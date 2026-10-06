@@ -1,0 +1,90 @@
+r"""weapon_ports_catalog.json entries for Halo 1's RESTORED weapons -- the Elites' Energy
+Sword and the Grunts' fuel rod made pickable (h1_pickable_weapons.py, PORTING.md "Halo 1:
+enemy-only weapons made pickable").
+
+They are not carried from another game: 'source' is Halo 1, the weapon tags keep their
+stock paths. The STOCK baselines carry the AI-only versions under those same paths, so
+each entry names `requires` -- a tag only the player build has -- and the enhancer counts
+the port as present on a level only when its weap AND every `requires` tag are in the map
+(the enhancer session's rule, cb8413d).
+
+The fuel rod is catalogued as 'Flak Cannon', the name halo.json already uses for the fuel
+rod in Halo 2-4, so a run carries it across games; its H1 cards derive from the donor
+(Rocket Launcher, port_cards.py).
+
+BALANCE rows (shape of the SAW's: class / tag / field / block / value / original, Assembly
+Halo1 plugin units, a range field as `<field>` + `<field> Max`). The values are the
+enhancer session's PROPOSAL put to the user (2026-10-06); 'original' is the shipped tag:
+  Flak Cannon   Triggers 'Charging Time' 1.25 -> 0 -- instant fire. The Grunts carry the
+                same weapon tag, so their fuel rods fire instantly too.
+  Energy Sword  aim assist 10 deg / 2.5 wu, 10 deg / 6 wu -> 15 / 3.5, 15 / 8 (Halo 3's
+                values are the original); the lunge strike's own damage radius
+                (`lunge strike`, split from the sword's melee so nothing else moves)
+                0.5 / 0.5 -> 1.0 / 1.0.
+
+    python make_port_catalog_h1_restored.py
+"""
+import json
+import os
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+TOOL = os.path.dirname(HERE)
+OUT = os.path.join(TOOL, 'weapon_ports_catalog.json')
+B = '\\'
+SWORD = B.join(['weapons', 'energy sword', 'energy sword'])
+STRIKE = B.join(['weapons', 'energy sword', 'lunge strike'])
+ROD = B.join(['weapons', 'fuel rod gun', 'fuel rod'])
+
+
+def row(cls, tag, field, value, original, card, block=None):
+    return {'class': cls, 'tag': tag, 'field': field, 'block': block, 'value': value,
+            'card': card, 'original': original}
+
+
+ENTRIES = [
+    {'weapon': 'Energy Sword', 'source': 'Halo 1', 'donor': None, 'default_on': False,
+     'desc': "The Elites' energy sword, made pickable: Halo 3's first-person animations "
+             "and sounds, Halo 1's own sword. Fire lunges (costs energy), melee slashes.",
+     'balance_desc': 'Stronger lunge aim assist (15 deg / 3.5 wu autoaim, 15 deg / 8 wu '
+                     'magnetism) and a wider lunge hit (radius 1.0).',
+     'fp_animations': B.join(['weapons', 'energy sword', 'fp', 'fp']),
+     # the lunge strike exists only in the player build
+     'requires': ['proj ' + B.join(['weapons', 'energy sword', 'lunge'])],
+     'anims': {},
+     'balance': [
+         row('weap', SWORD, 'Autoaim Angle', 15.0, 10.0, 'Lunge aim assist'),
+         row('weap', SWORD, 'Autoaim Range', 3.5, 2.5, 'Lunge aim assist'),
+         row('weap', SWORD, 'Magnetism Angle', 15.0, 10.0, 'Lunge aim assist'),
+         row('weap', SWORD, 'Magnetism Range', 8.0, 6.0, 'Lunge aim assist'),
+         row('jpt!', STRIKE, 'Radius', 1.0, 0.5, 'Lunge damage radius'),
+         row('jpt!', STRIKE, 'Radius Max', 1.0, 0.5, 'Lunge damage radius'),
+     ]},
+    {'weapon': 'Flak Cannon', 'source': 'Halo 1', 'donor': 'Rocket Launcher', 'default_on': False,
+     'desc': "The Grunts' fuel rod, made pickable: Halo 3's first-person animations and "
+             "sounds on the original gun. Hold fire to charge; it fires when full.",
+     'balance_desc': 'Instant fire, no charge (the Grunts\' fuel rods fire instantly too).',
+     'fp_animations': B.join(['weapons', 'fuel rod gun', 'fp', 'fp']),
+     # its own projectile (step 3) exists only in the player build
+     'requires': ['proj ' + B.join(['weapons', 'fuel rod gun', 'grunt fuel rod'])],
+     'anims': {},
+     'balance': [
+         row('weap', ROD, 'Charging Time', 0.0, 1.25, 'Charging Time', block='Triggers'),
+     ]},
+]
+
+
+def main():
+    cat = json.load(open(OUT, encoding='utf-8')) if os.path.exists(OUT) else {}
+    h1 = cat.setdefault('Halo 1', [])
+    for entry in ENTRIES:
+        old = next((e for e in h1 if e.get('weapon') == entry['weapon']), {})
+        merged = dict(old, **entry)              # keep what other tools added (e.g. 'ammo')
+        h1[:] = [e for e in h1 if e.get('weapon') != entry['weapon']] + [merged]
+        print('Halo 1 / %-12s %d balance row(s), requires %s'
+              % (entry['weapon'], len(entry['balance']), entry['requires']))
+    json.dump(cat, open(OUT, 'w', encoding='utf-8'), indent=1)
+    print('wrote %s' % OUT)
+
+
+if __name__ == '__main__':
+    main()

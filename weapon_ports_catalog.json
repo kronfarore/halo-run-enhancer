@@ -474,6 +474,99 @@
      "to": "sound\\weapons\\saw_port\\saw_reload_balanced"
     }
    }
+  },
+  {
+   "weapon": "Energy Sword",
+   "source": "Halo 1",
+   "donor": null,
+   "default_on": false,
+   "desc": "The Elites' energy sword, made pickable: Halo 3's first-person animations and sounds, Halo 1's own sword. Fire lunges (costs energy), melee slashes.",
+   "balance_desc": "Stronger lunge aim assist (15 deg / 3.5 wu autoaim, 15 deg / 8 wu magnetism) and a wider lunge hit (radius 1.0).",
+   "fp_animations": "weapons\\energy sword\\fp\\fp",
+   "requires": [
+    "proj weapons\\energy sword\\lunge"
+   ],
+   "anims": {},
+   "balance": [
+    {
+     "class": "weap",
+     "tag": "weapons\\energy sword\\energy sword",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 15.0,
+     "card": "Lunge aim assist",
+     "original": 10.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\energy sword\\energy sword",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 3.5,
+     "card": "Lunge aim assist",
+     "original": 2.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\energy sword\\energy sword",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 15.0,
+     "card": "Lunge aim assist",
+     "original": 10.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\energy sword\\energy sword",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 8.0,
+     "card": "Lunge aim assist",
+     "original": 6.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\energy sword\\lunge strike",
+     "field": "Radius",
+     "block": null,
+     "value": 1.0,
+     "card": "Lunge damage radius",
+     "original": 0.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\energy sword\\lunge strike",
+     "field": "Radius Max",
+     "block": null,
+     "value": 1.0,
+     "card": "Lunge damage radius",
+     "original": 0.5
+    }
+   ]
+  },
+  {
+   "weapon": "Flak Cannon",
+   "source": "Halo 1",
+   "donor": "Rocket Launcher",
+   "default_on": false,
+   "desc": "The Grunts' fuel rod, made pickable: Halo 3's first-person animations and sounds on the original gun. Hold fire to charge; it fires when full.",
+   "balance_desc": "Instant fire, no charge (the Grunts' fuel rods fire instantly too).",
+   "fp_animations": "weapons\\fuel rod gun\\fp\\fp",
+   "requires": [
+    "proj weapons\\fuel rod gun\\grunt fuel rod"
+   ],
+   "anims": {},
+   "balance": [
+    {
+     "class": "weap",
+     "tag": "weapons\\fuel rod gun\\fuel rod",
+     "field": "Charging Time",
+     "block": "Triggers",
+     "value": 0.0,
+     "card": "Charging Time",
+     "original": 1.25
+    }
+   ]
   }
  ],
  "Halo 3": [
