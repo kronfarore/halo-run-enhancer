@@ -227,26 +227,47 @@ WEAPONS['sentinel_beam'] = {
                'first-person posing': SBS + 'beam_pose',
                'first-person melee': SBS + 'beam_melee',
                'first-person overheating': SBS + 'beam_overheat'},
-    # THE FIRING EFFECT (own, every round, at the first-person muzzle): the hum as a
-    # per-shot GRAIN of Halo 3's loop (h1_port_sounds grains; overlapping at 15/s) and the
-    # muzzle light. History: tests 1-4 ran the hum as a sound_looping attachment scaled
-    # by a function -- `primary firing on` was silent, the illumination function toggled
-    # per round and QUEUED start/end tracks (the tail grew with how long fire was held).
-    # The light as an object attachment never showed in first person (tests 2-4, even at
-    # radius 6 full colour); stock weapons light their muzzle from the firing effect.
-    # No particles: Halo 1's Sentinel gun has no muzzle burst (the plasma rifle's was the
-    # template's)
+    # THE HUM, the flamethrower's way (the stock continuous-fire weapon): input B =
+    # `primary firing on`, function 1 = 'one' scaled by B_in, a sound_looping (a clone of
+    # its fire_ft: fade in/out) on B_out with Halo 3's in / 0.5 s seamless loop / out.
+    # The plasma rifle template's functions are rewired to make room (`rewire`): heat
+    # moves to function 3 (the heat flares follow it to D_out), illumination to input C.
+    # History: test 1 put `primary firing on` in input C / function 3 -- silent (the
+    # remaining difference from the flamethrower is that slot layout); tests 2-3 scaled by
+    # the illumination function, which toggled per round and QUEUED start/end tracks (the
+    # tail grew with how long fire was held); test 4's per-shot grains sounded like static
+    'rewire': {'inputs': ('heat', 'primary_firing_on', 'illumination', 'age'),
+               # new index: (template function index, scale by, usage)
+               'functions': {1: ((r'weapons\flamethrower\flamethrower', 1), 'B_in', 'fire loop'),
+                             2: (2, 'C_in', 'muzzle flash'),
+                             3: (1, 'A_in', 'heat flare')},
+               'attach_scale': {'B_out': 'D_out'}},
+    'fire_loop': {'tag': SBS + 'beam_fire', 'like': r'sound\sfx\weapons\flamethrower\fire_ft',
+                  'start': SBS + 'beam_fire_in', 'loop': SBS + 'beam_fire_loop',
+                  'end': SBS + 'beam_fire_out', 'marker': 'primary trigger', 'scale': 'B_out'},
+    # THE FIRING EFFECT (own, every round, at the first-person muzzle): the muzzle light
+    # only. No sound (the hum is the loop), no particles (Halo 1's Sentinel gun has no
+    # muzzle burst; the plasma rifle's was the template's). The light as an object
+    # attachment never showed in first person (tests 2-4)
     'fire_effect': {'from': r'weapons\plasma rifle\effects\plasma rifle upper fire',
-                    'out': SB + 'effects\\fire', 'sound': SBS + 'beam_fire_grain',
-                    'light': SB + 'muzzle light'},
+                    'out': SB + 'effects\\fire', 'sound': '', 'light': SB + 'muzzle light'},
     # the light: test 2 used the Sentinel's own gunlight -- NOT dynamic (a 0.5 wu glow
     # for the Sentinel's body). Own light = the plasma rifle muzzle flash (dynamic) in the
-    # gunlight's colour and with its lens flare, alive `duration` s per round
+    # gunlight's colour, alive `duration` s per round. Test 5: 'barely visible if at
+    # all' -- a dynamic light only lights surfaces; what the eye sees at a muzzle is the
+    # LENS FLARE. The gunlight's own (the Sentinel's eye flare) is 0.05 wu and dims with
+    # camera rotation: own copy x5, brightness unscaled
     'own_light': {'shape': r'weapons\plasma rifle\muzzle flash',
                   'look': r'characters\sentinel\gunlight', 'out': SB + 'muzzle light',
                   # test 3: still nothing to see -- gone HARD (radius x3, full alpha and
                   # brightness on both bounds), to be paddled back once it shows
-                  'radius': 6.0, 'argb': (1.0, 1.0, 0.45, 0.4), 'duration': 0.1},
+                  'radius': 6.0, 'argb': (1.0, 1.0, 0.45, 0.4), 'duration': 0.1,
+                  'flare': {'from': r'characters\sentinel\eyelight', 'out': SB + 'muzzle flare',
+                            'radius': 0.25}},
+    # Halo 1's overheat steam spawns at the plasma rifle's `vent` markers, which this
+    # model lacks (test 5: no particles): own copy at `overheat`
+    'overheated_effect': {'from': r'weapons\plasma rifle\effects\overheated',
+                          'out': SB + 'effects\\overheated', 'locations': {'vent': 'overheat'}},
     'attach_swap': {r'weapons\plasma rifle\muzzle flash': SB + 'muzzle light'},
     # the template's attachments sit on plasma rifle markers this model lacks
     # THE DROP (user's option B): Halo 1's Sentinel carries no droppable weapon, so its
@@ -272,7 +293,8 @@ WEAPONS['sentinel_beam'] = {
                 # wu: right, down -- test 3: y -0.04 sat right of the muzzle ('further to the left')
                 # test 4: 'a bit up and right', and the FP rig went 2 units down (the
                 # muzzle with it): y -0.03, z -0.035 + 0.01 - 0.02
-                'first_person_offset': (0.0, -0.03, -0.045),
+                # test 5: 'halfway back to the left and down'
+                'first_person_offset': (0.0, -0.025, -0.05),
                 # test 2: the hum ran on too long after letting go -- the illumination
                 # it follows held 0.15 s past the last round; one 15/s interval is 0.067
                 'illumination_recovery_time': 0.08},
@@ -526,6 +548,29 @@ def add_hum(d, h, write):
     x.change_color.set_to('none')
 
 
+def rewire(d, r):
+    """Re-lay a template's export inputs and object functions: `inputs` A..D, functions
+    {new index: (source, scale by, usage)} -- source a template function index, or
+    (weapon tag, index) to copy another weapon's -- and attachment scales renamed."""
+    o = d.obje_attrs
+    old = [copy.deepcopy(f) for f in o.functions.STEPTREE]
+    for slot, inp in zip('ABCD', r['inputs']):
+        getattr(d.weap_attrs, slot + '_in').set_to(inp)
+    for i, (src, by, usage) in r['functions'].items():
+        if isinstance(src, tuple):
+            other = weap_def.build(filepath=path(src[0], '.weapon')).data.tagdata
+            fn = copy.deepcopy(other.obje_attrs.functions.STEPTREE[src[1]])
+        else:
+            fn = copy.deepcopy(old[src])
+        fn.scale_function_by.set_to(by)
+        fn.usage = usage
+        o.functions.STEPTREE[i] = fn
+    for x in o.attachments.STEPTREE:
+        sc = x.primary_scale.enum_name
+        if sc in r.get('attach_scale', {}):
+            x.primary_scale.set_to(r['attach_scale'][sc])
+
+
 def add_fire_loop(d, f, write):
     """A start/loop/end sound_looping (cloned from `like`) at `marker`, its primary scale
     the weapon's existing object function output `scale` (it plays while that is up)."""
@@ -534,6 +579,8 @@ def add_fire_loop(d, f, write):
     ld = lt.data.tagdata
     tr = ld.tracks.STEPTREE[0]
     tr.start.filepath, tr.loop.filepath, tr.end.filepath = f['start'], f['loop'], f['end']
+    tr.gain = 1.0                 # the flamethrower's fire_ft says 0.0; the charging loop
+                                  # that played in tests 2-3 says 1.0
     while len(ld.tracks.STEPTREE) > 1:
         ld.tracks.STEPTREE.pop()
     save(lt, path(f['tag'], '.sound_looping'), write)
@@ -625,6 +672,16 @@ def edit_weapon(key, write):
                 setattr(sub[0], k, v)
     for k, v in w.get('heat', {}).items():
         setattr(a.heat, k, v)
+    if 'overheated_effect' in w:
+        from reclaimer.hek.defs.effe import effe_def
+        O = w['overheated_effect']
+        et = effe_def.build(filepath=path(O['from'], '.effect'))
+        for loc in et.data.tagdata.locations.STEPTREE:
+            loc.marker_name = O['locations'].get(loc.marker_name, loc.marker_name)
+        save(et, path(O['out'], '.effect'), write)
+        a.heat.overheated.filepath = O['out']
+    if 'rewire' in w:
+        rewire(d, w['rewire'])
     if 'own_light' in w:
         from reclaimer.hek.defs.ligh import ligh_def
         L = w['own_light']
@@ -640,6 +697,15 @@ def edit_weapon(key, write):
                 bound.a, bound.r, bound.g, bound.b = L['argb']
         if 'duration' in L:
             lt.data.tagdata.effect_parameters.duration = L['duration']
+        if 'flare' in L:
+            from reclaimer.hek.defs.lens import lens_def
+            fl = L['flare']
+            ft = lens_def.build(filepath=path(fl['from'], '.lens_flare'))
+            for r in ft.data.tagdata.reflections.STEPTREE:
+                r.radius[0] = r.radius[1] = fl['radius']
+                r.brightness_scaled_by.set_to('none')
+            save(ft, path(fl['out'], '.lens_flare'), write)
+            lt.data.tagdata.lens_flare.filepath = fl['out']
         save(lt, path(L['out'], '.light'), write)
     if 'fire_effect' in w:
         from reclaimer.hek.defs.effe import effe_def
@@ -652,8 +718,9 @@ def edit_weapon(key, write):
         while len(ev.particles.STEPTREE):
             ev.particles.STEPTREE.pop()
         parts = ev.parts.STEPTREE
-        parts[0].type.filepath = F['sound']
-        parts.append(copy.deepcopy(parts[0]))
+        if F['sound']:
+            parts[0].type.filepath = F['sound']
+            parts.append(copy.deepcopy(parts[0]))
         lp = parts[len(parts) - 1]
         lp.type.tag_class.set_to('light')
         lp.type.filepath = F['light']

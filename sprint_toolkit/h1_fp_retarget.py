@@ -95,8 +95,13 @@ WEAPONS = {
         # pushed 1.5 units AWAY from the camera (wrong way: test 2 'still too far forward,
         # set it back another 3 units'); now 3 units back from that, 1.5 toward the camera
         # test 3: 'making progress, another 1 unit'
-        # test 4: 'down 2 units'
-        'view_offset': (-0.025, 0.0, -0.02),
+        # test 4: 'down 2 units'; test 5: 'another unit backwards'
+        'view_offset': (-0.035, 0.0, -0.02),
+        # Halo 1 plays `overheated` (looped) after `overheating` while the weapon is still
+        # hot -- the stock plasma rifle has one (50 frames). Without it the engine replayed
+        # `overheating` (test 5: overheat sound twice, the pose jumping back mid-way).
+        # Halo 3's graph has none: the last overheating frame, held
+        'holds': {'first-person overheated': ('first_person:overheating', 50)},
         'anims': {
             'first_person:idle:var1': 'first-person idle',
             'first_person:ready': 'first-person ready',
@@ -470,10 +475,14 @@ def write_jmas(weapon, only=None):
                               parent_index=idx[p] if p is not None else -1))
     out_dir = os.path.join(HCEEK, 'data', w['h1_dir'], 'animations')
     written = []
-    for h3name, h1name in w['anims'].items():
+    jobs = list(w['anims'].items())
+    jobs += [(h3name, h1name) for h1name, (h3name, _n) in w.get('holds', {}).items()]
+    for h3name, h1name in jobs:
         if only and h1name not in only and h3name not in only:
             continue
         typ, frames = retarget(weapon, h3name, nodes, anims, defaults)
+        if h1name in w.get('holds', {}):           # a still: the source's LAST frame held
+            frames = [frames[-1]] * w['holds'][h1name][1]
         if typ != 'overlay':
             frames = frames + [frames[0] if h1name in LOOPING else frames[-1]]
         states = [[JmaNodeState(t[0] * 100, t[1] * 100, t[2] * 100,
