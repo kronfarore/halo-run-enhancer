@@ -9510,7 +9510,6 @@ class OptionsDialog(QDialog):
         Only their VISIBILITY follows debug mode. Their values keep applying either
         way, so turning debug off cannot silently undo a rule the run depends on."""
         on = self.debug_mode_cb.isChecked()
-        self._sync_ports_page()
         for w in getattr(self, '_debug_only_rows', ()):
             w.setVisible(on)
             lbl = w.parentWidget().layout().labelForField(w) if w.parentWidget() else None
@@ -12299,7 +12298,7 @@ class OptionsDialog(QDialog):
             self._ec_drop_widgets([it])
             self._ec_tree.setItemWidget(it, 1, self._ec_swatches(game, row))
 
-    # ---- Weapon ports (experimental, debug only) ---------------------------
+    # ---- Weapon ports (experimental; shown without Debug since 2026-10-06) ----
     # A ported weapon carries its SOURCE game's numbers in its target-game tags. The
     # options here decide what the patcher does with a port on top of that: the
     # suggested balance (the donor weapon's own numbers, read across the two games,
@@ -12315,8 +12314,8 @@ class OptionsDialog(QDialog):
         lay = QVBoxLayout(box)
         note = QLabel(
             "Weapons carried from one game into another. A port ships with its ORIGINAL "
-            "numbers from the game it came from.\n\nExperimental: shown only with Debug "
-            "on, and every port needs testing in game before it is worth trusting.")
+            "numbers from the game it came from.\n\nExperimental: every port needs "
+            "testing in game before it is worth trusting.")
         note.setWordWrap(True)
         lay.addWidget(note)
         self._ports_master_cb = QCheckBox("Use weapon ports")
@@ -12488,9 +12487,6 @@ class OptionsDialog(QDialog):
             w.setEnabled(self._ports_master_cb.isChecked())
         page = self._opt_page("Weapon ports")
         page.addWidget(box)
-        # Debug-only: the nav entry is hidden unless Debug is on (the page itself stays
-        # built, so its values are still saved either way).
-        self._ports_nav_row = self._opt_nav.count() - 1
 
     def _port_volume_widgets(self, game, weapon):
         """(label, spin box) for a port's volume knob, or None where port_volume does
@@ -12554,18 +12550,6 @@ class OptionsDialog(QDialog):
         lbl.setToolTip(tip)
         self._ports_volume[(game, weapon)] = sp
         return lbl, sp
-
-    def _sync_ports_page(self):
-        row = getattr(self, '_ports_nav_row', None)
-        if row is None:
-            return
-        item = self._opt_nav.item(row)
-        if item is None:
-            return
-        on = self.debug_mode_cb.isChecked()
-        item.setHidden(not on)
-        if not on and self._opt_nav.currentRow() == row:
-            self._opt_nav.setCurrentRow(0)
 
     def values(self):
         return {
@@ -15660,6 +15644,30 @@ class HaloGUI(QMainWindow):
             round_data['wildcard'] = mod
         return round_data
 
+    def _debug_armed_entries(self):
+        """Halo 1's synthesized 'Armed: <weapon>' cards for Add mod: every enemy type
+        that can be armed, plus the Marine (ally) version, for each weapon some Halo 1
+        character really spawns with (the same weapon filter as armed_cards, without
+        the level and weapon-pool gates -- the ports among them included)."""
+        db = self.db
+        try:
+            import weapon_ports
+            used = db.h1_used_weapons()
+            names = set(db.get_game_weapons('Halo 1'))
+            names |= {p.get('weapon') for p in weapon_ports.ports_for('Halo 1')}
+        except Exception:
+            return []
+        out = []
+        for w in sorted(n for n in names if n):
+            path = db.h1_weapon_path(w)
+            if (not path or db.is_grenade(w) or db.is_equipment(w) or is_sprint_item(w)
+                    or (used is not None and path not in used)):
+                continue
+            for e in db.H1_ARMED_ENEMIES:
+                out.append((f"[Armed] {e}: Armed: {w}", db.armed_card(e, w)))
+            out.append((f"[Armed] Marine (ally): Armed: {w}", db.armed_card('Marine', w, ally=True)))
+        return out
+
     # ---- Save ----
     def on_add_mod_debug(self):
         """Debug helper: search every effect in halo.json and inject the picked one
@@ -15678,6 +15686,7 @@ class HaloGUI(QMainWindow):
                            (self.db.wildcard_pool, 'Wildcard'), (self.db.skull_pool, 'Skull')):
             for mod in pool:
                 entries.append((f"[{kind}] {mod['name']}", mod))
+        entries += self._debug_armed_entries()
 
         dlg = QDialog(self)
         dlg.setWindowTitle("🔍 Add mod (debug)")
