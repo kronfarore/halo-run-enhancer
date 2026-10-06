@@ -58,6 +58,15 @@ ACTV_SIZE = 0x238
 REF_ACTOR, REF_UNIT, REF_MAJOR, REF_WEAPON = 0x04, 0x14, 0x24, 0x64
 CHANGE_COLORS, CC_SZ = 0x22C, 0x20
 FIRING = [(0x74, 0x160), (0x1D8, 0x1E4)]
+# A MELEE-ONLY weapon (Halo 1's energy sword) is more than a firing pattern: its
+# carriers set Flags bit 6 'Cannot Use Ranged Weapons' and their 'Berserking And Melee'
+# block (Melee Range / Abort Range, Berserk Firing Ranges, Berserk Melee Range / Abort
+# Range) is what makes them charge -- sword Commander 12 / 15 / 16 / 20 against 3 / 3 /
+# 0 / 0 on the same Commander with a plasma rifle (2026-10-06: armed sword Elites stood
+# and never closed in). Both follow the donor whenever either side is melee-only, so a
+# sword source given a gun can shoot again too.
+MELEE = (0x160, 0x178)
+FLAGS, NO_RANGED = 0x0, 0x40
 # numbers that describe the CHARACTER rather than its weapon (similarity measure)
 TRAITS = [(0x28, 0x64), (0x160, 0x1C0), (0x1D0, 0x1D8), (0x1E4, 0x22C)]
 
@@ -191,12 +200,26 @@ def _weapon_ref(m, weapon):
     return bytes(ref)
 
 
+def apply_donor(b, donor):
+    """Write the donor's firing block into actv bytes `b` (in place) -- and, where the
+    donor or `b` is a melee-only variant, its melee block and 'Cannot Use Ranged
+    Weapons' flag too (see MELEE)."""
+    if donor is None:
+        return b
+    for lo, hi in FIRING:
+        b[lo:hi] = donor[lo:hi]
+    dflag = struct.unpack_from('<I', donor, FLAGS)[0] & NO_RANGED
+    sflag = struct.unpack_from('<I', b, FLAGS)[0]
+    if dflag or sflag & NO_RANGED:
+        b[MELEE[0]:MELEE[1]] = donor[MELEE[0]:MELEE[1]]
+        struct.pack_into('<I', b, FLAGS, (sflag & ~NO_RANGED) | dflag)
+    return b
+
+
 def _clone_bytes(m, src_base, weref, donor):
     b = bytearray(m.data[src_base:src_base + ACTV_SIZE])
     b[REF_WEAPON:REF_WEAPON + 16] = weref
-    if donor is not None:
-        for lo, hi in FIRING:
-            b[lo:hi] = donor[lo:hi]
+    apply_donor(b, donor)
     # own Change Colors copy
     n = m.u32(src_base + CHANGE_COLORS)
     if n:

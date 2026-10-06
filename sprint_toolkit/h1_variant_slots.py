@@ -62,9 +62,7 @@ def fill_slot(m, slot, src_base, weref, donor=None, major_ref=None):
     keep = bytes(m.data[sb + hv.CHANGE_COLORS:sb + hv.CHANGE_COLORS + 12])   # its block
     data = bytearray(m.data[src_base:src_base + hv.ACTV_SIZE])
     data[hv.REF_WEAPON:hv.REF_WEAPON + 16] = weref
-    if donor is not None:
-        for lo, hi in hv.FIRING:
-            data[lo:hi] = donor[lo:hi]
+    hv.apply_donor(data, donor)
     if major_ref is not None:
         data[hv.REF_MAJOR:hv.REF_MAJOR + 16] = major_ref
     else:

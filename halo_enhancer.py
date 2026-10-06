@@ -11,6 +11,7 @@ import random
 import shutil
 import sys
 import threading
+import time
 from datetime import datetime
 from pathlib import Path
 try:
@@ -307,11 +308,15 @@ def pool_cache_get(key, path):
         return None
 
 
-def run_busy(parent, fn, title="Patching", label="Working"):
+def run_busy(parent, fn, title="Patching", label="Working", show_after=0.0):
     """Run fn() off the GUI thread while showing an animated busy dialog, so a long
     job is visibly distinct from a hang. Returns fn()'s value; re-raises whatever it
     raised. The work must be pure file/tag work with no Qt calls -- the GUI thread only
-    spins the event loop and the dots."""
+    spins the event loop and the dots.
+
+    `show_after` (seconds): the dialog appears only once the job has run that long, so a
+    usually-instant job (drawing pairs) does not flash one. Until then no events are
+    processed either, so nothing can be clicked twice in the meantime."""
     result = {}
 
     def work():
@@ -327,16 +332,26 @@ def run_busy(parent, fn, title="Patching", label="Working"):
     dlg.setMinimumDuration(0)
     dlg.setAutoClose(False)
     dlg.setAutoReset(False)
-    dlg.show()
+    shown = show_after <= 0
+    if shown:
+        dlg.show()
     t = threading.Thread(target=work, daemon=True)
     t.start()
+    t0 = time.monotonic()
     dots = 0
     while t.is_alive():
+        if not shown:
+            t.join(0.05)
+            if t.is_alive() and time.monotonic() - t0 >= show_after:
+                dlg.show()
+                shown = True
+            continue
         dots = dots % 3 + 1
         dlg.setLabelText(label + "." * dots + " " * (3 - dots))
         QApplication.processEvents()
         t.join(0.6)                                   # ~every 0.6 s a dot appears
-    QApplication.processEvents()
+    if shown:
+        QApplication.processEvents()
     dlg.close()
     if 'error' in result:
         raise result['error']
@@ -9915,6 +9930,12 @@ class OptionsDialog(QDialog):
                 bgrid.addWidget(cell, r + 2, c + 1)
                 self.baseline_spins[(game, key)] = sp
                 self.baseline_vanilla[(game, key)] = van
+        reset = QPushButton("Reset all dials")
+        reset.setToolTip("Set every dial of every game back to vanilla (0): the games' "
+                         "own values. Takes effect when Options is saved.")
+        reset.clicked.connect(lambda: [sp.setValue(0.0) for sp in self.baseline_spins.values()])
+        bgrid.addWidget(reset, len(BASELINE_GAMES) + 2, 0, 1, len(BASELINE_COLS) + 1,
+                        Qt.AlignRight)
         # Deferred: this reads maps, and doing it while the dialog is still being
         # built means the window never paints until it finishes.
         QTimer.singleShot(0, self._refresh_baseline_vanilla)
@@ -15190,14 +15211,19 @@ class HaloGUI(QMainWindow):
             self._sync_save_button()
             self.update_status("Regenerating pairs for Player 1")
 
-        if getattr(self.run_state, 'round_kind', 'normal') == 'identity':
-            pairs = self.enhancer.generate_identity_pairs(for_player=player)
-            if not pairs:
-                # no weapon with two cards left to tie: this player gets a normal offer
-                pairs = self.enhancer.generate_pairs(for_player=player)
-                turn_text += " (no Weapon Identity possible -- normal offer)"
-        else:
-            pairs = self.enhancer.generate_pairs(for_player=player)
+        identity = getattr(self.run_state, 'round_kind', 'normal') == 'identity'
+
+        def draw():
+            # pure card logic, no Qt: off the GUI thread behind a progress bar (the first
+            # draw after a map change also reads the Halo 1 enemy index, ten maps)
+            got = self.enhancer.generate_identity_pairs(for_player=player) if identity else None
+            fallback = identity and not got
+            # no weapon with two cards left to tie: this player gets a normal offer
+            return (got or self.enhancer.generate_pairs(for_player=player)), fallback
+        pairs, fallback = run_busy(self, draw, "Drawing cards",
+                                   "Drawing %s's cards" % turn_text, show_after=0.3)
+        if fallback:
+            turn_text += " (no Weapon Identity possible -- normal offer)"
         self.display_pairs(pairs, show_p1, show_p2)
         self.update_status(f"{turn_text}'s turn - Select a pair"
                            + (" (Weapon Identity)" if getattr(self.run_state, 'round_kind', '')
@@ -15672,6 +15698,12 @@ class HaloGUI(QMainWindow):
     def on_add_mod_debug(self):
         """Debug helper: search every effect in halo.json and inject the picked one
         into the run as its own round, so it shows up in the patcher."""
+        entries = run_busy(self, self._debug_mod_entries, "Add mod",
+                           "Collecting every effect", show_after=0.3)
+        self._show_add_mod_dialog(entries)
+
+    def _debug_mod_entries(self):
+        """(label, mod) for every effect Add mod lists -- no Qt (runs off the GUI thread)."""
         entries = []   # (label, mod)
         for weapon, mods in self.db.weapon_mods.items():
             for mod in mods:
@@ -15687,7 +15719,9 @@ class HaloGUI(QMainWindow):
             for mod in pool:
                 entries.append((f"[{kind}] {mod['name']}", mod))
         entries += self._debug_armed_entries()
+        return entries
 
+    def _show_add_mod_dialog(self, entries):
         dlg = QDialog(self)
         dlg.setWindowTitle("🔍 Add mod (debug)")
         dlg.setModal(True)
