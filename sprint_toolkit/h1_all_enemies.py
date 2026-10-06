@@ -22,6 +22,9 @@ Once resident, a variant spawns by REPOINTING a palette entry at patch time
     python h1_all_enemies.py test --level a10  kit edit -> build -> kit put back -> TEST map
                                                (every Covenant squad cycled over the 40 roots,
                                                player god shield) -> halo1\maps\<lvl>_allenemies_test.map
+    python h1_all_enemies.py test --level a10 --factions [--reuse-build]
+                                               v2: one faction per encounter (explicit team),
+                                               a Hunter squad first in every Covenant one
     python h1_all_enemies.py verify --map M    are all roots + majors in a built map?
     (h1_all_enemies_test.cmd deploy|restore [level] swaps the test map in / out)
 """
@@ -216,10 +219,23 @@ def _test_order(roots):
     return out
 
 
-def make_test(m, plan):
-    """Every Covenant squad (and Covenant starting-location override) cycles over the
-    40 roots. Slot palette entries are repointed at the anchors so all 40 are in the
-    palette; the player gets a god shield (h1_enemy_test_map's)."""
+FACTIONS = {                       # scnr encounter Team Index (+0x24)
+    'covenant': (3, ('elite', 'grunt', 'jackal', 'hunter')),
+    'flood': (4, ('flood',)),
+    'sentinel': (5, ('sentinel',)),
+}
+ENC_TEAM = 0x24
+KEEP_ENCOUNTERS = ('cryo_bane',)    # a10 tutorial actor: invulnerable, scripted, erased
+
+
+def make_test(m, plan, factions=False):
+    """Repoint the level's Covenant squads (and Covenant starting-location overrides).
+    Default (v1): every squad cycles over the 40 roots -> mixed encounters.
+    factions (v2): each enemy encounter becomes ONE faction (Covenant / Flood / Sentinel in
+    turn, team set explicitly), its squads cycling over that faction's roots, and every
+    Covenant encounter's first squad a Hunter -- a10 v1 showed the team is per ENCOUNTER.
+    Slot palette entries are repointed at the anchors so all 40 are in the palette; the
+    player gets a god shield (h1_enemy_test_map's)."""
     import h1_enemy_test_map as etm
     d = m.data
     ids = etm.tag_ids(m)
@@ -241,20 +257,46 @@ def make_test(m, plan):
     if lost:
         raise SystemExit('not in the palette: %s' % lost)
     cov = set(j for j, p in enumerate(pal) if species(p).startswith(COVENANT))
-    k, log = 0, []
+    if factions:
+        cycles = {f: [r for r in cycle if species(r).startswith(sp)]
+                  for f, (_t, sp) in FACTIONS.items()}
+        turn = ['sentinel', 'flood', 'covenant']   # a10: crossfire_anti (3rd) = Covenant
+        pos = {f: 0 for f in FACTIONS}
+    k, n_enc, log = 0, 0, []
     for enc in _elems(m, sb + ENCOUNTERS, ENC_SZ):
         ename = bytes(d[enc:enc + 32]).split(b'\0')[0].decode('latin-1')
-        for sq in _elems(m, enc + SQUADS, SQ_SZ):
+        if ename in KEEP_ENCOUNTERS:
+            continue
+        sqs = [sq for sq in _elems(m, enc + SQUADS, SQ_SZ)
+               if struct.unpack_from('<h', d, sq + SQ_TYPE)[0] in cov]
+        if not sqs:
+            continue
+        if factions:
+            fac = turn[n_enc % len(turn)]
+            n_enc += 1
+            struct.pack_into('<h', d, enc + ENC_TEAM, FACTIONS[fac][0])
+            log.append('%s = %s' % (ename, fac.upper()))
+        for si, sq in enumerate(sqs):
             t = struct.unpack_from('<h', d, sq + SQ_TYPE)[0]
-            if t not in cov:
-                continue
-            new = cycle[k % len(cycle)]
-            k += 1
+            if not factions:
+                new = cycle[k % len(cycle)]
+                k += 1
+            elif fac == 'covenant' and si == 0:
+                new = next(r for r in cycles['covenant'] if species(r) == 'hunter')
+            else:
+                c = cycles[fac]
+                new = c[pos[fac] % len(c)]
+                pos[fac] += 1
+                if fac == 'covenant' and species(new) == 'hunter':
+                    new = c[pos[fac] % len(c)]
+                    pos[fac] += 1
             struct.pack_into('<h', d, sq + SQ_TYPE, where[new])
             for loc in _elems(m, sq + LOCS, LOC_SZ):
                 if struct.unpack_from('<h', d, loc + LOC_TYPE)[0] in cov:
                     struct.pack_into('<h', d, loc + LOC_TYPE, where[new])
-            log.append('%s: %s -> %s' % (ename, pal[t].rsplit(BS, 1)[-1], new.rsplit(BS, 1)[-1]))
+            log.append('   %s: %s x%d -> %s' % (
+                ename, pal[t].rsplit(BS, 1)[-1], struct.unpack_from('<h', d, sq + 0x7C)[0],
+                new.rsplit(BS, 1)[-1]))
     coll = m.tags[('coll', etm.COLL)]
     for off, v in ((etm.MAX_BODY, 1e6), (etm.MAX_SHIELD, 1e6), (etm.LEAK, 0.0),
                    (etm.STUN, 0.0), (etm.RECHARGE, 0.1)):
@@ -269,6 +311,10 @@ def main():
     p.add_argument('--replan', action='store_true')
     t = sub.add_parser('test')
     t.add_argument('--level', default='a10')
+    t.add_argument('--factions', action='store_true',
+                   help='v2: one faction per encounter, explicit team, Hunters up front')
+    t.add_argument('--reuse-build', action='store_true',
+                   help='skip the kit build: the kit maps folder <level>.map is already the anchor build')
     v = sub.add_parser('verify')
     v.add_argument('--map', required=True)
     a = ap.parse_args()
@@ -279,23 +325,24 @@ def main():
     if a.cmd == 'verify':
         sys.exit(0 if verify(halo_patch.open_map(a.map, 'Halo 1'), plan) else 1)
     lv = a.level
-    kit_backup([lv])
-    try:
-        kit_apply(plan, [lv])
-        built = build(lv)
-        out = os.path.join(MAPS, lv + '_allenemies_test.map')
-        shutil.copy2(built, out)
-    finally:
-        kit_restore([lv])
-        print('kit put back (slots + %s scenario)' % lv)
+    out = os.path.join(MAPS, lv + '_allenemies_test.map')
+    if a.reuse_build:
+        shutil.copy2(os.path.join(paths.HCEEK, 'maps', lv + '.map'), out)
+    else:
+        kit_backup([lv])
+        try:
+            kit_apply(plan, [lv])
+            shutil.copy2(build(lv), out)
+        finally:
+            kit_restore([lv])
+            print('kit put back (slots + %s scenario)' % lv)
     m = halo_patch.open_map(out, 'Halo 1')
     print('palette in the build: %d' % len(_palette(m)))
     if not verify(m, plan):
         raise SystemExit('not every variant got in -- test map not finished')
-    log = make_test(m, plan)
+    log = make_test(m, plan, a.factions)
     m.save(out)
-    print('%d Covenant squads repointed (first 25):' % len(log))
-    for line in log[:25]:
+    for line in log if a.factions else log[:25]:
         print('   ' + line)
     print('wrote %s' % out)
 
