@@ -11,7 +11,9 @@ a = Analysis(
     binaries=[],
     datas=[('halo.json', '.'), ('port_glyphs.json', '.'), ('port_sounds', 'port_sounds')],   # bundle the data files next to the app
     hiddenimports=['h3_font_repack', 'port_glyphs', 'port_sounds', 'port_volume',
-                   'h1_fsb', 'numpy'],
+                   'h1_fsb', 'numpy',
+                   # imported inside functions after a sys.path insert (halo3_reload)
+                   'h3_move_speed', 'h3_anim_lengthen', 'h3_raw_residency', 'h3_zone_pools'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
