@@ -109,6 +109,11 @@
      "Drop Weapon Loaded Max"
     ]
    }
+  },
+  "weapons\\sentinel beam\\sentinel beam": {
+   "source": "Halo 1 characters\\sentinel\\sentinel (own carriers, Sentinel Beam fires like the Sentinel whose beam it replaces)",
+   "donor_weapon": "characters\\sentinel\\sentinel",
+   "fields": {}
   }
  }
 }

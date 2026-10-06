@@ -204,6 +204,13 @@ def donor_for(m, index, weapon, unit, traits, forced=None):
     if d:
         return d[0], d[1], d[2], None
     prof = profiles().get(weapon)
+    if prof and prof.get('donor_weapon'):
+        # a SAME-GAME profile (ai_firing_profile.py --donor-weapon): fire like the best
+        # character carrying that weapon -- Halo 1's Sentinel Beam ('sb', a label no one
+        # else has) like Halo 1's own Sentinel, whose beam it replaces
+        d = best_donor(index, prof['donor_weapon'], unit, traits)
+        if d:
+            return d[0], d[1], '%s + %s' % (d[2], _prof_desc(prof)), prof['fields'] or None
     label = m.weapon_label(weapon)
     if not prof or not label:
         return None

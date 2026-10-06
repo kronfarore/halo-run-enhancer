@@ -114,15 +114,44 @@ def build(from_map, from_game, from_weapon, to_weapon, to_game='Halo 1', char='a
     return data[to_game][to_weapon]
 
 
+def same_game(donor_weapon, to_weapon, to_game='Halo 1', why=''):
+    """A profile with NO foreign fields: the clone takes its whole firing block from the
+    best character in the target game carrying `donor_weapon` (h1_enemy_weapons.donor_for
+    reads 'donor_weapon'). For a weapon whose animation label nobody else uses, so the
+    label search finds no base: Halo 1's Sentinel Beam ('sb') fires like Halo 1's own
+    Sentinel, whose beam (characters\\sentinel\\sentinel) it replaces."""
+    try:
+        with open(PROFILE_FILE, encoding='utf-8') as fh:
+            data = json.load(fh)
+    except Exception:
+        data = {}
+    data.setdefault(to_game, {})[to_weapon] = {
+        'source': '%s %s (own carriers%s)' % (to_game, donor_weapon, ', ' + why if why else ''),
+        'donor_weapon': donor_weapon, 'fields': {}}
+    with open(PROFILE_FILE, 'w', encoding='utf-8') as fh:
+        json.dump(data, fh, indent=1)
+    return data[to_game][to_weapon]
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--from-map', required=True)
+    ap.add_argument('--from-map')
     ap.add_argument('--from-game', default='Halo 4')
-    ap.add_argument('--from-weapon', required=True)
+    ap.add_argument('--from-weapon')
     ap.add_argument('--to-weapon', required=True)
     ap.add_argument('--to-game', default='Halo 1')
     ap.add_argument('--char', default='ai\\generic')
+    ap.add_argument('--donor-weapon', help='same-game mode: fire like the characters '
+                                           'carrying this weapon (no foreign fields)')
+    ap.add_argument('--why', default='')
     a = ap.parse_args()
+    if a.donor_weapon:
+        prof = same_game(a.donor_weapon, a.to_weapon, a.to_game, a.why)
+        print(prof['source'], '->', a.to_weapon)
+        print('written', PROFILE_FILE)
+        return
+    if not (a.from_map and a.from_weapon):
+        ap.error('--from-map and --from-weapon (or --donor-weapon)')
     prof = build(a.from_map, a.from_game, a.from_weapon, a.to_weapon, a.to_game, a.char)
     print(prof['source'])
     for off, (fmt, v, name) in sorted(prof['fields'].items(), key=lambda kv: int(kv[0], 16)):

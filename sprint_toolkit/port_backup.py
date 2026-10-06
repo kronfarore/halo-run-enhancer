@@ -373,6 +373,11 @@ SCRIPTS += ('h3_rm_to_jms.py', 'h1_h3_weapon_model.py', 'h1_enemy_test_map.py',
             'make_port_catalog_h1_restored.py')
 # step 5b + staging tools, and every local module the restored-weapon tools import
 # (closure checked 2026-10-06)
+# the ARMED cards' firing data: the profiles (the SAW's, the Sentinel Beam's same-game
+# one), the tool that writes them, and the enhancer module that reads them
+FILES += [(os.path.join(TOOL, 'ai_firing_profiles.json'), 'catalog/ai_firing_profiles.json'),
+          (os.path.join(TOOL, 'h1_enemy_weapons.py'), 'tool/h1_enemy_weapons.py')]
+SCRIPTS += ('ai_firing_profile.py',)
 SCRIPTS += ('h1_role_compare.py', 'h1_stage_balanced.py', 'fsb5_merge.py', 'h1_loosetag.py',
             'h3_anim_decode.py', 'h3_kit.py', 'install_script.py', 'paths.py', 'port_env.py',
             'saw_port_sounds.py')
