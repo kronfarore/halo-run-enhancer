@@ -101,7 +101,11 @@ WEAPONS = {
         # toward the player's right (-y in the gun's space), JMS units / 100. Full strength
         # within 6 units of its idle grip, none beyond 14 (the reloads leave the gun).
         'grip_node': 'gun',
-        'left_hand_offset': ((0.05, -0.02, 0.0), 0.06, 0.14),
+        'left_hand_offset': ((0.04, -0.02, 0.0), 0.06, 0.14),
+        # and during the reloads, where the hand leaves the grip (user, 2026-10-06): one
+        # unit forward and one to the right, for the whole animation
+        'left_hand_offset_anims': {'first_person:reload_empty': (0.01, -0.01, 0.0),
+                                   'first_person:reload_full': (0.01, -0.01, 0.0)},
         'anims': {
             'first_person:idle': 'first-person idle',
             'first_person:ready': 'first-person ready',
@@ -276,7 +280,7 @@ def _rot_between(u, v):
     return tuple(x / n for x in q)
 
 
-def _move_left_hand(world, h3_nodes, grip, grip_node, ref):
+def _move_left_hand(world, h3_nodes, grip, grip_node, ref, extra=(0.0, 0.0, 0.0)):
     """Two-bone IK: the left wrist moved by `grip` = (offset in the gun's space, wu;
     full-strength radius; zero radius), elbow kept in its own plane, hand orientation and
     fingers unchanged. Used where Halo 1's model is not Halo 3's shape, so H3's hand would
@@ -287,9 +291,9 @@ def _move_left_hand(world, h3_nodes, grip, grip_node, ref):
     local = R.xform(R.inverse(G), W)                       # the wrist in gun space
     d = _vlen(_vsub(local, ref))
     k = 1.0 if d <= r_full else max(0.0, 1.0 - (d - r_full) / (r_zero - r_full))
-    if k <= 0.0:
+    if k <= 0.0 and not any(extra):
         return
-    T = R.xform(G, tuple(a + k * b for a, b in zip(local, offset)))
+    T = R.xform(G, tuple(a + k * b + e for a, b, e in zip(local, offset, extra)))
     a, b = _vlen(_vsub(E, S)), _vlen(_vsub(W, E))
     st = _vsub(T, S)
     c = min(_vlen(st), a + b - 1e-6)
@@ -318,7 +322,8 @@ def _move_left_hand(world, h3_nodes, grip, grip_node, ref):
         world[n] = (q, tuple(x + y for x, y in zip(t, shift)))
 
 
-def retarget_frame(h3_nodes, pose, defaults, weapon, corr, grip_ref=None):
+def retarget_frame(h3_nodes, pose, defaults, weapon, corr, grip_ref=None,
+                   extra=(0.0, 0.0, 0.0)):
     """One Halo 3 BASE frame -> {H1 name: (q in Halo 1 TAG convention, t wu)} LOCAL.
 
     Solved in world space: every H3 node's world transform, re-expressed relative to
@@ -339,7 +344,7 @@ def retarget_frame(h3_nodes, pose, defaults, weapon, corr, grip_ref=None):
         world[n] = _mul(world[n], C)
     grip = WEAPONS[weapon].get('left_hand_offset')
     if grip and grip_ref is not None:
-        _move_left_hand(world, h3_nodes, grip, WEAPONS[weapon]['grip_node'], grip_ref)
+        _move_left_hand(world, h3_nodes, grip, WEAPONS[weapon]['grip_node'], grip_ref, extra)
     if grip_ref is None and grip:                           # asked for the reference only
         return R.xform(R.inverse(world[WEAPONS[weapon]['grip_node']]), world['l_hand'][1])
     out = {}
@@ -399,7 +404,8 @@ def retarget(weapon, anim_name, nodes=None, anims=None, defaults=None):
     if WEAPONS[weapon].get('left_hand_offset'):
         # where the left wrist rests on the gun: the idle's first frame, before any IK
         ref = retarget_frame(nodes, anims['first_person:idle'][1][0], defaults, weapon, corr)
-    return typ, [retarget_frame(nodes, f, defaults, weapon, corr, ref) for f in frames]
+    extra = WEAPONS[weapon].get('left_hand_offset_anims', {}).get(anim_name, (0.0, 0.0, 0.0))
+    return typ, [retarget_frame(nodes, f, defaults, weapon, corr, ref, extra) for f in frames]
 
 
 LOOPING = ('first-person idle', 'first-person posing', 'first-person moving')

@@ -71,7 +71,6 @@ def redraw(region, n, meter):
     small = np.array(one.resize((rw, rh), Image.LANCZOS))
     out = np.zeros_like(region)
     top = y0 + ((y1 - y0) - rh) // 2
-    step = ammo_meter.plan(n)[2]
     for k in range(n):
         x = int(round(a0 + k * pitch))
         sl = (slice(top, top + rh), slice(x, min(w, x + rw)))
@@ -139,7 +138,38 @@ def redraw_rods(region, n, meter):
     return out
 
 
-ART = {'rockets': redraw, 'h3_rods': redraw_rods}
+def redraw_rods_row(region, n, meter):
+    """Halo 3's rods in ONE horizontal row (user, 2026-10-06), end to end across the span
+    the RL's two rockets cover, centred on their band. Like the AR's ticks the LAST (right)
+    rod has the highest threshold and goes out first."""
+    h, w, _ = region.shape
+    (a0, _a1), (_b0, b1) = _cells(region[..., 1])
+    rows = np.where(region[:, a0:b1, 1].max(axis=1) > 8)[0]
+    fy0, fy1 = rows[0], rows[-1] + 1
+    rod, _pitch = h3_rod()
+    gap = max(2, int(0.06 * (b1 - a0) / n))
+    rw = int((b1 - a0 - (n - 1) * gap) / n)
+    rh = max(2, round(rod.shape[0] * rw / rod.shape[1]))
+    if rh > fy1 - fy0:                       # never taller than the rocket band
+        rh = fy1 - fy0
+        rw = max(2, round(rod.shape[1] * rh / rod.shape[0]))
+    small = np.array(Image.fromarray(rod).resize((rw, rh), Image.LANCZOS))
+    top = fy0 + ((fy1 - fy0) - rh) // 2
+    out = np.zeros_like(region)
+    starts = [a0 + k * (rw + gap) for k in range(n)]
+    for x in starts:
+        sl = (slice(top, top + rh), slice(x, x + rw))
+        out[sl + (1,)] = np.maximum(out[sl + (1,)], small)
+        if not meter:
+            out[sl + (0,)] = np.where(small > 0, 255, out[sl + (0,)])
+    if meter:                                # every column belongs to its nearest rod
+        for x in range(w):
+            k = min(n - 1, max(0, int((x - a0 + gap / 2.0) // (rw + gap))))
+            out[:, x, 0] = ammo_meter.threshold(k + 1, n)
+    return out
+
+
+ART = {'rockets': redraw, 'h3_rods': redraw_rods, 'h3_rods_row': redraw_rods_row}
 
 
 def build(n, out_base, art='rockets'):

@@ -283,6 +283,16 @@ A PLACED weapon's ammo is the scenario placement's own Rounds Left/Loaded: 0/0 s
 empty (Bungie's placements all carry counts; a50's test row is 0/0).
 The fuel rod's hold-to-fire is the stock AI trigger (1.25 s charge, discharge).
 
+**Third round (2026-10-06):** EVERY Halo 1 HUD sheet a port writes has a 32-bit `_r` twin
+(`hud_msg_icons_r`, `hud_reticles_r`; both compiled into each map, both shipped loose by
+MCC) and a weapon HUD's sequence index must exist in BOTH -- the sword reticle written to
+`hud_reticles` only drew as a BLUE SQUARE in game. `h1_hud_sheet.put_twins` writes both at
+one index (pads with empty sequences); `add_msg_icon.py` and `h1_add_reticle.py` use it,
+and the SAW's icon now has its `_r` twin too (#25). Lunge shove: positive acceleration
+pushes the player BACK, negative forward; too much hurts (-2.0 now). Fuel rod charge: the
+plasma pistol's charging loop as an attachment scaled by `primary_charged` -- Halo 1 has
+no FP slot that plays during a charge. Rod meter in one row (`h3_rods_row`).
+
 **Open for the first boot**: does the dropped sword/fuel rod stay; the FP pose and grip
 (left hand vs the H1 fuel rod's front -- H3's hand is 13 cm ahead of the grip, the scaled
 model's own `cyborg left hand` marker 20 cm); overlay deltas (`moving`, aim `overlays`:

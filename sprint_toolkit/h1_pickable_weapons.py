@@ -90,8 +90,11 @@ WEAPONS = {
                   'push': r'weapons\energy sword\lunge push',       # firing damage
                   'push_from': r'weapons\plasma pistol\trigger',
                   # first boot (2026-10-06): strike hit, shove did nothing with 0 damage
-                  # and every material modifier 0 -- now a token 0.01 damage, modifiers 1
-                  'range': 1.5, 'velocity': 60.0, 'acceleration': 3.0, 'push_damage': 0.01,
+                  # and every material modifier 0 -- now a token 0.01 damage, modifiers 1.
+                  # Second boot: +3 pushed the player BACK, a negative value forward; too
+                  # much acceleration hurts the player (user tuned it live). Halo 3's
+                  # aim assist stays the original; stronger lunge assist = balanced build.
+                  'range': 1.5, 'velocity': 60.0, 'acceleration': -2.0, 'push_damage': 0.01,
                   'energy': 0.1, 'rate': 1.0},
     },
     'fuel_rod': {
@@ -113,7 +116,14 @@ WEAPONS = {
         'hud': {'donor': r'weapons\plasma_cannon\plasma_cannon',
                 'readout': r'weapons\rocket launcher\rocket_launcher',
                 'out': r'weapons\fuel rod gun\fuel rod',
-                'meter': r'weapons\fuel rod gun\bitmaps\fuel_rod_rods', 'art': 'h3_rods'},
+                'meter': r'weapons\fuel rod gun\bitmaps\fuel_rod_rods', 'art': 'h3_rods_row'},
+        # the charge (vanilla: hold 1.25 s, it fires when full): the plasma pistol's own
+        # charging loop, as the pistol plays it -- an attachment on `primary trigger`
+        # scaled by an object function fed by the weapon's primary_charged (input B).
+        # Halo 1 has no FP animation slot that plays DURING a charge (`overcharged` plays
+        # once full, and the fuel rod fires at that instant).
+        'charge_loop': {'sound': r'sound\sfx\weapons\plasma rifle\charging',
+                        'marker': 'primary trigger', 'input': 'B_in'},
         # the AI-only tag fired with rounds_per_shot 0 (never spent a round, never reloaded)
         # and had no aim assist; Halo 3's fuel rod values (degrees, wu)
         'rounds_per_shot': 1,
@@ -281,6 +291,27 @@ def make_lunge(w, a, write):
     a.age.misfire_chance = 0.0
 
 
+def add_charge_loop(d, c):
+    """A looping sound attachment whose scale follows the weapon's charge."""
+    o = d.obje_attrs
+    funcs, atts = o.functions.STEPTREE, o.attachments.STEPTREE
+    if any(a.type.filepath == c['sound'] for a in atts):
+        return
+    if len(funcs) >= 4:
+        raise SystemExit('no free object function for the charge loop')
+    tmpl = weap_def.build(filepath=path(r'weapons\plasma pistol\plasma pistol', '.weapon'))
+    td = tmpl.data.tagdata.obje_attrs
+    funcs.append(copy.deepcopy(td.functions.STEPTREE[3]))      # 'one' scaled by an input
+    f = funcs[len(funcs) - 1]
+    f.scale_function_by.set_to(c['input'])
+    out = 'ABCD'[len(funcs) - 1] + '_out'
+    loop = [a for a in td.attachments.STEPTREE if a.type.filepath == c['sound']][0]
+    atts.append(copy.deepcopy(loop))
+    a = atts[len(atts) - 1]
+    a.marker = c['marker']
+    a.primary_scale.set_to(out)
+
+
 def edit_weapon(key, write):
     w = WEAPONS[key]
     p = path(w['weapon'], '.weapon')
@@ -305,6 +336,8 @@ def edit_weapon(key, write):
         a.interface.hud_interface.filepath = make_hud(w, key, write)
     if 'lunge' in w:
         make_lunge(w, a, write)
+    if 'charge_loop' in w:
+        add_charge_loop(d, w['charge_loop'])
     if 'rounds_per_shot' in w:
         for tr in a.triggers.STEPTREE:
             tr.firing.rounds_per_shot = w['rounds_per_shot']
