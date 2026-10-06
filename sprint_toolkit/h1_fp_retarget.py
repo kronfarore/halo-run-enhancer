@@ -91,9 +91,10 @@ WEAPONS = {
         'h1_dir': r'weapons\sentinel beam\fp',
         'h1_model': r'weapons\sentinel beam\fp\fp',
         'align': 'same_space',
-        # test 1 (2026-10-06): 'a bit too forward, I can see into the arms' -- the rig
-        # pushed 1.5 units (0.015 wu) away from the camera
-        'view_offset': (0.015, 0.0, 0.0),
+        # test 1 (2026-10-06): 'a bit too forward, I can see into the arms' -- the rig was
+        # pushed 1.5 units AWAY from the camera (wrong way: test 2 'still too far forward,
+        # set it back another 3 units'); now 3 units back from that, 1.5 toward the camera
+        'view_offset': (-0.015, 0.0, 0.0),
         'anims': {
             'first_person:idle:var1': 'first-person idle',
             'first_person:ready': 'first-person ready',

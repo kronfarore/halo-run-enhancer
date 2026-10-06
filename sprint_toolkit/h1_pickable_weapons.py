@@ -197,10 +197,16 @@ WEAPONS = {
 #   aim assist Halo 3's (1/12, 9/18)
 # RATE: 30/s in the tag fired at ~15/s in game (test 1, 2026-10-06: a full battery emptied
 # with the heat bar just over half -- 167 x 0.0213 - 0.3 x 167 / r = ~0.55 gives r = ~16.7;
-# a 30-tick engine firing every other tick). So the tag says 15/s and every PER-ROUND value
-# above is doubled (10.4 damage, 0.0426 heat, 0.012 battery): the per-second numbers hold.
+# a 30-tick engine). Test 2 set 15/s and it fired at ~10/s (overheat after ~6 s with 27%
+# battery left: 61 rounds in 6 s). Both fit ONE rule: a shot every floor(30 / rate) + 1
+# ticks -- 30 -> 15/s, 15 -> 10/s. So the tag keeps 30/s (= 15/s in game) and every
+# PER-ROUND value above is doubled (10.4 damage, 0.0426 heat, 0.012 battery): the
+# per-second numbers hold (overheat after ~2.6 s, as Halo 3).
 # Every round is a tracer (Halo 1's Sentinel gun: 0 between) -- the template's 3 drew the
-# contrail on one round in four, which read as no beam at all (test 1).
+# contrail on one round in four (test 1). Test 2: still no beam in view, but one in the
+# floor's REFLECTION -- the contrail is a viewer-facing ribbon and the round left from the
+# camera along the view axis, so it was seen exactly end-on (zero width). The trigger's
+# first-person offset (the rocket launcher has one: y -0.1) starts it at the gun instead.
 # The damage effect is a copy of the plasma rifle BOLT's (x2 on shields, x0.5 on armour --
 # the yardstick's, and Halo 3's beam is plasma-category); the projectile a copy of Halo 1's
 # own Sentinel beam (its contrail is the Sentinel look) with Halo 3's 120 wu range.
@@ -229,9 +235,14 @@ WEAPONS['sentinel_beam'] = {
                   'start': SBS + 'beam_fire_in', 'loop': SBS + 'beam_fire_loop',
                   'end': SBS + 'beam_fire_out', 'marker': 'primary trigger', 'scale': 'C_out'},
     # no firing effect: Halo 1's Sentinel gun has none (the plasma rifle's muzzle burst and
-    # per-shot sound were the template's), and its light is the Sentinel's own gunlight
+    # per-shot sound were the template's). The muzzle light: test 2 used the Sentinel's
+    # own gunlight and it was not visible -- that light is NOT dynamic (a 0.5 wu glow for
+    # the Sentinel's body). Own light = the plasma rifle muzzle flash (dynamic, 2 wu) in
+    # the gunlight's colour and with its lens flare
     'no_firing_effect': True,
-    'attach_swap': {r'weapons\plasma rifle\muzzle flash': r'characters\sentinel\gunlight'},
+    'own_light': {'shape': r'weapons\plasma rifle\muzzle flash',
+                  'look': r'characters\sentinel\gunlight', 'out': SB + 'muzzle light'},
+    'attach_swap': {r'weapons\plasma rifle\muzzle flash': SB + 'muzzle light'},
     # the template's attachments sit on plasma rifle markers this model lacks
     # THE DROP (user's option B): Halo 1's Sentinel carries no droppable weapon, so its
     # death effect spawns the beam as a weapon part beside the debris. `death` is the
@@ -250,9 +261,13 @@ WEAPONS['sentinel_beam'] = {
     'beam': {'projectile': (r'characters\sentinel\beam', SB + 'beam'),
              'damage': (r'weapons\plasma rifle\bolt', SB + 'beam'),
              'range': 120.0, 'dmg': 10.4, 'acceleration': 0.05},
-    'trigger': {'rounds_per_second': 15.0, 'heat_generated_per_round': 0.0426,
+    'trigger': {'rounds_per_second': 30.0, 'heat_generated_per_round': 0.0426,
                 'age_generated_per_round': 0.012, 'error_angle': (0.0, 0.0),
-                'rounds_between_tracers': 0},
+                'rounds_between_tracers': 0,
+                'first_person_offset': (0.0, -0.04, -0.035),     # wu: right, down
+                # test 2: the hum ran on too long after letting go -- the illumination
+                # it follows held 0.15 s past the last round; one 15/s interval is 0.067
+                'illumination_recovery_time': 0.08},
     'heat': {'recovery_threshold': 0.25, 'overheated_threshold': 0.9,
              'loss_per_second': 0.3},
 }
@@ -592,12 +607,24 @@ def edit_weapon(key, write):
                 tr.firing.rounds_per_second[0] = tr.firing.rounds_per_second[1] = v
             elif k == 'error_angle':
                 tr.projectile.error_angle[0], tr.projectile.error_angle[1] = v
-            elif k == 'rounds_between_tracers':
-                tr.firing.rounds_between_tracers = v
-            else:
-                setattr(tr.misc, k, v)
+            elif k == 'first_person_offset':
+                o = tr.projectile.first_person_offset
+                o.x, o.y, o.z = v
+            else:                            # whichever trigger struct holds the field
+                sub = [s for s in tr if hasattr(s, 'NAME_MAP') and k in s.NAME_MAP]
+                if not sub:
+                    raise SystemExit('trigger field %s not found' % k)
+                setattr(sub[0], k, v)
     for k, v in w.get('heat', {}).items():
         setattr(a.heat, k, v)
+    if 'own_light' in w:
+        from reclaimer.hek.defs.ligh import ligh_def
+        L = w['own_light']
+        lt = ligh_def.build(filepath=path(L['shape'], '.light'))
+        look = ligh_def.build(filepath=path(L['look'], '.light')).data.tagdata
+        lt.data.tagdata.color = look.color
+        lt.data.tagdata.lens_flare.filepath = look.lens_flare.filepath
+        save(lt, path(L['out'], '.light'), write)
     if 'charge_loop' in w:
         add_charge_loop(d, w['charge_loop'])
     if 'hum' in w:
