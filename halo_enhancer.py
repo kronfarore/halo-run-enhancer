@@ -3910,14 +3910,15 @@ class ModifierDatabase:
         return tag[5:] if tag and tag.startswith('weap ') else None
 
     def h1_used_weapons(self):
-        """Weapon tag paths some Halo 1 character actually spawns with (cached index,
-        h1_enemy_weapons.used_weapons), or None when it cannot be read."""
+        """Weapon tag paths some Halo 1 character actually spawns with, from the
+        CACHED enemy index as it is (h1_enemy_weapons.used_weapons_cached), or None
+        when there is none yet. Never reads the maps: drawing cards must not stall
+        (user, 2026-10-06). The patch step rebuilds the index and skips a weapon
+        nobody carries, so a stale answer here costs at most a card that does nothing."""
         if getattr(self, '_h1_used', None) is None:
             try:
-                import halo_patch
                 import h1_enemy_weapons as ew
-                self._h1_used = ew.used_weapons(ew.build_index(self.h1_level_maps(),
-                                                               halo_patch.open_map))
+                self._h1_used = ew.used_weapons_cached() or False
             except Exception:
                 self._h1_used = False
         return self._h1_used or None
@@ -15214,8 +15215,7 @@ class HaloGUI(QMainWindow):
         identity = getattr(self.run_state, 'round_kind', 'normal') == 'identity'
 
         def draw():
-            # pure card logic, no Qt: off the GUI thread behind a progress bar (the first
-            # draw after a map change also reads the Halo 1 enemy index, ten maps)
+            # pure card logic, no Qt: off the GUI thread behind a progress bar
             got = self.enhancer.generate_identity_pairs(for_player=player) if identity else None
             fallback = identity and not got
             # no weapon with two cards left to tie: this player gets a normal offer

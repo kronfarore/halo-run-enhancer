@@ -143,6 +143,17 @@ def profiles():
         return {}
 
 
+def used_weapons_cached():
+    """used_weapons from the cached index file AS IT IS, without checking that it
+    matches today's maps -- for drawing cards, where reading ten maps would stall the
+    window. None when there is no cache yet (the patch step checks for real)."""
+    try:
+        with open(INDEX_FILE, encoding='utf-8') as f:
+            return used_weapons(json.load(f)['actv'])
+    except Exception:
+        return None
+
+
 def used_weapons(index):
     """Weapons some character in the game actually SPAWNS with. The Flood combat
     flamethrower variants ship but are never placed -- an Armed: Flamethrower card was
@@ -557,7 +568,15 @@ def cards(lv, index, picks):
                     break
                 got[w] += 1
             wants[unit] = got
+        used = used_weapons(index)
         for weapon, share in shares.items():
+            # decided HERE, not when the card is drawn (user, 2026-10-06: no map reads
+            # at draw time): a weapon no character spawns with has no firing to copy
+            if weapon not in used:
+                out.append(_row('enemy weapons', '%s +%s' % (enemy, weapon.rsplit(BS, 1)[-1]),
+                                skip=True, reason='no Halo 1 character spawns with the %s, '
+                                'so there is no firing pattern to copy' % weapon.rsplit(BS, 1)[-1]))
+                continue
             if lv.m.tag_id(('weap', weapon)) is None:
                 out.append(_row('enemy weapons', '%s +%s' % (enemy, weapon.rsplit(BS, 1)[-1]),
                                 skip=True, reason='the level has no %s' % weapon.rsplit(BS, 1)[-1]))
