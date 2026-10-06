@@ -317,13 +317,7 @@ class Level:
         self.tags = dict(m.find_tags('actv', '*'))
         self.pal = hv._elems(m, self.s + hv.S_PALETTE, hv.S_PAL_SZ)
         self.pal_names = [m.tag_name_by_id(m.u32(p + 0xC)) for p in self.pal]
-        self.spawns = []                       # [start location offset, palette index]
-        for enc in hv._elems(m, self.s + hv.S_ENC, hv.S_ENC_SZ):
-            for sq in hv._elems(m, enc + hv.SQ, hv.SQ_SZ):
-                t = struct.unpack_from('<h', m.data, sq + hv.SQ_TYPE)[0]
-                for sl in hv._elems(m, sq + hv.SL, hv.SL_SZ):
-                    ov = struct.unpack_from('<h', m.data, sl + hv.SL_TYPE)[0]
-                    self.spawns.append([sl, ov if ov >= 0 else t])
+        self.rescan()
         self.free_slots = [i for i in range(1, vs.SLOTS_PER_LEVEL + 1)
                            if vs.slot_path(i) in self.tags]
         self.alias = {}                        # slot path -> '<source> with <weapon>'
@@ -332,6 +326,18 @@ class Level:
         self.log = []                          # (slot, alias, donor) per filled slot
         self.forced = {}                       # 'source||weapon' -> saved donor name
         self.chosen = {}                       # ...and what this patch used
+
+    def rescan(self):
+        """Re-read every spawn's variant -- after another pass (h1_species_swap) moved
+        squads, which shares this Level so its slots and aliases stay known."""
+        m = self.m
+        self.spawns = []                       # [start location offset, palette index]
+        for enc in hv._elems(m, self.s + hv.S_ENC, hv.S_ENC_SZ):
+            for sq in hv._elems(m, enc + hv.SQ, hv.SQ_SZ):
+                t = struct.unpack_from('<h', m.data, sq + hv.SQ_TYPE)[0]
+                for sl in hv._elems(m, sq + hv.SL, hv.SL_SZ):
+                    ov = struct.unpack_from('<h', m.data, sl + hv.SL_TYPE)[0]
+                    self.spawns.append([sl, ov if ov >= 0 else t])
 
     def ref(self, name, what):
         return hv._ref_name(self.m, self.tags[name], what) if name in self.tags else None
@@ -740,7 +746,12 @@ def apply(m, hp, spec):
     """The whole pass. `spec` = {'levels': [level .map paths for the donor index],
     'first_weapons': [...], 'option1': bool, 'enabled': {enemy: bool},
     'fallback': {enemy: weapon path}, 'cards': {enemy: {weapon path: share}}}."""
-    lv = Level(m, hp)
+    # h1_species_swap runs first and leaves its Level here: same slots, same aliases
+    lv = getattr(m, '_h1_level', None)
+    if lv is None:
+        lv = Level(m, hp)
+    else:
+        lv.rescan()
     lv.forced = dict(spec.get('donors') or {})
     if not lv.free_slots and (spec.get('option1') or spec.get('cards')):
         note = _row('enemy weapons', 'variant slots', skip=True,

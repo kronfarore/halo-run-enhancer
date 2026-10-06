@@ -15702,6 +15702,90 @@
 				"targets": [
 					{ "step": "+0.1", "field": "Spawn Count", "squad_count": true, "min": 0, "harder_when": "increased" }
 				]
+			},
+			"Grunt Incursion": {
+				"color": "aggressive",
+				"desc": "A tenth of the enemies become Grunts.",
+				"debug_desc": "Halo 1 only. Each pick turns 10% of the level's enemies into Grunts, on every level for the rest of the run. The share is counted on the highest difficulty (squad Insane counts). Whole ENCOUNTERS convert -- Halo 1 decides who fights whom per encounter (scnr encounter Team Index), so the converted encounter gets the Covenant team and fights the level's own enemies as well as you (confirmed on a10, 2026-10-06). Encounters are drawn in an order seeded by scenario and card name (co-op machines agree) and taken while that brings the total closer to the share. Left alone: encounters with allies, bosses, vehicle or turret drivers, squads the scripts seat in a vehicle, and scripted set pieces (command lists, seats, teleports, custom animations). Each actor keeps its RANK: tier 1-4 by its own variant (Grunt minor/major/spec-ops/spec-ops fuel rod, Jackal minor/major, Elite minor/major/spec-ops+stealth/commander+stealth major, Hunter 3/major 4, Sentinel 1/major/shielded/shielded major, Flood infection 1/carrier 2/combat Human 3/combat Elite+stealth 4) and becomes that tier of Grunts: minor | major | spec-ops needler | spec-ops fuel rod. Where a tier has several weapons the replaced actor's weapon carries over, else one is drawn. Every variant is built into all ten maps (h1_all_enemies.py); a variant no level ships is built in an enhancer slot like the Armed cards'. Runs after Thunderstorm / Downpour and before Betrayal / Schism and the Armed cards (h1_species_swap.py).",
+				"harder_when": "increased",
+				"game": ["Halo 1"],
+				"swap_enemy": ["Grunt"],
+				"tag": {"Halo 1": "actv characters\\*"},
+				"targets": [
+					{ "step": "+0.1", "field": "Incursion", "species_swap": "grunt", "min": 0, "harder_when": "increased" }
+				]
+			},
+			"Jackal Incursion": {
+				"color": "aggressive",
+				"desc": "A tenth of the enemies become Jackals.",
+				"debug_desc": "Halo 1 only. Each pick turns 10% of the level's enemies into Jackals, on every level for the rest of the run. The share is counted on the highest difficulty (squad Insane counts). Whole ENCOUNTERS convert -- Halo 1 decides who fights whom per encounter (scnr encounter Team Index), so the converted encounter gets the Covenant team and fights the level's own enemies as well as you (confirmed on a10, 2026-10-06). Encounters are drawn in an order seeded by scenario and card name (co-op machines agree) and taken while that brings the total closer to the share. Left alone: encounters with allies, bosses, vehicle or turret drivers, squads the scripts seat in a vehicle, and scripted set pieces (command lists, seats, teleports, custom animations). Each actor keeps its RANK: tier 1-4 by its own variant (Grunt minor/major/spec-ops/spec-ops fuel rod, Jackal minor/major, Elite minor/major/spec-ops+stealth/commander+stealth major, Hunter 3/major 4, Sentinel 1/major/shielded/shielded major, Flood infection 1/carrier 2/combat Human 3/combat Elite+stealth 4) and becomes that tier of Jackals: minor | major | major | major. Where a tier has several weapons the replaced actor's weapon carries over, else one is drawn. Every variant is built into all ten maps (h1_all_enemies.py); a variant no level ships is built in an enhancer slot like the Armed cards'. Runs after Thunderstorm / Downpour and before Betrayal / Schism and the Armed cards (h1_species_swap.py).",
+				"harder_when": "increased",
+				"game": ["Halo 1"],
+				"swap_enemy": ["Jackal"],
+				"tag": {"Halo 1": "actv characters\\*"},
+				"targets": [
+					{ "step": "+0.1", "field": "Incursion", "species_swap": "jackal", "min": 0, "harder_when": "increased" }
+				]
+			},
+			"Elite Incursion": {
+				"color": "aggressive",
+				"desc": "A tenth of the enemies become Elites.",
+				"debug_desc": "Halo 1 only. Each pick turns 10% of the level's enemies into Elites, on every level for the rest of the run. The share is counted on the highest difficulty (squad Insane counts). Whole ENCOUNTERS convert -- Halo 1 decides who fights whom per encounter (scnr encounter Team Index), so the converted encounter gets the Covenant team and fights the level's own enemies as well as you (confirmed on a10, 2026-10-06). Encounters are drawn in an order seeded by scenario and card name (co-op machines agree) and taken while that brings the total closer to the share. Left alone: encounters with allies, bosses, vehicle or turret drivers, squads the scripts seat in a vehicle, and scripted set pieces (command lists, seats, teleports, custom animations). Each actor keeps its RANK: tier 1-4 by its own variant (Grunt minor/major/spec-ops/spec-ops fuel rod, Jackal minor/major, Elite minor/major/spec-ops+stealth/commander+stealth major, Hunter 3/major 4, Sentinel 1/major/shielded/shielded major, Flood infection 1/carrier 2/combat Human 3/combat Elite+stealth 4) and becomes that tier of Elites: minor | major | spec-ops or stealth | commander or stealth major with a sword. Where a tier has several weapons the replaced actor's weapon carries over, else one is drawn. Every variant is built into all ten maps (h1_all_enemies.py); a variant no level ships is built in an enhancer slot like the Armed cards'. Runs after Thunderstorm / Downpour and before Betrayal / Schism and the Armed cards (h1_species_swap.py).",
+				"harder_when": "increased",
+				"game": ["Halo 1"],
+				"swap_enemy": ["Elite"],
+				"tag": {"Halo 1": "actv characters\\*"},
+				"targets": [
+					{ "step": "+0.1", "field": "Incursion", "species_swap": "elite", "min": 0, "harder_when": "increased" }
+				]
+			},
+			"Hunter Incursion": {
+				"color": "aggressive",
+				"desc": "A tenth of the enemies become Hunters.",
+				"debug_desc": "Halo 1 only. Each pick turns 10% of the level's enemies into Hunters, on every level for the rest of the run. The share is counted on the highest difficulty (squad Insane counts). Whole ENCOUNTERS convert -- Halo 1 decides who fights whom per encounter (scnr encounter Team Index), so the converted encounter gets the Covenant team and fights the level's own enemies as well as you (confirmed on a10, 2026-10-06). Encounters are drawn in an order seeded by scenario and card name (co-op machines agree) and taken while that brings the total closer to the share. Left alone: encounters with allies, bosses, vehicle or turret drivers, squads the scripts seat in a vehicle, and scripted set pieces (command lists, seats, teleports, custom animations). Each actor keeps its RANK: tier 1-4 by its own variant (Grunt minor/major/spec-ops/spec-ops fuel rod, Jackal minor/major, Elite minor/major/spec-ops+stealth/commander+stealth major, Hunter 3/major 4, Sentinel 1/major/shielded/shielded major, Flood infection 1/carrier 2/combat Human 3/combat Elite+stealth 4) and becomes that tier of Hunters: hunter | hunter | hunter major | hunter major. Where a tier has several weapons the replaced actor's weapon carries over, else one is drawn. Every variant is built into all ten maps (h1_all_enemies.py); a variant no level ships is built in an enhancer slot like the Armed cards'. Runs after Thunderstorm / Downpour and before Betrayal / Schism and the Armed cards (h1_species_swap.py).",
+				"harder_when": "increased",
+				"game": ["Halo 1"],
+				"swap_enemy": ["Hunter"],
+				"tag": {"Halo 1": "actv characters\\*"},
+				"targets": [
+					{ "step": "+0.1", "field": "Incursion", "species_swap": "hunter", "min": 0, "harder_when": "increased" }
+				]
+			},
+			"Sentinel Incursion": {
+				"color": "aggressive",
+				"desc": "A tenth of the enemies become Sentinels.",
+				"debug_desc": "Halo 1 only. Each pick turns 10% of the level's enemies into Sentinels, on every level for the rest of the run. The share is counted on the highest difficulty (squad Insane counts). Whole ENCOUNTERS convert -- Halo 1 decides who fights whom per encounter (scnr encounter Team Index), so the converted encounter gets the Sentinel team and fights the level's own enemies as well as you (confirmed on a10, 2026-10-06). Encounters are drawn in an order seeded by scenario and card name (co-op machines agree) and taken while that brings the total closer to the share. Left alone: encounters with allies, bosses, vehicle or turret drivers, squads the scripts seat in a vehicle, and scripted set pieces (command lists, seats, teleports, custom animations). Each actor keeps its RANK: tier 1-4 by its own variant (Grunt minor/major/spec-ops/spec-ops fuel rod, Jackal minor/major, Elite minor/major/spec-ops+stealth/commander+stealth major, Hunter 3/major 4, Sentinel 1/major/shielded/shielded major, Flood infection 1/carrier 2/combat Human 3/combat Elite+stealth 4) and becomes that tier of Sentinels: sentinel | major | shielded | shielded major (allied on c10/c20 by script; Schism turns them). Where a tier has several weapons the replaced actor's weapon carries over, else one is drawn. Every variant is built into all ten maps (h1_all_enemies.py); a variant no level ships is built in an enhancer slot like the Armed cards'. Runs after Thunderstorm / Downpour and before Betrayal / Schism and the Armed cards (h1_species_swap.py).",
+				"harder_when": "increased",
+				"game": ["Halo 1"],
+				"swap_enemy": ["Sentinel"],
+				"tag": {"Halo 1": "actv characters\\*"},
+				"targets": [
+					{ "step": "+0.1", "field": "Incursion", "species_swap": "sentinel", "min": 0, "harder_when": "increased" }
+				]
+			},
+			"Flood Infection Incursion": {
+				"color": "aggressive",
+				"desc": "A tenth of the enemies become Flood infection forms and carriers.",
+				"debug_desc": "Halo 1 only. Each pick turns 10% of the level's enemies into Flood infection forms and carriers, on every level for the rest of the run. The share is counted on the highest difficulty (squad Insane counts). Whole ENCOUNTERS convert -- Halo 1 decides who fights whom per encounter (scnr encounter Team Index), so the converted encounter gets the Flood team and fights the level's own enemies as well as you (confirmed on a10, 2026-10-06). Encounters are drawn in an order seeded by scenario and card name (co-op machines agree) and taken while that brings the total closer to the share. Left alone: encounters with allies, bosses, vehicle or turret drivers, squads the scripts seat in a vehicle, and scripted set pieces (command lists, seats, teleports, custom animations). Each actor keeps its RANK: tier 1-4 by its own variant (Grunt minor/major/spec-ops/spec-ops fuel rod, Jackal minor/major, Elite minor/major/spec-ops+stealth/commander+stealth major, Hunter 3/major 4, Sentinel 1/major/shielded/shielded major, Flood infection 1/carrier 2/combat Human 3/combat Elite+stealth 4) and becomes that tier of Flood infection forms and carriers: infection forms x5 | infection forms x10 | a carrier | two carriers (squad counts multiplied, no extra starting locations). Where a tier has several weapons the replaced actor's weapon carries over, else one is drawn. Every variant is built into all ten maps (h1_all_enemies.py); a variant no level ships is built in an enhancer slot like the Armed cards'. Runs after Thunderstorm / Downpour and before Betrayal / Schism and the Armed cards (h1_species_swap.py).",
+				"harder_when": "increased",
+				"game": ["Halo 1"],
+				"swap_enemy": ["Flood Infection Form", "Flood Carrier Form"],
+				"tag": {"Halo 1": "actv characters\\*"},
+				"targets": [
+					{ "step": "+0.1", "field": "Incursion", "species_swap": "flood infection", "min": 0, "harder_when": "increased" }
+				]
+			},
+			"Flood Combat Incursion": {
+				"color": "aggressive",
+				"desc": "A tenth of the enemies become Flood combat forms.",
+				"debug_desc": "Halo 1 only. Each pick turns 10% of the level's enemies into Flood combat forms, on every level for the rest of the run. The share is counted on the highest difficulty (squad Insane counts). Whole ENCOUNTERS convert -- Halo 1 decides who fights whom per encounter (scnr encounter Team Index), so the converted encounter gets the Flood team and fights the level's own enemies as well as you (confirmed on a10, 2026-10-06). Encounters are drawn in an order seeded by scenario and card name (co-op machines agree) and taken while that brings the total closer to the share. Left alone: encounters with allies, bosses, vehicle or turret drivers, squads the scripts seat in a vehicle, and scripted set pieces (command lists, seats, teleports, custom animations). Each actor keeps its RANK: tier 1-4 by its own variant (Grunt minor/major/spec-ops/spec-ops fuel rod, Jackal minor/major, Elite minor/major/spec-ops+stealth/commander+stealth major, Hunter 3/major 4, Sentinel 1/major/shielded/shielded major, Flood infection 1/carrier 2/combat Human 3/combat Elite+stealth 4) and becomes that tier of Flood combat forms: Human (AR, pistol, plasma pistol, needler, plasma rifle) | Elite (any armed form) | Human with rocket launcher, sniper rifle or shotgun | Elite or stealth Elite with Flak Cannon or Energy Sword. Where a tier has several weapons the replaced actor's weapon carries over, else one is drawn. Every variant is built into all ten maps (h1_all_enemies.py); a variant no level ships is built in an enhancer slot like the Armed cards'. Runs after Thunderstorm / Downpour and before Betrayal / Schism and the Armed cards (h1_species_swap.py).",
+				"harder_when": "increased",
+				"game": ["Halo 1"],
+				"swap_enemy": ["Flood Combat Form"],
+				"tag": {"Halo 1": "actv characters\\*"},
+				"targets": [
+					{ "step": "+0.1", "field": "Incursion", "species_swap": "flood combat", "min": 0, "harder_when": "increased" }
+				]
 			}
 		},
 		"Specific Enemy modifier": {
@@ -26396,6 +26480,15 @@
 			"tag": {"Halo 1": "actv characters\\*", "Halo 2": "char objects\\characters\\*", "Halo 4": "char objects\\characters\\*"},
 			"targets": [
 				{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "side": "ally", "min": 0, "easier_when": "increased" }
+			]
+		},
+		"Friend Marines": {
+			"desc": "A tenth of the enemies become Marines on your side.",
+			"debug_desc": "Halo 1 only. Each pick turns 10% of the level's ENEMIES into Marines who fight on your side, on every level for the rest of the run. Same mechanism as the Incursion cards (whole encounters, highest-difficulty count, seeded draw, set pieces left alone); the converted encounter gets the Human team. Ranks: Marine (AR, needler, plasma rifle, shotgun) | armoured Marine (AR, needler, plasma rifle) | armoured sniper or shotgun | armoured majors. Most levels carry the Marine variants only as kit COPIES on slot 20's residency chain (h1_all_enemies.py); a copy's Major Variant is set to its real major before it spawns. Under BETRAYAL these encounters are all human, so the skull turns them against you like every other Marine.",
+			"game": ["Halo 1"],
+			"tag": {"Halo 1": "actv characters\\*"},
+			"targets": [
+				{ "step": "+0.1", "field": "Incursion", "species_swap": "human", "side": "ally", "min": 0, "easier_when": "increased" }
 			]
 		},
 		"Friend Active Camo": {

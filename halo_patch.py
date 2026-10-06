@@ -9575,7 +9575,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               h4_keep_loadout=False, clear_profile_equipment=False,
               clear_profile_grenades=False, spawn_grenades=None,
               h4_ability_visibility=None, h1_enemy_weapons=None,
-              camo_after_ladder=False,
+              camo_after_ladder=False, h1_levels=None,
               baseline_root=None, map_subdir=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
@@ -9639,21 +9639,22 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     # whereas running it last would flatten the effect's result to the skull's value.
     # A skull is a name ('tilt'), or a dict for a per-enemy one: {'skull', 'enemy', 'tag',
     # 'name'} (Assassins / Thunderstorm / Downpour name the enemy type they act on).
-    ladder_up, ladder_down, camo_specs = set(), set(), []
+    ladder_up, ladder_down, camo_specs, sides = set(), set(), [], []
     for skull in (skulls or ()):
         spec = skull if isinstance(skull, dict) else {'skull': skull}
         s = str(spec.get('skull')).strip().lower()
         g = str(game).strip()
-        if s == 'betrayal':
-            results.extend(_apply_betrayal(m, g, registry))
+        if s in ('betrayal', 'schism'):
+            # Who fights for whom is decided LAST among the "who is what" passes: after
+            # Thunderstorm / Downpour and the Halo 1 species replacement cards, so the
+            # Marines and allied Sentinels those bring in turn like any others.
+            sides.append(s)
         elif s == 'eyepatch':
             results.extend(_apply_eyepatch(m, g, registry))
         elif s == 'tilt':
             results.extend(_apply_tilt(m, g, registry))
         elif s == 'fog':
             results.extend(_apply_fog(m, g, registry))
-        elif s == 'schism':
-            results.extend(_apply_schism(m, g, registry))
         elif s == 'famine':
             results.extend(_apply_famine(m, g, registry))
         elif s == 'assassins' and spec.get('tag'):
@@ -9669,6 +9670,26 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             ladder_down.add(spec['enemy'])
     if ladder_up or ladder_down:
         results.extend(_apply_ladder(m, str(game).strip(), registry, ladder_up, ladder_down))
+    swap_cards = []
+    for item in plan:
+        for op in item.get('ops') or ():
+            if op.get('species_swap'):
+                parsed = hm.parse_operator(op.get('op_str'))
+                if parsed:
+                    swap_cards.append({'name': item['name'], 'species': op['species_swap'],
+                                       'share': hm.OP_FUNCS[parsed[0]](0.0, parsed[1])})
+    if swap_cards and str(game).strip() == 'Halo 1':
+        # Halo 1 species replacement cards (h1_species_swap.py): whole encounters turn
+        # into the card's species. After the ladder, before Betrayal / Schism and the
+        # enemy-weapon pass (which reuses this pass's slots and aliases).
+        import sys as _sys
+        import h1_species_swap as _sw
+        results.extend(_sw.apply(m, _sys.modules[__name__], swap_cards, h1_levels))
+    for s in sides:
+        if s == 'betrayal':
+            results.extend(_apply_betrayal(m, str(game).strip(), registry))
+        else:
+            results.extend(_apply_schism(m, str(game).strip(), registry))
     # Assassins runs BEFORE Thunderstorm / Downpour by default (user, 2026-10-05): what
     # was cloaked stays cloaked when it is promoted (Halo 2 carries the camo on the
     # squad's orders, so Elites promoted into Hunters are invisible Hunters). Options ->
@@ -9723,7 +9744,8 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                                       '(remove it from the run, or re-add the effect)'})
             continue
         cls, path = hm.split_tag(item['tag'])
-        if betrayed and str(item.get('name') or '').startswith('Friend ') and cls != 'matg'                 and not any(op.get('squad_count') for op in item.get('ops') or ()):
+        if betrayed and str(item.get('name') or '').startswith('Friend ') and cls != 'matg'                 and not any(op.get('squad_count') or op.get('species_swap')
+                            for op in item.get('ops') or ()):
             # Betrayal turned the humans these ally cards edit by tag (their animations,
             # their models): an ally card must not act on them any more (user, 2026-10-05).
             # Friend Spawn Count stays -- it counts allies by team, and the turned squads
@@ -9739,6 +9761,8 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             results.extend(_apply_init_defaults(m, item['init_defaults'], registry))
         for op in item.get('ops', []):
             base = {'effect': item['name'], 'tag': item['tag'], 'field': op['field']}
+            if op.get('species_swap'):
+                continue        # done before Betrayal / Schism (h1_species_swap), logged there
             if op.get('equip_drop'):
                 # Brute equipment loadout: the element to edit is picked by which
                 # equipment its tagRef points at, which no index/block target can

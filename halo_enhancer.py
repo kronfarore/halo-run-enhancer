@@ -2199,6 +2199,30 @@ def active_skull_names(run_state):
     return names
 
 
+def active_run_mods(run_state):
+    """Every card dict locked into this run (committed rounds plus the current round's
+    selections) -- the same slots active_skull_names reads, any kind of card."""
+    out = []
+    if run_state is None:
+        return out
+    for rd in getattr(run_state, 'rounds', None) or []:
+        for k in ('enemy1', 'enemy2', 'wildcard', 'wildcard2', 'skull1', 'skull2',
+                  'boss1', 'boss2', 'exhaust1', 'exhaust2'):
+            if isinstance(rd.get(k), dict):
+                out.append(rd.get(k))
+        for pk in ('player1', 'player2'):
+            mod = (rd.get(pk) or {}).get('mod')
+            if isinstance(mod, dict):
+                out.append(mod)
+    for pk in ('player1', 'player2'):
+        sel = (getattr(run_state, 'selected_pairs', None) or {}).get(pk)
+        if isinstance(sel, dict):
+            for k in ('enemy_mod', 'wildcard_mod', 'skull_mod', 'boss_mod', 'exhaust_mod'):
+                if isinstance(sel.get(k), dict):
+                    out.append(sel.get(k))
+    return out
+
+
 def skull_conflict(mod, run_state):
     """The active skull that neutralises `mod`, or None. `affected_by_skull` may
     name one skull or several; only an ACTIVE one is worth warning about, since the
@@ -2543,6 +2567,8 @@ class ModifierDatabase:
             # Name(s) of skull(s) that neutralise this effect. Only surfaced on the
             # card while one of them is actually active in the run.
             'affected_by_skull': mod_data.get('affected_by_skull'),
+            # Halo 1 Incursion cards: the enemy types they bring into the run
+            'swap_enemy': mod_data.get('swap_enemy'),
             'special': bool(mod_data.get('special', False)),  # escalating-odds effect
             'dual_only': bool(mod_data.get('dual_only', False)),  # needs 'Dual <X>'
             'harder_when': mod_data.get('harder_when'),  # 'increased'/'decreased' direction hint
@@ -2957,7 +2983,7 @@ class ModifierDatabase:
                             'name': f'{name} {m["name"]}'})
         return out
 
-    def get_enemy_modifiers(self, mission_id, betrayal=False, vanished=()):
+    def get_enemy_modifiers(self, mission_id, betrayal=False, vanished=(), added=()):
         if mission_id not in self.mission_enemies:
             return list(self.negative_pool)
         enemy_names = list(self.mission_enemies[mission_id]['enemies'])
@@ -2969,6 +2995,8 @@ class ModifierDatabase:
             enemy_names.append('Human')
         # An enemy type a Thunderstorm / Downpour took out of the run is not drawn for.
         enemy_names = [e for e in enemy_names if e not in set(vanished or ())]
+        # ...and a type a Halo 1 Incursion card brought into the run is (swapped_in_enemies)
+        enemy_names += [e for e in added or () if e not in enemy_names]
         if (CONFIG.get('h4_hostile_sentinels')
                 and mission_id in (CONFIG.get('h4_sentinel_missions') or ())
                 and 'Sentinel' not in enemy_names):
@@ -3947,7 +3975,7 @@ class ModifierDatabase:
                          'enemy_type': 'Marine' if ally else enemy, 'step': self.ARMED_STEP}],
         }
 
-    def armed_cards(self, mission_id, weapons, game, ally=False, vanished=()):
+    def armed_cards(self, mission_id, weapons, game, ally=False, vanished=(), added=()):
         """The Armed cards this level can offer for the players' `weapons` -- none for
         an enemy type a Thunderstorm / Downpour took out of the run."""
         if game != 'Halo 1' or not CONFIG.get('h1_enemy_weapon_cards', True):
@@ -3966,7 +3994,7 @@ class ModifierDatabase:
                 names.append(w)
         if ally:
             return [self.armed_card('Marine', w, ally=True) for w in names]
-        here = (self.mission_enemies.get(mission_id) or {}).get('enemies', [])
+        here = list((self.mission_enemies.get(mission_id) or {}).get('enemies', [])) +             list(added or ())
         return [self.armed_card(e, w) for e in self.H1_ARMED_ENEMIES
                 if e in here and e not in set(vanished or ()) for w in names]
 
@@ -4101,8 +4129,8 @@ class ModifierDatabase:
         return self.filter_blacklisted(mods, blacklist, game)
 
     def get_enemy_modifiers_filtered(self, mission_id, blacklist, game=None, betrayal=False,
-                                     vanished=()):
-        mods = self.get_enemy_modifiers(mission_id, betrayal, vanished)
+                                     vanished=(), added=()):
+        mods = self.get_enemy_modifiers(mission_id, betrayal, vanished, added)
         return self.filter_blacklisted(mods, blacklist, game)
 
     def get_wildcard_modifier_filtered(self, blacklist, game=None):
@@ -4163,6 +4191,18 @@ class ModifierDatabase:
     def skull_enemy(self, name):
         d = self.skull_defs.get(name) or {}
         return d.get('enemy') if d.get('skull') else None
+
+    def swapped_in_enemies(self, run_state, game=None):
+        """Enemy types a Halo 1 Incursion card (halo.json 'swap_enemy') brought into the
+        run: from the pick on they fight on every level, so their own cards are offered
+        there too (user, 2026-10-06)."""
+        if (game or '') not in ('', 'Halo 1'):
+            return set()
+        out = set()
+        for mod in active_run_mods(run_state):
+            for e in (mod or {}).get('swap_enemy') or ():
+                out.add(e)
+        return out
 
     def vanished_enemies(self, active_names):
         """Enemy types no longer in the run's levels: moved away by an active Thunderstorm
@@ -5962,6 +6002,19 @@ class MagnitudeEditorDialog(QDialog):
                 return '0.1 per kill (hardcoded in the game dll)'
         if target.get('camo'):
             return 'off (any value switches active camo on)'
+        if target.get('species_swap'):
+            # Halo 1 species replacement (h1_species_swap): not a tag field -- whole
+            # encounters turn into the card's species. Show what the share is taken of.
+            try:
+                import enemy_count
+                tot = enemy_count.enemy_total(m, self.game, 'characters' + chr(92) + '*', 'enemy', False)
+                if tot:
+                    squad, script, n = tot
+                    return ('%d enemies on this level  (+0.1 = 10%% of them, whole encounters, '
+                            'counted on the highest difficulty)' % (squad + script))
+            except Exception:
+                pass
+            return "share of the level's enemies (whole encounters)"
         if target.get('squad_count'):
             # More enemies (or allies): not a tag field -- a share of the level's matching
             # actors (script spawns included) is added to its squads. Show how many.
@@ -8772,6 +8825,7 @@ class MagnitudeEditorDialog(QDialog):
                                          'infect_anim': t.get('infect_anim'),
                                          'move_speed': t.get('move_speed'),
                                          'squad_count': t.get('squad_count'),
+                                         'species_swap': t.get('species_swap'),
                                          'camo': t.get('camo'),
                                          'side': t.get('side'),
                                          'include_boss': t.get('include_boss'),
@@ -8982,6 +9036,9 @@ class MagnitudeEditorDialog(QDialog):
                 spawn_grenades=self._spawn_grenades_spec(),
                 h4_ability_visibility=CONFIG.get('h4_ability_visibility') or None,
                 h1_enemy_weapons=self._h1_enemy_weapons_spec(armed_picks),
+                h1_levels=(self.parent_gui.db.h1_level_maps()
+                           if self.game == 'Halo 1' and getattr(self.parent_gui, 'db', None)
+                           else None),
                 hostile_sentinels=bool(CONFIG.get('h4_hostile_sentinels')),
                 remove_cutscenes=remove_cutscenes,
                 keep_title_hud=bool(CONFIG.get('keep_title_hud')),
@@ -13720,11 +13777,19 @@ class HaloGUI(QMainWindow):
         """Enemy types an active Thunderstorm / Downpour took out of the run."""
         return self.db.vanished_enemies(active_skull_names(self.run_state))
 
+    def _swapped_in(self):
+        """Enemy types a Halo 1 Incursion card brought into the run."""
+        try:
+            return self.db.swapped_in_enemies(
+                self.run_state, self.db.get_game_for_mission(self.run_state.mission_id))
+        except Exception:
+            return set()
+
     def _enemy_pool(self):
         # Already includes the general negative pool and is blacklist-filtered.
         return self.db.get_enemy_modifiers_filtered(
             self.run_state.mission_id, self.run_state.blacklist, self._current_game(),
-            betrayal=self._betrayal_active(), vanished=self._vanished())
+            betrayal=self._betrayal_active(), vanished=self._vanished(), added=self._swapped_in())
 
     def _pick_enemy(self, enemy_mods, used_enemies):
         available = [e for e in enemy_mods if e.get('name', '') not in used_enemies]
@@ -15457,7 +15522,7 @@ class HaloGUI(QMainWindow):
             ident[part] = copy.deepcopy(random.choice(cands))
         elif mod_type == 'enemy':
             mods = self.db.get_enemy_modifiers_filtered(self.run_state.mission_id, bl, game,
-                                                        betrayal=self._betrayal_active(), vanished=self._vanished())
+                                                        betrayal=self._betrayal_active(), vanished=self._vanished(), added=self._swapped_in())
             pair['enemy_mod'] = random.choice(mods) if mods else None
         elif mod_type == 'wildcard':
             pair['wildcard_mod'] = self.db.get_wildcard_modifier_filtered(bl, game)
@@ -16469,10 +16534,10 @@ class RunEnhancer:
         pmods = self.db.get_player_modifiers_filtered(
             self.run_state.weapons_for(for_player), list(bl) + self.identity_locked_labels(), game)
         enemy_mods = self.db.get_enemy_modifiers_filtered(mid, bl, game,
-                                                          betrayal=self._betrayal_active(), vanished=self._vanished())
+                                                          betrayal=self._betrayal_active(), vanished=self._vanished(), added=self._swapped_in())
         enemy_mods += self.db.filter_blacklisted(
             self.db.armed_cards(mid, self._run_weapons(), game,
-                                vanished=self._vanished()), bl, game)
+                                vanished=self._vanished(), added=self._swapped_in()), bl, game)
         wpool = self._new_weapon_pool(for_player)
 
         # A level with a named STORY fight gets a guaranteed Boss card on every pair.
@@ -16620,6 +16685,14 @@ class RunEnhancer:
         """Enemy types an active Thunderstorm / Downpour took out of the run."""
         return self.db.vanished_enemies(active_skull_names(self.run_state))
 
+    def _swapped_in(self):
+        """Enemy types a Halo 1 Incursion card brought into the run."""
+        try:
+            return self.db.swapped_in_enemies(
+                self.run_state, self.db.get_game_for_mission(self.run_state.mission_id))
+        except Exception:
+            return set()
+
     def _active_negative_names(self):
         """Names of negatives already active this run — every enemy card, every SKULL,
         plus Exhausts still bound to the current mission. Keeps a fresh Exhaust or
@@ -16734,10 +16807,10 @@ class RunEnhancer:
             return []
 
         enemy_mods = self.db.get_enemy_modifiers_filtered(mid, bl, game,
-                                                          betrayal=self._betrayal_active(), vanished=self._vanished())
+                                                          betrayal=self._betrayal_active(), vanished=self._vanished(), added=self._swapped_in())
         enemy_mods += self.db.filter_blacklisted(
             self.db.armed_cards(mid, self._run_weapons(), game,
-                                vanished=self._vanished()), bl, game)
+                                vanished=self._vanished(), added=self._swapped_in()), bl, game)
         enemies = (random.sample(enemy_mods, len(slots)) if len(enemy_mods) >= len(slots)
                    else [random.choice(enemy_mods) if enemy_mods else None for _ in slots])
         # Option: the Other slot too, rolled exactly like a normal round's (_draw_other)
