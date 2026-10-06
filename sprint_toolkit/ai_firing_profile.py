@@ -20,6 +20,13 @@ Output: ai_firing_profiles.json (tool dir): {game: {weapon path: {'source': ...,
 
     python ai_firing_profile.py --from-map ..\..\halo4\maps\m020.map --from-game "Halo 4" ^
         --from-weapon "objects\weapons\rifle\storm_lmg\storm_lmg" --to-weapon "weapons\saw\saw"
+
+SAME-GAME mode (no source map): fire like the characters carrying another weapon, with
+optional explicit fields over the donor -- Halo 1's Sentinel Beam:
+
+    python ai_firing_profile.py --to-weapon "weapons\sentinel beam\sentinel beam" ^
+        --donor-weapon "characters\sentinel\sentinel" ^
+        --set "0x1D8=0.7:Drop Weapon Loaded" --set "0x1DC=0.9:Drop Weapon Loaded Max"
 """
 import argparse
 import json
@@ -114,7 +121,17 @@ def build(from_map, from_game, from_weapon, to_weapon, to_game='Halo 1', char='a
     return data[to_game][to_weapon]
 
 
-def same_game(donor_weapon, to_weapon, to_game='Halo 1', why=''):
+def parse_sets(sets):
+    """['0x1D8=0.7:Drop Weapon Loaded', ...] -> {offset: ['<f', value, name]} (floats)."""
+    out = {}
+    for s in sets or ():
+        off, rest = s.split('=', 1)
+        val, name = (rest.split(':', 1) + [''])[:2]
+        out['0x%X' % int(off, 16)] = ['<f', float(val), name]
+    return out
+
+
+def same_game(donor_weapon, to_weapon, to_game='Halo 1', why='', fields=None):
     """A profile with NO foreign fields: the clone takes its whole firing block from the
     best character in the target game carrying `donor_weapon` (h1_enemy_weapons.donor_for
     reads 'donor_weapon'). For a weapon whose animation label nobody else uses, so the
@@ -127,7 +144,7 @@ def same_game(donor_weapon, to_weapon, to_game='Halo 1', why=''):
         data = {}
     data.setdefault(to_game, {})[to_weapon] = {
         'source': '%s %s (own carriers%s)' % (to_game, donor_weapon, ', ' + why if why else ''),
-        'donor_weapon': donor_weapon, 'fields': {}}
+        'donor_weapon': donor_weapon, 'fields': dict(fields or {})}
     with open(PROFILE_FILE, 'w', encoding='utf-8') as fh:
         json.dump(data, fh, indent=1)
     return data[to_game][to_weapon]
@@ -144,9 +161,16 @@ def main():
     ap.add_argument('--donor-weapon', help='same-game mode: fire like the characters '
                                            'carrying this weapon (no foreign fields)')
     ap.add_argument('--why', default='')
+    # explicit float fields written over the donor's bytes. The Sentinel Beam: its donor
+    # (the Sentinel) never drops a weapon (Drop Weapon Loaded 0 / 0), so a Grunt or Elite
+    # armed with it might drop an empty battery -- the plasma-rifle Elite's 0.7 / 0.9
+    # (actv +0x1D8 / +0x1DC, read off the tag) make it drop charged, whatever 0 means
+    ap.add_argument('--set', action='append', metavar='0xOFF=VALUE:NAME')
     a = ap.parse_args()
     if a.donor_weapon:
-        prof = same_game(a.donor_weapon, a.to_weapon, a.to_game, a.why)
+        prof = same_game(a.donor_weapon, a.to_weapon, a.to_game, a.why, parse_sets(a.set))
+        for off, (fmt, v, name) in sorted(prof['fields'].items()):
+            print('  %-6s %-24s %s' % (off, name, v))
         print(prof['source'], '->', a.to_weapon)
         print('written', PROFILE_FILE)
         return

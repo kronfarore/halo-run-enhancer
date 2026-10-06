@@ -113,7 +113,18 @@
   "weapons\\sentinel beam\\sentinel beam": {
    "source": "Halo 1 characters\\sentinel\\sentinel (own carriers, Sentinel Beam fires like the Sentinel whose beam it replaces)",
    "donor_weapon": "characters\\sentinel\\sentinel",
-   "fields": {}
+   "fields": {
+    "0x1D8": [
+     "<f",
+     0.7,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.9,
+     "Drop Weapon Loaded Max"
+    ]
+   }
   }
  }
 }
