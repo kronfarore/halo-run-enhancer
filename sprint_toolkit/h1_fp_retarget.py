@@ -91,6 +91,9 @@ WEAPONS = {
         'h1_dir': r'weapons\sentinel beam\fp',
         'h1_model': r'weapons\sentinel beam\fp\fp',
         'align': 'same_space',
+        # test 1 (2026-10-06): 'a bit too forward, I can see into the arms' -- the rig
+        # pushed 1.5 units (0.015 wu) away from the camera
+        'view_offset': (0.015, 0.0, 0.0),
         'anims': {
             'first_person:idle:var1': 'first-person idle',
             'first_person:ready': 'first-person ready',
@@ -368,6 +371,9 @@ def retarget_frame(h3_nodes, pose, defaults, weapon, corr, grip_ref=None,
     if cam is not None:
         icam = R.inverse(cam)
         world = {n: _mul(icam, W) for n, W in world.items()}
+    off = WEAPONS[weapon].get('view_offset')
+    if off:                                                  # the whole rig, view space (wu)
+        world = {n: (W[0], tuple(W[1][k] + off[k] for k in range(3))) for n, W in world.items()}
     for n, C in corr.items():
         world[n] = _mul(world[n], C)
     grip = WEAPONS[weapon].get('left_hand_offset')
