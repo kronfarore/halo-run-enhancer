@@ -61,7 +61,10 @@ def enabled_ports(game, config_ports, catalog=None):
 
 def weap_path(port):
     """The ported weapon's own weap tag path in its TARGET game (no class prefix),
-    read off its balance rows -- or None."""
+    read off its balance rows -- or None. A port without balance rows names it in
+    'weap' (Halo 1's Sentinel Beam)."""
+    if port.get('weap'):
+        return port['weap']
     for row in port.get('balance') or ():
         t = row.get('tag') or ''
         if t and not t.startswith(('proj ', 'jpt! ', 'jmad ', 'antr ', 'eqip ')):

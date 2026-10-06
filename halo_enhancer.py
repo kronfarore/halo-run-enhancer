@@ -3699,7 +3699,7 @@ class ModifierDatabase:
             return False
 
     PORT_LEVELS_FILE = 'port_levels_cache.json'
-    PORT_CACHE_VERSION = 4       # 2: + port card tags MISSING there; 3: from halo.json cards; 4: requires
+    PORT_CACHE_VERSION = 5       # 2: + port card tags MISSING there; 3: from halo.json cards; 4: requires; 5: H1 Sentinel Beam
 
     def _port_level_map(self, mission_id):
         import halo_patch

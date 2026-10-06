@@ -135,6 +135,10 @@ def plan(weapon):
             # rod has no zoom, the Rocket Launcher does)
             if name in (port.get('skip_cards') or ()):
                 continue
+            # the port may file a donor card under its own name (catalog 'card_map': the
+            # Halo 1 Sentinel Beam's damage is 'Beam Damage' like its other games, where
+            # the Plasma Rifle says 'Bullet Damage')
+            name = (port.get('card_map') or {}).get(name, name)
             card = port_cards.get(name)
             if card is not None and game in (card.get('game') or []):
                 continue                                     # already covered: never overwrite
