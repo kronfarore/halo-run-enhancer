@@ -256,13 +256,16 @@ WEAPONS['sentinel_beam'] = {
     #             the rate of fire, not per round
     #   Inputs that never move here: `primary firing on`, `overheated`. Weapon-state
     #   inputs that do: age (battery), heat.
-    #     test 11 chain via `ready` (function 1, off with 3): if the weapon is not
-    #             `ready` while overheated, this ends the overheat hum; if `ready` stays
-    #             1, it is test 8's behaviour (battery only)
+    #     test 11 chain via `ready` (function 1, off with 3)            battery yes,
+    #             overheat no -- `ready` stays 1 through an overheat
+    #     test 12 chain via `primary firing` (NOT `firing on`; the last untried input
+    #             with a plausible meaning): 1 while the trigger is in its firing state
+    #             would end the overheat hum; a once-per-round pulse would make the hum
+    #             stutter/stack instead (then: back to test 11's wiring)
     # The template's heat-flare lights (blue plasma rifle flares, function 1) are gone
-    'rewire': {'inputs': ('ready', 'illumination', 'primary_rate_of_fire', 'age'),
+    'rewire': {'inputs': ('primary_firing', 'illumination', 'primary_rate_of_fire', 'age'),
                'functions': {0: (2, 'C_in', 'fire loop', {'turn_off_with': 1}),
-                             1: (2, 'A_in', 'ready', {'turn_off_with': 3})},
+                             1: (2, 'A_in', 'primary firing', {'turn_off_with': 3})},
                'drop_attachments_on': ('B_out',)},
     'fire_loop': {'tag': SBS + 'beam_fire', 'like': r'sound\sfx\weapons\flamethrower\fire_ft',
                   'start': SBS + 'beam_fire_in', 'loop': SBS + 'beam_fire_loop',
@@ -300,6 +303,9 @@ WEAPONS['sentinel_beam'] = {
     # model lacks (test 5: no particles): own copy at `overheat`
     'overheated_effect': {'from': r'weapons\plasma rifle\effects\overheated',
                           'out': SB + 'effects\\overheated', 'locations': {'vent': 'overheat'}},
+    # the template's misfire burst (a low-battery misfire) aims at `vent` too
+    'misfire_effect': {'from': r'weapons\plasma rifle\effects\misfire',
+                       'out': SB + 'effects\\misfire', 'locations': {'vent': 'overheat'}},
     'attach_swap': {r'weapons\plasma rifle\muzzle flash': SB + 'muzzle light'},
     # the template's attachments sit on plasma rifle markers this model lacks
     # THE DROP (user's option B): Halo 1's Sentinel carries no droppable weapon, so its
@@ -724,6 +730,17 @@ def edit_weapon(key, write):
             loc.marker_name = O['locations'].get(loc.marker_name, loc.marker_name)
         save(et, path(O['out'], '.effect'), write)
         a.heat.overheated.filepath = O['out']
+    if 'misfire_effect' in w:                 # same marker fix for the misfire burst
+        from reclaimer.hek.defs.effe import effe_def
+        M = w['misfire_effect']
+        et = effe_def.build(filepath=path(M['from'], '.effect'))
+        for loc in et.data.tagdata.locations.STEPTREE:
+            loc.marker_name = M['locations'].get(loc.marker_name, loc.marker_name)
+        save(et, path(M['out'], '.effect'), write)
+        for tr in a.triggers.STEPTREE:
+            for fe in tr.firing_effects.STEPTREE:
+                if fe.misfire_effect.filepath == M['from']:
+                    fe.misfire_effect.filepath = M['out']
     if 'rewire' in w:
         rewire(d, w['rewire'])
     if 'change_color_a' in w:
