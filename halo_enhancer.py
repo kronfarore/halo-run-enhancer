@@ -456,7 +456,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                # Visual, but it changes map bytes: co-op partners must patch the same
                # colours or the game fails to load, so it travels in the run.
                'enemy_colors', 'enemy_color_drift', 'weapon_ports',
-               'weapon_ports_in_pools')
+               'weapon_ports_master', 'weapon_ports_in_pools')
 
 
 class _WheelGuard(QObject):
@@ -993,6 +993,8 @@ CONFIG = {
     # Options -> Weapon ports: ported weapons join every weapon pick (initial
     # selection, New Weapon, automatic rolls) on levels whose map carries them
     "weapon_ports_in_pools": False,
+    # Options -> Weapon ports master switch: off, no port is offered, carded or patched
+    "weapon_ports_master": True,
     # {game: {weapon: dB}}: shift a port's own sounds (port_volume.py), 0 = as built.
     "weapon_port_volume": {},
     # Write the knobs into saved / shared run files, so a co-op partner loading the run
@@ -3600,7 +3602,7 @@ class ModifierDatabase:
         # a switched-on PORT is a weapon this game fields, however it is offered
         try:
             import weapon_ports
-            out |= {p.get('weapon') for p in weapon_ports.enabled_ports(game, CONFIG.get('weapon_ports'))}
+            out |= {p.get('weapon') for p in _enabled_ports(game)}
         except Exception:
             pass
         return {self.resolve_weapon(w) for w in out} | out
@@ -3765,7 +3767,7 @@ class ModifierDatabase:
             return list(memo[mission_id])
         try:
             import weapon_ports
-            ports = weapon_ports.enabled_ports(game, CONFIG.get('weapon_ports'))
+            ports = _enabled_ports(game)
         except Exception:
             return []
         if not ports:
@@ -3859,7 +3861,7 @@ class ModifierDatabase:
         for mid, game in self.mission_games.items():
             try:
                 import weapon_ports
-                if not weapon_ports.enabled_ports(game, CONFIG.get('weapon_ports')):
+                if not _enabled_ports(game):
                     continue
             except Exception:
                 continue
@@ -5293,6 +5295,14 @@ LADDER_BY_STEP = '(by step)'
 # Halo 4's Wwise sfxbank.pck, Halo 1's FMOD sounds_adpcm.fsb, and the port's own FMOD bank
 # <game>\fmod\pc\sfx.saw.fsb (+ .info) in Halo 3, ODST and Reach.
 PORT_SOUND_FOLDERS = ('halo4', 'halo1', 'halo3', 'halo3odst', 'haloreach')
+
+
+def _enabled_ports(game):
+    """weapon_ports.enabled_ports for this game, or [] with the master switch off."""
+    if not CONFIG.get('weapon_ports_master', True):
+        return []
+    import weapon_ports
+    return weapon_ports.enabled_ports(game, CONFIG.get('weapon_ports'))
 
 
 def _h1_bank_ports():
@@ -12309,6 +12319,14 @@ class OptionsDialog(QDialog):
             "on, and every port needs testing in game before it is worth trusting.")
         note.setWordWrap(True)
         lay.addWidget(note)
+        self._ports_master_cb = QCheckBox("Use weapon ports")
+        self._ports_master_cb.setChecked(bool(CONFIG.get('weapon_ports_master', True)))
+        self._ports_master_cb.setToolTip(
+            "Master switch for the whole feature. Off, no ported weapon is offered, "
+            "gets cards or is touched by the patcher, whatever the switches below say "
+            "(they keep their settings for when it is turned back on).\n\nMaps that "
+            "were BUILT with a port still carry it where the level places it.")
+        lay.addWidget(self._ports_master_cb)
         gen = QGroupBox("Every game")
         gform = QFormLayout(gen)
         gform.setLabelAlignment(Qt.AlignRight)
@@ -12463,6 +12481,11 @@ class OptionsDialog(QDialog):
                 self._ports_ammo[(game, port.get('weapon'))] = combo
             lay.addWidget(gb)
 
+        _rest = [box.layout().itemAt(i).widget() for i in range(box.layout().count())]
+        _rest = [w for w in _rest if w is not None and w not in (note, self._ports_master_cb)]
+        self._ports_master_cb.toggled.connect(lambda on: [w.setEnabled(on) for w in _rest])
+        for w in _rest:
+            w.setEnabled(self._ports_master_cb.isChecked())
         page = self._opt_page("Weapon ports")
         page.addWidget(box)
         # Debug-only: the nav entry is hidden unless Debug is on (the page itself stays
@@ -12684,6 +12707,7 @@ class OptionsDialog(QDialog):
                     if g2 == g}
                 for g in {gg for gg, _ in self._ports_volume}},
             'weapon_ports_balance': self._ports_balance_cb.isChecked(),
+            'weapon_ports_master': self._ports_master_cb.isChecked(),
             'weapon_ports_in_pools': self._ports_pools_cb.isChecked(),
             'weapon_ports_balance_anims': self._ports_anim_cb.isChecked(),
             'enemy_color_drift': dict(

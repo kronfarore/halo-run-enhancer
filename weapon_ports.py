@@ -102,6 +102,8 @@ def active_ports(game, config, catalog=None):
     without its own choice), `weapon_ports_balance_anims` whether the retiming comes
     with it, and each port's own `ammo` which pickup item it accepts."""
     out = []
+    if not config.get('weapon_ports_master', True):
+        return out                       # Options -> Weapon ports: porting switched off
     chosen = (config.get('weapon_ports') or {}).get(str(game).strip()) or {}
     for port in enabled_ports(game, config.get('weapon_ports'), catalog):
         entry = dict(port)
