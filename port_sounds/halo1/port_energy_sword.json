@@ -44,6 +44,40 @@
    "aliases": [
     "sound\\weapons\\energy_sword_port\\sword_pose"
    ]
+  },
+  {
+   "tag": "sound\\weapons\\energy_sword_port\\sword_hit",
+   "perms": [
+    "sword_hit_1.wav",
+    "sword_hit_2.wav",
+    "sword_hit_3.wav",
+    "sword_hit_4.wav",
+    "sword_hit_5.wav",
+    "sword_hit_6.wav",
+    "sword_hit_7.wav",
+    "sword_hit_8.wav",
+    "sword_hit_9.wav",
+    "sword_hit_10.wav",
+    "sword_hit_11.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\energy_sword_port\\sword_hit"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\energy_sword_port\\sword_hum",
+   "perms": [
+    "sword_hum_1.wav",
+    "sword_hum_2.wav",
+    "sword_hum_3.wav",
+    "sword_hum_4.wav",
+    "sword_hum_5.wav",
+    "sword_hum_6.wav",
+    "sword_hum_7.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\energy_sword_port\\sword_hum"
+   ]
   }
  ]
 }

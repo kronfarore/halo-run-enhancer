@@ -329,6 +329,31 @@ H3_SCRIPTS += FIELD_SCRIPTS + ('h3_saw_tag_numbers.py', 'make_port_catalog_h3.py
                                'make_port_catalog_odst.py', 'balance_port.py')
 H4_SCRIPTS += FIELD_SCRIPTS
 
+# --- Halo 1 RESTORED weapons (2026-10-06) ---------------------------------------------
+# The Elites' energy sword and the Grunts' fuel rod made pickable (h1_pickable_weapons.py):
+# their own folders (FP animations + JMAs, scaled FP model, HUDs, meters, lunge tags), their
+# own sounds (h1_port_sounds.py), and the SHARED tags those edits change IN PLACE -- each
+# with the `<tag>.before_pickable` stock copy the scripts leave beside it.
+for _w in (('weapons', 'energy sword'), ('weapons', 'fuel rod gun')):
+    TREES += [(os.path.join(HCEEK, 'tags', *_w), 'tags/' + '/'.join(_w), True),
+              (os.path.join(HCEEK, 'data', *_w), 'data/' + '/'.join(_w), True)]
+for _s in ('energy_sword_port', 'fuel_rod_port'):
+    TREES += [(os.path.join(HCEEK, 'tags', 'sound', 'weapons', _s), 'tags/sound/weapons/' + _s, True),
+              (os.path.join(HCEEK, 'data', 'sound', 'weapons', _s), 'data/sound/weapons/' + _s, True)]
+for _t in ('ui/hud/bitmaps/combined/hud_msg_icons_r.bitmap',
+           'ui/hud/bitmaps/combined/hud_reticles.bitmap',
+           'ui/hud/bitmaps/combined/hud_reticles_r.bitmap',
+           'ui/hud/hud_item_messages.unicode_string_list',
+           'characters/cyborg/cyborg.model_animations',
+           'characters/grunt/grunt specops fuel rod.actor_variant',
+           'characters/grunt/grunt specops fuel rod airdef.actor_variant',
+           'levels/a50/a50.scenario'):
+    for _x in ('', '.before_pickable'):
+        SHARED.append((os.path.join(HCEEK, 'tags', *_t.split('/')) + _x, 'shared/' + _t + _x))
+SCRIPTS += ('h3_fp_pose.py', 'h1_fp_retarget.py', 'fp_render.py', 'h1_scaled_model.py',
+            'h1_pickable_weapons.py', 'h1_rocket_meter.py', 'h3_hud_art.py',
+            'h1_add_reticle.py', 'h1_hud_sheet.py', 'h1_port_sounds.py', 'h3_sprite_box.py')
+
 PROFILES = {
     'h1': {'trees': TREES, 'shared': SHARED, 'files': FILES, 'maps': MAPS,
            'scripts': SCRIPTS, 'label': 'saw-h1'},

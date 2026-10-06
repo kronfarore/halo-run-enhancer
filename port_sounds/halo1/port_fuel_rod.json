@@ -1,0 +1,62 @@
+{
+ "game": "Halo 1",
+ "weapon": "fuel_rod",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\fuel_rod_port\\rod_ready",
+   "perms": [
+    "rod_ready_1.wav",
+    "rod_ready_2.wav",
+    "rod_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\fuel_rod_port\\rod_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\fuel_rod_port\\rod_reload",
+   "perms": [
+    "rod_reload_1.wav",
+    "rod_reload_2.wav",
+    "rod_reload_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\fuel_rod_port\\rod_reload"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\fuel_rod_port\\rod_pose",
+   "perms": [
+    "rod_pose_1.wav",
+    "rod_pose_2.wav",
+    "rod_pose_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\fuel_rod_port\\rod_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\fuel_rod_port\\rod_melee",
+   "perms": [
+    "rod_melee_1.wav",
+    "rod_melee_2.wav",
+    "rod_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\fuel_rod_port\\rod_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\fuel_rod_port\\rod_fire",
+   "perms": [
+    "rod_fire_1.wav",
+    "rod_fire_2.wav",
+    "rod_fire_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\fuel_rod_port\\rod_fire"
+   ]
+  }
+ ]
+}

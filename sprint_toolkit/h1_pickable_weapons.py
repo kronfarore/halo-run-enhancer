@@ -57,6 +57,7 @@ CYBORG = r'characters\cyborg\cyborg'
 
 SWORD_SWING = r'sound\sfx\impulse\animations\elite\stand_sword_melee.mov'
 SWORD_SOUNDS = 'sound\\weapons\\energy_sword_port\\'
+ROD_SOUNDS = 'sound\\weapons\\fuel_rod_port\\'
 
 WEAPONS = {
     'energy_sword': {
@@ -71,6 +72,14 @@ WEAPONS = {
                    'first-person fire-1': SWORD_SOUNDS + 'sword_lunge',
                    'first-person ready': SWORD_SOUNDS + 'sword_ready',
                    'first-person posing': SWORD_SOUNDS + 'sword_pose'},
+        # Halo 3 plays the ignition from its blade_activate effect, 0.6 s after the sword
+        # turns on (that event's delay) -- 18 frames into the ready (user: 'too early' at 0)
+        'sound_frames': {'first-person ready': 18},
+        # the hit: the melee damage effect's own sound (slash AND lunge strike use it)
+        'hit_sound': SWORD_SOUNDS + 'sword_hit',
+        # the hum: a sound_looping (the plasma rifle charge loop's shape) on the blade
+        'hum': {'loop': SWORD_SOUNDS + 'sword_hum', 'tag': SWORD_SOUNDS + 'sword_hum',
+                'like': r'sound\sfx\weapons\plasma rifle\charging', 'marker': 'flare'},
         # MCC's Halo 1 localization has no line for message 8 ("need string insert here"
         # in game, 2026-10-05): the sword gets its own appended pair, like the SAW's 47/48
         'messages': ('Picked up an energy sword', 'Picked up %d rounds for energy sword'),
@@ -110,8 +119,14 @@ WEAPONS = {
         'fp_anims': r'weapons\fuel rod gun\fp\fp',
         'teach': ('fr', 'pc'),
         'keys': {'first-person melee': 5},
-        'sounds': {'first-person melee': r'sound\sfx\weapons\weapon_anims\fuelrod_melee',
-                   'first-person ready': r'sound\sfx\weapons\weapon_anims\plasrifle_ready'},
+        # Halo 3's own fuel rod sounds (h1_port_sounds.py fuel_rod), all cued at frame 0
+        # as Halo 3 does; the original fuel rod never had first-person sounds
+        'sounds': {'first-person melee': ROD_SOUNDS + 'rod_melee',
+                   'first-person ready': ROD_SOUNDS + 'rod_ready',
+                   'first-person reload-empty': ROD_SOUNDS + 'rod_reload',
+                   'first-person reload-full': ROD_SOUNDS + 'rod_reload',
+                   'first-person posing': ROD_SOUNDS + 'rod_pose',
+                   'first-person fire-1': ROD_SOUNDS + 'rod_fire'},
         # Halo 1 rule (PORTING.md step 3): a weapon owns its melee damage tag. The PC fuel
         # rod's is the Chief-held fuel rod's melee; the response stays shared (feedback).
         'melee': (r'weapons\plasma_cannon\effects\plasma_cannon_melee',
@@ -136,6 +151,16 @@ WEAPONS = {
                         # (the Hunter's arm glow) and light, which nothing attached
                         'glow': [r'weapons\fuel rod gun\hunter fuel rod',
                                  r'weapons\fuel rod gun\illumination']},
+        # STEP 3 (PORTING.md): its OWN projectile and damage. The Grunts' fuel rod fired
+        # `weapons\fuel rod gun\fuel rod`, the HUNTERS' projectile -- so the enhancer's
+        # Hunter cards (Fuel Rod Range / Velocity / Gravity on the projectile, Hunter Fuel
+        # Rod Damage on `explosion` through the detonation effect) moved the Grunts' and now
+        # the player's fuel rod too. Same values, own tags; the Hunters keep the originals.
+        'own_projectile': {
+            'projectile': (r'weapons\fuel rod gun\fuel rod', r'weapons\fuel rod gun\grunt fuel rod'),
+            'effect': (r'weapons\fuel rod gun\effects\explosion',
+                       r'weapons\fuel rod gun\effects\grunt explosion'),
+            'damage': (r'weapons\fuel rod gun\explosion', r'weapons\fuel rod gun\grunt explosion')},
         # the AI-only tag fired with rounds_per_shot 0 (never spent a round, never reloaded)
         # and had no aim assist; Halo 3's fuel rod values (degrees, wu)
         'rounds_per_shot': 1,
@@ -306,6 +331,60 @@ def make_lunge(w, a, write):
     a.age.misfire_chance = 0.0
 
 
+def own_projectile(a, o, write):
+    """Clone projectile -> detonation effect -> damage effect and repoint the chain, so the
+    weapon fires tags nothing else names (verify the BUILT map: port_refs_audit idea)."""
+    from reclaimer.hek.defs.effe import effe_def
+    (p_src, p_own), (e_src, e_own), (j_src, j_own) = o['projectile'], o['effect'], o['damage']
+    if write:
+        shutil.copy2(path(j_src, '.damage_effect'), path(j_own, '.damage_effect'))
+    et = effe_def.build(filepath=path(e_src, '.effect'))
+    n = 0
+    for ev in et.data.tagdata.events.STEPTREE:
+        for part in ev.parts.STEPTREE:
+            if part.type.filepath.lower() == j_src.lower():
+                part.type.filepath = j_own
+                n += 1
+    if n != 1:
+        raise SystemExit('%s: %d parts name %s' % (e_src, n, j_src))
+    save(et, path(e_own, '.effect'), write)
+    pt = proj_def.build(filepath=path(p_src, '.projectile'))
+    det = pt.data.tagdata.proj_attrs.detonation
+    if det.effect.filepath.lower() != e_src.lower():
+        raise SystemExit('%s detonates %s, not %s' % (p_src, det.effect.filepath, e_src))
+    det.effect.filepath = e_own
+    save(pt, path(p_own, '.projectile'), write)
+    for tr in a.triggers.STEPTREE:
+        if tr.projectile.projectile.filepath.lower() == p_src.lower():
+            tr.projectile.projectile.filepath = p_own
+
+
+def add_hum(d, h, write):
+    """An always-on looping sound on the weapon: a sound_looping cloned from `like`,
+    its loop track naming our sound, attached unscaled at `marker`."""
+    from reclaimer.hek.defs.lsnd import lsnd_def
+    lt = lsnd_def.build(filepath=path(h['like'], '.sound_looping'))
+    ld = lt.data.tagdata
+    tr = ld.tracks.STEPTREE[0]
+    tr.start.filepath = ''
+    tr.loop.filepath = h['loop']
+    tr.end.filepath = ''
+    while len(ld.tracks.STEPTREE) > 1:
+        ld.tracks.STEPTREE.pop()
+    save(lt, path(h['tag'], '.sound_looping'), write)
+    atts = d.obje_attrs.attachments.STEPTREE
+    if any(x.type.filepath == h['tag'] for x in atts):
+        return
+    atts.append(copy.deepcopy(atts[0]))
+    x = atts[len(atts) - 1]
+    x.type.tag_class.set_to('sound_looping')
+    x.type.filepath = h['tag']
+    x.marker = h['marker']
+    x.primary_scale.set_to('none')
+    x.secondary_scale.set_to('none')
+    x.change_color.set_to('none')
+
+
 def add_charge_loop(d, c):
     """A looping sound attachment whose scale follows the weapon's charge."""
     o = d.obje_attrs
@@ -356,8 +435,17 @@ def edit_weapon(key, write):
         a.interface.hud_interface.filepath = make_hud(w, key, write)
     if 'lunge' in w:
         make_lunge(w, a, write)
+    if 'own_projectile' in w:
+        own_projectile(a, w['own_projectile'], write)
     if 'charge_loop' in w:
         add_charge_loop(d, w['charge_loop'])
+    if 'hum' in w:
+        add_hum(d, w['hum'], write)
+    if 'hit_sound' in w:
+        jp = path(a.melee.player_damage.filepath, '.damage_effect')
+        jt = jpt__def.build(filepath=jp + BACKUP if os.path.exists(jp + BACKUP) else jp)
+        jt.data.tagdata.sound.filepath = w['hit_sound']
+        save(jt, jp, write)
     if 'rounds_per_shot' in w:
         for tr in a.triggers.STEPTREE:
             tr.firing.rounds_per_shot = w['rounds_per_shot']
@@ -408,7 +496,7 @@ def edit_fp_anims(key, write):
                 refs[-1].sound.filepath = snd
                 have.append(snd)
             a.sound = have.index(snd)
-            a.sound_frame_index = 0
+            a.sound_frame_index = w.get('sound_frames', {}).get(a.name, 0)
         print('   %-30s key %2d sound %s' % (a.name, a.key_frame_index,
                                               have[a.sound] if a.sound >= 0 else '-'))
     save(t, p, write)

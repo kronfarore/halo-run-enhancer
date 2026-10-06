@@ -61,9 +61,10 @@ COPY = ('flags', 'sound_class', 'minimum_distance', 'maximum_distance', 'skip_fr
         'random_pitch_bounds', 'inner_cone_angle', 'outer_cone_angle', 'outer_cone_gain',
         'gain_modifier', 'maximum_bend_per_second')
 
+IMPACTS = B.join(['sound', 'sfx', 'impulse', 'melee'])
 #: weapon -> tag folder (never under sound\sfx) and its sounds:
 #:   name -> (Halo 3 sound folders mixed together, stock H1 sound to copy playback from,
-#:            active-RMS target dBFS)
+#:            active-RMS target dBFS[, sound class override])
 WEAPONS = {
     'energy_sword': {
         'dir': B.join(['sound', 'weapons', 'energy_sword_port']),
@@ -74,6 +75,25 @@ WEAPONS = {
                             ANIMS + B + 'ball_melee', -16.2),
             'sword_ready': (['sword_ready'], ANIMS + B + 'ball_ready', -13.1),
             'sword_pose': (['energy_sword_pose'], ANIMS + B + 'ball_posing', -20.0),
+            # the melee damage effect's sound, so a slash or lunge that HITS sounds like one
+            'sword_hit': (['sword_impact_character'], IMPACTS + B + 'melee_impact_fleshy',
+                          -14.0),
+            # Halo 3's idle hum: the LOOP of a sound_looping the weapon carries always
+            'sword_hum': (['sword_loop\\sword_loop\\loop'],
+                          B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'charge']), -27.0,
+                          'weapon_idle'),
+        },
+    },
+    # Halo 3's fuel rod is the flak_cannon; every sound it cues sits on frame 0
+    'fuel_rod': {
+        'dir': B.join(['sound', 'weapons', 'fuel_rod_port']),
+        'h3_dir': 'data\\sound\\weapons\\flak_cannon\\',
+        'sounds': {
+            'rod_ready': (['flak_cannon_ready'], ANIMS + B + 'plasrifle_ready', -13.1),
+            'rod_reload': (['flak_cannon_reload'], ANIMS + B + 'rocket_reload_e', -20.9),
+            'rod_pose': (['flak_cannon_posing_var1'], ANIMS + B + 'rocket_posing', -20.0),
+            'rod_melee': (['flak_cannon_melee'], ANIMS + B + 'fuelrod_melee', -16.2),
+            'rod_fire': (['flak_cannon_fire_animation'], ANIMS + B + 'rocket_fire', -18.0),
         },
     },
 }
@@ -105,7 +125,7 @@ def render(weapon):
     w = WEAPONS[weapon]
     idx = h3_index()
     out = {}
-    for name, (folders, _like, target) in w['sounds'].items():
+    for name, (folders, _like, target, *_cls) in w['sounds'].items():
         sets = []
         for f in folders:
             key = (w['h3_dir'] + f + '\\').lower()
@@ -140,6 +160,7 @@ def write_tags(weapon, audio):
     w = WEAPONS[weapon]
     for name, perms in audio.items():
         like = w['sounds'][name][1]
+        cls = (w['sounds'][name][3:] or [None])[0]
         rel = w['dir'] + B + name
         data = os.path.join(HCEEK, 'data', rel)
         shutil.rmtree(data, ignore_errors=True)
@@ -158,6 +179,8 @@ def write_tags(weapon, audio):
         ref = snd__def.build(filepath=os.path.join(TAGS, like + '.sound')).data.tagdata
         for f in COPY:
             setattr(dd, f, getattr(ref, f))
+        if cls:
+            dd.sound_class.set_to(cls)
         tps = [p for pr in dd.pitch_ranges.STEPTREE for p in pr.permutations.STEPTREE]
         if len(tps) != len(pcm):
             raise SystemExit('%s: %d permutations for %d wavs' % (name, len(tps), len(pcm)))

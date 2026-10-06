@@ -304,6 +304,22 @@ and only its OWN files + manifest in port_sounds\halo1 (h1_saw_sounds' bank step
 folder -- run port_sounds.py --write after either). Sword: melee, lunge, ready (ignition),
 posing. Balanced build note (user): a small radius on the lunge strike's damage.
 
+**Fifth round (2026-10-06): sounds complete, step 3, backups.** Fuel rod: Halo 3's own
+fuel rod sounds (flak_cannon ready / reload / posing / melee / fire foley, all cued at frame
+0 as Halo 3 does). Sword: Halo 3's IGNITION is not an animation cue -- the weapon's
+blade_activate effect plays sword_ready with a 0.6 s DELAY, so the H1 ready cues it at
+frame 18 (antr sound frame index); hit = the melee damage effect's sound (slash and lunge);
+hum = a sound_looping (the plasma rifle charge loop's shape) attached unscaled at `flare`,
+class weapon_idle. STEP 3 applied to a restored weapon: the Grunts' fuel rod fired the
+HUNTERS' projectile + explosion, which the enhancer's Hunter cards tune -- it now owns a
+same-valued chain (`grunt fuel rod` proj -> `effects\grunt explosion` -> `grunt explosion`
+jpt), verified separate in the built map. `port_backup.py --game h1` now carries the restored
+weapons' folders, sounds, every shared tag edited in place + its .before_pickable copy.
+Manual steps that do NOT apply to a restored weapon: 1/2 (own geometry, original), 4/4b
+(original numbers), 6 (no ammo item exists), glyphs (H1 has none). Still open: step 5 --
+enhancer cards / pools / starting picks for both (enhancer side), and the per-weapon
+balanced switch.
+
 **Open for the first boot**: does the dropped sword/fuel rod stay; the FP pose and grip
 (left hand vs the H1 fuel rod's front -- H3's hand is 13 cm ahead of the grip, the scaled
 model's own `cyborg left hand` marker 20 cm); overlay deltas (`moving`, aim `overlays`:
