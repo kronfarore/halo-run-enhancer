@@ -102,6 +102,10 @@ WEAPONS = {
         'lunge': {'template': r'weapons\plasma pistol\plasma pistol',
                   'strike': r'weapons\energy sword\lunge',          # projectile
                   'strike_from': r'weapons\assault rifle\bullet',
+                  # the strike's OWN damage (step 3): a copy of the sword's melee damage, so a
+                  # balance row (e.g. the balanced build's damage RADIUS) moves only the lunge,
+                  # not the regular melee and not the Elites' sword
+                  'strike_damage': r'weapons\energy sword\lunge strike',
                   'push': r'weapons\energy sword\lunge push',       # firing damage
                   'push_from': r'weapons\plasma pistol\trigger',
                   # first boot (2026-10-06): strike hit, shove did nothing with 0 damage
@@ -283,7 +287,10 @@ def make_lunge(w, a, write):
     ph.initial_velocity = ph.final_velocity = L['velocity']
     ph.air_gravity_scale = 0.0
     ph.flyby_sound.filepath = ''
-    ph.impact_damage.filepath = a.melee.player_damage.filepath     # the sword's own melee
+    if write:
+        shutil.copy2(path(a.melee.player_damage.filepath, '.damage_effect'),
+                     path(L['strike_damage'], '.damage_effect'))
+    ph.impact_damage.filepath = L['strike_damage']                # = the melee's values
     pd.proj_attrs.detonation.maximum_range = L['range']
     hit = ''
     if L.get('hit_effect') and w.get('hit_sound'):
