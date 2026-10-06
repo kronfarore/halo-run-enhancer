@@ -34,6 +34,7 @@ B = '\\'
 SWORD = B.join(['weapons', 'energy sword', 'energy sword'])
 STRIKE = B.join(['weapons', 'energy sword', 'lunge strike'])
 ROD = B.join(['weapons', 'fuel rod gun', 'fuel rod'])
+ROD_BLAST = B.join(['weapons', 'fuel rod gun', 'grunt explosion'])
 
 
 RENAMED = ('Energy Sword',)
@@ -53,8 +54,8 @@ ENTRIES = [
     {'weapon': 'Energy Blade', 'source': 'Halo 1', 'donor': None, 'default_on': False,
      'desc': "The Elites' energy sword, made pickable: Halo 3's first-person animations "
              "and sounds, Halo 1's own sword. Fire lunges (costs energy), melee slashes.",
-     'balance_desc': 'Stronger lunge aim assist (15 deg / 3.5 wu autoaim, 15 deg / 8 wu '
-                     'magnetism) and a wider lunge hit (radius 1.0).',
+     'balance_desc': 'One lunge kills an Elite (420 damage), 20 lunges per charge, stronger '
+                     'lunge aim assist (15 deg / 3.5 wu, 15 deg / 8 wu) and a wider lunge hit.',
      'fp_animations': B.join(['weapons', 'energy sword', 'fp', 'fp']),
      # the lunge strike exists only in the player build
      'requires': ['proj ' + B.join(['weapons', 'energy sword', 'lunge'])],
@@ -66,17 +67,36 @@ ENTRIES = [
          row('weap', SWORD, 'Magnetism Range', 8.0, 6.0, 'Lunge aim assist'),
          row('jpt!', STRIKE, 'Radius', 1.0, 0.5, 'Lunge damage radius'),
          row('jpt!', STRIKE, 'Radius Max', 1.0, 0.5, 'Lunge damage radius'),
+         # step 5b (h1_role_compare.py energy_blade, user-approved 2026-10-06): the lunge
+         # kills like Halo 3's -- 420 is one lunge through an Elite commander on legendary
+         # (280 shield + 140 body; every material x1); the slash stays 151
+         row('jpt!', STRIKE, 'Damage Lower Bound', 420.0, 151.0, 'Lunge damage'),
+         row('jpt!', STRIKE, 'Damage Upper Bound', 420.0, 151.0, 'Lunge damage'),
+         row('jpt!', STRIKE, 'Damage Upper Bound Max', 420.0, 151.0, 'Lunge damage'),
+         # Halo 1 charges energy per swing where Halo 3 charges per kill: 20 lunges, not 10
+         row('weap', SWORD, 'Age Generated Per Round', 0.05, 0.1, 'Energy per lunge',
+             block='Triggers'),
      ]},
     {'weapon': 'Flak Cannon', 'source': 'Halo 1', 'donor': 'Rocket Launcher', 'default_on': False,
      'desc': "The Grunts' fuel rod, made pickable: Halo 3's first-person animations and "
              "sounds on the original gun. Hold fire to charge; it fires when full.",
-     'balance_desc': 'Instant fire, no charge (the Grunts\' fuel rods fire instantly too).',
+     'balance_desc': 'Instant fire at 2.5 rods/s and it hurts Hunters (the Grunts\' fuel '
+                     'rods change the same way).',
      'fp_animations': B.join(['weapons', 'fuel rod gun', 'fp', 'fp']),
      # its own projectile (step 3) exists only in the player build
      'requires': ['proj ' + B.join(['weapons', 'fuel rod gun', 'grunt fuel rod'])],
      'anims': {},
      'balance': [
          row('weap', ROD, 'Charging Time', 0.0, 1.25, 'Charging Time', block='Triggers'),
+         # step 5b (h1_role_compare.py flak_cannon, user-approved 2026-10-06): charge 0 alone
+         # leaves the AI tag's 10 rounds/s -- as fast as one can click; Halo 3's fuel rod
+         # fires at most every 0.4 s
+         row('weap', ROD, 'Rounds Per Second', 2.5, 10.0, 'Rate of Fire', block='Triggers'),
+         row('weap', ROD, 'Rounds Per Second Max', 2.5, 10.0, 'Rate of Fire', block='Triggers'),
+         # the explosion does x0 to Hunters (Bungie's guard against Grunts hurting them);
+         # the rocket launcher does x1. Grunts' fuel rods can then hurt Hunters too.
+         row('jpt!', ROD_BLAST, 'Hunter Armor', 1.0, 0.0, 'Hunter damage'),
+         row('jpt!', ROD_BLAST, 'Hunter Skin', 1.0, 0.0, 'Hunter damage'),
      ]},
 ]
 

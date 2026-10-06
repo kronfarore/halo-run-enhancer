@@ -481,7 +481,7 @@
    "donor": null,
    "default_on": false,
    "desc": "The Elites' energy sword, made pickable: Halo 3's first-person animations and sounds, Halo 1's own sword. Fire lunges (costs energy), melee slashes.",
-   "balance_desc": "Stronger lunge aim assist (15 deg / 3.5 wu autoaim, 15 deg / 8 wu magnetism) and a wider lunge hit (radius 1.0).",
+   "balance_desc": "One lunge kills an Elite (420 damage), 20 lunges per charge, stronger lunge aim assist (15 deg / 3.5 wu, 15 deg / 8 wu) and a wider lunge hit.",
    "fp_animations": "weapons\\energy sword\\fp\\fp",
    "requires": [
     "proj weapons\\energy sword\\lunge"
@@ -541,6 +541,42 @@
      "value": 1.0,
      "card": "Lunge damage radius",
      "original": 0.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\energy sword\\lunge strike",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 420.0,
+     "card": "Lunge damage",
+     "original": 151.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\energy sword\\lunge strike",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 420.0,
+     "card": "Lunge damage",
+     "original": 151.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\energy sword\\lunge strike",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 420.0,
+     "card": "Lunge damage",
+     "original": 151.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\energy sword\\energy sword",
+     "field": "Age Generated Per Round",
+     "block": "Triggers",
+     "value": 0.05,
+     "card": "Energy per lunge",
+     "original": 0.1
     }
    ]
   },
@@ -550,7 +586,7 @@
    "donor": "Rocket Launcher",
    "default_on": false,
    "desc": "The Grunts' fuel rod, made pickable: Halo 3's first-person animations and sounds on the original gun. Hold fire to charge; it fires when full.",
-   "balance_desc": "Instant fire, no charge (the Grunts' fuel rods fire instantly too).",
+   "balance_desc": "Instant fire at 2.5 rods/s and it hurts Hunters (the Grunts' fuel rods change the same way).",
    "fp_animations": "weapons\\fuel rod gun\\fp\\fp",
    "requires": [
     "proj weapons\\fuel rod gun\\grunt fuel rod"
@@ -565,6 +601,42 @@
      "value": 0.0,
      "card": "Charging Time",
      "original": 1.25
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\fuel rod gun\\fuel rod",
+     "field": "Rounds Per Second",
+     "block": "Triggers",
+     "value": 2.5,
+     "card": "Rate of Fire",
+     "original": 10.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\fuel rod gun\\fuel rod",
+     "field": "Rounds Per Second Max",
+     "block": "Triggers",
+     "value": 2.5,
+     "card": "Rate of Fire",
+     "original": 10.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\fuel rod gun\\grunt explosion",
+     "field": "Hunter Armor",
+     "block": null,
+     "value": 1.0,
+     "card": "Hunter damage",
+     "original": 0.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\fuel rod gun\\grunt explosion",
+     "field": "Hunter Skin",
+     "block": null,
+     "value": 1.0,
+     "card": "Hunter damage",
+     "original": 0.0
     }
    ],
    "tag_map": {

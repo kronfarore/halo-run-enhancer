@@ -156,40 +156,53 @@ def weapon(label, rel, mode, overrides):
                       else None)
         out['rounds_per_shot'] = tr.firing.rounds_per_shot
         out['reload'] = anim_seconds(fp, ('first-person reload-empty', 'first-person reload-full'))
-    for k, v in overrides.items():
-        if k == 'charge':
-            out['charge'] = v
-            out['interval'] = max(1.0 / out['rps'] if out.get('rps') else 0.0, v)
-        elif k == 'aim':
-            out['aim'] = tuple(n if n is not None else o for n, o in zip(v, out['aim']))
-        elif k == 'radius':
-            for dd in out['damage']:
-                if dd['tag'] == v[0]:
-                    dd['radius'] = v[1]
+    apply_rows(out, overrides)
     return out
 
 
+AIM = ('Autoaim Angle', 'Autoaim Range', 'Magnetism Angle', 'Magnetism Range')
+
+
+def apply_rows(out, rows):
+    """Catalog balance rows over one computed weapon, for the fields that change a time to
+    kill or the role table: trigger rate / charge, aim assist, damage, splash, per-material
+    modifiers. (Energy, ammo, animation rows do not enter the simulation.)"""
+    aim = list(out['aim'])
+    for r in rows:
+        f, v = r['field'], r['value']
+        if r['class'] == 'weap':
+            if f == 'Charging Time':
+                out['charge'] = v
+            elif f in ('Rounds Per Second', 'Rounds Per Second Max'):
+                out['rps'] = v if f == 'Rounds Per Second Max' else max(v, out.get('rps') or 0)
+            elif f in AIM:
+                aim[AIM.index(f)] = v
+        elif r['class'] == 'jpt!':
+            for d in out['damage']:
+                if d['tag'].lower() != r['tag'].lower():
+                    continue
+                if f == 'Radius':
+                    d['radius'] = (v, d['radius'][1])
+                elif f == 'Radius Max':
+                    d['radius'] = (d['radius'][0], v)
+                elif f in ('Damage Upper Bound', 'Damage Upper Bound Max'):
+                    d['dmg'] = v                           # both bounds are written alike
+                else:
+                    key = f.lower().replace(' ', '_')
+                    if key in d['mods']:
+                        d['mods'][key] = v
+    out['aim'] = tuple(aim)
+    if out['mode'] != 'melee':
+        out['interval'] = 1.0 / out['rps'] if out.get('rps') else 0.0
+        if out['charge']:
+            out['interval'] = max(out['interval'], out['charge'])
+
+
 def balanced_overrides(port):
-    """catalog balance rows this tool can apply -> {label-free override}"""
+    """The port's catalog balance rows (Halo 1)."""
     cat = json.load(open(CATALOG, encoding='utf-8'))
     e = next((x for x in cat.get('Halo 1', []) if x['weapon'] == port), None)
-    if e is None:
-        return {}
-    o, aim = {}, [None] * 4
-    radius = {}
-    for r in e.get('balance', []):
-        f = r['field']
-        if f == 'Charging Time':
-            o['charge'] = r['value']
-        elif f in ('Autoaim Angle', 'Autoaim Range', 'Magnetism Angle', 'Magnetism Range'):
-            aim[('Autoaim Angle', 'Autoaim Range', 'Magnetism Angle', 'Magnetism Range').index(f)] = r['value']
-        elif f in ('Radius', 'Radius Max'):
-            radius.setdefault(r['tag'], [None, None])[f == 'Radius Max'] = r['value']
-    if any(x is not None for x in aim):
-        o['aim'] = tuple(aim)
-    for tag, (a, b) in radius.items():
-        o['radius'] = (tag, (a, b))
-    return o
+    return e.get('balance', []) if e else []
 
 
 def scales():
@@ -248,8 +261,8 @@ def main():
     ap.add_argument('--balanced', action='store_true')
     a = ap.parse_args()
     s = SETS[a.set]
-    over = balanced_overrides(s['port']) if a.balanced else {}
-    rows = [weapon(lbl, rel, mode, over if '(restored)' in lbl else {})
+    over = balanced_overrides(s['port']) if a.balanced else []
+    rows = [weapon(lbl, rel, mode, over if '(restored)' in lbl else [])
             for lbl, rel, mode in s['weapons']]
     print('%s%s\n' % (s['port'], '  -- BALANCED rows applied' if a.balanced else ''))
     print('%-26s %8s %7s %8s %6s %5s %6s %6s  %s' % ('weapon', 'damage', 'splash', 'interval',
