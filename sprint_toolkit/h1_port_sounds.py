@@ -65,13 +65,15 @@ PR = B.join(['sound', 'sfx', 'weapons', 'plasma rifle'])
 SG = B.join(['sentinel_gun', 'sent_gun', ''])
 OH = B.join(['sentinel_beam_overheat', 'beam_overheat', ''])
 IMPACTS = B.join(['sound', 'sfx', 'impulse', 'melee'])
-#: weapon -> tag folder (never under sound\sfx) and its sounds:
+#: weapon -> its weapon_ports_catalog.json name (`catalog`: the manifest's 'weapon', which
+#: the enhancer keys its volume knobs by), tag folder (never under sound\sfx), sounds:
 #:   name -> (Halo 3 sound folders mixed together, stock H1 sound to copy playback from,
 #:            active-RMS target dBFS[, sound class override])
 #:   a folder given as a TUPLE is its pieces played one after another (permutation 1 of
 #:   each): Halo 3's in/loop/out sound_looping parts as one Halo 1 one-shot
 WEAPONS = {
     'energy_sword': {
+        'catalog': 'Energy Blade',
         'dir': B.join(['sound', 'weapons', 'energy_sword_port']),
         'h3_dir': 'data\\sound\\weapons\\energy_sword\\',
         'sounds': {
@@ -91,6 +93,7 @@ WEAPONS = {
     },
     # Halo 3's fuel rod is the flak_cannon; every sound it cues sits on frame 0
     'fuel_rod': {
+        'catalog': 'Flak Cannon',
         'dir': B.join(['sound', 'weapons', 'fuel_rod_port']),
         'h3_dir': 'data\\sound\\weapons\\flak_cannon\\',
         'sounds': {
@@ -106,6 +109,7 @@ WEAPONS = {
     # the weapon's illumination; the overheat is in + loop + out as one 2.4 s one-shot on
     # the overheated effect (the vent is 2.2 s)
     'sentinel_beam': {
+        'catalog': 'Sentinel Beam',
         'dir': B.join(['sound', 'weapons', 'sentinel_beam_port']),
         'h3_dir': 'data\\sound\\characters\\sentinel\\',
         'sounds': {
@@ -264,7 +268,7 @@ def write_bank(weapon, audio):
         tag = w['dir'] + B + name
         sounds.append({'tag': tag, 'perms': files, 'aliases': [tag]})
     man = os.path.join(BANK_DIR, 'port_%s.json' % weapon)
-    json.dump({'game': 'Halo 1', 'weapon': weapon, 'rate': RATE, 'sounds': sounds},
+    json.dump({'game': 'Halo 1', 'weapon': w['catalog'], 'rate': RATE, 'sounds': sounds},
               open(man, 'w'), indent=1)
     print('   bank %s (%d sounds)' % (man, len(sounds)))
 
