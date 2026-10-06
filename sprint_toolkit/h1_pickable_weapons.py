@@ -125,6 +125,10 @@ WEAPONS = {
     },
     'fuel_rod': {
         'weapon': r'weapons\fuel rod gun\fuel rod',
+        # a10 has no Grunt fuel rod (its palette carries only the Hunters'): palette entry
+        # + resident-only placement there too, so the enhancer can offer it (user,
+        # 2026-10-06); the other nine levels carry it already
+        'palette_levels': ['a10'],
         'fp_model': r'weapons\fuel rod gun\fp\fp',
         'fp_anims': r'weapons\fuel rod gun\fp\fp',
         'teach': ('fr', 'pc'),
