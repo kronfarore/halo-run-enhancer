@@ -111,7 +111,13 @@ WEAPONS = {
                   # aim assist stays the original; stronger lunge assist = balanced build.
                   # third boot: the user settled on -10 live
                   'range': 1.5, 'velocity': 60.0, 'acceleration': -10.0, 'push_damage': 0.01,
-                  'energy': 0.1, 'rate': 1.0},
+                  'energy': 0.1, 'rate': 1.0,
+                  # the strike's HIT sound (user, 2026-10-06: the lunge hit silently -- a
+                  # damage effect's sound plays for melee, not for a projectile's impact):
+                  # a one-part impact effect, the AR's `impact dirt` without its decal,
+                  # on every material response
+                  'hit_effect': (r'weapons\assault rifle\effects\impact dirt',
+                                 r'weapons\energy sword\effects\lunge hit')},
     },
     'fuel_rod': {
         'weapon': r'weapons\fuel rod gun\fuel rod',
@@ -279,8 +285,21 @@ def make_lunge(w, a, write):
     ph.flyby_sound.filepath = ''
     ph.impact_damage.filepath = a.melee.player_damage.filepath     # the sword's own melee
     pd.proj_attrs.detonation.maximum_range = L['range']
-    for m in pd.proj_attrs.material_responses.STEPTREE:           # no bullet holes
-        m.effect.filepath = ''
+    hit = ''
+    if L.get('hit_effect') and w.get('hit_sound'):
+        from reclaimer.hek.defs.effe import effe_def
+        src, hit = L['hit_effect']
+        et = effe_def.build(filepath=path(src, '.effect'))
+        parts = et.data.tagdata.events.STEPTREE[0].parts.STEPTREE
+        for i in reversed(range(len(parts))):
+            if parts[i].type.tag_class.enum_name != 'sound':
+                parts.pop(i)
+        if len(parts) != 1:
+            raise SystemExit('%s: want exactly one sound part' % src)
+        parts[0].type.filepath = w['hit_sound']
+        save(et, path(hit, '.effect'), write)
+    for m in pd.proj_attrs.material_responses.STEPTREE:     # no bullet holes; the sword's hit
+        m.effect.filepath = hit
         m.potential_response.effect.filepath = ''
         m.detonation_effect.filepath = ''
     save(pt, path(L['strike'], '.projectile'), write)
