@@ -101,7 +101,7 @@ WEAPONS = {
         # toward the player's right (-y in the gun's space), JMS units / 100. Full strength
         # within 6 units of its idle grip, none beyond 14 (the reloads leave the gun).
         'grip_node': 'gun',
-        'left_hand_offset': ((0.0, -0.02, 0.0), 0.06, 0.14),
+        'left_hand_offset': ((0.05, -0.02, 0.0), 0.06, 0.14),
         'anims': {
             'first_person:idle': 'first-person idle',
             'first_person:ready': 'first-person ready',

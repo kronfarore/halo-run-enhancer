@@ -33,6 +33,7 @@ Maps must be REBUILT afterwards (h1_rebuild_all.py): every change here is a kit 
     python h1_pickable_weapons.py --write
 """
 import argparse
+import math
 import copy
 import os
 import shutil
@@ -68,10 +69,15 @@ WEAPONS = {
         # in game, 2026-10-05): the sword gets its own appended pair, like the SAW's 47/48
         'messages': ('Picked up an energy sword', 'Picked up %d rounds for energy sword'),
         'icon': 'energy sword',                  # hud_msg_icons sequence (add_msg_icon.py)
-        # the plasma pistol's HUD: its crosshair, and its BATTERY bar (age) is the sword's
-        # energy. The heat half of `master plasma` stays empty (the sword makes no heat).
+        # the plasma pistol's HUD, whose BATTERY bar (age) is the sword's energy (the heat
+        # half of `master plasma` stays empty: the sword makes no heat), with HALO 3's sword
+        # reticle (hud_reticles #13) brought in by h1_add_reticle.py
         'hud': {'donor': r'weapons\plasma pistol\plasma pistol',
-                'out': r'weapons\energy sword\energy sword'},
+                'out': r'weapons\energy sword\energy sword',
+                'reticle': ('hud_reticles', 13, 'energy sword')},
+        # aim assist: Halo 3's sword (degrees, wu) -- the AI-only tag had none
+        'aiming': {'autoaim_angle': 10.0, 'autoaim_range': 2.5,
+                   'magnetism_angle': 10.0, 'magnetism_range': 6.0},
         # THE LUNGE (fire button), experimental: Halo 1 has no player lunge. A trigger
         # fires an invisible strike that dies after LUNGE_RANGE and does the sword's own
         # melee damage, and its firing damage on the wielder carries an instantaneous
@@ -83,7 +89,9 @@ WEAPONS = {
                   'strike_from': r'weapons\assault rifle\bullet',
                   'push': r'weapons\energy sword\lunge push',       # firing damage
                   'push_from': r'weapons\plasma pistol\trigger',
-                  'range': 1.5, 'velocity': 60.0, 'acceleration': 3.0,
+                  # first boot (2026-10-06): strike hit, shove did nothing with 0 damage
+                  # and every material modifier 0 -- now a token 0.01 damage, modifiers 1
+                  'range': 1.5, 'velocity': 60.0, 'acceleration': 3.0, 'push_damage': 0.01,
                   'energy': 0.1, 'rate': 1.0},
     },
     'fuel_rod': {
@@ -99,11 +107,18 @@ WEAPONS = {
         'melee': (r'weapons\plasma_cannon\effects\plasma_cannon_melee',
                   r'weapons\fuel rod gun\melee'),
         'melee_response': r'weapons\plasma_cannon\effects\plasma_cannon_melee_response',
-        # the ROCKET LAUNCHER's HUD (user, 2026-10-05: the original has none), its two
-        # rockets redrawn as four (h1_rocket_meter.py), and the fuel rod's own icon
-        'hud': {'donor': r'weapons\rocket launcher\rocket_launcher',
+        # HUD (user, 2026-10-06): the PC fuel rod's own -- its crosshair is the right one --
+        # on `master rounds`, with the RL's loaded-ammo elements drawing HALO 3's fuel rod
+        # meter, four of its rods (h1_rocket_meter.py h3_rods)
+        'hud': {'donor': r'weapons\plasma_cannon\plasma_cannon',
+                'readout': r'weapons\rocket launcher\rocket_launcher',
                 'out': r'weapons\fuel rod gun\fuel rod',
-                'meter': r'weapons\fuel rod gun\bitmaps\fuel_rod_rockets'},
+                'meter': r'weapons\fuel rod gun\bitmaps\fuel_rod_rods', 'art': 'h3_rods'},
+        # the AI-only tag fired with rounds_per_shot 0 (never spent a round, never reloaded)
+        # and had no aim assist; Halo 3's fuel rod values (degrees, wu)
+        'rounds_per_shot': 1,
+        'aiming': {'autoaim_angle': 4.0, 'autoaim_range': 25.0,
+                   'magnetism_angle': 6.0, 'magnetism_range': 25.0},
         'icon': 'fuel rod',
         # the fuel rod Grunts dropped it EMPTY (actv drop_weapon_loaded 0..0, ammo 0..0 --
         # it detonated anyway); a plasma pistol Grunt drops 70-90%
@@ -163,31 +178,40 @@ def make_hud(w, key, write):
     h = w['hud']
     t = wphi_def.build(filepath=path(h['donor'], '.weapon_hud_interface'))
     d = t.data.tagdata
-    if 'meter' in h:                       # fuel rod: the RL's rockets, redrawn as four
+    if 'meter' in h:                     # fuel rod: magazine readout in the RL's frame
         import ammo_meter
         import h1_rocket_meter
         mag = 4
+        ro = wphi_def.build(filepath=path(h['readout'], '.weapon_hud_interface')).data.tagdata
+        d.child_hud.filepath = ro.child_hud.filepath              # master plasma -> rounds
         for name, field, suffix in (('static_elements', 'interface_bitmap', '_alphas'),
                                     ('meter_elements', 'meter_bitmap', '_meters')):
-            for e in getattr(d, name).STEPTREE:
+            dst = getattr(d, name).STEPTREE
+            dst[:] = []
+            for e in getattr(ro, name).STEPTREE:
                 if e.state_attached_to.enum_name != 'loaded_ammo':
                     continue
+                e = copy.deepcopy(e)
                 getattr(e, field).filepath = h['meter'] + suffix
                 e.sequence_index = h1_rocket_meter.SEQ
                 if name == 'meter_elements':             # ammo_meter.plan: see saw_weapon
                     e.alpha_multiplier = ammo_meter.plan(mag)[3]
                     e.alpha_bias = 1
                     e.value_scale = 0
-        # the RL's two zoom (scope) crosshairs: the fuel rod has no zoom
-        ch = d.crosshairs.STEPTREE
-        for i in reversed(range(len(ch))):
-            if ch[i].crosshair_type.enum_name == 'zoom':
-                ch.pop(i)
+                dst.append(e)
         fc = d.flash_cutoffs
+        fc.heat_cutoff = 0
         fc.loaded_ammo_cutoff = 1
         fc.total_ammo_cutoff = 4
         if write:
-            h1_rocket_meter.build(mag, h['meter'])
+            h1_rocket_meter.build(mag, h['meter'], h.get('art', 'rockets'))
+    if 'reticle' in h:                   # a Halo 3 reticle, into Halo 1's sheet
+        import h1_add_reticle
+        seq = h1_add_reticle.add(*h['reticle']) if write else -1
+        for c in d.crosshairs.STEPTREE:
+            if c.crosshair_type.enum_name == 'aim':
+                for o in c.crosshair_overlays.STEPTREE:
+                    o.sequence_index = seq
     d.messaging_information.sequence_index = icon_sequence(w['icon'])
     save(t, path(h['out'], '.weapon_hud_interface'), write)
     return h['out']
@@ -215,7 +239,13 @@ def make_lunge(w, a, write):
     save(pt, path(L['strike'], '.projectile'), write)
     # the shove: a zero-damage firing effect whose instantaneous acceleration is the lunge
     jt = jpt__def.build(filepath=path(L['push_from'], '.damage_effect'))
-    jt.data.tagdata.damage.instantaneous_acceleration = L['acceleration']
+    dm = jt.data.tagdata.damage
+    dm.instantaneous_acceleration = L['acceleration']
+    dm.damage_lower_bound = L['push_damage']
+    dm.damage_upper_bound[0] = dm.damage_upper_bound[1] = L['push_damage']
+    mods = jt.data.tagdata.damage_modifiers
+    for k in mods.desc['NAME_MAP']:
+        setattr(mods, k, 1.0)
     save(jt, path(L['push'], '.damage_effect'), write)
     mags = a.magazines.STEPTREE
     mags[:] = []
@@ -275,6 +305,11 @@ def edit_weapon(key, write):
         a.interface.hud_interface.filepath = make_hud(w, key, write)
     if 'lunge' in w:
         make_lunge(w, a, write)
+    if 'rounds_per_shot' in w:
+        for tr in a.triggers.STEPTREE:
+            tr.firing.rounds_per_shot = w['rounds_per_shot']
+    for k, v in w.get('aiming', {}).items():
+        setattr(a.aiming, k, math.radians(v) if k.endswith('_angle') else v)
     print('   -> flags %s | fp %s | anims %s | hud %s | melee %s | message %d | triggers %d'
           % ([f for f in a.flags.NAME_MAP if a.flags.get(f)],
              a.interface.first_person_model.filepath,

@@ -86,13 +86,70 @@ def redraw(region, n, meter):
     return out
 
 
-def build(n, out_base):
+def h3_rod():
+    """One rod of Halo 3's fuel rod meter (ballistic_meters #17: five rods stacked, alpha =
+    the art), as an alpha array, plus the H3 rod pitch as a fraction of its height."""
+    import h3_hud_art
+    art, _reg = h3_hud_art.sprite('ballistic_meters', 17)
+    a = np.array(art.split()[3])
+    rows = a.max(axis=1) > 8
+    bands, y = [], 0
+    while y < len(rows):
+        if rows[y]:
+            y0 = y
+            while y < len(rows) and rows[y]:
+                y += 1
+            bands.append((y0, y))
+        y += 1
+    y0, y1 = bands[0]
+    cols = np.where(a[y0:y1].max(axis=0) > 8)[0]
+    rod = a[y0:y1, cols[0]:cols[-1] + 1]
+    pitch = (bands[1][0] - bands[0][0]) / float(y1 - y0) if len(bands) > 1 else 1.25
+    return rod, pitch
+
+
+def redraw_rods(region, n, meter):
+    """The ORIGINAL fuel rod readout (user, 2026-10-06): Halo 3's rods, n of them stacked
+    top to bottom like Halo 3 draws them, scaled to fill the region's height, left-aligned
+    where the RL's first rocket starts. Halo 3 counts its thresholds down from the top,
+    so the TOP rod has the highest threshold and goes out first."""
+    h, w, _ = region.shape
+    (a0, a1), _ = _cells(region[..., 1])
+    # the frame is the RL rocket's own height in THIS sheet, so the static silhouettes and
+    # the meter come out the same size, as the RL's two rockets do
+    rows = np.where(region[:, a0:a1, 1].max(axis=1) > 8)[0]
+    fy0, fy1 = rows[0], rows[-1] + 1
+    rod, pitch = h3_rod()
+    rh = max(2, int((fy1 - fy0) / (1 + (n - 1) * pitch)))
+    rw = max(2, round(rod.shape[1] * rh / rod.shape[0]))
+    small = np.array(Image.fromarray(rod).resize((rw, rh), Image.LANCZOS))
+    step = rh * pitch
+    top0 = fy0 + ((fy1 - fy0) - (rh + (n - 1) * step)) / 2.0
+    out = np.zeros_like(region)
+    for k in range(n):                       # k = 0 top
+        y = int(round(top0 + k * step))
+        sl = (slice(y, y + rh), slice(a0, a0 + rw))
+        out[sl + (1,)] = np.maximum(out[sl + (1,)], small)
+        if not meter:
+            out[sl + (0,)] = np.where(small > 0, 255, out[sl + (0,)])
+    if meter:
+        for y in range(h):                   # every row belongs to its nearest rod
+            k = min(n - 1, max(0, int(round((y - top0 - rh / 2.0) / step))))
+            out[y, :, 0] = ammo_meter.threshold(n - k, n)
+    return out
+
+
+ART = {'rockets': redraw, 'h3_rods': redraw_rods}
+
+
+def build(n, out_base, art='rockets'):
+    redraw_fn = ART[art]
     written = []
     # static silhouettes: bitmap SEQ of hud_ammo_alphas, a standalone 512x64 sheet
     t, d = _load('hud_ammo_alphas')
     bi = d.sequences.STEPTREE[SEQ].first_bitmap_index
     bm, px = _pixels(d, bi)
-    _store(d, bi, redraw(px, n, meter=False))
+    _store(d, bi, redraw_fn(px, n, meter=False))
     t.filepath = os.path.join(TAGS, out_base + '_alphas.bitmap')
     os.makedirs(os.path.dirname(t.filepath), exist_ok=True)
     t.serialize(temp=False, backup=False)
@@ -103,7 +160,7 @@ def build(n, out_base):
     bm, px = _pixels(d, sp.bitmap_index)
     x0, x1 = int(round(sp.left_side * bm.width)), int(round(sp.right_side * bm.width))
     y0, y1 = int(round(sp.top_side * bm.height)), int(round(sp.bottom_side * bm.height))
-    px[y0:y1, x0:x1] = redraw(px[y0:y1, x0:x1], n, meter=True)
+    px[y0:y1, x0:x1] = redraw_fn(px[y0:y1, x0:x1], n, meter=True)
     _store(d, sp.bitmap_index, px)
     t.filepath = os.path.join(TAGS, out_base + '_meters.bitmap')
     t.serialize(temp=False, backup=False)
@@ -113,11 +170,11 @@ def build(n, out_base):
                ((0, 8), (0, 0))),
         px[y0:y1, :, 1], px[y0:y1, :, 0]], axis=0))
     os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)
-    prev.save(os.path.join(HERE, 'out', 'rocket_meter_%d.png' % n))
+    prev.save(os.path.join(HERE, 'out', '%s_meter_%d.png' % (art, n)))
     return written
 
 
 if __name__ == '__main__':
-    for p in build(int(sys.argv[1]), sys.argv[2]):
+    for p in build(int(sys.argv[1]), sys.argv[2], *sys.argv[3:4]):
         print(p)
     print('alpha_multiplier %d, alpha_bias 1, sequence %d' % (ammo_meter.plan(int(sys.argv[1]))[3], SEQ))

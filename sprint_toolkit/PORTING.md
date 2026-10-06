@@ -269,6 +269,20 @@ Sword: plasma pistol HUD (crosshair + battery = energy) and an EXPERIMENTAL lung
 an invisible 1.5 wu strike with the sword's melee damage plus a firing damage with
 instantaneous acceleration 3.0 on the wielder (direction not yet seen), 0.1 energy each.
 
+**Second dry test (a50, 2026-10-06), and what changed:** the shove did nothing (strike hit)
+-- its damage effect was the plasma pistol trigger's, 0 damage with every material
+modifier 0; now 0.01 damage, modifiers 1. Both weapons carry Halo 3's aim assist (sword
+autoaim 10 deg / 2.5 wu, magnetism 10 deg / 6 wu; fuel rod 4 / 25, 6 / 25) -- the AI-only
+tags had none. The fuel rod fired with `rounds_per_shot 0` (never spent a round, never
+reloaded): now 1; Grunts have NO fuel rod reload animation, so watch them. Fuel rod HUD =
+the PC fuel rod's (its crosshair, the user's pick) + Halo 3's rod meter (ballistic_meters
+#17, four rods, `h1_rocket_meter.py ... h3_rods`); sword reticle = Halo 3's
+(hud_reticles #13, `h1_add_reticle.py`, scale x123/97 from the two fuel rod reticles).
+H3 HUD sheets are read with `h3_hud_art.py` (largest tgda chunk; H3EK's exporter fails).
+A PLACED weapon's ammo is the scenario placement's own Rounds Left/Loaded: 0/0 spawns it
+empty (Bungie's placements all carry counts; a50's test row is 0/0).
+The fuel rod's hold-to-fire is the stock AI trigger (1.25 s charge, discharge).
+
 **Open for the first boot**: does the dropped sword/fuel rod stay; the FP pose and grip
 (left hand vs the H1 fuel rod's front -- H3's hand is 13 cm ahead of the grip, the scaled
 model's own `cyborg left hand` marker 20 cm); overlay deltas (`moving`, aim `overlays`:
