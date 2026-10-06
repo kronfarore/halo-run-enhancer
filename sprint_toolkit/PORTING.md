@@ -297,7 +297,7 @@ no FP slot that plays during a charge. Rod meter in one row (`h3_rods_row`).
 silent for its first 0.45 s (timed to the Elite's wind-up), so the first-person slash and
 lunge sounded 0.3 s late. `h1_port_sounds.py <weapon>` is the GENERIC Halo 1 own-sounds
 tool (the SAW's h1_saw_sounds.py stays SAW-only): Halo 3 audio straight from MCC's
-`halo3mod\pc\sfx.fsb` (its `.info` names every subsong's source file; vgmstream
+`halo3\fmod\pc\sfx.fsb` (its `.info` names every subsong's source file; vgmstream
 decodes), several H3 sounds MIXED where H3 cues them on one frame (lunge = hum + cloth),
 22 kHz mono at the stock level, stock-shaped ADPCM tags under `sound\weapons\<x>_port`,
 and only its OWN files + manifest in port_sounds\halo1 (h1_saw_sounds' bank step wipes that
