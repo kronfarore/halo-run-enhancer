@@ -675,7 +675,44 @@
     "proj weapons\\sentinel beam\\beam"
    ],
    "anims": {},
-   "balance": [],
+   "balance": [
+    {
+     "class": "weap",
+     "tag": "weapons\\sentinel beam\\sentinel beam",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 25.0,
+     "card": "Aim assist",
+     "original": 12.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\sentinel beam\\sentinel beam",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 12.0,
+     "card": "Aim assist",
+     "original": 9.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\sentinel beam\\sentinel beam",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 25.0,
+     "card": "Aim assist",
+     "original": 18.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\sentinel beam\\sentinel beam",
+     "field": "Age Generated Per Round",
+     "block": "Triggers",
+     "value": 0.006,
+     "card": "Battery per round",
+     "original": 0.012
+    }
+   ],
    "tag_map": {
     "proj weapons\\plasma rifle\\bolt": "proj weapons\\sentinel beam\\beam",
     "jpt! weapons\\plasma rifle\\bolt": "jpt! weapons\\sentinel beam\\beam",
@@ -687,7 +724,8 @@
    "skip_cards": [
     "Ramp Up",
     "Salvo Shooting"
-   ]
+   ],
+   "balance_desc": "Halo 1-style aim assist (1 deg / 25 wu autoaim, 12 deg / 25 wu magnetism) and Halo 3's battery: 11 s of fire instead of 5.6 s."
   }
  ],
  "Halo 3": [

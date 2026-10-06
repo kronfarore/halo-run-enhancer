@@ -36,6 +36,7 @@ STRIKE = B.join(['weapons', 'energy sword', 'lunge strike'])
 ROD = B.join(['weapons', 'fuel rod gun', 'fuel rod'])
 ROD_BLAST = B.join(['weapons', 'fuel rod gun', 'grunt explosion'])
 GRUNT_ROD = B.join(['characters', 'grunt', 'grunt specops fuel rod'])
+SB = B.join(['weapons', 'sentinel beam', 'sentinel beam'])
 
 
 RENAMED = ('Energy Sword',)
@@ -109,15 +110,30 @@ ENTRIES = [
     # a FULL PORT from Halo 3 (2026-10-06, tested on c40 over 12 boots): Halo 1's Sentinels
     # carry no droppable weapon, so their death effect drops it (user's option B) -- it is
     # obtainable on the levels with Sentinels. Built on a copy of the plasma rifle, whose
-    # cards it takes. No balance rows: its numbers are Halo 3's by the ratio rule.
+    # cards it takes.
     {'weapon': 'Sentinel Beam', 'source': 'Halo 3', 'donor': 'Plasma Rifle', 'default_on': False,
      'desc': "Halo 3's Sentinel Beam: its model, first-person animations and sounds. "
              "Dropped by Sentinels when they die. A continuous beam on heat and battery.",
+     'balance_desc': "Halo 1-style aim assist (1 deg / 25 wu autoaim, 12 deg / 25 wu "
+                     "magnetism) and Halo 3's battery: 11 s of fire instead of 5.6 s.",
      'fp_animations': B.join(['weapons', 'sentinel beam', 'fp', 'fp']),
      # the weapon's own projectile exists only in the player build
      'requires': ['proj ' + B.join(['weapons', 'sentinel beam', 'beam'])],
      'anims': {},
-     'balance': []},
+     # step 5b (h1_role_compare.py sentinel_beam, user-chosen 2026-10-06). The default
+     # keeps Halo 3's ABSOLUTE aim assist and a per-round battery ratio; balanced:
+     'balance': [
+         # the ratio rule on aim assist, plasma rifle yardstick (H1 5/25, 12/25; H3 5/12,
+         # 9/18; H3 beam 1/12, 9/18): angle 5 x 1/5 = 1, range 25 x 12/12 = 25; magnet
+         # 12 x 9/9 = 12, range 25 x 18/18 = 25 -- Halo 1's automatics reach 25 wu
+         row('weap', SB, 'Autoaim Range', 25.0, 12.0, 'Aim assist'),
+         row('weap', SB, 'Magnetism Angle', 12.0, 9.0, 'Aim assist'),
+         row('weap', SB, 'Magnetism Range', 25.0, 18.0, 'Aim assist'),
+         # Halo 3's battery TIME: 0.003 x 30/s = 333 rounds = 11.1 s; at Halo 1's real
+         # 15/s that is 167 rounds = 0.006 per round (default 0.012 = 5.6 s)
+         row('weap', SB, 'Age Generated Per Round', 0.006, 0.012, 'Battery per round',
+             block='Triggers'),
+     ]},
 ]
 
 

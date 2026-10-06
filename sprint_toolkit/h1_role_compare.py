@@ -208,6 +208,8 @@ def apply_rows(out, rows):
                 out['rps'] = v if f == 'Rounds Per Second Max' else max(v, out.get('rps') or 0)
             elif f in AIM:
                 aim[AIM.index(f)] = v
+            elif f == 'Age Generated Per Round':
+                out['age'] = v
         elif r['class'] == 'jpt!':
             for d in out['damage']:
                 if d['tag'].lower() != r['tag'].lower():
