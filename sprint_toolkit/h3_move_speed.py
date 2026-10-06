@@ -74,9 +74,12 @@ class Pages:
             self.cbase = m.data2off(m.u32(self.zb + 0x148 + 0xC))
             self.rbase = HP._block_base(m, self.zb + 0x64)
         pb, pc = self.tabs['page']
-        starts = sorted(struct.unpack_from('<I', m.data, pb + i * R.PLAY_PAGE_ELEM + 8)[0]
-                        for i in range(pc)
-                        if struct.unpack_from('<h', m.data, pb + i * R.PLAY_PAGE_ELEM + 4)[0] < 0)
+        # 0xFFFFFFFF is a record without a page, not a page start: counted, it gave the
+        # file's last real page a slot of ~3.5 GB (h3_anim_lengthen, 2026-10-06)
+        starts = sorted(o for o in (struct.unpack_from('<I', m.data, pb + i * R.PLAY_PAGE_ELEM + 8)[0]
+                                    for i in range(pc)
+                                    if struct.unpack_from('<h', m.data, pb + i * R.PLAY_PAGE_ELEM + 4)[0] < 0)
+                        if o != 0xFFFFFFFF)
         self.next = dict(zip(starts, starts[1:]))
         self.cache = {}          # page index -> bytearray (uncompressed)
         self.dirty = set()
