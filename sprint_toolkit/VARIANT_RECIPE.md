@@ -11,7 +11,9 @@ The result in Halo 1:
   into another species per pick, for the rest of the run.
 
 Status: residency was confirmed in game (a10 tests v1 and v2). The cards were verified
-offline on baseline copies only and are **untested in game**.
+offline on baseline copies, then **confirmed in game on 2026-10-07**: the user played a
+combination of all of it (Incursion cards, Human Incursion, skulls, Armed cards) and it
+held up. Which cards and levels went into that run was not recorded.
 
 ---
 
@@ -343,9 +345,9 @@ Each answer below was a fixed fact in H1. Find the game's own before building.
 ---
 
 ## 11. Open / untested
-- The cards themselves in game (all eight), including Infection x5 / x10 without extra
-  starting locations.
-- Marine chain copies spawning with their fixed majors.
+- The combined test of 2026-10-07 held up. If a single card misbehaves later, test that
+  card alone: Infection x5 / x10 without extra starting locations, and the Marine chain
+  copies spawning with their fixed majors, are the pieces not singled out yet.
 - A palette grown past 64 at patch time (appends stop at 64; Armed's own
   `palette_index` may still append beyond it).
 - Skull versions of the cards (user: later, "to the extreme").
