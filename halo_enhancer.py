@@ -447,7 +447,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'other_chance', 'other_weights', 'other_hero_enabled',
                'other_exhaust_enabled', 'other_skull_enabled', 'other_ally_enabled',
                'other_bane_enabled', 'identity_other_card',
-               'skull_single_map', 'skull_disabled', 'skull_camo_after_ladder',
+               'skull_duration_value', 'skull_duration_multiply',
+               'skull_disabled', 'skull_camo_after_ladder',
                'bugfix_h2_fuel_rod', 'debug_player_armour', 'debug_player_armour_zero',
                'set_starting_equipment', 'equipment_all_selected',
                'h2_add_respawn_profile', 'h2_extra_squads', 'swap_player_loadouts',
@@ -1209,7 +1210,10 @@ CONFIG = {
     "other_bane_enabled": True,
     # Skulls (Options -> Skulls). Both travel with the run's options snapshot, so a
     # co-op partner loading the run plays under the same skull rules.
-    "skull_single_map": False,   # a drawn skull governs only the map it was drawn on
+    # How many maps a drawn skull stays (skull_duration): on -> each skull's halo.json
+    # `duration` x the value; off -> the value for every skull. 0 = rest of the run.
+    "skull_duration_value": 1.0,
+    "skull_duration_multiply": True,
     "skull_disabled": [],        # skull categories (halo.json `skull` keys) never offered
     "skull_camo_after_ladder": False,   # Thunderstorm / Downpour before Assassins
     # Options -> Patching -> Bugfixes: fixes to Bungie's own data. Off = vanilla.
@@ -2173,6 +2177,30 @@ def _patch_error_text(e):
     return str(e)
 
 
+def skull_duration(mod):
+    """Maps a skull drawn NOW lasts (0 = the rest of the run), from Options -> Skulls:
+    'Multiply each skull's own duration' on -> its halo.json `duration` x the number
+    (rounded, at least 1); off -> the number itself for every skull. The number 0 means
+    the rest of the run in both modes. A card without `duration` counts as 1."""
+    try:
+        n = float(CONFIG.get('skull_duration_value', 1.0))
+    except (TypeError, ValueError):
+        n = 1.0
+    if n <= 0:
+        return 0
+    if not CONFIG.get('skull_duration_multiply', True):
+        return max(1, int(round(n)))
+    base = (mod or {}).get('duration')
+    base = 1 if base is None else int(base)
+    if base <= 0:
+        return 0
+    return max(1, int(round(base * n)))
+
+
+def skull_duration_text(maps):
+    return 'rest of the run' if not maps else '%d map%s' % (maps, '' if maps == 1 else 's')
+
+
 def active_skull_names(run_state):
     """Names of the skulls already locked into this run — every committed round plus
     the current round's selections. A skull is a whole-map rule, so once it's picked
@@ -2181,12 +2209,15 @@ def active_skull_names(run_state):
     if run_state is None:
         return names
 
+    import halo_patch
     mid = getattr(run_state, 'mission_id', None)
+    done = len(getattr(run_state, 'levels', None) or [])
 
     def scan(mod):
-        # a one-map skull (Options -> Skulls) governs only the mission it was drawn on
+        # a skull past its duration (Options -> Skulls) governs nothing any more;
+        # the current round's picks are not stamped yet, so they always count
         if isinstance(mod, dict) and mod.get('skull') and \
-                mod.get('_skull_mission') in (None, mid):
+                halo_patch.skull_active(mod, mid, done):
             names.add(mod.get('name'))
 
     for rd in getattr(run_state, 'rounds', None) or []:
@@ -2575,6 +2606,8 @@ class ModifierDatabase:
             'affected_by_skull': mod_data.get('affected_by_skull'),
             # Halo 1 Incursion cards: the enemy types they bring into the run
             'swap_enemy': mod_data.get('swap_enemy'),
+            # skulls: how many maps one stays (Options -> Skulls, skull_duration)
+            'duration': mod_data.get('duration'),
             'special': bool(mod_data.get('special', False)),  # escalating-odds effect
             'dual_only': bool(mod_data.get('dual_only', False)),  # needs 'Dual <X>'
             'harder_when': mod_data.get('harder_when'),  # 'increased'/'decreased' direction hint
@@ -4908,7 +4941,8 @@ class PairCard(QGroupBox):
 
         if self.pair.get('skull_mod'):
             third.append(self.create_mod_widget(
-                self.pair['skull_mod'], "💀 SKULL", "skull", 'skull'))
+                self.pair['skull_mod'], "💀 SKULL (%s)" % skull_duration_text(
+                    skull_duration(self.pair['skull_mod'])), "skull", 'skull'))
 
         for band in (positive, negative, third):
             holder = QWidget()
@@ -9691,14 +9725,29 @@ class OptionsDialog(QDialog):
             c['games'].update([g] if isinstance(g, str) else g)
         box = QGroupBox("Skull cards")
         lay = QVBoxLayout(box)
-        self.skull_single_map_cb = QCheckBox("A skull lasts one map only")
-        self.skull_single_map_cb.setChecked(bool(CONFIG.get('skull_single_map')))
-        self.skull_single_map_cb.setToolTip(
-            "Off: a drawn skull governs every later patch for the rest of the run.\n"
-            "On: it applies only to the map it was drawn on (like an Exhaust) and goes back "
-            "into the pool afterwards. Iron and Betrayal scoring are put back by the next "
-            "patch of another map.\n\nShared: travels with the run to a co-op partner.")
-        lay.addWidget(self.skull_single_map_cb)
+        dur_row = QHBoxLayout()
+        dur_row.addWidget(QLabel("Skull duration:"))
+        self.skull_duration_spin = QDoubleSpinBox()
+        self.skull_duration_spin.setRange(0.0, 99.0)
+        self.skull_duration_spin.setDecimals(1)
+        self.skull_duration_spin.setSingleStep(0.5)
+        self.skull_duration_spin.setValue(float(CONFIG.get('skull_duration_value', 1.0)))
+        self.skull_duration_spin.setSpecialValueText("rest of the run")
+        dur_row.addWidget(self.skull_duration_spin)
+        self.skull_duration_mult_cb = QCheckBox("Multiply each skull's own duration")
+        self.skull_duration_mult_cb.setChecked(bool(CONFIG.get('skull_duration_multiply', True)))
+        dur_row.addWidget(self.skull_duration_mult_cb)
+        dur_row.addStretch(1)
+        tip = ("How many maps a drawn skull stays in force. Only 'Next level' counts a map, "
+               "so patching the same map again never uses one up.\n"
+               "Multiply on: each skull's own duration (halo.json: 3 maps for the light "
+               "skulls, 2 for the heavy ones, 1 for Iron) times this number.\n"
+               "Multiply off: every skull lasts this many maps.\n"
+               "0 = the rest of the run. A skull already drawn keeps the duration it was "
+               "drawn with.\n\nShared: travels with the run to a co-op partner.")
+        self.skull_duration_spin.setToolTip(tip)
+        self.skull_duration_mult_cb.setToolTip(tip)
+        lay.addLayout(dur_row)
         self.skull_camo_order_cb = QCheckBox("Thunderstorm / Downpour first, then Assassins")
         self.skull_camo_order_cb.setChecked(bool(CONFIG.get('skull_camo_after_ladder')))
         self.skull_camo_order_cb.setToolTip(
@@ -12787,7 +12836,8 @@ class OptionsDialog(QDialog):
             'other_ally_enabled': self.other_weight_boxes['ally'][0].isChecked(),
             'other_bane_enabled': self.other_weight_boxes['bane'][0].isChecked(),
             'identity_other_card': self.identity_other_cb.isChecked(),
-            'skull_single_map': self.skull_single_map_cb.isChecked(),
+            'skull_duration_value': float(self.skull_duration_spin.value()),
+            'skull_duration_multiply': self.skull_duration_mult_cb.isChecked(),
             'skull_camo_after_ladder': self.skull_camo_order_cb.isChecked(),
             'bugfix_h2_fuel_rod': self.bugfix_fuel_rod_cb.isChecked(),
             'debug_player_armour': self.debug_armour_cb.isChecked(),
@@ -14277,7 +14327,17 @@ class HaloGUI(QMainWindow):
             where = 'the run only (this level has no patch file)'
         if not hasattr(rs, 'levels') or rs.levels is None:
             rs.levels = []
+        import halo_patch
+        live_before = {id(k) for rd in rs.rounds or [] for k in (rd.get('skull1'), rd.get('skull2'))
+                       if isinstance(k, dict) and halo_patch.skull_active(k, mid, len(rs.levels))}
         rs.levels.append(entry)
+        # skulls whose last map this was: they stop patching and re-enter the pool
+        ended = [k.get('name', '?') for rd in rs.rounds or [] for k in (rd.get('skull1'), rd.get('skull2'))
+                 if isinstance(k, dict) and id(k) in live_before
+                 and not halo_patch.skull_active(k, None, len(rs.levels))]
+        if ended:
+            where += ' -- skull%s over: %s' % ('s' if len(ended) > 1 else '', ', '.join(ended))
+        self.update_history()                 # the skulls' maps-left count moved
         for w in (self.nl_score, self.nl_time_h, self.nl_time_m, self.nl_time_s, self.nl_mult):
             w.clear()
         old = rs.mission_name
@@ -15540,13 +15600,16 @@ class HaloGUI(QMainWindow):
                     self.run_state.free_negative_pending[
                         'player1' if pk == 'exhaust1' else 'player2'] = True
                 round_data[pk] = ex
-            # Options -> Skulls: a one-map skull is stamped like an Exhaust, so it only
-            # patches this mission and re-enters the pool afterwards.
-            if CONFIG.get('skull_single_map'):
-                for sk in ('skull1', 'skull2'):
-                    if isinstance(round_data.get(sk), dict):
-                        round_data[sk] = {**round_data[sk],
-                                          '_skull_mission': self.run_state.mission_id}
+            # Options -> Skulls: a skull is stamped with how many maps it lasts and how
+            # many levels were finished when it was drawn. Only "Next level" counts a
+            # map (halo_patch.skull_maps_left), so patching again never uses one up; at
+            # 0 left it stops patching and re-enters the pool.
+            for sk in ('skull1', 'skull2'):
+                if isinstance(round_data.get(sk), dict):
+                    round_data[sk] = {**round_data[sk],
+                                      '_skull_duration': skull_duration(round_data[sk]),
+                                      '_skull_level': len(getattr(self.run_state, 'levels',
+                                                                  None) or [])}
             self.run_state.rounds.append(round_data)
             self._blacklist_exclusive_siblings(round_data)
             self._update_special_counters(p1_pair.get('player1_mod'), p2_pair.get('player2_mod'))
@@ -15740,10 +15803,27 @@ class HaloGUI(QMainWindow):
                 if exhausts:
                     names = list(dict.fromkeys(e.get('name', '?') for e in exhausts))
                     text += f", Exhaust: {', '.join(names)}"
+                skulls = [k for k in (round_data.get('skull1'), round_data.get('skull2'))
+                          if isinstance(k, dict)]
+                if skulls:
+                    text += ", Skull: " + ', '.join(
+                        f"{k.get('name', '?')} ({self._skull_left_text(k)})" for k in skulls)
                 text += "\n"
 
         self.history_text.setText(text)
         self.update_weapon_display()
+
+    def _skull_left_text(self, sk):
+        """How long a recorded skull still runs, for the round history."""
+        import halo_patch
+        if '_skull_duration' not in sk:          # runs saved before skull durations
+            return 'one map' if sk.get('_skull_mission') else 'rest of the run'
+        left = halo_patch.skull_maps_left(sk, len(getattr(self.run_state, 'levels', None) or []))
+        if left is None:
+            return 'rest of the run'
+        if left <= 0:
+            return 'over'
+        return 'last map' if left == 1 else '%d maps left' % left
 
     def update_weapon_display(self):
         p1 = ", ".join(self.run_state.player1_weapons) or "No weapon selected"
@@ -16444,7 +16524,8 @@ class HaloGUI(QMainWindow):
         # anything here, and they made the list harder to read.
         effects = halo_patch.collect_effects(
             rounds, self.run_state.mission_id,
-            valid_bosses=set(self.db.bosses_for(self.run_state.mission_id)))
+            valid_bosses=set(self.db.bosses_for(self.run_state.mission_id)),
+            levels_done=len(getattr(self.run_state, 'levels', None) or []))
         if not effects:
             QMessageBox.information(self, "No effects yet",
                                     "Select some effects first — there's nothing to patch.")
@@ -16818,13 +16899,15 @@ class RunEnhancer:
         this set and the same skull could be drafted again and again. A skull is a
         whole-map rule that lasts the REST OF THE RUN — unlike an Exhaust, nothing ever
         expires it — so drawing it twice is pure waste."""
+        import halo_patch
         mid = self.run_state.mission_id
         names = set()
         for rd in self.run_state.rounds:
             for k in ('enemy1', 'enemy2', 'skull1', 'skull2'):
                 m = rd.get(k)
-                # a one-map skull drawn on another mission is back in the pool
-                if isinstance(m, dict) and m.get('_skull_mission') in (None, mid):
+                # a skull past its duration is back in the pool (enemy cards never expire)
+                if isinstance(m, dict) and (not m.get('skull') or halo_patch.skull_active(
+                        m, mid, len(getattr(self.run_state, 'levels', None) or []))):
                     names.add(m.get('name'))
             for k in ('exhaust1', 'exhaust2'):
                 m = rd.get(k)

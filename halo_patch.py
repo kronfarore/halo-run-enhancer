@@ -103,7 +103,35 @@ IDENTITY_UP_PICKS = 2
 IDENTITY_DOWN_PICKS = 1
 
 
-def collect_effects(rounds, mission_id=None, valid_bosses=None):
+def skull_maps_left(sk, levels_done):
+    """Maps a drawn skull still has, counting the one being played (1 = this is its last
+    map, 0 = over), or None for a skull that lasts the rest of the run.
+
+    A skull is stamped when its round is recorded (halo_enhancer, Options -> Skulls):
+    `_skull_duration` = maps it lasts (0 = rest of the run) and `_skull_level` = how many
+    levels the run had finished then (len(run_state.levels)). Only "Next level" adds to
+    that list, so re-patching a map any number of times (co-op resyncs) never uses up a
+    map, and two machines sharing the run always agree."""
+    if not isinstance(sk, dict) or '_skull_duration' not in sk:
+        return None
+    dur = int(sk.get('_skull_duration') or 0)
+    if dur <= 0 or levels_done is None:
+        return None if dur <= 0 else dur
+    return max(0, dur - (int(levels_done) - int(sk.get('_skull_level') or 0)))
+
+
+def skull_active(sk, mission_id=None, levels_done=None):
+    """Is a drawn skull still in force? By its map count (skull_maps_left), else the
+    older one-map stamp `_skull_mission` (runs saved before durations), else always."""
+    if not isinstance(sk, dict):
+        return False
+    if '_skull_duration' in sk:
+        left = skull_maps_left(sk, levels_done)
+        return left is None or left > 0
+    return mission_id is None or sk.get('_skull_mission') in (None, mission_id)
+
+
+def collect_effects(rounds, mission_id=None, valid_bosses=None, levels_done=None):
     """Unique patchable effects from a run's rounds, in first-seen order, each
     with a selection `count`, and a source `group`/`cat` (specific weapon,
     player-general, specific enemy, enemy-general, friend, boss, exhaust) for
@@ -208,9 +236,8 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None):
         # `skull` key, and they only get there by being collected here first.
         for k in ('skull1', 'skull2'):
             sk = rd.get(k)
-            # a one-map skull (Options -> Skulls) is collected only for its own mission
-            if isinstance(sk, dict) and (mission_id is None or sk.get('_skull_mission')
-                                         in (None, mission_id)):
+            # a skull past its duration (Options -> Skulls) is no longer collected
+            if isinstance(sk, dict) and skull_active(sk, mission_id, levels_done):
                 add(sk, 'Skull', 4)
         for k in ('exhaust1', 'exhaust2'):
             ex = rd.get(k)

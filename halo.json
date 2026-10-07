@@ -26196,7 +26196,7 @@
 	"Skull modifiers": {
 		"Eyepatch": {
 			"desc": "No aim assist. Every weapon loses its autoaim and magnetism \u2014 the reticule stops sticking and your aim stops bending onto targets.",
-			"skull": "eyepatch", "score_points": 2,
+			"skull": "eyepatch", "score_points": 2, "duration": 3,
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"tag": "weap",
 			"targets": []
@@ -26204,7 +26204,7 @@
 		"Betrayal": {
 			"desc": "Every human squad turns on you. Marines join the Flood in Halo 1, the Heretics in Halo 2, 3 and ODST, and an unused team in Reach and Halo 4, so the Covenant keeps fighting them too.",
 			"debug_desc": "Sets each human squad's Team to a hostile third faction, so they fight you AND the Covenant rather than simply swapping sides. A squad counts as human when every character it names matches a human tag and none is a loyal one (story characters: Johnson, Miranda, Keyes, the Arbiter, Buck/Dare/Dutch/Romeo/Mickey, Noble Team, Halsey, Lasky, Palmer, Del Rio stay loyal).\n\nTeams: Halo 1 Flood, Halo 2/3/ODST Heretic, Reach Spare, Halo 4 Brute -- none of them allied to anyone by a campaign script (no game has a tag-side alliance table). Exception: Halo 1 c10 allies the player with the Flood, so betrayed Marines stay friendly there.\n\nODST was wired 2026-08-31 (squads hold characters in three sub-blocks). Reach and Halo 4 use the same cell shape (2026-10-05); their Betrayal is untested in game.",
-			"skull": "betrayal", "score_points": 4,
+			"skull": "betrayal", "score_points": 4, "duration": 2,
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"tag": "scnr",
 			"targets": []
@@ -26212,7 +26212,7 @@
 		"Tilt": {
 			"desc": "Weaknesses doubled, everything else halved: plasma strips shields twice as fast, and a weapon with no edge against a target now does half.",
 			"debug_desc": "Every damage modifier v: v > 1 -> v x2 (weakness doubled), 0 < v <= 1 -> v / 2 (resistance AND neutral halved), 0 (immunity) stays. Halo 1: the 33 per-material floats on every jpt! (0x200-0x280). Halo 2 on: the matg Damage Table rows (damage group x armour); from Halo 3 on only element [0] -- [1] is the game's own Tilt table, used only with MCC's native skull. A matchup with no row in the H2+ table stays 1 (engine default). The player shares the Elites' armour rows from Halo 2 on, so it applies to damage you take. Per game: sprint_toolkit/reports/tilt_explained.md (written before the 1.0 -> 0.5 rule).",
-			"skull": "tilt", "score_points": 4,
+			"skull": "tilt", "score_points": 4, "duration": 2,
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"tag": {"Halo 1": "jpt!", "Halo 2": "matg"},
 			"targets": []
@@ -26220,7 +26220,7 @@
 		"Fog": {
 			"desc": "No motion tracker.",
 			"debug_desc": "Halo 1: hudg Motion Sensor Range 0.01 and the cyborg unhi dial bitmaps nulled. Halo 2: hudg range 0.01 and every nhdt widget drawn on 'Motion Sensor Enabled' gets 'Default' in its [No] flags. Halo 3: the chdt dial widget (class 6) draws only while the tracker is disabled, and the chgd HUD globals' Sensor Origin goes to (2000, 2000) with Blip Radius 0 -- the blips are drawn from there, not by a widget (Bungie removed ODST's tracker the same way). Reach: matg Default Player Traits Motion Tracker = Disabled. Halo 4: the radar cusc's blip-opacity expression '1-a' becomes '0-a' (the sensor trait is written too but the H4 radar ignores it; the dial stays). Not offered in ODST: it has no motion tracker. Confirmed in game: Halo 1, Halo 2, Reach.",
-			"skull": "fog", "score_points": 2,
+			"skull": "fog", "score_points": 2, "duration": 3,
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"skip_games": ["Halo 3: ODST"],
 			"tag": {"Halo 1": "hudg", "Halo 2": "nhdt", "Halo 3": "chdt", "Halo Reach": "matg"},
@@ -26229,7 +26229,7 @@
 		"Iron": {
 			"desc": "Iron. Solo, dying restarts the mission. In co-op, if anyone dies, everyone goes back to the last checkpoint.",
 			"debug_desc": "The real skull, switched on in the running game dll by sprint_toolkit/iron_live.py (MCC must be running; in co-op both machines patch). H1: the two Iron consumers' je NOPed. H2: co-op respawn off, any death = loss, solo loss = restart. H3/ODST: the primary-skull getter ORs Iron in. Reach/H4: the load-time skull-mask copy ORs Iron in (takes effect at the next level load). A patch without Iron, or for another game, puts the dll back. Untested in game.",
-			"skull": "iron", "score_points": 6,
+			"skull": "iron", "score_points": 6, "duration": 1,
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"tag": "MCC process",
 			"targets": []
@@ -26237,7 +26237,7 @@
 		"Schism": {
 			"desc": "Your non-human allies turn on you. The Arbiter's Covenant, Halo 3's Elites, allied Sentinels, ODST's Engineers and Halo 4's Sentinels all join a third side.",
 			"debug_desc": "Rewrites the Team of every non-human squad the level's scripts ally with the player (ai_allegiance, minus ai_allegiance_remove; no game has a tag-side alliance table) to a team no script allies with anyone: Halo 1 Covenant (only the Sentinels of c10/c20 -- Halo 1's Flood allegiance is a script artefact), Halo 2/3/ODST Heretic, Halo 4 Mule plus the hostile-Sentinels recipe (a hostile Sentinel never leaves its spawn without it). Story characters stay: the Arbiter, the Monitor, the freed Engineer. Reach fields no non-human ally, so it is not offered there. Untested in game.",
-			"skull": "schism", "score_points": 2,
+			"skull": "schism", "score_points": 2, "duration": 3,
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 4"],
 			"tag": "scnr",
 			"targets": []
@@ -26245,7 +26245,7 @@
 		"The Flood": {
 			"desc": "The Flood takes every level: every enemy -- and every ally -- becomes Flood.",
 			"debug_desc": "Halo 1 only (h1_species_swap.apply_factions). Every enemy encounter becomes the Flood (team Flood), on every level for the rest of the run, and your allied encounters do too -- they stay on your side (team Human). A replaced species takes the same place in the faction's ladder (Covenant Grunt 1, Jackal 2, Elite 3, Hunter 4; Flood infection 1, carrier 2, combat Human 3, combat Elite 4; Sentinels and humans by rank) and keeps its rank inside it, on the Incursion cards' ladders; infection forms come in x5 (rank 1) or x10. Several faction skulls SPLIT the encounters between them (seeded, balanced by actors), so the factions fight each other. Left alone: scripted set pieces, squads the scripts seat in a dropship or vehicle, encounters mixing sides or holding a story character. Runs first of the 'who is what' passes: then Thunderstorm / Downpour, the Incursion cards (which still bring their species back), Betrayal / Schism (Schism turns the non-human allies this skull makes), the Armed cards. While it is active, the other factions' cards leave the pool and this faction's are offered on every level.",
-			"skull": "faction_flood", "score_points": 4,
+			"skull": "faction_flood", "score_points": 4, "duration": 2,
 			"game": ["Halo 1"],
 			"tag": "scnr",
 			"targets": []
@@ -26253,7 +26253,7 @@
 		"Guardians of the Galaxy": {
 			"desc": "The Sentinels guard every level: every enemy -- and every ally -- becomes a Sentinel.",
 			"debug_desc": "Halo 1 only (h1_species_swap.apply_factions). Every enemy encounter becomes Sentinels (team Sentinel), on every level for the rest of the run, and your allied encounters do too -- they stay on your side (team Human). A replaced species takes the same place in the faction's ladder (Covenant Grunt 1, Jackal 2, Elite 3, Hunter 4; Flood infection 1, carrier 2, combat Human 3, combat Elite 4; Sentinels and humans by rank) and keeps its rank inside it, on the Incursion cards' ladders. Several faction skulls SPLIT the encounters between them (seeded, balanced by actors), so the factions fight each other. Left alone: scripted set pieces, squads the scripts seat in a dropship or vehicle, encounters mixing sides or holding a story character. Runs first of the 'who is what' passes: then Thunderstorm / Downpour, the Incursion cards (which still bring their species back), Betrayal / Schism (Schism turns the non-human allies this skull makes), the Armed cards. While it is active, the other factions' cards leave the pool and this faction's are offered on every level.",
-			"skull": "faction_sentinel", "score_points": 4,
+			"skull": "faction_sentinel", "score_points": 4, "duration": 2,
 			"game": ["Halo 1"],
 			"tag": "scnr",
 			"targets": []
@@ -26261,7 +26261,7 @@
 		"The Great Journey": {
 			"desc": "The Covenant holds every level: every enemy -- and every ally -- becomes Covenant.",
 			"debug_desc": "Halo 1 only (h1_species_swap.apply_factions). Every enemy encounter becomes Covenant (team Covenant), on every level for the rest of the run, and your allied encounters do too -- they stay on your side (team Human). A replaced species takes the same place in the faction's ladder (Covenant Grunt 1, Jackal 2, Elite 3, Hunter 4; Flood infection 1, carrier 2, combat Human 3, combat Elite 4; Sentinels and humans by rank) and keeps its rank inside it, on the Incursion cards' ladders. Several faction skulls SPLIT the encounters between them (seeded, balanced by actors), so the factions fight each other. Left alone: scripted set pieces, squads the scripts seat in a dropship or vehicle, encounters mixing sides or holding a story character. Runs first of the 'who is what' passes: then Thunderstorm / Downpour, the Incursion cards (which still bring their species back), Betrayal / Schism (Schism turns the non-human allies this skull makes), the Armed cards. While it is active, the other factions' cards leave the pool and this faction's are offered on every level.",
-			"skull": "faction_covenant", "score_points": 4,
+			"skull": "faction_covenant", "score_points": 4, "duration": 2,
 			"game": ["Halo 1"],
 			"tag": "scnr",
 			"targets": []
@@ -26269,7 +26269,7 @@
 		"Insurrection": {
 			"desc": "Rebel humans hold every level: every enemy becomes a Marine fighting you.",
 			"debug_desc": "Halo 1 only (h1_species_swap.apply_factions). Every enemy encounter becomes hostile humans (Betrayal's Flood team, or the first faction team no other active skull uses), on every level for the rest of the run, and your allied encounters do too -- they stay on your side (team Human). A replaced species takes the same place in the faction's ladder (Covenant Grunt 1, Jackal 2, Elite 3, Hunter 4; Flood infection 1, carrier 2, combat Human 3, combat Elite 4; Sentinels and humans by rank) and keeps its rank inside it, on the Incursion cards' ladders. Several faction skulls SPLIT the encounters between them (seeded, balanced by actors), so the factions fight each other. Left alone: scripted set pieces, squads the scripts seat in a dropship or vehicle, encounters mixing sides or holding a story character. Runs first of the 'who is what' passes: then Thunderstorm / Downpour, the Incursion cards (which still bring their species back), Betrayal / Schism (Schism turns the non-human allies this skull makes), the Armed cards. While it is active, the other factions' cards leave the pool and this faction's are offered on every level.",
-			"skull": "faction_human", "score_points": 4,
+			"skull": "faction_human", "score_points": 4, "duration": 2,
 			"game": ["Halo 1"],
 			"tag": "scnr",
 			"targets": []
@@ -26277,7 +26277,7 @@
 		"Famine": {
 			"desc": "Dropped weapons carry half the ammo, and so do the weapons lying around the level.",
 			"debug_desc": "Halves both ends of Drop Weapon Loaded (magazine fraction; an energy weapon's charge) and Drop Weapon Ammo (reserve; ignored for energy weapons) on EVERY character tag (Halo 1: every actv), so Grunts, Jackals and the Flood -- which define their own Weapons Properties -- are reached too. Halo 3/ODST ship Ammo 0 = weapon default, which stays; only the magazine moves there. Allies' drops are halved as well. Composes with the Dropped Ammo card (the skull runs first). Second half: every weapon PLACED on the map (scnr Weapons) gets half its Rounds Left / Loaded -- a 0 (= the weapon's default) becomes half the weapon's Magazines[0] default, never 0. Runs after the card ops (a Magazine card sets that default) and before the tool appends its marker weapons, which keep their ammo. Battery weapons have no charge field in a placement and stay full.",
-			"skull": "famine", "score_points": 4,
+			"skull": "famine", "score_points": 4, "duration": 2,
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"tag": {"Halo 1": "actv", "Halo 2": "char"},
 			"targets": []
@@ -26285,7 +26285,7 @@
 		"Assassins: Elite": {
 			"desc": "Elites spawn cloaked.",
 			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-			"skull": "assassins", "score_points": 4,
+			"skull": "assassins", "score_points": 4, "duration": 2,
 			"enemy": "Elite",
 			"game": ["Halo 1", "Halo 2", "Halo Reach", "Halo 4"],
 			"tag": {"Halo 1": "actv characters\\elite\\*", "Halo 2": "char objects\\characters\\elite\\* & objects\\characters\\heretic\\*", "Halo 4": "char objects\\characters\\storm_elite\\*"},
@@ -26294,7 +26294,7 @@
 		"Assassins: Hunter": {
 			"desc": "Hunters spawn cloaked.",
 			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-			"skull": "assassins", "score_points": 4,
+			"skull": "assassins", "score_points": 4, "duration": 2,
 			"enemy": "Hunter",
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"tag": {"Halo 1": "actv characters\\hunter\\*", "Halo 2": "char objects\\characters\\hunter\\*", "Halo 4": "char objects\\characters\\storm_hunter\\*"},
@@ -26303,7 +26303,7 @@
 		"Assassins: Grunt": {
 			"desc": "Grunts spawn cloaked.",
 			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-			"skull": "assassins", "score_points": 4,
+			"skull": "assassins", "score_points": 4, "duration": 2,
 			"enemy": "Grunt",
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"tag": {"Halo 1": "actv characters\\grunt\\*", "Halo 2": "char objects\\characters\\grunt\\* & objects\\characters\\heretic_grunt\\*", "Halo 4": "char objects\\characters\\storm_grunt\\*"},
@@ -26312,7 +26312,7 @@
 		"Assassins: Jackal": {
 			"desc": "Jackals spawn cloaked.",
 			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-			"skull": "assassins", "score_points": 4,
+			"skull": "assassins", "score_points": 4, "duration": 2,
 			"enemy": "Jackal",
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"tag": {"Halo 1": "actv characters\\jackal\\*", "Halo 2": "char objects\\characters\\jackal\\*", "Halo 4": "char objects\\characters\\storm_jackal\\*"},
@@ -26321,7 +26321,7 @@
 		"Assassins: Combat Form": {
 			"desc": "Combat Forms spawn cloaked.",
 			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-			"skull": "assassins", "score_points": 4,
+			"skull": "assassins", "score_points": 4, "duration": 2,
 			"enemy": "Flood Combat Form",
 			"game": ["Halo 1", "Halo 2", "Halo 3"],
 			"tag": {"Halo 1": "actv characters\\floodcombat*", "Halo 2": "char objects\\characters\\floodcombat_elite\\* & objects\\characters\\floodcombat_human\\*", "Halo 3": "char objects\\characters\\floodcombat_elite\\* & objects\\characters\\floodcombat_human\\* & objects\\characters\\floodcombat_brute\\*"},
@@ -26330,7 +26330,7 @@
 		"Assassins: Infection Form": {
 			"desc": "Infection Forms spawn cloaked.",
 			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-			"skull": "assassins", "score_points": 4,
+			"skull": "assassins", "score_points": 4, "duration": 2,
 			"enemy": "Flood Infection Form",
 			"game": ["Halo 1", "Halo 2", "Halo 3"],
 			"tag": {"Halo 1": "actv characters\\flood_infection\\*", "Halo 2": "char objects\\characters\\flood_infection\\*"},
@@ -26339,7 +26339,7 @@
 		"Assassins: Carrier Form": {
 			"desc": "Carrier Forms spawn cloaked.",
 			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-			"skull": "assassins", "score_points": 4,
+			"skull": "assassins", "score_points": 4, "duration": 2,
 			"enemy": "Flood Carrier Form",
 			"game": ["Halo 1", "Halo 2", "Halo 3"],
 			"tag": {"Halo 1": "actv characters\\floodcarrier\\*", "Halo 2": "char objects\\characters\\floodcarrier\\*"},
@@ -26348,7 +26348,7 @@
 		"Assassins: Pure Form": {
 			"desc": "Pure Forms spawn cloaked.",
 			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-			"skull": "assassins", "score_points": 4,
+			"skull": "assassins", "score_points": 4, "duration": 2,
 			"enemy": "Flood Pure Form",
 			"game": ["Halo 3"],
 			"tag": "char objects\\characters\\flood_stalker\\* & objects\\characters\\flood_tank\\* & objects\\characters\\flood_ranged\\*",
@@ -26357,7 +26357,7 @@
 		"Assassins: Sentinel": {
 			"desc": "Sentinels spawn cloaked.",
 			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-			"skull": "assassins", "score_points": 4,
+			"skull": "assassins", "score_points": 4, "duration": 2,
 			"enemy": "Sentinel",
 			"game": ["Halo 1", "Halo 2", "Halo 3"],
 			"tag": {"Halo 1": "actv characters\\sentinel\\*", "Halo 2": "char objects\\characters\\sentinel_aggressor\\* & objects\\characters\\sentinel_constructor\\*"},
@@ -26366,7 +26366,7 @@
 		"Assassins: Drone": {
 			"desc": "Drones spawn cloaked.",
 			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-			"skull": "assassins", "score_points": 4,
+			"skull": "assassins", "score_points": 4, "duration": 2,
 			"enemy": "Bugger",
 			"game": ["Halo 2", "Halo 3", "Halo Reach"],
 			"tag": "char objects\\characters\\bugger\\*",
@@ -26375,7 +26375,7 @@
 		"Assassins: Brute": {
 			"desc": "Brutes spawn cloaked.",
 			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-			"skull": "assassins", "score_points": 4,
+			"skull": "assassins", "score_points": 4, "duration": 2,
 			"enemy": "Brute",
 			"game": ["Halo 2", "Halo 3", "Halo Reach"],
 			"tag": "char objects\\characters\\brute\\*",
@@ -26384,7 +26384,7 @@
 		"Assassins: Engineer": {
 			"desc": "Engineers spawn cloaked.",
 			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-			"skull": "assassins", "score_points": 4,
+			"skull": "assassins", "score_points": 4, "duration": 2,
 			"enemy": "Engineer",
 			"game": ["Halo 3: ODST", "Halo Reach"],
 			"tag": "char objects\\characters\\engineer\\*",
@@ -26393,7 +26393,7 @@
 		"Assassins: Knight": {
 			"desc": "Knights spawn cloaked.",
 			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-			"skull": "assassins", "score_points": 4,
+			"skull": "assassins", "score_points": 4, "duration": 2,
 			"enemy": "Knight",
 			"game": ["Halo 4"],
 			"tag": "char objects\\characters\\storm_knight\\*",
@@ -26402,7 +26402,7 @@
 		"Assassins: Crawler": {
 			"desc": "Crawlers spawn cloaked.",
 			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-			"skull": "assassins", "score_points": 4,
+			"skull": "assassins", "score_points": 4, "duration": 2,
 			"enemy": "Crawler",
 			"game": ["Halo 4"],
 			"tag": "char objects\\characters\\storm_pawn\\*",
@@ -26411,7 +26411,7 @@
 		"Assassins: Watcher": {
 			"desc": "Watchers spawn cloaked.",
 			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-			"skull": "assassins", "score_points": 4,
+			"skull": "assassins", "score_points": 4, "duration": 2,
 			"enemy": "Watcher",
 			"game": ["Halo 4"],
 			"tag": "char objects\\characters\\storm_bishop\\*",
@@ -26420,7 +26420,7 @@
 		"Thunderstorm: Grunt": {
 			"desc": "Every Grunt is promoted: they become Jackals.",
 			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier up (_apply_ladder). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Weapons: a moved unit gets the weapon its new species most often carries on that map (Hunters: their own; a species placed nowhere: the unit keeps its weapon) -- Initial Weapon -1 is NO weapon from Halo 2 to ODST. Shared Character Type / weapon arrays are copied per cell before writing, so nothing is moved twice. Squads the scripts load into a Phantom are not moved to a species that cannot take its seats (Halo 3: Jackal, Elite, Hunter, Drone; elsewhere Hunter). Reach: only to a target resident in every zone set the source is (else no move). Untested in game.",
-			"skull": "thunderstorm", "score_points": 4,
+			"skull": "thunderstorm", "score_points": 4, "duration": 2,
 			"enemy": "Grunt",
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"tag": {"Halo 1": "actv characters\\grunt\\*", "Halo 2": "char objects\\characters\\grunt\\* & objects\\characters\\heretic_grunt\\*", "Halo 4": "char objects\\characters\\storm_grunt\\*"},
@@ -26429,7 +26429,7 @@
 		"Thunderstorm: Jackal": {
 			"desc": "Every Jackal is promoted: they become Elites or Brutes.",
 			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier up (_apply_ladder). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Weapons: a moved unit gets the weapon its new species most often carries on that map (Hunters: their own; a species placed nowhere: the unit keeps its weapon) -- Initial Weapon -1 is NO weapon from Halo 2 to ODST. Shared Character Type / weapon arrays are copied per cell before writing, so nothing is moved twice. Squads the scripts load into a Phantom are not moved to a species that cannot take its seats (Halo 3: Jackal, Elite, Hunter, Drone; elsewhere Hunter). Reach: only to a target resident in every zone set the source is (else no move). Untested in game.",
-			"skull": "thunderstorm", "score_points": 4,
+			"skull": "thunderstorm", "score_points": 4, "duration": 2,
 			"enemy": "Jackal",
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"tag": {"Halo 1": "actv characters\\jackal\\*", "Halo 2": "char objects\\characters\\jackal\\*", "Halo 4": "char objects\\characters\\storm_jackal\\*"},
@@ -26438,7 +26438,7 @@
 		"Thunderstorm: Skirmisher": {
 			"desc": "Every Skirmisher is promoted: they become Elites or Brutes.",
 			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier up (_apply_ladder). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Weapons: a moved unit gets the weapon its new species most often carries on that map (Hunters: their own; a species placed nowhere: the unit keeps its weapon) -- Initial Weapon -1 is NO weapon from Halo 2 to ODST. Shared Character Type / weapon arrays are copied per cell before writing, so nothing is moved twice. Squads the scripts load into a Phantom are not moved to a species that cannot take its seats (Halo 3: Jackal, Elite, Hunter, Drone; elsewhere Hunter). Reach: only to a target resident in every zone set the source is (else no move). Untested in game.",
-			"skull": "thunderstorm", "score_points": 4,
+			"skull": "thunderstorm", "score_points": 4, "duration": 2,
 			"enemy": "Skirmisher",
 			"game": ["Halo Reach"],
 			"tag": "scnr",
@@ -26447,7 +26447,7 @@
 		"Thunderstorm: Elite": {
 			"desc": "Every Elite is promoted: they become Hunters.",
 			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier up (_apply_ladder). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Weapons: a moved unit gets the weapon its new species most often carries on that map (Hunters: their own; a species placed nowhere: the unit keeps its weapon) -- Initial Weapon -1 is NO weapon from Halo 2 to ODST. Shared Character Type / weapon arrays are copied per cell before writing, so nothing is moved twice. Squads the scripts load into a Phantom are not moved to a species that cannot take its seats (Halo 3: Jackal, Elite, Hunter, Drone; elsewhere Hunter). Reach: only to a target resident in every zone set the source is (else no move). Untested in game.",
-			"skull": "thunderstorm", "score_points": 4,
+			"skull": "thunderstorm", "score_points": 4, "duration": 2,
 			"enemy": "Elite",
 			"game": ["Halo 1", "Halo 2", "Halo Reach", "Halo 4"],
 			"tag": {"Halo 1": "actv characters\\elite\\*", "Halo 2": "char objects\\characters\\elite\\* & objects\\characters\\heretic\\*", "Halo 4": "char objects\\characters\\storm_elite\\*"},
@@ -26456,7 +26456,7 @@
 		"Thunderstorm: Brute": {
 			"desc": "Every Brute is promoted: they become Hunters.",
 			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier up (_apply_ladder). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Weapons: a moved unit gets the weapon its new species most often carries on that map (Hunters: their own; a species placed nowhere: the unit keeps its weapon) -- Initial Weapon -1 is NO weapon from Halo 2 to ODST. Shared Character Type / weapon arrays are copied per cell before writing, so nothing is moved twice. Squads the scripts load into a Phantom are not moved to a species that cannot take its seats (Halo 3: Jackal, Elite, Hunter, Drone; elsewhere Hunter). Reach: only to a target resident in every zone set the source is (else no move). Untested in game.",
-			"skull": "thunderstorm", "score_points": 4,
+			"skull": "thunderstorm", "score_points": 4, "duration": 2,
 			"enemy": "Brute",
 			"game": ["Halo 2", "Halo 3", "Halo Reach"],
 			"tag": "char objects\\characters\\brute\\*",
@@ -26465,7 +26465,7 @@
 		"Thunderstorm: Infection Form": {
 			"desc": "Every Infection Form is promoted: they become Carrier Forms.",
 			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier up (_apply_ladder). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Weapons: a moved unit gets the weapon its new species most often carries on that map (Hunters: their own; a species placed nowhere: the unit keeps its weapon) -- Initial Weapon -1 is NO weapon from Halo 2 to ODST. Shared Character Type / weapon arrays are copied per cell before writing, so nothing is moved twice. Squads the scripts load into a Phantom are not moved to a species that cannot take its seats (Halo 3: Jackal, Elite, Hunter, Drone; elsewhere Hunter). Reach: only to a target resident in every zone set the source is (else no move). Untested in game.",
-			"skull": "thunderstorm", "score_points": 4,
+			"skull": "thunderstorm", "score_points": 4, "duration": 2,
 			"enemy": "Flood Infection Form",
 			"game": ["Halo 1", "Halo 2", "Halo 3"],
 			"tag": {"Halo 1": "actv characters\\flood_infection\\*", "Halo 2": "char objects\\characters\\flood_infection\\*"},
@@ -26474,7 +26474,7 @@
 		"Thunderstorm: Carrier Form": {
 			"desc": "Every Carrier Form is promoted: they become Combat Forms.",
 			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier up (_apply_ladder). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Weapons: a moved unit gets the weapon its new species most often carries on that map (Hunters: their own; a species placed nowhere: the unit keeps its weapon) -- Initial Weapon -1 is NO weapon from Halo 2 to ODST. Shared Character Type / weapon arrays are copied per cell before writing, so nothing is moved twice. Squads the scripts load into a Phantom are not moved to a species that cannot take its seats (Halo 3: Jackal, Elite, Hunter, Drone; elsewhere Hunter). Reach: only to a target resident in every zone set the source is (else no move). Untested in game.",
-			"skull": "thunderstorm", "score_points": 4,
+			"skull": "thunderstorm", "score_points": 4, "duration": 2,
 			"enemy": "Flood Carrier Form",
 			"game": ["Halo 1", "Halo 2", "Halo 3"],
 			"tag": {"Halo 1": "actv characters\\floodcarrier\\*", "Halo 2": "char objects\\characters\\floodcarrier\\*"},
@@ -26483,7 +26483,7 @@
 		"Thunderstorm: Combat Form": {
 			"desc": "Every Combat Form is promoted: they become Pure Forms.",
 			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier up (_apply_ladder). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Weapons: a moved unit gets the weapon its new species most often carries on that map (Hunters: their own; a species placed nowhere: the unit keeps its weapon) -- Initial Weapon -1 is NO weapon from Halo 2 to ODST. Shared Character Type / weapon arrays are copied per cell before writing, so nothing is moved twice. Squads the scripts load into a Phantom are not moved to a species that cannot take its seats (Halo 3: Jackal, Elite, Hunter, Drone; elsewhere Hunter). Reach: only to a target resident in every zone set the source is (else no move). Untested in game.",
-			"skull": "thunderstorm", "score_points": 4,
+			"skull": "thunderstorm", "score_points": 4, "duration": 2,
 			"enemy": "Flood Combat Form",
 			"game": ["Halo 3"],
 			"tag": {"Halo 1": "actv characters\\floodcombat*", "Halo 2": "char objects\\characters\\floodcombat_elite\\* & objects\\characters\\floodcombat_human\\*", "Halo 3": "char objects\\characters\\floodcombat_elite\\* & objects\\characters\\floodcombat_human\\* & objects\\characters\\floodcombat_brute\\*"},
@@ -26493,7 +26493,7 @@
 			"desc": "Every Jackal is demoted one tier, and the Grunts get tougher: shield, vitality and fire rate x2.",
 			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier DOWN (_apply_ladder), and raises the lower species (Grunt) by the rows below (x2 each, the shield / vitality / fire-rate rows of that species' own cards; they hit every member of it, not only the demoted ones). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Weapons: a moved unit gets the weapon its new species most often carries on that map (Hunters: their own; a species placed nowhere: the unit keeps its weapon) -- Initial Weapon -1 is NO weapon from Halo 2 to ODST. Shared Character Type / weapon arrays are copied per cell before writing, so nothing is moved twice. Squads the scripts load into a Phantom are not moved to a species that cannot take its seats (Halo 3: Jackal, Elite, Hunter, Drone; elsewhere Hunter). Reach: only to a target resident in every zone set the source is (else no move). Untested in game.",
 			"harder_when": "increased",
-			"skull": "downpour", "score_points": 2,
+			"skull": "downpour", "score_points": 2, "duration": 3,
 			"enemy": "Jackal",
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"tag": {"Halo 1": "actv characters\\grunt\\*", "Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt", "Halo 3": "char objects\\characters\\grunt\\ai\\grunt*", "Halo 3: ODST": "char objects\\characters\\grunt\\ai\\grunt*", "Halo Reach": "char objects\\characters\\grunt\\ai\\grunt*", "Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"},
@@ -26503,7 +26503,7 @@
 			"desc": "Every Skirmisher is demoted one tier, and the Grunts get tougher: shield, vitality and fire rate x2.",
 			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier DOWN (_apply_ladder), and raises the lower species (Grunt) by the rows below (x2 each, the shield / vitality / fire-rate rows of that species' own cards; they hit every member of it, not only the demoted ones). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Weapons: a moved unit gets the weapon its new species most often carries on that map (Hunters: their own; a species placed nowhere: the unit keeps its weapon) -- Initial Weapon -1 is NO weapon from Halo 2 to ODST. Shared Character Type / weapon arrays are copied per cell before writing, so nothing is moved twice. Squads the scripts load into a Phantom are not moved to a species that cannot take its seats (Halo 3: Jackal, Elite, Hunter, Drone; elsewhere Hunter). Reach: only to a target resident in every zone set the source is (else no move). Untested in game.",
 			"harder_when": "increased",
-			"skull": "downpour", "score_points": 2,
+			"skull": "downpour", "score_points": 2, "duration": 3,
 			"enemy": "Skirmisher",
 			"game": ["Halo Reach"],
 			"tag": {"Halo Reach": "char objects\\characters\\grunt\\ai\\grunt*"},
@@ -26513,7 +26513,7 @@
 			"desc": "Every Elite is demoted one tier, and the Jackals get tougher: shield, vitality and fire rate x2.",
 			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier DOWN (_apply_ladder), and raises the lower species (Jackal) by the rows below (x2 each, the shield / vitality / fire-rate rows of that species' own cards; they hit every member of it, not only the demoted ones). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Weapons: a moved unit gets the weapon its new species most often carries on that map (Hunters: their own; a species placed nowhere: the unit keeps its weapon) -- Initial Weapon -1 is NO weapon from Halo 2 to ODST. Shared Character Type / weapon arrays are copied per cell before writing, so nothing is moved twice. Squads the scripts load into a Phantom are not moved to a species that cannot take its seats (Halo 3: Jackal, Elite, Hunter, Drone; elsewhere Hunter). Reach: only to a target resident in every zone set the source is (else no move). Untested in game.",
 			"harder_when": "increased",
-			"skull": "downpour", "score_points": 2,
+			"skull": "downpour", "score_points": 2, "duration": 3,
 			"enemy": "Elite",
 			"game": ["Halo 1", "Halo 2", "Halo Reach", "Halo 4"],
 			"tag": {"Halo 1": "actv characters\\jackal\\*", "Halo 2": "char objects\\characters\\jackal\\ai\\jackal*", "Halo Reach": "char objects\\characters\\jackal\\ai\\jackal*", "Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"},
@@ -26523,7 +26523,7 @@
 			"desc": "Every Brute is demoted one tier, and the Jackals get tougher: shield, vitality and fire rate x2.",
 			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier DOWN (_apply_ladder), and raises the lower species (Jackal) by the rows below (x2 each, the shield / vitality / fire-rate rows of that species' own cards; they hit every member of it, not only the demoted ones). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Weapons: a moved unit gets the weapon its new species most often carries on that map (Hunters: their own; a species placed nowhere: the unit keeps its weapon) -- Initial Weapon -1 is NO weapon from Halo 2 to ODST. Shared Character Type / weapon arrays are copied per cell before writing, so nothing is moved twice. Squads the scripts load into a Phantom are not moved to a species that cannot take its seats (Halo 3: Jackal, Elite, Hunter, Drone; elsewhere Hunter). Reach: only to a target resident in every zone set the source is (else no move). Untested in game.",
 			"harder_when": "increased",
-			"skull": "downpour", "score_points": 2,
+			"skull": "downpour", "score_points": 2, "duration": 3,
 			"enemy": "Brute",
 			"game": ["Halo 2", "Halo 3", "Halo Reach"],
 			"tag": {"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*", "Halo 3": "char objects\\characters\\jackal\\ai\\jackal*", "Halo 3: ODST": "char objects\\characters\\jackal\\ai\\jackal*", "Halo Reach": "char objects\\characters\\jackal\\ai\\jackal*"},
@@ -26533,7 +26533,7 @@
 			"desc": "Every Hunter is demoted one tier, and the lower speciess get tougher: shield, vitality and fire rate x2.",
 			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier DOWN (_apply_ladder), and raises the lower species (Elite (Brute in Halo 3/ODST)) by the rows below (x2 each, the shield / vitality / fire-rate rows of that species' own cards; they hit every member of it, not only the demoted ones). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Weapons: a moved unit gets the weapon its new species most often carries on that map (Hunters: their own; a species placed nowhere: the unit keeps its weapon) -- Initial Weapon -1 is NO weapon from Halo 2 to ODST. Shared Character Type / weapon arrays are copied per cell before writing, so nothing is moved twice. Squads the scripts load into a Phantom are not moved to a species that cannot take its seats (Halo 3: Jackal, Elite, Hunter, Drone; elsewhere Hunter). Reach: only to a target resident in every zone set the source is (else no move). Untested in game.",
 			"harder_when": "increased",
-			"skull": "downpour", "score_points": 2,
+			"skull": "downpour", "score_points": 2, "duration": 3,
 			"enemy": "Hunter",
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"tag": {"Halo 1": "actv characters\\elite\\*", "Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major", "Halo 3": "char objects\\characters\\brute\\ai\\brute*", "Halo 3: ODST": "char objects\\characters\\brute\\ai\\brute*", "Halo Reach": "char objects\\characters\\elite\\ai\\elite*", "Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"},
@@ -26543,7 +26543,7 @@
 			"desc": "Every Carrier Form is demoted one tier, and the Infection Forms get tougher: shield, vitality and fire rate x2.",
 			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier DOWN (_apply_ladder), and raises the lower species (Infection Form) by the rows below (x2 each, the shield / vitality / fire-rate rows of that species' own cards; they hit every member of it, not only the demoted ones). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Weapons: a moved unit gets the weapon its new species most often carries on that map (Hunters: their own; a species placed nowhere: the unit keeps its weapon) -- Initial Weapon -1 is NO weapon from Halo 2 to ODST. Shared Character Type / weapon arrays are copied per cell before writing, so nothing is moved twice. Squads the scripts load into a Phantom are not moved to a species that cannot take its seats (Halo 3: Jackal, Elite, Hunter, Drone; elsewhere Hunter). Reach: only to a target resident in every zone set the source is (else no move). Untested in game.",
 			"harder_when": "increased",
-			"skull": "downpour", "score_points": 2,
+			"skull": "downpour", "score_points": 2, "duration": 3,
 			"enemy": "Flood Carrier Form",
 			"game": ["Halo 1", "Halo 2", "Halo 3"],
 			"tag": {"Halo 1": "actv characters\\flood_infection\\*", "Halo 2": "char ai\\generic", "Halo 3": "char ai\\generic", "Halo 3: ODST": "char ai\\generic"},
@@ -26553,7 +26553,7 @@
 			"desc": "Every Combat Form is demoted one tier, and the Carrier Forms get tougher: shield, vitality and fire rate x2.",
 			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier DOWN (_apply_ladder), and raises the lower species (Carrier Form) by the rows below (x2 each, the shield / vitality / fire-rate rows of that species' own cards; they hit every member of it, not only the demoted ones). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Weapons: a moved unit gets the weapon its new species most often carries on that map (Hunters: their own; a species placed nowhere: the unit keeps its weapon) -- Initial Weapon -1 is NO weapon from Halo 2 to ODST. Shared Character Type / weapon arrays are copied per cell before writing, so nothing is moved twice. Squads the scripts load into a Phantom are not moved to a species that cannot take its seats (Halo 3: Jackal, Elite, Hunter, Drone; elsewhere Hunter). Reach: only to a target resident in every zone set the source is (else no move). Untested in game.",
 			"harder_when": "increased",
-			"skull": "downpour", "score_points": 2,
+			"skull": "downpour", "score_points": 2, "duration": 3,
 			"enemy": "Flood Combat Form",
 			"game": ["Halo 1", "Halo 2", "Halo 3"],
 			"tag": {"Halo 1": "actv characters\\floodcarrier\\*", "Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier*", "Halo 3": "char objects\\characters\\floodcarrier\\ai\\flood_carrier", "Halo 3: ODST": "char objects\\characters\\floodcarrier\\ai\\flood_carrier"},
@@ -26563,7 +26563,7 @@
 			"desc": "Every Pure Form is demoted one tier, and the Combat Forms get tougher: shield, vitality and fire rate x2.",
 			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier DOWN (_apply_ladder), and raises the lower species (Combat Form) by the rows below (x2 each, the shield / vitality / fire-rate rows of that species' own cards; they hit every member of it, not only the demoted ones). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Weapons: a moved unit gets the weapon its new species most often carries on that map (Hunters: their own; a species placed nowhere: the unit keeps its weapon) -- Initial Weapon -1 is NO weapon from Halo 2 to ODST. Shared Character Type / weapon arrays are copied per cell before writing, so nothing is moved twice. Squads the scripts load into a Phantom are not moved to a species that cannot take its seats (Halo 3: Jackal, Elite, Hunter, Drone; elsewhere Hunter). Reach: only to a target resident in every zone set the source is (else no move). Untested in game.",
 			"harder_when": "increased",
-			"skull": "downpour", "score_points": 2,
+			"skull": "downpour", "score_points": 2, "duration": 3,
 			"enemy": "Flood Pure Form",
 			"game": ["Halo 3"],
 			"tag": {"Halo 3": "char objects\\characters\\floodcombat*", "Halo 3: ODST": "char objects\\characters\\floodcombat*"},
