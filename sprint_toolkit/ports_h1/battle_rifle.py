@@ -92,8 +92,9 @@ PORT.update({
         'h1_model': r'weapons\battle rifle\fp\fp',
         'align': 'same_space',
         # the SMG's tested placement (user's pick, H1_PORT_PLAN "Pilot A1"), tuned per weapon;
-        # test 1 (2026-10-07, a30): 'move the FP position up 2 units' (1 unit = 0.01 wu)
-        'view_offset': (-0.0225, 0.0, -0.0225 + 0.02),
+        # test 1 (2026-10-07, a30): 'move the FP position up 2 units' (1 unit = 0.01 wu);
+        # test 2: 'back down a unit'
+        'view_offset': (-0.0225, 0.0, -0.0225 + 0.01),
         # the H1 pistol's own names (per-shot `fire-1`, both reloads). The BR graph has NO
         # plain fire_1 / posing:var0: fire_1:var1..3 (6/6/5 fr, one per burst round in Halo
         # 3) and posing var1 / var2 (60 / 90 fr) -- var1 of each (--list, 2026-10-07)
@@ -181,14 +182,17 @@ PORT.update({
         # ticks = 1 charge tick + 4 gaps of 2 ticks (no recovery at all); faster than Halo 3,
         # 'a small delay' felt. So rounds = 1 + spew ticks / 2 + 1 (6 ticks -> 5) and the
         # cycle = charge + 2 x (rounds - 1) ticks (OBSERVATIONS from this port).
-        # TEST 2: spew 0.1 s (3 ticks -> 3 rounds) and the CHARGE as Halo 3's recovery:
-        # 0.28 s + 4 ticks = 0.41 s a held burst (Halo 3 0.413) -- the price is 0.28 s before
-        # the FIRST round (Halo 3: none). Variant B2 on the secondary (h1_port_test_map
-        # --secondary, a test-only tag): charge 1 tick + does_not_repeat_automatically
-        'trigger': {'rounds_per_second': (15.0, 15.0), 'acceleration_time': 0.0,
+        # TEST 2 (two variants in one boot, h1_port_test_map --secondary): B1 = spew 0.1 s +
+        # the CHARGE (0.28 s) as Halo 3's recovery; B2 = charge 1 tick +
+        # does_not_repeat_automatically (one burst a pull). USER PICKED B2 and tuned it
+        # himself in game: 10 rounds/s, spew 0.15 s = EXACTLY 3 rounds, 'a similar feeling
+        # to the original'. So rounds 3 ticks apart (Halo 3: 2 -- the spacing is the user's
+        # feel call), a burst per trigger pull, NO recovery: tapping is limited by the
+        # player only (Halo 3: 0.28 s) -- not reproduced, and so no burst-cycle balance row
+        'trigger': {'rounds_per_second': (10.0, 10.0), 'acceleration_time': 0.0,
                     'deceleration_time': 0.0,
-                    'charging_time': 0.28, 'overcharged_action': 'discharge',
-                    'spew_time': 0.1,
+                    'charging_time': 1 / 30.0, 'overcharged_action': 'discharge',
+                    'spew_time': 0.15, 'does_not_repeat_automatically': True,
                     # H3 bloom ramp 0.2 / 0.1 (magnum 0 / 0: no ratio, the source value)
                     'error_acceleration_time': 0.2, 'error_deceleration_time': 0.1},
         'fields': {
@@ -201,7 +205,11 @@ PORT.update({
             # ammo, which then tops the BR up -- as the AR's does the SMG)
             'weap_attrs.magazines.0.magazine_items.0.rounds': 72,
             # the on-gun counter's input (model 'numeric'): B exports the loaded fraction, as
-            # on the AR (the pistol template exports nothing on B)
+            # on the AR (the pistol template exports nothing on B). TEST 2: the counter
+            # jumped up on every shot and fell back to 0 -- the ILLUMINATION the pistol
+            # template exports on A. Test 3 drops A: if the counter now counts the magazine,
+            # it reads B (the AR's layout); if it stays at 00, it reads A (then A = ammo)
+            'weap_attrs.A_in': 'none',
             'weap_attrs.B_in': 'primary_ammunition',
             # Halo 3's zoom sounds (the template names the sniper's)
             'weap_attrs.interface.zoom_in_sound.filepath': SND + 'br_zoom_in',
@@ -235,7 +243,12 @@ PORT.update({
         # range meter, all drawn black) baked into the screen-effect mask (h1_h3_scope.py),
         # no blur, the pistol's zoom readouts dropped; the reticle stays (as in Halo 3)
         'hud': {'donor': PISTOL + 'pistol', 'out': BR + 'battle rifle',
-                'scope': {'chud': r'ui\chud\battle_rifle', 'out': BR + 'bitmaps\\scope_mask'},
+                # test 2 (screenshot): the ring drew 435 x 322 px at 1920x1080 -- Halo 1 puts
+                # the mask in a 4:3 box ~558 px tall. aspect 4/3 pre-squashes it round; span
+                # 380 fits Halo 3's 369-unit ring into 97% of the texture (~50% of the
+                # screen height; Halo 3 58%, Halo 1's pistol ~48%); 1024 px for crisp lines
+                'scope': {'chud': r'ui\chud\battle_rifle', 'out': BR + 'bitmaps\\scope_mask',
+                          'size': 1024, 'span': 380.0, 'aspect': 4 / 3.0},
                 'reticle': ('hud_reticles', 1, 'battle rifle'),
                 'reticle_thicken': 1,
                 'flash_base': 12,                # the pistol's low-ammo cutoff is of 12

@@ -17,9 +17,13 @@ offset` (y down); `mirror horizontal / vertical` add the copy reflected about th
 `extend border` repeats the sprite's edge beyond it. Only widgets whose unit zoom state
 excludes 'unzoomed' are taken (the reticle stays the HUD's own crosshair).
 
-The mask spans `span` chud units square (640: the screen height, the pistol mask's own
-convention -- its ring is round in the square texture), `size` px; the blur is switched
-off (Halo 3 does not blur). make_hud (h1_pickable_weapons, hud['scope']) points the
+The mask spans `span` chud units tall and `span x aspect` wide, `size` px square; the blur
+is switched off (Halo 3 does not blur). WHERE HALO 1 DRAWS IT (BR test 2, 2026-10-07,
+1920x1080 screenshot): NOT full screen -- a centred 4:3 box about 558 px tall (52% of the
+height; beyond it the edge texels repeat), so a ring round in the square texture showed
+435 x 322 px. Hence `aspect` 4/3 (pre-squashed) and a `span` that fits the scope into the
+box: Halo 3's ring (58% of the height) can be at most ~90% of its size here. An
+OBSERVATION from one weapon at one resolution -- check it on the next scope port. make_hud (h1_pickable_weapons, hud['scope']) points the
 weapon's HUD at it and drops the donor's zoom crosshairs (the pistol's readouts).
 
     python h1_h3_scope.py "ui\chud\battle_rifle" "weapons\battle rifle\bitmaps\scope_mask" [--preview out.png]
@@ -131,8 +135,12 @@ def write(dark, out):
     t = bitm_def.build(filepath=os.path.join(TAGS, TEMPLATE + '.bitmap'))
     d = t.data.tagdata
     b = d.bitmaps.STEPTREE[0]
-    if (b.width, b.height, b.format.enum_name, b.mipmaps) != (size, size, 'a8r8g8b8', 0):
-        raise SystemExit('the template is %dx%d %s +%d mips' % (b.width, b.height, b.format.enum_name, b.mipmaps))
+    if (b.format.enum_name, b.mipmaps) != ('a8r8g8b8', 0):
+        raise SystemExit('the template is %s +%d mips' % (b.format.enum_name, b.mipmaps))
+    if size & (size - 1):
+        raise SystemExit('size %d is not a power of 2' % size)
+    b.width = b.height = size                    # the template's 512, or larger (BR test 3: 1024)
+    b.registration_point_x = b.registration_point_y = size // 2
     v = np.clip(np.round(dark * 255), 0, 255).astype(np.uint8)
     bgra = np.stack([v, v, v, np.zeros_like(v)], axis=-1)
     d.processed_pixel_data.data = bytearray(bgra.tobytes())

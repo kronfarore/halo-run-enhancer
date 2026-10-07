@@ -197,7 +197,8 @@ def make_hud(w, key, write):
         import h1_h3_scope
         S = h['scope']
         if write:
-            dark, used = h1_h3_scope.bake(S['chud'], span=S.get('span', 640.0), aspect=S.get('aspect', 1.0))
+            dark, used = h1_h3_scope.bake(S['chud'], size=S.get('size', 512), span=S.get('span', 640.0),
+                                          aspect=S.get('aspect', 1.0))
             h1_h3_scope.write(dark, S['out'])
             print('   scope: ' + '; '.join(used))
         se = d.screen_effect.STEPTREE[0]
