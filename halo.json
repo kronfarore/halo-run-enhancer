@@ -958,6 +958,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "weap weapons\\assault rifle\\assault rifle", "Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle", "Halo Reach": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle"},
 					"targets": [
@@ -1286,6 +1287,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"tag": {"Halo 1": "weap weapons\\pistol\\pistol", "Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag", "Halo Reach": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 4": "weap objects\\weapons\\pistol\\storm_magnum\\storm_magnum"},
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"targets": [
@@ -1782,6 +1784,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"targets": [
@@ -2184,6 +2187,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"tag": {"Halo 1": "weap weapons\\plasma rifle\\plasma rifle", "Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle", "Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle", "Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red", "Halo Reach": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"},
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"targets": [
@@ -2621,6 +2625,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"tag": {"Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"targets": [
@@ -2940,6 +2945,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"tag": {"Halo 1": "weap weapons\\sniper rifle\\sniper rifle", "Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo Reach": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle"},
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"targets": [
@@ -3287,6 +3293,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"tag": {"Halo 1": "weap weapons\\rocket launcher\\rocket launcher", "Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo Reach": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo 4": "weap objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher"},
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"targets": [
@@ -3598,6 +3605,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"tag": {"Halo 1": "weap weapons\\shotgun\\shotgun", "Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun", "Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun", "Halo Reach": "weap objects\\weapons\\rifle\\shotgun\\shotgun", "Halo 4": "weap objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun"},
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"targets": [
@@ -3892,6 +3900,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": { "Halo 2": "weap objects\\weapons\\rifle\\smg\\smg", "Halo 3": "weap objects\\weapons\\rifle\\smg\\smg", "Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg & objects\\weapons\\rifle\\smg_silenced\\smg_silenced" },
 					"targets": [
@@ -4470,6 +4479,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle", "Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_br\\storm_br"},
 					"game": ["Halo 3", "Halo 3: ODST", "Halo 4"],
 					"targets": [
@@ -4767,6 +4777,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"tag": {"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot", "Halo 3": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"},
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"targets": [
@@ -5042,6 +5053,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"},
 					"game": ["Halo 3", "Halo 3: ODST", "Halo 4"],
 					"targets": [
@@ -5309,6 +5321,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine", "Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine", "Halo 4": "weap objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine"},
 					"game": ["Halo 3", "Halo 3: ODST", "Halo 4"],
 					"targets": [
@@ -5672,6 +5685,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"tag": { "Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 4": "weap objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon" },
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"targets": [
@@ -5944,6 +5958,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"tag": { "Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 4": "weap objects\\weapons\\pistol\\storm_sentinel_beam\\storm_sentinel_beam" },
 					"game": ["Halo 3", "Halo 3: ODST", "Halo 4"],
 					"targets": [
@@ -6402,6 +6417,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": { "Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator" },
 					"targets": [
@@ -6804,6 +6820,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
 					"targets": [
@@ -7120,6 +7137,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
 					"targets": [
@@ -7214,6 +7232,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"debug_desc": "`Magnification Levels` is how many zoom steps the weapon has and `Magnification Range` how far each goes. A weapon that ships with 0 levels has no zoom at all, which is exactly why it needs the card: an operator cannot multiply 0 into anything, so SET it (=1 or =2) to give the weapon a scope it never had.\n\nEvery game also adds a scope OVERLAY automatically when a scopeless weapon gains magnification, copying the widgets from a scoped donor on the same map (the 'Add a scope overlay to scopeless weapons' option, with a donor picker). Reach was wired for this on 2026-08-27; its donors are the sniper rifle, DMR, needle rifle, magnum and rocket launcher -- the only five Reach weapons that ship any magnification.",
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {"default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer"},
@@ -7525,6 +7544,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {"default": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser", "Halo 4": "weap objects\\weapons\\support_high\\storm_spartan_laser\\storm_spartan_laser"},
 					"targets": [
@@ -7749,6 +7769,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"requires_config": "turret_zoom_first_person",
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
@@ -8014,6 +8035,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"requires_config": "turret_zoom_first_person",
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated & objects\\vehicles\\warthog\\turrets\\chaingun\\weapon\\chaingun_turret", "Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\warthog_chaingun", "Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\storm_warthogchaingun"},
@@ -8279,6 +8301,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"requires_config": "turret_zoom_first_person",
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated", "Halo Reach": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted", "Halo 4": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_detached\\storm_plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"},
@@ -8499,6 +8522,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"requires_config": "turret_zoom_first_person",
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod & objects\\weapons\\turret\\missile_pod\\missile_pod_integrated",
@@ -8689,6 +8713,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"debug_desc": "`Magnification Levels` is how many zoom steps the weapon has and `Magnification Range` how far each goes. A weapon that ships with 0 levels has no zoom at all, which is exactly why it needs the card: an operator cannot multiply 0 into anything, so SET it (=1 or =2) to give the weapon a scope it never had.\n\nEvery game also adds a scope OVERLAY automatically when a scopeless weapon gains magnification, copying the widgets from a scoped donor on the same map (the 'Add a scope overlay to scopeless weapons' option, with a donor picker). Reach was wired for this on 2026-08-27; its donors are the sniper rifle, DMR, needle rifle, magnum and rocket launcher -- the only five Reach weapons that ship any magnification.",
 					"game": ["Halo Reach", "Halo 4"],
 					"tag": {"default": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle"},
@@ -8964,6 +8989,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo Reach", "Halo 4"],
 					"tag": {"default": "weap objects\\weapons\\rifle\\dmr\\dmr", "Halo 4": "weap objects\\weapons\\rifle\\storm_dmr\\storm_dmr"},
 					"targets": [
@@ -9245,6 +9271,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
 					"targets": [
@@ -9487,6 +9514,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"debug_desc": "`Magnification Levels` is how many zoom steps the weapon has and `Magnification Range` how far each goes. A weapon that ships with 0 levels has no zoom at all, which is exactly why it needs the card: an operator cannot multiply 0 into anything, so SET it (=1 or =2) to give the weapon a scope it never had.\n\nEvery game also adds a scope OVERLAY automatically when a scopeless weapon gains magnification, copying the widgets from a scoped donor on the same map (the 'Add a scope overlay to scopeless weapons' option, with a donor picker). Reach was wired for this on 2026-08-27; its donors are the sniper rifle, DMR, needle rifle, magnum and rocket launcher -- the only five Reach weapons that ship any magnification.",
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
@@ -9823,6 +9851,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
 					"targets": [
@@ -10114,6 +10143,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
 					"targets": [
@@ -10392,6 +10422,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"debug_desc": "`Magnification Levels` is how many zoom steps the weapon has and `Magnification Range` how far each goes. A weapon that ships with 0 levels has no zoom at all, which is exactly why it needs the card: an operator cannot multiply 0 into anything, so SET it (=1 or =2) to give the weapon a scope it never had.\n\nEvery game also adds a scope OVERLAY automatically when a scopeless weapon gains magnification, copying the widgets from a scoped donor on the same map (the 'Add a scope overlay to scopeless weapons' option, with a donor picker). Reach was wired for this on 2026-08-27; its donors are the sniper rifle, DMR, needle rifle, magnum and rocket launcher -- the only five Reach weapons that ship any magnification.",
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
@@ -10735,6 +10766,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
 					"targets": [
@@ -11050,6 +11082,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
 					"targets": [
@@ -11427,6 +11460,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo 4", "Halo 3", "Halo Reach"],
 					"tag": { "Halo 4": "weap objects\\weapons\\rifle\\storm_lmg\\storm_lmg", "Halo 3": "weap objects\\weapons\\rifle\\saw\\saw", "Halo Reach": "weap objects\\weapons\\rifle\\saw\\saw" },
 					"targets": [
@@ -11795,6 +11829,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun & objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun_npc",
 					"targets": [
@@ -12048,6 +12083,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle & objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle_npc",
 					"targets": [
@@ -12310,6 +12346,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_pawnhead",
 					"targets": [
@@ -12621,6 +12658,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
 					"targets": [
@@ -12922,6 +12960,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_rail_gun\\storm_rail_gun_pve",
 					"targets": [
@@ -13054,6 +13093,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"debug_desc": "`Magnification Levels` is how many zoom steps the weapon has and `Magnification Range` how far each goes. A weapon that ships with 0 levels has no zoom at all, which is exactly why it needs the card: an operator cannot multiply 0 into anything, so SET it (=1 or =2) to give the weapon a scope it never had.\n\nEvery game also adds a scope OVERLAY automatically when a scopeless weapon gains magnification, copying the widgets from a scoped donor on the same map (the 'Add a scope overlay to scopeless weapons' option, with a donor picker). Reach was wired for this on 2026-08-27; its donors are the sniper rifle, DMR, needle rifle, magnum and rocket launcher -- the only five Reach weapons that ship any magnification.",
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\pistol\\storm_sticky_detonator\\storm_sticky_detonator_pve",
@@ -13366,6 +13406,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle & objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle_npc",
 					"targets": [
@@ -13651,6 +13692,7 @@
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
+					"requires_zoom": true,
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher & objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher_knight",
 					"targets": [

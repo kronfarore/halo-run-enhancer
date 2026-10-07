@@ -2594,6 +2594,9 @@ class ModifierDatabase:
             'invertible': mod_data.get('invertible'),
             # the card family this card was split from (a pre-split run names it)
             'split_from': mod_data.get('split_from'),
+            # Offered only for a weapon that can zoom: innately in this game, or because
+            # the run already holds a Zoom pick for it (Zoom Time, user 2026-10-07)
+            'requires_zoom': mod_data.get('requires_zoom'),
             # An Options gate. `requires_config` names a CONFIG key (and may be
             # per-game, resolved like `tag`); `requires_config_in` optionally lists the
             # values that count as on, for a setting that is a choice rather than a
@@ -3668,6 +3671,35 @@ class ModifierDatabase:
             fielded = self._fielded_weapons(game)
         return base in fielded or self.resolve_weapon(base) in fielded
 
+    def weapon_has_zoom(self, weapon, game):
+        """True when `weapon` zooms innately in `game`: its Zoom card carries a zoom
+        ladder (Magnification Levels `inverse_steps`, a list) for that game. Those ladders
+        were built from the vanilla zoom census (null = no zoom; 129 of 129 weapon/game
+        pairs agree with it), so halo.json is the record."""
+        w = self.resolve_weapon(weapon) or weapon
+        z = next((m for m in self.weapon_mods.get(w, []) if m.get('name') == 'Zoom'), None)
+        if z is None or not self._game_ok(z, game):
+            return False
+        ts = z.get('targets') or []
+        if isinstance(ts, dict):
+            ts = resolve_gamed(ts, game, self.games) or []
+        for t in ts:
+            if (isinstance(t, dict) and t.get('field') == 'Magnification Levels'
+                    and target_applies(t, game)):
+                inv = resolve_gamed(t.get('inverse_steps'), game, self.games)
+                return isinstance(inv, list) and len(inv) > 0
+        return False
+
+    def _zoom_ok(self, m, game):
+        """`requires_zoom`: the weapon zooms innately, or the run holds a Zoom pick for it
+        (any earlier round, either player, a Weapon Identity x2 half included)."""
+        if not m.get('requires_zoom') or not m.get('weapon') or not game:
+            return True
+        if self.weapon_has_zoom(m['weapon'], game):
+            return True
+        held = (getattr(self, 'zoom_picks_fn', None) or (lambda: ()))()
+        return m['weapon'] in held or self.resolve_weapon(m['weapon']) in held
+
     def filter_blacklisted(self, mods, blacklist, game=None):
         drop = (() if CONFIG.get('starting_vitality_cards')
                 else set(self.SUPERSEDED_VITALITY_CARDS))
@@ -3684,6 +3716,7 @@ class ModifierDatabase:
                 # recurring bug class of fixing only one of them.
                 and (m.get('name') not in drop)
                 and self._weapon_fielded(m, game, fielded)
+                and self._zoom_ok(m, game)
                 # Enemies the game no longer fields, whose tags nonetheless resolve:
                 # the Flood from ODST on, and the Elites from Halo 3 on. Both are
                 # excluded at patch time too — this is the offer half of the pair.
@@ -13777,6 +13810,8 @@ class HaloGUI(QMainWindow):
         # the level being drafted, for filters that depend on it (port cards); a
         # lambda, because run_state is replaced on New Run / Load
         self.db.current_mission_fn = lambda: getattr(self.run_state, 'mission_id', None)
+        # weapons the run holds a Zoom pick for (gates Zoom Time: requires_zoom)
+        self.db.zoom_picks_fn = self._zoom_picks
         self.loaded_run_path = None   # set when a run is loaded; steers the save default
         self.shared_run_path = None   # this run's file in the shared folder, re-used
         self.enhancer = RunEnhancer(self.db, self.run_state)
@@ -16013,6 +16048,19 @@ class HaloGUI(QMainWindow):
         if mags:
             data['magnitudes'] = mags
         return data
+
+    def _zoom_picks(self):
+        """Weapons with a Zoom card picked anywhere in the run. A Weapon Identity
+        round's INVERTED half takes zoom away, so only its x2 half counts."""
+        out = set()
+        for rd in getattr(self.run_state, 'rounds', None) or ():
+            mods = [(rd.get(pk) or {}).get('mod') for pk in ('player1', 'player2')]
+            mods += [((rd.get(pk) or {}).get('identity') or {}).get('up')
+                     for pk in ('player1', 'player2')]
+            for m in mods:
+                if isinstance(m, dict) and m.get('name') == 'Zoom' and m.get('weapon'):
+                    out.add(m['weapon'])
+        return out
 
     @staticmethod
     def _round_mods(rd):
