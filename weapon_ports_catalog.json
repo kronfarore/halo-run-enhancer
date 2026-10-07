@@ -749,8 +749,7 @@
     "Bullet Damage": "Beam Damage"
    },
    "skip_cards": [
-    "Ramp Up",
-    "Salvo Shooting"
+    "Ramp Up"
    ],
    "balance_desc": "11.6 damage per round instead of 4.64, Halo 1-style aim assist (1 deg / 25 wu autoaim, 12 deg / 25 wu magnetism) and Halo 3's battery: 11 s of fire instead of 5.6 s."
   },
