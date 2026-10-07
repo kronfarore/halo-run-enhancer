@@ -77,9 +77,9 @@ reach-port-foundry-render-model; animations: a Halo 1 donor's).
 | B1 | **DMR** (pilot) | the Reach pipeline end to end; scope zoom |
 | B2 | Needle Rifle | needles + supercombine (the needler as yardstick) |
 | B3 | Plasma Repeater | heat with venting |
-| B4 | Grenade Launcher | an arcing grenade, the EMP alt-fire (may stay out) |
+| B4 | Grenade Launcher | an arcing grenade; the EMP alt-fire approximated |
 | B5 | Concussion Rifle | a splash push projectile |
-| B6 | Plasma Launcher | a charge + lock-on (lock-on may not exist in Halo 1: decide in session) |
+| B6 | Plasma Launcher | a charge; lock-on approximated (guidance) |
 | B7 | Focus Rifle | a beam + zoom (the H4 kit's Focus Rifle and the Sentinel Beam) |
 
 ### Wave C: Halo 4 source, the SAW's own route (9)
@@ -91,16 +91,19 @@ those tools are SAW-hardwired: the pilot generalizes them.
 |---|---|---|
 | C1 | **Storm Rifle** (pilot) | generalizing the SAW tools; heat |
 | C2 | Suppressor | an automatic, a fast projectile |
-| C3 | Boltshot | a burst/charge secondary (may be simplified) |
+| C3 | Boltshot | a charged secondary shot, approximated |
 | C4 | LightRifle | burst + zoom |
 | C5 | Scattershot | bouncing pellets |
 | C6 | Binary Rifle | a charge + zoom, one-shot balance |
 | C7 | Railgun | a charge shot |
-| C8 | Sticky Detonator | a remote detonation (a Halo 1 mechanism may not exist: decide) |
+| C8 | Sticky Detonator | remote detonation approximated |
 | C9 | Incineration Cannon | a cluster explosion |
 
-Any weapon a session finds the engine cannot support (lock-on, remote detonation) is
-recorded as such and skipped, not forced.
+A mechanic Halo 1 does not have (lock-on, remote detonation, EMP, bouncing projectiles...)
+is APPROXIMATED as closely as the engine allows, never skipped (user, 2026-10-07). E.g.
+lock-on -> strong projectile guidance/magnetism; remote detonation -> a sticky projectile on
+a long fuse or a detonation triggered by a second shot. The session records the
+approximation and what it does not reproduce.
 
 ## Definition of done, per weapon
 
