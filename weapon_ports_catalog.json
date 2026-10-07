@@ -1213,6 +1213,24 @@
      "card": "Ammo display",
      "original": 12,
      "index": 0
+    },
+    {
+     "class": "schi",
+     "tag": "weapons\\battle rifle\\shaders\\ones",
+     "field": "Numeric Counter Limit",
+     "block": null,
+     "value": 54,
+     "card": "Ammo display",
+     "original": 36
+    },
+    {
+     "class": "schi",
+     "tag": "weapons\\battle rifle\\shaders\\tens",
+     "field": "Numeric Counter Limit",
+     "block": null,
+     "value": 54,
+     "card": "Ammo display",
+     "original": 36
     }
    ],
    "weap": "weapons\\battle rifle\\battle rifle",

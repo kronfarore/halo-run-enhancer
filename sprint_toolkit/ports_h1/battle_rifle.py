@@ -253,9 +253,12 @@ PORT.update({
                 # Halo 1 draws the mask ~1.09 px a TEXEL at 1080p (512 -> 558 px, 1024 -> ~1116).
                 # So Halo 3's 58% (623 px) = 572 texels = 369 units -> span 1024 x 369/572 = 660.
                 # Blur: radius 0 smeared it ('worse'; the pistol's is 'more gentle') -> the
-                # donor's convolution kept, mask alpha 255 (test 4 tells what 255 means)
+                # donor's convolution kept, mask alpha 255 (test 4 tells what 255 means).
+                # TEST 4: size 'looking good'; the pistol's gentle blur over the WHOLE view,
+                # lens too -> alpha = WHERE it blurs (255 = blurred), the radius = how much.
+                # Halo 3 does not blur: alpha 0 everywhere (test 5), the donor's radius kept
                 'scope': {'chud': r'ui\chud\battle_rifle', 'out': BR + 'bitmaps\\scope_mask',
-                          'size': 1024, 'span': 660.0, 'aspect': 4 / 3.0, 'alpha': 255},
+                          'size': 1024, 'span': 660.0, 'aspect': 4 / 3.0, 'alpha': 0},
                 'reticle': ('hud_reticles', 1, 'battle rifle'),
                 'reticle_thicken': 1,
                 'flash_base': 12,                # the pistol's low-ammo cutoff is of 12
@@ -309,6 +312,9 @@ PORT.update({
                 dict(row('wphi', BR + 'battle rifle', 'Alpha Multiplier', 4, 7, 'Ammo display', block='Meter Elements'), index=0),
                 dict(row('wphi', BR + 'battle rifle', 'Sequence Index', 1, 0, 'Ammo display', block='Static Elements'), index=0),
                 dict(row('wphi', BR + 'battle rifle', 'Loaded Ammo Cutoff', 18, 12, 'Ammo display'), index=0),
+                # the ON-GUN counter (Halo 1's numeric shader shows loaded fraction x limit)
+                row('schi', BR + 'shaders\\ones', 'Numeric Counter Limit', 54, 36, 'Ammo display'),
+                row('schi', BR + 'shaders\\tens', 'Numeric Counter Limit', 54, 36, 'Ammo display'),
             ]},
     },
 
