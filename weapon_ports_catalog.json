@@ -989,7 +989,15 @@
      "from": "sound\\weapons\\smg_port\\smg_reload",
      "to": "sound\\weapons\\smg_port\\smg_reload_balanced"
     }
-   }
+   },
+   "tag_map": {
+    "proj weapons\\assault rifle\\bullet": "proj weapons\\smg\\bullet",
+    "jpt! weapons\\assault rifle\\bullet": "jpt! weapons\\smg\\bullet",
+    "jpt! weapons\\assault rifle\\melee": "jpt! weapons\\smg\\melee"
+   },
+   "skip_cards": [
+    "Salvo Shooting"
+   ]
   }
  ],
  "Halo 3": [
