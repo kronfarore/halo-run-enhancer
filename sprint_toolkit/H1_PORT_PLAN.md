@@ -28,6 +28,23 @@ last a full Halo 3 port). Their recipes are in PORTING.md.
    - the two-letter cyborg animation label (taught from the closest stock label);
    - the sound folder `sound\weapons\<x>_port`;
    - the catalog name (halo.json's name for the weapon).
+2b. **Yardstick candidates** (a second table in this file). PROVISIONAL ONLY: the final
+   pick is made with the user at the start of each weapon's session (step 4a below). Per
+   weapon:
+   - the ratio-rule yardstick (step 4: H1 value = H1 yardstick x source port / source
+     yardstick), which must exist in BOTH the source game and Halo 1, sharing the port's
+     role and damage type (bullet / plasma, hitscan / projectile, magazine / heat-battery);
+   - at least one alternative;
+   - any DIRECT yardstick (the same weapon or its user existing in both games, as the
+     Sentinel was for the Sentinel Beam);
+   - the step-5b role peers;
+   - one line of why.
+   Halo 1's candidates: Pistol, Assault Rifle, Shotgun, Sniper Rifle, Rocket Launcher,
+   Plasma Pistol, Plasma Rifle, Needler, Flamethrower, plus the restored Energy Sword,
+   Fuel Rod and Sentinel Beam.
+   Why it matters: on the Sentinel Beam the plasma-rifle yardstick gave 10.4 per round, the
+   Sentinel literally 1.0, the Sentinel by time-to-kill-the-player 4.64, and the per-second
+   form 11.6.
 3. **Per-weapon configs.** Today the H3-source pipeline keeps each weapon in a WEAPONS dict
    inside five scripts: h1_h3_weapon_model, h1_fp_retarget, h1_pickable_weapons,
    h1_port_sounds and make_port_catalog_h1_restored. Move each weapon into its own file
@@ -109,6 +126,13 @@ approximation and what it does not reproduce.
 
 All of PORTING.md's "What ported actually means", steps 1-11, plus:
 
+- **step 4a, confirm the yardstick, WITH THE USER, before any tag number is written:**
+  - run the ratio rule with the provisional yardstick and its alternatives (and any direct
+    yardstick) side by side, per value: damage per round AND per second, rate, heat /
+    battery, range, aim assist;
+  - show the time to kill each gives (h1_role_compare.py);
+  - the user picks; record the pick and the reason in the weapon's config and PORTING
+    notes. The session never decides it alone.
 - **step 5b:** the h1_role_compare.py set, with balanced values the user picked;
 - **in every map:** palette entry plus resident-only placement in all ten scenarios,
   checked on the BUILT maps;
@@ -123,6 +147,8 @@ The full ten-map rebuild + ship happens at the END of each weapon, on the user's
 > Port the <WEAPON> into Halo 1 (H1_PORT_PLAN.md, wave <X>, #<n>). Source: <game>.
 > Read sprint_toolkit/H1_PORT_PLAN.md, PORTING.md (Halo 1 sections + steps 0-11) and
 > memory h1-pickable-sword-fuelrod / h1-weapon-into-map first. Use the reserved message /
-> icon / reticle / label / sound-folder values from the plan's table. Test on a single map
+> icon / reticle / label / sound-folder values from the plan's table. Before writing any
+> numbers, do step 4a: lay out the provisional yardstick and its alternatives side by side
+> and let me pick. Test on a single map
 > first (no full rebuild until I say so). When done: catalog entry, enhancer hand-off,
 > PORTING notes, memory, backup -- and add what this weapon taught to the plan.
