@@ -590,3 +590,66 @@ spawn check in game. The SMG (done, tested on a30) is the first in that batch.
 > go). When done: catalog entry, enhancer hand-off to the "Halo enhancer project" session,
 > PORTING notes, memory, `python port_backup.py --game h1`, and what the BR taught (burst,
 > zoom) added to the plan before A3 (the Covenant Carbine, which reuses the zoom work).
+
+### The Covenant Carbine (wave A3), filled in
+
+> Port the Covenant Carbine into Halo 1 (H1_PORT_PLAN.md, wave A, #A3). Source: Halo 3,
+> `objects\weapons\rifle\covenant_carbine\covenant_carbine` (H3EK).
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Phase 0: DONE", "Pilot A1: what wave A inherits" and
+> "A2: what the Battle Rifle taught" first -- its last paragraph is written for THIS weapon),
+> PORTING.md ("What ported actually means" steps 0-11 and 5b, the Halo 1 sections, "Halo 1:
+> the SMG, the wave-A pilot", "Halo 1: the Battle Rifle, wave A2") and memory
+> h1-battle-rifle-port, h1-armed-test-balanced-god, h1-smg-pilot, h1-port-phase0,
+> halo-zoom-ui-reach-unwired, h1-weapon-into-map, halo-port-own-messages, h1-fmod-bank-sounds,
+> port-findings-are-observations, shared-worktree-commits. `ports_h1/battle_rifle.py` is the
+> example of a zoomed, pistol-template port: copy its shape into
+> `ports_h1/covenant_carbine.py` and edit only that file (plus any shared tool you generalize,
+> e.g. h1_h3_scope.py).
+>
+> START WITH STEP 4a, before any tag number is written: the yardstick, decided WITH me.
+> Wave-A rule: DEFAULT = Halo 3's own numbers, BALANCED = the ratio rows. Candidates
+> (covenant_carbine.py, yardstick.candidates): provisional PISTOL (semi-auto magazine, 2x
+> zoom, instant slug -- the precision mid-range role; the BR's pick), alternatives NEEDLER
+> (the Covenant magazine weapon) and SNIPER RIFLE, no direct yardstick (Elites carry it in
+> Halo 3; Halo 1's Elites carry plasma weapons). Lay them side by side per value (damage
+> per round AND per second, rate, magazine / reserve, reload, error / spread, range /
+> velocity, zoom, aim assist, melee) with `h3_weapon_values.py` and `h1_role_compare.py` (a
+> 'covenant_carbine' set; time to kill vs Pistol, Sniper Rifle, Needler, and the BR as a
+> port peer). Damage type matters here: Halo 3's carbine slug vs Halo 1's material table
+> (shields / Elite armour) -- show it. I pick; record it in yardstick['pick'] / ['reason']
+> and PORTING. Template: the yardstick's weapon unless the role table says otherwise -- then
+> inspect its object functions / attachments / A-D exports (the BR's pistol-template trap).
+>
+> Reserved (do not take any other number): pickup messages 57/58 ("Picked up a covenant
+> carbine" / "Picked up %d rounds for covenant carbine"); hud_msg_icons 32 (+ _r twin);
+> hud_reticles 21 (+ _r, `reticle_thicken` 1; the source reticle is Halo 3's hud_reticles
+> #4); label `cc`, taught to characters\cyborg from `ar`; sounds under
+> `sound\weapons\covenant_carbine_port` (never under sound\sfx); weapon folder
+> `weapons\covenant carbine`; catalog name `Covenant Carbine`.
+>
+> What the Carbine tests first:
+> - **the scope from a COLLECTION-state chud** (`ui\chud\carbine`): its scope widgets are
+>   black (mask-able) but their zoom-only state sits on the parent collection, so
+>   h1_h3_scope.widgets() must inherit the collection's state first or it bakes nothing.
+>   Decide WITH me: the two `blip`s (a mask is static -- check their animation data) and
+>   the `carbine_distortion` layer (a refraction effect Halo 1 has no mask equivalent for:
+>   approximate or drop, recorded). Zoom = Halo 3's scope, always; keep Halo 1's
+>   outside-the-lens blur; compute the span from this chud's own ring;
+> - a COVENANT magazine weapon: semi-auto 18 rounds (`does_not_repeat_automatically` for its
+>   latch trigger, Halo 3's rate -- mind the 15/s cap observation), its own slug projectile
+>   and damage effect (step 3), the ammo pickup (step 6: which Halo 1 item tops up a
+>   Covenant magazine weapon -- lay the options out);
+> - not dual-wieldable: one resource group expected in the FP graph (check `--list`).
+>
+> Step 11: `cc` has no carrier, so `firing_profile` needs a `donor_weapon` (as smg.py /
+> battle_rifle.py have) or there is no Armed card; Halo 3's ai\generic carbine entry
+> (010_jungle) is verified. Run order and closing checks: "Pilot A1" + the BR's close-out
+> list (port_field_audit lists 2 AND 3, full field diff against the template, kit_tag_diff,
+> port_sound_refs with NO 'BORROW', port_refs_audit, 5b on the built port). The FP rig starts
+> from the BR's view_offset (-0.0225, 0, -0.0125). Test with
+> `h1_port_test_map.py covenant_carbine --stage`: dry default, fixes, `--balanced`, then
+> `--armed grunt,elite` (implies balanced + god); `--restore <level>` after.
+> NO ten-map rebuild: BATCHED with the SMG and the BR, on my go. When done: catalog entry,
+> enhancer hand-off to the "Halo enhancer project" session, PORTING notes, memory,
+> `python port_backup.py --game h1`, and what the Carbine taught added to the plan before
+> A4 (the Beam Rifle: heat + zoom, the Sentinel Beam's heat lessons).
