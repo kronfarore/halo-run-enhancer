@@ -97,7 +97,10 @@ SETS = {
     # OBSERVATION on the Sentinel Beam) would fire every candidate rate in 15..30 at 15/s.
     # H3: SMG 5 x 15/s, mag 60, reload 50 fr; AR 7.5 x 10/s, 32, 58 fr; magnum 15 (0.4 s
     # recovery = 2.5/s), 8, 50 fr; plasma rifle 10 x 9/s, heat (no magazine)
+    # the BUILT port (step 5b): its tags, and with --balanced its catalog rows. Halo 1 fires
+    # it at 15/s at both the 15 and the balanced 22.5 tag (measured, magazine dumps)
     'smg': {'port': 'SMG', 'weapons': [
+        ('SMG (port)', W + r'smg\smg', 'shot', {'rate': 15.0, 'cap': 15.0}),
         ('SMG = AR ratio', W + r'assault rifle\assault rifle', 'shot',
          {'dmg': 6.67, 'rate': 22.5, 'mag': 112, 'reload': 2.5}),
         ('SMG = AR ratio @15', W + r'assault rifle\assault rifle', 'shot',
@@ -226,6 +229,8 @@ def weapon(label, rel, mode, overrides, extra=None):
         out['heat'] = (tr.misc.heat_generated_per_round, h.overheated_threshold,
                        h.loss_per_second, h.recovery_threshold)
         out['age'] = tr.misc.age_generated_per_round
+    if extra and extra.get('cap'):
+        out['cap'] = extra['cap']
     apply_rows(out, overrides)
     return out
 
@@ -245,6 +250,8 @@ def apply_rows(out, rows):
                 out['charge'] = v
             elif f in ('Rounds Per Second', 'Rounds Per Second Max'):
                 out['rps'] = v if f == 'Rounds Per Second Max' else max(v, out.get('rps') or 0)
+            elif f == 'Rounds Loaded Maximum':          # a magazine row (the SMG's 112)
+                out['mag'] = int(v)
             elif f in AIM:
                 aim[AIM.index(f)] = v
             elif f == 'Age Generated Per Round':
@@ -265,9 +272,19 @@ def apply_rows(out, rows):
                         d['mods'][key] = v
     out['aim'] = tuple(aim)
     if out['mode'] != 'melee':
+        # a MEASURED engine cap wins over a balanced rate row (SMG: the 22.5 row fires 15/s)
+        if out.get('cap') and out.get('rps'):
+            out['rps'] = min(out['rps'], out['cap'])
         out['interval'] = 1.0 / out['rps'] if out.get('rps') else 0.0
         if out['charge']:
             out['interval'] = max(out['interval'], out['charge'])
+
+
+def balanced_anims(port):
+    """The port's catalog animation multipliers ({'reload': x, 'swap': x})."""
+    cat = json.load(open(CATALOG, encoding='utf-8'))
+    e = next((x for x in cat.get('Halo 1', []) if x['weapon'] == port), None)
+    return (e or {}).get('anims') or {}
 
 
 def balanced_overrides(port):
@@ -337,6 +354,11 @@ def main():
     rows = [weapon(e[0], e[1], e[2], over if '(restored)' in e[0] or '(port)' in e[0] else [],
                    e[3] if len(e) > 3 else None)
             for e in s['weapons']]
+    if a.balanced:                       # the catalog's reload retime (anims) too
+        mult = balanced_anims(s['port']).get('reload')
+        for r, e in zip(rows, s['weapons']):
+            if mult and r.get('reload') and ('(restored)' in e[0] or '(port)' in e[0]):
+                r['reload'] *= mult
     enemies = ENEMIES + s.get('enemies', [])
     print('%s%s\n' % (s['port'], '  -- BALANCED rows applied' if a.balanced else ''))
     print('%-26s %8s %7s %8s %6s %6s %5s %6s %6s %6s  %s' % (

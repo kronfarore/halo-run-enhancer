@@ -158,17 +158,25 @@ def flatten_h2(tag):
     return vals
 
 
-def flatten_h1(tag):
+H1_DEFS = {'weapon': 'weap', 'projectile': 'proj', 'damage_effect': 'jpt_', 'scenario': 'scnr',
+           'model_animations': 'antr', 'unicode_string_list': 'ustr', 'bitmap': 'bitm',
+           'weapon_hud_interface': 'wphi', 'effect': 'effe', 'actor_variant': 'actv',
+           'sound': 'snd_', 'gbxmodel': 'mod2'}
+
+
+def flatten_h1(tag, filepath=None):
     """Halo 1 through Reclaimer (pylibs): snake_case names -> spaces, angles to DEGREES
     (the field's UNIT_SCALE; the other kits' exports print degrees), the top-level
-    *_attrs structs flattened away so paths look like the other games'."""
+    *_attrs structs flattened away so paths look like the other games'. `filepath` reads
+    another copy of the tag (a backup) -- kit_tag_diff.py HCEEK against. Raw data blobs
+    (pixels, samples) are not compared."""
     import importlib
     sys.path.insert(0, os.path.join(HERE, 'pylibs'))
     import env  # noqa: F401
     ext = tag.rsplit('.', 1)[-1]
-    mod = {'weapon': 'weap', 'projectile': 'proj', 'damage_effect': 'jpt_'}[ext]
+    mod = H1_DEFS[ext]
     d = getattr(importlib.import_module('reclaimer.hek.defs.' + mod), mod + '_def')
-    t = d.build(filepath=os.path.join(STEAM, 'HCEEK', 'tags', tag))
+    t = d.build(filepath=filepath or os.path.join(STEAM, 'HCEEK', 'tags', tag))
     vals = {}
 
     def walk(node, path, top=False):

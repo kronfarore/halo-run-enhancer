@@ -40,15 +40,25 @@ def sounds_of(m, game, group, base, datum, depth=0, seen=None):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--game')
+    # a kit build that is not deployed yet (h1_port_test_map's HCEEK\maps\port_test copy)
+    ap.add_argument('--map')
+    ap.add_argument('--weapon', help='only this catalog weapon')
     p = ap.parse_args()
     cat = json.load(open(os.path.join(a.TOOL, 'weapon_ports_catalog.json'), encoding='utf-8'))
     for game, v in cat.items():
         if p.game and game != p.game:
             continue
         for e in (v if isinstance(v, list) else [v]):
-            weap = next((r['tag'] for r in e.get('balance', []) if r['class'] == 'weap'), None)
+            if p.weapon and e.get('weapon') != p.weapon:
+                continue
+            weap = e.get('weap') or next((r['tag'] for r in e.get('balance', [])
+                                          if r['class'] == 'weap'), None)
+            if not weap:
+                continue
             own_dir = weap.rsplit(chr(92), 1)[0].lower()
-            for mp in [os.path.join(a.MCC, x) for x in a.MAPS.get(game, [])]:
+            # Halo 1 ports keep their sounds in sound\weapons\<x>_port (never sound\sfx)
+            port_dir = 'sound' + chr(92) + 'weapons' + chr(92) + own_dir.rsplit(chr(92), 1)[-1].replace(' ', '_') + '_port'
+            for mp in ([p.map] if p.map else [os.path.join(a.MCC, x) for x in a.MAPS.get(game, [])]):
                 if not os.path.exists(mp):
                     continue
                 m = a.hp.open_map(mp, game)
@@ -57,9 +67,11 @@ def main():
                     continue
                 datum = a.hp._tagref_datum(m)
                 rows = sounds_of(m, game, 'weap', hit[0][1], datum)
-                print('== %s %s  (%s)' % (game, e['weapon'], os.path.relpath(mp, a.MCC)))
+                same = os.path.splitdrive(mp)[0].lower() == os.path.splitdrive(a.MCC)[0].lower()
+                print('== %s %s  (%s)' % (game, e['weapon'], os.path.relpath(mp, a.MCC) if same else mp))
                 for field, cls, name in rows:
-                    own = str(name).lower().startswith(own_dir + chr(92))
+                    nm = str(name).lower()
+                    own = nm.startswith(own_dir + chr(92)) or nm.startswith(port_dir.lower() + chr(92))
                     print('   %-6s %-60s %s' % ('OWN' if own else 'BORROW', field[-60:], name))
                 break
 
