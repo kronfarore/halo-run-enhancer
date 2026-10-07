@@ -178,8 +178,8 @@ def make_hud(w, key, write):
                     e.alpha_multiplier = ammo_meter.step(sizes[0])
                     e.alpha_bias = 1             # the comparison is strict (saw_weapon.py)
                     e.value_scale = 0
-        fc = d.flash_cutoffs                  # low-ammo flash: the AR's 10 of 60
-        fc.loaded_ammo_cutoff = round(fc.loaded_ammo_cutoff * sizes[0] / 60.0)
+        fc = d.flash_cutoffs                  # low-ammo flash: the donor's (AR: 10 of 60)
+        fc.loaded_ammo_cutoff = round(fc.loaded_ammo_cutoff * sizes[0] / float(h.get('flash_base', 60)))
         if write:
             ammo_meter.main(*([str(n) for n in sizes] + [base]))
     if 'reticle' in h:                   # a Halo 3 reticle, into Halo 1's sheet
@@ -323,6 +323,12 @@ def own_beam(a, b, write):
     dm.damage_upper_bound[0] = dm.damage_upper_bound[1] = b['dmg']
     if 'acceleration' in b:
         dm.instantaneous_acceleration = b['acceleration']
+    for dotted, v in b.get('fields', {}).items():  # step 4b on the damage effect (the BR)
+        *head, last = dotted.split('.')
+        node = jt.data.tagdata
+        for part in head:
+            node = getattr(node, part)
+        setattr(node, last, v)
     save(jt, path(j_own, '.damage_effect'), write)
     pt = proj_def.build(filepath=path(p_src, '.projectile'))
     pd = pt.data.tagdata.proj_attrs
@@ -543,7 +549,10 @@ def edit_weapon(key, write):
                 sub = [s for s in tr if hasattr(s, 'NAME_MAP') and k in s.NAME_MAP]
                 if not sub:
                     raise SystemExit('trigger field %s not found' % k)
-                setattr(sub[0], k, v)
+                if isinstance(v, str):       # an enum by name (the BR's overcharged_action)
+                    getattr(sub[0], k).set_to(v)
+                else:
+                    setattr(sub[0], k, v)
     for k, v in w.get('heat', {}).items():
         setattr(a.heat, k, v)
     if 'overheated_effect' in w:

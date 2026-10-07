@@ -40,6 +40,10 @@ def decode(rel):
     blob = bytes(tag.data[nd.payload_at:nd.payload_at + nd.length])
     if fmt == 'a8r8g8b8':
         img = Image.frombytes('RGBA', (w, h), blob[:w * h * 4], 'raw', 'BGRA')
+    elif fmt == 'a8':                     # alpha only (the BR's scope, 2026-10-07): white + alpha
+        a = Image.frombytes('L', (w, h), blob[:w * h])
+        img = Image.new('RGBA', (w, h), (255, 255, 255, 0))
+        img.putalpha(a)
     elif fmt in h4_bitmap.FOURCC:
         size = h4_bitmap.chain_size(w, h, fmt, 1)
         hdr = (b'DDS ' + struct.pack('<7I', 124, 0x1007, h, w, size, 0, 1) + bytes(44)

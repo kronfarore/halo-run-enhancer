@@ -1,0 +1,122 @@
+{
+ "game": "Halo 1",
+ "weapon": "Battle Rifle",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\battle_rifle_port\\br_fire",
+   "perms": [
+    "br_fire_1.wav",
+    "br_fire_2.wav",
+    "br_fire_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\battle_rifle_port\\br_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\battle_rifle_port\\br_dryfire",
+   "perms": [
+    "br_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\battle_rifle_port\\br_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\battle_rifle_port\\br_reload_empty",
+   "perms": [
+    "br_reload_empty_1.wav",
+    "br_reload_empty_2.wav",
+    "br_reload_empty_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\battle_rifle_port\\br_reload_empty"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\battle_rifle_port\\br_reload_full",
+   "perms": [
+    "br_reload_full_1.wav",
+    "br_reload_full_2.wav",
+    "br_reload_full_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\battle_rifle_port\\br_reload_full"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\battle_rifle_port\\br_ready",
+   "perms": [
+    "br_ready_1.wav",
+    "br_ready_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\battle_rifle_port\\br_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\battle_rifle_port\\br_melee",
+   "perms": [
+    "br_melee_1.wav",
+    "br_melee_2.wav",
+    "br_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\battle_rifle_port\\br_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\battle_rifle_port\\br_pose",
+   "perms": [
+    "br_pose_1.wav",
+    "br_pose_2.wav",
+    "br_pose_3.wav",
+    "br_pose_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\battle_rifle_port\\br_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\battle_rifle_port\\br_zoom_in",
+   "perms": [
+    "br_zoom_in_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\battle_rifle_port\\br_zoom_in"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\battle_rifle_port\\br_zoom_out",
+   "perms": [
+    "br_zoom_out_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\battle_rifle_port\\br_zoom_out"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\battle_rifle_port\\br_reload_empty_balanced",
+   "perms": [
+    "br_reload_empty_balanced_1.wav",
+    "br_reload_empty_balanced_2.wav",
+    "br_reload_empty_balanced_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\battle_rifle_port\\br_reload_empty_balanced"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\battle_rifle_port\\br_reload_full_balanced",
+   "perms": [
+    "br_reload_full_balanced_1.wav",
+    "br_reload_full_balanced_2.wav",
+    "br_reload_full_balanced_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\battle_rifle_port\\br_reload_full_balanced"
+   ]
+  }
+ ]
+}

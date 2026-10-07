@@ -415,10 +415,27 @@ H1_ANIM_BLK, H1_ANIM_EL, H1_ANIM_SOUND = 0x74, 0xB4, 0x3C   # animation: Sound i
 def retimed_anim_sound(m, game, port, group, mult):
     """After the patcher retimes `group` of `port` by `mult`: point the animations that
     play the port's `from` sound at its `to` sound (stretched for exactly that mult).
-    Returns a patcher-style row, or None when the port names no such swap."""
+    Returns a patcher-style row, or None when the port names no such swap.
+    `anim_sounds[group]` may be a LIST of swaps (the H1 Battle Rifle: reload-empty and
+    reload-full play different sounds); they are applied in turn and reported as one row."""
     spec = (port.get('anim_sounds') or {}).get(group)
     if not spec or str(game).strip() != 'Halo 1' or not port.get('fp_animations'):
         return None
+    if isinstance(spec, list):
+        rows = [_retimed_one(m, port, s, group, mult) for s in spec]
+        bad = [r for r in rows if not r['ok']]
+        done = [r for r in rows if not r.get('skip')]
+        out = dict(rows[0], old=', '.join(r['old'] for r in rows))
+        if bad:
+            return dict(out, ok=False, reason='; '.join(r['reason'] for r in bad))
+        if not done:
+            return dict(out, skip=True, reason='; '.join(r['reason'] for r in rows))
+        return dict(out, ok=True, skip=False, new=', '.join(r['new'] for r in done))
+    return _retimed_one(m, port, spec, group, mult)
+
+
+def _retimed_one(m, port, spec, group, mult):
+    """One {'mult', 'from', 'to'} swap of retimed_anim_sound."""
     fp = port['fp_animations']
     row = {'effect': '%s (ported)' % (port.get('weapon') or 'port'),
            'tag': fp.rsplit('\\', 1)[-1], 'field': '%s sound' % group,

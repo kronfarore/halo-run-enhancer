@@ -119,6 +119,32 @@ SETS = {
          {'damage_tags': [W + r'needler\detonation damage']}),
         ('Pistol', W + r'pistol\pistol', 'shot'),
     ]},
+    # the BATTLE RIFLE (wave A2), step 4a: Halo 3's 3-round burst (shots per fire 3 at 15/s,
+    # then 0.28 s fire recovery -> a burst every 2/15 + 0.28 = 0.413 s, ASSUMED: the recovery
+    # replaces the third interval) as 'burst': (rounds, spacing, cycle). Each candidate keeps
+    # the burst's shape (3 rounds, 2 ticks apart) and scales per-round damage and the burst
+    # CYCLE by its yardstick's ratio, on that yardstick's bullet materials. H3 (H3EK
+    # 2026-10-07): BR 6 x 3 per 0.413 s = 43.5/s, mag 36, reload 58 fr; magnum 15 per 0.4 s =
+    # 37.5/s, 8, 50 fr; AR 7.5 x 10/s = 75/s, 32, 58 fr; sniper 80 per 0.7 s = 114/s, 4, 72 fr.
+    # H1: pistol 25 x 3.5/s, 12, 67 fr; AR 10 x 15/s, 60, 87 fr; sniper 101 x 2/s, 4, 94 fr.
+    'battle_rifle': {'port': 'Battle Rifle', 'weapons': [
+        ('BR = Halo 3 own (pistol)', W + r'pistol\pistol', 'shot',
+         {'dmg': 6.0, 'burst': (3, 1 / 15.0, 0.413), 'mag': 36, 'reload': 58 / 30.0}),
+        ('BR = Halo 3 own (AR)', W + r'assault rifle\assault rifle', 'shot',
+         {'dmg': 6.0, 'burst': (3, 1 / 15.0, 0.413), 'mag': 36, 'reload': 58 / 30.0}),
+        # 25 x 6/15; cycle: 3.5/s x (2.42 / 2.5) = 3.39 bursts/s; 12 x 36/8; 67 fr x 58/50
+        ('BR = Pistol ratio', W + r'pistol\pistol', 'shot',
+         {'dmg': 10.0, 'burst': (3, 1 / 15.0, 0.295), 'mag': 54, 'reload': 2.59}),
+        # 10 x 6/7.5; 15/s x (7.26 / 10) = 10.9 rounds/s = a burst every 0.275 s; 60 x 36/32
+        ('BR = AR ratio', W + r'assault rifle\assault rifle', 'shot',
+         {'dmg': 8.0, 'burst': (3, 1 / 15.0, 0.275), 'mag': 67, 'reload': 2.9}),
+        # 101 x 6/80; 2/s x (2.42 / 1.43) = 3.39 bursts/s; 4 x 36/4; 94 fr x 58/72
+        ('BR = Sniper ratio', W + r'sniper rifle\sniper rifle', 'shot',
+         {'dmg': 7.58, 'burst': (3, 1 / 15.0, 0.295), 'mag': 36, 'reload': 2.52}),
+        ('Pistol', W + r'pistol\pistol', 'shot'),
+        ('Assault Rifle', W + r'assault rifle\assault rifle', 'shot'),
+        ('Sniper Rifle', W + r'sniper rifle\sniper rifle', 'shot'),
+    ]},
 }
 
 ENEMIES = [
@@ -231,6 +257,8 @@ def weapon(label, rel, mode, overrides, extra=None):
         out['age'] = tr.misc.age_generated_per_round
     if extra and extra.get('cap'):
         out['cap'] = extra['cap']
+    if extra and extra.get('burst'):         # (rounds, spacing s, cycle s): Halo 3's burst
+        out['burst'] = extra['burst']
     apply_rows(out, overrides)
     return out
 
@@ -278,6 +306,9 @@ def apply_rows(out, rows):
         out['interval'] = 1.0 / out['rps'] if out.get('rps') else 0.0
         if out['charge']:
             out['interval'] = max(out['interval'], out['charge'])
+        if out.get('burst'):                 # the mean interval: a burst's rounds per cycle
+            out['interval'] = out['burst'][2] / out['burst'][0]
+            out['tag_rps'] = None            # not a measured rate: no '*'
 
 
 def balanced_anims(port):
@@ -337,7 +368,11 @@ def kill(wpn, body, shield, bmat, smat):
                 sh -= s_hit
         else:
             bo -= b_hit
-    t = wpn['charge'] + (shots - 1) * wpn['interval']
+    if wpn.get('burst'):                     # whole cycles, then the spacing inside the last burst
+        n, spacing, cycle = wpn['burst']
+        t = wpn['charge'] + ((shots - 1) // n) * cycle + ((shots - 1) % n) * spacing
+    else:
+        t = wpn['charge'] + (shots - 1) * wpn['interval']
     if wpn.get('mag') and wpn.get('reload'):
         per_mag = max(1, wpn['mag'] // max(1, wpn.get('rounds_per_shot') or 1))
         t += ((shots - 1) // per_mag) * wpn['reload']

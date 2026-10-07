@@ -994,6 +994,232 @@
     "jpt! weapons\\assault rifle\\bullet": "jpt! weapons\\smg\\bullet",
     "jpt! weapons\\assault rifle\\melee": "jpt! weapons\\smg\\melee"
    }
+  },
+  {
+   "weapon": "Battle Rifle",
+   "source": "Halo 3",
+   "donor": "Pistol",
+   "default_on": false,
+   "desc": "Halo 3's Battle Rifle: its model, first-person animations, sounds and numbers. A 36-round, 3-round-burst rifle with a 2x zoom; Pistol ammo tops it up.",
+   "balance_desc": "Measured against the Pistol, which both games have: 10 damage per round (30 a burst), a 54 magazine, 202 at pickup / 360 most, a 2.6 s reload, a tighter spread, a faster bullet and Halo 1-style aim assist.",
+   "anims": {
+    "reload": 1.34,
+    "swap": 1.59
+   },
+   "anim_sounds": {
+    "reload": [
+     {
+      "mult": 1.34,
+      "from": "sound\\weapons\\battle_rifle_port\\br_reload_empty",
+      "to": "sound\\weapons\\battle_rifle_port\\br_reload_empty_balanced"
+     },
+     {
+      "mult": 1.34,
+      "from": "sound\\weapons\\battle_rifle_port\\br_reload_full",
+      "to": "sound\\weapons\\battle_rifle_port\\br_reload_full_balanced"
+     }
+    ]
+   },
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\battle rifle\\bullet",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 10.0,
+     "card": "Bullet Damage",
+     "original": 6.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\battle rifle\\bullet",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 10.0,
+     "card": "Bullet Damage",
+     "original": 6.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\battle rifle\\bullet",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 10.0,
+     "card": "Bullet Damage",
+     "original": 6.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\battle rifle\\battle rifle",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 54.0,
+     "card": "Magazine",
+     "original": 36.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\battle rifle\\battle rifle",
+     "field": "Rounds Reloaded",
+     "block": "Magazines",
+     "value": 54.0,
+     "card": "Magazine",
+     "original": 36.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\battle rifle\\battle rifle",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 202.0,
+     "card": "Magazine",
+     "original": 108.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\battle rifle\\battle rifle",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 360.0,
+     "card": "Magazine",
+     "original": 144.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\battle rifle\\battle rifle",
+     "field": "Rounds",
+     "block": "Magazines/Magazines",
+     "value": 135,
+     "card": "Ammo pickup",
+     "original": 72
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\battle rifle\\battle rifle",
+     "field": "Minimum Error",
+     "block": "Triggers",
+     "value": 0.0,
+     "card": "Error Angle",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\battle rifle\\battle rifle",
+     "field": "Error Angle",
+     "block": "Triggers",
+     "value": 0.06,
+     "card": "Error Angle",
+     "original": 0.15
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\battle rifle\\battle rifle",
+     "field": "Error Angle Max",
+     "block": "Triggers",
+     "value": 2.0,
+     "card": "Error Angle",
+     "original": 0.5
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\battle rifle\\bullet",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 10.0,
+     "card": "Projectile",
+     "original": 6.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\battle rifle\\bullet",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 10.0,
+     "card": "Projectile",
+     "original": 6.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\battle rifle\\battle rifle",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 4.5,
+     "card": "Autoaim",
+     "original": 3.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\battle rifle\\battle rifle",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 34.0,
+     "card": "Autoaim",
+     "original": 17.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\battle rifle\\battle rifle",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 6.0,
+     "card": "Magnetism",
+     "original": 6.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\battle rifle\\battle rifle",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 31.5,
+     "card": "Magnetism",
+     "original": 21.0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\battle rifle\\battle rifle",
+     "field": "Sequence Index",
+     "block": "Meter Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\battle rifle\\battle rifle",
+     "field": "Alpha Multiplier",
+     "block": "Meter Elements",
+     "value": 4,
+     "card": "Ammo display",
+     "original": 7,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\battle rifle\\battle rifle",
+     "field": "Sequence Index",
+     "block": "Static Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\battle rifle\\battle rifle",
+     "field": "Loaded Ammo Cutoff",
+     "block": null,
+     "value": 18,
+     "card": "Ammo display",
+     "original": 12,
+     "index": 0
+    }
+   ],
+   "weap": "weapons\\battle rifle\\battle rifle",
+   "fp_animations": "weapons\\battle rifle\\fp\\fp",
+   "requires": [
+    "proj weapons\\battle rifle\\bullet"
+   ]
   }
  ],
  "Halo 3": [
