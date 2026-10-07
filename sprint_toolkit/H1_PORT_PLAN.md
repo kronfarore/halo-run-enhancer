@@ -50,12 +50,17 @@ placement costs one each). Note: `E:\HaloBackups\ek-build-h1\previous` ALREADY c
 Sentinel Beam (its difference to today is the all-enemies Marine chain), so it cannot
 measure a port's growth; the measurement above walks each port's closure instead.
 
-Open, for the user (nothing decided):
+**DECIDED (user, 2026-10-07): every port stays resident in ALL TEN maps** (palette entry +
+resident-only placement in every scenario, `palette_levels` = all ten). Not "resident only
+where offerable": the enhancer can then give any port anywhere (starting weapons, offers,
+Armed cards, a run carrying it level to level). Revisit only if a map over 384 MiB fails to
+load or a10's vertex buffer gets tight -- switching is just a config's `palette_levels`.
+
+Still open:
 - **384 MiB file size**: Custom Edition's old cap. MCC's limit is 2 GiB by c20, but no map
   over 384 MiB has been booted; five maps (a10, d40, b40, c40, c10) would pass it after 25
   SAW-sized ports. The first port that pushes one over is the boot that settles it.
-- If margin is wanted: resident only where the enhancer offers the weapon (saves its whole
-  cost per skipped level, and d40's placements); leaner models (fewer LODs: vertex buffer
+- If margin is ever wanted: leaner models (fewer LODs: vertex buffer
   is the tight one); shared sounds/bitmaps; recycle unused d40 palette/placement entries.
 - Cheap improvement: `h1_rebuild_all.py` could record tool's own "total tag size / vbuf
   size (free)" lines per build -- exact numbers instead of estimates.
