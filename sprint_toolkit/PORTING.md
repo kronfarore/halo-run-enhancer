@@ -405,6 +405,9 @@ What Halo 1 did that the data did not say (each one cost a boot):
 * RATE IS TICK-QUANTISED: a round every floor(30 / rate) + 1 ticks, so 30/s fires 15/s and
   15/s fires 10/s (measured from heat vs battery). The tag says 30 and every per-round value
   is doubled.
+  CORRECTED by the SMG (2026-10-07, measured by magazine dumps): a 15/s tag fired 15/s and
+  22.5/s fired 15/s -- "15 fires 10" does not hold; what holds so far is a 15/s CAP
+  (SMG 22.5, beam 30). The beam's heat-based 10/s reading is the odd one out.
 * A camera-facing CONTRAIL fired from the camera is seen END-ON and has no width: no beam in
   view, but one in the floor's reflection. Give the trigger a `first person offset` (the
   rocket launcher's is y -0.1). `rounds between tracers` must be 0, or only one round in four
@@ -473,6 +476,79 @@ H1_PORT_PLAN.md "Phase 0: DONE" is the full record; the short form:
   fit even at SAW size. d40's weapon placements reach 115 of 128.
 * OBSERVATION (Sentinel Beam only): `tool model` on today's JMS gives the beam's FP model
   LOD node counts 6, the shipped and tested one has 0 -- the tested copy was kept.
+
+### Halo 1: the SMG, the wave-A pilot (2026-10-07, 4 boots on a30) -- a plain magazine gun
+
+The whole weapon is `ports_h1/smg.py`; every number there carries its derivation. Order:
+`h1_h3_weapon_model.py smg` -> `h1_fp_retarget.py smg --write` + `tool animations
+weapons\smg\fp` -> `h1_port_sounds.py smg --write` -> `make_icon.py` + `add_msg_icon.py
+<png> smg 30` -> `h1_pickable_weapons.py --only smg --write` (re-applies the FP sound cues:
+run it after every `tool animations`) -> `make_port_catalog_h1_ports.py smg` ->
+`ai_firing_profile.py --port smg` -> `..\port_sounds.py --write` -> `h1_port_test_map.py smg
+[--balanced] [--armed grunt,elite] --stage`.
+
+**Step 4a, the yardstick (user): the ASSAULT RIFLE.** `h1_role_compare.py smg` laid the
+ratio rule out per candidate: AR 6.67 x 22.5/s = 150/s (Halo 3's SMG and AR both do 75/s,
+so it IS the H1 AR's dps), pistol 175/s, plasma rifle 108/s with no magazine to scale.
+DEFAULT = Halo 3's own numbers in the tags; BALANCED = the ratio rows (PORTING "Balance").
+Two new balance rules came out of it (see "When the ratio breaks" under Balance): scale a
+degenerate near-zero bound by its sibling's ratio (spread minimum 1.83), and the
+DUAL-WIELD CARRY RULE (x1.5 on the carry ratio: 562). Ammo pickup, balanced: Halo 3's own
+pickup : initial ratio (120/180) on the balanced initial 450 = 300 (user; Halo 1's ratio,
+450, refilled almost the whole carry).
+
+What the pilot found (each an OBSERVATION until a second port agrees):
+* **TWO RESOURCE GROUPS.** A dual-wieldable weapon's Halo 3 FP graph splits its animation
+  data into tag resource groups (fp_smg: 14 single-wield members, 17 dual), each numbering
+  its members from 0. The decoder keyed by member alone, so every single-wield animation
+  read DUAL data (frame counts gave it away: `ready` 4 frames where the tag says 19).
+  h3_anim_decode.members_from_xml / h3_fp_pose now key by (group, member). Every dual graph
+  in wave A has this (Spiker, Mauler...). h3_anim_retime / h3_saw_animations still key by
+  index alone: fine for single-group graphs, check before using them on a dual one.
+* **RATE CAP: Halo 1 fired the SMG at 15/s whatever above it** -- 60 rounds in 4.0 s at a
+  15/s tag (15/s, so the beam's "15 fires 10" does NOT hold), 112 in 7.5 s at 22.5/s (15/s).
+  With the beam's 30/s -> 15/s: every rate 15..30 has fired 15/s. User: accept the balanced
+  100/s (6.67 x 15) rather than move damage. A faster port must be MEASURED (magazine dump).
+* **FP placement.** The beam's tested view_offset (-0.0375, 0, -0.0425) as a start; the user
+  moved it forward 1.5 / up 2 units (1 unit = 0.01 wu); Halo 3's own placement (0) showed
+  nothing wrong but looked worse -> (-0.0225, 0, -0.0225). The beam's 'see into the arms'
+  was the beam's own, not a general Halo 3 retarget problem.
+* **FIRE SOUND from a LOOP.** Halo 3 automatics fire through in / loop / out; Halo 1 plays
+  one sound per round, the AR's a whole shot + tail (0.6-0.8 s, 4 permutations, -13 dB).
+  h1_port_sounds `shots`: shot k = the loop's k-th period (its own rate: 66 ms) + Halo 3's
+  release tail. User: all sounds good. Stock H1 levels are measured from MCC's
+  sounds_adpcm.fsb (the config lists them).
+* **BALANCED TIMING.** The patcher retimes `anims` reload / swap (one swap multiplier for
+  ready AND put-away: the ready's, x1.45) and then swaps in `anim_sounds` -- the reload's
+  sound stretched for the retime: h1_port_sounds `stretch` moves every click to onset x1.5,
+  unpitched, carried as an unused FP sound reference (`extra_sounds`). Confirmed in game.
+* **MUZZLE FLASH** = the template's sprites (Halo 3 particles do not come across). Halo 3's
+  SMG flash is on-axis only: the AR's muzzle-brake ring sprites dropped, the rest moved 1
+  unit forward and 1 up, full size (user). `sound_effects` 4th element.
+* **RETICLE** (Halo 3 hud_reticles #3, Halo 1 #19): Halo 1 draws the 256 px sheet at about
+  half size and thin Halo 3 strokes broke up -- `reticle_thicken` 1 px a side (user: better;
+  Halo 3's diagonal gaps kept).
+* **SPREAD and the barrel climb** Halo 1 lacks (Halo 3: 0 -> 0.4 deg/shot, 'very late' over
+  ~1.1 s): +1.6 deg on the full-bloom cone (4 shots between a player's corrections), through
+  the ratio on the balanced side: default 2.75 -> 4.35, balanced 9.43 (user, option A).
+  Halo 1's error ramp (1.2 s here, step 4b ratio) arrives when Halo 3's climb does.
+* **STEP 11 needs a BASE when the label is the port's own:** donor_for finds a firing base by
+  the port's animation label (the SAW is 'ar'); 'sm' has no carrier, so no Armed card.
+  `firing_profile` 'source' now takes `donor_weapon` (the AR): Halo 3's 24 ai\generic fields
+  over the AR carriers -- Grunts fire from a Marine AR major, Elites from a Flood combat
+  Elite AR; 'sm' taught from 'pr'. Confirmed in game (a30, every Grunt and Elite armed).
+* **Step 6:** the AR template's magazine item = Halo 1's AR ammo tops it up (confirmed).
+* **Not reproduced:** dual wield (no second gun, dual reloads, the 0.9 dual damage scale) --
+  deferred by the user; its only trace is the carry rule.
+
+Tools generalized (wave A uses them as data): h1_pickable_weapons `--only`, `bullet`,
+`magazine`, `error_deg`, `sound_effects` (+flash), `fields` (step 4b by dotted path),
+`hud.ammo_meter`, `reticle_thicken`, `extra_sounds`; h1_port_sounds `shots`, `stretch`;
+port_field_audit `--port <key>` (config `field_audit`); ai_firing_profile source +
+`donor_weapon`; h1_port_test_map `--balanced` (the patcher's own apply_weapon_ports) and
+`--armed` (the enhancer's h1_enemy_weapons.apply at 100%); h1_role_compare candidate rows
+(`dmg`/`mag`/`reload`/`damage_tags`; the needle's damage is `detonation damage`);
+h1_add_reticle `thicken`; make_port_catalog bullet; port_refs_audit cross-drive maps.
 
 ---
 
@@ -1719,6 +1795,8 @@ yardstick's number to be a normal reference. Two failure shapes so far:
 carry-limit ratio (dual wield doubles output and carry; x2 is too much for a one-handed
 port): SMG 600 x 0.625 x 1.5 = 562.5 -> 562 (Halo 1 stores a short). Applies to the next
 dual-wieldable ports too (Brute Spiker, Plasma Rifle-class) when their carry looks odd.
+**AMMO PICKUP (balanced):** the source game's own pickup : initial ratio on the balanced
+initial (SMG: 120/180 x 450 = 300; user, 2026-10-07).
 
 ---
 

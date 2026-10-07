@@ -12,7 +12,8 @@ The user's master list (`tool\Halo Weapons Spreadsheet (CE - Infinite).ods`, She
 
 Done so far: SAW (from Halo 4), Energy Sword, Fuel Rod and Sentinel Beam (restored, the
 last a full Halo 3 port). Their recipes are in PORTING.md. Phase 0 (setup) is DONE
-(2026-10-07): next is the SMG pilot, with the prompt at the end of this file.
+(2026-10-07). The SMG pilot (A1) is DONE and tested (2026-10-07; its ten-map rebuild waits
+for the user's go): read "Pilot A1: what wave A inherits" below before A2.
 
 ## Phase 0: DONE (2026-10-07)
 
@@ -241,6 +242,49 @@ folders (tags + data), the shared tags its `pickable` section edits in place (+
 (`palette_levels`), plus the message list / icon + reticle sheets / cyborg animations; and
 the scripts incl. `ports_h1/*.py`. Nothing the old hand lists carried was lost (checked).
 
+## Pilot A1: what wave A inherits (SMG, 2026-10-07)
+
+PORTING.md "Halo 1: the SMG, the wave-A pilot" is the full record; `ports_h1/smg.py` is the
+complete example of a MAGAZINE port (sentinel_beam.py stays the heat/battery one). A wave-A
+session copies smg.py's shape and changes the numbers.
+
+**Run order** (one weapon, nothing else rewritten -- `--only`):
+model -> retarget `--write` + `tool animations` -> sounds `--write` -> icon (`make_icon.py`,
+`add_msg_icon.py <png> <name> <reserved>`) -> `h1_pickable_weapons.py --only <key> --write`
+(always AFTER tool animations: it re-applies the FP sound cues) -> catalog -> firing profile
+-> `..\port_sounds.py --write` -> `port_refs_audit.py --game "Halo 1" --map <kit test copy>`
+-> `port_field_audit.py --port <key>` (list 2 = 0) -> test maps.
+
+**Test sequence that worked (4 boots):** 1 dry default (`h1_port_test_map.py <key>
+--stage`), 2 the fixes, 3 dry BALANCED (`--balanced`: the patcher's own pass on the copy,
+spawning with the balanced magazine), 4 Armed (`--armed grunt,elite`: the enhancer's own
+pass at 100%). `--restore <level>` after. Never `--keep-kit-map` on a staging run without
+rebuilding the normal level after (the pilot did it once).
+
+**Decided with the user, now RULES for wave A** (PORTING "Balance"):
+- default = the source game's own numbers; balanced = the ratio rows;
+- a degenerate near-zero bound: scale it by its sibling bound's ratio;
+- DUAL-WIELD CARRY RULE: x1.5 on the carry-limit ratio of a source-dual-wieldable port;
+- balanced ammo pickup: the source game's pickup : initial ratio on the balanced initial;
+- a missing Halo 3 mechanic is approximated in BOTH versions (the SMG's barrel climb:
+  +1.6 deg full-bloom cone, through the ratio for balanced);
+- dual wield itself: deferred (not reproduced, recorded).
+
+**Things every wave-A weapon must check (observations from the pilot):**
+- dual-wieldable source = TWO resource groups in the FP graph: the (group, member) fix is
+  in h3_fp_pose; compare `--list` frame counts with the graph's own;
+- RATE CAP: every rate 15..30 has fired 15/s (SMG 15 and 22.5, beam 30). A port above 15/s
+  must be measured; the user accepted the SMG's lower balanced dps rather than move damage;
+- a port label nobody carries ('sm', 'br', 'cc' ...): `firing_profile` needs
+  `donor_weapon` or it gets no Armed card (closing check 8 catches it);
+- the FP rig starts from the SMG's view_offset (-0.0225, 0, -0.0225), the user's pick,
+  and is tuned per weapon (the beam's offset was its own);
+- the template's muzzle flash: drop off-axis sprites the source lacks, judge size in game;
+- a Halo 3 reticle: `reticle_thicken` 1 from the start;
+- an automatic's fire sound: `shots` from the source's fire loop + release tail;
+- balanced reload/swap: `anims` + a stretched reload (`stretch`, `extra_sounds`,
+  `anim_sounds`) -- the patcher does the rest.
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one
@@ -302,7 +346,7 @@ simplest form, used to fix and generalize the tools before the rest of the wave.
 
 | # | weapon | new things it tests |
 |---|---|---|
-| A1 | **SMG** (pilot) | the first plain magazine gun on this pipeline: reload, ammo pickup (step 6), magazine HUD meter |
+| A1 | **SMG** (pilot) -- DONE 2026-10-07 | the first plain magazine gun on this pipeline: reload, ammo pickup (step 6), magazine HUD meter |
 | A2 | Battle Rifle | burst fire, zoom + scope HUD (memory halo-zoom-ui) |
 | A3 | Covenant Carbine | zoom on a Covenant weapon, its own projectile |
 | A4 | Beam Rifle | heat + zoom (Sentinel Beam heat lessons, tick-quantised rate) |
