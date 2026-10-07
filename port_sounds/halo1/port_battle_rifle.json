@@ -97,6 +97,40 @@
    ]
   },
   {
+   "tag": "sound\\weapons\\battle_rifle_port\\br_ammo",
+   "perms": [
+    "br_ammo_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\battle_rifle_port\\br_ammo"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\battle_rifle_port\\br_drop",
+   "perms": [
+    "br_drop_1.wav",
+    "br_drop_2.wav",
+    "br_drop_3.wav",
+    "br_drop_4.wav",
+    "br_drop_5.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\battle_rifle_port\\br_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\battle_rifle_port\\br_eject",
+   "perms": [
+    "br_eject_1.wav",
+    "br_eject_2.wav",
+    "br_eject_3.wav",
+    "br_eject_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\battle_rifle_port\\br_eject"
+   ]
+  },
+  {
    "tag": "sound\\weapons\\battle_rifle_port\\br_reload_empty_balanced",
    "perms": [
     "br_reload_empty_balanced_1.wav",

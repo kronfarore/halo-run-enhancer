@@ -128,6 +128,11 @@ SETS = {
     # 37.5/s, 8, 50 fr; AR 7.5 x 10/s = 75/s, 32, 58 fr; sniper 80 per 0.7 s = 114/s, 4, 72 fr.
     # H1: pistol 25 x 3.5/s, 12, 67 fr; AR 10 x 15/s, 60, 87 fr; sniper 101 x 2/s, 4, 94 fr.
     'battle_rifle': {'port': 'Battle Rifle', 'weapons': [
+        # the BUILT port (step 5b): its tags (+ --balanced rows). Its burst is the user's
+        # (test 2): 3 rounds 0.1 s apart (10/s), one burst a trigger PULL with no recovery --
+        # the cycle is the player's tapping; Halo 3's 0.413 s rhythm assumed here
+        ('Battle Rifle (port)', W + r'battle rifle\battle rifle', 'shot',
+         {'burst': (3, 0.1, 0.413)}),
         ('BR = Halo 3 own (pistol)', W + r'pistol\pistol', 'shot',
          {'dmg': 6.0, 'burst': (3, 1 / 15.0, 0.413), 'mag': 36, 'reload': 58 / 30.0}),
         ('BR = Halo 3 own (AR)', W + r'assault rifle\assault rifle', 'shot',

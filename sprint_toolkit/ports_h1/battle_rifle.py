@@ -135,6 +135,13 @@ PORT.update({
             'br_pose': (['battle_rifle_fp\\battle_rifle_pose_var1'], 'sound\\sfx\\weapons\\weapon_anims\\pistol_posing', -26.5),
             'br_zoom_in': (['battle_rifle_zoom_in'], 'sound\\sfx\\weapons\\sniper rifle\\sniper_2x_zoom', -28.9),
             'br_zoom_out': (['battle_rifle_zoom_out'], 'sound\\sfx\\weapons\\sniper rifle\\sniper_10x_zoom', -29.2),
+            # CLOSE-OUT (step 10 completeness): the pistol template still named the pistol's
+            # ammo-pickup and drop sounds; Halo 3 has the BR's own (pistol_ammo -28.4,
+            # pistol_impact -28.8)
+            'br_ammo': (['battle_rifle_ammo'], 'sound\\sfx\\weapons\\weapon_pickup_ammo\\pistol_ammo', -28.4),
+            'br_drop': (['battle_rifle_drop'], 'sound\\sfx\\impulse\\weapon_drops\\pistol_impact', -28.8),
+            # the casing eject, one per round in the fire effect (pistol eject -15.7/-18.3)
+            'br_eject': (['eject_br'], 'sound\\sfx\\weapons\\pistol\\eject', -17.0),
             # the BALANCED reloads' sounds (the patcher retimes both reloads x1.34 and then
             # swaps these in: catalog anim_sounds, a LIST -- empty and full differ in Halo 3)
             'br_reload_empty_balanced': (['battle_rifle_fp\\br_reload_empty'], 'sound\\sfx\\weapons\\weapon_anims\\pistol_reload', -19.0),
@@ -171,8 +178,24 @@ PORT.update({
                    # step 4b (port_field_audit list 2): screen flash 0.4 x 0.5/0.4 -- Halo 3
                    # has a shielded (0.5) and an unshielded (0.75) response, Halo 1 one: the
                    # SHIELDED one (the player is shielded). Wobble period (0 x ...) NOT written:
-                   # Halo 1's wobble function here is 'one' (constant), the period does nothing
-                   'fields': {'screen_flash.duration': 0.5}},
+                   # Halo 1's wobble function here is 'one' (constant), the period does nothing.
+                   # CLOSE-OUT (list 3, decided): the source pair differs where the magnum has
+                   # 0 -> Halo 3's own values (the SMG's 'zero on one side' rule): breaking
+                   # effect (35 / 0.12 / 8, 3 / 0.5 / 0.2), fade function linear (magnum
+                   # early). NOT ported: wobble function jitter (period 0 -- a jitter at
+                   # period 0 risks a divide in Halo 1's periodic function code; kept 'one')
+                   'fields': {'screen_flash.duration': 0.5,
+                              'screen_flash.fade_function': 'linear',
+                              'breaking_effect.forward_velocity': 35.0,
+                              'breaking_effect.forward_radius': 0.12,
+                              'breaking_effect.forward_exponent': 8.0,
+                              'breaking_effect.outward_velocity': 3.0,
+                              'breaking_effect.outward_radius': 0.5,
+                              'breaking_effect.outward_exponent': 0.2},
+                   # Halo 3's BR bullet carries a tracer (contrail system + effect) every 2nd
+                   # round; the magnum's none. Halo 1's AR bullet has the tracer contrail
+                   # (every 3rd AR round), the pistol's none -> the AR's contrail, every 2nd
+                   'attachments_from': r'weapons\assault rifle\bullet'},
         # THE BURST, option B (user, 2026-10-07): Halo 1's charge-and-spew -- the kit's own
         # precedent is digsite\weapons\smg's second trigger (charge 1 tick, overcharged
         # action discharge, spew 0.2 s at 15/s = 3 rounds 2 ticks apart, Halo 3's spacing
@@ -201,6 +224,11 @@ PORT.update({
             'obje_attrs.bounding_radius': 0.1 * 0.2 / 0.08,
             'obje_attrs.acceleration_scale': 2.0 * 1.0 / 1.25,
             'weap_attrs.interface.active_camo_ding': 0.65 * 0.25 / 0.4,
+            # CLOSE-OUT, list 3 (zero on one side -> Halo 3's own): bounding offset (magnum
+            # 0) and rounds between tracers 2 (magnum 0; the tracer itself: bullet below)
+            'obje_attrs.bounding_offset.x': 0.06,
+            'obje_attrs.bounding_offset.z': 0.05,
+            'weap_attrs.triggers.0.firing.rounds_between_tracers': 2,
             # STEP 6: Halo 3's BR magazine item 72 (the pistol template's item is H1 pistol
             # ammo, which then tops the BR up -- as the AR's does the SMG)
             'weap_attrs.magazines.0.magazine_items.0.rounds': 72,
@@ -209,13 +237,20 @@ PORT.update({
             # jumped up on every shot and fell back to 0 -- the ILLUMINATION the pistol
             # template exports on A. Test 3 drops A: if the counter now counts the magazine,
             # it reads B (the AR's layout); if it stays at 00, it reads A (then A = ammo)
-            # TEST 3: with A empty the counter stayed 00 -> the numeric shader reads A. So A =
-            # the loaded fraction (the template's A illumination drove the test-2 jumps)
-            'weap_attrs.A_in': 'primary_ammunition',
+            # TEST 3: with A empty the counter stayed 00 -> the numeric shader reads A OUT.
+            # TEST 6 (user): every armed Grunt / Elite and the player GLOWED -- the pistol
+            # template's muzzle-flash light attachment is scaled by A out too, constant once
+            # A carried the ammo. The OBJECT FUNCTIONS map exports to outs (out N = function
+            # N): the AR's layout, below (obje_functions) -- exports A illumination (the
+            # pistol's own), B the loaded fraction; out A = B in (ammo display -> counter),
+            # out B = A in (muzzle flash -> the light, attachment_scales)
+            'weap_attrs.A_in': 'illumination',
             'weap_attrs.B_in': 'primary_ammunition',
             # Halo 3's zoom sounds (the template names the sniper's)
             'weap_attrs.interface.zoom_in_sound.filepath': SND + 'br_zoom_in',
             'weap_attrs.interface.zoom_out_sound.filepath': SND + 'br_zoom_out',
+            'weap_attrs.interface.pickup_sound.filepath': SND + 'br_ammo',
+            'item_attrs.collision_sound.filepath': SND + 'br_drop',
         },
         # H3 single-wield: minimum error 0, error angle 0.15 -> 0.5 (H1 pistol 0, 0.2 -> 2.0)
         'error_deg': {'minimum_error': 0.0, 'error_angle': (0.15, 0.5)},
@@ -230,9 +265,17 @@ PORT.update({
                    'magnetism_angle': 6.0, 'magnetism_range': 21.0},
         'sound_effects': {
             'firing_effect': (PISTOL + 'effects\\fire bullet', BR + 'effects\\fire bullet',
-                              {r'sound\sfx\weapons\pistol\fire': SND + 'br_fire'}),
+                              {r'sound\sfx\weapons\pistol\fire': SND + 'br_fire',
+                               # close-out (port_sound_refs: BORROW): Halo 3's casing sound
+                               r'sound\sfx\weapons\pistol\eject': SND + 'br_eject'}),
             'empty_effect': (PISTOL + 'effects\\empty', BR + 'effects\\empty',
                              {r'sound\sfx\weapons\pistol\dryfire': SND + 'br_dryfire'})},
+        # the AR's functions 0 (ammo display, by B in) and 1 (muzzle flash, by C in -> A in
+        # here, the pistol's illumination export) -- see weap_attrs.A_in above
+        'obje_functions': [{'from': r'weapons\assault rifle\assault rifle', 'index': 0},
+                           {'from': r'weapons\assault rifle\assault rifle', 'index': 1,
+                            'set': {'scale_function_by': 'A_in'}}],
+        'attachment_scales': {0: ('B_out', 'none')},       # the muzzle-flash light
         'melee': (PISTOL + 'melee', BR + 'melee'),
         'melee_response': PISTOL + 'melee_response',
         'messages': ('Picked up a battle rifle', 'Picked up %d rounds for battle rifle'),

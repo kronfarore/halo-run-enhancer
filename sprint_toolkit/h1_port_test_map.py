@@ -276,6 +276,10 @@ def main():
     ap.add_argument('--armed', metavar='ENEMIES',
                     help="the enhancer's Armed-card pass at 100%%: e.g. grunt,elite carry the port")
     a = ap.parse_args()
+    if a.armed and not (a.balanced and a.god):
+        # the Armed test runs BALANCED with an unbreakable player shield (user, BR 2026-10-07)
+        a.balanced = a.god = True
+        print('--armed: also --balanced --god (the Armed test rule)')
     if a.restore:
         return restore(a.restore)
     if not a.weapon:

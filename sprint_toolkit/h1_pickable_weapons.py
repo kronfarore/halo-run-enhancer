@@ -349,7 +349,10 @@ def own_beam(a, b, write):
         node = jt.data.tagdata
         for part in head:
             node = getattr(node, part)
-        setattr(node, last, v)
+        if isinstance(v, str) and hasattr(getattr(node, last), 'set_to'):
+            getattr(node, last).set_to(v)
+        else:
+            setattr(node, last, v)
     save(jt, path(j_own, '.damage_effect'), write)
     pt = proj_def.build(filepath=path(p_src, '.projectile'))
     pd = pt.data.tagdata.proj_attrs
@@ -358,6 +361,12 @@ def own_beam(a, b, write):
         pd.detonation.maximum_range = b['range']
     if 'velocity' in b:
         pd.physics.initial_velocity = pd.physics.final_velocity = b['velocity']
+    if 'attachments_from' in b:          # e.g. a TRACER contrail (the BR takes the AR bullet's)
+        src = proj_def.build(filepath=path(b['attachments_from'], '.projectile')).data.tagdata
+        att = pt.data.tagdata.obje_attrs.attachments.STEPTREE
+        att[:] = []
+        for x in src.obje_attrs.attachments.STEPTREE:
+            att.append(copy.deepcopy(x))
     save(pt, path(p_own, '.projectile'), write)
     for tr in a.triggers.STEPTREE:
         tr.projectile.projectile.filepath = p_own
@@ -667,6 +676,26 @@ def edit_weapon(key, write):
         add_hum(d, w['hum'], write)
     if 'fire_loop' in w:
         add_fire_loop(d, w['fire_loop'], write)
+    if 'obje_functions' in w:
+        # the object FUNCTIONS (out N = function N, scaled by an export 'in'), rebuilt from
+        # another weapon's (the BR, test 6: the on-gun counter reads A out, and the pistol
+        # template's ONE function put the muzzle-flash LIGHT on A too -- a constant glow
+        # once A carried the ammo; the AR keeps them apart: A out = ammo, B out = flash)
+        fs = d.obje_attrs.functions.STEPTREE
+        new = []
+        for spec in w['obje_functions']:
+            src = weap_def.build(filepath=path(spec['from'], '.weapon')).data.tagdata
+            f = copy.deepcopy(src.obje_attrs.functions.STEPTREE[spec['index']])
+            for k, v in spec.get('set', {}).items():
+                getattr(f, k).set_to(v)
+            new.append(f)
+        fs[:] = []
+        for f in new:
+            fs.append(f)
+    for i, (p_scale, s_scale) in w.get('attachment_scales', {}).items():
+        x = d.obje_attrs.attachments.STEPTREE[i]
+        x.primary_scale.set_to(p_scale)
+        x.secondary_scale.set_to(s_scale)
     for x in d.obje_attrs.attachments.STEPTREE:
         x.marker = w.get('attach_markers', {}).get(x.marker, x.marker)
         x.type.filepath = w.get('attach_swap', {}).get(x.type.filepath, x.type.filepath)
