@@ -448,7 +448,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'other_exhaust_enabled', 'other_skull_enabled', 'other_ally_enabled',
                'other_bane_enabled', 'identity_other_card',
                'skull_single_map', 'skull_disabled', 'skull_camo_after_ladder',
-               'bugfix_h2_fuel_rod',
+               'bugfix_h2_fuel_rod', 'debug_player_armour', 'debug_player_armour_zero',
                'set_starting_equipment', 'equipment_all_selected',
                'h2_add_respawn_profile', 'h2_extra_squads', 'swap_player_loadouts',
                'h3_all_chief_profiles',
@@ -1214,6 +1214,9 @@ CONFIG = {
     "skull_camo_after_ladder": False,   # Thunderstorm / Downpour before Assassins
     # Options -> Patching -> Bugfixes: fixes to Bungie's own data. Off = vanilla.
     "bugfix_h2_fuel_rod": False,
+    # debug mode only, until checked in game (player_armour.py)
+    "debug_player_armour": False,
+    "debug_player_armour_zero": False,
     # Weapon Identity rounds also roll the Other slot (Hero / Exhaust / Skull / Ally /
     # Bane) like a normal round: a fourth card on the offer. Off = the identity pair and
     # one enemy card only.
@@ -9066,6 +9069,8 @@ class MagnitudeEditorDialog(QDialog):
                 skulls=skulls,
                 camo_after_ladder=bool(CONFIG.get('skull_camo_after_ladder')),
                 fix_h2_fuel_rod=bool(CONFIG.get('bugfix_h2_fuel_rod')),
+                debug_player_armour=bool(CONFIG.get('debug_player_armour')),
+                debug_player_armour_zero=bool(CONFIG.get('debug_player_armour_zero')),
                 equipment_swaps=equip_swaps or None,
                 spawn_equipment=spawn_equipment,
                 spawn_weapons=spawn_weapons,
@@ -9110,6 +9115,8 @@ class MagnitudeEditorDialog(QDialog):
                     skulls=skulls,
                 camo_after_ladder=bool(CONFIG.get('skull_camo_after_ladder')),
                 fix_h2_fuel_rod=bool(CONFIG.get('bugfix_h2_fuel_rod')),
+                debug_player_armour=bool(CONFIG.get('debug_player_armour')),
+                debug_player_armour_zero=bool(CONFIG.get('debug_player_armour_zero')),
                     enemy_colors=self._enemy_colors_for_patch(),
                 weapon_ports=self._weapon_ports_for_patch(),
                 port_volume=self._port_volume_for_patch(),
@@ -11690,6 +11697,27 @@ class OptionsDialog(QDialog):
         _bf_note.setWordWrap(True)
         _bf_note.setStyleSheet("color: #9a9a9a; font-size: 11px;")
         bugfix_form.addRow("", _bf_note)
+        # Debug mode only: the player's own armour rows (player_armour.py), to be checked
+        # in game before the Effective cards rely on them.
+        self.debug_armour_cb = QCheckBox("Build the player's own armour rows (Halo 2 to Halo 4)")
+        self.debug_armour_cb.setChecked(bool(CONFIG.get('debug_player_armour')))
+        self.debug_armour_cb.setToolTip(
+            "Clones the materials the player models take damage through, points only the "
+            "player at the clones and gives them their own damage-table rows with exactly "
+            "today's values -- nothing should change in play. From Halo 3 on it moves data "
+            "inside the globals tag (Reach: sound extra info) to make room: check that the "
+            "map loads, sounds are fine and damage to you is unchanged.")
+        bugfix_form.addRow("Debug:", self.debug_armour_cb)
+        self.debug_armour_zero_cb = QCheckBox("Test: your shield takes no plasma damage")
+        self.debug_armour_zero_cb.setChecked(bool(CONFIG.get('debug_player_armour_zero')))
+        self.debug_armour_zero_cb.setToolTip(
+            "With the rows built: sets the player's own shield rows in every plasma damage "
+            "group to 0. Plasma should no longer touch your shield while Elites (and AI "
+            "Spartans in Reach / Halo 4, who keep the shared rows) still take it -- proof "
+            "the game reads the player's rows. A test only: turn it off afterwards.")
+        bugfix_form.addRow("", self.debug_armour_zero_cb)
+        self.debug_armour_cb.toggled.connect(self.debug_armour_zero_cb.setEnabled)
+        self.debug_armour_zero_cb.setEnabled(self.debug_armour_cb.isChecked())
         self._opt_page("Patching").addWidget(bugfix_g, 46)
         self._opt_page("Patching").addWidget(patch_h1_g, 50)
         self._opt_page("Patching").addWidget(patchg, 60)
@@ -11922,7 +11950,8 @@ class OptionsDialog(QDialog):
             "tag set, so their cards go on being offered and patched onto levels where "
             "nothing they edit can spawn. On by default. Only shown in debug mode — it "
             "stays in force either way.")
-        self._debug_only_rows = [self.remove_flood_cb]
+        self._debug_only_rows = [self.remove_flood_cb, self.debug_armour_cb,
+                                 self.debug_armour_zero_cb]
         vform.addRow("", self.remove_flood_cb)
         self.debug_mode_cb.toggled.connect(lambda _=None: self._sync_debug_only_options())
         self._sync_debug_only_options()
@@ -12732,6 +12761,8 @@ class OptionsDialog(QDialog):
             'skull_single_map': self.skull_single_map_cb.isChecked(),
             'skull_camo_after_ladder': self.skull_camo_order_cb.isChecked(),
             'bugfix_h2_fuel_rod': self.bugfix_fuel_rod_cb.isChecked(),
+            'debug_player_armour': self.debug_armour_cb.isChecked(),
+            'debug_player_armour_zero': self.debug_armour_zero_cb.isChecked(),
             'skull_disabled': sorted(k for k, cb in self.skull_cat_boxes.items()
                                      if not cb.isChecked()),
             'new_weapon_chance': round(self.new_weapon_chance.value(), 2),

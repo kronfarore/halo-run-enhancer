@@ -9612,7 +9612,8 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               h4_keep_loadout=False, clear_profile_equipment=False,
               clear_profile_grenades=False, spawn_grenades=None,
               h4_ability_visibility=None, h1_enemy_weapons=None,
-              camo_after_ladder=False, fix_h2_fuel_rod=False, h1_levels=None,
+              camo_after_ladder=False, fix_h2_fuel_rod=False,
+              debug_player_armour=False, debug_player_armour_zero=False, h1_levels=None,
               baseline_root=None, map_subdir=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
@@ -9638,6 +9639,15 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     baseline = str(bak) if (from_baseline and found) else map_path
     m = open_map(baseline, game)
     results = []
+    if debug_player_armour:
+        # The player's own damage-table armour rows (player_armour.py). FIRST of all: from
+        # Halo 3 on it grows matg's Materials array in place by MOVING neighbouring blocks
+        # (Reach: snd! Extra Info), so nothing may hold offsets into them yet. Debug option
+        # until confirmed in game; the Effective cards will turn it on themselves.
+        import player_armour as _pa
+        results.extend(_pa.apply(m, str(game).strip(), registry))
+        if debug_player_armour_zero:
+            results.extend(_pa.zero_rows(m, str(game).strip()))
     if weapon_ports:
         # Ported weapons: the suggested balance becomes the port's VANILLA, so the run's
         # cards scale from it -- hence before every op, like the difficulty baseline. The
