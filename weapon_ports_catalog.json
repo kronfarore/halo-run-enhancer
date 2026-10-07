@@ -760,7 +760,7 @@
    "donor": "Assault Rifle",
    "default_on": false,
    "desc": "Halo 3's SMG: its model, first-person animations, sounds and numbers. A 60-round automatic; Assault Rifle ammo tops it up.",
-   "balance_desc": "Measured against the Assault Rifle, which both games have: 6.67 damage at 22.5 rounds/s (the Assault Rifle's damage per second), a 112 magazine, 450 at pickup / 562 most, a 2.5 s reload, a faster bullet and Halo 1-style aim assist.",
+   "balance_desc": "Measured against the Assault Rifle, which both games have: 6.67 damage per round (Halo 1 fires it at 15 rounds/s), a 112 magazine, 450 at pickup / 562 most, a 2.5 s reload, a wider spray in long bursts, a faster bullet and Halo 1-style aim assist.",
    "anims": {
     "reload": 1.5,
     "swap": 1.45
@@ -879,9 +879,9 @@
      "tag": "weapons\\smg\\smg",
      "field": "Error Angle Max",
      "block": "Triggers",
-     "value": 5.96,
+     "value": 9.43,
      "card": "Error Angle",
-     "original": 2.75
+     "original": 4.35
     },
     {
      "class": "proj",

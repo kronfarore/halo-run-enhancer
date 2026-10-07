@@ -24,7 +24,9 @@ PORT = reserved(
         # (step 4a, user 2026-10-07). H3: SMG / AR.
         'balanced': {
             'damage': 6.67,              # 10 x 5/7.5
-            'rounds_per_second': 22.5,   # 15 x 15/10 (tick rule: may fire 15/s, measure)
+            # 15 x 15/10. MEASURED (test 3): fires 15/s (112 rounds in 7.5 s) -- Halo 1 caps
+            # this weapon at 15/s, so balanced = 6.67 x 15 = 100/s; user: ACCEPT 100/s
+            'rounds_per_second': 22.5,
             'magazine': 112,             # 60 x 60/32 = 112.5
             'rounds_total_initial': 450,  # 240 x 180/96
             # DUAL-WIELD CARRY RULE (user): a port its source game let you dual wield gets
@@ -32,7 +34,10 @@ PORT = reserved(
             'rounds_total_maximum': 562,
             'reload_s': 2.5,             # 2.9 x 50/58 frames
             'error_min_deg': 1.83,       # 2 x 2.75/3.0 (the min's own ratio 1.25/0.1 -> 25)
-            'error_max_deg': 5.96,       # 6.5 x 2.75/3.0 -- step 5b: widen to approximate
+            # the BARREL CLIMB approximated (user, test 3, option A): +1.6 deg in Halo 3 terms
+            # (0.4 deg/shot x 4 shots = one 0.25 s correction window at 15/s) on the
+            # full-bloom cone, through the ratio: (2.75 + 1.6) x 6.5/3.0 = 9.43
+            'error_max_deg': 9.43,       # was 6.5 x 2.75/3.0 = 5.96 -- step 5b: widen to approximate
                                          # H3's barrel climb (0 -> 0.4 deg/shot, no H1 field)
             'velocity': 1620.0,          # 324 x 400/80 (user: keep)
             'aim': (6.0, 20.0, 14.4, 22.5),  # autoaim deg/wu, magnetism deg/wu
@@ -80,7 +85,9 @@ PORT.update({
         # test 1 (2026-10-07, a30): user moves it 'forward 1.5 and up 2 units' (1 unit =
         # 0.01 wu, the beam's) to check whether the beam's 'see into the arms' is general
         # test 2: 'still looking good' -> test 3: NO offset at all (Halo 3's own placement)
-        'view_offset': (0.0, 0.0, 0.0),
+        # test 3: 'nothing I shouldn't see, but test 2 looked better' -> back to test 2's.
+        # So the beam's 'see into the arms' was the BEAM's, not general (observation)
+        'view_offset': (-0.0375 + 0.015, 0.0, -0.0425 + 0.02),
         # Halo 1's AR names its auto-fire `firing` and has no reload-empty; the pistol and
         # the Sentinel Beam (30/s auto, tested) use the per-shot `fire-1`, which matches
         # H3's 5-frame fire_1. Halo 3 SMG frames: idle 89, posing 129, ready 19, put_away 5,
@@ -169,7 +176,10 @@ PORT.update({
                    # H3 AR has none: no ratio) -- the source value; the H1 AR's gives 240
                    'weap_attrs.magazines.0.magazine_items.0.rounds': 120},
         # H3 single-wield: minimum error 0.25, error angle 1.25 -> 2.75 (H1 AR 0, 2 -> 6.5)
-        'error_deg': {'minimum_error': 0.25, 'error_angle': (1.25, 2.75)},
+        # + the BARREL CLIMB Halo 1 lacks (H3: 0 -> 0.4 deg/shot, 'very late', arriving over
+        # ~1.1 s -- Halo 1's error ramp here is 1.2 s): +1.6 deg on the full-bloom cone, the
+        # drift of 4 shots between a player's corrections (user, test 3: 2.75 -> 4.35)
+        'error_deg': {'minimum_error': 0.25, 'error_angle': (1.25, 2.75 + 1.6)},
         # H3: 60 loaded, 180 at pickup, 240 most. Reload time: H3 SMG 2.0, H3 AR 0 (its
         # animation decides) -> no ratio, the source value (step 4b). 2.0 over the 1.67 s
         # animation is the H1 AR's own shape (3.4 over 2.9 s)
@@ -215,9 +225,9 @@ PORT.update({
             'desc': "Halo 3's SMG: its model, first-person animations, sounds and numbers. "
                     "A 60-round automatic; Assault Rifle ammo tops it up.",
             'balance_desc': "Measured against the Assault Rifle, which both games have: 6.67 "
-                            "damage at 22.5 rounds/s (the Assault Rifle's damage per second), "
-                            "a 112 magazine, 450 at pickup / 562 most, a 2.5 s reload, a "
-                            "faster bullet and Halo 1-style aim assist.",
+                            "damage per round (Halo 1 fires it at 15 rounds/s), a 112 "
+                            "magazine, 450 at pickup / 562 most, a 2.5 s reload, a wider "
+                            "spray in long bursts, a faster bullet and Halo 1-style aim assist.",
             # step 9: the balanced reload, 2.9 x 50/58 = 2.5 s, against the BUILT 50 frames
             # swap (ready + put-away, ONE multiplier in the patcher): ready 29 x 19/20 =
             # 27.55 frames over the built 19 = x1.45 (put-away's own would be 11 x 5/5 / 5 =
@@ -245,7 +255,8 @@ PORT.update({
                 # the minimum's own ratio is degenerate (H3 AR 0.1): the maximum's 2.75/3.0
                 row('weap', SMG + 'smg', 'Minimum Error', 0.0, 0.25, 'Error Angle', block='Triggers'),
                 row('weap', SMG + 'smg', 'Error Angle', 1.83, 1.25, 'Error Angle', block='Triggers'),
-                row('weap', SMG + 'smg', 'Error Angle Max', 5.96, 2.75, 'Error Angle', block='Triggers'),
+                # with the barrel-climb approximation: (2.75 + 1.6) x 6.5/3.0 (user, option A)
+                row('weap', SMG + 'smg', 'Error Angle Max', 9.43, 4.35, 'Error Angle', block='Triggers'),
                 row('proj', SMG + 'bullet', 'Initial Velocity', 54.0, 400.0 / 30, 'Projectile'),
                 row('proj', SMG + 'bullet', 'Final Velocity', 54.0, 400.0 / 30, 'Projectile'),
                 row('weap', SMG + 'smg', 'Autoaim Angle', 6.0, 5.0, 'Autoaim'),

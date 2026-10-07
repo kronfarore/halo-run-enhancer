@@ -180,6 +180,31 @@ def balance(m, entry):
         raise SystemExit('%d balance row(s) failed' % bad)
 
 
+LEVELS = ('a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40')
+
+
+def armed(m, weapon, enemies):
+    """STEP 11 in game: the enhancer's own Armed-card pass (h1_enemy_weapons.apply) at 100%
+    for each enemy -- every spawn of that enemy moved to a variant carrying the port, its
+    firing block from donor_for (the firing profile laid over a donor). Donor index from
+    the levels' pristine baselines, as halo_enhancer.h1_level_maps reads them."""
+    import halo_patch as hp
+    import halo_enhancer as he
+    import h1_enemy_weapons as EW
+    he.load_settings()
+    folder = he.CONFIG.get('map_game_folder', {}).get('Halo 1', '')
+    levels = []
+    for lvl in LEVELS:
+        live = hp.default_map_path(he.mcc_root(), folder, lvl)
+        base = he.baseline_source(live, 'Halo 1')
+        levels.append(base if os.path.exists(base) else live)
+    names = {e.lower(): e for e in EW.ENEMIES}
+    cards = {names[e.strip().lower()]: {weapon: 1.0} for e in enemies}
+    for r in EW.apply(m, hp, {'levels': levels, 'cards': cards}):
+        print('   armed %-16s %-22s %s' % (r.get('field'), r.get('old') or '',
+                                         r.get('new') or r.get('reason') or ''))
+
+
 def load_record():
     try:
         return json.load(open(RECORD, encoding='utf-8'))
@@ -234,6 +259,8 @@ def main():
     ap.add_argument('--balanced', action='store_true',
                     help="the patcher's own Balanced pass on the copy (catalog rows + anims "
                          '+ anim_sounds), spawning with the balanced magazine')
+    ap.add_argument('--armed', metavar='ENEMIES',
+                    help="the enhancer's Armed-card pass at 100%%: e.g. grunt,elite carry the port")
     a = ap.parse_args()
     if a.restore:
         return restore(a.restore)
@@ -261,7 +288,8 @@ def main():
     want = {'grunt': a.grunt or cfg.get('grunt'), 'elite': a.elite or cfg.get('elite')}
     actors = [v for v in want.values() if v]
     out = build_copy(level, weapon, rounds, actors, a.keep_kit_map)
-    if actors or a.god or cfg.get('god') or entry:
+    arm = [e for e in (a.armed or '').split(',') if e.strip()]
+    if actors or a.god or cfg.get('god') or entry or arm:
         import halo_patch
         m = halo_patch.open_map(out, 'Halo 1')
         if actors:
@@ -270,6 +298,8 @@ def main():
             E.god_shield(m)
         if entry:
             balance(m, entry)
+        if arm:
+            armed(m, weapon, arm)
         open(out, 'wb').write(bytes(m.data))
     print('wrote %s' % out)
     if a.stage:
