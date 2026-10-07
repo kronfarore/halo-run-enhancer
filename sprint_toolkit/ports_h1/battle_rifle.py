@@ -256,9 +256,12 @@ PORT.update({
                 # donor's convolution kept, mask alpha 255 (test 4 tells what 255 means).
                 # TEST 4: size 'looking good'; the pistol's gentle blur over the WHOLE view,
                 # lens too -> alpha = WHERE it blurs (255 = blurred), the radius = how much.
-                # Halo 3 does not blur: alpha 0 everywhere (test 5), the donor's radius kept
+                # Halo 3 does not blur: alpha 0 everywhere (test 5), the donor's radius kept.
+                # TEST 5: no blur at all. User: keep Halo 1's blur if every H1 zoom has it --
+                # they do (pistol r15, rocket launcher r11, sniper r11: alpha 0 in the lens,
+                # 255 outside) -> 'outside': blurred outside Halo 3's ring only
                 'scope': {'chud': r'ui\chud\battle_rifle', 'out': BR + 'bitmaps\\scope_mask',
-                          'size': 1024, 'span': 660.0, 'aspect': 4 / 3.0, 'alpha': 0},
+                          'size': 1024, 'span': 660.0, 'aspect': 4 / 3.0, 'alpha': 'outside'},
                 'reticle': ('hud_reticles', 1, 'battle rifle'),
                 'reticle_thicken': 1,
                 'flash_base': 12,                # the pistol's low-ammo cutoff is of 12

@@ -146,7 +146,23 @@ def write(dark, out, alpha=255):
     b.width = b.height = size                    # the template's 512, or larger (BR test 3: 1024)
     b.registration_point_x = b.registration_point_y = size // 2
     v = np.clip(np.round(dark * 255), 0, 255).astype(np.uint8)
-    bgra = np.stack([v, v, v, np.full_like(v, alpha)], axis=-1)
+    if alpha == 'outside':
+        # Halo 1's own style (BR test 5, user: 'keep it' -- every stock zoom does it: pistol,
+        # rocket launcher, sniper): blurred OUTSIDE the lens only. Outside = the VIGNETTE
+        # region connected to the texture border (flood fill over the vignette's own grey,
+        # 0.4..0.65 -- not the ring or the rulers' black bars, which touch the ring and
+        # would pull the blur into the lens), its edge softened like the stock gradient
+        from PIL import ImageDraw, ImageFilter
+        grey = (dark > 0.4) & (dark < 0.65)
+        img = Image.fromarray((grey * 255).astype(np.uint8)).copy()  # own buffer: floodfill
+        for corner in ((0, 0), (size - 1, 0), (0, size - 1), (size - 1, size - 1)):
+            if img.getpixel(corner) == 255:
+                ImageDraw.floodfill(img, corner, 128)
+        outer = (np.array(img) == 128).astype(np.uint8) * 255
+        a = np.array(Image.fromarray(outer).filter(ImageFilter.GaussianBlur(size / 128.0)))
+    else:
+        a = np.full_like(v, alpha)
+    bgra = np.stack([v, v, v, a], axis=-1)
     d.processed_pixel_data.data = bytearray(bgra.tobytes())
     p = os.path.join(TAGS, out + '.bitmap')
     os.makedirs(os.path.dirname(p), exist_ok=True)
