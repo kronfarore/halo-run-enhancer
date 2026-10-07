@@ -327,13 +327,22 @@ their species back (`added` wins over `vanished`, in the Armed cards too).
 - Infection squads become one-for-one Grunts / Sentinels / Marines under the other
   skulls, so large infection counts become large squads.
 
-## 8c. Dropship test (staged 2026-10-07)
+## 8c. Dropship test (2026-10-07)
 
 `h1_dropship_test.py` / `.cmd` builds a30: the opening dropship's 8 passenger seats
 (`lz_search/cship_toon`, loaded by `vehicle_load_magic lz_cship "passenger"`) each hold
 another species: Grunt (control), Hunter, Jackal, Flood combat Elite, Flood combat
-Human, infection form, carrier, Sentinel. The result decides whether dropship-seated
-encounters (excluded so far as `bound`) can be converted by the cards and skulls.
+Human, infection form, carrier, Sentinel. **RESULT (user, 2026-10-07): only the Grunt and the Jackal came out.** The Hunter, both
+Flood combat forms, the infection form, the carrier and the Sentinel never left the
+Spirit. Elites ride in the stock waves, so the Spirit carries Grunt, Jackal and Elite
+only. Dropship-seated encounters therefore STAY excluded (`bound`); converting them
+would at most work for Covenant targets. The live a30 was restored and the test map
+deleted (the tool stays in the repo).
+
+**Next game:** repeat this test where the main transport is the PHANTOM, not the
+Spirit (H2, H3, ODST, Reach, H4). Phantom seats and loading differ per game; see the
+Thunderstorm notes on Phantom seats (`_TS_NO_RIDE`) and H3's ai_trickle_via_phantom /
+ai_dump_via_phantom loaders.
 
 ## 9. Verification
 
@@ -402,4 +411,3 @@ Each answer below was a fixed fact in H1. Find the game's own before building.
 - A palette grown past 64 at patch time (appends stop at 64; Armed's own
   `palette_index` may still append beyond it).
 - The faction skulls in game (built 2026-10-07, offline-verified only).
-- The dropship test result (8c).
