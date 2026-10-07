@@ -3381,6 +3381,39 @@ def _famine_placements(m, game, registry):
                  halved, ', %d battery weapon(s) left' % skipped if skipped else '')}]
 
 
+# Bugfix: Halo 2's Fuel Rod splash group typo (Options -> Patching -> Bugfixes).
+# flak_explosion's General Damage (jpt! 0x50) is the string 'explosion_largw', which no
+# damage-table row carries, so the splash ignores armour. Pointed at the string id of
+# 'explosion_large' (taken from the same weapon's flak_impact, which spells it right).
+# Any other jpt! carrying the typo is fixed with it (03a: only flak_explosion).
+_H2_JPT_GENERAL = 0x50
+_H2_FLAK = ('objects' + chr(92) + 'weapons' + chr(92) + 'support_high' + chr(92) +
+            'flak_cannon' + chr(92) + 'damage_effects' + chr(92))
+
+
+def _fix_h2_fuel_rod_group(m, game):
+    ref = {'effect': 'Bugfix: Fuel Rod splash', 'field': 'General Damage group'}
+    if str(game).strip() != 'Halo 2':
+        return []
+    good = None
+    for _n, b in m.find_tags('jpt!', _H2_FLAK + 'flak_impact'):
+        sid = m.u32(b + _H2_JPT_GENERAL)
+        if m.resolve_stringid(sid) == 'explosion_large':
+            good = sid
+    if good is None:
+        return [{**ref, 'ok': True, 'skip': True,
+                 'reason': "no Fuel Rod (or its 'explosion_large' id) on this map"}]
+    fixed = []
+    for name, b in m.find_tags('jpt!', '*'):
+        if m.resolve_stringid(m.u32(b + _H2_JPT_GENERAL)) == 'explosion_largw':
+            struct.pack_into('<I', m.data, b + _H2_JPT_GENERAL, good)
+            fixed.append(str(name).rsplit(chr(92), 1)[-1])
+    if not fixed:
+        return [{**ref, 'ok': True, 'skip': True, 'reason': 'typo not present on this map'}]
+    return [{**ref, 'ok': True, 'tag': 'jpt!', 'old': 'explosion_largw (no row: x1 vs all)',
+             'new': 'explosion_large on ' + ', '.join(fixed)}]
+
+
 # Brute equipment loadout: char 'Equipment Definitions' (H3), elem 0x24 —
 # Equipment tagRef @0x0 (ident at +0xC), Flags @0x10, Relative Drop Chance @0x14.
 _EQUIP_DEFS = {'Halo 3': {'block': 0x1B0, 'elem': 0x24, 'id_at': 0xC, 'chance': 0x14},
@@ -9579,7 +9612,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               h4_keep_loadout=False, clear_profile_equipment=False,
               clear_profile_grenades=False, spawn_grenades=None,
               h4_ability_visibility=None, h1_enemy_weapons=None,
-              camo_after_ladder=False, h1_levels=None,
+              camo_after_ladder=False, fix_h2_fuel_rod=False, h1_levels=None,
               baseline_root=None, map_subdir=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
@@ -10111,6 +10144,9 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                                               equipment=clear_profile_equipment,
                                               grenades=clear_profile_grenades))
 
+    if fix_h2_fuel_rod:
+        # Options -> Patching -> Bugfixes. Before the card ops, like any tag fix.
+        results.extend(_fix_h2_fuel_rod_group(m, game))
     if 'famine' in _skull_names:
         # Famine's placed-weapon half: after the card ops (a Magazine card sets the
         # default it halves) and BEFORE the tool appends its own marker weapons below.

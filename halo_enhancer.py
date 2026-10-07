@@ -448,6 +448,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'other_exhaust_enabled', 'other_skull_enabled', 'other_ally_enabled',
                'other_bane_enabled', 'identity_other_card',
                'skull_single_map', 'skull_disabled', 'skull_camo_after_ladder',
+               'bugfix_h2_fuel_rod',
                'set_starting_equipment', 'equipment_all_selected',
                'h2_add_respawn_profile', 'h2_extra_squads', 'swap_player_loadouts',
                'h3_all_chief_profiles',
@@ -1211,6 +1212,8 @@ CONFIG = {
     "skull_single_map": False,   # a drawn skull governs only the map it was drawn on
     "skull_disabled": [],        # skull categories (halo.json `skull` keys) never offered
     "skull_camo_after_ladder": False,   # Thunderstorm / Downpour before Assassins
+    # Options -> Patching -> Bugfixes: fixes to Bungie's own data. Off = vanilla.
+    "bugfix_h2_fuel_rod": False,
     # Weapon Identity rounds also roll the Other slot (Hero / Exhaust / Skull / Ally /
     # Bane) like a normal round: a fourth card on the offer. Off = the identity pair and
     # one enemy card only.
@@ -9062,6 +9065,7 @@ class MagnitudeEditorDialog(QDialog):
                 keep_title_hud=bool(CONFIG.get('keep_title_hud')),
                 skulls=skulls,
                 camo_after_ladder=bool(CONFIG.get('skull_camo_after_ladder')),
+                fix_h2_fuel_rod=bool(CONFIG.get('bugfix_h2_fuel_rod')),
                 equipment_swaps=equip_swaps or None,
                 spawn_equipment=spawn_equipment,
                 spawn_weapons=spawn_weapons,
@@ -9105,6 +9109,7 @@ class MagnitudeEditorDialog(QDialog):
                     **baseline_args(self.game),
                     skulls=skulls,
                 camo_after_ladder=bool(CONFIG.get('skull_camo_after_ladder')),
+                fix_h2_fuel_rod=bool(CONFIG.get('bugfix_h2_fuel_rod')),
                     enemy_colors=self._enemy_colors_for_patch(),
                 weapon_ports=self._weapon_ports_for_patch(),
                 port_volume=self._port_volume_for_patch(),
@@ -11670,6 +11675,22 @@ class OptionsDialog(QDialog):
         h4form.addRow("Ability visibility:", self.h4_ability_vis_cb)
 
         self._opt_page("Patching").addWidget(patch_all_g, 45)   # above the Halo 2 box
+
+        # ---- Bugfixes: corrections to Bungie's own data, each with its full impact ----
+        bugfix_g = QGroupBox("Bugfixes")
+        bugfix_form = QFormLayout(bugfix_g)
+        bugfix_form.setLabelAlignment(Qt.AlignRight)
+        self.bugfix_fuel_rod_cb = QCheckBox("Halo 2: Fuel Rod splash damage uses its damage group")
+        self.bugfix_fuel_rod_cb.setChecked(bool(CONFIG.get('bugfix_h2_fuel_rod')))
+        _impact = ("Halo 2's Fuel Rod splash (flak_explosion) names its damage group 'explosion_largw' -- a typo in Bungie's data. The damage table has no such row, so the splash ignores armour (x1 against everything). The fix points it at 'explosion_large', the row rockets use. Splash damage then: shields (Elites, the Arbiter and the Chief, Sentinels, Regret, Covenant turrets) x0.5; Jackal arm shields x0.5; energy and holograms x0.5; glass, electronics, machinery and explosives x2; hard Flood flesh x0.25; Tartarus (invincible shield and body) and liquids x0; bodies, armour, Hunter flesh, vehicle hulls and everything else unchanged. The direct hit (flak_impact) is already correct and unchanged. Enemy Fuel Rod Grunts' splash does half to your shield too.")
+        self.bugfix_fuel_rod_cb.setToolTip(_impact + "\n\nShared with a co-op partner through "
+                                           "the run (it changes the patch).")
+        bugfix_form.addRow("", self.bugfix_fuel_rod_cb)
+        _bf_note = QLabel(_impact)
+        _bf_note.setWordWrap(True)
+        _bf_note.setStyleSheet("color: #9a9a9a; font-size: 11px;")
+        bugfix_form.addRow("", _bf_note)
+        self._opt_page("Patching").addWidget(bugfix_g, 46)
         self._opt_page("Patching").addWidget(patch_h1_g, 50)
         self._opt_page("Patching").addWidget(patchg, 60)
         self._opt_page("Patching").addWidget(patch_odst_g, 70)
@@ -12710,6 +12731,7 @@ class OptionsDialog(QDialog):
             'identity_other_card': self.identity_other_cb.isChecked(),
             'skull_single_map': self.skull_single_map_cb.isChecked(),
             'skull_camo_after_ladder': self.skull_camo_order_cb.isChecked(),
+            'bugfix_h2_fuel_rod': self.bugfix_fuel_rod_cb.isChecked(),
             'skull_disabled': sorted(k for k, cb in self.skull_cat_boxes.items()
                                      if not cb.isChecked()),
             'new_weapon_chance': round(self.new_weapon_chance.value(), 2),
