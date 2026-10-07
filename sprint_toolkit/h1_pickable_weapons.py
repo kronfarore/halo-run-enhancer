@@ -50,313 +50,18 @@ from reclaimer.hek.defs.jpt_ import jpt__def  # noqa: E402
 from reclaimer.hek.defs.actv import actv_def  # noqa: E402
 from reclaimer.hek.defs.bitm import bitm_def  # noqa: E402
 from reclaimer.hek.defs.ustr import ustr_def  # noqa: E402
+import ports_h1  # noqa: E402
 
 TAGS = os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'HCEEK', 'tags')
 BACKUP = '.before_pickable'
 CYBORG = r'characters\cyborg\cyborg'
 
-SWORD_SWING = r'sound\sfx\impulse\animations\elite\stand_sword_melee.mov'
-SWORD_SOUNDS = 'sound\\weapons\\energy_sword_port\\'
-ROD_SOUNDS = 'sound\\weapons\\fuel_rod_port\\'
-
-WEAPONS = {
-    'energy_sword': {
-        'weapon': r'weapons\energy sword\energy sword',
-        'fp_model': r'weapons\energy sword\energy sword',
-        'fp_anims': r'weapons\energy sword\fp\fp',
-        'teach': ('fb', 'b'),
-        'keys': {'first-person melee': 5},
-        # Halo 3's own sword sounds (h1_port_sounds.py energy_sword): the Elite's swing
-        # (SWORD_SWING) is silent for 0.45 s and was heard 0.3 s late (user, 2026-10-06)
-        'sounds': {'first-person melee': SWORD_SOUNDS + 'sword_melee',
-                   'first-person fire-1': SWORD_SOUNDS + 'sword_lunge',
-                   'first-person ready': SWORD_SOUNDS + 'sword_ready',
-                   'first-person posing': SWORD_SOUNDS + 'sword_pose'},
-        # Halo 3 plays the ignition from its blade_activate effect, 0.6 s after the sword
-        # turns on (that event's delay) -- 18 frames into the ready (user: 'too early' at 0)
-        'sound_frames': {'first-person ready': 18},
-        # the hit: the melee damage effect's own sound (slash AND lunge strike use it)
-        'hit_sound': SWORD_SOUNDS + 'sword_hit',
-        # the hum: a sound_looping (the plasma rifle charge loop's shape) on the blade
-        'hum': {'loop': SWORD_SOUNDS + 'sword_hum', 'tag': SWORD_SOUNDS + 'sword_hum',
-                'like': r'sound\sfx\weapons\plasma rifle\charging', 'marker': 'flare'},
-        # MCC's Halo 1 localization has no line for message 8 ("need string insert here"
-        # in game, 2026-10-05): the sword gets its own appended pair, like the SAW's 47/48
-        'messages': ('Picked up an energy sword', 'Picked up %d rounds for energy sword'),
-        'icon': 'energy sword',                  # hud_msg_icons sequence (add_msg_icon.py)
-        # the plasma pistol's HUD, whose BATTERY bar (age) is the sword's energy (the heat
-        # half of `master plasma` stays empty: the sword makes no heat), with HALO 3's sword
-        # reticle (hud_reticles #13) brought in by h1_add_reticle.py
-        'hud': {'donor': r'weapons\plasma pistol\plasma pistol',
-                'out': r'weapons\energy sword\energy sword',
-                'reticle': ('hud_reticles', 13, 'energy sword')},
-        # aim assist: Halo 3's sword (degrees, wu) -- the AI-only tag had none
-        'aiming': {'autoaim_angle': 10.0, 'autoaim_range': 2.5,
-                   'magnetism_angle': 10.0, 'magnetism_range': 6.0},
-        # THE LUNGE (fire button), experimental: Halo 1 has no player lunge. A trigger
-        # fires an invisible strike that dies after LUNGE_RANGE and does the sword's own
-        # melee damage, and its firing damage on the wielder carries an instantaneous
-        # acceleration -- the shove. Each lunge costs LUNGE_ENERGY of the battery (Halo 3
-        # costs 0.1 per KILL, which Halo 1 cannot count); at full age it cannot fire.
-        # Sword Elites keep their melee: their actor variants fire at rate 0.
-        'lunge': {'template': r'weapons\plasma pistol\plasma pistol',
-                  'strike': r'weapons\energy sword\lunge',          # projectile
-                  'strike_from': r'weapons\assault rifle\bullet',
-                  # the strike's OWN damage (step 3): a copy of the sword's melee damage, so a
-                  # balance row (e.g. the balanced build's damage RADIUS) moves only the lunge,
-                  # not the regular melee and not the Elites' sword
-                  'strike_damage': r'weapons\energy sword\lunge strike',
-                  'push': r'weapons\energy sword\lunge push',       # firing damage
-                  'push_from': r'weapons\plasma pistol\trigger',
-                  # first boot (2026-10-06): strike hit, shove did nothing with 0 damage
-                  # and every material modifier 0 -- now a token 0.01 damage, modifiers 1.
-                  # Second boot: +3 pushed the player BACK, a negative value forward; too
-                  # much acceleration hurts the player (user tuned it live). Halo 3's
-                  # aim assist stays the original; stronger lunge assist = balanced build.
-                  # third boot: the user settled on -10 live
-                  'range': 1.5, 'velocity': 60.0, 'acceleration': -10.0, 'push_damage': 0.01,
-                  'energy': 0.1, 'rate': 1.0,
-                  # the strike's HIT sound (user, 2026-10-06: the lunge hit silently -- a
-                  # damage effect's sound plays for melee, not for a projectile's impact):
-                  # a one-part impact effect, the AR's `impact dirt` without its decal,
-                  # on every material response
-                  'hit_effect': (r'weapons\assault rifle\effects\impact dirt',
-                                 r'weapons\energy sword\effects\lunge hit')},
-    },
-    'fuel_rod': {
-        'weapon': r'weapons\fuel rod gun\fuel rod',
-        # a10 has no Grunt fuel rod (its palette carries only the Hunters'): palette entry
-        # + resident-only placement there too, so the enhancer can offer it (user,
-        # 2026-10-06); the other nine levels carry it already
-        'palette_levels': ['a10'],
-        'fp_model': r'weapons\fuel rod gun\fp\fp',
-        'fp_anims': r'weapons\fuel rod gun\fp\fp',
-        'teach': ('fr', 'pc'),
-        'keys': {'first-person melee': 5},
-        # Halo 3's own fuel rod sounds (h1_port_sounds.py fuel_rod), all cued at frame 0
-        # as Halo 3 does; the original fuel rod never had first-person sounds
-        'sounds': {'first-person melee': ROD_SOUNDS + 'rod_melee',
-                   'first-person ready': ROD_SOUNDS + 'rod_ready',
-                   'first-person reload-empty': ROD_SOUNDS + 'rod_reload',
-                   'first-person reload-full': ROD_SOUNDS + 'rod_reload',
-                   'first-person posing': ROD_SOUNDS + 'rod_pose',
-                   'first-person fire-1': ROD_SOUNDS + 'rod_fire'},
-        # Halo 1 rule (PORTING.md step 3): a weapon owns its melee damage tag. The PC fuel
-        # rod's is the Chief-held fuel rod's melee; the response stays shared (feedback).
-        'melee': (r'weapons\plasma_cannon\effects\plasma_cannon_melee',
-                  r'weapons\fuel rod gun\melee'),
-        'melee_response': r'weapons\plasma_cannon\effects\plasma_cannon_melee_response',
-        # HUD (user, 2026-10-06): the PC fuel rod's own -- its crosshair is the right one --
-        # on `master rounds`, with the RL's loaded-ammo elements drawing HALO 3's fuel rod
-        # meter, four of its rods (h1_rocket_meter.py h3_rods)
-        'hud': {'donor': r'weapons\plasma_cannon\plasma_cannon',
-                'readout': r'weapons\rocket launcher\rocket_launcher',
-                'out': r'weapons\fuel rod gun\fuel rod',
-                'meter': r'weapons\fuel rod gun\bitmaps\fuel_rod_rods', 'art': 'h3_rods_row'},
-        # the charge (vanilla: hold 1.25 s, it fires when full): the plasma pistol's own
-        # charging loop, as the pistol plays it -- an attachment on `primary trigger`
-        # scaled by an object function fed by the weapon's primary_charged (input B).
-        # Halo 1 has no FP animation slot that plays DURING a charge (`overcharged` plays
-        # once full, and the fuel rod fires at that instant).
-        'charge_loop': {'sound': r'sound\sfx\weapons\plasma rifle\charging',
-                        'marker': 'primary trigger', 'input': 'B_in',
-                        # and a GLOW while charging (user, 2026-10-06: only the model's own
-                        # self-illumination showed): the fuel rod folder's own light volume
-                        # (the Hunter's arm glow) and light, which nothing attached
-                        'glow': [r'weapons\fuel rod gun\hunter fuel rod',
-                                 r'weapons\fuel rod gun\illumination']},
-        # STEP 3 (PORTING.md): its OWN projectile and damage. The Grunts' fuel rod fired
-        # `weapons\fuel rod gun\fuel rod`, the HUNTERS' projectile -- so the enhancer's
-        # Hunter cards (Fuel Rod Range / Velocity / Gravity on the projectile, Hunter Fuel
-        # Rod Damage on `explosion` through the detonation effect) moved the Grunts' and now
-        # the player's fuel rod too. Same values, own tags; the Hunters keep the originals.
-        'own_projectile': {
-            'projectile': (r'weapons\fuel rod gun\fuel rod', r'weapons\fuel rod gun\grunt fuel rod'),
-            'effect': (r'weapons\fuel rod gun\effects\explosion',
-                       r'weapons\fuel rod gun\effects\grunt explosion'),
-            'damage': (r'weapons\fuel rod gun\explosion', r'weapons\fuel rod gun\grunt explosion')},
-        # the AI-only tag fired with rounds_per_shot 0 (never spent a round, never reloaded)
-        # and had no aim assist; Halo 3's fuel rod values (degrees, wu)
-        'rounds_per_shot': 1,
-        'aiming': {'autoaim_angle': 4.0, 'autoaim_range': 25.0,
-                   'magnetism_angle': 6.0, 'magnetism_range': 25.0},
-        'icon': 'fuel rod',
-        # the fuel rod Grunts dropped it EMPTY (actv drop_weapon_loaded 0..0, ammo 0..0 --
-        # it detonated anyway); a plasma pistol Grunt drops 70-90%
-        'drops': {r'characters\grunt\grunt specops fuel rod': ((0.5, 1.0), (2, 6)),
-                  r'characters\grunt\grunt specops fuel rod airdef': ((0.5, 1.0), (2, 6))},
-    },
-}
-# ---------------------------------------------------------------------------------------
-# A FULL PORT, not a restoration: the Sentinel Beam, built from Halo 3 (geometry + look
-# h1_h3_weapon_model.py, FP animations h1_fp_retarget.py) on a COPY of the plasma rifle
-# (`template`: a heat + battery automatic, the closest Halo 1 weapon). Numbers by the
-# PORTING step-4 RATIO RULE, the plasma rifle as the yardstick both games have:
-#   H1 value = H1 plasma rifle x (H3 sentinel beam / H3 plasma rifle)
-#   damage / round   13 x 4 / 10            = 5.2   (156 dps; H1 PR ~110 -- x1.4, H3 x1.6)
-#   heat / round     0.08 x 0.04 / 0.15     = 0.0213 (overheats after ~2.6 s, H3 2.57 s)
-#   heat loss / s    0.3 x 0.8525 / 0.8525  = 0.3   (0.9 -> 0.25 in 2.2 s = H3's 69-frame vent)
-#   thresholds       overheat 1.0 x 0.9 / 1 = 0.9, recovery 0.25 x 0.1 / 0.1 = 0.25
-#   battery / round  0.005 x 0.003 / 0.0025 = 0.006 (167 rounds; H1 batteries are half H3's)
-#   aim assist Halo 3's (1/12, 9/18)
-# RATE: 30/s in the tag fired at ~15/s in game (test 1, 2026-10-06: a full battery emptied
-# with the heat bar just over half -- 167 x 0.0213 - 0.3 x 167 / r = ~0.55 gives r = ~16.7;
-# a 30-tick engine). Test 2 set 15/s and it fired at ~10/s (overheat after ~6 s with 27%
-# battery left: 61 rounds in 6 s). Both fit ONE rule: a shot every floor(30 / rate) + 1
-# ticks -- 30 -> 15/s, 15 -> 10/s. So the tag keeps 30/s (= 15/s in game) and every
-# PER-ROUND value above is doubled (10.4 damage, 0.0426 heat, 0.012 battery): the
-# per-second numbers hold (overheat after ~2.6 s, as Halo 3).
-# Every round is a tracer (Halo 1's Sentinel gun: 0 between) -- the template's 3 drew the
-# contrail on one round in four (test 1). Test 2: still no beam in view, but one in the
-# floor's REFLECTION -- the contrail is a viewer-facing ribbon and the round left from the
-# camera along the view axis, so it was seen exactly end-on (zero width). The trigger's
-# first-person offset (the rocket launcher has one: y -0.1) starts it at the gun instead.
-# The damage effect is a copy of the plasma rifle BOLT's (x2 on shields, x0.5 on armour --
-# the yardstick's, and Halo 3's beam is plasma-category); the projectile a copy of Halo 1's
-# own Sentinel beam (its contrail is the Sentinel look) with Halo 3's 120 wu range.
-SB = 'weapons\\sentinel beam\\'
-SBS = 'sound\\weapons\\sentinel_beam_port\\'
-WEAPONS['sentinel_beam'] = {
-    'weapon': SB + 'sentinel beam',
-    'template': r'weapons\plasma rifle\plasma rifle',
-    'world_model': SB + 'sentinel beam',
-    'fp_model': SB + 'fp\\fp',
-    'fp_anims': SB + 'fp\\fp',
-    'label': 'sb',
-    'teach': ('sb', 'pr'),
-    'keys': {'first-person melee': 5},
-    # Halo 3's own (the Sentinel's) sounds, h1_port_sounds.py sentinel_beam. Halo 1's
-    # plasma rifle cues its overheat from the FP overheating animation, so this does too
-    'sounds': {'first-person ready': SBS + 'beam_ready',
-               'first-person posing': SBS + 'beam_pose',
-               'first-person melee': SBS + 'beam_melee',
-               'first-person overheating': SBS + 'beam_overheat'},
-    # THE HUM: a sound_looping (a clone of the flamethrower's fire_ft: fade in/out) with
-    # Halo 3's in / 0.5 s seamless loop / out, on the trigger's RATE OF FIRE: input C =
-    # `primary rate of fire`, function 0 = 'one' scaled by it, the loop on A_out. That input ramps up over the
-    # trigger's acceleration time while fire is held and down over its deceleration time
-    # (0.1 s) after -- smooth, no per-round toggling. The rate bounds differ (29..30) so
-    # the ramp is not 0/0 (both fire every 2nd tick = 15/s).
-    # The record (2026-10-06):
-    #   test 1  `primary firing on` (input C, function 3)          silent
-    #   test 2  illumination, hold 0.15 s, 10 rounds/s, 4.3 s loop  plays, 'a bit long'
-    #   test 3  illumination, hold 0.08 s, 15 rounds/s, 0.5 s loop  tail grows with hold
-    #   test 4  per-shot grains in the firing effect                'static'
-    #   test 5  `primary firing on` the flamethrower's exact way      silent
-    #           (input B, its function 1, B_out) -- that input never reaches this weapon
-    #   test 6  illumination, hold 0.15 s, 15 rounds/s, 0.5 s loop  persists again
-    # So the illumination signal lingers whatever its hold: the rate of fire instead
-    # The trigger keeps ramping while fire is HELD, so the hum must also go off when the
-    # weapon cannot fire -- `turn off with` (a function is off when its value is 0, and
-    # off with whatever its own turn-off function is off with: test 9 showed the chain
-    # carries the battery link):
-    #   test 7: an empty battery kept the hum going -> off with function 3 (the template's
-    #           battery left, age inverted): WORKS (test 8)
-    #   test 8: an overheat with fire held kept it going ->
-    #     test 9  chain via `overheated` (inverted, function 1)         no effect
-    #     test 10 off with the illumination function                    no effect; and
-    #             it broke the battery case: illumination stays up while fire is HELD
-    #             (silent on a fresh press with a dead battery) -- trigger-driven, like
-    #             the rate of fire, not per round
-    #   Inputs that never move here: `primary firing on`, `overheated`. Weapon-state
-    #   inputs that do: age (battery), heat.
-    #     test 11 chain via `ready` (function 1, off with 3)            battery yes,
-    #             overheat no -- `ready` stays 1 through an overheat
-    #     test 12 chain via `primary firing` (NOT `firing on`; the last untried input
-    #             with a plausible meaning): 1 while the trigger is in its firing state
-    #             would end the overheat hum; a once-per-round pulse would make the hum
-    #             stutter/stack instead (then: back to test 11's wiring)
-    # The template's heat-flare lights (blue plasma rifle flares, function 1) are gone
-    'rewire': {'inputs': ('primary_firing', 'illumination', 'primary_rate_of_fire', 'age'),
-               'functions': {0: (2, 'C_in', 'fire loop', {'turn_off_with': 1}),
-                             1: (2, 'A_in', 'primary firing', {'turn_off_with': 3})},
-               'drop_attachments_on': ('B_out',)},
-    'fire_loop': {'tag': SBS + 'beam_fire', 'like': r'sound\sfx\weapons\flamethrower\fire_ft',
-                  'start': SBS + 'beam_fire_in', 'loop': SBS + 'beam_fire_loop',
-                  'end': SBS + 'beam_fire_out', 'marker': 'primary trigger', 'scale': 'A_out'},
-    # THE FIRING EFFECT (own, every round): the plasma rifle's flash particles only (no
-    # smoke, no tracer, no sound), recoloured to the Sentinel gunlight's red, plus the
-    # muzzle light. Test 5: a light/lens flare in the effect showed ABOVE THE RIGHT ARM
-    # (effect lights spawn at the hidden third-person weapon), while the particles carry
-    # `first person only` and spawn at the first-person muzzle -- the visible glow
-    'fire_effect': {'from': r'weapons\plasma rifle\effects\plasma rifle upper fire',
-                    'out': SB + 'effects\\fire', 'sound': '', 'light': SB + 'muzzle light',
-                    # test 7: still blue-white -- not the colour source: five additive
-                    # flash sprites, ~20 alive at 15 rounds/s, saturate to white (the
-                    # plasma pistol's green flash IS an RGB tint on the same sprite). One
-                    # sprite (`flash c generic` exactly), a deep red tint
-                    'keep_particles': 'flash c generic', 'tint': (1.0, 1.0, 0.15, 0.05),
-                    # test 8: red, right -- '0.25 units up and right on the muzzle'
-                    # (wu, marker space: forward, left, up); test 9: right way, 0.5 more
-                    'particle_offset': (0.0, -0.0075, 0.0075)},
-    # test 6: the glow came out plasma rifle blue-white anyway -- the `c generic`
-    # particles take the WEAPON's change colour A (the template wanders teal..blue), not
-    # the effect's tint. Change colour A = the Sentinel gunlight's red (rgb, rgb)
-    'change_color_a': ((1.0, 0.45, 0.4), (1.0, 0.3, 0.25)),
-    # the light (lights the surroundings): test 2 used the Sentinel's own gunlight --
-    # NOT dynamic (a 0.5 wu glow for the Sentinel's body). Own light = the plasma rifle
-    # muzzle flash (dynamic) in the gunlight's colour, alive `duration` s per round; no
-    # lens flare (test 5: it floated over the arm)
-    'own_light': {'shape': r'weapons\plasma rifle\muzzle flash',
-                  'look': r'characters\sentinel\gunlight', 'out': SB + 'muzzle light',
-                  # test 3: still nothing to see -- gone HARD (radius x3, full alpha and
-                  # brightness on both bounds), to be paddled back once it shows
-                  'radius': 6.0, 'argb': (1.0, 1.0, 0.45, 0.4), 'duration': 0.1,
-                  'no_flare': True},
-    # Halo 1's overheat steam spawns at the plasma rifle's `vent` markers, which this
-    # model lacks (test 5: no particles): own copy at `overheat`
-    'overheated_effect': {'from': r'weapons\plasma rifle\effects\overheated',
-                          'out': SB + 'effects\\overheated', 'locations': {'vent': 'overheat'}},
-    # the template's misfire burst (a low-battery misfire) aims at `vent` too
-    'misfire_effect': {'from': r'weapons\plasma rifle\effects\misfire',
-                       'out': SB + 'effects\\misfire', 'locations': {'vent': 'overheat'}},
-    'attach_swap': {r'weapons\plasma rifle\muzzle flash': SB + 'muzzle light'},
-    # the template's attachments sit on plasma rifle markers this model lacks
-    # THE DROP (user's option B): Halo 1's Sentinel carries no droppable weapon, so its
-    # death effect spawns the beam as a weapon part beside the debris. `death` is the
-    # coll's body DESTROYED effect, whose threshold is 0 -- it plays on every kill
-    'death_drop': [r'characters\sentinel\effects\death'],
-    # IN EVERY MAP: the death effect only brings the beam into levels with Sentinels (c10,
-    # c20, c40, d40); the enhancer may offer it anywhere, so it is APPENDED to every
-    # level's weapons palette, like the SAW / sword / fuel rod (a palette entry is enough
-    # for tool to build the tag in; appending keeps every existing palette index)
-    'palette_levels': ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40'],
-    'attach_markers': {'secondary trigger': 'primary trigger', 'heat flare': 'overheat',
-                       'heat flare1': 'overheat'},
-    'melee': (r'weapons\plasma rifle\melee', SB + 'melee'),
-    'melee_response': r'weapons\plasma rifle\melee_response',
-    'messages': ('Picked up a sentinel beam', 'Picked up %d rounds for sentinel beam'),
-    'icon': 'sentinel beam',
-    'hud': {'donor': r'weapons\plasma rifle\plasma rifle', 'out': SB + 'sentinel beam',
-            'reticle': ('hud_reticles', 21, 'sentinel beam')},
-    'aiming': {'autoaim_angle': 1.0, 'autoaim_range': 12.0,
-               'magnetism_angle': 9.0, 'magnetism_range': 18.0},
-    'beam': {'projectile': (r'characters\sentinel\beam', SB + 'beam'),
-             'damage': (r'weapons\plasma rifle\bolt', SB + 'beam'),
-             # DAMAGE (user, step 5b, 2026-10-06): the SENTINEL yardstick. Halo 3's
-             # Sentinels fire the player's own beam, so the H1 beam's base damage is what
-             # an H1 Sentinel would need to kill the Chief (150) in as many rounds as an H3
-             # Sentinel kills the Master Chief (115): 4 x 150/115 x H3 scale / H1 scale --
-             # Normal 4.04, LEGENDARY 4.64 (1.6 / 1.8), chosen. (Halo 1's real Sentinel
-             # beam is 1.0.) 11.6 (plasma-rifle ratio per second) is the BALANCED row
-             'range': 120.0, 'dmg': 4.64, 'acceleration': 0.05},
-    'trigger': {'rounds_per_second': (29.0, 30.0), 'heat_generated_per_round': 0.0426,
-                'acceleration_time': 0.05, 'deceleration_time': 0.1,
-                'age_generated_per_round': 0.012, 'error_angle': (0.0, 0.0),
-                'rounds_between_tracers': 0,
-                # wu: right, down -- test 3: y -0.04 sat right of the muzzle ('further to the left')
-                # test 4: 'a bit up and right', and the FP rig went 2 units down (the
-                # muzzle with it): y -0.03, z -0.035 + 0.01 - 0.02
-                # test 5: 'halfway back to the left and down'
-                # test 6: good -- then the FP rig went 1 unit down, the start with it
-                # test 7: rig 1 more unit down, the start with it
-                # test 8: rig 0.25 down, the start with it
-                'first_person_offset': (0.0, -0.025, -0.0725),
-                # the muzzle light's hold (the hum no longer follows it)
-                'illumination_recovery_time': 0.15},
-    'heat': {'recovery_threshold': 0.25, 'overheated_threshold': 0.9,
-             'loss_per_second': 0.3},
-}
+# per weapon: ports_h1/<weapon>.py, section 'pickable' (the energy sword, fuel rod and
+# Sentinel Beam carry the full record of what each key does and why). RESERVED holds each
+# port's reservations (pickup message pair, icon / reticle sequence, label): a new port
+# writes at ITS reserved index, so sessions never collide.
+WEAPONS = ports_h1.section('pickable')
+RESERVED = {k: p.get('reservations', {}) for k, p in ports_h1.all_ports()}
 MESSAGES = r'ui\hud\hud_item_messages'
 STOCK_MESSAGES = 47       # entries 0..46 ship with the game; ports append (the SAW is 47/48)
 ICONS = r'ui\hud\bitmaps\combined\hud_msg_icons'
@@ -387,12 +92,32 @@ def icon_sequence(name):
     return names.index(name)
 
 
-def message_index(lines, write):
+def message_index(lines, write, reserved=None):
     """Index of an appended pickup-message PAIR (Halo 1 reads index and index + 1),
-    appending it once. Appending never moves an entry (h1_port_messages.py)."""
+    appending it once. Appending never moves an entry (h1_port_messages.py).
+
+    `reserved` (the port's reservation, H1_PORT_PLAN.md): the pair goes at exactly that
+    index -- the list is padded with EMPTY lines up to it, and a slot holding other text is
+    refused -- so ports written in any order keep their numbers."""
     t = ustr_def.build(filepath=path(MESSAGES, '.unicode_string_list'))
     strs = t.data.tagdata.strings.STEPTREE
     texts = [s.data for s in strs]
+    if reserved is not None:
+        if reserved < STOCK_MESSAGES:
+            raise SystemExit('message %d is a stock line' % reserved)
+        have = texts[reserved:reserved + 2]
+        if have == list(lines):
+            return reserved
+        if any(x for x in have):
+            raise SystemExit('messages %d/%d hold %r, not %r -- another port\'s reservation?'
+                             % (reserved, reserved + 1, have, lines))
+        while len(strs) < reserved + 2:
+            strs.append()
+            strs[-1].data = ''
+        for k, line in enumerate(lines):
+            strs[reserved + k].data = line
+        save(t, path(MESSAGES, '.unicode_string_list'), write)
+        return reserved
     for i in range(STOCK_MESSAGES, len(texts) - 1):     # never a stock line: MCC overrides those
         if texts[i] == lines[0] and texts[i + 1] == lines[1]:
             return i
@@ -438,12 +163,17 @@ def make_hud(w, key, write):
             h1_rocket_meter.build(mag, h['meter'], h.get('art', 'rockets'))
     if 'reticle' in h:                   # a Halo 3 reticle, into Halo 1's sheet
         import h1_add_reticle
-        seq = h1_add_reticle.add(*h['reticle']) if write else -1
+        seq = (h1_add_reticle.add(*h['reticle'], index=RESERVED.get(key, {}).get('reticle'))
+               if write else -1)
         for c in d.crosshairs.STEPTREE:
             if c.crosshair_type.enum_name == 'aim':
                 for o in c.crosshair_overlays.STEPTREE:
                     o.sequence_index = seq
-    d.messaging_information.sequence_index = icon_sequence(w['icon'])
+    seq = icon_sequence(w['icon'])
+    want = RESERVED.get(key, {}).get('icon')
+    if want is not None and seq != want:
+        raise SystemExit('%s: icon %r is hud_msg_icons #%d, reserved #%d' % (key, w['icon'], seq, want))
+    d.messaging_information.sequence_index = seq
     save(t, path(h['out'], '.weapon_hud_interface'), write)
     return h['out']
 
@@ -707,7 +437,8 @@ def edit_weapon(key, write):
         a.melee.player_damage.filepath = own
         a.melee.player_response.filepath = w['melee_response']
     if 'messages' in w:
-        d.item_attrs.message_index = message_index(w['messages'], write)
+        res = (RESERVED.get(key, {}).get('messages') or (None,))[0]
+        d.item_attrs.message_index = message_index(w['messages'], write, res)
     if 'hud' in w:
         a.interface.hud_interface.filepath = make_hud(w, key, write)
     if 'lunge' in w:

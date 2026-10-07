@@ -114,9 +114,12 @@ def put(sheet, name, img, template_seq, sheet_size, reg, index=None):
     return si
 
 
-def put_twins(sheet, name, img, template_seq, sheet_size, reg):
-    """The sheet and its `_r` twin, at one index."""
-    i = put(sheet, name, img, template_seq, sheet_size, reg)
+def put_twins(sheet, name, img, template_seq, sheet_size, reg, index=None):
+    """The sheet and its `_r` twin, at one index -- the port's RESERVED index when given
+    (ports_h1 reservations, H1_PORT_PLAN.md), so ports added in any order keep theirs."""
+    i = put(sheet, name, img, template_seq, sheet_size, reg, index=index)
+    if index is not None and i != index:
+        raise SystemExit('%s: %r already sits at %d, reserved %d' % (sheet, name, i, index))
     j = put(sheet + '_r', name, img, template_seq, sheet_size, reg, index=i)
     if i != j:
         raise SystemExit('%s: %r landed at %d, its _r twin at %d' % (sheet, name, i, j))

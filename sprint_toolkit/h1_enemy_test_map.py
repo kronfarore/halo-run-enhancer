@@ -73,6 +73,43 @@ def tag_ids(m):
     return out
 
 
+def swap_actors(m, want):
+    """On an opened BUILT map: every Actor Palette entry naming a Grunt / Elite variant is
+    repointed to want['grunt'] / want['elite'] (either may be missing: that kind is left
+    alone). The enhancer's slots are not under characters\\grunt|elite, so they stay."""
+    d = m.data
+    ids = tag_ids(m)
+    targets = {k: ids[('actv', p)] for k, p in want.items() if p}
+    scnr = [v for k, v in m.tags.items() if k[0] == 'scnr'][0]
+    cnt, ptr = struct.unpack_from('<II', d, scnr + ACTOR_PALETTE)
+    arr = (ptr - m.magic) & 0xFFFFFFFF
+    names = {v[0]: k[1] for k, v in ids.items()}
+    swapped = []
+    for i in range(cnt):
+        e = arr + i * 16
+        tid = struct.unpack_from('<I', d, e + 12)[0]
+        name = names.get(tid, '')
+        kind = ('grunt' if name.startswith('characters\\grunt\\') else
+                'elite' if name.startswith('characters\\elite\\') else None)
+        if kind in targets and name != want[kind]:
+            new_id, new_ptr = targets[kind]
+            struct.pack_into('<I', d, e + 4, new_ptr)
+            struct.pack_into('<I', d, e + 12, new_id)
+            swapped.append('%d %s' % (i, name.rsplit('\\', 1)[-1]))
+    print('palette entries repointed: %d (%s)' % (len(swapped), ', '.join(swapped)))
+    return swapped
+
+
+def god_shield(m):
+    """The player's collision model: shield and body 1e6, no leak, no stun, instant recharge."""
+    d = m.data
+    coll = m.tags[('coll', COLL)]
+    for off, v in ((MAX_BODY, 1e6), (MAX_SHIELD, 1e6), (LEAK, 0.0), (STUN, 0.0), (RECHARGE, 0.1)):
+        struct.pack_into('<f', d, coll + off, v)
+    print('player shield: %s' % [round(struct.unpack_from('<f', d, coll + o)[0], 3)
+                                 for o in (MAX_BODY, MAX_SHIELD, LEAK, STUN, RECHARGE)])
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--level', default='a50')
@@ -110,32 +147,9 @@ def main():
 
     # 2. + 3. on the copy
     m = halo_patch.open_map(out, 'Halo 1')
-    d = m.data
-    ids = tag_ids(m)
-    targets = {k: ids[('actv', p)] for k, p in want.items()}
-    scnr = [v for k, v in m.tags.items() if k[0] == 'scnr'][0]
-    cnt, ptr = struct.unpack_from('<II', d, scnr + ACTOR_PALETTE)
-    arr = (ptr - m.magic) & 0xFFFFFFFF
-    names = {v[0]: k[1] for k, v in ids.items()}
-    swapped = []
-    for i in range(cnt):
-        e = arr + i * 16
-        tid = struct.unpack_from('<I', d, e + 12)[0]
-        name = names.get(tid, '')
-        kind = ('grunt' if name.startswith('characters\\grunt\\') else
-                'elite' if name.startswith('characters\\elite\\') else None)
-        if kind and name != want[kind]:
-            new_id, new_ptr = targets[kind]
-            struct.pack_into('<I', d, e + 4, new_ptr)
-            struct.pack_into('<I', d, e + 12, new_id)
-            swapped.append('%d %s' % (i, name.rsplit('\\', 1)[-1]))
-    print('palette entries repointed: %d (%s)' % (len(swapped), ', '.join(swapped)))
-    coll = m.tags[('coll', COLL)]
-    for off, v in ((MAX_BODY, 1e6), (MAX_SHIELD, 1e6), (LEAK, 0.0), (STUN, 0.0), (RECHARGE, 0.1)):
-        struct.pack_into('<f', d, coll + off, v)
-    print('player shield: %s' % [round(struct.unpack_from('<f', d, coll + o)[0], 3)
-                                 for o in (MAX_BODY, MAX_SHIELD, LEAK, STUN, RECHARGE)])
-    open(out, 'wb').write(bytes(d))
+    swap_actors(m, want)
+    god_shield(m)
+    open(out, 'wb').write(bytes(m.data))
     print('wrote %s' % out)
 
 

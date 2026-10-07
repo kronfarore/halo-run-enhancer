@@ -329,48 +329,70 @@ H3_SCRIPTS += FIELD_SCRIPTS + ('h3_saw_tag_numbers.py', 'make_port_catalog_h3.py
                                'make_port_catalog_odst.py', 'balance_port.py')
 H4_SCRIPTS += FIELD_SCRIPTS
 
-# --- Halo 1 RESTORED weapons (2026-10-06) ---------------------------------------------
-# The Elites' energy sword and the Grunts' fuel rod made pickable (h1_pickable_weapons.py):
-# their own folders (FP animations + JMAs, scaled FP model, HUDs, meters, lunge tags), their
-# own sounds (h1_port_sounds.py), and the SHARED tags those edits change IN PLACE -- each
-# with the `<tag>.before_pickable` stock copy the scripts leave beside it.
-for _w in (('weapons', 'energy sword'), ('weapons', 'fuel rod gun')):
-    TREES += [(os.path.join(HCEEK, 'tags', *_w), 'tags/' + '/'.join(_w), True),
-              (os.path.join(HCEEK, 'data', *_w), 'data/' + '/'.join(_w), True)]
-for _s in ('energy_sword_port', 'fuel_rod_port'):
-    TREES += [(os.path.join(HCEEK, 'tags', 'sound', 'weapons', _s), 'tags/sound/weapons/' + _s, True),
-              (os.path.join(HCEEK, 'data', 'sound', 'weapons', _s), 'data/sound/weapons/' + _s, True)]
-for _t in ('ui/hud/bitmaps/combined/hud_msg_icons_r.bitmap',
-           'ui/hud/bitmaps/combined/hud_reticles.bitmap',
-           'ui/hud/bitmaps/combined/hud_reticles_r.bitmap',
-           'ui/hud/hud_item_messages.unicode_string_list',
-           'characters/cyborg/cyborg.model_animations',
-           'characters/grunt/grunt specops fuel rod.actor_variant',
-           'characters/grunt/grunt specops fuel rod airdef.actor_variant',
-           'levels/a50/a50.scenario'):
-    for _x in ('', '.before_pickable'):
-        SHARED.append((os.path.join(HCEEK, 'tags', *_t.split('/')) + _x, 'shared/' + _t + _x))
+# --- Halo 1 PORTS, from their configs (ports_h1/<weapon>.py; H1_PORT_PLAN.md phase 0) ----
+# Every configured weapon is picked up AUTOMATICALLY: its weapon folder and sound folder
+# (tags + data, from its reservations), and the shared tags its 'pickable' section edits IN
+# PLACE -- each with the `<tag>.before_pickable` stock copy h1_pickable_weapons leaves beside
+# it: the enemies' actor variants it changes (drops), the effects it rides on (death_drop),
+# the scenarios it is made resident in (palette_levels), plus the sheets / message list /
+# player animations every port shares. A config's 'backup' section adds anything else:
+# {'trees': [tag-relative folders], 'shared': [tag-relative files with extension]}.
+# Before 2026-10-07 these were hand lists here (sword, fuel rod, Sentinel Beam).
+sys.path.insert(0, HERE)
+import ports_h1  # noqa: E402
+
+H1_SHARED_ALL = ('ui/hud/bitmaps/combined/hud_msg_icons_r.bitmap',
+                 'ui/hud/bitmaps/combined/hud_reticles.bitmap',
+                 'ui/hud/bitmaps/combined/hud_reticles_r.bitmap',
+                 'ui/hud/hud_item_messages.unicode_string_list',
+                 'characters/cyborg/cyborg.model_animations')
+
+
+def h1_port_items():
+    """(trees, shared) for every Halo 1 port config."""
+    trees, shared = [], []
+    rel = lambda t: t.replace('\\', '/')
+    for _key, p in ports_h1.all_ports():
+        r = p.get('reservations') or {}
+        w = p.get('pickable') or {}
+        extra = p.get('backup') or {}
+        for d in [r.get('weapon_dir'), r.get('sound_dir')] + list(extra.get('trees', ())):
+            if d:
+                for root in ('tags', 'data'):
+                    trees.append((os.path.join(HCEEK, root, *d.split('\\')),
+                                  '%s/%s' % (root, rel(d)), True))
+        files = list(extra.get('shared', ()))
+        files += [x + '.actor_variant' for x in w.get('drops', {})]
+        files += [x + '.effect' for x in w.get('death_drop', ())]
+        files += [r'levels\%s\%s.scenario' % (l, l) for l in w.get('palette_levels', ())]
+        if w:
+            files += [x.replace('/', '\\') for x in H1_SHARED_ALL]
+        for f in files:
+            for x in ('', '.before_pickable'):
+                shared.append((os.path.join(HCEEK, 'tags', *f.split('\\')) + x,
+                               'shared/' + rel(f) + x))
+    return trees, shared
+
+
+_seen = {t[0].lower() for t in TREES} | {s[0].lower() for s in SHARED}
+_t, _s = h1_port_items()
+for _item in _t + _s:
+    if _item[0].lower() not in _seen:
+        _seen.add(_item[0].lower())
+        (TREES if len(_item) == 3 else SHARED).append(_item)
+# a50 carried the first in-place scenario edit (the restored weapons' test placements)
+for _x in ('', '.before_pickable'):
+    _p = os.path.join(HCEEK, 'tags', 'levels', 'a50', 'a50.scenario') + _x
+    if _p.lower() not in _seen:
+        SHARED.append((_p, 'shared/levels/a50/a50.scenario' + _x))
 SCRIPTS += ('h3_fp_pose.py', 'h1_fp_retarget.py', 'fp_render.py', 'h1_scaled_model.py',
             'h1_pickable_weapons.py', 'h1_rocket_meter.py', 'h3_hud_art.py',
             'h1_add_reticle.py', 'h1_hud_sheet.py', 'h1_port_sounds.py', 'h3_sprite_box.py')
-# --- Halo 1 SENTINEL BEAM (2026-10-06): a full Halo 3 port -- its own folder (models,
-# shaders, bitmaps, FP animations + JMAs, weapon, HUD, beam, effects, lights), its own
-# sounds, and the Sentinels' death effect it edits in place (the drop)
-TREES += [(os.path.join(HCEEK, 'tags', 'weapons', 'sentinel beam'), 'tags/weapons/sentinel beam', True),
-          (os.path.join(HCEEK, 'data', 'weapons', 'sentinel beam'), 'data/weapons/sentinel beam', True),
-          (os.path.join(HCEEK, 'tags', 'sound', 'weapons', 'sentinel_beam_port'),
-           'tags/sound/weapons/sentinel_beam_port', True),
-          (os.path.join(HCEEK, 'data', 'sound', 'weapons', 'sentinel_beam_port'),
-           'data/sound/weapons/sentinel_beam_port', True)]
-for _x in ('', '.before_pickable'):
-    SHARED.append((os.path.join(HCEEK, 'tags', 'characters', 'sentinel', 'effects', 'death.effect') + _x,
-                   'shared/characters/sentinel/effects/death.effect' + _x))
-    # every level's scenario: the beam's weapons-palette entry + resident-only placement
-    for _l in ('a10', 'a30', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40'):  # a50 above
-        SHARED.append((os.path.join(HCEEK, 'tags', 'levels', _l, _l + '.scenario') + _x,
-                       'shared/levels/%s/%s.scenario%s' % (_l, _l, _x)))
 SCRIPTS += ('h3_rm_to_jms.py', 'h1_h3_weapon_model.py', 'h1_enemy_test_map.py',
-            'make_port_catalog_h1_restored.py')
+            'make_port_catalog_h1_restored.py', 'make_port_catalog_h1_ports.py',
+            'h1_port_test_map.py', 'H1_PORT_PLAN.md')
+SCRIPTS += tuple('ports_h1/' + f for f in sorted(os.listdir(os.path.join(HERE, 'ports_h1')))
+                 if f.endswith('.py'))
 # step 5b + staging tools, and every local module the restored-weapon tools import
 # (closure checked 2026-10-06)
 # the ARMED cards' firing data: the profiles (the SAW's, the Sentinel Beam's same-game

@@ -28,24 +28,14 @@ from reclaimer.hek.defs.soso import soso_def  # noqa: E402
 from reclaimer.model.jms.file import write_jms  # noqa: E402
 import h3_hud_art  # noqa: E402
 import h3_rm_to_jms  # noqa: E402
+import ports_h1  # noqa: E402
 
 HCEEK = os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'HCEEK')
 TAGS = os.path.join(HCEEK, 'tags')
 B = '\\'
-H3SG = r'objects\weapons\support_low\sentinel_gun'
-
-WEAPONS = {
-    'sentinel_beam': {
-        'dir': r'weapons\sentinel beam',
-        'world': H3SG + r'\sentinel_gun.render_model',
-        'fp': H3SG + r'\fp_sentinel_gun\fp_sentinel_gun.render_model',
-        'world_name': 'sentinel beam',
-        # shader name (= the JMS material) -> (base map, illum map or None)
-        'shaders': {'sentinel_beam': (H3SG + r'\bitmaps\sentinel_beam.bitmap',
-                                      H3SG + r'\bitmaps\sentinel_beam_illum.bitmap')},
-        'template': r'weapons\plasma rifle\fp\shaders\gun',
-    },
-}
+# per weapon: ports_h1/<weapon>.py, section 'model' (dir, world / fp H3 render models,
+# world_name, shaders {name: (base map, illum map)}, template shader)
+WEAPONS = ports_h1.section('model')
 
 
 def tool(*args):

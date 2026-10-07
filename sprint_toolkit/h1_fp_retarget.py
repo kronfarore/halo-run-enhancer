@@ -25,7 +25,7 @@ Halo 3 leaves nodes out of an animation when they sit at the bind pose (the swor
 stores 39 of 40 rotations and only 5 translations); those come from the render models'
 default transforms -- the arms' fp.render_model and the weapon's FP render model.
 
-Weapon nodes map by a per-weapon table (`WEAPONS`). The energy sword's H3 `handle` and
+Weapon nodes map by a per-weapon table (`WEAPONS`, from ports_h1/<weapon>.py). The energy sword's H3 `handle` and
 `blades` are Halo 1's `frame handle` and `frame blades`: Halo 3's sword descends from it.
 
     python h1_fp_retarget.py energy_sword --list
@@ -43,6 +43,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import h3_fp_pose                       # noqa: E402
 import fp_render as R                   # noqa: E402
+import ports_h1                         # noqa: E402
 
 H3EK = os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'H3EK')
 HCEEK = os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'HCEEK')
@@ -54,115 +55,11 @@ FP_GRAPHS = r'objects\characters\masterchief\fp\weapons'
 ARM_NAMES = {'base': 'frame bone24', 'l_hand': 'frame l wriste', 'r_hand': 'frame r wriste',
              'l_middle_low': 'frame l middlelow', 'r_middle_low': 'frame r middle low'}
 
-# per weapon: the H3 FP graph, the H3 FP render model, the H1 weapon-node names, which
-# H3 animation becomes which H1 one, and where the H1 tags go
-WEAPONS = {
-    'energy_sword': {
-        'graph': FP_GRAPHS + r'\melee\fp_energy_blade\fp_energy_blade.model_animation_graph',
-        'render_model': r'objects\weapons\melee\energy_blade\fp_energy_blade'
-                        r'\fp_energy_blade.render_model',
-        'nodes': {'handle': 'frame handle', 'blades': 'frame blades'},
-        'h1_dir': r'weapons\energy sword\fp',
-        # first person shows Halo 1's own sword: its world model, posed by H3's motion
-        'h1_model': r'weapons\energy sword\energy sword',
-        'align': 'same_space',
-        'anims': {
-            'first_person:idle': 'first-person idle',
-            'first_person:ready': 'first-person ready',
-            'first_person:put_away': 'first-person put-away',
-            'first_person:melee_strike_1': 'first-person melee',
-            # the fire button's lunge (h1_pickable_weapons.py gives the sword a trigger)
-            'first_person:melee_lunge': 'first-person fire-1',
-            'first_person:moving': 'first-person moving',
-            'first_person:overlays': 'first-person overlays',
-            'first_person:posing:var1': 'first-person posing',
-            'first_person:throw_grenade': 'first-person throw-grenade',
-        },
-    },
-    # A FULL PORT, geometry and all (h1_h3_weapon_model.py): Halo 1's FP model IS Halo 3's
-    # (h3_rm_to_jms keeps its nodes), so the models share one space exactly.
-    'sentinel_beam': {
-        'graph': FP_GRAPHS + r'\support_low\fp_sentinel_beam\fp_sentinel_beam.model_animation_graph',
-        'render_model': r'objects\weapons\support_low\sentinel_gun\fp_sentinel_gun'
-                        r'\fp_sentinel_gun.render_model',
-        'nodes': {n: 'frame ' + n.replace('_', ' ') for n in
-                  ('gun', 'barrel', 'clamp_left', 'clamp_right', 'powercore', 'powercore2',
-                   'shield')},
-        'h1_dir': r'weapons\sentinel beam\fp',
-        'h1_model': r'weapons\sentinel beam\fp\fp',
-        'align': 'same_space',
-        # test 1 (2026-10-06): 'a bit too forward, I can see into the arms' -- the rig was
-        # pushed 1.5 units AWAY from the camera (wrong way: test 2 'still too far forward,
-        # set it back another 3 units'); now 3 units back from that, 1.5 toward the camera
-        # test 3: 'making progress, another 1 unit'
-        # test 4: 'down 2 units'; test 5: 'another unit backwards'
-        # test 6: 'another unit down'
-        # test 7: 'one more unit down'
-        # test 8: '0.25 back and down'
-        'view_offset': (-0.0375, 0.0, -0.0425),
-        # Halo 1 plays `overheated` (looped) after `overheating` while the weapon is still
-        # hot -- the stock plasma rifle has one (50 frames). Without it the engine replayed
-        # `overheating` (test 5: overheat sound twice, the pose jumping back mid-way).
-        # Halo 3's graph has none: the last overheating frame, held
-        'holds': {'first-person overheated': ('first_person:overheating', 50)},
-        'anims': {
-            'first_person:idle:var1': 'first-person idle',
-            'first_person:ready': 'first-person ready',
-            'first_person:put_away': 'first-person put-away',
-            'first_person:fire_1:var1': 'first-person fire-1',
-            'first_person:melee_strike_1': 'first-person melee',
-            'first_person:moving': 'first-person moving',
-            'first_person:overlays': 'first-person overlays',
-            'first_person:posing:var1': 'first-person posing',
-            # 69 frames = Halo 3's whole overheat recovery, (0.9 - 0.1) / 0.35 per s = 2.3 s
-            'first_person:overheating': 'first-person overheating',
-            'first_person:o_h_exit': 'first-person o-h-exit',
-            'first_person:throw_grenade': 'first-person throw-grenade',
-            'first_person:throw_overheated': 'first-person throw-overheated',
-        },
-    },
-    # Halo 3's fuel rod is the flak_cannon. Its FP graph drives the ORIGINAL Halo 1 fuel
-    # rod (the Grunts' weapons\fuel rod gun\fuel rod gun model, one node `frame gun`).
-    # H3's reload parts (ammo, barrel, cowling) have no counterpart there: dropped.
-    'fuel_rod': {
-        'graph': FP_GRAPHS + r'\support_high\fp_flak_cannon\fp_flak_cannon.model_animation_graph',
-        'render_model': r'objects\weapons\support_high\flak_cannon\fp_flak_cannon'
-                        r'\fp_flak_cannon.render_model',
-        'nodes': {'gun': 'frame gun'},
-        'drop_nodes': ('ammo_bottom', 'barrel', 'ammo_top', 'cowling'),
-        'h1_dir': r'weapons\fuel rod gun\fp',
-        # the original's own mesh at Spartan size: h1_scaled_model.py, x0.75 (0.57 -> 0.43
-        # long, = H3's FP fuel rod; Halo 1's own Chief-held PC fuel rod is 0.41)
-        'h1_model': r'weapons\fuel rod gun\fp\fp',
-        'h1_model_from': (r'weapons\fuel rod gun\fuel rod gun', 0.75),
-        # the two models are NOT in one space; both put their `gun` node at the right-hand
-        # grip, so the grips are matched. Measured at idle: H3's left hand sits 13 cm ahead
-        # of the grip, the scaled H1 model's own `cyborg left hand` marker 20 cm.
-        'align': 'node',
-        # in game (a50, 2026-10-05) the left hand clipped into the H1 model: move the wrist
-        # toward the player's right (-y in the gun's space), JMS units / 100. Full strength
-        # within 6 units of its idle grip, none beyond 14 (the reloads leave the gun).
-        'grip_node': 'gun',
-        'left_hand_offset': ((0.04, -0.02, 0.0), 0.06, 0.14),
-        # and during the reloads, where the hand leaves the grip (user, 2026-10-06): one
-        # unit forward and one to the right, for the whole animation
-        'left_hand_offset_anims': {'first_person:reload_empty': (0.01, -0.02, 0.0),
-                                   'first_person:reload_full': (0.01, -0.02, 0.0)},
-        'anims': {
-            'first_person:idle': 'first-person idle',
-            'first_person:ready': 'first-person ready',
-            'first_person:put_away': 'first-person put-away',
-            'first_person:fire_1:var1': 'first-person fire-1',
-            'first_person:reload_empty': 'first-person reload-empty',
-            'first_person:reload_full': 'first-person reload-full',
-            'first_person:melee_strike_1': 'first-person melee',
-            'first_person:moving': 'first-person moving',
-            'first_person:overlays': 'first-person overlays',
-            'first_person:posing:var1': 'first-person posing',
-            'first_person:throw_grenade': 'first-person throw-grenade',
-        },
-    },
-}
+# per weapon (ports_h1/<weapon>.py, section 'retarget'): the H3 FP graph, the H3 FP render
+# model, the H1 weapon-node names, which H3 animation becomes which H1 one, and where the
+# H1 tags go (keys: graph, render_model, nodes, h1_dir, h1_model[, h1_model_from], align,
+# anims[, drop_nodes, view_offset, holds, grip_node, left_hand_offset(_anims), align_nodes])
+WEAPONS = ports_h1.section('retarget')
 
 
 def h1_arm_name(h3):

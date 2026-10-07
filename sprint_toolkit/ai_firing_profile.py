@@ -27,6 +27,13 @@ optional explicit fields over the donor -- Halo 1's Sentinel Beam:
     python ai_firing_profile.py --to-weapon "weapons\sentinel beam\sentinel beam" ^
         --donor-weapon "characters\sentinel\sentinel" ^
         --set "0x1D8=0.7:Drop Weapon Loaded" --set "0x1DC=0.9:Drop Weapon Loaded Max"
+
+FROM A PORT'S CONFIG (H1_PORT_PLAN.md phase 0): the step-11 command lives in the weapon's
+ports_h1/<key>.py 'firing_profile' section, and this runs it. Source layouts known: Halo 4,
+Halo 3 (+ ODST), Halo Reach.
+
+    python ai_firing_profile.py --port sentinel_beam [--dry]
+    python ai_firing_profile.py --port smg --dry
 """
 import argparse
 import json
@@ -47,7 +54,15 @@ RENAMES = {'Maximum Firing Range': 'Maximum Firing Distance',
            'Normal Combat Range Max': 'Desired Combat Range Max'}
 # source layouts: (props block, elem, weapon ref) and (patterns block, elem, weapon ref,
 # inner Firing Patterns block, elem)
-SOURCES = {'Halo 4': {'props': (0x204, 0xCC, 0x4), 'pattern': (0x210, 0x1C, 0x0, 0x10, 0x40)}}
+# Halo 3 / Reach read off the Assembly plugins (Halo3MCC / Reach char.xml, 2026-10-07):
+# Halo 3's Weapons Properties ALSO carry their own Firing Patterns (+0xC4, 0x40) -- read when
+# the Firing Pattern Properties block has no entry for the weapon ('inner').
+SOURCES = {'Halo 4': {'props': (0x204, 0xCC, 0x4), 'pattern': (0x210, 0x1C, 0x0, 0x10, 0x40)},
+           'Halo 3': {'props': (0x174, 0xE0, 0x4), 'pattern': (0x180, 0x1C, 0x0, 0x10, 0x40),
+                      'inner': (0xC4, 0x40)},
+           'Halo Reach': {'props': (0x1EC, 0xC4, 0x4), 'pattern': (0x1F8, 0x1C, 0x0, 0x10, 0x40)}}
+SOURCES['Halo 3: ODST'] = SOURCES['Halo 3']
+MCC = os.path.dirname(ROOT)
 
 
 def _plugins():
@@ -57,7 +72,8 @@ def _plugins():
     return reg
 
 
-def build(from_map, from_game, from_weapon, to_weapon, to_game='Halo 1', char='ai\\generic'):
+def build(from_map, from_game, from_weapon, to_weapon, to_game='Halo 1', char='ai\\generic',
+          write=True):
     reg = _plugins()
     src_pl, dst_pl = reg(from_game).get('char'), reg(to_game).get('actv')
     lay = SOURCES[from_game]
@@ -93,6 +109,14 @@ def build(from_map, from_game, from_weapon, to_weapon, to_game='Halo 1', char='a
             vals = [struct.unpack_from(fmt, m.data, ib + k * iesz + f['offset'])[0] for k in range(max(0, n))]
             if vals:
                 values[f['name']] = sum(vals) / len(vals)
+        elif (chain == ['Weapons Properties', 'Firing Patterns'] and fe is None
+              and pe is not None and 'inner' in lay):
+            ioff, iesz = lay['inner']
+            n = m.i32(pe + ioff)
+            ib = hp._block_base(m, pe + ioff) if n > 0 else None
+            vals = [struct.unpack_from(fmt, m.data, ib + k * iesz + f['offset'])[0] for k in range(max(0, n))]
+            if vals:
+                values[f['name']] = sum(vals) / len(vals)
     fields = {}
     for f in dst_pl.fields:
         if f['block_chain'] or not (0x74 <= f['offset'] < 0x160 or 0x1D8 <= f['offset'] < 0x1E4):
@@ -107,15 +131,17 @@ def build(from_map, from_game, from_weapon, to_weapon, to_game='Halo 1', char='a
             if FMT[f['type']] in ('<h', '<H'):
                 v = int(round(v))
             fields['0x%X' % f['offset']] = [FMT[f['type']], v, f['name']]
+    prof = {'source': '%s %s %s (weapon properties #%s, firing pattern #%s)' % (
+                from_game, char, from_weapon, pi, fi),
+            'fields': fields}
+    if not write:
+        return prof
     try:
         with open(PROFILE_FILE, encoding='utf-8') as fh:
             data = json.load(fh)
     except Exception:
         data = {}
-    data.setdefault(to_game, {})[to_weapon] = {
-        'source': '%s %s %s (weapon properties #%s, firing pattern #%s)' % (
-            from_game, char, from_weapon, pi, fi),
-        'fields': fields}
+    data.setdefault(to_game, {})[to_weapon] = prof
     with open(PROFILE_FILE, 'w', encoding='utf-8') as fh:
         json.dump(data, fh, indent=1)
     return data[to_game][to_weapon]
@@ -131,31 +157,85 @@ def parse_sets(sets):
     return out
 
 
-def same_game(donor_weapon, to_weapon, to_game='Halo 1', why='', fields=None):
+def same_game(donor_weapon, to_weapon, to_game='Halo 1', why='', fields=None, write=True):
     """A profile with NO foreign fields: the clone takes its whole firing block from the
     best character in the target game carrying `donor_weapon` (h1_enemy_weapons.donor_for
     reads 'donor_weapon'). For a weapon whose animation label nobody else uses, so the
     label search finds no base: Halo 1's Sentinel Beam ('sb') fires like Halo 1's own
     Sentinel, whose beam (characters\\sentinel\\sentinel) it replaces."""
+    prof = {'source': '%s %s (own carriers%s)' % (to_game, donor_weapon, ', ' + why if why else ''),
+            'donor_weapon': donor_weapon, 'fields': dict(fields or {})}
+    if not write:
+        return prof
     try:
         with open(PROFILE_FILE, encoding='utf-8') as fh:
             data = json.load(fh)
     except Exception:
         data = {}
-    data.setdefault(to_game, {})[to_weapon] = {
-        'source': '%s %s (own carriers%s)' % (to_game, donor_weapon, ', ' + why if why else ''),
-        'donor_weapon': donor_weapon, 'fields': dict(fields or {})}
+    data.setdefault(to_game, {})[to_weapon] = prof
     with open(PROFILE_FILE, 'w', encoding='utf-8') as fh:
         json.dump(data, fh, indent=1)
     return data[to_game][to_weapon]
 
 
+def from_config(key, write=True):
+    """Step 11 from a Halo 1 port's config (ports_h1/<key>.py, section 'firing_profile'):
+      {'mode': 'carried'}                      a character spawns with it: nothing to write
+      {'mode': 'same_game', 'donor_weapon': <H1 weapon>, 'why': .., 'set': ['0xOFF=V:NAME']}
+      {'mode': 'source', 'from_game': 'Halo 3', 'from_map': <path under the MCC folder>,
+       'from_weapon': <source weapon tag>[, 'char': 'ai\\generic']}
+    The port's weapon tag comes from its 'pickable' section (else reservations weapon_dir)."""
+    sys.path.insert(0, HERE)
+    import ports_h1
+    p = ports_h1.load(key)
+    fp = p.get('firing_profile') or {}
+    weapon = (p.get('pickable') or {}).get('weapon')
+    if not weapon:
+        d = p['reservations']['weapon_dir']
+        weapon = d + '\\' + d.rsplit('\\', 1)[-1]
+    mode = fp.get('mode')
+    if mode == 'carried' or not mode:
+        print('%s: %s -- nothing to write (carried in game: best_donor finds the carriers)'
+              % (key, mode or 'no firing_profile'))
+        return None
+    if mode == 'same_game':
+        if not fp.get('donor_weapon'):
+            raise SystemExit('%s: same_game profile without a donor_weapon -- %s'
+                             % (key, fp.get('why', 'choose the Halo 1 weapon it fires like')))
+        prof = same_game(fp['donor_weapon'], weapon, why=fp.get('why', ''),
+                         fields=parse_sets(fp.get('set')), write=write)
+    elif mode == 'source':
+        src = fp['from_map']
+        prof = build(src if os.path.isabs(src) else os.path.join(MCC, src), fp['from_game'],
+                     fp['from_weapon'], weapon, char=fp.get('char', 'ai\\generic'), write=False)
+        prof['fields'].update(parse_sets(fp.get('set')))      # explicit fields over the source
+        if write:
+            try:
+                with open(PROFILE_FILE, encoding='utf-8') as fh:
+                    data = json.load(fh)
+            except Exception:
+                data = {}
+            data.setdefault('Halo 1', {})[weapon] = prof
+            with open(PROFILE_FILE, 'w', encoding='utf-8') as fh:
+                json.dump(data, fh, indent=1)
+    else:
+        raise SystemExit('%s: unknown firing_profile mode %r' % (key, mode))
+    print(prof['source'], '->', weapon)
+    for off, (fmt, v, name) in sorted(prof['fields'].items(), key=lambda kv: int(kv[0], 16)):
+        print('  %-6s %-32s %s' % (off, name, round(v, 4) if isinstance(v, float) else v))
+    print('written' if write else '(dry: not written)', PROFILE_FILE)
+    return prof
+
+
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument('--port', help='a Halo 1 port config key (ports_h1/<key>.py): run its '
+                                   'firing_profile section')
+    ap.add_argument('--dry', action='store_true', help='with --port: print, write nothing')
     ap.add_argument('--from-map')
     ap.add_argument('--from-game', default='Halo 4')
     ap.add_argument('--from-weapon')
-    ap.add_argument('--to-weapon', required=True)
+    ap.add_argument('--to-weapon')
     ap.add_argument('--to-game', default='Halo 1')
     ap.add_argument('--char', default='ai\\generic')
     ap.add_argument('--donor-weapon', help='same-game mode: fire like the characters '
@@ -167,6 +247,11 @@ def main():
     # (actv +0x1D8 / +0x1DC, read off the tag) make it drop charged, whatever 0 means
     ap.add_argument('--set', action='append', metavar='0xOFF=VALUE:NAME')
     a = ap.parse_args()
+    if a.port:
+        from_config(a.port, write=not a.dry)
+        return
+    if not a.to_weapon:
+        ap.error('--to-weapon (or --port)')
     if a.donor_weapon:
         prof = same_game(a.donor_weapon, a.to_weapon, a.to_game, a.why, parse_sets(a.set))
         for off, (fmt, v, name) in sorted(prof['fields'].items()):

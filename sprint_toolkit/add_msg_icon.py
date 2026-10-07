@@ -8,8 +8,11 @@ same sequence index), a new name is appended -- in `hud_msg_icons` AND its 32-bi
 `hud_msg_icons_r`, at one index (h1_hud_sheet.py; the SAW's icon reached only the first). (Until 2026-10-05 it rebuilt from the stock
 backup every time, which would have dropped every earlier port's icon -- the SAW is 25.)
 
-    python add_msg_icon.py <icon.png> <sequence name>
+    python add_msg_icon.py <icon.png> <sequence name> [<reserved index>]
     python add_msg_icon.py --restore
+
+A Halo 1 port passes its RESERVED hud_msg_icons index (ports_h1/<weapon>.py, H1_PORT_PLAN.md
+reservations table), so ports built in any order land where the plan says.
 """
 import os, shutil, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -45,7 +48,8 @@ def main():
         raise SystemExit('icon larger than %dx%d' % (SHEET_W, sheet_h))
     # registration: the stock AR icon registers at half its width and 40% of its height
     i = h1_hud_sheet.put_twins('hud_msg_icons', name, icon, TEMPLATE_SEQ, (SHEET_W, sheet_h),
-                               (icon.width / 2.0, icon.height * 0.40))
+                               (icon.width / 2.0, icon.height * 0.40),
+                               index=int(sys.argv[3]) if len(sys.argv) > 3 else None)
     print('sequence %d (%r) in hud_msg_icons and hud_msg_icons_r' % (i, name))
 
 

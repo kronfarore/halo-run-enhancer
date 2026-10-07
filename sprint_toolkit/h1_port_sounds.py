@@ -46,6 +46,7 @@ import port_env                                       # noqa: E402,F401
 from reclaimer.hek.defs.snd_ import snd__def          # noqa: E402
 import h1_saw_tone as tone                            # noqa: E402  (read/write/resample)
 import h1_fsb                                         # noqa: E402
+import ports_h1                                       # noqa: E402
 
 MCC = os.path.dirname(os.path.dirname(HERE))
 H3_FSB = os.path.join(MCC, 'halo3', 'fmod', 'pc', 'sfx.fsb')
@@ -56,84 +57,19 @@ BANK_DIR = os.path.join(os.path.dirname(HERE), 'port_sounds', 'halo1')
 WORK = os.path.join(HERE, 'out', 'h3_sounds')
 RATE = 22050
 B = '\\'
-ANIMS = B.join(['sound', 'sfx', 'weapons', 'weapon_anims'])
 COPY = ('flags', 'sound_class', 'minimum_distance', 'maximum_distance', 'skip_fraction',
         'random_pitch_bounds', 'inner_cone_angle', 'outer_cone_angle', 'outer_cone_gain',
         'gain_modifier', 'maximum_bend_per_second')
 
-PR = B.join(['sound', 'sfx', 'weapons', 'plasma rifle'])
-SG = B.join(['sentinel_gun', 'sent_gun', ''])
-OH = B.join(['sentinel_beam_overheat', 'beam_overheat', ''])
-IMPACTS = B.join(['sound', 'sfx', 'impulse', 'melee'])
-#: weapon -> its weapon_ports_catalog.json name (`catalog`: the manifest's 'weapon', which
-#: the enhancer keys its volume knobs by), tag folder (never under sound\sfx), sounds:
+#: per weapon (ports_h1/<weapon>.py, section 'sounds'): its weapon_ports_catalog.json name
+#: (`catalog`: the manifest's 'weapon', which the enhancer keys its volume knobs by), tag
+#: folder (never under sound\sfx), sounds:
 #:   name -> (Halo 3 sound folders mixed together, stock H1 sound to copy playback from,
 #:            active-RMS target dBFS[, sound class override])
 #:   a folder given as a TUPLE is its pieces played one after another (permutation 1 of
 #:   each): Halo 3's in/loop/out sound_looping parts as one Halo 1 one-shot
-WEAPONS = {
-    'energy_sword': {
-        'catalog': 'Energy Blade',
-        'dir': B.join(['sound', 'weapons', 'energy_sword_port']),
-        'h3_dir': 'data\\sound\\weapons\\energy_sword\\',
-        'sounds': {
-            'sword_melee': (['energy_melee_1'], ANIMS + B + 'ball_melee', -16.2),
-            'sword_lunge': (['energy_sword_lunge_hum', 'energy_sword_lunge_cloth'],
-                            ANIMS + B + 'ball_melee', -16.2),
-            'sword_ready': (['sword_ready'], ANIMS + B + 'ball_ready', -13.1),
-            'sword_pose': (['energy_sword_pose'], ANIMS + B + 'ball_posing', -20.0),
-            # the melee damage effect's sound, so a slash or lunge that HITS sounds like one
-            'sword_hit': (['sword_impact_character'], IMPACTS + B + 'melee_impact_fleshy',
-                          -14.0),
-            # Halo 3's idle hum: the LOOP of a sound_looping the weapon carries always
-            'sword_hum': (['sword_loop\\sword_loop\\loop'],
-                          B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'charge']), -27.0,
-                          'weapon_idle'),
-        },
-    },
-    # Halo 3's fuel rod is the flak_cannon; every sound it cues sits on frame 0
-    'fuel_rod': {
-        'catalog': 'Flak Cannon',
-        'dir': B.join(['sound', 'weapons', 'fuel_rod_port']),
-        'h3_dir': 'data\\sound\\weapons\\flak_cannon\\',
-        'sounds': {
-            'rod_ready': (['flak_cannon_ready'], ANIMS + B + 'plasrifle_ready', -13.1),
-            'rod_reload': (['flak_cannon_reload'], ANIMS + B + 'rocket_reload_e', -20.9),
-            'rod_pose': (['flak_cannon_posing_var1'], ANIMS + B + 'rocket_posing', -20.0),
-            'rod_melee': (['flak_cannon_melee'], ANIMS + B + 'fuelrod_melee', -16.2),
-            'rod_fire': (['flak_cannon_fire_animation'], ANIMS + B + 'rocket_fire', -18.0),
-        },
-    },
-    # the Sentinel Beam (a full port): Halo 3's player weapon cues the Sentinel's own
-    # sounds. The fire loop is a Halo 1 sound_looping (start/loop/end tracks), scaled by
-    # the weapon's illumination; the overheat is in + loop + out as one 2.4 s one-shot on
-    # the overheated effect (the vent is 2.2 s)
-    'sentinel_beam': {
-        'catalog': 'Sentinel Beam',
-        'dir': B.join(['sound', 'weapons', 'sentinel_beam_port']),
-        'h3_dir': 'data\\sound\\characters\\sentinel\\',
-        'sounds': {
-            'beam_ready': (['sentinel_ready'], ANIMS + B + 'plasrifle_ready', -13.1),
-            'beam_pose': (['sentinel_posing'], ANIMS + B + 'plasrifle_posing', -20.0),
-            'beam_melee': (['sentinel_melee'], ANIMS + B + 'plasrifle_melee', -16.2),
-            'beam_fire_in': ([SG + 'in'], PR + B + 'fire', -16.0),
-            'beam_fire_loop': ([SG + 'loop'], PR + B + 'fire', -16.0),
-            'beam_fire_grain': ([SG + 'loop'], PR + B + 'fire', -19.0),
-            'beam_fire_out': ([SG + 'out'], PR + B + 'fire', -16.0),
-            'beam_overheat': ([tuple(OH + k for k in ('in', 'loop', 'out'))],
-                              PR + B + 'overheat', -18.0),
-        },
-        # Halo 1 lets a looping sound finish its current pass before the end track: Halo
-        # 3's 4.3 s loop hummed on for seconds after the trigger was let go (test 3)
-        'loop_len': {'beam_fire_loop': 0.5},
-        # test 4: the hum still lingered, LONGER the longer fire was held -- the loop
-        # attachment toggled per round and queued its start/end tracks. The hum is now
-        # per SHOT, like every stock weapon's fire sound: grains of the loop (seconds,
-        # count -> permutations from spread offsets, faded ends), one per round at 15/s,
-        # overlapping into a steady tone that ends with the last round
-        'grains': {'beam_fire_grain': (0.13, 8)},
-    },
-}
+#: optional: loop_len {name: seconds}, grains {name: (seconds, count)}
+WEAPONS = ports_h1.section('sounds')
 
 
 def h3_index():

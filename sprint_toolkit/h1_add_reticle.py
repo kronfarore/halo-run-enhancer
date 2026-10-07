@@ -13,6 +13,7 @@ so Halo 3 art is drawn x123/97 = x1.27 in Halo 1's sheet (measured 2026-10-06). 
 HUD's crosshair element then points its overlay at the new sequence.
 
     python h1_add_reticle.py hud_reticles 13 "energy sword"
+    python h1_add_reticle.py hud_reticles <h3 index> "smg" 19     # at the reserved index
 """
 import os
 import sys
@@ -31,8 +32,9 @@ SIZE, CENTRE = 256, (128, 125)
 SCALE = 123.0 / 97.0
 
 
-def add(h3_sheet, h3_index, name):
-    """The Halo 3 sprite into `hud_reticles` AND `hud_reticles_r`, one sequence index."""
+def add(h3_sheet, h3_index, name, index=None):
+    """The Halo 3 sprite into `hud_reticles` AND `hud_reticles_r`, one sequence index (the
+    port's reserved `index` when given)."""
     import h1_hud_sheet
     art, (rx, ry) = h3_hud_art.sprite(h3_sheet, h3_index)
     w, h = round(art.width * SCALE), round(art.height * SCALE)
@@ -42,8 +44,11 @@ def add(h3_sheet, h3_index, name):
     white = Image.new('L', (SIZE, SIZE), 255)
     img = Image.merge('RGBA', (white, white, white, canvas))
     canvas.save(os.path.join(HERE, 'out', 'reticle_%s.png' % name.replace(' ', '_')))
-    return h1_hud_sheet.put_twins('hud_reticles', name, img, TEMPLATE_SEQ, (SIZE, SIZE), CENTRE)
+    return h1_hud_sheet.put_twins('hud_reticles', name, img, TEMPLATE_SEQ, (SIZE, SIZE), CENTRE,
+                                  index=index)
 
 
 if __name__ == '__main__':
-    print('sequence', add(sys.argv[1], int(sys.argv[2]), sys.argv[3]))
+    # optional 4th argument: the port's reserved hud_reticles index (H1_PORT_PLAN.md)
+    print('sequence', add(sys.argv[1], int(sys.argv[2]), sys.argv[3],
+                          int(sys.argv[4]) if len(sys.argv) > 4 else None))

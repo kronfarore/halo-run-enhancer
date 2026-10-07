@@ -232,7 +232,8 @@ What it chains, and what each piece is for:
    path and factor against the Assault Rifle before it writes, and refuses if one
    stops reproducing the donor — which is how the velocity factor was caught
    inverted during its reconstruction.
-7. `saw_scenario.py --map <map>` — puts the weapon in that map's spawn profiles.
+7. `saw_scenario.py --map <map>` — puts the weapon in that map's spawn profiles (the SAW
+   only; new ports use `h1_port_test_map.py`, see "the port tooling after phase 0").
    **Only the spawns.** a10 has six profiles and three of them drive mechanisms (the
    sprint mod's invisible weapon, the bridge pistols, a weapon insert); handing one
    the SAW breaks the level. That cannot be read off the tag, so it is recorded per
@@ -440,6 +441,38 @@ What Halo 1 did that the data did not say (each one cost a boot):
 Catalogued as 'Sentinel Beam' (donor Plasma Rifle; balanced: 11.6 damage, ratio-rule aim, H3 battery; default damage 4.64 from the Sentinel yardstick); Armed card via a same-game firing profile (step 11). The enhancer
 session wires cards/pools. A cyan layer under the muzzle glow while firing, probably the
 beam's own start; kept (user).
+
+### Halo 1: the port tooling after phase 0 (2026-10-07) -- per-weapon CONFIGS
+
+H1_PORT_PLAN.md "Phase 0: DONE" is the full record; the short form:
+
+* **A weapon is a config, not code:** `sprint_toolkit/ports_h1/<key>.py` (dict `PORT`).
+  h1_h3_weapon_model / h1_fp_retarget / h1_pickable_weapons / h1_port_sounds /
+  make_port_catalog_h1_ports / ai_firing_profile --port / h1_port_test_map / port_backup
+  read its sections (`model`, `retarget`, `pickable`, `sounds`, `catalog`,
+  `firing_profile`, `test`, `backup`). The old WEAPONS dicts moved there unchanged; the
+  sword / fuel rod / Sentinel Beam regenerate byte-identical tags (only `tool bitmaps`'
+  own run-to-run `base_address` garbage differs, with the old scripts too).
+* **Reservations** (message pair, hud_msg_icons and hud_reticles sequence, label, sound and
+  weapon folder) are in each config and in the plan's table; the writers put a port at ITS
+  index (padding the message list / sheets), so ports done in any order never collide.
+  Two sessions writing the same shared tag at once still race: one at a time.
+* **Test map:** `h1_port_test_map.py <key> [--level] [--grunt/--elite <actv>] [--god]
+  [--stage]` replaces the SAW-only saw_scenario.py: the port in every SPAWN profile (non-spawn
+  profiles: `sprint_profile`, a10's bridge0/bridge1/weapon_insert), made resident if needed,
+  enemies swapped on the copy, the live map backed up to E:\HaloBackups\h1_port_test;
+  `--restore <level>`.
+* **Catalog:** `make_port_catalog_h1_ports.py` derives `weap` / `fp_animations` /
+  `requires` for a port and keeps the enhancer's keys.
+* **Step 11:** `ai_firing_profile.py --port <key>`; source layouts now Halo 3 (+ODST),
+  Reach and Halo 4 (Halo 3's Weapons Properties carry their own inner Firing Patterns, read
+  as a fallback). The SAW's stored profile = m020's storm_lmg + Drop Weapon Loaded 0.4..0.8
+  set over it.
+* **Capacity** (MCC classic): tag space and vertex buffers are each 64 MiB (HCEEK tool's
+  own checks), not CE's 23 MiB. The vertex buffer on a10 is the binding one; all 25 ports
+  fit even at SAW size. d40's weapon placements reach 115 of 128.
+* OBSERVATION (Sentinel Beam only): `tool model` on today's JMS gives the beam's FP model
+  LOD node counts 6, the shipped and tested one has 0 -- the tested copy was kept.
 
 ---
 
