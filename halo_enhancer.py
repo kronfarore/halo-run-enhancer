@@ -9859,7 +9859,7 @@ class OptionsDialog(QDialog):
         # Pre-create the pages so the nav order is the designed one rather than
         # whichever group happens to be built first.
         for _name in ['Run rules', 'Skulls', 'Loadout', 'Co-op', 'Abilities', 'Patching',
-                      'Interface']:
+                      'Bugfixes', 'Interface']:
             self._opt_page(_name)
 
         # ---- Map archive: first, because it is about protecting what everything
@@ -11726,10 +11726,6 @@ class OptionsDialog(QDialog):
         self.bugfix_fuel_rod_cb.setToolTip(_impact + "\n\nShared with a co-op partner through "
                                            "the run (it changes the patch).")
         bugfix_form.addRow("", self.bugfix_fuel_rod_cb)
-        _bf_note = QLabel(_impact)
-        _bf_note.setWordWrap(True)
-        _bf_note.setStyleSheet("color: #9a9a9a; font-size: 11px;")
-        bugfix_form.addRow("", _bf_note)
         # Debug mode only: the player's own armour rows (player_armour.py), to be checked
         # in game before the Effective cards rely on them.
         self.debug_armour_cb = QCheckBox("Build the player's own armour rows (Halo 2 to Halo 4)")
@@ -11751,7 +11747,7 @@ class OptionsDialog(QDialog):
         bugfix_form.addRow("", self.debug_armour_zero_cb)
         self.debug_armour_cb.toggled.connect(self.debug_armour_zero_cb.setEnabled)
         self.debug_armour_zero_cb.setEnabled(self.debug_armour_cb.isChecked())
-        self._opt_page("Patching").addWidget(bugfix_g, 46)
+        self._opt_page("Bugfixes").addWidget(bugfix_g)
         self._opt_page("Patching").addWidget(patch_h1_g, 50)
         self._opt_page("Patching").addWidget(patchg, 60)
         self._opt_page("Patching").addWidget(patch_odst_g, 70)
