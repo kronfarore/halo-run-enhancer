@@ -153,6 +153,33 @@ def build_copy(level, weapon, rounds, actors, keep_kit_map):
     return out
 
 
+def catalog_entry(name):
+    cat = json.load(open(os.path.join(ROOT, 'weapon_ports_catalog.json'), encoding='utf-8'))
+    e = next((x for x in cat.get('Halo 1', []) if x.get('weapon') == name), None)
+    if e is None:
+        raise SystemExit('%s is not in the catalog: make_port_catalog_h1_ports.py first' % name)
+    return e
+
+
+def balance(m, entry):
+    """The patcher's weapon-port pass (halo_patch.apply_weapon_ports) with this one port --
+    exactly what the enhancer's Balanced box writes (h3_apply_saw_numbers.py's harness)."""
+    import halo_patch as hp
+    import halo_enhancer as he
+    he.load_settings()
+    reg = hp.PluginRegistry(he.CONFIG.get('assembly_plugins_dir'),
+                            he.CONFIG.get('plugin_subdirs_by_game', {}).get('Halo 1', []))
+    bad = 0
+    for r in hp.apply_weapon_ports(m, 'Halo 1', reg, [entry]):
+        ok = r.get('ok')
+        bad += not ok
+        print('   balanced %-14s %-28s -> %s%s' % (r.get('tag'), r.get('field'),
+                                                  r.get('new') or r.get('reason'),
+                                                  '' if ok else '   [NOT OK]'))
+    if bad:
+        raise SystemExit('%d balance row(s) failed' % bad)
+
+
 def load_record():
     try:
         return json.load(open(RECORD, encoding='utf-8'))
@@ -204,6 +231,9 @@ def main():
     ap.add_argument('--keep-kit-map', action='store_true',
                     help='skip the rebuild of the normal level afterwards')
     ap.add_argument('--restore', metavar='LEVEL')
+    ap.add_argument('--balanced', action='store_true',
+                    help="the patcher's own Balanced pass on the copy (catalog rows + anims "
+                         '+ anim_sounds), spawning with the balanced magazine')
     a = ap.parse_args()
     if a.restore:
         return restore(a.restore)
@@ -221,16 +251,25 @@ def main():
         rounds = tuple(int(x) for x in a.rounds.split(','))
     else:
         rounds = tuple(cfg['rounds']) if cfg.get('rounds') else full_magazine(weapon)
+    entry = None
+    if a.balanced:
+        entry = catalog_entry(p['name'])
+        if not a.rounds:                     # spawn with the BALANCED magazine + initial
+            vals = {r['field']: r['value'] for r in entry.get('balance', ())}
+            rounds = (int(vals.get('Rounds Loaded Maximum', rounds[0])),
+                      int(vals.get('Rounds Total Initial', rounds[1])))
     want = {'grunt': a.grunt or cfg.get('grunt'), 'elite': a.elite or cfg.get('elite')}
     actors = [v for v in want.values() if v]
     out = build_copy(level, weapon, rounds, actors, a.keep_kit_map)
-    if actors or a.god or cfg.get('god'):
+    if actors or a.god or cfg.get('god') or entry:
         import halo_patch
         m = halo_patch.open_map(out, 'Halo 1')
         if actors:
             E.swap_actors(m, want)
         if a.god or cfg.get('god'):
             E.god_shield(m)
+        if entry:
+            balance(m, entry)
         open(out, 'wb').write(bytes(m.data))
     print('wrote %s' % out)
     if a.stage:

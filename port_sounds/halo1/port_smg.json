@@ -36,6 +36,17 @@
    ]
   },
   {
+   "tag": "sound\\weapons\\smg_port\\smg_reload_balanced",
+   "perms": [
+    "smg_reload_balanced_1.wav",
+    "smg_reload_balanced_2.wav",
+    "smg_reload_balanced_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\smg_port\\smg_reload_balanced"
+   ]
+  },
+  {
    "tag": "sound\\weapons\\smg_port\\smg_ready",
    "perms": [
     "smg_ready_1.wav",

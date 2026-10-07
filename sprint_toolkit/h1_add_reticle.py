@@ -32,13 +32,18 @@ SIZE, CENTRE = 256, (128, 125)
 SCALE = 123.0 / 97.0
 
 
-def add(h3_sheet, h3_index, name, index=None):
+def add(h3_sheet, h3_index, name, index=None, thicken=0):
     """The Halo 3 sprite into `hud_reticles` AND `hud_reticles_r`, one sequence index (the
-    port's reserved `index` when given)."""
+    port's reserved `index` when given). `thicken` px grows every stroke by that much on
+    each side (a max filter): Halo 1 draws the 256 px sheet at about half size, and Halo
+    3's thin strokes then break up -- 'pixels missing' (SMG test 1, 2026-10-07)."""
     import h1_hud_sheet
+    from PIL import ImageFilter
     art, (rx, ry) = h3_hud_art.sprite(h3_sheet, h3_index)
     w, h = round(art.width * SCALE), round(art.height * SCALE)
     alpha = art.split()[3].resize((w, h), Image.LANCZOS)
+    if thicken:
+        alpha = alpha.filter(ImageFilter.MaxFilter(2 * int(thicken) + 1))
     canvas = Image.new('L', (SIZE, SIZE), 0)
     canvas.paste(alpha, (round(CENTRE[0] - rx * SCALE), round(CENTRE[1] - ry * SCALE)))
     white = Image.new('L', (SIZE, SIZE), 255)

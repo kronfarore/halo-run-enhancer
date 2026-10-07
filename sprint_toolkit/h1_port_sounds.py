@@ -140,7 +140,34 @@ def render(weapon):
             perms = [src[k * step:k * step + n] * env for k in range(count)]
         if name in w.get('shots', {}):
             perms = shots(w, idx, perms[0], w['shots'][name], target)
+        if name in w.get('stretch', {}):
+            perms = [stretch(x, w['stretch'][name]) for x in perms]
         out[name] = perms
+    return out
+
+
+def stretch(x, mult, hop=0.005, rise=6.0):
+    """A one-cue animation sound for an animation the patcher retimes by `mult` (catalog
+    anims + anim_sounds): every TRANSIENT moves to onset x mult, unpitched -- the clip is
+    cut at its onsets (the 5 ms envelope jumps by `rise` dB over the previous 20 ms) and
+    each piece placed at its new time, faded out over 10 ms where the next one begins.
+    The SAW's balanced reload re-placed its Halo 4 frame cues the same way (saw_port_foley)."""
+    h = int(hop * RATE)
+    env = np.array([np.abs(x[i:i + h]).max() + 1e-6 for i in range(0, len(x), h)])
+    db = 20 * np.log10(env)
+    on = [0]
+    for i in range(4, len(db)):
+        if db[i] - db[i - 4:i].max() > rise and db[i] > db.max() - 40 and i * h - on[-1] > 0.03 * RATE:
+            on.append(i * h)
+    out = np.zeros(int(len(x) * mult) + 1)
+    f = int(0.01 * RATE)
+    for k, a in enumerate(on):
+        b = on[k + 1] if k + 1 < len(on) else len(x)
+        seg = x[a:b].copy()
+        if k + 1 < len(on) and len(seg) > f:
+            seg[-f:] *= np.linspace(1.0, 0.0, f)
+        t = int(a * mult)
+        out[t:t + len(seg)] += seg[:len(out) - t]
     return out
 
 

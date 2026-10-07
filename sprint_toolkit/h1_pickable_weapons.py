@@ -184,7 +184,8 @@ def make_hud(w, key, write):
             ammo_meter.main(*([str(n) for n in sizes] + [base]))
     if 'reticle' in h:                   # a Halo 3 reticle, into Halo 1's sheet
         import h1_add_reticle
-        seq = (h1_add_reticle.add(*h['reticle'], index=RESERVED.get(key, {}).get('reticle'))
+        seq = (h1_add_reticle.add(*h['reticle'], index=RESERVED.get(key, {}).get('reticle'),
+                                  thicken=h.get('reticle_thicken', 0))
                if write else -1)
         for c in d.crosshairs.STEPTREE:
             if c.crosshair_type.enum_name == 'aim':
@@ -753,6 +754,13 @@ def edit_fp_anims(key, write):
     d = t.data.tagdata
     refs = d.sound_references.STEPTREE
     have = [r.sound.filepath for r in refs]
+    # UNUSED references the patcher swaps in after a balanced retime (catalog
+    # anim_sounds; port_sounds.retimed_anim_sound): the SAW's saw_reload_balanced recipe
+    for snd in w.get('extra_sounds', ()):
+        if snd not in have:
+            refs.append()
+            refs[-1].sound.filepath = snd
+            have.append(snd)
     for a in d.animations.STEPTREE:
         if a.name in w['keys']:
             a.key_frame_index = w['keys'][a.name]

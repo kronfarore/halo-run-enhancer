@@ -20,8 +20,10 @@ config's 'pickable' section:
                    when its weap AND these tags are in the map (the enhancer's rule, cb8413d)
 
 THE MERGE keeps every key the enhancer session owns: an existing entry's keys survive and
-keep their place (tag_map, card_map, skip_cards, ammo, anim_sounds, ...); the entry's own
-keys overwrite theirs. Do not emit a key the enhancer owns.
+keep their place (tag_map, card_map, skip_cards, ammo, ...); the entry's own
+keys overwrite theirs. Do not emit a key the enhancer owns. `anim_sounds` is PORT data (the
+stretched sound a balanced retime swaps in; the SAW's came from make_port_catalog.py, the
+SMG's from its config) -- the patcher only reads it.
 
 Checks before writing: a non-empty 'balance' needs a 'balance_desc'; every row names a
 field and an original; 'donor' names a weapon halo.json knows.

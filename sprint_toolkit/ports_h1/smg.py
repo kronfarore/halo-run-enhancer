@@ -79,7 +79,8 @@ PORT.update({
         # here too -- an OBSERVATION from one port, this test checks it
         # test 1 (2026-10-07, a30): user moves it 'forward 1.5 and up 2 units' (1 unit =
         # 0.01 wu, the beam's) to check whether the beam's 'see into the arms' is general
-        'view_offset': (-0.0375 + 0.015, 0.0, -0.0425 + 0.02),
+        # test 2: 'still looking good' -> test 3: NO offset at all (Halo 3's own placement)
+        'view_offset': (0.0, 0.0, 0.0),
         # Halo 1's AR names its auto-fire `firing` and has no reload-empty; the pistol and
         # the Sentinel Beam (30/s auto, tested) use the per-shot `fire-1`, which matches
         # H3's 5-frame fire_1. Halo 3 SMG frames: idle 89, posing 129, ready 19, put_away 5,
@@ -115,10 +116,14 @@ PORT.update({
             'smg_fire': (['smg_loop\\smg_loop\\loop'], 'sound\\sfx\\weapons\\assault rifle\\fire', -13.0),
             'smg_dryfire': (['dryfire'], 'sound\\sfx\\weapons\\assault rifle\\dryfire', -17.6),
             'smg_reload': (['smg_fp\\smg_reload'], 'sound\\sfx\\weapons\\weapon_anims\\ar_reload', -20.9),
+            # the BALANCED reload's sound (the patcher retimes the reload x1.5 and then swaps
+            # this in: catalog anim_sounds) -- every click moved to onset x 1.5, unpitched
+            'smg_reload_balanced': (['smg_fp\\smg_reload'], 'sound\\sfx\\weapons\\weapon_anims\\ar_reload', -20.9),
             'smg_ready': (['smg_fp\\smg_ready'], 'sound\\sfx\\weapons\\assault rifle\\weapon ready', -13.1),
             'smg_melee': (['smg_fp\\smg_melee_strike'], 'sound\\sfx\\weapons\\weapon_anims\\ar_melee', -16.2),
             'smg_pose': (['smg_fp\\smg_posing0'], 'sound\\sfx\\weapons\\weapon_anims\\pistol_posing', -26.5),
         },
+        'stretch': {'smg_reload_balanced': 1.5},
         'shots': {'smg_fire': {'period': 0.066, 'count': 4, 'tail': 'smg_loop\\smg_loop\\out',
                                'tail_onset': 0.02, 'tail_len': 0.7}},
     },
@@ -180,18 +185,23 @@ PORT.update({
             # sprites dropped, the rest x0.6, 1 unit forward and 0.5 up (eyeballed, test 2)
             'firing_effect': (r'weapons\assault rifle\effects\fire bullet', SMG + 'effects\\fire bullet',
                               {r'sound\sfx\weapons\assault rifle\fire': SND + 'smg_fire'},
-                              {'match': 'flash', 'drop_off_axis': 0.012, 'scale': 0.6,
-                               'shift': (0.01, 0.0, 0.005)}),
+                              # test 2: 'move 0.5 units up, revert the size'
+                              {'match': 'flash', 'drop_off_axis': 0.012, 'scale': 1.0,
+                               'shift': (0.01, 0.0, 0.01)}),
             'empty_effect': (r'weapons\assault rifle\effects\empty', SMG + 'effects\\empty',
                              {r'sound\sfx\weapons\assault rifle\dryfire': SND + 'smg_dryfire'})},
         'melee': (r'weapons\assault rifle\melee', SMG + 'melee'),
         'melee_response': r'weapons\assault rifle\melee_response',
         'messages': ('Picked up an SMG', 'Picked up %d rounds for SMG'),
         'icon': 'smg',
+        'extra_sounds': [SND + 'smg_reload_balanced'],      # unused until the balanced retime
         # the AR's HUD with Halo 3's SMG reticle (H3 hud_reticles #3) at the reserved 19 and
         # a magazine meter drawn for 60 (default) and 112 (balanced)
         'hud': {'donor': r'weapons\assault rifle\assault rifle', 'out': SMG + 'smg',
                 'reticle': ('hud_reticles', 3, 'smg'),
+                # test 1: 'pixels missing' -- the strokes grown 1 px a side; the ring's
+                # diagonal gaps are Halo 3's design and stay (user)
+                'reticle_thicken': 1,
                 'ammo_meter': {'sizes': (60, 112), 'base': SMG + 'bitmaps\\smg_ammo'}},
         'palette_levels': ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40'],
     },
@@ -209,7 +219,14 @@ PORT.update({
                             "a 112 magazine, 450 at pickup / 562 most, a 2.5 s reload, a "
                             "faster bullet and Halo 1-style aim assist.",
             # step 9: the balanced reload, 2.9 x 50/58 = 2.5 s, against the BUILT 50 frames
-            'anims': {'reload': 1.5},
+            # swap (ready + put-away, ONE multiplier in the patcher): ready 29 x 19/20 =
+            # 27.55 frames over the built 19 = x1.45 (put-away's own would be 11 x 5/5 / 5 =
+            # x2.2; the SAW also took the ready's)
+            'anims': {'reload': 1.5, 'swap': 1.45},
+            # the patcher points the retimed reloads at the stretched sound
+            # (port_sounds.retimed_anim_sound; the SAW's recipe)
+            'anim_sounds': {'reload': {'mult': 1.5, 'from': SND + 'smg_reload',
+                                       'to': SND + 'smg_reload_balanced'}},
             'balance': [
                 row('jpt!', SMG + 'bullet', 'Damage Lower Bound', 6.67, 5.0, 'Bullet Damage'),
                 row('jpt!', SMG + 'bullet', 'Damage Upper Bound', 6.67, 5.0, 'Bullet Damage'),
@@ -221,10 +238,10 @@ PORT.update({
                 row('weap', SMG + 'smg', 'Rounds Total Initial', 450.0, 180.0, 'Magazine', block='Magazines'),
                 # the DUAL-WIELD CARRY RULE: 600 x 240/384 x 1.5 = 562.5 (a short)
                 row('weap', SMG + 'smg', 'Rounds Total Maximum', 562.0, 240.0, 'Magazine', block='Magazines'),
-                # STEP 6 balanced (user, test 1): the pickup by Halo 1's RATIO OF ROUNDS TOTAL
-                # INITIAL -- H1 AR pickup 240 x (SMG 450 / AR 240) = 450 (the AR's pickup is
-                # its own initial load, so the SMG's is too). Default: Halo 3's 120
-                row('weap', SMG + 'smg', 'Rounds', 450, 120, 'Ammo pickup', block='Magazines/Magazines'),
+                # STEP 6 balanced (user, test 2): Halo 3's own pickup : initial ratio (120 /
+                # 180) on the balanced initial 450 = 300. (Halo 1's ratio, 240/240 x 450 =
+                # 450, refilled nearly the whole 562 carry: rejected.) Default: Halo 3's 120
+                row('weap', SMG + 'smg', 'Rounds', 300, 120, 'Ammo pickup', block='Magazines/Magazines'),
                 # the minimum's own ratio is degenerate (H3 AR 0.1): the maximum's 2.75/3.0
                 row('weap', SMG + 'smg', 'Minimum Error', 0.0, 0.25, 'Error Angle', block='Triggers'),
                 row('weap', SMG + 'smg', 'Error Angle', 1.83, 1.25, 'Error Angle', block='Triggers'),
