@@ -209,7 +209,9 @@ PORT.update({
             # jumped up on every shot and fell back to 0 -- the ILLUMINATION the pistol
             # template exports on A. Test 3 drops A: if the counter now counts the magazine,
             # it reads B (the AR's layout); if it stays at 00, it reads A (then A = ammo)
-            'weap_attrs.A_in': 'none',
+            # TEST 3: with A empty the counter stayed 00 -> the numeric shader reads A. So A =
+            # the loaded fraction (the template's A illumination drove the test-2 jumps)
+            'weap_attrs.A_in': 'primary_ammunition',
             'weap_attrs.B_in': 'primary_ammunition',
             # Halo 3's zoom sounds (the template names the sniper's)
             'weap_attrs.interface.zoom_in_sound.filepath': SND + 'br_zoom_in',
@@ -246,9 +248,14 @@ PORT.update({
                 # test 2 (screenshot): the ring drew 435 x 322 px at 1920x1080 -- Halo 1 puts
                 # the mask in a 4:3 box ~558 px tall. aspect 4/3 pre-squashes it round; span
                 # 380 fits Halo 3's 369-unit ring into 97% of the texture (~50% of the
-                # screen height; Halo 3 58%, Halo 1's pistol ~48%); 1024 px for crisp lines
+                # screen height; Halo 3 58%, Halo 1's pistol ~48%); 1024 px for crisp lines.
+                # TEST 3: round, but the ring filled the WHOLE height -- the box is not fixed:
+                # Halo 1 draws the mask ~1.09 px a TEXEL at 1080p (512 -> 558 px, 1024 -> ~1116).
+                # So Halo 3's 58% (623 px) = 572 texels = 369 units -> span 1024 x 369/572 = 660.
+                # Blur: radius 0 smeared it ('worse'; the pistol's is 'more gentle') -> the
+                # donor's convolution kept, mask alpha 255 (test 4 tells what 255 means)
                 'scope': {'chud': r'ui\chud\battle_rifle', 'out': BR + 'bitmaps\\scope_mask',
-                          'size': 1024, 'span': 380.0, 'aspect': 4 / 3.0},
+                          'size': 1024, 'span': 660.0, 'aspect': 4 / 3.0, 'alpha': 255},
                 'reticle': ('hud_reticles', 1, 'battle rifle'),
                 'reticle_thicken': 1,
                 'flash_base': 12,                # the pistol's low-ammo cutoff is of 12

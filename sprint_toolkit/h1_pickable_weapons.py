@@ -199,13 +199,15 @@ def make_hud(w, key, write):
         if write:
             dark, used = h1_h3_scope.bake(S['chud'], size=S.get('size', 512), span=S.get('span', 640.0),
                                           aspect=S.get('aspect', 1.0))
-            h1_h3_scope.write(dark, S['out'])
+            h1_h3_scope.write(dark, S['out'], alpha=S.get('alpha', 255))
             print('   scope: ' + '; '.join(used))
         se = d.screen_effect.STEPTREE[0]
         se.mask.flags.only_when_zoomed = True
         se.mask.fullscreen_mask.filepath = S['out']
         se.mask.splitscreen_mask.filepath = S['out']
-        se.convolution.radius_out_bounds[0] = se.convolution.radius_out_bounds[1] = 0.0
+        # the convolution stays the DONOR's: radius 0 smeared the zoomed view (BR tests 2-3)
+        if 'blur_radius' in S:
+            se.convolution.radius_out_bounds[0], se.convolution.radius_out_bounds[1] = S['blur_radius']
         xs = d.crosshairs.STEPTREE
         for i in range(len(xs) - 1, -1, -1):
             if xs[i].crosshair_type.enum_name == 'zoom':

@@ -18,12 +18,12 @@ offset` (y down); `mirror horizontal / vertical` add the copy reflected about th
 excludes 'unzoomed' are taken (the reticle stays the HUD's own crosshair).
 
 The mask spans `span` chud units tall and `span x aspect` wide, `size` px square; the blur
-is switched off (Halo 3 does not blur). WHERE HALO 1 DRAWS IT (BR test 2, 2026-10-07,
-1920x1080 screenshot): NOT full screen -- a centred 4:3 box about 558 px tall (52% of the
-height; beyond it the edge texels repeat), so a ring round in the square texture showed
-435 x 322 px. Hence `aspect` 4/3 (pre-squashed) and a `span` that fits the scope into the
-box: Halo 3's ring (58% of the height) can be at most ~90% of its size here. An
-OBSERVATION from one weapon at one resolution -- check it on the next scope port. make_hud (h1_pickable_weapons, hud['scope']) points the
+keeps the donor's convolution. WHERE HALO 1 DRAWS IT (BR tests 2-3, 2026-10-07, 1920x1080
+screenshots): a centred 4:3 box whose size follows the TEXTURE -- about 1.09 px a texel
+tall (512 -> 558 px, 1024 -> ~1116 px), x 4/3 wide; beyond it the edge texels repeat.
+Hence `aspect` 4/3 (pre-squashed round) and a `span` chosen for the screen size wanted:
+ring px = 369 units x size/span x 1.09 (the BR: span 660 on 1024 -> 623 px = Halo 3's 58%).
+OBSERVATIONS from one weapon at one resolution -- check them on the next scope port. make_hud (h1_pickable_weapons, hud['scope']) points the
 weapon's HUD at it and drops the donor's zoom crosshairs (the pistol's readouts).
 
     python h1_h3_scope.py "ui\chud\battle_rifle" "weapons\battle rifle\bitmaps\scope_mask" [--preview out.png]
@@ -128,8 +128,12 @@ def bake(chud, size=512, span=640.0, aspect=1.0):
     return dark, used
 
 
-def write(dark, out):
-    """A copy of the pistol's mask tag with this darkness as RGB, alpha 0 (no blur)."""
+def write(dark, out, alpha=255):
+    """A copy of the pistol's mask tag with this darkness as RGB and a flat `alpha`.
+    THE ALPHA (BR tests 2-3): alpha 0 everywhere + convolution radius 0 SMEARED the whole
+    zoomed view; the stock pistol and sniper masks are alpha 0 in the lens, 255 outside.
+    Test 4: alpha 255 with the donor's own convolution -- what it shows decides whether
+    255 is sharp or blurred (an open question until then)."""
     from reclaimer.hek.defs.bitm import bitm_def
     size = dark.shape[0]
     t = bitm_def.build(filepath=os.path.join(TAGS, TEMPLATE + '.bitmap'))
@@ -142,7 +146,7 @@ def write(dark, out):
     b.width = b.height = size                    # the template's 512, or larger (BR test 3: 1024)
     b.registration_point_x = b.registration_point_y = size // 2
     v = np.clip(np.round(dark * 255), 0, 255).astype(np.uint8)
-    bgra = np.stack([v, v, v, np.zeros_like(v)], axis=-1)
+    bgra = np.stack([v, v, v, np.full_like(v, alpha)], axis=-1)
     d.processed_pixel_data.data = bytearray(bgra.tobytes())
     p = os.path.join(TAGS, out + '.bitmap')
     os.makedirs(os.path.dirname(p), exist_ok=True)
