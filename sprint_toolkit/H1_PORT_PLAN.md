@@ -417,6 +417,10 @@ All of PORTING.md's "What ported actually means", steps 1-11, plus:
   tag_map); PORTING notes; memory; port_backup --game h1.
 
 The full ten-map rebuild + ship happens at the END of each weapon, on the user's go.
+**BATCHED (user, 2026-10-07):** the rebuild waits until a few more weapons are built (in
+other sessions); then, for every port in the batch: residency on all ten BUILT maps,
+`port_refs_audit.py` + `port_sound_refs.py --game "Halo 1"` on the deployed maps, and the
+spawn check in game. The SMG (done, tested on a30) is the first in that batch.
 
 ## Hand-off prompt for a weapon session
 
