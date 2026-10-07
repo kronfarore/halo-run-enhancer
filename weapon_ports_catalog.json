@@ -1237,7 +1237,12 @@
    "fp_animations": "weapons\\battle rifle\\fp\\fp",
    "requires": [
     "proj weapons\\battle rifle\\bullet"
-   ]
+   ],
+   "tag_map": {
+    "proj weapons\\pistol\\bullet": "proj weapons\\battle rifle\\bullet",
+    "jpt! weapons\\pistol\\bullet": "jpt! weapons\\battle rifle\\bullet",
+    "jpt! weapons\\pistol\\melee": "jpt! weapons\\battle rifle\\melee"
+   }
   }
  ],
  "Halo 3": [
