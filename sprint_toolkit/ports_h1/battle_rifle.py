@@ -72,6 +72,13 @@ PORT.update({
                     'ones': (H3 + r'\bitmaps\numbers_plate.bitmap', H3 + r'\bitmaps\numbers_plate.bitmap'),
                     'tens': (H3 + r'\bitmaps\numbers_plate.bitmap', H3 + r'\bitmaps\numbers_plate.bitmap')},
         'template': r'weapons\assault rifle\fp\shaders\gun',
+        # THE AMMO COUNTER (user, test 1: 'see if we can make it work'): Halo 1's own numeric
+        # shader, as the AR's display -- the H3 digit quads each map one glyph (u 0.16-0.84,
+        # v 0-1), so the AR's 10-digit sequence fills them. Place 0 / 1 = the AR's two
+        # permutations (which is ones is a GUESS: swap if the digits read reversed). Limit =
+        # the magazine (the AR: 60); the weapon exports primary_ammunition on B as the AR does
+        'numeric': {'from': r'weapons\assault rifle\fp\shaders\numbers', 'limit': 36,
+                    'places': {'ones': 0, 'tens': 1}},
     },
 
     # FP animations (h1_fp_retarget.py). Halo 3 BR frames: ready 19, put_away 4, fire_1 6,
@@ -84,8 +91,9 @@ PORT.update({
         'h1_dir': r'weapons\battle rifle\fp',
         'h1_model': r'weapons\battle rifle\fp\fp',
         'align': 'same_space',
-        # the SMG's tested placement (user's pick, H1_PORT_PLAN "Pilot A1"), tuned per weapon
-        'view_offset': (-0.0225, 0.0, -0.0225),
+        # the SMG's tested placement (user's pick, H1_PORT_PLAN "Pilot A1"), tuned per weapon;
+        # test 1 (2026-10-07, a30): 'move the FP position up 2 units' (1 unit = 0.01 wu)
+        'view_offset': (-0.0225, 0.0, -0.0225 + 0.02),
         # the H1 pistol's own names (per-shot `fire-1`, both reloads). The BR graph has NO
         # plain fire_1 / posing:var0: fire_1:var1..3 (6/6/5 fr, one per burst round in Halo
         # 3) and posing var1 / var2 (60 / 90 fr) -- var1 of each (--list, 2026-10-07)
@@ -167,13 +175,20 @@ PORT.update({
         # THE BURST, option B (user, 2026-10-07): Halo 1's charge-and-spew -- the kit's own
         # precedent is digsite\weapons\smg's second trigger (charge 1 tick, overcharged
         # action discharge, spew 0.2 s at 15/s = 3 rounds 2 ticks apart, Halo 3's spacing
-        # exactly). TEST 1 MEASURES: rounds per burst, whether a held trigger repeats and at
-        # what cycle (Halo 3: 0.413 s), the first-round delay (1 tick). The between-burst
-        # recovery (H3 0.28 s) has no field yet: chosen after the measurement
+        # exactly).
+        # TEST 1 MEASURED (user, a30): spew 0.2 s fires FIVE rounds a burst; held, the bursts
+        # repeat back to back -- 36 rounds in 2.18 s = 16.5/s, i.e. a 5-round burst every 9
+        # ticks = 1 charge tick + 4 gaps of 2 ticks (no recovery at all); faster than Halo 3,
+        # 'a small delay' felt. So rounds = 1 + spew ticks / 2 + 1 (6 ticks -> 5) and the
+        # cycle = charge + 2 x (rounds - 1) ticks (OBSERVATIONS from this port).
+        # TEST 2: spew 0.1 s (3 ticks -> 3 rounds) and the CHARGE as Halo 3's recovery:
+        # 0.28 s + 4 ticks = 0.41 s a held burst (Halo 3 0.413) -- the price is 0.28 s before
+        # the FIRST round (Halo 3: none). Variant B2 on the secondary (h1_port_test_map
+        # --secondary, a test-only tag): charge 1 tick + does_not_repeat_automatically
         'trigger': {'rounds_per_second': (15.0, 15.0), 'acceleration_time': 0.0,
                     'deceleration_time': 0.0,
-                    'charging_time': 1 / 30.0, 'overcharged_action': 'discharge',
-                    'spew_time': 0.2,
+                    'charging_time': 0.28, 'overcharged_action': 'discharge',
+                    'spew_time': 0.1,
                     # H3 bloom ramp 0.2 / 0.1 (magnum 0 / 0: no ratio, the source value)
                     'error_acceleration_time': 0.2, 'error_deceleration_time': 0.1},
         'fields': {
@@ -185,6 +200,9 @@ PORT.update({
             # STEP 6: Halo 3's BR magazine item 72 (the pistol template's item is H1 pistol
             # ammo, which then tops the BR up -- as the AR's does the SMG)
             'weap_attrs.magazines.0.magazine_items.0.rounds': 72,
+            # the on-gun counter's input (model 'numeric'): B exports the loaded fraction, as
+            # on the AR (the pistol template exports nothing on B)
+            'weap_attrs.B_in': 'primary_ammunition',
             # Halo 3's zoom sounds (the template names the sniper's)
             'weap_attrs.interface.zoom_in_sound.filepath': SND + 'br_zoom_in',
             'weap_attrs.interface.zoom_out_sound.filepath': SND + 'br_zoom_out',
@@ -210,10 +228,14 @@ PORT.update({
         'messages': ('Picked up a battle rifle', 'Picked up %d rounds for battle rifle'),
         'icon': 'battle rifle',
         'extra_sounds': [SND + 'br_reload_empty_balanced', SND + 'br_reload_full_balanced'],
-        # the PISTOL's HUD (its zoom readouts) with Halo 3's BR reticle (H3 hud_reticles #1;
-        # #24 is the headshot cross, shown only on a headshot target: not reproduced) at the
-        # reserved 20, and a magazine meter for 36 (default) and 54 (balanced)
+        # the PISTOL's HUD with Halo 3's BR reticle (H3 hud_reticles #1; #24 is the headshot
+        # cross, shown only on a headshot target: not reproduced) at the reserved 20, and a
+        # magazine meter for 36 (default) and 54 (balanced). ZOOM (user, test 1): the zoom
+        # HUD replaced ENTIRELY by Halo 3's -- the chud's zoom-only widgets (ring, rulers,
+        # range meter, all drawn black) baked into the screen-effect mask (h1_h3_scope.py),
+        # no blur, the pistol's zoom readouts dropped; the reticle stays (as in Halo 3)
         'hud': {'donor': PISTOL + 'pistol', 'out': BR + 'battle rifle',
+                'scope': {'chud': r'ui\chud\battle_rifle', 'out': BR + 'bitmaps\\scope_mask'},
                 'reticle': ('hud_reticles', 1, 'battle rifle'),
                 'reticle_thicken': 1,
                 'flash_base': 12,                # the pistol's low-ammo cutoff is of 12

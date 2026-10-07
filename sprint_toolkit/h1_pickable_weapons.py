@@ -191,6 +191,24 @@ def make_hud(w, key, write):
             if c.crosshair_type.enum_name == 'aim':
                 for o in c.crosshair_overlays.STEPTREE:
                     o.sequence_index = seq
+    if 'scope' in h:                     # Halo 3's ZOOMED scope (h1_h3_scope.py): the BR, 2026-10-07
+        # the whole zoom HUD replaced (user: the standard procedure): the screen-effect
+        # mask = Halo 3's scope widgets baked, no blur, the donor's zoom crosshairs dropped
+        import h1_h3_scope
+        S = h['scope']
+        if write:
+            dark, used = h1_h3_scope.bake(S['chud'], span=S.get('span', 640.0), aspect=S.get('aspect', 1.0))
+            h1_h3_scope.write(dark, S['out'])
+            print('   scope: ' + '; '.join(used))
+        se = d.screen_effect.STEPTREE[0]
+        se.mask.flags.only_when_zoomed = True
+        se.mask.fullscreen_mask.filepath = S['out']
+        se.mask.splitscreen_mask.filepath = S['out']
+        se.convolution.radius_out_bounds[0] = se.convolution.radius_out_bounds[1] = 0.0
+        xs = d.crosshairs.STEPTREE
+        for i in range(len(xs) - 1, -1, -1):
+            if xs[i].crosshair_type.enum_name == 'zoom':
+                xs.pop(i)
     seq = icon_sequence(w['icon'])
     want = RESERVED.get(key, {}).get('icon')
     if want is not None and seq != want:
@@ -669,7 +687,10 @@ def edit_weapon(key, write):
             node = node.STEPTREE[int(part)] if part.isdigit() else getattr(node, part)
         if not hasattr(node, last):
             raise SystemExit('%s: no field %s' % (key, dotted))
-        setattr(node, last, v)
+        if isinstance(v, str) and hasattr(getattr(node, last), 'set_to'):
+            getattr(node, last).set_to(v)        # an enum by name (the BR's B_in)
+        else:
+            setattr(node, last, v)
     print('   -> flags %s | fp %s | anims %s | hud %s | melee %s | message %d | triggers %d'
           % ([f for f in a.flags.NAME_MAP if a.flags.get(f)],
              a.interface.first_person_model.filepath,

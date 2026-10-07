@@ -83,12 +83,44 @@ def full_magazine(weapon):
     return mags[0].rounds_loaded_maximum, mags[0].rounds_total_maximum
 
 
-def edit_kit(level, weapon, rounds, actors):
-    """The scenario edits of step 1 (the caller restores the file)."""
+def edit_kit(level, weapon, rounds, actors, secondary=None):
+    """The scenario edits of step 1 (the caller restores the file). `secondary` (a weapon
+    tag): every spawn profile's SECONDARY too, same rounds -- a second variant of the port
+    in the same boot (the BR's burst options, 2026-10-07)."""
     from reclaimer.hek.defs.scnr import scnr_def
     sp = E.scenario_path(level)
     t = scnr_def.build(filepath=sp)
     d = t.data.tagdata
+    for w in ([weapon] + ([secondary] if secondary else [])):
+        resident(d, w)
+    skip = SKIP_ALL + SKIP.get(level, ())
+    armed = []
+    for p in d.player_starting_profiles.STEPTREE:
+        if p.name in skip:
+            continue
+        p.primary_weapon.filepath = weapon
+        p.primary_rounds_loaded, p.primary_rounds_total = rounds
+        if secondary:
+            p.secondary_weapon.filepath = secondary
+            p.secondary_rounds_loaded, p.secondary_rounds_total = rounds
+        armed.append(p.name or '(unnamed)')
+    print('kit: %d spawn profile(s) armed, %d/%d rounds%s: %s'
+          % (len(armed), rounds[0], rounds[1], ' (+ secondary %s)' % secondary if secondary else '',
+             ', '.join(armed)))
+    t.filepath = sp
+    t.serialize(temp=False, backup=False)
+    if actors:                                   # raw insert, as h1_enemy_test_map does
+        data = bytearray(open(sp, 'rb').read())
+        have = L.read_block_paths(data, paths.SCNR_XML, E.ACTOR_PALETTE)
+        added = [a for a in actors if a not in have]
+        for a in added:
+            L.insert_block_element(data, paths.SCNR_XML, E.ACTOR_PALETTE, L._tagref(b'actv', a), a)
+        open(sp, 'wb').write(data)
+        print('kit: actor palette + %s' % (added or 'nothing'))
+
+
+def resident(d, weapon):
+    """The weapon in the palette + one resident-only placement (a copy of the SAW's)."""
     pal = d.weapons_palette.STEPTREE
     names = [e.name.filepath.lower() for e in pal]
     if weapon.lower() in names:
@@ -102,7 +134,7 @@ def edit_kit(level, weapon, rounds, actors):
         saw = names.index(SAW)
         src = [x for x in places if x.type == saw and x.not_placed.automatically]
         if not src:
-            raise SystemExit('%s: no resident-only SAW placement to copy' % level)
+            raise SystemExit('no resident-only SAW placement to copy (for %s)' % weapon)
         places.append(copy.deepcopy(src[0]))
         x = places[len(places) - 1]
         x.type = idx
@@ -110,34 +142,14 @@ def edit_kit(level, weapon, rounds, actors):
         print('kit: %s palette #%d + resident-only placement (temporary)' % (weapon, idx))
     else:
         print('kit: %s already resident (palette #%d)' % (weapon, idx))
-    skip = SKIP_ALL + SKIP.get(level, ())
-    armed = []
-    for p in d.player_starting_profiles.STEPTREE:
-        if p.name in skip:
-            continue
-        p.primary_weapon.filepath = weapon
-        p.primary_rounds_loaded, p.primary_rounds_total = rounds
-        armed.append(p.name or '(unnamed)')
-    print('kit: %d spawn profile(s) armed, %d/%d rounds: %s'
-          % (len(armed), rounds[0], rounds[1], ', '.join(armed)))
-    t.filepath = sp
-    t.serialize(temp=False, backup=False)
-    if actors:                                   # raw insert, as h1_enemy_test_map does
-        data = bytearray(open(sp, 'rb').read())
-        have = L.read_block_paths(data, paths.SCNR_XML, E.ACTOR_PALETTE)
-        added = [a for a in actors if a not in have]
-        for a in added:
-            L.insert_block_element(data, paths.SCNR_XML, E.ACTOR_PALETTE, L._tagref(b'actv', a), a)
-        open(sp, 'wb').write(data)
-        print('kit: actor palette + %s' % (added or 'nothing'))
 
 
-def build_copy(level, weapon, rounds, actors, keep_kit_map):
+def build_copy(level, weapon, rounds, actors, keep_kit_map, secondary=None):
     sp = E.scenario_path(level)
     keep = sp + '.before_porttest'
     shutil.copy2(sp, keep)
     try:
-        edit_kit(level, weapon, rounds, actors)
+        edit_kit(level, weapon, rounds, actors, secondary)
         E.build(level)
         out_dir = os.path.join(HCEEK, 'maps', 'port_test')
         os.makedirs(out_dir, exist_ok=True)
@@ -256,6 +268,8 @@ def main():
     ap.add_argument('--keep-kit-map', action='store_true',
                     help='skip the rebuild of the normal level afterwards')
     ap.add_argument('--restore', metavar='LEVEL')
+    ap.add_argument('--secondary', metavar='WEAPON_TAG',
+                    help='every spawn profile secondary too (a test variant), same rounds')
     ap.add_argument('--balanced', action='store_true',
                     help="the patcher's own Balanced pass on the copy (catalog rows + anims "
                          '+ anim_sounds), spawning with the balanced magazine')
@@ -287,7 +301,7 @@ def main():
                       int(vals.get('Rounds Total Initial', rounds[1])))
     want = {'grunt': a.grunt or cfg.get('grunt'), 'elite': a.elite or cfg.get('elite')}
     actors = [v for v in want.values() if v]
-    out = build_copy(level, weapon, rounds, actors, a.keep_kit_map)
+    out = build_copy(level, weapon, rounds, actors, a.keep_kit_map, a.secondary)
     arm = [e for e in (a.armed or '').split(',') if e.strip()]
     if actors or a.god or cfg.get('god') or entry or arm:
         import halo_patch

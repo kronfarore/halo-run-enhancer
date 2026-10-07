@@ -72,10 +72,47 @@ def bitmaps(w):
     return glow
 
 
+def numeric(w):
+    """An AMMO COUNTER on the gun (the BR, 2026-10-07): each `numeric` material gets a copy
+    of a Halo 1 numeric shader_transparent_chicago (the AR's `numbers`: flag numeric, its
+    digit bitmaps a 10-bitmap sequence) with the counter limit set; the digit PLACE is the
+    gbxmodel shader entry's permutation index (the AR: 0 and 1), set after `tool model`."""
+    from reclaimer.hek.defs.schi import schi_def
+    N = w['numeric']
+    out = os.path.join(TAGS, w['dir'], 'shaders')
+    os.makedirs(out, exist_ok=True)
+    for name in N['places']:
+        stale = os.path.join(out, name + '.shader_model')    # `tool model` must find ONE
+        if os.path.exists(stale):
+            os.remove(stale)
+        t = schi_def.build(filepath=os.path.join(TAGS, N['from'] + '.shader_transparent_chicago'))
+        t.data.tagdata.schi_attrs.chicago_shader.numeric_counter_limit = N['limit']
+        t.filepath = os.path.join(out, name + '.shader_transparent_chicago')
+        t.serialize(temp=False, backup=False)
+        print('   numeric shader %s  limit %d  place %d' % (t.filepath, N['limit'], N['places'][name]))
+
+
+def numeric_places(w):
+    from reclaimer.hek.defs.mod2 import mod2_def
+    for sub, fname in (('', w['world_name']), (B + 'fp', 'fp')):
+        p = os.path.join(TAGS, w['dir'] + sub, fname + '.gbxmodel')
+        t = mod2_def.build(filepath=p)
+        n = 0
+        for s in t.data.tagdata.shaders.STEPTREE:
+            name = s.shader.filepath.rsplit(B, 1)[-1]
+            if name in w['numeric']['places']:
+                s.permutation_index = w['numeric']['places'][name]
+                n += 1
+        t.serialize(temp=False, backup=False)
+        print('   %s: %d numeric shader entr(ies) placed' % (w['dir'] + sub, n))
+
+
 def shaders(w, glow):
     out = os.path.join(TAGS, w['dir'], 'shaders')
     os.makedirs(out, exist_ok=True)
     for name in w['shaders']:
+        if name in w.get('numeric', {}).get('places', {}):
+            continue
         t = soso_def.build(filepath=os.path.join(TAGS, w['template'] + '.shader_model'))
         m = t.data.tagdata.soso_attrs
         m.maps.diffuse_map.filepath = w['dir'] + B + 'bitmaps' + B + name + '_diff'
@@ -112,7 +149,11 @@ def main():
     w = WEAPONS[a.weapon]
     glow = {} if a.skip_bitmaps else bitmaps(w)
     shaders(w, glow)
+    if 'numeric' in w:
+        numeric(w)
     models(w)
+    if 'numeric' in w:
+        numeric_places(w)
 
 
 if __name__ == '__main__':
