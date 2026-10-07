@@ -328,14 +328,30 @@ def match(path, target, kit=None):
     return None, 'ambiguous'
 
 
-def audit(game, show_all=False):
-    G = GAMES[game]
-    covered = covered_fields(G['game'])
-    report = {'game': G['game'], 'kinds': {}}
-    hops = G.get('hops') or [(SOURCE['kit'], {k: v[1] for k, v in SOURCE['tags'].items()},
+def from_port(key):
+    """(source, target game entry, catalog weapon name) of a Halo 1 port config's
+    'field_audit' section (H1_PORT_PLAN: the SMG pilot generalized the SAW-only audit):
+    {'source_kit': 'H3EK', 'source': {kind: (port tag, yardstick tag)},
+     'target': {kind: (port tag, donor tag)}} -- tag paths kit-relative with extension."""
+    import ports_h1
+    p = ports_h1.load(key)
+    fa = p['field_audit']
+    src = dict(kit=fa['source_kit'], tags=fa['source'],
+               label='%s %s vs %s' % (KIT_GAME[fa['source_kit']], p['name'],
+                                      p['yardstick'].get('pick') or 'yardstick'))
+    return src, dict(kit='HCEEK', game='Halo 1', tags=fa['target']), p['name']
+
+
+def audit(game, show_all=False, source=None, G=None, weapon='SAW'):
+    source = source or SOURCE
+    G = G or GAMES[game]
+    covered = covered_fields(G['game'], weapon)
+    report = {'game': G['game'], 'kinds': {},
+              'source': source.get('label', 'Halo 4: SAW vs Assault Rifle')}
+    hops = G.get('hops') or [(source['kit'], {k: v[1] for k, v in source['tags'].items()},
                               G['kit'], {k: v[1] for k, v in G['tags'].items()})]
     for kind in ('weapon', 'projectile', 'damage_effect'):
-        s_port, s_donor = (flatten(SOURCE['kit'], t) for t in SOURCE['tags'][kind])
+        s_port, s_donor = (flatten(source['kit'], t) for t in source['tags'][kind])
         t_port, t_donor = (flatten(G['kit'], t) for t in G['tags'][kind])
         cov = covered.get(CLASS[kind], {})
         rows = {'same': 0, 'refs': 0, 'port': [], 'done': [], 'decide': [], 'covered': [],
@@ -439,7 +455,8 @@ def audit(game, show_all=False):
 
 
 def show(report, show_all=False):
-    print('PORT FIELD AUDIT -- %s (source Halo 4: SAW vs Assault Rifle)' % report['game'])
+    print('PORT FIELD AUDIT -- %s (source %s; columns: source port, source yardstick | '
+          'target donor)' % (report['game'], report.get('source', 'Halo 4: SAW vs Assault Rifle')))
     tgt = 'the target donor'
     for kind, r in report['kinds'].items():
         print('\n== %s: %d same in the source pair (kept), %d reference/name differences '
@@ -481,8 +498,13 @@ def main():
     ap.add_argument('--game', choices=sorted(GAMES), default='h3')
     ap.add_argument('--json')
     ap.add_argument('--all', action='store_true', help='also list the fields the balance table covers')
+    ap.add_argument('--port', help="a Halo 1 port config key (ports_h1/<key>.py 'field_audit')")
     a = ap.parse_args()
-    rep = audit(a.game)
+    if a.port:
+        src, g, name = from_port(a.port)
+        rep = audit('h1', source=src, G=g, weapon=name)
+    else:
+        rep = audit(a.game)
     show(rep, a.all)
     if a.json:
         json.dump(rep, open(a.json, 'w', encoding='utf-8'), indent=1)

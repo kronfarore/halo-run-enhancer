@@ -209,6 +209,13 @@ def from_config(key, write=True):
         prof = build(src if os.path.isabs(src) else os.path.join(MCC, src), fp['from_game'],
                      fp['from_weapon'], weapon, char=fp.get('char', 'ai\\generic'), write=False)
         prof['fields'].update(parse_sets(fp.get('set')))      # explicit fields over the source
+        if fp.get('donor_weapon'):
+            # the BASE the source fields are laid over. Without it donor_for looks for a
+            # carrier of the port's own animation LABEL -- the SAW is 'ar', but a port with
+            # a label of its own (the SMG's 'sm') finds none and gets no Armed card. With
+            # it donor_for takes the best carrier of donor_weapon (its same-game branch)
+            prof['donor_weapon'] = fp['donor_weapon']
+            prof['source'] += ' over %s carriers' % fp['donor_weapon']
         if write:
             try:
                 with open(PROFILE_FILE, encoding='utf-8') as fh:

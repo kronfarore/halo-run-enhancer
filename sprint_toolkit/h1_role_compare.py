@@ -90,6 +90,32 @@ SETS = {
         ('Sentinel', r'characters\sentinel\sentinel', 'sentinel'),
         ('Sentinel (shielded)', r'characters\sentinel\sentinel_shielded', 'sentinel'),
     ]},
+    # the SMG (wave A1), step 4a: each yardstick's RATIO-RULE candidate (H1 yard x H3 SMG /
+    # H3 yard; Halo 3 values from H3EK, 2026-10-07) on the Halo 1 AR's bullet materials --
+    # the port is built on an AR copy -- beside the step-5b peers. '@15' = the same per-round
+    # damage at 15/s: Halo 1's tick rule (a round every floor(30/rate)+1 ticks, an
+    # OBSERVATION on the Sentinel Beam) would fire every candidate rate in 15..30 at 15/s.
+    # H3: SMG 5 x 15/s, mag 60, reload 50 fr; AR 7.5 x 10/s, 32, 58 fr; magnum 15 (0.4 s
+    # recovery = 2.5/s), 8, 50 fr; plasma rifle 10 x 9/s, heat (no magazine)
+    'smg': {'port': 'SMG', 'weapons': [
+        ('SMG = AR ratio', W + r'assault rifle\assault rifle', 'shot',
+         {'dmg': 6.67, 'rate': 22.5, 'mag': 112, 'reload': 2.5}),
+        ('SMG = AR ratio @15', W + r'assault rifle\assault rifle', 'shot',
+         {'dmg': 6.67, 'rate': 15.0, 'mag': 112, 'reload': 2.5}),
+        ('SMG = Pistol ratio', W + r'assault rifle\assault rifle', 'shot',
+         {'dmg': 8.33, 'rate': 21.0, 'mag': 90, 'reload': 2.23}),
+        ('SMG = Pistol ratio @15', W + r'assault rifle\assault rifle', 'shot',
+         {'dmg': 8.33, 'rate': 15.0, 'mag': 90, 'reload': 2.23}),
+        ('SMG = PR ratio', W + r'assault rifle\assault rifle', 'shot',
+         {'dmg': 6.5, 'rate': 16.67, 'mag': 60, 'reload': 1.67}),
+        ('SMG = PR ratio @15', W + r'assault rifle\assault rifle', 'shot',
+         {'dmg': 6.5, 'rate': 15.0, 'mag': 60, 'reload': 1.67}),
+        ('Assault Rifle', W + r'assault rifle\assault rifle', 'shot'),
+        ('Plasma Rifle', W + r'plasma rifle\plasma rifle', 'shot'),
+        ('Needler (no supercombine)', W + r'needler\needler', 'shot',
+         {'damage_tags': [W + r'needler\detonation damage']}),
+        ('Pistol', W + r'pistol\pistol', 'shot'),
+    ]},
 }
 
 ENEMIES = [
@@ -183,6 +209,19 @@ def weapon(label, rel, mode, overrides, extra=None):
         if extra and extra.get('rate'):
             out['rps'] = extra['rate']
             out['interval'] = 1.0 / out['rps']
+        # a CANDIDATE that has no tag yet (step 4a): the base tag's projectile materials
+        # with the candidate's own per-round damage, magazine and reload
+        # damage the projectile walk does not reach: Halo 1's needle has a 0 impact damage
+        # and deals its 10 through `detonation damage` (the supercombine is `explosion`)
+        if extra and extra.get('damage_tags'):
+            out['damage'] = [damage(t) for t in extra['damage_tags']]
+        if extra and extra.get('dmg') is not None:
+            for d in out['damage']:
+                d['dmg'] = extra['dmg']
+        if extra and extra.get('mag'):
+            out['mag'] = extra['mag']
+        if extra and extra.get('reload'):
+            out['reload'] = extra['reload']
         h = w.heat
         out['heat'] = (tr.misc.heat_generated_per_round, h.overheated_threshold,
                        h.loss_per_second, h.recovery_threshold)

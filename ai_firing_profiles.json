@@ -125,6 +125,132 @@
      "Drop Weapon Loaded Max"
     ]
    }
+  },
+  "weapons\\smg\\smg": {
+   "source": "Halo 3 ai\\generic objects\\weapons\\rifle\\smg\\smg (weapon properties #10, firing pattern #10) over weapons\\assault rifle\\assault rifle carriers",
+   "fields": {
+    "0x74": [
+     "<f",
+     14.0,
+     "Maximum Firing Distance"
+    ],
+    "0x7C": [
+     "<f",
+     0.006544984877109528,
+     "Projectile Error"
+    ],
+    "0x80": [
+     "<f",
+     0.10000000149011612,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     0.800000011920929,
+     "First Burst Delay Time Max"
+    ],
+    "0x8C": [
+     "<f",
+     1.0,
+     "Surprise Delay Time"
+    ],
+    "0x94": [
+     "<f",
+     0.20000000298023224,
+     "Death Fire-Wildly Chance"
+    ],
+    "0x98": [
+     "<f",
+     0.800000011920929,
+     "Death Fire-Wildly Time"
+    ],
+    "0x9C": [
+     "<f",
+     2.5,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     7.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     0.75,
+     "Target Tracking"
+    ],
+    "0xC0": [
+     "<f",
+     0.5,
+     "Target Leading"
+    ],
+    "0xCC": [
+     "<f",
+     0.15000000596046448,
+     "Burst Origin Radius"
+    ],
+    "0xD0": [
+     "<f",
+     0.3490658402442932,
+     "Burst Origin Angle"
+    ],
+    "0xD4": [
+     "<f",
+     0.20000000298023224,
+     "Burst Return Length"
+    ],
+    "0xD8": [
+     "<f",
+     0.30000001192092896,
+     "Burst Return Length Max"
+    ],
+    "0xDC": [
+     "<f",
+     0.3490658402442932,
+     "Burst Return Angle"
+    ],
+    "0xE0": [
+     "<f",
+     0.6000000238418579,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     1.600000023841858,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     1.399999976158142,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     2.799999952316284,
+     "Burst Separation Max"
+    ],
+    "0x1D8": [
+     "<f",
+     0.5,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.8999999761581421,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     150,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     210,
+     "Drop Weapon Ammo Max"
+    ]
+   },
+   "donor_weapon": "weapons\\assault rifle\\assault rifle"
   }
  }
 }

@@ -188,7 +188,9 @@ def main():
             if not r:
                 print('   (no deployed map with the port found)')
                 continue
-            print('   map %s' % os.path.relpath(r['map'], MCC))
+            # --map may name a kit copy on another drive (relpath cannot cross drives)
+            same = os.path.splitdrive(r['map'])[0].lower() == os.path.splitdrive(MCC)[0].lower()
+            print('   map %s' % (os.path.relpath(r['map'], MCC) if same else r['map']))
             for line in r['lines']:
                 print(line)
             for p in r['problems']:

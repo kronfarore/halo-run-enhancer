@@ -138,7 +138,44 @@ def render(weapon):
             src = perms[0]
             step = (len(src) - n) // max(1, count - 1)
             perms = [src[k * step:k * step + n] * env for k in range(count)]
+        if name in w.get('shots', {}):
+            perms = shots(w, idx, perms[0], w['shots'][name], target)
         out[name] = perms
+    return out
+
+
+def shots(w, idx, loop, s, target):
+    """PER-SHOT permutations from a Halo 3 FIRE LOOP (SMG, 2026-10-07). Halo 3 automatics
+    fire through a looping sound (in / loop / out); Halo 1 plays one sound per round from
+    the firing effect, and the AR's is a whole shot WITH its tail (0.6-0.8 s, 4
+    permutations, overlapping at 15/s). Shot k = the loop's k-th period (`period` s from
+    `onset`: the loop's own fire rate), then the `tail` sound (Halo 3's release, `out`)
+    from its own first period on, crossfaded over 5 ms; each permutation at `target`."""
+    tail_subs = idx.get((w['h3_dir'] + s['tail'] + '\\').lower())
+    if not tail_subs:
+        raise SystemExit('no %s in Halo 3\'s bank' % s['tail'])
+    tail = tone.resample(*decode(tail_subs[0]), RATE)
+    p, t0 = int(s['period'] * RATE), int(s.get('tail_onset', 0.0) * RATE)
+    f = int(0.005 * RATE)
+    rest = tail[t0 + p:][:int(s.get('tail_len', 0.7) * RATE)]
+    fade = np.linspace(1.0, 0.0, int(0.05 * RATE))
+    rest[-len(fade):] *= fade
+    out = []
+    for k in range(s['count']):
+        a = int(s.get('onset', 0.0) * RATE) + k * p
+        head = loop[a:a + p + f].copy()
+        if len(head) < p + f:
+            raise SystemExit('the loop holds fewer than %d shots' % s['count'])
+        x = np.concatenate([head[:p], np.zeros(len(rest))])
+        ramp = np.linspace(0.0, 1.0, f)
+        x[p:p + f] += head[p:p + f] * (1 - ramp)
+        x[p:p + len(rest)] += rest * np.concatenate([ramp, np.ones(len(rest) - f)])
+        act = x[np.abs(x) > 0.01]
+        rms = 20 * np.log10(np.sqrt((act ** 2).mean()) + 1e-12) if len(act) else -99
+        x = x * 10 ** ((target - rms) / 20)
+        if np.abs(x).max() > 0.95:
+            x = 0.95 * np.tanh(x / 0.95)
+        out.append(x)
     return out
 
 

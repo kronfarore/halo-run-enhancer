@@ -81,6 +81,13 @@ NODES = 43
 def members_from_xml(path):
     """The per-animation section sizes, as `tool export-tag-to-xml` reports them."""
     s = io.open(path, encoding='utf-8', errors='replace').read()
+    # A graph can split its data over several TAG RESOURCE GROUPS, each numbering its
+    # members from 0 (H3 fp_smg: group 0 = 14 single-wield, group 1 = 17 dual-wield). An
+    # animation names (resource_group, resource_group_member), so a member is only unique
+    # with its group: keyed by index alone, fp_smg's single-wield animations read the
+    # dual-wield data (found 2026-10-07, the SMG port).
+    starts = [(m.start(), int(m.group(1))) for m in re.finditer(
+        r'<element index="(\d+)" name="\d+\. model_animation_tag_resource_group">', s)]
     out = []
     for m in re.finditer(r'<element index="(\d+)" name="\d+\. '
                          r'model_animation_tag_resource_member">(.*?)</element>', s, re.S):
@@ -90,7 +97,8 @@ def members_from_xml(path):
             hit = re.search(r'name="%s" value="([^"]*)"' % k, body)
             return int(hit.group(1)) if hit else 0
 
-        e = {'index': int(m.group(1)), 'frames': g('frame count'),
+        group = max([gi for at, gi in starts if at < m.start()], default=0)
+        e = {'index': int(m.group(1)), 'group': group, 'frames': g('frame count'),
              'nodes': g('node count')}
         for k in SECTIONS:
             e[k] = g(k)

@@ -1705,7 +1705,20 @@ the ratio per field; `balance_port.py` turns that into the port's balance rows.
 game actually exposes, so a missing row is a known gap rather than an oversight.
 
 Ports carry their ORIGINAL numbers by default; the balance option swaps in the derived
-values, and damage moves by the same ratio.
+values, and damage moves by the same ratio. (Exception: fields NO card covers -- step 4b --
+have no row to switch, so the port takes the ratio value outright.)
+
+**When the ratio breaks (user, 2026-10-07, SMG):** the ratio rule needs the source
+yardstick's number to be a normal reference. Two failure shapes so far:
+- a near-ZERO source value (H3 AR spread minimum 0.1 deg: 1.25/0.1 gave the H1 SMG a 25 deg
+  first shot, wider than its 5.96 maximum) -> scale by the sibling bound's ratio instead
+  (the maximum's 2.75/3.0: 2 x 0.917 = 1.83 deg);
+- related fields scaling in opposite directions (H3 AR carries 12 magazines, the SMG 4:
+  pickup x1.875 but carry limit x0.625 -> starts with more than it can hold).
+**DUAL-WIELD CARRY RULE:** a port its source game let you DUAL WIELD gets x1.5 on its
+carry-limit ratio (dual wield doubles output and carry; x2 is too much for a one-handed
+port): SMG 600 x 0.625 x 1.5 = 562.5 -> 562 (Halo 1 stores a short). Applies to the next
+dual-wieldable ports too (Brute Spiker, Plasma Rifle-class) when their carry looks odd.
 
 ---
 

@@ -161,6 +161,27 @@ def make_hud(w, key, write):
         fc.total_ammo_cutoff = 4
         if write:
             h1_rocket_meter.build(mag, h['meter'], h.get('art', 'rockets'))
+    if 'ammo_meter' in h:                # a MAGAZINE gun's tick readout (the SAW's recipe)
+        # ammo_meter.py draws one sheet sequence per magazine size: sequence 0 = the
+        # weapon's own (default) magazine, the next = its balanced one (balance rows select
+        # it, as the SAW's). The AR's two loaded-ammo elements point at sequence 0.
+        import ammo_meter
+        sizes, base = h['ammo_meter']['sizes'], h['ammo_meter']['base']
+        for name, field, suffix in (('static_elements', 'interface_bitmap', '_alphas'),
+                                    ('meter_elements', 'meter_bitmap', '_meters')):
+            for e in getattr(d, name).STEPTREE:
+                if e.state_attached_to.enum_name != 'loaded_ammo':
+                    continue
+                getattr(e, field).filepath = base + suffix
+                e.sequence_index = 0
+                if name == 'meter_elements':
+                    e.alpha_multiplier = ammo_meter.step(sizes[0])
+                    e.alpha_bias = 1             # the comparison is strict (saw_weapon.py)
+                    e.value_scale = 0
+        fc = d.flash_cutoffs                  # low-ammo flash: the AR's 10 of 60
+        fc.loaded_ammo_cutoff = round(fc.loaded_ammo_cutoff * sizes[0] / 60.0)
+        if write:
+            ammo_meter.main(*([str(n) for n in sizes] + [base]))
     if 'reticle' in h:                   # a Halo 3 reticle, into Halo 1's sheet
         import h1_add_reticle
         seq = (h1_add_reticle.add(*h['reticle'], index=RESERVED.get(key, {}).get('reticle'))
@@ -291,18 +312,24 @@ def own_projectile(a, o, write):
 
 def own_beam(a, b, write):
     """The weapon's own projectile (a copy of `projectile[0]`, range set) and its own
-    impact damage (a copy of `damage[0]`, damage + instantaneous acceleration set)."""
+    impact damage (a copy of `damage[0]`, damage + instantaneous acceleration set).
+    The same for a BULLET (`bullet` key, the SMG): `velocity` sets initial = final speed
+    (Reclaimer: world units per SECOND), and a value left out keeps the template's."""
     (p_src, p_own), (j_src, j_own) = b['projectile'], b['damage']
     jt = jpt__def.build(filepath=path(j_src, '.damage_effect'))
     dm = jt.data.tagdata.damage
     dm.damage_lower_bound = b['dmg']
     dm.damage_upper_bound[0] = dm.damage_upper_bound[1] = b['dmg']
-    dm.instantaneous_acceleration = b['acceleration']
+    if 'acceleration' in b:
+        dm.instantaneous_acceleration = b['acceleration']
     save(jt, path(j_own, '.damage_effect'), write)
     pt = proj_def.build(filepath=path(p_src, '.projectile'))
     pd = pt.data.tagdata.proj_attrs
     pd.physics.impact_damage.filepath = j_own
-    pd.detonation.maximum_range = b['range']
+    if 'range' in b:
+        pd.detonation.maximum_range = b['range']
+    if 'velocity' in b:
+        pd.physics.initial_velocity = pd.physics.final_velocity = b['velocity']
     save(pt, path(p_own, '.projectile'), write)
     for tr in a.triggers.STEPTREE:
         tr.projectile.projectile.filepath = p_own
@@ -451,6 +478,38 @@ def edit_weapon(key, write):
         a.label = w['label']
     if 'beam' in w:
         own_beam(a, w['beam'], write)
+    if 'bullet' in w:
+        own_beam(a, w['bullet'], write)
+    if 'magazine' in w:                      # magazine 0's fields (rounds, reload time s)
+        m = a.magazines.STEPTREE[0]
+        for k, v in w['magazine'].items():
+            setattr(m, k, v)
+    for k, v in w.get('error_deg', {}).items():     # Halo 1 stores angles in RADIANS
+        for tr in a.triggers.STEPTREE:
+            if k == 'error_angle':
+                tr.projectile.error_angle[0], tr.projectile.error_angle[1] = (
+                    math.radians(v[0]), math.radians(v[1]))
+            else:
+                setattr(tr.projectile, k, math.radians(v))
+    for field, (src, out, swaps) in w.get('sound_effects', {}).items():
+        # an OWN copy of a shared effect (the AR's `fire bullet` / `empty`) with its sound
+        # parts renamed: the SAW's own-sounds recipe, as data (h1_saw_sounds.py)
+        from reclaimer.hek.defs.effe import effe_def
+        et = effe_def.build(filepath=path(src, '.effect'))
+        n = 0
+        for ev in et.data.tagdata.events.STEPTREE:
+            for part in ev.parts.STEPTREE:
+                new = swaps.get(part.type.filepath)
+                if new:
+                    part.type.filepath = new
+                    n += 1
+        if n != len(swaps):
+            raise SystemExit('%s: %d of %d sound parts found' % (src, n, len(swaps)))
+        save(et, path(out, '.effect'), write)
+        for tr in a.triggers.STEPTREE:
+            for fe in tr.firing_effects.STEPTREE:
+                if getattr(fe, field).filepath.lower() == src.lower():
+                    setattr(getattr(fe, field), 'filepath', out)
     for k, v in w.get('trigger', {}).items():
         for tr in a.triggers.STEPTREE:
             if k == 'rounds_per_second':
@@ -572,6 +631,17 @@ def edit_weapon(key, write):
             tr.firing.rounds_per_shot = w['rounds_per_shot']
     for k, v in w.get('aiming', {}).items():
         setattr(a.aiming, k, math.radians(v) if k.endswith('_angle') else v)
+    # step 4b (port_field_audit.py --port <key>): fields NO card covers, by dotted path
+    # from the tag data ('obje_attrs.bounding_radius'; a number indexes a block's elements:
+    # 'weap_attrs.magazines.0.magazine_items.0.rounds'); values in Reclaimer units
+    for dotted, v in w.get('fields', {}).items():
+        *head, last = dotted.split('.')
+        node = d
+        for part in head:
+            node = node.STEPTREE[int(part)] if part.isdigit() else getattr(node, part)
+        if not hasattr(node, last):
+            raise SystemExit('%s: no field %s' % (key, dotted))
+        setattr(node, last, v)
     print('   -> flags %s | fp %s | anims %s | hud %s | melee %s | message %d | triggers %d'
           % ([f for f in a.flags.NAME_MAP if a.flags.get(f)],
              a.interface.first_person_model.filepath,
@@ -707,8 +777,11 @@ def teach_cyborg(write):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--write', action='store_true')
+    # one port's own tags only (a weapon session): the shared cyborg labels are still
+    # taught for every port (idempotent), the other ports' weapon tags are not rewritten
+    ap.add_argument('--only', choices=sorted(WEAPONS))
     a = ap.parse_args()
-    for key in WEAPONS:
+    for key in ([a.only] if a.only else WEAPONS):
         edit_weapon(key, a.write)
         edit_drops(key, a.write)
         edit_death_drop(key, a.write)

@@ -54,7 +54,9 @@ def animations_from_xml(path):
         body = m.group(3)
         typ = re.search(r'name="animation type" value="([^"]*)"', body).group(1)
         fit = re.search(r'name="frame info type" value="([^"]*)"', body).group(1)
-        out.append((m.group(2), typ, fit, int(m.group(4))))
+        grp = re.search(r'name="resource_group" value="(-?\d+)"', body)
+        # (group, member): members are numbered per tag resource group (h3_anim_decode)
+        out.append((m.group(2), typ, fit, (int(grp.group(1)) if grp else 0, int(m.group(4)))))
     return out
 
 
@@ -112,7 +114,7 @@ def load(graph, xml):
     nodes = skeleton_from_xml(xml)
     mem = dec.members_from_xml(xml)
     tag = h3tag.Tag(graph)
-    located = {e['index']: e for e in dec.blobs(tag, mem)}
+    located = {(e['group'], e['index']): e for e in dec.blobs(tag, mem)}
     out = {}
     for name, typ, fit, member in animations_from_xml(xml):
         e = located.get(member)

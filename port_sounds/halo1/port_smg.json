@@ -1,0 +1,72 @@
+{
+ "game": "Halo 1",
+ "weapon": "SMG",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\smg_port\\smg_fire",
+   "perms": [
+    "smg_fire_1.wav",
+    "smg_fire_2.wav",
+    "smg_fire_3.wav",
+    "smg_fire_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\smg_port\\smg_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\smg_port\\smg_dryfire",
+   "perms": [
+    "smg_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\smg_port\\smg_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\smg_port\\smg_reload",
+   "perms": [
+    "smg_reload_1.wav",
+    "smg_reload_2.wav",
+    "smg_reload_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\smg_port\\smg_reload"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\smg_port\\smg_ready",
+   "perms": [
+    "smg_ready_1.wav",
+    "smg_ready_2.wav",
+    "smg_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\smg_port\\smg_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\smg_port\\smg_melee",
+   "perms": [
+    "smg_melee_1.wav",
+    "smg_melee_2.wav",
+    "smg_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\smg_port\\smg_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\smg_port\\smg_pose",
+   "perms": [
+    "smg_pose_1.wav",
+    "smg_pose_2.wav",
+    "smg_pose_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\smg_port\\smg_pose"
+   ]
+  }
+ ]
+}

@@ -33,7 +33,7 @@ import os
 import pkgutil
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SECTIONS = ('model', 'retarget', 'pickable', 'sounds', 'catalog', 'firing_profile', 'test',
+SECTIONS = ('model', 'retarget', 'pickable', 'sounds', 'catalog', 'firing_profile', 'test', 'field_audit',
             'backup')
 RESERVED_KEYS = ('messages', 'icon', 'reticle', 'label', 'teach_from', 'sound_dir',
                  'weapon_dir')

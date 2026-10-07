@@ -47,8 +47,9 @@ HALO_JSON = os.path.join(TOOL, 'halo.json')
 def own_projectile(p):
     """The projectile only the player build carries, from the 'pickable' section."""
     w = p.get('pickable') or {}
-    if 'beam' in w:
-        return w['beam']['projectile'][1]
+    for k in ('beam', 'bullet'):
+        if k in w:
+            return w[k]['projectile'][1]
     if 'own_projectile' in w:
         return w['own_projectile']['projectile'][1]
     if 'lunge' in w:
