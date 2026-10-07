@@ -548,7 +548,9 @@ port_field_audit `--port <key>` (config `field_audit`); ai_firing_profile source
 `donor_weapon`; h1_port_test_map `--balanced` (the patcher's own apply_weapon_ports) and
 `--armed` (the enhancer's h1_enemy_weapons.apply at 100%); h1_role_compare candidate rows
 (`dmg`/`mag`/`reload`/`damage_tags`; the needle's damage is `detonation damage`);
-h1_add_reticle `thicken`; make_port_catalog bullet; port_refs_audit cross-drive maps.
+h1_add_reticle `thicken`; make_port_catalog bullet; port_refs_audit cross-drive maps. New:
+`h3_weapon_values.py` (step 4a's Halo 3 table, any H3EK weapons side by side) and
+`h1_stock_sound_levels.py` (a stock Halo 1 sound's level as MCC plays it, from the bank).
 
 ---
 

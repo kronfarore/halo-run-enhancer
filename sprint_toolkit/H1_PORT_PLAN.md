@@ -248,6 +248,10 @@ PORTING.md "Halo 1: the SMG, the wave-A pilot" is the full record; `ports_h1/smg
 complete example of a MAGAZINE port (sentinel_beam.py stays the heat/battery one). A wave-A
 session copies smg.py's shape and changes the numbers.
 
+**Step 4a's numbers:** `h3_weapon_values.py <weapon>=<fp graph> ...` (the Halo 3 side,
+per value, FP frames included) + `h1_role_compare.py <set>` (the Halo 1 side, time to kill;
+candidate rows). Sound targets: `h1_stock_sound_levels.py "<stock sound tail>" ...`.
+
 **Run order** (one weapon, nothing else rewritten -- `--only`):
 model -> retarget `--write` + `tool animations` -> sounds `--write` -> icon (`make_icon.py`,
 `add_msg_icon.py <png> <name> <reserved>`) -> `h1_pickable_weapons.py --only <key> --write`
