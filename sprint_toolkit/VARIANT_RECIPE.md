@@ -286,6 +286,55 @@ plan loop: every card op (Spawn Count, stats, colours); species_swap ops skipped
 
 ---
 
+## 8b. Faction skulls (2026-10-07)
+
+**The skulls:** The Flood (`faction_flood`), Guardians of the Galaxy (`faction_sentinel`),
+The Great Journey (`faction_covenant`) and Insurrection (`faction_human`). They are
+`Skull modifiers` entries with `"tag": "scnr"` and no targets, and the patcher reads
+their `skull` key (`h1_species_swap.apply_factions`).
+
+**What a faction skull does:**
+- EVERY enemy encounter becomes the faction. So does every allied encounter, which stays
+  on the player's side (team Human 2). Allied story or scripted humans (wounded, sitting,
+  suicidal, cinematic) and turret / vehicle drivers are left alone.
+- **Species mapping:** a replaced species takes the same POSITION in the target ladder.
+  - Covenant: Grunt 1, Jackal 2, Elite 3, Hunter 4.
+  - Flood: infection 1, carrier 2, combat Human 3, combat Elite 4.
+  - Sentinels and humans: position = rank.
+
+  Inside the target species the actor keeps its rank on the Incursion ladder. Flood
+  position 1 is infection forms x5 (rank 1) or x10; position 2 is one carrier.
+- **Several skulls SPLIT the encounters:** a seeded shuffle, then each encounter goes to
+  the faction with the fewest actors so far. They fight each other.
+- **Insurrection's hostile humans** take Betrayal's team (Flood 4). When The Flood is
+  active too, they take the first faction team no other active skull uses (Covenant 3,
+  then Sentinel 5, then 6, which is UNTESTED: all four skulls together).
+
+**Order:** faction skulls -> Thunderstorm / Downpour -> Incursion cards -> Betrayal /
+Schism -> Armed. Two skull fixes came with it:
+- Betrayal only flips human encounters still on team 0/1/2. Insurrection's already-hostile
+  humans keep their team; otherwise they would join the Flood's side.
+- Schism also flips non-human encounters on team Human. Those are the allies a faction
+  skull converted (c20: 13 instead of 6).
+
+**Offers:** `vanished_enemies` drops the other factions' types (`FACTION_TYPES`), and
+`swapped_in_enemies` adds the skull's types on every level. Incursion cards still bring
+their species back (`added` wins over `vanished`, in the Armed cards too).
+
+**Watch items:**
+- Rank-as-position for humans maps an allied armoured Marine (rank 2) to a Jackal /
+  carrier position.
+- Infection squads become one-for-one Grunts / Sentinels / Marines under the other
+  skulls, so large infection counts become large squads.
+
+## 8c. Dropship test (staged 2026-10-07)
+
+`h1_dropship_test.py` / `.cmd` builds a30: the opening dropship's 8 passenger seats
+(`lz_search/cship_toon`, loaded by `vehicle_load_magic lz_cship "passenger"`) each hold
+another species: Grunt (control), Hunter, Jackal, Flood combat Elite, Flood combat
+Human, infection form, carrier, Sentinel. The result decides whether dropship-seated
+encounters (excluded so far as `bound`) can be converted by the cards and skulls.
+
 ## 9. Verification
 
 ```
@@ -293,6 +342,8 @@ python h1_species_swap_check.py eligible --levels a10,c40
 python h1_species_swap_check.py dry --levels a50,d40 --cards hunter,elite,flood combat --share 0.2 --together
 python h1_species_swap_check.py e2e --level a10 --cards "flood combat,human" --skulls betrayal
 python h1_species_swap_check.py e2e --level c20 --cards "sentinel,flood infection" --skulls schism
+python h1_species_swap_check.py e2e --level a10 --cards hunter --share 0.1 --skulls faction_flood,faction_sentinel
+python h1_species_swap_check.py e2e --level a10 --cards "" --skulls faction_human,faction_flood,betrayal
 python validate_halo_json.py
 ```
 The e2e run patches a temp COPY through `apply_run` with an Armed card and prints the
@@ -350,4 +401,5 @@ Each answer below was a fixed fact in H1. Find the game's own before building.
   copies spawning with their fixed majors, are the pieces not singled out yet.
 - A palette grown past 64 at patch time (appends stop at 64; Armed's own
   `palette_index` may still append beyond it).
-- Skull versions of the cards (user: later, "to the extreme").
+- The faction skulls in game (built 2026-10-07, offline-verified only).
+- The dropship test result (8c).
