@@ -462,7 +462,9 @@ def apply(m, hp, cards, levels=None):
             taken.add(e['off'])
             struct.pack_into('<h', m.data, e['off'] + ENC_TEAM, TEAM[faction])
             for s in e['squads']:
-                moved += _convert_squad(m, lv, sw, rng, s, folders, tiers)
+                moved += _convert_squad(
+                    m, lv, sw, rng, s,
+                    lambda src: None if _of_species(src, folders) else tiers.get(tier_of(src)))
         names = ', '.join(e['name'] for e in picked)
         rows.append({**base, 'ok': True,
                      'old': '%d enemies on Insane (%d eligible encounters)' % (
@@ -483,11 +485,12 @@ def apply(m, hp, cards, levels=None):
     return rows
 
 
-def _convert_squad(m, lv, sw, rng, s, folders, tiers):
-    """Repoint one squad by tier: its actor type, and each starting-location override on
-    its own (an infection squad can carry combat-form overrides). A count multiplier
-    (infection forms x5 / x10, two carriers) applies when the squad's own type changes.
-    Returns 1 when anything changed."""
+def _convert_squad(m, lv, sw, rng, s, choose):
+    """Repoint one squad: its actor type, and each starting-location override on its own
+    (an infection squad can carry combat-form overrides). `choose(variant)` gives the
+    tier entries to draw from, or None to keep that actor. A count multiplier (infection
+    forms x5 / x10, two carriers) applies when the squad's own type changes. Returns 1
+    when anything changed."""
     sq = s['off']
     changed = 0
 
@@ -496,14 +499,17 @@ def _convert_squad(m, lv, sw, rng, s, folders, tiers):
         return lv.alias.get(n, n)
 
     def convert(src):
-        pick = _pick(m, lv, sw, rng, src, tiers)
+        entries = choose(src)
+        if entries is None:
+            return None
+        pick = _pick(m, lv, sw, rng, src, entries)
         if pick is None:
             sw.notes.append('%s: no resident variant for tier %d of %s -- kept' % (
                 s['name'], tier_of(src), src.rsplit(BS, 1)[-1]))
         return pick
 
     src = name_at(_i16(m, sq + hv.SQ_TYPE))
-    if src and not _of_species(src, folders):
+    if src:
         pick = convert(src)
         if pick:
             idx, mult, _label = pick
@@ -516,7 +522,7 @@ def _convert_squad(m, lv, sw, rng, s, folders, tiers):
     for sl in hv._elems(m, sq + hv.SL, hv.SL_SZ):
         o = _i16(m, sl + hv.SL_TYPE)
         osrc = name_at(o) if o >= 0 else None
-        if not osrc or _of_species(osrc, folders):
+        if not osrc:
             continue
         op = convert(osrc)
         if op:
@@ -525,10 +531,10 @@ def _convert_squad(m, lv, sw, rng, s, folders, tiers):
     return changed
 
 
-def _pick(m, lv, sw, rng, src, tiers):
-    """Tier entry for replaced variant `src`: its weapon carried over when an entry
+def _pick(m, lv, sw, rng, src, entries):
+    """One of `entries` for replaced variant `src`: its weapon carried over when an entry
     carries it, else a seeded draw; entries that cannot be resolved are skipped."""
-    entries = list(tiers.get(tier_of(src)) or [])
+    entries = list(entries or [])
     b = lv.tags.get(src)
     weapon = hv._ref_name(m, b, hv.REF_WEAPON) if b is not None else None
     same = [e for e in entries if weapon and sw.weapon_of(e) == weapon]
@@ -540,3 +546,173 @@ def _pick(m, lv, sw, rng, src, tiers):
             if got is not None:
                 return got
     return None
+
+
+# ----------------------------------------------------------------------------- faction skulls
+# The Flood / Guardians of the Galaxy / The Great Journey / Insurrection (user, 2026-10-07):
+# EVERY enemy encounter becomes the skull's faction, and allied encounters too (they stay
+# on the player's side). Several faction skulls SPLIT the encounters between them (each
+# encounter goes to the faction with the fewest actors so far, in a seeded order), so
+# they fight each other. Runs BEFORE Thunderstorm / Downpour and the Incursion cards.
+#
+# A replaced species takes the same POSITION in the target faction's ladder (the
+# Thunderstorm ladders): Covenant Grunt 1, Jackal 2, Elite 3, Hunter 4; Flood infection
+# 1, carrier 2, combat Human 3, combat Elite / stealth 4 (the user's Flood ranking);
+# Sentinels and Humans have one species, so their position is their rank. Within the
+# target species the actor keeps its RANK (tier_of) on that species' Incursion ladder.
+FACTION_SKULLS = {'faction_covenant': 'covenant', 'faction_flood': 'flood',
+                  'faction_sentinel': 'sentinel', 'faction_human': 'human'}
+FACTION_NAMES = {'covenant': 'The Great Journey', 'flood': 'The Flood',
+                 'sentinel': 'Guardians of the Galaxy', 'human': 'Insurrection'}
+ALLY_TEAM = TEAM['human']
+_INF = C('flood_infection', 'flood_infection')
+_CAR = C('floodcarrier', 'floodcarrier')
+LADDER = {
+    'covenant': {1: 'grunt', 2: 'jackal', 3: 'elite', 4: 'hunter'},
+    'flood': {1: {1: [('count', _INF, 5)], 2: [('count', _INF, 10)],
+                  3: [('count', _INF, 10)], 4: [('count', _INF, 10)]},
+              2: {t: [('count', _CAR, 1)] for t in (1, 2, 3, 4)},
+              3: 'flood combat', 4: 'flood combat'},
+    'sentinel': {p: 'sentinel' for p in (1, 2, 3, 4)},
+    'human': {p: 'human' for p in (1, 2, 3, 4)},
+}
+# never converted as allies: story-bound or scripted humans
+ALLY_SKIP_WORDS = ('wounded', 'sitting', 'suicidal', 'cinematic')
+
+
+def faction_of(name):
+    sp = species(name)
+    if sp in ('grunt', 'jackal', 'elite', 'hunter'):
+        return 'covenant'
+    if sp.startswith('flood'):
+        return 'flood'
+    if sp.startswith('sentinel'):
+        return 'sentinel'
+    if sp.startswith('marine') or sp.startswith('crewman'):
+        return 'human'
+    return None
+
+
+def position(name):
+    sp = species(name)
+    cov = {'grunt': 1, 'jackal': 2, 'elite': 3, 'hunter': 4}
+    if sp in cov:
+        return cov[sp]
+    if sp.startswith('flood_infection'):
+        return 1
+    if sp.startswith('floodcarrier'):
+        return 2
+    if sp == FCH:
+        return 3
+    if sp.startswith('floodcombat'):
+        return 4
+    return max(1, min(4, tier_of(name)))
+
+
+def faction_entries(faction, src):
+    """Tier entries for variant `src` under a faction skull, or None to keep it (already
+    of the faction, or not a character species: turret / vehicle drivers)."""
+    have = faction_of(src)
+    if have is None or have == faction:
+        return None
+    lad = LADDER[faction][position(src)]
+    tiers = CARDS[lad][2] if isinstance(lad, str) else lad
+    return tiers.get(tier_of(src))
+
+
+def _hostile_team(faction, factions):
+    """The team an enemy encounter of `faction` fights on. Insurrection's humans take
+    Betrayal's team (Flood) -- unless The Flood is active too, then the first faction
+    team no other active skull uses, so the two still fight each other."""
+    if faction != 'human':
+        return TEAM[faction]
+    used = {TEAM[f] for f in factions if f != 'human'}
+    return next((t for t in (TEAM['flood'], TEAM['covenant'], TEAM['sentinel'])
+                 if t not in used), 6)
+
+
+def apply_factions(m, hp, factions, levels=None):
+    """`factions` = faction keys of the active faction skulls. Patch-log rows."""
+    import enemy_count as ec
+    import h1_enemy_weapons as ew
+    factions = sorted(set(f for f in factions if f in LADDER))
+    if not factions:
+        return []
+    lv = getattr(m, '_h1_level', None) or ew.Level(m, hp)
+    m._h1_level = lv
+    index_cache = []
+
+    def index_fn():
+        if not index_cache:
+            index_cache.append(ew.build_index(levels or [], hp.open_map))
+        return index_cache[0]
+
+    sw = Swapper(m, lv, index_fn)
+    encs = _encounters(m, lv, ec.h1_squads(m))
+    sets = setpiece_names(m)
+    scen = next((n for c, n in m.tags if c == 'scnr'), '')
+    rng = random.Random('%s|%s' % (scen, '+'.join(factions)))
+    sides = {'enemy': [], 'ally': []}
+    left = {'set piece': 0, 'seated by script': 0, 'mixed / boss': 0}
+    for e in encs:
+        live = [s for s in e['squads'] if s['chars'] and s['placed']]
+        if not live:
+            continue
+        foes = [s for s in live if s['enemy'] and not s['boss']]
+        friends = [s for s in live if s['ally'] and not s['boss'] and all(
+            faction_of(c) and not any(w in c.lower() for w in ALLY_SKIP_WORDS)
+            for c in s['chars'])]
+        side = 'enemy' if len(foes) == len(live) else \
+            'ally' if len(friends) == len(live) else None
+        if side is None:
+            left['mixed / boss'] += 1
+            continue
+        if any(s['bound'] for s in e['squads']):
+            left['seated by script'] += 1
+            continue
+        if e['name'] in sets:
+            left['set piece'] += 1
+            continue
+        sides[side].append((e, sum(max(0, s['insane']) for s in live)))
+    rows = []
+    for side in ('enemy', 'ally'):
+        order = list(sides[side])
+        rng.shuffle(order)
+        load = {f: 0 for f in factions}
+        got = {f: [] for f in factions}
+        for e, w in order:
+            f = min(factions, key=lambda x: (load[x], factions.index(x)))
+            load[f] += w
+            got[f].append(e)
+        for f in factions:
+            if not got[f]:
+                continue
+            team = _hostile_team(f, factions) if side == 'enemy' else ALLY_TEAM
+            changed = 0
+            for e in got[f]:
+                struct.pack_into('<h', m.data, e['off'] + ENC_TEAM, team)
+                for s in e['squads']:
+                    changed += _convert_squad(m, lv, sw, rng, s,
+                                              lambda src, f=f: faction_entries(f, src))
+            rows.append({'effect': FACTION_NAMES[f], 'tag': 'scnr', 'field': 'Faction',
+                         'ok': True, 'old': '%d %s encounter(s), %d on Insane' % (
+                             len(got[f]), 'enemy' if side == 'enemy' else 'allied',
+                             load[f]),
+                         'new': '-> %s, team %d (%d squads changed)%s' % (
+                             f, team, changed, '' if side == 'enemy' else ', still allied')})
+    if any(left.values()):
+        rows.append({'effect': 'faction skulls', 'tag': 'scnr', 'field': 'left alone',
+                     'ok': True,
+                     'new': ', '.join('%d %s' % (n, k) for k, n in left.items() if n)})
+    if sw.recycled or sw.appended or sw.slotted:
+        rows.append({'effect': 'faction skulls', 'tag': 'scnr', 'field': 'Actor Palette',
+                     'ok': True, 'old': '%d entries' % len(lv.pal_names),
+                     'new': '%d unused entries reused, %d appended, %d slot(s)%s' % (
+                         sw.recycled, sw.appended, sw.slotted,
+                         '; OVER 64' if len(lv.pal_names) > PALETTE_MAX else '')})
+    for n in sw.notes:
+        rows.append({'effect': 'faction skulls', 'tag': 'scnr', 'field': 'variant',
+                     'ok': True, 'new': n})
+    lv.rescan()
+    m.actv_alias = dict(lv.alias)
+    return rows

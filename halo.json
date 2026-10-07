@@ -26139,6 +26139,38 @@
 			"tag": "scnr",
 			"targets": []
 		},
+		"The Flood": {
+			"desc": "The Flood takes every level: every enemy -- and every ally -- becomes Flood.",
+			"debug_desc": "Halo 1 only (h1_species_swap.apply_factions). Every enemy encounter becomes the Flood (team Flood), on every level for the rest of the run, and your allied encounters do too -- they stay on your side (team Human). A replaced species takes the same place in the faction's ladder (Covenant Grunt 1, Jackal 2, Elite 3, Hunter 4; Flood infection 1, carrier 2, combat Human 3, combat Elite 4; Sentinels and humans by rank) and keeps its rank inside it, on the Incursion cards' ladders; infection forms come in x5 (rank 1) or x10. Several faction skulls SPLIT the encounters between them (seeded, balanced by actors), so the factions fight each other. Left alone: scripted set pieces, squads the scripts seat in a dropship or vehicle, encounters mixing sides or holding a story character. Runs first of the 'who is what' passes: then Thunderstorm / Downpour, the Incursion cards (which still bring their species back), Betrayal / Schism (Schism turns the non-human allies this skull makes), the Armed cards. While it is active, the other factions' cards leave the pool and this faction's are offered on every level.",
+			"skull": "faction_flood", "score_points": 4,
+			"game": ["Halo 1"],
+			"tag": "scnr",
+			"targets": []
+		},
+		"Guardians of the Galaxy": {
+			"desc": "The Sentinels guard every level: every enemy -- and every ally -- becomes a Sentinel.",
+			"debug_desc": "Halo 1 only (h1_species_swap.apply_factions). Every enemy encounter becomes Sentinels (team Sentinel), on every level for the rest of the run, and your allied encounters do too -- they stay on your side (team Human). A replaced species takes the same place in the faction's ladder (Covenant Grunt 1, Jackal 2, Elite 3, Hunter 4; Flood infection 1, carrier 2, combat Human 3, combat Elite 4; Sentinels and humans by rank) and keeps its rank inside it, on the Incursion cards' ladders. Several faction skulls SPLIT the encounters between them (seeded, balanced by actors), so the factions fight each other. Left alone: scripted set pieces, squads the scripts seat in a dropship or vehicle, encounters mixing sides or holding a story character. Runs first of the 'who is what' passes: then Thunderstorm / Downpour, the Incursion cards (which still bring their species back), Betrayal / Schism (Schism turns the non-human allies this skull makes), the Armed cards. While it is active, the other factions' cards leave the pool and this faction's are offered on every level.",
+			"skull": "faction_sentinel", "score_points": 4,
+			"game": ["Halo 1"],
+			"tag": "scnr",
+			"targets": []
+		},
+		"The Great Journey": {
+			"desc": "The Covenant holds every level: every enemy -- and every ally -- becomes Covenant.",
+			"debug_desc": "Halo 1 only (h1_species_swap.apply_factions). Every enemy encounter becomes Covenant (team Covenant), on every level for the rest of the run, and your allied encounters do too -- they stay on your side (team Human). A replaced species takes the same place in the faction's ladder (Covenant Grunt 1, Jackal 2, Elite 3, Hunter 4; Flood infection 1, carrier 2, combat Human 3, combat Elite 4; Sentinels and humans by rank) and keeps its rank inside it, on the Incursion cards' ladders. Several faction skulls SPLIT the encounters between them (seeded, balanced by actors), so the factions fight each other. Left alone: scripted set pieces, squads the scripts seat in a dropship or vehicle, encounters mixing sides or holding a story character. Runs first of the 'who is what' passes: then Thunderstorm / Downpour, the Incursion cards (which still bring their species back), Betrayal / Schism (Schism turns the non-human allies this skull makes), the Armed cards. While it is active, the other factions' cards leave the pool and this faction's are offered on every level.",
+			"skull": "faction_covenant", "score_points": 4,
+			"game": ["Halo 1"],
+			"tag": "scnr",
+			"targets": []
+		},
+		"Insurrection": {
+			"desc": "Rebel humans hold every level: every enemy becomes a Marine fighting you.",
+			"debug_desc": "Halo 1 only (h1_species_swap.apply_factions). Every enemy encounter becomes hostile humans (Betrayal's Flood team, or the first faction team no other active skull uses), on every level for the rest of the run, and your allied encounters do too -- they stay on your side (team Human). A replaced species takes the same place in the faction's ladder (Covenant Grunt 1, Jackal 2, Elite 3, Hunter 4; Flood infection 1, carrier 2, combat Human 3, combat Elite 4; Sentinels and humans by rank) and keeps its rank inside it, on the Incursion cards' ladders. Several faction skulls SPLIT the encounters between them (seeded, balanced by actors), so the factions fight each other. Left alone: scripted set pieces, squads the scripts seat in a dropship or vehicle, encounters mixing sides or holding a story character. Runs first of the 'who is what' passes: then Thunderstorm / Downpour, the Incursion cards (which still bring their species back), Betrayal / Schism (Schism turns the non-human allies this skull makes), the Armed cards. While it is active, the other factions' cards leave the pool and this faction's are offered on every level.",
+			"skull": "faction_human", "score_points": 4,
+			"game": ["Halo 1"],
+			"tag": "scnr",
+			"targets": []
+		},
 		"Famine": {
 			"desc": "Dropped weapons carry half the ammo, and so do the weapons lying around the level.",
 			"debug_desc": "Halves both ends of Drop Weapon Loaded (magazine fraction; an energy weapon's charge) and Drop Weapon Ammo (reserve; ignored for energy weapons) on EVERY character tag (Halo 1: every actv), so Grunts, Jackals and the Flood -- which define their own Weapons Properties -- are reached too. Halo 3/ODST ship Ammo 0 = weapon default, which stays; only the magazine moves there. Allies' drops are halved as well. Composes with the Dropped Ammo card (the skull runs first). Second half: every weapon PLACED on the map (scnr Weapons) gets half its Rounds Left / Loaded -- a 0 (= the weapon's default) becomes half the weapon's Magazines[0] default, never 0. Runs after the card ops (a Magazine card sets that default) and before the tool appends its marker weapons, which keep their ammo. Battery weapons have no charge field in a placement and stay full.",

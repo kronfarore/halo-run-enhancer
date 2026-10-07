@@ -2047,7 +2047,9 @@ def _apply_betrayal(m, game, registry):
                     kinds.add(names[ati])
             if not kinds:
                 continue
-            if all(_is_human_tag(k) for k in kinds) and not any(_is_loyal_tag(k) for k in kinds):
+            # only humans still on their own side: an encounter already on a hostile team
+            # (the Insurrection skull's) keeps it, or it would join that team's side
+            if all(_is_human_tag(k) for k in kinds) and not any(_is_loyal_tag(k) for k in kinds)                     and struct.unpack_from('<h', m.data, e + 0x24)[0] in (0, 1, 2):
                 struct.pack_into('<h', m.data, e + 0x24, team)
                 flipped.append(_cstr_at(m, e))
             else:
@@ -2577,7 +2579,9 @@ def _apply_schism(m, game, registry):
                 sides = {'sentinel' if ec.species(u).startswith('sentinel') else
                          'flood' if ec.species(u).startswith('flood') else 'covenant'
                          for _n, u in kinds}
-            if et == ec.TEAM_PLAYER or (sides & allied):
+            # TEAM_HUMAN: a Halo 1 faction skull keeps the allies it converts on the human
+            # team -- non-human allies all the same (this loop skips any human encounter)
+            if et in (ec.TEAM_PLAYER, ec.TEAM_HUMAN) or (sides & allied):
                 struct.pack_into('<h', m.data, e + 0x24, team)
                 flipped.append(_cstr_at(m, e))
         label = 'encounters'
@@ -9639,7 +9643,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     # whereas running it last would flatten the effect's result to the skull's value.
     # A skull is a name ('tilt'), or a dict for a per-enemy one: {'skull', 'enemy', 'tag',
     # 'name'} (Assassins / Thunderstorm / Downpour name the enemy type they act on).
-    ladder_up, ladder_down, camo_specs, sides = set(), set(), [], []
+    ladder_up, ladder_down, camo_specs, sides, factions = set(), set(), [], [], []
     for skull in (skulls or ()):
         spec = skull if isinstance(skull, dict) else {'skull': skull}
         s = str(spec.get('skull')).strip().lower()
@@ -9664,10 +9668,23 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 _c, cpath = hm.split_tag(spec['tag'])
                 results.append({'tag': spec['tag'], **_apply_camo(
                     m, g, cpath, registry, spec.get('name') or 'Assassins')})
+        elif s.startswith('faction_'):
+            # Halo 1 faction skulls (The Flood, Guardians of the Galaxy, The Great
+            # Journey, Insurrection): applied below, before the ladder
+            factions.append(s)
         elif s == 'thunderstorm' and spec.get('enemy'):
             ladder_up.add(spec['enemy'])
         elif s == 'downpour' and spec.get('enemy'):
             ladder_down.add(spec['enemy'])
+    if factions and str(game).strip() == 'Halo 1':
+        # Every enemy (and allied) encounter becomes the skull's faction; several split
+        # the encounters (h1_species_swap.apply_factions). FIRST of the "who is what"
+        # passes, so Thunderstorm / Downpour and the Incursion cards act on the result.
+        import sys as _sys
+        import h1_species_swap as _sw
+        results.extend(_sw.apply_factions(
+            m, _sys.modules[__name__], [_sw.FACTION_SKULLS[f] for f in factions
+                                        if f in _sw.FACTION_SKULLS], h1_levels))
     if ladder_up or ladder_down:
         results.extend(_apply_ladder(m, str(game).strip(), registry, ladder_up, ladder_down))
     swap_cards = []

@@ -12,6 +12,8 @@ the patcher's E: baselines -- nothing is written to a live map.
         then the written map's encounter teams and species -- proves the patch order
         (ladder -> swap -> Betrayal / Schism -> Armed)
 Card keys: grunt, jackal, elite, hunter, sentinel, flood infection, flood combat, human.
+Faction skulls go in --skulls: faction_flood, faction_sentinel, faction_covenant,
+faction_human (several split the encounters), next to betrayal / schism.
 """
 import argparse
 import json
@@ -94,7 +96,8 @@ def e2e(lv, keys, share, skulls):
         results, _b = hp.apply_run(tmp, plan, reg, 'Normal', backup=False, game='Halo 1',
                                    from_baseline=False, skulls=skulls, h1_enemy_weapons=armed,
                                    h1_levels=levels)
-        names = {p['name'] for p in plan} | {'species swap', 'Betrayal', 'Schism'}
+        names = {p['name'] for p in plan} | {'species swap', 'Betrayal', 'Schism',
+                                             'faction skulls'} | set(sw.FACTION_NAMES.values())
         show([r for r in results if r.get('effect') in names
               or 'enemy weapons' in str(r.get('effect'))])
         m = hp.open_map(tmp, 'Halo 1')
@@ -134,7 +137,8 @@ def main():
     elif x.cmd == 'dry':
         dry(x.levels.split(','), x.cards.split(','), x.share, x.together)
     else:
-        e2e(x.level, x.cards.split(','), x.share, [s for s in x.skulls.split(',') if s])
+        e2e(x.level, [c for c in x.cards.split(',') if c], x.share,
+            [s for s in x.skulls.split(',') if s])
 
 
 if __name__ == '__main__':

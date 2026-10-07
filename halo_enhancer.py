@@ -3995,8 +3995,10 @@ class ModifierDatabase:
         if ally:
             return [self.armed_card('Marine', w, ally=True) for w in names]
         here = list((self.mission_enemies.get(mission_id) or {}).get('enemies', [])) +             list(added or ())
+        # an Incursion card / faction skull brings a type back even where it had vanished
         return [self.armed_card(e, w) for e in self.H1_ARMED_ENEMIES
-                if e in here and e not in set(vanished or ()) for w in names]
+                if (e in here and e not in set(vanished or ())) or e in set(added or ())
+                for w in names]
 
     def map_equip_mod(self, name, game):
         """The equipment counterpart of map_swap_mod, for a game whose equipment has
@@ -4192,6 +4194,14 @@ class ModifierDatabase:
         d = self.skull_defs.get(name) or {}
         return d.get('enemy') if d.get('skull') else None
 
+    # Halo 1 faction skulls (halo.json "skull") -> the enemy types they field
+    FACTION_TYPES = {
+        'faction_covenant': ('Grunt', 'Jackal', 'Elite', 'Hunter'),
+        'faction_flood': ('Flood Infection Form', 'Flood Carrier Form', 'Flood Combat Form'),
+        'faction_sentinel': ('Sentinel',),
+        'faction_human': ('Human',),
+    }
+
     def swapped_in_enemies(self, run_state, game=None):
         """Enemy types a Halo 1 Incursion card (halo.json 'swap_enemy') brought into the
         run: from the pick on they fight on every level, so their own cards are offered
@@ -4202,6 +4212,9 @@ class ModifierDatabase:
         for mod in active_run_mods(run_state):
             for e in (mod or {}).get('swap_enemy') or ():
                 out.add(e)
+        # ...and the faction skulls: their types fight on every level
+        for n in active_skull_names(run_state):
+            out.update(self.FACTION_TYPES.get(self.skull_kind(n), ()))
         return out
 
     def vanished_enemies(self, active_names):
@@ -4222,6 +4235,11 @@ class ModifierDatabase:
                 any(fams.get(x, (None,))[0] == fac and fams[x][1] == tier + 1 for x in down)
             if not refill:
                 gone.add(e)
+        # Halo 1 faction skulls: every other faction's types are gone from the run
+        facs = {self.skull_kind(n) for n in active_names or ()} & set(self.FACTION_TYPES)
+        if facs:
+            keep = {t for f in facs for t in self.FACTION_TYPES[f]}
+            gone |= {t for ts in self.FACTION_TYPES.values() for t in ts} - keep
         return gone
 
     def get_exhaust_modifier_filtered(self, active_names, blacklist, game=None):
