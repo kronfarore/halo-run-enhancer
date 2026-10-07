@@ -491,11 +491,29 @@ def edit_weapon(key, write):
                     math.radians(v[0]), math.radians(v[1]))
             else:
                 setattr(tr.projectile, k, math.radians(v))
-    for field, (src, out, swaps) in w.get('sound_effects', {}).items():
+    for field, (src, out, swaps, *opt) in w.get('sound_effects', {}).items():
         # an OWN copy of a shared effect (the AR's `fire bullet` / `empty`) with its sound
         # parts renamed: the SAW's own-sounds recipe, as data (h1_saw_sounds.py)
         from reclaimer.hek.defs.effe import effe_def
         et = effe_def.build(filepath=path(src, '.effect'))
+        fl = opt[0] if opt else {}
+        # the MUZZLE FLASH of the copy (SMG test 1, 2026-10-07: the AR's flash is sized for
+        # the AR's muzzle): particles whose tag path holds `match` -- off-axis ones (|y| or
+        # |z| over `drop_off_axis` wu: the AR's muzzle-brake rings) removed, the rest
+        # `scale`d (radius) and `shift`ed (wu, marker space: forward, left, up)
+        for ev in (et.data.tagdata.events.STEPTREE if fl else ()):
+            pts = ev.particles.STEPTREE
+            for i in range(len(pts) - 1, -1, -1):
+                x = pts[i]
+                if fl['match'] not in x.particle_type.filepath:
+                    continue
+                o = x.relative_offset
+                if fl.get('drop_off_axis') is not None and max(abs(o.j), abs(o.k)) > fl['drop_off_axis']:
+                    pts.pop(i)
+                    continue
+                x.radius[0], x.radius[1] = x.radius[0] * fl.get('scale', 1.0), x.radius[1] * fl.get('scale', 1.0)
+                dx, dy, dz = fl.get('shift', (0.0, 0.0, 0.0))
+                o.i, o.j, o.k = o.i + dx, o.j + dy, o.k + dz
         n = 0
         for ev in et.data.tagdata.events.STEPTREE:
             for part in ev.parts.STEPTREE:

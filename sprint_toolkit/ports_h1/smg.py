@@ -77,7 +77,9 @@ PORT.update({
         # START from the Sentinel Beam's in-game result (8 tests): if Halo 3's FP rig sits
         # too close in Halo 1 for every H3 weapon (view / FOV), the beam's correction fits
         # here too -- an OBSERVATION from one port, this test checks it
-        'view_offset': (-0.0375, 0.0, -0.0425),
+        # test 1 (2026-10-07, a30): user moves it 'forward 1.5 and up 2 units' (1 unit =
+        # 0.01 wu, the beam's) to check whether the beam's 'see into the arms' is general
+        'view_offset': (-0.0375 + 0.015, 0.0, -0.0425 + 0.02),
         # Halo 1's AR names its auto-fire `firing` and has no reload-empty; the pistol and
         # the Sentinel Beam (30/s auto, tested) use the per-shot `fire-1`, which matches
         # H3's 5-frame fire_1. Halo 3 SMG frames: idle 89, posing 129, ready 19, put_away 5,
@@ -173,8 +175,13 @@ PORT.update({
         'aiming': {'autoaim_angle': 5.0, 'autoaim_range': 12.0,
                    'magnetism_angle': 12.0, 'magnetism_range': 18.0},
         'sound_effects': {
+            # test 1: 'the AR's flash -- move it up and forward, shrink it'. Halo 3's SMG flash
+            # is on-axis only (round + long + glow, no muzzle brake): the AR's off-axis ring
+            # sprites dropped, the rest x0.6, 1 unit forward and 0.5 up (eyeballed, test 2)
             'firing_effect': (r'weapons\assault rifle\effects\fire bullet', SMG + 'effects\\fire bullet',
-                              {r'sound\sfx\weapons\assault rifle\fire': SND + 'smg_fire'}),
+                              {r'sound\sfx\weapons\assault rifle\fire': SND + 'smg_fire'},
+                              {'match': 'flash', 'drop_off_axis': 0.012, 'scale': 0.6,
+                               'shift': (0.01, 0.0, 0.005)}),
             'empty_effect': (r'weapons\assault rifle\effects\empty', SMG + 'effects\\empty',
                              {r'sound\sfx\weapons\assault rifle\dryfire': SND + 'smg_dryfire'})},
         'melee': (r'weapons\assault rifle\melee', SMG + 'melee'),
@@ -214,6 +221,10 @@ PORT.update({
                 row('weap', SMG + 'smg', 'Rounds Total Initial', 450.0, 180.0, 'Magazine', block='Magazines'),
                 # the DUAL-WIELD CARRY RULE: 600 x 240/384 x 1.5 = 562.5 (a short)
                 row('weap', SMG + 'smg', 'Rounds Total Maximum', 562.0, 240.0, 'Magazine', block='Magazines'),
+                # STEP 6 balanced (user, test 1): the pickup by Halo 1's RATIO OF ROUNDS TOTAL
+                # INITIAL -- H1 AR pickup 240 x (SMG 450 / AR 240) = 450 (the AR's pickup is
+                # its own initial load, so the SMG's is too). Default: Halo 3's 120
+                row('weap', SMG + 'smg', 'Rounds', 450, 120, 'Ammo pickup', block='Magazines/Magazines'),
                 # the minimum's own ratio is degenerate (H3 AR 0.1): the maximum's 2.75/3.0
                 row('weap', SMG + 'smg', 'Minimum Error', 0.0, 0.25, 'Error Angle', block='Triggers'),
                 row('weap', SMG + 'smg', 'Error Angle', 1.83, 1.25, 'Error Angle', block='Triggers'),

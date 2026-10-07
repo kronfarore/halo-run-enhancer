@@ -849,6 +849,15 @@
     {
      "class": "weap",
      "tag": "weapons\\smg\\smg",
+     "field": "Rounds",
+     "block": "Magazines/Magazines",
+     "value": 450,
+     "card": "Ammo pickup",
+     "original": 120
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\smg\\smg",
      "field": "Minimum Error",
      "block": "Triggers",
      "value": 0.0,
