@@ -197,9 +197,9 @@ def make_hud(w, key, write):
         import h1_h3_scope
         S = h['scope']
         if write:
-            dark, used = h1_h3_scope.bake(S['chud'], size=S.get('size', 512), span=S.get('span', 640.0),
-                                          aspect=S.get('aspect', 1.0))
-            h1_h3_scope.write(dark, S['out'], alpha=S.get('alpha', 255))
+            dark, blur, used = h1_h3_scope.bake_maps(S['chud'], size=S.get('size', 512), span=S.get('span', 640.0),
+                                                     aspect=S.get('aspect', 1.0), per_widget=S.get('per_widget'))
+            h1_h3_scope.write(dark, S['out'], alpha=S.get('alpha', 255), blur=blur)
             print('   scope: ' + '; '.join(used))
         se = d.screen_effect.STEPTREE[0]
         se.mask.flags.only_when_zoomed = True
@@ -367,6 +367,12 @@ def own_beam(a, b, write):
         att[:] = []
         for x in src.obje_attrs.attachments.STEPTREE:
             att.append(copy.deepcopy(x))
+    if 'material_responses_from' in b:   # the impact effects per material (the Carbine: plasma)
+        src = proj_def.build(filepath=path(b['material_responses_from'], '.projectile')).data.tagdata
+        mr = pd.material_responses.STEPTREE
+        mr[:] = []
+        for x in src.proj_attrs.material_responses.STEPTREE:
+            mr.append(copy.deepcopy(x))
     save(pt, path(p_own, '.projectile'), write)
     for tr in a.triggers.STEPTREE:
         tr.projectile.projectile.filepath = p_own
@@ -532,13 +538,15 @@ def edit_weapon(key, write):
         # an OWN copy of a shared effect (the AR's `fire bullet` / `empty`) with its sound
         # parts renamed: the SAW's own-sounds recipe, as data (h1_saw_sounds.py)
         from reclaimer.hek.defs.effe import effe_def
-        et = effe_def.build(filepath=path(src, '.effect'))
         fl = opt[0] if opt else {}
+        # `copy_from`: the copy starts from ANOTHER effect (the Carbine: the plasma pistol's
+        # green `fire bolt`, no casing) -- `src` still names the template field repointed
+        et = effe_def.build(filepath=path(fl.get('copy_from', src), '.effect'))
         # the MUZZLE FLASH of the copy (SMG test 1, 2026-10-07: the AR's flash is sized for
         # the AR's muzzle): particles whose tag path holds `match` -- off-axis ones (|y| or
         # |z| over `drop_off_axis` wu: the AR's muzzle-brake rings) removed, the rest
         # `scale`d (radius) and `shift`ed (wu, marker space: forward, left, up)
-        for ev in (et.data.tagdata.events.STEPTREE if fl else ()):
+        for ev in (et.data.tagdata.events.STEPTREE if fl.get('match') else ()):
             pts = ev.particles.STEPTREE
             for i in range(len(pts) - 1, -1, -1):
                 x = pts[i]

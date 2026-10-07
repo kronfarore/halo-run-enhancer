@@ -150,6 +150,45 @@ SETS = {
         ('Assault Rifle', W + r'assault rifle\assault rifle', 'shot'),
         ('Sniper Rifle', W + r'sniper rifle\sniper rifle', 'shot'),
     ]},
+    # the COVENANT CARBINE (wave A3), step 4a: semi-auto, Halo 3 rate = 1 / fire recovery.
+    # H3 (H3EK 2026-10-07): carbine 10 per 0.17 s = 5.88/s = 59/s, mag 18 (54 / 90), reload
+    # 69 fr, damage group plasma_fast (NO shield bonus: energy_shield x1, unlike plasma_slow's
+    # 1.5; shield_thick 0.5, sentinel 2); magnum 15 per 0.4 s = 2.5/s, 8 (32 / 48), 50 fr;
+    # needler 4 x 10/s (7 -> 10 ramp), 19 (76 / 95), 44 fr; sniper 80 per 0.7 s = 1.43/s, 4
+    # (12 / 24), 72 fr. H1: pistol 25 x 3.5/s, 12, 67 fr; needle 10 (detonation damage) x
+    # 10/s, 20, 70 fr; sniper 101 x 2/s, 4, 94 fr. Each candidate on its yardstick's own
+    # materials; Halo 3's own numbers on the pistol bullet AND the plasma rifle bolt to show
+    # what the damage type does (Halo 3's plasma_fast behaves like a bullet on shields).
+    'covenant_carbine': {'port': 'Covenant Carbine', 'weapons': [
+        # the BUILT port (step 5b): its tags (+ --balanced rows). Semi-automatic: the rate is
+        # the tag's cap (5.88/s, balanced 8.24/s) -- the player's tapping may be slower
+        ('Covenant Carbine (port)', W + r'covenant carbine\covenant carbine', 'shot'),
+        ('CC = H3 own (bullet mat)', W + r'pistol\pistol', 'shot',
+         {'dmg': 10.0, 'rate': 1 / 0.17, 'mag': 18, 'reload': 69 / 30.0}),
+        ('CC = H3 own (plasma mat)', W + r'pistol\pistol', 'shot',
+         {'dmg': 10.0, 'rate': 1 / 0.17, 'mag': 18, 'reload': 69 / 30.0,
+          'damage_tags': [W + r'plasma rifle\bolt']}),
+        ('CC = Pistol ratio (plasma)', W + r'pistol\pistol', 'shot',
+         {'dmg': 16.67, 'rate': 8.24, 'mag': 27, 'reload': 3.08,
+          'damage_tags': [W + r'plasma rifle\bolt']}),
+        # 25 x 10/15; 3.5/s x 5.88/2.5; 12 x 18/8; 67 fr x 69/50
+        ('CC = Pistol ratio', W + r'pistol\pistol', 'shot',
+         {'dmg': 16.67, 'rate': 8.24, 'mag': 27, 'reload': 3.08}),
+        # 10 x 10/4; 10/s x 5.88/10; 20 x 18/19; 70 fr x 69/44 (needle materials)
+        ('CC = Needler ratio', W + r'needler\needler', 'shot',
+         {'dmg': 25.0, 'rate': 5.88, 'mag': 19, 'reload': 3.66,
+          'damage_tags': [W + r'needler\detonation damage']}),
+        # 101 x 10/80; 2/s x 5.88/1.43; 4 x 18/4; 94 fr x 69/72
+        ('CC = Sniper ratio', W + r'sniper rifle\sniper rifle', 'shot',
+         {'dmg': 12.63, 'rate': 8.24, 'mag': 18, 'reload': 3.0}),
+        ('Pistol', W + r'pistol\pistol', 'shot'),
+        ('Needler (no supercombine)', W + r'needler\needler', 'shot',
+         {'damage_tags': [W + r'needler\detonation damage']}),
+        ('Sniper Rifle', W + r'sniper rifle\sniper rifle', 'shot'),
+        ('Plasma Rifle', W + r'plasma rifle\plasma rifle', 'shot'),
+        ('Battle Rifle (port peer)', W + r'battle rifle\battle rifle', 'shot',
+         {'burst': (3, 0.1, 0.413)}),
+    ]},
 }
 
 ENEMIES = [

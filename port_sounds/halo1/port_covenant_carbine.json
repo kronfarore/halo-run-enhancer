@@ -1,0 +1,125 @@
+{
+ "game": "Halo 1",
+ "weapon": "Covenant Carbine",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\covenant_carbine_port\\cc_fire",
+   "perms": [
+    "cc_fire_1.wav",
+    "cc_fire_2.wav",
+    "cc_fire_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\covenant_carbine_port\\cc_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\covenant_carbine_port\\cc_dryfire",
+   "perms": [
+    "cc_dryfire_1.wav",
+    "cc_dryfire_2.wav",
+    "cc_dryfire_3.wav",
+    "cc_dryfire_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\covenant_carbine_port\\cc_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\covenant_carbine_port\\cc_reload",
+   "perms": [
+    "cc_reload_1.wav",
+    "cc_reload_2.wav",
+    "cc_reload_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\covenant_carbine_port\\cc_reload"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\covenant_carbine_port\\cc_ready",
+   "perms": [
+    "cc_ready_1.wav",
+    "cc_ready_2.wav",
+    "cc_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\covenant_carbine_port\\cc_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\covenant_carbine_port\\cc_melee",
+   "perms": [
+    "cc_melee_1.wav",
+    "cc_melee_2.wav",
+    "cc_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\covenant_carbine_port\\cc_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\covenant_carbine_port\\cc_pose",
+   "perms": [
+    "cc_pose_1.wav",
+    "cc_pose_2.wav",
+    "cc_pose_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\covenant_carbine_port\\cc_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\covenant_carbine_port\\cc_zoom_in",
+   "perms": [
+    "cc_zoom_in_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\covenant_carbine_port\\cc_zoom_in"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\covenant_carbine_port\\cc_zoom_out",
+   "perms": [
+    "cc_zoom_out_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\covenant_carbine_port\\cc_zoom_out"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\covenant_carbine_port\\cc_ammo",
+   "perms": [
+    "cc_ammo_1.wav",
+    "cc_ammo_2.wav",
+    "cc_ammo_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\covenant_carbine_port\\cc_ammo"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\covenant_carbine_port\\cc_drop",
+   "perms": [
+    "cc_drop_1.wav",
+    "cc_drop_2.wav",
+    "cc_drop_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\covenant_carbine_port\\cc_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\covenant_carbine_port\\cc_reload_balanced",
+   "perms": [
+    "cc_reload_balanced_1.wav",
+    "cc_reload_balanced_2.wav",
+    "cc_reload_balanced_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\covenant_carbine_port\\cc_reload_balanced"
+   ]
+  }
+ ]
+}

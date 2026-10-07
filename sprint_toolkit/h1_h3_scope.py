@@ -50,12 +50,20 @@ TEMPLATE = r'ui\hud\bitmaps\pistol\pistol_scope_mask'      # 512x512 a8r8g8b8, n
 
 
 def widgets(chud):
-    """[(name, fields)] of every bitmap widget of a Halo 3 chud_definition."""
+    """[(name, fields)] of every bitmap widget of a Halo 3 chud_definition.
+    A widget with NO state of its own takes its COLLECTION's (the Carbine, 2026-10-07:
+    `scope_bitmaps` carries 'zoom lvl 1', its eight widgets none -- read per widget alone,
+    nothing was zoom-only and nothing baked)."""
     s = io.open(h1_fp_retarget.export_xml(chud + '.chud_definition'), encoding='utf-8',
                 errors='replace').read()
     out = []
     parts = re.split(r'<element index="\d+" name="([^"]+)">\s*<field name="base" value=" " type="struct"/>', s)
+    coll_zoom = 0
     for name, body in zip(parts[1::2], parts[2::2]):
+        if '<block name="bitmap widgets"' in body:          # a collection (its own states)
+            zc = re.search(r'name="unit zoom state" value="(\d+)"', body)
+            coll_zoom = int(zc.group(1)) if zc else 0
+            continue
         if '<field name="bitmap" value=' not in body:
             continue
         g = lambda k: (re.search(r'name="%s" value="([^"]*)"' % re.escape(k), body) or [None, None])[1]  # noqa: E731
@@ -67,7 +75,12 @@ def widgets(chud):
             'anchor': g('anchor type'), 'origin': tuple(float(x) for x in g('widget origin').split(',')),
             'offset': tuple(float(x) for x in g('origin offset').split(',')),
             'scale': tuple(float(x) for x in g('widget scale').split(',')),
-            'zoom': int(zm.group(1)) if zm else 0, 'color': g('custom color A'), 'flags': flags}))
+            'zoom': int(zm.group(1)) if zm else coll_zoom, 'color': g('custom color A'), 'flags': flags,
+            # 'distortion and blur' (the Carbine's carbine_distortion) refracts, it does not
+            # darken; an ACTIVE animation (.chad) may set what the static fields leave at 0
+            'shader': g('shader type'),
+            'active': (re.search(r'name="active" value=" " type="struct"/>.*?name="animation" value="([^",]*)',
+                                 body, re.S) or [None, None])[1] or None}))
     return out
 
 
@@ -75,13 +88,39 @@ def zoom_only(w):
     return w['zoom'] and not (w['zoom'] & 1)        # bit 0 = unzoomed
 
 
-def bake(chud, size=512, span=640.0, aspect=1.0):
-    """The darkness image (float 0..1, size x size) of the chud's zoom-only widgets."""
+def bake(chud, size=512, span=640.0, aspect=1.0, per_widget=None):
+    """(darkness, used): bake_maps without the blur map (the BR's call)."""
+    dark, _blur, used = bake_maps(chud, size, span, aspect, per_widget)
+    return dark, used
+
+
+def bake_maps(chud, size=512, span=640.0, aspect=1.0, per_widget=None):
+    """(darkness, blur, used): float 0..1 images (size x size) of the chud's zoom-only
+    widgets. `per_widget` {name: {'drop': True} | {'scale': (x, y)} | {'offset': (x, y)} |
+    {'blur': strength}}: a decision per widget (the Carbine's animated crosshair pieces sit
+    at scale 0 and get their size from the .chad; a mask is static). A 'distortion and
+    blur' widget is skipped unless named here (it refracts; a mask can only darken); with
+    'blur' its sprite alpha x strength goes to the BLUR map instead (write() puts it in
+    the mask's alpha: the Carbine's distortion over the side cells, user 2026-10-07)."""
     dark = np.zeros((size, size))
+    blur = np.zeros((size, size))
     px_per_u = (size / (span * aspect), size / span)   # x, y
     used = []
+    per_widget = per_widget or {}
     for name, w in widgets(chud):
         if not zoom_only(w) or 'hud_reticles' in w['bitmap']:
+            continue
+        o = per_widget.get(name, {})
+        if o.get('drop'):
+            used.append('%s DROPPED' % name)
+            continue
+        if w['shader'] == 'distortion and blur' and not o:
+            print('   SKIPPED %s: a distortion widget (decide it per widget)' % name)
+            continue
+        w = dict(w, **{k: tuple(v) for k, v in o.items() if k in ('scale', 'offset', 'origin')})
+        target = blur if o.get('blur') else dark
+        if w['scale'] == (0.0, 0.0):
+            print('   WARNING %s: scale 0 (animated by %s?) -- give it a scale' % (name, w['active']))
             continue
         if w['anchor'] not in ('crosshair', 'center'):
             raise SystemExit('%s: anchor %s not handled' % (name, w['anchor']))
@@ -92,10 +131,15 @@ def bake(chud, size=512, span=640.0, aspect=1.0):
             l, r, t, b, _rx, _ry = boxes[w['sequence']]
             W, H = img.size
             img = img.crop((round(l * W), round(t * H), round(r * W), round(b * H)))
-        a = np.array(img)[..., 3].astype(np.float64) / 255.0
+        a = np.array(img)[..., 3].astype(np.float64) / 255.0 * (o.get('blur') or 1.0)
         wu, hu = img.width * w['scale'][0], img.height * w['scale'][1]        # units
         cx = w['offset'][0] - w['origin'][0] * wu / 2.0
         cy = w['offset'][1] - w['origin'][1] * hu / 2.0
+        # a NEGATIVE scale (the Carbine's blip1, -1.4) flips the sprite about its centre
+        if wu < 0:
+            a, wu = a[:, ::-1], -wu
+        if hu < 0:
+            a, hu = a[::-1, :], -hu
         copies = [(1, 1)]
         if 'mirror horizontal' in w['flags']:
             copies.append((-1, 1))
@@ -114,7 +158,7 @@ def bake(chud, size=512, span=640.0, aspect=1.0):
             xa, ya = max(0, X), max(0, Y)
             xb, yb = min(size, X + sw), min(size, Y + sh)
             if xa < xb and ya < yb:
-                dark[ya:yb, xa:xb] = np.maximum(dark[ya:yb, xa:xb], spr[ya - Y:yb - Y, xa - X:xb - X])
+                target[ya:yb, xa:xb] = np.maximum(target[ya:yb, xa:xb], spr[ya - Y:yb - Y, xa - X:xb - X])
             if 'extend border' in w['flags']:
                 # beyond the sprite, its OUTER edge value (the quadrant away from the anchor)
                 edge = float(spr[-1 if sy > 0 else 0, -1 if sx > 0 else 0])
@@ -122,13 +166,14 @@ def bake(chud, size=512, span=640.0, aspect=1.0):
                 ys = slice(min(size, Y + sh), size) if sy > 0 else slice(0, max(0, Y))
                 xq = slice(max(0, min(size, int(round(size / 2)))), size) if sx > 0 else slice(0, int(round(size / 2)))
                 yq = slice(int(round(size / 2)), size) if sy > 0 else slice(0, int(round(size / 2)))
-                dark[yq, xs] = np.maximum(dark[yq, xs], edge)
-                dark[ys, xq] = np.maximum(dark[ys, xq], edge)
-        used.append('%s (%s #%d, %d copies)' % (name, w['bitmap'].rsplit('\\', 1)[-1], w['sequence'], len(copies)))
-    return dark, used
+                target[yq, xs] = np.maximum(target[yq, xs], edge)
+                target[ys, xq] = np.maximum(target[ys, xq], edge)
+        used.append('%s (%s #%d, %d copies%s)' % (name, w['bitmap'].rsplit('\\', 1)[-1], w['sequence'], len(copies),
+                                                 ', BLUR x%g' % o['blur'] if o.get('blur') else ''))
+    return dark, blur, used
 
 
-def write(dark, out, alpha=255):
+def write(dark, out, alpha=255, blur=None):
     """A copy of the pistol's mask tag with this darkness as RGB and a flat `alpha`.
     THE ALPHA (BR tests 2-3): alpha 0 everywhere + convolution radius 0 SMEARED the whole
     zoomed view; the stock pistol and sniper masks are alpha 0 in the lens, 255 outside.
@@ -162,6 +207,8 @@ def write(dark, out, alpha=255):
         a = np.array(Image.fromarray(outer).filter(ImageFilter.GaussianBlur(size / 128.0)))
     else:
         a = np.full_like(v, alpha)
+    if blur is not None:                 # widgets turned into blur (bake_maps 'blur')
+        a = np.maximum(a, np.clip(np.round(blur * 255), 0, 255).astype(np.uint8))
     bgra = np.stack([v, v, v, a], axis=-1)
     d.processed_pixel_data.data = bytearray(bgra.tobytes())
     p = os.path.join(TAGS, out + '.bitmap')
@@ -177,16 +224,26 @@ def main():
     ap.add_argument('out', nargs='?', help=r'Halo 1 bitmap tag to write (no extension)')
     ap.add_argument('--span', type=float, default=640.0)
     ap.add_argument('--aspect', type=float, default=1.0)
+    ap.add_argument('--size', type=int, default=512)
     ap.add_argument('--preview')
+    ap.add_argument('--port', help='a ports_h1 key: its hud scope settings (per_widget, size...)')
     a = ap.parse_args()
-    dark, used = bake(a.chud, span=a.span, aspect=a.aspect)
+    kw = {'span': a.span, 'aspect': a.aspect, 'size': a.size}
+    if a.port:
+        import ports_h1
+        S = ports_h1.load(a.port)['pickable']['hud']['scope']
+        kw = {'span': S.get('span', 640.0), 'aspect': S.get('aspect', 1.0), 'size': S.get('size', 512),
+              'per_widget': S.get('per_widget')}
+    dark, blur, used = bake_maps(a.chud, **kw)
     print('baked: ' + '; '.join(used))
     if a.preview:
         bg = np.array(Image.new('RGB', dark.shape[::-1], (120, 160, 110))).astype(np.float64)
-        Image.fromarray((bg * (1 - dark[..., None])).astype(np.uint8)).save(a.preview)
+        bg[..., 2] += blur * 120                 # the blur map shows as a blue tint
+        Image.fromarray(np.clip(bg * (1 - dark[..., None]), 0, 255).astype(np.uint8)).save(a.preview)
         print('preview', a.preview)
     if a.out:
-        print('wrote', write(dark, a.out))
+        S = ports_h1.load(a.port)['pickable']['hud']['scope'] if a.port else {}
+        print('wrote', write(dark, a.out, alpha=S.get('alpha', 255), blur=blur))
 
 
 if __name__ == '__main__':

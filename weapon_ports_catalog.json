@@ -1243,6 +1243,245 @@
     "jpt! weapons\\pistol\\bullet": "jpt! weapons\\battle rifle\\bullet",
     "jpt! weapons\\pistol\\melee": "jpt! weapons\\battle rifle\\melee"
    }
+  },
+  {
+   "weapon": "Covenant Carbine",
+   "source": "Halo 3",
+   "donor": "Pistol",
+   "default_on": false,
+   "desc": "Halo 3's Covenant Carbine: its model, first-person animations, sounds, scope and numbers. An 18-round semi-automatic rifle with a 2x zoom; Pistol ammo tops it up.",
+   "balance_desc": "Measured against the Pistol, which both games have: 16.7 damage per round, up to 8.2 rounds a second, a 27 magazine, 101 at pickup / 225 most, a 3.1 s reload, a wider spread when held, a faster slug and Halo 1-style aim assist.",
+   "anims": {
+    "reload": 1.34,
+    "swap": 1.59
+   },
+   "anim_sounds": {
+    "reload": [
+     {
+      "mult": 1.34,
+      "from": "sound\\weapons\\covenant_carbine_port\\cc_reload",
+      "to": "sound\\weapons\\covenant_carbine_port\\cc_reload_balanced"
+     }
+    ]
+   },
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\covenant carbine\\slug",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 16.67,
+     "card": "Bullet Damage",
+     "original": 10.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\covenant carbine\\slug",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 16.67,
+     "card": "Bullet Damage",
+     "original": 10.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\covenant carbine\\slug",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 16.67,
+     "card": "Bullet Damage",
+     "original": 10.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Rounds Per Second",
+     "block": "Triggers",
+     "value": 8.24,
+     "card": "More Shooting",
+     "original": 5.88
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Rounds Per Second Max",
+     "block": "Triggers",
+     "value": 8.24,
+     "card": "More Shooting",
+     "original": 5.88
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 27.0,
+     "card": "Magazine",
+     "original": 18.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Rounds Reloaded",
+     "block": "Magazines",
+     "value": 27.0,
+     "card": "Magazine",
+     "original": 18.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 101.0,
+     "card": "Magazine",
+     "original": 54.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 225.0,
+     "card": "Magazine",
+     "original": 90.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Rounds",
+     "block": "Magazines/Magazines",
+     "value": 67,
+     "card": "Ammo pickup",
+     "original": 36
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Minimum Error",
+     "block": "Triggers",
+     "value": 0.0,
+     "card": "Error Angle",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Error Angle",
+     "block": "Triggers",
+     "value": 0.12,
+     "card": "Error Angle",
+     "original": 0.3
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Error Angle Max",
+     "block": "Triggers",
+     "value": 2.4,
+     "card": "Error Angle",
+     "original": 0.6
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\covenant carbine\\slug",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 10.0,
+     "card": "Projectile",
+     "original": 6.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\covenant carbine\\slug",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 10.0,
+     "card": "Projectile",
+     "original": 6.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 4.5,
+     "card": "Autoaim",
+     "original": 3.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 34.0,
+     "card": "Autoaim",
+     "original": 17.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 6.0,
+     "card": "Magnetism",
+     "original": 6.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 31.5,
+     "card": "Magnetism",
+     "original": 21.0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Sequence Index",
+     "block": "Meter Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Alpha Multiplier",
+     "block": "Meter Elements",
+     "value": 9,
+     "card": "Ammo display",
+     "original": 14,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Sequence Index",
+     "block": "Static Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\covenant carbine\\covenant carbine",
+     "field": "Loaded Ammo Cutoff",
+     "block": null,
+     "value": 9,
+     "card": "Ammo display",
+     "original": 6,
+     "index": 0
+    }
+   ],
+   "weap": "weapons\\covenant carbine\\covenant carbine",
+   "fp_animations": "weapons\\covenant carbine\\fp\\fp",
+   "requires": [
+    "proj weapons\\covenant carbine\\slug"
+   ]
   }
  ],
  "Halo 3": [
