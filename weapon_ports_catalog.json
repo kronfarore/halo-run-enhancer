@@ -994,10 +994,7 @@
     "proj weapons\\assault rifle\\bullet": "proj weapons\\smg\\bullet",
     "jpt! weapons\\assault rifle\\bullet": "jpt! weapons\\smg\\bullet",
     "jpt! weapons\\assault rifle\\melee": "jpt! weapons\\smg\\melee"
-   },
-   "skip_cards": [
-    "Salvo Shooting"
-   ]
+   }
   }
  ],
  "Halo 3": [
