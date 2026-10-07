@@ -289,6 +289,57 @@ rebuilding the normal level after (the pilot did it once).
 - balanced reload/swap: `anims` + a stretched reload (`stretch`, `extra_sounds`,
   `anim_sounds`) -- the patcher does the rest.
 
+## A2: what the Battle Rifle taught (2026-10-07) -- read before A3 (the Carbine)
+
+PORTING.md "Halo 1: the Battle Rifle, wave A2" is the full record; `ports_h1/battle_rifle.py`
+is the example of a ZOOMED, BURST, PISTOL-TEMPLATE port. Everything in "Pilot A1" still
+holds; the BR added:
+
+**Test sequence (user rules):** dry default -> fixes -> dry `--balanced` -> `--armed
+grunt,elite` (which now IMPLIES `--balanced --god`). A choice between mechanisms can go
+in ONE boot: `--secondary <test-only tag>` puts a variant on every spawn's secondary.
+**Before close-out (user):** check EVERY step: port_field_audit lists 2 AND 3 (decide each
+list-3 line), a full field diff of the port against its TEMPLATE (every difference traced
+to a decision), kit_tag_diff on the last writes, `port_sound_refs --map <test copy>` with
+NO 'BORROW' (the template's ammo-pickup sound, item collision sound and casing eject are
+easy to miss), port_refs_audit, 5b on the BUILT port (a `(port)` row in the role set).
+
+**Zoom = Halo 3's scope, ALWAYS (user: the standard procedure).** `hud['scope'] = {'chud':
+<H3 chud>, 'out': <mask tag>, 'size': 1024, 'span': ..., 'aspect': 4/3, 'alpha':
+'outside'}`: the chud's zoom-only widgets baked into the screen-effect mask (h1_h3_scope),
+the donor's zoom crosshairs dropped, Halo 1's outside-the-lens blur kept (every stock
+zoom has it). Size: Halo 1 draws ~1.09 px a texel at 1080p, so span = 369-unit ring x
+size / wanted texels -- compute it from the chud's own ring, not the BR's numbers. Never
+a convolution radius of 0 (it smears). Check every new chud: widgets not drawn black
+(custom colour A != 0) cannot be a mask (the tool warns) -- a Covenant scope may be
+coloured: then it needs crosshair overlays instead (not built yet). OBSERVATIONS from one
+weapon at one resolution.
+
+**Template choice drives hidden layouts.** The pistol template's ONE object function fed
+both the muzzle-flash light and (once repointed) the on-gun counter -- constant glow.
+Inspect the template's object functions / attachments / A-D exports whenever a port
+changes an export (`obje_functions`, `attachment_scales` copy the AR's layout).
+
+**Burst (Halo 1 has none):** charge 1 tick + discharge + spew; rounds ~ spew ticks /
+spacing + 2 (5 at 0.2 s / 15/s, 3 at 0.15 s / 10/s); `does_not_repeat_automatically`
+= a burst a pull; a CHARGE as recovery delays the first round. Observations from one
+port. No burst-cycle balance row (the player's tapping sets it).
+
+**On-gun counter:** model `numeric` (Halo 1's numeric chicago shader, the AR's), digit
+place = shader permutation, the value = OUT A, limit = magazine (+ schi balance rows).
+
+**For A3, the Covenant Carbine (reuses the zoom):** yardstick candidates pistol
+(provisional), needler, sniper. Its chud is `ui\chud\carbine` (checked 2026-10-07): the
+scope widgets (carbine_scope ring with extend border + mirrors, four carbine_scope_elements
+pieces, two `blip`s (check their animation data), a `carbine_distortion` layer) are all colour 0 = black, BUT
+their zoom-only state is on the parent COLLECTION, not on each widget -- h1_h3_scope reads
+only the widget's own state and would bake NOTHING: extend `widgets()` to inherit the
+collection's state first; decide the blips (a mask is static) and
+the distortion layer (a refraction effect, no Halo 1 mask equivalent) with the user.
+Semi-automatic 18-round magazine (no burst: Halo 3 rate, `does_not_repeat_automatically`
+for its latch trigger); its own slug projectile; reticle hud_reticles #4. Template: the
+yardstick's weapon unless the role table says otherwise -- then inspect its functions.
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one
@@ -351,7 +402,7 @@ simplest form, used to fix and generalize the tools before the rest of the wave.
 | # | weapon | new things it tests |
 |---|---|---|
 | A1 | **SMG** (pilot) -- DONE 2026-10-07 | the first plain magazine gun on this pipeline: reload, ammo pickup (step 6), magazine HUD meter |
-| A2 | Battle Rifle | burst fire, zoom + scope HUD (memory halo-zoom-ui) |
+| A2 | **Battle Rifle** -- DONE 2026-10-07 | burst fire, zoom + scope HUD (memory halo-zoom-ui) -- see "A2: what the Battle Rifle taught" |
 | A3 | Covenant Carbine | zoom on a Covenant weapon, its own projectile |
 | A4 | Beam Rifle | heat + zoom (Sentinel Beam heat lessons, tick-quantised rate) |
 | A5 | Brute Spiker | the blades' melee, a slow projectile |

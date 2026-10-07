@@ -552,6 +552,79 @@ h1_add_reticle `thicken`; make_port_catalog bullet; port_refs_audit cross-drive 
 `h3_weapon_values.py` (step 4a's Halo 3 table, any H3EK weapons side by side) and
 `h1_stock_sound_levels.py` (a stock Halo 1 sound's level as MCC plays it, from the bank).
 
+### Halo 1: the Battle Rifle, wave A2 (2026-10-07, 7 boots on a30) -- burst, zoom scope, on-gun counter
+
+The whole weapon is `ports_h1/battle_rifle.py`, on a copy of the Halo 1 PISTOL (the
+yardstick: its zoom, magazine HUD and bullet materials). Same run order as the SMG, plus
+`h1_h3_scope.py` (run by make_hud) and the model's `numeric` counter.
+
+**Step 4a (user): the PISTOL.** `h1_role_compare.py battle_rifle` (now burst-aware:
+`'burst': (rounds, spacing, cycle)`): the pistol ratio is the only candidate whose every
+value scales -- AR ratio: 270 at pickup over a 225 maximum, spread 3.0 -> 1.08 inverted;
+sniper ratio: Flood combat forms take 33 s (the sniper bullet's materials). Pistol ratio:
+10 a round, 30 a burst, 102/s against the pistol's 88 (Halo 3: BR 44, magnum 38). Rows
+per round AND per burst cycle; the burst's shape has no yardstick.
+
+**THE BURST (option B, measured and tuned by the user).** Halo 1 has no burst trigger;
+the kit's own precedent is `digsite\weapons\smg`'s second trigger: charge 1 tick,
+overcharged action DISCHARGE, a SPEW time. Observations (this port; verify on the next):
+* spew 0.2 s at 15/s fired FIVE rounds; held, bursts ran back to back (36 in 2.18 s = a
+  5-round burst every 9 ticks: 1 charge tick + 4 gaps of 2). So rounds ~ spew ticks / 2 + 2.
+* the CHARGE can stand in for Halo 3's recovery (0.28 s + 4 ticks = 0.41 s, Halo 3's
+  0.413) but delays the FIRST round by the same -- tested (B1), not chosen.
+* THE BR: charge 1 tick + `does_not_repeat_automatically` (one burst a pull), 10 rounds/s,
+  spew 0.15 s = EXACTLY 3 rounds (user's own tuning, 'a similar feeling to the original').
+  Not reproduced: Halo 3's 2-tick spacing (here 3) and the 0.28 s recovery (tapping is
+  limited by the player only) -- so no burst-cycle balance row. 5b on the built port:
+  balanced 73/s at Halo 3's tapping rhythm, more if tapped faster; user: combat good.
+* two variants in ONE boot: `h1_port_test_map --secondary <tag>` (a test-only tag on every
+  spawn profile's secondary).
+* the fire sound: Halo 3 plays ONE fused burst sound (no separable onsets); `shots`
+  slices it per round (period 1/15 s + the burst's own tail) -- user: 'pretty good'.
+
+**THE ZOOM: Halo 3's scope as Halo 1's screen-effect mask (`h1_h3_scope.py`; user: the
+STANDARD procedure for every zooming port).** Halo 1 draws a zoom vignette as the weapon
+HUD's screen_effect mask: RGB = how dark (pistol: black lens, 131 outside, white ring),
+ALPHA = where the convolution blurs (255 = blurred), radius = how much. Halo 3's scope
+widgets are all drawn BLACK with the bitmap's alpha -- the same darkening -- so the chud's
+zoom-only bitmap widgets bake into one mask (widget origin in half-extents, image y down;
+origin offset y down; mirror = a copy reflected about the anchor; extend border). The
+donor's zoom crosshairs are dropped; the HUD's reticle stays (as in Halo 3).
+Observations: the mask is drawn in a centred 4:3 box ~1.09 px a TEXEL at 1080p (512 ->
+558 px, 1024 -> ~1116) -- so `aspect` 4/3 and `span` set the size (BR: span 660 on 1024 =
+Halo 3's 58% of the height); a convolution radius of 0 SMEARS the whole view (not 'off');
+every stock zoom (pistol, rocket launcher, sniper) blurs OUTSIDE the lens only, and the
+user keeps that: alpha 'outside' (flood fill of the vignette grey from the border, so
+the black ruler bars touching the ring do not pull the blur in). `h3_hud_art` reads a8.
+
+**THE ON-GUN AMMO COUNTER (model `numeric`).** Halo 1's AR display is a
+shader_transparent_chicago with flag NUMERIC (its bitmap a 10-digit sequence, counter
+limit = magazine), the digit PLACE = the gbxmodel shader entry's permutation (0 / 1). The
+H3 digit quads each map one glyph, so the AR's numeric shader drives them. The value is
+OUT A (measured: A illumination made it jump per shot; A empty kept 00). Out A comes
+from the object FUNCTIONS (out N = function N, scaled by an export 'in'): the pistol has
+ONE function, A <- illumination, which also scales the muzzle-flash LIGHT attachment --
+moving A to the ammo made every armed Grunt / Elite (and the player) glow. Fixed with the
+AR's layout (`obje_functions`, `attachment_scales`): exports A illumination / B ammo;
+out A = ammo display, out B = muzzle flash. Balanced: counter limit rows on the two
+`schi` tags (the patcher writes schi). Digits are Halo 1 AR style, not Halo 3's.
+
+**Close-out checks the user asked for (now part of every port):** step 4b lists 2 AND 3
+-- list 3 here gave the TRACER (Halo 3's BR bullet carries one every 2nd round; the
+pistol's none: the AR bullet's contrail, `attachments_from`, rounds between tracers 2),
+bounding offset, breaking effect, linear fade; not ported: jitter wobble at period 0,
+the unshielded screen flash (Halo 1 has one: the shielded 0.5). A full field diff of
+the port against its template (every difference traced to a decision); kit_tag_diff on
+the close-out writes; `port_sound_refs --map <test copy>`: it caught three BORROWED pistol
+sounds -- ammo pickup, weapon drop (item collision sound), casing eject -- now Halo 3's
+(br_ammo / br_drop / br_eject). Armed test = balanced + god (`--armed` implies both).
+
+Also: one resource group in the FP graph (not dual-wieldable, as expected); the graph has
+no plain fire_1 / posing:var0 (var1 used); FP view_offset (-0.0225, 0, -0.0125) (user:
++2 then -1 unit); Halo 3's zoom sounds; the headshot reticle cross (#24) not reproduced
+(Halo 1 has no such state); `port_sounds.retimed_anim_sound` takes a LIST of swaps (both
+reloads stretched x1.34, confirmed in game).
+
 ---
 
 ## Halo 3

@@ -56,7 +56,10 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'building',
+    # 2026-10-07: tested on a30 over 7 boots (dry default x4 incl. two burst variants in one
+    # boot, balanced, Armed x2) -- everything confirmed by the user; the ten-map rebuild is
+    # BATCHED with the SMG (on the user's go)
+    'status': 'done',
     # geometry + look (h1_h3_weapon_model.py). Halo 3's materials: metal (base + illum),
     # rubber, lens, and the AMMO COUNTER digits `ones` / `tens` (numbers_plate; Halo 3
     # scrolls them by the ammo function -- here a static plate: NOT reproduced yet)
