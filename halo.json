@@ -26482,7 +26482,7 @@
 				{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "side": "ally", "min": 0, "easier_when": "increased" }
 			]
 		},
-		"Friend Marines": {
+		"Human Incursion": {
 			"desc": "A tenth of the enemies become Marines on your side.",
 			"debug_desc": "Halo 1 only. Each pick turns 10% of the level's ENEMIES into Marines who fight on your side, on every level for the rest of the run. Same mechanism as the Incursion cards (whole encounters, highest-difficulty count, seeded draw, set pieces left alone); the converted encounter gets the Human team. Ranks: Marine (AR, needler, plasma rifle, shotgun) | armoured Marine (AR, needler, plasma rifle) | armoured sniper or shotgun | armoured majors. Most levels carry the Marine variants only as kit COPIES on slot 20's residency chain (h1_all_enemies.py); a copy's Major Variant is set to its real major before it spawns. Under BETRAYAL these encounters are all human, so the skull turns them against you like every other Marine.",
 			"game": ["Halo 1"],

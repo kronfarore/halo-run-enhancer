@@ -7,7 +7,7 @@ in `PORTING.md`; this one is about **characters**.
 The result in Halo 1:
 - all 40 enemy actor variants, their 9 majors and 13 Marine variants are built into all
   ten campaign maps;
-- seven **Incursion** cards and one **Friend Marines** card turn 10% of a level's enemies
+- seven enemy **Incursion** cards and the ally **Human Incursion** card turn 10% of a level's enemies
   into another species per pick, for the rest of the run.
 
 Status: residency was confirmed in game (a10 tests v1 and v2). The cards were verified
@@ -242,7 +242,7 @@ Armed cards / first-weapon replacement (h1_enemy_weapons)       -- what they car
 port actv carriers
 plan loop: every card op (Spawn Count, stats, colours); species_swap ops skipped (done)
 ```
-- **Betrayal** flips all-human encounters, so Friend Marines' converted encounters turn
+- **Betrayal** flips all-human encounters, so Human Incursion's converted encounters turn
   against the player like any Marines. Checked on a10.
 - **Schism** flips allied non-human encounters, so Sentinels a card brings into c10/c20
   (allied by script) turn too. Checked on c20.
@@ -257,7 +257,9 @@ plan loop: every card op (Spawn Count, stats, colours); species_swap ops skipped
 
 **`halo.json`** (inserted as TEXT so the hand formatting survives):
 - **Where:** `Enemy modifiers > General modifiers > <Species> Incursion` (seven cards),
-  and `Friend modifiers > Friend Marines`.
+  and `Friend modifiers > Human Incursion` (the ally card; named like the others,
+  without the Friend prefix -- only the Betrayal skip reads that prefix, and it exempts
+  `species_swap` ops anyway).
 - **Why General:** per-species cards are offered only where that species already fights,
   which is the opposite of what an Incursion card is for.
 - **Card keys:** `"game": ["Halo 1"]`, `"tag": {"Halo 1": "actv characters\\*"}`,

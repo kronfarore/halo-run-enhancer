@@ -31,7 +31,7 @@ import h1_enemy_weapons as ew      # noqa: E402
 
 LEVELS = ('a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40')
 BASE = 'E:/HaloBaselines/halo1/maps/%s.map'
-NAMES = {'human': 'Friend Marines'}
+NAMES = {}                  # every card is '<Species> Incursion'
 
 
 def card_name(k):
