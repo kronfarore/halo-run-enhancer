@@ -488,3 +488,54 @@ spawn check in game. The SMG (done, tested on a30) is the first in that batch.
 > session (cards, skip_cards, tag_map, card_map -- never edit the enhancer's files without
 > telling it), PORTING notes, memory, `python port_backup.py --game h1`, and add what the
 > pilot taught (and every tool you generalized) to H1_PORT_PLAN.md before wave A2 starts.
+
+### The Battle Rifle (wave A2), filled in
+
+> Port the Battle Rifle into Halo 1 (H1_PORT_PLAN.md, wave A, #A2). Source: Halo 3,
+> `objects\weapons\rifle\battle_rifle\battle_rifle` (H3EK).
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Phase 0: DONE" and "Pilot A1: what wave A inherits"
+> first), PORTING.md ("What ported actually means" steps 0-11 and 5b, the Halo 1 sections,
+> "Halo 1: the SMG, the wave-A pilot") and memory h1-smg-pilot, h1-port-phase0,
+> halo-zoom-ui-reach-unwired, h1-weapon-into-map, halo-port-own-messages, h1-fmod-bank-sounds,
+> port-findings-are-observations, shared-worktree-commits. `ports_h1/smg.py` is the complete
+> magazine-port example: copy its shape into `ports_h1/battle_rifle.py` and edit only that file.
+>
+> START WITH STEP 4a, before any tag number is written: the yardstick, decided WITH me.
+> Wave-A rule: DEFAULT = Halo 3's own numbers, BALANCED = the ratio rows -- so the pick sets
+> the balanced build. Candidates (battle_rifle.py, yardstick.candidates): provisional PISTOL
+> (magazine, scoped, precision mid-range -- the magnum's role), alternatives ASSAULT RIFLE
+> (the SMG's yardstick; a magazine bullet gun) and SNIPER RIFLE (scoped precision), no
+> direct yardstick. Lay them side by side per value (damage per round AND per second, rate
+> and burst timing, magazine / reserve, reload, error / spread, range / velocity, zoom, aim
+> assist, melee) with `h3_weapon_values.py` (H3 side) and `h1_role_compare.py` (add a
+> 'battle_rifle' set; time to kill vs the peers Pistol, Assault Rifle, Sniper Rifle). I pick;
+> record it in yardstick['pick'] / ['reason'] and PORTING.
+>
+> Reserved (do not take any other number): pickup messages 55/56 ("Picked up a battle rifle"
+> / "Picked up %d rounds for battle rifle"); hud_msg_icons 30 is the SMG's -- yours is 31
+> (+ _r twin); hud_reticles 20 (+ _r, `reticle_thicken` 1 from the start); label `br`,
+> taught to characters\cyborg from `ar`; sounds under `sound\weapons\battle_rifle_port`
+> (never under sound\sfx); weapon folder `weapons\battle rifle`; catalog name `Battle Rifle`.
+>
+> What the BR tests first on this pipeline:
+> - **the 3-round BURST** -- Halo 1 has no burst trigger: APPROXIMATE it (never skip) and
+>   record what it does not reproduce. Mind the pilot's 15/s RATE CAP observation (every
+>   rate 15..30 fired 15/s): Halo 3's burst spacing is faster than one round per two ticks,
+>   so measure what Halo 1 really fires before choosing (e.g. 3 projectiles per shot with a
+>   small spread vs. a capped auto burst); lay the options out for me;
+> - **ZOOM + scope HUD**: Halo 1's own zoom (the pistol's 2x is the model), and the scope
+>   overlay / reticle while zoomed (memory halo-zoom-ui-reach-unwired);
+> - NOT dual-wieldable in Halo 3: expect ONE resource group in the FP graph (compare
+>   `--list` frame counts with the graph's own), and no dual-wield carry rule.
+>
+> Run order, test sequence and closing checks: exactly "Pilot A1" (model -> retarget +
+> tool animations -> sounds -> icon -> `h1_pickable_weapons.py --only battle_rifle --write`
+> -> catalog -> firing profile -> port_sounds -> refs + field audits -> test maps). The FP
+> rig starts from the SMG's view_offset (-0.0225, 0, -0.0225). Step 11: `br` has no carrier,
+> so `firing_profile` needs a `donor_weapon` (as smg.py has) or there is no Armed card.
+> Test with `h1_port_test_map.py battle_rifle --stage` (dry default, fixes, `--balanced`,
+> `--armed grunt,elite`), `--restore <level>` after.
+> NO ten-map rebuild: it is BATCHED (the SMG and this weapon go in the same batch, on my
+> go). When done: catalog entry, enhancer hand-off to the "Halo enhancer project" session,
+> PORTING notes, memory, `python port_backup.py --game h1`, and what the BR taught (burst,
+> zoom) added to the plan before A3 (the Covenant Carbine, which reuses the zoom work).
