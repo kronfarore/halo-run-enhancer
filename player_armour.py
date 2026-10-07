@@ -48,7 +48,12 @@ Spartan materials are also worn by AI Spartans, armour lock sections and the Bro
    Group, the value the player gets today = the row of the material's Specific Armor if
    the group has one, else the row of its General Armor; if found, a row (key, value) is
    APPENDED to that group's Armor Modifiers. No row -> none added (engine default 1).
-   ASSUMPTION (`rule`, default 'multiply' since 2026-10-07; was 'specific'). The clone has no Specific,
+   SORTED ROWS (confirmed in halo3.dll / halo3odst.dll, 2026-10-07): the engine finds a
+   damage group and then each armour row by BINARY SEARCH on the stringid, and MULTIPLIES
+   every row it finds (jpt! general and specific group x material general and specific
+   armour), a missing row counting 1. Every shipped array is sorted ascending; a grown
+   one must be written sorted again (_sorted_rows) or rows are silently missed.
+   RULE (`rule`, default 'multiply' -- the engine's own, see above). The clone has no Specific,
    so in a group where the old material had BOTH a specific and a general row, the player
    now gets the copied value alone; if the engine instead MULTIPLIES general x specific,
    those groups change. They exist only in H3/ODST (the `_player` rows: no_damage in
@@ -262,6 +267,15 @@ class _Ctx:
                 groups.append((ge, self.m.u32(ge), rn, rb, rows))
             out.append((t, groups))
         return out
+
+
+def _sorted_rows(arr):
+    """An Armor Modifiers array (8-byte (name stringid, multiplier) rows) in ascending
+    name order. The engine finds rows by BINARY SEARCH (halo3.dll 0x18013eeb4, compare
+    *key - *elem), so a row appended out of order is never found -- the first H3 test
+    put the Chief's shield key before smaller ids and his shield read x1 everywhere."""
+    rows = [arr[i:i + 8] for i in range(0, len(arr), 8)]
+    return b''.join(sorted(rows, key=lambda r: struct.unpack_from('<i', r)[0]))
 
 
 def lookup(rows, spec, gen, rule='multiply'):
@@ -831,6 +845,12 @@ def apply(m, game, registry=None, rule='multiply'):
                 m.grow_blocks(jobs)
                 c.writes += [(old_len, len(m.data)), (0x8, 0xC), (0x14, 0x18), (0x2D8, 0x2DC)]
                 c.writes += [(tb + bo, tb + bo + 8) for tb, bo, _es, _el in jobs]
+                # grow_blocks APPENDS; the engine binary-searches each Armor Modifiers
+                # array (see SORTED ROWS in the docstring), so put every grown one back
+                # in ascending stringid order
+                for ge, _rn, _old, _new, _lbl in row_jobs:
+                    rn2, rb2 = c.blk(ge + 4)
+                    c.write(rb2, _sorted_rows(bytes(m.data[rb2:rb2 + rn2 * 8])))
         else:
             room = None
             moved = lambda o: o                                   # noqa: E731
@@ -875,7 +895,7 @@ def apply(m, game, registry=None, rule='multiply'):
             for ge, rn, old, new_rows, lbl in row_jobs:
                 dst = got[gi]
                 gi += 1
-                arr = old + b''.join(struct.pack('<If', k, v) for k, v in new_rows)
+                arr = _sorted_rows(old + b''.join(struct.pack('<If', k, v) for k, v in new_rows))
                 c.write(dst, arr)
                 ptr = m.off2data(dst)
                 if ptr is None or m.data2off(ptr) != dst:

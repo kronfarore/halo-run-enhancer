@@ -366,6 +366,35 @@ def run(game, rel, scratch):
         S['c'] = (ngroups, len(player_pairs), len(enemy_idx), len(names_enemy), cdiff, sorted(mult_diff))
         if cdiff:
             S['fail'].append('(c) multipliers changed: %s' % ', '.join(cdiff[:8]))
+        # (f) the engine BINARY-SEARCHES groups and armour rows (halo3.dll 0x18013eeb4,
+        # signed *key - *elem): every array sorted, and the search finds every row
+        unsorted, missed = [], []
+        cn = pa._Ctx(new, game)
+        for t, groups in cn.tables():
+            gids = [g[1] for g in groups]
+            if gids != sorted(gids, key=lambda v: struct.unpack('<i', struct.pack('<I', v))[0]):
+                unsorted.append('[%d] groups' % t)
+            for _ge, gsid, _rn, _rb, rows in groups:
+                ids = [struct.unpack('<i', struct.pack('<I', r[0]))[0] for r in rows]
+                if ids != sorted(ids):
+                    unsorted.append('[%d] %s' % (t, pa.sid_name(new, game, gsid)))
+                for want in ids:
+                    lo, hi, hit = 0, len(ids) - 1, False
+                    while lo <= hi:
+                        mid = (lo + hi) // 2
+                        if ids[mid] == want:
+                            hit = True
+                            break
+                        if ids[mid] < want:
+                            lo = mid + 1
+                        else:
+                            hi = mid - 1
+                    if not hit:
+                        missed.append('[%d] %s %s' % (t, pa.sid_name(new, game, gsid),
+                                                     pa.sid_name(new, game, want & 0xFFFFFFFF)))
+        S['f'] = (unsorted, missed)
+        if unsorted or missed:
+            S['fail'].append('(f) unsorted %s; binary search misses %s' % (unsorted[:4], missed[:4]))
         # (e)
         S['e'] = diff_outside(old, new, writes, IND[game]['cs'], game)
         if S['e'][0]:
@@ -460,6 +489,9 @@ def summary(S):
         if md:
             print('      under "general x specific" the player would differ in: %s' % ', '.join(md))
         print('  (d) second apply: %s' % (S['d'][0].get('new') if S.get('d') else '?'))
+        if 'f' in S:
+            print('  (f) armour arrays sorted, binary search finds every row: %s' % (
+                'yes' if not any(S['f']) else 'NO %s %s' % (S['f'][0][:3], S['f'][1][:3])))
         print('  (e) %d differing byte(s), all inside recorded writes: %s; appended %d B; matg deep compare: %s'
               % (S['e'][2], 'yes' if not S['e'][0] else 'NO %s' % S['e'][1][:4], S['e'][3],
                  'n/a (H2)' if S['deep'] is None else ('equal' if not S['deep'] else S['deep'][:3])))
