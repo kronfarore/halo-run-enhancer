@@ -5186,47 +5186,52 @@
 					"game": ["Halo 3"],
 					"tag": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
 					"targets": [
-						{ "step": "*1.2","field": "Angle Change Per Shot", "block": "Barrels", "min": 0, "group": "Recoil", "easier_when": "increased" },
-						{ "step": "*1.2","field": "Angle Change Per Shot Max", "block": "Barrels", "min": 0, "group": "Recoil", "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Angle Change Per Shot", "block": "Barrels", "min": 0, "group": "Recoil", "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Angle Change Per Shot Max", "block": "Barrels", "min": 0, "group": "Recoil", "easier_when": "increased" }
 					]
 				},
 				"Magnetism": {
 					"desc": "How hard your aim is pulled toward a target.",
 					"debug_desc": "`Magnetism Angle` and `Magnetism Range` are the pull on your reticle near a target, with `Magnetism Falloff Range` (Halo 3 onward) and Reach's `Magnetism Near Falloff Range` shaping where it fades. One decision, one input.\\n\\n**Halo 2 declares this pair TWICE** (weap root 0x19C and 0x210) and the first is a different, mostly-zero field -- reading it makes Halo 2 look like it barely uses magnetism. The real pair is the second, next to Autoaim, so every Halo 2 row here is pinned to `nth: 1`. Every other game states nth 0 explicitly, because a gamed value falls back to the nearest EARLIER game and Halo 3 would otherwise inherit Halo 2's 1.\\n\\nThis is the weapon's own magnetism. The general Magnetism card is a different thing -- matg's Magnetism Friction and Adhesion, the controller-level aim friction that applies to everything.",
-					"game": ["Halo 2", "Halo 3", "Halo 4"],
-					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"},
+					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"],
+					"tag": { "Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle", "Halo 1": "weap weapons\\beam rifle\\beam rifle" },
 					"targets": [
-						{ "step": "*1.2","field": "Magnetism Angle", "group": "Magnetism", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 4": 0, "Halo 2": 1}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Range", "group": "Magnetism", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 4": 0, "Halo 2": 1}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo 3", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 4": 0, "Halo 2": 1}, "easier_when": "increased"}
+						{ "step": "*1.2", "field": "Magnetism Angle", "group": "Magnetism", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": { "Halo 3": 0, "Halo 4": 0, "Halo 2": 1 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Range", "group": "Magnetism", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": { "Halo 3": 0, "Halo 4": 0, "Halo 2": 1 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo 3", "Halo 4"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": { "Halo 3": 0, "Halo 4": 0, "Halo 2": 1 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Angle", "group": "Magnetism", "min": 0, "nth": 0, "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Magnetism Range", "group": "Magnetism", "min": 0, "nth": 0, "easier_when": "increased", "games": ["Halo 1"] }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
 				"Autoaim": {
 					"desc": "How hard the game steers your shots onto a target.",
 					"debug_desc": "`Autoaim Angle` is the cone the game will bend a shot into, `Autoaim Range` how far out it does so, and `Autoaim Falloff Range` (Halo 3 onward) where that help starts tapering off. All three are one decision -- how much the game shoots for you -- so they share one input.\\n\\nAutoaim is the shot bending toward the target; Magnetism is your reticle being pulled. They are separate fields and separate cards.\\n\\nShipped values differ wildly by weapon and game: the Halo 3 assault rifle is 5deg/15 with falloff 7.5, the sniper 1deg/10, and Reach's sniper 0.8deg/20. Cutting these to 0 removes aim assist entirely, which is the harder direction.",
-					"game": ["Halo 2", "Halo 3", "Halo 4"],
-					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"},
+					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"],
+					"tag": { "Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle", "Halo 1": "weap weapons\\beam rifle\\beam rifle" },
 					"targets": [
-						{ "step": "*1.2","field": "Autoaim Angle", "group": "Autoaim", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Angle", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Range", "group": "Autoaim", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Falloff Range", "group": "Autoaim", "min": 0, "games": ["Halo 3", "Halo 4"], "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased"}
+						{ "step": "*1.2", "field": "Autoaim Angle", "group": "Autoaim", "min": 0, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Autoaim Angle", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Range", "group": "Autoaim", "min": 0, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Autoaim Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Falloff Range", "group": "Autoaim", "min": 0, "games": ["Halo 3", "Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Angle", "group": "Autoaim", "min": 0, "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Autoaim Range", "group": "Autoaim", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
-					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo 4"],
-					"tag": "jmad *fp_beam_rifle*",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo 4", "Halo 1"],
+					"tag": { "Halo 2": "jmad *fp_beam_rifle*", "Halo 3": "jmad *fp_beam_rifle*", "Halo 3: ODST": "jmad *fp_beam_rifle*", "Halo 4": "jmad *fp_beam_rifle*", "Halo 1": "antr weapons\\beam rifle\\fp\\fp" },
 					"targets": [
-						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased"}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo 4"] },
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Rider Damage": {
@@ -5235,9 +5240,9 @@
 					"game": ["Halo 2", "Halo 3"],
 					"tag": "jpt! objects\\weapons\\rifle\\beam_rifle\\damage_effects\\beam_rifle_impact",
 					"targets": [
-						{ "step": "*1.2","field": "Rider Direct Damage Scale", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "min": 0, "easier_when": "increased"}
+						{ "step": "*1.2", "field": "Rider Direct Damage Scale", "min": 0, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "min": 0, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "min": 0, "easier_when": "increased" }
 					]
 				},
 				"Melee Seeking Angles": {
@@ -5245,7 +5250,7 @@
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
 					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo 4"],
-					"tag": {"default": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"},
+					"tag": { "default": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle" },
 					"split_from": "Melee Seeking",
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "min": 0, "easier_when": "increased" },
@@ -5257,7 +5262,7 @@
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
 					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo 4"],
-					"tag": {"default": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"},
+					"tag": { "default": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle" },
 					"split_from": "Melee Seeking",
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Pyramid Depth", "min": 0, "easier_when": "increased" }
@@ -5266,58 +5271,67 @@
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
-					"game": ["Halo 2", "Halo 3", "Halo 4"],
-					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"},
+					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"],
+					"tag": { "Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle", "Halo 1": "weap weapons\\beam rifle\\beam rifle" },
 					"targets": [
-						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
-						{ "step": "*1.2","field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased"}
+						{ "field": "Distribution Function", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "set": "horizontal fan", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Distribution Angle", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "field": "Distribution Function", "block": "Triggers", "index": "all", "set": "horizontal fan", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Distribution Angle", "block": "Triggers", "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo 2", "Halo 3", "Halo 4"],
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
-						"Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"
-					},
+					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"],
+					"tag": { "Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle", "Halo 1": "weap weapons\\beam rifle\\beam rifle" },
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
-						{"field": "Impact Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 4": "proj objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"]},
-						{"field": "Detonation Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 4": "proj objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"]}
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"], "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "field": "Impact Noise", "tag": { "Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 4": "proj objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam" }, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"] },
+						{ "field": "Detonation Noise", "tag": { "Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 4": "proj objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam" }, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"] },
+						{ "field": "Firing Noise", "block": "Triggers", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"], "games": ["Halo 1"] },
+						{ "field": "Impact Noise", "tag": "proj weapons\\sniper rifle\\sniper bullet", "follows_choice": true, "games": ["Halo 1"] },
+						{ "field": "Detonation Noise", "tag": "proj weapons\\sniper rifle\\sniper bullet", "follows_choice": true, "games": ["Halo 1"] }
 					]
 				},
 				"Projectile Range": {
 					"desc": "Maximum Range, Air Damage Range, Air Damage Range Max, Water Damage Range, Water Damage Range Max",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"tag": {"Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 4": "proj objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam"},
-					"game": ["Halo 2", "Halo 3", "Halo 4"],
+					"tag": { "Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 4": "proj objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam", "Halo 1": "proj weapons\\beam rifle\\beam" },
+					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"],
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Maximum Range", "group": "Range", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Air Damage Range", "group": "Range", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Air Damage Range Max", "group": "Range", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Damage Range", "group": "Range", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Damage Range Max", "group": "Range", "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Maximum Range", "group": "Range", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Air Damage Range", "group": "Range", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Air Damage Range Max", "group": "Range", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Water Damage Range", "group": "Range", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Water Damage Range Max", "group": "Range", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Maximum Range", "group": "Range", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Air Damage Range", "group": "Range", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Air Damage Range Max", "group": "Range", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Water Damage Range", "group": "Range", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Water Damage Range Max", "group": "Range", "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Projectile Velocity": {
 					"desc": "Initial Velocity, Final Velocity, Minimum Velocity",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"tag": {"Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 4": "proj objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam"},
-					"game": ["Halo 2", "Halo 3", "Halo 4"],
+					"tag": { "Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 4": "proj objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam", "Halo 1": "proj weapons\\beam rifle\\beam" },
+					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"],
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Initial Velocity", "group": "Velocity", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Final Velocity", "group": "Velocity", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Minimum Velocity", "group": "Velocity", "min": 0, "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Initial Velocity", "group": "Velocity", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Final Velocity", "group": "Velocity", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Minimum Velocity", "group": "Velocity", "min": 0, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Initial Velocity", "group": "Velocity", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Final Velocity", "group": "Velocity", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Minimum Velocity", "group": "Velocity", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Projectile Lead Time": {
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"tag": {"Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 4": "proj objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam"},
+					"tag": { "Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 4": "proj objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam" },
 					"game": ["Halo 3", "Halo 4"],
 					"split_from": "Projectile",
 					"targets": [
@@ -5326,50 +5340,48 @@
 				},
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\rifle\\beam_rifle\\damage_effects\\beam_rifle_impact",
-						"Halo 3": "jpt! objects\\weapons\\rifle\\beam_rifle\\damage_effects\\beam_rifle_impact",
-						"Halo 4": "jpt! objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam"
-					},
+					"tag": { "Halo 2": "jpt! objects\\weapons\\rifle\\beam_rifle\\damage_effects\\beam_rifle_impact", "Halo 3": "jpt! objects\\weapons\\rifle\\beam_rifle\\damage_effects\\beam_rifle_impact", "Halo 4": "jpt! objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam", "Halo 1": "jpt! weapons\\beam rifle\\beam" },
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] }
 					],
-					"game": ["Halo 2", "Halo 3", "Halo 4"]
+					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"]
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
-					"desc_overrides": {
-						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.",
-						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
-					},
-					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
-						"Halo 4": "jpt! globals\\damage_effects\\strike_melee"
-					},
+					"desc_overrides": { "Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", "Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons." },
+					"tag": { "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee", "Halo 1": "jpt! weapons\\beam rifle\\melee" },
 					"targets": [
-						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased" },
-						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased" },
-						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] }
 					],
-					"game": ["Halo 2", "Halo 3", "Halo 4"]
+					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"},
+					"tag": { "Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle", "Halo 1": "weap weapons\\beam rifle\\beam rifle" },
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 2": ["=1", "=0"], "Halo 3": ["=1", "=0"], "Halo 3: ODST": ["=1", "=0"], "Halo 4": ["=1", "=0"]}, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": ["*1", "=0"], "Halo 3": ["*1", "=0"], "Halo 3: ODST": ["*1", "=0"], "Halo 4": ["*1", "=0"]}, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": ["=3.5", "=0"], "Halo 3": ["=3.5", "=0"], "Halo 3: ODST": ["=3.5", "=0"], "Halo 4": ["=3.5", "=0"]}, "easier_when": "increased" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": { "Halo 2": ["=1", "=0"], "Halo 3": ["=1", "=0"], "Halo 3: ODST": ["=1", "=0"], "Halo 4": ["=1", "=0"] }, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 2": ["*1", "=0"], "Halo 3": ["*1", "=0"], "Halo 3: ODST": ["*1", "=0"], "Halo 4": ["*1", "=0"] }, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 2": ["=3.5", "=0"], "Halo 3": ["=3.5", "=0"], "Halo 3: ODST": ["=3.5", "=0"], "Halo 4": ["=3.5", "=0"] }, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": ["=1", "=0"], "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": ["*1", "=0"], "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": ["=2", "=0"], "easier_when": "increased", "games": ["Halo 1"] }
 					],
-					"game": ["Halo 2", "Halo 3", "Halo 4"]
+					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"]
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
 					"requires_zoom": true,
-					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"},
+					"tag": { "Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle" },
 					"game": ["Halo 3", "Halo 3: ODST", "Halo 4"],
 					"targets": [
 						{ "step": "*0.8", "field": "Weapon Zoom Time", "min": 0, "zero_is": 0.2, "easier_when": "decreased" }
@@ -5377,53 +5389,59 @@
 				},
 				"Heat Threshold": {
 					"desc": "Heat Recovery Threshold",
-					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"},
-					"game": ["Halo 2", "Halo 3", "Halo 4"],
+					"tag": { "Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle", "Halo 1": "weap weapons\\beam rifle\\beam rifle" },
+					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"],
 					"split_from": "Heat Recovery",
 					"targets": [
-						{ "step": "*0.8", "field": "Heat Recovery Threshold", "min": "0", "max": "1", "easier_when": "decreased" }
+						{ "step": "*0.8", "field": "Heat Recovery Threshold", "min": "0", "max": "1", "easier_when": "decreased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*0.8", "field": "Heat Recovery Threshold", "min": "0", "max": "1", "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Heat Loss": {
 					"desc": "Heat Loss Per Second, Overheated Heat Loss Per Second",
-					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"},
-					"game": ["Halo 2", "Halo 3", "Halo 4"],
+					"tag": { "Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle", "Halo 1": "weap weapons\\beam rifle\\beam rifle" },
+					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"],
 					"split_from": "Heat Recovery",
 					"targets": [
-						{ "step": "*0.8", "field": "Heat Loss Per Second", "group": "Heat Loss", "easier_when": "decreased" },
-						{ "step": "*0.8", "field": "Overheated Heat Loss Per Second", "group": "Heat Loss", "easier_when": "decreased" }
+						{ "step": "*0.8", "field": "Heat Loss Per Second", "group": "Heat Loss", "easier_when": "decreased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*0.8", "field": "Overheated Heat Loss Per Second", "group": "Heat Loss", "easier_when": "decreased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*0.8", "field": "Heat Loss Per Second", "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Heat Per Round": {
 					"desc": "Heat Generated Per Round",
-					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"},
-					"game": ["Halo 2", "Halo 3", "Halo 4"],
+					"tag": { "Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle", "Halo 1": "weap weapons\\beam rifle\\beam rifle" },
+					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"],
 					"split_from": "Per Round",
 					"targets": [
-						{ "step": "*0.8", "field": "Heat Generated Per Round", "block": "Barrels", "easier_when": "decreased" }
+						{ "step": "*0.8", "field": "Heat Generated Per Round", "block": "Barrels", "easier_when": "decreased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*0.8", "field": "Heat Generated Per Round", "block": "Triggers", "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Age Per Round": {
 					"desc": "Age Generated Per Round, Campaign Age Generated Per Round",
-					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"},
-					"game": ["Halo 2", "Halo 3", "Halo 4"],
+					"tag": { "Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle", "Halo 1": "weap weapons\\beam rifle\\beam rifle" },
+					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"],
 					"split_from": "Per Round",
 					"targets": [
-						{ "step": "*1.2", "field": "Age Generated Per Round", "block": "Barrels", "group": "Age Generated Per Round", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "group": "Age Generated Per Round", "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Age Generated Per Round", "block": "Barrels", "group": "Age Generated Per Round", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "group": "Age Generated Per Round", "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Age Generated Per Round", "block": "Triggers", "group": "Age Generated Per Round", "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Salvo Shooting": {
 					"desc": "How fast it fires and how many rounds one pull sends.",
 					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
-					"game": ["Halo 2", "Halo 3", "Halo 4"],
-					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"},
+					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"],
+					"tag": { "Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle", "Halo 1": "weap weapons\\beam rifle\\beam rifle" },
 					"easier_when": "increased",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased" },
-						{ "step": "+1", "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "easier_when": "increased" },
-						{ "step": "+1", "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "+1", "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "+1", "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second", "easier_when": "increased", "games": ["Halo 1"] }
 					],
 					"split_from": "More Shooting"
 				},
@@ -5431,38 +5449,34 @@
 					"desc": "How fast you can pull the trigger again. Lower is faster.",
 					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
 					"game": ["Halo 2", "Halo 3", "Halo 4"],
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
-						"Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"
-					},
+					"tag": { "Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle" },
 					"easier_when": "decreased",
 					"targets": [
 						{ "step": "*0.8", "field": "Fire Recovery Time", "block": "Barrels", "easier_when": "decreased" }
 					]
 				},
-
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
-					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"},
+					"tag": { "Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle", "Halo 1": "weap weapons\\beam rifle\\beam rifle" },
 					"targets": [
-						{ "step": "+1", "field": "Projectiles Per Shot", "block": "Barrels", "group": "Projectiles Per Shot", "easier_when": "increased" },
-						{ "step": "+1", "field": "Rounds Per Shot", "block": "Barrels", "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo 4"], "easier_when": "increased" }
+						{ "step": "+1", "field": "Projectiles Per Shot", "block": "Barrels", "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "+1", "field": "Rounds Per Shot", "block": "Barrels", "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo 4"], "easier_when": "increased" },
+						{ "step": "+1", "field": "Projectiles Per Shot", "block": "Triggers", "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "+1", "field": "Rounds Per Shot", "block": "Triggers", "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 1"] }
 					],
-					"game": ["Halo 2", "Halo 3", "Halo 4"]
+					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"]
 				},
 				"Error Angle": {
 					"desc": "Spread of the shot, Minimum Error and Maximum Error",
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
-						"Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"
-					},
+					"tag": { "Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle", "Halo 1": "weap weapons\\beam rifle\\beam rifle" },
 					"targets": [
-						{ "step": "*0.8", "field": "Error Angle", "block": "Barrels", "nth": {"default": 1, "Halo 4": 0}, "group": "Error Angle", "easier_when": "decreased" },
-						{ "step": "*0.8", "field": "Error Angle Max", "block": "Barrels", "nth": {"default": 1, "Halo 4": 0}, "group": "Error Angle", "easier_when": "decreased" }
+						{ "step": "*0.8", "field": "Error Angle", "block": "Barrels", "nth": { "default": 1, "Halo 4": 0 }, "group": "Error Angle", "easier_when": "decreased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*0.8", "field": "Error Angle Max", "block": "Barrels", "nth": { "default": 1, "Halo 4": 0 }, "group": "Error Angle", "easier_when": "decreased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*0.8", "field": "Minimum Error", "block": "Triggers", "nth": 0, "group": "Error Angle", "easier_when": "decreased", "games": ["Halo 1"] },
+						{ "step": "*0.8", "field": "Error Angle", "block": "Triggers", "nth": 0, "group": "Error Angle", "easier_when": "decreased", "games": ["Halo 1"] },
+						{ "step": "*0.8", "field": "Error Angle Max", "block": "Triggers", "nth": 0, "group": "Error Angle", "easier_when": "decreased", "games": ["Halo 1"] }
 					],
-					"game": ["Halo 2", "Halo 3", "Halo 4"]
+					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"]
 				}
 			},
 			"Covenant Carbine": {

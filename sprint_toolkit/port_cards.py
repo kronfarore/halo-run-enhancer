@@ -111,104 +111,111 @@ def plan(weapon):
         port = next((p for p in ports or () if p.get('weapon') == weapon), None)
         if not port or game in sum(INHERITS.values(), []):
             continue
-        donor = port['donor']
-        wpath = weapon_ports.weap_path(port)
-        dtag = db.weap_tag_for(donor, game)
-        dpath = dtag.split(' & ')[0][5:]
-        dfolder = dpath.rsplit(chr(92), 1)[0]
-        dbase = dpath.rsplit(chr(92), 1)[-1].replace(' ', '_')
-        ptags = [r.get('tag') for r in port.get('balance') or () if r.get('tag')]
-        check = Checker(db, game, weapon, wpath)
-        targets_games = [game] + INHERITS.get(game, [])
-        for name, dcard in (weapons.get(db.resolve_weapon(donor) or donor) or {}).items():
-            if not isinstance(dcard, dict):
-                continue
-            mod = next((m for m in db.weapon_mods.get(db.resolve_weapon(donor) or donor, [])
-                        if m['name'] == name), None)
-            if mod is None or not db._game_ok(mod, game) or mod.get('ignore'):
-                continue
-            # dual-wield cards only for a port that can be dual wielded (catalog
-            # 'dual_wield': true) -- the SAW cannot (user, 2026-10-03)
-            if name.startswith('Dual ') and not port.get('dual_wield'):
-                continue
-            # donor cards the port has no use for (catalog 'skip_cards': the Halo 1 fuel
-            # rod has no zoom, the Rocket Launcher does)
-            if name in (port.get('skip_cards') or ()):
-                continue
-            # the port may file a donor card under its own name (catalog 'card_map': the
-            # Halo 1 Sentinel Beam's damage is 'Beam Damage' like its other games, where
-            # the Plasma Rifle says 'Bullet Damage')
-            name = (port.get('card_map') or {}).get(name, name)
-            card = port_cards.get(name)
-            if card is not None and game in (card.get('game') or []):
-                continue                                     # already covered: never overwrite
-            tag = _resolve(dcard.get('tag'), game, db.games)
-            if not isinstance(tag, str) or not tag:
-                continue
-            mapped, bad = [], None
-            tag_map = port.get('tag_map') or {}
-            for cls, path in _tag_parts(tag):
-                # the catalog's explicit donor -> port tag map wins (names that share no
-                # word: Halo 1's rocket -> the fuel rod's 'grunt fuel rod'); it only has
-                # to EXIST -- a damage effect reached through an effect tag is not named
-                # by the weapon or its projectile, so the reference check would refuse it
-                explicit = tag_map.get('%s %s' % (cls, path))
-                m = explicit or he.ModifierDatabase._port_tag(
-                    '%s %s' % (cls, path), dpath, dfolder, dbase, wpath, ptags,
-                    port.get('fp_animations'))
-                if m is None:
-                    bad = 'no %s counterpart for %s' % (weapon, path)
-                    break
-                mc, _s, mp = m.partition(' ')
-                if not check.ok(mc, mp, exists_only=bool(explicit)):
-                    bad = '%s %s does not exist in %s' % (mc, mp, game)
-                    break
-                mapped.append(m)
-            if bad:
-                report.append((game, name, 'SKIPPED', bad))
-                continue
-            # halo.json's form: the class once, on the first part
-            tag = ' & '.join([mapped[0]] + [x.partition(' ')[2] for x in mapped[1:]])
-            dtargets = _resolve(dcard.get('targets'), game, db.games) or []
-            new_targets = []
-            for t in dtargets:
-                if not isinstance(t, dict) or not he.target_applies(t, game):
+        # a second donor may supply named cards (catalog 'card_donors': the Halo 1 Beam
+        # Rifle aims and hits like the Sniper Rifle but heats and drains like the Plasma
+        # Pistol it was built on); the main donor then skips those names
+        extra = port.get('card_donors') or {}
+        claimed = {n for names in extra.values() for n in names}
+        for donor, only in [(port['donor'], None)] + [(d, set(n)) for d, n in extra.items()]:
+            wpath = weapon_ports.weap_path(port)
+            dtag = db.weap_tag_for(donor, game)
+            dpath = dtag.split(' & ')[0][5:]
+            dfolder = dpath.rsplit(chr(92), 1)[0]
+            dbase = dpath.rsplit(chr(92), 1)[-1].replace(' ', '_')
+            ptags = [r.get('tag') for r in port.get('balance') or () if r.get('tag')]
+            check = Checker(db, game, weapon, wpath)
+            targets_games = [game] + INHERITS.get(game, [])
+            for name, dcard in (weapons.get(db.resolve_weapon(donor) or donor) or {}).items():
+                if not isinstance(dcard, dict):
                     continue
-                t = {k: (_resolve(v, game, db.games) if isinstance(v, dict) and k != 'set' else v)
-                     for k, v in t.items() if k not in ('games', 'skip_games')}
-                t['games'] = list(targets_games)
-                new_targets.append(t)
-            if not new_targets:
-                continue
-            if card is None:                                  # donor-only card
-                card = {k: copy.deepcopy(v) for k, v in dcard.items()
-                        if k not in ('game', 'tag', 'targets', 'skip_games')}
-                card['game'] = [game]
-                card['tag'] = {game: tag}
-                card['targets'] = new_targets
-                port_cards[name] = card
-                report.append((game, name, 'NEW', tag))
-            else:                                             # extend the port's card
-                old_games = list(card.get('game') or [])
-                if isinstance(card.get('tag'), str):
-                    card['tag'] = {g: card['tag'] for g in old_games} or {'default': card['tag']}
-                card['tag'][game] = tag
-                if isinstance(card.get('targets'), list):
-                    for t in card['targets']:
-                        if isinstance(t, dict) and 'games' not in t:
-                            # keep them where they were -- and target 'games' are matched
-                            # LITERALLY, so a game that INHERITS (ODST from Halo 3) has to
-                            # be named or it silently loses the target
-                            pinned = list(old_games)
-                            for base, kids in INHERITS.items():
-                                if base in pinned:
-                                    pinned += [k for k in kids if k not in pinned]
-                            t['games'] = pinned
-                    card['targets'] += new_targets
-                else:
-                    card.setdefault('targets', {})[game] = new_targets
-                card['game'] = old_games + [game]
-                report.append((game, name, 'EXTENDED', tag))
+                if (name not in only) if only is not None else (name in claimed):
+                    continue
+                mod = next((m for m in db.weapon_mods.get(db.resolve_weapon(donor) or donor, [])
+                            if m['name'] == name), None)
+                if mod is None or not db._game_ok(mod, game) or mod.get('ignore'):
+                    continue
+                # dual-wield cards only for a port that can be dual wielded (catalog
+                # 'dual_wield': true) -- the SAW cannot (user, 2026-10-03)
+                if name.startswith('Dual ') and not port.get('dual_wield'):
+                    continue
+                # donor cards the port has no use for (catalog 'skip_cards': the Halo 1 fuel
+                # rod has no zoom, the Rocket Launcher does)
+                if name in (port.get('skip_cards') or ()):
+                    continue
+                # the port may file a donor card under its own name (catalog 'card_map': the
+                # Halo 1 Sentinel Beam's damage is 'Beam Damage' like its other games, where
+                # the Plasma Rifle says 'Bullet Damage')
+                name = (port.get('card_map') or {}).get(name, name)
+                card = port_cards.get(name)
+                if card is not None and game in (card.get('game') or []):
+                    continue                                     # already covered: never overwrite
+                tag = _resolve(dcard.get('tag'), game, db.games)
+                if not isinstance(tag, str) or not tag:
+                    continue
+                mapped, bad = [], None
+                tag_map = port.get('tag_map') or {}
+                for cls, path in _tag_parts(tag):
+                    # the catalog's explicit donor -> port tag map wins (names that share no
+                    # word: Halo 1's rocket -> the fuel rod's 'grunt fuel rod'); it only has
+                    # to EXIST -- a damage effect reached through an effect tag is not named
+                    # by the weapon or its projectile, so the reference check would refuse it
+                    explicit = tag_map.get('%s %s' % (cls, path))
+                    m = explicit or he.ModifierDatabase._port_tag(
+                        '%s %s' % (cls, path), dpath, dfolder, dbase, wpath, ptags,
+                        port.get('fp_animations'))
+                    if m is None:
+                        bad = 'no %s counterpart for %s' % (weapon, path)
+                        break
+                    mc, _s, mp = m.partition(' ')
+                    if not check.ok(mc, mp, exists_only=bool(explicit)):
+                        bad = '%s %s does not exist in %s' % (mc, mp, game)
+                        break
+                    mapped.append(m)
+                if bad:
+                    report.append((game, name, 'SKIPPED', bad))
+                    continue
+                # halo.json's form: the class once, on the first part
+                tag = ' & '.join([mapped[0]] + [x.partition(' ')[2] for x in mapped[1:]])
+                dtargets = _resolve(dcard.get('targets'), game, db.games) or []
+                new_targets = []
+                for t in dtargets:
+                    if not isinstance(t, dict) or not he.target_applies(t, game):
+                        continue
+                    t = {k: (_resolve(v, game, db.games) if isinstance(v, dict) and k != 'set' else v)
+                         for k, v in t.items() if k not in ('games', 'skip_games')}
+                    t['games'] = list(targets_games)
+                    new_targets.append(t)
+                if not new_targets:
+                    continue
+                if card is None:                                  # donor-only card
+                    card = {k: copy.deepcopy(v) for k, v in dcard.items()
+                            if k not in ('game', 'tag', 'targets', 'skip_games')}
+                    card['game'] = [game]
+                    card['tag'] = {game: tag}
+                    card['targets'] = new_targets
+                    port_cards[name] = card
+                    report.append((game, name, 'NEW', tag))
+                else:                                             # extend the port's card
+                    old_games = list(card.get('game') or [])
+                    if isinstance(card.get('tag'), str):
+                        card['tag'] = {g: card['tag'] for g in old_games} or {'default': card['tag']}
+                    card['tag'][game] = tag
+                    if isinstance(card.get('targets'), list):
+                        for t in card['targets']:
+                            if isinstance(t, dict) and 'games' not in t:
+                                # keep them where they were -- and target 'games' are matched
+                                # LITERALLY, so a game that INHERITS (ODST from Halo 3) has to
+                                # be named or it silently loses the target
+                                pinned = list(old_games)
+                                for base, kids in INHERITS.items():
+                                    if base in pinned:
+                                        pinned += [k for k in kids if k not in pinned]
+                                t['games'] = pinned
+                        card['targets'] += new_targets
+                    else:
+                        card.setdefault('targets', {})[game] = new_targets
+                    card['game'] = old_games + [game]
+                    report.append((game, name, 'EXTENDED', tag))
     return port_cards, report
 
 
