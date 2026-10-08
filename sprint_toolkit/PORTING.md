@@ -851,6 +851,21 @@ unzoomed; reload still unzooms; plasma pistol unchanged.
 
 ---
 
+### Halo 1: the Spike Rifle, wave A5 (2026-10-08) -- a dual-wieldable arcing automatic
+
+The whole weapon is `ports_h1/brute_spiker.py`.
+
+**Step 4a, the yardstick (user): the ASSAULT RIFLE.** `h3_weapon_values.py` + `h1_role_compare.py
+brute_spiker`. Halo 3's spiker is `bullet_slow` -- the AR's damage group, not the needler's
+`plasma_slow` -- and does the AR's dps (9 x 8/s = 72 vs 7.5 x 10/s = 75). AR ratio: 12 x 12/s =
+144/s (H1 AR 150), magazine 75, 300 / 375 (DUAL-WIELD CARRY RULE x1.5), reload 2.8 s, error
+1.08 -> 2.71 (the minimum's own ratio is degenerate: the maximum's 6.5/3.0 on both, the SMG
+rule), 101 -> 71 wu/s, range 70, aim 6/20 14.4/22.5, melee 56.6 (cut_melee 72 / strike_melee 70);
+it kills like the H1 AR (Elite major 2.17 s vs 2.07). The needler ratio (180/s on the needle's
+materials: Flood combat forms in 3 shots; its spread minimum 0/0) was rejected. No AR
+counterpart, so Halo 3's own in BOTH versions: air gravity 0.2 (the H3 AR has 0) and the
+spike's ricochet material responses (bounce at 0-60 deg off hard metal / terrain / glass).
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:

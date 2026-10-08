@@ -254,6 +254,40 @@ SETS = {
         ('Flood combat (elite)', r'characters\floodcombat elite\floodcombat elite plasma rifle',
          'floodcombat elite'),
     ]},
+    # the SPIKE RIFLE (wave A5), step 4a. Halo 3 (H3EK 2026-10-08, h3_weapon_values): spiker
+    # 9 (bullet_slow -- the AR's damage group) x 8/s = 72/s, ramp 1 s, mag 40 (120 / 160),
+    # reload 56 fr, error 0 min, 0.5 -> 1.25, 25 -> 17.5 wu/s, air gravity 0.2, range 70, aim
+    # 5/12 12/18, melee cut_melee 72; AR 7.5 x 10/s = 75/s, 32 (96 / 384), 58 fr, error 0.1,
+    # 0.1 -> 3, 80 wu/s, gravity 0, range 40, aim 5/15 10/20, strike_melee 70; needler 4
+    # (plasma_slow) x 7 -> 10/s = 40/s, 19 (76 / 95), 44 fr, error 0, 0 -> 3, 11 wu/s, range
+    # 25, aim 4/14 6/21. Halo 1: AR 10 x 15/s, 60 (240 / 600), 87 fr, error 2 -> 6.5, 324,
+    # gravity 1.0, range 40, aim 6/25 12/25, melee 55; needler 10 (detonation damage) x 3 ->
+    # 10/s, 20 (80 / 80), 70 fr, error min 2, 4 -> 4, speed 4 (tag), guided, range 20; plasma
+    # rifle 7 -> 10/s, heat. Ratio = H1 yardstick x H3 spiker / H3 yardstick.
+    'brute_spiker': {'port': 'Spike Rifle', 'weapons': [
+        ('SpR = H3 own (AR bullet)', W + r'assault rifle\assault rifle', 'shot',
+         {'dmg': 9.0, 'rate': 8.0, 'mag': 40, 'reload': 56 / 30.0, 'speed': 25.0, 'range': 70.0,
+          'aim': (5.0, 12.0, 12.0, 18.0)}),
+        ('SpR = H3 own (needle mat)', W + r'needler\needler', 'shot',
+         {'dmg': 9.0, 'rate': 8.0, 'mag': 40, 'reload': 56 / 30.0, 'speed': 25.0, 'range': 70.0,
+          'aim': (5.0, 12.0, 12.0, 18.0), 'damage_tags': [W + r'needler\detonation damage']}),
+        # 10 x 9/7.5; 15/s x 8/10 (under the 15/s cap); 60 x 40/32; 87 fr x 56/58;
+        # 324 x 25/80; range 40 x 70/40; aim 6 x 5/5, 25 x 12/15; 12 x 12/10, 25 x 18/20
+        ('SpR = AR ratio', W + r'assault rifle\assault rifle', 'shot',
+         {'dmg': 12.0, 'rate': 12.0, 'mag': 75, 'reload': 84 / 30.0, 'speed': 101.25,
+          'range': 70.0, 'aim': (6.0, 20.0, 14.4, 22.5)}),
+        # 10 x 9/4; 10/s x 8/10; 20 x 40/19; 70 fr x 56/44; 4 x 25/11; 20 x 70/25;
+        # aim 6 x 5/4, 25 x 12/14; 12 x 12/6, 25 x 18/21 (needle materials)
+        ('SpR = Needler ratio', W + r'needler\needler', 'shot',
+         {'dmg': 22.5, 'rate': 8.0, 'mag': 42, 'reload': 89 / 30.0, 'speed': 9.09,
+          'range': 56.0, 'aim': (7.5, 21.4, 24.0, 21.4),
+          'damage_tags': [W + r'needler\detonation damage']}),
+        ('Assault Rifle', W + r'assault rifle\assault rifle', 'shot'),
+        ('Needler (no supercombine)', W + r'needler\needler', 'shot',
+         {'damage_tags': [W + r'needler\detonation damage']}),
+        ('Plasma Rifle', W + r'plasma rifle\plasma rifle', 'shot'),
+        ('SMG (port peer)', W + r'smg\smg', 'shot', {'rate': 15.0, 'cap': 15.0}),
+    ]},
 }
 
 ENEMIES = [
