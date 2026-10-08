@@ -405,6 +405,20 @@ def own_beam(a, b, write):
         mr[:] = []
         for x in src.proj_attrs.material_responses.STEPTREE:
             mr.append(copy.deepcopy(x))
+    if 'change_color' in b:
+        # the projectile's CHANGE COLOUR A (the Beam Rifle, test 4: the impacts stayed
+        # un-pink): `c generic` particles take their colour from the CREATING object's change
+        # colour, here the projectile -- the plasma pistol bolt's runs magenta -> GREEN; the
+        # sniper bullet has none. A copy of `from`'s block, both bounds `rgb`, RGB blend
+        C = b['change_color']
+        src = proj_def.build(filepath=path(C['from'], '.projectile')).data.tagdata
+        ccs = pt.data.tagdata.obje_attrs.change_colors.STEPTREE
+        ccs[:] = []
+        cc = copy.deepcopy(src.obje_attrs.change_colors.STEPTREE[0])
+        cc.flags.blend_in_hsv = False
+        for bound in (cc.color_lower_bound, cc.color_upper_bound):
+            bound.r, bound.g, bound.b = C['rgb']
+        ccs.append(cc)
     if 'impact_tint' in b:
         # the impacts RECOLOURED (the Beam Rifle, test 3: 'green plasma on the ground, blue
         # smoke'): every response effect with a matching particle (path holds one of `match`)

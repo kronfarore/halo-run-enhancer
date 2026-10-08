@@ -78,7 +78,16 @@ def bitmaps(w):
     # a SOLID GLOW material (`glow_shaders` {name: rgb}; the Beam Rifle's `luminous` slits,
     # an animated energy field in Halo 3 on multiplayer bitmaps): a flat diffuse in its
     # colour and a multipurpose map fully self-lit (G 255)
-    for name, rgb in w.get('glow_shaders', {}).items():
+    for name, spec in w.get('glow_shaders', {}).items():
+        rgb = spec['rgb'] if isinstance(spec, dict) else spec
+        if isinstance(spec, dict) and spec.get('additive'):
+            # an ADDITIVE glow (the Beam Rifle, test 4: 'it looks like plain paint'): Halo 1
+            # draws light as additive transparency (the needler's needles, the sword blade)
+            col = np.zeros((16, 16, 4), np.uint8)
+            col[..., :3] = [int(round(c * 255)) for c in rgb]
+            col[..., 3] = 255
+            Image.fromarray(col).save(os.path.join(out, name + '_glow.tif'))
+            continue
         col = np.zeros((16, 16, 4), np.uint8)
         col[..., :3] = [int(round(c * 255)) for c in rgb]
         col[..., 3] = 255
@@ -204,7 +213,21 @@ def shaders(w, glow):
                 os.remove(stale)
         shutil.copy2(os.path.join(TAGS, src), os.path.join(out, name + ext))
         print('   shader %s = a copy of %s' % (name + ext, src))
-    for name in list(w['shaders']) + list(w.get('glow_shaders', {})):
+    for name, spec in w.get('glow_shaders', {}).items():
+        if not (isinstance(spec, dict) and spec.get('additive')):
+            continue
+        from reclaimer.hek.defs.schi import schi_def
+        stale = os.path.join(out, name + '.shader_model')          # `tool model` must find ONE
+        if os.path.exists(stale):
+            os.remove(stale)
+        t = schi_def.build(filepath=os.path.join(TAGS, spec.get('from', r'weapons\needler\shaders\needler luminous')
+                                                 + '.shader_transparent_chicago'))
+        t.data.tagdata.schi_attrs.maps.STEPTREE[0].bitmap.filepath = w['dir'] + B + 'bitmaps' + B + name + '_glow'
+        t.filepath = os.path.join(out, name + '.shader_transparent_chicago')
+        t.serialize(temp=False, backup=False)
+        print('   shader %s  ADDITIVE glow %s' % (t.filepath, tuple(spec['rgb'])))
+    for name in list(w['shaders']) + [k for k, v in w.get('glow_shaders', {}).items()
+                                      if not (isinstance(v, dict) and v.get('additive'))]:
         if (name in w.get('numeric', {}).get('places', {}) or name in w.get('meters', {})
                 or name in w.get('shader_copies', {})):
             continue

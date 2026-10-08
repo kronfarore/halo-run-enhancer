@@ -95,11 +95,16 @@ PORT.update({
         'shaders': {'beam_rifle': (H3 + r'\bitmaps\beam_rifle.bitmap', H3 + r'\bitmaps\beam_rifle_illum.bitmap'),
                     'beam_rifle2': (H3 + r'\bitmaps\beam_rifle.bitmap', H3 + r'\bitmaps\beam_rifle_illum.bitmap'),
                     'beam_rifle_rubber': (H3 + r'\bitmaps\beam_rifle.bitmap', None)},
-        'shader_copies': {'beam_rifle_glass': r'weapons\plasma rifle\fp\shaders\dull.shader_model'},
         # TEST 3 (user, Halo 3 screenshot beside ours): the glowing PINK slits on the outside
         # are `beam_rifle_luminous` -- built as the plasma rifle's blue luminous, they read
-        # dark. Now an own fully self-lit shader in the beam's pink
-        'glow_shaders': {'beam_rifle_luminous': PINK},
+        # dark; test 3 made them a self-lit pink shader_model. TEST 4 (user): 'four spots
+        # missing, and the glow looks like plain paint'. The four spots are `beam_rifle_glass`
+        # (rendered in the FP idle pose: the slit and the diamonds by the hand) -- not glass:
+        # its Halo 3 template _0_0_0_0_0_1_0_1_0_1 is blend mode ADDITIVE (a glow), built as
+        # the plasma rifle's dull metal. Both now ADDITIVE chicago glows (Halo 1 draws light
+        # that way: the needler's needles, the sword's blade) in the beam's pink
+        'glow_shaders': {'beam_rifle_luminous': {'rgb': PINK, 'additive': True},
+                         'beam_rifle_glass': {'rgb': PINK, 'additive': True}},
         'template': r'weapons\plasma rifle\fp\shaders\gun',
         # TEST 1 (user): 'no glow on the gun at all' -- Halo 3's illum map is a GREYSCALE mask
         # (its colour is the shader's self_illum_color, function data), 1% of texels lit in
@@ -241,6 +246,11 @@ PORT.update({
                    # TEST 3 (user): 'green plasma on the ground, blue smoke rising' -> the
                    # energy particles of each impact pink (RGB), the green burn decal Halo 1's
                    # plain plasma burn
+                   # TEST 4 (user): 'no pink impact, less visible now' -- the colour of the
+                   # `c generic` impact particles is the PROJECTILE's change colour A (the
+                   # plasma pistol bolt's runs magenta -> green; the sniper bullet copy had
+                   # none): an own change colour, pink
+                   'change_color': {'from': PP + 'bolt', 'rgb': PINK},
                    'impact_tint': {'rgb': PINK, 'out': BM + 'effects\\impact\\',
                                    'match': ('particles\\energy\\', 'shield impact'),
                                    'decals': {'effects\\decals\\bullet holes\\plasma green burn large':
