@@ -53,6 +53,39 @@ def strip_tris(idx):
     return out
 
 
+def convert_particle_model(rel, material, node='frame spike'):
+    """A Halo 3 PARTICLE MODEL (.particle_model, one rigid mesh) as a one-node Halo 1 JMS --
+    the Spike Rifle's stuck spike (`fx\\particles\\models\\weapons\\brute_spike`): Halo 3
+    spawns it as a model particle where a spike hits; Halo 1 has no model particles, so it
+    becomes the PROJECTILE's model (the needle's way). Read from the export's `raw vertices`
+    (compressed to the bounds, as a render model's) and `raw indices` (a triangle strip)."""
+    import io
+    import re
+    s = io.open(h1_fp_retarget.export_xml(rel), encoding='utf-8', errors='replace').read()
+
+    def nums(name, blk=s):
+        return [tuple(float(x) for x in v.split(','))
+                for v in re.findall(r'name="%s" value="([^"]*)"' % re.escape(name), blk)]
+    (x0, x1, y0), (y1, z0, z1) = nums('position bounds 0')[0], nums('position bounds 1')[0]
+    (u0, u1), (v0, v1) = nums('texcoord bounds 0')[0], nums('texcoord bounds 1')[0]
+    raw = s[s.find('<block name="raw vertices"'):s.find('<block name="raw indices"')]
+    pos, uv, nrm = nums('position', raw), nums('texcoord', raw), nums('normal', raw)
+    idx = [int(v) for v in re.findall(r'name="word" value="(\d+)"',
+                                      s[s.find('<block name="raw indices"'):])]
+    tmpl = extract_model(mod2_def.build(filepath=os.path.join(TAGS, TEMPLATE + '.gbxmodel')).data.tagdata,
+                         TEMPLATE, write_jms=False)[0]
+    jm = copy.deepcopy(tmpl)
+    jm.nodes = [JmsNode(node, -1, -1, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, parent_index=-1)]
+    lo, span = (x0, y0, z0), (x1 - x0, y1 - y0, z1 - z0)
+    jm.verts = [JmsVertex(0, *[(lo[k] + p[k] * span[k]) * 100 for k in range(3)], *n,
+                          -1, 0.0, u0 + t[0] * (u1 - u0), 1.0 - (v0 + t[1] * (v1 - v0)))
+                for p, t, n in zip(pos, uv, nrm)]
+    jm.tris = [JmsTriangle(0, 0, a, b, c) for a, b, c in strip_tris(idx)]
+    jm.materials = [JmsMaterial(material)]
+    jm.markers = []
+    return jm
+
+
 def convert(rel, materials=None, markers=None):
     """`markers`: extra Halo 3 -> Halo 1 marker names over MARKERS (the Beam Rifle's
     fx_vent -> overheat, where the template's overheat steam spawns)."""

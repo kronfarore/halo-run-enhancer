@@ -72,6 +72,34 @@ def material_islands(jm, material):
     return [(ts, [jm.verts[v] for t in ts for v in (t.v0, t.v1, t.v2)]) for ts in isl.values()]
 
 
+def lit_pieces(jm, material, illum, threshold=16):
+    """[(triangles, verts)] -- each triangle of `material` whose UVs land on a LIT texel of
+    the Halo 3 illum mask `illum` (sampled at 7 barycentric points, both v conventions; the
+    fp_material_view test). The Spike Rifle's glow: Halo 3 lights a few tiny spots inside
+    the big body / blade materials, so a material island would light far too much."""
+    img, _ = h3_hud_art.decode(illum)
+    a = np.array(img)[..., :3].max(axis=2)
+    H, W = a.shape
+    names = [m.name for m in jm.materials]
+    if material not in names:
+        return []
+    si = names.index(material)
+    out = []
+    for t in jm.tris:
+        if t.shader != si:
+            continue
+        vs = [jm.verts[i] for i in (t.v0, t.v1, t.v2)]
+        uv = np.array([(v.tex_u % 1.0, v.tex_v % 1.0) for v in vs])
+        best = 0
+        for wt in ((1 / 3., 1 / 3., 1 / 3.), (.6, .2, .2), (.2, .6, .2), (.2, .2, .6), (1, 0, 0), (0, 1, 0), (0, 0, 1)):
+            u, v = (np.array(wt)[:, None] * uv).sum(0)
+            for y in (v, 1 - v):
+                best = max(best, a[min(H - 1, int(y * H)), min(W - 1, int(u * W))])
+        if best > threshold:
+            out.append(([t], vs))
+    return out
+
+
 def drop_materials(jm, names):
     """Triangles of the named materials removed, materials renumbered (the Spike Rifle's FP
     model: 20 triangles of Halo 3's `shaders\\invalid` -- a flat cap at both barrel ends,
@@ -139,7 +167,16 @@ def bitmaps(w):
                 # luminous energy field = `mask` (alpha: bright crackles fading to dark);
                 # brightness v -> the colour up to v 0.5, then towards WHITE (a hot core)
                 img, _ = h3_hud_art.decode(spec['mask'])
-                v = np.array(img.resize((256, 256), Image.LANCZOS))[..., 3].astype(np.float64) / 255.0
+                if spec.get('mask_channel') == 'rgb':
+                    # a GREY illum mask (the Spike Rifle's brute_bolter_illum: alpha 255
+                    # everywhere, the light in RGB), thickened `dilate` px (no bloom in Halo 1)
+                    from PIL import ImageFilter
+                    g = Image.fromarray(np.array(img)[..., :3].max(axis=2).astype(np.uint8))
+                    if spec.get('dilate'):
+                        g = g.filter(ImageFilter.MaxFilter(2 * spec['dilate'] + 1))
+                    v = np.array(g.resize((256, 256), Image.LANCZOS)).astype(np.float64) / 255.0
+                else:
+                    v = np.array(img.resize((256, 256), Image.LANCZOS))[..., 3].astype(np.float64) / 255.0
                 v = np.clip(v * spec.get('gain', 1.0), 0.0, 1.0)
                 lo = np.clip(v * 2.0, 0.0, 1.0)[..., None] * np.array(rgb)[None, None, :]
                 hot = np.clip(v * 2.0 - 1.0, 0.0, 1.0)[..., None]
@@ -363,7 +400,9 @@ def models(w):
         import copy as _copy
         from reclaimer.model.jms.file import JmsMaterial, JmsTriangle
         for mat, C in w.get('glow_cards', {}).items():
-            pieces = material_islands(jm, mat)
+            # `lit`: only the triangles on lit illum texels (the Spike Rifle), else the
+            # material's islands (the Beam Rifle's gems)
+            pieces = lit_pieces(jm, mat, C['lit']) if C.get('lit') else material_islands(jm, mat)
             if not pieces:
                 continue
             jm.materials.append(JmsMaterial(C['shader']))
@@ -396,6 +435,23 @@ def models(w):
             print(log[-2000:])
 
 
+def extra_models(w):
+    """Further models from Halo 3 PARTICLE MODELS (`extra_models` {name: {'from': .particle_model
+    path, 'dir': tag folder, 'material': shader name from `shaders`}}): the Spike Rifle's
+    stuck spike, the projectile's model (h3_rm_to_jms.convert_particle_model). The folder
+    sits under the weapon's, so `tool model` finds the shader in <weapon>\\shaders."""
+    for name, X in w.get('extra_models', {}).items():
+        jm = h3_rm_to_jms.convert_particle_model(X['from'], X['material'])
+        d = os.path.join(HCEEK, 'data', X['dir'], 'models')
+        os.makedirs(d, exist_ok=True)
+        write_jms(os.path.join(d, name + '.jms'), jm)
+        log = tool('model', X['dir'])
+        ok = os.path.exists(os.path.join(TAGS, X['dir'], name + '.gbxmodel'))
+        print('   model %-40s %s  (%d verts, %d tris)' % (X['dir'], 'OK' if ok else 'FAILED', len(jm.verts), len(jm.tris)))
+        if not ok or 'error' in log.lower():
+            print(log[-2000:])
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('weapon', choices=sorted(WEAPONS))
@@ -409,6 +465,7 @@ def main():
     if 'meters' in w:
         meters(w)
     models(w)
+    extra_models(w)
     if 'numeric' in w:
         numeric_places(w)
 

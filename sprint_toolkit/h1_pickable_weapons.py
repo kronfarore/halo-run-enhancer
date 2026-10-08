@@ -390,6 +390,13 @@ def own_beam(a, b, write):
             pd.physics.initial_velocity, pd.physics.final_velocity = b['velocity']
         else:
             pd.physics.initial_velocity = pd.physics.final_velocity = b['velocity']
+    for resp, mats in b.get('default_responses', {}).items():
+        # per Halo 1 material index, the DEFAULT response by name (the Spike Rifle's stuck
+        # spike: 'attach', the needle's way; Halo 3's fizzles -> 'disappear')
+        for i in mats:
+            pd.material_responses.STEPTREE[i].response.set_to(resp)
+    if 'model' in b:                         # a visible projectile (the stuck spike's gbxmodel)
+        pt.data.tagdata.obje_attrs.model.filepath = b['model']
     if 'reflect' in b:
         # a RICOCHET as the potential response (the Spike Rifle: Halo 3's spike bounces off
         # hard metal / rock / forerunner shields at 0-60 deg, chance 1): per Halo 1 material

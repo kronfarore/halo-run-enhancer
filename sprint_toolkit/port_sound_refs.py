@@ -77,7 +77,11 @@ def main():
                 for field, cls, name in rows:
                     nm = str(name).lower()
                     own = nm.startswith(own_dir + chr(92)) or nm.startswith(port_dir.lower() + chr(92))
-                    tag = 'OWN' if own else ('KEEP' if nm in keeps.get((game, e['weapon']), ()) else 'BORROW')
+                    # USER RULE (2026-10-08, Spike Rifle): the FLASHLIGHT sound may always be
+                    # the game's own when the source weapon brings none -- KEEP for every port
+                    flashlight = 'flashlight' in field.lower() or nm.endswith(chr(92) + 'flashlight')
+                    tag = 'OWN' if own else ('KEEP' if nm in keeps.get((game, e['weapon']), ()) or flashlight
+                                             else 'BORROW')
                     print('   %-6s %-60s %s' % (tag, field[-60:], name))
                 break
 

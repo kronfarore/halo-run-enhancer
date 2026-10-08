@@ -18,6 +18,18 @@ ORANGE = (239 / 255.0, 57 / 255.0, 12 / 255.0)
 # glass, ice, energy_shield_thick) -> none. Halo 1 materials 16 (Jackal shield) and 32 (Hunter
 # shield) already REFLECT by default on the AR bullet: kept
 RICOCHET = [2, 5, 6, 7, 10]
+# the STUCK SPIKE (test 1): Halo 3 detonates the spike on most surfaces and leaves a model
+# particle; Halo 1 does it the needle's way -- the spike ATTACHES (and shows its model) on
+# everything Halo 3's spike does not pass through or fizzle on: overpenetrate water 28 /
+# leaves 29 (Halo 3 liquid / plant), disappear on glass 9, force field 10, engineer force
+# field 18, cyborg 22 / Elite 30 shields (Halo 3 fizzle), the AR's reflect on Jackal 16 /
+# Hunter 32 shields kept. Bodies too (Halo 3 detonates on them, no pass-through)
+ATTACH = [0, 1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 17, 19, 20, 21, 23, 24, 25, 26, 27, 31]
+DISAPPEAR = [9, 10, 18, 22, 30]
+# Halo 3's self-illum colours (BGRA bytes in the shaders' function data) and its grey mask
+BLUE = (47 / 216.0, 49 / 216.0, 1.0)
+AMBER = (1.0, 205 / 255.0, 87 / 255.0)
+ILLUM = H3 + r'\bitmaps\brute_bolter_illum.bitmap'
 
 PORT = reserved(
     order=14, wave='A5', name='Spike Rifle', source='Halo 3',
@@ -90,16 +102,34 @@ PORT.update({
         'world_name': 'spiker',
         'shaders': {'bolt_thrower': (H3 + r'\bitmaps\brute_bolter.bitmap', H3 + r'\bitmaps\brute_bolter_illum.bitmap'),
                     'bolt_thrower_dull': (H3 + r'\bitmaps\brute_bolter.bitmap', H3 + r'\bitmaps\brute_bolter_illum.bitmap'),
-                    'bolt_thrower_shiny': (H3 + r'\bitmaps\brute_bolter.bitmap', H3 + r'\bitmaps\brute_bolter_illum.bitmap')},
+                    'bolt_thrower_shiny': (H3 + r'\bitmaps\brute_bolter.bitmap', H3 + r'\bitmaps\brute_bolter_illum.bitmap'),
+                    # the STUCK SPIKE (test 1, user: 'it leaves a physical object behind, like
+                    # the needler'): Halo 3's impact spawns a model particle
+                    # (fx\particles\models\weapons\brute_spike, an opaque grey-metal map) for
+                    # 4-5 s -- Halo 1 has no model particles: the projectile's own model
+                    'spike': (r'fx\particles\models\weapons\brute_spike\_bitmaps\spike.bitmap', None)},
+        'extra_models': {'spike model': {'from': r'fx\particles\models\weapons\brute_spike\brute_spike.particle_model',
+                                         'dir': r'weapons\spiker\spike model', 'material': 'spike'}},
         'drop_materials': ['invalid'],
         # the illum map is a GREY mask of 68 texels (0.1%: small indicator lights); Halo 3
         # colours it per shader (self_illum_color, BGRA bytes in the function data): the body
         # blue 2f/31/d8 at intensity 6, dull + shiny hot orange ff/cd/57 at 3. fp_material_view
         # --illum: 4 lit FP triangles, all body. Lines thickened 1 px (no bloom in Halo 1)
         'illum_dilate': 1,
-        'glow': {'bolt_thrower': (47 / 216.0, 49 / 216.0, 1.0),
-                 'bolt_thrower_dull': (1.0, 205 / 255.0, 87 / 255.0),
-                 'bolt_thrower_shiny': (1.0, 205 / 255.0, 87 / 255.0)},
+        'glow': {'bolt_thrower': BLUE, 'bolt_thrower_dull': AMBER, 'bolt_thrower_shiny': AMBER},
+        # TEST 1 (user): 'no glowing effects on the weapon in FP or world model' -- the lit
+        # texels sit on the two barrel MUZZLE faces (facing forward, away from the camera), two
+        # side slots (x 10.4 cm), two small faces by the drum and two rear blade bits (shiny);
+        # Halo 3 shows them by bloom only. User: MAKE THEM VISIBLE -> GLOW CARDS on just the
+        # lit triangles (h1_h3_weapon_model.lit_pieces; a material island would light the
+        # whole body), same UVs, textured with Halo 3's OWN illum mask (grey, thickened 1 px)
+        # as an additive glow in the shader's colour: exactly Halo 3's lit spots, brighter
+        'glow_shaders': {'spiker_glow_blue': {'rgb': BLUE, 'additive': True, 'mask': ILLUM,
+                                              'mask_channel': 'rgb', 'dilate': 1, 'gain': 2.0},
+                         'spiker_glow_amber': {'rgb': AMBER, 'additive': True, 'mask': ILLUM,
+                                               'mask_channel': 'rgb', 'dilate': 1, 'gain': 2.0}},
+        'glow_cards': {'bolt_thrower': {'shader': 'spiker_glow_blue', 'lit': ILLUM, 'scale': 1.0, 'lift': 0.1},
+                       'bolt_thrower_shiny': {'shader': 'spiker_glow_amber', 'lit': ILLUM, 'scale': 1.0, 'lift': 0.1}},
         'template': r'weapons\assault rifle\fp\shaders\gun',
     },
 
@@ -198,7 +228,10 @@ PORT.update({
                                    # (the H3 AR: immediately, 0, 0 -- a zero on one side: the
                                    # source values; balanced minimum velocity = a catalog row)
                                    'proj_attrs.detonation_timer_starts': 'when_at_rest',
-                                   'proj_attrs.detonation.timer': (1.0, 1.0),
+                                   # TEST 1: the stuck spike lasts Halo 3's model-particle life
+                                   # (4-5 s, fx\impact.effect), then VANISHES (user: no damage,
+                                   # Halo 3 has no detonation effect / damage). Was 1 s
+                                   'proj_attrs.detonation.timer': (4.0, 5.0),
                                    'proj_attrs.detonation.minimum_velocity': 12.0,
                                    # flags by NAME (the Beam Rifle's rule): Halo 3's spike has
                                    # 'oriented along velocity' (Halo 1 has it) and 'no impact
@@ -213,6 +246,10 @@ PORT.update({
                    'reflect': {'materials': RICOCHET, 'angle_deg': (0.0, 60.0),
                                'parallel_friction': 0.35, 'perpendicular_friction': 0.7,
                                'noise_deg': 4.0, 'effect_from_default': False},
+                   # TEST 1 (user): the spike STICKS (attach) and shows its model, the needle's
+                   # recipe; the ricochet above stays the potential response on stone / metal
+                   'default_responses': {'attach': ATTACH, 'disappear': DISAPPEAR},
+                   'model': r'weapons\spiker\spike model\spike model',
                    # the LOOK: Halo 3's spike is a hot streak on every round -- the AR tracer's
                    # contrail recoloured orange (a tracer on every round: trigger below)
                    'contrail': {'from': AR + 'bullet', 'out': SK + 'spike', 'rgb': ORANGE}},
@@ -251,7 +288,9 @@ PORT.update({
             'firing_effect': (AR + 'effects\\fire bullet', SK + 'effects\\fire spike',
                               {r'sound\sfx\weapons\assault rifle\fire': SND + 'sk_fire'},
                               {'match': 'flash', 'drop_off_axis': 0.012, 'scale': 1.0,
-                               'shift': (0.01, 0.0, 0.01),
+                               # TEST 1 (user): 'move the muzzle effect up 0.5 units' (1 unit
+                               # = 0.01 wu): z 0.01 -> 0.015
+                               'shift': (0.01, 0.0, 0.015),
                                # TEMPLATE DIFF (before boot 1): the AR ejects a casing with
                                # the pistol's eject sound; a spike has no casing (Halo 3's
                                # spiker effect has none) -- both dropped
