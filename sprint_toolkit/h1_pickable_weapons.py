@@ -796,6 +796,18 @@ def edit_weapon(key, write):
         fs[:] = []
         for f in new:
             fs.append(f)
+    for i, spec in w.get('attachments_set', {}).items():
+        # an attachment of the TEMPLATE re-pointed in place (type, marker, scales): editing
+        # an existing element; tool rejected FRESH elements appended with Reclaimer (Beam
+        # Rifle gem-flare test: 'tag reference name length mismatch')
+        x = d.obje_attrs.attachments.STEPTREE[i]
+        if 'type' in spec:
+            x.type.tag_class.set_to(spec.get('class', 'light'))
+            x.type.filepath = spec['type']
+        if 'marker' in spec:
+            x.marker = spec['marker']
+        if 'scale' in spec:
+            x.primary_scale.set_to(spec['scale'])
     if 'drop_attachments' in w:
         # template attachments that do not apply (the Beam Rifle on the plasma pistol: the
         # charged shot's flare and charging sound); indices in the TEMPLATE's order

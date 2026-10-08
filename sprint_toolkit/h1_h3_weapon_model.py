@@ -44,6 +44,34 @@ def tool(*args):
     return r.stdout + r.stderr
 
 
+def material_islands(jm, material):
+    """[(triangles, verts)] of one material's connected pieces (shared positions) in a JMS --
+    the Beam Rifle's gems: five UV islands, each a small square of the texture."""
+    names = [m.name for m in jm.materials]
+    if material not in names:
+        return []
+    si = names.index(material)
+    tris = [t for t in jm.tris if t.shader == si]
+    parent = {}
+
+    def find(a):
+        while parent.setdefault(a, a) != a:
+            a = parent[a]
+        return a
+
+    def key(v):
+        x = jm.verts[v]
+        return (round(x.pos_x, 2), round(x.pos_y, 2), round(x.pos_z, 2))
+    for t in tris:
+        ks = [key(v) for v in (t.v0, t.v1, t.v2)]
+        for k in ks[1:]:
+            parent[find(k)] = find(ks[0])
+    isl = {}
+    for t in tris:
+        isl.setdefault(find(key(t.v0)), []).append(t)
+    return [(ts, [jm.verts[v] for t in ts for v in (t.v0, t.v1, t.v2)]) for ts in isl.values()]
+
+
 def bitmaps(w):
     out = os.path.join(HCEEK, 'data', w['dir'], 'bitmaps')
     os.makedirs(out, exist_ok=True)
@@ -95,6 +123,30 @@ def bitmaps(w):
                 hot = np.clip(v * 2.0 - 1.0, 0.0, 1.0)[..., None]
                 c = lo * (1 - hot) + hot
                 col = np.zeros((256, 256, 4), np.uint8)
+                col[..., :3] = np.round(c * 255)
+                col[..., 3] = 255
+            elif spec.get('islands'):
+                # each UV ISLAND of the material a radial glow (the Beam Rifle's gems, test
+                # 6: flat white-pink did not glow): white-hot centre falling off to the colour
+                # and dark at the island's edge. Painted at v and 1 - v (both conventions;
+                # the unused copy is never sampled)
+                N = 1024
+                v = np.zeros((N, N))
+                yy, xx = np.mgrid[0:N, 0:N]
+                for key in ('world', 'fp'):
+                    jm, _rm = h3_rm_to_jms.convert(w[key], markers=w.get('markers'))
+                    for _ts, vs in material_islands(jm, name):
+                        U = np.array([(x.tex_u % 1.0, x.tex_v % 1.0) for x in vs])
+                        (u0, v0), (u1, v1) = U.min(0), U.max(0)
+                        for vv0, vv1 in ((v0, v1), (1 - v1, 1 - v0)):
+                            cx, cy = (u0 + u1) / 2 * N, (vv0 + vv1) / 2 * N
+                            r = max(u1 - u0, vv1 - vv0) / 2 * N * 1.15 + 1
+                            d = np.sqrt((xx - cx) ** 2 + (yy - cy) ** 2) / r
+                            v = np.maximum(v, np.clip(1 - d, 0, 1) ** 0.6)
+                lo = np.clip(v * 2.0, 0.0, 1.0)[..., None] * np.array(rgb)[None, None, :]
+                hot = np.clip(v * 2.0 - 1.0, 0.0, 1.0)[..., None]
+                c = lo * (1 - hot) + hot
+                col = np.zeros((N, N, 4), np.uint8)
                 col[..., :3] = np.round(c * 255)
                 col[..., 3] = 255
             else:
@@ -267,6 +319,18 @@ def shaders(w, glow):
 def models(w):
     for key, sub, fname in (('world', '', w['world_name']), ('fp', B + 'fp', 'fp')):
         jm, _rm = h3_rm_to_jms.convert(w[key], markers=w.get('markers'))
+        # a marker at the centre of each piece of a material (`material_markers` {prefix:
+        # material}; the Beam Rifle's gems, for a lens-flare test): `<prefix> <n>`, on the
+        # piece's node (bind rotation identity there: checked on the beam rifle's `frame gun`)
+        from reclaimer.model.jms.file import JmsMarker
+        # WORLD model only: object attachments use it, and the FP pieces hang off child nodes
+        for prefix, mat in (w.get('material_markers', {}).items() if key == 'world' else ()):
+            for i, (_ts, vs) in enumerate(material_islands(jm, mat)):
+                nd = vs[0].node_0
+                n = jm.nodes[nd]
+                P = np.array([(x.pos_x, x.pos_y, x.pos_z) for x in vs]).mean(0)
+                jm.markers.append(JmsMarker('%s %d' % (prefix, i), '', 0, nd, 0.0, 0.0, 0.0, 1.0,
+                                            P[0] - n.pos_x, P[1] - n.pos_y, P[2] - n.pos_z))
         d = os.path.join(HCEEK, 'data', w['dir'] + sub, 'models')
         os.makedirs(d, exist_ok=True)
         write_jms(os.path.join(d, fname + '.jms'), jm)

@@ -112,7 +112,11 @@ PORT.update({
         'glow_shaders': {'beam_rifle_luminous': {'rgb': PINK, 'additive': True, 'gain': 1.6,
                                                  'mask': r'levels\multi\snowbound\bitmaps\airlock_field_mask.bitmap',
                                                  'v_scroll': 4.0},
-                         'beam_rifle_glass': {'rgb': (1.0, 0.72, 0.95), 'additive': True}},
+                         # TEST 6 (user): the strips glow and animate, the gems do not -> each
+                         # gem's UV island a radial glow (white-hot centre); a lens flare per
+                         # gem on a test-only secondary for comparison (`gem n` markers)
+                         'beam_rifle_glass': {'rgb': PINK, 'additive': True, 'islands': True}},
+        'material_markers': {'gem': 'beam_rifle_glass'},
         'template': r'weapons\plasma rifle\fp\shaders\gun',
         # TEST 1 (user): 'no glow on the gun at all' -- Halo 3's illum map is a GREYSCALE mask
         # (its colour is the shader's self_illum_color, function data), 1% of texels lit in
