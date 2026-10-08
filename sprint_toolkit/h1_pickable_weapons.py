@@ -397,6 +397,36 @@ def own_beam(a, b, write):
             pd.material_responses.STEPTREE[i].response.set_to(resp)
     if 'model' in b:                         # a visible projectile (the stuck spike's gbxmodel)
         pt.data.tagdata.obje_attrs.model.filepath = b['model']
+    if 'impact_thin' in b:
+        # the impact effect ON THE PLAYER, thinned (the Spike Rifle's Armed test: 'an impact
+        # effect played on the player' at a high rate -- a hit plays the projectile's response
+        # effect for the player's material, the AR's `impact cyborg shield` = 25 shield sparks
+        # + a flash): per Halo 1 material index, an OWN copy of the response effect under
+        # `out` keeping every n-th particle whose path holds a key of `thin` {substring: n}
+        from reclaimer.hek.defs.effe import effe_def
+        I = b['impact_thin']
+        for i in I['materials']:
+            x = pd.material_responses.STEPTREE[i]
+            src_e = x.effect.filepath
+            et = effe_def.build(filepath=path(src_e, '.effect'))
+            kept = total = 0
+            for ev in et.data.tagdata.events.STEPTREE:
+                pts = ev.particles.STEPTREE
+                seen = {}
+                for k in range(len(pts) - 1, -1, -1):
+                    key = next((s for s in I['thin'] if s in pts[k].particle_type.filepath), None)
+                    if key is None:
+                        continue
+                    total += 1
+                    seen[key] = seen.get(key, -1) + 1
+                    if seen[key] % I['thin'][key]:
+                        pts.pop(k)
+                    else:
+                        kept += 1
+            own = I['out'] + src_e.rsplit('\\', 1)[-1]
+            save(et, path(own, '.effect'), write)
+            x.effect.filepath = own
+            print('   impact on material %d: %s -> %s (%d of %d thinned particles kept)' % (i, src_e, own, kept, total))
     if 'detonation_effect' in b:
         # an OWN detonation effect copied from another projectile's (the Spike Rifle, test 2:
         # 'detonate like the needles, no damage' -- the needle's burst): particles whose path

@@ -256,10 +256,6 @@ PORT.update({
         'bullet': {'projectile': (AR + 'bullet', SK + 'spike'),
                    'damage': (AR + 'bullet', SK + 'spike'),
                    'dmg': 9.0, 'velocity': (25.0, 17.5), 'range': 70.0,
-                   # ARMED TEST (user): 'reduce the screen flash response when hit by 30%' --
-                   # the AR bullet's (lighten, 0.1 s, early, red A 0) intensity 0.2 -> 0.14
-                   # (H1_SCREEN_FLASH.md: with alpha 0 the intensity scales the added red)
-                   'fields': {'screen_flash.maximum_intensity': 0.14},
                    'proj_fields': {'proj_attrs.physics.air_gravity_scale': 0.2,
                                    # STEP 4b (before boot 1). List 2 (ratio vs the H3 AR bullet
                                    # onto the H1 AR bullet): air damage range 5..15 x 60/40 on
@@ -297,6 +293,14 @@ PORT.update({
                    # attach does not cost the damage response. Kept
                    'default_responses': {'attach': ATTACH, 'disappear': DISAPPEAR},
                    'model': r'weapons\spiker\spike model\spike model',
+                   # ARMED TEST (user): 'an impact effect played on the player' at the high
+                   # rate -- a hit plays the projectile's response effect for the player's
+                   # material: shielded (cyborg energy shield, #22) the AR's `impact cyborg
+                   # shield`, 25 shield sparks + a flash a hit. Own copy, every 4th spark kept
+                   # (~6 + the flash). Unshielded (#21, sparks + smoke + blood) left as is.
+                   # (A -30% screen flash was tried first and reverted: not the complaint)
+                   'impact_thin': {'materials': [22], 'out': SK + 'effects\\impact\\',
+                                   'thin': {'shield jackal sparks': 4}},
                    # TEST 2 (user): 'why not let them detonate (with no damage) like the
                    # needles?' -- the needle's burst (`needle detonate`: no damage part; the
                    # needle's damage is its attached detonation damage, which the spike lacks)

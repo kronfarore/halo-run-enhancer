@@ -85,13 +85,15 @@ def full_magazine(weapon):
 
 #: USER RULE (2026-10-08, the Spike Rifle's Armed test): an Armed test with Jackals puts
 #: Jackals in the FIRST DROPSHIP, so they are met at once (halo-test-enemy-placement). Per
-#: level: the encounter, the dropship squad that gives up `count` places (its seats are
-#: limited: a30's c_dropship has 8 passenger seats, the first wave fills 7) and the level's
-#: own Jackal squad of that encounter, moved into the dropship platoon with `count` of the
-#: donor squad's starting locations. Only the TEST copy is changed (edit_kit restores).
+#: level: the first dropship's encounter and ONE of its squads, whose actor type becomes the
+#: level's Jackal palette entry -- seats, platoon, locations and script untouched. a30: the
+#: first ship is lz_search/cship_toon in lz_cship (h1_dropship_test.py; NOT first_wave's
+#: pass_cship -- the first try changed that one: no Jackals seen): grunt 4/3 + far_grunt 2/3
+#: + elite 1/2 (Normal / Legendary) = 7 / 8 of the 8 seats -> far_grunt rides as 2 / 3
+#: Jackals. Only the TEST copy is changed (edit_kit restores).
 DROPSHIP_JACKALS = {
-    'a30': {'encounter': 'first_wave', 'from_squad': 'wave_1_lz_grunt',
-            'squad': 'wave_1_attack', 'count': 3},
+    'a30': {'encounter': 'lz_search', 'squad': 'far_grunt',
+            'jackal': r'characters\jackal\jackal minor plasma pistol'},
 }
 
 
@@ -99,21 +101,15 @@ def dropship_mix(d, mix):
     enc = [e for e in d.encounters.STEPTREE if e.name == mix['encounter']]
     if not enc:
         raise SystemExit('no encounter %s' % mix['encounter'])
-    sq = {q.name: q for q in enc[0].squads.STEPTREE}
-    src, jk, n = sq[mix['from_squad']], sq[mix['squad']], mix['count']
-    src.normal_diff_count = max(0, src.normal_diff_count - n)
-    src.insane_diff_count = max(0, src.insane_diff_count - n)
-    jk.platoon = src.platoon
-    jk.normal_diff_count = jk.insane_diff_count = n
-    jk.flags.data = src.flags.data
-    for k in ('initial_state', 'return_state'):
-        getattr(jk, k).data = getattr(src, k).data
-    locs = jk.starting_locations.STEPTREE
-    locs[:] = []
-    for x in list(src.starting_locations.STEPTREE)[-n:]:
-        locs.append(copy.deepcopy(x))
-    print('kit: %s -- %s %d places, %s %d Jackals in its platoon (the first dropship)'
-          % (mix['encounter'], src.name, src.normal_diff_count, jk.name, n))
+    sq = {q.name: q for q in enc[0].squads.STEPTREE}[mix['squad']]
+    pal = [p[0].filepath.lower() for p in d.actors_palette.STEPTREE]
+    if mix['jackal'].lower() not in pal:
+        raise SystemExit('no %s in the actor palette' % mix['jackal'])
+    old = d.actors_palette.STEPTREE[sq.actor_type][0].filepath
+    sq.actor_type = pal.index(mix['jackal'].lower())
+    print('kit: %s/%s %s -> %s (%d Normal / %d Legendary, the first dropship)'
+          % (mix['encounter'], mix['squad'], old.rsplit('\\', 1)[-1], mix['jackal'].rsplit('\\', 1)[-1],
+             sq.normal_diff_count, sq.insane_diff_count))
 
 
 def edit_kit(level, weapon, rounds, actors, secondary=None, mix=None):
