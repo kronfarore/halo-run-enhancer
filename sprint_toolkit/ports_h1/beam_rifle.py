@@ -123,7 +123,9 @@ PORT.update({
                          'beam_rifle_glow_card': {'rgb': PINK, 'additive': True, 'islands': True,
                                                   'islands_of': 'beam_rifle_glass', 'radius': 1.0,
                                                   'falloff': 1.6, 'hot': False, 'gain': 1.0}},
-        'glow_cards': {'beam_rifle_glass': {'shader': 'beam_rifle_glow_card', 'scale': 1.8, 'lift': 0.05}},
+        'glow_cards': {'beam_rifle_glass': {'shader': 'beam_rifle_glow_card', 'scale': 1.5, 'lift': 0.05}},
+        # TEST 8 (user): 'this will work' at 1.8 -- two reduced sizes in one boot: 1.5 (the gun),
+        # 1.3 (a test-only secondary)
         'template': r'weapons\plasma rifle\fp\shaders\gun',
         # TEST 1 (user): 'no glow on the gun at all' -- Halo 3's illum map is a GREYSCALE mask
         # (its colour is the shader's self_illum_color, function data), 1% of texels lit in
