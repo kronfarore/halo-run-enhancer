@@ -242,6 +242,12 @@ def from_config(key, write=True):
             prof['source'] += ' over %s carriers' % fp['donor_weapon']
     else:
         raise SystemExit('%s: unknown firing_profile mode %r' % (key, mode))
+    if fp.get('donor_variant'):
+        # ONE carrier for every slot (the Beam Rifle, user 2026-10-08: the Flood combat Elite
+        # sniper for Grunts and Jackals too -- best_donor's similarity ranking gave them the
+        # armoured Marine). h1_enemy_weapons.donor_for reads it before any saved choice
+        prof['donor_variant'] = fp['donor_variant']
+        prof['source'] += ' (always %s)' % fp['donor_variant']
     wdm_rule(prof, fp.get('wdm_rule'))
     if write:
         try:

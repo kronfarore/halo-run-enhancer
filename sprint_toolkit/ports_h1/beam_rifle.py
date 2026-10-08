@@ -65,9 +65,18 @@ PORT = reserved(
             'peers': ['Sniper Rifle'],
             'why': 'instant beam, two zoom levels, heat-limited fire + battery',
             'lacks': ''}},
-    # step 11: the source game's ai\generic entry (17 fields, verified 2026-10-07); 'bm' has
-    # no carrier -- donor_weapon and the ARMED WDM RULE are chosen with the user (step 11)
-    firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\rifle\\beam_rifle\\beam_rifle'},
+    # step 11: the source game's ai\generic entry (17 fields, verified 2026-10-07) over a base
+    # -- 'bm' has no carrier. User (2026-10-08): the SNIPER RIFLE's carriers (the plan said
+    # none carry it; Halo 1's Flood combat Elite and armoured Marines do), base = the Flood
+    # Elite's WDM 0.4. ARMED WDM RULE: 0.4 x Sniper 202 / port dps -- default 200 (0.40),
+    # balanced 354 (0.23); paper rates, heat makes the real ones lower (as the Carbine's)
+    firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\rifle\\beam_rifle\\beam_rifle',
+                    'donor_weapon': 'weapons\\sniper rifle\\sniper rifle',
+                    # the Flood Elite for EVERY slot (user; the ranking gave Grunts and Jackals
+                    # the armoured Marine)
+                    'donor_variant': 'characters\\floodcombat elite\\floodcombat elite sniper rifle',
+                    'wdm_rule': {'base': 0.4, 'yardstick_dps': 202.0, 'port_dps': 200.0,
+                                 'balanced_port_dps': 354.0}},
 )
 
 PORT.update({
@@ -86,8 +95,11 @@ PORT.update({
         'shaders': {'beam_rifle': (H3 + r'\bitmaps\beam_rifle.bitmap', H3 + r'\bitmaps\beam_rifle_illum.bitmap'),
                     'beam_rifle2': (H3 + r'\bitmaps\beam_rifle.bitmap', H3 + r'\bitmaps\beam_rifle_illum.bitmap'),
                     'beam_rifle_rubber': (H3 + r'\bitmaps\beam_rifle.bitmap', None)},
-        'shader_copies': {'beam_rifle_glass': r'weapons\plasma rifle\fp\shaders\dull.shader_model',
-                          'beam_rifle_luminous': r'weapons\plasma rifle\fp\shaders\luminous.shader_model'},
+        'shader_copies': {'beam_rifle_glass': r'weapons\plasma rifle\fp\shaders\dull.shader_model'},
+        # TEST 3 (user, Halo 3 screenshot beside ours): the glowing PINK slits on the outside
+        # are `beam_rifle_luminous` -- built as the plasma rifle's blue luminous, they read
+        # dark. Now an own fully self-lit shader in the beam's pink
+        'glow_shaders': {'beam_rifle_luminous': PINK},
         'template': r'weapons\plasma rifle\fp\shaders\gun',
         # TEST 1 (user): 'no glow on the gun at all' -- Halo 3's illum map is a GREYSCALE mask
         # (its colour is the shader's self_illum_color, function data), 1% of texels lit in
@@ -196,7 +208,9 @@ PORT.update({
         # zoom switch; Halo 3's beam rifle has none (its one attachment is the overheat
         # loop) -> dropped too. Kept: the muzzle light (attachment 0, C out = illumination)
         'keep_triggers': 1,
-        'drop_attachments': [1, 2, 3, 4],
+        # TEST 3: the muzzle light (0) moved into the firing effect -- every template
+        # attachment gone
+        'drop_attachments': [0, 1, 2, 3, 4],
         # own beam + damage (step 3): Halo 3's beam_rifle_beam = 1200 wu/s, range 500, 80
         # damage (the sniper's own speed, range and damage). Materials (user, step 4a): the
         # H1 sniper bullet's + Jackal shield 0.5, Sentinel 2.0. The LOOK: the sniper's trail
@@ -206,14 +220,31 @@ PORT.update({
                    'damage': (SR + 'sniper bullet', BM + 'beam'),
                    'dmg': 80.0, 'velocity': 1200.0, 'range': 500.0,
                    'fields': {'damage_modifiers.jackal_energy_shield': 0.5,
-                              'damage_modifiers.sentinel': 2.0},
+                              'damage_modifiers.sentinel': 2.0,
+                              # step 4b list 2: the breaking effect's forward exponent ratio
+                              # degenerates (H3 beam 8 / sniper 0.2 x 10 = 400): Halo 3's
+                              # own, as the BR / Carbine. Forward velocity: list 4 (both
+                              # Halo 3 weapons 35) -> the H1 sniper's 40
+                              'breaking_effect.forward_velocity': 40.0,
+                              'breaking_effect.forward_radius': 0.12,
+                              'breaking_effect.forward_exponent': 8.0},
+                   # step 4b list 3: water gravity 0 (Halo 3's beam; sniper 0.2 -- a zero on
+                   # one side: the source value)
+                   'proj_fields': {'proj_attrs.physics.water_gravity_scale': 0.0},
                    # TEST 2 (user): 'once shot it travels to the right' -- the H1 sniper's own
                    # behaviour: its trail points ride SMOKE point physics (cold / hot smoke
                    # cloud, lightweight particle) and drift with the level's wind; Halo 3's
                    # beam does not -> no point physics
                    'contrail': {'from': SR + 'sniper', 'out': BM + 'beam', 'rgb': PINK,
                                 'no_physics': True},
-                   'material_responses_from': PP + 'bolt'},
+                   'material_responses_from': PP + 'bolt',
+                   # TEST 3 (user): 'green plasma on the ground, blue smoke rising' -> the
+                   # energy particles of each impact pink (RGB), the green burn decal Halo 1's
+                   # plain plasma burn
+                   'impact_tint': {'rgb': PINK, 'out': BM + 'effects\\impact\\',
+                                   'match': ('particles\\energy\\', 'shield impact'),
+                                   'decals': {'effects\\decals\\bullet holes\\plasma green burn large':
+                                              'effects\\decals\\bullet holes\\plasma burn'}}},
         # TAPPED, like Halo 3's (fire recovery 0.4 s = 2.5/s, one shot a pull); the plasma
         # pistol's 0.6 s charge (its overcharge) off. Heat 0.7 a shot, battery 0.05 (Halo 3
         # CAMPAIGN) = 20 shots
@@ -225,7 +256,12 @@ PORT.update({
                     # round left from the camera; it now starts at the FP muzzle (the
                     # `primary trigger` marker in the idle pose, camera space: forward,
                     # left, up wu -- fp_render), the Sentinel Beam's fix
-                    'first_person_offset': (0.58, -0.0668, -0.0449)},
+                    'first_person_offset': (0.58, -0.0668, -0.0449),
+                    # TEST 3 (user): 'it does not hit where the crosshair is' -- Halo 3's beam
+                    # and Halo 1's sniper apply the error UNZOOMED only; the plasma pistol
+                    # template lacked the flag (step 4b list 5 shows it: trigger flags 9224 vs
+                    # 8200 -- 4b now runs before the first boot)
+                    'use_error_when_unzoomed': True},
         # Halo 3: overheated at 1.0, back to firing at 0.1; Halo 1 has ONE loss. TEST 1 (user,
         # 0.3 vs 0.575 in one boot): 'A is too slow to be useful, B too fast -- played right it
         # never overheats; take the average' = 0.4375 (a 2.06 s vent)
@@ -240,15 +276,15 @@ PORT.update({
         'aiming': {'autoaim_angle': 1.0, 'autoaim_range': 10.0,
                    'magnetism_angle': 4.0, 'magnetism_range': 14.0,
                    'zoom_levels': 2, 'zoom_ranges': (3.5, 9.5)},
-        'sound_effects': {
-            # the plasma pistol's flash, tinted pink, with Halo 3's fire sound
-            'firing_effect': (PP + 'effects\\fire bolt', BM + 'effects\\fire beam',
-                              {r'sound\sfx\weapons\plasma rifle\fire': SND + 'bm_fire'},
-                              {'tint': (1.0,) + PINK})},
-        # the muzzle light: the plasma pistol's (green) in pink
+        # THE FIRING EFFECT (the Sentinel Beam's recipe): the plasma pistol's flash sprite
+        # tinted pink, Halo 3's fire sound, and the muzzle LIGHT as a part of it. TEST 3
+        # (user): 'our weapon is illuminating the surrounding area' -- the light was an object
+        # attachment on the illumination export and stayed lit; now it lives 0.1 s a shot
+        'fire_effect': {'from': PP + 'effects\\fire bolt', 'out': BM + 'effects\\fire beam',
+                        'sound': SND + 'bm_fire', 'light': BM + 'muzzle light',
+                        'keep_particles': 'flash c generic', 'tint': (1.0,) + PINK},
         'own_light': {'shape': PP + 'muzzle flash', 'look': PP + 'muzzle flash',
-                      'out': BM + 'muzzle light', 'argb': (1.0,) + PINK},
-        'attach_swap': {PP + 'muzzle flash': BM + 'muzzle light'},
+                      'out': BM + 'muzzle light', 'argb': (1.0,) + PINK, 'duration': 0.1},
         'fields': {
             # the empty / dead-battery click: the plasma pistol's is a SOUND reference
             'weap_attrs.triggers.0.firing_effects.0.empty_effect.filepath': SND + 'bm_dryfire',
@@ -262,6 +298,22 @@ PORT.update({
             # ... so no misfire effect either (its sound was the plasma rifle's overheat: a
             # BORROW in port_sound_refs on the test copy, 2026-10-08)
             'weap_attrs.triggers.0.firing_effects.0.misfire_effect.filepath': '',
+            # STEP 4b (port_field_audit --port beam_rifle, after test 2). List 2 (the ratio vs
+            # the H3 sniper onto the H1 sniper): bounding radius 0.4125 x 0.3/0.325,
+            # illumination recovery 0.1 x 0.05/0.1
+            'obje_attrs.bounding_radius': 0.4125 * 0.3 / 0.325,
+            'weap_attrs.triggers.0.misc.illumination_recovery_time': 0.05,
+            # list 4 (the source pair agrees -> the yardstick's value; the plasma pistol
+            # template held its own): camo ding / regrowth, weapon type (plasma_pistol is the
+            # pistol's overcharge class), charged illumination, firing noise
+            'weap_attrs.interface.active_camo_ding': 0.55,
+            'weap_attrs.interface.active_camo_regrowth_rate': 0.0,
+            'weap_attrs.weapon_type': 'undefined',
+            'weap_attrs.triggers.0.charging.charged_illumination': 0.0,
+            'weap_attrs.triggers.0.firing.firing_noise': 'medium',
+            # list 5: the sniper's firing error (1, 1: the full error angle from the first
+            # shot; the plasma pistol's 0 -> 1 ramp)
+            'weap_attrs.triggers.0.firing.error': (1.0, 1.0),
         },
         'melee': (PP + 'melee', BM + 'melee'),
         'melee_response': PP + 'melee_response',

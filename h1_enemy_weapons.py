@@ -229,6 +229,11 @@ def donor_for(m, index, weapon, unit, traits, forced=None):
     otherwise -- a PORTED weapon -- the best donor among weapons sharing its animation
     LABEL (the SAW is 'ar', so an AR carrier), with the weapon's firing profile to be
     written over it."""
+    pv = profiles().get(weapon) or {}
+    if pv.get('donor_variant'):
+        # the PORT's own fixed donor (firing profile 'donor_variant', the Beam Rifle): data,
+        # so both co-op machines agree; it wins over a saved choice
+        forced = pv['donor_variant']
     if forced:
         # a SAVED choice (presets / the shared run) wins, so both co-op machines clone
         # from the same donor whatever their own ranking would say

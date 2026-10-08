@@ -590,6 +590,116 @@
     "port_dps": 59.0,
     "balanced_port_dps": 137.0
    }
+  },
+  "weapons\\beam rifle\\beam rifle": {
+   "source": "Halo 3 ai\\generic objects\\weapons\\rifle\\beam_rifle\\beam_rifle (weapon properties #6, firing pattern #6) over weapons\\sniper rifle\\sniper rifle carriers (always characters\\floodcombat elite\\floodcombat elite sniper rifle)",
+   "fields": {
+    "0x74": [
+     "<f",
+     50.0,
+     "Maximum Firing Distance"
+    ],
+    "0x78": [
+     "<f",
+     1.5,
+     "Rate Of Fire"
+    ],
+    "0x80": [
+     "<f",
+     0.5,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     2.0,
+     "First Burst Delay Time Max"
+    ],
+    "0x9C": [
+     "<f",
+     15.0,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     30.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     1.0,
+     "Target Tracking"
+    ],
+    "0xC0": [
+     "<f",
+     0.75,
+     "Target Leading"
+    ],
+    "0xCC": [
+     "<f",
+     0.1600000001490116,
+     "Burst Origin Radius"
+    ],
+    "0xD4": [
+     "<f",
+     0.14000000059604645,
+     "Burst Return Length"
+    ],
+    "0xD8": [
+     "<f",
+     0.1599999964237213,
+     "Burst Return Length Max"
+    ],
+    "0xE0": [
+     "<f",
+     1.0,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     1.5,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     4.0,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     5.75,
+     "Burst Separation Max"
+    ],
+    "0x1D8": [
+     "<f",
+     0.6000000238418579,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.8999999761581421,
+     "Drop Weapon Loaded Max"
+    ],
+    "0xC4": [
+     "<f",
+     0.4040000000000001,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "donor_weapon": "weapons\\sniper rifle\\sniper rifle",
+   "donor_variant": "characters\\floodcombat elite\\floodcombat elite sniper rifle",
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.2282485875706215,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.4,
+    "yardstick_dps": 202.0,
+    "port_dps": 200.0,
+    "balanced_port_dps": 354.0
+   }
   }
  }
 }

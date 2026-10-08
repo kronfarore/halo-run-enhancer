@@ -75,6 +75,18 @@ def bitmaps(w):
                 c = lit.mean(axis=0)
                 glow[name] = tuple(float(x) for x in c / c.max())
         Image.fromarray(mp).save(os.path.join(out, name + '_mp.tif'))
+    # a SOLID GLOW material (`glow_shaders` {name: rgb}; the Beam Rifle's `luminous` slits,
+    # an animated energy field in Halo 3 on multiplayer bitmaps): a flat diffuse in its
+    # colour and a multipurpose map fully self-lit (G 255)
+    for name, rgb in w.get('glow_shaders', {}).items():
+        col = np.zeros((16, 16, 4), np.uint8)
+        col[..., :3] = [int(round(c * 255)) for c in rgb]
+        col[..., 3] = 255
+        Image.fromarray(col).save(os.path.join(out, name + '_diff.tif'))
+        mp = np.zeros((16, 16, 4), np.uint8)
+        mp[..., 1] = mp[..., 3] = 255
+        Image.fromarray(mp).save(os.path.join(out, name + '_mp.tif'))
+        glow[name] = tuple(rgb)
     log = tool('bitmaps', w['dir'] + B + 'bitmaps')
     print('   tool bitmaps: %s' % (log.strip().splitlines()[-1] if log.strip() else 'ok'))
     return glow
@@ -192,7 +204,7 @@ def shaders(w, glow):
                 os.remove(stale)
         shutil.copy2(os.path.join(TAGS, src), os.path.join(out, name + ext))
         print('   shader %s = a copy of %s' % (name + ext, src))
-    for name in w['shaders']:
+    for name in list(w['shaders']) + list(w.get('glow_shaders', {})):
         if (name in w.get('numeric', {}).get('places', {}) or name in w.get('meters', {})
                 or name in w.get('shader_copies', {})):
             continue

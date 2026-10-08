@@ -366,6 +366,12 @@ def own_beam(a, b, write):
     pd.physics.impact_damage.filepath = j_own
     if 'range' in b:
         pd.detonation.maximum_range = b['range']
+    for dotted, v in b.get('proj_fields', {}).items():   # step 4b on the projectile (the Beam Rifle)
+        *head, last = dotted.split('.')
+        node = pt.data.tagdata
+        for part in head:
+            node = getattr(node, part)
+        setattr(node, last, v)
     if 'velocity' in b:
         pd.physics.initial_velocity = pd.physics.final_velocity = b['velocity']
     if 'attachments_from' in b:          # e.g. a TRACER contrail (the BR takes the AR bullet's)
@@ -399,6 +405,43 @@ def own_beam(a, b, write):
         mr[:] = []
         for x in src.proj_attrs.material_responses.STEPTREE:
             mr.append(copy.deepcopy(x))
+    if 'impact_tint' in b:
+        # the impacts RECOLOURED (the Beam Rifle, test 3: 'green plasma on the ground, blue
+        # smoke'): every response effect with a matching particle (path holds one of `match`)
+        # or a `decals` swap gets an own copy under `out`, those particles tinted `rgb` (RGB,
+        # not HSV: the stock tints blend in hue space), the decals swapped
+        from reclaimer.hek.defs.effe import effe_def
+        T = b['impact_tint']
+        done = {}
+        for x in pd.material_responses.STEPTREE:
+            for k in x.desc['NAME_MAP']:
+                ref = getattr(x, k)
+                if not (hasattr(ref, 'filepath') and ref.filepath) or ref.tag_class.enum_name != 'effect':
+                    continue
+                src_e = ref.filepath
+                if src_e not in done:
+                    et = effe_def.build(filepath=path(src_e, '.effect'))
+                    n = 0
+                    for ev in et.data.tagdata.events.STEPTREE:
+                        for q in ev.particles.STEPTREE:
+                            if any(m in q.particle_type.filepath for m in T['match']):
+                                q.flags.tint_as_hsv = False
+                                for bound in (q.tint_lower_bound, q.tint_upper_bound):
+                                    bound.r, bound.g, bound.b = T['rgb']
+                                n += 1
+                        for part in ev.parts.STEPTREE:
+                            new = T.get('decals', {}).get(part.type.filepath)
+                            if new:
+                                part.type.filepath = new
+                                n += 1
+                    if n:
+                        own = T['out'] + src_e.rsplit('\\', 1)[-1]
+                        save(et, path(own, '.effect'), write)
+                        done[src_e] = own
+                    else:
+                        done[src_e] = src_e
+                ref.filepath = done[src_e]
+        print('   impacts: %d effect(s) recoloured' % sum(1 for k, v in done.items() if k != v))
     save(pt, path(p_own, '.projectile'), write)
     for tr in a.triggers.STEPTREE:
         tr.projectile.projectile.filepath = p_own
@@ -778,6 +821,9 @@ def edit_weapon(key, write):
             raise SystemExit('%s: no field %s' % (key, dotted))
         if isinstance(v, str) and hasattr(getattr(node, last), 'set_to'):
             getattr(node, last).set_to(v)        # an enum by name (the BR's B_in)
+        elif isinstance(v, tuple):               # a bounds pair (the Beam Rifle's firing error)
+            for i, x in enumerate(v):
+                getattr(node, last)[i] = x
         else:
             setattr(node, last, v)
     print('   -> flags %s | fp %s | anims %s | hud %s | melee %s | message %d | triggers %d'
