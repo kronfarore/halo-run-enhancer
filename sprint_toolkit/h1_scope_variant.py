@@ -9,6 +9,10 @@ a copy of the port's weapon tag + its HUD with the mask baked at other `aspect` 
     python h1_scope_variant.py covenant_carbine b --aspect 1.667 [--span 828] [--size 1024] [--screen b.png]
     python h1_port_test_map.py covenant_carbine --secondary "weapons\covenant carbine\test\covenant carbine b" --stage
     python h1_scope_variant.py covenant_carbine --clean        (after the test)
+
+`--field dotted=value` (repeatable) sets a WEAPON field on the variant copy too -- the Beam
+Rifle (2026-10-08) judged Halo 1's heat loss 0.3 vs 0.575 in the same boot:
+    python h1_scope_variant.py beam_rifle b --aspect 1.333 --field weap_attrs.heat.loss_per_second=0.575
 """
 import argparse
 import os
@@ -35,6 +39,7 @@ def main():
     ap.add_argument('--span', type=float)
     ap.add_argument('--size', type=int)
     ap.add_argument('--screen', help='PNG of the variant as Halo 1 draws it')
+    ap.add_argument('--field', action='append', default=[], help='dotted=value on the variant weapon')
     ap.add_argument('--clean', action='store_true', help='delete every test variant of the port')
     a = ap.parse_args()
     w = ports_h1.load(a.port)['pickable']
@@ -67,6 +72,14 @@ def main():
     h.serialize(temp=False, backup=False)
     t = weap_def.build(filepath=os.path.join(TAGS, w['weapon'] + '.weapon'))
     t.data.tagdata.weap_attrs.interface.hud_interface.filepath = hud
+    for f in a.field:
+        dotted, v = f.split('=', 1)
+        *head, last = dotted.split('.')
+        node = t.data.tagdata
+        for part in head:
+            node = node.STEPTREE[int(part)] if part.isdigit() else getattr(node, part)
+        setattr(node, last, type(getattr(node, last))(v))
+        print('   field %s = %s' % (dotted, getattr(node, last)))
     t.filepath = os.path.join(TAGS, hud + '.weapon')
     t.serialize(temp=False, backup=False)
     print('variant weapon  %s  (aspect %.3f, span %g, size %d)' % (hud, S['aspect'], S['span'], S['size']))

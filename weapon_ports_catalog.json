@@ -1487,6 +1487,141 @@
     "jpt! weapons\\pistol\\bullet": "jpt! weapons\\covenant carbine\\slug",
     "jpt! weapons\\pistol\\melee": "jpt! weapons\\covenant carbine\\melee"
    }
+  },
+  {
+   "weapon": "Beam Rifle",
+   "source": "Halo 3",
+   "donor": "Sniper Rifle",
+   "default_on": false,
+   "desc": "Halo 3's Beam Rifle: its model, first-person animations, sounds, scope and numbers. A Covenant marksman rifle on heat and battery: two quick shots overheat it, 20 shots a battery, 3.5x / 9.5x zoom.",
+   "balance_desc": "Measured against the Sniper Rifle, which both games have: 101 damage per shot, up to 3.5 shots a second, Halo 1's 2x / 8x-style zoom (1.75x / 8.4x), a longer reach and Halo 1-style aim assist; heat and battery stay Halo 3's.",
+   "anims": {
+    "swap": 1.38
+   },
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\beam rifle\\beam",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 101.0,
+     "card": "Beam damage",
+     "original": 80.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\beam rifle\\beam",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 101.0,
+     "card": "Beam damage",
+     "original": 80.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\beam rifle\\beam",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 101.0,
+     "card": "Beam damage",
+     "original": 80.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\beam rifle\\beam rifle",
+     "field": "Rounds Per Second",
+     "block": "Triggers",
+     "value": 3.5,
+     "card": "More Shooting",
+     "original": 2.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\beam rifle\\beam rifle",
+     "field": "Rounds Per Second Max",
+     "block": "Triggers",
+     "value": 3.5,
+     "card": "More Shooting",
+     "original": 2.5
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\beam rifle\\beam",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 33.333,
+     "card": "Projectile",
+     "original": 40.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\beam rifle\\beam",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 33.333,
+     "card": "Projectile",
+     "original": 40.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\beam rifle\\beam",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 1000.0,
+     "card": "Projectile",
+     "original": 500.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\beam rifle\\beam rifle",
+     "field": "Magnification Range",
+     "block": null,
+     "value": 1.75,
+     "card": "Zoom",
+     "original": 3.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\beam rifle\\beam rifle",
+     "field": "Magnification Range Max",
+     "block": null,
+     "value": 8.44,
+     "card": "Zoom",
+     "original": 9.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\beam rifle\\beam rifle",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 35.0,
+     "card": "Autoaim",
+     "original": 10.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\beam rifle\\beam rifle",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 2.0,
+     "card": "Magnetism",
+     "original": 4.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\beam rifle\\beam rifle",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 35.0,
+     "card": "Magnetism",
+     "original": 14.0
+    }
+   ],
+   "weap": "weapons\\beam rifle\\beam rifle",
+   "fp_animations": "weapons\\beam rifle\\fp\\fp",
+   "requires": [
+    "proj weapons\\beam rifle\\beam"
+   ]
   }
  ],
  "Halo 3": [

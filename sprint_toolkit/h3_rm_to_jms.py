@@ -53,7 +53,9 @@ def strip_tris(idx):
     return out
 
 
-def convert(rel, materials=None):
+def convert(rel, materials=None, markers=None):
+    """`markers`: extra Halo 3 -> Halo 1 marker names over MARKERS (the Beam Rifle's
+    fx_vent -> overheat, where the template's overheat steam spawns)."""
     rm = h4_rm.load(h1_fp_retarget.export_xml(rel))
     tmpl = extract_model(mod2_def.build(filepath=os.path.join(TAGS, TEMPLATE + '.gbxmodel')).data.tagdata,
                          TEMPLATE, write_jms=False)[0]
@@ -107,7 +109,7 @@ def convert(rel, materials=None):
     jm.materials = [JmsMaterial(mats[i]) for i in used]
     marks = []
     for m in rm['markers']:
-        nm = MARKERS.get(m['name'])
+        nm = dict(MARKERS, **(markers or {})).get(m['name'])
         if nm is None:
             continue
         qi, qj, qk, qw = m['rot']

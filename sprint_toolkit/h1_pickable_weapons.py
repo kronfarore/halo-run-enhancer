@@ -196,6 +196,13 @@ def make_hud(w, key, write):
         # mask = Halo 3's scope widgets baked, no blur, the donor's zoom crosshairs dropped
         import h1_h3_scope
         S = h['scope']
+        if not d.screen_effect.STEPTREE and h.get('screen_effect_from'):
+            # a donor HUD with NO zoom screen effect (the Beam Rifle: the plasma pistol's
+            # heat + battery HUD) takes another HUD's (the sniper's: mask, convolution,
+            # night vision) -- the mask itself is replaced below
+            src = wphi_def.build(filepath=path(h['screen_effect_from'], '.weapon_hud_interface')).data.tagdata
+            for se in src.screen_effect.STEPTREE:
+                d.screen_effect.STEPTREE.append(copy.deepcopy(se))
         if write:
             dark, blur, used = h1_h3_scope.bake_maps(S['chud'], size=S.get('size', 512), span=S.get('span', 640.0),
                                                      aspect=S.get('aspect', 1.0), per_widget=S.get('per_widget'))
@@ -367,6 +374,23 @@ def own_beam(a, b, write):
         att[:] = []
         for x in src.obje_attrs.attachments.STEPTREE:
             att.append(copy.deepcopy(x))
+    if 'contrail' in b:                  # an OWN recoloured copy of the trail (the Beam Rifle)
+        from reclaimer.hek.defs.cont import cont_def
+        C = b['contrail']
+        ct = cont_def.build(filepath=path(C['from'], '.contrail'))
+        for ps in ct.data.tagdata.point_states.STEPTREE:
+            for bound in (ps.color_lower_bound, ps.color_upper_bound):
+                bound.r, bound.g, bound.b = C['rgb']
+            if 'width' in C:
+                ps.width *= C['width']
+        save(ct, path(C['out'], '.contrail'), write)
+        n = 0
+        for x in pt.data.tagdata.obje_attrs.attachments.STEPTREE:
+            if x.type.filepath.lower() == C['from'].lower():
+                x.type.filepath = C['out']
+                n += 1
+        if n != 1:
+            raise SystemExit('%s: %d attachments name %s' % (p_own, n, C['from']))
     if 'material_responses_from' in b:   # the impact effects per material (the Carbine: plasma)
         src = proj_def.build(filepath=path(b['material_responses_from'], '.projectile')).data.tagdata
         mr = pd.material_responses.STEPTREE
@@ -519,6 +543,12 @@ def edit_weapon(key, write):
         d.obje_attrs.model.filepath = w['world_model']
     if w.get('label'):
         a.label = w['label']
+    if 'keep_triggers' in w:
+        # the template's EXTRA triggers dropped (the Beam Rifle on the plasma pistol: its
+        # charged-shot trigger 1); the secondary trigger mode back to normal
+        trs = a.triggers.STEPTREE
+        while len(trs) > w['keep_triggers']:
+            trs.pop()
     if 'beam' in w:
         own_beam(a, w['beam'], write)
     if 'bullet' in w:
@@ -559,6 +589,13 @@ def edit_weapon(key, write):
                 x.radius[0], x.radius[1] = x.radius[0] * fl.get('scale', 1.0), x.radius[1] * fl.get('scale', 1.0)
                 dx, dy, dz = fl.get('shift', (0.0, 0.0, 0.0))
                 o.i, o.j, o.k = o.i + dx, o.j + dy, o.k + dz
+        # `tint` (ARGB): every particle of the copy recoloured, RGB not HSV (the plasma
+        # pistol's green flash IS a tint on a white sprite -- the Sentinel Beam's finding)
+        for ev in (et.data.tagdata.events.STEPTREE if fl.get('tint') else ()):
+            for x in ev.particles.STEPTREE:
+                x.flags.tint_as_hsv = False
+                for b in (x.tint_lower_bound, x.tint_upper_bound):
+                    b.a, b.r, b.g, b.b = fl['tint']
         n = 0
         for ev in et.data.tagdata.events.STEPTREE:
             for part in ev.parts.STEPTREE:
@@ -700,6 +737,12 @@ def edit_weapon(key, write):
         fs[:] = []
         for f in new:
             fs.append(f)
+    if 'drop_attachments' in w:
+        # template attachments that do not apply (the Beam Rifle on the plasma pistol: the
+        # charged shot's flare and charging sound); indices in the TEMPLATE's order
+        att = d.obje_attrs.attachments.STEPTREE
+        for i in sorted(w['drop_attachments'], reverse=True):
+            att.pop(i)
     for i, (p_scale, s_scale) in w.get('attachment_scales', {}).items():
         x = d.obje_attrs.attachments.STEPTREE[i]
         x.primary_scale.set_to(p_scale)
@@ -716,7 +759,11 @@ def edit_weapon(key, write):
         for tr in a.triggers.STEPTREE:
             tr.firing.rounds_per_shot = w['rounds_per_shot']
     for k, v in w.get('aiming', {}).items():
-        setattr(a.aiming, k, math.radians(v) if k.endswith('_angle') else v)
+        if isinstance(v, tuple):             # a bounds pair (the Beam Rifle's zoom_ranges)
+            for i, x in enumerate(v):
+                getattr(a.aiming, k)[i] = x
+        else:
+            setattr(a.aiming, k, math.radians(v) if k.endswith('_angle') else v)
     # step 4b (port_field_audit.py --port <key>): fields NO card covers, by dotted path
     # from the tag data ('obje_attrs.bounding_radius'; a number indexes a block's elements:
     # 'weap_attrs.magazines.0.magazine_items.0.rounds'); values in Reclaimer units

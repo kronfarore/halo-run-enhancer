@@ -1,0 +1,111 @@
+{
+ "game": "Halo 1",
+ "weapon": "Beam Rifle",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\beam_rifle_port\\bm_fire",
+   "perms": [
+    "bm_fire_1.wav",
+    "bm_fire_2.wav",
+    "bm_fire_3.wav",
+    "bm_fire_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\beam_rifle_port\\bm_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\beam_rifle_port\\bm_dryfire",
+   "perms": [
+    "bm_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\beam_rifle_port\\bm_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\beam_rifle_port\\bm_ready",
+   "perms": [
+    "bm_ready_1.wav",
+    "bm_ready_2.wav",
+    "bm_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\beam_rifle_port\\bm_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\beam_rifle_port\\bm_melee",
+   "perms": [
+    "bm_melee_1.wav",
+    "bm_melee_2.wav",
+    "bm_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\beam_rifle_port\\bm_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\beam_rifle_port\\bm_pose",
+   "perms": [
+    "bm_pose_1.wav",
+    "bm_pose_2.wav",
+    "bm_pose_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\beam_rifle_port\\bm_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\beam_rifle_port\\bm_zoom_in",
+   "perms": [
+    "bm_zoom_in_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\beam_rifle_port\\bm_zoom_in"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\beam_rifle_port\\bm_zoom_out",
+   "perms": [
+    "bm_zoom_out_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\beam_rifle_port\\bm_zoom_out"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\beam_rifle_port\\bm_drop",
+   "perms": [
+    "bm_drop_1.wav",
+    "bm_drop_2.wav",
+    "bm_drop_3.wav",
+    "bm_drop_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\beam_rifle_port\\bm_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\beam_rifle_port\\bm_overheat",
+   "perms": [
+    "bm_overheat_1.wav",
+    "bm_overheat_2.wav",
+    "bm_overheat_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\beam_rifle_port\\bm_overheat"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\beam_rifle_port\\bm_overheat_out",
+   "perms": [
+    "bm_overheat_out_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\beam_rifle_port\\bm_overheat_out"
+   ]
+  }
+ ]
+}

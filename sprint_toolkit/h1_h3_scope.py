@@ -57,12 +57,24 @@ def widgets(chud):
     s = io.open(h1_fp_retarget.export_xml(chud + '.chud_definition'), encoding='utf-8',
                 errors='replace').read()
     out = []
+    # the WINDOW state (the Beam Rifle, 2026-10-08: `scope` 720p/480p/480i FULLSCREEN = 13,
+    # `scope_quarterscreen` half/quarter screen = 242, the same widgets at scale 1.2 / 0.85)
+    # is inherited the same way; bake_maps takes the fullscreen set only
     parts = re.split(r'<element index="\d+" name="([^"]+)">\s*<field name="base" value=" " type="struct"/>', s)
-    coll_zoom = 0
+    coll_zoom = coll_window = 0
+    coll_place = ('crosshair', (0.0, 0.0))
     for name, body in zip(parts[1::2], parts[2::2]):
         if '<block name="bitmap widgets"' in body:          # a collection (its own states)
             zc = re.search(r'name="unit zoom state" value="(\d+)"', body)
             coll_zoom = int(zc.group(1)) if zc else 0
+            ws = re.search(r'name="window state" value="(\d+)"', body)
+            coll_window = int(ws.group(1)) if ws else 0
+            # its placement: a widget anchored to 'parent' sits on it (the Beam Rifle's
+            # scope_meters: crosshair, offset 0)
+            ca = re.search(r'name="anchor type" value="([^"]*)"', body.split('<block name="bitmap widgets"')[0])
+            co = re.search(r'name="origin offset" value="([^"]*)"', body.split('<block name="bitmap widgets"')[0])
+            coll_place = (ca.group(1) if ca else 'crosshair',
+                          tuple(float(x) for x in co.group(1).split(',')) if co else (0.0, 0.0))
             continue
         if '<field name="bitmap" value=' not in body:
             continue
@@ -70,12 +82,18 @@ def widgets(chud):
         fl = re.search(r'<field name="flags" value="\d+" type="word flags"(?:/>|>(.*?)</field>)', body, re.S)
         flags = set(x.strip() for x in (fl.group(1) or '').splitlines() if x.strip()) if fl else set()
         zm = re.search(r'name="unit zoom state" value="(\d+)"', body)
+        anchor, offset = g('anchor type'), tuple(float(x) for x in g('origin offset').split(','))
+        if anchor == 'parent':
+            anchor = coll_place[0]
+            offset = (offset[0] + coll_place[1][0], offset[1] + coll_place[1][1])
+        wn = re.search(r'name="window state" value="(\d+)"', body)
         out.append((name, {
             'bitmap': g('bitmap').split(',')[0], 'sequence': int(g('sequence index')),
-            'anchor': g('anchor type'), 'origin': tuple(float(x) for x in g('widget origin').split(',')),
-            'offset': tuple(float(x) for x in g('origin offset').split(',')),
+            'anchor': anchor, 'origin': tuple(float(x) for x in g('widget origin').split(',')),
+            'offset': offset,
             'scale': tuple(float(x) for x in g('widget scale').split(',')),
-            'zoom': int(zm.group(1)) if zm else coll_zoom, 'color': g('custom color A'), 'flags': flags,
+            'zoom': int(zm.group(1)) if zm else coll_zoom,
+            'window': int(wn.group(1)) if wn and int(wn.group(1)) else coll_window, 'color': g('custom color A'), 'flags': flags,
             # 'distortion and blur' (the Carbine's carbine_distortion) refracts, it does not
             # darken; an ACTIVE animation (.chad) may set what the static fields leave at 0
             'shader': g('shader type'),
@@ -86,6 +104,11 @@ def widgets(chud):
 
 def zoom_only(w):
     return w['zoom'] and not (w['zoom'] & 1)        # bit 0 = unzoomed
+
+
+def fullscreen(w):
+    """No window state, or one that includes 720p fullscreen (bit 0): Halo 1 has one view."""
+    return not w.get('window') or bool(w['window'] & 1)
 
 
 def bake(chud, size=512, span=640.0, aspect=1.0, per_widget=None):
@@ -108,7 +131,7 @@ def bake_maps(chud, size=512, span=640.0, aspect=1.0, per_widget=None):
     used = []
     per_widget = per_widget or {}
     for name, w in widgets(chud):
-        if not zoom_only(w) or 'hud_reticles' in w['bitmap']:
+        if not zoom_only(w) or 'hud_reticles' in w['bitmap'] or not fullscreen(w):
             continue
         o = per_widget.get(name, {})
         if o.get('drop'):

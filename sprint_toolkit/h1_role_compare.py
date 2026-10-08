@@ -189,6 +189,68 @@ SETS = {
         ('Battle Rifle (port peer)', W + r'battle rifle\battle rifle', 'shot',
          {'burst': (3, 0.1, 0.413)}),
     ]},
+    # the BEAM RIFLE (wave A4), step 4a. Halo 3 (H3EK 2026-10-08, h3_weapon_values): beam
+    # rifle 80 (plasma_fast) per 0.4 s recovery = 2.5/s, heat 0.7 a round, overheated at 1,
+    # loss 0.575/s (0.3/s while overheated) down to 0.1, battery: CAMPAIGN age 0.05 a round
+    # = 20 shots (multiplayer 0.1 = 10), 1200 wu/s, range 500, zoom 2 (3.5, 9.5), aim 1/10
+    # 4/14, error 0.5; sniper 80 (bullet_fast) per 0.7 s = 1.43/s, 4 (12 / 24), 72 fr, zoom
+    # 2 (4, 9), otherwise the beam's numbers; plasma pistol 7 (plasma_slow), recovery 0.05
+    # (TAPPED: a degenerate rate), heat 0.14, loss 0.6 / 0.45 to 0.1, age 0.002 (campaign),
+    # 21 wu/s, range 40, aim 5/13.5 9/18; sentinel gun 4 (plasma_fast) x 30/s, heat 0.04,
+    # loss 0.8525 / 0.35 to 0.1, overheated 0.9, age 0.003, 4000 wu/s, range 120, aim 1/12
+    # 9/18. Halo 1: sniper 101 x 2/s, 4 (12 / 24), 1000 wu/s, range 1000, zoom 2 (2, 8),
+    # aim 1/35 2/35, melee 55; plasma pistol 18 tapped (rate 0, charge 0.6 = the overcharge),
+    # heat 0.16, loss 0.65 to 0.25, age 0.002, 25 wu/s, range 50; Sentinel Beam (port,
+    # derived) 4.64 x 15/s measured, heat 0.0426, loss 0.3 to 0.25, overheated 0.9, age
+    # 0.012. Ratio rule = H1 yardstick x H3 beam / H3 yardstick; a value the yardstick does not
+    # have (the sniper's heat and battery) stays Halo 3's own. Halo 1 has ONE heat loss/s:
+    # Halo 3's two (0.575 cooling, 0.3 overheated) are shown both ways.
+    'beam_rifle': {'port': 'Beam Rifle', 'weapons': [
+        ('BmR = H3 own, loss .575', W + r'sniper rifle\sniper rifle', 'shot',
+         {'speed': 1200.0, 'range': 500.0, 'aim': (1.0, 10.0, 4.0, 14.0),
+          'dmg': 80.0, 'rate': 2.5, 'heat': (0.7, 1.0, 0.575, 0.1), 'age': 0.05,
+          'nomag': True, 'heat_sim': True}),
+        ('BmR = H3 own, loss .3', W + r'sniper rifle\sniper rifle', 'shot',
+         {'speed': 1200.0, 'range': 500.0, 'aim': (1.0, 10.0, 4.0, 14.0),
+          'dmg': 80.0, 'rate': 2.5, 'heat': (0.7, 1.0, 0.3, 0.1), 'age': 0.05,
+          'nomag': True, 'heat_sim': True}),
+        ('BmR = H3 own (2 losses)', W + r'sniper rifle\sniper rifle', 'shot',
+         {'speed': 1200.0, 'range': 500.0, 'aim': (1.0, 10.0, 4.0, 14.0),
+          'dmg': 80.0, 'rate': 2.5, 'heat': (0.7, 1.0, 0.575, 0.1, 0.3), 'age': 0.05,
+          'nomag': True, 'heat_sim': True}),
+        # Halo 3's plasma_fast differences Halo 1 has a material for (the Carbine's pair)
+        ('BmR = H3 own, plasma diffs', W + r'sniper rifle\sniper rifle', 'shot',
+         {'speed': 1200.0, 'range': 500.0, 'aim': (1.0, 10.0, 4.0, 14.0),
+          'dmg': 80.0, 'rate': 2.5, 'heat': (0.7, 1.0, 0.575, 0.1), 'age': 0.05,
+          'nomag': True, 'heat_sim': True,
+          'mods': {'jackal_energy_shield': 0.5, 'sentinel': 2.0}}),
+        # 101 x 80/80; 2/s x 2.5/1.43 = 3.5/s; heat + battery: Halo 3's own (no sniper heat)
+        ('BmR = Sniper ratio', W + r'sniper rifle\sniper rifle', 'shot',
+         {'dmg': 101.0, 'rate': 3.5, 'heat': (0.7, 1.0, 0.575, 0.1), 'age': 0.05,
+          'nomag': True, 'heat_sim': True}),
+        # 18 x 80/7; rate: both tapped -> Halo 3's 2.5; heat 0.16 x 5, loss 0.65 x 0.575/0.6,
+        # recovery 0.25 x 1; age 0.002 x 25 = 0.05 (plasma bolt materials)
+        ('BmR = Plasma Pistol ratio', W + r'plasma pistol\plasma pistol', 'shot',
+         {'speed': 1428.6, 'range': 625.0, 'aim': (1.0, 14.8, 5.33, 15.6),
+          'dmg': 205.7, 'rate': 2.5, 'charge': 0.0, 'heat': (0.8, 1.0, 0.623, 0.25),
+          'age': 0.05, 'heat_sim': True}),
+        # 4.64 x 80/4; 15/s (measured) x 2.5/30; heat 0.0426 x 17.5, overheated 0.9 x 1/0.9,
+        # loss 0.3 x 0.575/0.8525, recovery 0.25; age 0.012 x 0.05/0.003 = 0.2 (5 shots)
+        ('BmR = Sentinel Beam ratio', W + r'sentinel beam\sentinel beam', 'shot',
+         {'speed': 1200.0, 'range': 500.0, 'aim': (1.0, 10.0, 4.0, 14.0),
+          'dmg': 92.8, 'rate': 1.25, 'heat': (0.746, 1.0, 0.202, 0.25), 'age': 0.2,
+          'heat_sim': True}),
+        ('Sniper Rifle', W + r'sniper rifle\sniper rifle', 'shot'),
+        # Halo 1's primary is tapped (rate 0; the 0.6 s charge is the overcharge): 5/s ASSUMED
+        ('Plasma Pistol (tap 5/s)', W + r'plasma pistol\plasma pistol', 'shot',
+         {'rate': 5.0, 'charge': 0.0, 'heat_sim': True}),
+        ('Sentinel Beam (port)', W + r'sentinel beam\sentinel beam', 'shot', {'rate': 15.0}),
+        ('Pistol', W + r'pistol\pistol', 'shot'),
+    ], 'enemies': [
+        ('Sentinel', r'characters\sentinel\sentinel', 'sentinel'),
+        ('Flood combat (elite)', r'characters\floodcombat elite\floodcombat elite plasma rifle',
+         'floodcombat elite'),
+    ]},
 }
 
 ENEMIES = [
@@ -299,6 +361,26 @@ def weapon(label, rel, mode, overrides, extra=None):
         out['heat'] = (tr.misc.heat_generated_per_round, h.overheated_threshold,
                        h.loss_per_second, h.recovery_threshold)
         out['age'] = tr.misc.age_generated_per_round
+        # a CANDIDATE's own heat / battery (step 4a, the Beam Rifle): heat = (per round,
+        # overheated threshold, loss/s, recovery threshold[, loss/s while overheated --
+        # Halo 3 has two, Halo 1 one]); 'nomag' = a battery weapon on a magazine tag
+        if extra and extra.get('heat'):
+            out['heat'] = tuple(extra['heat'])
+        if extra and extra.get('age') is not None:
+            out['age'] = extra['age']
+        if extra and extra.get('nomag'):
+            out['mag'] = out['reload'] = None
+        if extra and extra.get('heat_sim'):  # time to kill waits out overheats (see kill)
+            out['heat_sim'] = True
+        if extra and extra.get('charge') is not None:
+            out['charge'] = extra['charge']
+            out['interval'] = 1.0 / out['rps'] if out['rps'] else 0.0
+        for k in ('speed', 'range', 'aim'):  # a candidate's own projectile / aim assist
+            if extra and extra.get(k) is not None:
+                out[k] = tuple(extra[k]) if k == 'aim' else extra[k]
+        if extra and extra.get('mods'):      # per-material modifiers over the base table
+            for d in out['damage']:
+                d['mods'].update(extra['mods'])
     if extra and extra.get('cap'):
         out['cap'] = extra['cap']
     if extra and extra.get('burst'):         # (rounds, spacing s, cycle s): Halo 3's burst
@@ -389,6 +471,29 @@ def enemy(path, char):
     return body, shield, body_mat, shield_mat
 
 
+def heat_times(wpn, shots):
+    """Times of `shots` rounds fired as fast as the rate and HEAT allow (a semi-automatic
+    tapped at its cap): the heat falls by loss/s in each gap; a round that reaches the
+    overheated threshold locks the trigger until the heat is back at the recovery threshold
+    (Halo 3: at the overheated loss/s). ASSUMED for Halo 1: a tapped weapon cools between
+    taps (the Sentinel Beam's 'cools only while not firing' was a HELD trigger)."""
+    hpr, oh, loss, rec = wpn['heat'][:4]
+    loss_oh = wpn['heat'][4] if len(wpn['heat']) > 4 else loss
+    t, heat, out = 0.0, 0.0, []
+    for k in range(shots):
+        if k:
+            if heat >= oh:                       # overheated: wait for the recovery threshold
+                wait = max(wpn['interval'], (heat - rec) / loss_oh if loss_oh else 1e9)
+                heat = max(0.0, heat - wait * loss_oh)
+            else:
+                wait = wpn['interval']
+                heat = max(0.0, heat - wait * loss)
+            t += wait
+        heat += hpr
+        out.append(t)
+    return out
+
+
 def kill(wpn, body, shield, bmat, smat):
     """(shots, seconds) for a burst from cold."""
     per = []
@@ -417,6 +522,8 @@ def kill(wpn, body, shield, bmat, smat):
         t = wpn['charge'] + ((shots - 1) // n) * cycle + ((shots - 1) % n) * spacing
     else:
         t = wpn['charge'] + (shots - 1) * wpn['interval']
+    if wpn.get('heat_sim'):
+        t = wpn['charge'] + heat_times(wpn, shots)[-1]
     if wpn.get('mag') and wpn.get('reload'):
         per_mag = max(1, wpn['mag'] // max(1, wpn.get('rounds_per_shot') or 1))
         t += ((shots - 1) // per_mag) * wpn['reload']
@@ -466,16 +573,30 @@ def main():
         print('%-26s %9s %9s %9s %10s %8s %10s %9s' % ('weapon', 'heat/rnd', 'overheat', 'loss/s',
                                                       'to overheat', 'vent', 'battery', 'per batt'))
         for r in hot:
-            hpr, oh, loss, rec = r['heat']
+            hpr, oh, loss, rec = r['heat'][:4]
             rate = 1.0 / r['interval']
             net = hpr * rate - loss
             t_oh = ('%.1fs' % (oh / net)) if hpr and net > 0 else 'never'
             vent = ('%.1fs' % ((oh - rec) / loss)) if hpr and loss else '-'
             rounds = (1.0 / r['age']) if r.get('age') else 0
-            print('%-26s %9.4f %9g %9g %10s %8s %10s %9s'
+            if r.get('heat_sim'):            # a tapped weapon: count rounds, vent at its own loss
+                loss_oh = r['heat'][4] if len(r['heat']) > 4 else loss
+                n, heat = 0, 0.0
+                while heat < oh and n < 999:
+                    heat = max(0.0, heat - (r['interval'] * loss if n else 0)) + hpr
+                    n += 1
+                t_oh = '%d rnds' % n if n < 999 else 'never'
+                vent = '%.1fs' % ((oh - rec) / loss_oh) if loss_oh else '-'
+                times = heat_times(r, 400)
+                in10 = sum(1 for x in times if x < 10.0)
+                dmg = sum(d['dmg'] for d in r['damage']) * r['per_shot']
+                extra = '  10 s: %d rnds = %.0f dps' % (in10, in10 * dmg / 10.0)
+            else:
+                extra = ''
+            print('%-26s %9.4f %9g %9g %10s %8s %10s %9s%s'
                   % (r['label'], hpr, oh, loss, t_oh, vent,
                      ('%d rnds' % rounds) if rounds else '-',
-                     ('%.1fs' % (rounds / rate)) if rounds else '-'))
+                     ('%.1fs' % (rounds / rate)) if rounds else '-', extra))
     sc = scales()
     for diff in ('normal', 'legendary'):
         vs, ss = sc[diff]

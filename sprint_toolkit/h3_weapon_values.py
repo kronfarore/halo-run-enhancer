@@ -86,6 +86,15 @@ def values(weapon, graph=None):
         'barrel climb / shot': field(bar, 'angle change per shot'),
         'heat per round': field(bar, 'heat generated per round'),
         'age per round': field(bar, 'age generated per round'),
+        # Halo 3 has a campaign-only battery cost beside the multiplayer one (beam rifle 0.05
+        # vs 0.1: 20 shots a battery in campaign, 10 in multiplayer; found by the Beam Rifle)
+        'CAMPAIGN age per round': field(bar, 'CAMPAIGN age generated per round'),
+        'heat loss / s (normal; overheated)': '%s; %s' % (field(s, 'heat loss per second'),
+                                                          field(s, 'overheated heat loss per second')),
+        'heat recovery / overheated threshold': '%s / %s' % (field(s, 'heat recovery threshold'),
+                                                             field(s, 'overheated threshold')),
+        'zoom levels (range)': '%s (%s)' % (field(s, 'magnification levels'),
+                                           field(s, 'magnification range')),
         'autoaim angle / range': '%s / %s' % (field(s, 'autoaim angle'), field(s, 'autoaim range')),
         'magnetism angle / range': '%s / %s' % (field(s, 'magnetism angle'), field(s, 'magnetism range')),
         'melee 1st / 3rd hit': '%s / %s' % ((ref(s, '1st hit melee damage') or '-').rsplit('\\', 1)[-1],

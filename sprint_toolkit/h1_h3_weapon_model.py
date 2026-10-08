@@ -179,8 +179,22 @@ def meters(w):
 def shaders(w, glow):
     out = os.path.join(TAGS, w['dir'], 'shaders')
     os.makedirs(out, exist_ok=True)
+    # a Halo 3 material with no Halo 1 maps of its own (the Beam Rifle: a reflective glass,
+    # an animated energy `luminous`) = a COPY of a stock Halo 1 shader under the material's
+    # name (`shader_copies` {name: tag path WITH extension}); `tool model` finds it by name
+    import shutil
+    for name, src in w.get('shader_copies', {}).items():
+        ext = os.path.splitext(src)[1]
+        for e in ('.shader_model', '.shader_transparent_chicago', '.shader_transparent_generic',
+                  '.shader_transparent_glass', '.shader_transparent_meter'):
+            stale = os.path.join(out, name + e)               # `tool model` must find ONE
+            if e != ext and os.path.exists(stale):
+                os.remove(stale)
+        shutil.copy2(os.path.join(TAGS, src), os.path.join(out, name + ext))
+        print('   shader %s = a copy of %s' % (name + ext, src))
     for name in w['shaders']:
-        if name in w.get('numeric', {}).get('places', {}) or name in w.get('meters', {}):
+        if (name in w.get('numeric', {}).get('places', {}) or name in w.get('meters', {})
+                or name in w.get('shader_copies', {})):
             continue
         t = soso_def.build(filepath=os.path.join(TAGS, w['template'] + '.shader_model'))
         m = t.data.tagdata.soso_attrs
@@ -197,7 +211,7 @@ def shaders(w, glow):
 
 def models(w):
     for key, sub, fname in (('world', '', w['world_name']), ('fp', B + 'fp', 'fp')):
-        jm, _rm = h3_rm_to_jms.convert(w[key])
+        jm, _rm = h3_rm_to_jms.convert(w[key], markers=w.get('markers'))
         d = os.path.join(HCEEK, 'data', w['dir'] + sub, 'models')
         os.makedirs(d, exist_ok=True)
         write_jms(os.path.join(d, fname + '.jms'), jm)
