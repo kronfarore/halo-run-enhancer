@@ -487,20 +487,24 @@ class Level:
         prof = donor[3] if donor else None
         dname = donor[2] if donor else 'itself (no donor)'
         major_ref = None
+        bases = []
         if need == 2:
             ms = self.free_slots.pop(0)
-            write_profile(self.m, vs.fill_slot(self.m, ms, self.tags[major], weref, dmaj), prof)
+            bases.append(vs.fill_slot(self.m, ms, self.tags[major], weref, dmaj))
+            write_profile(self.m, bases[-1], prof)
             major_ref = vs.slot_ref(self.m, ms)
             self.alias[vs.slot_path(ms)] = major + hv.CLONE_SEP + weapon.rsplit(BS, 1)[-1]
             self.log.append((ms, self.alias[vs.slot_path(ms)], dname))
         sl = self.free_slots.pop(0)
-        write_profile(self.m, vs.fill_slot(self.m, sl, self.tags[source], weref, dmin, major_ref), prof)
+        bases.append(vs.fill_slot(self.m, sl, self.tags[source], weref, dmin, major_ref))
+        write_profile(self.m, bases[-1], prof)
+        rule = grunt_rate_rule(self.m, bases, unit, weapon)
         self.alias[vs.slot_path(sl)] = source + hv.CLONE_SEP + weapon.rsplit(BS, 1)[-1]
         self.log.append((sl, self.alias[vs.slot_path(sl)], dname))
         # a major has a biped of its own (Jackal major), which needs the melee too
         major_unit = self.ref(major, hv.REF_UNIT) if need == 2 else None
         taught = '; '.join(x for x in (
-            self.ensure_label(unit, weapon), self.ensure_melee(unit, weapon),
+            rule, self.ensure_label(unit, weapon), self.ensure_melee(unit, weapon),
             self.ensure_melee(major_unit, weapon) if major_unit not in (None, unit) else None)
             if x)
         idx = self.palette_index(vs.slot_path(sl))
@@ -511,6 +515,49 @@ class Level:
 
 
 # ----------------------------------------------------------------------------- passes
+# ----------------------------------------------------------------------------- hands
+# Armed rule (user, 2026-10-08): a GRUNT given a TWO-HANDED weapon fires at half its rate
+# -- not with HEAVY support weapons -- and a JACKAL given a two-handed or heavy weapon
+# loses its arm shield. Halo 1 weapons carry no such class, so it is a list (user-
+# confirmed): stock weapons here, ported ones in their catalog entry's `hands`. Anything
+# unlisted counts as one-handed (no change).
+STOCK_HANDS = {
+    BS.join(('weapons', 'pistol', 'pistol')): 'one',
+    BS.join(('weapons', 'plasma pistol', 'plasma pistol')): 'one',
+    BS.join(('weapons', 'needler', 'needler')): 'one',
+    BS.join(('weapons', 'plasma rifle', 'plasma rifle')): 'one',
+    BS.join(('weapons', 'assault rifle', 'assault rifle')): 'two',
+    BS.join(('weapons', 'shotgun', 'shotgun')): 'two',
+    BS.join(('weapons', 'sniper rifle', 'sniper rifle')): 'two',
+    BS.join(('weapons', 'rocket launcher', 'rocket launcher')): 'heavy',
+    BS.join(('weapons', 'flamethrower', 'flamethrower')): 'heavy',
+}
+RATE_OF_FIRE = 0x78                       # actv firing block: the AI's rounds per second
+GRUNT_TWO_HANDED_RATE = 0.5
+
+
+def hands(weapon):
+    """'one' / 'two' / 'heavy' for a Halo 1 weapon tag path."""
+    if weapon in STOCK_HANDS:
+        return STOCK_HANDS[weapon]
+    try:
+        import weapon_ports
+        port = next((p for p in weapon_ports.ports_for(GAME) if weapon_ports.weap_path(p) == weapon), None)
+    except Exception:
+        port = None
+    return (port or {}).get('hands') or 'one'
+
+
+def grunt_rate_rule(m, bases, unit, weapon):
+    """Halve the filled slots' Rate Of Fire for a Grunt with a two-handed weapon."""
+    if enemy_of_unit(unit) != 'Grunt' or hands(weapon) != 'two':
+        return None
+    for b in bases:
+        struct.pack_into('<f', m.data, b + RATE_OF_FIRE,
+                         struct.unpack_from('<f', m.data, b + RATE_OF_FIRE)[0] * GRUNT_TWO_HANDED_RATE)
+    return 'two-handed: Grunt rate x%g' % GRUNT_TWO_HANDED_RATE
+
+
 def _i16(m, off):
     return struct.unpack_from('<h', m.data, off)[0]
 
