@@ -154,12 +154,14 @@ PORT.update({
                          # (circle 1; circle 2 smaller) -- right, but invisible without bloom.
                          # A radial HALO card per lit-texel cluster (the Beam Rifle's gem halo,
                          # placed on the spot, not over the face)
-                         # TEST 5 (user): 'side glows visible now' -- A/B: A (this) brightness
-                         # 50%, B (test-only secondary) size 50%
+                         # TEST 5 (user): 'side glows visible now' -- A/B: A brightness 50%, B
+                         # size 50%. TEST 6 (user): 'B looks better, zoom hides the glow' (FP
+                         # geometry: hidden with the FP model when zoomed) -> full brightness,
+                         # size 0.4 (below)
                          'spiker_spot': {'rgb': PALE, 'additive': True, 'radial': True,
-                                         'falloff': 1.6, 'gain': 1.0, 'brightness': 0.5}},
+                                         'falloff': 1.6, 'gain': 1.0}},
         'glow_spots': [{'material': 'bolt_thrower', 'illum': ILLUM, 'shader': 'spiker_spot',
-                        'size': 0.8, 'lift': 0.05, 'merge': 0.4, 'skip_normal': (1.0, 0.0, 0.0),
+                        'size': 0.4, 'lift': 0.05, 'merge': 0.4, 'skip_normal': (1.0, 0.0, 0.0),
                         # the faces are nearly edge-on to the FP camera (render): a second card
                         # per spot facing back along the gun (-x), where the camera looks from
                         'face': (-1.0, 0.0, 0.0)}],
