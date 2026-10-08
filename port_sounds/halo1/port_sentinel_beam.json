@@ -81,6 +81,18 @@
    "aliases": [
     "sound\\weapons\\sentinel_beam_port\\beam_overheat"
    ]
+  },
+  {
+   "tag": "sound\\weapons\\sentinel_beam_port\\beam_drop",
+   "perms": [
+    "beam_drop_1.wav",
+    "beam_drop_2.wav",
+    "beam_drop_3.wav",
+    "beam_drop_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sentinel_beam_port\\beam_drop"
+   ]
   }
  ]
 }

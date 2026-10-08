@@ -721,6 +721,16 @@ def edit_weapon(key, write):
         et = effe_def.build(filepath=path(M['from'], '.effect'))
         for loc in et.data.tagdata.locations.STEPTREE:
             loc.marker_name = M['locations'].get(loc.marker_name, loc.marker_name)
+        # `sounds`: its sound parts renamed (the Sentinel Beam's own overheat, 2026-10-08)
+        n = 0
+        for ev in et.data.tagdata.events.STEPTREE:
+            for part in ev.parts.STEPTREE:
+                new = M.get('sounds', {}).get(part.type.filepath)
+                if new:
+                    part.type.filepath = new
+                    n += 1
+        if M.get('sounds') and not n:
+            raise SystemExit('%s: none of the sound parts %s found' % (M['from'], list(M['sounds'])))
         save(et, path(M['out'], '.effect'), write)
         for tr in a.triggers.STEPTREE:
             for fe in tr.firing_effects.STEPTREE:

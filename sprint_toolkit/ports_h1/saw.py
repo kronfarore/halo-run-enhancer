@@ -14,6 +14,13 @@ PORT = {
     'reservations': {'messages': (47, 48), 'icon': 25, 'reticle': None, 'label': 'ar',
                      'teach_from': None, 'sound_dir': r'sound\weapons\saw_port',
                      'weapon_dir': r'weapons\saw'},
+    # sound close-out (user, 2026-10-08): the drop is Halo 4's LMG drop (h1_saw_sounds.py
+    # --only saw_drop). BORROWED sounds kept ON PURPOSE -- Halo 4 has none for the SAW (its
+    # generic ammo-pickup event is in no MCC bank; its casings are per-surface landings, not
+    # an eject; no flashlight sound). port_sound_refs.py prints these as KEEP
+    'sound_keeps': {r'sound\sfx\weapons\assault rifle\flashlight': 'Halo 4 SAW has no flashlight sound',
+                    r'sound\sfx\weapons\weapon_pickup_ammo\ar_ammo': 'Halo 4 ammo pickup is in no MCC bank',
+                    r'sound\sfx\weapons\pistol\eject': 'Halo 4 SAW has no casing eject (user chose drop only)'},
     'yardstick': {'pick': 'Assault Rifle',
                   'reason': 'ratio rule against the Assault Rifle (balance_SAW_Halo4_to_Halo1.json)',
                   'candidates': {}},

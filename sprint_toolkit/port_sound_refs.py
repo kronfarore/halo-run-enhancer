@@ -45,6 +45,11 @@ def main():
     ap.add_argument('--weapon', help='only this catalog weapon')
     p = ap.parse_args()
     cat = json.load(open(os.path.join(a.TOOL, 'weapon_ports_catalog.json'), encoding='utf-8'))
+    # borrows the user kept ON PURPOSE (a Halo 1 port's `sound_keeps`, ports_h1/<key>.py):
+    # printed KEEP, not BORROW -- the close-out rule is "no BORROW"
+    import ports_h1
+    keeps = {('Halo 1', P['name']): {k.lower() for k in P.get('sound_keeps', {})}
+             for _k, P in ports_h1.all_ports()}
     for game, v in cat.items():
         if p.game and game != p.game:
             continue
@@ -72,7 +77,8 @@ def main():
                 for field, cls, name in rows:
                     nm = str(name).lower()
                     own = nm.startswith(own_dir + chr(92)) or nm.startswith(port_dir.lower() + chr(92))
-                    print('   %-6s %-60s %s' % ('OWN' if own else 'BORROW', field[-60:], name))
+                    tag = 'OWN' if own else ('KEEP' if nm in keeps.get((game, e['weapon']), ()) else 'BORROW')
+                    print('   %-6s %-60s %s' % (tag, field[-60:], name))
                 break
 
 

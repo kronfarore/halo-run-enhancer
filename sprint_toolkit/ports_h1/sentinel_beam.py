@@ -205,7 +205,14 @@ PORT = {
                               'out': SB + 'effects\\overheated', 'locations': {'vent': 'overheat'}},
         # the template's misfire burst (a low-battery misfire) aims at `vent` too
         'misfire_effect': {'from': r'weapons\plasma rifle\effects\misfire',
-                           'out': SB + 'effects\\misfire', 'locations': {'vent': 'overheat'}},
+                           'out': SB + 'effects\\misfire', 'locations': {'vent': 'overheat'},
+                           # sound close-out (user, 2026-10-08): the misfire's sound part was
+                           # the plasma rifle's overheat -> the beam's own (Halo 3's vent)
+                           'sounds': {r'sound\sfx\weapons\plasma rifle\overheat': SBS + 'beam_overheat'}},
+        # sound close-out (user, 2026-10-08, port_sound_refs BORROW): Halo 3's Sentinel drop
+        # over the plasma rifle's, and the empty click = the beam's own overheat (above)
+        'fields': {'item_attrs.collision_sound.filepath': SBS + 'beam_drop',
+                   'weap_attrs.triggers.0.firing_effects.0.empty_effect.filepath': SBS + 'beam_overheat'},
         'attach_swap': {r'weapons\plasma rifle\muzzle flash': SB + 'muzzle light'},
         # the template's attachments sit on plasma rifle markers this model lacks
         # THE DROP (user's option B): Halo 1's Sentinel carries no droppable weapon, so its
@@ -272,6 +279,9 @@ PORT = {
             'beam_fire_out': ([SG + 'out'], PR_SOUNDS + B + 'fire', -16.0),
             'beam_overheat': ([tuple(OH + k for k in ('in', 'loop', 'out'))],
                               PR_SOUNDS + B + 'overheat', -18.0),
+            # sound close-out (2026-10-08): the Sentinel's own drop over the plasma rifle's
+            # plasma_impact (-18.7, measured)
+            'beam_drop': (['sentinel_laser_drop'], 'sound\\sfx\\impulse\\weapon_drops\\plasma_impact', -18.7),
         },
         # Halo 1 lets a looping sound finish its current pass before the end track: Halo
         # 3's 4.3 s loop hummed on for seconds after the trigger was let go (test 3)

@@ -136,11 +136,21 @@ PORT.update({
             'smg_ready': (['smg_fp\\smg_ready'], 'sound\\sfx\\weapons\\assault rifle\\weapon ready', -13.1),
             'smg_melee': (['smg_fp\\smg_melee_strike'], 'sound\\sfx\\weapons\\weapon_anims\\ar_melee', -16.2),
             'smg_pose': (['smg_fp\\smg_posing0'], 'sound\\sfx\\weapons\\weapon_anims\\pistol_posing', -26.5),
+            # sound close-out (2026-10-08, port_sound_refs BORROW): Halo 3's own drop and
+            # ammo pickup over the AR's (assault_impact -20.7, ar_ammo -24.9, measured)
+            'smg_drop': (['smg_drop'], 'sound\\sfx\\impulse\\weapon_drops\\assault_impact', -20.7),
+            'smg_ammo': (['smg_ammo'], 'sound\\sfx\\weapons\\weapon_pickup_ammo\\ar_ammo', -24.9),
         },
         'stretch': {'smg_reload_balanced': 1.5},
         'shots': {'smg_fire': {'period': 0.066, 'count': 4, 'tail': 'smg_loop\\smg_loop\\out',
                                'tail_onset': 0.02, 'tail_len': 0.7}},
     },
+
+    # BORROWED sounds kept ON PURPOSE (user, 2026-10-08 sound close-out): Halo 3's SMG has
+    # no flashlight sound and no casing eject, so the AR's flashlight and the pistol's eject
+    # (in the copied `fire bullet`) stay. port_sound_refs.py prints these as KEEP
+    'sound_keeps': {r'sound\sfx\weapons\assault rifle\flashlight': 'Halo 3 SMG has no flashlight sound',
+                    r'sound\sfx\weapons\pistol\eject': 'Halo 3 SMG has no casing eject'},
 
     # ---------------------------------------------------------------------------------------
     # The weapon (h1_pickable_weapons.py --only smg) on a COPY of the Halo 1 Assault Rifle.
@@ -181,7 +191,10 @@ PORT.update({
                    'weap_attrs.interface.active_camo_ding': 0.25 * 0.18 / 0.2,
                    # STEP 6, how much one pickup gives: Halo 3's SMG magazine item 120 (the
                    # H3 AR has none: no ratio) -- the source value; the H1 AR's gives 240
-                   'weap_attrs.magazines.0.magazine_items.0.rounds': 120},
+                   'weap_attrs.magazines.0.magazine_items.0.rounds': 120,
+                   # sound close-out (2026-10-08): its own drop and ammo pickup
+                   'weap_attrs.interface.pickup_sound.filepath': SND + 'smg_ammo',
+                   'item_attrs.collision_sound.filepath': SND + 'smg_drop'},
         # H3 single-wield: minimum error 0.25, error angle 1.25 -> 2.75 (H1 AR 0, 2 -> 6.5)
         # + the BARREL CLIMB Halo 1 lacks (H3: 0 -> 0.4 deg/shot, 'very late', arriving over
         # ~1.1 s -- Halo 1's error ramp here is 1.2 s): +1.6 deg on the full-bloom cone, the

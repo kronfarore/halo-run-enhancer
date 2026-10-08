@@ -72,6 +72,17 @@
    "aliases": [
     "sound\\weapons\\saw_port\\saw_melee"
    ]
+  },
+  {
+   "tag": "sound\\weapons\\saw_port\\saw_drop",
+   "perms": [
+    "saw_drop_1.wav",
+    "saw_drop_2.wav",
+    "saw_drop_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\saw_port\\saw_drop"
+   ]
   }
  ]
 }

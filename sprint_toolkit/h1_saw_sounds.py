@@ -73,7 +73,15 @@ SOUNDS = {'saw_fire': ('fire', AR_SND + B + 'fire'),
           'saw_reload_balanced': ('foley', AR_ANIM + B + 'ar_reload'),
           'saw_ready': ('foley', AR_SND + B + 'weapon ready'),
           # second batch: melee (the H1 animation set cues ONE melee sound, ar_melee)
-          'saw_melee': ('foley', AR_ANIM + B + 'ar_melee')}
+          'saw_melee': ('foley', AR_ANIM + B + 'ar_melee'),
+          # sound close-out (user, 2026-10-08): Halo 4's LMG drop (play_wea_drop_rifle_lmg_
+          # nonplayer, in the SAW's own bank; h4_wwise.py --extract light_machine_gun_player)
+          # over the AR's. The AR's ammo pickup, flashlight and casing eject stay: Halo 4 has
+          # none for the SAW (ports_h1/saw.py sound_keeps). Add it alone: --only saw_drop
+          'saw_drop': ('drop', B.join(['sound', 'sfx', 'impulse', 'weapon_drops', 'assault_impact']))}
+#: non-foley sounds set to an ACTIVE-RMS target (dBFS, samples above 0.01): the stock sound
+#: each stands in for, measured (h1_stock_sound_levels.py: assault_impact -20.7)
+LEVELS = {'saw_drop': -20.7}
 #: foley sound -> (cues, stretch, active-RMS target = the H1 AR's own, measured in the
 #: classic bank: ar_reload -20.9 dBFS, weapon ready -13.1). The balanced animation set
 #: (saw_anims.py balanced) plays the reload in 164 frames instead of 128.
@@ -146,12 +154,17 @@ def backup():
     print('backup: %s' % BACKUP)
 
 
-def import_sounds():
-    shutil.rmtree(os.path.join(TAGS, SND_DIR), ignore_errors=True)
-    shutil.rmtree(os.path.join(HCEEK, 'data', SND_DIR), ignore_errors=True)
+def import_sounds(only=None):
+    """Every own sound (the folders wiped first), or just `only` (the others untouched)."""
+    if not only:
+        shutil.rmtree(os.path.join(TAGS, SND_DIR), ignore_errors=True)
+        shutil.rmtree(os.path.join(HCEEK, 'data', SND_DIR), ignore_errors=True)
     gain = 10 ** (-HEADROOM_DB / 20)
     for name, (src, ar) in SOUNDS.items():
+        if only and name not in only:
+            continue
         d = os.path.join(HCEEK, 'data', SND_DIR, name)
+        shutil.rmtree(d, ignore_errors=True)
         os.makedirs(d)
         pcm = []
         for f, y in rendered(name):
@@ -225,6 +238,10 @@ def repoint_weapon():
                 if ref.filepath.lower() in ((AR_FX + B + name).lower(), (OWN_FX + B + name).lower()):
                     ref.filepath = OWN_FX + B + name
                     n += 1
+    # the drop (sound close-out, 2026-10-08), once its tag exists
+    if os.path.exists(os.path.join(TAGS, SND_DIR, 'saw_drop.sound')):
+        t.data.tagdata.item_attrs.collision_sound.filepath = SND_DIR + B + 'saw_drop'
+        print('   weapon: collision sound -> saw_drop')
     t.serialize(temp=False, backup=False)
     print('   weapon: %d effect reference(s) -> own' % n)
 
@@ -253,6 +270,11 @@ def processed(name, w):
     x = tone_mod.resample(x, r, 44100)
     if name == 'saw_fire' and TONE:
         x = tone_mod.level(tone_mod.tone(x, 44100, TONE), 44100, tone_mod.AR_RMS_DB + LOUDER_DB)
+    elif name in LEVELS:                                 # the foley path's measure
+        act = x[np.abs(x) > 0.01]
+        x = x * 10 ** ((LEVELS[name] - 20 * np.log10(np.sqrt((act ** 2).mean()) + 1e-12)) / 20)
+        if np.abs(x).max() > 0.95:
+            x = 0.95 * np.tanh(x / 0.95)                 # peaks soft-limited
     return tone_mod.resample(x, 44100, BANK_RATE)
 
 
@@ -278,16 +300,23 @@ def rendered(name):
     return out
 
 
-def bank_wavs():
+def bank_wavs(only=None):
     """The SAW's bank audio, 22 kHz mono, the fire in TONE at the H1 AR's level, plus the
     manifest port_sounds.py reads: each sound's tag path, the index ALIASES (how classic
     view maps a path outside sound\\sfx is not known yet -- the plain path and an `old_`
-    form are both listed), and its permutations in order."""
+    form are both listed), and its permutations in order. `only`: just those sounds,
+    replaced in (or appended to) the existing manifest."""
     import json
-    shutil.rmtree(BANK_DIR, ignore_errors=True)
-    os.makedirs(BANK_DIR)
-    sounds = []
+    # port_sounds\halo1 is SHARED with every other port (h1_port_sounds.py): only the
+    # SAW's own files go (this once wiped the whole folder)
+    os.makedirs(BANK_DIR, exist_ok=True)
+    man = os.path.join(BANK_DIR, 'port_saw.json')
+    sounds = json.load(open(man))['sounds'] if only and os.path.exists(man) else []
     for name, (src, _ar) in SOUNDS.items():
+        if only and name not in only:
+            continue
+        for f in glob.glob(os.path.join(BANK_DIR, name + '_*.wav')):
+            os.remove(f)
         perms = []
         for f, y in rendered(name):
             tone_mod.write(os.path.join(BANK_DIR, f), y, BANK_RATE)
@@ -306,10 +335,10 @@ def bank_wavs():
             # and after the SAW fired the AR started CLIPPING (user, 2026-10-04: AR fine,
             # SAW fine, AR again clipped) -- dropped, suspected double release.
             entry = {'tag': tag, 'perms': perms, 'aliases': [tag]}
-        sounds.append(entry)
+        sounds = [s for s in sounds if s['tag'] != tag] + [entry]
         print('   bank audio %-12s %d permutation(s) at %d Hz' % (name, len(perms), BANK_RATE))
     json.dump({'game': 'Halo 1', 'weapon': 'SAW', 'rate': BANK_RATE, 'sounds': sounds},
-              open(os.path.join(BANK_DIR, 'port_saw.json'), 'w'), indent=1)
+              open(man, 'w'), indent=1)
     print('   wrote %s' % BANK_DIR)
 
 
@@ -318,19 +347,22 @@ def main():
     ap.add_argument('--write', action='store_true')
     ap.add_argument('--bank-only', action='store_true',
                     help='only rewrite the bank audio (port_sounds\\halo1); no tags, no rebuild')
+    ap.add_argument('--only', nargs='+', choices=sorted(SOUNDS),
+                    help='just these sounds (tag + bank); the other SAW sounds stay as built')
     a = ap.parse_args()
     if not a.write:
         print('(dry run -- pass --write)')
         return
     if a.bank_only:
-        bank_wavs()
+        bank_wavs(a.only)
         print('done -- install with: python ..\\port_sounds.py --write')
         return
     backup()
-    import_sounds()
-    own_effects()
+    import_sounds(a.only)
+    if not a.only:
+        own_effects()
     repoint_weapon()
-    bank_wavs()
+    bank_wavs(a.only)
     print('done -- rebuild (h1_rebuild_all.py --maps a10 for a test), then '
           'python ..\\port_sounds.py --write')
 

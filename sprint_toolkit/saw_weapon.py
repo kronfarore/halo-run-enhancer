@@ -74,7 +74,11 @@ def main():
             for fe in trig.firing_effects.STEPTREE:
                 fe.firing_effect.filepath = own_fx + 'fire bullet'
                 fe.empty_effect.filepath = own_fx + 'empty'
-    mags = d.weap_attrs.magazines.STEPTREE
+    # its own drop (h1_saw_sounds.py --only saw_drop, 2026-10-08), kept the same way
+    drop = 'sound' + B + 'weapons' + B + 'saw_port' + B + 'saw_drop'
+    if os.path.exists(os.path.join(TAGS, drop + '.sound')):
+        d.item_attrs.collision_sound.filepath = drop
+    mags =d.weap_attrs.magazines.STEPTREE
     if len(mags):
         m = mags[0]
         print('AR magazine:', m.rounds_recharged, m.rounds_total_initial, m.rounds_total_maximum,

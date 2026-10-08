@@ -24,6 +24,9 @@ Top-level keys every config has:
     yardstick      {'pick', 'reason', 'candidates': {...}} -- the pick is made WITH the
                    user at step 4a and recorded here; phase 0 only lists candidates
 
+Optional: sound_keeps  {stock sound tag path: why} -- borrowed sounds the USER kept on
+                   purpose; port_sound_refs.py prints them KEEP instead of BORROW
+
     import ports_h1
     ports_h1.section('pickable')   # {key: PORT['pickable']} in `order`
     ports_h1.load('smg')           # one config

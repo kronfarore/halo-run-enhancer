@@ -18,6 +18,9 @@ PORT = {
     'reservations': {'messages': (49, 50), 'icon': 27, 'reticle': 17, 'label': 'fb',
                      'teach_from': 'b', 'sound_dir': r'sound\weapons\energy_sword_port',
                      'weapon_dir': r'weapons\energy sword'},
+    # BORROWED sound kept ON PURPOSE (user, 2026-10-08 sound close-out): a RESTORED weapon
+    # keeps Halo 1's own dispersal boom. port_sound_refs.py prints it as KEEP
+    'sound_keeps': {r'sound\sfx\impulse\impacts\elite_sword_boom': "the original sword's own dispersal"},
     'yardstick': {'pick': None,
                   'reason': 'restored weapon: Halo 1\'s own numbers; balanced rows by step 5b '
                             '(h1_role_compare.py energy_blade, user-approved 2026-10-06)',

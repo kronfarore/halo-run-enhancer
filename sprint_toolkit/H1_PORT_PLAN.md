@@ -305,7 +305,7 @@ in ONE boot: `--secondary <test-only tag>` puts a variant on every spawn's secon
 list-3 line), a full field diff of the port against its TEMPLATE (every difference traced
 to a decision), kit_tag_diff on the last writes, `port_sound_refs --map <test copy>` with
 NO 'BORROW' (the template's ammo-pickup sound, item collision sound and casing eject are
-easy to miss), port_refs_audit, 5b on the BUILT port (a `(port)` row in the role set).
+easy to miss; a borrow the user keeps goes in the config's `sound_keeps` and prints KEEP), port_refs_audit, 5b on the BUILT port (a `(port)` row in the role set).
 
 **Zoom = Halo 3's scope, ALWAYS (user: the standard procedure).** `hud['scope'] = {'chud':
 <H3 chud>, 'out': <mask tag>, 'size': 1024, 'span': ..., 'aspect': 4/3, 'alpha':
@@ -433,8 +433,9 @@ carry wind physics. Scope: `h1_h3_scope` bakes the FULLSCREEN widget set (window
 **New user rule** (enhancer session, every Armed card): Grunts with a two-handed weapon fire
 at half rate (heavy support excepted); Jackals with one lose the arm shield -- for A5 the
 enhancer's classification decides; check it is in place before the Armed boot.
-**Older ports** still show port_sound_refs BORROWs (SAW, SMG, Sentinel Beam, Flak Cannon,
-Energy Blade): not A5's job (a follow-up was proposed to the user).
+**Older ports' BORROWs: CLOSED 2026-10-08** (own drop/ammo/overheat where the source game has
+one; the rest the user KEPT on purpose -- `sound_keeps` in ports_h1/<key>.py, printed KEEP by
+port_sound_refs). Rule unchanged: a new port closes with NO 'BORROW'; a KEEP needs the user.
 
 **For A5, the Spike Rifle:** yardstick candidates Needler (provisional) and Assault Rifle. It is
 DUAL-WIELDABLE: two resource groups in the FP graph (Pilot A1), the DUAL-WIELD CARRY RULE x1.5,

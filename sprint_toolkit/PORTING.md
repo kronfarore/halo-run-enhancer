@@ -782,8 +782,8 @@ Final check (user): the weapon flags, decided by NAME (the audit lists the flags
 by hand'): Halo 3's beam and sniper both magnetize only when zoomed -> the sniper's
 `aim_assists_only_when_zoomed` (Halo 1's one flag also stops autoaim unzoomed). Close-out: list 2 = 0 (weapon, projectile; the damage effect's two = Halo 3's own breaking
 effect), template diff 191 traced, kit_tag_diff no change on the final rebuild, refs 0
-problems, sound refs 0 BORROW (older ports still have some: SAW, SMG, Sentinel Beam, Flak
-Cannon, Energy Blade), 5b default = Halo 3's row, balanced = the sniper-ratio row. Not
+problems, sound refs 0 BORROW (the older ports' were closed 2026-10-08: own sounds or
+user KEEPs, `sound_keeps`), 5b default = Halo 3's row, balanced = the sniper-ratio row. Not
 reproduced: Halo 3's two losses, bloom, live scope meters, the headshot cross. Zoom-out on
 overheat: the next section (halo1.dll, built and confirmed by its own session).
 

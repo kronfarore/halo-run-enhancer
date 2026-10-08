@@ -78,6 +78,30 @@
    "aliases": [
     "sound\\weapons\\smg_port\\smg_pose"
    ]
+  },
+  {
+   "tag": "sound\\weapons\\smg_port\\smg_drop",
+   "perms": [
+    "smg_drop_1.wav",
+    "smg_drop_2.wav",
+    "smg_drop_3.wav",
+    "smg_drop_4.wav",
+    "smg_drop_5.wav",
+    "smg_drop_6.wav",
+    "smg_drop_7.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\smg_port\\smg_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\smg_port\\smg_ammo",
+   "perms": [
+    "smg_ammo_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\smg_port\\smg_ammo"
+   ]
   }
  ]
 }

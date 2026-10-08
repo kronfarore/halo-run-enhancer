@@ -19,6 +19,14 @@ PORT = {
     'reservations': {'messages': None, 'icon': 28, 'reticle': None, 'label': 'fr',
                      'teach_from': 'pc', 'sound_dir': r'sound\weapons\fuel_rod_port',
                      'weapon_dir': r'weapons\fuel rod gun'},
+    # BORROWED sounds kept ON PURPOSE (user, 2026-10-08 sound close-out): a RESTORED weapon
+    # keeps Halo 1's own fuel rod fire / explosion / detonation, and the charge is the plasma
+    # pistol's charging loop as Halo 1 plays it (retarget charge_loop). port_sound_refs.py
+    # prints these as KEEP
+    'sound_keeps': {r'sound\sfx\weapons\fuel rod gun\fire': "the original gun's own fire",
+                    r'sound\sfx\weapons\fuel rod gun\explosion': "the original gun's own explosion",
+                    r'sound\sfx\impulse\impacts\dirthits': "the original gun's own detonation",
+                    r'sound\sfx\weapons\plasma rifle\charging': 'the charge loop (retarget charge_loop)'},
     'yardstick': {'pick': None,
                   'reason': 'restored weapon: Halo 1\'s own numbers; balanced rows by step 5b '
                             '(h1_role_compare.py flak_cannon, user-approved 2026-10-06)',
