@@ -80,7 +80,11 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'building',
+    # 2026-10-08: tested on a30 over 9 boots (dry default + heat variants, fixes, balanced,
+    # Armed Grunt/Jackal/Elite, glow iterations: additive mask, gem flares (dropped), glow
+    # cards 1.8 / 1.5 / 1.3) -- confirmed by the user; the ten-map rebuild is BATCHED with
+    # the SMG, BR and Carbine (on the user's go)
+    'status': 'done',
     # geometry + look (h1_h3_weapon_model.py). Halo 3's five materials: beam_rifle and
     # beam_rifle2 (the metal: base + illum map), beam_rifle_rubber (base only), and two with
     # no Halo 1 maps of their own -- `beam_rifle_glass` (a dark reflective lens) and
@@ -123,9 +127,9 @@ PORT.update({
                          'beam_rifle_glow_card': {'rgb': PINK, 'additive': True, 'islands': True,
                                                   'islands_of': 'beam_rifle_glass', 'radius': 1.0,
                                                   'falloff': 1.6, 'hot': False, 'gain': 1.0}},
-        'glow_cards': {'beam_rifle_glass': {'shader': 'beam_rifle_glow_card', 'scale': 1.5, 'lift': 0.05}},
+        'glow_cards': {'beam_rifle_glass': {'shader': 'beam_rifle_glow_card', 'scale': 1.3, 'lift': 0.05}},
         # TEST 8 (user): 'this will work' at 1.8 -- two reduced sizes in one boot: 1.5 (the gun),
-        # 1.3 (a test-only secondary)
+        # 1.3 (a test-only secondary). User: '1.3 looks best'
         'template': r'weapons\plasma rifle\fp\shaders\gun',
         # TEST 1 (user): 'no glow on the gun at all' -- Halo 3's illum map is a GREYSCALE mask
         # (its colour is the shader's self_illum_color, function data), 1% of texels lit in
@@ -263,7 +267,10 @@ PORT.update({
                    # beam does not -> no point physics
                    'contrail': {'from': SR + 'sniper', 'out': BM + 'beam', 'rgb': PINK,
                                 'no_physics': True},
-                   'material_responses_from': PP + 'bolt',
+                   # CLOSE-OUT (template diff): the plasma pistol bolt's WHOLE responses made
+                   # the 11 materials Halo 3's beam overpenetrates (as its sniper) 'disappear'
+                   # -> the sniper bullet's response types kept, only the effects the bolt's
+                   'material_effects_from': PP + 'bolt',
                    # TEST 3 (user): 'green plasma on the ground, blue smoke rising' -> the
                    # energy particles of each impact pink (RGB), the green burn decal Halo 1's
                    # plain plasma burn
@@ -363,6 +370,10 @@ PORT.update({
         # dark, so write()'s grey flood fill would find no vignette)
         'hud': {'donor': PP + 'plasma pistol', 'out': BM + 'beam rifle',
                 'screen_effect_from': SR + 'sniper rifle',
+                # CLOSE-OUT (template diff): the sniper's effect brought its night vision and
+                # green desaturation (inert without the weapon's night-vision flag); Halo 3's
+                # beam rifle has neither -> off
+                'screen_effect_clear': ('night_vision', 'desaturation'),
                 'scope': {'chud': r'ui\chud\beam_rifle', 'out': BM + 'bitmaps\\scope_mask',
                           # the Carbine's picked size and shape (80%, x squashed 0.8);
                           # the BR's 4/3 on the test variant. TEST 1 (user): A (this) looks
@@ -414,6 +425,28 @@ PORT.update({
             ]},
     },
 
+    # CLOSE-OUT RECORD (2026-10-08). 4b ran after test 2 (it should run BEFORE boot 1 when the
+    # template is not the yardstick: the missing 'use error when unzoomed' was in list 5).
+    # Weapon: list 2 = 0. List 4 = 0. List 5 (kept, the template's job): A-D exports +
+    #   functions (heat / battery / illumination layout), message 59, sort order 2 / scale 2
+    #   (the plasma pistol's), heat thresholds/loss/illumination (Halo 3 + user), zoom 3.5/9.5
+    #   (Halo 3's own), no magazine (battery), FP offset (the muzzle). List 3: no Halo 1 field
+    #   for Halo 3's second heat loss (user: one value, 0.4375), campaign age (written as the
+    #   age), fire recovery (= the rate), magnification (= zoom ranges), reporting type,
+    #   scariness, FP offset override / scope size, item ground scales, font icon.
+    # Projectile: list 2 = 0; water gravity 0 (written); responses = the SNIPER's types
+    #   (Halo 3's beam overpenetrates the same 11 materials) with the plasma pistol's effects
+    #   recoloured (material_effects_from + impact_tint); list 3 otherwise Halo 3-only fields.
+    # Damage effect: breaking effect = Halo 3's own radius / exponent (the ratio gave 400),
+    #   forward velocity = the sniper's 40 (list 4); category kept 'sniper' (Halo 3 plasma:
+    #   no Halo 1 counterpart that changes damage here); fade 'late' = both.
+    # Full field diff (h1_port_template_diff.py beam_rifle): 191 differences, each one of
+    #   the above, a reference to the port's own tags, or the sniper screen effect (night
+    #   vision / desaturation cleared). kit_tag_diff: the final rebuild changed nothing.
+    # port_refs_audit 0 problems; port_sound_refs 0 BORROW; 5b: default = Halo 3's row,
+    #   balanced = the sniper-ratio row (h1_role_compare beam_rifle [--balanced]).
+    # Not reproduced: Halo 3's two heat losses, bloom (glow cards instead), the scope's live
+    #   meters, the headshot cross; zoom-out on overheat = the separate halo1.dll session.
     # step 4b (port_field_audit.py --port beam_rifle): the source pair (H3 beam rifle vs the
     # yardstick, H3 sniper) against the target pair (the H1 port vs the H1 sniper; the
     # template is the plasma pistol -- the full field diff covers it)

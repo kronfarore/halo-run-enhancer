@@ -15,7 +15,8 @@ last a full Halo 3 port). Their recipes are in PORTING.md. Phase 0 (setup) is DO
 (2026-10-07). The SMG pilot (A1) is DONE and tested (2026-10-07; its ten-map rebuild waits
 for the user's go): read "Pilot A1: what wave A inherits" below before A2. A2 (Battle
 Rifle) and A3 (Covenant Carbine, 2026-10-08) are DONE and tested too -- the ten-map
-rebuild is BATCHED for all three (user's go); read "A3: what the Carbine taught" before A4.
+rebuild is BATCHED for all three (user's go). A4 (Beam Rifle, 2026-10-08) is DONE and tested
+too (batched with them); read "A4: what the Beam Rifle taught" before A5.
 
 ## Phase 0: DONE (2026-10-07)
 
@@ -395,6 +396,51 @@ meters (`meter gradient`, animated) and flash widgets -- a mask is static: decid
 the user (drop, or Halo 1 HUD meters); a `distortion and blur` layer again. Heat: the
 Sentinel Beam's lessons (PORTING "Halo 1: the Sentinel Beam"); two zoom levels.
 
+## A4: what the Beam Rifle taught (2026-10-08) -- read before A5 (the Spike Rifle)
+
+PORTING.md "Halo 1: the Beam Rifle, wave A4" is the full record; `ports_h1/beam_rifle.py` is
+the example of a HEAT + BATTERY port on a template that is NOT its yardstick, and of GLOW.
+Everything in "Pilot A1", "A2" and "A3" still holds; the Beam Rifle added:
+
+**Run 4b BEFORE BOOT 1 (rule now).** `port_field_audit.py --port <key>` lists 2-5 and
+`h1_port_template_diff.py <key>` before the first test, not at close-out. When the template
+is not the yardstick, list 5 holds the yardstick's flags the template lacks (the sniper's
+`use error when unzoomed` cost a boot) and the template diff shows behaviour the template
+brought along (the bolt's material RESPONSES turned overpenetration into 'disappear').
+Copy only what you need from a donor (`material_effects_from`, not `material_responses_from`).
+
+**Step 4a:** `h3_weapon_values.py` prints heat, the CAMPAIGN battery (Halo 3 has a campaign
+age field beside the multiplayer one -- the beam rifle 0.05 vs 0.1) and zoom; Halo 1 has ONE
+heat loss where Halo 3 has two -- show both, judge in game (`h1_scope_variant.py --field`
+puts any weapon field on the test secondary). `h1_role_compare` `heat_sim` waits out
+overheats for a tapped weapon. Halo 1 enemies DO carry some weapons the plan said they do not
+(sniper: Flood combat Elite, armoured Marines): list the carriers before choosing a donor.
+
+**Look (observations, PORTING):** render the FP pose coloured by material before guessing
+which material glows (Halo 3 shader templates encode the blend mode: `_..._1_0_1` additive);
+GLOW = additive chicago + a texture with falloff (Halo 3's own mask where it has one) +
+glow cards for small pieces (`glow_shaders`, `glow_cards`); never lights / lens flares /
+attachments for first-person looks (they draw at the hidden third-person gun); impact colour
+= the projectile's change colour; a muzzle light belongs in the firing effect; a Halo 3
+`*_first_person_fire` sound is only a layer -- mix it with the shot; a borrowed contrail may
+carry wind physics. Scope: `h1_h3_scope` bakes the FULLSCREEN widget set (window state).
+
+**Step 11:** `donor_variant` in the firing profile pins one carrier for every slot.
+**New user rule** (enhancer session, every Armed card): Grunts with a two-handed weapon fire
+at half rate (heavy support excepted); Jackals with one lose the arm shield -- for A5 the
+enhancer's classification decides; check it is in place before the Armed boot.
+**Older ports** still show port_sound_refs BORROWs (SAW, SMG, Sentinel Beam, Flak Cannon,
+Energy Blade): not A5's job (a follow-up was proposed to the user).
+
+**For A5, the Spike Rifle:** yardstick candidates Needler (provisional) and Assault Rifle. It is
+DUAL-WIELDABLE: two resource groups in the FP graph (Pilot A1), the DUAL-WIELD CARRY RULE x1.5,
+and the 15/s cap observation if its rate exceeds it. A slow ARCING spike (gravity) -- Halo 1's
+projectiles have air gravity: compare the drop. A blade melee (Halo 3's spiker blades): its
+melee damage tag; no lunge. Its chud and reticle: check for meter shaders on the gun (the
+Carbine's `meters`) and for any additive / luminous material (render the FP pose by material
+FIRST). Template: the yardstick's weapon unless the role table says otherwise -- then run 4b and
+the template diff before boot 1.
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one
@@ -766,3 +812,48 @@ spawn check in game. The SMG (done, tested on a30) is the first in that batch.
 > entry, enhancer hand-off to the "Halo enhancer project" session, PORTING notes, memory,
 > `python port_backup.py --game h1`, and what the Beam Rifle taught added to the plan
 > before A5 (the Brute Spiker).
+
+### The Spike Rifle (wave A5), filled in
+
+> Port the Spike Rifle (Brute Spiker) into Halo 1 (H1_PORT_PLAN.md, wave A, #A5). Source:
+> Halo 3, `objects\weapons\rifle\spike_rifle\spike_rifle` (H3EK).
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Phase 0: DONE", "Pilot A1", "A2", "A3" and "A4: what
+> the Beam Rifle taught" first -- its last paragraph is written for THIS weapon), PORTING.md
+> ("What ported actually means" steps 0-11 and 5b, the Halo 1 sections -- the SMG (dual-wield
+> rules), the Covenant Carbine and the Beam Rifle (4b before boot 1, glow) -- and "Balance"
+> incl. the DUAL-WIELD CARRY RULE and the ARMED WDM RULE) and memory h1-beam-rifle-port,
+> h1-covenant-carbine-port, h1-smg-pilot, h1-armed-test-balanced-god, h1-port-phase0,
+> h1-weapon-into-map, halo-port-own-messages, h1-fmod-bank-sounds,
+> port-findings-are-observations, shared-worktree-commits. `ports_h1/smg.py` is the example
+> of a dual-wieldable automatic, `ports_h1/beam_rifle.py` of a template that is not the
+> yardstick and of glow: copy their shape into `ports_h1/brute_spiker.py` and edit only that
+> file (plus any shared tool you generalize).
+>
+> START WITH STEP 4a, before any tag number is written: the yardstick, decided WITH me.
+> Wave-A rule: DEFAULT = Halo 3's own numbers, BALANCED = the ratio rows. Candidates:
+> provisional NEEDLER, alternative ASSAULT RIFLE. Lay them side by side per value (damage per
+> round AND per second, rate, magazine / carry, reload, error, velocity / gravity / range,
+> aim assist, melee) with `h3_weapon_values.py` and `h1_role_compare.py` (a 'brute_spiker'
+> set; time to kill vs Needler, AR, Plasma Rifle). Damage type against Halo 1's materials.
+> I pick; record it in yardstick['pick'] / ['reason'] and PORTING. Then run step 4b
+> (`port_field_audit.py --port brute_spiker`) and `h1_port_template_diff.py` BEFORE boot 1.
+>
+> Reserved: pickup messages 61/62; hud_msg_icons 34 (+ _r twin); hud_reticles 23 (+ _r,
+> `reticle_thicken` 1); label `sk` taught to characters\cyborg from `hp`; sounds under
+> `sound\weapons\spiker_port` (never under sound\sfx); weapon folder `weapons\spiker`;
+> catalog name `Spike Rifle`.
+>
+> What the Spike Rifle tests first: dual wield (two resource groups; carry rule x1.5); an
+> arcing spike (gravity) against Halo 1's projectile physics; the blade melee; any luminous /
+> additive material (render the FP pose by material first). Before the Armed boot: check the
+> enhancer's new Armed rule (Grunts: two-handed = half rate; Jackals: no arm shield) is in
+> place and how it classifies the spiker.
+>
+> Step 11: list Halo 1's carriers of the chosen donor weapon first; `firing_profile` needs a
+> `donor_weapon` (+ `donor_variant` if one carrier should serve every slot) AND a `wdm_rule`.
+> Test with `h1_port_test_map.py brute_spiker --stage`: dry default, fixes, `--balanced`, then
+> `--armed grunt,jackal,elite` (implies balanced + god; `--grunt <jackal variant>` when the
+> level has no Jackals); `--restore <level>`. NO ten-map rebuild: BATCHED with the SMG, BR,
+> Carbine and Beam Rifle, on my go. When done: catalog entry, enhancer hand-off to the "Halo
+> enhancer project" session, PORTING notes, memory, `python port_backup.py --game h1`, and
+> what the Spike Rifle taught added to the plan before A6 (the Brute Mauler).

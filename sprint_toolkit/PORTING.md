@@ -697,6 +697,92 @@ Halo 1 FP graphs: the writer's listing shows all five cues `cc_*`); 5b: default 
 own row, balanced = the pistol-ratio row exactly. One resource group (not dual-wieldable).
 Not reproduced: the wedges' slide, the refraction itself, the headshot cross.
 
+### Halo 1: the Beam Rifle, wave A4 (2026-10-08, 9 boots on a30) -- a tapped heat weapon, a template that is NOT the yardstick, glow on a bloomless engine
+
+The whole weapon is `ports_h1/beam_rifle.py` (CLOSE-OUT RECORD in it), on a copy of the Halo 1
+PLASMA PISTOL, with the SNIPER RIFLE as the yardstick: the first port whose template is not its
+yardstick.
+
+**Step 4a (user): the SNIPER.** `h3_weapon_values.py` now prints heat (loss normal / overheated,
+recovery / overheated thresholds), the CAMPAIGN battery and zoom; `h1_role_compare.py beam_rifle`
+simulates overheat pauses for tapped weapons (`heat_sim`). Halo 3's beam = its sniper's 80 /
+1200 wu/s / 500 / aim; rate 1 / 0.4 s vs 1 / 0.7 s; heat 0.7 a shot (2 quick shots overheat).
+Plasma pistol ratio: 205.7 damage (degenerate: the pistol's 7); Sentinel Beam ratio: two
+derivations, a 5-shot battery. Balanced = sniper ratio: 101, 3.5/s, zoom 1.75x / 8.44x, Halo 1
+sniper aim; heat and battery Halo 3's (no sniper counterpart). **Battery: Halo 3 has a
+CAMPAIGN age field** (0.05 = 20 shots) beside the multiplayer one (0.1) -- read it. **Materials
+(user):** the sniper bullet's + the Carbine's plasma pair (Jackal shield 0.5, Sentinel 2.0);
+Flood stays 0.05 (Halo 3's bullet_fast and plasma_fast treat Flood alike). **ONE heat loss in
+Halo 1** where Halo 3 has two (cooling 0.575, overheated 0.3): Bungie's pair splits (H1 plasma
+rifle = H3's overheated loss, plasma pistol = the cooling one); judged in one boot (0.3 / 0.575),
+the user took the average 0.4375 (a 2.06 s vent).
+
+**Template = role, not yardstick.** The heat/battery HUD (`master plasma`), overheat states and
+`cannot_fire_at_maximum_age` came from the plasma pistol; the damage table, bullet, contrail and
+zoom screen effect from the sniper. Costs: the charged trigger (`keep_triggers` 1), its two
+charge attachments, the heat flares (`drop_attachments`), the low-battery misfire (Halo 3 has
+none), and **STEP 4b must run BEFORE boot 1**: the sniper's `use error when unzoomed` was in
+list 5 and the user found it in test 3 ('does not hit the crosshair'); list 4 also held the
+pistol's weapon type, firing noise, camo ding, charged illumination; the template diff later
+found the bolt's responses turning the sniper's 11 OVERPENETRATE materials into 'disappear'
+(Halo 3's beam overpenetrates the same 11) -> `material_effects_from` (effects only), and the
+sniper screen effect's night vision / green desaturation (`screen_effect_clear`).
+
+**Scope (h1_h3_scope):** the chud's two widget sets are FULLSCREEN (window state 13) vs SPLIT
+SCREEN (242) -- `widgets()` inherits the collection's window state and bakes fullscreen only;
+`parent` anchors take the collection's placement. Meter fills (meter shaders: garbage as a
+mask) and the hidden warning flashes dropped, the static meter frame baked (user); the
+`distortion and blur` layer covers everything outside the lens = Halo 1's outside blur
+(`blur` x1 -- the grey flood fill finds no vignette at ~90% dark). The Carbine's 80% /
+x0.8 squash fitted again (2nd scope; the BR's 4/3 was the variant).
+
+**What Halo 1 did (each an OBSERVATION, PORTING rule):**
+* Halo 3's `*_first_person_fire` sound is only the FP LAYER (silent 0.3 s, then clicks): the
+  shot is the third-person fire sound; mix both (`bm_fire`).
+* Halo 3's overheat in+loop+out is 6.9 s against a 2-3 s vent: 'in' on the FP overheating
+  animation, 'out' on o-h-exit, no loop.
+* The sniper's trail rides SMOKE point physics and drifts with the wind (`contrail`
+  `no_physics`). The trail is drawn from the camera unless the trigger's FP offset puts the
+  round at the muzzle -- computed from the idle pose (fp_render: primary trigger marker in
+  camera space, 0.58 / -0.067 / -0.045 wu).
+* **Impact colour = the PROJECTILE's change colour A** (`c generic` particles): the bolt's runs
+  magenta -> green; the sniper bullet has none -> own pink (`change_color`) + `impact_tint`.
+* **The muzzle light as an attachment stayed lit** (illumination export) -> a light PART of
+  the firing effect, 0.1 s (`fire_effect`, the Sentinel Beam's recipe).
+* **Lights, lens flares and attachments draw at the hidden THIRD-PERSON gun in first person**
+  (third time: Sentinel Beam, test 1 green dot, gem flares at `gem n` markers). No first-person
+  or zoom switch on a Halo 1 lens flare. Do not use them for first-person looks.
+* **GLOW without bloom:** Halo 3 colours greyscale illum masks through shader parameters in
+  function data (unreadable) and BLOOMS; Halo 1 does neither. What worked, in order:
+  (1) find which material really glows -- render the FP pose coloured by material
+  (`beam_rifle_glass` was an ADDITIVE Halo 3 template -- the gems, not glass; the illum-map
+  lines all face down, hidden); (2) ADDITIVE chicago shaders (the needler's needles are the
+  precedent) -- a FLAT colour reads as paint even additive; (3) a TEXTURE with falloff: the
+  strips sample the bright band of Halo 3's own luminous mask (snowbound airlock_field_mask
+  alpha), pink to white-hot, scrolled along v (`glow_shaders` `mask`, `v_scroll`); (4) small
+  pieces (the gems, a few pixels) need a HALO: **glow cards** -- each piece copied 1.3x about
+  its centre, lifted 0.05 along its normal, additive, falling to 0 at its UV box edge
+  (`glow_cards`; the user picked 1.3 of 1.8 / 1.5 / 1.3). Halo 1 gbxmodels store UVs
+  normalized with a model-wide `base_map_u/v_scale` -- multiply before sampling a texture.
+* Tool rejects attachment elements APPENDED with Reclaimer ('reference name length
+  mismatch'); re-point existing ones (`attachments_set`).
+
+**Step 11 (user): the SNIPER's carriers** (the plan said none; the Flood combat Elite and the
+armoured Marines carry it), the Flood Elite for EVERY slot via the profile's new
+`donor_variant` (h1_enemy_weapons.donor_for reads it before a saved choice; the ranking gave
+Grunts/Jackals the armoured Marine). WDM rule base 0.4: 0.40 default / 0.23 balanced. Armed
+Grunt, Jackal (all Grunts swapped to Jackals: a30's dropship has none) and Elite confirmed.
+**New user rule for every Armed card** (handed to the enhancer session): Grunts with a
+two-handed weapon fire at half rate (heavy support excepted); Jackals with one lose the arm
+shield (to test).
+
+Close-out: list 2 = 0 (weapon, projectile; the damage effect's two = Halo 3's own breaking
+effect), template diff 191 traced, kit_tag_diff no change on the final rebuild, refs 0
+problems, sound refs 0 BORROW (older ports still have some: SAW, SMG, Sentinel Beam, Flak
+Cannon, Energy Blade), 5b default = Halo 3's row, balanced = the sniper-ratio row. Not
+reproduced: Halo 3's two losses, bloom, live scope meters, the headshot cross. Zoom-out on
+overheat: the next section (halo1.dll, built and confirmed by its own session).
+
 ### Halo 1: the Beam Rifle, wave A4 -- leaving the zoom on overheat (research, 2026-10-08, nothing patched)
 
 Test 3: zoomed + overheating, the player STAYS zoomed (Halo 2-4 drop the zoom). No stock
@@ -2012,7 +2098,7 @@ port player dps), base = the WDM of the carriers it fires from (the AR donors: 0
 from h1_role_compare 5b; once for the default numbers, once for the balanced rows
 (`firing_profile['wdm_rule']` -> ai_firing_profiles.json `fields` + `balanced_fields`;
 h1_enemy_weapons uses the latter for ports in its spec's `balanced`). A stronger port gets
-a gentler AI. Carbine 0.60 / 0.26, SMG 0.80 / 0.60, BR 0.80 / 0.48, SAW 0.53 / 0.40 (the
+a gentler AI. Beam Rifle 0.40 / 0.23 (base 0.4: the Flood Elite sniper; yardstick Sniper 202), Carbine 0.60 / 0.26, SMG 0.80 / 0.60, BR 0.80 / 0.48, SAW 0.53 / 0.40 (the
 rule replaced Halo 4's own 0.75; dps at the 15/s cap observation). Checked by stopwatch on
 the Carbine (0.23 measured vs 0.26). A source profile's own WDM (Halo 4 has one) is
 replaced by the rule; every Halo 1 port carries a rule now.

@@ -212,6 +212,13 @@ def make_hud(w, key, write):
         se.mask.flags.only_when_zoomed = True
         se.mask.fullscreen_mask.filepath = S['out']
         se.mask.splitscreen_mask.filepath = S['out']
+        for k in h.get('screen_effect_clear', ()):
+            # a borrowed screen effect's extras switched off (the Beam Rifle took the sniper's:
+            # its night vision and green desaturation; Halo 3's beam rifle has neither)
+            blk = getattr(se, k)
+            for f in blk.flags.NAME_MAP:
+                setattr(blk.flags, f, False)
+            blk.intensity = 0.0
         # the convolution stays the DONOR's: radius 0 smeared the zoomed view (BR tests 2-3)
         if 'blur_radius' in S:
             se.convolution.radius_out_bounds[0], se.convolution.radius_out_bounds[1] = S['blur_radius']
@@ -405,6 +412,17 @@ def own_beam(a, b, write):
         mr[:] = []
         for x in src.proj_attrs.material_responses.STEPTREE:
             mr.append(copy.deepcopy(x))
+    if 'material_effects_from' in b:
+        # only the EFFECTS of another projectile's responses (the Beam Rifle close-out: Halo
+        # 3's beam overpenetrates the same 11 materials as its sniper, but the plasma pistol
+        # bolt's whole responses -- material_responses_from -- made them 'disappear'): the
+        # template's response types stay, each material's effect / potential effect /
+        # detonation effect come from `from` (same material index in Halo 1's fixed list)
+        src = proj_def.build(filepath=path(b['material_effects_from'], '.projectile')).data.tagdata
+        for x, y in zip(pd.material_responses.STEPTREE, src.proj_attrs.material_responses.STEPTREE):
+            x.effect.filepath = y.effect.filepath
+            x.potential_response.effect.filepath = y.potential_response.effect.filepath
+            x.detonation_effect.filepath = y.detonation_effect.filepath
     if 'change_color' in b:
         # the projectile's CHANGE COLOUR A (the Beam Rifle, test 4: the impacts stayed
         # un-pink): `c generic` particles take their colour from the CREATING object's change

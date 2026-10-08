@@ -206,6 +206,9 @@ SETS = {
     # have (the sniper's heat and battery) stays Halo 3's own. Halo 1 has ONE heat loss/s:
     # Halo 3's two (0.575 cooling, 0.3 overheated) are shown both ways.
     'beam_rifle': {'port': 'Beam Rifle', 'weapons': [
+        # the BUILT port (step 5b): its tags (+ --balanced rows); tapped, so the overheat
+        # pauses are simulated (heat 0.7, loss 0.4375 -- the user's average, test 1)
+        ('Beam Rifle (port)', W + r'beam rifle\beam rifle', 'shot', {'heat_sim': True}),
         ('BmR = H3 own, loss .575', W + r'sniper rifle\sniper rifle', 'shot',
          {'speed': 1200.0, 'range': 500.0, 'aim': (1.0, 10.0, 4.0, 14.0),
           'dmg': 80.0, 'rate': 2.5, 'heat': (0.7, 1.0, 0.575, 0.1), 'age': 0.05,
@@ -244,7 +247,7 @@ SETS = {
         # Halo 1's primary is tapped (rate 0; the 0.6 s charge is the overcharge): 5/s ASSUMED
         ('Plasma Pistol (tap 5/s)', W + r'plasma pistol\plasma pistol', 'shot',
          {'rate': 5.0, 'charge': 0.0, 'heat_sim': True}),
-        ('Sentinel Beam (port)', W + r'sentinel beam\sentinel beam', 'shot', {'rate': 15.0}),
+        ('Sentinel Beam (peer)', W + r'sentinel beam\sentinel beam', 'shot', {'rate': 15.0}),
         ('Pistol', W + r'pistol\pistol', 'shot'),
     ], 'enemies': [
         ('Sentinel', r'characters\sentinel\sentinel', 'sentinel'),
