@@ -421,7 +421,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h2_spawn_starting_weapons', 'h2_spawn_all_weapons',
                'h1_replace_first_weapons', 'h1_enemy_weapon_enabled',
                'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards',
-               'h1_overheat_unzoom',
+               'h1_overheat_unzoom', 'h1_overheat_no_rezoom',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -1012,6 +1012,8 @@ CONFIG = {
     # halo1.dll patch (sprint_toolkit/h1_overheat_unzoom.py), engine-wide: every heat
     # weapon, live in a running MCC AND in the file. Off = put back to stock.
     "h1_overheat_unzoom": False,
+    # ...and no zooming back in while the weapon vents (patch B; only with the above)
+    "h1_overheat_no_rezoom": True,
     # Options -> Weapon ports: ported weapons join every weapon pick (initial
     # selection, New Weapon, automatic rolls) on levels whose map carries them
     "weapon_ports_in_pools": False,
@@ -7127,14 +7129,16 @@ class MagnitudeEditorDialog(QDialog):
 
     @staticmethod
     def _apply_h1_overheat_unzoom():
-        """Halo 1's overheat-drops-the-zoom halo1.dll patch, synced to its option on
-        every patch (any game, so unticking it always puts the dll back): live in a
+        """Halo 1's overheat-drops-the-zoom halo1.dll patches (A, and B: no re-zoom
+        while venting), synced to their options on every patch (any game, so
+        unticking always puts the dll back): live in a
         running MCC and in the file, which h1_overheat_unzoom swaps in even while MCC
         holds it. Rows only for what changed or failed."""
         sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
         try:
             import h1_overheat_unzoom
-            return h1_overheat_unzoom.sync(bool(CONFIG.get('h1_overheat_unzoom')))
+            return h1_overheat_unzoom.sync(bool(CONFIG.get('h1_overheat_unzoom')),
+                                           bool(CONFIG.get('h1_overheat_no_rezoom', True)))
         except Exception as e:
             return [{'tag': 'halo1.dll', 'effect': 'Overheat drops the zoom',
                      'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
@@ -11644,6 +11648,15 @@ class OptionsDialog(QDialog):
             "(at once) and into halo1.dll (every later start). Unticked, the next patch "
             "puts halo1.dll back to stock. In co-op both machines need it.")
         h1form.addRow("Engine:", self.h1_overheat_unzoom_cb)
+        self.h1_overheat_no_rezoom_cb = QCheckBox("…and no zooming back in while it vents")
+        self.h1_overheat_no_rezoom_cb.setChecked(bool(CONFIG.get('h1_overheat_no_rezoom', True)))
+        self.h1_overheat_no_rezoom_cb.setToolTip(
+            "As in Halo 2-4: until the weapon has cooled below its recovery threshold, "
+            "zooming in does nothing (zooming out still works). Same halo1.dll, same "
+            "every-heat-weapon scope; only together with the option above.")
+        h1form.addRow("", self.h1_overheat_no_rezoom_cb)
+        self.h1_overheat_unzoom_cb.toggled.connect(self.h1_overheat_no_rezoom_cb.setEnabled)
+        self.h1_overheat_no_rezoom_cb.setEnabled(self.h1_overheat_unzoom_cb.isChecked())
 
         self.reach_pools_cb = QCheckBox(
             "Reach: offer every weapon and ability the prepared map supports")
@@ -12911,6 +12924,7 @@ class OptionsDialog(QDialog):
                                          if c.currentData()},
             'h1_enemy_weapon_cards': self.h1_armed_cards_cb.isChecked(),
             'h1_overheat_unzoom': self.h1_overheat_unzoom_cb.isChecked(),
+            'h1_overheat_no_rezoom': self.h1_overheat_no_rezoom_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
             'odst_red_plasma_as_brute': self.red_plasma_cb.isChecked(),
             'odst_variants_as_base': self.odst_variants_cb.isChecked(),
