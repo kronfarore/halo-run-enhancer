@@ -42,6 +42,12 @@ KIT_EXT = {'weap': 'weapon', 'proj': 'projectile', 'jpt!': 'damage_effect',
 INHERITS = {'Halo 3': ['Halo 3: ODST']}       # targets name these too ('games' is literal)
 
 
+def _games(card):
+    """A card's `game` as a list (a single game may be a plain string)."""
+    g = card.get('game') or []
+    return [g] if isinstance(g, str) else list(g)
+
+
 def _resolve(v, game, games):
     import halo_enhancer as he
     return he.resolve_gamed(v, game, games)
@@ -147,7 +153,7 @@ def plan(weapon):
                 # the Plasma Rifle says 'Bullet Damage')
                 name = (port.get('card_map') or {}).get(name, name)
                 card = port_cards.get(name)
-                if card is not None and game in (card.get('game') or []):
+                if card is not None and game in _games(card):
                     continue                                     # already covered: never overwrite
                 tag = _resolve(dcard.get('tag'), game, db.games)
                 if not isinstance(tag, str) or not tag:
@@ -196,7 +202,10 @@ def plan(weapon):
                     port_cards[name] = card
                     report.append((game, name, 'NEW', tag))
                 else:                                             # extend the port's card
-                    old_games = list(card.get('game') or [])
+                    old_games = card.get('game') or []
+                    # a single game may be written as a plain string ("Halo 3"): list()
+                    # would split it into letters (Spike Rifle, 2026-10-08)
+                    old_games = [old_games] if isinstance(old_games, str) else list(old_games)
                     if isinstance(card.get('tag'), str):
                         card['tag'] = {g: card['tag'] for g in old_games} or {'default': card['tag']}
                     card['tag'][game] = tag
