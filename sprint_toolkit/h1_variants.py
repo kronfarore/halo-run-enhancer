@@ -104,8 +104,12 @@ def add_tags(m, entries):
         four = cls.encode('latin-1')[::-1]
         e = bytearray(0x20)
         e[0:4] = four
-        e[4:8] = b'\xff\xff\xff\xff'
-        e[8:12] = b'\xff\xff\xff\xff'
+        # the PARENT classes as an existing tag of the class has them: a biped is also
+        # 'unit' and 'obje', and a biped entry without them is a fatal error on load
+        # (shieldless Jackal, 2026-10-08); actv / mod2 / coll have none (0xFFFFFFFF)
+        like = next((old[i * 0x20:i * 0x20 + 0x20] for i in range(count)
+                     if old[i * 0x20:i * 0x20 + 4] == four), None)
+        e[4:12] = like[4:12] if like else b'\xff' * 8
         struct.pack_into('<IIII', e, 0xC, tid, (name_off + m.magic) & 0xFFFFFFFF,
                          (meta_off + m.magic) & 0xFFFFFFFF, 0)
         new.append(bytes(e))
