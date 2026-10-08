@@ -423,6 +423,8 @@ def own_beam(a, b, write):
                         pts.pop(k)
                     else:
                         kept += 1
+                for q in pts:                     # `scale`: every remaining particle's radius
+                    q.radius[0], q.radius[1] = q.radius[0] * I.get('scale', 1.0), q.radius[1] * I.get('scale', 1.0)
             own = I['out'] + src_e.rsplit('\\', 1)[-1]
             save(et, path(own, '.effect'), write)
             x.effect.filepath = own

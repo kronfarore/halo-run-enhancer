@@ -299,8 +299,10 @@ PORT.update({
                    # shield`, 25 shield sparks + a flash a hit. Own copy, every 4th spark kept
                    # (~6 + the flash). Unshielded (#21, sparks + smoke + blood) left as is.
                    # (A -30% screen flash was tried first and reverted: not the complaint)
+                   # ARMED TEST 2 (user): 'that could be the effect -- reduce its size to 25%':
+                   # every remaining particle's radius x0.25 (sparks and flash)
                    'impact_thin': {'materials': [22], 'out': SK + 'effects\\impact\\',
-                                   'thin': {'shield jackal sparks': 4}},
+                                   'thin': {'shield jackal sparks': 4}, 'scale': 0.25},
                    # TEST 2 (user): 'why not let them detonate (with no damage) like the
                    # needles?' -- the needle's burst (`needle detonate`: no damage part; the
                    # needle's damage is its attached detonation damage, which the spike lacks)
