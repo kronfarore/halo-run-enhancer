@@ -72,7 +72,9 @@ def export_xml(rel):
     """`tool export-tag-to-xml` of a Halo 3 kit tag, cached by the tag's mtime."""
     src = os.path.join(H3EK, 'tags', rel)
     os.makedirs(CACHE, exist_ok=True)
-    out = os.path.join(CACHE, os.path.basename(rel) + '.xml')
+    # keyed by the kit PATH, not the basename: generic names collide (the Spike Rifle's
+    # fx\projectile.effect read the Carbine's cached one, 2026-10-08)
+    out = os.path.join(CACHE, rel.replace('\\', '~').replace('/', '~') + '.xml')
     if not os.path.exists(out) or os.path.getmtime(out) < os.path.getmtime(src):
         subprocess.run([os.path.join(H3EK, 'tool.exe'), 'export-tag-to-xml', src, out],
                        cwd=H3EK, capture_output=True, timeout=600)
