@@ -427,6 +427,8 @@ LIFT_SKIP_GROUPS = ('no_damage',)
 #: armour rows left alone (substrings): scripted invulnerability (Guilty Spark, set pieces,
 #: Reach / Halo 4 invulnerable objects) and what is not armour at all (water, terrain)
 LIFT_SKIP_ARMOUR = ('invincible', 'invulnerable', 'liquid', 'terrain')
+#: Halo 1 jpt! Damage Lower Bound / Upper Bound / Upper Bound Max (HCEEK plugin)
+H1_DAMAGE_BOUNDS = (0x1D0, 0x1D4, 0x1D8)
 #: Halo 1 columns left alone: the environment, and the Monitor (Guilty Spark)
 H1_LIFT_SKIP = ('Dirt', 'Sand', 'Stone', 'Snow', 'Wood', 'Plastic', 'Water', 'Leaves', 'Ice',
                 'Monitor')
@@ -436,8 +438,10 @@ def lift_plan(m, game):
     """The rows the no-immunities option raises: [(offset, old value, label)] plus the
     skipped zero count. From Halo 2 on: every Damage Table element, every group but
     LIFT_SKIP_GROUPS, every armour row but LIFT_SKIP_ARMOUR (the player's own rows
-    included). Halo 1: the armour columns of every jpt! that does damage to something
-    (an all-zero profile is a no-damage effect and stays)."""
+    included). Halo 1: the armour columns of every jpt! that does damage -- one whose
+    damage bounds are all 0 (the glass-breaking shock waves of grenades, Sentinels,
+    Wraith / Pelican / Autumn blasts, a10's shield-charger zapper) or whose columns are
+    all 0 is a no-damage effect and stays."""
     game = str(game).strip()
     out, skipped = [], 0
     if game == 'Halo 1':
@@ -445,7 +449,8 @@ def lift_plan(m, game):
         for name, base in m.find_tags('jpt!', '*'):
             vals = [(i, struct.unpack_from('<f', m.data, base + H1_COLUMNS_AT + 4 * i)[0])
                     for i in cols]
-            if not any(v > 0 for _i, v in vals):
+            dmg = [struct.unpack_from('<f', m.data, base + o)[0] for o in H1_DAMAGE_BOUNDS]
+            if not any(v > 0 for _i, v in vals) or not any(x > 0 for x in dmg):
                 skipped += sum(1 for _i, v in vals if v < LIFT_FLOOR)
                 continue
             for i, v in vals:
@@ -480,6 +485,7 @@ def lift_plan(m, game):
 def lift_immunities(m, game):
     """Options -> Patching 'No immunities': every in-scope damage row below LIFT_FLOOR
     (immunities at 0 and near-immunities like EMP vs vehicles at 0.001) is set to it.
+    halo_patch.apply_run runs it LAST, after the skulls and cards: the absolute minimum.
     Values only -- no key moves, the arrays stay sorted. Returns result rows."""
     lab = 'No immunities'
     try:

@@ -278,7 +278,12 @@ def run(game, rel, scratch, do_census):
         # --- without the option: no player rows, the card still applies (the player
         # shares the change -- intended)
         shutil.copyfile(src, dst)
-        results, _bak = hp.apply_run(dst, plan, reg, 'Normal', backup=False, game=game,
+        # a second card that crushes its rows to 1%: the lift runs LAST, so they end at 0.1
+        crush = {'damage': OPS[game][1][0], 'armour': OPS[game][1][1]}
+        plan2 = plan + [{'tag': plan[0]['tag'], 'name': 'Hardened: ' + dr.label(crush),
+                         'absent_is_skip': False,
+                         'ops': [{'field': dr.label(crush), 'op_str': '*0.01', 'damage_row': crush}]}]
+        results, _bak = hp.apply_run(dst, plan2, reg, 'Normal', backup=False, game=game,
                                      no_immunities=True)
         if not any(r.get('field') == 'No immunities' and r.get('ok') for r in results):
             S['fail'].append('apply_run: No immunities did not run')
@@ -290,16 +295,21 @@ def run(game, rel, scratch, do_census):
         gc.collect()
         m3 = hp.open_map(dst, game)
         after = keyed_values(m3, game, run_spec)
-        # lifted first (to 0.1), then x1.2
+        # x1.2, then lifted to the floor last
         wrong = [k for k, v in base_vals.items()
-                 if abs(after.get(k, -1) - f32(max(v, dr.LIFT_FLOOR) * 1.2)) > 1e-6 * max(1, v)]
-        left = dr.lift_plan(m3, game)[0]       # (x1.2 rows of the card itself are above it)
+                 if abs(after.get(k, -1) - max(f32(v * 1.2), f32(dr.LIFT_FLOOR))) > 1e-6 * max(1, v)]
+        left = dr.lift_plan(m3, game)[0]       # incl. the crushed card's rows
+        crushed = keyed_values(m3, game, crush)
+        if not crushed or any(abs(v - f32(dr.LIFT_FLOOR)) > 1e-6 for v in crushed.values()
+                              if v < 0.5):
+            S['fail'].append('apply_run: the crushed card rows are not at the floor')
         if left:
             S['fail'].append('apply_run: %d row(s) below the floor after the run' % len(left))
         if wrong or not set(base_vals) <= set(after):      # lifted zeros join the card's rows
             S['fail'].append('apply_run without the option: %d row(s) not x1.2' % len(wrong))
         S['run_plain'] = ('without the player-rows option, with No immunities: %d row(s) x1.2, '
-                          'player_armour not run, nothing below the floor' % len(base_vals))
+                          'player_armour not run, nothing below the floor, a *0.01 card ends at %g' % (
+                              len(base_vals), dr.LIFT_FLOOR))
         del m3
         gc.collect()
     finally:

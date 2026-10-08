@@ -9712,13 +9712,6 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # all five games (2026-10-08).
         import player_armour as _pa
         results.extend(_pa.apply(m, str(game).strip(), registry))
-    if no_immunities:
-        # Options -> Patching 'No immunities': every armour row below 0.1 (0 = immune)
-        # becomes 0.1 -- after the player's own rows (they get it too), BEFORE the skulls
-        # and cards, so it is the floor they then scale (Tilt may halve it to 0.05; an
-        # Effective / Hardened card now acts on the lifted rows too).
-        import damage_rows as _dr
-        results.extend(_dr.lift_immunities(m, str(game).strip()))
     if weapon_ports:
         # Ported weapons: the suggested balance becomes the port's VANILLA, so the run's
         # cards scale from it -- hence before every op, like the difficulty baseline. The
@@ -10430,6 +10423,13 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # run patched onto the plasma rifle, rather than being overwritten by it.
         results.extend(apply_red_plasma_as_brute(m, registry, red_plasma))
 
+    if no_immunities:
+        # Options -> Patching 'No immunities': the ABSOLUTE minimum (user, 2026-10-08) --
+        # after every skull and card, every armour row below 0.1 (0 = immune) becomes 0.1,
+        # so neither Tilt nor a Hardened card can take one below it. The player's own rows
+        # get it too.
+        import damage_rows as _dr
+        results.extend(_dr.lift_immunities(m, str(game).strip()))
     if mags_before:
         # LAST of the value passes: it reads the magazine every other op has finished
         # with, so anything that moves it -- a card, a skull, a port's balance -- is
