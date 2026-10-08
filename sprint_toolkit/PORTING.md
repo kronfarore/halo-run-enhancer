@@ -910,6 +910,26 @@ OBSERVATION until a second port agrees, except the user RULES):
 * Not reproduced: dual wield (carry rule x1.5 instead), the bounce speed window (20-30 wu/s:
   the balanced spike is 4x faster), Halo 3's 1 s impact glow decal.
 
+### Halo 1: the Mauler, wave A6 (2026-10-08) -- a one-handed pellet weapon
+
+* **Halo 3 keeps PELLETS on the projectile, not the barrel.** The barrel reads projectiles per
+  shot 1 and error 0 (h3_weapon_values); the count and cone are the projectile's `conical
+  spread` block: yaw count x pitch count (3 x 5 = 15), `spread` 7.5 deg, a fixed GRID. The
+  mauler (`excavator_shard`) and the shotgun (`shotgun_bullet`) share it exactly. Distance
+  falloff = flag 'damage scales based on distance' + `air damage range` (mauler 2.5 -> 5 wu,
+  7 -> 1.5; shotgun 2 -> 4, 10 -> 3). Halo 1 has the same falloff fields (shotgun pellet
+  18..25 -> 8 over 1.5 -> 3 wu) but a random cone (error angle 10, distribution 'point').
+* **Step 4a (user, 2026-10-08): yardstick SHOTGUN** (ports_h1/brute_mauler.py yardstick). Same
+  projectile family in Halo 3 (pellets, cone, bullet_slow, falloff): every value has a
+  counterpart; the pistol has no pellets/cone/falloff (its lower bound 0 is degenerate).
+  Balanced: 15 x 15.05 (lower 4.0 over 1.875 -> 3.75), 0.75 s, 10 (13 / 62 with the carry
+  rule), 55 fr WHOLE-magazine reload (H1 shotgun's 12 shells 144 fr x 55 / H3 shotgun's empty
+  -> full 144 fr), error 10, 140 -> 100 wu/s, range 53.3, aim 6/19.1 12/19.1, melee 56.6.
+  Default (Halo 3's own) is weak in Halo 1: 105 a shot vs the shotgun's 322 (Elite major in 3
+  vs 1 on normal) -- the wave-A rule, shown to the user. Damage table: the shotgun pellet's.
+  Hit-effect rule: 15 pellets x 1.33/s = 20 hits/s -> x0.004, CHECK with the user (the rule
+  was set on continuous fire).
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:
