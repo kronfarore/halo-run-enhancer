@@ -301,11 +301,12 @@ PORT.update({
                    # (A -30% screen flash was tried first and reverted: not the complaint)
                    # ARMED TEST 2 (user): 'that could be the effect -- reduce its size to 25%'
                    # (with every 4th spark: approved). Then THE HIT-EFFECT RULE (user, same
-                   # day, h1_hit_effect_load.py): at most the stock pistol's load per second
-                   # (4.36) -- the whole effect, size only, at max(default 8, balanced 12)/s:
-                   # sqrt(4.36 / (0.6015 x 12)) = x0.78
+                   # day, h1_hit_effect_load.py): v1, the stock pistol's load per second, gave
+                   # x0.78 -- 'too big, a steeper curve'. v2: kept up to 3.5/s, above x (3.5 /
+                   # rate)^3.19 (fitted to the approved effect): the whole effect at 12/s (max of
+                   # default 8 / balanced 12) -> size x0.14, the approved load
                    'impact_thin': {'materials': [22], 'out': SK + 'effects\\impact\\',
-                                   'thin': {}, 'budget': 1.2461 * 3.5, 'rate': 12.0},
+                                   'thin': {}, 'rate': 12.0},
                    # TEST 2 (user): 'why not let them detonate (with no damage) like the
                    # needles?' -- the needle's burst (`needle detonate`: no damage part; the
                    # needle's damage is its attached detonation damage, which the spike lacks)

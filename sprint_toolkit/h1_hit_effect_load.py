@@ -9,11 +9,13 @@ Armed test, 2026-10-08).
   load per hit = sum over the effect's particles of created count x mean radius^2
   load per second = load per hit x rounds/s x projectiles per shot
 
-THE RULE (user, 2026-10-08): a port's shield-hit effect may load the player at most as much
-per second as the STOCK PISTOL (1.246 x 3.5/s = 4.36/s). The donor's effect stays whole and
-shrinks in SIZE only: scale = sqrt(budget / load per second), capped at 1. The rate is the
-higher of the port's default and balanced rates (one effect tag serves both). Ports apply it
-with h1_pickable_weapons `bullet.impact_thin` {'materials': [22], 'budget': BUDGET, 'rate': r}.
+THE RULE (user, 2026-10-08), v2: 'the higher the fire rate, the smaller the effect'. The donor's
+per-hit load is kept up to the stock pistol's RATE (3.5/s); above it, it falls as (3.5 / rate)^K,
+K = 3.19 fitted to the user's APPROVED Spike Rifle effect (12/s: 2% of the AR's load). The
+effect shrinks in SIZE only (scale = sqrt of the load factor). The rate is the higher of the
+port's default and balanced rates. v1 (a load-per-second budget = the stock pistol's 4.36) was
+too big (user). Ports apply it with h1_pickable_weapons `bullet.impact_thin` {'materials': [22],
+'thin': {}, 'rate': r}.
 
     python h1_hit_effect_load.py            the table: every stock weapon + every Halo 1 port,
                                             its load per second and the rule's size scale
@@ -51,11 +53,30 @@ def effect_load(effect):
     return tot, n
 
 
-def rule_scale(effect, rate, per_shot=1, budget=BUDGET):
-    """The size scale THE RULE gives an effect fired at `rate` rounds/s."""
-    load, _n = effect_load(effect)
-    per_s = load * rate * per_shot
-    return 1.0 if per_s <= budget or per_s <= 0 else math.sqrt(budget / per_s)
+# THE RULE, v2 (user, 2026-10-08: 'the pistol budget keeps the effect too big -- a steeper
+# curve'): the donor's per-hit load is kept up to the stock pistol's RATE, above it it falls as
+# (FREE_RATE / rate)^K. K is fitted to the user's APPROVED Spike Rifle effect (the AR's shield
+# hit, every 4th spark at x0.25 size: 0.0118 of 0.6015 per hit = 0.0196 at 12/s) -> K = 3.19
+FREE_RATE = 3.5
+ANCHOR_RATE, ANCHOR_FACTOR = 12.0, 0.0118 / 0.6015
+K = math.log(ANCHOR_FACTOR) / math.log(FREE_RATE / ANCHOR_RATE)
+
+
+def load_factor(rate, per_shot=1):
+    """The share of the donor's per-hit load THE RULE keeps at `rate` rounds/s (pellets count
+    as rate: a shotgun's 15 pellets hit at once)."""
+    r = rate * per_shot
+    return 1.0 if r <= FREE_RATE or r <= 0 else (FREE_RATE / r) ** K
+
+
+def rule_scale(effect, rate, per_shot=1, budget=None):
+    """The SIZE scale THE RULE gives an effect fired at `rate` rounds/s (load ~ size^2).
+    `budget` is the v1 rule (a load per second cap), kept for comparison only."""
+    if budget:
+        load, _n = effect_load(effect)
+        per_s = load * rate * per_shot
+        return 1.0 if per_s <= budget or per_s <= 0 else math.sqrt(budget / per_s)
+    return math.sqrt(load_factor(rate, per_shot))
 
 
 def weapon_row(weapon, rate=None):
@@ -78,13 +99,14 @@ def main():
         w = (P.get('pickable') or {}).get('weapon')
         if w and os.path.exists(os.path.join(TAGS, w + '.weapon')):
             rows.append((w, key))
-    print('budget (the stock pistol): %.2f load/s\n' % BUDGET)
+    print('THE RULE v2: load kept up to %.1f/s, above x (%.1f / rate)^%.2f (fitted to the approved '
+          'Spike Rifle)\n' % (FREE_RATE, FREE_RATE, K))
     print('%-42s %-16s %6s %4s %5s %9s %9s %7s  %s' % ('weapon', 'config', 'rate', 'x', 'parts', 'load/hit',
                                                       'load/s', 'scale', 'shield-hit effect'))
     for w, key in rows:
         rate, pps, n, load, eff = weapon_row(w)
         per_s = load * rate * pps
-        sc = 1.0 if per_s <= BUDGET or per_s <= 0 else math.sqrt(BUDGET / per_s)
+        sc = math.sqrt(load_factor(rate, pps))
         print('%-42s %-16s %6.1f %4d %5d %9.4f %9.3f %7.3f  %s' % (w, key, rate, pps, n, load, per_s, sc, eff))
     print('\n(rates: the tag maximum, or MEASURED; a port applies the rule at max(default, balanced) -- its config)')
 

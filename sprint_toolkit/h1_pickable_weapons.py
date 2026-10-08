@@ -409,10 +409,10 @@ def own_beam(a, b, write):
         for i in I['materials']:
             x = pd.material_responses.STEPTREE[i]
             src_e = x.effect.filepath
-            if I.get('budget'):
-                # THE HIT-EFFECT RULE (user, 2026-10-08): at most the stock pistol's load per
-                # second on the player -- size scale = sqrt(budget / (rate x load per hit))
-                I['scale'] = HL.rule_scale(src_e, I['rate'], I.get('per_shot', 1), I['budget'])
+            if I.get('rate'):
+                # THE HIT-EFFECT RULE (user, 2026-10-08; v2 'steeper'): the donor's load kept up
+                # to the pistol's rate, above it x (3.5 / rate)^3.19 -- size = sqrt of that
+                I['scale'] = HL.rule_scale(src_e, I['rate'], I.get('per_shot', 1), I.get('budget'))
                 print('   hit-effect rule: %s at %.1f/s -> size x%.3f' % (src_e, I['rate'], I['scale']))
             et = effe_def.build(filepath=path(src_e, '.effect'))
             kept = total = 0
