@@ -40,7 +40,8 @@ PORT = reserved(
                   "alike: the 0.05 is Halo 1's sniper design). Heat loss: Halo 1 has ONE (Halo 3: "
                   "0.575 cooling, 0.3 overheated); Bungie's own pair splits (H1 plasma rifle 0.3 = "
                   "H3's overheated loss, vents match; H1 plasma pistol 0.65 = H3's cooling loss, "
-                  "vents faster) -- user: both, decided in game (0.3 the gun, 0.575 the variant)",
+                  "vents faster) -- user: both in one boot (0.3 the gun, 0.575 the variant), then "
+                  "test 1: 'A too slow, B never overheats if played right: the average' = 0.4375",
         # DEFAULT = Halo 3's own numbers (PORTING "Balance"); these are the BALANCED rows.
         # H1 sniper: 101 dmg, 2/s, 1000 wu/s, range 1000, zoom 2 (2, 8), aim 1/35 2/35,
         # error 0.5, melee 55; H3 sniper 80, 1 / 0.7 s, 1200, 500, zoom (4, 9), aim 1/10 4/14
@@ -52,7 +53,7 @@ PORT = reserved(
             'zoom': (1.75, 8.44),        # (2, 8) x (3.5/4, 9.5/9)
             'aim': (1.0, 35.0, 2.0, 35.0),  # x1 each (Halo 3's beam = its sniper)
             'error_deg': 0.5,            # 0.5 x 0.5/0.5
-            'heat': None,                # no sniper heat: Halo 3's own (0.7 a shot, loss 0.3)
+            'heat': None,                # no sniper heat: Halo 3's own (0.7 a shot; loss 0.4375, test 1)
             'battery': None,             # no sniper battery: Halo 3's campaign 20 shots
             'melee': 55.0},              # H3 shares strike_melee: x1 = the H1 sniper's 55
         'measured': 'h1_role_compare.py beam_rifle',
@@ -88,6 +89,12 @@ PORT.update({
         'shader_copies': {'beam_rifle_glass': r'weapons\plasma rifle\fp\shaders\dull.shader_model',
                           'beam_rifle_luminous': r'weapons\plasma rifle\fp\shaders\luminous.shader_model'},
         'template': r'weapons\plasma rifle\fp\shaders\gun',
+        # TEST 1 (user): 'no glow on the gun at all' -- Halo 3's illum map is a GREYSCALE mask
+        # (its colour is the shader's self_illum_color, function data), 1% of texels lit in
+        # thin lines Halo 3 blooms: the Carbine's fix, lines thickened 1 px each way and a set
+        # colour (the beam's pink, judged in test 2)
+        'illum_dilate': 1,
+        'glow': PINK,
         # the template's overheat steam / misfire burst spawn at a marker: Halo 3's vent
         'markers': {'fx_vent': 'overheat'},
     },
@@ -133,7 +140,10 @@ PORT.update({
         'dir': B.join(['sound', 'weapons', 'beam_rifle_port']),
         'h3_dir': 'data\\sound\\weapons\\beam_rifle\\',
         'sounds': {
-            'bm_fire': (['beam_rifle_first_person_fire'], 'sound\\sfx\\weapons\\sniper rifle\\fire', -12.4),
+            # TEST 1 (user): 'the firing sound is missing' -- beam_rifle_first_person_fire is
+            # only Halo 3's first-person LAYER (silent 0.3 s, then two clicks); the SHOT is
+            # beam_rifle_fire (2.9 s), and Halo 3 plays both: mixed, permutation k with k
+            'bm_fire': (['beam_rifle_fire', 'beam_rifle_first_person_fire'], 'sound\\sfx\\weapons\\sniper rifle\\fire', -12.4),
             'bm_dryfire': (['beam_rifle_misfire'], 'sound\\sfx\\weapons\\plasma rifle\\overheat', -19.5),
             'bm_ready': (['fp_beam_rifle\\fp_beam_ready'], 'sound\\sfx\\weapons\\weapon_anims\\sniper_ready', -21.6),
             'bm_melee': (['fp_beam_rifle\\fp_beam_melee1'], 'sound\\sfx\\weapons\\weapon_anims\\sniper_melee', -21.5),
@@ -145,7 +155,8 @@ PORT.update({
             # longer than the 3.0 s vent): 'in' on the FP overheating animation, 'out' on
             # o-h-exit (Halo 1's own overheat states); the loop left out
             'bm_overheat': ([OH + 'in'], 'sound\\sfx\\weapons\\plasma rifle\\overheat', -19.5),
-            'bm_overheat_out': ([OH + 'out'], 'sound\\sfx\\weapons\\plasma rifle\\overheat', -19.5),
+            # TEST 1 (user): 'the venting is a bit too quiet' -> +6 dB
+            'bm_overheat_out': ([OH + 'out'], 'sound\\sfx\\weapons\\plasma rifle\\overheat', -13.5),
         },
     },
 
@@ -174,9 +185,14 @@ PORT.update({
                    'first-person overheating': SND + 'bm_overheat',
                    'first-person o-h-exit': SND + 'bm_overheat_out'},
         # the plasma pistol's charged shot (trigger 1) and its two charge attachments
-        # (`overcharge` flare, `charging` sound) do not exist on the beam rifle
+        # (`overcharge` flare, `charging` sound) do not exist on the beam rifle. TEST 1 (user):
+        # a green glow off the muzzle, also while zoomed = the plasma pistol's two HEAT FLARES
+        # (light + lens flare, B out): lights and flares draw at the hidden THIRD-PERSON
+        # weapon (the Sentinel Beam's finding) and a Halo 1 lens flare has no first-person or
+        # zoom switch; Halo 3's beam rifle has none (its one attachment is the overheat
+        # loop) -> dropped too. Kept: the muzzle light (attachment 0, C out = illumination)
         'keep_triggers': 1,
-        'drop_attachments': [2, 3],
+        'drop_attachments': [1, 2, 3, 4],
         # own beam + damage (step 3): Halo 3's beam_rifle_beam = 1200 wu/s, range 500, 80
         # damage (the sniper's own speed, range and damage). Materials (user, step 4a): the
         # H1 sniper bullet's + Jackal shield 0.5, Sentinel 2.0. The LOOK: the sniper's trail
@@ -195,10 +211,16 @@ PORT.update({
         'trigger': {'rounds_per_second': (2.5, 2.5), 'acceleration_time': 0.0,
                     'deceleration_time': 0.0, 'does_not_repeat_automatically': True,
                     'charging_time': 0.0, 'charge_hold_time': 0.0,
-                    'heat_generated_per_round': 0.7, 'age_generated_per_round': 0.05},
-        # Halo 3: overheated at 1.0, back to firing at 0.1; Halo 1 has ONE loss -- 0.3 here
-        # (Halo 3's overheated loss: a 3.0 s vent), 0.575 on the test variant (step 4a)
-        'heat': {'recovery_threshold': 0.1, 'overheated_threshold': 1.0, 'loss_per_second': 0.3},
+                    'heat_generated_per_round': 0.7, 'age_generated_per_round': 0.05,
+                    # TEST 1 (user): 'the beam trail seems offset from the impact' -- the
+                    # round left from the camera; it now starts at the FP muzzle (the
+                    # `primary trigger` marker in the idle pose, camera space: forward,
+                    # left, up wu -- fp_render), the Sentinel Beam's fix
+                    'first_person_offset': (0.58, -0.0668, -0.0449)},
+        # Halo 3: overheated at 1.0, back to firing at 0.1; Halo 1 has ONE loss. TEST 1 (user,
+        # 0.3 vs 0.575 in one boot): 'A is too slow to be useful, B too fast -- played right it
+        # never overheats; take the average' = 0.4375 (a 2.06 s vent)
+        'heat': {'recovery_threshold': 0.1, 'overheated_threshold': 1.0, 'loss_per_second': 0.4375},
         # the template's overheat steam aims at its vent_* markers
         'overheated_effect': {'from': PP + 'effects\\overheated', 'out': BM + 'effects\\overheated',
                               'locations': {'vent_rear': 'overheat', 'vent_mid': 'overheat',
@@ -251,7 +273,9 @@ PORT.update({
                 'screen_effect_from': SR + 'sniper rifle',
                 'scope': {'chud': r'ui\chud\beam_rifle', 'out': BM + 'bitmaps\\scope_mask',
                           # the Carbine's picked size and shape (80%, x squashed 0.8);
-                          # the BR's 4/3 on the test variant
+                          # the BR's 4/3 on the test variant. TEST 1 (user): A (this) looks
+                          # good; the empty meter frames stay (a mask cannot fill them, and
+                          # Halo 1 HUD meters have no zoom state)
                           'size': 1024, 'span': 828.0, 'aspect': (4 / 3.0) / 0.8, 'alpha': 'outside',
                           'per_widget': {'overheat_flash_scope': {'drop': True},
                                          'lowbatt_flash_scope': {'drop': True},
