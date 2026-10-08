@@ -83,9 +83,24 @@ def bitmaps(w):
         if isinstance(spec, dict) and spec.get('additive'):
             # an ADDITIVE glow (the Beam Rifle, test 4: 'it looks like plain paint'): Halo 1
             # draws light as additive transparency (the needler's needles, the sword blade)
-            col = np.zeros((16, 16, 4), np.uint8)
-            col[..., :3] = [int(round(c * 255)) for c in rgb]
-            col[..., 3] = 255
+            if spec.get('mask'):
+                # a GLOW TEXTURE from Halo 3's own mask (the Beam Rifle, test 5: 'still not
+                # really glowing' -- a flat colour reads as paint even additive). Halo 3's
+                # luminous energy field = `mask` (alpha: bright crackles fading to dark);
+                # brightness v -> the colour up to v 0.5, then towards WHITE (a hot core)
+                img, _ = h3_hud_art.decode(spec['mask'])
+                v = np.array(img.resize((256, 256), Image.LANCZOS))[..., 3].astype(np.float64) / 255.0
+                v = np.clip(v * spec.get('gain', 1.0), 0.0, 1.0)
+                lo = np.clip(v * 2.0, 0.0, 1.0)[..., None] * np.array(rgb)[None, None, :]
+                hot = np.clip(v * 2.0 - 1.0, 0.0, 1.0)[..., None]
+                c = lo * (1 - hot) + hot
+                col = np.zeros((256, 256, 4), np.uint8)
+                col[..., :3] = np.round(c * 255)
+                col[..., 3] = 255
+            else:
+                col = np.zeros((16, 16, 4), np.uint8)
+                col[..., :3] = [int(round(c * 255)) for c in rgb]
+                col[..., 3] = 255
             Image.fromarray(col).save(os.path.join(out, name + '_glow.tif'))
             continue
         col = np.zeros((16, 16, 4), np.uint8)
@@ -222,7 +237,12 @@ def shaders(w, glow):
             os.remove(stale)
         t = schi_def.build(filepath=os.path.join(TAGS, spec.get('from', r'weapons\needler\shaders\needler luminous')
                                                  + '.shader_transparent_chicago'))
-        t.data.tagdata.schi_attrs.maps.STEPTREE[0].bitmap.filepath = w['dir'] + B + 'bitmaps' + B + name + '_glow'
+        mp = t.data.tagdata.schi_attrs.maps.STEPTREE[0]
+        mp.bitmap.filepath = w['dir'] + B + 'bitmaps' + B + name + '_glow'
+        if spec.get('v_scroll'):                 # Halo 3 scrolls its noise: slide along v
+            mp.v_animation.function.set_to('slide')
+            mp.v_animation.period = spec['v_scroll']
+            mp.v_animation.scale = 1.0
         t.filepath = os.path.join(out, name + '.shader_transparent_chicago')
         t.serialize(temp=False, backup=False)
         print('   shader %s  ADDITIVE glow %s' % (t.filepath, tuple(spec['rgb'])))

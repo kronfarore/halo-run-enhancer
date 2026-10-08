@@ -103,8 +103,16 @@ PORT.update({
         # its Halo 3 template _0_0_0_0_0_1_0_1_0_1 is blend mode ADDITIVE (a glow), built as
         # the plasma rifle's dull metal. Both now ADDITIVE chicago glows (Halo 1 draws light
         # that way: the needler's needles, the sword's blade) in the beam's pink
-        'glow_shaders': {'beam_rifle_luminous': {'rgb': PINK, 'additive': True},
-                         'beam_rifle_glass': {'rgb': PINK, 'additive': True}},
+        # TEST 5 (user): 'still not really glowing; is there no precedent?' -- a FLAT colour
+        # reads as paint even additive; Halo 1's glowing needles are additive with a bright,
+        # falling-off TEXTURE. The strips' UVs sit on the bright crackling band of Halo 3's
+        # own luminous mask (snowbound airlock_field_mask, alpha, u 0.77..0.96): that mask as
+        # the glow (pink rising to a white-hot core), scrolled along v as Halo 3 animates its
+        # noise. The gems' UVs fall in the mask's dark middle: a brighter white-pink, flat
+        'glow_shaders': {'beam_rifle_luminous': {'rgb': PINK, 'additive': True, 'gain': 1.6,
+                                                 'mask': r'levels\multi\snowbound\bitmaps\airlock_field_mask.bitmap',
+                                                 'v_scroll': 4.0},
+                         'beam_rifle_glass': {'rgb': (1.0, 0.72, 0.95), 'additive': True}},
         'template': r'weapons\plasma rifle\fp\shaders\gun',
         # TEST 1 (user): 'no glow on the gun at all' -- Halo 3's illum map is a GREYSCALE mask
         # (its colour is the shader's self_illum_color, function data), 1% of texels lit in
