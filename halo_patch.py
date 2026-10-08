@@ -9675,7 +9675,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               clear_profile_grenades=False, spawn_grenades=None,
               h4_ability_visibility=None, h1_enemy_weapons=None,
               camo_after_ladder=False, fix_h2_fuel_rod=False,
-              player_armour=False, h1_levels=None,
+              player_armour=False, no_immunities=False, h1_levels=None,
               baseline_root=None, map_subdir=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
@@ -9712,6 +9712,13 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # all five games (2026-10-08).
         import player_armour as _pa
         results.extend(_pa.apply(m, str(game).strip(), registry))
+    if no_immunities:
+        # Options -> Patching 'No immunities': every armour row below 0.1 (0 = immune)
+        # becomes 0.1 -- after the player's own rows (they get it too), BEFORE the skulls
+        # and cards, so it is the floor they then scale (Tilt may halve it to 0.05; an
+        # Effective / Hardened card now acts on the lifted rows too).
+        import damage_rows as _dr
+        results.extend(_dr.lift_immunities(m, str(game).strip()))
     if weapon_ports:
         # Ported weapons: the suggested balance becomes the port's VANILLA, so the run's
         # cards scale from it -- hence before every op, like the difficulty baseline. The

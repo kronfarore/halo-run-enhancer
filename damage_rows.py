@@ -417,3 +417,82 @@ def describe(m, game, spec):
     return '%d row(s), typical %g%s%s' % (
         len(vals), typ, ('  [0]: ' + show + (' ...' if len(t0) > 6 else '')) if t0 else '',
         ('  (%d pair(s) have no row: x1)' % len(p['missing'])) if p['missing'] else '')
+
+
+# --- no immunities (Options -> Patching) ----------------------------------------------------
+#: the option's minimum: every in-scope row (0 included) ends at least here
+LIFT_FLOOR = 0.1
+#: damage groups left alone: they are MEANT to do nothing (screen-shake effects, triggers)
+LIFT_SKIP_GROUPS = ('no_damage',)
+#: armour rows left alone (substrings): scripted invulnerability (Guilty Spark, set pieces,
+#: Reach / Halo 4 invulnerable objects) and what is not armour at all (water, terrain)
+LIFT_SKIP_ARMOUR = ('invincible', 'invulnerable', 'liquid', 'terrain')
+#: Halo 1 columns left alone: the environment, and the Monitor (Guilty Spark)
+H1_LIFT_SKIP = ('Dirt', 'Sand', 'Stone', 'Snow', 'Wood', 'Plastic', 'Water', 'Leaves', 'Ice',
+                'Monitor')
+
+
+def lift_plan(m, game):
+    """The rows the no-immunities option raises: [(offset, old value, label)] plus the
+    skipped zero count. From Halo 2 on: every Damage Table element, every group but
+    LIFT_SKIP_GROUPS, every armour row but LIFT_SKIP_ARMOUR (the player's own rows
+    included). Halo 1: the armour columns of every jpt! that does damage to something
+    (an all-zero profile is a no-damage effect and stays)."""
+    game = str(game).strip()
+    out, skipped = [], 0
+    if game == 'Halo 1':
+        cols = [i for i, c in enumerate(H1_COLUMNS) if c not in H1_LIFT_SKIP]
+        for name, base in m.find_tags('jpt!', '*'):
+            vals = [(i, struct.unpack_from('<f', m.data, base + H1_COLUMNS_AT + 4 * i)[0])
+                    for i in cols]
+            if not any(v > 0 for _i, v in vals):
+                skipped += sum(1 for _i, v in vals if v < LIFT_FLOOR)
+                continue
+            for i, v in vals:
+                if v < LIFT_FLOOR:
+                    out.append((base + H1_COLUMNS_AT + 4 * i, v,
+                                '%s / %s' % (str(name).rsplit(_B, 1)[-1], H1_COLUMNS[i])))
+        return out, skipped
+    import player_armour as pa
+    c = pa._Ctx(m, game)
+    if c.matg is None:
+        raise ValueError('no globals tag')
+    nm = {}
+
+    def name(v):
+        if v not in nm:
+            nm[v] = pa.sid_name(m, game, v) or ''
+        return nm[v]
+    for t, groups in c.tables():
+        for _ge, g, _rn, rb, rows in groups:
+            gname = name(g)
+            for r, (k, v) in enumerate(rows):
+                if v >= LIFT_FLOOR:
+                    continue
+                an = name(k)
+                if gname in LIFT_SKIP_GROUPS or any(s in an for s in LIFT_SKIP_ARMOUR):
+                    skipped += 1
+                    continue
+                out.append((rb + r * 8 + 4, v, '[%d] %s / %s' % (t, gname, an)))
+    return out, skipped
+
+
+def lift_immunities(m, game):
+    """Options -> Patching 'No immunities': every in-scope damage row below LIFT_FLOOR
+    (immunities at 0 and near-immunities like EMP vs vehicles at 0.001) is set to it.
+    Values only -- no key moves, the arrays stay sorted. Returns result rows."""
+    lab = 'No immunities'
+    try:
+        hits, skipped = lift_plan(m, game)
+    except ValueError as ex:
+        return [_row(lab, False, reason=str(ex))]
+    if not hits:
+        return [_row(lab, True, skip=True, reason='no row below %g' % LIFT_FLOOR)]
+    zeros = sum(1 for _o, v, _l in hits if v == 0.0)
+    for off, _v, _l in hits:
+        struct.pack_into('<f', m.data, off, LIFT_FLOOR)
+    return [_row(lab, True, tag='jpt! *' if str(game).strip() == 'Halo 1' else 'matg globals',
+                 old='%d immunit%s at 0, %d row(s) below %g' % (
+                     zeros, 'y' if zeros == 1 else 'ies', len(hits) - zeros, LIFT_FLOOR),
+                 new='%g (%d left alone: no-damage group, invincible / water / terrain%s)' % (
+                     LIFT_FLOOR, skipped, ', no-damage effects' if str(game).strip() == 'Halo 1' else ''))]

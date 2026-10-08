@@ -117,6 +117,33 @@ def keyed_values(m, game, spec):
     return {(h[0], h[1], h[2]): h[4] for h in p['hits']}
 
 
+def test_lift(m, game, S):
+    """No immunities: exactly the planned values change, each to the floor; afterwards
+    nothing in scope is below it, the left-alone rows are the same, arrays stay sorted."""
+    hits, skipped = dr.lift_plan(m, game)
+    before = bytes(m.data)
+    res = dr.lift_immunities(m, game)
+    if not res or not res[0]['ok']:
+        S['fail'].append('lift: %s' % res)
+        return
+    changed, grew = diff_offsets(before, m.data)
+    allowed = set()
+    for off, _v, _l in hits:
+        allowed.update(range(off, off + 4))
+        if struct.unpack_from('<f', m.data, off)[0] != f32(dr.LIFT_FLOOR):
+            S['fail'].append('lift: %#x not at the floor' % off)
+    if grew or changed - allowed:
+        S['fail'].append('lift: %d byte(s) changed outside the planned rows' % len(changed - allowed))
+    again, skipped2 = dr.lift_plan(m, game)
+    if again or skipped2 != skipped:
+        S['fail'].append('lift: %d row(s) still below the floor, skipped %d -> %d'
+                         % (len(again), skipped, skipped2))
+    if game != 'Halo 1' and all_arrays_sorted(m, game):
+        S['fail'].append('lift: unsorted array(s)')
+    S['lift'] = '%d value(s) -> %g (%d zeros), %d left alone; %s' % (
+        len(hits), dr.LIFT_FLOOR, sum(1 for h in hits if h[1] == 0), skipped, res[0].get('new'))
+
+
 def test_ops(m, game, S):
     fails = S['fail']
     specs = [{'damage': d, 'armour': a} for d, a in OPS[game]]
@@ -209,6 +236,7 @@ def run(game, rel, scratch, do_census):
         if do_census:
             S['census'] = census(m, game)
         test_ops(m, game, S)
+        test_lift(m, game, S)
         del m
         gc.collect()
         # --- full apply_run on the (untouched) scratch file
@@ -250,7 +278,10 @@ def run(game, rel, scratch, do_census):
         # --- without the option: no player rows, the card still applies (the player
         # shares the change -- intended)
         shutil.copyfile(src, dst)
-        results, _bak = hp.apply_run(dst, plan, reg, 'Normal', backup=False, game=game)
+        results, _bak = hp.apply_run(dst, plan, reg, 'Normal', backup=False, game=game,
+                                     no_immunities=True)
+        if not any(r.get('field') == 'No immunities' and r.get('ok') for r in results):
+            S['fail'].append('apply_run: No immunities did not run')
         if any(r.get('effect') == pa.EFFECT for r in results):
             S['fail'].append('apply_run without the option: player_armour ran')
         if not any(r.get('effect') == plan[0]['name'] and r.get('ok') and not r.get('skip')
@@ -259,10 +290,16 @@ def run(game, rel, scratch, do_census):
         gc.collect()
         m3 = hp.open_map(dst, game)
         after = keyed_values(m3, game, run_spec)
-        wrong = [k for k, v in base_vals.items() if abs(after.get(k, -1) - f32(v * 1.2)) > 1e-6 * max(1, v)]
-        if wrong or set(after) != set(base_vals):
+        # lifted first (to 0.1), then x1.2
+        wrong = [k for k, v in base_vals.items()
+                 if abs(after.get(k, -1) - f32(max(v, dr.LIFT_FLOOR) * 1.2)) > 1e-6 * max(1, v)]
+        left = dr.lift_plan(m3, game)[0]       # (x1.2 rows of the card itself are above it)
+        if left:
+            S['fail'].append('apply_run: %d row(s) below the floor after the run' % len(left))
+        if wrong or not set(base_vals) <= set(after):      # lifted zeros join the card's rows
             S['fail'].append('apply_run without the option: %d row(s) not x1.2' % len(wrong))
-        S['run_plain'] = 'without the option: %d row(s) x1.2, player_armour not run' % len(base_vals)
+        S['run_plain'] = ('without the player-rows option, with No immunities: %d row(s) x1.2, '
+                          'player_armour not run, nothing below the floor' % len(base_vals))
         del m3
         gc.collect()
     finally:
@@ -310,6 +347,8 @@ def main():
         for r in S.get('run', []):
             print('  run ' + r)
         print('  run: %d row(s) re-read x1.2' % S.get('run_rows', 0))
+        if S.get('lift'):
+            print('  lift: ' + S['lift'])
         if S.get('run_plain'):
             print('  run: ' + S['run_plain'])
         if a.census:

@@ -450,7 +450,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'other_bane_enabled', 'identity_other_card',
                'skull_duration_value', 'skull_duration_multiply',
                'skull_disabled', 'skull_camo_after_ladder',
-               'bugfix_h2_fuel_rod', 'player_armour_rows',
+               'bugfix_h2_fuel_rod', 'player_armour_rows', 'no_immunities',
                'set_starting_equipment', 'equipment_all_selected',
                'h2_add_respawn_profile', 'h2_extra_squads', 'swap_player_loadouts',
                'h3_all_chief_profiles',
@@ -1228,6 +1228,9 @@ CONFIG = {
     # Options -> Patching: always give the player its own damage-table armour rows
     # (player_armour.py). Effective / Hardened cards build them whatever this says.
     "player_armour_rows": False,
+    # Options -> Patching: every armour takes at least 10% from every damage type
+    # (damage_rows.lift_immunities)
+    "no_immunities": False,
     # Weapon Identity rounds also roll the Other slot (Hero / Exhaust / Skull / Ally /
     # Bane) like a normal round: a fourth card on the offer. Off = the identity pair and
     # one enemy card only.
@@ -9238,6 +9241,7 @@ class MagnitudeEditorDialog(QDialog):
                 camo_after_ladder=bool(CONFIG.get('skull_camo_after_ladder')),
                 fix_h2_fuel_rod=bool(CONFIG.get('bugfix_h2_fuel_rod')),
                 player_armour=bool(CONFIG.get('player_armour_rows')),
+                no_immunities=bool(CONFIG.get('no_immunities')),
                 equipment_swaps=equip_swaps or None,
                 spawn_equipment=spawn_equipment,
                 spawn_weapons=spawn_weapons,
@@ -9283,6 +9287,7 @@ class MagnitudeEditorDialog(QDialog):
                 camo_after_ladder=bool(CONFIG.get('skull_camo_after_ladder')),
                 fix_h2_fuel_rod=bool(CONFIG.get('bugfix_h2_fuel_rod')),
                 player_armour=bool(CONFIG.get('player_armour_rows')),
+                no_immunities=bool(CONFIG.get('no_immunities')),
                     enemy_colors=self._enemy_colors_for_patch(),
                 weapon_ports=self._weapon_ports_for_patch(),
                 port_volume=self._port_volume_for_patch(),
@@ -11285,6 +11290,20 @@ class OptionsDialog(QDialog):
             "whether this is on or not. Halo 1 needs none (the player's columns are its "
             "own). Shared with a co-op partner through the run (it changes the patch).")
         allform.addRow("Damage table:", self.player_armour_cb)
+        self.no_immunities_cb = QCheckBox("No immunities: every armour takes at least 10%")
+        self.no_immunities_cb.setChecked(bool(CONFIG.get('no_immunities')))
+        self.no_immunities_cb.setToolTip(
+            "On: every damage-table value below 0.1 becomes 0.1, so no armour is immune to "
+            "any damage type any more -- bullets chip Jackal shields and Hunter plates, "
+            "melee and fire hurt what they could not, EMP (the charged Plasma Pistol) "
+            "hurts flesh and vehicles, and so on. It is the floor the cards and skulls then "
+            "work from: Tilt can halve it to 5%.\n\n"
+            "Left alone: the no-damage group (effects meant to do nothing), armour the game "
+            "calls invincible / invulnerable (Guilty Spark, scripted set pieces), water and "
+            "terrain; in Halo 1 the ground / prop materials and the Monitor, and damage "
+            "effects that harm nothing at all. Applies to you as well (Halo 1: the Cyborg "
+            "columns). Shared with a co-op partner through the run (it changes the patch).")
+        allform.addRow("", self.no_immunities_cb)
 
         strength_row = QHBoxLayout()
         self.step_strength_slider = QSlider(Qt.Horizontal)
@@ -12958,6 +12977,7 @@ class OptionsDialog(QDialog):
             'skull_camo_after_ladder': self.skull_camo_order_cb.isChecked(),
             'bugfix_h2_fuel_rod': self.bugfix_fuel_rod_cb.isChecked(),
             'player_armour_rows': self.player_armour_cb.isChecked(),
+            'no_immunities': self.no_immunities_cb.isChecked(),
             'skull_disabled': sorted(k for k, cb in self.skull_cat_boxes.items()
                                      if not cb.isChecked()),
             'new_weapon_chance': round(self.new_weapon_chance.value(), 2),
