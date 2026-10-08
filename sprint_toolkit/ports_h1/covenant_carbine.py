@@ -83,11 +83,17 @@ PORT.update({
                     'carbine_tint_map': (H3 + r'\bitmaps\covenant_carbine.bitmap', H3 + r'\bitmaps\covenant_carbine_illum.bitmap'),
                     },
         'template': r'weapons\plasma rifle\fp\shaders\gun',
+        # TEST 2 (user): 'the strips on the gun's side barely glow' -- the illum lines 1-2 px
+        # wide (Halo 3 blooms them): thickened 1 px each way, and the meters' brighter cyan
+        # instead of the lit mean (0.07, 0.59, 1.0)
+        'illum_dilate': 1,
+        'glow': (0.097, 0.854, 1.0),
         # the meters' colour: the illum map's lit mean (24, 211, 247) normalized; 'off' a
         # quarter of it (Halo 3's meter_color_off sits in unreadable function data)
         'meters': {'carbine_display': {'map': H3 + r'\bitmaps\covenant_carbine_display_illum.bitmap',
                                        'from': r'weapons\plasma rifle\fp\shaders\gauge',
-                                       'gradient': 'alpha', 'value': 'A_out',
+                                       # test 2: drained from the 3rd shot, uneven -> steps
+                                       'gradient': 'alpha', 'steps': 18, 'value': 'A_out',
                                        'color': (0.097, 0.854, 1.0)},
                    'carbine_switch': {'map': H3 + r'\bitmaps\covenant_carbine_switch_illum.bitmap',
                                       'from': r'weapons\plasma rifle\fp\shaders\gauge',
@@ -272,13 +278,16 @@ PORT.update({
                           # cells are 1.25 wide : 1 tall where a regular hexagon is 1.155 ->
                           # test 2 variant A (this config): x squashed by 1.155/1.25 (aspect
                           # 4/3 / 0.924 = 1.443), 80% size (span 662 / 0.8 = 828); variant B
-                          # (a test-only secondary): squashed 0.8 (aspect 1.667), same size
-                          'size': 1024, 'span': 828.0, 'aspect': 1.443, 'alpha': 'outside',
+                          # (a test-only secondary): squashed 0.8 (aspect 1.667), same size.
+                          # TEST 2 (user): B is closer to the original -> aspect 1.667; 'the
+                          # outer hexagons might be malformed': the distortion blur spilled
+                          # past the side cells (blur_inside, h1_h3_scope)
+                          'size': 1024, 'span': 828.0, 'aspect': (4 / 3.0) / 0.8, 'alpha': 'outside',
                           'per_widget': {'scope_crosshairs1': {'scale': (1.0, 1.0)},
                                          'scope_crosshairs2': {'scale': (1.0, 1.0)},
                                          'scope_crosshairs3': {'scale': (1.0, 1.0)},
                                          'scope_crosshairs4': {'scale': (1.0, 1.0)},
-                                         'scope_blur': {'blur': 0.5}}},
+                                         'scope_blur': {'blur': 0.5, 'blur_inside': 0.45}}},
                 'reticle': ('hud_reticles', 4, 'covenant carbine'),
                 'reticle_thicken': 1,
                 'flash_base': 12,                # the pistol's low-ammo cutoff is of 12

@@ -61,9 +61,17 @@ def bitmaps(w):
             il, _ = h3_hud_art.decode(illum)
             il = il.resize(b.size, Image.LANCZOS)
             a = np.array(il)[..., :3].astype(np.float64)
-            mp[..., 1] = np.clip(a.max(axis=2), 0, 255).astype(np.uint8)
+            g = Image.fromarray(np.clip(a.max(axis=2), 0, 255).astype(np.uint8))
+            if w.get('illum_dilate'):
+                # thin glow lines THICKENED (the Carbine, test 2: 'the side strips barely
+                # glow'): Halo 3 blooms them, Halo 1 has no bloom
+                from PIL import ImageFilter
+                g = g.filter(ImageFilter.MaxFilter(2 * w['illum_dilate'] + 1))
+            mp[..., 1] = np.array(g)
             lit = a[a.max(axis=2) > 64]
-            if len(lit):                                          # the glow's own colour
+            if w.get('glow'):                                     # a set colour
+                glow[name] = tuple(w['glow'])
+            elif len(lit):                                        # the glow's own colour
                 c = lit.mean(axis=0)
                 glow[name] = tuple(float(x) for x in c / c.max())
         Image.fromarray(mp).save(os.path.join(out, name + '_mp.tif'))
@@ -126,6 +134,20 @@ def meters(w):
         a = np.array(img)
         shape = a[..., :3].max(axis=2)
         grad = a[..., 3] if M.get('gradient', 'alpha') == 'alpha' else np.full_like(shape, int(round(M['gradient'] * 255)))
+        if M.get('steps'):
+            # Halo 3's steps are GAMMA-spaced (the display: 223, 189, 168 ... 3, 1 = (k/18)^2.2)
+            # and Halo 1 compares linearly (lit while gradient < value) -- test 2: 'drains only
+            # from the 3rd shot, irregular steps'. By RANK: the r-th brightest interior step ->
+            # (N - 1 - r + 0.5) / N, so k shots darken k steps; the 255 / 0 edge columns join
+            # their neighbours (the brightest step / always lit)
+            n = M['steps']
+            vals = sorted({int(v) for v in np.unique(grad)} - {0, 255}, reverse=True)
+            lut = np.zeros(256)
+            for r, v in enumerate(vals):
+                lut[v] = (n - 1 - r + 0.5) / n
+            lut[255] = lut[vals[0]] if vals else 1.0
+            grad = np.clip(np.round(lut[grad] * 255), 0, 255).astype(np.uint8)
+            print('   %s: %d gamma steps -> linear thresholds of %d' % (name, len(vals), n))
         h, wd = shape.shape
         t = bitm_def.build(filepath=os.path.join(TAGS, h1_h3_scope.TEMPLATE + '.bitmap'))
         d = t.data.tagdata

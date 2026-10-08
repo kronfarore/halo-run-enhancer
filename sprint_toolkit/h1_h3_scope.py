@@ -170,6 +170,13 @@ def bake_maps(chud, size=512, span=640.0, aspect=1.0, per_widget=None):
                 target[ys, xq] = np.maximum(target[ys, xq], edge)
         used.append('%s (%s #%d, %d copies%s)' % (name, w['bitmap'].rsplit('\\', 1)[-1], w['sequence'], len(copies),
                                                  ', BLUR x%g' % o['blur'] if o.get('blur') else ''))
+    # 'blur_inside' (any widget naming it): the blur only where the mask is DARK -- the
+    # Carbine's distortion hexes are larger than the side cells they sit on, and their blur
+    # spilled over the cells' bright outline and the lens corners (test 2: 'the outer
+    # hexagons look malformed'). Kept in full from darkness `t` up, faded below it
+    t = max([o['blur_inside'] for o in per_widget.values() if o.get('blur_inside')] or [0])
+    if t:
+        blur *= np.clip(dark / t, 0.0, 1.0) ** 2
     return dark, blur, used
 
 
