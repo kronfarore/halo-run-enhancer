@@ -2178,7 +2178,9 @@ FUEL ROD: NOT applied -- the table's x0.19 is an artifact of the tag's 10/s, whi
 fires (default: one rod per 1.25 s charge = 0.8/s; balanced 2.5/s; Grunts ~0.4/s): every real
 rate is under 3.5/s, so the rule keeps x1.0; its #22 response is a DETONATION (`impact
 generic`, the explosion itself, 81 particles), not shield sparks. USER: leave it unchanged
-for now. Armed tests on a30: SMG, Battle Rifle CONFIRMED by the user (keep as is); Carbine, SAW next. v1 = a
+for now. Armed tests on a30: SMG, Battle Rifle, Carbine size CONFIRMED by the user (keep as is); the Carbine's then
+recoloured GREEN (user: 'change color to green if possible' -- impact_thin `tint`, the plasma
+pistol bolt light's .23/1/.13 on the sparks + flash; untested); SAW staged next. v1 = a
 load-per-second budget equal to the stock pistol's (4.36/s): Spike x0.78, too big (user).
 The way there: a -30% screen flash first (reverted: not the complaint), then thinned + x0.25
 (approved), v1, v2. Unshielded hits (#21 cyborg armor: sparks, smoke, blood) are left alone.

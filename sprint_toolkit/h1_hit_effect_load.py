@@ -111,6 +111,13 @@ def thin_effect(spec, src_e):
                 kept += 1
         for q in pts:                             # the size: every remaining particle's radius
             q.radius[0], q.radius[1] = q.radius[0] * scale, q.radius[1] * scale
+            # `tint` {'rgb': (r, g, b), 'match': substrings (default: every particle)}: the
+            # particles recoloured, RGB not HSV (the Carbine, user: 'change color to green')
+            T = spec.get('tint')
+            if T and any(m in q.particle_type.filepath for m in T.get('match', ('',))):
+                q.flags.tint_as_hsv = False
+                for bound in (q.tint_lower_bound, q.tint_upper_bound):
+                    bound.r, bound.g, bound.b = T['rgb']
     return et, spec['out'] + src_e.rsplit('\\', 1)[-1], kept, total
 
 

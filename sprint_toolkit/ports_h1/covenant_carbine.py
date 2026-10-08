@@ -230,8 +230,12 @@ PORT.update({
                    # player = the plasma bolt's 49-particle `impact cyborg shield` (the plasma
                    # rifle's) -> an own copy sized by the rule at max(default 5.88, balanced
                    # 8.24) = 8.24/s (one tag serves both) -> x0.26 (x0.44 at the default alone)
+                   # ARMED TEST (user, 2026-10-08): size kept; 'change color to green' -- the
+                   # 25 sparks (pale yellow .97/.91/.45) and the flash in the plasma pistol
+                   # bolt light's green (`plasma` light: .2/1/.24 .. .26/1/.02 -> midpoint)
                    'impact_thin': {'materials': [22], 'out': CC + 'effects\\impact\\',
-                                   'thin': {}, 'rate': 8.24}},
+                                   'thin': {}, 'rate': 8.24,
+                                   'tint': {'rgb': (0.23, 1.0, 0.13)}}},
         # SEMI-AUTOMATIC (Halo 3 'latch-zoom' primary): one round a pull at most 1 / 0.17 s =
         # 5.88/s (Halo 1 pistol: automatic at 3.5/s). H3 bloom ramp 1.0 / 0.5 (magnum 0 / 0:
         # no ratio, the source value)
