@@ -124,12 +124,19 @@ PORT.update({
         # lit triangles (h1_h3_weapon_model.lit_pieces; a material island would light the
         # whole body), same UVs, textured with Halo 3's OWN illum mask (grey, thickened 1 px)
         # as an additive glow in the shader's colour: exactly Halo 3's lit spots, brighter
-        'glow_shaders': {'spiker_glow_blue': {'rgb': BLUE, 'additive': True, 'mask': ILLUM,
-                                              'mask_channel': 'rgb', 'dilate': 1, 'gain': 2.0},
-                         'spiker_glow_amber': {'rgb': AMBER, 'additive': True, 'mask': ILLUM,
-                                               'mask_channel': 'rgb', 'dilate': 1, 'gain': 2.0}},
-        'glow_cards': {'bolt_thrower': {'shader': 'spiker_glow_blue', 'lit': ILLUM, 'scale': 1.0, 'lift': 0.1},
-                       'bolt_thrower_shiny': {'shader': 'spiker_glow_amber', 'lit': ILLUM, 'scale': 1.0, 'lift': 0.1}},
+        # TEST 2 (user): 'no visible glow; the glow inside the MUZZLE on the 3D model looks like
+        # two squares plastered onto it' -- the Beam Rifle's early flat-card problem. Halo 3's
+        # glow is the two muzzle BORES (the user saw it there in Halo 3's model); the side /
+        # rear faces hold a few lit texels on large faces (a card lights the whole face). Now
+        # the Beam Rifle's FINAL recipe on the bores only: a radial card per bore (colour
+        # falling to nothing at the edge, no white core), x1.3, the blue of Halo 3's body
+        'glow_shaders': {'spiker_glow_blue': {'rgb': BLUE, 'additive': True, 'islands': True,
+                                              'islands_of': 'bolt_thrower', 'lit': ILLUM,
+                                              'normal': (1.0, 0.0, 0.0), 'min_dot': 0.7,
+                                              'radius': 1.0, 'falloff': 1.6, 'hot': False, 'gain': 1.0}},
+        'glow_cards': {'bolt_thrower': {'shader': 'spiker_glow_blue', 'lit': ILLUM,
+                                        'normal': (1.0, 0.0, 0.0), 'min_dot': 0.7,
+                                        'scale': 1.3, 'lift': 0.05}},
         'template': r'weapons\assault rifle\fp\shaders\gun',
     },
 
@@ -250,6 +257,18 @@ PORT.update({
                    # recipe; the ricochet above stays the potential response on stone / metal
                    'default_responses': {'attach': ATTACH, 'disappear': DISAPPEAR},
                    'model': r'weapons\spiker\spike model\spike model',
+                   # TEST 2 (user): 'why not let them detonate (with no damage) like the
+                   # needles?' -- the needle's burst (`needle detonate`: no damage part; the
+                   # needle's damage is its attached detonation damage, which the spike lacks)
+                   # minus the pink crystal debris, flash + flare in the spike's red-orange,
+                   # smoke and scorch decal kept. SILENT: the needle's `expl` would be a BORROW
+                   # and Halo 3's spike has no detonation sound (asked the user)
+                   'detonation_effect': {'from': r'weapons\needler\effects\needle detonate',
+                                         'out': SK + 'effects\\spike detonate',
+                                         'drop_particles': ('needler spike debris',),
+                                         'tint_match': ('flash h pistol detonate', 'flare h stealth cannon'),
+                                         'tint': ORANGE,
+                                         'drop_parts': (r'sound\sfx\weapons\needler\expl',)},
                    # the LOOK: Halo 3's spike is a hot streak on every round -- the AR tracer's
                    # contrail recoloured orange (a tracer on every round: trigger below)
                    'contrail': {'from': AR + 'bullet', 'out': SK + 'spike', 'rgb': ORANGE}},

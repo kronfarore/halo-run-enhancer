@@ -397,6 +397,30 @@ def own_beam(a, b, write):
             pd.material_responses.STEPTREE[i].response.set_to(resp)
     if 'model' in b:                         # a visible projectile (the stuck spike's gbxmodel)
         pt.data.tagdata.obje_attrs.model.filepath = b['model']
+    if 'detonation_effect' in b:
+        # an OWN detonation effect copied from another projectile's (the Spike Rifle, test 2:
+        # 'detonate like the needles, no damage' -- the needle's burst): particles whose path
+        # holds one of `drop_particles` removed, the rest whose path holds one of `tint_match`
+        # recoloured `tint` (RGB, not HSV); parts whose tag path is in `drop_parts` removed
+        from reclaimer.hek.defs.effe import effe_def
+        D = b['detonation_effect']
+        et = effe_def.build(filepath=path(D['from'], '.effect'))
+        for ev in et.data.tagdata.events.STEPTREE:
+            pts = ev.particles.STEPTREE
+            for i in range(len(pts) - 1, -1, -1):
+                q = pts[i]
+                if any(s in q.particle_type.filepath for s in D.get('drop_particles', ())):
+                    pts.pop(i)
+                elif D.get('tint') and any(s in q.particle_type.filepath for s in D.get('tint_match', ())):
+                    q.flags.tint_as_hsv = False
+                    for bound in (q.tint_lower_bound, q.tint_upper_bound):
+                        bound.r, bound.g, bound.b = D['tint']
+            prts = ev.parts.STEPTREE
+            for i in range(len(prts) - 1, -1, -1):
+                if prts[i].type.filepath in D.get('drop_parts', ()):
+                    prts.pop(i)
+        save(et, path(D['out'], '.effect'), write)
+        pd.detonation.effect.filepath = D['out']
     if 'reflect' in b:
         # a RICOCHET as the potential response (the Spike Rifle: Halo 3's spike bounces off
         # hard metal / rock / forerunner shields at 0-60 deg, chance 1): per Halo 1 material

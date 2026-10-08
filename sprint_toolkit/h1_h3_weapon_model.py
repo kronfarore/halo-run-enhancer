@@ -100,6 +100,42 @@ def lit_pieces(jm, material, illum, threshold=16):
     return out
 
 
+def glow_pieces(jm, material, C):
+    """The pieces a glow card / an islands texture works on: the material's islands (the
+    Beam Rifle's gems), or -- with `lit` -- its LIT triangles (lit_pieces), optionally only
+    those facing `normal` (dot >= `min_dot`: the Spike Rifle's muzzle bores), grouped into
+    islands by shared positions (each bore = one card, one radial glow)."""
+    if not C.get('lit'):
+        return material_islands(jm, material)
+    tris = [ts[0] for ts, _vs in lit_pieces(jm, material, C['lit'])]
+    if C.get('normal'):
+        nn = np.array(C['normal'], float)
+        keep = []
+        for t in tris:
+            N = np.array([(jm.verts[i].norm_i, jm.verts[i].norm_j, jm.verts[i].norm_k) for i in (t.v0, t.v1, t.v2)]).mean(0)
+            if np.dot(N / (np.linalg.norm(N) or 1.0), nn) >= C.get('min_dot', 0.7):
+                keep.append(t)
+        tris = keep
+    parent = {}
+
+    def find(a):
+        while parent.setdefault(a, a) != a:
+            a = parent[a]
+        return a
+
+    def key(v):
+        x = jm.verts[v]
+        return (round(x.pos_x, 2), round(x.pos_y, 2), round(x.pos_z, 2))
+    for t in tris:
+        ks = [key(v) for v in (t.v0, t.v1, t.v2)]
+        for k in ks[1:]:
+            parent[find(k)] = find(ks[0])
+    isl = {}
+    for t in tris:
+        isl.setdefault(find(key(t.v0)), []).append(t)
+    return [(ts, [jm.verts[v] for t in ts for v in (t.v0, t.v1, t.v2)]) for ts in isl.values()]
+
+
 def drop_materials(jm, names):
     """Triangles of the named materials removed, materials renumbered (the Spike Rifle's FP
     model: 20 triangles of Halo 3's `shaders\\invalid` -- a flat cap at both barrel ends,
@@ -194,7 +230,7 @@ def bitmaps(w):
                 yy, xx = np.mgrid[0:N, 0:N]
                 for key in ('world', 'fp'):
                     jm, _rm = h3_rm_to_jms.convert(w[key], markers=w.get('markers'))
-                    for _ts, vs in material_islands(jm, spec.get('islands_of', name)):
+                    for _ts, vs in glow_pieces(jm, spec.get('islands_of', name), spec):
                         U = np.array([(x.tex_u % 1.0, x.tex_v % 1.0) for x in vs])
                         (u0, v0), (u1, v1) = U.min(0), U.max(0)
                         for vv0, vv1 in ((v0, v1), (1 - v1, 1 - v0)):
@@ -402,7 +438,7 @@ def models(w):
         for mat, C in w.get('glow_cards', {}).items():
             # `lit`: only the triangles on lit illum texels (the Spike Rifle), else the
             # material's islands (the Beam Rifle's gems)
-            pieces = lit_pieces(jm, mat, C['lit']) if C.get('lit') else material_islands(jm, mat)
+            pieces = glow_pieces(jm, mat, C)
             if not pieces:
                 continue
             jm.materials.append(JmsMaterial(C['shader']))
