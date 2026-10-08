@@ -16,7 +16,7 @@ A  'unzoom' -- CONFIRMED in game 2026-10-08. The first-person weapon event handl
      +0xB2A462  8D 42 EE   lea eax,[rdx-0x12]   ->  8D 42 F1   lea eax,[rdx-0x0F]
      +0xB2A465  41 3B C7   cmp eax,r15d (=1)    ->  83 F8 04   cmp eax,4
 
-B  'no_rezoom' -- only together with A. Next-zoom +0xB770B8 (every zoom-in press and
+B  'no_rezoom' -- CONFIRMED in game 2026-10-08. Only together with A. Next-zoom +0xB770B8 (every zoom-in press and
    wheel step) keeps the current level when +0xB76A88 says the weapon cannot zoom. Its
    call at +0xB7710D now goes to a 76-byte cave in the .text slack (+0x1750180, zeros in
    the stock file, mapped executable with the section) that calls the original check
