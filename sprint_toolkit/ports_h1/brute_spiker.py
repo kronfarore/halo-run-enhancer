@@ -256,6 +256,10 @@ PORT.update({
         'bullet': {'projectile': (AR + 'bullet', SK + 'spike'),
                    'damage': (AR + 'bullet', SK + 'spike'),
                    'dmg': 9.0, 'velocity': (25.0, 17.5), 'range': 70.0,
+                   # ARMED TEST (user): 'reduce the screen flash response when hit by 30%' --
+                   # the AR bullet's (lighten, 0.1 s, early, red A 0) intensity 0.2 -> 0.14
+                   # (H1_SCREEN_FLASH.md: with alpha 0 the intensity scales the added red)
+                   'fields': {'screen_flash.maximum_intensity': 0.14},
                    'proj_fields': {'proj_attrs.physics.air_gravity_scale': 0.2,
                                    # STEP 4b (before boot 1). List 2 (ratio vs the H3 AR bullet
                                    # onto the H1 AR bullet): air damage range 5..15 x 60/40 on

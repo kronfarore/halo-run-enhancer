@@ -83,7 +83,40 @@ def full_magazine(weapon):
     return mags[0].rounds_loaded_maximum, mags[0].rounds_total_maximum
 
 
-def edit_kit(level, weapon, rounds, actors, secondary=None):
+#: USER RULE (2026-10-08, the Spike Rifle's Armed test): an Armed test with Jackals puts
+#: Jackals in the FIRST DROPSHIP, so they are met at once (halo-test-enemy-placement). Per
+#: level: the encounter, the dropship squad that gives up `count` places (its seats are
+#: limited: a30's c_dropship has 8 passenger seats, the first wave fills 7) and the level's
+#: own Jackal squad of that encounter, moved into the dropship platoon with `count` of the
+#: donor squad's starting locations. Only the TEST copy is changed (edit_kit restores).
+DROPSHIP_JACKALS = {
+    'a30': {'encounter': 'first_wave', 'from_squad': 'wave_1_lz_grunt',
+            'squad': 'wave_1_attack', 'count': 3},
+}
+
+
+def dropship_mix(d, mix):
+    enc = [e for e in d.encounters.STEPTREE if e.name == mix['encounter']]
+    if not enc:
+        raise SystemExit('no encounter %s' % mix['encounter'])
+    sq = {q.name: q for q in enc[0].squads.STEPTREE}
+    src, jk, n = sq[mix['from_squad']], sq[mix['squad']], mix['count']
+    src.normal_diff_count = max(0, src.normal_diff_count - n)
+    src.insane_diff_count = max(0, src.insane_diff_count - n)
+    jk.platoon = src.platoon
+    jk.normal_diff_count = jk.insane_diff_count = n
+    jk.flags.data = src.flags.data
+    for k in ('initial_state', 'return_state'):
+        getattr(jk, k).data = getattr(src, k).data
+    locs = jk.starting_locations.STEPTREE
+    locs[:] = []
+    for x in list(src.starting_locations.STEPTREE)[-n:]:
+        locs.append(copy.deepcopy(x))
+    print('kit: %s -- %s %d places, %s %d Jackals in its platoon (the first dropship)'
+          % (mix['encounter'], src.name, src.normal_diff_count, jk.name, n))
+
+
+def edit_kit(level, weapon, rounds, actors, secondary=None, mix=None):
     """The scenario edits of step 1 (the caller restores the file). `secondary` (a weapon
     tag): every spawn profile's SECONDARY too, same rounds -- a second variant of the port
     in the same boot (the BR's burst options, 2026-10-07)."""
@@ -107,6 +140,8 @@ def edit_kit(level, weapon, rounds, actors, secondary=None):
     print('kit: %d spawn profile(s) armed, %d/%d rounds%s: %s'
           % (len(armed), rounds[0], rounds[1], ' (+ secondary %s)' % secondary if secondary else '',
              ', '.join(armed)))
+    if mix:
+        dropship_mix(d, mix)
     t.filepath = sp
     t.serialize(temp=False, backup=False)
     if actors:                                   # raw insert, as h1_enemy_test_map does
@@ -144,12 +179,12 @@ def resident(d, weapon):
         print('kit: %s already resident (palette #%d)' % (weapon, idx))
 
 
-def build_copy(level, weapon, rounds, actors, keep_kit_map, secondary=None):
+def build_copy(level, weapon, rounds, actors, keep_kit_map, secondary=None, mix=None):
     sp = E.scenario_path(level)
     keep = sp + '.before_porttest'
     shutil.copy2(sp, keep)
     try:
-        edit_kit(level, weapon, rounds, actors, secondary)
+        edit_kit(level, weapon, rounds, actors, secondary, mix)
         E.build(level)
         out_dir = os.path.join(HCEEK, 'maps', 'port_test')
         os.makedirs(out_dir, exist_ok=True)
@@ -312,7 +347,8 @@ def main():
                       int(vals.get('Rounds Total Initial', rounds[1])))
     want = {'grunt': a.grunt or cfg.get('grunt'), 'elite': a.elite or cfg.get('elite')}
     actors = [v for v in want.values() if v]
-    out = build_copy(level, weapon, rounds, actors, a.keep_kit_map, a.secondary)
+    mix = DROPSHIP_JACKALS.get(level) if 'jackal' in (a.armed or '').lower() else None
+    out = build_copy(level, weapon, rounds, actors, a.keep_kit_map, a.secondary, mix)
     arm = [e for e in (a.armed or '').split(',') if e.strip()]
     if actors or a.god or cfg.get('god') or entry or arm:
         import halo_patch
