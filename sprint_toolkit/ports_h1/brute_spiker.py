@@ -299,10 +299,13 @@ PORT.update({
                    # shield`, 25 shield sparks + a flash a hit. Own copy, every 4th spark kept
                    # (~6 + the flash). Unshielded (#21, sparks + smoke + blood) left as is.
                    # (A -30% screen flash was tried first and reverted: not the complaint)
-                   # ARMED TEST 2 (user): 'that could be the effect -- reduce its size to 25%':
-                   # every remaining particle's radius x0.25 (sparks and flash)
+                   # ARMED TEST 2 (user): 'that could be the effect -- reduce its size to 25%'
+                   # (with every 4th spark: approved). Then THE HIT-EFFECT RULE (user, same
+                   # day, h1_hit_effect_load.py): at most the stock pistol's load per second
+                   # (4.36) -- the whole effect, size only, at max(default 8, balanced 12)/s:
+                   # sqrt(4.36 / (0.6015 x 12)) = x0.78
                    'impact_thin': {'materials': [22], 'out': SK + 'effects\\impact\\',
-                                   'thin': {'shield jackal sparks': 4}, 'scale': 0.25},
+                                   'thin': {}, 'budget': 1.2461 * 3.5, 'rate': 12.0},
                    # TEST 2 (user): 'why not let them detonate (with no damage) like the
                    # needles?' -- the needle's burst (`needle detonate`: no damage part; the
                    # needle's damage is its attached detonation damage, which the spike lacks)

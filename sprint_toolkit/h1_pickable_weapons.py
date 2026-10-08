@@ -404,10 +404,16 @@ def own_beam(a, b, write):
         # + a flash): per Halo 1 material index, an OWN copy of the response effect under
         # `out` keeping every n-th particle whose path holds a key of `thin` {substring: n}
         from reclaimer.hek.defs.effe import effe_def
-        I = b['impact_thin']
+        import h1_hit_effect_load as HL
+        I = dict(b['impact_thin'])
         for i in I['materials']:
             x = pd.material_responses.STEPTREE[i]
             src_e = x.effect.filepath
+            if I.get('budget'):
+                # THE HIT-EFFECT RULE (user, 2026-10-08): at most the stock pistol's load per
+                # second on the player -- size scale = sqrt(budget / (rate x load per hit))
+                I['scale'] = HL.rule_scale(src_e, I['rate'], I.get('per_shot', 1), I['budget'])
+                print('   hit-effect rule: %s at %.1f/s -> size x%.3f' % (src_e, I['rate'], I['scale']))
             et = effe_def.build(filepath=path(src_e, '.effect'))
             kept = total = 0
             for ev in et.data.tagdata.events.STEPTREE:
