@@ -248,9 +248,27 @@
      "<h",
      210,
      "Drop Weapon Ammo Max"
+    ],
+    "0xC4": [
+     "<f",
+     0.8,
+     "Weapon Damage Modifier"
     ]
    },
-   "donor_weapon": "weapons\\assault rifle\\assault rifle"
+   "donor_weapon": "weapons\\assault rifle\\assault rifle",
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.6,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.4,
+    "yardstick_dps": 150.0,
+    "port_dps": 75.0,
+    "balanced_port_dps": 100.0
+   }
   },
   "weapons\\battle rifle\\battle rifle": {
    "source": "Halo 3 ai\\generic objects\\weapons\\rifle\\battle_rifle\\battle_rifle (weapon properties #9, firing pattern #9) over weapons\\assault rifle\\assault rifle carriers",
@@ -384,9 +402,27 @@
      "<h",
      126,
      "Drop Weapon Ammo Max"
+    ],
+    "0xC4": [
+     "<f",
+     0.8,
+     "Weapon Damage Modifier"
     ]
    },
-   "donor_weapon": "weapons\\assault rifle\\assault rifle"
+   "donor_weapon": "weapons\\assault rifle\\assault rifle",
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.4821917808219178,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.4,
+    "yardstick_dps": 88.0,
+    "port_dps": 44.0,
+    "balanced_port_dps": 73.0
+   }
   },
   "weapons\\covenant carbine\\covenant carbine": {
    "source": "Halo 3 ai\\generic objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine (weapon properties #4, firing pattern #4) over weapons\\assault rifle\\assault rifle carriers",

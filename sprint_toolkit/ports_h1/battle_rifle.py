@@ -51,8 +51,13 @@ PORT = reserved(
     # step 11: the source game's ai\generic entry, laid over a base -- 'br' has no carrier
     # (smg.py's lesson): the pistol is the yardstick, but NO Halo 1 enemy carries it; the AR
     # has carriers (Marines, Flood combat Elites), as for the SMG
+    # Armed WDM (user, 2026-10-08, Rule B -- ai_firing_profile.wdm_rule, measured on the
+    # Carbine): 0.4 (the AR carriers) x Pistol 88 / BR 44 (h1_role_compare 5b, Halo 3's
+    # 0.413 s rhythm) = 0.80, balanced / 73 = 0.48
     firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\rifle\\battle_rifle\\battle_rifle',
-                    'donor_weapon': 'weapons\\assault rifle\\assault rifle'},
+                    'donor_weapon': 'weapons\\assault rifle\\assault rifle',
+                    'wdm_rule': {'base': 0.4, 'yardstick_dps': 88.0, 'port_dps': 44.0,
+                                 'balanced_port_dps': 73.0}},
 )
 
 PORT.update({

@@ -53,8 +53,12 @@ PORT = reserved(
             'lacks': 'dual wield'}},
     # step 11: the source game's ai\generic entry (24 fields, verified 2026-10-07), laid
     # over the H1 AR's carriers -- the SMG's own label 'sm' has no carrier to find a base by
+    # Armed WDM (user, 2026-10-08, Rule B -- ai_firing_profile.wdm_rule, measured on the
+    # Carbine): 0.4 (the AR carriers) x AR 150 / SMG 75 = 0.80, balanced / 100 = 0.60
     firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\rifle\\smg\\smg',
-                    'donor_weapon': 'weapons\\assault rifle\\assault rifle'},
+                    'donor_weapon': 'weapons\\assault rifle\\assault rifle',
+                    'wdm_rule': {'base': 0.4, 'yardstick_dps': 150.0, 'port_dps': 75.0,
+                                 'balanced_port_dps': 100.0}},
 )
 
 PORT.update({
