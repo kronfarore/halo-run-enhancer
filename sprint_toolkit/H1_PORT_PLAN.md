@@ -402,7 +402,10 @@ PORTING.md "Halo 1: the Beam Rifle, wave A4" is the full record; `ports_h1/beam_
 the example of a HEAT + BATTERY port on a template that is NOT its yardstick, and of GLOW.
 Everything in "Pilot A1", "A2" and "A3" still holds; the Beam Rifle added:
 
-**Run 4b BEFORE BOOT 1 (rule now).** `port_field_audit.py --port <key>` lists 2-5 and
+**Run 4b BEFORE BOOT 1 (rule now)** -- and decide every FLAGS line of list 3 by flag NAME (the
+audit cannot compare them across games; the beam rifle's 'magnetize only when zoomed' was found
+only in the final check).
+**4b itself:** `port_field_audit.py --port <key>` lists 2-5 and
 `h1_port_template_diff.py <key>` before the first test, not at close-out. When the template
 is not the yardstick, list 5 holds the yardstick's flags the template lacks (the sniper's
 `use error when unzoomed` cost a boot) and the template diff shows behaviour the template
@@ -416,7 +419,8 @@ puts any weapon field on the test secondary). `h1_role_compare` `heat_sim` waits
 overheats for a tapped weapon. Halo 1 enemies DO carry some weapons the plan said they do not
 (sniper: Flood combat Elite, armoured Marines): list the carriers before choosing a donor.
 
-**Look (observations, PORTING):** render the FP pose coloured by material before guessing
+**Look (observations, PORTING):** render the FP pose coloured by material (`fp_material_view.py
+<key> [--illum <H3 bitmap>]`) before guessing
 which material glows (Halo 3 shader templates encode the blend mode: `_..._1_0_1` additive);
 GLOW = additive chicago + a texture with falloff (Halo 3's own mask where it has one) +
 glow cards for small pieces (`glow_shaders`, `glow_cards`); never lights / lens flares /

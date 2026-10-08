@@ -352,6 +352,12 @@ PORT.update({
             # list 5: the sniper's firing error (1, 1: the full error angle from the first
             # shot; the plasma pistol's 0 -> 1 ramp)
             'weap_attrs.triggers.0.firing.error': (1.0, 1.0),
+            # FINAL CHECK (list 3 'flags', decided by name): Halo 3's beam AND sniper both
+            # 'magnetize only when zoomed' (secondary flags) -> the H1 sniper's
+            # aim_assists_only_when_zoomed (Halo 1's one flag also stops autoaim unzoomed,
+            # Halo 3's only magnetism). 'strict deviation angle' / "don't clear fire bit":
+            # no Halo 1 field; the sniper's integrated night vision: not Halo 3's beam
+            'weap_attrs.flags.aim_assists_only_when_zoomed': True,
         },
         'melee': (PP + 'melee', BM + 'melee'),
         'melee_response': PP + 'melee_response',
@@ -443,6 +449,14 @@ PORT.update({
     # Full field diff (h1_port_template_diff.py beam_rifle): 191 differences, each one of
     #   the above, a reference to the port's own tags, or the sniper screen effect (night
     #   vision / desaturation cleared). kit_tag_diff: the final rebuild changed nothing.
+    # Steps 6-10: 6 ammo pickup n/a (a battery weapon; Halo 3 has no beam rifle ammo item);
+    #   7 the HUD readout = the plasma pistol's heat + battery meters; 8 icon 33 + messages
+    #   59/60; 9 no reload, swap balanced x1.38 (default Halo 3's frames); 10 own sounds: fire
+    #   (shot + FP layer), dry fire, ready, melee, posing, zoom in/out, drop, overheat in/out
+    #   (Halo 3 has no reload, first draw or put-away cue for it).
+    # FINAL CHECK (user, 'every step, especially 4b'): weapon flags decided by name ->
+    #   aim_assists_only_when_zoomed (kit_tag_diff: flags 2048 -> 2080, nothing else);
+    #   port_sounds --check 0, validate_halo_json 0.
     # port_refs_audit 0 problems; port_sound_refs 0 BORROW; 5b: default = Halo 3's row,
     #   balanced = the sniper-ratio row (h1_role_compare beam_rifle [--balanced]).
     # Not reproduced: Halo 3's two heat losses, bloom (glow cards instead), the scope's live

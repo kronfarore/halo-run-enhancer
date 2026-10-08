@@ -738,7 +738,8 @@ x0.8 squash fitted again (2nd scope; the BR's 4/3 was the variant).
 
 **What Halo 1 did (each an OBSERVATION, PORTING rule):**
 * Halo 3's `*_first_person_fire` sound is only the FP LAYER (silent 0.3 s, then clicks): the
-  shot is the third-person fire sound; mix both (`bm_fire`).
+  shot is the third-person fire sound; mix both (`bm_fire`). Look first: `h3_sound_envelope.py
+  <h3_dir> [--match fire]` prints every folder's subsongs with a 0.1 s envelope.
 * Halo 3's overheat in+loop+out is 6.9 s against a 2-3 s vent: 'in' on the FP overheating
   animation, 'out' on o-h-exit, no loop.
 * The sniper's trail rides SMOKE point physics and drifts with the wind (`contrail`
@@ -755,6 +756,7 @@ x0.8 squash fitted again (2nd scope; the BR's 4/3 was the variant).
 * **GLOW without bloom:** Halo 3 colours greyscale illum masks through shader parameters in
   function data (unreadable) and BLOOMS; Halo 1 does neither. What worked, in order:
   (1) find which material really glows -- render the FP pose coloured by material
+  (`fp_material_view.py <key> --illum <H3 illum bitmap>`;
   (`beam_rifle_glass` was an ADDITIVE Halo 3 template -- the gems, not glass; the illum-map
   lines all face down, hidden); (2) ADDITIVE chicago shaders (the needler's needles are the
   precedent) -- a FLAT colour reads as paint even additive; (3) a TEXTURE with falloff: the
@@ -776,7 +778,9 @@ Grunt, Jackal (all Grunts swapped to Jackals: a30's dropship has none) and Elite
 two-handed weapon fire at half rate (heavy support excepted); Jackals with one lose the arm
 shield (to test).
 
-Close-out: list 2 = 0 (weapon, projectile; the damage effect's two = Halo 3's own breaking
+Final check (user): the weapon flags, decided by NAME (the audit lists the flags word under 'decide
+by hand'): Halo 3's beam and sniper both magnetize only when zoomed -> the sniper's
+`aim_assists_only_when_zoomed` (Halo 1's one flag also stops autoaim unzoomed). Close-out: list 2 = 0 (weapon, projectile; the damage effect's two = Halo 3's own breaking
 effect), template diff 191 traced, kit_tag_diff no change on the final rebuild, refs 0
 problems, sound refs 0 BORROW (older ports still have some: SAW, SMG, Sentinel Beam, Flak
 Cannon, Energy Blade), 5b default = Halo 3's row, balanced = the sniper-ratio row. Not
