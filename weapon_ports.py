@@ -111,6 +111,7 @@ def active_ports(game, config, catalog=None):
         balanced = st.get('balanced')
         if balanced is None:
             balanced = config.get('weapon_ports_balance', True)
+        entry['balanced'] = bool(balanced)    # the Armed WDM rule reads it (h1_enemy_weapons)
         if not balanced:
             # Balance OFF means the port plays like the weapon it came from -- which is
             # not the same as writing nothing. A port built by CLONING a donor tag starts

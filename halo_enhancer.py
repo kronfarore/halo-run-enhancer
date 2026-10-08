@@ -5534,10 +5534,22 @@ class MagnitudeEditorDialog(QDialog):
             'enabled': dict(CONFIG.get('h1_enemy_weapon_enabled') or {}),
             'fallback': {e: tag(w) for e, w in (CONFIG.get('h1_enemy_weapon_fallback') or {}).items() if w},
             'cards': {e: {tag(w): sh for w, sh in ws.items() if tag(w)} for e, ws in armed_picks.items()},
+            # ports whose Balanced box is on: their Armed firing takes the profile's
+            # balanced_fields (Armed Weapon Damage Modifier rule, user 2026-10-08)
+            'balanced': self._balanced_port_weapons(),
             # donor choices already made (this machine or the co-op partner's shared run)
             'donors': {k[len(DONOR_KEY_PREFIX):]: v for k, v in self.presets.items()
                        if k.startswith(DONOR_KEY_PREFIX)},
         }
+
+    def _balanced_port_weapons(self):
+        """Weapon tag paths of this game's switched-on ports that play Balanced."""
+        try:
+            import weapon_ports
+            return sorted(weapon_ports.weap_path(p) for p in (self._weapon_ports_for_patch() or ())
+                          if p.get('balanced') and weapon_ports.weap_path(p))
+        except Exception:
+            return []
 
     def _enemy_colors_for_patch(self):
         """This game's colour overrides for apply_run: the player's picks (Enemy

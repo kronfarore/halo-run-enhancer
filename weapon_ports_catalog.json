@@ -1481,7 +1481,12 @@
    "fp_animations": "weapons\\covenant carbine\\fp\\fp",
    "requires": [
     "proj weapons\\covenant carbine\\slug"
-   ]
+   ],
+   "tag_map": {
+    "proj weapons\\pistol\\bullet": "proj weapons\\covenant carbine\\slug",
+    "jpt! weapons\\pistol\\bullet": "jpt! weapons\\covenant carbine\\slug",
+    "jpt! weapons\\pistol\\melee": "jpt! weapons\\covenant carbine\\melee"
+   }
   }
  ],
  "Halo 3": [
