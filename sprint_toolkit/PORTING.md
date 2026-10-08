@@ -927,8 +927,18 @@ OBSERVATION until a second port agrees, except the user RULES):
   -> full 144 fr), error 10, 140 -> 100 wu/s, range 53.3, aim 6/19.1 12/19.1, melee 56.6.
   Default (Halo 3's own) is weak in Halo 1: 105 a shot vs the shotgun's 322 (Elite major in 3
   vs 1 on normal) -- the wave-A rule, shown to the user. Damage table: the shotgun pellet's.
-  Hit-effect rule: 15 pellets x 1.33/s = 20 hits/s -> x0.004, CHECK with the user (the rule
-  was set on continuous fire).
+  Hit-effect rule with PELLETS (user, 2026-10-08): count SHOTS, not pellets -- 1.33/s is
+  under 3.5/s, the pellet's shield-hit effect stays x1 (pellets x rate = 20/s would give x0.004).
+* **Before boot 1 (4b + template diff + port_sound_refs), the Shotgun template's traps:** the
+  magazine flag 'every round must be chambered' and weapon type 'shotgun' (Halo 3's mauler has
+  neither, Halo 3's shotgun both: cleared, by name); the trigger's EMPTY field names the AR dry
+  fire SOUND directly and `shotgun empty` sits on the MISFIRE field (a sound_effects copy of
+  `shotgun empty` repointed nothing): empty = the port's own dry fire by `fields`, misfire
+  cleared. The firing effect plays its fire sound in TWO identical events at 0 s (kept: the
+  level matches the shotgun's; h1_pickable_weapons' swap check now counts sounds, not parts).
+  Halo 3's pellet attachment (`fx\projectile`) is an EMPTY effect: nothing to port.
+* Step 6 (user): no Halo 3 ammo item; Halo 1's shotgun ammo (60 a box) tops the Mauler up, kept.
+* One-handed pose: `ml` taught from `hp` (Halo 1's pistol), not `sg` (two-handed).
 
 ## Halo 3
 

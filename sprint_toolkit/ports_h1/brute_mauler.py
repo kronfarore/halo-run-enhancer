@@ -173,6 +173,9 @@ PORT.update({
         # same fields: the shotgun pellet 18..25 -> 8 over 1.5 -> 3), 480 wu/s instantaneous
         # (Halo 1 has no instant flag: 480 wu/s crosses the 8 wu range in 1/60 s), range 8.
         # Materials: the H1 shotgun pellet's (both bullet_slow in Halo 3)
+        # THE HIT-EFFECT RULE with pellets (user, 2026-10-08): count SHOTS, not pellets --
+        # 1.33 shots/s is under the rule's 3.5/s, so the pellet's shield-hit effect stays the
+        # shotgun's (x1, no `impact_thin`); pellets x rate (20/s) would have been x0.004
         'bullet': {'projectile': (SG + 'pellet', ML + 'pellet'),
                    'damage': (SG + 'pellet', ML + 'pellet'),
                    'dmg': 7.0, 'velocity': 480.0, 'range': 8.0,
@@ -195,6 +198,9 @@ PORT.update({
         # H3 aim assist, absolute (balanced = the ratio rule)
         'aiming': {'autoaim_angle': 8.0, 'autoaim_range': 7.0,
                    'magnetism_angle': 16.0, 'magnetism_range': 7.0},
+        # STEP 6 (user, 2026-10-08): Halo 3's mauler has NO ammo item; the template's magazine
+        # names `powerups\shotgun ammo` (60 rounds a box) -- KEPT: a box refills the Mauler
+        # (capped at 25 / 62 balanced)
         'fields': {
             # STEP 4b list 2 (ratio vs the H3 shotgun onto the H1 shotgun; before boot 1):
             # bounding radius 0.2 x 0.2/0.225; acceleration scale 2 x 1.25/1.0
