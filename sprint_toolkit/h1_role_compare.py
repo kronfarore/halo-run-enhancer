@@ -291,6 +291,44 @@ SETS = {
         ('Plasma Rifle', W + r'plasma rifle\plasma rifle', 'shot'),
         ('SMG (port peer)', W + r'smg\smg', 'shot', {'rate': 15.0, 'cap': 15.0}),
     ]},
+    # the MAULER (wave A6), step 4a. Halo 3 (H3EK 2026-10-08, h3_weapon_values + the
+    # projectiles' `conical spread` block -- the pellets are there, not on the barrel): mauler
+    # 15 pellets (yaw 3 x pitch 5, 7.5 deg) x 7 (lower 1.5 over 2.5 -> 5 wu; bullet_slow),
+    # recovery 0.75 s, mag 5 (10 / 25) whole-magazine reload 55 fr, 480 wu/s instant, range 8,
+    # aim 8/7 16/7, cut_melee; shotgun the SAME 15 / 7.5 deg cone x 10 (lower 3 over 2 -> 4
+    # wu; bullet_slow), 1.0 s, 6 (18 / 36) shell by shell (enter 14 + 16 a shell + exit 34),
+    # range 6, aim 8/5.5 16/5.5, strike_melee; magnum 15 (lower 0) x 1/0.4 s, 8 (32 / 48),
+    # 50 fr, range 40, aim 2/15 6/20. Halo 1: shotgun 15 pellets x 18..25 (lower 8 over 1.5
+    # -> 3 wu; 'shotgun' table), 1/s, 12 (24 / 60) 0.4 s a shell, error 10 deg, 140 -> 100
+    # wu/s, range 40, aim 6/15 12/15; pistol 25 x 3.5/s, 12 (60 / 120), 67 fr, error 0.2 ->
+    # 2, 300 wu/s, range 40, aim 3/30 6/30. All pellets hit, at point blank (no falloff).
+    'brute_mauler': {'port': 'Mauler', 'weapons': [
+        ('Mau = H3 own (sg pellet)', W + r'shotgun\shotgun', 'shot',
+         {'dmg': 7.0, 'rate': 1 / 0.75, 'mag': 5, 'reload': 55 / 30.0, 'speed': 480.0,
+          'range': 8.0, 'aim': (8.0, 7.0, 16.0, 7.0)}),
+        ('Mau = H3 own (pistol mat)', W + r'pistol\pistol', 'shot',
+         {'per_shot': 15, 'dmg': 7.0, 'rate': 1 / 0.75, 'mag': 5, 'reload': 55 / 30.0,
+          'speed': 480.0, 'range': 8.0, 'aim': (8.0, 7.0, 16.0, 7.0)}),
+        # 21.5 x 7/10; 1/s x 1.0/0.75; 12 x 5/6; 12 shells (144 fr) x 55 / 144 (H3 shotgun
+        # empty -> full: 14 + 6 x 16 + 34) = 55 fr; speed x1; 40 x 8/6; aim 6 x 8/8, 15 x
+        # 7/5.5; 12 x 16/16, 15 x 7/5.5
+        ('Mau = Shotgun ratio', W + r'shotgun\shotgun', 'shot',
+         {'dmg': 15.05, 'rate': 4 / 3.0, 'mag': 10, 'reload': 55 / 30.0, 'speed': 140.0,
+          'range': 53.3, 'aim': (6.0, 19.1, 12.0, 19.1)}),
+        # 25 x 7/15 a pellet, 15 pellets (H3's own: the magnum has none); 3.5/s x 0.4/0.75;
+        # 12 x 5/8; 67 fr x 55/50; 300 x 480/180; 40 x 8/40; aim 3 x 8/2, 30 x 7/15; 6 x
+        # 16/6, 30 x 7/20
+        ('Mau = Pistol ratio', W + r'pistol\pistol', 'shot',
+         {'per_shot': 15, 'dmg': 11.67, 'rate': 1.867, 'mag': 8, 'reload': 73.7 / 30.0,
+          'speed': 800.0, 'range': 8.0, 'aim': (12.0, 14.0, 16.0, 10.5)}),
+        ('Shotgun', W + r'shotgun\shotgun', 'shot'),
+        ('Pistol', W + r'pistol\pistol', 'shot'),
+        ('Sword slash (restored)', W + r'energy sword\energy sword', 'melee'),
+        ('Sword lunge (restored)', W + r'energy sword\energy sword', 'shot'),
+        ('Shotgun melee', W + r'shotgun\shotgun', 'melee'),
+        ('Pistol melee', W + r'pistol\pistol', 'melee'),
+        ('Spike Rifle (blade peer)', W + r'spiker\spiker', 'melee'),
+    ]},
 }
 
 ENEMIES = [
@@ -368,6 +406,8 @@ def weapon(label, rel, mode, overrides, extra=None):
         out['rps'] = max(rps[0], rps[1])
         out['charge'] = tr.charging.charging_time
         out['per_shot'] = tr.projectile.projectiles_per_shot or 1
+        if extra and extra.get('per_shot'):  # a pellet CANDIDATE on a single-round tag
+            out['per_shot'] = extra['per_shot']
         dmg, p = projectile_damage(tr.projectile.projectile.filepath)
         out['damage'] = dmg
         out['speed'] = p.proj_attrs.physics.initial_velocity if p else None
