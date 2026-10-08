@@ -175,6 +175,10 @@ def weight_of(effect_name, weights=None):
     cat = NAME_TO_CATEGORY.get(effect_name)
     if not cat and str(effect_name).startswith('Armed: '):
         cat = 'equipment'       # Halo 1 'Armed: <weapon>' cards: what the enemy carries
+    if not cat and str(effect_name).startswith('Hardened: '):
+        # 'Hardened: <armour> vs <damage>' (damage_rows.py): an enemy-general card that
+        # makes one armour class take less from one damage type -- durability
+        cat = 'durability'
     if not cat:
         return 0
     return (weights or CATEGORY_WEIGHTS).get(cat, 0)

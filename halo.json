@@ -758,6 +758,293 @@
 						{ "step": "*1.1","field": "Drop Weapon Ammo Max", "block": "Weapons Properties", "index": "all", "group": "Ammo", "min": 0, "easier_when": "increased"}
 					]
 				}
+			},
+			"Effective: Bullets vs Shields": {
+				"desc": "Bullets do more damage to enemy shields.",
+				"debug_desc": "Player card (x1.2 per pick). Bullets = bullet_slow (AR, Magnum/Pistol, SMG, Shotgun, Mauler, Spike Rifle, H3/ODST SAW). The Halo 2 SAW port (and Halo 1's) is bullet_vehicle -- not a Bullets card; vehicle and turret guns (bullet_vehicle, bullet_turret) are not either. Shields = energy_shield_thin: Elites, Brutes (H3/ODST/Reach), Sentinels, Halo 4 Knights... NOT the Jackal hand shields or turret shields (energy_shield_thick). Halo 1: the Elite Energy Shield column (Sentinels wear it too), never the Jackal shield. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Elite Energy Shield column(s) on every jpt! of the type (Bullets jpt!s: AR, Pistol, Shotgun pellet, SMG port). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 3 value(s) on 3 jpt!, H2 1, H3 2 (1 in [0]), ODST 2 (1 in [0]), Reach 2 (1 in [0]), H4 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Bullets vs Shields", "damage_row": {"damage": "bullets", "armour": "shields"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Bullets vs Flesh": {
+				"desc": "Bullets do more damage to unarmoured flesh.",
+				"debug_desc": "Player card (x1.2 per pick). Bullets = bullet_slow (AR, Magnum/Pistol, SMG, Shotgun, Mauler, Spike Rifle, H3/ODST SAW). The Halo 2 SAW port (and Halo 1's) is bullet_vehicle -- not a Bullets card; vehicle and turret guns (bullet_vehicle, bullet_turret) are not either. Flesh = soft_organic + soft_inorganic (the Grunt's methane-pack armour; also Warthog/Mongoose seats); Reach adds tough_organic (Drones, Mule -- Reach Brutes are soft_organic already). Hunter flesh (soft_organic + its specific soft_organic_flesh_hunter row) scales too. Halo 1: the Grunt, Jackal, Human and Engineer columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Grunt, Jackal, Human, Engineer column(s) on every jpt! of the type (Bullets jpt!s: AR, Pistol, Shotgun pellet, SMG port). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 12 value(s) on 3 jpt!, H2 2, H3 4 (2 in [0]), ODST 4 (2 in [0]), Reach 6 (3 in [0]), H4 4 (2 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Bullets vs Flesh", "damage_row": {"damage": "bullets", "armour": "flesh"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Precision rounds vs Shields": {
+				"desc": "Precision rounds do more damage to enemy shields.",
+				"debug_desc": "Player card (x1.2 per pick). Precision rounds = bullet_fast (+ ODST's Battle Rifle group bullet_fast_h3): Battle Rifle, Sniper Rifle (Halo 1-ODST), DMR, the H3 machine-gun turret, Halo 4's SAW. The Reach / Halo 4 Sniper Rifle and Binary Rifle are general group 'sniper' -- not included. Shields = energy_shield_thin: Elites, Brutes (H3/ODST/Reach), Sentinels, Halo 4 Knights... NOT the Jackal hand shields or turret shields (energy_shield_thick). Halo 1: the Elite Energy Shield column (Sentinels wear it too), never the Jackal shield. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Elite Energy Shield column(s) on every jpt! of the type (Precision jpt!s: Sniper Rifle, Battle Rifle port). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 1 value(s) on 1 jpt!, H2 1, H3 2 (1 in [0]), ODST 4 (2 in [0]), Reach 2 (1 in [0]), H4 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Precision rounds vs Shields", "damage_row": {"damage": "precision", "armour": "shields"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Plasma vs Shields": {
+				"desc": "Plasma does more damage to enemy shields.",
+				"debug_desc": "Player card (x1.2 per pick). Plasma = plasma_slow + plasma_fast: Plasma Pistol/Rifle, Needler (Halo 1-ODST), Carbine, Beam Rifle, Sentinel Beam, Focus Rifle, Plasma Repeater, Storm Rifle... The Plasma Pistol's charged shot (emp) and vehicle plasma (plasma_vehicle / plasma_turret) are not included. Shields = energy_shield_thin: Elites, Brutes (H3/ODST/Reach), Sentinels, Halo 4 Knights... NOT the Jackal hand shields or turret shields (energy_shield_thick). Halo 1: the Elite Energy Shield column (Sentinels wear it too), never the Jackal shield. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Elite Energy Shield column(s) on every jpt! of the type (Plasma jpt!s: Plasma Pistol/Rifle bolts, Needler impact + detonation, Sentinel beams, Carbine port slug). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 5 value(s) on 5 jpt!, H2 2, H3 4 (2 in [0]), ODST 4 (2 in [0]), Reach 4 (2 in [0]), H4 4 (2 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Plasma vs Shields", "damage_row": {"damage": "plasma", "armour": "shields"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Plasma vs Armour": {
+				"desc": "Plasma does more damage to enemy armour.",
+				"debug_desc": "Player card (x1.2 per pick). Plasma = plasma_slow + plasma_fast: Plasma Pistol/Rifle, Needler (Halo 1-ODST), Carbine, Beam Rifle, Sentinel Beam, Focus Rifle, Plasma Repeater, Storm Rifle... The Plasma Pistol's charged shot (emp) and vehicle plasma (plasma_vehicle / plasma_turret) are not included. Armour = hard_metal_thin: Elite bodies, Brute armour plates and Chieftains (H3/ODST), Reach/H4 AI Spartans, Halo 4 Prometheans' metal. Halo 1: the Elite column. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Elite column(s) on every jpt! of the type (Plasma jpt!s: Plasma Pistol/Rifle bolts, Needler impact + detonation, Sentinel beams, Carbine port slug). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 5 value(s) on 5 jpt!, H2 2, H3 4 (2 in [0]), ODST 4 (2 in [0]), Reach 4 (2 in [0]), H4 4 (2 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Plasma vs Armour", "damage_row": {"damage": "plasma", "armour": "armour"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Explosives vs Shields": {
+				"desc": "Explosives do more damage to enemy shields.",
+				"debug_desc": "Player card (x1.2 per pick). Explosives = explosion_small + explosion_large + explosion_attached (no attached group in Reach/H4): grenades, rockets, Fuel Rod, Brute Shot, needle supercombine, the Gravity Hammer blast. From Reach on a direct hit of an explosive projectile is 'collision' (not included), the blast is. The Halo 2 Fuel Rod splash names the typo group explosion_largw (no row) unless Options -> Bugfixes fixes it. Shields = energy_shield_thin: Elites, Brutes (H3/ODST/Reach), Sentinels, Halo 4 Knights... NOT the Jackal hand shields or turret shields (energy_shield_thick). Halo 1: the Elite Energy Shield column (Sentinels wear it too), never the Jackal shield. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Elite Energy Shield column(s) on every jpt! of the type (Explosives jpt!s: grenades, rocket, fuel rod, needle supercombine, Banshee/Wraith/Scorpion shells). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 9 value(s) on 9 jpt!, H2 3, H3 6 (3 in [0]), ODST 6 (3 in [0]), Reach 4 (2 in [0]), H4 4 (2 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Explosives vs Shields", "damage_row": {"damage": "explosives", "armour": "shields"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Explosives vs Vehicles and Hunter plates": {
+				"desc": "Explosives do more damage to vehicles and Hunter plates.",
+				"debug_desc": "Player card (x1.2 per pick). Explosives = explosion_small + explosion_large + explosion_attached (no attached group in Reach/H4): grenades, rockets, Fuel Rod, Brute Shot, needle supercombine, the Gravity Hammer blast. From Reach on a direct hit of an explosive projectile is 'collision' (not included), the blast is. The Halo 2 Fuel Rod splash names the typo group explosion_largw (no row) unless Options -> Bugfixes fixes it. Vehicles and Hunter plates = hard_metal_thick + hard_metal_solid (Hunter plates are hard_metal_solid from Halo 2 on, shared with Scorpion, Wraith, Pelican, Phantom) + brittle_mech / brittle_elec / brittle_glass (engines, anti-grav pods, windscreens; brittle/brittle_explosive props are left out) + ODST's 'hunter' specific row. Halo 1: the Metal (Hollow/Thin/Thick), Hunter Armor and Hunter Shield columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Metal (Hollow), Metal (Thin), Metal (Thick), Hunter Armor, Hunter Shield column(s) on every jpt! of the type (Explosives jpt!s: grenades, rocket, fuel rod, needle supercombine, Banshee/Wraith/Scorpion shells). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 31 value(s) on 9 jpt!, H2 13, H3 29 (15 in [0]), ODST 29 (15 in [0]), Reach 20 (10 in [0]), H4 20 (10 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Explosives vs Vehicles and Hunter plates", "damage_row": {"damage": "explosives", "armour": "vehicles"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Blades and melee vs Shields": {
+				"desc": "Blades and melee attacks do more damage to enemy shields.",
+				"debug_desc": "Player card (x1.2 per pick). Blades and melee = cutting + melee: every melee, the Energy Sword, the Brute Shot / Missile Pod / Sentinel Beam bayonet (cutting). The H3 Gravity Hammer lunge is 'collision' (its blast is Explosives). Shields = energy_shield_thin: Elites, Brutes (H3/ODST/Reach), Sentinels, Halo 4 Knights... NOT the Jackal hand shields or turret shields (energy_shield_thick). Halo 1: the Elite Energy Shield column (Sentinels wear it too), never the Jackal shield. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Elite Energy Shield column(s) on every jpt! of the type (Blades jpt!s: every weapons melee, Energy Sword melee + lunge). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 16 value(s) on 16 jpt!, H2 2, H3 4 (2 in [0]), ODST 4 (2 in [0]), Reach 4 (2 in [0]), H4 4 (2 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Blades and melee vs Shields", "damage_row": {"damage": "blades", "armour": "shields"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Bullets vs Brute hide": {
+				"desc": "Bullets do more damage to Brute hide.",
+				"debug_desc": "Player card (x1.2 per pick). Bullets = bullet_slow (AR, Magnum/Pistol, SMG, Shotgun, Mauler, Spike Rifle, H3/ODST SAW). The Halo 2 SAW port (and Halo 1's) is bullet_vehicle -- not a Bullets card; vehicle and turret guns (bullet_vehicle, bullet_turret) are not either. Brute hide = tough_organic (Halo 2 / H3 / ODST Brutes; Tartarus multiplies it with his own specific row). The ODST player body is tough_organic as well -- kept by the player's own rows. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H2 1, H3 2 (1 in [0]), ODST 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "step": "*1.2", "field": "Bullets vs Brute hide", "damage_row": {"damage": "bullets", "armour": "brute_hide"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Anything vs Flood": {
+				"desc": "Everything does more damage to the Flood.",
+				"debug_desc": "Player card (x1.2 per pick). Every damage type at once: bullet_slow, bullet_fast(_h3), plasma_slow/fast, needle, explosion_small/large/attached, cutting, melee, burning, laser. Flood = soft_floodflesh + tough_floodflesh + hard_floodflesh (+ brittle_flood in H3, worn by nothing). Halo 1: the Flood Combat Form and Flood Carrier Form columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Flood Combat Form, Flood Carrier Form column(s) on every jpt! of the type (every classified jpt! (damage_rows.H1_JPT)). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 72 value(s) on 36 jpt!, H2 14, H3 76 (39 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3"],
+				"skip_games": ["Halo 3: ODST"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Anything vs Flood", "damage_row": {"damage": "anything", "armour": "flood"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Bullets vs Armour": {
+				"desc": "Bullets do more damage to enemy armour.",
+				"debug_desc": "Player card (x1.2 per pick). Bullets = bullet_slow (AR, Magnum/Pistol, SMG, Shotgun, Mauler, Spike Rifle, H3/ODST SAW). The Halo 2 SAW port (and Halo 1's) is bullet_vehicle -- not a Bullets card; vehicle and turret guns (bullet_vehicle, bullet_turret) are not either. Armour = hard_metal_thin: Elite bodies, Brute armour plates and Chieftains (H3/ODST), Reach/H4 AI Spartans, Halo 4 Prometheans' metal. Halo 1: the Elite column. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Elite column(s) on every jpt! of the type (Bullets jpt!s: AR, Pistol, Shotgun pellet, SMG port). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 3 value(s) on 3 jpt!, H2 1, H3 2 (1 in [0]), ODST 2 (1 in [0]), Reach 2 (1 in [0]), H4 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Bullets vs Armour", "damage_row": {"damage": "bullets", "armour": "armour"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Bullets vs Flood": {
+				"desc": "Bullets do more damage to the Flood.",
+				"debug_desc": "Player card (x1.2 per pick). Bullets = bullet_slow (AR, Magnum/Pistol, SMG, Shotgun, Mauler, Spike Rifle, H3/ODST SAW). The Halo 2 SAW port (and Halo 1's) is bullet_vehicle -- not a Bullets card; vehicle and turret guns (bullet_vehicle, bullet_turret) are not either. Flood = soft_floodflesh + tough_floodflesh + hard_floodflesh (+ brittle_flood in H3, worn by nothing). Halo 1: the Flood Combat Form and Flood Carrier Form columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Flood Combat Form, Flood Carrier Form column(s) on every jpt! of the type (Bullets jpt!s: AR, Pistol, Shotgun pellet, SMG port). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 6 value(s) on 3 jpt!, H2 1, H3 6 (3 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3"],
+				"skip_games": ["Halo 3: ODST"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Bullets vs Flood", "damage_row": {"damage": "bullets", "armour": "flood"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Precision rounds vs Flesh": {
+				"desc": "Precision rounds do more damage to unarmoured flesh.",
+				"debug_desc": "Player card (x1.2 per pick). Precision rounds = bullet_fast (+ ODST's Battle Rifle group bullet_fast_h3): Battle Rifle, Sniper Rifle (Halo 1-ODST), DMR, the H3 machine-gun turret, Halo 4's SAW. The Reach / Halo 4 Sniper Rifle and Binary Rifle are general group 'sniper' -- not included. Flesh = soft_organic + soft_inorganic (the Grunt's methane-pack armour; also Warthog/Mongoose seats); Reach adds tough_organic (Drones, Mule -- Reach Brutes are soft_organic already). Hunter flesh (soft_organic + its specific soft_organic_flesh_hunter row) scales too. Halo 1: the Grunt, Jackal, Human and Engineer columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Grunt, Jackal, Human, Engineer column(s) on every jpt! of the type (Precision jpt!s: Sniper Rifle, Battle Rifle port). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 4 value(s) on 1 jpt!, H2 2, H3 4 (2 in [0]), ODST 8 (4 in [0]), Reach 6 (3 in [0]), H4 4 (2 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Precision rounds vs Flesh", "damage_row": {"damage": "precision", "armour": "flesh"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Precision rounds vs Armour": {
+				"desc": "Precision rounds do more damage to enemy armour.",
+				"debug_desc": "Player card (x1.2 per pick). Precision rounds = bullet_fast (+ ODST's Battle Rifle group bullet_fast_h3): Battle Rifle, Sniper Rifle (Halo 1-ODST), DMR, the H3 machine-gun turret, Halo 4's SAW. The Reach / Halo 4 Sniper Rifle and Binary Rifle are general group 'sniper' -- not included. Armour = hard_metal_thin: Elite bodies, Brute armour plates and Chieftains (H3/ODST), Reach/H4 AI Spartans, Halo 4 Prometheans' metal. Halo 1: the Elite column. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Elite column(s) on every jpt! of the type (Precision jpt!s: Sniper Rifle, Battle Rifle port). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 1 value(s) on 1 jpt!, H2 1, H3 2 (1 in [0]), ODST 4 (2 in [0]), Reach 2 (1 in [0]), H4 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Precision rounds vs Armour", "damage_row": {"damage": "precision", "armour": "armour"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Precision rounds vs Hunters": {
+				"desc": "Precision rounds do more damage to Hunters' exposed flesh.",
+				"debug_desc": "Player card (x1.2 per pick). Precision rounds = bullet_fast (+ ODST's Battle Rifle group bullet_fast_h3): Battle Rifle, Sniper Rifle (Halo 1-ODST), DMR, the H3 machine-gun turret, Halo 4's SAW. The Reach / Halo 4 Sniper Rifle and Binary Rifle are general group 'sniper' -- not included. Hunters = soft_organic_flesh_hunter, the SPECIFIC armour row of the Hunter's exposed flesh (multiplied with its soft_organic row). Their plates are 'Vehicles and Hunter plates'. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H2 1, H3 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 2", "Halo 3"],
+				"skip_games": ["Halo 3: ODST"],
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "step": "*1.2", "field": "Precision rounds vs Hunters", "damage_row": {"damage": "precision", "armour": "hunters"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Plasma vs Flesh": {
+				"desc": "Plasma does more damage to unarmoured flesh.",
+				"debug_desc": "Player card (x1.2 per pick). Plasma = plasma_slow + plasma_fast: Plasma Pistol/Rifle, Needler (Halo 1-ODST), Carbine, Beam Rifle, Sentinel Beam, Focus Rifle, Plasma Repeater, Storm Rifle... The Plasma Pistol's charged shot (emp) and vehicle plasma (plasma_vehicle / plasma_turret) are not included. Flesh = soft_organic + soft_inorganic (the Grunt's methane-pack armour; also Warthog/Mongoose seats); Reach adds tough_organic (Drones, Mule -- Reach Brutes are soft_organic already). Hunter flesh (soft_organic + its specific soft_organic_flesh_hunter row) scales too. Halo 1: the Grunt, Jackal, Human and Engineer columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Grunt, Jackal, Human, Engineer column(s) on every jpt! of the type (Plasma jpt!s: Plasma Pistol/Rifle bolts, Needler impact + detonation, Sentinel beams, Carbine port slug). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 20 value(s) on 5 jpt!, H2 4, H3 8 (4 in [0]), ODST 8 (4 in [0]), Reach 12 (6 in [0]), H4 8 (4 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Plasma vs Flesh", "damage_row": {"damage": "plasma", "armour": "flesh"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Plasma vs Brute hide": {
+				"desc": "Plasma does more damage to Brute hide.",
+				"debug_desc": "Player card (x1.2 per pick). Plasma = plasma_slow + plasma_fast: Plasma Pistol/Rifle, Needler (Halo 1-ODST), Carbine, Beam Rifle, Sentinel Beam, Focus Rifle, Plasma Repeater, Storm Rifle... The Plasma Pistol's charged shot (emp) and vehicle plasma (plasma_vehicle / plasma_turret) are not included. Brute hide = tough_organic (Halo 2 / H3 / ODST Brutes; Tartarus multiplies it with his own specific row). The ODST player body is tough_organic as well -- kept by the player's own rows. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H2 2, H3 4 (2 in [0]), ODST 4 (2 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "step": "*1.2", "field": "Plasma vs Brute hide", "damage_row": {"damage": "plasma", "armour": "brute_hide"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Plasma vs Vehicles and Hunter plates": {
+				"desc": "Plasma does more damage to vehicles and Hunter plates.",
+				"debug_desc": "Player card (x1.2 per pick). Plasma = plasma_slow + plasma_fast: Plasma Pistol/Rifle, Needler (Halo 1-ODST), Carbine, Beam Rifle, Sentinel Beam, Focus Rifle, Plasma Repeater, Storm Rifle... The Plasma Pistol's charged shot (emp) and vehicle plasma (plasma_vehicle / plasma_turret) are not included. Vehicles and Hunter plates = hard_metal_thick + hard_metal_solid (Hunter plates are hard_metal_solid from Halo 2 on, shared with Scorpion, Wraith, Pelican, Phantom) + brittle_mech / brittle_elec / brittle_glass (engines, anti-grav pods, windscreens; brittle/brittle_explosive props are left out) + ODST's 'hunter' specific row. Halo 1: the Metal (Hollow/Thin/Thick), Hunter Armor and Hunter Shield columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Metal (Hollow), Metal (Thin), Metal (Thick), Hunter Armor, Hunter Shield column(s) on every jpt! of the type (Plasma jpt!s: Plasma Pistol/Rifle bolts, Needler impact + detonation, Sentinel beams, Carbine port slug). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 20 value(s) on 5 jpt!, H2 8, H3 14 (8 in [0]), ODST 14 (8 in [0]), Reach 17 (10 in [0]), H4 17 (10 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Plasma vs Vehicles and Hunter plates", "damage_row": {"damage": "plasma", "armour": "vehicles"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Needles vs Shields": {
+				"desc": "Needles do more damage to enemy shields.",
+				"debug_desc": "Player card (x1.2 per pick). Needles = needle: Needler and Needle Rifle (Reach), Needler and Railgun (Halo 4). Shields = energy_shield_thin: Elites, Brutes (H3/ODST/Reach), Sentinels, Halo 4 Knights... NOT the Jackal hand shields or turret shields (energy_shield_thick). Halo 1: the Elite Energy Shield column (Sentinels wear it too), never the Jackal shield. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): Reach 2 (1 in [0]), H4 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "step": "*1.2", "field": "Needles vs Shields", "damage_row": {"damage": "needles", "armour": "shields"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Needles vs Armour": {
+				"desc": "Needles do more damage to enemy armour.",
+				"debug_desc": "Player card (x1.2 per pick). Needles = needle: Needler and Needle Rifle (Reach), Needler and Railgun (Halo 4). Armour = hard_metal_thin: Elite bodies, Brute armour plates and Chieftains (H3/ODST), Reach/H4 AI Spartans, Halo 4 Prometheans' metal. Halo 1: the Elite column. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): Reach 2 (1 in [0]), H4 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "step": "*1.2", "field": "Needles vs Armour", "damage_row": {"damage": "needles", "armour": "armour"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Explosives vs Flesh": {
+				"desc": "Explosives do more damage to unarmoured flesh.",
+				"debug_desc": "Player card (x1.2 per pick). Explosives = explosion_small + explosion_large + explosion_attached (no attached group in Reach/H4): grenades, rockets, Fuel Rod, Brute Shot, needle supercombine, the Gravity Hammer blast. From Reach on a direct hit of an explosive projectile is 'collision' (not included), the blast is. The Halo 2 Fuel Rod splash names the typo group explosion_largw (no row) unless Options -> Bugfixes fixes it. Flesh = soft_organic + soft_inorganic (the Grunt's methane-pack armour; also Warthog/Mongoose seats); Reach adds tough_organic (Drones, Mule -- Reach Brutes are soft_organic already). Hunter flesh (soft_organic + its specific soft_organic_flesh_hunter row) scales too. Halo 1: the Grunt, Jackal, Human and Engineer columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Grunt, Jackal, Human, Engineer column(s) on every jpt! of the type (Explosives jpt!s: grenades, rocket, fuel rod, needle supercombine, Banshee/Wraith/Scorpion shells). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 36 value(s) on 9 jpt!, H2 6, H3 12 (6 in [0]), ODST 12 (6 in [0]), Reach 12 (6 in [0]), H4 8 (4 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Explosives vs Flesh", "damage_row": {"damage": "explosives", "armour": "flesh"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Explosives vs Flood": {
+				"desc": "Explosives do more damage to the Flood.",
+				"debug_desc": "Player card (x1.2 per pick). Explosives = explosion_small + explosion_large + explosion_attached (no attached group in Reach/H4): grenades, rockets, Fuel Rod, Brute Shot, needle supercombine, the Gravity Hammer blast. From Reach on a direct hit of an explosive projectile is 'collision' (not included), the blast is. The Halo 2 Fuel Rod splash names the typo group explosion_largw (no row) unless Options -> Bugfixes fixes it. Flood = soft_floodflesh + tough_floodflesh + hard_floodflesh (+ brittle_flood in H3, worn by nothing). Halo 1: the Flood Combat Form and Flood Carrier Form columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Flood Combat Form, Flood Carrier Form column(s) on every jpt! of the type (Explosives jpt!s: grenades, rocket, fuel rod, needle supercombine, Banshee/Wraith/Scorpion shells). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 18 value(s) on 9 jpt!, H2 5, H3 22 (12 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3"],
+				"skip_games": ["Halo 3: ODST"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Explosives vs Flood", "damage_row": {"damage": "explosives", "armour": "flood"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Blades and melee vs Flesh": {
+				"desc": "Blades and melee attacks do more damage to unarmoured flesh.",
+				"debug_desc": "Player card (x1.2 per pick). Blades and melee = cutting + melee: every melee, the Energy Sword, the Brute Shot / Missile Pod / Sentinel Beam bayonet (cutting). The H3 Gravity Hammer lunge is 'collision' (its blast is Explosives). Flesh = soft_organic + soft_inorganic (the Grunt's methane-pack armour; also Warthog/Mongoose seats); Reach adds tough_organic (Drones, Mule -- Reach Brutes are soft_organic already). Hunter flesh (soft_organic + its specific soft_organic_flesh_hunter row) scales too. Halo 1: the Grunt, Jackal, Human and Engineer columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Grunt, Jackal, Human, Engineer column(s) on every jpt! of the type (Blades jpt!s: every weapons melee, Energy Sword melee + lunge). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 64 value(s) on 16 jpt!, H2 4, H3 8 (4 in [0]), ODST 8 (4 in [0]), Reach 12 (6 in [0]), H4 8 (4 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Blades and melee vs Flesh", "damage_row": {"damage": "blades", "armour": "flesh"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Blades and melee vs Flood": {
+				"desc": "Blades and melee attacks do more damage to the Flood.",
+				"debug_desc": "Player card (x1.2 per pick). Blades and melee = cutting + melee: every melee, the Energy Sword, the Brute Shot / Missile Pod / Sentinel Beam bayonet (cutting). The H3 Gravity Hammer lunge is 'collision' (its blast is Explosives). Flood = soft_floodflesh + tough_floodflesh + hard_floodflesh (+ brittle_flood in H3, worn by nothing). Halo 1: the Flood Combat Form and Flood Carrier Form columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Flood Combat Form, Flood Carrier Form column(s) on every jpt! of the type (Blades jpt!s: every weapons melee, Energy Sword melee + lunge). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 32 value(s) on 16 jpt!, H2 3, H3 14 (7 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 2", "Halo 3"],
+				"skip_games": ["Halo 3: ODST"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Blades and melee vs Flood", "damage_row": {"damage": "blades", "armour": "flood"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Fire vs Flesh": {
+				"desc": "Fire does more damage to unarmoured flesh.",
+				"debug_desc": "Player card (x1.2 per pick). Fire = burning: Flamethrower and Firebomb grenade (Halo 1 flamethrower). Flesh = soft_organic + soft_inorganic (the Grunt's methane-pack armour; also Warthog/Mongoose seats); Reach adds tough_organic (Drones, Mule -- Reach Brutes are soft_organic already). Hunter flesh (soft_organic + its specific soft_organic_flesh_hunter row) scales too. Halo 1: the Grunt, Jackal, Human and Engineer columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Grunt, Jackal, Human, Engineer column(s) on every jpt! of the type (Fire jpt!s: flamethrower impact + explosion). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 8 value(s) on 2 jpt!, H3 4 (2 in [0]), ODST 4 (2 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 3", "Halo 3: ODST"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Fire vs Flesh", "damage_row": {"damage": "fire", "armour": "flesh"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Fire vs Flood": {
+				"desc": "Fire does more damage to the Flood.",
+				"debug_desc": "Player card (x1.2 per pick). Fire = burning: Flamethrower and Firebomb grenade (Halo 1 flamethrower). Flood = soft_floodflesh + tough_floodflesh + hard_floodflesh (+ brittle_flood in H3, worn by nothing). Halo 1: the Flood Combat Form and Flood Carrier Form columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Flood Combat Form, Flood Carrier Form column(s) on every jpt! of the type (Fire jpt!s: flamethrower impact + explosion). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 4 value(s) on 2 jpt!, H3 8 (4 in [0]), ODST 8 (4 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 1", "Halo 3", "Halo 3: ODST"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*1.2", "field": "Fire vs Flood", "damage_row": {"damage": "fire", "armour": "flood"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Lasers vs Vehicles and Hunter plates": {
+				"desc": "Lasers do more damage to vehicles and Hunter plates.",
+				"debug_desc": "Player card (x1.2 per pick). Lasers = laser: the Spartan Laser (Halo 4 also the Sentinel Beam). Vehicles and Hunter plates = hard_metal_thick + hard_metal_solid (Hunter plates are hard_metal_solid from Halo 2 on, shared with Scorpion, Wraith, Pelican, Phantom) + brittle_mech / brittle_elec / brittle_glass (engines, anti-grav pods, windscreens; brittle/brittle_explosive props are left out) + ODST's 'hunter' specific row. Halo 1: the Metal (Hollow/Thin/Thick), Hunter Armor and Hunter Shield columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H3 10 (5 in [0]), Reach 10 (5 in [0]), H4 10 (5 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 3", "Halo Reach", "Halo 4"],
+				"skip_games": ["Halo 3: ODST"],
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "step": "*1.2", "field": "Lasers vs Vehicles and Hunter plates", "damage_row": {"damage": "lasers", "armour": "vehicles"}, "easier_when": "increased" }
+				]
+			},
+			"Effective: Lasers vs Shields": {
+				"desc": "Lasers do more damage to enemy shields.",
+				"debug_desc": "Player card (x1.2 per pick). Lasers = laser: the Spartan Laser (Halo 4 also the Sentinel Beam). Shields = energy_shield_thin: Elites, Brutes (H3/ODST/Reach), Sentinels, Halo 4 Knights... NOT the Jackal hand shields or turret shields (energy_shield_thick). Halo 1: the Elite Energy Shield column (Sentinels wear it too), never the Jackal shield. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H3 2 (1 in [0]), Reach 2 (1 in [0]), H4 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"easier_when": "increased",
+				"game": ["Halo 3", "Halo Reach", "Halo 4"],
+				"skip_games": ["Halo 3: ODST"],
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "step": "*1.2", "field": "Lasers vs Shields", "damage_row": {"damage": "lasers", "armour": "shields"}, "easier_when": "increased" }
+				]
 			}
 		},
 		"Specific Weapon Modifier": {
@@ -15916,6 +16203,321 @@
 				"tag": {"Halo 1": "actv characters\\*"},
 				"targets": [
 					{ "step": "+0.1", "field": "Incursion", "species_swap": "flood combat", "min": 0, "harder_when": "increased" }
+				]
+			},
+			"Hardened: Shields vs Bullets": {
+				"color": "defensive",
+				"desc": "Enemy shields take less damage from bullets.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Bullets = bullet_slow (AR, Magnum/Pistol, SMG, Shotgun, Mauler, Spike Rifle, H3/ODST SAW). The Halo 2 SAW port (and Halo 1's) is bullet_vehicle -- not a Bullets card; vehicle and turret guns (bullet_vehicle, bullet_turret) are not either. Shields = energy_shield_thin: Elites, Brutes (H3/ODST/Reach), Sentinels, Halo 4 Knights... NOT the Jackal hand shields or turret shields (energy_shield_thick). Halo 1: the Elite Energy Shield column (Sentinels wear it too), never the Jackal shield. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Elite Energy Shield column(s) on every jpt! of the type (Bullets jpt!s: AR, Pistol, Shotgun pellet, SMG port). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 3 value(s) on 3 jpt!, H2 1, H3 2 (1 in [0]), ODST 2 (1 in [0]), Reach 2 (1 in [0]), H4 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Shields vs Bullets", "damage_row": {"damage": "bullets", "armour": "shields"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Flesh vs Bullets": {
+				"color": "defensive",
+				"desc": "Unarmoured flesh takes less damage from bullets.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Bullets = bullet_slow (AR, Magnum/Pistol, SMG, Shotgun, Mauler, Spike Rifle, H3/ODST SAW). The Halo 2 SAW port (and Halo 1's) is bullet_vehicle -- not a Bullets card; vehicle and turret guns (bullet_vehicle, bullet_turret) are not either. Flesh = soft_organic + soft_inorganic (the Grunt's methane-pack armour; also Warthog/Mongoose seats); Reach adds tough_organic (Drones, Mule -- Reach Brutes are soft_organic already). Hunter flesh (soft_organic + its specific soft_organic_flesh_hunter row) scales too. Halo 1: the Grunt, Jackal, Human and Engineer columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Grunt, Jackal, Human, Engineer column(s) on every jpt! of the type (Bullets jpt!s: AR, Pistol, Shotgun pellet, SMG port). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 12 value(s) on 3 jpt!, H2 2, H3 4 (2 in [0]), ODST 4 (2 in [0]), Reach 6 (3 in [0]), H4 4 (2 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Flesh vs Bullets", "damage_row": {"damage": "bullets", "armour": "flesh"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Shields vs Precision rounds": {
+				"color": "defensive",
+				"desc": "Enemy shields take less damage from precision rounds.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Precision rounds = bullet_fast (+ ODST's Battle Rifle group bullet_fast_h3): Battle Rifle, Sniper Rifle (Halo 1-ODST), DMR, the H3 machine-gun turret, Halo 4's SAW. The Reach / Halo 4 Sniper Rifle and Binary Rifle are general group 'sniper' -- not included. Shields = energy_shield_thin: Elites, Brutes (H3/ODST/Reach), Sentinels, Halo 4 Knights... NOT the Jackal hand shields or turret shields (energy_shield_thick). Halo 1: the Elite Energy Shield column (Sentinels wear it too), never the Jackal shield. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Elite Energy Shield column(s) on every jpt! of the type (Precision jpt!s: Sniper Rifle, Battle Rifle port). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 1 value(s) on 1 jpt!, H2 1, H3 2 (1 in [0]), ODST 4 (2 in [0]), Reach 2 (1 in [0]), H4 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Shields vs Precision rounds", "damage_row": {"damage": "precision", "armour": "shields"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Shields vs Plasma": {
+				"color": "defensive",
+				"desc": "Enemy shields take less damage from plasma.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Plasma = plasma_slow + plasma_fast: Plasma Pistol/Rifle, Needler (Halo 1-ODST), Carbine, Beam Rifle, Sentinel Beam, Focus Rifle, Plasma Repeater, Storm Rifle... The Plasma Pistol's charged shot (emp) and vehicle plasma (plasma_vehicle / plasma_turret) are not included. Shields = energy_shield_thin: Elites, Brutes (H3/ODST/Reach), Sentinels, Halo 4 Knights... NOT the Jackal hand shields or turret shields (energy_shield_thick). Halo 1: the Elite Energy Shield column (Sentinels wear it too), never the Jackal shield. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Elite Energy Shield column(s) on every jpt! of the type (Plasma jpt!s: Plasma Pistol/Rifle bolts, Needler impact + detonation, Sentinel beams, Carbine port slug). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 5 value(s) on 5 jpt!, H2 2, H3 4 (2 in [0]), ODST 4 (2 in [0]), Reach 4 (2 in [0]), H4 4 (2 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Shields vs Plasma", "damage_row": {"damage": "plasma", "armour": "shields"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Armour vs Plasma": {
+				"color": "defensive",
+				"desc": "Enemy armour takes less damage from plasma.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Plasma = plasma_slow + plasma_fast: Plasma Pistol/Rifle, Needler (Halo 1-ODST), Carbine, Beam Rifle, Sentinel Beam, Focus Rifle, Plasma Repeater, Storm Rifle... The Plasma Pistol's charged shot (emp) and vehicle plasma (plasma_vehicle / plasma_turret) are not included. Armour = hard_metal_thin: Elite bodies, Brute armour plates and Chieftains (H3/ODST), Reach/H4 AI Spartans, Halo 4 Prometheans' metal. Halo 1: the Elite column. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Elite column(s) on every jpt! of the type (Plasma jpt!s: Plasma Pistol/Rifle bolts, Needler impact + detonation, Sentinel beams, Carbine port slug). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 5 value(s) on 5 jpt!, H2 2, H3 4 (2 in [0]), ODST 4 (2 in [0]), Reach 4 (2 in [0]), H4 4 (2 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Armour vs Plasma", "damage_row": {"damage": "plasma", "armour": "armour"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Shields vs Explosives": {
+				"color": "defensive",
+				"desc": "Enemy shields take less damage from explosives.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Explosives = explosion_small + explosion_large + explosion_attached (no attached group in Reach/H4): grenades, rockets, Fuel Rod, Brute Shot, needle supercombine, the Gravity Hammer blast. From Reach on a direct hit of an explosive projectile is 'collision' (not included), the blast is. The Halo 2 Fuel Rod splash names the typo group explosion_largw (no row) unless Options -> Bugfixes fixes it. Shields = energy_shield_thin: Elites, Brutes (H3/ODST/Reach), Sentinels, Halo 4 Knights... NOT the Jackal hand shields or turret shields (energy_shield_thick). Halo 1: the Elite Energy Shield column (Sentinels wear it too), never the Jackal shield. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Elite Energy Shield column(s) on every jpt! of the type (Explosives jpt!s: grenades, rocket, fuel rod, needle supercombine, Banshee/Wraith/Scorpion shells). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 9 value(s) on 9 jpt!, H2 3, H3 6 (3 in [0]), ODST 6 (3 in [0]), Reach 4 (2 in [0]), H4 4 (2 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Shields vs Explosives", "damage_row": {"damage": "explosives", "armour": "shields"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Vehicles and Hunter plates vs Explosives": {
+				"color": "defensive",
+				"desc": "Vehicles and Hunter plates take less damage from explosives.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Explosives = explosion_small + explosion_large + explosion_attached (no attached group in Reach/H4): grenades, rockets, Fuel Rod, Brute Shot, needle supercombine, the Gravity Hammer blast. From Reach on a direct hit of an explosive projectile is 'collision' (not included), the blast is. The Halo 2 Fuel Rod splash names the typo group explosion_largw (no row) unless Options -> Bugfixes fixes it. Vehicles and Hunter plates = hard_metal_thick + hard_metal_solid (Hunter plates are hard_metal_solid from Halo 2 on, shared with Scorpion, Wraith, Pelican, Phantom) + brittle_mech / brittle_elec / brittle_glass (engines, anti-grav pods, windscreens; brittle/brittle_explosive props are left out) + ODST's 'hunter' specific row. Halo 1: the Metal (Hollow/Thin/Thick), Hunter Armor and Hunter Shield columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Metal (Hollow), Metal (Thin), Metal (Thick), Hunter Armor, Hunter Shield column(s) on every jpt! of the type (Explosives jpt!s: grenades, rocket, fuel rod, needle supercombine, Banshee/Wraith/Scorpion shells). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 31 value(s) on 9 jpt!, H2 13, H3 29 (15 in [0]), ODST 29 (15 in [0]), Reach 20 (10 in [0]), H4 20 (10 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Vehicles and Hunter plates vs Explosives", "damage_row": {"damage": "explosives", "armour": "vehicles"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Shields vs Blades and melee": {
+				"color": "defensive",
+				"desc": "Enemy shields take less damage from blades and melee attacks.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Blades and melee = cutting + melee: every melee, the Energy Sword, the Brute Shot / Missile Pod / Sentinel Beam bayonet (cutting). The H3 Gravity Hammer lunge is 'collision' (its blast is Explosives). Shields = energy_shield_thin: Elites, Brutes (H3/ODST/Reach), Sentinels, Halo 4 Knights... NOT the Jackal hand shields or turret shields (energy_shield_thick). Halo 1: the Elite Energy Shield column (Sentinels wear it too), never the Jackal shield. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Elite Energy Shield column(s) on every jpt! of the type (Blades jpt!s: every weapons melee, Energy Sword melee + lunge). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 16 value(s) on 16 jpt!, H2 2, H3 4 (2 in [0]), ODST 4 (2 in [0]), Reach 4 (2 in [0]), H4 4 (2 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Shields vs Blades and melee", "damage_row": {"damage": "blades", "armour": "shields"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Brute hide vs Bullets": {
+				"color": "defensive",
+				"desc": "Brute hide takes less damage from bullets.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Bullets = bullet_slow (AR, Magnum/Pistol, SMG, Shotgun, Mauler, Spike Rifle, H3/ODST SAW). The Halo 2 SAW port (and Halo 1's) is bullet_vehicle -- not a Bullets card; vehicle and turret guns (bullet_vehicle, bullet_turret) are not either. Brute hide = tough_organic (Halo 2 / H3 / ODST Brutes; Tartarus multiplies it with his own specific row). The ODST player body is tough_organic as well -- kept by the player's own rows. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H2 1, H3 2 (1 in [0]), ODST 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "step": "*0.8", "field": "Brute hide vs Bullets", "damage_row": {"damage": "bullets", "armour": "brute_hide"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Flood vs Anything": {
+				"color": "defensive",
+				"desc": "The Flood takes less damage from everything.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Every damage type at once: bullet_slow, bullet_fast(_h3), plasma_slow/fast, needle, explosion_small/large/attached, cutting, melee, burning, laser. Flood = soft_floodflesh + tough_floodflesh + hard_floodflesh (+ brittle_flood in H3, worn by nothing). Halo 1: the Flood Combat Form and Flood Carrier Form columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Flood Combat Form, Flood Carrier Form column(s) on every jpt! of the type (every classified jpt! (damage_rows.H1_JPT)). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 72 value(s) on 36 jpt!, H2 14, H3 76 (39 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3"],
+				"skip_games": ["Halo 3: ODST"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Flood vs Anything", "damage_row": {"damage": "anything", "armour": "flood"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Armour vs Bullets": {
+				"color": "defensive",
+				"desc": "Enemy armour takes less damage from bullets.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Bullets = bullet_slow (AR, Magnum/Pistol, SMG, Shotgun, Mauler, Spike Rifle, H3/ODST SAW). The Halo 2 SAW port (and Halo 1's) is bullet_vehicle -- not a Bullets card; vehicle and turret guns (bullet_vehicle, bullet_turret) are not either. Armour = hard_metal_thin: Elite bodies, Brute armour plates and Chieftains (H3/ODST), Reach/H4 AI Spartans, Halo 4 Prometheans' metal. Halo 1: the Elite column. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Elite column(s) on every jpt! of the type (Bullets jpt!s: AR, Pistol, Shotgun pellet, SMG port). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 3 value(s) on 3 jpt!, H2 1, H3 2 (1 in [0]), ODST 2 (1 in [0]), Reach 2 (1 in [0]), H4 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Armour vs Bullets", "damage_row": {"damage": "bullets", "armour": "armour"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Flood vs Bullets": {
+				"color": "defensive",
+				"desc": "The Flood takes less damage from bullets.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Bullets = bullet_slow (AR, Magnum/Pistol, SMG, Shotgun, Mauler, Spike Rifle, H3/ODST SAW). The Halo 2 SAW port (and Halo 1's) is bullet_vehicle -- not a Bullets card; vehicle and turret guns (bullet_vehicle, bullet_turret) are not either. Flood = soft_floodflesh + tough_floodflesh + hard_floodflesh (+ brittle_flood in H3, worn by nothing). Halo 1: the Flood Combat Form and Flood Carrier Form columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Flood Combat Form, Flood Carrier Form column(s) on every jpt! of the type (Bullets jpt!s: AR, Pistol, Shotgun pellet, SMG port). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 6 value(s) on 3 jpt!, H2 1, H3 6 (3 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3"],
+				"skip_games": ["Halo 3: ODST"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Flood vs Bullets", "damage_row": {"damage": "bullets", "armour": "flood"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Flesh vs Precision rounds": {
+				"color": "defensive",
+				"desc": "Unarmoured flesh takes less damage from precision rounds.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Precision rounds = bullet_fast (+ ODST's Battle Rifle group bullet_fast_h3): Battle Rifle, Sniper Rifle (Halo 1-ODST), DMR, the H3 machine-gun turret, Halo 4's SAW. The Reach / Halo 4 Sniper Rifle and Binary Rifle are general group 'sniper' -- not included. Flesh = soft_organic + soft_inorganic (the Grunt's methane-pack armour; also Warthog/Mongoose seats); Reach adds tough_organic (Drones, Mule -- Reach Brutes are soft_organic already). Hunter flesh (soft_organic + its specific soft_organic_flesh_hunter row) scales too. Halo 1: the Grunt, Jackal, Human and Engineer columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Grunt, Jackal, Human, Engineer column(s) on every jpt! of the type (Precision jpt!s: Sniper Rifle, Battle Rifle port). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 4 value(s) on 1 jpt!, H2 2, H3 4 (2 in [0]), ODST 8 (4 in [0]), Reach 6 (3 in [0]), H4 4 (2 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Flesh vs Precision rounds", "damage_row": {"damage": "precision", "armour": "flesh"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Armour vs Precision rounds": {
+				"color": "defensive",
+				"desc": "Enemy armour takes less damage from precision rounds.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Precision rounds = bullet_fast (+ ODST's Battle Rifle group bullet_fast_h3): Battle Rifle, Sniper Rifle (Halo 1-ODST), DMR, the H3 machine-gun turret, Halo 4's SAW. The Reach / Halo 4 Sniper Rifle and Binary Rifle are general group 'sniper' -- not included. Armour = hard_metal_thin: Elite bodies, Brute armour plates and Chieftains (H3/ODST), Reach/H4 AI Spartans, Halo 4 Prometheans' metal. Halo 1: the Elite column. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Elite column(s) on every jpt! of the type (Precision jpt!s: Sniper Rifle, Battle Rifle port). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 1 value(s) on 1 jpt!, H2 1, H3 2 (1 in [0]), ODST 4 (2 in [0]), Reach 2 (1 in [0]), H4 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Armour vs Precision rounds", "damage_row": {"damage": "precision", "armour": "armour"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Hunters vs Precision rounds": {
+				"color": "defensive",
+				"desc": "Hunters' exposed flesh takes less damage from precision rounds.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Precision rounds = bullet_fast (+ ODST's Battle Rifle group bullet_fast_h3): Battle Rifle, Sniper Rifle (Halo 1-ODST), DMR, the H3 machine-gun turret, Halo 4's SAW. The Reach / Halo 4 Sniper Rifle and Binary Rifle are general group 'sniper' -- not included. Hunters = soft_organic_flesh_hunter, the SPECIFIC armour row of the Hunter's exposed flesh (multiplied with its soft_organic row). Their plates are 'Vehicles and Hunter plates'. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H2 1, H3 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 2", "Halo 3"],
+				"skip_games": ["Halo 3: ODST"],
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "step": "*0.8", "field": "Hunters vs Precision rounds", "damage_row": {"damage": "precision", "armour": "hunters"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Flesh vs Plasma": {
+				"color": "defensive",
+				"desc": "Unarmoured flesh takes less damage from plasma.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Plasma = plasma_slow + plasma_fast: Plasma Pistol/Rifle, Needler (Halo 1-ODST), Carbine, Beam Rifle, Sentinel Beam, Focus Rifle, Plasma Repeater, Storm Rifle... The Plasma Pistol's charged shot (emp) and vehicle plasma (plasma_vehicle / plasma_turret) are not included. Flesh = soft_organic + soft_inorganic (the Grunt's methane-pack armour; also Warthog/Mongoose seats); Reach adds tough_organic (Drones, Mule -- Reach Brutes are soft_organic already). Hunter flesh (soft_organic + its specific soft_organic_flesh_hunter row) scales too. Halo 1: the Grunt, Jackal, Human and Engineer columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Grunt, Jackal, Human, Engineer column(s) on every jpt! of the type (Plasma jpt!s: Plasma Pistol/Rifle bolts, Needler impact + detonation, Sentinel beams, Carbine port slug). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 20 value(s) on 5 jpt!, H2 4, H3 8 (4 in [0]), ODST 8 (4 in [0]), Reach 12 (6 in [0]), H4 8 (4 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Flesh vs Plasma", "damage_row": {"damage": "plasma", "armour": "flesh"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Brute hide vs Plasma": {
+				"color": "defensive",
+				"desc": "Brute hide takes less damage from plasma.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Plasma = plasma_slow + plasma_fast: Plasma Pistol/Rifle, Needler (Halo 1-ODST), Carbine, Beam Rifle, Sentinel Beam, Focus Rifle, Plasma Repeater, Storm Rifle... The Plasma Pistol's charged shot (emp) and vehicle plasma (plasma_vehicle / plasma_turret) are not included. Brute hide = tough_organic (Halo 2 / H3 / ODST Brutes; Tartarus multiplies it with his own specific row). The ODST player body is tough_organic as well -- kept by the player's own rows. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H2 2, H3 4 (2 in [0]), ODST 4 (2 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "step": "*0.8", "field": "Brute hide vs Plasma", "damage_row": {"damage": "plasma", "armour": "brute_hide"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Vehicles and Hunter plates vs Plasma": {
+				"color": "defensive",
+				"desc": "Vehicles and Hunter plates take less damage from plasma.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Plasma = plasma_slow + plasma_fast: Plasma Pistol/Rifle, Needler (Halo 1-ODST), Carbine, Beam Rifle, Sentinel Beam, Focus Rifle, Plasma Repeater, Storm Rifle... The Plasma Pistol's charged shot (emp) and vehicle plasma (plasma_vehicle / plasma_turret) are not included. Vehicles and Hunter plates = hard_metal_thick + hard_metal_solid (Hunter plates are hard_metal_solid from Halo 2 on, shared with Scorpion, Wraith, Pelican, Phantom) + brittle_mech / brittle_elec / brittle_glass (engines, anti-grav pods, windscreens; brittle/brittle_explosive props are left out) + ODST's 'hunter' specific row. Halo 1: the Metal (Hollow/Thin/Thick), Hunter Armor and Hunter Shield columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Metal (Hollow), Metal (Thin), Metal (Thick), Hunter Armor, Hunter Shield column(s) on every jpt! of the type (Plasma jpt!s: Plasma Pistol/Rifle bolts, Needler impact + detonation, Sentinel beams, Carbine port slug). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 20 value(s) on 5 jpt!, H2 8, H3 14 (8 in [0]), ODST 14 (8 in [0]), Reach 17 (10 in [0]), H4 17 (10 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Vehicles and Hunter plates vs Plasma", "damage_row": {"damage": "plasma", "armour": "vehicles"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Shields vs Needles": {
+				"color": "defensive",
+				"desc": "Enemy shields take less damage from needles.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Needles = needle: Needler and Needle Rifle (Reach), Needler and Railgun (Halo 4). Shields = energy_shield_thin: Elites, Brutes (H3/ODST/Reach), Sentinels, Halo 4 Knights... NOT the Jackal hand shields or turret shields (energy_shield_thick). Halo 1: the Elite Energy Shield column (Sentinels wear it too), never the Jackal shield. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): Reach 2 (1 in [0]), H4 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "step": "*0.8", "field": "Shields vs Needles", "damage_row": {"damage": "needles", "armour": "shields"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Armour vs Needles": {
+				"color": "defensive",
+				"desc": "Enemy armour takes less damage from needles.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Needles = needle: Needler and Needle Rifle (Reach), Needler and Railgun (Halo 4). Armour = hard_metal_thin: Elite bodies, Brute armour plates and Chieftains (H3/ODST), Reach/H4 AI Spartans, Halo 4 Prometheans' metal. Halo 1: the Elite column. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): Reach 2 (1 in [0]), H4 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "step": "*0.8", "field": "Armour vs Needles", "damage_row": {"damage": "needles", "armour": "armour"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Flesh vs Explosives": {
+				"color": "defensive",
+				"desc": "Unarmoured flesh takes less damage from explosives.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Explosives = explosion_small + explosion_large + explosion_attached (no attached group in Reach/H4): grenades, rockets, Fuel Rod, Brute Shot, needle supercombine, the Gravity Hammer blast. From Reach on a direct hit of an explosive projectile is 'collision' (not included), the blast is. The Halo 2 Fuel Rod splash names the typo group explosion_largw (no row) unless Options -> Bugfixes fixes it. Flesh = soft_organic + soft_inorganic (the Grunt's methane-pack armour; also Warthog/Mongoose seats); Reach adds tough_organic (Drones, Mule -- Reach Brutes are soft_organic already). Hunter flesh (soft_organic + its specific soft_organic_flesh_hunter row) scales too. Halo 1: the Grunt, Jackal, Human and Engineer columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Grunt, Jackal, Human, Engineer column(s) on every jpt! of the type (Explosives jpt!s: grenades, rocket, fuel rod, needle supercombine, Banshee/Wraith/Scorpion shells). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 36 value(s) on 9 jpt!, H2 6, H3 12 (6 in [0]), ODST 12 (6 in [0]), Reach 12 (6 in [0]), H4 8 (4 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Flesh vs Explosives", "damage_row": {"damage": "explosives", "armour": "flesh"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Flood vs Explosives": {
+				"color": "defensive",
+				"desc": "The Flood takes less damage from explosives.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Explosives = explosion_small + explosion_large + explosion_attached (no attached group in Reach/H4): grenades, rockets, Fuel Rod, Brute Shot, needle supercombine, the Gravity Hammer blast. From Reach on a direct hit of an explosive projectile is 'collision' (not included), the blast is. The Halo 2 Fuel Rod splash names the typo group explosion_largw (no row) unless Options -> Bugfixes fixes it. Flood = soft_floodflesh + tough_floodflesh + hard_floodflesh (+ brittle_flood in H3, worn by nothing). Halo 1: the Flood Combat Form and Flood Carrier Form columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Flood Combat Form, Flood Carrier Form column(s) on every jpt! of the type (Explosives jpt!s: grenades, rocket, fuel rod, needle supercombine, Banshee/Wraith/Scorpion shells). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 18 value(s) on 9 jpt!, H2 5, H3 22 (12 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3"],
+				"skip_games": ["Halo 3: ODST"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Flood vs Explosives", "damage_row": {"damage": "explosives", "armour": "flood"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Flesh vs Blades and melee": {
+				"color": "defensive",
+				"desc": "Unarmoured flesh takes less damage from blades and melee attacks.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Blades and melee = cutting + melee: every melee, the Energy Sword, the Brute Shot / Missile Pod / Sentinel Beam bayonet (cutting). The H3 Gravity Hammer lunge is 'collision' (its blast is Explosives). Flesh = soft_organic + soft_inorganic (the Grunt's methane-pack armour; also Warthog/Mongoose seats); Reach adds tough_organic (Drones, Mule -- Reach Brutes are soft_organic already). Hunter flesh (soft_organic + its specific soft_organic_flesh_hunter row) scales too. Halo 1: the Grunt, Jackal, Human and Engineer columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Grunt, Jackal, Human, Engineer column(s) on every jpt! of the type (Blades jpt!s: every weapons melee, Energy Sword melee + lunge). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 64 value(s) on 16 jpt!, H2 4, H3 8 (4 in [0]), ODST 8 (4 in [0]), Reach 12 (6 in [0]), H4 8 (4 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Flesh vs Blades and melee", "damage_row": {"damage": "blades", "armour": "flesh"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Flood vs Blades and melee": {
+				"color": "defensive",
+				"desc": "The Flood takes less damage from blades and melee attacks.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Blades and melee = cutting + melee: every melee, the Energy Sword, the Brute Shot / Missile Pod / Sentinel Beam bayonet (cutting). The H3 Gravity Hammer lunge is 'collision' (its blast is Explosives). Flood = soft_floodflesh + tough_floodflesh + hard_floodflesh (+ brittle_flood in H3, worn by nothing). Halo 1: the Flood Combat Form and Flood Carrier Form columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Flood Combat Form, Flood Carrier Form column(s) on every jpt! of the type (Blades jpt!s: every weapons melee, Energy Sword melee + lunge). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 32 value(s) on 16 jpt!, H2 3, H3 14 (7 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 2", "Halo 3"],
+				"skip_games": ["Halo 3: ODST"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Flood vs Blades and melee", "damage_row": {"damage": "blades", "armour": "flood"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Flesh vs Fire": {
+				"color": "defensive",
+				"desc": "Unarmoured flesh takes less damage from fire.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Fire = burning: Flamethrower and Firebomb grenade (Halo 1 flamethrower). Flesh = soft_organic + soft_inorganic (the Grunt's methane-pack armour; also Warthog/Mongoose seats); Reach adds tough_organic (Drones, Mule -- Reach Brutes are soft_organic already). Hunter flesh (soft_organic + its specific soft_organic_flesh_hunter row) scales too. Halo 1: the Grunt, Jackal, Human and Engineer columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Grunt, Jackal, Human, Engineer column(s) on every jpt! of the type (Fire jpt!s: flamethrower impact + explosion). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 8 value(s) on 2 jpt!, H3 4 (2 in [0]), ODST 4 (2 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 3", "Halo 3: ODST"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Flesh vs Fire", "damage_row": {"damage": "fire", "armour": "flesh"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Flood vs Fire": {
+				"color": "defensive",
+				"desc": "The Flood takes less damage from fire.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Fire = burning: Flamethrower and Firebomb grenade (Halo 1 flamethrower). Flood = soft_floodflesh + tough_floodflesh + hard_floodflesh (+ brittle_flood in H3, worn by nothing). Halo 1: the Flood Combat Form and Flood Carrier Form columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Halo 1 has no table: the card scales the Flood Combat Form, Flood Carrier Form column(s) on every jpt! of the type (Fire jpt!s: flamethrower impact + explosion). Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H1 4 value(s) on 2 jpt!, H3 8 (4 in [0]), ODST 8 (4 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 1", "Halo 3", "Halo 3: ODST"],
+				"tag": {"Halo 1": "jpt! *", "Halo 2": "matg globals\\globals"},
+				"targets": [
+					{ "step": "*0.8", "field": "Flood vs Fire", "damage_row": {"damage": "fire", "armour": "flood"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Vehicles and Hunter plates vs Lasers": {
+				"color": "defensive",
+				"desc": "Vehicles and Hunter plates take less damage from lasers.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Lasers = laser: the Spartan Laser (Halo 4 also the Sentinel Beam). Vehicles and Hunter plates = hard_metal_thick + hard_metal_solid (Hunter plates are hard_metal_solid from Halo 2 on, shared with Scorpion, Wraith, Pelican, Phantom) + brittle_mech / brittle_elec / brittle_glass (engines, anti-grav pods, windscreens; brittle/brittle_explosive props are left out) + ODST's 'hunter' specific row. Halo 1: the Metal (Hollow/Thin/Thick), Hunter Armor and Hunter Shield columns. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H3 10 (5 in [0]), Reach 10 (5 in [0]), H4 10 (5 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 3", "Halo Reach", "Halo 4"],
+				"skip_games": ["Halo 3: ODST"],
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "step": "*0.8", "field": "Vehicles and Hunter plates vs Lasers", "damage_row": {"damage": "lasers", "armour": "vehicles"}, "harder_when": "decreased" }
+				]
+			},
+			"Hardened: Shields vs Lasers": {
+				"color": "defensive",
+				"desc": "Enemy shields take less damage from lasers.",
+				"debug_desc": "Enemy-general card (x0.8 per pick; scores as durability in scoredb). Allies sharing the rows get tougher too; you do not. Lasers = laser: the Spartan Laser (Halo 4 also the Sentinel Beam). Shields = energy_shield_thin: Elites, Brutes (H3/ODST/Reach), Sentinels, Halo 4 Knights... NOT the Jackal hand shields or turret shields (energy_shield_thick). Halo 1: the Elite Energy Shield column (Sentinels wear it too), never the Jackal shield. Each pick multiplies, linearly stacked, every existing row of these damage groups against these armour rows in every matg Damage Table element ([0] normal play, [1] the native Tilt-skull table from Halo 3 on); general damage groups only -- specific groups (sniper, anti_flood, kill_flood) multiply on top and are left alone. Immunities (rows at 0) stay at 0; a pair with no row stays at the engine's x1 (no row is added). Runs after the skulls, so Tilt's values are scaled. The player gets its own rows first (player_armour.py, Halo 2 on), so this never changes the damage you take; Halo 1's Cyborg columns are never touched. Allies share these rows: Marines with Grunts/Jackals (Flesh), H3 allied Elites and Reach/H4 AI Spartans with Elites. Rows on the test maps (b30, 03a, 010, sc100, m10, m10_crash): H3 2 (1 in [0]), Reach 2 (1 in [0]), H4 2 (1 in [0]). damage_rows.py; test: sprint_toolkit/damage_rows_selftest.py.",
+				"harder_when": "decreased",
+				"game": ["Halo 3", "Halo Reach", "Halo 4"],
+				"skip_games": ["Halo 3: ODST"],
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "step": "*0.8", "field": "Shields vs Lasers", "damage_row": {"damage": "lasers", "armour": "shields"}, "harder_when": "decreased" }
 				]
 			}
 		},

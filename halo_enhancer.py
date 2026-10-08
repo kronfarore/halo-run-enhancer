@@ -6105,6 +6105,14 @@ class MagnitudeEditorDialog(QDialog):
                 return '0.1 per kill (hardcoded in the game dll)'
         if target.get('camo'):
             return 'off (any value switches active camo on)'
+        if target.get('damage_row'):
+            # Effective / Hardened cards: not a plugin field -- the damage-table rows
+            # (Halo 1: jpt! material columns) of one damage type x one armour class.
+            try:
+                import damage_rows
+                return damage_rows.describe(m, self.game, target['damage_row'])
+            except Exception as ex:
+                return 'damage-table rows (%s)' % ex
         if target.get('species_swap'):
             # Halo 1 species replacement (h1_species_swap): not a tag field -- whole
             # encounters turn into the card's species. Show what the share is taken of.
@@ -8930,6 +8938,7 @@ class MagnitudeEditorDialog(QDialog):
                                          'squad_count': t.get('squad_count'),
                                          'species_swap': t.get('species_swap'),
                                          'camo': t.get('camo'),
+                                         'damage_row': t.get('damage_row'),
                                          'side': t.get('side'),
                                          'include_boss': t.get('include_boss'),
                                          'sword_drain': t.get('sword_drain'),
@@ -9539,7 +9548,7 @@ class MagnitudeEditorDialog(QDialog):
         txt = self._stacked_op(eff, t, txt) or txt     # card-stacking: once per pick
         op = {'field': t['field'], 'block': t.get('block'), **_diff_flavor(t),
               'index': t.get('index', 0), 'op_str': txt, 'negate': t.get('negate'),
-              'nth': t.get('nth', 0) or 0}
+              'nth': t.get('nth', 0) or 0, 'damage_row': t.get('damage_row')}
         plan = [{'tag': eff['tag'], 'name': eff['name'], 'ops': [op],
                  'init_defaults': eff.get('init_defaults')}]
         try:

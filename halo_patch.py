@@ -9625,6 +9625,10 @@ def apply_weapon_ports(m, game, registry, ports):
     return out
 
 
+#: games whose damage_row cards need the player's own armour rows (player_armour.py)
+_DAMAGE_ROW_GAMES = ('Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4')
+
+
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
               turret_first_person=None, keep_reticle=False,
@@ -9666,14 +9670,20 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     baseline = str(bak) if (from_baseline and found) else map_path
     m = open_map(baseline, game)
     results = []
-    if debug_player_armour:
+    # "Effective" / "Hardened" cards (damage_rows.py) scale the enemy armour rows of the
+    # matg Damage Table, which the player shares from Halo 2 on -- so any plan holding one
+    # gives the player its own rows first (once, also when the debug option is on too).
+    _damage_rows = str(game).strip() in _DAMAGE_ROW_GAMES and any(
+        op.get('damage_row') for item in plan if not item.get('missing_in_db')
+        for op in item.get('ops') or ())
+    if debug_player_armour or _damage_rows:
         # The player's own damage-table armour rows (player_armour.py). FIRST of all: from
         # Halo 3 on it grows matg's Materials array in place by MOVING neighbouring blocks
-        # (Reach: snd! Extra Info), so nothing may hold offsets into them yet. Debug option
-        # until confirmed in game; the Effective cards will turn it on themselves.
+        # (Reach: snd! Extra Info), so nothing may hold offsets into them yet. Confirmed in
+        # all five games (2026-10-08); the debug option or a damage_row card turns it on.
         import player_armour as _pa
         results.extend(_pa.apply(m, str(game).strip(), registry))
-        if debug_player_armour_zero:
+        if debug_player_armour and debug_player_armour_zero:
             results.extend(_pa.zero_rows(m, str(game).strip()))
     if weapon_ports:
         # Ported weapons: the suggested balance becomes the port's VANILLA, so the run's
@@ -9919,6 +9929,16 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 else:
                     r.update(ok=False, reason=rep.get('reason', 'movement scale failed'))
                 results.append(r)
+                continue
+            if op.get('damage_row'):
+                # Effective / Hardened cards: one damage type x one armour class
+                # (damage_rows.py) -- the matg Damage Table rows from Halo 2 on, the jpt!
+                # material columns in Halo 1. After the skulls, so Tilt's values are scaled.
+                import damage_rows as _dr
+                for r in _dr.apply_op(m, str(game).strip(), registry, op['damage_row'],
+                                      op.get('op_str')):
+                    results.append({**base, **{k: v for k, v in r.items()
+                                               if k not in ('effect', 'field')}})
                 continue
             if op.get('camo'):
                 # Active camo on the card's characters (_apply_camo): an on/off rule,

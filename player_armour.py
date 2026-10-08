@@ -802,6 +802,8 @@ def apply(m, game, registry=None, rule='multiply'):
                   if arr is not None and any(a < arr[1] + arr[2] * arr[3] and arr[1] < b for a, b in others)})
 
     if not new_clones and not row_jobs and not repoint and not cow:
+        # already applied (a live map patched in place): the keys are still the player's
+        m._player_armour_keys = [(e['key'], names[e['orig']]) for e in clones]
         out.append(_row('player armour', True, old='already applied',
                         new='%d clone(s), key rows present; nothing to do' % len(clones)))
         if mism:
