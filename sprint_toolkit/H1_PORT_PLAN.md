@@ -13,7 +13,9 @@ The user's master list (`tool\Halo Weapons Spreadsheet (CE - Infinite).ods`, She
 Done so far: SAW (from Halo 4), Energy Sword, Fuel Rod and Sentinel Beam (restored, the
 last a full Halo 3 port). Their recipes are in PORTING.md. Phase 0 (setup) is DONE
 (2026-10-07). The SMG pilot (A1) is DONE and tested (2026-10-07; its ten-map rebuild waits
-for the user's go): read "Pilot A1: what wave A inherits" below before A2.
+for the user's go): read "Pilot A1: what wave A inherits" below before A2. A2 (Battle
+Rifle) and A3 (Covenant Carbine, 2026-10-08) are DONE and tested too -- the ten-map
+rebuild is BATCHED for all three (user's go); read "A3: what the Carbine taught" before A4.
 
 ## Phase 0: DONE (2026-10-07)
 
@@ -340,6 +342,54 @@ Semi-automatic 18-round magazine (no burst: Halo 3 rate, `does_not_repeat_automa
 for its latch trigger); its own slug projectile; reticle hud_reticles #4. Template: the
 yardstick's weapon unless the role table says otherwise -- then inspect its functions.
 
+## A3: what the Covenant Carbine taught (2026-10-08) -- read before A4 (the Beam Rifle)
+
+PORTING.md "Halo 1: the Covenant Carbine, wave A3" is the full record;
+`ports_h1/covenant_carbine.py` is the example of a SEMI-AUTO, COVENANT-LOOK, METER port.
+Everything in "Pilot A1" and "A2" still holds; the Carbine added:
+
+**THE ARMED WDM RULE (user, now a RULE for every Armed port):** Weapon Damage Modifier =
+base x (yardstick player dps / port player dps), default AND balanced
+(`firing_profile['wdm_rule']`: base = the WDM of the carriers it fires from, the dps from
+h1_role_compare 5b). Halo 3 profiles carry no WDM. Applied to the SMG and BR too. The
+enhancer must list Balanced ports in the Armed spec (`balanced`) -- handed off.
+**Measurement runs** (when a number must be felt, not computed): `h1_port_test_map
+--grunt/--elite <actv>` (every Grunt/Elite one variant) + `--armed elite --mortal`
+(balanced, no god); the user's stopwatch (time to die x5) is the instrument --
+`h1_vitality_live.py` is too slow at its moved-triple step (fix before use).
+
+**Step 4a:** show the DAMAGE TYPE against Halo 1's materials (`h1_role_compare` rows with
+`damage_tags` of another weapon): Halo 3's `plasma_fast` has no shield bonus, so the
+Carbine kept a bullet table + Halo 3's differences. Check `h3_weapon_values`' damage group,
+then the Halo 3 globals damage table (out/h3_export/_g.txt).
+
+**Scope (standard, h1_h3_scope):** collection state inherited; `per_widget` (drop / scale /
+blur / blur_inside); animated widgets at scale 0 need a scale; DISTORTION widgets become
+Halo 1 blur only by decision; the BR's span/aspect were NOT general -- the Carbine needed
+x0.8 aspect and 80% size: put 2 variants in ONE boot (`--secondary` with a test-only
+copy: weapon + HUD + mask under `<weapon dir>\test`, deleted after).
+**Halo 3 meter shaders on the gun** (`meter_map` / `meter_value`): `h1_h3_weapon_model`
+`meters` -- channels SWAP, gamma-spaced steps -> `steps` (rank remap), the AR's function
+layout for the out that drives them. Any H3 shader with meter_* parameters is one.
+**Glow:** thin illum lines need `illum_dilate` (no bloom in Halo 1) and often a set `glow`.
+**Covenant look on a bullet template:** `sound_effects` `copy_from` (the plasma pistol's
+green fire effect), bullet `attachments_from` + `material_responses_from`, the muzzle
+light by `fields` (attachments.0). Screen flash: Halo 3's shielded response
+(H1_SCREEN_FLASH.md, the screen-flash session).
+**Semi-auto rate:** the player's tapping sets it (~3.8/s default, ~6.5/s balanced
+measured) -- the 15/s cap observation stays untested.
+
+**For A4, the Beam Rifle:** yardstick candidates Sniper Rifle (provisional; Halo 3's beam
+rifle = the sniper's 80 damage, 1200 wu/s, range 500, aim 1/10 4/14 -- only the rate 0.4 vs
+0.7 s, heat 0.7 a shot, age 0.1 = 10 shots a battery and the damage group `plasma_fast` vs
+`bullet_fast` differ), Plasma Pistol (heat + battery), Sentinel Beam (H1 derived). Its
+chud `ui\chud\beam_rifle` (checked 2026-10-08): zoom state 6 (lvl 1 AND 2), and TWO
+widget sets (scale 1.2 and 0.85 -- most likely fullscreen vs splitscreen: `widgets()` does
+not read resolution/screen states yet, filter before baking); in-scope HEAT and BATTERY
+meters (`meter gradient`, animated) and flash widgets -- a mask is static: decide them with
+the user (drop, or Halo 1 HUD meters); a `distortion and blur` layer again. Heat: the
+Sentinel Beam's lessons (PORTING "Halo 1: the Sentinel Beam"); two zoom levels.
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one
@@ -403,7 +453,7 @@ simplest form, used to fix and generalize the tools before the rest of the wave.
 |---|---|---|
 | A1 | **SMG** (pilot) -- DONE 2026-10-07 | the first plain magazine gun on this pipeline: reload, ammo pickup (step 6), magazine HUD meter |
 | A2 | **Battle Rifle** -- DONE 2026-10-07 | burst fire, zoom + scope HUD (memory halo-zoom-ui) -- see "A2: what the Battle Rifle taught" |
-| A3 | Covenant Carbine | zoom on a Covenant weapon, its own projectile |
+| A3 | **Covenant Carbine** -- DONE 2026-10-08 | zoom on a Covenant weapon, its own projectile -- see "A3: what the Carbine taught" |
 | A4 | Beam Rifle | heat + zoom (Sentinel Beam heat lessons, tick-quantised rate) |
 | A5 | Brute Spiker | the blades' melee, a slow projectile |
 | A6 | Brute Mauler | a pellet spread (the shotgun as yardstick) |
@@ -653,3 +703,61 @@ spawn check in game. The SMG (done, tested on a30) is the first in that batch.
 > enhancer hand-off to the "Halo enhancer project" session, PORTING notes, memory,
 > `python port_backup.py --game h1`, and what the Carbine taught added to the plan before
 > A4 (the Beam Rifle: heat + zoom, the Sentinel Beam's heat lessons).
+
+### The Beam Rifle (wave A4), filled in
+
+> Port the Beam Rifle into Halo 1 (H1_PORT_PLAN.md, wave A, #A4). Source: Halo 3,
+> `objects\weapons\rifle\beam_rifle\beam_rifle` (H3EK).
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Phase 0: DONE", "Pilot A1", "A2: what the Battle
+> Rifle taught" and "A3: what the Covenant Carbine taught" first -- its last paragraph is
+> written for THIS weapon), PORTING.md ("What ported actually means" steps 0-11 and 5b, the
+> Halo 1 sections, "Halo 1: the Sentinel Beam" (heat), "Halo 1: the SMG", "the Battle
+> Rifle", "the Covenant Carbine", and "Balance" incl. the ARMED WDM RULE) and memory
+> h1-covenant-carbine-port, h1-battle-rifle-port, h1-armed-test-balanced-god,
+> h1-smg-pilot, h1-port-phase0, halo-zoom-ui-reach-unwired, h1-weapon-into-map,
+> halo-port-own-messages, h1-fmod-bank-sounds, port-findings-are-observations,
+> shared-worktree-commits. `ports_h1/covenant_carbine.py` is the example of a zoomed,
+> Covenant-look port; `ports_h1/sentinel_beam.py` the heat/battery one: copy their shape
+> into `ports_h1/beam_rifle.py` and edit only that file (plus any shared tool you
+> generalize, e.g. h1_h3_scope.py).
+>
+> START WITH STEP 4a, before any tag number is written: the yardstick, decided WITH me.
+> Wave-A rule: DEFAULT = Halo 3's own numbers, BALANCED = the ratio rows. Candidates:
+> provisional SNIPER RIFLE (Halo 3's beam rifle shares its damage, speed, range and aim;
+> differs in rate, heat + battery and damage group), alternatives PLASMA PISTOL (heat +
+> battery) and SENTINEL BEAM (Halo 1's numbers are derived: a chained ratio). Lay them
+> side by side per value (damage per round AND per second, rate, heat per shot / shots to
+> overheat / vent, battery, error, range / velocity, zoom levels, aim assist, melee) with
+> `h3_weapon_values.py` and `h1_role_compare.py` (a 'beam_rifle' set with a sustained-fire
+> table; time to kill vs Sniper, Plasma Pistol, Sentinel Beam). Damage type: Halo 3's
+> `plasma_fast` vs the sniper bullet's materials (Flood 0.05!) -- show it. I pick; record
+> it in yardstick['pick'] / ['reason'] and PORTING. Template: the yardstick's weapon unless
+> the role table says otherwise -- then inspect its object functions / attachments / A-D
+> exports (heat display, battery: the BR's template trap).
+>
+> Reserved: pickup messages 59/60; hud_msg_icons 33 (+ _r twin); hud_reticles 22 (+ _r,
+> `reticle_thicken` 1); label `bm` taught to characters\cyborg from `sr`; sounds under
+> `sound\weapons\beam_rifle_port` (never under sound\sfx); weapon folder
+> `weapons\beam rifle`; catalog name `Beam Rifle`.
+>
+> What the Beam Rifle tests first:
+> - the scope from `ui\chud\beam_rifle`: TWO widget sets (scale 1.2 / 0.85, likely
+>   fullscreen vs splitscreen -- filter by screen state in h1_h3_scope before baking), two
+>   zoom levels (state 6), in-scope HEAT and BATTERY meters + flash widgets (a mask is
+>   static: decide WITH me), a `distortion and blur` layer (the Carbine's blur_inside
+>   rule). Variants in ONE boot (`--secondary`) for size / shape;
+> - HEAT + BATTERY on a Halo 1 weapon (the Sentinel Beam's lessons: heat cools only while
+>   not firing; the tick-quantised rate); the overheat looping sound;
+> - any Halo 3 meter shader on the gun (`meters`, channels swap, gamma steps).
+>
+> Step 11: `bm` has no carrier: `firing_profile` needs a `donor_weapon` (choose with me:
+> no Halo 1 enemy carries the sniper) AND a `wdm_rule` (the ARMED WDM RULE). Run order and
+> closing checks: "Pilot A1" + the BR's close-out list (port_field_audit lists 2 AND 3,
+> full field diff against the template, kit_tag_diff, port_sound_refs with NO 'BORROW',
+> port_refs_audit, 5b on the built port). FP rig from the BR's view_offset (-0.0225, 0,
+> -0.0125). Test with `h1_port_test_map.py beam_rifle --stage`: dry default, fixes,
+> `--balanced`, then `--armed grunt,elite` (implies balanced + god); `--restore <level>`.
+> NO ten-map rebuild: BATCHED with the SMG, BR and Carbine, on my go. When done: catalog
+> entry, enhancer hand-off to the "Halo enhancer project" session, PORTING notes, memory,
+> `python port_backup.py --game h1`, and what the Beam Rifle taught added to the plan
+> before A5 (the Brute Spiker).

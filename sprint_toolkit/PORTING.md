@@ -625,6 +625,77 @@ no plain fire_1 / posing:var0 (var1 used); FP view_offset (-0.0225, 0, -0.0125) 
 (Halo 1 has no such state); `port_sounds.retimed_anim_sound` takes a LIST of swaps (both
 reloads stretched x1.34, confirmed in game).
 
+### Halo 1: the Covenant Carbine, wave A3 (2026-10-07/08, 4 boots + 2 measurement runs on a30) -- collection-state scope, on-gun meters, the Armed WDM rule
+
+The whole weapon is `ports_h1/covenant_carbine.py`, on a copy of the Halo 1 PISTOL (the
+BR's shape). Same run order as the BR.
+
+**Step 4a (user): the PISTOL.** `h1_role_compare.py covenant_carbine` (candidate rows on
+the bullet AND the plasma-bolt materials): the pistol ratio is the only candidate whose
+every value scales -- needler ratio: the needle's 65 wu/s and a degenerate error carry
+over, no zoom; sniper ratio: zoom 2 x 2/4 = 1x, Flood combat forms 36 s. Pistol ratio:
+16.7 x 8.24/s = 137/s against the pistol's 88 (Halo 3: carbine 59, magnum 38). Halo 3's
+semi-auto rate = 1 / fire recovery (0.17 s). **Damage type:** Halo 3's carbine is
+`plasma_fast`, which has NO shield bonus (energy_shield x1; `plasma_slow` x1.5) -- so the
+user took the H1 pistol bullet's table with Halo 3's two differences Halo 1 has a material
+for: Jackal shield 0 -> 0.5, Sentinel 0.2 -> 2.0.
+
+**The scope from a COLLECTION-state chud** (`ui\chud\carbine`): `scope_bitmaps` carries
+'zoom lvl 1', its eight widgets none -- `h1_h3_scope.widgets()` now inherits the
+collection's state (BR mask byte-identical). New per-widget decisions (`per_widget`):
+the four needle wedges are scale 0 and get 1.0 from an 'active' .chad (a small slide, not
+reproduced), both 'blip's are static (baked), `carbine_distortion` (a 'distortion and
+blur' refraction over the two SIDE cells, not the lens) became Halo 1 blur at half
+strength in its hexes (`blur`, `bake_maps` -> the mask alpha), clipped to the dark cell
+interior (`blur_inside`; test 2: its hexes are larger than the cells and smeared the
+outlines). Negative widget scale = a flipped sprite. SIZE/SHAPE (tests 1-2): Halo 1 drew
+it too big and too wide with the BR's settings; the user picked x squashed 0.8 (aspect
+4/3 / 0.8) at 80% size (span 828) out of two variants in one boot (`--secondary`).
+OBSERVATION: the BR's span/aspect were not general -- tune per chud in game.
+
+**ON-GUN METERS** (test 1: 'a flat square on the gun'): Halo 3's `carbine_display` and
+`carbine_switch` are METER shaders (`meter_map`, `meter_value` <- ammo), not glow --
+`h1_h3_weapon_model` `meters` makes Halo 1 shader_transparent_meters (copied from the
+plasma rifle's heat gauge). **The channels SWAP:** Halo 3 = shape in RGB, fill gradient
+in alpha; Halo 1 = gradient in RGB, shape in alpha. The meter reads an object OUT (A: the
+AR's function layout, as the BR's counter). **Halo 3's steps are GAMMA-spaced** (the
+display: 17 values 223..1 = (k/18)^2.2) and Halo 1 compares linearly (lit while gradient
+< value) -- test 2: 'drains only from the 3rd shot, irregular' -> `steps` remaps by rank
+to (N-1-r+0.5)/N; confirmed smooth. The body's illum lines are 1-2 px (0.4% of the map):
+Halo 3 blooms them, Halo 1 does not -> `illum_dilate` 1 + a set `glow` colour (confirmed).
+
+**A Covenant look on a bullet template:** the plasma pistol's green `fire bolt` as the
+fire effect (`sound_effects` `copy_from`; no casing, so no eject sound to borrow), its
+bolt light (`attachments_from`) and impact effects (`material_responses_from`, the slug
+'disappears' where the bullet overpenetrated), the plasma pistol's green muzzle light.
+Screen flash (user via the screen-flash session, H1_SCREEN_FLASH.md): Halo 3's shielded
+response (ARGB .25/0/.5/.75, intensity 0.5) instead of the pistol's white wash.
+
+**Semi-automatic** (`does_not_repeat_automatically`, Halo 3's 5.88/s; balanced 8.24):
+the player's tapping sets the rate (18 in ~4.5 s default, 27 in ~4 s balanced = ~6.5/s):
+below both the tag and the tick-rule cap -- the 15/s observation is not tested by it.
+**Step 6:** Halo 3 has NO carbine magazine item -> pistol ammo (user), 36 = Halo 3's
+family pickup : initial 2/3 on 54 (balanced 67). Needler ammo exists in HCEEK but no
+campaign scenario places it.
+
+**THE ARMED WEAPON DAMAGE MODIFIER RULE (user, 2026-10-08)** -- see "Balance". The
+Armed test felt too strong; Halo 3's profile carries no WDM, so the slots kept the AR
+donors' 0.4 (the Grunt major slot 0.5). A tag estimate needs a hit fraction (the
+carbine's AI aims to 0.35 deg with a 180 wu/s slug; plasma bolts at 25-50 wu/s with
+1.5-5 deg mostly miss) -- so MEASURED: a30, every Grunt/Elite palette entry -> Elite
+minor plasma rifle (`--grunt/--elite`), player mortal (`--armed elite --mortal`), stopwatch
+time to die from the dropship group's first shot x5: stock 3.61 s, Armed carbine (0.40,
+balanced) 2.04 s -> 0.23 measured; Rule B gives 0.26. `h1_vitality_live.py` (a live
+shield/health logger) did NOT get through its moved-triple step in reasonable time -- the
+first scan keeps too many candidates; fix before relying on it.
+
+Close-out: list 2 = 0 (the damage effect's wobble period deliberately not written, as the
+BR); list 3 decided in the config; full field diff vs the pistol / plasma pistol fire
+effect traced; port_refs_audit 0 problems; port_sound_refs 0 BORROW (the tool does not read
+Halo 1 FP graphs: the writer's listing shows all five cues `cc_*`); 5b: default = Halo 3's
+own row, balanced = the pistol-ratio row exactly. One resource group (not dual-wieldable).
+Not reproduced: the wedges' slide, the refraction itself, the headshot cross.
+
 ---
 
 ## Halo 3
@@ -1872,6 +1943,15 @@ port): SMG 600 x 0.625 x 1.5 = 562.5 -> 562 (Halo 1 stores a short). Applies to 
 dual-wieldable ports too (Brute Spiker, Plasma Rifle-class) when their carry looks odd.
 **AMMO PICKUP (balanced):** the source game's own pickup : initial ratio on the balanced
 initial (SMG: 120/180 x 450 = 300; user, 2026-10-07).
+**ARMED WEAPON DAMAGE MODIFIER, Halo 1 ("Rule B", user 2026-10-08):** an enemy carrying a
+port gets actor_variant Weapon Damage Modifier (0xC4) = base x (yardstick player dps /
+port player dps), base = the WDM of the carriers it fires from (the AR donors: 0.4), dps
+from h1_role_compare 5b; once for the default numbers, once for the balanced rows
+(`firing_profile['wdm_rule']` -> ai_firing_profiles.json `fields` + `balanced_fields`;
+h1_enemy_weapons uses the latter for ports in its spec's `balanced`). A stronger port gets
+a gentler AI. Carbine 0.60 / 0.26, SMG 0.80 / 0.60, BR 0.80 / 0.48. Checked by stopwatch on
+the Carbine (0.23 measured vs 0.26). A source profile with its own WDM (Halo 4's: the
+SAW's 0.75) keeps it unless the config sets a rule.
 
 ---
 

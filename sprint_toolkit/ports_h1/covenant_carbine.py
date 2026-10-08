@@ -69,7 +69,11 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'building',
+    # 2026-10-07/08: tested on a30 over 4 boots (dry default, fixes + scope variants in one
+    # boot, dry balanced, Armed) + a 2-run stopwatch measurement (the Armed WDM rule) --
+    # everything confirmed by the user; the ten-map rebuild is BATCHED with the SMG and the
+    # BR (on the user's go)
+    'status': 'done',
     # geometry + look (h1_h3_weapon_model.py). Halo 3's five materials (render model order:
     # carbine, carbine_dull, carbine_tint_map, carbine_display, carbine_switch): the metal
     # and its dull and striped variants share the base map + illum (glow = the illum map's own
