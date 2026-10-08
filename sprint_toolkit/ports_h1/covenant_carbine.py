@@ -193,6 +193,19 @@ PORT.update({
                               'damage.active_camouflage_damage': 0.45 * 0.2 / 0.15,
                               'screen_flash.duration': 0.5,
                               'screen_flash.fade_function': 'linear',
+                              # the FLASH colour + intensity (user via the screen-flash
+                              # session, 2026-10-08: 'a fitting colour, reduce the
+                              # intensity'; H1_SCREEN_FLASH.md): the pistol template's was a
+                              # full-white wash (ARGB 1/1/1/1, intensity 0.8). Halo 3's own
+                              # shielded response (the carbine's = the magnum's, Halo 3's
+                              # shield-blue): ARGB .25/0/.5/.75, maximum intensity 0.5.
+                              # Lighten = DST(1-A) + C, so the alpha 1 -> .25 is most of
+                              # the reduction
+                              'screen_flash.maximum_intensity': 0.5,
+                              'screen_flash.tint_lower_bound.a': 0.25,
+                              'screen_flash.tint_lower_bound.r': 0.0,
+                              'screen_flash.tint_lower_bound.g': 0.5,
+                              'screen_flash.tint_lower_bound.b': 0.75,
                               'breaking_effect.forward_velocity': 35.0,
                               'breaking_effect.forward_radius': 0.12,
                               'breaking_effect.forward_exponent': 8.0,
