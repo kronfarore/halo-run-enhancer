@@ -1,0 +1,98 @@
+{
+ "game": "Halo 1",
+ "weapon": "Mauler",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\mauler_port\\ml_fire",
+   "perms": [
+    "ml_fire_1.wav",
+    "ml_fire_2.wav",
+    "ml_fire_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\mauler_port\\ml_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\mauler_port\\ml_reload",
+   "perms": [
+    "ml_reload_1.wav",
+    "ml_reload_2.wav",
+    "ml_reload_3.wav",
+    "ml_reload_4.wav",
+    "ml_reload_5.wav",
+    "ml_reload_6.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\mauler_port\\ml_reload"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\mauler_port\\ml_ready",
+   "perms": [
+    "ml_ready_1.wav",
+    "ml_ready_2.wav",
+    "ml_ready_3.wav",
+    "ml_ready_4.wav",
+    "ml_ready_5.wav",
+    "ml_ready_6.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\mauler_port\\ml_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\mauler_port\\ml_melee",
+   "perms": [
+    "ml_melee_1.wav",
+    "ml_melee_2.wav",
+    "ml_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\mauler_port\\ml_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\mauler_port\\ml_pose",
+   "perms": [
+    "ml_pose_1.wav",
+    "ml_pose_2.wav",
+    "ml_pose_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\mauler_port\\ml_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\mauler_port\\ml_drop",
+   "perms": [
+    "ml_drop_1.wav",
+    "ml_drop_2.wav",
+    "ml_drop_3.wav",
+    "ml_drop_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\mauler_port\\ml_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\mauler_port\\ml_ammo",
+   "perms": [
+    "ml_ammo_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\mauler_port\\ml_ammo"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\mauler_port\\ml_dryfire",
+   "perms": [
+    "ml_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\mauler_port\\ml_dryfire"
+   ]
+  }
+ ]
+}

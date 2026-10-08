@@ -775,15 +775,18 @@ def edit_weapon(key, write):
             for i in range(len(prts) - 1, -1, -1):
                 if prts[i].type.filepath in fl.get('drop_parts', ()):
                     prts.pop(i)
-        n = 0
+        # a sound may sit in SEVERAL events (the shotgun's `shotgun firing` plays its fire
+        # sound twice, two identical events at 0 s -- the Mauler keeps that layering): every
+        # swap must be found at least once
+        found = set()
         for ev in et.data.tagdata.events.STEPTREE:
             for part in ev.parts.STEPTREE:
                 new = swaps.get(part.type.filepath)
                 if new:
+                    found.add(part.type.filepath)
                     part.type.filepath = new
-                    n += 1
-        if n != len(swaps):
-            raise SystemExit('%s: %d of %d sound parts found' % (src, n, len(swaps)))
+        if len(found) != len(swaps):
+            raise SystemExit('%s: %d of %d sound parts found' % (src, len(found), len(swaps)))
         save(et, path(out, '.effect'), write)
         for tr in a.triggers.STEPTREE:
             for fe in tr.firing_effects.STEPTREE:

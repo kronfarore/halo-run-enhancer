@@ -1928,6 +1928,250 @@
     "jpt! weapons\\assault rifle\\melee": "jpt! weapons\\spiker\\melee"
    },
    "hands": "one"
+  },
+  {
+   "weapon": "Mauler",
+   "source": "Halo 3",
+   "donor": "Shotgun",
+   "default_on": false,
+   "desc": "Halo 3's Mauler: its model, first-person animations, sounds and numbers. A one-handed 5-round Brute shotgun firing 15 pellets that lose most of their damage past a few metres, with a blade for melee.",
+   "balance_desc": "Measured against the Shotgun, which both games have: 15 pellets of 12.6-17.5 damage (4 at range, over 1.9-3.8 m), a 10-round magazine, 13 at pickup / 62 most, a wider cone, Halo 1-style pellet speed and range, and Halo 1-style aim assist.",
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\mauler\\pellet",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 4.0,
+     "card": "Pellet Damage",
+     "original": 1.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\mauler\\pellet",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 12.6,
+     "card": "Pellet Damage",
+     "original": 7.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\mauler\\pellet",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 17.5,
+     "card": "Pellet Damage",
+     "original": 7.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\mauler\\pellet",
+     "field": "Air Damage Range",
+     "block": null,
+     "value": 1.875,
+     "card": "Pellet Damage",
+     "original": 2.5
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\mauler\\pellet",
+     "field": "Air Damage Range Max",
+     "block": null,
+     "value": 3.75,
+     "card": "Pellet Damage",
+     "original": 5.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\mauler\\pellet",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 4.666666666666667,
+     "card": "Projectile",
+     "original": 16.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\mauler\\pellet",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 3.3333333333333335,
+     "card": "Projectile",
+     "original": 16.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\mauler\\pellet",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 53.3,
+     "card": "Projectile",
+     "original": 8.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\mauler\\mauler",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 10.0,
+     "card": "Magazine",
+     "original": 5.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\mauler\\mauler",
+     "field": "Rounds Reloaded",
+     "block": "Magazines",
+     "value": 10.0,
+     "card": "Magazine",
+     "original": 5.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\mauler\\mauler",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 13.0,
+     "card": "Magazine",
+     "original": 10.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\mauler\\mauler",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 62.0,
+     "card": "Magazine",
+     "original": 25.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\mauler\\mauler",
+     "field": "Error Angle",
+     "block": "Triggers",
+     "value": 10.0,
+     "card": "Error Angle",
+     "original": 7.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\mauler\\mauler",
+     "field": "Error Angle Max",
+     "block": "Triggers",
+     "value": 10.0,
+     "card": "Error Angle",
+     "original": 7.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\mauler\\mauler",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 6.0,
+     "card": "Autoaim",
+     "original": 8.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\mauler\\mauler",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 19.1,
+     "card": "Autoaim",
+     "original": 7.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\mauler\\mauler",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 12.0,
+     "card": "Magnetism",
+     "original": 16.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\mauler\\mauler",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 19.1,
+     "card": "Magnetism",
+     "original": 7.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\mauler\\melee",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 41.16,
+     "card": "Melee Damage",
+     "original": 52.36
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\mauler\\melee",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 51.45,
+     "card": "Melee Damage",
+     "original": 65.45
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\mauler\\melee",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 61.75,
+     "card": "Melee Damage",
+     "original": 78.55
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\mauler\\mauler",
+     "field": "Sequence Index",
+     "block": "Meter Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\mauler\\mauler",
+     "field": "Alpha Multiplier",
+     "block": "Meter Elements",
+     "value": 25,
+     "card": "Ammo display",
+     "original": 51,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\mauler\\mauler",
+     "field": "Sequence Index",
+     "block": "Static Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\mauler\\mauler",
+     "field": "Loaded Ammo Cutoff",
+     "block": null,
+     "value": 2,
+     "card": "Ammo display",
+     "original": 1,
+     "index": 0
+    }
+   ],
+   "weap": "weapons\\mauler\\mauler",
+   "fp_animations": "weapons\\mauler\\fp\\fp",
+   "requires": [
+    "proj weapons\\mauler\\pellet"
+   ]
   }
  ],
  "Halo 3": [
