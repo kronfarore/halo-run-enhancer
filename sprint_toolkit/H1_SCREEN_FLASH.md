@@ -67,7 +67,7 @@ ARGB = Color. I = Maximum Intensity. Shield state: same row both ways (see above
 | Scorpion MG / shell | `vehicles\scorpion\bullet` / `shell explosion` | lighten | med/high | 0.1 / 1.0 | | 0.2 / 0.7 | red / yellow | |
 | weapon melee (all player weapons) | `weapons\*\melee` | lighten | med | 1.0 | linear | 0.2 | 0 / 1 .09 .11 | red |
 | falling / vehicle hit / flaming death | `globals\falling`, `vehicle_collision`, `flaming_death` | lighten | low | 0.1 | early | 0 | .5 / 1 0 0 | red |
-| **ports**: BR | `weapons\battle rifle\bullet` | lighten | med | **0.5** | **linear** | 0.8 | 1 / 1 1 1 | white (magnum colour, H3 timing) |
+| **ports**: BR | `weapons\battle rifle\bullet` | lighten | med | 0.5 | linear | 0.5 | .25 / .25 0 0 | dark red: Halo 3 battle_rifle_bullet UNSHIELDED colour + intensity (its shielded one is the generic shield-blue); 2026-10-08, was 1/1/1/1 at 0.8 |
 | **ports**: Carbine | `weapons\covenant carbine\slug` | lighten | med | 0.5 | linear | 0.5 | .25 / 0 .5 .75 | shield-blue: Halo 3 carbine_slug shielded response (bed379b; was 1/1/1/1 at 0.8) |
 | **ports**: Plasma Lancer | `weapons\plasma lancer\bolt` / `charged bolt` | as plasma rifle | | | | | | |
 | **ports**: Sentinel Beam | `weapons\sentinel beam\beam` | lighten | med | 2.0 | very_late | 0.6 | as plasma rifle | |
@@ -80,7 +80,9 @@ melee_response / shock-wave tags are type none.)
 - The "big" flashes are plasma (2-3 s very_late/late) and the pistol family (white, A 1).
   The BR and Carbine ports inherited the **pistol's colour/intensity** from their magnum
   template and only took duration/fade from Halo 3 -- so a Carbine hit reads as a white
-  pistol flash, not a Covenant one.
+  pistol flash, not a Covenant one. (Both since given their own: the Carbine Halo 3's
+  shielded shield-blue, bed379b; the BR Halo 3's UNSHIELDED dark red at 0.5, 2026-10-08 --
+  Halo 3's shielded colour is the same generic shield-blue on the BR, magnum and carbine.)
 - **Duration 0** on the fuel rod, rocket and Banshee fuel rod explosions: presumably no flash
   at all (unverified).
 - **Maximum Intensity 0** on all character melees, Sentinel beam, needle impact, globals:

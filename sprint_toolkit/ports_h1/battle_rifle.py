@@ -187,8 +187,23 @@ PORT.update({
                    # effect (35 / 0.12 / 8, 3 / 0.5 / 0.2), fade function linear (magnum
                    # early). NOT ported: wobble function jitter (period 0 -- a jitter at
                    # period 0 risks a divide in Halo 1's periodic function code; kept 'one')
+                   # FLASH COLOUR + INTENSITY (user 2026-10-08, H1_SCREEN_FLASH.md): the pistol
+                   # template's full-white wash (A 1 / RGB 1 1 1, Maximum Intensity 0.8) read as
+                   # a pistol hit. Brief: 'human red family', reduced. Halo 3's BR bullet: the
+                   # SHIELDED response is .25 / 0 .5 .75 at 0.5 -- the generic shield-blue
+                   # (Halo 3's magnum and carbine carry the same), not red; the UNSHIELDED one
+                   # is .25 / .25 0 0 at 0.5 -- the BR's own DARK RED: taken (colour + 0.5).
+                   # Lighten = DST(1-A) + C: a 25% wash plus a little red, scaled by 0.5 (stock
+                   # AR: A 0 / red at 0.2; shotgun / sniper: red, A .5 / .7, 0.2). Timing stays
+                   # the shielded 0.5 s linear. Not tested in game (no boot asked); intensity
+                   # 0 is NOT 'off' (c20: default 1 -- unverified), scaling by damage unknown
                    'fields': {'screen_flash.duration': 0.5,
                               'screen_flash.fade_function': 'linear',
+                              'screen_flash.maximum_intensity': 0.5,
+                              'screen_flash.tint_lower_bound.a': 0.25,
+                              'screen_flash.tint_lower_bound.r': 0.25,
+                              'screen_flash.tint_lower_bound.g': 0.0,
+                              'screen_flash.tint_lower_bound.b': 0.0,
                               'breaking_effect.forward_velocity': 35.0,
                               'breaking_effect.forward_radius': 0.12,
                               'breaking_effect.forward_exponent': 8.0,
