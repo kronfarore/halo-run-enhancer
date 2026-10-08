@@ -85,6 +85,12 @@ done for the SAW in all five games plus the Halo 4 Focus Rifle; the per-game rec
    map names; Halo 1 / Halo 4: `python port_sounds.py --check`.
 8. Step 11 (Halo 1): the port is in `h1_enemy_weapons.used_weapons()` and `best_donor` /
    `donor_for` names a firing donor for a Grunt and an Elite slot -- see **Step 11**.
+9. THE HIT-EFFECT RULE (Halo 1, user 2026-10-08, Spike Rifle): the port's SHIELD-HIT effect
+   on the player (its projectile's response effect for material #22, cyborg energy shield)
+   loads the player at most as much per second as the stock pistol's -- `python
+   h1_hit_effect_load.py` lists every weapon's load and the size scale; the port applies it
+   with `bullet.impact_thin` {'materials': [22], 'out': <own folder>, 'thin': {}, 'budget':
+   1.2461 * 3.5, 'rate': max(default, balanced)}. See "Balance".
 
 **Step 4 has a second half: the fields NO CARD covers (2026-10-05).** The balance table
 only knows fields some card targets; every other field of a clone is its donor's. Run
@@ -2111,6 +2117,22 @@ port): SMG 600 x 0.625 x 1.5 = 562.5 -> 562 (Halo 1 stores a short). Applies to 
 dual-wieldable ports too (Brute Spiker, Plasma Rifle-class) when their carry looks odd.
 **AMMO PICKUP (balanced):** the source game's own pickup : initial ratio on the balanced
 initial (SMG: 120/180 x 450 = 300; user, 2026-10-07).
+**THE HIT-EFFECT RULE, Halo 1 (user, 2026-10-08, the Spike Rifle's Armed test):** 'the higher
+the fire rate, the smaller the effect'. A projectile hitting the player plays the projectile's
+own response effect for the player's material -- the same table it uses on walls; shielded =
+#22 `cyborg energy shield`. Stock Halo 1 never scales it (the AR's 49-particle shield hit at
+15/s) and ports inherit their donor's, so high-rate ports wash the view out with sparks. Load
+per hit = sum of created count x radius^2 over the effect's particles; x rate x projectiles
+per shot = load per second. Budget = the STOCK PISTOL's (1.246 x 3.5/s = 4.36/s, the user's
+pick of three: free-up-to-pistol-rate-then-steep, the Spike's own budget, the pistol's). The
+donor's effect stays whole and shrinks in SIZE: scale = sqrt(budget / load per second), capped
+at 1, at max(default, balanced) rate (one tag serves both). Spike Rifle x0.78 (12/s). Ports
+still to apply it (`h1_hit_effect_load.py`): SMG x0.70, Battle Rifle x0.59, SAW (same donor as
+the SMG); Carbine / Beam Rifle / Sentinel Beam / Sword under budget; Fuel Rod's x0.09 is an
+artifact (a charge weapon's tag rate on an explosion effect) -- by hand. The way there: a -30%
+screen flash first (reverted: not the complaint), then thinned + x0.25 (approved), then this
+rule. Unshielded hits (#21 cyborg armor: sparks, smoke, blood) are left alone.
+
 **ARMED WEAPON DAMAGE MODIFIER, Halo 1 ("Rule B", user 2026-10-08):** an enemy carrying a
 port gets actor_variant Weapon Damage Modifier (0xC4) = base x (yardstick player dps /
 port player dps), base = the WDM of the carriers it fires from (the AR donors: 0.4), dps
