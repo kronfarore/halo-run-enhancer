@@ -331,7 +331,9 @@ def bitmaps(w):
                 v = np.clip(1 - d, 0, 1) ** spec.get('falloff', 1.6) * spec.get('gain', 1.0)
                 lo = np.clip(v * 2.0, 0.0, 1.0)[..., None] * np.array(rgb)[None, None, :]
                 hot = (np.clip(v * 2.0 - 1.0, 0.0, 1.0) if spec.get('hot', False) else np.zeros_like(v))[..., None]
-                c = lo * (1 - hot) + hot
+                # `brightness` scales the result (the Spike Rifle's A/B, test 5): the gain only
+                # shapes the falloff -- the centre saturates either way
+                c = (lo * (1 - hot) + hot) * spec.get('brightness', 1.0)
                 col = np.zeros((N, N, 4), np.uint8)
                 col[..., :3] = np.round(c * 255)
                 col[..., 3] = 255
