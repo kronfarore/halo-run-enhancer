@@ -397,44 +397,6 @@ def own_beam(a, b, write):
             pd.material_responses.STEPTREE[i].response.set_to(resp)
     if 'model' in b:                         # a visible projectile (the stuck spike's gbxmodel)
         pt.data.tagdata.obje_attrs.model.filepath = b['model']
-    if 'impact_thin' in b:
-        # the impact effect ON THE PLAYER, thinned (the Spike Rifle's Armed test: 'an impact
-        # effect played on the player' at a high rate -- a hit plays the projectile's response
-        # effect for the player's material, the AR's `impact cyborg shield` = 25 shield sparks
-        # + a flash): per Halo 1 material index, an OWN copy of the response effect under
-        # `out` keeping every n-th particle whose path holds a key of `thin` {substring: n}
-        from reclaimer.hek.defs.effe import effe_def
-        import h1_hit_effect_load as HL
-        I = dict(b['impact_thin'])
-        for i in I['materials']:
-            x = pd.material_responses.STEPTREE[i]
-            src_e = x.effect.filepath
-            if I.get('rate'):
-                # THE HIT-EFFECT RULE (user, 2026-10-08; v2 'steeper'): the donor's load kept up
-                # to the pistol's rate, above it x (3.5 / rate)^3.19 -- size = sqrt of that
-                I['scale'] = HL.rule_scale(src_e, I['rate'], I.get('per_shot', 1), I.get('budget'))
-                print('   hit-effect rule: %s at %.1f/s -> size x%.3f' % (src_e, I['rate'], I['scale']))
-            et = effe_def.build(filepath=path(src_e, '.effect'))
-            kept = total = 0
-            for ev in et.data.tagdata.events.STEPTREE:
-                pts = ev.particles.STEPTREE
-                seen = {}
-                for k in range(len(pts) - 1, -1, -1):
-                    key = next((s for s in I['thin'] if s in pts[k].particle_type.filepath), None)
-                    if key is None:
-                        continue
-                    total += 1
-                    seen[key] = seen.get(key, -1) + 1
-                    if seen[key] % I['thin'][key]:
-                        pts.pop(k)
-                    else:
-                        kept += 1
-                for q in pts:                     # `scale`: every remaining particle's radius
-                    q.radius[0], q.radius[1] = q.radius[0] * I.get('scale', 1.0), q.radius[1] * I.get('scale', 1.0)
-            own = I['out'] + src_e.rsplit('\\', 1)[-1]
-            save(et, path(own, '.effect'), write)
-            x.effect.filepath = own
-            print('   impact on material %d: %s -> %s (%d of %d thinned particles kept)' % (i, src_e, own, kept, total))
     if 'detonation_effect' in b:
         # an OWN detonation effect copied from another projectile's (the Spike Rifle, test 2:
         # 'detonate like the needles, no damage' -- the needle's burst): particles whose path
@@ -575,6 +537,22 @@ def own_beam(a, b, write):
                         done[src_e] = src_e
                 ref.filepath = done[src_e]
         print('   impacts: %d effect(s) recoloured' % sum(1 for k, v in done.items() if k != v))
+    if 'impact_thin' in b:
+        # the impact effect ON THE PLAYER, thinned (the Spike Rifle's Armed test: 'an impact
+        # effect played on the player' at a high rate -- a hit plays the projectile's response
+        # effect for the player's material, the AR's `impact cyborg shield` = 25 shield sparks
+        # + a flash): per Halo 1 material index, an OWN copy of the response effect under
+        # `out`, thinned and sized by THE HIT-EFFECT RULE (h1_hit_effect_load.thin_effect;
+        # the SAW's own writer, saw_port_values.py, calls the same). LAST: after
+        # material_responses_from / material_effects_from (the Carbine takes the plasma bolt's)
+        import h1_hit_effect_load as HL
+        for i in b['impact_thin']['materials']:
+            x = pd.material_responses.STEPTREE[i]
+            et, own, kept, total = HL.thin_effect(b['impact_thin'], x.effect.filepath)
+            save(et, path(own, '.effect'), write)
+            print('   impact on material %d: %s -> %s (%d of %d thinned particles kept)'
+                  % (i, x.effect.filepath, own, kept, total))
+            x.effect.filepath = own
     save(pt, path(p_own, '.projectile'), write)
     for tr in a.triggers.STEPTREE:
         tr.projectile.projectile.filepath = p_own

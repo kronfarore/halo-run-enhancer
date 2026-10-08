@@ -2166,8 +2166,18 @@ a steeper curve'): the donor's per-hit load is KEPT up to the stock pistol's rat
 above it x (3.5 / rate)^K, K = 3.19 FITTED to the approved Spike Rifle effect (every 4th spark
 at x0.25 = 2% of the AR's load at 12/s). Size only (scale = sqrt), at max(default, balanced)
 rate (one tag serves both). Spike Rifle x0.14 (the approved load, all 49 sparks smaller).
-Ports still to apply it: SMG / SAW x0.10 (15/s), Battle Rifle x0.19 (10/s), Covenant Carbine
-x0.44 (5.9/s); Beam Rifle, Sword unchanged; Fuel Rod by hand (charge weapon). v1 = a
+APPLIED 2026-10-08 (tags written, untested in game): SMG x0.098 (15/s: balanced 22.5 is capped
+at the measured 15/s), SAW x0.098 (15/s; its own writer saw_port_values.py reads
+ports_h1/saw.py `impact_thin`, whose `from` names the donor's effect so a rerun does not shrink
+the own copy twice), Battle Rifle x0.187 (the TAG rate 10/s: a burst's 3 rounds land 0.1 s
+apart and stack; the sustained tap rate ~5-6/s would give ~x0.5), Covenant Carbine x0.255
+(balanced 8.24/s; x0.44 at the default 5.88 alone). The shared code is
+h1_hit_effect_load.thin_effect; h1_pickable_weapons runs it LAST in the bullet step (after
+material_responses_from -- the Carbine's plasma responses). Beam Rifle, Sword unchanged.
+FUEL ROD: NOT applied -- the table's x0.19 is an artifact of the tag's 10/s, which nobody
+fires (default: one rod per 1.25 s charge = 0.8/s; balanced 2.5/s; Grunts ~0.4/s): every real
+rate is under 3.5/s, so the rule keeps x1.0; its #22 response is a DETONATION (`impact
+generic`, the explosion itself, 81 particles), not shield sparks. The user's call. v1 = a
 load-per-second budget equal to the stock pistol's (4.36/s): Spike x0.78, too big (user).
 The way there: a -30% screen flash first (reverted: not the complaint), then thinned + x0.25
 (approved), v1, v2. Unshielded hits (#21 cyborg armor: sparks, smoke, blood) are left alone.

@@ -39,4 +39,11 @@ PORT = {
                        # OBSERVATION (SMG, Sentinel Beam), not measured on the SAW itself
                        'wdm_rule': {'base': 0.4, 'yardstick_dps': 150.0, 'port_dps': 112.5,
                                     'balanced_port_dps': 150.0}},
+    # THE HIT-EFFECT RULE (user, 2026-10-08): the shield-hit effect on the player (its bullet's
+    # response for material #22) is the AR's 49-particle `impact cyborg shield` at 15/s (the
+    # 15..30 -> 15/s cap observation; the balanced rate is capped the same) -> an own copy at
+    # size x0.10. Written by saw_port_values.py (h1_hit_effect_load.thin_effect); `from` names
+    # the donor's effect so a second run does not shrink the own copy again
+    'impact_thin': {'materials': [22], 'from': r'weapons\assault rifle\effects\impact cyborg shield',
+                    'out': 'weapons\\saw\\effects\\impact\\', 'thin': {}, 'rate': 15.0},
 }

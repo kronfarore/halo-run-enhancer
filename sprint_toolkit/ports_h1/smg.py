@@ -177,7 +177,13 @@ PORT.update({
         # own bullet + damage (step 3): H3 smg_bullet 5 damage, 400 wu/s (AR 7.5, 80)
         'bullet': {'projectile': (r'weapons\assault rifle\bullet', SMG + 'bullet'),
                    'damage': (r'weapons\assault rifle\bullet', SMG + 'bullet'),
-                   'dmg': 5.0, 'velocity': 400.0},
+                   'dmg': 5.0, 'velocity': 400.0,
+                   # THE HIT-EFFECT RULE (user, 2026-10-08): the shield-hit effect on the
+                   # player = the AR's 49-particle `impact cyborg shield` -> an own copy sized
+                   # by the rule at 15/s (default 15; balanced 22.5 is capped at the measured
+                   # 15/s) -> x0.10
+                   'impact_thin': {'materials': [22], 'out': SMG + 'effects\\impact\\',
+                                   'thin': {}, 'rate': 15.0}},
         # H3: 15/s (= the H1 AR), rate ramp 1.0 / 0.2 s (H3 AR 0: no ratio, the source value).
         # Error ramp: NO card covers it, so step 4b's ratio goes in outright -- H1 AR 0.6 x
         # 1.0/0.5 = 1.2 s to bloom, 1.0 x 0.2/0.5 = 0.4 s to settle (port_field_audit)

@@ -225,7 +225,13 @@ PORT.update({
                               'breaking_effect.outward_radius': 0.5,
                               'breaking_effect.outward_exponent': 0.2},
                    'attachments_from': PP + 'bolt',
-                   'material_responses_from': PP + 'bolt'},
+                   'material_responses_from': PP + 'bolt',
+                   # THE HIT-EFFECT RULE (user, 2026-10-08): the shield-hit effect on the
+                   # player = the plasma bolt's 49-particle `impact cyborg shield` (the plasma
+                   # rifle's) -> an own copy sized by the rule at max(default 5.88, balanced
+                   # 8.24) = 8.24/s (one tag serves both) -> x0.26 (x0.44 at the default alone)
+                   'impact_thin': {'materials': [22], 'out': CC + 'effects\\impact\\',
+                                   'thin': {}, 'rate': 8.24}},
         # SEMI-AUTOMATIC (Halo 3 'latch-zoom' primary): one round a pull at most 1 / 0.17 s =
         # 5.88/s (Halo 1 pistol: automatic at 3.5/s). H3 bloom ramp 1.0 / 0.5 (magnum 0 / 0:
         # no ratio, the source value)

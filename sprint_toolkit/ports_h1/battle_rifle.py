@@ -218,7 +218,14 @@ PORT.update({
                    # Halo 3's BR bullet carries a tracer (contrail system + effect) every 2nd
                    # round; the magnum's none. Halo 1's AR bullet has the tracer contrail
                    # (every 3rd AR round), the pistol's none -> the AR's contrail, every 2nd
-                   'attachments_from': r'weapons\assault rifle\bullet'},
+                   'attachments_from': r'weapons\assault rifle\bullet',
+                   # THE HIT-EFFECT RULE (user, 2026-10-08): the shield-hit effect on the
+                   # player = the pistol's 52-particle `impact cyborg shield` -> an own copy
+                   # sized by the rule at the TAG rate, 10/s: a burst's three rounds land 0.1 s
+                   # apart and stack on screen (sustained, with the player's tap, ~5-6/s would
+                   # give x0.5; no balanced rate row) -> x0.19
+                   'impact_thin': {'materials': [22], 'out': BR + 'effects\\impact\\',
+                                   'thin': {}, 'rate': 10.0}},
         # THE BURST, option B (user, 2026-10-07): Halo 1's charge-and-spew -- the kit's own
         # precedent is digsite\weapons\smg's second trigger (charge 1 tick, overcharged
         # action discharge, spew 0.2 s at 15/s = 3 rounds 2 ticks apart, Halo 3's spacing

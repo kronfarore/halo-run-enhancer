@@ -303,9 +303,32 @@ def main():
     print('%d of %d fields differ from what the port holds and would change'
           % (len(changes), len(found)))
 
+    # THE HIT-EFFECT RULE (user, 2026-10-08): the shield-hit effect on the player, an own copy
+    # sized by the rule (ports_h1/saw.py `impact_thin`; h1_hit_effect_load.thin_effect)
+    import h1_hit_effect_load as HL
+    from ports_h1 import saw as saw_port
+    I = saw_port.PORT['impact_thin']
+    key = ('proj', _AR + 'bullet')
+    port, ext, definition = PAIRS[key]
+    if port + ext not in tags:
+        tags[port + ext] = load(port + ext, definition)
+    effects = []
+    for i in I['materials']:
+        x = tags[port + ext].data.tagdata.proj_attrs.material_responses.STEPTREE[i]
+        et, own, kept, total = HL.thin_effect(I, x.effect.filepath)
+        print('   impact on material %d: %s -> %s' % (i, x.effect.filepath, own))
+        if a.write:
+            x.effect.filepath = own
+        effects.append((et, own))
+
     if not a.write:
         print('(dry run -- pass --write)')
         return
+    for et, own in effects:
+        p = os.path.join(TAGS, own + '.effect')
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        et.serialize(filepath=p, temp=False, backup=False)
+        print('wrote %s' % own)
     for name, t in sorted(tags.items()):
         t.serialize(temp=False, backup=False)
         print('wrote %s' % name)
