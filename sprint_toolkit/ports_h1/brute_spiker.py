@@ -92,7 +92,10 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'building',
+    # 2026-10-08: tested on a30 over 13 boots (dry default, stuck spike, glow x4 incl. one A/B,
+    # stagger A/B, balanced, Armed x5: hit effect + first-dropship Jackals) -- confirmed by the
+    # user; the ten-map rebuild is BATCHED with the SMG, BR, Carbine and Beam Rifle (user's go)
+    'status': 'done',
     # geometry + look (h1_h3_weapon_model.py). Halo 3's three materials all sample the same
     # `brute_bolter` base map (+ bump, + the brute_bolter_illum self-illumination): the body
     # `bolt_thrower` (detail metal_dirty), `bolt_thrower_dull` (rubber detail: the grip) and
@@ -445,6 +448,41 @@ PORT.update({
             ]},
     },
 
+    # CLOSE-OUT RECORD (2026-10-08). 4b ran BEFORE boot 1 (the Beam Rifle's rule) and again at
+    # close-out. Weapon: list 2 = 0 (bounding radius, error ramp written). List 4: tracers 0 (a
+    #   tracer every round, test 1), rate ramp 0.2 (Halo 3's). List 3: weapon flags by NAME --
+    #   'can be dual wielded' (dual wield not reproduced, the carry rule instead), 'loop fp
+    #   firing animation' (Halo 1 restarts fire-1 a round: user 'serviceable'), 'old dual fire
+    #   error code' (n/a); first-person offset = Halo 3's single-wield barrel (0, -0.05, -0.01);
+    #   reload time 2.0 (Halo 3's); dual-wield error / damage scale, font icons, fp offset
+    #   override, angle change function: no Halo 1 field.
+    # Projectile: list 2 = 0 (air damage range 5..22.5, water gravity 0.8). List 3/5: flags by
+    #   name ('oriented along velocity' set; 'no impact effects on bounce' -> the reflect has no
+    #   effect; no 'AI must use ballistic aiming' -- Halo 3 lacks it, Armed boots hit fine);
+    #   timer when at rest 4..5 s, minimum velocity 12 (balanced row 48.6); the response table
+    #   (ATTACH / DISAPPEAR / RICOCHET, the needle's way; Halo 3's 20-30 wu/s bounce window left
+    #   open: the balanced spike is 4x faster); Halo 3's light-volume streak = a red-orange
+    #   tracer on every round; the stuck spike = Halo 3's brute_spike particle model as the
+    #   projectile model; the needle's burst (no damage, x0.5, silent: Halo 3's spike has no
+    #   detonation effect at all).
+    # Damage effect: list 2 = 0. The screen flash stays the AR's (a -30% try reverted).
+    # The SHIELD-HIT effect on the player = THE HIT-EFFECT RULE v2 (x0.14 at 12/s; PORTING).
+    # Full field diff (h1_port_template_diff.py): 554 differences, each one of the above, a
+    #   reference to the port's own tags, the dropped casing / eject, or the glow tags.
+    # Steps 6-10: 6 the AR template's magazine item (AR ammo tops it up), 120 a pickup (Halo 3's
+    #   SMG-ammo item), balanced 300; 7 the AR's HUD, meter 40 / 75, reticle 23 (H3 #2); 8 icon
+    #   34 + messages 61/62; 9 reload x1.5 (stretched sound), swap x1.45; 10 own sounds: fire,
+    #   reload (+ balanced), ready, melee, posing, drop, ammo, dry fire (Halo 3's SMG dry fire, as
+    #   Halo 3 uses); flashlight = the game's (user rule, KEEP).
+    # Look: Halo 3's illum = tiny constant lights (68 texels) -> base self-illum PALE (intensity
+    #   6 saturates), radial halo cards on the muzzle bores, GLOW SPOTS on the side lights (x0.4,
+    #   two cards each: face + camera), a flat card on the top-rear window; all hide with the FP
+    #   model when zoomed (test 6, a test-only zoom).
+    # port_refs_audit 0; port_sound_refs: all OWN + KEEP flashlight; port_sounds --check 0;
+    #   validate_halo_json 0; 5b: default = Halo 3's row, balanced = the AR-ratio row (144 dps).
+    # Armed: Spiker one-handed (h1_enemy_weapons.hands default 'one' -- the enhancer to write
+    #   it explicitly): Grunts full rate, Jackals keep the arm shield (confirmed in game).
+    # Not reproduced: dual wield, Halo 3's 1 s impact glow decal, the bounce speed window.
     # step 4b (port_field_audit.py --port brute_spiker): the source pair (H3 spiker vs the
     # yardstick, H3 AR) against the target pair (the H1 port vs its template = the H1 AR)
     'field_audit': {

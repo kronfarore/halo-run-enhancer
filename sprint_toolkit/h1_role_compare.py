@@ -265,6 +265,9 @@ SETS = {
     # 10/s, 20 (80 / 80), 70 fr, error min 2, 4 -> 4, speed 4 (tag), guided, range 20; plasma
     # rifle 7 -> 10/s, heat. Ratio = H1 yardstick x H3 spiker / H3 yardstick.
     'brute_spiker': {'port': 'Spike Rifle', 'weapons': [
+        # the BUILT port (step 5b): its tags (+ --balanced rows); 8/s and 12/s are under the
+        # 15/s cap observation, so the tag rates stand (no measurement needed)
+        ('Spike Rifle (port)', W + r'spiker\spiker', 'shot'),
         ('SpR = H3 own (AR bullet)', W + r'assault rifle\assault rifle', 'shot',
          {'dmg': 9.0, 'rate': 8.0, 'mag': 40, 'reload': 56 / 30.0, 'speed': 25.0, 'range': 70.0,
           'aim': (5.0, 12.0, 12.0, 18.0)}),

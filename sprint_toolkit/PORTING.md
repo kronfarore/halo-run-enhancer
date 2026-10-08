@@ -872,6 +872,44 @@ materials: Flood combat forms in 3 shots; its spread minimum 0/0) was rejected. 
 counterpart, so Halo 3's own in BOTH versions: air gravity 0.2 (the H3 AR has 0) and the
 spike's ricochet material responses (bounce at 0-60 deg off hard metal / terrain / glass).
 
+DONE 2026-10-08 (13 boots on a30; ten-map rebuild BATCHED with the SMG, BR, Carbine, Beam
+Rifle). The config's CLOSE-OUT RECORD lists every decision. What the Spike Rifle found (each an
+OBSERVATION until a second port agrees, except the user RULES):
+* **4b BEFORE BOOT 1 paid off:** the AR bullet starts its detonation timer ON FIRST BOUNCE
+  with timer 0 -- every ricochet would have ended at the first bounce; Halo 3's spike: when at
+  rest, 1 s, minimum velocity 12. Flags decided by NAME again (template diff + Halo 3 xml).
+* **H3 export cache** keyed by basename returned another weapon's `fx\projectile.effect`:
+  now keyed by path (h3_weapon_values, h1_fp_retarget). Check any cached H3 read whose name is
+  generic.
+* **The stuck spike (user: 'like the needler'):** Halo 3 spawns a MODEL PARTICLE at the impact
+  (`fx\particles\models\weapons\brute_spike`, 4-5 s) -- Halo 1 has none, so the needle's
+  recipe: response `attach` + the particle model as the projectile's MODEL
+  (`h3_rm_to_jms.convert_particle_model`, `extra_models`), timer when at rest 4-5 s, then the
+  needle's burst with no damage (user: 'detonate like the needles'; Halo 3's spike has no
+  detonation effect at all -> silent), x0.5 (user). Attach did NOT cost the hit stagger (A/B).
+* **Ricochet** = Halo 1 potential response `reflect` (skip fraction = 1 - Halo 3's chance;
+  impact angle 0-60 deg; frictions). Confirmed on rock and metal, not on dirt or bodies.
+* **Visible spike** = the AR tracer's contrail recoloured (Halo 3's light volume colour, BGRA
+  in its function data), `rounds between tracers` 0 = EVERY round (confirmed).
+* **GLOW, the third time (after the Carbine and the Beam Rifle):** Halo 3's illum colour lives
+  per SHADER (self_illum_color, BGRA bytes) with an intensity (6!) Halo 1 cannot do -- a
+  saturating colour stands in. fp_material_view's sampling MISSED thin lit lines (6x6 / 15%):
+  now exact coverage + `--texels` (the lit texels drawn on the pose) -- use them FIRST. Tiny
+  lights on edge-on faces are right but invisible without bloom: GLOW SPOTS (`glow_spots`: a
+  radial halo card per lit-texel cluster, plus a camera-facing card), radial bore cards (the
+  Beam Rifle's gems), a flat card for a lit window; flat cards over whole faces read as squares.
+  FP glow geometry hides with the FP model when zoomed (tested).
+* **The hit effect on the player:** a hit plays the projectile's response effect for the
+  player's MATERIAL (#22 shielded) -- at a high rate the donor's 49 sparks flood the view.
+  THE HIT-EFFECT RULE v2 (Balance; `h1_hit_effect_load.py`, closing check 9).
+* **Armed test (user rule):** Jackals ride the FIRST dropship (`DROPSHIP_JACKALS`; a30 =
+  lz_search's lz_cship, not first_wave's ship). One Jackal came out of an expected 2-3 (kept).
+* Muzzle flash: the SMG's on-axis recipe, 0.5 units higher (user). Fire sound: a one-shot per
+  round (no loop to slice). Dry fire = Halo 3's own reuse of the SMG's (own copy). Flashlight:
+  the game's own, a standing user rule (port_sound_refs KEEP).
+* Not reproduced: dual wield (carry rule x1.5 instead), the bounce speed window (20-30 wu/s:
+  the balanced spike is 4x faster), Halo 3's 1 s impact glow decal.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:

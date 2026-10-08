@@ -16,7 +16,8 @@ last a full Halo 3 port). Their recipes are in PORTING.md. Phase 0 (setup) is DO
 for the user's go): read "Pilot A1: what wave A inherits" below before A2. A2 (Battle
 Rifle) and A3 (Covenant Carbine, 2026-10-08) are DONE and tested too -- the ten-map
 rebuild is BATCHED for all three (user's go). A4 (Beam Rifle, 2026-10-08) is DONE and tested
-too (batched with them); read "A4: what the Beam Rifle taught" before A5.
+too (batched with them); read "A4: what the Beam Rifle taught" before A5. A5 (Spike Rifle,
+2026-10-08) is DONE and tested too (batched); read "A5: what the Spike Rifle taught" before A6.
 
 ## Phase 0: DONE (2026-10-07)
 
@@ -446,6 +447,44 @@ Carbine's `meters`) and for any additive / luminous material (render the FP pose
 FIRST). Template: the yardstick's weapon unless the role table says otherwise -- then run 4b and
 the template diff before boot 1.
 
+## A5: what the Spike Rifle taught (2026-10-08) -- read before A6 (the Mauler)
+
+PORTING.md "Halo 1: the Spike Rifle, wave A5" is the full record; `ports_h1/brute_spiker.py`
+is the example of a DUAL-WIELDABLE automatic with a PHYSICAL projectile (arc, ricochet, a stuck
+spike) and of the GLOW SPOT recipe. Everything in "Pilot A1" to "A4" still holds; the Spiker
+added:
+
+**New user rules:**
+- THE HIT-EFFECT RULE v2 (PORTING Balance, closing check 9): the port's shield-hit effect on
+  the player (its projectile's response for material #22) keeps the donor's load up to 3.5
+  rounds/s, above x (3.5 / rate)^3.19, size-scaled -- `h1_hit_effect_load.py`, `bullet.
+  impact_thin` {'materials': [22], 'thin': {}, 'rate': max(default, balanced)}. A pellet weapon
+  counts pellets x rate (the tool does): CHECK the Mauler's number with the user.
+- FLASHLIGHT sound: the game's own when the source has none (port_sound_refs prints KEEP).
+- ARMED TEST: Jackals ride the FIRST DROPSHIP (`DROPSHIP_JACKALS` in h1_port_test_map; a30 =
+  lz_search/far_grunt). Another level needs its entry first.
+
+**Process (observations):**
+- 4b + the template diff BEFORE boot 1 caught the AR bullet's timer-on-first-bounce (it would
+  have killed every ricochet). Read the TEMPLATE's projectile detonation block for any port whose
+  projectile bounces, sticks or rests.
+- Glow: run `fp_material_view.py <key> --illum <H3 illum> --threshold 16 --texels 24` FIRST
+  (exact coverage, the lit texels drawn on the pose) and decode each Halo 3 shader's
+  self_illum_color / intensity (BGRA bytes in the function data). Tiny lights = `glow_spots`.
+- A Halo 3 MODEL PARTICLE (stuck spikes, shell casings...) becomes a projectile / object model
+  via `h3_rm_to_jms.convert_particle_model` + `extra_models`.
+- The H3 export cache is keyed by PATH now (generic names like fx\projectile.effect collided).
+
+**For A6, the Mauler (`pistol\excavator\excavator`):** yardstick candidates Shotgun
+(provisional) and Pistol. Halo 3: 5 rounds, WHOLE-magazine reload (55 fr; the shotgun loads
+shell by shell -- a reload-style difference to approximate or keep), fire recovery 0.75 s
+(shotgun 1.0), 7 damage a pellet with a 1.5 LOWER bound (falloff -- read the damage effect's
+range; the shotgun 10 / 3), range 8 (shotgun 6), aim 8/7 16/7, both bullet_slow, `cut_melee`
+(the Spiker's blade), dual-wieldable (carry rule x1.5, two resource groups). The barrel's error
+fields read 0 and projectiles per shot 1 in h3_weapon_values -- find the PELLET count and spread
+(barrel distribution / a second block) before the ratio table. One-handed: `hands` 'one' (Armed
+rule: no Grunt half rate, Jackals keep the shield). Hit-effect rule: pellets x rate.
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one
@@ -862,3 +901,51 @@ spawn check in game. The SMG (done, tested on a30) is the first in that batch.
 > Carbine and Beam Rifle, on my go. When done: catalog entry, enhancer hand-off to the "Halo
 > enhancer project" session, PORTING notes, memory, `python port_backup.py --game h1`, and
 > what the Spike Rifle taught added to the plan before A6 (the Brute Mauler).
+
+### The Mauler (wave A6), filled in
+
+> Port the Mauler (Brute Mauler) into Halo 1 (H1_PORT_PLAN.md, wave A, #A6). Source: Halo 3,
+> `objects\weapons\pistol\excavator\excavator` (H3EK).
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Phase 0: DONE", "Pilot A1", "A2", "A3", "A4" and "A5: what
+> the Spike Rifle taught" first -- its last paragraph is written for THIS weapon), PORTING.md
+> ("What ported actually means" steps 0-11 and 5b, closing checks 1-9, the Halo 1 sections -- the
+> SMG (dual-wield rules) and the Spike Rifle (blade melee, physical projectiles, glow spots, the
+> hit-effect rule) -- and "Balance" incl. the DUAL-WIELD CARRY RULE, the ARMED WDM RULE and THE
+> HIT-EFFECT RULE) and memory h1-spike-rifle-port, h1-beam-rifle-port, h1-smg-pilot,
+> h1-armed-test-balanced-god, h1-hit-effect-rule, port-flashlight-sound-rule, h1-port-phase0,
+> h1-weapon-into-map, halo-port-own-messages, h1-fmod-bank-sounds,
+> port-findings-are-observations, shared-worktree-commits. `ports_h1/brute_spiker.py` is the
+> example of a dual-wieldable one-hander with a blade; copy its shape into
+> `ports_h1/brute_mauler.py` and edit only that file (plus any shared tool you generalize).
+>
+> START WITH STEP 4a, before any tag number is written: the yardstick, decided WITH me.
+> Wave-A rule: DEFAULT = Halo 3's own numbers, BALANCED = the ratio rows. Candidates:
+> provisional SHOTGUN, alternative PISTOL. First find the Mauler's PELLET count and spread
+> (h3_weapon_values shows projectiles per shot 1 and error 0 -- they live elsewhere). Lay them
+> side by side per value (damage per pellet AND per shot, falloff lower bound and its range,
+> rate / fire recovery, magazine / carry, reload (whole magazine vs the shotgun's shell by
+> shell), spread, velocity / range, aim assist, melee) with `h3_weapon_values.py` and
+> `h1_role_compare.py` (a 'brute_mauler' set; time to kill vs Shotgun, Pistol, Energy Sword).
+> Damage type against Halo 1's materials. I pick; record it in yardstick['pick'] / ['reason']
+> and PORTING. Then run step 4b (`port_field_audit.py --port brute_mauler`) and
+> `h1_port_template_diff.py` BEFORE boot 1.
+>
+> Reserved: pickup messages 63/64; hud_msg_icons 35 (+ _r twin); hud_reticles 24 (+ _r,
+> `reticle_thicken` 1); label `ml` taught to characters\cyborg from `sg`; sounds under
+> `sound\weapons\mauler_port` (never under sound\sfx); weapon folder `weapons\mauler`; catalog
+> name `Mauler`.
+>
+> What the Mauler tests first: a ONE-HANDED pellet weapon (two resource groups; carry rule
+> x1.5; the 3P pose class -- `sg` is two-handed: check the label against the Spiker's `hp`);
+> the whole-magazine reload against Halo 1's shotgun reload; damage falloff; the blade melee
+> (cut_melee); glow (`fp_material_view --illum --texels` first); the hit-effect rule with
+> pellets. Before the Armed boot: the enhancer's `hands` for the Mauler ('one').
+>
+> Step 11: list Halo 1's carriers of the chosen donor weapon first; `firing_profile` needs a
+> `donor_weapon` (+ `donor_variant` if one carrier should serve every slot) AND a `wdm_rule`.
+> Test with `h1_port_test_map.py brute_mauler --stage`: dry default, fixes, `--balanced`, then
+> `--armed grunt,jackal,elite` (implies balanced + god; Jackals ride the first dropship on
+> a30); `--restore <level>`. NO ten-map rebuild: BATCHED with the SMG, BR, Carbine, Beam Rifle
+> and Spike Rifle, on my go. When done: catalog entry, enhancer hand-off to the "Halo enhancer
+> project" session, PORTING notes, memory, `python port_backup.py --game h1`, and what the
+> Mauler taught added to the plan before A7 (the Brute Shot).
