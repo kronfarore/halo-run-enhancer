@@ -658,12 +658,17 @@ def _point(m, at, key):
     struct.pack_into('<I', m.data, at + 0xC, m.tag_id(key))
 
 
-def shieldless_biped(m, unit):
-    """'<unit> shieldless' -- made now if the map does not carry it yet. None when the
-    biped has no arm shield to drop."""
+def shieldless_biped(m, unit, make=False):
+    """'<unit> shieldless' when the map carries it, else None.
+
+    NEVER make=True on a map for the game: adding tags to a built Halo 1 map is a fatal
+    error on load (2026-10-02, and again 2026-10-08 with these very tags). The shieldless
+    Jackal has to be built into the maps with the kit; `make` stays for offline tests."""
     name = unit + SHIELDLESS
     if m.tag_id(('bipd', name)) is not None:
         return name
+    if not make:
+        return None
     b = dict(m.find_tags('bipd', unit)).get(unit)
     if b is None:
         return None
@@ -708,9 +713,15 @@ def jackal_shield_rule(m, bases, units, weapon):
             swap[u] = shieldless_biped(m, u)
         if swap[u]:
             _point(m, b + hv.REF_UNIT, ('bipd', swap[u]))
+    missing = [u for u, v in swap.items() if not v]
     swap = {k: v for k, v in swap.items() if v}
-    return swap, ('no arm shield (%s)' % ', '.join(v.rsplit(BS, 1)[-1] for v in swap.values())
-                  if swap else None)
+    notes = []
+    if swap:
+        notes.append('no arm shield (%s)' % ', '.join(v.rsplit(BS, 1)[-1] for v in swap.values()))
+    if missing:
+        notes.append('arm shield KEPT: the map carries no %s' % ', '.join(
+            (u + SHIELDLESS).rsplit(BS, 1)[-1] for u in missing))
+    return swap, '; '.join(notes) or None
 
 
 def _i16(m, off):
