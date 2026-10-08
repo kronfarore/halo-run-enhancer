@@ -1,0 +1,108 @@
+{
+ "game": "Halo 1",
+ "weapon": "Spike Rifle",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\spiker_port\\sk_fire",
+   "perms": [
+    "sk_fire_1.wav",
+    "sk_fire_2.wav",
+    "sk_fire_3.wav",
+    "sk_fire_4.wav",
+    "sk_fire_5.wav",
+    "sk_fire_6.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spiker_port\\sk_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spiker_port\\sk_reload",
+   "perms": [
+    "sk_reload_1.wav",
+    "sk_reload_2.wav",
+    "sk_reload_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spiker_port\\sk_reload"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spiker_port\\sk_reload_balanced",
+   "perms": [
+    "sk_reload_balanced_1.wav",
+    "sk_reload_balanced_2.wav",
+    "sk_reload_balanced_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spiker_port\\sk_reload_balanced"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spiker_port\\sk_ready",
+   "perms": [
+    "sk_ready_1.wav",
+    "sk_ready_2.wav",
+    "sk_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spiker_port\\sk_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spiker_port\\sk_melee",
+   "perms": [
+    "sk_melee_1.wav",
+    "sk_melee_2.wav",
+    "sk_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spiker_port\\sk_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spiker_port\\sk_pose",
+   "perms": [
+    "sk_pose_1.wav",
+    "sk_pose_2.wav",
+    "sk_pose_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spiker_port\\sk_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spiker_port\\sk_drop",
+   "perms": [
+    "sk_drop_1.wav",
+    "sk_drop_2.wav",
+    "sk_drop_3.wav",
+    "sk_drop_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spiker_port\\sk_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spiker_port\\sk_ammo",
+   "perms": [
+    "sk_ammo_1.wav",
+    "sk_ammo_2.wav",
+    "sk_ammo_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spiker_port\\sk_ammo"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spiker_port\\sk_dryfire",
+   "perms": [
+    "sk_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spiker_port\\sk_dryfire"
+   ]
+  }
+ ]
+}

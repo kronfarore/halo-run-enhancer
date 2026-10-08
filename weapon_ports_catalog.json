@@ -1658,6 +1658,270 @@
      "Age Per Round"
     ]
    }
+  },
+  {
+   "weapon": "Spike Rifle",
+   "source": "Halo 3",
+   "donor": "Assault Rifle",
+   "default_on": false,
+   "desc": "Halo 3's Spike Rifle: its model, first-person animations, sounds and numbers. A 40-round Brute automatic firing slow, arcing spikes that ricochet off metal and rock, with a blade for melee; Assault Rifle ammo tops it up.",
+   "balance_desc": "Measured against the Assault Rifle, which both games have: 12 damage per spike at 12 a second, a 75 magazine, 300 at pickup / 375 most, a 2.8 s reload, a wider spray, faster spikes and Halo 1-style aim assist; the arc and the ricochet stay Halo 3's.",
+   "anims": {
+    "reload": 1.5,
+    "swap": 1.45
+   },
+   "anim_sounds": {
+    "reload": {
+     "mult": 1.5,
+     "from": "sound\\weapons\\spiker_port\\sk_reload",
+     "to": "sound\\weapons\\spiker_port\\sk_reload_balanced"
+    }
+   },
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\spiker\\spike",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 12.0,
+     "card": "Spike Damage",
+     "original": 9.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\spiker\\spike",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 12.0,
+     "card": "Spike Damage",
+     "original": 9.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\spiker\\spike",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 12.0,
+     "card": "Spike Damage",
+     "original": 9.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spiker\\spiker",
+     "field": "Rounds Per Second",
+     "block": "Triggers",
+     "value": 12.0,
+     "card": "More Shooting",
+     "original": 8.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spiker\\spiker",
+     "field": "Rounds Per Second Max",
+     "block": "Triggers",
+     "value": 12.0,
+     "card": "More Shooting",
+     "original": 8.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spiker\\spiker",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 75.0,
+     "card": "Magazine",
+     "original": 40.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spiker\\spiker",
+     "field": "Rounds Reloaded",
+     "block": "Magazines",
+     "value": 75.0,
+     "card": "Magazine",
+     "original": 40.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spiker\\spiker",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 300.0,
+     "card": "Magazine",
+     "original": 120.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spiker\\spiker",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 375.0,
+     "card": "Magazine",
+     "original": 160.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spiker\\spiker",
+     "field": "Rounds",
+     "block": "Magazines/Magazines",
+     "value": 300,
+     "card": "Ammo pickup",
+     "original": 120
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spiker\\spiker",
+     "field": "Error Angle",
+     "block": "Triggers",
+     "value": 1.08,
+     "card": "Error Angle",
+     "original": 0.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spiker\\spiker",
+     "field": "Error Angle Max",
+     "block": "Triggers",
+     "value": 2.71,
+     "card": "Error Angle",
+     "original": 1.25
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\spiker\\spike",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 3.375,
+     "card": "Projectile",
+     "original": 0.8333333333333334
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\spiker\\spike",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 2.3625,
+     "card": "Projectile",
+     "original": 0.5833333333333334
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\spiker\\spike",
+     "field": "Minimum Velocity",
+     "block": null,
+     "value": 1.62,
+     "card": "Projectile",
+     "original": 0.4
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spiker\\spiker",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 6.0,
+     "card": "Autoaim",
+     "original": 5.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spiker\\spiker",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 20.0,
+     "card": "Autoaim",
+     "original": 12.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spiker\\spiker",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 14.4,
+     "card": "Magnetism",
+     "original": 12.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spiker\\spiker",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 22.5,
+     "card": "Magnetism",
+     "original": 18.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\spiker\\melee",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 41.16,
+     "card": "Melee Damage",
+     "original": 52.36
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\spiker\\melee",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 51.45,
+     "card": "Melee Damage",
+     "original": 65.45
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\spiker\\melee",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 61.75,
+     "card": "Melee Damage",
+     "original": 78.55
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\spiker\\spiker",
+     "field": "Sequence Index",
+     "block": "Meter Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\spiker\\spiker",
+     "field": "Alpha Multiplier",
+     "block": "Meter Elements",
+     "value": 3,
+     "card": "Ammo display",
+     "original": 6,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\spiker\\spiker",
+     "field": "Sequence Index",
+     "block": "Static Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\spiker\\spiker",
+     "field": "Loaded Ammo Cutoff",
+     "block": null,
+     "value": 12,
+     "card": "Ammo display",
+     "original": 7,
+     "index": 0
+    }
+   ],
+   "weap": "weapons\\spiker\\spiker",
+   "fp_animations": "weapons\\spiker\\fp\\fp",
+   "requires": [
+    "proj weapons\\spiker\\spike"
+   ]
   }
  ],
  "Halo 3": [

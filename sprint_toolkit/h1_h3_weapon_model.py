@@ -72,6 +72,24 @@ def material_islands(jm, material):
     return [(ts, [jm.verts[v] for t in ts for v in (t.v0, t.v1, t.v2)]) for ts in isl.values()]
 
 
+def drop_materials(jm, names):
+    """Triangles of the named materials removed, materials renumbered (the Spike Rifle's FP
+    model: 20 triangles of Halo 3's `shaders\\invalid` -- a flat cap at both barrel ends,
+    x 15.8 cm -- that Halo 3 does not draw)."""
+    mats = [m.name for m in jm.materials]
+    drop = {i for i, n in enumerate(mats) if n in names}
+    if not drop:
+        return
+    n0 = len(jm.tris)
+    jm.tris = [t for t in jm.tris if t.shader not in drop]
+    keep = [i for i in range(len(mats)) if i not in drop]
+    remap = {old: new for new, old in enumerate(keep)}
+    for t in jm.tris:
+        t.shader = remap[t.shader]
+    jm.materials = [jm.materials[i] for i in keep]
+    print('   dropped %d triangle(s) of %s' % (n0 - len(jm.tris), sorted(mats[i] for i in drop)))
+
+
 def bitmaps(w):
     out = os.path.join(HCEEK, 'data', w['dir'], 'bitmaps')
     os.makedirs(out, exist_ok=True)
@@ -97,7 +115,11 @@ def bitmaps(w):
                 g = g.filter(ImageFilter.MaxFilter(2 * w['illum_dilate'] + 1))
             mp[..., 1] = np.array(g)
             lit = a[a.max(axis=2) > 64]
-            if w.get('glow'):                                     # a set colour
+            if isinstance(w.get('glow'), dict) and name in w['glow']:
+                # a colour PER SHADER (the Spike Rifle: Halo 3's self_illum_color differs --
+                # the body blue, the grip and blades hot orange, on one shared grey mask)
+                glow[name] = tuple(w['glow'][name])
+            elif w.get('glow') and not isinstance(w['glow'], dict):   # a set colour
                 glow[name] = tuple(w['glow'])
             elif len(lit):                                        # the glow's own colour
                 c = lit.mean(axis=0)
@@ -320,6 +342,7 @@ def shaders(w, glow):
 def models(w):
     for key, sub, fname in (('world', '', w['world_name']), ('fp', B + 'fp', 'fp')):
         jm, _rm = h3_rm_to_jms.convert(w[key], markers=w.get('markers'))
+        drop_materials(jm, w.get('drop_materials', ()))
         # a marker at the centre of each piece of a material (`material_markers` {prefix:
         # material}; the Beam Rifle's gems, for a lens-flare test): `<prefix> <n>`, on the
         # piece's node (bind rotation identity there: checked on the beam rifle's `frame gun`)

@@ -103,7 +103,9 @@ def render(weapon):
         for f in folders:
             pieces = []
             for g in (f if isinstance(f, tuple) else (f,)):
-                key = (w['h3_dir'] + g + '\\').lower()
+                # a folder from ANOTHER weapon names its full bank path (the Spike Rifle's
+                # dry fire is Halo 3's own reuse of `data\sound\weapons\smg\dryfire`)
+                key = ((g if g.lower().startswith('data\\') else w['h3_dir'] + g) + '\\').lower()
                 subs = idx.get(key)
                 if not subs:
                     raise SystemExit('%s: no %s in Halo 3\'s bank' % (name, key))

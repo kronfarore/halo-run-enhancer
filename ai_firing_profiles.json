@@ -700,6 +700,160 @@
     "port_dps": 200.0,
     "balanced_port_dps": 354.0
    }
+  },
+  "weapons\\spiker\\spiker": {
+   "source": "Halo 3 ai\\generic objects\\weapons\\rifle\\spike_rifle\\spike_rifle (weapon properties #2, firing pattern #2) over weapons\\assault rifle\\assault rifle carriers",
+   "fields": {
+    "0x74": [
+     "<f",
+     14.0,
+     "Maximum Firing Distance"
+    ],
+    "0x78": [
+     "<f",
+     8.0,
+     "Rate Of Fire"
+    ],
+    "0x7C": [
+     "<f",
+     0.006544984877109528,
+     "Projectile Error"
+    ],
+    "0x80": [
+     "<f",
+     0.10000000149011612,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     0.800000011920929,
+     "First Burst Delay Time Max"
+    ],
+    "0x8C": [
+     "<f",
+     1.0,
+     "Surprise Delay Time"
+    ],
+    "0x90": [
+     "<f",
+     0.5,
+     "Surprise Fire-Wildly Time"
+    ],
+    "0x94": [
+     "<f",
+     0.20000000298023224,
+     "Death Fire-Wildly Chance"
+    ],
+    "0x98": [
+     "<f",
+     0.800000011920929,
+     "Death Fire-Wildly Time"
+    ],
+    "0x9C": [
+     "<f",
+     2.5,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     7.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     0.75,
+     "Target Tracking"
+    ],
+    "0xC0": [
+     "<f",
+     0.5,
+     "Target Leading"
+    ],
+    "0xCC": [
+     "<f",
+     0.15000000596046448,
+     "Burst Origin Radius"
+    ],
+    "0xD0": [
+     "<f",
+     0.3490658402442932,
+     "Burst Origin Angle"
+    ],
+    "0xD4": [
+     "<f",
+     0.20000000298023224,
+     "Burst Return Length"
+    ],
+    "0xD8": [
+     "<f",
+     0.30000001192092896,
+     "Burst Return Length Max"
+    ],
+    "0xDC": [
+     "<f",
+     0.3490658402442932,
+     "Burst Return Angle"
+    ],
+    "0xE0": [
+     "<f",
+     0.6000000238418579,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     1.600000023841858,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     1.399999976158142,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     2.799999952316284,
+     "Burst Separation Max"
+    ],
+    "0x1D8": [
+     "<f",
+     0.4000000059604645,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.800000011920929,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     60,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     100,
+     "Drop Weapon Ammo Max"
+    ],
+    "0xC4": [
+     "<f",
+     0.8333333333333334,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "donor_weapon": "weapons\\assault rifle\\assault rifle",
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.4166666666666667,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.4,
+    "yardstick_dps": 150.0,
+    "port_dps": 72.0,
+    "balanced_port_dps": 144.0
+   }
   }
  }
 }

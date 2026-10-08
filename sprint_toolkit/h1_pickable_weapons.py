@@ -378,9 +378,38 @@ def own_beam(a, b, write):
         node = pt.data.tagdata
         for part in head:
             node = getattr(node, part)
-        setattr(node, last, v)
+        if isinstance(v, str) and hasattr(getattr(node, last), 'set_to'):
+            getattr(node, last).set_to(v)        # an enum by name (the Spike Rifle's timer start)
+        elif isinstance(v, tuple):               # a bounds pair (the Spike Rifle's damage range)
+            for i, x in enumerate(v):
+                getattr(node, last)[i] = x
+        else:
+            setattr(node, last, v)
     if 'velocity' in b:
-        pd.physics.initial_velocity = pd.physics.final_velocity = b['velocity']
+        if isinstance(b['velocity'], tuple):  # (initial, final): the Spike Rifle's slowing spike
+            pd.physics.initial_velocity, pd.physics.final_velocity = b['velocity']
+        else:
+            pd.physics.initial_velocity = pd.physics.final_velocity = b['velocity']
+    if 'reflect' in b:
+        # a RICOCHET as the potential response (the Spike Rifle: Halo 3's spike bounces off
+        # hard metal / rock / forerunner shields at 0-60 deg, chance 1): per Halo 1 material
+        # index, potential response 'reflect', skip fraction 0 (Halo 1 SKIPS that fraction;
+        # Halo 3 has a chance), impact angle (deg), optional impact velocity window, the
+        # response's frictions and angular noise. The default response stays the template's
+        R = b['reflect']
+        mr = pd.material_responses.STEPTREE
+        for i in R['materials']:
+            x = mr[i]
+            pr = x.potential_response
+            pr.response.set_to('reflect')
+            pr.skip_fraction = R.get('skip', 0.0)
+            pr.impact_angle[0], pr.impact_angle[1] = (math.radians(a) for a in R['angle_deg'])
+            pr.impact_velocity[0], pr.impact_velocity[1] = R.get('velocity', (0.0, 0.0))
+            if R.get('effect_from_default', True):   # the template's impact effect on the bounce
+                pr.effect.filepath = x.effect.filepath
+            x.parallel_refriction = R.get('parallel_friction', x.parallel_refriction)
+            x.perpendicular_friction = R.get('perpendicular_friction', x.perpendicular_friction)
+            x.angular_noise = math.radians(R.get('noise_deg', 0.0))
     if 'attachments_from' in b:          # e.g. a TRACER contrail (the BR takes the AR bullet's)
         src = proj_def.build(filepath=path(b['attachments_from'], '.projectile')).data.tagdata
         att = pt.data.tagdata.obje_attrs.attachments.STEPTREE
@@ -605,6 +634,17 @@ def edit_weapon(key, write):
         if write:
             backup(path(own, '.damage_effect'))
             shutil.copy2(path(donor, '.damage_effect'), path(own, '.damage_effect'))
+        if 'melee_dmg' in w:
+            # the copy's damage MEAN set, its lower / upper spread kept (the Spike Rifle's blade:
+            # Halo 3 cut_melee 72 against the H1 AR's 50..60): both upper bounds x mean / old
+            jt = jpt__def.build(filepath=path(donor, '.damage_effect'))
+            dm = jt.data.tagdata.damage
+            k = w['melee_dmg'] / ((dm.damage_upper_bound[0] + dm.damage_upper_bound[1]) / 2.0)
+            dm.damage_lower_bound *= k
+            dm.damage_upper_bound[0], dm.damage_upper_bound[1] = (dm.damage_upper_bound[0] * k,
+                                                                  dm.damage_upper_bound[1] * k)
+            save(jt, path(own, '.damage_effect'), write)
+            print('   melee %s: x%.3f -> %.1f..%.1f' % (own, k, dm.damage_upper_bound[0], dm.damage_upper_bound[1]))
         a.melee.player_damage.filepath = own
         a.melee.player_response.filepath = w['melee_response']
     if 'messages' in w:
@@ -673,6 +713,18 @@ def edit_weapon(key, write):
                 x.flags.tint_as_hsv = False
                 for b in (x.tint_lower_bound, x.tint_upper_bound):
                     b.a, b.r, b.g, b.b = fl['tint']
+        # `drop_particles` (path substrings) / `drop_parts` (tag paths): what the source weapon
+        # does not have (the Spike Rifle: no casing, so the AR's casing particle and the
+        # pistol's eject sound go -- otherwise a BORROW in port_sound_refs)
+        for ev in et.data.tagdata.events.STEPTREE:
+            pts = ev.particles.STEPTREE
+            for i in range(len(pts) - 1, -1, -1):
+                if any(s in pts[i].particle_type.filepath for s in fl.get('drop_particles', ())):
+                    pts.pop(i)
+            prts = ev.parts.STEPTREE
+            for i in range(len(prts) - 1, -1, -1):
+                if prts[i].type.filepath in fl.get('drop_parts', ()):
+                    prts.pop(i)
         n = 0
         for ev in et.data.tagdata.events.STEPTREE:
             for part in ev.parts.STEPTREE:
