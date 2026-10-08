@@ -499,12 +499,16 @@ class Level:
         bases.append(vs.fill_slot(self.m, sl, self.tags[source], weref, dmin, major_ref))
         write_profile(self.m, bases[-1], prof)
         rule = grunt_rate_rule(self.m, bases, unit, weapon)
+        units = ([self.ref(major, hv.REF_UNIT)] if need == 2 else []) + [unit]
+        swap, shield_note = jackal_shield_rule(self.m, bases, units, weapon)
         self.alias[vs.slot_path(sl)] = source + hv.CLONE_SEP + weapon.rsplit(BS, 1)[-1]
         self.log.append((sl, self.alias[vs.slot_path(sl)], dname))
         # a major has a biped of its own (Jackal major), which needs the melee too
         major_unit = self.ref(major, hv.REF_UNIT) if need == 2 else None
+        # a shieldless Jackal is its own biped: the melee damage ref goes on IT
+        unit, major_unit = swap.get(unit, unit), swap.get(major_unit, major_unit)
         taught = '; '.join(x for x in (
-            rule, self.ensure_label(unit, weapon), self.ensure_melee(unit, weapon),
+            rule, shield_note, self.ensure_label(unit, weapon), self.ensure_melee(unit, weapon),
             self.ensure_melee(major_unit, weapon) if major_unit not in (None, unit) else None)
             if x)
         idx = self.palette_index(vs.slot_path(sl))
@@ -556,6 +560,157 @@ def grunt_rate_rule(m, bases, unit, weapon):
         struct.pack_into('<f', m.data, b + RATE_OF_FIRE,
                          struct.unpack_from('<f', m.data, b + RATE_OF_FIRE)[0] * GRUNT_TWO_HANDED_RATE)
     return 'two-handed: Grunt rate x%g' % GRUNT_TWO_HANDED_RATE
+
+
+# ----------------------------------------------------------------------------- shieldless
+# A Jackal given a two-handed or heavy weapon loses its arm shield (user, 2026-10-08).
+# The shield is the model region 'shield' (looks base00 / ~shield_off) and the collision
+# node of the coll region 'shield' (one BSP per look). Measured on b30 (2026-10-08, user):
+# the normal look pointed at ~shield_off's geometry + the node's BSPs swapped = no shield,
+# shots hit the body. An energy shield of 0 alone did nothing.
+# Made at PATCH time, per biped, only when an armed slot needs it: '<biped> shieldless'
+# with its own model and collision copies. Each copy is the tag's root plus private copies
+# of just the blocks it changes; everything else stays shared with the original.
+SHIELDLESS = ' shieldless'
+BIPD_ROOT, MOD2_ROOT, COLL_ROOT = 0x4F4, 0xE8, 0x298
+BIPD_MODEL, BIPD_COLL = 0x28, 0x70
+MOD2_REGIONS, MOD2_REGION, MOD2_PERMS, MOD2_PERM, MOD2_GEOMETRY = 0xC4, 0x4C, 0x40, 0x58, 0x40
+COLL_REGIONS, COLL_REGION, COLL_PERMS, COLL_PERM = 0x240, 0x54, 0x48, 0x20
+COLL_NODES, COLL_NODE, NODE_REGION, NODE_BSPS, BSP = 0x28C, 0x40, 0x20, 0x34, 0x60
+COLL_MAX_SHIELD = 0xCC
+SHIELD_REGION, SHIELD_OFF = 'shield', '~shield_off'
+
+
+def _own_block(m, owner, at, size, edit=None):
+    """Give the reflexive at owner+at a private copy of its elements (edit(list of
+    bytearrays) may change them). Returns the copy's element offsets."""
+    els = [bytearray(m.data[e:e + size]) for e in tw._elems(m, owner + at, size)]
+    if edit:
+        edit(els)
+    off = m.append_raw(b''.join(bytes(e) for e in els))
+    struct.pack_into('<I', m.data, owner + at + 4, (off + m.magic) & 0xFFFFFFFF)
+    return [off + i * size for i in range(len(els))]
+
+
+def _perm_index(m, region, at, size, name):
+    names = [tw._ascii(m, p) for p in tw._elems(m, region + at, size)]
+    return names.index(name) if name in names else None
+
+
+def _shieldless_model(m, base):
+    """Model root copy with the shield region's normal look(s) on ~shield_off's geometry.
+    None when the model has no such region."""
+    region = next((r for r in tw._elems(m, base + MOD2_REGIONS, MOD2_REGION)
+                   if tw._ascii(m, r) == SHIELD_REGION), None)
+    if region is None or _perm_index(m, region, MOD2_PERMS, MOD2_PERM, SHIELD_OFF) is None:
+        return None
+    return bytearray(m.data[base:base + MOD2_ROOT])
+
+
+def _shieldless_coll(m, base):
+    if not any(tw._ascii(m, r) == SHIELD_REGION
+               for r in tw._elems(m, base + COLL_REGIONS, COLL_REGION)):
+        return None
+    root = bytearray(m.data[base:base + COLL_ROOT])
+    struct.pack_into('<f', root, COLL_MAX_SHIELD, 0.0)
+    return root
+
+
+def _strip_model(m, base):
+    """In the (already added) model copy at `base`: private regions, private shield
+    permutations, every normal look on ~shield_off's geometry."""
+    for r in _own_block(m, base, MOD2_REGIONS, MOD2_REGION):
+        if tw._ascii(m, r) != SHIELD_REGION:
+            continue
+        off = _perm_index(m, r, MOD2_PERMS, MOD2_PERM, SHIELD_OFF)
+
+        def edit(perms):
+            geo = bytes(perms[off][MOD2_GEOMETRY:MOD2_GEOMETRY + 10])
+            for i, p in enumerate(perms):
+                if i != off and not p[:1] == b'~':
+                    p[MOD2_GEOMETRY:MOD2_GEOMETRY + 10] = geo
+        _own_block(m, r, MOD2_PERMS, MOD2_PERM, edit)
+
+
+def _strip_coll(m, base):
+    """In the (already added) collision copy at `base`: the shield region's nodes get
+    private BSP lists whose normal permutations use ~shield_off's BSP."""
+    regions = tw._elems(m, base + COLL_REGIONS, COLL_REGION)
+    ri = next(i for i, r in enumerate(regions) if tw._ascii(m, r) == SHIELD_REGION)
+    names = [tw._ascii(m, p) for p in tw._elems(m, regions[ri] + COLL_PERMS, COLL_PERM)]
+    off = names.index(SHIELD_OFF) if SHIELD_OFF in names else None
+    if off is None:
+        return
+    for n in _own_block(m, base, COLL_NODES, COLL_NODE):
+        if struct.unpack_from('<h', m.data, n + NODE_REGION)[0] != ri:
+            continue
+
+        def edit(bsps):
+            if off < len(bsps):
+                for i in range(len(bsps)):
+                    if not names[i].startswith('~'):
+                        bsps[i] = bytearray(bsps[off])
+        _own_block(m, n, NODE_BSPS, BSP, edit)
+
+
+def _point(m, at, key):
+    struct.pack_into('<I', m.data, at + 4, m.tag_name_ptr(key))
+    struct.pack_into('<I', m.data, at + 0xC, m.tag_id(key))
+
+
+def shieldless_biped(m, unit):
+    """'<unit> shieldless' -- made now if the map does not carry it yet. None when the
+    biped has no arm shield to drop."""
+    name = unit + SHIELDLESS
+    if m.tag_id(('bipd', name)) is not None:
+        return name
+    b = dict(m.find_tags('bipd', unit)).get(unit)
+    if b is None:
+        return None
+    model, coll = hv._ref_name(m, b, BIPD_MODEL), hv._ref_name(m, b, BIPD_COLL)
+    mb = dict(m.find_tags('mod2', model or '-')).get(model)
+    cb = dict(m.find_tags('coll', coll or '-')).get(coll)
+    if mb is None or cb is None:
+        return None
+    entries = []
+    if m.tag_id(('mod2', model + SHIELDLESS)) is None:
+        root = _shieldless_model(m, mb)
+        if root is None:
+            return None
+        entries.append(('mod2', model + SHIELDLESS, root))
+    if m.tag_id(('coll', coll + SHIELDLESS)) is None:
+        root = _shieldless_coll(m, cb)
+        if root is None:
+            return None
+        entries.append(('coll', coll + SHIELDLESS, root))
+    entries.append(('bipd', name, bytearray(m.data[b:b + BIPD_ROOT])))
+    added = dict(zip([(c, n) for c, n, _r in entries], hv.add_tags(m, entries)))
+    if ('mod2', model + SHIELDLESS) in added:
+        _strip_model(m, added[('mod2', model + SHIELDLESS)][1])
+    if ('coll', coll + SHIELDLESS) in added:
+        _strip_coll(m, added[('coll', coll + SHIELDLESS)][1])
+    nb = added[('bipd', name)][1]
+    _point(m, nb + BIPD_MODEL, ('mod2', model + SHIELDLESS))
+    _point(m, nb + BIPD_COLL, ('coll', coll + SHIELDLESS))
+    return name
+
+
+def jackal_shield_rule(m, bases, units, weapon):
+    """Point the filled slots (bases, with their units) at shieldless Jackal bipeds when
+    the weapon is two-handed or heavy. Returns ({old unit: new unit}, note)."""
+    if hands(weapon) not in ('two', 'heavy'):
+        return {}, None
+    swap = {}
+    for b, u in zip(bases, units):
+        if not u or enemy_of_unit(u) != 'Jackal':
+            continue
+        if u not in swap:
+            swap[u] = shieldless_biped(m, u)
+        if swap[u]:
+            _point(m, b + hv.REF_UNIT, ('bipd', swap[u]))
+    swap = {k: v for k, v in swap.items() if v}
+    return swap, ('no arm shield (%s)' % ', '.join(v.rsplit(BS, 1)[-1] for v in swap.values())
+                  if swap else None)
 
 
 def _i16(m, off):
