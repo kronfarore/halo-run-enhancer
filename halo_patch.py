@@ -3441,6 +3441,37 @@ def _fix_h2_fuel_rod_group(m, game):
              'new': 'explosion_large on ' + ', '.join(fixed)}]
 
 
+
+# The Halo 2 SAW port's bullet (saw_bullet, built from the cut gpmg's h_turret_ap_bullet)
+# kept the turret's General Damage group 'bullet_vehicle'. Every other SAW (the Halo 3,
+# ODST, Reach and Halo 4 ones) fires 'bullet_slow', the Assault Rifle's group -- so the
+# port is pointed there on every Halo 2 patch (the string id is taken from a jpt! that
+# already names it). Not an option: the port is ours, not Bungie's data.
+_H2_SAW_BULLET = ('objects' + chr(92) + 'weapons' + chr(92) + 'rifle' + chr(92) + 'saw' +
+                  chr(92) + 'damage_effects' + chr(92) + 'saw_bullet')
+
+
+def _fix_h2_saw_group(m, game):
+    ref = {'effect': 'SAW port', 'field': 'General Damage group'}
+    if str(game).strip() != 'Halo 2':
+        return []
+    saw = [b for _n, b in m.find_tags('jpt!', _H2_SAW_BULLET)]
+    if not saw:
+        return []                                  # no SAW port on this map
+    good = None
+    for _n, b in m.find_tags('jpt!', '*'):
+        if m.resolve_stringid(m.u32(b + _H2_JPT_GENERAL)) == 'bullet_slow':
+            good = m.u32(b + _H2_JPT_GENERAL)
+            break
+    if good is None:
+        return [{**ref, 'ok': False, 'reason': "no 'bullet_slow' id on this map"}]
+    old = m.resolve_stringid(m.u32(saw[0] + _H2_JPT_GENERAL))
+    if old == 'bullet_slow':
+        return [{**ref, 'ok': True, 'skip': True, 'reason': 'already bullet_slow'}]
+    for b in saw:
+        struct.pack_into('<I', m.data, b + _H2_JPT_GENERAL, good)
+    return [{**ref, 'ok': True, 'tag': 'jpt!', 'old': str(old), 'new': 'bullet_slow (as the AR)'}]
+
 # Brute equipment loadout: char 'Equipment Definitions' (H3), elem 0x24 —
 # Equipment tagRef @0x0 (ident at +0xC), Flags @0x10, Relative Drop Chance @0x14.
 _EQUIP_DEFS = {'Halo 3': {'block': 0x1B0, 'elem': 0x24, 'id_at': 0xC, 'chance': 0x14},
@@ -9644,7 +9675,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               clear_profile_grenades=False, spawn_grenades=None,
               h4_ability_visibility=None, h1_enemy_weapons=None,
               camo_after_ladder=False, fix_h2_fuel_rod=False,
-              debug_player_armour=False, debug_player_armour_zero=False, h1_levels=None,
+              player_armour=False, h1_levels=None,
               baseline_root=None, map_subdir=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
@@ -9672,19 +9703,17 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     results = []
     # "Effective" / "Hardened" cards (damage_rows.py) scale the enemy armour rows of the
     # matg Damage Table, which the player shares from Halo 2 on -- so any plan holding one
-    # gives the player its own rows first (once, also when the debug option is on too).
+    # gives the player its own rows first -- whatever the player_armour option says.
     _damage_rows = str(game).strip() in _DAMAGE_ROW_GAMES and any(
         op.get('damage_row') for item in plan if not item.get('missing_in_db')
         for op in item.get('ops') or ())
-    if debug_player_armour or _damage_rows:
+    if (player_armour and str(game).strip() in _DAMAGE_ROW_GAMES) or _damage_rows:
         # The player's own damage-table armour rows (player_armour.py). FIRST of all: from
         # Halo 3 on it grows matg's Materials array in place by MOVING neighbouring blocks
         # (Reach: snd! Extra Info), so nothing may hold offsets into them yet. Confirmed in
-        # all five games (2026-10-08); the debug option or a damage_row card turns it on.
+        # all five games (2026-10-08); the Patching option or a damage_row card turns it on.
         import player_armour as _pa
         results.extend(_pa.apply(m, str(game).strip(), registry))
-        if debug_player_armour and debug_player_armour_zero:
-            results.extend(_pa.zero_rows(m, str(game).strip()))
     if weapon_ports:
         # Ported weapons: the suggested balance becomes the port's VANILLA, so the run's
         # cards scale from it -- hence before every op, like the difficulty baseline. The
@@ -10204,6 +10233,8 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     if fix_h2_fuel_rod:
         # Options -> Patching -> Bugfixes. Before the card ops, like any tag fix.
         results.extend(_fix_h2_fuel_rod_group(m, game))
+    # The Halo 2 SAW port's bullet onto the AR's damage group (always; see the helper).
+    results.extend(_fix_h2_saw_group(m, game))
     if 'famine' in _skull_names:
         # Famine's placed-weapon half: after the card ops (a Magazine card sets the
         # default it halves) and BEFORE the tool appends its own marker weapons below.

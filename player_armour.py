@@ -921,8 +921,8 @@ def apply(m, game, registry=None, rule='multiply'):
     if getattr(c, 'moved', None):
         m._player_armour_moved = c.moved            # for the self-test / diagnostics
 
-    # (key stringid, original material Name stringid) per clone -- zero_rows() and the
-    # coming Effective cards find the player's rows by these
+    # (key stringid, original material Name stringid) per clone -- the Effective /
+    # Hardened cards (damage_rows.py) find the player's rows by these
     m._player_armour_keys = [(e['key'], names[e['orig']]) for e in clones]
     for e in clones:
         kind = 'wet clone' if e.get('dry') is not None else 'clone'
@@ -950,34 +950,3 @@ def apply(m, game, registry=None, rule='multiply'):
     if mism:
         out.append(_row('key rows', False, reason='; '.join(mism)))
     return out
-
-
-def zero_rows(m, game, group_words=('plasma',), material_words=('shield',)):
-    """DEBUG TEST (Options -> Patching -> Bugfixes, debug mode): set the player's own rows
-    to 0 in every damage group whose name contains one of `group_words`, for the clones
-    of materials whose name contains one of `material_words` -- by default: plasma can no
-    longer hurt the player's shield, while Elites (same rows before the split) still take
-    it. Proves the engine reads the clone. Run right after apply()."""
-    game = str(game).strip()
-    keys = {k for k, orig in getattr(m, '_player_armour_keys', ())
-            if any(w in (sid_name(m, game, orig) or '') for w in material_words)}
-    if not keys:
-        return [_row('TEST player rows -> 0', False, reason='no player armour keys (apply first)')]
-    c = _Ctx(m, game)
-    n, groups_hit = 0, set()
-    for t, groups in c.tables():
-        for _ge, gsid, rn, rb, _rows in groups:
-            gname = sid_name(m, game, gsid) or ''
-            if not any(w in gname for w in group_words):
-                continue
-            for r in range(rn):
-                if m.u32(rb + r * 8) in keys:
-                    struct.pack_into('<f', m.data, rb + r * 8 + 4, 0.0)
-                    n += 1
-                    groups_hit.add('[%d] %s' % (t, gname))
-    if not n:
-        return [_row('TEST player rows -> 0', False,
-                     reason='no player %s row in a %s group' % ('/'.join(material_words),
-                                                                 '/'.join(group_words)))]
-    return [_row('TEST player %s vs %s -> 0' % ('/'.join(material_words), '/'.join(group_words)),
-                 True, new='%d row(s) in %s' % (n, ', '.join(sorted(groups_hit))))]

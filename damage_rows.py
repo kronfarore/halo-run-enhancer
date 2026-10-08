@@ -43,7 +43,8 @@ EFFECT = 'Damage rows'
 
 #: damage type -> (player-facing label, GENERAL damage groups). Vehicle/turret groups
 #: (bullet_vehicle, plasma_vehicle, bullet_turret, plasma_turret, ...) are not player weapon
-#: types and are never included -- the Halo 2 (and Halo 1) SAW port fires bullet_vehicle.
+#: types and are never included. (The Halo 2 SAW port shipped with bullet_vehicle; every
+#: Halo 2 patch now points it at bullet_slow -- halo_patch._fix_h2_saw_group.)
 DAMAGE = {
     'bullets': ('Bullets', ('bullet_slow',)),
     'precision': ('Precision rounds', ('bullet_fast', 'bullet_fast_h3')),     # _h3 = ODST BR
@@ -116,12 +117,13 @@ def _p(*parts):
 #: ai_and_vehicles; the type of the Halo 2 group of the same weapon). Not listed, on
 #: purpose: the Plasma Pistol charged bolt (emp), the vehicle guns (bullet_vehicle /
 #: plasma_vehicle: Warthog, Scorpion MG, Ghost, Banshee bolts, Shade, the plasma cannon
-#: impact) and the SAW port bullet (bullet_vehicle, as the Halo 2 SAW).
+#: impact). The SAW port bullet is Bullets, as every other SAW (bullet_slow).
 H1_JPT = {
     _p('weapons', 'assault rifle', 'bullet'): 'bullets',
     _p('weapons', 'pistol', 'bullet'): 'bullets',
     _p('weapons', 'shotgun', 'pellet'): 'bullets',
     _p('weapons', 'smg', 'bullet'): 'bullets',                           # port
+    _p('weapons', 'saw', 'bullet'): 'bullets',                           # port
     _p('weapons', 'sniper rifle', 'sniper bullet'): 'precision',
     _p('weapons', 'battle rifle', 'bullet'): 'precision',                # port
     _p('weapons', 'plasma pistol', 'bolt'): 'plasma',
