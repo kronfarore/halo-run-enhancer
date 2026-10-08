@@ -115,8 +115,15 @@ PORT.update({
                          # TEST 6 (user): the strips glow and animate, the gems do not -> each
                          # gem's UV island a radial glow (white-hot centre); a lens flare per
                          # gem on a test-only secondary for comparison (`gem n` markers)
-                         'beam_rifle_glass': {'rgb': PINK, 'additive': True, 'islands': True}},
-        'material_markers': {'gem': 'beam_rifle_glass'},
+                         'beam_rifle_glass': {'rgb': PINK, 'additive': True, 'islands': True},
+                         # TEST 7 (user): the gem gradient and the flares ('not on the gems':
+                         # first-person attachments draw at the hidden third-person gun) did
+                         # not do it -> GLOW CARDS (user's pick): a halo around each gem,
+                         # pink falling to nothing at the card's edge, no white core
+                         'beam_rifle_glow_card': {'rgb': PINK, 'additive': True, 'islands': True,
+                                                  'islands_of': 'beam_rifle_glass', 'radius': 1.0,
+                                                  'falloff': 1.6, 'hot': False, 'gain': 1.0}},
+        'glow_cards': {'beam_rifle_glass': {'shader': 'beam_rifle_glow_card', 'scale': 1.8, 'lift': 0.05}},
         'template': r'weapons\plasma rifle\fp\shaders\gun',
         # TEST 1 (user): 'no glow on the gun at all' -- Halo 3's illum map is a GREYSCALE mask
         # (its colour is the shader's self_illum_color, function data), 1% of texels lit in

@@ -135,16 +135,17 @@ def bitmaps(w):
                 yy, xx = np.mgrid[0:N, 0:N]
                 for key in ('world', 'fp'):
                     jm, _rm = h3_rm_to_jms.convert(w[key], markers=w.get('markers'))
-                    for _ts, vs in material_islands(jm, name):
+                    for _ts, vs in material_islands(jm, spec.get('islands_of', name)):
                         U = np.array([(x.tex_u % 1.0, x.tex_v % 1.0) for x in vs])
                         (u0, v0), (u1, v1) = U.min(0), U.max(0)
                         for vv0, vv1 in ((v0, v1), (1 - v1, 1 - v0)):
                             cx, cy = (u0 + u1) / 2 * N, (vv0 + vv1) / 2 * N
-                            r = max(u1 - u0, vv1 - vv0) / 2 * N * 1.15 + 1
+                            r = max(u1 - u0, vv1 - vv0) / 2 * N * spec.get('radius', 1.15) + 1
                             d = np.sqrt((xx - cx) ** 2 + (yy - cy) ** 2) / r
-                            v = np.maximum(v, np.clip(1 - d, 0, 1) ** 0.6)
+                            v = np.maximum(v, np.clip(1 - d, 0, 1) ** spec.get('falloff', 0.6))
+                v = v * spec.get('gain', 1.0)
                 lo = np.clip(v * 2.0, 0.0, 1.0)[..., None] * np.array(rgb)[None, None, :]
-                hot = np.clip(v * 2.0 - 1.0, 0.0, 1.0)[..., None]
+                hot = (np.clip(v * 2.0 - 1.0, 0.0, 1.0) if spec.get('hot', True) else np.zeros_like(v))[..., None]
                 c = lo * (1 - hot) + hot
                 col = np.zeros((N, N, 4), np.uint8)
                 col[..., :3] = np.round(c * 255)
@@ -331,6 +332,35 @@ def models(w):
                 P = np.array([(x.pos_x, x.pos_y, x.pos_z) for x in vs]).mean(0)
                 jm.markers.append(JmsMarker('%s %d' % (prefix, i), '', 0, nd, 0.0, 0.0, 0.0, 1.0,
                                             P[0] - n.pos_x, P[1] - n.pos_y, P[2] - n.pos_z))
+        # GLOW CARDS (the Beam Rifle's gems, test 7: a gradient inside a few-pixel gem reads
+        # flat; Halo 1 has no bloom): each piece of `material` copied, scaled `scale` about
+        # its centre and lifted `lift` (JMS units) along its mean normal, as material `shader`
+        # (an additive glow whose texture falls to 0 at the piece's UV box edge: a halo
+        # around the gem). Same UVs, so the card's texture is the piece's box stretched
+        import copy as _copy
+        from reclaimer.model.jms.file import JmsMaterial, JmsTriangle
+        for mat, C in w.get('glow_cards', {}).items():
+            pieces = material_islands(jm, mat)
+            if not pieces:
+                continue
+            jm.materials.append(JmsMaterial(C['shader']))
+            si = len(jm.materials) - 1
+            n_new = 0
+            for ts, vs in pieces:
+                P = np.array([(x.pos_x, x.pos_y, x.pos_z) for x in vs]).mean(0)
+                Nm = np.array([(x.norm_i, x.norm_j, x.norm_k) for x in vs]).mean(0)
+                Nm = Nm / (np.linalg.norm(Nm) or 1.0)
+                for t in ts:
+                    idx = []
+                    for v in (t.v0, t.v1, t.v2):
+                        x = _copy.copy(jm.verts[v])
+                        q = P + (np.array([x.pos_x, x.pos_y, x.pos_z]) - P) * C.get('scale', 1.8) + Nm * C.get('lift', 0.05)
+                        x.pos_x, x.pos_y, x.pos_z = float(q[0]), float(q[1]), float(q[2])
+                        jm.verts.append(x)
+                        idx.append(len(jm.verts) - 1)
+                    jm.tris.append(JmsTriangle(t.region, si, *idx))
+                    n_new += 1
+            print('   glow cards %s: %d piece(s), %d triangle(s) as %s' % (mat, len(pieces), n_new, C['shader']))
         d = os.path.join(HCEEK, 'data', w['dir'] + sub, 'models')
         os.makedirs(d, exist_ok=True)
         write_jms(os.path.join(d, fname + '.jms'), jm)
