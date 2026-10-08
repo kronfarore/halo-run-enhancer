@@ -1921,7 +1921,13 @@
    "fp_animations": "weapons\\spiker\\fp\\fp",
    "requires": [
     "proj weapons\\spiker\\spike"
-   ]
+   ],
+   "tag_map": {
+    "proj weapons\\assault rifle\\bullet": "proj weapons\\spiker\\spike",
+    "jpt! weapons\\assault rifle\\bullet": "jpt! weapons\\spiker\\spike",
+    "jpt! weapons\\assault rifle\\melee": "jpt! weapons\\spiker\\melee"
+   },
+   "hands": "one"
   }
  ],
  "Halo 3": [
