@@ -2180,7 +2180,9 @@ rate is under 3.5/s, so the rule keeps x1.0; its #22 response is a DETONATION (`
 generic`, the explosion itself, 81 particles), not shield sparks. USER: leave it unchanged
 for now. Armed tests on a30: SMG, Battle Rifle, Carbine size CONFIRMED by the user (keep as is); the Carbine's then
 recoloured GREEN (user: 'change color to green if possible' -- impact_thin `tint`, the plasma
-pistol bolt light's .23/1/.13 on the sparks + flash; untested); SAW staged next. v1 = a
+pistol bolt light's .23/1/.13 on the sparks + flash; not re-tested, the user's call: 'the size
+was the important part'); SAW CONFIRMED (keep). All four DONE; they reach the shipped maps with
+the batched ten-map rebuild (user's go). v1 = a
 load-per-second budget equal to the stock pistol's (4.36/s): Spike x0.78, too big (user).
 The way there: a -30% screen flash first (reverted: not the complaint), then thinned + x0.25
 (approved), v1, v2. Unshielded hits (#21 cyborg armor: sparks, smoke, blood) are left alone.
