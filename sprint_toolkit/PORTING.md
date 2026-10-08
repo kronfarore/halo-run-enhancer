@@ -697,6 +697,64 @@ Halo 1 FP graphs: the writer's listing shows all five cues `cc_*`); 5b: default 
 own row, balanced = the pistol-ratio row exactly. One resource group (not dual-wieldable).
 Not reproduced: the wedges' slide, the refraction itself, the headshot cross.
 
+### Halo 1: the Beam Rifle, wave A4 -- leaving the zoom on overheat (research, 2026-10-08, nothing patched)
+
+Test 3: zoomed + overheating, the player STAYS zoomed (Halo 2-4 drop the zoom). No stock
+Halo 1 weapon both zooms and overheats, so the engine never had to handle it. Read-only
+analysis of `halo1\halo1.dll` (sha256 `0a12dc56...6cd42e6c`, MCC build of 2026-06-22).
+
+**Tag-only: none.** weap flags (Reclaimer hek `weap.py`): nothing about zoom except
+`aim_assists_only_when_zoomed`; `must_be_readied` is unrelated; trigger flag
+`use_error_when_unzoomed` is accuracy only. The heat block (recovery/overheated/detonation
+thresholds, loss, illumination, overheated/detonation effects) has no zoom field; zoom is
+`zoom_levels` + `zoom_ranges` only; wphi does not drive zoom state. The reload unzoom is
+engine code (below), not a tag setting.
+
+**Script: not usable.** Halo 1 HaloScript HAS `players_unzoom_all` (and
+`player_action_test_zoom`), but no script function reads weapon heat, so a script cannot
+know WHEN to call it.
+
+**Where the engine keeps and clears zoom** (addresses at image base 0x180000000):
+- Per local player control, 4 entries x 0x58 from the pointer at `0x182D8FE70`:
+  +0x10 unit, +0x30/+0x31 weapon index / desired, +0x32 grenade, **+0x34 zoom level
+  (int16, -1 = unzoomed)**, +0x5E zoom-button latch, +0x60/+0x62 zoom hold.
+  `players_unzoom_all` = `0x180A9A22C` (writes +0x34 = -1, +0x5E = 0 for all four).
+- Player control tick `0x180A9915C` unzooms on weapon switch (`0x180A993BD`, `0x180A993E1`)
+  and with no weapon (`0x180A99619`); zoom input via next-zoom `0x180B770B8`, which refuses
+  while `0x180B76A88` (weapon +0x280 == 1) says so.
+- Melee / grenade / vehicle / death paths write +0x34 inline (`0x180AD5225`,
+  `0x180AD5D17`, `0x180B00CD5`, `0x180B0A1CF`).
+- **First-person weapon event handler `0x180B2A3F0(local player, event)`** (called through
+  `0x180B27BA0(weapon, event)`). Its switch unzooms for events **9, 10, 0x12, 0x13 = the
+  reloads** (sent from the reload start at `0x180B78330`). That is the "reload unzooms" rule.
+- **The overheat:** weapon tick `0x180B74E6C` compares heat (weapon +0x204) with the tag's
+  `overheated_threshold` (weap +0x350), sets the overheated bit (weapon +0x1F8 bit 0) once,
+  and sends **event 0xF** (0x10 for one variant) to `0x180B27BA0`, then the tag's
+  overheated effect (weap +0x380). The switch does nothing with 0xF/0x10 -> zoom stays.
+
+**The patch site (option A, 6 bytes in place, no code cave):** the switch tail
+```
+0x180B2A462  8D 42 EE   lea eax,[rdx-0x12]   ->  8D 42 F1   lea eax,[rdx-0x0F]
+0x180B2A465  41 3B C7   cmp eax,r15d (=1)    ->  83 F8 04   cmp eax,4
+0x180B2A468  77 5D      ja  (skip unzoom)       unchanged
+```
+file offset `0xB29862`. The unzoom range becomes 0xF..0x13: adds exactly the two overheat
+events (0x11 is taken by its own `je` before; 0x12/0x13 keep unzooming). Both paths end at
+`0x180B2A4C7`, and the later code there branches on the ORIGINAL event, so nothing else
+changes. Affects only a weapon held by a LOCAL player (the AI path exits at -1); stock heat
+weapons (plasma pistol/rifle) are never zoomed, so for them it writes -1 over -1.
+**Not covered:** re-zooming during the vent stays possible (the event fires once). Blocking it
+would need a code cave in `0x180B76A88` (test weapon +0x1F8 bit 0) -- option B, only if the
+user wants it after seeing A (check first what Halo 3 does in the vent).
+
+**Risks / how to ship:** option A as a LIVE memory patch (iron_live.py pattern: no file
+write, reverts on restart, MCC may stay open) is the low-risk route; as a dll file patch it
+needs MCC closed, the user's go, a backup, and a byte-pattern check (the bytes above +
+context) so an MCC update cannot misplace it. It is global (every map, co-op: each machine
+needs it). Bit 0 of +0x1F8 = overheated is read from the code, unverified live.
+**Recommendation:** A, live-patched, one boot on a30: zoom in, overheat -> must drop to
+unzoomed; reload still unzooms; plasma pistol unchanged.
+
 ---
 
 ## Halo 3
