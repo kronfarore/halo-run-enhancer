@@ -280,6 +280,14 @@ def check_directions(quiet):
                     if want and isinstance(have, str) and have != want and not t.get('ask_direction'):
                         report(f'{path} [{t.get("field")}]: {own} "{have}" but the step '
                                f'{st} points {want}', quiet)
+                    # the adding twin of a step (halo_enhancer._step_variants)
+                    ast_ = t.get('add_step')
+                    awant = _step_direction(ast_) if isinstance(ast_, str) else None
+                    if ast_ is not None and (not awant or str(ast_).strip()[:1] not in '+-'):
+                        report(f'{path} [{t.get("field")}]: add_step {ast_!r} is not +n / -n', quiet)
+                    elif awant and want and awant != want:
+                        report(f'{path} [{t.get("field")}]: add_step {ast_} points {awant}, '
+                               f'step {st} points {want}', quiet)
                 return
             for k, v in o.items():
                 walk(v, f'{path}/{k}' if path else k, own, other)

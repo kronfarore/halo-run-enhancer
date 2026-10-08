@@ -9701,17 +9701,15 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     baseline = str(bak) if (from_baseline and found) else map_path
     m = open_map(baseline, game)
     results = []
-    # "Effective" / "Hardened" cards (damage_rows.py) scale the enemy armour rows of the
-    # matg Damage Table, which the player shares from Halo 2 on -- so any plan holding one
-    # gives the player its own rows first -- whatever the player_armour option says.
-    _damage_rows = str(game).strip() in _DAMAGE_ROW_GAMES and any(
-        op.get('damage_row') for item in plan if not item.get('missing_in_db')
-        for op in item.get('ops') or ())
-    if (player_armour and str(game).strip() in _DAMAGE_ROW_GAMES) or _damage_rows:
+    # "Effective" / "Hardened" cards (damage_rows.py) scale the armour rows of the matg
+    # Damage Table, which the player shares with Elites / Brutes / AI Spartans from Halo 2
+    # on. Only the Patching option splits the player off; without it the cards move the
+    # damage the player takes as well (user, 2026-10-08: intended).
+    if player_armour and str(game).strip() in _DAMAGE_ROW_GAMES:
         # The player's own damage-table armour rows (player_armour.py). FIRST of all: from
         # Halo 3 on it grows matg's Materials array in place by MOVING neighbouring blocks
         # (Reach: snd! Extra Info), so nothing may hold offsets into them yet. Confirmed in
-        # all five games (2026-10-08); the Patching option or a damage_row card turns it on.
+        # all five games (2026-10-08).
         import player_armour as _pa
         results.extend(_pa.apply(m, str(game).strip(), registry))
     if weapon_ports:
@@ -9965,7 +9963,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 # material columns in Halo 1. After the skulls, so Tilt's values are scaled.
                 import damage_rows as _dr
                 for r in _dr.apply_op(m, str(game).strip(), registry, op['damage_row'],
-                                      op.get('op_str')):
+                                      op.get('op_str'), floor=op.get('row_floor')):
                     results.append({**base, **{k: v for k, v in r.items()
                                                if k not in ('effect', 'field')}})
                 continue

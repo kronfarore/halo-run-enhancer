@@ -2676,7 +2676,10 @@ class ModifierDatabase:
         gen = set((self.data.get('Enemy modifiers') or {}).get('General modifiers') or {})
         out = {'specific': dict.fromkeys(('aggressive', 'defensive', 'utility'), 0),
                'general': dict.fromkeys(('aggressive', 'defensive', 'utility'), 0)}
-        pools = (('general', [m for m in self.negative_pool if m['name'] in gen]),
+        # a card with step variants counts once (its (x) card), as it is offered once
+        pools = (('general', [m for m in self.negative_pool if m['name'] in gen
+                              or (m.get('variant_family') in gen
+                                  and m['name'].endswith(self.VARIANT_MUL))]),
                  ('specific', [m for ms in list(self.enemy_mods.values())
                                + list(self.boss_mods.values()) for m in ms]))
         for kind, mods in pools:
@@ -2686,11 +2689,46 @@ class ModifierDatabase:
                     out[kind][m['color']] += 1
         return out
 
+    #: name suffixes of a card's step variants (see _step_variants)
+    VARIANT_MUL, VARIANT_ADD, VARIANT_SUB = ' (×)', ' (+)', ' (-)'
+
+    def _step_variants(self, mod_name, mod_data):
+        """One halo.json card -> its pool cards. A card whose targets carry an `add_step`
+        (the Effective / Hardened cards) becomes TWO cards: '<name> (x)' with the targets'
+        `step` and '<name> (+)' / '(-)' with their `add_step`. Separate names = separate
+        pick counts, patch entries and presets, so both stack on the same rows (the
+        multiplying one first, as drafted). They share a `variant_family`: the offer pools
+        keep ONE of them per draw (filter_blacklisted), picked at random, so the pair is
+        not offered twice as often. The (x) card carries `split_from` = the old name, so a
+        pick drafted before the split rebuilds into it."""
+        targets = mod_data.get('targets')
+        if not (isinstance(targets, list)
+                and any(isinstance(t, dict) and t.get('add_step') for t in targets)):
+            return [self._build_mod(mod_name, mod_data)]
+        mul = copy.deepcopy(mod_data)
+        add = copy.deepcopy(mod_data)
+        for t in add['targets']:
+            if isinstance(t, dict) and t.get('add_step'):
+                t['step'] = t['add_step']
+        first = next(t['add_step'] for t in add['targets']
+                     if isinstance(t, dict) and t.get('add_step'))
+        sign = self.VARIANT_SUB if str(first).strip().startswith('-') else self.VARIANT_ADD
+        if add.get('debug_desc'):
+            add['debug_desc'] = ('ADDING variant: %s per pick to every non-zero row (linear), '
+                                 'instead of the multiplier below. ' % first) + add['debug_desc']
+        mul.setdefault('split_from', mod_name)
+        out = []
+        for data, suffix in ((mul, self.VARIANT_MUL), (add, sign)):
+            m = self._build_mod(mod_name + suffix, data)
+            m['variant_family'] = mod_name
+            out.append(m)
+        return out
+
     def _categorize(self):
         if 'Player Modifiers' in self.data:
             if 'General Modifiers' in self.data['Player Modifiers']:
                 for mod_name, mod_data in self.data['Player Modifiers']['General Modifiers'].items():
-                    self.positive_pool.append(self._build_mod(mod_name, mod_data))
+                    self.positive_pool.extend(self._step_variants(mod_name, mod_data))
             if 'Specific Weapon Modifier' in self.data['Player Modifiers']:
                 for weapon, mods in self.data['Player Modifiers']['Specific Weapon Modifier'].items():
                     self.weapon_mods[weapon] = [
@@ -2700,7 +2738,7 @@ class ModifierDatabase:
         if 'Enemy modifiers' in self.data:
             if 'General modifiers' in self.data['Enemy modifiers']:
                 for mod_name, mod_data in self.data['Enemy modifiers']['General modifiers'].items():
-                    self.negative_pool.append(self._build_mod(mod_name, mod_data))
+                    self.negative_pool.extend(self._step_variants(mod_name, mod_data))
             if 'Specific Enemy modifier' in self.data['Enemy modifiers']:
                 for enemy, mods in self.data['Enemy modifiers']['Specific Enemy modifier'].items():
                     self.enemy_mods[enemy] = []
@@ -3738,7 +3776,7 @@ class ModifierDatabase:
                 else set(self.SUPERSEDED_VITALITY_CARDS))
         fielded = (self._fielded_weapons(game)
                    if game and any(m.get('weapon') for m in mods) else None)
-        return [m for m in mods
+        out = [m for m in mods
                 if self.get_mod_label(m) not in blacklist and self._game_ok(m, game)
                 and self._cross_game_ok(m) and not mod_ignored(m)
                 and self._config_ok(m, game)
@@ -3756,6 +3794,24 @@ class ModifierDatabase:
                 and not _is_absent_flood_mod(m, game)
                 and not (CONFIG.get('ignore_elite_in_h3')
                          and _is_allied_elite_mod(m, game))]
+        return self._one_variant(out)
+
+    @staticmethod
+    def _one_variant(mods):
+        """Step variants (the same card as x and as +/-, _step_variants) count as ONE
+        candidate: keep one of each `variant_family` still in `mods`, chosen at random,
+        in the place of the first. Every offer path funnels through filter_blacklisted,
+        so this covers the draw, rerolls, Bane, Exhaust and Identity alike; a variant the
+        blacklist removed leaves the other one always."""
+        fams = {}
+        for m in mods:
+            f = m.get('variant_family')
+            if f:
+                fams.setdefault(f, []).append(m)
+        if not fams:
+            return mods
+        keep = {f: random.choice(ms) for f, ms in fams.items()}
+        return [m for m in mods if not m.get('variant_family') or keep[m['variant_family']] is m]
 
     def map_swap_mod(self, weapon_name, game=None):
         """#7: the per-weapon "Map Presence" card — replace a share of the level's
@@ -8939,6 +8995,7 @@ class MagnitudeEditorDialog(QDialog):
                                          'species_swap': t.get('species_swap'),
                                          'camo': t.get('camo'),
                                          'damage_row': t.get('damage_row'),
+                                         'row_floor': t.get('row_floor'),
                                          'side': t.get('side'),
                                          'include_boss': t.get('include_boss'),
                                          'sword_drain': t.get('sword_drain'),
@@ -9546,7 +9603,8 @@ class MagnitudeEditorDialog(QDialog):
         txt = self._stacked_op(eff, t, txt) or txt     # card-stacking: once per pick
         op = {'field': t['field'], 'block': t.get('block'), **_diff_flavor(t),
               'index': t.get('index', 0), 'op_str': txt, 'negate': t.get('negate'),
-              'nth': t.get('nth', 0) or 0, 'damage_row': t.get('damage_row')}
+              'nth': t.get('nth', 0) or 0, 'damage_row': t.get('damage_row'),
+              'row_floor': t.get('row_floor')}
         plan = [{'tag': eff['tag'], 'name': eff['name'], 'ops': [op],
                  'init_defaults': eff.get('init_defaults')}]
         try:

@@ -19,11 +19,18 @@ touched: the engine multiplies them on top, scaling both would double-apply.
 "armour": <ARMOUR key>}.
 
 THE PLAYER. From Halo 2 on the player wears the same armour names as Elites (H2/H3
-Arbiter, ODST body = Brute hide, Reach/H4 Spartans = Elite rows), so halo_patch.apply_run
-runs player_armour.apply FIRST whenever a plan holds a damage_row op: the player then has
+Arbiter, ODST body = Brute hide, Reach/H4 Spartans = Elite rows), so a card moves the damage
+the player takes as well -- intended (user, 2026-10-08) -- unless the Patching option
+'Give the player its own armour rows' ran player_armour.apply first: the player then has
 rows of its own (keys = its materials' own Name stringids) that never match an armour name
-here -- asserted per op. Halo 1 needs none: its player columns (Cyborg, Cyborg Energy
-Shield) are its own and never in a class below.
+here -- asserted per op. Halo 1's player columns (Cyborg, Cyborg Energy Shield) are its own
+and never in a class below.
+
+STEPS. halo.json gives each card a multiplying `step` and an `add_step`; the enhancer makes
+two cards of it ('(x)' and '(+)'/'(-)', halo_enhancer._step_variants) that stack on the
+same rows. A target's `row_floor` keeps a non-zero row from being pushed below it (a
+subtraction would otherwise turn a 0.25 row into an immunity); a row already under the
+floor is never raised.
 
 HALO 1 has no table: every jpt! carries 33 per-material floats (0x200 Dirt .. 0x280 Hunter
 Shield). A card scales the class's COLUMNS on every jpt! of the damage type; the jpt!s are
@@ -32,7 +39,7 @@ sprint_toolkit/damage_categories_h1_odst.json), plus any weapons\...\melee.
 
 RULES: values only change (no row is added -- a (group, armour) pair without a row stays at
 the engine's x1 and is COUNTED, so we know later whether row creation is needed); rows at 0
-(immunities) stay 0; results are clamped >= 0. The arrays' key order is untouched, so the
+(immunities) stay 0; results are clamped >= 0, or >= `floor` (see STEPS). The arrays' key order is untouched, so the
 binary search still finds every row (asserted).
 """
 import struct
@@ -96,8 +103,8 @@ H1_COLUMNS = ('Dirt', 'Sand', 'Stone', 'Snow', 'Wood', 'Metal (Hollow)', 'Metal 
 H1_PLAYER_COLUMNS = ('Cyborg', 'Cyborg Energy Shield')
 #: armour class -> Halo 1 jpt! columns. Shields = Elite Energy Shield (Sentinels wear it
 #: too); never the Jackal hand shield. Flesh includes Human (Marines) and Engineer (no
-#: campaign Engineers; the column is flesh). Hunters is not offered in Halo 1 (the user's
-#: combo list is H2/H3) but the column is mapped.
+#: campaign Engineers; the column is flesh). Hunters = the Hunter Skin column (Precision vs
+#: Hunters: the Sniper Rifle, the Battle Rifle port).
 H1_ARMOUR = {
     'shields': ('Elite Energy Shield',),
     'armour': ('Elite',),
@@ -170,14 +177,16 @@ COMBOS = [
     # extras
     ('bullets', 'armour', ALL_GAMES), ('bullets', 'flood', _H1_H3),
     ('precision', 'flesh', ALL_GAMES), ('precision', 'armour', ALL_GAMES),
-    ('precision', 'hunters', ('Halo 2', 'Halo 3')),
+    ('precision', 'hunters', ('Halo 1', 'Halo 2', 'Halo 3')),
     ('plasma', 'flesh', ALL_GAMES), ('plasma', 'brute_hide', ('Halo 2', 'Halo 3', 'Halo 3: ODST')),
     ('plasma', 'vehicles', ALL_GAMES),
     ('needles', 'shields', ('Halo Reach', 'Halo 4')), ('needles', 'armour', ('Halo Reach', 'Halo 4')),
     ('explosives', 'flesh', ALL_GAMES), ('explosives', 'flood', _H1_H3),
     ('blades', 'flesh', ALL_GAMES), ('blades', 'flood', _H1_H3),
-    ('fire', 'flesh', ('Halo 1', 'Halo 3', 'Halo 3: ODST')),
-    ('fire', 'flood', ('Halo 1', 'Halo 3', 'Halo 3: ODST')),
+    # Halo 2: rows exist, nothing in the campaign burns yet (the cut gravity rifle) --
+    # kept for the Flamethrower port (user, 2026-10-08)
+    ('fire', 'flesh', ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST')),
+    ('fire', 'flood', ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST')),
     ('lasers', 'vehicles', ('Halo 3', 'Halo Reach', 'Halo 4')),
     ('lasers', 'shields', ('Halo 3', 'Halo Reach', 'Halo 4')),
 ]
@@ -339,9 +348,10 @@ def _sorted(m, rb, rn):
 
 
 # --- apply -----------------------------------------------------------------------------------
-def apply_op(m, game, registry, spec, op_str):
-    """Scale one card's rows by `op_str` (the stacked op, e.g. '*1.4'). See the module
-    docstring. Returns result rows (one summary row; ok False with a reason on failure)."""
+def apply_op(m, game, registry, spec, op_str, floor=None):
+    """Scale one card's rows by `op_str` (the stacked op, e.g. '*1.4' or '+0.4'). See the
+    module docstring. `floor`: no non-zero row ends below it (one already below stays).
+    Returns result rows (one summary row; ok False with a reason on failure)."""
     game = str(game).strip()
     lab = label(spec) if not _check_spec(spec) else str(spec)
     parsed = hm.parse_operator(op_str)
@@ -352,10 +362,6 @@ def apply_op(m, game, registry, spec, op_str):
         p = plan(m, game, spec)
     except (ValueError, AssertionError) as ex:
         return [_row(lab, False, reason=str(ex))]
-    if game != 'Halo 1' and not p['player_keys']:
-        # without the player's own rows the card would change the damage YOU take too
-        return [_row(lab, False, reason="the player's own armour rows are missing "
-                                        '(player_armour did not run or failed); not applied')]
     if not p['hits']:
         return [_row(lab, True, skip=True,
                      reason='no non-zero row for %s in this map' % lab)]
@@ -365,7 +371,7 @@ def apply_op(m, game, registry, spec, op_str):
     olds = []
     for h in p['hits']:
         off, v = h[-2], h[-1]
-        nv = max(0.0, f(v, val))
+        nv = max(0.0 if floor is None else min(v, float(floor)), f(v, val))
         struct.pack_into('<f', m.data, off, nv)
         olds.append(v)
     if game != 'Halo 1':

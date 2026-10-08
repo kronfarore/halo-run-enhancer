@@ -57,6 +57,7 @@ OPS = {
 }
 FACTOR = 1.4
 HARD = 0.8
+ADD, SUBTRACT, FLOOR = 0.3, 0.9, 0.1      # the (+) / (-) cards' ops, with the row floor
 
 
 def f32(x):
@@ -119,9 +120,14 @@ def keyed_values(m, game, spec):
 def test_ops(m, game, S):
     fails = S['fail']
     specs = [{'damage': d, 'armour': a} for d, a in OPS[game]]
-    # the Hardened op runs on the first card again, after the others
-    seq = [(s, '*%g' % FACTOR) for s in specs] + [(specs[0], '*%g' % HARD)]
-    for spec, op in seq:
+    # the Hardened op runs on the first card again, after the others; then the adding
+    # cards: +ADD on the second, -SUBTRACT (floored) on the first
+    seq = ([(s, '*%g' % FACTOR, None) for s in specs] + [(specs[0], '*%g' % HARD, None)]
+           + [(specs[1], '+%g' % ADD, FLOOR), (specs[0], '-%g' % SUBTRACT, FLOOR)])
+    want_of = {'*%g' % FACTOR: lambda v: v * FACTOR, '*%g' % HARD: lambda v: v * HARD,
+               '+%g' % ADD: lambda v: v + ADD,
+               '-%g' % SUBTRACT: lambda v: max(min(v, FLOOR), v - SUBTRACT)}
+    for spec, op, floor in seq:
         lab = dr.label(spec) + ' ' + op
         p = dr.plan(m, game, spec)
         if not p['hits']:
@@ -129,28 +135,28 @@ def test_ops(m, game, S):
             continue
         pr_before = player_rows(m, game) if game != 'Halo 1' else None
         before = bytes(m.data)
-        res = dr.apply_op(m, game, None, spec, op)
+        res = dr.apply_op(m, game, None, spec, op, floor=floor)
         if not res or not res[0]['ok'] or res[0].get('skip'):
             fails.append('%s: %s' % (lab, res))
             continue
         changed, grew = diff_offsets(before, m.data)
         if grew:
             fails.append('%s: the image changed size' % lab)
-        factor = FACTOR if op == '*%g' % FACTOR else HARD
+        want = want_of[op]
         allowed = set()
         bad_vals = 0
         for h in p['hits']:
             off, v = h[-2], h[-1]
             allowed.update(range(off, off + 4))
             nv = struct.unpack_from('<f', m.data, off)[0]
-            if abs(nv - f32(v * factor)) > 1e-6 * max(1.0, abs(v)):
+            if abs(nv - f32(want(v))) > 1e-6 * max(1.0, abs(v)):
                 bad_vals += 1
         outside = changed - allowed
         if outside:
             fails.append('%s: %d byte(s) changed outside the planned rows (first %#x)'
                          % (lab, len(outside), min(outside)))
         if bad_vals:
-            fails.append('%s: %d row(s) not scaled by %g' % (lab, bad_vals, factor))
+            fails.append('%s: %d row(s) not changed by %s' % (lab, bad_vals, op))
         zeros_ok = all(struct.unpack_from('<f', m.data, h[-2])[0] != 0.0 for h in p['hits'])
         if not zeros_ok:
             fails.append('%s: a scaled row reads 0' % lab)
@@ -169,8 +175,11 @@ def test_ops(m, game, S):
             nb = all_arrays_sorted(m, game)
             if nb:
                 fails.append('%s: %d unsorted Armor Modifiers array(s)' % (lab, nb))
-        S['ops'].append('%-38s %3d value(s) x%g, %d zero(s) kept, %d missing pair(s); %d byte(s) changed'
-                        % (lab, len(p['hits']), factor, p['zeros'], len(p['missing']), len(changed)))
+        floored = sum(1 for h in p['hits'] if floor is not None
+                      and abs(struct.unpack_from('<f', m.data, h[-2])[0] - f32(min(h[-1], floor))) < 1e-6)
+        S['ops'].append('%-38s %3d value(s) %s, %d zero(s) kept, %d missing pair(s), %d at the floor; '
+                        '%d byte(s) changed' % (lab, len(p['hits']), op, p['zeros'], len(p['missing']),
+                                                floored, len(changed)))
         del before
 
 
@@ -206,7 +215,8 @@ def run(game, rel, scratch, do_census):
         plan = [{'tag': 'jpt! *' if game == 'Halo 1' else 'matg globals' + chr(92) + 'globals',
                  'name': 'Effective: ' + dr.label(run_spec), 'absent_is_skip': False,
                  'ops': [{'field': dr.label(run_spec), 'op_str': '*1.2', 'damage_row': run_spec}]}]
-        results, _bak = hp.apply_run(dst, plan, reg, 'Normal', backup=False, game=game)
+        results, _bak = hp.apply_run(dst, plan, reg, 'Normal', backup=False, game=game,
+                                     player_armour=True)
         bad = [r for r in results if not r.get('ok')]
         S['run'] = ['%s | %s | %s -> %s %s' % (r.get('effect'), r.get('field'), r.get('old'), r.get('new'),
                                              r.get('reason') or '') for r in results
@@ -236,6 +246,24 @@ def run(game, rel, scratch, do_census):
             if nb:
                 S['fail'].append('apply_run: %d unsorted array(s)' % nb)
         del m2
+        gc.collect()
+        # --- without the option: no player rows, the card still applies (the player
+        # shares the change -- intended)
+        shutil.copyfile(src, dst)
+        results, _bak = hp.apply_run(dst, plan, reg, 'Normal', backup=False, game=game)
+        if any(r.get('effect') == pa.EFFECT for r in results):
+            S['fail'].append('apply_run without the option: player_armour ran')
+        if not any(r.get('effect') == plan[0]['name'] and r.get('ok') and not r.get('skip')
+                   for r in results):
+            S['fail'].append('apply_run without the option: the card did not apply')
+        gc.collect()
+        m3 = hp.open_map(dst, game)
+        after = keyed_values(m3, game, run_spec)
+        wrong = [k for k, v in base_vals.items() if abs(after.get(k, -1) - f32(v * 1.2)) > 1e-6 * max(1, v)]
+        if wrong or set(after) != set(base_vals):
+            S['fail'].append('apply_run without the option: %d row(s) not x1.2' % len(wrong))
+        S['run_plain'] = 'without the option: %d row(s) x1.2, player_armour not run' % len(base_vals)
+        del m3
         gc.collect()
     finally:
         gc.collect()
@@ -282,6 +310,8 @@ def main():
         for r in S.get('run', []):
             print('  run ' + r)
         print('  run: %d row(s) re-read x1.2' % S.get('run_rows', 0))
+        if S.get('run_plain'):
+            print('  run: ' + S['run_plain'])
         if a.census:
             print_census(S)
         for f in S['fail']:
