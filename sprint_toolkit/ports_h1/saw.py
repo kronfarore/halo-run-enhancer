@@ -25,5 +25,11 @@ PORT = {
                        'from_map': r'halo4\maps\m020.map',
                        'from_weapon': r'objects\weapons\rifle\storm_lmg\storm_lmg',
                        'set': ['0x1D8=0.4000000059604645:Drop Weapon Loaded',
-                               '0x1DC=0.800000011920929:Drop Weapon Loaded Max']},
+                               '0x1DC=0.800000011920929:Drop Weapon Loaded Max'],
+                       # Armed WDM (user, 2026-10-08, Rule B) replaces Halo 4's own 0.75:
+                       # 0.4 (the AR carriers) x AR 150 / SAW 112.5 = 0.53, balanced / 150 =
+                       # 0.40. dps at 15/s (7.5 / 10 a round): the 15..30 -> 15/s cap
+                       # OBSERVATION (SMG, Sentinel Beam), not measured on the SAW itself
+                       'wdm_rule': {'base': 0.4, 'yardstick_dps': 150.0, 'port_dps': 112.5,
+                                    'balanced_port_dps': 150.0}},
 }

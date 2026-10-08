@@ -1950,9 +1950,10 @@ port player dps), base = the WDM of the carriers it fires from (the AR donors: 0
 from h1_role_compare 5b; once for the default numbers, once for the balanced rows
 (`firing_profile['wdm_rule']` -> ai_firing_profiles.json `fields` + `balanced_fields`;
 h1_enemy_weapons uses the latter for ports in its spec's `balanced`). A stronger port gets
-a gentler AI. Carbine 0.60 / 0.26, SMG 0.80 / 0.60, BR 0.80 / 0.48. Checked by stopwatch on
-the Carbine (0.23 measured vs 0.26). A source profile with its own WDM (Halo 4's: the
-SAW's 0.75) keeps it unless the config sets a rule.
+a gentler AI. Carbine 0.60 / 0.26, SMG 0.80 / 0.60, BR 0.80 / 0.48, SAW 0.53 / 0.40 (the
+rule replaced Halo 4's own 0.75; dps at the 15/s cap observation). Checked by stopwatch on
+the Carbine (0.23 measured vs 0.26). A source profile's own WDM (Halo 4 has one) is
+replaced by the rule; every Halo 1 port carries a rule now.
 
 ---
 
