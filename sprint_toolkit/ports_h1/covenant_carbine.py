@@ -65,9 +65,14 @@ PORT.update({
     'status': 'building',
     # geometry + look (h1_h3_weapon_model.py). Halo 3's five materials (render model order:
     # carbine, carbine_dull, carbine_tint_map, carbine_display, carbine_switch): the metal
-    # and its dull and striped variants share the base map + illum; the display and the
-    # switch are illum-only (their glow map stands in as the base, as the BR's digits).
-    # Template: the plasma rifle's FP gun shader (Covenant metal, as the Sentinel Beam)
+    # and its dull and striped variants share the base map + illum (glow = the illum map's own
+    # cyan, 0.4% of its texels lit: Halo 3's carbine glows mostly from the two METERS).
+    # TEST 1 (user): 'a flat square on the weapon at the glowy part' -- carbine_display and
+    # carbine_switch are Halo 3 METER shaders (meter_map, meter_value <- ammo), first built as
+    # opaque shader_models. Now Halo 1 shader_transparent_meters (`meters`, channels swapped,
+    # see h1_h3_weapon_model.meters): the display = the 18-step ammo bar (its alpha), the
+    # switch (the round symbol) lit while a round is loaded. Template: the plasma rifle's FP
+    # gun shader (Covenant metal, as the Sentinel Beam)
     'model': {
         'dir': r'weapons\covenant carbine',
         'world': H3 + r'\covenant_carbine.render_model',
@@ -76,9 +81,18 @@ PORT.update({
         'shaders': {'carbine': (H3 + r'\bitmaps\covenant_carbine.bitmap', H3 + r'\bitmaps\covenant_carbine_illum.bitmap'),
                     'carbine_dull': (H3 + r'\bitmaps\covenant_carbine.bitmap', H3 + r'\bitmaps\covenant_carbine_illum.bitmap'),
                     'carbine_tint_map': (H3 + r'\bitmaps\covenant_carbine.bitmap', H3 + r'\bitmaps\covenant_carbine_illum.bitmap'),
-                    'carbine_display': (H3 + r'\bitmaps\covenant_carbine_display_illum.bitmap', H3 + r'\bitmaps\covenant_carbine_display_illum.bitmap'),
-                    'carbine_switch': (H3 + r'\bitmaps\covenant_carbine_switch_illum.bitmap', H3 + r'\bitmaps\covenant_carbine_switch_illum.bitmap')},
+                    },
         'template': r'weapons\plasma rifle\fp\shaders\gun',
+        # the meters' colour: the illum map's lit mean (24, 211, 247) normalized; 'off' a
+        # quarter of it (Halo 3's meter_color_off sits in unreadable function data)
+        'meters': {'carbine_display': {'map': H3 + r'\bitmaps\covenant_carbine_display_illum.bitmap',
+                                       'from': r'weapons\plasma rifle\fp\shaders\gauge',
+                                       'gradient': 'alpha', 'value': 'A_out',
+                                       'color': (0.097, 0.854, 1.0)},
+                   'carbine_switch': {'map': H3 + r'\bitmaps\covenant_carbine_switch_illum.bitmap',
+                                      'from': r'weapons\plasma rifle\fp\shaders\gauge',
+                                      'gradient': 0.0, 'value': 'A_out',
+                                      'color': (0.097, 0.854, 1.0)}},
     },
 
     # FP animations (h1_fp_retarget.py). Halo 3 carbine frames: ready 19, put_away 4, fire_1
@@ -208,9 +222,18 @@ PORT.update({
             'item_attrs.collision_sound.filepath': SND + 'cc_drop',
             # the muzzle-flash LIGHT: the pistol template's is the AR's (orange); Halo 3's
             # carbine flash is green -> the plasma pistol's green flash light, same slot
-            # (the pistol's one function, A illumination, still scales it)
             'obje_attrs.attachments.0.type.filepath': PP + 'muzzle flash',
+            # the METERS' input (model `meters`, value A out): the BR's lesson -- the pistol's
+            # ONE function (A illumination) also scales the muzzle-flash light, so the AR's
+            # layout: exports A illumination / B loaded fraction; out A = ammo (meters), out
+            # B = muzzle flash (the light, attachment_scales)
+            'weap_attrs.A_in': 'illumination',
+            'weap_attrs.B_in': 'primary_ammunition',
         },
+        'obje_functions': [{'from': r'weapons\assault rifle\assault rifle', 'index': 0},
+                           {'from': r'weapons\assault rifle\assault rifle', 'index': 1,
+                            'set': {'scale_function_by': 'A_in'}}],
+        'attachment_scales': {0: ('B_out', 'none')},       # the muzzle-flash light
         # H3 single-wield: minimum error 0, error angle 0.3 -> 0.6 (H1 pistol 0, 0.2 -> 2.0)
         'error_deg': {'minimum_error': 0.0, 'error_angle': (0.3, 0.6)},
         # H3: 18 loaded, 54 at pickup, 90 most. Reload: H3 0 (the animation decides): 69 fr =
@@ -244,7 +267,13 @@ PORT.update({
         # is 384 of 640 units tall (60%) = 648 px at 1080 = 594 texels -> 1024 x 384/594 = 662
         'hud': {'donor': PISTOL + 'pistol', 'out': CC + 'covenant carbine',
                 'scope': {'chud': r'ui\chud\carbine', 'out': CC + 'bitmaps\\scope_mask',
-                          'size': 1024, 'span': 662.0, 'aspect': 4 / 3.0, 'alpha': 'outside',
+                          # TEST 1 (user): masks good; 'reduce the size, it's stretched
+                          # horizontally while the original looks 1:1'. The baked honeycomb
+                          # cells are 1.25 wide : 1 tall where a regular hexagon is 1.155 ->
+                          # test 2 variant A (this config): x squashed by 1.155/1.25 (aspect
+                          # 4/3 / 0.924 = 1.443), 80% size (span 662 / 0.8 = 828); variant B
+                          # (a test-only secondary): squashed 0.8 (aspect 1.667), same size
+                          'size': 1024, 'span': 828.0, 'aspect': 1.443, 'alpha': 'outside',
                           'per_widget': {'scope_crosshairs1': {'scale': (1.0, 1.0)},
                                          'scope_crosshairs2': {'scale': (1.0, 1.0)},
                                          'scope_crosshairs3': {'scale': (1.0, 1.0)},

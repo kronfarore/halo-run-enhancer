@@ -107,11 +107,58 @@ def numeric_places(w):
         print('   %s: %d numeric shader entr(ies) placed' % (w['dir'] + sub, n))
 
 
+def meters(w):
+    """On-gun METERS (the Carbine, 2026-10-07): Halo 3's meter shaders (`meter_map` +
+    `meter_value` <- ammo) as Halo 1 shader_transparent_meters, copied from `from` (the
+    plasma rifle's heat gauge). THE CHANNELS SWAP: Halo 3's meter map is the SHAPE in RGB
+    and the fill GRADIENT in alpha (the carbine display: 18 steps, one a round); Halo 1's
+    is the gradient in RGB and the shape in alpha (the gauge). `gradient` 'alpha' takes
+    Halo 3's alpha, a number is constant (0: lit while the value is above 0 -- the switch).
+    The bitmap is a raw a8r8g8b8 tag (h1_h3_scope's template: no compression, no mips);
+    `value` = the weapon OUT that drives it (the AR's layout: out A = loaded ammo)."""
+    from reclaimer.hek.defs.smet import smet_def
+    from reclaimer.hek.defs.bitm import bitm_def
+    import h1_h3_scope
+    out = os.path.join(TAGS, w['dir'], 'shaders')
+    os.makedirs(out, exist_ok=True)
+    for name, M in w['meters'].items():
+        img, _ = h3_hud_art.decode(M['map'])
+        a = np.array(img)
+        shape = a[..., :3].max(axis=2)
+        grad = a[..., 3] if M.get('gradient', 'alpha') == 'alpha' else np.full_like(shape, int(round(M['gradient'] * 255)))
+        h, wd = shape.shape
+        t = bitm_def.build(filepath=os.path.join(TAGS, h1_h3_scope.TEMPLATE + '.bitmap'))
+        d = t.data.tagdata
+        b = d.bitmaps.STEPTREE[0]
+        b.width, b.height = wd, h
+        b.registration_point_x, b.registration_point_y = wd // 2, h // 2
+        d.processed_pixel_data.data = bytearray(np.stack([grad, grad, grad, shape], axis=-1).astype(np.uint8).tobytes())
+        bm = w['dir'] + B + 'bitmaps' + B + name + '_meter'
+        t.filepath = os.path.join(TAGS, bm + '.bitmap')
+        os.makedirs(os.path.dirname(t.filepath), exist_ok=True)
+        t.serialize(temp=False, backup=False)
+        stale = os.path.join(out, name + '.shader_model')        # `tool model` must find ONE
+        if os.path.exists(stale):
+            os.remove(stale)
+        s = smet_def.build(filepath=os.path.join(TAGS, M['from'] + '.shader_transparent_meter'))
+        sm = s.data.tagdata.smet_attrs
+        sm.meter_shader.map.filepath = bm
+        c = sm.colors
+        on, off = M['color'], M.get('color_off', tuple(x * 0.25 for x in M['color']))
+        for blk, rgb in ((c.gadient_min, on), (c.gadient_max, on), (c.background, off), (c.tint, (1.0, 1.0, 1.0))):
+            blk.r, blk.g, blk.b = rgb
+        c.background_transparency = M.get('background_transparency', c.background_transparency)
+        sm.external_function_sources.value.set_to(M.get('value', 'A_out'))
+        s.filepath = os.path.join(out, name + '.shader_transparent_meter')
+        s.serialize(temp=False, backup=False)
+        print('   meter shader %s  map %s %dx%d  value %s' % (s.filepath, bm, wd, h, M.get('value', 'A_out')))
+
+
 def shaders(w, glow):
     out = os.path.join(TAGS, w['dir'], 'shaders')
     os.makedirs(out, exist_ok=True)
     for name in w['shaders']:
-        if name in w.get('numeric', {}).get('places', {}):
+        if name in w.get('numeric', {}).get('places', {}) or name in w.get('meters', {}):
             continue
         t = soso_def.build(filepath=os.path.join(TAGS, w['template'] + '.shader_model'))
         m = t.data.tagdata.soso_attrs
@@ -151,6 +198,8 @@ def main():
     shaders(w, glow)
     if 'numeric' in w:
         numeric(w)
+    if 'meters' in w:
+        meters(w)
     models(w)
     if 'numeric' in w:
         numeric_places(w)
