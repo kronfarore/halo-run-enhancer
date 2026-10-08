@@ -411,10 +411,13 @@ def own_beam(a, b, write):
                 q = pts[i]
                 if any(s in q.particle_type.filepath for s in D.get('drop_particles', ())):
                     pts.pop(i)
-                elif D.get('tint') and any(s in q.particle_type.filepath for s in D.get('tint_match', ())):
-                    q.flags.tint_as_hsv = False
-                    for bound in (q.tint_lower_bound, q.tint_upper_bound):
-                        bound.r, bound.g, bound.b = D['tint']
+                else:
+                    if D.get('tint') and any(s in q.particle_type.filepath for s in D.get('tint_match', ())):
+                        q.flags.tint_as_hsv = False
+                        for bound in (q.tint_lower_bound, q.tint_upper_bound):
+                            bound.r, bound.g, bound.b = D['tint']
+                    if D.get('scale'):           # every particle's radius (the spike's smaller burst)
+                        q.radius[0], q.radius[1] = q.radius[0] * D['scale'], q.radius[1] * D['scale']
             prts = ev.parts.STEPTREE
             for i in range(len(prts) - 1, -1, -1):
                 if prts[i].type.filepath in D.get('drop_parts', ()):

@@ -105,6 +105,17 @@ def glow_pieces(jm, material, C):
     Beam Rifle's gems), or -- with `lit` -- its LIT triangles (lit_pieces), optionally only
     those facing `normal` (dot >= `min_dot`: the Spike Rifle's muzzle bores), grouped into
     islands by shared positions (each bore = one card, one radial glow)."""
+    if C.get('near'):
+        # the islands whose centre lies within `near` = ((x, y, z) JMS cm, radius) -- the Spike
+        # Rifle's lit WINDOW (circle 3 of the user's Halo 3 screenshot): a 2-triangle piece of
+        # the blade material at the top rear, no lit texel in the illum mask
+        (cx, cy, cz), r = C['near']
+        out = []
+        for ts, vs in material_islands(jm, material):
+            P = np.array([(v.pos_x, v.pos_y, v.pos_z) for v in vs]).mean(0)
+            if np.linalg.norm(P - np.array((cx, cy, cz))) <= r:
+                out.append((ts, vs))
+        return out
     if not C.get('lit'):
         return material_islands(jm, material)
     tris = [ts[0] for ts, _vs in lit_pieces(jm, material, C['lit'])]
@@ -435,7 +446,10 @@ def models(w):
         # around the gem). Same UVs, so the card's texture is the piece's box stretched
         import copy as _copy
         from reclaimer.model.jms.file import JmsMaterial, JmsTriangle
-        for mat, C in w.get('glow_cards', {}).items():
+        for card, C in w.get('glow_cards', {}).items():
+            # the key is the material, or any name with the material in C['of'] (two card sets
+            # on one material: the Spike Rifle's muzzle bores and its window, both the body's)
+            mat = C.get('of', card)
             # `lit`: only the triangles on lit illum texels (the Spike Rifle), else the
             # material's islands (the Beam Rifle's gems)
             pieces = glow_pieces(jm, mat, C)

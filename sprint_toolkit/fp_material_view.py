@@ -39,6 +39,7 @@ def main():
     ap.add_argument('--frame', type=int, default=0)
     ap.add_argument('--illum', help='Halo 3 bitmap (H3EK tags path): mark triangles on its lit texels')
     ap.add_argument('--threshold', type=int, default=64, help='lit = max(RGB) above this')
+    ap.add_argument('--list-lit', action='store_true', help='print each lit triangle')
     ap.add_argument('--size', default='1920x1080')
     a = ap.parse_args()
     cfg = ports_h1.load(a.port)
@@ -80,15 +81,26 @@ def main():
                 col = colours[sh]
                 if lit is not None:
                     H, W = lit.shape
-                    uv = [(vsx[i].u * us, vsx[i].v * vs) for i in (i0, i1, i2)]
-                    hits = tot = 0
-                    for s in np.linspace(0, 1, 6):
-                        for t in np.linspace(0, 1 - s, 6):
-                            uu = uv[0][0] + s * (uv[1][0] - uv[0][0]) + t * (uv[2][0] - uv[0][0])
-                            vv = uv[0][1] + s * (uv[1][1] - uv[0][1]) + t * (uv[2][1] - uv[0][1])
-                            hits += lit[int((vv % 1) * H) % H, int((uu % 1) * W) % W]
-                            tot += 1
-                    if hits / tot > 0.15:
+                    uv = np.array([(vsx[i].u * us, vsx[i].v * vs) for i in (i0, i1, i2)])
+                    # EXACT coverage (the Spike Rifle, test 3): every texel whose centre lies in
+                    # the UV triangle; lit = ANY lit texel. The old 6x6 sampling with a 15%
+                    # share missed thin lit lines on larger faces (4 of 30 triangles)
+                    off = np.floor(uv.min(0))
+                    q = (uv - off) * (W, H)
+                    x0, y0 = np.floor(q.min(0)).astype(int)
+                    x1, y1 = np.ceil(q.max(0)).astype(int)
+                    yy, xx = np.mgrid[y0:y1 + 1, x0:x1 + 1] + 0.5
+                    (ax, ay), (bx, by), (cx, cy) = q
+                    den = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy)
+                    hits = 0
+                    if abs(den) > 1e-12:
+                        l1 = ((by - cy) * (xx - cx) + (cx - bx) * (yy - cy)) / den
+                        l2 = ((cy - ay) * (xx - cx) + (ax - cx) * (yy - cy)) / den
+                        ins = (l1 >= 0) & (l2 >= 0) & (1 - l1 - l2 >= 0)
+                        hits = int(lit[(yy[ins].astype(int)) % H, (xx[ins].astype(int)) % W].sum())
+                    if hits:
+                        if a.list_lit:
+                            print('   lit %-22s %3d texel(s)' % (sh, hits))
                         col = (255, 255, 255)
                         counts[sh + ' (lit)'] = counts.get(sh + ' (lit)', 0) + 1
                 pts = []

@@ -28,6 +28,10 @@ ATTACH = [0, 1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 17, 19, 20, 21, 23, 24,
 DISAPPEAR = [9, 10, 18, 22, 30]
 # Halo 3's self-illum colours (BGRA bytes in the shaders' function data) and its grey mask
 BLUE = (47 / 216.0, 49 / 216.0, 1.0)
+# TEST 3 (user's Halo 3 screenshot): the lit spots read near-WHITE lavender in Halo 3 -- the
+# body's blue at self_illum_intensity 6 (+ bloom) saturates; Halo 1 shows colour x mask, so
+# the colour itself is the saturated one (47/49/216 x 6 clips to white; the bloom's blue tint)
+PALE = (0.75, 0.78, 1.0)
 AMBER = (1.0, 205 / 255.0, 87 / 255.0)
 ILLUM = H3 + r'\bitmaps\brute_bolter_illum.bitmap'
 
@@ -115,8 +119,11 @@ PORT.update({
         # colours it per shader (self_illum_color, BGRA bytes in the function data): the body
         # blue 2f/31/d8 at intensity 6, dull + shiny hot orange ff/cd/57 at 3. fp_material_view
         # --illum: 4 lit FP triangles, all body. Lines thickened 1 px (no bloom in Halo 1)
-        'illum_dilate': 1,
-        'glow': {'bolt_thrower': BLUE, 'bolt_thrower_dull': AMBER, 'bolt_thrower_shiny': AMBER},
+        # TEST 3 (user, screenshot circles 1 + 2): the side lines ARE lit in Halo 1 (the built
+        # map keeps 557 of 565 lit texels through DXT1, mean G 175) but read as nothing: a
+        # few texels at colour x1. Halo 3: intensity 6 + bloom -> PALE and 2 px thicker
+        'illum_dilate': 2,
+        'glow': {'bolt_thrower': PALE, 'bolt_thrower_dull': AMBER, 'bolt_thrower_shiny': AMBER},
         # TEST 1 (user): 'no glowing effects on the weapon in FP or world model' -- the lit
         # texels sit on the two barrel MUZZLE faces (facing forward, away from the camera), two
         # side slots (x 10.4 cm), two small faces by the drum and two rear blade bits (shiny);
@@ -130,11 +137,21 @@ PORT.update({
         # rear faces hold a few lit texels on large faces (a card lights the whole face). Now
         # the Beam Rifle's FINAL recipe on the bores only: a radial card per bore (colour
         # falling to nothing at the edge, no white core), x1.3, the blue of Halo 3's body
-        'glow_shaders': {'spiker_glow_blue': {'rgb': BLUE, 'additive': True, 'islands': True,
+        # TEST 3 (user): 'you identified small glowing parts that are not on the muzzle, and now
+        # say they don't exist?' -- my error: fp_material_view's 6x6 / 15% sampling missed
+        # thin lit lines on larger faces; EXACT coverage on the built model's UVs marks them
+        # where the user circled them in Halo 3 (side line, dot -- mirrored on the far side).
+        # They are lit by the base shader (PALE, 2 px, above). Circle 3, the white TRAPEZOID,
+        # is a 2-triangle WINDOW of the blade material (no lit texel: Halo 3 draws it bright
+        # with its chrome): a FLAT additive card in PALE (a lit window, not a radial gem)
+        'glow_shaders': {'spiker_glow_blue': {'rgb': PALE, 'additive': True, 'islands': True,
                                               'islands_of': 'bolt_thrower', 'lit': ILLUM,
                                               'normal': (1.0, 0.0, 0.0), 'min_dot': 0.7,
-                                              'radius': 1.0, 'falloff': 1.6, 'hot': False, 'gain': 1.0}},
-        'glow_cards': {'bolt_thrower': {'shader': 'spiker_glow_blue', 'lit': ILLUM,
+                                              'radius': 1.0, 'falloff': 1.6, 'hot': False, 'gain': 1.0},
+                         'spiker_window': {'rgb': PALE, 'additive': True}},
+        'glow_cards': {'window': {'of': 'bolt_thrower_shiny', 'shader': 'spiker_window',
+                                  'near': ((0.8, 0.0, 3.3), 0.5), 'scale': 1.0, 'lift': 0.03},
+                       'bolt_thrower': {'shader': 'spiker_glow_blue', 'lit': ILLUM,
                                         'normal': (1.0, 0.0, 0.0), 'min_dot': 0.7,
                                         'scale': 1.3, 'lift': 0.05}},
         'template': r'weapons\assault rifle\fp\shaders\gun',
@@ -255,6 +272,9 @@ PORT.update({
                                'noise_deg': 4.0, 'effect_from_default': False},
                    # TEST 1 (user): the spike STICKS (attach) and shows its model, the needle's
                    # recipe; the ricochet above stays the potential response on stone / metal
+                   # TEST 3 A/B (user): stagger identical with attach (A) and test 1's body
+                   # responses (B, secondary) -- enemies stagger after enough spikes either way:
+                   # attach does not cost the damage response. Kept
                    'default_responses': {'attach': ATTACH, 'disappear': DISAPPEAR},
                    'model': r'weapons\spiker\spike model\spike model',
                    # TEST 2 (user): 'why not let them detonate (with no damage) like the
@@ -268,6 +288,9 @@ PORT.update({
                                          'drop_particles': ('needler spike debris',),
                                          'tint_match': ('flash h pistol detonate', 'flare h stealth cannon'),
                                          'tint': ORANGE,
+                                         # TEST 3 (user): 'the explosion is nice, could just be
+                                         # reduced in size' -> every particle x0.5
+                                         'scale': 0.5,
                                          'drop_parts': (r'sound\sfx\weapons\needler\expl',)},
                    # the LOOK: Halo 3's spike is a hot streak on every round -- the AR tracer's
                    # contrail recoloured orange (a tracer on every round: trigger below)
