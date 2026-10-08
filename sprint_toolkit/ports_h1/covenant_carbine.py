@@ -91,7 +91,8 @@ PORT.update({
         'world_name': 'covenant carbine',
         'shaders': {'carbine': (H3 + r'\bitmaps\covenant_carbine.bitmap', H3 + r'\bitmaps\covenant_carbine_illum.bitmap'),
                     'carbine_dull': (H3 + r'\bitmaps\covenant_carbine.bitmap', H3 + r'\bitmaps\covenant_carbine_illum.bitmap'),
-                    'carbine_tint_map': (H3 + r'\bitmaps\covenant_carbine.bitmap', H3 + r'\bitmaps\covenant_carbine_illum.bitmap'),
+                    # carbine_tint_map dropped at close-out: no Halo 3 triangle carries it (neither
+                    # gbxmodel names it -- h1_port_template_diff showed the orphan)
                     },
         'template': r'weapons\plasma rifle\fp\shaders\gun',
         # TEST 2 (user): 'the strips on the gun's side barely glow' -- the illum lines 1-2 px
@@ -370,6 +371,29 @@ PORT.update({
 
     # step 4b (port_field_audit.py --port covenant_carbine): the source pair (H3 carbine vs
     # the yardstick, H3 magnum) against the target pair (the H1 port vs its donor, the pistol)
+    # CLOSE-OUT RECORD (2026-10-08) -- list 2: 0 (weapon, projectile); damage effect 1 = the
+    # wobble period, deliberately NOT written (Halo 1's wobble function is 'one', as the BR).
+    # List 4: reload time 2.24 (Halo 3's 69 fr in the pistol's tag/anim shape), flash
+    # intensity 0.5 (Halo 3's). List 5: B in / function layout (the meters' ammo input, the
+    # BR's AR layout), message 57, trigger flags (+ does_not_repeat_automatically), Jackal
+    # shield 0.5 / Sentinel 2.0 (step 4a), the flash colour (Halo 3's shielded), the plasma
+    # pistol's material responses ('disappear' where the bullet overpenetrated). List 3:
+    #   weapon -- bounding offset 0.075 (written), error ramp 1.0 / 0.5 (written), functions
+    #     2 (the AR layout); NO Halo 1 field: magnification (= the template's 1 level 2x),
+    #     fire recovery 0.17 (= the 5.88/s rate), soft recovery fraction 0.8 (NOT reproduced:
+    #     Halo 1 has no partial recovery), zoom time 0.2, aim falloff ranges, barrel flags,
+    #     latch-zoom behaviour (= does_not_repeat_automatically), dual-wield scale, reporting
+    #     type, FP offset override (the retarget's view_offset), item ground scales, icons.
+    #   projectile -- attachments 1 (Halo 3's projectile effect + contrail -> the plasma
+    #     pistol bolt's green light; NO contrail), widgets 1 (Halo 3 only), flags 33 vs 32
+    #     (no model to orient: kept), material responses: Halo 3's own material indices do not
+    #     map onto Halo 1's 33 -- the plasma pistol table instead (Halo 3's carbine
+    #     overpenetrates some materials and its friction / distance values: NOT reproduced).
+    #   damage effect -- breaking effect = Halo 3's (written), fade linear = the shielded
+    #     response (written; Halo 1 has one flash), jitter wobble NOT ported (as the BR),
+    #     flags 8194 vs 16386 (Halo 3 bits, no Halo 1 counterpart), rumble (no field).
+    # Full field diff vs the templates: h1_port_template_diff.py covenant_carbine (197
+    # differences, each one of the above or a reference to the port's own tags).
     'field_audit': {
         'source_kit': 'H3EK',
         'source': {'weapon': (H3 + r'\covenant_carbine.weapon', r'objects\weapons\pistol\magnum\magnum.weapon'),

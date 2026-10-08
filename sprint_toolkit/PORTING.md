@@ -690,8 +690,9 @@ shield/health logger) did NOT get through its moved-triple step in reasonable ti
 first scan keeps too many candidates; fix before relying on it.
 
 Close-out: list 2 = 0 (the damage effect's wobble period deliberately not written, as the
-BR); list 3 decided in the config; full field diff vs the pistol / plasma pistol fire
-effect traced; port_refs_audit 0 problems; port_sound_refs 0 BORROW (the tool does not read
+BR); lists 3/4/5 recorded line by line in the config (CLOSE-OUT RECORD); full field diff
+`h1_port_template_diff.py covenant_carbine` (NEW: every pair from the config, 197
+differences traced; it found an orphan `carbine_tint_map` shader, removed); port_refs_audit 0 problems; port_sound_refs 0 BORROW (the tool does not read
 Halo 1 FP graphs: the writer's listing shows all five cues `cc_*`); 5b: default = Halo 3's
 own row, balanced = the pistol-ratio row exactly. One resource group (not dual-wieldable).
 Not reproduced: the wedges' slide, the refraction itself, the headshot cross.

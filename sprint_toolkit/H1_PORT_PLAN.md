@@ -358,6 +358,10 @@ enhancer must list Balanced ports in the Armed spec (`balanced`) -- handed off.
 (balanced, no god); the user's stopwatch (time to die x5) is the instrument --
 `h1_vitality_live.py` is too slow at its moved-triple step (fix before use).
 
+**Close-out tool:** `h1_port_template_diff.py <key>` = the full field diff of every tag
+against what it was copied from (pairs from the config; Halo 1's kit_tag_diff) -- it found
+the Carbine's orphan shader. port_field_audit now reads shaders and HUD flag blocks.
+
 **Step 4a:** show the DAMAGE TYPE against Halo 1's materials (`h1_role_compare` rows with
 `damage_tags` of another weapon): Halo 3's `plasma_fast` has no shield bonus, so the
 Carbine kept a bullet table + Halo 3's differences. Check `h3_weapon_values`' damage group,
@@ -366,8 +370,9 @@ then the Halo 3 globals damage table (out/h3_export/_g.txt).
 **Scope (standard, h1_h3_scope):** collection state inherited; `per_widget` (drop / scale /
 blur / blur_inside); animated widgets at scale 0 need a scale; DISTORTION widgets become
 Halo 1 blur only by decision; the BR's span/aspect were NOT general -- the Carbine needed
-x0.8 aspect and 80% size: put 2 variants in ONE boot (`--secondary` with a test-only
-copy: weapon + HUD + mask under `<weapon dir>\test`, deleted after).
+x0.8 aspect and 80% size: preview first (`h1_h3_scope.py <chud> --port <key> --screen
+out.png` = the mask as Halo 1 draws it), then 2 variants in ONE boot (`h1_scope_variant.py
+<key> b --aspect ..` + `--secondary`, `--clean` after; a test-only copy: weapon + HUD + mask under `<weapon dir>\test`, deleted after).
 **Halo 3 meter shaders on the gun** (`meter_map` / `meter_value`): `h1_h3_weapon_model`
 `meters` -- channels SWAP, gamma-spaced steps -> `steps` (rank remap), the AR's function
 layout for the out that drives them. Any H3 shader with meter_* parameters is one.

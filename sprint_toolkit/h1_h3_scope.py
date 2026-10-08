@@ -225,6 +225,31 @@ def write(dark, out, alpha=255, blur=None):
     return p
 
 
+def screen(dark, blur, path, w=1920, h=1080, px_per_texel=1.09):
+    """The mask as Halo 1 DRAWS it (BR tests 2-3): a centred 4:3 box ~1.09 px a texel tall,
+    edge texels repeated beyond -- over a checker (what the lens shows), the blur map as a
+    blue tint. For judging size / shape before a boot (the Carbine's variants, 2026-10-08)."""
+    size = dark.shape[0]
+    bh = int(round(size * px_per_texel))
+    bw = int(round(bh * 4 / 3.0))
+    pad_x = max(0, (w - bw + 1) // 2 + 1)
+    pad_y = max(0, (h - bh + 1) // 2 + 1)
+
+    def place(a):
+        img = np.array(Image.fromarray((np.clip(a, 0, 1) * 255).astype(np.uint8)).resize((bw, bh), Image.LANCZOS))
+        img = np.pad(img, ((pad_y, pad_y), (pad_x, pad_x)), mode='edge')
+        y0, x0 = (img.shape[0] - h) // 2, (img.shape[1] - w) // 2
+        return img[y0:y0 + h, x0:x0 + w] / 255.0
+    d, b = place(dark), place(blur)
+    yy, xx = np.mgrid[0:h, 0:w]
+    bg = np.zeros((h, w, 3))
+    bg[...] = (120, 160, 110)
+    bg[((xx // 60 + yy // 60) % 2) == 0] = (100, 140, 95)
+    bg[..., 2] += b * 100
+    Image.fromarray(np.clip(bg * (1 - d[..., None]), 0, 255).astype(np.uint8)).save(path)
+    return path
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('chud', help=r'Halo 3 chud, e.g. ui\chud\battle_rifle')
@@ -233,6 +258,7 @@ def main():
     ap.add_argument('--aspect', type=float, default=1.0)
     ap.add_argument('--size', type=int, default=512)
     ap.add_argument('--preview')
+    ap.add_argument('--screen', help='PNG: the mask as Halo 1 draws it at 1920x1080 (screen())')
     ap.add_argument('--port', help='a ports_h1 key: its hud scope settings (per_widget, size...)')
     a = ap.parse_args()
     kw = {'span': a.span, 'aspect': a.aspect, 'size': a.size}
@@ -248,6 +274,8 @@ def main():
         bg[..., 2] += blur * 120                 # the blur map shows as a blue tint
         Image.fromarray(np.clip(bg * (1 - dark[..., None]), 0, 255).astype(np.uint8)).save(a.preview)
         print('preview', a.preview)
+    if a.screen:
+        print('screen', screen(dark, blur, a.screen))
     if a.out:
         S = ports_h1.load(a.port)['pickable']['hud']['scope'] if a.port else {}
         print('wrote', write(dark, a.out, alpha=S.get('alpha', 255), blur=blur))

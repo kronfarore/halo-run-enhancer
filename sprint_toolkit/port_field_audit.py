@@ -161,7 +161,8 @@ def flatten_h2(tag):
 H1_DEFS = {'weapon': 'weap', 'projectile': 'proj', 'damage_effect': 'jpt_', 'scenario': 'scnr',
            'model_animations': 'antr', 'unicode_string_list': 'ustr', 'bitmap': 'bitm',
            'weapon_hud_interface': 'wphi', 'effect': 'effe', 'actor_variant': 'actv',
-           'sound': 'snd_', 'gbxmodel': 'mod2'}
+           'sound': 'snd_', 'gbxmodel': 'mod2', 'shader_model': 'soso',
+           'shader_transparent_meter': 'smet', 'shader_transparent_chicago': 'schi'}
 
 
 def flatten_h1(tag, filepath=None):
@@ -197,7 +198,8 @@ def flatten_h1(tag, filepath=None):
                     walk(e, '%s/[%d]' % (p, k))
             elif hasattr(c, 'enum_name'):
                 vals[p] = ('enum', c.enum_name)
-            elif tn.startswith('Bool'):
+            elif tn.startswith(('Bool', 'FlBool')) or type(c).__name__ == 'BoolBlock':
+                # (a flag block named otherwise -- the HUD's -- crashed the walk: the Carbine)
                 vals[p] = ('flags', str(c.data))
             elif hasattr(c, 'desc'):
                 kids = [c[k] for k in range(len(c))]
