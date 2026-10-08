@@ -40,6 +40,8 @@ def main():
     ap.add_argument('--illum', help='Halo 3 bitmap (H3EK tags path): mark triangles on its lit texels')
     ap.add_argument('--threshold', type=int, default=64, help='lit = max(RGB) above this')
     ap.add_argument('--list-lit', action='store_true', help='print each lit triangle')
+    ap.add_argument('--texels', type=int, default=0,
+                    help='draw the lit texels on lit triangles (each cut n x n), not the whole triangle')
     ap.add_argument('--size', default='1920x1080')
     a = ap.parse_args()
     cfg = ports_h1.load(a.port)
@@ -116,7 +118,25 @@ def main():
                         acc = [x + wt * y for x, y in zip(acc, q)]
                         w += wt
                     pts.append(tuple(x / (w or 1.0) for x in acc))
-                tris.append((pts, col))
+                if a.texels and col == (255, 255, 255):
+                    # the lit TEXELS themselves (the Spike Rifle, test 4: which part of a lit
+                    # face glows): the triangle cut into n x n pieces, each white where its UV
+                    # centre lands on a lit texel, else the material's colour
+                    n = a.texels
+                    P = np.array(pts)
+                    for i in range(n):
+                        for j in range(n - i):
+                            for corners in (((i, j), (i + 1, j), (i, j + 1)),
+                                            ((i + 1, j), (i + 1, j + 1), (i, j + 1))):
+                                if any(x + y > n for x, y in corners):
+                                    continue
+                                bc = [np.array([1 - (x + y) / n, x / n, y / n]) for x, y in corners]
+                                sub = [tuple(w @ P) for w in bc]
+                                c_uv = sum(bc) / 3 @ uv
+                                hit = lit[int((c_uv[1] % 1) * H) % H, int((c_uv[0] % 1) * W) % W]
+                                tris.append((sub, (255, 255, 255) if hit else colours[sh]))
+                else:
+                    tris.append((pts, col))
                 counts[sh] = counts.get(sh, 0) + 1
     hands = R.posed_tris(R.load_model(R.HANDS), world, (200, 170, 120))
     size = tuple(int(x) for x in a.size.split('x'))

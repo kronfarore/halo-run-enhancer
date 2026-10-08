@@ -148,7 +148,19 @@ PORT.update({
                                               'islands_of': 'bolt_thrower', 'lit': ILLUM,
                                               'normal': (1.0, 0.0, 0.0), 'min_dot': 0.7,
                                               'radius': 1.0, 'falloff': 1.6, 'hot': False, 'gain': 1.0},
-                         'spiker_window': {'rgb': PALE, 'additive': True}},
+                         'spiker_window': {'rgb': PALE, 'additive': True},
+                         # TEST 4 (user): 'the side parts not yet'. fp_material_view --texels:
+                         # under Halo 1's UVs Halo 3's side lights are a FLECK of a few texels
+                         # (circle 1; circle 2 smaller) -- right, but invisible without bloom.
+                         # A radial HALO card per lit-texel cluster (the Beam Rifle's gem halo,
+                         # placed on the spot, not over the face)
+                         'spiker_spot': {'rgb': PALE, 'additive': True, 'radial': True,
+                                         'falloff': 1.6, 'gain': 1.0}},
+        'glow_spots': [{'material': 'bolt_thrower', 'illum': ILLUM, 'shader': 'spiker_spot',
+                        'size': 0.8, 'lift': 0.05, 'merge': 0.4, 'skip_normal': (1.0, 0.0, 0.0),
+                        # the faces are nearly edge-on to the FP camera (render): a second card
+                        # per spot facing back along the gun (-x), where the camera looks from
+                        'face': (-1.0, 0.0, 0.0)}],
         'glow_cards': {'window': {'of': 'bolt_thrower_shiny', 'shader': 'spiker_window',
                                   'near': ((0.8, 0.0, 3.3), 0.5), 'scale': 1.0, 'lift': 0.03},
                        'bolt_thrower': {'shader': 'spiker_glow_blue', 'lit': ILLUM,

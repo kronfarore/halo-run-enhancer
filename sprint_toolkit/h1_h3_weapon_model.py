@@ -147,6 +147,97 @@ def glow_pieces(jm, material, C):
     return [(ts, [jm.verts[v] for t in ts for v in (t.v0, t.v1, t.v2)]) for ts in isl.values()]
 
 
+def glow_spots(jm, S):
+    """[(centre, normal, tangent)] JMS cm -- one SPOT per cluster of lit texels (the Spike
+    Rifle, test 4: Halo 3's side lights are a few texels each -- correct in Halo 1, but too
+    small to see without bloom; a card over the whole face is a flat square). Each lit
+    triangle of S['material'] (sampled the way Halo 1 maps it: row = 1 - JMS v) gives the
+    3D point of its lit texels' centroid (barycentric); spots closer than S['merge'] cm join.
+    Faces along S['skip_normal'] (dot >= 0.7: the muzzle bores, which have their own cards)
+    are skipped."""
+    img, _ = h3_hud_art.decode(S['illum'])
+    a = np.array(img)[..., :3].max(axis=2)
+    H, W = a.shape
+    names = [m.name for m in jm.materials]
+    si = names.index(S['material'])
+    spots = []
+    for t in jm.tris:
+        if t.shader != si:
+            continue
+        vs = [jm.verts[i] for i in (t.v0, t.v1, t.v2)]
+        P = np.array([(v.pos_x, v.pos_y, v.pos_z) for v in vs])
+        N = np.cross(P[1] - P[0], P[2] - P[0])
+        if np.linalg.norm(N) < 1e-9:
+            continue
+        N = N / np.linalg.norm(N)
+        Nv = np.array([(v.norm_i, v.norm_j, v.norm_k) for v in vs]).mean(0)
+        if np.dot(N, Nv) < 0:
+            N = -N
+        if S.get('skip_normal') and np.dot(N, S['skip_normal']) >= 0.7:
+            continue
+        uv = np.array([(v.tex_u, 1.0 - v.tex_v) for v in vs])
+        off = np.floor(uv.min(0))
+        q = (uv - off) * (W, H)
+        x0, y0 = np.floor(q.min(0)).astype(int)
+        x1, y1 = np.ceil(q.max(0)).astype(int)
+        yy, xx = np.mgrid[y0:y1 + 1, x0:x1 + 1] + 0.5
+        (ax, ay), (bx, by), (cx, cy) = q
+        den = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy)
+        if abs(den) < 1e-12:
+            continue
+        l1 = ((by - cy) * (xx - cx) + (cx - bx) * (yy - cy)) / den
+        l2 = ((cy - ay) * (xx - cx) + (ax - cx) * (yy - cy)) / den
+        ins = (l1 >= 0) & (l2 >= 0) & (1 - l1 - l2 >= 0)
+        val = a[yy[ins].astype(int) % H, xx[ins].astype(int) % W].astype(float)
+        lit = val > S.get('threshold', 16)
+        if not lit.any():
+            continue
+        w = val[lit]
+        L1, L2 = (l1[ins][lit] * w).sum() / w.sum(), (l2[ins][lit] * w).sum() / w.sum()
+        C = L1 * P[0] + L2 * P[1] + (1 - L1 - L2) * P[2]
+        Tg = (P[1] - P[0]) / (np.linalg.norm(P[1] - P[0]) or 1.0)
+        for s in spots:
+            if np.linalg.norm(s[0] - C) < S.get('merge', 0.4):
+                break
+        else:
+            spots.append((C, N, Tg, vs[0].node_0))
+    return spots
+
+
+def add_spot_cards(jm, S):
+    """A square card (`size` cm, lifted `lift` along the face normal) per glow spot, UVs 0..1
+    on a RADIAL glow texture (glow_shaders `radial`), as material S['shader']."""
+    from reclaimer.model.jms.file import JmsMaterial, JmsTriangle, JmsVertex
+    spots = glow_spots(jm, S)
+    jm.materials.append(JmsMaterial(S['shader']))
+    si = len(jm.materials) - 1
+    half = S.get('size', 0.8) / 2.0
+    for C, N, Tg, node in spots:
+        C = C + N * S.get('lift', 0.05)
+        planes = [(N, Tg)]
+        if S.get('face'):
+            # a second card FACING an axis (the Spike Rifle, test 4: the side lights' faces sit
+            # nearly edge-on to the first-person camera; the gun points +x, so the camera looks
+            # at -x faces): its plane perpendicular to `face`
+            F = np.array(S['face'], float)
+            T2 = np.cross(F, (0.0, 0.0, 1.0))
+            if np.linalg.norm(T2) < 1e-6:
+                T2 = np.cross(F, (0.0, 1.0, 0.0))
+            planes.append((F, T2 / np.linalg.norm(T2)))
+        for Nn, Tt in planes:
+            B2 = np.cross(Nn, Tt)
+            idx = []
+            for du, dv in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
+                p = C + Tt * du * half + B2 * dv * half
+                jm.verts.append(JmsVertex(node, float(p[0]), float(p[1]), float(p[2]), float(Nn[0]), float(Nn[1]), float(Nn[2]),
+                                          -1, 0.0, (du + 1) / 2.0, (dv + 1) / 2.0))
+                idx.append(len(jm.verts) - 1)
+            jm.tris.append(JmsTriangle(0, si, idx[0], idx[1], idx[2]))
+            jm.tris.append(JmsTriangle(0, si, idx[0], idx[2], idx[3]))
+    print('   glow spots %s: %d spot(s) as %s: %s' % (S['material'], len(spots), S['shader'],
+                                                     [tuple(c.round(1)) for c, _n, _t, _d in spots]))
+
+
 def drop_materials(jm, names):
     """Triangles of the named materials removed, materials renumbered (the Spike Rifle's FP
     model: 20 triangles of Halo 3's `shaders\\invalid` -- a flat cap at both barrel ends,
@@ -229,6 +320,19 @@ def bitmaps(w):
                 hot = np.clip(v * 2.0 - 1.0, 0.0, 1.0)[..., None]
                 c = lo * (1 - hot) + hot
                 col = np.zeros((256, 256, 4), np.uint8)
+                col[..., :3] = np.round(c * 255)
+                col[..., 3] = 255
+            elif spec.get('radial'):
+                # ONE radial glow over the whole 0..1 UV square (glow spot cards): the colour
+                # falling to nothing at the edge (`falloff`), an optional white core (`hot`)
+                N = 128
+                yy, xx = np.mgrid[0:N, 0:N]
+                d = np.sqrt((xx - (N - 1) / 2.0) ** 2 + (yy - (N - 1) / 2.0) ** 2) / (N / 2.0)
+                v = np.clip(1 - d, 0, 1) ** spec.get('falloff', 1.6) * spec.get('gain', 1.0)
+                lo = np.clip(v * 2.0, 0.0, 1.0)[..., None] * np.array(rgb)[None, None, :]
+                hot = (np.clip(v * 2.0 - 1.0, 0.0, 1.0) if spec.get('hot', False) else np.zeros_like(v))[..., None]
+                c = lo * (1 - hot) + hot
+                col = np.zeros((N, N, 4), np.uint8)
                 col[..., :3] = np.round(c * 255)
                 col[..., 3] = 255
             elif spec.get('islands'):
@@ -473,6 +577,8 @@ def models(w):
                     jm.tris.append(JmsTriangle(t.region, si, *idx))
                     n_new += 1
             print('   glow cards %s: %d piece(s), %d triangle(s) as %s' % (mat, len(pieces), n_new, C['shader']))
+        for S in w.get('glow_spots', ()):
+            add_spot_cards(jm, S)
         d = os.path.join(HCEEK, 'data', w['dir'] + sub, 'models')
         os.makedirs(d, exist_ok=True)
         write_jms(os.path.join(d, fname + '.jms'), jm)
