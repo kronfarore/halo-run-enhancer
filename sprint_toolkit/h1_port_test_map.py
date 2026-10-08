@@ -275,8 +275,13 @@ def main():
                          '+ anim_sounds), spawning with the balanced magazine')
     ap.add_argument('--armed', metavar='ENEMIES',
                     help="the enhancer's Armed-card pass at 100%%: e.g. grunt,elite carry the port")
+    ap.add_argument('--mortal', action='store_true',
+                    help='with --armed: NO god shield (a damage MEASUREMENT run, h1_vitality_live.py)')
     a = ap.parse_args()
-    if a.armed and not (a.balanced and a.god):
+    if a.armed and a.mortal:
+        a.balanced = True
+        print('--armed --mortal: balanced, the player shield breaks (a measurement run)')
+    elif a.armed and not (a.balanced and a.god):
         # the Armed test runs BALANCED with an unbreakable player shield (user, BR 2026-10-07)
         a.balanced = a.god = True
         print('--armed: also --balanced --god (the Armed test rule)')
