@@ -357,7 +357,9 @@ PORT.update({
             # aim_assists_only_when_zoomed (Halo 1's one flag also stops autoaim unzoomed,
             # Halo 3's only magnetism). 'strict deviation angle' / "don't clear fire bit":
             # no Halo 1 field; the sniper's integrated night vision: not Halo 3's beam
-            'weap_attrs.flags.aim_assists_only_when_zoomed': True,
+            # USER (2026-10-08): only in the BALANCED version (a catalog row on the weapon
+            # flags word); the default keeps aim assist unzoomed
+            'weap_attrs.flags.aim_assists_only_when_zoomed': False,
         },
         'melee': (PP + 'melee', BM + 'melee'),
         'melee_response': PP + 'melee_response',
@@ -428,6 +430,12 @@ PORT.update({
                 row('weap', BM + 'beam rifle', 'Autoaim Range', 35.0, 10.0, 'Autoaim'),
                 row('weap', BM + 'beam rifle', 'Magnetism Angle', 2.0, 4.0, 'Magnetism'),
                 row('weap', BM + 'beam rifle', 'Magnetism Range', 35.0, 14.0, 'Magnetism'),
+                # the sniper's 'aim assists only when zoomed' (user: balanced only): the WHOLE
+                # weapon flags word (Assembly 'Flags' at 0x308). `nth` counts EVERY 'Flags' of
+                # the plugin in walk order, nested blocks included: 0 object 0x2, 1 a block's,
+                # 2 item 0x17C, 3 WEAPON 0x308 (nth=2 first wrote the item flags -- caught by
+                # reading the built copy back) -- 2048 = cannot fire at maximum age, + bit 5
+                dict(row('weap', BM + 'beam rifle', 'Flags', 2080, 2048, 'Aim assist zoomed only'), nth=3),
             ]},
     },
 
@@ -455,7 +463,7 @@ PORT.update({
     #   (shot + FP layer), dry fire, ready, melee, posing, zoom in/out, drop, overheat in/out
     #   (Halo 3 has no reload, first draw or put-away cue for it).
     # FINAL CHECK (user, 'every step, especially 4b'): weapon flags decided by name ->
-    #   aim_assists_only_when_zoomed (kit_tag_diff: flags 2048 -> 2080, nothing else);
+    #   aim_assists_only_when_zoomed -- user: BALANCED only (a catalog row on the flags word);
     #   port_sounds --check 0, validate_halo_json 0.
     # port_refs_audit 0 problems; port_sound_refs 0 BORROW; 5b: default = Halo 3's row,
     #   balanced = the sniper-ratio row (h1_role_compare beam_rifle [--balanced]).

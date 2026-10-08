@@ -1622,6 +1622,16 @@
      "value": 35.0,
      "card": "Magnetism",
      "original": 14.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\beam rifle\\beam rifle",
+     "field": "Flags",
+     "block": null,
+     "value": 2080,
+     "card": "Aim assist zoomed only",
+     "original": 2048,
+     "nth": 3
     }
    ],
    "weap": "weapons\\beam rifle\\beam rifle",
