@@ -465,6 +465,11 @@ PORT.update({
     #   tracer on every round; the stuck spike = Halo 3's brute_spike particle model as the
     #   projectile model; the needle's burst (no damage, x0.5, silent: Halo 3's spike has no
     #   detonation effect at all).
+    #   List 3, the rest decided: bounding radius (Halo 3 0.5, the AR 0 -> 0 kept: the stuck
+    #   spike draws fine), change colours (Halo 3's purple-blue -- the look is the tracer +
+    #   the model, nothing reads them), acceleration range 0..6 / AI velocity scale / autoaim
+    #   leading (no Halo 1 field); the response rows of list 3 pair Halo 3 elements by INDEX
+    #   (other materials): decided per material in the table above instead.
     # Damage effect: list 2 = 0. The screen flash stays the AR's (a -30% try reverted).
     # The SHIELD-HIT effect on the player = THE HIT-EFFECT RULE v2 (x0.14 at 12/s; PORTING).
     # Full field diff (h1_port_template_diff.py): 554 differences, each one of the above, a
@@ -478,6 +483,12 @@ PORT.update({
     #   6 saturates), radial halo cards on the muzzle bores, GLOW SPOTS on the side lights (x0.4,
     #   two cards each: face + camera), a flat card on the top-rear window; all hide with the FP
     #   model when zoomed (test 6, a test-only zoom).
+    # Tag writes PROVEN (closing check 6; Halo 1 = port_field_audit.flatten, no XML export):
+    #   29 tags (every weapons\spiker tag + messages, cyborg animations, the ten scenarios)
+    #   flattened, the writer re-run, 0 fields changed (545,643 compared); the contrail (no
+    #   flatten reader) checked by hand: colour 239/57/12.
+    # Closing check 8: the Armed pass armed Grunt / Jackal / Elite slots with a donor each (AR
+    #   major Marine, armoured Marine, Flood combat Elite) + Halo 3's spike_rifle profile.
     # port_refs_audit 0; port_sound_refs: all OWN + KEEP flashlight; port_sounds --check 0;
     #   validate_halo_json 0; 5b: default = Halo 3's row, balanced = the AR-ratio row (144 dps).
     # Armed: Spiker one-handed (h1_enemy_weapons.hands default 'one' -- the enhancer to write
