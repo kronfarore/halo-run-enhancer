@@ -421,6 +421,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h2_spawn_starting_weapons', 'h2_spawn_all_weapons',
                'h1_replace_first_weapons', 'h1_enemy_weapon_enabled',
                'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards',
+               'h1_overheat_unzoom',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -1007,6 +1008,10 @@ CONFIG = {
     "h1_enemy_weapon_fallback": {},
     # ...and offer 'Armed: <weapon>' enemy cards (Marines through the Ally pool)
     "h1_enemy_weapon_cards": True,
+    # Options -> Patching -> Halo 1: an overheat drops the zoom, as in Halo 2-4. A
+    # halo1.dll patch (sprint_toolkit/h1_overheat_unzoom.py), engine-wide: every heat
+    # weapon, live in a running MCC AND in the file. Off = put back to stock.
+    "h1_overheat_unzoom": False,
     # Options -> Weapon ports: ported weapons join every weapon pick (initial
     # selection, New Weapon, automatic rolls) on levels whose map carries them
     "weapon_ports_in_pools": False,
@@ -7121,6 +7126,20 @@ class MagnitudeEditorDialog(QDialog):
         return iron_live.sync(self.game if self._iron_drawn(skulls) else None)
 
     @staticmethod
+    def _apply_h1_overheat_unzoom():
+        """Halo 1's overheat-drops-the-zoom halo1.dll patch, synced to its option on
+        every patch (any game, so unticking it always puts the dll back): live in a
+        running MCC and in the file, which h1_overheat_unzoom swaps in even while MCC
+        holds it. Rows only for what changed or failed."""
+        sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        try:
+            import h1_overheat_unzoom
+            return h1_overheat_unzoom.sync(bool(CONFIG.get('h1_overheat_unzoom')))
+        except Exception as e:
+            return [{'tag': 'halo1.dll', 'effect': 'Overheat drops the zoom',
+                     'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
+
+    @staticmethod
     def _betrayal_drawn(skulls):
         return any(MagnitudeEditorDialog._skull_name(s) == 'betrayal' for s in (skulls or ()))
 
@@ -9337,6 +9356,7 @@ class MagnitudeEditorDialog(QDialog):
 
         # Same footing: a live write to another process, never fatal to the map patch.
         results.extend(self._apply_iron(skulls))
+        results.extend(self._apply_h1_overheat_unzoom())
         if CONFIG.get('death_penalty_scaling'):
             results.extend(self._apply_death_penalty())
         results.extend(self._restore_sword_drain(plan))
@@ -11613,6 +11633,18 @@ class OptionsDialog(QDialog):
             "cards through the Ally slot, at the lowest priority.")
         h1form.addRow("", self.h1_armed_cards_cb)
 
+        self.h1_overheat_unzoom_cb = QCheckBox("Overheating drops the zoom (halo1.dll)")
+        self.h1_overheat_unzoom_cb.setChecked(bool(CONFIG.get('h1_overheat_unzoom')))
+        self.h1_overheat_unzoom_cb.setToolTip(
+            "Halo 2-4 knock you out of the scope when a weapon overheats; Halo 1 never "
+            "had a weapon that zooms AND overheats, so it keeps you zoomed. This patches "
+            "the engine, not a weapon: every heat weapon is covered -- the Beam Rifle "
+            "and any battery weapon a run gives zoom to.\n\n"
+            "Applied when you patch, whatever state MCC is in: into the running game "
+            "(at once) and into halo1.dll (every later start). Unticked, the next patch "
+            "puts halo1.dll back to stock. In co-op both machines need it.")
+        h1form.addRow("Engine:", self.h1_overheat_unzoom_cb)
+
         self.reach_pools_cb = QCheckBox(
             "Reach: offer every weapon and ability the prepared map supports")
         self.reach_pools_cb.setChecked(bool(CONFIG.get('reach_pools_from_map')))
@@ -12878,6 +12910,7 @@ class OptionsDialog(QDialog):
             'h1_enemy_weapon_fallback': {e: c.currentData() for e, (_cb, c) in self.h1_enemy_rows.items()
                                          if c.currentData()},
             'h1_enemy_weapon_cards': self.h1_armed_cards_cb.isChecked(),
+            'h1_overheat_unzoom': self.h1_overheat_unzoom_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
             'odst_red_plasma_as_brute': self.red_plasma_cb.isChecked(),
             'odst_variants_as_base': self.odst_variants_cb.isChecked(),

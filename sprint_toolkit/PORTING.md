@@ -755,6 +755,8 @@ needs it). Bit 0 of +0x1F8 = overheated is read from the code, unverified live.
 **Recommendation:** A, live-patched, one boot on a30: zoom in, overheat -> must drop to
 unzoomed; reload still unzooms; plasma pistol unchanged.
 
+**BUILT 2026-10-08 (option A, untested in game):** `sprint_toolkit/h1_overheat_unzoom.py`, Options -> Patching -> Halo 1 -> "Overheating drops the zoom (halo1.dll)" (`h1_overheat_unzoom`, off by default, in the run's options snapshot so a co-op partner gets it too). Every patch (any game) syncs it: LIVE into a running MCC (verified live: the running dll held the stock bytes + context) AND into the file -- in place with MCC closed; with MCC running the loaded dll cannot be opened for writing but CAN be renamed, so the patched copy is swapped in and the original becomes `halo1.dll.inuse-<time>`, deleted by a later sync. First file write keeps `halo1.dll.prepatch.bak`. Unticked -> both halves back to stock. Engine-wide by construction (keyed on the overheat event), so every heat weapon a run gives zoom to is covered, not just the Beam Rifle. CLI: `python sprint_toolkit/h1_overheat_unzoom.py --show | --on | --off`.
+
 ---
 
 ## Halo 3
