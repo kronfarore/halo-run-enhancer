@@ -520,9 +520,27 @@
      "<h",
      62,
      "Drop Weapon Ammo Max"
+    ],
+    "0xC4": [
+     "<f",
+     0.5966101694915255,
+     "Weapon Damage Modifier"
     ]
    },
-   "donor_weapon": "weapons\\assault rifle\\assault rifle"
+   "donor_weapon": "weapons\\assault rifle\\assault rifle",
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.2569343065693431,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.4,
+    "yardstick_dps": 88.0,
+    "port_dps": 59.0,
+    "balanced_port_dps": 137.0
+   }
   }
  }
 }

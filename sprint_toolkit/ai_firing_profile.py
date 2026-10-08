@@ -178,6 +178,30 @@ def same_game(donor_weapon, to_weapon, to_game='Halo 1', why='', fields=None, wr
     return data[to_game][to_weapon]
 
 
+WDM = '0xC4'                     # Halo 1 actor_variant Weapon Damage Modifier
+
+
+def wdm_rule(prof, rule):
+    """THE ARMED WEAPON DAMAGE MODIFIER RULE (user, 2026-10-08, the Covenant Carbine):
+    WDM = base x (yardstick player dps / port player dps), once for the DEFAULT numbers
+    (`fields`) and once for the BALANCED rows (`balanced_fields`; h1_enemy_weapons uses
+    them for a port listed in its spec's 'balanced'). base = the Weapon Damage Modifier of
+    the carriers the port fires from (the AR donors: 0.4); the dps values are
+    h1_role_compare's (step 5b on the built port). A stronger port gets a gentler AI.
+    Checked in game on the Carbine (a30, all Elite minors, stopwatch time to die x5):
+    stock plasma rifle 3.61 s, Armed carbine (balanced, WDM 0.40) 2.04 s -> measured
+    0.40 x 2.04/3.61 = 0.23 against the rule's 0.26. Source profiles carry no WDM of their
+    own from Halo 3 (Halo 4 does: the SAW's 0.75) -- a rule value replaces it."""
+    if not rule:
+        return
+    base, yard = rule['base'], rule['yardstick_dps']
+    prof['fields'][WDM] = ['<f', base * yard / rule['port_dps'], 'Weapon Damage Modifier']
+    if rule.get('balanced_port_dps'):
+        prof['balanced_fields'] = {WDM: ['<f', base * yard / rule['balanced_port_dps'],
+                                         'Weapon Damage Modifier']}
+    prof['wdm_rule'] = dict(rule)
+
+
 def from_config(key, write=True):
     """Step 11 from a Halo 1 port's config (ports_h1/<key>.py, section 'firing_profile'):
       {'mode': 'carried'}                      a character spawns with it: nothing to write
@@ -203,7 +227,7 @@ def from_config(key, write=True):
             raise SystemExit('%s: same_game profile without a donor_weapon -- %s'
                              % (key, fp.get('why', 'choose the Halo 1 weapon it fires like')))
         prof = same_game(fp['donor_weapon'], weapon, why=fp.get('why', ''),
-                         fields=parse_sets(fp.get('set')), write=write)
+                         fields=parse_sets(fp.get('set')), write=False)   # written below
     elif mode == 'source':
         src = fp['from_map']
         prof = build(src if os.path.isabs(src) else os.path.join(MCC, src), fp['from_game'],
@@ -216,20 +240,23 @@ def from_config(key, write=True):
             # it donor_for takes the best carrier of donor_weapon (its same-game branch)
             prof['donor_weapon'] = fp['donor_weapon']
             prof['source'] += ' over %s carriers' % fp['donor_weapon']
-        if write:
-            try:
-                with open(PROFILE_FILE, encoding='utf-8') as fh:
-                    data = json.load(fh)
-            except Exception:
-                data = {}
-            data.setdefault('Halo 1', {})[weapon] = prof
-            with open(PROFILE_FILE, 'w', encoding='utf-8') as fh:
-                json.dump(data, fh, indent=1)
     else:
         raise SystemExit('%s: unknown firing_profile mode %r' % (key, mode))
+    wdm_rule(prof, fp.get('wdm_rule'))
+    if write:
+        try:
+            with open(PROFILE_FILE, encoding='utf-8') as fh:
+                data = json.load(fh)
+        except Exception:
+            data = {}
+        data.setdefault('Halo 1', {})[weapon] = prof
+        with open(PROFILE_FILE, 'w', encoding='utf-8') as fh:
+            json.dump(data, fh, indent=1)
     print(prof['source'], '->', weapon)
     for off, (fmt, v, name) in sorted(prof['fields'].items(), key=lambda kv: int(kv[0], 16)):
         print('  %-6s %-32s %s' % (off, name, round(v, 4) if isinstance(v, float) else v))
+    for off, (fmt, v, name) in sorted((prof.get('balanced_fields') or {}).items()):
+        print('  %-6s %-32s %s  (BALANCED)' % (off, name, round(v, 4)))
     print('written' if write else '(dry: not written)', PROFILE_FILE)
     return prof
 

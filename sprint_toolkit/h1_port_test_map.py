@@ -195,7 +195,7 @@ def balance(m, entry):
 LEVELS = ('a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40')
 
 
-def armed(m, weapon, enemies):
+def armed(m, weapon, enemies, balanced=False):
     """STEP 11 in game: the enhancer's own Armed-card pass (h1_enemy_weapons.apply) at 100%
     for each enemy -- every spawn of that enemy moved to a variant carrying the port, its
     firing block from donor_for (the firing profile laid over a donor). Donor index from
@@ -212,7 +212,9 @@ def armed(m, weapon, enemies):
         levels.append(base if os.path.exists(base) else live)
     names = {e.lower(): e for e in EW.ENEMIES}
     cards = {names[e.strip().lower()]: {weapon: 1.0} for e in enemies}
-    for r in EW.apply(m, hp, {'levels': levels, 'cards': cards}):
+    # balanced: the port's profile `balanced_fields` (the Armed WDM rule) over its fields
+    spec = {'levels': levels, 'cards': cards, 'balanced': [weapon] if balanced else []}
+    for r in EW.apply(m, hp, spec):
         print('   armed %-16s %-22s %s' % (r.get('field'), r.get('old') or '',
                                          r.get('new') or r.get('reason') or ''))
 
@@ -322,7 +324,7 @@ def main():
         if entry:
             balance(m, entry)
         if arm:
-            armed(m, weapon, arm)
+            armed(m, weapon, arm, balanced=bool(entry))
         open(out, 'wb').write(bytes(m.data))
     print('wrote %s' % out)
     if a.stage:

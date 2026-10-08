@@ -209,6 +209,19 @@ def best_donor(index, weapon, unit, traits):
     return best[1:] + (best[0],) if best else None
 
 
+# ports whose BALANCED box is on in this patch (apply's spec 'balanced'): their firing
+# profile's `balanced_fields` (the Armed Weapon Damage Modifier rule, ai_firing_profile
+# wdm_rule) go over `fields`. Absent -> the default fields, as before.
+BALANCED = set()
+
+
+def _fields(prof, weapon):
+    f = dict(prof.get('fields') or {})
+    if weapon in BALANCED:
+        f.update(prof.get('balanced_fields') or {})
+    return f or None
+
+
 def donor_for(m, index, weapon, unit, traits, forced=None):
     """(minor bytes, major bytes, description, profile fields or None).
 
@@ -225,7 +238,7 @@ def donor_for(m, index, weapon, unit, traits, forced=None):
             prof = profiles().get(weapon) if e['weapon'] != weapon else None
             return (bytes.fromhex(e['bytes']), bytes.fromhex(major) if major else None,
                     e['name'] + (' + ' + _prof_desc(prof) if prof else ''),
-                    prof['fields'] if prof else None)
+                    _fields(prof, weapon) if prof else None)
     d = best_donor(index, weapon, unit, traits)
     if d:
         return d[0], d[1], d[2], None
@@ -236,7 +249,7 @@ def donor_for(m, index, weapon, unit, traits, forced=None):
         # else has) like Halo 1's own Sentinel, whose beam it replaces
         d = best_donor(index, prof['donor_weapon'], unit, traits)
         if d:
-            return d[0], d[1], '%s + %s' % (d[2], _prof_desc(prof)), prof['fields'] or None
+            return d[0], d[1], '%s + %s' % (d[2], _prof_desc(prof)), _fields(prof, weapon)
     label = m.weapon_label(weapon)
     if not prof or not label:
         return None
@@ -250,7 +263,7 @@ def donor_for(m, index, weapon, unit, traits, forced=None):
     if best is None:
         return None
     # the FULL donor path stays first: it is what gets saved and looked up again
-    return best[0], best[1], '%s + %s' % (best[2], _prof_desc(prof)), prof['fields']
+    return best[0], best[1], '%s + %s' % (best[2], _prof_desc(prof)), _fields(prof, weapon)
 
 
 def _prof_desc(prof):
@@ -753,6 +766,8 @@ def apply(m, hp, spec):
     else:
         lv.rescan()
     lv.forced = dict(spec.get('donors') or {})
+    BALANCED.clear()
+    BALANCED.update(spec.get('balanced') or ())
     if not lv.free_slots and (spec.get('option1') or spec.get('cards')):
         note = _row('enemy weapons', 'variant slots', skip=True,
                     reason='this level has no enhancer variant slots (rebuild it with '

@@ -57,8 +57,15 @@ PORT = reserved(
             'lacks': ''}},
     # step 11: the source game's ai\generic entry (26 fields, verified 2026-10-07), laid over
     # a base -- 'cc' has no carrier (smg.py's lesson): the AR's carriers, as the SMG / BR
+    # ARMED WEAPON DAMAGE MODIFIER (user, 2026-10-08, 'Rule B', ai_firing_profile.wdm_rule):
+    # base 0.4 (the AR carriers it fires from) x Pistol 88 / port dps -- default 59 (0.60),
+    # balanced 137 (0.26). Halo 3's profile has no WDM of its own. Measured on a30 (all
+    # Elite minors, time to die x5): stock plasma rifle 3.61 s, Armed carbine at 0.40
+    # balanced 2.04 s -> 0.23 measured vs the rule's 0.26 (reports/h1_vitality_log.jsonl)
     firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine',
-                    'donor_weapon': 'weapons\\assault rifle\\assault rifle'},
+                    'donor_weapon': 'weapons\\assault rifle\\assault rifle',
+                    'wdm_rule': {'base': 0.4, 'yardstick_dps': 88.0, 'port_dps': 59.0,
+                                 'balanced_port_dps': 137.0}},
 )
 
 PORT.update({
