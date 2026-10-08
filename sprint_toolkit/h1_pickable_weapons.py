@@ -383,6 +383,8 @@ def own_beam(a, b, write):
                 bound.r, bound.g, bound.b = C['rgb']
             if 'width' in C:
                 ps.width *= C['width']
+            if C.get('no_physics'):          # a BEAM, not a vapour trail: the sniper's points
+                ps.physics.filepath = ''     # ride smoke point physics and drift with the wind
         save(ct, path(C['out'], '.contrail'), write)
         n = 0
         for x in pt.data.tagdata.obje_attrs.attachments.STEPTREE:

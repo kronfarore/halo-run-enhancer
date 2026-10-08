@@ -93,6 +93,10 @@ PORT.update({
         # (its colour is the shader's self_illum_color, function data), 1% of texels lit in
         # thin lines Halo 3 blooms: the Carbine's fix, lines thickened 1 px each way and a set
         # colour (the beam's pink, judged in test 2)
+        # TEST 2 (user): still no visible glow -- every lit texel maps to 66 triangles of
+        # `beam_rifle` that all FACE DOWN (z normal < -0.3, none up), on the underside of the
+        # upper body just above the grip (x 1..6 of -11..50 cm): out of sight from the
+        # first-person camera, as in Halo 3. Kept (it shows on a dropped gun from below)
         'illum_dilate': 1,
         'glow': PINK,
         # the template's overheat steam / misfire burst spawn at a marker: Halo 3's vent
@@ -203,7 +207,12 @@ PORT.update({
                    'dmg': 80.0, 'velocity': 1200.0, 'range': 500.0,
                    'fields': {'damage_modifiers.jackal_energy_shield': 0.5,
                               'damage_modifiers.sentinel': 2.0},
-                   'contrail': {'from': SR + 'sniper', 'out': BM + 'beam', 'rgb': PINK},
+                   # TEST 2 (user): 'once shot it travels to the right' -- the H1 sniper's own
+                   # behaviour: its trail points ride SMOKE point physics (cold / hot smoke
+                   # cloud, lightweight particle) and drift with the level's wind; Halo 3's
+                   # beam does not -> no point physics
+                   'contrail': {'from': SR + 'sniper', 'out': BM + 'beam', 'rgb': PINK,
+                                'no_physics': True},
                    'material_responses_from': PP + 'bolt'},
         # TAPPED, like Halo 3's (fire recovery 0.4 s = 2.5/s, one shot a pull); the plasma
         # pistol's 0.6 s charge (its overcharge) off. Heat 0.7 a shot, battery 0.05 (Halo 3
