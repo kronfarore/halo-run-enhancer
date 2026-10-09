@@ -104,8 +104,49 @@ class Checker:
             return True
         return self.map is not None and bool(self.map.find_tags(cls, path))
 
+    def zoom(self, wpath):
+        """(Magnification Levels, Magnification Range from) of the PORT's own weapon, or
+        None when it cannot be read. Halo 1: the kit tag; later games: the built map."""
+        if not wpath:
+            return None
+        if self.game in KIT_TAGS:
+            f = os.path.join(KIT_TAGS[self.game], wpath + '.weapon')
+            if not os.path.exists(f):
+                return None
+            import port_env  # noqa: F401  (reclaimer on the path)
+            from reclaimer.hek.defs.weap import weap_def
+            w = weap_def.build(filepath=f).data.tagdata.weap_attrs.aiming
+            return int(w.zoom_levels), float(w.zoom_ranges[0])
+        if self.map is None:
+            return None
+        import halo_enhancer as he
+        import halo_patch
+        found = self.map.find_tags('weap', wpath)
+        plugin = halo_patch.PluginRegistry(
+            he.CONFIG.get('assembly_plugins_dir'),
+            (he.CONFIG.get('plugin_subdirs_by_game') or {}).get(self.game)).get('weap')
+        if not found or plugin is None:
+            return None
+        levels = self.map.read_tag_field(found[0][1], 'Magnification Levels', plugin)
+        rng = self.map.read_tag_field(found[0][1], 'Magnification Range', plugin)
+        if levels is None or rng is None:
+            return None
+        return int(levels), float(rng[0] if isinstance(rng, (tuple, list)) else rng)
 
-def plan(weapon):
+
+def zoom_ladders(levels, frm):
+    """The Zoom card's inverse ladder per field for a weapon zooming `levels` stages
+    from `frm` -- the shape every stock weapon's ladder has (Halo 1 Sniper, 2 stages
+    from 2: levels =1,=0 / range *1,=0 / range max =2,=0). None = no innate zoom: the
+    card GIVES a zoom (from_zero) and Zoom Time waits for a Zoom pick (requires_zoom)."""
+    if levels <= 0:
+        return None
+    return {'Magnification Levels': ['=%d' % (levels - i) for i in range(1, levels + 1)],
+            'Magnification Range': ['*1'] * (levels - 1) + ['=0'],
+            'Magnification Range Max': ['=%g' % frm] * (levels - 1) + ['=0']}
+
+
+def plan(weapon, only_cards=None, only_game=None):
     import halo_enhancer as he
     import weapon_ports
     db = he.ModifierDatabase(HALO_JSON)
@@ -115,7 +156,7 @@ def plan(weapon):
     report = []
     for game, ports in sorted(weapon_ports.load_catalog().items()):
         port = next((p for p in ports or () if p.get('weapon') == weapon), None)
-        if not port or game in sum(INHERITS.values(), []):
+        if not port or game in sum(INHERITS.values(), []) or (only_game and game != only_game):
             continue
         # a second donor may supply named cards (catalog 'card_donors': the Halo 1 Beam
         # Rifle aims and hits like the Sniper Rifle but heats and drains like the Plasma
@@ -147,6 +188,9 @@ def plan(weapon):
                 # donor cards the port has no use for (catalog 'skip_cards': the Halo 1 fuel
                 # rod has no zoom, the Rocket Launcher does)
                 if name in (port.get('skip_cards') or ()):
+                    continue
+                # --only: just these cards this run (a partial pass; the rest stays for later)
+                if only_cards and name not in only_cards:
                     continue
                 # the port may file a donor card under its own name (catalog 'card_map': the
                 # Halo 1 Sentinel Beam's damage is 'Beam Damage' like its other games, where
@@ -193,6 +237,22 @@ def plan(weapon):
                     new_targets.append(t)
                 if not new_targets:
                     continue
+                if name == 'Zoom':
+                    # the inverse ladder says whether the weapon zooms innately
+                    # (weapon_has_zoom, which gates Zoom Time): the PORT's zoom, never the
+                    # donor's (the Halo 1 Brute Shot has none, its Rocket Launcher does)
+                    z = check.zoom(wpath)
+                    if z is None:
+                        report.append((game, name, 'WARN', 'port zoom unreadable: donor ladder kept'))
+                    else:
+                        lad = zoom_ladders(*z)
+                        for t in new_targets:
+                            if t.get('field') in ('Magnification Levels', 'Magnification Range',
+                                                  'Magnification Range Max'):
+                                t.pop('inverse_steps', None)
+                                if lad:
+                                    t['inverse_steps'] = lad[t['field']]
+                        report.append((game, name, 'ZOOM', '%d stage(s) from %g' % z))
                 if card is None:                                  # donor-only card
                     card = {k: copy.deepcopy(v) for k, v in dcard.items()
                             if k not in ('game', 'tag', 'targets', 'skip_games')}
@@ -226,6 +286,43 @@ def plan(weapon):
                     card['game'] = old_games + [game]
                     report.append((game, name, 'EXTENDED', tag))
     return port_cards, report
+
+
+ZOOM_FIELDS = ('Magnification Levels', 'Magnification Range', 'Magnification Range Max')
+
+
+def refresh_zoom(weapon):
+    """Re-set the inverse ladders on the port's EXISTING Zoom card, per game, from the
+    port's own zoom (plan() never overwrites a card; this is the one rewrite it allows).
+    Only targets pinned to that game ('games') are touched."""
+    import halo_enhancer as he
+    import weapon_ports
+    db = he.ModifierDatabase(HALO_JSON)
+    raw = json.load(open(HALO_JSON, encoding='utf-8'))
+    cards = copy.deepcopy(raw[SECTION[0]][SECTION[1]].get(weapon) or {})
+    zoom, report = cards.get('Zoom'), []
+    if not isinstance(zoom, dict) or not isinstance(zoom.get('targets'), list):
+        return cards, [('-', 'Zoom', 'SKIPPED', 'no Zoom card with a target list')]
+    for game, ports in sorted(weapon_ports.load_catalog().items()):
+        port = next((p for p in ports or () if p.get('weapon') == weapon), None)
+        if not port or game in sum(INHERITS.values(), []) or game not in _games(zoom):
+            continue
+        wpath = weapon_ports.weap_path(port)
+        z = Checker(db, game, weapon, wpath).zoom(wpath)
+        if z is None:
+            report.append((game, 'Zoom', 'WARN', 'port zoom unreadable: left as it is'))
+            continue
+        lad = zoom_ladders(*z)
+        for t in zoom['targets']:
+            if t.get('field') in ZOOM_FIELDS and game in (t.get('games') or ()):
+                old = t.pop('inverse_steps', None)
+                if lad:
+                    t['inverse_steps'] = lad[t['field']]
+                if old != t.get('inverse_steps'):
+                    report.append((game, 'Zoom', 'LADDER', '%s %s -> %s' % (
+                        t['field'], json.dumps(old), json.dumps(t.get('inverse_steps')))))
+        report.append((game, 'Zoom', 'ZOOM', '%d stage(s) from %g' % z))
+    return cards, report
 
 
 # ---------------------------------------------------------------- house-style writer
@@ -299,9 +396,16 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--weapon', required=True)
     ap.add_argument('--write', action='store_true')
+    ap.add_argument('--only', help='comma-separated card names: derive just these')
+    ap.add_argument('--game', help='derive for this game only')
+    ap.add_argument('--refresh-zoom', action='store_true',
+                    help="re-set the existing Zoom card's ladders from the port's own zoom")
     ap.add_argument('--file', default=HALO_JSON, help='halo.json to rewrite (default: the live one)')
     a = ap.parse_args()
-    cards, report = plan(a.weapon)
+    if a.refresh_zoom:
+        cards, report = refresh_zoom(a.weapon)
+    else:
+        cards, report = plan(a.weapon, [c.strip() for c in a.only.split(',')] if a.only else None, a.game)
     for game, name, what, info in report:
         print('%-12s %-26s %-8s %s' % (game, name, what, info))
     if a.write:

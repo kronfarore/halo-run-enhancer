@@ -228,6 +228,50 @@ def check_structure():
     # 6. harder_when / easier_when follow the step, on the right side
     check_directions(False)
 
+    # 7. Zoom coverage (user, 2026-10-09): every weapon gets the Zoom card -- it improves
+    #    a 1-stage zoom to 2 stages, amplifies a 2-stage one, and GIVES one to a weapon
+    #    without (from_zero) -- so a port must never skip it because its donor or it has
+    #    no zoom. Every Zoom card has a Zoom Time twin where the field exists (Halo 3 on;
+    #    Halo 1/2 weapons have no zoom time). Melee weapons are the only exceptions.
+    check_zoom_coverage(per_game)
+
+
+ZOOM_EXEMPT = ('Energy Blade', 'Gravity Hammer')
+ZOOM_TIME_GAMES = ('Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4')
+
+
+def check_zoom_coverage(per_game):
+    weapons = DB.get('Player Modifiers', {}).get('Specific Weapon Modifier') or {}
+    fielded = {g: set() for g in GAMES}
+    for game, missions in DB['Missions'].items():
+        for md in missions.values():
+            fielded[game] |= set(md.get('weapons') or [])
+    try:
+        import weapon_ports
+        for game, ports in weapon_ports.load_catalog().items():
+            fielded.setdefault(game, set()).update(p['weapon'] for p in ports or ())
+    except Exception:
+        pass
+
+    def has(card, game):
+        if not isinstance(card, dict):
+            return False
+        d = declared_games(card)
+        return game in d or (game == 'Halo 3: ODST' and 'Halo 3' in d)
+    for w, cards in sorted(weapons.items()):
+        if w in ZOOM_EXEMPT:
+            continue
+        for game in GAMES:
+            # a weapon whose cards are deferred in a game (Halo 1 Flamethrower) has none
+            if w not in fielded.get(game, ()) or not any(has(c, game) for c in cards.values()):
+                continue
+            if not has(cards.get('Zoom'), game):
+                report(f'{w}/Zoom: missing in {game} -- every weapon gets the Zoom card '
+                       f'(it gives a zoom to one without)')
+            elif game in ZOOM_TIME_GAMES and not has(cards.get('Zoom Time'), game):
+                report(f'{w}/Zoom Time: missing in {game} -- every Zoom card has its '
+                       f'Zoom Time twin from Halo 3 on')
+
 
 COLOR_GROUPS = ('aggressive', 'defensive', 'utility')
 

@@ -2339,9 +2339,6 @@
     "jpt! weapons\\rocket launcher\\explosion": "jpt! weapons\\brute shot\\explosion",
     "proj weapons\\shotgun\\pellet": "proj weapons\\brute shot\\grenade"
    },
-   "skip_cards": [
-    "Zoom"
-   ],
    "card_donors": {
     "Shotgun": [
      "Projectile Gravity"

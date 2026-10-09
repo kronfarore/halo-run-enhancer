@@ -5141,13 +5141,16 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"tag": { "Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot", "Halo 3": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot" },
+					"tag": { "Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot", "Halo 3": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot", "Halo 1": "weap weapons\\brute shot\\brute shot" },
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": { "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null }, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null }, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null }, "easier_when": "increased" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": { "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null }, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null }, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null }, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 3: ODST"] },
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "easier_when": "increased", "games": ["Halo 1"] }
 					],
-					"game": ["Halo 2", "Halo 3"]
+					"game": ["Halo 2", "Halo 3", "Halo 1"]
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
@@ -5435,9 +5438,9 @@
 						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": { "Halo 2": ["=1", "=0"], "Halo 3": ["=1", "=0"], "Halo 3: ODST": ["=1", "=0"], "Halo 4": ["=1", "=0"] }, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
 						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 2": ["*1", "=0"], "Halo 3": ["*1", "=0"], "Halo 3: ODST": ["*1", "=0"], "Halo 4": ["*1", "=0"] }, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
 						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 2": ["=3.5", "=0"], "Halo 3": ["=3.5", "=0"], "Halo 3: ODST": ["=3.5", "=0"], "Halo 4": ["=3.5", "=0"] }, "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": ["=1", "=0"], "easier_when": "increased", "games": ["Halo 1"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": ["*1", "=0"], "easier_when": "increased", "games": ["Halo 1"] },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": ["=2", "=0"], "easier_when": "increased", "games": ["Halo 1"] }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "easier_when": "increased", "games": ["Halo 1"], "inverse_steps": ["=1", "=0"] },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "easier_when": "increased", "games": ["Halo 1"], "inverse_steps": ["*1", "=0"] },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "easier_when": "increased", "games": ["Halo 1"], "inverse_steps": ["=3.5", "=0"] }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"]
 				},
@@ -9682,11 +9685,11 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo Reach"],
-					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"},
+					"tag": { "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee" },
 					"targets": [
-						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased"},
-						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased"},
-						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased"}
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased" }
 					]
 				},
 				"Magnetism": {
@@ -9695,10 +9698,10 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
 					"targets": [
-						{ "step": "*1.2","field": "Magnetism Angle", "group": "Magnetism", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Range", "group": "Magnetism", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Near Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"}
+						{ "step": "*1.2", "field": "Magnetism Angle", "group": "Magnetism", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Range", "group": "Magnetism", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo Reach"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Near Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo Reach"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased" }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -9708,9 +9711,9 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
 					"targets": [
-						{ "step": "*1.2","field": "Autoaim Angle", "group": "Autoaim", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Range", "group": "Autoaim", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Falloff Range", "group": "Autoaim", "min": 0, "games": ["Halo Reach"], "easier_when": "increased"}
+						{ "step": "*1.2", "field": "Autoaim Angle", "group": "Autoaim", "min": 0, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Range", "group": "Autoaim", "min": 0, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Falloff Range", "group": "Autoaim", "min": 0, "games": ["Halo Reach"], "easier_when": "increased" }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -9720,7 +9723,7 @@
 					"game": ["Halo Reach"],
 					"tag": "jmad *fp_focus_rifle*",
 					"targets": [
-						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased"}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased" }
 					]
 				},
 				"Melee Seeking Angles": {
@@ -9763,8 +9766,8 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
 					"targets": [
-						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
-						{ "step": "*1.2","field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased"}
+						{ "field": "Distribution Function", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "set": "horizontal fan" },
+						{ "step": "*1.2", "field": "Distribution Angle", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased" }
 					]
 				},
 				"Firing Noise": {
@@ -9773,28 +9776,32 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
-						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam", "follows_choice": true},
-						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam", "follows_choice": true}
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
+						{ "field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam", "follows_choice": true },
+						{ "field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam", "follows_choice": true }
 					]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": { "Halo Reach": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle", "Halo 4": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle" },
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo Reach": ["=1", "=0"]}, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": ["*1", "=0"]}, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": ["=3.5", "=0"]}, "easier_when": "increased" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": { "Halo Reach": ["=1", "=0"] }, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo Reach": ["*1", "=0"] }, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo Reach": ["=3.5", "=0"] }, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "easier_when": "increased", "games": ["Halo 4"], "inverse_steps": ["=1", "=0"] },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "easier_when": "increased", "games": ["Halo 4"], "inverse_steps": ["*1", "=0"] },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "easier_when": "increased", "games": ["Halo 4"], "inverse_steps": ["=3.5", "=0"] }
 					]
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
 					"requires_zoom": true,
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": { "Halo Reach": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle", "Halo 4": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle" },
 					"targets": [
-						{ "step": "*0.8", "field": "Weapon Zoom Time", "min": 0, "zero_is": 0.2, "easier_when": "decreased" }
+						{ "step": "*0.8", "field": "Weapon Zoom Time", "min": 0, "zero_is": 0.2, "easier_when": "decreased", "games": ["Halo Reach"] },
+						{ "step": "*0.8", "field": "Weapon Zoom Time", "min": 0, "zero_is": 0.2, "easier_when": "decreased", "games": ["Halo 4"] }
 					]
 				},
 				"Salvo Shooting": {
@@ -9816,7 +9823,7 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
 					"targets": [
-						{ "step": "*0.8","field": "Fire Recovery Time", "block": "Barrels", "easier_when": "decreased"}
+						{ "step": "*0.8", "field": "Fire Recovery Time", "block": "Barrels", "easier_when": "decreased" }
 					]
 				},
 				"Projectiles Per Shot": {
@@ -9907,9 +9914,9 @@
 					"game": ["Halo Reach"],
 					"tag": "jpt! objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam",
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased" },
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased" },
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased" }
 					]
 				}
 			},
