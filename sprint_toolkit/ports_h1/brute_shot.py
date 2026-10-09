@@ -132,6 +132,7 @@ PORT.update({
     #   circle fit without strays, every strip triangle by UV, each triangle's own wall into the
     #   full strip; mask at 512) -- user: 'perfect'. Muzzle flash: the shotgun's (one sound).
     # HUD: Halo 3's pips (ballistic_meters #6), reticle 25 (H3 #17), icon 36 (horizontal).
+    # Step 6 (user): the rocket's ammo box tops it up, ratio-scaled 2 x 18/8 -> 4 a box.
     # Full field diff (h1_port_template_diff, 133 differences): each a decision above, a
     #   reference to the port's own tags, the HUD pips / reticle / icon.
     # Tag writes PROVEN (closing check 6): 37 tags, 0 of 765,887 fields changed.
@@ -435,6 +436,12 @@ PORT.update({
             'weap_attrs.interface.active_camo_ding': 0.75,
             # Halo 3's brute shot has NO zoom (zoom levels 0); the rocket's 2x goes
             'weap_attrs.aiming.zoom_levels': 0,
+            # STEP 6 (user, close-out 2026-10-09): the template's `powerups\rocket launcher
+            # ammo` box tops the brute shot up, RATIO-SCALED: 2 x carry 18/8 = 4.5 -> 4 (the
+            # Mauler's round-down); Halo 3's brute shot has no ammo item. The count is the
+            # weapon's own magazine item (the rocket keeps 2 a box); same in both versions
+            # (the carry is 18 default and balanced)
+            'weap_attrs.magazines.0.magazine_items.0.rounds': 4,
             # ... so the rocket's sniper zoom sounds go too (port_sound_refs BORROW; Halo 3's
             # brute shot names them, unused without a zoom)
             'weap_attrs.interface.zoom_in_sound.filepath': '',

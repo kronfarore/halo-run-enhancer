@@ -1033,6 +1033,9 @@ The whole weapon is `ports_h1/brute_shot.py` (its CLOSE-OUT RECORD lists every d
   firing range.
 * Explosion visuals vs radius cards: EXPLOSION_VISUAL_SCALE.md (parked by the user until every
   weapon is ported everywhere); the Brute Shot already has its own particle-system copy.
+* Step 6 (user): Halo 3's brute shot has no ammo item; the rocket's box (the template's magazine
+  item) tops it up RATIO-SCALED: 2 x carry 18/8 = 4.5 -> 4 a box (the weapon's own magazine item;
+  the rocket keeps 2).
 * Not reproduced: Halo 3's bloom (the fold stands in), its grenade light volume (a flare).
 * **Tools from the Brute Shot** (sprint_toolkit, generic): `h3_tag_fields.py` (any H3EK tag's
   fields; a projectile's detonation / damage / responses summary -- what h3_weapon_values does
