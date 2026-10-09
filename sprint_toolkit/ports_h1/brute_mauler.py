@@ -68,8 +68,19 @@ PORT = reserved(
             'peers': ['Shotgun', 'Energy Blade', 'Flamethrower'],
             'why': '5-round magazine, instant pellets, 8 wu range: a one-hand shotgun',
             'lacks': 'dual wield'}},
-    # step 11: the source game's ai\generic entry (14 fields, verified 2026-10-07)
-    firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\pistol\\excavator\\excavator'},
+    # step 11: the source game's ai\generic entry (14 fields, verified 2026-10-07) laid over a
+    # Halo 1 SHOTGUN carrier ('ml' has no carrier). Halo 1's shotgun carriers (2026-10-09):
+    # Flood combat Elite / human (WDM 0.15), Marine plain / anchor and armoured Marine major
+    # (0.6) -- no Covenant one. The two bases differ x4, so ONE donor is pinned for every slot
+    # (the Beam Rifle's donor_variant; user 2026-10-09): the Flood combat Elite, a combatant
+    # and the carrier an Elite slot would clone anyway. ARMED WDM RULE: base 0.15 x shotgun
+    # 322 / mauler dps -- default 105 x 1.33 = 140 (0.35), balanced 15.05 x 15 x 1.33 = 301
+    # (0.16)
+    firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\pistol\\excavator\\excavator',
+                    'donor_weapon': 'weapons\\shotgun\\shotgun',
+                    'donor_variant': 'characters\\floodcombat elite\\floodcombat elite shotgun',
+                    'wdm_rule': {'base': 0.15, 'yardstick_dps': 322.0, 'port_dps': 140.0,
+                                 'balanced_port_dps': 301.0}},
 )
 
 PORT.update({

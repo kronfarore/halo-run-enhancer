@@ -854,6 +854,101 @@
     "port_dps": 72.0,
     "balanced_port_dps": 144.0
    }
+  },
+  "weapons\\mauler\\mauler": {
+   "source": "Halo 3 ai\\generic objects\\weapons\\pistol\\excavator\\excavator (weapon properties #17, firing pattern #12) over weapons\\shotgun\\shotgun carriers (always characters\\floodcombat elite\\floodcombat elite shotgun)",
+   "fields": {
+    "0x74": [
+     "<f",
+     6.0,
+     "Maximum Firing Distance"
+    ],
+    "0x80": [
+     "<f",
+     0.10000000149011612,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     0.800000011920929,
+     "First Burst Delay Time Max"
+    ],
+    "0x8C": [
+     "<f",
+     0.4000000059604645,
+     "Surprise Delay Time"
+    ],
+    "0x94": [
+     "<f",
+     0.10000000149011612,
+     "Death Fire-Wildly Chance"
+    ],
+    "0x98": [
+     "<f",
+     0.5,
+     "Death Fire-Wildly Time"
+    ],
+    "0x9C": [
+     "<f",
+     1.0,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     3.0,
+     "Desired Combat Range Max"
+    ],
+    "0xE8": [
+     "<f",
+     1.375,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     2.125,
+     "Burst Separation Max"
+    ],
+    "0x1D8": [
+     "<f",
+     0.30000001192092896,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.8999999761581421,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     10,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     18,
+     "Drop Weapon Ammo Max"
+    ],
+    "0xC4": [
+     "<f",
+     0.345,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "donor_weapon": "weapons\\shotgun\\shotgun",
+   "donor_variant": "characters\\floodcombat elite\\floodcombat elite shotgun",
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.16046511627906976,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.15,
+    "yardstick_dps": 322.0,
+    "port_dps": 140.0,
+    "balanced_port_dps": 301.0
+   }
   }
  }
 }
