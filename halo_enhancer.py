@@ -421,7 +421,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h2_spawn_starting_weapons', 'h2_spawn_all_weapons',
                'h1_replace_first_weapons', 'h1_enemy_weapon_enabled',
                'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards',
-               'h1_overheat_unzoom', 'h1_overheat_no_rezoom',
+               'h1_overheat_unzoom', 'h1_overheat_no_rezoom', 'h1_covenant_avoid_ff',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -1014,6 +1014,9 @@ CONFIG = {
     "h1_overheat_unzoom": False,
     # ...and no zooming back in while the weapon vents (patch B; only with the above)
     "h1_overheat_no_rezoom": True,
+    # Options -> Patching -> Halo 1: Grunt / Jackal / Elite actors get the human actors'
+    # 'avoid friends line of fire' + 'crouch when in line of fire' flags (user, 2026-10-09)
+    "h1_covenant_avoid_ff": False,
     # Options -> Weapon ports: ported weapons join every weapon pick (initial
     # selection, New Weapon, automatic rolls) on levels whose map carries them
     "weapon_ports_in_pools": False,
@@ -9234,6 +9237,7 @@ class MagnitudeEditorDialog(QDialog):
                 spawn_grenades=self._spawn_grenades_spec(),
                 h4_ability_visibility=CONFIG.get('h4_ability_visibility') or None,
                 h1_enemy_weapons=self._h1_enemy_weapons_spec(armed_picks),
+                h1_covenant_avoid_ff=bool(CONFIG.get('h1_covenant_avoid_ff')),
                 h1_levels=(self.parent_gui.db.h1_level_maps()
                            if self.game == 'Halo 1' and getattr(self.parent_gui, 'db', None)
                            else None),
@@ -11668,6 +11672,14 @@ class OptionsDialog(QDialog):
             "that moves 10% more of them onto that weapon per pick. Marines get the same "
             "cards through the Ally slot, at the lowest priority.")
         h1form.addRow("", self.h1_armed_cards_cb)
+        self.h1_covenant_ff_cb = QCheckBox("Covenant avoid friendly fire")
+        self.h1_covenant_ff_cb.setChecked(bool(CONFIG.get('h1_covenant_avoid_ff')))
+        self.h1_covenant_ff_cb.setToolTip(
+            "Grunts, Jackals and Elites try not to shoot through each other: they get the "
+            "two flags Halo 1 gives only its Marines ('avoid friends line of fire' and "
+            "'crouch when in line of fire'). Not perfect, but they try -- most noticeable "
+            "when they carry explosives (Armed cards).")
+        h1form.addRow("", self.h1_covenant_ff_cb)
 
         self.h1_overheat_unzoom_cb = QCheckBox("Overheating drops the zoom (halo1.dll)")
         self.h1_overheat_unzoom_cb.setChecked(bool(CONFIG.get('h1_overheat_unzoom')))
@@ -12957,6 +12969,7 @@ class OptionsDialog(QDialog):
             'h1_enemy_weapon_cards': self.h1_armed_cards_cb.isChecked(),
             'h1_overheat_unzoom': self.h1_overheat_unzoom_cb.isChecked(),
             'h1_overheat_no_rezoom': self.h1_overheat_no_rezoom_cb.isChecked(),
+            'h1_covenant_avoid_ff': self.h1_covenant_ff_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
             'odst_red_plasma_as_brute': self.red_plasma_cb.isChecked(),
             'odst_variants_as_base': self.odst_variants_cb.isChecked(),

@@ -9674,6 +9674,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               h4_keep_loadout=False, clear_profile_equipment=False,
               clear_profile_grenades=False, spawn_grenades=None,
               h4_ability_visibility=None, h1_enemy_weapons=None,
+              h1_covenant_avoid_ff=False,
               camo_after_ladder=False, fix_h2_fuel_rod=False,
               player_armour=False, no_immunities=False, h1_levels=None,
               baseline_root=None, map_subdir=None):
@@ -9834,6 +9835,11 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         import sys as _sys
         import h1_enemy_weapons as _ew
         results.extend(_ew.apply(m, _sys.modules[__name__], h1_enemy_weapons))
+    if h1_covenant_avoid_ff and str(game).strip() == 'Halo 1':
+        # Options -> Halo 1 'Covenant avoid friendly fire': the human actors' two
+        # line-of-fire flags on the Grunt / Jackal / Elite actor tags
+        import h1_enemy_weapons as _ew
+        results.extend(_ew.covenant_avoid_friendly_fire(m))
     if weapon_ports and str(game).strip() == 'Halo 1':
         # A port's actv balance rows (the fuel rod's AI Rate Of Fire) belong to EVERY
         # variant that carries the port's weapon, not only the stock ones the rows name:

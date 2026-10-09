@@ -1016,3 +1016,27 @@ def apply(m, hp, spec):
     if note and any(r.get('reason', '').startswith('no free variant slot') for r in out):
         out.append(note)
     return out
+
+
+# ----------------------------------------------------------------------------- friendly fire
+# Options -> Patching -> Halo 1 'Covenant avoid friendly fire' (user, 2026-10-09). Halo 1's
+# human actors carry 'avoid friends line of fire' + 'crouch when in line of fire'; no
+# Covenant actor does. Set on the Grunt / Jackal / Elite actors (the Brute Shot's Armed
+# test: "not perfect, but they try"). The flags are the actor tag's first long, per
+# species, so every variant and enhancer slot pointing at the actor follows.
+AVOID_FRIENDS_LINE_OF_FIRE, CROUCH_IN_LINE_OF_FIRE = 0x80000000, 0x40000000
+FRIENDLY_FIRE_SPECIES = ('grunt', 'jackal', 'elite')
+
+
+def covenant_avoid_friendly_fire(m):
+    bits = AVOID_FRIENDS_LINE_OF_FIRE | CROUCH_IN_LINE_OF_FIRE
+    done = []
+    for path, off in m.find_tags('actr', 'characters' + BS + '*'):
+        if (path.lower().split(BS) + [''])[1] in FRIENDLY_FIRE_SPECIES:
+            v = struct.unpack_from('<I', m.data, off)[0]
+            struct.pack_into('<I', m.data, off, v | bits)
+            done.append(path.rsplit(BS, 1)[-1])
+    r = _row('Covenant avoid friendly fire', 'actor flags', ok=bool(done),
+             reason=None if done else 'no Grunt / Jackal / Elite actor')
+    r.update(tag='actr', new='avoid friends line of fire + crouch: ' + ', '.join(done))
+    return [r]
