@@ -287,7 +287,15 @@ PORT.update({
                                             'breaking_effect.forward_velocity': 80 * 30 / 35.0,
                                             'breaking_effect.forward_radius': 4.0,
                                             'breaking_effect.forward_exponent': 0.0,
-                                            'breaking_effect.outward_velocity': 40.0}},
+                                            'breaking_effect.outward_velocity': 40.0,
+                                            # TEST 6 (user): 'add a light screen flash' (the
+                                            # rocket's lasts 0 s = none). Halo 3's shielded
+                                            # response: lighten, 1 s, intensity 0.5, colour
+                                            # (ARGB) 0.25 / 0 / 0.5 / 0.75 -- a blue; alpha 1
+                                            # here (the rocket's, intensity does the rest)
+                                            'screen_flash.duration': 1.0,
+                                            'screen_flash.maximum_intensity': 0.5,
+                                            'screen_flash.tint_lower_bound': (1.0, 0.0, 0.5, 0.75)}},
                    'velocity': (16.0, 7.0), 'range': 20.0,
                    'model': BS + 'grenade\\grenade',
                    # 4b list 2: water gravity 0.4 x 0.25/0.4. Air damage range KEPT 0..100

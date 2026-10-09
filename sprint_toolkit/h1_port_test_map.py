@@ -100,6 +100,30 @@ DROPSHIP_JACKALS = {
 }
 
 
+def actor_flags(m, species, flags):
+    """Actor (actr) flags SET on every actor tag of the armed species in the built copy (the
+    Brute Shot's Armed test, user 2026-10-09: Halo 1's 'avoid friends line of fire' + 'crouch
+    when in line of fire' -- only the human actors carry them -- tried on Covenant carrying
+    an explosive). The flags are the actor's first field (a little-endian long in the map)."""
+    import struct
+    from reclaimer.hek.defs.actr import actr_def
+    fl = actr_def.build().data.tagdata.flags
+    names = list(fl.desc['NAME_MAP'])
+    bits = 0
+    for f in flags:
+        if f not in names:
+            raise SystemExit('no actor flag %s' % f)
+        bits |= fl.desc[fl.desc['NAME_MAP'][f]]['VALUE']
+    n = 0
+    for (cls, path), off in m.tags.items():
+        if cls == 'actr' and any(path.lower().startswith('characters' + os.sep + s) for s in species):
+            v = struct.unpack_from('<I', m.data, off)[0]
+            struct.pack_into('<I', m.data, off, v | bits)
+            n += 1
+            print('   actor flags %-50s %08x -> %08x' % (path, v, v | bits))
+    print('actor flags: %s on %d actor(s)' % (', '.join(flags), n))
+
+
 def dropship_mix(d, mix):
     enc = [e for e in d.encounters.STEPTREE if e.name == mix['encounter']]
     if not enc:
@@ -313,6 +337,9 @@ def main():
                          '+ anim_sounds), spawning with the balanced magazine')
     ap.add_argument('--armed', metavar='ENEMIES',
                     help="the enhancer's Armed-card pass at 100%%: e.g. grunt,elite carry the port")
+    ap.add_argument('--actor-flags', metavar='FLAGS',
+                    help="actr flags set on every actor of the --armed species, test copy only "
+                         "(the Brute Shot: avoid_friends_line_of_fire,crouch_when_in_line_of_fire)")
     ap.add_argument('--mortal', action='store_true',
                     help='NO god shield (a damage MEASUREMENT run, h1_vitality_live.py)')
     a = ap.parse_args()
@@ -366,6 +393,8 @@ def main():
             balance(m, entry)
         if arm:
             armed(m, weapon, arm, balanced=bool(entry))
+        if a.actor_flags and arm:
+            actor_flags(m, arm, [f.strip() for f in a.actor_flags.split(',') if f.strip()])
         open(out, 'wb').write(bytes(m.data))
     print('wrote %s' % out)
     if a.stage:
