@@ -211,11 +211,15 @@ def glow_spots(jm, S):
         L1, L2 = (l1[ins][lit] * w).sum() / w.sum(), (l2[ins][lit] * w).sum() / w.sum()
         C = L1 * P[0] + L2 * P[1] + (1 - L1 - L2) * P[2]
         Tg = (P[1] - P[0]) / (np.linalg.norm(P[1] - P[0]) or 1.0)
+        # every lit texel's 3D point (a `strip` card spans them: the Mauler's slit)
+        a1, a2 = l1[ins][lit][:, None], l2[ins][lit][:, None]
+        pts = a1 * P[0] + a2 * P[1] + (1 - a1 - a2) * P[2]
         for s in spots:
             if np.linalg.norm(s[0] - C) < S.get('merge', 0.4):
+                s[4].append(pts)
                 break
         else:
-            spots.append((C, N, Tg, vs[0].node_0))
+            spots.append((C, N, Tg, vs[0].node_0, [pts]))
     return spots
 
 
@@ -232,7 +236,37 @@ def add_spot_cards(jm, S):
     jm.materials.append(JmsMaterial(S['shader']))
     si = len(jm.materials) - 1
     half = S.get('size', 0.8) / 2.0
-    for C, N, Tg, node in spots:
+    for C, N, Tg, node, pts in spots:
+        if S.get('strip'):
+            # a STRIP along the lit texels (the Mauler, test 5: the slit under the barrel is a
+            # LINE along the gun, 0.8 long and 0.2 tall on a sideways face -- edge-on to the
+            # FP camera, which looks from behind and above; a square face card read as a
+            # blob). The card runs the lit texels' extent along `strip` (an axis, + `pad`),
+            # `width` wide across the face, straight out of it (a fin: seen from above, it draws the
+            # slit as Halo 3's bloom does), its normal perpendicular to both
+            L = np.array(S['strip'], float)
+            L = L / np.linalg.norm(L)
+            q = np.concatenate(pts)
+            t = q @ L
+            mid = q.mean(0)
+            mid = mid + L * ((t.min() + t.max()) / 2.0 - mid @ L)
+            hl = (t.max() - t.min()) / 2.0 + S.get('pad', 0.05)
+            hw = S.get('width', 0.3) / 2.0
+            Wd = N - L * (N @ L)
+            Wd = Wd / (np.linalg.norm(Wd) or 1.0)
+            Nn = np.cross(L, Wd)
+            # centred ON the face (the inner half hides in the body): the radial glow peaks
+            # at the card's middle, so the brightest line lies on the slit itself
+            M = mid + Wd * S.get('lift', 0.0)
+            idx = []
+            for du, dv in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
+                p = M + L * du * hl + Wd * dv * hw
+                jm.verts.append(JmsVertex(node, float(p[0]), float(p[1]), float(p[2]), float(Nn[0]), float(Nn[1]), float(Nn[2]),
+                                          -1, 0.0, (du + 1) / 2.0, (dv + 1) / 2.0))
+                idx.append(len(jm.verts) - 1)
+            jm.tris.append(JmsTriangle(0, si, idx[0], idx[1], idx[2]))
+            jm.tris.append(JmsTriangle(0, si, idx[0], idx[2], idx[3]))
+            continue
         C = C + N * S.get('lift', 0.05)
         planes = [(N, Tg)]
         if S.get('face'):
@@ -259,7 +293,7 @@ def add_spot_cards(jm, S):
             jm.tris.append(JmsTriangle(0, si, idx[0], idx[1], idx[2]))
             jm.tris.append(JmsTriangle(0, si, idx[0], idx[2], idx[3]))
     print('   glow spots %s: %d spot(s) as %s: %s' % (S['material'], len(spots), S['shader'],
-                                                     [tuple(c.round(1)) for c, _n, _t, _d in spots]))
+                                                     [tuple(c.round(1)) for c, _n, _t, _d, _p in spots]))
 
 
 def drop_materials(jm, names):

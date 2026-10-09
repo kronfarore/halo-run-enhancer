@@ -120,14 +120,15 @@ PORT.update({
         # (dot 0.84..0.99) and stay
         'glow_shaders': {'mauler_window': {'rgb': ORANGE_GLOW, 'additive': True, 'mask': ILLUM,
                                            'mask_channel': 'rgb', 'dilate': 1, 'gain': 1.0},
-                         # the rear lights' camera-facing card (test 3, below)
-                         'mauler_spot': {'rgb': ORANGE_GLOW, 'additive': True, 'radial': True,
-                                         'falloff': 1.6, 'gain': 1.0, 'hot': True}},
+                         # the body's thin SLITS (test 5, below): the same mask, grown 3 px,
+                         # x2 gain -- a line reads only when thick and saturated
+                         'mauler_slit': {'rgb': ORANGE_GLOW, 'additive': True, 'mask': ILLUM,
+                                         'mask_channel': 'rgb', 'dilate': 3, 'gain': 2.0}},
         'glow_cards': {'excavator_metal': {'shader': 'mauler_window', 'lit': ILLUM,
                                            'scale': 1.0, 'lift': 0.02,
                                            'skip_normals': ((1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)),
                                            'skip_dot': 0.995},
-                       'body': {'of': 'excavator', 'shader': 'mauler_window', 'lit': ILLUM,
+                       'body': {'of': 'excavator', 'shader': 'mauler_slit', 'lit': ILLUM,
                                 'scale': 1.0, 'lift': 0.02}},
         # TEST 3 (user, ground + FP screenshots): 'the ground model has a lit shape that should
         # be visible in the FP view'. Test 3's guess (cards on the rear-top lights, excavator_
@@ -139,9 +140,15 @@ PORT.update({
         # recipe (test 4/6, approved there): a small radial card per slit FACING BACK (-x) at
         # the camera, only that card (the face keeps its shaped one); `highest` 2 keeps the
         # pair under the barrel (the lower pair by the grip, z 3.4, gets none)
-        'glow_spots': [{'material': 'excavator', 'illum': ILLUM, 'shader': 'mauler_spot',
-                        'size': 0.4, 'lift': 0.1, 'merge': 1.0, 'threshold': 16, 'highest': 2,
-                        'face': (-1.0, 0.0, 0.0), 'only_face': True}],
+        # TEST 5 (user): 'right position, but not fitting the slit layout' -- the square
+        # camera-facing card read as a blob. Measured (lit texels > 64): each slit is a LINE
+        # ALONG THE GUN, x 3.55..4.33 at z ~7.1 (0.2 tall) on a sideways face; from the FP
+        # camera it projects as Halo 3's short near-vertical streak. A fin card along it
+        # (glow_spots `strip`) rendered nearly edge-on, while the slit's OWN face shows at an
+        # angle (the lit-texel render: a vertical streak where the user circled) -- so the
+        # face carries it: its shaped glow card (`slit` above, Halo 3's mask) grown 3 px and
+        # x2 gain, the Spike Rifle's side-line finding (thin lines need thickness + a
+        # saturated colour without bloom). No spot cards
         'template': SG + r'shaders\shotgun gun',
     },
 
