@@ -224,6 +224,11 @@ def add_spot_cards(jm, S):
     on a RADIAL glow texture (glow_shaders `radial`), as material S['shader']."""
     from reclaimer.model.jms.file import JmsMaterial, JmsTriangle, JmsVertex
     spots = glow_spots(jm, S)
+    if S.get('highest'):
+        # only the N HIGHEST spots (the Mauler, test 4: the slits on the upper body, under the
+        # barrel -- the same material's lower pair by the grip stays without a card; z
+        # differs between the world and FP models, the order does not)
+        spots = sorted(spots, key=lambda s: -s[0][2])[:S['highest']]
     jm.materials.append(JmsMaterial(S['shader']))
     si = len(jm.materials) - 1
     half = S.get('size', 0.8) / 2.0

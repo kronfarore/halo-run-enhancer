@@ -119,15 +119,17 @@ PORT.update({
                        'body': {'of': 'excavator', 'shader': 'mauler_window', 'lit': ILLUM,
                                 'scale': 1.0, 'lift': 0.02}},
         # TEST 3 (user, ground + FP screenshots): 'the ground model has a lit shape that should
-        # be visible in the FP view' -- the two lights at the REAR TOP of the body (FP -2.5,
-        # +-1, 6.4; world -3.5, +-1, 4.5) sit on faces pointing straight sideways (+-y): edge-on
-        # to the FP camera behind the gun. The Spike Rifle's side-light recipe (test 4/6,
-        # approved there): a small radial card per light FACING BACK (-x) at the camera, only
-        # that card (the side keeps its shaped one). skip_dot 0.8 leaves out every face along
-        # the gun (the drum windows 0.84..0.99, the barrel ends 1.0): only the +-y lights
-        'glow_spots': [{'material': 'excavator_metal', 'illum': ILLUM, 'shader': 'mauler_spot',
-                        'size': 0.5, 'lift': 0.1, 'merge': 1.0, 'threshold': 64,
-                        'skip_normals': ((1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)), 'skip_dot': 0.8,
+        # be visible in the FP view'. Test 3's guess (cards on the rear-top lights, excavator_
+        # metal FP -2.5 +-1 6.4) was WRONG -- test 4: 'that part was already lit'. TEST 4 (user
+        # circled it on Halo 3's FP view and ours): a thin vertical SLIT on the left side of the
+        # upper body under the barrel = the body material's lit texels at FP (4.3, +1.1, 7.2)
+        # (its mirror at -1.1 on the right), faces pointing straight sideways (+-y): edge-on to
+        # the FP camera, a few texels -- Halo 3 shows it by bloom. The Spike Rifle's side-light
+        # recipe (test 4/6, approved there): a small radial card per slit FACING BACK (-x) at
+        # the camera, only that card (the face keeps its shaped one); `highest` 2 keeps the
+        # pair under the barrel (the lower pair by the grip, z 3.4, gets none)
+        'glow_spots': [{'material': 'excavator', 'illum': ILLUM, 'shader': 'mauler_spot',
+                        'size': 0.4, 'lift': 0.1, 'merge': 1.0, 'threshold': 16, 'highest': 2,
                         'face': (-1.0, 0.0, 0.0), 'only_face': True}],
         'template': SG + r'shaders\shotgun gun',
     },
