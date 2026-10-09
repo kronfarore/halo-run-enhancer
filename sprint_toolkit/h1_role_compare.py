@@ -383,6 +383,63 @@ SETS = {
         ('Mauler (blade peer)', W + r'mauler\mauler', 'melee'),
         ('Sword slash (restored)', W + r'energy sword\energy sword', 'melee'),
     ]},
+    # the SPARTAN LASER (wave A8), step 4a. Halo 3 (H3EK 2026-10-09): trigger 'spew-charge',
+    # charge 2.5 s; while charging barrel 0 fires the no-damage tracer at 20/s; charged, barrel 1
+    # fires 5 beam rounds at 30/s (one firing effect a burst), heat 1 a round (one shot
+    # overheats: vent (1 - 0.1) / 0.4 = 2.25 s), age 0.04 a round = 0.2 a shot = 5 shots a
+    # battery. A round = the projectile's DETONATION damage 20 (radius 0..0.6, core 0.15) + the
+    # aoe spike bump 94 inside 0.15 = 114 on a direct hit -> 570 a shot (the bump is what lets
+    # it one-shot a Halo 3 Spartan: hard_metal_thin body and energy_shield_thin both x0.5 to
+    # 'laser'; 100 could not). Damage group 'laser' = explosion_large (the rocket's) except
+    # hard_metal_solid (Hunter armour) 0.5 vs 1. Cycle 2.5 + 0.13 + 2.25 = 4.88 s -> 117 dps
+    # (Halo 3 sniper 80 / 0.7 s = 114). One shot a row here: 'dmg' = the whole 5-round shot.
+    'spartan_laser': {'port': 'Spartan Laser', 'weapons': [
+        # the BUILT port (step 5b): its tags (+ --balanced rows); the charged trigger pair is
+        # read as one shot a charge + a vent (weapon())
+        ('Spartan Laser (port)', W + r'spartan laser\spartan laser', 'shot'),
+        ('Spartan Laser melee (port)', W + r'spartan laser\spartan laser', 'melee'),
+        ('SL = H3 own (RL mat)', W + r'rocket launcher\rocket launcher', 'shot',
+         {'dmg': 570.0, 'radius': (0.0, 0.6), 'rate': 1 / 4.88, 'charge': 2.5, 'nomag': True,
+          'speed': 4000.0, 'range': 120.0, 'aim': (1.0, 25.0, 5.0, 25.0),
+          'heat': (1.0, 1.0, 0.4, 0.1), 'age': 0.2, 'mods': {'hunter_armor': 0.5}}),
+        # 101 x 570/80; cycle 4.88 x 1.43/2 = 3.49 s (charge 2.5 x 3.49/4.88 = 1.79); range
+        # 120 x 1000/500; aim 1 x 1/1, 35 x 25/10; 2 x 5/4, 35 x 25/14; bullet table + the
+        # laser's differences to bullet_fast: shields x0.5 (elite 2 -> 1, cyborg 0.5),
+        # sentinel (hard metal thin) 0.2 -> 0.1; Flood stays 0.05 (2/2); Hunter 0.5 (0/0)
+        ('SL = Sniper ratio', W + r'sniper rifle\sniper rifle', 'shot',
+         {'dmg': 719.6, 'rate': 1 / 3.49, 'charge': 1.79, 'nomag': True, 'speed': 3333.0,
+          'range': 240.0, 'aim': (1.0, 87.5, 2.5, 62.5), 'heat': (1.0, 1.0, 0.56, 0.1),
+          'age': 0.2, 'mods': {'elite_energy_shield': 1.0, 'cyborg_energy_shield': 0.5,
+                               'sentinel': 0.1}}),
+        # 315 x 570/440 (both with their spike bump); cycle by the SUSTAINED rate (2 rockets a
+        # 0.8 + 3.87 s / 2 + 4.17 s: x0.75) 4.88 / 0.75 = 6.5 s, charge 3.33; radius 0.6 x 2/2;
+        # range 120 x 128/175; aim 1 x 12/10 (0/5 is degenerate: the sibling's ratio), 35 x
+        # 25/25; 5 x 12/10, 35; the rocket's table, Hunter armour x0.5 (laser / explosion_large)
+        ('SL = RL ratio', W + r'rocket launcher\rocket launcher', 'shot',
+         {'dmg': 408.0, 'radius': (0.0, 0.6), 'rate': 1 / 6.5, 'charge': 3.33, 'nomag': True,
+          'speed': 4000.0, 'range': 88.0, 'aim': (1.2, 35.0, 6.0, 35.0),
+          'heat': (1.0, 1.0, 0.3, 0.1), 'age': 0.2, 'mods': {'hunter_armor': 0.5}}),
+        # the same without either spike bump (the Brute Shot's ratio used the rocket's 240): 315 x 100/240
+        ('SL = RL ratio, no bump', W + r'rocket launcher\rocket launcher', 'shot',
+         {'dmg': 131.25, 'radius': (0.0, 0.6), 'rate': 1 / 6.5, 'charge': 3.33, 'nomag': True,
+          'speed': 4000.0, 'range': 88.0, 'aim': (1.2, 35.0, 6.0, 35.0),
+          'heat': (1.0, 1.0, 0.3, 0.1), 'age': 0.2, 'mods': {'hunter_armor': 0.5}}),
+        # 4.64 x 570/4; rate x15/30 (Halo 1's measured cap) -> cycle 9.76 s, charge 5.0; age
+        # 0.2 x 0.012/0.003 = 0.8 (1.25 shots a battery); range, aim = Halo 3's (equal there);
+        # beam table + laser / plasma_fast: shields x0.5 (2 -> 1), Flood 1, sentinel 2 -> 1
+        ('SL = Sentinel Beam ratio', W + r'sentinel beam\sentinel beam', 'shot',
+         {'dmg': 661.0, 'rate': 1 / 9.76, 'charge': 5.0, 'speed': 4000.0, 'range': 120.0,
+          'aim': (1.0, 25.0, 5.0, 25.0), 'heat': (1.0, 1.0, 0.2, 0.1), 'age': 0.8,
+          'mods': {'elite_energy_shield': 1.0, 'cyborg_energy_shield': 1.0, 'sentinel': 1.0}}),
+        ('Sniper Rifle', W + r'sniper rifle\sniper rifle', 'shot'),
+        ('Rocket Launcher', W + r'rocket launcher\rocket launcher', 'shot'),
+        ('Fuel Rod (restored)', W + r'fuel rod gun\fuel rod', 'shot'),
+        ('Sentinel Beam (peer)', W + r'sentinel beam\sentinel beam', 'shot', {'rate': 15.0}),
+    ], 'enemies': [
+        ('Sentinel', r'characters\sentinel\sentinel', 'sentinel'),
+        ('Flood combat (elite)', r'characters\floodcombat elite\floodcombat elite plasma rifle',
+         'floodcombat elite'),
+    ]},
 }
 
 ENEMIES = [
@@ -459,6 +516,13 @@ def weapon(label, rel, mode, overrides, extra=None):
         rps = tr.firing.rounds_per_second
         out['rps'] = max(rps[0], rps[1])
         out['charge'] = tr.charging.charging_time
+        # a CHARGED TRIGGER PAIR (the Spartan Laser on the plasma pistol): trigger 0 charges
+        # and fires trigger 1 when charged ('discharge') -- the shot is trigger 1's projectile
+        # and heat; trigger 0's own round (a tap) is ignored
+        if (len(w.triggers.STEPTREE) > 1 and out['charge']
+                and tr.charging.overcharged_action.enum_name == 'discharge'):
+            tr = w.triggers.STEPTREE[1]
+            out['pair'] = True
         out['per_shot'] = tr.projectile.projectiles_per_shot or 1
         if extra and extra.get('per_shot'):  # a pellet CANDIDATE on a single-round tag
             out['per_shot'] = extra['per_shot']
@@ -547,6 +611,8 @@ def apply_rows(out, rows):
                 aim[AIM.index(f)] = v
             elif f == 'Age Generated Per Round':
                 out['age'] = v
+            elif f == 'Heat Loss Per Second' and out.get('heat'):
+                out['heat'] = (out['heat'][0], out['heat'][1], v) + tuple(out['heat'][3:])
         elif r['class'] == 'jpt!':
             for d in out['damage']:
                 if d['tag'].lower() != r['tag'].lower():
@@ -565,6 +631,13 @@ def apply_rows(out, rows):
                     if key in d['mods']:
                         d['mods'][key] = v
     out['aim'] = tuple(aim)
+    if out.get('pair') and out.get('heat') and out['heat'][0] >= out['heat'][1] > 0:
+        # every charged shot OVERHEATS (the Spartan Laser): one shot a charge + a vent
+        hpr, oh, loss, rec = out['heat'][:4]
+        out['interval'] = out['charge'] + (oh - rec) / loss
+        out['rps'] = 1.0 / out['interval']
+        out['tag_rps'] = None
+        return
     if out['mode'] != 'melee':
         # a MEASURED engine cap wins over a balanced rate row (SMG: the 22.5 row fires 15/s)
         if out.get('cap') and out.get('rps'):

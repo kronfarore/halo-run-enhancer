@@ -185,12 +185,51 @@ def make_hud(w, key, write):
     if 'reticle' in h:                   # a Halo 3 reticle, into Halo 1's sheet
         import h1_add_reticle
         seq = (h1_add_reticle.add(*h['reticle'], index=RESERVED.get(key, {}).get('reticle'),
-                                  thicken=h.get('reticle_thicken', 0))
+                                  thicken=h.get('reticle_thicken', 0),
+                                  layers=h.get('reticle_layers', ()),
+                                  prefilter=h.get('reticle_prefilter', 0),
+                                  scale=h.get('reticle_scale', 1.0),
+                                  pixel=h.get('reticle_pixel', 0),
+                                  centre=h.get('reticle_centre', h1_add_reticle.CENTRE),
+                                  mips=h.get('reticle_mips', False),
+                                  hard=h.get('reticle_hard', 0),
+                                  min_width=h.get('reticle_min_width', 0))
                if write else -1)
         for c in d.crosshairs.STEPTREE:
             if c.crosshair_type.enum_name == 'aim':
                 for o in c.crosshair_overlays.STEPTREE:
                     o.sequence_index = seq
+                    if h.get('reticle_scale'):
+                        # the art drawn SMALLER in the sheet and the overlay scaled UP: Halo 1
+                        # then MAGNIFIES the sprite (no texel skipped) instead of minifying it
+                        # with no mipmaps (the Spartan Laser's fizzle, test 3). `reticle_overlay`
+                        # sets the overlay factor apart from the art's (test 4: Halo 3's size)
+                        o.width_scale = o.height_scale = h.get('reticle_overlay', 1.0 / h['reticle_scale'])
+    if 'charge_crosshair' in h:
+        # a CHARGE indicator (the Spartan Laser, test 1: Halo 3's triangle sweeping round the
+        # reticle as it charges): Halo 1's `charge` crosshair type -- no stock HUD uses it --
+        # on an own multi-frame bitmap (h1_add_reticle.orbit_frames), a copy of the aim
+        # crosshair element repointed
+        import h1_add_reticle
+        C = h['charge_crosshair']
+        if write:
+            h1_add_reticle.orbit_frames(C['out'], *C['art'], n=C.get('frames', 16),
+                                        prefilter=h.get('reticle_prefilter', 0),
+                                        sheet_index=C.get('sheet_index'),
+                                        art_scale=h.get('reticle_scale', 1.0), tight=C.get('tight', True),
+                                        size=C.get('size', 512))
+        xs = d.crosshairs.STEPTREE
+        aim = [c for c in xs if c.crosshair_type.enum_name == 'aim'][0]
+        xs.append(copy.deepcopy(aim))
+        c = xs[len(xs) - 1]
+        c.crosshair_type.set_to('charge')
+        # `sheet_index`: the frames sit in hud_reticles (the aim's own sheet) at that index
+        c.crosshair_bitmap.filepath = C['out'] if C.get('sheet_index') is None else aim.crosshair_bitmap.filepath
+        for o in c.crosshair_overlays.STEPTREE:
+            o.sequence_index = C.get('sheet_index') or 0
+            o.frame_rate = C.get('frame_rate', 0)
+            if h.get('reticle_scale'):
+                o.width_scale = o.height_scale = 1.0 / h['reticle_scale']
     if 'scope' in h:                     # Halo 3's ZOOMED scope (h1_h3_scope.py): the BR, 2026-10-07
         # the whole zoom HUD replaced (user: the standard procedure): the screen-effect
         # mask = Halo 3's scope widgets baked, no blur, the donor's zoom crosshairs dropped
@@ -365,15 +404,19 @@ def set_fields(root, fields):
             setattr(node, last, v)
 
 
-def scaled_particle_system(src, k, out_dir, write):
+def scaled_particle_system(src, k, out_dir, write, tint=None):
     """An own copy of a particle system x k: each particle type's radius and each state's
-    sprite scale (the Brute Shot's smaller explosion, test 1). Returns its path."""
+    sprite scale (the Brute Shot's smaller explosion, test 1). `tint` {state name: (colour
+    1 ARGB, colour 2 ARGB)}: those states recoloured (the Spartan Laser's red fire). Returns
+    its path."""
     from reclaimer.hek.defs.pctl import pctl_def
     t = pctl_def.build(filepath=path(src, '.particle_system'))
     for pt in t.data.tagdata.particle_types.STEPTREE:
         pt.radius *= k
         for st in pt.particle_states.STEPTREE:
             st.scale[0], st.scale[1] = st.scale[0] * k, st.scale[1] * k
+            for blk, argb in zip((st.color_1, st.color_2), (tint or {}).get(st.name, ())):
+                blk.a, blk.r, blk.g, blk.b = argb
     own = out_dir + src.rsplit(os.sep, 1)[-1]
     save(t, path(own, '.particle_system'), write)
     return own
@@ -426,7 +469,34 @@ def own_explosion(pd, X, write):
                 part.type.filepath = new
             if X.get('scale') and part.type.tag_class.enum_name == 'particle_system':
                 part.type.filepath = scaled_particle_system(part.type.filepath, X['scale'],
-                                                            X['out_dir'], write)
+                                                            X['out_dir'], write, X.get('psys_tint'))
+            if part.type.tag_class.enum_name == 'light' and X.get('light'):
+                # an OWN recoloured copy of the explosion's light (the Spartan Laser: red)
+                from reclaimer.hek.defs.ligh import ligh_def
+                L = X['light']
+                lt = ligh_def.build(filepath=path(part.type.filepath, '.light'))
+                for bd in (lt.data.tagdata.color.color_lower_bound, lt.data.tagdata.color.color_upper_bound):
+                    if bd.r or bd.g or bd.b:
+                        bd.r, bd.g, bd.b = L['rgb']
+                save(lt, path(L['out'], '.light'), write)
+                part.type.filepath = L['out']
+        # `drop_particles` (path substrings): the template explosion's own particles removed
+        # (the Spartan Laser: the rocket's flare, gravel and smoke around a small beam splash)
+        pts = ev.particles.STEPTREE
+        for i in range(len(pts) - 1, -1, -1):
+            if any(x in pts[i].particle_type.filepath for x in X.get('drop_particles', ())):
+                pts.pop(i)
+        # `particle_swaps` {old particle: new}: another particle type in place (the Spartan
+        # Laser, test 4: the grenade's flare -> the energy flare of the charged plasma bolt)
+        for q in pts:
+            q.particle_type.filepath = X.get('particle_swaps', {}).get(q.particle_type.filepath,
+                                                                       q.particle_type.filepath)
+        # `particle_tint` (RGB) on the particles whose path holds one of `tint_match`
+        for q in pts:
+            if X.get('particle_tint') and any(x in q.particle_type.filepath for x in X.get('tint_match', ())):
+                q.flags.tint_as_hsv = False
+                for bd in (q.tint_lower_bound, q.tint_upper_bound):
+                    bd.r, bd.g, bd.b = X['particle_tint']
         if X.get('scale'):
             for q in ev.particles.STEPTREE:
                 q.radius[0], q.radius[1] = q.radius[0] * X['scale'], q.radius[1] * X['scale']
@@ -461,6 +531,10 @@ def own_beam(a, b, write):
     pd = pt.data.tagdata.proj_attrs
     if b.get('damage'):
         pd.physics.impact_damage.filepath = j_own
+    elif b.get('no_impact_damage'):
+        # a projectile that deals NOTHING (the Spartan Laser's aiming tracer, Halo 3's
+        # no-damage tracer: a copy of the sniper bullet, whose impact damage would ride along)
+        pd.physics.impact_damage.filepath = ''
     if 'explosion' in b:
         own_explosion(pd, b['explosion'], write)
     if 'range' in b:
@@ -592,14 +666,34 @@ def own_beam(a, b, write):
                 ps.width *= C['width']
             if C.get('no_physics'):          # a BEAM, not a vapour trail: the sniper's points
                 ps.physics.filepath = ''     # ride smoke point physics and drift with the wind
+        if 'blend' in C:                 # an ADDITIVE beam (the Spartan Laser: Halo 3's beam
+            # systems glow; the sniper trail it copies is alpha-blended vapour)
+            ct.data.tagdata.rendering.framebuffer_blend_function.set_to(C['blend'])
+        contrail_look(ct, C)
         save(ct, path(C['out'], '.contrail'), write)
         n = 0
-        for x in pt.data.tagdata.obje_attrs.attachments.STEPTREE:
+        atts = pt.data.tagdata.obje_attrs.attachments.STEPTREE
+        for x in atts:
             if x.type.filepath.lower() == C['from'].lower():
                 x.type.filepath = C['out']
                 n += 1
+                first = x
         if n != 1:
             raise SystemExit('%s: %d attachments name %s' % (p_own, n, C['from']))
+        # `extra`: further contrails on the same marker (the Spartan Laser: a white-hot CORE
+        # inside a wide red GLOW), each its own copy of `from` with the same keys
+        for E in C.get('extra', ()):
+            et = cont_def.build(filepath=path(E.get('from', C['from']), '.contrail'))
+            for ps in et.data.tagdata.point_states.STEPTREE:
+                if E.get('no_physics', C.get('no_physics')):
+                    ps.physics.filepath = ''
+            if 'blend' in E:
+                et.data.tagdata.rendering.framebuffer_blend_function.set_to(E['blend'])
+            contrail_look(et, E)
+            save(et, path(E['out'], '.contrail'), write)
+            if not any(x.type.filepath.lower() == E['out'].lower() for x in atts):
+                atts.append(copy.deepcopy(first))
+                atts[len(atts) - 1].type.filepath = E['out']
     if 'glow' in b:
         # a GLOWING projectile (the Brute Shot, test 1: 'the grenade is hard to see'; Halo 3
         # attaches a lens flare + light volume at fx_glow): own copies of a light and its
@@ -715,9 +809,42 @@ def own_beam(a, b, write):
             print('   impact on material %d: %s -> %s (%d of %d thinned particles kept)'
                   % (i, x.effect.filepath, own, kept, total))
             x.effect.filepath = own
+    if b.get('clear_response_effects'):
+        # no impact effect on any material (the Spartan Laser's tracer: Halo 3's shows only a
+        # faint glow; the sniper bullet's dust and sparks would read as a hit)
+        for x in pd.material_responses.STEPTREE:
+            x.effect.filepath = x.potential_response.effect.filepath = x.detonation_effect.filepath = ''
     save(pt, path(p_own, '.projectile'), write)
-    for tr in a.triggers.STEPTREE:
-        tr.projectile.projectile.filepath = p_own
+    # `triggers`: which triggers fire it (the Spartan Laser: trigger 0 the tracer a tap fires,
+    # trigger 1 the beam a full charge fires); all of them by default
+    trs = a.triggers.STEPTREE
+    for i in b.get('triggers', range(len(trs))):
+        trs[i].projectile.projectile.filepath = p_own
+
+
+def contrail_look(ct, C):
+    """A contrail's texture and point states (the Spartan Laser, test 1: 'thin and transparent,
+    not epic'): `bitmap` (a solid beam texture instead of the sniper's vapour), `states`
+    [{'duration': (lo, hi), 'transition': (lo, hi), 'width': wu, 'argb': (a, r, g, b)}] -- one
+    per point state, the block resized to match (copies of its last state)."""
+    d = ct.data.tagdata
+    if 'bitmap' in C:
+        d.rendering.bitmap.filepath = C['bitmap']
+        # a SEQUENCED texture needs its sequence range (test 2: the plasma rifle contrail's
+        # bitmap with the sniper's 0 / 0 drew NOTHING -- every stock contrail on it says 0 / 1)
+        d.rendering.first_sequence_index, d.rendering.sequence_count = C.get('sequence', (0, 1))
+    if 'states' in C:
+        sts = d.point_states.STEPTREE
+        while len(sts) < len(C['states']):
+            sts.append(copy.deepcopy(sts[len(sts) - 1]))
+        while len(sts) > len(C['states']):
+            sts.pop()
+        for ps, S in zip(sts, C['states']):
+            ps.state_duration[0], ps.state_duration[1] = S.get('duration', (0.0, 0.0))
+            ps.state_transition_duration[0], ps.state_transition_duration[1] = S.get('transition', (0.0, 0.0))
+            ps.width = S['width']
+            for bd in (ps.color_lower_bound, ps.color_upper_bound):
+                bd.a, bd.r, bd.g, bd.b = S['argb']
 
 
 def add_hum(d, h, write):
@@ -988,6 +1115,45 @@ def edit_weapon(key, write):
         et = effe_def.build(filepath=path(O['from'], '.effect'))
         for loc in et.data.tagdata.locations.STEPTREE:
             loc.marker_name = O['locations'].get(loc.marker_name, loc.marker_name)
+        # the VENT's look (the Spartan Laser, test 1: 'looks like the fuel rod venting'): the
+        # template's particle types swapped (`particles` {old path: new}: the plasma pistol's
+        # green `plasma overheat` -> Halo 1's white `steam`), their count x `count`, and the
+        # event `duration` (Halo 3 steams for 2.5 s)
+        for P in O.get('own_particles', ()):
+            # an OWN copy of a particle with another point physics (the Spartan Laser, test 7:
+            # Halo 1's first-person smoke rides `warm smoke cloud` physics, which 'uses simple
+            # wind' -- the vent steam drifted right with the level's wind whatever its
+            # direction); swapped in like `particles`
+            from reclaimer.hek.defs.part import part_def
+            pt_ = part_def.build(filepath=path(P['from'], '.particle'))
+            pt_.data.tagdata.physics.filepath = P['physics']
+            save(pt_, path(P['out'], '.particle'), write)
+        for ev in et.data.tagdata.events.STEPTREE:
+            if 'duration' in O:
+                ev.duration_bounds[0] = ev.duration_bounds[1] = O['duration']
+            for q in ev.particles.STEPTREE:
+                q.particle_type.filepath = O.get('particles', {}).get(q.particle_type.filepath,
+                                                                      q.particle_type.filepath)
+                if 'count' in O:
+                    q.created_count[0] = int(round(q.created_count[0] * O['count']))
+                    q.created_count[1] = int(round(q.created_count[1] * O['count']))
+                if 'radius_scale' in O:      # the new particle's size (test 2: Halo 1's steam
+                    # at the plasma sparks' 2-3 cm radius was invisible)
+                    q.radius[0], q.radius[1] = q.radius[0] * O['radius_scale'], q.radius[1] * O['radius_scale']
+                if 'direction' in O:         # (yaw, pitch) deg from the marker's forward: the
+                    # Spartan Laser's ONE side vent points out of the gun (test 3: 'check the
+                    # position' -- the plasma pistol's entries spray both ways, +-60..90 deg)
+                    q.relative_direction.y, q.relative_direction.p = (math.radians(x) for x in O['direction'])
+                if 'cone' in O:
+                    q.velocity_cone_angle = math.radians(O['cone'])
+                if 'offset' in O:            # marker space: x = out of the vent
+                    q.relative_offset.i, q.relative_offset.j, q.relative_offset.k = O['offset']
+                if 'distribution' in O:      # spread over the event ('constant': a plume)
+                    q.distribution_function.set_to(O['distribution'])
+                if 'tint' in O:              # RGB, not HSV
+                    q.flags.tint_as_hsv = False
+                    for bd in (q.tint_lower_bound, q.tint_upper_bound):
+                        bd.r, bd.g, bd.b = O['tint']
         save(et, path(O['out'], '.effect'), write)
         a.heat.overheated.filepath = O['out']
     if 'misfire_effect' in w:                 # same marker fix for the misfire burst

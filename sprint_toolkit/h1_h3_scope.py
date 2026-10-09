@@ -79,7 +79,12 @@ def widgets(chud):
         if '<field name="bitmap" value=' not in body:
             continue
         g = lambda k: (re.search(r'name="%s" value="([^"]*)"' % re.escape(k), body) or [None, None])[1]  # noqa: E731
-        fl = re.search(r'<field name="flags" value="\d+" type="word flags"(?:/>|>(.*?)</field>)', body, re.S)
+        # the WIDGET's flags sit right before its bitmap field; an animation block can carry a
+        # `flags` of its own earlier in the body (the Spartan Laser's scope_mask: the first
+        # match was that one, 0, and the mirrored ring baked as one quarter)
+        fls = [m for m in re.finditer(r'<field name="flags" value="\d+" type="word flags"(?:/>|>(.*?)</field>)', body, re.S)
+               if m.end() <= body.find('<field name="bitmap" value=')]
+        fl = fls[-1] if fls else None
         flags = set(x.strip() for x in (fl.group(1) or '').splitlines() if x.strip()) if fl else set()
         zm = re.search(r'name="unit zoom state" value="(\d+)"', body)
         anchor, offset = g('anchor type'), tuple(float(x) for x in g('origin offset').split(','))

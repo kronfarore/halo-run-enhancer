@@ -349,6 +349,46 @@ def glow_spots(jm, S):
     return spots
 
 
+def add_point_cards(jm, G):
+    """A GLOW at a MARKER (the Spartan Laser, test 1: 'I need the charging glow' -- Halo 3
+    attaches its charging particles, light and lens flare at primary_trigger, and Halo 1 draws
+    attachments at the hidden third-person gun in first person): three crossed square cards
+    (`size` cm) centred `forward` cm ahead of the marker `marker` (JMS name), UVs 0..1 on a
+    RADIAL glow shader G['shader'] (glow_shaders `radial`; a `fade_source` makes it follow
+    the charge). Assumes the marker's node chain rests unrotated (checked: the laser's
+    `frame gun`, h3_rm_info)."""
+    from reclaimer.model.jms.file import JmsMaterial, JmsTriangle, JmsVertex
+    mk = [m for m in jm.markers if m.name == G['marker']]
+    if not mk:
+        print('   glow point: no marker %r' % G['marker'])
+        return
+    m = mk[0]
+    node = m.parent
+    P = np.array([m.pos_x, m.pos_y, m.pos_z], float)
+    i = node
+    while i >= 0:                               # the node's bind position (unrotated chain)
+        n = jm.nodes[i]
+        P = P + np.array([n.pos_x, n.pos_y, n.pos_z])
+        i = n.parent_index if hasattr(n, 'parent_index') else -1
+    P = P + np.array([G.get('forward', 0.0), 0.0, 0.0])
+    jm.materials.append(JmsMaterial(G['shader']))
+    si = len(jm.materials) - 1
+    h = G.get('size', 6.0) / 2.0
+    X, Y, Z = np.eye(3)
+    for U, V, N in ((Y, Z, X), (X, Z, Y), (X, Y, Z)):
+        idx = []
+        for du, dv in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
+            q = P + U * du * h + V * dv * h
+            jm.verts.append(JmsVertex(node, float(q[0]), float(q[1]), float(q[2]),
+                                      float(N[0]), float(N[1]), float(N[2]),
+                                      -1, 0.0, (du + 1) / 2.0, (dv + 1) / 2.0))
+            idx.append(len(jm.verts) - 1)
+        for tri in ((0, 1, 2), (0, 2, 3), (0, 2, 1), (0, 3, 2)):      # both faces
+            jm.tris.append(JmsTriangle(0, si, idx[tri[0]], idx[tri[1]], idx[tri[2]]))
+    print('   glow point at %s: %s, %.1f cm, %s' % (G['marker'], tuple(round(c, 2) for c in P),
+                                                    G.get('size', 6.0), G['shader']))
+
+
 def add_spot_cards(jm, S):
     """A square card (`size` cm, lifted `lift` along the face normal) per glow spot, UVs 0..1
     on a RADIAL glow texture (glow_shaders `radial`), as material S['shader']."""
@@ -446,9 +486,17 @@ def bitmaps(w):
     glow = {}
     for name, (base, illum) in w['shaders'].items():
         b, _ = h3_hud_art.decode(base)
+        # Halo 1's `tool bitmaps` SKIPS a non-power-of-two map (the Spartan Laser's 768 x 768
+        # base, its 128 x 96 decal): resized up to the next power of two each way
+        pot = tuple(1 << (n - 1).bit_length() for n in b.size)
+        if pot != b.size:
+            b = b.resize(pot, Image.LANCZOS)
         rgba = np.array(b)
         diff = rgba.copy()
-        diff[..., 3] = 255
+        if name not in w.get('decals', ()):
+            diff[..., 3] = 255
+        # a DECAL keeps Halo 3's alpha (the Spartan Laser's warning stickers): an
+        # alpha-blended decal shader_model (shaders())
         Image.fromarray(diff).save(os.path.join(out, name + '_diff.tif'))
         mp = np.zeros_like(rgba)
         mp[..., 0] = rgba[..., 3]                                 # reflection = specular mask
@@ -561,8 +609,40 @@ def bitmaps(w):
         mp[..., 1] = mp[..., 3] = 255
         Image.fromarray(mp).save(os.path.join(out, name + '_mp.tif'))
         glow[name] = tuple(rgb)
+    for name, K in w.get('baked_textures', {}).items():
+        # a Halo 3 BEAM look as one texture (the Spartan Laser, test 9: Halo 3's beam_system =
+        # a beam profile texture `profile` -- constant along u, the profile across v --
+        # palette-mapped through a gradient `palette`, blended additively x alpha): colour =
+        # palette[profile], alpha = profile; `premultiply` for an additive layer
+        prof, _ = h3_hud_art.decode(K['profile'])
+        pal, _ = h3_hud_art.decode(K['palette'])
+        v = np.asarray(prof.convert('L').resize((K.get('size', 64),) * 2, Image.LANCZOS)).astype(np.float64)
+        row = np.asarray(pal)[np.asarray(pal).shape[0] // 2, :, :3].astype(np.float64)
+        col = row[np.clip((v / 255.0 * (len(row) - 1)).round().astype(int), 0, len(row) - 1)]
+        if K.get('premultiply'):
+            col = col * (v / 255.0)[..., None]
+        out_px = np.zeros(v.shape + (4,), np.uint8)
+        out_px[..., :3] = np.clip(col, 0, 255).round()
+        out_px[..., 3] = np.clip(v, 0, 255).round()
+        Image.fromarray(out_px).save(os.path.join(out, name + '.tif'))
+    for name in w.get('solid_textures', ()):
+        # a plain WHITE texture (the Spartan Laser's beam contrails, test 3: every stock
+        # contrail texture is a short bolt's pattern, mostly dark along a 120 wu beam -- the
+        # contrail's own colours then make the beam): 16 x 16, alpha 255
+        Image.fromarray(np.full((16, 16, 4), 255, np.uint8)).save(os.path.join(out, name + '.tif'))
     log = tool('bitmaps', w['dir'] + B + 'bitmaps')
     print('   tool bitmaps: %s' % (log.strip().splitlines()[-1] if log.strip() else 'ok'))
+    if w.get('decals') or w.get('baked_textures'):
+        # a DECAL's soft alpha: `tool bitmaps` makes a new tag DXT1 (1-bit alpha); set the
+        # tags to interpolated alpha (DXT5) and import again -- the tool keeps a tag's format.
+        # The same for a baked beam texture's profile alpha
+        from reclaimer.hek.defs.bitm import bitm_def
+        for name in ([n + '_diff' for n in w.get('decals', ())] + list(w.get('baked_textures', {}))):
+            t = bitm_def.build(filepath=os.path.join(TAGS, w['dir'], 'bitmaps', name + '.bitmap'))
+            t.data.tagdata.format.set_to('interpolated_alpha')
+            t.serialize(temp=False, backup=False)
+        log = tool('bitmaps', w['dir'] + B + 'bitmaps')
+        print('   tool bitmaps (decals DXT5): %s' % (log.strip().splitlines()[-1] if log.strip() else 'ok'))
     return glow
 
 
@@ -693,9 +773,16 @@ def shaders(w, glow):
             mp.v_animation.function.set_to('slide')
             mp.v_animation.period = spec['v_scroll']
             mp.v_animation.scale = 1.0
+        if spec.get('fade_source'):
+            # its brightness follows a weapon FUNCTION (the Spartan Laser's charge glow: D out =
+            # primary charged, the plasma pistol template's layout) -- Halo 1 shaders read
+            # object functions in first person (the plasma pistol's own charge gauge is a
+            # meter shader on D out)
+            t.data.tagdata.schi_attrs.chicago_shader.framebuffer_fade_source.set_to(spec['fade_source'])
         t.filepath = os.path.join(out, name + '.shader_transparent_chicago')
         t.serialize(temp=False, backup=False)
-        print('   shader %s  ADDITIVE glow %s' % (t.filepath, tuple(spec['rgb'])))
+        print('   shader %s  ADDITIVE glow %s%s' % (t.filepath, tuple(spec['rgb']),
+                                                 '  fade %s' % spec['fade_source'] if spec.get('fade_source') else ''))
     for name in list(w['shaders']) + [k for k, v in w.get('glow_shaders', {}).items()
                                       if not (isinstance(v, dict) and v.get('additive'))]:
         if (name in w.get('numeric', {}).get('places', {}) or name in w.get('meters', {})
@@ -705,6 +792,8 @@ def shaders(w, glow):
         m = t.data.tagdata.soso_attrs
         m.maps.diffuse_map.filepath = w['dir'] + B + 'bitmaps' + B + name + '_diff'
         m.maps.multipurpose_map.filepath = w['dir'] + B + 'bitmaps' + B + name + '_mp'
+        if name in w.get('decals', ()):
+            m.model_shader.flags.alpha_blended_decal = True
         if name in glow:
             si = m.self_illumination
             for bound in (si.color_lower_bound, si.color_upper_bound):
@@ -719,6 +808,11 @@ def models(w):
         jm, _rm = h3_rm_to_jms.convert(w[key], markers=w.get('markers'),
                                              frame=w.get('world_frame') if key == 'world' else None)
         drop_materials(jm, w.get('drop_materials', ()))
+        # `material_names` {Halo 3 name: Halo 1 name}: Halo 1's `tool model` DROPS a trailing
+        # digit of a material name when it looks for the shader (the Spartan Laser, test 1:
+        # `spartan_laser_decal2` drew with `spartan_laser_decal`'s shader)
+        for m in jm.materials:
+            m.name = w.get('material_names', {}).get(m.name, m.name)
         # a marker at the centre of each piece of a material (`material_markers` {prefix:
         # material}; the Beam Rifle's gems, for a lens-flare test): `<prefix> <n>`, on the
         # piece's node (bind rotation identity there: checked on the beam rifle's `frame gun`)
@@ -769,6 +863,8 @@ def models(w):
             print('   glow cards %s: %d piece(s), %d triangle(s) as %s' % (mat, len(pieces), n_new, C['shader']))
         for S in w.get('glow_spots', ()):
             add_spot_cards(jm, S)
+        for G in w.get('glow_points', ()):
+            add_point_cards(jm, G)
         d = os.path.join(HCEEK, 'data', w['dir'] + sub, 'models')
         os.makedirs(d, exist_ok=True)
         write_jms(os.path.join(d, fname + '.jms'), jm)

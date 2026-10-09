@@ -1,0 +1,152 @@
+{
+ "game": "Halo 1",
+ "weapon": "Spartan Laser",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\spartan_laser_port\\sl_fire",
+   "perms": [
+    "sl_fire_1.wav",
+    "sl_fire_2.wav",
+    "sl_fire_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spartan_laser_port\\sl_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spartan_laser_port\\sl_charge_in",
+   "perms": [
+    "sl_charge_in_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spartan_laser_port\\sl_charge_in"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spartan_laser_port\\sl_charge_loop",
+   "perms": [
+    "sl_charge_loop_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spartan_laser_port\\sl_charge_loop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spartan_laser_port\\sl_charge_out",
+   "perms": [
+    "sl_charge_out_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spartan_laser_port\\sl_charge_out"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spartan_laser_port\\sl_overheat",
+   "perms": [
+    "sl_overheat_1.wav",
+    "sl_overheat_2.wav",
+    "sl_overheat_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spartan_laser_port\\sl_overheat"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spartan_laser_port\\sl_impact",
+   "perms": [
+    "sl_impact_1.wav",
+    "sl_impact_2.wav",
+    "sl_impact_3.wav",
+    "sl_impact_4.wav",
+    "sl_impact_5.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spartan_laser_port\\sl_impact"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spartan_laser_port\\sl_ready",
+   "perms": [
+    "sl_ready_1.wav",
+    "sl_ready_2.wav",
+    "sl_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spartan_laser_port\\sl_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spartan_laser_port\\sl_melee",
+   "perms": [
+    "sl_melee_1.wav",
+    "sl_melee_2.wav",
+    "sl_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spartan_laser_port\\sl_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spartan_laser_port\\sl_pose",
+   "perms": [
+    "sl_pose_1.wav",
+    "sl_pose_2.wav",
+    "sl_pose_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spartan_laser_port\\sl_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spartan_laser_port\\sl_zoom_in",
+   "perms": [
+    "sl_zoom_in_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spartan_laser_port\\sl_zoom_in"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spartan_laser_port\\sl_zoom_out",
+   "perms": [
+    "sl_zoom_out_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spartan_laser_port\\sl_zoom_out"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spartan_laser_port\\sl_drop",
+   "perms": [
+    "sl_drop_1.wav",
+    "sl_drop_2.wav",
+    "sl_drop_3.wav",
+    "sl_drop_4.wav",
+    "sl_drop_5.wav",
+    "sl_drop_6.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spartan_laser_port\\sl_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spartan_laser_port\\sl_ammo",
+   "perms": [
+    "sl_ammo_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spartan_laser_port\\sl_ammo"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\spartan_laser_port\\sl_dryfire",
+   "perms": [
+    "sl_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\spartan_laser_port\\sl_dryfire"
+   ]
+  }
+ ]
+}

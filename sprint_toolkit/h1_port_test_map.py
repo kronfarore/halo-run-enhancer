@@ -155,6 +155,11 @@ def dropship_mix(d, mix):
                  sq.normal_diff_count, sq.insane_diff_count))
 
 
+# --secondary-rounds: a CONTROL weapon's own ammo (the Spartan Laser's test 4: the stock sniper
+# beside a battery port, which spawns at 0 / 0)
+SECONDARY_ROUNDS = None
+
+
 def edit_kit(level, weapon, rounds, actors, secondary=None, mix=None):
     """The scenario edits of step 1 (the caller restores the file). `secondary` (a weapon
     tag): every spawn profile's SECONDARY too, same rounds -- a second variant of the port
@@ -174,7 +179,7 @@ def edit_kit(level, weapon, rounds, actors, secondary=None, mix=None):
         p.primary_rounds_loaded, p.primary_rounds_total = rounds
         if secondary:
             p.secondary_weapon.filepath = secondary
-            p.secondary_rounds_loaded, p.secondary_rounds_total = rounds
+            p.secondary_rounds_loaded, p.secondary_rounds_total = SECONDARY_ROUNDS or rounds
         armed.append(p.name or '(unnamed)')
     print('kit: %d spawn profile(s) armed, %d/%d rounds%s: %s'
           % (len(armed), rounds[0], rounds[1], ' (+ secondary %s)' % secondary if secondary else '',
@@ -346,6 +351,8 @@ def main():
     ap.add_argument('--restore', metavar='LEVEL')
     ap.add_argument('--secondary', metavar='WEAPON_TAG',
                     help='every spawn profile secondary too (a test variant), same rounds')
+    ap.add_argument('--secondary-rounds', metavar='L,T',
+                    help="the secondary's own rounds (a control weapon beside a battery port)")
     ap.add_argument('--balanced', action='store_true',
                     help="the patcher's own Balanced pass on the copy (catalog rows + anims "
                          '+ anim_sounds), spawning with the balanced magazine')
@@ -394,6 +401,9 @@ def main():
     want = {'grunt': a.grunt or cfg.get('grunt'), 'elite': a.elite or cfg.get('elite')}
     actors = [v for v in want.values() if v]
     mix = DROPSHIP_JACKALS.get(level) if 'jackal' in (a.armed or '').lower() else None
+    global SECONDARY_ROUNDS
+    if a.secondary_rounds:
+        SECONDARY_ROUNDS = tuple(int(x) for x in a.secondary_rounds.split(','))
     out = build_copy(level, weapon, rounds, actors, a.keep_kit_map, a.secondary, mix)
     arm = [e for e in (a.armed or '').split(',') if e.strip()]
     if actors or a.god or cfg.get('god') or entry or arm:
