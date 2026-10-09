@@ -33,7 +33,11 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 STEAM = r'F:\SteamLibrary\steamapps\common'
 B = '\\'
-CLASS = {'weapon': 'weap', 'projectile': 'proj', 'damage_effect': 'jpt!'}
+CLASS = {'weapon': 'weap', 'projectile': 'proj', 'damage_effect': 'jpt!',
+         # the MELEE damage effect as a fourth pair (the Mauler, 2026-10-09: Halo 3's blade
+         # cut_melee vs the yardstick's strike_melee onto the port's melee copy) -- a Halo 1
+         # config may add it to its field_audit; the SAW-era game tables do not
+         'melee': 'jpt!'}
 
 #: the source weapon and the donor it is measured against, per tag kind (Halo 4)
 SOURCE = dict(kit='H4EK', tags={
@@ -360,7 +364,7 @@ def audit(game, show_all=False, source=None, G=None, weapon='SAW'):
               'source': source.get('label', 'Halo 4: SAW vs Assault Rifle')}
     hops = G.get('hops') or [(source['kit'], {k: v[1] for k, v in source['tags'].items()},
                               G['kit'], {k: v[1] for k, v in G['tags'].items()})]
-    for kind in ('weapon', 'projectile', 'damage_effect'):
+    for kind in [k for k in CLASS if k in source['tags'] and k in G['tags']]:
         s_port, s_donor = (flatten(source['kit'], t) for t in source['tags'][kind])
         t_port, t_donor = (flatten(G['kit'], t) for t in G['tags'][kind])
         cov = covered.get(CLASS[kind], {})

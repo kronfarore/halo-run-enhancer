@@ -378,6 +378,8 @@ PORT.update({
     # Projectile: list 2 = 0 (range 8 and air damage range 2.5..5 default; balanced rows).
     #   Halo 3's attachment `fx\projectile` is an EMPTY effect (nothing to port); pellets: the
     #   shotgun's 15 (Halo 3's conical grid 3 x 5 = 15), cone 7.5 random (Halo 1 has no grid).
+    # Melee (re-check at close-out, a 4th audit pair): cut_melee vs strike_melee = 69 fields
+    #   the same, the 2 that differ are the damage (balance rows) -- list 2 = 0, nothing to port.
     # Damage effect: list 2 = 0 (lower 1.5, upper 7; balanced 4 / 12.6..17.5); materials the
     #   shotgun pellet's (both bullet_slow). Shield-hit effect x1: THE HIT-EFFECT RULE counts
     #   SHOTS, not pellets (user) -- 1.33/s.
@@ -411,10 +413,15 @@ PORT.update({
                    'projectile': (H3 + r'\projectiles\excavator_shard.projectile',
                                   r'objects\weapons\rifle\shotgun\projectiles\shotgun_bullet.projectile'),
                    'damage_effect': (H3 + r'\damage_effects\excavator_shard.damage_effect',
-                                     r'objects\weapons\rifle\shotgun\damage_effects\shotgun_bullet.damage_effect')},
+                                     r'objects\weapons\rifle\shotgun\damage_effects\shotgun_bullet.damage_effect'),
+                   # the BLADE (close-out re-check, user 2026-10-09): Halo 3's cut_melee vs the
+                   # shotgun's strike_melee, onto the port's melee copy vs the H1 shotgun's
+                   'melee': (r'objects\weapons\damage_effects\cut_melee.damage_effect',
+                             r'objects\weapons\damage_effects\strike_melee.damage_effect')},
         'target': {'weapon': (ML + 'mauler.weapon', SG + 'shotgun.weapon'),
                    'projectile': (ML + 'pellet.projectile', SG + 'pellet.projectile'),
-                   'damage_effect': (ML + 'pellet.damage_effect', SG + 'pellet.damage_effect')}},
+                   'damage_effect': (ML + 'pellet.damage_effect', SG + 'pellet.damage_effect'),
+                   'melee': (ML + 'melee.damage_effect', SG + 'melee.damage_effect')}},
 
     # the dry test: a30 (Covenant within seconds of the landing), the mauler as the primary
     # with Halo 3's own loadout (5 loaded, 10 in all)
