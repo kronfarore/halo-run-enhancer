@@ -63,6 +63,10 @@ DAMAGE = {
     'lasers': ('Lasers', ('laser',)),
 }
 ANYTHING = 'anything'           # every type above ("Anything vs Flood")
+#: per-game additions to DAMAGE's groups. Reach: the Sniper Rifle fires its own GENERAL group
+#: 'sniper' (only it -- and Jun's AI copy of the same bullet -- uses it), folded into
+#: Precision (user, 2026-10-09). Halo 4 keeps 'sniper' out (Binary Rifle shares it).
+DAMAGE_GAME = {('Halo Reach', 'precision'): ('sniper',)}
 
 #: armour class -> (label, armour row names). Per-game overrides in ARMOUR_GAME.
 #:  shields  energy_shield_thin only: energy_shield_thick is the Jackal hand shield and
@@ -203,13 +207,14 @@ def h1_type(name):
     return None
 
 
-def damage_groups(damage):
+def damage_groups(damage, game=None):
+    g = str(game).strip() if game else None
     if damage == ANYTHING:
         out = []
-        for _l, gs in DAMAGE.values():
-            out += list(gs)
+        for k, (_l, gs) in DAMAGE.items():
+            out += list(gs) + list(DAMAGE_GAME.get((g, k), ()))
         return tuple(out)
-    return DAMAGE[damage][1]
+    return tuple(DAMAGE[damage][1]) + tuple(DAMAGE_GAME.get((g, damage), ()))
 
 
 def damage_types(damage):
@@ -278,7 +283,7 @@ def plan(m, game, spec):
             nm[v] = pa.sid_name(m, game, v)
         return nm[v]
 
-    want_g = set(damage_groups(spec['damage']))
+    want_g = set(damage_groups(spec['damage'], game))
     want_a = set(armour_rows(game, spec['armour']))
     player_keys = {k for k, _o in getattr(m, '_player_armour_keys', ())}
     hits, missing, zeros, arrays = [], [], 0, []
