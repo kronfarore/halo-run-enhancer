@@ -968,6 +968,12 @@ OBSERVATION until a second port agrees, except the user RULES):
   endian in the tag file, after the 64-byte header).
 * **Test rule (user, 2026-10-09):** the god shield on EVERY port test boot (h1_port_test_map
   default; `--mortal` opts out).
+* **Tools from the Mauler** (sprint_toolkit, generic): `h1_weapon_values.py` (step 4a's Halo 1
+  side, raw fields incl. falloff and the trigger's three effect fields), `h1_weapon_carriers.py`
+  (step 11: carriers of a weapon + their WDM), `h1_port_write_proof.py <key> snap|diff`
+  (closing check 6), `h1_tag_inspect.py effect|hud` (template effects / HUD elements),
+  `h3_port_sources.py chud|sounds` (a chud's reticle + ammo sprites; Halo 3 bank folders),
+  `glow_spot_list.py` (lit-texel spots: centre, normal, extent -- for the glow filters).
 * 5b tool fix: `h1_role_compare` kept only the last Damage Upper Bound row (both bounds alike
   in earlier ports); it now keeps the range's two bounds (the Mauler's 12.6..17.5 -> 15.05).
 
