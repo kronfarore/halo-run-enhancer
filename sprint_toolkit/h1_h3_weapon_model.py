@@ -189,6 +189,23 @@ def fold_cards(jm, pieces, F, si):
             (wall if abs(n.dot(a)) < 0.35 else keep).append(t)
         if keep:
             rest.append((keep, vs))
+    if F.get('v_range'):
+        # every wall triangle of `material` on the strip's UVs, lit or not (the Brute Shot,
+        # test 5: the lit-texel test took 81 of the 96 -- it misses the half of a quad
+        # whose chevron lies mostly in its neighbour: chevrons drawn half)
+        mi = [m.name for m in jm.materials].index(F['material'])
+        have = {id(t) for t in wall}
+        lo_v, hi_v = F['v_range']
+        for t in jm.tris:
+            if t.shader != mi or id(t) in have:
+                continue
+            if not all(lo_v <= jm.verts[i].tex_v <= hi_v for i in (t.v0, t.v1, t.v2)):
+                continue
+            p0, p1, p2 = (pos(jm.verts[i]) for i in (t.v0, t.v1, t.v2))
+            n = np.cross(p1 - p0, p2 - p0)
+            n = n / (np.linalg.norm(n) or 1.0)
+            if abs(n.dot(a)) < 0.35:
+                wall.append(t)
     if not wall:
         return pieces, 0
     # the circle, fitted again without the triangles off it (the Brute Shot, test 3: 16 lit

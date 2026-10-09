@@ -149,7 +149,12 @@ PORT.update({
         'glow_cards': {'brute_shot': {'shader': 'bs_ring', 'lit': ILLUM, 'scale': 1.0,
                                       'lift': 0.02,
                                       'fold': {'axis': (0.0, 1.0, 0.0), 'band': -1.2,
-                                               'gap': 0.05}}},
+                                               'gap': 0.05,
+                                               # TEST 5 (user): 'chevrons still cut off' --
+                                               # the lit-texel test took 81 of the strip's 96
+                                               # wall triangles; all of the strip by its UVs
+                                               'material': 'brute_shot',
+                                               'v_range': (0.855, 0.88)}}},
         # the GRENADE (Halo 3 projectiles\grenade: one node, the body shader, markers
         # fx_contrail / fx_glow): the projectile's own model; fx_contrail = `smoke` (the
         # frag-grenade smoke trail's marker, test 3), fx_glow = `glow` (the orange flare)
@@ -312,11 +317,16 @@ PORT.update({
                    # `smoke` marker (Halo 3's fx_contrail); the contrail dropped
                    'keep_attachments': (0,),
                    # TEST 4 (user): 'flies too fast to follow its trail' -- an own copy,
-                   # puffs x1.6 radius, x2 count: a denser line
+                   # puffs x1.6 radius, x2 count: a denser line. TEST 5 (user): 'fine, can
+                   # be tuned down a bit' -> x1.3, x1.5
                    'set_attachments': {0: {'class': 'effect', 'type': r'weapons\frag grenade\effects\smoke',
                                            'marker': 'smoke',
                                            'copy': {'out': BS + 'effects\\grenade smoke',
-                                                    'scale': 1.6, 'count': 2.0}}},
+                                                    'scale': 1.3, 'count': 1.5}}},
+                   # TEST 5 (user): 'the projectile has a trail of its own, rotated with the
+                   # shot angle' = the rocket's LIGHT VOLUME widget (its exhaust streak);
+                   # Halo 3's grenade has none (its glow = the flare above)
+                   'drop_widgets': True,
                    'hum': {'like': 'sound\\sfx\\weapons\\rocket launcher\\rl_projectile',
                            'loop': SND + 'bs_projectile', 'tag': SND + 'bs_projectile',
                            'marker': ''},

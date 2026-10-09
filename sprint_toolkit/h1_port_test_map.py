@@ -91,8 +91,11 @@ def full_magazine(weapon):
 #: pass_cship -- the first try changed that one: no Jackals seen): grunt 4/3 + far_grunt 2/3
 #: + elite 1/2 (Normal / Legendary) = 7 / 8 of the 8 seats -> far_grunt rides as 2 / 3
 #: Jackals. Only the TEST copy is changed (edit_kit restores).
+#: Brute Shot Armed test (user, 2026-10-09): 'increase the Jackals, 1 isn't enough with
+#: explosives (they kill themselves)' -- BOTH Grunt squads ride as Jackals now: 6 / 6 + the
+#: Elite (a list of squads)
 DROPSHIP_JACKALS = {
-    'a30': {'encounter': 'lz_search', 'squad': 'far_grunt',
+    'a30': {'encounter': 'lz_search', 'squad': ['far_grunt', 'grunt'],
             'jackal': r'characters\jackal\jackal minor plasma pistol'},
 }
 
@@ -101,15 +104,17 @@ def dropship_mix(d, mix):
     enc = [e for e in d.encounters.STEPTREE if e.name == mix['encounter']]
     if not enc:
         raise SystemExit('no encounter %s' % mix['encounter'])
-    sq = {q.name: q for q in enc[0].squads.STEPTREE}[mix['squad']]
     pal = [p[0].filepath.lower() for p in d.actors_palette.STEPTREE]
     if mix['jackal'].lower() not in pal:
         raise SystemExit('no %s in the actor palette' % mix['jackal'])
-    old = d.actors_palette.STEPTREE[sq.actor_type][0].filepath
-    sq.actor_type = pal.index(mix['jackal'].lower())
-    print('kit: %s/%s %s -> %s (%d Normal / %d Legendary, the first dropship)'
-          % (mix['encounter'], mix['squad'], old.rsplit('\\', 1)[-1], mix['jackal'].rsplit('\\', 1)[-1],
-             sq.normal_diff_count, sq.insane_diff_count))
+    squads = {q.name: q for q in enc[0].squads.STEPTREE}
+    for name in (mix['squad'] if isinstance(mix['squad'], list) else [mix['squad']]):
+        sq = squads[name]
+        old = d.actors_palette.STEPTREE[sq.actor_type][0].filepath
+        sq.actor_type = pal.index(mix['jackal'].lower())
+        print('kit: %s/%s %s -> %s (%d Normal / %d Legendary, the first dropship)'
+              % (mix['encounter'], name, old.rsplit('\\', 1)[-1], mix['jackal'].rsplit('\\', 1)[-1],
+                 sq.normal_diff_count, sq.insane_diff_count))
 
 
 def edit_kit(level, weapon, rounds, actors, secondary=None, mix=None):

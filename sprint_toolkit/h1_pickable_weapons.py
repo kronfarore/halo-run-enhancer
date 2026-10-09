@@ -543,6 +543,10 @@ def own_beam(a, b, write):
         for i in range(len(att) - 1, -1, -1):
             if i not in b['keep_attachments']:
                 att.pop(i)
+    if b.get('drop_widgets'):
+        # the template's object WIDGETS removed (the Brute Shot, test 5: the rocket's light-
+        # volume exhaust streak rode the grenade, turning with the shot angle)
+        pt.data.tagdata.obje_attrs.widgets.STEPTREE[:] = []
     for i, spec in b.get('set_attachments', {}).items():
         # a kept attachment re-pointed (index AFTER keep_attachments): the Brute Shot's
         # trail = Halo 1's frag-grenade smoke effect in the rocket's exhaust-effect slot
