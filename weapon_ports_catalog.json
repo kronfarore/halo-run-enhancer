@@ -4165,6 +4165,26 @@
    "weapon": "Focus Rifle",
    "source": "Halo Reach",
    "donor": "Sniper Rifle",
+   "tag_map": {
+    "jpt! objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet": "jpt! objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam",
+    "jmad *fp_sniper_rifle*": "jmad *fp_focus_rifle*"
+   },
+   "card_map": {
+    "Bullet Damage": "Beam Damage"
+   },
+   "skip_cards": [
+    "Ammo Inventory",
+    "Ammo Loaded",
+    "Reload Time"
+   ],
+   "card_donors": {
+    "Sentinel Beam": [
+     "Heat Threshold",
+     "Heat Loss",
+     "Heat Per Round",
+     "Age Per Round"
+    ]
+   },
    "default_on": true,
    "desc": "Focus Rifle carried from Halo Reach into Halo 4: its own model, the Beam Rifle's first-person animations and HUD, the Sentinel Beam's beam. Numbers scaled through the Sniper Rifle.",
    "balance": [
