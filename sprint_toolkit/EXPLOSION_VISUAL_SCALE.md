@@ -4,6 +4,8 @@ Problem: a radius card multiplies a damage effect's `Radius` / `Radius Max` (jpt
 the explosion's particles stay the same size, so after a few picks the visible blast and
 the damage area no longer match. Investigation only: **no card or patcher change made.**
 
+**Status 2026-10-09 (part 2): feasible in all six games on map data.** Halo 2 to Halo 4 proven offline end to end (write a copy, re-read, every other effect byte-identical); the step left per game is one in-game look (section 6). Implementation waits until the weapon port is done (user).
+
 ## 1. Cards that scale an explosion / area radius today
 
 All write `Radius` + `Radius Max` on jpt! tags (one input, `group: "Radius"`) unless noted.
@@ -116,16 +118,139 @@ Open points for the enhancer session / user:
 - Lights: include only on own copies; low visual value, optional.
 - One test boot: a30, Frag Radius at x2, compare the fireball to the damage reach.
 
-## Later games
+## 5. Halo 2 / 3 / ODST / Reach / 4 (full investigation, 2026-10-09 part 2)
 
-- **Halo 2 / Halo 3 / ODST / Reach:** particle systems live inline in the effe
-  (`Particle Systems/Emitters`); `Particle Size`, `Particle Scale` and `Emission Radius`
-  are function PROPERTIES (input/range variable + a `Function` dataref blob), and H3+
-  also bake `Runtime GPU Properties/Functions` blocks that the GPU particles read. A plain
-  field write does not reach them: it needs a function-blob scaler (constant / ranged
-  function types) and a check that the GPU runtime blocks follow (or rewriting them too).
-  Research item. Effect sharing between weapons must be audited per game as here.
-- **Halo 4:** easiest of all: effe root `Global Size Scale` (0x18) and per particle
-  system `Size Scale` ("multiplied by all size related fields"). One plain float per
-  effect, the generic writer can do it with the same group mechanism. Needs a per-effect
-  sharing audit and an in-game check that Global Size Scale isn't overridden at runtime.
+Tools (all in sprint_toolkit):
+- `explosion_fx_audit.py` -- card -> jpt! -> every referencing tag -> effects, over EVERY
+  campaign map of each game (tagRef index: gen 3+ `[group][..][..][ident]`, owner = nearest
+  tag base below; Halo 2 `[group][datum]`, exact tag sizes). Writes reports/explosion_fx_audit.*
+  (the gen-3 owner guess sometimes names a bitmap/pixel-shader tag -- ignore those owners).
+- `reports/explosion_fx_rule.txt` -- the per-card effect lists under the implementation rule
+  (5d). Committed; the full audit json is regenerable (~25 min).
+- `fx_visual_scale.py` -- the PROTOTYPE writer + verifier (not wired into the patcher).
+- `fx_visual_test.py` / `fx_visual_test.cmd` -- the in-game test maps (section 6).
+
+### 5a. What draws the size
+
+Every game from Halo 2 on keeps particle systems INSIDE the effect (effe `Events/Particle
+Systems/Emitters`). The two properties that set an explosion's size are **Particle Size
+(world units)** and **Emission Radius (world units)**. Each is a *function property*: input /
+range variable bytes + a dataRef to function data (+ on Halo 3/ODST/Reach/4 an inline
+`Runtime m Constant Value` and flags). Layouts are read from the Assembly plugins.
+
+Function data (all five games, colour functions aside): byte 0 = type, byte 1 = flags,
+**floats at +4 and +8 = the output range**, the curve after them normalised. Scaling both
+scales the output for every type -- Halo 3's GPU bake stores exactly those two numbers beside
+the curve coefficients, which is the proof.
+
+Halo 3 ONLY also bakes each emitter for the GPU (`Runtime GPU Properties` 0x2CC, 16 B rows;
+`Runtime GPU Functions` 0x2D8, 64 B rows). Decoded over all 7076 size/scale entries of
+040_voi with **0 mismatches**:
+- GPU property row 1 = alpha, **row 2 = Particle Size**, row 6 = Particle Scale, row 7 = rotation;
+- a constant property sits in col 0 of its row; a function property has col 0 = 0 and
+  col 2 = function index << 17;
+- a baked function row is `[type, ?, min, max, flags, coefficients...]` (a ranged function
+  bakes two rows).
+Emitter-level properties (emission radius, counts, velocity) are not baked -- CPU side.
+ODST, Reach and Halo 4 MCC caches carry **no** baked GPU blocks (emitter tails probed).
+
+Halo 4 additionally has an inline per-effect `Global Size Scale` (root 0x18) and a per
+particle system `Size Scale`. (The 2026-09-28 equipment-icon test that "showed no change"
+at x8 GSS is no evidence either way: Halo 4 never drew that icon at all.)
+
+### 5b. The trap: everything is DEDUPLICATED
+
+The caches share identical data between tags. Measured per map:
+
+| game | function datarefs | distinct blobs | shared emitter / GPU blocks |
+|---|---|---|---|
+| Halo 2 (05b) | 14058 | 1874 | 149 emitter blocks |
+| Halo 3 (040) | 63684 | 5750 | 1774 (emitter + GPU) |
+| ODST (sc120) | 63306 | 5599 | 0 |
+| Reach (m30) | 26370 | 3639 | 0 |
+| Halo 4 (m10) | 90398 | 6190 | 0 |
+
+An in-place edit of a function blob would resize every other effect in the map that shares
+those bytes. So the writer is **copy on write**: each touched blob / GPU block gets a private
+scaled copy and its dataRef / reflexive is repointed; an emitter block shared with an effect
+outside the scaled set is copied first. New bytes go where the patcher already grows data:
+gen 3+ through `halo_patch._h3_reserve` (zero runs; the rule confirmed in game on Reach m10 and
+Halo 4 m70), Halo 2 appended at the end of the image like `Halo2Map.grow_blocks` (confirmed in
+game). The patcher rebuilds every map from its pristine baseline, so copies never compound.
+
+Space, ALL radius cards at once on one map: Halo 2 ~6 KB, ODST ~7 KB, Reach ~7 KB, Halo 4
+~6 KB, Halo 3 ~89 KB (GPU blocks) against 172 KB of >=4 KB zero runs on 040_voi (largest 48
+KB). A real run drafts a few radius cards, so the Halo 3 margin is comfortable, but the
+implementation must fail soft (skip the visual, keep the damage) when slack runs out.
+
+### 5c. Offline proof (fx_visual_scale.py, frag grenade x2 on a copy)
+
+| game / map | emitters | copies | other property values byte-identical | scaled values exact |
+|---|---|---|---|---|
+| Halo 2 05b | 6 | 12 blobs | 14004 | 12 / 12 |
+| Halo 3 040 | 17 | 4 emitter blocks, 13 blobs, 12 GPU blocks | 70400 | 36 / 36 |
+| ODST sc120 | 18 | 13 blobs | 62982 | 36 / 36 |
+| Reach m30 | 10 | 9 blobs | 26190 | 20 / 20 |
+| Halo 4 m10 | 10 | 9 blobs (or 2 GSS floats) | 91481 | 20 / 20 |
+
+Halo 3 after the write: the GPU bake is still consistent with the functions on all 7076
+entries. The same checks pass on the five test levels (section 6).
+
+### 5d. Which effects belong to a card (the implementation rule)
+
+The projectile's OWN detonation fields (`Airborne Detonation Effect`, `Ground Detonation
+Effect`, `Super Detonation`, `Detonation Started`) plus any effect that carries the jpt! as
+a part. **Not** the projectile's material responses: from Reach on these name the GENERIC
+per-surface `fx\material_effects\weapons\impact_explosion_medium\*` (and Halo 3's Spartan
+Laser card reaches ~60 generic `impact_plasma_large\*` effects) that every explosive weapon
+shares. The grenade's own detonation effects carry the fireball (5-8 particle systems);
+the material effects are surface debris that stays at stock size.
+
+Under that rule (reports/explosion_fx_rule.txt), cards with a drawn explosion:
+
+| game | cards | own effects only | shared with another weapon (resizing leaks to it) |
+|---|---|---|---|
+| Halo 2 | 7 | 6 | Flak Cannon <- Banshee bomb |
+| Halo 3 | 11 | 7 | Rocket <- Pelican rocket; Flak <- Banshee bomb; Plasma Grenade <- Flood "banger"; Missile Pod <- Hornet missile |
+| ODST | 13 | 9 | Rocket, Flak, Missile Pod as Halo 3; the Hunter card reaches the flak detonation |
+| Reach | 11 | 6 | Needler <-> Needle Rifle (one effect, TWO cards); Flak <- Hunter fuel rod, Banshee, Seraph, Shade; Frag <- AA / frigate turret rounds; Concussion <- Phantom chin gun |
+| Halo 4 | 11 | 7 | Rocket <- missile battery; Frag <- Bishop turret round; Plasma <- pulse popup / active shield / Bishop; Concussion <- Phantom chin gun |
+
+A shared effect cannot be split at cache level (that would mean adding tags), so per shared
+card the choice is the user's: let the other weapon's blast grow too (cosmetic only -- its
+damage is untouched), or leave that card's visual unscaled. Two cards on one effect (Reach
+Needler / Needle Rifle) must not compound: take the larger multiplier, or one card owns it.
+Melee-radius cards (no particle explosion) and the Gravity Hammer (Halo 3 fires its visual
+from animation events, not a projectile) are out of scope.
+
+## 6. In-game test (one boot per game, when the user chooses)
+
+    fx_visual_test.cmd deploy h3      (h2 / h3 / odst / reach / h4)
+    fx_visual_test.cmd restore h3
+
+Builds `<level>_fxscale_test.map` from the CURRENT live map (a patched run stays patched;
+deploy again after any re-patch) and swaps it in; the live map waits as
+`<level>.map.pre_fxscale`. The frag grenade's own explosion is drawn **x3**; nothing else
+changes (damage included). Halo 4 also draws the **plasma grenade x3 via Global Size Scale**,
+so one boot compares both Halo 4 routes. Levels: Halo 2 03a_oldmombasa, Halo 3 010_jungle,
+ODST sc100, Reach m10, Halo 4 m10_crash (frags early; Halo 2 01b avoided by rule). All five
+builds were dry-run and verified on these levels, then removed.
+
+What each outcome means:
+- three times wider -> the route works in that engine;
+- stock size -> the engine ignores what was written (Halo 3: the GPU rows or the function
+  copies; Halo 4 plasma: GSS -- the frag's emitter route still stands);
+- crash / no explosion -> a repointed copy is unreachable; the copy placement needs revisiting.
+Halo 1 needs no new mechanism (plain fields, section 2); its test belongs with the shared-tag
+split in the Halo 1 rebuild, after the port.
+
+## 7. Implementation outline (after the port, with the enhancer session)
+
+1. Per card and game, the list of effects to scale, generated from the audit under rule 5d
+   and reviewed for the shared cases; the multiplier is the card's own Radius multiplier
+   (the group's input), so visuals follow picks exactly.
+2. Halo 1: plain rows (sections 2 + 4) after the shared-tag split.
+3. Halo 2-4: a new emit pass in halo_patch calling the fx_visual_scale writer (copy on write,
+   fail soft when there's no slack, Halo 3 GPU rows); Halo 4 through Global Size Scale if the
+   test shows it works (one float per effect, no copies).
+4. Two cards on one effect: the larger multiplier, not the product.

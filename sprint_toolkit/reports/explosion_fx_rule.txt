@@ -1,0 +1,88 @@
+#### Halo 2
+Needler > Explosion Radius                           effects 3 emitters   8  CLEAN
+Brute Shot > Radius                                  effects 1 emitters   4  CLEAN
+Flak Cannon > Radius                                 effects 1 emitters   6  SHARED
+      ~ explosion_large\banshee_bomb\detonation <- proj weapon\banshee_bomb
+Frag Grenade > Radius                                effects 1 emitters   6  CLEAN
+Plasma Grenade > Radius                              effects 3 emitters   9  CLEAN
+Hunter > Hunter Radius                               effects 2 emitters   3  CLEAN
+Tartarus > Gravity Hammer Radius                     effects 1 emitters   4  CLEAN
+   7 cards with visuals, 6 clean
+#### Halo 3
+Needler > Explosion Radius                           effects 3 emitters  19  CLEAN
+Rocket Launcher > Radius                             effects 1 emitters  10  SHARED
+      ~ rocket_launcher\fx\detonation <- proj projectiles\pelican_rocket
+Brute Shot > Radius                                  effects 2 emitters  14  CLEAN
+Flak Cannon > Radius                                 effects 1 emitters   6  SHARED
+      ~ flak_cannon\fx\detonation <- proj weapon\banshee_bomb
+Frag Grenade > Radius                                effects 2 emitters  18  CLEAN
+Plasma Grenade > Radius                              effects 3 emitters  21  SHARED
+      ~ plasma_grenade\fx\detonation <- crea flood_infection\flood_infection_banger
+Spartan Laser > Impact Radius                        effects 1 emitters   5  CLEAN
+Missile Pod > Radius                                 effects 2 emitters  20  SHARED
+      ~ missile_pod\fx\detonation <- proj weapon\hornet_missile
+Claymore Grenade > Radius                            effects 2 emitters  20  CLEAN
+Firebomb Grenade > Burn Radius                       effects 1 emitters   0  CLEAN
+Hunter > Hunter Radius                               effects 1 emitters   3  CLEAN
+   11 cards with visuals, 7 clean
+#### Halo 3: ODST
+Needler > Explosion Radius                           effects 3 emitters  19  CLEAN
+Rocket Launcher > Radius                             effects 1 emitters  10  SHARED
+      ~ rocket_launcher\fx\detonation <- proj projectiles\pelican_rocket
+Brute Shot > Radius                                  effects 2 emitters  14  CLEAN
+Flak Cannon > Radius                                 effects 1 emitters   6  SHARED
+      ~ flak_cannon\fx\detonation <- proj projectiles\flak_bolt; proj weapon\banshee_bomb
+Frag Grenade > Radius                                effects 4 emitters  32  CLEAN
+Plasma Grenade > Radius                              effects 3 emitters  21  CLEAN
+Gravity Hammer > Hammer Radius                       effects 1 emitters   5  CLEAN
+Spartan Laser > Impact Radius                        effects 1 emitters   5  CLEAN
+Missile Pod > Radius                                 effects 2 emitters  20  SHARED
+      ~ missile_pod\fx\detonation <- proj weapon\hornet_missile
+Claymore Grenade > Radius                            effects 2 emitters  20  CLEAN
+Firebomb Grenade > Burn Radius                       effects 1 emitters   0  CLEAN
+Hunter > Hunter Radius                               effects 2 emitters   9  SHARED
+      ~ flak_cannon\fx\detonation <- proj weapon\banshee_bomb; proj flak_bolt\flak_bolt
+Sentinel > Explosion Radius                          effects 1 emitters   6  CLEAN
+   TWO CARDS ON ONE EFFECT: flak_cannon\fx\detonation <- ['Flak Cannon > Radius', 'Hunter > Hunter Radius']
+   13 cards with visuals, 9 clean
+#### Halo Reach
+Needler > Explosion Radius                           effects 1 emitters   4  SHARED
+      ~ needler\fx\super_detonation <- proj projectiles\needle_rifle_shard
+Rocket Launcher > Radius                             effects 2 emitters   5  CLEAN
+Flak Cannon > Radius                                 effects 1 emitters   6  SHARED
+      ~ flak_cannon\fx\detonation <- proj projectiles\hunter_fuel_rod_bolt; proj projectiles\banshee_bomb_launcher_bomb; proj projectiles\seraph_quad_bomb_launcher_bomb; proj projectiles\shade_flak_cannon_bolt
+Frag Grenade > Radius                                effects 2 emitters  10  SHARED
+      ~ frag_grenade\fx\detonation <- proj projectiles\anti_infantry_turret_round; proj projectiles\frigate_turret_round
+Plasma Grenade > Radius                              effects 3 emitters  13  CLEAN
+Spartan Laser > Impact Radius                        effects 1 emitters   2  CLEAN
+Concussion Rifle > Radius                            effects 2 emitters  10  SHARED
+      ~ concussion_rifle\fx\airborne_detonation <- proj weapons\phantom_chin_gun
+      ~ concussion_rifle\fx\detonation <- proj weapons\phantom_chin_gun
+Grenade Launcher > Radius                            effects 3 emitters  16  CLEAN
+Needle Rifle > Explosion Radius                      effects 1 emitters   4  SHARED
+      ~ needler\fx\super_detonation <- proj projectiles\needler_shard
+Plasma Launcher > Radius                             effects 2 emitters  10  CLEAN
+Target Locator > Explosion Radius                    effects 1 emitters   5  CLEAN
+   TWO CARDS ON ONE EFFECT: needler\fx\super_detonation <- ['Needle Rifle > Explosion Radius', 'Needler > Explosion Radius']
+   11 cards with visuals, 6 clean
+#### Halo 4
+Needler > Explosion Radius                           effects 1 emitters   4  CLEAN
+Rocket Launcher > Radius                             effects 1 emitters   4  SHARED
+      ~ storm_rocket_launcher\fx\detonation <- proj missile_battery_missile\storm_missile_battery_missile
+Frag Grenade > Radius                                effects 3 emitters  10  SHARED
+      ~ storm_frag_grenade\fx\detonation <- proj projectiles\bishop_turret_round
+Plasma Grenade > Radius                              effects 3 emitters  15  SHARED
+      ~ storm_plasma_grenade\fx\detonation_start <- proj storm_energy_drain_grenade\storm_energy_drain_grenade_popup
+      ~ storm_plasma_grenade\fx\airborne_detonation <- bloc storm_active_shield\storm_active_shield
+      ~ storm_plasma_grenade\fx\detonation <- bipd storm_bishop\storm_bishop
+Concussion Rifle > Radius                            effects 2 emitters   6  SHARED
+      ~ storm_concussion_rifle\fx\airborne_detonation <- proj weapons\storm_phantom_chin_gun; proj phantom_chin_gun_dogfight\storm_phantom_chin_gun_dogfight
+      ~ storm_concussion_rifle\fx\detonation <- proj weapons\storm_phantom_chin_gun; proj phantom_chin_gun_dogfight\storm_phantom_chin_gun_dogfight
+Scattershot > Super Detonation Radius                effects 3 emitters  12  CLEAN
+Railgun > Impact Radius                              effects 1 emitters   5  CLEAN
+Sticky Detonator > Radius                            effects 1 emitters   5  CLEAN
+Incineration Cannon > Radius                         effects 2 emitters  10  CLEAN
+Pulse Grenade > Radius                               effects 1 emitters   0  CLEAN
+Knight > Melee Radius                                effects 1 emitters   5  CLEAN
+   TWO CARDS ON ONE EFFECT: grenade\storm_energy_drain_grenade\pop_up <- ['Frag Grenade > Radius', 'Pulse Grenade > Radius']
+   11 cards with visuals, 7 clean
