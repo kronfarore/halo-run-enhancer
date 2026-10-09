@@ -1034,6 +1034,13 @@ The whole weapon is `ports_h1/brute_shot.py` (its CLOSE-OUT RECORD lists every d
 * Explosion visuals vs radius cards: EXPLOSION_VISUAL_SCALE.md (parked by the user until every
   weapon is ported everywhere); the Brute Shot already has its own particle-system copy.
 * Not reproduced: Halo 3's bloom (the fold stands in), its grenade light volume (a flare).
+* **Tools from the Brute Shot** (sprint_toolkit, generic): `h3_tag_fields.py` (any H3EK tag's
+  fields; a projectile's detonation / damage / responses summary -- what h3_weapon_values does
+  not print), `h3_rm_info.py` (a Halo 3 render model's nodes, markers, vertex types and the
+  TILTED-ROOT check; `--frame <node>`), `glow_fold_render.py` (a folded glow textured as Halo 1
+  draws it, before a boot), `jms_side_view.py` (a JMS side-on, one material highlighted),
+  `h1_model_markers.py` (gbxmodel markers live per permutation); `h1_port_test_map.py
+  --actor-flags`, per-squad `DROPSHIP_JACKALS`.
 
 ## Halo 3
 

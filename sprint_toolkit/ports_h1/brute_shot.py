@@ -117,7 +117,16 @@ PORT.update({
     #   damage copy, its particle system an own copy x0.55; Halo 3's explosion sound; list 2
     #   (aoe core, camo damage, acceleration, shake, breaking effect) written; screen flash 1 s
     #   0.5 YELLOW (user: blue reads as plasma); flood combat x1 (explosion_small).
-    # Melee: slice_melee 90 as the copy's mean (rocket 55); list 2 = 0 (re-check pair).
+    # Melee: slice_melee 90 as the copy's mean (rocket 55); list 2 = 0 (re-check pair); list 3:
+    #   instantaneous acceleration (H3 1.25 / 1 onto the H1 rocket melee's 0: the ratio is 0).
+    # 4b list 3, the rest (close-out re-check): weapon -- hud text message index (Halo 3's
+    #   pickup string; Halo 1: the message list, 65/66), magnification / falloff / autofire /
+    #   prediction / fp weapon offsets / zoom time / font icon / ground scales / damage reporting
+    #   (no Halo 1 field), flags 0 both; projectile -- lightmap shadow, material effect radius,
+    #   ai velocity scale, acceleration range, attach/response flags/between (no Halo 1 field),
+    #   flags by name; damage effect -- category kept high_explosive, the H3 flags differ only
+    #   in 'enables special death' (no Halo 1 flag), rider / ai stun / shake radius / aoe spike /
+    #   shake duration (no Halo 1 field), camera impulse + outward exponent (the H1 rocket's 0).
     # Look: the world model RE-ROOTED in Halo 3's `body` frame (its root is authored tilted);
     #   the drum chevrons = Halo 3's mask on the ring wall FOLDED into the opening (fold_cards:
     #   circle fit without strays, every strip triangle by UV, each triangle's own wall into the
@@ -336,6 +345,14 @@ PORT.update({
                                             # TEST 7 (user): 'blue reads as plasma -- make it
                                             # yellow': RGB 1 / 0.85 / 0.35 (the H1 rocket's
                                             # own tint is white-yellow 1 / 1 / 0)
+                                            # close-out 4b list 3: priority -- Halo 3 has the
+                                            # brute shot one step above its rocket (high vs
+                                            # medium), Halo 1's rocket is low -> medium. Halo 3
+                                            # has TWO responses (shielded 1 s, unshielded 1.5
+                                            # s, both 0.5; colour alpha 0.25 vs the rocket's
+                                            # 0.75): Halo 1 has one -> 1 s, the intensity
+                                            # stands in for the alpha
+                                            'screen_flash.priority': 'medium',
                                             'screen_flash.duration': 1.0,
                                             'screen_flash.maximum_intensity': 0.5,
                                             'screen_flash.tint_lower_bound': (1.0, 1.0, 0.85, 0.35)}},
