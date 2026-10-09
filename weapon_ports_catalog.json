@@ -2333,7 +2333,8 @@
    "fp_animations": "weapons\\brute shot\\fp\\fp",
    "requires": [
     "proj weapons\\brute shot\\grenade"
-   ]
+   ],
+   "hands": "heavy"
   }
  ],
  "Halo 3": [
