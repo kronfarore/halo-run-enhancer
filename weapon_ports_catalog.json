@@ -2334,6 +2334,19 @@
    "requires": [
     "proj weapons\\brute shot\\grenade"
    ],
+   "tag_map": {
+    "proj weapons\\rocket launcher\\rocket": "proj weapons\\brute shot\\grenade",
+    "jpt! weapons\\rocket launcher\\explosion": "jpt! weapons\\brute shot\\explosion",
+    "proj weapons\\shotgun\\pellet": "proj weapons\\brute shot\\grenade"
+   },
+   "skip_cards": [
+    "Zoom"
+   ],
+   "card_donors": {
+    "Shotgun": [
+     "Projectile Gravity"
+    ]
+   },
    "hands": "heavy"
   }
  ],
