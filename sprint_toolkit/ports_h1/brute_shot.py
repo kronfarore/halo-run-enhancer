@@ -16,6 +16,10 @@ BLUE = (46 / 255.0, 87 / 255.0, 215 / 255.0)
 ILLUM = H3 + r'\bitmaps\brute_shot_illum.bitmap'
 BASE = H3 + r'\bitmaps\brute_shot.bitmap'
 BLUE_HOT = (0.45, 0.75, 1.0)
+RING_BLUE = (0.45, 0.7, 1.0)
+# the grenade's glow in Halo 3: lens flare colour 0.94 / 0.46 / 0.13 (radius 0..0.1), light
+# volume BGRA 0d 5f f0 = RGB 240 / 95 / 13 -- an ORANGE ember
+EMBER = (0.94, 0.46, 0.13)
 
 PORT = reserved(
     order=16, wave='A7', name='Brute Shot', source='Halo 3',
@@ -101,6 +105,12 @@ PORT.update({
         'world': H3 + r'\brute_shot.render_model',
         'fp': H3 + r'\fp_brute_shot\fp_brute_shot.render_model',
         'world_name': 'brute shot',
+        # TEST 1 (user): 'the pickup icon is diagonal'. Halo 3's world model is authored
+        # TILTED: its root `gun` node rests rotated ~55 deg, the weapon frame (x forward, z
+        # up, primary_trigger 0.25 forward) is the `body` node -- Halo 3 holds weapons by
+        # markers, Halo 1 by the object frame (third person + icon). Re-rooted in `body`
+        # (h3_rm_to_jms frame); the FP mesh is skinned in model space and stays
+        'world_frame': 'body',
         'shaders': {'brute_shot': (BASE, ILLUM),
                     'brute_shot_dull': (BASE, None),
                     'brute_shot_shiny': (BASE, None)},
@@ -111,12 +121,23 @@ PORT.update({
         # around the gun origin) + small side spots (glow_spot_list)
         'illum_dilate': 1,
         'glow': {'brute_shot': BLUE_HOT},
+        # TEST 1 (user, screenshots H1 vs H3 on the ground and in FP): NO glow -- Halo 3 shows
+        # a ring of pale blue CHEVRONS on the drum's inner wall. The illum mask's lit texels
+        # are almost all one thin strip (rows 66..70 of 512, the ring wall) at most 160 of
+        # 255: after DXT the base self-illum is nothing, Halo 3 shows it by bloom. The
+        # Mauler's SHAPED glow (A6, its test 3): the lit triangles copied in place as an
+        # additive card textured with Halo 3's own mask, grown 2 px, x1.6 gain (160 -> 255:
+        # a white-hot core on the brightest texels), lifted along the (inward) normal
+        'glow_shaders': {'bs_ring': {'rgb': RING_BLUE, 'additive': True, 'mask': ILLUM,
+                                     'mask_channel': 'rgb', 'dilate': 2, 'gain': 1.6}},
+        'glow_cards': {'brute_shot': {'shader': 'bs_ring', 'lit': ILLUM, 'scale': 1.0,
+                                      'lift': 0.02}},
         # the GRENADE (Halo 3 projectiles\grenade: one node, the body shader, markers
         # fx_contrail / fx_glow): the projectile's own model; fx_contrail = the rocket's
-        # `exhaust` marker its kept smoke contrail hangs on
+        # `exhaust` marker its trail hangs on, fx_glow = `glow` (the orange flare, test 1)
         'extra_models': {'grenade': {'from': H3 + r'\projectiles\grenade\grenade.render_model',
                                      'dir': r'weapons\brute shot\grenade',
-                                     'markers': {'fx_contrail': 'exhaust'}}},
+                                     'markers': {'fx_contrail': 'exhaust', 'fx_glow': 'glow'}}},
         'template': RL + r'shaders\rocket launcher body',
     },
 
@@ -215,7 +236,14 @@ PORT.update({
         # exhaust flame + particle system dropped, Halo 3's flight loop as an own loop
         'bullet': {'projectile': (RL + 'rocket', BS + 'grenade'),
                    'damage': None,
-                   'explosion': {'effect': (RL + 'effects\\rocket explosion', BS + 'effects\\grenade explosion'),
+                   # TEST 1 (user): 'the explosion is too big -- swap it to the frag grenade's,
+                   # a smaller version if necessary'. The frag effect (quick flash, drifting
+                   # smoke) around the ROCKET's damage copy (the yardstick's table stays);
+                   # both effects burst the same `explosion med` particle system, so it is
+                   # SCALED: x0.63 = Halo 3's brute shot 1.1 / frag 1.75 wu radius
+                   'explosion': {'effect': (r'weapons\frag grenade\effects\explosion', BS + 'effects\\grenade explosion'),
+                                 'part': r'weapons\frag grenade\explosion',
+                                 'scale': 1.1 / 1.75, 'out_dir': BS + 'effects\\',
                                  'damage': (RL + 'explosion', BS + 'explosion'),
                                  'lower': 26.0, 'upper': (73.0, 73.0), 'radius': (0.3, 1.1),
                                  'mods': {'flood_combat_form': 1.0},
@@ -241,13 +269,14 @@ PORT.update({
                    # 4b list 2: water gravity 0.4 x 0.25/0.4. Air damage range KEPT 0..100
                    # (Halo 3: brute shot 0,0 = unset, rocket 0,150 -- a ratio on an unset
                    # field is degenerate; the grenade has no impact damage it would scale).
-                   # List 3: minimum velocity 11 (the H3 rocket's 0: no ratio -> Halo 3's
-                   # own; Halo 3's grenade falls 16 -> 7 over 6..15 wu, so it is slower than
-                   # 11 from ~11 wu -- WATCH where it bursts in game); danger radius,
-                   # acceleration scale: the H1 rocket's 0 (the ratio is 0)
+                   # List 3: minimum velocity -- boot 1 had Halo 3's 11: the grenade burst
+                   # after ~1 s (user) where Halo 3's bursts at ~2 s = its 20 wu range (16 ->
+                   # 7 over 6..15 wu, then 7: 1.9 s). So in HALO 1 minimum velocity DETONATES
+                   # (Halo 3: an at-rest threshold); the rocket's 0 now, the range decides.
+                   # Danger radius, acceleration scale: the H1 rocket's 0 (the ratio is 0)
                    'proj_fields': {'proj_attrs.physics.air_gravity_scale': 0.05,
                                    'proj_attrs.physics.water_gravity_scale': 0.25,
-                                   'proj_attrs.detonation.minimum_velocity': 11.0,
+                                   'proj_attrs.detonation.minimum_velocity': 0.0,
                                    'proj_attrs.flags.oriented_along_velocity': True,
                                    'proj_attrs.flags.ai_must_use_ballistic_aiming': True},
                    # rocket attachments: 0 exhaust effect, 1 smoke contrail, 2 rocket exhaust
@@ -255,7 +284,20 @@ PORT.update({
                    'keep_attachments': (1,),
                    'hum': {'like': 'sound\\sfx\\weapons\\rocket launcher\\rl_projectile',
                            'loop': SND + 'bs_projectile', 'tag': SND + 'bs_projectile',
-                           'marker': ''}},
+                           'marker': ''},
+                   # TEST 1 (user): 'the trail doesn't follow the arc'. The rocket's contrail
+                   # emits its points at 0..5 wu/s along the marker (backwards on the rocket);
+                   # the grenade's marker keeps Halo 3's fx_contrail axis, so the trail shot
+                   # off its path. An own copy, points born at rest: it traces the arc
+                   'contrail': {'from': RL + 'exhaust', 'out': BS + 'grenade trail',
+                                'velocity': (0.0, 0.0)},
+                   # TEST 1 (user): the grenade was hard to see / 'somewhere above me'. Halo
+                   # 3's grenade glows ORANGE (a lens flare + light volume at fx_glow): the
+                   # fuel rod's exhaust light (radius 0 = flare only) + its flare recoloured
+                   # EMBER, the flare 0.25 wu (Halo 3's 0..0.1 curve has no Halo 1 form: judge)
+                   'glow': {'light': (r'weapons\fuel rod gun\fuel rod exhaust', BS + 'grenade glow'),
+                            'flare': BS + 'grenade glow', 'rgb': EMBER, 'flare_radius': 0.25,
+                            'marker': 'glow'}},
         # H3: fire recovery 0.3 s (rounds per second 0 = recovery-limited) = 3.33/s
         'trigger': {'rounds_per_second': (1 / 0.3, 1 / 0.3),
                     # 4b list 3: first person offset -- H3 brute shot 0,-0.025,-0.02 vs

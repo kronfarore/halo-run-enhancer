@@ -86,10 +86,53 @@ def convert_particle_model(rel, material, node='frame spike'):
     return jm
 
 
-def convert(rel, materials=None, markers=None):
+def _qrot(q, v):
+    """v rotated by quaternion q = (i, j, k, w), Halo 3's convention (as stored)."""
+    i, j, k, w = q
+    ux, uy, uz = i, j, k
+    cx = (uy * v[2] - uz * v[1]) + w * v[0]
+    cy = (uz * v[0] - ux * v[2]) + w * v[1]
+    cz = (ux * v[1] - uy * v[0]) + w * v[2]
+    return (v[0] + 2 * (uy * cz - uz * cy), v[1] + 2 * (uz * cx - ux * cz),
+            v[2] + 2 * (ux * cy - uy * cx))
+
+
+def _qmul(a, b):
+    ai, aj, ak, aw = a
+    bi, bj, bk, bw = b
+    return (aw * bi + ai * bw + aj * bk - ak * bj, aw * bj - ai * bk + aj * bw + ak * bi,
+            aw * bk + ai * bj - aj * bi + ak * bw, aw * bw - ai * bi - aj * bj - ak * bk)
+
+
+def _world(nodes, i):
+    """(rotation, translation) of node i in model space (Halo 3 convention)."""
+    n = nodes[i]
+    if n['parent'] is None or n['parent'] < 0:
+        return tuple(n['rot']), tuple(n['pos'])
+    pq, pp = _world(nodes, n['parent'])
+    d = _qrot(pq, n['pos'])
+    return _qmul(pq, tuple(n['rot'])), (pp[0] + d[0], pp[1] + d[1], pp[2] + d[2])
+
+
+def convert(rel, materials=None, markers=None, frame=None):
     """`markers`: extra Halo 3 -> Halo 1 marker names over MARKERS (the Beam Rifle's
-    fx_vent -> overheat, where the template's overheat steam spawns)."""
+    fx_vent -> overheat, where the template's overheat steam spawns).
+    `frame`: a node name -- the model re-expressed in that node's bind frame (the Brute
+    Shot, 2026-10-09: Halo 3's world model is authored TILTED, its root `gun` rotated ~55
+    deg, the weapon frame -- x forward, z up, the muzzle marker 0.25 forward -- is the
+    `body` node; Halo 3 holds weapons by markers, Halo 1 by the object frame). Vertices
+    (model space) and the root's bind transform change; every other node and every marker
+    is parent-relative and stays."""
     rm = h4_rm.load(h1_fp_retarget.export_xml(rel))
+    F = None
+    if frame:
+        names = [n['name'] for n in rm['nodes']]
+        fq, fp = _world(rm['nodes'], names.index(frame))
+        F = ((-fq[0], -fq[1], -fq[2], fq[3]), fp)          # the inverse rotation, the origin
+        for n in rm['nodes']:
+            if n['parent'] is None or n['parent'] < 0:      # root: F^-1 * (its bind)
+                d = _qrot(F[0], (n['pos'][0] - fp[0], n['pos'][1] - fp[1], n['pos'][2] - fp[2]))
+                n['pos'], n['rot'] = d, _qmul(F[0], tuple(n['rot']))
     tmpl = extract_model(mod2_def.build(filepath=os.path.join(TAGS, TEMPLATE + '.gbxmodel')).data.tagdata,
                          TEMPLATE, write_jms=False)[0]
     jm = copy.deepcopy(tmpl)
@@ -115,7 +158,12 @@ def convert(rel, materials=None, markers=None):
     for me in rm['meshes']:
         base = len(verts)
         for v in me['verts']:
-            p = [(lo[k] + v['pos'][k] * span[k]) * 100 for k in range(3)]
+            p = [lo[k] + v['pos'][k] * span[k] for k in range(3)]
+            if F:
+                p = _qrot(F[0], (p[0] - F[1][0], p[1] - F[1][1], p[2] - F[1][2]))
+                if v['n']:
+                    v['n'] = _qrot(F[0], v['n'])
+            p = [c * 100 for c in p]
             u = u0 + v['uv'][0] * (u1 - u0)
             vv = v0 + v['uv'][1] * (v1 - v0)
             ns = sorted([(n, w) for n, w in zip(v['nodes'], v['w']) if n >= 0 and w > 0],

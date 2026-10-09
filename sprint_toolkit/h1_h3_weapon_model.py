@@ -404,7 +404,8 @@ def bitmaps(w):
                 v = np.zeros((N, N))
                 yy, xx = np.mgrid[0:N, 0:N]
                 for key in ('world', 'fp'):
-                    jm, _rm = h3_rm_to_jms.convert(w[key], markers=w.get('markers'))
+                    jm, _rm = h3_rm_to_jms.convert(w[key], markers=w.get('markers'),
+                                             frame=w.get('world_frame') if key == 'world' else None)
                     for _ts, vs in glow_pieces(jm, spec.get('islands_of', name), spec):
                         U = np.array([(x.tex_u % 1.0, x.tex_v % 1.0) for x in vs])
                         (u0, v0), (u1, v1) = U.min(0), U.max(0)
@@ -589,7 +590,8 @@ def shaders(w, glow):
 
 def models(w):
     for key, sub, fname in (('world', '', w['world_name']), ('fp', B + 'fp', 'fp')):
-        jm, _rm = h3_rm_to_jms.convert(w[key], markers=w.get('markers'))
+        jm, _rm = h3_rm_to_jms.convert(w[key], markers=w.get('markers'),
+                                             frame=w.get('world_frame') if key == 'world' else None)
         drop_materials(jm, w.get('drop_materials', ()))
         # a marker at the centre of each piece of a material (`material_markers` {prefix:
         # material}; the Beam Rifle's gems, for a lens-flare test): `<prefix> <n>`, on the
@@ -660,7 +662,7 @@ def extra_models(w):
     # named by its shaders, `markers` as the world model's (h3_rm_to_jms.convert)
     for name, X in w.get('extra_models', {}).items():
         if X['from'].endswith('.render_model'):
-            jm, _rm = h3_rm_to_jms.convert(X['from'], markers=X.get('markers'))
+            jm, _rm = h3_rm_to_jms.convert(X['from'], markers=X.get('markers'), frame=X.get('frame'))
             drop_materials(jm, X.get('drop_materials', ()))
         else:
             jm = h3_rm_to_jms.convert_particle_model(X['from'], X['material'])

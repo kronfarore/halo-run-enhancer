@@ -365,15 +365,36 @@ def set_fields(root, fields):
             setattr(node, last, v)
 
 
+def scaled_particle_system(src, k, out_dir, write):
+    """An own copy of a particle system x k: each particle type's radius and each state's
+    sprite scale (the Brute Shot's smaller explosion, test 1). Returns its path."""
+    from reclaimer.hek.defs.pctl import pctl_def
+    t = pctl_def.build(filepath=path(src, '.particle_system'))
+    for pt in t.data.tagdata.particle_types.STEPTREE:
+        pt.radius *= k
+        for st in pt.particle_states.STEPTREE:
+            st.scale[0], st.scale[1] = st.scale[0] * k, st.scale[1] * k
+    own = out_dir + src.rsplit(os.sep, 1)[-1]
+    save(t, path(own, '.particle_system'), write)
+    return own
+
+
 def own_explosion(pd, X, write):
     """An EXPLOSIVE projectile's own detonation (the Brute Shot, 2026-10-09: Halo 3's damage
     is the grenade's DETONATION damage, no impact damage): own copies of the template's
     detonation effect and of its damage part, the part repointed. The damage: `lower`,
     `upper` (two bounds), `radius` (inner, outer wu), `mods` {Halo 1 material: x} and
     `fields` (dotted, 4b); the effect: `swaps` {sound: own sound}, `drop_parts` (tag paths
-    removed: the rocket's frag-grenade sound when the port brings its own)."""
+    removed: the rocket's frag-grenade sound when the port brings its own).
+    `part`: the effect's damage part to repoint when the effect is not the damage's own
+    (the Brute Shot, test 1: the FRAG GRENADE's effect around the rocket's damage table) --
+    matched by path AND class (the frag effect names a light of the same path).
+    `scale`: a smaller (or larger) explosion -- every particle of the effect (radius,
+    distribution radius) and an own copy of each particle-system part (each type's radius,
+    each state's scale) under `out_dir`, x scale."""
     from reclaimer.hek.defs.effe import effe_def
     (e_src, e_own), (j_src, j_own) = X['effect'], X['damage']
+    part_src = X.get('part', j_src)
     jt = jpt__def.build(filepath=path(j_src, '.damage_effect'))
     jd = jt.data.tagdata
     dm = jd.damage
@@ -395,15 +416,24 @@ def own_explosion(pd, X, write):
             if prts[i].type.filepath in X.get('drop_parts', ()):
                 prts.pop(i)
         for part in prts:
-            if part.type.filepath.lower() == j_src.lower():
+            if (part.type.filepath.lower() == part_src.lower()
+                    and part.type.tag_class.enum_name == 'damage_effect'):
                 part.type.filepath = j_own
                 n += 1
             new = X.get('swaps', {}).get(part.type.filepath)
             if new:
                 found.add(part.type.filepath)
                 part.type.filepath = new
+            if X.get('scale') and part.type.tag_class.enum_name == 'particle_system':
+                part.type.filepath = scaled_particle_system(part.type.filepath, X['scale'],
+                                                            X['out_dir'], write)
+        if X.get('scale'):
+            for q in ev.particles.STEPTREE:
+                q.radius[0], q.radius[1] = q.radius[0] * X['scale'], q.radius[1] * X['scale']
+                dr = q.distribution_radius
+                dr[0], dr[1] = dr[0] * X['scale'], dr[1] * X['scale']
     if n != 1:
-        raise SystemExit('%s: %d parts name %s' % (e_src, n, j_src))
+        raise SystemExit('%s: %d parts name %s' % (e_src, n, part_src))
     if len(found) != len(X.get('swaps', {})):
         raise SystemExit('%s: %d of %d sound parts found' % (e_src, len(found), len(X['swaps'])))
     save(et, path(e_own, '.effect'), write)
@@ -525,8 +555,13 @@ def own_beam(a, b, write):
         from reclaimer.hek.defs.cont import cont_def
         C = b['contrail']
         ct = cont_def.build(filepath=path(C['from'], '.contrail'))
+        if 'velocity' in C:
+            # the points' birth speed along the marker (the Brute Shot, test 1: the rocket's
+            # 0..5 wu/s shot the trail off the grenade's arc -- 0 = it traces the path)
+            pc = ct.data.tagdata.point_creation
+            pc.velocity[0], pc.velocity[1] = C['velocity']
         for ps in ct.data.tagdata.point_states.STEPTREE:
-            for bound in (ps.color_lower_bound, ps.color_upper_bound):
+            for bound in ((ps.color_lower_bound, ps.color_upper_bound) if 'rgb' in C else ()):
                 bound.r, bound.g, bound.b = C['rgb']
             if 'width' in C:
                 ps.width *= C['width']
@@ -540,6 +575,37 @@ def own_beam(a, b, write):
                 n += 1
         if n != 1:
             raise SystemExit('%s: %d attachments name %s' % (p_own, n, C['from']))
+    if 'glow' in b:
+        # a GLOWING projectile (the Brute Shot, test 1: 'the grenade is hard to see'; Halo 3
+        # attaches a lens flare + light volume at fx_glow): own copies of a light and its
+        # lens flare (the fuel rod's exhaust: radius 0 = the flare only), recoloured `rgb`,
+        # the flare `flare_radius` wu, attached at `marker`
+        from reclaimer.hek.defs.ligh import ligh_def
+        from reclaimer.hek.defs.lens import lens_def
+        G = b['glow']
+        lt = ligh_def.build(filepath=path(G['light'][0], '.light'))
+        ft = lens_def.build(filepath=path(lt.data.tagdata.lens_flare.filepath, '.lens_flare'))
+        for r in ft.data.tagdata.reflections.STEPTREE:
+            r.tint_color.a, r.tint_color.r, r.tint_color.g, r.tint_color.b = (1.0,) + tuple(G['rgb'])
+            if 'flare_radius' in G:
+                r.radius[0] = r.radius[1] = G['flare_radius']
+                r.radius_scaled_by.set_to('none')
+        save(ft, path(G['flare'], '.lens_flare'), write)
+        ld = lt.data.tagdata
+        for bound in (ld.color.color_lower_bound, ld.color.color_upper_bound):
+            bound.a, bound.r, bound.g, bound.b = (1.0,) + tuple(G['rgb'])
+        ld.lens_flare.filepath = G['flare']
+        save(lt, path(G['light'][1], '.light'), write)
+        att = pt.data.tagdata.obje_attrs.attachments.STEPTREE
+        if not any(x.type.filepath == G['light'][1] for x in att):
+            att.append(copy.deepcopy(att[0]))
+            x = att[len(att) - 1]
+            x.type.tag_class.set_to('light')
+            x.type.filepath = G['light'][1]
+            x.marker = G['marker']
+            x.primary_scale.set_to('none')
+            x.secondary_scale.set_to('none')
+            x.change_color.set_to('none')
     if 'material_responses_from' in b:   # the impact effects per material (the Carbine: plasma)
         src = proj_def.build(filepath=path(b['material_responses_from'], '.projectile')).data.tagdata
         mr = pd.material_responses.STEPTREE
