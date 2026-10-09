@@ -344,6 +344,10 @@ SETS = {
     # 40..75, 0.5 -> 1.5, 1.25 s, 4 (12 / 24), 3.0 s, 14 -> 5, 1.0, -, 4/25 6/25, 55; frag
     # 80..120, 1.5 -> 2.5 (arming 1.5, 0.5 s after the first bounce)
     'brute_shot': {'port': 'Brute Shot', 'weapons': [
+        # the BUILT port (step 5b): its tags (+ --balanced rows); semi-auto (latch), the
+        # tapping cap = the tag's 3.33/s (default) / 1.33/s (balanced)
+        ('Brute Shot (port)', W + r'brute shot\brute shot', 'shot'),
+        ('Brute Shot melee (port)', W + r'brute shot\brute shot', 'melee'),
         ('BS = H3 own (RL mat)', W + r'rocket launcher\rocket launcher', 'shot',
          {'dmg': 73.0, 'radius': (0.3, 1.1), 'rate': 1 / 0.3, 'mag': 6, 'reload': 95 / 30.0,
           'speed': 16.0, 'range': 20.0, 'aim': (4.0, 15.0, 6.0, 20.0)}),
