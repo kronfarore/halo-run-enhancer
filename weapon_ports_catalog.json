@@ -2171,7 +2171,8 @@
    "fp_animations": "weapons\\mauler\\fp\\fp",
    "requires": [
     "proj weapons\\mauler\\pellet"
-   ]
+   ],
+   "hands": "one"
   }
  ],
  "Halo 3": [
