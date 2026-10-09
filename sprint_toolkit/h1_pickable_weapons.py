@@ -912,6 +912,14 @@ def edit_weapon(key, write):
             for i in range(len(prts) - 1, -1, -1):
                 if prts[i].type.filepath in fl.get('drop_parts', ()):
                     prts.pop(i)
+        # `drop_event_parts` {event index: [tag paths]}: a part removed from ONE event (the
+        # Brute Shot on the shotgun's flash: events 0 / 1 are its first- / third-person
+        # particle sets, each with the fire sound -- one sound kept)
+        for ei, paths in fl.get('drop_event_parts', {}).items():
+            prts = et.data.tagdata.events.STEPTREE[ei].parts.STEPTREE
+            for i in range(len(prts) - 1, -1, -1):
+                if prts[i].type.filepath in paths:
+                    prts.pop(i)
         # a sound may sit in SEVERAL events (the shotgun's `shotgun firing` plays its fire
         # sound twice, two identical events at 0 s -- the Mauler keeps that layering): every
         # swap must be found at least once

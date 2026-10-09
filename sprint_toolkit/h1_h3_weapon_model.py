@@ -157,6 +157,78 @@ def glow_pieces(jm, material, C):
     return [(ts, [jm.verts[v] for t in ts for v in (t.v0, t.v1, t.v2)]) for ts in isl.values()]
 
 
+def fold_cards(jm, pieces, F, si):
+    """A lit RING WALL folded onto the ring's two open faces (the Brute Shot, test 2: Halo
+    3's drum chevrons sit on the INNER wall of a ring, facing its axis -- from the side
+    Halo 1 shows only the far half; Halo 3's bloom spreads them all round). Every lit
+    triangle whose normal is square to `axis` (|n.a| < 0.35) is a wall triangle: a circle
+    is fitted to them (centre in the plane square to the axis); each vertex at radius r
+    and axial height h becomes r + (h - h_min) / (h_max - h_min) * `band` (negative: inward,
+    into the ring's opening) on the plane
+    h_max + `gap` (facing +axis) and again on h_min - `gap` (facing -axis): the strip's
+    UVs (the chevrons) laid flat as an annulus. The rest (side spots) stay ordinary
+    cards. Returns (the pieces left, triangles added)."""
+    import copy as _copy
+    from reclaimer.model.jms.file import JmsTriangle
+    a = np.array(F['axis'], float)
+    a /= np.linalg.norm(a)
+    e1 = np.cross(a, [1.0, 0.0, 0.0] if abs(a[0]) < 0.9 else [0.0, 0.0, 1.0])
+    e1 /= np.linalg.norm(e1)
+    e2 = np.cross(a, e1)
+
+    def pos(x):
+        return np.array([x.pos_x, x.pos_y, x.pos_z])
+
+    wall, rest = [], []
+    for ts, vs in pieces:
+        keep = []
+        for t in ts:
+            p0, p1, p2 = (pos(jm.verts[i]) for i in (t.v0, t.v1, t.v2))
+            n = np.cross(p1 - p0, p2 - p0)
+            n = n / (np.linalg.norm(n) or 1.0)
+            (wall if abs(n.dot(a)) < 0.35 else keep).append(t)
+        if keep:
+            rest.append((keep, vs))
+    if not wall:
+        return pieces, 0
+    V = np.array([pos(jm.verts[i]) for t in wall for i in (t.v0, t.v1, t.v2)])
+    X, Y = V.dot(e1), V.dot(e2)
+    A = np.c_[2 * X, 2 * Y, np.ones(len(X))]
+    cx, cy, k = np.linalg.lstsq(A, X * X + Y * Y, rcond=None)[0]
+    H = V.dot(a)
+    h0, h1 = H.min(), H.max()
+    centre = cx * e1 + cy * e2
+    n_new = 0
+    for side, plane in ((1.0, h1 + F.get('gap', 0.05)), (-1.0, h0 - F.get('gap', 0.05))):
+        for t in wall:
+            idx = []
+            for i in (t.v0, t.v1, t.v2):
+                x = _copy.copy(jm.verts[i])
+                q = pos(x)
+                h = q.dot(a)
+                rv = (q - h * a) - centre
+                r = np.linalg.norm(rv)
+                r2 = r + (h - h0) / ((h1 - h0) or 1.0) * F.get('band', 1.0)
+                q2 = centre + rv / (r or 1.0) * r2 + plane * a
+                x.pos_x, x.pos_y, x.pos_z = (float(c) for c in q2)
+                x.norm_i, x.norm_j, x.norm_k = (float(c) for c in side * a)
+                jm.verts.append(x)
+                idx.append(len(jm.verts) - 1)
+            p0, p1, p2 = (pos(jm.verts[i]) for i in idx)
+            # the winding of the source triangle against its vertex normals = the
+            # convention; the folded copy faces side * axis the same way
+            s0, s1, s2 = (pos(jm.verts[i]) for i in (t.v0, t.v1, t.v2))
+            vn = np.array([jm.verts[t.v0].norm_i, jm.verts[t.v0].norm_j, jm.verts[t.v0].norm_k])
+            conv = np.sign(np.cross(s1 - s0, s2 - s0).dot(vn)) or 1.0
+            if np.sign(np.cross(p1 - p0, p2 - p0).dot(side * a)) != conv:
+                idx[1], idx[2] = idx[2], idx[1]
+            jm.tris.append(JmsTriangle(t.region, si, *idx))
+            n_new += 1
+    print('   folded ring: %d wall triangle(s), radius %.2f, axial %.2f..%.2f -> 2 faces'
+          % (len(wall), float(np.sqrt(k + cx * cx + cy * cy)), h0, h1))
+    return rest, n_new
+
+
 def glow_spots(jm, S):
     """[(centre, normal, tangent)] JMS cm -- one SPOT per cluster of lit texels (the Spike
     Rifle, test 4: Halo 3's side lights are a few texels each -- correct in Halo 1, but too
@@ -624,6 +696,8 @@ def models(w):
             jm.materials.append(JmsMaterial(C['shader']))
             si = len(jm.materials) - 1
             n_new = 0
+            if C.get('fold'):
+                pieces, n_new = fold_cards(jm, pieces, C['fold'], si)
             for ts, vs in pieces:
                 P = np.array([(x.pos_x, x.pos_y, x.pos_z) for x in vs]).mean(0)
                 Nm = np.array([(x.norm_i, x.norm_j, x.norm_k) for x in vs]).mean(0)
