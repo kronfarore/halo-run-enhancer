@@ -85,9 +85,46 @@ def layout(n):
     return best
 
 
-def render(n):
-    """n is the MAGAZINE, and the sheet holds as many ticks as it takes to show it."""
+def h3_tick(sheet, seq):
+    """A HALO 3 round icon as the tick (the Mauler, test 1 2026-10-08: 'the original pips'):
+    the first icon of a chud ballistic-meter sprite (alpha = the shape; Halo 3 draws one icon
+    a round in a row), plus Halo 3's own pitch between icons, in px of that sprite."""
+    import h3_hud_art
+    art, _reg = h3_hud_art.sprite(sheet, seq)
+    a = np.array(art.split()[3])
+    on = a.max(axis=0) > 8
+    starts = [x for x in range(len(on)) if on[x] and (x == 0 or not on[x - 1])]
+    ends = [x + 1 for x in range(len(on)) if on[x] and (x == len(on) - 1 or not on[x + 1])]
+    rows = np.where(a[:, starts[0]:ends[0]].max(axis=1) > 8)[0]
+    tick = a[rows[0]:rows[-1] + 1, starts[0]:ends[0]]
+    pitch = (starts[1] - starts[0]) if len(starts) > 1 else tick.shape[1] * 1.5
+    return tick, float(pitch)
+
+
+def render(n, art=None):
+    """n is the MAGAZINE, and the sheet holds as many ticks as it takes to show it.
+    `art` (optional): {'h3': (sheet, sequence)} -- Halo 3's round icon as the tick, in ONE
+    row at Halo 3's own spacing, no slant, at most its native size (h3_tick)."""
     rounds_per, n_ticks, _s, _mult = plan(n)
+    if art:
+        tick, pitch = h3_tick(*art['h3'])
+        th, tw = tick.shape
+        s = min(1.0, BOX_W / (n_ticks * pitch), BOX_H / float(th))
+        t = np.array(Image.fromarray(tick).resize((max(1, round(tw * s)), max(1, round(th * s))),
+                                                  Image.LANCZOS))
+        static_a = np.zeros((H, W), np.uint8)
+        meter_l = np.zeros((H, W), np.uint8)
+        meter_a = np.zeros((H, W), np.uint8)
+        h_, w_ = t.shape
+        y = int(5 + (BOX_H - h_) / 2.0)
+        for k in range(1, n_ticks + 1):
+            x = int(5 + (k - 1) * pitch * s + 0.5)
+            sl = (slice(y, y + h_), slice(x, x + w_))
+            meter_a[sl] = np.maximum(meter_a[sl], t)
+            meter_l[sl] = np.where(t > 0, threshold(k, n), meter_l[sl])
+            ys, xs = slice(y - 4, y - 4 + h_), slice(x - 4, x - 4 + w_)
+            static_a[ys, xs] = np.maximum(static_a[ys, xs], t)
+        return static_a, meter_l, meter_a, (1, n_ticks, s, n_ticks, rounds_per)
     tick = ar_tick()
     rows, per, s = layout(n_ticks)
     th, tw = tick.shape
@@ -147,13 +184,14 @@ def write_tag(src_name, out_rel, frames, sprite):
     return t.filepath
 
 
-def main(*sizes_then_base):
-    """ammo_meter.py <N> [<N2> ...] <out tag base> -- sequence k is drawn for size k."""
+def main(*sizes_then_base, art=None):
+    """ammo_meter.py <N> [<N2> ...] <out tag base> -- sequence k is drawn for size k.
+    `art`: see render (a Halo 3 round icon instead of the AR's tick)."""
     sizes = [int(x) for x in sizes_then_base[:-1]]
     out_base = sizes_then_base[-1]
     statics, meters = [], []
     for n in sizes:
-        static_a, meter_l, meter_a, info = render(n)
+        static_a, meter_l, meter_a, info = render(n, art)
         statics.append((n, static_a, static_a))
         meters.append((n, meter_l, meter_a))
         prev = Image.new('RGB', (W, H * 2 + 8), (40, 60, 90))

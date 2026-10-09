@@ -175,6 +175,11 @@ def glow_spots(jm, S):
             N = -N
         if S.get('skip_normal') and np.dot(N, S['skip_normal']) >= 0.7:
             continue
+        # several directions, with their own cut (the Mauler: both barrel ENDS face exactly +x
+        # / -x, dot 1.0, and hold lit texels Halo 3 does not show as lights; its drum windows
+        # face back and forward too but tilted, dot 0.84..0.99 -> `skip_dot` 0.995)
+        if any(np.dot(N, sn) >= S.get('skip_dot', 0.7) for sn in S.get('skip_normals', ())):
+            continue
         uv = np.array([(v.tex_u, 1.0 - v.tex_v) for v in vs])
         off = np.floor(uv.min(0))
         q = (uv - off) * (W, H)

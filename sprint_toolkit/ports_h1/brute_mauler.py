@@ -13,6 +13,11 @@ SG = 'weapons\\shotgun\\'
 # = RGB 191 / 60 / 30, an orange-red; intensity a curve 8 -> 4). The shiny shader names the
 # illum map with no colour of its own (intensity 1)
 ORANGE = (191 / 255.0, 60 / 255.0, 30 / 255.0)
+# TEST 1: Halo 3's 191/60/30 at intensity 8 clips toward white (the drum windows read white-hot
+# with orange rims): the base self-illum in that saturated colour, the glow cards in a brighter
+# orange than the raw one
+HOT = (1.0, 0.78, 0.55)
+ORANGE_GLOW = (1.0, 0.45, 0.18)
 ILLUM = H3 + r'\bitmaps\excavator_illum.bitmap'
 BASE = H3 + r'\bitmaps\excavator.bitmap'
 
@@ -84,7 +89,25 @@ PORT.update({
                     'excavator_dull': (BASE, None),
                     'excavator_metal': (BASE, ILLUM),
                     'excavator_shiny': (BASE, ILLUM)},
-        'glow': {'excavator': ORANGE, 'excavator_metal': ORANGE, 'excavator_shiny': ORANGE},
+        # TEST 1 (user, screenshots H3 vs H1): 'glow needs work' -- Halo 3's drum windows read
+        # WHITE-HOT with orange edges (191/60/30 x intensity 8, + bloom), ours a dim orange.
+        # fp_material_view --illum --texels: the lit texels are the drum's round windows
+        # (excavator_metal, ~100 texels each) and a few body spots (excavator). Halo 1 shows
+        # colour x mask, no bloom -> the base colour itself saturated (HOT), lit texels grown
+        # 1 px, and a radial additive glow card per lit window (the Spike Rifle's spot recipe)
+        # with a white core fading to ORANGE: the bloom
+        'illum_dilate': 1,
+        'glow': {'excavator': HOT, 'excavator_metal': HOT, 'excavator_shiny': HOT},
+        'glow_shaders': {'mauler_spot': {'rgb': ORANGE_GLOW, 'additive': True, 'radial': True,
+                                         'falloff': 1.6, 'gain': 1.0, 'hot': True}},
+        'glow_spots': [{'material': 'excavator_metal', 'illum': ILLUM, 'shader': 'mauler_spot',
+                        'size': 1.0, 'lift': 0.05, 'merge': 1.0, 'threshold': 64,
+                        # render check: two spots sat on the barrel ENDS (faces exactly along
+                        # the gun, dot 1.0) -- Halo 3 shows no light there; the drum windows
+                        # face back / forward TILTED (dot 0.84..0.99) and stay
+                        'skip_normals': ((1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)), 'skip_dot': 0.995},
+                       {'material': 'excavator', 'illum': ILLUM, 'shader': 'mauler_spot',
+                        'size': 0.6, 'lift': 0.05, 'merge': 1.0, 'threshold': 64}],
         'template': SG + r'shaders\shotgun gun',
     },
 
@@ -99,7 +122,8 @@ PORT.update({
         'h1_model': r'weapons\mauler\fp\fp',
         'align': 'same_space',
         # the SMG's placement (user's pick, A1), tuned in test 1
-        'view_offset': (-0.0225, 0.0, -0.0225),
+        # test 1 (user): 'lower the FP position by 2 units' (1 unit = 0.01 wu)
+        'view_offset': (-0.0225, 0.0, -0.0225 - 0.02),
         # --list (2026-10-08): single-wield idle var1-3 (99/124/74), posing var1 124, fire_1
         # var1-3 19, melee_strike_1 29 (primary_keyframe 5), reload_empty / full 55 (no
         # variants; primary_keyframe 40), throw_grenade 41 -- the frame counts match the
@@ -238,7 +262,11 @@ PORT.update({
         'hud': {'donor': SG + 'shotgun', 'out': ML + 'mauler',
                 'reticle': ('hud_reticles', 12, 'mauler'),
                 'reticle_thicken': 1,
-                'ammo_meter': {'sizes': (5, 10), 'base': ML + 'bitmaps\\mauler_ammo'},
+                # TEST 1 (user): 'the ammo meter needs to be replaced by the original pips' --
+                # Halo 3's own round icon (chud excavator: ballistic_meters #13, five pips)
+                # one a round in a row, at Halo 3's spacing (ammo_meter `art`)
+                'ammo_meter': {'sizes': (5, 10), 'base': ML + 'bitmaps\\mauler_ammo',
+                               'art': {'h3': ('ballistic_meters', 13)}},
                 'flash_base': 12},
         'palette_levels': ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40'],
     },

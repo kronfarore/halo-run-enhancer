@@ -181,7 +181,7 @@ def make_hud(w, key, write):
         fc = d.flash_cutoffs                  # low-ammo flash: the donor's (AR: 10 of 60)
         fc.loaded_ammo_cutoff = round(fc.loaded_ammo_cutoff * sizes[0] / float(h.get('flash_base', 60)))
         if write:
-            ammo_meter.main(*([str(n) for n in sizes] + [base]))
+            ammo_meter.main(*([str(n) for n in sizes] + [base]), art=h['ammo_meter'].get('art'))
     if 'reticle' in h:                   # a Halo 3 reticle, into Halo 1's sheet
         import h1_add_reticle
         seq = (h1_add_reticle.add(*h['reticle'], index=RESERVED.get(key, {}).get('reticle'),
