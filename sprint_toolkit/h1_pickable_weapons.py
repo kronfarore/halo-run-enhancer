@@ -550,6 +550,20 @@ def own_beam(a, b, write):
         x.type.tag_class.set_to(spec['class'])
         x.type.filepath = spec['type']
         x.marker = spec.get('marker', x.marker)
+        if 'copy' in spec:
+            # an OWN copy of the attached effect, its particles `scale`d (radius) and
+            # `count` x (the Brute Shot's trail, test 4: 'too fast to follow' -- bigger,
+            # denser puffs read as a line)
+            from reclaimer.hek.defs.effe import effe_def
+            K = spec['copy']
+            et = effe_def.build(filepath=path(spec['type'], '.effect'))
+            for ev in et.data.tagdata.events.STEPTREE:
+                for q in ev.particles.STEPTREE:
+                    q.radius[0], q.radius[1] = q.radius[0] * K.get('scale', 1.0), q.radius[1] * K.get('scale', 1.0)
+                    q.created_count[0] = int(round(q.created_count[0] * K.get('count', 1.0)))
+                    q.created_count[1] = int(round(q.created_count[1] * K.get('count', 1.0)))
+            save(et, path(K['out'], '.effect'), write)
+            x.type.filepath = K['out']
     if 'hum' in b:                       # an own looping sound in flight (the Brute Shot)
         add_hum(pt.data.tagdata, b['hum'], write)
     if 'attachments_from' in b:          # e.g. a TRACER contrail (the BR takes the AR bullet's)

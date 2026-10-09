@@ -225,16 +225,27 @@ def fold_cards(jm, pieces, F, si):
     h0, h1 = H.min(), H.max()
     centre = cx * e1 + cy * e2
     n_new = 0
+    # the band coordinate = the vertex's place across ITS OWN triangle's wall, by UV v (the
+    # Brute Shot, test 4: the wall is +-0.74 tall on one half of the ring, +-0.42 on the other,
+    # and Halo 3's UVs follow it -- the short half samples only the middle rows of the
+    # chevron strip, so a global height range squashed and cut it). That fraction sets the
+    # radius in the band AND the v across the FULL strip: every chevron whole, one width
+    VG = [jm.verts[i].tex_v for t in wall for i in (t.v0, t.v1, t.v2)]
+    vg0, vg1 = min(VG), max(VG)
     for side, plane in ((1.0, h1 + F.get('gap', 0.05)), (-1.0, h0 - F.get('gap', 0.05))):
         for t in wall:
             idx = []
+            tv = [jm.verts[i].tex_v for i in (t.v0, t.v1, t.v2)]
+            tv0, tv1 = min(tv), max(tv)
             for i in (t.v0, t.v1, t.v2):
                 x = _copy.copy(jm.verts[i])
                 q = pos(x)
                 h = q.dot(a)
                 rv = (q - h * a) - centre
                 r = np.linalg.norm(rv)
-                r2 = r + (h - h0) / ((h1 - h0) or 1.0) * F.get('band', 1.0)
+                frac = (x.tex_v - tv0) / ((tv1 - tv0) or 1.0)
+                x.tex_v = vg0 + frac * (vg1 - vg0)
+                r2 = r + frac * F.get('band', 1.0)
                 q2 = centre + rv / (r or 1.0) * r2 + plane * a
                 x.pos_x, x.pos_y, x.pos_z = (float(c) for c in q2)
                 x.norm_i, x.norm_j, x.norm_k = (float(c) for c in side * a)
@@ -468,14 +479,14 @@ def bitmaps(w):
                     g = Image.fromarray(np.array(img)[..., :3].max(axis=2).astype(np.uint8))
                     if spec.get('dilate'):
                         g = g.filter(ImageFilter.MaxFilter(2 * spec['dilate'] + 1))
-                    v = np.array(g.resize((256, 256), Image.LANCZOS)).astype(np.float64) / 255.0
+                    v = np.array(g.resize((spec.get("size", 256),) * 2, Image.LANCZOS)).astype(np.float64) / 255.0
                 else:
-                    v = np.array(img.resize((256, 256), Image.LANCZOS))[..., 3].astype(np.float64) / 255.0
+                    v = np.array(img.resize((spec.get("size", 256),) * 2, Image.LANCZOS))[..., 3].astype(np.float64) / 255.0
                 v = np.clip(v * spec.get('gain', 1.0), 0.0, 1.0)
                 lo = np.clip(v * 2.0, 0.0, 1.0)[..., None] * np.array(rgb)[None, None, :]
                 hot = np.clip(v * 2.0 - 1.0, 0.0, 1.0)[..., None]
                 c = lo * (1 - hot) + hot
-                col = np.zeros((256, 256, 4), np.uint8)
+                col = np.zeros(v.shape + (4,), np.uint8)
                 col[..., :3] = np.round(c * 255)
                 col[..., 3] = 255
             elif spec.get('radial'):

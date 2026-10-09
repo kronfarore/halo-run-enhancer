@@ -137,7 +137,15 @@ PORT.update({
         # kept; white
         # because x1.6 gain + 2 px pushed the mask into the hot range -> x1.0, 1 px
         'glow_shaders': {'bs_ring': {'rgb': RING_BLUE, 'additive': True, 'mask': ILLUM,
-                                     'mask_channel': 'rgb', 'dilate': 1, 'gain': 1.0}},
+                                     'mask_channel': 'rgb', 'dilate': 1, 'gain': 1.0,
+                                     # test 4: Halo 3's own 512 (the builder's 256 default
+                                     # halves 4-px chevrons)
+                                     'size': 512}},
+        # TEST 4 (user): 'perfect on one half, scrambled on the other'. The wall is +-0.74
+        # tall on one half of the ring, +-0.42 on the other, and Halo 3's UVs follow it (the
+        # short half samples only the middle rows of the strip); the fold now maps each
+        # vertex by its place across its OWN triangle's wall into the full strip (fold_cards)
+        # -- a textured render shows whole, even chevrons all round
         'glow_cards': {'brute_shot': {'shader': 'bs_ring', 'lit': ILLUM, 'scale': 1.0,
                                       'lift': 0.02,
                                       'fold': {'axis': (0.0, 1.0, 0.0), 'band': -1.2,
@@ -303,8 +311,12 @@ PORT.update({
                    # construction) in the rocket's exhaust-effect slot, at the grenade's
                    # `smoke` marker (Halo 3's fx_contrail); the contrail dropped
                    'keep_attachments': (0,),
+                   # TEST 4 (user): 'flies too fast to follow its trail' -- an own copy,
+                   # puffs x1.6 radius, x2 count: a denser line
                    'set_attachments': {0: {'class': 'effect', 'type': r'weapons\frag grenade\effects\smoke',
-                                           'marker': 'smoke'}},
+                                           'marker': 'smoke',
+                                           'copy': {'out': BS + 'effects\\grenade smoke',
+                                                    'scale': 1.6, 'count': 2.0}}},
                    'hum': {'like': 'sound\\sfx\\weapons\\rocket launcher\\rl_projectile',
                            'loop': SND + 'bs_projectile', 'tag': SND + 'bs_projectile',
                            'marker': ''},
