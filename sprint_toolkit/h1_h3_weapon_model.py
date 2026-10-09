@@ -239,6 +239,10 @@ def add_spot_cards(jm, S):
             if np.linalg.norm(T2) < 1e-6:
                 T2 = np.cross(F, (0.0, 1.0, 0.0))
             planes.append((F, T2 / np.linalg.norm(T2)))
+            if S.get('only_face'):
+                # the face card ALONE (the Mauler, test 3: the lit face already carries its
+                # shaped glow card; only the edge-on view from the FP camera needs a card)
+                planes = planes[1:]
         for Nn, Tt in planes:
             B2 = np.cross(Nn, Tt)
             idx = []

@@ -108,13 +108,27 @@ PORT.update({
         # there -- the render check of test 2); the drum windows face back / forward TILTED
         # (dot 0.84..0.99) and stay
         'glow_shaders': {'mauler_window': {'rgb': ORANGE_GLOW, 'additive': True, 'mask': ILLUM,
-                                           'mask_channel': 'rgb', 'dilate': 1, 'gain': 1.0}},
+                                           'mask_channel': 'rgb', 'dilate': 1, 'gain': 1.0},
+                         # the rear lights' camera-facing card (test 3, below)
+                         'mauler_spot': {'rgb': ORANGE_GLOW, 'additive': True, 'radial': True,
+                                         'falloff': 1.6, 'gain': 1.0, 'hot': True}},
         'glow_cards': {'excavator_metal': {'shader': 'mauler_window', 'lit': ILLUM,
                                            'scale': 1.0, 'lift': 0.02,
                                            'skip_normals': ((1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)),
                                            'skip_dot': 0.995},
                        'body': {'of': 'excavator', 'shader': 'mauler_window', 'lit': ILLUM,
                                 'scale': 1.0, 'lift': 0.02}},
+        # TEST 3 (user, ground + FP screenshots): 'the ground model has a lit shape that should
+        # be visible in the FP view' -- the two lights at the REAR TOP of the body (FP -2.5,
+        # +-1, 6.4; world -3.5, +-1, 4.5) sit on faces pointing straight sideways (+-y): edge-on
+        # to the FP camera behind the gun. The Spike Rifle's side-light recipe (test 4/6,
+        # approved there): a small radial card per light FACING BACK (-x) at the camera, only
+        # that card (the side keeps its shaped one). skip_dot 0.8 leaves out every face along
+        # the gun (the drum windows 0.84..0.99, the barrel ends 1.0): only the +-y lights
+        'glow_spots': [{'material': 'excavator_metal', 'illum': ILLUM, 'shader': 'mauler_spot',
+                        'size': 0.5, 'lift': 0.1, 'merge': 1.0, 'threshold': 64,
+                        'skip_normals': ((1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)), 'skip_dot': 0.8,
+                        'face': (-1.0, 0.0, 0.0), 'only_face': True}],
         'template': SG + r'shaders\shotgun gun',
     },
 
