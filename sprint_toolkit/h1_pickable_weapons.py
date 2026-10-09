@@ -346,31 +346,93 @@ def own_projectile(a, o, write):
             tr.projectile.projectile.filepath = p_own
 
 
+def set_fields(root, fields):
+    """Fields by dotted path (a number indexes a block's elements); an enum by name, a
+    bounds pair as a tuple."""
+    for dotted, v in fields.items():
+        *head, last = dotted.split('.')
+        node = root
+        for part in head:
+            node = node.STEPTREE[int(part)] if part.isdigit() else getattr(node, part)
+        if not hasattr(node, last):
+            raise SystemExit('no field %s' % dotted)
+        if isinstance(v, str) and hasattr(getattr(node, last), 'set_to'):
+            getattr(node, last).set_to(v)
+        elif isinstance(v, tuple):
+            for i, x in enumerate(v):
+                getattr(node, last)[i] = x
+        else:
+            setattr(node, last, v)
+
+
+def own_explosion(pd, X, write):
+    """An EXPLOSIVE projectile's own detonation (the Brute Shot, 2026-10-09: Halo 3's damage
+    is the grenade's DETONATION damage, no impact damage): own copies of the template's
+    detonation effect and of its damage part, the part repointed. The damage: `lower`,
+    `upper` (two bounds), `radius` (inner, outer wu), `mods` {Halo 1 material: x} and
+    `fields` (dotted, 4b); the effect: `swaps` {sound: own sound}, `drop_parts` (tag paths
+    removed: the rocket's frag-grenade sound when the port brings its own)."""
+    from reclaimer.hek.defs.effe import effe_def
+    (e_src, e_own), (j_src, j_own) = X['effect'], X['damage']
+    jt = jpt__def.build(filepath=path(j_src, '.damage_effect'))
+    jd = jt.data.tagdata
+    dm = jd.damage
+    if 'lower' in X:
+        dm.damage_lower_bound = X['lower']
+    if 'upper' in X:
+        dm.damage_upper_bound[0], dm.damage_upper_bound[1] = X['upper']
+    if 'radius' in X:
+        jd.radius[0], jd.radius[1] = X['radius']
+    for mat, v in X.get('mods', {}).items():
+        setattr(jd.damage_modifiers, mat, v)
+    set_fields(jd, X.get('fields', {}))
+    save(jt, path(j_own, '.damage_effect'), write)
+    et = effe_def.build(filepath=path(e_src, '.effect'))
+    n, found = 0, set()
+    for ev in et.data.tagdata.events.STEPTREE:
+        prts = ev.parts.STEPTREE
+        for i in range(len(prts) - 1, -1, -1):
+            if prts[i].type.filepath in X.get('drop_parts', ()):
+                prts.pop(i)
+        for part in prts:
+            if part.type.filepath.lower() == j_src.lower():
+                part.type.filepath = j_own
+                n += 1
+            new = X.get('swaps', {}).get(part.type.filepath)
+            if new:
+                found.add(part.type.filepath)
+                part.type.filepath = new
+    if n != 1:
+        raise SystemExit('%s: %d parts name %s' % (e_src, n, j_src))
+    if len(found) != len(X.get('swaps', {})):
+        raise SystemExit('%s: %d of %d sound parts found' % (e_src, len(found), len(X['swaps'])))
+    save(et, path(e_own, '.effect'), write)
+    pd.detonation.effect.filepath = e_own
+
+
 def own_beam(a, b, write):
     """The weapon's own projectile (a copy of `projectile[0]`, range set) and its own
     impact damage (a copy of `damage[0]`, damage + instantaneous acceleration set).
     The same for a BULLET (`bullet` key, the SMG): `velocity` sets initial = final speed
-    (Reclaimer: world units per SECOND), and a value left out keeps the template's."""
-    (p_src, p_own), (j_src, j_own) = b['projectile'], b['damage']
-    jt = jpt__def.build(filepath=path(j_src, '.damage_effect'))
-    dm = jt.data.tagdata.damage
-    dm.damage_lower_bound = b['dmg']
-    dm.damage_upper_bound[0] = dm.damage_upper_bound[1] = b['dmg']
-    if 'acceleration' in b:
-        dm.instantaneous_acceleration = b['acceleration']
-    for dotted, v in b.get('fields', {}).items():  # step 4b on the damage effect (the BR)
-        *head, last = dotted.split('.')
-        node = jt.data.tagdata
-        for part in head:
-            node = getattr(node, part)
-        if isinstance(v, str) and hasattr(getattr(node, last), 'set_to'):
-            getattr(node, last).set_to(v)
-        else:
-            setattr(node, last, v)
-    save(jt, path(j_own, '.damage_effect'), write)
+    (Reclaimer: world units per SECOND), and a value left out keeps the template's.
+    `damage` None: no own impact damage (the Brute Shot: its damage is the `explosion`)."""
+    p_src, p_own = b['projectile']
+    if b.get('damage'):
+        j_src, j_own = b['damage']
+        jt = jpt__def.build(filepath=path(j_src, '.damage_effect'))
+        dm = jt.data.tagdata.damage
+        dm.damage_lower_bound = b['dmg']
+        dm.damage_upper_bound[0] = dm.damage_upper_bound[1] = b['dmg']
+        if 'acceleration' in b:
+            dm.instantaneous_acceleration = b['acceleration']
+        set_fields(jt.data.tagdata, b.get('fields', {}))  # step 4b on the damage effect (the BR)
+        save(jt, path(j_own, '.damage_effect'), write)
     pt = proj_def.build(filepath=path(p_src, '.projectile'))
     pd = pt.data.tagdata.proj_attrs
-    pd.physics.impact_damage.filepath = j_own
+    if b.get('damage'):
+        pd.physics.impact_damage.filepath = j_own
+    if 'explosion' in b:
+        own_explosion(pd, b['explosion'], write)
     if 'range' in b:
         pd.detonation.maximum_range = b['range']
     for dotted, v in b.get('proj_fields', {}).items():   # step 4b on the projectile (the Beam Rifle)
@@ -444,6 +506,15 @@ def own_beam(a, b, write):
             x.parallel_refriction = R.get('parallel_friction', x.parallel_refriction)
             x.perpendicular_friction = R.get('perpendicular_friction', x.perpendicular_friction)
             x.angular_noise = math.radians(R.get('noise_deg', 0.0))
+    if 'keep_attachments' in b:
+        # only these of the template projectile's attachments (indices; the Brute Shot keeps
+        # the rocket's smoke contrail, drops its exhaust flame and its loop)
+        att = pt.data.tagdata.obje_attrs.attachments.STEPTREE
+        for i in range(len(att) - 1, -1, -1):
+            if i not in b['keep_attachments']:
+                att.pop(i)
+    if 'hum' in b:                       # an own looping sound in flight (the Brute Shot)
+        add_hum(pt.data.tagdata, b['hum'], write)
     if 'attachments_from' in b:          # e.g. a TRACER contrail (the BR takes the AR bullet's)
         src = proj_def.build(filepath=path(b['attachments_from'], '.projectile')).data.tagdata
         att = pt.data.tagdata.obje_attrs.attachments.STEPTREE

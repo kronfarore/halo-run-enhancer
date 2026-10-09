@@ -2173,6 +2173,167 @@
     "proj weapons\\mauler\\pellet"
    ],
    "hands": "one"
+  },
+  {
+   "weapon": "Brute Shot",
+   "source": "Halo 3",
+   "donor": "Rocket Launcher",
+   "default_on": false,
+   "desc": "Halo 3's Brute Shot: its model, first-person animations, sounds and numbers. A 6-round Brute grenade launcher firing arcing grenades that explode on impact, with a blade for melee.",
+   "balance_desc": "Measured against the Rocket Launcher, which both games have: 91-100 damage per grenade over 1.1 m, one shot every 0.75 s, a 3.4 s reload, faster grenades with a shorter reach, a heavier blade, and Halo 1-style aim assist.",
+   "anims": {
+    "reload": 1.07,
+    "swap": 0.85
+   },
+   "anim_sounds": {
+    "reload": {
+     "mult": 1.07,
+     "from": "sound\\weapons\\brute_shot_port\\bs_reload",
+     "to": "sound\\weapons\\brute_shot_port\\bs_reload_balanced"
+    }
+   },
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\brute shot\\explosion",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 91.25,
+     "card": "Grenade Damage",
+     "original": 73.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\brute shot\\explosion",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 100.4,
+     "card": "Grenade Damage",
+     "original": 73.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\brute shot\\explosion",
+     "field": "Radius",
+     "block": null,
+     "value": 0.167,
+     "card": "Grenade Damage",
+     "original": 0.3
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\brute shot\\brute shot",
+     "field": "Rounds Per Second",
+     "block": "Triggers",
+     "value": 1.3333333333333333,
+     "card": "More Shooting",
+     "original": 3.3333333333333335
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\brute shot\\brute shot",
+     "field": "Rounds Per Second Max",
+     "block": "Triggers",
+     "value": 1.3333333333333333,
+     "card": "More Shooting",
+     "original": 3.3333333333333335
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\brute shot\\grenade",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 0.8,
+     "card": "Projectile",
+     "original": 0.5333333333333333
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\brute shot\\grenade",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 0.14583333333333334,
+     "card": "Projectile",
+     "original": 0.23333333333333334
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\brute shot\\grenade",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 14.6,
+     "card": "Projectile",
+     "original": 20.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\brute shot\\brute shot",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 0.0,
+     "card": "Autoaim",
+     "original": 4.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\brute shot\\brute shot",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 21.0,
+     "card": "Autoaim",
+     "original": 15.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\brute shot\\brute shot",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 7.2,
+     "card": "Magnetism",
+     "original": 6.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\brute shot\\brute shot",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 28.0,
+     "card": "Magnetism",
+     "original": 20.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\brute shot\\melee",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 45.02,
+     "card": "Melee Damage",
+     "original": 65.45
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\brute shot\\melee",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 56.27,
+     "card": "Melee Damage",
+     "original": 81.82
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\brute shot\\melee",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 67.53,
+     "card": "Melee Damage",
+     "original": 98.18
+    }
+   ],
+   "weap": "weapons\\brute shot\\brute shot",
+   "fp_animations": "weapons\\brute shot\\fp\\fp",
+   "requires": [
+    "proj weapons\\brute shot\\grenade"
+   ]
   }
  ],
  "Halo 3": [

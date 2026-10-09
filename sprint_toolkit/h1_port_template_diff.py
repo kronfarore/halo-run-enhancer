@@ -27,9 +27,15 @@ def pairs(p):
     w = p['pickable']
     out = [('weapon', w['weapon'] + '.weapon', w['template'] + '.weapon')]
     for kind, ext in (('projectile', '.projectile'), ('damage', '.damage_effect')):
-        src, own = (w.get('bullet') or {}).get(kind, (None, None))
+        src, own = (w.get('bullet') or {}).get(kind) or (None, None)
         if own:
             out.append(('bullet ' + kind, own + ext, src + ext))
+    # an explosive projectile's own detonation (the Brute Shot): effect + its damage part
+    X = (w.get('bullet') or {}).get('explosion') or {}
+    for kind, ext in (('effect', '.effect'), ('damage', '.damage_effect')):
+        if X.get(kind):
+            src, own = X[kind]
+            out.append(('explosion ' + kind, own + ext, src + ext))
     if w.get('melee'):
         out.append(('melee', w['melee'][1] + '.damage_effect', w['melee'][0] + '.damage_effect'))
     for field, (src, own, _swaps, *opt) in (w.get('sound_effects') or {}).items():

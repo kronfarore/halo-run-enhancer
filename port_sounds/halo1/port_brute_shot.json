@@ -1,0 +1,133 @@
+{
+ "game": "Halo 1",
+ "weapon": "Brute Shot",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\brute_shot_port\\bs_fire",
+   "perms": [
+    "bs_fire_1.wav",
+    "bs_fire_2.wav",
+    "bs_fire_3.wav",
+    "bs_fire_4.wav",
+    "bs_fire_5.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\brute_shot_port\\bs_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\brute_shot_port\\bs_explode",
+   "perms": [
+    "bs_explode_1.wav",
+    "bs_explode_2.wav",
+    "bs_explode_3.wav",
+    "bs_explode_4.wav",
+    "bs_explode_5.wav",
+    "bs_explode_6.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\brute_shot_port\\bs_explode"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\brute_shot_port\\bs_projectile",
+   "perms": [
+    "bs_projectile_1.wav",
+    "bs_projectile_2.wav",
+    "bs_projectile_3.wav",
+    "bs_projectile_4.wav",
+    "bs_projectile_5.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\brute_shot_port\\bs_projectile"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\brute_shot_port\\bs_reload",
+   "perms": [
+    "bs_reload_1.wav",
+    "bs_reload_2.wav",
+    "bs_reload_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\brute_shot_port\\bs_reload"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\brute_shot_port\\bs_reload_balanced",
+   "perms": [
+    "bs_reload_balanced_1.wav",
+    "bs_reload_balanced_2.wav",
+    "bs_reload_balanced_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\brute_shot_port\\bs_reload_balanced"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\brute_shot_port\\bs_ready",
+   "perms": [
+    "bs_ready_1.wav",
+    "bs_ready_2.wav",
+    "bs_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\brute_shot_port\\bs_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\brute_shot_port\\bs_melee",
+   "perms": [
+    "bs_melee_1.wav",
+    "bs_melee_2.wav",
+    "bs_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\brute_shot_port\\bs_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\brute_shot_port\\bs_pose",
+   "perms": [
+    "bs_pose_1.wav",
+    "bs_pose_2.wav",
+    "bs_pose_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\brute_shot_port\\bs_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\brute_shot_port\\bs_drop",
+   "perms": [
+    "bs_drop_1.wav",
+    "bs_drop_2.wav",
+    "bs_drop_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\brute_shot_port\\bs_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\brute_shot_port\\bs_ammo",
+   "perms": [
+    "bs_ammo_1.wav",
+    "bs_ammo_2.wav",
+    "bs_ammo_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\brute_shot_port\\bs_ammo"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\brute_shot_port\\bs_dryfire",
+   "perms": [
+    "bs_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\brute_shot_port\\bs_dryfire"
+   ]
+  }
+ ]
+}

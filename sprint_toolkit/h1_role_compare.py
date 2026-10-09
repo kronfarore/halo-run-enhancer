@@ -331,6 +331,54 @@ SETS = {
         ('Pistol melee', W + r'pistol\pistol', 'melee'),
         ('Spike Rifle (blade peer)', W + r'spiker\spiker', 'melee'),
     ]},
+    # the Brute Shot (wave A7), step 4a. Its damage is the grenade's DETONATION (no impact
+    # damage): H3 shot_grenade_explosion 26..73, radius 0.3 -> 1.1 (core 0.3), 'bullet'
+    # category / explosion_small. The grenade does NOT bounce in Halo 3: impact (detonate) on
+    # every material (attach at chance 0), timer 0, arming 0, and it bursts in the air at its
+    # 20 wu maximum range (airborne_detonation). H3: brute shot 0.3 s, 6 (18 / 18), 95 fr,
+    # 16 -> 7 wu/s, gravity 0.05, aim 4/15 6/20, slice_melee 90; rocket 80..240, 0.9 -> 2,
+    # 0.8 s, 2 (4 / 8), 116 fr, 8 -> 16, 0, 175, 5/25 10/25, smash 80; flak 30..60, 0.5 ->
+    # 1.5, 0.4 s, 5 (20 / 30), 90 fr, 15 -> 6.5, 0.025, 80, 4/25 6/25, smash 80; frag
+    # 60..160, 0.5 -> 1.75 (arming 1.3, 0.5 s after the first bounce). Halo 1: rocket 80..315,
+    # 0.5 -> 2, 2.0 s, 2 (4 / 8), 4.17 s, 12 -> 10, 0, 128, 0/35 12/35, melee 55; fuel rod
+    # 40..75, 0.5 -> 1.5, 1.25 s, 4 (12 / 24), 3.0 s, 14 -> 5, 1.0, -, 4/25 6/25, 55; frag
+    # 80..120, 1.5 -> 2.5 (arming 1.5, 0.5 s after the first bounce)
+    'brute_shot': {'port': 'Brute Shot', 'weapons': [
+        ('BS = H3 own (RL mat)', W + r'rocket launcher\rocket launcher', 'shot',
+         {'dmg': 73.0, 'radius': (0.3, 1.1), 'rate': 1 / 0.3, 'mag': 6, 'reload': 95 / 30.0,
+          'speed': 16.0, 'range': 20.0, 'aim': (4.0, 15.0, 6.0, 20.0)}),
+        ('BS = H3 own (FR mat)', W + r'fuel rod gun\fuel rod', 'shot',
+         {'dmg': 73.0, 'radius': (0.3, 1.1), 'rate': 1 / 0.3, 'mag': 6, 'reload': 95 / 30.0,
+          'speed': 16.0, 'range': 20.0, 'aim': (4.0, 15.0, 6.0, 20.0), 'charge': 0.0}),
+        # 315 x 73/240; 0.5 x 0.3/0.9, 2 x 1.1/2; 2.0 s x 0.3/0.8; 2 x 6/2; 4.17 s x 95/116;
+        # 12 x 16/8; 128 x 20/175; aim 0 x 4/5, 35 x 15/25; 12 x 6/10, 35 x 20/25
+        ('BS = RL ratio', W + r'rocket launcher\rocket launcher', 'shot',
+         {'dmg': 95.8, 'radius': (0.167, 1.1), 'rate': 1 / 0.75, 'mag': 6,
+          'reload': 4.1667 * 95 / 116, 'speed': 24.0, 'range': 14.6,
+          'aim': (0.0, 21.0, 7.2, 28.0)}),
+        # 75 x 73/60; 0.5 x 0.3/0.5, 1.5 x 1.1/1.5; 1.25 s x 0.3/0.4; 4 x 6/5; 3.0 s x 95/90;
+        # 14 x 16/15; aim 4 x 4/4, 25 x 15/25; 6 x 6/6, 25 x 20/25 (= Halo 3's own)
+        ('BS = Fuel Rod ratio', W + r'fuel rod gun\fuel rod', 'shot',
+         {'dmg': 91.25, 'radius': (0.3, 1.1), 'rate': 1 / 0.9375, 'mag': 5,
+          'reload': 3.0 * 95 / 90, 'speed': 14.9, 'aim': (4.0, 15.0, 6.0, 20.0),
+          'charge': 0.0}),
+        # 120 x 73/160; 1.5 x 0.3/0.5, 2.5 x 1.1/1.75 (the frag table: hunter armour x0.25);
+        # the rest is Halo 3's own (a thrown grenade has no rate, magazine or aim)
+        ('BS = Frag ratio', W + r'rocket launcher\rocket launcher', 'shot',
+         {'damage_tags': [W + r'frag grenade\explosion'], 'dmg': 54.75,
+          'radius': (0.9, 1.57), 'rate': 1 / 0.3, 'mag': 6, 'reload': 95 / 30.0,
+          'speed': 16.0, 'range': 20.0, 'aim': (4.0, 15.0, 6.0, 20.0)}),
+        ('Rocket Launcher', W + r'rocket launcher\rocket launcher', 'shot'),
+        ('Fuel Rod (restored)', W + r'fuel rod gun\fuel rod', 'shot'),
+        ('Frag grenade (1/s)', W + r'rocket launcher\rocket launcher', 'shot',
+         {'damage_tags': [W + r'frag grenade\explosion'], 'radius': (1.5, 2.5), 'rate': 1.0,
+          'nomag': True, 'speed': 0.0, 'range': 0.0, 'aim': (0.0, 0.0, 0.0, 0.0)}),
+        ('Rocket Launcher melee', W + r'rocket launcher\rocket launcher', 'melee'),
+        ('Fuel Rod melee', W + r'fuel rod gun\fuel rod', 'melee'),
+        ('Spike Rifle (blade peer)', W + r'spiker\spiker', 'melee'),
+        ('Mauler (blade peer)', W + r'mauler\mauler', 'melee'),
+        ('Sword slash (restored)', W + r'energy sword\energy sword', 'melee'),
+    ]},
 }
 
 ENEMIES = [
@@ -463,6 +511,9 @@ def weapon(label, rel, mode, overrides, extra=None):
         if extra and extra.get('mods'):      # per-material modifiers over the base table
             for d in out['damage']:
                 d['mods'].update(extra['mods'])
+        if extra and extra.get('radius'):    # a candidate's own splash (inner, outer wu)
+            for d in out['damage']:
+                d['radius'] = tuple(extra['radius'])
     if extra and extra.get('cap'):
         out['cap'] = extra['cap']
     if extra and extra.get('burst'):         # (rounds, spacing s, cycle s): Halo 3's burst

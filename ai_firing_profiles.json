@@ -949,6 +949,135 @@
     "port_dps": 140.0,
     "balanced_port_dps": 301.0
    }
+  },
+  "weapons\\brute shot\\brute shot": {
+   "source": "Halo 3 ai\\generic objects\\weapons\\support_low\\brute_shot\\brute_shot (weapon properties #5, firing pattern #5) over weapons\\rocket launcher\\rocket launcher carriers",
+   "fields": {
+    "0x74": [
+     "<f",
+     15.0,
+     "Maximum Firing Distance"
+    ],
+    "0x78": [
+     "<f",
+     2.0,
+     "Rate Of Fire"
+    ],
+    "0x7C": [
+     "<f",
+     0.02617993950843811,
+     "Projectile Error"
+    ],
+    "0x80": [
+     "<f",
+     0.10000000149011612,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     0.800000011920929,
+     "First Burst Delay Time Max"
+    ],
+    "0x8C": [
+     "<f",
+     1.0,
+     "Surprise Delay Time"
+    ],
+    "0x94": [
+     "<f",
+     0.10000000149011612,
+     "Death Fire-Wildly Chance"
+    ],
+    "0x98": [
+     "<f",
+     0.10000000149011612,
+     "Death Fire-Wildly Time"
+    ],
+    "0x9C": [
+     "<f",
+     4.0,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     10.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     0.75,
+     "Target Tracking"
+    ],
+    "0xC0": [
+     "<f",
+     0.5,
+     "Target Leading"
+    ],
+    "0xE0": [
+     "<f",
+     0.4999999888241291,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     1.600000023841858,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     2.5,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     3.5,
+     "Burst Separation Max"
+    ],
+    "0x14C": [
+     "<f",
+     1.0,
+     "Bombardment Range"
+    ],
+    "0x1D8": [
+     "<f",
+     0.30000001192092896,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.699999988079071,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     5,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     7,
+     "Drop Weapon Ammo Max"
+    ],
+    "0xC4": [
+     "<f",
+     0.26008230452674896,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "donor_weapon": "weapons\\rocket launcher\\rocket launcher",
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.49375,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.4,
+    "yardstick_dps": 158.0,
+    "port_dps": 243.0,
+    "balanced_port_dps": 128.0
+   }
   }
  }
 }

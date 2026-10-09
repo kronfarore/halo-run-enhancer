@@ -656,8 +656,14 @@ def extra_models(w):
     path, 'dir': tag folder, 'material': shader name from `shaders`}}): the Spike Rifle's
     stuck spike, the projectile's model (h3_rm_to_jms.convert_particle_model). The folder
     sits under the weapon's, so `tool model` finds the shader in <weapon>\\shaders."""
+    # a `.render_model` source is a whole Halo 3 model (the Brute Shot's grenade): materials
+    # named by its shaders, `markers` as the world model's (h3_rm_to_jms.convert)
     for name, X in w.get('extra_models', {}).items():
-        jm = h3_rm_to_jms.convert_particle_model(X['from'], X['material'])
+        if X['from'].endswith('.render_model'):
+            jm, _rm = h3_rm_to_jms.convert(X['from'], markers=X.get('markers'))
+            drop_materials(jm, X.get('drop_materials', ()))
+        else:
+            jm = h3_rm_to_jms.convert_particle_model(X['from'], X['material'])
         d = os.path.join(HCEEK, 'data', X['dir'], 'models')
         os.makedirs(d, exist_ok=True)
         write_jms(os.path.join(d, name + '.jms'), jm)
