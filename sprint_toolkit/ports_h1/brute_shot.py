@@ -285,6 +285,10 @@ PORT.update({
             'weap_attrs.interface.active_camo_ding': 0.75,
             # Halo 3's brute shot has NO zoom (zoom levels 0); the rocket's 2x goes
             'weap_attrs.aiming.zoom_levels': 0,
+            # ... so the rocket's sniper zoom sounds go too (port_sound_refs BORROW; Halo 3's
+            # brute shot names them, unused without a zoom)
+            'weap_attrs.interface.zoom_in_sound.filepath': '',
+            'weap_attrs.interface.zoom_out_sound.filepath': '',
             # the rocket's trigger names the AR dry fire SOUND as its empty effect: the brute
             # shot's own (Halo 3: the battle rifle's dry fire)
             'weap_attrs.triggers.0.firing_effects.0.empty_effect.filepath': SND + 'bs_dryfire',
