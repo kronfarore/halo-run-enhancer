@@ -65,8 +65,11 @@ DAMAGE = {
 ANYTHING = 'anything'           # every type above ("Anything vs Flood")
 #: per-game additions to DAMAGE's groups. Reach: the Sniper Rifle fires its own GENERAL group
 #: 'sniper' (only it -- and Jun's AI copy of the same bullet -- uses it), folded into
-#: Precision (user, 2026-10-09). Halo 4 keeps 'sniper' out (Binary Rifle shares it).
-DAMAGE_GAME = {('Halo Reach', 'precision'): ('sniper',)}
+#: Precision (user, 2026-10-09). Halo 4 too: there 'sniper' is the GENERAL group of the
+#: Sniper Rifle and the Binary Rifle (their only one; the Crawler snipers' AI bullet too)
+#: and the SPECIFIC group of the Beam Rifle -- the engine multiplies both rows, so the Beam
+#: Rifle gets the Precision cards on top of its Plasma ones (one group, one row).
+DAMAGE_GAME = {('Halo Reach', 'precision'): ('sniper',), ('Halo 4', 'precision'): ('sniper',)}
 
 #: armour class -> (label, armour row names). Per-game overrides in ARMOUR_GAME.
 #:  shields  energy_shield_thin only: energy_shield_thick is the Jackal hand shield and
