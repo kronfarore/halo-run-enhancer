@@ -127,6 +127,16 @@ def glow_pieces(jm, material, C):
             if np.dot(N / (np.linalg.norm(N) or 1.0), nn) >= C.get('min_dot', 0.7):
                 keep.append(t)
         tris = keep
+    if C.get('skip_normals'):
+        # faces along any of these left out (the Mauler: both barrel ENDS, dot 1.0; its drum
+        # windows face back / forward tilted and stay -- the glow_spots rule, `skip_dot`)
+        keep = []
+        for t in tris:
+            N = np.array([(jm.verts[i].norm_i, jm.verts[i].norm_j, jm.verts[i].norm_k) for i in (t.v0, t.v1, t.v2)]).mean(0)
+            N = N / (np.linalg.norm(N) or 1.0)
+            if not any(np.dot(N, sn) >= C.get('skip_dot', 0.7) for sn in C['skip_normals']):
+                keep.append(t)
+        tris = keep
     parent = {}
 
     def find(a):

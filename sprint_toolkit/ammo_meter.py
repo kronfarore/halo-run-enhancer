@@ -55,8 +55,12 @@ def plan(n):
     n = max(1, int(n))
     for p in range(1, 4):                    # rounds per tick: 1 up to 127, then 2, 3
         ticks = -(-n // p)
-        step_ = (255 // ticks) // p * p      # a multiple of p, or the ticks drift
-        if step_ >= max(2, p) and step_ * ticks <= 255:
+        # the TOP tick's threshold must stay below 255: the value is capped at 255 and the
+        # comparison is strict, so a full magazine never lights a 255 tick (the Mauler, test
+        # 2 2026-10-09: 5 rounds x 51 = 255 -> '4 of 5 lit when full'). Only magazines whose
+        # tick count divides 255 (5, 15, 17, 51, 85) reached it; 254 leaves every other one as is
+        step_ = (254 // ticks) // p * p      # a multiple of p, or the ticks drift
+        if step_ >= max(2, p) and step_ * ticks <= 254:
             return p, ticks, step_, step_ // p
     # Past 255 rounds no 8-bit meter can resolve the magazine: the top threshold would
     # have to exceed 255. The bar then fills at 255 rounds and stays full above it.

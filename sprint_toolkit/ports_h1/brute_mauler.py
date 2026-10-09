@@ -98,16 +98,23 @@ PORT.update({
         # with a white core fading to ORANGE: the bloom
         'illum_dilate': 1,
         'glow': {'excavator': HOT, 'excavator_metal': HOT, 'excavator_shiny': HOT},
-        'glow_shaders': {'mauler_spot': {'rgb': ORANGE_GLOW, 'additive': True, 'radial': True,
-                                         'falloff': 1.6, 'gain': 1.0, 'hot': True}},
-        'glow_spots': [{'material': 'excavator_metal', 'illum': ILLUM, 'shader': 'mauler_spot',
-                        'size': 1.0, 'lift': 0.05, 'merge': 1.0, 'threshold': 64,
-                        # render check: two spots sat on the barrel ENDS (faces exactly along
-                        # the gun, dot 1.0) -- Halo 3 shows no light there; the drum windows
-                        # face back / forward TILTED (dot 0.84..0.99) and stay
-                        'skip_normals': ((1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)), 'skip_dot': 0.995},
-                       {'material': 'excavator', 'illum': ILLUM, 'shader': 'mauler_spot',
-                        'size': 0.6, 'lift': 0.05, 'merge': 1.0, 'threshold': 64}],
+        # TEST 2 (user): 'much better -- but in H3 they have DISTINCT SHAPES; ours look like
+        # lights drawn onto the weapon' (the radial spot cards: round blobs over the faces).
+        # Now the window SHAPES: each lit triangle copied in place (scale 1.0, lifted 0.02,
+        # the same UVs) as an additive glow whose texture IS Halo 3's illum mask (grown 1 px;
+        # brightness -> ORANGE_GLOW up to half, then towards white: a hot core on the mask's
+        # bright texels) -- the light sits exactly where and in the shape Halo 3 draws it.
+        # Barrel ENDS left out (faces exactly along the gun, dot 1.0; Halo 3 shows no light
+        # there -- the render check of test 2); the drum windows face back / forward TILTED
+        # (dot 0.84..0.99) and stay
+        'glow_shaders': {'mauler_window': {'rgb': ORANGE_GLOW, 'additive': True, 'mask': ILLUM,
+                                           'mask_channel': 'rgb', 'dilate': 1, 'gain': 1.0}},
+        'glow_cards': {'excavator_metal': {'shader': 'mauler_window', 'lit': ILLUM,
+                                           'scale': 1.0, 'lift': 0.02,
+                                           'skip_normals': ((1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)),
+                                           'skip_dot': 0.995},
+                       'body': {'of': 'excavator', 'shader': 'mauler_window', 'lit': ILLUM,
+                                'scale': 1.0, 'lift': 0.02}},
         'template': SG + r'shaders\shotgun gun',
     },
 
@@ -313,9 +320,9 @@ PORT.update({
                 row('jpt!', ML + 'melee', 'Damage Upper Bound', 51.45, 65.45, 'Melee Damage'),
                 row('jpt!', ML + 'melee', 'Damage Upper Bound Max', 61.75, 78.55, 'Melee Damage'),
                 # the 10 magazine's meter: mauler_ammo sequence 1 (ammo_meter 5 10), step 25
-                # (default 51); flash at 2 x 10/12 = 2 (default 1)
+                # (default 50: ammo_meter's top threshold stays below 255); flash at 2 x 10/12 = 2 (default 1)
                 dict(row('wphi', ML + 'mauler', 'Sequence Index', 1, 0, 'Ammo display', block='Meter Elements'), index=0),
-                dict(row('wphi', ML + 'mauler', 'Alpha Multiplier', 25, 51, 'Ammo display', block='Meter Elements'), index=0),
+                dict(row('wphi', ML + 'mauler', 'Alpha Multiplier', 25, 50, 'Ammo display', block='Meter Elements'), index=0),
                 dict(row('wphi', ML + 'mauler', 'Sequence Index', 1, 0, 'Ammo display', block='Static Elements'), index=0),
                 dict(row('wphi', ML + 'mauler', 'Loaded Ammo Cutoff', 2, 1, 'Ammo display'), index=0),
             ]},
