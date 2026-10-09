@@ -48,10 +48,11 @@ import halo_map as hm
 
 EFFECT = 'Damage rows'
 
-#: damage type -> (player-facing label, GENERAL damage groups). Vehicle/turret groups
-#: (bullet_vehicle, plasma_vehicle, bullet_turret, plasma_turret, ...) are not player weapon
-#: types and are never included. (The Halo 2 SAW port shipped with bullet_vehicle; every
-#: Halo 2 patch now points it at bullet_slow -- halo_patch._fix_h2_saw_group.)
+#: damage type -> (player-facing label, GENERAL damage groups). The vehicle / turret groups
+#: are their own type, 'turrets' (Mounted guns): portable turrets and vehicle guns share
+#: them in every game, so one can't be had without the other; its cards need the Vehicles
+#: option (halo.json requires_config). (The Halo 2 SAW port shipped with bullet_vehicle;
+#: every Halo 2 patch points it at bullet_slow -- halo_patch._fix_h2_saw_group.)
 DAMAGE = {
     'bullets': ('Bullets', ('bullet_slow',)),
     'precision': ('Precision rounds', ('bullet_fast', 'bullet_fast_h3')),     # _h3 = ODST BR
@@ -61,7 +62,14 @@ DAMAGE = {
     'blades': ('Blades and melee', ('cutting', 'melee')),
     'fire': ('Fire', ('burning',)),
     'lasers': ('Lasers', ('laser',)),
+    # H2/H3/ODST bullet_vehicle + plasma_vehicle; Reach/H4 bullet_turret + plasma_turret
+    # (+ H4 Mantis bullet_turret_mech). Not H3/ODST's Machine Gun turret: bullet_fast,
+    # shared with the Battle Rifle (Precision).
+    'turrets': ('Mounted guns', ('bullet_vehicle', 'plasma_vehicle', 'bullet_turret',
+                                 'plasma_turret', 'bullet_turret_mech')),
 }
+#: types behind an Options gate: never part of ANYTHING ("Anything vs Flood")
+GATED = ('turrets',)
 ANYTHING = 'anything'           # every type above ("Anything vs Flood")
 #: per-game additions to DAMAGE's groups. Reach: the Sniper Rifle fires its own GENERAL group
 #: 'sniper' (only it -- and Jun's AI copy of the same bullet -- uses it), folded into
@@ -129,9 +137,9 @@ def _p(*parts):
 
 #: Halo 1 jpt! -> damage type, from damage_categories_h1_odst.json (weapons +
 #: ai_and_vehicles; the type of the Halo 2 group of the same weapon). Not listed, on
-#: purpose: the Plasma Pistol charged bolt (emp), the vehicle guns (bullet_vehicle /
-#: plasma_vehicle: Warthog, Scorpion MG, Ghost, Banshee bolts, Shade, the plasma cannon
-#: impact). The SAW port bullet is Bullets, as every other SAW (bullet_slow).
+#: purpose: the Plasma Pistol charged bolt (emp). The vehicle guns are Mounted guns (their
+#: Halo 2 groups bullet_vehicle / plasma_vehicle). The SAW port bullet is Bullets, as every
+#: other SAW (bullet_slow).
 H1_JPT = {
     _p('weapons', 'assault rifle', 'bullet'): 'bullets',
     _p('weapons', 'pistol', 'bullet'): 'bullets',
@@ -163,6 +171,12 @@ H1_JPT = {
     _p('weapons', 'plasma_cannon', 'effects', 'plasma_cannon_melee'): 'blades',
     _p('weapons', 'flamethrower', 'explosion'): 'fire',
     _p('weapons', 'flamethrower', 'impact damage'): 'fire',
+    _p('vehicles', 'warthog', 'bullet'): 'turrets',
+    _p('vehicles', 'scorpion', 'bullet'): 'turrets',
+    _p('vehicles', 'ghost', 'ghost bolt'): 'turrets',
+    _p('vehicles', 'banshee', 'banshee bolt'): 'turrets',
+    _p('vehicles', 'c gun turret', 'bolt'): 'turrets',                   # Shade, dropship gun
+    _p('weapons', 'plasma_cannon', 'impact damage'): 'turrets',
 }
 
 GAMES_TABLE = ('Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4')
@@ -196,6 +210,9 @@ COMBOS = [
     ('fire', 'flood', ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST')),
     ('lasers', 'vehicles', ('Halo 3', 'Halo Reach', 'Halo 4')),
     ('lasers', 'shields', ('Halo 3', 'Halo Reach', 'Halo 4')),
+    # Mounted guns (user, 2026-10-09; behind the Vehicles option)
+    ('turrets', 'shields', ALL_GAMES), ('turrets', 'flesh', ALL_GAMES),
+    ('turrets', 'armour', ALL_GAMES), ('turrets', 'vehicles', ALL_GAMES),
 ]
 
 
@@ -215,13 +232,15 @@ def damage_groups(damage, game=None):
     if damage == ANYTHING:
         out = []
         for k, (_l, gs) in DAMAGE.items():
+            if k in GATED:
+                continue
             out += list(gs) + list(DAMAGE_GAME.get((g, k), ()))
         return tuple(out)
     return tuple(DAMAGE[damage][1]) + tuple(DAMAGE_GAME.get((g, damage), ()))
 
 
 def damage_types(damage):
-    return tuple(DAMAGE) if damage == ANYTHING else (damage,)
+    return tuple(k for k in DAMAGE if k not in GATED) if damage == ANYTHING else (damage,)
 
 
 def armour_rows(game, armour):

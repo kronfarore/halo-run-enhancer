@@ -2988,13 +2988,13 @@
      {
       "jpt": "objects\\weapons\\rifle\\saw\\damage_effects\\saw_bullet",
       "role": "impact",
-      "general": "bullet_vehicle",
+      "general": "bullet_slow",
       "specific": null,
-      "category": "bullet_vehicle",
+      "category": "bullet_slow",
       "proj": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet"
      }
     ],
-    "primary_category": "bullet_vehicle",
+    "primary_category": "bullet_slow",
     "maps": 13
    },
    "Scarab gun (handheld, 07a cheat weapon)": {

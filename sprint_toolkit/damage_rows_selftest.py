@@ -49,11 +49,13 @@ MAPS = [
 OPS = {
     'Halo 1': [('plasma', 'shields'), ('bullets', 'flesh'), ('anything', 'flood'), ('explosives', 'vehicles')],
     'Halo 2': [('plasma', 'shields'), ('bullets', 'brute_hide'), ('anything', 'flood'), ('precision', 'hunters')],
-    'Halo 3': [('plasma', 'shields'), ('bullets', 'flesh'), ('anything', 'flood'), ('lasers', 'vehicles')],
+    'Halo 3': [('plasma', 'shields'), ('bullets', 'flesh'), ('anything', 'flood'), ('lasers', 'vehicles'),
+               ('turrets', 'vehicles')],
     'Halo 3: ODST': [('plasma', 'shields'), ('bullets', 'brute_hide'), ('precision', 'shields'),
                      ('explosives', 'vehicles')],
     'Halo Reach': [('plasma', 'shields'), ('needles', 'shields'), ('bullets', 'flesh'), ('blades', 'armour')],
-    'Halo 4': [('plasma', 'armour'), ('needles', 'shields'), ('explosives', 'vehicles'), ('lasers', 'shields')],
+    'Halo 4': [('plasma', 'armour'), ('needles', 'shields'), ('explosives', 'vehicles'), ('lasers', 'shields'),
+               ('turrets', 'flesh')],
 }
 FACTOR = 1.4
 HARD = 0.8

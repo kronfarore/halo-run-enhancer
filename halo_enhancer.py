@@ -450,7 +450,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'other_bane_enabled', 'identity_other_card',
                'skull_duration_value', 'skull_duration_multiply',
                'skull_disabled', 'skull_camo_after_ladder',
-               'bugfix_h2_fuel_rod', 'player_armour_rows', 'no_immunities',
+               'bugfix_h2_fuel_rod', 'player_armour_rows', 'no_immunities', 'vehicle_cards',
                'set_starting_equipment', 'equipment_all_selected',
                'h2_add_respawn_profile', 'h2_extra_squads', 'swap_player_loadouts',
                'h3_all_chief_profiles',
@@ -1231,6 +1231,9 @@ CONFIG = {
     # Options -> Patching: every armour takes at least 10% from every damage type
     # (damage_rows.lift_immunities)
     "no_immunities": False,
+    # Options -> Run rules -> Card rolls: vehicle cards join the draw (for now only the
+    # Mounted guns damage cards -- halo.json requires_config "vehicle_cards")
+    "vehicle_cards": False,
     # Weapon Identity rounds also roll the Other slot (Hero / Exhaust / Skull / Ally /
     # Bane) like a normal round: a fourth card on the offer. Off = the identity pair and
     # one enemy card only.
@@ -11199,6 +11202,16 @@ class OptionsDialog(QDialog):
         self.special_rate.setValue(float(CONFIG.get('special_rate_factor', 0.67)))
         self.special_rate.setToolTip("Scales how often special (escalating) effects appear; <1 = rarer.\nThese effects are your prime way to get tankier.")
         rform.addRow("Special-effect rate:", self.special_rate)
+
+        self.vehicle_cards_cb = QCheckBox("Vehicles: offer vehicle cards")
+        self.vehicle_cards_cb.setChecked(bool(CONFIG.get('vehicle_cards')))
+        self.vehicle_cards_cb.setToolTip(
+            "On: cards about vehicles join the draw. For now that is the Mounted guns "
+            "damage cards (Effective / Hardened: turret and vehicle-gun fire against "
+            "shields, flesh, armour and vehicles) -- the games give portable turrets and "
+            "vehicle guns one shared damage type, so they come as one. More vehicle cards "
+            "will follow. Shared with a co-op partner through the run.")
+        rform.addRow("", self.vehicle_cards_cb)
         self._opt_page("Run rules").addWidget(rolls)
 
         # ---- Map patching ----
@@ -12978,6 +12991,7 @@ class OptionsDialog(QDialog):
             'bugfix_h2_fuel_rod': self.bugfix_fuel_rod_cb.isChecked(),
             'player_armour_rows': self.player_armour_cb.isChecked(),
             'no_immunities': self.no_immunities_cb.isChecked(),
+            'vehicle_cards': self.vehicle_cards_cb.isChecked(),
             'skull_disabled': sorted(k for k, cb in self.skull_cat_boxes.items()
                                      if not cb.isChecked()),
             'new_weapon_chance': round(self.new_weapon_chance.value(), 2),
