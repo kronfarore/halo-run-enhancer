@@ -120,7 +120,9 @@ def render(n, art=None):
         meter_l = np.zeros((H, W), np.uint8)
         meter_a = np.zeros((H, W), np.uint8)
         h_, w_ = t.shape
-        y = int(5 + (BOX_H - h_) / 2.0)
+        # TOP-aligned where the AR's first tick row starts (the Mauler, test 4: centred in
+        # the AR's box, the smaller balanced row sat low under the counter -- 'move it up')
+        y = 5 + art.get('y', 0)
         for k in range(1, n_ticks + 1):
             x = int(5 + (k - 1) * pitch * s + 0.5)
             sl = (slice(y, y + h_), slice(x, x + w_))

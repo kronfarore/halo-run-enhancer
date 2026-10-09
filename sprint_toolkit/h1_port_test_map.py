@@ -309,8 +309,12 @@ def main():
     ap.add_argument('--armed', metavar='ENEMIES',
                     help="the enhancer's Armed-card pass at 100%%: e.g. grunt,elite carry the port")
     ap.add_argument('--mortal', action='store_true',
-                    help='with --armed: NO god shield (a damage MEASUREMENT run, h1_vitality_live.py)')
+                    help='NO god shield (a damage MEASUREMENT run, h1_vitality_live.py)')
     a = ap.parse_args()
+    # EVERY port test runs with the god shield unless --mortal (user, Mauler test 4,
+    # 2026-10-09: 'an increased shield in all the port testing, not only the armed test')
+    if not a.mortal:
+        a.god = True
     if a.armed and a.mortal:
         a.balanced = True
         print('--armed --mortal: balanced, the player shield breaks (a measurement run)')
