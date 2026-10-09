@@ -94,8 +94,13 @@ def full_magazine(weapon):
 #: Brute Shot Armed test (user, 2026-10-09): 'increase the Jackals, 1 isn't enough with
 #: explosives (they kill themselves)' -- BOTH Grunt squads ride as Jackals now: 6 / 6 + the
 #: Elite (a list of squads)
+#: Then (user, same day): 'move one Jackal back out; keep it for future tests, so we always
+#: spawn 3 / 3 / 2' (seen with both squads: 4 Jackals, 2 Elites, 2 Grunts) -- per-squad
+#: COUNTS (Normal, Legendary): `grunt` rides as 3 Jackals, `far_grunt` stays Grunts at 3, the
+#: Elite squad as it is
 DROPSHIP_JACKALS = {
-    'a30': {'encounter': 'lz_search', 'squad': ['far_grunt', 'grunt'],
+    'a30': {'encounter': 'lz_search', 'squad': {'grunt': (3, 3)},
+            'counts': {'far_grunt': (3, 3)},
             'jackal': r'characters\jackal\jackal minor plasma pistol'},
 }
 
@@ -132,8 +137,17 @@ def dropship_mix(d, mix):
     if mix['jackal'].lower() not in pal:
         raise SystemExit('no %s in the actor palette' % mix['jackal'])
     squads = {q.name: q for q in enc[0].squads.STEPTREE}
-    for name in (mix['squad'] if isinstance(mix['squad'], list) else [mix['squad']]):
+    # `squad`: a name, a list, or {name: (Normal, Legendary) count}; `counts`: other squads'
+    # counts set without a species change
+    want = mix['squad'] if isinstance(mix['squad'], dict) else {
+        n: None for n in (mix['squad'] if isinstance(mix['squad'], list) else [mix['squad']])}
+    for name, cnt in mix.get('counts', {}).items():
+        squads[name].normal_diff_count, squads[name].insane_diff_count = cnt
+        print('kit: %s/%s count %d Normal / %d Legendary' % (mix['encounter'], name, cnt[0], cnt[1]))
+    for name, cnt in want.items():
         sq = squads[name]
+        if cnt:
+            sq.normal_diff_count, sq.insane_diff_count = cnt
         old = d.actors_palette.STEPTREE[sq.actor_type][0].filepath
         sq.actor_type = pal.index(mix['jackal'].lower())
         print('kit: %s/%s %s -> %s (%d Normal / %d Legendary, the first dropship)'
