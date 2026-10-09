@@ -143,11 +143,11 @@ PORT.update({
                                       'fold': {'axis': (0.0, 1.0, 0.0), 'band': -1.2,
                                                'gap': 0.05}}},
         # the GRENADE (Halo 3 projectiles\grenade: one node, the body shader, markers
-        # fx_contrail / fx_glow): the projectile's own model; fx_contrail = the rocket's
-        # `exhaust` marker its trail hangs on, fx_glow = `glow` (the orange flare, test 1)
+        # fx_contrail / fx_glow): the projectile's own model; fx_contrail = `smoke` (the
+        # frag-grenade smoke trail's marker, test 3), fx_glow = `glow` (the orange flare)
         'extra_models': {'grenade': {'from': H3 + r'\projectiles\grenade\grenade.render_model',
                                      'dir': r'weapons\brute shot\grenade',
-                                     'markers': {'fx_contrail': 'exhaust', 'fx_glow': 'glow'}}},
+                                     'markers': {'fx_contrail': 'smoke', 'fx_glow': 'glow'}}},
         'template': RL + r'shaders\rocket launcher body',
     },
 
@@ -292,19 +292,22 @@ PORT.update({
                                    'proj_attrs.flags.ai_must_use_ballistic_aiming': True},
                    # rocket attachments: 0 exhaust effect, 1 smoke contrail, 2 rocket exhaust
                    # particle system, 3 the rl_projectile loop
-                   'keep_attachments': (1,),
+                   # The TRAIL. Test 1 (user): 'doesn't follow the arc' -- the rocket's contrail
+                   # emits its points at 0..5 wu/s along the marker; test 2 (points at rest +
+                   # no point physics): 'diagonal from below, horizontal at high angles' --
+                   # still not. A ribbon contrail is the rocket's look anyway: Halo 3 trails
+                   # its grenade with soft SMOKE PARTICLES (projectile.effect: soft_smoke_
+                   # small). TEST 3: Halo 1's own grenade trail instead -- the frag grenade's
+                   # `smoke` effect (a looping attachment, 1-2 `smoke impact` puffs a tick,
+                   # left in the world where the grenade was: it traces the path by
+                   # construction) in the rocket's exhaust-effect slot, at the grenade's
+                   # `smoke` marker (Halo 3's fx_contrail); the contrail dropped
+                   'keep_attachments': (0,),
+                   'set_attachments': {0: {'class': 'effect', 'type': r'weapons\frag grenade\effects\smoke',
+                                           'marker': 'smoke'}},
                    'hum': {'like': 'sound\\sfx\\weapons\\rocket launcher\\rl_projectile',
                            'loop': SND + 'bs_projectile', 'tag': SND + 'bs_projectile',
                            'marker': ''},
-                   # TEST 1 (user): 'the trail doesn't follow the arc'. The rocket's contrail
-                   # emits its points at 0..5 wu/s along the marker (backwards on the rocket);
-                   # the grenade's marker keeps Halo 3's fx_contrail axis, so the trail shot
-                   # off its path. An own copy, points born at rest: it traces the arc
-                   # TEST 2 (user): 'still not on the arc at low angles; horizontal at high
-                   # angles' -- the points ride the rocket's smoke POINT PHYSICS (wind: the
-                   # Beam Rifle's finding). No physics: they stay where the grenade was
-                   'contrail': {'from': RL + 'exhaust', 'out': BS + 'grenade trail',
-                                'velocity': (0.0, 0.0), 'no_physics': True},
                    # TEST 1 (user): the grenade was hard to see / 'somewhere above me'. Halo
                    # 3's grenade glows ORANGE (a lens flare + light volume at fx_glow): the
                    # fuel rod's exhaust light (radius 0 = flare only) + its flare recoloured

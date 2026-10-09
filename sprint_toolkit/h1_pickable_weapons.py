@@ -543,6 +543,13 @@ def own_beam(a, b, write):
         for i in range(len(att) - 1, -1, -1):
             if i not in b['keep_attachments']:
                 att.pop(i)
+    for i, spec in b.get('set_attachments', {}).items():
+        # a kept attachment re-pointed (index AFTER keep_attachments): the Brute Shot's
+        # trail = Halo 1's frag-grenade smoke effect in the rocket's exhaust-effect slot
+        x = pt.data.tagdata.obje_attrs.attachments.STEPTREE[i]
+        x.type.tag_class.set_to(spec['class'])
+        x.type.filepath = spec['type']
+        x.marker = spec.get('marker', x.marker)
     if 'hum' in b:                       # an own looping sound in flight (the Brute Shot)
         add_hum(pt.data.tagdata, b['hum'], write)
     if 'attachments_from' in b:          # e.g. a TRACER contrail (the BR takes the AR bullet's)

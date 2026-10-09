@@ -191,10 +191,36 @@ def fold_cards(jm, pieces, F, si):
             rest.append((keep, vs))
     if not wall:
         return pieces, 0
-    V = np.array([pos(jm.verts[i]) for t in wall for i in (t.v0, t.v1, t.v2)])
-    X, Y = V.dot(e1), V.dot(e2)
-    A = np.c_[2 * X, 2 * Y, np.ones(len(X))]
-    cx, cy, k = np.linalg.lstsq(A, X * X + Y * Y, rcond=None)[0]
+    # the circle, fitted again without the triangles off it (the Brute Shot, test 3: 16 lit
+    # front triangles square to the axis pulled the centre sideways -- the folded chevrons
+    # stretched on one side, squeezed on the other): a triangle whose mean |r - R| exceeds
+    # `tol` leaves the wall (an ordinary card again)
+    def hspan(t):
+        hs = [pos(jm.verts[i]).dot(a) for i in (t.v0, t.v1, t.v2)]
+        return max(hs) - min(hs)
+
+    def as_piece(ts):
+        return (ts, [jm.verts[i] for t in ts for i in (t.v0, t.v1, t.v2)])
+
+    # a wall triangle spans the wall's height; the strays are short (0.2..0.5 vs 0.85+)
+    top = max(hspan(t) for t in wall)
+    short = [t for t in wall if hspan(t) < F.get('min_height', 0.5) * top]
+    if short:
+        wall = [t for t in wall if t not in short]
+        rest.append(as_piece(short))
+    for _ in range(4):
+        V = np.array([pos(jm.verts[i]) for t in wall for i in (t.v0, t.v1, t.v2)])
+        X, Y = V.dot(e1), V.dot(e2)
+        A = np.c_[2 * X, 2 * Y, np.ones(len(X))]
+        cx, cy, k = np.linalg.lstsq(A, X * X + Y * Y, rcond=None)[0]
+        R = np.sqrt(k + cx * cx + cy * cy)
+        off = [t for t in wall
+               if np.mean([abs(np.hypot(pos(jm.verts[i]).dot(e1) - cx, pos(jm.verts[i]).dot(e2) - cy) - R)
+                           for i in (t.v0, t.v1, t.v2)]) > F.get('tol', 0.5)]
+        if not off:
+            break
+        wall = [t for t in wall if t not in off]
+        rest.append(as_piece(off))
     H = V.dot(a)
     h0, h1 = H.min(), H.max()
     centre = cx * e1 + cy * e2
