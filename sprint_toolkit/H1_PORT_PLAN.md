@@ -19,7 +19,8 @@ rebuild is BATCHED for all three (user's go). A4 (Beam Rifle, 2026-10-08) is DON
 too (batched with them); read "A4: what the Beam Rifle taught" before A5. A5 (Spike Rifle,
 2026-10-08) is DONE and tested too (batched); read "A5: what the Spike Rifle taught" before A6.
 A6 (Mauler, 2026-10-09) is DONE and tested too (batched); read "A6: what the Mauler taught"
-before A7.
+before A7. A7 (Brute Shot, 2026-10-09) is DONE and tested too (batched); read "A7: what the
+Brute Shot taught" before A8.
 
 ## Phase 0: DONE (2026-10-07)
 
@@ -527,6 +528,48 @@ detonation timer. Reload: whole magazine like the Mauler. The 3P pose: `bs` taug
 user. Glow: fp_material_view --illum first; a light the user circles -> match it by its lit
 texels.
 
+## A7: what the Brute Shot taught (2026-10-09) -- read before A8 (the Spartan Laser)
+
+PORTING.md "Halo 1: the Brute Shot, wave A7" is the full record; `ports_h1/brute_shot.py` is the
+example of an EXPLOSIVE projectile port (own detonation effect + damage, a scaled particle
+system, a visible glowing projectile with a smoke trail), of a RE-ROOTED world model and of a
+FOLDED ring glow. Everything in "Pilot A1" to "A6" still holds; the Brute Shot added:
+
+**New user rules / decisions:**
+- ARMED TEST on a30: the first dropship carries 3 Jackals / 3 Grunts / the Elite squad for
+  every Armed test (`DROPSHIP_JACKALS`, per-squad counts).
+- The actor flags 'avoid friends line of fire' + 'crouch when in line of fire' (`--actor-flags`,
+  test copy only) made the Covenant careful with explosives -- a SPECIES flag: an enhancer
+  OPTION (handed off), not a per-port change.
+- An explosion's screen flash: yellow, not blue (blue reads as plasma).
+- Explosion visual scale with radius cards: EXPLOSION_VISUAL_SCALE.md, parked until every
+  weapon is ported to every game.
+
+**Process (observations):**
+- A source weapon's DAMAGE may live in its projectile's DETONATION damage (h3_weapon_values
+  prints None): read the projectile's `detonation damage` / detonation fields first.
+- Halo 1's detonation `minimum velocity` DETONATES (Halo 3: at rest) -- 0 unless wanted.
+- 4b and the template diff do not show what a TEMPLATE OBJECT carries visually: check the
+  template projectile's WIDGETS (the rocket's light-volume streak), contrail emission
+  velocity + point physics, the firing effect's per-location particles (the rocket's
+  back-blast sits on `primary ejection`) and the explosion's screen flash duration.
+- Halo 3 world models can be authored TILTED (root node rotated; the weapon frame a child
+  node): check the root rotation, `world_frame` re-roots. Vertices are model space.
+- Thin Halo 3 illum on an inner wall: `fold` (select the strip by UV `v_range`, fit without
+  strays, map per triangle into the full strip, mask `size` 512) and check it with a textured
+  render before booting.
+
+**For A8, the Spartan Laser (`support_high\spartan_laser\spartan_laser`):** yardstick candidates
+Sniper Rifle (provisional), Rocket Launcher, Sentinel Beam. Halo 3 (h3_weapon_values,
+2026-10-09): rounds per second 20 (the beam's tick), NO magazine, heat loss 1 / 0.4 overheated,
+recovery 0.1 / overheat 1, zoom 1 (2.5), aim 1/25 5/25, smash_melee, velocity 4000 wu/s, range
+120, FP ready 31 / fire_1 2 / melee 42. Like the Brute Shot, the tool shows NO damage (None) and
+no battery (age 0, no magazine) and does not print the CHARGE: read the trigger's charging
+block (charge time, overcharge, charged fire), the projectile (impact / detonation damage, its
+group) and where the battery lives (a barrel / trigger age field, or rounds) before the ratio
+table. The Fuel Rod's charge lessons and the Sentinel Beam's beam-visual (contrail) lessons
+apply; one huge shot a charge = the hit-effect rule counts that rate.
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one
@@ -594,7 +637,7 @@ simplest form, used to fix and generalize the tools before the rest of the wave.
 | A4 | Beam Rifle | heat + zoom (Sentinel Beam heat lessons, tick-quantised rate) |
 | A5 | Brute Spiker | the blades' melee, a slow projectile |
 | A6 | Brute Mauler | a pellet spread (the shotgun as yardstick) |
-| A7 | Brute Shot | a bouncing grenade projectile + its explosion (step 3: own chain) |
+| A7 | **Brute Shot** -- DONE 2026-10-09 | an explosive grenade (it does NOT bounce in Halo 3) + its own explosion chain -- see "A7: what the Brute Shot taught" |
 | A8 | Spartan Laser | a charge-up shot (the fuel rod's charge lessons), a beam visual (the Sentinel Beam's contrail lessons) |
 | A9 | Gravity Hammer | a melee weapon with energy (the Energy Sword's recipe; aging per swing) |
 
@@ -1041,3 +1084,56 @@ spawn check in game. The SMG (done, tested on a30) is the first in that batch.
 > catalog entry, enhancer hand-off to the "Halo enhancer project" session, PORTING notes,
 > memory, `python port_backup.py --game h1`, and what the Brute Shot taught added to the plan
 > before A8 (the Spartan Laser).
+
+### The Spartan Laser (wave A8), filled in
+
+> Port the Spartan Laser into Halo 1 (H1_PORT_PLAN.md, wave A, #A8). Source: Halo 3,
+> `objects\weapons\support_high\spartan_laser\spartan_laser` (H3EK).
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Phase 0: DONE", "Pilot A1", "A2" to "A6" and "A7: what
+> the Brute Shot taught" first -- its last paragraph is written for THIS weapon), PORTING.md
+> ("What ported actually means" steps 0-11 and 5b, closing checks 0-9, the Halo 1 sections --
+> the Sentinel Beam (beam visual, heat), the Beam Rifle (heat + battery, glow), the Brute Shot
+> (template-object traps, re-rooted world model, folded glow) -- and "Balance" incl. the ARMED
+> WDM RULE and THE HIT-EFFECT RULE) and memory h1-brute-shot-port, h1-mauler-port,
+> h1-beam-rifle-port, h1-armed-test-balanced-god, h1-hit-effect-rule,
+> port-flashlight-sound-rule, h1-port-phase0, h1-weapon-into-map, halo-port-own-messages,
+> h1-fmod-bank-sounds, port-findings-are-observations, shared-worktree-commits.
+> `ports_h1/beam_rifle.py` is the example of a battery / heat port on a template that is not
+> its yardstick; `ports_h1/brute_shot.py` of template-object checks and of world-model
+> re-rooting. Copy the nearer shape into `ports_h1/spartan_laser.py` and edit only that file
+> (plus any shared tool you generalize).
+>
+> START WITH STEP 4a, before any tag number is written: the yardstick, decided WITH me.
+> Wave-A rule: DEFAULT = Halo 3's own numbers, BALANCED = the ratio rows. Candidates:
+> provisional SNIPER RIFLE, alternatives the ROCKET LAUNCHER and the SENTINEL BEAM. First find
+> what h3_weapon_values does not print: the laser's DAMAGE (the projectile's impact or
+> detonation damage, its group), the CHARGE (the trigger's charging block: time, overcharge,
+> what fires) and the BATTERY (shots per battery: which field). Lay them side by side per value
+> (damage per shot and per second incl. the charge, battery, heat, zoom, range, aim assist,
+> melee) with `h3_weapon_values.py` and `h1_role_compare.py` (a 'spartan_laser' set; time to
+> kill vs Sniper, Rocket Launcher, Sentinel Beam). Damage type against Halo 1's materials. I
+> pick; record it in yardstick['pick'] / ['reason'] and PORTING. Then run step 4b
+> (`port_field_audit.py --port spartan_laser`), `h1_port_template_diff.py` and
+> `port_sound_refs` BEFORE boot 1 -- and check the template OBJECT's widgets, attachments,
+> contrail physics and firing-effect locations by hand (the Brute Shot's traps).
+>
+> Reserved: pickup messages 67/68; hud_msg_icons 37 (+ _r twin); hud_reticles 26 (+ _r,
+> `reticle_thicken` 1); label `sl` taught to characters\cyborg from `rl`; sounds under
+> `sound\weapons\spartan_laser_port` (never under sound\sfx); weapon folder `weapons\spartan
+> laser`; catalog name `Spartan Laser`.
+>
+> What the Spartan Laser tests first: a CHARGE-UP shot (the Fuel Rod's charge lessons), a
+> battery, a beam VISUAL (the Sentinel Beam's contrail lessons; contrail physics off), a 2.5x
+> zoom (Halo 3's scope, `hud['scope']`, the standard procedure), Halo 3's own HUD art, glow
+> (`fp_material_view --illum --texels` first; check the world model's root rotation), the
+> hit-effect rule. Before the Armed boot: the enhancer's `hands` for the Spartan Laser.
+>
+> Step 11: list Halo 1's carriers of the chosen donor weapon first (with their WDM, actv
+> +0xC4); `firing_profile` needs a `donor_weapon` (+ `donor_variant` if the carriers' WDM
+> disagree) AND a `wdm_rule`. Test with `h1_port_test_map.py spartan_laser --stage` (god shield
+> on every boot): dry default, fixes, `--balanced`, then `--armed grunt,jackal,elite` (implies
+> balanced; a30's first dropship 3 Jackals / 3 Grunts / 2 Elites); `--restore <level>`. NO
+> ten-map rebuild: BATCHED with the SMG, BR, Carbine, Beam Rifle, Spike Rifle, Mauler and Brute
+> Shot, on my go. When done: catalog entry, enhancer hand-off to the "Halo enhancer project"
+> session, PORTING notes, memory, `python port_backup.py --game h1`, and what the Spartan Laser
+> taught added to the plan before A9 (the Gravity Hammer).

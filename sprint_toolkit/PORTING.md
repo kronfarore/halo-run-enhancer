@@ -977,6 +977,64 @@ OBSERVATION until a second port agrees, except the user RULES):
 * 5b tool fix: `h1_role_compare` kept only the last Damage Upper Bound row (both bounds alike
   in earlier ports); it now keeps the range's two bounds (the Mauler's 12.6..17.5 -> 15.05).
 
+### Halo 1: the Brute Shot, wave A7 (2026-10-09, 9 boots on a30) -- an explosive grenade launcher
+
+The whole weapon is `ports_h1/brute_shot.py` (its CLOSE-OUT RECORD lists every decision).
+
+* **Step 4a (user): yardstick ROCKET LAUNCHER.** The damage is the grenade's DETONATION damage
+  effect (`shot_grenade_explosion` 26..73, radius 0.3 -> 1.1, `explosion_small`); h3_weapon_values
+  prints none, so read the projectile's `detonation damage` (and the yardsticks': rocket 80..240
+  over 0.9 -> 2, flak 30..60, frag 60..160). RL ratio: 95.8 every 0.75 s (128 dps vs the rocket's
+  158 = Halo 3's 0.81 relation), 6 / 18 / 18, 3.4 s, 24 -> 4.4 wu/s, range 14.6, aim 0/21 7.2/28,
+  melee 61.9. The Fuel Rod ratio (Hunter armour immune: Halo 1's Covenant explosion table) and
+  the Frag ratio (damage only) were shown and rejected. Halo 3's damage table: explosion_small
+  vs _large differ only on soft flood flesh (x1 vs x2) for Halo 1 -> flood_combat_form 1.0.
+* **Halo 3's grenade does NOT bounce** (the plan assumed it): impact (detonate) on every
+  material, its `attach` response at chance 0, timer 0, a mid-air burst at 20 wu. Kept in both
+  versions; a bounce is a later enhancer option (user).
+* **MINIMUM VELOCITY DETONATES in Halo 1.** Halo 3's 11 (an at-rest threshold there) burst the
+  grenade after ~1 s (user's stopwatch) instead of Halo 3's ~2 s = its 20 wu range (16 -> 7 over
+  6..15 wu = 1.9 s). Set 0; the range decides (confirmed ~2 s).
+* **An explosive projectile is new tooling:** `bullet.damage` None + `explosion` (own copies of
+  the detonation effect and its damage part; `part` when the effect is another weapon's -- by
+  class, the frag effect names a LIGHT of the same path as its damage; `scale` an own scaled
+  particle-system copy; `swaps`; `fields`), `keep_attachments`, `set_attachments` (+ `copy`
+  scaled), `hum` on the projectile, `glow` (light + recoloured flare), `drop_widgets`;
+  `sound_effects` `drop_event_parts`; h1_port_template_diff pairs the explosion.
+* **What the rocket template carried along (each caught in game, not by 4b):** its contrail
+  emits points at 0..5 wu/s along the marker plus smoke point physics (the trail left the arc
+  -- replaced by Halo 1's frag smoke trail, which Halo 3's soft-smoke particles resemble); its
+  LIGHT-VOLUME WIDGET (an exhaust streak turning with the shot angle); a one-sprite muzzle
+  flash with the back-blast on `primary ejection` (-> the shotgun's flash family, its fire
+  sound dropped from the second event); explosion screen flash duration 0 (-> Halo 3's 1 s,
+  yellow by the user: blue reads as plasma). Template objects' WIDGETS and contrail physics
+  belong on the 4b/template-diff checklist for any projectile port.
+* **Halo 3 WORLD MODELS CAN BE AUTHORED TILTED.** The brute shot's root `gun` node rests ~55 deg
+  rotated; the weapon frame is the `body` node (x forward, z up, primary_trigger 0.25 ahead).
+  Halo 3 holds weapons by markers, Halo 1 by the object frame (the pickup icon came out
+  diagonal; third person and drops sit in it). `h3_rm_to_jms.convert(frame=)` re-roots the
+  model (vertices + root bind; markers stay node-relative); config `world_frame`. The vertices
+  are in MODEL space even for `rigid` meshes (checked: markers land on the geometry). Check
+  every Halo 3 world model's root rotation.
+* **Glow on an INNER ring wall: fold it** (`glow_cards` `fold`, h1_h3_weapon_model.fold_cards).
+  The chevrons sit on a wall facing the drum axis -- Halo 1 shows only the far half (Halo 3:
+  bloom). Folded flat into the ring opening on both faces, chevron UVs kept. Four boots to get
+  right: (1) a white half ring (gain x1.6 + 2 px -> x1.0, 1 px); (2) the circle fit pulled by
+  stray lit triangles (drop short / off-circle ones); (3) the wall is +-0.74 tall on one half
+  and +-0.42 on the other, Halo 3's UVs follow it -- map each vertex by its place across ITS
+  OWN triangle's wall into the full strip (v); (4) the lit-texel test took 81 of the 96 strip
+  triangles (half-quads) -- take the strip by UV (`v_range`); the mask texture at 512 (`size`).
+  Check a fold with a TEXTURED render (mask sampled at the UVs) before a boot.
+* **Armed test (user rules):** a30's first dropship 3 Jackals / 3 Grunts / the Elite squad
+  (`DROPSHIP_JACKALS` per-squad counts) for every Armed test; `--actor-flags
+  avoid_friends_line_of_fire,crouch_when_in_line_of_fire` (Halo 1's humans carry them, no
+  Covenant actor does) made Grunts / Jackals / Elites 'more careful' with explosives -- a
+  SPECIES flag, so an enhancer OPTION (handed off). Halo 1 actor variants have no minimum
+  firing range.
+* Explosion visuals vs radius cards: EXPLOSION_VISUAL_SCALE.md (parked by the user until every
+  weapon is ported everywhere); the Brute Shot already has its own particle-system copy.
+* Not reproduced: Halo 3's bloom (the fold stands in), its grenade light volume (a flare).
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:

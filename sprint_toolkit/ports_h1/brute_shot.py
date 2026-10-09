@@ -95,7 +95,47 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'in progress',
+    # 2026-10-09: tested on a30 over 9 boots (dry default + 3 fix boots, balanced, Armed x4 incl.
+    # actor flags) -- confirmed by the user; the ten-map rebuild is BATCHED with the SMG, BR,
+    # Carbine, Beam Rifle, Spike Rifle and Mauler (user's go)
+    'status': 'done',
+    # CLOSE-OUT RECORD (2026-10-09). 4b + template diff + port_sound_refs ran BEFORE boot 1.
+    # Yardstick: Rocket Launcher (user). The grenade does NOT bounce in Halo 3 (impact detonate,
+    #   20 wu air burst); the bounce = a later enhancer option (user).
+    # Weapon: list 2 = only the reload time, 3.2 s on purpose. Written by list 2: bounding radius
+    #   0.363, active camo ding 0.75, illumination recovery 0.15; list 3: first person offset
+    #   (0, -0.05, -0.07: test 2 lowered it 5 units). Zoom removed (Halo 3 has none) + its zoom
+    #   sounds. Trigger latch = the rocket's 'does not repeat automatically'.
+    # Projectile (the rocket's copy): list 2 = air damage range kept 0..100 on purpose (Halo 3's
+    #   0,0 = unset); water gravity 0.25. MINIMUM VELOCITY DETONATES in Halo 1 (boot 1: a 1 s
+    #   burst with Halo 3's 11) -> 0; range 20 bursts at ~2 s as in Halo 3. Timer (on first
+    #   bounce, 0) kept: every response detonates. The rocket's light-volume WIDGET (a streak
+    #   turning with the shot angle), exhaust effect / particle system / contrail all gone.
+    #   Visible: Halo 3's grenade model, an orange ember flare (EMBER, 0.25), the frag
+    #   grenade's smoke trail (own copy x1.3 radius x1.5 count), Halo 3's flight loop.
+    # Explosion: the FRAG GRENADE's effect (user: the rocket's was too big) around the rocket's
+    #   damage copy, its particle system an own copy x0.55; Halo 3's explosion sound; list 2
+    #   (aoe core, camo damage, acceleration, shake, breaking effect) written; screen flash 1 s
+    #   0.5 YELLOW (user: blue reads as plasma); flood combat x1 (explosion_small).
+    # Melee: slice_melee 90 as the copy's mean (rocket 55); list 2 = 0 (re-check pair).
+    # Look: the world model RE-ROOTED in Halo 3's `body` frame (its root is authored tilted);
+    #   the drum chevrons = Halo 3's mask on the ring wall FOLDED into the opening (fold_cards:
+    #   circle fit without strays, every strip triangle by UV, each triangle's own wall into the
+    #   full strip; mask at 512) -- user: 'perfect'. Muzzle flash: the shotgun's (one sound).
+    # HUD: Halo 3's pips (ballistic_meters #6), reticle 25 (H3 #17), icon 36 (horizontal).
+    # Full field diff (h1_port_template_diff, 133 differences): each a decision above, a
+    #   reference to the port's own tags, the HUD pips / reticle / icon.
+    # Tag writes PROVEN (closing check 6): 37 tags, 0 of 765,887 fields changed.
+    # Closing checks: port_refs_audit 0 (kit a30), port_sound_refs all OWN, port_sounds --check
+    #   0, validate_halo_json 0; 5b default 243 dps (Halo 3's row) / balanced 128 (the RL ratio
+    #   row); 9: no shield-hit effect on the player (the explosion is the hit), 3.3/s < 3.5.
+    #   Check 8: the Armed pass armed every Grunt / Jackal / Elite slot from the Flood rocket
+    #   carriers + Halo 3's brute_shot profile (WDM 0.26 / 0.49); hands 'heavy' (enhancer):
+    #   Grunts full rate, Jackals shieldless -- confirmed in game.
+    # Armed test findings (user): the actor flags 'avoid friends line of fire' + 'crouch when in
+    #   line of fire' (only Halo 1's humans carry them) made the Covenant 'more careful' -- a
+    #   SPECIES flag, so an enhancer OPTION (handed off); the a30 dropship mix 3 / 3 / 2 kept.
+    # Not reproduced: Halo 3's bloom (the fold stands in), its light-volume glow (a flare).
     # geometry + look (h1_h3_weapon_model.py). Halo 3's three materials all sample the same
     # `brute_shot` base map (+ bump): the body `brute_shot` (detail metal_dirty, self-illum
     # brute_shot_illum in BLUE at 3 -> 1), `brute_shot_dull` (rubber detail, no illum) and
