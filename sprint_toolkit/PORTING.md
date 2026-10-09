@@ -939,6 +939,37 @@ OBSERVATION until a second port agrees, except the user RULES):
   Halo 3's pellet attachment (`fx\projectile`) is an EMPTY effect: nothing to port.
 * Step 6 (user): no Halo 3 ammo item; Halo 1's shotgun ammo (60 a box) tops the Mauler up, kept.
 * One-handed pose: `ml` taught from `hp` (Halo 1's pistol), not `sg` (two-handed).
+* **DONE 2026-10-09, 7 boots on a30** (dry default, 2 fix boots, 3 balanced incl. glow, Armed):
+  user-confirmed; the ten-map rebuild is batched (user's go). Close-out record in
+  `ports_h1/brute_mauler.py`.
+* **Ammo display = Halo 3's own round icons (user, test 1: 'the original pips').** `ammo_meter`
+  `art` {'h3': (sheet, sequence)}: the chud's ballistic-meter sprite (the Mauler: `ballistic_
+  meters` #13, read off `ui\chud\excavator`), its FIRST icon cut by alpha columns, drawn one a
+  round in a row at Halo 3's spacing, native size at most, top-aligned (centred sat low under
+  the counter). A full magazine lit 4 of 5: the value is capped at 255 and the compare is
+  strict, so a tick threshold of exactly 255 never lights -- `plan` now keeps the top below
+  255 (only magazines whose tick count divides 255 change: 5, 15, 17, 51, 85).
+* **Glow in Halo 3's SHAPES (user, test 3: 'works well for shapes').** Radial spot cards read as
+  'lights drawn onto the weapon'. What works: the lit triangles COPIED in place (scale 1.0, lift
+  0.02, same UVs) as an additive chicago whose texture IS Halo 3's illum mask (`glow_shaders`
+  `mask` + `mask_channel` 'rgb' + `dilate`; `glow_cards` with `lit`), on a saturated base illum
+  (HOT, +1 px). `skip_normals` + `skip_dot` (glow_cards and glow_spots) leave out faces along an
+  axis -- the barrel ends faced exactly +-x (dot 1.0), the drum windows tilted (0.84..0.99).
+* **A thin lit line on a face edge-on to the FP camera stays OPEN** (user: 'very minor, move
+  on'): the body slit (0.8 x 0.2 along the gun, a sideways face). Tried: a camera-facing radial
+  card (`face` + `only_face`: a blob), a fin along the lit texels (`strip`: edge-on in the
+  render), the face's own shaped card grown 3 px x2 gain (still not seen). OBSERVATION: Halo 3
+  shows such lines by bloom alone; locate a user-circled light by rendering the lit texels
+  (fp_material_view --illum) and matching THEIR screen position, not a guessed spot (test 3
+  carded the wrong light).
+* **Armed donor with split carrier bases (user):** Halo 1's shotgun carriers are Flood combat
+  (WDM 0.15) and Marines (0.6) -- one donor pinned for every slot (`donor_variant`, the Flood
+  combat Elite), base 0.15: WDM 0.345 default / 0.16 balanced. WDM sits at actv +0xC4 (big-
+  endian in the tag file, after the 64-byte header).
+* **Test rule (user, 2026-10-09):** the god shield on EVERY port test boot (h1_port_test_map
+  default; `--mortal` opts out).
+* 5b tool fix: `h1_role_compare` kept only the last Damage Upper Bound row (both bounds alike
+  in earlier ports); it now keeps the range's two bounds (the Mauler's 12.6..17.5 -> 15.05).
 
 ## Halo 3
 

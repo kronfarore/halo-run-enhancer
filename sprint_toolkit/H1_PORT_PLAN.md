@@ -18,6 +18,8 @@ Rifle) and A3 (Covenant Carbine, 2026-10-08) are DONE and tested too -- the ten-
 rebuild is BATCHED for all three (user's go). A4 (Beam Rifle, 2026-10-08) is DONE and tested
 too (batched with them); read "A4: what the Beam Rifle taught" before A5. A5 (Spike Rifle,
 2026-10-08) is DONE and tested too (batched); read "A5: what the Spike Rifle taught" before A6.
+A6 (Mauler, 2026-10-09) is DONE and tested too (batched); read "A6: what the Mauler taught"
+before A7.
 
 ## Phase 0: DONE (2026-10-07)
 
@@ -131,7 +133,7 @@ if the port brings its own reticle.
 | A3 | Covenant Carbine | covenant_carbine | 57/58 | 32 | 21 | cc <- ar | sound\weapons\covenant_carbine_port | weapons\covenant carbine |
 | A4 | Beam Rifle | beam_rifle | 59/60 | 33 | 22 | bm <- sr | sound\weapons\beam_rifle_port | weapons\beam rifle |
 | A5 | Spike Rifle (Brute Spiker) | brute_spiker | 61/62 | 34 | 23 | sk <- hp | sound\weapons\spiker_port | weapons\spiker |
-| A6 | Mauler (Brute Mauler) | brute_mauler | 63/64 | 35 | 24 | ml <- sg | sound\weapons\mauler_port | weapons\mauler |
+| A6 | Mauler (Brute Mauler) | brute_mauler | 63/64 | 35 | 24 | ml <- hp (was sg: two-handed) | sound\weapons\mauler_port | weapons\mauler |
 | A7 | Brute Shot | brute_shot | 65/66 | 36 | 25 | bs <- rl | sound\weapons\brute_shot_port | weapons\brute shot |
 | A8 | Spartan Laser | spartan_laser | 67/68 | 37 | 26 | sl <- rl | sound\weapons\spartan_laser_port | weapons\spartan laser |
 | A9 | Gravity Hammer | gravity_hammer | 69/70 | 38 | 27 | gh <- f | sound\weapons\gravity_hammer_port | weapons\gravity hammer |
@@ -484,6 +486,46 @@ range; the shotgun 10 / 3), range 8 (shotgun 6), aim 8/7 16/7, both bullet_slow,
 fields read 0 and projectiles per shot 1 in h3_weapon_values -- find the PELLET count and spread
 (barrel distribution / a second block) before the ratio table. One-handed: `hands` 'one' (Armed
 rule: no Grunt half rate, Jackals keep the shield). Hit-effect rule: pellets x rate.
+
+## A6: what the Mauler taught (2026-10-09) -- read before A7 (the Brute Shot)
+
+PORTING.md "Halo 1: the Mauler, wave A6" is the full record; `ports_h1/brute_mauler.py` is the
+example of a ONE-HANDED PELLET port on a SHELL-BY-SHELL template, of Halo 3's own AMMO PIPS and
+of glow in Halo 3's SHAPES. Everything in "Pilot A1" to "A5" still holds; the Mauler added:
+
+**New user rules:**
+- the GOD SHIELD on EVERY port test boot (h1_port_test_map default; `--mortal` opts out);
+- THE HIT-EFFECT RULE counts SHOTS, not pellets (a 1.33/s pellet weapon keeps x1);
+- the ammo display is the source game's OWN round icons where it has them (`ammo_meter`
+  `art` {'h3': (sheet, sequence)} -- read the sprite off the weapon's chud).
+
+**Process (observations):**
+- Halo 3 keeps pellets on the PROJECTILE (`conical spread`: yaw x pitch count, spread), not on
+  the barrel -- h3_weapon_values shows 1 / 0 there.
+- 4b + template diff + port_sound_refs before boot 1 caught the template's SHELL-BY-SHELL
+  baggage (magazine 'every round must be chambered', weapon type 'shotgun') and the shotgun
+  trigger's EMPTY field naming a SOUND directly (its `shotgun empty` effect sat on MISFIRE).
+  Read the template trigger's three effect fields before writing `sound_effects`.
+- A meter tick at exactly 255 never lights (ammo_meter `plan` keeps the top below 255).
+- Glow: shaped cards (lit triangles copied, Halo 3's mask as the additive texture) are the
+  recipe; radial cards read as stickers. A thin line edge-on to the FP camera stayed OPEN.
+  Find a circled light by its rendered lit texels, never by a guessed spot.
+- Armed: when the donor weapon's carriers disagree on WDM, pin one (`donor_variant`) and use
+  its base (the user picks); WDM = actv +0xC4.
+
+**For A7, the Brute Shot (`support_low\brute_shot\brute_shot`):** yardstick candidates Rocket
+Launcher (provisional), the restored Fuel Rod, Frag Grenade. Halo 3 (h3_weapon_values,
+2026-10-09): 6 loaded, 18 initial = 18 maximum, a WHOLE-magazine reload of 95 fr (the RL 116),
+fire recovery 0.3 s (RL 0.8), minimum error 0.15 + error 0.4 (RL 0), grenade 16 -> 7 wu/s with
+air gravity 0.05, range 20 (RL 8 -> 16, 175), aim 4/15 6/20 (RL 5/25 10/25), melee
+`slice_melee` (a BLADE again; the RL smash_melee), FP ready 19 / fire 29 / melee 28. Its
+damage is NOT an impact damage effect (h3_weapon_values prints None): it lives in the
+projectile's DETONATION -- read the detonation effect / damage and its radius, and how the
+grenade bounces and arms, before the ratio table, against Halo 1's projectile responses and
+detonation timer. Reload: whole magazine like the Mauler. The 3P pose: `bs` taught from `rl`
+(heavy: Armed Grunts keep full rate, Jackals lose the shield) -- confirm the class with the
+user. Glow: fp_material_view --illum first; a light the user circles -> match it by its lit
+texels.
 
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
@@ -949,3 +991,53 @@ spawn check in game. The SMG (done, tested on a30) is the first in that batch.
 > and Spike Rifle, on my go. When done: catalog entry, enhancer hand-off to the "Halo enhancer
 > project" session, PORTING notes, memory, `python port_backup.py --game h1`, and what the
 > Mauler taught added to the plan before A7 (the Brute Shot).
+
+### The Brute Shot (wave A7), filled in
+
+> Port the Brute Shot into Halo 1 (H1_PORT_PLAN.md, wave A, #A7). Source: Halo 3,
+> `objects\weapons\support_low\brute_shot\brute_shot` (H3EK).
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Phase 0: DONE", "Pilot A1", "A2" to "A5" and "A6: what
+> the Mauler taught" first -- its last paragraph is written for THIS weapon), PORTING.md ("What
+> ported actually means" steps 0-11 and 5b, closing checks 0-9, the Halo 1 sections -- the
+> Spike Rifle (physical projectiles, blade melee) and the Mauler (shell-by-shell template
+> traps, Halo 3 ammo pips, glow shapes) -- and "Balance" incl. the ARMED WDM RULE and THE
+> HIT-EFFECT RULE) and memory h1-mauler-port, h1-spike-rifle-port, h1-armed-test-balanced-god,
+> h1-hit-effect-rule, port-flashlight-sound-rule, h1-port-phase0, h1-weapon-into-map,
+> halo-port-own-messages, h1-fmod-bank-sounds, port-findings-are-observations,
+> shared-worktree-commits. `ports_h1/brute_mauler.py` is the example of a whole-magazine reload
+> on a template that reloads otherwise, of Halo 3 pips and shaped glow; copy its shape into
+> `ports_h1/brute_shot.py` and edit only that file (plus any shared tool you generalize).
+>
+> START WITH STEP 4a, before any tag number is written: the yardstick, decided WITH me.
+> Wave-A rule: DEFAULT = Halo 3's own numbers, BALANCED = the ratio rows. Candidates:
+> provisional ROCKET LAUNCHER, alternatives the restored FUEL ROD and the FRAG GRENADE. First
+> find the Brute Shot's DAMAGE: it is in the projectile's detonation (h3_weapon_values prints
+> no impact damage) -- damage, radius, and how the grenade bounces / arms. Lay them side by
+> side per value (damage direct AND splash with its radius, rate / fire recovery, magazine /
+> carry, reload, error, velocity / gravity / range, aim assist, melee) with
+> `h3_weapon_values.py` and `h1_role_compare.py` (a 'brute_shot' set; time to kill vs RL, Fuel
+> Rod, frag grenade). Damage type against Halo 1's materials. I pick; record it in
+> yardstick['pick'] / ['reason'] and PORTING. Then run step 4b (`port_field_audit.py --port
+> brute_shot`), `h1_port_template_diff.py` and `port_sound_refs` BEFORE boot 1.
+>
+> Reserved: pickup messages 65/66; hud_msg_icons 36 (+ _r twin); hud_reticles 25 (+ _r,
+> `reticle_thicken` 1); label `bs` taught to characters\cyborg from `rl`; sounds under
+> `sound\weapons\brute_shot_port` (never under sound\sfx); weapon folder `weapons\brute shot`;
+> catalog name `Brute Shot`.
+>
+> What the Brute Shot tests first: an explosive ARCING grenade with a bounce (Halo 1's
+> projectile responses and detonation timer -- read the template projectile's detonation block
+> first, the Spiker's trap); a 6-round whole-magazine reload; the blade melee (slice_melee);
+> Halo 3's own ammo pips (`ammo_meter` art, read off its chud); glow (`fp_material_view --illum
+> --texels` first); the hit-effect rule (0.3 s recovery = 3.3/s, under 3.5). Before the Armed
+> boot: the enhancer's `hands` for the Brute Shot.
+>
+> Step 11: list Halo 1's carriers of the chosen donor weapon first (with their WDM, actv
+> +0xC4); `firing_profile` needs a `donor_weapon` (+ `donor_variant` if the carriers' WDM
+> disagree) AND a `wdm_rule`. Test with `h1_port_test_map.py brute_shot --stage` (god shield
+> on every boot): dry default, fixes, `--balanced`, then `--armed grunt,jackal,elite` (implies
+> balanced; Jackals ride the first dropship on a30); `--restore <level>`. NO ten-map rebuild:
+> BATCHED with the SMG, BR, Carbine, Beam Rifle, Spike Rifle and Mauler, on my go. When done:
+> catalog entry, enhancer hand-off to the "Halo enhancer project" session, PORTING notes,
+> memory, `python port_backup.py --game h1`, and what the Brute Shot taught added to the plan
+> before A8 (the Spartan Laser).

@@ -84,7 +84,10 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'in progress',
+    # 2026-10-09: tested on a30 over 7 boots (dry default, fixes x2, balanced x3 incl. glow,
+    # Armed) -- confirmed by the user; the ten-map rebuild is BATCHED with the SMG, BR,
+    # Carbine, Beam Rifle and Spike Rifle (user's go)
+    'status': 'done',
     # geometry + look (h1_h3_weapon_model.py). Halo 3's four materials all sample the same
     # `excavator` base map (+ bump): the body `excavator` (detail metal_dirty, self-illum
     # excavator_illum in ORANGE at 8 -> 4), `excavator_dull` (rubber detail, no illum: the
@@ -362,6 +365,43 @@ PORT.update({
             ]},
     },
 
+    # CLOSE-OUT RECORD (2026-10-09). 4b + template diff + port_sound_refs ran BEFORE boot 1.
+    # Weapon: list 2 = only the reload time, 1.8 s on purpose (Halo 3's 0 = the animation's
+    #   length; Halo 1 needs a number). Written by list 2: bounding radius 0.178, acceleration
+    #   scale 2.5, ejection port recovery 0. List 3 by NAME: magazine 'every round must be
+    #   chambered' cleared + weapon type 'undefined' (Halo 3's mauler has neither; its shotgun
+    #   both); 'can be dual wielded' / 'old dual fire error code' (dual wield not reproduced:
+    #   the carry rule x1.5); attachments (Halo 3 2: firing light kept as the shotgun's AR
+    #   muzzle light); fp offset override, font icons, ground scales, power on/off, aim
+    #   falloff, look-pitch error, dual-wield damage scale, damage reporting type: no Halo 1
+    #   field. Fire recovery 0.75 s = rounds per second 1.333.
+    # Projectile: list 2 = 0 (range 8 and air damage range 2.5..5 default; balanced rows).
+    #   Halo 3's attachment `fx\projectile` is an EMPTY effect (nothing to port); pellets: the
+    #   shotgun's 15 (Halo 3's conical grid 3 x 5 = 15), cone 7.5 random (Halo 1 has no grid).
+    # Damage effect: list 2 = 0 (lower 1.5, upper 7; balanced 4 / 12.6..17.5); materials the
+    #   shotgun pellet's (both bullet_slow). Shield-hit effect x1: THE HIT-EFFECT RULE counts
+    #   SHOTS, not pellets (user) -- 1.33/s.
+    # Full field diff (h1_port_template_diff.py): every difference = a decision above, a
+    #   reference to the port's own tags, the dropped casing, the HUD pips / reticle / icon.
+    # Steps 6-10: 6 the shotgun's ammo item (60 a box) KEPT (user; Halo 3 has none); 7 the
+    #   shotgun's HUD, Halo 3's own pips (ballistic_meters #13, ammo_meter `art`, top-aligned;
+    #   5 / 10, step 50 -- the top threshold below 255), reticle 24 (H3 #12); 8 icon 35 +
+    #   messages 63/64; 9 reload and swap x1.0 (the ratio lands on Halo 3's own 55 / 20 fr);
+    #   10 own sounds: fire (two events, the shotgun's layering), reload, ready, melee, pose,
+    #   drop / ammo / dry fire (Halo 3's own reuse of the magnum's).
+    # Look: base self-illum HOT (+1 px); the drum windows in Halo 3's own shapes (lit
+    #   triangles copied, additive, the illum mask as texture); the body slits (mask +3 px,
+    #   x2) -- OPEN, minor (user 2026-10-09: 'still doesn't render, a very minor detail'):
+    #   tried a camera-facing radial card (a blob), a fin strip (edge-on), the bolder face.
+    # Tag writes PROVEN (closing check 6): 39 tags (every weapons\mauler tag, messages, cyborg
+    #   animations, the ten scenarios) flattened, the writer re-run, 0 of 693,643 changed.
+    # Closing checks: port_refs_audit 0 (kit a30), port_sound_refs all OWN, port_sounds
+    #   --check 0, validate_halo_json 0; 5b: default = Halo 3's row (140 dps), balanced = the
+    #   Shotgun-ratio row (301 dps; h1_role_compare now keeps a damage range's two bounds).
+    #   Check 8: the Armed pass armed Grunt / Jackal / Elite slots, all from the pinned Flood
+    #   combat Elite shotgun + Halo 3's excavator profile; one-handed (enhancer default 'one':
+    #   Grunts full rate, Jackals keep the shield -- confirmed in game).
+    # Not reproduced: dual wield, the fixed pellet grid, the slit glow (open).
     # step 4b (port_field_audit.py --port brute_mauler): the source pair (H3 mauler vs the
     # yardstick, H3 shotgun) against the target pair (the H1 port vs its template = the H1
     # shotgun)

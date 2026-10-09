@@ -303,6 +303,8 @@ SETS = {
     # wu/s, range 40, aim 6/15 12/15; pistol 25 x 3.5/s, 12 (60 / 120), 67 fr, error 0.2 ->
     # 2, 300 wu/s, range 40, aim 3/30 6/30. All pellets hit, at point blank (no falloff).
     'brute_mauler': {'port': 'Mauler', 'weapons': [
+        # the BUILT port (step 5b): its tags (+ --balanced rows)
+        ('Mauler (port)', W + r'mauler\mauler', 'shot'),
         ('Mau = H3 own (sg pellet)', W + r'shotgun\shotgun', 'shot',
          {'dmg': 7.0, 'rate': 1 / 0.75, 'mag': 5, 'reload': 55 / 30.0, 'speed': 480.0,
           'range': 8.0, 'aim': (8.0, 7.0, 16.0, 7.0)}),
@@ -499,7 +501,10 @@ def apply_rows(out, rows):
                 elif f == 'Radius Max':
                     d['radius'] = (d['radius'][0], v)
                 elif f in ('Damage Upper Bound', 'Damage Upper Bound Max'):
-                    d['dmg'] = v                           # both bounds are written alike
+                    # the two bounds of the random range, kept apart: damage = their mean
+                    # (the Mauler's balanced pellet 12.6..17.5; earlier ports wrote both alike)
+                    d.setdefault('up', [d['dmg'], d['dmg']])[f.endswith('Max')] = v
+                    d['dmg'] = sum(d['up']) / 2.0
                 else:
                     key = f.lower().replace(' ', '_')
                     if key in d['mods']:
