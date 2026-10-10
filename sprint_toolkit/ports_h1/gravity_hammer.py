@@ -321,7 +321,6 @@ PORT.update({
                                  # blast's own reach (the mortar's 0.2..0.5 ends at 4..10 wu)
                                  'add_particles': [{'from': r'vehicles\wraith\effects\wraith mortar explosion',
                                                     'match': 'light ring expand',
-                                                    'radius': (0.075, 0.125),
                                                     # BOOT 3 (user): 'the shockwave is not the
                                                     # described behaviour; it looks better than
                                                     # the last explosion, remember this state'
@@ -332,7 +331,18 @@ PORT.update({
                                                     # up, small, facing the player). Location 1 =
                                                     # 'gravity' (straight down: the grenade's
                                                     # scorch decal) lays them FLAT
-                                                    'location': 1}],
+                                                    'location': 1,
+                                                    # BOOT 4 (user): 'still nothing of the
+                                                    # described shockwave'. The stock ring lives
+                                                    # 0.1-0.2 s (3-6 frames) at a dim tint: an
+                                                    # OWN copy that lasts 0.5-0.6 s (fading over
+                                                    # the last 0.4), full bright, growing x0.25 ->
+                                                    # x20 to ~3 wu -- unmistakable, to tell size
+                                                    # from orientation
+                                                    'radius': (0.15, 0.15),
+                                                    'tint': (1.0, 0.75, 0.85, 1.0),
+                                                    'particle': {'out': GH + r'effects\shockwave ring',
+                                                                 'lifespan': (0.5, 0.6), 'fade_out': 0.4}}],
                                  # the plasma grenade's blue burst + light; its 8 wu shock wave,
                                  # burn decal and sound go (the hammer brings its own)
                                  'drop_parts': [PG + 'shock wave',

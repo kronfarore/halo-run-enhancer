@@ -526,6 +526,22 @@ def own_explosion(pd, X, write):
                 x.radius[0], x.radius[1] = A['radius']
             if 'location' in A:          # an index of THIS effect's locations (1 = 'gravity')
                 x.location = A['location']
+            if 'particle' in A:
+                # an OWN copy of the particle tag (the Gravity Hammer, boot 4: the stock ring
+                # lives 0.1-0.2 s -- 3-6 frames, not seen): `lifespan` (lo, hi) s, `fade_out` s,
+                # `radius_animation` (start, end) x the entry's radius
+                from reclaimer.hek.defs.part import part_def
+                Q = A['particle']
+                qt = part_def.build(filepath=path(x.particle_type.filepath, '.particle'))
+                qd = qt.data.tagdata
+                if 'lifespan' in Q:
+                    qd.lifespan[0], qd.lifespan[1] = Q['lifespan']
+                if 'fade_out' in Q:
+                    qd.fade_out_time = Q['fade_out']
+                if 'radius_animation' in Q:
+                    qd.rendering.radius_animation[0], qd.rendering.radius_animation[1] = Q['radius_animation']
+                save(qt, path(Q['out'], '.particle'), write)
+                x.particle_type.filepath = Q['out']
             for bd in ((x.tint_lower_bound, x.tint_upper_bound) if 'tint' in A else ()):
                 bd.a, bd.r, bd.g, bd.b = A['tint']
     if n != 1:
