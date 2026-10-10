@@ -208,7 +208,8 @@ def make_hud(w, key, write):
                                   mips=h.get('reticle_mips', False),
                                   hard=h.get('reticle_hard', 0),
                                   min_width=h.get('reticle_min_width', 0),
-                                  split=h.get('reticle_split', 0))
+                                  split=h.get('reticle_split', 0),
+                                  xform=h.get('reticle_xform'))
                if write else -1)
         for c in d.crosshairs.STEPTREE:
             if c.crosshair_type.enum_name == 'aim':
@@ -448,7 +449,7 @@ def scaled_particle_system(src, k, out_dir, write, tint=None):
     return own
 
 
-def own_explosion(pd, X, write):
+def own_explosion(pd, X, write, slot='detonation'):
     """An EXPLOSIVE projectile's own detonation (the Brute Shot, 2026-10-09: Halo 3's damage
     is the grenade's DETONATION damage, no impact damage): own copies of the template's
     detonation effect and of its damage part, the part repointed. The damage: `lower`,
@@ -590,7 +591,10 @@ def own_explosion(pd, X, write):
     if len(found) != len(X.get('swaps', {})):
         raise SystemExit('%s: %d of %d sound parts found' % (e_src, len(found), len(X['swaps'])))
     save(et, path(e_own, '.effect'), write)
-    pd.detonation.effect.filepath = e_own
+    if slot == 'super':                  # the SUPERCOMBINE (the Needle Rifle): its own effect
+        pd.super_detonation.filepath = e_own
+    else:
+        pd.detonation.effect.filepath = e_own
 
 
 def own_beam(a, b, write):
@@ -620,6 +624,12 @@ def own_beam(a, b, write):
         pd.physics.impact_damage.filepath = ''
     if 'explosion' in b:
         own_explosion(pd, b['explosion'], write)
+    if 'super_explosion' in b:
+        # the SUPERCOMBINE (the Needle Rifle, wave B2): a Halo 1 projectile names its OWN
+        # super_detonation effect (the needle: weapons\needler\effects\explosion, damage part
+        # weapons\needler\explosion) -- own copies, the same keys as `explosion`. Only the
+        # needle COUNT (7) is the engine's
+        own_explosion(pd, b['super_explosion'], write, slot='super')
     if 'range' in b:
         pd.detonation.maximum_range = b['range']
     for dotted, v in b.get('proj_fields', {}).items():   # step 4b on the projectile (the Beam Rifle)
@@ -671,6 +681,8 @@ def own_beam(a, b, write):
             for i in range(len(prts) - 1, -1, -1):
                 if prts[i].type.filepath in D.get('drop_parts', ()):
                     prts.pop(i)
+            for q in prts:                       # `swaps` {part: own} (the Needle Rifle's burst sound)
+                q.type.filepath = D.get('swaps', {}).get(q.type.filepath, q.type.filepath)
         save(et, path(D['out'], '.effect'), write)
         pd.detonation.effect.filepath = D['out']
     if 'reflect' in b:

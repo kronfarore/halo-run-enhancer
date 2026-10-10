@@ -127,7 +127,7 @@ def simulate(alpha, out_png, scales=(0.47, 0.49, 0.52), offsets=((0, 0), (0.5, 0
 
 
 def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0, scale=1.0,
-        pixel=0, centre=CENTRE, mips=False, hard=0, min_width=0, dry=False, split=0):
+        pixel=0, centre=CENTRE, mips=False, hard=0, min_width=0, dry=False, split=0, xform=None):
     """The Halo 3 sprite into `hud_reticles` AND `hud_reticles_r`, one sequence index (the
     port's reserved `index` when given). `thicken` px grows every stroke by that much on
     each side (a max filter): Halo 1 draws the 256 px sheet at about half size, and Halo
@@ -139,8 +139,21 @@ def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0,
     import h1_hud_sheet
     from PIL import ImageChops, ImageFilter
     canvas = Image.new('L', (SIZE, SIZE), 0)
-    for src, idx, k, *gain in [(h3_sheet, h3_index, 1.0)] + list(layers):
+    main = (h3_sheet, h3_index, 1.0) + ((xform,) if xform else ())
+    for src, idx, k, *gain in [main] + list(layers):
+        # a trailing DICT on a layer (or `xform` for the main sprite): the chud widget's own
+        # placement (the Needle Rifle: ONE arc sprite drawn four times round the crosshair) --
+        # `flip_x`, `rotate` (+-90: PIL's counter-clockwise), `offset` (dx, dy) chud units
+        xf = gain.pop() if gain and isinstance(gain[-1], dict) else {}
         art, (rx, ry) = layer_art(src, idx)
+        if xf.get('flip_x'):
+            art, rx = art.transpose(Image.FLIP_LEFT_RIGHT), art.width - rx
+        if xf.get('rotate') == 90:
+            art, rx, ry = art.rotate(90, expand=True), ry, art.width - rx
+        elif xf.get('rotate') == -90:
+            art, rx, ry = art.rotate(-90, expand=True), art.height - ry, rx
+        rx -= xf.get('offset', (0.0, 0.0))[0] / k
+        ry -= xf.get('offset', (0.0, 0.0))[1] / k
         # `scale`: the art drawn that much smaller in the sheet (BOX: area-averaged), the
         # weapon HUD's overlay scaled up by the inverse (h1_pickable_weapons reticle_scale)
         k = k * scale

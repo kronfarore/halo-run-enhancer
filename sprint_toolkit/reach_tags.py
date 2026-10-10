@@ -119,6 +119,12 @@ def find_tag(base, ext, near=None):
 def tree(path):
     txt = io.open(path, encoding='utf-8', errors='replace').read()
     txt = re.sub(r'value="<([^"<>]*)>"', 'value="[unavailable]"', txt)
+    # garbage element names in the Needle Rifle chud: control characters (not legal XML)
+    # dropped, and a NAME holding a quote (`""p`) escaped, line-wise
+    txt = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f]', '', txt)
+    txt = re.sub(r'(<element index="\d+" name=")(.*)(">)$',
+                 lambda m: m.group(1) + m.group(2).replace('"', '&quot;') + m.group(3), txt,
+                 flags=re.M)
     return ET.fromstring(txt)
 
 
