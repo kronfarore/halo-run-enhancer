@@ -91,6 +91,17 @@ done for the SAW in all five games plus the Halo 4 Focus Rifle; the per-game rec
    it by (3.5 / rate)^3.19 (size = the square root) -- `python h1_hit_effect_load.py` lists
    every weapon's scale; the port applies it with `bullet.impact_thin` {'materials': [22],
    'out': <own folder>, 'thin': {}, 'rate': max(default, balanced)}. See "Balance".
+10. THE MUZZLE-FLASH RULE (Halo 1, user 2026-10-10, the DMR: 'if muzzle flash isn't part of
+   the regular things to replicate, it should finally be'): the port's FIRST-PERSON flash is
+   checked against the SOURCE weapon's, before boot 1 -- the template's flash sprites (count,
+   radius, direction, offset: its `effe` events / particles) beside the source firing
+   effect's first-person particles (Halo 3 / Reach: the particle systems with camera mode
+   'first person', their location markers and emitter `bounding radius estimate`). A
+   template's flash belongs to the TEMPLATE's muzzle: the DMR on the sniper inherited two
+   sideways brake fans of 15-20 sprites up to 0.125 wu where Reach's flash is 0.06-0.11 wu at
+   the bore ('too big and wide'). Fix with `sound_effects` `copy_from` a closer Halo 1 flash
+   (the DMR: the BR port's pistol sprites + casing) and/or `match` / `drop_off_axis` / `scale`
+   / `shift` (the SMG); record the source numbers beside the choice in the config.
 
 **Step 4 has a second half: the fields NO CARD covers (2026-10-05).** The balance table
 only knows fields some card targets; every other field of a clone is its donor's. Run
