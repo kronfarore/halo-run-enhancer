@@ -42,6 +42,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import h3_fp_pose                       # noqa: E402
+import reach_tags                       # noqa: E402  (a `reach:` source: HALO REACH, wave B)
 import fp_render as R                   # noqa: E402
 import ports_h1                         # noqa: E402
 
@@ -69,7 +70,10 @@ def h1_arm_name(h3):
 
 
 def export_xml(rel):
-    """`tool export-tag-to-xml` of a Halo 3 kit tag, cached by the tag's mtime."""
+    """`tool export-tag-to-xml` of a Halo 3 kit tag, cached by the tag's mtime. A `reach:`
+    path is an HREK tag (reach_tags: absolute paths, its own cache, FLAT xml)."""
+    if reach_tags.is_reach(rel):
+        return reach_tags.export_xml(rel)
     src = os.path.join(H3EK, 'tags', rel)
     os.makedirs(CACHE, exist_ok=True)
     # keyed by the kit PATH, not the basename: generic names collide (the Spike Rifle's
@@ -85,6 +89,8 @@ def export_xml(rel):
 
 def rm_defaults(rel):
     """{node: (q (w,x,y,z), t wu)} bind transforms of a Halo 3 render model."""
+    if reach_tags.is_reach(rel):
+        return reach_tags.rm_defaults(rel)
     s = io.open(export_xml(rel), encoding='utf-8', errors='replace').read()
     blk = s[s.find('<block name="nodes"'):]
     blk = blk[:blk.find('</block>')]
@@ -115,6 +121,15 @@ def frame_events(xml):
 def load(weapon):
     """(h3 nodes [(name, parent)], {anim: (type, frames)}, defaults, events)."""
     w = WEAPONS[weapon]
+    if reach_tags.is_reach(w['graph']):
+        # HALO REACH (the DMR, wave B1): the Spartan FP arms are Halo 1's 37 nodes plus 10
+        # helpers (pedestal / aim_pitch / aim_yaw above base, humerus / radius / handguard
+        # twist nodes) -- a config drops those (`drop_nodes`); the graph decodes like Halo
+        # 3's (reach_tags: the export mislabels the section sizes)
+        nodes, anims, events = reach_tags.load_graph(w['graph'])
+        defaults = dict(reach_tags.rm_defaults(reach_tags.PREFIX + reach_tags.ARMS_RM))
+        defaults.update(rm_defaults(w['render_model']))
+        return nodes, anims, defaults, events
     xml = export_xml(w['graph'])
     nodes, anims = h3_fp_pose.load(os.path.join(H3EK, 'tags', w['graph']), xml)
     defaults = dict(rm_defaults(ARMS_RM))
@@ -132,6 +147,7 @@ def h1_skeleton(weapon, h3_nodes):
     for n, p in h3_nodes:
         if _skip(weapon, n):
             continue
+        p = _kept(weapon, h3_nodes, p)
         names.append(wmap.get(n) or h1_arm_name(n))
         parents.append(None if p < 0 else (wmap.get(h3_nodes[p][0])
                                            or h1_arm_name(h3_nodes[p][0])))
@@ -195,6 +211,14 @@ def corrections(weapon, defaults, h3_nodes):
 def _skip(weapon, n):
     """camera_control (folded into the root) and weapon nodes Halo 1's model lacks."""
     return n == 'camera_control' or n in WEAPONS[weapon].get('drop_nodes', ())
+
+
+def _kept(weapon, h3_nodes, p):
+    """The nearest ancestor (from parent index p) that is not skipped: Reach's dropped
+    pedestal / aim nodes sit ABOVE base (Halo 3's skipped nodes are leaves: unchanged)."""
+    while p >= 0 and _skip(weapon, h3_nodes[p][0]):
+        p = h3_nodes[p][1]
+    return p
 
 
 def _h1(weapon, n):
@@ -295,6 +319,7 @@ def retarget_frame(h3_nodes, pose, defaults, weapon, corr, grip_ref=None,
     for n, p in h3_nodes:
         if _skip(weapon, n):
             continue
+        p = _kept(weapon, h3_nodes, p)
         W = world[n] if p < 0 else _mul(R.inverse(world[h3_nodes[p][0]]), world[n])
         out[_h1(weapon, n)] = (R.qconj(W[0]), tuple(W[1]))   # H1 stores the inverse rotation
     return out

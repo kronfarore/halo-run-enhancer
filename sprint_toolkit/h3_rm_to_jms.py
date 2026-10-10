@@ -123,7 +123,9 @@ def convert(rel, materials=None, markers=None, frame=None):
     `body` node; Halo 3 holds weapons by markers, Halo 1 by the object frame). Vertices
     (model space) and the root's bind transform change; every other node and every marker
     is parent-relative and stays."""
-    rm = h4_rm.load(h1_fp_retarget.export_xml(rel))
+    # a `reach:` render model (HREK's flat export) reads into the same dict (the DMR, wave B1)
+    load = h1_fp_retarget.reach_tags.load_render_model if h1_fp_retarget.reach_tags.is_reach(rel) else h4_rm.load
+    rm = load(h1_fp_retarget.export_xml(rel))
     F = None
     if frame:
         names = [n['name'] for n in rm['nodes']]

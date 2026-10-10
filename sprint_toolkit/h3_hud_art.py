@@ -30,7 +30,10 @@ REL = 'ui\\chud\\bitmaps\\%s.bitmap'
 
 
 def decode(rel):
-    """(RGBA image of the top mip, sprite boxes) of ANY Halo 3 bitmap tag (H3EK path)."""
+    """(RGBA image of the top mip, sprite boxes) of ANY Halo 3 bitmap tag (H3EK path); a
+    `reach:` path is an HREK bitmap (reach_tags.decode_bitmap, the same shapes)."""
+    if h1_fp_retarget.reach_tags.is_reach(rel):
+        return h1_fp_retarget.reach_tags.decode_bitmap(rel)
     xml = h1_fp_retarget.export_xml(rel)
     s = io.open(xml, encoding='utf-8', errors='replace').read()
     g = lambda k: re.search(r'name="%s" value="([^"]*)"' % k, s).group(1)   # noqa: E731

@@ -50,6 +50,10 @@ import ports_h1                                       # noqa: E402
 
 MCC = os.path.dirname(os.path.dirname(HERE))
 H3_FSB = os.path.join(MCC, 'halo3', 'fmod', 'pc', 'sfx.fsb')
+#: the SOURCE bank of the weapon being rendered: a config's `bank` names its MCC game folder
+#: (the DMR, wave B1: 'haloreach' -- Reach's sfx.fsb + .info have Halo 3's 280-byte entries);
+#: none = Halo 3's
+BANK = H3_FSB
 VGMSTREAM = os.path.join('F:' + os.sep, 'Tools', 'vgmstream', 'vgmstream-cli.exe')
 HCEEK = os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'HCEEK')
 TAGS = os.path.join(HCEEK, 'tags')
@@ -72,9 +76,15 @@ COPY = ('flags', 'sound_class', 'minimum_distance', 'maximum_distance', 'skip_fr
 WEAPONS = ports_h1.section('sounds')
 
 
+def use_bank(w):
+    """Select the weapon's source bank (`bank`: an MCC game folder; default Halo 3's)."""
+    global BANK
+    BANK = os.path.join(MCC, w['bank'], 'fmod', 'pc', 'sfx.fsb') if w.get('bank') else H3_FSB
+
+
 def h3_index():
-    """{source folder (lower case, ends in \\): [subsong index, ...]} of Halo 3's bank."""
-    d = open(H3_FSB + '.info', 'rb').read()
+    """{source folder (lower case, ends in \\): [subsong index, ...]} of the source bank."""
+    d = open(BANK + '.info', 'rb').read()
     out = {}
     for i in range(len(d) // 280):
         path = d[i * 280 + 24:(i + 1) * 280].split(b'\0')[0].decode('latin1').lower()
@@ -85,9 +95,11 @@ def h3_index():
 def decode(subsong):
     """One Halo 3 subsong as float mono at its own rate (vgmstream, cached)."""
     os.makedirs(WORK, exist_ok=True)
-    wav = os.path.join(WORK, 'h3_%05d.wav' % subsong)
+    # the cache is per bank (Halo 3's keeps its h3_ names)
+    tag = 'h3' if BANK == H3_FSB else os.path.relpath(BANK, MCC).split(os.sep)[0]
+    wav = os.path.join(WORK, '%s_%05d.wav' % (tag, subsong))
     if not os.path.exists(wav):
-        subprocess.run([VGMSTREAM, '-s', str(subsong + 1), '-o', wav, H3_FSB],
+        subprocess.run([VGMSTREAM, '-s', str(subsong + 1), '-o', wav, BANK],
                        capture_output=True, check=True)
     x, rate = tone.read(wav)
     return x, rate
@@ -96,6 +108,7 @@ def decode(subsong):
 def render(weapon):
     """{sound name: [22 kHz mono float per permutation]}"""
     w = WEAPONS[weapon]
+    use_bank(w)
     idx = h3_index()
     out = {}
     for name, (folders, _like, target, *_cls) in w['sounds'].items():

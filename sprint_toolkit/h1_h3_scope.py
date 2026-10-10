@@ -53,7 +53,11 @@ def widgets(chud):
     """[(name, fields)] of every bitmap widget of a Halo 3 chud_definition.
     A widget with NO state of its own takes its COLLECTION's (the Carbine, 2026-10-07:
     `scope_bitmaps` carries 'zoom lvl 1', its eight widgets none -- read per widget alone,
-    nothing was zoom-only and nothing baked)."""
+    nothing was zoom-only and nothing baked).
+    A `reach:` chud (the DMR, wave B1) is read by reach_tags.chud_widgets into this shape;
+    its widgets carry `px_per_unit` (Reach's 'double / triple sized' 4K assets)."""
+    if h1_fp_retarget.reach_tags.is_reach(chud):
+        return h1_fp_retarget.reach_tags.chud_widgets(chud)
     s = io.open(h1_fp_retarget.export_xml(chud + '.chud_definition'), encoding='utf-8',
                 errors='replace').read()
     out = []
@@ -161,6 +165,8 @@ def bake_maps(chud, size=512, span=640.0, aspect=1.0, per_widget=None):
             img = img.crop((round(l * W), round(t * H), round(r * W), round(b * H)))
         a = np.array(img)[..., 3].astype(np.float64) / 255.0 * (o.get('blur') or 1.0)
         wu, hu = img.width * w['scale'][0], img.height * w['scale'][1]        # units
+        if 'px_per_unit' in w:           # Reach: a 'double sized' sprite is 2 px a unit
+            wu, hu = wu / w['px_per_unit'], hu / w['px_per_unit']
         cx = w['offset'][0] - w['origin'][0] * wu / 2.0
         cy = w['offset'][1] - w['origin'][1] * hu / 2.0
         # a NEGATIVE scale (the Carbine's blip1, -1.4) flips the sprite about its centre
