@@ -453,6 +453,10 @@ SETS = {
     # the H1 sword's melee table (all x1), the explosion on the rocket's (H3 explosion_small =
     # _large for Halo 1 except soft flood flesh x1: the Brute Shot's finding)
     'gravity_hammer': {'port': 'Gravity Hammer', 'weapons': [
+        # the BUILT port (step 5b): its strike (impact crush + the blast) every 46 fr, and its
+        # pommel jab (+ --balanced rows)
+        ('Gravity Hammer (port)', W + r'gravity hammer\gravity hammer', 'shot'),
+        ('GH pommel jab (port)', W + r'gravity hammer\gravity hammer', 'melee'),
         ('GH = H3 own', W + r'energy sword\energy sword', 'melee',
          {'parts': [(W + r'energy sword\melee', 80.0),
                     (W + r'rocket launcher\explosion', 160.0, (0.75, 1.5),

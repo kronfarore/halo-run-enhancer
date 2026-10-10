@@ -608,6 +608,36 @@ what it does not reproduce. Read the Energy Sword's recipe (PORTING "enemy-only 
 pickable") and the sword's `lunge` before choosing a template. Check the hammer's Halo 3 HUD
 (energy meter) for the charge-style reticle widgets the laser found MCC cannot draw.
 
+## A9: what the Gravity Hammer taught (2026-10-10) -- read before wave B (the DMR pilot)
+
+PORTING.md "Halo 1: the Gravity Hammer, wave A9" is the full record; `ports_h1/gravity_hammer.py`
+is the example of an AREA MELEE weapon (a trigger strike that detonates into a knockback blast)
+and of an Armed carrier that must CLOSE IN. Everything in "Pilot A1" to "A8" still holds; wave A
+is complete with it (nine Halo 3 ports, batched for the ten-map rebuild on the user's go).
+
+**New user rules / decisions:**
+- Knockback is TUNED IN GAME (Assembly, live) -- 4b's ratio moved only dead bodies; the user's
+  values replace it (blast 7.5, wielder shove +5).
+- A dropped weapon whose model's long axis is z STANDS (Halo 1 keeps model z vertical on its
+  origin); the user chose to keep the flag pose and stand it like the flag.
+- A melee hit and a weapon blast must SOUND different (tests could not tell them apart).
+
+**Process (observations -- check them on the next port):**
+- ARMED, read the donor's actv FLAGS before step 11: h1_enemy_weapons clones the whole block
+  (the sword commander's 'cannot use ranged weapons' silenced the trigger for six tests).
+- The Armed AI fires from the WORLD model's `primary trigger` marker (h1_model_markers.py: a port
+  with none fires from its origin) and judges reach by the projectile's MAXIMUM RANGE.
+- Short-range weapons need a CHARGE (actor flag `always_charge_in_attacking_mode`, per weapon in
+  the enhancer) -- Halo 1's AI otherwise keeps to firing positions.
+- A label's third-person FIRE animation is its pose donor's; `fire_anim` overrides it.
+- Ground resting, glow halos, shockwave rings: PORTING's A9 bullets.
+
+**For wave B (Reach source, SAW route), the DMR pilot (`rifle\dmr\dmr`):** yardstick candidates
+the Pistol (provisional) and the Sniper Rifle; a magazine semi-automatic with a 3x zoom -- the BR's
+scope recipe (Halo 3 chud baked into a Halo 1 zoom mask) applies to Reach's chud with Reach's
+widget reading (h4_reach_scope / reach_meter_art). Check the world model for a `primary trigger`
+marker (Armed) and its root rotation (Reach models can be authored tilted, as Halo 3's Brute Shot).
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one

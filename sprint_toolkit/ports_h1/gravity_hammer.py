@@ -231,7 +231,38 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'in progress',
+    # 2026-10-10: tested on a30 over 10 dry / balanced boots and 12 Armed tests -- confirmed by the
+    # user; the ten-map rebuild is BATCHED with the SMG, BR, Carbine, Beam Rifle, Spike Rifle,
+    # Mauler, Brute Shot and Spartan Laser (user's go)
+    'status': 'done',
+    # CLOSE-OUT RECORD (2026-10-10). 4b + template diff + port_sound_refs ran BEFORE boot 1.
+    # Yardstick: the Energy Sword (user), x151/150 -> balanced ~ default.
+    # FIRE = Halo 3's head slam (its lunge animation, melee_lunge_unaimed, 46 fr): the sword's
+    #   trigger recipe fires an invisible strike (6 wu/s, 0.2 s timer = the head landing; max
+    #   range 5 for the AI's reach) -> impact crush 150 + a blast 160 over 0.75 -> 1.5 wu
+    #   (knockback 7.5, user-tuned; spares owner + friends), +5 backward shove on the wielder,
+    #   0.0499 energy a slam (20; misfire from 0.99). MELEE = Halo 3's pommel jab, 80, no blast,
+    #   its own hit sound. No fire during a melee: the h1-melee-gate session's halo1.dll patch
+    #   (enhancer option h1_melee_blocks_fire, tag bit 31) + an own 38 fr third-person melee.
+    # Look: Halo 3's model / FP animations (2 units lower, 0.5 closer), Spike Rifle glow recipe
+    #   (48 halo spots), shockwave = 3 stacked Wraith-mortar rings (bright, 0.5-0.6 s) + one
+    #   upright ring; no explosion sprite. Dropped it stands like the flag (z up: Halo 1 rests
+    #   items on their origin). HUD: the plasma pistol's battery + Halo 3's reticle #20 at 27
+    #   (3 px, two brightness bands grown apart); icon 38, messages 69/70.
+    # Armed: Halo 3's ai\generic hammer entry over the sword commander, its 'cannot use ranged
+    #   weapons' flag CLEARED, rate 0.65 / burst 2 s, fire within 2 wu, melee 1 wu; carriers
+    #   CHARGE (actor flag always_charge_in_attacking_mode -- test-map --actor-flags; per-weapon
+    #   in the enhancer: hand-off) and SWING on the trigger (catalog fire_anim 'melee');
+    #   hands two; WDM 1 x 189/202 = 0.94 (balanced 0.93).
+    # Closing checks (2026-10-10, staged a30): port_refs_audit 0 problems, port_sound_refs 0
+    #   BORROW, 4b list 2 only deliberate lines, template diff traced (377), 5b 310 / 1.53 s = 202
+    #   dps (balanced 204), 9: 0.65 slams/s < 3.5 -> hit effect x1.
+    # Steps 6-10: 6 n/a (no ammo: energy); 7 the plasma pistol's battery meter; 8 icon 38, 69/70,
+    #   reticle 27; 9 no reload, swap x1 (the sword's ready 54 = Halo 3's 54: no anims row); 10
+    #   own sounds: melee (swing), jab hit, blast hit, ready, posing, drop.
+    # Not reproduced: the lunge's dash, the blast on the melee button, the Brutes' smaller
+    #   blast, Halo 3's mesh shockwave and arcs, Jackals' swing (knockback interrupts it -- user:
+    #   accepted), rings when a hit lands ON the player (edge-on at eye height).
     # geometry + look (h1_h3_weapon_model.py). Halo 3's materials: hammer (base + bump + brute
     # metal detail + the ILLUM map), hammer_shiny (base + chrome reflections + illum), hammer_dull
     # (base, rubber detail: the grip). h3_rm_info: both roots `hammer` rest at 0 deg and the

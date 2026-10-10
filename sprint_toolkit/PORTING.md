@@ -1156,6 +1156,49 @@ The whole weapon is `ports_h1/gravity_hammer.py`.
   / RL, x0.69 -- Halo 3's hammer smash IS their smash_melee), AR (x0.79), Oddball (x0.53).
   `h1_role_compare.py` melee candidates take `parts` (Halo 1 damage tag, damage[, radius,
   materials]) + `interval` / `aim`.
+* **FIRE = Halo 3's head SLAM, not its strike** (boot 1, user): melee_strike_1 / _2 are POMMEL
+  JABS (the melee button); the RT attack is the lunge animation (`melee_lunge_unaimed`, 46 fr,
+  head down at frame 5) -> a slam that lands is crush_melee 150 + the blast (310 / 1.53 s; the
+  sword ratio unchanged). Find the frame by the weapon node's motion (h1_fp_retarget.retarget +
+  fp_render.compose), not the graph's key frame.
+* **AREA MELEE in Halo 1:** the sword's trigger recipe (make_lunge, `strike`/`push` optional now)
+  fires an INVISIBLE strike (own_beam on a copy of the sword's `lunge` projectile) that detonates on
+  every material and by a TIMER from launch (0.2 s = the slam's moment, 6 wu/s) into an own
+  explosion (own_explosion: damage + knockback, owner and friends spared). Every swing blasts, hit
+  or miss. The wielder's push back = the sword shove (firing damage 0.01, POSITIVE acceleration).
+* **KNOCKBACK on LIVING units:** 4b's ratio (5.83, the H1 rocket's 6) moved only dead bodies --
+  the user tuned 7.5 live (blast) and +5 (shove) in Assembly. The god shield does not stop it.
+* **Halo 1 rests a dropped item on its ORIGIN with model z VERTICAL** (either way up): a model
+  whose long axis is z (the flag's, the hammer's) stands; stock guns lie flat because their z is
+  'up'. The collision hull does not matter (h1_box_collision.py built one: no change). User's pick:
+  stand like the flag (`always_maintains_z_up`).
+* **Shockwave without mesh particles:** the Wraith mortar's `light ring expand` (additive, lies
+  PERPENDICULAR to its location's direction). On the effect's `gravity` location (straight down) it
+  lies flat; the stock particle lives 0.1-0.2 s (unseen) -> an own copy 0.5-0.6 s, drawn x4
+  (brighter), three stacked 0.12 wu apart + one upright on location 0 (faces the strike's target).
+  Ground hits clip flat rings (accepted). own_explosion `add_particles` (count / offset / delay /
+  own `particle` copy) and `drop_classes`.
+* **No fire during a melee:** Halo 1 blocks a trigger for only 3/4 of a player melee -> the
+  h1-melee-gate session's halo1.dll patch (`h1_melee_blocks_fire.py`, enhancer option on by
+  default, opt-in tag bit 31 via `melee_blocks_fire`). Padding the FP melee made it WORSE.
+* **ARMED, four traps** (12 Armed tests): (1) h1_enemy_weapons clones the donor's WHOLE actv --
+  the sword commander's flags 0x40 'cannot use ranged weapons' rode along: no carrier ever fired
+  (every 'slam' was its melee; give the melee its OWN hit sound so tests can tell them apart) ->
+  profile `set` '0x0=I0:Flags' (I<int> longs in ai_firing_profile). (2) Halo 1's AI moves between
+  firing positions; only a CHARGE closes in: actor flag `always_charge_in_attacking_mode` (the
+  Flood shotgun recipe, test-map `--actor-flags`) + berserk firing ranges (actv 0x168 / 0x16C);
+  melee range 0x160 / abort 0x164 / berserk 0x170 / 0x174 (found in the tag by value). (3) The AI
+  fires from the world model's `primary trigger` marker and judges reach by the projectile's
+  MAXIMUM RANGE: the hammer had no markers (its blast went off on the carrier) and range 1.2 ->
+  marker = Halo 3's `hammer_detonation`, range 5 (the timer still bursts it at 1.2). (4) The
+  label's FIRE animation is the pose donor's recoil -> catalog `fire_anim` 'melee'
+  (h1_enemy_weapons.ensure_fire_anim on a PRIVATE copy of the type's list: teach() shares the
+  donor's; h1_pickable_weapons.third_person_fire_as_melee for the player). Stand-in swings:
+  warn before signal-attack (the Jackal's signal-attack barely moves the weapon hand). Jackals'
+  swing is still cut short by knockback (shieldless: every hit pings) -- accepted.
+* Tools: `h1_box_collision.py`, `make_icon.py --z-forward`, `h1_add_reticle` `dry` + `split`,
+  `h1_fp_retarget` `pad_end`, `h1_pickable_weapons` `melee_fields` / `fire_anim` / hit_sound on
+  an own melee copy (it read the donor's backup), `port_refs_audit` takes the entry's `weap`.
 
 ### Halo 1: no FIRE during a MELEE (melee weapons, 2026-10-10) -- halo1.dll patch, CONFIRMED
 
