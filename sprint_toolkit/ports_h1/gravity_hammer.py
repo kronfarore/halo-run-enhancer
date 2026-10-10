@@ -46,6 +46,13 @@ EXPLOSION_4B = {'damage.instantaneous_acceleration': 3.5 * 2.5 / 1.5,
                 'damage.category': 'melee',
                 'damage.aoe_core_radius': 0.75,
                 'damage.flags.does_not_hurt_owner': True,
+                # ARMED TEST 11 (user): 'the Jackal swing does not really play -- the explosion
+                # comes out too early, they get hit by the knockback, which stops the animation'.
+                # Armed Jackals are SHIELDLESS (the two-handed rule) with accel scale 1.0: a
+                # neighbour's blast is a body hit -> a ping animation over the swing (Elites'
+                # shields absorb it, Grunts die). The blast spares its OWNER's side (the player's
+                # spares the Marines)
+                'damage.flags.does_not_hurt_friends': True,
                 'camera_shaking.random_translation': 0.05,
                 'breaking_effect.forward_velocity': 30.0,
                 'breaking_effect.forward_radius': 2.0,
