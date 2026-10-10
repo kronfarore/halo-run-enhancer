@@ -1274,3 +1274,83 @@ purpose: a 458.8 MiB a10 loads and plays (0.1) -- no file-size cap. Spawn check 
 > and Spartan Laser, on my go. When done: catalog entry, enhancer hand-off to the "Halo enhancer
 > project" session, PORTING notes, memory, `python port_backup.py --game h1`, and what the
 > Gravity Hammer taught added to the plan before wave B (the DMR pilot).
+
+### The DMR pilot (wave B1), filled in
+
+> Port the DMR into Halo 1 (H1_PORT_PLAN.md, wave B, #B1, the PILOT of the REACH route).
+> Source: Halo Reach, `objects\weapons\rifle\dmr\dmr` (HREK); FP graph
+> `objects\characters\spartans\fp\weapons\rifle\fp_dmr\fp_dmr`, FP arms
+> `objects\characters\spartans\fp\fp.render_model`.
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Phase 0: DONE" incl. 0.1 capacity -- no 384 MiB cap --,
+> "Pilot A1", "A2" (the scope recipe) to "A8", and "A9: what the Gravity Hammer taught" -- its
+> last paragraph is written for THIS weapon -- and the wave-A batch record), PORTING.md ("What
+> ported actually means" steps 0-11 and 5b, closing checks 0-9, the Halo 1 sections -- the
+> Battle Rifle (zoom = the source scope baked into a Halo 1 mask), the Spartan Laser (MCC's
+> reticle drawing, `reticle_min_width`) -- the Halo Reach sections (geometry: the Foundry
+> route; "REACH STEP 9: the animations are COMPRESSED"; Reach textures, chud, sounds) and
+> "Balance" incl. the ARMED WDM RULE, THE HIT-EFFECT RULE, the two-handed rule) and memory
+> h1-gravity-hammer-port, h1-spartan-laser-port, h1-battle-rifle-port,
+> h1-armed-test-balanced-god, h1-armed-wdm-rule, h1-armed-two-handed-rule, h1-hit-effect-rule,
+> port-flashlight-sound-rule, h1-port-phase0, reach-port-foundry-render-model,
+> halo-reach-support-scoping, halo-zoom-ui-reach-unwired, h1-weapon-into-map,
+> halo-port-own-messages, h1-fmod-bank-sounds, port-findings-are-observations,
+> shared-worktree-commits. `ports_h1/battle_rifle.py` is the nearest shape (a zoomed magazine
+> semi-auto on the pistol template): copy it into `ports_h1/dmr.py` and edit only that file
+> plus the shared tools you GENERALIZE FOR REACH (this pilot's job: every tool you extend
+> must keep producing byte-identical output for the wave-A ports -- prove it as phase 0 did,
+> with a SHA-1 snapshot of the files a --write run touches, before and after).
+>
+> START WITH STEP 4a, before any tag number is written: the yardstick, decided WITH me.
+> Wave rule so far: DEFAULT = the source game's own numbers, BALANCED = the ratio rows (ask
+> me whether wave B keeps it). Candidates: provisional PISTOL (semi-auto magazine 15, 3x zoom,
+> near-instant bullet: the magnum's role), alternative SNIPER RIFLE, no direct yardstick.
+> Lay them side by side per value (damage per round AND per second, rate / fire recovery,
+> magazine / carry, reload, error / bloom, velocity / range, zoom, aim assist, melee) and
+> the time to kill (h1_role_compare.py, a 'dmr' set vs Pistol, Sniper Rifle and the BR as a
+> port peer). The Halo 3 side tool is h3_weapon_values.py: make its Reach equivalent (HREK
+> `tool export-tag-to-xml`, cwd = the kit, absolute paths) or generalize it. Damage type
+> against Halo 1's materials. I pick; record it in yardstick['pick'] / ['reason'] and
+> PORTING. Then step 4b, `h1_port_template_diff.py` and `port_sound_refs` BEFORE boot 1.
+>
+> THE ROUTE (the pilot's real question -- lay the options out for me before building):
+> - GEOMETRY: Reach render model -> JMS for HCEEK `tool model` (world + FP). Candidates:
+>   h4_rm.load / the Halo 3 converters (h3_rm_to_jms) on Reach's render_model, Foundry
+>   (Blender on F:) import + JMS export, `tool export-render-model-mesh` (reach_donor_mesh.py's
+>   .x reader). Check the world model's root rotation (Reach models can be tilted, as Halo 3's
+>   Brute Shot) and its `primary trigger` marker (Armed fires from it).
+> - FP ANIMATIONS, three candidates, side by side with what each costs:
+>   (a) a RETARGET of Reach's own fp_dmr if Reach's FP arms match Halo 1's (Halo 3's do --
+>       compare `spartans\fp\fp.render_model` nodes / bind poses with H1's cyborg fp as the
+>       wave-A finding did; Reach graphs are COMPRESSED: Foundry decodes them, PORTING
+>       "REACH STEP 9");
+>   (b) the PROVEN Halo 3 retarget driving the DMR mesh with Halo 3's Battle Rifle FP
+>       animations (h1_fp_retarget.py; the BR already runs on it) -- a different rifle's
+>       motion;
+>   (c) the plan's original SAW route: the mesh on a Halo 1 donor's skeleton, the donor's
+>       animations retimed.
+>   Prefer the most faithful route that the pilot can PROVE; record what the others would
+>   need (wave B's next six ports inherit the choice).
+> - TEXTURES / SHADERS: Reach's bitmaps decoded (h3_hud_art.decode or reach_saw_textures.py;
+>   check the chunk layout), multipurpose map R = specular mask, G = self-illum (Halo 1 needs
+>   it or the gun renders white).
+> - SOUNDS: Reach's FMOD bank `haloreach\fmod\pc\sfx.fsb` (+ .info) -- generalize
+>   h1_port_sounds.py's Halo 3 source (H3_FSB) to a per-config source game.
+> - HUD: Reach's chud scope through h1_h3_scope (Reach widget reading: h4_reach_scope /
+>   reach_meter_art), Halo 1's outside-the-lens blur kept; reticle strokes >= 3 sheet px
+>   (`reticle_min_width`, simulate first); ammo readout for 15 rounds.
+>
+> Reserved: pickup messages 71/72; hud_msg_icons 39 (+ _r twin); hud_reticles 28 (+ _r);
+> label `dm` taught to characters\cyborg from `ar`; sounds under `sound\weapons\dmr_port`
+> (never under sound\sfx); weapon folder `weapons\dmr`; catalog name `DMR`.
+>
+> Step 11: `dm` has no carrier: list Halo 1's carriers of the chosen donor weapon first (with
+> their WDM, actv +0xC4, and their actor FLAGS -- A9's trap); `firing_profile` (Reach's
+> ai\generic DMR entry on m10 is verified) needs a `donor_weapon` (+ `donor_variant` if the
+> carriers' WDM disagree) AND a `wdm_rule`. Test with `h1_port_test_map.py dmr --stage` (god
+> shield on every boot): dry default, fixes, `--balanced`, then `--armed grunt,jackal,elite`
+> (implies balanced; a30's first dropship 3 Jackals / 3 Grunts / 2 Elites);
+> `--restore <level>`. The ten-map rebuild is BATCHED again (wave B, on my go). When done:
+> catalog entry, enhancer hand-off to the "Halo enhancer project" session, PORTING notes
+> (a "Halo 1: the DMR, the Reach pilot" section), memory, `python port_backup.py --game h1`,
+> and "B1: what the DMR taught" in the plan -- the Reach recipe the next six inherit -- plus
+> the B2 (Needle Rifle) prompt.
