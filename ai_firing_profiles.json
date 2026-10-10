@@ -1068,7 +1068,7 @@
    "balanced_fields": {
     "0xC4": [
      "<f",
-     0.49375,
+     0.9067431850789096,
      "Weapon Damage Modifier"
     ]
    },
@@ -1076,7 +1076,126 @@
     "base": 0.4,
     "yardstick_dps": 158.0,
     "port_dps": 243.0,
-    "balanced_port_dps": 128.0
+    "balanced_port_dps": 69.7
+   }
+  },
+  "weapons\\spartan laser\\spartan laser": {
+   "source": "Halo 3 ai\\generic objects\\weapons\\support_high\\spartan_laser\\spartan_laser (weapon properties #14, firing pattern #14) over weapons\\rocket launcher\\rocket launcher carriers",
+   "fields": {
+    "0x74": [
+     "<f",
+     50.0,
+     "Maximum Firing Distance"
+    ],
+    "0x80": [
+     "<f",
+     0.20000000298023224,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     0.4000000059604645,
+     "First Burst Delay Time Max"
+    ],
+    "0x8C": [
+     "<f",
+     1.0,
+     "Surprise Delay Time"
+    ],
+    "0x9C": [
+     "<f",
+     10.0,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     30.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     0.75,
+     "Target Tracking"
+    ],
+    "0xCC": [
+     "<f",
+     0.4000000059604645,
+     "Burst Origin Radius"
+    ],
+    "0xD0": [
+     "<f",
+     0.3490658402442932,
+     "Burst Origin Angle"
+    ],
+    "0xD4": [
+     "<f",
+     0.4000000059604645,
+     "Burst Return Length"
+    ],
+    "0xD8": [
+     "<f",
+     0.4000000059604645,
+     "Burst Return Length Max"
+    ],
+    "0xDC": [
+     "<f",
+     0.3490658402442932,
+     "Burst Return Angle"
+    ],
+    "0xE0": [
+     "<f",
+     3.6,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     3.6,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     3.0,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     5.0,
+     "Burst Separation Max"
+    ],
+    "0x1D8": [
+     "<f",
+     0.6000000238418579,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.8999999761581421,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x78": [
+     "<f",
+     0.0,
+     "Rate Of Fire"
+    ],
+    "0xC4": [
+     "<f",
+     0.2771929824561404,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "donor_weapon": "weapons\\rocket launcher\\rocket launcher",
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.5159183673469387,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.4,
+    "yardstick_dps": 158.0,
+    "port_dps": 228.0,
+    "balanced_port_dps": 122.5
    }
   }
  }

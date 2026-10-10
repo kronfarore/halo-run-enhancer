@@ -80,19 +80,23 @@ PORT = reserved(
                   "(4-5 shots); the Sentinel Beam ratio chains derived numbers and leaves 1.25 "
                   "shots a battery. User: A/B the AOE SPIKE BUMP in game (with: 408 a shot, "
                   "without: 131) and decide from that whether the Brute Shot's rocket ratio "
-                  "(which used the rocket's 240 without its 200 bump) needs adjusting",
+                  "(which used the rocket's 240 without its 200 bump) needs adjusting. "
+                  "A/B (balanced boot 12, user): A -- 'A feels right, go with A and adjust the "
+                  "Brute Shot' (its balanced grenade 73/440 of the rocket, 2026-10-09)",
         # DEFAULT = Halo 3's own numbers (PORTING "Balance"); these are the BALANCED rows.
         # H1 rocket: explosion 315 (300..330, lower 80), radius 0.5 -> 2.0, 2.0 s a shot, 2 (4
         # / 8), reload 4.17 s, range 128, aim 0/35 12/35, melee 55. H3 rocket: 240 + bump 200
         # = 440 direct, radius 0.9 -> 2, 0.8 s, 2 (4 / 8), reload 116 fr, range 175, aim 5/25
         # 10/25, smash_melee 80
         'balanced': {
-            # A (with both bumps): 315 x 570/440 = 408 a shot; B (without): 315 x 100/240 = 131
-            'damage': {'A': 408.0, 'B': 131.25},
+            # A (with both bumps): 315 x 570/440 = 408 a shot; B (without): 315 x 100/240 = 131.
+            # The user's pick (boot 12): A
+            'damage': 408.0,
             # the rocket's SUSTAINED rate (2 rockets a 0.8 + 3.87 s in Halo 3, a 2.0 + 4.17 s
             # in Halo 1: x0.75) -> cycle 4.88 / 0.75 = 6.5 s: charge 2.5 x 6.5/4.88 = 3.33 s,
             # vent 2.25 x 6.5/4.88 = 3.0 s (loss 0.9 / 3.0 = 0.3)
             'charge_s': 3.33,
+            # 2.25 s x 6.5/4.88 = 3.0 s vent (the long vent of Armed test 6 was reverted)
             'heat_loss': 0.3,
             'battery_shots': 5,            # the rocket's 2 / 4 / 8 = Halo 3's: x1
             'radius': (0.0, 0.6),          # 0 x 0.5/0.9, 0.6 x 2/2
@@ -114,11 +118,70 @@ PORT = reserved(
             'why': 'instant beam, one huge shot, battery (age) not magazine',
             'lacks': '2.5 s charge-up (the fuel rod charge is the H1 precedent)'}},
     # step 11: the source game's ai\generic entry (18 fields, verified 2026-10-07)
-    firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\support_high\\spartan_laser\\spartan_laser'},
+    # Halo 1's ROCKET LAUNCHER carriers (the yardstick; h1_weapon_carriers, the Brute Shot's
+    # check 2026-10-09): the Flood combat Elite and human, both WDM 0.4 -- they agree, no
+    # donor_variant. ARMED WDM RULE: 0.4 x rocket 158 / laser dps (5b, the direct hit 570 /
+    # 408): a HELD cycle is the LONGER of charge and vent in Halo 1 (Armed test 6) -- default
+    # 570 / 2.5 s = 228 (0.28), balanced 408 / 3.33 s = 122.5 (0.52)
+    firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\support_high\\spartan_laser\\spartan_laser',
+                    'donor_weapon': 'weapons\\rocket launcher\\rocket launcher',
+                    # ARMED TESTS 1-2 (user): 'they only fire the tracer, no charge up'. A Halo 1
+                    # AI holds the trigger for ONE BURST (the fuel rod Grunts charge that way);
+                    # Halo 3's profile bursts 2.6 s -- sized for ITS 2.5 s charge -- and the
+                    # balanced charge is 3.33 s: every release came early and fired the tap's
+                    # tracer. Burst 3.6 s covers both (default 2.5, balanced 3.33). Test 2 tried
+                    # special fire 'overcharge' (0x154..0x15C) first: no change -- dropped
+                    # ARMED TEST 3 (user): still the tracer with the 3.6 s burst alone. Bungie's
+                    # only charging AI: the plasma-pistol JACKALS (special fire overcharge, enemy
+                    # visible, 0.2-0.3, delay 5). Test 4: overcharge + the 3.6 s burst together
+                    # (+ the trigger's 0.1 s charge hold, below)
+                    # test 5: the fuel rod's ONE trigger (special fire off again) -- the enemy
+                    # then fired NOTHING. TEST 6: Halo 3's profile sets no RATE OF FIRE, so the
+                    # rocket carriers' 0.25 rode along: a Halo 1 AI with a rate PULSES the
+                    # trigger a round at a time (each pull ends long before the charge); the
+                    # fuel rod Grunts run rate 0 -- they HOLD for the burst (2.2 s against their
+                    # 1.25 s charge). Rate 0 + the 3.6 s burst (the 3.33 s balanced charge)
+                    'set': ['0x78=0.0:Rate Of Fire',
+                            '0xE0=3.6:Burst Duration', '0xE4=3.6:Burst Duration Max'],
+                    'wdm_rule': {'base': 0.4, 'yardstick_dps': 158.0, 'port_dps': 228.0,
+                                 'balanced_port_dps': 122.5}},
 )
 
 PORT.update({
-    'status': 'building',
+    # 2026-10-09/10: tested on a30 over 19 boots (dry default + look / HUD / beam iterations, a
+    # penetration control, balanced A/B, Armed x6, the vent) -- confirmed by the user; the ten-
+    # map rebuild is BATCHED with the SMG, BR, Carbine, Beam Rifle, Spike Rifle, Mauler and Brute
+    # Shot (user's go)
+    'status': 'done',
+    # CLOSE-OUT RECORD (2026-10-10). 4b + template diff + port_sound_refs ran BEFORE boot 1.
+    # Yardstick: Rocket Launcher with both aoe spike bumps (user, A/B: A) -> the Brute Shot's
+    #   balanced grenade corrected to 73/440 (52.3, WDM 0.91).
+    # Trigger: the FUEL ROD's one trigger (charge 2.5, discharge, rounds per second 10, does not
+    #   repeat automatically; early release fires nothing) after the plasma pistol's pair, which
+    #   the Armed AI only tapped. Heat 1 a shot, Halo 3's 2.25 s vent (a whole-cycle vent was
+    #   tried and reverted: Halo 1 charges during the overheat -- a held laser fires every 2.5 s).
+    #   Battery 0.19999999 + age misfire 0.9999 / 1 (5 shots, HUD 80/60/40/20/0).
+    # Beam: one round = the whole shot, impact 570 (the direct hit; overpenetrated units take
+    #   only the impact) + splash 100 over 0.6; 60 -> 1940 wu/s (overpenetration + the contrail's
+    #   first point), collision radius 0; three contrail layers on a baked Halo 3 beam texture
+    #   (profile x laser_red_01). Impact: the rocket explosion's parts small and red + scorch.
+    # 4b list 2 (final): only deliberate lines left -- the tracer barrel's shot count (no Halo 1
+    #   meaning), collision radius 0 and the speeds (the penetration / contrail findings); lists
+    #   4/5: the muzzle offset, heat / battery (Halo 3's tracer barrel compared), the template's
+    #   layout, the screen flash (the Brute Shot's precedent).
+    # Look: decals (alpha-blended, `material_names` for the digit trap), luminous = the gem
+    #   recipe, the charge glow = `glow_points` faded by D out, vent = own wind-free FP smoke out of
+    #   Halo 3's side vent. HUD: the plasma pistol's heat + battery, Halo 3's two-widget reticle
+    #   at Halo 1's size with 3 px strokes, Halo 3's scope (the BR's ring shape); the HUD charge
+    #   triangle not reproducible (the `charge` crosshair type never draws in MCC).
+    # Closing checks: port_refs_audit 0 problems, port_sound_refs 0 BORROW, port_sounds --check 0,
+    #   validate_halo_json 0, tag writes proven (71 tags, 0 of 748,552 fields changed); 5b default
+    #   570 a shot, held cycle 2.5 s; balanced 408, 3.33 s (h1_role_compare spartan_laser); 9: one
+    #   shot a cycle (0.3-0.4/s, < 3.5) -> the hit effect kept x1. Check 8: Armed Grunt / Jackal /
+    #   Elite fire it (Rate Of Fire 0, burst 3.6), hands heavy -- confirmed in game; WDM 0.28 /
+    #   0.52 (the held cycle).
+    # Not reproduced: the tap-tracer, the HUD charge triangle, Halo 3's bloom, the charge lock
+    #   during the overheat.
     # geometry + look (h1_h3_weapon_model.py). Halo 3's materials: spartan_laser (base + bump,
     # chrome reflections), spartan_laser_dull (BR gun detail), spartan_laser_shiny,
     # spartan_laser_luminous (base + a 1x1 WHITE self-illum map: the whole material lit in
@@ -284,15 +347,17 @@ PORT.update({
                       'start': SND + 'sl_charge_in', 'loop': SND + 'sl_charge_loop',
                       'end': SND + 'sl_charge_out', 'tag': SND + 'sl_charging',
                       'marker': 'primary trigger', 'scale': 'D_out'},
-        # trigger 0: Halo 3's TRACER (spartan_laser_tracer: no damage, 4000 wu/s, range 120)
-        'beam': {'projectile': (SR + 'sniper bullet', SL + 'tracer'),
-                 'no_impact_damage': True, 'velocity': 4000.0, 'range': 120.0,
-                 'contrail': {'from': SR + 'sniper', 'out': SL + 'tracer', 'rgb': RED,
-                              'no_physics': True, 'blend': 'add'},
-                 'proj_fields': {'proj_attrs.physics.water_gravity_scale': 0.0},
-                 'clear_response_effects': True,
-                 'triggers': (0,)},
-        # trigger 1: the BEAM. Halo 3's 5 rounds = ONE Halo 1 round of the whole shot. Its
+        # ARMED TESTS 1-4 (user): Armed enemies fired only the tap's tracer -- no charge -- with
+        # a longer burst, special fire 'overcharge' (Bungie's only charging AI: the plasma-
+        # pistol Jackals) and a charge hold. User: 'there is a better precedent, the original
+        # H1 FUEL ROD fires after a charge up'. ONE trigger the fuel rod's way: it charges and
+        # DISCHARGES its own projectile -- the beam; the plasma pistol's charged trigger pair is
+        # gone (keep_triggers 1), and with it Halo 3's harmless tap-tracer (no trigger left to
+        # fire it). Fuel rod trigger: rounds per second 10 (the pair's 0 reads as 'release at
+        # once' to the AI, apparently), 'does not repeat automatically', charge hold 0
+        'keep_triggers': 1,
+        # the BEAM (trigger 0 since Armed test 5; trigger 1 before). Halo 3's 5 rounds = ONE
+        # Halo 1 round of the whole shot. Its
         # damage split in two so a direct hit is Halo 3's 570 and a near miss its splash:
         # IMPACT 470 (= 5 x the 94 aoe spike bump: what only a direct hit gets) + a DETONATION
         # splash 100 (= 5 x 20 over 0..0.6 wu, core 0.15). Both on copies of the ROCKET's
@@ -300,7 +365,11 @@ PORT.update({
         # beam overpenetrates units (except giants), glass, water, plants and detonates on the
         # rest -> the sniper bullet's overpenetrate set without Hunter skin (a giant), plus the
         # Jackal, player and Sentinel shields/bodies; detonate everywhere else (the splash).
-        # OBSERVATION to check in game: an overpenetrated unit takes the impact (470) only
+        # OBSERVATION, CONFIRMED by the penetration test (boot 5): a unit the beam PASSES
+        # THROUGH takes the impact only -- the detonation happens where the beam stops. So the
+        # IMPACT carries the WHOLE direct hit (570; boot 11 on): infantry take Halo 3's 570; the
+        # splash (100 over 0.6 wu) hits near misses and what the beam stops on -- Hunters
+        # (detonate, as Halo 3's 'not against giants') take impact + splash, 670 x 0.5 armour
         'bullet': {'projectile': (SR + 'sniper bullet', SL + 'beam'),
                    'damage': (RL + 'explosion', SL + 'beam'),
                    # TEST 5 (two lasers): only the copy at the SNIPER's 1000 wu/s overpenetrated
@@ -315,7 +384,7 @@ PORT.update({
                    # speed from initial to final over its range (the Brute Shot's 16 -> 7): a
                    # beam that STARTS SLOW, 60 -> 1940 wu/s -- the first update 2 wu out, the
                    # 120 wu in ~0.2 s, ~380-700 wu/s at 20-40 wu (it penetrated at 1000)
-                   'dmg': 470.0, 'velocity': (60.0, 1940.0), 'range': 120.0,
+                   'dmg': 570.0, 'velocity': (60.0, 1940.0), 'range': 120.0,
                    'fields': dict(DAMAGE_4B, **{'radius': (0.0, 0.0),
                                                 'damage_modifiers.hunter_armor': 0.5}),
                    'explosion': {'effect': (RL + 'effects\\rocket explosion', SL + 'effects\\beam impact'),
@@ -386,7 +455,16 @@ PORT.update({
                                 'states': [{'duration': (0.25, 0.3), 'transition': (0.3, 0.4),
                                             'width': 0.22, 'argb': (1.0, 1.0, 1.0, 1.0)},
                                            {'width': 0.18, 'argb': (0.0, 1.0, 1.0, 1.0)}],
-                                'extra': [{'out': SL + 'beam body', 'blend': 'alpha_blend',
+                                # TEST 10 (user): 'the best beam so far; neither thicker nor
+                                # thinner -- more luminous?' A second ADDITIVE layer on the same
+                                # texture and width: additive layers add up (Halo 3 drives its
+                                # palette above 1 in HDR)
+                                'extra': [{'out': SL + 'beam glow', 'blend': 'add',
+                                           'bitmap': SL + 'bitmaps\\sl_beam_add', 'sequence': (0, 0),
+                                           'states': [{'duration': (0.25, 0.3), 'transition': (0.3, 0.4),
+                                                       'width': 0.22, 'argb': (1.0, 1.0, 1.0, 1.0)},
+                                                      {'width': 0.18, 'argb': (0.0, 1.0, 1.0, 1.0)}]},
+                                          {'out': SL + 'beam body', 'blend': 'alpha_blend',
                                            'bitmap': SL + 'bitmaps\\sl_beam_body', 'sequence': (0, 0),
                                            'states': [{'duration': (0.25, 0.3), 'transition': (0.3, 0.4),
                                                        'width': 0.12, 'argb': (0.9, 1.0, 1.0, 1.0)},
@@ -399,12 +477,23 @@ PORT.update({
                                    'match': ('particles\\energy\\', 'shield impact'),
                                    'decals': {'effects\\decals\\bullet holes\\plasma green burn large':
                                               'effects\\decals\\bullet holes\\plasma burn'}},
-                   'triggers': (1,)},
+                   'triggers': (0,)},
         # Halo 3: no error, no spread; the muzzle offset -- the trail starts at the FP muzzle
         'trigger': {'acceleration_time': 0.0, 'deceleration_time': 0.0,
+                    'rounds_per_second': (10.0, 10.0),
                     'first_person_offset': FP_MUZZLE},
         # Halo 3: overheated at 1.0, back at 0.1; Halo 1 has ONE loss: every shot overheats,
         # so the OVERHEATED loss (0.4) is the one that ever runs -> a 2.25 s vent
+        # ARMED TEST 6 (user): 'I can start charging again right after firing by re-pressing
+        # and holding -- the beam comes out the moment the heat is back'. Halo 1 CHARGES DURING
+        # THE OVERHEAT (no trigger flag prevents it; only the discharge waits), so a held cycle
+        # is the LONGER of charge and vent (2.5 s) where Halo 3's is charge + vent (4.75 s).
+        # Compared with Halo 1's charged weapons: the fuel rod has no heat, the plasma cannon no
+        # charge, the plasma pistol's charged shot overlaps the same way (vent 1.15 s, charge
+        # 0.6). User: 'if it's the vent, we increase the vent to match the delay it should
+        # have' -> the vent = Halo 3's whole cycle (0.9 / 4.75 s), boot 19. User: 'the vent
+        # doesn't feel right, revert it' -> Halo 3's 2.25 s vent; a held laser fires every 2.5 s
+        # (the charge), the plasma pistol's overlap. Kept as an observation (PORTING)
         'heat': {'recovery_threshold': 0.1, 'overheated_threshold': 1.0, 'loss_per_second': 0.4},
         # TEST 1 (user): 'venting looks like the fuel rod venting -- as close to the original as
         # possible'. The template's vent = green `plasma overheat` energy particles; Halo 3's =
@@ -458,37 +547,30 @@ PORT.update({
         'own_light': {'shape': PP + 'muzzle flash', 'look': PP + 'muzzle flash',
                       'out': SL + 'muzzle light', 'argb': (1.0,) + RED, 'duration': 0.1},
         'fields': {
-            # TRIGGER 0 = the charge (Halo 3: 2.5 s, fires itself when charged)
+            # THE TRIGGER (the fuel rod's way, Armed test 5): charge 2.5 s, then DISCHARGE the
+            # beam (Halo 3's spew-charge fires by itself when charged); heat 1 (every shot
+            # overheats), battery 0.19999999 (5 shots: Halo 3's 0.04 a round x 5). The charge
+            # hold went 0 -> 0.1 for test 4's overcharge attempt and back
             'weap_attrs.triggers.0.charging.charging_time': 2.5,
             'weap_attrs.triggers.0.charging.charge_hold_time': 0.0,
             'weap_attrs.triggers.0.charging.overcharged_action': 'discharge',
-            'weap_attrs.triggers.0.misc.heat_generated_per_round': 0.0,
-            'weap_attrs.triggers.0.misc.age_generated_per_round': 0.0,
-            # a tap: Halo 3's tracer effect has no sound and no flash
-            'weap_attrs.triggers.0.firing_effects.0.firing_effect.filepath': '',
-            'weap_attrs.triggers.0.firing_effects.0.firing_damage.filepath': '',
-            'weap_attrs.triggers.0.firing_effects.0.misfire_effect.filepath': '',
-            'weap_attrs.triggers.0.firing_effects.0.misfire_damage.filepath': '',
-            'weap_attrs.triggers.0.firing_effects.0.empty_effect.filepath': SND + 'sl_dryfire',
-            # TRIGGER 1 = the beam: heat 1 (every shot overheats), age 0.2 (5 shots a battery:
-            # Halo 3's 0.04 a round x 5 rounds, campaign = multiplayer)
-            'weap_attrs.triggers.1.misc.heat_generated_per_round': 1.0,
+            'weap_attrs.triggers.0.flags.does_not_repeat_automatically': True,
+            'weap_attrs.triggers.0.flags.projectile_is_client_side_only': False,
+            'weap_attrs.triggers.0.misc.heat_generated_per_round': 1.0,
             # TEST 1 (user): 'the third shot got the battery down to 39 instead of 40': 0.2 in
             # float32 sums to 0.6000000238 after three shots (1 - that = 39.99..%). The float
-            # just below 0.2 shows 80 / 60 / 40 / 20 / 0 -- but after five shots the age is
-            # 0.99999994 < 1: TEST 2 checks that no 6th shot fires
-            'weap_attrs.triggers.1.misc.age_generated_per_round': 0.19999999,
-            # TEST 2 (user): 'the 6th shot fires'; TEST 3: clearing the charged trigger's 'can
-            # fire with partial ammo' did NOT stop it (the template's flag is kept). Halo 1's
-            # AGE MISFIRE does it instead (below): misfire from age 0.9999 at chance 1 -- after
-            # five shots the age is 0.99999994, after four 0.79999995
-            # (no empty effect on trigger 1: an empty battery clicks on trigger 0, the one the
-            # player presses; trigger 1's slot is EFFECT-class -- a sound there failed the build)
-            # Halo 3's laser never misfires on a low battery (the template's 0.9 / 0.5 would)
+            # just below 0.2 shows 80 / 60 / 40 / 20 / 0 -- after five shots the age is
+            # 0.99999994 < 1 and a 6th shot fired (test 2; clearing the charged trigger's 'can
+            # fire with partial ammo' did not stop it, test 3): Halo 1's AGE MISFIRE does --
+            # misfire from age 0.9999 at chance 1 (after four shots 0.79999995)
+            'weap_attrs.triggers.0.misc.age_generated_per_round': 0.19999999,
             'weap_attrs.age.misfire_start': 0.9999,
             'weap_attrs.age.misfire_chance': 1.0,
-            'weap_attrs.triggers.1.firing_effects.0.misfire_effect.filepath': '',
-            'weap_attrs.triggers.1.firing_effects.0.misfire_damage.filepath': '',
+            'weap_attrs.triggers.0.firing_effects.0.misfire_effect.filepath': '',
+            'weap_attrs.triggers.0.firing_effects.0.misfire_damage.filepath': '',
+            # the plasma pistol's overcharged-shot rumble (its trigger 1's firing damage)
+            'weap_attrs.triggers.0.firing_effects.0.firing_damage.filepath': PP + 'trigger overcharge',
+            'weap_attrs.triggers.0.firing_effects.0.empty_effect.filepath': SND + 'sl_dryfire',
             'weap_attrs.interface.zoom_in_sound.filepath': SND + 'sl_zoom_in',
             'weap_attrs.interface.zoom_out_sound.filepath': SND + 'sl_zoom_out',
             'weap_attrs.interface.pickup_sound.filepath': SND + 'sl_ammo',
@@ -507,7 +589,6 @@ PORT.update({
             'weap_attrs.interface.active_camo_regrowth_rate': 0.0,
             'obje_attrs.acceleration_scale': 2.0,
             'weap_attrs.triggers.0.misc.illumination_recovery_time': 0.3,
-            'weap_attrs.triggers.1.misc.illumination_recovery_time': 0.3,
         },
         # the smash (Halo 3 smash_melee 80; the template's 40 / 50..60 = the rocket's): DEFAULT
         # Halo 3's 80 as the copy's mean; balanced 55 (x 80/80 the rocket's)
@@ -543,6 +624,12 @@ PORT.update({
                 # with the thickened lines, and the inner circle is missing'. Halo 3 draws TWO
                 # crosshair widgets: hud_reticles #11 at 0.59 and the inner double circle
                 # `spartan_outerring` (one 100 px bitmap) at 0.95 -> both layers, no thickening
+                # TEST 10 (user): 'the best result so far -- check if the inner ring can be
+                # improved'. Its two lines run ~1 px apart at Halo 1's size (Halo 3 draws it
+                # 1.6x larger, at 64 % with bloom): a bilinear simulation showed it crisper
+                # brighter -> x1.3 (~83 %, still dimmer than the outer ring)
+                # TEST 11 (user): 'inner ring looks unchanged' at x1.3 -> back to Halo 3's own
+                # brightness; the ~1 px gap at Halo 1's size is the limit (boot 10's reticle)
                 'reticle_layers': [(r'ui\chud\bitmaps\spartan_outerring.bitmap', None, 0.95 / 0.59)],
                 # TEST 2 (user): unthickened, the lines 'look fizzled out' (screenshot: broken
                 # ticks). Cause: Halo 1 draws the 256 px sheet at about half size with NO
@@ -596,6 +683,10 @@ PORT.update({
             'weapon': 'Spartan Laser', 'source': 'Halo 3', 'donor': 'Rocket Launcher', 'default_on': False,
             # the BEAM (trigger 1): the derivation would take `beam` = the tracer
             'requires': ['proj ' + SL + 'beam'],
+            # the Armed rule's class (h1_enemy_weapons.hands): HEAVY -- Halo 3 support_high,
+            # the rocket's pose (`sl` from `rl`), as the rocket and the Brute Shot: Armed
+            # Grunts keep their rate, Jackals lose the arm shield (handed to the enhancer)
+            'hands': 'heavy',
             'desc': "Halo 3's Spartan Laser: its model, first-person animations, sounds, scope and "
                     "numbers. Hold the trigger 2.5 s and it fires one devastating red beam that "
                     "overheats it; five shots a battery, 2.5x zoom.",
@@ -603,17 +694,17 @@ PORT.update({
                             "damage per beam, a 3.3 s charge and a 3 s vent, a shorter reach and "
                             "Halo 1-style aim assist; the battery stays five shots.",
             'balance': [
-                # A: impact 470 x 315/440 = 336.5, splash 100 x 315/440 = 71.6
-                row('jpt!', SL + 'beam', 'Damage Lower Bound', 336.5, 470.0, 'Beam Damage'),
-                row('jpt!', SL + 'beam', 'Damage Upper Bound', 336.5, 470.0, 'Beam Damage'),
-                row('jpt!', SL + 'beam', 'Damage Upper Bound Max', 336.5, 470.0, 'Beam Damage'),
+                # A: the direct hit 570 x 315/440 = 408 (the impact, boot 11), splash 100 x
+                # 315/440 = 71.6
+                row('jpt!', SL + 'beam', 'Damage Lower Bound', 408.0, 570.0, 'Beam Damage'),
+                row('jpt!', SL + 'beam', 'Damage Upper Bound', 408.0, 570.0, 'Beam Damage'),
+                row('jpt!', SL + 'beam', 'Damage Upper Bound Max', 408.0, 570.0, 'Beam Damage'),
                 row('jpt!', SL + 'splash', 'Damage Upper Bound', 71.6, 100.0, 'Beam Damage'),
                 row('jpt!', SL + 'splash', 'Damage Upper Bound Max', 71.6, 100.0, 'Beam Damage'),
                 # trigger 0's charge (index 0 of Triggers)
                 row('weap', SL + 'spartan laser', 'Charging Time', 3.33, 2.5, 'Charge Time', block='Triggers'),
                 row('weap', SL + 'spartan laser', 'Heat Loss Per Second', 0.3, 0.4, 'Heat Loss'),
                 row('proj', SL + 'beam', 'Maximum Range', 88.0, 120.0, 'Projectile'),
-                row('proj', SL + 'tracer', 'Maximum Range', 88.0, 120.0, 'Projectile'),
                 row('weap', SL + 'spartan laser', 'Autoaim Angle', 1.2, 1.0, 'Autoaim'),
                 row('weap', SL + 'spartan laser', 'Autoaim Range', 35.0, 25.0, 'Autoaim'),
                 row('weap', SL + 'spartan laser', 'Magnetism Angle', 6.0, 5.0, 'Magnetism'),

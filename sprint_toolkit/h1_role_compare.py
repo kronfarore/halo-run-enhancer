@@ -356,8 +356,10 @@ SETS = {
           'speed': 16.0, 'range': 20.0, 'aim': (4.0, 15.0, 6.0, 20.0), 'charge': 0.0}),
         # 315 x 73/240; 0.5 x 0.3/0.9, 2 x 1.1/2; 2.0 s x 0.3/0.8; 2 x 6/2; 4.17 s x 95/116;
         # 12 x 16/8; 128 x 20/175; aim 0 x 4/5, 35 x 15/25; 12 x 6/10, 35 x 20/25
+        # 2026-10-09: x 73/440 -- the rocket's direct hit WITH its aoe spike bump 200 (the user's
+        # pick on the Spartan Laser's A/B; was 73/240 = 95.8)
         ('BS = RL ratio', W + r'rocket launcher\rocket launcher', 'shot',
-         {'dmg': 95.8, 'radius': (0.167, 1.1), 'rate': 1 / 0.75, 'mag': 6,
+         {'dmg': 52.3, 'radius': (0.167, 1.1), 'rate': 1 / 0.75, 'mag': 6,
           'reload': 4.1667 * 95 / 116, 'speed': 24.0, 'range': 14.6,
           'aim': (0.0, 21.0, 7.2, 28.0)}),
         # 75 x 73/60; 0.5 x 0.3/0.5, 1.5 x 1.1/1.5; 1.25 s x 0.3/0.4; 4 x 6/5; 3.0 s x 95/90;
@@ -631,10 +633,13 @@ def apply_rows(out, rows):
                     if key in d['mods']:
                         d['mods'][key] = v
     out['aim'] = tuple(aim)
-    if out.get('pair') and out.get('heat') and out['heat'][0] >= out['heat'][1] > 0:
-        # every charged shot OVERHEATS (the Spartan Laser): one shot a charge + a vent
+    if out.get('charge') and out.get('heat') and out['heat'][0] >= out['heat'][1] > 0:
+        # every charged shot OVERHEATS (the Spartan Laser -- a charged trigger pair until its
+        # Armed test 5, then the fuel rod's one trigger): one shot a charge + a vent
         hpr, oh, loss, rec = out['heat'][:4]
-        out['interval'] = out['charge'] + (oh - rec) / loss
+        # Halo 1 CHARGES DURING THE OVERHEAT (the Spartan Laser's Armed test 6): a held cycle
+        # is the LONGER of charge and vent, not their sum
+        out['interval'] = max(out['charge'], (oh - rec) / loss)
         out['rps'] = 1.0 / out['interval']
         out['tag_rps'] = None
         return

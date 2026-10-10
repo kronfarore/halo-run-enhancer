@@ -148,12 +148,15 @@ def build(from_map, from_game, from_weapon, to_weapon, to_game='Halo 1', char='a
 
 
 def parse_sets(sets):
-    """['0x1D8=0.7:Drop Weapon Loaded', ...] -> {offset: ['<f', value, name]} (floats)."""
+    """['0x1D8=0.7:Drop Weapon Loaded', ...] -> {offset: ['<f', value, name]} (floats); a
+    value `h<int>` is a SHORT (an enum16: the Spartan Laser's 'Special-Fire Mode' 0x154 =
+    h1, overcharge -- its AI held no charge without it, firing only the tap's tracer)."""
     out = {}
     for s in sets or ():
         off, rest = s.split('=', 1)
         val, name = (rest.split(':', 1) + [''])[:2]
-        out['0x%X' % int(off, 16)] = ['<f', float(val), name]
+        out['0x%X' % int(off, 16)] = (['<h', int(val[1:]), name] if val.startswith('h')
+                                      else ['<f', float(val), name])
     return out
 
 

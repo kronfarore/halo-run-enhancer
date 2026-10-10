@@ -2180,7 +2180,7 @@
    "donor": "Rocket Launcher",
    "default_on": false,
    "desc": "Halo 3's Brute Shot: its model, first-person animations, sounds and numbers. A 6-round Brute grenade launcher firing arcing grenades that explode on impact, with a blade for melee.",
-   "balance_desc": "Measured against the Rocket Launcher, which both games have: 91-100 damage per grenade over 1.1 m, one shot every 0.75 s, a 3.4 s reload, faster grenades with a shorter reach, a heavier blade, and Halo 1-style aim assist.",
+   "balance_desc": "Measured against the Rocket Launcher, which both games have: 50-55 damage per grenade over 1.1 m, one shot every 0.75 s, a 3.4 s reload, faster grenades with a shorter reach, a heavier blade, and Halo 1-style aim assist.",
    "anims": {
     "reload": 1.07,
     "swap": 0.85
@@ -2198,7 +2198,7 @@
      "tag": "weapons\\brute shot\\explosion",
      "field": "Damage Upper Bound",
      "block": null,
-     "value": 91.25,
+     "value": 49.77,
      "card": "Grenade Damage",
      "original": 73.0
     },
@@ -2207,7 +2207,7 @@
      "tag": "weapons\\brute shot\\explosion",
      "field": "Damage Upper Bound Max",
      "block": null,
-     "value": 100.4,
+     "value": 54.75,
      "card": "Grenade Damage",
      "original": 73.0
     },
@@ -2345,6 +2345,190 @@
     ]
    },
    "hands": "heavy"
+  },
+  {
+   "weapon": "Spartan Laser",
+   "source": "Halo 3",
+   "donor": "Rocket Launcher",
+   "default_on": false,
+   "requires": [
+    "proj weapons\\spartan laser\\beam"
+   ],
+   "desc": "Halo 3's Spartan Laser: its model, first-person animations, sounds, scope and numbers. Hold the trigger 2.5 s and it fires one devastating red beam that overheats it; five shots a battery, 2.5x zoom.",
+   "balance_desc": "Measured against the Rocket Launcher, which both games have: 408 damage per beam, a 3.3 s charge and a 3 s vent, a shorter reach and Halo 1-style aim assist; the battery stays five shots.",
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\spartan laser\\beam",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 408.0,
+     "card": "Beam Damage",
+     "original": 570.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\spartan laser\\beam",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 408.0,
+     "card": "Beam Damage",
+     "original": 570.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\spartan laser\\beam",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 408.0,
+     "card": "Beam Damage",
+     "original": 570.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\spartan laser\\splash",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 71.6,
+     "card": "Beam Damage",
+     "original": 100.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\spartan laser\\splash",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 71.6,
+     "card": "Beam Damage",
+     "original": 100.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spartan laser\\spartan laser",
+     "field": "Charging Time",
+     "block": "Triggers",
+     "value": 3.33,
+     "card": "Charge Time",
+     "original": 2.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spartan laser\\spartan laser",
+     "field": "Heat Loss Per Second",
+     "block": null,
+     "value": 0.3,
+     "card": "Heat Loss",
+     "original": 0.4
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\spartan laser\\beam",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 88.0,
+     "card": "Projectile",
+     "original": 120.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spartan laser\\spartan laser",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 1.2,
+     "card": "Autoaim",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spartan laser\\spartan laser",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 35.0,
+     "card": "Autoaim",
+     "original": 25.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spartan laser\\spartan laser",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 6.0,
+     "card": "Magnetism",
+     "original": 5.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spartan laser\\spartan laser",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 35.0,
+     "card": "Magnetism",
+     "original": 25.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\spartan laser\\melee",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 40.0,
+     "card": "Melee Damage",
+     "original": 58.18
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\spartan laser\\melee",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 50.0,
+     "card": "Melee Damage",
+     "original": 72.73
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\spartan laser\\melee",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 60.0,
+     "card": "Melee Damage",
+     "original": 87.27
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\spartan laser\\spartan laser",
+     "field": "Flags",
+     "block": null,
+     "value": 2080,
+     "card": "Aim assist zoomed only",
+     "original": 2048,
+     "nth": 3
+    }
+   ],
+   "weap": "weapons\\spartan laser\\spartan laser",
+   "fp_animations": "weapons\\spartan laser\\fp\\fp",
+   "hands": "heavy",
+   "tag_map": {
+    "jpt! weapons\\rocket launcher\\explosion": "jpt! weapons\\spartan laser\\beam & weapons\\spartan laser\\splash"
+   },
+   "card_map": {
+    "Explosion Damage": "Beam Damage",
+    "Radius": "Impact Radius"
+   },
+   "skip_cards": [
+    "Ammo Inventory",
+    "Ammo Loaded",
+    "Reload Time",
+    "Projectile Range",
+    "Projectile Velocity"
+   ],
+   "card_donors": {
+    "Plasma Pistol": [
+     "Heat Threshold",
+     "Heat Loss",
+     "Heat Per Round",
+     "Age Per Round",
+     "Charging Time"
+    ]
+   }
   }
  ],
  "Halo 3": [

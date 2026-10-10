@@ -139,7 +139,7 @@ def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0,
     import h1_hud_sheet
     from PIL import ImageChops, ImageFilter
     canvas = Image.new('L', (SIZE, SIZE), 0)
-    for src, idx, k in [(h3_sheet, h3_index, 1.0)] + list(layers):
+    for src, idx, k, *gain in [(h3_sheet, h3_index, 1.0)] + list(layers):
         art, (rx, ry) = layer_art(src, idx)
         # `scale`: the art drawn that much smaller in the sheet (BOX: area-averaged), the
         # weapon HUD's overlay scaled up by the inverse (h1_pickable_weapons reticle_scale)
@@ -156,7 +156,10 @@ def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0,
         if min_width:
             # per LAYER, keeping its own peak brightness (Halo 3's inner double circle is a
             # half-transparent grey, the outer ring full white)
-            peak = piece.getextrema()[1]
+            # an optional 4th layer element: a brightness GAIN on that peak (the Spartan
+            # Laser, test 10: the inner double circle's two lines run ~1 px apart at Halo 1's
+            # size -- brighter reads crisper)
+            peak = min(255, piece.getextrema()[1] * (gain[0] if gain else 1.0))
             piece = grow_to(piece, min_width).point(lambda v: int(v * peak / 255.0))
         canvas = ImageChops.lighter(canvas, piece)
     if prefilter:

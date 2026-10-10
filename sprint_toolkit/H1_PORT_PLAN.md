@@ -20,7 +20,8 @@ too (batched with them); read "A4: what the Beam Rifle taught" before A5. A5 (Sp
 2026-10-08) is DONE and tested too (batched); read "A5: what the Spike Rifle taught" before A6.
 A6 (Mauler, 2026-10-09) is DONE and tested too (batched); read "A6: what the Mauler taught"
 before A7. A7 (Brute Shot, 2026-10-09) is DONE and tested too (batched); read "A7: what the
-Brute Shot taught" before A8.
+Brute Shot taught" before A8. A8 (Spartan Laser, 2026-10-10) is DONE and tested too (batched);
+read "A8: what the Spartan Laser taught" before A9.
 
 ## Phase 0: DONE (2026-10-07)
 
@@ -570,6 +571,43 @@ group) and where the battery lives (a barrel / trigger age field, or rounds) bef
 table. The Fuel Rod's charge lessons and the Sentinel Beam's beam-visual (contrail) lessons
 apply; one huge shot a charge = the hit-effect rule counts that rate.
 
+## A8: what the Spartan Laser taught (2026-10-10) -- read before A9 (the Gravity Hammer)
+
+PORTING.md "Halo 1: the Spartan Laser, wave A8" is the full record; `ports_h1/spartan_laser.py`
+is the example of a CHARGED weapon (the fuel rod's one trigger), a BEAM contrail baked from Halo
+3's beam system, a multi-widget Halo 3 RETICLE that survives MCC's HUD, and a model charge glow.
+Everything in "Pilot A1" to "A7" still holds; the Spartan Laser added:
+
+**New user rules / decisions:**
+- Halo 3's AOE SPIKE BUMP counts on BOTH sides of a ratio (A/B in game, 'A feels right'): the
+  rocket's direct hit is 240 + 200 = 440 -- the Brute Shot's balanced grenade was corrected to
+  73/440 (52.3, Armed WDM 0.91). Check every Halo 3 damage effect's `aoe spike` fields.
+- Reticles stay at HALO 1's size; thin Halo 3 strokes grow to 3 sheet px (`reticle_min_width`).
+- A charged weapon that overheats keeps Halo 3's vent even though Halo 1 charges during it.
+
+**Process (observations):**
+- CHARGE: the fuel rod's ONE trigger (charge, discharge, rounds per second 10, 'does not repeat
+  automatically'): the player's early release fires nothing; the AI needs Rate Of Fire 0 (actv
+  0x78) and a burst longer than the charge. The plasma pistol's charged PAIR: the AI only taps it.
+- MCC's HUD: the reticle sheet is drawn at ~0.5 with bilinear sampling (test chart); simulate a
+  reticle (`h1_add_reticle.simulate`) before booting it. The `charge` crosshair type never draws.
+- Overpenetration fails when a projectile crosses its whole range in one tick; a contrail starts
+  after the first update (start a beam slow); stock contrail textures need sequence count 0.
+- `tool model` drops a trailing digit of a material name (`material_names`); FP smoke rides
+  wind physics (an own particle on `vacuum particle`).
+
+**For A9, the Gravity Hammer (`melee\gravity_hammer\gravity_hammer`):** yardstick candidates the
+restored Energy Sword (provisional) and any Halo 1 melee. Halo 3 (h3_weapon_values, 2026-10-10):
+melee 1st and 3rd hit `smash_melee` (the shared global -- find the hammer's OWN area damage: a
+lunge / AOE damage effect and its radius, and Halo 3's aging per swing: memory
+halo-weapon-aging-energy, 'hammer external aging per swing'), autoaim 10 / 1.75, magnetism 10 /
+6, FP ready 55 / put_away 6 / melee_strike_1 38 (the sword: dash_melee, autoaim 10 / 2.5). The
+area knockback has no Halo 1 counterpart: approximate it (a detonation-style damage with
+instantaneous acceleration at the swing, the sword lunge's firing-damage precedent) and record
+what it does not reproduce. Read the Energy Sword's recipe (PORTING "enemy-only weapons made
+pickable") and the sword's `lunge` before choosing a template. Check the hammer's Halo 3 HUD
+(energy meter) for the charge-style reticle widgets the laser found MCC cannot draw.
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one
@@ -638,7 +676,7 @@ simplest form, used to fix and generalize the tools before the rest of the wave.
 | A5 | Brute Spiker | the blades' melee, a slow projectile |
 | A6 | Brute Mauler | a pellet spread (the shotgun as yardstick) |
 | A7 | **Brute Shot** -- DONE 2026-10-09 | an explosive grenade (it does NOT bounce in Halo 3) + its own explosion chain -- see "A7: what the Brute Shot taught" |
-| A8 | Spartan Laser | a charge-up shot (the fuel rod's charge lessons), a beam visual (the Sentinel Beam's contrail lessons) |
+| A8 | **Spartan Laser** -- DONE 2026-10-10 | a charge-up shot (the fuel rod's ONE trigger), a beam visual (a baked Halo 3 beam texture) -- see "A8: what the Spartan Laser taught" |
 | A9 | Gravity Hammer | a melee weapon with energy (the Energy Sword's recipe; aging per swing) |
 
 ### Wave B: Reach source, SAW route (7)
@@ -1137,3 +1175,56 @@ spawn check in game. The SMG (done, tested on a30) is the first in that batch.
 > Shot, on my go. When done: catalog entry, enhancer hand-off to the "Halo enhancer project"
 > session, PORTING notes, memory, `python port_backup.py --game h1`, and what the Spartan Laser
 > taught added to the plan before A9 (the Gravity Hammer).
+
+### The Gravity Hammer (wave A9), filled in
+
+> Port the Gravity Hammer into Halo 1 (H1_PORT_PLAN.md, wave A, #A9). Source: Halo 3,
+> `objects\weapons\melee\gravity_hammer\gravity_hammer` (H3EK).
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Phase 0: DONE", "Pilot A1", "A2" to "A7" and "A8: what
+> the Spartan Laser taught" first -- its last paragraph is written for THIS weapon), PORTING.md
+> ("What ported actually means" steps 0-11 and 5b, closing checks 0-9, the Halo 1 sections --
+> "enemy-only weapons made pickable" (the Energy Sword: no trigger, the `lunge`), the Spartan
+> Laser (charge, AI rate of fire, MCC's HUD reticle drawing, `reticle_min_width`) -- and
+> "Balance" incl. the ARMED WDM RULE and THE HIT-EFFECT RULE) and memory h1-spartan-laser-port,
+> h1-brute-shot-port, h1-restored-ports-enhancer, halo-weapon-aging-energy,
+> h1-armed-test-balanced-god, port-flashlight-sound-rule, h1-port-phase0, h1-weapon-into-map,
+> halo-port-own-messages, h1-fmod-bank-sounds, port-findings-are-observations,
+> shared-worktree-commits. `ports_h1/energy_sword.py` is the example of a melee weapon with an
+> energy (age) charge per swing; `ports_h1/spartan_laser.py` of HUD and Armed-AI lessons. Copy the
+> nearer shape into `ports_h1/gravity_hammer.py` and edit only that file (plus any shared tool
+> you generalize).
+>
+> START WITH STEP 4a, before any tag number is written: the yardstick, decided WITH me. Wave-A
+> rule: DEFAULT = Halo 3's own numbers, BALANCED = the ratio rows. Candidates: provisional the
+> restored ENERGY SWORD, alternatives any Halo 1 melee. First find what h3_weapon_values does
+> not print: the hammer's OWN damage (its 1st / 3rd hit name the shared `smash_melee`; find the
+> area damage effect, its radius and acceleration -- check every damage effect's `aoe spike`
+> fields, the Spartan Laser's lesson), its energy per swing (Halo 3 ages it per swing) and its
+> lunge. Lay them side by side per value (damage per swing and per second, energy, reach, aim
+> assist) with `h3_weapon_values.py` and `h1_role_compare.py` (a 'gravity_hammer' set; time to
+> kill vs the Energy Sword and the melee of the heavy weapons). I pick; record it in
+> yardstick['pick'] / ['reason'] and PORTING. Then run step 4b, `h1_port_template_diff.py` and
+> `port_sound_refs` BEFORE boot 1, and check the template OBJECT's widgets, attachments and
+> effect locations by hand.
+>
+> Reserved: pickup messages 69/70; hud_msg_icons 38 (+ _r twin); hud_reticles 27 (+ _r; Halo 3
+> strokes under 3 sheet px -> `reticle_min_width` 3, simulate first); label `gh` taught to
+> characters\cyborg from `f`; sounds under `sound\weapons\gravity_hammer_port` (never under
+> sound\sfx); weapon folder `weapons\gravity hammer`; catalog name `Gravity Hammer`.
+>
+> What the Gravity Hammer tests first: a melee weapon with ENERGY per swing (the sword's recipe),
+> the AREA KNOCKBACK approximated (Halo 1 has none: a damage at the swing with instantaneous
+> acceleration, the sword lunge's precedent), Halo 3's own HUD art, glow (`fp_material_view
+> --illum --texels` first; check the world model's root rotation), the hit-effect rule. Before the
+> Armed boot: the enhancer's `hands` for the hammer, and the melee-only weapon on units without a
+> melee (the sword's stand-in swing, enhancer side).
+>
+> Step 11: list Halo 1's carriers of the chosen donor weapon first (with their WDM, actv
+> +0xC4); `firing_profile` needs a `donor_weapon` (+ `donor_variant` if the carriers' WDM
+> disagree) AND a `wdm_rule`. Test with `h1_port_test_map.py gravity_hammer --stage` (god shield
+> on every boot): dry default, fixes, `--balanced`, then `--armed grunt,jackal,elite` (implies
+> balanced; a30's first dropship 3 Jackals / 3 Grunts / 2 Elites); `--restore <level>`. NO
+> ten-map rebuild: BATCHED with the SMG, BR, Carbine, Beam Rifle, Spike Rifle, Mauler, Brute Shot
+> and Spartan Laser, on my go. When done: catalog entry, enhancer hand-off to the "Halo enhancer
+> project" session, PORTING notes, memory, `python port_backup.py --game h1`, and what the
+> Gravity Hammer taught added to the plan before wave B (the DMR pilot).

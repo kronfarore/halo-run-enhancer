@@ -1045,6 +1045,96 @@ The whole weapon is `ports_h1/brute_shot.py` (its CLOSE-OUT RECORD lists every d
   `h1_model_markers.py` (gbxmodel markers live per permutation); `h1_port_test_map.py
   --actor-flags`, per-squad `DROPSHIP_JACKALS`.
 
+### Halo 1: the Spartan Laser, wave A8 (2026-10-09/10, 19 boots on a30) -- a charge-up beam
+
+The whole weapon is `ports_h1/spartan_laser.py` (its CLOSE-OUT RECORD lists every decision). On a
+copy of the Halo 1 PLASMA PISTOL (heat + battery), yardstick the ROCKET LAUNCHER.
+
+* **Step 4a (user): ROCKET LAUNCHER, with the AOE SPIKE BUMP counted (A/B in game).** What
+  h3_weapon_values does not print: the trigger is `spew-charge` (2.5 s; while charging barrel 0
+  fires a NO-damage tracer at 20/s, charged barrel 1 fires 5 beam rounds at 30/s with one firing
+  effect); a round's damage is the projectile's DETONATION damage, 20 over 0..0.6 wu PLUS an
+  `aoe spike damage bump` of 94 inside 0.15 wu -> 114 a direct hit, 570 a shot (the bump is what
+  one-shots a Halo 3 Spartan: hard_metal_thin body + energy_shield_thin, both x0.5 to `laser`);
+  battery = age 0.04 a round x 5 = 5 shots; heat 1 a round. Damage group `laser` = the rocket's
+  `explosion_large` except hard_metal_solid (Hunter armour) 0.5 vs 1. **Halo 3's rocket has the
+  bump too (240 + 200 = 440 direct):** the user's A/B picked 'with the bump' (A, 408 a shot vs B,
+  131) -- and the BRUTE SHOT's rocket ratio, which had used 240, was corrected to 73/440 (balanced
+  52.3, WDM 0.91). Read every Halo 3 damage effect's `aoe spike` fields before a ratio.
+* **CHARGE in Halo 1: two mechanisms, only one the AI uses.** The plasma pistol's PAIR (trigger
+  0 charges; a full charge -- or 'discharge' at the charge's end -- fires trigger 1; an early
+  release fires trigger 0) worked for the player (a tap = Halo 3's harmless tracer) but Armed AI
+  only ever TAPPED it -- with a longer burst, special fire 'overcharge' (Bungie's only charging
+  AI: the plasma-pistol Jackals) and a charge hold. The FUEL ROD's ONE trigger (charge, then
+  'discharge' its own projectile; rounds per second 10, 'does not repeat automatically') works:
+  the player's early release fires NOTHING; the AI needs **Rate Of Fire 0** (actv 0x78: a rate
+  makes it PULSE the trigger a round at a time -- the fuel rod Grunts run 0 and HOLD for the
+  burst) and a **burst longer than the charge** (Halo 3's profile bursts 2.6 s for ITS 2.5 s;
+  3.6 s here for the balanced 3.33 s). The tap-tracer is lost (no second trigger).
+* **Halo 1 CHARGES DURING THE OVERHEAT** (no trigger flag prevents it; only the discharge waits):
+  a held laser fires every max(charge, vent) = 2.5 s where Halo 3's cycle is charge + vent 4.75
+  s -- the plasma pistol's charged shot overlaps the same way. A vent stretched to the whole
+  cycle (boot 19) 'did not feel right': reverted, Halo 3's vent kept (user). h1_role_compare
+  models a charged, overheating weapon as max(charge, vent) now.
+* **OVERPENETRATION needs a projectile that does not cross its whole range in one tick:** at
+  4000 wu/s over 120 wu (all in one 30 Hz tick) Halo 1 never overpenetrated; a test copy at the
+  sniper's 1000 did (control: the stock sniper as `--secondary`, `--secondary-rounds`). An
+  overpenetrated unit takes the IMPACT only -- the detonation happens where the beam stops -- so
+  the impact carries the whole direct hit (570) and the splash serves near misses (Hunters, which
+  stop it as Halo 3's 'not against giants', get both).
+* **A CONTRAIL's first point is laid after the projectile's FIRST UPDATE:** a fast round's beam
+  starts tens of wu out, so from the firing point it shows only side-on (the Sentinel Beam's 'end
+  on' look, though the first-person offset was set). The beam starts SLOW and accelerates (60 ->
+  1940 wu/s: Halo 1 changes a projectile's speed over its range) -- 2 wu out after one tick.
+* **Contrail textures:** every stock contrail texture holds ONE sequence with NO sprites -- a
+  contrail naming it with sequence count 1 draws NOTHING (0 = the whole bitmap); stock textures
+  are short-bolt patterns, mostly dark along a long beam. Halo 3's beam = a beam PROFILE texture
+  palette-mapped (fx\contrails\_bitmaps\beam x fx\particles\_gradients\laser_red_01, additive x
+  alpha): baked into one texture (`baked_textures`), drawn additive + a narrower alpha-blended
+  body (solid over bright scenery) + a second additive layer (luminance). Layers on one texture
+  match; mixed textures did not (the Sentinel's beam texture read orange).
+* **POINT PHYSICS WIND:** Halo 1's first-person smoke rides `warm smoke cloud`, which 'uses simple
+  wind' -- the vent steam drifted with a30's wind whatever its direction; an own particle copy on
+  `vacuum particle` physics (`overheated_effect` `own_particles`, `direction`, `offset`).
+* **THE RETICLE: MCC draws the reticle sheet at ~0.5 with BILINEAR sampling** (a test chart of 1 /
+  2 / 3 / 4 / 6 px line pairs: 2 px the first to resolve, unevenly) -- a 2 x 2 average, so a 2 px
+  line is 1 px at 100 % or 2 px at 50 % by its phase and flickers along a curve: the 'fizzle'.
+  Mips, pixel doubling, a registration change and a prefilter did nothing; Halo 3's size (art x0.78,
+  overlay x2.1) was crisp but too big (user). The fix: EVERY STROKE AT LEAST 3 SHEET PX
+  (`reticle_min_width` -> h1_add_reticle.grow_to: only the thinner strokes, +1 px at 4x
+  supersampling, per layer keeping its brightness; ticks and gaps untouched) -- checked in a
+  bilinear simulation at three scales and phases before booting. Halo 3 crosshairs can be SEVERAL
+  widgets (`reticle_layers`: the laser's inner double circle `spartan_outerring`). A 1 px gap
+  between two lines is the limit at Halo 1's size (brightness did not change it).
+* **Halo 1's `charge` crosshair type does not draw in MCC** (an own bitmap + `_r` twin, small
+  sprites in hud_reticles, whole frames: nothing, three boots). MCC remaps only the stock sheets
+  listed in ui\hud\default.hud_globals to their `_r` copies. The charge cue is a MODEL glow
+  instead: `glow_points` (a card star at a marker) on an additive chicago whose
+  `framebuffer_fade_source` is D out (primary charged) -- confirmed in first person.
+* **Halo 1's `tool model` DROPS A TRAILING DIGIT of a material name** when it finds the shader:
+  `spartan_laser_decal2` drew with `spartan_laser_decal`'s (the Beam Rifle's `beam_rifle2` too,
+  harmless there) -> `material_names`. Decals: an alpha-blended-decal shader_model on a DXT5 map
+  (`decals`); `tool bitmaps` skips non-power-of-two maps (now resized up).
+* **Battery rounding:** age 0.2 in float32 sums to 0.6000000238 after three shots (HUD 39 %); the
+  float just under 0.2 shows 80 / 60 / 40 / 20 / 0 but leaves 0.99999994 after five, and a 6th
+  fired ('can fire with partial ammo' off did not stop it) -> AGE MISFIRE: start 0.9999, chance 1.
+* Smaller: a trigger's empty-effect slot can be SOUND- or EFFECT-class per trigger (a sound in an
+  effect-class slot fails the build); the luminous indicator segments took the Beam Rifle's gem
+  recipe; the impact = the rocket explosion's parts small and red (psys tint, own red light, the
+  energy flare `flare h stealth cannon`, the grenade-char scorch); `h1_h3_scope` read a widget's
+  mirror flags from an animation block's `flags` (fixed: the field before `bitmap`).
+* **Armed:** Halo 3's own ai\generic laser entry over the rocket carriers (Flood combat Elite /
+  human, WDM 0.4) + Rate Of Fire 0 + burst 3.6 s; `hands` heavy (Grunts full rate, Jackals
+  shieldless -- confirmed). WDM rule on the held cycle: 0.28 default / 0.52 balanced.
+  `ai_firing_profile` `set` takes shorts now (`0x154=h1`).
+* Not reproduced: the tap-tracer, the HUD charge triangle, Halo 3's bloom, the charge lock during
+  the overheat. Tools: `h1_hud_sheet.put_frames` / mips / compaction, `h1_add_reticle` `layers`,
+  `grow_to`, `simulate`, `orbit_frames`; `h1_h3_weapon_model` `decals`, `material_names`,
+  `glow_points`, `fade_source`, `solid_textures`, `baked_textures`; `h1_pickable_weapons` `triggers`,
+  `no_impact_damage`, `clear_response_effects`, contrail `bitmap` / `sequence` / `states` / `extra` /
+  `blend`, explosion `drop_particles` / `particle_swaps` / `psys_tint` / `light`;
+  `h1_port_test_map --secondary-rounds`.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:

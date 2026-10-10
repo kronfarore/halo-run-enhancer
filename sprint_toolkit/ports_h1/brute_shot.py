@@ -42,7 +42,7 @@ PORT = reserved(
                   "material table keeps Hunters killable as in Halo 3 (the fuel rod's makes "
                   "their armour immune), and the rocket is the pose donor (`bs` from `rl`). "
                   "Halo 3's no-bounce impact grenade in BOTH versions (user: a bounce is a later "
-                  "enhancer option)",
+                  "enhancer option). " + "2026-10-09, the Spartan Laser's step 4a (user): Halo 3's rocket explosion carries an AOE SPIKE BUMP of 200 inside 0.15 wu (a direct hit = 240 + 200 = 440) that this ratio had left out; the user's A/B on the laser chose 'with the bump' -> the Brute Shot's balanced grenade 73/440 of the rocket (the grenade has no bump): 300..330 x 73/440 = 49.8..54.8 (mean 52.3)",
         # DEFAULT = Halo 3's own numbers (PORTING "Balance"); these are the BALANCED rows.
         # H3: brute shot / rocket launcher. H1 rocket: explosion 80 lower, 300..330 upper
         # (mean 315), radius 0.5 -> 2.0, 2.0 s a shot (0.5/s), 2 (4 / 8), reload 4.17 s (125
@@ -51,7 +51,9 @@ PORT = reserved(
         # wu/s, gravity 0.05, range 20, aim 4/15 6/20, slice_melee 90. H3 rocket: 80..240,
         # 0.9 -> 2, 0.8 s, 2 (4 / 8), 116 fr, 8 -> 16, 0, 175, aim 5/25 10/25, smash_melee 80
         'balanced': {
-            'damage': (91.25, 100.4),      # 300..330 x 73/240 (mean 95.8)
+            # 300..330 x 73/440 (mean 52.3): the rocket's direct hit with its aoe spike bump
+            # (2026-10-09, the Spartan Laser's A/B, user); was 73/240 (91.25..100.4, mean 95.8)
+            'damage': (49.77, 54.75),
             'damage_lower': 26.0,          # 80 x 26/80
             'radius': (0.167, 1.1),        # 0.5 x 0.3/0.9, 2.0 x 1.1/2
             'fire_recovery_s': 0.75,       # 2.0 s x 0.3/0.8 (rounds_per_second 1.333)
@@ -87,11 +89,12 @@ PORT = reserved(
     # Halo 1 ROCKET LAUNCHER carrier ('bs' has no carrier). Halo 1's rocket carriers
     # (h1_weapon_carriers, 2026-10-09): the Flood combat Elite and human, both WDM 0.4 -- they
     # agree, no donor_variant. ARMED WDM RULE: base 0.4 x rocket 158 / brute shot dps --
-    # default 73 x 3.33 = 243 (0.26), balanced 95.8 x 1.33 = 128 (0.49)
+    # default 73 x 3.33 = 243 (0.26), balanced 52.3 x 1.33 = 69.7 (0.91; was 95.8 x 1.33 = 128,
+    # 0.49, before the bump correction of 2026-10-09)
     firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\support_low\\brute_shot\\brute_shot',
                     'donor_weapon': 'weapons\\rocket launcher\\rocket launcher',
                     'wdm_rule': {'base': 0.4, 'yardstick_dps': 158.0, 'port_dps': 243.0,
-                                 'balanced_port_dps': 128.0}},
+                                 'balanced_port_dps': 69.7}},
 )
 
 PORT.update({
@@ -494,7 +497,7 @@ PORT.update({
                     "numbers. A 6-round Brute grenade launcher firing arcing grenades that "
                     "explode on impact, with a blade for melee.",
             'balance_desc': "Measured against the Rocket Launcher, which both games have: "
-                            "91-100 damage per grenade over 1.1 m, one shot every 0.75 s, a "
+                            "50-55 damage per grenade over 1.1 m, one shot every 0.75 s, a "
                             "3.4 s reload, faster grenades with a shorter reach, a heavier "
                             "blade, and Halo 1-style aim assist.",
             # step 9: the balanced reload = H1 rocket 125 fr x 95/116 = 102 fr over the built
@@ -504,8 +507,9 @@ PORT.update({
             'anim_sounds': {'reload': {'mult': 1.07, 'from': SND + 'bs_reload',
                                        'to': SND + 'bs_reload_balanced'}},
             'balance': [
-                row('jpt!', BS + 'explosion', 'Damage Upper Bound', 91.25, 73.0, 'Grenade Damage'),
-                row('jpt!', BS + 'explosion', 'Damage Upper Bound Max', 100.4, 73.0, 'Grenade Damage'),
+                # 300..330 x 73/440 (the rocket's direct hit WITH its spike bump: 2026-10-09)
+                row('jpt!', BS + 'explosion', 'Damage Upper Bound', 49.77, 73.0, 'Grenade Damage'),
+                row('jpt!', BS + 'explosion', 'Damage Upper Bound Max', 54.75, 73.0, 'Grenade Damage'),
                 row('jpt!', BS + 'explosion', 'Radius', 0.167, 0.3, 'Grenade Damage'),
                 row('weap', BS + 'brute shot', 'Rounds Per Second', 1 / 0.75, 1 / 0.3, 'More Shooting', block='Triggers'),
                 row('weap', BS + 'brute shot', 'Rounds Per Second Max', 1 / 0.75, 1 / 0.3, 'More Shooting', block='Triggers'),
