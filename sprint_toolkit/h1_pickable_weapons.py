@@ -193,7 +193,8 @@ def make_hud(w, key, write):
                                   centre=h.get('reticle_centre', h1_add_reticle.CENTRE),
                                   mips=h.get('reticle_mips', False),
                                   hard=h.get('reticle_hard', 0),
-                                  min_width=h.get('reticle_min_width', 0))
+                                  min_width=h.get('reticle_min_width', 0),
+                                  split=h.get('reticle_split', 0))
                if write else -1)
         for c in d.crosshairs.STEPTREE:
             if c.crosshair_type.enum_name == 'aim':
@@ -276,50 +277,54 @@ def make_hud(w, key, write):
 
 def make_lunge(w, a, write):
     """The sword's fire button: a magazine and trigger in the plasma pistol's shape, firing
-    an invisible short strike with the sword's own melee damage, and shoving the wielder."""
+    an invisible short strike with the sword's own melee damage, and shoving the wielder.
+    `strike` None: the trigger only -- the weapon's `bullet` entry builds the projectile (the
+    Gravity Hammer: a strike that DETONATES with an area blast); `push` None: no shove."""
     L = w['lunge']
     tmpl = weap_def.build(filepath=path(L['template'], '.weapon')).data.tagdata.weap_attrs
-    # the strike: the AR bullet with everything visible or audible taken off
-    pt = proj_def.build(filepath=path(L['strike_from'], '.projectile'))
-    pd = pt.data.tagdata
-    pd.obje_attrs.attachments.STEPTREE[:] = []
-    ph = pd.proj_attrs.physics
-    ph.initial_velocity = ph.final_velocity = L['velocity']
-    ph.air_gravity_scale = 0.0
-    ph.flyby_sound.filepath = ''
-    if write:
-        shutil.copy2(path(a.melee.player_damage.filepath, '.damage_effect'),
-                     path(L['strike_damage'], '.damage_effect'))
-    ph.impact_damage.filepath = L['strike_damage']                # = the melee's values
-    pd.proj_attrs.detonation.maximum_range = L['range']
-    hit = ''
-    if L.get('hit_effect') and w.get('hit_sound'):
-        from reclaimer.hek.defs.effe import effe_def
-        src, hit = L['hit_effect']
-        et = effe_def.build(filepath=path(src, '.effect'))
-        parts = et.data.tagdata.events.STEPTREE[0].parts.STEPTREE
-        for i in reversed(range(len(parts))):
-            if parts[i].type.tag_class.enum_name != 'sound':
-                parts.pop(i)
-        if len(parts) != 1:
-            raise SystemExit('%s: want exactly one sound part' % src)
-        parts[0].type.filepath = w['hit_sound']
-        save(et, path(hit, '.effect'), write)
-    for m in pd.proj_attrs.material_responses.STEPTREE:     # no bullet holes; the sword's hit
-        m.effect.filepath = hit
-        m.potential_response.effect.filepath = ''
-        m.detonation_effect.filepath = ''
-    save(pt, path(L['strike'], '.projectile'), write)
-    # the shove: a zero-damage firing effect whose instantaneous acceleration is the lunge
-    jt = jpt__def.build(filepath=path(L['push_from'], '.damage_effect'))
-    dm = jt.data.tagdata.damage
-    dm.instantaneous_acceleration = L['acceleration']
-    dm.damage_lower_bound = L['push_damage']
-    dm.damage_upper_bound[0] = dm.damage_upper_bound[1] = L['push_damage']
-    mods = jt.data.tagdata.damage_modifiers
-    for k in mods.desc['NAME_MAP']:
-        setattr(mods, k, 1.0)
-    save(jt, path(L['push'], '.damage_effect'), write)
+    if L.get('strike'):
+        # the strike: the AR bullet with everything visible or audible taken off
+        pt = proj_def.build(filepath=path(L['strike_from'], '.projectile'))
+        pd = pt.data.tagdata
+        pd.obje_attrs.attachments.STEPTREE[:] = []
+        ph = pd.proj_attrs.physics
+        ph.initial_velocity = ph.final_velocity = L['velocity']
+        ph.air_gravity_scale = 0.0
+        ph.flyby_sound.filepath = ''
+        if write:
+            shutil.copy2(path(a.melee.player_damage.filepath, '.damage_effect'),
+                         path(L['strike_damage'], '.damage_effect'))
+        ph.impact_damage.filepath = L['strike_damage']                # = the melee's values
+        pd.proj_attrs.detonation.maximum_range = L['range']
+        hit = ''
+        if L.get('hit_effect') and w.get('hit_sound'):
+            from reclaimer.hek.defs.effe import effe_def
+            src, hit = L['hit_effect']
+            et = effe_def.build(filepath=path(src, '.effect'))
+            parts = et.data.tagdata.events.STEPTREE[0].parts.STEPTREE
+            for i in reversed(range(len(parts))):
+                if parts[i].type.tag_class.enum_name != 'sound':
+                    parts.pop(i)
+            if len(parts) != 1:
+                raise SystemExit('%s: want exactly one sound part' % src)
+            parts[0].type.filepath = w['hit_sound']
+            save(et, path(hit, '.effect'), write)
+        for m in pd.proj_attrs.material_responses.STEPTREE:     # no bullet holes; the sword's hit
+            m.effect.filepath = hit
+            m.potential_response.effect.filepath = ''
+            m.detonation_effect.filepath = ''
+        save(pt, path(L['strike'], '.projectile'), write)
+    if L.get('push'):
+        # the shove: a zero-damage firing effect whose instantaneous acceleration is the lunge
+        jt = jpt__def.build(filepath=path(L['push_from'], '.damage_effect'))
+        dm = jt.data.tagdata.damage
+        dm.instantaneous_acceleration = L['acceleration']
+        dm.damage_lower_bound = L['push_damage']
+        dm.damage_upper_bound[0] = dm.damage_upper_bound[1] = L['push_damage']
+        mods = jt.data.tagdata.damage_modifiers
+        for k in mods.desc['NAME_MAP']:
+            setattr(mods, k, 1.0)
+        save(jt, path(L['push'], '.damage_effect'), write)
     mags = a.magazines.STEPTREE
     mags[:] = []
     mags.append(copy.deepcopy(tmpl.magazines.STEPTREE[0]))        # all zero: no ammo
@@ -340,7 +345,7 @@ def make_lunge(w, a, write):
     # a sword swing is not a gunshot: the plasma pistol template fires `loud`, which every
     # AI in earshot reacts to
     tr.firing.firing_noise.set_to('silent')
-    tr.projectile.projectile.filepath = L['strike']
+    tr.projectile.projectile.filepath = L.get('strike') or ''
     tr.projectile.error_angle.__setitem__(1, 0.0)
     tr.misc.heat_generated_per_round = 0.0
     tr.misc.age_generated_per_round = L['energy']
@@ -349,7 +354,7 @@ def make_lunge(w, a, write):
         fe.firing_effect.filepath = ''
         fe.misfire_effect.filepath = ''
         fe.empty_effect.filepath = ''
-        fe.firing_damage.filepath = L['push']
+        fe.firing_damage.filepath = L.get('push') or ''
         fe.misfire_damage.filepath = ''
         fe.empty_damage.filepath = ''
     a.flags.cannot_fire_at_maximum_age = True
@@ -1292,9 +1297,16 @@ def edit_weapon(key, write):
         x.type.filepath = w.get('attach_swap', {}).get(x.type.filepath, x.type.filepath)
     if 'hit_sound' in w:
         jp = path(a.melee.player_damage.filepath, '.damage_effect')
-        jt = jpt__def.build(filepath=jp + BACKUP if os.path.exists(jp + BACKUP) else jp)
-        jt.data.tagdata.sound.filepath = w['hit_sound']
-        save(jt, jp, write)
+        # a weapon with its OWN melee copy (`melee`, the Gravity Hammer) reads that copy, just
+        # written with `melee_dmg` -- its .before_pickable is the DONOR's values (the hammer's
+        # first build came out at the sword's 151); a melee edited in place (the restored
+        # sword) reads its stock backup
+        own = 'melee' in w
+        src = jp if own or not os.path.exists(jp + BACKUP) else jp + BACKUP
+        if os.path.exists(src):
+            jt = jpt__def.build(filepath=src)
+            jt.data.tagdata.sound.filepath = w['hit_sound']
+            save(jt, jp, write)
     if 'rounds_per_shot' in w:
         for tr in a.triggers.STEPTREE:
             tr.firing.rounds_per_shot = w['rounds_per_shot']

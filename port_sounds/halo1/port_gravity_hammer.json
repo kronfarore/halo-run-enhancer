@@ -1,0 +1,67 @@
+{
+ "game": "Halo 1",
+ "weapon": "Gravity Hammer",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\gravity_hammer_port\\gh_melee",
+   "perms": [
+    "gh_melee_1.wav",
+    "gh_melee_2.wav",
+    "gh_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\gravity_hammer_port\\gh_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\gravity_hammer_port\\gh_ready",
+   "perms": [
+    "gh_ready_1.wav",
+    "gh_ready_2.wav",
+    "gh_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\gravity_hammer_port\\gh_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\gravity_hammer_port\\gh_pose",
+   "perms": [
+    "gh_pose_1.wav",
+    "gh_pose_2.wav",
+    "gh_pose_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\gravity_hammer_port\\gh_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\gravity_hammer_port\\gh_hit",
+   "perms": [
+    "gh_hit_1.wav",
+    "gh_hit_2.wav",
+    "gh_hit_3.wav",
+    "gh_hit_4.wav",
+    "gh_hit_5.wav",
+    "gh_hit_6.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\gravity_hammer_port\\gh_hit"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\gravity_hammer_port\\gh_drop",
+   "perms": [
+    "gh_drop_1.wav",
+    "gh_drop_2.wav",
+    "gh_drop_3.wav",
+    "gh_drop_4.wav",
+    "gh_drop_5.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\gravity_hammer_port\\gh_drop"
+   ]
+  }
+ ]
+}

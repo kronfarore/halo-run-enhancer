@@ -5,7 +5,10 @@ a dark see-through fill (79 grey, alpha ~59), muzzle to the right.
 Side view (x right, z up), painter's-order flat shading by normal; the part outlines are
 the shading's edges plus the silhouette.
 
-    python make_icon.py <model.jms> <out.png> [height px, default 132]
+    python make_icon.py <model.jms> <out.png> [height px, default 132] [--z-forward]
+
+--z-forward: a model whose long axis is +z (the Gravity Hammer, Halo 1's flag convention)
+is turned so +z points right (x' = z, z' = -x).
 """
 import os, sys
 import numpy as np
@@ -19,9 +22,11 @@ SS = 4                      # supersampling
 EDGE = 70                   # shading-edge threshold: higher = fewer, cleaner lines
 
 
-def main(jms_path, out, height=132):
+def main(jms_path, out, height=132, z_forward=False):
     jm = read_jms(open(jms_path, encoding='utf-8', errors='replace').read())
     P = np.array([(v.pos_x, v.pos_y, v.pos_z) for v in jm.verts])
+    if z_forward:
+        P = np.stack([P[:, 2], P[:, 1], -P[:, 0]], axis=1)
     xs, zs = P[:, 0], P[:, 2]
     pad = 0.06
     w_units, h_units = xs.max() - xs.min(), zs.max() - zs.min()
@@ -78,4 +83,5 @@ def main(jms_path, out, height=132):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1], sys.argv[2], *(int(x) for x in sys.argv[3:4]))
+    args = [x for x in sys.argv[1:] if x != '--z-forward']
+    main(args[0], args[1], *(int(x) for x in args[2:3]), z_forward='--z-forward' in sys.argv)

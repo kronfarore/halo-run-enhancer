@@ -127,7 +127,7 @@ def simulate(alpha, out_png, scales=(0.47, 0.49, 0.52), offsets=((0, 0), (0.5, 0
 
 
 def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0, scale=1.0,
-        pixel=0, centre=CENTRE, mips=False, hard=0, min_width=0):
+        pixel=0, centre=CENTRE, mips=False, hard=0, min_width=0, dry=False, split=0):
     """The Halo 3 sprite into `hud_reticles` AND `hud_reticles_r`, one sequence index (the
     port's reserved `index` when given). `thicken` px grows every stroke by that much on
     each side (a max filter): Halo 1 draws the 256 px sheet at about half size, and Halo
@@ -159,8 +159,24 @@ def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0,
             # an optional 4th layer element: a brightness GAIN on that peak (the Spartan
             # Laser, test 10: the inner double circle's two lines run ~1 px apart at Halo 1's
             # size -- brighter reads crisper)
-            peak = min(255, piece.getextrema()[1] * (gain[0] if gain else 1.0))
-            piece = grow_to(piece, min_width).point(lambda v: int(v * peak / 255.0))
+            # `split` (alpha): a layer of TWO brightness levels grown apart, each to its own
+            # peak (the Gravity Hammer: white strokes ~250 and dim inner outlines ~70-95 in ONE
+            # sprite -- grown together, the dim lines fell under grow_to's threshold and drew
+            # dotted in the simulation)
+            bands = ([piece.point(lambda v: v if v >= split else 0),
+                      piece.point(lambda v: v if v < split else 0)] if split else [piece])
+            grown = Image.new('L', (SIZE, SIZE), 0)
+            for band in bands:
+                top = band.getextrema()[1]
+                if not top:
+                    continue
+                peak = min(255, top * (gain[0] if gain else 1.0))
+                # split bands are normalised first (the dim band would fall under the
+                # threshold); a whole layer is grown as it is (the Spartan Laser's, unchanged)
+                norm = band.point(lambda v: min(255, int(v * 255.0 / top))) if split else band
+                grown = ImageChops.lighter(grown, grow_to(norm, min_width).point(
+                    lambda v, pk=peak: int(v * pk / 255.0)))
+            piece = grown
         canvas = ImageChops.lighter(canvas, piece)
     if prefilter:
         canvas = prefiltered(canvas, prefilter)
@@ -172,6 +188,8 @@ def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0,
     white = Image.new('L', (SIZE, SIZE), 255)
     img = Image.merge('RGBA', (white, white, white, canvas))
     canvas.save(os.path.join(HERE, 'out', 'reticle_%s.png' % name.replace(' ', '_')))
+    if dry:              # `dry`: only the art + its simulation (simulate FIRST: the Gravity Hammer)
+        return None
     return h1_hud_sheet.put_twins('hud_reticles', name, img, TEMPLATE_SEQ, (SIZE, SIZE), centre, mips=mips,
                                   index=index)
 
