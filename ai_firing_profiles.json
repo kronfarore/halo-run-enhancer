@@ -1256,6 +1256,16 @@
      1.6,
      "Burst Duration Max"
     ],
+    "0x168": [
+     "<f",
+     0.75,
+     "Berserk Firing Range"
+    ],
+    "0x16C": [
+     "<f",
+     2.0,
+     "Berserk Firing Range Max"
+    ],
     "0x160": [
      "<f",
      0.5,

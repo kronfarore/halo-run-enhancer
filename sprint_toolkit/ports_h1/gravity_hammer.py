@@ -174,6 +174,14 @@ PORT = reserved(
                     'donor_variant': 'characters\\elite\\elite commander\\elite commander energy sword',
                     'set': ['0x78=0.65:Rate Of Fire',
                             '0xE0=1.6:Burst Duration', '0xE4=1.6:Burst Duration Max',
+                            # ARMED TEST 1 (user): 'they circle me but never come close enough
+                            # to strike; right in front of them they strike' (their MELEE: no
+                            # ring). Halo 1's AI moves between firing positions -- only a CHARGE
+                            # closes in. The Flood shotgun forms' recipe: actor flag 'always
+                            # charge in attacking mode' (h1_port_test_map --actor-flags; per-port
+                            # actor copies are enhancer-side) + berserk firing ranges 0.75-2.75
+                            # (theirs; 2.0 here = the hammer's firing distance)
+                            '0x168=0.75:Berserk Firing Range', '0x16C=2.0:Berserk Firing Range Max',
                             '0x160=0.5:Melee Range', '0x164=1.0:Melee Abort Range',
                             '0x170=0.5:Berserk Melee Range', '0x174=1.0:Berserk Melee Abort Range'],
                     'wdm_rule': {'base': 0.0, 'yardstick_dps': 189.0, 'port_dps': 202.0,
