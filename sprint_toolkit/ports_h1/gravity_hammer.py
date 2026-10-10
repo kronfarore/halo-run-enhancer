@@ -4,6 +4,8 @@ per swing and a fire-button strike (`lunge`); spartan_laser.py of a new weapon o
 PLASMA PISTOL (battery HUD), its HUD and Armed-AI lessons. What is new here: a melee weapon whose
 every swing sets off an AREA damage with knockback (Halo 3's gravity_hammer_explosion), which
 Halo 1 does not have."""
+import os
+
 from ._common import ANIMS, B, H3_FP_GRAPHS, IMPACTS, reserved, row
 
 H3 = r'objects\weapons\melee\gravity_hammer'
@@ -52,6 +54,32 @@ EXPLOSION_4B = {'damage.instantaneous_acceleration': 3.5 * 2.5 / 1.5,
                 'breaking_effect.forward_exponent': 0.0,
                 'breaking_effect.outward_velocity': 15.0,
                 'breaking_effect.outward_radius': 1.0}
+
+# THE SHOCKWAVE (boots 2-7). Halo 3's ring is a mesh particle (fx ... blast_radius); Halo 1 has
+# none. Halo 1's own shockwave ring is the Wraith mortar's `light ring expand` (additive, lying
+# perpendicular to the effect's direction, radius x0.25 -> x20 in 0.1-0.2 s; the mortar: 2 at
+# radius 0.2..0.5 -> 4..10 wu).
+#   BOOT 3 (user): 'not the described behaviour; it looks better than the last explosion,
+#     remember this state' -- kept as effects\blast.effect.boot3 (2 stock rings at location 0
+#     over the plasma grenade burst): at location 0 a ring faces the effect's direction, the
+#     strike's flight -- an air burst stood them up, small, facing the player.
+#   BOOT 4: location 1 = 'gravity' (straight down: the grenade's scorch decal) -> FLAT; still
+#     not seen. BOOT 5: an OWN copy lasting 0.5-0.6 s (fading over the last 0.4), full bright,
+#     to ~3 wu -> user: 'there is the ring, I like it. Remove the explosion, size the ring to
+#     the explosion' -> boot 6: the ring alone, ending at the blast's 1.5 wu (radius 0.075).
+#   BOOT 6 (user): 'slightly bigger; try two setups -- rings stacked above and beneath, and
+#     several rings from the same position; one brighter, the other longer'. Both end at 1.8
+#     wu (radius 0.09). A/B in ONE boot round: GH_RINGS=A staged on a30, GH_RINGS=B on a50
+RING = {'from': r'vehicles\wraith\effects\wraith mortar explosion', 'match': 'light ring expand',
+        'location': 1, 'radius': (0.09, 0.09), 'tint': (1.0, 0.75, 0.85, 1.0)}
+RING_PART = {'out': GH + r'effects\shockwave ring', 'lifespan': (0.5, 0.6), 'fade_out': 0.4}
+# A: three rings stacked along the gravity location's axis (i = down) 0.25 wu apart, each
+#    drawn x4 (additive: brighter)
+RINGS_A = [dict(RING, offset=(i, 0.0, 0.0), count=4, particle=RING_PART) for i in (-0.25, 0.0, 0.25)]
+# B: three rings from the SAME spot, 0.12 s apart, each lasting 0.9-1.0 s (fading over 0.7)
+RING_PART_B = {'out': GH + r'effects\shockwave ring long', 'lifespan': (0.9, 1.0), 'fade_out': 0.7}
+RINGS_B = [dict(RING, delay=d, particle=RING_PART_B) for d in (0.0, 0.12, 0.24)]
+RINGS = {'A': RINGS_A, 'B': RINGS_B}[os.environ.get('GH_RINGS', 'A')]
 
 PORT = reserved(
     order=18, wave='A9', name='Gravity Hammer', source='Halo 3',
@@ -313,38 +341,8 @@ PORT.update({
                                  # Instantaneous Acceleration (Assembly)
                                  # BOOT 2 (user, tuned live in Assembly): 15 -> 7.5
                                  'fields': dict(EXPLOSION_4B, **{'damage.instantaneous_acceleration': 7.5}),
-                                 # BOOT 2 (user): 'try the shockwave'. Halo 3's ring is a mesh
-                                 # particle (blast_radius); Halo 1's own shockwave ring is the
-                                 # Wraith mortar's `light ring expand` (additive, lying
-                                 # perpendicular to the effect's direction, radius x0.25 -> x20 in
-                                 # 0.1-0.2 s): 2 rings at radius 0.075..0.125 -> 1.5..2.5 wu, the
-                                 # blast's own reach (the mortar's 0.2..0.5 ends at 4..10 wu)
-                                 'add_particles': [{'from': r'vehicles\wraith\effects\wraith mortar explosion',
-                                                    'match': 'light ring expand',
-                                                    # BOOT 3 (user): 'the shockwave is not the
-                                                    # described behaviour; it looks better than
-                                                    # the last explosion, remember this state'
-                                                    # (kept: effectslast.effect.boot3 -- the
-                                                    # rings at location 0). At location 0 the
-                                                    # rings face the effect's direction (the
-                                                    # strike's flight: an air burst stands them
-                                                    # up, small, facing the player). Location 1 =
-                                                    # 'gravity' (straight down: the grenade's
-                                                    # scorch decal) lays them FLAT
-                                                    'location': 1,
-                                                    # BOOT 4 (user): 'still nothing of the
-                                                    # described shockwave'. The stock ring lives
-                                                    # 0.1-0.2 s (3-6 frames) at a dim tint: an
-                                                    # OWN copy that lasts 0.5-0.6 s (fading over
-                                                    # the last 0.4), full bright, growing x0.25 ->
-                                                    # x20 to ~3 wu -- unmistakable, to tell size
-                                                    # from orientation
-                                                    # BOOT 5 (user): the ring ENDS at the blast's
-                                                    # 1.5 wu (x20 radius animation: 0.075)
-                                                    'radius': (0.075, 0.075),
-                                                    'tint': (1.0, 0.75, 0.85, 1.0),
-                                                    'particle': {'out': GH + r'effects\shockwave ring',
-                                                                 'lifespan': (0.5, 0.6), 'fade_out': 0.4}}],
+                                 # the SHOCKWAVE (boots 2-6): RINGS, see RING above
+                                 'add_particles': RINGS,
                                  # the plasma grenade's blue burst + light; its 8 wu shock wave,
                                  # burn decal and sound go (the hammer brings its own)
                                  'drop_parts': [PG + 'shock wave',

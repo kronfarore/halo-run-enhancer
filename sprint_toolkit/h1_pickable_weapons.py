@@ -516,17 +516,32 @@ def own_explosion(pd, X, write):
     # scaling (the Gravity Hammer, boot 2: Halo 3's shockwave ring is a mesh particle Halo 1
     # does not have -- the Wraith mortar's own `light ring expand`, a ring lying perpendicular
     # to the effect's direction that grows x80): [{'from': effect, 'match': particle path
-    # substring, 'radius': (lo, hi)[, 'tint': (a, r, g, b), 'location': index]}]
+    # substring, 'radius': (lo, hi)[, 'tint': (a, r, g, b), 'location': index, 'count': n,
+    # 'offset': (i, j, k), 'delay': s, 'particle': {own copy}]}]
     for A in X.get('add_particles', ()):
         src = effe_def.build(filepath=path(A['from'], '.effect')).data.tagdata
         got = [q for ev in src.events.STEPTREE for q in ev.particles.STEPTREE
                if A['match'] in q.particle_type.filepath]
         if not got:
             raise SystemExit('%s: no particle matches %r' % (A['from'], A['match']))
-        dst = et.data.tagdata.events.STEPTREE[0].particles.STEPTREE
+        evs = et.data.tagdata.events.STEPTREE
+        dst = evs[0].particles.STEPTREE
+        if A.get('delay'):
+            # a DELAYED ring (the Gravity Hammer's staggered rings): its own event, a copy of
+            # event 0 without parts or particles, started `delay` s after the blast
+            evs.append(copy.deepcopy(evs[0]))
+            ev = evs[len(evs) - 1]
+            ev.parts.STEPTREE[:] = []
+            ev.particles.STEPTREE[:] = []
+            ev.delay_bounds[0] = ev.delay_bounds[1] = A['delay']
+            dst = ev.particles.STEPTREE
         for q in got:
             dst.append(copy.deepcopy(q))
             x = dst[len(dst) - 1]
+            if 'count' in A:             # more of the same additive ring = brighter
+                x.created_count[0] = x.created_count[1] = A['count']
+            if 'offset' in A:            # in the LOCATION's frame (i = its direction)
+                x.relative_offset.i, x.relative_offset.j, x.relative_offset.k = A['offset']
             if 'radius' in A:
                 x.radius[0], x.radius[1] = A['radius']
             if 'location' in A:          # an index of THIS effect's locations (1 = 'gravity')
