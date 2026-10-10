@@ -154,8 +154,30 @@ PORT = reserved(
             'peers': ['Energy Blade', 'Shotgun'],
             'why': "pure melee, energy aging per swing like the sword (whose H1 numbers are Bungie's own)",
             'lacks': 'area knockback blast'}},
-    # step 11: the source game's ai\generic entry (8 fields, verified 2026-10-07)
-    firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\melee\\gravity_hammer\\gravity_hammer'},
+    # step 11: the source game's ai\generic entry (8 fields, verified 2026-10-07): Halo 3's hammer
+    # AI fires within 2 wu, desired combat range 0.5-2 wu, bursts 0.5 s apart, drops it loaded
+    # 0.5-0.9. Halo 1's carriers of the yardstick (h1_weapon_carriers, 2026-10-10): the Elite
+    # COMMANDER energy sword (WDM 0) and the STEALTH Elite MAJOR (WDM 0.5) -- they disagree ->
+    # donor_variant = the commander (the sword's main carrier). User: 'WDM 0 is probably no
+    # modifier'. ARMED WDM RULE: 0 x sword 189 / hammer 202 (default; balanced 312.1 / 1.53 s =
+    # 204) = 0 -> 'no modifier' in both builds.
+    # The sword commander fires NOTHING (rate 0, no burst) and charges to melee from 12 wu (16
+    # berserk). User (Armed prep): 'the enemies should fight with the FIRE TRIGGER primarily, not
+    # the melee hit' -> a rate (one slam a 46 fr cycle: 0.65/s; a rate makes Halo 1's AI PULSE the
+    # trigger, the Spartan Laser's finding -- right for a trigger that does not repeat) and a
+    # burst of one slam (1.6 s); melee ranges cut to point blank (0.5 wu, abort 1.0; berserk the
+    # same) so they close to the 2 wu firing range and slam. actv offsets found in the tag file
+    # (the commander's 12 / 15 / 16 / 20): melee range 0x160, abort 0x164, berserk melee 0x170,
+    # abort 0x174
+    firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\melee\\gravity_hammer\\gravity_hammer',
+                    'donor_weapon': 'weapons\\energy sword\\energy sword',
+                    'donor_variant': 'characters\\elite\\elite commander\\elite commander energy sword',
+                    'set': ['0x78=0.65:Rate Of Fire',
+                            '0xE0=1.6:Burst Duration', '0xE4=1.6:Burst Duration Max',
+                            '0x160=0.5:Melee Range', '0x164=1.0:Melee Abort Range',
+                            '0x170=0.5:Berserk Melee Range', '0x174=1.0:Berserk Melee Abort Range'],
+                    'wdm_rule': {'base': 0.0, 'yardstick_dps': 189.0, 'port_dps': 202.0,
+                                 'balanced_port_dps': 204.0}},
 )
 
 PORT.update({
