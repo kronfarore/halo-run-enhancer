@@ -35,6 +35,9 @@ PORT = {
         # first person shows Halo 1's own sword: its world model, posed by H3's motion
         'h1_model': r'weapons\energy sword\energy sword',
         'align': 'same_space',
+        # user (2026-10-10, during the DMR pilot): 'the FP was not correct' -> 1 unit (0.01 wu)
+        # DOWN, the whole rig in view space (h1_fp_retarget view_offset)
+        'view_offset': (0.0, 0.0, -0.01),
         'anims': {
             'first_person:idle': 'first-person idle',
             'first_person:ready': 'first-person ready',

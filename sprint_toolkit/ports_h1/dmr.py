@@ -163,6 +163,9 @@ PORT.update({
             'dm_zoom_in': ([RS + 'battle_rifle\\battle_rifle_zoom_in'], 'sound\\sfx\\weapons\\sniper rifle\\sniper_2x_zoom', -28.9),
             'dm_zoom_out': ([RS + 'battle_rifle\\battle_rifle_zoom_out'], 'sound\\sfx\\weapons\\sniper rifle\\sniper_10x_zoom', -29.2),
             'dm_ammo': ([RS + 'battle_rifle\\battle_rifle_ammo'], 'sound\\sfx\\weapons\\weapon_pickup_ammo\\sniper_ammo', -30.5),
+            # the casing (TEST 1: the flash now starts from the BR's effect, which ejects one;
+            # Reach's DMR plays eject_br too), at the BR port's eject level
+            'dm_eject': ([RS + 'battle_rifle\\eject_br'], 'sound\\sfx\\weapons\\pistol\\eject', -17.0),
             'dm_drop': ([RS + 'battle_rifle\\battle_rifle_drop'], 'sound\\sfx\\impulse\\weapon_drops\\shotgun_impact', -20.7),
             # the BALANCED reloads (the patcher retimes both x1.12, then swaps these in)
             'dm_reload_empty_balanced': (['dmr_reload_empty'], 'sound\\sfx\\weapons\\weapon_anims\\sniper_reload_empty', -17.4),
@@ -245,8 +248,18 @@ PORT.update({
                    'magnetism_angle': 5.0, 'magnetism_range': 20.0, 'deviation_angle': 2.25,
                    'zoom_levels': 1, 'zoom_ranges': (3.0, 3.0)},
         'sound_effects': {
+            # TEST 1 (user): 'the muzzle flash feels too big and wide'. The sniper template's
+            # flash = two SIDEWAYS fans of 15-20 `flash h sniper muzzle break` sprites (yaw
+            # +-115 deg, radius to 0.125 wu) + a forward fan + side smoke + a warthog casing.
+            # Reach's DMR first-person flash is small and AT the muzzle: long_brake / long_soft
+            # on the four muzzle_flash markers (+-6 mm round the bore), a round flash and glow
+            # (emitter bounds 0.06-0.11 wu), a BR casing. Nearest tested Halo 1 look = the BR
+            # port's (the pistol's sprites: centre 0.045-0.056 wu + two small sides at +-0.023;
+            # user-approved in A2) and its casing -> the copy starts from the BR's effect
             'firing_effect': (SR + 'effects\\fire bullet', DMR + 'effects\\fire bullet',
-                              {r'sound\sfx\weapons\sniper rifle\fire': SND + 'dm_fire'})},
+                              {'sound\\weapons\\battle_rifle_port\\br_fire': SND + 'dm_fire',
+                               'sound\\weapons\\battle_rifle_port\\br_eject': SND + 'dm_eject'},
+                              {'copy_from': 'weapons\\battle rifle\\effects\\fire bullet'})},
         'fields': {
             # the sniper's EMPTY field names a SOUND directly (the AR's dryfire; the Mauler trap)
             'weap_attrs.triggers.0.firing_effects.0.empty_effect.filepath': SND + 'dm_dryfire',
@@ -265,9 +278,11 @@ PORT.update({
             'weap_attrs.triggers.0.misc.ejection_port_recovery_time': 0.0,
             'weap_attrs.triggers.0.misc.illumination_recovery_time': 0.06,
             # STEP 6: Reach's DMR has no per-weapon pickup count (its ammo box gives 0 -- Reach
-            # tops up from dropped weapons); the template's item is SNIPER ammo (16 rounds).
-            # Boot 1: ONE MAGAZINE (15) a pickup -- an approximation for the user to decide
-            'weap_attrs.magazines.0.magazine_items.0.rounds': 15,
+            # tops up from dropped weapons), so the wave rule (the source's pickup count; the
+            # BR: Halo 3's 72) has nothing to read. User (test 1, 2026-10-10): the YARDSTICK's
+            # pickup : initial ratio instead -- H1 sniper 16 : 12 on Reach's 45 = 60. Balanced
+            # initial is 45 too, so no balanced row (boot 1 had 15, one magazine)
+            'weap_attrs.magazines.0.magazine_items.0.rounds': 60,
             # the on-gun counter (model 'numeric'): the AR's export layout (the BR)
             'weap_attrs.A_in': 'illumination',
             'weap_attrs.B_in': 'primary_ammunition',
@@ -293,9 +308,17 @@ PORT.update({
                           # magnification ARC (scope_distance_meter: scale 0, animated) and its
                           # SLIDER (animated by dmr_zoom along the arc) cannot be a static mask:
                           # dropped for boot 1 (user decides after seeing it)
-                          'size': 1024, 'span': 660.0, 'aspect': 4 / 3.0, 'alpha': 'outside',
-                          'per_widget': {'scope_distance_meter': {'drop': True},
-                                         'distance_slider': {'drop': True}}},
+                          # TEST 1 (user): 'shrink it to mirror the original size' -> Reach's
+                          # 1152x640 HUD canvas read as its 90% SAFE AREA of 1280x720 (user's
+                          # pick, 2026-10-10): span 660 / 0.9 = 733.3 -> the ring at 69% of the
+                          # screen height. The ARC (scale 0 in the tag, animated) at scale 1 in
+                          # Reach's own placement, and the SLIDER (animated along it by dmr_zoom)
+                          # STATIC at the 3.0x end -- the DMR's one zoom level (user: 'add them
+                          # as a static picture for a test'); its spot read off the art
+                          'size': 1024, 'span': 660.0 / 0.9, 'aspect': 4 / 3.0, 'alpha': 'outside',
+                          'per_widget': {'scope_distance_meter': {'scale': (1.0, 1.0)},
+                                         'distance_slider': {'origin': (0.0, 0.0),
+                                                             'offset': (141.0, -186.0)}}},
                 # the SNIPER HUD's layout (4b template diff, before boot 1): its zoom overlays
                 # are AIM-typed crosshairs with zoom-only overlays (type 6/5) -- crosshairs2,
                 # _sm, caption -- + two zoom crosshairs: all but #0 dropped (Reach's scope

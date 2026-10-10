@@ -106,6 +106,18 @@
    ]
   },
   {
+   "tag": "sound\\weapons\\dmr_port\\dm_eject",
+   "perms": [
+    "dm_eject_1.wav",
+    "dm_eject_2.wav",
+    "dm_eject_3.wav",
+    "dm_eject_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\dmr_port\\dm_eject"
+   ]
+  },
+  {
    "tag": "sound\\weapons\\dmr_port\\dm_drop",
    "perms": [
     "dm_drop_1.wav",
