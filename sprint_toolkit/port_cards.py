@@ -217,7 +217,10 @@ def plan(weapon, only_cards=None, only_game=None):
                         bad = 'no %s counterpart for %s' % (weapon, path)
                         break
                     mc, _s, mp = m.partition(' ')
-                    if not check.ok(mc, mp, exists_only=bool(explicit)):
+                    # an explicit map may name several tags ('jpt! a & b': the Halo 1 Spartan
+                    # Laser's damage is its beam's direct hit AND its splash)
+                    if not all(check.ok(mc, x.strip(), exists_only=bool(explicit))
+                               for x in mp.split(' & ')):
                         bad = '%s %s does not exist in %s' % (mc, mp, game)
                         break
                     mapped.append(m)
