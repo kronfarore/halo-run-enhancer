@@ -2827,6 +2827,249 @@
     "jpt! weapons\\sniper rifle\\sniper bullet": "jpt! weapons\\dmr\\bullet",
     "jpt! weapons\\sniper rifle\\melee": "jpt! weapons\\dmr\\melee"
    }
+  },
+  {
+   "weapon": "Needle Rifle",
+   "source": "Halo Reach",
+   "donor": "Needler",
+   "default_on": false,
+   "desc": "Halo Reach's Needle Rifle: its model, first-person animations, sounds, scope and numbers. A 21-round semi-automatic needle rifle with a 2x zoom; seven stuck needles supercombine. Needler ammo tops it up.",
+   "balance_desc": "Measured against the Needler: 10 damage a needle at up to 3.3 rounds a second, an 18-needle magazine with a slower reload, a slower needle with a shorter reach, Halo 1-style aim assist and the needler's own supercombine; the zoom stays Reach's.",
+   "anims": {
+    "reload": 1.59
+   },
+   "anim_sounds": {
+    "reload": [
+     {
+      "mult": 1.59,
+      "from": "sound\\weapons\\needle_rifle_port\\nr_reload",
+      "to": "sound\\weapons\\needle_rifle_port\\nr_reload_balanced"
+     }
+    ]
+   },
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\needle rifle\\needle",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 10.0,
+     "card": "Needle Damage",
+     "original": 6.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\needle rifle\\needle",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 10.0,
+     "card": "Needle Damage",
+     "original": 6.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\needle rifle\\needle",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 10.0,
+     "card": "Needle Damage",
+     "original": 6.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\needle rifle\\supercombine",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 6.9,
+     "card": "Explosion Damage",
+     "original": 45.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\needle rifle\\supercombine",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 60.0,
+     "card": "Explosion Damage",
+     "original": 390.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\needle rifle\\supercombine",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 60.0,
+     "card": "Explosion Damage",
+     "original": 390.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\needle rifle\\needle rifle",
+     "field": "Rounds Per Second",
+     "block": "Triggers",
+     "value": 3.333,
+     "card": "More Shooting",
+     "original": 4.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\needle rifle\\needle rifle",
+     "field": "Rounds Per Second Max",
+     "block": "Triggers",
+     "value": 3.333,
+     "card": "More Shooting",
+     "original": 4.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\needle rifle\\needle rifle",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 18,
+     "card": "Magazine",
+     "original": 21
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\needle rifle\\needle rifle",
+     "field": "Rounds Reloaded",
+     "block": "Magazines",
+     "value": 18,
+     "card": "Magazine",
+     "original": 21
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\needle rifle\\needle rifle",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 70,
+     "card": "Magazine",
+     "original": 63
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\needle rifle\\needle rifle",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 70,
+     "card": "Magazine",
+     "original": 105
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\needle rifle\\needle rifle",
+     "field": "Rounds",
+     "block": "Magazines/Magazines",
+     "value": 70,
+     "card": "Ammo pickup",
+     "original": 63
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\needle rifle\\needle rifle",
+     "field": "Error Angle",
+     "block": "Triggers",
+     "value": 0.2,
+     "card": "Error Angle",
+     "original": 0.15
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\needle rifle\\needle rifle",
+     "field": "Error Angle Max",
+     "block": "Triggers",
+     "value": 2.67,
+     "card": "Error Angle",
+     "original": 2.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\needle rifle\\needle",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 18.167,
+     "card": "Projectile",
+     "original": 50.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\needle rifle\\needle",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 18.167,
+     "card": "Projectile",
+     "original": 50.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\needle rifle\\needle",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 192.0,
+     "card": "Projectile",
+     "original": 250.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\needle rifle\\needle",
+     "field": "Timer",
+     "block": null,
+     "value": 2.25,
+     "card": "Needle Timer",
+     "original": 4.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\needle rifle\\needle",
+     "field": "Timer Max",
+     "block": null,
+     "value": 2.25,
+     "card": "Needle Timer",
+     "original": 4.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\needle rifle\\needle rifle",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 1.69,
+     "card": "Autoaim",
+     "original": 2.25
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\needle rifle\\needle rifle",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 24.0,
+     "card": "Autoaim",
+     "original": 25.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\needle rifle\\needle rifle",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 3.75,
+     "card": "Magnetism",
+     "original": 5.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\needle rifle\\needle rifle",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 24.0,
+     "card": "Magnetism",
+     "original": 25.0
+    }
+   ],
+   "weap": "weapons\\needle rifle\\needle rifle",
+   "fp_animations": "weapons\\needle rifle\\fp\\fp",
+   "requires": [
+    "proj weapons\\needle rifle\\needle"
+   ]
   }
  ],
  "Halo 3": [

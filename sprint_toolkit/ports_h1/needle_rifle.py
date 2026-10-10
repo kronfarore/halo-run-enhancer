@@ -14,6 +14,11 @@ N = 'weapons\\needler\\'
 PISTOL = 'weapons\\pistol\\'
 RS = 'data\\sound\\weapons\\'                      # Reach's bank folders
 RSN = RS + 'needle_rifle\\'
+# Halo 1 material indices (proj material responses): TERRAIN / props -- dirt, sand, stone, snow,
+# wood, metal hollow / thin / thick, rubber, glass, plastic, ice. Reach's needle sticks only to
+# BIPEDS ('attach, only against bipeds'); elsewhere it bounces at 0-30 deg (friction 0 / 0.7,
+# noise 2 deg) or detonates -- with NO detonation effect, so it just ends
+TERRAIN = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 27, 31]
 LEVELS = ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40']
 # Reach's self-illumination colours (ManagedBlam, the shaders' function data, 2026-10-10):
 # the stowed CRYSTALS (needler_crystal_solid, illum_detail, intensity 3) violet (87, 19, 237)
@@ -169,6 +174,10 @@ PORT.update({
             # a stuck needle's end (Reach: needle_rifle_bolt_expl) and the SUPERCOMBINE
             'nr_burst': (['needle_rifle_bolt_expl'], 'sound\\sfx\\weapons\\needler\\expl', -15.9),
             'nr_super': ([RS + 'needler\\needler_super_expl'], 'sound\\sfx\\impulse\\impacts\\needler_super_expl', -17.6),
+            # the needle's FLYBY (Reach: needle_rifle_bolt_by; the needle's needler_projectile
+            # -26.1 / -21.0 / -21.7 -> -22.9): found by hand before boot 1 -- port_sound_refs
+            # does not read a projectile's own sound fields
+            'nr_flyby': (['needle_rifle_bolt_by'], 'sound\\sfx\\impulse\\impacts\\needler_projectile', -22.9),
             # the BALANCED reload (the patcher retimes it, then swaps this in)
             'nr_reload_balanced': (['needle_rifle_fp\\needle_rifle_reload'], 'sound\\sfx\\weapons\\weapon_anims\\needle_reload', -18.3),
         },
@@ -201,11 +210,32 @@ PORT.update({
         'bullet': {'projectile': (N + 'needle', NR + 'needle'),
                    'damage': (N + 'detonation damage', NR + 'needle'),
                    'dmg': 6.0, 'acceleration': 0.2, 'velocity': 1500.0, 'range': 250.0,
+                   # STEP 4b on the damage: list 2 camo damage 0.1 x 0.33/0.2; the forward
+                   # EXPONENT degenerates (1 x 8/0.2 = 40) -> Reach's own 8 (the BR / DMR rule).
+                   # List 3: category bullet (Reach's) kept; 'can cause headshots' has no
+                   # Halo 1 jpt flag; instantaneous acceleration 0.2 (above)
+                   'fields': {'damage.active_camouflage_damage': 0.165,
+                              'breaking_effect.forward_exponent': 8.0},
                    'proj_fields': {'proj_attrs.physics.guided_angular_velocity': 0.0,
                                    # Reach's needle has no attached detonation damage
                                    'proj_attrs.physics.attached_detonation_damage.filepath': '',
                                    'proj_attrs.detonation.timer': (4.0, 4.0),
-                                   'proj_attrs.flags.detonation_max_time_if_attached': True},
+                                   'proj_attrs.flags.detonation_max_time_if_attached': True,
+                                   # STEP 4b (before boot 1). List 2 (ratio vs Reach's needler
+                                   # onto the H1 needle): air damage range 0, 100 x 40/60. List 3
+                                   # (a zero on one side -> the source value): water gravity 0.2
+                                   'proj_attrs.physics.air_damage_range': (0.0, 66.667),
+                                   'proj_attrs.physics.water_gravity_scale': 0.2,
+                                   'proj_attrs.physics.flyby_sound.filepath': SND + 'nr_flyby'},
+                   # Reach's material responses (4b list 3): a needle sticks to BODIES only (the
+                   # needle's own attach kept on 11-26 and Elite shields 30 -- the supercombine
+                   # needs it); on terrain it ENDS ('disappear', the impact effect plays) or
+                   # bounces off at 0-30 deg (the Spike Rifle's reflect). The needle's shield
+                   # reflects (10 / 16 / 18 / 32) and water / leaves pass-through kept
+                   'default_responses': {'disappear': TERRAIN},
+                   'reflect': {'materials': TERRAIN, 'angle_deg': (0.0, 30.0),
+                               'parallel_friction': 0.0, 'perpendicular_friction': 0.7,
+                               'noise_deg': 2.0, 'effect_from_default': True},
                    # the stuck needle's end: the needle's burst, its sound Reach's own
                    'detonation_effect': {'from': N + 'effects\\needle detonate',
                                          'out': NR + 'effects\\needle detonate',
@@ -226,6 +256,8 @@ PORT.update({
                     'acceleration_time': 0.0, 'deceleration_time': 0.0,
                     # Reach blooms by a firing-penalty function (decay 0.9 s); Halo 1's ramp
                     'error_acceleration_time': 1.0, 'error_deceleration_time': 0.9},
+        # Reach's own spread; minimum error 0 (4b list 4: the needler's 2 deg is its spray --
+        # the user: 'fire like a precision weapon')
         'error_deg': {'minimum_error': 0.0, 'error_angle': (0.15, 2.0)},
         # Reach: 21 loaded, 63 at pickup, 105 most
         'magazine': {'rounds_loaded_maximum': 21, 'rounds_reloaded': 21,
@@ -233,7 +265,9 @@ PORT.update({
                      'reload_time': 0.0},
         'aiming': {'autoaim_angle': 2.25, 'autoaim_range': 25.0,
                    'magnetism_angle': 5.0, 'magnetism_range': 25.0,
-                   'zoom_levels': 1, 'zoom_ranges': (2.0, 2.0)},
+                   'zoom_levels': 1, 'zoom_ranges': (2.0, 2.0),
+                   # 4b list 3: a zero on one side (the needler 0) -> Reach's own
+                   'deviation_angle': 2.25},
         'sound_effects': {
             # THE MUZZLE-FLASH RULE (closing check 10, before boot 1). Reach's FIRST-PERSON flash
             # (fx\firing.effect, 'only in first person'): five particle systems ALL on the one
@@ -245,13 +279,23 @@ PORT.update({
             # dropped (`drop_off_axis`, the SMG's recipe); size kept (Reach's span)
             'firing_effect': (N + 'effects\\fire needle', NR + 'effects\\fire needle',
                               {'sound\\sfx\\weapons\\needler\\fire': SND + 'nr_fire'},
-                              {'match': 'flash', 'drop_off_axis': 0.012})},
+                              {'match': 'flash', 'drop_off_axis': 0.012}),
+            # the needler's EMPTY field is an EFFECT (the sniper's named a sound: the DMR's
+            # field write failed the boot-1 build) -> an own copy, the dry fire swapped
+            'empty_effect': (N + 'effects\\empty', NR + 'effects\\empty',
+                             {'sound\\sfx\\weapons\\needler\\dryfire': SND + 'nr_dryfire'})},
         'fields': {
-            'weap_attrs.triggers.0.firing_effects.0.empty_effect.filepath': SND + 'nr_dryfire',
             'weap_attrs.interface.zoom_in_sound.filepath': SND + 'nr_zoom_in',
             'weap_attrs.interface.zoom_out_sound.filepath': SND + 'nr_zoom_out',
             'weap_attrs.interface.pickup_sound.filepath': SND + 'nr_ammo',
             'item_attrs.collision_sound.filepath': SND + 'nr_drop',
+            # STEP 4b list 2 (ratio vs Reach's needler onto the H1 needler): camo ding 0.16 x
+            # 0.75/0.2, illumination recovery 0.2 x 0.1/0.04
+            'weap_attrs.interface.active_camo_ding': 0.6,
+            'weap_attrs.triggers.0.misc.illumination_recovery_time': 0.5,
+            # STEP 6: Reach has no per-weapon pickup count (its ammo box gives 0) -> the DMR's
+            # rule (user, B1): the YARDSTICK's pickup : initial (needler 80 : 80) on Reach's 63
+            'weap_attrs.magazines.0.magazine_items.0.rounds': 63,
         },
         'melee': (N + 'melee', NR + 'melee'),
         'melee_response': N + 'melee_response',
@@ -310,8 +354,16 @@ PORT.update({
                 row('weap', NR + 'needle rifle', 'Rounds Per Second', 3.333, 4.0, 'More Shooting', block='Triggers'),
                 row('weap', NR + 'needle rifle', 'Rounds Per Second Max', 3.333, 4.0, 'More Shooting', block='Triggers'),
                 row('weap', NR + 'needle rifle', 'Rounds Loaded Maximum', 18, 21, 'Magazine', block='Magazines'),
+                row('weap', NR + 'needle rifle', 'Rounds Reloaded', 18, 21, 'Magazine', block='Magazines'),
                 row('weap', NR + 'needle rifle', 'Rounds Total Initial', 70, 63, 'Magazine', block='Magazines'),
                 row('weap', NR + 'needle rifle', 'Rounds Total Maximum', 70, 105, 'Magazine', block='Magazines'),
+                # STEP 6 balanced: the needler's 80 : 80 on the balanced initial 70
+                row('weap', NR + 'needle rifle', 'Rounds', 70, 63, 'Ammo pickup', block='Magazines/Magazines'),
+                # spread: the needler's 4 -> 4 deg x (Reach 0.15 -> 2 / needler 0.1 -> 3): the
+                # maximum 2.67, the minimum INVERTS (6) -> the SIBLING RULE in Reach's shape (the
+                # DMR): 2.67 x 0.15/2 = 0.2; minimum error 0 both (precision)
+                row('weap', NR + 'needle rifle', 'Error Angle', 0.2, 0.15, 'Error Angle', block='Triggers'),
+                row('weap', NR + 'needle rifle', 'Error Angle Max', 2.67, 2.0, 'Error Angle', block='Triggers'),
                 row('proj', NR + 'needle', 'Initial Velocity', 18.167, 50.0, 'Projectile'),
                 row('proj', NR + 'needle', 'Final Velocity', 18.167, 50.0, 'Projectile'),
                 row('proj', NR + 'needle', 'Maximum Range', 192.0, 250.0, 'Projectile'),

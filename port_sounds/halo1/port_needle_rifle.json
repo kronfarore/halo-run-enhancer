@@ -1,0 +1,157 @@
+{
+ "game": "Halo 1",
+ "weapon": "Needle Rifle",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\needle_rifle_port\\nr_fire",
+   "perms": [
+    "nr_fire_1.wav",
+    "nr_fire_2.wav",
+    "nr_fire_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\needle_rifle_port\\nr_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\needle_rifle_port\\nr_dryfire",
+   "perms": [
+    "nr_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\needle_rifle_port\\nr_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\needle_rifle_port\\nr_reload",
+   "perms": [
+    "nr_reload_1.wav",
+    "nr_reload_2.wav",
+    "nr_reload_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\needle_rifle_port\\nr_reload"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\needle_rifle_port\\nr_ready",
+   "perms": [
+    "nr_ready_1.wav",
+    "nr_ready_2.wav",
+    "nr_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\needle_rifle_port\\nr_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\needle_rifle_port\\nr_melee",
+   "perms": [
+    "nr_melee_1.wav",
+    "nr_melee_2.wav",
+    "nr_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\needle_rifle_port\\nr_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\needle_rifle_port\\nr_pose",
+   "perms": [
+    "nr_pose_1.wav",
+    "nr_pose_2.wav",
+    "nr_pose_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\needle_rifle_port\\nr_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\needle_rifle_port\\nr_zoom_in",
+   "perms": [
+    "nr_zoom_in_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\needle_rifle_port\\nr_zoom_in"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\needle_rifle_port\\nr_zoom_out",
+   "perms": [
+    "nr_zoom_out_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\needle_rifle_port\\nr_zoom_out"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\needle_rifle_port\\nr_ammo",
+   "perms": [
+    "nr_ammo_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\needle_rifle_port\\nr_ammo"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\needle_rifle_port\\nr_drop",
+   "perms": [
+    "nr_drop_1.wav",
+    "nr_drop_2.wav",
+    "nr_drop_3.wav",
+    "nr_drop_4.wav",
+    "nr_drop_5.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\needle_rifle_port\\nr_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\needle_rifle_port\\nr_burst",
+   "perms": [
+    "nr_burst_1.wav",
+    "nr_burst_2.wav",
+    "nr_burst_3.wav",
+    "nr_burst_4.wav",
+    "nr_burst_5.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\needle_rifle_port\\nr_burst"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\needle_rifle_port\\nr_super",
+   "perms": [
+    "nr_super_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\needle_rifle_port\\nr_super"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\needle_rifle_port\\nr_flyby",
+   "perms": [
+    "nr_flyby_1.wav",
+    "nr_flyby_2.wav",
+    "nr_flyby_3.wav",
+    "nr_flyby_4.wav",
+    "nr_flyby_5.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\needle_rifle_port\\nr_flyby"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\needle_rifle_port\\nr_reload_balanced",
+   "perms": [
+    "nr_reload_balanced_1.wav",
+    "nr_reload_balanced_2.wav",
+    "nr_reload_balanced_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\needle_rifle_port\\nr_reload_balanced"
+   ]
+  }
+ ]
+}
