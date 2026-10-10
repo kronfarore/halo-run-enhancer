@@ -182,9 +182,16 @@ PORT = reserved(
                             # actor copies are enhancer-side) + berserk firing ranges 0.75-2.75
                             # (theirs; 2.0 here = the hammer's firing distance)
                             '0x168=0.75:Berserk Firing Range', '0x16C=2.0:Berserk Firing Range Max',
-                            '0x160=0.5:Melee Range', '0x164=1.0:Melee Abort Range',
-                            '0x170=0.5:Berserk Melee Range', '0x174=1.0:Berserk Melee Abort Range'],
-                    'wdm_rule': {'base': 0.0, 'yardstick_dps': 189.0, 'port_dps': 202.0,
+                            # ARMED TEST 2 (user): 'they charge and clobber me now, good -- increase
+                            # their melee range slightly; they attack right in my face': 0.5 -> 1.0
+                            # (abort 1.0 -> 1.5), berserk the same
+                            '0x160=1.0:Melee Range', '0x164=1.5:Melee Abort Range',
+                            '0x170=1.0:Berserk Melee Range', '0x174=1.5:Berserk Melee Abort Range'],
+                    # ARMED TEST 2 (user): 'I hear the blast sound, but no visible effect and no
+                    # knockback on me'. Halo 1 pushes NOTHING with zero damage (the sword's
+                    # lunge shove, boot 1) -- if WDM 0 means ZERO (not 'no modifier'), the AI's
+                    # blast hits for 0 and pushes nothing. Test 3: base 1.0 (0.94 / 0.93)
+                    'wdm_rule': {'base': 1.0, 'yardstick_dps': 189.0, 'port_dps': 202.0,
                                  'balanced_port_dps': 204.0}},
 )
 
