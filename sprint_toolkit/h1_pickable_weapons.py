@@ -511,7 +511,7 @@ def own_explosion(pd, X, write):
     # scaling (the Gravity Hammer, boot 2: Halo 3's shockwave ring is a mesh particle Halo 1
     # does not have -- the Wraith mortar's own `light ring expand`, a ring lying perpendicular
     # to the effect's direction that grows x80): [{'from': effect, 'match': particle path
-    # substring, 'radius': (lo, hi)[, 'tint': (a, r, g, b)]}]
+    # substring, 'radius': (lo, hi)[, 'tint': (a, r, g, b), 'location': index]}]
     for A in X.get('add_particles', ()):
         src = effe_def.build(filepath=path(A['from'], '.effect')).data.tagdata
         got = [q for ev in src.events.STEPTREE for q in ev.particles.STEPTREE
@@ -524,6 +524,8 @@ def own_explosion(pd, X, write):
             x = dst[len(dst) - 1]
             if 'radius' in A:
                 x.radius[0], x.radius[1] = A['radius']
+            if 'location' in A:          # an index of THIS effect's locations (1 = 'gravity')
+                x.location = A['location']
             for bd in ((x.tint_lower_bound, x.tint_upper_bound) if 'tint' in A else ()):
                 bd.a, bd.r, bd.g, bd.b = A['tint']
     if n != 1:

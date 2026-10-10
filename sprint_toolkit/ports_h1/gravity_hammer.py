@@ -182,7 +182,8 @@ PORT.update({
         'h1_model': r'weapons\gravity hammer\fp\fp',
         'align': 'same_space',
         # BOOT 2 (user): 'another unit lower'
-        'view_offset': (0.0, 0.0, -0.02),
+        # BOOT 3 (user): 'about 0.5 closer to the camera' (x = forward)
+        'view_offset': (-0.005, 0.0, -0.02),
         'anims': {
             'first_person:idle': 'first-person idle',
             'first_person:posing:var1': 'first-person posing',
@@ -320,7 +321,18 @@ PORT.update({
                                  # blast's own reach (the mortar's 0.2..0.5 ends at 4..10 wu)
                                  'add_particles': [{'from': r'vehicles\wraith\effects\wraith mortar explosion',
                                                     'match': 'light ring expand',
-                                                    'radius': (0.075, 0.125)}],
+                                                    'radius': (0.075, 0.125),
+                                                    # BOOT 3 (user): 'the shockwave is not the
+                                                    # described behaviour; it looks better than
+                                                    # the last explosion, remember this state'
+                                                    # (kept: effectslast.effect.boot3 -- the
+                                                    # rings at location 0). At location 0 the
+                                                    # rings face the effect's direction (the
+                                                    # strike's flight: an air burst stands them
+                                                    # up, small, facing the player). Location 1 =
+                                                    # 'gravity' (straight down: the grenade's
+                                                    # scorch decal) lays them FLAT
+                                                    'location': 1}],
                                  # the plasma grenade's blue burst + light; its 8 wu shock wave,
                                  # burn decal and sound go (the hammer brings its own)
                                  'drop_parts': [PG + 'shock wave',
@@ -346,6 +358,14 @@ PORT.update({
             # h1_box_collision.py), and a bounding radius that covers the 0.67 wu model (the
             # template's 0.2 is a pistol's; the farthest vertex sits 0.40 wu from the origin)
             'obje_attrs.collision_model.filepath': GH + 'gravity hammer',
+            # BOOT 3 (user's screenshots): the hull changed nothing -- Halo 1 rests a dropped
+            # item on its ORIGIN (the grip) with its model z axis VERTICAL, either way up: the
+            # hammer stood on its head or its handle (stock guns lie flat only because their
+            # z is the model's up). The user's pick of three (lie flat + shoulder / rifle pose,
+            # or stand like the flag): STAND LIKE THE FLAG -- the flag pose kept, the flag's
+            # 'always maintains z up': head up every time, the lower 0.29 wu of handle in the
+            # ground (the hull stays: what projectiles hit)
+            'item_attrs.flags.always_maintains_z_up': True,
             'obje_attrs.bounding_radius': 0.42,
             # BOOT 1 (user): 'each swing costs ABOUT 5%' -- float32 0.05 is 0.0500000007, so the
             # HUD reads 94, 89, ... Boot 2 tried the Spartan Laser's fix (the float just below,
