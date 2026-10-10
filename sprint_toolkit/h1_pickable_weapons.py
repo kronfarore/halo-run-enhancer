@@ -463,6 +463,11 @@ def own_explosion(pd, X, write):
         for i in range(len(prts) - 1, -1, -1):
             if prts[i].type.filepath in X.get('drop_parts', ()):
                 prts.pop(i)
+            # `drop_classes`: every part of these classes (the Gravity Hammer, boot 5: only its
+            # shockwave ring shows -- the plasma grenade's burst and light flash go; the light
+            # shares its tag PATH with the damage part, so a path cannot name it)
+            elif prts[i].type.tag_class.enum_name in X.get('drop_classes', ()):
+                prts.pop(i)
         for part in prts:
             if (part.type.filepath.lower() == part_src.lower()
                     and part.type.tag_class.enum_name == 'damage_effect'):

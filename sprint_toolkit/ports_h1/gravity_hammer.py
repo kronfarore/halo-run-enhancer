@@ -339,7 +339,9 @@ PORT.update({
                                                     # the last 0.4), full bright, growing x0.25 ->
                                                     # x20 to ~3 wu -- unmistakable, to tell size
                                                     # from orientation
-                                                    'radius': (0.15, 0.15),
+                                                    # BOOT 5 (user): the ring ENDS at the blast's
+                                                    # 1.5 wu (x20 radius animation: 0.075)
+                                                    'radius': (0.075, 0.075),
                                                     'tint': (1.0, 0.75, 0.85, 1.0),
                                                     'particle': {'out': GH + r'effects\shockwave ring',
                                                                  'lifespan': (0.5, 0.6), 'fade_out': 0.4}}],
@@ -348,7 +350,11 @@ PORT.update({
                                  'drop_parts': [PG + 'shock wave',
                                                 'effects\\decals\\bullet holes\\plasma burn large'],
                                  'swaps': {'sound\\sfx\\weapons\\plasma grenade\\plasmagrenexpl': SND + 'gh_hit'},
-                                 'scale': 0.75, 'out_dir': GH + 'effects\\'},
+                                 # BOOT 5 (user): 'the ring is there and I like it. Remove the
+                                 # explosion, size the ring to the explosion' -> no burst, no
+                                 # light flash: the damage, its knockback and the sound stay
+                                 'drop_classes': ['particle_system', 'light'],
+                                 'out_dir': GH + 'effects\\'},
                    'triggers': (0,)},
         'fields': {
             # Armed AI swing the weapon's own melee damage (the sword's flag)
