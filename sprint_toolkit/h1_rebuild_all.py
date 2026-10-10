@@ -78,7 +78,13 @@ def build(mp):
         return None, 'build failed:\n      ' + '\n      '.join(tail)
     if not os.path.isfile(out) or os.path.getmtime(out) < t0 - 2:
         return None, 'tool reported success but %s is not fresh' % out
-    return out, '%.0fs' % (time.time() - t0)
+    # tool's own capacity lines (MCC classic: 64 MiB tag space, 64 MiB vertex buffers;
+    # H1_PORT_PLAN.md 0.1) -- e.g. 'total tag size is 20.38M (43.62M free)'
+    import re
+    sizes = re.findall(r'total (tag|vbuf) size is ([0-9.]+)M \(([0-9.]+)M free\)', r.stdout)
+    fin = re.search(r'finalizing ([0-9.]+)M', r.stdout)
+    extra = ''.join(', %s %sM (%sM free)' % s for s in sizes) + (', file %sM' % fin.group(1) if fin else '')
+    return out, '%.0fs%s' % (time.time() - t0, extra)
 
 
 def check(path, allow_missing_slots=False):

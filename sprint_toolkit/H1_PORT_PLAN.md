@@ -771,6 +771,20 @@ other sessions); then, for every port in the batch: residency on all ten BUILT m
 `port_refs_audit.py` + `port_sound_refs.py --game "Halo 1"` on the deployed maps, and the
 spawn check in game. The SMG (done, tested on a30) is the first in that batch.
 
+**WAVE A BATCH REBUILT + SHIPPED (2026-10-10, user's go):** all nine Halo 3 ports (SMG, BR,
+Carbine, Beam Rifle, Spike Rifle, Mauler, Brute Shot, Spartan Laser, Gravity Hammer) with
+the SAW / sword / fuel rod / beam: `h1_rebuild_all.py`, 10 ok, shipped to
+E:\HaloBaselines + halo1\maps (live + old baselines first copied to
+E:\HaloBackups\h1_waveA_rebuild_2026-10-10; a30 / c20 live were patched/test copies).
+Checks on the DEPLOYED maps: `h1_port_residency.py` (new: weapon + `requires` tags +
+palette per port per map) 13 ports x 10 maps, 0 missing; `port_refs_audit.py` 0 problems
+on all ten (13 ports); `port_sound_refs.py` 0 BORROW on all ten; `port_sounds.py --check` 0.
+Capacity, tool's own lines (h1_rebuild_all now prints them): tag space 19.1-20.4 MiB of 64,
+vbuf 22.5-27.7 MiB of 64 (a10 highest), files 277-355 MiB (d40 355.1, a10 352.1), d40
+weapon placements 99 of 128. NOTE the 384 MiB question: a10/d40 grow ~4.5 MiB a port, so
+the 7th-8th port of wave B crosses 384 MiB on a10/d40 -- the first build over it must be
+booted on that map (or tested on purpose before). Spawn check in game: the user's.
+
 ## Hand-off prompt for a weapon session
 
 > Port the <WEAPON> into Halo 1 (H1_PORT_PLAN.md, wave <X>, #<n>). Source: <game>.
