@@ -15,6 +15,14 @@ yardstick came from it. The Halo 1 side is h1_role_compare.py.
 
     python h3_weapon_values.py rifle\smg\smg rifle\assault_rifle\assault_rifle pistol\magnum\magnum
     (paths under objects\weapons, no extension; --json out.json writes the table)
+
+HALO REACH (`--kit reach`, the DMR pilot, 2026-10-10): the same rows from HREK. Reach's
+export writes a tag reference as its BASENAME only (`dmr_bullet`), so a reference is found
+by name + extension, nearest the referencing tag's folder first; FP graphs sit under
+spartans\fp\weapons; the melee is ONE `melee damage` field (shown as 1st / 3rd); a Reach
+magazine has no reload time (the animation sets it).
+
+    python h3_weapon_values.py --kit reach rifle\dmr\dmr=rifle\fp_dmr\fp_dmr pistol\magnum\magnum
 """
 import argparse
 import io
@@ -28,6 +36,19 @@ H3EK = os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'H3EK'
 CACHE = os.path.join(HERE, 'out', 'h3_export')
 W = 'objects\\weapons\\'
 FP = 'objects\\characters\\masterchief\\fp\\weapons\\'
+#: per kit: (kit root, export cache, FP graph folder); 'h3' is the original behaviour
+KITS = {'h3': (H3EK, CACHE, FP),
+        'reach': (os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'HREK'),
+                  os.path.join(HERE, 'out', 'reach_export'),
+                  'objects\\characters\\spartans\\fp\\weapons\\')}
+KIT = 'h3'
+
+
+def use_kit(kit):
+    """Point export / ref / values at another kit (module globals)."""
+    global H3EK, CACHE, FP, KIT
+    H3EK, CACHE, FP = KITS[kit]
+    KIT = kit
 
 
 def export(rel):
@@ -54,9 +75,39 @@ def field(s, name, after=None):
     return m.group(1) if m else None
 
 
-def ref(s, name):
+def ref(s, name, ext=None, near=None):
     v = field(s, name)
+    if KIT != 'h3':
+        return find_tag(v, ext, near) if v else None
     return v.split(',')[0] if v and ',' in v and v.split(',')[0] else None
+
+
+_INDEX = {}
+
+
+def find_tag(base, ext, near=None):
+    """Reach: a basename reference -> the kit-relative path (no extension) of <base>.<ext>,
+    the one sharing the longest folder prefix with `near` (the referencing tag) first."""
+    if '\\' in base:
+        return base
+    root = os.path.join(H3EK, 'tags')
+    if not _INDEX:
+        for d, _ds, fs in os.walk(root):
+            for f in fs:
+                b, e = os.path.splitext(f)
+                _INDEX.setdefault((b.lower(), e[1:].lower()), []).append(
+                    os.path.relpath(os.path.join(d, b), root))
+    hits = _INDEX.get((base.lower(), (ext or '').lower()), [])
+    if not hits:
+        return None
+    nb = (near or '').lower().split('\\')[:-1]
+
+    def shared(h):
+        a, n = h.lower().split('\\')[:-1], 0
+        while n < min(len(a), len(nb)) and a[n] == nb[n]:
+            n += 1
+        return -n
+    return sorted(hits, key=shared)[0]
 
 
 def values(weapon, graph=None):
@@ -65,11 +116,13 @@ def values(weapon, graph=None):
     s = export(W + weapon + '.weapon')
     if s is None:
         raise SystemExit('no %s%s.weapon in H3EK' % (W, weapon))
-    bar = s[s.find('<block name="barrels"'):]
-    mag = s[s.find('<block name="magazines"'):]
-    proj = ref(bar, 'projectile')
+    # Halo 3 writes <block name=..>; Reach a <field name=.. type="block"/> before the elements
+    blk = '<block name="%s"' if KIT == 'h3' else '<field name="%s" value='
+    bar = s[s.find(blk % 'barrels'):]
+    mag = s[s.find(blk % 'magazines'):]
+    proj = ref(bar, 'projectile', 'projectile', W + weapon)
     ps = export(proj + '.projectile') if proj else None
-    dmg = ref(ps, 'impact damage')
+    dmg = ref(ps, 'impact damage', 'damage_effect', proj)
     ds = export(dmg + '.damage_effect') if dmg else None
     after = 'distribution function'          # the single-wield error, after the dual set
     v = {
@@ -99,8 +152,8 @@ def values(weapon, graph=None):
                                            field(s, 'magnification range')),
         'autoaim angle / range': '%s / %s' % (field(s, 'autoaim angle'), field(s, 'autoaim range')),
         'magnetism angle / range': '%s / %s' % (field(s, 'magnetism angle'), field(s, 'magnetism range')),
-        'melee 1st / 3rd hit': '%s / %s' % ((ref(s, '1st hit melee damage') or '-').rsplit('\\', 1)[-1],
-                                           (ref(s, '3rd hit melee damage') or '-').rsplit('\\', 1)[-1]),
+        'melee 1st / 3rd hit': '%s / %s' % ((ref(s, '1st hit melee damage') or ref(s, 'melee damage', 'damage_effect') or '-').rsplit('\\', 1)[-1],
+                                           (ref(s, '3rd hit melee damage') or ref(s, 'melee damage', 'damage_effect') or '-').rsplit('\\', 1)[-1]),
         'velocity (init, final)': '%s, %s' % (field(ps, 'initial velocity'), field(ps, 'final velocity')),
         'maximum range': field(ps, 'maximum range'),
         'air gravity scale': field(ps, 'air gravity scale'),
@@ -127,7 +180,9 @@ def main():
                     r'add =<fp graph under masterchief\fp\weapons> for FP frames, e.g. '
                     r'rifle\smg\smg=rifle\fp_smg\fp_smg')
     ap.add_argument('--json')
+    ap.add_argument('--kit', choices=sorted(KITS), default='h3')
     a = ap.parse_args()
+    use_kit(a.kit)
     cols = []
     for w in a.weapons:
         name, _, graph = w.partition('=')

@@ -509,6 +509,45 @@ SETS = {
         ('Flood combat (elite)', r'characters\floodcombat elite\floodcombat elite plasma rifle',
          'floodcombat elite'),
     ]},
+    # the DMR (wave B1, the REACH pilot), step 4a. Reach (HREK 2026-10-10, h3_weapon_values
+    # --kit reach): DMR 17.5 (bullet_fast, headshots) per 0.33 s recovery, rounds/s 3 = 3.0/s,
+    # 15 (45 / 75), reload 68 fr empty / 59 full, error 0.15 -> 2, zoom 1 (3x), 3000 wu/s,
+    # range 250, aim 2.25/20 5/20, strike_melee; magnum 17.5 (bullet_slow) per 0.19 s =
+    # 5.26/s, 8 (24 / 48), 50 / 51 fr, error 0.6 -> 4, zoom 2x, 3000, range 100, aim 2.25/18
+    # 4.5/18; sniper 80 (sniper group) per 0.75 s = 1.33/s, 4 (12 / 24), 86 / 72 fr, error
+    # 0.08 -> 4, zoom 2 (4, 10), 6000, range 500, aim 0.8/20 1.6/20. Halo 1: pistol 25 x
+    # 3.5/s, 12 (60 / 120), 67 fr, error 0.2 -> 2, zoom 2x, 300 wu/s, range 40, aim 3/30 6/30;
+    # sniper 101 x 2/s, 4 (12 / 24), 94 fr, error 0.5, zoom 2 (2, 8), 1000, range 1000, aim
+    # 1/35 2/35. Ratio rule = H1 yardstick x Reach DMR / Reach yardstick.
+    'dmr': {'port': 'DMR', 'weapons': [
+        # Reach's own numbers (the DEFAULT, wave rule) on each candidate's bullet materials
+        ('DMR = Reach own (pistol)', W + r'pistol\pistol', 'shot',
+         {'dmg': 17.5, 'rate': 3.0, 'mag': 15, 'reload': 68 / 30.0, 'speed': 3000.0,
+          'range': 250.0, 'aim': (2.25, 20.0, 5.0, 20.0)}),
+        ('DMR = Reach own (sniper)', W + r'sniper rifle\sniper rifle', 'shot',
+         {'dmg': 17.5, 'rate': 3.0, 'mag': 15, 'reload': 68 / 30.0, 'speed': 3000.0,
+          'range': 250.0, 'aim': (2.25, 20.0, 5.0, 20.0)}),
+        # 25 x 17.5/17.5; 3.5/s x 3.0/5.26; 12 x 15/8; 67 fr x 68/50; 40 x 250/100;
+        # aim 3 x 2.25/2.25, 30 x 20/18; 6 x 5/4.5, 30 x 20/18
+        ('DMR = Pistol ratio', W + r'pistol\pistol', 'shot',
+         {'dmg': 25.0, 'rate': 3.5 * 3.0 / (1 / 0.19), 'mag': 22, 'reload': 67 * 68 / 50 / 30.0,
+          'range': 100.0, 'aim': (3.0, 33.3, 6.67, 33.3)}),
+        # 101 x 17.5/80; 2/s x 3.0/1.33; 4 x 15/4; 94 fr x 68/86; 1000 x 3000/6000; 1000 x
+        # 250/500; aim 1 x 2.25/0.8, 35 x 20/20; 2 x 5/1.6, 35
+        ('DMR = Sniper ratio', W + r'sniper rifle\sniper rifle', 'shot',
+         {'dmg': 101 * 17.5 / 80, 'rate': 2.0 * 3.0 / (1 / 0.75), 'mag': 15,
+          'reload': 94 * 68 / 86 / 30.0, 'speed': 500.0, 'range': 500.0,
+          'aim': (2.81, 35.0, 6.25, 35.0)}),
+        # the user's pick (sniper ratio) on the PISTOL bullet's materials (a pistol template)
+        ('DMR = Sniper ratio (pistol)', W + r'pistol\pistol', 'shot',
+         {'dmg': 101 * 17.5 / 80, 'rate': 2.0 * 3.0 / (1 / 0.75), 'mag': 15,
+          'reload': 94 * 68 / 86 / 30.0, 'speed': 500.0, 'range': 500.0,
+          'aim': (2.81, 35.0, 6.25, 35.0)}),
+        ('Pistol', W + r'pistol\pistol', 'shot'),
+        ('Sniper Rifle', W + r'sniper rifle\sniper rifle', 'shot'),
+        ('Battle Rifle (port peer)', W + r'battle rifle\battle rifle', 'shot',
+         {'burst': (3, 0.1, 0.413)}),
+    ]},
 }
 
 ENEMIES = [
