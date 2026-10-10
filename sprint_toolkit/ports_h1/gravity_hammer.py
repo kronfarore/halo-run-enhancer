@@ -85,6 +85,12 @@ RING_PART = {'out': GH + r'effects\shockwave ring', 'lifespan': (0.5, 0.6), 'fad
 #     -0.12 / 0 / +0.12; the ground clipping is ACCEPTED (a flat sprite cannot bend over terrain)
 RINGS = [dict(RING, offset=(i, 0.0, 0.0), count=4, particle=RING_PART, radius=(r, r))
          for i, r in ((-0.12, 0.06), (0.0, 0.09), (0.12, 0.06))]
+#   ARMED TEST 3 (user): the AI's slams on the player show NO ring -- their strike bursts AT the
+#     player, the flat rings lie at about eye height and the first-person camera sees them
+#     edge-on. User: 'add the upright ring facing the target for a test' -> one more ring at
+#     location 0 (the effect's own direction = the strike's flight: perpendicular to it = a
+#     disc facing whoever it flies at -- the boot-3 look), same size / brightness as the centre
+RINGS = RINGS + [dict(RING, count=4, particle=RING_PART, location=0)]
 
 PORT = reserved(
     order=18, wave='A9', name='Gravity Hammer', source='Halo 3',
@@ -190,7 +196,10 @@ PORT = reserved(
                     # ARMED TEST 2 (user): 'I hear the blast sound, but no visible effect and no
                     # knockback on me'. Halo 1 pushes NOTHING with zero damage (the sword's
                     # lunge shove, boot 1) -- if WDM 0 means ZERO (not 'no modifier'), the AI's
-                    # blast hits for 0 and pushes nothing. Test 3: base 1.0 (0.94 / 0.93)
+                    # blast hits for 0 and pushes nothing. Test 3: base 1.0 (0.94 / 0.93).
+                    # ARMED TEST 3 (user): 'still no knockback; in both tests I took
+                    # considerable damage' -- so 0 was NOT zero damage. User: 'no modifier means
+                    # 1 -- treat it as 1': base 1.0 KEPT (the rule's 0.94 / 0.93)
                     'wdm_rule': {'base': 1.0, 'yardstick_dps': 189.0, 'port_dps': 202.0,
                                  'balanced_port_dps': 204.0}},
 )
