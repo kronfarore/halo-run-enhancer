@@ -2820,7 +2820,8 @@
    "fp_animations": "weapons\\dmr\\fp\\fp",
    "requires": [
     "proj weapons\\dmr\\bullet"
-   ]
+   ],
+   "hands": "two"
   }
  ],
  "Halo 3": [
