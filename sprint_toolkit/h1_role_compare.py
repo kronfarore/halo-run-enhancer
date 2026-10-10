@@ -442,6 +442,69 @@ SETS = {
         ('Flood combat (elite)', r'characters\floodcombat elite\floodcombat elite plasma rifle',
          'floodcombat elite'),
     ]},
+    # the Gravity Hammer (wave A9), step 4a. Halo 3 (H3EK, 2026-10-10): a swing = the shared
+    # `smash_melee` 80 (no radius) PLUS `gravity_hammer_explosion` 50..160 over 0.75 -> 1.5 wu,
+    # acceleration 3.5 (no aoe spike on either), set off by the strike's animation effect hit
+    # or miss: 240 a direct swing (upper bounds, the Spartan Laser's rule), every 38 fr = 1.27 s;
+    # the lunge is `crush_melee` 150 + the explosion = 310 (46 fr). Energy: campaign external
+    # aging 0.05 a swing (20 swings; MP 0.0835). Aim 10 / 1.75, 10 / 6.
+    # Ratio rows = H1 yardstick melee x H3 hammer / H3 yardstick melee, the same factor on both
+    # parts; interval x H1 melee anim / H3 melee anim; aim per field. Materials: the smash on
+    # the H1 sword's melee table (all x1), the explosion on the rocket's (H3 explosion_small =
+    # _large for Halo 1 except soft flood flesh x1: the Brute Shot's finding)
+    'gravity_hammer': {'port': 'Gravity Hammer', 'weapons': [
+        ('GH = H3 own', W + r'energy sword\energy sword', 'melee',
+         {'parts': [(W + r'energy sword\melee', 80.0),
+                    (W + r'rocket launcher\explosion', 160.0, (0.75, 1.5),
+                     {'flood_combat_form': 1.0})],
+          'interval': 38 / 30.0, 'aim': (10.0, 1.75, 10.0, 6.0)}),
+        ('GH lunge = H3 own', W + r'energy sword\energy sword', 'melee',
+         {'parts': [(W + r'energy sword\melee', 150.0),
+                    (W + r'rocket launcher\explosion', 160.0, (0.75, 1.5),
+                     {'flood_combat_form': 1.0})],
+          'interval': 46 / 30.0, 'aim': (10.0, 1.75, 10.0, 6.0)}),
+        # sword: 151/150 (dash_melee); 0.80 s / 24 fr = x1; aim = Halo 3's (the H1 tag has H3's)
+        ('GH = Sword ratio', W + r'energy sword\energy sword', 'melee',
+         {'parts': [(W + r'energy sword\melee', 80.53),
+                    (W + r'rocket launcher\explosion', 161.07, (0.75, 1.5),
+                     {'flood_combat_form': 1.0})],
+          'interval': 38 / 30.0, 'aim': (10.0, 1.75, 10.0, 6.0)}),
+        # AR: 55/70 (strike_melee); 1.23 s / 30 fr; aim 6/25 12/25 over H3's 5/15 10/20
+        ('GH = AR melee ratio', W + r'energy sword\energy sword', 'melee',
+         {'parts': [(W + r'energy sword\melee', 62.86),
+                    (W + r'rocket launcher\explosion', 125.71, (0.75, 1.5),
+                     {'flood_combat_form': 1.0})],
+          'interval': 1.562, 'aim': (12.0, 2.92, 12.0, 7.5)}),
+        # RL: 55/80 (smash_melee, the hammer's own swing damage); 1.73 s / 42 fr; aim 0/35 12/35
+        # over H3's 5/25 10/25
+        ('GH = RL melee ratio', W + r'energy sword\energy sword', 'melee',
+         {'parts': [(W + r'energy sword\melee', 55.0),
+                    (W + r'rocket launcher\explosion', 110.0, (0.75, 1.5),
+                     {'flood_combat_form': 1.0})],
+          'interval': 1.568, 'aim': (0.0, 2.45, 12.0, 8.4)}),
+        # restored fuel rod: 55/80 (H3 flak smash_melee); 1.40 s / 42 fr = x1; aim = H3's
+        ('GH = Fuel Rod melee ratio', W + r'energy sword\energy sword', 'melee',
+         {'parts': [(W + r'energy sword\melee', 55.0),
+                    (W + r'rocket launcher\explosion', 110.0, (0.75, 1.5),
+                     {'flood_combat_form': 1.0})],
+          'interval': 38 / 30.0, 'aim': (10.0, 1.75, 10.0, 6.0)}),
+        # oddball: 80/150 (oneshot_melee); 0.93 s / 34 fr; aim 0/0 (H1 ball has none)
+        ('GH = Oddball ratio', W + r'energy sword\energy sword', 'melee',
+         {'parts': [(W + r'energy sword\melee', 42.67),
+                    (W + r'rocket launcher\explosion', 85.33, (0.75, 1.5),
+                     {'flood_combat_form': 1.0})],
+          'interval': 1.043, 'aim': (0.0, 0.0, 0.0, 0.0)}),
+        ('Sword slash (restored)', W + r'energy sword\energy sword', 'melee'),
+        ('Sword lunge (restored)', W + r'energy sword\energy sword', 'shot'),
+        ('Rocket Launcher melee', W + r'rocket launcher\rocket launcher', 'melee'),
+        ('Fuel Rod melee', W + r'fuel rod gun\fuel rod', 'melee'),
+        ('Assault Rifle melee', W + r'assault rifle\assault rifle', 'melee'),
+        ('Oddball melee', W + r'ball\ball', 'melee'),
+        ('Shotgun', W + r'shotgun\shotgun', 'shot'),
+    ], 'enemies': [
+        ('Flood combat (elite)', r'characters\floodcombat elite\floodcombat elite plasma rifle',
+         'floodcombat elite'),
+    ]},
 }
 
 ENEMIES = [
@@ -513,6 +576,22 @@ def weapon(label, rel, mode, overrides, extra=None):
         out['interval'] = anim_seconds(fp, ('first-person melee',)) or 1.0
         out['charge'], out['mag'], out['reload'], out['per_shot'] = 0.0, None, None, 1
         out['speed'] = out['range'] = None
+        # a melee CANDIDATE (step 4a, the Gravity Hammer): its swing as PARTS, each a Halo 1
+        # damage effect's materials with the candidate's damage [, radius, {material: x}]
+        # (smash + area explosion = one hit), its own swing interval and aim assist
+        if extra and extra.get('parts'):
+            out['damage'] = []
+            for part in extra['parts']:
+                d = damage(part[0])
+                d['dmg'] = part[1]
+                if len(part) > 2 and part[2]:
+                    d['radius'] = tuple(part[2])
+                if len(part) > 3:
+                    d['mods'].update(part[3])
+                out['damage'].append(d)
+        for k in ('interval', 'aim', 'age'):
+            if extra and extra.get(k) is not None:
+                out[k] = tuple(extra[k]) if k == 'aim' else extra[k]
     else:
         tr = w.triggers.STEPTREE[0]
         rps = tr.firing.rounds_per_second

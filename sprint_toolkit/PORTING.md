@@ -1139,6 +1139,24 @@ copy of the Halo 1 PLASMA PISTOL (heat + battery), yardstick the ROCKET LAUNCHER
   `blend`, explosion `drop_particles` / `particle_swaps` / `psys_tint` / `light`;
   `h1_port_test_map --secondary-rounds`.
 
+### Halo 1: the Gravity Hammer, wave A9 (2026-10-10) -- a melee weapon with an area blast
+
+The whole weapon is `ports_h1/gravity_hammer.py`.
+
+* **Step 4a (user): the restored ENERGY SWORD, x1.007 -- BALANCED = DEFAULT in practice.** What
+  h3_weapon_values does not print: a swing is TWO damages -- the shared `smash_melee` 80 (no
+  radius; the same tag as Halo 3's rocket and flak melee) PLUS the hammer's own
+  `gravity_hammer_explosion` 50..160 over 0.75 -> 1.5 wu, acceleration 3.5 -- the explosion set
+  off by an ANIMATION EFFECT (FP strike / lunge frame 4, the primary keyframe; third person at
+  marker `hammer_detonation`), on every swing, hit or not: 240 a direct swing every 38 fr (1.27
+  s). Lunge `crush_melee` 150 + the explosion. No aoe spike on any of the four damage effects.
+  Energy = campaign EXTERNAL AGING 0.05 a swing (20; multiplayer 0.0835). Aim 10 / 1.75, 10 / 6.
+  The sword (151 vs dash_melee 150, Halo 3's aim) gives x1.007 everywhere; energy has no ratio
+  (Halo 3's sword ages per kill). Shown and not picked: the heavy-weapon melee reading (Fuel Rod
+  / RL, x0.69 -- Halo 3's hammer smash IS their smash_melee), AR (x0.79), Oddball (x0.53).
+  `h1_role_compare.py` melee candidates take `parts` (Halo 1 damage tag, damage[, radius,
+  materials]) + `interval` / `aim`.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:
