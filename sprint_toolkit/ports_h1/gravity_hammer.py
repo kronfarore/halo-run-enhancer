@@ -287,6 +287,13 @@ PORT.update({
         'label': 'gh',
         # two-handed, held like the FLAG (its pole runs along z like the hammer's shaft)
         'teach': ('gh', 'f'),
+        # no FIRE while the melee jab plays (boots 8-9: the slam fired in the jab's tail, with
+        # no swing -- Halo 1 blocks the trigger for only 3/4 of a melee). The halo1.dll patch
+        # h1_melee_blocks_fire.py (enhancer option, on by default) holds it until the melee
+        # ANIMATION ends, for tags with weapon flags bit 31 (set here); that animation is the
+        # third-person one, 32 fr from the flag -> `gh` gets its own held to the jab's 38 fr
+        # (h1_pickable_weapons.third_person_melee_as_fp). CONFIRMED in game 2026-10-10
+        'melee_blocks_fire': True,
         'keys': {'first-person melee': 4},           # H3 melee_strike primary keyframe 4
         'sounds': {'first-person ready': SND + 'gh_ready',
                    'first-person posing': SND + 'gh_pose',

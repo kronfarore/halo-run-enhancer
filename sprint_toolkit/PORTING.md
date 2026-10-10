@@ -1157,6 +1157,50 @@ The whole weapon is `ports_h1/gravity_hammer.py`.
   `h1_role_compare.py` melee candidates take `parts` (Halo 1 damage tag, damage[, radius,
   materials]) + `interval` / `aim`.
 
+### Halo 1: no FIRE during a MELEE (melee weapons, 2026-10-10) -- halo1.dll patch, CONFIRMED
+
+Gravity Hammer boots 8-9: melee (the pommel jab, 38 fr), then fire -> the slam's blast with no
+swing (the FP fire waits for the jab); holding the jab's last pose 15 more frames made it WORSE.
+The restored sword (lunge on fire) has the same gap. Analysis of `halo1.dll` (rva at image base
+0x180000000, MCC build of 2026-06-22) + a LIVE probe (`h1_melee_fire_probe.py`, logs to
+`out/melee_fire_probe.jsonl`).
+
+* **The trigger gate.** Weapon tick `+0xB74E6C` reads the weapon's control word (weapon +0x1FA:
+  bit 1 primary, bit 2 secondary trigger, bit 3 reload, **0x10 = cannot fire**: both triggers
+  forced off). The unit update `+0xAFBE54` builds it from the unit control flags (unit +0x1D8:
+  0x80 melee, 0x400 reload, 0x800 / 0x1000 the triggers) and hands it over at `+0xAFD693`
+  (setter `+0xB768BC`). 0x10 comes from (a) the unit's animation STATE (+0x283) in the mask at
+  `+0xB00F3C` (0x1E melee, 0x21 grenade, ...: the AI's full-body melee -- a PLAYER melee never
+  sets it, measured) or (b) **unit +0x512 > 0** (not in a vehicle).
+* **The player's melee** is the biped update `+0xBAF258`: on the melee flag with +0x512 == 0 it
+  starts the REPLACEMENT animation 'melee' (unit +0x284 = 7), sends the FP melee event, and
+  sets the timer **+0x512 = the FP melee's frame count minus a quarter** (+0x513 = when the
+  damage lands, `+0xB0C388` at the key frame). The timer counts down a tick at a time; it blocks
+  the trigger AND the next melee. So the last quarter of every melee can fire: measured, hammer
+  blocked 30 of 36 ticks, sword 19 of 26. Stock weapons have it too (a fire in the recovery).
+* **The fix: `h1_melee_blocks_fire.py`** (two 6-/8-byte call sites, 50 bytes of caves in the
+  .text slack at `+0x17501CC`, right after the overheat-unzoom cave; --show / --on [--live] /
+  --off = --restore; LIVE + FILE as h1_overheat_unzoom, rename swap while MCC runs).
+  U `+0xAFD688` (`mov edx,[rbp+0x88]`, the word handed to the weapon): also bit **0x80** while
+  unit +0x284 == 7 (the melee replacement animation plays; 0x80 is read nowhere in stock).
+  W `+0xB7515A` (`movzx r8d,word [rbx+0x1FA]`, r15 = the weapon tag): 0x80 -> 0x10 when the
+  tag has **weapon flags bit 31** (weap +0x308; byte +0x30B mask 0x80 -- only unreleased
+  digsite tags use bits 16+, halo1.dll reads none of them). The timer is untouched, so melee
+  spam is stock; the trigger waits for the melee ANIMATION's end instead.
+* **That animation is the THIRD-person one** (the replacement anim on the cyborg, weapon type
+  slot 8). `gh` was taught from the flag: `stand rifle f melee` 32 fr < the jab 38 -> the label
+  gets its own `stand rifle gh melee` held to 38 fr (`third_person_melee_as_fp`; the flag's is
+  shared with the sprint weapon). The sword's `stand pistol b melee` 28 fr (crouched 46) already
+  outlasts the slash (24).
+* **Opt-in = port key `'melee_blocks_fire': True`** (gravity_hammer, energy_sword):
+  `h1_pickable_weapons.edit_weapon` sets weapon flags bit 31, `teach_cyborg` the 3P melee.
+* **CONFIRMED in game 2026-10-10** (live patch, a30): melee then fire -> no slam / lunge until
+  the swing ends, both weapons; the probe shows the word at 0x82 with fire held through the
+  tail and the trigger going through on the tick the animation ends.
+* **Enhancer:** Options -> Patching -> Halo 1 "No firing during a melee: Gravity Hammer, Energy
+  Sword (halo1.dll)" (`h1_melee_blocks_fire`, ON by default -- user), synced on every patch like
+  the overheat option, in the run's options snapshot (co-op: both machines).
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:

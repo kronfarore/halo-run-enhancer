@@ -54,6 +54,10 @@ PORT = {
         'fp_model': r'weapons\energy sword\energy sword',
         'fp_anims': r'weapons\energy sword\fp\fp',
         'teach': ('fb', 'b'),
+        # no FIRE (lunge) while the slash plays: weapon flags bit 31 for the halo1.dll patch
+        # h1_melee_blocks_fire.py (Halo 1 blocks only 3/4 of a melee); the ball's 3P melee
+        # (28 fr) already outlasts the slash (24). CONFIRMED in game 2026-10-10
+        'melee_blocks_fire': True,
         'keys': {'first-person melee': 5},
         # Halo 3's own sword sounds (h1_port_sounds.py energy_sword): the Elite's swing
         # (SWORD_SWING) is silent for 0.45 s and was heard 0.3 s late (user, 2026-10-06)

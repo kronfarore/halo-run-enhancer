@@ -1028,6 +1028,10 @@ def edit_weapon(key, write):
     a = d.weap_attrs
     print('%s: flags before %s' % (key, [f for f in a.flags.NAME_MAP if a.flags.get(f)]))
     a.flags.detonates_when_dropped = False
+    if w.get('melee_blocks_fire'):
+        # the opt-in of h1_melee_blocks_fire.py (halo1.dll): weapon flags bit 31 -- no trigger
+        # while the wielder's melee animation plays
+        a.flags.data |= 1 << 31
     a.interface.first_person_model.filepath = w['fp_model']
     a.interface.first_person_animations.filepath = w['fp_anims']
     if 'melee' in w:
@@ -1527,8 +1531,56 @@ def teach_cyborg(write):
                     labels.append(new)
                     added.append('%s/%s %s<-%s' % (u.label, wc.name, new, donor))
     print('cyborg: %d label(s) taught: %s' % (len(added), ', '.join(added)))
+    for w in WEAPONS.values():
+        if w.get('melee_blocks_fire'):
+            third_person_melee_as_fp(t.data.tagdata, w)
     t.filepath = p
     save(t, p, write)
+
+
+MELEE_SLOT = 8      # weapon type animations: reload 1/2, chamber 1/2, fire 1/2, charged 1/2, MELEE
+
+
+def third_person_melee_as_fp(d, w):
+    """`melee_blocks_fire`: the THIRD-person melee at least as long as the first-person one.
+
+    halo1.dll (h1_melee_blocks_fire.py, an enhancer option) holds the trigger of a weapon
+    with weapon flags bit 31 off while the wielder's melee replacement animation plays (unit
+    +0x284 == 7) -- and that is the third-person melee on the cyborg. A port whose FP melee
+    outlasts the donor label's 3P one (the Gravity Hammer: jab 38 fr, the flag's 32) would
+    still fire in the jab's tail: the label gets its OWN 3P melee, the donor's with its last
+    pose held to the FP length (the donor's is shared: untouched). Melee spam is untouched:
+    Halo 1 times the next melee by its own timer (3/4 of the FP melee)."""
+    new = w['teach'][0]
+    fp = antr_def.build(filepath=path(w['fp_anims'], '.model_animations')).data.tagdata
+    fp_n = [a.frame_count for a in fp.animations.STEPTREE if a.name == 'first-person melee'][0]
+    anims = d.animations.STEPTREE
+    own = {}                                # donor animation index -> the label's padded copy
+    for u in d.units.STEPTREE:
+        for wc in u.weapons.STEPTREE:
+            for wt in wc.weapon_types.STEPTREE:
+                slots = wt.animations.STEPTREE
+                if wt.label != new or len(slots) <= MELEE_SLOT or slots[MELEE_SLOT].animation < 0:
+                    continue
+                i = slots[MELEE_SLOT].animation
+                src = anims[i]
+                if not src.name.endswith('melee') or src.frame_count >= fp_n:
+                    print('   %s/%s %s: 3P %r %d fr >= FP melee %d fr, kept' % (
+                        u.label, wc.name, new, src.name, src.frame_count, fp_n))
+                    continue
+                if i not in own:
+                    a = copy.deepcopy(src)
+                    a.name = '%s %s melee' % (src.name.rsplit(' ', 2)[0], new)
+                    data = bytes(src.frame_data.data)
+                    last = data[len(data) - src.frame_size:]
+                    a.frame_data.data = bytearray(data + last * (fp_n - src.frame_count))
+                    a.frame_count = fp_n
+                    anims.append(a)
+                    own[i] = len(anims) - 1
+                    anims[own[i]].first_permutation_index = own[i]
+                    print('   %s melee: 3P %r %d fr -> own %r %d fr (FP melee %d fr) = #%d' % (
+                        new, src.name, src.frame_count, a.name, fp_n, fp_n, own[i]))
+                slots[MELEE_SLOT].animation = own[i]
 
 
 def main():

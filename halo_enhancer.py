@@ -422,6 +422,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h1_replace_first_weapons', 'h1_enemy_weapon_enabled',
                'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards',
                'h1_overheat_unzoom', 'h1_overheat_no_rezoom', 'h1_covenant_avoid_ff',
+               'h1_melee_blocks_fire',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -1014,6 +1015,11 @@ CONFIG = {
     "h1_overheat_unzoom": False,
     # ...and no zooming back in while the weapon vents (patch B; only with the above)
     "h1_overheat_no_rezoom": True,
+    # Options -> Patching -> Halo 1: no fire button while a melee plays, for weapons whose
+    # tag opts in (weapon flags bit 31: the Gravity Hammer, the Energy Sword). A halo1.dll
+    # patch (sprint_toolkit/h1_melee_blocks_fire.py), live AND in the file; inert for every
+    # other weapon. Off = put back to stock. On by default (user, 2026-10-10)
+    "h1_melee_blocks_fire": True,
     # Options -> Patching -> Halo 1: Grunt / Jackal / Elite actors get the human actors'
     # 'avoid friends line of fire' + 'crouch when in line of fire' flags (user, 2026-10-09)
     "h1_covenant_avoid_ff": False,
@@ -7153,6 +7159,19 @@ class MagnitudeEditorDialog(QDialog):
                      'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
 
     @staticmethod
+    def _apply_h1_melee_blocks_fire():
+        """Halo 1's melee-blocks-fire halo1.dll patch, synced to its option on every patch
+        (any game): live in a running MCC and in the file (swapped in while MCC holds it).
+        Rows only for what changed or failed."""
+        sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        try:
+            import h1_melee_blocks_fire
+            return h1_melee_blocks_fire.sync(bool(CONFIG.get('h1_melee_blocks_fire', True)))
+        except Exception as e:
+            return [{'tag': 'halo1.dll', 'effect': 'Melee blocks the fire button',
+                     'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
+
+    @staticmethod
     def _betrayal_drawn(skulls):
         return any(MagnitudeEditorDialog._skull_name(s) == 'betrayal' for s in (skulls or ()))
 
@@ -9373,6 +9392,7 @@ class MagnitudeEditorDialog(QDialog):
         # Same footing: a live write to another process, never fatal to the map patch.
         results.extend(self._apply_iron(skulls))
         results.extend(self._apply_h1_overheat_unzoom())
+        results.extend(self._apply_h1_melee_blocks_fire())
         if CONFIG.get('death_penalty_scaling'):
             results.extend(self._apply_death_penalty())
         results.extend(self._restore_sword_drain(plan))
@@ -11701,6 +11721,19 @@ class OptionsDialog(QDialog):
         h1form.addRow("", self.h1_overheat_no_rezoom_cb)
         self.h1_overheat_unzoom_cb.toggled.connect(self.h1_overheat_no_rezoom_cb.setEnabled)
         self.h1_overheat_no_rezoom_cb.setEnabled(self.h1_overheat_unzoom_cb.isChecked())
+        self.h1_melee_blocks_fire_cb = QCheckBox(
+            "No firing during a melee: Gravity Hammer, Energy Sword (halo1.dll)")
+        self.h1_melee_blocks_fire_cb.setChecked(bool(CONFIG.get('h1_melee_blocks_fire', True)))
+        self.h1_melee_blocks_fire_cb.setToolTip(
+            "The Gravity Hammer and the Energy Sword attack on the fire button. Halo 1 "
+            "only blocks the trigger for the first 3/4 of a melee, so a fire pressed late "
+            "in the swing slams / lunges with no swing animation. This keeps the fire "
+            "button off until the melee animation has ended -- only for weapons whose tag "
+            "opts in (those two); melee spam and every other weapon are unchanged.\n\n"
+            "Applied when you patch, whatever state MCC is in: into the running game "
+            "(at once) and into halo1.dll (every later start). Unticked, the next patch "
+            "puts halo1.dll back to stock. In co-op both machines need it.")
+        h1form.addRow("", self.h1_melee_blocks_fire_cb)
 
         self.reach_pools_cb = QCheckBox(
             "Reach: offer every weapon and ability the prepared map supports")
@@ -12969,6 +13002,7 @@ class OptionsDialog(QDialog):
             'h1_enemy_weapon_cards': self.h1_armed_cards_cb.isChecked(),
             'h1_overheat_unzoom': self.h1_overheat_unzoom_cb.isChecked(),
             'h1_overheat_no_rezoom': self.h1_overheat_no_rezoom_cb.isChecked(),
+            'h1_melee_blocks_fire': self.h1_melee_blocks_fire_cb.isChecked(),
             'h1_covenant_avoid_ff': self.h1_covenant_ff_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
             'odst_red_plasma_as_brute': self.red_plasma_cb.isChecked(),
