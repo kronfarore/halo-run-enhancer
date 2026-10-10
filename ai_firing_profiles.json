@@ -1203,7 +1203,7 @@
    "fields": {
     "0x74": [
      "<f",
-     4.0,
+     2.0,
      "Maximum Firing Distance"
     ],
     "0x8C": [
@@ -1268,27 +1268,27 @@
     ],
     "0x16C": [
      "<f",
-     4.0,
+     2.0,
      "Berserk Firing Range Max"
     ],
     "0x160": [
      "<f",
-     2.0,
+     1.0,
      "Melee Range"
     ],
     "0x164": [
      "<f",
-     3.0,
+     1.5,
      "Melee Abort Range"
     ],
     "0x170": [
      "<f",
-     2.0,
+     1.0,
      "Berserk Melee Range"
     ],
     "0x174": [
      "<f",
-     3.0,
+     1.5,
      "Berserk Melee Abort Range"
     ],
     "0xC4": [

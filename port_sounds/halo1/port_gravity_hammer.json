@@ -41,13 +41,24 @@
    "perms": [
     "gh_hit_1.wav",
     "gh_hit_2.wav",
-    "gh_hit_3.wav",
-    "gh_hit_4.wav",
-    "gh_hit_5.wav",
-    "gh_hit_6.wav"
+    "gh_hit_3.wav"
    ],
    "aliases": [
     "sound\\weapons\\gravity_hammer_port\\gh_hit"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\gravity_hammer_port\\gh_jab",
+   "perms": [
+    "gh_jab_1.wav",
+    "gh_jab_2.wav",
+    "gh_jab_3.wav",
+    "gh_jab_4.wav",
+    "gh_jab_5.wav",
+    "gh_jab_6.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\gravity_hammer_port\\gh_jab"
    ]
   },
   {

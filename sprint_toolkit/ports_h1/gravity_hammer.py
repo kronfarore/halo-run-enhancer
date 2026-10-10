@@ -199,15 +199,17 @@ PORT = reserved(
                             # (theirs; 2.0 here = the hammer's firing distance)
                             # ARMED TEST 4 (user): 'double their firing range' 2 -> 4 wu (the
                             # berserk firing band too); a mortal boot for the knockback on the player
-                            '0x74=4.0:Maximum Firing Distance',
-                            '0x168=0.75:Berserk Firing Range', '0x16C=4.0:Berserk Firing Range Max',
+                            # ARMED TEST 7 (user): blast + knockback CONFIRMED -- 'reduce the ranges
+                            # again': firing back to Halo 3's 2 wu, melee 1 wu (abort 1.5)
+                            '0x74=2.0:Maximum Firing Distance',
+                            '0x168=0.75:Berserk Firing Range', '0x16C=2.0:Berserk Firing Range Max',
                             # ARMED TEST 2 (user): 'they charge and clobber me now, good -- increase
                             # their melee range slightly; they attack right in my face': 0.5 -> 1.0
                             # (abort 1.0 -> 1.5), berserk the same
                             # ARMED TEST 5 (user): 'increase normal melee range as well' (x2, as the
                             # firing range): 1.0 -> 2.0, abort 1.5 -> 3.0; berserk the same
-                            '0x160=2.0:Melee Range', '0x164=3.0:Melee Abort Range',
-                            '0x170=2.0:Berserk Melee Range', '0x174=3.0:Berserk Melee Abort Range'],
+                            '0x160=1.0:Melee Range', '0x164=1.5:Melee Abort Range',
+                            '0x170=1.0:Berserk Melee Range', '0x174=1.5:Berserk Melee Abort Range'],
                     # ARMED TEST 2 (user): 'I hear the blast sound, but no visible effect and no
                     # knockback on me'. Halo 1 pushes NOTHING with zero damage (the sword's
                     # lunge shove, boot 1) -- if WDM 0 means ZERO (not 'no modifier'), the AI's
@@ -319,7 +321,11 @@ PORT.update({
             'gh_melee': (['fp_hammer\\hammer_melee'], ANIMS + B + 'ball_melee', -16.2),
             'gh_ready': (['fp_hammer\\hammer_ready'], ANIMS + B + 'rocket_ready', -18.3),
             'gh_pose': (['fp_hammer\\hammer_posing'], ANIMS + B + 'rocket_posing', -22.1),
-            'gh_hit': (['hammer_hit', 'data\\sound\\characters\\brute\\tartarus_melee'],
+            # ARMED TEST 7 (user): 'the normal melee sound was the same as the blast -- that needs to
+            # change'. Halo 3's pair SPLIT: the blast keeps hammer_hit (its third-person
+            # explosion's), the pommel jab's hit takes tartarus_melee (the first-person impact)
+            'gh_hit': (['hammer_hit'], IMPACTS + B + 'melee_impact_fleshy', -14.0),
+            'gh_jab': (['data\\sound\\characters\\brute\\tartarus_melee'],
                        IMPACTS + B + 'melee_impact_fleshy', -14.0),
             'gh_drop': (['hammer_drops'], 'sound\\sfx\\impulse\\weapon_drops\\rlauncher_impact', -23.0),
         },
@@ -376,7 +382,7 @@ PORT.update({
         'melee_fields': SMASH_4B,
         'melee_response': PP + 'melee_response',
         # the melee's hit sound (the sword's recipe): Halo 3's hammer hit
-        'hit_sound': SND + 'gh_hit',
+        'hit_sound': SND + 'gh_jab',
         # the FIRE button (h1_pickable_weapons.make_lunge): one slam every 46 fr, 0.05 energy each.
         # BOOT 1 (user): 'no knockback on the player -- the shockwave should push the player
         # slightly BACKWARDS with no damage'. The blast does not hurt its owner (and so does not
