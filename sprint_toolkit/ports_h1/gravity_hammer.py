@@ -188,7 +188,9 @@ PORT = reserved(
                     # 1.6 s burst is ~1 pull for an Elite, 0.52 for a Grunt (the two-handed rule
                     # halves it) -> 2/s, burst 2 s: the TRIGGER (0.65/s) still caps it at one slam
                     'set': ['0x0=I0:Flags',
-                            '0x78=2.0:Rate Of Fire',
+                            # ARMED TEST 8 (user): sounds + Armed CONFIRMED -- 'revert the firing rate
+                            # for one last test': 0.65/s (one pull a slam cycle), burst 2 s kept
+                            '0x78=0.65:Rate Of Fire',
                             '0xE0=2.0:Burst Duration', '0xE4=2.0:Burst Duration Max',
                             # ARMED TEST 1 (user): 'they circle me but never come close enough
                             # to strike; right in front of them they strike' (their MELEE: no
