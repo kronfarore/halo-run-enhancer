@@ -79,7 +79,11 @@ CLASS_ANIMS, SLOT_MELEE = 0x98, 39
 # a weapon TYPE (label) element: label, pad, its animations reflexive (2-byte indices: reload 1
 # / 2, chamber 1 / 2, fire 1 / 2, charged 1 / 2, melee, ...)
 TYPE_ANIMS, TYPE_FIRE, TYPE_MELEE = 0x30, (4, 5), 8
-STAND_IN_SLOTS = (20, 33, 34)              # throw-grenade, signal-attack, warn
+# throw-grenade, WARN, signal-attack. Warn before signal-attack since the Gravity Hammer's Armed
+# test 10 (user: 'the Jackal is still animationless'): Jackals have no throw-grenade, and their
+# signal-attack is a pointing gesture -- its weapon hand travels 0.12 / 0.13 / 0.07 wu (x / y / z;
+# fp_render.anim_pose) and, sped up to 28 frames, reads as no swing. Warn: 0.29 / 0.15 / 0.27
+STAND_IN_SLOTS = (20, 34, 33)
 MELEE_FRAMES = 28                          # the Elite's sword melee is 28-35 frames
 
 
