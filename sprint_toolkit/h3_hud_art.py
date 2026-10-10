@@ -61,17 +61,28 @@ def decode(rel):
 
 
 def sheet(name):
-    """(RGBA image, [sprite boxes]) of a whole HUD sheet."""
+    """(RGBA image, [sprite boxes]) of a whole HUD sheet. A `reach:` name is a full HREK path
+    (no extension), e.g. reach:ui\\chud\\bitmaps\\hud_reticles."""
+    if h1_fp_retarget.reach_tags.is_reach(name):
+        return decode(name + '.bitmap')
     return decode(REL % name)
 
 
 def sprite(name, index):
-    """(RGBA crop, registration point in crop pixels)."""
+    """(RGBA crop, registration point in crop pixels). A Reach sprite comes at HALO 3's
+    density: Reach's 4K chud art ('double / triple sized': 2-3 px a chud unit, Halo 3's 1)
+    is scaled down by that, so every Halo 3-calibrated user (h1_add_reticle's SCALE) holds."""
     img, boxes = sheet(name)
     l, r, t, b, rx, ry = boxes[index]
     w, h = img.size
-    return (img.crop((round(l * w), round(t * h), round(r * w), round(b * h))),
-            (rx * w, ry * h))
+    crop = img.crop((round(l * w), round(t * h), round(r * w), round(b * h)))
+    if h1_fp_retarget.reach_tags.is_reach(name):
+        k = h1_fp_retarget.reach_tags.px_per_unit(name + '.bitmap')
+        if k != 1.0:
+            crop = crop.resize((max(1, round(crop.width / k)), max(1, round(crop.height / k))),
+                               Image.LANCZOS)
+            return crop, (rx * w / k, ry * h / k)
+    return crop, (rx * w, ry * h)
 
 
 if __name__ == '__main__':

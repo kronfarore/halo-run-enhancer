@@ -1,0 +1,144 @@
+{
+ "game": "Halo 1",
+ "weapon": "DMR",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\dmr_port\\dm_fire",
+   "perms": [
+    "dm_fire_1.wav",
+    "dm_fire_2.wav",
+    "dm_fire_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\dmr_port\\dm_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\dmr_port\\dm_dryfire",
+   "perms": [
+    "dm_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\dmr_port\\dm_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\dmr_port\\dm_reload_empty",
+   "perms": [
+    "dm_reload_empty_1.wav",
+    "dm_reload_empty_2.wav",
+    "dm_reload_empty_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\dmr_port\\dm_reload_empty"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\dmr_port\\dm_reload_full",
+   "perms": [
+    "dm_reload_full_1.wav",
+    "dm_reload_full_2.wav",
+    "dm_reload_full_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\dmr_port\\dm_reload_full"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\dmr_port\\dm_ready",
+   "perms": [
+    "dm_ready_1.wav",
+    "dm_ready_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\dmr_port\\dm_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\dmr_port\\dm_melee",
+   "perms": [
+    "dm_melee_1.wav",
+    "dm_melee_2.wav",
+    "dm_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\dmr_port\\dm_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\dmr_port\\dm_pose",
+   "perms": [
+    "dm_pose_1.wav",
+    "dm_pose_2.wav",
+    "dm_pose_3.wav",
+    "dm_pose_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\dmr_port\\dm_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\dmr_port\\dm_zoom_in",
+   "perms": [
+    "dm_zoom_in_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\dmr_port\\dm_zoom_in"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\dmr_port\\dm_zoom_out",
+   "perms": [
+    "dm_zoom_out_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\dmr_port\\dm_zoom_out"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\dmr_port\\dm_ammo",
+   "perms": [
+    "dm_ammo_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\dmr_port\\dm_ammo"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\dmr_port\\dm_drop",
+   "perms": [
+    "dm_drop_1.wav",
+    "dm_drop_2.wav",
+    "dm_drop_3.wav",
+    "dm_drop_4.wav",
+    "dm_drop_5.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\dmr_port\\dm_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\dmr_port\\dm_reload_empty_balanced",
+   "perms": [
+    "dm_reload_empty_balanced_1.wav",
+    "dm_reload_empty_balanced_2.wav",
+    "dm_reload_empty_balanced_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\dmr_port\\dm_reload_empty_balanced"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\dmr_port\\dm_reload_full_balanced",
+   "perms": [
+    "dm_reload_full_balanced_1.wav",
+    "dm_reload_full_balanced_2.wav",
+    "dm_reload_full_balanced_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\dmr_port\\dm_reload_full_balanced"
+   ]
+  }
+ ]
+}

@@ -2653,6 +2653,174 @@
      "Radius"
     ]
    }
+  },
+  {
+   "weapon": "DMR",
+   "source": "Halo Reach",
+   "donor": "Sniper Rifle",
+   "default_on": false,
+   "desc": "Halo Reach's DMR: its model, first-person animations, sounds, scope and numbers. A 15-round semi-automatic marksman rifle with a 3x zoom; Sniper Rifle ammo tops it up.",
+   "balance_desc": "Measured against the Sniper Rifle, which both games have: 22 damage per round at up to 4.5 rounds a second, a tight spread, a slower bullet with a longer reach and Halo 1-style aim assist; the magazine, carry and zoom stay Reach's.",
+   "anims": {
+    "reload": 1.12,
+    "swap": 1.38
+   },
+   "anim_sounds": {
+    "reload": [
+     {
+      "mult": 1.12,
+      "from": "sound\\weapons\\dmr_port\\dm_reload_empty",
+      "to": "sound\\weapons\\dmr_port\\dm_reload_empty_balanced"
+     },
+     {
+      "mult": 1.12,
+      "from": "sound\\weapons\\dmr_port\\dm_reload_full",
+      "to": "sound\\weapons\\dmr_port\\dm_reload_full_balanced"
+     }
+    ]
+   },
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\dmr\\bullet",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 22.09,
+     "card": "Bullet Damage",
+     "original": 17.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\dmr\\bullet",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 22.09,
+     "card": "Bullet Damage",
+     "original": 17.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\dmr\\bullet",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 22.09,
+     "card": "Bullet Damage",
+     "original": 17.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\dmr\\dmr",
+     "field": "Rounds Per Second",
+     "block": "Triggers",
+     "value": 4.5,
+     "card": "More Shooting",
+     "original": 3.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\dmr\\dmr",
+     "field": "Rounds Per Second Max",
+     "block": "Triggers",
+     "value": 4.5,
+     "card": "More Shooting",
+     "original": 3.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\dmr\\dmr",
+     "field": "Minimum Error",
+     "block": "Triggers",
+     "value": 0.0,
+     "card": "Error Angle",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\dmr\\dmr",
+     "field": "Error Angle",
+     "block": "Triggers",
+     "value": 0.019,
+     "card": "Error Angle",
+     "original": 0.15
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\dmr\\dmr",
+     "field": "Error Angle Max",
+     "block": "Triggers",
+     "value": 0.25,
+     "card": "Error Angle",
+     "original": 2.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\dmr\\bullet",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 16.667,
+     "card": "Projectile",
+     "original": 100.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\dmr\\bullet",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 16.667,
+     "card": "Projectile",
+     "original": 100.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\dmr\\bullet",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 500.0,
+     "card": "Projectile",
+     "original": 250.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\dmr\\dmr",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 2.81,
+     "card": "Autoaim",
+     "original": 2.25
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\dmr\\dmr",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 35.0,
+     "card": "Autoaim",
+     "original": 20.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\dmr\\dmr",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 6.25,
+     "card": "Magnetism",
+     "original": 5.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\dmr\\dmr",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 35.0,
+     "card": "Magnetism",
+     "original": 20.0
+    }
+   ],
+   "weap": "weapons\\dmr\\dmr",
+   "fp_animations": "weapons\\dmr\\fp\\fp",
+   "requires": [
+    "proj weapons\\dmr\\bullet"
+   ]
   }
  ],
  "Halo 3": [

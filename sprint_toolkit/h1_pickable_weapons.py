@@ -182,6 +182,20 @@ def make_hud(w, key, write):
         fc.loaded_ammo_cutoff = round(fc.loaded_ammo_cutoff * sizes[0] / float(h.get('flash_base', 60)))
         if write:
             ammo_meter.main(*([str(n) for n in sizes] + [base]), art=h['ammo_meter'].get('art'))
+    if h.get('drop_crosshairs'):
+        # the SNIPER donor (the DMR, wave B1): its zoom overlays are typed AIM, not zoom
+        # (crosshairs2 / _sm / caption: only-when-zoomed overlays), so the scope step's
+        # zoom-type drop keeps them -- dropped by the donor's index, before the reticle step
+        xs = d.crosshairs.STEPTREE
+        for i in sorted(h['drop_crosshairs'], reverse=True):
+            xs.pop(i)
+    for kind, states in h.get('drop_elements', {}).items():
+        # donor readouts the port does not have (the sniper's zoom angle ticks on `age`, its
+        # distance / elevation numbers): `static` / `meter` / `number` elements by state
+        blk = getattr(d, kind + '_elements').STEPTREE
+        for i in range(len(blk) - 1, -1, -1):
+            if blk[i].state_attached_to.enum_name in states:
+                blk.pop(i)
     if 'reticle' in h:                   # a Halo 3 reticle, into Halo 1's sheet
         import h1_add_reticle
         seq = (h1_add_reticle.add(*h['reticle'], index=RESERVED.get(key, {}).get('reticle'),
@@ -198,7 +212,14 @@ def make_hud(w, key, write):
                if write else -1)
         for c in d.crosshairs.STEPTREE:
             if c.crosshair_type.enum_name == 'aim':
+                if h.get('reticle_bitmap'):
+                    # a donor whose aim crosshair draws from its OWN sheet (the sniper's
+                    # ui\hud\bitmaps\sniper\hud_reticles_scope): the shared sheet the
+                    # reticle went into
+                    c.crosshair_bitmap.filepath = h['reticle_bitmap']
                 for o in c.crosshair_overlays.STEPTREE:
+                    if 'reticle_scaling' in h:     # the sniper's dont_scale_size (2): the
+                        o.scaling_flags.data = h['reticle_scaling']   # pistol / BR's 0
                     o.sequence_index = seq
                     if h.get('reticle_scale'):
                         # the art drawn SMALLER in the sheet and the overlay scaled UP: Halo 1
