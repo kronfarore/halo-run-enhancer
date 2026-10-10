@@ -422,7 +422,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h1_replace_first_weapons', 'h1_enemy_weapon_enabled',
                'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards',
                'h1_overheat_unzoom', 'h1_overheat_no_rezoom', 'h1_covenant_avoid_ff',
-               'h1_melee_blocks_fire',
+               'h1_melee_blocks_fire', 'h1_supercombine_count',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -1020,6 +1020,12 @@ CONFIG = {
     # patch (sprint_toolkit/h1_melee_blocks_fire.py), live AND in the file; inert for every
     # other weapon. Off = put back to stock. On by default (user, 2026-10-10)
     "h1_melee_blocks_fire": True,
+    # Options -> Patching -> Halo 1: the supercombine needle count read PER PROJECTILE
+    # (proj +0x1F2, 0 = the engine's 7) instead of the hardcoded 7. A halo1.dll patch
+    # (sprint_toolkit/h1_supercombine_count.py), live AND in the file; with every count at
+    # 0 the game is stock. Needed by the Needle Rifle port (3) and the Halo 1 Supercombine
+    # Needle Count card. Off = put back to stock. Prototype, untested in game (2026-10-10)
+    "h1_supercombine_count": False,
     # Options -> Patching -> Halo 1: Grunt / Jackal / Elite actors get the human actors'
     # 'avoid friends line of fire' + 'crouch when in line of fire' flags (user, 2026-10-09)
     "h1_covenant_avoid_ff": False,
@@ -7172,6 +7178,18 @@ class MagnitudeEditorDialog(QDialog):
                      'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
 
     @staticmethod
+    def _apply_h1_supercombine_count():
+        """Halo 1's per-projectile supercombine count halo1.dll patch, synced to its option
+        on every patch (any game), like _apply_h1_melee_blocks_fire."""
+        sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        try:
+            import h1_supercombine_count
+            return h1_supercombine_count.sync(bool(CONFIG.get('h1_supercombine_count')))
+        except Exception as e:
+            return [{'tag': 'halo1.dll', 'effect': 'Supercombine needle count per projectile',
+                     'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
+
+    @staticmethod
     def _betrayal_drawn(skulls):
         return any(MagnitudeEditorDialog._skull_name(s) == 'betrayal' for s in (skulls or ()))
 
@@ -9393,6 +9411,7 @@ class MagnitudeEditorDialog(QDialog):
         results.extend(self._apply_iron(skulls))
         results.extend(self._apply_h1_overheat_unzoom())
         results.extend(self._apply_h1_melee_blocks_fire())
+        results.extend(self._apply_h1_supercombine_count())
         if CONFIG.get('death_penalty_scaling'):
             results.extend(self._apply_death_penalty())
         results.extend(self._restore_sword_drain(plan))
@@ -11734,6 +11753,19 @@ class OptionsDialog(QDialog):
             "(at once) and into halo1.dll (every later start). Unticked, the next patch "
             "puts halo1.dll back to stock. In co-op both machines need it.")
         h1form.addRow("", self.h1_melee_blocks_fire_cb)
+        self.h1_supercombine_count_cb = QCheckBox(
+            "Supercombine needle count per projectile (halo1.dll)")
+        self.h1_supercombine_count_cb.setChecked(bool(CONFIG.get('h1_supercombine_count')))
+        self.h1_supercombine_count_cb.setToolTip(
+            "Halo 1 hardcodes the supercombine at 7 stuck needles for every projectile. "
+            "This makes the engine read the count from each projectile instead (Halo 2 "
+            "on have the field): the Needle Rifle port supercombines at 3 and the "
+            "Supercombine Needle Count card works in Halo 1. A projectile that names no "
+            "count keeps 7, so with nothing set the game is unchanged.\n\n"
+            "Applied when you patch, whatever state MCC is in: into the running game "
+            "(at once) and into halo1.dll (every later start). Unticked, the next patch "
+            "puts halo1.dll back to stock. In co-op both machines need it.")
+        h1form.addRow("", self.h1_supercombine_count_cb)
 
         self.reach_pools_cb = QCheckBox(
             "Reach: offer every weapon and ability the prepared map supports")
@@ -13003,6 +13035,7 @@ class OptionsDialog(QDialog):
             'h1_overheat_unzoom': self.h1_overheat_unzoom_cb.isChecked(),
             'h1_overheat_no_rezoom': self.h1_overheat_no_rezoom_cb.isChecked(),
             'h1_melee_blocks_fire': self.h1_melee_blocks_fire_cb.isChecked(),
+            'h1_supercombine_count': self.h1_supercombine_count_cb.isChecked(),
             'h1_covenant_avoid_ff': self.h1_covenant_ff_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
             'odst_red_plasma_as_brute': self.red_plasma_cb.isChecked(),

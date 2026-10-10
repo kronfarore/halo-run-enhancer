@@ -1342,6 +1342,70 @@ for byte (FP animation tags, the SMG / Sentinel Beam gbxmodels, three sounds): c
 where checked (the sword's tag: every animation, key and sound identical), so they are tag
 noise -- but a regen run must restore from backup to leave the tested kit exact.
 
+### Halo 1: the supercombine count PER PROJECTILE (Needle Rifle, wave B2, 2026-10-10) -- halo1.dll patch, PROTOTYPE
+
+Halo 2 on carry `Super Detonation Projectile Count` in the projectile tag; Halo 1 hardcodes 7
+(the Needle Rifle wants Reach's 3, the stock needler keeps 7). Tool: `h1_supercombine_count.py`,
+enhancer Options -> Patching -> Halo 1 "Supercombine needle count per projectile (halo1.dll)"
+(`h1_supercombine_count`, OFF by default until tested).
+
+**Where the 7 lives.** Every read of proj flag bit 3 (`has super combining explosion`,
+proj +0x17C, `test byte [reg+0x17C], 8`) leads to a loop over the PARENT object's attached
+children (object +0xD0 = next sibling) counting the ones with the SAME tag index and without
+object +0x1F8 bit 6 (already spent). The count is compared with the constant 6 (= six OTHERS,
+or seven including the detonating one) at four places:
+
+| rva (base 0x180000000) | stock | proj tag in | role |
+|---|---|---|---|
+| +0xBC72C5 | `cmp r8w,6 / jge` | rdi | attach (fn +0xBC7158): -> `bts [new proj +0x1F8],7` |
+| +0xBC8442 | `cmp r10w,6 / jge` | r13 | attach on impact (projectile update): same bit 7 |
+| +0xBC8EC4 | `cmp r8w,6 / jle` | rsi | detonation: >= 7 -> super_detonation (proj +0x198) |
+| +0xBC8F4C | `cmp r8w,6 / jg` | rsi | detonation, per-sibling loop (zero timers vs bit 6) |
+
+So the count is "needles of THIS tag stuck in THIS object", and the needler's 7 and another
+projectile's N never mix (stock already keeps `needle` and `mp_needle` apart).
+
+**The per-projectile field: proj +0x1F2, int16** = the HEK `pad(2)` after `detonation noise`
+(Assembly Halo1MCC: hidden int16 `Unknown`). Zero in all 772 proj tags of the 29 Halo 1 maps in
+halo1\maps (2026-10-10, ports included); nothing in halo1.dll reads +0x1F2. Semantics as Halo 2+:
+TOTAL needles; 0 or less = the engine's 7, so with the patch on and nothing set the game is stock.
+1 combines on the detonation path only (the attach loop needs a sibling) -- keep the card's
+Halo 1 minimum at 2.
+
+**Where the count comes from, NOT the tag file.** The field is a pad: reclaimer writes pads as
+zero on save and tool's handling of pad bytes is untested, so do not put it in the loose tag.
+Write it into the BUILT map (or at patch time): `h1_supercombine_count.map_count(HaloMap, proj,
+n)` / `--map <file.map> --count <proj> <n>`. The enhancer rebuilds every patch from the
+baseline, so a patch-time write (port catalog value, then the card on top) is the robust home.
+
+**The patch.** Each 5-byte `cmp R,6` becomes `call cave`; a cave (20-21 bytes) is
+`movsx eax, word [T+0x1F2] ; dec eax ; jns +4 ; mov ax,6 ; cmp R, ax ; ret` (flags survive the
+ret, the stock jcc after the call is untouched). eax is dead at all four sites (written before
+any read on every path), and the caves touch no stack, so they need no unwind data. The .text
+section slack is FULL (overheat + melee caves), so the caves sit in int3 PADDING between
+functions -- the first time: no int3 run in halo1.dll's .text is longer than 21 bytes (237 runs
+>= 16, 17 of exactly 21). Picked: +0x139561B (rdi/r8w), +0x139576B (r13/r10w), +0x1397BAB
+(rsi/r8w, shared by both detonation sites) -- each right after a `ret`, outside every .pdata
+range and relocation, never a jump target. Verified offline: on -> disassembles as above,
+off -> byte-identical to the stock dll, and it coexists with the overheat / melee patches.
+The NEXT halo1.dll cave: 14 more 21-byte int3 runs remain (+0x1391621 .. +0x139B09B); vet
+each the same way (prev byte C3 = after a ret, no .pdata cover, no reloc, not a jump target),
+or chain shorter runs with a jmp.
+
+**Live tag access (test helper).** halo1.dll's tag_get +0xA9B648: tag array = qword
+[+0x1C34FB0] (32-byte entries: class, id +0xC, name +0x10, data +0x14), a tag pointer p is at
+p - [+0x2EA3410] + [+0x2D9CE10] (the index header there: tag count +0xC). Tag data is loaded
+once per level -- `--count <proj> <n>` changes a projectile's count in the running game.
+
+**Test plan (one boot, any level with Elites and a needler, e.g. a30 / b30):** patch on (Options
+tick + patch, or `h1_supercombine_test.cmd on`). (1) stock count: stick needles into one Elite
+-- 6 do not combine, the 7th does. (2) `h1_supercombine_test.cmd 3` while in game: the 3rd
+needle combines. (3) `h1_supercombine_test.cmd 0`: back to 7.
+A 3-to-7 change in one boot proves the engine reads the projectile's own count; (1) proves 0 =
+stock. Per weapon at once (needler 7 beside a port at 3) follows with the Needle Rifle's first
+boot. If (2) still needs 7: the counts are not read where shown -- re-probe live before a second
+boot.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:
