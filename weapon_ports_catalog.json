@@ -2631,6 +2631,9 @@
    "weap": "weapons\\gravity hammer\\gravity hammer",
    "fp_animations": "weapons\\gravity hammer\\fp\\fp",
    "fire_anim": "melee",
+   "actor_flags": [
+    "always_charge_in_attacking_mode"
+   ],
    "tag_map": {
     "jpt! weapons\\energy sword\\lunge strike": "jpt! weapons\\gravity hammer\\crush & weapons\\gravity hammer\\explosion",
     "jpt! weapons\\energy sword\\melee": "jpt! weapons\\gravity hammer\\melee",

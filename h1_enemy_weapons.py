@@ -550,6 +550,7 @@ class Level:
         rule = grunt_rate_rule(self.m, bases, unit, weapon)
         units = ([self.ref(major, hv.REF_UNIT)] if need == 2 else []) + [unit]
         swap, shield_note = jackal_shield_rule(self.m, bases, units, weapon)
+        flags_note = actor_flag_rule(self.m, bases, weapon)
         self.alias[vs.slot_path(sl)] = source + hv.CLONE_SEP + weapon.rsplit(BS, 1)[-1]
         self.log.append((sl, self.alias[vs.slot_path(sl)], dname))
         # a major has a biped of its own (Jackal major), which needs the melee too
@@ -557,7 +558,7 @@ class Level:
         # a shieldless Jackal is its own biped: the melee damage ref goes on IT
         unit, major_unit = swap.get(unit, unit), swap.get(major_unit, major_unit)
         taught = '; '.join(x for x in (
-            rule, shield_note, self.ensure_label(unit, weapon), self.ensure_melee(unit, weapon),
+            rule, shield_note, flags_note, self.ensure_label(unit, weapon), self.ensure_melee(unit, weapon),
             self.ensure_melee(major_unit, weapon) if major_unit not in (None, unit) else None,
             self.ensure_fire_anim(unit, weapon),
             self.ensure_fire_anim(major_unit, weapon) if major_unit not in (None, unit) else None)
@@ -614,6 +615,51 @@ def fire_anim(weapon):
     except Exception:
         port = None
     return (port or {}).get('fire_anim')
+
+
+# A port's catalog `actor_flags` (names, as the actr tag's flags) set on the ACTOR tag of
+# every filled slot carrying it: the Gravity Hammer's 'always charge in attacking mode',
+# without which its carriers keep to their firing positions and never close in. The flags
+# are per actor tag -- the species and rank -- so every carrier of that actor follows,
+# whatever it holds (user, 2026-10-10: species-wide at patch time for now; private kit
+# actor copies only if the maps have room after every port).
+ACTOR_FLAG_BITS = {'always_charge_in_attacking_mode': 0x01000000,
+                   'crouch_when_in_line_of_fire': 0x40000000,
+                   'avoid_friends_line_of_fire': 0x80000000}
+
+
+def port_actor_flags(weapon):
+    if weapon in STOCK_HANDS:
+        return 0
+    try:
+        import weapon_ports
+        port = next((p for p in weapon_ports.ports_for(GAME) if weapon_ports.weap_path(p) == weapon), None)
+    except Exception:
+        port = None
+    bits = 0
+    for f in (port or {}).get('actor_flags') or ():
+        bits |= ACTOR_FLAG_BITS.get(f, f if isinstance(f, int) else 0)
+    return bits
+
+
+def actor_flag_rule(m, bases, weapon):
+    """OR the weapon's actor flags into the actor tag each filled slot uses."""
+    bits = port_actor_flags(weapon)
+    if not bits:
+        return None
+    done = []
+    for b in bases:
+        actor = hv._ref_name(m, b, hv.REF_ACTOR)
+        off = dict(m.find_tags('actr', actor or '-')).get(actor)
+        if off is None:
+            continue
+        struct.pack_into('<I', m.data, off, struct.unpack_from('<I', m.data, off)[0] | bits)
+        short = actor.rsplit(BS, 1)[-1]
+        if short not in done:
+            done.append(short)
+    names = [n for n, v in ACTOR_FLAG_BITS.items() if bits & v]
+    return ('%s on %s (species-wide)' % (', '.join(n.replace('_', ' ') for n in names),
+                                         ', '.join(done))) if done else None
 
 
 def grunt_rate_rule(m, bases, unit, weapon):
