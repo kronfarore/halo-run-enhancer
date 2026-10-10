@@ -551,6 +551,80 @@ SETS = {
         ('Battle Rifle (port peer)', W + r'battle rifle\battle rifle', 'shot',
          {'burst': (3, 0.1, 0.413)}),
     ]},
+    # the NEEDLE RIFLE (wave B2), step 4a. Reach (HREK 2026-10-10, h3_weapon_values --kit
+    # reach + the shard's damage effects): needle rifle 6 IMPACT (group needle; flags
+    # headshots) per 0.25 s = 4/s semi-auto, 21 (63 / 105), reload 82 fr both, error 0.15 ->
+    # 2, zoom 1 (2x), 1500 wu/s, range 250, aim 2.25/25 5/25; SUPERCOMBINE at 3 stuck needles
+    # (super det. time 0.05 s): attached super detonation 350 (35 lower, explosion_small,
+    # 'affects model targets') + super detonation 40 (r 0.375-1.25) = 390. Needler 6 impact
+    # at 8 -> 12/s, 24 (72 / 120), 44 fr, 11 wu/s homing, range 26, aim 8/26 16/26, the SAME
+    # 350 + 40 at 6 needles (0.35 s). Magnum 17.5 / 5.26/s / 8 / 50 fr / 3000 / 100 / 2.25/18
+    # 4.5/18; sniper 80 / 1.33/s / 4 / 86 fr / 6000 / 500 / 0.8/20 1.6/20. Halo 1: needle
+    # impact 0, `detonation damage` 10 when it BURSTS 0.75 s after sticking, the
+    # supercombine `explosion` 60 (40-80, Elite shields x4, Flood x2) at SEVEN stuck needles
+    # (engine-hardcoded, c20); needler 10/s (3 -> 10), 20 (80 / 80), 70 fr, 4 wu/s guided,
+    # range 20, aim 6/25 12/25. A port needle on Halo 1's 0.75 s timer at 4/s never has 7
+    # stuck at once ('timer' below): the supercombine needs a longer attached life.
+    # Every row: the needle's materials (`detonation damage`); the super on `explosion`'s.
+    'needle_rifle': {'port': 'Needle Rifle', 'weapons': [
+        ('NR = Reach own, no super', W + r'needler\needler', 'shot',
+         {'dmg': 6.0, 'rate': 4.0, 'mag': 21, 'reload': 82 / 30.0, 'speed': 1500.0,
+          'range': 250.0, 'aim': (2.25, 25.0, 5.0, 25.0),
+          'damage_tags': [W + r'needler\detonation damage']}),
+        # Reach's own count (3) would need a halo1.dll change: the engine's 7 is fixed
+        ('NR = Reach own, super @3', W + r'needler\needler', 'shot',
+         {'dmg': 6.0, 'rate': 4.0, 'mag': 21, 'reload': 82 / 30.0, 'speed': 1500.0,
+          'range': 250.0, 'aim': (2.25, 25.0, 5.0, 25.0),
+          'damage_tags': [W + r'needler\detonation damage'],
+          'super': (3, W + r'needler\explosion', 390.0), 'timer': 4.0}),
+        ('NR = Reach own, super @7', W + r'needler\needler', 'shot',
+         {'dmg': 6.0, 'rate': 4.0, 'mag': 21, 'reload': 82 / 30.0, 'speed': 1500.0,
+          'range': 250.0, 'aim': (2.25, 25.0, 5.0, 25.0),
+          'damage_tags': [W + r'needler\detonation damage'],
+          'super': (7, W + r'needler\explosion', 390.0), 'timer': 4.0}),
+        # 10 x 6/6; 10/s x 4/12; 20 x 21/24 = 17.5; 70 fr x 82/44; 4 x 1500/11; 20 x 250/26;
+        # aim 6 x 2.25/8, 25 x 25/26; 12 x 5/16, 25 x 25/26; super 60 x 390/390 at 7
+        ('NR = Needler ratio, no super', W + r'needler\needler', 'shot',
+         {'dmg': 10.0, 'rate': 10.0 * 4 / 12, 'mag': 18, 'reload': 70 * 82 / 44 / 30.0,
+          'speed': 545.0, 'range': 192.0, 'aim': (1.69, 24.0, 3.75, 24.0),
+          'damage_tags': [W + r'needler\detonation damage']}),
+        ('NR = Needler ratio, super @7', W + r'needler\needler', 'shot',
+         {'dmg': 10.0, 'rate': 10.0 * 4 / 12, 'mag': 18, 'reload': 70 * 82 / 44 / 30.0,
+          'speed': 545.0, 'range': 192.0, 'aim': (1.69, 24.0, 3.75, 24.0),
+          'damage_tags': [W + r'needler\detonation damage'],
+          'super': (7, W + r'needler\explosion', 60.0), 'timer': 4.0}),
+        # 25 x 6/17.5; 3.5/s x 4/5.26; 12 x 21/8; 67 fr x 82/50; 300 x 1500/3000; 40 x
+        # 250/100; aim 3 x 2.25/2.25, 30 x 25/18; 6 x 5/4.5, 30 x 25/18 (no super in the pistol)
+        ('NR = Pistol ratio, no super', W + r'needler\needler', 'shot',
+         {'dmg': 25 * 6 / 17.5, 'rate': 3.5 * 4 / (1 / 0.19), 'mag': 32,
+          'reload': 67 * 82 / 50 / 30.0, 'speed': 150.0, 'range': 100.0,
+          'aim': (3.0, 41.7, 6.67, 41.7), 'damage_tags': [W + r'needler\detonation damage']}),
+        ('NR = Pistol ratio, super @7', W + r'needler\needler', 'shot',
+         {'dmg': 25 * 6 / 17.5, 'rate': 3.5 * 4 / (1 / 0.19), 'mag': 32,
+          'reload': 67 * 82 / 50 / 30.0, 'speed': 150.0, 'range': 100.0,
+          'aim': (3.0, 41.7, 6.67, 41.7), 'damage_tags': [W + r'needler\detonation damage'],
+          'super': (7, W + r'needler\explosion', 60.0), 'timer': 4.0}),
+        # 101 x 6/80; 2/s x 4/1.33; 4 x 21/4; 94 fr x 82/86; 1000 x 1500/6000; 1000 x
+        # 250/500; aim 1 x 2.25/0.8, 35 x 25/20; 2 x 5/1.6, 35 x 25/20
+        ('NR = Sniper ratio, no super', W + r'needler\needler', 'shot',
+         {'dmg': 101 * 6 / 80, 'rate': 2.0 * 4 / (1 / 0.75), 'mag': 21,
+          'reload': 94 * 82 / 86 / 30.0, 'speed': 250.0, 'range': 500.0,
+          'aim': (2.81, 43.75, 6.25, 43.75), 'damage_tags': [W + r'needler\detonation damage']}),
+        ('NR = Sniper ratio, super @7', W + r'needler\needler', 'shot',
+         {'dmg': 101 * 6 / 80, 'rate': 2.0 * 4 / (1 / 0.75), 'mag': 21,
+          'reload': 94 * 82 / 86 / 30.0, 'speed': 250.0, 'range': 500.0,
+          'aim': (2.81, 43.75, 6.25, 43.75), 'damage_tags': [W + r'needler\detonation damage'],
+          'super': (7, W + r'needler\explosion', 60.0), 'timer': 4.0}),
+        # Halo 1's needler, both ways: damage 0.75 s after the last needle sticks
+        ('Needler (no supercombine)', W + r'needler\needler', 'shot',
+         {'damage_tags': [W + r'needler\detonation damage'], 'delay': 0.75}),
+        ('Needler (supercombine)', W + r'needler\needler', 'shot',
+         {'damage_tags': [W + r'needler\detonation damage'], 'delay': 0.75,
+          'super': (7, W + r'needler\explosion', 60.0), 'timer': 0.75}),
+        ('Pistol', W + r'pistol\pistol', 'shot'),
+        ('Sniper Rifle', W + r'sniper rifle\sniper rifle', 'shot'),
+        ('DMR (port peer)', W + r'dmr\dmr', 'shot'),
+    ]},
 }
 
 ENEMIES = [
@@ -709,6 +783,18 @@ def weapon(label, rel, mode, overrides, extra=None):
         if extra and extra.get('radius'):    # a candidate's own splash (inner, outer wu)
             for d in out['damage']:
                 d['radius'] = tuple(extra['radius'])
+    # a SUPERCOMBINE (step 4a, the Needle Rifle): (count, damage tag, damage) -- every
+    # count-th stuck needle adds the super explosion on that tag's materials, but only if
+    # the first of them is still stuck: (count - 1) x interval <= 'timer' (the needle's
+    # attached life; Halo 1's count is the engine's 7). 'delay' = seconds from the last
+    # hit to its damage (Halo 1's needle bursts 0.75 s after it sticks)
+    if extra and extra.get('super'):
+        n, tag, dmg = extra['super']
+        d = damage(tag)
+        d['dmg'] = dmg
+        out['super'] = (n, d, extra.get('timer'))
+    if extra and extra.get('delay'):
+        out['delay'] = extra['delay']
     if extra and extra.get('cap'):
         out['cap'] = extra['cap']
     if extra and extra.get('burst'):         # (rounds, spacing s, cycle s): Halo 3's burst
@@ -848,9 +934,17 @@ def kill(wpn, body, shield, bmat, smat):
     b_hit = sum(p[1] for p in per) * wpn['per_shot']
     if b_hit <= 0:
         return None, None
+    sup = wpn.get('super')
+    if sup and sup[2] is not None and (sup[0] - 1) * wpn['interval'] > sup[2]:
+        sup = None                           # the first needle bursts before the last sticks
+    base_s, base_b = s_hit, b_hit
     shots, sh, bo = 0, shield, body
     while bo > 0 and shots < 500:
         shots += 1
+        s_hit, b_hit = base_s, base_b
+        if sup and shots % sup[0] == 0:
+            s_hit += sup[1]['dmg'] * sup[1]['mods'].get(smat, 1.0)
+            b_hit += sup[1]['dmg'] * sup[1]['mods'].get(bmat, 1.0)
         if sh > 0 and s_hit > 0:
             if s_hit >= sh:                  # the killing shot's overflow reaches the body
                 frac = 1 - sh / s_hit
@@ -870,7 +964,7 @@ def kill(wpn, body, shield, bmat, smat):
     if wpn.get('mag') and wpn.get('reload'):
         per_mag = max(1, wpn['mag'] // max(1, wpn.get('rounds_per_shot') or 1))
         t += ((shots - 1) // per_mag) * wpn['reload']
-    return shots, t
+    return shots, t + wpn.get('delay', 0.0)
 
 
 def main():
