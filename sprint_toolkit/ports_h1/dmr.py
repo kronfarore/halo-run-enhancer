@@ -62,10 +62,19 @@ PORT = reserved(
             'peers': ['Pistol', 'Sniper Rifle', 'Battle Rifle'],
             'why': "semi-auto magazine 15, 3x zoom, near-instant bullet: the H1 magnum's role",
             'lacks': ''}},
-    # step 11: the source game's ai\generic entry (26 fields, verified 2026-10-07); 'dm' has no
-    # carrier -- donor_weapon / wdm_rule set at step 11
+    # step 11: Reach's ai\generic DMR entry (m10, 26 fields) over a base -- 'dm' has no carrier.
+    # Halo 1's carriers of the yardstick (h1_weapon_carriers, 2026-10-10): the Flood combat
+    # Elite sniper (WDM 0.4, actor flags: moveswitch_stay_with_friends only) and the armoured
+    # Marine snipers (0.6, prefer_passenger_seat) -- they disagree: the Flood Elite for EVERY
+    # slot (user; the Beam Rifle's pick). ARMED WDM RULE (user: applied as is, the first
+    # WDM above 1.0): 0.4 x Sniper 202 / DMR 52.5 = 1.54 default, / 99.4 = 0.81 balanced
+    # (h1_role_compare dmr, the built port, 5b)
     firing_profile={'mode': 'source', 'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map',
-                    'from_weapon': 'objects\\weapons\\rifle\\dmr\\dmr'},
+                    'from_weapon': 'objects\\weapons\\rifle\\dmr\\dmr',
+                    'donor_weapon': 'weapons\\sniper rifle\\sniper rifle',
+                    'donor_variant': 'characters\\floodcombat elite\\floodcombat elite sniper rifle',
+                    'wdm_rule': {'base': 0.4, 'yardstick_dps': 202.0, 'port_dps': 52.5,
+                                 'balanced_port_dps': 99.4}},
 )
 
 PORT.update({

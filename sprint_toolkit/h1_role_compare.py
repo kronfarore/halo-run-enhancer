@@ -520,6 +520,9 @@ SETS = {
     # sniper 101 x 2/s, 4 (12 / 24), 94 fr, error 0.5, zoom 2 (2, 8), 1000, range 1000, aim
     # 1/35 2/35. Ratio rule = H1 yardstick x Reach DMR / Reach yardstick.
     'dmr': {'port': 'DMR', 'weapons': [
+        # the BUILT port (step 5b): its tags (+ --balanced rows); semi-automatic, the tag's
+        # rate is the cap (3.0/s default, 4.5/s balanced)
+        ('DMR (port)', W + r'dmr\dmr', 'shot'),
         # Reach's own numbers (the DEFAULT, wave rule) on each candidate's bullet materials
         ('DMR = Reach own (pistol)', W + r'pistol\pistol', 'shot',
          {'dmg': 17.5, 'rate': 3.0, 'mag': 15, 'reload': 68 / 30.0, 'speed': 3000.0,
