@@ -187,7 +187,10 @@ PORT = reserved(
                             # charge in attacking mode' (h1_port_test_map --actor-flags; per-port
                             # actor copies are enhancer-side) + berserk firing ranges 0.75-2.75
                             # (theirs; 2.0 here = the hammer's firing distance)
-                            '0x168=0.75:Berserk Firing Range', '0x16C=2.0:Berserk Firing Range Max',
+                            # ARMED TEST 4 (user): 'double their firing range' 2 -> 4 wu (the
+                            # berserk firing band too); a mortal boot for the knockback on the player
+                            '0x74=4.0:Maximum Firing Distance',
+                            '0x168=0.75:Berserk Firing Range', '0x16C=4.0:Berserk Firing Range Max',
                             # ARMED TEST 2 (user): 'they charge and clobber me now, good -- increase
                             # their melee range slightly; they attack right in my face': 0.5 -> 1.0
                             # (abort 1.0 -> 1.5), berserk the same

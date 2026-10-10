@@ -1203,7 +1203,7 @@
    "fields": {
     "0x74": [
      "<f",
-     2.0,
+     4.0,
      "Maximum Firing Distance"
     ],
     "0x8C": [
@@ -1263,7 +1263,7 @@
     ],
     "0x16C": [
      "<f",
-     2.0,
+     4.0,
      "Berserk Firing Range Max"
     ],
     "0x160": [
