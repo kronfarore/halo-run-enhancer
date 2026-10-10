@@ -565,6 +565,11 @@ SETS = {
     # (engine-hardcoded, c20); needler 10/s (3 -> 10), 20 (80 / 80), 70 fr, 4 wu/s guided,
     # range 20, aim 6/25 12/25. A port needle on Halo 1's 0.75 s timer at 4/s never has 7
     # stuck at once ('timer' below): the supercombine needs a longer attached life.
+    # PICK (user, 2026-10-10): the NEEDLER, fired like a precision weapon; the port's OWN
+    # supercombine (Halo 1's projectile names its own super_detonation effect; only the
+    # count 7 is the engine's). Default = Reach's 390 at 7, stuck 4 s; balanced = 60 at 7
+    # (the needler's ratio), stuck 0.75 s (the needler ratio) x 6/2 shot intervals (7 needles
+    # in Halo 1, 3 in Reach) = 2.25 s -- x7/3 (1.75 s) misses 1.8 s at the 3.33/s cap.
     # Every row: the needle's materials (`detonation damage`); the super on `explosion`'s.
     'needle_rifle': {'port': 'Needle Rifle', 'weapons': [
         ('NR = Reach own, no super', W + r'needler\needler', 'shot',
@@ -592,7 +597,7 @@ SETS = {
          {'dmg': 10.0, 'rate': 10.0 * 4 / 12, 'mag': 18, 'reload': 70 * 82 / 44 / 30.0,
           'speed': 545.0, 'range': 192.0, 'aim': (1.69, 24.0, 3.75, 24.0),
           'damage_tags': [W + r'needler\detonation damage'],
-          'super': (7, W + r'needler\explosion', 60.0), 'timer': 4.0}),
+          'super': (7, W + r'needler\explosion', 60.0), 'timer': 2.25}),
         # 25 x 6/17.5; 3.5/s x 4/5.26; 12 x 21/8; 67 fr x 82/50; 300 x 1500/3000; 40 x
         # 250/100; aim 3 x 2.25/2.25, 30 x 25/18; 6 x 5/4.5, 30 x 25/18 (no super in the pistol)
         ('NR = Pistol ratio, no super', W + r'needler\needler', 'shot',
