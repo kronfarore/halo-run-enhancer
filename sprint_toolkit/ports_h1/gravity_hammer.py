@@ -251,8 +251,13 @@ PORT.update({
     #   (3 px, two brightness bands grown apart); icon 38, messages 69/70.
     # Armed: Halo 3's ai\generic hammer entry over the sword commander, its 'cannot use ranged
     #   weapons' flag CLEARED, rate 0.65 / burst 2 s, fire within 2 wu, melee 1 wu; carriers
-    #   CHARGE (actor flag always_charge_in_attacking_mode -- test-map --actor-flags; per-weapon
-    #   in the enhancer: hand-off) and SWING on the trigger (catalog fire_anim 'melee');
+    #   CHARGE (actor flag always_charge_in_attacking_mode -- test-map --actor-flags; enhancer
+    #   958e318: catalog `actor_flags`, h1_enemy_weapons.actor_flag_rule ORs it into the ACTOR
+    #   of every filled slot carrying the hammer -- species + rank wide at patch time, user's
+    #   call; private actor copies later if the maps have room) and SWING on the trigger
+    #   (catalog fire_anim 'melee'); enhancer cards d4ed39a: Hammer Damage (crush + blast),
+    #   Melee Damage, Hammer Radius, Energy Use, Magnetism, Autoaim, Weapon Swap Speed --
+    #   knockback and the recoil shove not carded;
     #   hands two; WDM 1 x 189/202 = 0.94 (balanced 0.93).
     # Closing checks (2026-10-10, staged a30): port_refs_audit 0 problems, port_sound_refs 0
     #   BORROW, 4b list 2 only deliberate lines, template diff traced (377), 5b 310 / 1.53 s = 202
