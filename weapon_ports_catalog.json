@@ -2528,6 +2528,9 @@
      "Age Per Round",
      "Charging Time"
     ]
+   },
+   "anims": {
+    "swap": 0.85
    }
   }
  ],

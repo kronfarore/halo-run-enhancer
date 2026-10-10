@@ -1127,6 +1127,10 @@ copy of the Halo 1 PLASMA PISTOL (heat + battery), yardstick the ROCKET LAUNCHER
   human, WDM 0.4) + Rate Of Fire 0 + burst 3.6 s; `hands` heavy (Grunts full rate, Jackals
   shieldless -- confirmed). WDM rule on the held cycle: 0.28 default / 0.52 balanced.
   `ai_firing_profile` `set` takes shorts now (`0x154=h1`).
+* Steps 6-10: 6 n/a (battery); 7 the plasma pistol's heat + battery meters; 8 icon 37, messages
+  67/68; 9 no reload, BALANCED SWAP x0.85 (H1 rocket ready 22 x 31/26 over the built 31) --
+  missed at close-out, caught by the final step check: a port with no reload still has step 9's
+  swap (`anims` in the catalog entry); 10 own sounds (14).
 * Not reproduced: the tap-tracer, the HUD charge triangle, Halo 3's bloom, the charge lock during
   the overheat. Tools: `h1_hud_sheet.put_frames` / mips / compaction, `h1_add_reticle` `layers`,
   `grow_to`, `simulate`, `orbit_frames`; `h1_h3_weapon_model` `decals`, `material_names`,

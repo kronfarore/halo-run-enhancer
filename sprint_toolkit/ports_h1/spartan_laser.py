@@ -182,6 +182,15 @@ PORT.update({
     #   0.52 (the held cycle).
     # Not reproduced: the tap-tracer, the HUD charge triangle, Halo 3's bloom, the charge lock
     #   during the overheat.
+    # Steps 6-10: 6 ammo pickup n/a (a battery weapon; Halo 3 has no laser ammo item); 7 the HUD
+    #   readout = the plasma pistol's heat + battery meters; 8 icon 37 + messages 67/68, reticle
+    #   26; 9 no reload, swap balanced x0.85 (default Halo 3's frames) -- MISSING until the final
+    #   step check (user: 'every step, especially 4b'); 10 own sounds: fire, charge in / loop /
+    #   out, overheat, impact, ready, melee, posing, zoom in/out, drop, ammo, dry fire.
+    # FINAL CHECK (2026-10-10, rerun on the final tags): 4b list 2 = the six deliberate lines
+    #   above; list 3 = Halo 3-only fields / decisions (both damage effects 'plasma', camera
+    #   impulse 0); h1_port_template_diff 326 differences, the vent at Halo 3's 0.4 / 0.1 and
+    #   nothing left from the charge-crosshair or long-vent experiments.
     # geometry + look (h1_h3_weapon_model.py). Halo 3's materials: spartan_laser (base + bump,
     # chrome reflections), spartan_laser_dull (BR gun detail), spartan_laser_shiny,
     # spartan_laser_luminous (base + a 1x1 WHITE self-illum map: the whole material lit in
@@ -693,6 +702,10 @@ PORT.update({
             'balance_desc': "Measured against the Rocket Launcher, which both games have: 408 "
                             "damage per beam, a 3.3 s charge and a 3 s vent, a shorter reach and "
                             "Halo 1-style aim assist; the battery stays five shots.",
+            # step 9 (swap = ready + put-away, ONE multiplier, the ready's): H1 rocket ready
+            # 22 fr x H3 laser 31 / H3 rocket 26 = 26.2 fr over the built 31 = x0.85; no
+            # reload (battery). Found missing at the final step check (2026-10-10)
+            'anims': {'swap': 0.85},
             'balance': [
                 # A: the direct hit 570 x 315/440 = 408 (the impact, boot 11), splash 100 x
                 # 315/440 = 71.6
