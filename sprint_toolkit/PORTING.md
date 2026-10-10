@@ -479,7 +479,9 @@ H1_PORT_PLAN.md "Phase 0: DONE" is the full record; the short form:
   set over it.
 * **Capacity** (MCC classic): tag space and vertex buffers are each 64 MiB (HCEEK tool's
   own checks), not CE's 23 MiB. The vertex buffer on a10 is the binding one; all 25 ports
-  fit even at SAW size. d40's weapon placements reach 115 of 128.
+  fit even at SAW size. d40's weapon placements reach 115 of 128. NO 384 MiB file cap: a
+  458.8 MiB a10 with all tag data past 384 MiB loads and plays (h1_size_test_map.py, user's
+  boot 2026-10-10).
 * OBSERVATION (Sentinel Beam only): `tool model` on today's JMS gives the beam's FP model
   LOD node counts 6, the shipped and tested one has 0 -- the tested copy was kept.
 

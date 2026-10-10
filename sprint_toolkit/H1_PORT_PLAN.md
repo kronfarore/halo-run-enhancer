@@ -65,10 +65,13 @@ where offerable": the enhancer can then give any port anywhere (starting weapons
 Armed cards, a run carrying it level to level). Revisit only if a map over 384 MiB fails to
 load or a10's vertex buffer gets tight -- switching is just a config's `palette_levels`.
 
-Still open:
-- **384 MiB file size**: Custom Edition's old cap. MCC's limit is 2 GiB by c20, but no map
-  over 384 MiB has been booted; five maps (a10, d40, b40, c40, c10) would pass it after 25
-  SAW-sized ports. The first port that pushes one over is the boot that settles it.
+Answered since:
+
+- **384 MiB file size: SETTLED, NO CAP (user's boot, 2026-10-10).** `h1_size_test_map.py`
+  grew a10 to 458.8 MiB the ports' way (tool built five 2048x2048 32-bit pad bitmaps in
+  through a resident-only weapon's HUD), ALL its tag data past 384 MiB (from 442.9 MiB):
+  it loads and plays in MCC. Custom Edition's 384 MiB cap does not apply; the binding limits
+  are tool's 64 MiB tag space and 64 MiB vertex buffers.
 - If margin is ever wanted: leaner models (fewer LODs: vertex buffer
   is the tight one); shared sounds/bitmaps; recycle unused d40 palette/placement entries.
 - Cheap improvement: `h1_rebuild_all.py` could record tool's own "total tag size / vbuf
@@ -781,9 +784,8 @@ palette per port per map) 13 ports x 10 maps, 0 missing; `port_refs_audit.py` 0 
 on all ten (13 ports); `port_sound_refs.py` 0 BORROW on all ten; `port_sounds.py --check` 0.
 Capacity, tool's own lines (h1_rebuild_all now prints them): tag space 19.1-20.4 MiB of 64,
 vbuf 22.5-27.7 MiB of 64 (a10 highest), files 277-355 MiB (d40 355.1, a10 352.1), d40
-weapon placements 99 of 128. NOTE the 384 MiB question: a10/d40 grow ~4.5 MiB a port, so
-the 7th-8th port of wave B crosses 384 MiB on a10/d40 -- the first build over it must be
-booted on that map (or tested on purpose before). Spawn check in game: the user's.
+weapon placements 99 of 128. The 384 MiB question was then settled on
+purpose: a 458.8 MiB a10 loads and plays (0.1) -- no file-size cap. Spawn check in game: the user's.
 
 ## Hand-off prompt for a weapon session
 
