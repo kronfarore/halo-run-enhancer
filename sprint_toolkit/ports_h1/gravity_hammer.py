@@ -194,8 +194,10 @@ PORT = reserved(
                             # ARMED TEST 2 (user): 'they charge and clobber me now, good -- increase
                             # their melee range slightly; they attack right in my face': 0.5 -> 1.0
                             # (abort 1.0 -> 1.5), berserk the same
-                            '0x160=1.0:Melee Range', '0x164=1.5:Melee Abort Range',
-                            '0x170=1.0:Berserk Melee Range', '0x174=1.5:Berserk Melee Abort Range'],
+                            # ARMED TEST 5 (user): 'increase normal melee range as well' (x2, as the
+                            # firing range): 1.0 -> 2.0, abort 1.5 -> 3.0; berserk the same
+                            '0x160=2.0:Melee Range', '0x164=3.0:Melee Abort Range',
+                            '0x170=2.0:Berserk Melee Range', '0x174=3.0:Berserk Melee Abort Range'],
                     # ARMED TEST 2 (user): 'I hear the blast sound, but no visible effect and no
                     # knockback on me'. Halo 1 pushes NOTHING with zero damage (the sword's
                     # lunge shove, boot 1) -- if WDM 0 means ZERO (not 'no modifier'), the AI's
@@ -387,7 +389,14 @@ PORT.update({
                    # the hammer node) is lowest from frame 5 (0.17 s; frame 4 is still at eye
                    # level), and Halo 1 starts the animation about a tick after the shot ->
                    # 0.20 s: 6 wu/s for 1.2 wu, timer 0.2
-                   'range': 1.2, 'velocity': 6.0,
+                   # ARMED TEST 5 (user, mortal): 'still no knockback, no rings on their misses
+                   # either' -- their 'blast' sound was their MELEE hit (the melee jpt plays the
+                   # same gh_hit): the AI never pulled the trigger. Halo 1's weapon ai_targeting
+                   # holds only a minimum range, so the AI judges reach by the PROJECTILE's
+                   # maximum range: 1.2 wu, under every distance it fought at. Range 5 wu; the
+                   # 0.2 s TIMER still bursts the strike at 1.2 wu (6 wu/s) -- the player's slam
+                   # is unchanged
+                   'range': 5.0, 'velocity': 6.0,
                    'default_responses': {'detonate': list(range(33))},
                    'clear_response_effects': True,
                    # the copy's sword hit sound off (the blast sounds)
