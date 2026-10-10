@@ -2629,7 +2629,8 @@
     }
    ],
    "weap": "weapons\\gravity hammer\\gravity hammer",
-   "fp_animations": "weapons\\gravity hammer\\fp\\fp"
+   "fp_animations": "weapons\\gravity hammer\\fp\\fp",
+   "fire_anim": "melee"
   }
  ],
  "Halo 3": [

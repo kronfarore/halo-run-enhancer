@@ -369,6 +369,12 @@ PORT.update({
         # third-person one, 32 fr from the flag -> `gh` gets its own held to the jab's 38 fr
         # (h1_pickable_weapons.third_person_melee_as_fp). CONFIRMED in game 2026-10-10
         'melee_blocks_fire': True,
+        # ARMED TEST 9 (user): 'now that they use the fire trigger they no longer swing -- the
+        # explosion happens without an animation'. The `gh` label's fire animations came from
+        # its pose donor (the flag's / plasma rifle's); the hammer's fire IS a swing -> fire 1 / 2
+        # = the label's melee, for the player's third person (here, teach_cyborg) and the Armed
+        # carriers (the catalog entry's `fire_anim`, h1_enemy_weapons.ensure_fire_anim)
+        'fire_anim': 'melee',
         'keys': {'first-person melee': 4},           # H3 melee_strike primary keyframe 4
         'sounds': {'first-person ready': SND + 'gh_ready',
                    'first-person posing': SND + 'gh_pose',
@@ -525,6 +531,8 @@ PORT.update({
             # the Armed rule's class (h1_enemy_weapons.hands): TWO-handed (held like the flag;
             # Halo 3's Brutes carry it two-handed) -- a proposal for the enhancer session
             'hands': 'two',
+            # carriers SWING on the trigger (h1_enemy_weapons.ensure_fire_anim; Armed test 9)
+            'fire_anim': 'melee',
             'desc': "Halo 3's Gravity Hammer: its model, first-person animations, sounds, reticle "
                     "and numbers. Fire slams the head down (150) into a knockback blast (160 over "
                     "1.5 wu), 20 slams a charge; melee jabs with the pommel (80).",

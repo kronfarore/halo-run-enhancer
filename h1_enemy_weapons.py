@@ -76,6 +76,9 @@ WEAP_FLAGS, AI_WEAPON_MELEE = 0x308, 1 << 15
 WEAP_MELEE_DAMAGE = 0x394                  # 'Player Melee Damage' tagref
 BIPD_MELEE_DAMAGE = 0x288
 CLASS_ANIMS, SLOT_MELEE = 0x98, 39
+# a weapon TYPE (label) element: label, pad, its animations reflexive (2-byte indices: reload 1
+# / 2, chamber 1 / 2, fire 1 / 2, charged 1 / 2, melee, ...)
+TYPE_ANIMS, TYPE_FIRE, TYPE_MELEE = 0x30, (4, 5), 8
 STAND_IN_SLOTS = (20, 33, 34)              # throw-grenade, signal-attack, warn
 MELEE_FRAMES = 28                          # the Elite's sword melee is 28-35 frames
 
@@ -408,6 +411,48 @@ class Level:
             return 'taught %r (from %r, %d classes)' % (label, donor, n)
         return None
 
+    def ensure_fire_anim(self, unit, weapon):
+        """`fire_anim` 'melee' (the Gravity Hammer, Armed test 9: 'they use the fire trigger now,
+        but no longer swing -- the explosion happens without an animation'): the label's FIRE
+        animations (weapon type slots 4 / 5) = its melee (type slot 8, else the class's slot
+        39, which ensure_melee fills for a unit without one). teach() copied the label's type
+        element from its donor (`pr`), so its animation list is the DONOR's: a private copy
+        first, or the plasma rifle would swing too."""
+        if fire_anim(weapon) != 'melee':
+            return None
+        bipd = dict(self.m.find_tags('bipd', unit or '-')).get(unit)
+        if bipd is None:
+            return None
+        label = self.m.weapon_label(weapon)
+        antr = hv._ref_name(self.m, bipd, 0x38)
+        done = self.__dict__.setdefault('_fire_as_melee', set())
+        if (antr, label) in done:
+            return None
+        n = 0
+        for _p, base in self.m.find_tags('antr', antr or '-'):
+            for _ul, _u, _cn, w, labs in tw.walk(self.m, base):
+                if label not in labs:
+                    continue
+                t = tw._elems(self.m, w + tw.TYPES, tw.TYPE_SZ)[labs.index(label)]
+                cls = tw._elems(self.m, w + CLASS_ANIMS, 2)
+                typ = [_i16(self.m, e) for e in tw._elems(self.m, t + TYPE_ANIMS, 2)]
+                melee = typ[TYPE_MELEE] if len(typ) > TYPE_MELEE and typ[TYPE_MELEE] >= 0 else (
+                    _i16(self.m, cls[SLOT_MELEE]) if len(cls) > SLOT_MELEE else -1)
+                if melee < 0:
+                    continue
+
+                def edit(els, melee=melee):
+                    while len(els) < TYPE_FIRE[-1] + 1:
+                        els.append(bytearray(struct.pack('<h', -1)))
+                    for k in TYPE_FIRE:
+                        struct.pack_into('<h', els[k], 0, melee)
+                n_el = max(len(typ), TYPE_FIRE[-1] + 1)
+                _own_block(self.m, t, TYPE_ANIMS, 2, edit)
+                struct.pack_into('<i', self.m.data, t + TYPE_ANIMS, n_el)
+                n += 1
+        done.add((antr, label))
+        return 'fire = melee swing in %d class(es)' % n if n else None
+
     def ensure_melee(self, unit, weapon):
         """Give `unit` a melee for a melee-only `weapon` (see MELEE_FRAMES). A note, or
         None when nothing was needed."""
@@ -509,7 +554,9 @@ class Level:
         unit, major_unit = swap.get(unit, unit), swap.get(major_unit, major_unit)
         taught = '; '.join(x for x in (
             rule, shield_note, self.ensure_label(unit, weapon), self.ensure_melee(unit, weapon),
-            self.ensure_melee(major_unit, weapon) if major_unit not in (None, unit) else None)
+            self.ensure_melee(major_unit, weapon) if major_unit not in (None, unit) else None,
+            self.ensure_fire_anim(unit, weapon),
+            self.ensure_fire_anim(major_unit, weapon) if major_unit not in (None, unit) else None)
             if x)
         idx = self.palette_index(vs.slot_path(sl))
         self.clones[key] = idx
@@ -550,6 +597,19 @@ def hands(weapon):
     except Exception:
         port = None
     return (port or {}).get('hands') or 'one'
+
+
+def fire_anim(weapon):
+    """A port's catalog `fire_anim` ('melee': its carriers SWING on the trigger -- the Gravity
+    Hammer, whose fire button is Halo 3's head slam), else None."""
+    if weapon in STOCK_HANDS:
+        return None
+    try:
+        import weapon_ports
+        port = next((p for p in weapon_ports.ports_for(GAME) if weapon_ports.weap_path(p) == weapon), None)
+    except Exception:
+        port = None
+    return (port or {}).get('fire_anim')
 
 
 def grunt_rate_rule(m, bases, unit, weapon):

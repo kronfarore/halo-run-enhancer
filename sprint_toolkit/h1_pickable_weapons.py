@@ -1534,6 +1534,8 @@ def teach_cyborg(write):
     for w in WEAPONS.values():
         if w.get('melee_blocks_fire'):
             third_person_melee_as_fp(t.data.tagdata, w)
+        if w.get('fire_anim') == 'melee':
+            third_person_fire_as_melee(t.data.tagdata, w)
     t.filepath = p
     save(t, p, write)
 
@@ -1581,6 +1583,27 @@ def third_person_melee_as_fp(d, w):
                     print('   %s melee: 3P %r %d fr -> own %r %d fr (FP melee %d fr) = #%d' % (
                         new, src.name, src.frame_count, a.name, fp_n, fp_n, own[i]))
                 slots[MELEE_SLOT].animation = own[i]
+
+
+FIRE_SLOTS = (4, 5)  # weapon type animations: fire 1 / 2
+
+
+def third_person_fire_as_melee(d, w):
+    """`fire_anim` 'melee' (the Gravity Hammer, Armed test 9: the fire button IS the swing):
+    the label's third-person FIRE animations = its melee, so a player seen in third person (co-op)
+    swings when it fires, as the Armed carriers do (h1_enemy_weapons.ensure_fire_anim). Runs after
+    third_person_melee_as_fp: the melee is then the label's own, held to the FP jab."""
+    new = w['teach'][0]
+    for u in d.units.STEPTREE:
+        for wc in u.weapons.STEPTREE:
+            for wt in wc.weapon_types.STEPTREE:
+                slots = wt.animations.STEPTREE
+                if wt.label != new or len(slots) <= MELEE_SLOT or slots[MELEE_SLOT].animation < 0:
+                    continue
+                for k in FIRE_SLOTS:
+                    slots[k].animation = slots[MELEE_SLOT].animation
+                print('   %s/%s %s: fire 1/2 = melee #%d' % (u.label, wc.name, new,
+                                                           slots[MELEE_SLOT].animation))
 
 
 def main():
