@@ -2821,7 +2821,12 @@
    "requires": [
     "proj weapons\\dmr\\bullet"
    ],
-   "hands": "two"
+   "hands": "two",
+   "tag_map": {
+    "proj weapons\\sniper rifle\\sniper bullet": "proj weapons\\dmr\\bullet",
+    "jpt! weapons\\sniper rifle\\sniper bullet": "jpt! weapons\\dmr\\bullet",
+    "jpt! weapons\\sniper rifle\\melee": "jpt! weapons\\dmr\\melee"
+   }
   }
  ],
  "Halo 3": [
