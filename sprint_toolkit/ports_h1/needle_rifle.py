@@ -101,24 +101,37 @@ PORT.update({
                     'needle_holes': (R + r'objects\vehicles\covenant\phantom\bitmaps\phantom_illum.bitmap',
                                      R + r'objects\vehicles\covenant\phantom\bitmaps\phantom_illum.bitmap'),
                     'needler_crystal_solid': (R + r'objects\weapons\pistol\needler\bitmaps\needler_crystal_illum.bitmap',
-                                              R + r'objects\weapons\pistol\needler\bitmaps\needler_crystal_illum.bitmap'),
-                    'needle_rifle_display': (R + r'objects\weapons\pistol\plasma_pistol\bitmaps\plasma_pistol_display.bitmap',
-                                             R + r'objects\weapons\pistol\plasma_pistol\bitmaps\plasma_pistol_display.bitmap')},
+                                              R + r'objects\weapons\pistol\needler\bitmaps\needler_crystal_illum.bitmap')},
         # boot 1: the two halograms (scrolling data stream / reload shimmer: no Halo 1 shader)
         # dropped -- the look is judged in game (render by material first)
         'drop_materials': ('needle_rifle_illum_indicator', 'needle_rifle_reload_effect'),
         'template': N + r'shaders\needler gun',
-        'glow': {'needle_holes': (174 / 255.0, 27 / 255.0, 1.0), 'needler_crystal_solid': VIOLET,
-                 'needle_rifle_display': (22 / 105.0, 37 / 105.0, 1.0)},
+        'glow': {'needle_holes': (174 / 255.0, 27 / 255.0, 1.0), 'needler_crystal_solid': VIOLET},
+        # BOOT 1 (user): 'the display shows only squares'. needle_rifle_display is a Reach METER
+        # shader: its illum map plasma_pistol_display = a RING GAUGE (the ring in R, an angular
+        # fill gradient in A; G and B solid 255 -- so max(RGB) made every texel shape). The
+        # Carbine's `meters` (shader_transparent_meter) with the shape from R (`shape`), the
+        # fill = AMMO: the needler template's out C (`needles remaining`, B in = primary
+        # ammunition); the halogram blue (22, 37, 105 at 2.5) normalized, off a quarter
+        'meters': {'needle_rifle_display': {
+            'map': R + r'objects\weapons\pistol\plasma_pistol\bitmaps\plasma_pistol_display.bitmap',
+            'from': r'weapons\plasma rifle\fp\shaders\gauge', 'shape': 'r', 'gradient': 'alpha',
+            'value': 'C_out', 'color': (22 / 105.0, 37 / 105.0, 1.0)}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Reach's OWN fp_needle_rifle retargeted (the
     # DMR's recipe: drop Reach's helper nodes, its view_offset). fp_needle_rifle (26 animations,
     # reach_tags --pose): fire_1 var1-3 (11 fr), idle 100, posing var1 / var2 94, ready 19
     # (ready_initial 27), put_away 4, reload empty / full 82 (primary keyframe 48), melee 34
-    # (primary 5), throw_grenade 44, moving 20, look 9; `ammunition_needles` (14 fr, a
-    # replacement: the stowed needles by ammo) has no Halo 1 slot
+    # (primary 5), throw_grenade 44, moving 20, look 9.
+    # BOOT 1 (user): 'the draining needles would be nice'. Reach's `ammunition_needles` (14 fr,
+    # a REPLACEMENT on the 12 needle nodes: frame 0 = empty, 13 = full; a spent needle shrinks
+    # to SCALE 0.01, turned 23 / 163 deg) = Halo 1's `first-person ammunition` OVERLAY (the
+    # needler's: 21 frames after its reference, first = empty, last = zero delta = full; it
+    # pulls spent needles into the gun). h1_fp_retarget `replacement_overlays`: the reference =
+    # the full frame, every other node held at it, node scale carried
     'retarget': {
+        'replacement_overlays': {'first_person:ammunition_needles': 'first-person ammunition'},
         'graph': R + RFP + '.model_animation_graph',
         'render_model': R + RW + r'\needle_rifle.render_model',
         'nodes': dict([('b_gun', 'frame b gun'), ('b_scope', 'frame b scope'), ('b_shell', 'frame b shell')]
@@ -248,6 +261,19 @@ PORT.update({
                                        'damage': (N + 'explosion', NR + 'supercombine'),
                                        'lower': 45.0, 'upper': (390.0, 390.0), 'radius': (0.375, 1.25),
                                        'swaps': {'sound\\sfx\\impulse\\impacts\\needler_super_expl': SND + 'nr_super'}},
+                   # BOOT 1 (user): 'the trail repeats the Brute Shot's mistake -- not following
+                   # the needle, orthogonal to the surface, nothing visible in flight'. The
+                   # needler's needle carries a LIGHT-VOLUME widget (weapons\needler\needle:
+                   # turns with the surface on a stuck needle) -> dropped; its contrail
+                   # (weapons\needler\needler) emits 30 points/s = one every 50 wu at 1500 wu/s
+                   # -> the SNIPER bullet's trail (the Beam Rifle's: points at its speed), no
+                   # point physics, ADDITIVE, Reach's needle-trail pink (contrail_system
+                   # profile colour 237, 94, 237 -> 122, 43, 244)
+                   'drop_widgets': True,
+                   'attachments_from': 'weapons\\sniper rifle\\sniper bullet',
+                   'contrail': {'from': 'weapons\\sniper rifle\\sniper', 'out': NR + 'needle trail',
+                                'rgb': (237 / 255.0, 94 / 255.0, 237 / 255.0),
+                                'no_physics': True, 'blend': 'add'},
                    # THE HIT-EFFECT RULE: max(default 4, balanced 3.33) = 4/s
                    'impact_thin': {'materials': [22], 'out': NR + 'effects\\impact\\',
                                    'thin': {}, 'rate': 4.0}},

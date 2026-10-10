@@ -698,7 +698,9 @@ def meters(w):
     for name, M in w['meters'].items():
         img, _ = h3_hud_art.decode(M['map'])
         a = np.array(img)
-        shape = a[..., :3].max(axis=2)
+        # `shape` 'r' / 'g' / 'b': the shape in ONE channel (the Needle Rifle's Reach ring gauge
+        # plasma_pistol_display: the ring in R, G and B solid 255 -- max(RGB) lit the whole square)
+        shape = a[..., :3].max(axis=2) if not M.get('shape') else a[..., 'rgb'.index(M['shape'])]
         grad = a[..., 3] if M.get('gradient', 'alpha') == 'alpha' else np.full_like(shape, int(round(M['gradient'] * 255)))
         if M.get('steps'):
             # Halo 3's steps are GAMMA-spaced (the display: 223, 189, 168 ... 3, 1 = (k/18)^2.2)

@@ -361,6 +361,27 @@ def overlay_frames(h3_nodes, frames, animated, weapon):
     return [ref] + out
 
 
+def replacement_frames(weapon, h3_nodes, frames, animated, defaults):
+    """A source REPLACEMENT animation -> H1 OVERLAY frames (the Needle Rifle's
+    `ammunition_needles` = Halo 1's `first-person ammunition`, 2026-10-10): the reference =
+    the LAST frame (Reach's full magazine = the overlay's zero delta, as Halo 1's needler),
+    then one frame per source frame -- the replacement's nodes retargeted as a base frame,
+    every other node held at the reference, and the animated nodes' SCALE carried as a third
+    element (a spent Reach needle shrinks to 0.01)."""
+    corr = corrections(weapon, defaults, h3_nodes)
+    moving = {h3_nodes[i][0] for k in ('rot', 'trans', 'scale') for i in animated.get(k, ())}
+    ref = retarget_frame(h3_nodes, frames[-1], defaults, weapon, corr)
+    out = [ref]
+    for f in frames:
+        r = retarget_frame(h3_nodes, f, defaults, weapon, corr)
+        fr = dict(ref)
+        for (n, _p), (_q, _t, s) in zip(h3_nodes, f):
+            if n in moving and not _skip(weapon, n):
+                fr[_h1(weapon, n)] = r[_h1(weapon, n)] + ((s if s is not None else 1.0),)
+        out.append(fr)
+    return out
+
+
 def retarget(weapon, anim_name, nodes=None, anims=None, defaults=None):
     """(type, [ {H1 node: (q tag convention, t wu)} per frame ])"""
     if nodes is None:
@@ -368,6 +389,8 @@ def retarget(weapon, anim_name, nodes=None, anims=None, defaults=None):
     typ, frames, animated = anims[anim_name]
     if typ == 'overlay':
         return typ, overlay_frames(nodes, frames, animated, weapon)
+    if typ == 'replacement' and anim_name in WEAPONS[weapon].get('replacement_overlays', {}):
+        return 'overlay', replacement_frames(weapon, nodes, frames, animated, defaults)
     corr = corrections(weapon, defaults, nodes)
     ref = None
     if WEAPONS[weapon].get('left_hand_offset'):
@@ -404,6 +427,7 @@ def write_jmas(weapon, only=None):
     written = []
     jobs = list(w['anims'].items())
     jobs += [(h3name, h1name) for h1name, (h3name, _n) in w.get('holds', {}).items()]
+    jobs += list(w.get('replacement_overlays', {}).items())
     for h3name, h1name in jobs:
         if only and h1name not in only and h3name not in only:
             continue
@@ -416,9 +440,10 @@ def write_jmas(weapon, only=None):
             frames = frames + [frames[-1]] * w['pad_end'][h1name]
         if typ != 'overlay':
             frames = frames + [frames[0] if h1name in LOOPING else frames[-1]]
-        states = [[JmaNodeState(t[0] * 100, t[1] * 100, t[2] * 100,
-                                q[1], q[2], q[3], q[0], 1.0)
-                   for q, t in (fr[n] for n in names)] for fr in frames]
+        # a third element = the node's SCALE (replacement_frames); else 1
+        states = [[JmaNodeState(v[1][0] * 100, v[1][1] * 100, v[1][2] * 100,
+                                v[0][1], v[0][2], v[0][3], v[0][0], v[2] if len(v) > 2 else 1.0)
+                   for v in (fr[n] for n in names)] for fr in frames]
         jma = JmaAnimation(h1name, 0, 'overlay' if typ == 'overlay' else 'base', 'none',
                            False, jnodes, states)
         path = os.path.join(out_dir, h1name + ('.jmo' if typ == 'overlay' else '.jmm'))
