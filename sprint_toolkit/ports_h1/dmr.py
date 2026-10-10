@@ -78,7 +78,9 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'building',
+    # 2026-10-10: tested on a30 over 4 boots (dry default, fixes, balanced, Armed) -- everything
+    # confirmed by the user; the ten-map rebuild is BATCHED (wave B, on the user's go)
+    'status': 'done',
 
     # geometry + look (h1_h3_weapon_model.py; Reach through reach_tags). Reach has ONE model
     # for world AND first person (the weapon's own render model; the FP graph moves it).

@@ -21,7 +21,10 @@ too (batched with them); read "A4: what the Beam Rifle taught" before A5. A5 (Sp
 A6 (Mauler, 2026-10-09) is DONE and tested too (batched); read "A6: what the Mauler taught"
 before A7. A7 (Brute Shot, 2026-10-09) is DONE and tested too (batched); read "A7: what the
 Brute Shot taught" before A8. A8 (Spartan Laser, 2026-10-10) is DONE and tested too (batched);
-read "A8: what the Spartan Laser taught" before A9.
+read "A8: what the Spartan Laser taught" before A9. Wave A was rebuilt and shipped 2026-10-10.
+B1 (DMR, the Reach pilot, 2026-10-10) is DONE and tested (4 boots: dry, fixes, balanced, Armed);
+its ten-map rebuild is BATCHED for wave B (user's go); read "B1: what the DMR taught" -- the
+Reach recipe -- before B2 (the Needle Rifle; its prompt is at the end of this file).
 
 ## Phase 0: DONE (2026-10-07)
 
@@ -772,7 +775,7 @@ reach-port-foundry-render-model; animations: a Halo 1 donor's).
 
 | # | weapon | new things it tests |
 |---|---|---|
-| B1 | **DMR** (pilot) | the Reach pipeline end to end; scope zoom |
+| B1 | **DMR** (pilot) -- DONE 2026-10-10 | the Reach pipeline end to end; scope zoom -- see "B1: what the DMR taught" |
 | B2 | Needle Rifle | needles + supercombine (the needler as yardstick) |
 | B3 | Plasma Repeater | heat with venting |
 | B4 | Grenade Launcher | an arcing grenade; the EMP alt-fire approximated |
