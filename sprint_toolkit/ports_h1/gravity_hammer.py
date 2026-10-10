@@ -18,6 +18,10 @@ ILLUM = H3 + r'\bitmaps\gravity_hammer_illum.bitmap'
 # Halo 3's self_illum_color on `hammer` and `hammer_shiny` (function data BGRA d7 57 2e -> RGB
 # 46 / 87 / 215, a blue; intensity empty = 1)
 BLUE = (46 / 255.0, 87 / 255.0, 215 / 255.0)
+# BOOT 2 (user): 'apply the glow' -- the Spike Rifle's final recipe (its blue was Halo 3's 2f/31/d8,
+# the hammer's 2e/57/d7): Halo 3 lights thin lines of a few texels and BLOOMS them; Halo 1 shows
+# them as nothing at colour x1 -> PALE (Halo 3's intensity + bloom read pale) and 2 px thicker
+PALE = (0.75, 0.78, 1.0)
 # STEP 4b (port_field_audit.py --port gravity_hammer, BEFORE boot 1; out/gh/4b.txt). Source
 # pair: the H3 hammer vs the H3 energy blade; target: the H1 port vs the H1 sword.
 # The SMASH (smash_melee vs dash_melee onto the H1 sword's melee), on the melee AND the fire
@@ -137,7 +141,17 @@ PORT.update({
         'shaders': {'hammer': (BASE, ILLUM),
                     'hammer_shiny': (BASE, ILLUM),
                     'hammer_dull': (BASE, None)},
-        'glow': {'hammer': BLUE, 'hammer_shiny': BLUE},
+        'glow': {'hammer': PALE, 'hammer_shiny': PALE},
+        'illum_dilate': 2,
+        # ... and a small radial HALO card per cluster of lit texels (the Spike Rifle's side lights,
+        # its test 5-6 size 0.4), both lit materials (out/gh/glow_map.png: 159 lit triangles --
+        # the head's front faces, the side panels by the head, the pommel)
+        'glow_shaders': {'gh_spot': {'rgb': PALE, 'additive': True, 'radial': True,
+                                     'falloff': 1.6, 'gain': 1.0}},
+        'glow_spots': [{'material': 'hammer', 'illum': ILLUM, 'shader': 'gh_spot',
+                        'size': 0.4, 'lift': 0.05, 'merge': 0.4},
+                       {'material': 'hammer_shiny', 'illum': ILLUM, 'shader': 'gh_spot',
+                        'size': 0.4, 'lift': 0.05, 'merge': 0.4}],
         'drop_materials': ['invalid'],
         'template': RL + r'shaders\rocket launcher body',
         # BOOT 1 (user): 'the weapon sinks into the ground'. It kept the plasma pistol template's
@@ -167,7 +181,8 @@ PORT.update({
         'h1_dir': r'weapons\gravity hammer\fp',
         'h1_model': r'weapons\gravity hammer\fp\fp',
         'align': 'same_space',
-        'view_offset': (0.0, 0.0, -0.01),
+        # BOOT 2 (user): 'another unit lower'
+        'view_offset': (0.0, 0.0, -0.02),
         'anims': {
             'first_person:idle': 'first-person idle',
             'first_person:posing:var1': 'first-person posing',
@@ -255,7 +270,8 @@ PORT.update({
         # acceleration = backwards (sword boot 2). +2 a start ('slightly'; the sword lunge is -10)
         'lunge': {'template': PP + 'plasma pistol', 'strike': None,
                   'push': GH + 'recoil', 'push_from': PP + 'trigger',
-                  'acceleration': 2.0, 'push_damage': 0.01,
+                  # BOOT 2 (user, tuned live in Assembly): 5
+                  'acceleration': 5.0, 'push_damage': 0.01,
                   'rate': 30 / 46.0, 'energy': 0.05},
         # THE STRIKE (own_beam): a copy of the sword's invisible lunge projectile, its impact the
         # lunge's crush, its detonation the explosion. Range 1.2 wu (Halo 3 slams the head about
@@ -270,13 +286,17 @@ PORT.update({
                    # (0 vs 0.5) and damage type: the sword strike's own acceleration (2.5) and
                    # screen flash are already the 4b ratio (x1)
                    'dmg': 150.0,
-                   'range': 1.2, 'velocity': 9.0,
+                   # BOOT 2 (user): 'blast still too early'. The retargeted slam's head (0.3 wu up
+                   # the hammer node) is lowest from frame 5 (0.17 s; frame 4 is still at eye
+                   # level), and Halo 1 starts the animation about a tick after the shot ->
+                   # 0.20 s: 6 wu/s for 1.2 wu, timer 0.2
+                   'range': 1.2, 'velocity': 6.0,
                    'default_responses': {'detonate': list(range(33))},
                    'clear_response_effects': True,
                    # the copy's sword hit sound off (the blast sounds)
                    'fields': {'sound.filepath': ''},
                    'proj_fields': {'proj_attrs.detonation_timer_starts': 'immediately',
-                                   'proj_attrs.detonation.timer': (0.13, 0.13)},
+                                   'proj_attrs.detonation.timer': (0.2, 0.2)},
                    'explosion': {'effect': (PG + 'effects\\explosion', GH + 'effects\\blast'),
                                  # the rocket explosion's material table (Halo 3's explosion_small
                                  # = _large for Halo 1 but Flood x1)
@@ -290,7 +310,17 @@ PORT.update({
                                  # take x0.6, Grunts x0.9). 15 a start; Halo 3's hammer launches
                                  # its targets. Live-tunable: the explosion jpt's
                                  # Instantaneous Acceleration (Assembly)
-                                 'fields': dict(EXPLOSION_4B, **{'damage.instantaneous_acceleration': 15.0}),
+                                 # BOOT 2 (user, tuned live in Assembly): 15 -> 7.5
+                                 'fields': dict(EXPLOSION_4B, **{'damage.instantaneous_acceleration': 7.5}),
+                                 # BOOT 2 (user): 'try the shockwave'. Halo 3's ring is a mesh
+                                 # particle (blast_radius); Halo 1's own shockwave ring is the
+                                 # Wraith mortar's `light ring expand` (additive, lying
+                                 # perpendicular to the effect's direction, radius x0.25 -> x20 in
+                                 # 0.1-0.2 s): 2 rings at radius 0.075..0.125 -> 1.5..2.5 wu, the
+                                 # blast's own reach (the mortar's 0.2..0.5 ends at 4..10 wu)
+                                 'add_particles': [{'from': r'vehicles\wraith\effects\wraith mortar explosion',
+                                                    'match': 'light ring expand',
+                                                    'radius': (0.075, 0.125)}],
                                  # the plasma grenade's blue burst + light; its 8 wu shock wave,
                                  # burn decal and sound go (the hammer brings its own)
                                  'drop_parts': [PG + 'shock wave',
@@ -318,12 +348,15 @@ PORT.update({
             'obje_attrs.collision_model.filepath': GH + 'gravity hammer',
             'obje_attrs.bounding_radius': 0.42,
             # BOOT 1 (user): 'each swing costs ABOUT 5%' -- float32 0.05 is 0.0500000007, so the
-            # HUD reads 94, 89, ... The Spartan Laser's fix: the float just below (0.049999997)
-            # shows 95 / 90 / ... / 0; after 20 slams the age is 0.99999994 < 1 and a 21st would
-            # fire -- the age MISFIRE stops it (start 0.9999, chance 1; make_lunge cleared the
-            # misfire effects)
-            'weap_attrs.triggers.0.misc.age_generated_per_round': 0.049999997,
-            'weap_attrs.age.misfire_start': 0.9999,
+            # HUD reads 94, 89, ... Boot 2 tried the Spartan Laser's fix (the float just below,
+            # 0.049999997): 'steps to 39 from 45 -- the fix doesn't hold at a step of 5'. The
+            # laser had 5 additions; 20 float32 sums of 0.05 round by up to ~3e-8 each, more
+            # than that 3e-9 margin. Now a margin the sums cannot eat: 0.0499 a slam (the HUD
+            # reads 95.01 -> 95 ... 5.19 -> 5, 0.2 -> 0); after 20 slams the age is 0.998 < 1,
+            # so the age MISFIRE stops a 21st (start 0.99: 19 slams = 0.948 still fire; chance 1;
+            # make_lunge cleared the misfire effects)
+            'weap_attrs.triggers.0.misc.age_generated_per_round': 0.0499,
+            'weap_attrs.age.misfire_start': 0.99,
             'weap_attrs.age.misfire_chance': 1.0,
         },
         'messages': ('Picked up a gravity hammer', 'Picked up %d rounds for gravity hammer'),
