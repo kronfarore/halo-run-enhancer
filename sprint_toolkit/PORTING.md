@@ -1198,7 +1198,12 @@ The whole weapon is `ports_h1/gravity_hammer.py`.
   swing is still cut short by knockback (shieldless: every hit pings) -- accepted.
 * Tools: `h1_box_collision.py`, `make_icon.py --z-forward`, `h1_add_reticle` `dry` + `split`,
   `h1_fp_retarget` `pad_end`, `h1_pickable_weapons` `melee_fields` / `fire_anim` / hit_sound on
-  an own melee copy (it read the donor's backup), `port_refs_audit` takes the entry's `weap`.
+  an own melee copy (it read the donor's backup), `port_refs_audit` takes the entry's `weap`,
+  `port_field_audit` an `impact` pair (a second impact damage effect: the slam's crush).
+* **Final step check (2026-10-10):** closing 0 refs 0 problems, 2 validate_halo_json 0
+  problems, 6 4b (weapon / blast / melee / impact: list 2 only the recorded decisions) + write
+  proof 34 tags / 723,618 fields 0 changed, 7 port_sound_refs 0 BORROW + port_sounds --check 0,
+  8 Armed carriers built in every test, 9 hit effect x1; 1/3/5 n/a (Halo 1).
 
 ### Halo 1: no FIRE during a MELEE (melee weapons, 2026-10-10) -- halo1.dll patch, CONFIRMED
 

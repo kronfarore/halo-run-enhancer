@@ -451,7 +451,10 @@ PORT.update({
                    'damage': (SW + 'lunge strike', GH + 'crush'),
                    # Halo 3's crush_melee 150 = the sword's dash_melee in every field but radius
                    # (0 vs 0.5) and damage type: the sword strike's own acceleration (2.5) and
-                   # screen flash are already the 4b ratio (x1)
+                   # screen flash are already the 4b ratio (x1). 4b's `impact` pair (final check):
+                   # list 2 = radius 0 x 0.5/0.5 -> 0 NOT taken (the melee's decision: every stock
+                   # Halo 1 melee and the sword's strike are 0.5); damage = Halo 3's own 150
+                   # (balanced row 151)
                    'dmg': 150.0,
                    # BOOT 2 (user): 'blast still too early'. The retargeted slam's head (0.3 wu up
                    # the hammer node) is lowest from frame 5 (0.17 s; frame 4 is still at eye
@@ -605,10 +608,15 @@ PORT.update({
                    'damage_effect': (H3 + r'\damage_effects\gravity_hammer_explosion.damage_effect',
                                      r'objects\weapons\damage_effects\dash_melee.damage_effect'),
                    'melee': (r'objects\weapons\damage_effects\smash_melee.damage_effect',
-                             r'objects\weapons\damage_effects\dash_melee.damage_effect')},
+                             r'objects\weapons\damage_effects\dash_melee.damage_effect'),
+                   # the slam's impact (final check, 2026-10-10): Halo 3's lunge crush_melee vs
+                   # the sword's dash_melee onto the port's crush vs the sword's lunge strike
+                   'impact': (r'objects\weapons\damage_effects\crush_melee.damage_effect',
+                              r'objects\weapons\damage_effects\dash_melee.damage_effect')},
         'target': {'weapon': (GH + 'gravity hammer.weapon', SW + 'energy sword.weapon'),
                    'damage_effect': (GH + 'explosion.damage_effect', SW + 'melee.damage_effect'),
-                   'melee': (GH + 'melee.damage_effect', SW + 'melee.damage_effect')}},
+                   'melee': (GH + 'melee.damage_effect', SW + 'melee.damage_effect'),
+                   'impact': (GH + 'crush.damage_effect', SW + 'lunge strike.damage_effect')}},
 
     # the dry test: a30 (Covenant within seconds of the landing), a battery weapon spawns
     # charged (rounds 0 / 0)

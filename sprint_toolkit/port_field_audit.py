@@ -37,7 +37,11 @@ CLASS = {'weapon': 'weap', 'projectile': 'proj', 'damage_effect': 'jpt!',
          # the MELEE damage effect as a fourth pair (the Mauler, 2026-10-09: Halo 3's blade
          # cut_melee vs the yardstick's strike_melee onto the port's melee copy) -- a Halo 1
          # config may add it to its field_audit; the SAW-era game tables do not
-         'melee': 'jpt!'}
+         'melee': 'jpt!',
+         # a second IMPACT damage effect (the Gravity Hammer, 2026-10-10: its slam's crush_melee
+         # vs the yardstick sword's dash_melee onto the port's `crush` -- the blast is the
+         # `damage_effect` pair)
+         'impact': 'jpt!'}
 
 #: the source weapon and the donor it is measured against, per tag kind (Halo 4)
 SOURCE = dict(kit='H4EK', tags={
