@@ -4,8 +4,6 @@ per swing and a fire-button strike (`lunge`); spartan_laser.py of a new weapon o
 PLASMA PISTOL (battery HUD), its HUD and Armed-AI lessons. What is new here: a melee weapon whose
 every swing sets off an AREA damage with knockback (Halo 3's gravity_hammer_explosion), which
 Halo 1 does not have."""
-import os
-
 from ._common import ANIMS, B, H3_FP_GRAPHS, IMPACTS, reserved, row
 
 H3 = r'objects\weapons\melee\gravity_hammer'
@@ -69,17 +67,17 @@ EXPLOSION_4B = {'damage.instantaneous_acceleration': 3.5 * 2.5 / 1.5,
 #     the explosion' -> boot 6: the ring alone, ending at the blast's 1.5 wu (radius 0.075).
 #   BOOT 6 (user): 'slightly bigger; try two setups -- rings stacked above and beneath, and
 #     several rings from the same position; one brighter, the other longer'. Both end at 1.8
-#     wu (radius 0.09). A/B in ONE boot round: GH_RINGS=A staged on a30, GH_RINGS=B on a50
+#     wu (radius 0.09). A/B in ONE boot round (A on a30, B on a50).
+#   BOOT 7 (user): 'A it is -- the stacked rings are brighter; B's long duration does not look
+#     good, the old one is better, and rings one after another enhance that'. A, its top and
+#     bottom rings closer to the centre: 0.25 -> 0.12 wu
 RING = {'from': r'vehicles\wraith\effects\wraith mortar explosion', 'match': 'light ring expand',
         'location': 1, 'radius': (0.09, 0.09), 'tint': (1.0, 0.75, 0.85, 1.0)}
 RING_PART = {'out': GH + r'effects\shockwave ring', 'lifespan': (0.5, 0.6), 'fade_out': 0.4}
-# A: three rings stacked along the gravity location's axis (i = down) 0.25 wu apart, each
-#    drawn x4 (additive: brighter)
-RINGS_A = [dict(RING, offset=(i, 0.0, 0.0), count=4, particle=RING_PART) for i in (-0.25, 0.0, 0.25)]
-# B: three rings from the SAME spot, 0.12 s apart, each lasting 0.9-1.0 s (fading over 0.7)
-RING_PART_B = {'out': GH + r'effects\shockwave ring long', 'lifespan': (0.9, 1.0), 'fade_out': 0.7}
-RINGS_B = [dict(RING, delay=d, particle=RING_PART_B) for d in (0.0, 0.12, 0.24)]
-RINGS = {'A': RINGS_A, 'B': RINGS_B}[os.environ.get('GH_RINGS', 'A')]
+# three rings stacked along the gravity location's axis (i = down) 0.12 wu apart, each drawn x4
+# (additive: brighter). (B -- three rings from the same spot 0.12 s apart, 0.9-1.0 s each -- was
+# rejected)
+RINGS = [dict(RING, offset=(i, 0.0, 0.0), count=4, particle=RING_PART) for i in (-0.12, 0.0, 0.12)]
 
 PORT = reserved(
     order=18, wave='A9', name='Gravity Hammer', source='Halo 3',
