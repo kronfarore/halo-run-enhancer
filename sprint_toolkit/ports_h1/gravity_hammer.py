@@ -237,6 +237,12 @@ PORT.update({
                        {'material': 'hammer_shiny', 'illum': ILLUM, 'shader': 'gh_spot',
                         'size': 0.4, 'lift': 0.05, 'merge': 0.4}],
         'drop_materials': ['invalid'],
+        # ARMED TEST 5 (user): 'their allies die around them' -- the AI's blast went off AT the
+        # carrier. Halo 1's AI fires from the weapon's `primary trigger` marker; the hammer had
+        # NO markers (no Halo 3 name matched h3_rm_to_jms.MARKERS) -> its strike started at the
+        # weapon origin. Halo 3's own `hammer_detonation` (the head's striking face, where its
+        # third-person blast plays) becomes it
+        'markers': {'hammer_detonation': 'primary trigger'},
         'template': RL + r'shaders\rocket launcher body',
         # BOOT 1 (user): 'the weapon sinks into the ground'. It kept the plasma pistol template's
         # collision model (a pistol-sized hull, other node names). Its OWN hull, three boxes
