@@ -641,6 +641,59 @@ scope recipe (Halo 3 chud baked into a Halo 1 zoom mask) applies to Reach's chud
 widget reading (h4_reach_scope / reach_meter_art). Check the world model for a `primary trigger`
 marker (Armed) and its root rotation (Reach models can be authored tilted, as Halo 3's Brute Shot).
 
+## B1: what the DMR taught (2026-10-10) -- the REACH RECIPE, read before B2 (the Needle Rifle)
+
+PORTING.md "Halo 1: the DMR, the Reach pilot" is the full record; `ports_h1/dmr.py` is the
+example of a REACH-SOURCE port (and of a port on the SNIPER template). Everything in "Pilot A1"
+to "A9" still holds; the route the next six inherit:
+
+**Reach goes through wave A's pipeline, behind `reach:`.** Name every source tag as
+`reach:objects\...` (reach_tags.py reads HREK's flat XML into the Halo 3 readers' shapes);
+sounds: `sounds['bank'] = 'haloreach'`, `h3_dir` = the Reach bank folder (`data\sound\
+weapons\<x>\`). Step 4a's Reach side: `h3_weapon_values.py --kit reach <w>=<fp graph>`
+(FP graphs under spartans\fp\weapons). Run order unchanged (model -> retarget + tool
+animations -> sounds -> icon -> pickable -> catalog -> firing profile -> port_sounds).
+- GEOMETRY: Reach's ONE render model is world AND first person (`model.world` = `model.fp` =
+  `retarget.render_model`). No Foundry (that was Reach as the TARGET). Check the root (the DMR's
+  was not tilted) and the marker names (`markers`: primary_ejection, left_hand).
+- FP: route (a), Reach's own graph -- it is NOT compressed-only (the export mislabels the
+  sizes; a full float copy is there). `drop_nodes`: pedestal, aim_pitch, aim_yaw, l/r_humerus,
+  l/r_radius, l/r_handguard; `nodes`: b_gun etc -> `frame b gun`; `look` -> `first-person
+  overlays`; view_offset = the BR's minus 0.025 x (user-approved on the DMR). The r_hand 4.3 deg
+  roll needed no fix. Two resource groups if dual-wieldable (A1's rule: check `--list`).
+- TEXTURES: read each shader's self-illum option first (the DMR had none: G 0); a decal keeps
+  alpha (`decals`); glass with no Halo 1 equivalent -> `drop_materials`.
+- HUD: `scope.chud` = `reach:ui\chud\<x>`; the 4K art density is handled (`px_per_unit`); size =
+  span / 0.9 (Reach's canvas = its 90% safe area: the user's 'original size'); animated widgets
+  (scale 0) -> a static picture by `per_widget` scale / origin / offset (the DMR's arc + slider).
+  Reticle `('reach:ui\chud\bitmaps\hud_reticles', <seq>, name)` + `reticle_min_width` 3.
+- MUZZLE FLASH (new closing check 10, user): compare the template's FP flash with the source's
+  BEFORE boot 1.
+- Step 6 with no source pickup count (Reach's ammo boxes give 0): the yardstick's pickup :
+  initial ratio on the source initial (user, the DMR: 60).
+- Step 11: list the yardstick's carriers (h1_weapon_carriers) + their actor flags; a WDM rule
+  above 1.0 is applied as is (user, the DMR's 1.54).
+- The proof for a tool change: `port_sha_snapshot.py snap / regen / snap / diff`, then RESTORE
+  from a backup (the chain re-writes 12 tested files as content-equal tag noise).
+
+**The sniper template's HUD differs from the pistol's:** `drop_crosshairs` [1..5],
+`reticle_bitmap` (the shared hud_reticles), `reticle_scaling` 0, `drop_elements` (age ticks,
+distance / elevation numbers); clear `use_error_when_unzoomed`, `aim_assists_only_when_zoomed`
+and night vision unless the source has them.
+
+**For B2, the Needle Rifle (`rifle\needle_rifle\needle_rifle`):** yardstick candidates the
+Needler (provisional), Pistol, Sniper Rifle. Reach (h3_weapon_values --kit reach, 2026-10-10):
+6 a needle (group `needle`, = the needler's 6) at 4/s with a 0.25 s recovery (semi-auto; the
+needler 8 -> 12/s), 21 (63 / 105) against the needler's 24 (72 / 120), error 0.15 -> 2 (needler
+0.1 -> 3), ONE 2x zoom, 1500 wu/s, range 250 (the needler 11 wu/s homing, 26), aim 2.25/25
+5/25 (needler 8/26 16/26), FP ready 19 / reload 82 both / melee 34 / fire 11. The SUPERCOMBINE
+lives in the needle's damage effects (`needle_rifle_shard_impact`, `..._super_detonation`,
+`..._attached_super_detonation`): read them (and the projectile's super-detonation count)
+against Halo 1's needle (impact 0, `detonation damage` 10, `explosion` the supercombine). A
+sticking needle (the Spike Rifle's stuck-spike recipe, A5) and its pink glow (A4 / A5 glow
+recipes, fp_material_view first). Template: the yardstick's weapon (the needler) unless the
+role table says otherwise.
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one
@@ -1354,3 +1407,46 @@ purpose: a 458.8 MiB a10 loads and plays (0.1) -- no file-size cap. Spawn check 
 > (a "Halo 1: the DMR, the Reach pilot" section), memory, `python port_backup.py --game h1`,
 > and "B1: what the DMR taught" in the plan -- the Reach recipe the next six inherit -- plus
 > the B2 (Needle Rifle) prompt.
+
+### The Needle Rifle (wave B2), filled in
+
+> Port the Needle Rifle into Halo 1 (H1_PORT_PLAN.md, wave B, #B2). Source: Halo Reach,
+> `objects\weapons\rifle\needle_rifle\needle_rifle` (HREK); FP graph
+> `objects\characters\spartans\fp\weapons\rifle\fp_needle_rifle\fp_needle_rifle`.
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Phase 0: DONE", "Pilot A1" to "A9" -- A5 (the Spike
+> Rifle: stuck projectile, glow spots) matters most here -- and "B1: what the DMR taught", the
+> REACH RECIPE: `reach:` paths, `bank: 'haloreach'`, `h3_weapon_values.py --kit reach`, route (a)
+> Reach's own FP graph with the DMR's drop_nodes / view_offset), PORTING.md ("What ported
+> actually means" steps 0-11 and 5b, closing checks 0-10 incl. THE MUZZLE-FLASH RULE, the Halo 1
+> sections -- the DMR's "Reach pilot" first, the Spike Rifle, the Beam Rifle's glow --, "Balance"
+> incl. the ARMED WDM RULE, THE HIT-EFFECT RULE, the two-handed rule) and memory
+> port-muzzle-flash-rule, h1-spike-rifle-port, h1-armed-test-balanced-god, h1-armed-wdm-rule,
+> h1-armed-two-handed-rule, h1-hit-effect-rule, port-flashlight-sound-rule, h1-port-phase0,
+> halo-port-own-messages, h1-fmod-bank-sounds, port-findings-are-observations,
+> shared-worktree-commits. `ports_h1/dmr.py` is the nearest shape for the Reach plumbing; the
+> Spike Rifle's (`brute_spiker.py`) for the needle itself. Copy into `ports_h1/needle_rifle.py`
+> and edit only that file plus shared tools you generalize (prove byte-identical output for the
+> built ports with `port_sha_snapshot.py`, and restore the kit from a backup after).
+>
+> START WITH STEP 4a, with me: candidates Needler (provisional), Pistol, Sniper Rifle; DEFAULT
+> = Reach's own numbers, BALANCED = the ratio rows. Reach (2026-10-10): 6 a needle (`needle`
+> group) at 4/s (0.25 s recovery, semi-auto), 21 (63 / 105), error 0.15 -> 2, one 2x zoom, 1500
+> wu/s, range 250, aim 2.25/25 5/25; the needler 6 at 8 -> 12/s, 24 (72 / 120), 11 wu/s homing,
+> range 26. THE SUPERCOMBINE: read Reach's three shard damage effects (impact, super detonation,
+> attached super detonation) and the projectile's super-detonation count against Halo 1's needle
+> (impact 0, `detonation damage` 10, the `explosion` supercombine) before the ratio table; show
+> the time to kill with and without it (h1_role_compare `needle_rifle` set vs Needler, Pistol,
+> Sniper and the DMR as a port peer). Then 4b, the template diff, port_sound_refs and the
+> muzzle-flash comparison BEFORE boot 1.
+>
+> Reserved: pickup messages 73/74; hud_msg_icons 40 (+ _r); hud_reticles 29 (+ _r); label `nr`
+> taught to characters\cyborg from `pr`; sounds under `sound\weapons\needle_rifle_port`; weapon
+> folder `weapons\needle rifle`; catalog name `Needle Rifle`.
+>
+> Step 11: `nr` has no carrier -- list Halo 1's carriers of the donor weapon (WDM, actor flags);
+> `firing_profile` (Reach's ai\generic Needle Rifle entry) with `donor_weapon` (+ `donor_variant`)
+> and a `wdm_rule`; the enhancer session sets `hands` before the Armed boot. Tests:
+> `h1_port_test_map.py needle_rifle --stage` (dry default), fixes, `--balanced`, `--armed
+> grunt,jackal,elite`; `--restore <level>`. The ten-map rebuild stays BATCHED (wave B, my go).
+> When done: catalog entry, enhancer hand-off, PORTING section, memory, `python port_backup.py
+> --game h1`, "B2: what the Needle Rifle taught" and the B3 (Plasma Repeater) prompt.

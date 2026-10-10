@@ -1262,6 +1262,85 @@ The restored sword (lunge on fire) has the same gap. Analysis of `halo1.dll` (rv
   Sword (halo1.dll)" (`h1_melee_blocks_fire`, ON by default -- user), synced on every patch like
   the overheat option, in the run's options snapshot (co-op: both machines).
 
+### Halo 1: the DMR, the Reach pilot (wave B1, 2026-10-10, 3 boots + Armed on a30) -- Reach as a SOURCE
+
+The whole weapon is `ports_h1/dmr.py`, on a copy of the Halo 1 SNIPER RIFLE. Wave B's question
+was the ROUTE from Reach; the answer is that Reach goes through the SAME pipeline as Halo 3,
+behind one path prefix.
+
+**`reach:` paths (reach_tags.py).** A config names an HREK tag as `reach:objects\...`;
+h1_fp_retarget.export_xml / rm_defaults / load, h3_rm_to_jms.convert, h3_hud_art.decode /
+sheet / sprite and h1_h3_scope.widgets branch on it, and only on it (a path without the prefix
+runs the old code: proven byte-identical, below). reach_tags reads HREK's export, which is
+FLAT XML -- a block is `<field type="block"/>` followed by its elements as siblings, a struct's
+fields follow it as siblings, a block index is the element's NAME, a tag reference is the
+BASENAME only (`find_tag`: by name + extension, nearest the referencing tag's folder) -- into
+the shapes the Halo 3 readers return. `export-tag-to-xml` needs absolute paths (cwd = the kit).
+
+**Step 4a (user): the SNIPER RIFLE**, not the provisional pistol (`h3_weapon_values.py --kit
+reach` + `h1_role_compare.py dmr`). Pistol ratio: every value scales (25 x 2.0/s = 50 dps, 22
+rounds, 3x by ratio). Sniper ratio: 22.09 x 4.5/s = 99 dps, 15 / 45 / 75 (= Reach's own), the
+spread INVERTS (Reach's sniper minimum 0.08 is near zero) -> the SIBLING RULE in Reach's shape
+(user): 0.019 -> 0.25; zoom Reach's 3x in both (ratio 1.5x / 2.4x); bullet materials = the H1
+sniper bullet's (user: Elite shields x2, Flood x0.05 -- Flood take ~26 s). Wave rule kept:
+default = Reach's own numbers, balanced = the ratio rows. Reach's damage table: bullet_fast
+(DMR) = bullet_slow (magnum) on flesh and thin shields, x2 on tough / thick / metal.
+
+**Geometry:** Reach's ONE render model (world and first person; the FP graph moves it) through
+h3_rm_to_jms -- no Foundry for a Halo 1 TARGET (Foundry was Reach-as-target's JMS trap). Not
+tilted (b_gun root at identity, grip at the origin), `primary_trigger` present. Nodes come out
+`frame b gun` etc. Scope GLASS (alpha blend over grey 50% + cubemap) dropped; UNSC stencils a
+decal (Reach's alpha); the on-gun counter (ones / tens) = the BR's numeric recipe, limit 15.
+**Textures:** every DMR shader has self-illumination OFF (the illum bitmaps they name are not
+even in HREK) -> multipurpose R = the diffuse alpha, G 0. reach_tags.decode_bitmap = Halo 3's
+method (the largest tgda, DDS header); a8 / dxt / dxn handled.
+
+**FP animations, route (a) (user): Reach's own fp_dmr RETARGETED.** Reach's Spartan arms =
+Halo 1's 37 nodes (names, parents, lengths to 0.001) + 10 helpers: pedestal / aim_pitch /
+aim_yaw ABOVE base and humerus / radius / handguard twist nodes -- `drop_nodes`; h1_fp_retarget
+now walks to the nearest KEPT ancestor (Halo 3's skipped nodes are leaves: unchanged). The
+4.3 deg roll on r_hand was NOT corrected (user: 'right hand looks right'). view_offset = the
+BR's minus 2.5 cm forward (Reach's arms sit further forward): user 'FP position good'. `look`
+(9 fr overlay) = Halo 1's `overlays`. Melee primary keyframe 5. Routes (b) Halo 3 BR motion
+and (c) the SAW donor-skeleton route were not needed; (b) stays the fallback for a Reach
+weapon with no good graph.
+
+**Sounds:** h1_port_sounds `bank: 'haloreach'` -- Reach's sfx.fsb + .info have Halo 3's
+280-byte entries; numbered 1/2/3 and a/b/c files are permutations. Fire = marksman_rifle_fire
++ marksman_tail_ext MIXED (Halo 1 plays one sound a round); targets = the H1 sniper's levels.
+**HUD:** Reach's chud (`reach_tags.chud_widgets`): zoom = the `zoom lvl N` conditions of a
+widget / its collection, the FULLSCREEN placement = the element with no window state, and
+Reach's 4K art is 'double / triple sized' (`more flags`: 2-3 px a chud unit) -> `px_per_unit`
+in the bake, and sprites (reticles) come at Halo 3's density. SIZE (user, test 1 'shrink to
+mirror the original'): Reach's 1152x640 HUD canvas = its 90% SAFE AREA of 1280x720 -> span /
+0.9, the ring at 69% of the screen height (an OBSERVATION; Halo 3's scopes were read as full
+screen and approved). The magnification ARC (scale 0, animated) at scale 1 and its SLIDER
+static at 3.0x (user: 'as a static picture'). Reticle = Reach's circle (#14) at 28; the
+`reticle_min_width` simulation showed it unbroken.
+**The sniper template's HUD is not the pistol's** (4b template diff, before boot 1): its zoom
+overlays are AIM-typed crosshairs with zoom-only overlays, its reticle draws from its OWN
+sheet, `dont_scale_size` set, zoom angle ticks on `age`, distance / elevation numbers ->
+make_hud opt-ins `drop_crosshairs`, `reticle_bitmap`, `reticle_scaling`, `drop_elements`.
+The sniper trigger's `use error when unzoomed` cleared (Reach's DMR blooms zoomed); the
+sniper's `aim assists only when zoomed` + night vision cleared (Reach's DMR has neither).
+**Muzzle flash (test 1, now closing check 10):** the sniper's two sideways brake fans -> the
+BR port's pistol sprites + casing (`copy_from`), Reach's at-the-bore flash.
+**Step 6 (user):** Reach's DMR has no pickup count (ammo box 0) -> the YARDSTICK's pickup :
+initial ratio (16 : 12) on 45 = 60.
+**Step 9:** ONE reload multiplier for both reloads in the patcher (empty x1.094 and full
+x1.153 wanted) -> x1.12 (user: keep); swap x1.38 (the H1 sniper's ready).
+**Step 11:** donor = the Flood combat Elite sniper (WDM 0.4; flags harmless) for every slot;
+WDM rule 1.54 / 0.81 -- the FIRST WDM above 1.0 (the DMR does a quarter of the sniper's dps),
+applied as is (user). hands 'two' (enhancer).
+
+**Proof (the pilot's job):** `port_sha_snapshot.py` -- snap, regen (the wave-A --write chain:
+model -> retarget + tool animations -> sounds -> pickable, every non-Reach config), snap, diff.
+Old tools vs generalized tools: 10,474 files, 0 changed (80 bitmap headers: `tool bitmaps`'
+pointer noise, pixels identical). FINDING: the chain does NOT reproduce 12 tested files byte
+for byte (FP animation tags, the SMG / Sentinel Beam gbxmodels, three sounds): content-equal
+where checked (the sword's tag: every animation, key and sound identical), so they are tag
+noise -- but a regen run must restore from backup to leave the tested kit exact.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:
@@ -3289,6 +3368,16 @@ chud are untouched.
 ---
 
 ## REACH STEP 9: the animations are COMPRESSED, and Foundry decodes them
+
+**CORRECTED 2026-10-10 (the Halo 1 DMR, wave B1): they are NOT compressed-only.** The export
+mislabels the member's `data sizes`: in label order they are the blob's sections shifted by
+one -- `static_node_flags` = the default data, `animated_node_flags` = a codec-3 compressed
+copy, `movement_data` / `pill_offset_data` = the static / animated node masks (24 bytes each),
+`uncompressed_data` = 12 bytes a frame (zero in fp_dmr), `compressed_data` = a FULL codec-2
+float copy in Halo 3's uncompressed layout. So a Reach pose decodes like Halo 3's, in Python,
+no Foundry: `reach_tags.load_graph` (all 25 fp_dmr animations: masks = header counts, unit
+quaternions, codec 3 and 2 agree within 0.042 deg). Foundry stays the route for WRITING a
+Reach graph (Reach as the target); the text below is the original record.
 
 Why `h3_anim_decode` over-read: Halo 3 stores first-person frames RAW in the uncompressed
 block (16-byte quaternions), which is what made retiming arithmetic. Reach does not.
