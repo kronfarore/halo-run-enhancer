@@ -45,7 +45,15 @@ def pairs(p):
     if h.get('out'):
         out.append(('hud', h['out'] + '.weapon_hud_interface', h['donor'] + '.weapon_hud_interface'))
     m = p.get('model') or {}
+    num = m.get('numeric') or {}
     for name in m.get('shaders', {}):
+        if name in num.get('places', {}):
+            # an on-gun COUNTER digit is a numeric shader_transparent_chicago copied from
+            # `numeric.from` (the AR's numbers), not a shader_model (the BR's and the DMR's
+            # ones / tens printed MISSING until 2026-10-10)
+            out.append(('numeric ' + name, m['dir'] + B + 'shaders' + B + name + '.shader_transparent_chicago',
+                        num['from'] + '.shader_transparent_chicago'))
+            continue
         out.append(('shader ' + name, m['dir'] + B + 'shaders' + B + name + '.shader_model',
                     m['template'] + '.shader_model'))
     for name, M in (m.get('meters') or {}).items():

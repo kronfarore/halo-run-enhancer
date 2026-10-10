@@ -676,8 +676,9 @@ animations -> sounds -> icon -> pickable -> catalog -> firing profile -> port_so
   initial ratio on the source initial (user, the DMR: 60).
 - Step 11: list the yardstick's carriers (h1_weapon_carriers) + their actor flags; a WDM rule
   above 1.0 is applied as is (user, the DMR's 1.54).
-- The proof for a tool change: `port_sha_snapshot.py snap / regen / snap / diff`, then RESTORE
-  from a backup (the chain re-writes 12 tested files as content-equal tag noise).
+- The proof for a tool change: `port_sha_snapshot.py snap / regen / snap / diff`, then
+  `port_sha_snapshot.py restore <before> <after> <backup>` (the chain re-writes 12 tested files
+  as content-equal tag noise; `h1_antr_diff.py` shows what an animation tag really changed).
 
 **The sniper template's HUD differs from the pistol's:** `drop_crosshairs` [1..5],
 `reticle_bitmap` (the shared hud_reticles), `reticle_scaling` 0, `drop_elements` (age ticks,

@@ -407,7 +407,8 @@ SCRIPTS += ('h1_role_compare.py', 'h1_stage_balanced.py', 'fsb5_merge.py', 'h1_l
 # `reach:` paths go through, the byte-identical proof tool, step 4a's source-side table
 # (h3_weapon_values, now --kit reach) and step 11's carrier listing
 SCRIPTS += tuple(s for s in ('reach_tags.py', 'port_sha_snapshot.py', 'h3_weapon_values.py',
-                             'h1_weapon_carriers.py', 'h1_port_template_diff.py')
+                             'h1_weapon_carriers.py', 'h1_port_template_diff.py',
+                             'h1_effect_particles.py', 'h1_antr_diff.py')
                  if s not in SCRIPTS and os.path.exists(os.path.join(HERE, s)))
 
 PROFILES = {

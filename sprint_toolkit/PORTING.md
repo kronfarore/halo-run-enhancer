@@ -102,6 +102,7 @@ done for the SAW in all five games plus the Halo 4 Focus Rifle; the per-game rec
    the bore ('too big and wide'). Fix with `sound_effects` `copy_from` a closer Halo 1 flash
    (the DMR: the BR port's pistol sprites + casing) and/or `match` / `drop_off_axis` / `scale`
    / `shift` (the SMG); record the source numbers beside the choice in the config.
+   `python h1_effect_particles.py "<port fire effect>" "<template's>"` lists both sides' particles.
 
 **Step 4 has a second half: the fields NO CARD covers (2026-10-05).** The balance table
 only knows fields some card targets; every other field of a clone is its donor's. Run

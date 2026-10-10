@@ -7,6 +7,8 @@ sound, tool\port_sounds\halo1, weapon_ports_catalog.json, ai_firing_profiles.jso
 
     python port_sha_snapshot.py snap <name>               hash the set -> out\sha_<name>.json
     python port_sha_snapshot.py diff <a> <b>              files added / removed / changed
+    python port_sha_snapshot.py restore <a> <b> <backup>  every file differing a -> b back from
+                                                          a backup taken at a (then snap + diff)
     python port_sha_snapshot.py regen [key ...]           the wave-A --write chain, per config:
         h1_h3_weapon_model <key> -> h1_fp_retarget <key> --write + tool animations <h1_dir>
         -> h1_port_sounds <key> --write -> h1_pickable_weapons --only <key> --write
@@ -21,6 +23,7 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 
@@ -97,6 +100,38 @@ def diff(a, b):
     return not (added or removed or other)
 
 
+def restore(a, b, backup):
+    """Put back every file that differs between snapshots a (the state to return to) and b
+    (now), from `backup` -- a copy of ROOTS taken with snapshot a: <backup>\\tags\\<d>,
+    <backup>\\data\\<d>, <backup>\\tool\\halo1, <backup>\\tool\\<json> (the layout the DMR pilot's
+    backups used). Files only in b are deleted. A regen run must be followed by this: the
+    wave-A chain re-writes 12 tested files as content-equal tag noise (H1_PORT_PLAN "B1")."""
+    A = json.load(open(os.path.join(OUT, 'sha_%s.json' % a)))
+    B_ = json.load(open(os.path.join(OUT, 'sha_%s.json' % b)))
+    keys = lambda D: {k for k in D if not k.startswith('px:')}  # noqa: E731
+
+    def real(k):
+        return os.path.join(os.path.dirname(HCEEK), k) if k.startswith('HCEEK') else os.path.join(TOOL, k)
+
+    def back(k):
+        p = k.split(os.sep)
+        if k.startswith('HCEEK'):
+            return os.path.join(backup, p[1], *p[2:])
+        if k.startswith('port_sounds'):
+            return os.path.join(backup, 'tool', *p[1:])
+        return os.path.join(backup, 'tool', k)
+    n = 0
+    for k in sorted(keys(A) | keys(B_)):
+        if A.get(k) == B_.get(k):
+            continue
+        if k not in A:
+            os.remove(real(k))
+        else:
+            shutil.copy2(back(k), real(k))
+        n += 1
+    print('%d file(s) restored from %s -- snap again and diff against %s to prove it' % (n, backup, a))
+
+
 def run(*cmd):
     print('>', ' '.join(cmd), flush=True)
     r = subprocess.run(cmd, cwd=HERE, capture_output=True, text=True, errors='replace')
@@ -132,13 +167,15 @@ def regen(keys):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('cmd', choices=('snap', 'diff', 'regen'))
+    ap.add_argument('cmd', choices=('snap', 'diff', 'regen', 'restore'))
     ap.add_argument('args', nargs='*')
     a = ap.parse_args()
     if a.cmd == 'snap':
         snap(a.args[0])
     elif a.cmd == 'diff':
         sys.exit(0 if diff(a.args[0], a.args[1]) else 1)
+    elif a.cmd == 'restore':
+        restore(a.args[0], a.args[1], a.args[2])
     else:
         regen(a.args)
 

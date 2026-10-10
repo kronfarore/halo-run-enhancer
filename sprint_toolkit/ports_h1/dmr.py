@@ -388,6 +388,34 @@ PORT.update({
             ]},
     },
 
+    # CLOSE-OUT RECORD (2026-10-10, after the Armed boot). STEP 4b (port_field_audit --port dmr):
+    # Weapon: list 2 = only the ammo-pickup rounds, 60 on purpose (user: the yardstick's 16:12 on
+    #   Reach's 45; the tool's '-> 0' is Reach's ammo box). Written by list 2: camo ding, ejection
+    #   port / illumination recovery; balance rows: aim angles, magazine. List 4 = 0. List 5 (kept,
+    #   decided): the AR's export / function layout (the on-gun counter), message 71, zoom 1 level
+    #   3x (user), trigger flags 8200 (use_error_when_unzoomed cleared), error acceleration 1.0
+    #   (Halo 1's ramp for Reach's penalty-function bloom), the FP offset (the muzzle). List 3:
+    #   weapon flags (binoculars, strict deviation: no Halo 1 meaning; night vision / zoomed-only
+    #   aim assist cleared by name), deviation angle 2.25 and error deceleration 0.7 written (a
+    #   zero on one side -> the source value); the rest no Halo 1 field.
+    # Projectile: list 2 = only the AIR damage range, 333.3 x2 on purpose (the SIBLING RULE: the
+    #   tool's 1000, 333 inverts); water 0, 5 written; velocity / range = balance rows. List 3:
+    #   Reach's material responses / reporting type have no Halo 1 field; the noise enums kept
+    #   (the sniper bullet's: the DMR is the quieter of the source pair); one attachment (the
+    #   sniper's contrail) where Reach has two (contrail + effect).
+    # Damage effect: list 2 = only the forward EXPONENT, Reach's 8 on purpose (the ratio
+    #   degenerates to 400); camo damage 0.75, forward radius 0.3 written. List 3: outward 3 / 0.5 /
+    #   0.2 and instantaneous acceleration 0.4 written (zero on one side); flags: no Halo 1 jpt flag.
+    # TEMPLATE DIFF (h1_port_template_diff dmr, final): every line traced -- weapon 45 (the
+    #   above + sounds, models, HUD, label, message), bullet 7, damage 9, melee 0, firing effect 2
+    #   (the BR's effect: the two sound swaps), HUD (the sniper zoom crosshairs / readouts dropped,
+    #   the reticle on the shared sheet), shaders 2-3 each (maps + glow), the counter digits 1 each
+    #   (limit 15; the tool diffs numeric chicago shaders since this close-out).
+    # Closing checks: 0 port_refs_audit 0 problems (test copy); 2 validate_halo_json 0 (16 cards
+    #   await the rebuild); 4 port_backup h1; 5 n/a (Halo 1's volume knob is the bank manifest,
+    #   catalog 'DMR'); 6 = 4b above; 7 port_sound_refs all OWN, port_sounds --check 0; 8 the Armed
+    #   build: Grunt / Jackal / Elite slots fire from the Flood Elite sniper + Reach's profile; 9 the
+    #   shield hit = own copy x0.670 (4.5/s); 10 the flash = the BR port's (user-approved).
     # step 4b (port_field_audit.py --port dmr): the source pair (Reach DMR vs the yardstick,
     # Reach's sniper) against the target pair (the H1 port vs its template, the H1 sniper)
     'field_audit': {
