@@ -2532,6 +2532,104 @@
    "anims": {
     "swap": 0.85
    }
+  },
+  {
+   "weapon": "Gravity Hammer",
+   "source": "Halo 3",
+   "donor": "Energy Blade",
+   "default_on": false,
+   "requires": [
+    "proj weapons\\gravity hammer\\strike"
+   ],
+   "hands": "two",
+   "desc": "Halo 3's Gravity Hammer: its model, first-person animations, sounds, reticle and numbers. Fire swings it -- every swing smashes (80) and bursts in a knockback blast (160 over 1.5 wu) for 1/20 of its energy; melee smashes.",
+   "balance_desc": "Measured against the Energy Sword, which both games have: the same as Halo 3's within 1% (Halo 1's sword already carries Halo 3's own melee damage and aim assist).",
+   "anims": {},
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\gravity hammer\\smash",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 80.53,
+     "card": "Smash Damage",
+     "original": 80.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\gravity hammer\\smash",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 80.53,
+     "card": "Smash Damage",
+     "original": 80.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\gravity hammer\\smash",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 80.53,
+     "card": "Smash Damage",
+     "original": 80.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\gravity hammer\\melee",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 80.53,
+     "card": "Smash Damage",
+     "original": 80.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\gravity hammer\\melee",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 80.53,
+     "card": "Smash Damage",
+     "original": 80.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\gravity hammer\\melee",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 80.53,
+     "card": "Smash Damage",
+     "original": 80.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\gravity hammer\\explosion",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 50.33,
+     "card": "Blast Damage",
+     "original": 50.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\gravity hammer\\explosion",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 161.07,
+     "card": "Blast Damage",
+     "original": 160.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\gravity hammer\\explosion",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 161.07,
+     "card": "Blast Damage",
+     "original": 160.0
+    }
+   ],
+   "weap": "weapons\\gravity hammer\\gravity hammer",
+   "fp_animations": "weapons\\gravity hammer\\fp\\fp"
   }
  ],
  "Halo 3": [

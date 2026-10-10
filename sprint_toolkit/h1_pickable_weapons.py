@@ -987,6 +987,8 @@ def edit_weapon(key, write):
             dm.damage_lower_bound *= k
             dm.damage_upper_bound[0], dm.damage_upper_bound[1] = (dm.damage_upper_bound[0] * k,
                                                                   dm.damage_upper_bound[1] * k)
+            # step 4b on the melee copy (the Gravity Hammer: acceleration, screen flash)
+            set_fields(jt.data.tagdata, w.get('melee_fields', {}))
             save(jt, path(own, '.damage_effect'), write)
             print('   melee %s: x%.3f -> %.1f..%.1f' % (own, k, dm.damage_upper_bound[0], dm.damage_upper_bound[1]))
         a.melee.player_damage.filepath = own

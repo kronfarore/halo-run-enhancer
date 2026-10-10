@@ -4,7 +4,7 @@ per swing and a fire-button strike (`lunge`); spartan_laser.py of a new weapon o
 PLASMA PISTOL (battery HUD), its HUD and Armed-AI lessons. What is new here: a melee weapon whose
 every swing sets off an AREA damage with knockback (Halo 3's gravity_hammer_explosion), which
 Halo 1 does not have."""
-from ._common import ANIMS, B, H3_FP_GRAPHS, IMPACTS, reserved
+from ._common import ANIMS, B, H3_FP_GRAPHS, IMPACTS, reserved, row
 
 H3 = r'objects\weapons\melee\gravity_hammer'
 GH = 'weapons\\gravity hammer\\'
@@ -18,6 +18,36 @@ ILLUM = H3 + r'\bitmaps\gravity_hammer_illum.bitmap'
 # Halo 3's self_illum_color on `hammer` and `hammer_shiny` (function data BGRA d7 57 2e -> RGB
 # 46 / 87 / 215, a blue; intensity empty = 1)
 BLUE = (46 / 255.0, 87 / 255.0, 215 / 255.0)
+# STEP 4b (port_field_audit.py --port gravity_hammer, BEFORE boot 1; out/gh/4b.txt). Source
+# pair: the H3 hammer vs the H3 energy blade; target: the H1 port vs the H1 sword.
+# The SMASH (smash_melee vs dash_melee onto the H1 sword's melee), on the melee AND the fire
+# swing's strike: acceleration 1 x 2.5/1.5 = 1.67; screen flash duration 1 x 3/1.25 = 2.4 (the
+# shielded response; Halo 1 has one flash). Radius 0 x 0.5/0.5 = 0 NOT taken: every stock Halo 1
+# melee is 0.5 and a 0 radius risks a melee that never connects. Camera impulse (1.2 / 0.25,
+# the H1 sword 0): skipped, Halo 1's melees have none
+SMASH_4B = {'damage.instantaneous_acceleration': 2.5 / 1.5,
+            'screen_flash.duration': 2.4}
+# The EXPLOSION (gravity_hammer_explosion vs dash_melee onto the H1 sword's melee). List 2:
+# ACCELERATION 3.5 x 2.5/1.5 = 5.83 (Halo 1 pushes ~2x Halo 3 per unit: the rocket 6 vs 3, the
+# sword 2.5 vs 1.5 -- 5.83 sits at the H1 rocket's 6), active camo damage 0.1 x 1/0.9; damage
+# 50 / 160 x 151/150 = the BALANCED rows. List 4: category = Halo 3's own 'melee' (both melee in
+# the source; the H1 sword's is plasma, the template rocket's high_explosive). List 3 (a zero on
+# one side -> the source value): breaking effect forward 30 / 2 wu / exponent 0, outward 15 / 1
+# wu; shake random translation 0.05. Kept the rocket's: screen flash (duration 0 = none, Halo
+# 3's small_screen_flash is a response, not a field), vibration, camera impulse 0 (an angle
+# whose Halo 3 units are unchecked), damage modifiers (the yardstick decision: the rocket's
+# table, Flood x1)
+EXPLOSION_4B = {'damage.instantaneous_acceleration': 3.5 * 2.5 / 1.5,
+                'damage.active_camouflage_damage': 0.1 / 0.9,
+                'damage.category': 'melee',
+                'damage.aoe_core_radius': 0.75,
+                'damage.flags.does_not_hurt_owner': True,
+                'camera_shaking.random_translation': 0.05,
+                'breaking_effect.forward_velocity': 30.0,
+                'breaking_effect.forward_radius': 2.0,
+                'breaking_effect.forward_exponent': 0.0,
+                'breaking_effect.outward_velocity': 15.0,
+                'breaking_effect.outward_radius': 1.0}
 
 PORT = reserved(
     order=18, wave='A9', name='Gravity Hammer', source='Halo 3',
@@ -194,6 +224,7 @@ PORT.update({
         # smash_melee is a melee-category hit on everything), Halo 3's 80 as its mean
         'melee': (SW + 'melee', GH + 'melee'),
         'melee_dmg': 80.0,
+        'melee_fields': SMASH_4B,
         'melee_response': PP + 'melee_response',
         # the melee's hit sound (the sword's recipe): Halo 3's hammer hit
         'hit_sound': SND + 'gh_hit',
@@ -207,11 +238,12 @@ PORT.update({
         # bursts it in the air (a miss) -- the range alone may not detonate
         'bullet': {'projectile': (SW + 'lunge', GH + 'strike'),
                    'damage': (SW + 'lunge strike', GH + 'smash'),
-                   'dmg': 80.0, 'acceleration': 1.0,
+                   'dmg': 80.0,
                    'range': 1.2,
                    'default_responses': {'detonate': list(range(33))},
                    'clear_response_effects': True,
-                   'fields': {'sound.filepath': ''},       # the copy's sword hit (the blast sounds)
+                   # 4b + the copy's sword hit sound off (the blast sounds)
+                   'fields': dict(SMASH_4B, **{'sound.filepath': ''}),
                    'proj_fields': {'proj_attrs.detonation_timer_starts': 'immediately',
                                    'proj_attrs.detonation.timer': (0.05, 0.05)},
                    'explosion': {'effect': (PG + 'effects\\explosion', GH + 'effects\\blast'),
@@ -221,9 +253,7 @@ PORT.update({
                                  'part': PG + 'explosion',
                                  'lower': 50.0, 'upper': (160.0, 160.0), 'radius': (0.75, 1.5),
                                  'mods': {'flood_combat_form': 1.0},
-                                 'fields': {'damage.instantaneous_acceleration': 3.5,
-                                            'damage.aoe_core_radius': 0.75,
-                                            'damage.flags.does_not_hurt_owner': True},
+                                 'fields': EXPLOSION_4B,
                                  # the plasma grenade's blue burst + light; its 8 wu shock wave,
                                  # burn decal and sound go (the hammer brings its own)
                                  'drop_parts': [PG + 'shock wave',
@@ -236,6 +266,15 @@ PORT.update({
             'weap_attrs.flags.ai_uses_weapon_melee_damage': True,
             'weap_attrs.interface.pickup_sound.filepath': '',
             'item_attrs.collision_sound.filepath': SND + 'gh_drop',
+            # STEP 4b, the weapon. List 2: acceleration scale 0 x 2/1 = 0 (Halo 3's hammer is not
+            # thrown about by explosions); bounding radius 0 = Halo 3 computes it -> the
+            # template's. List 4 (both 0 in the source -> the sword's 0): active camo ding /
+            # regrowth. List 3: 'melee only' / 'allows unaimed lunge' (no Halo 1 flag), autoaim
+            # falloff, tracking, turn-on time (no Halo 1 field); external aging = the trigger's
+            # age per round (the lunge `energy`)
+            'obje_attrs.acceleration_scale': 0.0,
+            'weap_attrs.interface.active_camo_ding': 0.0,
+            'weap_attrs.interface.active_camo_regrowth_rate': 0.0,
         },
         'messages': ('Picked up a gravity hammer', 'Picked up %d rounds for gravity hammer'),
         'icon': 'gravity hammer',
@@ -252,6 +291,59 @@ PORT.update({
                    'magnetism_angle': 10.0, 'magnetism_range': 6.0},
         'palette_levels': ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40'],
     },
+
+    # weapon_ports_catalog.json (make_port_catalog_h1_ports.py gravity_hammer). DEFAULT = Halo
+    # 3's own numbers in the tags; BALANCED = the ENERGY SWORD ratio (step 4a, user 2026-10-10):
+    # x151/150 on every damage -- the rest is x1 (interval 0.80 s / 24 fr, aim = Halo 3's in
+    # both swords, swap: the H1 sword's ready 54 fr = Halo 3's 54 -> x1, no `anims` row; energy
+    # has no ratio). Assembly Halo1 units
+    'catalog': {
+        'entry': {
+            'weapon': 'Gravity Hammer', 'source': 'Halo 3', 'donor': 'Energy Blade', 'default_on': False,
+            # no weapon-class balance row names the weapon tag: say it (the Sentinel Beam's key)
+            'weap': GH + 'gravity hammer',
+            # the swing's strike exists only in the port build
+            'requires': ['proj ' + GH + 'strike'],
+            # the Armed rule's class (h1_enemy_weapons.hands): TWO-handed (held like the flag;
+            # Halo 3's Brutes carry it two-handed) -- a proposal for the enhancer session
+            'hands': 'two',
+            'desc': "Halo 3's Gravity Hammer: its model, first-person animations, sounds, reticle "
+                    "and numbers. Fire swings it -- every swing smashes (80) and bursts in a "
+                    "knockback blast (160 over 1.5 wu) for 1/20 of its energy; melee smashes.",
+            'balance_desc': "Measured against the Energy Sword, which both games have: the "
+                            "same as Halo 3's within 1% (Halo 1's sword already carries Halo 3's "
+                            "own melee damage and aim assist).",
+            'anims': {},
+            'balance': [
+                # x151/150: the smash 80 -> 80.53 (the fire swing's strike and the melee)
+                row('jpt!', GH + 'smash', 'Damage Lower Bound', 80.53, 80.0, 'Smash Damage'),
+                row('jpt!', GH + 'smash', 'Damage Upper Bound', 80.53, 80.0, 'Smash Damage'),
+                row('jpt!', GH + 'smash', 'Damage Upper Bound Max', 80.53, 80.0, 'Smash Damage'),
+                row('jpt!', GH + 'melee', 'Damage Lower Bound', 80.53, 80.0, 'Smash Damage'),
+                row('jpt!', GH + 'melee', 'Damage Upper Bound', 80.53, 80.0, 'Smash Damage'),
+                row('jpt!', GH + 'melee', 'Damage Upper Bound Max', 80.53, 80.0, 'Smash Damage'),
+                # the blast 50..160 -> 50.33..161.07
+                row('jpt!', GH + 'explosion', 'Damage Lower Bound', 50.33, 50.0, 'Blast Damage'),
+                row('jpt!', GH + 'explosion', 'Damage Upper Bound', 161.07, 160.0, 'Blast Damage'),
+                row('jpt!', GH + 'explosion', 'Damage Upper Bound Max', 161.07, 160.0, 'Blast Damage'),
+            ]},
+    },
+
+    # step 4b (port_field_audit.py --port gravity_hammer): the source pair (H3 hammer vs the
+    # yardstick, H3 energy blade) against the target pair (the H1 port vs the H1 sword). Halo 3
+    # has no hammer projectile; the explosion's pair is the sword's own hit (dash_melee / the
+    # H1 sword melee) -- the only damage the yardstick has; the template is the plasma pistol
+    # (the full field diff covers it)
+    'field_audit': {
+        'source_kit': 'H3EK',
+        'source': {'weapon': (H3 + r'\gravity_hammer.weapon', r'objects\weapons\melee\energy_blade\energy_blade.weapon'),
+                   'damage_effect': (H3 + r'\damage_effects\gravity_hammer_explosion.damage_effect',
+                                     r'objects\weapons\damage_effects\dash_melee.damage_effect'),
+                   'melee': (r'objects\weapons\damage_effects\smash_melee.damage_effect',
+                             r'objects\weapons\damage_effects\dash_melee.damage_effect')},
+        'target': {'weapon': (GH + 'gravity hammer.weapon', SW + 'energy sword.weapon'),
+                   'damage_effect': (GH + 'explosion.damage_effect', SW + 'melee.damage_effect'),
+                   'melee': (GH + 'melee.damage_effect', SW + 'melee.damage_effect')}},
 
     # the dry test: a30 (Covenant within seconds of the landing), a battery weapon spawns
     # charged (rounds 0 / 0)

@@ -118,7 +118,11 @@ def damage_users(m, game, datum):
 
 def audit(game, entry, map_path):
     rows = entry.get('balance', [])
-    weap = next((r['tag'] for r in rows if r['class'] == 'weap'), None)
+    # an entry whose balance rows name no weapon tag says it in `weap` (the Sentinel Beam, the
+    # Gravity Hammer)
+    weap = entry.get('weap') or next((r['tag'] for r in rows if r['class'] == 'weap'), None)
+    if not weap:
+        return None
     own_dir = weap.rsplit('\\', 1)[0].lower()
     m = hp.open_map(map_path, game)
     if not m.find_tags('weap', weap):
