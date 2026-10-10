@@ -1241,19 +1241,24 @@
      0.8999999761581421,
      "Drop Weapon Loaded Max"
     ],
+    "0x0": [
+     "<I",
+     0,
+     "Flags"
+    ],
     "0x78": [
      "<f",
-     0.65,
+     2.0,
      "Rate Of Fire"
     ],
     "0xE0": [
      "<f",
-     1.6,
+     2.0,
      "Burst Duration"
     ],
     "0xE4": [
      "<f",
-     1.6,
+     2.0,
      "Burst Duration Max"
     ],
     "0x168": [

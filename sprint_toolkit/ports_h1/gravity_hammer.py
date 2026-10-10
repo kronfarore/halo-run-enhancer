@@ -178,8 +178,18 @@ PORT = reserved(
     firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\melee\\gravity_hammer\\gravity_hammer',
                     'donor_weapon': 'weapons\\energy sword\\energy sword',
                     'donor_variant': 'characters\\elite\\elite commander\\elite commander energy sword',
-                    'set': ['0x78=0.65:Rate Of Fire',
-                            '0xE0=1.6:Burst Duration', '0xE4=1.6:Burst Duration Max',
+                    # ARMED TEST 6 (user): 'no knockback, no blast, they still need to get very
+                    # close to strike'. ROOT CAUSE: h1_enemy_weapons clones the donor's WHOLE actv
+                    # block -- the sword commander's flags 0x40 = 'cannot use ranged weapons'
+                    # (Bungie's melee-only Elites; the stealth major's 0x70 too) rode along, so no
+                    # carrier ever pulled the trigger: every 'slam' in tests 1-6 was their MELEE
+                    # (its hit sound is gh_hit; its 0.5 wu radius killed the allies beside you).
+                    # Flags cleared (the commander has no other flag). And the rate: 0.65/s x a
+                    # 1.6 s burst is ~1 pull for an Elite, 0.52 for a Grunt (the two-handed rule
+                    # halves it) -> 2/s, burst 2 s: the TRIGGER (0.65/s) still caps it at one slam
+                    'set': ['0x0=I0:Flags',
+                            '0x78=2.0:Rate Of Fire',
+                            '0xE0=2.0:Burst Duration', '0xE4=2.0:Burst Duration Max',
                             # ARMED TEST 1 (user): 'they circle me but never come close enough
                             # to strike; right in front of them they strike' (their MELEE: no
                             # ring). Halo 1's AI moves between firing positions -- only a CHARGE
