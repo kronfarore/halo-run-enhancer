@@ -2630,7 +2630,26 @@
    ],
    "weap": "weapons\\gravity hammer\\gravity hammer",
    "fp_animations": "weapons\\gravity hammer\\fp\\fp",
-   "fire_anim": "melee"
+   "fire_anim": "melee",
+   "tag_map": {
+    "jpt! weapons\\energy sword\\lunge strike": "jpt! weapons\\gravity hammer\\crush & weapons\\gravity hammer\\explosion",
+    "jpt! weapons\\energy sword\\melee": "jpt! weapons\\gravity hammer\\melee",
+    "jpt! weapons\\rocket launcher\\explosion": "jpt! weapons\\gravity hammer\\explosion"
+   },
+   "card_map": {
+    "Dash Damage": "Hammer Damage",
+    "Strike Damage": "Melee Damage",
+    "Radius": "Hammer Radius"
+   },
+   "skip_cards": [
+    "Lunge Range",
+    "Lunge Reach"
+   ],
+   "card_donors": {
+    "Rocket Launcher": [
+     "Radius"
+    ]
+   }
   }
  ],
  "Halo 3": [

@@ -7671,49 +7671,54 @@
 				"Magnetism": {
 					"desc": "How hard your aim is pulled toward a target.",
 					"debug_desc": "`Magnetism Angle` and `Magnetism Range` are the pull on your reticle near a target, with `Magnetism Falloff Range` (Halo 3 onward) and Reach's `Magnetism Near Falloff Range` shaping where it fades. One decision, one input.\\n\\n**Halo 2 declares this pair TWICE** (weap root 0x19C and 0x210) and the first is a different, mostly-zero field -- reading it makes Halo 2 look like it barely uses magnetism. The real pair is the second, next to Autoaim, so every Halo 2 row here is pinned to `nth: 1`. Every other game states nth 0 explicitly, because a gamed value falls back to the nearest EARLIER game and Halo 3 would otherwise inherit Halo 2's 1.\\n\\nThis is the weapon's own magnetism. The general Magnetism card is a different thing -- matg's Magnetism Friction and Adhesion, the controller-level aim friction that applies to everything.",
-					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer"},
+					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4", "Halo 1"],
+					"tag": { "default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer", "Halo 1": "weap weapons\\gravity hammer\\gravity hammer" },
 					"targets": [
-						{ "step": "*1.2","field": "Magnetism Angle", "group": "Magnetism", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Range", "group": "Magnetism", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Near Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "easier_when": "increased"}
+						{ "step": "*1.2", "field": "Magnetism Angle", "group": "Magnetism", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] },
+						{ "step": "*1.2", "field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Range", "group": "Magnetism", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] },
+						{ "step": "*1.2", "field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Near Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Angle", "group": "Magnetism", "min": 0, "nth": 0, "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Magnetism Range", "group": "Magnetism", "min": 0, "nth": 0, "easier_when": "increased", "games": ["Halo 1"] }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
 				"Autoaim": {
 					"desc": "How hard the game steers your shots onto a target.",
 					"debug_desc": "`Autoaim Angle` is the cone the game will bend a shot into, `Autoaim Range` how far out it does so, and `Autoaim Falloff Range` (Halo 3 onward) where that help starts tapering off. All three are one decision -- how much the game shoots for you -- so they share one input.\\n\\nAutoaim is the shot bending toward the target; Magnetism is your reticle being pulled. They are separate fields and separate cards.\\n\\nShipped values differ wildly by weapon and game: the Halo 3 assault rifle is 5deg/15 with falloff 7.5, the sniper 1deg/10, and Reach's sniper 0.8deg/20. Cutting these to 0 removes aim assist entirely, which is the harder direction.",
-					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer"},
+					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4", "Halo 1"],
+					"tag": { "default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer", "Halo 1": "weap weapons\\gravity hammer\\gravity hammer" },
 					"targets": [
-						{ "step": "*1.2","field": "Autoaim Angle", "group": "Autoaim", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Angle", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Range", "group": "Autoaim", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Falloff Range", "group": "Autoaim", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased"}
+						{ "step": "*1.2", "field": "Autoaim Angle", "group": "Autoaim", "min": 0, "easier_when": "increased", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] },
+						{ "step": "*1.2", "field": "Autoaim Angle", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Range", "group": "Autoaim", "min": 0, "easier_when": "increased", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] },
+						{ "step": "*1.2", "field": "Autoaim Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Falloff Range", "group": "Autoaim", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Angle", "group": "Autoaim", "min": 0, "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Autoaim Range", "group": "Autoaim", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
-					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": "jmad *fp_gravity_hammer*",
+					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4", "Halo 1"],
+					"tag": { "Halo 3": "jmad *fp_gravity_hammer*", "Halo 3: ODST": "jmad *fp_gravity_hammer*", "Halo Reach": "jmad *fp_gravity_hammer*", "Halo 4": "jmad *fp_gravity_hammer*", "Halo 1": "antr weapons\\gravity hammer\\fp\\fp" },
 					"targets": [
-						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased"}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] },
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Melee Seeking Angles": {
 					"desc": "Damage Pyramid Angles y, Damage Pyramid Angles p",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer"},
+					"tag": { "default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer" },
 					"split_from": "Melee Seeking",
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "min": 0, "block": { "Halo Reach": "Melee Damage Parameters" }, "index": "all", "easier_when": "increased" },
@@ -7724,7 +7729,7 @@
 					"desc": "Damage Pyramid Depth",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer"},
+					"tag": { "default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer" },
 					"split_from": "Melee Seeking",
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Pyramid Depth", "min": 0, "block": { "Halo Reach": "Melee Damage Parameters" }, "index": "all", "easier_when": "increased" }
@@ -7745,11 +7750,11 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"debug_desc": "`Magnification Levels` is how many zoom steps the weapon has and `Magnification Range` how far each goes. A weapon that ships with 0 levels has no zoom at all, which is exactly why it needs the card: an operator cannot multiply 0 into anything, so SET it (=1 or =2) to give the weapon a scope it never had.\n\nEvery game also adds a scope OVERLAY automatically when a scopeless weapon gains magnification, copying the widgets from a scoped donor on the same map (the 'Add a scope overlay to scopeless weapons' option, with a donor picker). Reach was wired for this on 2026-08-27; its donors are the sniper rifle, DMR, needle rifle, magnum and rocket launcher -- the only five Reach weapons that ship any magnification.",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer"},
+					"tag": { "default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer" },
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "min": 0, "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null}, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null}, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null}, "easier_when": "increased" }
+						{ "step": "+1", "field": "Magnification Levels", "min": 0, "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": { "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null }, "easier_when": "increased" }
 					]
 				},
 				"Zoom Time": {
@@ -7757,42 +7762,46 @@
 					"requires_zoom": true,
 					"debug_desc": "`Magnification Levels` is how many zoom steps the weapon has and `Magnification Range` how far each goes. A weapon that ships with 0 levels has no zoom at all, which is exactly why it needs the card: an operator cannot multiply 0 into anything, so SET it (=1 or =2) to give the weapon a scope it never had.\n\nEvery game also adds a scope OVERLAY automatically when a scopeless weapon gains magnification, copying the widgets from a scoped donor on the same map (the 'Add a scope overlay to scopeless weapons' option, with a donor picker). Reach was wired for this on 2026-08-27; its donors are the sniper rifle, DMR, needle rifle, magnum and rocket launcher -- the only five Reach weapons that ship any magnification.",
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer"},
+					"tag": { "default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer" },
 					"targets": [
 						{ "step": "*0.8", "field": "Weapon Zoom Time", "min": 0, "zero_is": 0.2, "easier_when": "decreased" }
 					]
 				},
 				"Hammer Damage": {
 					"desc": "Damage of the gravity blast",
-					"game": ["Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"default": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion & objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_impulse", "Halo 4": "jpt! objects\\weapons\\melee\\storm_gravity_hammer\\damage_effects\\storm_gravity_hammer_explosion & objects\\weapons\\melee\\storm_gravity_hammer\\damage_effects\\storm_gravity_hammer_impulse"},
+					"game": ["Halo 3", "Halo Reach", "Halo 4", "Halo 1"],
+					"tag": { "default": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion & objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_impulse", "Halo 4": "jpt! objects\\weapons\\melee\\storm_gravity_hammer\\damage_effects\\storm_gravity_hammer_explosion & objects\\weapons\\melee\\storm_gravity_hammer\\damage_effects\\storm_gravity_hammer_impulse", "Halo 1": "jpt! weapons\\gravity hammer\\crush & weapons\\gravity hammer\\explosion" },
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased", "games": ["Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Melee Damage": {
 					"desc": "Lower Bound and Upper Bound Damage. One effect shared with other weapons.",
-					"tag": {
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee & objects\\weapons\\damage_effects\\crush_melee",
-						"Halo 4": "jpt! globals\\damage_effects\\crush_melee & globals\\damage_effects\\hammer_to_gun_clang_melee & globals\\damage_effects\\hammer_to_melee_clang_melee",
-						"Halo Reach": "jpt! globals\\damage_effects\\crush_melee & globals\\damage_effects\\hammer_to_gun_clang_melee & globals\\damage_effects\\hammer_to_melee_clang_melee"
-					},
+					"tag": { "Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee & objects\\weapons\\damage_effects\\crush_melee", "Halo 4": "jpt! globals\\damage_effects\\crush_melee & globals\\damage_effects\\hammer_to_gun_clang_melee & globals\\damage_effects\\hammer_to_melee_clang_melee", "Halo Reach": "jpt! globals\\damage_effects\\crush_melee & globals\\damage_effects\\hammer_to_gun_clang_melee & globals\\damage_effects\\hammer_to_melee_clang_melee", "Halo 1": "jpt! weapons\\gravity hammer\\melee" },
 					"targets": [
-						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased" },
-						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased" },
-						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 3", "Halo 4", "Halo Reach", "Halo 3: ODST"] },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 3", "Halo 4", "Halo Reach", "Halo 3: ODST"] },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased", "games": ["Halo 3", "Halo 4", "Halo Reach", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] }
 					],
-					"game": ["Halo 3", "Halo 4", "Halo Reach"]
+					"game": ["Halo 3", "Halo 4", "Halo Reach", "Halo 1"]
 				},
 				"Hammer Radius": {
 					"desc": "Blast radius of the gravity blast",
-					"game": ["Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"default": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion & objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_impulse", "Halo 4": "jpt! objects\\weapons\\melee\\storm_gravity_hammer\\damage_effects\\storm_gravity_hammer_explosion & objects\\weapons\\melee\\storm_gravity_hammer\\damage_effects\\storm_gravity_hammer_impulse"},
+					"game": ["Halo 3", "Halo Reach", "Halo 4", "Halo 1"],
+					"tag": { "default": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion & objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_impulse", "Halo 4": "jpt! objects\\weapons\\melee\\storm_gravity_hammer\\damage_effects\\storm_gravity_hammer_explosion & objects\\weapons\\melee\\storm_gravity_hammer\\damage_effects\\storm_gravity_hammer_impulse", "Halo 1": "jpt! weapons\\gravity hammer\\explosion" },
 					"targets": [
-						{ "step": "*1.2", "field": "Radius", "group": "Radius", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Radius Max", "group": "Radius", "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Radius", "group": "Radius", "easier_when": "increased", "games": ["Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Radius Max", "group": "Radius", "easier_when": "increased", "games": ["Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Radius", "group": "Radius", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Radius Max", "group": "Radius", "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Lunge Range": {
@@ -7800,32 +7809,27 @@
 					"debug_desc": "Reach's `Maximum Lunge Range` in `Melee Damage Parameters`: the distance you actually cover lunging at a target.\\n\\nThis card used to carry `Autoaim Range` too -- how far the game helps the swing find a target -- but that field now belongs to this weapon's own Autoaim card, and two cards writing one field compound. Autoaim Range is the only aim-assist field the older games give these weapons, so what remains here is Reach-only.",
 					"game": ["Halo Reach", "Halo 4"],
 					"ignore": true,
-					"tag": {"default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer"},
+					"tag": { "default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer" },
 					"targets": [
-						{ "step": "*1.2","field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "min": 0, "easier_when": "increased"}
+						{ "step": "*1.2", "field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "min": 0, "easier_when": "increased" }
 					]
 				},
 				"Energy Use": {
 					"desc": "How much energy every swing costs.",
 					"debug_desc": "`Campaign External Aging Amount` (0.05, 20 swings) and `External Aging Amount` (0.0835, 12 swings; the multiplayer value), grouped. Read in the Halo 3 DLL (2026-09-17): whenever a unit's attack deals its damage effect, the attacker's CURRENT weapon ages by the campaign value in campaign and the other one elsewhere, and only if that value is above 0. The hammer's swing always sets off its explosion damage, so every swing costs energy whether it hits anything or not. The energy sword works differently -- see its Energy Use card.",
-					"game": ["Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {
-						"default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
-						"Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer"
-					},
+					"game": ["Halo 3", "Halo Reach", "Halo 4", "Halo 1"],
+					"tag": { "default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer", "Halo 1": "weap weapons\\gravity hammer\\gravity hammer" },
 					"targets": [
-						{ "step": "*0.8", "field": "Campaign External Aging Amount", "group": "Energy Use", "min": 0, "max": 1, "easier_when": "decreased" },
-						{ "step": "*0.8", "field": "External Aging Amount", "group": "Energy Use", "min": 0, "max": 1, "easier_when": "decreased" }
+						{ "step": "*0.8", "field": "Campaign External Aging Amount", "group": "Energy Use", "min": 0, "max": 1, "easier_when": "decreased", "games": ["Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*0.8", "field": "External Aging Amount", "group": "Energy Use", "min": 0, "max": 1, "easier_when": "decreased", "games": ["Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*0.8", "field": "Age Generated Per Round", "block": "Triggers", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Energy Recharge": {
 					"desc": "Lets the weapon slowly recharge its energy over time.",
 					"debug_desc": "Halo 4 only: `Age Recovered Per Second`, which NO weapon ships (0 everywhere). Read in the Halo 4 DLL (2026-09-17): every tick, a weapon with some age loses Age Recovered Per Second x frame time of it, down to 0, unless it is firing or reloading. zero_is 0.02 (empty to full in 50 s) gives the operator something to act on.",
 					"game": ["Halo 4"],
-					"tag": {
-						"default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
-						"Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer"
-					},
+					"tag": { "default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer" },
 					"targets": [
 						{ "step": "*1.2", "field": "Age Recovered Per Second", "zero_is": 0.02, "min": 0, "easier_when": "increased" }
 					]
