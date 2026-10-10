@@ -37,8 +37,9 @@ PORT = {
         'align': 'same_space',
         # user (2026-10-10, during the DMR pilot): 'the FP was not correct' -> 1 unit (0.01 wu)
         # DOWN, the whole rig in view space (h1_fp_retarget view_offset); test 2: 'up 0.5 u and
-        # towards the player 0.5 u' (x back, z up) -> (-0.005, 0, -0.005)
-        'view_offset': (-0.005, 0.0, -0.005),
+        # towards the player 0.5 u' (x back, z up) -> (-0.005, 0, -0.005); test 3: 'back down
+        # 0.5 u' -> (-0.005, 0, -0.01)
+        'view_offset': (-0.005, 0.0, -0.01),
         'anims': {
             'first_person:idle': 'first-person idle',
             'first_person:ready': 'first-person ready',
