@@ -140,12 +140,26 @@ PORT.update({
         'glow': {'hammer': BLUE, 'hammer_shiny': BLUE},
         'drop_materials': ['invalid'],
         'template': RL + r'shaders\rocket launcher body',
+        # BOOT 1 (user): 'the weapon sinks into the ground'. It kept the plasma pistol template's
+        # collision model (a pistol-sized hull, other node names). Its OWN hull, three boxes
+        # from the world model's cross-section (h1_box_collision.py): shaft + knob, the neck
+        # and blade under the head, the head
+        'collision': {'material': 'metal',
+                      'boxes': [((-0.025, -0.025, -0.30), (0.048, 0.025, 0.05)),
+                                ((-0.08, -0.022, 0.05), (0.02, 0.022, 0.20)),
+                                ((-0.095, -0.051, 0.20), (0.09, 0.051, 0.40))]},
     },
 
     # FP animations (h1_fp_retarget.py). Halo 3 hammer frames: ready 55, put_away 6,
     # melee_strike_1 / _2 38 (primary keyframe 4, the explosion effect at 4), melee_lunge 46,
-    # posing var1 69, idle 99, moving 23. The FIRE button swings (strike 1, the explosion strike);
-    # the MELEE button is strike 2 (Halo 3 alternates them)
+    # posing var1 69, idle 99, moving 23.
+    # BOOT 1 (user): 'the fire button uses the wrong swing -- it strikes with the KNOB, like the
+    # melee; it should strike with the hammer HEAD'. melee_strike_1 / _2 are Halo 3's pommel
+    # jabs (the melee button); the head SLAM is the lunge (the RT attack): melee_lunge_unaimed
+    # (46 fr: wind-up over the right shoulder frames 1-3, the head lands at frame 4 = 0.13 s and
+    # stays down to ~26, recovery to 46; out/gh/lunge_sheet.png) -> FIRE. The melee button keeps
+    # strike 1 (Halo 1 has one melee animation)
+    # BOOT 1 (user): 'FP position is too high, lower it by 1 unit' (1 unit = 0.01 wu, z up)
     'retarget': {
         'graph': H3_FP_GRAPHS + r'\melee\fp_gravity_hammer\fp_gravity_hammer.model_animation_graph',
         'render_model': H3 + r'\fp_gravity_hammer\fp_gravity_hammer.render_model',
@@ -153,13 +167,14 @@ PORT.update({
         'h1_dir': r'weapons\gravity hammer\fp',
         'h1_model': r'weapons\gravity hammer\fp\fp',
         'align': 'same_space',
+        'view_offset': (0.0, 0.0, -0.01),
         'anims': {
             'first_person:idle': 'first-person idle',
             'first_person:posing:var1': 'first-person posing',
             'first_person:ready': 'first-person ready',
             'first_person:put_away': 'first-person put-away',
-            'first_person:melee_strike_1': 'first-person fire-1',
-            'first_person:melee_strike_2': 'first-person melee',
+            'first_person:melee_lunge_unaimed': 'first-person fire-1',
+            'first_person:melee_strike_1': 'first-person melee',
             'first_person:moving': 'first-person moving',
             'first_person:overlays': 'first-person overlays',
             'first_person:throw_grenade': 'first-person throw-grenade',
@@ -194,15 +209,19 @@ PORT.update({
     # the hum, and no collision model). DEFAULT = HALO 3's OWN NUMBERS; the sword ratio
     # (x1.007) = the balance rows.
     # HALO 1 HAS NO AREA MELEE. The approximation (the sword lunge's precedent: a trigger):
-    #   FIRE  = Halo 3's swing: the sword's fire-button trigger (`lunge`, no shove) fires an
-    #           invisible STRIKE that hits for the smash (impact 80) and DETONATES -- on whatever
-    #           it meets, or by its timer in the air -- into the hammer's explosion (160 over
-    #           0.75 -> 1.5 wu, the knockback): every swing blasts, hit or not, as Halo 3's. Each
-    #           swing costs 0.05 energy (Halo 3's campaign aging); at full age it cannot fire
-    #   MELEE = Halo 1's melee: the smash alone (80). Halo 1 cannot age a weapon on melee, so
-    #           it costs nothing and does not blast
-    # Not reproduced: the lunge (crush_melee 150 at a target in lunge range: Halo 1 has no
-    # player lunge), the blast on the melee button, the Brutes' smaller explosion
+    #   FIRE  = Halo 3's head SLAM (its RT attack, the lunge animation -- boot 1): the sword's
+    #           fire-button trigger fires an invisible STRIKE that hits for the lunge's
+    #           crush_melee (impact 150) and DETONATES -- on whatever it meets, or by its timer
+    #           in the air -- into the hammer's explosion (160 over 0.75 -> 1.5 wu, the
+    #           knockback): every slam blasts, hit or not, as Halo 3's. One slam every 46 fr;
+    #           each costs 0.05 energy (Halo 3's campaign aging); at full age it cannot fire
+    #   MELEE = Halo 3's pommel jab (melee_strike): the smash alone (80). Halo 1 cannot age a
+    #           weapon on melee, so it costs nothing and does not blast (user: the right design)
+    # Not reproduced: the lunge's dash toward a target (user: not needed if it can't be
+    # helped), the blast on the melee button, the Brutes' smaller explosion
+    # (4a correction, boot 1: the fire swing is Halo 3's lunge, 150 + 160 = 310 every 46 fr,
+    # not the strike's 80 + 160 every 38 -- the 'GH lunge = H3 own' row of h1_role_compare; the
+    # sword ratio is the same x151/150, so the pick stands)
     'pickable': {
         'weapon': GH + 'gravity hammer',
         'template': PP + 'plasma pistol',
@@ -228,24 +247,36 @@ PORT.update({
         'melee_response': PP + 'melee_response',
         # the melee's hit sound (the sword's recipe): Halo 3's hammer hit
         'hit_sound': SND + 'gh_hit',
-        # the FIRE button (h1_pickable_weapons.make_lunge): trigger only, no shove -- one swing
-        # every 38 fr, 0.05 energy each
-        'lunge': {'template': PP + 'plasma pistol', 'strike': None, 'push': None,
-                  'rate': 30 / 38.0, 'energy': 0.05},
+        # the FIRE button (h1_pickable_weapons.make_lunge): one slam every 46 fr, 0.05 energy each.
+        # BOOT 1 (user): 'no knockback on the player -- the shockwave should push the player
+        # slightly BACKWARDS with no damage'. The blast does not hurt its owner (and so does not
+        # push him); the sword's SHOVE instead: a firing damage on the wielder, a token 0.01
+        # damage with every material x1 (0 damage pushed nothing, sword boot 1), POSITIVE
+        # acceleration = backwards (sword boot 2). +2 a start ('slightly'; the sword lunge is -10)
+        'lunge': {'template': PP + 'plasma pistol', 'strike': None,
+                  'push': GH + 'recoil', 'push_from': PP + 'trigger',
+                  'acceleration': 2.0, 'push_damage': 0.01,
+                  'rate': 30 / 46.0, 'energy': 0.05},
         # THE STRIKE (own_beam): a copy of the sword's invisible lunge projectile, its impact the
-        # smash, its detonation the explosion. Range 1.2 wu (Halo 3 slams the head about a
-        # hammer's length ahead); detonate on EVERY material; a 0.05 s timer from launch
-        # bursts it in the air (a miss) -- the range alone may not detonate
+        # lunge's crush, its detonation the explosion. Range 1.2 wu (Halo 3 slams the head about
+        # a hammer's length ahead); detonate on EVERY material.
+        # BOOT 1 (user): 'the explosion happens too early, basically frame 1, rather than on
+        # impact'. The strike flew 1.2 wu at 60 wu/s (0.02 s) and burst by a 0.05 s timer; the
+        # head lands at frame 4 (0.13 s): now 9 wu/s (1.2 wu in 0.13 s) with the timer at 0.13 s
+        # -- the slam's own moment in the air, sooner on a target in reach
         'bullet': {'projectile': (SW + 'lunge', GH + 'strike'),
-                   'damage': (SW + 'lunge strike', GH + 'smash'),
-                   'dmg': 80.0,
-                   'range': 1.2,
+                   'damage': (SW + 'lunge strike', GH + 'crush'),
+                   # Halo 3's crush_melee 150 = the sword's dash_melee in every field but radius
+                   # (0 vs 0.5) and damage type: the sword strike's own acceleration (2.5) and
+                   # screen flash are already the 4b ratio (x1)
+                   'dmg': 150.0,
+                   'range': 1.2, 'velocity': 9.0,
                    'default_responses': {'detonate': list(range(33))},
                    'clear_response_effects': True,
-                   # 4b + the copy's sword hit sound off (the blast sounds)
-                   'fields': dict(SMASH_4B, **{'sound.filepath': ''}),
+                   # the copy's sword hit sound off (the blast sounds)
+                   'fields': {'sound.filepath': ''},
                    'proj_fields': {'proj_attrs.detonation_timer_starts': 'immediately',
-                                   'proj_attrs.detonation.timer': (0.05, 0.05)},
+                                   'proj_attrs.detonation.timer': (0.13, 0.13)},
                    'explosion': {'effect': (PG + 'effects\\explosion', GH + 'effects\\blast'),
                                  # the rocket explosion's material table (Halo 3's explosion_small
                                  # = _large for Halo 1 but Flood x1)
@@ -253,7 +284,13 @@ PORT.update({
                                  'part': PG + 'explosion',
                                  'lower': 50.0, 'upper': (160.0, 160.0), 'radius': (0.75, 1.5),
                                  'mods': {'flood_combat_form': 1.0},
-                                 'fields': EXPLOSION_4B,
+                                 # BOOT 1 (user): 'no knockback on the enemy'. 5.83 (the 4b
+                                 # ratio, the H1 rocket's 6) moves only DEAD bodies visibly: a
+                                 # living biped on the ground sheds a few wu/s at once (Elites
+                                 # take x0.6, Grunts x0.9). 15 a start; Halo 3's hammer launches
+                                 # its targets. Live-tunable: the explosion jpt's
+                                 # Instantaneous Acceleration (Assembly)
+                                 'fields': dict(EXPLOSION_4B, **{'damage.instantaneous_acceleration': 15.0}),
                                  # the plasma grenade's blue burst + light; its 8 wu shock wave,
                                  # burn decal and sound go (the hammer brings its own)
                                  'drop_parts': [PG + 'shock wave',
@@ -275,6 +312,19 @@ PORT.update({
             'obje_attrs.acceleration_scale': 0.0,
             'weap_attrs.interface.active_camo_ding': 0.0,
             'weap_attrs.interface.active_camo_regrowth_rate': 0.0,
+            # BOOT 1 (user): 'sinks into the ground' -> its OWN hull (model['collision'],
+            # h1_box_collision.py), and a bounding radius that covers the 0.67 wu model (the
+            # template's 0.2 is a pistol's; the farthest vertex sits 0.40 wu from the origin)
+            'obje_attrs.collision_model.filepath': GH + 'gravity hammer',
+            'obje_attrs.bounding_radius': 0.42,
+            # BOOT 1 (user): 'each swing costs ABOUT 5%' -- float32 0.05 is 0.0500000007, so the
+            # HUD reads 94, 89, ... The Spartan Laser's fix: the float just below (0.049999997)
+            # shows 95 / 90 / ... / 0; after 20 slams the age is 0.99999994 < 1 and a 21st would
+            # fire -- the age MISFIRE stops it (start 0.9999, chance 1; make_lunge cleared the
+            # misfire effects)
+            'weap_attrs.triggers.0.misc.age_generated_per_round': 0.049999997,
+            'weap_attrs.age.misfire_start': 0.9999,
+            'weap_attrs.age.misfire_chance': 1.0,
         },
         'messages': ('Picked up a gravity hammer', 'Picked up %d rounds for gravity hammer'),
         'icon': 'gravity hammer',
@@ -308,17 +358,18 @@ PORT.update({
             # Halo 3's Brutes carry it two-handed) -- a proposal for the enhancer session
             'hands': 'two',
             'desc': "Halo 3's Gravity Hammer: its model, first-person animations, sounds, reticle "
-                    "and numbers. Fire swings it -- every swing smashes (80) and bursts in a "
-                    "knockback blast (160 over 1.5 wu) for 1/20 of its energy; melee smashes.",
+                    "and numbers. Fire slams the head down (150) into a knockback blast (160 over "
+                    "1.5 wu), 20 slams a charge; melee jabs with the pommel (80).",
             'balance_desc': "Measured against the Energy Sword, which both games have: the "
                             "same as Halo 3's within 1% (Halo 1's sword already carries Halo 3's "
                             "own melee damage and aim assist).",
             'anims': {},
             'balance': [
-                # x151/150: the smash 80 -> 80.53 (the fire swing's strike and the melee)
-                row('jpt!', GH + 'smash', 'Damage Lower Bound', 80.53, 80.0, 'Smash Damage'),
-                row('jpt!', GH + 'smash', 'Damage Upper Bound', 80.53, 80.0, 'Smash Damage'),
-                row('jpt!', GH + 'smash', 'Damage Upper Bound Max', 80.53, 80.0, 'Smash Damage'),
+                # x151/150: the slam's crush 150 -> 151 (= the sword lunge's own), the melee's
+                # smash 80 -> 80.53
+                row('jpt!', GH + 'crush', 'Damage Lower Bound', 151.0, 150.0, 'Slam Damage'),
+                row('jpt!', GH + 'crush', 'Damage Upper Bound', 151.0, 150.0, 'Slam Damage'),
+                row('jpt!', GH + 'crush', 'Damage Upper Bound Max', 151.0, 150.0, 'Slam Damage'),
                 row('jpt!', GH + 'melee', 'Damage Lower Bound', 80.53, 80.0, 'Smash Damage'),
                 row('jpt!', GH + 'melee', 'Damage Upper Bound', 80.53, 80.0, 'Smash Damage'),
                 row('jpt!', GH + 'melee', 'Damage Upper Bound Max', 80.53, 80.0, 'Smash Damage'),

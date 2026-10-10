@@ -2542,36 +2542,36 @@
     "proj weapons\\gravity hammer\\strike"
    ],
    "hands": "two",
-   "desc": "Halo 3's Gravity Hammer: its model, first-person animations, sounds, reticle and numbers. Fire swings it -- every swing smashes (80) and bursts in a knockback blast (160 over 1.5 wu) for 1/20 of its energy; melee smashes.",
+   "desc": "Halo 3's Gravity Hammer: its model, first-person animations, sounds, reticle and numbers. Fire slams the head down (150) into a knockback blast (160 over 1.5 wu), 20 slams a charge; melee jabs with the pommel (80).",
    "balance_desc": "Measured against the Energy Sword, which both games have: the same as Halo 3's within 1% (Halo 1's sword already carries Halo 3's own melee damage and aim assist).",
    "anims": {},
    "balance": [
     {
      "class": "jpt!",
-     "tag": "weapons\\gravity hammer\\smash",
+     "tag": "weapons\\gravity hammer\\crush",
      "field": "Damage Lower Bound",
      "block": null,
-     "value": 80.53,
-     "card": "Smash Damage",
-     "original": 80.0
+     "value": 151.0,
+     "card": "Slam Damage",
+     "original": 150.0
     },
     {
      "class": "jpt!",
-     "tag": "weapons\\gravity hammer\\smash",
+     "tag": "weapons\\gravity hammer\\crush",
      "field": "Damage Upper Bound",
      "block": null,
-     "value": 80.53,
-     "card": "Smash Damage",
-     "original": 80.0
+     "value": 151.0,
+     "card": "Slam Damage",
+     "original": 150.0
     },
     {
      "class": "jpt!",
-     "tag": "weapons\\gravity hammer\\smash",
+     "tag": "weapons\\gravity hammer\\crush",
      "field": "Damage Upper Bound Max",
      "block": null,
-     "value": 80.53,
-     "card": "Smash Damage",
-     "original": 80.0
+     "value": 151.0,
+     "card": "Slam Damage",
+     "original": 150.0
     },
     {
      "class": "jpt!",
