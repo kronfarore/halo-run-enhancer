@@ -77,7 +77,14 @@ RING_PART = {'out': GH + r'effects\shockwave ring', 'lifespan': (0.5, 0.6), 'fad
 # three rings stacked along the gravity location's axis (i = down) 0.12 wu apart, each drawn x4
 # (additive: brighter). (B -- three rings from the same spot 0.12 s apart, 0.9-1.0 s each -- was
 # rejected)
-RINGS = [dict(RING, offset=(i, 0.0, 0.0), count=4, particle=RING_PART) for i in (-0.12, 0.0, 0.12)]
+#   BOOT 8 (user): 'reduce the size of the top and bottom wave; the shockwave disappears fast
+#     when striking the ground and does not expand to its full size'. On a GROUND hit the
+#     location sits ON the surface: the bottom ring was 0.12 wu inside it, the centre ring at it
+#     -- terrain cuts the flat sprites as they grow. The whole stack LIFTED above the surface
+#     (bottom 4 cm, centre 16, top 28 cm; still 0.12 apart), top and bottom smaller (end 1.2 wu,
+#     radius 0.06), the centre 1.8 wu
+RINGS = [dict(RING, offset=(i, 0.0, 0.0), count=4, particle=RING_PART, radius=(r, r))
+         for i, r in ((-0.04, 0.06), (-0.16, 0.09), (-0.28, 0.06))]
 
 PORT = reserved(
     order=18, wave='A9', name='Gravity Hammer', source='Halo 3',
@@ -210,6 +217,12 @@ PORT.update({
         # BOOT 2 (user): 'another unit lower'
         # BOOT 3 (user): 'about 0.5 closer to the camera' (x = forward)
         'view_offset': (-0.005, 0.0, -0.02),
+        # BOOT 8 (user): 'it is possible to fire after a melee without the swing animation --
+        # lengthen the melee's DURATION without lengthening the animation itself'. No tag field
+        # times a Halo 1 melee (weapon melee = damage + response; stock second key frames all
+        # 0); the jab's last pose (the idle's) HELD 15 more frames (0.5 s: 38 -> 53). Observation
+        # pending: if Halo 1 lets the trigger fire DURING a melee, this lengthens that window
+        'pad_end': {'first-person melee': 15},
         'anims': {
             'first_person:idle': 'first-person idle',
             'first_person:posing:var1': 'first-person posing',

@@ -58,7 +58,7 @@ ARM_NAMES = {'base': 'frame bone24', 'l_hand': 'frame l wriste', 'r_hand': 'fram
 # per weapon (ports_h1/<weapon>.py, section 'retarget'): the H3 FP graph, the H3 FP render
 # model, the H1 weapon-node names, which H3 animation becomes which H1 one, and where the
 # H1 tags go (keys: graph, render_model, nodes, h1_dir, h1_model[, h1_model_from], align,
-# anims[, drop_nodes, view_offset, holds, grip_node, left_hand_offset(_anims), align_nodes])
+# anims[, drop_nodes, view_offset, holds, pad_end, grip_node, left_hand_offset(_anims), align_nodes])
 WEAPONS = ports_h1.section('retarget')
 
 
@@ -385,6 +385,10 @@ def write_jmas(weapon, only=None):
         typ, frames = retarget(weapon, h3name, nodes, anims, defaults)
         if h1name in w.get('holds', {}):           # a still: the source's LAST frame held
             frames = [frames[-1]] * w['holds'][h1name][1]
+        # `pad_end` {h1 name: n}: the animation LONGER, its motion unchanged -- its last frame
+        # held n more frames (the Gravity Hammer's pommel jab, boot 8: a longer melee state)
+        if w.get('pad_end', {}).get(h1name):
+            frames = frames + [frames[-1]] * w['pad_end'][h1name]
         if typ != 'overlay':
             frames = frames + [frames[0] if h1name in LOOPING else frames[-1]]
         states = [[JmaNodeState(t[0] * 100, t[1] * 100, t[2] * 100,
