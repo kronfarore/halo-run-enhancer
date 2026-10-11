@@ -84,10 +84,8 @@ def run(a):
         while time.perf_counter() - t0 < a.seconds:
             try:
                 wh, ctrl, _u = held(h, base)
-                if wh not in (None, 0xFFFFFFFF):
-                    if wh != track:
-                        last = {}
-                    track = wh
+                if track is None and wh not in (None, 0xFFFFFFFF):
+                    track = wh               # the weapon held at the start, followed after a drop
                 if track is None:
                     continue
                 w = mp.obj(h, base, track)
@@ -97,8 +95,8 @@ def run(a):
             if not b:
                 continue
             ws = words(b)
-            ch = {('%03x' % (i * 4)): [f32(last[i]), f32(v), '%08x' % v] for i, v in enumerate(ws)
-                  if last.get(i) != v}
+            ch = {('%03x' % (i * 4)): [f32(last[i]) if i in last else None, f32(v), '%08x' % v]
+                  for i, v in enumerate(ws) if last.get(i) != v}
             if not ch:
                 if wh != track:
                     still_since = still_since or time.perf_counter()
@@ -143,7 +141,8 @@ def analyse(a):
             s = stats.setdefault(k, {'n': 0, 'fire': 0, 'lo': new, 'hi': new})
             s['n'] += 1
             s['fire'] += r['fire']
-            s['lo'], s['hi'] = min(s['lo'], new), max(s['hi'], new)
+            if new is not None:
+                s["lo"], s["hi"] = min(s["lo"], new), max(s["hi"], new)
     for k in sorted(stats):
         s = stats[k]
         if s['n'] >= a.min:
