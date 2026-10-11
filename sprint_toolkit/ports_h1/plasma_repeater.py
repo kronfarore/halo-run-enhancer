@@ -135,17 +135,27 @@ PORT.update({
         # the gun). BOOT 1 (user, Reach screenshots cold / hot): both are FULLY LIT shapes whose
         # COLOUR follows heat -- teal cold, through yellow, red hot (Reach's meter_color_on: 89,
         # 255, 244 -> 255, 181, 23 -> red); the boot-1 meter only FILLED (Reach's gradient is 0
-        # over the left half: half lit from cold) -> `heat_illum`: a shader_model, the shape as
-        # the self-illumination mask, its colour = change colour A (pickable `fields`: scaled by
-        # B out = heat, teal -> red blended in HSV = teal, green, yellow, red). Gauge: Reach's
-        # meter map plasma_repeater_gauge (the outline in RGB); display: the Needle Rifle's
-        # finding, its UVs land on plasma_launcher_holo's icons (R)
-        'heat_illum': {
-            'plasma_repeater_gauge': {'map': R + RW + r'\bitmaps\plasma_repeater_gauge.bitmap',
-                                      'diffuse': (0.10, 0.12, 0.26), 'source': 'A'},
-            'plasma_repeater_display': {'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
-                                        'shape': 'r', 'diffuse': (0.10, 0.12, 0.26), 'source': 'A'}},
+        # over the left half: half lit from cold). BOOT 2: a shader_model lit through a CHANGE
+        # COLOUR stayed BLACK (Halo 1's change colour = a colour picked at creation, its `scale
+        # by` a BRIGHTNESS -- dark at heat 0). BOOT 3: the meter again, read from the stock
+        # gauge: lit texels take their colour from the gradient (by PLACE, its `gradient` source
+        # none), UNLIT texels draw the BACKGROUND colour. So: the texel gradient a constant 0
+        # (the whole shape lit once heat > 0), `gradient_source` B out = heat (the colour by
+        # heat, min -> max, Halo 1 blends RGB), background = the cold teal. TWO VARIANTS for the
+        # user to compare: gauge teal -> YELLOW -> red (min yellow), display teal -> red (min teal)
         'meters': {
+            'plasma_repeater_gauge': {
+                'map': R + RW + r'\bitmaps\plasma_repeater_gauge.bitmap',
+                'from': PR + r'fp\shaders\gauge', 'value': 'B_out', 'gradient': 0.0,
+                'gradient_source': 'B_out',
+                'color': (1.0, 200 / 255.0, 40 / 255.0), 'color_max': (1.0, 0.16, 0.08),
+                'color_off': (89 / 255.0, 1.0, 244 / 255.0)},
+            'plasma_repeater_display': {
+                'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
+                'from': PR + r'fp\shaders\gauge', 'shape': 'r', 'value': 'B_out', 'gradient': 0.0,
+                'gradient_source': 'B_out',
+                'color': (89 / 255.0, 1.0, 244 / 255.0), 'color_max': (1.0, 0.16, 0.08),
+                'color_off': (89 / 255.0, 1.0, 244 / 255.0)},
             # the INDICATOR halogram (plasma_launcher_holo, teal 114, 255, 215): the Needle
             # Rifle's indicator recipe, its 1/4 level
             'plasma_repeater_indicator': {
@@ -334,12 +344,6 @@ PORT.update({
             # radius over the model (the template's 0.2 < the farthest vertex, ~0.24 wu)
             'obje_attrs.collision_model.filepath': RP + 'plasma repeater',
             'obje_attrs.bounding_radius': 0.25,
-            # the HEAT COLOUR of the gauge / display (`heat_illum`): change colour A (the template's
-            # one: its plasma glow wandered on A out) scaled by B out = heat (function 1, the gauge's
-            # own), teal (89, 255, 244) -> Reach's hot red, blended in HSV (the template's flag)
-            'obje_attrs.change_colors.0.scale_by': 'B_out',
-            'obje_attrs.change_colors.0.color_lower_bound': (89 / 255.0, 1.0, 244 / 255.0),
-            'obje_attrs.change_colors.0.color_upper_bound': (1.0, 0.16, 0.08),
             # STEP 4b (before boot 1). List 2 (the ratio vs Reach's plasma rifle onto the H1 plasma
             # rifle): camo ding 0.3 x 0.25/0.4, illumination recovery 0.15 x 0.1/0.03. List 3: rounds
             # between tracers -- Reach 1, its plasma rifle 0 (a zero on one side: the source value);
@@ -366,16 +370,20 @@ PORT.update({
         # (17.3 / 17.3); the little heat meter under the crosshair: Halo 1's HUD meters show heat
         'hud': {'donor': PR + 'plasma rifle', 'out': RP + 'plasma repeater',
                 'reticle': (R + r'ui\chud\bitmaps\hud_reticles', 3, 'plasma repeater'),
-                'reticle_xform': {'offset': (-17.2, -16.6)},
-                'reticle_layers': [(R + r'ui\chud\bitmaps\hud_reticles', 3, 1.0, {'flip_x': True, 'offset': (17.2, -16.6)}),
-                                   (R + r'ui\chud\bitmaps\hud_reticles', 3, 1.0, {'flip_y': True, 'offset': (-17.2, 16.6)}),
-                                   (R + r'ui\chud\bitmaps\hud_reticles', 3, 1.0, {'flip_x': True, 'flip_y': True, 'offset': (17.2, 16.6)}),
+                'reticle_xform': {'offset': (-17.2, -16.6), 'gain': 0.5},
+                'reticle_layers': [(R + r'ui\chud\bitmaps\hud_reticles', 3, 1.0, {'flip_x': True, 'offset': (17.2, -16.6), 'gain': 0.5}),
+                                   (R + r'ui\chud\bitmaps\hud_reticles', 3, 1.0, {'flip_y': True, 'offset': (-17.2, 16.6), 'gain': 0.5}),
+                                   (R + r'ui\chud\bitmaps\hud_reticles', 3, 1.0, {'flip_x': True, 'flip_y': True, 'offset': (17.2, 16.6), 'gain': 0.5}),
                                    (R + r'ui\chud\bitmaps\hud_reticles', 33, 0.56, {'rotate': -45, 'offset': (-17.3, -17.3)}),
                                    (R + r'ui\chud\bitmaps\hud_reticles', 33, 0.56, {'rotate': -135, 'offset': (17.3, -17.3)}),
                                    (R + r'ui\chud\bitmaps\hud_reticles', 33, 0.56, {'rotate': 135, 'offset': (17.3, 17.3)}),
                                    (R + r'ui\chud\bitmaps\hud_reticles', 33, 0.56, {'rotate': 45, 'offset': (-17.3, 17.3)})],
                 'reticle_split': 1,
-                'reticle_min_width': 3},
+                'reticle_min_width': 3,
+                # BOOT 2 (user): 'the right shape; slightly bigger; can we draw a half-transparent
+                # ring?' -- the overlay x1.15 (reticle_scale 1: the art as drawn), the ring's four
+                # quarters at half their level (Reach's faint ring)
+                'reticle_scale': 1.0, 'reticle_overlay': 1.15},
         'palette_levels': LEVELS,
     },
 

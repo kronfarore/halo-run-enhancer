@@ -625,23 +625,6 @@ def bitmaps(w):
         out_px[..., :3] = np.clip(col, 0, 255).round()
         out_px[..., 3] = np.clip(v, 0, 255).round()
         Image.fromarray(out_px).save(os.path.join(out, name + '.tif'))
-    for name, Hs in w.get('heat_illum', {}).items():
-        # a lit SHAPE whose COLOUR follows a weapon function (the Plasma Repeater, boot 1: Reach's
-        # heat gauge and lights are fully lit, teal when cold, yellow, then red when hot -- a Halo
-        # 1 meter can only FILL): a shader_model, its multipurpose G (the self-illumination mask)
-        # = the shape (`map`, channel `shape` or max RGB) at the material's own UVs, a flat dark
-        # diffuse (`diffuse` rgb), the colour = an object CHANGE COLOUR (shaders(): color source)
-        img, _ = h3_hud_art.decode(Hs['map'])
-        a = np.array(img)
-        g = a[..., :3].max(axis=2) if not Hs.get('shape') else a[..., 'rgb'.index(Hs['shape'])]
-        mp = np.zeros(g.shape + (4,), np.uint8)
-        mp[..., 1] = np.clip(g.astype(np.float64) * Hs.get('gain', 1.0), 0, 255).astype(np.uint8)
-        mp[..., 3] = 255
-        Image.fromarray(mp).save(os.path.join(out, name + '_mp.tif'))
-        col = np.zeros(g.shape + (4,), np.uint8)
-        col[..., :3] = [int(round(c * 255)) for c in Hs.get('diffuse', (0.05, 0.05, 0.08))]
-        col[..., 3] = 255
-        Image.fromarray(col).save(os.path.join(out, name + '_diff.tif'))
     for name in w.get('solid_textures', ()):
         # a plain WHITE texture (the Spartan Laser's beam contrails, test 3: every stock
         # contrail texture is a short bolt's pattern, mostly dark along a 120 wu beam -- the
@@ -777,6 +760,11 @@ def meters(w):
             blk.r, blk.g, blk.b = rgb
         c.background_transparency = M.get('background_transparency', c.background_transparency)
         sm.external_function_sources.value.set_to(M.get('value', 'A_out'))
+        if M.get('gradient_source'):
+            # the COLOUR by a function instead of the texel's place (the Plasma Repeater, boot 2:
+            # Reach's lights are lit whole and turn teal -> yellow -> red with heat; the stock
+            # gauge colours lit texels by position, its `gradient` source none)
+            sm.external_function_sources.gradient.set_to(M['gradient_source'])
         s.filepath = os.path.join(out, name + '.shader_transparent_meter')
         s.serialize(temp=False, backup=False)
         print('   meter shader %s  map %s %dx%d  value %s' % (s.filepath, bm, wd, h, M.get('value', 'A_out')))
@@ -823,8 +811,8 @@ def shaders(w, glow):
         t.serialize(temp=False, backup=False)
         print('   shader %s  ADDITIVE glow %s%s' % (t.filepath, tuple(spec['rgb']),
                                                  '  fade %s' % spec['fade_source'] if spec.get('fade_source') else ''))
-    for name in list(w['shaders']) + list(w.get('heat_illum', {})) + [
-            k for k, v in w.get('glow_shaders', {}).items() if not (isinstance(v, dict) and v.get('additive'))]:
+    for name in list(w['shaders']) + [k for k, v in w.get('glow_shaders', {}).items()
+                                      if not (isinstance(v, dict) and v.get('additive'))]:
         if (name in w.get('numeric', {}).get('places', {}) or name in w.get('meters', {})
                 or name in w.get('shader_copies', {})):
             continue
@@ -838,18 +826,6 @@ def shaders(w, glow):
             si = m.self_illumination
             for bound in (si.color_lower_bound, si.color_upper_bound):
                 bound.r, bound.g, bound.b = glow[name]
-        if name in w.get('heat_illum', {}):
-            # `heat_illum`: the external self-illumination colour = the object's change colour
-            # `source` (A-D), steady (animation 'one', bounds white)
-            si = m.self_illumination
-            si.color_source.set_to(w['heat_illum'][name].get('source', 'A'))
-            si.animation_function.set_to('one')
-            for bound in (si.color_lower_bound, si.color_upper_bound):
-                bound.r = bound.g = bound.b = 1.0
-            for e in ('.shader_transparent_meter', '.shader_transparent_chicago'):
-                stale = os.path.join(out, name + e)            # `tool model` must find ONE
-                if os.path.exists(stale):
-                    os.remove(stale)
         t.filepath = os.path.join(out, name + '.shader_model')
         t.serialize(temp=False, backup=False)
         print('   shader %s  glow %s' % (t.filepath, tuple(round(c, 2) for c in glow.get(name, ()))))
