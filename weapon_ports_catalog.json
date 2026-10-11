@@ -3453,18 +3453,18 @@
      "tag": "weapons\\plasma repeater\\plasma repeater",
      "field": "Rounds Per Second Max",
      "block": "Triggers",
-     "value": 3.333,
+     "value": 3.4,
      "card": "More Shooting",
-     "original": 3.0
+     "original": 3.05
     },
     {
      "class": "weap",
      "tag": "weapons\\plasma repeater\\plasma repeater",
      "field": "Acceleration Time",
      "block": "Triggers",
-     "value": 2.65,
+     "value": 2.6,
      "card": "More Shooting",
-     "original": 1.4
+     "original": 1.35
     },
     {
      "class": "weap",
@@ -3482,7 +3482,7 @@
      "block": "Triggers",
      "value": 0.077,
      "card": "Heat",
-     "original": 0.121
+     "original": 0.12
     },
     {
      "class": "weap",
