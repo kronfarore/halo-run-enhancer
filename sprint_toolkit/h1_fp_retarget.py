@@ -436,6 +436,11 @@ def write_jmas(weapon, only=None):
             frames = [frames[-1]] * w['holds'][h1name][1]
         # `pad_end` {h1 name: n}: the animation LONGER, its motion unchanged -- its last frame
         # held n more frames (the Gravity Hammer's pommel jab, boot 8: a longer melee state)
+        # `repeat` {h1 name: n}: a loop played n times in a row (the Plasma Repeater, boot 1: Halo
+        # 1 plays `overheated` ONCE -- Reach's 1 s vent_loop let the pose drop mid-vent; the stock
+        # plasma rifle's overheat states run 3.6 s against its 2.5 s vent)
+        if w.get('repeat', {}).get(h1name):
+            frames = frames * w['repeat'][h1name]
         if w.get('pad_end', {}).get(h1name):
             frames = frames + [frames[-1]] * w['pad_end'][h1name]
         if typ != 'overlay':

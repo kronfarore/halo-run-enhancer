@@ -950,7 +950,10 @@ def own_beam(a, b, write):
                                     bound.r, bound.g, bound.b = T['rgb']
                                 n += 1
                         for part in ev.parts.STEPTREE:
-                            new = T.get('decals', {}).get(part.type.filepath)
+                            # `sounds` {stock sound: own}: the impact SOUND swapped too (the Plasma
+                            # Repeater, boot 1: 'its own plasma impact sound' -- Reach's
+                            # plasma_impacts_reach in place of Halo 1's plasmahit)
+                            new = dict(T.get('decals', {}), **T.get('sounds', {})).get(part.type.filepath)
                             if new:
                                 part.type.filepath = new
                                 n += 1

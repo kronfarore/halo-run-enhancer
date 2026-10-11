@@ -129,6 +129,19 @@
    "aliases": [
     "sound\\weapons\\plasma_repeater_port\\rp_flyby"
    ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_repeater_port\\rp_impact",
+   "perms": [
+    "rp_impact_1.wav",
+    "rp_impact_2.wav",
+    "rp_impact_3.wav",
+    "rp_impact_4.wav",
+    "rp_impact_5.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_repeater_port\\rp_impact"
+   ]
   }
  ]
 }

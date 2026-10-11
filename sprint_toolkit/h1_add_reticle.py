@@ -15,6 +15,7 @@ HUD's crosshair element then points its overlay at the new sequence.
     python h1_add_reticle.py hud_reticles 13 "energy sword"
     python h1_add_reticle.py hud_reticles <h3 index> "smg" 19     # at the reserved index
 """
+import math
 import os
 import sys
 
@@ -156,6 +157,14 @@ def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0,
             art, rx, ry = art.rotate(90, expand=True), ry, art.width - rx
         elif xf.get('rotate') == -90:
             art, rx, ry = art.rotate(-90, expand=True), art.height - ry, rx
+        elif xf.get('rotate'):
+            # any other angle (the Plasma Repeater's four diagonal wedges, +-45 / +-135): PIL's
+            # counter-clockwise, the registration point turned with the art about its centre
+            a = math.radians(xf['rotate'])
+            dx, dy = rx - art.width / 2.0, ry - art.height / 2.0
+            art = art.rotate(xf['rotate'], expand=True, resample=Image.BICUBIC)
+            rx = dx * math.cos(a) + dy * math.sin(a) + art.width / 2.0
+            ry = -dx * math.sin(a) + dy * math.cos(a) + art.height / 2.0
         rx -= xf.get('offset', (0.0, 0.0))[0] / k
         ry -= xf.get('offset', (0.0, 0.0))[1] / k
         # `scale`: the art drawn that much smaller in the sheet (BOX: area-averaged), the

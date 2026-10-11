@@ -54,7 +54,7 @@ PORT = reserved(
         'balanced': {
             'damage': 8.34,              # 13 x 6.42/10
             'rate': (15.0, 3.333),       # 7 x 15/6 = 17.5 -> Halo 1's 15/s cap; 10 x 3/9 (4b's positional pairing)
-            'heat_per_round': 1 / 22.0,  # 0.03 x 0.08/0.15 = 0.016 a tick: hot after 22 rounds
+            'heat_per_round': 0.077,     # 0.03 x 0.08/0.15 = 0.016 a tick: hot after 22 rounds (H1 cools while firing)
             'ramp_s': 2.65,              # fitted (Reach hot in 2.1 s at 0.016 a tick)
             'vent_s': 2.9,               # 2.5 x 0.35/0.3 (overheated losses) -> loss 1/2.9
             'battery': 0.01,             # 0.005 x 0.005/0.0025 (100 rounds)
@@ -116,28 +116,36 @@ PORT.update({
         'shaders': {'plasma_repeater_metal': (R + RW + r'\bitmaps\plasma_repeater_diffuse.bitmap', None),
                     'plasma_repeater_rubber': (R + RW + r'\bitmaps\plasma_repeater_diffuse.bitmap', None),
                     'plasma_repeater_shell': (R + RW + r'\bitmaps\plasma_repeater_diffuse.bitmap', None),
-                    'plasma_repeater_display': (R + RW + r'\bitmaps\plasma_repeater_diffuse.bitmap', None),
-                    'plasma_repeater_gauge': (R + RW + r'\bitmaps\plasma_repeater_diffuse.bitmap', None),
                     'plasma_repeater_indicator': (R + RW + r'\bitmaps\plasma_repeater_diffuse.bitmap', None)},
         'template': PR + r'fp\shaders\gun',
         'glow': {},
-        # THE HEAT GAUGE (the big panel on top in first person, fp_material_view): Reach's meter
-        # map plasma_repeater_gauge = the gauge's OUTLINE in RGB, a left -> right fill gradient
-        # in alpha, value = heat -- the Carbine's `meters` recipe on the plasma rifle's own heat
-        # gauge (B out = heat, the template's), Reach's on colour teal (89, 255, 244) at a cold
-        # gauge -> orange (255, 181, 23) full (`color_max`)
+        # BOOT 1 (user): 'the weapon phases into the ground when dropped -- find the proper
+        # solution this time'. The Gravity Hammer's finding: Halo 1 rests a dropped item on its
+        # ORIGIN (the grip) with z vertical, either way up; its own hull changed nothing. Lead
+        # tested here: Halo CE's PATHFINDING SPHERES (collision-JMS `pathfinder` markers -- no
+        # weapon, stock or port, carries one). Own hull (h1_box_collision.py) from the world
+        # model's cross-section (x -0.093..0.226, y +-0.016, z -0.037..0.077): body + grip, and
+        # three spheres along the body (r 0.03 at z 0.02)
+        'collision': {'material': 'metal',
+                      'boxes': [((-0.093, -0.016, 0.0), (0.226, 0.016, 0.077)),
+                                ((-0.02, -0.012, -0.037), (0.05, 0.012, 0.0))],
+                      'spheres': [((-0.06, 0.0, 0.02), 0.03), ((0.06, 0.0, 0.02), 0.03),
+                                  ((0.18, 0.0, 0.02), 0.03)]},
+        # THE HEAT GAUGE (the big panel on top in first person) and the DISPLAY (the lights low on
+        # the gun). BOOT 1 (user, Reach screenshots cold / hot): both are FULLY LIT shapes whose
+        # COLOUR follows heat -- teal cold, through yellow, red hot (Reach's meter_color_on: 89,
+        # 255, 244 -> 255, 181, 23 -> red); the boot-1 meter only FILLED (Reach's gradient is 0
+        # over the left half: half lit from cold) -> `heat_illum`: a shader_model, the shape as
+        # the self-illumination mask, its colour = change colour A (pickable `fields`: scaled by
+        # B out = heat, teal -> red blended in HSV = teal, green, yellow, red). Gauge: Reach's
+        # meter map plasma_repeater_gauge (the outline in RGB); display: the Needle Rifle's
+        # finding, its UVs land on plasma_launcher_holo's icons (R)
+        'heat_illum': {
+            'plasma_repeater_gauge': {'map': R + RW + r'\bitmaps\plasma_repeater_gauge.bitmap',
+                                      'diffuse': (0.10, 0.12, 0.26), 'source': 'A'},
+            'plasma_repeater_display': {'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
+                                        'shape': 'r', 'diffuse': (0.10, 0.12, 0.26), 'source': 'A'}},
         'meters': {
-            'plasma_repeater_gauge': {
-                'map': R + RW + r'\bitmaps\plasma_repeater_gauge.bitmap',
-                'from': PR + r'fp\shaders\gauge', 'value': 'B_out',
-                'color': (89 / 255.0, 1.0, 244 / 255.0), 'color_max': (1.0, 181 / 255.0, 23 / 255.0)},
-            # the DISPLAY (Reach: the Needle Rifle's very shader set -- illum plasma_pistol_display,
-            # meter plasma_launcher_holo, red): the Needle Rifle's tested recipe, a lit SHAPE
-            # (every Halo 1 weapon out reads 0 until the first shot)
-            'plasma_repeater_display': {
-                'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
-                'from': PR + r'fp\shaders\gauge', 'shape': 'r', 'gradient': 0.0,
-                'static': r'weapons\needler\shaders\needler luminous', 'color': (1.0, 0.0, 0.0)},
             # the INDICATOR halogram (plasma_launcher_holo, teal 114, 255, 215): the Needle
             # Rifle's indicator recipe, its 1/4 level
             'plasma_repeater_indicator': {
@@ -168,6 +176,10 @@ PORT.update({
         'drop_nodes': ('pedestal', 'aim_pitch', 'aim_yaw', 'l_humerus', 'r_humerus',
                        'l_radius', 'r_radius', 'l_handguard', 'r_handguard'),
         'h1_dir': r'weapons\plasma repeater\fp',
+        # BOOT 1 (user): 'hold the venting animation as long as overheat is going on' -- Halo 1
+        # plays `overheated` once: vent_loop (1 s) x3 = 3 s; with vent_enter 0.7 s the overheat
+        # states run 3.7 s (the stock plasma rifle's 3.6 s against its 2.5 s vent)
+        'repeat': {'first-person overheated': 3},
         'h1_model': r'weapons\plasma repeater\fp\fp',
         'align': 'same_space',
         # the DMR's tested placement (user-approved, B1)
@@ -221,6 +233,10 @@ PORT.update({
             'rp_drop': ([RS + 'plasma_rifle\\plasma_rifle_drop'], 'sound\\sfx\\impulse\\weapon_drops\\plasma_impact', -18.7),
             # the bolt's own FLYBY (port_sound_refs does not read projectile sound fields: by hand)
             'rp_flyby': ([RS + 'impacts_riccs\\plasma_flyby_reach'], 'sound\\sfx\\impulse\\impacts\\plasrif_projectile', -26.2),
+            # BOOT 1 (user): 'its own plasma impact sound' -- Reach's material effects
+            # (fx\material_effects\weapons\plasma_repeater) play plasma_impacts_reach; Halo 1's bolt
+            # plays plasma rifle\plasmahit (-11.3) in 21 of its response effects
+            'rp_impact': ([RS + 'impacts_riccs\\plasma_impacts_reach'], 'sound\\sfx\\weapons\\plasma rifle\\plasmahit', -11.3),
         },
     },
 
@@ -255,6 +271,10 @@ PORT.update({
                    'dmg': 5.834, 'velocity': (25.0, 35.0), 'range': 100.0,
                    'fields': {'damage.damage_upper_bound': (5.834, 7.0)},
                    'proj_fields': {'proj_attrs.physics.flyby_sound.filepath': SND + 'rp_flyby'},
+                   # BOOT 1: every response effect that plays plasmahit -> an own copy playing rp_impact
+                   # (impact_tint with no particle match: the sound swap only)
+                   'impact_tint': {'match': (), 'rgb': None, 'out': RP + 'effects\\impact\\',
+                                   'sounds': {'sound\\sfx\\weapons\\plasma rifle\\plasmahit': SND + 'rp_impact'}},
                    # THE HIT-EFFECT RULE: a 15/s weapon (max(default 15, balanced 15))
                    'impact_thin': {'materials': [22], 'out': RP + 'effects\\impact\\',
                                    'thin': {}, 'rate': 15.0}},
@@ -263,14 +283,20 @@ PORT.update({
         # battery 0.005 (Reach's campaign = multiplayer); the FP muzzle = the MEAN of Reach's two
         # staggered primary_trigger markers in the idle pose (camera space: 0.291 / -0.037 /
         # -0.064 and 0.285 / -0.037 / -0.021; Halo 1 has one offset)
+        # BOOT 1 (user): 'doesn't build up enough heat' -- Halo 1 COOLS WHILE FIRING (the one
+        # loss, 0.4/s, every tick): at 3/s, 1/12 a round never overheats. Heat a round refitted
+        # so the gun still overheats at Reach's 12 rounds (h1_role_compare cool_firing: 12 /
+        # 1.03 s, Reach 12 / 1.0 s): 0.121
         'trigger': {'rounds_per_second': (15.0, 3.0), 'acceleration_time': 1.4,
-                    'deceleration_time': 2.5, 'heat_generated_per_round': 1 / 12.0,
+                    'deceleration_time': 2.5, 'heat_generated_per_round': 0.121,
                     'age_generated_per_round': 0.005,
                     'first_person_offset': (0.288, -0.0373, -0.0422)},
         # Reach's vent: 2.5 s to heat 0 -> overheated at 1, back at 0, one loss 0.4/s
         # TEMPLATE DIFF (before boot 1): Halo 1's heat `illumination` = Reach's `heat illumination`
         # (4b listed it as Reach-only by name): repeater 0, Reach plasma rifle 1 -> 1 x 0/1 = 0
-        'heat': {'recovery_threshold': 0.0, 'overheated_threshold': 1.0, 'loss_per_second': 0.4,
+        # BOOT 1 (user): 'it never exits the overheated state' -- the heat must fall BELOW the
+        # recovery threshold, and it stops at 0: 0.01 (1 -> 0.01 at 0.4/s = 2.475 s)
+        'heat': {'recovery_threshold': 0.01, 'overheated_threshold': 1.0, 'loss_per_second': 0.4,
                  'illumination': 0.0},
         # the template's overheat steam aims at its `vent` (Reach's fx_vent, mapped in the model)
         'overheated_effect': {'from': PR + 'effects\\overheated', 'out': RP + 'effects\\overheated',
@@ -304,6 +330,16 @@ PORT.update({
             'weap_attrs.age.misfire_chance': 0.25,
             'weap_attrs.triggers.0.firing_effects.1.misfire_effect.filepath': '',
             'item_attrs.collision_sound.filepath': SND + 'rp_drop',
+            # the own hull + pathfinding spheres (model['collision'], boot 1's sinking) and a bounding
+            # radius over the model (the template's 0.2 < the farthest vertex, ~0.24 wu)
+            'obje_attrs.collision_model.filepath': RP + 'plasma repeater',
+            'obje_attrs.bounding_radius': 0.25,
+            # the HEAT COLOUR of the gauge / display (`heat_illum`): change colour A (the template's
+            # one: its plasma glow wandered on A out) scaled by B out = heat (function 1, the gauge's
+            # own), teal (89, 255, 244) -> Reach's hot red, blended in HSV (the template's flag)
+            'obje_attrs.change_colors.0.scale_by': 'B_out',
+            'obje_attrs.change_colors.0.color_lower_bound': (89 / 255.0, 1.0, 244 / 255.0),
+            'obje_attrs.change_colors.0.color_upper_bound': (1.0, 0.16, 0.08),
             # STEP 4b (before boot 1). List 2 (the ratio vs Reach's plasma rifle onto the H1 plasma
             # rifle): camo ding 0.3 x 0.25/0.4, illumination recovery 0.15 x 0.1/0.03. List 3: rounds
             # between tracers -- Reach 1, its plasma rifle 0 (a zero on one side: the source value);
@@ -319,18 +355,25 @@ PORT.update({
         # the PLASMA RIFLE's HUD (heat + battery meters) with Reach's reticle: the plasma_carbine
         # chud's `crosshair` = hud_reticles #3, ONE ring quarter (37 x 36, its registration at the
         # centre; chud origin 0.965 / 0.962 = the ring's centre at the sprite's bottom right)
-        # mirrored both ways -> four layers at +-17.2 / +-16.6 sprite px. NOT yet: the four corner
-        # wedges (#33 x4 at +-3, +-3 -- orientation unclear from the chud: a Reach screenshot) and
-        # the little heat meter under the crosshair (Halo 1's HUD meters show heat)
+        # mirrored both ways -> four layers at +-17.2 / +-16.6 sprite px. Reach's sprite peaks at
+        # alpha 85: BOOT 1's x2.9 lift made a solid ring -- the user's Reach screenshot shows it
+        # ALMOST TRANSPARENT: its own level (gain 1; `reticle_split` 1 normalises each layer for
+        # the stroke growth, then puts the layer's peak back, else grow_to's threshold 96 erased
+        # it). THE WEDGES (user, Reach screenshot, 1080p: ring ~88 px across, four bright wedges
+        # on the DIAGONALS, ~35 px long, tips ~13 px from the centre): #33 (50 x 14, tip at +x)
+        # at 0.56 of the ring sprite's scale (chud 0.6 / 0.7 vs 1.15 -> 28 sprite px long), each
+        # turned to point at the centre, its centre 10.5 + 14 = 24.5 px out along its diagonal
+        # (17.3 / 17.3); the little heat meter under the crosshair: Halo 1's HUD meters show heat
         'hud': {'donor': PR + 'plasma rifle', 'out': RP + 'plasma repeater',
                 'reticle': (R + r'ui\chud\bitmaps\hud_reticles', 3, 'plasma repeater'),
-                'reticle_xform': {'offset': (-17.2, -16.6), 'gain': 2.9},
-                'reticle_layers': [(R + r'ui\chud\bitmaps\hud_reticles', 3, 1.0, {'flip_x': True, 'offset': (17.2, -16.6), 'gain': 2.9}),
-                                   (R + r'ui\chud\bitmaps\hud_reticles', 3, 1.0, {'flip_y': True, 'offset': (-17.2, 16.6), 'gain': 2.9}),
-                                   (R + r'ui\chud\bitmaps\hud_reticles', 3, 1.0, {'flip_x': True, 'flip_y': True, 'offset': (17.2, 16.6), 'gain': 2.9})],
-                # Reach's sprite peaks at alpha 85 (its chud shader brightens it): each layer
-                # normalised (`reticle_split` 1) and lifted x2.9 to full, else grow_to's threshold
-                # (96) erased it (the first write: an EMPTY reticle)
+                'reticle_xform': {'offset': (-17.2, -16.6)},
+                'reticle_layers': [(R + r'ui\chud\bitmaps\hud_reticles', 3, 1.0, {'flip_x': True, 'offset': (17.2, -16.6)}),
+                                   (R + r'ui\chud\bitmaps\hud_reticles', 3, 1.0, {'flip_y': True, 'offset': (-17.2, 16.6)}),
+                                   (R + r'ui\chud\bitmaps\hud_reticles', 3, 1.0, {'flip_x': True, 'flip_y': True, 'offset': (17.2, 16.6)}),
+                                   (R + r'ui\chud\bitmaps\hud_reticles', 33, 0.56, {'rotate': -45, 'offset': (-17.3, -17.3)}),
+                                   (R + r'ui\chud\bitmaps\hud_reticles', 33, 0.56, {'rotate': -135, 'offset': (17.3, -17.3)}),
+                                   (R + r'ui\chud\bitmaps\hud_reticles', 33, 0.56, {'rotate': 135, 'offset': (17.3, 17.3)}),
+                                   (R + r'ui\chud\bitmaps\hud_reticles', 33, 0.56, {'rotate': 45, 'offset': (-17.3, 17.3)})],
                 'reticle_split': 1,
                 'reticle_min_width': 3},
         'palette_levels': LEVELS,
@@ -376,7 +419,8 @@ PORT.update({
                 row('weap', RP + 'plasma repeater', 'Rounds Per Second Max', 3.333, 3.0, 'More Shooting', block='Triggers'),
                 row('weap', RP + 'plasma repeater', 'Acceleration Time', 2.65, 1.4, 'More Shooting', block='Triggers'),
                 row('weap', RP + 'plasma repeater', 'Deceleration Time', 2.9, 2.5, 'More Shooting', block='Triggers'),
-                row('weap', RP + 'plasma repeater', 'Heat Generated Per Round', 1 / 22.0, 1 / 12.0, 'Heat', block='Triggers'),
+                # (boot 1: Halo 1 cools while firing -- refitted to overheat at 22 rounds, 1.97 s)
+                row('weap', RP + 'plasma repeater', 'Heat Generated Per Round', 0.077, 0.121, 'Heat', block='Triggers'),
                 # the vent: 2.5 x 0.35/0.3 = 2.9 s from 1 to 0
                 row('weap', RP + 'plasma repeater', 'Heat Loss Per Second', 1 / 2.9, 0.4, 'Heat'),
                 # battery: 0.005 x 0.005/0.0025 = 0.01 (100 rounds)

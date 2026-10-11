@@ -687,8 +687,8 @@ SETS = {
         # overheat = the 2.5 s vent (one loss 0.4 to 0), deceleration time 2.5 s
         ('RP = Reach own, H1 B', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 6.417, 'speed': 25.0, 'range': 100.0, 'aim': (5.0, 15.0, 10.0, 20.0),
-          'age': 0.005, 'heat_model': {'rate': ('time', 15.0, 3.0, 1.4), 'hpr': 1 / 12.0,
-                                       'oh': 1.0, 'loss': 0.4, 'rec': 0.0}}),
+          'age': 0.005, 'heat_model': {'rate': ('time', 15.0, 3.0, 1.4), 'hpr': 0.121,
+                                       'oh': 1.0, 'loss': 0.4, 'rec': 0.01, 'cool_firing': True}}),
         # PLASMA RIFLE ratio (H1 PR x repeater / Reach PR): 13 x 6.42/10 = 8.34; rate 10 x 15/9
         # = 16.7 (Halo 1's 15/s cap) -> 7 x 3/6 = 3.5; heat 0.03 x 0.08/0.15 = 0.016 a tick (hot
         # in 2.1 s); loss x 0.3/0.8525: 0.088 -> 0.021; vent 2.5 x 0.35/0.3 = 2.9 s; battery
@@ -722,8 +722,8 @@ SETS = {
         ('RP = PR ratio, H1 B', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.3, 27.8), 'age': 0.01,
           'mods': dict(RP_FAST_SLOW),
-          'heat_model': {'rate': ('time', 15.0, 3.333, 2.65), 'hpr': 1 / 22.0, 'oh': 1.0,
-                         'loss': 1 / 2.9, 'rec': 0.0}}),
+          'heat_model': {'rate': ('time', 15.0, 3.333, 2.65), 'hpr': 0.077, 'oh': 1.0,
+                         'loss': 1 / 2.9, 'rec': 0.01, 'cool_firing': True}}),
         # PLASMA PISTOL ratio: 18 x 6.42/16 = 7.22; rate: the pistol is tapped -> Reach's own;
         # heat 0.03 x 0.16/0.14 = 0.034 a tick; loss x 0.65/0.6; vent 2.5 x 0.45/0.65 = 1.7 s;
         # battery 0.002 x 0.005/0.002 = 0.005 (200); 25 x 25/20 = 31 wu/s; range 50 x 100/40 =
@@ -894,7 +894,7 @@ def weapon(label, rel, mode, overrides, extra=None):
         if m == 'tag':
             m = {'rate': ('time', rps[0], rps[1], tr.firing.acceleration_time or 1e-6),
                  'hpr': out['heat'][0], 'oh': out['heat'][1], 'loss': out['heat'][2],
-                 'rec': out['heat'][3]}
+                 'rec': out['heat'][3], 'cool_firing': True}
         if m:
             out['heat_model'] = m
             out['heat'] = (m['hpr'], m['oh'], model_loss(m, 0.0), m['rec'])
@@ -1102,6 +1102,8 @@ def model_times(wpn, shots):
             continue
         acc += model_rate(m, heat, held) / 30.0
         heat = min(heat + m.get('hpt', 0.0), 1.0)
+        if m.get('cool_firing'):         # Halo 1 cools WHILE firing too (the Plasma Repeater,
+            heat = max(0.0, heat - model_loss(m, heat) / 30.0)    # boot 1: it never overheated)
         held += 1 / 30.0
         t += 1 / 30.0
     return out
