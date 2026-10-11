@@ -422,7 +422,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h1_replace_first_weapons', 'h1_enemy_weapon_enabled',
                'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards',
                'h1_overheat_unzoom', 'h1_overheat_no_rezoom', 'h1_covenant_avoid_ff',
-               'h1_melee_blocks_fire', 'h1_supercombine_count',
+               'h1_melee_blocks_fire', 'h1_supercombine_count', 'h1_birthday_party',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -1026,6 +1026,11 @@ CONFIG = {
     # 0 the game is stock. Needed by the Needle Rifle port (3) and the Halo 1 Supercombine
     # Needle Count card. Off = put back to stock. Prototype, untested in game (2026-10-10)
     "h1_supercombine_count": False,
+    # Options -> Patching -> Halo 1: the Grunt Birthday Party skull also spawns a CLASSIC
+    # effect on the dead Grunt (its own confetti is Anniversary-only, never drawn in classic
+    # graphics). A halo1.dll patch (sprint_toolkit/h1_birthday_party.py), live AND in the
+    # file; does nothing unless the skull is on. Opt-in (user, 2026-10-11), untested in game
+    "h1_birthday_party": False,
     # Options -> Patching -> Halo 1: Grunt / Jackal / Elite actors get the human actors'
     # 'avoid friends line of fire' + 'crouch when in line of fire' flags (user, 2026-10-09)
     "h1_covenant_avoid_ff": False,
@@ -7190,6 +7195,18 @@ class MagnitudeEditorDialog(QDialog):
                      'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
 
     @staticmethod
+    def _apply_h1_birthday_party():
+        """Halo 1's classic Grunt Birthday Party effect halo1.dll patch, synced to its option
+        on every patch (any game), like _apply_h1_melee_blocks_fire."""
+        sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        try:
+            import h1_birthday_party
+            return h1_birthday_party.sync(bool(CONFIG.get('h1_birthday_party')))
+        except Exception as e:
+            return [{'tag': 'halo1.dll', 'effect': 'Grunt Birthday Party in classic graphics',
+                     'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
+
+    @staticmethod
     def _betrayal_drawn(skulls):
         return any(MagnitudeEditorDialog._skull_name(s) == 'betrayal' for s in (skulls or ()))
 
@@ -9412,6 +9429,7 @@ class MagnitudeEditorDialog(QDialog):
         results.extend(self._apply_h1_overheat_unzoom())
         results.extend(self._apply_h1_melee_blocks_fire())
         results.extend(self._apply_h1_supercombine_count())
+        results.extend(self._apply_h1_birthday_party())
         if CONFIG.get('death_penalty_scaling'):
             results.extend(self._apply_death_penalty())
         results.extend(self._restore_sword_drain(plan))
@@ -11766,6 +11784,18 @@ class OptionsDialog(QDialog):
             "(at once) and into halo1.dll (every later start). Unticked, the next patch "
             "puts halo1.dll back to stock. In co-op both machines need it.")
         h1form.addRow("", self.h1_supercombine_count_cb)
+        self.h1_birthday_party_cb = QCheckBox(
+            "Grunt Birthday Party effect in classic graphics (halo1.dll)")
+        self.h1_birthday_party_cb.setChecked(bool(CONFIG.get('h1_birthday_party')))
+        self.h1_birthday_party_cb.setToolTip(
+            "With the Grunt Birthday Party skull on, a Grunt killed by a headshot gets "
+            "confetti -- but only in Anniversary graphics; classic graphics show nothing. "
+            "This also plays a classic effect on the Grunt at that moment (the needler's "
+            "pink needle burst and its pop sound). Without the skull nothing changes.\n\n"
+            "Applied when you patch, whatever state MCC is in: into the running game "
+            "(at once) and into halo1.dll (every later start). Unticked, the next patch "
+            "puts halo1.dll back to stock. In co-op both machines need it.")
+        h1form.addRow("", self.h1_birthday_party_cb)
 
         self.reach_pools_cb = QCheckBox(
             "Reach: offer every weapon and ability the prepared map supports")
@@ -13036,6 +13066,7 @@ class OptionsDialog(QDialog):
             'h1_overheat_no_rezoom': self.h1_overheat_no_rezoom_cb.isChecked(),
             'h1_melee_blocks_fire': self.h1_melee_blocks_fire_cb.isChecked(),
             'h1_supercombine_count': self.h1_supercombine_count_cb.isChecked(),
+            'h1_birthday_party': self.h1_birthday_party_cb.isChecked(),
             'h1_covenant_avoid_ff': self.h1_covenant_ff_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
             'odst_red_plasma_as_brute': self.red_plasma_cb.isChecked(),

@@ -1425,9 +1425,23 @@ User, boot 7 (a30): the port's needle headshots Grunts (jpt `can cause headshots
 graphics, which every test uses (Anniversary graphics break the modded maps), the confetti is
 not seen with the pistol either. What the skull spawns, `sfx_konfetti`, is an ANNIVERSARY
 effect: it is defined only in `halo1\prebuild\paks\initial_ps.s3dpak`, not in any map. The
-candidates and the probe below are kept for reference. To show Birthday Party in classic
-graphics, a classic effect tag would have to be spawned at the skull test (+0x80444): a
-halo1.dll patch, not started.
+candidates and the probe below are kept for reference.
+
+**Built (opt-in, 2026-10-11, untested in game): `h1_birthday_party.py`.** Enhancer option
+`h1_birthday_party` (Options -> Patching -> Halo 1, off by default); `h1_birthday_party_test.cmd
+on|show|off` for the user. Where the confetti code starts (+0x80444, reached only on a real
+Birthday Party), a call into three chained 21-byte int3 caves (+0x1397EFB, +0x139865B,
++0x139A04B) does `tag_loaded('effe', NAME)` (+0xA9B35C) and the engine's effect-on-object
+call (+0xBA1078, the one unit death uses) on the dead Grunt (r13d). NAME is in the .rdata
+slack at +0x1B74520 (VirtualSize ends at +0x1B7451A; the slack is mapped, checked live).
+Default effect: `weapons\needler\effects\needle detonate` (all ten campaign maps, no damage
+parts); `--effect <path>` names another, and a path a level lacks spawns nothing. A real
+confetti effect only needs its tag in the maps. The nested effect re-enters MCC's effect hook
+with the head value already reset, so the skull code does not run twice.
+**Test (a30, Birthday Party skull ON, classic graphics):** `h1_birthday_party_test.cmd on` in
+game, headshot a Grunt with the pistol -> the needle burst + pop on the Grunt; a body-shot kill
+-> nothing; skull off -> nothing. A crash at a Grunt headshot means the nested effect call is
+not safe there (then: defer the spawn to the end of the effect call instead).
 
 **The condition, three pieces (all in halo1.dll, nothing in any tag but the data they read):**
 1. **Flavour index 11.** `debug_ice_cream_flavor_status_grunt_birthday_party` is the byte
