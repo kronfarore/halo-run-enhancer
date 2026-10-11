@@ -56,6 +56,13 @@ CATALOG = os.path.join(os.path.dirname(HERE), 'weapon_ports_catalog.json')
 B = '\\'
 W = 'weapons' + B
 
+# Reach's Plasma Repeater heat (B3; the set's comment): heat_loss = 0.06 + 0.19 x its spline,
+# read through ManagedBlam's Evaluate at these heats
+RP_REACH = {'rate': ('heat', 15.0, 3.0, 1.5), 'hpr': 0.0, 'hpt': 0.03, 'oh': None, 'rec': 0.0,
+            'vent': 2.5,
+            'loss': [(0.0, 0.25), (0.1, 0.1623), (0.25, 0.1189), (0.4, 0.0934), (0.5, 0.0818),
+                     (0.6, 0.0732), (0.75, 0.0648), (0.9, 0.0607), (1.0, 0.06)]}
+
 SETS = {
     # the restored fuel rod against the explosive power weapons of Halo 1
     'flak_cannon': {'port': 'Flak Cannon', 'weapons': [
@@ -635,6 +642,93 @@ SETS = {
         ('Sniper Rifle', W + r'sniper rifle\sniper rifle', 'shot'),
         ('DMR (port peer)', W + r'dmr\dmr', 'shot'),
     ]},
+    # the PLASMA REPEATER (wave B3), step 4a. Reach (HREK 2026-10-11, h3_weapon_values + its
+    # weapon FUNCTIONS through ManagedBlam's own Evaluate; semantics from tool.exe's field
+    # docs): 5.834 -> 7 (mean 6.42) plasma_fast; rate 15 -> 3 by heat^1.5
+    # (heat_driven_rate_of_fire); heat 0.03 a TICK the barrel fires (the per-round field is
+    # 0); 'never overheats' (heat stops at 1, the gun keeps firing at 3/s -- the 0.971
+    # auto_venting function only drives a steam effect); passive loss = the heat_loss
+    # function 0.25/s cold -> 0.06/s hot (the 0.0333 field is overridden); MANUAL vent on
+    # reload, 2.5 s, to heat 0, can be cut short; battery 0.005 (200), 25 -> 35 wu/s, range
+    # 100, error 0.4 -> 3, aim 5/15 10/20. Reach's plasma rifle 6 -> 9/s, heat 0.15 a round,
+    # loss 0.8525 / 0.35 overheated, recovery 0.1, battery 0.0025, 25 wu/s, range 40, 10
+    # plasma_slow, aim 5/12 9/18; plasma pistol 16, heat 0.14, loss 0.6 / 0.45, campaign
+    # battery 0.002, 20 -> 30 wu/s, range 40, aim 4/20 8/20. Halo 1: plasma rifle 13, 7 -> 10/s
+    # over 1.8 s held (the trigger's own clock, not heat), heat 0.08 a round, ONE loss 0.3,
+    # recovery 0.25, battery 0.005, 50 wu/s, aim 5/25 12/25; plasma pistol 18 tapped, heat
+    # 0.16, loss 0.65, recovery 0.25, battery 0.002, 25 wu/s, range 50, aim 5/20 12/20.
+    # Halo 1 cannot drive a rate by heat: its trigger goes from -> to over the HELD time
+    # ('time' rate) and back over its deceleration time; no manual vent.
+    'plasma_repeater': {'port': 'Plasma Repeater', 'weapons': [
+        ('RP = Reach own (true)', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 6.417, 'speed': 25.0, 'range': 100.0, 'aim': (5.0, 15.0, 10.0, 20.0),
+          'age': 0.005, 'heat_model': dict(RP_REACH)}),
+        # Halo 1 approximation A: no heat at all; the rate falls 15 -> 3 over 1.4 s held (the
+        # same rounds as Reach by the time Reach is fully hot, 1.11 s) and recovers over the
+        # deceleration time; no heat meter, no vent
+        ('RP = Reach own, H1 A', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 6.417, 'speed': 25.0, 'range': 100.0, 'aim': (5.0, 15.0, 10.0, 20.0),
+          'age': 0.005, 'heat_model': dict(RP_REACH, rate=('time', 15.0, 3.0, 1.4),
+                                           hpt=0.0)}),
+        # approximation B: A + heat a round so the gun OVERHEATS when Reach's player would
+        # vent -- the overheat is the vent (2.5 s, loss 0.4 to 0), the rate is back at 15
+        # after it (deceleration time 2.5 s); 20 rounds = ~3 s held
+        ('RP = Reach own, H1 B', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 6.417, 'speed': 25.0, 'range': 100.0, 'aim': (5.0, 15.0, 10.0, 20.0),
+          'age': 0.005, 'heat_model': {'rate': ('time', 15.0, 3.0, 1.4), 'hpr': 0.05,
+                                       'oh': 1.0, 'loss': 0.4, 'rec': 0.0}}),
+        # PLASMA RIFLE ratio (H1 PR x repeater / Reach PR): 13 x 6.42/10 = 8.34; rate 10 x 15/9
+        # = 16.7 (Halo 1's 15/s cap) -> 7 x 3/6 = 3.5; heat 0.03 x 0.08/0.15 = 0.016 a tick (hot
+        # in 2.1 s); loss x 0.3/0.8525: 0.088 -> 0.021; vent 2.5 x 0.35/0.3 = 2.9 s; battery
+        # 0.005 x 0.005/0.0025 = 0.01 (100); 50 x 25/25 = 50 -> 70 wu/s; aim 5 x 5/5, 25 x
+        # 15/12; 12 x 10/9, 25 x 20/18; error 0.5 deg x 0.4/1.3 = 0.15 -> 5 x 3/3.5 = 4.3
+        ('RP = PR ratio (true)', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.3, 27.8), 'age': 0.01,
+          'heat_model': {'rate': ('heat', 15.0, 3.5, 1.5), 'hpr': 0.0, 'hpt': 0.016,
+                         'oh': None, 'rec': 0.0, 'vent': 2.9,
+                         'loss': [(h, 0.352 * l) for h, l in RP_REACH['loss']]}}),
+        # materials: Reach's plasma_fast / plasma_slow on Halo 1's bolt -- shields x1.0/1.6
+        # (2 -> 1.25), hard metal x2 (Hunter 0.5 -> 1, metal 0.25 -> 0.5); or the Carbine's
+        # precedent (plasma_fast = a bullet on shields: shields x1)
+        ('RP = PR ratio, fast/slow', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.3, 27.8), 'age': 0.01,
+          'mods': {'elite_energy_shield': 1.25, 'cyborg_energy_shield': 1.25,
+                   'hunter_armor': 1.0, 'hunter_skin': 1.0, 'metal_hollow': 0.5,
+                   'metal_thin': 0.5, 'metal_thick': 0.5},
+          'heat_model': {'rate': ('heat', 15.0, 3.5, 1.5), 'hpr': 0.0, 'hpt': 0.016,
+                         'oh': None, 'rec': 0.0, 'vent': 2.9,
+                         'loss': [(h, 0.352 * l) for h, l in RP_REACH['loss']]}}),
+        ('RP = PR ratio, shields x1', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.3, 27.8), 'age': 0.01,
+          'mods': {'elite_energy_shield': 1.0, 'cyborg_energy_shield': 1.0},
+          'heat_model': {'rate': ('heat', 15.0, 3.5, 1.5), 'hpr': 0.0, 'hpt': 0.016,
+                         'oh': None, 'rec': 0.0, 'vent': 2.9,
+                         'loss': [(h, 0.352 * l) for h, l in RP_REACH['loss']]}}),
+        ('RP = PR ratio, H1 A', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.3, 27.8), 'age': 0.01,
+          'heat_model': {'rate': ('time', 15.0, 3.5, 2.6), 'hpr': 0.0, 'oh': None,
+                         'rec': 0.0, 'loss': 0.0}}),
+        ('RP = PR ratio, H1 B', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.3, 27.8), 'age': 0.01,
+          'heat_model': {'rate': ('time', 15.0, 3.5, 2.6), 'hpr': 1 / 30.0, 'oh': 1.0,
+                         'loss': 1 / 2.9, 'rec': 0.0}}),
+        # PLASMA PISTOL ratio: 18 x 6.42/16 = 7.22; rate: the pistol is tapped -> Reach's own;
+        # heat 0.03 x 0.16/0.14 = 0.034 a tick; loss x 0.65/0.6; vent 2.5 x 0.45/0.65 = 1.7 s;
+        # battery 0.002 x 0.005/0.002 = 0.005 (200); 25 x 25/20 = 31 wu/s; range 50 x 100/40 =
+        # 125; aim 5 x 5/4, 20 x 15/20; 12 x 10/8, 20 x 20/20
+        ('RP = PP ratio (true)', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 7.22, 'speed': 31.25, 'range': 125.0, 'aim': (6.25, 15.0, 15.0, 20.0),
+          'age': 0.005,
+          'heat_model': {'rate': ('heat', 15.0, 3.0, 1.5), 'hpr': 0.0, 'hpt': 0.0343,
+                         'oh': None, 'rec': 0.0, 'vent': 1.7,
+                         'loss': [(h, 1.083 * l) for h, l in RP_REACH['loss']]}}),
+        ('Plasma Rifle', W + r'plasma rifle\plasma rifle', 'shot', {'heat_model': 'tag'}),
+        ('Plasma Pistol (tap 5/s)', W + r'plasma pistol\plasma pistol', 'shot',
+         {'rate': 5.0, 'charge': 0.0, 'heat_sim': True}),
+        ('Assault Rifle', W + r'assault rifle\assault rifle', 'shot'),
+        ('Needler (no supercombine)', W + r'needler\needler', 'shot',
+         {'damage_tags': [W + r'needler\detonation damage'], 'delay': 0.75}),
+    ]},
 }
 
 ENEMIES = [
@@ -781,6 +875,19 @@ def weapon(label, rel, mode, overrides, extra=None):
             out['mag'] = out['reload'] = None
         if extra and extra.get('heat_sim'):  # time to kill waits out overheats (see kill)
             out['heat_sim'] = True
+        # a HEAT MODEL (the Plasma Repeater, B3): a rate that changes with heat (Reach) or
+        # with the held time (Halo 1's trigger), a loss that changes with heat, a vent; 'tag'
+        # = the Halo 1 tag's own (rate from -> to over the acceleration time, one loss)
+        m = extra.get('heat_model') if extra else None
+        if m == 'tag':
+            m = {'rate': ('time', rps[0], rps[1], tr.firing.acceleration_time or 1e-6),
+                 'hpr': out['heat'][0], 'oh': out['heat'][1], 'loss': out['heat'][2],
+                 'rec': out['heat'][3]}
+        if m:
+            out['heat_model'] = m
+            out['heat'] = (m['hpr'], m['oh'], model_loss(m, 0.0), m['rec'])
+            out['rps'] = m['rate'][1]
+            out['interval'] = 1.0 / out['rps']
         if extra and extra.get('charge') is not None:
             out['charge'] = extra['charge']
             out['interval'] = 1.0 / out['rps'] if out['rps'] else 0.0
@@ -939,6 +1046,64 @@ def heat_times(wpn, shots):
     return out
 
 
+def model_rate(m, heat, held):
+    """Rounds/s of a heat MODEL (the Plasma Repeater, B3): ('heat', cold, hot, exp) = Reach's
+    heat_driven_rate_of_fire (cold + (hot - cold) x heat^exp); ('time', from, to, accel s) =
+    Halo 1's trigger (from -> to linearly over the time the trigger has been held)."""
+    kind, a, b, k = m['rate'][:4]
+    f = min(1.0, heat) ** k if kind == 'heat' else min(1.0, held / k)
+    return a + (b - a) * f
+
+
+def model_loss(m, heat):
+    """Heat loss/s at a heat: a constant, or (heat, loss) points linearly between."""
+    pts = m['loss']
+    if not isinstance(pts, (list, tuple)):
+        return pts
+    if heat <= pts[0][0]:
+        return pts[0][1]
+    for (h0, l0), (h1, l1) in zip(pts, pts[1:]):
+        if heat <= h1:
+            return l0 + (l1 - l0) * (heat - h0) / (h1 - h0)
+    return pts[-1][1]
+
+
+def model_times(wpn, shots):
+    """Times of `shots` rounds, trigger HELD from cold, for a heat model, in 30 Hz ticks: the
+    first round at 0, then the rate accumulates; heat = `hpr` a round + `hpt` a tick held
+    (Reach's heat_generated_per_round FUNCTION is per TICK); no cooling while firing. `oh`
+    None = never overheats (Reach's repeater: heat stops at 1, the rate at its hot end);
+    else at `oh` the gun overheats and cools to `rec` at its one loss (Halo 1) and the held
+    clock restarts (the trigger is released)."""
+    m = wpn['heat_model']
+    t, held, heat, acc, out = 0.0, 0.0, 0.0, 1.0, []
+    while len(out) < shots and t < 600:
+        if m['oh'] is not None and heat >= m['oh'] - 1e-9:
+            while heat > m['rec']:
+                heat -= model_loss(m, heat) / 30.0
+                t += 1 / 30.0
+            heat, held, acc = max(heat, 0.0), 0.0, 1.0
+        if acc >= 1.0 - 1e-9:
+            acc -= 1.0
+            out.append(t)
+            heat = min(heat + m['hpr'], 1.0)
+            continue
+        acc += model_rate(m, heat, held) / 30.0
+        heat = min(heat + m.get('hpt', 0.0), 1.0)
+        held += 1 / 30.0
+        t += 1 / 30.0
+    return out
+
+
+def cool_time(m, top):
+    """Seconds of passive cooling from `top` heat to 0 (trigger up, no vent)."""
+    t, h = 0.0, top
+    while h > 0 and t < 999:
+        h -= model_loss(m, h) / 30.0
+        t += 1 / 30.0
+    return t
+
+
 def kill(wpn, body, shield, bmat, smat):
     """(shots, seconds) for a burst from cold."""
     per = []
@@ -977,6 +1142,8 @@ def kill(wpn, body, shield, bmat, smat):
         t = wpn['charge'] + (shots - 1) * wpn['interval']
     if wpn.get('heat_sim'):
         t = wpn['charge'] + heat_times(wpn, shots)[-1]
+    if wpn.get('heat_model'):
+        t = wpn['charge'] + model_times(wpn, shots)[-1]
     if wpn.get('mag') and wpn.get('reload'):
         per_mag = max(1, wpn['mag'] // max(1, wpn.get('rounds_per_shot') or 1))
         t += ((shots - 1) // per_mag) * wpn['reload']
@@ -1020,7 +1187,8 @@ def main():
         print('  * measured in game, not the tag rate (tag: %s)' % ', '.join(
             '%s %g/s' % (r['label'], r['tag_rps']) for r in rows
             if r.get('tag_rps') and r['interval'] and abs(r['tag_rps'] - 1.0 / r['interval']) > 0.01))
-    hot = [r for r in rows if r.get('heat') and (r['heat'][0] or r.get('age'))]
+    hot = [r for r in rows if r.get('heat') and (r['heat'][0] or r.get('age'))
+           and not r.get('heat_model')]
     if hot:
         print('\nSUSTAINED FIRE (heat / battery)')
         print('%-26s %9s %9s %9s %10s %8s %10s %9s' % ('weapon', 'heat/rnd', 'overheat', 'loss/s',
@@ -1050,6 +1218,32 @@ def main():
                   % (r['label'], hpr, oh, loss, t_oh, vent,
                      ('%d rnds' % rounds) if rounds else '-',
                      ('%.1fs' % (rounds / rate)) if rounds else '-', extra))
+    models = [r for r in rows if r.get('heat_model')]
+    if models:
+        print('\nHEAT MODEL (trigger held from cold, 30 Hz ticks; no cooling while firing)')
+        print('%-26s %7s %7s %13s %13s %8s %8s %8s %13s %13s' % (
+            'weapon', 'heat/rd', 'heat/tk', 'to overheat', 'slow (<5/s)', 'vent', 'cool 0',
+            'battery', '3 s: rnds/dps', '10 s: rnds/dps'))
+        for r in models:
+            m = r['heat_model']
+            times = model_times(r, 400)
+            gaps = [b - a for a, b in zip(times, times[1:])]
+            n = (next((i + 1 for i, g in enumerate(gaps) if g > 0.4), None)
+                 if m['oh'] is not None else None)
+            slow = next((i + 1 for i, g in enumerate(gaps) if g > 0.2 + 1e-6), None)
+            vent = gaps[n - 1] if n else None
+            dmg = sum(d['dmg'] for d in r['damage']) * r['per_shot']
+            cells = []
+            for span in (3.0, 10.0):
+                k = sum(1 for x in times if x < span)
+                cells.append('%d / %.0f' % (k, k * dmg / span))
+            print('%-26s %7.4f %7.4f %13s %13s %8s %8s %8s %13s %13s' % (
+                r['label'], m['hpr'], m.get('hpt', 0.0),
+                ('%d / %.2fs' % (n, times[n - 1])) if n else 'never',
+                ('%d / %.2fs' % (slow, times[slow - 1])) if slow else '-',
+                '%.2fs' % vent if vent else ('%gs' % m['vent'] if m.get('vent') else '-'),
+                '%.1fs' % cool_time(m, 1.0 if m['oh'] is None else m['oh']),
+                ('%d rnds' % round(1.0 / r['age'])) if r.get('age') else '-', *cells))
     sc = scales()
     for diff in ('normal', 'legendary'):
         vs, ss = sc[diff]
