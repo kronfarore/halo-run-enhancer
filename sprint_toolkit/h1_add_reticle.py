@@ -145,6 +145,8 @@ def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0,
         # placement (the Needle Rifle: ONE arc sprite drawn four times round the crosshair) --
         # `flip_x`, `rotate` (+-90: PIL's counter-clockwise), `offset` (dx, dy) chud units
         xf = gain.pop() if gain and isinstance(gain[-1], dict) else {}
+        if 'gain' in xf:                 # the Plasma Repeater: Reach's dim sprite (alpha 85) to full
+            gain = [xf['gain']]
         art, (rx, ry) = layer_art(src, idx)
         if xf.get('flip_x'):
             art, rx = art.transpose(Image.FLIP_LEFT_RIGHT), art.width - rx
