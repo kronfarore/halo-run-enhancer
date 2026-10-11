@@ -1641,7 +1641,15 @@ two-handed half: actv 0x78 = trigger pulls per second, so x0.5 is slower), Jacka
 **Proof:** port_sha_snapshot, twice (reach_tags / pickable super + swaps + reticle_xform; then
 model meters / retarget replacement / pickable glyphs + reflect list / scope fit): old vs new tools
 0 changed of 10,637 / 10,806 files (bitmap headers only; one FP antr content-equal), h1_add_reticle
-12 reticles identical, the kit restored exactly both times.
+12 reticles identical, the kit restored exactly both times. Now TOOLS: `port_tool_proof.py --rev
+<old> --tools ... --backup ... --tag ...` (the whole proof in one run), `h1_reticle_proof.py` (a
+reticle-tool change, dry), `reach_function_data.py` (Blender: every function-data value of an HREK
+tag -- shader colours / intensities, contrail profiles).
+**Close-out re-check (user: 'check every step, especially 4b'):** 4b's material lines against
+Reach's table found Reach's DEFAULT bounce frictions 0 / 0 (the terrain's 0.7 had been copied),
+terrain / thick-metal noise 4 deg, and the template's glass glance (now skip 1); step 9's balanced
+SWAP had been computed in a comment and never written (x1.05). Read lists 4/5 line by line against
+the SOURCE table, not just list 2.
 
 ## Halo 3
 

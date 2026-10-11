@@ -48,9 +48,10 @@ def _mr(i, field, value, original):
 
 
 BOUNCE_ROWS = ([_mr(i, 'Skip Fraction', 1.0, 0.0) for i in (0, 1, 3, 4, 8, 27, 31)]
+               # thin metal = Reach's DEFAULT bounce (frictions 0 / 0): perpendicular 0.3 x 0 / the
+               # needler's 0.7 = 0 (= the default, no row); parallel 0.3 (0 / 0 degenerates: kept)
                + [r for i in (5, 6) for r in (_mr(i, 'Between Max', 19.1, 30.0),
-                                              _mr(i, 'Parallel Friction', 0.3, 0.0),
-                                              _mr(i, 'Perpendicular Friction', 0.3, 0.7))]
+                                              _mr(i, 'Parallel Friction', 0.3, 0.0))]
                + [r for i, ang in ((2, (25.0, 75.0)), (7, (35.0, 85.0)))
                   for r in (_mr(i, 'Skip Fraction', 0.0, 0.1), _mr(i, 'Between Max', ang[0], ang[1]),
                             _mr(i, 'Parallel Friction', 0.3, 0.0),
@@ -347,9 +348,14 @@ PORT.update({
                    # reflects (10 / 16 / 18 / 32) and water / leaves pass-through kept
                    'default_responses': {'detonate': SOFT, 'disappear': STONE + METAL,
                                          'overpenetrate': GLASS},
-                   'reflect': [{'materials': SOFT, 'angle_deg': (0.0, 30.0), 'parallel_friction': 0.0, 'perpendicular_friction': 0.7, 'noise_deg': 2.0},
-                               {'materials': STONE, 'angle_deg': (0.0, 75.0), 'skip': 0.1, 'parallel_friction': 0.0, 'perpendicular_friction': 0.7, 'noise_deg': 2.0},
-                               {'materials': METAL, 'angle_deg': (0.0, 85.0), 'skip': 0.1, 'parallel_friction': 0.0, 'perpendicular_friction': 0.7, 'noise_deg': 2.0}],
+                   # CLOSE-OUT re-check (user: 'check every step, especially 4b'): Reach's DEFAULT bounce
+                   # has frictions 0 / 0 (not the terrain's 0.7), hard terrain / thick metal noise 4
+                   # deg (default 2); glass only passes through -- the needle template's glass glance
+                   # (0-15 deg) switched off (skip 1)
+                   'reflect': [{'materials': SOFT, 'angle_deg': (0.0, 30.0), 'parallel_friction': 0.0, 'perpendicular_friction': 0.0, 'noise_deg': 2.0},
+                               {'materials': STONE, 'angle_deg': (0.0, 75.0), 'skip': 0.1, 'parallel_friction': 0.0, 'perpendicular_friction': 0.7, 'noise_deg': 4.0},
+                               {'materials': METAL, 'angle_deg': (0.0, 85.0), 'skip': 0.1, 'parallel_friction': 0.0, 'perpendicular_friction': 0.7, 'noise_deg': 4.0},
+                               {'materials': GLASS, 'angle_deg': (0.0, 0.0), 'skip': 1.0}],
                    # the stuck needle's end: the needle's burst, its sound Reach's own
                    'detonation_effect': {'from': N + 'effects\\needle detonate',
                                          'out': NR + 'effects\\needle detonate',
@@ -511,8 +517,9 @@ PORT.update({
                             "slower needle with a shorter reach, Halo 1-style aim assist and the "
                             "needler's own supercombine; the zoom stays Reach's.",
             # step 9: reload 70 fr x 82/44 = 130.5 over the built 82 = x1.59; swap: the H1
-            # needler's ready x Reach needle rifle 19 / Reach needler 22 over the built 19
-            'anims': {'reload': 1.59},
+            # needler's ready 23 fr x Reach needle rifle 19 / Reach needler 22 = 19.9 over the built
+            # 19 = x1.05 (CLOSE-OUT re-check: the swap was computed, never written)
+            'anims': {'reload': 1.59, 'swap': 1.05},
             'anim_sounds': {'reload': [
                 {'mult': 1.59, 'from': SND + 'nr_reload', 'to': SND + 'nr_reload_balanced'}]},
             'balance': [

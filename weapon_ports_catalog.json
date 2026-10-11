@@ -2836,7 +2836,8 @@
    "desc": "Halo Reach's Needle Rifle: its model, first-person animations, sounds, scope and numbers. A 21-round semi-automatic needle rifle with a 2x zoom; seven stuck needles supercombine. Needler ammo tops it up.",
    "balance_desc": "Measured against the Needler: 10 damage a needle at up to 3.3 rounds a second, an 18-needle magazine with a slower reload, a slower needle with a shorter reach, Halo 1-style aim assist and the needler's own supercombine; the zoom stays Reach's.",
    "anims": {
-    "reload": 1.59
+    "reload": 1.59,
+    "swap": 1.05
    },
    "anim_sounds": {
     "reload": [
@@ -3206,16 +3207,6 @@
     {
      "class": "proj",
      "tag": "weapons\\needle rifle\\needle",
-     "field": "Perpendicular Friction",
-     "block": "Material Responses",
-     "value": 0.3,
-     "card": "Needle Bounce",
-     "original": 0.7,
-     "index": 5
-    },
-    {
-     "class": "proj",
-     "tag": "weapons\\needle rifle\\needle",
      "field": "Between Max",
      "block": "Material Responses",
      "value": 19.1,
@@ -3231,16 +3222,6 @@
      "value": 0.3,
      "card": "Needle Bounce",
      "original": 0.0,
-     "index": 6
-    },
-    {
-     "class": "proj",
-     "tag": "weapons\\needle rifle\\needle",
-     "field": "Perpendicular Friction",
-     "block": "Material Responses",
-     "value": 0.3,
-     "card": "Needle Bounce",
-     "original": 0.7,
      "index": 6
     },
     {
