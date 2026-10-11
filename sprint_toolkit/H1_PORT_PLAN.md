@@ -731,6 +731,10 @@ A1" to "B1" still holds; the Needle Rifle added:
 - Per-element balance rows work (`index` on a block row; checked in the built map).
 - Heredoc edits of configs with Windows paths ate backslashes three times (`\n`, `\b`): edit
   configs with the Edit tool or chr(92).
+- Tools now: `port_tool_proof.py` (the whole byte-identical proof in one run), `h1_reticle_proof.py`,
+  `reach_function_data.py` (ManagedBlam function data: shader colours, contrail profiles).
+- Close-out: read 4b lists 4/5 line by line against the SOURCE table (frictions / noise slipped), and
+  check that every step-9 multiplier computed in a comment is in `anims` (the swap was not).
 
 **For B3, the Plasma Repeater (`rifle\plasma_repeater\plasma_repeater`):** yardstick candidates the
 Plasma Rifle (provisional; Reach HAS one, `rifle\plasma_rifle`, and the Elite carries it in both
