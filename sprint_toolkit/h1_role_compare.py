@@ -56,6 +56,11 @@ CATALOG = os.path.join(os.path.dirname(HERE), 'weapon_ports_catalog.json')
 B = '\\'
 W = 'weapons' + B
 
+# Halo 1's trigger, MEASURED (h1_weapon_state_probe, the Plasma Repeater, 2026-10-11): the rate
+# ramps over the acceleration time x 1.2/1.4 (three bursts: shot gaps 3,3,3,3,3,4,4,5,6,11 ticks
+# for 15 -> 3 over a 1.4 s tag) and a shot RESETS the per-tick sum (`h1_ticks` in a heat model)
+H1_RAMP = 1.2 / 1.4
+
 # Reach's Plasma Repeater heat (B3; the set's comment): heat_loss = 0.06 + 0.19 x its spline,
 # read through ManagedBlam's Evaluate at these heats
 RP_REACH = {'rate': ('heat', 15.0, 3.0, 1.5), 'hpr': 0.0, 'hpt': 0.03, 'oh': None, 'rec': 0.0,
@@ -687,8 +692,9 @@ SETS = {
         # overheat = the 2.5 s vent (one loss 0.4 to 0), deceleration time 2.5 s
         ('RP = Reach own, H1 B', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 6.417, 'speed': 25.0, 'range': 100.0, 'aim': (5.0, 15.0, 10.0, 20.0),
-          'age': 0.005, 'heat_model': {'rate': ('time', 15.0, 3.0, 1.4), 'hpr': 0.121,
-                                       'oh': 1.0, 'loss': 0.4, 'rec': 0.01, 'cool_firing': True}}),
+          'age': 0.005, 'heat_model': {'rate': ('time', 20.0, 3.05, 1.35), 'hpr': 0.12,
+                                       'oh': 1.0, 'loss': 0.4, 'rec': 0.01, 'cool_firing': True,
+                                       'h1_ticks': True}}),
         # PLASMA RIFLE ratio (H1 PR x repeater / Reach PR): 13 x 6.42/10 = 8.34; rate 10 x 15/9
         # = 16.7 (Halo 1's 15/s cap) -> 7 x 3/6 = 3.5; heat 0.03 x 0.08/0.15 = 0.016 a tick (hot
         # in 2.1 s); loss x 0.3/0.8525: 0.088 -> 0.021; vent 2.5 x 0.35/0.3 = 2.9 s; battery
@@ -722,8 +728,8 @@ SETS = {
         ('RP = PR ratio, H1 B', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.3, 27.8), 'age': 0.01,
           'mods': dict(RP_FAST_SLOW),
-          'heat_model': {'rate': ('time', 15.0, 3.333, 2.65), 'hpr': 0.077, 'oh': 1.0,
-                         'loss': 1 / 2.9, 'rec': 0.01, 'cool_firing': True}}),
+          'heat_model': {'rate': ('time', 20.0, 3.4, 2.6), 'hpr': 0.077, 'oh': 1.0,
+                         'loss': 1 / 2.9, 'rec': 0.01, 'cool_firing': True, 'h1_ticks': True}}),
         # PLASMA PISTOL ratio: 18 x 6.42/16 = 7.22; rate: the pistol is tapped -> Reach's own;
         # heat 0.03 x 0.16/0.14 = 0.034 a tick; loss x 0.65/0.6; vent 2.5 x 0.45/0.65 = 1.7 s;
         # battery 0.002 x 0.005/0.002 = 0.005 (200); 25 x 25/20 = 31 wu/s; range 50 x 100/40 =
@@ -894,7 +900,7 @@ def weapon(label, rel, mode, overrides, extra=None):
         if m == 'tag':
             m = {'rate': ('time', rps[0], rps[1], tr.firing.acceleration_time or 1e-6),
                  'hpr': out['heat'][0], 'oh': out['heat'][1], 'loss': out['heat'][2],
-                 'rec': out['heat'][3], 'cool_firing': True}
+                 'rec': out['heat'][3], 'cool_firing': True, 'h1_ticks': True}
         if m:
             out['heat_model'] = m
             out['heat'] = (m['hpr'], m['oh'], model_loss(m, 0.0), m['rec'])
@@ -1063,6 +1069,8 @@ def model_rate(m, heat, held):
     heat_driven_rate_of_fire (cold + (hot - cold) x heat^exp); ('time', from, to, accel s) =
     Halo 1's trigger (from -> to linearly over the time the trigger has been held)."""
     kind, a, b, k = m['rate'][:4]
+    if kind == 'time' and m.get('h1_ticks'):
+        k *= H1_RAMP                         # the ramp the engine runs (the probe, B3)
     f = min(1.0, heat) ** k if kind == 'heat' else min(1.0, held / k)
     return a + (b - a) * f
 
@@ -1096,7 +1104,9 @@ def model_times(wpn, shots):
                 t += 1 / 30.0
             heat, held, acc = max(heat, 0.0), 0.0, 1.0
         if acc >= 1.0 - 1e-9:
-            acc -= 1.0
+            # Halo 1 (`h1_ticks`, the probe): the sum RESETS on a shot (a rate under 15 takes 3
+            # ticks); Reach's continuous rate carries the remainder
+            acc = 0.0 if m.get('h1_ticks') else acc - 1.0
             out.append(t)
             heat = min(heat + m['hpr'], 1.0)
             continue

@@ -31,6 +31,10 @@ import h1_melee_fire_probe as mp  # noqa: E402  (player unit -> object resolutio
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'out', 'weapon_state_probe.jsonl')
 SIZE = 0x2A0
+# MCC Halo 1's object layout, READ from the first run (2026-10-11): position +0x18 (copied at +0x5C),
+# forward +0x30, up +0x3C, angular velocity +0x48 (unit vectors, orthogonal)
+POSE = ('018', '030', '03c', '048')
+POSE_WORDS = ('018', '01c', '020', '030', '034', '038', '03c', '040', '044', '048', '04c', '050')
 
 
 def words(b):
@@ -73,50 +77,57 @@ def run(a):
         if wh not in (None, 0xFFFFFFFF):
             break
         time.sleep(0.5)
-    print('logging %d s -- fire in bursts and held, let it overheat, then DROP it and wait' % a.seconds)
+    print('logging %d s -- fire in bursts and held, let it overheat; DROP weapons (swap) and wait' % a.seconds)
     t0 = time.perf_counter()
-    track = None                      # the weapon handle being followed (held, then dropped)
-    last = {}
-    still_since = None
+    follow = {}                       # handle -> {'last': {word: value}, 'still': t or None, 'done': bool}
     rows = 0
     with open(OUT, 'a', encoding='utf-8') as f:
         f.write(json.dumps({'start': time.strftime('%Y-%m-%d %H:%M:%S'), 'note': a.note}) + '\n')
         while time.perf_counter() - t0 < a.seconds:
             try:
                 wh, ctrl, _u = held(h, base)
-                if track is None and wh not in (None, 0xFFFFFFFF):
-                    track = wh               # the weapon held at the start, followed after a drop
-                if track is None:
-                    continue
-                w = mp.obj(h, base, track)
-                b = dp.read(h, w, SIZE) if w else None
             except (TypeError, struct.error):
                 continue
-            if not b:
-                continue
-            ws = words(b)
-            ch = {('%03x' % (i * 4)): [f32(last[i]) if i in last else None, f32(v), '%08x' % v]
-                  for i, v in enumerate(ws) if last.get(i) != v}
-            if not ch:
-                if wh != track:
-                    still_since = still_since or time.perf_counter()
-                    if time.perf_counter() - still_since > 3.0:
-                        print('dropped weapon at rest for 3 s -- done')
-                        break
-                continue
-            dropped = wh != track
-            if dropped:
-                moving = any(k in ch for k in ('05c', '060', '064', '074', '078', '07c', '080', '084', '088'))
-                still_since = None if moving else (still_since or time.perf_counter())
-                pose = {k: [f32(ws[int(k, 16) // 4 + j]) for j in range(3)] for k in ('05c', '068', '074', '080', '08c')}
-            row = {'ms': round((time.perf_counter() - t0) * 1000, 1), 'weapon': '%08x' % track,
-                   'held': not dropped, 'fire': bool((ctrl or 0) & 0x800), 'ch': ch}
-            if dropped:
-                row['pose'] = pose
-            for i, v in enumerate(ws):
-                last[i] = v
-            f.write(json.dumps(row) + '\n')
-            rows += 1
+            if wh not in (None, 0xFFFFFFFF) and wh not in follow:
+                follow[wh] = {'last': {}, 'still': None, 'done': False}
+            now = time.perf_counter()
+            for hd, F in follow.items():
+                if F['done']:
+                    continue
+                try:
+                    w = mp.obj(h, base, hd)
+                    b_ = dp.read(h, w, SIZE) if w else None
+                except (TypeError, struct.error):
+                    b_ = None
+                if not b_:
+                    continue
+                ws = words(b_)
+                last = F['last']
+                ch = {('%03x' % (i * 4)): [f32(last[i]) if i in last else None, f32(v), '%08x' % v]
+                      for i, v in enumerate(ws) if last.get(i) != v}
+                dropped = hd != wh
+                if dropped:
+                    moving = any(k in ch for k in POSE_WORDS)
+                    F['still'] = None if moving else (F['still'] or now)
+                    if F['still'] and now - F['still'] > 3.0:
+                        F['done'] = True
+                        print('weapon %08x at rest for 3 s' % hd)
+                if not ch:
+                    continue
+                tg = None
+                try:
+                    t = mp.tag(h, base, ws[0])
+                    tg = '%08x' % ws[0] if t else None
+                except (TypeError, struct.error):
+                    pass
+                row = {'ms': round((now - t0) * 1000, 1), 'weapon': '%08x' % hd, 'tag': tg,
+                       'held': not dropped, 'fire': bool((ctrl or 0) & 0x800), 'ch': ch}
+                if dropped:
+                    row['pose'] = {k: [f32(ws[int(k, 16) // 4 + j]) for j in range(3)] for k in POSE}
+                for i, v in enumerate(ws):
+                    last[i] = v
+                f.write(json.dumps(row) + '\n')
+                rows += 1
     print('%d row(s) -> %s' % (rows, OUT))
 
 
@@ -147,10 +158,21 @@ def analyse(a):
         s = stats[k]
         if s['n'] >= a.min:
             print('  +0x%s  changes %4d (%4d firing)  range %s .. %s' % (k, s['n'], s['fire'], s['lo'], s['hi']))
-    drops = [r for r in run_['rows'] if not r['held']]
-    if drops:
-        print('dropped: %d rows; first pose %s' % (len(drops), drops[0]['pose']))
-        print('         last pose %s' % drops[-1]['pose'])
+    # every DROPPED weapon, in the order the player let go of them: where it came to rest --
+    # position, forward / up (pitch of the forward vector, tilt of up from vertical)
+    import math
+    order = []
+    for r in run_['rows']:
+        if not r['held'] and r['weapon'] not in order:
+            order.append(r['weapon'])
+    for wpn in order:
+        d = [r for r in run_['rows'] if r['weapon'] == wpn and not r['held']]
+        p0, p1 = d[0]['pose'], d[-1]['pose']
+        fw, up = p1['030'], p1['03c']
+        pitch = math.degrees(math.asin(max(-1.0, min(1.0, fw[2]))))
+        tilt = math.degrees(math.acos(max(-1.0, min(1.0, up[2]))))
+        print('dropped %s (tag %s): %d rows, z %.3f -> %.3f, rest forward %s up %s = pitch %.0f deg, up %.0f deg off vertical'
+              % (wpn, d[0].get('tag'), len(d), p0['018'][2], p1['018'][2], fw, up, pitch, tilt))
 
 
 def main(argv=None):

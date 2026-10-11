@@ -22,6 +22,10 @@ SND = 'sound\\weapons\\plasma_repeater_port\\'
 PR = 'weapons\\plasma rifle\\'
 RS = 'data\\sound\\weapons\\'                      # Reach's bank folders
 LEVELS = ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40']
+# the heat colour of the on-gun lights (Reach's meter_color_on): teal cold (B out's floor 0.1),
+# Reach's 255, 181, 23 orange-yellow midway, red hot
+HEAT_RAMP = [(0.0, (89 / 255.0, 1.0, 244 / 255.0)), (0.1, (89 / 255.0, 1.0, 244 / 255.0)),
+             (0.55, (1.0, 181 / 255.0, 23 / 255.0)), (1.0, (1.0, 0.16, 0.08))]
 
 PORT = reserved(
     order=21, wave='B3', name='Plasma Repeater', source='Halo Reach',
@@ -55,7 +59,7 @@ PORT = reserved(
             'damage': 8.34,              # 13 x 6.42/10
             'rate': (15.0, 3.333),       # 7 x 15/6 = 17.5 -> Halo 1's 15/s cap; 10 x 3/9 (4b's positional pairing)
             'heat_per_round': 0.077,     # 0.03 x 0.08/0.15 = 0.016 a tick: hot after 22 rounds (H1 cools while firing)
-            'ramp_s': 2.65,              # fitted (Reach hot in 2.1 s at 0.016 a tick)
+            'ramp_s': 2.6,               # fitted under Halo 1's fire rule (the probe; Reach hot in 1.95 s)
             'vent_s': 2.9,               # 2.5 x 0.35/0.3 (overheated losses) -> loss 1/2.9
             'battery': 0.01,             # 0.005 x 0.005/0.0025 (100 rounds)
             'velocity': (50.0, 70.0),    # 50 x 25/25, 35/25
@@ -137,25 +141,22 @@ PORT.update({
         # 255, 244 -> 255, 181, 23 -> red); the boot-1 meter only FILLED (Reach's gradient is 0
         # over the left half: half lit from cold). BOOT 2: a shader_model lit through a CHANGE
         # COLOUR stayed BLACK (Halo 1's change colour = a colour picked at creation, its `scale
-        # by` a BRIGHTNESS -- dark at heat 0). BOOT 3: the meter again, read from the stock
-        # gauge: lit texels take their colour from the gradient (by PLACE, its `gradient` source
-        # none), UNLIT texels draw the BACKGROUND colour. So: the texel gradient a constant 0
-        # (the whole shape lit once heat > 0), `gradient_source` B out = heat (the colour by
-        # heat, min -> max, Halo 1 blends RGB), background = the cold teal. TWO VARIANTS for the
-        # user to compare: gauge teal -> YELLOW -> red (min yellow), display teal -> red (min teal)
+        # by` a BRIGHTNESS). BOOT 3: a meter with its `gradient` SOURCE = heat stayed one colour
+        # (a meter colours lit texels by their PLACE only). The probe (h1_weapon_state_probe):
+        # B out = heat floored at 0.1, live from spawn. BOOT 4: the Needle Rifle's lit shape
+        # (additive chicago, white shape) x a colour RAMP sampled at one point slid by B out
+        # (`ramp`: the map's u-animation source) -- teal to 0.1, yellow at 0.55, red at 1
         'meters': {
             'plasma_repeater_gauge': {
                 'map': R + RW + r'\bitmaps\plasma_repeater_gauge.bitmap',
-                'from': PR + r'fp\shaders\gauge', 'value': 'B_out', 'gradient': 0.0,
-                'gradient_source': 'B_out',
-                'color': (1.0, 200 / 255.0, 40 / 255.0), 'color_max': (1.0, 0.16, 0.08),
-                'color_off': (89 / 255.0, 1.0, 244 / 255.0)},
+                'from': PR + r'fp\shaders\gauge', 'gradient': 0.0,
+                'static': r'weapons\needler\shaders\needler luminous', 'color': (1.0, 1.0, 1.0),
+                'ramp': HEAT_RAMP, 'ramp_source': 'B_out'},
             'plasma_repeater_display': {
                 'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
-                'from': PR + r'fp\shaders\gauge', 'shape': 'r', 'value': 'B_out', 'gradient': 0.0,
-                'gradient_source': 'B_out',
-                'color': (89 / 255.0, 1.0, 244 / 255.0), 'color_max': (1.0, 0.16, 0.08),
-                'color_off': (89 / 255.0, 1.0, 244 / 255.0)},
+                'from': PR + r'fp\shaders\gauge', 'shape': 'r', 'gradient': 0.0,
+                'static': r'weapons\needler\shaders\needler luminous', 'color': (1.0, 1.0, 1.0),
+                'ramp': HEAT_RAMP, 'ramp_source': 'B_out'},
             # the INDICATOR halogram (plasma_launcher_holo, teal 114, 255, 215): the Needle
             # Rifle's indicator recipe, its 1/4 level
             'plasma_repeater_indicator': {
@@ -294,11 +295,16 @@ PORT.update({
         # staggered primary_trigger markers in the idle pose (camera space: 0.291 / -0.037 /
         # -0.064 and 0.285 / -0.037 / -0.021; Halo 1 has one offset)
         # BOOT 1 (user): 'doesn't build up enough heat' -- Halo 1 COOLS WHILE FIRING (the one
-        # loss, 0.4/s, every tick): at 3/s, 1/12 a round never overheats. Heat a round refitted
-        # so the gun still overheats at Reach's 12 rounds (h1_role_compare cool_firing: 12 /
-        # 1.03 s, Reach 12 / 1.0 s): 0.121
-        'trigger': {'rounds_per_second': (15.0, 3.0), 'acceleration_time': 1.4,
-                    'deceleration_time': 2.5, 'heat_generated_per_round': 0.121,
+        # loss, 0.4/s, every tick). BOOT 2: still no overheat. THE PROBE (h1_weapon_state_probe,
+        # 3 bursts, heat = weapon +0x204): shot gaps 3,3,3,3,3,4,4,5,6,11 ticks -- Halo 1 adds
+        # rate/30 a tick and fires when the sum REACHES 1, then RESETS it: a rate a hair under
+        # 15 takes 3 ticks (10/s), exactly 3/s takes 11 (2.7/s); the ramp ran ~1.17x faster than
+        # the tag (1.2 s for 1.4). Heat peaked at 0.78. REFIT under that rule (h1_role_compare
+        # h1_ticks): start 20 (the first six shots every 2 ticks = 15/s, Reach's), ramp 1.35 s,
+        # floor 3.05 (10 ticks = 3/s), heat 0.12 a round -- the first 12 shot times within a
+        # tick of Reach's, overheat on the 12th round at 1.03 s (Reach full heat 12 / 1.0 s)
+        'trigger': {'rounds_per_second': (20.0, 3.05), 'acceleration_time': 1.35,
+                    'deceleration_time': 2.5, 'heat_generated_per_round': 0.12,
                     'age_generated_per_round': 0.005,
                     'first_person_offset': (0.288, -0.0373, -0.0422)},
         # Reach's vent: 2.5 s to heat 0 -> overheated at 1, back at 0, one loss 0.4/s
@@ -383,7 +389,8 @@ PORT.update({
                 # BOOT 2 (user): 'the right shape; slightly bigger; can we draw a half-transparent
                 # ring?' -- the overlay x1.15 (reticle_scale 1: the art as drawn), the ring's four
                 # quarters at half their level (Reach's faint ring)
-                'reticle_scale': 1.0, 'reticle_overlay': 1.15},
+                # BOOT 3 (user): '30% bigger' -> x1.15 x 1.3 = x1.5
+                'reticle_scale': 1.0, 'reticle_overlay': 1.5},
         'palette_levels': LEVELS,
     },
 
@@ -424,11 +431,12 @@ PORT.update({
                 row('jpt!', RP + 'bolt', 'Metal (Thick)', 0.5, 0.25, 'Bolt materials'),
                 # rate (4b's positional pairing): 15 (Halo 1's cap; 7 x 15/6 = 17.5) -> 10 x 3/9 = 3.33, the ramp fitted to
                 # 22 rounds (heat 0.016 a tick x Reach's), the deceleration = the vent
-                row('weap', RP + 'plasma repeater', 'Rounds Per Second Max', 3.333, 3.0, 'More Shooting', block='Triggers'),
-                row('weap', RP + 'plasma repeater', 'Acceleration Time', 2.65, 1.4, 'More Shooting', block='Triggers'),
+                # (the probe's fire rule: floor 3.4 = 9 ticks = 3.33/s; the ramp refitted 2.6 s)
+                row('weap', RP + 'plasma repeater', 'Rounds Per Second Max', 3.4, 3.05, 'More Shooting', block='Triggers'),
+                row('weap', RP + 'plasma repeater', 'Acceleration Time', 2.6, 1.35, 'More Shooting', block='Triggers'),
                 row('weap', RP + 'plasma repeater', 'Deceleration Time', 2.9, 2.5, 'More Shooting', block='Triggers'),
-                # (boot 1: Halo 1 cools while firing -- refitted to overheat at 22 rounds, 1.97 s)
-                row('weap', RP + 'plasma repeater', 'Heat Generated Per Round', 0.077, 0.121, 'Heat', block='Triggers'),
+                # (the probe's fire rule: refitted to overheat on the 22nd round, 1.97 s; Reach 1.95)
+                row('weap', RP + 'plasma repeater', 'Heat Generated Per Round', 0.077, 0.12, 'Heat', block='Triggers'),
                 # the vent: 2.5 x 0.35/0.3 = 2.9 s from 1 to 0
                 row('weap', RP + 'plasma repeater', 'Heat Loss Per Second', 1 / 2.9, 0.4, 'Heat'),
                 # battery: 0.005 x 0.005/0.0025 = 0.01 (100 rounds)

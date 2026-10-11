@@ -727,7 +727,7 @@ def meters(w):
             # gauges, and every weapon out read 0 until the first shot -- a meter stayed dark):
             # the colour BAKED (a8r8g8b8 = B, G, R, A in the data), an additive chicago copied
             # from `static` (a stock .shader_transparent_chicago) on it
-            col = [np.clip(np.round(shape * c), 0, 255) for c in M['color']]
+            col = [np.clip(np.round(shape * c), 0, 255) for c in (M['color'] if not M.get('ramp') else (1.0, 1.0, 1.0))]
             d.processed_pixel_data.data = bytearray(np.stack([col[2], col[1], col[0], shape], axis=-1).astype(np.uint8).tobytes())
         else:
             d.processed_pixel_data.data = bytearray(np.stack([grad, grad, grad, shape], axis=-1).astype(np.uint8).tobytes())
@@ -745,6 +745,38 @@ def meters(w):
                     os.remove(os.path.join(out, name + e))
             s = schi_def.build(filepath=os.path.join(TAGS, M['static'] + '.shader_transparent_chicago'))
             s.data.tagdata.schi_attrs.maps.STEPTREE[0].bitmap.filepath = bm
+            if M.get('ramp'):
+                # a lit shape whose COLOUR follows a weapon function (the Plasma Repeater, boot 3:
+                # a meter colours lit texels by their PLACE only -- its `gradient` source changed
+                # nothing): the white shape x a second map, a colour RAMP (`ramp` [(u, rgb)],
+                # 256 x 4, clamped) sampled at ONE point (uv scale ~0) slid along u by the map's
+                # u-animation SOURCE (`ramp_source`, e.g. B out = heat)
+                n = 256
+                u = np.arange(n) / (n - 1.0)
+                stops = M['ramp']
+                rgb = np.stack([np.interp(u, [x[0] for x in stops], [x[1][k] for x in stops]) for k in range(3)], axis=-1)
+                px = np.clip(np.round(rgb * 255), 0, 255).astype(np.uint8)
+                row = np.stack([px[:, 2], px[:, 1], px[:, 0], np.full(n, 255, np.uint8)], axis=-1)
+                rt = bitm_def.build(filepath=os.path.join(TAGS, h1_h3_scope.TEMPLATE + '.bitmap'))
+                rd = rt.data.tagdata
+                rb = rd.bitmaps.STEPTREE[0]
+                rb.width, rb.height = n, 4
+                rb.registration_point_x, rb.registration_point_y = n // 2, 2
+                rd.processed_pixel_data.data = bytearray(np.tile(row[None, :, :], (4, 1, 1)).tobytes())
+                rbm = w['dir'] + B + 'bitmaps' + B + name + '_ramp'
+                rt.filepath = os.path.join(TAGS, rbm + '.bitmap')
+                rt.serialize(temp=False, backup=False)
+                maps = s.data.tagdata.schi_attrs.maps.STEPTREE
+                maps[0].color_function.set_to('multiply')
+                maps.append()
+                m1 = maps[-1]
+                m1.bitmap.filepath = rbm
+                m1.map_u_scale = m1.map_v_scale = M.get('ramp_uv_scale', 0.001)
+                m1.flags.u_clamped = m1.flags.v_clamped = True
+                m1.u_animation.source.set_to(M.get('ramp_source', 'B_out'))
+                m1.u_animation.function.set_to('one')
+                m1.u_animation.scale = 1.0
+                print('   ramp %s  %s by %s' % (rbm, [tuple(round(c, 2) for c in x[1]) for x in stops], M.get('ramp_source', 'B_out')))
             s.filepath = os.path.join(out, name + '.shader_transparent_chicago')
             s.serialize(temp=False, backup=False)
             print('   lit shape %s  map %s %dx%d' % (s.filepath, bm, wd, h))
@@ -760,11 +792,6 @@ def meters(w):
             blk.r, blk.g, blk.b = rgb
         c.background_transparency = M.get('background_transparency', c.background_transparency)
         sm.external_function_sources.value.set_to(M.get('value', 'A_out'))
-        if M.get('gradient_source'):
-            # the COLOUR by a function instead of the texel's place (the Plasma Repeater, boot 2:
-            # Reach's lights are lit whole and turn teal -> yellow -> red with heat; the stock
-            # gauge colours lit texels by position, its `gradient` source none)
-            sm.external_function_sources.gradient.set_to(M['gradient_source'])
         s.filepath = os.path.join(out, name + '.shader_transparent_meter')
         s.serialize(temp=False, backup=False)
         print('   meter shader %s  map %s %dx%d  value %s' % (s.filepath, bm, wd, h, M.get('value', 'A_out')))
