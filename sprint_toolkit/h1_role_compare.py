@@ -576,7 +576,7 @@ SETS = {
         # `supercombine` damage (390 default / 60 balanced via the rows) at Halo 1's 7, stuck 4 s /
         # 2.25 s (semi-automatic: the tag rate is the cap)
         ('Needle Rifle (port)', W + r'needle rifle\needle rifle', 'shot',
-         {'super': (7, W + r'needle rifle\supercombine', 390.0), 'timer': 4.0}),
+         {'super': (7, W + r'needle rifle\supercombine', None), 'timer': 'tag'}),
         ('NR = Reach own, no super', W + r'needler\needler', 'shot',
          {'dmg': 6.0, 'rate': 4.0, 'mag': 21, 'reload': 82 / 30.0, 'speed': 1500.0,
           'range': 250.0, 'aim': (2.25, 25.0, 5.0, 25.0),
@@ -801,8 +801,12 @@ def weapon(label, rel, mode, overrides, extra=None):
     if extra and extra.get('super'):
         n, tag, dmg = extra['super']
         d = damage(tag)
-        d['dmg'] = dmg
-        out['super'] = (n, d, extra.get('timer'))
+        if dmg is not None:                  # None: the BUILT tag's own (the port row)
+            d['dmg'] = dmg
+        timer = extra.get('timer')
+        if timer == 'tag' and p is not None:  # the port's own attached life (timer max)
+            timer = p.proj_attrs.detonation.timer[1]
+        out['super'] = (n, d, timer)
     if extra and extra.get('delay'):
         out['delay'] = extra['delay']
     if extra and extra.get('cap'):
@@ -836,8 +840,10 @@ def apply_rows(out, rows):
                 out['age'] = v
             elif f == 'Heat Loss Per Second' and out.get('heat'):
                 out['heat'] = (out['heat'][0], out['heat'][1], v) + tuple(out['heat'][3:])
+        elif r['class'] == 'proj' and f == 'Timer Max' and out.get('super'):
+            out['super'] = out['super'][:2] + (v,)   # the balanced attached life (the Needle Rifle)
         elif r['class'] == 'jpt!':
-            for d in out['damage']:
+            for d in out['damage'] + ([out['super'][1]] if out.get('super') else []):
                 if d['tag'].lower() != r['tag'].lower():
                     continue
                 if f == 'Radius':

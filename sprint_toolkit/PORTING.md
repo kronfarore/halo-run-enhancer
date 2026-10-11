@@ -1510,6 +1510,83 @@ kill; `h1_gbp_probe.cmd dump`, then `off`. Each outcome decides the fix:
     int3 padding (.text slack is full, see the supercombine count), option
     `h1_gbp_any_effect`, cmd/.cmd for the user. Not built: the probe decides whether it is needed.
 
+### Halo 1: the Needle Rifle, wave B2 (2026-10-10/11, 9 boots on a30) -- a stuck needle, its own supercombine, a Reach scope with coloured glyphs
+
+The whole weapon is `ports_h1/needle_rifle.py`, on a copy of the Halo 1 NEEDLER (the yardstick,
+the user's pick at 4a: the needle family, Reach's `needle` damage group = Halo 1's needle
+materials) and fired like a precision weapon (Reach's latch trigger, a straight unguided needle,
+2x zoom). The Reach route is the DMR's unchanged (`reach:` paths, Reach's bank, route (a) with the
+DMR's drop_nodes / view_offset -- the FP placement was right at boot 1).
+
+**The supercombine (step 4a).** A Halo 1 projectile names its OWN `super_detonation` effect (the
+needle: `weapons\needler\effects\explosion`, damage part `explosion`); only the needle COUNT is
+the engine's (7, c20). The port carries own copies (`bullet.super_explosion`, h1_pickable_weapons:
+`own_explosion(..., slot='super')`): Reach's attached 350 + area 40 = ONE damage 45 -> 390 over
+Reach's radius 0.375-1.25 (default), the needler's 60 (balanced rows). TRAP: a Halo 1 needle bursts
+0.75 s after it sticks -- at 4/s seven needles never coexist; the attached life must be >= (7 - 1) /
+rate: Reach's 4 s (default), 0.75 x 6/2 shot intervals = 2.25 s (balanced, a 'Timer' row).
+h1_role_compare models it (`super` (count, tag, damage), `timer` window, `delay` for the needler's
+burst damage). Per-weapon counts: the dll session's `h1_supercombine_count` (built 6dd397a,
+untested). **Halo 1 campaign never supercombines the PLAYER** (engine gate on unit +0x1F8 at
++0xBC8E7A..+0xBC8EBE, null game engine = campaign; live read 2026-10-11) -- not a port defect.
+
+**Needle behaviour.** Damage ON IMPACT (Reach) on the needle's materials, `attached detonation
+damage` cleared, guidance 0, minimum velocity 9 (Reach; the needler's 2 slipped through 4b once).
+Material responses = REACH's TABLE per Halo 1 material (default: sticks to bodies; soft ground
+bounce 0-30 else detonate; stone 0-75 / thick metal 0-85 at chance 0.9 else fizzle; glass passes):
+`reflect` takes a LIST of angle groups, skip = 1 - chance. The bounce IS Reach's (user checked);
+it read 'out of proportion' only because of the TRAIL (below). BALANCED bounce by the ratio
+rule (H1 needler x Reach NR / Reach needler): soft ground none (the needler sticks there), thin
+metal 19.1 deg, stone 25, thick metal 35, frictions 0.3 -- PER-ELEMENT catalog rows (block
+'Material Responses' + `index`; halo_patch apply_field passes it; verified in the built map).
+**Headshots:** Halo 1's jpt flag 'causes headshots' (+ 'multiplayer'); Halo 3 / Reach 'can cause
+headshots' on the damage effect (+ the model's headshotable regions from Halo 2 on). Reach's needle
+rifle has it, its needler not -> set. (The DMR config's note 'no Halo 1 jpt flag' is wrong; the DMR
+has the flag from the sniper bullet.) Grunt Birthday Party does NOT fire on a needle headshot
+(it does with the pistol): the birthday-party session's section above.
+
+**The trail (boot 1-4).** The needler's needle brought a LIGHT-VOLUME widget (turns with a stuck
+needle's surface -- the Brute Shot's trap again: `drop_widgets`) and a contrail at 30 points/s (one
+every 50 wu at 1500 wu/s: invisible). The sniper's trail (`attachments_from` + `contrail`) from the
+FP muzzle (`first_person_offset` = the FP primary_trigger in the idle pose, the DMR's method
+reproduced exactly), additive, Reach's own PROFILE from projectile.contrail_system (ManagedBlam:
+lifespan 0.15 s, 0.03 -> 0.01 wu, pink -> violet) -- the sniper's ~1.4 s / 0.087 wu streak made
+every ricochet look huge. Read the source contrail's lifespan / size before borrowing a trail.
+
+**On-gun look.** Reach meter shaders read: the screens' UVs land on `plasma_launcher_holo`'s
+ring ICONS (not the ring gauge its illum map holds -- check where the UVs land on EACH map), a
+shape with no gradient; every weapon OUT reads 0 until the first shot (the needler's 'needles
+remaining' and an added constant alike) -> `meters` `static`: the colour baked, an additive chicago
+(the needler's luminous) -- always lit. `shape` 'r' when a Reach map keeps the shape in one channel.
+The blue indicator halogram = the same lit shape at the meter's OFF level the user approved.
+**Draining needles:** Reach's `ammunition_needles` (a REPLACEMENT on 12 needle nodes, spent = SCALE
+0.01) = Halo 1's `first-person ammunition` OVERLAY (the needler's; last frame = full = zero delta):
+h1_fp_retarget `replacement_overlays` (reference = the full frame, node scale carried) -- Halo 1
+plays node SCALE in an overlay (confirmed in game).
+
+**HUD.** Reticle = Reach's ONE arc sprite on four widgets (h1_add_reticle per-layer `xform`:
+offset / flip / rotate). Ammo meter = `ammo_meter` sizes (21, 18) + balanced rows (the needler's
+20-tick meter showed 18/20 full). SCOPE SIZE FROM A SOURCE SCREENSHOT (user: 'a recurring problem,
+make it part of zoom porting'): `h1_h3_scope.py <chud> --port <key> --fit W,H` (the lens px at
+1080p) solves span / aspect -- Reach's lens here 865 x 590 = 55% of the height (the DMR's '90% safe
+area' gave 1.27x too big). COLOURED scope glyphs (a mask only darkens): `zoom_glyphs` -- a ZOOM
+crosshair whose sequence holds an EMPTY sprite 0 and the glyph as sprite 1 (Halo 1 draws sprite N
+at zoom level N; an aim crosshair with 'show only when zoomed' overlays drew nothing), at reserved
+hud_reticles 44 / 45 (put_frames, + _r), overlay colour WITH an alpha byte, the sprite = Reach's
+faint alpha normalized ^1.6 in RGB + A (MCC drew any non-zero texel near-opaque), size / place
+measured on the source screenshot then nudged onto the mask's cutouts (memory
+h1-coloured-scope-glyphs). `--balanced` boots now exercise per-element rows too.
+
+**Step 11.** Donor = the Elite minor needler (user; carriers 0.4 / 0.5 / 0.6, no actor flags),
+Reach's profile (3.875/s bursts), WDM rule as is 2.08 / 1.50 (user, aware a default supercombine
+x 2.08 one-shots -- but the player cannot be supercombined in campaign anyway). Grunts 1.94/s (the
+two-handed half: actv 0x78 = trigger pulls per second, so x0.5 is slower), Jackals shieldless.
+
+**Proof:** port_sha_snapshot, twice (reach_tags / pickable super + swaps + reticle_xform; then
+model meters / retarget replacement / pickable glyphs + reflect list / scope fit): old vs new tools
+0 changed of 10,637 / 10,806 files (bitmap headers only; one FP antr content-equal), h1_add_reticle
+12 reticles identical, the kit restored exactly both times.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:

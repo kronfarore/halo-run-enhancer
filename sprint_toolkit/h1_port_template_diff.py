@@ -57,6 +57,10 @@ def pairs(p):
         out.append(('shader ' + name, m['dir'] + B + 'shaders' + B + name + '.shader_model',
                     m['template'] + '.shader_model'))
     for name, M in (m.get('meters') or {}).items():
+        if M.get('static'):                  # a lit shape: an additive chicago from `static`
+            out.append(('lit shape ' + name, m['dir'] + B + 'shaders' + B + name + '.shader_transparent_chicago',
+                        M['static'] + '.shader_transparent_chicago'))
+            continue
         out.append(('meter ' + name, m['dir'] + B + 'shaders' + B + name + '.shader_transparent_meter',
                     M['from'] + '.shader_transparent_meter'))
     return out

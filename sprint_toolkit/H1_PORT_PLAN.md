@@ -24,7 +24,9 @@ Brute Shot taught" before A8. A8 (Spartan Laser, 2026-10-10) is DONE and tested 
 read "A8: what the Spartan Laser taught" before A9. Wave A was rebuilt and shipped 2026-10-10.
 B1 (DMR, the Reach pilot, 2026-10-10) is DONE and tested (4 boots: dry, fixes, balanced, Armed);
 its ten-map rebuild is BATCHED for wave B (user's go); read "B1: what the DMR taught" -- the
-Reach recipe -- before B2 (the Needle Rifle; its prompt is at the end of this file).
+Reach recipe -- before B2. B2 (Needle Rifle, 2026-10-11) is DONE and tested (9 boots: dry x5,
+balanced x3, Armed; batched for wave B); read "B2: what the Needle Rifle taught" before B3 (the
+Plasma Repeater; its prompt is at the end of this file).
 
 ## Phase 0: DONE (2026-10-07)
 
@@ -146,7 +148,7 @@ if the port brings its own reticle.
 | A8 | Spartan Laser | spartan_laser | 67/68 | 37 | 26 | sl <- rl | sound\weapons\spartan_laser_port | weapons\spartan laser |
 | A9 | Gravity Hammer | gravity_hammer | 69/70 | 38 | 27 | gh <- f | sound\weapons\gravity_hammer_port | weapons\gravity hammer |
 | B1 | DMR | dmr | 71/72 | 39 | 28 | dm <- ar | sound\weapons\dmr_port | weapons\dmr |
-| B2 | Needle Rifle | needle_rifle | 73/74 | 40 | 29 | nr <- pr | sound\weapons\needle_rifle_port | weapons\needle rifle |
+| B2 | Needle Rifle | needle_rifle | 73/74 | 40 | 29 (+ 44/45 zoom glyphs) | nr <- pr | sound\weapons\needle_rifle_port | weapons\needle rifle |
 | B3 | Plasma Repeater | plasma_repeater | 75/76 | 41 | 30 | rp <- pr | sound\weapons\plasma_repeater_port | weapons\plasma repeater |
 | B4 | Grenade Launcher | grenade_launcher | 77/78 | 42 | 31 | gl <- sg | sound\weapons\grenade_launcher_port | weapons\grenade launcher |
 | B5 | Concussion Rifle | concussion_rifle | 79/80 | 43 | 32 | cr <- pr | sound\weapons\concussion_rifle_port | weapons\concussion rifle |
@@ -697,6 +699,50 @@ against Halo 1's needle (impact 0, `detonation damage` 10, `explosion` the super
 sticking needle (the Spike Rifle's stuck-spike recipe, A5) and its pink glow (A4 / A5 glow
 recipes, fp_material_view first). Template: the yardstick's weapon (the needler) unless the
 role table says otherwise.
+
+## B2: what the Needle Rifle taught (2026-10-11) -- read before B3 (the Plasma Repeater)
+
+PORTING.md "Halo 1: the Needle Rifle, wave B2" is the full record; `ports_h1/needle_rifle.py` is the
+example of a STUCK-PROJECTILE port with its OWN SUPERCOMBINE, of Reach meter shaders on the gun, of
+a Reach REPLACEMENT animation as a Halo 1 overlay and of COLOURED scope glyphs. Everything in "Pilot
+A1" to "B1" still holds; the Needle Rifle added:
+
+**New user rules / decisions:**
+- SCOPE SIZE comes from a SOURCE SCREENSHOT (user: 'a recurring problem -- make it part of zoom
+  porting'): measure the lens (W x H px at 1080p), `h1_h3_scope.py <chud> --port <key> --fit W,H`.
+  The DMR's '90% safe area' was 1.27x too big here (an observation, not a rule).
+- Coloured scope symbols are restored, not dropped: `zoom_glyphs` (memory h1-coloured-scope-glyphs;
+  user: 'remember how these were produced').
+- A mechanic whose source and yardstick values sit on different sides of a zero (the needler never
+  bounces on soft ground) goes to zero in BALANCED (user: 'keep the no bounce').
+- A port's damage that can headshot in the source gets Halo 1's jpt flag 'causes headshots'.
+- WDM rule as is even when a supercombine makes the default AI lethal (user). The player cannot be
+  supercombined in Halo 1 campaign at all (engine gate, confirmed): no port can change that by tags.
+
+**Process (observations):**
+- Read where each source shader's UVs LAND on each of its maps before choosing the map (the display
+  sampled the meter map's icons, not the illum map's gauge).
+- Every Halo 1 weapon OUT reads 0 until the first shot: a lit shape that must glow from spawn is a
+  function-free additive chicago (`meters` `static`), not a meter.
+- A borrowed contrail brings its LIFESPAN and WIDTH: read the source trail's profile (ManagedBlam,
+  function data) before judging the source's projectile behaviour.
+- 4b let the template's minimum velocity (2) through: compare the source's detonation fields too.
+- port_sound_refs skips a projectile's own sound fields (flyby): check them by hand.
+- Per-element balance rows work (`index` on a block row; checked in the built map).
+- Heredoc edits of configs with Windows paths ate backslashes three times (`\n`, `\b`): edit
+  configs with the Edit tool or chr(92).
+
+**For B3, the Plasma Repeater (`rifle\plasma_repeater\plasma_repeater`):** yardstick candidates the
+Plasma Rifle (provisional; Reach HAS one, `rifle\plasma_rifle`, and the Elite carries it in both
+games) and the Plasma Pistol. Reach (h3_weapon_values --kit reach, 2026-10-11): repeater rounds/s
+15 -> 3 (the rate FALLS WITH HEAT), recovery 0.05, no magazine, battery 0.005 a round (200 shots;
+campaign the same), error 0.4 -> 3, 25 -> 35 wu/s, range 100, damage 5.83 -> 7 `plasma_fast`, aim
+5/15 10/20, FP ready 20 / fire 10 / melee 34; Reach's plasma rifle 6 -> 9/s (ramp 0.8 / 0.6), heat
+0.15 a round, loss 0.85 / 0.35 overheated, battery 0.0025, error 1.3 -> 3.5, 25 wu/s, range 40, 10
+`plasma_slow`, aim 5/12 9/18. The repeater's HEAT per round reads 0 and its heat loss 0.033/s with
+no recovery threshold: find where its heat lives (a trigger / barrel heat function, 'heat generated
+per second', the manual VENT) before the ratio table; Halo 1 has one heat loss and no manual vent
+(the Beam Rifle's heat lessons, A4).
 
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
@@ -1454,3 +1500,50 @@ purpose: a 458.8 MiB a10 loads and plays (0.1) -- no file-size cap. Spawn check 
 > grunt,jackal,elite`; `--restore <level>`. The ten-map rebuild stays BATCHED (wave B, my go).
 > When done: catalog entry, enhancer hand-off, PORTING section, memory, `python port_backup.py
 > --game h1`, "B2: what the Needle Rifle taught" and the B3 (Plasma Repeater) prompt.
+
+### The Plasma Repeater (wave B3), filled in
+
+> Port the Plasma Repeater into Halo 1 (H1_PORT_PLAN.md, wave B, #B3). Source: Halo Reach,
+> `objects\weapons\rifle\plasma_repeater\plasma_repeater` (HREK); FP graph
+> `objects\characters\spartans\fp\weapons\rifle\fp_plasma_repeater\fp_plasma_repeater`.
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Phase 0: DONE", "Pilot A1" to "A9" -- A4 (the Beam Rifle:
+> heat + battery on a tapped weapon, a template that is not the yardstick, glow) matters most here
+> -- "B1: what the DMR taught" (the REACH RECIPE) and "B2: what the Needle Rifle taught" (scope /
+> glyph / meter-shader / replacement-animation recipes, source-screenshot rules)), PORTING.md
+> ("What ported actually means" steps 0-11 and 5b, closing checks 0-10, the Halo 1 sections -- the
+> Needle Rifle and the DMR first, the Beam Rifle and the Sentinel Beam for heat --, "Balance" incl.
+> the ARMED WDM RULE, THE HIT-EFFECT RULE (a 15/s weapon), the two-handed rule) and memory
+> h1-needle-rifle-port, h1-dmr-reach-pilot, h1-beam-rifle-port, h1-coloured-scope-glyphs,
+> h1-armed-test-balanced-god, h1-armed-wdm-rule, h1-armed-two-handed-rule, h1-hit-effect-rule,
+> port-muzzle-flash-rule, port-flashlight-sound-rule, h1-port-phase0, halo-port-own-messages,
+> h1-fmod-bank-sounds, port-findings-are-observations, shared-worktree-commits.
+> `ports_h1/needle_rifle.py` is the nearest shape for the Reach plumbing; `beam_rifle.py` and
+> `sentinel_beam.py` for heat and battery. Copy into `ports_h1/plasma_repeater.py` and edit only
+> that file plus shared tools you generalize (prove byte-identical output for the built ports with
+> `port_sha_snapshot.py`, and restore the kit from a backup after).
+>
+> START WITH STEP 4a, with me: candidates Plasma Rifle (provisional; Reach has one too) and Plasma
+> Pistol; DEFAULT = Reach's own numbers, BALANCED = the ratio rows. Reach (2026-10-11): repeater
+> 15 -> 3 rounds/s (falls with heat), recovery 0.05, battery 0.005 a round, error 0.4 -> 3, 25 -> 35
+> wu/s, range 100, 5.83 -> 7 `plasma_fast`, aim 5/15 10/20; Reach's plasma rifle 6 -> 9/s, heat
+> 0.15 a round, loss 0.85 / 0.35, battery 0.0025, 25 wu/s, range 40, 10 `plasma_slow`. FIND WHERE THE
+> REPEATER'S HEAT LIVES (heat per round reads 0, loss 0.033/s, no recovery threshold) and how its
+> rate falls with heat, and how Reach's MANUAL VENT works, before the ratio table -- Halo 1 has one
+> heat loss and no manual vent (approximate it in both versions and record what it lacks). Show
+> the time to kill with heat (`heat_sim`) vs the Plasma Rifle, AR, Needler. Damage group
+> `plasma_fast` vs Halo 1's plasma materials. Then 4b, the template diff, port_sound_refs (+ the
+> projectile's own sound fields by hand) and the muzzle-flash comparison BEFORE boot 1. Any zoom /
+> HUD art: size it from a Reach SCREENSHOT (`h1_h3_scope --fit`), ask me for one.
+>
+> Reserved: pickup messages 75/76; hud_msg_icons 41 (+ _r); hud_reticles 30 (+ _r; 46+ for any
+> zoom glyphs, after the Needle Rifle's 44/45); label `rp` taught to characters\cyborg from `pr`;
+> sounds under `sound\weapons\plasma_repeater_port`; weapon folder `weapons\plasma repeater`;
+> catalog name `Plasma Repeater`.
+>
+> Step 11: `rp` has no carrier -- list Halo 1's carriers of the donor weapon (WDM, actor flags);
+> `firing_profile` (Reach's ai\generic Plasma Repeater entry) with `donor_weapon` (+
+> `donor_variant`) and a `wdm_rule`; the enhancer session sets `hands` (and cards) before the Armed
+> boot. Tests: `h1_port_test_map.py plasma_repeater --stage` (dry default), fixes, `--balanced`,
+> `--armed grunt,jackal,elite`; `--restore <level>`. The ten-map rebuild stays BATCHED (wave B, my
+> go). When done: catalog entry, enhancer hand-off, PORTING section, memory, `python port_backup.py
+> --game h1`, "B3: what the Plasma Repeater taught" and the B4 (Grenade Launcher) prompt.

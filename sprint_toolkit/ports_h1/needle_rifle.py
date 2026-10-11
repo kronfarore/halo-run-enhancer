@@ -124,7 +124,30 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'in progress',
+    # 2026-10-11: tested on a30 over 9 boots (dry x5, balanced x3, Armed) -- everything confirmed by
+    # the user; the ten-map rebuild is BATCHED for wave B (user's go). CLOSE-OUT RECORD:
+    # STEP 4b (port_field_audit --port needle_rifle, final): weapon list 2 = 0 (camo ding,
+    #   illumination recovery written; error ramp by the trigger); list 4 = minimum error 0 (the
+    #   user's 'precision', the needler's 2 is spray); list 5 = message 73, zoom 1 x 2, reload time
+    #   0 (the animation), trigger flags (latch), error acceleration 1.0. Projectile list 2 = air
+    #   damage range (66.667 written); list 4 = minimum velocity 9 (Reach's; the needler 2); list 5
+    #   = guidance 0, Reach's material table (SOFT / STONE / METAL / GLASS). Damage list 2 = the
+    #   forward exponent, Reach's 8 on purpose (the ratio degenerates to 40); list 5 = the headshot
+    #   flag (Reach's needle can headshot).
+    # TEMPLATE DIFF (h1_port_template_diff, final, 472 lines): every line traced -- weapon 36,
+    #   needle 87 (responses, timer, super detonation, trail, flyby), damage 6, empty 1 (the dry
+    #   fire), firing effect (the 8 off-axis sprites dropped: index shifts), HUD 56 (reticle 29,
+    #   scope mask, the glyph zoom crosshair, nr_ammo meter), shaders (maps + glow), the two lit
+    #   shapes (their baked bitmap only).
+    # Closing checks: 0 port_refs_audit 0 problems (test copies); 2 validate_halo_json 0 problems;
+    #   4 port_backup h1; 5 n/a (Halo 1: the bank manifest); 6 = 4b above; 7 every sound OWN (flyby
+    #   checked by hand -- port_sound_refs does not read projectile sound fields), port_sounds
+    #   --check 0; 8 the Armed build: Grunt / Jackal / Elite slots fire from the Elite minor needler
+    #   + Reach's profile, Grunts 1.94/s vs 3.875 (two-handed), Jackals shieldless; 9 the shield
+    #   hit = own copy x0.808 (4/s); 10 the flash = the needler's centre sprites (sideways pairs
+    #   dropped). The player is NEVER supercombined in Halo 1 campaign (engine gate, confirmed by a
+    #   live read: the supercombine session) -- not a port defect.
+    'status': 'done',
 
     # geometry + look (h1_h3_weapon_model.py; Reach through reach_tags). Reach's ONE model for
     # world AND first person. needle_rifle.render_model: 15 nodes -- b_gun (root), b_scope (+
