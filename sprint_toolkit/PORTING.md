@@ -1446,12 +1446,17 @@ its tag in the maps.
 
 **The classic confetti (2026-10-11, untested in game): `effects\grunt birthday party.effect`**,
 written by `h1_confetti_effect.py --write` into HCEEK\tags; the dll's preferred slot already
-names it, so no dll change. Built only from HCEEK's own tags, NO damage part: an own flake
-particle `effects\particles\solid\confetti` (a copy of `debris shirt`: a near-white fluttering
-cloth sprite on light wind-damped point physics, so the effect tint gives clean colours; lives
-2.5-3.5 s, not killed at rest) in six colours, pink needler spike debris, green plasma
-overcharge sparks, blue shield sparks, a warm `flash h pistol detonate` and the needler's
-detonation pop. Everything starts at the Grunt's origin + 0.3 wu, up in a wide cone.
+names it, so no dll change (since 3e50a85 it is the ONLY Birthday Party effect: vanilla
+maps play nothing). v2 (same day), after in-game tests: on a dead Grunt at the object origin
+the small spark effects (`charged bolt sparks`, `impact c shield`) showed NOTHING and `needle
+detonate` only a tiny burst, while `weapons\plasma grenade\effects\explosion` DID show. So the
+BASE is that explosion: both damage parts and the decal removed, its particle system (x0.7,
+pink) and light (warm) as own copies under effects\particle systems \ effects\lights, the boom
+swapped for the needler's pop. Added to it, all large and carrying their own velocity and spread
+(no impact normal): an own flake particle `effects\particles\solid\confetti` (a copy of `debris
+shirt`: a near-white fluttering cloth sprite on light wind-damped point physics, so the tint
+gives clean colours; lives 2.5-3.5 s) in six colours, half up in a cone and half in every
+direction, plus pink needler debris and green / blue sparks, from the origin + 0.3 wu.
 **How it gets into the maps:** a NEVER-CALLED static script at the end of sprint.hsc,
 `gbp_confetti_ref` (`effect_new_on_object_marker "effects\grunt birthday party" (player0) ""`).
 install_script puts sprint.hsc into data\global_scripts.hsc, which tool compiles into every
