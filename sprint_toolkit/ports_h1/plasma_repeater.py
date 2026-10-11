@@ -24,8 +24,8 @@ RS = 'data\\sound\\weapons\\'                      # Reach's bank folders
 LEVELS = ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40']
 # the heat colour of the on-gun lights (Reach's meter_color_on): teal cold (B out's floor 0.1),
 # Reach's 255, 181, 23 orange-yellow midway, red hot
-HEAT_RAMP = [(0.0, (89 / 255.0, 1.0, 244 / 255.0)), (0.1, (89 / 255.0, 1.0, 244 / 255.0)),
-             (0.55, (1.0, 181 / 255.0, 23 / 255.0)), (1.0, (1.0, 0.16, 0.08))]
+HEAT_RAMP = [(0.0, (89 / 255.0, 1.0, 244 / 255.0)), (0.05, (89 / 255.0, 1.0, 244 / 255.0)),
+             (0.5, (1.0, 181 / 255.0, 23 / 255.0)), (0.95, (1.0, 0.16, 0.08)), (1.0, (1.0, 0.16, 0.08))]
 
 PORT = reserved(
     order=21, wave='B3', name='Plasma Repeater', source='Halo Reach',
@@ -146,17 +146,26 @@ PORT.update({
         # B out = heat floored at 0.1, live from spawn. BOOT 4: the Needle Rifle's lit shape
         # (additive chicago, white shape) x a colour RAMP sampled at one point slid by B out
         # (`ramp`: the map's u-animation source) -- teal to 0.1, yellow at 0.55, red at 1
+        # BOOT 4 (user): the ramp works ('both change colours from teal to red') -- REMEMBER IT as
+        # the backup -- but Reach's gauge FILLS: 'initially blue, fills up with heat, slowly
+        # turning red on the way; the plasma rifle already shows how' (its meter: lit texels by
+        # value, coloured by PLACE). And 'the overheat colour isn't held' -> both read A OUT =
+        # heat + OVERHEATED (function 0, pickable `fields`: C in = overheated, `add`): full / red
+        # through the whole vent. BOOT 5: the gauge a meter again -- Reach's alpha gradient
+        # stretched to 0.02..0.95 (`gradient_range`: boot 1 lit half of it from cold), unlit = a
+        # dim teal (Reach's meter_color_off 77, 212, 203 at half), lit teal -> red along the
+        # bar; the display keeps the ramp
         'meters': {
             'plasma_repeater_gauge': {
                 'map': R + RW + r'\bitmaps\plasma_repeater_gauge.bitmap',
-                'from': PR + r'fp\shaders\gauge', 'gradient': 0.0,
-                'static': r'weapons\needler\shaders\needler luminous', 'color': (1.0, 1.0, 1.0),
-                'ramp': HEAT_RAMP, 'ramp_source': 'B_out'},
+                'from': PR + r'fp\shaders\gauge', 'value': 'A_out', 'gradient_range': (0.02, 0.95),
+                'color': (89 / 255.0, 1.0, 244 / 255.0), 'color_max': (1.0, 0.16, 0.08),
+                'color_off': (0.5 * 77 / 255.0, 0.5 * 212 / 255.0, 0.5 * 203 / 255.0)},
             'plasma_repeater_display': {
                 'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
                 'from': PR + r'fp\shaders\gauge', 'shape': 'r', 'gradient': 0.0,
                 'static': r'weapons\needler\shaders\needler luminous', 'color': (1.0, 1.0, 1.0),
-                'ramp': HEAT_RAMP, 'ramp_source': 'B_out'},
+                'ramp': HEAT_RAMP, 'ramp_source': 'A_out'},
             # the INDICATOR halogram (plasma_launcher_holo, teal 114, 255, 215): the Needle
             # Rifle's indicator recipe, its 1/4 level
             'plasma_repeater_indicator': {
@@ -346,6 +355,14 @@ PORT.update({
             'weap_attrs.age.misfire_chance': 0.25,
             'weap_attrs.triggers.0.firing_effects.1.misfire_effect.filepath': '',
             'item_attrs.collision_sound.filepath': SND + 'rp_drop',
+            # BOOT 4 (user): 'the overheat colour isn't held' -- the lights read A OUT = heat +
+            # OVERHEATED: C in = overheated, function 0 (the template's colour wander on A out,
+            # used by nothing of the port's) = 'one' x heat + C in -> 1+ through the vent
+            'weap_attrs.C_in': 'overheated',
+            'obje_attrs.functions.0.function': 'one',
+            'obje_attrs.functions.0.period': 0.0,
+            'obje_attrs.functions.0.scale_function_by': 'A_in',
+            'obje_attrs.functions.0.add': 'C_in',
             # the own hull + pathfinding spheres (model['collision'], boot 1's sinking) and a bounding
             # radius over the model (the template's 0.2 < the farthest vertex, ~0.24 wu)
             'obje_attrs.collision_model.filepath': RP + 'plasma repeater',

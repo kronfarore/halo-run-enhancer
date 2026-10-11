@@ -702,6 +702,14 @@ def meters(w):
         # plasma_pistol_display: the ring in R, G and B solid 255 -- max(RGB) lit the whole square)
         shape = a[..., :3].max(axis=2) if not M.get('shape') else a[..., 'rgb'.index(M['shape'])]
         grad = a[..., 3] if M.get('gradient', 'alpha') == 'alpha' else np.full_like(shape, int(round(M['gradient'] * 255)))
+        if M.get('gradient_range'):
+            # the source gradient's own range stretched onto (lo, hi) of the meter value (the
+            # Plasma Repeater, boot 1: Reach's gauge gradient is 0 over half its shape -- lit
+            # from cold; 0..166 -> lo..hi, so a cold gun shows an empty gauge, full at hi)
+            lo, hi = M['gradient_range']
+            g = grad.astype(np.float64)
+            g = (g - g[shape > 0].min()) / max(1.0, g[shape > 0].max() - g[shape > 0].min())
+            grad = np.clip(np.round((lo + (hi - lo) * g) * 255), 0, 255).astype(np.uint8)
         if M.get('steps'):
             # Halo 3's steps are GAMMA-spaced (the display: 223, 189, 168 ... 3, 1 = (k/18)^2.2)
             # and Halo 1 compares linearly (lit while gradient < value) -- test 2: 'drains only
@@ -781,6 +789,9 @@ def meters(w):
             s.serialize(temp=False, backup=False)
             print('   lit shape %s  map %s %dx%d' % (s.filepath, bm, wd, h))
             continue
+        stale = os.path.join(out, name + '.shader_transparent_chicago')   # a lit shape before
+        if os.path.exists(stale):
+            os.remove(stale)
         s = smet_def.build(filepath=os.path.join(TAGS, M['from'] + '.shader_transparent_meter'))
         sm = s.data.tagdata.smet_attrs
         sm.meter_shader.map.filepath = bm
