@@ -3013,6 +3013,15 @@
     {
      "class": "proj",
      "tag": "weapons\\needle rifle\\needle",
+     "field": "Super Detonation Projectile Count",
+     "block": null,
+     "value": 4,
+     "card": "Supercombine Needle Count",
+     "original": 3
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\needle rifle\\needle",
      "field": "Timer",
      "block": null,
      "value": 2.25,

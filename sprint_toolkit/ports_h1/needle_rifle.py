@@ -538,6 +538,12 @@ PORT.update({
                 row('proj', NR + 'needle', 'Initial Velocity', 18.167, 50.0, 'Projectile'),
                 row('proj', NR + 'needle', 'Final Velocity', 18.167, 50.0, 'Projectile'),
                 row('proj', NR + 'needle', 'Maximum Range', 192.0, 250.0, 'Projectile'),
+                # the PER-WEAPON supercombine count (the dll option h1_supercombine_count, off by
+                # default; the supercombine-card session's field: H1 proj +0x1F2): default Reach's
+                # 3, balanced the ratio 7 x 3/6 = 3.5 -> 4 (user, 2026-10-11). Option OFF = the
+                # engine's 7, so the balanced stuck time stays 2.25 s (it fits 7 at 3.33/s; the
+                # ratio for 4 alone would be 1.125 s and could never supercombine with the option off)
+                row('proj', NR + 'needle', 'Super Detonation Projectile Count', 4, 3, 'Supercombine Needle Count'),
                 row('proj', NR + 'needle', 'Timer', 2.25, 4.0, 'Needle Timer'),
                 row('proj', NR + 'needle', 'Timer Max', 2.25, 4.0, 'Needle Timer'),
                 row('weap', NR + 'needle rifle', 'Autoaim Angle', 1.69, 2.25, 'Autoaim'),
