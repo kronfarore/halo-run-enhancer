@@ -97,44 +97,57 @@ SITES = [
 ]
 
 
-def _writes(state, want):
+# ---- PLAYERS supercombinable in campaign (option h1_supercombine_players) -----------
+# The detonation skips a stuck-in unit that belongs to a player (unit +0x1F8 = player
+# handle, AI -1; measured 2026-10-11) unless a multiplayer game engine runs (qword
+# +0x2E9F820, null in campaign): `cmp [rax],-1 / je +0xBC8EC4 / cmp engine,0 / je skip`.
+# The first je becomes a jmp, so every unit goes on to the count. Independent of SITES.
+PLAYER_NAME = 'Needles supercombine on the player in campaign'
+PLAYER_SITES = [(0xBC8EB5, H('443920'), H('740d'), H('eb0d'), H('4c393d62692d02'))]
+
+
+def sync_players(on, path=DLL, quiet=True, live_only=False):
+    return sync(on, path, quiet, live_only, PLAYER_SITES, PLAYER_NAME)
+
+def _writes(state, want, sites=None):
+    sites = sites or SITES
     if want and state in ('off', 'partial'):
-        return [(r, pt) for r, _p, _st, pt, _po in SITES]
+        return [(r, pt) for r, _p, _st, pt, _po in sites]
     if not want and state in ('on', 'partial'):
-        return [(r, st) for r, _p, st, _pt, _po in reversed(SITES)]
+        return [(r, st) for r, _p, st, _pt, _po in reversed(sites)]
     return []
 
 
-def file_state(path=DLL):
-    return _classify(_file_reader(path), SITES) if os.path.exists(path) else 'missing'
+def file_state(path=DLL, sites=None):
+    return _classify(_file_reader(path), sites or SITES) if os.path.exists(path) else 'missing'
 
 
-def live_state(h, base):
-    return _classify(lambda rva, n: dp.read(h, base + rva, n), SITES)
+def live_state(h, base, sites=None):
+    return _classify(lambda rva, n: dp.read(h, base + rva, n), sites or SITES)
 
 
-def live_set(h, base, want):
-    state = live_state(h, base)
+def live_set(h, base, want, sites=None):
+    state = live_state(h, base, sites)
     if state == 'unknown':
         return False, ('the running halo1.dll does not hold the expected bytes -- this MCC '
                        'build differs, refusing to write')
-    for rva, blob in _writes(state, want):
+    for rva, blob in _writes(state, want, sites):
         ok, err = dp.write(h, base + rva, blob)
         if not ok:
             return False, '+0x%X: %s' % (rva, err)
     return True, None
 
 
-def file_set(want, path=DLL):
+def file_set(want, path=DLL, sites=None):
     """(ok, message). In place, or the swap by rename while MCC holds the dll."""
     _cleanup_inuse(path)
-    state = file_state(path)
+    state = file_state(path, sites)
     if state == 'missing':
         return False, '%s not found' % path
     if state == 'unknown':
         return False, ('halo1.dll does not hold the expected bytes -- this MCC build '
                        'differs, refusing to write')
-    writes = _writes(state, want)
+    writes = _writes(state, want, sites)
     if not writes:
         return True, 'already as wanted'
     bak = path + '.prepatch.bak'
@@ -148,7 +161,7 @@ def file_set(want, path=DLL):
     new = path + '.new'
     shutil.copyfile(path, new)
     _write_file(new, writes)
-    if file_state(new) != ('on' if want else 'off'):
+    if file_state(new, sites) != ('on' if want else 'off'):
         os.remove(new)
         return False, 'the patched copy did not verify'
     held = '%s.inuse-%d' % (path, int(time.time()))
@@ -165,11 +178,11 @@ def file_set(want, path=DLL):
     return True, 'swapped in while MCC runs (applies at its next start)'
 
 
-def sync(on, path=DLL, quiet=True, live_only=False):
+def sync(on, path=DLL, quiet=True, live_only=False, sites=None, name=NAME):
     """One call for the GUI (h1_overheat_unzoom.sync's shape): the patch on (or back to
     stock) in the running MCC AND in halo1.dll on disk. Result rows; never raises."""
     target = 'on' if on else 'off'
-    row = {'tag': 'halo1.dll', 'effect': NAME}
+    row = {'tag': 'halo1.dll', 'effect': name}
     out = []
 
     def add(field, ok, old, msg):
@@ -180,8 +193,8 @@ def sync(on, path=DLL, quiet=True, live_only=False):
                     'reason': None if ok else msg, **({'note': msg} if ok else {})})
 
     def live(h, base):
-        old = live_state(h, base)
-        ok, err = live_set(h, base, on)
+        old = live_state(h, base, sites)
+        ok, err = live_set(h, base, on, sites)
         add('running MCC', ok, old, err)
     try:
         # the running MCC only when acting on ITS dll (not on a --dll copy)
@@ -193,8 +206,8 @@ def sync(on, path=DLL, quiet=True, live_only=False):
         add('running MCC', False, None, str(e))
     if not live_only:
         try:
-            old = file_state(path)
-            ok, msg = file_set(on, path)
+            old = file_state(path, sites)
+            ok, msg = file_set(on, path, sites)
             add('halo1.dll file', ok, old, msg)
         except Exception as e:
             add('halo1.dll file', False, None, str(e))
@@ -328,6 +341,8 @@ def main(argv=None):
     g.add_argument('--on', action='store_true')
     g.add_argument('--off', '--restore', dest='off', action='store_true')
     g.add_argument('--show', action='store_true')
+    ap.add_argument('--players', action='store_true',
+                    help='with --on/--off/--show: the player-supercombine patch instead')
     g.add_argument('--count', nargs='*', metavar=('PROJ', 'N'),
                    help='list the supercombining projectiles (live, or --map), or set one')
     g.add_argument('--gates', action='store_true',
@@ -338,7 +353,8 @@ def main(argv=None):
     ap.add_argument('--map', help='with --count: a .map file instead of the running game')
     a = ap.parse_args(argv)
     if a.on or a.off:
-        for r in sync(a.on, a.dll, quiet=False, live_only=a.live):
+        fn = sync_players if a.players else sync
+        for r in fn(a.on, a.dll, quiet=False, live_only=a.live):
             print('%-16s %s %s' % (r['field'], 'OK  ' if r['ok'] else 'FAIL',
                                    r.get('note') or r.get('reason') or r.get('new')))
         return
@@ -398,9 +414,10 @@ def main(argv=None):
         else:
             _print_counts(r)
         return
-    print('file  %s  (%s)' % (file_state(a.dll), a.dll))
-    r = _live(lambda h, base: live_state(h, base))
-    print('live  %s' % (r if r else 'MCC / halo1.dll not running'))
+    for label, sites in (('count', SITES), ('players', PLAYER_SITES)):
+        print('%-8s file  %s  (%s)' % (label, file_state(a.dll, sites), a.dll))
+        r = _live(lambda h, base: live_state(h, base, sites))
+        print('%-8s live  %s' % (label, r if r else 'MCC / halo1.dll not running'))
 
 
 if __name__ == '__main__':

@@ -1399,7 +1399,12 @@ game_engine_new +0xA9E3B0, NULL in campaign) must be set. `h1_supercombine_test.
 on a loaded campaign level: every AI biped +0x1F8 = -1, the player's = 0xEC700000 (a player
 handle, index 0) -- so +0x1F8 is the unit's player, and players are immune in campaign (in
 multiplayer they are not). Stock needler included; the god shield plays no part (no count code
-reads shields). Lifting it = a 2-byte patch at +0xBC8EBE (not built; the user's call).
+reads shields). LIFTED by option `h1_supercombine_players` (2026-10-11, user: test it):
+`h1_supercombine_count.sync_players` / `h1_supercombine_test.cmd players on|off`, ONE byte --
++0xBC8EB5 `74 0D` (je to the count when +0x1F8 == -1) -> `EB 0D` (always), so every unit goes
+on to the count; the attach path needs nothing (needles already stick to players). Test: god
+shield on, let enemies with needlers / Needle Rifles stick 7 / 3 needles in you -> the
+supercombine bursts on you (shield drop, the explosion effect).
 
 **Live tag access (test helper).** halo1.dll's tag_get +0xA9B648: tag array = qword
 [+0x1C34FB0] (32-byte entries: class, id +0xC, name +0x10, data +0x14), a tag pointer p is at

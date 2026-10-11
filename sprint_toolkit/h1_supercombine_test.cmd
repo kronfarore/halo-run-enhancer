@@ -6,7 +6,8 @@ rem   h1_supercombine_test.cmd 3 rifle  in game: the Needle Rifle port's needle 
 rem   h1_supercombine_test.cmd 0        in game: back to the engine's 7 (0 rifle: the rifle's)
 rem   h1_supercombine_test.cmd show     patch state + the loaded level's counts
 rem   h1_supercombine_test.cmd off      halo1.dll back to stock
-rem   h1_supercombine_test.cmd gates    read-only: why a stuck-in biped can or cannot supercombine
+rem   h1_supercombine_test.cmd players on^|off   needles supercombine on the player in campaign
+rem   h1_supercombine_test.cmd gates   read-only: why a stuck-in biped can or cannot supercombine
 rem Run elevated if it says OpenProcess failed. No parenthesised blocks: "(x86)" in the path.
 setlocal
 set "PY=%~dp0h1_supercombine_count.py"
@@ -14,6 +15,7 @@ if /i "%~1"=="on" goto on
 if /i "%~1"=="off" goto off
 if /i "%~1"=="show" goto show
 if /i "%~1"=="gates" goto gates
+if /i "%~1"=="players" goto players
 if "%~1"=="" goto usage
 set "PROJ=weapons\needler\needle"
 if /i "%~2"=="rifle" set "PROJ=weapons\needle rifle\needle"
@@ -37,6 +39,11 @@ exit /b %errorlevel%
 python "%PY%" --gates --note "%~2"
 exit /b %errorlevel%
 
+:players
+if /i "%~2"=="off" python "%PY%" --off --players
+if /i not "%~2"=="off" python "%PY%" --on --players
+exit /b %errorlevel%
+
 :usage
-echo usage: %~nx0 on^|off^|show^|gates^|^<count^>
+echo usage: %~nx0 on^|off^|show^|gates^|players^|^<count^> [rifle]
 exit /b 1

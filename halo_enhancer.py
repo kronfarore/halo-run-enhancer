@@ -422,7 +422,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h1_replace_first_weapons', 'h1_enemy_weapon_enabled',
                'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards',
                'h1_overheat_unzoom', 'h1_overheat_no_rezoom', 'h1_covenant_avoid_ff',
-               'h1_melee_blocks_fire', 'h1_supercombine_count', 'h1_birthday_party',
+               'h1_melee_blocks_fire', 'h1_supercombine_count', 'h1_supercombine_players',
+               'h1_birthday_party',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -1026,6 +1027,10 @@ CONFIG = {
     # 0 the game is stock. Needed by the Needle Rifle port (3) and the Halo 1 Supercombine
     # Needle Count card. Off = put back to stock. Prototype, untested in game (2026-10-10)
     "h1_supercombine_count": False,
+    # ...and needles supercombine on the PLAYER in campaign too (stock Halo 1 skips a unit
+    # that belongs to a player unless a multiplayer game engine runs). A 1-byte halo1.dll
+    # patch in the same tool (sync_players). Off = stock. Untested in game (2026-10-11)
+    "h1_supercombine_players": False,
     # Options -> Patching -> Halo 1: the Grunt Birthday Party skull also spawns a CLASSIC
     # effect on the dead Grunt (its own confetti is Anniversary-only, never drawn in classic
     # graphics). A halo1.dll patch (sprint_toolkit/h1_birthday_party.py), live AND in the
@@ -7190,7 +7195,9 @@ class MagnitudeEditorDialog(QDialog):
         sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
         try:
             import h1_supercombine_count
-            return h1_supercombine_count.sync(bool(CONFIG.get('h1_supercombine_count')))
+            return (h1_supercombine_count.sync(bool(CONFIG.get('h1_supercombine_count')))
+                    + h1_supercombine_count.sync_players(
+                        bool(CONFIG.get('h1_supercombine_players'))))
         except Exception as e:
             return [{'tag': 'halo1.dll', 'effect': 'Supercombine needle count per projectile',
                      'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
@@ -11785,6 +11792,15 @@ class OptionsDialog(QDialog):
             "(at once) and into halo1.dll (every later start). Unticked, the next patch "
             "puts halo1.dll back to stock. In co-op both machines need it.")
         h1form.addRow("", self.h1_supercombine_count_cb)
+        self.h1_supercombine_players_cb = QCheckBox(
+            "Needles supercombine on the player in campaign (halo1.dll)")
+        self.h1_supercombine_players_cb.setChecked(bool(CONFIG.get('h1_supercombine_players')))
+        self.h1_supercombine_players_cb.setToolTip(
+            "Halo 1 never supercombines needles stuck in a player during campaign (only in "
+            "multiplayer). This lifts that, so enemy needlers and Needle Rifles can "
+            "supercombine on you, as from Halo 2 on. Same handling as the option above: "
+            "running game and halo1.dll, both machines in co-op.")
+        h1form.addRow("", self.h1_supercombine_players_cb)
         self.h1_birthday_party_cb = QCheckBox(
             "Grunt Birthday Party effect in classic graphics (halo1.dll)")
         self.h1_birthday_party_cb.setChecked(bool(CONFIG.get('h1_birthday_party')))
@@ -13068,6 +13084,7 @@ class OptionsDialog(QDialog):
             'h1_overheat_no_rezoom': self.h1_overheat_no_rezoom_cb.isChecked(),
             'h1_melee_blocks_fire': self.h1_melee_blocks_fire_cb.isChecked(),
             'h1_supercombine_count': self.h1_supercombine_count_cb.isChecked(),
+            'h1_supercombine_players': self.h1_supercombine_players_cb.isChecked(),
             'h1_birthday_party': self.h1_birthday_party_cb.isChecked(),
             'h1_covenant_avoid_ff': self.h1_covenant_ff_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
