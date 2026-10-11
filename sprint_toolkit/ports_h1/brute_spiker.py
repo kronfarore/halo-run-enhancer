@@ -107,6 +107,9 @@ PORT.update({
         'world': H3 + r'\spike_rifle.render_model',
         'fp': H3 + r'\fp_spike_rifle\fp_spike_rifle.render_model',
         'world_name': 'spiker',
+        # the user (Plasma Repeater, 2026-10-11): every port gets a FITTED `ground point` -- Halo 1
+        # rests a dropped item on it (h1_h3_weapon_model; replaces the one the source model brought)
+        'ground_point': 'auto',
         'shaders': {'bolt_thrower': (H3 + r'\bitmaps\brute_bolter.bitmap', H3 + r'\bitmaps\brute_bolter_illum.bitmap'),
                     'bolt_thrower_dull': (H3 + r'\bitmaps\brute_bolter.bitmap', H3 + r'\bitmaps\brute_bolter_illum.bitmap'),
                     'bolt_thrower_shiny': (H3 + r'\bitmaps\brute_bolter.bitmap', H3 + r'\bitmaps\brute_bolter_illum.bitmap'),

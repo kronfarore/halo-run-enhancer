@@ -96,6 +96,9 @@ PORT.update({
         'world': H3 + r'\beam_rifle.render_model',
         'fp': H3 + r'\fp_beam_rifle\fp_beam_rifle.render_model',
         'world_name': 'beam rifle',
+        # the user (Plasma Repeater, 2026-10-11): every port gets a FITTED `ground point` -- Halo 1
+        # rests a dropped item on it (h1_h3_weapon_model; replaces the one the source model brought)
+        'ground_point': 'auto',
         'shaders': {'beam_rifle': (H3 + r'\bitmaps\beam_rifle.bitmap', H3 + r'\bitmaps\beam_rifle_illum.bitmap'),
                     'beam_rifle2': (H3 + r'\bitmaps\beam_rifle.bitmap', H3 + r'\bitmaps\beam_rifle_illum.bitmap'),
                     'beam_rifle_rubber': (H3 + r'\bitmaps\beam_rifle.bitmap', None)},

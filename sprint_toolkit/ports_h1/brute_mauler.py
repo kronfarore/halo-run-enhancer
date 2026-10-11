@@ -99,6 +99,9 @@ PORT.update({
         'world': H3 + r'\excavator.render_model',
         'fp': H3 + r'\fp_excavator\fp_excavator.render_model',
         'world_name': 'mauler',
+        # the user (Plasma Repeater, 2026-10-11): every port gets a FITTED `ground point` -- Halo 1
+        # rests a dropped item on it (h1_h3_weapon_model; replaces the one the source model brought)
+        'ground_point': 'auto',
         'shaders': {'excavator': (BASE, ILLUM),
                     'excavator_dull': (BASE, None),
                     'excavator_metal': (BASE, ILLUM),

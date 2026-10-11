@@ -201,6 +201,9 @@ PORT.update({
         'world': H3 + r'\spartan_laser.render_model',
         'fp': H3 + r'\fp_spartan_laser\fp_spartan_laser.render_model',
         'world_name': 'spartan laser',
+        # the user (Plasma Repeater, 2026-10-11): every port gets a FITTED `ground point` -- Halo 1
+        # rests a dropped item on it (h1_h3_weapon_model; replaces the one the source model brought)
+        'ground_point': 'auto',
         # h3_rm_info: the world model's root `gun` rests at 0 deg (not tilted: no world_frame)
         # TEST 1 (user): 'the warning stickers got duplicated; a different kind of mark should
         # be where the bigger sticker is'. Halo 1's `tool model` bound the material

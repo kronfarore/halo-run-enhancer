@@ -894,16 +894,30 @@ def models(w):
             from reclaimer.model.jms import JmsMarker
             for name, node, (x, y, z), (qw, qi, qj, qk) in w['extra_markers']:
                 jm.markers.append(JmsMarker(name, '', 0, node, qi, qj, qk, qw, x * 100, y * 100, z * 100))
-        if w.get('ground_point') == 'auto' and not any(m.name == 'ground point' for m in jm.markers):
+        if w.get('ground_point') == 'auto':
+            # REPLACES a ground point the source model brought (Halo 3's ground_point -> the
+            # template's place: the Mauler / Spartan Laser carried the rocket launcher's, inside
+            # their bodies)
+            jm.markers[:] = [m for m in jm.markers if m.name != 'ground point']
             # the same marker placed from the model itself (the user, Plasma Repeater boot 6: 'apply
             # this to all port weapons'): the middle of the model's x and z extent, on its -y side
             # surface, the stock plasma rifle's rotation (its axis +y, into the gun) -- the item
             # lies on its left side. On node 0 (every port's root sits at identity)
             from reclaimer.model.jms import JmsMarker
+            import fp_render as FR
             P = np.array([(v.pos_x, v.pos_y, v.pos_z) for v in jm.verts])
             gx, gz = (P[:, 0].min() + P[:, 0].max()) / 2.0, (P[:, 2].min() + P[:, 2].max()) / 2.0
-            jm.markers.append(JmsMarker('ground point', '', 0, 0, 0.70711, 0.0, 0.0, 0.70711,
-                                        gx, P[:, 1].min(), gz))
+            # a marker is NODE-RELATIVE and some ports' root sits off identity (re-rooted / tilted
+            # sources: the Brute Shot's landed on its far side): the model-space point and the
+            # stock rotation (stored 0.707, 0.707, 0, 0: axis +y) taken into node 0's frame. Node
+            # rotations in Halo 1's stored (inverse) convention, as fp_render composes them
+            n0 = jm.nodes[0]
+            r0 = FR.qconj((n0.rot_w, n0.rot_i, n0.rot_j, n0.rot_k))
+            loc = FR.qrot(FR.qconj(r0), (gx - n0.pos_x, P[:, 1].min() - n0.pos_y, gz - n0.pos_z))
+            want = FR.qconj((0.70711, 0.70711, 0.0, 0.0))            # the rotation the stock marker makes
+            ql = FR.qconj(FR.qmul(FR.qconj(r0), want))                # stored, node-relative
+            jm.markers.append(JmsMarker('ground point', '', 0, 0, ql[1], ql[2], ql[3], ql[0],
+                                        loc[0], loc[1], loc[2]))
             print('   ground point (%s): %.3f %.3f %.3f wu' % (key, gx / 100, P[:, 1].min() / 100, gz / 100))
         # a marker at the centre of each piece of a material (`material_markers` {prefix:
         # material}; the Beam Rifle's gems, for a lens-flare test): `<prefix> <n>`, on the

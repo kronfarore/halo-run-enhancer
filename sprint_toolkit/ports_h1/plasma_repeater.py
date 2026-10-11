@@ -123,7 +123,8 @@ PORT.update({
         # turned 90 deg about x (stored 0.707, 0.707, 0, 0: its axis = into the gun) -- the dropped
         # item rests on it; no port had one. The repeater's: the left side surface (y -0.016) at
         # the middle of the gun (x 0.06, z 0.02), the plasma rifle's rotation
-        'extra_markers': [('ground point', 0, (0.06, -0.016, 0.02), (0.70711, 0.70711, 0.0, 0.0))],
+        # BOOT 6 (user): 'this is the dropping issue fix' -> placed by the tool now, as on every port
+        'ground_point': 'auto',
         'shaders': {'plasma_repeater_metal': (R + RW + r'\bitmaps\plasma_repeater_diffuse.bitmap', None),
                     'plasma_repeater_rubber': (R + RW + r'\bitmaps\plasma_repeater_diffuse.bitmap', None),
                     'plasma_repeater_shell': (R + RW + r'\bitmaps\plasma_repeater_diffuse.bitmap', None),

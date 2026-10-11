@@ -158,6 +158,9 @@ PORT.update({
         'world': H3 + r'\brute_shot.render_model',
         'fp': H3 + r'\fp_brute_shot\fp_brute_shot.render_model',
         'world_name': 'brute shot',
+        # the user (Plasma Repeater, 2026-10-11): every port gets a FITTED `ground point` -- Halo 1
+        # rests a dropped item on it (h1_h3_weapon_model; replaces the one the source model brought)
+        'ground_point': 'auto',
         # TEST 1 (user): 'the pickup icon is diagonal'. Halo 3's world model is authored
         # TILTED: its root `gun` node rests rotated ~55 deg, the weapon frame (x forward, z
         # up, primary_trigger 0.25 forward) is the `body` node -- Halo 3 holds weapons by

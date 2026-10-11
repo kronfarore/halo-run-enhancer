@@ -36,6 +36,9 @@ PORT = {
         'world': H3SG + r'\sentinel_gun.render_model',
         'fp': H3SG + r'\fp_sentinel_gun\fp_sentinel_gun.render_model',
         'world_name': 'sentinel beam',
+        # the user (Plasma Repeater, 2026-10-11): every port gets a FITTED `ground point` -- Halo 1
+        # rests a dropped item on it (h1_h3_weapon_model; replaces the one the source model brought)
+        'ground_point': 'auto',
         # shader name (= the JMS material) -> (base map, illum map or None)
         'shaders': {'sentinel_beam': (H3SG + r'\bitmaps\sentinel_beam.bitmap',
                                       H3SG + r'\bitmaps\sentinel_beam_illum.bitmap')},
