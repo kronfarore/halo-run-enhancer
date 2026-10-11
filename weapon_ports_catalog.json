@@ -3319,6 +3319,258 @@
    "skip_cards": [
     "Ramp Up"
    ]
+  },
+  {
+   "weapon": "Plasma Repeater",
+   "source": "Halo Reach",
+   "donor": "Plasma Rifle",
+   "default_on": false,
+   "desc": "Halo Reach's Plasma Repeater: its model, first-person animations, sounds and numbers. A Covenant automatic on heat and battery: it starts at 15 bolts a second and slows as it heats; a full gun vents for 2.5 s (Reach's manual vent, here the overheat). 200 shots a battery.",
+   "balance_desc": "Measured against the Plasma Rifle, which both games have: 8.3 damage a bolt (the plasma rifle's family, faster on armour and slower on shields, as Reach's fast plasma), 15 down to 3.3 bolts a second over 22 shots, a 2.9 s vent, 100 shots a battery, a faster bolt and Halo 1-style aim assist.",
+   "anims": {
+    "swap": 1.380952380952381
+   },
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma repeater\\bolt",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 7.584,
+     "card": "Bolt Damage",
+     "original": 5.834
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma repeater\\bolt",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 7.584,
+     "card": "Bolt Damage",
+     "original": 5.834
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma repeater\\bolt",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 9.1,
+     "card": "Bolt Damage",
+     "original": 7.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma repeater\\bolt",
+     "field": "Elite Energy Shield",
+     "block": null,
+     "value": 1.25,
+     "card": "Bolt materials",
+     "original": 2.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma repeater\\bolt",
+     "field": "Elite",
+     "block": null,
+     "value": 2.5,
+     "card": "Bolt materials",
+     "original": 1.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma repeater\\bolt",
+     "field": "Cyborg Energy Shield",
+     "block": null,
+     "value": 1.25,
+     "card": "Bolt materials",
+     "original": 2.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma repeater\\bolt",
+     "field": "Cyborg",
+     "block": null,
+     "value": 1.25,
+     "card": "Bolt materials",
+     "original": 0.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma repeater\\bolt",
+     "field": "Hunter Armor",
+     "block": null,
+     "value": 1.0,
+     "card": "Bolt materials",
+     "original": 0.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma repeater\\bolt",
+     "field": "Jackal Energy Shield",
+     "block": null,
+     "value": 0.5,
+     "card": "Bolt materials",
+     "original": 1.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma repeater\\bolt",
+     "field": "Armored Human",
+     "block": null,
+     "value": 2.0,
+     "card": "Bolt materials",
+     "original": 1.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma repeater\\bolt",
+     "field": "Metal (Hollow)",
+     "block": null,
+     "value": 0.625,
+     "card": "Bolt materials",
+     "original": 0.25
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma repeater\\bolt",
+     "field": "Metal (Thin)",
+     "block": null,
+     "value": 0.625,
+     "card": "Bolt materials",
+     "original": 0.25
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma repeater\\bolt",
+     "field": "Metal (Thick)",
+     "block": null,
+     "value": 0.5,
+     "card": "Bolt materials",
+     "original": 0.25
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma repeater\\plasma repeater",
+     "field": "Rounds Per Second Max",
+     "block": "Triggers",
+     "value": 3.333,
+     "card": "More Shooting",
+     "original": 3.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma repeater\\plasma repeater",
+     "field": "Acceleration Time",
+     "block": "Triggers",
+     "value": 2.65,
+     "card": "More Shooting",
+     "original": 1.4
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma repeater\\plasma repeater",
+     "field": "Deceleration Time",
+     "block": "Triggers",
+     "value": 2.9,
+     "card": "More Shooting",
+     "original": 2.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma repeater\\plasma repeater",
+     "field": "Heat Generated Per Round",
+     "block": "Triggers",
+     "value": 0.045454545454545456,
+     "card": "Heat",
+     "original": 0.08333333333333333
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma repeater\\plasma repeater",
+     "field": "Heat Loss Per Second",
+     "block": null,
+     "value": 0.3448275862068966,
+     "card": "Heat",
+     "original": 0.4
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma repeater\\plasma repeater",
+     "field": "Age Generated Per Round",
+     "block": "Triggers",
+     "value": 0.01,
+     "card": "Battery",
+     "original": 0.005
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma repeater\\plasma repeater",
+     "field": "Error Angle",
+     "block": "Triggers",
+     "value": 0.154,
+     "card": "Error Angle",
+     "original": 0.4
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma repeater\\plasma repeater",
+     "field": "Error Angle Max",
+     "block": "Triggers",
+     "value": 4.29,
+     "card": "Error Angle",
+     "original": 3.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma repeater\\bolt",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 1.6666666666666667,
+     "card": "Projectile",
+     "original": 0.8333333333333334
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma repeater\\bolt",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 2.3333333333333335,
+     "card": "Projectile",
+     "original": 1.1666666666666667
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma repeater\\plasma repeater",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 31.25,
+     "card": "Autoaim",
+     "original": 15.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma repeater\\plasma repeater",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 13.33,
+     "card": "Magnetism",
+     "original": 10.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma repeater\\plasma repeater",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 27.78,
+     "card": "Magnetism",
+     "original": 20.0
+    }
+   ],
+   "weap": "weapons\\plasma repeater\\plasma repeater",
+   "fp_animations": "weapons\\plasma repeater\\fp\\fp",
+   "requires": [
+    "proj weapons\\plasma repeater\\bolt"
+   ]
   }
  ],
  "Halo 3": [

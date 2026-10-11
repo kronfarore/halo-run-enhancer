@@ -722,7 +722,7 @@ SETS = {
         ('RP = PR ratio, H1 B', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.3, 27.8), 'age': 0.01,
           'mods': dict(RP_FAST_SLOW),
-          'heat_model': {'rate': ('time', 15.0, 3.5, 2.7), 'hpr': 1 / 22.0, 'oh': 1.0,
+          'heat_model': {'rate': ('time', 15.0, 3.333, 2.65), 'hpr': 1 / 22.0, 'oh': 1.0,
                          'loss': 1 / 2.9, 'rec': 0.0}}),
         # PLASMA PISTOL ratio: 18 x 6.42/16 = 7.22; rate: the pistol is tapped -> Reach's own;
         # heat 0.03 x 0.16/0.14 = 0.034 a tick; loss x 0.65/0.6; vent 2.5 x 0.45/0.65 = 1.7 s;

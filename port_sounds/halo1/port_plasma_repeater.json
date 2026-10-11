@@ -1,0 +1,134 @@
+{
+ "game": "Halo 1",
+ "weapon": "Plasma Repeater",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\plasma_repeater_port\\rp_fire",
+   "perms": [
+    "rp_fire_1.wav",
+    "rp_fire_2.wav",
+    "rp_fire_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_repeater_port\\rp_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_repeater_port\\rp_dryfire",
+   "perms": [
+    "rp_dryfire_1.wav",
+    "rp_dryfire_2.wav",
+    "rp_dryfire_3.wav",
+    "rp_dryfire_4.wav",
+    "rp_dryfire_5.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_repeater_port\\rp_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_repeater_port\\rp_ready",
+   "perms": [
+    "rp_ready_1.wav",
+    "rp_ready_2.wav",
+    "rp_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_repeater_port\\rp_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_repeater_port\\rp_melee",
+   "perms": [
+    "rp_melee_1.wav",
+    "rp_melee_2.wav",
+    "rp_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_repeater_port\\rp_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_repeater_port\\rp_pose",
+   "perms": [
+    "rp_pose_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_repeater_port\\rp_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_repeater_port\\rp_vent",
+   "perms": [
+    "rp_vent_1.wav",
+    "rp_vent_2.wav",
+    "rp_vent_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_repeater_port\\rp_vent"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_repeater_port\\rp_vent_loop",
+   "perms": [
+    "rp_vent_loop_1.wav",
+    "rp_vent_loop_2.wav",
+    "rp_vent_loop_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_repeater_port\\rp_vent_loop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_repeater_port\\rp_vent_exit",
+   "perms": [
+    "rp_vent_exit_1.wav",
+    "rp_vent_exit_2.wav",
+    "rp_vent_exit_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_repeater_port\\rp_vent_exit"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_repeater_port\\rp_drop",
+   "perms": [
+    "rp_drop_1.wav",
+    "rp_drop_2.wav",
+    "rp_drop_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_repeater_port\\rp_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_repeater_port\\rp_flyby",
+   "perms": [
+    "rp_flyby_1.wav",
+    "rp_flyby_2.wav",
+    "rp_flyby_3.wav",
+    "rp_flyby_4.wav",
+    "rp_flyby_5.wav",
+    "rp_flyby_6.wav",
+    "rp_flyby_7.wav",
+    "rp_flyby_8.wav",
+    "rp_flyby_9.wav",
+    "rp_flyby_10.wav",
+    "rp_flyby_11.wav",
+    "rp_flyby_12.wav",
+    "rp_flyby_13.wav",
+    "rp_flyby_14.wav",
+    "rp_flyby_15.wav",
+    "rp_flyby_16.wav",
+    "rp_flyby_17.wav",
+    "rp_flyby_18.wav",
+    "rp_flyby_19.wav",
+    "rp_flyby_20.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_repeater_port\\rp_flyby"
+   ]
+  }
+ ]
+}
