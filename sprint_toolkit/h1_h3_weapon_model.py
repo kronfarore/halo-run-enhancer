@@ -754,7 +754,9 @@ def meters(w):
         sm.meter_shader.map.filepath = bm
         c = sm.colors
         on, off = M['color'], M.get('color_off', tuple(x * 0.25 for x in M['color']))
-        for blk, rgb in ((c.gadient_min, on), (c.gadient_max, on), (c.background, off), (c.tint, (1.0, 1.0, 1.0))):
+        # `color_max`: the colour at a FULL meter (Halo 1 blends min -> max by the value: the
+        # Plasma Repeater's heat gauge, Reach's teal -> orange); default one colour
+        for blk, rgb in ((c.gadient_min, on), (c.gadient_max, M.get('color_max', on)), (c.background, off), (c.tint, (1.0, 1.0, 1.0))):
             blk.r, blk.g, blk.b = rgb
         c.background_transparency = M.get('background_transparency', c.background_transparency)
         sm.external_function_sources.value.set_to(M.get('value', 'A_out'))

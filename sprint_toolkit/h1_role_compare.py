@@ -63,6 +63,17 @@ RP_REACH = {'rate': ('heat', 15.0, 3.0, 1.5), 'hpr': 0.0, 'hpt': 0.03, 'oh': Non
             'loss': [(0.0, 0.25), (0.1, 0.1623), (0.25, 0.1189), (0.4, 0.0934), (0.5, 0.0818),
                      (0.6, 0.0732), (0.75, 0.0648), (0.9, 0.0607), (1.0, 0.06)]}
 
+# the H1 plasma rifle bolt's table x Reach's plasma_fast / plasma_slow for the armour class
+# of the matching Reach model (HREK globals damage table + model materials, 2026-10-11):
+# Elite shield energy_shield_thin 1/1.6, Elite BODY hard_metal_thin 1/0.4, Spartan the same
+# pair (cyborg), Hunter armour hard_metal_thick 0.25/0.125 (skin soft_organic x1), Jackal
+# shield energy_shield_thick 0.5/1, Marine armour tough_inorganic 1/0.5, metal thin x2.5 /
+# thick x2; flesh x1; no Reach Flood / Sentinel (kept)
+RP_FAST_SLOW = {'elite_energy_shield': 1.25, 'elite': 2.5, 'cyborg_energy_shield': 1.25,
+                'cyborg_armor': 1.25, 'hunter_armor': 1.0, 'jackal_energy_shield': 0.5,
+                'human_armor': 2.0, 'metal_hollow': 0.625, 'metal_thin': 0.625,
+                'metal_thick': 0.5}
+
 SETS = {
     # the restored fuel rod against the explosive power weapons of Halo 1
     'flak_cannon': {'port': 'Flak Cannon', 'weapons': [
@@ -670,12 +681,13 @@ SETS = {
          {'dmg': 6.417, 'speed': 25.0, 'range': 100.0, 'aim': (5.0, 15.0, 10.0, 20.0),
           'age': 0.005, 'heat_model': dict(RP_REACH, rate=('time', 15.0, 3.0, 1.4),
                                            hpt=0.0)}),
-        # approximation B: A + heat a round so the gun OVERHEATS when Reach's player would
-        # vent -- the overheat is the vent (2.5 s, loss 0.4 to 0), the rate is back at 15
-        # after it (deceleration time 2.5 s); 20 rounds = ~3 s held
+        # approximation B (user 2026-10-11: the OVERHEAT stands in for the vent; the rate decline
+        # must follow the heat): Reach is fully hot after 12 rounds -> heat 1/12 a round, the
+        # ramp 15 -> 3 over 1.4 s (fitted: Halo 1's rate at each heat within ~1/s of Reach's),
+        # overheat = the 2.5 s vent (one loss 0.4 to 0), deceleration time 2.5 s
         ('RP = Reach own, H1 B', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 6.417, 'speed': 25.0, 'range': 100.0, 'aim': (5.0, 15.0, 10.0, 20.0),
-          'age': 0.005, 'heat_model': {'rate': ('time', 15.0, 3.0, 1.4), 'hpr': 0.05,
+          'age': 0.005, 'heat_model': {'rate': ('time', 15.0, 3.0, 1.4), 'hpr': 1 / 12.0,
                                        'oh': 1.0, 'loss': 0.4, 'rec': 0.0}}),
         # PLASMA RIFLE ratio (H1 PR x repeater / Reach PR): 13 x 6.42/10 = 8.34; rate 10 x 15/9
         # = 16.7 (Halo 1's 15/s cap) -> 7 x 3/6 = 3.5; heat 0.03 x 0.08/0.15 = 0.016 a tick (hot
@@ -687,14 +699,11 @@ SETS = {
           'heat_model': {'rate': ('heat', 15.0, 3.5, 1.5), 'hpr': 0.0, 'hpt': 0.016,
                          'oh': None, 'rec': 0.0, 'vent': 2.9,
                          'loss': [(h, 0.352 * l) for h, l in RP_REACH['loss']]}}),
-        # materials: Reach's plasma_fast / plasma_slow on Halo 1's bolt -- shields x1.0/1.6
-        # (2 -> 1.25), hard metal x2 (Hunter 0.5 -> 1, metal 0.25 -> 0.5); or the Carbine's
-        # precedent (plasma_fast = a bullet on shields: shields x1)
+        # materials: the bolt's table x Reach's plasma_fast / plasma_slow (RP_FAST_SLOW); or the
+        # Carbine's precedent (plasma_fast = a bullet on shields: shields x1)
         ('RP = PR ratio, fast/slow', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.3, 27.8), 'age': 0.01,
-          'mods': {'elite_energy_shield': 1.25, 'cyborg_energy_shield': 1.25,
-                   'hunter_armor': 1.0, 'hunter_skin': 1.0, 'metal_hollow': 0.5,
-                   'metal_thin': 0.5, 'metal_thick': 0.5},
+          'mods': dict(RP_FAST_SLOW),
           'heat_model': {'rate': ('heat', 15.0, 3.5, 1.5), 'hpr': 0.0, 'hpt': 0.016,
                          'oh': None, 'rec': 0.0, 'vent': 2.9,
                          'loss': [(h, 0.352 * l) for h, l in RP_REACH['loss']]}}),
@@ -708,9 +717,12 @@ SETS = {
          {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.3, 27.8), 'age': 0.01,
           'heat_model': {'rate': ('time', 15.0, 3.5, 2.6), 'hpr': 0.0, 'oh': None,
                          'rec': 0.0, 'loss': 0.0}}),
+        # BALANCED (user): PR ratio, H1 B (22 rounds hot -> 1/22, ramp 2.7 s fitted, vent 2.9 s)
+        # on the bolt's table x Reach's plasma_fast / plasma_slow per armour class
         ('RP = PR ratio, H1 B', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.3, 27.8), 'age': 0.01,
-          'heat_model': {'rate': ('time', 15.0, 3.5, 2.6), 'hpr': 1 / 30.0, 'oh': 1.0,
+          'mods': dict(RP_FAST_SLOW),
+          'heat_model': {'rate': ('time', 15.0, 3.5, 2.7), 'hpr': 1 / 22.0, 'oh': 1.0,
                          'loss': 1 / 2.9, 'rec': 0.0}}),
         # PLASMA PISTOL ratio: 18 x 6.42/16 = 7.22; rate: the pistol is tapped -> Reach's own;
         # heat 0.03 x 0.16/0.14 = 0.034 a tick; loss x 0.65/0.6; vent 2.5 x 0.45/0.65 = 1.7 s;
@@ -886,7 +898,7 @@ def weapon(label, rel, mode, overrides, extra=None):
         if m:
             out['heat_model'] = m
             out['heat'] = (m['hpr'], m['oh'], model_loss(m, 0.0), m['rec'])
-            out['rps'] = m['rate'][1]
+            out['rps'] = max(m['rate'][1], m['rate'][2])     # the table's rate: the fastest
             out['interval'] = 1.0 / out['rps']
         if extra and extra.get('charge') is not None:
             out['charge'] = extra['charge']

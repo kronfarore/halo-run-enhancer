@@ -148,6 +148,8 @@ def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0,
         art, (rx, ry) = layer_art(src, idx)
         if xf.get('flip_x'):
             art, rx = art.transpose(Image.FLIP_LEFT_RIGHT), art.width - rx
+        if xf.get('flip_y'):             # the Plasma Repeater: one ring QUARTER mirrored both ways
+            art, ry = art.transpose(Image.FLIP_TOP_BOTTOM), art.height - ry
         if xf.get('rotate') == 90:
             art, rx, ry = art.rotate(90, expand=True), ry, art.width - rx
         elif xf.get('rotate') == -90:
