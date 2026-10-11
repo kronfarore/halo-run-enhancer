@@ -23,9 +23,12 @@ path the level does not hold, and then nothing is spawned. The Anniversary confe
 runs as before. The new effect re-enters MCC's effect hook, which is harmless: the head value
 is already reset, so the skull code does not run again.
 
-Effect: `weapons\needler\effects\needle detonate` by default (in all ten campaign maps, no
-damage parts: needle debris, flash, flare, smoke + the needle pop sound). `--effect <path>`
-names another; a dedicated confetti effect only needs its tag in the maps.
+Effects, chosen PER LEVEL by the dll (caves E1-E5): `effects\grunt birthday party` when the
+loaded map holds it (a rebuilt map's own confetti), else BOTH stock fallbacks, present in all
+ten campaign maps with no damage parts: `weapons\needler\effects\needle detonate` (pink
+needle burst + pop) and `weapons\plasma rifle\effects\charged bolt sparks` (green overcharge
+sparks). `--effect "preferred;fallback1;fallback2"` names others (64-byte slots in the .rdata
+slack at +0x1B74520 / +0x1B74560 / +0x1B745A0).
 
 Same LIVE / FILE handling as h1_supercombine_count.py (verified sites, caves first, rename
 swap while MCC runs, .prepatch.bak). In co-op BOTH machines need it.
@@ -49,12 +52,21 @@ from h1_overheat_unzoom import DLL, _classify, _cleanup_inuse  # noqa: E402
 
 H = bytes.fromhex
 NAME = 'Grunt Birthday Party in classic graphics'
-DEFAULT_EFFECT = r'weapons\needler\effects\needle detonate'
+# Three name slots, ';'-separated: the PREFERRED effect (a rebuilt map's own confetti tag),
+# else BOTH fallbacks (in every stock campaign map, no damage parts): the needler's pink
+# needle burst + pop, and the plasma rifle's green overcharge sparks. The choice is made per
+# LEVEL by the dll (tag_loaded), so rebuilt and vanilla maps can be mixed freely.
+CONFETTI = r'effects\grunt birthday party'
+DEFAULT_EFFECT = ';'.join([CONFETTI, r'weapons\needler\effects\needle detonate',
+                           r'weapons\plasma rifle\effects\charged bolt sparks'])
 
 SITE = 0x80444
 C1, C2, C3 = 0x1397EFB, 0x139865B, 0x139A04B
 NAME_RVA = 0x1B74520
 NAME_MAX = 0xC0                       # bytes reserved (to +0x1B745E0; slack ends +0x1B74600)
+SLOT = 0x40                           # three 64-byte name slots: preferred, fallback 1, 2
+FB1_RVA, FB2_RVA = NAME_RVA + SLOT, NAME_RVA + 2 * SLOT
+E1, E2, E3, E4, E5 = 0x1394AEE, 0x1395B0E, 0x139537C, 0x1396E0D, 0x1396A2C
 TAG_LOADED = 0xA9B35C
 EFFECT_ON_OBJECT = 0xBA1078
 OBJECT_GET = 0xB389A4                 # (object, type mask) -> &object.tag (or 0)
@@ -76,7 +88,7 @@ def _rel(next_ip, target):
 
 
 CODE1 = (H('4c897c2470') + H('4883ec28') + H('488d15') + _rel(C1 + 16, NAME_RVA)
-         + H('e9') + _rel(C1 + 21, C2))
+         + H('e9') + _rel(C1 + 21, E1))
 CODE2 = (H('b965666665') + H('e8') + _rel(C2 + 10, TAG_LOADED) + H('89c1') + H('4489ea')
          + H('e9') + _rel(C2 + 20, C3))
 CODE3 = (H('83f9ff') + H('7405') + H('e8') + _rel(C3 + 10, EFFECT_ON_OBJECT)
@@ -91,9 +103,26 @@ CODE_KD = (H('488d15') + _rel(KD + 7, GRUNT_RVA) + H('b964706962')   # mov ecx,'
            + H('e9') + _rel(KD + 17, KE))
 CODE_KE = (H('e8') + _rel(KE + 5, TAG_LOADED) + H('3b442420') + H('0f85') + _rel(KE + 15, DONE)
            + H('e9') + _rel(KE + 20, KF))
-CODE_KF = H('488d15') + _rel(KF + 7, NAME_RVA) + H('e9') + _rel(KF + 12, C2)
+CODE_KF = H('488d15') + _rel(KF + 7, NAME_RVA) + H('e9') + _rel(KF + 12, E1)
+# Both routes arrive at E1 with rdx = the preferred name, the 0x28 frame and r13d = the grunt:
+#   E1  mov ecx,'effe' ; call tag_loaded ; cmp eax,-1 ; jmp E2
+#   E2  jne C2+10 (found: mov ecx,eax ; mov edx,r13d ; C3 spawns it, done) ;
+#       lea rdx,[fallback 1] ; jmp E3
+#   E3  mov ecx,'effe' ; call tag_loaded ; mov ecx,eax ; mov edx,r13d ; jmp E4
+#   E4  cmp ecx,-1 ; je +5 ; call effect_new_on_object ; jmp E5
+#   E5  lea rdx,[fallback 2] ; jmp C2 (looked up and spawned by C2/C3, done)
+CODE_E1 = (H('b965666665') + H('e8') + _rel(E1 + 10, TAG_LOADED) + H('83f8ff')
+           + H('e9') + _rel(E1 + 18, E2))
+CODE_E2 = (H('0f85') + _rel(E2 + 6, C2 + 10) + H('488d15') + _rel(E2 + 13, FB1_RVA)
+           + H('e9') + _rel(E2 + 18, E3))
+CODE_E3 = (H('b965666665') + H('e8') + _rel(E3 + 10, TAG_LOADED) + H('89c1') + H('4489ea')
+           + H('e9') + _rel(E3 + 20, E4))
+CODE_E4 = (H('83f9ff') + H('7405') + H('e8') + _rel(E4 + 10, EFFECT_ON_OBJECT)
+           + H('e9') + _rel(E4 + 15, E5))
+CODE_E5 = H('488d15') + _rel(E5 + 7, FB2_RVA) + H('e9') + _rel(E5 + 12, C2)
 for _c, _room in ((CODE_KA, 21), (CODE_KB, 16), (CODE_KC, 17), (CODE_KD, 17), (CODE_KE, 20),
-                  (CODE_KF, 16)):
+                  (CODE_KF, 16), (CODE_E1, 18), (CODE_E2, 18), (CODE_E3, 20), (CODE_E4, 19),
+                  (CODE_E5, 20)):
     assert len(_c) <= _room
 
 # (rva, context before, stock, patched, context after) -- in "on" order: caves first
@@ -107,6 +136,11 @@ SITES = [
     (KD, H('5fc3'), b'\xcc' * len(CODE_KD), CODE_KD, b''),
     (KE, H('5bc3'), b'\xcc' * len(CODE_KE), CODE_KE, b''),
     (KF, H('f8c3'), b'\xcc' * len(CODE_KF), CODE_KF, b''),
+    (E1, H('5bc3'), b'\xcc' * len(CODE_E1), CODE_E1, b''),
+    (E2, H('5ec3'), b'\xcc' * len(CODE_E2), CODE_E2, b''),
+    (E3, H('c0c3'), b'\xcc' * len(CODE_E3), CODE_E3, b''),
+    (E4, H('5fc3'), b'\xcc' * len(CODE_E4), CODE_E4, b''),
+    (E5, H('ffc3'), b'\xcc' * len(CODE_E5), CODE_E5, b''),
     (GRUNT_RVA, b'', b'\x00' * len(GRUNT), GRUNT, b''),
     (SITE, H('3bca7ced'), H('4c897c24684533c9'), H('e8') + _rel(SITE + 5, C1) + H('909090'),
      H('458d41ff')),
@@ -115,11 +149,20 @@ SITES = [
 ]
 
 
+def _names(effect):
+    """'preferred;fallback1;fallback2' -> three normalised paths ('' = slot unused)."""
+    parts = [p.strip().lower() for p in (effect or '').split(';')][:3]
+    return parts + [''] * (3 - len(parts))
+
+
 def _name_blob(effect):
-    raw = effect.strip().lower().encode('latin1') + b'\0'
-    if len(raw) > NAME_MAX:
-        raise ValueError('effect path longer than %d bytes' % (NAME_MAX - 1))
-    return raw + b'\0' * (NAME_MAX - len(raw))
+    out = b''
+    for p in _names(effect):
+        raw = p.encode('latin1') + b'\0'
+        if len(raw) > SLOT:
+            raise ValueError('effect path longer than %d bytes: %s' % (SLOT - 1, p))
+        out += raw + b'\0' * (SLOT - len(raw))
+    return out
 
 
 def _offset(rva):
@@ -156,15 +199,41 @@ def _writes(state, want, effect):
 
 def _effect_of(read):
     raw = read(NAME_RVA, NAME_MAX) or b''
-    return raw.split(b'\0')[0].decode('latin1')
+    names = [raw[i:i + SLOT].split(b'\0')[0].decode('latin1') for i in range(0, NAME_MAX, SLOT)]
+    return ';'.join(names).rstrip(';')
+
+
+def _wanted_names(effect, on):
+    return ';'.join(_names(effect)).rstrip(';') if on else ''
+
+
+# Earlier builds of this patch (one effect name: C1 and KF jumped straight to C2). Read as
+# stock, so such a dll classifies 'partial' and the next write upgrades it in place.
+LEGACY = {
+    C1: CODE1[:-4] + _rel(C1 + 21, C2),
+    KF: CODE_KF[:-4] + _rel(KF + 12, C2),
+}
+
+
+def _upgrading(read):
+    def r(rva, n):
+        b = read(rva, n)
+        for at, old in LEGACY.items():
+            if b and rva <= at and at + len(old) <= rva + n:
+                i = at - rva
+                if b[i:i + len(old)] == old:
+                    b = b[:i] + b'\xcc' * len(old) + b[i + len(old):]
+        return b
+    return r
 
 
 def file_state(path=DLL):
-    return _classify(_file_reader(path), SITES) if os.path.exists(path) else 'missing'
+    return (_classify(_upgrading(_file_reader(path)), SITES) if os.path.exists(path)
+            else 'missing')
 
 
 def live_state(h, base):
-    return _classify(lambda rva, n: dp.read(h, base + rva, n), SITES)
+    return _classify(_upgrading(lambda rva, n: dp.read(h, base + rva, n)), SITES)
 
 
 def live_set(h, base, want, effect=DEFAULT_EFFECT):
@@ -191,8 +260,7 @@ def file_set(want, path=DLL, effect=DEFAULT_EFFECT):
         return False, ('halo1.dll does not hold the expected bytes -- this MCC build '
                        'differs, refusing to write')
     current = _effect_of(_file_reader(path))
-    if (state == ('on' if want else 'off')
-            and current == (effect.strip().lower() if want else '')):
+    if state == ('on' if want else 'off') and current == _wanted_names(effect, want):
         return True, 'already as wanted'
     writes = _writes(state, want, effect)
     bak = path + '.prepatch.bak'
@@ -241,7 +309,7 @@ def sync(on, path=DLL, quiet=True, live_only=False, effect=DEFAULT_EFFECT):
     def live(h, base):
         old = live_state(h, base)
         if (old == target and _effect_of(lambda r, n: dp.read(h, base + r, n))
-                == (effect.strip().lower() if on else '')):
+                == _wanted_names(effect, on)):
             return add('running MCC', True, old, None)
         ok, err = live_set(h, base, on, effect)
         add('running MCC', ok, old if old != target else old + ' (other effect)', err)
