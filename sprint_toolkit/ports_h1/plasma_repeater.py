@@ -160,15 +160,23 @@ PORT.update({
         # bar; the display keeps the ramp
         'meters': {
             # BOOT 5 (user): 'fills like imagined, but the colours don't shift as expected -- teal, then
-            # red towards the end' (min -> max colours the fill by PLACE). BOOT 6: the fill one teal
-            # (min = max) and the meter's FLASH colour (red) with its brightness = A out (heat +
-            # overheated): the whole fill turning red with heat, if flash blends by brightness
+            # red towards the end' (min -> max colours the fill by PLACE). BOOT 6: the meter's FLASH
+            # colour by A out did nothing ('only fills with teal'). BOOT 7 (user: 'try the
+            # recolouring path'): the boot-4 lit shape x the colour RAMP x a FILL lookup (`fill`:
+            # column = the gauge's u, row = A out; Reach's gradient stretched onto 0.02..0.95) --
+            # the outline opens left to right and the lit part turns teal -> yellow -> red as a
+            # whole, held through the vent; the unlit part = a dim teal copy of the gauge lifted
+            # 0.001 wu (`glow_cards` -> plasma_repeater_gauge_base)
             'plasma_repeater_gauge': {
                 'map': R + RW + r'\bitmaps\plasma_repeater_gauge.bitmap',
-                'from': PR + r'fp\shaders\gauge', 'value': 'A_out', 'gradient_range': (0.02, 0.95),
-                'color': (89 / 255.0, 1.0, 244 / 255.0), 'color_max': (89 / 255.0, 1.0, 244 / 255.0),
-                'color_off': (0.5 * 77 / 255.0, 0.5 * 212 / 255.0, 0.5 * 203 / 255.0),
-                'flash': (1.0, 0.16, 0.08), 'flash_source': 'A_out'},
+                'from': PR + r'fp\shaders\gauge', 'gradient': 0.0,
+                'static': r'weapons\needler\shaders\needler luminous', 'color': (1.0, 1.0, 1.0),
+                'ramp': HEAT_RAMP, 'ramp_source': 'A_out', 'fill': (0.02, 0.95)},
+            'plasma_repeater_gauge_base': {
+                'map': R + RW + r'\bitmaps\plasma_repeater_gauge.bitmap',
+                'from': PR + r'fp\shaders\gauge', 'gradient': 0.0,
+                'static': r'weapons\needler\shaders\needler luminous',
+                'color': (0.5 * 77 / 255.0, 0.5 * 212 / 255.0, 0.5 * 203 / 255.0)},
             'plasma_repeater_display': {
                 'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
                 'from': PR + r'fp\shaders\gauge', 'shape': 'r', 'gradient': 0.0,
@@ -183,6 +191,9 @@ PORT.update({
                 'color': (0.25 * 114 / 255.0, 0.25, 0.25 * 215 / 255.0)}},
         # the PILOT flame (8 triangles; Reach: a halogram of plasma noise, white -> blue 8, 16, 82):
         # an additive radial glow per UV island (the Spike Rifle's / Beam Rifle's gems)
+        # the gauge's dim base (boot 7): the gauge copied in place, a hair outward
+        'glow_cards': {'plasma_repeater_gauge': {'shader': 'plasma_repeater_gauge_base', 'scale': 1.0,
+                                                 'lift': 0.1}},
         'glow_shaders': {'plasma_repeater_pilot': {'rgb': (0.55, 0.65, 1.0), 'additive': True,
                                                    'islands': True}},
     },
