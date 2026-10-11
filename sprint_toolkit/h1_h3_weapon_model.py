@@ -802,6 +802,12 @@ def meters(w):
         for blk, rgb in ((c.gadient_min, on), (c.gadient_max, M.get('color_max', on)), (c.background, off), (c.tint, (1.0, 1.0, 1.0))):
             blk.r, blk.g, blk.b = rgb
         c.background_transparency = M.get('background_transparency', c.background_transparency)
+        if M.get('flash'):
+            # the FLASH colour by a function (the Plasma Repeater, boot 5: the lit fill must turn
+            # red AS A WHOLE with heat, as Reach's; min / max colour the fill by place): `flash`
+            # rgb, its brightness = `flash_source`
+            c.flash.r, c.flash.g, c.flash.b = M['flash']
+            sm.external_function_sources.flash_brightness.set_to(M.get('flash_source', 'A_out'))
         sm.external_function_sources.value.set_to(M.get('value', 'A_out'))
         s.filepath = os.path.join(out, name + '.shader_transparent_meter')
         s.serialize(temp=False, backup=False)
@@ -879,6 +885,15 @@ def models(w):
         # `spartan_laser_decal2` drew with `spartan_laser_decal`'s shader)
         for m in jm.materials:
             m.name = w.get('material_names', {}).get(m.name, m.name)
+        # `extra_markers` [(name, node index, (x, y, z) wu, (w, i, j, k) as Halo 1 tags store it)]:
+        # markers the source model lacks. THE `ground point` (the Plasma Repeater, boot 5): every
+        # stock Halo 1 weapon has ONE, on its side surface near the balance point, turned 90 deg
+        # about x -- a dropped item rests on it with its axis vertical; a model without one rests
+        # on its ORIGIN and sinks (the Gravity Hammer, the Plasma Repeater; probe-measured)
+        if w.get('extra_markers'):
+            from reclaimer.model.jms import JmsMarker
+            for name, node, (x, y, z), (qw, qi, qj, qk) in w['extra_markers']:
+                jm.markers.append(JmsMarker(name, '', 0, node, qi, qj, qk, qw, x * 100, y * 100, z * 100))
         # a marker at the centre of each piece of a material (`material_markers` {prefix:
         # material}; the Beam Rifle's gems, for a lens-flare test): `<prefix> <n>`, on the
         # piece's node (bind rotation identity there: checked on the beam rifle's `frame gun`)

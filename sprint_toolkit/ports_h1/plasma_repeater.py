@@ -117,24 +117,26 @@ PORT.update({
         # firing effects; h3_rm_to_jms names list entries per instance)
         'markers': {'left_hand': 'left hand', 'fx_vent': 'vent',
                     'primary_trigger': ['primary trigger1', 'primary trigger']},
+        # BOOT 5 (A/B with the stock plasma rifle's model: it bounced, ours sank): every stock Halo 1
+        # weapon has ONE `ground point` marker -- on its side surface near the balance point (plasma
+        # rifle 0.017 / -0.021 / 0.001 of a +-0.030 wide gun, AR 0.057 / -0.014 / 0.032 of +-0.015),
+        # turned 90 deg about x (stored 0.707, 0.707, 0, 0: its axis = into the gun) -- the dropped
+        # item rests on it; no port had one. The repeater's: the left side surface (y -0.016) at
+        # the middle of the gun (x 0.06, z 0.02), the plasma rifle's rotation
+        'extra_markers': [('ground point', 0, (0.06, -0.016, 0.02), (0.70711, 0.70711, 0.0, 0.0))],
         'shaders': {'plasma_repeater_metal': (R + RW + r'\bitmaps\plasma_repeater_diffuse.bitmap', None),
                     'plasma_repeater_rubber': (R + RW + r'\bitmaps\plasma_repeater_diffuse.bitmap', None),
                     'plasma_repeater_shell': (R + RW + r'\bitmaps\plasma_repeater_diffuse.bitmap', None),
                     'plasma_repeater_indicator': (R + RW + r'\bitmaps\plasma_repeater_diffuse.bitmap', None)},
         'template': PR + r'fp\shaders\gun',
         'glow': {},
-        # BOOT 1 (user): 'the weapon phases into the ground when dropped -- find the proper
-        # solution this time'. The Gravity Hammer's finding: Halo 1 rests a dropped item on its
-        # ORIGIN (the grip) with z vertical, either way up; its own hull changed nothing. Lead
-        # tested here: Halo CE's PATHFINDING SPHERES (collision-JMS `pathfinder` markers -- no
-        # weapon, stock or port, carries one). Own hull (h1_box_collision.py) from the world
-        # model's cross-section (x -0.093..0.226, y +-0.016, z -0.037..0.077): body + grip, and
-        # three spheres along the body (r 0.03 at z 0.02)
+        # Own hull (h1_box_collision.py) from the world model's cross-section (x -0.093..0.226, y
+        # +-0.016, z -0.037..0.077): body + grip -- what projectiles hit (the plasma rifle's hull
+        # has other nodes). BOOT 2 tested Halo CE's pathfinding spheres against the sinking:
+        # NO effect (removed); the cause was the missing `ground point` (extra_markers, below)
         'collision': {'material': 'metal',
                       'boxes': [((-0.093, -0.016, 0.0), (0.226, 0.016, 0.077)),
-                                ((-0.02, -0.012, -0.037), (0.05, 0.012, 0.0))],
-                      'spheres': [((-0.06, 0.0, 0.02), 0.03), ((0.06, 0.0, 0.02), 0.03),
-                                  ((0.18, 0.0, 0.02), 0.03)]},
+                                ((-0.02, -0.012, -0.037), (0.05, 0.012, 0.0))]},
         # THE HEAT GAUGE (the big panel on top in first person) and the DISPLAY (the lights low on
         # the gun). BOOT 1 (user, Reach screenshots cold / hot): both are FULLY LIT shapes whose
         # COLOUR follows heat -- teal cold, through yellow, red hot (Reach's meter_color_on: 89,
@@ -156,11 +158,16 @@ PORT.update({
         # dim teal (Reach's meter_color_off 77, 212, 203 at half), lit teal -> red along the
         # bar; the display keeps the ramp
         'meters': {
+            # BOOT 5 (user): 'fills like imagined, but the colours don't shift as expected -- teal, then
+            # red towards the end' (min -> max colours the fill by PLACE). BOOT 6: the fill one teal
+            # (min = max) and the meter's FLASH colour (red) with its brightness = A out (heat +
+            # overheated): the whole fill turning red with heat, if flash blends by brightness
             'plasma_repeater_gauge': {
                 'map': R + RW + r'\bitmaps\plasma_repeater_gauge.bitmap',
                 'from': PR + r'fp\shaders\gauge', 'value': 'A_out', 'gradient_range': (0.02, 0.95),
-                'color': (89 / 255.0, 1.0, 244 / 255.0), 'color_max': (1.0, 0.16, 0.08),
-                'color_off': (0.5 * 77 / 255.0, 0.5 * 212 / 255.0, 0.5 * 203 / 255.0)},
+                'color': (89 / 255.0, 1.0, 244 / 255.0), 'color_max': (89 / 255.0, 1.0, 244 / 255.0),
+                'color_off': (0.5 * 77 / 255.0, 0.5 * 212 / 255.0, 0.5 * 203 / 255.0),
+                'flash': (1.0, 0.16, 0.08), 'flash_source': 'A_out'},
             'plasma_repeater_display': {
                 'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
                 'from': PR + r'fp\shaders\gauge', 'shape': 'r', 'gradient': 0.0,
@@ -353,6 +360,11 @@ PORT.update({
             'weap_attrs.triggers.0.firing_effects.0.empty_effect.filepath': SND + 'rp_dryfire',
             # Reach misfires (start 0.9, chance 0.25) with NO misfire effect
             'weap_attrs.age.misfire_chance': 0.25,
+            # BOOT 5 (probe: battery 58-72 % used): the template's AGE penalties (rate -20 %, heat
+            # +20 % at an empty battery) slowed the trigger so it never overheated; Reach's repeater
+            # has 0 / 0 (and the rate fit assumes none) -> 0 in both versions
+            'weap_attrs.age.heat_penalty': 0.0,
+            'weap_attrs.age.rate_of_fire_penalty': 0.0,
             'weap_attrs.triggers.0.firing_effects.1.misfire_effect.filepath': '',
             'item_attrs.collision_sound.filepath': SND + 'rp_drop',
             # BOOT 4 (user): 'the overheat colour isn't held' -- the lights read A OUT = heat +
@@ -363,8 +375,8 @@ PORT.update({
             'obje_attrs.functions.0.period': 0.0,
             'obje_attrs.functions.0.scale_function_by': 'A_in',
             'obje_attrs.functions.0.add': 'C_in',
-            # the own hull + pathfinding spheres (model['collision'], boot 1's sinking) and a bounding
-            # radius over the model (the template's 0.2 < the farthest vertex, ~0.24 wu)
+            # the own hull (model['collision']) and a bounding radius over the model (the
+            # template's 0.2 < the farthest vertex, ~0.24 wu)
             'obje_attrs.collision_model.filepath': RP + 'plasma repeater',
             'obje_attrs.bounding_radius': 0.25,
             # STEP 4b (before boot 1). List 2 (the ratio vs Reach's plasma rifle onto the H1 plasma

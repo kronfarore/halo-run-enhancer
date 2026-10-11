@@ -31,7 +31,7 @@ JMS_SCALE = 100.0                     # JMS units per world unit
 FACES = [(0, 2, 3, 1), (4, 5, 7, 6), (0, 1, 5, 4), (2, 6, 7, 3), (0, 4, 6, 2), (1, 3, 7, 5)]
 
 
-def box_jms(world_jms, boxes, material, spheres=()):
+def box_jms(world_jms, boxes, material):
     jm = read_jms(open(world_jms, encoding='utf-8', errors='replace').read())
     jm.materials[:] = [JmsMaterial(material)]
     jm.markers[:] = []
@@ -46,13 +46,6 @@ def box_jms(world_jms, boxes, material, spheres=()):
         for a, b, c, d in FACES:
             jm.tris.append(JmsTriangle(region, 0, base + a, base + b, base + c))
             jm.tris.append(JmsTriangle(region, 0, base + a, base + c, base + d))
-    # `spheres` [(centre xyz, radius) wu]: PATHFINDING SPHERES -- Halo CE's tool makes them from
-    # collision-JMS markers named `pathfinder` (the Plasma Repeater, boot 1: a dropped gun sank
-    # into the ground; no stock weapon carries any -- the test of whether items rest on them)
-    from reclaimer.model.jms import JmsMarker
-    for (x, y, z), r in spheres:
-        jm.markers.append(JmsMarker('pathfinder', '', 0, 0, 0.0, 0.0, 0.0, 1.0,
-                                    x * JMS_SCALE, y * JMS_SCALE, z * JMS_SCALE, r * JMS_SCALE))
     jm.calculate_vertex_normals()
     return jm
 
@@ -66,8 +59,8 @@ def main():
     C = m['collision']
     name = m['world_name']
     src = os.path.join(HCEEK, 'data', m['dir'], 'models', name + '.jms')
-    jm = box_jms(src, C['boxes'], C.get('material', 'metal'), C.get('spheres', ()))
-    print('%d box(es), %d sphere(s), %d triangles, nodes %s' % (len(C['boxes']), len(C.get('spheres', ())), len(jm.tris),
+    jm = box_jms(src, C['boxes'], C.get('material', 'metal'))
+    print('%d box(es), %d triangles, nodes %s' % (len(C['boxes']), len(jm.tris),
                                                    [n.name for n in jm.nodes]))
     if not a.write:
         print('(dry run -- --write to compile)')
