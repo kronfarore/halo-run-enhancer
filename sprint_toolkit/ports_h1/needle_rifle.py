@@ -435,13 +435,16 @@ PORT.update({
                 # (sheet px -> screen ~0.565, the reticle's calibration), alpha 0.55.
                 # BOOT 4 calibration (boot 3's screenshot: offset 171 -> 190 px at 1080p, a sheet
                 # px -> 0.5 screen px): offset +-346 (Reach's +-385 px), sprite x2.63 / 2.6
-                # (Reach's ~88 x 60 px boxes); the overlay colour's alpha byte 255 (`a`)
+                # (Reach's ~88 x 60 px boxes); the overlay colour's alpha byte 255 (`a`).
+                # BOOT 7 (user: 'perfect visually, align them with the box cutouts'): BOTH sat
+                # ~25 px left / 7 px above their cutouts (a shared shift = the sprite's
+                # registration, not the spacing) -> +22 / +6 units each (1.11 px a unit)
                 'zoom_glyphs': [{'art': (R + r'ui\chud\bitmaps\scopes\nr_glyphs', 1), 'name': 'needle rifle glyph l',
                                  'index': 44, 'scale': (2.63, 2.6), 'alpha': 0.55,
-                                 'offset': (-346, 0), 'rgb': (220, 45, 45), 'normalize': True, 'gamma': 1.6},
+                                 'offset': (-324, 6), 'rgb': (220, 45, 45), 'normalize': True, 'gamma': 1.6},
                                 {'art': (R + r'ui\chud\bitmaps\scopes\nr_glyphs', 0), 'name': 'needle rifle glyph r',
                                  'index': 45, 'scale': (2.63, 2.6), 'alpha': 0.55,
-                                 'offset': (346, 0), 'rgb': (60, 200, 200), 'normalize': True, 'gamma': 1.6}],
+                                 'offset': (368, 6), 'rgb': (60, 200, 200), 'normalize': True, 'gamma': 1.6}],
                 # Reach's reticle = ONE arc sprite (hud_reticles #4, 11 x 27, a '(' arc) on four
                 # widgets: left at -14, right mirrored at +14, top / bottom at -+14 (the arc
                 # turned): composed by h1_add_reticle's per-layer xform -- a ring, unbroken in
