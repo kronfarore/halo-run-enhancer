@@ -14,11 +14,19 @@ N = 'weapons\\needler\\'
 PISTOL = 'weapons\\pistol\\'
 RS = 'data\\sound\\weapons\\'                      # Reach's bank folders
 RSN = RS + 'needle_rifle\\'
-# Halo 1 material indices (proj material responses): TERRAIN / props -- dirt, sand, stone, snow,
-# wood, metal hollow / thin / thick, rubber, glass, plastic, ice. Reach's needle sticks only to
-# BIPEDS ('attach, only against bipeds'); elsewhere it bounces at 0-30 deg (friction 0 / 0.7,
-# noise 2 deg) or detonates -- with NO detonation effect, so it just ends
-TERRAIN = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 27, 31]
+# Halo 1 material indices (proj material responses) mapped onto REACH's needle table (BOOT 3,
+# user: 'double check that this is the Reach behavior' -- needle_rifle_shard material responses):
+# a needle sticks only to BIPEDS ('attach, only against bipeds'); otherwise
+#   default material   bounce at 0-30 deg (chance 1), else impact (DETONATE): dirt, sand, snow,
+#                      wood, metal hollow / thin (Reach has no thin-metal row), rubber, plastic, ice
+#   hard_terrain       bounce at 0-75 deg (chance 0.9), else FIZZLE: stone
+#   hard_metal_thick   bounce at 0-85 deg (chance 0.9), else FIZZLE: metal thick
+#   brittle_glass      overpenetrate: glass
+# Halo 1 has no chance: skip fraction = 1 - chance; fizzle = 'disappear'
+SOFT = [0, 1, 3, 4, 5, 6, 8, 27, 31]
+STONE = [2]
+METAL = [7]
+GLASS = [9]
 LEVELS = ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40']
 # Reach's self-illumination colours (ManagedBlam, the shaders' function data, 2026-10-10):
 # the stowed CRYSTALS (needler_crystal_solid, illum_detail, intensity 3) violet (87, 19, 237)
@@ -104,7 +112,9 @@ PORT.update({
                                               R + r'objects\weapons\pistol\needler\bitmaps\needler_crystal_illum.bitmap')},
         # boot 1: the two halograms (scrolling data stream / reload shimmer: no Halo 1 shader)
         # dropped -- the look is judged in game (render by material first)
-        'drop_materials': ('needle_rifle_illum_indicator', 'needle_rifle_reload_effect'),
+        # BOOT 3 (user: 'try the approximation' of Reach's blue hex frames round the screens):
+        # needle_rifle_illum_indicator is back, as a lit meter shape like the display (below)
+        'drop_materials': ('needle_rifle_reload_effect',),
         'template': N + r'shaders\needler gun',
         'glow': {'needle_holes': (174 / 255.0, 27 / 255.0, 1.0), 'needler_crystal_solid': VIOLET},
         # BOOT 1 (user): 'the display shows only squares'. needle_rifle_display is a Reach METER
@@ -122,7 +132,16 @@ PORT.update({
         'meters': {'needle_rifle_display': {
             'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
             'from': r'weapons\plasma rifle\fp\shaders\gauge', 'shape': 'r', 'gradient': 0.0,
-            'value': 'C_out', 'color': (1.0, 0.0, 6 / 255.0)}},
+            'value': 'D_out', 'color': (1.0, 0.0, 6 / 255.0)},
+            # BOOT 3 (user): 'they start unlit and light up after the first shot' -- out C
+            # (`needles remaining`) reads 0 until the weapon fires -> out D, a constant ONE
+            # (obje_functions: the needler's three + 'one' scaled by nothing). The hex frames:
+            # the indicator halogram (Reach: holo map, data-stream detail, blue 22, 37, 105 at
+            # 2.5) as the same lit shape in its blue
+            'needle_rifle_illum_indicator': {
+            'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
+            'from': r'weapons\plasma rifle\fp\shaders\gauge', 'shape': 'r', 'gradient': 0.0,
+            'value': 'D_out', 'color': (22 / 105.0, 37 / 105.0, 1.0)}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Reach's OWN fp_needle_rifle retargeted (the
@@ -248,12 +267,16 @@ PORT.update({
                                    'proj_attrs.physics.flyby_sound.filepath': SND + 'nr_flyby'},
                    # Reach's material responses (4b list 3): a needle sticks to BODIES only (the
                    # needle's own attach kept on 11-26 and Elite shields 30 -- the supercombine
-                   # needs it); on terrain it DETONATES (Reach's 'impact (detonate)': the needle's
-                   # burst plays). BOOT 2 (user): the 0-30 deg bounce sent glancing needles up
-                   # off the ground, trail and all ('orthogonal to the ground; it should explode
-                   # when hitting the ground') -> no reflect. The needle's shield reflects (10 /
-                   # 16 / 18 / 32) and water / leaves pass-through kept
-                   'default_responses': {'detonate': TERRAIN},
+                   # needs it). BOOT 2 had the 0-30 deg bounce everywhere, boot 3 none (the
+                   # user saw glancing needles leave the ground); BOOT 3 (user: 'double check
+                   # this is the Reach behaviour') -> REACH's TABLE per material (SOFT / STONE /
+                   # METAL / GLASS, top of the file): the bounce IS Reach's. The needle's shield
+                   # reflects (10 / 16 / 18 / 32) and water / leaves pass-through kept
+                   'default_responses': {'detonate': SOFT, 'disappear': STONE + METAL,
+                                         'overpenetrate': GLASS},
+                   'reflect': [{'materials': SOFT, 'angle_deg': (0.0, 30.0), 'parallel_friction': 0.0, 'perpendicular_friction': 0.7, 'noise_deg': 2.0},
+                               {'materials': STONE, 'angle_deg': (0.0, 75.0), 'skip': 0.1, 'parallel_friction': 0.0, 'perpendicular_friction': 0.7, 'noise_deg': 2.0},
+                               {'materials': METAL, 'angle_deg': (0.0, 85.0), 'skip': 0.1, 'parallel_friction': 0.0, 'perpendicular_friction': 0.7, 'noise_deg': 2.0}],
                    # the stuck needle's end: the needle's burst, its sound Reach's own
                    'detonation_effect': {'from': N + 'effects\\needle detonate',
                                          'out': NR + 'effects\\needle detonate',
@@ -333,6 +356,10 @@ PORT.update({
             # rule (user, B1): the YARDSTICK's pickup : initial (needler 80 : 80) on Reach's 63
             'weap_attrs.magazines.0.magazine_items.0.rounds': 63,
         },
+        # out D = a constant ONE for the on-gun screens (BOOT 3; outs A-C the needler's own)
+        'obje_functions': [{'from': N + 'needler', 'index': 0}, {'from': N + 'needler', 'index': 1},
+                           {'from': N + 'needler', 'index': 2},
+                           {'from': N + 'needler', 'index': 2, 'set': {'scale_function_by': 'none'}}],
         'melee': (N + 'melee', NR + 'melee'),
         'melee_response': N + 'melee_response',
         'messages': ('Picked up a Needle Rifle', 'Picked up %d needles for Needle Rifle'),
@@ -364,10 +391,10 @@ PORT.update({
                 # (sheet px -> screen ~0.565, the reticle's calibration), alpha 0.55
                 'zoom_glyphs': [{'art': (R + r'ui\chud\bitmaps\scopes\nr_glyphs', 1), 'name': 'needle rifle glyph l',
                                  'index': 44, 'scale': (2.33, 2.30), 'alpha': 0.55,
-                                 'offset': (-171, 0), 'rgb': (220, 45, 45)},
+                                 'offset': (-171, 0), 'rgb': (220, 45, 45), 'frame_alpha': 0.3},
                                 {'art': (R + r'ui\chud\bitmaps\scopes\nr_glyphs', 0), 'name': 'needle rifle glyph r',
                                  'index': 45, 'scale': (2.33, 2.30), 'alpha': 0.55,
-                                 'offset': (171, 0), 'rgb': (60, 200, 200)}],
+                                 'offset': (171, 0), 'rgb': (60, 200, 200), 'frame_alpha': 0.3}],
                 # Reach's reticle = ONE arc sprite (hud_reticles #4, 11 x 27, a '(' arc) on four
                 # widgets: left at -14, right mirrored at +14, top / bottom at -+14 (the arc
                 # turned): composed by h1_add_reticle's per-layer xform -- a ring, unbroken in

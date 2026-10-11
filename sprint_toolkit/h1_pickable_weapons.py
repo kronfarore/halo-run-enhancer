@@ -242,7 +242,10 @@ def make_hud(w, key, write):
         aim = [c for c in xs if c.crosshair_type.enum_name == 'aim'][0]
         xs.append(copy.deepcopy(aim))
         zc = xs[len(xs) - 1]
-        zc.crosshair_type.set_to('zoom')
+        # an AIM crosshair whose overlays show ONLY ZOOMED (the sniper's own layout); boot 3:
+        # the `zoom` type picks its sprite by ZOOM LEVEL (zoomed in, the left overlay drew the
+        # next sequence, the right one an empty slot) and draws unzoomed too
+        zc.crosshair_type.set_to('aim')
         zc.crosshair_bitmap.filepath = h.get('reticle_bitmap', zc.crosshair_bitmap.filepath)
         ovs = zc.crosshair_overlays.STEPTREE
         tmpl = copy.deepcopy(ovs[0])
@@ -252,6 +255,16 @@ def make_hud(w, key, write):
                 art, (rx, ry) = AR.layer_art(*G['art'])
                 sx, sy = G['scale']
                 a = art.split()[3].resize((round(art.width * sx), round(art.height * sy)), Image.LANCZOS)
+                if 'frame_alpha' in G:
+                    # the glyph's grey FRAME faint, its coloured SYMBOL strong (boot 3: the
+                    # whole sprite drew as a solid block): alpha x (frame + (1 - frame) x the
+                    # source pixel's saturation)
+                    import numpy as np
+                    rgb = np.asarray(art.convert('RGB').resize(a.size, Image.LANCZOS)).astype(float)
+                    sat = (rgb.max(2) - rgb.min(2)) / np.maximum(rgb.max(2), 1.0)
+                    sat = sat / max(sat.max(), 1e-6)
+                    k = G['frame_alpha'] + (1.0 - G['frame_alpha']) * sat
+                    a = Image.fromarray(np.clip(np.asarray(a) * k, 0, 255).astype(np.uint8))
                 a = a.point(lambda v, k=G.get('alpha', 1.0): int(round(v * k)))
                 canvas = Image.new('L', (AR.SIZE, AR.SIZE), 0)
                 canvas.paste(a, (round(AR.CENTRE[0] - rx * sx), round(AR.CENTRE[1] - ry * sy)))
@@ -265,6 +278,7 @@ def make_hud(w, key, write):
             r, g, b = G['rgb']
             o.default_color = (r << 16) | (g << 8) | b          # ARGB, alpha 0 as the stock reticles
             o.type.data = 0                                      # not 'flashes when active'
+            o.type.show_only_when_zoomed = True
     if 'charge_crosshair' in h:
         # a CHARGE indicator (the Spartan Laser, test 1: Halo 3's triangle sweeping round the
         # reticle as it charges): Halo 1's `charge` crosshair type -- no stock HUD uses it --
@@ -729,9 +743,11 @@ def own_beam(a, b, write):
         # index, potential response 'reflect', skip fraction 0 (Halo 1 SKIPS that fraction;
         # Halo 3 has a chance), impact angle (deg), optional impact velocity window, the
         # response's frictions and angular noise. The default response stays the template's
-        R = b['reflect']
+        # a LIST of such specs: one per angle group (the Needle Rifle: Reach's default 0-30,
+        # hard terrain 0-75 and thick metal 0-85 deg)
         mr = pd.material_responses.STEPTREE
-        for i in R['materials']:
+        for R, i in [(R, i) for R in (b['reflect'] if isinstance(b['reflect'], list) else [b['reflect']])
+                     for i in R['materials']]:
             x = mr[i]
             pr = x.potential_response
             pr.response.set_to('reflect')
