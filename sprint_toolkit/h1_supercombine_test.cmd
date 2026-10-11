@@ -2,7 +2,8 @@
 rem Supercombine count per projectile (h1_supercombine_count.py), the one-boot test.
 rem   h1_supercombine_test.cmd on       halo1.dll patch on (running MCC + file)
 rem   h1_supercombine_test.cmd 3        in game: the needler's needle supercombines at 3
-rem   h1_supercombine_test.cmd 0        in game: back to the engine's 7
+rem   h1_supercombine_test.cmd 3 rifle  in game: the Needle Rifle port's needle at 3
+rem   h1_supercombine_test.cmd 0        in game: back to the engine's 7 (0 rifle: the rifle's)
 rem   h1_supercombine_test.cmd show     patch state + the loaded level's counts
 rem   h1_supercombine_test.cmd off      halo1.dll back to stock
 rem   h1_supercombine_test.cmd gates    read-only: why a stuck-in biped can or cannot supercombine
@@ -14,7 +15,9 @@ if /i "%~1"=="off" goto off
 if /i "%~1"=="show" goto show
 if /i "%~1"=="gates" goto gates
 if "%~1"=="" goto usage
-python "%PY%" --count "weapons\needler\needle" %~1
+set "PROJ=weapons\needler\needle"
+if /i "%~2"=="rifle" set "PROJ=weapons\needle rifle\needle"
+python "%PY%" --count "%PROJ%" %~1
 exit /b %errorlevel%
 
 :on
