@@ -1412,6 +1412,14 @@ User, boot 7 (a30): the port's needle headshots Grunts (jpt `can cause headshots
 `weapons\pistol\bullet`) but Birthday Party never fires; the pistol's does. rvas at image base
 0x180000000, halo1.dll of 2026-06-22.
 
+**RESOLVED, no needle bug (user, 2026-10-11):** the pistol report was an assumption. In CLASSIC
+graphics, which every test uses (Anniversary graphics break the modded maps), the confetti is
+not seen with the pistol either. What the skull spawns, `sfx_konfetti`, is an ANNIVERSARY
+effect: it is defined only in `halo1\prebuild\paks\initial_ps.s3dpak`, not in any map. The
+candidates and the probe below are kept for reference. To show Birthday Party in classic
+graphics, a classic effect tag would have to be spawned at the skull test (+0x80444): a
+halo1.dll patch, not started.
+
 **The condition, three pieces (all in halo1.dll, nothing in any tag but the data they read):**
 1. **Flavour index 11.** `debug_ice_cream_flavor_status_grunt_birthday_party` is the byte
    +0x1C421C3 = flavor(11) (base +0x1C421B8; the debug-global table at +0x1B89E80 names every
