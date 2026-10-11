@@ -3319,7 +3319,8 @@
    "fp_animations": "weapons\\needle rifle\\fp\\fp",
    "requires": [
     "proj weapons\\needle rifle\\needle"
-   ]
+   ],
+   "hands": "two"
   }
  ],
  "Halo 3": [
