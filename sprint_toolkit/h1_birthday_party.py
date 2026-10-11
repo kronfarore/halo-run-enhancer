@@ -24,11 +24,11 @@ runs as before. The new effect re-enters MCC's effect hook, which is harmless: t
 is already reset, so the skull code does not run again.
 
 Effects, chosen PER LEVEL by the dll (caves E1-E5): `effects\grunt birthday party` when the
-loaded map holds it (a rebuilt map's own confetti), else BOTH stock fallbacks, present in all
-ten campaign maps with no damage parts: `weapons\needler\effects\needle detonate` (pink
-needle burst + pop) and `weapons\plasma rifle\effects\charged bolt sparks` (green overcharge
-sparks). `--effect "preferred;fallback1;fallback2"` names others (64-byte slots in the .rdata
-slack at +0x1B74520 / +0x1B74560 / +0x1B745A0).
+loaded map holds it (a rebuilt map's own confetti), else the fallback slots. Those are EMPTY
+by default (user, 2026-10-11): a vanilla map plays nothing. No stock effect worked well. The
+needler's `needle detonate` shows a tiny burst; the plasma rifle's `charged bolt sparks` and
+`impact c shield` show nothing on a dead Grunt. `--effect "preferred;fallback1;fallback2"`
+fills them (64-byte slots in the .rdata slack at +0x1B74520 / +0x1B74560 / +0x1B745A0).
 
 Same LIVE / FILE handling as h1_supercombine_count.py (verified sites, caves first, rename
 swap while MCC runs, .prepatch.bak). In co-op BOTH machines need it.
@@ -57,8 +57,10 @@ NAME = 'Grunt Birthday Party in classic graphics'
 # needle burst + pop, and the plasma rifle's green overcharge sparks. The choice is made per
 # LEVEL by the dll (tag_loaded), so rebuilt and vanilla maps can be mixed freely.
 CONFETTI = r'effects\grunt birthday party'
-DEFAULT_EFFECT = ';'.join([CONFETTI, r'weapons\needler\effects\needle detonate',
-                           r'weapons\plasma rifle\effects\charged bolt sparks'])
+# User 2026-10-11: REBUILT MAPS ONLY. No stock effect looked right (the needle burst is tiny; the
+# plasma rifle's charged bolt sparks and impact c shield showed nothing on a dead Grunt), so the
+# fallback slots stay empty and a vanilla map plays nothing. The slots still work if wanted.
+DEFAULT_EFFECT = CONFETTI
 
 SITE = 0x80444
 C1, C2, C3 = 0x1397EFB, 0x139865B, 0x139A04B

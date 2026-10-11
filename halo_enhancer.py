@@ -1030,7 +1030,7 @@ CONFIG = {
     # effect on the dead Grunt (its own confetti is Anniversary-only, never drawn in classic
     # graphics). A halo1.dll patch (sprint_toolkit/h1_birthday_party.py), live AND in the
     # file; does nothing unless the skull is on. Opt-in (user, 2026-10-11), confirmed in game.
-    # Per level: a rebuilt map's `effects\grunt birthday party`, else two stock fallbacks
+    # Per level: a rebuilt map's `effects\grunt birthday party`; vanilla maps play nothing
     "h1_birthday_party": False,
     # Options -> Patching -> Halo 1: Grunt / Jackal / Elite actors get the human actors'
     # 'avoid friends line of fire' + 'crouch when in line of fire' flags (user, 2026-10-09)
@@ -11791,10 +11791,9 @@ class OptionsDialog(QDialog):
         self.h1_birthday_party_cb.setToolTip(
             "With the Grunt Birthday Party skull on, a Grunt killed by a headshot gets "
             "confetti -- but only in Anniversary graphics; classic graphics show nothing. "
-            "This also plays a classic effect on the Grunt at that moment: the map's own "
-            "confetti where a rebuilt map has it, otherwise the needler's pink needle burst "
-            "with its pop plus green plasma sparks (no damage). Without the skull nothing "
-            "changes.\n\n"
+            "This also plays the map's own classic confetti on the Grunt at that moment -- "
+            "in maps rebuilt with the confetti effect; vanilla maps show nothing. Without "
+            "the skull nothing changes.\n\n"
             "Applied when you patch, whatever state MCC is in: into the running game "
             "(at once) and into halo1.dll (every later start). Unticked, the next patch "
             "puts halo1.dll back to stock. In co-op both machines need it.")
