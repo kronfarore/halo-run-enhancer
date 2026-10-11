@@ -285,7 +285,11 @@ PORT.update({
                    # EXPONENT degenerates (1 x 8/0.2 = 40) -> Reach's own 8 (the BR / DMR rule).
                    # List 3: category bullet (Reach's) kept; 'can cause headshots' has no
                    # Halo 1 jpt flag; instantaneous acceleration 0.2 (above)
-                   'fields': {'damage.active_camouflage_damage': 0.165,
+                   # BOOT 6 (user: 'what decides headshots?'): Halo 1's jpt flag 'causes
+                   # headshots' (the DMR close-out wrongly said Halo 1 has none); Reach's needle
+                   # rifle impact sets 'can cause headshots' (the needler's does not) -> set
+                   'fields': {'damage.flags.headshot': True,
+                              'damage.active_camouflage_damage': 0.165,
                               'breaking_effect.forward_exponent': 8.0},
                    'proj_fields': {'proj_attrs.physics.guided_angular_velocity': 0.0,
                                    # Reach's needle has no attached detonation damage
@@ -434,10 +438,10 @@ PORT.update({
                 # (Reach's ~88 x 60 px boxes); the overlay colour's alpha byte 255 (`a`)
                 'zoom_glyphs': [{'art': (R + r'ui\chud\bitmaps\scopes\nr_glyphs', 1), 'name': 'needle rifle glyph l',
                                  'index': 44, 'scale': (2.63, 2.6), 'alpha': 0.55,
-                                 'offset': (-346, 0), 'rgb': (220, 45, 45), 'frame_alpha': 0.3},
+                                 'offset': (-346, 0), 'rgb': (220, 45, 45), 'normalize': True, 'gamma': 1.6},
                                 {'art': (R + r'ui\chud\bitmaps\scopes\nr_glyphs', 0), 'name': 'needle rifle glyph r',
                                  'index': 45, 'scale': (2.63, 2.6), 'alpha': 0.55,
-                                 'offset': (346, 0), 'rgb': (60, 200, 200), 'frame_alpha': 0.3}],
+                                 'offset': (346, 0), 'rgb': (60, 200, 200), 'normalize': True, 'gamma': 1.6}],
                 # Reach's reticle = ONE arc sprite (hud_reticles #4, 11 x 27, a '(' arc) on four
                 # widgets: left at -14, right mirrored at +14, top / bottom at -+14 (the arc
                 # turned): composed by h1_add_reticle's per-layer xform -- a ring, unbroken in
@@ -447,7 +451,13 @@ PORT.update({
                 'reticle_layers': [(R + r'ui\chud\bitmaps\hud_reticles', 4, 1.0, {'flip_x': True, 'offset': (14.0, 0.0)}),
                                    (R + r'ui\chud\bitmaps\hud_reticles', 4, 1.0, {'rotate': -90, 'offset': (0.0, -14.0)}),
                                    (R + r'ui\chud\bitmaps\hud_reticles', 4, 1.0, {'rotate': 90, 'offset': (0.0, 14.0)})],
-                'reticle_min_width': 3},
+                'reticle_min_width': 3,
+                # BOOT 6 (user): 'the tick meter shows 18 / 20 lit at a full magazine' -- the
+                # needler's meter is 20 ticks, a tick a round. The SAW's / Spiker's ammo_meter: one
+                # sheet sequence per magazine (21 default, 18 balanced: a balance row selects it),
+                # the low-ammo flash scaled from the needler's 8 of 20 (`flash_base`)
+                'flash_base': 20,
+                'ammo_meter': {'sizes': (21, 18), 'base': NR + 'bitmaps\\nr_ammo'}},
         'palette_levels': LEVELS,
     },
 
@@ -498,6 +508,12 @@ PORT.update({
                 row('weap', NR + 'needle rifle', 'Autoaim Range', 24.0, 25.0, 'Autoaim'),
                 row('weap', NR + 'needle rifle', 'Magnetism Angle', 3.75, 5.0, 'Magnetism'),
                 row('weap', NR + 'needle rifle', 'Magnetism Range', 24.0, 25.0, 'Magnetism'),
+                # the 18 magazine's meter: nr_ammo sequence 1 (ammo_meter 21 18), step 14
+                # (default 12); flash at 8 x 18/20 = 7 (default 8)
+                dict(row('wphi', NR + 'needle rifle', 'Sequence Index', 1, 0, 'Ammo display', block='Meter Elements'), index=0),
+                dict(row('wphi', NR + 'needle rifle', 'Alpha Multiplier', 14, 12, 'Ammo display', block='Meter Elements'), index=0),
+                dict(row('wphi', NR + 'needle rifle', 'Sequence Index', 1, 0, 'Ammo display', block='Static Elements'), index=0),
+                dict(row('wphi', NR + 'needle rifle', 'Loaded Ammo Cutoff', 7, 8, 'Ammo display'), index=0),
             ] + BOUNCE_ROWS},
     },
 

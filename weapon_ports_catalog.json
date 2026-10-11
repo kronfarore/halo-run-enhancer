@@ -3065,6 +3065,46 @@
      "original": 25.0
     },
     {
+     "class": "wphi",
+     "tag": "weapons\\needle rifle\\needle rifle",
+     "field": "Sequence Index",
+     "block": "Meter Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\needle rifle\\needle rifle",
+     "field": "Alpha Multiplier",
+     "block": "Meter Elements",
+     "value": 14,
+     "card": "Ammo display",
+     "original": 12,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\needle rifle\\needle rifle",
+     "field": "Sequence Index",
+     "block": "Static Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\needle rifle\\needle rifle",
+     "field": "Loaded Ammo Cutoff",
+     "block": null,
+     "value": 7,
+     "card": "Ammo display",
+     "original": 8,
+     "index": 0
+    },
+    {
      "class": "proj",
      "tag": "weapons\\needle rifle\\needle",
      "field": "Skip Fraction",

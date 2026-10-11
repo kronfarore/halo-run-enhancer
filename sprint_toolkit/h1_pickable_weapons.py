@@ -266,10 +266,20 @@ def make_hud(w, key, write):
                     sat = sat / max(sat.max(), 1e-6)
                     k = G['frame_alpha'] + (1.0 - G['frame_alpha']) * sat
                     a = Image.fromarray(np.clip(np.asarray(a) * k, 0, 255).astype(np.uint8))
+                if G.get('normalize'):
+                    # boot 6: Reach keeps these glyphs in ALPHA only and faint (max 98 / 255:
+                    # symbol 50-98, frame 16-30, box fill ~16; RGB solid white) and MCC drew every
+                    # non-zero texel near-opaque (solid boxes, the symbol dark) -> alpha / its max,
+                    # ^`gamma` (the fill and frame fall away, the symbol stays), and the SAME
+                    # intensity in RGB (whichever channel MCC weights)
+                    import numpy as np
+                    v = np.asarray(a).astype(float)
+                    v = (v / max(v.max(), 1.0)) ** G.get('gamma', 1.0)
+                    a = Image.fromarray(np.clip(np.round(v * 255), 0, 255).astype(np.uint8))
                 a = a.point(lambda v, k=G.get('alpha', 1.0): int(round(v * k)))
                 canvas = Image.new('L', (AR.SIZE, AR.SIZE), 0)
                 canvas.paste(a, (round(AR.CENTRE[0] - rx * sx), round(AR.CENTRE[1] - ry * sy)))
-                white = Image.new('L', (AR.SIZE, AR.SIZE), 255)
+                white = canvas if G.get('normalize') else Image.new('L', (AR.SIZE, AR.SIZE), 255)
                 img = Image.merge('RGBA', (white, white, white, canvas))
                 x0, y0, x1, y1 = canvas.getbbox()
                 x0, y0, x1, y1 = x0 - 2, y0 - 2, x1 + 2, y1 + 2
