@@ -237,6 +237,29 @@ class Plugin:
         bs = root.get('baseSize')
         self.base_size = int(bs, 16) if bs else None
         self._walk(root, [], [], [])
+        self._rename_fields()
+
+    # Assembly leaves some fields the engine DOES read as hidden 'Unknown' leaves; a
+    # card needs a real name for them. Keyed (plugin folder, tag group), lower case:
+    # {offset: (assembly name, our name)} -- root-level fields only, and only while the
+    # plugin still calls the leaf by the Assembly name.
+    FIELD_RENAMES = {
+        # Halo 1 proj +0x1F2: the HEK pad after Detonation Noise, read by halo1.dll's
+        # supercombine count patch (sprint_toolkit/h1_supercombine_count.py). Same name
+        # as the Halo 2+ field so one card target serves every game.
+        ('halo1mcc', 'proj'): {0x1F2: ('Unknown', 'Super Detonation Projectile Count')},
+        ('halo1', 'proj'): {0x1F2: ('Unknown', 'Super Detonation Projectile Count')},
+    }
+
+    def _rename_fields(self):
+        p = Path(self.path)
+        ren = self.FIELD_RENAMES.get((p.parent.name.lower(), p.stem.lower()))
+        if not ren:
+            return
+        for f in self.fields:
+            hit = ren.get(f['offset']) if not f['block_chain'] else None
+            if hit and f['name'] == hit[0]:
+                f['name'] = hit[1]
 
     def _walk(self, node, chain, offsets, sizes):
         for ch in node:
