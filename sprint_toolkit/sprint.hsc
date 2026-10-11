@@ -448,3 +448,14 @@
 			(set fp1 (unit_get_current_flashlight_state (player1)))))
 
 	(sleep 1))
+
+;-----------------------------------------------------------------------------
+; GRUNT BIRTHDAY PARTY CONFETTI (classic graphics) -- keeps the effect in every map.
+; NEVER CALLED. h1_birthday_party.py (halo1.dll) spawns `effects\grunt birthday party`
+; on a headshot Grunt when the level holds the tag (tag_loaded), else stock fallbacks.
+; A tag is only built into a map when something references it: this script is that
+; reference, and global_scripts.hsc is compiled into every level. Tag: h1_confetti_effect.py.
+;-----------------------------------------------------------------------------
+
+(script static void gbp_confetti_ref
+	(effect_new_on_object_marker "effects\grunt birthday party" (player0) ""))

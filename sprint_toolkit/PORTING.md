@@ -1444,6 +1444,22 @@ remain (+0x1393CBE, +0x1394AEE, +0x13952DC, +0x139537C, +0x1396A2C ...; scan in 
 history). The effect is small: a bigger or real confetti effect only needs `--effect`, plus
 its tag in the maps.
 
+**The classic confetti (2026-10-11, untested in game): `effects\grunt birthday party.effect`**,
+written by `h1_confetti_effect.py --write` into HCEEK\tags; the dll's preferred slot already
+names it, so no dll change. Built only from HCEEK's own tags, NO damage part: an own flake
+particle `effects\particles\solid\confetti` (a copy of `debris shirt`: a near-white fluttering
+cloth sprite on light wind-damped point physics, so the effect tint gives clean colours; lives
+2.5-3.5 s, not killed at rest) in six colours, pink needler spike debris, green plasma
+overcharge sparks, blue shield sparks, a warm `flash h pistol detonate` and the needler's
+detonation pop. Everything starts at the Grunt's origin + 0.3 wu, up in a wide cone.
+**How it gets into the maps:** a NEVER-CALLED static script at the end of sprint.hsc,
+`gbp_confetti_ref` (`effect_new_on_object_marker "effects\grunt birthday party" (player0) ""`).
+install_script puts sprint.hsc into data\global_scripts.hsc, which tool compiles into every
+level, and the script compiler adds the tag to each scenario's references. That's the same
+route the ability effects (`ab_fx0`) take, and no gameplay reference is touched.
+`h1_rebuild_all.py` prints `confetti yes/no` per level. Vanilla (unrebuilt) maps keep the
+fallbacks.
+
 **Built (opt-in, 2026-10-11): `h1_birthday_party.py`, route 1.** Enhancer option
 `h1_birthday_party` (Options -> Patching -> Halo 1, off by default); `h1_birthday_party_test.cmd
 on|show|off` for the user. Where the confetti code starts (+0x80444, reached only on a real

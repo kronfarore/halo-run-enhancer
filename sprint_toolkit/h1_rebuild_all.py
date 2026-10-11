@@ -44,6 +44,9 @@ PREVIOUS = os.path.join('E:' + os.sep, 'HaloBackups', 'ek-build-h1', 'previous')
 SLOTS = 'characters\\enhancer\\slot*'
 SLOT_COUNT = 20
 SAW = 'weapons\\saw\\saw'
+# the classic Grunt Birthday Party effect (h1_confetti_effect.py; sprint.hsc's never-called
+# gbp_confetti_ref keeps it in every level) -- h1_birthday_party.py's halo1.dll patch plays it
+CONFETTI = 'effects\\grunt birthday party'
 
 
 def baseline_root():
@@ -92,8 +95,10 @@ def check(path, allow_missing_slots=False):
     slots = len(m.find_tags('actv', SLOTS))
     sprint = bool(m.find_tags('weap', halo_patch._SPRINT_WEAP))
     saw = bool(m.find_tags('weap', SAW))
-    note = '%2d slots, sprint %s, SAW %s' % (slots, 'yes' if sprint else 'NO',
-                                             'yes' if saw else 'no')
+    confetti = bool(m.find_tags('effe', CONFETTI))
+    note = '%2d slots, sprint %s, SAW %s, confetti %s' % (slots, 'yes' if sprint else 'NO',
+                                                          'yes' if saw else 'no',
+                                                          'yes' if confetti else 'no')
     problem = None
     if not sprint:
         problem = 'no sprint weapon -- not a toolkit scenario?'
