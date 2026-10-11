@@ -80,6 +80,14 @@ def convert(rm, template, node_map):
         src = h4m.get(MARKER_FROM.get(mk.name, ''))
         if src:
             mk.pos_x, mk.pos_y, mk.pos_z = (c * 100 * SCALE for c in src['pos'])
+        if mk.name == 'ground point':
+            # the AR's sat 0.023 inside the SAW (2026-10-11, the Plasma Repeater's finding: a
+            # dropped item rests on its ground point): the middle of the SAW's x / z extent on
+            # its -y surface, the AR's rotation (axis +y); node 0 = 'frame gun' at identity
+            xs = [v.pos_x for v in verts]
+            ys = [v.pos_y for v in verts]
+            zs = [v.pos_z for v in verts]
+            mk.pos_x, mk.pos_y, mk.pos_z = (min(xs) + max(xs)) / 2, min(ys), (min(zs) + max(zs)) / 2
     return jm
 
 
