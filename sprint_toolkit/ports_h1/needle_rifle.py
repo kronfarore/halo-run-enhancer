@@ -132,7 +132,10 @@ PORT.update({
         'meters': {'needle_rifle_display': {
             'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
             'from': r'weapons\plasma rifle\fp\shaders\gauge', 'shape': 'r', 'gradient': 0.0,
-            'value': 'D_out', 'color': (1.0, 0.0, 6 / 255.0)},
+            # BOOT 4 (user): 'the symbols never light up' -- out D read 0 as well (every out is
+            # 0 until the weapon fires; the frames showed only the meter's 1/4 OFF colour) ->
+            # `static`: no function, the colour baked, an additive chicago (the needler's luminous)
+            'static': N + 'shaders\\needler luminous', 'color': (1.0, 0.0, 6 / 255.0)},
             # BOOT 3 (user): 'they start unlit and light up after the first shot' -- out C
             # (`needles remaining`) reads 0 until the weapon fires -> out D, a constant ONE
             # (obje_functions: the needler's three + 'one' scaled by nothing). The hex frames:
@@ -141,7 +144,9 @@ PORT.update({
             'needle_rifle_illum_indicator': {
             'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
             'from': r'weapons\plasma rifle\fp\shaders\gauge', 'shape': 'r', 'gradient': 0.0,
-            'value': 'D_out', 'color': (22 / 105.0, 37 / 105.0, 1.0)}},
+            # the frames as the user approved them in boot 4: the meter's OFF level, 1/4 blue
+            'static': N + 'shaders\\needler luminous',
+            'color': (0.25 * 22 / 105.0, 0.25 * 37 / 105.0, 0.25)}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Reach's OWN fp_needle_rifle retargeted (the
@@ -264,7 +269,10 @@ PORT.update({
                                    # (a zero on one side -> the source value): water gravity 0.2
                                    'proj_attrs.physics.air_damage_range': (0.0, 66.667),
                                    'proj_attrs.physics.water_gravity_scale': 0.2,
-                                   'proj_attrs.physics.flyby_sound.filepath': SND + 'nr_flyby'},
+                                   'proj_attrs.physics.flyby_sound.filepath': SND + 'nr_flyby',
+                                   # BOOT 4: Reach's minimum velocity (detonates below 9 wu/s; the
+                                   # needler's 2 was kept by mistake)
+                                   'proj_attrs.detonation.minimum_velocity': 9.0},
                    # Reach's material responses (4b list 3): a needle sticks to BODIES only (the
                    # needle's own attach kept on 11-26 and Elite shields 30 -- the supercombine
                    # needs it). BOOT 2 had the 0-30 deg bounce everywhere, boot 3 none (the
@@ -301,7 +309,15 @@ PORT.update({
                    'attachments_from': 'weapons\\sniper rifle\\sniper bullet',
                    'contrail': {'from': 'weapons\\sniper rifle\\sniper', 'out': NR + 'needle trail',
                                 'rgb': (237 / 255.0, 94 / 255.0, 237 / 255.0),
-                                'no_physics': True, 'blend': 'add'},
+                                'no_physics': True, 'blend': 'add',
+                                # BOOT 4 (user: 'the bouncing is out of proportion'): Reach's
+                                # needle trail (projectile.contrail_system, ManagedBlam) lives
+                                # 0.15 s, 0.03 -> 0.01 wu, pink -> violet, intensity 4; the
+                                # sniper's lived ~1.4 s growing to 0.087 wu -- every ricochet a
+                                # long thick streak. Reach's own profile
+                                'states': [{'duration': (0.0, 0.0), 'transition': (0.15, 0.15),
+                                            'width': 0.03, 'argb': (1.0, 237 / 255.0, 94 / 255.0, 237 / 255.0)},
+                                           {'width': 0.01, 'argb': (0.0, 122 / 255.0, 43 / 255.0, 244 / 255.0)}]},
                    # THE HIT-EFFECT RULE: max(default 4, balanced 3.33) = 4/s
                    'impact_thin': {'materials': [22], 'out': NR + 'effects\\impact\\',
                                    'thin': {}, 'rate': 4.0}},
@@ -356,10 +372,6 @@ PORT.update({
             # rule (user, B1): the YARDSTICK's pickup : initial (needler 80 : 80) on Reach's 63
             'weap_attrs.magazines.0.magazine_items.0.rounds': 63,
         },
-        # out D = a constant ONE for the on-gun screens (BOOT 3; outs A-C the needler's own)
-        'obje_functions': [{'from': N + 'needler', 'index': 0}, {'from': N + 'needler', 'index': 1},
-                           {'from': N + 'needler', 'index': 2},
-                           {'from': N + 'needler', 'index': 2, 'set': {'scale_function_by': 'none'}}],
         'melee': (N + 'melee', NR + 'melee'),
         'melee_response': N + 'melee_response',
         'messages': ('Picked up a Needle Rifle', 'Picked up %d needles for Needle Rifle'),
@@ -388,13 +400,16 @@ PORT.update({
                 # arrows, teal), framed, ~88 x 60 px at 1080p each, centres +-385 px. Halo 1:
                 # one zoom crosshair, an overlay each at RESERVED hud_reticles 44 / 45 (added to
                 # the plan's table), offset +-171 HUD units (385 px / 2.25), sprite x2.33 / 2.30
-                # (sheet px -> screen ~0.565, the reticle's calibration), alpha 0.55
+                # (sheet px -> screen ~0.565, the reticle's calibration), alpha 0.55.
+                # BOOT 4 calibration (boot 3's screenshot: offset 171 -> 190 px at 1080p, a sheet
+                # px -> 0.5 screen px): offset +-346 (Reach's +-385 px), sprite x2.63 / 2.6
+                # (Reach's ~88 x 60 px boxes); the overlay colour's alpha byte 255 (`a`)
                 'zoom_glyphs': [{'art': (R + r'ui\chud\bitmaps\scopes\nr_glyphs', 1), 'name': 'needle rifle glyph l',
-                                 'index': 44, 'scale': (2.33, 2.30), 'alpha': 0.55,
-                                 'offset': (-171, 0), 'rgb': (220, 45, 45), 'frame_alpha': 0.3},
+                                 'index': 44, 'scale': (2.63, 2.6), 'alpha': 0.55,
+                                 'offset': (-346, 0), 'rgb': (220, 45, 45), 'frame_alpha': 0.3},
                                 {'art': (R + r'ui\chud\bitmaps\scopes\nr_glyphs', 0), 'name': 'needle rifle glyph r',
-                                 'index': 45, 'scale': (2.33, 2.30), 'alpha': 0.55,
-                                 'offset': (171, 0), 'rgb': (60, 200, 200), 'frame_alpha': 0.3}],
+                                 'index': 45, 'scale': (2.63, 2.6), 'alpha': 0.55,
+                                 'offset': (346, 0), 'rgb': (60, 200, 200), 'frame_alpha': 0.3}],
                 # Reach's reticle = ONE arc sprite (hud_reticles #4, 11 x 27, a '(' arc) on four
                 # widgets: left at -14, right mirrored at +14, top / bottom at -+14 (the arc
                 # turned): composed by h1_add_reticle's per-layer xform -- a ring, unbroken in

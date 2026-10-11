@@ -276,7 +276,9 @@ def make_hud(w, key, write):
             o.sequence_index = G['index']
             o.anchor_offset.x, o.anchor_offset.y = G['offset']
             r, g, b = G['rgb']
-            o.default_color = (r << 16) | (g << 8) | b          # ARGB, alpha 0 as the stock reticles
+            # ARGB WITH alpha (boot 4: alpha 0 drew nothing on an aim crosshair; the stock
+            # sniper's zoom overlays carry 0xFF / 0x78) -- `a` 0-255, the sprite's own alpha on top
+            o.default_color = (G.get('a', 255) << 24) | (r << 16) | (g << 8) | b
             o.type.data = 0                                      # not 'flashes when active'
             o.type.show_only_when_zoomed = True
     if 'charge_crosshair' in h:

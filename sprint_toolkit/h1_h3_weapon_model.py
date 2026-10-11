@@ -722,7 +722,15 @@ def meters(w):
         b = d.bitmaps.STEPTREE[0]
         b.width, b.height = wd, h
         b.registration_point_x, b.registration_point_y = wd // 2, h // 2
-        d.processed_pixel_data.data = bytearray(np.stack([grad, grad, grad, shape], axis=-1).astype(np.uint8).tobytes())
+        if M.get('static'):
+            # a LIT SHAPE with no function (the Needle Rifle, boot 4: its screens are shapes, not
+            # gauges, and every weapon out read 0 until the first shot -- a meter stayed dark):
+            # the colour BAKED (a8r8g8b8 = B, G, R, A in the data), an additive chicago copied
+            # from `static` (a stock .shader_transparent_chicago) on it
+            col = [np.clip(np.round(shape * c), 0, 255) for c in M['color']]
+            d.processed_pixel_data.data = bytearray(np.stack([col[2], col[1], col[0], shape], axis=-1).astype(np.uint8).tobytes())
+        else:
+            d.processed_pixel_data.data = bytearray(np.stack([grad, grad, grad, shape], axis=-1).astype(np.uint8).tobytes())
         bm = w['dir'] + B + 'bitmaps' + B + name + '_meter'
         t.filepath = os.path.join(TAGS, bm + '.bitmap')
         os.makedirs(os.path.dirname(t.filepath), exist_ok=True)
@@ -730,6 +738,17 @@ def meters(w):
         stale = os.path.join(out, name + '.shader_model')        # `tool model` must find ONE
         if os.path.exists(stale):
             os.remove(stale)
+        if M.get('static'):
+            from reclaimer.hek.defs.schi import schi_def
+            for e in ('.shader_transparent_meter',):
+                if os.path.exists(os.path.join(out, name + e)):
+                    os.remove(os.path.join(out, name + e))
+            s = schi_def.build(filepath=os.path.join(TAGS, M['static'] + '.shader_transparent_chicago'))
+            s.data.tagdata.schi_attrs.maps.STEPTREE[0].bitmap.filepath = bm
+            s.filepath = os.path.join(out, name + '.shader_transparent_chicago')
+            s.serialize(temp=False, backup=False)
+            print('   lit shape %s  map %s %dx%d' % (s.filepath, bm, wd, h))
+            continue
         s = smet_def.build(filepath=os.path.join(TAGS, M['from'] + '.shader_transparent_meter'))
         sm = s.data.tagdata.smet_attrs
         sm.meter_shader.map.filepath = bm
