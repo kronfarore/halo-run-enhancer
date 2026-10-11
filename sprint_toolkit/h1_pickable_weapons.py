@@ -1195,9 +1195,12 @@ def edit_weapon(key, write):
                     math.radians(v[0]), math.radians(v[1]))
             else:
                 setattr(tr.projectile, k, math.radians(v))
-    for field, (src, out, swaps, *opt) in w.get('sound_effects', {}).items():
+    for key, (src, out, swaps, *opt) in w.get('sound_effects', {}).items():
         # an OWN copy of a shared effect (the AR's `fire bullet` / `empty`) with its sound
-        # parts renamed: the SAW's own-sounds recipe, as data (h1_saw_sounds.py)
+        # parts renamed: the SAW's own-sounds recipe, as data (h1_saw_sounds.py). A key
+        # `<field>@<n>` names a SECOND effect of the same field (the Plasma Repeater on the
+        # plasma rifle: its upper and lower firing effects)
+        field = key.split('@')[0]
         from reclaimer.hek.defs.effe import effe_def
         fl = opt[0] if opt else {}
         # `copy_from`: the copy starts from ANOTHER effect (the Carbine: the plasma pistol's

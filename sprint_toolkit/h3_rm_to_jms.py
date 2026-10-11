@@ -191,10 +191,16 @@ def convert(rel, materials=None, markers=None, frame=None):
     jm.verts, jm.tris = verts, tris
     jm.materials = [JmsMaterial(mats[i]) for i in used]
     marks = []
+    seen = {}
     for m in rm['markers']:
         nm = dict(MARKERS, **(markers or {})).get(m['name'])
         if nm is None:
             continue
+        if isinstance(nm, (list, tuple)):
+            # one name per INSTANCE, in the source's order (the Plasma Repeater's two staggered
+            # primary_trigger muzzles = the plasma rifle's `primary trigger1` / `primary trigger`)
+            k = seen[m['name']] = seen.get(m['name'], -1) + 1
+            nm = nm[min(k, len(nm) - 1)]
         qi, qj, qk, qw = m['rot']
         marks.append(JmsMarker(nm, '', 0, m['node'], -qi, -qj, -qk, qw,
                                m['pos'][0] * 100, m['pos'][1] * 100, m['pos'][2] * 100))
