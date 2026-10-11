@@ -1450,20 +1450,29 @@ names it, so no dll change (since 3e50a85 it is the ONLY Birthday Party effect: 
 maps play nothing). v2 (same day), after in-game tests: on a dead Grunt at the object origin
 the small spark effects (`charged bolt sparks`, `impact c shield`) showed NOTHING and `needle
 detonate` only a tiny burst, while `weapons\plasma grenade\effects\explosion` DID show. So the
-BASE is that explosion: both damage parts and the decal removed, its particle system (x0.7,
-pink) and light (warm) as own copies under effects\particle systems \ effects\lights, the boom
-swapped for the needler's pop. Added to it, all large and carrying their own velocity and spread
-(no impact normal): an own flake particle `effects\particles\solid\confetti` (a copy of `debris
-shirt`: a near-white fluttering cloth sprite on light wind-damped point physics, so the tint
-gives clean colours; lives 2.5-3.5 s) in six colours, half up in a cone and half in every
-direction, plus pink needler debris and green / blue sparks, from the origin + 0.3 wu.
+container is that explosion, with v3 (user, same day) removing EVERY part but its light (no
+plasma fireball, no damage, no decal; the light an own warm copy = the flash). Event 0, the
+LAUNCH: confetti and pink needle debris straight up (cone 0.35, 3-4.5 wu/s) from the origin +
+0.3 wu, the needler's pop and the Grunt's own `celebration` line (unit_dialog, 14 permutations:
+the dead Grunt cheers). Event 1, 0.3 s later, the AIR BURST at the origin + 1.2 wu (~3.6 m):
+confetti in six colours and green / blue sparks in every direction, raining down. Confetti = an
+own particle `effects\particles\solid\confetti` (a copy of `debris shirt`: a near-white
+fluttering cloth sprite on light wind-damped point physics, so the tint gives clean colours;
+4-6 s, fades over the last second, not killed at rest).
+**The original cannot be copied** (checked 2026-10-11): `initial_ps.s3dpak` is 71 zlib chunks
+(u32 count + u32 offsets); decompressed, `sfx_konfetti` is a Saber3D TEXT definition (an
+`sfx_entity` playing `sfx_konfett` + `sfx_expl_flash_02` x0.5; `surface` emitters on
+`sfx_source_ak`, `dir y+`, speedNorm 2, life 6 s, size 0.5, texture `konfetti_16x1` = a 4x4
+animated sprite sheet, CDT friction 15 = pieces settle) drawn only by the Anniversary renderer
+with a Saber `sfx` material. Classic reads Blam tags only, and there is no converter. Its numbers are mirrored
+above; the texture's pixels were not found in a readable pak (porting its look would mean
+extracting it and authoring an H1 sprite bitmap).
 **How it gets into the maps:** a NEVER-CALLED static script at the end of sprint.hsc,
 `gbp_confetti_ref` (`effect_new_on_object_marker "effects\grunt birthday party" (player0) ""`).
 install_script puts sprint.hsc into data\global_scripts.hsc, which tool compiles into every
 level, and the script compiler adds the tag to each scenario's references. That's the same
 route the ability effects (`ab_fx0`) take, and no gameplay reference is touched.
-`h1_rebuild_all.py` prints `confetti yes/no` per level. Vanilla (unrebuilt) maps keep the
-fallbacks.
+`h1_rebuild_all.py` prints `confetti yes/no` per level. Unrebuilt maps play nothing.
 
 **Built (opt-in, 2026-10-11): `h1_birthday_party.py`, route 1.** Enhancer option
 `h1_birthday_party` (Options -> Patching -> Halo 1, off by default); `h1_birthday_party_test.cmd
