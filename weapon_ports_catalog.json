@@ -3320,7 +3320,15 @@
    "requires": [
     "proj weapons\\needle rifle\\needle"
    ],
-   "hands": "two"
+   "hands": "two",
+   "tag_map": {
+    "jpt! weapons\\needler\\detonation damage": "jpt! weapons\\needle rifle\\needle",
+    "jpt! weapons\\needler\\explosion": "jpt! weapons\\needle rifle\\supercombine",
+    "jpt! weapons\\needler\\melee": "jpt! weapons\\needle rifle\\melee"
+   },
+   "skip_cards": [
+    "Ramp Up"
+   ]
   }
  ],
  "Halo 3": [
