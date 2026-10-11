@@ -1392,6 +1392,15 @@ The NEXT halo1.dll cave: 14 more 21-byte int3 runs remain (+0x1391621 .. +0x139B
 each the same way (prev byte C3 = after a ret, no .pdata cover, no reloc, not a jump target),
 or chain shorter runs with a jmp.
 
+**The PLAYER is never supercombined in campaign -- engine rule, MEASURED 2026-10-11.** The
+detonation (+0xBC8E7A..+0xBC8EBE) gates on the stuck-in object before the count: word +0x70
+must be 0, and if dword +0x1F8 is not -1 the game-engine pointer (qword +0x2E9F820, set by
+game_engine_new +0xA9E3B0, NULL in campaign) must be set. `h1_supercombine_test.cmd gates`
+on a loaded campaign level: every AI biped +0x1F8 = -1, the player's = 0xEC700000 (a player
+handle, index 0) -- so +0x1F8 is the unit's player, and players are immune in campaign (in
+multiplayer they are not). Stock needler included; the god shield plays no part (no count code
+reads shields). Lifting it = a 2-byte patch at +0xBC8EBE (not built; the user's call).
+
 **Live tag access (test helper).** halo1.dll's tag_get +0xA9B648: tag array = qword
 [+0x1C34FB0] (32-byte entries: class, id +0xC, name +0x10, data +0x14), a tag pointer p is at
 p - [+0x2EA3410] + [+0x2D9CE10] (the index header there: tag count +0xC). Tag data is loaded

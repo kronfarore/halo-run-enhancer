@@ -343,11 +343,14 @@ def main(argv=None):
                                    r.get('note') or r.get('reason') or r.get('new')))
         return
     if a.gates:
-        r = _live(probe_gates)
-        if not r or isinstance(r, tuple) or r[0] is None and not r[1]:
+        r = _live(lambda h, base: [probe_gates(h, base)])   # _live's own error is a tuple
+        if isinstance(r, tuple):
+            print(r[1])
+            return
+        if not r or (r[0][0] is None and not r[0][1]):
             print('MCC / a level not running')
             return
-        engine, rows = r
+        engine, rows = r[0]
         print('game engine pointer: %s (null = campaign: a biped whose +0x1F8 is not -1 '
               'is never supercombined)' % ('%x' % engine if engine else 'null'))
         for handle, is_player, w70, d1f8, stuck in rows:
