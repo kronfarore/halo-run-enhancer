@@ -676,6 +676,18 @@ SETS = {
     # Halo 1 cannot drive a rate by heat: its trigger goes from -> to over the HELD time
     # ('time' rate) and back over its deceleration time; no manual vent.
     'plasma_repeater': {'port': 'Plasma Repeater', 'weapons': [
+        # the BUILT port (5b, 2026-10-11, after boot 6): its tags under Halo 1's measured trigger
+        # (`heat_model` 'tag': h1_ticks, cooling while firing) -- default 20 -> 3.05 over 1.35 s,
+        # 0.12 heat, vent 2.5 s; BALANCED the catalog's rows written out (apply_rows does not
+        # reach a heat model): 7.584 / 7.584-9.1, 20 -> 3.4 over 2.6 s, 0.077 heat, loss 1/2.9,
+        # battery 0.01, the fast/slow materials, 50 -> 70 wu/s, Halo 1-style aim
+        ('Plasma Repeater (port)', W + r'plasma repeater\plasma repeater', 'shot',
+         {'heat_model': 'tag'}),
+        ('Plasma Repeater balanced', W + r'plasma repeater\plasma repeater', 'shot',
+         {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.33, 27.78), 'age': 0.01,
+          'mods': dict(RP_FAST_SLOW),
+          'heat_model': {'rate': ('time', 20.0, 3.4, 2.6), 'hpr': 0.077, 'oh': 1.0,
+                         'loss': 1 / 2.9, 'rec': 0.01, 'cool_firing': True, 'h1_ticks': True}}),
         ('RP = Reach own (true)', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 6.417, 'speed': 25.0, 'range': 100.0, 'aim': (5.0, 15.0, 10.0, 20.0),
           'age': 0.005, 'heat_model': dict(RP_REACH)}),
@@ -1245,12 +1257,12 @@ def main():
     models = [r for r in rows if r.get('heat_model')]
     if models:
         print('\nHEAT MODEL (trigger held from cold, 30 Hz ticks; no cooling while firing)')
-        print('%-26s %7s %7s %13s %13s %8s %8s %8s %13s %13s' % (
+        print('%-26s %7s %7s %13s %13s %8s %8s %8s %13s %13s %13s' % (
             'weapon', 'heat/rd', 'heat/tk', 'to overheat', 'slow (<5/s)', 'vent', 'cool 0',
-            'battery', '3 s: rnds/dps', '10 s: rnds/dps'))
+            'battery', '3 s: rnds/dps', '10 s: rnds/dps', '30 s: rnds/dps'))
         for r in models:
             m = r['heat_model']
-            times = model_times(r, 400)
+            times = model_times(r, 1200)
             gaps = [b - a for a, b in zip(times, times[1:])]
             n = (next((i + 1 for i, g in enumerate(gaps) if g > 0.4), None)
                  if m['oh'] is not None else None)
@@ -1258,10 +1270,10 @@ def main():
             vent = gaps[n - 1] if n else None
             dmg = sum(d['dmg'] for d in r['damage']) * r['per_shot']
             cells = []
-            for span in (3.0, 10.0):
+            for span in (3.0, 10.0, 30.0):
                 k = sum(1 for x in times if x < span)
                 cells.append('%d / %.0f' % (k, k * dmg / span))
-            print('%-26s %7.4f %7.4f %13s %13s %8s %8s %8s %13s %13s' % (
+            print('%-26s %7.4f %7.4f %13s %13s %8s %8s %8s %13s %13s %13s' % (
                 r['label'], m['hpr'], m.get('hpt', 0.0),
                 ('%d / %.2fs' % (n, times[n - 1])) if n else 'never',
                 ('%d / %.2fs' % (slow, times[slow - 1])) if slow else '-',
