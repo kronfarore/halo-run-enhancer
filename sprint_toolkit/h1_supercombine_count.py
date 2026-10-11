@@ -235,6 +235,57 @@ def live_projectiles(h, base):
     return out
 
 
+# ---- the supercombine GATES on the stuck-in object (read-only probe) ----------------
+# Detonation +0xBC8E7A..+0xBC8EBE, before the count: the parent (needle object +0xD8) must
+# have word +0x70 == 0, and dword +0x1F8 == -1 OR the game-engine pointer [+0x2E9F820]
+# non-null (set by game_engine_new +0xA9E3B0 from the variant's game type: null in
+# campaign). Objects: table qword +0x1C42248, data qword +0x2D9CDF8, object = data + 0x34 +
+# entry offset; header entry byte +3 = type (0 biped); +0xD4 first child, +0xD0 next.
+OBJ_TABLE_PTR = 0x1C42248
+OBJ_DATA_PTR = 0x2D9CDF8
+GAME_ENGINE_PTR = 0x2E9F820
+PLAYER_CONTROL_PTR = 0x2D8FE70   # +0x10 = the local player's unit handle
+
+
+def probe_gates(h, base):
+    """Rows for every live biped: (handle, is_player, w70, d1f8, stuck children by tag)."""
+    table, data = _q(h, base + OBJ_TABLE_PTR), _q(h, base + OBJ_DATA_PTR)
+    if not table or not data:
+        return None, []
+    engine = _q(h, base + GAME_ENGINE_PTR)
+    pc = _q(h, base + PLAYER_CONTROL_PTR)
+    player = struct.unpack('<I', dp.read(h, pc + 0x10, 4))[0] if pc else None
+    hdr = dp.read(h, table, 0x38)
+    maximum = struct.unpack_from('<h', hdr, 0x20)[0]
+    first = struct.unpack_from('<i', hdr, 0x34)[0]
+    entries = dp.read(h, table + first, 12 * maximum) or b''
+
+    def at(i):
+        salt, typ, off = (struct.unpack_from('<H', entries, 12 * i)[0], entries[12 * i + 3],
+                          struct.unpack_from('<i', entries, 12 * i + 8)[0])
+        return salt, typ, (None if off == -1 else data + 0x34 + off)
+
+    rows = []
+    for i in range(len(entries) // 12):
+        salt, typ, o = at(i)
+        if not salt or typ != 0 or o is None:
+            continue
+        handle = (salt << 16) | i
+        b = dp.read(h, o, 0x200)
+        stuck, child, guard = {}, struct.unpack_from('<I', b, 0xD4)[0], 0
+        while child != 0xFFFFFFFF and guard < 64:
+            _s, _t, co = at(child & 0xFFFF)
+            if co is None:
+                break
+            cb = dp.read(h, co, 0x1FC)
+            stuck[struct.unpack_from('<I', cb, 0)[0]] = stuck.get(
+                struct.unpack_from('<I', cb, 0)[0], 0) + 1
+            child, guard = struct.unpack_from('<I', cb, 0xD0)[0], guard + 1
+        rows.append(('%08x' % handle, handle == player, struct.unpack_from('<H', b, 0x70)[0],
+                     struct.unpack_from('<i', b, 0x1F8)[0], stuck))
+    return engine, rows
+
+
 def live_count(h, base, proj=None, count=None):
     """Rows (path, flags, count) of the loaded proj tags; with `count`, sets `proj`'s."""
     rows = []
@@ -279,6 +330,9 @@ def main(argv=None):
     g.add_argument('--show', action='store_true')
     g.add_argument('--count', nargs='*', metavar=('PROJ', 'N'),
                    help='list the supercombining projectiles (live, or --map), or set one')
+    g.add_argument('--gates', action='store_true',
+                   help='read-only: the detonation gates on every live biped (+ .jsonl log)')
+    ap.add_argument('--note', default='', help='with --gates: the condition, for the log')
     ap.add_argument('--live', action='store_true', help='the running MCC only, not the file')
     ap.add_argument('--dll', default=DLL, help='a halo1.dll to act on (default: MCC\'s)')
     ap.add_argument('--map', help='with --count: a .map file instead of the running game')
@@ -287,6 +341,29 @@ def main(argv=None):
         for r in sync(a.on, a.dll, quiet=False, live_only=a.live):
             print('%-16s %s %s' % (r['field'], 'OK  ' if r['ok'] else 'FAIL',
                                    r.get('note') or r.get('reason') or r.get('new')))
+        return
+    if a.gates:
+        r = _live(probe_gates)
+        if not r or isinstance(r, tuple) or r[0] is None and not r[1]:
+            print('MCC / a level not running')
+            return
+        engine, rows = r
+        print('game engine pointer: %s (null = campaign: a biped whose +0x1F8 is not -1 '
+              'is never supercombined)' % ('%x' % engine if engine else 'null'))
+        for handle, is_player, w70, d1f8, stuck in rows:
+            print('%s%s  +0x70=%d  +0x1F8=%d  stuck=%s' % (
+                handle, ' PLAYER' if is_player else '       ', w70, d1f8,
+                {'%08x' % k: v for k, v in stuck.items()}))
+        import json
+        out = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'out',
+                           'supercombine_gates.jsonl')
+        os.makedirs(os.path.dirname(out), exist_ok=True)
+        with open(out, 'a', encoding='utf-8') as f:
+            f.write(json.dumps({'time': time.strftime('%Y-%m-%d %H:%M:%S'), 'note': a.note,
+                                'engine': bool(engine),
+                                'bipeds': [{'handle': x[0], 'player': x[1], 'w70': x[2],
+                                            'd1f8': x[3], 'stuck': len(x[4])}
+                                           for x in rows]}) + '\n')
         return
     if a.count is not None:
         proj = a.count[0] if a.count else None
