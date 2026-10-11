@@ -27,6 +27,34 @@ SOFT = [0, 1, 3, 4, 5, 6, 8, 27, 31]
 STONE = [2]
 METAL = [7]
 GLASS = [9]
+# BOOT 5 (user): 'bouncing needs to become a consideration in the balanced setting'. The RATIO
+# per material group: H1 needler x Reach needle rifle / Reach needler (the needle tables,
+# 2026-10-11). Reach needler: default material bounce 0-55 at chance 0.5 (never against units),
+# hard terrain 0-75 / 0.9, thick metal 0-85 / 0.9, frictions 0 / 0.7; the needle rifle the same
+# for terrain and metal, default 0-30 at 1. H1 needler: STICKS in soft ground (no bounce),
+# reflects off stone 0-25, metal hollow / thin / thick 0-35, glass 0-15, frictions 0.3 / 0.3.
+#   soft ground   0 x 30/55 = no bounce (a zero on the yardstick side) -> Skip Fraction 1
+#   metal thin    35 x 30/55 = 19.1 deg, chance 1 x 1/0.5 -> 1 (skip 0), frictions 0.3 x 0.7/0.7
+#   stone         25 x 75/75 = 25 deg, chance 1 x 0.9/0.9 = 1 (skip 0), frictions 0.3
+#   metal thick   35 x 85/85 = 35 deg, skip 0, frictions 0.3
+# per-ELEMENT rows: block 'Material Responses' + `index` (halo_patch apply_field's index);
+# originals = the default build's (Reach's table)
+MR = 'Material Responses'
+
+
+def _mr(i, field, value, original):
+    return dict(row('proj', 'weapons\\needle rifle\\needle', field, value, original, 'Needle Bounce',
+                    block=MR), index=i)
+
+
+BOUNCE_ROWS = ([_mr(i, 'Skip Fraction', 1.0, 0.0) for i in (0, 1, 3, 4, 8, 27, 31)]
+               + [r for i in (5, 6) for r in (_mr(i, 'Between Max', 19.1, 30.0),
+                                              _mr(i, 'Parallel Friction', 0.3, 0.0),
+                                              _mr(i, 'Perpendicular Friction', 0.3, 0.7))]
+               + [r for i, ang in ((2, (25.0, 75.0)), (7, (35.0, 85.0)))
+                  for r in (_mr(i, 'Skip Fraction', 0.0, 0.1), _mr(i, 'Between Max', ang[0], ang[1]),
+                            _mr(i, 'Parallel Friction', 0.3, 0.0),
+                            _mr(i, 'Perpendicular Friction', 0.3, 0.7))])
 LEVELS = ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40']
 # Reach's self-illumination colours (ManagedBlam, the shaders' function data, 2026-10-10):
 # the stowed CRYSTALS (needler_crystal_solid, illum_detail, intensity 3) violet (87, 19, 237)
@@ -470,7 +498,7 @@ PORT.update({
                 row('weap', NR + 'needle rifle', 'Autoaim Range', 24.0, 25.0, 'Autoaim'),
                 row('weap', NR + 'needle rifle', 'Magnetism Angle', 3.75, 5.0, 'Magnetism'),
                 row('weap', NR + 'needle rifle', 'Magnetism Range', 24.0, 25.0, 'Magnetism'),
-            ]},
+            ] + BOUNCE_ROWS},
     },
 
     # step 4b (port_field_audit.py --port needle_rifle): the source pair (Reach needle rifle vs

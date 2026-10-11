@@ -242,10 +242,11 @@ def make_hud(w, key, write):
         aim = [c for c in xs if c.crosshair_type.enum_name == 'aim'][0]
         xs.append(copy.deepcopy(aim))
         zc = xs[len(xs) - 1]
-        # an AIM crosshair whose overlays show ONLY ZOOMED (the sniper's own layout); boot 3:
-        # the `zoom` type picks its sprite by ZOOM LEVEL (zoomed in, the left overlay drew the
-        # next sequence, the right one an empty slot) and draws unzoomed too
-        zc.crosshair_type.set_to('aim')
+        # a ZOOM crosshair: Halo 1 draws sprite N of its sequence at zoom level N (boot 3: one
+        # sprite showed unzoomed and turned into another zoomed; boot 4/5: an aim crosshair
+        # with 'show only when zoomed' overlays drew nothing) -> each glyph's sequence holds
+        # an EMPTY sprite 0 (unzoomed) and the glyph as sprite 1 (the first zoom level)
+        zc.crosshair_type.set_to('zoom')
         zc.crosshair_bitmap.filepath = h.get('reticle_bitmap', zc.crosshair_bitmap.filepath)
         ovs = zc.crosshair_overlays.STEPTREE
         tmpl = copy.deepcopy(ovs[0])
@@ -269,8 +270,16 @@ def make_hud(w, key, write):
                 canvas = Image.new('L', (AR.SIZE, AR.SIZE), 0)
                 canvas.paste(a, (round(AR.CENTRE[0] - rx * sx), round(AR.CENTRE[1] - ry * sy)))
                 white = Image.new('L', (AR.SIZE, AR.SIZE), 255)
-                h1_hud_sheet.put_twins('hud_reticles', G['name'], Image.merge('RGBA', (white, white, white, canvas)),
-                                       AR.TEMPLATE_SEQ, (AR.SIZE, AR.SIZE), AR.CENTRE, index=G['index'])
+                img = Image.merge('RGBA', (white, white, white, canvas))
+                x0, y0, x1, y1 = canvas.getbbox()
+                x0, y0, x1, y1 = x0 - 2, y0 - 2, x1 + 2, y1 + 2
+                w2, h2 = 1 << (x1 - x0 - 1).bit_length(), 1 << (y1 - y0 - 1).bit_length()
+                crop = Image.new('RGBA', (w2, h2), (255, 255, 255, 0))
+                crop.paste(img.crop((x0, y0, x1, y1)), (0, 0))
+                blank = Image.new('RGBA', (4, 4), (255, 255, 255, 0))
+                frames = [(blank, (2, 2)), (crop, (AR.CENTRE[0] - x0, AR.CENTRE[1] - y0))]
+                for sheet in ('hud_reticles', 'hud_reticles_r'):
+                    h1_hud_sheet.put_frames(sheet, G['name'], frames, AR.TEMPLATE_SEQ, G['index'])
             ovs.append(copy.deepcopy(tmpl))
             o = ovs[len(ovs) - 1]
             o.sequence_index = G['index']
@@ -280,7 +289,6 @@ def make_hud(w, key, write):
             # sniper's zoom overlays carry 0xFF / 0x78) -- `a` 0-255, the sprite's own alpha on top
             o.default_color = (G.get('a', 255) << 24) | (r << 16) | (g << 8) | b
             o.type.data = 0                                      # not 'flashes when active'
-            o.type.show_only_when_zoomed = True
     if 'charge_crosshair' in h:
         # a CHARGE indicator (the Spartan Laser, test 1: Halo 3's triangle sweeping round the
         # reticle as it charges): Halo 1's `charge` crosshair type -- no stock HUD uses it --
