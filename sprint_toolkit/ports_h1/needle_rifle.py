@@ -107,10 +107,20 @@ PORT = reserved(
             'peers': ['Pistol', 'Needler', 'Sniper Rifle'],
             'why': 'magazine, semi-auto, 2x zoom, fast needle that supercombines like the needler',
             'lacks': "Reach's 3-needle supercombine (Halo 1's engine count is 7)"}},
-    # step 11: Reach's ai\generic Needle Rifle entry (m10) over a base -- 'nr' has no carrier.
-    # Donor / WDM rule: filled at step 11 (h1_weapon_carriers of the needler)
+    # step 11: Reach's ai\generic Needle Rifle entry (m10: rate 3.875, bursts 1.07-1.38 s, separation
+    # 0.88-2.06 s, range 8-10, Reach WDM 1.75 -- replaced by the rule) over a base -- 'nr' has no
+    # carrier. Halo 1's needler carriers (h1_weapon_carriers, 2026-10-11) disagree: Flood /
+    # Marines 0.4, Grunts + Elite minor / major 0.5, spec-ops Elite + armoured Marines 0.6, the
+    # captain 0; no actor flags on any candidate. User (2026-10-11): the ELITE MINOR needler for
+    # every slot; the WDM RULE AS IS though the default supercombine x 2.08 one-shots (user: like
+    # the DMR's 1.54): 0.5 x needler 100 / port 24 = 2.08 default, / 33.3 = 1.50 balanced
+    # (h1_role_compare needle_rifle, the built port, 5b)
     firing_profile={'mode': 'source', 'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map',
-                    'from_weapon': 'objects\\weapons\\rifle\\needle_rifle\\needle_rifle'},
+                    'from_weapon': 'objects\\weapons\\rifle\\needle_rifle\\needle_rifle',
+                    'donor_weapon': 'weapons\\needler\\needler',
+                    'donor_variant': 'characters\\elite\\elite minor\\elite minor needler',
+                    'wdm_rule': {'base': 0.5, 'yardstick_dps': 100.0, 'port_dps': 24.0,
+                                 'balanced_port_dps': 33.3}},
 )
 
 PORT.update({

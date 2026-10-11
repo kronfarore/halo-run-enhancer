@@ -1462,6 +1462,156 @@
     "port_dps": 52.5,
     "balanced_port_dps": 99.4
    }
+  },
+  "weapons\\needle rifle\\needle rifle": {
+   "source": "Halo Reach ai\\generic objects\\weapons\\rifle\\needle_rifle\\needle_rifle (weapon properties #12, firing pattern #12) over weapons\\needler\\needler carriers (always characters\\elite\\elite minor\\elite minor needler)",
+   "fields": {
+    "0x74": [
+     "<f",
+     20.0,
+     "Maximum Firing Distance"
+    ],
+    "0x78": [
+     "<f",
+     3.875,
+     "Rate Of Fire"
+    ],
+    "0x7C": [
+     "<f",
+     0.008181230572517961,
+     "Projectile Error"
+    ],
+    "0x80": [
+     "<f",
+     0.75,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     1.0,
+     "First Burst Delay Time Max"
+    ],
+    "0x8C": [
+     "<f",
+     1.0,
+     "Surprise Delay Time"
+    ],
+    "0x94": [
+     "<f",
+     0.20000000298023224,
+     "Death Fire-Wildly Chance"
+    ],
+    "0x98": [
+     "<f",
+     0.5,
+     "Death Fire-Wildly Time"
+    ],
+    "0x9C": [
+     "<f",
+     8.0,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     10.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     0.949999988079071,
+     "Target Tracking"
+    ],
+    "0xC0": [
+     "<f",
+     0.7249999940395355,
+     "Target Leading"
+    ],
+    "0xC4": [
+     "<f",
+     2.0833333333333335,
+     "Weapon Damage Modifier"
+    ],
+    "0xCC": [
+     "<f",
+     0.22500000707805157,
+     "Burst Origin Radius"
+    ],
+    "0xD0": [
+     "<f",
+     0.01745329238474369,
+     "Burst Origin Angle"
+    ],
+    "0xD4": [
+     "<f",
+     0.26874999701976776,
+     "Burst Return Length"
+    ],
+    "0xD8": [
+     "<f",
+     0.45000001415610313,
+     "Burst Return Length Max"
+    ],
+    "0xDC": [
+     "<f",
+     0.026179938577115536,
+     "Burst Return Angle"
+    ],
+    "0xE0": [
+     "<f",
+     1.0650000423192978,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     1.3749999701976776,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     0.875,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     2.0625,
+     "Burst Separation Max"
+    ],
+    "0x1D8": [
+     "<f",
+     0.20000000298023224,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.4000000059604645,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     9,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     12,
+     "Drop Weapon Ammo Max"
+    ]
+   },
+   "donor_weapon": "weapons\\needler\\needler",
+   "donor_variant": "characters\\elite\\elite minor\\elite minor needler",
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     1.5015015015015016,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.5,
+    "yardstick_dps": 100.0,
+    "port_dps": 24.0,
+    "balanced_port_dps": 33.3
+   }
   }
  }
 }

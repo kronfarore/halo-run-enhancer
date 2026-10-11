@@ -572,6 +572,11 @@ SETS = {
     # in Halo 1, 3 in Reach) = 2.25 s -- x7/3 (1.75 s) misses 1.8 s at the 3.33/s cap.
     # Every row: the needle's materials (`detonation damage`); the super on `explosion`'s.
     'needle_rifle': {'port': 'Needle Rifle', 'weapons': [
+        # the BUILT port (step 5b): its tags (+ --balanced rows); its supercombine = its own
+        # `supercombine` damage (390 default / 60 balanced via the rows) at Halo 1's 7, stuck 4 s /
+        # 2.25 s (semi-automatic: the tag rate is the cap)
+        ('Needle Rifle (port)', W + r'needle rifle\needle rifle', 'shot',
+         {'super': (7, W + r'needle rifle\supercombine', 390.0), 'timer': 4.0}),
         ('NR = Reach own, no super', W + r'needler\needler', 'shot',
          {'dmg': 6.0, 'rate': 4.0, 'mag': 21, 'reload': 82 / 30.0, 'speed': 1500.0,
           'range': 250.0, 'aim': (2.25, 25.0, 5.0, 25.0),
