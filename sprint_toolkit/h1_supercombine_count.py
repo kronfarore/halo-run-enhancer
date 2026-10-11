@@ -228,8 +228,8 @@ def _q(h, addr):
     return struct.unpack('<Q', b)[0] if b and len(b) == 8 else None
 
 
-def live_projectiles(h, base):
-    """[(path, data address)] of every proj tag in the loaded map."""
+def live_projectiles(h, base, cls=b'proj'):
+    """[(path, data address)] of every `cls` tag (default proj) in the loaded map."""
     arr, vb, db = (_q(h, base + o) for o in (TAG_ARRAY_PTR, VBASE_PTR, DBASE_PTR))
     if not arr or vb is None or db is None:
         return []
@@ -240,12 +240,47 @@ def live_projectiles(h, base):
         e = dp.read(h, arr + 32 * i, 32)
         if not e or len(e) < 32:
             break
-        if e[:4][::-1] != b'proj':
+        if e[:4][::-1] != cls:
             continue
         name_p, data_p = struct.unpack_from('<ii', e, 0x10)
         raw = dp.read(h, name_p - vb + db, 256) or b''
         out.append((raw.split(b'\0')[0].decode('latin1'), data_p - vb + db))
     return out
+
+
+# ---- god shield, LIVE (test helper): h1_enemy_test_map.god_shield's values written into
+# the loaded level's player collision model; the originals are kept for `--god off`.
+GOD_COLL = 'characters\\cyborg\\cyborg'
+GOD_FIELDS = ((0x8, 1e6), (0xCC, 1e6), (0xF4, 0.0), (0x10C, 0.0), (0x110, 0.1))
+GOD_STATE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'out', 'god_shield_live.json')
+
+
+def live_god(h, base, on):
+    """'on' / 'off' -> the player's collision model; returns a status line."""
+    import json
+    hit = [a for p, a in live_projectiles(h, base, b'coll') if p.lower() == GOD_COLL]
+    if not hit:
+        return 'no %s collision model loaded (or no level loaded)' % GOD_COLL
+    addr = hit[0]
+    now = [struct.unpack('<f', dp.read(h, addr + o, 4))[0] for o, _v in GOD_FIELDS]
+    if on:
+        if now[1] < 1e5:                           # not already god: keep the originals
+            os.makedirs(os.path.dirname(GOD_STATE), exist_ok=True)
+            with open(GOD_STATE, 'w', encoding='utf-8') as f:
+                json.dump(now, f)
+        vals = [v for _o, v in GOD_FIELDS]
+    else:
+        try:
+            with open(GOD_STATE, encoding='utf-8') as f:
+                vals = json.load(f)
+        except (OSError, ValueError):
+            return 'no saved originals -- reload the level (checkpoint) to get the stock shield'
+    for (o, _v), v in zip(GOD_FIELDS, vals):
+        ok, err = dp.write(h, addr + o, struct.pack('<f', v), 0x04)
+        if not ok:
+            return 'write failed: %s' % err
+    return 'god shield %s (max body/shield, leak, stun, recharge: %s)' % (
+        'ON' if on else 'off', [round(v, 3) for v in vals])
 
 
 # ---- the supercombine GATES on the stuck-in object (read-only probe) ----------------
@@ -345,6 +380,8 @@ def main(argv=None):
                     help='with --on/--off/--show: the player-supercombine patch instead')
     g.add_argument('--count', nargs='*', metavar=('PROJ', 'N'),
                    help='list the supercombining projectiles (live, or --map), or set one')
+    g.add_argument('--god', choices=('on', 'off'),
+                   help='test helper: the god shield on/off in the loaded level (live)')
     g.add_argument('--gates', action='store_true',
                    help='read-only: the detonation gates on every live biped (+ .jsonl log)')
     ap.add_argument('--note', default='', help='with --gates: the condition, for the log')
@@ -357,6 +394,10 @@ def main(argv=None):
         for r in fn(a.on, a.dll, quiet=False, live_only=a.live):
             print('%-16s %s %s' % (r['field'], 'OK  ' if r['ok'] else 'FAIL',
                                    r.get('note') or r.get('reason') or r.get('new')))
+        return
+    if a.god:
+        r = _live(lambda h, base: [live_god(h, base, a.god == 'on')])
+        print(r[1] if isinstance(r, tuple) else r[0] if r else 'MCC / halo1.dll not running')
         return
     if a.gates:
         r = _live(lambda h, base: [probe_gates(h, base)])   # _live's own error is a tuple
