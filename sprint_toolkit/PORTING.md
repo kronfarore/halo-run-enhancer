@@ -1427,7 +1427,24 @@ not seen with the pistol either. What the skull spawns, `sfx_konfetti`, is an AN
 effect: it is defined only in `halo1\prebuild\paks\initial_ps.s3dpak`, not in any map. The
 candidates and the probe below are kept for reference.
 
-**Built (opt-in, 2026-10-11, untested in game): `h1_birthday_party.py`.** Enhancer option
+**CONFIRMED in game 2026-10-11 (a30, classic, pistol headshots: a small needle burst on the
+Grunt) after a second route.** The first build (below) never fired in classic graphics. The
+probe showed why: value 2 reached the skull test, but MCC's object-record lookup (`"id%x"`,
++0x2B3140) returns 0 in classic graphics (that list is the Anniversary mirror), so MCC leaves
+at +0x803E2, before the name test and before +0x80444. Route 2 hooks the lookup result at
+**+0x803DC** (`mov r14,rax ; test rax,rax` -> `call KA`). On a hit (Anniversary graphics) it
+replays both instructions and returns to the stock path. On a miss it looks the effect's
+object up with mask -1 (object_get +0xB389A4, which returns &object.tag), compares that tag
+with `tag_loaded('bipd', 'characters\grunt\grunt')` (name at +0x1B745E0 in the .rdata slack),
+then spawns the effect through route 1's C2/C3. Every miss leaves through C3's tail (+0x139A055:
+`add rsp,0x28 ; xor r9d,r9d` -> ZF=1, so the stock `je` skips MCC's confetti code) and `ret`.
+Caves: KA +0x1391621 (21), KB +0x1393D00 (16), KC +0x1394B8F (17), KD +0x13978BF (17),
+KE +0x139689C (20), KF +0x1394990 (16), all unreferenced. More free int3 runs of 16-20 bytes
+remain (+0x1393CBE, +0x1394AEE, +0x13952DC, +0x139537C, +0x1396A2C ...; scan in this section's
+history). The effect is small: a bigger or real confetti effect only needs `--effect`, plus
+its tag in the maps.
+
+**Built (opt-in, 2026-10-11): `h1_birthday_party.py`, route 1.** Enhancer option
 `h1_birthday_party` (Options -> Patching -> Halo 1, off by default); `h1_birthday_party_test.cmd
 on|show|off` for the user. Where the confetti code starts (+0x80444, reached only on a real
 Birthday Party), a call into three chained 21-byte int3 caves (+0x1397EFB, +0x139865B,

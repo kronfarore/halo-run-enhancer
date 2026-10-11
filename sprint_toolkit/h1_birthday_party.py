@@ -57,6 +57,16 @@ NAME_RVA = 0x1B74520
 NAME_MAX = 0xC0                       # bytes reserved (to +0x1B745E0; slack ends +0x1B74600)
 TAG_LOADED = 0xA9B35C
 EFFECT_ON_OBJECT = 0xBA1078
+OBJECT_GET = 0xB389A4                 # (object, type mask) -> &object.tag (or 0)
+# CLASSIC graphics: MCC's object-record lookup ("id%x", +0x2B3140) finds nothing, so its code
+# leaves at +0x803E2 before the name test and before +0x80444 (measured 2026-10-11 with the
+# probe: value 2 reached the test, the lookup returned 0). This second route hooks the lookup
+# result: lookup failed -> the effect's object is the Grunt biped -> the effect.
+SITE2 = 0x803DC                       # mov r14,rax ; test rax,rax   (then je +0x805DB)
+KA, KB, KC, KD, KE, KF = 0x1391621, 0x1393D00, 0x1394B8F, 0x13978BF, 0x139689C, 0x1394990
+GRUNT_RVA = 0x1B745E0                 # r'characters\grunt\grunt' in the .rdata slack
+GRUNT = b'characters\\grunt\\grunt\x00'
+DONE = C3 + 10                        # add rsp,0x28 ; xor r9d,r9d (ZF=1: je taken) ; ret
 SECTIONS = [(0x1000, 0x174F200, 0xC00),      # .text  (rva start, raw size, rva - file offset)
             (0x1751000, 0x423600, 0x1A00)]   # .rdata
 
@@ -72,14 +82,36 @@ CODE2 = (H('b965666665') + H('e8') + _rel(C2 + 10, TAG_LOADED) + H('89c1') + H('
 CODE3 = (H('83f9ff') + H('7405') + H('e8') + _rel(C3 + 10, EFFECT_ON_OBJECT)
          + H('4883c428') + H('4533c9') + H('c3'))
 assert len(CODE1) <= 21 and len(CODE2) <= 21 and len(CODE3) <= 21
+CODE_KA = (H('4c8bf0') + H('4885c0') + H('7401') + H('c3')     # registry hit: stock path
+           + H('4883ec28') + H('4489e9') + H('e9') + _rel(KA + 21, KB))
+CODE_KB = H('83caff') + H('e8') + _rel(KB + 8, OBJECT_GET) + H('4885c0') + H('e9') + _rel(KB + 16, KC)
+CODE_KC = (H('0f84') + _rel(KC + 6, DONE) + H('8b00') + H('89442420')
+           + H('e9') + _rel(KC + 17, KD))
+CODE_KD = (H('488d15') + _rel(KD + 7, GRUNT_RVA) + H('b964706962')   # mov ecx,'bipd'
+           + H('e9') + _rel(KD + 17, KE))
+CODE_KE = (H('e8') + _rel(KE + 5, TAG_LOADED) + H('3b442420') + H('0f85') + _rel(KE + 15, DONE)
+           + H('e9') + _rel(KE + 20, KF))
+CODE_KF = H('488d15') + _rel(KF + 7, NAME_RVA) + H('e9') + _rel(KF + 12, C2)
+for _c, _room in ((CODE_KA, 21), (CODE_KB, 16), (CODE_KC, 17), (CODE_KD, 17), (CODE_KE, 20),
+                  (CODE_KF, 16)):
+    assert len(_c) <= _room
 
 # (rva, context before, stock, patched, context after) -- in "on" order: caves first
 SITES = [
     (C1, H('5ec3'), b'\xcc' * len(CODE1), CODE1, b''),
     (C2, H('5dc3'), b'\xcc' * len(CODE2), CODE2, b''),
     (C3, H('5bc3'), b'\xcc' * len(CODE3), CODE3, b''),
+    (KA, H('5dc3'), b'\xcc' * len(CODE_KA), CODE_KA, b''),
+    (KB, H('28c3'), b'\xcc' * len(CODE_KB), CODE_KB, b''),
+    (KC, H('5fc3'), b'\xcc' * len(CODE_KC), CODE_KC, b''),
+    (KD, H('5fc3'), b'\xcc' * len(CODE_KD), CODE_KD, b''),
+    (KE, H('5bc3'), b'\xcc' * len(CODE_KE), CODE_KE, b''),
+    (KF, H('f8c3'), b'\xcc' * len(CODE_KF), CODE_KF, b''),
+    (GRUNT_RVA, b'', b'\x00' * len(GRUNT), GRUNT, b''),
     (SITE, H('3bca7ced'), H('4c897c24684533c9'), H('e8') + _rel(SITE + 5, C1) + H('909090'),
      H('458d41ff')),
+    (SITE2, H('642d2300'), H('4c8bf04885c0'), H('e8') + _rel(SITE2 + 5, KA) + H('90'),
+     H('0f84f301')),
 ]
 
 

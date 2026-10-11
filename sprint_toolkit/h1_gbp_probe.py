@@ -171,9 +171,13 @@ def _state():
 def install():
     pid, h, base = _open()
     st = _state()
+    skip = set()
     for name, (rva, stock, _back) in SITES.items():
         cur = dp.read(h, base + rva, len(stock))
         if cur != stock:
+            if name == 'gbp_pass' and cur and cur[0] == 0xE8:
+                skip.add(name)          # h1_birthday_party's call sits there: leave it
+                continue
             if st.get('pid') == pid and cur and cur[0] == 0xE9:
                 raise SystemExit('already installed (use --dump / --off).')
             raise SystemExit('%s: unexpected bytes at +%X (%s) -- different halo1.dll build?'
@@ -187,6 +191,8 @@ def install():
         if not ok:
             raise SystemExit(err)
     for name, (at, _code) in caves.items():         # sites last, caves already in place
+        if name in skip:
+            continue
         rva, stock, _back = SITES[name]
         patch = b'\xe9' + _rel32(base + rva + 5, at)
         ok, err = dp.write(h, base + rva, patch + b'\x90' * (len(stock) - 5))
@@ -204,7 +210,7 @@ def uninstall():
     pid, h, base = _open()
     for name, (rva, stock, _back) in SITES.items():
         cur = dp.read(h, base + rva, len(stock))
-        if cur == stock:
+        if cur == stock or (cur and cur[0] == 0xE8):     # stock, or h1_birthday_party's call
             continue
         ok, err = dp.write(h, base + rva, stock)
         print('%s: %s' % (name, 'restored' if ok else err))
