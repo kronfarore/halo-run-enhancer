@@ -89,6 +89,9 @@ PORT.update({
         'world': H3 + r'\covenant_carbine.render_model',
         'fp': H3 + r'\fp_covenant_carbine\fp_covenant_carbine.render_model',
         'world_name': 'covenant carbine',
+        # the user (Plasma Repeater, 2026-10-11): every port gets a `ground point` -- Halo 1 rests a
+        # dropped item on it; without one it rests on its origin and sinks (h1_h3_weapon_model)
+        'ground_point': 'auto',
         'shaders': {'carbine': (H3 + r'\bitmaps\covenant_carbine.bitmap', H3 + r'\bitmaps\covenant_carbine_illum.bitmap'),
                     'carbine_dull': (H3 + r'\bitmaps\covenant_carbine.bitmap', H3 + r'\bitmaps\covenant_carbine_illum.bitmap'),
                     # carbine_tint_map dropped at close-out: no Halo 3 triangle carries it (neither

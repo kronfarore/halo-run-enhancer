@@ -94,6 +94,9 @@ PORT.update({
         'world': R + RW + r'\dmr.render_model',
         'fp': R + RW + r'\dmr.render_model',
         'world_name': 'dmr',
+        # the user (Plasma Repeater, 2026-10-11): every port gets a `ground point` -- Halo 1 rests a
+        # dropped item on it; without one it rests on its origin and sinks (h1_h3_weapon_model)
+        'ground_point': 'auto',
         'markers': {'primary_ejection': 'primary ejection', 'left_hand': 'left hand'},
         'shaders': {'dmr_metal': (R + RW + r'\bitmaps\dmr_diffuse.bitmap', None),
                     'dmr_metal_shiny': (R + RW + r'\bitmaps\dmr_diffuse.bitmap', None),

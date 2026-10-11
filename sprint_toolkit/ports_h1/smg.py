@@ -72,6 +72,9 @@ PORT.update({
         'world': H3 + r'\smg.render_model',
         'fp': H3 + r'\fp_smg\fp_smg.render_model',
         'world_name': 'smg',
+        # the user (Plasma Repeater, 2026-10-11): every port gets a `ground point` -- Halo 1 rests a
+        # dropped item on it; without one it rests on its origin and sinks (h1_h3_weapon_model)
+        'ground_point': 'auto',
         'shaders': {'smg_metal': (H3 + r'\bitmaps\smg.bitmap', H3 + r'\bitmaps\smg_illum.bitmap'),
                     'smg_rubber': (H3 + r'\bitmaps\smg.bitmap', None)},
         'template': r'weapons\assault rifle\fp\shaders\gun',

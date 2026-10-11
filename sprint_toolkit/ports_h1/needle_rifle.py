@@ -164,6 +164,9 @@ PORT.update({
         'world': R + RW + r'\needle_rifle.render_model',
         'fp': R + RW + r'\needle_rifle.render_model',
         'world_name': 'needle rifle',
+        # the user (Plasma Repeater, 2026-10-11): every port gets a `ground point` -- Halo 1 rests a
+        # dropped item on it; without one it rests on its origin and sinks (h1_h3_weapon_model)
+        'ground_point': 'auto',
         'markers': {'primary_ejection': 'primary ejection', 'left_hand': 'left hand'},
         'shaders': {'needle_rifle_metal': (R + RW + r'\bitmaps\needle_rifle_diffuse.bitmap', None),
                     'needle_rifle_shell': (R + RW + r'\bitmaps\needle_rifle_diffuse.bitmap', None),

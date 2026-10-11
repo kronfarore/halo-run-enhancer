@@ -279,6 +279,9 @@ PORT.update({
         'world': H3 + r'\gravity_hammer.render_model',
         'fp': H3 + r'\fp_gravity_hammer\fp_gravity_hammer.render_model',
         'world_name': 'gravity hammer',
+        # the user (Plasma Repeater, 2026-10-11): every port gets a `ground point` -- Halo 1 rests a
+        # dropped item on it; without one it rests on its origin and sinks (h1_h3_weapon_model)
+        'ground_point': 'auto',
         'shaders': {'hammer': (BASE, ILLUM),
                     'hammer_shiny': (BASE, ILLUM),
                     'hammer_dull': (BASE, None)},
@@ -532,7 +535,8 @@ PORT.update({
             # or stand like the flag): STAND LIKE THE FLAG -- the flag pose kept, the flag's
             # 'always maintains z up': head up every time, the lower 0.29 wu of handle in the
             # ground (the hull stays: what projectiles hit)
-            'item_attrs.flags.always_maintains_z_up': True,
+            # 2026-10-11 (user): the `ground point` (model) replaces the flag's standing pose -- the
+            # hammer lies on its side like every stock weapon; 'always maintains z up' off
             'obje_attrs.bounding_radius': 0.42,
             # BOOT 1 (user): 'each swing costs ABOUT 5%' -- float32 0.05 is 0.0500000007, so the
             # HUD reads 94, 89, ... Boot 2 tried the Spartan Laser's fix (the float just below,
