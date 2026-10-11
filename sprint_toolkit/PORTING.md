@@ -1542,8 +1542,10 @@ metal 19.1 deg, stone 25, thick metal 35, frictions 0.3 -- PER-ELEMENT catalog r
 **Headshots:** Halo 1's jpt flag 'causes headshots' (+ 'multiplayer'); Halo 3 / Reach 'can cause
 headshots' on the damage effect (+ the model's headshotable regions from Halo 2 on). Reach's needle
 rifle has it, its needler not -> set. (The DMR config's note 'no Halo 1 jpt flag' is wrong; the DMR
-has the flag from the sniper bullet.) Grunt Birthday Party does NOT fire on a needle headshot
-(it does with the pistol): the birthday-party session's section above.
+has the flag from the sniper bullet.) Grunt Birthday Party: NOT a port issue -- its confetti
+(`sfx_konfetti`) is Anniversary-graphics only and never shows in classic graphics with any weapon
+(the earlier 'pistol works' was an assumption); a classic effect = the opt-in dll option
+`h1_birthday_party` (the birthday-party session's section above, untested).
 
 **The trail (boot 1-4).** The needler's needle brought a LIGHT-VOLUME widget (turns with a stuck
 needle's surface -- the Brute Shot's trap again: `drop_widgets`) and a contrail at 30 points/s (one
