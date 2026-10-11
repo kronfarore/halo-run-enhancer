@@ -1342,12 +1342,14 @@ for byte (FP animation tags, the SMG / Sentinel Beam gbxmodels, three sounds): c
 where checked (the sword's tag: every animation, key and sound identical), so they are tag
 noise -- but a regen run must restore from backup to leave the tested kit exact.
 
-### Halo 1: the supercombine count PER PROJECTILE (Needle Rifle, wave B2, 2026-10-10) -- halo1.dll patch, PROTOTYPE
+### Halo 1: the supercombine count PER PROJECTILE (Needle Rifle, wave B2, 2026-10-10) -- halo1.dll patch, CONFIRMED 2026-10-11
 
 Halo 2 on carry `Super Detonation Projectile Count` in the projectile tag; Halo 1 hardcodes 7
 (the Needle Rifle wants Reach's 3, the stock needler keeps 7). Tool: `h1_supercombine_count.py`,
 enhancer Options -> Patching -> Halo 1 "Supercombine needle count per projectile (halo1.dll)"
-(`h1_supercombine_count`, OFF by default until tested).
+(`h1_supercombine_count`, OFF by default). CONFIRMED in game 2026-10-11 (a30): needler at 7 and
+Needle Rifle at 3 in one level, and both supercombining on the player with `h1_supercombine_players`
+(Armed copy, rifle count written into the map, god shield).
 
 **Where the 7 lives.** Every read of proj flag bit 3 (`has super combining explosion`,
 proj +0x17C, `test byte [reg+0x17C], 8`) leads to a loop over the PARENT object's attached

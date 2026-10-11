@@ -1025,11 +1025,11 @@ CONFIG = {
     # (proj +0x1F2, 0 = the engine's 7) instead of the hardcoded 7. A halo1.dll patch
     # (sprint_toolkit/h1_supercombine_count.py), live AND in the file; with every count at
     # 0 the game is stock. Needed by the Needle Rifle port (3) and the Halo 1 Supercombine
-    # Needle Count card. Off = put back to stock. Prototype, untested in game (2026-10-10)
+    # Needle Count card. Off = put back to stock. CONFIRMED in game 2026-10-11
     "h1_supercombine_count": False,
     # ...and needles supercombine on the PLAYER in campaign too (stock Halo 1 skips a unit
     # that belongs to a player unless a multiplayer game engine runs). A 1-byte halo1.dll
-    # patch in the same tool (sync_players). Off = stock. Untested in game (2026-10-11)
+    # patch in the same tool (sync_players). Off = stock. CONFIRMED in game 2026-10-11
     "h1_supercombine_players": False,
     # Options -> Patching -> Halo 1: the Grunt Birthday Party skull also spawns a CLASSIC
     # effect on the dead Grunt (its own confetti is Anniversary-only, never drawn in classic
