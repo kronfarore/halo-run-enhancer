@@ -284,6 +284,40 @@ def screen(dark, blur, path, w=1920, h=1080, px_per_texel=1.09):
     return path
 
 
+def lens_px(dark, px_per_texel=1.09):
+    """(width, height) px of the LENS on a 1080p screen (screen()'s geometry): along the centre
+    row / column, from each edge inward to where the outside darkness ends (< 0.5)."""
+    size = dark.shape[0]
+    bh = int(round(size * px_per_texel))
+    bw = int(round(bh * 4 / 3.0))
+    img = np.array(Image.fromarray((np.clip(dark, 0, 1) * 255).astype(np.uint8)).resize((bw, bh), Image.LANCZOS)) / 255.0
+
+    def run(a):
+        i, j = 0, len(a) - 1
+        while i < len(a) // 2 and a[i] > 0.5:
+            i += 1
+        while j > len(a) // 2 and a[j] > 0.5:
+            j -= 1
+        return j - i
+    return run(img[bh // 2]), run(img[:, bw // 2])
+
+
+def fit(chud, target, size=512, span=640.0, aspect=1.0, per_widget=None):
+    """SIZE A SCOPE FROM THE SOURCE GAME'S SCREEN (the Needle Rifle, boot 2, 2026-10-11: 'the
+    size is a recurring problem -- make it part of zoom porting'): `target` = the lens (w, h)
+    px measured on a 1920x1080 SOURCE screenshot; the height scales with 1 / span, the width
+    with 1 / (span x aspect). Returns (span, aspect, measured (w, h)) -- verified by a re-bake.
+    Rules it replaces were observations: Halo 3's full-screen reading (BR, Carbine x0.8) and
+    Reach's 90% safe area (the DMR: right there, 1.27x too big on the Needle Rifle)."""
+    dark, _b, _u = bake_maps(chud, size, span, aspect, per_widget)
+    w, h = lens_px(dark)
+    span2 = span * h / float(target[1])
+    w2 = w * float(target[1]) / h               # the width at the new span, same aspect
+    aspect2 = aspect * w2 / float(target[0])
+    dark, _b, _u = bake_maps(chud, size, span2, aspect2, per_widget)
+    return span2, aspect2, lens_px(dark)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('chud', help=r'Halo 3 chud, e.g. ui\chud\battle_rifle')
@@ -294,6 +328,8 @@ def main():
     ap.add_argument('--preview')
     ap.add_argument('--screen', help='PNG: the mask as Halo 1 draws it at 1920x1080 (screen())')
     ap.add_argument('--port', help='a ports_h1 key: its hud scope settings (per_widget, size...)')
+    ap.add_argument('--fit', help="W,H: the lens px on a 1920x1080 SOURCE screenshot -> the span / "
+                                  "aspect that reproduce it (fit())")
     a = ap.parse_args()
     kw = {'span': a.span, 'aspect': a.aspect, 'size': a.size}
     if a.port:
@@ -301,6 +337,11 @@ def main():
         S = ports_h1.load(a.port)['pickable']['hud']['scope']
         kw = {'span': S.get('span', 640.0), 'aspect': S.get('aspect', 1.0), 'size': S.get('size', 512),
               'per_widget': S.get('per_widget')}
+    if a.fit:
+        tw, th = (float(x) for x in a.fit.split(','))
+        sp, asp, got = fit(a.chud, (tw, th), **kw)
+        print('fit: span %.1f aspect %.4f -> lens %d x %d px (target %d x %d)' % (sp, asp, got[0], got[1], tw, th))
+        return
     dark, blur, used = bake_maps(a.chud, **kw)
     print('baked: ' + '; '.join(used))
     if a.preview:

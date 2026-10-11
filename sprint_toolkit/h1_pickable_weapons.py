@@ -228,6 +228,43 @@ def make_hud(w, key, write):
                         # with no mipmaps (the Spartan Laser's fizzle, test 3). `reticle_overlay`
                         # sets the overlay factor apart from the art's (test 4: Halo 3's size)
                         o.width_scale = o.height_scale = h.get('reticle_overlay', 1.0 / h['reticle_scale'])
+    if 'zoom_glyphs' in h:
+        # COLOURED scope symbols (the Needle Rifle, boot 2, 2026-10-11: Reach's red / teal
+        # translucent side glyphs -- a Halo 1 zoom mask can only darken). Each glyph = its own
+        # hud_reticles sequence (MCC draws crosshair overlays only from the stock sheets, the
+        # Spartan Laser's lesson) at its reserved `index`, the source sprite's alpha x `alpha`
+        # on white, drawn `scale` (x, y) sheet px a source px; ONE zoom-type crosshair with an
+        # overlay per glyph: `offset` (x, y) Halo 1 HUD units from the centre, `rgb` 0-255
+        import h1_add_reticle as AR
+        import h1_hud_sheet
+        from PIL import Image
+        xs = d.crosshairs.STEPTREE
+        aim = [c for c in xs if c.crosshair_type.enum_name == 'aim'][0]
+        xs.append(copy.deepcopy(aim))
+        zc = xs[len(xs) - 1]
+        zc.crosshair_type.set_to('zoom')
+        zc.crosshair_bitmap.filepath = h.get('reticle_bitmap', zc.crosshair_bitmap.filepath)
+        ovs = zc.crosshair_overlays.STEPTREE
+        tmpl = copy.deepcopy(ovs[0])
+        ovs[:] = []
+        for G in h['zoom_glyphs']:
+            if write:
+                art, (rx, ry) = AR.layer_art(*G['art'])
+                sx, sy = G['scale']
+                a = art.split()[3].resize((round(art.width * sx), round(art.height * sy)), Image.LANCZOS)
+                a = a.point(lambda v, k=G.get('alpha', 1.0): int(round(v * k)))
+                canvas = Image.new('L', (AR.SIZE, AR.SIZE), 0)
+                canvas.paste(a, (round(AR.CENTRE[0] - rx * sx), round(AR.CENTRE[1] - ry * sy)))
+                white = Image.new('L', (AR.SIZE, AR.SIZE), 255)
+                h1_hud_sheet.put_twins('hud_reticles', G['name'], Image.merge('RGBA', (white, white, white, canvas)),
+                                       AR.TEMPLATE_SEQ, (AR.SIZE, AR.SIZE), AR.CENTRE, index=G['index'])
+            ovs.append(copy.deepcopy(tmpl))
+            o = ovs[len(ovs) - 1]
+            o.sequence_index = G['index']
+            o.anchor_offset.x, o.anchor_offset.y = G['offset']
+            r, g, b = G['rgb']
+            o.default_color = (r << 16) | (g << 8) | b          # ARGB, alpha 0 as the stock reticles
+            o.type.data = 0                                      # not 'flashes when active'
     if 'charge_crosshair' in h:
         # a CHARGE indicator (the Spartan Laser, test 1: Halo 3's triangle sweeping round the
         # reticle as it charges): Halo 1's `charge` crosshair type -- no stock HUD uses it --
@@ -285,8 +322,9 @@ def make_hud(w, key, write):
         if 'blur_radius' in S:
             se.convolution.radius_out_bounds[0], se.convolution.radius_out_bounds[1] = S['blur_radius']
         xs = d.crosshairs.STEPTREE
+        keep = len(xs) - 1 if 'zoom_glyphs' in h else None      # the glyphs' own (above)
         for i in range(len(xs) - 1, -1, -1):
-            if xs[i].crosshair_type.enum_name == 'zoom':
+            if xs[i].crosshair_type.enum_name == 'zoom' and i != keep:
                 xs.pop(i)
     seq = icon_sequence(w['icon'])
     want = RESERVED.get(key, {}).get('icon')

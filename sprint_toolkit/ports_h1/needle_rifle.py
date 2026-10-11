@@ -113,10 +113,16 @@ PORT.update({
         # Carbine's `meters` (shader_transparent_meter) with the shape from R (`shape`), the
         # fill = AMMO: the needler template's out C (`needles remaining`, B in = primary
         # ammunition); the halogram blue (22, 37, 105 at 2.5) normalized, off a quarter
+        # BOOT 2 (user, Reach screenshot: three hex screens with RED ring icons): still squares --
+        # the display's UVs (u 0.15-0.31, v 0.81-1.0) never reach the ring gauge's ring; they
+        # land on the RING ICONS of the METER map plasma_launcher_holo (decoded rows 0-0.19,
+        # the Carbine's V convention). That map has NO fill gradient (R = G = B = A): a lit
+        # SHAPE, not a gauge -> gradient 0 (lit while out C, the magazine, is above 0), in
+        # Reach's self-illum red (the colour function's 255, 0, 6)
         'meters': {'needle_rifle_display': {
-            'map': R + r'objects\weapons\pistol\plasma_pistol\bitmaps\plasma_pistol_display.bitmap',
-            'from': r'weapons\plasma rifle\fp\shaders\gauge', 'shape': 'r', 'gradient': 'alpha',
-            'value': 'C_out', 'color': (22 / 105.0, 37 / 105.0, 1.0)}},
+            'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
+            'from': r'weapons\plasma rifle\fp\shaders\gauge', 'shape': 'r', 'gradient': 0.0,
+            'value': 'C_out', 'color': (1.0, 0.0, 6 / 255.0)}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Reach's OWN fp_needle_rifle retargeted (the
@@ -242,13 +248,12 @@ PORT.update({
                                    'proj_attrs.physics.flyby_sound.filepath': SND + 'nr_flyby'},
                    # Reach's material responses (4b list 3): a needle sticks to BODIES only (the
                    # needle's own attach kept on 11-26 and Elite shields 30 -- the supercombine
-                   # needs it); on terrain it ENDS ('disappear', the impact effect plays) or
-                   # bounces off at 0-30 deg (the Spike Rifle's reflect). The needle's shield
-                   # reflects (10 / 16 / 18 / 32) and water / leaves pass-through kept
-                   'default_responses': {'disappear': TERRAIN},
-                   'reflect': {'materials': TERRAIN, 'angle_deg': (0.0, 30.0),
-                               'parallel_friction': 0.0, 'perpendicular_friction': 0.7,
-                               'noise_deg': 2.0, 'effect_from_default': True},
+                   # needs it); on terrain it DETONATES (Reach's 'impact (detonate)': the needle's
+                   # burst plays). BOOT 2 (user): the 0-30 deg bounce sent glancing needles up
+                   # off the ground, trail and all ('orthogonal to the ground; it should explode
+                   # when hitting the ground') -> no reflect. The needle's shield reflects (10 /
+                   # 16 / 18 / 32) and water / leaves pass-through kept
+                   'default_responses': {'detonate': TERRAIN},
                    # the stuck needle's end: the needle's burst, its sound Reach's own
                    'detonation_effect': {'from': N + 'effects\\needle detonate',
                                          'out': NR + 'effects\\needle detonate',
@@ -281,7 +286,12 @@ PORT.update({
         'trigger': {'rounds_per_second': (4.0, 4.0), 'does_not_repeat_automatically': True,
                     'acceleration_time': 0.0, 'deceleration_time': 0.0,
                     # Reach blooms by a firing-penalty function (decay 0.9 s); Halo 1's ramp
-                    'error_acceleration_time': 1.0, 'error_deceleration_time': 0.9},
+                    'error_acceleration_time': 1.0, 'error_deceleration_time': 0.9,
+                    # BOOT 2 (user): 'the sniper trail should start from the muzzle'. Reach's
+                    # 'force contrails to come from weapon barrel' -> the FP `primary_trigger`
+                    # in the idle pose, camera space forward / left / up wu (the DMR's method,
+                    # reproduced: DMR 0.288 / -0.0378 / -0.0269)
+                    'first_person_offset': (0.3837, -0.0528, -0.0425)},
         # Reach's own spread; minimum error 0 (4b list 4: the needler's 2 deg is its spray --
         # the user: 'fire like a precision weapon')
         'error_deg': {'minimum_error': 0.0, 'error_angle': (0.15, 2.0)},
@@ -337,8 +347,27 @@ PORT.update({
         # and Reach's reticle (hud_reticles #4, four mirrored ticks at +-14: the Carbine's)
         'hud': {'donor': N + 'needler', 'out': NR + 'needle rifle',
                 'screen_effect_from': PISTOL + 'pistol',
+                # BOOT 2 (user, Reach screenshot): 1.27x too big. The lens in Reach = 865 x 590 px
+                # at 1080p (55% of the height; the DMR's '90% safe area' gave 1053 x 751) ->
+                # `h1_h3_scope.py <chud> --port needle_rifle --fit 865,590` (a source screenshot
+                # sizes every scope now): span 933.4, aspect 1.2752 -> 865 x 591. The two
+                # coloured glyphs leave the mask (zoom_glyphs below)
                 'scope': {'chud': R + r'ui\chud\needle_rifle', 'out': NR + 'bitmaps\\scope_mask',
-                          'size': 1024, 'span': 660.0 / 0.9, 'aspect': 4 / 3.0, 'alpha': 'outside'},
+                          'size': 1024, 'span': 933.4, 'aspect': 1.2752, 'alpha': 'outside',
+                          'per_widget': {'blip1': {'drop': True}, 'blip2': {'drop': True}}},
+                # BOOT 2 (user): 'a red symbol on the left and a cobalt one on the right, both
+                # pretty transparent' are missing (in the mask they were dark). Reach: nr_glyphs
+                # #1 (blip2, at -267: the crosshair-circle, red) and #0 (blip1, at +267: the
+                # arrows, teal), framed, ~88 x 60 px at 1080p each, centres +-385 px. Halo 1:
+                # one zoom crosshair, an overlay each at RESERVED hud_reticles 44 / 45 (added to
+                # the plan's table), offset +-171 HUD units (385 px / 2.25), sprite x2.33 / 2.30
+                # (sheet px -> screen ~0.565, the reticle's calibration), alpha 0.55
+                'zoom_glyphs': [{'art': (R + r'ui\chud\bitmaps\scopes\nr_glyphs', 1), 'name': 'needle rifle glyph l',
+                                 'index': 44, 'scale': (2.33, 2.30), 'alpha': 0.55,
+                                 'offset': (-171, 0), 'rgb': (220, 45, 45)},
+                                {'art': (R + r'ui\chud\bitmaps\scopes\nr_glyphs', 0), 'name': 'needle rifle glyph r',
+                                 'index': 45, 'scale': (2.33, 2.30), 'alpha': 0.55,
+                                 'offset': (171, 0), 'rgb': (60, 200, 200)}],
                 # Reach's reticle = ONE arc sprite (hud_reticles #4, 11 x 27, a '(' arc) on four
                 # widgets: left at -14, right mirrored at +14, top / bottom at -+14 (the arc
                 # turned): composed by h1_add_reticle's per-layer xform -- a ring, unbroken in
