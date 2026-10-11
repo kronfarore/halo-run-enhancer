@@ -161,22 +161,22 @@ PORT.update({
         'meters': {
             # BOOT 5 (user): 'fills like imagined, but the colours don't shift as expected -- teal, then
             # red towards the end' (min -> max colours the fill by PLACE). BOOT 6: the meter's FLASH
-            # colour by A out did nothing ('only fills with teal'). BOOT 7 (user: 'try the
-            # recolouring path'): the boot-4 lit shape x the colour RAMP x a FILL lookup (`fill`:
-            # column = the gauge's u, row = A out; Reach's gradient stretched onto 0.02..0.95) --
-            # the outline opens left to right and the lit part turns teal -> yellow -> red as a
-            # whole, held through the vent; the unlit part = a dim teal copy of the gauge lifted
-            # 0.001 wu (`glow_cards` -> plasma_repeater_gauge_base)
+            # colour by A out did nothing. BOOT 7: a 3-map shape x ramp x FILL lookup (the fill by
+            # a v-axis slide -- no stock shader slides v by a function) never moved. BOOT 8, proven
+            # parts only: the boot-5 meter FILL lit WHITE over the dim teal, and on a copy of the
+            # gauge lifted 0.001 wu (`glow_cards`) a MULTIPLY layer (`tint`): the boot-4 ramp (the
+            # u slide by A out) added to the inverted shape -- x1 outside the outline, x the heat
+            # colour inside: the white fill turns teal -> yellow -> red as a whole
             'plasma_repeater_gauge': {
+                'map': R + RW + r'\bitmaps\plasma_repeater_gauge.bitmap',
+                'from': PR + r'fp\shaders\gauge', 'value': 'A_out', 'gradient_range': (0.02, 0.95),
+                'color': (1.0, 1.0, 1.0), 'color_max': (1.0, 1.0, 1.0),
+                'color_off': (0.5 * 77 / 255.0, 0.5 * 212 / 255.0, 0.5 * 203 / 255.0)},
+            'plasma_repeater_gauge_tint': {
                 'map': R + RW + r'\bitmaps\plasma_repeater_gauge.bitmap',
                 'from': PR + r'fp\shaders\gauge', 'gradient': 0.0,
                 'static': r'weapons\needler\shaders\needler luminous', 'color': (1.0, 1.0, 1.0),
-                'ramp': HEAT_RAMP, 'ramp_source': 'A_out', 'fill': (0.02, 0.95)},
-            'plasma_repeater_gauge_base': {
-                'map': R + RW + r'\bitmaps\plasma_repeater_gauge.bitmap',
-                'from': PR + r'fp\shaders\gauge', 'gradient': 0.0,
-                'static': r'weapons\needler\shaders\needler luminous',
-                'color': (0.5 * 77 / 255.0, 0.5 * 212 / 255.0, 0.5 * 203 / 255.0)},
+                'ramp': HEAT_RAMP, 'ramp_source': 'A_out', 'tint': True},
             'plasma_repeater_display': {
                 'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
                 'from': PR + r'fp\shaders\gauge', 'shape': 'r', 'gradient': 0.0,
@@ -191,8 +191,8 @@ PORT.update({
                 'color': (0.25 * 114 / 255.0, 0.25, 0.25 * 215 / 255.0)}},
         # the PILOT flame (8 triangles; Reach: a halogram of plasma noise, white -> blue 8, 16, 82):
         # an additive radial glow per UV island (the Spike Rifle's / Beam Rifle's gems)
-        # the gauge's dim base (boot 7): the gauge copied in place, a hair outward
-        'glow_cards': {'plasma_repeater_gauge': {'shader': 'plasma_repeater_gauge_base', 'scale': 1.0,
+        # the gauge's heat TINT (boot 8): the gauge copied in place, a hair outward
+        'glow_cards': {'plasma_repeater_gauge': {'shader': 'plasma_repeater_gauge_tint', 'scale': 1.0,
                                                  'lift': 0.1}},
         'glow_shaders': {'plasma_repeater_pilot': {'rgb': (0.55, 0.65, 1.0), 'additive': True,
                                                    'islands': True}},
@@ -476,6 +476,11 @@ PORT.update({
                 row('weap', RP + 'plasma repeater', 'Rounds Per Second Max', 3.4, 3.05, 'More Shooting', block='Triggers'),
                 row('weap', RP + 'plasma repeater', 'Acceleration Time', 2.6, 1.35, 'More Shooting', block='Triggers'),
                 row('weap', RP + 'plasma repeater', 'Deceleration Time', 2.9, 2.5, 'More Shooting', block='Triggers'),
+                # BOOT 7 (probe + the built map read back): the engine ramps by the RUNTIME rates the
+                # map build computes, 1 / (time x 30) -- the time rows alone changed nothing (the
+                # balanced gun kept the default's ramp and never overheated). Both written
+                row('weap', RP + 'plasma repeater', 'Rate Of Fire Acceleration Rate', 1 / (2.6 * 30), 1 / (1.35 * 30), 'More Shooting', block='Triggers'),
+                row('weap', RP + 'plasma repeater', 'Rate Of Fire Deceleration Rate', 1 / (2.9 * 30), 1 / (2.5 * 30), 'More Shooting', block='Triggers'),
                 # (the probe's fire rule: refitted to overheat on the 22nd round, 1.97 s; Reach 1.95)
                 row('weap', RP + 'plasma repeater', 'Heat Generated Per Round', 0.077, 0.12, 'Heat', block='Triggers'),
                 # the vent: 2.5 x 0.35/0.3 = 2.9 s from 1 to 0

@@ -3478,6 +3478,24 @@
     {
      "class": "weap",
      "tag": "weapons\\plasma repeater\\plasma repeater",
+     "field": "Rate Of Fire Acceleration Rate",
+     "block": "Triggers",
+     "value": 0.01282051282051282,
+     "card": "More Shooting",
+     "original": 0.024691358024691357
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma repeater\\plasma repeater",
+     "field": "Rate Of Fire Deceleration Rate",
+     "block": "Triggers",
+     "value": 0.011494252873563218,
+     "card": "More Shooting",
+     "original": 0.013333333333333334
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma repeater\\plasma repeater",
      "field": "Heat Generated Per Round",
      "block": "Triggers",
      "value": 0.077,

@@ -736,6 +736,11 @@ def meters(w):
             # the colour BAKED (a8r8g8b8 = B, G, R, A in the data), an additive chicago copied
             # from `static` (a stock .shader_transparent_chicago) on it
             col = [np.clip(np.round(shape * c), 0, 255) for c in (M['color'] if not M.get('ramp') else (1.0, 1.0, 1.0))]
+            if M.get('tint'):
+                # a MULTIPLY tint (the Plasma Repeater, boot 7): the shape INVERTED -- white outside
+                # (x1 under a multiply), black inside, where the ramp's colour is added
+                col = [255 - shape] * 3
+                shape = np.full_like(shape, 255)
             d.processed_pixel_data.data = bytearray(np.stack([col[2], col[1], col[0], shape], axis=-1).astype(np.uint8).tobytes())
         else:
             d.processed_pixel_data.data = bytearray(np.stack([grad, grad, grad, shape], axis=-1).astype(np.uint8).tobytes())
@@ -784,40 +789,24 @@ def meters(w):
                 m1.u_animation.source.set_to(M.get('ramp_source', 'B_out'))
                 m1.u_animation.function.set_to('one')
                 m1.u_animation.scale = 1.0
+                if M.get('tint'):
+                    # `tint`: the RAMP first, ADDED to the inverted shape (map 1), drawn MULTIPLY --
+                    # outside the shape x1, inside x the ramp's colour: a layer that recolours what
+                    # is under it (the gauge's white meter fill) by the function
+                    m0 = maps[0]
+                    m0.bitmap.filepath, m1.bitmap.filepath = rbm, bm
+                    m0.map_u_scale = m0.map_v_scale = M.get('ramp_uv_scale', 0.001)
+                    m0.flags.u_clamped = m0.flags.v_clamped = True
+                    m0.u_animation.source.set_to(M.get('ramp_source', 'B_out'))
+                    m0.u_animation.function.set_to('one')
+                    m0.u_animation.scale = 1.0
+                    m0.color_function.set_to('add')
+                    m1.map_u_scale = m1.map_v_scale = 1.0
+                    m1.flags.u_clamped = m1.flags.v_clamped = False
+                    m1.u_animation.source.set_to('none')
+                    m1.u_animation.scale = 0.0
+                    s.data.tagdata.schi_attrs.chicago_shader.framebuffer_blend_function.set_to('multiply')
                 print('   ramp %s  %s by %s' % (rbm, [tuple(round(c, 2) for c in x[1]) for x in stops], M.get('ramp_source', 'B_out')))
-                if M.get('fill'):
-                    # ... and FILLED with the same function (the Plasma Repeater, boot 7: Reach's gauge
-                    # fills AND turns red as a whole): a third map, a LOOKUP -- column = the shape's
-                    # u, row = the function's value (v-animation source, v scale ~0): lit where the
-                    # column's fill threshold (the source alpha gradient stretched onto `fill` =
-                    # (lo, hi), averaged down the column) is below the value
-                    lo, hi = M['fill']
-                    al = a[..., 3].astype(np.float64)
-                    on = shape > 0
-                    gn = (al - al[on].min()) / max(1.0, al[on].max() - al[on].min())
-                    thr = lo + (hi - lo) * gn
-                    cols = np.array([thr[on[:, c], c].mean() if on[:, c].any() else 2.0 for c in range(wd)])
-                    nh = 64
-                    lit = (cols[None, :] < (np.arange(nh) / (nh - 1.0))[:, None]).astype(np.uint8) * 255
-                    ft = bitm_def.build(filepath=os.path.join(TAGS, h1_h3_scope.TEMPLATE + '.bitmap'))
-                    fd = ft.data.tagdata
-                    fb = fd.bitmaps.STEPTREE[0]
-                    fb.width, fb.height = wd, nh
-                    fb.registration_point_x, fb.registration_point_y = wd // 2, nh // 2
-                    fd.processed_pixel_data.data = bytearray(np.stack([lit, lit, lit, np.full_like(lit, 255)], axis=-1).tobytes())
-                    fbm = w['dir'] + B + 'bitmaps' + B + name + '_fill'
-                    ft.filepath = os.path.join(TAGS, fbm + '.bitmap')
-                    ft.serialize(temp=False, backup=False)
-                    m1.color_function.set_to('multiply')
-                    maps.append()
-                    m2 = maps[-1]
-                    m2.bitmap.filepath = fbm
-                    m2.map_v_scale = M.get('ramp_uv_scale', 0.001)
-                    m2.flags.u_clamped = m2.flags.v_clamped = True
-                    m2.v_animation.source.set_to(M.get('ramp_source', 'B_out'))
-                    m2.v_animation.function.set_to('one')
-                    m2.v_animation.scale = 1.0
-                    print('   fill %s  %d columns, thresholds %.2f..%.2f' % (fbm, wd, cols[cols < 2].min(), cols[cols < 2].max()))
             s.filepath = os.path.join(out, name + '.shader_transparent_chicago')
             s.serialize(temp=False, backup=False)
             print('   lit shape %s  map %s %dx%d' % (s.filepath, bm, wd, h))
