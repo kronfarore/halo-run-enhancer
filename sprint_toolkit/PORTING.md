@@ -1406,6 +1406,79 @@ stock. Per weapon at once (needler 7 beside a port at 3) follows with the Needle
 boot. If (2) still needs 7: the counts are not read where shown -- re-probe live before a second
 boot.
 
+### Halo 1: when the Grunt Birthday Party skull fires (Needle Rifle, 2026-10-11) -- research + live probe
+
+User, boot 7 (a30): the port's needle headshots Grunts (jpt `can cause headshots`, like
+`weapons\pistol\bullet`) but Birthday Party never fires; the pistol's does. rvas at image base
+0x180000000, halo1.dll of 2026-06-22.
+
+**The condition, three pieces (all in halo1.dll, nothing in any tag but the data they read):**
+1. **Flavour index 11.** `debug_ice_cream_flavor_status_grunt_birthday_party` is the byte
+   +0x1C421C3 = flavor(11) (base +0x1C421B8; the debug-global table at +0x1B89E80 names every
+   flavour's byte -- the authoritative name->index map). Its ONLY consumer: `mov ecx,0xB; call
+   flavor` at **+0x8039E**.
+2. **The killing damage records WHERE it hit.** object damage (+0xB9EA28, args: node index
+   r8w, region r9w, material 5th) looks the hit **collision node** up in the victim's coll tag
+   (`coll +0x28C Nodes`, 64-byte elements) and keeps the node's **+0x32 word** (Assembly:
+   `Unknown Name`; a body-part class). Grunt: 2 = `bip01 neck` + `bip01 head`; 0 pelvis/spine,
+   1 spine1, 3/4 left arm, 6 left leg, 7/8 right arm, 10 right leg. No valid node -> -1.
+   When that damage KILLS (flag bit 0 after unit kill +0xB9D9E0) and has a causer (damage data
+   +0xC != -1), +0xBA07F4 stores the word in the global **+0x1B7BA7C** (`mov [g],eax` at
+   **+0xBA0CCA**; its only writer).
+3. **The next EFFECT consumes it.** +0x7FB20 is MCC's effect hook: every effect_new reaches it
+   through +0xAB2040 (effect tag valid, 1-32 locations) with the effect's OBJECT (edx). It reads
+   the global and **resets it to -1 at entry** (+0x7FB9C/+0x7FBA5), maps the effect tag path to
+   an Anniversary effect name (table from `hcex_effect_names.ps`, qword +0x2B04F68 / count
+   +0x2B04F70; paths not in it get a built `sfx_wpn_...` name) and **returns before the skull
+   test if that name is EMPTY** (+0x7FF2A). Then: flavour 11 on AND value == 2 AND the effect's
+   object exists AND MCC's object record (`"id%x"`, +0x2B3140) is named exactly `grunt` AND it
+   has not celebrated yet (list +0x2B05050) -> `sfx_konfetti` + `skull_laugh` at the effect.
+So: **Birthday Party = a HEAD-node kill whose very next effect sits on the dead Grunt** (in
+practice the projectile's flesh impact effect, `weapons\...\effects\impact grunt`, created on
+the hit object by +0xBC8638 right after the impact damage at +0xBC7AE2).
+
+**Why the needle should NOT differ, and what is left.** Read statically, the bullet and the
+needle take the same route: same impact-damage call (node = collision result +0x3E), the same
+`impact grunt` response effect for material 11 on the hit object (the needle's is
+`weapons\needler\effects\impact grunt`, ATTACH; the bullet's `weapons\pistol\...`, response 0),
+nothing that creates an effect between the kill and that response effect (checked
+transitively, 4 call levels deep from the hook: +0xBA07F4 after the write, +0xB9EA28's tail, +0xBC7880 up to +0xBC82A9), and the
+attach code (+0xBC8317..) runs only after the effects. The headshot itself (+0xB9FD65) is a
+different test -- coll MATERIAL `head` flag + jpt flag bit 1 -- so "headshots work" does not by
+itself prove the node word was 2. Remaining candidates, in order of how cheaply they are told
+apart:
+  (b) `hcex_effect_names.ps` maps `weapons\needler\effects\impact grunt` to an EMPTY name: the
+      hook consumes the 2 and leaves before the test. The table only exists in a loaded level
+      (it is inside the Anniversary paks, not plain on disk) -- `h1_gbp_probe.cmd table`.
+  (c) another effect lands between the kill and the impact effect (not visible statically).
+  (a) the needle's kill reports a non-head node (value != 2).
+  (d) the Grunt is not killed by the impact damage (no KILL record at all).
+
+**The probe: `sprint_toolkit/h1_gbp_probe.py` / `h1_gbp_probe.cmd`** (live only, never the
+file; jumps at five sites into a cave allocated within 2 GB of halo1.dll, the hooked
+instructions replayed, so behaviour is unchanged): logs KILL (value, victim, model), IMPACT
+(node, hit object, projectile), EFFECT (value consumed, object, effect name), GBP? (skull on and
+tested) and GBP! (confetti). `dump` prints every kill with the effect that consumed it and
+appends to `reports/gbp_probe.jsonl`; `table` reads the effect-name table (read-only).
+
+**One-boot test (a30, Birthday Party ON, god shield as usual).** At the first Grunts:
+`h1_gbp_probe.cmd table` -> `on`; then (1) pistol headshot a Grunt (confetti expected),
+(2) Needle Rifle headshot a Grunt, (3) Needle Rifle body shot until it dies, (4) stock needler
+kill; `h1_gbp_probe.cmd dump`, then `off`. Each outcome decides the fix:
+  * (b) table shows `...needler\effects\impact grunt -> ''` and the needle's KILL 2 is consumed
+    by that effect -> **tag-side fix**: give the port's material-11 (Grunt) response its OWN
+    effect (a copy of the needler's under `weapons\needle rifle\effects\impact grunt`, which is
+    not in the table and so gets a non-empty built name), or reuse the pistol's `impact grunt`.
+    One boot confirms. (Check the Anniversary-graphics look of a path outside the table.)
+  * (c) the dump names the intervening effect -> move/remove it on the port, or the dll fix.
+  * (a) value != 2 with node 9/12 in IMPACT -> the needle hits a non-head node; check the
+    IMPACT node against the Grunt node list above.
+  * (d) no KILL -> the needle's kill comes from another damage (detonation): the dll fix.
+  * dll fix (only if the tag route cannot): consume the head value only when the effect's object
+    is the KILLED object and only at the skull test (+0x803B0), not at hook entry -- a cave in
+    int3 padding (.text slack is full, see the supercombine count), option
+    `h1_gbp_any_effect`, cmd/.cmd for the user. Not built: the probe decides whether it is needed.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:
