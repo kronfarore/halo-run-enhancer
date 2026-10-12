@@ -137,7 +137,32 @@ def put(sheet, name, img, template_seq, sheet_size, reg, index=None, mips=False)
 
 
 
-def sprite_bitmap(template, img, out):
+def _compiled(img, out):
+    """(bitmap element, pixel bytes) of `img` compiled by HCEEK's `tool bitmaps` as DXT5
+    (interpolated alpha): a TIFF under the kit's data/<out's folder> named <name>_src, compiled, its tag
+    set to interpolated alpha and compiled again (the tool keeps a tag's format)."""
+    import subprocess
+    hceek = os.path.dirname(TAGS)
+    folder, name = os.path.split(out)
+    src = name + '_src'
+    d = os.path.join(hceek, 'data', folder)
+    os.makedirs(d, exist_ok=True)
+    img.convert('RGBA').save(os.path.join(d, src + '.tif'))
+
+    def tool():
+        subprocess.run([os.path.join(hceek, 'tool.exe'), 'bitmaps', folder], cwd=hceek,
+                       capture_output=True, text=True, errors='replace')
+    tool()
+    tp = os.path.join(TAGS, folder, src + '.bitmap')
+    t = bitm_def.build(filepath=tp)
+    t.data.tagdata.format.set_to('interpolated_alpha')
+    t.serialize(temp=False, backup=False)
+    tool()
+    d_ = bitm_def.build(filepath=tp).data.tagdata
+    return d_.bitmaps.STEPTREE[0], bytes(d_.processed_pixel_data.data)
+
+
+def sprite_bitmap(template, img, out, compile=False):
     """A standalone PARTICLE bitmap: a copy of `template` (a stock particle's sprite bitmap tag)
     holding ONE raw a8r8g8b8 texture (`img`, RGBA) and one full-frame sprite (the Grenade
     Launcher's EMP pulse, Reach's emp_mask: stock particle sheets are DXT; this one is not
@@ -149,11 +174,18 @@ def sprite_bitmap(template, img, out):
     raw_t = bitm_def.build(filepath=os.path.join(TAGS, h1_h3_scope.TEMPLATE + '.bitmap')).data.tagdata
     bms = d.bitmaps.STEPTREE
     bms[:] = []
-    bms.append(copy.deepcopy(raw_t.bitmaps.STEPTREE[0]))
+    if compile:
+        # `compile` (the Grenade Launcher, boot 9: a RAW a8r8g8b8 particle sprite never drew --
+        # the stock particle sheets are DXT): HCEEK's own DXT5 of the image (_compiled)
+        el, pix = _compiled(img, out)
+        bms.append(copy.deepcopy(el))
+    else:
+        bms.append(copy.deepcopy(raw_t.bitmaps.STEPTREE[0]))
     b = bms[0]
-    b.width, b.height = img.width, img.height
-    b.registration_point_x, b.registration_point_y = img.width // 2, img.height // 2
-    b.mipmaps = 0
+    if not compile:
+        b.width, b.height = img.width, img.height
+        b.registration_point_x, b.registration_point_y = img.width // 2, img.height // 2
+        b.mipmaps = 0
     b.pixels_offset = 0
     seq = d.sequences.STEPTREE[0]
     while len(seq.sprites.STEPTREE) > 1:
@@ -165,7 +197,8 @@ def sprite_bitmap(template, img, out):
     while len(d.sequences.STEPTREE) > 1:
         d.sequences.STEPTREE.pop()
     seq.first_bitmap_index, seq.bitmap_count = 0, 1
-    d.processed_pixel_data.data = bytearray(img.convert('RGBA').tobytes('raw', 'BGRA'))
+    d.processed_pixel_data.data = (bytearray(pix) if compile
+                                   else bytearray(img.convert('RGBA').tobytes('raw', 'BGRA')))
     t.filepath = os.path.join(TAGS, out + '.bitmap')
     os.makedirs(os.path.dirname(t.filepath), exist_ok=True)
     t.serialize(temp=False, backup=False)

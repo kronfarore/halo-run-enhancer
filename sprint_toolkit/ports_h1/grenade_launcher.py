@@ -500,6 +500,10 @@ PORT.update({
                                                                     'animate_once_per_frame': False},
                                                           'bitmap': {'mask': R + B.join(['fx', 'bitmaps', 'plasma', 'emp_mask.bitmap']),
                                                                      'size': 128,
+                                                                     # BOOT 9 (user: green + red seen, no
+                                                                     # blue): the raw sprite never drew ->
+                                                                     # HCEEK's DXT5 like the stock sheets
+                                                                     'compile': True,
                                                                      'out': GL + 'effects' + B + 'bitmaps' + B + 'emp pulse'}}},
                                             # BOOT 9 DIAGNOSTIC (user: 'no EMP effect again -- disable the
                                             # normal explosion to see if it draws'): RED = the same particle

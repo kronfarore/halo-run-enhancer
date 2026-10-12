@@ -673,9 +673,12 @@ def own_explosion(pd, X, write, slot='detonation'):
                     M = Q['bitmap']
                     img, _ = h3_hud_art.decode(M['mask'])
                     a = img.getchannel('A').resize((M['size'], M['size']), Image.LANCZOS)
-                    white = Image.new('L', a.size, 255)
+                    # `compile`: HCEEK's DXT5 (boot 9: a raw a8r8g8b8 particle sprite never drew),
+                    # the mask PREMULTIPLIED (grey = alpha: right for additive and blended)
+                    rgb = a if M.get('compile') else Image.new('L', a.size, 255)
                     if write:
-                        h1_hud_sheet.sprite_bitmap(qd.bitmap.filepath, Image.merge('RGBA', (white, white, white, a)), M['out'])
+                        h1_hud_sheet.sprite_bitmap(qd.bitmap.filepath, Image.merge('RGBA', (rgb, rgb, rgb, a)), M['out'],
+                                                   compile=M.get('compile', False))
                     qd.bitmap.filepath = M['out']
                 save(qt, path(Q['out'], '.particle'), write)
                 x.particle_type.filepath = Q['out']
