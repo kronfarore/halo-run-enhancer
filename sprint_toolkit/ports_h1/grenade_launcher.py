@@ -464,15 +464,21 @@ PORT.update({
             'explosion': {'effect': (FG + 'effects' + B + 'explosion', GL + 'effects' + B + 'release explosion'),
                           'part': FG + 'explosion',
                           'scale': 0.45, 'out_dir': GL + 'effects' + B + 'release' + B,
+                          # BOOT 6 (user): 'the blast is smaller, still no sparks'. Tried: location 1
+                          # 'normal' + the plasma grenade's buildup over a 0 s event (none made),
+                          # location 0 any-environment + 'start' (none seen). BOOT 7 A/B/C in one
+                          # shot, by COLOUR: white bolts at 'normal' (1, out of the surface), RED
+                          # bolts at 'gravity' (2, up), the blue shield flash at 'normal'
                           'add_particles': [{'from': r'weapons\plasma grenade\effects\detonation start',
-                                             'match': 'plasma electric bolts', 'location': 0,
+                                             'match': 'plasma electric bolts', 'location': 1,
                                              'env': 'any_environment', 'radius': (0.6, 0.8),
-                                             # BOOT 4 (user: 'still no sparks'): the plasma grenade
-                                             # spreads its 60 bolts over ITS 2 s event; in a 0 s
-                                             # event none came -> all at the start (the needler's)
                                              'distribution': 'start'},
                                             {'from': r'weapons\plasma grenade\effects\detonation start',
-                                             'match': 'flash h shield impact', 'location': 0,
+                                             'match': 'plasma electric bolts', 'location': 2,
+                                             'env': 'any_environment', 'radius': (0.6, 0.8),
+                                             'distribution': 'start', 'tint': (1.0, 1.0, 0.1, 0.1)},
+                                            {'from': r'weapons\plasma grenade\effects\detonation start',
+                                             'match': 'flash h shield impact', 'location': 1,
                                              'env': 'any_environment', 'radius': (0.25, 0.5),
                                              'distribution': 'start'}],
                           'damage': (FG + 'explosion', GL + 'release explosion'),
