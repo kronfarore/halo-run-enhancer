@@ -676,8 +676,11 @@ def own_explosion(pd, X, write, slot='detonation'):
                     # `compile`: HCEEK's DXT5 (boot 9: a raw a8r8g8b8 particle sprite never drew),
                     # the mask PREMULTIPLIED (grey = alpha: right for additive and blended)
                     rgb = a if M.get('compile') else Image.new('L', a.size, 255)
+                    # `opaque`: alpha 255 everywhere, the shape in the (premultiplied) colour on black
+                    # -- the stock flash sprites' own form (boot 12: they decode fully opaque)
+                    alpha = Image.new('L', a.size, 255) if M.get('opaque') else a
                     if write:
-                        h1_hud_sheet.sprite_bitmap(qd.bitmap.filepath, Image.merge('RGBA', (rgb, rgb, rgb, a)), M['out'],
+                        h1_hud_sheet.sprite_bitmap(qd.bitmap.filepath, Image.merge('RGBA', (rgb, rgb, rgb, alpha)), M['out'],
                                                    compile=M.get('compile', False))
                     qd.bitmap.filepath = M['out']
                 if 'bitmap_copy' in Q:

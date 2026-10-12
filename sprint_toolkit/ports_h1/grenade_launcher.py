@@ -154,6 +154,31 @@ UNITS = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 30, 32]
 WORLD = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 27, 31]           # 29 leaves: the frag's overpenetrate kept
 
 
+def _emp_test(rgb, out=None, bitmap=None, copy=False, small=False):
+    """One EMP diagnostic particle (boots 9-13): the plasma grenade's shield flash entry at the
+    surface ('normal'), all at once, tinted `rgb`; `out` an own particle copy (Reach's timing) with
+    an own sprite (`bitmap`: Reach's emp_mask, see h1_pickable_weapons) or the stock sprite copied."""
+    eff = B.join(['weapons', 'plasma grenade', 'effects', 'detonation start'])
+    e = {'from': eff, 'match': 'flash h shield impact', 'location': 1, 'env': 'any_environment',
+         'distribution': 'start', 'tint_bounds': ((1.0,) + tuple(rgb), (1.0,) + tuple(rgb))}
+    if small:
+        e['radius'] = (0.25, 0.5)
+        return e
+    e.update({'count': 3, 'radius': (1.2, 1.5), 'spin': (-90.0, 90.0)})
+    q = {'out': GL + 'effects' + B + out, 'lifespan': (0.35, 0.45), 'fade_out': 0.3,
+         'radius_animation': (0.6, 1.0),
+         'flags': {'random_horizontal_mirroring': True, 'random_vertical_mirroring': True,
+                   'animate_once_per_frame': False}}
+    if bitmap:
+        q['bitmap'] = dict({'mask': R + B.join(['fx', 'bitmaps', 'plasma', 'emp_mask.bitmap']), 'size': 32},
+                           **dict(bitmap, out=GL + 'effects' + B + 'bitmaps' + B + bitmap['out']))
+    if copy:
+        q['bitmap_copy'] = (B.join(['effects', 'particles', 'flash', 'bitmaps', 'flash h shield impact']),
+                            GL + 'effects' + B + 'bitmaps' + B + 'flash copy')
+    e['particle'] = q
+    return e
+
+
 def _lcd(bitmap):
     """One display element of the on-gun LCD as a lit static shape (the Needle Rifle's recipe)."""
     return {'map': DISPLAY + bitmap, 'from': GAUGE, 'shape': 'r', 'gradient': 0.0,
@@ -486,52 +511,18 @@ PORT.update({
                           # x0.6 -> x1 over 0.35-0.45 s while it fades, random mirroring + spin, a
                           # random tint between Reach's birth and mid colours (Halo 1 has no colour
                           # over life). Not reproduced: the scrolling clouds, the colour over life
-                          'add_particles': [{'from': r'weapons\plasma grenade\effects\detonation start',
-                                             'match': 'flash h shield impact', 'location': 1,
-                                             'env': 'any_environment', 'distribution': 'start',
-                                             'count': 3, 'radius': (1.2, 1.5), 'spin': (-90.0, 90.0),
-                                             'tint_bounds': ((1.0, 162 / 255.0, 226 / 255.0, 252 / 255.0),
-                                                             (1.0, 87 / 255.0, 195 / 255.0, 240 / 255.0)),
-                                             'particle': {'out': GL + 'effects' + B + 'emp pulse',
-                                                          'lifespan': (0.35, 0.45), 'fade_out': 0.3,
-                                                          'radius_animation': (0.6, 1.0),
-                                                          'flags': {'random_horizontal_mirroring': True,
-                                                                    'random_vertical_mirroring': True,
-                                                                    'animate_once_per_frame': False},
-                                                          'bitmap': {'mask': R + B.join(['fx', 'bitmaps', 'plasma', 'emp_mask.bitmap']),
-                                                                     'size': 32,
-                                                                     # BOOT 9 (user: green + red seen, no
-                                                                     # blue): the raw sprite never drew ->
-                                                                     # HCEEK's DXT5 like the stock sheets
-                                                                     # BOOTS 10-11: DXT5 / stock headers: still
-                                                                     # no blue -> boot 12: exactly the stock
-                                                                     # flash's form, 32 px DXT1 (colour key)
-                                                                     'compile': 'dxt1',
-                                                                     'out': GL + 'effects' + B + 'bitmaps' + B + 'emp pulse'}}},
-                                            # BOOT 9 DIAGNOSTIC (user: 'no EMP effect again -- disable the
-                                            # normal explosion to see if it draws'): RED = the same particle
-                                            # settings on the STOCK flash sprite; GREEN = boot 7's flash as it
-                                            # was (seen then). Blue missing alone = the a8r8g8b8 sprite
-                                            {'from': r'weapons\plasma grenade\effects\detonation start',
-                                             'match': 'flash h shield impact', 'location': 1,
-                                             'env': 'any_environment', 'distribution': 'start',
-                                             'count': 3, 'radius': (1.2, 1.5), 'spin': (-90.0, 90.0),
-                                             'tint_bounds': ((1.0, 1.0, 0.1, 0.1), (1.0, 1.0, 0.1, 0.1)),
-                                             'particle': {'out': GL + 'effects' + B + 'emp pulse b',
-                                                          'lifespan': (0.35, 0.45), 'fade_out': 0.3,
-                                                          'radius_animation': (0.6, 1.0),
-                                                          'flags': {'random_horizontal_mirroring': True,
-                                                                    'random_vertical_mirroring': True,
-                                                                    'animate_once_per_frame': False},
-                                                          # BOOT 12: RED = a byte COPY of the stock flash
-                                                          # sprite under our own path
-                                                          'bitmap_copy': (B.join(['effects', 'particles', 'flash', 'bitmaps', 'flash h shield impact']),
-                                                                          GL + 'effects' + B + 'bitmaps' + B + 'flash copy')}},
-                                            {'from': r'weapons\plasma grenade\effects\detonation start',
-                                             'match': 'flash h shield impact', 'location': 1,
-                                             'env': 'any_environment', 'radius': (0.25, 0.5),
-                                             'distribution': 'start',
-                                             'tint_bounds': ((1.0, 0.1, 1.0, 0.1), (1.0, 0.1, 1.0, 0.1))}],
+                          # BOOTS 9-12 (user): green + red seen, never blue -- the raw a8r8g8b8 sprite, then DXT5,
+                          # then the stock headers, then 32 px DXT1: no blue; a byte COPY of the stock flash under an
+                          # own path DID draw (red, boot 12). Decoded, the stock flash is OPAQUE (alpha 255, the shape
+                          # on black); ours colour-keyed 37 % of its texels transparent -- and the blue entry was
+                          # always the event's FIRST added particle. BOOT 13, by colour: GREEN control first, BLUE the
+                          # keyed ring second, YELLOW the ring OPAQUE on black (the stock form), RED the stock copy
+                          'add_particles': [_emp_test((0.1, 1.0, 0.1), small=True),
+                                            _emp_test((162 / 255.0, 226 / 255.0, 252 / 255.0), out='emp pulse',
+                                                      bitmap={'compile': 'dxt1', 'out': 'emp pulse'}),
+                                            _emp_test((1.0, 1.0, 0.1), out='emp pulse o',
+                                                      bitmap={'compile': 'dxt1', 'opaque': True, 'out': 'emp pulse o'}),
+                                            _emp_test((1.0, 0.1, 0.1), out='emp pulse b', copy=True)],
                           # BOOT 9 DIAGNOSTIC: the normal explosion's visuals off (its particle system,
                           # lights, smoke) -- the sound and the damage stay
                           'drop_classes': ('particle_system', 'light'),
