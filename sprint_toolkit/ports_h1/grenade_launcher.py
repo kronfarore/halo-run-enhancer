@@ -164,7 +164,9 @@ def _emp_test(rgb, out=None, bitmap=None, copy=False, small=False, rgb2=None):
     if small:
         e['radius'] = (0.25, 0.5)
         return e
-    e.update({'count': 3, 'radius': (1.2, 1.5), 'spin': (-90.0, 90.0)})
+    # BOOT 16 (user): 'better -- double the rings as a test; I perceive one normal explosion and
+    # one big mostly white flash' -> 6 a burst (was 3)
+    e.update({'count': 6, 'radius': (1.2, 1.5), 'spin': (-90.0, 90.0)})
     # BOOT 15 (user): 'it's there, but it doesn't last long enough' -- 0.35-0.45 s -> 0.8-1.0 s, a
     # 0.6 s fade, growing to x1.1
     q = {'out': GL + 'effects' + B + out, 'lifespan': (0.8, 1.0), 'fade_out': 0.6,
