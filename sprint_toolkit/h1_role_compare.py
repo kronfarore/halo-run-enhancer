@@ -880,6 +880,105 @@ SETS = {
          {'damage_tags': [W + r'plasma rifle\charged bolt'], 'rate': 1 / 1.2, 'charge': 0.6,
           'nomag': True}),
     ]},
+    # the FOCUS RIFLE (wave B7), step 4a. Reach (HREK 2026-10-12, h3_weapon_values --kit reach):
+    # a spew beam 3 (plasma_fast) x 30/s = 90 dps, 4000 wu/s, range 120, error 0, heat 0.025 a
+    # round, loss 0.35 / 0.23 overheated, recovery 0.1, battery 0.0016125 a round (campaign the
+    # same: 620 rounds = 20.7 s), zoom 2 (3.5, 9.5), aim 2/10 4/10; Reach's plasma rifle 10
+    # (plasma_slow) x 6 -> 9/s, heat 0.15, loss 0.8525 / 0.35, battery 0.0025; sniper 80
+    # (sniper) / 0.75 s, zoom 4 / 10, aim 0.8/20 1.6/20, 6000 wu/s, 500; plasma pistol 16
+    # (plasma_slow), tapped (0.08 s), heat 0.14, loss 0.6 / 0.45, campaign battery 0.002, 20 ->
+    # 30 wu/s, 40, aim 4/20 8/20. Halo 1 fires a held 30/s at 15/s (SMG / Sentinel Beam
+    # observation): per-SECOND damage, heat and battery kept -> 6 a round, battery 1/310.
+    # REACH'S HEAT READ TWO WAYS (open): A = no cooling while firing (the H4 port's confirmed
+    # rule) -> 40 rounds / 1.33 s; B = cooling at 0.35 while firing -> 75 rounds / 2.5 s. Halo 1
+    # COOLS WHILE FIRING at its ONE loss (measured, B3): heat a round fitted to overheat on the
+    # same second; the loss is a choice (0.35 / 0.23 / their mean, the Beam Rifle's precedent).
+    'focus_rifle': {'port': 'Focus Rifle', 'weapons': [
+        ('FR = Reach true, A', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 3.0, 'speed': 4000.0, 'range': 120.0, 'aim': (2.0, 10.0, 4.0, 10.0),
+          'age': 0.0016125, 'heat_model': {'rate': ('time', 30.0, 30.0, 1e-6), 'hpr': 0.025,
+                                           'oh': 1.0, 'loss': 0.23, 'rec': 0.1}}),
+        ('FR = Reach true, B', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 3.0, 'speed': 4000.0, 'range': 120.0, 'aim': (2.0, 10.0, 4.0, 10.0),
+          'age': 0.0016125, 'heat_model': {'rate': ('time', 30.0, 30.0, 1e-6), 'hpr': 0.025,
+                                           'oh': 1.0, 'loss': 0.35, 'rec': 0.1,
+                                           'cool_firing': True}}),
+        # DEFAULT candidates: Reach's own at Halo 1's 15/s; heat a round = (1 + 19 x 2 ticks x
+        # loss / 30) / 20 (A: the 20th round overheats) or (1 + 37 x ...) / 38 (B)
+        ('FR = Reach A, loss .23', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 6.0, 'speed': 4000.0, 'range': 120.0, 'aim': (2.0, 10.0, 4.0, 10.0),
+          'age': 1 / 310.0, 'heat_model': {'rate': ('time', 15.0, 15.0, 1e-6), 'hpr': 0.0646,
+                                           'oh': 1.0, 'loss': 0.23, 'rec': 0.1,
+                                           'cool_firing': True, 'h1_ticks': True}}),
+        ('FR = Reach A, loss .29', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 6.0, 'speed': 4000.0, 'range': 120.0, 'aim': (2.0, 10.0, 4.0, 10.0),
+          'age': 1 / 310.0, 'heat_model': {'rate': ('time', 15.0, 15.0, 1e-6), 'hpr': 0.0684,
+                                           'oh': 1.0, 'loss': 0.29, 'rec': 0.1,
+                                           'cool_firing': True, 'h1_ticks': True}}),
+        ('FR = Reach A, loss .35', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 6.0, 'speed': 4000.0, 'range': 120.0, 'aim': (2.0, 10.0, 4.0, 10.0),
+          'age': 1 / 310.0, 'heat_model': {'rate': ('time', 15.0, 15.0, 1e-6), 'hpr': 0.0722,
+                                           'oh': 1.0, 'loss': 0.35, 'rec': 0.1,
+                                           'cool_firing': True, 'h1_ticks': True}}),
+        ('FR = Reach B, loss .29', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 6.0, 'speed': 4000.0, 'range': 120.0, 'aim': (2.0, 10.0, 4.0, 10.0),
+          'age': 1 / 310.0, 'heat_model': {'rate': ('time', 15.0, 15.0, 1e-6), 'hpr': 0.0451,
+                                           'oh': 1.0, 'loss': 0.29, 'rec': 0.1,
+                                           'cool_firing': True, 'h1_ticks': True}}),
+        # Reach's own on the SNIPER bullet's table x plasma_fast / sniper (Hunter armour x0.25)
+        # + the Beam Rifle's plasma pair (Jackal shield 0.5, Sentinel 2.0)
+        ('FR = Reach A .29, sniper tbl', W + r'sniper rifle\sniper rifle', 'shot',
+         {'dmg': 6.0, 'speed': 4000.0, 'range': 120.0, 'aim': (2.0, 10.0, 4.0, 10.0),
+          'nomag': True, 'age': 1 / 310.0,
+          'mods': {'hunter_armor': 0.125, 'jackal_energy_shield': 0.5, 'sentinel': 2.0},
+          'heat_model': {'rate': ('time', 15.0, 15.0, 1e-6), 'hpr': 0.0684, 'oh': 1.0,
+                         'loss': 0.29, 'rec': 0.1, 'cool_firing': True, 'h1_ticks': True}}),
+        # PLASMA RIFLE ratio (H1 PR x FR / Reach PR): dps 130 x 90/90 -> 8.67 a round at 15/s;
+        # heat/s 0.8 x 0.75/1.35 = 0.444 -> 0.0296 a round; loss 0.3 (= Halo 3's OVERHEATED
+        # loss, the Beam Rifle's reading) x 0.23/0.35 = 0.197; recovery 0.25 x 1; battery by
+        # time 20 s x 20.7/44.4 = 9.3 s -> 140 rounds; 50 x 4000/25 = 8000 wu/s; range: the PR
+        # has none -> Reach's 120; aim 5 x 2/5, 25 x 10/12, 12 x 4/9, 25 x 10/18; materials
+        # the bolt's table x Reach's plasma_fast / plasma_slow (the repeater's RP_FAST_SLOW)
+        ('FR = PR ratio', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 8.67, 'speed': 8000.0, 'range': 120.0, 'aim': (2.0, 20.83, 5.33, 13.89),
+          'age': 1 / 140.0, 'mods': dict(RP_FAST_SLOW),
+          'heat_model': {'rate': ('time', 15.0, 15.0, 1e-6), 'hpr': 0.0296, 'oh': 1.0,
+                         'loss': 0.197, 'rec': 0.25, 'cool_firing': True, 'h1_ticks': True}}),
+        # SNIPER ratio: dps 202 x 90/106.7 = 170 -> 11.36 a round; heat + battery: no sniper
+        # counterpart -> Reach's own (A, .29); 1000 x 4000/6000 = 667 wu/s; range 1000 x 120/500
+        # = 240; aim 1 x 2/0.8, 35 x 10/20, 2 x 4/1.6, 35 x 10/20; zoom 2 x 3.5/4 = 1.75, 8 x
+        # 9.5/10 = 7.6; sniper table x plasma_fast / sniper
+        ('FR = Sniper ratio', W + r'sniper rifle\sniper rifle', 'shot',
+         {'dmg': 11.36, 'speed': 667.0, 'range': 240.0, 'aim': (2.5, 17.5, 5.0, 17.5),
+          'nomag': True, 'age': 1 / 310.0,
+          'mods': {'hunter_armor': 0.125, 'jackal_energy_shield': 0.5, 'sentinel': 2.0},
+          'heat_model': {'rate': ('time', 15.0, 15.0, 1e-6), 'hpr': 0.0684, 'oh': 1.0,
+                         'loss': 0.29, 'rec': 0.1, 'cool_firing': True, 'h1_ticks': True}}),
+        # PLASMA PISTOL ratio (both tapped at the same rate): dps 90 x 90/80 = 101 -> 6.75 a
+        # round; heat/s 0.75 x 0.16/0.14 = 0.857 -> 0.0571; loss 0.65 (= the COOLING loss) x
+        # 0.35/0.6 = 0.379; recovery 0.25; battery 0.002 / 0.002 -> Reach's 310; 25 x 4000/20
+        # = 5000; 50 x 120/40 = 150; aim 5 x 2/4, 20 x 10/20, 12 x 4/8, 20 x 10/20; the bolt's
+        # table x fast/slow (cyborg 0.6 -> shield 0.375, armour 1.5)
+        ('FR = PP ratio', W + r'plasma pistol\plasma pistol', 'shot',
+         {'dmg': 6.75, 'speed': 5000.0, 'range': 150.0, 'aim': (2.5, 10.0, 6.0, 10.0),
+          'charge': 0.0, 'age': 1 / 310.0,
+          'mods': dict(RP_FAST_SLOW, cyborg_energy_shield=0.375, cyborg_armor=1.5),
+          'heat_model': {'rate': ('time', 15.0, 15.0, 1e-6), 'hpr': 0.0571, 'oh': 1.0,
+                         'loss': 0.379, 'rec': 0.25, 'cool_firing': True, 'h1_ticks': True}}),
+        # peers
+        ('Plasma Rifle', W + r'plasma rifle\plasma rifle', 'shot', {'heat_model': 'tag'}),
+        ('Sniper Rifle', W + r'sniper rifle\sniper rifle', 'shot'),
+        ('Plasma Pistol (tap 5/s)', W + r'plasma pistol\plasma pistol', 'shot',
+         {'rate': 5.0, 'charge': 0.0, 'heat_sim': True}),
+        ('Sentinel Beam (peer)', W + r'sentinel beam\sentinel beam', 'shot',
+         {'heat_model': {'rate': ('time', 15.0, 15.0, 1e-6), 'hpr': 0.0426, 'oh': 0.9,
+                         'loss': 0.3, 'rec': 0.25, 'cool_firing': True, 'h1_ticks': True}}),
+        ('Beam Rifle (port)', W + r'beam rifle\beam rifle', 'shot', {'heat_sim': True}),
+    ], 'enemies': [
+        ('Sentinel', r'characters\sentinel\sentinel', 'sentinel'),
+        ('Flood combat (elite)', r'characters\floodcombat elite\floodcombat elite plasma rifle',
+         'floodcombat elite'),
+    ]},
 }
 
 ENEMIES = [
