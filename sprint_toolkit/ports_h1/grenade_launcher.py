@@ -467,6 +467,8 @@ PORT.update({
                                    # 4b list 2: Reach 0,0 = unset (a ratio on it degenerates):
                                    # 0..100 = the range (the Brute Shot's)
                                    'proj_attrs.physics.air_damage_range': (0.0, 100.0),
+                                   # water damage range: the frag's 0..10 kept (Reach 0,0 =
+                                   # unset, as the air range)
                                    'proj_attrs.detonation.minimum_velocity': 0.0,
                                    'proj_attrs.flags.oriented_along_velocity': True},
                    # REACH'S RULES as Halo 1 responses: units DETONATE (Reach: 'only against
@@ -738,8 +740,9 @@ PORT.update({
             # (the DMR's) x1.02, stretched sounds; swap (ONE multiplier, the ready's): H1 rocket
             # ready 22 fr x Reach GL 21 / Reach rocket 26 = 17.8 over the built 21 = x0.85
             'anims': {'reload': 1.02, 'swap': 0.85},
-            'anim_sounds': {'reload': {'mult': 1.02, 'from': SND + 'gl_reload_empty',
-                                       'to': SND + 'gl_reload_empty_balanced'}},
+            'anim_sounds': {'reload': [
+                {'mult': 1.02, 'from': SND + 'gl_reload_empty', 'to': SND + 'gl_reload_empty_balanced'},
+                {'mult': 1.02, 'from': SND + 'gl_reload_full', 'to': SND + 'gl_reload_full_balanced'}]},
             'balance': [
                 # the grenade's explosion: 120 x 180/160 (frag), lower 80 x 135/120 (the sibling
                 # rule: Reach's lower bounds are 0 / unset); radius 1.5 x 0.75/0.675, 2.5 x 2.25/2.25

@@ -4109,11 +4109,18 @@
     "swap": 0.85
    },
    "anim_sounds": {
-    "reload": {
-     "mult": 1.02,
-     "from": "sound\\weapons\\grenade_launcher_port\\gl_reload_empty",
-     "to": "sound\\weapons\\grenade_launcher_port\\gl_reload_empty_balanced"
-    }
+    "reload": [
+     {
+      "mult": 1.02,
+      "from": "sound\\weapons\\grenade_launcher_port\\gl_reload_empty",
+      "to": "sound\\weapons\\grenade_launcher_port\\gl_reload_empty_balanced"
+     },
+     {
+      "mult": 1.02,
+      "from": "sound\\weapons\\grenade_launcher_port\\gl_reload_full",
+      "to": "sound\\weapons\\grenade_launcher_port\\gl_reload_full_balanced"
+     }
+    ]
    },
    "balance": [
     {
