@@ -166,7 +166,9 @@ def plan(weapon, only_cards=None, only_game=None):
         for donor, only in [(port['donor'], None)] + [(d, set(n)) for d, n in extra.items()]:
             wpath = weapon_ports.weap_path(port)
             dtag = db.weap_tag_for(donor, game)
-            dpath = dtag.split(' & ')[0][5:]
+            # a donor without a weapon tag (a grenade lending its Fuse Timer) matches by
+            # the catalog's explicit tag_map only
+            dpath = dtag.split(' & ')[0][5:] if dtag else ''
             dfolder = dpath.rsplit(chr(92), 1)[0]
             dbase = dpath.rsplit(chr(92), 1)[-1].replace(' ', '_')
             ptags = [r.get('tag') for r in port.get('balance') or () if r.get('tag')]

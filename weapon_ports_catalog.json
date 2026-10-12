@@ -3932,7 +3932,22 @@
    "requires": [
     "proj weapons\\grenade launcher\\grenade"
    ],
-   "hands": "two"
+   "hands": "two",
+   "tag_map": {
+    "proj weapons\\rocket launcher\\rocket": "proj weapons\\grenade launcher\\grenade",
+    "jpt! weapons\\rocket launcher\\explosion": "jpt! weapons\\grenade launcher\\explosion & weapons\\grenade launcher\\impact & weapons\\grenade launcher\\emp & weapons\\grenade launcher\\release explosion",
+    "jpt! weapons\\rocket launcher\\melee": "jpt! weapons\\grenade launcher\\melee",
+    "proj weapons\\frag grenade\\frag grenade": "proj weapons\\grenade launcher\\grenade",
+    "proj weapons\\shotgun\\pellet": "proj weapons\\grenade launcher\\grenade"
+   },
+   "card_donors": {
+    "Frag Grenade": [
+     "Fuse Timer"
+    ],
+    "Shotgun": [
+     "Projectile Gravity"
+    ]
+   }
   }
  ],
  "Halo 3": [
