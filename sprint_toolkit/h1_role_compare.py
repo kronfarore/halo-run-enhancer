@@ -896,8 +896,9 @@ SETS = {
     # (plasma_slow), tapped (0.08 s), heat 0.14, loss 0.6 / 0.45, campaign battery 0.002, 20 ->
     # 30 wu/s, 40, aim 4/20 8/20. Halo 1 fires a held 30/s at 15/s (SMG / Sentinel Beam
     # observation): per-SECOND damage, heat and battery kept -> 6 a round, battery 1/310.
-    # REACH'S HEAT READ TWO WAYS (open): A = no cooling while firing (the H4 port's confirmed
-    # rule) -> 40 rounds / 1.33 s; B = cooling at 0.35 while firing -> 75 rounds / 2.5 s. Halo 1
+    # REACH'S HEAT READ TWO WAYS: A = no cooling while firing (the H4 port's confirmed rule) ->
+    # 40 rounds / 1.33 s; B = cooling at 0.35 while firing -> 75 rounds / 2.5 s. SETTLED B: the
+    # user's stopwatch in Reach, ~2.5 s (2026-10-12; the meter never visibly falls). Halo 1
     # COOLS WHILE FIRING at its ONE loss (measured, B3): heat a round fitted to overheat on the
     # same second; the loss is a choice (0.35 / 0.23 / their mean, the Beam Rifle's precedent).
     'focus_rifle': {'port': 'Focus Rifle', 'weapons': [
@@ -940,8 +941,11 @@ SETS = {
           'mods': {'hunter_armor': 0.125, 'jackal_energy_shield': 0.5, 'sentinel': 2.0},
           'heat_model': {'rate': ('time', 15.0, 15.0, 1e-6), 'hpr': 0.0684, 'oh': 1.0,
                          'loss': 0.29, 'rec': 0.1, 'cool_firing': True, 'h1_ticks': True}}),
-        # PLASMA RIFLE ratio (H1 PR x FR / Reach PR): dps 130 x 90/90 -> 8.67 a round at 15/s;
-        # heat/s 0.8 x 0.75/1.35 = 0.444 -> 0.0296 a round; loss 0.3 (= Halo 3's OVERHEATED
+        # PLASMA RIFLE ratio (H1 PR x FR / Reach PR; the user's pick): dps 130 x 90/90 -> 8.67 a
+        # round at 15/s; TIME TO OVERHEAT (Reach cools while firing -- the user's stopwatch: the
+        # Focus Rifle overheats in ~2.5 s = 0.75 - 0.35 heat/s): H1 PR 2.67 s x FR 2.47 / Reach
+        # PR 2.17 (6 -> 9/s, 0.15, cooling 0.8525: 19 rounds) = 3.0 s -> the 46th round, heat
+        # 0.0346 a round; loss 0.3 (= Halo 3's OVERHEATED
         # loss, the Beam Rifle's reading) x 0.23/0.35 = 0.197; recovery 0.25 x 1; battery by
         # time 20 s x 20.7/44.4 = 9.3 s -> 140 rounds; 50 x 4000/25 = 8000 wu/s; range: the PR
         # has none -> Reach's 120; aim 5 x 2/5, 25 x 10/12, 12 x 4/9, 25 x 10/18; materials
@@ -949,7 +953,7 @@ SETS = {
         ('FR = PR ratio', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 8.67, 'speed': 8000.0, 'range': 120.0, 'aim': (2.0, 20.83, 5.33, 13.89),
           'age': 1 / 140.0, 'mods': dict(RP_FAST_SLOW),
-          'heat_model': {'rate': ('time', 15.0, 15.0, 1e-6), 'hpr': 0.0296, 'oh': 1.0,
+          'heat_model': {'rate': ('time', 15.0, 15.0, 1e-6), 'hpr': 0.0346, 'oh': 1.0,
                          'loss': 0.197, 'rec': 0.25, 'cool_firing': True, 'h1_ticks': True}}),
         # SNIPER ratio: dps 202 x 90/106.7 = 170 -> 11.36 a round; heat + battery: no sniper
         # counterpart -> Reach's own (A, .29); 1000 x 4000/6000 = 667 wu/s; range 1000 x 120/500
