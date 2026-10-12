@@ -12920,11 +12920,11 @@ class OptionsDialog(QDialog):
                     if bal:
                         f.addRow("", bal)
                     continue
-                # Which ammo pickup the port's magazines accept. A port has no pickup
-                # item of its own (the SAW's home game has no ammo pickups at all), so
-                # it is built taking the DONOR's -- shown here as the default, with
-                # every other item of this game beside it and "(none)" for a weapon
-                # that can never be topped up.
+                # Which ammo pickup the port's magazines accept: the item it was built
+                # with (the catalog's `ammo.default` -- the donor's for the SAW, whose
+                # home game has no ammo pickups; the Frag Grenade for the Grenade
+                # Launcher) shown as the default, with every other item of this game
+                # beside it and "(none)" for a weapon that can never be topped up.
                 combo = QComboBox()
                 for choice in ammo.get('choices') or ():
                     label = choice.get('label') or choice.get('tag')
@@ -12943,12 +12943,14 @@ class OptionsDialog(QDialog):
                 at = combo.findData(pick)
                 combo.setCurrentIndex(at if at >= 0 else 0)
                 tune_combo(combo)
+                built = next((c.get('label') or c.get('tag') for c in ammo.get('choices') or ()
+                              if c.get('tag') == ammo.get('default')), None)
                 combo.setToolTip(
                     "The pickup this weapon takes ammunition from. It was built taking "
-                    "the %s's, because the game it came from has no ammo pickups; any "
-                    "other item of this game works too, and (none) leaves it with what "
-                    "it spawns with.\n\nHow MUCH a pickup gives is the port's own "
-                    "number, and moves with the balance." % port.get('donor'))
+                    "%s; any other item of this game works too, and (none) leaves it "
+                    "with what it spawns with.\n\nHow MUCH a pickup gives is the port's "
+                    "own number, and moves with the balance."
+                    % (built or "the %s's" % port.get('donor')))
                 # Beside the checkbox, not under it: the pickup belongs to THIS port, and
                 # a row of its own reads like a separate option for the whole game.
                 row = QWidget()
