@@ -153,9 +153,16 @@ PORT.update({
         # gold -> white -- the user's firing screenshot: a white-gold core); the violet is the 3p beam's
         # plasma layers and the muzzle particles. Baked (the Spartan Laser's route): colour =
         # palette[profile], premultiplied for the additive contrail
+        # BOOT 3 (user): 'the beam is a static image -- can we animate it?' The core's energy_trail
+        # barely varies along u (column-mean spread 4), so the contrail's scroll shows nothing; Reach's
+        # MOTION is the `pulse` layer (512 x 64, spread 32: bright knots along the beam) scrolled
+        # -5 / s at tiling 0.15 -> baked at its own length (`size` (w, h)) through the same palette
         'baked_textures': {'fo_beam': {'profile': R + r'fx\bitmaps\contrails\energy_trail.bitmap',
                                        'palette': r'fx\contrails\_gradients\sentinel_beam.bitmap',
-                                       'premultiply': True}},
+                                       'premultiply': True},
+                           'fo_beam_pulse': {'profile': R + r'fx\bitmaps\contrails\pulse.bitmap',
+                                             'palette': r'fx\contrails\_gradients\sentinel_beam.bitmap',
+                                             'premultiply': True, 'size': (512, 64)}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Reach's OWN fp_focus_rifle retargeted (the DMR's
@@ -416,7 +423,16 @@ PORT.update({
                  # BOOT 2: an OWN copy of the Sentinel contrail (white x texture, additive, 0.095 wu,
                  # its point states kept) on the baked Reach beam (model `baked_textures` fo_beam)
                  'contrail': {'from': r'characters\sentinel\beam', 'out': FO + 'beam',
-                              'bitmap': FO + 'bitmaps\\fo_beam', 'sequence': (0, 0)}},
+                              'bitmap': FO + 'bitmaps\\fo_beam', 'sequence': (0, 0),
+                              # BOOT 4: the PULSE (Reach's 12-sided `pulse` tube, 1p tiling 0.15,
+                              # scroll -5 / s): a second additive layer on the same marker, a little
+                              # wider than the core, its knots moving along the beam (Halo 1's u
+                              # animation sign vs Reach's: to see in game)
+                              'extra': [{'out': FO + 'beam pulse', 'bitmap': FO + 'bitmaps\\fo_beam_pulse',
+                                         'sequence': (0, 0), 'repeats': (0.15, 1.0), 'scroll': (5.0, 0.0),
+                                         'states': [{'duration': (0.0, 0.0), 'transition': (0.2, 0.2),
+                                                     'width': 0.14, 'argb': (1.0, 1.0, 1.0, 1.0)},
+                                                    {'width': 0.002, 'argb': (0.0, 0.0, 0.0, 0.0)}]}]}},
         # Reach: spew 30/s. BOOT 2 (user: 'overheats in under 2 s'; the PROBE): Halo 1 fires 29..30 at
         # 30/s -- 29 rounds in 0.97 s, shots 33 ms apart, heat 0.045 -> 1.0 (cools while firing at 0.29),
         # vent 3.07 s -- the per-round values doubled for 15/s overheated it at 1 s. Now Reach's own
