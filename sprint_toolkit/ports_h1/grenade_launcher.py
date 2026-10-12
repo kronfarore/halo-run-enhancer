@@ -500,7 +500,31 @@ PORT.update({
                                                                     'animate_once_per_frame': False},
                                                           'bitmap': {'mask': R + B.join(['fx', 'bitmaps', 'plasma', 'emp_mask.bitmap']),
                                                                      'size': 128,
-                                                                     'out': GL + 'effects' + B + 'bitmaps' + B + 'emp pulse'}}}],
+                                                                     'out': GL + 'effects' + B + 'bitmaps' + B + 'emp pulse'}}},
+                                            # BOOT 9 DIAGNOSTIC (user: 'no EMP effect again -- disable the
+                                            # normal explosion to see if it draws'): RED = the same particle
+                                            # settings on the STOCK flash sprite; GREEN = boot 7's flash as it
+                                            # was (seen then). Blue missing alone = the a8r8g8b8 sprite
+                                            {'from': r'weapons\plasma grenade\effects\detonation start',
+                                             'match': 'flash h shield impact', 'location': 1,
+                                             'env': 'any_environment', 'distribution': 'start',
+                                             'count': 3, 'radius': (1.2, 1.5), 'spin': (-90.0, 90.0),
+                                             'tint_bounds': ((1.0, 1.0, 0.1, 0.1), (1.0, 1.0, 0.1, 0.1)),
+                                             'particle': {'out': GL + 'effects' + B + 'emp pulse b',
+                                                          'lifespan': (0.35, 0.45), 'fade_out': 0.3,
+                                                          'radius_animation': (0.6, 1.0),
+                                                          'flags': {'random_horizontal_mirroring': True,
+                                                                    'random_vertical_mirroring': True,
+                                                                    'animate_once_per_frame': False}}},
+                                            {'from': r'weapons\plasma grenade\effects\detonation start',
+                                             'match': 'flash h shield impact', 'location': 1,
+                                             'env': 'any_environment', 'radius': (0.25, 0.5),
+                                             'distribution': 'start',
+                                             'tint_bounds': ((1.0, 0.1, 1.0, 0.1), (1.0, 0.1, 1.0, 0.1))}],
+                          # BOOT 9 DIAGNOSTIC: the normal explosion's visuals off (its particle system,
+                          # lights, smoke) -- the sound and the damage stay
+                          'drop_classes': ('particle_system', 'light'),
+                          'drop_particles': ('drifting smoke',),
                           'damage': (FG + 'explosion', GL + 'release explosion'),
                           'lower': 120.0, 'upper': (180.0, 180.0), 'radius': (0.001, 1.0),
                           # the same ratio on Reach's tethered blast (core 0.2, acceleration 3)
