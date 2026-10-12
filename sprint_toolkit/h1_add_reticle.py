@@ -33,13 +33,16 @@ SIZE, CENTRE = 256, (128, 125)
 SCALE = 123.0 / 97.0
 
 
-def layer_art(src, index):
+def layer_art(src, index, native=False):
     """(RGBA, registration px) of a Halo 3 HUD piece: a sprite of a SHEET (`index` a number),
     or a whole single BITMAP (`index` None, registered at its centre: the Spartan Laser's
-    `spartan_outerring`, one 100 px bitmap with no sequences)."""
+    `spartan_outerring`, one 100 px bitmap with no sequences). `native`: a Reach sprite at its
+    own 4K density (h3_hud_art.sprite native; the caller divides by h3_hud_art.density)."""
     if index is None:
         img, _ = h3_hud_art.decode(src)
         return img, (img.width / 2.0, img.height / 2.0)
+    if native:
+        return h3_hud_art.sprite(src, index, native=True)
     return h3_hud_art.sprite(src, index)
 
 
@@ -128,7 +131,8 @@ def simulate(alpha, out_png, scales=(0.47, 0.49, 0.52), offsets=((0, 0), (0.5, 0
 
 
 def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0, scale=1.0,
-        pixel=0, centre=CENTRE, mips=False, hard=0, min_width=0, dry=False, split=0, xform=None):
+        pixel=0, centre=CENTRE, mips=False, hard=0, min_width=0, dry=False, split=0, xform=None,
+        supersample=1):
     """The Halo 3 sprite into `hud_reticles` AND `hud_reticles_r`, one sequence index (the
     port's reserved `index` when given). `thicken` px grows every stroke by that much on
     each side (a max filter): Halo 1 draws the 256 px sheet at about half size, and Halo
@@ -139,7 +143,12 @@ def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0,
     circle `spartan_outerring` at 0.95; test 1: 'the inner circle is missing')."""
     import h1_hud_sheet
     from PIL import ImageChops, ImageFilter
-    canvas = Image.new('L', (SIZE, SIZE), 0)
+    # `supersample` F (the Grenade Launcher, boot 2: 'the crosshair is better, but still not good
+    # enough'): the sheet cell 256 x F, every placement x F, and Reach's sprites taken at their
+    # NATIVE 4K density (not shrunk to Halo 3's and magnified back) -- the HUD overlay scale then
+    # draws it at the same size from finer pixels. F = 1: the original path
+    F = supersample
+    canvas = Image.new('L', (SIZE * F, SIZE * F), 0)
     main = (h3_sheet, h3_index, 1.0) + ((xform,) if xform else ())
     for src, idx, k, *gain in [main] + list(layers):
         # a trailing DICT on a layer (or `xform` for the main sprite): the chud widget's own
@@ -148,7 +157,8 @@ def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0,
         xf = gain.pop() if gain and isinstance(gain[-1], dict) else {}
         if 'gain' in xf:                 # the Plasma Repeater: Reach's dim sprite (alpha 85) to full
             gain = [xf['gain']]
-        art, (rx, ry) = layer_art(src, idx)
+        art, (rx, ry) = layer_art(src, idx, native=F > 1)
+        dens = h3_hud_art.density(src) if F > 1 and idx is not None else 1.0
         if xf.get('flip_x'):
             art, rx = art.transpose(Image.FLIP_LEFT_RIGHT), art.width - rx
         if xf.get('flip_y'):             # the Plasma Repeater: one ring QUARTER mirrored both ways
@@ -170,6 +180,7 @@ def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0,
             # Launcher: Reach's pitch ladder, 140 deg in 1024 px, shows only inside the frame)
             l, t, r, b = xf['crop']
             art, rx, ry = art.crop((l, t, r, b)), rx - l, ry - t
+        rx, ry = rx / dens, ry / dens            # native art px -> Halo 3 density (1 when F = 1)
         rx -= xf.get('offset', (0.0, 0.0))[0] / k
         ry -= xf.get('offset', (0.0, 0.0))[1] / k
         # `scale`: the art drawn that much smaller in the sheet (BOX: area-averaged), the
@@ -177,15 +188,15 @@ def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0,
         k = k * scale
         # `stretch` (sx, sy): a chud widget scaled per axis (the pitch ladder's 1.6 x 0.7)
         sx, sy = xf.get('stretch', (1.0, 1.0))
-        w, h = round(art.width * SCALE * k * sx), round(art.height * SCALE * k * sy)
+        w, h = round(art.width / dens * SCALE * k * sx * F), round(art.height / dens * SCALE * k * sy * F)
         alpha = art.split()[3].resize((w, h), Image.BOX if scale < 1 else Image.LANCZOS)
         if thicken:
             alpha = alpha.filter(ImageFilter.MaxFilter(2 * int(thicken) + 1))
-        piece = Image.new('L', (SIZE, SIZE), 0)
+        piece = Image.new('L', (SIZE * F, SIZE * F), 0)
         # `centre`: the registration point (the Spartan Laser, test 6 tried an even y against
         # the blur of pixel-doubled art -- it changed nothing: MCC's sampling phase is not tied
         # to it)
-        piece.paste(alpha, (round(centre[0] - rx * SCALE * k * sx), round(centre[1] - ry * SCALE * k * sy)))
+        piece.paste(alpha, (round(centre[0] * F - rx * SCALE * k * sx * F), round(centre[1] * F - ry * SCALE * k * sy * F)))
         if min_width:
             # per LAYER, keeping its own peak brightness (Halo 3's inner double circle is a
             # half-transparent grey, the outer ring full white)
@@ -198,7 +209,7 @@ def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0,
             # dotted in the simulation)
             bands = ([piece.point(lambda v: v if v >= split else 0),
                       piece.point(lambda v: v if v < split else 0)] if split else [piece])
-            grown = Image.new('L', (SIZE, SIZE), 0)
+            grown = Image.new('L', (SIZE * F, SIZE * F), 0)
             for band in bands:
                 top = band.getextrema()[1]
                 if not top:
@@ -218,12 +229,13 @@ def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0,
     if hard:
         canvas = hard_strokes(canvas, min_width=hard)
     simulate(canvas, os.path.join(HERE, 'out', 'reticle_%s_sim.png' % name.replace(' ', '_')))
-    white = Image.new('L', (SIZE, SIZE), 255)
+    white = Image.new('L', (SIZE * F, SIZE * F), 255)
     img = Image.merge('RGBA', (white, white, white, canvas))
     canvas.save(os.path.join(HERE, 'out', 'reticle_%s.png' % name.replace(' ', '_')))
     if dry:              # `dry`: only the art + its simulation (simulate FIRST: the Gravity Hammer)
         return None
-    return h1_hud_sheet.put_twins('hud_reticles', name, img, TEMPLATE_SEQ, (SIZE, SIZE), centre, mips=mips,
+    return h1_hud_sheet.put_twins('hud_reticles', name, img, TEMPLATE_SEQ, (SIZE * F, SIZE * F),
+                                  (centre[0] * F, centre[1] * F), mips=mips,
                                   index=index)
 
 

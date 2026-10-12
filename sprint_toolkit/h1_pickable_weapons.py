@@ -209,7 +209,8 @@ def make_hud(w, key, write):
                                   hard=h.get('reticle_hard', 0),
                                   min_width=h.get('reticle_min_width', 0),
                                   split=h.get('reticle_split', 0),
-                                  xform=h.get('reticle_xform'))
+                                  xform=h.get('reticle_xform'),
+                                  supersample=h.get('reticle_supersample', 1))
                if write else -1)
         for c in d.crosshairs.STEPTREE:
             if c.crosshair_type.enum_name == 'aim':

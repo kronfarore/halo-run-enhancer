@@ -68,21 +68,30 @@ def sheet(name):
     return decode(REL % name)
 
 
-def sprite(name, index):
+def sprite(name, index, native=False):
     """(RGBA crop, registration point in crop pixels). A Reach sprite comes at HALO 3's
     density: Reach's 4K chud art ('double / triple sized': 2-3 px a chud unit, Halo 3's 1)
-    is scaled down by that, so every Halo 3-calibrated user (h1_add_reticle's SCALE) holds."""
+    is scaled down by that, so every Halo 3-calibrated user (h1_add_reticle's SCALE) holds.
+    `native`: the crop at the sheet's OWN density, unscaled (the Grenade Launcher's crosshair,
+    boot 2: the 4K art's fine lines kept; the caller divides by `density`)."""
     img, boxes = sheet(name)
     l, r, t, b, rx, ry = boxes[index]
     w, h = img.size
     crop = img.crop((round(l * w), round(t * h), round(r * w), round(b * h)))
-    if h1_fp_retarget.reach_tags.is_reach(name):
+    if h1_fp_retarget.reach_tags.is_reach(name) and not native:
         k = h1_fp_retarget.reach_tags.px_per_unit(name + '.bitmap')
         if k != 1.0:
             crop = crop.resize((max(1, round(crop.width / k)), max(1, round(crop.height / k))),
                                Image.LANCZOS)
             return crop, (rx * w / k, ry * h / k)
     return crop, (rx * w, ry * h)
+
+
+def density(name):
+    """Pixels a Halo 3 sprite pixel of a sheet: Reach's 4K art 2-3 (px_per_unit), else 1."""
+    if h1_fp_retarget.reach_tags.is_reach(name):
+        return h1_fp_retarget.reach_tags.px_per_unit(name + '.bitmap')
+    return 1.0
 
 
 if __name__ == '__main__':

@@ -386,7 +386,13 @@ PORT.update({
                                  'fields': {'damage.aoe_core_radius': 0.4 * 0.6 / 0.54,
                                             'damage.instantaneous_acceleration': 4 * 2 / 2.25},
                                  'swaps': {B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'expl']): SND + 'gl_explode'}},
-                   'velocity': (12.5, 7.5), 'range': 100.0,
+                   # BOOT 2 PROBE (h1_projectile_probe): in flight the speed falls with DISTANCE
+                   # (initial -> final over the 100 wu range: 12.26 at 4.95 wu); the first bounce
+                   # cut it to ~7.4, then it SLID at a constant 7.4 wu/s for 12 s and burst at the
+                   # range (99.5 wu) -- the 0.5 s 'on first bounce' fuse never ran (variant B, no
+                   # range: 27-38 s). BOOT 3 EXPERIMENT: final velocity 0 (is the final a speed
+                   # FLOOR?) -- the secondary test variant: a fuse from launch ('immediately' 1.5 s)
+                   'velocity': (12.5, 0.0), 'range': 100.0,
                    'model': GL + 'grenade' + B + 'grenade',
                    'proj_fields': {'proj_attrs.physics.air_gravity_scale': 0.7,
                                    'proj_attrs.physics.water_gravity_scale': 0.75,
@@ -434,14 +440,14 @@ PORT.update({
             # should be smaller, and add some effect to resemble the EMP (electric would be perfect)'.
             # Visual x0.45 (Reach's tethered blast 1 wu against 2.25) + Halo 1's own electric burst:
             # the plasma grenade's `detonation start` (60 `plasma electric bolts` 0.35-0.45 + 60
-            # blue `flash h shield impact`), at the frag effect's `normal` (location 1)
+            # blue `flash h shield impact`), at location 0 (boot 2: none showed at `normal`; the frag draws all at 0)
             'explosion': {'effect': (FG + 'effects' + B + 'explosion', GL + 'effects' + B + 'release explosion'),
                           'part': FG + 'explosion',
                           'scale': 0.45, 'out_dir': GL + 'effects' + B + 'release' + B,
                           'add_particles': [{'from': r'weapons\plasma grenade\effects\detonation start',
-                                             'match': 'plasma electric bolts', 'location': 1},
+                                             'match': 'plasma electric bolts', 'location': 0},
                                             {'from': r'weapons\plasma grenade\effects\detonation start',
-                                             'match': 'flash h shield impact', 'location': 1}],
+                                             'match': 'flash h shield impact', 'location': 0}],
                           'damage': (FG + 'explosion', GL + 'release explosion'),
                           'lower': 120.0, 'upper': (180.0, 180.0), 'radius': (0.001, 1.0),
                           # the same ratio on Reach's tethered blast (core 0.2, acceleration 3)
@@ -572,8 +578,16 @@ PORT.update({
                 # art was drawn small in the sheet and magnified x1.6 (blur, unreadable labels). Drawn
                 # x1.35 in the sheet (the frame ~246 of 256 px) and magnified 1.6 / 1.35 = x1.185: the
                 # same on-screen size; the simulation resolves the labels, pitch and drop ticks
-                'reticle_scale': 1.35, 'reticle_overlay': 1.6 / 1.35,
-                'reticle_min_width': 3,
+                # BOOT 2 (user): 'better, but still not good enough -- it's just an image, can we
+                # copy it like the Needle Rifle's glyphs?' -- MCC draws crosshairs only from the
+                # stock sheets (~0.5 screen px a sheet px), so the cell is the limit: SUPERSAMPLED x2
+                # (a 512 px cell, Reach's sprites at their NATIVE 4K density -- not shrunk to Halo
+                # 3's and magnified back), drawn at 1.6 / 1.35 / 2 = x0.59: the same on-screen size
+                # from finer pixels; strokes grown to 2 px of the 512 cell (~0.9 screen px). The
+                # 1080p simulation against the user's Reach screenshot: the closest of 3
+                'reticle_scale': 1.35, 'reticle_overlay': 1.6 / 1.35 / 2,
+                'reticle_supersample': 2,
+                'reticle_min_width': 2,
                 'ammo_meter': {'sizes': (1,), 'base': GL + 'bitmaps' + B + 'grenade_launcher_ammo'},
                 'flash_base': 2},
         'palette_levels': LEVELS,
