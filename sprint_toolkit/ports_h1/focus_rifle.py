@@ -24,6 +24,10 @@ SND = 'sound\\weapons\\focus_rifle_port\\'
 PR = 'weapons\\plasma rifle\\'
 RS = 'data\\sound\\weapons\\'                      # Reach's bank folders
 LEVELS = ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40']
+# the heat colour of the display tiles (Reach's meter: OFF (0, 69, 200) blue, ON (255, 134, 22)
+# orange; the user's idle screenshot reads a lighter blue on the gun)
+HEAT_RAMP = [(0.0, (0.15, 0.5, 1.0)), (0.1, (0.15, 0.5, 1.0)),
+             (0.9, (1.0, 134 / 255.0, 22 / 255.0)), (1.0, (1.0, 134 / 255.0, 22 / 255.0))]
 
 PORT = reserved(
     order=25, wave='B7', name='Focus Rifle', source='Halo Reach',
@@ -119,12 +123,19 @@ PORT.update({
         # Needle Rifle's / repeater's STATIC lit shapes (additive chicago, function-free -- every
         # Halo 1 weapon out reads 0 until the first shot), Reach's colours; to judge against the
         # user's Reach screenshot (a heat-driven display = the repeater's ramp, if Reach's is)
+        # BOOT 1 (user): 'glow tiles looking pretty good -- they are a heat tracking meter as well'
+        # (the user's Reach screenshots: idle blue, overheated orange; the display IS Reach's meter
+        # by heat, OFF blue / ON orange) -> the DISPLAY = the repeater's backup recipe ('remember this
+        # setup'): the lit shape white x a colour RAMP slid by the heat out (C out = function 2 = 'one'
+        # x B in heat, the pickable rewire), blue cold -> orange hot. Not reproduced: Reach fills the
+        # meter by PLACE (tile by tile); here every tile turns together, and the colour follows the heat
+        # back down through the vent
         'meters': {
             'focus_rifle_display': {
                 'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
                 'from': PR + r'fp\shaders\gauge', 'shape': 'r', 'gradient': 0.0,
-                'static': r'weapons\needler\shaders\needler luminous',
-                'color': (1.0, 134 / 255.0, 22 / 255.0)},
+                'static': r'weapons\needler\shaders\needler luminous', 'color': (1.0, 1.0, 1.0),
+                'ramp': HEAT_RAMP, 'ramp_source': 'C_out'},
             'focus_rifle_indicator': {
                 'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
                 'from': PR + r'fp\shaders\gauge', 'shape': 'r', 'gradient': 0.0,
@@ -135,6 +146,15 @@ PORT.update({
                 'from': PR + r'fp\shaders\gauge', 'gradient': 0.0,
                 'static': r'weapons\needler\shaders\needler luminous',
                 'color': (67 / 255.0, 69 / 255.0, 216 / 255.0)}},
+        # THE BEAM'S LOOK (boot 2): Reach's FIRST-PERSON beam (fx\projectile_1p.beam_system) = a
+        # `center` aligned ribbon on energy_trail + a 12-sided `pulse` tube, BOTH through the palette
+        # `sentinel_beam` (missing from HREK; Halo 3's fx\contrails\_gradients\sentinel_beam: black ->
+        # gold -> white -- the user's firing screenshot: a white-gold core); the violet is the 3p beam's
+        # plasma layers and the muzzle particles. Baked (the Spartan Laser's route): colour =
+        # palette[profile], premultiplied for the additive contrail
+        'baked_textures': {'fo_beam': {'profile': R + r'fx\bitmaps\contrails\energy_trail.bitmap',
+                                       'palette': r'fx\contrails\_gradients\sentinel_beam.bitmap',
+                                       'premultiply': True}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Reach's OWN fp_focus_rifle retargeted (the DMR's
@@ -248,10 +268,16 @@ PORT.update({
                    'first-person overheating': SND + 'fo_overheat',
                    'first-person overheated': SND + 'fo_overheat_loop',
                    'first-person o-h-exit': SND + 'fo_oh_exit'},
-        'rewire': {'inputs': ('primary_firing', 'illumination', 'primary_rate_of_fire', 'age'),
+        # BOOT 2: input B = HEAT (was illumination: it only scaled the muzzle-light attachment, whose
+        # light the firing effect already carries per shot -- the Beam Rifle's test 3: an attachment
+        # light stays lit) -> function 2 = 'one' x B in = the heat out C, the display tiles' ramp
+        'rewire': {'inputs': ('primary_firing', 'heat', 'primary_rate_of_fire', 'age'),
                    'functions': {0: (2, 'C_in', 'fire loop', {'turn_off_with': 1}),
-                                 1: (2, 'A_in', 'primary firing', {'turn_off_with': 3})},
+                                 1: (2, 'A_in', 'primary firing', {'turn_off_with': 3}),
+                                 2: (2, 'B_in', 'heat')},
                    'drop_attachments_on': ('B_out',)},
+        # the muzzle-light attachment (index 0 after the rewire; it would now follow the heat)
+        'drop_attachments': [0],
         'fire_loop': {'tag': SND + 'fo_fire', 'like': r'sound\sfx\weapons\flamethrower\fire_ft',
                       'start': SND + 'fo_fire_in', 'loop': SND + 'fo_fire_loop',
                       'end': SND + 'fo_fire_out', 'marker': 'primary trigger',
@@ -322,17 +348,27 @@ PORT.update({
                 # 4 copies), meter_border (4), meter_heat / meter_batt (meter fills), the low-battery
                 # and overheat flashes. The Beam Rifle's decisions (user, A4): the frame baked, the
                 # fills (garbage as a mask) and the flashes (hidden until a warning) dropped -- the
-                # Halo 1 HUD's own heat / battery meters show while zoomed. SIZE: a placeholder (the
-                # Beam Rifle's 828 / x0.8) until the user's Reach screenshot (`--fit W,H`)
+                # Halo 1 HUD's own heat / battery meters show while zoomed. SIZE from the user's Reach
+                # screenshot (1080p, zoom 1): the lens 1293 x 707 px (x 313-1606, y 186-893 on the
+                # centre row / column) -> `h1_h3_scope.py reach:ui\chud\focus_rifle --port focus_rifle
+                # --fit 1293,707` = span 931.1, aspect 1.2506 (re-bake: 1293 x 713)
                 'scope': {'chud': R + r'ui\chud\focus_rifle', 'out': FO + 'bitmaps\\scope_mask',
-                          'size': 1024, 'span': 828.0, 'aspect': (4 / 3.0) / 0.8, 'alpha': 'outside',
+                          'size': 1024, 'span': 931.1, 'aspect': 1.2506, 'alpha': 'outside',
                           'per_widget': {'lowbatt_flash_scope': {'drop': True},
                                          'meter_heat': {'drop': True},
                                          'meter_batt': {'drop': True},
                                          'meter_lowbatt_flash_left': {'drop': True},
                                          'meter_overheat_flash_right': {'drop': True}}},
+                # THE CROSSHAIR (the supersample recipe, memory h1-reticle-supersample): Reach's
+                # hud_reticles #22 (three arcs; matches the user's screenshot), ~55 px wide at 1080p
+                # (Halo 3 density 93 px); x2 supersampled. The cell art = 93 x h1_add_reticle.SCALE
+                # (1.268, its Halo 3 -> Halo 1 calibration) x scale x 2: scale 2.0 -> 472 of the 512
+                # cell (~20 px margin; 2.4 overflowed it); on-screen = sheet px x 0.75 x overlay ->
+                # overlay 55 / (472 x 0.75)
                 'reticle': (R + r'ui\chud\bitmaps\hud_reticles', 22, 'focus rifle'),
-                'reticle_min_width': 3},
+                'reticle_scale': 2.0, 'reticle_overlay': 55 / (93 * 123.0 / 97.0 * 2.0 * 2 * 0.75),
+                'reticle_supersample': 2,
+                'reticle_min_width': 2},
         'aiming': {'autoaim_angle': 2.0, 'autoaim_range': 10.0,
                    'magnetism_angle': 4.0, 'magnetism_range': 10.0,
                    'zoom_levels': 2, 'zoom_ranges': (3.5, 9.5),
@@ -375,7 +411,11 @@ PORT.update({
                  # shield) has NO response effect on this projectile (default 'disappear', effect
                  # empty; the potential reflect's empty too) -- nothing to thin at 15/s
                  'impact_tint': {'match': (), 'rgb': None, 'out': FO + 'effects\\impact\\',
-                                 'sounds': {'sound\\sfx\\vehicles\\sent_laser_impact': SND + 'fo_impact'}}},
+                                 'sounds': {'sound\\sfx\\vehicles\\sent_laser_impact': SND + 'fo_impact'}},
+                 # BOOT 2: an OWN copy of the Sentinel contrail (white x texture, additive, 0.095 wu,
+                 # its point states kept) on the baked Reach beam (model `baked_textures` fo_beam)
+                 'contrail': {'from': r'characters\sentinel\beam', 'out': FO + 'beam',
+                              'bitmap': FO + 'bitmaps\\fo_beam', 'sequence': (0, 0)}},
         # Reach: spew 30/s (Halo 1: 15/s; the hum needs differing bounds, 29..30 both fire 15/s),
         # no rate ramp (4b: Reach's 0.3 is the ERROR deceleration -- error 0 here); the rate
         # deceleration 0.1 = the Sentinel Beam's (the hum's tail follows it); heat 0.0451 a round = the 39th round overheats at 2.53 s with
@@ -386,7 +426,9 @@ PORT.update({
                     'acceleration_time': 0.05, 'deceleration_time': 0.1,
                     'age_generated_per_round': 1 / 310.0, 'error_angle': (0.0, 0.0),
                     'rounds_between_tracers': 0,
-                    'first_person_offset': (0.4496, -0.0643, -0.0387),
+                    # BOOT 1 (user): 'starts roughly at the muzzle -- try moving it back a unit' (1 unit
+                    # = 0.01 wu)
+                    'first_person_offset': (0.4396, -0.0643, -0.0387),
                     'illumination_recovery_time': 0.5},
         # Reach: overheated at 1, back at 0.1; ONE loss = the mean of 0.35 / 0.23 (user, step 4a)
         'heat': {'recovery_threshold': 0.1, 'overheated_threshold': 1.0, 'loss_per_second': 0.29},
