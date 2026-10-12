@@ -661,10 +661,32 @@ def own_explosion(pd, X, write, slot='detonation'):
                     qd.fade_out_time = Q['fade_out']
                 if 'radius_animation' in Q:
                     qd.rendering.radius_animation[0], qd.rendering.radius_animation[1] = Q['radius_animation']
+                for name, on in Q.get('flags', {}).items():   # particle flags by name
+                    setattr(qd.flags, name, on)
+                if 'bitmap' in Q:
+                    # its OWN sprite from a source game's MASK (the Grenade Launcher's EMP pulse:
+                    # Reach's emp_mask, white in RGB, the mask in alpha; the entry's tint colours
+                    # it): `mask` (a reach:/H3 bitmap path), `size` px, `out` the bitmap tag
+                    import h1_hud_sheet
+                    import h3_hud_art
+                    from PIL import Image
+                    M = Q['bitmap']
+                    img, _ = h3_hud_art.decode(M['mask'])
+                    a = img.getchannel('A').resize((M['size'], M['size']), Image.LANCZOS)
+                    white = Image.new('L', a.size, 255)
+                    if write:
+                        h1_hud_sheet.sprite_bitmap(qd.bitmap.filepath, Image.merge('RGBA', (white, white, white, a)), M['out'])
+                    qd.bitmap.filepath = M['out']
                 save(qt, path(Q['out'], '.particle'), write)
                 x.particle_type.filepath = Q['out']
             for bd in ((x.tint_lower_bound, x.tint_upper_bound) if 'tint' in A else ()):
                 bd.a, bd.r, bd.g, bd.b = A['tint']
+            if 'tint_bounds' in A:           # (lower ARGB, upper ARGB): a random tint per particle
+                x.flags.tint_as_hsv = False
+                for bd, c in zip((x.tint_lower_bound, x.tint_upper_bound), A['tint_bounds']):
+                    bd.a, bd.r, bd.g, bd.b = c
+            if 'spin' in A:                  # angular velocity bounds, deg/s
+                x.angular_velocity[0], x.angular_velocity[1] = (math.radians(v) for v in A['spin'])
     # `add_damage`: further damage parts beside the explosion's (the Grenade Launcher's release:
     # Reach's tethered blast + its EMP) -- each an own copy of `from` (a damage effect) with
     # `lower`, `upper`, `radius`, `mods` (every Halo 1 material when `zero` is set: the rest 0)

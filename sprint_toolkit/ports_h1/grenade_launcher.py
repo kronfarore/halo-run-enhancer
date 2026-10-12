@@ -470,20 +470,37 @@ PORT.update({
             'explosion': {'effect': (FG + 'effects' + B + 'explosion', GL + 'effects' + B + 'release explosion'),
                           'part': FG + 'explosion',
                           'scale': 0.45, 'out_dir': GL + 'effects' + B + 'release' + B,
-                          # BOOT 6 (user): 'the blast is smaller, still no sparks'. Tried: location 1
-                          # 'normal' + the plasma grenade's buildup over a 0 s event (none made),
-                          # location 0 + 'start' (none seen). BOOT 7, three by colour: 'a white-blue
-                          # explosion besides the normal one' = the white bolts + the blue flash at
-                          # 'normal' (the surface; the plasma grenade's own location) with 'start';
-                          # the red ones at 'gravity' never showed -> dropped
+                          # BOOT 6 (user): 'the blast is smaller, still no sparks'. Boot 7 found the
+                          # placement by colour: particles at 'normal' (location 1, the surface)
+                          # created all at once ('start') show; 'gravity' and location 0 never did.
+                          # USER after boot 7: 'the EMP explosion didn't look good yet' (the borrowed
+                          # plasma-grenade bolts + flash). REACH'S EMP (fx\airborne_super_detonation
+                          # `emp` event, 0.15 s): blast_radius is 'disabled for debugging', so only
+                          # EMP_PULSE draws -- a globe emitter (bounding ~1.48 wu) of fx\particles\
+                          # plasma\emp_pulse: Reach's emp_mask (a RING of electric wisps, alpha)
+                          # coloured over its life by the emp gradient (pale cyan 162 / 226 / 252 at
+                          # birth -> 87 / 195 / 240 -> 33 / 150 / 199 -> deep blue 13 / 85 / 116),
+                          # random rotation + mirroring, scrolling plasma clouds. HALO 1: an own
+                          # particle (the camera-facing shield flash copied) with its OWN sprite =
+                          # Reach's emp_mask (white, the mask in alpha), 3 a burst, 1.2-1.5 wu growing
+                          # x0.6 -> x1 over 0.35-0.45 s while it fades, random mirroring + spin, a
+                          # random tint between Reach's birth and mid colours (Halo 1 has no colour
+                          # over life). Not reproduced: the scrolling clouds, the colour over life
                           'add_particles': [{'from': r'weapons\plasma grenade\effects\detonation start',
-                                             'match': 'plasma electric bolts', 'location': 1,
-                                             'env': 'any_environment', 'radius': (0.6, 0.8),
-                                             'distribution': 'start'},
-                                            {'from': r'weapons\plasma grenade\effects\detonation start',
                                              'match': 'flash h shield impact', 'location': 1,
-                                             'env': 'any_environment', 'radius': (0.25, 0.5),
-                                             'distribution': 'start'}],
+                                             'env': 'any_environment', 'distribution': 'start',
+                                             'count': 3, 'radius': (1.2, 1.5), 'spin': (-90.0, 90.0),
+                                             'tint_bounds': ((1.0, 162 / 255.0, 226 / 255.0, 252 / 255.0),
+                                                             (1.0, 87 / 255.0, 195 / 255.0, 240 / 255.0)),
+                                             'particle': {'out': GL + 'effects' + B + 'emp pulse',
+                                                          'lifespan': (0.35, 0.45), 'fade_out': 0.3,
+                                                          'radius_animation': (0.6, 1.0),
+                                                          'flags': {'random_horizontal_mirroring': True,
+                                                                    'random_vertical_mirroring': True,
+                                                                    'animate_once_per_frame': False},
+                                                          'bitmap': {'mask': R + B.join(['fx', 'bitmaps', 'plasma', 'emp_mask.bitmap']),
+                                                                     'size': 128,
+                                                                     'out': GL + 'effects' + B + 'bitmaps' + B + 'emp pulse'}}}],
                           'damage': (FG + 'explosion', GL + 'release explosion'),
                           'lower': 120.0, 'upper': (180.0, 180.0), 'radius': (0.001, 1.0),
                           # the same ratio on Reach's tethered blast (core 0.2, acceleration 3)

@@ -27,6 +27,7 @@ from reclaimer.hek.defs.bitm import bitm_def  # noqa: E402
 COMBINED = os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'HCEEK', 'tags',
                         'ui', 'hud', 'bitmaps', 'combined')
 BACKUP = '.before_pickable'
+TAGS = os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'HCEEK', 'tags')
 
 
 def sheet_path(name):
@@ -133,6 +134,42 @@ def put(sheet, name, img, template_seq, sheet_size, reg, index=None, mips=False)
     t.filepath = p
     t.serialize(temp=False, backup=False)
     return si
+
+
+
+def sprite_bitmap(template, img, out):
+    """A standalone PARTICLE bitmap: a copy of `template` (a stock particle's sprite bitmap tag)
+    holding ONE raw a8r8g8b8 texture (`img`, RGBA) and one full-frame sprite (the Grenade
+    Launcher's EMP pulse, Reach's emp_mask: stock particle sheets are DXT; this one is not
+    compressed). The texture element's fields come from the a8r8g8b8 scope template
+    (h1_h3_scope.TEMPLATE); `out` = the tag path written (no extension)."""
+    import h1_h3_scope
+    t = bitm_def.build(filepath=os.path.join(TAGS, template + '.bitmap'))
+    d = t.data.tagdata
+    raw_t = bitm_def.build(filepath=os.path.join(TAGS, h1_h3_scope.TEMPLATE + '.bitmap')).data.tagdata
+    bms = d.bitmaps.STEPTREE
+    bms[:] = []
+    bms.append(copy.deepcopy(raw_t.bitmaps.STEPTREE[0]))
+    b = bms[0]
+    b.width, b.height = img.width, img.height
+    b.registration_point_x, b.registration_point_y = img.width // 2, img.height // 2
+    b.mipmaps = 0
+    b.pixels_offset = 0
+    seq = d.sequences.STEPTREE[0]
+    while len(seq.sprites.STEPTREE) > 1:
+        seq.sprites.STEPTREE.pop()
+    sp = seq.sprites.STEPTREE[0]
+    sp.bitmap_index = 0
+    sp.left_side, sp.right_side, sp.top_side, sp.bottom_side = 0.0, 1.0, 0.0, 1.0
+    sp.registration_point_x = sp.registration_point_y = 0.5
+    while len(d.sequences.STEPTREE) > 1:
+        d.sequences.STEPTREE.pop()
+    seq.first_bitmap_index, seq.bitmap_count = 0, 1
+    d.processed_pixel_data.data = bytearray(img.convert('RGBA').tobytes('raw', 'BGRA'))
+    t.filepath = os.path.join(TAGS, out + '.bitmap')
+    os.makedirs(os.path.dirname(t.filepath), exist_ok=True)
+    t.serialize(temp=False, backup=False)
+    return out
 
 
 def put_frames(sheet, name, frames, template_seq, index):
