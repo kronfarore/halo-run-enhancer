@@ -109,6 +109,32 @@ PORT.update({
         'drop_materials': ('focus_rifle_scope_alpha',),
         'template': PR + r'fp\shaders\gun',
         'glow': {},
+        # GLOW (fp_material_view --illum --texels 24, threshold 16, BEFORE choosing): the display
+        # (the readout in the scope housing: 99 of 248 triangles on plasma_launcher_holo's lit
+        # texels), the indicator (the scope window + two spots: 36 of 97), the plasma strip down the
+        # left side (208 of 236 on phantom_illum, its alpha mask); display2 has no triangles. Reach's
+        # colours (reach_function_data): display meter ON (255, 134, 22) orange / OFF (0, 69, 200)
+        # blue, intensity 0.5..1; indicator self_illum (17, 134, 247) blue; the plasma halogram
+        # through soft_plasma_blue (peak 67, 69, 216), color_medium (27, 53, 90). Boot 1: the
+        # Needle Rifle's / repeater's STATIC lit shapes (additive chicago, function-free -- every
+        # Halo 1 weapon out reads 0 until the first shot), Reach's colours; to judge against the
+        # user's Reach screenshot (a heat-driven display = the repeater's ramp, if Reach's is)
+        'meters': {
+            'focus_rifle_display': {
+                'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
+                'from': PR + r'fp\shaders\gauge', 'shape': 'r', 'gradient': 0.0,
+                'static': r'weapons\needler\shaders\needler luminous',
+                'color': (1.0, 134 / 255.0, 22 / 255.0)},
+            'focus_rifle_indicator': {
+                'map': R + r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap',
+                'from': PR + r'fp\shaders\gauge', 'shape': 'r', 'gradient': 0.0,
+                'static': r'weapons\needler\shaders\needler luminous',
+                'color': (0.5 * 17 / 255.0, 0.5 * 134 / 255.0, 0.5 * 247 / 255.0)},
+            'focus_rifle_illum_plasma': {
+                'map': R + r'objects\vehicles\covenant\phantom\bitmaps\phantom_illum.bitmap',
+                'from': PR + r'fp\shaders\gauge', 'gradient': 0.0,
+                'static': r'weapons\needler\shaders\needler luminous',
+                'color': (67 / 255.0, 69 / 255.0, 216 / 255.0)}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Reach's OWN fp_focus_rifle retargeted (the DMR's
