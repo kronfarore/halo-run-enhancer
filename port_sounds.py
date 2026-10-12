@@ -500,4 +500,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sprint_toolkit'))
+    import kit_lock   # the shared-kit lock: two port sessions in parallel (H1_PORT_PLAN.md)
+    with kit_lock.script('port_sounds'):
+        main()

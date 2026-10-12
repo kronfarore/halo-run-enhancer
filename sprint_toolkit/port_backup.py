@@ -410,6 +410,13 @@ SCRIPTS += tuple(s for s in ('reach_tags.py', 'port_sha_snapshot.py', 'h3_weapon
                              'h1_weapon_carriers.py', 'h1_port_template_diff.py',
                              'h1_effect_particles.py', 'h1_antr_diff.py')
                  if s not in SCRIPTS and os.path.exists(os.path.join(HERE, s)))
+# two ports in parallel (2026-10-12): the shared-kit lock every shared-step script imports,
+# the whole-proof driver, the residency + size checks of the batch rebuilds
+SCRIPTS += tuple(s for s in ('kit_lock.py', 'port_tool_proof.py', 'h1_port_residency.py',
+                             'h1_size_test_map.py')
+                 if s not in SCRIPTS and os.path.exists(os.path.join(HERE, s)))
+FILES += [(os.path.join(TOOL, 'port_sounds.py'), 'tool/port_sounds.py')] if not any(
+    f[0].endswith('port_sounds.py') for f in FILES) else []
 
 PROFILES = {
     'h1': {'trees': TREES, 'shared': SHARED, 'files': FILES, 'maps': MAPS,

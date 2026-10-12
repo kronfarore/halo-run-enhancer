@@ -495,6 +495,11 @@ H1_PORT_PLAN.md "Phase 0: DONE" is the full record; the short form:
   fit even at SAW size. d40's weapon placements reach 115 of 128. NO 384 MiB file cap: a
   458.8 MiB a10 with all tag data past 384 MiB loads and plays (h1_size_test_map.py, user's
   boot 2026-10-10).
+* **Two ports in parallel (2026-10-12):** `kit_lock.py` -- one lock taken inside every script
+  that touches what ports share (shared tags, kit builds + staging, proofs, catalog / firing
+  profiles / the halo1 bank); proofs snapshot, regenerate and restore DONE ports only and run old
+  tools from a temporary toolkit copy; `h1_port_test_map` records each staged level's owner
+  port. H1_PORT_PLAN.md "Running two ports in parallel" has the rules and the pairs.
 * OBSERVATION (Sentinel Beam only): `tool model` on today's JMS gives the beam's FP model
   LOD node counts 6, the shipped and tested one has 0 -- the tested copy was kept.
 

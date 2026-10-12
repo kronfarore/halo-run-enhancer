@@ -42,14 +42,50 @@ OUT = os.path.join(HERE, 'out')
 OUTSIDE = {'weapon_ports_catalog.json', 'ai_firing_profiles.json'}
 
 
+def in_progress():
+    """Paths of the ports NOT 'done' (lower case): their tag / data folders and their bank files.
+    Two port sessions may run in parallel (H1_PORT_PLAN.md): a proof never snapshots, regenerates
+    or RESTORES the other session's port -- its files change under the proof, by design."""
+    sys.path.insert(0, HERE)
+    import ports_h1
+    dirs, bank = [], set()
+    for key, p in ports_h1.all_ports():
+        if p.get('status') == 'done':
+            continue
+        r = p.get('reservations') or {}
+        ds = {r.get('weapon_dir'), r.get('sound_dir'), (p.get('model') or {}).get('dir'),
+              (p.get('retarget') or {}).get('h1_dir'), (p.get('sounds') or {}).get('dir')}
+        w = (p.get('pickable') or {}).get('weapon')
+        if w:
+            ds.add(os.path.dirname(w))
+        for d in filter(None, ds):
+            for root in ('tags', 'data'):
+                dirs.append(os.path.join(HCEEK, root, d).lower() + os.sep)
+        man = os.path.join(TOOL, 'port_sounds', 'halo1', 'port_%s.json' % key)
+        bank.add(man.lower())
+        try:
+            for snd in json.load(open(man, encoding='utf-8')).get('sounds', []):
+                for f in snd.get('perms', []):
+                    bank.add(os.path.join(TOOL, 'port_sounds', 'halo1', f).lower())
+        except (OSError, ValueError):
+            pass
+    return dirs, bank
+
+
 def files():
+    skip_dirs, skip_files = in_progress()
     for r in ROOTS:
         if os.path.isfile(r):
             yield r
             continue
         for d, _ds, fs in os.walk(r):
+            dl = d.lower() + os.sep
+            if any(dl.startswith(s) for s in skip_dirs):
+                continue
             for f in fs:
-                yield os.path.join(d, f)
+                p = os.path.join(d, f)
+                if p.lower() not in skip_files:
+                    yield p
 
 
 def sha(path):
@@ -161,6 +197,13 @@ def regen(keys, steps=STEPS):
     allk = sorted(set().union(*secs.values()))
     src = {k: getattr(__import__('ports_h1.' + k, fromlist=['PORT']), 'PORT').get('source') for k in allk}
     keys = keys or [k for k in allk if src[k] != 'Halo Reach']
+    # never another session's port in progress (H1_PORT_PLAN.md, parallel ports)
+    done = {k for k, p in ports_h1.all_ports() if p.get('status') == 'done'}
+    skipped = [k for k in keys if k not in done]
+    if skipped:
+        print('regen: skipping port(s) not done (another session may be on them): %s'
+              % ', '.join(skipped))
+    keys = [k for k in keys if k in done]
     py = sys.executable
     for k in keys:
         if k in secs['model'] and 'model' in steps:
@@ -199,4 +242,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    import kit_lock   # the shared-kit lock: two port sessions in parallel (H1_PORT_PLAN.md)
+    with kit_lock.script('port_sha_snapshot'):
+        main()

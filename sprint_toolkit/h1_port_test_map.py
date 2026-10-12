@@ -324,10 +324,21 @@ def load_record():
         return {}
 
 
-def stage(level, test_map, label):
+def owned_elsewhere(rec, level, owner):
+    """The port (config key) whose test copy is staged on `level`, when it is not `owner`.
+    Two port sessions in parallel each test on their OWN level (H1_PORT_PLAN.md)."""
+    o = rec.get(level, {}).get('owner')
+    return o if o and o != owner else None
+
+
+def stage(level, test_map, label, owner=None, force=False):
     live = os.path.join(LIVE, level + '.map')
     os.makedirs(BACKUPS, exist_ok=True)
     rec = load_record()
+    other = owned_elsewhere(rec, level, owner)
+    if other and not force:
+        raise SystemExit('%s is staged by the %s session (%s) -- test on another level '
+                         '(--level), or --force' % (level, other, rec[level].get('what')))
     bak = os.path.join(BACKUPS, level + '.map')
     staged = rec.get(level, {}).get('staged_sha1')
     if os.path.exists(live) and sha1(live) != staged:
@@ -340,15 +351,18 @@ def stage(level, test_map, label):
     shutil.copy2(test_map, live)
     rec[level] = {'staged_sha1': sha1(live), 'what': label,
                   'when': datetime.datetime.now().isoformat(timespec='seconds'),
-                  'backup': bak}
+                  'backup': bak, 'owner': owner}
     json.dump(rec, open(RECORD, 'w', encoding='utf-8'), indent=1)
     print('STAGED %s -> %s  (restore: python h1_port_test_map.py --restore %s)' % (label, live, level))
 
 
-def restore(level):
+def restore(level, owner=None, force=False):
     bak = os.path.join(BACKUPS, level + '.map')
     if not os.path.exists(bak):
         raise SystemExit('no backup %s' % bak)
+    other = owned_elsewhere(load_record(), level, owner)
+    if other and not force:
+        raise SystemExit('%s is staged by the %s session -- its restore, or --force' % (level, other))
     shutil.copy2(bak, os.path.join(LIVE, level + '.map'))
     rec = load_record()
     rec.pop(level, None)
@@ -368,6 +382,8 @@ def main():
     ap.add_argument('--keep-kit-map', action='store_true',
                     help='skip the rebuild of the normal level afterwards')
     ap.add_argument('--restore', metavar='LEVEL')
+    ap.add_argument('--force', action='store_true',
+                    help='stage / restore a level another port session has staged')
     ap.add_argument('--secondary', metavar='WEAPON_TAG',
                     help='every spawn profile secondary too (a test variant), same rounds')
     ap.add_argument('--secondary-rounds', metavar='L,T',
@@ -399,7 +415,7 @@ def main():
         a.balanced = a.god = True
         print('--armed: also --balanced --god (the Armed test rule)')
     if a.restore:
-        return restore(a.restore)
+        return restore(a.restore, owner=a.weapon, force=a.force)
     if not a.weapon:
         ap.error('a weapon config key, or --restore LEVEL')
     p = ports_h1.load(a.weapon)
@@ -448,8 +464,11 @@ def main():
     print('wrote %s' % out)
     if a.stage:
         stage(level, out, '%s on %s%s' % (p['name'], level,
-                                          ' enemies %s' % actors if actors else ''))
+                                          ' enemies %s' % actors if actors else ''),
+              owner=a.weapon, force=a.force)
 
 
 if __name__ == '__main__':
-    main()
+    import kit_lock   # the shared-kit lock: two port sessions in parallel (H1_PORT_PLAN.md)
+    with kit_lock.script('h1_port_test_map'):
+        main()

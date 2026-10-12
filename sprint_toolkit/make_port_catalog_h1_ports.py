@@ -152,8 +152,10 @@ def main(only=None, dry=False):
 
 
 if __name__ == '__main__':
-    ap = argparse.ArgumentParser()
-    ap.add_argument('weapons', nargs='*', help='config keys (default: every configured one)')
-    ap.add_argument('--dry', action='store_true')
-    a = ap.parse_args()
-    main(a.weapons or None, a.dry)
+    import kit_lock   # the shared-kit lock: two port sessions in parallel (H1_PORT_PLAN.md)
+    with kit_lock.script('make_port_catalog_h1_ports'):
+        ap = argparse.ArgumentParser()
+        ap.add_argument('weapons', nargs='*', help='config keys (default: every configured one)')
+        ap.add_argument('--dry', action='store_true')
+        a = ap.parse_args()
+        main(a.weapons or None, a.dry)

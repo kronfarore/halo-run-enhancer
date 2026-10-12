@@ -1023,6 +1023,72 @@ vbuf 22.5-27.7 MiB of 64 (a10 highest), files 277-355 MiB (d40 355.1, a10 352.1)
 weapon placements 99 of 128. The 384 MiB question was then settled on
 purpose: a 458.8 MiB a10 loads and plays (0.1) -- no file-size cap. Spawn check in game: the user's.
 
+## Running two ports in parallel (user, 2026-10-12)
+
+Two port sessions may run at once. Each port's OWN work (its config, its weapon / sound / data
+folders, model, FP animations, sounds) is parallel by design (the phase-0 reservations). What
+every port SHARES is protected by machinery built into the scripts -- a session cannot forget it:
+
+- **THE KIT LOCK** (`kit_lock.py`, `HCEEK\.port_kit.lock`): one holder at a time for every
+  step that touches what ports share -- `h1_pickable_weapons --write` (message list, cyborg
+  labels, scenarios, actor variants, effects), `h1_hud_sheet` writes (icon / reticle sheets +
+  `_r` twins, a twin pair under one hold), every kit build (`h1_rebuild_all`,
+  `h1_port_test_map` incl. stage / restore, `h1_enemy_test_map`, `h1_size_test_map`: they edit
+  the level scenario temporarily and `tool` has ONE temporary cache file), the proofs
+  (`port_tool_proof`, `port_sha_snapshot`), and the shared records (`make_port_catalog_h1_ports`,
+  `ai_firing_profile`, `..\port_sounds.py` -- the halo1 FMOD bank). A waiting script prints who
+  holds it and what; a holder's child processes re-enter (no self-deadlock); a lock whose
+  process died is taken over. `python kit_lock.py status`; a manual multi-step shared sequence:
+  `python kit_lock.py run --owner <key> -- <command>`; a stuck lock: `release --force`.
+  Verified 2026-10-12: contention (B waited for A, then ran), child re-entry, stale takeover.
+- **PROOFS COVER DONE PORTS ONLY.** `port_sha_snapshot` never snapshots, regenerates or
+  RESTORES a port whose status is not 'done' (its tag / data / sound folders and bank files);
+  `port_tool_proof` regenerates done ports only and runs the OLD tools from a temporary toolkit
+  copy (`tool\_proof_<tag>_toolkit`, junctions to pylibs / out, removed after) -- never over the
+  working copy the other session is running. Verified 2026-10-12 (proof lk1, below).
+- **ONE TEST LEVEL PER SESSION.** `h1_port_test_map` records the staging port as the level's
+  OWNER (`E:\HaloBackups\h1_port_test\stage.json`); staging or restoring a level another port
+  owns is refused (`--force` overrides). Restore with the key: `h1_port_test_map.py <key>
+  --restore <level>`. The user boots one map at a time and tells each session its result.
+
+Rules for the sessions (in each parallel prompt's preface):
+1. Edit only your own config and folders. A SHARED script you must change: small change ->
+   the narrowed proof -> `git commit -- <paths>` at once. If `git diff` shows the OTHER session's
+   uncommitted edits in that file, stop and ask the user.
+2. Never edit another port's config while it is in progress; a rule for every DONE port goes
+   through one session, committed at once (the other session re-reads configs, nothing else).
+3. Extra HUD sequences (zoom glyphs, meters) go at the indices reserved for the pair below,
+   never a hand-picked "next free" number.
+4. Records: your own "Bx: what <weapon> taught" section, PORTING section and memory file;
+   MEMORY.md and this plan are edited with one small Edit each (re-read first). The NEXT
+   prompts are written by the coordinating session, not by the port sessions.
+5. Git: commit by path only; an `index.lock` error means the other session is committing --
+   retry.
+6. Observation, not yet seen: `tool` verbs other than build-cache-file (model, bitmaps,
+   sounds, animations) running in both sessions at once write only their own tags; if one
+   fails oddly, rerun it.
+
+### Parallel pair 1: B5 Concussion Rifle + B7 Focus Rifle
+
+Paired because they touch different tools (B5: the explosive bolt / blast, the Brute Shot and
+Gravity Hammer tools; B7: beam + heat + battery + zoom, the Sentinel Beam / Beam Rifle /
+Spartan Laser tools). B6 (Plasma Launcher) follows B5.
+
+| session | weapon | test level | extra HUD sequences (zoom glyphs etc.) |
+|---|---|---|---|
+| 1 | B5 Concussion Rifle | a30 (the dropship Jackals for Armed) | hud_reticles 46-47 |
+| 2 | B7 Focus Rifle | b30 (`--level b30` on EVERY staging run) | hud_reticles 48-51 |
+
+PARALLEL PREFACE (put in front of each prompt of a pair):
+
+> PARALLEL: another port session (<the other weapon>) runs at the same time on the same kit.
+> Read H1_PORT_PLAN.md "Running two ports in parallel" first and follow its rules. Your test
+> level is <level> -- pass `--level <level>` on every `h1_port_test_map.py` run and restore with
+> `h1_port_test_map.py <key> --restore <level>`. Extra HUD sequences: hud_reticles <range>
+> only. If a script says `kit lock: WAITING`, let it wait (the other session is in a shared
+> step); never `kit_lock.py release --force` a lock whose holder is running. Do NOT write the
+> next weapon's prompt: write "<Bx>: what <weapon> taught" and tell me you are done.
+
 ## Hand-off prompt for a weapon session
 
 > Port the <WEAPON> into Halo 1 (H1_PORT_PLAN.md, wave <X>, #<n>). Source: <game>.
@@ -1730,8 +1796,17 @@ purpose: a 458.8 MiB a10 loads and plays (0.1) -- no file-size cap. Spawn check 
 > `python port_backup.py --game h1`, "B4: what the Grenade Launcher taught" and the B5
 > (Concussion Rifle) prompt.
 
-### The Concussion Rifle (wave B5), filled in
+### The Concussion Rifle (wave B5), filled in -- PARALLEL with B7
 
+> PARALLEL: another port session (B7, the Focus Rifle) runs at the same time on the same
+> kit. Read H1_PORT_PLAN.md "Running two ports in parallel" first and follow its rules. Your
+> test level is a30 -- pass `--level a30` on every `h1_port_test_map.py` run and restore with
+> `h1_port_test_map.py concussion_rifle --restore a30`. Extra HUD sequences: hud_reticles
+> 46-47 only (not "46+"). If a script says `kit lock: WAITING`, let it wait (the other
+> session is in a shared step); never `kit_lock.py release --force` a lock whose holder is
+> running. Do NOT write the next weapon's prompt (ignore "the B6 (Plasma Launcher) prompt"
+> below): write "B5: what the Concussion Rifle taught" and tell me you are done.
+>
 > Port the Concussion Rifle into Halo 1 (H1_PORT_PLAN.md, wave B, #B5). Source: Halo Reach,
 > `objects\weapons\rifle\concussion_rifle\concussion_rifle` (HREK); FP graph
 > `objects\characters\spartans\fp\weapons\rifle\fp_concussion_rifle\fp_concussion_rifle`.
@@ -1783,3 +1858,74 @@ purpose: a 458.8 MiB a10 loads and plays (0.1) -- no file-size cap. Spawn check 
 > rebuild stays BATCHED (wave B, my go). When done: catalog entry, enhancer hand-off, PORTING
 > section, memory, `python port_backup.py --game h1`, "B5: what the Concussion Rifle taught" and
 > the B6 (Plasma Launcher) prompt.
+
+### The Focus Rifle (wave B7), filled in -- PARALLEL with B5
+
+> PARALLEL: another port session (B5, the Concussion Rifle) runs at the same time on the same
+> kit. Read H1_PORT_PLAN.md "Running two ports in parallel" first and follow its rules. Your
+> test level is b30 -- pass `--level b30` on every `h1_port_test_map.py` run and restore with
+> `h1_port_test_map.py focus_rifle --restore b30`. Extra HUD sequences: hud_reticles 48-51
+> only. If a script says `kit lock: WAITING`, let it wait (the other session is in a shared
+> step); never `kit_lock.py release --force` a lock whose holder is running. Do NOT write the
+> next weapon's prompt: write "B7: what the Focus Rifle taught" and tell me you are done.
+>
+> Port the Focus Rifle into Halo 1 (H1_PORT_PLAN.md, wave B, #B7). Source: Halo Reach,
+> `objects\weapons\rifle\focus_rifle\focus_rifle` (HREK); FP graph
+> `objects\characters\spartans\fp\weapons\rifle\fp_focus_rifle\fp_focus_rifle`.
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Running two ports in parallel", "Phase 0: DONE",
+> "Pilot A1" to "A9" -- A4 (the Beam Rifle: heat + battery, a scope, a template that is not the
+> yardstick) and A8 (the Spartan Laser: a beam visual baked from the source, MCC's reticle
+> drawing) matter most here -- "B1: what the DMR taught" (the REACH RECIPE) to "B4"),
+> PORTING.md ("What ported actually means" steps 0-11 and 5b, closing checks 0-10, the Halo 1
+> sections -- the Sentinel Beam (a continuous beam on heat + battery: the 15/s rate cap, the
+> camera-facing contrail seen end-on, first-person offset, the hum on a held trigger), the Beam
+> Rifle, the Spartan Laser, the DMR and the Plasma Repeater (runtime trigger rates) -- the Halo 4
+> kit's FOCUS RIFLE records (the same Reach weapon, ported INTO Halo 4: Reach's scope read from
+> `ui\chud\focus_rifle`, the beam look, `overheated` as a still hold), and "Balance" incl. the
+> ARMED WDM RULE, THE HIT-EFFECT RULE (a 15/s beam), the two-handed rule, the balanced drop rule)
+> and memory h1-plasma-repeater-port, h1-beam-rifle-port, h1-spartan-laser-port,
+> h1-pickable-sword-fuelrod (the Sentinel Beam), h1-dmr-reach-pilot, h1-needle-rifle-port,
+> h4-port-kit, h1-reticle-supersample, h1-coloured-scope-glyphs, h1-armed-test-balanced-god,
+> h1-armed-wdm-rule, h1-armed-two-handed-rule, h1-armed-balanced-drop-rule, h1-hit-effect-rule,
+> port-muzzle-flash-rule, port-flashlight-sound-rule, h1-port-phase0, halo-port-own-messages,
+> h1-fmod-bank-sounds, port-findings-are-observations, shared-worktree-commits.
+> `ports_h1/plasma_repeater.py` / `needle_rifle.py` are the nearest shape for the Reach
+> plumbing, `sentinel_beam.py` for the beam on heat + battery, `beam_rifle.py` for the scope.
+> Copy into `ports_h1/focus_rifle.py` and edit only that file plus shared tools you generalize
+> (the parallel rules: small change, narrowed proof with `port_tool_proof.py`, commit at once).
+>
+> START WITH STEP 4a, with me: candidates the Plasma Rifle (provisional: heat + battery, both
+> games), the Sniper Rifle (the role: a scoped long-range weapon) and the Plasma Pistol; the
+> restored Sentinel Beam is the step-5b role peer, not a yardstick (its Halo 1 numbers are
+> derived, and Reach has none). DEFAULT = Reach's own numbers, BALANCED = the ratio rows. Read
+> Reach's focus rifle first with `h3_weapon_values.py --kit reach` / `reach_tag_fields.py`: the
+> beam's damage per round and its group, the rate (the tag says ~30/s: Halo 1 fires a held
+> trigger at most 15/s -- the Sentinel Beam and SMG observation; measure, and keep per-SECOND
+> damage), heat per round / loss / thresholds, battery per round, the zoom levels, range, aim
+> assist. Lay the candidates side by side per value and the time to kill (h1_role_compare
+> 'focus_rifle' set vs Plasma Rifle, Sniper Rifle, the Sentinel Beam and the Beam Rifle port),
+> with a sustained-fire table (heat cools only while not firing). Damage group vs Halo 1's
+> materials. I pick; record it in yardstick['pick'] / ['reason'] and PORTING. Then 4b, the
+> template diff, port_sound_refs and the muzzle-flash comparison BEFORE boot 1. The scope /
+> HUD art: size it from a Reach SCREENSHOT (`h1_h3_scope --fit`), ask me for one; the crosshair:
+> the supersample recipe. The model gets `'ground_point': 'auto'`.
+>
+> Reserved: pickup messages 83/84; hud_msg_icons 45 (+ _r); hud_reticles 34 (+ _r; zoom glyphs
+> 48-51); label `fo` taught to characters\cyborg from `sr`; sounds under
+> `sound\weapons\focus_rifle_port`; weapon folder `weapons\focus rifle`; catalog name
+> `Focus Rifle`.
+>
+> What the Focus Rifle tests first on the Reach route: a CONTINUOUS BEAM on heat + battery (the
+> Sentinel Beam's lessons: tick-quantised rate, a visible beam from the first-person muzzle, the
+> held-trigger hum, `overheated` hold), two scope levels with Reach's own scope art, the beam's
+> look from Reach (the Spartan Laser's baked-beam route if Reach's beam cannot be drawn by Halo 1
+> as is), glow (`fp_material_view --illum --texels` first).
+>
+> Step 11: `fo` has no carrier -- list Halo 1's carriers of the donor weapon (WDM, actor flags);
+> `firing_profile` (Reach's ai\generic Focus Rifle entry on m10 is verified) with `donor_weapon`
+> (+ `donor_variant`), a `wdm_rule` and a `balanced_set`; hand off to the "Halo enhancer
+> project" session (hands, cards, heat/battery card donors) before the Armed boot. Tests:
+> `h1_port_test_map.py focus_rifle --level b30 --stage` (dry default), fixes, `--balanced`,
+> `--armed grunt,jackal,elite`; `h1_port_test_map.py focus_rifle --restore b30`. The ten-map
+> rebuild stays BATCHED (wave B, my go). When done: catalog entry, enhancer hand-off, PORTING
+> section, memory, `python port_backup.py --game h1`, and "B7: what the Focus Rifle taught".

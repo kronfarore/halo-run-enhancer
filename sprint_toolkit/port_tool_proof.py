@@ -46,10 +46,11 @@ import port_sha_snapshot as ps  # noqa: E402
 import ports_h1  # noqa: E402
 
 
-def run(*cmd, ok=(0,)):
+def run(*cmd, ok=(0,), cwd=None):
     print('>', ' '.join(cmd), flush=True)
     t = time.time()
-    r = subprocess.run([sys.executable] + list(cmd), cwd=HERE, capture_output=True, text=True, errors='replace')
+    r = subprocess.run([sys.executable] + list(cmd), cwd=cwd or HERE, capture_output=True, text=True,
+                       errors='replace')
     print(r.stdout[-3000:], r.stderr[-3000:], 'rc', r.returncode, '%.0fs' % (time.time() - t), flush=True)
     if r.returncode not in ok:
         raise SystemExit('failed: %s' % ' '.join(cmd))
@@ -121,6 +122,44 @@ def unproven(a, b, keys, steps):
               % (', '.join(hit), ', '.join(steps), ', '.join(later)))
 
 
+def old_toolkit(tag, rev, tools):
+    """tool\\_proof_<tag>_toolkit: the toolkit's top-level files + ports_h1 copied, every other
+    folder (pylibs, out, assets ...) a JUNCTION to the real one, and `tools` at `rev`. Its
+    parent is the tool folder, so every script's paths (ROOT, port_sounds) resolve as usual."""
+    dst = os.path.join(os.path.dirname(HERE), '_proof_%s_toolkit' % tag)
+    if os.path.exists(dst):
+        drop_toolkit(dst)
+    os.makedirs(dst)
+    for f in os.listdir(HERE):
+        p = os.path.join(HERE, f)
+        if os.path.isfile(p) and os.path.getsize(p) < 5 * 1024 * 1024:
+            shutil.copy2(p, os.path.join(dst, f))
+        elif os.path.isdir(p) and f == 'ports_h1':
+            shutil.copytree(p, os.path.join(dst, f), ignore=shutil.ignore_patterns('__pycache__'))
+        elif os.path.isdir(p) and f != '__pycache__':
+            subprocess.run(['cmd', '/c', 'mklink', '/J', os.path.join(dst, f), p],
+                           capture_output=True, check=True)
+    for t in tools:
+        old = subprocess.run(['git', 'show', '%s:sprint_toolkit/%s' % (rev, t)], cwd=HERE,
+                             capture_output=True).stdout
+        if not old:
+            drop_toolkit(dst)
+            raise SystemExit('%s not in %s' % (t, rev))
+        open(os.path.join(dst, t), 'wb').write(old)
+    print('old tools (%s) in %s' % (' '.join(tools), dst), flush=True)
+    return dst
+
+
+def drop_toolkit(dst):
+    """Remove the temporary toolkit: junctions UNLINKED first (never followed into the real
+    folders)."""
+    for f in os.listdir(dst):
+        p = os.path.join(dst, f)
+        if os.path.isjunction(p):
+            os.rmdir(p)
+    shutil.rmtree(dst)
+
+
 def backup(dest):
     if os.path.exists(dest):
         raise SystemExit('backup exists: ' + dest)
@@ -152,7 +191,11 @@ def main():
     secs = set()
     for s in ('model', 'retarget', 'sounds', 'pickable'):
         secs |= set(ports_h1.section(s))
-    keys = sorted(k for k in secs if k not in a.exclude)
+    done = {k for k, p in ports_h1.all_ports() if p.get('status') == 'done'}
+    keys = sorted(k for k in secs if k not in a.exclude and k in done)
+    busy = sorted(k for k in secs if k not in a.exclude and k not in done)
+    if busy:
+        print('not in the proof (not done -- another session may be on them): %s' % ', '.join(busy))
     uses = {st: closure(SCRIPTS[st]) for st in ps.STEPS}
     if not a.tools:
         if not a.full:
@@ -169,19 +212,14 @@ def main():
     dest = os.path.join('E:' + os.sep, 'HaloBackups', a.backup)
     backup(dest)
     run('port_sha_snapshot.py', 'snap', a.tag + '_pre')
-    new = {t: open(os.path.join(HERE, t), 'rb').read() for t in a.tools}
+    # the OLD tools run from a temporary COPY of the toolkit, never written over the working
+    # copy: a second port session may be running these very scripts (H1_PORT_PLAN.md, parallel)
+    copy = old_toolkit(a.tag, a.rev, a.tools)
     try:
-        for t in a.tools:
-            old = subprocess.run(['git', 'show', '%s:sprint_toolkit/%s' % (a.rev, t)], cwd=HERE,
-                                 capture_output=True).stdout
-            if not old:
-                raise SystemExit('%s not in %s' % (t, a.rev))
-            open(os.path.join(HERE, t), 'wb').write(old)
-        run('port_sha_snapshot.py', *regen_args)
+        run('port_sha_snapshot.py', *regen_args, cwd=copy)
         run('port_sha_snapshot.py', 'snap', a.tag + '_old')
     finally:
-        for t, b in new.items():
-            open(os.path.join(HERE, t), 'wb').write(b)
+        drop_toolkit(copy)
     run('port_sha_snapshot.py', *regen_args)
     run('port_sha_snapshot.py', 'snap', a.tag + '_new')
     run('port_sha_snapshot.py', 'diff', a.tag + '_old', a.tag + '_new', ok=(0, 1))
@@ -193,4 +231,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    import kit_lock   # the shared-kit lock: two port sessions in parallel (H1_PORT_PLAN.md)
+    with kit_lock.script('port_tool_proof'):
+        main()

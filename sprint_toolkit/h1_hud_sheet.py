@@ -61,7 +61,7 @@ def mip_chain(img, fmt, w, h):
         n += 1
 
 
-def put(sheet, name, img, template_seq, sheet_size, reg, index=None, mips=False):
+def _put(sheet, name, img, template_seq, sheet_size, reg, index=None, mips=False):
     """img: RGBA (white art + alpha) placed at (0, 0) of a new sheet_size bitmap.
     reg: registration point in PIXELS of that bitmap. Returns the sequence index.
     `mips`: the bitmap carries a full MIP CHAIN (the Spartan Laser, test 7: stock HUD sheets
@@ -240,7 +240,7 @@ def sprite_bitmap(template, img, out, compile=False):
     return out
 
 
-def put_frames(sheet, name, frames, template_seq, index):
+def _put_frames(sheet, name, frames, template_seq, index):
     """A MULTI-FRAME sequence (the Spartan Laser's charge indicator): `frames` = [(RGBA
     image, registration px in it)], each its own small bitmap + sprite, at `index` (empty
     pads before it; a sequence of this name at `index` is replaced, its old bitmaps left
@@ -324,11 +324,28 @@ def _compact(d, pix):
 
 def put_twins(sheet, name, img, template_seq, sheet_size, reg, index=None, mips=False):
     """The sheet and its `_r` twin, at one index -- the port's RESERVED index when given
-    (ports_h1 reservations, H1_PORT_PLAN.md), so ports added in any order keep theirs."""
-    i = put(sheet, name, img, template_seq, sheet_size, reg, index=index, mips=mips)
-    if index is not None and i != index:
-        raise SystemExit('%s: %r already sits at %d, reserved %d' % (sheet, name, i, index))
-    j = put(sheet + '_r', name, img, template_seq, sheet_size, reg, index=i, mips=mips)
-    if i != j:
-        raise SystemExit('%s: %r landed at %d, its _r twin at %d' % (sheet, name, i, j))
-    return i
+    (ports_h1 reservations, H1_PORT_PLAN.md), so ports added in any order keep theirs.
+    Both sheets under ONE hold of the kit lock (the twins must not drift apart)."""
+    import kit_lock
+    with kit_lock.held('h1_hud_sheet.put_twins %s %r' % (sheet, name)):
+        i = put(sheet, name, img, template_seq, sheet_size, reg, index=index, mips=mips)
+        if index is not None and i != index:
+            raise SystemExit('%s: %r already sits at %d, reserved %d' % (sheet, name, i, index))
+        j = put(sheet + '_r', name, img, template_seq, sheet_size, reg, index=i, mips=mips)
+        if i != j:
+            raise SystemExit('%s: %r landed at %d, its _r twin at %d' % (sheet, name, i, j))
+        return i
+
+
+# Every sheet write holds the shared-kit lock (kit_lock.py): the sheets are read-modify-write
+# tags every port shares, and two port sessions may run in parallel (H1_PORT_PLAN.md).
+def put(sheet, name, *a, **k):
+    import kit_lock
+    with kit_lock.held('h1_hud_sheet.put %s %r' % (sheet, name)):
+        return _put(sheet, name, *a, **k)
+
+
+def put_frames(sheet, name, *a, **k):
+    import kit_lock
+    with kit_lock.held('h1_hud_sheet.put_frames %s %r' % (sheet, name)):
+        return _put_frames(sheet, name, *a, **k)

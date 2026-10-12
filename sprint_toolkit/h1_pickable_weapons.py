@@ -1831,4 +1831,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    import kit_lock   # the shared-kit lock: two port sessions in parallel (H1_PORT_PLAN.md)
+    with kit_lock.script('h1_pickable_weapons'):
+        main()
