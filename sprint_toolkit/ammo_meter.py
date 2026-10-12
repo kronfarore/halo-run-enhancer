@@ -60,6 +60,9 @@ def plan(n):
         # 2 2026-10-09: 5 rounds x 51 = 255 -> '4 of 5 lit when full'). Only magazines whose
         # tick count divides 255 (5, 15, 17, 51, 85) reached it; 254 leaves every other one as is
         step_ = (254 // ticks) // p * p      # a multiple of p, or the ticks drift
+        # the HUD element's alpha_multiplier is a SIGNED byte (the Grenade Launcher's 1-round
+        # magazine: 254 failed to serialize) -- 127 still lights one round (127 <= 1 x 127 + 1)
+        step_ = min(step_, 127)
         if step_ >= max(2, p) and step_ * ticks <= 254:
             return p, ticks, step_, step_ // p
     # Past 255 rounds no 8-bit meter can resolve the magazine: the top threshold would

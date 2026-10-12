@@ -149,7 +149,24 @@ GAUGE = r'weapons\plasma rifle\fp\shaders\gauge'
 # Halo 1 material indices (the projectile's 33 responses): the UNITS Reach detonates on (its
 # 'only against units' rules); the rest is world (28 water overpenetrates, as Reach's liquid)
 UNITS = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 30, 32]
-WORLD = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 27, 29, 31]
+WORLD = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 27, 31]           # 29 leaves: the frag's overpenetrate kept
+# the H1 frag's bounce frictions (parallel, perpendicular) per world material
+FRAG_FRICTION = {0: (0.8, 0.9), 1: (0.8, 0.9), 2: (0.7, 0.8), 3: (0.9, 0.95), 4: (0.8, 0.9),
+                 5: (0.7, 0.8), 6: (0.7, 0.8), 7: (0.7, 0.8), 8: (0.7, 0.8), 9: (0.8, 0.9),
+                 10: (0.6, 0.7), 27: (0.8, 0.9), 31: (0.55, 0.65)}
+
+
+def _friction_rows():
+    """BALANCED bounce frictions (4b, 2026-10-12): the H1 frag's per world material x Reach GL /
+    Reach frag (world bounce: GL 0.42 / 0.42, frag 0.6 / 0.65); default = Reach's 0.42 / 0.42.
+    Per-ELEMENT rows (block 'Material Responses' + `index`: the Needle Rifle's)."""
+    out = []
+    for i in WORLD:
+        par, per = FRAG_FRICTION[i]
+        for field, v in (('Parallel Friction', par * 0.42 / 0.6), ('Perpendicular Friction', per * 0.42 / 0.65)):
+            out.append(dict(row('proj', GL + 'grenade', field, round(v, 3), 0.42, 'Grenade Bounce',
+                                block='Material Responses'), index=i))
+    return out
 
 
 def _lcd(bitmap):
@@ -191,8 +208,16 @@ PORT.update({
         # DISPLAY, boot 1: STATIC (Halo 1 has no tether) -- the frame, ARM / READY and the digits
         # at 0 lit teal as Reach shows them untethered; the skull + its count off (Reach: intensity
         # by bipeds in range of a TETHERED grenade = 0) -> dropped with the glass
-        'drop_materials': ('grenade_launcher_glass', 'skull_switch', 'skull_ones'),
-        'meters': {'display': _lcd('display_bg.bitmap'),
+        # THE HOLO SIGHT (user's Reach screenshot: the glass above the barrel shows the sight's own
+        # ring + drop ticks): Reach paints them into the diffuse under the glass UVs (u 0.53-0.60,
+        # v 0.45-0.62: a pale teal panel with a faint ring and ticks); Reach's glass shader blends
+        # it over a 50% grey self-illum. Halo 1: a DIM additive lit shape of the diffuse's green
+        # channel -- see-through, the painted reticle darker than the panel (judge in game)
+        'drop_materials': ('skull_switch', 'skull_ones'),
+        'meters': {'grenade_launcher_glass': {'map': DISPLAY + 'grenade_launcher_diffuse.bitmap', 'from': GAUGE,
+                                              'shape': 'g', 'gradient': 0.0, 'static': STATIC,
+                                              'color': (0.22, 0.34, 0.32)},
+                   'display': _lcd('display_bg.bitmap'),
                    'item': _lcd('gl_display_details_diffuse.bitmap'),
                    'display_status': _lcd('gl_display_status.bitmap'),
                    'hundreds': _lcd('numbers.bitmap'),
@@ -347,6 +372,10 @@ PORT.update({
                                  'scale': 0.9, 'out_dir': GL + 'effects' + B,
                                  'damage': (FG + 'explosion', GL + 'explosion'),
                                  'lower': 120.0, 'upper': (180.0, 180.0), 'radius': (0.75, 2.25),
+                                 # 4b list 2 (Reach GL / Reach frag onto the H1 frag): aoe core
+                                 # 0.4 x 0.6/0.54, instantaneous acceleration 4 x 2/2.25
+                                 'fields': {'damage.aoe_core_radius': 0.4 * 0.6 / 0.54,
+                                            'damage.instantaneous_acceleration': 4 * 2 / 2.25},
                                  'swaps': {B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'expl']): SND + 'gl_explode'}},
                    'velocity': (12.5, 7.5), 'range': 100.0,
                    'model': GL + 'grenade' + B + 'grenade',
@@ -354,6 +383,9 @@ PORT.update({
                                    'proj_attrs.physics.water_gravity_scale': 0.75,
                                    'proj_attrs.detonation.arming_time': 0.0,
                                    'proj_attrs.detonation.timer': (0.5, 0.5),
+                                   # 4b list 2: Reach 0,0 = unset (a ratio on it degenerates):
+                                   # 0..100 = the range (the Brute Shot's)
+                                   'proj_attrs.physics.air_damage_range': (0.0, 100.0),
                                    'proj_attrs.detonation.minimum_velocity': 0.0,
                                    'proj_attrs.flags.oriented_along_velocity': True},
                    # REACH'S RULES as Halo 1 responses: units DETONATE (Reach: 'only against
@@ -365,7 +397,9 @@ PORT.update({
                    'reflect': [{'materials': UNITS, 'angle_deg': (0.0, 90.0), 'velocity': (0.0, 5.0),
                                 'effect_from_default': False},
                                {'materials': WORLD, 'response': 'detonate', 'angle_deg': (75.0, 90.0),
-                                'velocity': (7.5, 14.0), 'effect_from_default': False}],
+                                'velocity': (7.5, 14.0), 'effect_from_default': False,
+                                # 4b: Reach's world bounce frictions (balanced: _friction_rows)
+                                'parallel_friction': 0.42, 'perpendicular_friction': 0.42}],
                    # the frag's smoke trail kept (attachment 0 at `smoke`), its own light dropped:
                    # Reach's flare instead (EMBER, 0.15 wu) at `glow`
                    'keep_attachments': (0,),
@@ -392,10 +426,16 @@ PORT.update({
                           'scale': 0.9, 'out_dir': GL + 'effects' + B,
                           'damage': (FG + 'explosion', GL + 'release explosion'),
                           'lower': 120.0, 'upper': (180.0, 180.0), 'radius': (0.001, 1.0),
+                          # the same ratio on Reach's tethered blast (core 0.2, acceleration 3)
+                          'fields': {'damage.aoe_core_radius': 0.4 * 0.2 / 0.54,
+                                     'damage.instantaneous_acceleration': 4 * 3 / 2.25},
                           'swaps': {B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'expl']): SND + 'gl_explode'},
                           'add_damage': [{'from': FG + 'explosion', 'out': GL + 'emp',
                                           'lower': 0.0, 'upper': (100.0, 100.0), 'radius': (0.25, 2.5),
                                           'zero': True,
+                                          # Reach's EMP has no shove (acceleration 0), core 0.6
+                                          'fields': {'damage.aoe_core_radius': 0.4 * 0.6 / 0.54,
+                                                     'damage.instantaneous_acceleration': 0.0},
                                           'mods': {'elite_energy_shield': 0.5, 'cyborg_energy_shield': 0.5,
                                                    'jackal_energy_shield': 0.25}}]},
             'velocity': (12.5, 7.5), 'range': 100.0,
@@ -404,6 +444,7 @@ PORT.update({
                             'proj_attrs.physics.water_gravity_scale': 0.75,
                             'proj_attrs.detonation.arming_time': 0.0,
                             'proj_attrs.detonation.timer': (0.0, 0.0),
+                            'proj_attrs.physics.air_damage_range': (0.0, 100.0),
                             'proj_attrs.detonation.minimum_velocity': 0.0,
                             'proj_attrs.flags.oriented_along_velocity': True},
             'default_responses': {'detonate': UNITS + WORLD},
@@ -415,7 +456,10 @@ PORT.update({
                     'loop': SND + 'gl_projectile', 'tag': SND + 'gl_projectile', 'marker': ''},
             'triggers': [1]}],
         # Reach: fire recovery 0.5 s (rounds per second 0 = recovery-limited) = 2/s
-        'trigger': {'rounds_per_second': (2.0, 2.0)},
+        # 4b list 2 (Reach GL / Reach RL onto the H1 RL): first person offset 0,0,0 (Reach's GL 0,
+        # its RL -0.05: a zero on one side), illumination recovery 0.3 x 0.1/0.2
+        'trigger': {'rounds_per_second': (2.0, 2.0), 'first_person_offset': (0.0, 0.0, 0.0),
+                    'illumination_recovery_time': 0.15},
         # Reach: minimum error 0.15, error angle 0 -> 0.4
         'error_deg': {'minimum_error': 0.15, 'error_angle': (0.0, 0.4)},
         # Reach: 1 loaded, 8 at pickup, 16 most, 1 reloaded (63 fr empty, 59 full; reload time 0 =
@@ -425,8 +469,12 @@ PORT.update({
                      'reload_time': 2.1},
         # Reach aim assist, absolute
         'aiming': {'autoaim_angle': 4.0, 'autoaim_range': 15.0,
-                   'magnetism_angle': 8.0, 'magnetism_range': 15.0},
+                   'magnetism_angle': 8.0, 'magnetism_range': 15.0,
+                   # 4b list 3: Reach GL 2 deg, its RL 0 (a zero on one side: the source value)
+                   'deviation_angle': 2.0},
         'fields': {
+            # 4b list 2: active camo ding 1 x 0.75/1
+            'weap_attrs.interface.active_camo_ding': 0.75,
             # THE CHARGE: trigger 0 charges 0.5 s (no Reach number: the tether starts at the press;
             # 0.5 s = Reach's fire recovery, a tap stays a tap) and holds the charge 45 s (the
             # plasma pistol's); trigger 1 fires the release, never charges itself
@@ -469,13 +517,29 @@ PORT.update({
         'melee_response': RL + 'melee_response',
         'messages': ('Picked up a grenade launcher', 'Picked up %d rounds for grenade launcher'),
         'icon': 'grenade launcher',
-        # the ROCKET's HUD with Reach's grenade launcher crosshair (the chud's `crosshair` =
-        # hud_reticles #12 at 1.3: two arcs + the drop-tick ladder) at the reserved 31, at Halo 1's
-        # size for boot 1 (a Reach SCREENSHOT sizes it, user); one tick for the one round.
-        # Not reproduced: the AUTO / MANUAL mode icons and the tether triangle (tether states),
-        # the falcon PITCH ladder (it scrolls with the aim; Halo 1's HUD cannot)
+        # the ROCKET's HUD with Reach's grenade launcher crosshair at the reserved 31; one tick for
+        # the one round. Reach's chud: `crosshair` = hud_reticles #12 at 1.3 (the frame box, the two
+        # arcs, the drop ticks), `pitch` = falcon\pitch (a whole 64 x 1024 bitmap, 140 deg, a label
+        # every 70 px = 10 deg, 0 deg at row ~519) at (1.6, 0.7), `auto` = grenade_launcher #1 at 0.5
+        # right-aligned at -47. SIZED FROM THE USER'S REACH SCREENSHOT (1080p, 2026-10-12): the frame
+        # 74 x 224 px, the ring ~80 px, 10 deg = 29.5 px, labels 30 .. -10 inside the frame (plain
+        # ticks below), the AUTO square ~70 px left of the centre. Halo 1: 1080p px = sheet px x 0.75
+        # x the overlay (the Plasma Repeater's calibration) -> the frame 182 sheet px x 0.75 x 1.6 =
+        # 218 px; the ladder stretched 0.642 x 0.281 (29.5 / 70 px a degree; the chud's 1.6 : 0.7),
+        # its window rows 275..600 (+30 .. -10), the 0 mark on the centre (offset -7); `split` 100:
+        # Reach's frame (alpha ~51) and drop ticks (~71) grow in their own band (one band left them
+        # under grow_to's threshold 96 -- erased in the simulation). STATIC: the ladder at 0 deg
+        # (it scrolls with the aim in Reach; Halo 1's HUD cannot), AUTO lit (Halo 1 has no MANUAL
+        # mode to switch to); not reproduced: the tether triangle and the MANUAL icon
         'hud': {'donor': RL + 'rocket_launcher', 'out': GL + 'grenade launcher',
                 'reticle': (R + r'ui\chud\bitmaps\hud_reticles', 12, 'grenade launcher'),
+                'reticle_layers': [(R + r'ui\chud\bitmaps\falcon\pitch.bitmap', None, 1.0,
+                                    {'crop': (0, 275, 64, 600), 'stretch': (0.642, 0.281),
+                                     'offset': (0.0, -7.0)}),
+                                   (R + r'ui\chud\bitmaps\grenade_launcher', 1, 0.385,
+                                    {'offset': (-46.0, 0.0)})],
+                'reticle_split': 100,
+                'reticle_scale': 1.0, 'reticle_overlay': 1.6,
                 'reticle_min_width': 3,
                 'ammo_meter': {'sizes': (1,), 'base': GL + 'bitmaps' + B + 'grenade_launcher_ammo'},
                 'flash_base': 2},
@@ -551,7 +615,7 @@ PORT.update({
                 row('weap', GL + 'grenade launcher', 'Autoaim Range', 8.75, 15.0, 'Autoaim'),
                 row('weap', GL + 'grenade launcher', 'Magnetism Angle', 9.6, 8.0, 'Magnetism'),
                 row('weap', GL + 'grenade launcher', 'Magnetism Range', 21.0, 15.0, 'Magnetism'),
-            ]},
+            ] + _friction_rows()},
     },
 
     # step 4b (port_field_audit.py --port grenade_launcher): the source pair against the target

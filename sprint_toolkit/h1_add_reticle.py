@@ -165,12 +165,19 @@ def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0,
             art = art.rotate(xf['rotate'], expand=True, resample=Image.BICUBIC)
             rx = dx * math.cos(a) + dy * math.sin(a) + art.width / 2.0
             ry = -dx * math.sin(a) + dy * math.cos(a) + art.height / 2.0
+        if xf.get('crop'):
+            # `crop` (left, top, right, bottom) art px: a WINDOW of a long bitmap (the Grenade
+            # Launcher: Reach's pitch ladder, 140 deg in 1024 px, shows only inside the frame)
+            l, t, r, b = xf['crop']
+            art, rx, ry = art.crop((l, t, r, b)), rx - l, ry - t
         rx -= xf.get('offset', (0.0, 0.0))[0] / k
         ry -= xf.get('offset', (0.0, 0.0))[1] / k
         # `scale`: the art drawn that much smaller in the sheet (BOX: area-averaged), the
         # weapon HUD's overlay scaled up by the inverse (h1_pickable_weapons reticle_scale)
         k = k * scale
-        w, h = round(art.width * SCALE * k), round(art.height * SCALE * k)
+        # `stretch` (sx, sy): a chud widget scaled per axis (the pitch ladder's 1.6 x 0.7)
+        sx, sy = xf.get('stretch', (1.0, 1.0))
+        w, h = round(art.width * SCALE * k * sx), round(art.height * SCALE * k * sy)
         alpha = art.split()[3].resize((w, h), Image.BOX if scale < 1 else Image.LANCZOS)
         if thicken:
             alpha = alpha.filter(ImageFilter.MaxFilter(2 * int(thicken) + 1))
@@ -178,7 +185,7 @@ def add(h3_sheet, h3_index, name, index=None, thicken=0, layers=(), prefilter=0,
         # `centre`: the registration point (the Spartan Laser, test 6 tried an even y against
         # the blur of pixel-doubled art -- it changed nothing: MCC's sampling phase is not tied
         # to it)
-        piece.paste(alpha, (round(centre[0] - rx * SCALE * k), round(centre[1] - ry * SCALE * k)))
+        piece.paste(alpha, (round(centre[0] - rx * SCALE * k * sx), round(centre[1] - ry * SCALE * k * sy)))
         if min_width:
             # per LAYER, keeping its own peak brightness (Halo 3's inner double circle is a
             # half-transparent grey, the outer ring full white)
