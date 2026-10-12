@@ -748,6 +748,62 @@ no recovery threshold: find where its heat lives (a trigger / barrel heat functi
 per second', the manual VENT) before the ratio table; Halo 1 has one heat loss and no manual vent
 (the Beam Rifle's heat lessons, A4).
 
+## B3: what the Plasma Repeater taught (2026-10-12) -- read before B4 (the Grenade Launcher)
+
+PORTING.md "Halo 1: the Plasma Repeater, wave B3" is the full record; `ports_h1/plasma_repeater.py`
+is the example of a HEAT weapon whose rate falls with heat, of an overheat standing in for a vent,
+and of on-gun lights that FILL and RECOLOUR by a function. Everything in "Pilot A1" to "B2" still
+holds; the Plasma Repeater added:
+
+**New user rules / decisions:**
+- A source mechanic Halo 1 lacks is APPROXIMATED with the user at 4a and the gap recorded
+  (`candidates.lacks`): here overheat = the manual vent, the rate decline correlated to the heat.
+- Materials may be the YARDSTICK's table in DEFAULT and that table x the source's damage-group
+  ratio (plasma_fast / plasma_slow per armour class) in BALANCED.
+- ONE RULE FOR EVERY WEAPON (user): the runtime trigger rates follow their times (the enhancer's
+  `sync_h1_trigger_rates`, 8b0c984); only a port whose ramp was hand-fitted (this one) carries its
+  own rate rows.
+- Every port gets a `ground point` (user: 'the dropping issue fix -- apply to all port weapons');
+  the Gravity Hammer's forced z-up is gone.
+
+**Process (observations):**
+- Find where a source mechanic LIVES before the ratio table: Reach keeps the repeater's heat in
+  weapon FUNCTIONS (ManagedBlam Evaluate, tool tooltips), not in its trigger fields.
+- MEASURE the Halo 1 engine before fitting (`h1_weapon_state_probe.py`, read-only, logs to
+  reports): the fire rule (sum resets, no carry), cooling while firing, the overheat bit, the
+  recovery threshold (0 never exits), the template's age penalties. Two boots were lost guessing.
+- Halo 1 balance rows on Acceleration / Deceleration Time need the RUNTIME rate rows (map-build
+  values) -- now automatic engine-wide; read any row on a derived field back from the built map.
+- A dropped item rests on `ground point`; hull, pathfinding spheres and bounding radius do not
+  matter (tested). A/B against a stock weapon found it in one boot.
+- On-gun colour by a function: change colours / meter gradient source / meter flash do nothing; a
+  RAMP map slid by an out (`meters` `ramp`) recolours a lit shape; a MULTIPLY copy (`tint` on a
+  `glow_cards` copy) recolours a meter fill. Hold a colour through an overheat with an out =
+  heat + overheated (C in). Test one change per boot and keep the parts already confirmed.
+- `--skip-bitmaps` rewrites glow shaders (a proof diff caught it): build fully before a proof.
+- Halo 1 plays `overheated` once: `repeat` in h1_fp_retarget holds a vent loop.
+- THE PROOF IS NARROWED (user 2026-10-12): `port_tool_proof.py` regenerates only the chain steps
+  whose scripts import a changed tool (a model-tool change: the models, minutes instead of ~25)
+  and names the ports whose later steps read a changed output ('NOT COMPARED'). THE WAVE CHECK:
+  at the END OF EVERY WAVE, `port_tool_proof.py --full --rev <wave start>` (every step of every
+  port; --tools defaults to every chain tool changed since then). Wave B's start = d096b49 (the
+  Gravity Hammer close-out); the B7 session runs it before the wave's batched rebuild.
+
+**For B4, the Grenade Launcher (`rifle\grenade_launcher\grenade_launcher`):** yardstick candidates
+the Rocket Launcher (provisional: the explosive, magazine, single-shot role; Reach has one), the
+Frag Grenade and the Fuel Rod; peers RL, Fuel Rod and the Brute Shot PORT (A7: a grenade
+launcher's explosion chain on a rocket template, `ports_h1/brute_shot.py`). Reach (h3_weapon_values --kit reach,
+2026-10-12): grenade launcher 1 loaded / 8 initial / 16 max, reloads 1, fire recovery 0.5,
+minimum error 0.15, error 0 -> 0.4, 12.5 -> 7.5 wu/s, gravity 0.7, range 100, impact 25
+(`collision`), instantaneous acceleration 0.5, aim 4/15 8/15, FP ready 21 / put_away 6 / reload
+63 empty, 59 full / melee 35 / fire 17; Reach's rocket launcher 2 / 4 / 8, recovery 0.8, 8 -> 16
+wu/s, gravity 0.02, 200 impact (`collision`), FP ready 26 / reload 116 / melee 47 / fire 24. THE
+EXPLOSION and THE ALT FIRE: read the grenade's detonation effect (its area damage / radii) and
+the charge-and-release EMP (held fire: the grenade detonates on release, its EMP drains shields
+and stalls vehicles) before the ratio table -- Halo 1 has no remote detonation and no EMP
+(approximate both with the user and record what is lost: the plasma pistol's overcharge as an
+EMP stand-in, the bounce / timer as Reach's default mode).
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one
@@ -828,7 +884,7 @@ reach-port-foundry-render-model; animations: a Halo 1 donor's).
 |---|---|---|
 | B1 | **DMR** (pilot) -- DONE 2026-10-10 | the Reach pipeline end to end; scope zoom -- see "B1: what the DMR taught" |
 | B2 | Needle Rifle | needles + supercombine (the needler as yardstick) |
-| B3 | Plasma Repeater | heat with venting |
+| B3 | Plasma Repeater -- DONE 2026-10-12 | heat with venting -- see "B3: what the Plasma Repeater taught" |
 | B4 | Grenade Launcher | an arcing grenade; the EMP alt-fire approximated |
 | B5 | Concussion Rifle | a splash push projectile |
 | B6 | Plasma Launcher | a charge; lock-on approximated (guidance) |
@@ -858,6 +914,9 @@ a long fuse or a detonation triggered by a second shot. The session records the
 approximation and what it does not reproduce.
 
 ## Definition of done, per weapon
+
+(Per WAVE, in its last session: the full proof, `port_tool_proof.py --full --rev <wave start>`,
+before the batched ten-map rebuild -- user 2026-10-12. Per weapon the narrowed proof.)
 
 All of PORTING.md's "What ported actually means", steps 1-11, plus:
 
@@ -1551,3 +1610,51 @@ purpose: a 458.8 MiB a10 loads and plays (0.1) -- no file-size cap. Spawn check 
 > `--armed grunt,jackal,elite`; `--restore <level>`. The ten-map rebuild stays BATCHED (wave B, my
 > go). When done: catalog entry, enhancer hand-off, PORTING section, memory, `python port_backup.py
 > --game h1`, "B3: what the Plasma Repeater taught" and the B4 (Grenade Launcher) prompt.
+
+### The Grenade Launcher (wave B4), filled in
+
+> Port the Grenade Launcher into Halo 1 (H1_PORT_PLAN.md, wave B, #B4). Source: Halo Reach,
+> `objects\weapons\rifle\grenade_launcher\grenade_launcher` (HREK); FP graph
+> `objects\characters\spartans\fp\weapons\rifle\fp_grenade_launcher\fp_grenade_launcher`.
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Phase 0: DONE", "Pilot A1" to "A9" -- A7 (the Brute Shot:
+> an explosive grenade on a rocket template, the explosion chain, template-object traps) matters
+> most here -- "B1: what the DMR taught" (the REACH RECIPE), "B2: what the Needle Rifle taught"
+> and "B3: what the Plasma Repeater taught" (measure the engine first, approximations recorded,
+> ground point, runtime trigger rates)), PORTING.md ("What ported actually means" steps 0-11 and
+> 5b, closing checks 0-10, the Halo 1 sections -- the Plasma Repeater, the Needle Rifle and the
+> DMR first, the Brute Shot for the explosion --, "Balance" incl. the ARMED WDM RULE, THE
+> HIT-EFFECT RULE, the two-handed rule) and memory h1-plasma-repeater-port, h1-needle-rifle-port,
+> h1-dmr-reach-pilot, h1-brute-shot-port, h1-armed-test-balanced-god, h1-armed-wdm-rule,
+> h1-armed-two-handed-rule, h1-hit-effect-rule, port-muzzle-flash-rule, port-flashlight-sound-rule,
+> h1-port-phase0, halo-port-own-messages, h1-fmod-bank-sounds, port-findings-are-observations,
+> shared-worktree-commits. `ports_h1/plasma_repeater.py` / `needle_rifle.py` are the nearest shape
+> for the Reach plumbing; `brute_shot.py` for the grenade and its explosion. Copy into
+> `ports_h1/grenade_launcher.py` and edit only that file plus shared tools you generalize (prove
+> byte-identical output for the built ports with `port_tool_proof.py`, and restore the kit from a
+> backup after).
+>
+> START WITH STEP 4a, with me: candidates Rocket Launcher (provisional; Reach has one), Frag
+> Grenade, Fuel Rod; DEFAULT = Reach's own numbers, BALANCED = the ratio rows. Reach (2026-10-12):
+> 1 loaded / 8 initial / 16 max, reloads 1, fire recovery 0.5, error 0 -> 0.4 (minimum 0.15),
+> 12.5 -> 7.5 wu/s, gravity 0.7, range 100, impact 25 `collision`; Reach's rocket launcher 2 / 4 /
+> 8, recovery 0.8, 8 -> 16 wu/s, 200 `collision`. READ THE GRENADE'S DETONATION (area damage,
+> radii, the bounce / timer / impact rules) and Reach's HOLD-TO-DETONATE + EMP alt fire before
+> the ratio table -- Halo 1 has neither remote detonation nor EMP (approximate with me, record
+> what is lost). Show the time to kill (h1_role_compare) vs RL, Fuel Rod, the Brute Shot port.
+> Then 4b, the template diff, port_sound_refs (+ the projectile's own sound fields by hand) and
+> the muzzle-flash comparison BEFORE boot 1. Any zoom / HUD art: size it from a Reach SCREENSHOT,
+> ask me for one. The model gets `'ground_point': 'auto'`.
+>
+> Reserved: pickup messages 77/78; hud_msg_icons 42 (+ _r); hud_reticles 31 (+ _r; 46+ for any
+> zoom glyphs); label `gl` taught to characters\cyborg from `sg`; sounds under
+> `sound\weapons\grenade_launcher_port`; weapon folder `weapons\grenade launcher`; catalog name
+> `Grenade Launcher`.
+>
+> Step 11: `gl` has no carrier -- list Halo 1's carriers of the donor weapon (WDM, actor flags);
+> `firing_profile` (Reach's ai\generic Grenade Launcher entry) with `donor_weapon` (+
+> `donor_variant`) and a `wdm_rule`; the enhancer session sets `hands` (and cards) before the
+> Armed boot. Tests: `h1_port_test_map.py grenade_launcher --stage` (dry default), fixes,
+> `--balanced`, `--armed grunt,jackal,elite`; `--restore <level>`. The ten-map rebuild stays
+> BATCHED (wave B, my go). When done: catalog entry, enhancer hand-off, PORTING section, memory,
+> `python port_backup.py --game h1`, "B4: what the Grenade Launcher taught" and the B5
+> (Concussion Rifle) prompt.

@@ -14,6 +14,8 @@ sound, tool\port_sounds\halo1, weapon_ports_catalog.json, ai_firing_profiles.jso
         -> h1_port_sounds <key> --write -> h1_pickable_weapons --only <key> --write
         (default: every config with that section, Reach ports excluded -- the proof is about
         the ports that were built BEFORE the change)
+        --steps model,retarget,sounds,pickable  only those steps (port_tool_proof's narrowed
+        proof: the steps whose scripts use the changed tools)
 
 KNOWN run-to-run difference (phase 0): `tool bitmaps` writes a garbage `base_address` pointer
 (and the header checksum) into .bitmap tags; the pixels are identical. `diff` lists those
@@ -141,7 +143,11 @@ def run(*cmd):
     return r.stdout
 
 
-def regen(keys):
+#: the chain, in order; each step's script ('retarget' also runs tool animations)
+STEPS = ('model', 'retarget', 'sounds', 'pickable')
+
+
+def regen(keys, steps=STEPS):
     sys.path.insert(0, HERE)
     import ports_h1
     secs = {s: ports_h1.section(s) for s in ('model', 'retarget', 'sounds', 'pickable')}
@@ -150,18 +156,18 @@ def regen(keys):
     keys = keys or [k for k in allk if src[k] != 'Halo Reach']
     py = sys.executable
     for k in keys:
-        if k in secs['model']:
+        if k in secs['model'] and 'model' in steps:
             run(py, 'h1_h3_weapon_model.py', k)
-        if k in secs['retarget']:
+        if k in secs['retarget'] and 'retarget' in steps:
             run(py, 'h1_fp_retarget.py', k, '--write')
             r = subprocess.run([os.path.join(HCEEK, 'tool.exe'), 'animations',
                                 secs['retarget'][k]['h1_dir']], cwd=HCEEK,
                                capture_output=True, text=True, errors='replace')
             print('  tool animations %s: %s' % (secs['retarget'][k]['h1_dir'],
                                                 (r.stdout + r.stderr).strip().splitlines()[-1:]))
-        if k in secs['sounds']:
+        if k in secs['sounds'] and 'sounds' in steps:
             run(py, 'h1_port_sounds.py', k, '--write')
-        if k in secs['pickable']:
+        if k in secs['pickable'] and 'pickable' in steps:
             run(py, 'h1_pickable_weapons.py', '--only', k, '--write')
 
 
@@ -169,6 +175,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('cmd', choices=('snap', 'diff', 'regen', 'restore'))
     ap.add_argument('args', nargs='*')
+    ap.add_argument('--steps', help='regen: comma-separated subset of ' + ','.join(STEPS))
     a = ap.parse_args()
     if a.cmd == 'snap':
         snap(a.args[0])
@@ -177,7 +184,11 @@ def main():
     elif a.cmd == 'restore':
         restore(a.args[0], a.args[1], a.args[2])
     else:
-        regen(a.args)
+        steps = tuple(a.steps.split(',')) if a.steps else STEPS
+        bad = set(steps) - set(STEPS)
+        if bad:
+            raise SystemExit('unknown step(s): %s' % ', '.join(sorted(bad)))
+        regen(a.args, steps)
 
 
 if __name__ == '__main__':

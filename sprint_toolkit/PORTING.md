@@ -1651,6 +1651,103 @@ terrain / thick-metal noise 4 deg, and the template's glass glance (now skip 1);
 SWAP had been computed in a comment and never written (x1.05). Read lists 4/5 line by line against
 the SOURCE table, not just list 2.
 
+### Halo 1: the Plasma Repeater, wave B3 (2026-10-11/12, 8 boots + Armed on a30) -- heat that slows the gun, an overheat for a vent, a gauge that fills AND recolours
+
+The whole weapon is `ports_h1/plasma_repeater.py`, on a copy of the Halo 1 PLASMA RIFLE (the
+yardstick and template, the user's pick at 4a: heat + battery HUD, gauge, bolt, overheat states).
+The Reach route is the DMR's / Needle Rifle's unchanged (FP placement right at boot 1).
+
+**Where Reach's heat lives (step 4a).** NOT in the trigger fields (heat per round 0, loss 0.033):
+in the weapon's FUNCTIONS (ManagedBlam `TagValueCustomFunctionEditor.Evaluate` + tool.exe's
+tooltips): 0.03 heat a TICK while firing; rate = 15 + (3 - 15) x heat^1.5; it never overheats;
+passive loss 0.25 -> 0.06/s by the heat_loss function (the 0.0333 field overridden); the manual
+vent 2.5 s. **Approximation B (user):** OVERHEAT stands in for the vent; the rate decline follows
+the heat -- Halo 1 ramps the rate over the HELD time, so the ramp is fitted to reach each heat's
+rate when Reach would. What it lacks: venting part-way, firing on at 3/s while hot, Reach's slow
+passive cooling.
+
+**The Halo 1 trigger, MEASURED** (`h1_weapon_state_probe.py`, live, read-only, follows every held
+or dropped weapon; values to reports\*.jsonl): per tick rate/30 is added; a shot when the sum
+REACHES 1, then the sum RESETS to 0 (no carry) -> a rate a hair under 15 fires every 3 ticks (10/s),
+exactly 3/s every 11 ticks (2.7/s). Heat (weapon +0x204) COOLS WHILE FIRING at the one loss.
+Overheated = weapon +0x1F8 bit 0; leaving it needs heat BELOW the recovery threshold (0 never
+exits: recovery 0.01). The template's AGE penalties (rate -20 %, heat +20 % at an empty battery)
+kept it from ever overheating (Reach: 0 / 0 -> 0). Fit (h1_role_compare `heat_model`, `h1_ticks`):
+DEFAULT start 20 (six shots every 2 ticks = 15/s), ramp 1.35 s to 3.05, decel 2.5, heat 0.12 a
+round, loss 0.4 -> overheat on the 12th round at 1.03 s (Reach 12 / 1.0 s); BALANCED floor 3.4,
+ramp 2.6, decel 2.9, heat 0.077, loss 1/2.9 -> 22 rounds / 1.97 s (Reach x the ratio 1.95 s).
+Measured dps: default ~21.8 sustained (sim 23), balanced ~37.5 (sim 40); balanced overheat ~20
+rounds in 1.55 s, vent 2.87 s.
+
+**THE RUNTIME-RATE TRAP (every Halo 1 weapon):** the engine ramps by the trigger's RUNTIME 'Rate Of
+Fire Acceleration / Deceleration Rate' (+0xF8 / +0xFC) = 1 / (time x 30), computed at MAP BUILD.
+A balance row on Acceleration / Deceleration Time alone changes nothing (boot 7: the balanced gun
+kept the default ramp and never overheated). The repeater's balanced rows write both; since
+8b0c984 the enhancer's `halo_patch.sync_h1_trigger_rates` re-derives the rates from the times on
+every Halo 1 patch (time 0 -> 1.0), so it is one rule for every weapon (user) -- the repeater is
+the only port whose ramp was hand-fitted.
+
+**The vent.** Reach's vent_enter / vent_loop / vent_exit = Halo 1's overheating / overheated /
+o-h-exit; Halo 1 plays `overheated` ONCE -> h1_fp_retarget `repeat` (vent_loop x3 = 3 s; the
+states run 3.7 s against the 2.5 s vent, as the stock plasma rifle's 3.6 / 2.5). Sounds: the
+vent_enter cue + the manual vent's `in` mixed, the vent loop, the exit.
+
+**DROPPED PORTS SANK -- SOLVED: the `ground point` marker.** Every stock Halo 1 weapon world
+model has ONE `ground point` (on its side surface near the balance point, stored rotation 0.707,
+0.707, 0, 0: its axis INTO the gun); a dropped item rests on it. Ports had none and rested on the
+origin. Pathfinding spheres, the hull and the bounding radius had NO effect (tested). Now
+`h1_h3_weapon_model` `'ground_point': 'auto'` places it (replacing an existing one; computed in the
+node-0 frame, right for re-rooted models) and ALL ports carry it (smg, battle rifle, carbine, DMR,
+needle rifle, beam rifle, brute shot, mauler, spiker, spartan laser, sentinel beam, gravity hammer
+-- the hammer's forced z-up flag REMOVED, user); the SAW's is fitted in saw_to_jms.py. Reaches
+the shipped maps with the batched rebuild.
+
+**The heat lights (on-gun).** Reach's gauge FILLS with heat and the whole fill turns teal ->
+yellow -> red; the lower display lights recolour. What failed: a change colour (Halo 1's = a
+creation colour x a BRIGHTNESS: black), a meter's `gradient` SOURCE and its `flash` colour (no
+effect: a meter colours lit texels by PLACE), a v-axis 'fill' lookup (no stock shader slides v by
+a function). What works:
+- DISPLAY (the lower lights; the user's BACKUP recipe, 'remember this setup'): an additive lit
+  shape (the Needle Rifle's `static` chicago, white) x a colour RAMP sampled at one point (uv scale
+  0.001, clamped) slid by an out (`meters` `ramp` + `ramp_source`: the map's u-animation source).
+- GAUGE: the meter FILL (value = A out, `gradient_range` 0.02..0.95 -- Reach's alpha gradient is 0
+  over its left half, lit half from cold -- lit WHITE, unlit = Reach's meter_color_off at half) +
+  a copy of the gauge lifted 0.1 JMS units (`glow_cards`) with a MULTIPLY chicago (`tint`): the
+  ramp ADDED to the inverted shape -> x1 outside the outline, x the heat colour inside.
+- HOLD THE COLOUR THROUGH THE VENT: A out = heat + overheated (pickable `fields`: C in =
+  overheated; function 0 'one' x A in + C in).
+Every Halo 1 weapon out reads 0 until the first shot except B out (heat floored at 0.1, live from
+spawn).
+
+**Look and sound.** Reach's two staggered muzzles = the plasma rifle's two firing effects
+(`primary trigger1` / `primary trigger`; h3_rm_to_jms names list entries per instance;
+`sound_effects` '<field>@n' keys). Muzzle flash: the plasma rifle's vertical +-120 deg pair
+dropped (`drop_off_axis` 0.012). Pilot flame = island glow. Own impact sound (user): every response
+effect that plays plasmahit -> a copy playing rp_impact (`impact_tint` `sounds`, no particle
+match); the hit-effect rule at 15/s. Reticle: Reach's faint ring (#3, four quarters at gain 0.5)
++ four wedges (#33 rotated +-45 / +-135 at +-17.3, k 0.56) -- h1_add_reticle `flip_y`, per-layer
+`gain`, any-angle `rotate`; MCC's grow threshold 96 erased Reach's alpha-85 sprite until
+`reticle_split` 1 + gain; overlay x1.5 (user: x1.15 then +30 %).
+
+**Materials (user):** DEFAULT = the H1 plasma rifle bolt's table; BALANCED = that table x Reach's
+plasma_fast / plasma_slow per armour class (h1_role_compare RP_FAST_SLOW: Elite shield x0.625,
+Elite body x2.5, Hunter x2, Jackal shield x0.5, Marine armour x2, metal x2-2.5).
+
+**Step 11.** Donor = the Elite minor plasma rifle (carriers 0.4-0.6, no actor flags); Reach's
+ai\generic profile; WDM rule 0.5 x 130 / 96 (default), / 125 (balanced). Enhancer (8b0c984): hands
+'two', tag_map, battery skips, 20 Halo 1 cards from the Plasma Rifle.
+
+**Traps on the way:** `--skip-bitmaps` REWRITES the glow shaders (caught by the proof diff; rebuild
+fully); a glow bitmap missing under --skip-bitmaps fails the build; the pilot listed in both
+`shaders` and `glow_shaders` drew twice.
+
+**Proof:** port_tool_proof rp1-rp4 (reach_tags / pickable / reticle / retarget repeat / model
+meters + ground point): 0 changed apart from bitmap headers, one brute-shot FP antr (known noise)
+and -- rp4, by design -- every port's gbxmodel (its new ground point); h1_reticle_proof identical;
+the kit restored each time. After rp4 the proof is NARROWED (user): only the steps whose scripts
+import a changed tool are regenerated, 'NOT COMPARED' names ports whose later steps read a changed
+output; `--full --rev <wave start>` at the end of every wave (wave B: d096b49).
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:
