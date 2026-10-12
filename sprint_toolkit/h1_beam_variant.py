@@ -83,10 +83,14 @@ def main():
     ap.add_argument('--trigger', type=int, default=0, help='the trigger whose projectile is copied')
     ap.add_argument('--skin', action='append', default=[])
     ap.add_argument('--clean', action='store_true')
+    # `--out`: the test folder (default <weapon dir>	est). A DONE port's folder is RESTORED by the other
+    # parallel session's proofs (the Focus Rifle's laser copy vanished mid-build, 2026-10-12): put a
+    # copy of a done port under the in-progress port's folder
+    ap.add_argument('--out', help='test folder, kit tag path')
     a = ap.parse_args()
     w = ports_h1.load(a.port)['pickable']
     wdir = w['weapon'].rsplit(B, 1)[0]
-    test = wdir + B + 'test'
+    test = a.out or (wdir + B + 'test')
     if a.clean:
         for root in (TAGS, os.path.join(HCEEK, 'data')):
             p = os.path.join(root, test)
