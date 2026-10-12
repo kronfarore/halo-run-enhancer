@@ -368,7 +368,14 @@ PORT.update({
                                  'proj_attrs.impact_noise': 'loud',
                                  'proj_attrs.physics.detonation_noise': 'loud'},
                  'default_responses': {'overpenetrate': [9, 11, 15, 17, 19, 20, 24, 28, 29],
-                                       'disappear': [13, 14, 16, 21, 23, 27]}},
+                                       'disappear': [13, 14, 16, 21, 23, 27]},
+                 # the Sentinel beam's five impact effects play sound\sfx\vehicles\sent_laser_impact
+                 # (a BORROW) -> own copies playing Reach's focus_beam_impact (the repeater's sound swap,
+                 # no particle match). THE HIT-EFFECT RULE (check 9): material #22 (cyborg energy
+                 # shield) has NO response effect on this projectile (default 'disappear', effect
+                 # empty; the potential reflect's empty too) -- nothing to thin at 15/s
+                 'impact_tint': {'match': (), 'rgb': None, 'out': FO + 'effects\\impact\\',
+                                 'sounds': {'sound\\sfx\\vehicles\\sent_laser_impact': SND + 'fo_impact'}}},
         # Reach: spew 30/s (Halo 1: 15/s; the hum needs differing bounds, 29..30 both fire 15/s),
         # no rate ramp (4b: Reach's 0.3 is the ERROR deceleration -- error 0 here); the rate
         # deceleration 0.1 = the Sentinel Beam's (the hum's tail follows it); heat 0.0451 a round = the 39th round overheats at 2.53 s with
