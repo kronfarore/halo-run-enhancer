@@ -680,6 +680,14 @@ def own_explosion(pd, X, write, slot='detonation'):
                         h1_hud_sheet.sprite_bitmap(qd.bitmap.filepath, Image.merge('RGBA', (rgb, rgb, rgb, a)), M['out'],
                                                    compile=M.get('compile', False))
                     qd.bitmap.filepath = M['out']
+                if 'bitmap_copy' in Q:
+                    # a byte COPY of an existing bitmap tag under an own path (a test: does Halo 1
+                    # draw a particle sprite from a new path at all?)
+                    src_b, dst_b = Q['bitmap_copy']
+                    if write:
+                        os.makedirs(os.path.dirname(path(dst_b, '.bitmap')), exist_ok=True)
+                        shutil.copy2(path(src_b, '.bitmap'), path(dst_b, '.bitmap'))
+                    qd.bitmap.filepath = dst_b
                 save(qt, path(Q['out'], '.particle'), write)
                 x.particle_type.filepath = Q['out']
             for bd in ((x.tint_lower_bound, x.tint_upper_bound) if 'tint' in A else ()):

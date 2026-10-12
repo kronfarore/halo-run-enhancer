@@ -137,7 +137,7 @@ def put(sheet, name, img, template_seq, sheet_size, reg, index=None, mips=False)
 
 
 
-def _compiled(img, out):
+def _compiled(img, out, fmt='dxt5'):
     """(bitmap element, pixel bytes) of `img` compiled by HCEEK's `tool bitmaps` as DXT5
     (interpolated alpha): a TIFF under the kit's data/<out's folder> named <name>_src, compiled, its tag
     set to interpolated alpha and compiled again (the tool keeps a tag's format)."""
@@ -154,10 +154,11 @@ def _compiled(img, out):
                        capture_output=True, text=True, errors='replace')
     tool()
     tp = os.path.join(TAGS, folder, src + '.bitmap')
-    t = bitm_def.build(filepath=tp)
-    t.data.tagdata.format.set_to('interpolated_alpha')
-    t.serialize(temp=False, backup=False)
-    tool()
+    if fmt == 'dxt5':                      # 'dxt1': the tool's default (colour key), as stock sheets
+        t = bitm_def.build(filepath=tp)
+        t.data.tagdata.format.set_to('interpolated_alpha')
+        t.serialize(temp=False, backup=False)
+        tool()
     d_ = bitm_def.build(filepath=tp).data.tagdata
     return d_.bitmaps.STEPTREE[0], bytes(d_.processed_pixel_data.data)
 
@@ -177,7 +178,7 @@ def sprite_bitmap(template, img, out, compile=False):
     if compile:
         # `compile` (the Grenade Launcher, boot 9: a RAW a8r8g8b8 particle sprite never drew --
         # the stock particle sheets are DXT): HCEEK's own DXT5 of the image (_compiled)
-        el, pix = _compiled(img, out)
+        el, pix = _compiled(img, out, compile if isinstance(compile, str) else 'dxt5')
         bms.append(copy.deepcopy(el))
     else:
         bms.append(copy.deepcopy(raw_t.bitmaps.STEPTREE[0]))

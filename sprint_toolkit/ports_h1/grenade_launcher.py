@@ -499,11 +499,14 @@ PORT.update({
                                                                     'random_vertical_mirroring': True,
                                                                     'animate_once_per_frame': False},
                                                           'bitmap': {'mask': R + B.join(['fx', 'bitmaps', 'plasma', 'emp_mask.bitmap']),
-                                                                     'size': 128,
+                                                                     'size': 32,
                                                                      # BOOT 9 (user: green + red seen, no
                                                                      # blue): the raw sprite never drew ->
                                                                      # HCEEK's DXT5 like the stock sheets
-                                                                     'compile': True,
+                                                                     # BOOTS 10-11: DXT5 / stock headers: still
+                                                                     # no blue -> boot 12: exactly the stock
+                                                                     # flash's form, 32 px DXT1 (colour key)
+                                                                     'compile': 'dxt1',
                                                                      'out': GL + 'effects' + B + 'bitmaps' + B + 'emp pulse'}}},
                                             # BOOT 9 DIAGNOSTIC (user: 'no EMP effect again -- disable the
                                             # normal explosion to see if it draws'): RED = the same particle
@@ -519,7 +522,11 @@ PORT.update({
                                                           'radius_animation': (0.6, 1.0),
                                                           'flags': {'random_horizontal_mirroring': True,
                                                                     'random_vertical_mirroring': True,
-                                                                    'animate_once_per_frame': False}}},
+                                                                    'animate_once_per_frame': False},
+                                                          # BOOT 12: RED = a byte COPY of the stock flash
+                                                          # sprite under our own path
+                                                          'bitmap_copy': (B.join(['effects', 'particles', 'flash', 'bitmaps', 'flash h shield impact']),
+                                                                          GL + 'effects' + B + 'bitmaps' + B + 'flash copy')}},
                                             {'from': r'weapons\plasma grenade\effects\detonation start',
                                              'match': 'flash h shield impact', 'location': 1,
                                              'env': 'any_environment', 'radius': (0.25, 0.5),
