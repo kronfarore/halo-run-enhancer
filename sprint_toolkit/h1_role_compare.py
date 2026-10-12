@@ -103,6 +103,13 @@ GL_SMALL_LARGE = {'elite_energy_shield': 0.5, 'elite': 0.667, 'cyborg_energy_shi
                   'cyborg_armor': 0.667, 'hunter_armor': 0.5, 'jackal_energy_shield': 0.5,
                   'metal_thin': 0.667, 'metal_hollow': 0.667, 'metal_thick': 0.5,
                   'sentinel': 0.667, 'glass': 0.667 * 4}
+PGX = W + r'plasma grenade\explosion'
+# Reach's plasma_fast / collision per armour class (HREK globals, 2026-10-12), onto a x1 table
+# (the rocket's, Flood set back to x1: Reach has no Flood): Hunter armour (hard_metal_thick)
+# 0.25 / 0.75, Jackal shield (energy_shield_thick) 0.5 / 0.75, Elite / Spartan shield and body,
+# tough, flesh x1
+CR_PLASMA_FAST = {'hunter_armor': 0.25, 'jackal_energy_shield': 0.5, 'flood_combat_form': 1.0}
+CR_COLLISION = {'hunter_armor': 0.75, 'jackal_energy_shield': 0.75, 'flood_combat_form': 1.0}
 
 SETS = {
     # the restored fuel rod against the explosive power weapons of Halo 1
@@ -978,6 +985,55 @@ SETS = {
         ('Sentinel', r'characters\sentinel\sentinel', 'sentinel'),
         ('Flood combat (elite)', r'characters\floodcombat elite\floodcombat elite plasma rifle',
          'floodcombat elite'),
+    ]},
+    # the CONCUSSION RIFLE (wave B5), step 4a. Reach (HREK 2026-10-12): recovery 0.333 s, 6 / 18 /
+    # 30, reload 100 fr. A direct hit = impact 21.5 (`collision`) + the blast 0..21.5 over 1 -> 2
+    # (core 0.8, `plasma_fast`, accel 2.5 = Reach's gravity hammer IMPULSE's 2.5) = 43; the fuel
+    # rod 100 + 0..60 over 0.5 -> 2.25 = 160, recovery 0.4, 5 / 20 / 30, reload 90 fr; the rocket
+    # 200 + 240 = 440, 0.8 s, reload 116 fr; the plasma grenade (unstuck) 2 + 25..250 over 0.54 ->
+    # 1.8 = 252. A row's parts: (blast, impact)
+    'concussion_rifle': {'port': 'Concussion Rifle', 'weapons': [
+        # Reach's own numbers on a neutral table (the rocket's: x1, Flood x2) ...
+        ('CR = Reach own', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 21.5, (1.0, 2.0)), (RLX, 21.5, (0.0, 0.0))], 'rate': 3.0, 'mag': 6,
+          'reload': 100 / 30.0, 'speed': 12.0, 'range': 100.0, 'aim': (4.0, 15.0, 8.0, 15.0)}),
+        # ... and on Reach's own groups per armour class: the blast plasma_fast (Hunter armour
+        # x0.25, Jackal shield x0.5, the rest x1), the impact collision (x0.75 / x0.75)
+        ('CR = Reach own, Reach mat', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 21.5, (1.0, 2.0), CR_PLASMA_FAST), (RLX, 21.5, (0.0, 0.0), CR_COLLISION)],
+          'rate': 3.0, 'mag': 6, 'reload': 100 / 30.0, 'speed': 12.0, 'range': 100.0,
+          'aim': (4.0, 15.0, 8.0, 15.0)}),
+        # FUEL ROD ratio by the direct hit: 75 x 43/160 = 20.2 (half impact, half blast) on the
+        # fuel rod's table (Hunters immune, Flood x2); radius 0.5 x 1/0.5, 1.5 x 2/2.25; 1.25 s x
+        # 0.333/0.4; 4 x 6/5 = 5 (12 x 18/20 = 11, 24 x 30/30); 3.0 s x 100/90; 14 x 12/15; aim
+        # 4 x 4/4, 25 x 15/25; 6 x 8/8, 25 x 15/25
+        ('CR = Fuel Rod ratio', W + r'fuel rod gun\fuel rod', 'shot',
+         {'parts': [(FRX, 10.08, (1.0, 1.33)), (FRX, 10.08, (0.0, 0.0))], 'rate': 0.96, 'mag': 5,
+          'reload': 3.0 * 100 / 90, 'speed': 11.2, 'aim': (4.0, 15.0, 6.0, 15.0), 'charge': 0.0}),
+        # ROCKET ratio by the direct hit: 315 x 43/440 = 30.8 on the rocket's table; radius 0.5 x
+        # 1/0.75, 2.0 x 2/2.5; 2.0 s x 0.333/0.8; 2 x 6/2 = 6 (18 / 30 = Reach's own); 125 fr x
+        # 100/116; 12 x 12/8; 128 x 100/175; aim 0 x 4/5, 35 x 15/60; 12 x 8/10, 35 x 15/25
+        ('CR = RL ratio', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 15.39, (0.67, 1.6)), (RLX, 15.39, (0.0, 0.0))], 'rate': 1.2, 'mag': 6,
+          'reload': 4.1667 * 100 / 116, 'speed': 18.0, 'range': 73.1,
+          'aim': (0.0, 8.75, 9.6, 21.0)}),
+        # PLASMA GRENADE ratio: 120 x 43/252 = 20.5 on the plasma grenade's table (Elite shield x4,
+        # Jackal shield x1.5, Hunter armour x0.25, Flood x2); radius 0.5 x 1/0.54, 2.0 x 2/1.8; a
+        # thrown grenade's HOLES (rate, magazine, reload, flight, aim) by the RL ratio (the GL's
+        # precedent)
+        ('CR = Plasma Grenade ratio', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(PGX, 10.24, (0.93, 2.22)), (PGX, 10.24, (0.0, 0.0))], 'rate': 1.2, 'mag': 6,
+          'reload': 4.1667 * 100 / 116, 'speed': 18.0, 'range': 73.1,
+          'aim': (0.0, 8.75, 9.6, 21.0)}),
+        # peers
+        ('Fuel Rod (restored)', W + r'fuel rod gun\fuel rod', 'shot'),
+        ('Rocket Launcher', W + r'rocket launcher\rocket launcher', 'shot'),
+        ('Plasma Rifle', W + r'plasma rifle\plasma rifle', 'shot', {'heat_model': 'tag'}),
+        ('Plasma grenade (1/s)', W + r'rocket launcher\rocket launcher', 'shot',
+         {'damage_tags': [PGX], 'radius': (0.5, 2.0), 'rate': 1.0,
+          'nomag': True, 'speed': 0.0, 'range': 0.0, 'aim': (0.0, 0.0, 0.0, 0.0)}),
+        ('Brute Shot port, default', W + r'brute shot\brute shot', 'shot'),
+        ('Grenade Launcher (port)', W + r'grenade launcher\grenade launcher', 'shot'),
     ]},
 }
 
