@@ -705,12 +705,12 @@ PORT.update({
             'weapon': 'Grenade Launcher', 'source': 'Halo Reach', 'donor': 'Rocket Launcher', 'default_on': False,
             'desc': "Halo Reach's Grenade Launcher: its model, first-person animations, sounds and "
                     "numbers. A single-shot launcher: a tap fires a grenade that explodes on "
-                    "enemies or a hard hit and otherwise bounces, bursting half a second after the "
-                    "first bounce. Hold the trigger and release to fire a grenade that bursts on "
-                    "contact with an EMP that strips shields.",
+                    "enemies or a hard hit and otherwise bounces, bursting 1.2 s after it was "
+                    "fired. Hold the trigger until it beeps and release to fire a grenade that "
+                    "bursts on contact with an EMP that strips shields.",
             'balance_desc': "Measured against the Frag Grenade, with the Rocket Launcher for what a "
                             "thrown grenade lacks: 135 damage over 2.5 m (the frag's family), a "
-                            "0.4 s fuse, one shot every 1.25 s, a shorter reach, a smaller EMP and "
+                            "1.1 s fuse, one shot every 1.25 s, a shorter reach, a smaller EMP and "
                             "Halo 1-style aim assist.",
             # step 9: the balanced reload = H1 rocket reload-empty 125 fr x 63/116 = 67.9 over the
             # built 63 (x1.078), reload-full 111 x 59/116 = 56.5 over 59 (x0.957): ONE multiplier
