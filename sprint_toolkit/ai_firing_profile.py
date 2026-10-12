@@ -215,6 +215,7 @@ def from_config(key, write=True):
       {'mode': 'same_game', 'donor_weapon': <H1 weapon>, 'why': .., 'set': ['0xOFF=V:NAME']}
       {'mode': 'source', 'from_game': 'Halo 3', 'from_map': <path under the MCC folder>,
        'from_weapon': <source weapon tag>[, 'char': 'ai\\generic']}
+    Any mode may add 'balanced_set': ['0xOFF=V:NAME'] -- fields for the BALANCED box only.
     The port's weapon tag comes from its 'pickable' section (else reservations weapon_dir)."""
     sys.path.insert(0, HERE)
     import ports_h1
@@ -256,6 +257,10 @@ def from_config(key, write=True):
         prof['donor_variant'] = fp['donor_variant']
         prof['source'] += ' (always %s)' % fp['donor_variant']
     wdm_rule(prof, fp.get('wdm_rule'))
+    if fp.get('balanced_set'):
+        # explicit BALANCED fields (the Plasma Repeater, 2026-10-12: the drop battery by the
+        # ratio rule; the default keeps the source's own), over the WDM rule's
+        prof.setdefault('balanced_fields', {}).update(parse_sets(fp['balanced_set']))
     if write:
         try:
             with open(PROFILE_FILE, encoding='utf-8') as fh:

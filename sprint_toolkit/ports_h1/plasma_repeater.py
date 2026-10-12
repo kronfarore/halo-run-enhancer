@@ -90,11 +90,45 @@ PORT = reserved(
                     'donor_weapon': 'weapons\\plasma rifle\\plasma rifle',
                     'donor_variant': 'characters\\elite\\elite minor\\elite minor plasma rifle',
                     'wdm_rule': {'base': 0.5, 'yardstick_dps': 130.0, 'port_dps': 96.0,
-                                 'balanced_port_dps': 125.0}},
+                                 'balanced_port_dps': 125.0},
+                    # THE DROP BATTERY (user after the Armed boot, 2026-10-12): MCC's shipped
+                    # Reach maps carry ~HALF of HREK's ai\generic drop values for every weapon
+                    # (m10: repeater 0.25-0.45, plasma rifle 0.35-0.45, AR 0.25-0.45; HREK
+                    # 0.5-0.9 / 0.7-0.9 / 0.5-0.9) -- the source read gives the DEFAULT Reach's
+                    # real 25-45 %. BALANCED by the ratio: H1 plasma rifle 0.7-0.9 x 0.25/0.35,
+                    # 0.45/0.45 = 50-90 %
+                    'balanced_set': ['0x1D8=0.5:Drop Weapon Loaded', '0x1DC=0.9:Drop Weapon Loaded Max']},
 )
 
 PORT.update({
-    'status': 'building',
+    # DONE 2026-10-12: 8 boots + the Armed boot on a30 (user: 'heat gauge works perfectly'); the
+    # ten-map rebuild is BATCHED for wave B (user's go). CLOSE-OUT RECORD:
+    # STEP 4b (port_field_audit --port plasma_repeater, final): weapon list 2 = the rate only
+    #   (approximation B: 15 -> 3 by heat = 20 -> 3.05 over the HELD time, fitted under the
+    #   measured fire rule); camo ding / illumination recovery written. List 5 (13) = every line a
+    #   decision above: C in overheated + function 0 (the held overheat colour), message 75,
+    #   recovery 0.01 (0 never exits), loss 0.4 (the vent), heat illumination 0 (Reach's), age
+    #   penalties 0 (Reach's; they stopped the overheat), misfire 0.25, the FP offset. Projectile
+    #   list 3 (8): range 100 (Reach's; a zero on one side), the rest no Halo 1 field / 0 kept.
+    #   Damage: nothing left.
+    # TEMPLATE DIFF (h1_port_template_diff, final, 446 lines): weapon 39, bolt 28 (flyby, range,
+    #   velocities, impact copies with rp_impact), damage 2, two firing effects 148 each (the
+    #   vertical pair dropped: index shifts; rp_fire), HUD 4 (reticle 30), the three gun shaders,
+    #   the gauge meter (6) + tint (35), display (29), indicator (1: its baked bitmap). The
+    #   'shaders' indicator shader_model is never built (MISSING): the `meters` chicago takes
+    #   that material.
+    # Closing checks: 0 port_refs_audit 0 problems (the staged test copy); 2 validate_halo_json 0
+    #   problems; 4 port_backup h1; 5 n/a (Halo 1: the bank manifest); 6 = 4b above; 7 every
+    #   sound OWN (port_sound_refs on the built a30: fire / dry / drop; the FP-animation sounds,
+    #   flyby and impact checked by hand -- all 11 rp_ tags resident), port_sounds --check 0; 8
+    #   the Armed build (built map read back): Grunt / Jackal / Elite slots fire from the Elite
+    #   minor plasma rifle + Reach's profile, WDM 0.677 / 0.52 balanced, Grunts 5.03/s vs 10.06
+    #   (two-handed), Jackals shieldless, drop battery 25-45 % (Reach's real campaign value) /
+    #   50-90 % balanced (firing_profile balanced_set); 9 the shield hit = own copy at 15/s; 10 the
+    #   flash = the plasma rifle's sprites, the vertical pair dropped.
+    # PROOFS rp1-rp4 (rp4: the 14 ports' gbxmodels + JMS = the ground point only); the narrowed
+    #   proof and the wave check (--full) from here on.
+    'status': 'done',
 
     # geometry + look (h1_h3_weapon_model.py; Reach through reach_tags). Reach's ONE model for
     # world AND first person. plasma_repeater.render_model: 7 nodes -- b_gun (root, identity: not

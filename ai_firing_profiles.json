@@ -1744,6 +1744,16 @@
      "<f",
      0.52,
      "Weapon Damage Modifier"
+    ],
+    "0x1D8": [
+     "<f",
+     0.5,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.9,
+     "Drop Weapon Loaded Max"
     ]
    },
    "wdm_rule": {
