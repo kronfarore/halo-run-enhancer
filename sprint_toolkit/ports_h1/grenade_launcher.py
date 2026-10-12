@@ -166,7 +166,10 @@ def _emp_test(rgb, out=None, bitmap=None, copy=False, small=False, rgb2=None):
         return e
     # BOOT 16 (user): 'better -- double the rings as a test; I perceive one normal explosion and
     # one big mostly white flash' -> 6 a burst (was 3)
-    e.update({'count': 6, 'radius': (1.2, 1.5), 'spin': (-90.0, 90.0)})
+    # BOOT 17 (user): 'still mostly one white explosion, no change' -- the rings sat inside the
+    # fireball in a near-white cyan. BOOT 18: 2.0-2.5 wu (the EMP's own damage radius, Reach's
+    # 2.5: the rings show its reach beyond the blast) and bluer (the caller's tint)
+    e.update({'count': 6, 'radius': (2.0, 2.5), 'spin': (-90.0, 90.0)})
     # BOOT 15 (user): 'it's there, but it doesn't last long enough' -- 0.35-0.45 s -> 0.8-1.0 s, a
     # 0.6 s fade, growing to x1.1
     q = {'out': GL + 'effects' + B + out, 'lifespan': (0.8, 1.0), 'fade_out': 0.6,
@@ -527,8 +530,9 @@ PORT.update({
                           # SPLICED into it (pixels only) drew (boot 14: 'a green and blue explosion'). FINAL: the
                           # ring opaque on black spliced into the 128 px `shield charge rings` sheet (one full-frame
                           # sprite), the release explosion's own visuals back, the green control gone
-                          'add_particles': [_emp_test((162 / 255.0, 226 / 255.0, 252 / 255.0), out='emp pulse',
-                                                      rgb2=(87 / 255.0, 195 / 255.0, 240 / 255.0),
+                          'add_particles': [_emp_test((87 / 255.0, 195 / 255.0, 240 / 255.0), out='emp pulse',
+                                                      # boot 18: Reach's MID -> DEEP blue (the birth cyan read white)
+                                                      rgb2=(33 / 255.0, 150 / 255.0, 199 / 255.0),
                             bitmap={'compile': 'splice', 'opaque': True, 'out': 'emp pulse',
                                                               'size': 128,
                                                               'container': B.join(['effects', 'particles', 'flash', 'bitmaps',
