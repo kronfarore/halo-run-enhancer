@@ -882,6 +882,12 @@ def own_beam(a, b, write):
                     q.radius[0], q.radius[1] = q.radius[0] * K.get('scale', 1.0), q.radius[1] * K.get('scale', 1.0)
                     q.created_count[0] = int(round(q.created_count[0] * K.get('count', 1.0)))
                     q.created_count[1] = int(round(q.created_count[1] * K.get('count', 1.0)))
+                    # `tint` (ARGB, RGB not HSV): every particle recoloured (the Concussion
+                    # Rifle: the fuel rod's green trail sparks -> Reach's violet)
+                    if 'tint' in K:
+                        q.flags.tint_as_hsv = False
+                        for bd in (q.tint_lower_bound, q.tint_upper_bound):
+                            bd.a, bd.r, bd.g, bd.b = K['tint']
             save(et, path(K['out'], '.effect'), write)
             x.type.filepath = K['out']
     if 'hum' in b:                       # an own looping sound in flight (the Brute Shot)
@@ -1085,6 +1091,12 @@ def contrail_look(ct, C):
         # a SEQUENCED texture needs its sequence range (test 2: the plasma rifle contrail's
         # bitmap with the sniper's 0 / 0 drew NOTHING -- every stock contrail on it says 0 / 1)
         d.rendering.first_sequence_index, d.rendering.sequence_count = C.get('sequence', (0, 1))
+    # `repeats` (u, v) texture repeats and `scroll` (u, v) texture animation -- a beam that MOVES
+    # (the Focus Rifle, boot 3: 'the beam is a static image'; Reach scrolls its beam textures)
+    if 'repeats' in C:
+        d.rendering.texture_repeats_u, d.rendering.texture_repeats_v = C['repeats']
+    if 'scroll' in C:
+        d.rendering.texture_animation_u, d.rendering.texture_animation_v = C['scroll']
     if 'states' in C:
         sts = d.point_states.STEPTREE
         while len(sts) < len(C['states']):
