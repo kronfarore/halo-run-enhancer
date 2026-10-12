@@ -150,23 +150,6 @@ GAUGE = r'weapons\plasma rifle\fp\shaders\gauge'
 # 'only against units' rules); the rest is world (28 water overpenetrates, as Reach's liquid)
 UNITS = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 30, 32]
 WORLD = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 27, 31]           # 29 leaves: the frag's overpenetrate kept
-# the H1 frag's bounce frictions (parallel, perpendicular) per world material
-FRAG_FRICTION = {0: (0.8, 0.9), 1: (0.8, 0.9), 2: (0.7, 0.8), 3: (0.9, 0.95), 4: (0.8, 0.9),
-                 5: (0.7, 0.8), 6: (0.7, 0.8), 7: (0.7, 0.8), 8: (0.7, 0.8), 9: (0.8, 0.9),
-                 10: (0.6, 0.7), 27: (0.8, 0.9), 31: (0.55, 0.65)}
-
-
-def _friction_rows():
-    """BALANCED bounce frictions (4b, 2026-10-12): the H1 frag's per world material x Reach GL /
-    Reach frag (world bounce: GL 0.42 / 0.42, frag 0.6 / 0.65); default = Reach's 0.42 / 0.42.
-    Per-ELEMENT rows (block 'Material Responses' + `index`: the Needle Rifle's)."""
-    out = []
-    for i in WORLD:
-        par, per = FRAG_FRICTION[i]
-        for field, v in (('Parallel Friction', par * 0.42 / 0.6), ('Perpendicular Friction', per * 0.42 / 0.65)):
-            out.append(dict(row('proj', GL + 'grenade', field, round(v, 3), 0.42, 'Grenade Bounce',
-                                block='Material Responses'), index=i))
-    return out
 
 
 def _lcd(bitmap):
@@ -324,6 +307,14 @@ PORT.update({
                            B.join(['sound', 'sfx', 'weapons', 'assault rifle', 'dryfire']), -17.6),
             'gl_drop': ([B.join([RS + 'frag_grenade', 'frag_drops', 'frag_drop'])],
                         B.join(['sound', 'sfx', 'impulse', 'weapon_drops', 'rlauncher_impact']), -23.0),
+            # BOOT 3 (user): 'another charge indicator, ideally a small sound cue for the charge
+            # up' -- Reach's grenade launcher has no tether sound; its FRAG's arming (frag_armed:
+            # an 'in' click + the armed beep loop) as the hold's cue, at the plasma rifle charge's
+            # level (-12.0 / -11.2, the Spartan Laser's measurement) less 2 dB for a beep
+            'gl_charge_in': ([B.join([RS + 'frag_grenade', 'frag_armed_loop', 'frag_armed', 'in'])],
+                             B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'startcharge']), -14.0),
+            'gl_charge_loop': ([B.join([RS + 'frag_grenade', 'frag_armed_loop', 'frag_armed', 'loop'])],
+                               B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'charge']), -14.0),
             # the BALANCED reloads (the patcher retimes both, then swaps these in): H1 rocket
             # reload-empty 125 fr x 63/116 = 67.9 over the built 63 (x1.078), reload-full 111 x
             # 59/116 = 56.5 over 59 (x0.957) -> ONE patcher multiplier (the DMR's): x1.02
@@ -390,8 +381,12 @@ PORT.update({
                    # (initial -> final over the 100 wu range: 12.26 at 4.95 wu); the first bounce
                    # cut it to ~7.4, then it SLID at a constant 7.4 wu/s for 12 s and burst at the
                    # range (99.5 wu) -- the 0.5 s 'on first bounce' fuse never ran (variant B, no
-                   # range: 27-38 s). BOOT 3 EXPERIMENT: final velocity 0 (is the final a speed
-                   # FLOOR?) -- the secondary test variant: a fuse from launch ('immediately' 1.5 s)
+                   # range: 27-38 s). BOOT 3 (probe): final 0 -> it slows, settles, and bursts ~0.45 s
+                   # after settling; the test variant's fuse from launch ('immediately' 1.5 s) burst
+                   # at 1.47 s exactly -- not taken (it would burst mid-air on long lobs)
+                   # final velocity 0 (a final above 0 is a speed floor: no rest, no fuse); the flight
+                   # slows with distance over the range (12.5 -> 0 over 100 wu; Reach 12.5 -> 7.5
+                   # over its 1-10 wu acceleration range) -- the long-lob speed is the cost
                    'velocity': (12.5, 0.0), 'range': 100.0,
                    'model': GL + 'grenade' + B + 'grenade',
                    'proj_fields': {'proj_attrs.physics.air_gravity_scale': 0.7,
@@ -412,9 +407,14 @@ PORT.update({
                    'reflect': [{'materials': UNITS, 'angle_deg': (0.0, 90.0), 'velocity': (0.0, 5.0),
                                 'effect_from_default': False},
                                {'materials': WORLD, 'response': 'detonate', 'angle_deg': (75.0, 90.0),
-                                'velocity': (7.5, 14.0), 'effect_from_default': False,
-                                # 4b: Reach's world bounce frictions (balanced: _friction_rows)
-                                'parallel_friction': 0.42, 'perpendicular_friction': 0.42}],
+                                'velocity': (7.5, 14.0), 'effect_from_default': False}],
+                   # BOOT 3 PROBE + USER (2026-10-12): Halo 1's 'on first bounce' fuse runs from when
+                   # the grenade COMES TO REST (0.45 s after it settled), and a FINAL VELOCITY is a
+                   # speed floor (boot 2: slid at 7.4 wu/s for 12 s, never at rest, never fused).
+                   # Reach's 0.42 friction (boot 3) bounced for 2-3 s -> burst 2.6-3.5 s after
+                   # launch; Reach bursts 0.5 s after the FIRST bounce. User: 'Frag friction' --
+                   # the frag's own frictions (one bounce keeps ~10 % of the speed: the frag burst
+                   # ~0.8 s after its first bounce); Reach's few hops are lost
                    # the frag's smoke trail kept (attachment 0 at `smoke`), its own light dropped:
                    # Reach's flare instead (EMBER, 0.15 wu) at `glow`
                    'keep_attachments': (0,),
@@ -445,9 +445,11 @@ PORT.update({
                           'part': FG + 'explosion',
                           'scale': 0.45, 'out_dir': GL + 'effects' + B + 'release' + B,
                           'add_particles': [{'from': r'weapons\plasma grenade\effects\detonation start',
-                                             'match': 'plasma electric bolts', 'location': 0},
+                                             'match': 'plasma electric bolts', 'location': 0,
+                                             'env': 'any_environment', 'radius': (0.6, 0.8)},
                                             {'from': r'weapons\plasma grenade\effects\detonation start',
-                                             'match': 'flash h shield impact', 'location': 0}],
+                                             'match': 'flash h shield impact', 'location': 0,
+                                             'env': 'any_environment', 'radius': (0.25, 0.5)}],
                           'damage': (FG + 'explosion', GL + 'release explosion'),
                           'lower': 120.0, 'upper': (180.0, 180.0), 'radius': (0.001, 1.0),
                           # the same ratio on Reach's tethered blast (core 0.2, acceleration 3)
@@ -462,7 +464,7 @@ PORT.update({
                                                      'damage.instantaneous_acceleration': 0.0},
                                           'mods': {'elite_energy_shield': 0.5, 'cyborg_energy_shield': 0.5,
                                                    'jackal_energy_shield': 0.25}}]},
-            'velocity': (12.5, 7.5), 'range': 100.0,
+            'velocity': (12.5, 0.0), 'range': 100.0,            # the tap's flight (above)
             'model': GL + 'grenade' + B + 'grenade',
             'proj_fields': {'proj_attrs.physics.air_gravity_scale': 0.7,
                             'proj_attrs.physics.water_gravity_scale': 0.75,
@@ -504,6 +506,11 @@ PORT.update({
         # the CHARGE as an object function (the arm light): out 0 = the rocket's muzzle flash (A in =
         # integrated light), out 1 = the plasma pistol's function 3 (`one` x B in) with weapon B in =
         # primary charged -> B out = the charge
+        # the CHARGE CUE (boot 3, user): a start / loop sound_looping at the muzzle, scaled by B out
+        # (the charge): it plays from the press while the charge builds and holds (a tap blips)
+        'fire_loop': {'like': B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'charging']),
+                      'start': SND + 'gl_charge_in', 'loop': SND + 'gl_charge_loop', 'end': '',
+                      'tag': SND + 'gl_charging', 'marker': 'primary trigger', 'scale': 'B_out'},
         'obje_functions': [{'from': RL + 'rocket launcher', 'index': 0},
                            {'from': 'weapons' + B + 'plasma pistol' + B + 'plasma pistol', 'index': 3}],
         'fields': {
@@ -585,7 +592,10 @@ PORT.update({
                 # 3's and magnified back), drawn at 1.6 / 1.35 / 2 = x0.59: the same on-screen size
                 # from finer pixels; strokes grown to 2 px of the 512 cell (~0.9 screen px). The
                 # 1080p simulation against the user's Reach screenshot: the closest of 3
-                'reticle_scale': 1.35, 'reticle_overlay': 1.6 / 1.35 / 2,
+                # BOOT 3 (user): 'the best crosshair so far -- remember this setting; a small blue
+                # pixel at the top left corner of the box' -- the frame touched the cell's top edge
+                # (rows 0-1; bilinear edge bleed): x1.3 (a ~10 px margin), the overlay x1.6 / 1.3 / 2
+                'reticle_scale': 1.3, 'reticle_overlay': 1.6 / 1.3 / 2,
                 'reticle_supersample': 2,
                 'reticle_min_width': 2,
                 'ammo_meter': {'sizes': (1,), 'base': GL + 'bitmaps' + B + 'grenade_launcher_ammo'},
@@ -662,7 +672,7 @@ PORT.update({
                 row('weap', GL + 'grenade launcher', 'Autoaim Range', 8.75, 15.0, 'Autoaim'),
                 row('weap', GL + 'grenade launcher', 'Magnetism Angle', 9.6, 8.0, 'Magnetism'),
                 row('weap', GL + 'grenade launcher', 'Magnetism Range', 21.0, 15.0, 'Magnetism'),
-            ] + _friction_rows()},
+            ]},
     },
 
     # step 4b (port_field_audit.py --port grenade_launcher): the source pair against the target

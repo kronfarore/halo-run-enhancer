@@ -641,6 +641,9 @@ def own_explosion(pd, X, write, slot='detonation'):
                 x.radius[0], x.radius[1] = A['radius']
             if 'location' in A:          # an index of THIS effect's locations (1 = 'gravity')
                 x.location = A['location']
+            if 'env' in A:               # the Grenade Launcher's EMP bolts (boot 3: 'air_only' ones
+                # never showed at a ground detonation): 'any_environment'
+                x.create_in_env.set_to(A['env'])
             if 'particle' in A:
                 # an OWN copy of the particle tag (the Gravity Hammer, boot 4: the stock ring
                 # lives 0.1-0.2 s -- 3-6 frames, not seen): `lifespan` (lo, hi) s, `fade_out` s,
