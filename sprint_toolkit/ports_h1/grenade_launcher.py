@@ -66,8 +66,10 @@ PORT = reserved(
             # A source value on the other side of a zero goes to zero in balanced (the Needle
             # Rifle's rule)
             'impact': 0.0,
-            # the fuse: 0.5 x 0.5/0.6, 0.5 x 0.5/0.65 -> 0.4 (mean); arming 1.5 x 0/1.4 = 0
-            'timer': 0.4, 'arming': 0.0,
+            # the fuse: 0.5 x 0.5/0.6, 0.5 x 0.5/0.65 -> 0.4 (mean) after the first bounce; since boot
+            # 5 (user) a fuse from LAUNCH: the typical first bounce 0.7 s + 0.4 = 1.1 (default 1.2);
+            # arming 1.5 x 0/1.4 = 0
+            'timer': 1.1, 'arming': 0.0,
             # flight: the throw speed is 10 wu/s in both games (biped grenade velocity) -> x1:
             # Reach's own 12.5 -> 7.5; gravity 1.0 x 0.7/0.9, water 1.0 x 0.75/0.75
             'velocity': (12.5, 7.5), 'gravity': 0.778, 'water_gravity': 1.0,
@@ -361,6 +363,10 @@ PORT.update({
                    'first-person reload-full': SND + 'gl_reload_full'},
         'extra_sounds': [SND + 'gl_reload_empty_balanced', SND + 'gl_reload_full_balanced'],
         'add_triggers': [0],
+        # PENDING (user, boot 7): 'the grenade launcher needs to be hooked into the NO OVERCHARGE
+        # SOUND WHEN EMPTY patch later' -- a charged pair (the plasma pistol's mechanism) charges
+        # (and beeps, fire_loop on B out) with an empty magazine; that patch (not written yet) must
+        # list this weapon
         # THE GRENADE (trigger 0, a tap). Reach: impact 25 (`collision`, accel 0.5) + the explosion
         # 0..180 over 0.75 -> 2.25. The impact on a copy of the frag explosion's table with no
         # radius (an impact deals its damage to what it hits); the explosion = the frag's effect
@@ -466,17 +472,14 @@ PORT.update({
                           'scale': 0.45, 'out_dir': GL + 'effects' + B + 'release' + B,
                           # BOOT 6 (user): 'the blast is smaller, still no sparks'. Tried: location 1
                           # 'normal' + the plasma grenade's buildup over a 0 s event (none made),
-                          # location 0 any-environment + 'start' (none seen). BOOT 7 A/B/C in one
-                          # shot, by COLOUR: white bolts at 'normal' (1, out of the surface), RED
-                          # bolts at 'gravity' (2, up), the blue shield flash at 'normal'
+                          # location 0 + 'start' (none seen). BOOT 7, three by colour: 'a white-blue
+                          # explosion besides the normal one' = the white bolts + the blue flash at
+                          # 'normal' (the surface; the plasma grenade's own location) with 'start';
+                          # the red ones at 'gravity' never showed -> dropped
                           'add_particles': [{'from': r'weapons\plasma grenade\effects\detonation start',
                                              'match': 'plasma electric bolts', 'location': 1,
                                              'env': 'any_environment', 'radius': (0.6, 0.8),
                                              'distribution': 'start'},
-                                            {'from': r'weapons\plasma grenade\effects\detonation start',
-                                             'match': 'plasma electric bolts', 'location': 2,
-                                             'env': 'any_environment', 'radius': (0.6, 0.8),
-                                             'distribution': 'start', 'tint': (1.0, 1.0, 0.1, 0.1)},
                                             {'from': r'weapons\plasma grenade\effects\detonation start',
                                              'match': 'flash h shield impact', 'location': 1,
                                              'env': 'any_environment', 'radius': (0.25, 0.5),
