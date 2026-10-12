@@ -3942,6 +3942,7 @@
     "proj weapons\\frag grenade\\frag grenade": "proj weapons\\grenade launcher\\grenade",
     "proj weapons\\shotgun\\pellet": "proj weapons\\grenade launcher\\grenade"
    },
+   "trigger_index": "all",
    "card_donors": {
     "Frag Grenade": [
      "Fuse Timer"

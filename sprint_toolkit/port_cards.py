@@ -239,6 +239,12 @@ def plan(weapon, only_cards=None, only_game=None):
                     t = {k: (_resolve(v, game, db.games) if isinstance(v, dict) and k != 'set' else v)
                          for k, v in t.items() if k not in ('games', 'skip_games')}
                     t['games'] = list(targets_games)
+                    # catalog 'trigger_index': a port whose triggers are one gun (the Halo 1
+                    # Grenade Launcher's tap and charged release) gets its Triggers cards on
+                    # every trigger, as its balance rows are (user, 2026-10-12)
+                    if (port.get('trigger_index') is not None and t.get('index') is None
+                            and t.get('block') in ('Triggers', 'Barrels')):
+                        t['index'] = port['trigger_index']
                     new_targets.append(t)
                 if not new_targets:
                     continue
