@@ -1041,6 +1041,9 @@ every port SHARES is protected by machinery built into the scripts -- a session 
   process died is taken over. `python kit_lock.py status`; a manual multi-step shared sequence:
   `python kit_lock.py run --owner <key> -- <command>`; a stuck lock: `release --force`.
   Verified 2026-10-12: contention (B waited for A, then ran), child re-entry, stale takeover.
+  The ENHANCER session writes its catalog keys (hands, tag_map, card_map, skip_cards,
+  card_donors, trigger_index, actor_flags) only through `port_catalog_keys.py` (its ae6e5e9),
+  which holds the lock as owner 'enhancer' and writes the generator's exact format.
 - **PROOFS COVER DONE PORTS ONLY.** `port_sha_snapshot` never snapshots, regenerates or
   RESTORES a port whose status is not 'done' (its tag / data / sound folders and bank files);
   `port_tool_proof` regenerates done ports only and runs the OLD tools from a temporary toolkit
