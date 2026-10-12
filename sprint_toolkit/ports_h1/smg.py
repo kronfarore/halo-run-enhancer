@@ -55,7 +55,12 @@ PORT = reserved(
     # over the H1 AR's carriers -- the SMG's own label 'sm' has no carrier to find a base by
     # Armed WDM (user, 2026-10-08, Rule B -- ai_firing_profile.wdm_rule, measured on the
     # Carbine): 0.4 (the AR carriers) x AR 150 / SMG 75 = 0.80, balanced / 100 = 0.60
-    firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\rifle\\smg\\smg',
+    firing_profile={
+                    # BALANCED DROP (user 2026-10-12, the Plasma Repeater: 'same rule for every weapon'):
+                    # H1 yardstick x source port / source yardstick, the source values read from its MAP
+                    # (as the default fields): AR carriers 0.3-0.9 / 400-600 (10 of 12); H3 SMG 0.5-0.9 / 150-210, AR 0.5-0.9 / 128-192. A zero on one side: no row
+                    'balanced_set': ['0x1D8=0.3:Drop Weapon Loaded', '0x1DC=0.9:Drop Weapon Loaded Max', '0x1E0=h469:Drop Weapon Ammo', '0x1E2=h656:Drop Weapon Ammo Max'],
+                    'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\rifle\\smg\\smg',
                     'donor_weapon': 'weapons\\assault rifle\\assault rifle',
                     'wdm_rule': {'base': 0.4, 'yardstick_dps': 150.0, 'port_dps': 75.0,
                                  'balanced_port_dps': 100.0}},

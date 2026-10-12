@@ -162,7 +162,8 @@ label to each enemy from TEACH_DONORS ('pr' first); a melee-only weapon on a uni
 melee (Energy Blade on Grunts/Jackals) gets a stand-in swing (enhancer side, 5dc3f23).
 
 Check (closing step 8): the port is in `used_weapons()`, and the donor for a Grunt slot
-and an Elite slot is the intended one. Back up `ai_firing_profiles.json`,
+and an Elite slot is the intended one. BALANCED DROP (2026-10-12, every port): the profile's
+`balanced_set` holds Drop Weapon Loaded / Ammo by the ratio rule (see the Plasma Repeater). Back up `ai_firing_profiles.json`,
 `ai_firing_profile.py` and `h1_enemy_weapons.py` (port_backup h1 carries them).
 
 **And step 5 has a ROLE check (2026-10-05):** `python port_role_compare.py <set>
@@ -1741,7 +1742,14 @@ MCC's SHIPPED Reach maps carry ~HALF of HREK's ai\generic 'drop weapon loaded' f
 (m10: repeater 0.25-0.45, plasma rifle 0.35-0.45, AR 0.25-0.45, magnum 0.3-0.4; HREK 0.5-0.9 /
 0.7-0.9 / 0.5-0.9 / 0.6-0.8) -- the source read is right; read drop values from the MAP, not
 HREK. Default = Reach's 25-45 %; balanced by the ratio 50-90 % (ai_firing_profile
-`balanced_set`). No earlier port has balanced drop rows (their balanced box keeps the source's).
+`balanced_set`).
+**THE BALANCED DROP RULE (user 2026-10-12: 'same rule for every weapon'):** every Armed port's
+firing profile carries balanced Drop Weapon Loaded / Ammo = the H1 yardstick's MOST COMMON carrier
+value x source port / source yardstick (source values from the source MAP); a zero on one side =
+no row. Applied to the SMG, BR, Carbine, Beam Rifle, Spiker, Mauler, Brute Shot (ammo only), DMR,
+Needle Rifle, SAW, Plasma Repeater; none for the Gravity Hammer (the sword's carriers drop
+nothing) and the Spartan Laser (the RL carriers drop it unloaded); the Sentinel Beam is its own
+yardstick. Default fields unchanged (ai_firing_profiles.json diff: balanced_fields only).
 
 **Traps on the way:** `--skip-bitmaps` REWRITES the glow shaders (caught by the proof diff; rebuild
 fully); a glow bitmap missing under --skip-bitmaps fails the build; the pilot listed in both

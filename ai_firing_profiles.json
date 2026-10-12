@@ -114,6 +114,16 @@
      "<f",
      0.4,
      "Weapon Damage Modifier"
+    ],
+    "0x1D8": [
+     "<f",
+     0.24,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.8,
+     "Drop Weapon Loaded Max"
     ]
    },
    "wdm_rule": {
@@ -274,6 +284,26 @@
      "<f",
      0.6,
      "Weapon Damage Modifier"
+    ],
+    "0x1D8": [
+     "<f",
+     0.3,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.9,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     469,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     656,
+     "Drop Weapon Ammo Max"
     ]
    },
    "wdm_rule": {
@@ -428,6 +458,26 @@
      "<f",
      0.4821917808219178,
      "Weapon Damage Modifier"
+    ],
+    "0x1D8": [
+     "<f",
+     0.1,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.675,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     188,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     394,
+     "Drop Weapon Ammo Max"
     ]
    },
    "wdm_rule": {
@@ -582,6 +632,26 @@
      "<f",
      0.2569343065693431,
      "Weapon Damage Modifier"
+    ],
+    "0x1D8": [
+     "<f",
+     0.2,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.9,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     92,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     194,
+     "Drop Weapon Ammo Max"
     ]
    },
    "wdm_rule": {
@@ -692,6 +762,16 @@
      "<f",
      0.2282485875706215,
      "Weapon Damage Modifier"
+    ],
+    "0x1D8": [
+     "<f",
+     0.36,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.9,
+     "Drop Weapon Loaded Max"
     ]
    },
    "wdm_rule": {
@@ -846,6 +926,26 @@
      "<f",
      0.4166666666666667,
      "Weapon Damage Modifier"
+    ],
+    "0x1D8": [
+     "<f",
+     0.24,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.8,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     188,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     312,
+     "Drop Weapon Ammo Max"
     ]
    },
    "wdm_rule": {
@@ -941,6 +1041,26 @@
      "<f",
      0.16046511627906976,
      "Weapon Damage Modifier"
+    ],
+    "0x1D8": [
+     "<f",
+     0.3,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.9,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     50,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     90,
+     "Drop Weapon Ammo Max"
     ]
    },
    "wdm_rule": {
@@ -1070,6 +1190,16 @@
      "<f",
      0.9067431850789096,
      "Weapon Damage Modifier"
+    ],
+    "0x1E0": [
+     "<h",
+     3,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     5,
+     "Drop Weapon Ammo Max"
     ]
    },
    "wdm_rule": {
@@ -1454,6 +1584,26 @@
      "<f",
      0.812877263581489,
      "Weapon Damage Modifier"
+    ],
+    "0x1D8": [
+     "<f",
+     0.12,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.6,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     36,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     56,
+     "Drop Weapon Ammo Max"
     ]
    },
    "wdm_rule": {
@@ -1604,6 +1754,26 @@
      "<f",
      1.5015015015015016,
      "Weapon Damage Modifier"
+    ],
+    "0x1D8": [
+     "<f",
+     0.3,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.9,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     40,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     48,
+     "Drop Weapon Ammo Max"
     ]
    },
    "wdm_rule": {

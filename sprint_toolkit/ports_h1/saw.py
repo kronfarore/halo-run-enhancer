@@ -28,7 +28,12 @@ PORT = {
     # an AR carrier (the label search finds the base). The stored profile drops 0.4..0.8
     # loaded where m020's ai\generic says 0.2..0.4 (set over it; reproduces the stored file
     # exactly, checked 2026-10-07)
-    'firing_profile': {'mode': 'source', 'from_game': 'Halo 4',
+    'firing_profile': {
+                       # BALANCED DROP (user 2026-10-12, the Plasma Repeater: 'same rule for every weapon'):
+                       # H1 yardstick x source port / source yardstick, the source values read from its MAP
+                       # (as the default fields): AR carriers 0.3-0.9 / 400-600 (10 of 12); H4 storm_lmg 0.4-0.8 / no ammo, storm AR 0.5-0.9 / 192-256. A zero on one side: no row
+                       'balanced_set': ['0x1D8=0.24:Drop Weapon Loaded', '0x1DC=0.8:Drop Weapon Loaded Max'],
+                       'mode': 'source', 'from_game': 'Halo 4',
                        'from_map': r'halo4\maps\m020.map',
                        'from_weapon': r'objects\weapons\rifle\storm_lmg\storm_lmg',
                        'set': ['0x1D8=0.4000000059604645:Drop Weapon Loaded',

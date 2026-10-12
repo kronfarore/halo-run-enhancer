@@ -70,7 +70,12 @@ PORT = reserved(
     # none carry it; Halo 1's Flood combat Elite and armoured Marines do), base = the Flood
     # Elite's WDM 0.4. ARMED WDM RULE: 0.4 x Sniper 202 / port dps -- default 200 (0.40),
     # balanced 354 (0.23); paper rates, heat makes the real ones lower (as the Carbine's)
-    firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\rifle\\beam_rifle\\beam_rifle',
+    firing_profile={
+                    # BALANCED DROP (user 2026-10-12, the Plasma Repeater: 'same rule for every weapon'):
+                    # H1 yardstick x source port / source yardstick, the source values read from its MAP
+                    # (as the default fields): sniper carriers 0.3-0.9 / 12-20 (4 of 5); H3 beam rifle 0.6-0.9 / no ammo, sniper 0.5-0.9 / 6-10. A zero on one side: no row
+                    'balanced_set': ['0x1D8=0.36:Drop Weapon Loaded', '0x1DC=0.9:Drop Weapon Loaded Max'],
+                    'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\rifle\\beam_rifle\\beam_rifle',
                     'donor_weapon': 'weapons\\sniper rifle\\sniper rifle',
                     # the Flood Elite for EVERY slot (user; the ranking gave Grunts and Jackals
                     # the armoured Marine)

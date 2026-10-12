@@ -69,7 +69,12 @@ PORT = reserved(
     # slot (user; the Beam Rifle's pick). ARMED WDM RULE (user: applied as is, the first
     # WDM above 1.0): 0.4 x Sniper 202 / DMR 52.5 = 1.54 default, / 99.4 = 0.81 balanced
     # (h1_role_compare dmr, the built port, 5b)
-    firing_profile={'mode': 'source', 'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map',
+    firing_profile={
+                    # BALANCED DROP (user 2026-10-12, the Plasma Repeater: 'same rule for every weapon'):
+                    # H1 yardstick x source port / source yardstick, the source values read from its MAP
+                    # (as the default fields): sniper carriers 0.3-0.9 / 12-20 (4 of 5); Reach DMR 0.1-0.3 / 9-14, sniper 0.25-0.45 / 3-5. A zero on one side: no row
+                    'balanced_set': ['0x1D8=0.12:Drop Weapon Loaded', '0x1DC=0.6:Drop Weapon Loaded Max', '0x1E0=h36:Drop Weapon Ammo', '0x1E2=h56:Drop Weapon Ammo Max'],
+                    'mode': 'source', 'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map',
                     'from_weapon': 'objects\\weapons\\rifle\\dmr\\dmr',
                     'donor_weapon': 'weapons\\sniper rifle\\sniper rifle',
                     'donor_variant': 'characters\\floodcombat elite\\floodcombat elite sniper rifle',

@@ -62,7 +62,12 @@ PORT = reserved(
     # balanced 137 (0.26). Halo 3's profile has no WDM of its own. Measured on a30 (all
     # Elite minors, time to die x5): stock plasma rifle 3.61 s, Armed carbine at 0.40
     # balanced 2.04 s -> 0.23 measured vs the rule's 0.26 (reports/h1_vitality_log.jsonl)
-    firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine',
+    firing_profile={
+                    # BALANCED DROP (user 2026-10-12, the Plasma Repeater: 'same rule for every weapon'):
+                    # H1 yardstick x source port / source yardstick, the source values read from its MAP
+                    # (as the default fields): pistol carriers 0.3-0.9 / 50-100 (3 of 4); H3 carbine 0.4-0.8 / 44-62, magnum 0.6-0.8 / 24-32. A zero on one side: no row
+                    'balanced_set': ['0x1D8=0.2:Drop Weapon Loaded', '0x1DC=0.9:Drop Weapon Loaded Max', '0x1E0=h92:Drop Weapon Ammo', '0x1E2=h194:Drop Weapon Ammo Max'],
+                    'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine',
                     'donor_weapon': 'weapons\\assault rifle\\assault rifle',
                     'wdm_rule': {'base': 0.4, 'yardstick_dps': 88.0, 'port_dps': 59.0,
                                  'balanced_port_dps': 137.0}},

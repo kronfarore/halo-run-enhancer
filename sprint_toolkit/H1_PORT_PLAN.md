@@ -782,8 +782,9 @@ holds; the Plasma Repeater added:
   heat + overheated (C in). Test one change per boot and keep the parts already confirmed.
 - `--skip-bitmaps` rewrites glow shaders (a proof diff caught it): build fully before a proof.
 - The Armed DROP BATTERY / ammo: MCC's shipped Reach maps carry ~half of HREK's ai\generic drop
-  values (read them from the map: ai_firing_profile does). Balanced drop rows by the ratio go in
-  the firing profile's `balanced_set`.
+  values (read them from the map: ai_firing_profile does). THE BALANCED DROP RULE (user, every
+  weapon): `balanced_set` Drop Weapon Loaded / Ammo = H1 yardstick's most common carrier value x
+  source port / source yardstick; written for every built port 2026-10-12.
 - A proof's restore once wiped another session's catalog commit made while it ran; the restore
   now leaves weapon_ports_catalog.json / ai_firing_profiles.json alone.
 - Halo 1 plays `overheated` once: `repeat` in h1_fp_retarget holds a vent loop.

@@ -91,7 +91,12 @@ PORT = reserved(
     # agree, no donor_variant. ARMED WDM RULE: base 0.4 x rocket 158 / brute shot dps --
     # default 73 x 3.33 = 243 (0.26), balanced 52.3 x 1.33 = 69.7 (0.91; was 95.8 x 1.33 = 128,
     # 0.49, before the bump correction of 2026-10-09)
-    firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\support_low\\brute_shot\\brute_shot',
+    firing_profile={
+                    # BALANCED DROP (user 2026-10-12, the Plasma Repeater: 'same rule for every weapon'):
+                    # H1 yardstick x source port / source yardstick, the source values read from its MAP
+                    # (as the default fields): RL carriers loaded 0 (no ratio) / 2-2, 2-4 (tie: 2-3); H3 brute shot 0.3-0.7 / 5-7, RL 0.5-1 / 3-4. A zero on one side: no row
+                    'balanced_set': ['0x1E0=h3:Drop Weapon Ammo', '0x1E2=h5:Drop Weapon Ammo Max'],
+                    'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\support_low\\brute_shot\\brute_shot',
                     'donor_weapon': 'weapons\\rocket launcher\\rocket launcher',
                     'wdm_rule': {'base': 0.4, 'yardstick_dps': 158.0, 'port_dps': 243.0,
                                  'balanced_port_dps': 69.7}},

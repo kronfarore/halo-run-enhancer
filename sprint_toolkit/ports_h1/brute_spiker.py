@@ -85,7 +85,12 @@ PORT = reserved(
     # Elite (0.4), Grunt minor / major 'plasma pistol with assault rifle' (0.6 / 0.5).
     # ARMED WDM RULE: base 0.4 (the AR donors, as the SMG) x AR 150 / spiker dps -- default
     # 9 x 8 = 72 (0.83), balanced 12 x 12 = 144 (0.42)
-    firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\rifle\\spike_rifle\\spike_rifle',
+    firing_profile={
+                    # BALANCED DROP (user 2026-10-12, the Plasma Repeater: 'same rule for every weapon'):
+                    # H1 yardstick x source port / source yardstick, the source values read from its MAP
+                    # (as the default fields): AR carriers 0.3-0.9 / 400-600 (10 of 12); H3 spiker 0.4-0.8 / 60-100, AR 0.5-0.9 / 128-192. A zero on one side: no row
+                    'balanced_set': ['0x1D8=0.24:Drop Weapon Loaded', '0x1DC=0.8:Drop Weapon Loaded Max', '0x1E0=h188:Drop Weapon Ammo', '0x1E2=h312:Drop Weapon Ammo Max'],
+                    'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\rifle\\spike_rifle\\spike_rifle',
                     'donor_weapon': 'weapons\\assault rifle\\assault rifle',
                     'wdm_rule': {'base': 0.4, 'yardstick_dps': 150.0, 'port_dps': 72.0,
                                  'balanced_port_dps': 144.0}},

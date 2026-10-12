@@ -76,7 +76,12 @@ PORT = reserved(
     # and the carrier an Elite slot would clone anyway. ARMED WDM RULE: base 0.15 x shotgun
     # 322 / mauler dps -- default 105 x 1.33 = 140 (0.35), balanced 15.05 x 15 x 1.33 = 301
     # (0.16)
-    firing_profile={'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\pistol\\excavator\\excavator',
+    firing_profile={
+                    # BALANCED DROP (user 2026-10-12, the Plasma Repeater: 'same rule for every weapon'):
+                    # H1 yardstick x source port / source yardstick, the source values read from its MAP
+                    # (as the default fields): shotgun carriers 0.3-0.9 / 40-60 (4 of 6); H3 mauler 0.3-0.9 / 10-18, shotgun 0.3-0.9 / 8-12. A zero on one side: no row
+                    'balanced_set': ['0x1D8=0.3:Drop Weapon Loaded', '0x1DC=0.9:Drop Weapon Loaded Max', '0x1E0=h50:Drop Weapon Ammo', '0x1E2=h90:Drop Weapon Ammo Max'],
+                    'mode': 'source', 'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\pistol\\excavator\\excavator',
                     'donor_weapon': 'weapons\\shotgun\\shotgun',
                     'donor_variant': 'characters\\floodcombat elite\\floodcombat elite shotgun',
                     'wdm_rule': {'base': 0.15, 'yardstick_dps': 322.0, 'port_dps': 140.0,

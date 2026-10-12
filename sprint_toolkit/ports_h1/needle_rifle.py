@@ -116,7 +116,12 @@ PORT = reserved(
     # every slot; the WDM RULE AS IS though the default supercombine x 2.08 one-shots (user: like
     # the DMR's 1.54): 0.5 x needler 100 / port 24 = 2.08 default, / 33.3 = 1.50 balanced
     # (h1_role_compare needle_rifle, the built port, 5b)
-    firing_profile={'mode': 'source', 'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map',
+    firing_profile={
+                    # BALANCED DROP (user 2026-10-12, the Plasma Repeater: 'same rule for every weapon'):
+                    # H1 yardstick x source port / source yardstick, the source values read from its MAP
+                    # (as the default fields): needler carriers 0.3-0.9 / 40-60 (5 of 14); Reach NR 0.2-0.4 / 9-12, needler 0.2-0.4 / 9-15. A zero on one side: no row
+                    'balanced_set': ['0x1D8=0.3:Drop Weapon Loaded', '0x1DC=0.9:Drop Weapon Loaded Max', '0x1E0=h40:Drop Weapon Ammo', '0x1E2=h48:Drop Weapon Ammo Max'],
+                    'mode': 'source', 'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map',
                     'from_weapon': 'objects\\weapons\\rifle\\needle_rifle\\needle_rifle',
                     'donor_weapon': 'weapons\\needler\\needler',
                     'donor_variant': 'characters\\elite\\elite minor\\elite minor needler',
