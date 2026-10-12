@@ -187,6 +187,13 @@ def sprite_bitmap(template, img, out, compile=False):
         b.registration_point_x, b.registration_point_y = img.width // 2, img.height // 2
         b.mipmaps = 0
     b.pixels_offset = 0
+    if compile:
+        # the element as a stock PARTICLE sheet holds it (boot 10: the DXT5 sprite still never
+        # drew; diffed against `flash h shield impact`, which does): registration 0, the data
+        # pointer -1, meta size 255
+        b.registration_point_x = b.registration_point_y = 0
+        b.bitmap_data_pointer = 0xFFFFFFFF
+        b.pixels_meta_size = 255
     seq = d.sequences.STEPTREE[0]
     while len(seq.sprites.STEPTREE) > 1:
         seq.sprites.STEPTREE.pop()
@@ -196,7 +203,10 @@ def sprite_bitmap(template, img, out, compile=False):
     sp.registration_point_x = sp.registration_point_y = 0.5
     while len(d.sequences.STEPTREE) > 1:
         d.sequences.STEPTREE.pop()
-    seq.first_bitmap_index, seq.bitmap_count = 0, 1
+    # a stock particle SPRITE sequence keeps its header (first / count as the template's: the
+    # sprites name the bitmaps); a count of 1 is a plain bitmap sequence (the raw path's)
+    if not compile:
+        seq.first_bitmap_index, seq.bitmap_count = 0, 1
     d.processed_pixel_data.data = (bytearray(pix) if compile
                                    else bytearray(img.convert('RGBA').tobytes('raw', 'BGRA')))
     t.filepath = os.path.join(TAGS, out + '.bitmap')
