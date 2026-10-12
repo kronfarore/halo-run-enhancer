@@ -38,6 +38,8 @@ ROOTS = ([os.path.join(HCEEK, 'tags', d) for d in ('weapons', 'sound', 'ui', 'ch
             os.path.join(TOOL, 'weapon_ports_catalog.json'),
             os.path.join(TOOL, 'ai_firing_profiles.json')])
 OUT = os.path.join(HERE, 'out')
+#: snapshot keys the regen never writes (the catalog / firing-profile writers are not in it)
+OUTSIDE = {'weapon_ports_catalog.json', 'ai_firing_profiles.json'}
 
 
 def files():
@@ -125,6 +127,11 @@ def restore(a, b, backup):
     n = 0
     for k in sorted(keys(A) | keys(B_)):
         if A.get(k) == B_.get(k):
+            continue
+        if k in OUTSIDE:
+            # the regen chain never writes these: a change is ANOTHER SESSION's (rp4, 2026-10-12:
+            # the restore wiped the enhancer's catalog commit made while the proof ran)
+            print('LEFT    %s (changed by another writer during the proof, not by the regen)' % k)
             continue
         if k not in A:
             os.remove(real(k))
