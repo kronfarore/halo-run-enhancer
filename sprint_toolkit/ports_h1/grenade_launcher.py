@@ -517,12 +517,13 @@ PORT.update({
                           # on black); ours colour-keyed 37 % of its texels transparent -- and the blue entry was
                           # always the event's FIRST added particle. BOOT 13, by colour: GREEN control first, BLUE the
                           # keyed ring second, YELLOW the ring OPAQUE on black (the stock form), RED the stock copy
+                          # BOOT 13 (user): green + red -- not the slot (green first drew), not the keying (the opaque
+                          # yellow failed too): every REBUILT sprite tag fails, the stock copy draws. BOOT 14: Reach's
+                          # ring SPLICED into the stock flash sheet (its pixels only, opaque on black, DXT1 at the
+                          # sheet's own sizes / mips), green the control
                           'add_particles': [_emp_test((0.1, 1.0, 0.1), small=True),
                                             _emp_test((162 / 255.0, 226 / 255.0, 252 / 255.0), out='emp pulse',
-                                                      bitmap={'compile': 'dxt1', 'out': 'emp pulse'}),
-                                            _emp_test((1.0, 1.0, 0.1), out='emp pulse o',
-                                                      bitmap={'compile': 'dxt1', 'opaque': True, 'out': 'emp pulse o'}),
-                                            _emp_test((1.0, 0.1, 0.1), out='emp pulse b', copy=True)],
+                                                      bitmap={'compile': 'splice', 'opaque': True, 'out': 'emp pulse'})],
                           # BOOT 9 DIAGNOSTIC: the normal explosion's visuals off (its particle system,
                           # lights, smoke) -- the sound and the damage stay
                           'drop_classes': ('particle_system', 'light'),

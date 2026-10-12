@@ -172,6 +172,30 @@ def sprite_bitmap(template, img, out, compile=False):
     import h1_h3_scope
     t = bitm_def.build(filepath=os.path.join(TAGS, template + '.bitmap'))
     d = t.data.tagdata
+    if compile == 'splice':
+        # SPLICE (the Grenade Launcher, boot 13: every REBUILT sprite tag -- raw, DXT5, stock
+        # headers, 32 px DXT1 keyed or opaque -- never drew, while a byte COPY of the stock flash
+        # did): the template tag kept WHOLE; each bitmap element's pixel bytes overwritten by the
+        # image compiled at that element's size as DXT1 (HCEEK's tool), cut to the element's own
+        # length (its mip count). Every other byte = the stock sheet's
+        bms = d.bitmaps.STEPTREE
+        pix = bytearray(d.processed_pixel_data.data)
+        for b in bms:
+            if b.format.enum_name != 'dxt1':
+                raise SystemExit('%s: splice handles DXT1 sheets only (%s)' % (template, b.format.enum_name))
+            n, w_, h_ = 0, b.width, b.height
+            for _m in range(b.mipmaps + 1):
+                n += max(1, w_ // 4) * max(1, h_ // 4) * 8
+                w_, h_ = max(1, w_ // 2), max(1, h_ // 2)
+            _el, data = _compiled(img.resize((b.width, b.height), Image.LANCZOS), out, 'dxt1')
+            if len(data) < n:
+                raise SystemExit('%s: compiled %d bytes, the element needs %d' % (out, len(data), n))
+            pix[b.pixels_offset:b.pixels_offset + n] = data[:n]
+        d.processed_pixel_data.data = pix
+        t.filepath = os.path.join(TAGS, out + '.bitmap')
+        os.makedirs(os.path.dirname(t.filepath), exist_ok=True)
+        t.serialize(temp=False, backup=False)
+        return out
     raw_t = bitm_def.build(filepath=os.path.join(TAGS, h1_h3_scope.TEMPLATE + '.bitmap')).data.tagdata
     bms = d.bitmaps.STEPTREE
     bms[:] = []
