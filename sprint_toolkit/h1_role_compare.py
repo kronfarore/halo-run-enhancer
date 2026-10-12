@@ -79,6 +79,31 @@ RP_FAST_SLOW = {'elite_energy_shield': 1.25, 'elite': 2.5, 'cyborg_energy_shield
                 'human_armor': 2.0, 'metal_hollow': 0.625, 'metal_thin': 0.625,
                 'metal_thick': 0.5}
 
+RLX = W + r'rocket launcher\explosion'
+FRX = W + r'fuel rod gun\grunt explosion'
+FGX = W + r'frag grenade\explosion'
+H1_MATERIALS = (
+    'dirt sand stone snow wood metal_hollow metal_thin metal_thick rubber glass force_field '
+    'grunt hunter_armor hunter_skin elite jackal jackal_energy_shield engineer_skin '
+    'engineer_force_field flood_combat_form flood_carrier_form cyborg_armor cyborg_energy_shield '
+    'human_armor human_skin sentinel moniter plastic water leaves elite_energy_shield ice '
+    'hunter_shield').split()
+# Reach's `emp` group (HREK globals): shields only -- energy_shield_thin x0.5 (Elite, Spartan),
+# _thick x0.25 (Jackal), flesh / armour / metal 0 -- onto Halo 1's materials
+EMP_REACH = dict({m: 0.0 for m in H1_MATERIALS}, elite_energy_shield=0.5,
+                 cyborg_energy_shield=0.5, jackal_energy_shield=0.25)
+# the stand-in: Halo 1's overcharged bolt's shield modifiers (elite 1.5, cyborg 0.6, jackal 1),
+# the rest 0 as Reach's emp
+EMP_H1 = dict({m: 0.0 for m in H1_MATERIALS}, elite_energy_shield=1.5,
+              cyborg_energy_shield=0.6, jackal_energy_shield=1.0)
+# Reach's explosion_small / explosion_large per armour class (HREK globals, 2026-10-12): Elite
+# shield (energy_shield_thin) 0.25/0.5, Elite body (hard_metal_thin) 0.5/0.75, Hunter armour
+# (hard_metal_thick) 0.25/0.5, Jackal shield (_thick) 0.125/0.25, brittle 2/3; flesh, tough x1
+GL_SMALL_LARGE = {'elite_energy_shield': 0.5, 'elite': 0.667, 'cyborg_energy_shield': 0.5,
+                  'cyborg_armor': 0.667, 'hunter_armor': 0.5, 'jackal_energy_shield': 0.5,
+                  'metal_thin': 0.667, 'metal_hollow': 0.667, 'metal_thick': 0.5,
+                  'sentinel': 0.667, 'glass': 0.667 * 4}
+
 SETS = {
     # the restored fuel rod against the explosive power weapons of Halo 1
     'flak_cannon': {'port': 'Flak Cannon', 'weapons': [
@@ -759,6 +784,98 @@ SETS = {
         ('Needler (no supercombine)', W + r'needler\needler', 'shot',
          {'damage_tags': [W + r'needler\detonation damage'], 'delay': 0.75}),
     ]},
+    # the GRENADE LAUNCHER (wave B4), step 4a. Reach (HREK 2026-10-12): trigger 'latch-tether',
+    # recovery 0.5 s, 1 / 8 / 16, reload 63 / 59 fr. A direct hit = impact 25 (collision) +
+    # the explosion 0..180 over 0.75 -> 2.25 (core 0.6, explosion_small); the rocket 200 + 0..240
+    # over 0.75 -> 2.5 (explosion_large) = 440, no aoe spike bump in Reach; the frag 0..160 over
+    # 0.675 -> 2.25; the fuel rod 100 + 0..60 over 0.5 -> 2.25. HELD (tethered) and released: the
+    # tethered explosion 180 over 0.001 -> 1 + the EMP 100 (`emp`: shields only, thin x0.5, thick
+    # x0.25, flesh 0) over 0.25 -> 2.5. A row's parts: (explosion, impact[, EMP])
+    'grenade_launcher': {'port': 'Grenade Launcher', 'weapons': [
+        ('GL = Reach own', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 180.0, (0.75, 2.25)), (RLX, 25.0, (0.0, 0.0))], 'rate': 2.0, 'mag': 1,
+          'reload': 63 / 30.0, 'speed': 12.5, 'range': 100.0, 'aim': (4.0, 15.0, 8.0, 15.0)}),
+        # the same on the rocket table x Reach's explosion_small / explosion_large per armour
+        # class (the Plasma Repeater's balanced-materials precedent)
+        ('GL = Reach own, Reach mat', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 180.0, (0.75, 2.25), GL_SMALL_LARGE), (RLX, 25.0, (0.0, 0.0))],
+          'rate': 2.0, 'mag': 1, 'reload': 63 / 30.0, 'speed': 12.5, 'range': 100.0,
+          'aim': (4.0, 15.0, 8.0, 15.0)}),
+        # RL ratio by the DIRECT HIT (the spike-bump precedent: a whole hit against a whole hit):
+        # 315 x 180/440, 315 x 25/440; radius 0.5 x 0.75/0.75, 2.0 x 2.25/2.5; 2.0 s x 0.5/0.8;
+        # 2 x 1/2 (4 x 8/4, 8 x 16/8 = Reach's own); 125 fr x 63/116; 12 x 12.5/8; 128 x 100/175;
+        # aim 0 x 4/5, 35 x 15/60; 12 x 8/10, 35 x 15/25
+        ('GL = RL ratio (hit)', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 128.86, (0.5, 1.8)), (RLX, 17.9, (0.0, 0.0))], 'rate': 0.8, 'mag': 1,
+          'reload': 4.1667 * 63 / 116, 'speed': 18.75, 'range': 73.1,
+          'aim': (0.0, 8.75, 9.6, 21.0)}),
+        # RL ratio PER PART: the explosion 315 x 180/240; the impact has no Halo 1 side (the
+        # rocket's is 0) -> Reach's own 25
+        ('GL = RL ratio (parts)', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 236.25, (0.5, 1.8)), (RLX, 25.0, (0.0, 0.0))], 'rate': 0.8, 'mag': 1,
+          'reload': 4.1667 * 63 / 116, 'speed': 18.75, 'range': 73.1,
+          'aim': (0.0, 8.75, 9.6, 21.0)}),
+        # Frag ratio: 120 x 180/160 on the frag table (Hunter armour x0.25); 1.5 x 0.75/0.675,
+        # 2.5 x 2.25/2.25; impact, rate, magazine, aim: Reach's own (a thrown grenade has none)
+        ('GL = Frag ratio', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(FGX, 135.0, (1.67, 2.5)), (RLX, 25.0, (0.0, 0.0))], 'rate': 2.0, 'mag': 1,
+          'reload': 63 / 30.0, 'speed': 12.5, 'range': 100.0, 'aim': (4.0, 15.0, 8.0, 15.0)}),
+        # Fuel Rod ratio by the direct hit: 75 x 180/160, 75 x 25/160 on the fuel rod's table
+        # (Hunters immune); 0.5 x 0.75/0.5, 1.5 x 2.25/2.25; 1.25 s x 0.5/0.4; 4 x 1/5 -> 1 (12 x
+        # 8/20 = 5, 24 x 16/30 = 13); 3.0 s x 63/90; 14 x 12.5/15; aim 4 x 4/4, 25 x 15/25; 6 x
+        # 8/8, 25 x 15/25; gravity 1.0 x 0.7/0.025 = 28 (a near-zero source: no ratio)
+        ('GL = Fuel Rod ratio', W + r'fuel rod gun\fuel rod', 'shot',
+         {'parts': [(FRX, 84.4, (0.75, 1.5)), (FRX, 11.7, (0.0, 0.0))], 'rate': 0.64, 'mag': 1,
+          'reload': 3.0 * 63 / 90, 'speed': 11.67, 'aim': (4.0, 15.0, 6.0, 15.0),
+          'charge': 0.0}),
+        # THE PICK (user, step 4a 2026-10-12): the FRAG ratio, its holes filled by the RL ratio.
+        # Frag: explosion 120 x 180/160 (frag table; Reach's frag is explosion_small like the
+        # GL: no group difference), radius 1.5 x 0.75/0.675, 2.5 x 2.25/2.25, velocity 10 x
+        # 12.5/10 (the throw speed, both games 10) = Reach's own. Holes -> RL: impact 0 x 25/200
+        # = 0, recovery 1.25 s, 1 / 8 / 16, reload 125 fr x 63/116, range 73.1, aim
+        ('GL = Frag + RL holes', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(FGX, 135.0, (1.67, 2.5))], 'rate': 0.8, 'mag': 1,
+          'reload': 4.1667 * 63 / 116, 'speed': 12.5, 'range': 73.1,
+          'aim': (0.0, 8.75, 9.6, 21.0)}),
+        # its release (charge pair): frag ratio 135 over 1.5 x 0.001/0.675, 2.5 x 1/2.25 + the
+        # EMP 35 (plasma pistol overcharge ratio) over 1.5 x 0.25/0.675, 2.5 x 2.5/2.25
+        ('GL release = Frag + PP', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(FGX, 135.0, (0.002, 1.11)), (FGX, 35.0, (0.56, 2.78), EMP_H1)],
+          'rate': 0.8, 'mag': 1, 'reload': 4.1667 * 63 / 116, 'speed': 12.5, 'range': 73.1,
+          'aim': (0.0, 8.75, 9.6, 21.0)}),
+        ('GL release = Reach own, frag', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(FGX, 180.0, (0.001, 1.0)), (FGX, 100.0, (0.25, 2.5), EMP_REACH)],
+          'rate': 2.0, 'mag': 1, 'reload': 63 / 30.0, 'speed': 12.5, 'range': 100.0,
+          'aim': (4.0, 15.0, 8.0, 15.0)}),
+        ('GL = Reach own, frag mat', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(FGX, 180.0, (0.75, 2.25)), (FGX, 25.0, (0.0, 0.0))], 'rate': 2.0, 'mag': 1,
+          'reload': 63 / 30.0, 'speed': 12.5, 'range': 100.0, 'aim': (4.0, 15.0, 8.0, 15.0)}),
+        # HELD + released (tethered): no impact; Reach's own vs the RL ratio (180/440 x 315 over
+        # 0 -> 0.8) + the EMP stand-in by the plasma pistol's overcharge: Halo 1's 70 x Reach EMP
+        # 100 / Reach overcharge 200 (emp) = 35 on the overcharge's SHIELD modifiers only
+        ('GL release = Reach own', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 180.0, (0.001, 1.0)), (RLX, 100.0, (0.25, 2.5), EMP_REACH)],
+          'rate': 2.0, 'mag': 1, 'reload': 63 / 30.0, 'speed': 12.5, 'range': 100.0,
+          'aim': (4.0, 15.0, 8.0, 15.0)}),
+        ('GL release = RL+PP ratio', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 128.86, (0.0, 0.8)), (RLX, 35.0, (0.2, 2.0), EMP_H1)], 'rate': 0.8,
+          'mag': 1, 'reload': 4.1667 * 63 / 116, 'speed': 18.75, 'range': 73.1,
+          'aim': (0.0, 8.75, 9.6, 21.0)}),
+        # peers
+        ('Brute Shot port, default', W + r'brute shot\brute shot', 'shot'),
+        ('Brute Shot port, balanced', W + r'brute shot\brute shot', 'shot',
+         {'dmg': 52.3, 'radius': (0.167, 1.1), 'rate': 1 / 0.75, 'mag': 6,
+          'reload': 4.1667 * 95 / 116, 'speed': 24.0, 'range': 14.6,
+          'aim': (0.0, 21.0, 7.2, 28.0)}),
+        ('Rocket Launcher', W + r'rocket launcher\rocket launcher', 'shot'),
+        ('Fuel Rod (restored)', W + r'fuel rod gun\fuel rod', 'shot'),
+        ('Frag grenade (1/s)', W + r'rocket launcher\rocket launcher', 'shot',
+         {'damage_tags': [FGX], 'radius': (1.5, 2.5), 'rate': 1.0,
+          'nomag': True, 'speed': 0.0, 'range': 0.0, 'aim': (0.0, 0.0, 0.0, 0.0)}),
+        ('Plasma Pistol overcharge', W + r'plasma pistol\plasma pistol', 'shot',
+         {'damage_tags': [W + r'plasma rifle\charged bolt'], 'rate': 1 / 1.2, 'charge': 0.6,
+          'nomag': True}),
+    ]},
 }
 
 ENEMIES = [
@@ -886,6 +1003,18 @@ def weapon(label, rel, mode, overrides, extra=None):
         if extra and extra.get('dmg') is not None:
             for d in out['damage']:
                 d['dmg'] = extra['dmg']
+        # a shot as PARTS (step 4a, the Grenade Launcher: Reach's impact + explosion [+ EMP]),
+        # the melee candidates' shape: (Halo 1 damage tag, damage[, radius, {material: x}])
+        if extra and extra.get('parts'):
+            out['damage'] = []
+            for part in extra['parts']:
+                d = damage(part[0])
+                d['dmg'] = part[1]
+                if len(part) > 2 and part[2]:
+                    d['radius'] = tuple(part[2])
+                if len(part) > 3:
+                    d['mods'].update(part[3])
+                out['damage'].append(d)
         if extra and extra.get('mag'):
             out['mag'] = extra['mag']
         if extra and extra.get('reload'):
