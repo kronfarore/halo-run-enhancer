@@ -327,8 +327,9 @@ PORT.update({
         },
         'stretch': {'gl_reload_empty_balanced': 1.02, 'gl_reload_full_balanced': 1.02},
         # BOOT 5 (user): 'push the first beep further back so an instant shot doesn't play it' --
-        # the beep 0.3 s into each 0.5 s cycle (a tap releases sooner; full charge at 0.5 s)
-        'rotate': {'gl_charge_loop': 0.3},
+        # 0.3 s of silence before the beep: the first beep at 0.3 s, then every 0.8 s while held
+        # (a tap releases sooner; full charge at 0.5 s)
+        'lead': {'gl_charge_loop': 0.3},
     },
 
     # ---------------------------------------------------------------------------------------

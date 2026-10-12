@@ -157,11 +157,13 @@ def render(weapon):
             perms = shots(w, idx, perms[0], w['shots'][name], target)
         if name in w.get('stretch', {}):
             perms = [stretch(x, w['stretch'][name]) for x in perms]
-        if name in w.get('rotate', {}):
-            # a LOOP shifted later by `rotate` s (its tail wraps to the head): the Grenade
-            # Launcher's charge beep (boot 5, user: 'push the first beep back so an instant shot
-            # doesn't play it') -- the beep at 0.3 s into each 0.5 s cycle, a tap releases sooner
-            perms = [np.roll(x, int(w['rotate'][name] * RATE)) for x in perms]
+        if name in w.get('lead', {}):
+            # `lead` s of SILENCE before the sound: the Grenade Launcher's charge beep (boot 5,
+            # user: 'push the first beep back so an instant shot doesn't play it') -- a loop then
+            # beeps first at the lead, a tap releases sooner (a rotation wrapped the beep's tail
+            # to the head: a faint tail on every tap)
+            perms = [np.concatenate([np.zeros(int(w['lead'][name] * RATE), dtype=x.dtype), x])
+                     for x in perms]
         out[name] = perms
     return out
 
