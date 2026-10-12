@@ -150,4 +150,192 @@ PORT.update({
             'first_person:throw_overheated': 'first-person throw-overheated',
         },
     },
+
+    # Reach's own sounds (h1_port_sounds.py focus_rifle, Reach's sfx.fsb). Levels = the active RMS of
+    # the stock Halo 1 PLASMA RIFLE sound each stands in for (the template's; the repeater's
+    # h1_stock_sound_levels readings, 2026-10-11): fire -9.3, overheat / dry -20.9, melee -11.4,
+    # oh_exit -20.0, overheating -26.7, posing -30.5, ready -21.2, drop (plasma_impact) -18.7, flyby
+    # (plasrif_projectile) -26.2, impact (plasmahit) -11.3; the hum -16 (the Sentinel Beam's loop,
+    # same stand-in), zooms = the sniper's -28.9 / -29.2 (the Beam Rifle's). Reach's cues: the
+    # weapon's attachments play focus_rifle_fire (in / loop / out, on primary_firing) + the FP layer
+    # focus_rifle_firing_loop (in, a SILENT loop, out) + the tails; fr_overheat (in + loop, on
+    # overheated); the FP graph: overheating -> fp_focus_rifle_overheating, o_h_exit ->
+    # focus_rifle_oh_exit, ready, posing 1, melee; the projectile: focus_beam_flyby, the material
+    # effects: focus_beam_impact, the drop: flak_cannon_drop; the empty effect beam_rifle_misfire;
+    # zoom = the beam rifle's zoom in / out (Reach's weapon names them)
+    'sounds': {
+        'catalog': 'Focus Rifle',
+        'bank': 'haloreach',
+        'dir': B.join(['sound', 'weapons', 'focus_rifle_port']),
+        'h3_dir': RS + 'focus_rifle\\',
+        'sounds': {
+            # THE HUM (the Sentinel Beam's recipe): a sound_looping on the trigger's rate of fire;
+            # start = the 3p fire in + the FP layer's in, loop = the fire loop, end = the fire out +
+            # the FP out + the exterior tail
+            'fo_fire_in': (['focus_rifle_fire\\focus_rifle_fire\\in', 'focus_rifle_fp\\focus_rifle_firing_loop\\track1\\in'],
+                           'sound\\sfx\\weapons\\plasma rifle\\fire', -16.0),
+            'fo_fire_loop': (['focus_rifle_fire\\focus_rifle_fire\\loop'], 'sound\\sfx\\weapons\\plasma rifle\\fire', -16.0),
+            'fo_fire_out': (['focus_rifle_fire\\focus_rifle_fire\\out', 'focus_rifle_fp\\focus_rifle_firing_loop\\track1\\out',
+                             'focus_rifle_tails_ext\\fr_tails_ext\\out'],
+                            'sound\\sfx\\weapons\\plasma rifle\\fire', -16.0),
+            'fo_dryfire': ([RS + 'beam_rifle\\beam_rifle_misfire'], 'sound\\sfx\\weapons\\plasma rifle\\overheat', -20.9),
+            'fo_ready': (['focus_rifle_fp\\focus_rifle_ready'], 'sound\\sfx\\weapons\\weapon_anims\\plasrifle_ready', -21.2),
+            'fo_melee': (['focus_rifle_fp\\focus_rifle_melee'], 'sound\\sfx\\weapons\\weapon_anims\\plasrifle_melee', -11.4),
+            'fo_pose': (['focus_rifle_fp\\focus_rifle_posing1'], 'sound\\sfx\\weapons\\weapon_anims\\plasrifle_posing', -30.5),
+            # THE OVERHEAT (Halo 1's three states): the FP overheating cue + fr_overheat's in mixed,
+            # its loop on `overheated`, the exit cue on o-h-exit
+            'fo_overheat': (['focus_rifle_fp\\focus_rifle_overheating', 'fr_overheat\\fr_overheat\\in'],
+                            'sound\\sfx\\weapons\\weapon_anims\\plasrifle_overheat', -26.7),
+            'fo_overheat_loop': (['fr_overheat\\fr_overheat\\loop'], 'sound\\sfx\\weapons\\weapon_anims\\plasrifle_overheat', -26.7),
+            'fo_oh_exit': (['focus_rifle_fp\\focus_rifle_oh_exit'], 'sound\\sfx\\weapons\\weapon_anims\\plasrifle_oh_exit', -20.0),
+            'fo_zoom_in': ([RS + 'beam_rifle\\beam_rifle_zoom_in'], 'sound\\sfx\\weapons\\sniper rifle\\sniper_2x_zoom', -28.9),
+            'fo_zoom_out': ([RS + 'beam_rifle\\beam_rifle_zoom_out'], 'sound\\sfx\\weapons\\sniper rifle\\sniper_10x_zoom', -29.2),
+            'fo_drop': ([RS + 'flak_cannon\\flak_cannon_drop'], 'sound\\sfx\\impulse\\weapon_drops\\plasma_impact', -18.7),
+            # the beam's own FLYBY (port_sound_refs does not read projectile sound fields: by hand)
+            'fo_flyby': (['focus_beam_flyby\\single'], 'sound\\sfx\\impulse\\impacts\\plasrif_projectile', -26.2),
+            'fo_impact': (['focus_beam_impact'], 'sound\\sfx\\weapons\\plasma rifle\\plasmahit', -11.3),
+        },
+        # Halo 1 finishes a loop pass before the end track (the Sentinel Beam: 0.5 s)
+        'loop_len': {'fo_fire_loop': 0.5},
+    },
+
+    # ---------------------------------------------------------------------------------------
+    # The weapon (h1_pickable_weapons.py --only focus_rifle) on a COPY of the Halo 1 PLASMA RIFLE
+    # (the yardstick = the template: heat + battery HUD, overheat states) wired as the SENTINEL
+    # BEAM (sentinel_beam.py, a continuous beam on the same template, 12 boots): the hum, the own
+    # firing effect, the beam projectile. DEFAULT = REACH'S OWN NUMBERS at Halo 1's 15/s (the
+    # yardstick block); the ratio values are the balance rows. Template layout after the
+    # Sentinel Beam's rewire: inputs A primary firing / B illumination / C rate of fire / D age;
+    # function 0 = the hum (C in, off with 1), 1 = primary firing (A in, off with 3), 3 = age
+    'pickable': {
+        'weapon': FO + 'focus rifle',
+        'template': PR + 'plasma rifle',
+        'world_model': FO + 'focus rifle',
+        'fp_model': FO + 'fp\\fp',
+        'fp_anims': FO + 'fp\\fp',
+        'label': 'fo',
+        'teach': ('fo', 'sr'),
+        'keys': {'first-person melee': 5},          # Reach melee_strike_1 primary keyframe 5
+        'sounds': {'first-person ready': SND + 'fo_ready',
+                   'first-person posing': SND + 'fo_pose',
+                   'first-person melee': SND + 'fo_melee',
+                   'first-person overheating': SND + 'fo_overheat',
+                   'first-person overheated': SND + 'fo_overheat_loop',
+                   'first-person o-h-exit': SND + 'fo_oh_exit'},
+        'rewire': {'inputs': ('primary_firing', 'illumination', 'primary_rate_of_fire', 'age'),
+                   'functions': {0: (2, 'C_in', 'fire loop', {'turn_off_with': 1}),
+                                 1: (2, 'A_in', 'primary firing', {'turn_off_with': 3})},
+                   'drop_attachments_on': ('B_out',)},
+        'fire_loop': {'tag': SND + 'fo_fire', 'like': r'sound\sfx\weapons\flamethrower\fire_ft',
+                      'start': SND + 'fo_fire_in', 'loop': SND + 'fo_fire_loop',
+                      'end': SND + 'fo_fire_out', 'marker': 'primary trigger',
+                      'scale': 'A_out'},
+        # THE FIRING EFFECT (the Sentinel Beam's): the plasma rifle's one flash sprite (additive
+        # sprites saturate at 15/s), no sound (the hum), the muzzle light as a part. REACH'S FOCUS
+        # RIFLE MUZZLE IS ORANGE (the H4 kit: its particle tints (255, 98, 42) -> (255, 92, 0),
+        # sparks (255, 200, 72) -> (238, 83, 31); the firing light blue-violet)
+        'fire_effect': {'from': PR + 'effects\\plasma rifle upper fire',
+                        'out': FO + 'effects\\fire', 'sound': '', 'light': FO + 'muzzle light',
+                        'keep_particles': 'flash c generic', 'tint': (1.0, 1.0, 0.38, 0.16)},
+        # the `c generic` particles take the WEAPON's change colour A (the Sentinel Beam's test 6)
+        'change_color_a': ((1.0, 0.38, 0.16), (1.0, 0.36, 0.0)),
+        'own_light': {'shape': PR + 'muzzle flash', 'look': PR + 'muzzle flash',
+                      'out': FO + 'muzzle light', 'argb': (1.0, 1.0, 0.38, 0.16), 'duration': 0.1,
+                      'no_flare': True},
+        # the template's overheat steam aims at its `vent` (Reach's fx_vent, mapped in the model)
+        'overheated_effect': {'from': PR + 'effects\\overheated', 'out': FO + 'effects\\overheated',
+                              'locations': {}},
+        'attach_swap': {PR + 'muzzle flash': FO + 'muzzle light'},
+        'attach_markers': {'secondary trigger': 'primary trigger', 'heat flare': 'vent',
+                           'heat flare1': 'vent'},
+        'fields': {
+            # the dead-battery click: the plasma rifle's empty is a SOUND reference
+            'weap_attrs.triggers.0.firing_effects.0.empty_effect.filepath': SND + 'fo_dryfire',
+            'weap_attrs.interface.zoom_in_sound.filepath': SND + 'fo_zoom_in',
+            'weap_attrs.interface.zoom_out_sound.filepath': SND + 'fo_zoom_out',
+            'item_attrs.collision_sound.filepath': SND + 'fo_drop',
+            # Reach's focus rifle: no age penalties, no misfire (its age block is all 0; only
+            # 'cannot fire at maximum age') -- the template's rate -20 % / heat +20 % at an empty
+            # battery stopped the repeater overheating; misfire 0.9 / 0.5 off with its effect
+            'weap_attrs.age.heat_penalty': 0.0,
+            'weap_attrs.age.rate_of_fire_penalty': 0.0,
+            'weap_attrs.age.misfire_start': 0.0,
+            'weap_attrs.age.misfire_chance': 0.0,
+            'weap_attrs.triggers.0.firing_effects.0.misfire_effect.filepath': '',
+            'weap_attrs.triggers.0.firing_effects.1.misfire_effect.filepath': '',
+        },
+        'melee': (PR + 'melee', FO + 'melee'),
+        'melee_response': PR + 'melee_response',
+        'messages': ('Picked up a focus rifle', 'Picked up %d rounds for focus rifle'),
+        'icon': 'focus rifle',
+        # the PLASMA RIFLE's HUD (heat + battery meters) with Reach's reticle (ui\chud\focus_rifle:
+        # hud_reticles 22, the H4 kit's reading -- recheck with the user's screenshot), the
+        # sniper's zoom screen effect; THE SCOPE (h1_h3_scope, Reach's chud) waits for the user's
+        # Reach screenshot (`--fit`)
+        'hud': {'donor': PR + 'plasma rifle', 'out': FO + 'focus rifle',
+                'screen_effect_from': r'weapons\sniper rifle\sniper rifle',
+                'screen_effect_clear': ('night_vision', 'desaturation'),
+                # Reach's chud (h1_h3_scope reach:ui\chud\focus_rifle): scope_mask (beam_rifle_scope,
+                # 4 copies), meter_border (4), meter_heat / meter_batt (meter fills), the low-battery
+                # and overheat flashes. The Beam Rifle's decisions (user, A4): the frame baked, the
+                # fills (garbage as a mask) and the flashes (hidden until a warning) dropped -- the
+                # Halo 1 HUD's own heat / battery meters show while zoomed. SIZE: a placeholder (the
+                # Beam Rifle's 828 / x0.8) until the user's Reach screenshot (`--fit W,H`)
+                'scope': {'chud': R + r'ui\chud\focus_rifle', 'out': FO + 'bitmaps\\scope_mask',
+                          'size': 1024, 'span': 828.0, 'aspect': (4 / 3.0) / 0.8, 'alpha': 'outside',
+                          'per_widget': {'lowbatt_flash_scope': {'drop': True},
+                                         'meter_heat': {'drop': True},
+                                         'meter_batt': {'drop': True},
+                                         'meter_lowbatt_flash_left': {'drop': True},
+                                         'meter_overheat_flash_right': {'drop': True}}},
+                'reticle': (R + r'ui\chud\bitmaps\hud_reticles', 22, 'focus rifle'),
+                'reticle_min_width': 3},
+        'aiming': {'autoaim_angle': 2.0, 'autoaim_range': 10.0,
+                   'magnetism_angle': 4.0, 'magnetism_range': 10.0,
+                   'zoom_levels': 2, 'zoom_ranges': (3.5, 9.5)},
+        # THE BEAM (the Sentinel Beam's): a copy of Halo 1's Sentinel beam projectile (its contrail
+        # = a continuous beam, the look Reach's 1p beam shares: energy_trail through the
+        # sentinel_beam palette, black -> gold -> white -- the bake waits for the user's
+        # screenshot), Reach's 120 wu range; the damage a copy of the plasma rifle BOLT (the
+        # yardstick's table = the DEFAULT materials, user), Reach's 3 a round x 30/s = 6 at 15/s,
+        # instantaneous acceleration 0.1 (Reach's). Speed: the Sentinel beam's own 1200 wu/s (proven
+        # visible from the FP muzzle); Reach 4000 crosses the whole range in one tick (the Spartan
+        # Laser: no overpenetration at that speed) -- 4b decides the responses
+        'beam': {'projectile': (r'characters\sentinel\beam', FO + 'beam'),
+                 'damage': (PR + 'bolt', FO + 'beam'),
+                 'range': 120.0, 'dmg': 6.0, 'acceleration': 0.1,
+                 'proj_fields': {'proj_attrs.physics.flyby_sound.filepath': SND + 'fo_flyby'}},
+        # Reach: spew 30/s (Halo 1: 15/s; the hum needs differing bounds, 29..30 both fire 15/s),
+        # rate deceleration 0.3 s; heat 0.0451 a round = the 39th round overheats at 2.53 s with
+        # Halo 1 cooling while firing at 0.29 (Reach ~2.5 s, the user's stopwatch); battery 1/310
+        # (Reach's 620 x 0.0016125 at 30/s); error 0; every round a tracer; the FP muzzle
+        # (h1_fp_muzzle.py, the idle pose: 0.4496 / -0.0643 / -0.0387 wu)
+        'trigger': {'rounds_per_second': (29.0, 30.0), 'heat_generated_per_round': 0.0451,
+                    'acceleration_time': 0.05, 'deceleration_time': 0.3,
+                    'age_generated_per_round': 1 / 310.0, 'error_angle': (0.0, 0.0),
+                    'rounds_between_tracers': 0,
+                    'first_person_offset': (0.4496, -0.0643, -0.0387),
+                    'illumination_recovery_time': 0.1},
+        # Reach: overheated at 1, back at 0.1; ONE loss = the mean of 0.35 / 0.23 (user, step 4a)
+        'heat': {'recovery_threshold': 0.1, 'overheated_threshold': 1.0, 'loss_per_second': 0.29},
+        'error_deg': {'minimum_error': 0.0, 'error_angle': (0.0, 0.0)},
+        'palette_levels': LEVELS,
+    },
+
+    # step 4b (port_field_audit.py --port focus_rifle): the source pair (Reach focus rifle vs the
+    # yardstick, Reach's plasma rifle) against the target pair (the H1 port vs its template = the
+    # yardstick, the H1 plasma rifle)
+    'field_audit': {
+        'source_kit': 'HREK',
+        'source': {'weapon': (RW + r'\focus_rifle.weapon', r'objects\weapons\rifle\plasma_rifle\plasma_rifle.weapon'),
+                   'projectile': (RW + r'\projectiles\focus_rifle_beam.projectile',
+                                  r'objects\weapons\rifle\plasma_rifle\projectiles\plasma_rifle_bolt.projectile'),
+                   'damage_effect': (RW + r'\projectiles\focus_rifle_beam.damage_effect',
+                                     r'objects\weapons\rifle\plasma_rifle\projectiles\plasma_rifle_bolt.damage_effect')},
+        'target': {'weapon': (FO + 'focus rifle.weapon', PR + 'plasma rifle.weapon'),
+                   'projectile': (FO + 'beam.projectile', PR + 'bolt.projectile'),
+                   'damage_effect': (FO + 'beam.damage_effect', PR + 'bolt.damage_effect')}},
+
+    # the dry test: b30 (the parallel pair's level for B7), a battery weapon spawns charged
+    'test': {'level': 'b30', 'rounds': (0, 0), 'grunt': None, 'elite': None},
 })
