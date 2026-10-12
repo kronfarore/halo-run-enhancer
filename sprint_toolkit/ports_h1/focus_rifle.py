@@ -234,6 +234,14 @@ PORT.update({
         # sprites saturate at 15/s), no sound (the hum), the muzzle light as a part. REACH'S FOCUS
         # RIFLE MUZZLE IS ORANGE (the H4 kit: its particle tints (255, 98, 42) -> (255, 92, 0),
         # sparks (255, 200, 72) -> (238, 83, 31); the firing light blue-violet)
+        # THE MUZZLE-FLASH RULE (closing check 10, before boot 1; h1_effect_particles): Reach's
+        # FIRST-PERSON flash (fx\firing.effect, 'only in first person', all at primary_trigger, no
+        # offsets): flash_large (emitter bounds 0.106 wu), muzzle_flash_plasma (0.108, 'render when
+        # zoomed'), distortion_ring (0.229: a refraction ring, no Halo 1 equivalent), spark_ember
+        # (0.51: physics sparks, orange) + the 1p beam and the blue-violet firing light. Ours: ONE
+        # `flash c generic` 0.06-0.075 wu at the bore, first person only (the plasma rifle's other
+        # five sprites dropped: additive sprites saturate to white at 15/s, the Sentinel Beam's
+        # finding) -- within Reach's size; the sparks and the ring not reproduced (judge in game)
         'fire_effect': {'from': PR + 'effects\\plasma rifle upper fire',
                         'out': FO + 'effects\\fire', 'sound': '', 'light': FO + 'muzzle light',
                         'keep_particles': 'flash c generic', 'tint': (1.0, 1.0, 0.38, 0.16)},
@@ -263,6 +271,15 @@ PORT.update({
             'weap_attrs.age.misfire_chance': 0.0,
             'weap_attrs.triggers.0.firing_effects.0.misfire_effect.filepath': '',
             'weap_attrs.triggers.0.firing_effects.1.misfire_effect.filepath': '',
+            # STEP 4b (before boot 1). List 2 (the ratio vs Reach's plasma rifle onto the H1 plasma
+            # rifle): camo ding 0.3 x 1/0.4, illumination recovery 0.15 x 0.1/0.03. List 3: firing
+            # noise Reach's 'shout' (the plasma rifle 'loud'), weapon type Reach's 'undefined' (the
+            # plasma rifle's 'plasma rifle'), deviation angle 1 deg (a zero on one side: the source
+            # value, the DMR's / Needle Rifle's way)
+            'weap_attrs.interface.active_camo_ding': 0.75,
+            'weap_attrs.triggers.0.misc.illumination_recovery_time': 0.5,
+            'weap_attrs.triggers.0.firing.firing_noise': 'shout',
+            'weap_attrs.weapon_type': 'undefined',
         },
         'melee': (PR + 'melee', FO + 'melee'),
         'melee_response': PR + 'melee_response',
@@ -292,7 +309,8 @@ PORT.update({
                 'reticle_min_width': 3},
         'aiming': {'autoaim_angle': 2.0, 'autoaim_range': 10.0,
                    'magnetism_angle': 4.0, 'magnetism_range': 10.0,
-                   'zoom_levels': 2, 'zoom_ranges': (3.5, 9.5)},
+                   'zoom_levels': 2, 'zoom_ranges': (3.5, 9.5),
+                   'deviation_angle': 1.0},           # 4b list 3 (degrees here)
         # THE BEAM (the Sentinel Beam's): a copy of Halo 1's Sentinel beam projectile (its contrail
         # = a continuous beam, the look Reach's 1p beam shares: energy_trail through the
         # sentinel_beam palette, black -> gold -> white -- the bake waits for the user's
@@ -301,21 +319,42 @@ PORT.update({
         # instantaneous acceleration 0.1 (Reach's). Speed: the Sentinel beam's own 1200 wu/s (proven
         # visible from the FP muzzle); Reach 4000 crosses the whole range in one tick (the Spartan
         # Laser: no overpenetration at that speed) -- 4b decides the responses
+        # STEP 4b (before boot 1): the damage effect's camo damage 0.12 x 0.1/0.25 (list 2); breaking
+        # effect (list 3: Reach 0, its plasma rifle 3 / 0.5 / 0.2) = the bolt's 0. The projectile:
+        # air / water damage range Reach's own 0..120 / 0..20 (no falloff: lower = upper damage);
+        # impact / detonation noise Reach's 'loud' (list 3, enums); water gravity 0 (Reach's).
+        # RESPONSES: the Halo 1 Sentinel beam overpenetrates every unit body and reflects off Jackal
+        # shields; Reach's focus_rifle_beam overpenetrates glass, liquid, plants and 'tough_organic'
+        # UNITS EXCEPT GIANTS, detonates on the rest (Elite bodies are hard_metal_thin, armour
+        # tough_inorganic) and never reflects -> overpenetrate glass 9, grunt 11, jackal 15,
+        # engineer 17, flood 19 / 20, human skin 24, water 28, leaves 29; the hunter skin 13, elite
+        # 14, Jackal shield 16, cyborg / human armour 21 / 23, plastic 27 stop it ('disappear', the
+        # Sentinel beam's own stop, with its impact effects). The shields' potential 'reflect' (0..180
+        # deg, the Sentinel beam's) kept: an OBSERVATION to check in game (no velocity window)
         'beam': {'projectile': (r'characters\sentinel\beam', FO + 'beam'),
                  'damage': (PR + 'bolt', FO + 'beam'),
                  'range': 120.0, 'dmg': 6.0, 'acceleration': 0.1,
-                 'proj_fields': {'proj_attrs.physics.flyby_sound.filepath': SND + 'fo_flyby'}},
+                 'fields': {'damage.active_camouflage_damage': 0.048},
+                 'proj_fields': {'proj_attrs.physics.flyby_sound.filepath': SND + 'fo_flyby',
+                                 'proj_attrs.physics.air_damage_range': (0.0, 120.0),
+                                 'proj_attrs.physics.water_damage_range': (0.0, 20.0),
+                                 'proj_attrs.physics.water_gravity_scale': 0.0,
+                                 'proj_attrs.impact_noise': 'loud',
+                                 'proj_attrs.physics.detonation_noise': 'loud'},
+                 'default_responses': {'overpenetrate': [9, 11, 15, 17, 19, 20, 24, 28, 29],
+                                       'disappear': [13, 14, 16, 21, 23, 27]}},
         # Reach: spew 30/s (Halo 1: 15/s; the hum needs differing bounds, 29..30 both fire 15/s),
-        # rate deceleration 0.3 s; heat 0.0451 a round = the 39th round overheats at 2.53 s with
+        # no rate ramp (4b: Reach's 0.3 is the ERROR deceleration -- error 0 here); the rate
+        # deceleration 0.1 = the Sentinel Beam's (the hum's tail follows it); heat 0.0451 a round = the 39th round overheats at 2.53 s with
         # Halo 1 cooling while firing at 0.29 (Reach ~2.5 s, the user's stopwatch); battery 1/310
         # (Reach's 620 x 0.0016125 at 30/s); error 0; every round a tracer; the FP muzzle
         # (h1_fp_muzzle.py, the idle pose: 0.4496 / -0.0643 / -0.0387 wu)
         'trigger': {'rounds_per_second': (29.0, 30.0), 'heat_generated_per_round': 0.0451,
-                    'acceleration_time': 0.05, 'deceleration_time': 0.3,
+                    'acceleration_time': 0.05, 'deceleration_time': 0.1,
                     'age_generated_per_round': 1 / 310.0, 'error_angle': (0.0, 0.0),
                     'rounds_between_tracers': 0,
                     'first_person_offset': (0.4496, -0.0643, -0.0387),
-                    'illumination_recovery_time': 0.1},
+                    'illumination_recovery_time': 0.5},
         # Reach: overheated at 1, back at 0.1; ONE loss = the mean of 0.35 / 0.23 (user, step 4a)
         'heat': {'recovery_threshold': 0.1, 'overheated_threshold': 1.0, 'loss_per_second': 0.29},
         'error_deg': {'minimum_error': 0.0, 'error_angle': (0.0, 0.0)},
