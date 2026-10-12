@@ -1658,7 +1658,8 @@ purpose: a 458.8 MiB a10 loads and plays (0.1) -- no file-size cap. Spawn check 
 >
 > Step 11: `gl` has no carrier -- list Halo 1's carriers of the donor weapon (WDM, actor flags);
 > `firing_profile` (Reach's ai\generic Grenade Launcher entry) with `donor_weapon` (+
-> `donor_variant`) and a `wdm_rule`; the enhancer session sets `hands` (and cards) before the
+> `donor_variant`), a `wdm_rule` and a `balanced_set` (THE BALANCED DROP RULE: drop loaded / ammo
+> by the ratio, the source values from the MAP); the enhancer session sets `hands` (and cards) before the
 > Armed boot. Tests: `h1_port_test_map.py grenade_launcher --stage` (dry default), fixes,
 > `--balanced`, `--armed grunt,jackal,elite`; `--restore <level>`. The ten-map rebuild stays
 > BATCHED (wave B, my go). When done: catalog entry, enhancer hand-off, PORTING section, memory,
