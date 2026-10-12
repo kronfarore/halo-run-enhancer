@@ -530,10 +530,16 @@ PORT.update({
                           # SPLICED into it (pixels only) drew (boot 14: 'a green and blue explosion'). FINAL: the
                           # ring opaque on black spliced into the 128 px `shield charge rings` sheet (one full-frame
                           # sprite), the release explosion's own visuals back, the green control gone
+                          # BOOT 18 (user): 'no blue rings, no visual change'. Boot 14 drew the ring in the 32 px FLASH
+                          # sheet with the explosion OFF; boots 15-18 changed both (the 128 px `shield charge rings`
+                          # container, the explosion back). BOOT 19, explosion ON: BLUE = the 32 px flash container,
+                          # RED = the 128 px rings container
                           'add_particles': [_emp_test((87 / 255.0, 195 / 255.0, 240 / 255.0), out='emp pulse',
-                                                      # boot 18: Reach's MID -> DEEP blue (the birth cyan read white)
                                                       rgb2=(33 / 255.0, 150 / 255.0, 199 / 255.0),
-                            bitmap={'compile': 'splice', 'opaque': True, 'out': 'emp pulse',
+                                                      bitmap={'compile': 'splice', 'opaque': True, 'out': 'emp pulse',
+                                                              'size': 32}),
+                                            _emp_test((1.0, 0.15, 0.1), out='emp pulse r',
+                                                      bitmap={'compile': 'splice', 'opaque': True, 'out': 'emp pulse r',
                                                               'size': 128,
                                                               'container': B.join(['effects', 'particles', 'flash', 'bitmaps',
                                                                                    'shield charge rings'])})],
