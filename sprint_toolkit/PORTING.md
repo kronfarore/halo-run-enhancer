@@ -1764,6 +1764,79 @@ the kit restored each time. After rp4 the proof is NARROWED (user): only the ste
 import a changed tool are regenerated, 'NOT COMPARED' names ports whose later steps read a changed
 output; `--full --rev <wave start>` at the end of every wave (wave B: d096b49).
 
+### Halo 1: the Grenade Launcher, wave B4 (2026-10-12, 19 boots + Armed x2 on a30) -- a bouncing grenade, a charged pair for Reach's EMP, a particle sprite of its own
+
+The whole weapon is `ports_h1/grenade_launcher.py`, on a copy of the Halo 1 ROCKET LAUNCHER (weapon,
+magazine, HUD, melee) firing grenades built on Halo 1's FRAG GRENADE projectile.
+
+**Step 4a (user): the FRAG GRENADE as yardstick, its holes by the ROCKET LAUNCHER** (a thrown grenade
+has no rate, magazine, reload, range, aim, melee or impact). Reach (HREK): impact 25 `collision` +
+detonation 0..180 over 0.75 -> 2.25 (`explosion_small`, the frag's group too -> the frag table in both
+versions, Hunter armour x0.25); balanced 135 (lower 90), 1.667 -> 2.5, recovery 1.25 s, impact 0 (the
+rocket's 0: a zero on one side), aim / range by the rocket. h1_role_compare `grenade_launcher` (shot
+rows take damage PARTS: impact + explosion + EMP). WDM: the usual dps column (user), 0.154 / 0.585.
+
+**Reach's hold-to-detonate + EMP -> the plasma pistol's CHARGED PAIR** (`add_triggers` [0]: trigger 1 =
+a copy of trigger 0; trigger 0 charges 0.5 s, hold 45 s, overcharged action none): a tap fires the
+bouncing grenade, a full charge released fires `grenade release` -- every material detonates, Reach's
+tethered blast 0..180 over 0.001 -> 1 (`projectiles` [1]) + the EMP (`add_damage`: 100 on Reach's emp
+table -- elite / cyborg shields x0.5, jackal shield x0.25, everything else 0; balanced 35 by the plasma
+pistol overcharge ratio). Lost: detonating a grenade already in flight, rolling while held, the
+vehicle stall. Halo 1's AI never fires the charged shot (Jackals with special fire overcharge at
+100 %, `--actv-set`, still only tapped -- user: leave it). Charge cue: the arm light (`fade_source` B
+out; weapon B in = primary charged + the plasma pistol's `one x B in` function via `obje_functions`)
+and Reach's landmine BEEP loop (`fire_loop` on B out, 0.3 s `lead` silence: a tap is silent). PENDING
+(user): the GL joins the future 'no overcharge sound when empty' patch.
+
+**The bounce and the fuse, MEASURED** (`h1_projectile_probe.py`, read-only, new): a weapon-fired
+projectile's speed falls LINEARLY WITH DISTANCE from initial to final over its maximum range; a
+FINAL VELOCITY above 0 is a SPEED FLOOR (boot 2: after its first bounce the grenade slid at 7.4 wu/s
+for 12 s and burst at its 100 wu range -- never at rest); Halo 1's 'on first bounce' fuse runs from
+REST (bursts ~0.45 s after settling); 'immediately' is exact. Final velocity 0. Three bounce boots
+(Reach 0.42 -> 2.6-3.5 s bursts; the frag's 0.8 / 0.9 -> 'no bounce at all'; A/B) -> the user's pick:
+Reach's friction 0.42 + a FUSE FROM LAUNCH 1.2 s (the typical first bounce ~0.7 s + Reach's 0.5;
+balanced 1.1). Lost: a long lob bursts in the air. Units / steep fast hits detonate (Reach's rules as
+per-material responses: `default_responses`, reflect `response` 'detonate'; Halo 1's angle
+convention unverified). `clear_detonation_effects`: the frag's per-material DETONATION effects (a dirt
+sound, an empty stone effect) REPLACED the grenade's own explosion on contact -- the rocket's are empty.
+
+**The EMP look -- Reach's emp_pulse in Halo 1** (boots 7-19): Reach's release plays `emp_pulse` (a ring
+of electric wisps, `fx\bitmaps\plasma\emp_mask`, coloured over its life by a cyan -> deep-blue
+gradient). Found one fact a boot, by COLOUR, with the normal explosion off (user): added particles
+draw at the effect location `normal` (the surface) with distribution 'start' (a 'buildup' over a 0 s
+event makes none); a particle draws ONLY from a STOCK particle sheet's own tag layout -- every rebuilt
+sheet (raw a8r8g8b8, DXT5, DXT1, stock headers copied, keyed or opaque) failed while a byte copy of
+the stock sheet drew; Reach's mask SPLICED into the stock `flash h shield impact` sheet's pixels drew
+(`h1_hud_sheet.sprite_bitmap` 'splice', HCEEK's DXT1, opaque on black); the 128 px `shield charge
+rings` sheet failed as a container. Final: 6 rings, 2.0-2.5 wu (the EMP's damage radius), 0.8-1.0 s
+growing x0.6 -> x1.1, tinted Reach mid -> deep blue (reads white-blue cyan, additive). Not reproduced:
+the colour over life, the scrolling clouds, a sharper ring.
+
+**Look:** Reach's one model (b_gun not tilted, primary_trigger present); the on-gun LCD STATIC (teal
+14 / 152 / 193 x3: frame, ARM / READY, digits 000; the tether distance / skull count have no Halo 1
+source -> skull dropped); the holo SIGHT = the diffuse's ALPHA (Reach paints the sight reticle there)
+through `meters` `levels` (140, 235) + `floor` 0.12. Crosshair (from the user's Reach screenshot):
+hud_reticles #12 + the falcon pitch ladder (`crop` rows +30..-10, `stretch` 0.642 x 0.281) + the AUTO
+square, SUPERSAMPLED x2 (512 px cell, Reach art at native 4K density, scale 1.3, overlay 1.6 / 1.3 / 2,
+`split` 100 for the dim frame) -- 'the best crosshair so far' (memory h1-reticle-supersample); a frame
+touching the cell edge bled a stray pixel (margin). Muzzle flash: the shotgun family without sparks /
+casing (Reach: round flash 0.053, glow 0.13, smoke). HUD meter for a 1-round magazine: ammo_meter caps
+the signed-byte alpha multiplier at 127.
+
+**Sounds:** Reach's bank; fire = grenade_launcher_fire + brute_shot_tails_ext mixed; explosion =
+grenade_launcher_expl + frag_close_layer; bounces frag_bnc_dirt / metal (the frag's reflection effects
+copied, `impact_tint` sounds, on both grenades); Reach's frag_armed LOOP is SILENT (decode a loop before
+using it). Step 6: the rocket's box ratio-scaled 4 -> then (user test) the FRAG GRENADE equipment, 1
+round: a pickup gives BOTH a grenade and a round (noted for later).
+
+**Enhancer (hand-off):** hands 'two' (81aedf1), 19 cards from the rocket / frag / shotgun (d1a8e9e);
+Triggers balance rows and cards reached trigger 0 ONLY -> `index: 'all'` rows + catalog
+`trigger_index: 'all'` (0dcb713). 'Covenant avoid friendly fire' stays a global option (user).
+
+**Proofs:** port_tool_proof gl1 (pickable), gl2 (model meters), gl3 (sounds + pickable), glF (every
+chain tool changed since 9fb39f7); h1_reticle_proof (crop / stretch, supersample); ammo_meter.plan
+unchanged for every n but 1 -- each 0 changed apart from bitmap-header noise, the kit restored exact.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:

@@ -193,7 +193,28 @@ def _lcd(bitmap):
 
 
 PORT.update({
-    'status': 'in progress',
+    # 2026-10-12: tested on a30 over 19 boots (dry default + look / bounce / EMP iterations, the
+    # probe-measured fuse, balanced) + Armed x2 (incl. Jackal overcharge) -- confirmed by the user;
+    # the ten-map rebuild is BATCHED for wave B (user's go)
+    'status': 'done',
+    # CLOSE-OUT RECORD (2026-10-12). 4b + template diff + port_sound_refs + the muzzle flash BEFORE
+    # boot 1. Yardstick: the FRAG GRENADE, holes by the ROCKET LAUNCHER (user); frag table both.
+    # Weapon (rocket copy): 2 triggers (the plasma pistol's charged pair), 1 / 8 / 16, reload 2.1 s,
+    #   recovery 0.5 (balanced 1.25 on BOTH triggers: index 'all'), error 0.15 / 0..0.4, no zoom,
+    #   aim 4/15 8/15, deviation 2; 4b list 2 = only the magazine item's rounds (the frag pickup, 1).
+    # Grenade (frag copy): 12.5 -> 0 wu/s (a final velocity is a speed FLOOR in Halo 1: probe), gravity
+    #   0.7, Reach friction 0.42, a fuse from LAUNCH 1.2 s (balanced 1.1; user), units / steep fast hits
+    #   detonate, the frag's per-material detonation effects cleared; explosion 120..180 over 0.75 ->
+    #   2.25 + impact 25 (balanced 90..135 over 1.667 -> 2.5, impact 0).
+    # Release: contact burst 120..180 over 0.001 -> 1 + the shield-only EMP 100 over 0.25 -> 2.5
+    #   (balanced 35 on the overcharge's shield table); the EMP look = Reach's emp_mask spliced into the
+    #   stock flash sheet, 6 rings, 2.0-2.5 wu, 0.8-1.0 s (boots 7-19). The AI never fires it.
+    # Look: Reach's model, static LCD, the holo sight from the diffuse alpha, the arm light faded by
+    #   the charge, the crosshair supersampled x2 (user: 'the best so far'); charge beep (landmine
+    #   loop, 0.3 s lead). Closing checks: port_refs_audit 0 problems, port_sound_refs all OWN (+ the
+    #   grenades' bounce / flight sounds by hand), port_sounds --check 0, hit-effect rule x1 (2/s < 3.5:
+    #   the explosion is the hit), check 8: Armed Grunt / Jackal / Elite fire it (hands 'two', WDM
+    #   0.154 / 0.585, drop ammo 6-13 balanced). Pending: the 'no overcharge sound when empty' patch.
 
     # geometry + look (h1_h3_weapon_model.py; Reach through reach_tags). Reach's ONE model for world
     # AND first person. grenade_launcher.render_model: 5 nodes -- b_gun (root, identity: not tilted),

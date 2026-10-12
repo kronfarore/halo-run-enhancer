@@ -26,7 +26,10 @@ B1 (DMR, the Reach pilot, 2026-10-10) is DONE and tested (4 boots: dry, fixes, b
 its ten-map rebuild is BATCHED for wave B (user's go); read "B1: what the DMR taught" -- the
 Reach recipe -- before B2. B2 (Needle Rifle, 2026-10-11) is DONE and tested (9 boots: dry x5,
 balanced x3, Armed; batched for wave B); read "B2: what the Needle Rifle taught" before B3 (the
-Plasma Repeater; its prompt is at the end of this file).
+Plasma Repeater). B3 (Plasma Repeater, 2026-10-12) is DONE and tested (batched); read "B3: what the
+Plasma Repeater taught" before B4. B4 (Grenade Launcher, 2026-10-12) is DONE and tested (19 boots +
+Armed x2; batched for wave B); read "B4: what the Grenade Launcher taught" before B5 (the Concussion
+Rifle; its prompt is at the end of this file).
 
 ## Phase 0: DONE (2026-10-07)
 
@@ -811,6 +814,66 @@ and stalls vehicles) before the ratio table -- Halo 1 has no remote detonation a
 (approximate both with the user and record what is lost: the plasma pistol's overcharge as an
 EMP stand-in, the bounce / timer as Reach's default mode).
 
+## B4: what the Grenade Launcher taught (2026-10-12) -- read before B5 (the Concussion Rifle)
+
+PORTING.md "Halo 1: the Grenade Launcher, wave B4" is the full record; `ports_h1/grenade_launcher.py`
+is the example of a BOUNCING grenade with a fuse, of a CHARGED PAIR on a magazine weapon (the plasma
+pistol's mechanism on a rocket copy), of a charge cue (light + sound) and of an OWN PARTICLE SPRITE.
+Everything in "Pilot A1" to "B3" still holds; the Grenade Launcher added:
+
+**New user rules / decisions:**
+- Step 4a: the yardstick can be a THROWN grenade with its HOLES (rate, magazine, reload, range, aim,
+  melee, impact) filled by a weapon ratio (user: 'Frag Grenade and fill the holes with Rocket
+  Launcher information'); the WDM rule keeps the dps COLUMN even for a 1-round magazine (user:
+  'keep the usual WDM').
+- Reach's hold-to-detonate + EMP -> the plasma pistol's CHARGED PAIR (tap = the bouncing grenade,
+  held 0.5 s + released = a contact-burst grenade with a shield-only EMP); the AI never fires the
+  charged shot, even as Jackals with special fire overcharge at 100 % (user: 'leave that be').
+- Bounce: Reach's own friction 0.42 with a FUSE FROM LAUNCH 1.2 s (balanced 1.1) -- the user's pick
+  after three bounce boots. Crosshair: SUPERSAMPLED x2 (memory h1-reticle-supersample, 'remember
+  this setting'). Frag grenades as its ammo item give BOTH a grenade and a round (noted, later).
+- The 'Covenant avoid friendly fire' enhancer option stays GLOBAL (user expected per weapon; no
+  change). PENDING: the GL joins the future 'no overcharge sound when empty' patch.
+
+**Process (observations -- check them on the next port):**
+- MEASURE projectiles live: `h1_projectile_probe.py` (read-only; every projectile from creation to
+  detonation, `--analyse`). It found: in flight a projectile's speed falls LINEARLY WITH DISTANCE
+  from initial to final over its maximum range; a FINAL VELOCITY > 0 is a SPEED FLOOR (the grenade
+  slid at 7.4 wu/s for 12 s and burst only at its range); Halo 1's 'on first bounce' fuse runs from
+  REST (0.45 s after settling); 'immediately' is exact (1.5 s -> 1.47 s). A test variant on the
+  secondary (a hand-made test weapon + projectile under `<weapon dir>\test`) halves the boots.
+- A projectile built on the FRAG carries per-material DETONATION EFFECTS that REPLACE its own
+  explosion on contact (the EMP never showed until `clear_detonation_effects`); the rocket's are
+  empty. Check any template projectile's material detonation effects.
+- PARTICLE SPRITES: a particle draws ONLY from a STOCK particle sheet's own tag layout -- every
+  rebuilt sheet (raw, DXT5, DXT1, stock headers copied) failed; Reach's art SPLICED into the stock
+  `flash h shield impact` sheet's pixels (`h1_hud_sheet.sprite_bitmap` 'splice') drew, the 128 px
+  `shield charge rings` sheet did NOT as a container. Particles spawn at the effect location
+  `normal` (the surface) and need distribution 'start' in a 0 s event; one colour per boot found
+  each fact (the user's 'disable the normal explosion to see it' first).
+- Balance rows / cards on the Triggers block reach trigger 0 ONLY unless `index: 'all'` (enhancer
+  0dcb713 + the catalog key `trigger_index: 'all'`) -- any port with a second trigger.
+- Halo 1 tags: the HUD meter's alpha multiplier is a SIGNED byte (ammo_meter caps at 127: a 1-round
+  meter); a sound LOOP can be silent (Reach's frag_armed loop: decode before using; `lead` silence
+  delays a cue); a rotated loop wraps its tail onto the head.
+- Tools now: `h1_projectile_probe.py/.cmd`, `h1_port_test_map.py --actv-set`, pickable
+  `add_triggers` / `projectiles` / explosion `add_damage` / `clear_detonation_effects` / particle
+  `bitmap` (mask, splice, container) / `tint_bounds` / `spin`, reflect `response`, meters `levels`
+  (alpha shape), reticle `supersample` + layer `crop` / `stretch`, h1_port_sounds `lead`.
+
+**For B5, the Concussion Rifle (`rifle\concussion_rifle\concussion_rifle`):** yardstick candidates the
+restored Fuel Rod (provisional), the Rocket Launcher, the Plasma Grenade. Reach (h3_weapon_values --kit
+reach, 2026-10-12): 6 loaded / 18 initial / 30 max, reloads 6 (100 fr both), fire recovery 0.333,
+minimum error 0.15, error 0.4 / 0.4, NO zoom, aim 4/15 8/15, FP ready 19 / put_away 4 / melee 34 /
+fire 25; the bolt (concussion_rifle_grenade.projectile): impact 21.5 `collision` (accel 0.75) +
+DETONATION 0..21.5 over 1 -> 2 wu (core 0.8, `plasma_fast`, instantaneous acceleration 2.5 = the
+KNOCKBACK), timer 'immediately', MINIMUM VELOCITY 11 (detonates in Halo 1: the Brute Shot's trap),
+12 -> 16 wu/s (it ACCELERATES; a final velocity is a speed floor in Halo 1: harmless for a contact
+burst), gravity 0.25, range 100. Reach's fuel rod (flak_cannon) 5 / 20 / 30, recovery 0.4, 100 impact
++ 0..60 over 0.5 -> 2.25 (`explosion_large`). Read the knockback against the Gravity Hammer's tuned
+blast (A9: knockback is TUNED IN GAME), and the bolt's look (plasma; the particle-sprite lesson
+above before any own effect).
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one
@@ -892,7 +955,7 @@ reach-port-foundry-render-model; animations: a Halo 1 donor's).
 | B1 | **DMR** (pilot) -- DONE 2026-10-10 | the Reach pipeline end to end; scope zoom -- see "B1: what the DMR taught" |
 | B2 | Needle Rifle | needles + supercombine (the needler as yardstick) |
 | B3 | Plasma Repeater -- DONE 2026-10-12 | heat with venting -- see "B3: what the Plasma Repeater taught" |
-| B4 | Grenade Launcher | an arcing grenade; the EMP alt-fire approximated |
+| B4 | Grenade Launcher -- DONE 2026-10-12 | an arcing grenade; the EMP alt-fire approximated -- see "B4: what the Grenade Launcher taught" |
 | B5 | Concussion Rifle | a splash push projectile |
 | B6 | Plasma Launcher | a charge; lock-on approximated (guidance) |
 | B7 | Focus Rifle | a beam + zoom (the H4 kit's Focus Rifle and the Sentinel Beam) |
@@ -1666,3 +1729,57 @@ purpose: a 458.8 MiB a10 loads and plays (0.1) -- no file-size cap. Spawn check 
 > BATCHED (wave B, my go). When done: catalog entry, enhancer hand-off, PORTING section, memory,
 > `python port_backup.py --game h1`, "B4: what the Grenade Launcher taught" and the B5
 > (Concussion Rifle) prompt.
+
+### The Concussion Rifle (wave B5), filled in
+
+> Port the Concussion Rifle into Halo 1 (H1_PORT_PLAN.md, wave B, #B5). Source: Halo Reach,
+> `objects\weapons\rifle\concussion_rifle\concussion_rifle` (HREK); FP graph
+> `objects\characters\spartans\fp\weapons\rifle\fp_concussion_rifle\fp_concussion_rifle`.
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Phase 0: DONE", "Pilot A1" to "A9" -- A7 (the Brute Shot:
+> an explosive projectile on a rocket template, minimum velocity DETONATES) and A9 (the Gravity
+> Hammer: knockback is TUNED IN GAME) matter most here -- "B1: what the DMR taught" (the REACH
+> RECIPE), "B2", "B3" and "B4: what the Grenade Launcher taught" (the projectile probe, a final
+> velocity is a speed floor, the frag's per-material detonation effects replace the explosion,
+> particle sprites only from stock sheets, Triggers rows need index 'all')), PORTING.md ("What
+> ported actually means" steps 0-11 and 5b, closing checks 0-10, the Halo 1 sections -- the Grenade
+> Launcher, the Plasma Repeater, the Needle Rifle and the DMR first, the Brute Shot and the Gravity
+> Hammer for the blast --, "Balance" incl. the ARMED WDM RULE, THE HIT-EFFECT RULE, the two-handed
+> rule) and memory h1-grenade-launcher-port, h1-plasma-repeater-port, h1-needle-rifle-port,
+> h1-dmr-reach-pilot, h1-brute-shot-port, h1-gravity-hammer-port, h1-reticle-supersample,
+> h1-armed-test-balanced-god, h1-armed-wdm-rule, h1-armed-two-handed-rule, h1-armed-balanced-drop-rule,
+> h1-hit-effect-rule, port-muzzle-flash-rule, port-flashlight-sound-rule, h1-port-phase0,
+> halo-port-own-messages, h1-fmod-bank-sounds, port-findings-are-observations, shared-worktree-commits.
+> `ports_h1/grenade_launcher.py` / `plasma_repeater.py` are the nearest shape for the Reach plumbing;
+> `brute_shot.py` for an explosive bolt. Copy into `ports_h1/concussion_rifle.py` and edit only that
+> file plus shared tools you generalize (prove byte-identical output for the built ports with
+> `port_tool_proof.py`, and restore the kit from a backup after).
+>
+> START WITH STEP 4a, with me: candidates the restored Fuel Rod (provisional; Reach's fuel rod is a
+> 5-round magazine weapon too), Rocket Launcher, Plasma Grenade; DEFAULT = Reach's own numbers,
+> BALANCED = the ratio rows. Reach (2026-10-12): 6 loaded / 18 initial / 30 max, reloads 6 (100 fr
+> both reloads), fire recovery 0.333, error 0.15 minimum / 0.4, no zoom, aim 4/15 8/15; the bolt
+> `concussion_rifle_grenade`: impact 21.5 `collision` + DETONATION 0..21.5 over 1 -> 2 wu (core 0.8,
+> `plasma_fast`, instantaneous acceleration 2.5 = the KNOCKBACK), minimum velocity 11, 12 -> 16 wu/s,
+> gravity 0.25, range 100; Reach's fuel rod 5 / 20 / 30, recovery 0.4, 100 impact + 0..60
+> (`explosion_large`). READ THE KNOCKBACK (the hammer's tuned blast is the Halo 1 reference) and the
+> bolt's flight against Halo 1's speed rule (h1_projectile_probe if it matters) before the ratio
+> table. Show the time to kill (h1_role_compare) vs Fuel Rod, RL, Plasma Rifle. Then 4b, the
+> template diff (incl. the template projectile's material DETONATION effects), port_sound_refs (+
+> the projectile's own sound fields by hand) and the muzzle-flash comparison BEFORE boot 1. Any
+> zoom / HUD art: size it from a Reach SCREENSHOT, ask me for one (the crosshair: the supersample
+> recipe). The model gets `'ground_point': 'auto'`.
+>
+> Reserved: pickup messages 79/80; hud_msg_icons 43 (+ _r); hud_reticles 32 (+ _r; 46+ for any
+> zoom glyphs); label `cr` taught to characters\cyborg from `pr`; sounds under
+> `sound\weapons\concussion_rifle_port`; weapon folder `weapons\concussion rifle`; catalog name
+> `Concussion Rifle`.
+>
+> Step 11: `cr` has no carrier -- list Halo 1's carriers of the donor weapon (WDM, actor flags);
+> `firing_profile` (Reach's ai\generic Concussion Rifle entry) with `donor_weapon` (+
+> `donor_variant`), a `wdm_rule` and a `balanced_set` (THE BALANCED DROP RULE, the source values
+> from the MAP); hand off to the "Halo enhancer project" session (hands, cards, `trigger_index` if
+> a second trigger) before the Armed boot. Tests: `h1_port_test_map.py concussion_rifle --stage` (dry
+> default), fixes, `--balanced`, `--armed grunt,jackal,elite`; `--restore <level>`. The ten-map
+> rebuild stays BATCHED (wave B, my go). When done: catalog entry, enhancer hand-off, PORTING
+> section, memory, `python port_backup.py --game h1`, "B5: what the Concussion Rifle taught" and
+> the B6 (Plasma Launcher) prompt.

@@ -1,0 +1,184 @@
+{
+ "game": "Halo 1",
+ "weapon": "Grenade Launcher",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\grenade_launcher_port\\gl_fire",
+   "perms": [
+    "gl_fire_1.wav",
+    "gl_fire_2.wav",
+    "gl_fire_3.wav",
+    "gl_fire_4.wav",
+    "gl_fire_5.wav",
+    "gl_fire_6.wav",
+    "gl_fire_7.wav",
+    "gl_fire_8.wav",
+    "gl_fire_9.wav",
+    "gl_fire_10.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\grenade_launcher_port\\gl_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\grenade_launcher_port\\gl_explode",
+   "perms": [
+    "gl_explode_1.wav",
+    "gl_explode_2.wav",
+    "gl_explode_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\grenade_launcher_port\\gl_explode"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\grenade_launcher_port\\gl_bounce",
+   "perms": [
+    "gl_bounce_1.wav",
+    "gl_bounce_2.wav",
+    "gl_bounce_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\grenade_launcher_port\\gl_bounce"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\grenade_launcher_port\\gl_bounce_metal",
+   "perms": [
+    "gl_bounce_metal_1.wav",
+    "gl_bounce_metal_2.wav",
+    "gl_bounce_metal_3.wav",
+    "gl_bounce_metal_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\grenade_launcher_port\\gl_bounce_metal"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\grenade_launcher_port\\gl_projectile",
+   "perms": [
+    "gl_projectile_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\grenade_launcher_port\\gl_projectile"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\grenade_launcher_port\\gl_reload_empty",
+   "perms": [
+    "gl_reload_empty_1.wav",
+    "gl_reload_empty_2.wav",
+    "gl_reload_empty_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\grenade_launcher_port\\gl_reload_empty"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\grenade_launcher_port\\gl_reload_full",
+   "perms": [
+    "gl_reload_full_1.wav",
+    "gl_reload_full_2.wav",
+    "gl_reload_full_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\grenade_launcher_port\\gl_reload_full"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\grenade_launcher_port\\gl_ready",
+   "perms": [
+    "gl_ready_1.wav",
+    "gl_ready_2.wav",
+    "gl_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\grenade_launcher_port\\gl_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\grenade_launcher_port\\gl_melee",
+   "perms": [
+    "gl_melee_1.wav",
+    "gl_melee_2.wav",
+    "gl_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\grenade_launcher_port\\gl_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\grenade_launcher_port\\gl_pose",
+   "perms": [
+    "gl_pose_1.wav",
+    "gl_pose_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\grenade_launcher_port\\gl_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\grenade_launcher_port\\gl_ammo",
+   "perms": [
+    "gl_ammo_1.wav",
+    "gl_ammo_2.wav",
+    "gl_ammo_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\grenade_launcher_port\\gl_ammo"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\grenade_launcher_port\\gl_dryfire",
+   "perms": [
+    "gl_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\grenade_launcher_port\\gl_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\grenade_launcher_port\\gl_drop",
+   "perms": [
+    "gl_drop_1.wav",
+    "gl_drop_2.wav",
+    "gl_drop_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\grenade_launcher_port\\gl_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\grenade_launcher_port\\gl_charge_loop",
+   "perms": [
+    "gl_charge_loop_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\grenade_launcher_port\\gl_charge_loop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\grenade_launcher_port\\gl_reload_empty_balanced",
+   "perms": [
+    "gl_reload_empty_balanced_1.wav",
+    "gl_reload_empty_balanced_2.wav",
+    "gl_reload_empty_balanced_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\grenade_launcher_port\\gl_reload_empty_balanced"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\grenade_launcher_port\\gl_reload_full_balanced",
+   "perms": [
+    "gl_reload_full_balanced_1.wav",
+    "gl_reload_full_balanced_2.wav",
+    "gl_reload_full_balanced_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\grenade_launcher_port\\gl_reload_full_balanced"
+   ]
+  }
+ ]
+}
