@@ -448,6 +448,11 @@ PORT.update({
                             'proj_attrs.detonation.minimum_velocity': 0.0,
                             'proj_attrs.flags.oriented_along_velocity': True},
             'default_responses': {'detonate': UNITS + WORLD},
+            # the frag's reflection effects ride along on every response: own bounce sounds too
+            # (port_sound_refs does not read a projectile's responses -- found by hand)
+            'impact_tint': {'match': (), 'rgb': None, 'out': GL + 'effects' + B + 'impact' + B,
+                            'sounds': {B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'bouncedirt']): SND + 'gl_bounce',
+                                       B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'bouncemetal']): SND + 'gl_bounce_metal'}},
             'keep_attachments': (0,),
             'glow': {'light': (r'weapons\fuel rod gun\fuel rod exhaust', GL + 'grenade release glow'),
                      'flare': GL + 'grenade release glow', 'rgb': ARM_RED, 'flare_radius': 0.15,
