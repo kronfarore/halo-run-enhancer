@@ -700,7 +700,16 @@ def meters(w):
         a = np.array(img)
         # `shape` 'r' / 'g' / 'b': the shape in ONE channel (the Needle Rifle's Reach ring gauge
         # plasma_pistol_display: the ring in R, G and B solid 255 -- max(RGB) lit the whole square)
-        shape = a[..., :3].max(axis=2) if not M.get('shape') else a[..., 'rgb'.index(M['shape'])]
+        shape = a[..., :3].max(axis=2) if not M.get('shape') else a[..., 'rgba'.index(M['shape'])]
+        if M.get('levels'):
+            # `levels` (lo, hi): the shape stretched so lo -> 0, hi -> 255, plus `floor` (0..1)
+            # kept everywhere (the Grenade Launcher's holo sight, boot 1: Reach paints the sight's
+            # reticle into the diffuse's ALPHA -- lines ~200-242 over a ~132 panel; a dim faint
+            # panel + bright lines)
+            lo, hi = M['levels']
+            sh = np.clip((shape.astype(np.float64) - lo) / float(hi - lo), 0.0, 1.0)
+            sh = M.get('floor', 0.0) + (1.0 - M.get('floor', 0.0)) * sh
+            shape = np.round(sh * 255).astype(np.uint8)
         grad = a[..., 3] if M.get('gradient', 'alpha') == 'alpha' else np.full_like(shape, int(round(M['gradient'] * 255)))
         if M.get('gradient_range'):
             # the source gradient's own range stretched onto (lo, hi) of the meter value (the

@@ -214,9 +214,14 @@ PORT.update({
         # it over a 50% grey self-illum. Halo 1: a DIM additive lit shape of the diffuse's green
         # channel -- see-through, the painted reticle darker than the panel (judge in game)
         'drop_materials': ('skull_switch', 'skull_ones'),
+        # BOOT 1 (user): 'the holographic sight does not have the crosshair on it' -- the green
+        # channel's lines are a few levels off the panel. The sight's reticle (frame, ring, side
+        # bars, drop ticks = the HUD crosshair's design) is clean in the diffuse's ALPHA: lines
+        # ~200-242 over a ~132 panel -> `levels` (140, 235), a faint panel `floor` 0.12, teal
         'meters': {'grenade_launcher_glass': {'map': DISPLAY + 'grenade_launcher_diffuse.bitmap', 'from': GAUGE,
-                                              'shape': 'g', 'gradient': 0.0, 'static': STATIC,
-                                              'color': (0.22, 0.34, 0.32)},
+                                              'shape': 'a', 'levels': (140, 235), 'floor': 0.12,
+                                              'gradient': 0.0, 'static': STATIC,
+                                              'color': (0.45, 0.95, 1.0)},
                    'display': _lcd('display_bg.bitmap'),
                    'item': _lcd('gl_display_details_diffuse.bitmap'),
                    'display_status': _lcd('gl_display_status.bitmap'),
@@ -225,7 +230,11 @@ PORT.update({
                    'ones': _lcd('numbers.bitmap')},
         # the ARM SWITCH light (Reach: solid yellow at rest, red when tethered): an additive glow per
         # UV island (the Plasma Repeater's pilot recipe), yellow; the CHARGED cue comes later
-        'glow_shaders': {'arm_switch': {'rgb': ARM_YELLOW, 'additive': True, 'islands': True}},
+        # BOOT 1 (user): 'the yellow light is always on -- maybe only when it charges' -> faded by B
+        # OUT = primary charged (pickable: weapon B in + the plasma pistol's `one x B in` function):
+        # dark at rest, lit as the hold charges (Reach: lit at rest, red when tethered)
+        'glow_shaders': {'arm_switch': {'rgb': ARM_YELLOW, 'additive': True, 'islands': True,
+                                        'fade_source': 'B_out'}},
         # own hull (h1_box_collision.py) over the world model's bounds
         'collision': {'material': 'metal',
                       'boxes': [((-0.025, -0.026, -0.011), (0.230, 0.026, 0.097))]},
@@ -421,9 +430,18 @@ PORT.update({
         'projectiles': [{
             'projectile': (FG + 'frag grenade', GL + 'grenade release'),
             'damage': None,
+            # BOOT 1 (user): 'explosion looks the same for both -- if the second type is smaller it
+            # should be smaller, and add some effect to resemble the EMP (electric would be perfect)'.
+            # Visual x0.45 (Reach's tethered blast 1 wu against 2.25) + Halo 1's own electric burst:
+            # the plasma grenade's `detonation start` (60 `plasma electric bolts` 0.35-0.45 + 60
+            # blue `flash h shield impact`), at the frag effect's `normal` (location 1)
             'explosion': {'effect': (FG + 'effects' + B + 'explosion', GL + 'effects' + B + 'release explosion'),
                           'part': FG + 'explosion',
-                          'scale': 0.9, 'out_dir': GL + 'effects' + B,
+                          'scale': 0.45, 'out_dir': GL + 'effects' + B + 'release' + B,
+                          'add_particles': [{'from': r'weapons\plasma grenade\effects\detonation start',
+                                             'match': 'plasma electric bolts', 'location': 1},
+                                            {'from': r'weapons\plasma grenade\effects\detonation start',
+                                             'match': 'flash h shield impact', 'location': 1}],
                           'damage': (FG + 'explosion', GL + 'release explosion'),
                           'lower': 120.0, 'upper': (180.0, 180.0), 'radius': (0.001, 1.0),
                           # the same ratio on Reach's tethered blast (core 0.2, acceleration 3)
@@ -477,7 +495,13 @@ PORT.update({
                    'magnetism_angle': 8.0, 'magnetism_range': 15.0,
                    # 4b list 3: Reach GL 2 deg, its RL 0 (a zero on one side: the source value)
                    'deviation_angle': 2.0},
+        # the CHARGE as an object function (the arm light): out 0 = the rocket's muzzle flash (A in =
+        # integrated light), out 1 = the plasma pistol's function 3 (`one` x B in) with weapon B in =
+        # primary charged -> B out = the charge
+        'obje_functions': [{'from': RL + 'rocket launcher', 'index': 0},
+                           {'from': 'weapons' + B + 'plasma pistol' + B + 'plasma pistol', 'index': 3}],
         'fields': {
+            'weap_attrs.B_in': 'primary_charged',
             # 4b list 2: active camo ding 1 x 0.75/1
             'weap_attrs.interface.active_camo_ding': 0.75,
             # THE CHARGE: trigger 0 charges 0.5 s (no Reach number: the tether starts at the press;
@@ -544,7 +568,11 @@ PORT.update({
                                    (R + r'ui\chud\bitmaps\grenade_launcher', 1, 0.385,
                                     {'offset': (-46.0, 0.0)})],
                 'reticle_split': 100,
-                'reticle_scale': 1.0, 'reticle_overlay': 1.6,
+                # BOOT 1 (user): 'size is good, but looks pretty bad compared to the original' -- the
+                # art was drawn small in the sheet and magnified x1.6 (blur, unreadable labels). Drawn
+                # x1.35 in the sheet (the frame ~246 of 256 px) and magnified 1.6 / 1.35 = x1.185: the
+                # same on-screen size; the simulation resolves the labels, pitch and drop ticks
+                'reticle_scale': 1.35, 'reticle_overlay': 1.6 / 1.35,
                 'reticle_min_width': 3,
                 'ammo_meter': {'sizes': (1,), 'base': GL + 'bitmaps' + B + 'grenade_launcher_ammo'},
                 'flash_base': 2},
