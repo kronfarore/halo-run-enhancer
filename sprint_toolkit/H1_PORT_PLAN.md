@@ -781,6 +781,11 @@ holds; the Plasma Repeater added:
   `glow_cards` copy) recolours a meter fill. Hold a colour through an overheat with an out =
   heat + overheated (C in). Test one change per boot and keep the parts already confirmed.
 - `--skip-bitmaps` rewrites glow shaders (a proof diff caught it): build fully before a proof.
+- The Armed DROP BATTERY / ammo: MCC's shipped Reach maps carry ~half of HREK's ai\generic drop
+  values (read them from the map: ai_firing_profile does). Balanced drop rows by the ratio go in
+  the firing profile's `balanced_set`.
+- A proof's restore once wiped another session's catalog commit made while it ran; the restore
+  now leaves weapon_ports_catalog.json / ai_firing_profiles.json alone.
 - Halo 1 plays `overheated` once: `repeat` in h1_fp_retarget holds a vent loop.
 - THE PROOF IS NARROWED (user 2026-10-12): `port_tool_proof.py` regenerates only the chain steps
   whose scripts import a changed tool (a model-tool change: the models, minutes instead of ~25)

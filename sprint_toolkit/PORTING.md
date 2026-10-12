@@ -1735,7 +1735,13 @@ Elite body x2.5, Hunter x2, Jackal shield x0.5, Marine armour x2, metal x2-2.5).
 
 **Step 11.** Donor = the Elite minor plasma rifle (carriers 0.4-0.6, no actor flags); Reach's
 ai\generic profile; WDM rule 0.5 x 130 / 96 (default), / 125 (balanced). Enhancer (8b0c984): hands
-'two', tag_map, battery skips, 20 Halo 1 cards from the Plasma Rifle.
+'two', tag_map, battery skips, 20 Halo 1 cards from the Plasma Rifle. Armed boot (built map read
+back): WDM 0.677 / 0.52, Grunts 5.03/s vs 10.06, Jackals shieldless. THE DROP BATTERY (user):
+MCC's SHIPPED Reach maps carry ~HALF of HREK's ai\generic 'drop weapon loaded' for every weapon
+(m10: repeater 0.25-0.45, plasma rifle 0.35-0.45, AR 0.25-0.45, magnum 0.3-0.4; HREK 0.5-0.9 /
+0.7-0.9 / 0.5-0.9 / 0.6-0.8) -- the source read is right; read drop values from the MAP, not
+HREK. Default = Reach's 25-45 %; balanced by the ratio 50-90 % (ai_firing_profile
+`balanced_set`). No earlier port has balanced drop rows (their balanced box keeps the source's).
 
 **Traps on the way:** `--skip-bitmaps` REWRITES the glow shaders (caught by the proof diff; rebuild
 fully); a glow bitmap missing under --skip-bitmaps fails the build; the pilot listed in both
