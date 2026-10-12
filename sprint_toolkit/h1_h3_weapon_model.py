@@ -616,7 +616,11 @@ def bitmaps(w):
         # palette[profile], alpha = profile; `premultiply` for an additive layer
         prof, _ = h3_hud_art.decode(K['profile'])
         pal, _ = h3_hud_art.decode(K['palette'])
-        v = np.asarray(prof.convert('L').resize((K.get('size', 64),) * 2, Image.LANCZOS)).astype(np.float64)
+        # `size`: square px, or (w, h) -- a profile that VARIES along u keeps its length (the
+        # Focus Rifle's scrolling `pulse`, 512 x 64)
+        sz = K.get('size', 64)
+        v = np.asarray(prof.convert('L').resize(tuple(sz) if isinstance(sz, (tuple, list)) else (sz, sz),
+                                                Image.LANCZOS)).astype(np.float64)
         row = np.asarray(pal)[np.asarray(pal).shape[0] // 2, :, :3].astype(np.float64)
         col = row[np.clip((v / 255.0 * (len(row) - 1)).round().astype(int), 0, len(row) - 1)]
         if K.get('premultiply'):
