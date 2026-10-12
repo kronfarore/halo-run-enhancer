@@ -3588,6 +3588,17 @@
    "fp_animations": "weapons\\plasma repeater\\fp\\fp",
    "requires": [
     "proj weapons\\plasma repeater\\bolt"
+   ],
+   "hands": "two",
+   "tag_map": {
+    "proj weapons\\plasma rifle\\bolt": "proj weapons\\plasma repeater\\bolt",
+    "jpt! weapons\\plasma rifle\\bolt": "jpt! weapons\\plasma repeater\\bolt",
+    "jpt! weapons\\plasma rifle\\melee": "jpt! weapons\\plasma repeater\\melee"
+   },
+   "skip_cards": [
+    "Ammo Inventory",
+    "Ammo Loaded",
+    "Reload Time"
    ]
   }
  ],

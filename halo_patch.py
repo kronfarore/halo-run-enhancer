@@ -721,6 +721,36 @@ def apply_difficulty_baseline(m, registry, target_difficulty, spec):
     return rows
 
 
+#: Halo 1 weap Triggers (0x4FC, 0x114 an element): (time, runtime rate) offset pairs --
+#: rate of fire acceleration / deceleration, error acceleration / deceleration
+H1_TRIGGERS, H1_TRIGGER_SIZE = 0x4FC, 0x114
+H1_TRIGGER_RATES = ((0x0C, 0xF8), (0x10, 0xFC), (0x38, 0x100), (0x3C, 0x104))
+
+
+def sync_h1_trigger_rates(m):
+    """Every Halo 1 trigger's four runtime rates re-derived from its times. Only rates
+    that no longer match are written, so an untouched map changes nothing."""
+    import struct
+    rows = []
+    for path, base in m.find_tags('weap', '*'):
+        count, ptr = struct.unpack_from('<iI', m.data, base + H1_TRIGGERS)
+        if count <= 0 or count > 8:
+            continue
+        first = ptr - m.magic
+        for i in range(count):
+            e = first + i * H1_TRIGGER_SIZE
+            for t_off, r_off in H1_TRIGGER_RATES:
+                t = struct.unpack_from('<f', m.data, e + t_off)[0]
+                want = 1.0 / (30.0 * t) if t > 0 else 1.0
+                have = struct.unpack_from('<f', m.data, e + r_off)[0]
+                if abs(have - want) > 1e-5 * max(1.0, want):
+                    struct.pack_into('<f', m.data, e + r_off, want)
+                    rows.append({'effect': 'trigger rates follow times', 'tag': 'weap ' + path,
+                                 'field': 'trigger %d rate @0x%X' % (i, r_off), 'ok': True,
+                                 'old': round(have, 5), 'new': round(want, 5)})
+    return rows
+
+
 def _apply_derived(m, cls, path, effect_name, op, plugin):
     """Write a derived field (sum of its source fields' current values) into
     every tag matching (cls, path). Needs the per-tag read/write interface of
@@ -10436,6 +10466,13 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # get it too.
         import damage_rows as _dr
         results.extend(_dr.lift_immunities(m, str(game).strip()))
+    if str(game).strip() == 'Halo 1':
+        # Halo 1 ramps rate of fire and error by the trigger's RUNTIME rates, which tool
+        # bakes from the times at build (rate = 1/(30 x time), time 0 -> 1.0; measured on
+        # every a30 trigger). A card or port row that changes a time alone does nothing in
+        # game (the Plasma Repeater port, 2026-10-11), so the rates follow the times here,
+        # after every value op.
+        results.extend(sync_h1_trigger_rates(m))
     if mags_before:
         # LAST of the value passes: it reads the magazine every other op has finished
         # with, so anything that moves it -- a card, a skull, a port's balance -- is

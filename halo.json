@@ -11027,46 +11027,54 @@
 			"Plasma Repeater": {
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"game": ["Halo Reach"],
-					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"},
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 1": "jpt! weapons\\plasma repeater\\melee" },
 					"targets": [
-						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased"},
-						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased"},
-						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased"}
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Magnetism": {
 					"desc": "How hard your aim is pulled toward a target.",
 					"debug_desc": "`Magnetism Angle` and `Magnetism Range` are the pull on your reticle near a target, with `Magnetism Falloff Range` (Halo 3 onward) and Reach's `Magnetism Near Falloff Range` shaping where it fades. One decision, one input.\\n\\n**Halo 2 declares this pair TWICE** (weap root 0x19C and 0x210) and the first is a different, mostly-zero field -- reading it makes Halo 2 look like it barely uses magnetism. The real pair is the second, next to Autoaim, so every Halo 2 row here is pinned to `nth: 1`. Every other game states nth 0 explicitly, because a gamed value falls back to the nearest EARLIER game and Halo 3 would otherwise inherit Halo 2's 1.\\n\\nThis is the weapon's own magnetism. The general Magnetism card is a different thing -- matg's Magnetism Friction and Adhesion, the controller-level aim friction that applies to everything.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater", "Halo 1": "weap weapons\\plasma repeater\\plasma repeater" },
 					"targets": [
-						{ "step": "*1.2","field": "Magnetism Angle", "group": "Magnetism", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Range", "group": "Magnetism", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Near Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"}
+						{ "step": "*1.2", "field": "Magnetism Angle", "group": "Magnetism", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Magnetism Range", "group": "Magnetism", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Magnetism Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo Reach"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Near Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo Reach"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Angle", "group": "Magnetism", "min": 0, "nth": 0, "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Magnetism Range", "group": "Magnetism", "min": 0, "nth": 0, "easier_when": "increased", "games": ["Halo 1"] }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
 				"Autoaim": {
 					"desc": "How hard the game steers your shots onto a target.",
 					"debug_desc": "`Autoaim Angle` is the cone the game will bend a shot into, `Autoaim Range` how far out it does so, and `Autoaim Falloff Range` (Halo 3 onward) where that help starts tapering off. All three are one decision -- how much the game shoots for you -- so they share one input.\\n\\nAutoaim is the shot bending toward the target; Magnetism is your reticle being pulled. They are separate fields and separate cards.\\n\\nShipped values differ wildly by weapon and game: the Halo 3 assault rifle is 5deg/15 with falloff 7.5, the sniper 1deg/10, and Reach's sniper 0.8deg/20. Cutting these to 0 removes aim assist entirely, which is the harder direction.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater", "Halo 1": "weap weapons\\plasma repeater\\plasma repeater" },
 					"targets": [
-						{ "step": "*1.2","field": "Autoaim Angle", "group": "Autoaim", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Range", "group": "Autoaim", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Falloff Range", "group": "Autoaim", "min": 0, "games": ["Halo Reach"], "easier_when": "increased"}
+						{ "step": "*1.2", "field": "Autoaim Angle", "group": "Autoaim", "min": 0, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Autoaim Range", "group": "Autoaim", "min": 0, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Autoaim Falloff Range", "group": "Autoaim", "min": 0, "games": ["Halo Reach"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Angle", "group": "Autoaim", "min": 0, "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Autoaim Range", "group": "Autoaim", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
-					"game": ["Halo Reach"],
-					"tag": "jmad *fp_plasma_repeater*",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "jmad *fp_plasma_repeater*", "Halo 1": "antr weapons\\plasma repeater\\fp\\fp" },
 					"targets": [
-						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased"}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo Reach"] },
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Melee Seeking Angles": {
@@ -11106,22 +11114,27 @@
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater", "Halo 1": "weap weapons\\plasma repeater\\plasma repeater" },
 					"targets": [
-						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
-						{ "step": "*1.2","field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased"}
+						{ "field": "Distribution Function", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "set": "horizontal fan", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Distribution Angle", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "field": "Distribution Function", "block": "Triggers", "index": "all", "set": "horizontal fan", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Distribution Angle", "block": "Triggers", "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
 					"debug_desc": "`Magnification Levels` is how many zoom steps the weapon has and `Magnification Range` how far each goes. A weapon that ships with 0 levels has no zoom at all, which is exactly why it needs the card: an operator cannot multiply 0 into anything, so SET it (=1 or =2) to give the weapon a scope it never had.\n\nEvery game also adds a scope OVERLAY automatically when a scopeless weapon gains magnification, copying the widgets from a scoped donor on the same map (the 'Add a scope overlay to scopeless weapons' option, with a donor picker). Reach was wired for this on 2026-08-27; its donors are the sniper rifle, DMR, needle rifle, magnum and rocket launcher -- the only five Reach weapons that ship any magnification.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater", "Halo 1": "weap weapons\\plasma repeater\\plasma repeater" },
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "min": 0, "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo Reach": null}, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": null}, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": null}, "easier_when": "increased" }
+						{ "step": "+1", "field": "Magnification Levels", "min": 0, "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": { "Halo Reach": null }, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo Reach": null }, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo Reach": null }, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "=2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Zoom Time": {
@@ -11146,24 +11159,29 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater", "Halo 1": "weap weapons\\plasma repeater\\plasma repeater" },
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
-						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt", "follows_choice": true},
-						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt", "follows_choice": true}
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"], "games": ["Halo Reach"] },
+						{ "field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt", "follows_choice": true, "games": ["Halo Reach"] },
+						{ "field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt", "follows_choice": true, "games": ["Halo Reach"] },
+						{ "field": "Firing Noise", "block": "Triggers", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"], "games": ["Halo 1"] },
+						{ "field": "Impact Noise", "tag": "proj weapons\\plasma rifle\\bolt", "follows_choice": true, "games": ["Halo 1"] },
+						{ "field": "Detonation Noise", "tag": "proj weapons\\plasma rifle\\bolt", "follows_choice": true, "games": ["Halo 1"] }
 					]
 				},
 				"Salvo Shooting": {
 					"desc": "How fast it fires and how many rounds one pull sends.",
 					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater", "Halo 1": "weap weapons\\plasma repeater\\plasma repeater" },
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased" },
-						{ "step": "+1", "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "easier_when": "increased" },
-						{ "step": "+1", "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "+1", "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "+1", "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second", "easier_when": "increased", "games": ["Halo 1"] }
 					],
 					"split_from": "More Shooting"
 				},
@@ -11173,90 +11191,107 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
 					"targets": [
-						{ "step": "*0.8","field": "Fire Recovery Time", "block": "Barrels", "easier_when": "decreased"}
+						{ "step": "*0.8", "field": "Fire Recovery Time", "block": "Barrels", "easier_when": "decreased" }
 					]
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater", "Halo 1": "weap weapons\\plasma repeater\\plasma repeater" },
 					"targets": [
-						{ "step": "+1", "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "group": "Projectiles Per Shot", "easier_when": "increased" },
-						{ "step": "+1", "field": "Rounds Per Shot", "block": "Barrels", "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "games": ["Halo Reach"], "easier_when": "increased" }
+						{ "step": "+1", "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "+1", "field": "Rounds Per Shot", "block": "Barrels", "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "games": ["Halo Reach"], "easier_when": "increased" },
+						{ "step": "+1", "field": "Projectiles Per Shot", "block": "Triggers", "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "+1", "field": "Rounds Per Shot", "block": "Triggers", "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Error Angle": {
 					"desc": "Weapon Spread",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater", "Halo 1": "weap weapons\\plasma repeater\\plasma repeater" },
 					"targets": [
-						{ "step": "*0.8","field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle", "easier_when": "decreased" },
-						{ "step": "*0.8","field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle", "easier_when": "decreased" },
-						{ "step": "*0.8","field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle", "easier_when": "decreased" }
+						{ "step": "*0.8", "field": "Minimum Error", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": 0, "group": "Error Angle", "easier_when": "decreased", "games": ["Halo Reach"] },
+						{ "step": "*0.8", "field": "Error Angle", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": 0, "group": "Error Angle", "easier_when": "decreased", "games": ["Halo Reach"] },
+						{ "step": "*0.8", "field": "Error Angle Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": 0, "group": "Error Angle", "easier_when": "decreased", "games": ["Halo Reach"] },
+						{ "step": "*0.8", "field": "Minimum Error", "block": "Triggers", "nth": 0, "group": "Error Angle", "easier_when": "decreased", "games": ["Halo 1"] },
+						{ "step": "*0.8", "field": "Error Angle", "block": "Triggers", "nth": 0, "group": "Error Angle", "easier_when": "decreased", "games": ["Halo 1"] },
+						{ "step": "*0.8", "field": "Error Angle Max", "block": "Triggers", "nth": 0, "group": "Error Angle", "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Heat Threshold": {
 					"desc": "Heat Recovery Threshold",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater", "Halo 1": "weap weapons\\plasma repeater\\plasma repeater" },
 					"split_from": "Heat Recovery",
 					"targets": [
-						{ "step": "*0.8", "field": "Heat Recovery Threshold", "min": "0", "max": "1", "easier_when": "decreased" }
+						{ "step": "*0.8", "field": "Heat Recovery Threshold", "min": "0", "max": "1", "easier_when": "decreased", "games": ["Halo Reach"] },
+						{ "step": "*0.8", "field": "Heat Recovery Threshold", "min": "0", "max": "1", "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Heat Loss": {
 					"desc": "Heat Loss Per Second, Overheated Heat Loss Per Second",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater", "Halo 1": "weap weapons\\plasma repeater\\plasma repeater" },
 					"split_from": "Heat Recovery",
 					"targets": [
-						{ "step": "*0.8", "field": "Heat Loss Per Second", "group": "Heat Loss", "easier_when": "decreased" },
-						{ "step": "*0.8", "field": "Overheated Heat Loss Per Second", "group": "Heat Loss", "easier_when": "decreased" }
+						{ "step": "*0.8", "field": "Heat Loss Per Second", "group": "Heat Loss", "easier_when": "decreased", "games": ["Halo Reach"] },
+						{ "step": "*0.8", "field": "Overheated Heat Loss Per Second", "group": "Heat Loss", "easier_when": "decreased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Heat Loss Per Second", "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Heat Per Round": {
 					"desc": "Heat Generated Per Round",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater", "Halo 1": "weap weapons\\plasma repeater\\plasma repeater" },
 					"split_from": "Per Round",
 					"targets": [
-						{ "step": "*0.8", "field": "Heat Generated Per Round", "block": "Barrels", "index": 0, "easier_when": "decreased" }
+						{ "step": "*0.8", "field": "Heat Generated Per Round", "block": "Barrels", "index": 0, "easier_when": "decreased", "games": ["Halo Reach"] },
+						{ "step": "*0.8", "field": "Heat Generated Per Round", "block": "Triggers", "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Age Per Round": {
 					"desc": "Age Generated Per Round, Campaign Age Generated Per Round",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater", "Halo 1": "weap weapons\\plasma repeater\\plasma repeater" },
 					"split_from": "Per Round",
 					"targets": [
-						{ "step": "*1.2", "field": "Age Generated Per Round", "block": "Barrels", "index": 0, "group": "Age Generated Per Round", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Campaign Age Generated Per Round", "block": "Barrels", "index": 0, "group": "Age Generated Per Round", "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Age Generated Per Round", "block": "Barrels", "index": 0, "group": "Age Generated Per Round", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Campaign Age Generated Per Round", "block": "Barrels", "index": 0, "group": "Age Generated Per Round", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*0.8", "field": "Age Generated Per Round", "block": "Triggers", "group": "Age Generated Per Round", "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Projectile Range": {
 					"desc": "Maximum Range, Air Damage Range, Air Damage Range Max, Water Damage Range, Water Damage Range Max",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"game": ["Halo Reach"],
-					"tag": "proj objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "proj objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt", "Halo 1": "proj weapons\\plasma repeater\\bolt" },
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Maximum Range", "group": "Range", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Air Damage Range", "group": "Range", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Air Damage Range Max", "group": "Range", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Damage Range", "group": "Range", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Damage Range Max", "group": "Range", "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Maximum Range", "group": "Range", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Air Damage Range", "group": "Range", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Air Damage Range Max", "group": "Range", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Water Damage Range", "group": "Range", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Water Damage Range Max", "group": "Range", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Maximum Range", "group": "Range", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Air Damage Range", "group": "Range", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Air Damage Range Max", "group": "Range", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Water Damage Range", "group": "Range", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Water Damage Range Max", "group": "Range", "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Projectile Velocity": {
 					"desc": "Initial Velocity, Final Velocity, Minimum Velocity",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"game": ["Halo Reach"],
-					"tag": "proj objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "proj objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt", "Halo 1": "proj weapons\\plasma repeater\\bolt" },
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Initial Velocity", "group": "Velocity", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Final Velocity", "group": "Velocity", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Minimum Velocity", "group": "Velocity", "min": 0, "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Initial Velocity", "group": "Velocity", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Final Velocity", "group": "Velocity", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Minimum Velocity", "group": "Velocity", "min": 0, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Initial Velocity", "group": "Velocity", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Final Velocity", "group": "Velocity", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Minimum Velocity", "group": "Velocity", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Projectile Lead Time": {
@@ -11271,21 +11306,36 @@
 				},
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"game": ["Halo Reach"],
-					"tag": "jpt! objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "jpt! objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt", "Halo 1": "jpt! weapons\\plasma repeater\\bolt" },
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased" },
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased" },
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Misfire": {
 					"desc": "When Misifirng starts and how likely it is",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater", "Halo 1": "weap weapons\\plasma repeater\\plasma repeater" },
 					"targets": [
-						{ "step": "*1.2", "field": "Age Misfire Start", "min": 0, "max": 1.0, "easier_when": "increased"  },
-						{ "step": "*1.2", "field": "Age Misfire Chance", "min": 0, "max": 1.0, "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Age Misfire Start", "min": 0, "max": 1.0, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Age Misfire Chance", "min": 0, "max": 1.0, "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "=1", "field": "Age Misfire Start", "min": 0, "max": 1.0, "games": ["Halo 1"] },
+						{ "step": "*0.8", "field": "Age Misfire Chance", "min": 0, "max": 1.0, "easier_when": "decreased", "games": ["Halo 1"] }
+					]
+				},
+				"Ramp Up": {
+					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
+					"debug_desc": "`Acceleration Time` is how long the weapon takes to reach its full rate of fire, `Deceleration Time` how long it takes to wind back down. Per barrel.\n\nNo card clamps Deceleration against Acceleration any more -- the constraint was removed on 2026-08-26 for retesting. The reasoning behind it was that guns spin up slowly and spin down fast, which holds for the plasma rifle, brute plasma rifle and needler, but is NOT universal: measuring every weapon that sets these fields disproves the stronger claim this text used to make: six weapon-games ship the OPPOSITE. Halo 3 and ODST's machinegun turret and plasma cannon both run 1.25 up / 2.0 down, Reach's plasma launcher 0.7 / 1.0, and Reach's spike rifle 0.0 / 0.2 -- it has no spin-up at all and still takes time to stop.\n\nSo the weapons that ship deceleration above acceleration deliberately carry NO constraint: clamping them would quietly rewrite their vanilla behaviour the first time the card was patched.\n\nAlso note Reach's stringid Rate Of Fire Acceleration/Deceleration fields are dead -- these numeric Time fields are the ones that carry the values.",
+					"game": ["Halo 1"],
+					"tag": { "Halo 1": "weap weapons\\plasma repeater\\plasma repeater" },
+					"targets": [
+						{ "step": "-0.2", "field": "Acceleration Time", "block": "Triggers", "easier_when": "decreased", "games": ["Halo 1"] },
+						{ "step": "-0.2", "field": "Deceleration Time", "block": "Triggers", "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				}
 			},
