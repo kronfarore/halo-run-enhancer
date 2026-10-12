@@ -1015,6 +1015,13 @@ def own_beam(a, b, write):
             print('   impact on material %d: %s -> %s (%d of %d thinned particles kept)'
                   % (i, x.effect.filepath, own, kept, total))
             x.effect.filepath = own
+    if b.get('clear_detonation_effects'):
+        # no per-MATERIAL detonation effect (the Grenade Launcher, boot 5: its grenades are the
+        # frag's, whose materials name their own -- `impact dirt` is a sound, `impact stone`
+        # empty -- and a contact detonation showed none of the projectile's own explosion (the EMP
+        # sparks); Halo 1's rocket leaves them empty and its own explosion plays)
+        for x in pd.material_responses.STEPTREE:
+            x.detonation_effect.filepath = ''
     if b.get('clear_response_effects'):
         # no impact effect on any material (the Spartan Laser's tracer: Halo 3's shows only a
         # faint glow; the sniper bullet's dust and sparks would read as a hit)

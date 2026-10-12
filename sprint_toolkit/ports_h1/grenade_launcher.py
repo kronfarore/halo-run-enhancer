@@ -326,6 +326,9 @@ PORT.update({
                                         B.join(['sound', 'sfx', 'weapons', 'weapon_anims', 'rocket_reload_f']), -22.5),
         },
         'stretch': {'gl_reload_empty_balanced': 1.02, 'gl_reload_full_balanced': 1.02},
+        # BOOT 5 (user): 'push the first beep further back so an instant shot doesn't play it' --
+        # the beep 0.3 s into each 0.5 s cycle (a tap releases sooner; full charge at 0.5 s)
+        'rotate': {'gl_charge_loop': 0.3},
     },
 
     # ---------------------------------------------------------------------------------------
@@ -394,7 +397,13 @@ PORT.update({
                    'proj_fields': {'proj_attrs.physics.air_gravity_scale': 0.7,
                                    'proj_attrs.physics.water_gravity_scale': 0.75,
                                    'proj_attrs.detonation.arming_time': 0.0,
-                                   'proj_attrs.detonation.timer': (0.5, 0.5),
+                                   # THE FUSE (boot 5, user's pick): from LAUNCH -- Halo 1 runs an 'on
+                                   # first bounce' fuse only from rest (boot 3 probe). Reach: 0.5 s
+                                   # after the first bounce; a typical first bounce comes at ~0.7 s
+                                   # (the probes: 0.43-0.73 s) -> 1.2 s from launch (measured 1.47 s
+                                   # for a 1.5 s fuse: exact). Lost: a long lob bursts in the air
+                                   'proj_attrs.detonation_timer_starts': 'immediately',
+                                   'proj_attrs.detonation.timer': (1.2, 1.2),
                                    # 4b list 2: Reach 0,0 = unset (a ratio on it degenerates):
                                    # 0..100 = the range (the Brute Shot's)
                                    'proj_attrs.physics.air_damage_range': (0.0, 100.0),
@@ -411,10 +420,13 @@ PORT.update({
                                {'materials': WORLD, 'response': 'detonate', 'angle_deg': (75.0, 90.0),
                                 'velocity': (7.5, 14.0), 'effect_from_default': False,
                                 # BOOT 4 (user): 'no bounce at all now' (the frag's 0.8 / 0.9 keep
-                                # ~10 %). BOOT 5 A/B: MIDDLE friction 0.6 / 0.6 (a few hops, the
-                                # fuse after it settles) vs the test variant: Reach's 0.42 + a fuse
-                                # from LAUNCH (immediately, 1.2 s)
-                                'parallel_friction': 0.6, 'perpendicular_friction': 0.6}],
+                                # ~10 %). BOOT 5 A/B: middle friction 0.6 (a few hops, the fuse after
+                                # it settles) vs Reach's 0.42 + a fuse from LAUNCH -- the user took
+                                # the latter ('works well, if that is the normal bounciness')
+                                'parallel_friction': 0.42, 'perpendicular_friction': 0.42}],
+                   # contact detonations play the projectile's OWN explosion (boot 5: the frag's
+                   # per-material ones -- a dirt sound, an empty stone effect -- stood in for it)
+                   'clear_detonation_effects': True,
                    # BOOT 3 PROBE + USER (2026-10-12): Halo 1's 'on first bounce' fuse runs from when
                    # the grenade COMES TO REST (0.45 s after it settled), and a FINAL VELOCITY is a
                    # speed floor (boot 2: slid at 7.4 wu/s for 12 s, never at rest, never fused).
@@ -486,6 +498,7 @@ PORT.update({
                             'proj_attrs.detonation.minimum_velocity': 0.0,
                             'proj_attrs.flags.oriented_along_velocity': True},
             'default_responses': {'detonate': UNITS + WORLD},
+            'clear_detonation_effects': True,
             # the frag's reflection effects ride along on every response: own bounce sounds too
             # (port_sound_refs does not read a projectile's responses -- found by hand)
             'impact_tint': {'match': (), 'rgb': None, 'out': GL + 'effects' + B + 'impact' + B,
@@ -674,8 +687,10 @@ PORT.update({
                 # 128 x 100/175 (the release has no fuse: it bursts on contact)
                 row('proj', GL + 'grenade', 'Air Gravity Scale', 0.778, 0.7, 'Projectile'),
                 row('proj', GL + 'grenade', 'Water Gravity Scale', 1.0, 0.75, 'Projectile'),
-                row('proj', GL + 'grenade', 'Timer', 0.4, 0.5, 'Projectile'),
-                row('proj', GL + 'grenade', 'Timer Max', 0.4, 0.5, 'Projectile'),
+                # the fuse from launch (boot 5): the typical first bounce 0.7 s + the frag ratio's
+                # 0.4 (Reach 0.5 x H1 frag 0.5 / Reach frag 0.625) = 1.1 (default 0.7 + 0.5)
+                row('proj', GL + 'grenade', 'Timer', 1.1, 1.2, 'Projectile'),
+                row('proj', GL + 'grenade', 'Timer Max', 1.1, 1.2, 'Projectile'),
                 row('proj', GL + 'grenade', 'Maximum Range', 73.1, 100.0, 'Projectile'),
                 row('proj', GL + 'grenade release', 'Air Gravity Scale', 0.778, 0.7, 'Projectile'),
                 row('proj', GL + 'grenade release', 'Water Gravity Scale', 1.0, 0.75, 'Projectile'),
