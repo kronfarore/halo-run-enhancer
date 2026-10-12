@@ -274,6 +274,25 @@ def balance(m, entry):
 LEVELS = ('a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40')
 
 
+def actv_set(m, spec):
+    """`species:0xOFF=TYPE:VALUE` on every actor variant of the species in the copy -- after the
+    Armed pass, so its slots carry it too (the Grenade Launcher, 2026-10-12: Jackals with special
+    fire overcharge at chance 1, Bungie's plasma-pistol Jackals' mode 1 / situation 1 / 0.2-0.3 /
+    5 s). The map's tag data is little-endian; offsets are the actv tag's (Assembly)."""
+    import struct
+    species, rest = spec.split(':', 1)
+    off, val = rest.split('=', 1)
+    typ, num = val.split(':', 1)
+    fmt = {'h': '<h', 'f': '<f'}[typ]
+    v = int(num) if typ == 'h' else float(num)
+    n = 0
+    for (cls, path), base in m.tags.items():
+        if cls == 'actv' and path.lower().startswith('characters' + os.sep + species.lower()):
+            struct.pack_into(fmt, m.data, base + int(off, 16), v)
+            n += 1
+    print('   actv %s %s = %s on %d variant(s)' % (species, off, v, n))
+
+
 def armed(m, weapon, enemies, balanced=False):
     """STEP 11 in game: the enhancer's own Armed-card pass (h1_enemy_weapons.apply) at 100%
     for each enemy -- every spawn of that enemy moved to a variant carrying the port, its
@@ -361,6 +380,10 @@ def main():
     ap.add_argument('--actor-flags', metavar='FLAGS',
                     help="actr flags set on every actor of the --armed species, test copy only "
                          "(the Brute Shot: avoid_friends_line_of_fire,crouch_when_in_line_of_fire)")
+    ap.add_argument('--actv-set', metavar='SPECIES:0xOFF=TYPE:VALUE', action='append', default=[],
+                    help="an actor-variant field on every variant of a species, test copy only "
+                         "(the Grenade Launcher: jackal:0x154=h:1 = special fire overcharge); "
+                         "TYPE h (short) or f (float); repeatable")
     ap.add_argument('--mortal', action='store_true',
                     help='NO god shield (a damage MEASUREMENT run, h1_vitality_live.py)')
     a = ap.parse_args()
@@ -419,6 +442,8 @@ def main():
             armed(m, weapon, arm, balanced=bool(entry))
         if a.actor_flags and arm:
             actor_flags(m, arm, [f.strip() for f in a.actor_flags.split(',') if f.strip()])
+        for spec in a.actv_set:
+            actv_set(m, spec)
         open(out, 'wb').write(bytes(m.data))
     print('wrote %s' % out)
     if a.stage:
