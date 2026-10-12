@@ -4520,6 +4520,204 @@
      }
     ]
    }
+  },
+  {
+   "weapon": "Focus Rifle",
+   "source": "Halo Reach",
+   "donor": "Plasma Rifle",
+   "default_on": false,
+   "desc": "Halo Reach's Focus Rifle: its model, first-person animations, sounds, scope and numbers. A Covenant beam on heat and battery: hold the trigger for a continuous beam; about 2.5 s of fire overheats it, 20 s of fire a battery, 3.5x / 9.5x zoom.",
+   "balance_desc": "Measured against the Plasma Rifle, which both games have: 8.7 damage a round (the plasma rifle's family, faster on armour and slower on shields, as Reach's fast plasma), 3 s of fire before it overheats, a 3.8 s vent, 9 s of fire a battery and Halo 1-style aim assist.",
+   "anims": {
+    "swap": 1.3869565217391304
+   },
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\focus rifle\\beam",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 8.67,
+     "card": "Beam Damage",
+     "original": 6.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\focus rifle\\beam",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 8.67,
+     "card": "Beam Damage",
+     "original": 6.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\focus rifle\\beam",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 8.67,
+     "card": "Beam Damage",
+     "original": 6.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\focus rifle\\beam",
+     "field": "Elite Energy Shield",
+     "block": null,
+     "value": 1.25,
+     "card": "Beam materials",
+     "original": 2.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\focus rifle\\beam",
+     "field": "Elite",
+     "block": null,
+     "value": 2.5,
+     "card": "Beam materials",
+     "original": 1.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\focus rifle\\beam",
+     "field": "Cyborg Energy Shield",
+     "block": null,
+     "value": 1.25,
+     "card": "Beam materials",
+     "original": 2.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\focus rifle\\beam",
+     "field": "Cyborg",
+     "block": null,
+     "value": 1.25,
+     "card": "Beam materials",
+     "original": 0.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\focus rifle\\beam",
+     "field": "Hunter Armor",
+     "block": null,
+     "value": 1.0,
+     "card": "Beam materials",
+     "original": 0.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\focus rifle\\beam",
+     "field": "Jackal Energy Shield",
+     "block": null,
+     "value": 0.5,
+     "card": "Beam materials",
+     "original": 1.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\focus rifle\\beam",
+     "field": "Armored Human",
+     "block": null,
+     "value": 2.0,
+     "card": "Beam materials",
+     "original": 1.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\focus rifle\\beam",
+     "field": "Metal (Hollow)",
+     "block": null,
+     "value": 0.625,
+     "card": "Beam materials",
+     "original": 0.25
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\focus rifle\\beam",
+     "field": "Metal (Thin)",
+     "block": null,
+     "value": 0.625,
+     "card": "Beam materials",
+     "original": 0.25
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\focus rifle\\beam",
+     "field": "Metal (Thick)",
+     "block": null,
+     "value": 0.5,
+     "card": "Beam materials",
+     "original": 0.25
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\focus rifle\\focus rifle",
+     "field": "Heat Generated Per Round",
+     "block": "Triggers",
+     "value": 0.0346,
+     "card": "Heat",
+     "original": 0.0451
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\focus rifle\\focus rifle",
+     "field": "Heat Loss Per Second",
+     "block": null,
+     "value": 0.197,
+     "card": "Heat",
+     "original": 0.29
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\focus rifle\\focus rifle",
+     "field": "Heat Recovery Threshold",
+     "block": null,
+     "value": 0.25,
+     "card": "Heat",
+     "original": 0.1
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\focus rifle\\focus rifle",
+     "field": "Age Generated Per Round",
+     "block": "Triggers",
+     "value": 0.007142857142857143,
+     "card": "Battery",
+     "original": 0.0032258064516129032
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\focus rifle\\focus rifle",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 20.83,
+     "card": "Autoaim",
+     "original": 10.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\focus rifle\\focus rifle",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 5.33,
+     "card": "Magnetism",
+     "original": 4.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\focus rifle\\focus rifle",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 13.89,
+     "card": "Magnetism",
+     "original": 10.0
+    }
+   ],
+   "weap": "weapons\\focus rifle\\focus rifle",
+   "fp_animations": "weapons\\focus rifle\\fp\\fp",
+   "requires": [
+    "proj weapons\\focus rifle\\beam"
+   ]
   }
  ],
  "Halo 3": [

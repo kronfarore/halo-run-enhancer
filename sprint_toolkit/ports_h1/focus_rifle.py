@@ -387,6 +387,58 @@ PORT.update({
         'palette_levels': LEVELS,
     },
 
+    # weapon_ports_catalog.json (make_port_catalog_h1_ports.py focus_rifle). DEFAULT = Reach's own
+    # numbers in the tags (at Halo 1's 15/s); BALANCED = the PLASMA RIFLE ratio (step 4a, user
+    # 2026-10-12; yardstick['balanced']). Assembly Halo1 units: angles in degrees, velocity in wu
+    # per TICK
+    'catalog': {
+        'entry': {
+            'weapon': 'Focus Rifle', 'source': 'Halo Reach', 'donor': 'Plasma Rifle', 'default_on': False,
+            'desc': "Halo Reach's Focus Rifle: its model, first-person animations, sounds, scope and "
+                    "numbers. A Covenant beam on heat and battery: hold the trigger for a continuous "
+                    "beam; about 2.5 s of fire overheats it, 20 s of fire a battery, 3.5x / 9.5x zoom.",
+            'balance_desc': "Measured against the Plasma Rifle, which both games have: 8.7 damage a "
+                            "round (the plasma rifle's family, faster on armour and slower on "
+                            "shields, as Reach's fast plasma), 3 s of fire before it overheats, a "
+                            "3.8 s vent, 9 s of fire a battery and Halo 1-style aim assist.",
+            # step 9 (swap, ONE multiplier; no reload: a battery weapon): the H1 plasma rifle's ready
+            # 29 fr x Reach focus rifle 22 / Reach plasma rifle 20 = 31.9 over the built ready (23)
+            'anims': {'swap': 29 * 22 / 20.0 / 23.0},
+            'balance': [
+                # damage: dps 130 (H1 PR 13 x 10/s) x 90/90 -> / 15/s = 8.67 (default 6 = Reach's 3 x 30/s)
+                row('jpt!', FO + 'beam', 'Damage Lower Bound', 8.67, 6.0, 'Beam Damage'),
+                row('jpt!', FO + 'beam', 'Damage Upper Bound', 8.67, 6.0, 'Beam Damage'),
+                row('jpt!', FO + 'beam', 'Damage Upper Bound Max', 8.67, 6.0, 'Beam Damage'),
+                # materials (user): the plasma rifle bolt's table x Reach plasma_fast / plasma_slow per
+                # armour class (h1_role_compare RP_FAST_SLOW -- the Plasma Repeater's rows)
+                row('jpt!', FO + 'beam', 'Elite Energy Shield', 1.25, 2.0, 'Beam materials'),
+                row('jpt!', FO + 'beam', 'Elite', 2.5, 1.0, 'Beam materials'),
+                row('jpt!', FO + 'beam', 'Cyborg Energy Shield', 1.25, 2.0, 'Beam materials'),
+                row('jpt!', FO + 'beam', 'Cyborg', 1.25, 0.5, 'Beam materials'),
+                row('jpt!', FO + 'beam', 'Hunter Armor', 1.0, 0.5, 'Beam materials'),
+                row('jpt!', FO + 'beam', 'Jackal Energy Shield', 0.5, 1.0, 'Beam materials'),
+                row('jpt!', FO + 'beam', 'Armored Human', 2.0, 1.0, 'Beam materials'),
+                row('jpt!', FO + 'beam', 'Metal (Hollow)', 0.625, 0.25, 'Beam materials'),
+                row('jpt!', FO + 'beam', 'Metal (Thin)', 0.625, 0.25, 'Beam materials'),
+                row('jpt!', FO + 'beam', 'Metal (Thick)', 0.5, 0.25, 'Beam materials'),
+                # heat by TIME TO OVERHEAT (both games cool while firing): H1 PR 2.67 s x 2.47 / 2.17
+                # = 3.0 s -> the 46th round at the loss below (h1_role_compare 'FR = PR ratio')
+                row('weap', FO + 'focus rifle', 'Heat Generated Per Round', 0.0346, 0.0451, 'Heat', block='Triggers'),
+                # the one loss: 0.3 (the H1 PR's = the overheated loss) x 0.23/0.35; recovery 0.25 x 0.1/0.1
+                row('weap', FO + 'focus rifle', 'Heat Loss Per Second', 0.197, 0.29, 'Heat'),
+                row('weap', FO + 'focus rifle', 'Heat Recovery Threshold', 0.25, 0.1, 'Heat'),
+                # battery by time: H1 PR 20 s x 20.7 / Reach PR 44.4 = 9.3 s -> 140 rounds at 15/s
+                row('weap', FO + 'focus rifle', 'Age Generated Per Round', 1 / 140.0, 1 / 310.0, 'Battery', block='Triggers'),
+                # aim: 5 x 2/5 (no row), 25 x 10/12; 12 x 4/9, 25 x 10/18
+                row('weap', FO + 'focus rifle', 'Autoaim Range', 20.83, 10.0, 'Autoaim'),
+                row('weap', FO + 'focus rifle', 'Magnetism Angle', 5.33, 4.0, 'Magnetism'),
+                row('weap', FO + 'focus rifle', 'Magnetism Range', 13.89, 10.0, 'Magnetism'),
+                # NO velocity row: the ratio's 50 x 4000/25 = 8000 wu/s crosses the 120 wu range in one
+                # tick (the Spartan Laser: no overpenetration at that speed) -- both versions keep the
+                # Sentinel beam's 1200; range: the H1 plasma rifle bolt has none (Reach's 120 kept)
+            ]},
+    },
+
     # step 4b (port_field_audit.py --port focus_rifle): the source pair (Reach focus rifle vs the
     # yardstick, Reach's plasma rifle) against the target pair (the H1 port vs its template = the
     # yardstick, the H1 plasma rifle)
