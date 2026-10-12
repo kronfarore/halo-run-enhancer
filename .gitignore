@@ -59,3 +59,8 @@ port_levels_cache.json
 
 # weapon-port listening samples (decoded game audio)
 sprint_toolkit/sound_compare/
+# runtime state and tool.exe debug dumps (not data)
+sprint_toolkit/reports/*.state.json
+sprint_toolkit/gamestate.txt
+sprint_toolkit/reports/reports_*
+.~lock.*#
