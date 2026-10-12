@@ -246,8 +246,9 @@ PORT.update({
     #   (enhancer option h1_melee_blocks_fire, tag bit 31) + an own 38 fr third-person melee.
     # Look: Halo 3's model / FP animations (2 units lower, 0.5 closer), Spike Rifle glow recipe
     #   (48 halo spots), shockwave = 3 stacked Wraith-mortar rings (bright, 0.5-0.6 s) + one
-    #   upright ring; no explosion sprite. Dropped it stands like the flag (z up: Halo 1 rests
-    #   items on their origin). HUD: the plasma pistol's battery + Halo 3's reticle #20 at 27
+    #   upright ring; no explosion sprite. Dropped it lies on its side (2026-10-11: a `ground
+    #   point` marker, 'auto' -- Halo 1 rests an item on that marker; without one it rested on its
+    #   origin, z up, and sank / stood -- the boot-3 'stand like the flag' fix is gone). HUD: the plasma pistol's battery + Halo 3's reticle #20 at 27
     #   (3 px, two brightness bands grown apart); icon 38, messages 69/70.
     # Armed: Halo 3's ai\generic hammer entry over the sword commander, its 'cannot use ranged
     #   weapons' flag CLEARED, rate 0.65 / burst 2 s, fire within 2 wu, melee 1 wu; carriers
@@ -528,8 +529,9 @@ PORT.update({
             # h1_box_collision.py), and a bounding radius that covers the 0.67 wu model (the
             # template's 0.2 is a pistol's; the farthest vertex sits 0.40 wu from the origin)
             'obje_attrs.collision_model.filepath': GH + 'gravity hammer',
-            # BOOT 3 (user's screenshots): the hull changed nothing -- Halo 1 rests a dropped
-            # item on its ORIGIN (the grip) with its model z axis VERTICAL, either way up: the
+            # BOOT 3 (user's screenshots): the hull changed nothing -- the hammer rested on its
+            # ORIGIN (the grip) with its model z axis VERTICAL, either way up (SUPERSEDED
+            # 2026-10-11: that is a port WITHOUT a `ground point` marker; see below): the
             # hammer stood on its head or its handle (stock guns lie flat only because their
             # z is the model's up). The user's pick of three (lie flat + shoulder / rifle pose,
             # or stand like the flag): STAND LIKE THE FLAG -- the flag pose kept, the flag's

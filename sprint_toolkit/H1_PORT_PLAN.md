@@ -626,8 +626,9 @@ is complete with it (nine Halo 3 ports, batched for the ten-map rebuild on the u
 **New user rules / decisions:**
 - Knockback is TUNED IN GAME (Assembly, live) -- 4b's ratio moved only dead bodies; the user's
   values replace it (blast 7.5, wielder shove +5).
-- A dropped weapon whose model's long axis is z STANDS (Halo 1 keeps model z vertical on its
-  origin); the user chose to keep the flag pose and stand it like the flag.
+- A dropped weapon rests on its world model's `ground point` marker (2026-10-11, the Plasma
+  Repeater session; every port now has `ground_point: 'auto'`). Without one the hammer rested on
+  its origin, z up, and stood -- the flag workaround of boot 3 is gone.
 - A melee hit and a weapon blast must SOUND different (tests could not tell them apart).
 
 **Process (observations -- check them on the next port):**

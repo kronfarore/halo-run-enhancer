@@ -1183,10 +1183,12 @@ The whole weapon is `ports_h1/gravity_hammer.py`.
   or miss. The wielder's push back = the sword shove (firing damage 0.01, POSITIVE acceleration).
 * **KNOCKBACK on LIVING units:** 4b's ratio (5.83, the H1 rocket's 6) moved only dead bodies --
   the user tuned 7.5 live (blast) and +5 (shove) in Assembly. The god shield does not stop it.
-* **Halo 1 rests a dropped item on its ORIGIN with model z VERTICAL** (either way up): a model
-  whose long axis is z (the flag's, the hammer's) stands; stock guns lie flat because their z is
-  'up'. The collision hull does not matter (h1_box_collision.py built one: no change). User's pick:
-  stand like the flag (`always_maintains_z_up`).
+* **A dropped item rests on its world model's `ground point` MARKER** (found 2026-10-11 in the
+  Plasma Repeater session: every stock Halo 1 weapon has one, on a side surface near the balance
+  point). The hammer had none: it rested on its ORIGIN with model z vertical and stood / sank --
+  boot 3's 'stand like the flag' (`always_maintains_z_up`) was a workaround, now REMOVED: the
+  hammer has `ground_point: 'auto'` (h1_h3_weapon_model) and lies on its side. The collision hull
+  does not decide it (h1_box_collision.py: no change). Check every port's world model for one.
 * **Shockwave without mesh particles:** the Wraith mortar's `light ring expand` (additive, lies
   PERPENDICULAR to its location's direction). On the effect's `gravity` location (straight down) it
   lies flat; the stock particle lives 0.1-0.2 s (unseen) -> an own copy 0.5-0.6 s, drawn x4
