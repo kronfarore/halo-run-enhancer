@@ -11,8 +11,9 @@ heat 0.025 a round, loss 0.35 / 0.23 overheated, recovery 0.1, overheated 1, bat
 round (campaign the same: 620 rounds = 20.7 s), zoom 2 (3.5, 9.5), aim 2/10 4/10, strike_melee.
 REACH COOLS WHILE FIRING: the user's stopwatch in Reach, ~2.5 s to overheat from cold = 0.75 heat/s
 generated - 0.35 loss (the meter never visibly falls); 'no cooling' would be 1.33 s. Halo 1 fires a
-held 30/s at 15/s (the SMG / Sentinel Beam observation): per-SECOND damage, heat and battery are
-kept -> 6 a round, battery 1/310; Halo 1 cools while firing at its ONE loss (the Plasma Repeater's
+held 30/s at 30/s -- BOOT 2's probe (h1_weapon_state_probe, the 15/s 'cap' did not hold: shots 33 ms
+apart, the repeater's fire rule: rate/30 a tick reaches 1 every tick) -> Reach's own per-round values
+(3 a round, battery 0.0016125); Halo 1 cools while firing at its ONE loss (the Plasma Repeater's
 probe) -> heat a round fitted so the gun overheats on the same second as Reach."""
 from ._common import B, reserved, row
 
@@ -38,8 +39,8 @@ PORT = reserved(
         'pick': 'Plasma Rifle',
         'reason': ("the heat + battery Covenant automatic of both games (Reach has one; the sniper "
                    "has no heat, battery or Flood damage, the plasma pistol is tapped). DEFAULT = "
-                   "Reach's own numbers at Halo 1's 15/s (6 a round, overheat on the 39th round at "
-                   "2.53 s = Reach's ~2.5 s, one heat loss = the MEAN of Reach's 0.35 / 0.23 (user; "
+                   "Reach's own numbers at 30/s (3 a round, overheat on the 75th round at "
+                   "2.47 s = Reach's ~2.5 s; BOOT 2's probe: Halo 1 fires the tag's 30/s, one heat loss = the MEAN of Reach's 0.35 / 0.23 (user; "
                    "the Beam Rifle's precedent): 0.29, a 3.1 s vent; Reach 3.9 s). BALANCED = the "
                    "plasma-rifle ratio. Materials (user, the Plasma Repeater's rule): the H1 plasma "
                    "rifle bolt's table in DEFAULT, x Reach's plasma_fast / plasma_slow per armour "
@@ -52,14 +53,14 @@ PORT = reserved(
         # range 40, aim 5/12 9/18. H1 plasma rifle 12-14 (13) x 7 -> 10/s, heat 0.08, loss 0.3,
         # recovery 0.25, battery 0.005, 50 -> 25 wu/s, no range, aim 5/25 12/25
         'balanced': {
-            'damage': 8.67,              # dps 13 x 10 = 130 x FR 90 / Reach PR 90 -> / 15/s
-            'rate': (15.0, 15.0),        # 10 x 30/9 = 33 -> Halo 1's 15/s cap (damage keeps the dps)
+            'damage': 4.33,              # dps 13 x 10 = 130 x FR 90 / Reach PR 90 -> / 30/s (boot 2: 8.67 at 15/s)
+            'rate': (30.0, 30.0),        # 10 x 30/9 = 33 -> Halo 1's one round a tick (damage keeps the dps)
             'overheat_s': 3.0,           # TIME TO OVERHEAT (both games cool while firing): H1 PR
                                          # 2.67 s x FR 2.47 / Reach PR 2.17 (19 rounds) -> the 46th round
-            'heat_per_round': 0.0346,    # fitted under Halo 1's fire rule with the loss below
+            'heat_per_round': 0.0175,    # fitted at 30/s with the loss below (the 91st round at 3.0 s)
             'loss': 0.197,               # 0.3 (= the OVERHEATED loss, the Beam Rifle's reading) x 0.23/0.35
             'recovery': 0.25,            # 0.25 x 0.1/0.1 (vent 1 -> 0.25 at 0.197 = 3.8 s)
-            'battery': 1 / 140.0,        # by TIME: H1 PR 20 s x FR 20.7 / Reach PR 44.4 = 9.3 s -> 140 rounds
+            'battery': 1 / 280.0,        # by TIME: H1 PR 20 s x FR 20.7 / Reach PR 44.4 = 9.3 s -> 280 rounds at 30/s
             'velocity': 8000.0,          # 50 x 4000/25 -- see 4b (overpenetration: the laser's 1000)
             'range': 120.0,              # the H1 plasma rifle bolt has none: a zero on one side, Reach's
             'aim': (2.0, 20.83, 5.33, 13.89),  # 5 x 2/5, 25 x 10/12; 12 x 4/9, 25 x 10/18
@@ -249,7 +250,7 @@ PORT.update({
     # The weapon (h1_pickable_weapons.py --only focus_rifle) on a COPY of the Halo 1 PLASMA RIFLE
     # (the yardstick = the template: heat + battery HUD, overheat states) wired as the SENTINEL
     # BEAM (sentinel_beam.py, a continuous beam on the same template, 12 boots): the hum, the own
-    # firing effect, the beam projectile. DEFAULT = REACH'S OWN NUMBERS at Halo 1's 15/s (the
+    # firing effect, the beam projectile. DEFAULT = REACH'S OWN NUMBERS at 30/s (the
     # yardstick block); the ratio values are the balance rows. Template layout after the
     # Sentinel Beam's rewire: inputs A primary firing / B illumination / C rate of fire / D age;
     # function 0 = the hum (C in, off with 1), 1 = primary firing (A in, off with 3), 3 = age
@@ -377,7 +378,7 @@ PORT.update({
         # = a continuous beam, the look Reach's 1p beam shares: energy_trail through the
         # sentinel_beam palette, black -> gold -> white -- the bake waits for the user's
         # screenshot), Reach's 120 wu range; the damage a copy of the plasma rifle BOLT (the
-        # yardstick's table = the DEFAULT materials, user), Reach's 3 a round x 30/s = 6 at 15/s,
+        # yardstick's table = the DEFAULT materials, user), Reach's 3 a round at 30/s (boot 2's probe),
         # instantaneous acceleration 0.1 (Reach's). Speed: the Sentinel beam's own 1200 wu/s (proven
         # visible from the FP muzzle); Reach 4000 crosses the whole range in one tick (the Spartan
         # Laser: no overpenetration at that speed) -- 4b decides the responses
@@ -395,7 +396,7 @@ PORT.update({
         # deg, the Sentinel beam's) kept: an OBSERVATION to check in game (no velocity window)
         'beam': {'projectile': (r'characters\sentinel\beam', FO + 'beam'),
                  'damage': (PR + 'bolt', FO + 'beam'),
-                 'range': 120.0, 'dmg': 6.0, 'acceleration': 0.1,
+                 'range': 120.0, 'dmg': 3.0, 'acceleration': 0.1,
                  'fields': {'damage.active_camouflage_damage': 0.048},
                  'proj_fields': {'proj_attrs.physics.flyby_sound.filepath': SND + 'fo_flyby',
                                  'proj_attrs.physics.air_damage_range': (0.0, 120.0),
@@ -416,15 +417,19 @@ PORT.update({
                  # its point states kept) on the baked Reach beam (model `baked_textures` fo_beam)
                  'contrail': {'from': r'characters\sentinel\beam', 'out': FO + 'beam',
                               'bitmap': FO + 'bitmaps\\fo_beam', 'sequence': (0, 0)}},
-        # Reach: spew 30/s (Halo 1: 15/s; the hum needs differing bounds, 29..30 both fire 15/s),
+        # Reach: spew 30/s. BOOT 2 (user: 'overheats in under 2 s'; the PROBE): Halo 1 fires 29..30 at
+        # 30/s -- 29 rounds in 0.97 s, shots 33 ms apart, heat 0.045 -> 1.0 (cools while firing at 0.29),
+        # vent 3.07 s -- the per-round values doubled for 15/s overheated it at 1 s. Now Reach's own
+        # per-round values (the hum needs differing bounds, 29..30),
         # no rate ramp (4b: Reach's 0.3 is the ERROR deceleration -- error 0 here); the rate
-        # deceleration 0.1 = the Sentinel Beam's (the hum's tail follows it); heat 0.0451 a round = the 39th round overheats at 2.53 s with
-        # Halo 1 cooling while firing at 0.29 (Reach ~2.5 s, the user's stopwatch); battery 1/310
+        # deceleration 0.1 = the Sentinel Beam's (the hum's tail follows it); heat (1 + 74 / 30 x 0.29) / 75 = 0.0229 a round =
+        # the 75th round at 2.47 s with Halo 1 cooling while firing at 0.29 (Reach ~2.5 s, the user's
+        # stopwatch); battery Reach's 0.0016125 (620 rounds = 20.7 s)
         # (Reach's 620 x 0.0016125 at 30/s); error 0; every round a tracer; the FP muzzle
         # (h1_fp_muzzle.py, the idle pose: 0.4496 / -0.0643 / -0.0387 wu)
-        'trigger': {'rounds_per_second': (29.0, 30.0), 'heat_generated_per_round': 0.0451,
+        'trigger': {'rounds_per_second': (29.0, 30.0), 'heat_generated_per_round': 0.0229,
                     'acceleration_time': 0.05, 'deceleration_time': 0.1,
-                    'age_generated_per_round': 1 / 310.0, 'error_angle': (0.0, 0.0),
+                    'age_generated_per_round': 0.0016125, 'error_angle': (0.0, 0.0),
                     'rounds_between_tracers': 0,
                     # BOOT 1 (user): 'starts roughly at the muzzle -- try moving it back a unit' (1 unit
                     # = 0.01 wu)
@@ -437,7 +442,7 @@ PORT.update({
     },
 
     # weapon_ports_catalog.json (make_port_catalog_h1_ports.py focus_rifle). DEFAULT = Reach's own
-    # numbers in the tags (at Halo 1's 15/s); BALANCED = the PLASMA RIFLE ratio (step 4a, user
+    # numbers in the tags (at 30/s); BALANCED = the PLASMA RIFLE ratio (step 4a, user
     # 2026-10-12; yardstick['balanced']). Assembly Halo1 units: angles in degrees, velocity in wu
     # per TICK
     'catalog': {
@@ -454,10 +459,10 @@ PORT.update({
             # 29 fr x Reach focus rifle 22 / Reach plasma rifle 20 = 31.9 over the built ready (23)
             'anims': {'swap': 29 * 22 / 20.0 / 23.0},
             'balance': [
-                # damage: dps 130 (H1 PR 13 x 10/s) x 90/90 -> / 15/s = 8.67 (default 6 = Reach's 3 x 30/s)
-                row('jpt!', FO + 'beam', 'Damage Lower Bound', 8.67, 6.0, 'Beam Damage'),
-                row('jpt!', FO + 'beam', 'Damage Upper Bound', 8.67, 6.0, 'Beam Damage'),
-                row('jpt!', FO + 'beam', 'Damage Upper Bound Max', 8.67, 6.0, 'Beam Damage'),
+                # damage: dps 130 (H1 PR 13 x 10/s) x 90/90 -> / 30/s = 4.33 (default Reach's 3 at 30/s)
+                row('jpt!', FO + 'beam', 'Damage Lower Bound', 4.33, 3.0, 'Beam Damage'),
+                row('jpt!', FO + 'beam', 'Damage Upper Bound', 4.33, 3.0, 'Beam Damage'),
+                row('jpt!', FO + 'beam', 'Damage Upper Bound Max', 4.33, 3.0, 'Beam Damage'),
                 # materials (user): the plasma rifle bolt's table x Reach plasma_fast / plasma_slow per
                 # armour class (h1_role_compare RP_FAST_SLOW -- the Plasma Repeater's rows)
                 row('jpt!', FO + 'beam', 'Elite Energy Shield', 1.25, 2.0, 'Beam materials'),
@@ -471,13 +476,13 @@ PORT.update({
                 row('jpt!', FO + 'beam', 'Metal (Thin)', 0.625, 0.25, 'Beam materials'),
                 row('jpt!', FO + 'beam', 'Metal (Thick)', 0.5, 0.25, 'Beam materials'),
                 # heat by TIME TO OVERHEAT (both games cool while firing): H1 PR 2.67 s x 2.47 / 2.17
-                # = 3.0 s -> the 46th round at the loss below (h1_role_compare 'FR = PR ratio')
-                row('weap', FO + 'focus rifle', 'Heat Generated Per Round', 0.0346, 0.0451, 'Heat', block='Triggers'),
+                # = 3.0 s -> the 91st round at 30/s at the loss below (h1_role_compare 'FR = PR ratio')
+                row('weap', FO + 'focus rifle', 'Heat Generated Per Round', 0.0175, 0.0229, 'Heat', block='Triggers'),
                 # the one loss: 0.3 (the H1 PR's = the overheated loss) x 0.23/0.35; recovery 0.25 x 0.1/0.1
                 row('weap', FO + 'focus rifle', 'Heat Loss Per Second', 0.197, 0.29, 'Heat'),
                 row('weap', FO + 'focus rifle', 'Heat Recovery Threshold', 0.25, 0.1, 'Heat'),
-                # battery by time: H1 PR 20 s x 20.7 / Reach PR 44.4 = 9.3 s -> 140 rounds at 15/s
-                row('weap', FO + 'focus rifle', 'Age Generated Per Round', 1 / 140.0, 1 / 310.0, 'Battery', block='Triggers'),
+                # battery by time: H1 PR 20 s x 20.7 / Reach PR 44.4 = 9.3 s -> 280 rounds at 30/s
+                row('weap', FO + 'focus rifle', 'Age Generated Per Round', 1 / 280.0, 0.0016125, 'Battery', block='Triggers'),
                 # aim: 5 x 2/5 (no row), 25 x 10/12; 12 x 4/9, 25 x 10/18
                 row('weap', FO + 'focus rifle', 'Autoaim Range', 20.83, 10.0, 'Autoaim'),
                 row('weap', FO + 'focus rifle', 'Magnetism Angle', 5.33, 4.0, 'Magnetism'),
