@@ -792,6 +792,10 @@ SETS = {
     # tethered explosion 180 over 0.001 -> 1 + the EMP 100 (`emp`: shields only, thin x0.5, thick
     # x0.25, flesh 0) over 0.25 -> 2.5. A row's parts: (explosion, impact[, EMP])
     'grenade_launcher': {'port': 'Grenade Launcher', 'weapons': [
+        # the BUILT port (step 5b): its tags (+ --balanced rows); the tap trigger (its 0.5 s charge
+        # caps it at one grenade a 0.5 s, reloading after each)
+        ('Grenade Launcher (port)', W + r'grenade launcher\grenade launcher', 'shot'),
+        ('Grenade Launcher melee (port)', W + r'grenade launcher\grenade launcher', 'melee'),
         ('GL = Reach own', W + r'rocket launcher\rocket launcher', 'shot',
          {'parts': [(RLX, 180.0, (0.75, 2.25)), (RLX, 25.0, (0.0, 0.0))], 'rate': 2.0, 'mag': 1,
           'reload': 63 / 30.0, 'speed': 12.5, 'range': 100.0, 'aim': (4.0, 15.0, 8.0, 15.0)}),
