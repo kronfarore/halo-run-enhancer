@@ -1,0 +1,115 @@
+{
+ "game": "Halo 1",
+ "weapon": "Concussion Rifle",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\concussion_rifle_port\\cr_fire",
+   "perms": [
+    "cr_fire_1.wav",
+    "cr_fire_2.wav",
+    "cr_fire_3.wav",
+    "cr_fire_4.wav",
+    "cr_fire_5.wav",
+    "cr_fire_6.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\concussion_rifle_port\\cr_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\concussion_rifle_port\\cr_explode",
+   "perms": [
+    "cr_explode_1.wav",
+    "cr_explode_2.wav",
+    "cr_explode_3.wav",
+    "cr_explode_4.wav",
+    "cr_explode_5.wav",
+    "cr_explode_6.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\concussion_rifle_port\\cr_explode"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\concussion_rifle_port\\cr_reload",
+   "perms": [
+    "cr_reload_1.wav",
+    "cr_reload_2.wav",
+    "cr_reload_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\concussion_rifle_port\\cr_reload"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\concussion_rifle_port\\cr_ready",
+   "perms": [
+    "cr_ready_1.wav",
+    "cr_ready_2.wav",
+    "cr_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\concussion_rifle_port\\cr_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\concussion_rifle_port\\cr_melee",
+   "perms": [
+    "cr_melee_1.wav",
+    "cr_melee_2.wav",
+    "cr_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\concussion_rifle_port\\cr_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\concussion_rifle_port\\cr_pose",
+   "perms": [
+    "cr_pose_1.wav",
+    "cr_pose_2.wav",
+    "cr_pose_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\concussion_rifle_port\\cr_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\concussion_rifle_port\\cr_ammo",
+   "perms": [
+    "cr_ammo_1.wav",
+    "cr_ammo_2.wav",
+    "cr_ammo_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\concussion_rifle_port\\cr_ammo"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\concussion_rifle_port\\cr_dryfire",
+   "perms": [
+    "cr_dryfire_1.wav",
+    "cr_dryfire_2.wav",
+    "cr_dryfire_3.wav",
+    "cr_dryfire_4.wav",
+    "cr_dryfire_5.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\concussion_rifle_port\\cr_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\concussion_rifle_port\\cr_drop",
+   "perms": [
+    "cr_drop_1.wav",
+    "cr_drop_2.wav",
+    "cr_drop_3.wav",
+    "cr_drop_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\concussion_rifle_port\\cr_drop"
+   ]
+  }
+ ]
+}

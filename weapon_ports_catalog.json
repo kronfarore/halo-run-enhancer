@@ -4718,6 +4718,330 @@
    "requires": [
     "proj weapons\\focus rifle\\beam"
    ]
+  },
+  {
+   "weapon": "Concussion Rifle",
+   "source": "Halo Reach",
+   "donor": "Rocket Launcher",
+   "default_on": false,
+   "desc": "Halo Reach's Concussion Rifle: its model, first-person animations, sounds and numbers. Six plasma bolts a magazine, three a second; each bolt bursts on contact and its blast knocks back whatever it catches, the wielder included.",
+   "balance_desc": "Measured against the Fuel Rod: a heavier blast (27) without the impact hit, about one bolt a second, five a magazine, slower bolts and a stronger knockback.",
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\concussion rifle\\explosion",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 14.3,
+     "card": "Explosion Damage",
+     "original": 11.47
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\concussion rifle\\explosion",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 26.9,
+     "card": "Explosion Damage",
+     "original": 21.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\concussion rifle\\explosion",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 26.9,
+     "card": "Explosion Damage",
+     "original": 21.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\concussion rifle\\explosion",
+     "field": "Radius",
+     "block": null,
+     "value": 1.0,
+     "card": "Explosion Damage",
+     "original": 1.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\concussion rifle\\explosion",
+     "field": "Radius Max",
+     "block": null,
+     "value": 1.333,
+     "card": "Explosion Damage",
+     "original": 2.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\concussion rifle\\explosion",
+     "field": "Instantaneous Acceleration",
+     "block": null,
+     "value": 6.67,
+     "card": "Knockback",
+     "original": 2.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\concussion rifle\\explosion",
+     "field": "Elite Energy Shield",
+     "block": null,
+     "value": 1.333,
+     "card": "Explosion Damage",
+     "original": 1.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\concussion rifle\\explosion",
+     "field": "Cyborg Energy Shield",
+     "block": null,
+     "value": 1.333,
+     "card": "Explosion Damage",
+     "original": 1.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\concussion rifle\\explosion",
+     "field": "Jackal Energy Shield",
+     "block": null,
+     "value": 0.667,
+     "card": "Explosion Damage",
+     "original": 1.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\concussion rifle\\impact",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 0.0,
+     "card": "Bolt Damage",
+     "original": 21.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\concussion rifle\\impact",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 0.0,
+     "card": "Bolt Damage",
+     "original": 21.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\concussion rifle\\impact",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 0.0,
+     "card": "Bolt Damage",
+     "original": 21.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\concussion rifle\\concussion rifle",
+     "field": "Rounds Per Second",
+     "block": "Triggers",
+     "value": 0.96,
+     "card": "More Shooting",
+     "original": 3.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\concussion rifle\\concussion rifle",
+     "field": "Rounds Per Second Max",
+     "block": "Triggers",
+     "value": 0.96,
+     "card": "More Shooting",
+     "original": 3.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\concussion rifle\\concussion rifle",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 5,
+     "card": "Magazine",
+     "original": 6
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\concussion rifle\\concussion rifle",
+     "field": "Rounds Reloaded",
+     "block": "Magazines",
+     "value": 5,
+     "card": "Magazine",
+     "original": 6
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\concussion rifle\\concussion rifle",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 11,
+     "card": "Magazine",
+     "original": 18
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\concussion rifle\\concussion rifle",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 24,
+     "card": "Magazine",
+     "original": 30
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\concussion rifle\\concussion rifle",
+     "field": "Rounds",
+     "block": "Magazines/Magazines",
+     "value": 6,
+     "card": "Ammo pickup",
+     "original": 7
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\concussion rifle\\bolt",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 0.3733333333333333,
+     "card": "Projectile",
+     "original": 0.4
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\concussion rifle\\bolt",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 0.41000000000000003,
+     "card": "Projectile",
+     "original": 0.5333333333333333
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\concussion rifle\\bolt",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 0.0,
+     "card": "Projectile",
+     "original": 100.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\concussion rifle\\concussion rifle",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 6.0,
+     "card": "Magnetism",
+     "original": 8.0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\concussion rifle\\concussion rifle",
+     "field": "Sequence Index",
+     "block": "Meter Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\concussion rifle\\concussion rifle",
+     "field": "Alpha Multiplier",
+     "block": "Meter Elements",
+     "value": 50,
+     "card": "Ammo display",
+     "original": 42,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\concussion rifle\\concussion rifle",
+     "field": "Sequence Index",
+     "block": "Static Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\concussion rifle\\concussion rifle",
+     "field": "Loaded Ammo Cutoff",
+     "block": null,
+     "value": 2,
+     "card": "Ammo display",
+     "original": 3,
+     "index": 0
+    }
+   ],
+   "weap": "weapons\\concussion rifle\\concussion rifle",
+   "fp_animations": "weapons\\concussion rifle\\fp\\fp",
+   "requires": [
+    "proj weapons\\concussion rifle\\bolt"
+   ],
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\concussion rifle\\concussion rifle",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+      "label": "Assault Rifle Ammo"
+     },
+     {
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+      "label": "Flamethrower Ammo"
+     },
+     {
+      "tag": "powerups\\needler ammo\\needler ammo",
+      "label": "Needler Ammo"
+     },
+     {
+      "tag": "powerups\\pistol ammo\\pistol ammo",
+      "label": "Pistol Ammo"
+     },
+     {
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+      "label": "Sniper Rifle Ammo"
+     }
+    ]
+   }
   }
  ],
  "Halo 3": [
