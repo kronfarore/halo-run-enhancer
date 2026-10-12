@@ -3879,7 +3879,8 @@
      "block": "Triggers",
      "value": 0.8,
      "card": "More Shooting",
-     "original": 2.0
+     "original": 2.0,
+     "index": "all"
     },
     {
      "class": "weap",
@@ -3888,7 +3889,8 @@
      "block": "Triggers",
      "value": 0.8,
      "card": "More Shooting",
-     "original": 2.0
+     "original": 2.0,
+     "index": "all"
     },
     {
      "class": "weap",

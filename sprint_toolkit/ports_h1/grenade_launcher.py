@@ -761,8 +761,10 @@ PORT.update({
                 row('proj', GL + 'grenade release', 'Water Gravity Scale', 1.0, 0.75, 'Projectile'),
                 row('proj', GL + 'grenade release', 'Maximum Range', 73.1, 100.0, 'Projectile'),
                 # holes -> the RL ratio: 2.0 s x 0.5/0.8 = 1.25 s (both triggers)
-                row('weap', GL + 'grenade launcher', 'Rounds Per Second', 0.8, 2.0, 'More Shooting', block='Triggers'),
-                row('weap', GL + 'grenade launcher', 'Rounds Per Second Max', 0.8, 2.0, 'More Shooting', block='Triggers'),
+                # BOTH triggers (enhancer session, d1a8e9e: a Triggers row without `index` reaches trigger 0
+                # only -- the charged release kept Reach's rate): index 'all'
+                dict(row('weap', GL + 'grenade launcher', 'Rounds Per Second', 0.8, 2.0, 'More Shooting', block='Triggers'), index='all'),
+                dict(row('weap', GL + 'grenade launcher', 'Rounds Per Second Max', 0.8, 2.0, 'More Shooting', block='Triggers'), index='all'),
                 # aim: 0 x 4/5, 35 x 15/60; 12 x 8/10, 35 x 15/25
                 row('weap', GL + 'grenade launcher', 'Autoaim Angle', 0.0, 4.0, 'Autoaim'),
                 row('weap', GL + 'grenade launcher', 'Autoaim Range', 8.75, 15.0, 'Autoaim'),

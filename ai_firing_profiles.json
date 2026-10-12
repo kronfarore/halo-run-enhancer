@@ -1932,6 +1932,130 @@
     "port_dps": 96.0,
     "balanced_port_dps": 125.0
    }
+  },
+  "weapons\\grenade launcher\\grenade launcher": {
+   "source": "Halo Reach ai\\generic objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher (weapon properties #8, firing pattern #7) over weapons\\rocket launcher\\rocket launcher carriers",
+   "fields": {
+    "0x74": [
+     "<f",
+     12.0,
+     "Maximum Firing Distance"
+    ],
+    "0x78": [
+     "<f",
+     1.0,
+     "Rate Of Fire"
+    ],
+    "0x7C": [
+     "<f",
+     0.04363323003053665,
+     "Projectile Error"
+    ],
+    "0x80": [
+     "<f",
+     0.75,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     1.0,
+     "First Burst Delay Time Max"
+    ],
+    "0x8C": [
+     "<f",
+     1.0,
+     "Surprise Delay Time"
+    ],
+    "0x9C": [
+     "<f",
+     6.0,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     10.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     0.8999999761581421,
+     "Target Tracking"
+    ],
+    "0xC0": [
+     "<f",
+     0.5,
+     "Target Leading"
+    ],
+    "0xC4": [
+     "<f",
+     0.15414634146341463,
+     "Weapon Damage Modifier"
+    ],
+    "0xE0": [
+     "<f",
+     0.75,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     0.8500000238418579,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     2.0,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     2.5,
+     "Burst Separation Max"
+    ],
+    "0x1D8": [
+     "<f",
+     0.25,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.4000000059604645,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     6,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     9,
+     "Drop Weapon Ammo Max"
+    ]
+   },
+   "donor_weapon": "weapons\\rocket launcher\\rocket launcher",
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.5851851851851853,
+     "Weapon Damage Modifier"
+    ],
+    "0x1E0": [
+     "<h",
+     6,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     13,
+     "Drop Weapon Ammo Max"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.4,
+    "yardstick_dps": 158.0,
+    "port_dps": 410.0,
+    "balanced_port_dps": 108.0
+   }
   }
  }
 }
