@@ -154,13 +154,13 @@ UNITS = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 30, 32]
 WORLD = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 27, 31]           # 29 leaves: the frag's overpenetrate kept
 
 
-def _emp_test(rgb, out=None, bitmap=None, copy=False, small=False):
+def _emp_test(rgb, out=None, bitmap=None, copy=False, small=False, rgb2=None):
     """One EMP diagnostic particle (boots 9-13): the plasma grenade's shield flash entry at the
     surface ('normal'), all at once, tinted `rgb`; `out` an own particle copy (Reach's timing) with
     an own sprite (`bitmap`: Reach's emp_mask, see h1_pickable_weapons) or the stock sprite copied."""
     eff = B.join(['weapons', 'plasma grenade', 'effects', 'detonation start'])
     e = {'from': eff, 'match': 'flash h shield impact', 'location': 1, 'env': 'any_environment',
-         'distribution': 'start', 'tint_bounds': ((1.0,) + tuple(rgb), (1.0,) + tuple(rgb))}
+         'distribution': 'start', 'tint_bounds': ((1.0,) + tuple(rgb), (1.0,) + tuple(rgb2 or rgb))}
     if small:
         e['radius'] = (0.25, 0.5)
         return e
@@ -170,7 +170,7 @@ def _emp_test(rgb, out=None, bitmap=None, copy=False, small=False):
          'flags': {'random_horizontal_mirroring': True, 'random_vertical_mirroring': True,
                    'animate_once_per_frame': False}}
     if bitmap:
-        q['bitmap'] = dict({'mask': R + B.join(['fx', 'bitmaps', 'plasma', 'emp_mask.bitmap']), 'size': 32},
+        q['bitmap'] = dict({'mask': R + B.join(['fx', 'bitmaps', 'plasma', 'emp_mask.bitmap']), 'size': bitmap.get('size', 32)},
                            **dict(bitmap, out=GL + 'effects' + B + 'bitmaps' + B + bitmap['out']))
     if copy:
         q['bitmap_copy'] = (B.join(['effects', 'particles', 'flash', 'bitmaps', 'flash h shield impact']),
@@ -517,17 +517,18 @@ PORT.update({
                           # on black); ours colour-keyed 37 % of its texels transparent -- and the blue entry was
                           # always the event's FIRST added particle. BOOT 13, by colour: GREEN control first, BLUE the
                           # keyed ring second, YELLOW the ring OPAQUE on black (the stock form), RED the stock copy
-                          # BOOT 13 (user): green + red -- not the slot (green first drew), not the keying (the opaque
-                          # yellow failed too): every REBUILT sprite tag fails, the stock copy draws. BOOT 14: Reach's
-                          # ring SPLICED into the stock flash sheet (its pixels only, opaque on black, DXT1 at the
-                          # sheet's own sizes / mips), green the control
-                          'add_particles': [_emp_test((0.1, 1.0, 0.1), small=True),
-                                            _emp_test((162 / 255.0, 226 / 255.0, 252 / 255.0), out='emp pulse',
-                                                      bitmap={'compile': 'splice', 'opaque': True, 'out': 'emp pulse'})],
-                          # BOOT 9 DIAGNOSTIC: the normal explosion's visuals off (its particle system,
-                          # lights, smoke) -- the sound and the damage stay
-                          'drop_classes': ('particle_system', 'light'),
-                          'drop_particles': ('drifting smoke',),
+                          # BOOTS 9-14 (user): a particle sprite draws ONLY from a stock sheet's own tag layout --
+                          # every rebuilt sheet (raw a8r8g8b8, DXT5, stock headers, 32 px DXT1 keyed or opaque, the
+                          # first or a later slot) failed; a byte copy of the stock flash drew, and Reach's ring
+                          # SPLICED into it (pixels only) drew (boot 14: 'a green and blue explosion'). FINAL: the
+                          # ring opaque on black spliced into the 128 px `shield charge rings` sheet (one full-frame
+                          # sprite), the release explosion's own visuals back, the green control gone
+                          'add_particles': [_emp_test((162 / 255.0, 226 / 255.0, 252 / 255.0), out='emp pulse',
+                                                      rgb2=(87 / 255.0, 195 / 255.0, 240 / 255.0),
+                            bitmap={'compile': 'splice', 'opaque': True, 'out': 'emp pulse',
+                                                              'size': 128,
+                                                              'container': B.join(['effects', 'particles', 'flash', 'bitmaps',
+                                                                                   'shield charge rings'])})],
                           'damage': (FG + 'explosion', GL + 'release explosion'),
                           'lower': 120.0, 'upper': (180.0, 180.0), 'radius': (0.001, 1.0),
                           # the same ratio on Reach's tethered blast (core 0.2, acceleration 3)

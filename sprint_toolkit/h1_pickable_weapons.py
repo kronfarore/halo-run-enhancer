@@ -680,7 +680,10 @@ def own_explosion(pd, X, write, slot='detonation'):
                     # -- the stock flash sprites' own form (boot 12: they decode fully opaque)
                     alpha = Image.new('L', a.size, 255) if M.get('opaque') else a
                     if write:
-                        h1_hud_sheet.sprite_bitmap(qd.bitmap.filepath, Image.merge('RGBA', (rgb, rgb, rgb, alpha)), M['out'],
+                        # `container`: another stock sheet to splice into (a larger one: the EMP's
+                        # 128 px `shield charge rings`, one full-frame sprite)
+                        h1_hud_sheet.sprite_bitmap(M.get('container', qd.bitmap.filepath),
+                                                   Image.merge('RGBA', (rgb, rgb, rgb, alpha)), M['out'],
                                                    compile=M.get('compile', False))
                     qd.bitmap.filepath = M['out']
                 if 'bitmap_copy' in Q:
