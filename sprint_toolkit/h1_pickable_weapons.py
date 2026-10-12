@@ -644,6 +644,9 @@ def own_explosion(pd, X, write, slot='detonation'):
             if 'env' in A:               # the Grenade Launcher's EMP bolts (boot 3: 'air_only' ones
                 # never showed at a ground detonation): 'any_environment'
                 x.create_in_env.set_to(A['env'])
+            if 'distribution' in A:      # boot 4: the plasma grenade's 'buildup_and_falloff' spreads
+                # its bolts over ITS 2 s event -- in a 0 s explosion event none were created; 'start'
+                x.distribution_function.set_to(A['distribution'])
             if 'particle' in A:
                 # an OWN copy of the particle tag (the Gravity Hammer, boot 4: the stock ring
                 # lives 0.1-0.2 s -- 3-6 frames, not seen): `lifespan` (lo, hi) s, `fade_out` s,

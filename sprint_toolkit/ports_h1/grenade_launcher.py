@@ -311,9 +311,11 @@ PORT.update({
             # up' -- Reach's grenade launcher has no tether sound; its FRAG's arming (frag_armed:
             # an 'in' click + the armed beep loop) as the hold's cue, at the plasma rifle charge's
             # level (-12.0 / -11.2, the Spartan Laser's measurement) less 2 dB for a beep
-            'gl_charge_in': ([B.join([RS + 'frag_grenade', 'frag_armed_loop', 'frag_armed', 'in'])],
-                             B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'startcharge']), -14.0),
-            'gl_charge_loop': ([B.join([RS + 'frag_grenade', 'frag_armed_loop', 'frag_armed', 'loop'])],
+            # BOOT 4 (user): 'plays on a normal shot as well or not at all' -- the frag_armed LOOP
+            # is pure silence (peak 0), its 'in' click played at every press (a tap charges too).
+            # Now NO start sound and Reach's LANDMINE beep loop (one clear beep each 0.5 s: the
+            # first lands inside the 0.5 s charge); its volume follows the charge
+            'gl_charge_loop': ([B.join([RS + 'equipment', 'landmine', 'landmine_beep', 'track1', 'loop'])],
                                B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'charge']), -14.0),
             # the BALANCED reloads (the patcher retimes both, then swaps these in): H1 rocket
             # reload-empty 125 fr x 63/116 = 67.9 over the built 63 (x1.078), reload-full 111 x
@@ -407,7 +409,12 @@ PORT.update({
                    'reflect': [{'materials': UNITS, 'angle_deg': (0.0, 90.0), 'velocity': (0.0, 5.0),
                                 'effect_from_default': False},
                                {'materials': WORLD, 'response': 'detonate', 'angle_deg': (75.0, 90.0),
-                                'velocity': (7.5, 14.0), 'effect_from_default': False}],
+                                'velocity': (7.5, 14.0), 'effect_from_default': False,
+                                # BOOT 4 (user): 'no bounce at all now' (the frag's 0.8 / 0.9 keep
+                                # ~10 %). BOOT 5 A/B: MIDDLE friction 0.6 / 0.6 (a few hops, the
+                                # fuse after it settles) vs the test variant: Reach's 0.42 + a fuse
+                                # from LAUNCH (immediately, 1.2 s)
+                                'parallel_friction': 0.6, 'perpendicular_friction': 0.6}],
                    # BOOT 3 PROBE + USER (2026-10-12): Halo 1's 'on first bounce' fuse runs from when
                    # the grenade COMES TO REST (0.45 s after it settled), and a FINAL VELOCITY is a
                    # speed floor (boot 2: slid at 7.4 wu/s for 12 s, never at rest, never fused).
@@ -446,10 +453,15 @@ PORT.update({
                           'scale': 0.45, 'out_dir': GL + 'effects' + B + 'release' + B,
                           'add_particles': [{'from': r'weapons\plasma grenade\effects\detonation start',
                                              'match': 'plasma electric bolts', 'location': 0,
-                                             'env': 'any_environment', 'radius': (0.6, 0.8)},
+                                             'env': 'any_environment', 'radius': (0.6, 0.8),
+                                             # BOOT 4 (user: 'still no sparks'): the plasma grenade
+                                             # spreads its 60 bolts over ITS 2 s event; in a 0 s
+                                             # event none came -> all at the start (the needler's)
+                                             'distribution': 'start'},
                                             {'from': r'weapons\plasma grenade\effects\detonation start',
                                              'match': 'flash h shield impact', 'location': 0,
-                                             'env': 'any_environment', 'radius': (0.25, 0.5)}],
+                                             'env': 'any_environment', 'radius': (0.25, 0.5),
+                                             'distribution': 'start'}],
                           'damage': (FG + 'explosion', GL + 'release explosion'),
                           'lower': 120.0, 'upper': (180.0, 180.0), 'radius': (0.001, 1.0),
                           # the same ratio on Reach's tethered blast (core 0.2, acceleration 3)
@@ -509,7 +521,7 @@ PORT.update({
         # the CHARGE CUE (boot 3, user): a start / loop sound_looping at the muzzle, scaled by B out
         # (the charge): it plays from the press while the charge builds and holds (a tap blips)
         'fire_loop': {'like': B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'charging']),
-                      'start': SND + 'gl_charge_in', 'loop': SND + 'gl_charge_loop', 'end': '',
+                      'start': '', 'loop': SND + 'gl_charge_loop', 'end': '',
                       'tag': SND + 'gl_charging', 'marker': 'primary trigger', 'scale': 'B_out'},
         'obje_functions': [{'from': RL + 'rocket launcher', 'index': 0},
                            {'from': 'weapons' + B + 'plasma pistol' + B + 'plasma pistol', 'index': 3}],
@@ -532,7 +544,11 @@ PORT.update({
             'weap_attrs.interface.zoom_out_sound.filepath': '',
             # STEP 6: the rocket's ammo box tops it up RATIO-SCALED (the Brute Shot): 2 x carry
             # 16/8 = 4 (the same in both versions: the carry is 16 default and balanced)
-            'weap_attrs.magazines.0.magazine_items.0.rounds': 4,
+            'weap_attrs.magazines.0.magazine_items.0.rounds': 1,
+            # BOOT 4 (user): 'this will come up later -- try setting the ammo pickup to frag
+            # grenades': the magazine item = Halo 1's FRAG GRENADE equipment, 1 round a grenade
+            # (TEST: does the pickup still also give the grenade?)
+            'weap_attrs.magazines.0.magazine_items.0.equipment.filepath': FG + 'frag grenade',
             # the rocket's empty effect is the AR dry fire SOUND: the GL's own (Reach: the BR's)
             'weap_attrs.triggers.0.firing_effects.0.empty_effect.filepath': SND + 'gl_dryfire',
             'weap_attrs.triggers.1.firing_effects.0.empty_effect.filepath': SND + 'gl_dryfire',
