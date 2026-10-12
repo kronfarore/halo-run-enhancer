@@ -40,7 +40,10 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import ports_h1  # noqa: E402
+import port_env  # noqa: E402,F401  (Reclaimer, for ammo_block)
 
+B = chr(92)
+TAGS = os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'HCEEK', 'tags')
 TOOL = os.path.dirname(HERE)
 OUT = os.path.join(TOOL, 'weapon_ports_catalog.json')
 HALO_JSON = os.path.join(TOOL, 'halo.json')
@@ -75,6 +78,33 @@ def entry_for(key, p):
     return e
 
 
+def ammo_block(p, template):
+    """The enhancer's AMMO PICKUP dropdown for a port (user, 2026-10-12: 'all of the H1 ports that
+    use ammo pickups, apart from the SAW, don't have the ammo pickup swap wired into the
+    enhancer'): the SAW's `ammo` block (the Halo 1 pickup choices with the missions that carry
+    each, read from the shipped maps) with the port's weapon tag and its BUILT magazine item as
+    the default; that item joins the choices when it is no stock ammo powerup (the Grenade
+    Launcher's frag grenade). None for a port with no magazine item (battery / melee weapons)."""
+    import copy
+    from reclaimer.hek.defs.weap import weap_def
+    w = (p.get('pickable') or {}).get('weapon')
+    if not w or not template:
+        return None
+    path = os.path.join(TAGS, w + '.weapon')
+    if not os.path.exists(path):
+        return None
+    mags = weap_def.build(filepath=path).data.tagdata.weap_attrs.magazines.STEPTREE
+    items = mags[0].magazine_items.STEPTREE if len(mags) else []
+    item = items[0].equipment.filepath if len(items) else ''
+    if not item:
+        return None
+    b = copy.deepcopy(template)
+    b['tag'], b['default'] = w, item
+    if not any(c['tag'].lower() == item.lower() for c in b['choices']):
+        b['choices'].append({'tag': item, 'label': item.rsplit(B, 1)[-1].title()})
+    return b
+
+
 def check(key, e, known):
     problems = []
     if e.get('balance') and not e.get('balance_desc'):
@@ -102,6 +132,11 @@ def main(only=None, dry=False):
         h1[:] = [e for e in h1 if e.get('weapon') not in renamed]    # entries under an old name
         old = next((e for e in h1 if e.get('weapon') == entry['weapon']), {})
         merged = dict(old, **entry)              # keep what other tools added (e.g. 'ammo')
+        if 'ammo' not in merged:                 # the pickup dropdown (ammo_block)
+            saw = next((e for e in h1 if e.get('weapon') == 'SAW'), {}).get('ammo')
+            blk = ammo_block(p, saw)
+            if blk:
+                merged['ammo'] = blk
         h1[:] = [e for e in h1 if e.get('weapon') != entry['weapon']] + [merged]
         kept = sorted(set(old) - set(entry))
         print('Halo 1 / %-12s %d balance row(s), requires %s%s'

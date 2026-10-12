@@ -998,7 +998,69 @@
     "jpt! weapons\\assault rifle\\bullet": "jpt! weapons\\smg\\bullet",
     "jpt! weapons\\assault rifle\\melee": "jpt! weapons\\smg\\melee"
    },
-   "hands": "one"
+   "hands": "one",
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\smg\\smg",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "powerups\\assault rifle ammo\\assault rifle ammo",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+      "label": "Assault Rifle Ammo"
+     },
+     {
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+      "label": "Flamethrower Ammo"
+     },
+     {
+      "tag": "powerups\\needler ammo\\needler ammo",
+      "label": "Needler Ammo"
+     },
+     {
+      "tag": "powerups\\pistol ammo\\pistol ammo",
+      "label": "Pistol Ammo"
+     },
+     {
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+      "label": "Sniper Rifle Ammo"
+     }
+    ]
+   }
   },
   {
    "weapon": "Battle Rifle",
@@ -1248,7 +1310,69 @@
     "jpt! weapons\\pistol\\bullet": "jpt! weapons\\battle rifle\\bullet",
     "jpt! weapons\\pistol\\melee": "jpt! weapons\\battle rifle\\melee"
    },
-   "hands": "two"
+   "hands": "two",
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\battle rifle\\battle rifle",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "powerups\\pistol ammo\\pistol ammo",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+      "label": "Assault Rifle Ammo"
+     },
+     {
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+      "label": "Flamethrower Ammo"
+     },
+     {
+      "tag": "powerups\\needler ammo\\needler ammo",
+      "label": "Needler Ammo"
+     },
+     {
+      "tag": "powerups\\pistol ammo\\pistol ammo",
+      "label": "Pistol Ammo"
+     },
+     {
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+      "label": "Sniper Rifle Ammo"
+     }
+    ]
+   }
   },
   {
    "weapon": "Covenant Carbine",
@@ -1493,7 +1617,69 @@
     "jpt! weapons\\pistol\\bullet": "jpt! weapons\\covenant carbine\\slug",
     "jpt! weapons\\pistol\\melee": "jpt! weapons\\covenant carbine\\melee"
    },
-   "hands": "two"
+   "hands": "two",
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\covenant carbine\\covenant carbine",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "powerups\\pistol ammo\\pistol ammo",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+      "label": "Assault Rifle Ammo"
+     },
+     {
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+      "label": "Flamethrower Ammo"
+     },
+     {
+      "tag": "powerups\\needler ammo\\needler ammo",
+      "label": "Needler Ammo"
+     },
+     {
+      "tag": "powerups\\pistol ammo\\pistol ammo",
+      "label": "Pistol Ammo"
+     },
+     {
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+      "label": "Sniper Rifle Ammo"
+     }
+    ]
+   }
   },
   {
    "weapon": "Beam Rifle",
@@ -1927,7 +2113,69 @@
     "jpt! weapons\\assault rifle\\bullet": "jpt! weapons\\spiker\\spike",
     "jpt! weapons\\assault rifle\\melee": "jpt! weapons\\spiker\\melee"
    },
-   "hands": "one"
+   "hands": "one",
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\spiker\\spiker",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "powerups\\assault rifle ammo\\assault rifle ammo",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+      "label": "Assault Rifle Ammo"
+     },
+     {
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+      "label": "Flamethrower Ammo"
+     },
+     {
+      "tag": "powerups\\needler ammo\\needler ammo",
+      "label": "Needler Ammo"
+     },
+     {
+      "tag": "powerups\\pistol ammo\\pistol ammo",
+      "label": "Pistol Ammo"
+     },
+     {
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+      "label": "Sniper Rifle Ammo"
+     }
+    ]
+   }
   },
   {
    "weapon": "Mauler",
@@ -2172,7 +2420,69 @@
    "requires": [
     "proj weapons\\mauler\\pellet"
    ],
-   "hands": "one"
+   "hands": "one",
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\mauler\\mauler",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "powerups\\shotgun ammo\\shotgun ammo",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+      "label": "Assault Rifle Ammo"
+     },
+     {
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+      "label": "Flamethrower Ammo"
+     },
+     {
+      "tag": "powerups\\needler ammo\\needler ammo",
+      "label": "Needler Ammo"
+     },
+     {
+      "tag": "powerups\\pistol ammo\\pistol ammo",
+      "label": "Pistol Ammo"
+     },
+     {
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+      "label": "Sniper Rifle Ammo"
+     }
+    ]
+   }
   },
   {
    "weapon": "Brute Shot",
@@ -2344,7 +2654,69 @@
      "Projectile Gravity"
     ]
    },
-   "hands": "heavy"
+   "hands": "heavy",
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\brute shot\\brute shot",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+      "label": "Assault Rifle Ammo"
+     },
+     {
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+      "label": "Flamethrower Ammo"
+     },
+     {
+      "tag": "powerups\\needler ammo\\needler ammo",
+      "label": "Needler Ammo"
+     },
+     {
+      "tag": "powerups\\pistol ammo\\pistol ammo",
+      "label": "Pistol Ammo"
+     },
+     {
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+      "label": "Sniper Rifle Ammo"
+     }
+    ]
+   }
   },
   {
    "weapon": "Spartan Laser",
@@ -2826,6 +3198,68 @@
     "proj weapons\\sniper rifle\\sniper bullet": "proj weapons\\dmr\\bullet",
     "jpt! weapons\\sniper rifle\\sniper bullet": "jpt! weapons\\dmr\\bullet",
     "jpt! weapons\\sniper rifle\\melee": "jpt! weapons\\dmr\\melee"
+   },
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\dmr\\dmr",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+      "label": "Assault Rifle Ammo"
+     },
+     {
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+      "label": "Flamethrower Ammo"
+     },
+     {
+      "tag": "powerups\\needler ammo\\needler ammo",
+      "label": "Needler Ammo"
+     },
+     {
+      "tag": "powerups\\pistol ammo\\pistol ammo",
+      "label": "Pistol Ammo"
+     },
+     {
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+      "label": "Sniper Rifle Ammo"
+     }
+    ]
    }
   },
   {
@@ -3318,7 +3752,69 @@
    },
    "skip_cards": [
     "Ramp Up"
-   ]
+   ],
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\needle rifle\\needle rifle",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "powerups\\needler ammo\\needler ammo",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+      "label": "Assault Rifle Ammo"
+     },
+     {
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+      "label": "Flamethrower Ammo"
+     },
+     {
+      "tag": "powerups\\needler ammo\\needler ammo",
+      "label": "Needler Ammo"
+     },
+     {
+      "tag": "powerups\\pistol ammo\\pistol ammo",
+      "label": "Pistol Ammo"
+     },
+     {
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+      "label": "Sniper Rifle Ammo"
+     }
+    ]
+   }
   },
   {
    "weapon": "Plasma Repeater",
@@ -3949,6 +4445,72 @@
     ],
     "Shotgun": [
      "Projectile Gravity"
+    ]
+   },
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\grenade launcher\\grenade launcher",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "weapons\\frag grenade\\frag grenade",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+      "label": "Assault Rifle Ammo"
+     },
+     {
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+      "label": "Flamethrower Ammo"
+     },
+     {
+      "tag": "powerups\\needler ammo\\needler ammo",
+      "label": "Needler Ammo"
+     },
+     {
+      "tag": "powerups\\pistol ammo\\pistol ammo",
+      "label": "Pistol Ammo"
+     },
+     {
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+      "label": "Sniper Rifle Ammo"
+     },
+     {
+      "tag": "weapons\\frag grenade\\frag grenade",
+      "label": "Frag Grenade"
+     }
     ]
    }
   }
