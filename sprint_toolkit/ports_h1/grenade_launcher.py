@@ -113,6 +113,461 @@ PORT = reserved(
             # stall (emp side effect); the AI only taps (Spartan Laser finding)
             'lacks': 'release-to-detonate in flight (approximated: hold + release fires a '
                      'contact-burst EMP grenade), rolling, the EMP vehicle stall'}},
-    # step 11: the source game's ai\generic entry (19 fields, verified 2026-10-07)
-    firing_profile={'mode': 'source', 'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map', 'from_weapon': 'objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher'},
+    # step 11: the source game's ai\generic entry (19 fields, verified 2026-10-07) laid over a Halo
+    # 1 ROCKET LAUNCHER carrier ('gl' has no carrier; the frag yardstick is thrown, so the RL fills
+    # the hole). Halo 1's rocket carriers (h1_weapon_carriers, 2026-10-12): the Flood combat Elite
+    # and human, both WDM 0.4, no actor flags -- they agree, no donor_variant. ARMED WDM RULE: base
+    # 0.4 x rocket 158 / GL dps (h1_role_compare's dps column: default 205 x 2/s = 410 -> 0.154,
+    # balanced 135 x 0.8/s = 108 -> 0.585). User 2026-10-12: 'keep the usual WDM' -- the column
+    # (reloads ignored on both sides, as every port), not the sustained 0.52 / 1.07 (the 1-round
+    # magazine reloads every shot: rocket 102, GL 79 / 38 with reloads)
+    # BALANCED DROP (user 2026-10-12, every weapon): H1 yardstick x source port / source yardstick,
+    # the source values read from its MAP (m10): the frag has no carrier -> the RL fills the hole.
+    # H1 RL carriers loaded 0 / 0 (no ratio), ammo 2-2 and 2-4 (tie: 2-3, the Brute Shot's); Reach
+    # GL 0.25-0.4 / 6-9, Reach RL 0.25-0.5 / 2-2 -> ammo 2 x 6/2 = 6, 3 x 9/2 = 13.5 -> 13
+    firing_profile={'balanced_set': ['0x1E0=h6:Drop Weapon Ammo', '0x1E2=h13:Drop Weapon Ammo Max'],
+                    'mode': 'source', 'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map', 'from_weapon': 'objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher',
+                    'donor_weapon': 'weapons\\rocket launcher\\rocket launcher',
+                    'wdm_rule': {'base': 0.4, 'yardstick_dps': 158.0, 'port_dps': 410.0,
+                                 'balanced_port_dps': 108.0}},
 )
+
+# Reach's display colour (shaders\display / item / display_status / ones, ManagedBlam function
+# data): self_illum_color BGRA c1 98 0e = RGB 14 / 152 / 193, intensity 3, albedo black -- a teal
+# LCD. Halo 1 has no bloom: colour x intensity clipped (the Brute Shot's BLUE_HOT recipe)
+TEAL = (min(1.0, 3 * 14 / 255.0), min(1.0, 3 * 152 / 255.0), min(1.0, 3 * 193 / 255.0))
+# the ARM SWITCH (arm_switch.shader): albedo = self-illum colour by `tether_indicator` over 4
+# colours (BGRA 00 ff ff / 00 00 00 / 00 25 ff / 00 00 ff = yellow, black, orange 255 / 37 / 0,
+# red), intensity 5 -> 1: YELLOW at rest; a tethered grenade turns it red
+ARM_YELLOW = (1.0, 1.0, 0.0)
+ARM_RED = (1.0, 0.15, 0.0)
+# the grenade's flare (fx\projectile.lens_flare): colour 1 / 0.538 / 0.435, radius 0.15
+EMBER = (1.0, 0.538, 0.435)
+DISPLAY = R + RW + r'\bitmaps' + B
+STATIC = r'weapons\needler\shaders\needler luminous'
+GAUGE = r'weapons\plasma rifle\fp\shaders\gauge'
+# Halo 1 material indices (the projectile's 33 responses): the UNITS Reach detonates on (its
+# 'only against units' rules); the rest is world (28 water overpenetrates, as Reach's liquid)
+UNITS = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 30, 32]
+WORLD = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 27, 29, 31]
+
+
+def _lcd(bitmap):
+    """One display element of the on-gun LCD as a lit static shape (the Needle Rifle's recipe)."""
+    return {'map': DISPLAY + bitmap, 'from': GAUGE, 'shape': 'r', 'gradient': 0.0,
+            'static': STATIC, 'color': TEAL}
+
+
+PORT.update({
+    'status': 'in progress',
+
+    # geometry + look (h1_h3_weapon_model.py; Reach through reach_tags). Reach's ONE model for world
+    # AND first person. grenade_launcher.render_model: 5 nodes -- b_gun (root, identity: not tilted),
+    # b_chamber (the break-open barrel) > b_handle, b_ironsight, b_grenade (the loaded round); 1
+    # mesh; markers primary_trigger (0.243 / 0 / 0.057), 5 x muzzle_flash, left_hand(s),
+    # weapon_stow_anchor -- no primary_ejection. Bounds x -0.025..0.230, y -0.031..0.026, z
+    # -0.011..0.097. 16 materials: _composite / _metal / _metal_shiny / _rubber (the diffuse; their
+    # illum maps dmr_illum / battle_rifle_illum are NOT in HREK -> illum off, the DMR's case),
+    # unsc_decals_fp (alpha decal), _glass (no Halo 1 equivalent: dropped), and the ON-GUN DISPLAY
+    # driven entirely by the TETHER (no Halo 1 counterpart): display (bg frame), item (ARM / ID
+    # NOBLE6 / P R X), display_status (READY; tether_state), hundreds / tens / ones (the tethered
+    # grenade's DISTANCE), skull_switch + skull_ones (the Jolly Roger + bipeds in range of it),
+    # arm_switch (the tether indicator light), arm_switch_projectile (grey 0e0e0e)
+    'model': {
+        'dir': r'weapons\grenade launcher',
+        'world': R + RW + r'\grenade_launcher.render_model',
+        'fp': R + RW + r'\grenade_launcher.render_model',
+        'world_name': 'grenade launcher',
+        'ground_point': 'auto',
+        'markers': {'left_hand': 'left hand'},
+        'shaders': {'grenade_launcher_composite': (DISPLAY + 'grenade_launcher_diffuse.bitmap', None),
+                    'grenade_launcher_metal': (DISPLAY + 'grenade_launcher_diffuse.bitmap', None),
+                    'grenade_launcher_metal_shiny': (DISPLAY + 'grenade_launcher_diffuse.bitmap', None),
+                    'grenade_launcher_rubber': (DISPLAY + 'grenade_launcher_diffuse.bitmap', None),
+                    'arm_switch_projectile': (DISPLAY + 'grenade_launcher_diffuse.bitmap', None),
+                    'unsc_decals_fp': (R + r'objects\bitmaps\decals\bitmaps\unsc_decals_diffuse.bitmap', None)},
+        'template': r'weapons\assault rifle\fp\shaders\gun',
+        'decals': ('unsc_decals_fp',),
+        # DISPLAY, boot 1: STATIC (Halo 1 has no tether) -- the frame, ARM / READY and the digits
+        # at 0 lit teal as Reach shows them untethered; the skull + its count off (Reach: intensity
+        # by bipeds in range of a TETHERED grenade = 0) -> dropped with the glass
+        'drop_materials': ('grenade_launcher_glass', 'skull_switch', 'skull_ones'),
+        'meters': {'display': _lcd('display_bg.bitmap'),
+                   'item': _lcd('gl_display_details_diffuse.bitmap'),
+                   'display_status': _lcd('gl_display_status.bitmap'),
+                   'hundreds': _lcd('numbers.bitmap'),
+                   'tens': _lcd('numbers.bitmap'),
+                   'ones': _lcd('numbers.bitmap')},
+        # the ARM SWITCH light (Reach: solid yellow at rest, red when tethered): an additive glow per
+        # UV island (the Plasma Repeater's pilot recipe), yellow; the CHARGED cue comes later
+        'glow_shaders': {'arm_switch': {'rgb': ARM_YELLOW, 'additive': True, 'islands': True}},
+        # own hull (h1_box_collision.py) over the world model's bounds
+        'collision': {'material': 'metal',
+                      'boxes': [((-0.025, -0.026, -0.011), (0.230, 0.026, 0.097))]},
+        # the GRENADE (projectiles\grenade_launcher_grenade.render_model: one node, metal /
+        # metal_shiny / arm_switch, markers contrail / dynamic_light) = the projectile's model;
+        # contrail = `smoke` (the frag grenade's smoke-trail marker), dynamic_light = `glow`
+        'extra_models': {'grenade': {'from': R + RW + r'\projectiles\grenade_launcher_grenade.render_model',
+                                     'dir': r'weapons\grenade launcher\grenade',
+                                     'markers': {'contrail': 'smoke', 'dynamic_light': 'glow'}}},
+    },
+
+    # FP animations (h1_fp_retarget.py): ROUTE (a), Reach's own fp_grenade_launcher (the DMR's
+    # recipe). One resource group (not dual-wieldable). fire_1 var1-3 17 fr (allow interruption 14),
+    # idle 100, posing var1 94 / var2 89, ready 21 (ready_initial 29), put_away 6, reload_empty 63
+    # (primary 27) / reload_full 59 (primary 33), melee_strike_1 35 (primary 5), throw_grenade 44
+    # (primary 8), moving 20, look 9; sprint / jump / land / fall / acceleration_screens not
+    # reproduced. THE CHARGE PAIR's release = Halo 1's `fire-2` (the plasma pistol's charged shot):
+    # Reach's fire_1 var2 (Reach plays nothing extra on a tethered release)
+    'retarget': {
+        'graph': R + RFP + '.model_animation_graph',
+        'render_model': R + RW + r'\grenade_launcher.render_model',
+        'nodes': {'b_gun': 'frame b gun', 'b_chamber': 'frame b chamber', 'b_handle': 'frame b handle',
+                  'b_ironsight': 'frame b ironsight', 'b_grenade': 'frame b grenade'},
+        'drop_nodes': ('pedestal', 'aim_pitch', 'aim_yaw', 'l_humerus', 'r_humerus',
+                       'l_radius', 'r_radius', 'l_handguard', 'r_handguard'),
+        'h1_dir': r'weapons\grenade launcher\fp',
+        'h1_model': r'weapons\grenade launcher\fp\fp',
+        'align': 'same_space',
+        # the DMR's tested placement (user-approved, B1; the repeater kept it)
+        'view_offset': (-0.0225 - 0.025, 0.0, -0.0125),
+        'anims': {
+            'first_person:idle': 'first-person idle',
+            'first_person:posing:var1': 'first-person posing',
+            'first_person:ready': 'first-person ready',
+            'first_person:put_away': 'first-person put-away',
+            'first_person:fire_1:var1': 'first-person fire-1',
+            'first_person:fire_1:var2': 'first-person fire-2',
+            'first_person:melee_strike_1': 'first-person melee',
+            'first_person:moving': 'first-person moving',
+            'first_person:look': 'first-person overlays',
+            'first_person:reload_empty': 'first-person reload-empty',
+            'first_person:reload_full': 'first-person reload-full',
+            'first_person:throw_grenade': 'first-person throw-grenade',
+        },
+    },
+
+    # Reach's own sounds (h1_port_sounds.py grenade_launcher, Reach's sfx.fsb). Levels = the active
+    # RMS of the stock Halo 1 sound each stands in for (h1_stock_sound_levels.py, 2026-10-12):
+    # rocket fire -15.3 / -14.9, frag expl -7.2 / -8.1 / -8.3, bouncedirt -21.3, bouncemetal -17.3,
+    # rocket_reload_e / _f -22.5; the Brute Shot's measured ready -18.3, melee -21.8, posing -22.1,
+    # rlauncher_impact -23.0, rocket_ammo -28.8, AR dryfire -17.6, rl_projectile -19.9.
+    # Reach's cues: firing.effect = grenade_launcher_fire + brute_shot_tails_ext / _int (Halo 1
+    # plays one sound a round: the shot and the exterior tail MIXED, the DMR); detonation.effect =
+    # frag_close_layer + the explosion tails (+ grenade_launcher_expl in the AIR detonation) -> the
+    # explosion = grenade_launcher_expl + frag_close_layer MIXED; the grenade's material effects
+    # bounce frag_bnc_dirt / _stone / _metal; flight loop grenade_launcher_proj; pickup sound
+    # brute_shot_ammo; the empty effect = the BR's dry fire (as Reach's brute shot)
+    'sounds': {
+        'catalog': 'Grenade Launcher',
+        'bank': 'haloreach',
+        'dir': B.join(['sound', 'weapons', 'grenade_launcher_port']),
+        'h3_dir': RS + 'grenade_launcher' + B,
+        'sounds': {
+            'gl_fire': (['grenade_launcher_fire', RS + 'brute_shot' + B + 'brute_shot_tails_ext'],
+                        B.join(['sound', 'sfx', 'weapons', 'rocket launcher', 'fire']), -15.1),
+            'gl_explode': (['grenade_launcher_expl', RS + 'frag_grenade' + B + 'frag_close_layer'],
+                           B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'expl']), -7.9),
+            'gl_bounce': ([RS + 'frag_grenade' + B + 'frag_bnc_dirt'],
+                          B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'bouncedirt']), -21.3),
+            'gl_bounce_metal': ([RS + 'frag_grenade' + B + 'frag_bnc_metal'],
+                                B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'bouncemetal']), -17.3),
+            'gl_projectile': ([B.join(['grenade_launcher_proj', 'grenade_launcher_proj', 'loop'])],
+                              B.join(['sound', 'sfx', 'weapons', 'rocket launcher', 'rl_projectile']), -19.9),
+            'gl_reload_empty': (['grenade_launcher_fp' + B + 'grenade_launcher_reload_empty'],
+                                B.join(['sound', 'sfx', 'weapons', 'weapon_anims', 'rocket_reload_e']), -22.5),
+            'gl_reload_full': (['grenade_launcher_fp' + B + 'grenade_launcher_reload_full'],
+                               B.join(['sound', 'sfx', 'weapons', 'weapon_anims', 'rocket_reload_f']), -22.5),
+            'gl_ready': (['grenade_launcher_fp' + B + 'grenade_launcher_ready'],
+                         B.join(['sound', 'sfx', 'weapons', 'weapon_anims', 'rocket_ready']), -18.3),
+            'gl_melee': (['grenade_launcher_fp' + B + 'grenade_launcher_melee1'],
+                         B.join(['sound', 'sfx', 'weapons', 'weapon_anims', 'rocket_melee']), -21.8),
+            'gl_pose': (['grenade_launcher_fp' + B + 'grenade_launcher_pose1'],
+                        B.join(['sound', 'sfx', 'weapons', 'weapon_anims', 'rocket_posing']), -22.1),
+            'gl_ammo': ([RS + 'brute_shot' + B + 'brute_shot_ammo'],
+                        B.join(['sound', 'sfx', 'weapons', 'weapon_pickup_ammo', 'rocket_ammo']), -28.8),
+            'gl_dryfire': ([RS + 'battle_rifle' + B + 'dryfire'],
+                           B.join(['sound', 'sfx', 'weapons', 'assault rifle', 'dryfire']), -17.6),
+            'gl_drop': ([B.join([RS + 'frag_grenade', 'frag_drops', 'frag_drop'])],
+                        B.join(['sound', 'sfx', 'impulse', 'weapon_drops', 'rlauncher_impact']), -23.0),
+            # the BALANCED reloads (the patcher retimes both, then swaps these in): H1 rocket
+            # reload-empty 125 fr x 63/116 = 67.9 over the built 63 (x1.078), reload-full 111 x
+            # 59/116 = 56.5 over 59 (x0.957) -> ONE patcher multiplier (the DMR's): x1.02
+            'gl_reload_empty_balanced': (['grenade_launcher_fp' + B + 'grenade_launcher_reload_empty'],
+                                         B.join(['sound', 'sfx', 'weapons', 'weapon_anims', 'rocket_reload_e']), -22.5),
+            'gl_reload_full_balanced': (['grenade_launcher_fp' + B + 'grenade_launcher_reload_full'],
+                                        B.join(['sound', 'sfx', 'weapons', 'weapon_anims', 'rocket_reload_f']), -22.5),
+        },
+        'stretch': {'gl_reload_empty_balanced': 1.02, 'gl_reload_full_balanced': 1.02},
+    },
+
+    # ---------------------------------------------------------------------------------------
+    # The weapon (h1_pickable_weapons.py --only grenade_launcher) on a COPY of the Halo 1 ROCKET
+    # LAUNCHER (the hole-filler of the ratio: a one-at-a-time explosive launcher, its magazine,
+    # reload, HUD and melee; the Brute Shot's template) firing GRENADES built on Halo 1's FRAG
+    # GRENADE projectile (the yardstick: it bounces on every material, its timer starts on the
+    # first bounce, it trails smoke, its explosion is the frag's). DEFAULT = REACH's OWN NUMBERS;
+    # the ratio values are the balance rows.
+    # THE CHARGE PAIR (user, 4a): trigger 1 = a copy of trigger 0 (`add_triggers`); trigger 0
+    # charges (the plasma pistol's: charge hold 45 s, overcharged action none) -- an early release
+    # fires trigger 0 (the bouncing grenade), a full charge fires trigger 1 on release (the
+    # 'tethered' grenade: bursts on contact, Reach's tethered blast + the EMP)
+    'pickable': {
+        'weapon': GL + 'grenade launcher',
+        'template': RL + 'rocket launcher',
+        'world_model': GL + 'grenade launcher',
+        'fp_model': GL + 'fp' + B + 'fp',
+        'fp_anims': GL + 'fp' + B + 'fp',
+        'label': 'gl',
+        # the reserved pose donor: the shotgun (a two-handed rifle-class launcher, not the rocket's
+        # shoulder pose; Reach's grenade launcher is a rifle)
+        'teach': ('gl', 'sg'),
+        'keys': {'first-person melee': 5},          # Reach melee_strike_1 primary keyframe 5
+        'sounds': {'first-person ready': SND + 'gl_ready',
+                   'first-person posing': SND + 'gl_pose',
+                   'first-person melee': SND + 'gl_melee',
+                   'first-person reload-empty': SND + 'gl_reload_empty',
+                   'first-person reload-full': SND + 'gl_reload_full'},
+        'extra_sounds': [SND + 'gl_reload_empty_balanced', SND + 'gl_reload_full_balanced'],
+        'add_triggers': [0],
+        # THE GRENADE (trigger 0, a tap). Reach: impact 25 (`collision`, accel 0.5) + the explosion
+        # 0..180 over 0.75 -> 2.25. The impact on a copy of the frag explosion's table with no
+        # radius (an impact deals its damage to what it hits); the explosion = the frag's effect
+        # (x0.9 = 2.25 / 2.5 wu) around an own copy of the frag's damage, lower bound by the
+        # sibling rule (Reach 0 / unset: 80 x 180/120 = 120). Flight 12.5 -> 7.5 wu/s, air gravity
+        # 0.7, water 0.75, range 100, arming 0 (the frag's 1.5: Reach 0), timer 0.5 s on the
+        # first bounce (the frag's rule = Reach's 'after first bounce off any surface'), oriented
+        # along velocity (Reach's flag; the frag tumbles)
+        'bullet': {'projectile': (FG + 'frag grenade', GL + 'grenade'),
+                   'damage': (FG + 'explosion', GL + 'impact'),
+                   'dmg': 25.0, 'acceleration': 0.5,
+                   'fields': {'radius': (0.0, 0.0)},
+                   'explosion': {'effect': (FG + 'effects' + B + 'explosion', GL + 'effects' + B + 'grenade explosion'),
+                                 'part': FG + 'explosion',
+                                 'scale': 0.9, 'out_dir': GL + 'effects' + B,
+                                 'damage': (FG + 'explosion', GL + 'explosion'),
+                                 'lower': 120.0, 'upper': (180.0, 180.0), 'radius': (0.75, 2.25),
+                                 'swaps': {B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'expl']): SND + 'gl_explode'}},
+                   'velocity': (12.5, 7.5), 'range': 100.0,
+                   'model': GL + 'grenade' + B + 'grenade',
+                   'proj_fields': {'proj_attrs.physics.air_gravity_scale': 0.7,
+                                   'proj_attrs.physics.water_gravity_scale': 0.75,
+                                   'proj_attrs.detonation.arming_time': 0.0,
+                                   'proj_attrs.detonation.timer': (0.5, 0.5),
+                                   'proj_attrs.detonation.minimum_velocity': 0.0,
+                                   'proj_attrs.flags.oriented_along_velocity': True},
+                   # REACH'S RULES as Halo 1 responses: units DETONATE (Reach: 'only against
+                   # units' detonate, except a slow roll under 5 wu/s that bounces); the world
+                   # REFLECTS (the frag's) and detonates on a steep fast hit (Reach: 75-90 deg AND
+                   # 7.5-14 wu/s). Halo 1's angle convention is UNVERIFIED (0 = grazing assumed,
+                   # as Reach's 'between'): boot 1 checks it
+                   'default_responses': {'detonate': UNITS},
+                   'reflect': [{'materials': UNITS, 'angle_deg': (0.0, 90.0), 'velocity': (0.0, 5.0),
+                                'effect_from_default': False},
+                               {'materials': WORLD, 'response': 'detonate', 'angle_deg': (75.0, 90.0),
+                                'velocity': (7.5, 14.0), 'effect_from_default': False}],
+                   # the frag's smoke trail kept (attachment 0 at `smoke`), its own light dropped:
+                   # Reach's flare instead (EMBER, 0.15 wu) at `glow`
+                   'keep_attachments': (0,),
+                   'glow': {'light': (r'weapons\fuel rod gun\fuel rod exhaust', GL + 'grenade glow'),
+                            'flare': GL + 'grenade glow', 'rgb': EMBER, 'flare_radius': 0.15,
+                            'marker': 'glow'},
+                   'hum': {'like': B.join(['sound', 'sfx', 'weapons', 'rocket launcher', 'rl_projectile']),
+                           'loop': SND + 'gl_projectile', 'tag': SND + 'gl_projectile', 'marker': ''},
+                   # the BOUNCES: the frag's reflection effects as own copies playing Reach's
+                   # frag_bnc (impact_tint with no particle match: the sound swap only)
+                   'impact_tint': {'match': (), 'rgb': None, 'out': GL + 'effects' + B + 'impact' + B,
+                                   'sounds': {B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'bouncedirt']): SND + 'gl_bounce',
+                                              B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'bouncemetal']): SND + 'gl_bounce_metal'}},
+                   'triggers': [0]},
+        # THE RELEASE (trigger 1, held past the charge): Reach's tethered blast 0..180 over 0.001
+        # -> 1 (lower: the sibling rule, 120) + the EMP 100 `emp` over 0.25 -> 2.5 on Reach's emp
+        # table (energy_shield_thin x0.5: Elite + cyborg shields; _thick x0.25: Jackal; the rest
+        # 0) -- bursts on CONTACT with anything (no bounce: Reach's release IS the detonation)
+        'projectiles': [{
+            'projectile': (FG + 'frag grenade', GL + 'grenade release'),
+            'damage': None,
+            'explosion': {'effect': (FG + 'effects' + B + 'explosion', GL + 'effects' + B + 'release explosion'),
+                          'part': FG + 'explosion',
+                          'scale': 0.9, 'out_dir': GL + 'effects' + B,
+                          'damage': (FG + 'explosion', GL + 'release explosion'),
+                          'lower': 120.0, 'upper': (180.0, 180.0), 'radius': (0.001, 1.0),
+                          'swaps': {B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'expl']): SND + 'gl_explode'},
+                          'add_damage': [{'from': FG + 'explosion', 'out': GL + 'emp',
+                                          'lower': 0.0, 'upper': (100.0, 100.0), 'radius': (0.25, 2.5),
+                                          'zero': True,
+                                          'mods': {'elite_energy_shield': 0.5, 'cyborg_energy_shield': 0.5,
+                                                   'jackal_energy_shield': 0.25}}]},
+            'velocity': (12.5, 7.5), 'range': 100.0,
+            'model': GL + 'grenade' + B + 'grenade',
+            'proj_fields': {'proj_attrs.physics.air_gravity_scale': 0.7,
+                            'proj_attrs.physics.water_gravity_scale': 0.75,
+                            'proj_attrs.detonation.arming_time': 0.0,
+                            'proj_attrs.detonation.timer': (0.0, 0.0),
+                            'proj_attrs.detonation.minimum_velocity': 0.0,
+                            'proj_attrs.flags.oriented_along_velocity': True},
+            'default_responses': {'detonate': UNITS + WORLD},
+            'keep_attachments': (0,),
+            'glow': {'light': (r'weapons\fuel rod gun\fuel rod exhaust', GL + 'grenade release glow'),
+                     'flare': GL + 'grenade release glow', 'rgb': ARM_RED, 'flare_radius': 0.15,
+                     'marker': 'glow'},
+            'hum': {'like': B.join(['sound', 'sfx', 'weapons', 'rocket launcher', 'rl_projectile']),
+                    'loop': SND + 'gl_projectile', 'tag': SND + 'gl_projectile', 'marker': ''},
+            'triggers': [1]}],
+        # Reach: fire recovery 0.5 s (rounds per second 0 = recovery-limited) = 2/s
+        'trigger': {'rounds_per_second': (2.0, 2.0)},
+        # Reach: minimum error 0.15, error angle 0 -> 0.4
+        'error_deg': {'minimum_error': 0.15, 'error_angle': (0.0, 0.4)},
+        # Reach: 1 loaded, 8 at pickup, 16 most, 1 reloaded (63 fr empty, 59 full; reload time 0 =
+        # the animation's -- Halo 1 needs a number: 2.1 s)
+        'magazine': {'rounds_loaded_maximum': 1, 'rounds_reloaded': 1,
+                     'rounds_total_initial': 8, 'rounds_total_maximum': 16,
+                     'reload_time': 2.1},
+        # Reach aim assist, absolute
+        'aiming': {'autoaim_angle': 4.0, 'autoaim_range': 15.0,
+                   'magnetism_angle': 8.0, 'magnetism_range': 15.0},
+        'fields': {
+            # THE CHARGE: trigger 0 charges 0.5 s (no Reach number: the tether starts at the press;
+            # 0.5 s = Reach's fire recovery, a tap stays a tap) and holds the charge 45 s (the
+            # plasma pistol's); trigger 1 fires the release, never charges itself
+            'weap_attrs.triggers.0.charging.charging_time': 0.5,
+            'weap_attrs.triggers.0.charging.charge_hold_time': 45.0,
+            'weap_attrs.triggers.0.charging.overcharged_action': 'none',
+            'weap_attrs.triggers.1.charging.charging_time': 0.0,
+            'weap_attrs.triggers.1.charging.charge_hold_time': 0.0,
+            # Reach's grenade launcher has NO zoom (zoom levels 0); the rocket's 2x goes, and its
+            # zoom sounds with it (the Brute Shot)
+            'weap_attrs.aiming.zoom_levels': 0,
+            'weap_attrs.interface.zoom_in_sound.filepath': '',
+            'weap_attrs.interface.zoom_out_sound.filepath': '',
+            # STEP 6: the rocket's ammo box tops it up RATIO-SCALED (the Brute Shot): 2 x carry
+            # 16/8 = 4 (the same in both versions: the carry is 16 default and balanced)
+            'weap_attrs.magazines.0.magazine_items.0.rounds': 4,
+            # the rocket's empty effect is the AR dry fire SOUND: the GL's own (Reach: the BR's)
+            'weap_attrs.triggers.0.firing_effects.0.empty_effect.filepath': SND + 'gl_dryfire',
+            'weap_attrs.triggers.1.firing_effects.0.empty_effect.filepath': SND + 'gl_dryfire',
+            'weap_attrs.interface.pickup_sound.filepath': SND + 'gl_ammo',
+            'item_attrs.collision_sound.filepath': SND + 'gl_drop',
+            'obje_attrs.collision_model.filepath': GL + 'grenade launcher',
+            'obje_attrs.bounding_radius': 0.24},
+        # THE MUZZLE-FLASH RULE (closing check 10, before boot 1). Reach's FIRST-PERSON flash
+        # (fx\firing.effect, set `1st_person`): muzzle_flash_round (bounding radius 0.053 wu),
+        # glow_soft (0.133) and muzzle_smoke (0.785), all at primary_trigger, no offsets, no
+        # sparks, no casing (+ the firing_1p light). The rocket's (h1_effect_particles): ONE
+        # `flash h ar` 0.07-0.1 at the muzzle + smoke 0.12-0.15 + a back-blast flash and 24-28
+        # smoke at `primary ejection` (the GL has no such marker). -> the SHOTGUN family (the Brute
+        # Shot's): `flash h generic` 0.10-0.125 (~ Reach's glow), smoke 0.125-0.375; its sparks
+        # trail (Reach has none) and casing dropped, the fire sound kept once (event 0)
+        'sound_effects': {
+            'firing_effect': (RL + 'effects' + B + 'fire rocket', GL + 'effects' + B + 'fire grenade',
+                              {B.join(['sound', 'sfx', 'weapons', 'shotgun', 'fire']): SND + 'gl_fire'},
+                              {'copy_from': r'weapons\shotgun\effects\shotgun firing',
+                               'drop_particles': ('casing', 'sparks'),
+                               'drop_event_parts': {1: [B.join(['sound', 'sfx', 'weapons', 'shotgun', 'fire'])]}})},
+        # Reach shares strike_melee with its rocket: x1 = the H1 rocket's own melee (copied)
+        'melee': (RL + 'melee', GL + 'melee'),
+        'melee_response': RL + 'melee_response',
+        'messages': ('Picked up a grenade launcher', 'Picked up %d rounds for grenade launcher'),
+        'icon': 'grenade launcher',
+        # the ROCKET's HUD with Reach's grenade launcher crosshair (the chud's `crosshair` =
+        # hud_reticles #12 at 1.3: two arcs + the drop-tick ladder) at the reserved 31, at Halo 1's
+        # size for boot 1 (a Reach SCREENSHOT sizes it, user); one tick for the one round.
+        # Not reproduced: the AUTO / MANUAL mode icons and the tether triangle (tether states),
+        # the falcon PITCH ladder (it scrolls with the aim; Halo 1's HUD cannot)
+        'hud': {'donor': RL + 'rocket_launcher', 'out': GL + 'grenade launcher',
+                'reticle': (R + r'ui\chud\bitmaps\hud_reticles', 12, 'grenade launcher'),
+                'reticle_min_width': 3,
+                'ammo_meter': {'sizes': (1,), 'base': GL + 'bitmaps' + B + 'grenade_launcher_ammo'},
+                'flash_base': 2},
+        'palette_levels': LEVELS,
+    },
+
+    # weapon_ports_catalog.json (make_port_catalog_h1_ports.py grenade_launcher). DEFAULT = Reach's
+    # own numbers in the tags; BALANCED = the FRAG ratio, its holes by the RL ratio (step 4a, user
+    # 2026-10-12). Assembly Halo1 units: angles in degrees, velocity in wu per TICK
+    'catalog': {
+        'entry': {
+            'weapon': 'Grenade Launcher', 'source': 'Halo Reach', 'donor': 'Rocket Launcher', 'default_on': False,
+            'desc': "Halo Reach's Grenade Launcher: its model, first-person animations, sounds and "
+                    "numbers. A single-shot launcher: a tap fires a grenade that explodes on "
+                    "enemies or a hard hit and otherwise bounces, bursting half a second after the "
+                    "first bounce. Hold the trigger and release to fire a grenade that bursts on "
+                    "contact with an EMP that strips shields.",
+            'balance_desc': "Measured against the Frag Grenade, with the Rocket Launcher for what a "
+                            "thrown grenade lacks: 135 damage over 2.5 m (the frag's family), a "
+                            "0.4 s fuse, one shot every 1.25 s, a shorter reach, a smaller EMP and "
+                            "Halo 1-style aim assist.",
+            # step 9: the balanced reload = H1 rocket reload-empty 125 fr x 63/116 = 67.9 over the
+            # built 63 (x1.078), reload-full 111 x 59/116 = 56.5 over 59 (x0.957): ONE multiplier
+            # (the DMR's) x1.02, stretched sounds; swap (ONE multiplier, the ready's): H1 rocket
+            # ready 22 fr x Reach GL 21 / Reach rocket 26 = 17.8 over the built 21 = x0.85
+            'anims': {'reload': 1.02, 'swap': 0.85},
+            'anim_sounds': {'reload': {'mult': 1.02, 'from': SND + 'gl_reload_empty',
+                                       'to': SND + 'gl_reload_empty_balanced'}},
+            'balance': [
+                # the grenade's explosion: 120 x 180/160 (frag), lower 80 x 135/120 (the sibling
+                # rule: Reach's lower bounds are 0 / unset); radius 1.5 x 0.75/0.675, 2.5 x 2.25/2.25
+                row('jpt!', GL + 'explosion', 'Damage Lower Bound', 90.0, 120.0, 'Grenade Damage'),
+                row('jpt!', GL + 'explosion', 'Damage Upper Bound', 135.0, 180.0, 'Grenade Damage'),
+                row('jpt!', GL + 'explosion', 'Damage Upper Bound Max', 135.0, 180.0, 'Grenade Damage'),
+                row('jpt!', GL + 'explosion', 'Radius', 1.667, 0.75, 'Grenade Damage'),
+                row('jpt!', GL + 'explosion', 'Radius Max', 2.5, 2.25, 'Grenade Damage'),
+                # the impact: a hole (the frag has none) -> RL 0 x 25/200 = 0 (a zero on one side ->
+                # zero in balanced, the Needle Rifle's rule)
+                row('jpt!', GL + 'impact', 'Damage Lower Bound', 0.0, 25.0, 'Grenade Damage'),
+                row('jpt!', GL + 'impact', 'Damage Upper Bound', 0.0, 25.0, 'Grenade Damage'),
+                row('jpt!', GL + 'impact', 'Damage Upper Bound Max', 0.0, 25.0, 'Grenade Damage'),
+                # the release: the tethered blast by the frag ratio (135, lower 90, radius 1.5 x
+                # 0.001/0.675, 2.5 x 1/2.25) + the EMP by the plasma pistol overcharge (H1 70 x
+                # Reach EMP 100 / Reach overcharge 200) = 35 on the overcharge's shield modifiers
+                row('jpt!', GL + 'release explosion', 'Damage Lower Bound', 90.0, 120.0, 'Grenade Damage'),
+                row('jpt!', GL + 'release explosion', 'Damage Upper Bound', 135.0, 180.0, 'Grenade Damage'),
+                row('jpt!', GL + 'release explosion', 'Damage Upper Bound Max', 135.0, 180.0, 'Grenade Damage'),
+                row('jpt!', GL + 'release explosion', 'Radius', 0.002, 0.001, 'Grenade Damage'),
+                row('jpt!', GL + 'release explosion', 'Radius Max', 1.11, 1.0, 'Grenade Damage'),
+                row('jpt!', GL + 'emp', 'Damage Upper Bound', 35.0, 100.0, 'EMP'),
+                row('jpt!', GL + 'emp', 'Damage Upper Bound Max', 35.0, 100.0, 'EMP'),
+                row('jpt!', GL + 'emp', 'Radius', 0.556, 0.25, 'EMP'),
+                row('jpt!', GL + 'emp', 'Radius Max', 2.78, 2.5, 'EMP'),
+                row('jpt!', GL + 'emp', 'Elite Energy Shield', 1.5, 0.5, 'EMP'),
+                row('jpt!', GL + 'emp', 'Cyborg Energy Shield', 0.6, 0.5, 'EMP'),
+                row('jpt!', GL + 'emp', 'Jackal Energy Shield', 1.0, 0.25, 'EMP'),
+                # flight: the throw speed x1 (no velocity rows); gravity 1.0 x 0.7/0.9, water 1.0 x
+                # 0.75/0.75; the fuse 0.5 x 0.5/0.625 (Reach frag 0.6-0.65); range: a hole -> RL
+                # 128 x 100/175 (the release has no fuse: it bursts on contact)
+                row('proj', GL + 'grenade', 'Air Gravity Scale', 0.778, 0.7, 'Projectile'),
+                row('proj', GL + 'grenade', 'Water Gravity Scale', 1.0, 0.75, 'Projectile'),
+                row('proj', GL + 'grenade', 'Timer', 0.4, 0.5, 'Projectile'),
+                row('proj', GL + 'grenade', 'Timer Max', 0.4, 0.5, 'Projectile'),
+                row('proj', GL + 'grenade', 'Maximum Range', 73.1, 100.0, 'Projectile'),
+                row('proj', GL + 'grenade release', 'Air Gravity Scale', 0.778, 0.7, 'Projectile'),
+                row('proj', GL + 'grenade release', 'Water Gravity Scale', 1.0, 0.75, 'Projectile'),
+                row('proj', GL + 'grenade release', 'Maximum Range', 73.1, 100.0, 'Projectile'),
+                # holes -> the RL ratio: 2.0 s x 0.5/0.8 = 1.25 s (both triggers)
+                row('weap', GL + 'grenade launcher', 'Rounds Per Second', 0.8, 2.0, 'More Shooting', block='Triggers'),
+                row('weap', GL + 'grenade launcher', 'Rounds Per Second Max', 0.8, 2.0, 'More Shooting', block='Triggers'),
+                # aim: 0 x 4/5, 35 x 15/60; 12 x 8/10, 35 x 15/25
+                row('weap', GL + 'grenade launcher', 'Autoaim Angle', 0.0, 4.0, 'Autoaim'),
+                row('weap', GL + 'grenade launcher', 'Autoaim Range', 8.75, 15.0, 'Autoaim'),
+                row('weap', GL + 'grenade launcher', 'Magnetism Angle', 9.6, 8.0, 'Magnetism'),
+                row('weap', GL + 'grenade launcher', 'Magnetism Range', 21.0, 15.0, 'Magnetism'),
+            ]},
+    },
+
+    # step 4b (port_field_audit.py --port grenade_launcher): the source pair against the target
+    # pair; the yardstick is the FRAG for the grenade and its damage, the ROCKET for the weapon
+    # (the frag is thrown -- no weapon tag)
+    'field_audit': {
+        'source_kit': 'HREK',
+        'source': {'weapon': (RW + r'\grenade_launcher.weapon', r'objects\weapons\support_high\rocket_launcher\rocket_launcher.weapon'),
+                   'projectile': (RW + r'\projectiles\grenade_launcher_grenade.projectile',
+                                  r'objects\weapons\grenade\frag_grenade\frag_grenade.projectile'),
+                   'damage_effect': (RW + r'\projectiles\damage_effects\grenade_launcher_grenade_explosion.damage_effect',
+                                     r'objects\weapons\grenade\frag_grenade\damage_effects\frag_grenade_explosion.damage_effect')},
+        'target': {'weapon': (GL + 'grenade launcher.weapon', RL + 'rocket launcher.weapon'),
+                   'projectile': (GL + 'grenade.projectile', FG + 'frag grenade.projectile'),
+                   'damage_effect': (GL + 'explosion.damage_effect', FG + 'explosion.damage_effect')}},
+
+    # the dry test: a30 (Covenant within seconds of the landing), Reach's own loadout (1 + 8)
+    'test': {'level': 'a30', 'rounds': (1, 8), 'grunt': None, 'elite': None},
+})

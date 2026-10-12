@@ -658,6 +658,31 @@ def own_explosion(pd, X, write, slot='detonation'):
                 x.particle_type.filepath = Q['out']
             for bd in ((x.tint_lower_bound, x.tint_upper_bound) if 'tint' in A else ()):
                 bd.a, bd.r, bd.g, bd.b = A['tint']
+    # `add_damage`: further damage parts beside the explosion's (the Grenade Launcher's release:
+    # Reach's tethered blast + its EMP) -- each an own copy of `from` (a damage effect) with
+    # `lower`, `upper`, `radius`, `mods` (every Halo 1 material when `zero` is set: the rest 0)
+    # and `fields`, appended to event 0 as a copy of the repointed damage part
+    for A in X.get('add_damage', ()):
+        at = jpt__def.build(filepath=path(A['from'], '.damage_effect'))
+        ad = at.data.tagdata
+        if 'lower' in A:
+            ad.damage.damage_lower_bound = A['lower']
+        if 'upper' in A:
+            ad.damage.damage_upper_bound[0], ad.damage.damage_upper_bound[1] = A['upper']
+        if 'radius' in A:
+            ad.radius[0], ad.radius[1] = A['radius']
+        if A.get('zero'):
+            for mat in ad.damage_modifiers.desc['NAME_MAP']:
+                setattr(ad.damage_modifiers, mat, 0.0)
+        for mat, v in A.get('mods', {}).items():
+            setattr(ad.damage_modifiers, mat, v)
+        set_fields(ad, A.get('fields', {}))
+        save(at, path(A['out'], '.damage_effect'), write)
+        src_part = next(p for ev in et.data.tagdata.events.STEPTREE for p in ev.parts.STEPTREE
+                        if p.type.filepath == j_own and p.type.tag_class.enum_name == 'damage_effect')
+        prts = et.data.tagdata.events.STEPTREE[0].parts.STEPTREE
+        prts.append(copy.deepcopy(src_part))
+        prts[len(prts) - 1].type.filepath = A['out']
     if n != 1:
         raise SystemExit('%s: %d parts name %s' % (e_src, n, part_src))
     if len(found) != len(X.get('swaps', {})):
@@ -770,7 +795,9 @@ def own_beam(a, b, write):
                      for i in R['materials']]:
             x = mr[i]
             pr = x.potential_response
-            pr.response.set_to('reflect')
+            # `response`: another potential response by name (the Grenade Launcher: Reach's
+            # grenade DETONATES on a steep fast hit and bounces otherwise)
+            pr.response.set_to(R.get('response', 'reflect'))
             pr.skip_fraction = R.get('skip', 0.0)
             pr.impact_angle[0], pr.impact_angle[1] = (math.radians(a) for a in R['angle_deg'])
             pr.impact_velocity[0], pr.impact_velocity[1] = R.get('velocity', (0.0, 0.0))
@@ -1183,11 +1210,20 @@ def edit_weapon(key, write):
         trs = a.triggers.STEPTREE
         while len(trs) > w['keep_triggers']:
             trs.pop()
+    for i in w.get('add_triggers', ()):
+        # a COPY of trigger i appended (the Grenade Launcher on the rocket: the plasma pistol's
+        # CHARGED PAIR -- trigger 0 charges, a full charge fires trigger 1; an early release
+        # fires trigger 0); per-trigger values go in `fields` ('weap_attrs.triggers.1. ...'),
+        # its projectile by `projectiles` (`triggers`: [1])
+        trs = a.triggers.STEPTREE
+        trs.append(copy.deepcopy(trs[i]))
     if 'beam' in w:
         own_beam(a, w['beam'], write)
     if 'bullet' in w:
         own_beam(a, w['bullet'], write)
-    if 'magazine' in w:                      # magazine 0's fields (rounds, reload time s)
+    for b in w.get('projectiles', ()):       # further own projectiles, each on its `triggers`
+        own_beam(a, b, write)
+    if 'magazine' in w:                     # magazine 0's fields (rounds, reload time s)
         m = a.magazines.STEPTREE[0]
         for k, v in w['magazine'].items():
             setattr(m, k, v)
