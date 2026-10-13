@@ -41,8 +41,8 @@ ATTACH = [i for i in range(33) if i not in [JACKAL_SHIELD, WATER] + FORCE_FIELDS
 # damage: impact 2 (`collision`, accel 0.1) on a copy of the grenade explosion's table with no
 # radius; the free burst 17.5..175 over 0.6 -> 1.8 = the grenade's own explosion effect around an
 # own damage copy (core 0.4 x 0.48/0.432, accel 4 x 1.75/2: 4b list 2, Reach PL / Reach PG onto the
-# H1 PG); STUCK: Halo 1 adds the attached damage to the area burst -> 300 - 175 = 125 direct
-# (accel 4 x 2/2.5). Flight: Reach's own 11 -> 7 wu/s (Halo 1 changes speed over the whole range:
+# H1 PG); STUCK: Reach's 300 -- Halo 1 deals attached damage at the STICK (boot 1), so none: the
+# burst alone. Flight: Reach's own 11 -> 7 wu/s (Halo 1 changes speed over the whole range:
 # slower than Reach's 1..20 wu acceleration range -- the probe), gravity 0.1, water 0.5, range 180;
 # fuse 'when at rest' 0.25..2.5 s, arming 1 s (what Halo 1's arming does to a bolt stuck early:
 # the probe), danger radius 2. Responses: Reach's table -- attach everywhere (the needle's DEFAULT
@@ -60,8 +60,6 @@ BOLT = {
                   'fields': {'damage.aoe_core_radius': 0.4 * 0.48 / 0.432,
                              'damage.instantaneous_acceleration': 4.0 * 1.75 / 2.0},
                   'swaps': {B.join(['sound', 'sfx', 'weapons', 'plasma grenade', 'plasmagrenexpl']): SND + 'pl_explode'}},
-    'attached': {'from': PG + 'attached', 'out': PL + 'attached', 'dmg': 125.0,
-                 'fields': {'damage.instantaneous_acceleration': 4.0 * 2.0 / 2.5}},
     'velocity': (11.0, 7.0), 'range': 180.0,
     'model': PL + 'bolt' + B + 'bolt',
     'proj_fields': {'proj_attrs.physics.air_gravity_scale': 0.1,
@@ -74,6 +72,11 @@ BOLT = {
                     # Reach 0,0 = unset -> the range (the GL's / Brute Shot's)
                     'proj_attrs.physics.air_damage_range': (0.0, 180.0),
                     'proj_attrs.physics.guided_angular_velocity': 0.0,
+                    # BOOT 1 (user): 'the impact kills targets a lot of times, before the explosion
+                    # even happens -- shift all damage to the explosion': Halo 1 deals the ATTACHED
+                    # damage when the bolt sticks, not when it bursts -> none (the grenade's own
+                    # `attached` is cleared too); the stuck bonus (Reach 300 against 175) is lost
+                    'proj_attrs.physics.attached_detonation_damage.filepath': '',
                     # 4b list 3: the grenade's 0 (a zero on one side) -> Reach's own 0.02
                     'proj_attrs.collision_radius': 0.02,
                     'proj_attrs.flags.oriented_along_velocity': True,
@@ -85,8 +88,12 @@ BOLT = {
     # the grenade's per-material DETONATION effects would replace the bolt's own burst (the GL's
     # trap: a frag copy's dirt sound / empty stone effect)
     'clear_detonation_effects': True,
-    # the grenade's armed light effect + its blue light kept; its sound loop -> Reach's (hum)
-    'keep_attachments': (0, 1),
+    # the grenade's blue light kept, its armed-light effect dropped (BOOT 1, user: 'our bolt in
+    # flight is pure white'; Reach's: a white core in a BLUE halo -- its light volume 44 / 117 /
+    # 255); its sound loop -> Reach's (hum, appended); a blue glow (light + flare) at the origin
+    'keep_attachments': (1,),
+    'glow': {'light': ('weapons' + B + 'fuel rod gun' + B + 'fuel rod exhaust', PL + 'bolt glow'),
+             'flare': PL + 'bolt glow', 'rgb': BLUE, 'flare_radius': 0.15, 'marker': ''},
     'hum': {'like': B.join(['sound', 'sfx', 'weapons', 'plasma grenade', 'plasma_projectile']),
             'loop': SND + 'pl_projectile', 'tag': SND + 'pl_projectile', 'marker': ''},
     # the fuse start (stuck / at rest): the grenade's `detonation start` (electric bolts, flares)
@@ -183,6 +190,9 @@ PORT = reserved(
             'velocity': (16.5, 4.4), 'range': 131.7, 'gravity': 0.1,
             # aim 0 x 3/5 = 0, 35 x 30/60 = 17.5; 12 x 6/10 = 7.2, 35 x 30/25 = 42
             'aim': (0.0, 17.5, 7.2, 42.0),
+            # EXCEPT the autoaim ANGLE (user, 2026-10-13, approved after boot 1): Reach's 3 in both
+            # -- the RL ratio's 0 would also turn off the volley's homing (Halo 1 homes on the
+            # autoaim target)
             # heat / battery: no yardstick has either (the grenade, the rocket) -> Reach's own
             'heat': 'reach', 'battery': 'reach'},
         # Time to kill (h1_role_compare plasma_launcher, direct hits, normal): Reach's own 177 a bolt
@@ -214,6 +224,10 @@ PORT = reserved(
 
 PORT.update({
     'status': 'in_progress',
+    # user, boot 1 reply (2026-10-13): 'keep the water splash' -- a bolt into water plays the
+    # grenade's `bounce water` (Reach's launcher has no water sound of its own)
+    'sound_keeps': {B.join(['sound', 'sfx', 'impulse', 'impacts', 'med_splash']):
+                    "user: keep the water splash (Reach's launcher has none)"},
 
     # geometry + look (h1_h3_weapon_model.py; Reach through reach_tags). Reach's ONE model for world
     # AND first person. plasma_launcher.render_model: b_gun (root, identity: not tilted) > b_vent_1..4,
@@ -249,9 +263,20 @@ PORT.update({
         # plasma_nade_metal / plasma_launcher_projectile -- the CR's bolt materials) glowing
         # ADDITIVELY (the CR's boot 3: a solid glow shader_model draws the template's reflection
         # tint) in Reach's bolt blue, a white-hot core
+        # BOOT 1 (user): 'our bolt in flight is pure white' (screenshot: Reach's = a white core in
+        # a blue halo) -> the core a pale blue (and a blue glow flare on the bolt, pickable)
+        # THE CHARGE GLOW (boot 1, user: 'a charging energy effect at the muzzle when holding it';
+        # the screenshot: a blue sphere in front of the barrels at full charge). Halo 1 draws
+        # weapon attachments at the hidden third-person gun in first person -> the Spartan Laser's
+        # recipe: a star of radial cards at the muzzle built INTO the model, its additive shader
+        # FADING with D out = primary charged (`fade_source`)
         'glow_shaders': {'emitter_beam': {'rgb': BLUE, 'additive': True},
                          'plasma_nade_metal': {'rgb': BLUE, 'additive': True},
-                         'plasma_launcher_projectile': {'rgb': (0.85, 0.92, 1.0), 'additive': True}},
+                         'plasma_launcher_projectile': {'rgb': (0.55, 0.75, 1.0), 'additive': True},
+                         'pl_charge_glow': {'rgb': BLUE, 'additive': True, 'radial': True,
+                                            'hot': True, 'falloff': 1.4, 'fade_source': 'D_out'}},
+        'glow_points': [{'marker': 'primary trigger', 'shader': 'pl_charge_glow', 'size': 7.0,
+                         'forward': 1.0}],
         'extra_models': {'bolt': {'from': R + RW + r'\projectiles\plasma_launcher_grenade.render_model',
                                   'dir': PL + 'bolt'}},
         'collision': {'material': 'metal',
@@ -365,36 +390,59 @@ PORT.update({
         # fins, small flash and smoke go), tinted Reach's bolt blue, Reach's fire sound, a blue muzzle
         # light 0.1 s (Reach's firing_1p light). Not reproduced yet: Reach's larger flash (0.106 wu
         # against 0.05) and its ember sparks -- judged in boot 1
-        'fire_effect': {'from': PP + 'effects' + B + 'fire bolt', 'out': PL + 'effects' + B + 'fire bolt',
-                        'sound': SND + 'pl_fire', 'light': PL + 'muzzle light',
-                        'keep_particles': 'flash c generic', 'tint': (1.0,) + BLUE_LIGHT},
+        # BOOT 1 (user): 'muzzle flash needs to be improved'. Now the Concussion Rifle's copy of
+        # the pistol's whole `fire bolt` (both events): the side fins dropped (off axis > 0.02 wu:
+        # Reach's flash is round), the flashes x1.5 (Reach 0.106 wu against the pistol's ~0.07),
+        # every particle Reach's bolt blue (its smoke too), the light part appended. Still not
+        # reproduced: the ember sparks (no Halo 1 plasma ember)
+        'sound_effects': {
+            'firing_effect': (PP + 'effects' + B + 'fire bolt', PL + 'effects' + B + 'fire bolt',
+                              {B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'fire']): SND + 'pl_fire'},
+                              {'match': 'flash c generic', 'drop_off_axis': 0.02, 'scale': 1.5,
+                               'tint': (1.0,) + BLUE_LIGHT, 'light': PL + 'muzzle light'}),
+            # trigger 1 names the plasma rifle's charged-bolt flash: the same copy
+            'firing_effect@1': ('weapons' + B + 'plasma rifle' + B + 'effects' + B + 'charged bolt fire',
+                                PL + 'effects' + B + 'fire bolt',
+                                {B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'fire']): SND + 'pl_fire'},
+                                {'copy_from': PP + 'effects' + B + 'fire bolt',
+                                 'match': 'flash c generic', 'drop_off_axis': 0.02, 'scale': 1.5,
+                                 'tint': (1.0,) + BLUE_LIGHT, 'light': PL + 'muzzle light'})},
         'own_light': {'shape': PP + 'muzzle flash', 'look': PP + 'muzzle flash',
                       'out': PL + 'muzzle light', 'argb': (1.0,) + BLUE_LIGHT, 'duration': 0.1},
         'fields': {
             # THE CHARGED PAIR (user, 4a): trigger 0 = the tap, paced at Reach's single-bolt cycle
             # 0.95 s (1.05/s); it charges Reach's 3.0 s, holds 2.0 s, then DISCHARGES trigger 1
-            'weap_attrs.triggers.0.firing.rounds_per_second': (1.0 / 0.95, 1.0 / 0.95),
+            # BOOT 1 PROBE: 1.0526/s fired every 1.03-1.04 s (31 ticks: Halo 1 rounds the interval
+            # up ~2 ticks, the B3 rule) -> 1.13/s for Reach's 0.95 s (~28.5 ticks)
+            'weap_attrs.triggers.0.firing.rounds_per_second': (1.13, 1.13),
             'weap_attrs.triggers.0.charging.charging_time': 3.0,
             'weap_attrs.triggers.0.charging.charge_hold_time': 2.0,
             'weap_attrs.triggers.0.charging.overcharged_action': 'discharge',
             # 4b list 3: Reach's charged illumination 0.5 (the rocket's 0: a zero on one side)
             'weap_attrs.triggers.0.charging.charged_illumination': 0.5,
-            # trigger 1 = the VOLLEY: a SPEW of 4 bolts at Reach's 4.75/s (Halo 1's burst recipe,
-            # the BR's: spew time = 3 gaps of 1/4.75 s) -- MEASURE the count (the probe)
+            # trigger 1 = the VOLLEY. BOOT 1 PROBE: a spew time on trigger 1 fires ONE bolt (the
+            # pair's discharge fires trigger 1 once; its own spew never runs) -> 4 PROJECTILES PER
+            # SHOT in a horizontal fan of 4 deg (Reach's 4 bolts leave 0.21 s apart along one line:
+            # here together, side by side -- the homing pulls them onto the target). The spew
+            # recipe (trigger 1 charging 1 tick + discharge + spew) is boot 2's test SECONDARY
             'weap_attrs.triggers.1.firing.rounds_per_second': (4.75, 4.75),
             'weap_attrs.triggers.1.charging.charging_time': 0.0,
             'weap_attrs.triggers.1.charging.charge_hold_time': 0.0,
-            'weap_attrs.triggers.1.charging.spew_time': 3 / 4.75,
+            'weap_attrs.triggers.1.charging.spew_time': 0.0,
             'weap_attrs.triggers.1.charging.overcharged_action': 'none',
-            # heat 0.4 a bolt on both triggers (a volley overheats on its 4th bolt: 1.6 minus the
-            # cooling while it spews)
+            'weap_attrs.triggers.1.projectile.projectiles_per_shot': 4,
+            'weap_attrs.triggers.1.projectile.distribution_function': 'horizontal_fan',
+            'weap_attrs.triggers.1.projectile.distribution_angle': math.radians(4.0),
+            # heat 0.4 a bolt: the volley's one round = 4 bolts = 1.6 (overheats: Reach's 1.6 minus
+            # ~0.5 cooling while it spews still overheats)
             'weap_attrs.triggers.0.misc.heat_generated_per_round': 0.4,
-            'weap_attrs.triggers.1.misc.heat_generated_per_round': 0.4,
+            'weap_attrs.triggers.1.misc.heat_generated_per_round': 1.6,
             # BATTERY 12 bolts: Reach's 0.0833333 (just below 1/12: the display shows whole
             # steps) + the Spartan Laser's age MISFIRE at 0.9999, chance 1 (a 13th bolt fired
             # without it)
             'weap_attrs.triggers.0.misc.age_generated_per_round': 0.0833333,
-            'weap_attrs.triggers.1.misc.age_generated_per_round': 0.0833333,
+            # the volley's one round = 4 bolts of battery
+            'weap_attrs.triggers.1.misc.age_generated_per_round': 4 * 0.0833333,
             'weap_attrs.age.misfire_start': 0.9999,
             'weap_attrs.age.misfire_chance': 1.0,
             'weap_attrs.triggers.0.firing_effects.0.misfire_effect.filepath': '',
@@ -427,15 +475,41 @@ PORT.update({
         # the CR's screenshot-measured #17 (88 px for 2 x 0.85 x 46 sprite px) -> 1.125 1080p px a
         # sprite px: ~127 x 124 px; supersampled x2 at scale 1.3 -> overlay 0.455
         'hud': {'donor': PP + 'plasma pistol', 'out': PL + 'plasma launcher',
+                # THE ZOOM (Reach's one 3x level): the scope recipe (h1_h3_scope) on Reach's chud
+                # `plasma_launcher`, its `scope` collection. Its state data did not decode (every
+                # widget reads zoom 0) -> named (`zoom`); the central LENS `scope_mask` (a hex
+                # quarter, mirrored both ways, border extended = the dim outside) is animated
+                # (scale 0) -> its size fitted to the user's screenshot; `scope_mask_left` /
+                # `_right` share the top cell's placement and are turned +-120 deg by the chud's
+                # animation (the screenshot's lower cells) -> `rotate`. COLOURED widgets cannot be a
+                # mask (it only darkens): the blue rings (outer / inner_crosshair), the four bolt
+                # pips (outer_pips) and the charge bar (meter_new) -- dropped here; glyphs later
+                # (the reserved sequences 52-53). The pistol HUD has no screen effect: the sniper's
+                'screen_effect_from': 'weapons\\sniper rifle\\sniper rifle',
+                'screen_effect_clear': ('night_vision', 'desaturation'),
+                'scope': {'chud': R + r'ui\chud\plasma_launcher', 'out': PL + 'bitmaps\\scope_mask',
+                          'size': 1024, 'span': 931.1, 'aspect': 1.25, 'alpha': 'outside',
+                          'per_widget': {'scope_mask': {'zoom': True, 'scale': (1.0, 1.0)},
+                                         'scope_mask_top': {'zoom': True},
+                                         'scope_mask_left': {'zoom': True, 'rotate': 120.0},
+                                         'scope_mask_right': {'zoom': True, 'rotate': -120.0},
+                                         'scope_mask_sm_bottom': {'zoom': True},
+                                         'scope_mask_sm_left': {'zoom': True},
+                                         'scope_mask_sm_right': {'zoom': True},
+                                         'outer_crosshair': {'drop': True},
+                                         'inner_crosshair': {'drop': True},
+                                         'meter_new': {'drop': True},
+                                         'outer_pips': {'drop': True},
+                                         'lowbatt_flash_scope': {'drop': True}}},
                 'reticle': (R + r'ui\chud\bitmaps\hud_reticles', 31, 'plasma launcher'),
-                'reticle_xform': {'stretch': (1.2, 1.25), 'offset': (RQ[0], -RQ[1])},
+                'reticle_xform': {'stretch': (1.2, 1.25), 'offset': (-RQ[0], -RQ[1])},
                 'reticle_layers': [(R + r'ui\chud\bitmaps\hud_reticles', 31, 1.0,
-                                    {'flip_x': True, 'stretch': (1.2, 1.25), 'offset': (-RQ[0], -RQ[1])}),
+                                    {'flip_x': True, 'stretch': (1.2, 1.25), 'offset': (RQ[0], -RQ[1])}),
                                    (R + r'ui\chud\bitmaps\hud_reticles', 31, 1.0,
-                                    {'flip_y': True, 'stretch': (1.2, 1.25), 'offset': (RQ[0], RQ[1])}),
+                                    {'flip_y': True, 'stretch': (1.2, 1.25), 'offset': (-RQ[0], RQ[1])}),
                                    (R + r'ui\chud\bitmaps\hud_reticles', 31, 1.0,
                                     {'flip_x': True, 'flip_y': True, 'stretch': (1.2, 1.25),
-                                     'offset': (-RQ[0], RQ[1])})],
+                                     'offset': (RQ[0], RQ[1])})],
                 'reticle_scale': 1.3, 'reticle_overlay': 0.455,
                 'reticle_supersample': 2,
                 'reticle_min_width': 2},
@@ -471,7 +545,7 @@ PORT.update({
             'pl_projectile': (['plas_launcher_proj_loop' + B + 'pl_proj_loop' + B + 'loop'],
                               B.join(['sound', 'sfx', 'weapons', 'plasma grenade', 'plasma_projectile']), -25.0),
             'pl_stick': (['pl_proj_stick_beep'],
-                         B.join(['sound', 'sfx', 'weapons', 'plasma grenade', 'plasma_projectile']), -25.0),
+                         B.join(['sound', 'sfx', 'weapons', 'plasma grenade', 'plasma_projectile']), -15.0),  # BOOT 1 (user): 'I don't hear a beeping' at the projectile loop's -25
             'pl_ready': (['plaslauncher_fp' + B + 'plaslauncher_ready'],
                          B.join(['sound', 'sfx', 'weapons', 'weapon_anims', 'plaspistol_ready']), -24.6),
             'pl_melee': (['plaslauncher_fp' + B + 'plaslauncher_melee'],
@@ -507,21 +581,16 @@ PORT.update({
                 row('jpt!', PL + 'explosion', 'Damage Upper Bound Max', 84.29, 175.0, 'Explosion Damage'),
                 row('jpt!', PL + 'explosion', 'Radius', 0.556, 0.6, 'Explosion Damage'),
                 row('jpt!', PL + 'explosion', 'Radius Max', 2.0, 1.8, 'Explosion Damage'),
-                # the stuck burst: Halo 1 240 x 302/352 = 205.9 -> attached 205.9 - 84.3 = 121.6
-                row('jpt!', PL + 'attached', 'Damage Lower Bound', 121.6, 125.0, 'Stuck Damage'),
-                row('jpt!', PL + 'attached', 'Damage Upper Bound', 121.6, 125.0, 'Stuck Damage'),
-                row('jpt!', PL + 'attached', 'Damage Upper Bound Max', 121.6, 125.0, 'Stuck Damage'),
+                # the stuck burst: none since boot 1 (Halo 1 deals attached damage at the stick)
                 # the impact: Halo 1's grenade has none -> 0 (a zero on one side)
                 row('jpt!', PL + 'impact', 'Damage Lower Bound', 0.0, 2.0, 'Bolt Damage'),
                 row('jpt!', PL + 'impact', 'Damage Upper Bound', 0.0, 2.0, 'Bolt Damage'),
                 row('jpt!', PL + 'impact', 'Damage Upper Bound Max', 0.0, 2.0, 'Bolt Damage'),
-                # the single bolt: Reach's 0.75 s hold (no counterpart) + 0.2 x 2.0/0.8 = 1.25 s
-                dict(row('weap', PL + 'plasma launcher', 'Rounds Per Second', 0.8, 1.0526, 'More Shooting', block='Triggers'), index=0),
-                dict(row('weap', PL + 'plasma launcher', 'Rounds Per Second Max', 0.8, 1.0526, 'More Shooting', block='Triggers'), index=0),
-                # the volley's spacing 0.21 x 2.5 = 0.526 s (1.9/s); its spew 3 gaps
-                dict(row('weap', PL + 'plasma launcher', 'Rounds Per Second', 1.9, 4.75, 'More Shooting', block='Triggers'), index=1),
-                dict(row('weap', PL + 'plasma launcher', 'Rounds Per Second Max', 1.9, 4.75, 'More Shooting', block='Triggers'), index=1),
-                dict(row('weap', PL + 'plasma launcher', 'Spew Time', 3 / 1.9, 3 / 4.75, 'More Shooting', block='Triggers'), index=1),
+                # the single bolt: Reach's 0.75 s hold (no counterpart) + 0.2 x 2.0/0.8 = 1.25 s =
+                # 37.5 ticks -> 0.845/s (Halo 1 rounds ~2 ticks up: the boot 1 probe). The volley
+                # leaves in one shot since boot 1: no spacing row
+                dict(row('weap', PL + 'plasma launcher', 'Rounds Per Second', 0.845, 1.13, 'More Shooting', block='Triggers'), index=0),
+                dict(row('weap', PL + 'plasma launcher', 'Rounds Per Second Max', 0.845, 1.13, 'More Shooting', block='Triggers'), index=0),
                 # flight 12 x 11/8 = 16.5, 10 x 7/16 = 4.4; range 128 x 180/175 = 131.7; fuse 2.0 x
                 # 0.25/0.9, 2.0 x 2.5/0.95; arming 0 x 1/1.4 = 0 -- on BOTH bolts
             ] + [r for proj in ('bolt', 'bolt guided') for r in (
@@ -534,9 +603,9 @@ PORT.update({
                 # 4b list 2: gravity 1 x 0.1/0.9, water 1 x 0.5/0.75 (the grenade's flight)
                 row('proj', PL + proj, 'Air Gravity Scale', 0.111, 0.1, 'Projectile'),
                 row('proj', PL + proj, 'Water Gravity Scale', 0.667, 0.5, 'Projectile'))] + [
-                # aim (RL ratio): 0 x 3/5, 35 x 30/60; 12 x 6/10, 35 x 30/25. PENDING (user): the
-                # autoaim 0 also turns off the volley's homing (Halo 1 homes on the autoaim target)
-                row('weap', PL + 'plasma launcher', 'Autoaim Angle', 0.0, 3.0, 'Autoaim'),
+                # aim (RL ratio): 0 x 3/5, 35 x 30/60; 12 x 6/10, 35 x 30/25. The autoaim ANGLE stays
+                # Reach's 3 (user, boot 1 reply: the RL's 0 would turn off the volley's homing --
+                # Halo 1 homes on the autoaim target): no row
                 row('weap', PL + 'plasma launcher', 'Autoaim Range', 17.5, 30.0, 'Autoaim'),
                 row('weap', PL + 'plasma launcher', 'Magnetism Angle', 7.2, 6.0, 'Magnetism'),
                 row('weap', PL + 'plasma launcher', 'Magnetism Range', 42.0, 30.0, 'Magnetism'),
