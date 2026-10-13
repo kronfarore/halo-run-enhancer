@@ -1060,8 +1060,10 @@ SETS = {
     # battery 0.006 campaign (167), 50 wu/s, range 100, error 0.5 -> 2.75, aim (the MODE block,
     # Halo 4's live one) 5/15 10/20, melee the global strike_melee 70; a MANUAL VENT exists in the
     # FP graph (vent_enter 21 / loop 30 / exit 13) though the weapon's vent fields are 0. Halo 4
-    # cools ONLY while not firing (port_ttk, user-confirmed); Halo 1 cools WHILE firing (B3) and
-    # has one loss -- so the H1 rows FIT the heat a round to overheat on the same 12th bolt.
+    # DRAINS heat while firing (user, 2026-10-13; the earlier 'cools only while not firing' was
+    # wrong) -> its own Storm Rifle overheats on the 27th bolt; Halo 1 also cools while firing (B3)
+    # but has ONE loss -- the H1 rows FIT the heat a round to overheat on the same bolt (A', the
+    # user's pick). The H1 A / B / raw / ratio rows below were the first fit, on the wrong rule.
     # Halo 4 multipliers (globals damage table): plasma_fast x1 on every shield / body; plasma_slow
     # x1.6 shield / x0.4 body on Elites AND the Spartan; needle x2 / x0.25; bullet_slow x1.
     # Halo 4 yardsticks: plasma pistol 14 plasma_slow tapped, heat 0.18, loss 0.6 / 0.45, rec 0.1,
@@ -1767,7 +1769,7 @@ def main():
                      ('%.1fs' % (rounds / rate)) if rounds else '-', extra))
     models = [r for r in rows if r.get('heat_model')]
     if models:
-        print('\nHEAT MODEL (trigger held from cold, 30 Hz ticks; no cooling while firing)')
+        print('\nHEAT MODEL (trigger held from cold, 30 Hz ticks; cooling while firing where a row sets cool_firing)')
         print('%-26s %7s %7s %13s %13s %8s %8s %8s %13s %13s %13s' % (
             'weapon', 'heat/rd', 'heat/tk', 'to overheat', 'slow (<5/s)', 'vent', 'cool 0',
             'battery', '3 s: rnds/dps', '10 s: rnds/dps', '30 s: rnds/dps'))

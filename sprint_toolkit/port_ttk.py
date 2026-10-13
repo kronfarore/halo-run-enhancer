@@ -14,9 +14,11 @@ type against its shield and its body. Halo 4 (Reach's model) keeps it all in tag
     armor, else its general armor up the material's parent chain). The first pair found
     wins; none = 1. Every lookup is printed (`--why`) so it can be checked.
 
-SIMULATION: body shots from cold; shots at the weapon's interval; after the shots that
-overheat it, a pause of its overheat recovery (heat cools ONLY while not firing --
-confirmed by the user); shield damage that overflows carries into the body at the body
+SIMULATION: body shots from cold; shots at the weapon's interval; heat DRAINS while firing
+(user, 2026-10-13: Halo 2 / 3 / ODST / Reach / 4 -- the heat loss applies between shots, the
+overheated loss after an overheat down to the recovery threshold; ttk_common.player_time_drain;
+the earlier 'cools only while not firing' was a wrong Focus Rifle reading); the overheat pause
+lasts until the recovery threshold; shield damage that overflows carries into the body at the body
 multiplier. A pause as long as the enemy's shield recharge delay is flagged '!'.
 Headshots are NOT counted (the Beam Rifle and Sniper would do better on bare heads).
 
@@ -129,8 +131,10 @@ def simulate(m, hp, sh, ms, mb, delay):
     if hp <= 0:
         return 0.0, 0, ''
     d, interval = m['hit'], m['interval']
-    burst = m.get('burst shots') or 10 ** 9
-    pause = m.get('recover s', 0.0)
+    # heat per shot, draining between shots (port_role_compare 'heat params'): a gun that never
+    # overheats has no 'burst shots'
+    hp_, loss, over, rec, loss_oh = m.get('heat params') or (0.0, 0.0, 1.0, 0.0, 0.0)
+    heat = 0.0
     t, shots, flag = 0.0, 0, ''
     for _ in range(5000):
         if sh > 0:
@@ -148,10 +152,15 @@ def simulate(m, hp, sh, ms, mb, delay):
         shots += 1
         if hp <= 1e-9:
             return t, shots, flag
-        if shots % burst == 0:
-            t += pause
+        heat += hp_
+        if hp_ and heat >= over - 1e-9:
+            pause = (heat - rec) / (loss_oh or loss or 1.0)
+            t += max(interval, pause)
+            heat = rec
             if pause >= delay and delay > 0:
                 flag = '!'                    # the shield would start recharging
+            continue
+        heat = max(0.0, heat - loss * interval)
         t += interval
     return None, shots, 'no kill'
 

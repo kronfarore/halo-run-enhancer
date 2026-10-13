@@ -2033,7 +2033,8 @@ will touch shared pipeline scripts more than a normal port: every such change is
 > damage), heat per round / loss / thresholds, battery per round, the zoom levels, range, aim
 > assist. Lay the candidates side by side per value and the time to kill (h1_role_compare
 > 'focus_rifle' set vs Plasma Rifle, Sniper Rifle, the Sentinel Beam and the Beam Rifle port),
-> with a sustained-fire table (heat cools only while not firing). Damage group vs Halo 1's
+> with a sustained-fire table (heat DRAINS while firing -- corrected 2026-10-13: the B7 session's
+> 'cools only while not firing' was wrong; Halo 2 / 3 / ODST / Reach / 4 drain). Damage group vs Halo 1's
 > materials. I pick; record it in yardstick['pick'] / ['reason'] and PORTING. Then 4b, the
 > template diff, port_sound_refs and the muzzle-flash comparison BEFORE boot 1. The scope /
 > HUD art: size it from a Reach SCREENSHOT (`h1_h3_scope --fit`), ask me for one; the crosshair:

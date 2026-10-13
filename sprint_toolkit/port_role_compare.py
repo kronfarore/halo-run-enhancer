@@ -10,13 +10,16 @@ reads each weapon's weapon / projectile / damage effect tags and derives role me
     burst      shots and damage from cold until OVERHEATED, and the seconds it takes
     recover    seconds from overheated until it fires again:
                (overheated threshold - recovery threshold) / overheated heat loss
-    cycle dps  burst damage / (burst seconds + recover seconds) -- holding the trigger
+    cycle      shots per overheat cycle once hot (from the recovery threshold), and
+    cycle dps  cycle damage / (cycle seconds + recover seconds) -- holding the trigger
     battery    shots per battery (1 / age per round) and the damage in one battery
     + headshots (damage flag or specific damage 'sniper'), range, zoom, aim assist
 
-ASSUMPTION, stated rather than hidden: heat is lost only while NOT firing (no decay is
-counted inside a burst). Measured in game it may be otherwise -- the burst numbers are
-then upper bounds on heat, lower bounds on time.
+HEAT DRAINS WHILE FIRING (user, 2026-10-13: Halo 2 / 3 / ODST / Reach / 4): between shots the
+heat falls by heat loss x interval; after an overheat it falls at the overheated loss to the
+recovery threshold (ttk_common.player_time_drain). The earlier assumption here -- heat lost
+only while NOT firing -- was wrong (a Focus Rifle reading): it undercounted the shots to
+overheat.
 
     python port_role_compare.py focus_rifle [--balanced]
 
@@ -112,13 +115,29 @@ def metrics(kit, wtag, stem, overrides=None):
                                    and int(flags.split()[0]) & 2)) else 'no',
          'damage type': str(first(d, 'general_damage', default='-'))}
     if heat > 0:
-        shots = math.ceil(over / heat)
-        m['burst shots'] = shots
-        m['burst dmg'] = shots * m['hit']
-        m['burst s'] = shots * interval
-        m['recover s'] = (over - rec_thr) / over_loss if over_loss else float('inf')
-        m['cycle dps'] = m['burst dmg'] / (m['burst s'] + m['recover s'])
+        # heat DRAINS while firing (user, 2026-10-13: Halo 2 / 3 / ODST / Reach / 4 -- the heat loss
+        # applies between shots; the overheated loss after an overheat, to the recovery
+        # threshold; ttk_common.player_time_drain): shots to overheat from cold, and per cycle
+        # from the recovery threshold (the held trigger's steady state)
+        drain = loss * interval
+
+        def to_overheat(start):
+            if heat <= drain:
+                return None                      # never overheats
+            return max(1, math.ceil((over - start - drain) / (heat - drain) - 1e-9))
+        shots, cyc = to_overheat(0.0), to_overheat(rec_thr)
+        m['heat params'] = (heat, loss, over, rec_thr, over_loss or loss)
+        m['recover s'] = (over - rec_thr) / (over_loss or loss) if (over_loss or loss) else float('inf')
         m['cool 1 shot s'] = heat / loss if loss else float('inf')
+        if shots is None:
+            m['burst shots'] = None
+            m['cycle dps'] = m['dps_raw']
+        else:
+            m['burst shots'] = shots
+            m['burst dmg'] = shots * m['hit']
+            m['burst s'] = shots * interval
+            m['cycle shots'] = cyc
+            m['cycle dps'] = cyc * m['hit'] / (cyc * interval + m['recover s'])
     if age > 0:
         m['battery shots'] = int(round(1.0 / age))
         m['battery dmg'] = m['battery shots'] * m['hit']
@@ -142,7 +161,8 @@ def catalog_rows(game, weapon):
 ROWS = [('hit', 'damage per shot', '%.1f'), ('interval', 'seconds per shot', '%.3f'),
         ('dps_raw', 'dps while firing', '%.0f'), ('burst shots', 'shots to overheat', '%d'),
         ('burst dmg', 'damage to overheat', '%.0f'), ('burst s', 'seconds to overheat', '%.2f'),
-        ('recover s', 'overheat recovery s', '%.2f'), ('cycle dps', 'dps holding trigger', '%.0f'),
+        ('recover s', 'overheat recovery s', '%.2f'), ('cycle shots', 'shots per cycle (hot)', '%d'),
+        ('cycle dps', 'dps holding trigger', '%.0f'),
         ('cool 1 shot s', 'cool-off per shot s', '%.2f'),
         ('battery shots', 'shots per battery', '%d'), ('battery dmg', 'damage per battery', '%.0f'),
         ('magazine', 'magazine / reserve', '%s'), ('headshot', 'headshots', '%s'),
@@ -181,7 +201,7 @@ def main():
             continue
         print('%-24s' % title + ''.join('%-*s' % (width, fmt(f, m.get(key))[:width - 1])
                                         for _l, m in cols))
-    print('\n(heat is assumed to decay only while NOT firing; see the docstring)')
+    print('\n(heat drains while firing, the overheated loss after an overheat; see the docstring)')
 
 
 if __name__ == '__main__':
