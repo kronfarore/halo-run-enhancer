@@ -1,0 +1,166 @@
+{
+ "game": "Halo 1",
+ "weapon": "Focus Rifle",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\focus_rifle_port\\fo_fire_in",
+   "perms": [
+    "fo_fire_in_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\focus_rifle_port\\fo_fire_in"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\focus_rifle_port\\fo_fire_loop",
+   "perms": [
+    "fo_fire_loop_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\focus_rifle_port\\fo_fire_loop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\focus_rifle_port\\fo_fire_out",
+   "perms": [
+    "fo_fire_out_1.wav",
+    "fo_fire_out_2.wav",
+    "fo_fire_out_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\focus_rifle_port\\fo_fire_out"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\focus_rifle_port\\fo_dryfire",
+   "perms": [
+    "fo_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\focus_rifle_port\\fo_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\focus_rifle_port\\fo_ready",
+   "perms": [
+    "fo_ready_1.wav",
+    "fo_ready_2.wav",
+    "fo_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\focus_rifle_port\\fo_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\focus_rifle_port\\fo_melee",
+   "perms": [
+    "fo_melee_1.wav",
+    "fo_melee_2.wav",
+    "fo_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\focus_rifle_port\\fo_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\focus_rifle_port\\fo_pose",
+   "perms": [
+    "fo_pose_1.wav",
+    "fo_pose_2.wav",
+    "fo_pose_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\focus_rifle_port\\fo_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\focus_rifle_port\\fo_overheat",
+   "perms": [
+    "fo_overheat_1.wav",
+    "fo_overheat_2.wav",
+    "fo_overheat_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\focus_rifle_port\\fo_overheat"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\focus_rifle_port\\fo_overheat_loop",
+   "perms": [
+    "fo_overheat_loop_1.wav",
+    "fo_overheat_loop_2.wav",
+    "fo_overheat_loop_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\focus_rifle_port\\fo_overheat_loop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\focus_rifle_port\\fo_oh_exit",
+   "perms": [
+    "fo_oh_exit_1.wav",
+    "fo_oh_exit_2.wav",
+    "fo_oh_exit_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\focus_rifle_port\\fo_oh_exit"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\focus_rifle_port\\fo_zoom_in",
+   "perms": [
+    "fo_zoom_in_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\focus_rifle_port\\fo_zoom_in"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\focus_rifle_port\\fo_zoom_out",
+   "perms": [
+    "fo_zoom_out_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\focus_rifle_port\\fo_zoom_out"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\focus_rifle_port\\fo_drop",
+   "perms": [
+    "fo_drop_1.wav",
+    "fo_drop_2.wav",
+    "fo_drop_3.wav",
+    "fo_drop_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\focus_rifle_port\\fo_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\focus_rifle_port\\fo_flyby",
+   "perms": [
+    "fo_flyby_1.wav",
+    "fo_flyby_2.wav",
+    "fo_flyby_3.wav",
+    "fo_flyby_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\focus_rifle_port\\fo_flyby"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\focus_rifle_port\\fo_impact",
+   "perms": [
+    "fo_impact_1.wav",
+    "fo_impact_2.wav",
+    "fo_impact_3.wav",
+    "fo_impact_4.wav",
+    "fo_impact_5.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\focus_rifle_port\\fo_impact"
+   ]
+  }
+ ]
+}
