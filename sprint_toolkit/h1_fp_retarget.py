@@ -492,6 +492,25 @@ def retarget(weapon, anim_name, nodes=None, anims=None, defaults=None):
 LOOPING = ('first-person idle', 'first-person posing', 'first-person moving')
 
 
+def _continuous(frames):
+    """Every node's quaternion in the hemisphere of the frame before (q and -q are one rotation).
+    HALO 4 (the Storm Rifle, boot 2, user: 'when using melee both hands act up, the idle fidget
+    too'): its locals come out of rotation matrices with w >= 0 (h4_tags._mat_quat), so a joint
+    near 180 deg FLIPS sign between frames -- the right upper arm in melee / posing, the left
+    thumb, the right wrist in the overheat -- and the game's blend between frames spins through
+    the flip. Halo 3 / Reach sources carry continuous signs: untouched."""
+    out = [dict(frames[0])]
+    for fr in frames[1:]:
+        row = {}
+        for n, v in fr.items():
+            q0 = out[-1][n][0]
+            if sum(a * b for a, b in zip(q0, v[0])) < 0:
+                v = (tuple(-c for c in v[0]),) + tuple(v[1:])
+            row[n] = v
+        out.append(row)
+    return out
+
+
 def write_jmas(weapon, only=None):
     """Every mapped animation as a JMA into HCEEK data\\<h1_dir>\\animations.
 
@@ -534,6 +553,8 @@ def write_jmas(weapon, only=None):
             frames = frames + [frames[-1]] * w['pad_end'][h1name]
         if typ != 'overlay':
             frames = frames + [frames[0] if h1name in LOOPING else frames[-1]]
+            if h4_tags.is_h4(w['graph']):
+                frames = _continuous(frames)
         # a third element = the node's SCALE (replacement_frames); else 1
         states = [[JmaNodeState(v[1][0] * 100, v[1][1] * 100, v[1][2] * 100,
                                 v[0][1], v[0][2], v[0][3], v[0][0], v[2] if len(v) > 2 else 1.0)

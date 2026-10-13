@@ -835,7 +835,11 @@ def meters(w):
             first = np.full(shape.shape, n - 1, np.float64)
             for k in range(n - 1, -1, -1):
                 first[lit[k] > 32] = k
-            grad = np.clip(np.round(np.maximum(first - 0.5, 0.0) / (n - 1) * 255), 0, 255).astype(np.uint8)
+            # `value_floor`: the driving out never goes below it (the Storm Rifle's B out = heat
+            # floored at 0.1, B3's probe: stage 1 lit from cold) -> thresholds remapped onto floor..1
+            f0 = M.get('value_floor', 0.0)
+            g = f0 + (1.0 - f0) * np.maximum(first - 0.5, 0.0) / (n - 1)
+            grad = np.clip(np.round(g * 255), 0, 255).astype(np.uint8)
             print('   %s: %d stages -> one meter' % (name, n))
         h, wd = shape.shape
         t = bitm_def.build(filepath=os.path.join(TAGS, h1_h3_scope.TEMPLATE + '.bitmap'))
