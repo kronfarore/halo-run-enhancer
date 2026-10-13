@@ -17,6 +17,7 @@ by a fixed step per shot (heat), which counts shots, which ticks (rate), which c
 
     python sprint_toolkit/h1_weapon_state_probe.py --seconds 90 --note "repeater: hold fire, drop"
     python sprint_toolkit/h1_weapon_state_probe.py --analyse
+    python sprint_toolkit/h1_weapon_state_probe.py --bursts [--run -2] [--events]   (the fire RATE: B7)
 """
 import argparse
 import json
@@ -175,15 +176,69 @@ def analyse(a):
               % (wpn, d[0].get('tag'), len(d), p0['018'][2], p1['018'][2], fw, up, pitch, tilt))
 
 
+def bursts(a):
+    """THE FIRE RATE, MEASURED (the Focus Rifle, B7, 2026-10-13): a shot = a rise of the battery
+    word (+0x208, age); shots grouped into bursts (gap > 300 ms) with their rate, the heat (+0x204)
+    from first to last round and the first shot gaps; the overheated bit (+0x1F8 bit 0) and fire
+    button changes as a timeline. It found a 29..30 tag firing 30/s on the Focus Rifle (33 ms) and
+    15/s on the Sentinel Beam (67 ms: its age rate-of-fire penalty 0.2). A battery weapon only --
+    a magazine weapon's shots are its rounds word (see --analyse)."""
+    runs, cur = [], None
+    for line in open(OUT, encoding='utf-8'):
+        r = json.loads(line)
+        if 'start' in r:
+            cur = {'note': r.get('note'), 'rows': []}
+            runs.append(cur)
+        elif cur is not None:
+            cur['rows'].append(r)
+    rows = runs[a.run]['rows']
+    print('run %s: %s' % (a.run, runs[a.run]['note']))
+    wid = next((r['weapon'] for r in rows if r.get('ch', {}).get('208')), None)
+    heat = age = 0.0
+    shots, events, prev_fire = [], [], False
+    for r in rows:
+        if r.get('weapon') != wid:
+            continue
+        ch = r.get('ch', {})
+        if '204' in ch:
+            heat = ch['204'][1]
+        if '1f8' in ch:
+            events.append('%9.1f ms  weapon +0x1F8 = %s  heat %.3f' % (r['ms'], ch['1f8'][2], heat))
+        if '208' in ch and ch['208'][1] > age:
+            age = ch['208'][1]
+            shots.append((r['ms'], heat))
+        if r.get('fire') != prev_fire:
+            events.append('%9.1f ms  %s  heat %.3f' % (r['ms'], 'FIRE ON ' if r.get('fire') else 'fire off', heat))
+            prev_fire = r.get('fire')
+    print('weapon %s: %d shots, battery used %.4f' % (wid, len(shots), age))
+    groups, cur_b = [], []
+    for s in shots:
+        if cur_b and s[0] - cur_b[-1][0] > 300:
+            groups.append(cur_b)
+            cur_b = []
+        cur_b.append(s)
+    if cur_b:
+        groups.append(cur_b)
+    for b in groups:
+        dt = (b[-1][0] - b[0][0]) / 1000.0
+        print('burst %3d rounds over %.2f s (%s/s)  heat %.3f -> %.3f  first gaps ms %s'
+              % (len(b), dt, ('%.1f' % ((len(b) - 1) / dt)) if dt else '-', b[0][1], b[-1][1],
+                 [round(b[i + 1][0] - b[i][0]) for i in range(min(8, len(b) - 1))]))
+    if a.events:
+        print('\n'.join(events))
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument('--bursts', action='store_true', help='the fire rate: shots, bursts, heat (bursts())')
+    ap.add_argument('--events', action='store_true', help='--bursts: the fire / overheated timeline too')
     ap.add_argument('--seconds', type=float, default=90.0)
     ap.add_argument('--note', default='')
     ap.add_argument('--analyse', action='store_true')
     ap.add_argument('--run', type=int, default=-1, help='--analyse: which run (default the last)')
     ap.add_argument('--min', type=int, default=3, help='--analyse: offsets changing at least this often')
     a = ap.parse_args(argv)
-    (analyse if a.analyse else run)(a)
+    (bursts if a.bursts else analyse if a.analyse else run)(a)
 
 
 if __name__ == '__main__':

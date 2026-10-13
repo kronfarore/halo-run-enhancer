@@ -53,9 +53,19 @@ def main(weapons):
         for fe in tr.firing_effects.STEPTREE:
             print('           effects firing %s | misfire %s | empty %s'
                   % (fe.firing_effect.filepath, fe.misfire_effect.filepath, fe.empty_effect.filepath))
+        # heat / battery / zoom (the Focus Rifle, B7: its 4a needed the yardstick's heat, age and zoom;
+        # the AGE rate-of-fire penalty decides whether a 30/s tag fires 30 or 15/s -- PORTING)
+        h, ag = d.heat, d.age
+        print('heat       per round %.4f  overheated %.2f  recovery %.2f  loss %.3f/s   rate %s ramp %.2f / %.2f s'
+              % (tr.misc.heat_generated_per_round, h.overheated_threshold, h.recovery_threshold,
+                 h.loss_per_second, list(f.rounds_per_second), f.acceleration_time, f.deceleration_time))
+        print('battery    age per round %.5f  penalties: heat %.2f rate of fire %.2f  misfire start %.2f chance %.2f'
+              % (tr.misc.age_generated_per_round, ag.heat_penalty, ag.rate_of_fire_penalty,
+                 ag.misfire_start, ag.misfire_chance))
         a = d.aiming
-        print('aim        auto %.1f deg / %g wu   magnet %.1f deg / %g wu'
-              % (deg(a.autoaim_angle), a.autoaim_range, deg(a.magnetism_angle), a.magnetism_range))
+        print('aim        auto %.1f deg / %g wu   magnet %.1f deg / %g wu   zoom %d %s   deviation %.2f deg'
+              % (deg(a.autoaim_angle), a.autoaim_range, deg(a.magnetism_angle), a.magnetism_range,
+                 a.zoom_levels, tuple(round(z, 2) for z in a.zoom_ranges), deg(a.deviation_angle)))
         print('melee      %s   weapon type %s   label %s' % (d.melee.player_damage.filepath,
                                                            d.weapon_type.enum_name, d.label))
         fp = d.interface.first_person_animations.filepath
