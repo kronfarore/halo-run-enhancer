@@ -453,8 +453,9 @@ PORT.update({
             'weap_attrs.triggers.1.projectile.projectiles_per_shot': 4,
             'weap_attrs.triggers.1.projectile.distribution_function': 'point',
             'weap_attrs.triggers.1.projectile.distribution_angle': 0.0,
-            'weap_attrs.triggers.1.projectile.minimum_error': math.radians(1.0),
-            'weap_attrs.triggers.1.projectile.error_angle': (math.radians(1.5), math.radians(2.0)),
+            # BOOT 4 (user): 'increase the initial volley spread a little bit' -> min 1.5, 2 -> 2.5
+            'weap_attrs.triggers.1.projectile.minimum_error': math.radians(1.5),
+            'weap_attrs.triggers.1.projectile.error_angle': (math.radians(2.0), math.radians(2.5)),
             # heat 0.4 a bolt: the volley's one round = 4 bolts = 1.6 (overheats: Reach's 1.6 minus
             # ~0.5 cooling while it spews still overheats)
             'weap_attrs.triggers.0.misc.heat_generated_per_round': 0.4,
@@ -551,7 +552,19 @@ PORT.update({
                                  'name': 'plasma launcher ring inner', 'index': 53, 'scale': (1.5, 1.5),
                                  'overlay': 200 / (159 * 1.5 * 0.5), 'alpha': 0.55, 'offset': (0, 0),
                                  'rgb': (110, 190, 245), 'normalize': True, 'gamma': 1.6,
-                                 'flip': 'xy'}],
+                                 'flip': 'xy'},
+                                # BOOT 4 (user: hud_reticles 58-59 granted by the coordinating
+                                # session): the four BOLT PIPS (`outer_pips`: scope_bits2 #1, a 54 x 43
+                                # three-streak icon, unflipped upper right, 'mirror horizontal, vertical')
+                                # in ONE glyph (`mirror4`); the user's scope screenshot: ~55 px each at
+                                # (+-268, -167 / +165) px -> 1.02 screen px an art px, the copies at
+                                # (263, -164) art px, art x0.38 in the cell, overlay 1.02 / (0.38 x 0.5).
+                                # 59 stays free: the diagonal charge bar is a live meter (no static art)
+                                {'art': (R + B.join(['ui', 'chud', 'bitmaps', 'scopes', 'plasma_launcher_scope_bits2']), 1),
+                                 'name': 'plasma launcher pips', 'index': 58, 'scale': (0.38, 0.38),
+                                 'mirror4': (263, -164), 'overlay': 1.02 / (0.38 * 0.5), 'alpha': 0.85,
+                                 'offset': (0, 0), 'rgb': (110, 190, 245), 'normalize': True,
+                                 'gamma': 1.0}],
                 # BOOT 3: the offsets fixed (RQ) drew the art ~10 % narrower (345 against 382 cell px) ->
                 # the overlay x382/345 keeps the size the user called close
                 'reticle_scale': 1.3, 'reticle_overlay': 0.455 * 382 / 345,
