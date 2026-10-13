@@ -1128,6 +1128,19 @@ def contrail_look(ct, C):
         d.rendering.texture_repeats_u, d.rendering.texture_repeats_v = C['repeats']
     if 'scroll' in C:
         d.rendering.texture_animation_u, d.rendering.texture_animation_v = C['scroll']
+    # `secondary`: an ANIMATED SECONDARY MAP {'bitmap', 'anchor', 'function', 'period', 'scale'}
+    # -- the Focus Rifle, boot 8 (user: 'the beam moves now'): the contrail's own u scroll drew
+    # STATIC (every 30/s beam starts at the same phase); a map function with source 'none' runs on
+    # GAME time, so a greyscale knot map sliding along the beam moves (it modulates the primary)
+    if 'secondary' in C:
+        S = C['secondary']
+        sm = d.secondary_map
+        sm.bitmap.filepath = S['bitmap']
+        sm.anchor.set_to(S.get('anchor', 'with_primary'))
+        sm.u_animation.source.set_to('none')
+        sm.u_animation.function.set_to(S.get('function', 'slide'))
+        sm.u_animation.period = S.get('period', 0.5)
+        sm.u_animation.scale = S.get('scale', 1.0)
     if 'states' in C:
         sts = d.point_states.STEPTREE
         while len(sts) < len(C['states']):

@@ -615,17 +615,32 @@ def bitmaps(w):
         # palette-mapped through a gradient `palette`, blended additively x alpha): colour =
         # palette[profile], alpha = profile; `premultiply` for an additive layer
         prof, _ = h3_hud_art.decode(K['profile'])
-        pal, _ = h3_hud_art.decode(K['palette'])
         # `size`: square px, or (w, h) -- a profile that VARIES along u keeps its length (the
         # Focus Rifle's scrolling `pulse`, 512 x 64)
         sz = K.get('size', 64)
         v = np.asarray(prof.convert('L').resize(tuple(sz) if isinstance(sz, (tuple, list)) else (sz, sz),
                                                 Image.LANCZOS)).astype(np.float64)
-        row = np.asarray(pal)[np.asarray(pal).shape[0] // 2, :, :3].astype(np.float64)
+        out_px = np.zeros(v.shape + (4,), np.uint8)
+        if 'grey' in K:
+            # a GREYSCALE map (the Focus Rifle, 2026-10-13: a contrail's animated SECONDARY map):
+            # grey = floor + (1 - floor) x profile, alpha 255
+            g = K['grey'] + (1.0 - K['grey']) * v / 255.0
+            out_px[..., :3] = np.clip(g * 255, 0, 255).round()[..., None]
+            out_px[..., 3] = 255
+            Image.fromarray(out_px).save(os.path.join(out, name + '.tif'))
+            continue
+        if 'stops' in K:
+            # colour STOPS [(t, (r, g, b) 0..255)] instead of a palette bitmap (the Focus Rifle's
+            # Reach colours: a white core, orange edges, a violet haze)
+            t = np.linspace(0, 1, 256)
+            st = sorted(K['stops'])
+            row = np.stack([np.interp(t, [s[0] for s in st], [s[1][c] for s in st]) for c in range(3)], axis=1)
+        else:
+            pal, _ = h3_hud_art.decode(K['palette'])
+            row = np.asarray(pal)[np.asarray(pal).shape[0] // 2, :, :3].astype(np.float64)
         col = row[np.clip((v / 255.0 * (len(row) - 1)).round().astype(int), 0, len(row) - 1)]
         if K.get('premultiply'):
-            col = col * (v / 255.0)[..., None]
-        out_px = np.zeros(v.shape + (4,), np.uint8)
+            col = col * (v / 255.0)[..., None] * K.get('gain', 1.0)
         out_px[..., :3] = np.clip(col, 0, 255).round()
         out_px[..., 3] = np.clip(v, 0, 255).round()
         Image.fromarray(out_px).save(os.path.join(out, name + '.tif'))
