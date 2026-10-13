@@ -213,7 +213,11 @@ PORT.update({
         # triangle centres inside the gun mesh, ray parity, every 3rd frame): right hand 2 cm to the
         # gun's right (-y): idle 2771 -> 32, melee 853 -> 132; left hand 1 cm down (-z): idle 243 ->
         # 52, fire 24 -> 5 (its melee contact is Halo 4's own: the hand off the gun)
-        'hand_offset': {'r': (0.0, -0.02, 0.0), 'l': (0.0, 0.0, -0.01)},
+        # BOOT 5 (user: 'idle was fine before, the fidget better now; the melee: the right hand does
+        # not grip the handle, a finger stretched out') -- the offset lifted the right hand off the
+        # handle in the melee (Halo 4's hand wraps it: rendered at 25 deg, frames 6-16). Now only
+        # the FIDGET keeps it; every other animation sits on Halo 4's wrists
+        'hand_offset_anims': {'first_person:posing:var1': {'r': (0.0, -0.02, 0.0), 'l': (0.0, 0.0, -0.01)}},
         'align': 'same_space',
         'anims': {
             'first_person:idle': 'first-person idle',
