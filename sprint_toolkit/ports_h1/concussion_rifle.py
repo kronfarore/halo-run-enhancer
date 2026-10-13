@@ -22,6 +22,23 @@ STATIC = r'weapons\needler\shaders\needler luminous'
 GAUGE = r'weapons\plasma rifle\fp\shaders\gauge'
 # Reach's indicator blue, read off the user's Reach screenshot (2026-10-12: ~70 / 150 / 255)
 BLUE = (0.3, 0.6, 1.0)
+# Reach's concussion PLASMA (boot 1, user: 'a normal plasma release'; 'fuel rod projectiles, not
+# changed yet, including the detonation size and color' + a Reach screenshot of the bolt). Read
+# from Reach: the muzzle flare gradient muzzle_flare_concussion_rifle (black -> 50 / 46 / 174 ->
+# 103 / 84 / 247 -> 199 / 148 / 255 -> white), the contrail gradient concussion_rifle (the same
+# violet -> white), the bolt's lens flare 1 / 0.19 / 0.12 (red-orange) over it; the screenshot's
+# bolt: a white-hot core in a PINK-MAGENTA glow (mid 168 / 125 / 151), violet-white sparks, no
+# trail to see
+VIOLET = (0.78, 0.58, 1.0)
+VIOLET_DEEP = (0.40, 0.33, 0.97)
+PINK = (1.0, 0.45, 0.75)
+# BOOT 6 DIAGNOSTIC (boot 5, user: 'leaves the bolt in flight as the remaining green object' --
+# every in-flight tag reads non-green in the deployed map): one colour per element, the GL's
+# method -- SPARKS red, glow light + flare BLUE, model shell YELLOW, model core WHITE
+# BOOT 6 (user: 'unchanged, green' -- a big green ball, white core, none of the four colours):
+# not an attachment at all -- the fuel rod copy's light-volume WIDGET `hunter fuel rod` (green
+# 0.68 / 0.96 / 0.29 -> 0.52 / 0.98 / 0.29, radius 0.02 -> 0.1 wu). Diagnostic off
+DIAG = False
 
 PORT = reserved(
     order=23, wave='B5', name='Concussion Rifle', source='Halo Reach',
@@ -161,8 +178,20 @@ PORT.update({
                                                   'gradient': 0.0, 'static': STATIC, 'color': BLUE},
                    'concussion_rifle_overheat': {'map': HOLO, 'from': GAUGE, 'shape': 'r',
                                                  'gradient': 0.0, 'static': STATIC, 'color': BLUE}},
+        # THE BOLT'S MODEL (boot 2): Reach's own concussion_rifle_grenade (one node, no markers;
+        # materials plasma_nade_metal / plasma_launcher_projectile) instead of the fuel rod's green
+        # ammo orb -- both SOLID GLOW: the white-hot core of the screenshot
+        # BOOT 3 (user): 'still all green' -- a solid glow is a shader_model on the template (the
+        # plasma rifle gun), whose REFLECTION tints (perpendicular 0.24 / 1 / 0.56) drew the bolt
+        # green over the pink -> ADDITIVE glows (transparent chicago: no reflection), the white-hot
+        # core inside the pink
+        'glow_shaders': {'plasma_nade_metal': {'rgb': (1.0, 1.0, 0.0) if DIAG else PINK, 'additive': True},
+                         'plasma_launcher_projectile': {'rgb': (1.0, 1.0, 1.0) if DIAG else (1.0, 0.85, 0.95), 'additive': True}},
+        'extra_models': {'bolt': {'from': R + RW + r'\projectiles\concussion_rifle_grenade.render_model',
+                                  'dir': CR + 'bolt'}},
         'collision': {'material': 'metal',
-                      'boxes': [((-0.03, -0.045, -0.06), (0.25, 0.045, 0.07))]},
+                      # the world model's bounds (JMS, wu): x -0.108..0.230, y -0.029..0.031, z -0.049..0.075
+                      'boxes': [((-0.108, -0.029, -0.049), (0.230, 0.031, 0.075))]},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Reach's own fp_concussion_rifle (the DMR's
@@ -289,8 +318,58 @@ PORT.update({
                                  'fields': {'damage.instantaneous_acceleration': 2.5,
                                             'damage.active_camouflage_damage': 1.0 / 0.9,
                                             'damage.aoe_core_radius': 0.8},
-                                 'swaps': {B.join(['sound', 'sfx', 'weapons', 'fuel rod gun', 'explosion']): SND + 'cr_explode'}},
+                                 'swaps': {B.join(['sound', 'sfx', 'weapons', 'fuel rod gun', 'explosion']): SND + 'cr_explode'},
+                                 # THE BLAST'S LOOK (boot 2, user: 'detonation size and color'):
+                                 # Reach's detonation = explosive_flash (bounding 0.73 wu), sparks,
+                                 # plasma_noise_long (0.48), violet; the fuel rod's burst is 1.5 wu
+                                 # -> x0.5, its green `c fire` states and stealth-cannon flare violet
+                                 'scale': 0.5,
+                                 'psys_tint': {'fuelrod burst': ((1.0,) + VIOLET, (1.0,) + VIOLET_DEEP),
+                                               'c energy smoke': ((0.65,) + VIOLET, (0.85,) + VIOLET_DEEP),
+                                               'death': ((0.0,) + VIOLET_DEEP, (0.0,) + VIOLET_DEEP),
+                                               # BOOT 3 (user): 'still all green' -- the map held the
+                                               # violet states; the TYPE states `birth` / `death`
+                                               # multiply every particle by the fuel rod's green
+                                               # (1 / 0.14 / 1 / 0.02) -> white (the states colour)
+                                               '@birth': (1.0, 1.0, 1.0, 1.0), '@death': (0.0, 1.0, 1.0, 1.0)},
+                                 'particle_tint': VIOLET, 'tint_match': ('stealth cannon',)},
                    'velocity': (12.0, 16.0), 'range': 100.0,
+                   # THE BOLT'S LOOK (boot 2): Reach's model glowing; the fuel rod's green contrail
+                   # and green exhaust light dropped (the screenshot shows no trail); its trail
+                   # sparks kept as an own copy tinted Reach violet-white; a PINK glow (the fuel
+                   # rod exhaust light + flare recoloured, 0.2 wu: the screenshot's halo)
+                   'model': CR + 'bolt' + B + 'bolt',
+                   'keep_attachments': (1,),
+                   # BOOT 2 (user): 'the bolt is still green, probably too big compared to the
+                   # original of Reach; the blast is also still the green explosion' -- every tag
+                   # was violet in the built map: Halo 1's `c` particles (the sparks' `c energy`,
+                   # the blast's `c fire`) take the CREATING OBJECT's CHANGE COLOUR (the Beam Rifle's
+                   # finding), and the fuel rod copy has none -> an own change colour, Reach violet
+                   # (the plasma pistol bolt's block). Smaller: sparks x0.5 radius, x0.6 count
+                   # (Reach's spark_ember 0.055 wu), the flare 0.2 -> 0.12 wu
+                   'change_color': {'from': 'weapons' + B + 'plasma pistol' + B + 'bolt', 'rgb': VIOLET},
+                   'set_attachments': {0: {'class': 'effect', 'type': FR + 'effects' + B + 'fuel rod tail sparks',
+                                           'copy': {'out': CR + 'effects' + B + 'bolt sparks',
+                                                    'tint': (1.0,) + ((1.0, 0.0, 0.0) if DIAG else VIOLET), 'scale': 0.5, 'count': 0.6}}},
+                   # the GLOW BALL = the fuel rod's light volume, an own copy: white-pink at the
+                   # core (hither), Reach pink outward (yon) -- the screenshot's hot core in a halo
+                   'widget_tint': {'out': CR + 'bolt glow volume', 'hither': (1.0, 1.0, 0.8, 0.95),
+                                   'yon': (1.0,) + PINK},
+                   'glow': {'light': (FR + 'fuel rod exhaust', CR + 'bolt glow'), 'flare': CR + 'bolt glow',
+                            'rgb': (0.0, 0.0, 1.0) if DIAG else PINK, 'flare_radius': 0.12, 'marker': 'contrail'},
+                   # BOOT 2 (user): 'the scorch mark can stay, the green plasma burn would be good to
+                   # change' -> own copies of the fuel rod's impact effects with Halo 1's plain plasma
+                   # burn (the Beam Rifle's swap)
+                   # BOOT 4 (user): 'the bolt and burn stay green' -- read from the map: half the
+                   # responses still named the fuel rod's effects (each names its effect twice: the
+                   # nested POTENTIAL response kept the green burn) -> `potential`; and those impact
+                   # effects carry their own particles -- `flare h stealth cannon` + `flash h shield
+                   # impact` (tinted green), `tracer` / `smoke c generic` -- the green ball at the
+                   # impact -> tinted Reach violet
+                   'impact_tint': {'match': ('stealth cannon', 'shield impact', 'c generic'), 'rgb': VIOLET,
+                                   'potential': True, 'out': CR + 'effects' + B + 'impact' + B,
+                                   'decals': {B.join(['effects', 'decals', 'bullet holes', 'plasma green burn large']):
+                                              B.join(['effects', 'decals', 'bullet holes', 'plasma burn large'])}},
                    'proj_fields': {'proj_attrs.physics.air_gravity_scale': 0.25,
                                    'proj_attrs.physics.water_gravity_scale': 0.25,
                                    # Reach's 11 -- in Halo 1 minimum velocity DETONATES (the Brute
@@ -334,23 +413,28 @@ PORT.update({
             'obje_attrs.bounding_radius': 0.26,
             # 4b list 3: the item's acceleration scale (how far blasts throw it) 1.5 x 1/0.8 (Reach
             # CR / fuel rod onto the H1 fuel rod; the rocket template's 2.0)
-            'obje_attrs.acceleration_scale': 1.875},
-        # THE MUZZLE-FLASH RULE (closing check 10, before boot 1). Reach's FIRST-PERSON flash
-        # (fx\firing.effect, `1st_person`): glow_soft (bounding radius 0.106 wu), muzzle_flash_round
-        # (0.071) and smoke_fiery_small (0.117), all at primary_trigger, no offsets, no sparks, no
-        # casing (+ the firing_1p light). The rocket's (h1_effect_particles): `flash h ar` 0.07-0.1
-        # + smoke 0.12-0.15 at the muzzle AND a back-blast (flash + 24-28 smoke) at `primary
-        # ejection`. The FUEL ROD's (the yardstick's, Covenant): `charge c energy` 0.065-0.104 (~
-        # Reach's glow), 2 x 2-4 `smoke c generic` 0.09-0.19 (~ the smoke), 10-14 `flash c generic
-        # small` 0.03-0.05 (sparks: Reach has none -> dropped) and one `flash c generic` 0.046-0.506
-        # (x0.2 -> 0.009-0.1 ~ Reach's round flash), all at the muzzle -> the fuel rod's effect,
-        # its fire sound swapped for Reach's
+            'obje_attrs.acceleration_scale': 1.875,
+            'obje_attrs.attachments.0.type.filepath': CR + 'muzzle light'},
+        # THE MUZZLE-FLASH RULE (closing check 10). Reach's FIRST-PERSON flash (fxiring.effect,
+        # `1st_person`): glow_soft (bounding radius 0.106 wu), muzzle_flash_round (0.071, coloured by
+        # muzzle_flare_concussion_rifle: VIOLET) and smoke_fiery_small (0.117), all at
+        # primary_trigger, no sparks, no casing (+ the firing_1p light). BOOT 1 had the fuel rod's
+        # green flash; USER: 'I think the muzzle flash is a normal plasma release' -> Halo 1's
+        # PLASMA PISTOL `fire bolt` (the Carbine's precedent): `flash c generic` 0.04-0.05, two
+        # sideways `med` fins at +-0.04 (dropped: Reach's flash is round), the front `med`
+        # 0.065-0.08, `small` 0.15-0.25, smoke -- the flashes x0.7 (generic 0.03, med 0.05, small
+        # 0.1-0.18 ~ Reach's glow), everything tinted Reach violet, its fire sound swapped
         'sound_effects': {
             'firing_effect': (RL + 'effects' + B + 'fire rocket', CR + 'effects' + B + 'fire bolt',
-                              {B.join(['sound', 'sfx', 'weapons', 'fuel rod gun', 'fire']): SND + 'cr_fire'},
-                              {'copy_from': FR + 'effects' + B + 'fuel rod fire',
-                               'drop_particles': ('flash c generic small',),
-                               'match': 'flash c generic', 'scale': 0.2})},
+                              {B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'fire']): SND + 'cr_fire'},
+                              {'copy_from': 'weapons' + B + 'plasma pistol' + B + 'effects' + B + 'fire bolt',
+                               'match': 'flash c generic', 'drop_off_axis': 0.02, 'scale': 0.7,
+                               'tint': (1.0,) + VIOLET})},
+        # the MUZZLE LIGHT: the rocket's (the AR's yellow `muzzle flash`, its flash function kept) ->
+        # an own copy in Reach violet (the plasma pistol's light colour slot)
+        'own_light': {'shape': 'weapons' + B + 'assault rifle' + B + 'muzzle flash',
+                      'look': 'weapons' + B + 'plasma pistol' + B + 'muzzle flash',
+                      'out': CR + 'muzzle light', 'argb': (1.0,) + VIOLET},
         # the fuel rod's melee (Reach: strike_melee on both = x1 in both versions)
         'melee': (FR + 'melee', CR + 'melee'),
         'melee_response': RL + 'melee_response',
