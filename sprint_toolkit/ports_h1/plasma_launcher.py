@@ -30,7 +30,13 @@ BLUE_LIGHT = (42 / 255.0, 83 / 255.0, 1.0)
 # the Concussion Rifle's indicator blue (its user screenshot ~70 / 150 / 255; the same holo bitmap)
 HOLO_BLUE = (0.3, 0.6, 1.0)
 # the crosshair quadrant's offset (chud units): half the #31 sprite (47 x 44 px) x Reach's 1.2 x 1.25
-RQ = (47 / 2.0 * 1.2, 44 / 2.0 * 1.25)
+# x its widget ORIGIN 0.945 -- the four copies OVERLAP 5.5 % (boot 2, user: 'the horizontal lines
+# look mirrored and facing away' -- edge to edge, the halves' half-transparent edge rows left a seam)
+RQ = (47 / 2.0 * 1.2 * 0.945, 44 / 2.0 * 1.25 * 0.945)
+# the FULLY CHARGED cue (boot 2, user: 'another fully charged identification would be good'):
+# Reach's rear display turns RED-ORANGE at full charge (the user's fully-charged screenshot) ->
+# the holo ring + screen slide blue -> red-orange at the top of the charge (D out = primary charged)
+CHARGE_RAMP = [(0.0, HOLO_BLUE), (0.97, HOLO_BLUE), (1.0, (1.0, 0.32, 0.12))]
 # Halo 1 material indices (h1_role_compare.H1_MATERIALS order)
 JACKAL_SHIELD, WATER = 16, 28
 FORCE_FIELDS = [10, 18, 26, 32]      # force field, engineer force field, monitor, hunter shield
@@ -98,8 +104,10 @@ BOLT = {
             'loop': SND + 'pl_projectile', 'tag': SND + 'pl_projectile', 'marker': ''},
     # the fuse start (stuck / at rest): the grenade's `detonation start` (electric bolts, flares)
     # without its dirt-hit sound (the beep plays at the impact, below)
+    # BOOT 2 (user): 'I can't hear a beep still' (on the impact effects, -15) -> the beep HERE as
+    # well: Halo 1 plays this effect when the fuse starts (the bolt at rest = stuck)
     'started_effect': {'from': PG + 'effects' + B + 'detonation start', 'out': PL + 'effects' + B + 'stuck',
-                       'drop_parts': [B.join(['sound', 'sfx', 'impulse', 'impacts', 'dirthits'])]},
+                       'swaps': {B.join(['sound', 'sfx', 'impulse', 'impacts', 'dirthits']): SND + 'pl_stick'}},
     # the IMPACTS: every response plays the grenade's `bounce` (its sound the stock dirthits: a
     # BORROW in the hand check). Reach's impact.effect has no sound (a flash light) and its stick
     # beep plays when the bolt ATTACHES -- in Halo 1 the impact itself -> own copies of the bounce
@@ -256,9 +264,11 @@ PORT.update({
         # Concussion Rifle's static lit shapes off the holo map in its indicator blue; the emitter
         # an additive glow in Reach's bolt blue
         'meters': {'circular_indicator': {'map': HOLO, 'from': GAUGE, 'shape': 'r',
-                                          'gradient': 0.0, 'static': STATIC, 'color': HOLO_BLUE},
+                                          'gradient': 0.0, 'static': STATIC, 'color': HOLO_BLUE,
+                                          'ramp': CHARGE_RAMP, 'ramp_source': 'D_out'},
                    'plasma_launcher_display': {'map': HOLO, 'from': GAUGE, 'shape': 'r',
-                                               'gradient': 0.0, 'static': STATIC, 'color': HOLO_BLUE}},
+                                               'gradient': 0.0, 'static': STATIC, 'color': HOLO_BLUE,
+                                               'ramp': CHARGE_RAMP, 'ramp_source': 'D_out'}},
         # THE BOLT'S MODEL: Reach's own plasma_launcher_grenade (one node; materials
         # plasma_nade_metal / plasma_launcher_projectile -- the CR's bolt materials) glowing
         # ADDITIVELY (the CR's boot 3: a solid glow shader_model draws the template's reflection
@@ -358,7 +368,11 @@ PORT.update({
         # then the loop) while the trigger charges: the template's charge function (D out = primary
         # charged) scales it
         'fire_loop': {'like': B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'charging']),
-                      'start': SND + 'pl_charge_in', 'loop': SND + 'pl_charge_loop', 'end': '',
+                      # BOOT 2 (user): 'swapping to the weapon plays the initial charge up sound' --
+                      # a sound_looping's START plays when it is attached (on ready), not when the
+                      # charge begins -> no start; the steady loop scaled by the charge. Lost:
+                      # Reach's rising 'in' (5 s, the whole charge + hold)
+                      'start': '', 'loop': SND + 'pl_charge_loop', 'end': '',
                       'tag': SND + 'pl_charging', 'marker': 'primary trigger', 'scale': 'D_out'},
         'bullet': dict(BOLT, projectile=(PG + 'plasma grenade', PL + 'bolt'), triggers=[0]),
         # THE VOLLEY (trigger 1): the same bolt, GUIDED at Reach's 45 deg/s on the autoaim target at
@@ -493,9 +507,9 @@ PORT.update({
                                          'scope_mask_top': {'zoom': True},
                                          'scope_mask_left': {'zoom': True, 'rotate': 120.0},
                                          'scope_mask_right': {'zoom': True, 'rotate': -120.0},
-                                         'scope_mask_sm_bottom': {'zoom': True},
-                                         'scope_mask_sm_left': {'zoom': True},
-                                         'scope_mask_sm_right': {'zoom': True},
+                                         'scope_mask_sm_bottom': {'zoom': True, 'mirror_local': True},
+                                         'scope_mask_sm_left': {'zoom': True, 'mirror_local': True},
+                                         'scope_mask_sm_right': {'zoom': True, 'mirror_local': True},
                                          'outer_crosshair': {'drop': True},
                                          'inner_crosshair': {'drop': True},
                                          'meter_new': {'drop': True},
@@ -510,6 +524,22 @@ PORT.update({
                                    (R + r'ui\chud\bitmaps\hud_reticles', 31, 1.0,
                                     {'flip_x': True, 'flip_y': True, 'stretch': (1.2, 1.25),
                                      'offset': (RQ[0], RQ[1])})],
+                # THE SCOPE'S BLUE RINGS (boot 2, user: 'a couple symbols missing'): the coloured-glyph
+                # recipe (memory h1-coloured-scope-glyphs: a zoom crosshair, empty sprite 0 + the
+                # glyph as sprite 1) at the reserved extras 52 / 53. Reach stores them white with the
+                # shape in alpha. Sizes from the user's scope screenshot (1080p): the outer ring
+                # (scope_bits, 504 px art) ~312 px across, the inner (scope_bits2 #0, 159 px) ~200 px;
+                # a cell sprite draws ~0.5 screen px a sheet px -> the art x0.5 / x1.5 in the 256 cell
+                # and the overlay x2.48 / x1.68 (`overlay`). Not reproduced (no sequence left): the
+                # four bolt pips and the charge bar
+                'zoom_glyphs': [{'art': (R + r'ui\chud\bitmaps\scopes\plasma_launcher_scope_bits.bitmap', None),
+                                 'name': 'plasma launcher ring outer', 'index': 52, 'scale': (0.5, 0.5),
+                                 'overlay': 312 / (504 * 0.5 * 0.5), 'alpha': 0.55, 'offset': (0, 0),
+                                 'rgb': (110, 190, 245), 'normalize': True, 'gamma': 1.6},
+                                {'art': (R + r'ui\chud\bitmaps\scopes\plasma_launcher_scope_bits2', 0),
+                                 'name': 'plasma launcher ring inner', 'index': 53, 'scale': (1.5, 1.5),
+                                 'overlay': 200 / (159 * 1.5 * 0.5), 'alpha': 0.55, 'offset': (0, 0),
+                                 'rgb': (110, 190, 245), 'normalize': True, 'gamma': 1.6}],
                 'reticle_scale': 1.3, 'reticle_overlay': 0.455,
                 'reticle_supersample': 2,
                 'reticle_min_width': 2},
