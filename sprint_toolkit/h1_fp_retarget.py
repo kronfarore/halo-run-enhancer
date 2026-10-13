@@ -323,6 +323,12 @@ def _resolve_arms(world, h3_nodes, weapon):
         a = A[side]
         up, fo, ha = side + '_upperarm', side + '_forearm', side + '_hand'
         E4, T = src[fo][1], src[ha][1]
+        # `hand_offset` {side: (x, y, z) wu in the GUN's frame}: the Halo 1 wrist moved off Halo 4's
+        # (the Storm Rifle, boot 4: Halo 1's chunkier glove and cuff sink into the gun's rear where
+        # Halo 4's slim hand wraps the grip -- seen in the melee's side view)
+        off = WEAPONS[weapon].get('hand_offset', {}).get(side)
+        if off and 'gun' in src:
+            T = tuple(t + d for t, d in zip(T, R.qrot(src['gun'][0], off)))
         qu, qf, qh = (R.qmul(src[n][0], a) for n in (up, fo, ha))
         S = R.xform(world['base'], _HAND_BIND[_h1(weapon, up)][1])
         la = _vlen(_HAND_BIND[_h1(weapon, fo)][1])
