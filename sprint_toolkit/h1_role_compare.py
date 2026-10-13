@@ -1069,11 +1069,25 @@ SETS = {
     # 10/s, 32 / 160 / 256, hitscan, range 100, aim 5/16 10/16; needler 6 needle, 12/s (ramp 0.4),
     # 22 / 44 / 66, 11 wu/s homing, range 25, aim 8/26 16/26. Halo 4 has NO plasma rifle.
     'storm_rifle': {'port': 'Storm Rifle', 'weapons': [
-        # Halo 4's own, its own engine: no cooling while firing, the 0.3 overheated loss to 0.1
+        # Halo 4's own, its own engine (CORRECTED 2026-10-13, the user: Halo 3 / 4 DRAIN heat while
+        # firing): loss 0.55 between bolts, the 0.3 overheated loss to 0.1 -> the 27th bolt
         ('ST = H4 own (true)', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 8.0, 'speed': 50.0, 'range': 100.0, 'aim': (5.0, 15.0, 10.0, 20.0), 'age': 0.006,
-          'heat_model': {'rate': ('time', 10.0, 10.0, 1e-6), 'hpr': 0.09, 'oh': 1.0, 'loss': 0.3,
-                         'rec': 0.1}}),
+          'heat_model': {'rate': ('time', 10.0, 10.0, 1e-6), 'hpr': 0.09, 'oh': 1.0, 'loss': 0.55,
+                         'loss_oh': 0.3, 'rec': 0.1, 'cool_firing': True, 'h1_ticks': True}}),
+        # A' (the user's pick after the correction): one loss 0.3, heat 0.0665 -> the 27th bolt, 3 s vent
+        ("ST = H4 own, H1 A'", W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 8.0, 'speed': 50.0, 'range': 100.0, 'aim': (5.0, 15.0, 10.0, 20.0), 'age': 0.006,
+          'heat_model': {'rate': ('time', 10.0, 10.0, 1e-6), 'hpr': 0.0665, 'oh': 1.0, 'loss': 0.3,
+                         'rec': 0.1, 'cool_firing': True, 'h1_ticks': True}}),
+        # PP ratio, draining (balanced, A' style): heat 0.0639 on one loss 0.433 -> 47 bolts, 1.73 s vent
+        ("ST = PP ratio, A'", W + r'plasma pistol\plasma pistol', 'shot',
+         {'dmg': 10.29, 'speed': 62.5, 'range': 125.0, 'aim': (6.25, 15.0, 15.0, 20.0),
+          'age': 0.006, 'charge': 0.0,
+          'mods': {'elite_energy_shield': 1.25, 'elite': 2.5, 'cyborg_energy_shield': 0.375,
+                   'cyborg_armor': 1.5},
+          'heat_model': {'rate': ('time', 10.0, 10.0, 1e-6), 'hpr': 0.0639, 'oh': 1.0, 'loss': 0.433,
+                         'rec': 0.25, 'cool_firing': True, 'h1_ticks': True}}),
         # Halo 4's own numbers in Halo 1's engine (cooling while firing, one loss): A = the
         # overheated loss 0.3 (Halo 4's 3.0 s lockout to 0.1 kept), heat fitted 0.1125 (12th bolt);
         # B = the normal loss 0.55 (idle cooling kept, the lockout 1.6 s), heat fitted 0.137;
@@ -1608,7 +1622,8 @@ def model_times(wpn, shots):
     while len(out) < shots and t < 600:
         if m['oh'] is not None and heat >= m['oh'] - 1e-9:
             while heat > m['rec']:
-                heat -= model_loss(m, heat) / 30.0
+                # `loss_oh`: a second loss while overheated (Halo 3 / 4 have two, Halo 1 one)
+                heat -= (m['loss_oh'] if 'loss_oh' in m else model_loss(m, heat)) / 30.0
                 t += 1 / 30.0
             heat, held, acc = max(heat, 0.0), 0.0, 1.0
         if acc >= 1.0 - 1e-9:
