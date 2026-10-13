@@ -614,12 +614,33 @@ def bitmaps(w):
         # a beam profile texture `profile` -- constant along u, the profile across v --
         # palette-mapped through a gradient `palette`, blended additively x alpha): colour =
         # palette[profile], alpha = profile; `premultiply` for an additive layer
-        prof, _ = h3_hud_art.decode(K['profile'])
         # `size`: square px, or (w, h) -- a profile that VARIES along u keeps its length (the
         # Focus Rifle's scrolling `pulse`, 512 x 64)
         sz = K.get('size', 64)
-        v = np.asarray(prof.convert('L').resize(tuple(sz) if isinstance(sz, (tuple, list)) else (sz, sz),
-                                                Image.LANCZOS)).astype(np.float64)
+        sz = tuple(sz) if isinstance(sz, (tuple, list)) else (sz, sz)
+        if K.get('components'):
+            # several premultiplied bakes SUMMED into one texture, alpha the max (the Focus Rifle,
+            # boots 11-12: an added contrail did not draw on the beam, the core's texture did --
+            # Reach's violet haze folded into the core: a narrow white-orange centre (`power` > 1
+            # narrows a profile) + violet bands outside it (`power` < 1 widens one))
+            cols, alphas = [], []
+            for C in K['components']:
+                pc, _ = h3_hud_art.decode(C['profile'])
+                vc = np.asarray(pc.convert('L').resize(sz, Image.LANCZOS)).astype(np.float64)
+                vc = 255.0 * (vc / 255.0) ** C.get('power', 1.0)
+                t = np.linspace(0, 1, 256)
+                st = sorted(C['stops'])
+                row = np.stack([np.interp(t, [s[0] for s in st], [s[1][c] for s in st]) for c in range(3)], axis=1)
+                col = row[np.clip((vc / 255.0 * 255).round().astype(int), 0, 255)]
+                cols.append(col * (vc / 255.0)[..., None] * C.get('gain', 1.0))
+                alphas.append(vc)
+            out_px = np.zeros(cols[0].shape[:2] + (4,), np.uint8)
+            out_px[..., :3] = np.clip(sum(cols), 0, 255).round()
+            out_px[..., 3] = np.clip(np.maximum.reduce(alphas), 0, 255).round()
+            Image.fromarray(out_px).save(os.path.join(out, name + '.tif'))
+            continue
+        prof, _ = h3_hud_art.decode(K['profile'])
+        v = np.asarray(prof.convert('L').resize(sz, Image.LANCZOS)).astype(np.float64)
         out_px = np.zeros(v.shape + (4,), np.uint8)
         if 'grey' in K:
             # a GREYSCALE map (the Focus Rifle, 2026-10-13: a contrail's animated SECONDARY map):
