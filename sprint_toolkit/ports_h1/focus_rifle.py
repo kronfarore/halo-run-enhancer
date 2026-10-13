@@ -111,6 +111,20 @@ PORT.update({
     #   proven; Reach's 4000 and the ratio's 8000 cross the range in one tick: no overpenetration, the
     #   Spartan Laser's finding); responses = Reach's (overpenetrate flesh / glass / liquid / plants).
     #   Damage: camo damage 0.048, instantaneous acceleration 0.1.
+    #   FINAL CHECK (user: 'every step, especially 4b'): list 3 line by line -- error deceleration 0.3
+    #   written; detonation timer starts (Reach 'after first bounce') inert: the beam's timer is 0 (the
+    #   bolt's too); projectile flags (Reach damage_not_predictable_by_clients: multiplayer) none either
+    #   side; weapon / trigger flags by NAME = the template's (cannot fire at maximum age; Reach's
+    #   "don't clear fire bit" has no Halo 1 field); block-count lines = the battery weapon (no
+    #   magazine) and the projectile's own attachments (the contrail); deviation 1, noise, type written.
+    #   Projectile list 5: the bolt's function + second attachment absent (the Sentinel beam copy has
+    #   one contrail). Age rate-of-fire penalty 0 in BOTH versions (Reach's, both sides of the ratio;
+    #   the 30/s fit needs it -- no row or card touches it).
+    #   REPRODUCIBLE: port_sha_snapshot before / after a full regen of the chain from this config
+    #   (model, retarget + tool animations, sounds, pickable): 5 changed + 16 bitmap headers -- the FP
+    #   antr content-equal (h1_antr_diff: 0 animations differ, sound references same) and four FP-cue
+    #   sound tags whose ogg_sample_count `tool sounds` writes 128 samples apart (the bank sources MCC
+    #   plays unchanged); two further regens byte-identical.
     # TEMPLATE DIFF (h1_port_template_diff, final): weapon 70, HUD 18 (reticle 34, icon 45, the scope
     #   screen effect), the gun shaders 2 each, the three lit shapes; display / indicator / illum_plasma
     #   shader_models MISSING by design (the lit-shape chicagos take those materials).
@@ -505,6 +519,9 @@ PORT.update({
         'trigger': {'rounds_per_second': (29.0, 30.0), 'heat_generated_per_round': 0.0229,
                     'acceleration_time': 0.05, 'deceleration_time': 0.1,
                     'age_generated_per_round': 0.0016125, 'error_angle': (0.0, 0.0),
+                    # FINAL CHECK (4b list 3): error deceleration -- Reach 0.3, the H1 plasma rifle 0: a
+                    # zero on one side, the source value (inert with error 0; written, the DMR's way)
+                    'error_deceleration_time': 0.3,
                     'rounds_between_tracers': 0,
                     # BOOT 1 (user): 'starts roughly at the muzzle -- try moving it back a unit' (1 unit
                     # = 0.01 wu)
