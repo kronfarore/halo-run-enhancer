@@ -5054,7 +5054,8 @@
       "label": "Sniper Rifle Ammo"
      }
     ]
-   }
+   },
+   "hands": "two"
   }
  ],
  "Halo 3": [
