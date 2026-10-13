@@ -282,8 +282,16 @@ def members(root):
     return out
 
 
-def _bits(mask):
-    return [i for i in range(64) if mask >> i & 1]
+def _bits(mask, width=64):
+    return [i for i in range(width) if mask >> i & 1]
+
+
+def _masks(b, at, size):
+    """The three node masks (rotation, translation, scale) of one flags section of `size` bytes:
+    each mask is size / 3 bytes, little endian -- 8 bytes up to 64 nodes, 12 above (the Plasma
+    Launcher's FP graph has 65 nodes: a 36-byte section)."""
+    w = size // 3
+    return [_bits(int.from_bytes(b[at + w * k:at + w * (k + 1)], 'little'), 8 * w) for k in range(3)]
 
 
 def poses(tag, e, nodes, animated=None):
@@ -299,7 +307,8 @@ def poses(tag, e, nodes, animated=None):
     strn = [struct.unpack_from('<3f', b, t_at + 12 * k) for k in range(m)]
     sscl = struct.unpack_from('<f', b, s_at)[0]
     flags_at = d0 + c0
-    sR, sT, sS, aR, aT, aS = (_bits(x) for x in struct.unpack_from('<6Q', b, flags_at))
+    sR, sT, sS = _masks(b, flags_at, sm)
+    aR, aT, aS = _masks(b, flags_at + sm, am)
     if len(sR) != n or len(sT) != m:
         raise ValueError('static masks %d/%d disagree with default header %d/%d'
                          % (len(sR), len(sT), n, m))

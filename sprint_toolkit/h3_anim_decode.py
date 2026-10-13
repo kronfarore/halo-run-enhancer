@@ -146,8 +146,12 @@ def blobs(tag, mem):
     the match a proof rather than a guess.
     """
     want = {e['size'] for e in mem}
+    # the tgda proof decides membership too: an OUTER chunk can have a member's length by chance
+    # (Reach's fp_plasma_launcher: a group chunk of 4212 = sprint_loop_airborne's size) and would
+    # shift every later member by one
     found = sorted((n for n in tag.nodes()
-                    if n.marker == 'tgst' and (n.length - 24) in want),
+                    if n.marker == 'tgst' and (n.length - 24) in want
+                    and struct.unpack_from('<I', tag.data, n.payload_at + 12 + 8)[0] == n.length - 24),
                    key=lambda n: n.off)
     out = []
     for n, e in zip(found, mem):
