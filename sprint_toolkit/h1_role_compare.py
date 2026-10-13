@@ -902,6 +902,14 @@ SETS = {
     # COOLS WHILE FIRING at its ONE loss (measured, B3): heat a round fitted to overheat on the
     # same second; the loss is a choice (0.35 / 0.23 / their mean, the Beam Rifle's precedent).
     'focus_rifle': {'port': 'Focus Rifle', 'weapons': [
+        # the BUILT port (5b, 2026-10-13): its tags under Halo 1's measured trigger -- the probe (boot
+        # 2): the 29..30 tag fires 30/s, cools while firing; --balanced applies the catalog rows (the
+        # heat-model rows written out below: apply_rows does not reach a heat model)
+        ('Focus Rifle (port)', W + r'focus rifle\focus rifle', 'shot', {'heat_model': 'tag'}),
+        ('Focus Rifle balanced', W + r'focus rifle\focus rifle', 'shot',
+         {'dmg': 4.33, 'aim': (2.0, 20.83, 5.33, 13.89), 'age': 1 / 280.0, 'mods': dict(RP_FAST_SLOW),
+          'heat_model': {'rate': ('time', 29.0, 30.0, 0.05), 'hpr': 0.0175, 'oh': 1.0, 'loss': 0.197,
+                         'rec': 0.25, 'cool_firing': True, 'h1_ticks': True}}),
         ('FR = Reach true, A', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 3.0, 'speed': 4000.0, 'range': 120.0, 'aim': (2.0, 10.0, 4.0, 10.0),
           'age': 0.0016125, 'heat_model': {'rate': ('time', 30.0, 30.0, 1e-6), 'hpr': 0.025,

@@ -78,8 +78,22 @@ PORT = reserved(
             'lacks': "Reach's 30 rounds a second (Halo 1: 15, per-second values kept); its TWO heat "
                      "losses (Halo 1: one, the mean); a beam drawn as one continuous ribbon (Halo 1: "
                      "a contrail a round)"}},
-    # step 11: the source game's ai\generic entry (22 fields, verified 2026-10-07)
-    firing_profile={'mode': 'source', 'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map', 'from_weapon': 'objects\\weapons\\rifle\\focus_rifle\\focus_rifle'},
+    # step 11: Reach's ai\generic Focus Rifle entry (m10, verified) over a base -- 'fo' has no carrier.
+    # Halo 1's PLASMA RIFLE carriers (h1_weapon_carriers, 2026-10-13): Elite minor / major / stealth
+    # 0.5, commander / spec-ops 0.6, Flood combat (both) 0.4, Marines 0.5, armoured Marines 0.6; no
+    # actor flags. The yardstick's own carrier = the ELITE MINOR plasma rifle for every slot (the
+    # repeater's choice). WDM RULE: 0.5 x plasma rifle 130 / the port's dps (5b, the built port:
+    # default 3 x 30 = 90, balanced 4.33 x 30 = 130)
+    firing_profile={'mode': 'source', 'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map',
+                    'from_weapon': 'objects\\weapons\\rifle\\focus_rifle\\focus_rifle',
+                    'donor_weapon': 'weapons\\plasma rifle\\plasma rifle',
+                    'donor_variant': 'characters\\elite\\elite minor\\elite minor plasma rifle',
+                    'wdm_rule': {'base': 0.5, 'yardstick_dps': 130.0, 'port_dps': 90.0,
+                                 'balanced_port_dps': 130.0},
+                    # THE BALANCED DROP RULE: Reach's m10 (the shipped map) focus rifle 0.375-0.475,
+                    # its plasma rifle 0.35-0.45 (the repeater's read); the H1 plasma rifle carriers
+                    # 0.7-0.9 -> 0.7 x 0.375/0.35, 0.9 x 0.475/0.45
+                    'balanced_set': ['0x1D8=0.75:Drop Weapon Loaded', '0x1DC=0.95:Drop Weapon Loaded Max']},
 )
 
 PORT.update({
