@@ -207,6 +207,13 @@ PORT.update({
         # BOOT 2 (user: 'the hold lasts a bit too long'): Halo 1 plays the exit only after the hold
         # -- 40 frames ran to 3.3 s; 31 = 1.97 + 1.03 s = the 3.0 s lockout
         'holds': {'first-person overheated': ('first_person:overheating', 31)},
+        # BOOT 4 (user's melee video: 'hands phasing through the weapon'): the motion matches Halo
+        # 4's own (its arms + gun rendered from b_camera_control, frame for frame) -- Halo 1's glove
+        # and cuff are chunkier than Halo 4's slim hand and sink into the gun. Measured (hand
+        # triangle centres inside the gun mesh, ray parity, every 3rd frame): right hand 2 cm to the
+        # gun's right (-y): idle 2771 -> 32, melee 853 -> 132; left hand 1 cm down (-z): idle 243 ->
+        # 52, fire 24 -> 5 (its melee contact is Halo 4's own: the hand off the gun)
+        'hand_offset': {'r': (0.0, -0.02, 0.0), 'l': (0.0, 0.0, -0.01)},
         'align': 'same_space',
         'anims': {
             'first_person:idle': 'first-person idle',
