@@ -1050,6 +1050,93 @@ SETS = {
         ('Brute Shot port, default', W + r'brute shot\brute shot', 'shot'),
         ('Grenade Launcher (port)', W + r'grenade launcher\grenade launcher', 'shot'),
     ]},
+    # the STORM RIFLE (wave C1, the HALO 4 pilot), step 4a. Halo 4 (H4EK 2026-10-13,
+    # h3_weapon_values --kit h4): 8 plasma_fast a bolt, 10/s flat (recovery 0.067), heat 0.09 a
+    # round (overheats on the 12th), loss 0.55 / 0.3 overheated, recovery 0.1, warning 0.8,
+    # battery 0.006 campaign (167), 50 wu/s, range 100, error 0.5 -> 2.75, aim (the MODE block,
+    # Halo 4's live one) 5/15 10/20, melee the global strike_melee 70; a MANUAL VENT exists in the
+    # FP graph (vent_enter 21 / loop 30 / exit 13) though the weapon's vent fields are 0. Halo 4
+    # cools ONLY while not firing (port_ttk, user-confirmed); Halo 1 cools WHILE firing (B3) and
+    # has one loss -- so the H1 rows FIT the heat a round to overheat on the same 12th bolt.
+    # Halo 4 multipliers (globals damage table): plasma_fast x1 on every shield / body; plasma_slow
+    # x1.6 shield / x0.4 body on Elites AND the Spartan; needle x2 / x0.25; bullet_slow x1.
+    # Halo 4 yardsticks: plasma pistol 14 plasma_slow tapped, heat 0.18, loss 0.6 / 0.45, rec 0.1,
+    # battery 0.02 (50), 20 -> 30 wu/s, range 40, aim 4/20 8/20; assault rifle 7.5 bullet_slow
+    # 10/s, 32 / 160 / 256, hitscan, range 100, aim 5/16 10/16; needler 6 needle, 12/s (ramp 0.4),
+    # 22 / 44 / 66, 11 wu/s homing, range 25, aim 8/26 16/26. Halo 4 has NO plasma rifle.
+    'storm_rifle': {'port': 'Storm Rifle', 'weapons': [
+        # Halo 4's own, its own engine: no cooling while firing, the 0.3 overheated loss to 0.1
+        ('ST = H4 own (true)', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 8.0, 'speed': 50.0, 'range': 100.0, 'aim': (5.0, 15.0, 10.0, 20.0), 'age': 0.006,
+          'heat_model': {'rate': ('time', 10.0, 10.0, 1e-6), 'hpr': 0.09, 'oh': 1.0, 'loss': 0.3,
+                         'rec': 0.1}}),
+        # Halo 4's own numbers in Halo 1's engine (cooling while firing, one loss): A = the
+        # overheated loss 0.3 (Halo 4's 3.0 s lockout to 0.1 kept), heat fitted 0.1125 (12th bolt);
+        # B = the normal loss 0.55 (idle cooling kept, the lockout 1.6 s), heat fitted 0.137;
+        # raw = the tag's 0.09 copied (overheats much later)
+        ('ST = H4 own, H1 A', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 8.0, 'speed': 50.0, 'range': 100.0, 'aim': (5.0, 15.0, 10.0, 20.0), 'age': 0.006,
+          'heat_model': {'rate': ('time', 10.0, 10.0, 1e-6), 'hpr': 0.1125, 'oh': 1.0, 'loss': 0.3,
+                         'rec': 0.1, 'cool_firing': True, 'h1_ticks': True}}),
+        ('ST = H4 own, H1 B', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 8.0, 'speed': 50.0, 'range': 100.0, 'aim': (5.0, 15.0, 10.0, 20.0), 'age': 0.006,
+          'heat_model': {'rate': ('time', 10.0, 10.0, 1e-6), 'hpr': 0.137, 'oh': 1.0, 'loss': 0.55,
+                         'rec': 0.1, 'cool_firing': True, 'h1_ticks': True}}),
+        ('ST = H4 own, H1 raw', W + r'plasma rifle\plasma rifle', 'shot',
+         {'dmg': 8.0, 'speed': 50.0, 'range': 100.0, 'aim': (5.0, 15.0, 10.0, 20.0), 'age': 0.006,
+          'heat_model': {'rate': ('time', 10.0, 10.0, 1e-6), 'hpr': 0.09, 'oh': 1.0, 'loss': 0.3,
+                         'rec': 0.1, 'cool_firing': True, 'h1_ticks': True}}),
+        # PLASMA PISTOL ratio (the provisional): 18 x 8/14 = 10.29; rate: the pistol is tapped ->
+        # Halo 4's own 10; heat 0.16 x 0.09/0.18 = 0.08 (13 bolts) -> fitted 0.12 at the loss
+        # 0.65 x 0.3/0.45 = 0.433 (overheated; normal 0.65 x 0.55/0.6 = 0.596), recovery 0.25 x
+        # 0.1/0.1; battery 0.002 x 0.006/0.02 = 0.0006 (1667!); 25 x 50/20 = 62.5 wu/s; range 50
+        # x 100/40 = 125; aim 5 x 5/4, 20 x 15/20; 12 x 10/8, 20 x 20/20; materials: the pistol
+        # bolt's table x Halo 4's plasma_fast / plasma_slow (shields x0.625, Elite / cyborg body x2.5)
+        ('ST = PP ratio', W + r'plasma pistol\plasma pistol', 'shot',
+         {'dmg': 10.29, 'speed': 62.5, 'range': 125.0, 'aim': (6.25, 15.0, 15.0, 20.0),
+          'age': 0.0006, 'charge': 0.0,
+          'mods': {'elite_energy_shield': 1.25, 'elite': 2.5, 'cyborg_energy_shield': 0.375,
+                   'cyborg_armor': 1.5},
+          'heat_model': {'rate': ('time', 10.0, 10.0, 1e-6), 'hpr': 0.12, 'oh': 1.0, 'loss': 0.433,
+                         'rec': 0.25, 'cool_firing': True, 'h1_ticks': True}}),
+        # ASSAULT RIFLE ratio: 10 x 8/7.5 = 10.67; rate 15 x 10/10 = 15; heat / battery: no AR
+        # side -> Halo 4's own (fitted at 15/s: 0.105); speed: hitscan vs Halo 1's 324 wu/s bullet
+        # is degenerate -> Halo 4's 50; range 40 x 100/100; aim 6 x 5/5, 25 x 15/16; 12 x 10/10,
+        # 25 x 20/16; materials: the bullet's table (plasma_fast / bullet_slow = 1 in Halo 4)
+        ('ST = AR ratio', W + r'assault rifle\assault rifle', 'shot',
+         {'dmg': 10.67, 'speed': 50.0, 'range': 40.0, 'aim': (6.0, 23.4, 12.0, 31.25), 'age': 0.006,
+          'nomag': True,
+          'heat_model': {'rate': ('time', 15.0, 15.0, 1e-6), 'hpr': 0.105, 'oh': 1.0, 'loss': 0.3,
+                         'rec': 0.1, 'cool_firing': True, 'h1_ticks': True}}),
+        # NEEDLER ratio: 10 x 8/6 = 13.3 (the needle's detonation damage; no supercombine); rate
+        # 10 x 10/12 = 8.33 (Halo 1 fires it 7.5/s: 4 ticks); heat Halo 4's own fitted 0.123;
+        # 4 x 50/11 = 18.2 wu/s; range 20 x 100/25 = 80; aim 6 x 5/8, 25 x 15/26; 12 x 10/16,
+        # 25 x 20/26; materials x plasma_fast / needle (shields x0.5, Elite / cyborg body x4)
+        ('ST = Needler ratio', W + r'needler\needler', 'shot',
+         {'damage_tags': [W + r'needler\detonation damage'], 'dmg': 13.33, 'speed': 18.2,
+          'range': 80.0, 'aim': (3.75, 14.4, 7.5, 19.2), 'age': 0.006, 'nomag': True,
+          'mods': {'elite_energy_shield': 0.5, 'elite': 4.0, 'cyborg_energy_shield': 0.5,
+                   'cyborg_armor': 4.0},
+          'heat_model': {'rate': ('time', 8.33, 8.33, 1e-6), 'hpr': 0.123, 'oh': 1.0, 'loss': 0.3,
+                         'rec': 0.1, 'cool_firing': True, 'h1_ticks': True}}),
+        # the ELITE CARRIER (the Sentinel Beam's kind): Halo 4's Elites carry the Storm Rifle where
+        # Halo 1's carry the Plasma Rifle -> the port takes Halo 1's plasma rifle numbers whole
+        ('ST = Elite carrier (= PR)', W + r'plasma rifle\plasma rifle', 'shot', {'heat_model': 'tag'}),
+        # peers
+        ('Plasma Rifle', W + r'plasma rifle\plasma rifle', 'shot', {'heat_model': 'tag'}),
+        ('Plasma Pistol (tap 5/s)', W + r'plasma pistol\plasma pistol', 'shot',
+         {'rate': 5.0, 'charge': 0.0, 'heat_sim': True}),
+        ('Assault Rifle', W + r'assault rifle\assault rifle', 'shot'),
+        ('Needler (no supercombine)', W + r'needler\needler', 'shot',
+         {'damage_tags': [W + r'needler\detonation damage'], 'delay': 0.75}),
+        ('Plasma Repeater port', W + r'plasma repeater\plasma repeater', 'shot',
+         {'heat_model': 'tag'}),
+        ('Plasma Repeater balanced', W + r'plasma repeater\plasma repeater', 'shot',
+         {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.33, 27.78), 'age': 0.01,
+          'mods': dict(RP_FAST_SLOW),
+          'heat_model': {'rate': ('time', 20.0, 3.4, 2.6), 'hpr': 0.077, 'oh': 1.0,
+                         'loss': 1 / 2.9, 'rec': 0.01, 'cool_firing': True, 'h1_ticks': True}}),
+    ]},
 }
 
 ENEMIES = [
