@@ -109,9 +109,9 @@ PORT = reserved(
             'rounds_per_second': 0.96,
             'magazine': 5, 'rounds_total_initial': 11, 'rounds_total_maximum': 24,
             # flight 14 x 12/15 = 11.2, 5 x 16/6.5 = 12.3; gravity 1 x 0.25/0.025 = 10 (a near-zero
-            # source: no ratio -> Reach's own 0.25, the GL's precedent); range 0 x 100/80 = 0 (the
-            # fuel rod has none)
-            'velocity': (11.2, 12.3), 'gravity': 0.25, 'range': 0.0,
+            # source: no ratio -> Reach's own 0.25, the GL's precedent); range: the fuel rod's 0 is
+            # UNSET -> Reach's own 100 (boot 11: a 0 range destroyed the bolt on creation)
+            'velocity': (11.2, 12.3), 'gravity': 0.25, 'range': 100.0,
             # aim 4 x 4/4, 25 x 15/25; 6 x 8/8, 25 x 15/25
             'aim': (4.0, 15.0, 6.0, 15.0),
             # error: Reach's fuel rod 0 / 0..0.05, Halo 1's 0 / 0 -> degenerate: Reach's own
@@ -526,7 +526,10 @@ PORT.update({
                 # = 0 (none: the fuel rod's); gravity: no ratio (Reach's fuel rod 0.025)
                 row('proj', CR + 'bolt', 'Initial Velocity', 11.2 / 30, 12.0 / 30, 'Projectile'),
                 row('proj', CR + 'bolt', 'Final Velocity', 12.3 / 30, 16.0 / 30, 'Projectile'),
-                row('proj', CR + 'bolt', 'Maximum Range', 0.0, 100.0, 'Projectile'),
+                # Maximum Range: NO ROW (boot 11 probe: 0 projectiles logged over 5 balanced shots --
+                # the bolt was destroyed the tick it was made). The H1 fuel rod's 0 is UNSET (it
+                # comes down by gravity), not a zero to carry over: a ratio on an unset field is
+                # degenerate (the GL's air damage range) -> Reach's 100 in both versions
                 # BOOT 10 (user): 'the bolt is invisible now' -- the balanced bolt starts at 11.2
                 # wu/s, 0.2 above Reach's MINIMUM VELOCITY 11, which DETONATES in Halo 1 (the Brute
                 # Shot): it burst at the muzzle. The ratio rule had no row for it: the H1 fuel rod's

@@ -4932,15 +4932,6 @@
     {
      "class": "proj",
      "tag": "weapons\\concussion rifle\\bolt",
-     "field": "Maximum Range",
-     "block": null,
-     "value": 0.0,
-     "card": "Projectile",
-     "original": 100.0
-    },
-    {
-     "class": "proj",
-     "tag": "weapons\\concussion rifle\\bolt",
      "field": "Minimum Velocity",
      "block": null,
      "value": 0.0,
