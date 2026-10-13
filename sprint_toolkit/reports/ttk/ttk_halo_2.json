@@ -1,0 +1,1798 @@
+{
+ "game": "Halo 2",
+ "difficulty": "Legendary",
+ "rows": [
+  {
+   "direction": "player->enemy",
+   "attacker": "Player (Master Chief)",
+   "target": "Elite minor",
+   "weapon": "SMG",
+   "shots": 32,
+   "seconds": 2.067,
+   "inputs": {
+    "weapon": {
+     "tag": "objects\\weapons\\rifle\\smg\\smg.weapon",
+     "trigger behavior": "spew",
+     "rps": [
+      15.0,
+      15.0
+     ],
+     "accel": 1.0,
+     "shots per fire": [
+      0.0,
+      0.0
+     ],
+     "fire recovery": 0.0,
+     "projectiles per shot": 1.0,
+     "heat per round": 0.0,
+     "overheated threshold": 0.0,
+     "heat recovery threshold": 0.0,
+     "heat loss": 0.0,
+     "overheated heat loss": 0.0,
+     "mag": 60,
+     "reload tag": 2.0,
+     "projectile": "objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet",
+     "reload": 2.0,
+     "reload source": "objects\\weapons\\rifle\\smg\\smg.weapon :: magazines/[0]/reload time",
+     "reload animation": {
+      "tag": "objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_smg\\fp_smg.model_animation_graph",
+      "animation": "first_person:reload_empty",
+      "frames": 50.0,
+      "seconds @30Hz": 1.667
+     },
+     "impact damage": "objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet",
+     "air damage range": [
+      0.0,
+      40.0
+     ],
+     "damage lower bound": 0.0,
+     "damage upper bound": [
+      4.75,
+      4.75
+     ],
+     "upper": 4.75,
+     "general_damage": "bullet_slow",
+     "specific_damage": ""
+    },
+    "damage multipliers": {
+     "shield": {
+      "material": "energy_shield_thin_cov_elite",
+      "material chain": [
+       "materials/[149] energy_shield_thin_cov_elite (general '', specific '', parent 'energy_shield_thin_cov')",
+       "materials/[148] energy_shield_thin_cov (general '', specific '', parent 'energy_shield_thin')",
+       "materials/[145] energy_shield_thin (general 'energy_shield_thin', specific '', parent 'energy')",
+       "materials/[144] energy (general 'energy', specific '', parent 'default_material')",
+       "materials/[0] default_material (general 'material', specific '', parent '')"
+      ],
+      "general armor": "energy_shield_thin",
+      "specific armor": "",
+      "rows": {
+       "damage table/[0]/damage groups/[1] bullet_slow x energy_shield_thin": 1.0
+      },
+      "product": 1.0
+     },
+     "body": {
+      "material": "hard_metal_thin_cov_elite",
+      "material chain": [
+       "materials/[63] hard_metal_thin_cov_elite (general '', specific '', parent 'hard_metal_thin_cov')",
+       "materials/[60] hard_metal_thin_cov (general '', specific '', parent 'hard_metal_thin')",
+       "materials/[54] hard_metal_thin (general 'hard_metal_thin', specific '', parent 'hard')",
+       "materials/[53] hard (general 'hard', specific '', parent 'default_material')",
+       "materials/[0] default_material (general 'material', specific '', parent '')"
+      ],
+      "general armor": "hard_metal_thin",
+      "specific armor": "",
+      "rows": {
+       "damage table/[0]/damage groups/[1] bullet_slow x hard_metal_thin": 1.0
+      },
+      "product": 1.0
+     }
+    },
+    "shield hit": 4.75,
+    "body hit": 4.75,
+    "target": {
+     "character": "objects\\characters\\elite\\ai\\elite.character",
+     "vitality from": "objects\\characters\\elite\\ai\\elite.character",
+     "legendary body vitality": 45.0,
+     "legendary shield vitality": 105.0,
+     "model new damage info (overridden by the character)": {
+      "maximum vitality": 30.0,
+      "maximum shield vitality": 70.0
+     },
+     "shield material": "energy_shield_thin_cov_elite",
+     "body material": "materials/[4] armored_torso -> hard_metal_thin_cov_elite",
+     "matg imposs. enemy vitality": 1.0,
+     "matg imposs. enemy shield": 1.0,
+     "shield pool": 105.0,
+     "body pool": 45.0,
+     "character shield recharge delay time": 15.0,
+     "matg imposs. enemy recharge": 0.3,
+     "shield recharge delay used (delay x enemy recharge, ASSUMED)": 4.5,
+     "body recharge delay time / fraction": [
+      0.0,
+      0.0
+     ],
+     "fields read": {
+      "objects\\characters\\elite\\ai\\elite.character :: parent character": "ai\\generic",
+      "ai\\generic.character :: parent character": "",
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/legendary body vitality": 45.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/legendary shield vitality": 105.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/normal body vitality": 30.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/normal shield vitality": 70.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/shield recharge delay time": 15.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/body recharge delay time": 0.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/body recharge fraction": 0.0,
+      "objects\\characters\\elite\\ai\\elite.character :: unit": "objects\\characters\\elite\\elite",
+      "objects\\characters\\elite\\elite.biped :: model": "objects\\characters\\elite\\elite",
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/maximum vitality": 30.0,
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/maximum shield vitality": 70.0,
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/global shield material name": "energy_shield_thin_cov_elite",
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/stun time'": 5.0,
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/recharge time'": 2.0,
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/stun time": 10.0,
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/recharge fraction": 0.0,
+      "objects\\characters\\elite\\elite.model :: materials/[4]/global material name": "hard_metal_thin_cov_elite",
+      "ai\\generic.character :: firing pattern properties/[27]/weapon": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+      "ai\\generic.character :: weapons properties/[29]/weapon": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+      "ai\\generic.character :: weapons properties/[29]/legendary accuracy bounds": [
+       0.6,
+       1.0
+      ],
+      "ai\\generic.character :: weapons properties/[29]/legendary accuracy time": 1.0,
+      "ai\\generic.character :: weapons properties/[29]/first burst delay time": [
+       0.25,
+       1.25
+      ],
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[0]/rate of fire": 6.0,
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[0]/burst duration": [
+       0.75,
+       1.1
+      ],
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[0]/burst separation": [
+       0.5,
+       1.0
+      ],
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[0]/weapon damage modifier": 0.0,
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[1]/rate of fire": 9.0,
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[1]/burst duration": [
+       0.75,
+       0.9
+      ],
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[1]/burst separation": [
+       0.5,
+       0.7
+      ],
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[1]/weapon damage modifier": 0.0
+     }
+    },
+    "events in the kill": {
+     "overheats": 0,
+     "reloads": 0,
+     "bursts": 0
+    },
+    "ttk_common.player_time cross-check (constant-rate weapons)": 2.067,
+    "30 Hz quantised rate (H1 trigger model, cross-check only)": [
+     15.0,
+     15.0
+    ],
+    "fields read (weapon)": {
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: new triggers/[0]/behavior": "spew",
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: barrels/[0]/rounds per second": [
+      15.0,
+      15.0
+     ],
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: barrels/[0]/acceleration time": 1.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: barrels/[0]/shots per fire": [
+      0.0,
+      0.0
+     ],
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: barrels/[0]/fire recovery time": 0.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: barrels/[0]/projectiles per shot": 1.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: barrels/[0]/heat generated per round": 0.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: overheated threshold": 0.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: heat recovery threshold": 0.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: heat loss per second": 0.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: overheated heat loss per second": 0.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: magazines/[0]/rounds loaded maximum": 60.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: magazines/[0]/reload time": 2.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: barrels/[0]/projectile": "objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet",
+     "objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_smg\\fp_smg.model_animation_graph :: animations/[30]/frame count": 50.0,
+     "objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet.projectile :: impact damage": "objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet",
+     "objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet.projectile :: air damage range": [
+      0.0,
+      40.0
+     ],
+     "objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet.damage_effect :: damage upper bound": [
+      4.75,
+      4.75
+     ],
+     "objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet.damage_effect :: damage lower bound": 0.0,
+     "objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet.damage_effect :: general_damage": "bullet_slow",
+     "objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet.damage_effect :: specific_damage": ""
+    },
+    "fields read (matg)": {
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy damage": 1.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy vitality": 1.0,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy shield": 1.0,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy recharge": 0.3,
+     "globals\\globals.globals :: difficulty/[0]/imposs. rate of fire": 1.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. burst separation": 0.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. projectile error": 1.0
+    }
+   },
+   "flags": [
+    "point-blank damage: the jpt upper bound falls toward the lower bound (0.00) across the projectile air damage range 0-40 wu (at 5 wu: x0.875, ASSUMED linear)"
+   ]
+  },
+  {
+   "direction": "player->enemy",
+   "attacker": "Player (Master Chief)",
+   "target": "Elite minor",
+   "weapon": "Plasma Rifle",
+   "shots": 20,
+   "seconds": 4.76,
+   "inputs": {
+    "weapon": {
+     "tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon",
+     "trigger behavior": "spew",
+     "rps": [
+      6.0,
+      9.0
+     ],
+     "accel": 0.8,
+     "shots per fire": [
+      0.0,
+      0.0
+     ],
+     "fire recovery": 0.0,
+     "projectiles per shot": 1.0,
+     "heat per round": 0.15,
+     "overheated threshold": 1.0,
+     "heat recovery threshold": 0.1,
+     "heat loss": 0.8525,
+     "overheated heat loss": 0.35,
+     "mag": 0,
+     "reload tag": 0.0,
+     "projectile": "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt",
+     "reload": 0.0,
+     "reload source": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: magazines/[0]/reload time",
+     "impact damage": "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt",
+     "air damage range": [
+      0.0,
+      40.0
+     ],
+     "damage lower bound": 6.0,
+     "damage upper bound": [
+      10.0,
+      10.0
+     ],
+     "upper": 10.0,
+     "general_damage": "plasma_slow",
+     "specific_damage": ""
+    },
+    "damage multipliers": {
+     "shield": {
+      "material": "energy_shield_thin_cov_elite",
+      "material chain": [
+       "materials/[149] energy_shield_thin_cov_elite (general '', specific '', parent 'energy_shield_thin_cov')",
+       "materials/[148] energy_shield_thin_cov (general '', specific '', parent 'energy_shield_thin')",
+       "materials/[145] energy_shield_thin (general 'energy_shield_thin', specific '', parent 'energy')",
+       "materials/[144] energy (general 'energy', specific '', parent 'default_material')",
+       "materials/[0] default_material (general 'material', specific '', parent '')"
+      ],
+      "general armor": "energy_shield_thin",
+      "specific armor": "",
+      "rows": {
+       "damage table/[0]/damage groups/[2] plasma_slow x energy_shield_thin": 1.5
+      },
+      "product": 1.5
+     },
+     "body": {
+      "material": "hard_metal_thin_cov_elite",
+      "material chain": [
+       "materials/[63] hard_metal_thin_cov_elite (general '', specific '', parent 'hard_metal_thin_cov')",
+       "materials/[60] hard_metal_thin_cov (general '', specific '', parent 'hard_metal_thin')",
+       "materials/[54] hard_metal_thin (general 'hard_metal_thin', specific '', parent 'hard')",
+       "materials/[53] hard (general 'hard', specific '', parent 'default_material')",
+       "materials/[0] default_material (general 'material', specific '', parent '')"
+      ],
+      "general armor": "hard_metal_thin",
+      "specific armor": "",
+      "rows": {
+       "damage table/[0]/damage groups/[2] plasma_slow x hard_metal_thin": 0.35
+      },
+      "product": 0.35
+     }
+    },
+    "shield hit": 15.0,
+    "body hit": 3.5,
+    "target": {
+     "character": "objects\\characters\\elite\\ai\\elite.character",
+     "vitality from": "objects\\characters\\elite\\ai\\elite.character",
+     "legendary body vitality": 45.0,
+     "legendary shield vitality": 105.0,
+     "model new damage info (overridden by the character)": {
+      "maximum vitality": 30.0,
+      "maximum shield vitality": 70.0
+     },
+     "shield material": "energy_shield_thin_cov_elite",
+     "body material": "materials/[4] armored_torso -> hard_metal_thin_cov_elite",
+     "matg imposs. enemy vitality": 1.0,
+     "matg imposs. enemy shield": 1.0,
+     "shield pool": 105.0,
+     "body pool": 45.0,
+     "character shield recharge delay time": 15.0,
+     "matg imposs. enemy recharge": 0.3,
+     "shield recharge delay used (delay x enemy recharge, ASSUMED)": 4.5,
+     "body recharge delay time / fraction": [
+      0.0,
+      0.0
+     ],
+     "fields read": {
+      "objects\\characters\\elite\\ai\\elite.character :: parent character": "ai\\generic",
+      "ai\\generic.character :: parent character": "",
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/legendary body vitality": 45.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/legendary shield vitality": 105.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/normal body vitality": 30.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/normal shield vitality": 70.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/shield recharge delay time": 15.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/body recharge delay time": 0.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/body recharge fraction": 0.0,
+      "objects\\characters\\elite\\ai\\elite.character :: unit": "objects\\characters\\elite\\elite",
+      "objects\\characters\\elite\\elite.biped :: model": "objects\\characters\\elite\\elite",
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/maximum vitality": 30.0,
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/maximum shield vitality": 70.0,
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/global shield material name": "energy_shield_thin_cov_elite",
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/stun time'": 5.0,
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/recharge time'": 2.0,
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/stun time": 10.0,
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/recharge fraction": 0.0,
+      "objects\\characters\\elite\\elite.model :: materials/[4]/global material name": "hard_metal_thin_cov_elite",
+      "ai\\generic.character :: firing pattern properties/[27]/weapon": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+      "ai\\generic.character :: weapons properties/[29]/weapon": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+      "ai\\generic.character :: weapons properties/[29]/legendary accuracy bounds": [
+       0.6,
+       1.0
+      ],
+      "ai\\generic.character :: weapons properties/[29]/legendary accuracy time": 1.0,
+      "ai\\generic.character :: weapons properties/[29]/first burst delay time": [
+       0.25,
+       1.25
+      ],
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[0]/rate of fire": 6.0,
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[0]/burst duration": [
+       0.75,
+       1.1
+      ],
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[0]/burst separation": [
+       0.5,
+       1.0
+      ],
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[0]/weapon damage modifier": 0.0,
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[1]/rate of fire": 9.0,
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[1]/burst duration": [
+       0.75,
+       0.9
+      ],
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[1]/burst separation": [
+       0.5,
+       0.7
+      ],
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[1]/weapon damage modifier": 0.0
+     }
+    },
+    "events in the kill": {
+     "overheats": 1,
+     "reloads": 0,
+     "bursts": 0
+    },
+    "ttk_common.player_time cross-check (constant-rate weapons)": null,
+    "30 Hz quantised rate (H1 trigger model, cross-check only)": [
+     6.0,
+     7.5
+    ],
+    "fields read (weapon)": {
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: new triggers/[0]/behavior": "spew",
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/rounds per second": [
+      6.0,
+      9.0
+     ],
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/acceleration time": 0.8,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/shots per fire": [
+      0.0,
+      0.0
+     ],
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/fire recovery time": 0.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/projectiles per shot": 1.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/heat generated per round": 0.15,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: overheated threshold": 1.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: heat recovery threshold": 0.1,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: heat loss per second": 0.8525,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: overheated heat loss per second": 0.35,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: magazines/[0]/rounds loaded maximum": 0.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: magazines/[0]/reload time": 0.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/projectile": "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt",
+     "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt.projectile :: impact damage": "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt",
+     "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt.projectile :: air damage range": [
+      0.0,
+      40.0
+     ],
+     "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt.damage_effect :: damage upper bound": [
+      10.0,
+      10.0
+     ],
+     "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt.damage_effect :: damage lower bound": 6.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt.damage_effect :: general_damage": "plasma_slow",
+     "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt.damage_effect :: specific_damage": ""
+    },
+    "fields read (matg)": {
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy damage": 1.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy vitality": 1.0,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy shield": 1.0,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy recharge": 0.3,
+     "globals\\globals.globals :: difficulty/[0]/imposs. rate of fire": 1.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. burst separation": 0.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. projectile error": 1.0
+    }
+   },
+   "flags": [
+    "fight (4.76 s) outlasts the shield recharge delay 4.50 s (character 15 s x matg enemy recharge 0.30, assumed to scale the delay) -- recharge not modelled",
+    "(inside the raw 15 s delay if the dial does not scale it)",
+    "rate ramps 6 -> 9 rounds/s over 0.80 s held (re-ramps after each overheat)",
+    "1 overheat(s) during the kill: the 19-th bolt overheats the gun (heat loss assumed to run while firing), the cool-down to the recovery threshold costs 2.57 s; without overheat pauses: 2.27 s",
+    "point-blank damage: the jpt upper bound falls toward the lower bound (6.00) across the projectile air damage range 0-40 wu (at 5 wu: x0.950, ASSUMED linear)"
+   ]
+  },
+  {
+   "direction": "player->enemy",
+   "attacker": "Player (Master Chief)",
+   "target": "Elite minor",
+   "weapon": "Battle Rifle",
+   "shots": 25,
+   "seconds": 3.147,
+   "inputs": {
+    "weapon": {
+     "tag": "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon",
+     "trigger behavior": "latch-zoom",
+     "rps": [
+      15.0,
+      15.0
+     ],
+     "accel": 0.0,
+     "shots per fire": [
+      3.0,
+      3.0
+     ],
+     "fire recovery": 0.26,
+     "projectiles per shot": 1.0,
+     "heat per round": 0.0,
+     "overheated threshold": 0.0,
+     "heat recovery threshold": 0.0,
+     "heat loss": 0.0,
+     "overheated heat loss": 0.0,
+     "mag": 36,
+     "reload tag": 0.0,
+     "projectile": "objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet",
+     "reload": 1.9333333333333333,
+     "reload source": "objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_battle_rifle\\fp_battle_rifle.model_animation_graph first_person:reload_empty frame count / 30",
+     "reload animation": {
+      "tag": "objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_battle_rifle\\fp_battle_rifle.model_animation_graph",
+      "animation": "first_person:reload_empty",
+      "frames": 58.0,
+      "seconds @30Hz": 1.933
+     },
+     "impact damage": "objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet",
+     "air damage range": [
+      0.0,
+      40.0
+     ],
+     "damage lower bound": 6.0,
+     "damage upper bound": [
+      6.0,
+      6.0
+     ],
+     "upper": 6.0,
+     "general_damage": "bullet_fast",
+     "specific_damage": ""
+    },
+    "damage multipliers": {
+     "shield": {
+      "material": "energy_shield_thin_cov_elite",
+      "material chain": [
+       "materials/[149] energy_shield_thin_cov_elite (general '', specific '', parent 'energy_shield_thin_cov')",
+       "materials/[148] energy_shield_thin_cov (general '', specific '', parent 'energy_shield_thin')",
+       "materials/[145] energy_shield_thin (general 'energy_shield_thin', specific '', parent 'energy')",
+       "materials/[144] energy (general 'energy', specific '', parent 'default_material')",
+       "materials/[0] default_material (general 'material', specific '', parent '')"
+      ],
+      "general armor": "energy_shield_thin",
+      "specific armor": "",
+      "rows": {
+       "damage table/[0]/damage groups/[3] bullet_fast x energy_shield_thin": 1.0
+      },
+      "product": 1.0
+     },
+     "body": {
+      "material": "hard_metal_thin_cov_elite",
+      "material chain": [
+       "materials/[63] hard_metal_thin_cov_elite (general '', specific '', parent 'hard_metal_thin_cov')",
+       "materials/[60] hard_metal_thin_cov (general '', specific '', parent 'hard_metal_thin')",
+       "materials/[54] hard_metal_thin (general 'hard_metal_thin', specific '', parent 'hard')",
+       "materials/[53] hard (general 'hard', specific '', parent 'default_material')",
+       "materials/[0] default_material (general 'material', specific '', parent '')"
+      ],
+      "general armor": "hard_metal_thin",
+      "specific armor": "",
+      "rows": {
+       "damage table/[0]/damage groups/[3] bullet_fast x hard_metal_thin": 1.0
+      },
+      "product": 1.0
+     }
+    },
+    "shield hit": 6.0,
+    "body hit": 6.0,
+    "target": {
+     "character": "objects\\characters\\elite\\ai\\elite.character",
+     "vitality from": "objects\\characters\\elite\\ai\\elite.character",
+     "legendary body vitality": 45.0,
+     "legendary shield vitality": 105.0,
+     "model new damage info (overridden by the character)": {
+      "maximum vitality": 30.0,
+      "maximum shield vitality": 70.0
+     },
+     "shield material": "energy_shield_thin_cov_elite",
+     "body material": "materials/[4] armored_torso -> hard_metal_thin_cov_elite",
+     "matg imposs. enemy vitality": 1.0,
+     "matg imposs. enemy shield": 1.0,
+     "shield pool": 105.0,
+     "body pool": 45.0,
+     "character shield recharge delay time": 15.0,
+     "matg imposs. enemy recharge": 0.3,
+     "shield recharge delay used (delay x enemy recharge, ASSUMED)": 4.5,
+     "body recharge delay time / fraction": [
+      0.0,
+      0.0
+     ],
+     "fields read": {
+      "objects\\characters\\elite\\ai\\elite.character :: parent character": "ai\\generic",
+      "ai\\generic.character :: parent character": "",
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/legendary body vitality": 45.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/legendary shield vitality": 105.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/normal body vitality": 30.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/normal shield vitality": 70.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/shield recharge delay time": 15.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/body recharge delay time": 0.0,
+      "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/body recharge fraction": 0.0,
+      "objects\\characters\\elite\\ai\\elite.character :: unit": "objects\\characters\\elite\\elite",
+      "objects\\characters\\elite\\elite.biped :: model": "objects\\characters\\elite\\elite",
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/maximum vitality": 30.0,
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/maximum shield vitality": 70.0,
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/global shield material name": "energy_shield_thin_cov_elite",
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/stun time'": 5.0,
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/recharge time'": 2.0,
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/stun time": 10.0,
+      "objects\\characters\\elite\\elite.model :: new damage info/[0]/recharge fraction": 0.0,
+      "objects\\characters\\elite\\elite.model :: materials/[4]/global material name": "hard_metal_thin_cov_elite",
+      "ai\\generic.character :: firing pattern properties/[27]/weapon": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+      "ai\\generic.character :: weapons properties/[29]/weapon": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+      "ai\\generic.character :: weapons properties/[29]/legendary accuracy bounds": [
+       0.6,
+       1.0
+      ],
+      "ai\\generic.character :: weapons properties/[29]/legendary accuracy time": 1.0,
+      "ai\\generic.character :: weapons properties/[29]/first burst delay time": [
+       0.25,
+       1.25
+      ],
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[0]/rate of fire": 6.0,
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[0]/burst duration": [
+       0.75,
+       1.1
+      ],
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[0]/burst separation": [
+       0.5,
+       1.0
+      ],
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[0]/weapon damage modifier": 0.0,
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[1]/rate of fire": 9.0,
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[1]/burst duration": [
+       0.75,
+       0.9
+      ],
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[1]/burst separation": [
+       0.5,
+       0.7
+      ],
+      "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[1]/weapon damage modifier": 0.0
+     }
+    },
+    "events in the kill": {
+     "overheats": 0,
+     "reloads": 0,
+     "bursts": 8
+    },
+    "ttk_common.player_time cross-check (constant-rate weapons)": null,
+    "30 Hz quantised rate (H1 trigger model, cross-check only)": [
+     15.0,
+     15.0
+    ],
+    "fields read (weapon)": {
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: new triggers/[0]/behavior": "latch-zoom",
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: barrels/[0]/rounds per second": [
+      15.0,
+      15.0
+     ],
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: barrels/[0]/acceleration time": 0.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: barrels/[0]/shots per fire": [
+      3.0,
+      3.0
+     ],
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: barrels/[0]/fire recovery time": 0.26,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: barrels/[0]/projectiles per shot": 1.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: barrels/[0]/heat generated per round": 0.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: overheated threshold": 0.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: heat recovery threshold": 0.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: heat loss per second": 0.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: overheated heat loss per second": 0.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: magazines/[0]/rounds loaded maximum": 36.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: magazines/[0]/reload time": 0.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: barrels/[0]/projectile": "objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet",
+     "objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_battle_rifle\\fp_battle_rifle.model_animation_graph :: animations/[13]/frame count": 58.0,
+     "objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet.projectile :: impact damage": "objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet",
+     "objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet.projectile :: air damage range": [
+      0.0,
+      40.0
+     ],
+     "objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet.damage_effect :: damage upper bound": [
+      6.0,
+      6.0
+     ],
+     "objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet.damage_effect :: damage lower bound": 6.0,
+     "objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet.damage_effect :: general_damage": "bullet_fast",
+     "objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet.damage_effect :: specific_damage": ""
+    },
+    "fields read (matg)": {
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy damage": 1.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy vitality": 1.0,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy shield": 1.0,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy recharge": 0.3,
+     "globals\\globals.globals :: difficulty/[0]/imposs. rate of fire": 1.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. burst separation": 0.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. projectile error": 1.0
+    }
+   },
+   "flags": [
+    "3-round bursts at 15/s, 0.26 s fire recovery from a burst's last round to the next burst (assumed timing)",
+    "point-blank damage: the jpt upper bound falls toward the lower bound (6.00) across the projectile air damage range 0-40 wu (at 5 wu: x1.000, ASSUMED linear)"
+   ]
+  },
+  {
+   "direction": "enemy->player",
+   "attacker": "Elite minor",
+   "target": "Player (Master Chief)",
+   "weapon": "Plasma Rifle (AI)",
+   "shots": 9,
+   "seconds": 0.889,
+   "seconds_paced": 1.078,
+   "inputs": {
+    "attacker character chain": [
+     "objects\\characters\\elite\\ai\\elite.character",
+     "ai\\generic.character"
+    ],
+    "firing pattern from": "ai\\generic.character :: firing pattern properties/[27]/",
+    "weapons properties from": "ai\\generic.character :: weapons properties/[29]/",
+    "firing patterns": [
+     {
+      "rate of fire": 6.0,
+      "burst duration": [
+       0.75,
+       1.1
+      ],
+      "burst separation": [
+       0.5,
+       1.0
+      ],
+      "weapon damage modifier": 0.0
+     },
+     {
+      "rate of fire": 9.0,
+      "burst duration": [
+       0.75,
+       0.9
+      ],
+      "burst separation": [
+       0.5,
+       0.7
+      ],
+      "weapon damage modifier": 0.0
+     }
+    ],
+    "legendary accuracy bounds / time": [
+     0.6,
+     1.0,
+     1.0
+    ],
+    "weapon": {
+     "tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon",
+     "trigger behavior": "spew",
+     "rps": [
+      6.0,
+      9.0
+     ],
+     "accel": 0.8,
+     "shots per fire": [
+      0.0,
+      0.0
+     ],
+     "fire recovery": 0.0,
+     "projectiles per shot": 1.0,
+     "heat per round": 0.15,
+     "overheated threshold": 1.0,
+     "heat recovery threshold": 0.1,
+     "heat loss": 0.8525,
+     "overheated heat loss": 0.35,
+     "mag": 0,
+     "reload tag": 0.0,
+     "projectile": "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt",
+     "reload": 0.0,
+     "reload source": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: magazines/[0]/reload time",
+     "impact damage": "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt",
+     "air damage range": [
+      0.0,
+      40.0
+     ],
+     "damage lower bound": 6.0,
+     "damage upper bound": [
+      10.0,
+      10.0
+     ],
+     "upper": 10.0,
+     "general_damage": "plasma_slow",
+     "specific_damage": ""
+    },
+    "damage multipliers": {
+     "shield": {
+      "material": "energy_shield_thin_hum_masterchief",
+      "material chain": [
+       "materials/[147] energy_shield_thin_hum_masterchief (general '', specific '', parent 'energy_shield_thin_hum')",
+       "materials/[146] energy_shield_thin_hum (general '', specific '', parent 'energy_shield_thin')",
+       "materials/[145] energy_shield_thin (general 'energy_shield_thin', specific '', parent 'energy')",
+       "materials/[144] energy (general 'energy', specific '', parent 'default_material')",
+       "materials/[0] default_material (general 'material', specific '', parent '')"
+      ],
+      "general armor": "energy_shield_thin",
+      "specific armor": "",
+      "rows": {
+       "damage table/[0]/damage groups/[2] plasma_slow x energy_shield_thin": 1.5
+      },
+      "product": 1.5
+     },
+     "body": {
+      "material": "hard_metal_thin_hum_masterchief",
+      "material chain": [
+       "materials/[56] hard_metal_thin_hum_masterchief (general '', specific '', parent 'hard_metal_thin_hum')",
+       "materials/[55] hard_metal_thin_hum (general '', specific '', parent 'hard_metal_thin')",
+       "materials/[54] hard_metal_thin (general 'hard_metal_thin', specific '', parent 'hard')",
+       "materials/[53] hard (general 'hard', specific '', parent 'default_material')",
+       "materials/[0] default_material (general 'material', specific '', parent '')"
+      ],
+      "general armor": "hard_metal_thin",
+      "specific armor": "",
+      "rows": {
+       "damage table/[0]/damage groups/[2] plasma_slow x hard_metal_thin": 0.35
+      },
+      "product": 0.35
+     },
+     "matg imposs. enemy damage": 1.5,
+     "firing pattern weapon damage modifier (0 = none)": 1.0
+    },
+    "shield hit": 22.5,
+    "body hit": 5.25,
+    "target": {
+     "model": "objects\\characters\\masterchief\\masterchief.model",
+     "shield pool": 70.0,
+     "body pool": 30.0,
+     "shield material": "energy_shield_thin_hum_masterchief",
+     "body material": "materials/[1] body -> hard_metal_thin_hum_masterchief",
+     "shield recharge delay (model shield stun time)": 5.0,
+     "shield recharge time": 2.0,
+     "fields read": {
+      "objects\\characters\\masterchief\\masterchief.model :: new damage info/[0]/maximum vitality": 30.0,
+      "objects\\characters\\masterchief\\masterchief.model :: new damage info/[0]/maximum shield vitality": 70.0,
+      "objects\\characters\\masterchief\\masterchief.model :: new damage info/[0]/global shield material name": "energy_shield_thin_hum_masterchief",
+      "objects\\characters\\masterchief\\masterchief.model :: new damage info/[0]/stun time'": 5.0,
+      "objects\\characters\\masterchief\\masterchief.model :: new damage info/[0]/recharge time'": 2.0,
+      "objects\\characters\\masterchief\\masterchief.model :: new damage info/[0]/stun time": 10.0,
+      "objects\\characters\\masterchief\\masterchief.model :: new damage info/[0]/recharge fraction": 0.0,
+      "objects\\characters\\masterchief\\masterchief.model :: materials/[1]/global material name": "hard_metal_thin_hum_masterchief"
+     }
+    },
+    "matg imposs. rate of fire": 1.5,
+    "AI trigger pulls per second (pattern x dial)": 13.5,
+    "shots per second used (capped)": 9.0,
+    "burst duration used (mean)": 0.825,
+    "burst separation (mean, before dial)": 0.6,
+    "burst separation used": 0.3,
+    "30 Hz quantised rate (H1 trigger model, cross-check only)": 7.5,
+    "fields read": {
+     "objects\\characters\\elite\\ai\\elite.character :: parent character": "ai\\generic",
+     "ai\\generic.character :: parent character": "",
+     "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/legendary body vitality": 45.0,
+     "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/legendary shield vitality": 105.0,
+     "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/normal body vitality": 30.0,
+     "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/normal shield vitality": 70.0,
+     "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/shield recharge delay time": 15.0,
+     "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/body recharge delay time": 0.0,
+     "objects\\characters\\elite\\ai\\elite.character :: vitality properties/[0]/body recharge fraction": 0.0,
+     "objects\\characters\\elite\\ai\\elite.character :: unit": "objects\\characters\\elite\\elite",
+     "objects\\characters\\elite\\elite.biped :: model": "objects\\characters\\elite\\elite",
+     "objects\\characters\\elite\\elite.model :: new damage info/[0]/maximum vitality": 30.0,
+     "objects\\characters\\elite\\elite.model :: new damage info/[0]/maximum shield vitality": 70.0,
+     "objects\\characters\\elite\\elite.model :: new damage info/[0]/global shield material name": "energy_shield_thin_cov_elite",
+     "objects\\characters\\elite\\elite.model :: new damage info/[0]/stun time'": 5.0,
+     "objects\\characters\\elite\\elite.model :: new damage info/[0]/recharge time'": 2.0,
+     "objects\\characters\\elite\\elite.model :: new damage info/[0]/stun time": 10.0,
+     "objects\\characters\\elite\\elite.model :: new damage info/[0]/recharge fraction": 0.0,
+     "objects\\characters\\elite\\elite.model :: materials/[4]/global material name": "hard_metal_thin_cov_elite",
+     "ai\\generic.character :: firing pattern properties/[27]/weapon": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+     "ai\\generic.character :: weapons properties/[29]/weapon": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+     "ai\\generic.character :: weapons properties/[29]/legendary accuracy bounds": [
+      0.6,
+      1.0
+     ],
+     "ai\\generic.character :: weapons properties/[29]/legendary accuracy time": 1.0,
+     "ai\\generic.character :: weapons properties/[29]/first burst delay time": [
+      0.25,
+      1.25
+     ],
+     "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[0]/rate of fire": 6.0,
+     "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[0]/burst duration": [
+      0.75,
+      1.1
+     ],
+     "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[0]/burst separation": [
+      0.5,
+      1.0
+     ],
+     "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[0]/weapon damage modifier": 0.0,
+     "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[1]/rate of fire": 9.0,
+     "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[1]/burst duration": [
+      0.75,
+      0.9
+     ],
+     "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[1]/burst separation": [
+      0.5,
+      0.7
+     ],
+     "ai\\generic.character :: firing pattern properties/[27]/firing patterns/[1]/weapon damage modifier": 0.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: new triggers/[0]/behavior": "spew",
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/rounds per second": [
+      6.0,
+      9.0
+     ],
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/acceleration time": 0.8,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/shots per fire": [
+      0.0,
+      0.0
+     ],
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/fire recovery time": 0.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/projectiles per shot": 1.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/heat generated per round": 0.15,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: overheated threshold": 1.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: heat recovery threshold": 0.1,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: heat loss per second": 0.8525,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: overheated heat loss per second": 0.35,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: magazines/[0]/rounds loaded maximum": 0.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: magazines/[0]/reload time": 0.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/projectile": "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt",
+     "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt.projectile :: impact damage": "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt",
+     "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt.projectile :: air damage range": [
+      0.0,
+      40.0
+     ],
+     "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt.damage_effect :: damage upper bound": [
+      10.0,
+      10.0
+     ],
+     "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt.damage_effect :: damage lower bound": 6.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt.damage_effect :: general_damage": "plasma_slow",
+     "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt.damage_effect :: specific_damage": ""
+    },
+    "fields read (matg)": {
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy damage": 1.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy vitality": 1.0,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy shield": 1.0,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy recharge": 0.3,
+     "globals\\globals.globals :: difficulty/[0]/imposs. rate of fire": 1.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. burst separation": 0.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. projectile error": 1.0
+    }
+   },
+   "flags": [
+    "AI default weapon plasma_rifle is an ASSUMPTION: Halo 2 gives AI their weapon from the scenario squad / starting location, not the character",
+    "AI rate = firing-pattern rate of fire (0 = held: weapon rounds per second max 9) x matg imposs. rate of fire 1.50 = 13.50/s, CAPPED at the weapon's 9/s (as the H1 collector; uncapped: held 0.59 s, paced 0.59 s)",
+    "firing pattern at legendary accuracy 1.00 (end of the 0.60 -> 1.00 ramp over 1.0 s); at the ramp start (0.60): held 0.89 s, paced 1.11 s",
+    "burst duration / separation are ranges: means used; separation x matg imposs. burst separation 0.50",
+    "AI weapon heat / overheat not modelled; first burst delay [0.25, 1.25] s not counted"
+   ]
+  },
+  {
+   "direction": "player->enemy",
+   "attacker": "Player (Master Chief)",
+   "target": "Brute minor",
+   "weapon": "SMG",
+   "shots": 106,
+   "seconds": 8.933,
+   "inputs": {
+    "weapon": {
+     "tag": "objects\\weapons\\rifle\\smg\\smg.weapon",
+     "trigger behavior": "spew",
+     "rps": [
+      15.0,
+      15.0
+     ],
+     "accel": 1.0,
+     "shots per fire": [
+      0.0,
+      0.0
+     ],
+     "fire recovery": 0.0,
+     "projectiles per shot": 1.0,
+     "heat per round": 0.0,
+     "overheated threshold": 0.0,
+     "heat recovery threshold": 0.0,
+     "heat loss": 0.0,
+     "overheated heat loss": 0.0,
+     "mag": 60,
+     "reload tag": 2.0,
+     "projectile": "objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet",
+     "reload": 2.0,
+     "reload source": "objects\\weapons\\rifle\\smg\\smg.weapon :: magazines/[0]/reload time",
+     "reload animation": {
+      "tag": "objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_smg\\fp_smg.model_animation_graph",
+      "animation": "first_person:reload_empty",
+      "frames": 50.0,
+      "seconds @30Hz": 1.667
+     },
+     "impact damage": "objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet",
+     "air damage range": [
+      0.0,
+      40.0
+     ],
+     "damage lower bound": 0.0,
+     "damage upper bound": [
+      4.75,
+      4.75
+     ],
+     "upper": 4.75,
+     "general_damage": "bullet_slow",
+     "specific_damage": ""
+    },
+    "damage multipliers": {
+     "shield": {},
+     "body": {
+      "material": "tough_organic_flesh_brute",
+      "material chain": [
+       "materials/[31] tough_organic_flesh_brute (general '', specific '', parent 'tough_organic_flesh')",
+       "materials/[29] tough_organic_flesh (general '', specific '', parent 'tough_organic')",
+       "materials/[28] tough_organic (general 'tough_organic', specific '', parent 'tough')",
+       "materials/[27] tough (general 'tough', specific '', parent 'default_material')",
+       "materials/[0] default_material (general 'material', specific '', parent '')"
+      ],
+      "general armor": "tough_organic",
+      "specific armor": "",
+      "rows": {
+       "damage table/[0]/damage groups/[1] bullet_slow x tough_organic": 0.5
+      },
+      "product": 0.5
+     }
+    },
+    "shield hit": 0.0,
+    "body hit": 2.375,
+    "target": {
+     "character": "objects\\characters\\brute\\ai\\brute.character",
+     "vitality from": "objects\\characters\\brute\\ai\\brute.character",
+     "legendary body vitality": 250.0,
+     "legendary shield vitality": 0.0,
+     "model new damage info (overridden by the character)": {
+      "maximum vitality": 150.0,
+      "maximum shield vitality": 0.0
+     },
+     "shield material": "",
+     "body material": "materials/[2] body -> tough_organic_flesh_brute",
+     "matg imposs. enemy vitality": 1.0,
+     "matg imposs. enemy shield": 1.0,
+     "shield pool": 0.0,
+     "body pool": 250.0,
+     "character shield recharge delay time": 0.0,
+     "matg imposs. enemy recharge": 0.3,
+     "shield recharge delay used (delay x enemy recharge, ASSUMED)": 0.0,
+     "body recharge delay time / fraction": [
+      14.0,
+      0.125
+     ],
+     "fields read": {
+      "objects\\characters\\brute\\ai\\brute.character :: parent character": "ai\\generic",
+      "ai\\generic.character :: parent character": "",
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/legendary body vitality": 250.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/legendary shield vitality": 0.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/normal body vitality": 175.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/normal shield vitality": 0.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/shield recharge delay time": 0.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/body recharge delay time": 14.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/body recharge fraction": 0.125,
+      "objects\\characters\\brute\\ai\\brute.character :: unit": "objects\\characters\\brute\\brute",
+      "objects\\characters\\brute\\brute.biped :: model": "objects\\characters\\brute\\brute",
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/maximum vitality": 150.0,
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/maximum shield vitality": 0.0,
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/global shield material name": "",
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/stun time'": 0.0,
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/recharge time'": 0.0,
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/stun time": 0.0,
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/recharge fraction": 0.0,
+      "objects\\characters\\brute\\brute.model :: materials/[2]/global material name": "tough_organic_flesh_brute",
+      "ai\\generic.character :: firing pattern properties/[20]/weapon": "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+      "ai\\generic.character :: weapons properties/[24]/weapon": "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+      "ai\\generic.character :: weapons properties/[24]/legendary accuracy bounds": [
+       0.6,
+       1.0
+      ],
+      "ai\\generic.character :: weapons properties/[24]/legendary accuracy time": 1.0,
+      "ai\\generic.character :: weapons properties/[24]/first burst delay time": [
+       0.25,
+       1.25
+      ],
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[0]/rate of fire": 0.0,
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[0]/burst duration": [
+       0.4,
+       0.6
+      ],
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[0]/burst separation": [
+       1.0,
+       1.25
+      ],
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[0]/weapon damage modifier": 0.0,
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[1]/rate of fire": 0.0,
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[1]/burst duration": [
+       0.6,
+       0.8
+      ],
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[1]/burst separation": [
+       0.5,
+       0.8
+      ],
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[1]/weapon damage modifier": 0.0
+     }
+    },
+    "events in the kill": {
+     "overheats": 0,
+     "reloads": 1,
+     "bursts": 0
+    },
+    "ttk_common.player_time cross-check (constant-rate weapons)": 8.933,
+    "30 Hz quantised rate (H1 trigger model, cross-check only)": [
+     15.0,
+     15.0
+    ],
+    "fields read (weapon)": {
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: new triggers/[0]/behavior": "spew",
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: barrels/[0]/rounds per second": [
+      15.0,
+      15.0
+     ],
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: barrels/[0]/acceleration time": 1.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: barrels/[0]/shots per fire": [
+      0.0,
+      0.0
+     ],
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: barrels/[0]/fire recovery time": 0.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: barrels/[0]/projectiles per shot": 1.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: barrels/[0]/heat generated per round": 0.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: overheated threshold": 0.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: heat recovery threshold": 0.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: heat loss per second": 0.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: overheated heat loss per second": 0.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: magazines/[0]/rounds loaded maximum": 60.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: magazines/[0]/reload time": 2.0,
+     "objects\\weapons\\rifle\\smg\\smg.weapon :: barrels/[0]/projectile": "objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet",
+     "objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_smg\\fp_smg.model_animation_graph :: animations/[30]/frame count": 50.0,
+     "objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet.projectile :: impact damage": "objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet",
+     "objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet.projectile :: air damage range": [
+      0.0,
+      40.0
+     ],
+     "objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet.damage_effect :: damage upper bound": [
+      4.75,
+      4.75
+     ],
+     "objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet.damage_effect :: damage lower bound": 0.0,
+     "objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet.damage_effect :: general_damage": "bullet_slow",
+     "objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet.damage_effect :: specific_damage": ""
+    },
+    "fields read (matg)": {
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy damage": 1.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy vitality": 1.0,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy shield": 1.0,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy recharge": 0.3,
+     "globals\\globals.globals :: difficulty/[0]/imposs. rate of fire": 1.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. burst separation": 0.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. projectile error": 1.0
+    }
+   },
+   "flags": [
+    "1 reload(s) during the kill (2.00 s each, objects\\weapons\\rifle\\smg\\smg.weapon :: magazines/[0]/reload time)",
+    "point-blank damage: the jpt upper bound falls toward the lower bound (0.00) across the projectile air damage range 0-40 wu (at 5 wu: x0.875, ASSUMED linear)"
+   ]
+  },
+  {
+   "direction": "player->enemy",
+   "attacker": "Player (Master Chief)",
+   "target": "Brute minor",
+   "weapon": "Plasma Rifle",
+   "shots": 50,
+   "seconds": 10.869,
+   "inputs": {
+    "weapon": {
+     "tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon",
+     "trigger behavior": "spew",
+     "rps": [
+      6.0,
+      9.0
+     ],
+     "accel": 0.8,
+     "shots per fire": [
+      0.0,
+      0.0
+     ],
+     "fire recovery": 0.0,
+     "projectiles per shot": 1.0,
+     "heat per round": 0.15,
+     "overheated threshold": 1.0,
+     "heat recovery threshold": 0.1,
+     "heat loss": 0.8525,
+     "overheated heat loss": 0.35,
+     "mag": 0,
+     "reload tag": 0.0,
+     "projectile": "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt",
+     "reload": 0.0,
+     "reload source": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: magazines/[0]/reload time",
+     "impact damage": "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt",
+     "air damage range": [
+      0.0,
+      40.0
+     ],
+     "damage lower bound": 6.0,
+     "damage upper bound": [
+      10.0,
+      10.0
+     ],
+     "upper": 10.0,
+     "general_damage": "plasma_slow",
+     "specific_damage": ""
+    },
+    "damage multipliers": {
+     "shield": {},
+     "body": {
+      "material": "tough_organic_flesh_brute",
+      "material chain": [
+       "materials/[31] tough_organic_flesh_brute (general '', specific '', parent 'tough_organic_flesh')",
+       "materials/[29] tough_organic_flesh (general '', specific '', parent 'tough_organic')",
+       "materials/[28] tough_organic (general 'tough_organic', specific '', parent 'tough')",
+       "materials/[27] tough (general 'tough', specific '', parent 'default_material')",
+       "materials/[0] default_material (general 'material', specific '', parent '')"
+      ],
+      "general armor": "tough_organic",
+      "specific armor": "",
+      "rows": {
+       "damage table/[0]/damage groups/[2] plasma_slow x tough_organic": 0.5
+      },
+      "product": 0.5
+     }
+    },
+    "shield hit": 0.0,
+    "body hit": 5.0,
+    "target": {
+     "character": "objects\\characters\\brute\\ai\\brute.character",
+     "vitality from": "objects\\characters\\brute\\ai\\brute.character",
+     "legendary body vitality": 250.0,
+     "legendary shield vitality": 0.0,
+     "model new damage info (overridden by the character)": {
+      "maximum vitality": 150.0,
+      "maximum shield vitality": 0.0
+     },
+     "shield material": "",
+     "body material": "materials/[2] body -> tough_organic_flesh_brute",
+     "matg imposs. enemy vitality": 1.0,
+     "matg imposs. enemy shield": 1.0,
+     "shield pool": 0.0,
+     "body pool": 250.0,
+     "character shield recharge delay time": 0.0,
+     "matg imposs. enemy recharge": 0.3,
+     "shield recharge delay used (delay x enemy recharge, ASSUMED)": 0.0,
+     "body recharge delay time / fraction": [
+      14.0,
+      0.125
+     ],
+     "fields read": {
+      "objects\\characters\\brute\\ai\\brute.character :: parent character": "ai\\generic",
+      "ai\\generic.character :: parent character": "",
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/legendary body vitality": 250.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/legendary shield vitality": 0.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/normal body vitality": 175.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/normal shield vitality": 0.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/shield recharge delay time": 0.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/body recharge delay time": 14.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/body recharge fraction": 0.125,
+      "objects\\characters\\brute\\ai\\brute.character :: unit": "objects\\characters\\brute\\brute",
+      "objects\\characters\\brute\\brute.biped :: model": "objects\\characters\\brute\\brute",
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/maximum vitality": 150.0,
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/maximum shield vitality": 0.0,
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/global shield material name": "",
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/stun time'": 0.0,
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/recharge time'": 0.0,
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/stun time": 0.0,
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/recharge fraction": 0.0,
+      "objects\\characters\\brute\\brute.model :: materials/[2]/global material name": "tough_organic_flesh_brute",
+      "ai\\generic.character :: firing pattern properties/[20]/weapon": "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+      "ai\\generic.character :: weapons properties/[24]/weapon": "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+      "ai\\generic.character :: weapons properties/[24]/legendary accuracy bounds": [
+       0.6,
+       1.0
+      ],
+      "ai\\generic.character :: weapons properties/[24]/legendary accuracy time": 1.0,
+      "ai\\generic.character :: weapons properties/[24]/first burst delay time": [
+       0.25,
+       1.25
+      ],
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[0]/rate of fire": 0.0,
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[0]/burst duration": [
+       0.4,
+       0.6
+      ],
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[0]/burst separation": [
+       1.0,
+       1.25
+      ],
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[0]/weapon damage modifier": 0.0,
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[1]/rate of fire": 0.0,
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[1]/burst duration": [
+       0.6,
+       0.8
+      ],
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[1]/burst separation": [
+       0.5,
+       0.8
+      ],
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[1]/weapon damage modifier": 0.0
+     }
+    },
+    "events in the kill": {
+     "overheats": 2,
+     "reloads": 0,
+     "bursts": 0
+    },
+    "ttk_common.player_time cross-check (constant-rate weapons)": null,
+    "30 Hz quantised rate (H1 trigger model, cross-check only)": [
+     6.0,
+     7.5
+    ],
+    "fields read (weapon)": {
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: new triggers/[0]/behavior": "spew",
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/rounds per second": [
+      6.0,
+      9.0
+     ],
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/acceleration time": 0.8,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/shots per fire": [
+      0.0,
+      0.0
+     ],
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/fire recovery time": 0.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/projectiles per shot": 1.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/heat generated per round": 0.15,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: overheated threshold": 1.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: heat recovery threshold": 0.1,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: heat loss per second": 0.8525,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: overheated heat loss per second": 0.35,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: magazines/[0]/rounds loaded maximum": 0.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: magazines/[0]/reload time": 0.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon :: barrels/[0]/projectile": "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt",
+     "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt.projectile :: impact damage": "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt",
+     "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt.projectile :: air damage range": [
+      0.0,
+      40.0
+     ],
+     "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt.damage_effect :: damage upper bound": [
+      10.0,
+      10.0
+     ],
+     "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt.damage_effect :: damage lower bound": 6.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt.damage_effect :: general_damage": "plasma_slow",
+     "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt.damage_effect :: specific_damage": ""
+    },
+    "fields read (matg)": {
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy damage": 1.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy vitality": 1.0,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy shield": 1.0,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy recharge": 0.3,
+     "globals\\globals.globals :: difficulty/[0]/imposs. rate of fire": 1.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. burst separation": 0.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. projectile error": 1.0
+    }
+   },
+   "flags": [
+    "rate ramps 6 -> 9 rounds/s over 0.80 s held (re-ramps after each overheat)",
+    "2 overheat(s) during the kill: the 19-th bolt overheats the gun (heat loss assumed to run while firing), the cool-down to the recovery threshold costs 2.57 s; without overheat pauses: 5.60 s",
+    "point-blank damage: the jpt upper bound falls toward the lower bound (6.00) across the projectile air damage range 0-40 wu (at 5 wu: x0.950, ASSUMED linear)"
+   ]
+  },
+  {
+   "direction": "player->enemy",
+   "attacker": "Player (Master Chief)",
+   "target": "Brute minor",
+   "weapon": "Battle Rifle",
+   "shots": 42,
+   "seconds": 6.92,
+   "inputs": {
+    "weapon": {
+     "tag": "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon",
+     "trigger behavior": "latch-zoom",
+     "rps": [
+      15.0,
+      15.0
+     ],
+     "accel": 0.0,
+     "shots per fire": [
+      3.0,
+      3.0
+     ],
+     "fire recovery": 0.26,
+     "projectiles per shot": 1.0,
+     "heat per round": 0.0,
+     "overheated threshold": 0.0,
+     "heat recovery threshold": 0.0,
+     "heat loss": 0.0,
+     "overheated heat loss": 0.0,
+     "mag": 36,
+     "reload tag": 0.0,
+     "projectile": "objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet",
+     "reload": 1.9333333333333333,
+     "reload source": "objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_battle_rifle\\fp_battle_rifle.model_animation_graph first_person:reload_empty frame count / 30",
+     "reload animation": {
+      "tag": "objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_battle_rifle\\fp_battle_rifle.model_animation_graph",
+      "animation": "first_person:reload_empty",
+      "frames": 58.0,
+      "seconds @30Hz": 1.933
+     },
+     "impact damage": "objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet",
+     "air damage range": [
+      0.0,
+      40.0
+     ],
+     "damage lower bound": 6.0,
+     "damage upper bound": [
+      6.0,
+      6.0
+     ],
+     "upper": 6.0,
+     "general_damage": "bullet_fast",
+     "specific_damage": ""
+    },
+    "damage multipliers": {
+     "shield": {},
+     "body": {
+      "material": "tough_organic_flesh_brute",
+      "material chain": [
+       "materials/[31] tough_organic_flesh_brute (general '', specific '', parent 'tough_organic_flesh')",
+       "materials/[29] tough_organic_flesh (general '', specific '', parent 'tough_organic')",
+       "materials/[28] tough_organic (general 'tough_organic', specific '', parent 'tough')",
+       "materials/[27] tough (general 'tough', specific '', parent 'default_material')",
+       "materials/[0] default_material (general 'material', specific '', parent '')"
+      ],
+      "general armor": "tough_organic",
+      "specific armor": "",
+      "rows": {
+       "damage table/[0]/damage groups/[3] bullet_fast x tough_organic": 1.0
+      },
+      "product": 1.0
+     }
+    },
+    "shield hit": 0.0,
+    "body hit": 6.0,
+    "target": {
+     "character": "objects\\characters\\brute\\ai\\brute.character",
+     "vitality from": "objects\\characters\\brute\\ai\\brute.character",
+     "legendary body vitality": 250.0,
+     "legendary shield vitality": 0.0,
+     "model new damage info (overridden by the character)": {
+      "maximum vitality": 150.0,
+      "maximum shield vitality": 0.0
+     },
+     "shield material": "",
+     "body material": "materials/[2] body -> tough_organic_flesh_brute",
+     "matg imposs. enemy vitality": 1.0,
+     "matg imposs. enemy shield": 1.0,
+     "shield pool": 0.0,
+     "body pool": 250.0,
+     "character shield recharge delay time": 0.0,
+     "matg imposs. enemy recharge": 0.3,
+     "shield recharge delay used (delay x enemy recharge, ASSUMED)": 0.0,
+     "body recharge delay time / fraction": [
+      14.0,
+      0.125
+     ],
+     "fields read": {
+      "objects\\characters\\brute\\ai\\brute.character :: parent character": "ai\\generic",
+      "ai\\generic.character :: parent character": "",
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/legendary body vitality": 250.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/legendary shield vitality": 0.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/normal body vitality": 175.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/normal shield vitality": 0.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/shield recharge delay time": 0.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/body recharge delay time": 14.0,
+      "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/body recharge fraction": 0.125,
+      "objects\\characters\\brute\\ai\\brute.character :: unit": "objects\\characters\\brute\\brute",
+      "objects\\characters\\brute\\brute.biped :: model": "objects\\characters\\brute\\brute",
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/maximum vitality": 150.0,
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/maximum shield vitality": 0.0,
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/global shield material name": "",
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/stun time'": 0.0,
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/recharge time'": 0.0,
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/stun time": 0.0,
+      "objects\\characters\\brute\\brute.model :: new damage info/[0]/recharge fraction": 0.0,
+      "objects\\characters\\brute\\brute.model :: materials/[2]/global material name": "tough_organic_flesh_brute",
+      "ai\\generic.character :: firing pattern properties/[20]/weapon": "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+      "ai\\generic.character :: weapons properties/[24]/weapon": "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+      "ai\\generic.character :: weapons properties/[24]/legendary accuracy bounds": [
+       0.6,
+       1.0
+      ],
+      "ai\\generic.character :: weapons properties/[24]/legendary accuracy time": 1.0,
+      "ai\\generic.character :: weapons properties/[24]/first burst delay time": [
+       0.25,
+       1.25
+      ],
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[0]/rate of fire": 0.0,
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[0]/burst duration": [
+       0.4,
+       0.6
+      ],
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[0]/burst separation": [
+       1.0,
+       1.25
+      ],
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[0]/weapon damage modifier": 0.0,
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[1]/rate of fire": 0.0,
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[1]/burst duration": [
+       0.6,
+       0.8
+      ],
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[1]/burst separation": [
+       0.5,
+       0.8
+      ],
+      "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[1]/weapon damage modifier": 0.0
+     }
+    },
+    "events in the kill": {
+     "overheats": 0,
+     "reloads": 1,
+     "bursts": 13
+    },
+    "ttk_common.player_time cross-check (constant-rate weapons)": null,
+    "30 Hz quantised rate (H1 trigger model, cross-check only)": [
+     15.0,
+     15.0
+    ],
+    "fields read (weapon)": {
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: new triggers/[0]/behavior": "latch-zoom",
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: barrels/[0]/rounds per second": [
+      15.0,
+      15.0
+     ],
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: barrels/[0]/acceleration time": 0.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: barrels/[0]/shots per fire": [
+      3.0,
+      3.0
+     ],
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: barrels/[0]/fire recovery time": 0.26,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: barrels/[0]/projectiles per shot": 1.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: barrels/[0]/heat generated per round": 0.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: overheated threshold": 0.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: heat recovery threshold": 0.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: heat loss per second": 0.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: overheated heat loss per second": 0.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: magazines/[0]/rounds loaded maximum": 36.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: magazines/[0]/reload time": 0.0,
+     "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon :: barrels/[0]/projectile": "objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet",
+     "objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_battle_rifle\\fp_battle_rifle.model_animation_graph :: animations/[13]/frame count": 58.0,
+     "objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet.projectile :: impact damage": "objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet",
+     "objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet.projectile :: air damage range": [
+      0.0,
+      40.0
+     ],
+     "objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet.damage_effect :: damage upper bound": [
+      6.0,
+      6.0
+     ],
+     "objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet.damage_effect :: damage lower bound": 6.0,
+     "objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet.damage_effect :: general_damage": "bullet_fast",
+     "objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet.damage_effect :: specific_damage": ""
+    },
+    "fields read (matg)": {
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy damage": 1.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy vitality": 1.0,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy shield": 1.0,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy recharge": 0.3,
+     "globals\\globals.globals :: difficulty/[0]/imposs. rate of fire": 1.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. burst separation": 0.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. projectile error": 1.0
+    }
+   },
+   "flags": [
+    "1 reload(s) during the kill (1.93 s each, objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_battle_rifle\\fp_battle_rifle.model_animation_graph first_person:reload_empty frame count / 30)",
+    "3-round bursts at 15/s, 0.26 s fire recovery from a burst's last round to the next burst (assumed timing)",
+    "point-blank damage: the jpt upper bound falls toward the lower bound (6.00) across the projectile air damage range 0-40 wu (at 5 wu: x1.000, ASSUMED linear)"
+   ]
+  },
+  {
+   "direction": "enemy->player",
+   "attacker": "Brute minor",
+   "target": "Player (Master Chief)",
+   "weapon": "Brute Plasma Rifle (AI)",
+   "shots": 9,
+   "seconds": 0.727,
+   "seconds_paced": 0.961,
+   "inputs": {
+    "attacker character chain": [
+     "objects\\characters\\brute\\ai\\brute.character",
+     "ai\\generic.character"
+    ],
+    "firing pattern from": "ai\\generic.character :: firing pattern properties/[20]/",
+    "weapons properties from": "ai\\generic.character :: weapons properties/[24]/",
+    "firing patterns": [
+     {
+      "rate of fire": 0.0,
+      "burst duration": [
+       0.4,
+       0.6
+      ],
+      "burst separation": [
+       1.0,
+       1.25
+      ],
+      "weapon damage modifier": 0.0
+     },
+     {
+      "rate of fire": 0.0,
+      "burst duration": [
+       0.6,
+       0.8
+      ],
+      "burst separation": [
+       0.5,
+       0.8
+      ],
+      "weapon damage modifier": 0.0
+     }
+    ],
+    "legendary accuracy bounds / time": [
+     0.6,
+     1.0,
+     1.0
+    ],
+    "weapon": {
+     "tag": "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle.weapon",
+     "trigger behavior": "spew",
+     "rps": [
+      8.0,
+      11.0
+     ],
+     "accel": 0.8,
+     "shots per fire": [
+      0.0,
+      0.0
+     ],
+     "fire recovery": 0.0,
+     "projectiles per shot": 1.0,
+     "heat per round": 0.15,
+     "overheated threshold": 1.0,
+     "heat recovery threshold": 0.1,
+     "heat loss": 0.8525,
+     "overheated heat loss": 0.35,
+     "mag": 0,
+     "reload tag": 0.0,
+     "projectile": "objects\\weapons\\rifle\\brute_plasma_rifle\\projectiles\\brute_plasma_rifle_bolt",
+     "reload": 0.0,
+     "reload source": "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle.weapon :: magazines/[0]/reload time",
+     "impact damage": "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt",
+     "air damage range": [
+      0.0,
+      40.0
+     ],
+     "damage lower bound": 6.0,
+     "damage upper bound": [
+      10.0,
+      10.0
+     ],
+     "upper": 10.0,
+     "general_damage": "plasma_slow",
+     "specific_damage": ""
+    },
+    "damage multipliers": {
+     "shield": {
+      "material": "energy_shield_thin_hum_masterchief",
+      "material chain": [
+       "materials/[147] energy_shield_thin_hum_masterchief (general '', specific '', parent 'energy_shield_thin_hum')",
+       "materials/[146] energy_shield_thin_hum (general '', specific '', parent 'energy_shield_thin')",
+       "materials/[145] energy_shield_thin (general 'energy_shield_thin', specific '', parent 'energy')",
+       "materials/[144] energy (general 'energy', specific '', parent 'default_material')",
+       "materials/[0] default_material (general 'material', specific '', parent '')"
+      ],
+      "general armor": "energy_shield_thin",
+      "specific armor": "",
+      "rows": {
+       "damage table/[0]/damage groups/[2] plasma_slow x energy_shield_thin": 1.5
+      },
+      "product": 1.5
+     },
+     "body": {
+      "material": "hard_metal_thin_hum_masterchief",
+      "material chain": [
+       "materials/[56] hard_metal_thin_hum_masterchief (general '', specific '', parent 'hard_metal_thin_hum')",
+       "materials/[55] hard_metal_thin_hum (general '', specific '', parent 'hard_metal_thin')",
+       "materials/[54] hard_metal_thin (general 'hard_metal_thin', specific '', parent 'hard')",
+       "materials/[53] hard (general 'hard', specific '', parent 'default_material')",
+       "materials/[0] default_material (general 'material', specific '', parent '')"
+      ],
+      "general armor": "hard_metal_thin",
+      "specific armor": "",
+      "rows": {
+       "damage table/[0]/damage groups/[2] plasma_slow x hard_metal_thin": 0.35
+      },
+      "product": 0.35
+     },
+     "matg imposs. enemy damage": 1.5,
+     "firing pattern weapon damage modifier (0 = none)": 1.0
+    },
+    "shield hit": 22.5,
+    "body hit": 5.25,
+    "target": {
+     "model": "objects\\characters\\masterchief\\masterchief.model",
+     "shield pool": 70.0,
+     "body pool": 30.0,
+     "shield material": "energy_shield_thin_hum_masterchief",
+     "body material": "materials/[1] body -> hard_metal_thin_hum_masterchief",
+     "shield recharge delay (model shield stun time)": 5.0,
+     "shield recharge time": 2.0,
+     "fields read": {
+      "objects\\characters\\masterchief\\masterchief.model :: new damage info/[0]/maximum vitality": 30.0,
+      "objects\\characters\\masterchief\\masterchief.model :: new damage info/[0]/maximum shield vitality": 70.0,
+      "objects\\characters\\masterchief\\masterchief.model :: new damage info/[0]/global shield material name": "energy_shield_thin_hum_masterchief",
+      "objects\\characters\\masterchief\\masterchief.model :: new damage info/[0]/stun time'": 5.0,
+      "objects\\characters\\masterchief\\masterchief.model :: new damage info/[0]/recharge time'": 2.0,
+      "objects\\characters\\masterchief\\masterchief.model :: new damage info/[0]/stun time": 10.0,
+      "objects\\characters\\masterchief\\masterchief.model :: new damage info/[0]/recharge fraction": 0.0,
+      "objects\\characters\\masterchief\\masterchief.model :: materials/[1]/global material name": "hard_metal_thin_hum_masterchief"
+     }
+    },
+    "matg imposs. rate of fire": 1.5,
+    "AI trigger pulls per second (pattern x dial)": 16.5,
+    "shots per second used (capped)": 11.0,
+    "burst duration used (mean)": 0.7,
+    "burst separation (mean, before dial)": 0.65,
+    "burst separation used": 0.325,
+    "30 Hz quantised rate (H1 trigger model, cross-check only)": 10.0,
+    "fields read": {
+     "objects\\characters\\brute\\ai\\brute.character :: parent character": "ai\\generic",
+     "ai\\generic.character :: parent character": "",
+     "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/legendary body vitality": 250.0,
+     "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/legendary shield vitality": 0.0,
+     "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/normal body vitality": 175.0,
+     "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/normal shield vitality": 0.0,
+     "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/shield recharge delay time": 0.0,
+     "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/body recharge delay time": 14.0,
+     "objects\\characters\\brute\\ai\\brute.character :: vitality properties/[0]/body recharge fraction": 0.125,
+     "objects\\characters\\brute\\ai\\brute.character :: unit": "objects\\characters\\brute\\brute",
+     "objects\\characters\\brute\\brute.biped :: model": "objects\\characters\\brute\\brute",
+     "objects\\characters\\brute\\brute.model :: new damage info/[0]/maximum vitality": 150.0,
+     "objects\\characters\\brute\\brute.model :: new damage info/[0]/maximum shield vitality": 0.0,
+     "objects\\characters\\brute\\brute.model :: new damage info/[0]/global shield material name": "",
+     "objects\\characters\\brute\\brute.model :: new damage info/[0]/stun time'": 0.0,
+     "objects\\characters\\brute\\brute.model :: new damage info/[0]/recharge time'": 0.0,
+     "objects\\characters\\brute\\brute.model :: new damage info/[0]/stun time": 0.0,
+     "objects\\characters\\brute\\brute.model :: new damage info/[0]/recharge fraction": 0.0,
+     "objects\\characters\\brute\\brute.model :: materials/[2]/global material name": "tough_organic_flesh_brute",
+     "ai\\generic.character :: firing pattern properties/[20]/weapon": "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+     "ai\\generic.character :: weapons properties/[24]/weapon": "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+     "ai\\generic.character :: weapons properties/[24]/legendary accuracy bounds": [
+      0.6,
+      1.0
+     ],
+     "ai\\generic.character :: weapons properties/[24]/legendary accuracy time": 1.0,
+     "ai\\generic.character :: weapons properties/[24]/first burst delay time": [
+      0.25,
+      1.25
+     ],
+     "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[0]/rate of fire": 0.0,
+     "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[0]/burst duration": [
+      0.4,
+      0.6
+     ],
+     "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[0]/burst separation": [
+      1.0,
+      1.25
+     ],
+     "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[0]/weapon damage modifier": 0.0,
+     "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[1]/rate of fire": 0.0,
+     "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[1]/burst duration": [
+      0.6,
+      0.8
+     ],
+     "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[1]/burst separation": [
+      0.5,
+      0.8
+     ],
+     "ai\\generic.character :: firing pattern properties/[20]/firing patterns/[1]/weapon damage modifier": 0.0,
+     "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle.weapon :: new triggers/[0]/behavior": "spew",
+     "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle.weapon :: barrels/[0]/rounds per second": [
+      8.0,
+      11.0
+     ],
+     "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle.weapon :: barrels/[0]/acceleration time": 0.8,
+     "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle.weapon :: barrels/[0]/shots per fire": [
+      0.0,
+      0.0
+     ],
+     "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle.weapon :: barrels/[0]/fire recovery time": 0.0,
+     "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle.weapon :: barrels/[0]/projectiles per shot": 1.0,
+     "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle.weapon :: barrels/[0]/heat generated per round": 0.15,
+     "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle.weapon :: overheated threshold": 1.0,
+     "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle.weapon :: heat recovery threshold": 0.1,
+     "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle.weapon :: heat loss per second": 0.8525,
+     "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle.weapon :: overheated heat loss per second": 0.35,
+     "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle.weapon :: magazines/[0]/rounds loaded maximum": 0.0,
+     "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle.weapon :: magazines/[0]/reload time": 0.0,
+     "objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle.weapon :: barrels/[0]/projectile": "objects\\weapons\\rifle\\brute_plasma_rifle\\projectiles\\brute_plasma_rifle_bolt",
+     "objects\\weapons\\rifle\\brute_plasma_rifle\\projectiles\\brute_plasma_rifle_bolt.projectile :: impact damage": "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt",
+     "objects\\weapons\\rifle\\brute_plasma_rifle\\projectiles\\brute_plasma_rifle_bolt.projectile :: air damage range": [
+      0.0,
+      40.0
+     ],
+     "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt.damage_effect :: damage upper bound": [
+      10.0,
+      10.0
+     ],
+     "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt.damage_effect :: damage lower bound": 6.0,
+     "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt.damage_effect :: general_damage": "plasma_slow",
+     "objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt.damage_effect :: specific_damage": ""
+    },
+    "fields read (matg)": {
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy damage": 1.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy vitality": 1.0,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy shield": 1.0,
+     "globals\\globals.globals :: difficulty/[0]/imposs. enemy recharge": 0.3,
+     "globals\\globals.globals :: difficulty/[0]/imposs. rate of fire": 1.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. burst separation": 0.5,
+     "globals\\globals.globals :: difficulty/[0]/imposs. projectile error": 1.0
+    }
+   },
+   "flags": [
+    "AI default weapon brute_plasma_rifle is an ASSUMPTION: Halo 2 gives AI their weapon from the scenario squad / starting location, not the character",
+    "AI rate = firing-pattern rate of fire (0 = held: weapon rounds per second max 11) x matg imposs. rate of fire 1.50 = 16.50/s, CAPPED at the weapon's 11/s (as the H1 collector; uncapped: held 0.48 s, paced 0.48 s)",
+    "firing pattern at legendary accuracy 1.00 (end of the 0.60 -> 1.00 ramp over 1.0 s); at the ramp start (0.60): held 0.73 s, paced 1.06 s",
+    "burst duration / separation are ranges: means used; separation x matg imposs. burst separation 0.50",
+    "AI weapon heat / overheat not modelled; first burst delay [0.25, 1.25] s not counted"
+   ]
+  }
+ ],
+ "notes": [
+  "Source: H2EK tags (F:\\SteamLibrary\\steamapps\\common\\H2EK\\tags), read with ttk_common.flatten (private temp export); nothing in the kit was written.",
+  "Legendary = matg Difficulty \"imposs.\" column: enemy damage 1.50, enemy vitality 1.00, enemy shield 1.00, enemy recharge 0.30, rate of fire 1.50, burst separation 0.50.",
+  "Enemy pools = character \"legendary body / shield vitality\" (the kit help: \"maximum body vitality of our unit (on legendary)\"), which replace the model maxima (Elite model 30/70 -> 45/105 on Legendary; Brute model 150 -> 250). The matg vitality/shield dials (1.0) multiply on top.",
+  "Damage per hit = jpt damage upper bound (mean of the pair) x every matg damage-table row for (jpt general_damage, specific_damage) x (material general armor, specific armor), materials resolved up the parent chain; missing row = 1. None of these damage effects has a specific_damage and none of these materials a specific armor, so each multiplier is a single row. Body shot = Elite \"armored_torso\" (hard_metal_thin_cov_elite; the skinned parts resolve to the same hard_metal_thin armour), Brute \"body\" (tough_organic_flesh_brute -> tough_organic), Chief \"body\".",
+  "Player times: continuous-time trigger simulation (sim_player): ramp lo->hi over acceleration time, bursts + fire recovery, heat with continuous heat loss and the overheated cool-down to the recovery threshold, reloads. Constant-rate weapons are asserted equal to ttk_common.player_time. Battle Rifle reload = its fp reload_empty animation (magazine reload time is 0 = animation-driven); SMG uses its tag reload time 2.0 s (its fp reload animation is 50 frames = 1.67 s).",
+  "Enemy shield recharge: the character delay (Elite 15 s) x matg \"enemy recharge\" (kit help: \"enemy shield recharge scale\") 0.3 -- ASSUMED to scale the delay (it falls with difficulty, so it cannot be a rate). Flags use 4.5 s.",
+  "Not modelled: headshots, melee, grenades, misses, AI weapon heat, damage falloff with range (projectile air damage range 0-40 wu: the jpt lower bound is reached at 40 wu), the first-burst delay, the AI accuracy ramp (steady state used)."
+ ]
+}

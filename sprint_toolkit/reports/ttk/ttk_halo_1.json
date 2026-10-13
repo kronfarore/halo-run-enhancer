@@ -1,0 +1,366 @@
+{
+ "game": "Halo 1",
+ "difficulty": "Legendary",
+ "rows": [
+  {
+   "direction": "player->enemy",
+   "attacker": "Player (Master Chief)",
+   "target": "Elite minor",
+   "weapon": "Assault Rifle",
+   "shots": 34,
+   "seconds": 2.2,
+   "inputs": {
+    "weapon": {
+     "tag": "weap weapons\\assault rifle\\assault rifle",
+     "Triggers[0] Rounds Per Second (+0x4)": 15.0,
+     "Triggers[0] Rounds Per Second Max (+0x8)": 15.0,
+     "Triggers[0] Acceleration Time (+0xC)": 1.0,
+     "Triggers[0] Rate Of Fire Acceleration Rate (+0xF8, runtime per tick)": 0.03333333507180214,
+     "Triggers[0] Projectiles Per Shot (+0x6E)": 1,
+     "Triggers[0] Rounds Per Shot (+0x22)": 1,
+     "Triggers[0] Heat Generated Per Round (+0xB8)": 0.0,
+     "Triggers[0] Projectile (+0x94)": "proj weapons\\assault rifle\\bullet",
+     "proj Impact Damage (+0x224)": "jpt! weapons\\assault rifle\\bullet",
+     "Overheated Threshold (+0x350)": 0.0,
+     "Heat Recovery Threshold (+0x34C)": 0.0,
+     "Heat Loss Per Second (+0x35C)": 0.0,
+     "Magazines[0] Rounds Loaded Maximum (+0xA)": 60,
+     "Magazines[0] Reload Time (+0x14)": 3.4000000953674316
+    },
+    "damage effect": {
+     "tag": "jpt! weapons\\assault rifle\\bullet",
+     "Damage Lower Bound (+0x1D0)": 10.0,
+     "Damage Upper Bound (+0x1D4 / +0x1D8)": [
+      10.0,
+      10.0
+     ],
+     "upper": 10.0,
+     "Stun Time (+0x1EC)": 0.0
+    },
+    "damage multipliers": {
+     "jpt shield modifier [Elite Energy Shield]": 0.699999988079071,
+     "jpt body modifier [Elite]": 1.0,
+     "coll material \"body\" Shield Damage Multiplier (+0x2C)": 1.0,
+     "coll material \"body\" Body Damage Multiplier (+0x3C)": 1.0
+    },
+    "shield hit": 7.0,
+    "body hit": 10.0,
+    "target": {
+     "actv": "actv characters\\elite\\elite minor\\elite minor plasma rifle",
+     "coll": "coll characters\\elite\\elite",
+     "actv Body Vitality (+0x200)": 100.0,
+     "actv Shield Vitality (+0x204)": 100.0,
+     "coll Maximum Body Vitality (+0x8)": 100.0,
+     "coll Maximum Shield Vitality (+0xCC)": 100.0,
+     "coll Shield Material Type (+0xD2)": "Elite Energy Shield",
+     "coll body material": {
+      "name": "body",
+      "head flag": false,
+      "type": "Elite",
+      "shield_mul": 1.0,
+      "body_mul": 1.0
+     },
+     "coll Stun Time (+0x10C)": 12.0,
+     "coll Recharge Time (+0x110)": 10.0,
+     "matg globals\\globals Difficulty Impossible Enemy Vitality": 1.399999976158142,
+     "matg globals\\globals Difficulty Impossible Enemy Shield": 1.399999976158142,
+     "matg globals\\globals Difficulty Impossible Enemy Recharge": 2.0,
+     "shield pool": 140.0,
+     "body pool": 140.0
+    },
+    "rate used (30 Hz quantised)": [
+     15.0,
+     15.0
+    ],
+    "overheat pause (s) = (Overheated - Recovery threshold) / Heat Loss": 0.0,
+    "events in the kill": {
+     "overheats": 0,
+     "reloads": 0
+    },
+    "cross-check (fixed-rate shared helper)": {
+     "ttk_common.player_time at 15.000/s": 2.2
+    }
+   },
+   "flags": []
+  },
+  {
+   "direction": "player->enemy",
+   "attacker": "Player (Master Chief)",
+   "target": "Elite minor",
+   "weapon": "Plasma Rifle",
+   "shots": 17,
+   "seconds": 2.1,
+   "inputs": {
+    "weapon": {
+     "tag": "weap weapons\\plasma rifle\\plasma rifle",
+     "Triggers[0] Rounds Per Second (+0x4)": 7.0,
+     "Triggers[0] Rounds Per Second Max (+0x8)": 10.0,
+     "Triggers[0] Acceleration Time (+0xC)": 1.7999999523162842,
+     "Triggers[0] Rate Of Fire Acceleration Rate (+0xF8, runtime per tick)": 0.018518520519137383,
+     "Triggers[0] Projectiles Per Shot (+0x6E)": 1,
+     "Triggers[0] Rounds Per Shot (+0x22)": 0,
+     "Triggers[0] Heat Generated Per Round (+0xB8)": 0.07999999821186066,
+     "Triggers[0] Projectile (+0x94)": "proj weapons\\plasma rifle\\bolt",
+     "proj Impact Damage (+0x224)": "jpt! weapons\\plasma rifle\\bolt",
+     "Overheated Threshold (+0x350)": 1.0,
+     "Heat Recovery Threshold (+0x34C)": 0.25,
+     "Heat Loss Per Second (+0x35C)": 0.30000001192092896,
+     "Magazines[0] Rounds Loaded Maximum (+0xA)": 0,
+     "Magazines[0] Reload Time (+0x14)": 0.0
+    },
+    "damage effect": {
+     "tag": "jpt! weapons\\plasma rifle\\bolt",
+     "Damage Lower Bound (+0x1D0)": 10.0,
+     "Damage Upper Bound (+0x1D4 / +0x1D8)": [
+      12.0,
+      14.0
+     ],
+     "upper": 13.0,
+     "Stun Time (+0x1EC)": 0.15000000596046448
+    },
+    "damage multipliers": {
+     "jpt shield modifier [Elite Energy Shield]": 2.0,
+     "jpt body modifier [Elite]": 1.0,
+     "coll material \"body\" Shield Damage Multiplier (+0x2C)": 1.0,
+     "coll material \"body\" Body Damage Multiplier (+0x3C)": 1.0
+    },
+    "shield hit": 26.0,
+    "body hit": 13.0,
+    "target": {
+     "actv": "actv characters\\elite\\elite minor\\elite minor plasma rifle",
+     "coll": "coll characters\\elite\\elite",
+     "actv Body Vitality (+0x200)": 100.0,
+     "actv Shield Vitality (+0x204)": 100.0,
+     "coll Maximum Body Vitality (+0x8)": 100.0,
+     "coll Maximum Shield Vitality (+0xCC)": 100.0,
+     "coll Shield Material Type (+0xD2)": "Elite Energy Shield",
+     "coll body material": {
+      "name": "body",
+      "head flag": false,
+      "type": "Elite",
+      "shield_mul": 1.0,
+      "body_mul": 1.0
+     },
+     "coll Stun Time (+0x10C)": 12.0,
+     "coll Recharge Time (+0x110)": 10.0,
+     "matg globals\\globals Difficulty Impossible Enemy Vitality": 1.399999976158142,
+     "matg globals\\globals Difficulty Impossible Enemy Shield": 1.399999976158142,
+     "matg globals\\globals Difficulty Impossible Enemy Recharge": 2.0,
+     "shield pool": 140.0,
+     "body pool": 140.0
+    },
+    "rate used (30 Hz quantised)": [
+     6.0,
+     10.0
+    ],
+    "overheat pause (s) = (Overheated - Recovery threshold) / Heat Loss": 2.5,
+    "events in the kill": {
+     "overheats": 0,
+     "reloads": 0
+    },
+    "cross-check (fixed-rate shared helper)": {
+     "ttk_common.player_time at 6.000/s": 5.0,
+     "ttk_common.player_time at 10.000/s": 4.0
+    }
+   },
+   "flags": [
+    "rate ramps 7.0 -> 10.0 rounds/s (quantised 6.00 -> 10.00/s at 30 Hz) over 1.80 s held; time from the tick simulation of the ramp"
+   ]
+  },
+  {
+   "direction": "player->enemy",
+   "attacker": "Player (Master Chief)",
+   "target": "Elite minor",
+   "weapon": "Pistol",
+   "shots": 13,
+   "seconds": 5.5,
+   "inputs": {
+    "weapon": {
+     "tag": "weap weapons\\pistol\\pistol",
+     "Triggers[0] Rounds Per Second (+0x4)": 3.5,
+     "Triggers[0] Rounds Per Second Max (+0x8)": 3.5,
+     "Triggers[0] Acceleration Time (+0xC)": 0.0,
+     "Triggers[0] Rate Of Fire Acceleration Rate (+0xF8, runtime per tick)": 1.0,
+     "Triggers[0] Projectiles Per Shot (+0x6E)": 1,
+     "Triggers[0] Rounds Per Shot (+0x22)": 1,
+     "Triggers[0] Heat Generated Per Round (+0xB8)": 0.0,
+     "Triggers[0] Projectile (+0x94)": "proj weapons\\pistol\\bullet",
+     "proj Impact Damage (+0x224)": "jpt! weapons\\pistol\\bullet",
+     "Overheated Threshold (+0x350)": 0.0,
+     "Heat Recovery Threshold (+0x34C)": 0.0,
+     "Heat Loss Per Second (+0x35C)": 0.0,
+     "Magazines[0] Rounds Loaded Maximum (+0xA)": 12,
+     "Magazines[0] Reload Time (+0x14)": 2.1700000762939453
+    },
+    "damage effect": {
+     "tag": "jpt! weapons\\pistol\\bullet",
+     "Damage Lower Bound (+0x1D0)": 25.0,
+     "Damage Upper Bound (+0x1D4 / +0x1D8)": [
+      25.0,
+      25.0
+     ],
+     "upper": 25.0,
+     "Stun Time (+0x1EC)": 0.0
+    },
+    "damage multipliers": {
+     "jpt shield modifier [Elite Energy Shield]": 0.800000011920929,
+     "jpt body modifier [Elite]": 1.0,
+     "coll material \"body\" Shield Damage Multiplier (+0x2C)": 1.0,
+     "coll material \"body\" Body Damage Multiplier (+0x3C)": 1.0
+    },
+    "shield hit": 20.0,
+    "body hit": 25.0,
+    "target": {
+     "actv": "actv characters\\elite\\elite minor\\elite minor plasma rifle",
+     "coll": "coll characters\\elite\\elite",
+     "actv Body Vitality (+0x200)": 100.0,
+     "actv Shield Vitality (+0x204)": 100.0,
+     "coll Maximum Body Vitality (+0x8)": 100.0,
+     "coll Maximum Shield Vitality (+0xCC)": 100.0,
+     "coll Shield Material Type (+0xD2)": "Elite Energy Shield",
+     "coll body material": {
+      "name": "body",
+      "head flag": false,
+      "type": "Elite",
+      "shield_mul": 1.0,
+      "body_mul": 1.0
+     },
+     "coll Stun Time (+0x10C)": 12.0,
+     "coll Recharge Time (+0x110)": 10.0,
+     "matg globals\\globals Difficulty Impossible Enemy Vitality": 1.399999976158142,
+     "matg globals\\globals Difficulty Impossible Enemy Shield": 1.399999976158142,
+     "matg globals\\globals Difficulty Impossible Enemy Recharge": 2.0,
+     "shield pool": 140.0,
+     "body pool": 140.0
+    },
+    "rate used (30 Hz quantised)": [
+     3.333,
+     3.333
+    ],
+    "overheat pause (s) = (Overheated - Recovery threshold) / Heat Loss": 0.0,
+    "events in the kill": {
+     "overheats": 0,
+     "reloads": 1
+    },
+    "cross-check (fixed-rate shared helper)": {
+     "ttk_common.player_time at 3.333/s": 5.47
+    }
+   },
+   "flags": [
+    "1 reload(s) during the kill"
+   ]
+  },
+  {
+   "direction": "enemy->player",
+   "attacker": "Elite minor",
+   "target": "Player (Master Chief)",
+   "weapon": "Plasma Rifle (AI)",
+   "shots": 17,
+   "seconds": 2.133,
+   "seconds_paced": 2.867,
+   "inputs": {
+    "attacker": {
+     "tag": "actv characters\\elite\\elite minor\\elite minor plasma rifle",
+     "Unit (+0x14)": "bipd characters\\elite\\elite",
+     "Weapon (+0x64)": "weap weapons\\plasma rifle\\plasma rifle",
+     "Rate Of Fire (+0x78)": 5.0,
+     "Weapon Damage Modifier (+0xC4)": 0.5,
+     "Damage Per Second (+0xC8)": 0.0,
+     "Burst Duration (+0xE0 / +0xE4)": [
+      0.75,
+      1.100000023841858
+     ],
+     "Burst Separation (+0xE8 / +0xEC)": [
+      0.5,
+      1.5
+     ],
+     "First Burst Delay Time (+0x80 / +0x84)": [
+      0.25,
+      1.25
+     ],
+     "Body Vitality (+0x200)": 100.0,
+     "Shield Vitality (+0x204)": 100.0,
+     "bipd Collision Model (+0x70)": "coll characters\\elite\\elite"
+    },
+    "weapon": {
+     "tag": "weap weapons\\plasma rifle\\plasma rifle",
+     "Triggers[0] Rounds Per Second (+0x4)": 7.0,
+     "Triggers[0] Rounds Per Second Max (+0x8)": 10.0,
+     "Triggers[0] Acceleration Time (+0xC)": 1.7999999523162842,
+     "Triggers[0] Rate Of Fire Acceleration Rate (+0xF8, runtime per tick)": 0.018518520519137383,
+     "Triggers[0] Projectiles Per Shot (+0x6E)": 1,
+     "Triggers[0] Rounds Per Shot (+0x22)": 0,
+     "Triggers[0] Heat Generated Per Round (+0xB8)": 0.07999999821186066,
+     "Triggers[0] Projectile (+0x94)": "proj weapons\\plasma rifle\\bolt",
+     "proj Impact Damage (+0x224)": "jpt! weapons\\plasma rifle\\bolt",
+     "Overheated Threshold (+0x350)": 1.0,
+     "Heat Recovery Threshold (+0x34C)": 0.25,
+     "Heat Loss Per Second (+0x35C)": 0.30000001192092896,
+     "Magazines[0] Rounds Loaded Maximum (+0xA)": 0,
+     "Magazines[0] Reload Time (+0x14)": 0.0
+    },
+    "damage effect": {
+     "tag": "jpt! weapons\\plasma rifle\\bolt",
+     "Damage Lower Bound (+0x1D0)": 10.0,
+     "Damage Upper Bound (+0x1D4 / +0x1D8)": [
+      12.0,
+      14.0
+     ],
+     "upper": 13.0,
+     "Stun Time (+0x1EC)": 0.15000000596046448
+    },
+    "damage multipliers": {
+     "jpt shield modifier [Cyborg Energy Shield]": 2.0,
+     "jpt body modifier [Cyborg Armor]": 0.5,
+     "coll material \"body\" Shield Damage Multiplier (+0x2C)": 1.0,
+     "coll material \"body\" Body Damage Multiplier (+0x3C)": 1.0,
+     "matg globals\\globals Difficulty Impossible Enemy Damage": 1.7999999523162842,
+     "actv Weapon Damage Modifier (+0xC4)": 0.5
+    },
+    "shield hit": 23.4,
+    "body hit": 5.85,
+    "target": {
+     "bipd": "bipd characters\\cyborg\\cyborg",
+     "coll": "coll characters\\cyborg\\cyborg",
+     "coll Maximum Body Vitality (+0x8)": 75.0,
+     "coll Maximum Shield Vitality (+0xCC)": 75.0,
+     "coll Shield Material Type (+0xD2)": "Cyborg Energy Shield",
+     "coll body material": {
+      "name": "body",
+      "head flag": false,
+      "type": "Cyborg Armor",
+      "shield_mul": 1.0,
+      "body_mul": 1.0
+     },
+     "coll Stun Time (+0x10C)": 6.0,
+     "coll Recharge Time (+0x110)": 4.0
+    },
+    "matg globals\\globals Difficulty Impossible Rate Of Fire": 1.5,
+    "AI trigger pulls per second (actv RoF x dial)": 7.5,
+    "shots per second used (capped, 30 Hz quantised)": 7.5,
+    "burst duration used (mean)": 0.925,
+    "burst separation (actv mean, before dial)": 1.0,
+    "burst separation used (x Impossible Burst Separation)": 0.5,
+    "unquantised (held, paced)": [
+     2.133,
+     2.867
+    ]
+   },
+   "flags": [
+    "AI rate = actv Rate Of Fire x matg Impossible Rate Of Fire (ASSUMED multiplicative; not measured in game), capped at the weapon Rounds Per Second Max, quantised to the 30 Hz trigger",
+    "actv Burst Duration and Burst Separation are RANGES: the means are used; separation also x matg Impossible Burst Separation 0.50 (assumed to scale it)"
+   ]
+  }
+ ],
+ "notes": [
+  "Source: E:\\HaloBaselines\\halo1\\maps\\a10.map (patcher baseline, read-only); plugins E:\\Assembly-1-2023-11-29-1702446457\\Plugins (loose copy of the Assembly Halo1MCC/Halo1 set; the HCEEK kit was not touched).",
+  "Legendary = matg Difficulty \"Impossible\" column throughout.",
+  "Damage per hit = jpt! Damage Upper Bound mean x jpt! per-material modifier (shield material = coll Shield Material Type; body = the coll material named \"body\") x that coll material's Shield/Body Damage Multiplier. No headshots, no melee, no AOE.",
+  "Elite pool = actv Body/Shield Vitality (+0x200/+0x204, the actor-variant override; equal to the coll maxima for the minor) x matg Enemy Vitality / Enemy Shield.",
+  "Player times: 30 Hz tick simulation of the measured H1 trigger (rate/30 per tick, shot at sum >= 1, sum resets; rate ramp by the runtime Rate Of Fire Acceleration Rate per tick; plasma heat cools while firing). Halo 1 has no fire-recovery-time field: the rate is the only limit. Flat-rate weapons match ttk_common.player_time (asserted).",
+  "Shield recharge: coll Stun Time (+0x10C) is reported as the recharge delay. Its unit is NOT verified in game for H1 (the Elite's 12 vs the cyborg's 6; matg Impossible Enemy Recharge 2.0 is assumed to scale the recharge RATE, not the delay).",
+  "AI damage = jpt x matg Enemy Damage x actv Weapon Damage Modifier (+0xC4). The player is NOT scaled by any vitality dial (matg Friend dials apply to allies).",
+  "AI \"held\" = the AI firing continuously at its trigger-pull rate; \"paced\" = in its own bursts. Both count every shot as a hit; first-burst delay, aim error and leading are ignored.",
+  "Halo 1 has no Brutes."
+ ]
+}

@@ -1,0 +1,1044 @@
+{
+ "game": "Halo Reach",
+ "difficulty": "Legendary",
+ "rows": [
+  {
+   "direction": "player->enemy",
+   "attacker": "Spartan (player)",
+   "target": "Elite minor",
+   "weapon": "Assault Rifle",
+   "shots": 28,
+   "seconds": 2.7,
+   "inputs": {
+    "target legendary body vitality": {
+     "value": 100.0,
+     "src": "objects\\characters\\elite\\ai\\elite.character : vitality properties/[0]/legendary body vitality = 100"
+    },
+    "target legendary shield vitality": {
+     "value": 75.0,
+     "src": "objects\\characters\\elite\\ai\\elite.character : vitality properties/[0]/legendary shield vitality = 75"
+    },
+    "target shield recharge delay s": {
+     "value": 8.0,
+     "src": "objects\\characters\\elite\\ai\\elite.character : vitality properties/[0]/shield recharge delay time = 8"
+    },
+    "target body recharge delay s": {
+     "value": 0.0,
+     "src": "objects\\characters\\elite\\ai\\elite.character : vitality properties/[0]/body recharge delay time = 0"
+    },
+    "target body recharge fraction": {
+     "value": 0.0,
+     "src": "objects\\characters\\elite\\ai\\elite.character : vitality properties/[0]/body recharge fraction = 0"
+    },
+    "target shield material": {
+     "value": "energy_shield_thin_cov_elite",
+     "src": "objects\\characters\\elite_ai\\elite_ai.model : new damage info/[0]/shield/global shield material name"
+    },
+    "target body material": {
+     "value": "hard_metal_thin_cov_elite",
+     "src": "objects\\characters\\elite_ai\\elite_ai.model : model materials ['body'] global material name"
+    },
+    "legendary enemy damage": {
+     "value": 1.6,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy damage = 1.6"
+    },
+    "legendary enemy vitality": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy vitality = 1"
+    },
+    "legendary enemy shield": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy shield = 1"
+    },
+    "legendary rate of fire": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. rate of fire = 1"
+    },
+    "legendary burst separation": {
+     "value": 0.5,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. burst separation = 0.5"
+    },
+    "weapon damage per hit (upper bound, mean)": {
+     "value": 6.311,
+     "src": "objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet.damage_effect : damage upper bound = 5.834,6.788"
+    },
+    "weapon projectiles per shot": {
+     "value": 1.0,
+     "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : barrels/[0]/projectiles per shot = 1"
+    },
+    "weapon general damage": {
+     "value": "bullet_slow",
+     "src": "objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet.damage_effect : general_damage"
+    },
+    "weapon specific damage": {
+     "value": "",
+     "src": "objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet.damage_effect : specific_damage"
+    },
+    "weapon rounds per second (first of pair)": {
+     "value": 10.0,
+     "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : barrels/[0]/firing/rounds per second = 10,10"
+    },
+    "weapon fire recovery time": {
+     "value": 0.05,
+     "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : barrels/[0]/firing/fire recovery time = 0.05"
+    },
+    "weapon magazine": {
+     "value": 32.0,
+     "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : magazines/[0]/rounds loaded maximum = 32"
+    },
+    "weapon campaign age per round (battery)": {
+     "value": 0.0,
+     "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : barrels/[0]/campaign age generated per round = 0"
+    },
+    "weapon heat per round (field)": {
+     "value": 0.0,
+     "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : barrels/[0]/heat generated per round = 0"
+    },
+    "weapon heat per round function": {
+     "value": "",
+     "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : barrels/[0]/heat generated per round function"
+    },
+    "weapon interval s": {
+     "value": 0.1,
+     "src": "max(1 / rounds per second, fire recovery time)"
+    },
+    "weapon reload s": {
+     "value": 2.066666666666667,
+     "src": "objects\\characters\\spartans\\fp\\weapons\\rifle\\fp_assault_rifle\\fp_assault_rifle.model_animation_graph : animations [18] first_person:reload_empty allow interruption frame 62 (of 68 frames) / 30"
+    },
+    "shield multiplier": {
+     "value": 1.0,
+     "src": "globals\\globals.globals damage table [0] / materials: energy_shield_thin_cov_elite [energy_shield_thin_cov_elite > energy_shield_thin_cov > energy_shield_thin > energy > default_material] -> bullet_slow x energy_shield_thin = 1; bullet_slow x energy_shield_thin_player: no row (1)"
+    },
+    "body multiplier": {
+     "value": 1.0,
+     "src": "globals\\globals.globals damage table [0] / materials: hard_metal_thin_cov_elite [hard_metal_thin_cov_elite > hard_metal_thin_cov > hard_metal_thin > hard > default_material] -> bullet_slow x hard_metal_thin = 1; bullet_slow x hard_metal_thin_player: no row (1)"
+    },
+    "hit vs shield": {
+     "value": 6.311,
+     "src": "damage per hit x shield multiplier"
+    },
+    "hit vs body": {
+     "value": 6.311,
+     "src": "damage per hit x body multiplier"
+    }
+   },
+   "flags": []
+  },
+  {
+   "direction": "player->enemy",
+   "attacker": "Spartan (player)",
+   "target": "Elite minor",
+   "weapon": "Plasma Repeater",
+   "shots": 28,
+   "seconds": 6.107,
+   "inputs": {
+    "target legendary body vitality": {
+     "value": 100.0,
+     "src": "objects\\characters\\elite\\ai\\elite.character : vitality properties/[0]/legendary body vitality = 100"
+    },
+    "target legendary shield vitality": {
+     "value": 75.0,
+     "src": "objects\\characters\\elite\\ai\\elite.character : vitality properties/[0]/legendary shield vitality = 75"
+    },
+    "target shield recharge delay s": {
+     "value": 8.0,
+     "src": "objects\\characters\\elite\\ai\\elite.character : vitality properties/[0]/shield recharge delay time = 8"
+    },
+    "target body recharge delay s": {
+     "value": 0.0,
+     "src": "objects\\characters\\elite\\ai\\elite.character : vitality properties/[0]/body recharge delay time = 0"
+    },
+    "target body recharge fraction": {
+     "value": 0.0,
+     "src": "objects\\characters\\elite\\ai\\elite.character : vitality properties/[0]/body recharge fraction = 0"
+    },
+    "target shield material": {
+     "value": "energy_shield_thin_cov_elite",
+     "src": "objects\\characters\\elite_ai\\elite_ai.model : new damage info/[0]/shield/global shield material name"
+    },
+    "target body material": {
+     "value": "hard_metal_thin_cov_elite",
+     "src": "objects\\characters\\elite_ai\\elite_ai.model : model materials ['body'] global material name"
+    },
+    "legendary enemy damage": {
+     "value": 1.6,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy damage = 1.6"
+    },
+    "legendary enemy vitality": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy vitality = 1"
+    },
+    "legendary enemy shield": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy shield = 1"
+    },
+    "legendary rate of fire": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. rate of fire = 1"
+    },
+    "legendary burst separation": {
+     "value": 0.5,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. burst separation = 0.5"
+    },
+    "weapon damage per hit (upper bound, mean)": {
+     "value": 6.417,
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt.damage_effect : damage upper bound = 5.834,7"
+    },
+    "weapon projectiles per shot": {
+     "value": 1.0,
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater.weapon : barrels/[0]/projectiles per shot = 1"
+    },
+    "weapon general damage": {
+     "value": "plasma_fast",
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt.damage_effect : general_damage"
+    },
+    "weapon specific damage": {
+     "value": "",
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt.damage_effect : specific_damage"
+    },
+    "weapon rounds per second (first of pair)": {
+     "value": 15.0,
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater.weapon : barrels/[0]/firing/rounds per second = 15,3"
+    },
+    "weapon fire recovery time": {
+     "value": 0.05,
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater.weapon : barrels/[0]/firing/fire recovery time = 0.05"
+    },
+    "weapon magazine": {
+     "value": 0.0,
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater.weapon : magazines/[0]/rounds loaded maximum = 0"
+    },
+    "weapon campaign age per round (battery)": {
+     "value": 0.005,
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater.weapon : barrels/[0]/campaign age generated per round = 0.005"
+    },
+    "weapon heat per round (field)": {
+     "value": 0.0,
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater.weapon : barrels/[0]/heat generated per round = 0"
+    },
+    "weapon heat per round function": {
+     "value": "heat_generated_per_round",
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater.weapon : barrels/[0]/heat generated per round function"
+    },
+    "weapon rate by heat": {
+     "value": "15 -> 3 (rounds per second 15,3) by heat^1.5",
+     "src": "plasma_repeater.weapon item/object/functions heat->heat_generated_per_round / heat->heat_driven_rate_of_fire (curves not exported; values from ports_h1/plasma_repeater.py, ManagedBlam Evaluate 2026-10-11)"
+    },
+    "weapon heat per tick firing": {
+     "value": 0.03,
+     "src": "plasma_repeater.weapon item/object/functions heat->heat_generated_per_round / heat->heat_driven_rate_of_fire (curves not exported; values from ports_h1/plasma_repeater.py, ManagedBlam Evaluate 2026-10-11)"
+    },
+    "weapon never overheats": {
+     "value": true,
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater.weapon : secondary flags"
+    },
+    "shield multiplier": {
+     "value": 1.0,
+     "src": "globals\\globals.globals damage table [0] / materials: energy_shield_thin_cov_elite [energy_shield_thin_cov_elite > energy_shield_thin_cov > energy_shield_thin > energy > default_material] -> plasma_fast x energy_shield_thin = 1; plasma_fast x energy_shield_thin_player: no row (1)"
+    },
+    "body multiplier": {
+     "value": 1.0,
+     "src": "globals\\globals.globals damage table [0] / materials: hard_metal_thin_cov_elite [hard_metal_thin_cov_elite > hard_metal_thin_cov > hard_metal_thin > hard > default_material] -> plasma_fast x hard_metal_thin = 1; plasma_fast x hard_metal_thin_player: no row (1)"
+    },
+    "hit vs shield": {
+     "value": 6.417,
+     "src": "damage per hit x shield multiplier"
+    },
+    "hit vs body": {
+     "value": 6.417,
+     "src": "damage per hit x body multiplier"
+    }
+   },
+   "flags": [
+    "rate falls with heat (15 -> 3/s); the manual vent (2.5 s) is not used"
+   ]
+  },
+  {
+   "direction": "player->enemy",
+   "attacker": "Spartan (player)",
+   "target": "Elite minor",
+   "weapon": "DMR",
+   "shots": 10,
+   "seconds": 3.0,
+   "inputs": {
+    "target legendary body vitality": {
+     "value": 100.0,
+     "src": "objects\\characters\\elite\\ai\\elite.character : vitality properties/[0]/legendary body vitality = 100"
+    },
+    "target legendary shield vitality": {
+     "value": 75.0,
+     "src": "objects\\characters\\elite\\ai\\elite.character : vitality properties/[0]/legendary shield vitality = 75"
+    },
+    "target shield recharge delay s": {
+     "value": 8.0,
+     "src": "objects\\characters\\elite\\ai\\elite.character : vitality properties/[0]/shield recharge delay time = 8"
+    },
+    "target body recharge delay s": {
+     "value": 0.0,
+     "src": "objects\\characters\\elite\\ai\\elite.character : vitality properties/[0]/body recharge delay time = 0"
+    },
+    "target body recharge fraction": {
+     "value": 0.0,
+     "src": "objects\\characters\\elite\\ai\\elite.character : vitality properties/[0]/body recharge fraction = 0"
+    },
+    "target shield material": {
+     "value": "energy_shield_thin_cov_elite",
+     "src": "objects\\characters\\elite_ai\\elite_ai.model : new damage info/[0]/shield/global shield material name"
+    },
+    "target body material": {
+     "value": "hard_metal_thin_cov_elite",
+     "src": "objects\\characters\\elite_ai\\elite_ai.model : model materials ['body'] global material name"
+    },
+    "legendary enemy damage": {
+     "value": 1.6,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy damage = 1.6"
+    },
+    "legendary enemy vitality": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy vitality = 1"
+    },
+    "legendary enemy shield": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy shield = 1"
+    },
+    "legendary rate of fire": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. rate of fire = 1"
+    },
+    "legendary burst separation": {
+     "value": 0.5,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. burst separation = 0.5"
+    },
+    "weapon damage per hit (upper bound, mean)": {
+     "value": 17.5,
+     "src": "objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet.damage_effect : damage upper bound = 17.5,17.5"
+    },
+    "weapon projectiles per shot": {
+     "value": 1.0,
+     "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : barrels/[0]/projectiles per shot = 1"
+    },
+    "weapon general damage": {
+     "value": "bullet_fast",
+     "src": "objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet.damage_effect : general_damage"
+    },
+    "weapon specific damage": {
+     "value": "",
+     "src": "objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet.damage_effect : specific_damage"
+    },
+    "weapon rounds per second (first of pair)": {
+     "value": 3.0,
+     "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : barrels/[0]/firing/rounds per second = 3,3"
+    },
+    "weapon fire recovery time": {
+     "value": 0.33,
+     "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : barrels/[0]/firing/fire recovery time = 0.33"
+    },
+    "weapon magazine": {
+     "value": 15.0,
+     "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : magazines/[0]/rounds loaded maximum = 15"
+    },
+    "weapon campaign age per round (battery)": {
+     "value": 0.0,
+     "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : barrels/[0]/campaign age generated per round = 0"
+    },
+    "weapon heat per round (field)": {
+     "value": 0.0,
+     "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : barrels/[0]/heat generated per round = 0"
+    },
+    "weapon heat per round function": {
+     "value": "",
+     "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : barrels/[0]/heat generated per round function"
+    },
+    "weapon interval s": {
+     "value": 0.3333333333333333,
+     "src": "max(1 / rounds per second, fire recovery time)"
+    },
+    "weapon reload s": {
+     "value": 2.066666666666667,
+     "src": "objects\\characters\\spartans\\fp\\weapons\\rifle\\fp_dmr\\fp_dmr.model_animation_graph : animations [18] first_person:reload_empty allow interruption frame 62 (of 68 frames) / 30"
+    },
+    "shield multiplier": {
+     "value": 1.0,
+     "src": "globals\\globals.globals damage table [0] / materials: energy_shield_thin_cov_elite [energy_shield_thin_cov_elite > energy_shield_thin_cov > energy_shield_thin > energy > default_material] -> bullet_fast x energy_shield_thin = 1; bullet_fast x energy_shield_thin_player: no row (1)"
+    },
+    "body multiplier": {
+     "value": 1.0,
+     "src": "globals\\globals.globals damage table [0] / materials: hard_metal_thin_cov_elite [hard_metal_thin_cov_elite > hard_metal_thin_cov > hard_metal_thin > hard > default_material] -> bullet_fast x hard_metal_thin = 1; bullet_fast x hard_metal_thin_player: no row (1)"
+    },
+    "hit vs shield": {
+     "value": 17.5,
+     "src": "damage per hit x shield multiplier"
+    },
+    "hit vs body": {
+     "value": 17.5,
+     "src": "damage per hit x body multiplier"
+    }
+   },
+   "flags": []
+  },
+  {
+   "direction": "enemy->player",
+   "attacker": "Elite minor",
+   "target": "Spartan (player)",
+   "weapon": "Plasma Rifle",
+   "shots": 10,
+   "seconds": 1.059,
+   "seconds_paced": 1.566,
+   "inputs": {
+    "player body vitality": {
+     "value": 45.0,
+     "src": "objects\\characters\\spartans\\spartans.model : new damage info/[0]/body/maximum vitality = 45"
+    },
+    "player shield vitality": {
+     "value": 70.0,
+     "src": "objects\\characters\\spartans\\spartans.model : new damage info/[0]/shield/maximum shield vitality = 70"
+    },
+    "player shield recharge delay s": {
+     "value": 7.0,
+     "src": "objects\\characters\\spartans\\spartans.model : new damage info/[0]/shield/stun time = 7"
+    },
+    "player shield material": {
+     "value": "energy_shield_thin_hum_spartan",
+     "src": "objects\\characters\\spartans\\spartans.model : new damage info/[0]/shield/global shield material name"
+    },
+    "player body material": {
+     "value": "hard_metal_thin_hum_spartan",
+     "src": "objects\\characters\\spartans\\spartans.model : model materials ['body'] global material name"
+    },
+    "legendary enemy damage": {
+     "value": 1.6,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy damage = 1.6"
+    },
+    "legendary enemy vitality": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy vitality = 1"
+    },
+    "legendary enemy shield": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy shield = 1"
+    },
+    "legendary rate of fire": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. rate of fire = 1"
+    },
+    "legendary burst separation": {
+     "value": 0.5,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. burst separation = 0.5"
+    },
+    "enemy default weapon": {
+     "value": "plasma_rifle",
+     "src": "ai\\squad_templates\\sq_camp_elite_minor_1.squad_template : cell templates/[0]/initial weapon/[0]/weapon type"
+    },
+    "weapon damage per hit (upper bound, mean)": {
+     "value": 10.0,
+     "src": "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt.damage_effect : damage upper bound = 10,10"
+    },
+    "weapon projectiles per shot": {
+     "value": 1.0,
+     "src": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon : barrels/[0]/projectiles per shot = 1"
+    },
+    "weapon general damage": {
+     "value": "plasma_slow",
+     "src": "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt.damage_effect : general_damage"
+    },
+    "weapon specific damage": {
+     "value": "",
+     "src": "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt.damage_effect : specific_damage"
+    },
+    "firing pattern plasma_rifle [17] really accurate rate of fire": {
+     "value": 8.5,
+     "src": "ai\\generic.character : firing pattern properties/[17]/firing patterns/[1]/rate of fire = 8.5"
+    },
+    "firing pattern plasma_rifle [17] really accurate burst duration (mean)": {
+     "value": 0.85,
+     "src": "ai\\generic.character : firing pattern properties/[17]/firing patterns/[1]/burst duration = 0.7,1"
+    },
+    "firing pattern plasma_rifle [17] really accurate burst separation (mean)": {
+     "value": 1.25,
+     "src": "ai\\generic.character : firing pattern properties/[17]/firing patterns/[1]/burst separation = 0.75,1.75"
+    },
+    "firing pattern plasma_rifle [17] really accurate weapon damage modifier": {
+     "value": 0.0,
+     "src": "ai\\generic.character : firing pattern properties/[17]/firing patterns/[1]/weapon damage modifier = 0"
+    },
+    "firing pattern plasma_rifle inaccurate rate of fire (Legendary starts at accuracy 0.3)": {
+     "value": 3.5,
+     "src": "ai\\generic.character : firing pattern properties/[17]/firing patterns/[0]/rate of fire = 3.5"
+    },
+    "legendary accuracy bounds (first)": {
+     "value": 0.3,
+     "src": "ai\\generic.character : weapons properties/[17]/legendary accuracy bounds = 0.3,1"
+    },
+    "legendary accuracy time s": {
+     "value": 3.0,
+     "src": "ai\\generic.character : weapons properties/[17]/legendary accuracy time = 3"
+    },
+    "weapon rounds per second (first of pair)": {
+     "value": 6.0,
+     "src": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon : barrels/[0]/firing/rounds per second = 6,9"
+    },
+    "ai shots per second": {
+     "value": 8.5,
+     "src": "pattern rate of fire (0 = weapon rate) x legendary rate of fire, capped by the weapon rounds per second"
+    },
+    "ai burst separation s": {
+     "value": 0.625,
+     "src": "pattern burst separation x legendary burst separation"
+    },
+    "ai weapon damage modifier used": {
+     "value": 1.0,
+     "src": "pattern weapon damage modifier (0 = unset -> 1)"
+    },
+    "shield multiplier": {
+     "value": 1.6,
+     "src": "globals\\globals.globals damage table [0] / materials: energy_shield_thin_hum_spartan [energy_shield_thin_hum_spartan > energy_shield_thin_hum > energy_shield_thin > energy > default_material] -> plasma_slow x energy_shield_thin = 1.6; plasma_slow x energy_shield_thin_player: no row (1)"
+    },
+    "body multiplier": {
+     "value": 0.4,
+     "src": "globals\\globals.globals damage table [0] / materials: hard_metal_thin_hum_spartan [hard_metal_thin_hum_spartan > hard_metal_thin_hum > hard_metal_thin > hard > default_material] -> plasma_slow x hard_metal_thin = 0.4; plasma_slow x hard_metal_thin_player: no row (1)"
+    },
+    "hit vs shield": {
+     "value": 25.6,
+     "src": "damage x shield multiplier x legendary enemy damage x modifier"
+    },
+    "hit vs body": {
+     "value": 6.4,
+     "src": "damage x body multiplier x legendary enemy damage x modifier"
+    }
+   },
+   "flags": [
+    "AI weapon overheat not modelled: 7 rounds overheat it if heat does not cool while firing (heat 0.15/round, threshold 1)",
+    "first 3 s of a fight the AI fires between the inaccurate and really accurate patterns (accuracy 0.3 -> 1)"
+   ]
+  },
+  {
+   "direction": "player->enemy",
+   "attacker": "Spartan (player)",
+   "target": "Brute minor",
+   "weapon": "Assault Rifle",
+   "shots": 40,
+   "seconds": 5.867,
+   "inputs": {
+    "target legendary body vitality": {
+     "value": 175.0,
+     "src": "objects\\characters\\brute\\ai\\brute.character : vitality properties/[0]/legendary body vitality = 175"
+    },
+    "target legendary shield vitality": {
+     "value": 75.0,
+     "src": "objects\\characters\\brute\\ai\\brute.character : vitality properties/[0]/legendary shield vitality = 75"
+    },
+    "target shield recharge delay s": {
+     "value": 0.0,
+     "src": "objects\\characters\\brute\\ai\\brute.character : vitality properties/[0]/shield recharge delay time = 0"
+    },
+    "target body recharge delay s": {
+     "value": 8.0,
+     "src": "objects\\characters\\brute\\ai\\brute.character : vitality properties/[0]/body recharge delay time = 8"
+    },
+    "target body recharge fraction": {
+     "value": 0.35,
+     "src": "objects\\characters\\brute\\ai\\brute.character : vitality properties/[0]/body recharge fraction = 0.35"
+    },
+    "target shield material": {
+     "value": "energy_shield_thin",
+     "src": "objects\\characters\\brute\\brute.model : damage info/damage sections/[2] 'shield' shield material name"
+    },
+    "target body material": {
+     "value": "soft_organic_flesh",
+     "src": "objects\\characters\\brute\\brute.model : model materials ['body'] global material name"
+    },
+    "legendary enemy damage": {
+     "value": 1.6,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy damage = 1.6"
+    },
+    "legendary enemy vitality": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy vitality = 1"
+    },
+    "legendary enemy shield": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy shield = 1"
+    },
+    "legendary rate of fire": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. rate of fire = 1"
+    },
+    "legendary burst separation": {
+     "value": 0.5,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. burst separation = 0.5"
+    },
+    "weapon damage per hit (upper bound, mean)": {
+     "value": 6.311,
+     "src": "objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet.damage_effect : damage upper bound = 5.834,6.788"
+    },
+    "weapon projectiles per shot": {
+     "value": 1.0,
+     "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : barrels/[0]/projectiles per shot = 1"
+    },
+    "weapon general damage": {
+     "value": "bullet_slow",
+     "src": "objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet.damage_effect : general_damage"
+    },
+    "weapon specific damage": {
+     "value": "",
+     "src": "objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet.damage_effect : specific_damage"
+    },
+    "weapon rounds per second (first of pair)": {
+     "value": 10.0,
+     "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : barrels/[0]/firing/rounds per second = 10,10"
+    },
+    "weapon fire recovery time": {
+     "value": 0.05,
+     "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : barrels/[0]/firing/fire recovery time = 0.05"
+    },
+    "weapon magazine": {
+     "value": 32.0,
+     "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : magazines/[0]/rounds loaded maximum = 32"
+    },
+    "weapon campaign age per round (battery)": {
+     "value": 0.0,
+     "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : barrels/[0]/campaign age generated per round = 0"
+    },
+    "weapon heat per round (field)": {
+     "value": 0.0,
+     "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : barrels/[0]/heat generated per round = 0"
+    },
+    "weapon heat per round function": {
+     "value": "",
+     "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : barrels/[0]/heat generated per round function"
+    },
+    "weapon interval s": {
+     "value": 0.1,
+     "src": "max(1 / rounds per second, fire recovery time)"
+    },
+    "weapon reload s": {
+     "value": 2.066666666666667,
+     "src": "objects\\characters\\spartans\\fp\\weapons\\rifle\\fp_assault_rifle\\fp_assault_rifle.model_animation_graph : animations [18] first_person:reload_empty allow interruption frame 62 (of 68 frames) / 30"
+    },
+    "shield multiplier": {
+     "value": 1.0,
+     "src": "globals\\globals.globals damage table [0] / materials: energy_shield_thin [energy_shield_thin > energy > default_material] -> bullet_slow x energy_shield_thin = 1"
+    },
+    "body multiplier": {
+     "value": 1.0,
+     "src": "globals\\globals.globals damage table [0] / materials: soft_organic_flesh [soft_organic_flesh > soft_organic > soft > default_material] -> bullet_slow x soft_organic = 1"
+    },
+    "hit vs shield": {
+     "value": 6.311,
+     "src": "damage per hit x shield multiplier"
+    },
+    "hit vs body": {
+     "value": 6.311,
+     "src": "damage per hit x body multiplier"
+    }
+   },
+   "flags": [
+    "needs 1 reload(s) (magazine 32, reload 2.07 s)",
+    "shield never recharges (character shield recharge delay/time 0)"
+   ]
+  },
+  {
+   "direction": "player->enemy",
+   "attacker": "Spartan (player)",
+   "target": "Brute minor",
+   "weapon": "Plasma Repeater",
+   "shots": 39,
+   "seconds": 9.774,
+   "inputs": {
+    "target legendary body vitality": {
+     "value": 175.0,
+     "src": "objects\\characters\\brute\\ai\\brute.character : vitality properties/[0]/legendary body vitality = 175"
+    },
+    "target legendary shield vitality": {
+     "value": 75.0,
+     "src": "objects\\characters\\brute\\ai\\brute.character : vitality properties/[0]/legendary shield vitality = 75"
+    },
+    "target shield recharge delay s": {
+     "value": 0.0,
+     "src": "objects\\characters\\brute\\ai\\brute.character : vitality properties/[0]/shield recharge delay time = 0"
+    },
+    "target body recharge delay s": {
+     "value": 8.0,
+     "src": "objects\\characters\\brute\\ai\\brute.character : vitality properties/[0]/body recharge delay time = 8"
+    },
+    "target body recharge fraction": {
+     "value": 0.35,
+     "src": "objects\\characters\\brute\\ai\\brute.character : vitality properties/[0]/body recharge fraction = 0.35"
+    },
+    "target shield material": {
+     "value": "energy_shield_thin",
+     "src": "objects\\characters\\brute\\brute.model : damage info/damage sections/[2] 'shield' shield material name"
+    },
+    "target body material": {
+     "value": "soft_organic_flesh",
+     "src": "objects\\characters\\brute\\brute.model : model materials ['body'] global material name"
+    },
+    "legendary enemy damage": {
+     "value": 1.6,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy damage = 1.6"
+    },
+    "legendary enemy vitality": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy vitality = 1"
+    },
+    "legendary enemy shield": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy shield = 1"
+    },
+    "legendary rate of fire": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. rate of fire = 1"
+    },
+    "legendary burst separation": {
+     "value": 0.5,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. burst separation = 0.5"
+    },
+    "weapon damage per hit (upper bound, mean)": {
+     "value": 6.417,
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt.damage_effect : damage upper bound = 5.834,7"
+    },
+    "weapon projectiles per shot": {
+     "value": 1.0,
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater.weapon : barrels/[0]/projectiles per shot = 1"
+    },
+    "weapon general damage": {
+     "value": "plasma_fast",
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt.damage_effect : general_damage"
+    },
+    "weapon specific damage": {
+     "value": "",
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt.damage_effect : specific_damage"
+    },
+    "weapon rounds per second (first of pair)": {
+     "value": 15.0,
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater.weapon : barrels/[0]/firing/rounds per second = 15,3"
+    },
+    "weapon fire recovery time": {
+     "value": 0.05,
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater.weapon : barrels/[0]/firing/fire recovery time = 0.05"
+    },
+    "weapon magazine": {
+     "value": 0.0,
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater.weapon : magazines/[0]/rounds loaded maximum = 0"
+    },
+    "weapon campaign age per round (battery)": {
+     "value": 0.005,
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater.weapon : barrels/[0]/campaign age generated per round = 0.005"
+    },
+    "weapon heat per round (field)": {
+     "value": 0.0,
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater.weapon : barrels/[0]/heat generated per round = 0"
+    },
+    "weapon heat per round function": {
+     "value": "heat_generated_per_round",
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater.weapon : barrels/[0]/heat generated per round function"
+    },
+    "weapon rate by heat": {
+     "value": "15 -> 3 (rounds per second 15,3) by heat^1.5",
+     "src": "plasma_repeater.weapon item/object/functions heat->heat_generated_per_round / heat->heat_driven_rate_of_fire (curves not exported; values from ports_h1/plasma_repeater.py, ManagedBlam Evaluate 2026-10-11)"
+    },
+    "weapon heat per tick firing": {
+     "value": 0.03,
+     "src": "plasma_repeater.weapon item/object/functions heat->heat_generated_per_round / heat->heat_driven_rate_of_fire (curves not exported; values from ports_h1/plasma_repeater.py, ManagedBlam Evaluate 2026-10-11)"
+    },
+    "weapon never overheats": {
+     "value": true,
+     "src": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater.weapon : secondary flags"
+    },
+    "shield multiplier": {
+     "value": 1.0,
+     "src": "globals\\globals.globals damage table [0] / materials: energy_shield_thin [energy_shield_thin > energy > default_material] -> plasma_fast x energy_shield_thin = 1"
+    },
+    "body multiplier": {
+     "value": 1.0,
+     "src": "globals\\globals.globals damage table [0] / materials: soft_organic_flesh [soft_organic_flesh > soft_organic > soft > default_material] -> plasma_fast x soft_organic = 1"
+    },
+    "hit vs shield": {
+     "value": 6.417,
+     "src": "damage per hit x shield multiplier"
+    },
+    "hit vs body": {
+     "value": 6.417,
+     "src": "damage per hit x body multiplier"
+    }
+   },
+   "flags": [
+    "shield never recharges (character shield recharge delay/time 0)",
+    "fight (9.77 s) outlasts body recharge delay (8 s, 0.35 of body)",
+    "rate falls with heat (15 -> 3/s); the manual vent (2.5 s) is not used"
+   ]
+  },
+  {
+   "direction": "player->enemy",
+   "attacker": "Spartan (player)",
+   "target": "Brute minor",
+   "weapon": "DMR",
+   "shots": 15,
+   "seconds": 4.667,
+   "inputs": {
+    "target legendary body vitality": {
+     "value": 175.0,
+     "src": "objects\\characters\\brute\\ai\\brute.character : vitality properties/[0]/legendary body vitality = 175"
+    },
+    "target legendary shield vitality": {
+     "value": 75.0,
+     "src": "objects\\characters\\brute\\ai\\brute.character : vitality properties/[0]/legendary shield vitality = 75"
+    },
+    "target shield recharge delay s": {
+     "value": 0.0,
+     "src": "objects\\characters\\brute\\ai\\brute.character : vitality properties/[0]/shield recharge delay time = 0"
+    },
+    "target body recharge delay s": {
+     "value": 8.0,
+     "src": "objects\\characters\\brute\\ai\\brute.character : vitality properties/[0]/body recharge delay time = 8"
+    },
+    "target body recharge fraction": {
+     "value": 0.35,
+     "src": "objects\\characters\\brute\\ai\\brute.character : vitality properties/[0]/body recharge fraction = 0.35"
+    },
+    "target shield material": {
+     "value": "energy_shield_thin",
+     "src": "objects\\characters\\brute\\brute.model : damage info/damage sections/[2] 'shield' shield material name"
+    },
+    "target body material": {
+     "value": "soft_organic_flesh",
+     "src": "objects\\characters\\brute\\brute.model : model materials ['body'] global material name"
+    },
+    "legendary enemy damage": {
+     "value": 1.6,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy damage = 1.6"
+    },
+    "legendary enemy vitality": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy vitality = 1"
+    },
+    "legendary enemy shield": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy shield = 1"
+    },
+    "legendary rate of fire": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. rate of fire = 1"
+    },
+    "legendary burst separation": {
+     "value": 0.5,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. burst separation = 0.5"
+    },
+    "weapon damage per hit (upper bound, mean)": {
+     "value": 17.5,
+     "src": "objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet.damage_effect : damage upper bound = 17.5,17.5"
+    },
+    "weapon projectiles per shot": {
+     "value": 1.0,
+     "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : barrels/[0]/projectiles per shot = 1"
+    },
+    "weapon general damage": {
+     "value": "bullet_fast",
+     "src": "objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet.damage_effect : general_damage"
+    },
+    "weapon specific damage": {
+     "value": "",
+     "src": "objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet.damage_effect : specific_damage"
+    },
+    "weapon rounds per second (first of pair)": {
+     "value": 3.0,
+     "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : barrels/[0]/firing/rounds per second = 3,3"
+    },
+    "weapon fire recovery time": {
+     "value": 0.33,
+     "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : barrels/[0]/firing/fire recovery time = 0.33"
+    },
+    "weapon magazine": {
+     "value": 15.0,
+     "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : magazines/[0]/rounds loaded maximum = 15"
+    },
+    "weapon campaign age per round (battery)": {
+     "value": 0.0,
+     "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : barrels/[0]/campaign age generated per round = 0"
+    },
+    "weapon heat per round (field)": {
+     "value": 0.0,
+     "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : barrels/[0]/heat generated per round = 0"
+    },
+    "weapon heat per round function": {
+     "value": "",
+     "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : barrels/[0]/heat generated per round function"
+    },
+    "weapon interval s": {
+     "value": 0.3333333333333333,
+     "src": "max(1 / rounds per second, fire recovery time)"
+    },
+    "weapon reload s": {
+     "value": 2.066666666666667,
+     "src": "objects\\characters\\spartans\\fp\\weapons\\rifle\\fp_dmr\\fp_dmr.model_animation_graph : animations [18] first_person:reload_empty allow interruption frame 62 (of 68 frames) / 30"
+    },
+    "shield multiplier": {
+     "value": 1.0,
+     "src": "globals\\globals.globals damage table [0] / materials: energy_shield_thin [energy_shield_thin > energy > default_material] -> bullet_fast x energy_shield_thin = 1"
+    },
+    "body multiplier": {
+     "value": 1.0,
+     "src": "globals\\globals.globals damage table [0] / materials: soft_organic_flesh [soft_organic_flesh > soft_organic > soft > default_material] -> bullet_fast x soft_organic = 1"
+    },
+    "hit vs shield": {
+     "value": 17.5,
+     "src": "damage per hit x shield multiplier"
+    },
+    "hit vs body": {
+     "value": 17.5,
+     "src": "damage per hit x body multiplier"
+    }
+   },
+   "flags": [
+    "shield never recharges (character shield recharge delay/time 0)"
+   ]
+  },
+  {
+   "direction": "enemy->player",
+   "attacker": "Brute minor",
+   "target": "Spartan (player)",
+   "weapon": "Spike Rifle",
+   "shots": 11,
+   "seconds": 1.25,
+   "seconds_paced": 1.875,
+   "inputs": {
+    "player body vitality": {
+     "value": 45.0,
+     "src": "objects\\characters\\spartans\\spartans.model : new damage info/[0]/body/maximum vitality = 45"
+    },
+    "player shield vitality": {
+     "value": 70.0,
+     "src": "objects\\characters\\spartans\\spartans.model : new damage info/[0]/shield/maximum shield vitality = 70"
+    },
+    "player shield recharge delay s": {
+     "value": 7.0,
+     "src": "objects\\characters\\spartans\\spartans.model : new damage info/[0]/shield/stun time = 7"
+    },
+    "player shield material": {
+     "value": "energy_shield_thin_hum_spartan",
+     "src": "objects\\characters\\spartans\\spartans.model : new damage info/[0]/shield/global shield material name"
+    },
+    "player body material": {
+     "value": "hard_metal_thin_hum_spartan",
+     "src": "objects\\characters\\spartans\\spartans.model : model materials ['body'] global material name"
+    },
+    "legendary enemy damage": {
+     "value": 1.6,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy damage = 1.6"
+    },
+    "legendary enemy vitality": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy vitality = 1"
+    },
+    "legendary enemy shield": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. enemy shield = 1"
+    },
+    "legendary rate of fire": {
+     "value": 1.0,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. rate of fire = 1"
+    },
+    "legendary burst separation": {
+     "value": 0.5,
+     "src": "globals\\globals.globals : difficulty/[0]/imposs. burst separation = 0.5"
+    },
+    "enemy default weapon": {
+     "value": "spike_rifle",
+     "src": "ai\\squad_templates\\sq_camp_brute_1.squad_template : cell templates/[0]/initial weapon/[0]/weapon type"
+    },
+    "weapon damage per hit (upper bound, mean)": {
+     "value": 9.0,
+     "src": "objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_rifle_shard.damage_effect : damage upper bound = 9,9"
+    },
+    "weapon projectiles per shot": {
+     "value": 1.0,
+     "src": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle.weapon : barrels/[0]/projectiles per shot = 1"
+    },
+    "weapon general damage": {
+     "value": "plasma_slow",
+     "src": "objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_rifle_shard.damage_effect : general_damage"
+    },
+    "weapon specific damage": {
+     "value": "",
+     "src": "objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_rifle_shard.damage_effect : specific_damage"
+    },
+    "firing pattern spike_rifle [23] really accurate rate of fire": {
+     "value": 8.0,
+     "src": "ai\\generic.character : firing pattern properties/[23]/firing patterns/[1]/rate of fire = 8"
+    },
+    "firing pattern spike_rifle [23] really accurate burst duration (mean)": {
+     "value": 1.0,
+     "src": "ai\\generic.character : firing pattern properties/[23]/firing patterns/[1]/burst duration = 0.8,1.2"
+    },
+    "firing pattern spike_rifle [23] really accurate burst separation (mean)": {
+     "value": 1.5,
+     "src": "ai\\generic.character : firing pattern properties/[23]/firing patterns/[1]/burst separation = 0.75,2.25"
+    },
+    "firing pattern spike_rifle [23] really accurate weapon damage modifier": {
+     "value": 0.0,
+     "src": "ai\\generic.character : firing pattern properties/[23]/firing patterns/[1]/weapon damage modifier = 0"
+    },
+    "firing pattern spike_rifle inaccurate rate of fire (Legendary starts at accuracy 0.3)": {
+     "value": 3.5,
+     "src": "ai\\generic.character : firing pattern properties/[23]/firing patterns/[0]/rate of fire = 3.5"
+    },
+    "legendary accuracy bounds (first)": {
+     "value": 0.3,
+     "src": "ai\\generic.character : weapons properties/[23]/legendary accuracy bounds = 0.3,1"
+    },
+    "legendary accuracy time s": {
+     "value": 3.0,
+     "src": "ai\\generic.character : weapons properties/[23]/legendary accuracy time = 3"
+    },
+    "weapon rounds per second (first of pair)": {
+     "value": 8.0,
+     "src": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle.weapon : barrels/[0]/firing/rounds per second = 8,8"
+    },
+    "ai shots per second": {
+     "value": 8.0,
+     "src": "pattern rate of fire (0 = weapon rate) x legendary rate of fire, capped by the weapon rounds per second"
+    },
+    "ai burst separation s": {
+     "value": 0.75,
+     "src": "pattern burst separation x legendary burst separation"
+    },
+    "ai weapon damage modifier used": {
+     "value": 1.0,
+     "src": "pattern weapon damage modifier (0 = unset -> 1)"
+    },
+    "shield multiplier": {
+     "value": 1.6,
+     "src": "globals\\globals.globals damage table [0] / materials: energy_shield_thin_hum_spartan [energy_shield_thin_hum_spartan > energy_shield_thin_hum > energy_shield_thin > energy > default_material] -> plasma_slow x energy_shield_thin = 1.6; plasma_slow x energy_shield_thin_player: no row (1)"
+    },
+    "body multiplier": {
+     "value": 0.4,
+     "src": "globals\\globals.globals damage table [0] / materials: hard_metal_thin_hum_spartan [hard_metal_thin_hum_spartan > hard_metal_thin_hum > hard_metal_thin > hard > default_material] -> plasma_slow x hard_metal_thin = 0.4; plasma_slow x hard_metal_thin_player: no row (1)"
+    },
+    "hit vs shield": {
+     "value": 23.040000000000003,
+     "src": "damage x shield multiplier x legendary enemy damage x modifier"
+    },
+    "hit vs body": {
+     "value": 5.760000000000001,
+     "src": "damage x body multiplier x legendary enemy damage x modifier"
+    }
+   },
+   "flags": [
+    "first 3 s of a fight the AI fires between the inaccurate and really accurate patterns (accuracy 0.3 -> 1)"
+   ]
+  }
+ ],
+ "notes": [
+  "Legendary = the globals difficulty \"imposs.\" column: enemy damage 1.6, enemy vitality / shield 1 (the characters carry their own legendary pools), rate of fire 1, burst separation 0.5.",
+  "Enemy pools are the character vitality properties (legendary body / shield); they replace the model numbers (elite_ai.model 50 / 79, brute.model damage info 60).",
+  "Every damage-table row found multiplies (general and specific damage group x general and specific armour, missing = 1); armours come up the globals material parent chain. Reach has no *_player rows, so the Spartan / Elite specific armours add nothing.",
+  "The Reach Brute body is soft_organic_flesh (model materials \"body\"); its armour is the damage section \"shield\" with energy_shield_thin. tough_organic_flesh_brute is only the biped physics / indirect (area) material, not used for direct body shots.",
+  "The Brute armour does not recharge (character shield recharge delay and time 0); its BODY recharges 35% after 8 s, flagged where a fight outlasts it.",
+  "AI fire = the \"really accurate\" firing pattern (Legendary accuracy reaches 1 within 3 s); burst duration / separation = the mean of their bounds; co-op modifiers not applied (solo).",
+  "Default AI weapons come from the campaign squad templates (Elite minor: plasma rifle; Brute: spike rifle); the character tags only list weapon handling.",
+  "Reload times are the first-person reload_empty \"allow interruption\" frame / 30 (Reach reloads are animation-driven).",
+  "Plasma Repeater heat curves are not in the XML export; the B3 research values are used (0.03 heat a tick firing, rate 15 + (3-15) x heat^1.5, never overheats). Holding the trigger is modelled; a manual vent (2.5 s) is not.",
+  "Bloom / spread ignored (every shot hits), body shots only."
+ ]
+}

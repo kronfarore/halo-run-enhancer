@@ -1,0 +1,955 @@
+{
+ "game": "Halo 4",
+ "difficulty": "Legendary",
+ "rows": [
+  {
+   "direction": "player->enemy",
+   "attacker": "Player",
+   "target": "Elite (minor)",
+   "weapon": "Assault Rifle",
+   "shots": 26,
+   "seconds": 2.5,
+   "inputs": {
+    "character chain": "objects\\characters\\storm_elite\\ai\\storm_elite.character -> ai\\generic.character",
+    "enemy body (legendary)": [
+     100.0,
+     "objects\\characters\\storm_elite\\ai\\storm_elite.character: vitality properties/[0]/legendary body|shield vitality"
+    ],
+    "enemy shield (legendary)": [
+     93.0,
+     "objects\\characters\\storm_elite\\ai\\storm_elite.character: vitality properties/[0]/legendary body|shield vitality"
+    ],
+    "normal body/shield (not used)": [
+     40.0,
+     93.0
+    ],
+    "difficulty enemy vitality": [
+     1.0,
+     "globals\\globals.globals: difficulty/[0]/imposs. enemy vitality"
+    ],
+    "difficulty enemy shield": [
+     1.0,
+     "globals\\globals.globals: difficulty/[0]/imposs. enemy shield"
+    ],
+    "enemy shield recharge delay": [
+     8.0,
+     "objects\\characters\\storm_elite\\ai\\storm_elite.character: vitality properties/[0]/shield recharge delay time"
+    ],
+    "player damage_scale": [
+     0.0,
+     "0 = 1 (tool.exe doc)"
+    ],
+    "enemy hlmt": "objects\\characters\\storm_elite_ai\\storm_elite_ai.model (from objects\\characters\\storm_elite_ai\\storm_elite_ai.biped)",
+    "enemy hlmt pools (overridden by the character)": [
+     49.999969,
+     79.0
+    ],
+    "enemy shield material": "energy_shield_thin_cov_elite",
+    "enemy body material": "hard_metal_thin_cov_elite (model materials (*body*))",
+    "weapon": "objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle.weapon",
+    "rounds per second": [
+     10.0,
+     "objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle.weapon: barrels/[0]/firing/rounds per second"
+    ],
+    "fire recovery time": [
+     0.0666667,
+     "objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle.weapon: barrels/[0]/firing/fire recovery time"
+    ],
+    "shots per fire": [
+     0,
+     "objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle.weapon: barrels/[0]/firing/shots per fire"
+    ],
+    "interval used": 0.1,
+    "magazine": [
+     32,
+     "objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle.weapon: magazines/[0]/rounds loaded maximum"
+    ],
+    "reload": [
+     2.2666666666666666,
+     "objects\\characters\\storm_fp\\weapons\\rifle\\fp_assault_rifle\\storm_fp_assault_rifle.model_animation_graph: definitions/animations/[18]/shared animation data/[0]/frame count = 68 (/30 fps)"
+    ],
+    "heat per round / overheat at / recovery threshold / overheated loss per s": [
+     0.0,
+     1.0,
+     0.0,
+     0.0
+    ],
+    "overheat pause": [
+     0.0,
+     "(overheated threshold - heat recovery threshold) / overheated heat loss per second"
+    ],
+    "damage per hit": [
+     7.5,
+     "objects\\weapons\\rifle\\storm_assault_rifle\\projectiles\\storm_assault_rifle_bullet.damage_effect: damage upper bound (mean of pair)"
+    ],
+    "projectile": "objects\\weapons\\rifle\\storm_assault_rifle\\projectiles\\storm_assault_rifle_bullet.projectile: impact damage",
+    "damage groups (general / specific)": [
+     "bullet_slow",
+     ""
+    ],
+    "shield multiplier": {
+     "material": "energy_shield_thin_cov_elite",
+     "materials chain": "[187] energy_shield_thin_cov_elite -> [186] energy_shield_thin_cov -> [183] energy_shield_thin -> [182] energy -> [0] default_material",
+     "general armor": "energy_shield_thin",
+     "specific armor": "energy_shield_thin_player",
+     "rows": [
+      "bullet_slow x energy_shield_thin = 1 (damage table/[0]/damage groups/[1]/armor modifiers/[21]/damage multiplier)",
+      "bullet_slow x energy_shield_thin_player: no row (1)"
+     ],
+     "multiplier": 1.0
+    },
+    "body multiplier": {
+     "material": "hard_metal_thin_cov_elite",
+     "materials chain": "[93] hard_metal_thin_cov_elite -> [90] hard_metal_thin_cov -> [77] hard_metal_thin -> [76] hard -> [0] default_material",
+     "general armor": "hard_metal_thin",
+     "specific armor": "hard_metal_thin_player",
+     "rows": [
+      "bullet_slow x hard_metal_thin = 1 (damage table/[0]/damage groups/[1]/armor modifiers/[9]/damage multiplier)",
+      "bullet_slow x hard_metal_thin_player: no row (1)"
+     ],
+     "multiplier": 1.0
+    },
+    "hit on shield": 7.5,
+    "hit on body": 7.5
+   },
+   "flags": []
+  },
+  {
+   "direction": "player->enemy",
+   "attacker": "Player",
+   "target": "Elite (minor)",
+   "weapon": "Storm Rifle",
+   "shots": 25,
+   "seconds": 8.2,
+   "inputs": {
+    "character chain": "objects\\characters\\storm_elite\\ai\\storm_elite.character -> ai\\generic.character",
+    "enemy body (legendary)": [
+     100.0,
+     "objects\\characters\\storm_elite\\ai\\storm_elite.character: vitality properties/[0]/legendary body|shield vitality"
+    ],
+    "enemy shield (legendary)": [
+     93.0,
+     "objects\\characters\\storm_elite\\ai\\storm_elite.character: vitality properties/[0]/legendary body|shield vitality"
+    ],
+    "normal body/shield (not used)": [
+     40.0,
+     93.0
+    ],
+    "difficulty enemy vitality": [
+     1.0,
+     "globals\\globals.globals: difficulty/[0]/imposs. enemy vitality"
+    ],
+    "difficulty enemy shield": [
+     1.0,
+     "globals\\globals.globals: difficulty/[0]/imposs. enemy shield"
+    ],
+    "enemy shield recharge delay": [
+     8.0,
+     "objects\\characters\\storm_elite\\ai\\storm_elite.character: vitality properties/[0]/shield recharge delay time"
+    ],
+    "player damage_scale": [
+     0.0,
+     "0 = 1 (tool.exe doc)"
+    ],
+    "enemy hlmt": "objects\\characters\\storm_elite_ai\\storm_elite_ai.model (from objects\\characters\\storm_elite_ai\\storm_elite_ai.biped)",
+    "enemy hlmt pools (overridden by the character)": [
+     49.999969,
+     79.0
+    ],
+    "enemy shield material": "energy_shield_thin_cov_elite",
+    "enemy body material": "hard_metal_thin_cov_elite (model materials (*body*))",
+    "weapon": "objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine.weapon",
+    "rounds per second": [
+     10.0,
+     "objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine.weapon: barrels/[0]/firing/rounds per second"
+    ],
+    "fire recovery time": [
+     0.0666667,
+     "objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine.weapon: barrels/[0]/firing/fire recovery time"
+    ],
+    "shots per fire": [
+     0,
+     "objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine.weapon: barrels/[0]/firing/shots per fire"
+    ],
+    "interval used": 0.1,
+    "magazine": [
+     0,
+     "objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine.weapon: magazines/[0]/rounds loaded maximum"
+    ],
+    "reload": [
+     0.0,
+     null
+    ],
+    "heat per round / overheat at / recovery threshold / overheated loss per s": [
+     0.09,
+     1.0,
+     0.1,
+     0.3
+    ],
+    "overheat pause": [
+     3.0,
+     "(overheated threshold - heat recovery threshold) / overheated heat loss per second"
+    ],
+    "damage per hit": [
+     8.0,
+     "objects\\weapons\\rifle\\storm_assault_carbine\\projectiles\\storm_assault_carbine_bolt.damage_effect: damage upper bound (mean of pair)"
+    ],
+    "projectile": "objects\\weapons\\rifle\\storm_assault_carbine\\projectiles\\storm_assault_carbine_bolt.projectile: impact damage",
+    "damage groups (general / specific)": [
+     "plasma_fast",
+     ""
+    ],
+    "shield multiplier": {
+     "material": "energy_shield_thin_cov_elite",
+     "materials chain": "[187] energy_shield_thin_cov_elite -> [186] energy_shield_thin_cov -> [183] energy_shield_thin -> [182] energy -> [0] default_material",
+     "general armor": "energy_shield_thin",
+     "specific armor": "energy_shield_thin_player",
+     "rows": [
+      "plasma_fast x energy_shield_thin = 1 (damage table/[0]/damage groups/[4]/armor modifiers/[21]/damage multiplier)",
+      "plasma_fast x energy_shield_thin_player: no row (1)"
+     ],
+     "multiplier": 1.0
+    },
+    "body multiplier": {
+     "material": "hard_metal_thin_cov_elite",
+     "materials chain": "[93] hard_metal_thin_cov_elite -> [90] hard_metal_thin_cov -> [77] hard_metal_thin -> [76] hard -> [0] default_material",
+     "general armor": "hard_metal_thin",
+     "specific armor": "hard_metal_thin_player",
+     "rows": [
+      "plasma_fast x hard_metal_thin = 1 (damage table/[0]/damage groups/[4]/armor modifiers/[9]/damage multiplier)",
+      "plasma_fast x hard_metal_thin_player: no row (1)"
+     ],
+     "multiplier": 1.0
+    },
+    "hit on shield": 8.0,
+    "hit on body": 8.0
+   },
+   "flags": [
+    "fight outlasts the target's shield recharge delay (8 s)",
+    "includes overheat 3.00 s"
+   ]
+  },
+  {
+   "direction": "player->enemy",
+   "attacker": "Player",
+   "target": "Elite (minor)",
+   "weapon": "Battle Rifle",
+   "shots": 34,
+   "seconds": 4.033,
+   "inputs": {
+    "character chain": "objects\\characters\\storm_elite\\ai\\storm_elite.character -> ai\\generic.character",
+    "enemy body (legendary)": [
+     100.0,
+     "objects\\characters\\storm_elite\\ai\\storm_elite.character: vitality properties/[0]/legendary body|shield vitality"
+    ],
+    "enemy shield (legendary)": [
+     93.0,
+     "objects\\characters\\storm_elite\\ai\\storm_elite.character: vitality properties/[0]/legendary body|shield vitality"
+    ],
+    "normal body/shield (not used)": [
+     40.0,
+     93.0
+    ],
+    "difficulty enemy vitality": [
+     1.0,
+     "globals\\globals.globals: difficulty/[0]/imposs. enemy vitality"
+    ],
+    "difficulty enemy shield": [
+     1.0,
+     "globals\\globals.globals: difficulty/[0]/imposs. enemy shield"
+    ],
+    "enemy shield recharge delay": [
+     8.0,
+     "objects\\characters\\storm_elite\\ai\\storm_elite.character: vitality properties/[0]/shield recharge delay time"
+    ],
+    "player damage_scale": [
+     0.0,
+     "0 = 1 (tool.exe doc)"
+    ],
+    "enemy hlmt": "objects\\characters\\storm_elite_ai\\storm_elite_ai.model (from objects\\characters\\storm_elite_ai\\storm_elite_ai.biped)",
+    "enemy hlmt pools (overridden by the character)": [
+     49.999969,
+     79.0
+    ],
+    "enemy shield material": "energy_shield_thin_cov_elite",
+    "enemy body material": "hard_metal_thin_cov_elite (model materials (*body*))",
+    "weapon": "objects\\weapons\\rifle\\storm_br\\storm_br.weapon",
+    "rounds per second": [
+     30.0,
+     "objects\\weapons\\rifle\\storm_br\\storm_br.weapon: barrels/[0]/firing/rounds per second"
+    ],
+    "fire recovery time": [
+     0.3,
+     "objects\\weapons\\rifle\\storm_br\\storm_br.weapon: barrels/[0]/firing/fire recovery time"
+    ],
+    "shots per fire": [
+     3,
+     "objects\\weapons\\rifle\\storm_br\\storm_br.weapon: barrels/[0]/firing/shots per fire"
+    ],
+    "interval used": 0.03333333333333333,
+    "magazine": [
+     36,
+     "objects\\weapons\\rifle\\storm_br\\storm_br.weapon: magazines/[0]/rounds loaded maximum"
+    ],
+    "reload": [
+     2.2666666666666666,
+     "objects\\characters\\storm_fp\\weapons\\rifle\\fp_br\\storm_fp_br.model_animation_graph: definitions/animations/[16]/shared animation data/[0]/frame count = 68 (/30 fps)"
+    ],
+    "heat per round / overheat at / recovery threshold / overheated loss per s": [
+     0.0,
+     1.0,
+     0.0,
+     0.0
+    ],
+    "overheat pause": [
+     0.0,
+     "(overheated threshold - heat recovery threshold) / overheated heat loss per second"
+    ],
+    "damage per hit": [
+     5.8333,
+     "objects\\weapons\\rifle\\storm_br\\projectiles\\storm_br_bullet.damage_effect: damage upper bound (mean of pair)"
+    ],
+    "projectile": "objects\\weapons\\rifle\\storm_br\\projectiles\\storm_br_bullet.projectile: impact damage",
+    "damage groups (general / specific)": [
+     "bullet_fast",
+     ""
+    ],
+    "shield multiplier": {
+     "material": "energy_shield_thin_cov_elite",
+     "materials chain": "[187] energy_shield_thin_cov_elite -> [186] energy_shield_thin_cov -> [183] energy_shield_thin -> [182] energy -> [0] default_material",
+     "general armor": "energy_shield_thin",
+     "specific armor": "energy_shield_thin_player",
+     "rows": [
+      "bullet_fast x energy_shield_thin = 1 (damage table/[0]/damage groups/[3]/armor modifiers/[21]/damage multiplier)",
+      "bullet_fast x energy_shield_thin_player: no row (1)"
+     ],
+     "multiplier": 1.0
+    },
+    "body multiplier": {
+     "material": "hard_metal_thin_cov_elite",
+     "materials chain": "[93] hard_metal_thin_cov_elite -> [90] hard_metal_thin_cov -> [77] hard_metal_thin -> [76] hard -> [0] default_material",
+     "general armor": "hard_metal_thin",
+     "specific armor": "hard_metal_thin_player",
+     "rows": [
+      "bullet_fast x hard_metal_thin = 1 (damage table/[0]/damage groups/[3]/armor modifiers/[9]/damage multiplier)",
+      "bullet_fast x hard_metal_thin_player: no row (1)"
+     ],
+     "multiplier": 1.0
+    },
+    "hit on shield": 5.8333,
+    "hit on body": 5.8333
+   },
+   "flags": [
+    "burst weapon: 3 rounds at 1/30 s, next burst 0.3 s (fire recovery time) after the last round; soft recovery (queueing) ignored"
+   ]
+  },
+  {
+   "direction": "enemy->player",
+   "attacker": "Elite (minor)",
+   "target": "Player",
+   "weapon": "storm_assault_carbine",
+   "shots": 12,
+   "seconds": 0.917,
+   "seconds_paced": 0.917,
+   "inputs": {
+    "weapon": "objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine.weapon (objects\\characters\\storm_elite\\ai\\storm_elite.character: general properties/[0]/initial primary weapon)",
+    "damage per hit": [
+     8.0,
+     "objects\\weapons\\rifle\\storm_assault_carbine\\projectiles\\storm_assault_carbine_bolt.damage_effect: damage upper bound (mean of pair)"
+    ],
+    "projectile": "objects\\weapons\\rifle\\storm_assault_carbine\\projectiles\\storm_assault_carbine_bolt.projectile",
+    "damage groups (general / specific)": [
+     "plasma_fast",
+     ""
+    ],
+    "difficulty enemy damage": [
+     1.3,
+     "globals\\globals.globals: difficulty/[0]/imposs. enemy damage"
+    ],
+    "weapon damage modifier (end pattern; 0 = none)": 1.0,
+    "shots per second (end pattern)": 12.0,
+    "pattern rate of fire (end; 0 = held -> weapon rate)": 12.0,
+    "burst duration (end)": 0.975,
+    "burst separation (end, x difficulty)": 1.5,
+    "start-of-series pattern": {
+     "accuracy": 0.5,
+     "shots per second": 8.125,
+     "burst duration": 0.8625,
+     "burst separation": 1.5,
+     "weapon damage modifier": 1.0,
+     "pattern rate of fire": 8.125
+    },
+    "shield multiplier": {
+     "material": "energy_shield_thin_hum_spartan",
+     "materials chain": "[185] energy_shield_thin_hum_spartan -> [184] energy_shield_thin_hum -> [183] energy_shield_thin -> [182] energy -> [0] default_material",
+     "general armor": "energy_shield_thin",
+     "specific armor": "energy_shield_thin_player",
+     "rows": [
+      "plasma_fast x energy_shield_thin = 1 (damage table/[0]/damage groups/[4]/armor modifiers/[21]/damage multiplier)",
+      "plasma_fast x energy_shield_thin_player: no row (1)"
+     ],
+     "multiplier": 1.0
+    },
+    "body multiplier": {
+     "material": "hard_metal_thin_hum_spartan",
+     "materials chain": "[80] hard_metal_thin_hum_spartan -> [79] hard_metal_thin_hum -> [77] hard_metal_thin -> [76] hard -> [0] default_material",
+     "general armor": "hard_metal_thin",
+     "specific armor": "hard_metal_thin_player",
+     "rows": [
+      "plasma_fast x hard_metal_thin = 1 (damage table/[0]/damage groups/[4]/armor modifiers/[9]/damage multiplier)",
+      "plasma_fast x hard_metal_thin_player: no row (1)"
+     ],
+     "multiplier": 1.0
+    },
+    "hit on shield": 10.4,
+    "hit on body": 10.4,
+    "legendary accuracy bounds": [
+     [
+      0.5,
+      1.0
+     ],
+     "ai\\generic.character: weapons properties/[15]/legendary accuracy bounds"
+    ],
+    "legendary accuracy time": [
+     3.0,
+     "ai\\generic.character: weapons properties/[15]/legendary accuracy time"
+    ],
+    "firing patterns [0] inaccurate / [1] really accurate": [
+     [
+      {
+       "rate of fire": 4.25,
+       "burst duration": 0.75,
+       "burst separation": 1.5,
+       "weapon damage modifier": 0.0
+      },
+      {
+       "rate of fire": 12.0,
+       "burst duration": 0.975,
+       "burst separation": 1.5,
+       "weapon damage modifier": 0.0
+      }
+     ],
+     "ai\\generic.character: firing pattern properties/[15]/firing patterns/[0..1] (burst duration / separation = mean of the bounds)"
+    ],
+    "difficulty rate of fire": [
+     1.0,
+     "globals\\globals.globals: difficulty/[0]/imposs. rate of fire"
+    ],
+    "difficulty burst separation": [
+     1.0,
+     "globals\\globals.globals: difficulty/[0]/imposs. burst separation"
+    ],
+    "weapon rounds per second": [
+     10.0,
+     "objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine.weapon: barrels/[0]/firing/rounds per second"
+    ],
+    "weapon fire recovery time": [
+     0.0666667,
+     "objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine.weapon: barrels/[0]/firing/fire recovery time"
+    ],
+    "player hlmt": "objects\\characters\\storm_masterchief\\storm_masterchief.model (from objects\\characters\\storm_masterchief\\storm_masterchief.biped: unit/object/model)",
+    "player body": [
+     44.999990000000004,
+     "objects\\characters\\storm_masterchief\\storm_masterchief.model: damage info/maximum vitality 70 x body section vitality percentage 0.642857"
+    ],
+    "player shield": [
+     70.0,
+     "objects\\characters\\storm_masterchief\\storm_masterchief.model: damage info/maximum vitality 70 x shield section 1"
+    ],
+    "player shield recharge delay": [
+     6.0,
+     "shield section stun time (root 6 / legacy 7)"
+    ],
+    "player shield material": "energy_shield_thin_hum_spartan",
+    "player body material": "hard_metal_thin_hum_spartan (model materials (*body*))"
+   },
+   "flags": [
+    "player shield recharge delay: root shield-section stun time 6 s vs legacy block 7 s; flagging against the shorter (6 s)",
+    "firing patterns [2..3] exist (AI-trait-weapon overrides per tool.exe: \"VALID_INDEX(block_index-2, k_num_ai_trait_weapon-2)\"); not used",
+    "AI accuracy runs 0.5 -> 1 over 3 s (Legendary); main numbers use the END pattern (accuracy 1); at the START (accuracy 0.5): 12 shots, held 1.35 s, paced 2.73 s",
+    "the AI weapon generates heat (0.09 per round); AI overheating is not modelled"
+   ]
+  },
+  {
+   "direction": "player->enemy",
+   "attacker": "Player",
+   "target": "Knight",
+   "weapon": "Assault Rifle",
+   "shots": 43,
+   "seconds": 6.367,
+   "inputs": {
+    "character chain": "objects\\characters\\storm_knight\\ai\\storm_knight.character -> ai\\generic.character",
+    "enemy body (legendary)": [
+     120.0,
+     "objects\\characters\\storm_knight\\ai\\storm_knight.character: vitality properties/[0]/legendary body|shield vitality"
+    ],
+    "enemy shield (legendary)": [
+     200.0,
+     "objects\\characters\\storm_knight\\ai\\storm_knight.character: vitality properties/[0]/legendary body|shield vitality"
+    ],
+    "normal body/shield (not used)": [
+     70.0,
+     80.0
+    ],
+    "difficulty enemy vitality": [
+     1.0,
+     "globals\\globals.globals: difficulty/[0]/imposs. enemy vitality"
+    ],
+    "difficulty enemy shield": [
+     1.0,
+     "globals\\globals.globals: difficulty/[0]/imposs. enemy shield"
+    ],
+    "enemy shield recharge delay": [
+     4.0,
+     "objects\\characters\\storm_knight\\ai\\storm_knight.character: vitality properties/[0]/shield recharge delay time"
+    ],
+    "player damage_scale": [
+     0.0,
+     "0 = 1 (tool.exe doc)"
+    ],
+    "enemy hlmt": "objects\\characters\\storm_knight\\storm_knight.model (from objects\\characters\\storm_knight\\storm_knight.biped)",
+    "enemy hlmt pools (overridden by the character)": [
+     63.2911,
+     100.0
+    ],
+    "enemy shield material": "energy_shield_thin_for",
+    "enemy body material": "hard_metal_thin_for (model materials (*body*))",
+    "weapon": "objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle.weapon",
+    "rounds per second": [
+     10.0,
+     "objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle.weapon: barrels/[0]/firing/rounds per second"
+    ],
+    "fire recovery time": [
+     0.0666667,
+     "objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle.weapon: barrels/[0]/firing/fire recovery time"
+    ],
+    "shots per fire": [
+     0,
+     "objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle.weapon: barrels/[0]/firing/shots per fire"
+    ],
+    "interval used": 0.1,
+    "magazine": [
+     32,
+     "objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle.weapon: magazines/[0]/rounds loaded maximum"
+    ],
+    "reload": [
+     2.2666666666666666,
+     "objects\\characters\\storm_fp\\weapons\\rifle\\fp_assault_rifle\\storm_fp_assault_rifle.model_animation_graph: definitions/animations/[18]/shared animation data/[0]/frame count = 68 (/30 fps)"
+    ],
+    "heat per round / overheat at / recovery threshold / overheated loss per s": [
+     0.0,
+     1.0,
+     0.0,
+     0.0
+    ],
+    "overheat pause": [
+     0.0,
+     "(overheated threshold - heat recovery threshold) / overheated heat loss per second"
+    ],
+    "damage per hit": [
+     7.5,
+     "objects\\weapons\\rifle\\storm_assault_rifle\\projectiles\\storm_assault_rifle_bullet.damage_effect: damage upper bound (mean of pair)"
+    ],
+    "projectile": "objects\\weapons\\rifle\\storm_assault_rifle\\projectiles\\storm_assault_rifle_bullet.projectile: impact damage",
+    "damage groups (general / specific)": [
+     "bullet_slow",
+     ""
+    ],
+    "shield multiplier": {
+     "material": "energy_shield_thin_for",
+     "materials chain": "[190] energy_shield_thin_for -> [183] energy_shield_thin -> [182] energy -> [0] default_material",
+     "general armor": "energy_shield_thin",
+     "specific armor": "",
+     "rows": [
+      "bullet_slow x energy_shield_thin = 1 (damage table/[0]/damage groups/[1]/armor modifiers/[21]/damage multiplier)"
+     ],
+     "multiplier": 1.0
+    },
+    "body multiplier": {
+     "material": "hard_metal_thin_for",
+     "materials chain": "[99] hard_metal_thin_for -> [77] hard_metal_thin -> [76] hard -> [0] default_material",
+     "general armor": "hard_metal_thin",
+     "specific armor": "",
+     "rows": [
+      "bullet_slow x hard_metal_thin = 1 (damage table/[0]/damage groups/[1]/armor modifiers/[9]/damage multiplier)"
+     ],
+     "multiplier": 1.0
+    },
+    "hit on shield": 7.5,
+    "hit on body": 7.5
+   },
+   "flags": [
+    "Knight hlmt: root damage info (used) shield energy_shield_thin_for / indirect hard_metal_thin_for, legacy `new damage info` says shield energy_shield_thin_cov_elite / indirect hard_metal_thin_cov_elite",
+    "fight outlasts the target's shield recharge delay (4 s)",
+    "includes reload(s) 2.27 s"
+   ]
+  },
+  {
+   "direction": "player->enemy",
+   "attacker": "Player",
+   "target": "Knight",
+   "weapon": "Storm Rifle",
+   "shots": 40,
+   "seconds": 12.6,
+   "inputs": {
+    "character chain": "objects\\characters\\storm_knight\\ai\\storm_knight.character -> ai\\generic.character",
+    "enemy body (legendary)": [
+     120.0,
+     "objects\\characters\\storm_knight\\ai\\storm_knight.character: vitality properties/[0]/legendary body|shield vitality"
+    ],
+    "enemy shield (legendary)": [
+     200.0,
+     "objects\\characters\\storm_knight\\ai\\storm_knight.character: vitality properties/[0]/legendary body|shield vitality"
+    ],
+    "normal body/shield (not used)": [
+     70.0,
+     80.0
+    ],
+    "difficulty enemy vitality": [
+     1.0,
+     "globals\\globals.globals: difficulty/[0]/imposs. enemy vitality"
+    ],
+    "difficulty enemy shield": [
+     1.0,
+     "globals\\globals.globals: difficulty/[0]/imposs. enemy shield"
+    ],
+    "enemy shield recharge delay": [
+     4.0,
+     "objects\\characters\\storm_knight\\ai\\storm_knight.character: vitality properties/[0]/shield recharge delay time"
+    ],
+    "player damage_scale": [
+     0.0,
+     "0 = 1 (tool.exe doc)"
+    ],
+    "enemy hlmt": "objects\\characters\\storm_knight\\storm_knight.model (from objects\\characters\\storm_knight\\storm_knight.biped)",
+    "enemy hlmt pools (overridden by the character)": [
+     63.2911,
+     100.0
+    ],
+    "enemy shield material": "energy_shield_thin_for",
+    "enemy body material": "hard_metal_thin_for (model materials (*body*))",
+    "weapon": "objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine.weapon",
+    "rounds per second": [
+     10.0,
+     "objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine.weapon: barrels/[0]/firing/rounds per second"
+    ],
+    "fire recovery time": [
+     0.0666667,
+     "objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine.weapon: barrels/[0]/firing/fire recovery time"
+    ],
+    "shots per fire": [
+     0,
+     "objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine.weapon: barrels/[0]/firing/shots per fire"
+    ],
+    "interval used": 0.1,
+    "magazine": [
+     0,
+     "objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine.weapon: magazines/[0]/rounds loaded maximum"
+    ],
+    "reload": [
+     0.0,
+     null
+    ],
+    "heat per round / overheat at / recovery threshold / overheated loss per s": [
+     0.09,
+     1.0,
+     0.1,
+     0.3
+    ],
+    "overheat pause": [
+     3.0,
+     "(overheated threshold - heat recovery threshold) / overheated heat loss per second"
+    ],
+    "damage per hit": [
+     8.0,
+     "objects\\weapons\\rifle\\storm_assault_carbine\\projectiles\\storm_assault_carbine_bolt.damage_effect: damage upper bound (mean of pair)"
+    ],
+    "projectile": "objects\\weapons\\rifle\\storm_assault_carbine\\projectiles\\storm_assault_carbine_bolt.projectile: impact damage",
+    "damage groups (general / specific)": [
+     "plasma_fast",
+     ""
+    ],
+    "shield multiplier": {
+     "material": "energy_shield_thin_for",
+     "materials chain": "[190] energy_shield_thin_for -> [183] energy_shield_thin -> [182] energy -> [0] default_material",
+     "general armor": "energy_shield_thin",
+     "specific armor": "",
+     "rows": [
+      "plasma_fast x energy_shield_thin = 1 (damage table/[0]/damage groups/[4]/armor modifiers/[21]/damage multiplier)"
+     ],
+     "multiplier": 1.0
+    },
+    "body multiplier": {
+     "material": "hard_metal_thin_for",
+     "materials chain": "[99] hard_metal_thin_for -> [77] hard_metal_thin -> [76] hard -> [0] default_material",
+     "general armor": "hard_metal_thin",
+     "specific armor": "",
+     "rows": [
+      "plasma_fast x hard_metal_thin = 1 (damage table/[0]/damage groups/[4]/armor modifiers/[9]/damage multiplier)"
+     ],
+     "multiplier": 1.0
+    },
+    "hit on shield": 8.0,
+    "hit on body": 8.0
+   },
+   "flags": [
+    "Knight hlmt: root damage info (used) shield energy_shield_thin_for / indirect hard_metal_thin_for, legacy `new damage info` says shield energy_shield_thin_cov_elite / indirect hard_metal_thin_cov_elite",
+    "fight outlasts the target's shield recharge delay (4 s)",
+    "includes overheat 3.00 s"
+   ]
+  },
+  {
+   "direction": "player->enemy",
+   "attacker": "Player",
+   "target": "Knight",
+   "weapon": "Battle Rifle",
+   "shots": 55,
+   "seconds": 8.567,
+   "inputs": {
+    "character chain": "objects\\characters\\storm_knight\\ai\\storm_knight.character -> ai\\generic.character",
+    "enemy body (legendary)": [
+     120.0,
+     "objects\\characters\\storm_knight\\ai\\storm_knight.character: vitality properties/[0]/legendary body|shield vitality"
+    ],
+    "enemy shield (legendary)": [
+     200.0,
+     "objects\\characters\\storm_knight\\ai\\storm_knight.character: vitality properties/[0]/legendary body|shield vitality"
+    ],
+    "normal body/shield (not used)": [
+     70.0,
+     80.0
+    ],
+    "difficulty enemy vitality": [
+     1.0,
+     "globals\\globals.globals: difficulty/[0]/imposs. enemy vitality"
+    ],
+    "difficulty enemy shield": [
+     1.0,
+     "globals\\globals.globals: difficulty/[0]/imposs. enemy shield"
+    ],
+    "enemy shield recharge delay": [
+     4.0,
+     "objects\\characters\\storm_knight\\ai\\storm_knight.character: vitality properties/[0]/shield recharge delay time"
+    ],
+    "player damage_scale": [
+     0.0,
+     "0 = 1 (tool.exe doc)"
+    ],
+    "enemy hlmt": "objects\\characters\\storm_knight\\storm_knight.model (from objects\\characters\\storm_knight\\storm_knight.biped)",
+    "enemy hlmt pools (overridden by the character)": [
+     63.2911,
+     100.0
+    ],
+    "enemy shield material": "energy_shield_thin_for",
+    "enemy body material": "hard_metal_thin_for (model materials (*body*))",
+    "weapon": "objects\\weapons\\rifle\\storm_br\\storm_br.weapon",
+    "rounds per second": [
+     30.0,
+     "objects\\weapons\\rifle\\storm_br\\storm_br.weapon: barrels/[0]/firing/rounds per second"
+    ],
+    "fire recovery time": [
+     0.3,
+     "objects\\weapons\\rifle\\storm_br\\storm_br.weapon: barrels/[0]/firing/fire recovery time"
+    ],
+    "shots per fire": [
+     3,
+     "objects\\weapons\\rifle\\storm_br\\storm_br.weapon: barrels/[0]/firing/shots per fire"
+    ],
+    "interval used": 0.03333333333333333,
+    "magazine": [
+     36,
+     "objects\\weapons\\rifle\\storm_br\\storm_br.weapon: magazines/[0]/rounds loaded maximum"
+    ],
+    "reload": [
+     2.2666666666666666,
+     "objects\\characters\\storm_fp\\weapons\\rifle\\fp_br\\storm_fp_br.model_animation_graph: definitions/animations/[16]/shared animation data/[0]/frame count = 68 (/30 fps)"
+    ],
+    "heat per round / overheat at / recovery threshold / overheated loss per s": [
+     0.0,
+     1.0,
+     0.0,
+     0.0
+    ],
+    "overheat pause": [
+     0.0,
+     "(overheated threshold - heat recovery threshold) / overheated heat loss per second"
+    ],
+    "damage per hit": [
+     5.8333,
+     "objects\\weapons\\rifle\\storm_br\\projectiles\\storm_br_bullet.damage_effect: damage upper bound (mean of pair)"
+    ],
+    "projectile": "objects\\weapons\\rifle\\storm_br\\projectiles\\storm_br_bullet.projectile: impact damage",
+    "damage groups (general / specific)": [
+     "bullet_fast",
+     ""
+    ],
+    "shield multiplier": {
+     "material": "energy_shield_thin_for",
+     "materials chain": "[190] energy_shield_thin_for -> [183] energy_shield_thin -> [182] energy -> [0] default_material",
+     "general armor": "energy_shield_thin",
+     "specific armor": "",
+     "rows": [
+      "bullet_fast x energy_shield_thin = 1 (damage table/[0]/damage groups/[3]/armor modifiers/[21]/damage multiplier)"
+     ],
+     "multiplier": 1.0
+    },
+    "body multiplier": {
+     "material": "hard_metal_thin_for",
+     "materials chain": "[99] hard_metal_thin_for -> [77] hard_metal_thin -> [76] hard -> [0] default_material",
+     "general armor": "hard_metal_thin",
+     "specific armor": "",
+     "rows": [
+      "bullet_fast x hard_metal_thin = 1 (damage table/[0]/damage groups/[3]/armor modifiers/[9]/damage multiplier)"
+     ],
+     "multiplier": 1.0
+    },
+    "hit on shield": 5.8333,
+    "hit on body": 5.8333
+   },
+   "flags": [
+    "Knight hlmt: root damage info (used) shield energy_shield_thin_for / indirect hard_metal_thin_for, legacy `new damage info` says shield energy_shield_thin_cov_elite / indirect hard_metal_thin_cov_elite",
+    "fight outlasts the target's shield recharge delay (4 s)",
+    "includes reload(s) 2.27 s",
+    "burst weapon: 3 rounds at 1/30 s, next burst 0.3 s (fire recovery time) after the last round; soft recovery (queueing) ignored"
+   ]
+  },
+  {
+   "direction": "enemy->player",
+   "attacker": "Knight",
+   "target": "Player",
+   "weapon": "storm_forerunner_smg_npc",
+   "shots": 29,
+   "seconds": 1.867,
+   "seconds_paced": 1.867,
+   "inputs": {
+    "weapon": "objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc.weapon (objects\\characters\\storm_knight\\ai\\storm_knight.character: general properties/[0]/initial primary weapon)",
+    "damage per hit": [
+     6.25,
+     "objects\\weapons\\rifle\\storm_forerunner_smg\\projectiles\\storm_forerunner_smg_shard.damage_effect: damage upper bound (mean of pair)"
+    ],
+    "projectile": "objects\\weapons\\rifle\\storm_forerunner_smg\\projectiles\\storm_forerunner_smg_shard.projectile",
+    "damage groups (general / specific)": [
+     "plasma_fast",
+     ""
+    ],
+    "difficulty enemy damage": [
+     1.3,
+     "globals\\globals.globals: difficulty/[0]/imposs. enemy damage"
+    ],
+    "weapon damage modifier (end pattern; 0 = none)": 0.5,
+    "shots per second (end pattern)": 15.0,
+    "pattern rate of fire (end; 0 = held -> weapon rate)": 0.0,
+    "burst duration (end)": 2.5,
+    "burst separation (end, x difficulty)": 0.75,
+    "start-of-series pattern": {
+     "accuracy": 0.5,
+     "shots per second": 15.0,
+     "burst duration": 2.0,
+     "burst separation": 0.825,
+     "weapon damage modifier": 0.5,
+     "pattern rate of fire": 0.0
+    },
+    "shield multiplier": {
+     "material": "energy_shield_thin_hum_spartan",
+     "materials chain": "[185] energy_shield_thin_hum_spartan -> [184] energy_shield_thin_hum -> [183] energy_shield_thin -> [182] energy -> [0] default_material",
+     "general armor": "energy_shield_thin",
+     "specific armor": "energy_shield_thin_player",
+     "rows": [
+      "plasma_fast x energy_shield_thin = 1 (damage table/[0]/damage groups/[4]/armor modifiers/[21]/damage multiplier)",
+      "plasma_fast x energy_shield_thin_player: no row (1)"
+     ],
+     "multiplier": 1.0
+    },
+    "body multiplier": {
+     "material": "hard_metal_thin_hum_spartan",
+     "materials chain": "[80] hard_metal_thin_hum_spartan -> [79] hard_metal_thin_hum -> [77] hard_metal_thin -> [76] hard -> [0] default_material",
+     "general armor": "hard_metal_thin",
+     "specific armor": "hard_metal_thin_player",
+     "rows": [
+      "plasma_fast x hard_metal_thin = 1 (damage table/[0]/damage groups/[4]/armor modifiers/[9]/damage multiplier)",
+      "plasma_fast x hard_metal_thin_player: no row (1)"
+     ],
+     "multiplier": 1.0
+    },
+    "hit on shield": 4.0625,
+    "hit on body": 4.0625,
+    "legendary accuracy bounds": [
+     [
+      0.5,
+      1.0
+     ],
+     "ai\\generic.character: weapons properties/[23]/legendary accuracy bounds"
+    ],
+    "legendary accuracy time": [
+     3.0,
+     "ai\\generic.character: weapons properties/[23]/legendary accuracy time"
+    ],
+    "firing patterns [0] inaccurate / [1] really accurate": [
+     [
+      {
+       "rate of fire": 0.0,
+       "burst duration": 1.5,
+       "burst separation": 0.9,
+       "weapon damage modifier": 0.5
+      },
+      {
+       "rate of fire": 0.0,
+       "burst duration": 2.5,
+       "burst separation": 0.75,
+       "weapon damage modifier": 0.5
+      }
+     ],
+     "ai\\generic.character: firing pattern properties/[23]/firing patterns/[0..1] (burst duration / separation = mean of the bounds)"
+    ],
+    "difficulty rate of fire": [
+     1.0,
+     "globals\\globals.globals: difficulty/[0]/imposs. rate of fire"
+    ],
+    "difficulty burst separation": [
+     1.0,
+     "globals\\globals.globals: difficulty/[0]/imposs. burst separation"
+    ],
+    "weapon rounds per second": [
+     15.0,
+     "objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc.weapon: barrels/[0]/firing/rounds per second"
+    ],
+    "weapon fire recovery time": [
+     0.125,
+     "objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc.weapon: barrels/[0]/firing/fire recovery time"
+    ],
+    "player hlmt": "objects\\characters\\storm_masterchief\\storm_masterchief.model (from objects\\characters\\storm_masterchief\\storm_masterchief.biped: unit/object/model)",
+    "player body": [
+     44.999990000000004,
+     "objects\\characters\\storm_masterchief\\storm_masterchief.model: damage info/maximum vitality 70 x body section vitality percentage 0.642857"
+    ],
+    "player shield": [
+     70.0,
+     "objects\\characters\\storm_masterchief\\storm_masterchief.model: damage info/maximum vitality 70 x shield section 1"
+    ],
+    "player shield recharge delay": [
+     6.0,
+     "shield section stun time (root 6 / legacy 7)"
+    ],
+    "player shield material": "energy_shield_thin_hum_spartan",
+    "player body material": "hard_metal_thin_hum_spartan (model materials (*body*))"
+   },
+   "flags": [
+    "player shield recharge delay: root shield-section stun time 6 s vs legacy block 7 s; flagging against the shorter (6 s)",
+    "AI accuracy runs 0.5 -> 1 over 3 s (Legendary); main numbers use the END pattern (accuracy 1); at the START (accuracy 0.5): 29 shots, held 1.87 s, paced 1.87 s",
+    "damage lower bound 0 < upper 6.25, air damage range 0,60: damage falls off with distance; upper bound used (point blank)"
+   ]
+  }
+ ],
+ "notes": [
+  "Halo 4 Legendary = matg Difficulty \"imposs.\" column: enemy damage 1.3, enemy vitality 1, enemy shield 1, rate of fire 1, burst separation 1. Enemy toughness on Legendary comes from the CHARACTER: vitality properties carry separate normal / legendary body and shield (Heroic presumably uses normal; not checked in game).",
+  "Damage multiplier: matg damage table [0] (\"default\"; [1] is the native Tilt-skull table), every row found multiplied (jpt general/specific x material general/specific armor, inherited up the parent chain; missing = 1). The Spartan, Elite materials carry the specific armors hard_metal_thin_player / energy_shield_thin_player, which have NO rows.",
+  "The Battle Rifle in Halo 4 fires a 3-ROUND burst (barrel shots per fire 3,3), not 4: modelled as 3 rounds at 1/30 s, then the 0.3 s fire recovery from the last round. If the engine counts recovery after the last round's own 1/30 s slot, each burst cycle is 0.033 s longer.",
+  "Reload: Halo 4 weapons carry no reload time; the first-person reload_empty animation frame count / 30 is used (reload ends when the animation ends; animation-cancel tricks not modelled).",
+  "AI fire (tool.exe field docs): firing pattern [0] \"inaccurate\" and [1] \"really accurate\" are interpolated by accuracy, which goes from the legendary accuracy bounds low to high over legendary accuracy time of firing at the target. Rate of fire = trigger pulls per second (0 = held -> weapon rounds per second); a pull fires once the barrel recovered (cap 1 / fire recovery time). Weapon damage modifier 0 = none. Misses, AI reloads and AI overheat are not counted.",
+  "Knight mechanics NOT modelled: teleport/blink away when hurt (breaks the fight and lets the shield recharge after its 4 s delay), Watcher shielding / resurrection of Knights, the face-plate pop exposing the skull section, Knight Commanders / Battlewagons (tougher variants), alternative Knight weapons (incineration cannon, scattershot, binary rifle, light rifle) -- this table is the default storm_knight with its Suppressor (forerunner SMG npc).",
+  "Elite mechanics NOT modelled: evasion rolls / cover breaks, plasma grenades, stimuli overrides (aggressive / berserk characters), the hlmt armor-lock and engineer-shield sections (Reach leftovers on storm_elite_ai).",
+  "Every multiplier in these rows is 1.0: the Storm Rifle and the Suppressor are plasma_FAST (1.0 vs energy_shield_thin); only plasma_SLOW carries the Halo-style 1.6 vs shields / 0.4 vs hard_metal_thin in Halo 4. So the Storm Rifle is no shield-stripper on paper.",
+  "Storm Rifle held trigger: overheats on the 12th bolt (0.09 heat per bolt, threshold 1), then (1 - 0.1 recovery threshold) / 0.3 per s = 3.0 s locked (the real heat is 1.08, so ~3.27 s). A feathering player (heat loss 0.55/s while not firing) avoids the lockout; the held-trigger number is a worst case, not how people use it.",
+  "Headshots are excluded by method; Halo 4 jpt headshot damage multiplier reads 0 on all three player weapons (engine default applies to BR shots via its headshot flag)."
+ ]
+}
