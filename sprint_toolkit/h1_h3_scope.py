@@ -194,8 +194,16 @@ def bake_maps(chud, size=512, span=640.0, aspect=1.0, per_widget=None):
                 spr = spr[:, ::-1]
             if sy < 0:
                 spr = spr[::-1, :]
-            x0 = size / 2.0 + (sx * cx - wu / 2.0) * px_per_u[0]
-            y0 = size / 2.0 + (sy * cy - hu / 2.0) * px_per_u[1]
+            # `mirror_local`: the copies reflect about the widget's OWN offset point, not the
+            # anchor (the Plasma Launcher's small cells: one quarter at (-182, -118) mirrored both
+            # ways = a whole hex there -- boot 2 drew half hexes reflected about the crosshair)
+            if o.get('mirror_local'):
+                ox, oy = w['offset']
+                x0 = size / 2.0 + (ox + sx * (cx - ox) - wu / 2.0) * px_per_u[0]
+                y0 = size / 2.0 + (oy + sy * (cy - oy) - hu / 2.0) * px_per_u[1]
+            else:
+                x0 = size / 2.0 + (sx * cx - wu / 2.0) * px_per_u[0]
+                y0 = size / 2.0 + (sy * cy - hu / 2.0) * px_per_u[1]
             X, Y = int(round(x0)), int(round(y0))
             xa, ya = max(0, X), max(0, Y)
             xb, yb = min(size, X + sw), min(size, Y + sh)

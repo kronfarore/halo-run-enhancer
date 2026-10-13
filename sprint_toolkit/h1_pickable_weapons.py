@@ -295,6 +295,11 @@ def make_hud(w, key, write):
             o = ovs[len(ovs) - 1]
             o.sequence_index = G['index']
             o.anchor_offset.x, o.anchor_offset.y = G['offset']
+            if 'overlay' in G:
+                # `overlay`: the overlay's width / height scale (the Plasma Launcher's scope RINGS,
+                # ~312 px on the 1080p source screenshot: wider than a 256 px cell drawn at ~0.5
+                # screen px a sheet px -- drawn smaller in the cell and magnified here)
+                o.width_scale = o.height_scale = G['overlay']
             r, g, b = G['rgb']
             # ARGB WITH alpha (boot 4: alpha 0 drew nothing on an aim crosshair; the stock
             # sniper's zoom overlays carry 0xFF / 0x78) -- `a` 0-255, the sprite's own alpha on top
