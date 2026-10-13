@@ -5055,7 +5055,12 @@
      }
     ]
    },
-   "hands": "two"
+   "hands": "two",
+   "tag_map": {
+    "proj weapons\\rocket launcher\\rocket": "proj weapons\\concussion rifle\\bolt",
+    "jpt! weapons\\rocket launcher\\explosion": "jpt! weapons\\concussion rifle\\explosion & weapons\\concussion rifle\\impact",
+    "jpt! weapons\\rocket launcher\\melee": "jpt! weapons\\concussion rifle\\melee"
+   }
   }
  ],
  "Halo 3": [
