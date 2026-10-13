@@ -513,6 +513,14 @@ def scaled_particle_system(src, k, out_dir, write, tint=None):
     t = pctl_def.build(filepath=path(src, '.particle_system'))
     for pt in t.data.tagdata.particle_types.STEPTREE:
         pt.radius *= k
+        # `@<type state>` (one ARGB): the TYPE-level state's colour MULTIPLIER (the Concussion
+        # Rifle, boot 3: the fuel rod burst stayed green with every particle state violet --
+        # its `birth` / `death` type states multiply by green)
+        for st in pt.states.STEPTREE:
+            argb = (tint or {}).get('@' + st.name)
+            if argb:
+                cm = st.color_multiplier
+                cm.a, cm.r, cm.g, cm.b = argb
         for st in pt.particle_states.STEPTREE:
             st.scale[0], st.scale[1] = st.scale[0] * k, st.scale[1] * k
             for blk, argb in zip((st.color_1, st.color_2), (tint or {}).get(st.name, ())):
