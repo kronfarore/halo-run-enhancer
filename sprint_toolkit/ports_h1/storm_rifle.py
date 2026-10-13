@@ -148,12 +148,12 @@ PORT.update({
         # the glow lights (Halo 4: srf_char_blinn_selfillum, si teal 0, 1, 0.73 x20 through the
         # control map): an additive radial glow per UV island (the Plasma Repeater's pilot)
         # THE OVERHEAT CHEVRON (Halo 4: srf_blinn_selfillum, overheat image 0, si 1, 0.78, 0.18 x5,
-        # by `overheated`): additive, its brightness = D out (pickable: function 3 = C in =
+        # by `overheated`): additive, its brightness = A out (pickable: function 0 = C in =
         # overheated)
         'glow_shaders': {'st_glow': {'rgb': (0.0, 1.0, 0.73), 'additive': True, 'islands': True,
                                      'islands_of': 'storm_assault_carbine_default_glow'},
                          'st_overheat': {'rgb': (1.0, 0.78, 0.18), 'additive': True, 'size': 64,
-                                         'mask': H4 + SBM + 'overheat.bitmap', 'fade_source': 'D_out'}},
+                                         'mask': H4 + SBM + 'overheat.bitmap', 'fade_source': 'A_out'}},
         # THE ON-GUN DISPLAY (Halo 4: three srf_constant_meter layers on `heat`): the HEAT PANEL fills
         # bottom-up through 7 stages (`buildup`: stage k lit at heat k/6, si red 1, 0, 0) -> ONE
         # meter whose threshold per texel = the first stage it is lit in (`stages`), on B out (=
@@ -370,11 +370,15 @@ PORT.update({
             # decisions above (functions, heat, age penalties, the FP offset)
             'weap_attrs.interface.active_camo_ding': 0.2,
             'weap_attrs.triggers.0.misc.illumination_recovery_time': 0.3,
-            # the ON-GUN functions (glow 'st_overheat'): out D = overheated (function 3, the
-            # template's age, used by nothing; C in = overheated); out B stays heat (the template's
-            # flares + the heat meter). (Boot 2's counter read out A = 1 - age: dropped with it)
+            # the ON-GUN functions (glow 'st_overheat'): out A = overheated (function 0, the
+            # template's colour wander, used by nothing of the port's; C in = overheated); out B
+            # stays heat (the flares + the heat meter). BOOT 3 (user: 'a leftover sigil' = the
+            # chevron lit at rest): function 3 was used first -- the template's carries INVERT
+            # (1 - age), so it read 1 - overheated, and function 1 (B out) is 'turned off with' 3
             'weap_attrs.C_in': 'overheated',
-            'obje_attrs.functions.3.scale_function_by': 'C_in',
+            'obje_attrs.functions.0.function': 'one',
+            'obje_attrs.functions.0.period': 0.0,
+            'obje_attrs.functions.0.scale_function_by': 'C_in',
         },
         'melee': (PR + 'melee', ST + 'melee'),
         'melee_response': PR + 'melee_response',
