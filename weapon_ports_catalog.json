@@ -5270,33 +5270,6 @@
     },
     {
      "class": "jpt!",
-     "tag": "weapons\\plasma launcher\\attached",
-     "field": "Damage Lower Bound",
-     "block": null,
-     "value": 121.6,
-     "card": "Stuck Damage",
-     "original": 125.0
-    },
-    {
-     "class": "jpt!",
-     "tag": "weapons\\plasma launcher\\attached",
-     "field": "Damage Upper Bound",
-     "block": null,
-     "value": 121.6,
-     "card": "Stuck Damage",
-     "original": 125.0
-    },
-    {
-     "class": "jpt!",
-     "tag": "weapons\\plasma launcher\\attached",
-     "field": "Damage Upper Bound Max",
-     "block": null,
-     "value": 121.6,
-     "card": "Stuck Damage",
-     "original": 125.0
-    },
-    {
-     "class": "jpt!",
      "tag": "weapons\\plasma launcher\\impact",
      "field": "Damage Lower Bound",
      "block": null,
@@ -5327,9 +5300,9 @@
      "tag": "weapons\\plasma launcher\\plasma launcher",
      "field": "Rounds Per Second",
      "block": "Triggers",
-     "value": 0.8,
+     "value": 0.845,
      "card": "More Shooting",
-     "original": 1.0526,
+     "original": 1.13,
      "index": 0
     },
     {
@@ -5337,40 +5310,10 @@
      "tag": "weapons\\plasma launcher\\plasma launcher",
      "field": "Rounds Per Second Max",
      "block": "Triggers",
-     "value": 0.8,
+     "value": 0.845,
      "card": "More Shooting",
-     "original": 1.0526,
+     "original": 1.13,
      "index": 0
-    },
-    {
-     "class": "weap",
-     "tag": "weapons\\plasma launcher\\plasma launcher",
-     "field": "Rounds Per Second",
-     "block": "Triggers",
-     "value": 1.9,
-     "card": "More Shooting",
-     "original": 4.75,
-     "index": 1
-    },
-    {
-     "class": "weap",
-     "tag": "weapons\\plasma launcher\\plasma launcher",
-     "field": "Rounds Per Second Max",
-     "block": "Triggers",
-     "value": 1.9,
-     "card": "More Shooting",
-     "original": 4.75,
-     "index": 1
-    },
-    {
-     "class": "weap",
-     "tag": "weapons\\plasma launcher\\plasma launcher",
-     "field": "Spew Time",
-     "block": "Triggers",
-     "value": 1.5789473684210527,
-     "card": "More Shooting",
-     "original": 0.631578947368421,
-     "index": 1
     },
     {
      "class": "proj",
@@ -5515,15 +5458,6 @@
      "value": 0.667,
      "card": "Projectile",
      "original": 0.5
-    },
-    {
-     "class": "weap",
-     "tag": "weapons\\plasma launcher\\plasma launcher",
-     "field": "Autoaim Angle",
-     "block": null,
-     "value": 0.0,
-     "card": "Autoaim",
-     "original": 3.0
     },
     {
      "class": "weap",
