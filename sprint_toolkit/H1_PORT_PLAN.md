@@ -1132,6 +1132,10 @@ Rules for the sessions (in each parallel prompt's preface):
    uncommitted edits in that file, stop and ask the user.
 2. Never edit another port's config while it is in progress; a rule for every DONE port goes
    through one session, committed at once (the other session re-reads configs, nothing else).
+2b. REWORK of a DONE port (e.g. the Sentinel Beam's rate check after B7): set its config
+   `'status': 'rework'` FIRST (one small commit), back to 'done' when finished. Proofs treat
+   every status but 'done' as in progress, so they leave a reworked port's folders alone; a
+   'done' port is regenerated and RESTORED by the other session's proofs.
 3. Extra HUD sequences (zoom glyphs, meters) go at the indices reserved for the pair below,
    never a hand-picked "next free" number.
 4. Records: your own "Bx: what <weapon> taught" section, PORTING section and memory file;
@@ -2004,3 +2008,68 @@ PARALLEL PREFACE (put in front of each prompt of a pair):
 > `--armed grunt,jackal,elite`; `h1_port_test_map.py focus_rifle --restore b30`. The ten-map
 > rebuild stays BATCHED (wave B, my go). When done: catalog entry, enhancer hand-off, PORTING
 > section, memory, `python port_backup.py --game h1`, and "B7: what the Focus Rifle taught".
+
+### The Plasma Launcher (wave B6), filled in -- the last of wave B
+
+> PARALLEL RULES APPLY: other sessions may be working on the same kit (H1_PORT_PLAN.md "Running
+> two ports in parallel", incl. REWORK status). Your test level is a30 -- pass `--level a30` on
+> every `h1_port_test_map.py` run and restore with `h1_port_test_map.py plasma_launcher --restore
+> a30`. Extra HUD sequences: hud_reticles 52-53 only. If a script says `kit lock: WAITING`, let it
+> wait. Do NOT write the next weapon's prompt: write "B6: what the Plasma Launcher taught" and tell
+> me you are done.
+>
+> Port the Plasma Launcher into Halo 1 (H1_PORT_PLAN.md, wave B, #B6). Source: Halo Reach,
+> `objects\weapons\support_high\plasma_launcher\plasma_launcher` (HREK); FP graph under
+> `objects\characters\spartans\fp\weapons\support_high\` (find its fp_plasma_launcher graph).
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Running two ports in parallel", "Phase 0: DONE", "Pilot
+> A1" to "A9" -- A5 (the Spike Rifle: a STUCK projectile, the needle recipe), A7 (the Brute Shot:
+> the explosion chain) and A8 (the Spartan Laser: a one-trigger CHARGE) matter most here -- "B1"
+> (the REACH RECIPE) to "B4" (the Grenade Launcher: the CHARGED PAIR of triggers, the projectile
+> probe) and "B5: what the Concussion Rifle taught" (written for THIS weapon: recolouring a
+> borrowed Covenant look in its five hidden places, a zero that means UNSET, minimum velocity
+> detonates) and "B7"), PORTING.md ("What ported actually means" steps 0-11 and 5b, closing checks
+> 0-10, the Halo 1 sections -- the Concussion Rifle, the Grenade Launcher, the Spartan Laser and the
+> Spike Rifle first --, "Balance" incl. the ARMED WDM RULE, THE HIT-EFFECT RULE, the two-handed
+> rule, the balanced drop rule) and memory h1-concussion-rifle-port, h1-grenade-launcher-port,
+> h1-focus-rifle-port, h1-spartan-laser-port, h1-spike-rifle-port, h1-plasma-repeater-port,
+> h1-dmr-reach-pilot, h1-parallel-ports, h1-armed-test-balanced-god, h1-armed-wdm-rule,
+> h1-armed-two-handed-rule, h1-armed-balanced-drop-rule, h1-hit-effect-rule,
+> port-muzzle-flash-rule, port-flashlight-sound-rule, h1-port-phase0, halo-port-own-messages,
+> h1-fmod-bank-sounds, port-findings-are-observations, shared-worktree-commits.
+> `ports_h1/concussion_rifle.py` / `grenade_launcher.py` are the nearest shape (Reach plumbing, a
+> Covenant explosive, a charged pair); copy into `ports_h1/plasma_launcher.py` and edit only that
+> file plus shared tools you generalize (small change, narrowed proof, commit at once).
+>
+> START WITH STEP 4a, with me: candidates the restored Fuel Rod (provisional: Halo 1's own
+> charge-to-fire explosive plasma), the Plasma Grenade (the sticky plasma explosive) and the
+> Rocket Launcher (the anti-vehicle role; Reach's launcher locks on); DEFAULT = Reach's own
+> numbers, BALANCED = the ratio rows. FIRST read what h3_weapon_values (--kit reach) /
+> reach_tag_fields do not print: the CHARGE (how holding fires 1 to 4 bolts -- charge levels,
+> times, what each level fires), the LOCK-ON (Reach's tracking: lock time, range, the bolt's
+> guidance), the STICKING (does a bolt attach to a target / surface, its fuse), the bolt's
+> detonation (area damage, radii, group) and the battery / heat model (no magazine). Halo 1 has
+> no multi-bolt charge, no lock-on and no lock indicator: lay out the approximations with me
+> before any number (e.g. the Grenade Launcher's CHARGED PAIR -- tap = one bolt, charged
+> release = a volley as projectiles per shot; lock-on = strong projectile guidance through the
+> needler's homing; sticking = the Spike Rifle's stuck-projectile recipe) and record what each
+> does not reproduce. Show the time to kill (h1_role_compare 'plasma_launcher' set vs Fuel Rod,
+> Rocket Launcher, the Brute Shot and Concussion Rifle ports). Then 4b, the template diff (incl.
+> the template projectile's material DETONATION effects and the five Covenant-look places),
+> port_sound_refs (+ the projectile's own sound fields by hand) and the muzzle-flash comparison
+> BEFORE boot 1. HUD art (a lock / charge display, if any): size it from a Reach SCREENSHOT, ask
+> me for one; the crosshair: the supersample recipe. The model gets `'ground_point': 'auto'`.
+>
+> Reserved: pickup messages 81/82; hud_msg_icons 44 (+ _r); hud_reticles 33 (+ _r; extras 52-53);
+> label `pl` taught to characters\cyborg from `rl`; sounds under `sound\weapons\plasma_launcher_port`;
+> weapon folder `weapons\plasma launcher`; catalog name `Plasma Launcher`.
+>
+> Step 11: `pl` has no carrier -- list Halo 1's carriers of the donor weapon (WDM, actor flags);
+> `firing_profile` (Reach's ai\generic Plasma Launcher entry on m10 is verified) with
+> `donor_weapon` (+ `donor_variant`), a `wdm_rule` and a `balanced_set` (a zero on one side: no
+> row); the enhancer session writes its keys (hands, cards, `trigger_index` for a second trigger)
+> through port_catalog_keys.py before the Armed boot. Tests: `h1_port_test_map.py plasma_launcher
+> --level a30 --stage` (dry default), fixes, `--balanced`, `--armed grunt,jackal,elite`;
+> `h1_port_test_map.py plasma_launcher --restore a30`. When done: catalog entry, enhancer
+> hand-off, PORTING section, memory, `python port_backup.py --game h1`, "B6: what the Plasma
+> Launcher taught". Wave B then closes with the wave check (`port_tool_proof.py --full --rev
+> d096b49`) and the batched ten-map rebuild -- both on my go, not in this session.
