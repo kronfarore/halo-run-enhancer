@@ -4939,6 +4939,15 @@
      "original": 100.0
     },
     {
+     "class": "proj",
+     "tag": "weapons\\concussion rifle\\bolt",
+     "field": "Minimum Velocity",
+     "block": null,
+     "value": 0.0,
+     "card": "Projectile",
+     "original": 0.36666666666666664
+    },
+    {
      "class": "weap",
      "tag": "weapons\\concussion rifle\\concussion rifle",
      "field": "Magnetism Angle",

@@ -527,6 +527,11 @@ PORT.update({
                 row('proj', CR + 'bolt', 'Initial Velocity', 11.2 / 30, 12.0 / 30, 'Projectile'),
                 row('proj', CR + 'bolt', 'Final Velocity', 12.3 / 30, 16.0 / 30, 'Projectile'),
                 row('proj', CR + 'bolt', 'Maximum Range', 0.0, 100.0, 'Projectile'),
+                # BOOT 10 (user): 'the bolt is invisible now' -- the balanced bolt starts at 11.2
+                # wu/s, 0.2 above Reach's MINIMUM VELOCITY 11, which DETONATES in Halo 1 (the Brute
+                # Shot): it burst at the muzzle. The ratio rule had no row for it: the H1 fuel rod's
+                # 0 = a zero on one side -> 0 in balanced (default keeps Reach's 11, margin 1)
+                row('proj', CR + 'bolt', 'Minimum Velocity', 0.0, 11.0 / 30, 'Projectile'),
                 # aim: 8 x 6/8 (the rest x1)
                 row('weap', CR + 'concussion rifle', 'Magnetism Angle', 6.0, 8.0, 'Magnetism'),
                 # the 5 magazine's meter: concussion_rifle_ammo sequence 1 (ammo_meter 6 5), step 50
