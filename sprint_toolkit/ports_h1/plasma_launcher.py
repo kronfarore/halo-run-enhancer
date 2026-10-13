@@ -32,7 +32,9 @@ HOLO_BLUE = (0.3, 0.6, 1.0)
 # the crosshair quadrant's offset (chud units): half the #31 sprite (47 x 44 px) x Reach's 1.2 x 1.25
 # x its widget ORIGIN 0.945 -- the four copies OVERLAP 5.5 % (boot 2, user: 'the horizontal lines
 # look mirrored and facing away' -- edge to edge, the halves' half-transparent edge rows left a seam)
-RQ = (47 / 2.0 * 1.2 * 0.945, 44 / 2.0 * 1.25 * 0.945)
+# BOOT 3 (user): 'still a gap' -- h1_add_reticle applies a layer's `stretch` to its offset too:
+# the offset is in SPRITE px (the 1.2 x 1.25 had been applied twice)
+RQ = (47 / 2.0 * 0.945, 44 / 2.0 * 0.945)
 # the FULLY CHARGED cue (boot 2, user: 'another fully charged identification would be good'):
 # Reach's rear display turns RED-ORANGE at full charge (the user's fully-charged screenshot) ->
 # the holo ring + screen slide blue -> red-orange at the top of the charge (D out = primary charged)
@@ -444,9 +446,15 @@ PORT.update({
             'weap_attrs.triggers.1.charging.charge_hold_time': 0.0,
             'weap_attrs.triggers.1.charging.spew_time': 0.0,
             'weap_attrs.triggers.1.charging.overcharged_action': 'none',
+            # BOOT 3 (user): 'adjust the spread on the volley, it's currently two pairs of two
+            # bolts' (the 4 deg fan) -> no fan: each bolt its own random error in a small cone
+            # (min 1, up to 2 deg; Reach's error grows 0.3 -> 0.8 over a volley) -- a loose
+            # cluster that the homing pulls onto the target
             'weap_attrs.triggers.1.projectile.projectiles_per_shot': 4,
-            'weap_attrs.triggers.1.projectile.distribution_function': 'horizontal_fan',
-            'weap_attrs.triggers.1.projectile.distribution_angle': math.radians(4.0),
+            'weap_attrs.triggers.1.projectile.distribution_function': 'point',
+            'weap_attrs.triggers.1.projectile.distribution_angle': 0.0,
+            'weap_attrs.triggers.1.projectile.minimum_error': math.radians(1.0),
+            'weap_attrs.triggers.1.projectile.error_angle': (math.radians(1.5), math.radians(2.0)),
             # heat 0.4 a bolt: the volley's one round = 4 bolts = 1.6 (overheats: Reach's 1.6 minus
             # ~0.5 cooling while it spews still overheats)
             'weap_attrs.triggers.0.misc.heat_generated_per_round': 0.4,
@@ -532,15 +540,21 @@ PORT.update({
                 # a cell sprite draws ~0.5 screen px a sheet px -> the art x0.5 / x1.5 in the 256 cell
                 # and the overlay x2.48 / x1.68 (`overlay`). Not reproduced (no sequence left): the
                 # four bolt pips and the charge bar
+                # BOOT 3 (user): 'the rings in the middle seem mirrored' -- against the screenshot
+                # they are turned 180 deg (Reach's open side upper right, ours lower left): `flip`
                 'zoom_glyphs': [{'art': (R + r'ui\chud\bitmaps\scopes\plasma_launcher_scope_bits.bitmap', None),
                                  'name': 'plasma launcher ring outer', 'index': 52, 'scale': (0.5, 0.5),
                                  'overlay': 312 / (504 * 0.5 * 0.5), 'alpha': 0.55, 'offset': (0, 0),
-                                 'rgb': (110, 190, 245), 'normalize': True, 'gamma': 1.6},
+                                 'rgb': (110, 190, 245), 'normalize': True, 'gamma': 1.6,
+                                 'flip': 'xy'},
                                 {'art': (R + r'ui\chud\bitmaps\scopes\plasma_launcher_scope_bits2', 0),
                                  'name': 'plasma launcher ring inner', 'index': 53, 'scale': (1.5, 1.5),
                                  'overlay': 200 / (159 * 1.5 * 0.5), 'alpha': 0.55, 'offset': (0, 0),
-                                 'rgb': (110, 190, 245), 'normalize': True, 'gamma': 1.6}],
-                'reticle_scale': 1.3, 'reticle_overlay': 0.455,
+                                 'rgb': (110, 190, 245), 'normalize': True, 'gamma': 1.6,
+                                 'flip': 'xy'}],
+                # BOOT 3: the offsets fixed (RQ) drew the art ~10 % narrower (345 against 382 cell px) ->
+                # the overlay x382/345 keeps the size the user called close
+                'reticle_scale': 1.3, 'reticle_overlay': 0.455 * 382 / 345,
                 'reticle_supersample': 2,
                 'reticle_min_width': 2},
         'palette_levels': LEVELS,
@@ -563,14 +577,19 @@ PORT.update({
         'bank': 'haloreach',
         'dir': B.join(['sound', 'weapons', 'plasma_launcher_port']),
         'h3_dir': RS + 'plasma_launcher' + B,
+        'slice': {'pl_charge_loop': (3.0, 4.5)},
+        'loop_len': {'pl_charge_loop': 1.4},
         'sounds': {
             'pl_fire': (['plas_launcher_fire', RS + 'rocket_launcher' + B + 'rocket_launcher_tails_ext'],
                         B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'fire']), -9.3),
             'pl_explode': (['pl_proj_expl'],
                            B.join(['sound', 'sfx', 'weapons', 'plasma grenade', 'plasmagrenexpl']), -9.3),
-            'pl_charge_in': (['plas_launcher_charge' + B + 'plas_launcher_charge' + B + 'in'],
-                             B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'startcharge']), -12.0),
-            'pl_charge_loop': (['plas_launcher_charge' + B + 'plas_launcher_charge' + B + 'loop'],
+            # BOOT 3 (user): 'the charge sound is gone entirely' -- Reach's charge LOOP decodes
+            # SILENT (rms -180 dB: the GL's frag_armed lesson); what boots 1-2 played was the 5 s
+            # 'in' as the loop's start (on ready). The loop is now the 'in''s full-charge SUSTAIN
+            # (3.0 - 4.5 s: -9..-12 dB after the rising part), crossfaded seamless (`slice`,
+            # `loop_len`), scaled by the charge -- it swells as the charge builds
+            'pl_charge_loop': (['plas_launcher_charge' + B + 'plas_launcher_charge' + B + 'in'],
                                B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'charge']), -11.2),
             'pl_projectile': (['plas_launcher_proj_loop' + B + 'pl_proj_loop' + B + 'loop'],
                               B.join(['sound', 'sfx', 'weapons', 'plasma grenade', 'plasma_projectile']), -25.0),
