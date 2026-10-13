@@ -110,6 +110,10 @@ PGX = W + r'plasma grenade\explosion'
 # tough, flesh x1
 CR_PLASMA_FAST = {'hunter_armor': 0.25, 'jackal_energy_shield': 0.5, 'flood_combat_form': 1.0}
 CR_COLLISION = {'hunter_armor': 0.75, 'jackal_energy_shield': 0.75, 'flood_combat_form': 1.0}
+# the Plasma Launcher (B6) on the fuel rod's table: Hunters by Reach's explosion_small
+# (hard_metal_thick 0.25, soft_organic x1) -- the fuel rod's immune x0 has no ratio
+PL_HUNTER = {'hunter_armor': 0.25, 'hunter_skin': 1.0}
+PGA = W + r'plasma grenade\attached'
 
 SETS = {
     # the restored fuel rod against the explosive power weapons of Halo 1
@@ -1136,6 +1140,108 @@ SETS = {
           'mods': dict(RP_FAST_SLOW),
           'heat_model': {'rate': ('time', 20.0, 3.4, 2.6), 'hpr': 0.077, 'oh': 1.0,
                          'loss': 1 / 2.9, 'rec': 0.01, 'cool_firing': True, 'h1_ticks': True}}),
+    ]},
+    # the PLASMA LAUNCHER (wave B6), step 4a. Reach (HREK 2026-10-13): charge 3.0 s in four 0.75 s
+    # steps (1..4 bolts; a bolt needs a 0.75 s hold), held 2 s more -> discharge; 4.75/s, recovery
+    # 0.2; heat 0.4 a bolt (oh 1, loss 0.85, rec 0.1: a volley overheats), battery 12 bolts; 11 -> 7
+    # wu/s, range 180, guided 45 deg/s (lock 0.5 s); sticks to everything but Jackal shields, fuse
+    # 0.25-2.5 s from rest, arming 1. A bolt = impact 2 (collision) + 0..175 over 0.6 -> 1.8
+    # (explosion_small, core 0.48); STUCK 0..300 instead (Halo 1: 125 direct + the 175 area). The
+    # approximation (user, 4a): the charged PAIR -- a tap = 1 unguided bolt paced 0.95 s (Reach's 0.75
+    # s hold + 0.2 recovery), a 3 s charge = a guided 4-bolt spew; a volley cycle = 3.0 + 0.63 s spew
+    # (Halo 1 charges during the vent). Shots = bolts (single rows) or VOLLEYS (x4 rows). Yardsticks
+    # (Reach): fuel rod 100 + 0..60 (explosion_large) = 160, 0.4 s; plasma grenade 2 + 25..250 over
+    # 0.54 -> 1.8, stuck 35..350 (explosion_small, the bolt's own group); rocket 200 + 240 = 440, 0.8 s
+    'plasma_launcher': {'port': 'Plasma Launcher', 'weapons': [
+        # Reach's own on the fuel rod's table (Flood x2), Hunters by Reach's explosion_small
+        # (hard_metal_thick 0.25, skin x1: the fuel rod's x0 has no ratio -- the CR's rule)
+        ('PL = Reach own, bolt', W + r'fuel rod gun\fuel rod', 'shot',
+         {'parts': [(FRX, 175.0, (0.6, 1.8), PL_HUNTER), (FRX, 2.0, (0.0, 0.0), PL_HUNTER)],
+          'rate': 1 / 0.95, 'charge': 0.0, 'nomag': True, 'speed': 11.0, 'range': 180.0,
+          'aim': (3.0, 30.0, 6.0, 30.0)}),
+        ('PL = Reach own, bolt stuck', W + r'fuel rod gun\fuel rod', 'shot',
+         {'parts': [(FRX, 175.0, (0.6, 1.8), PL_HUNTER), (FRX, 127.0, (0.0, 0.0), PL_HUNTER)],
+          'rate': 1 / 0.95, 'charge': 0.0, 'nomag': True, 'speed': 11.0, 'range': 180.0,
+          'aim': (3.0, 30.0, 6.0, 30.0)}),
+        ('PL = Reach own, volley x4', W + r'fuel rod gun\fuel rod', 'shot',
+         {'parts': [(FRX, 175.0, (0.6, 1.8), PL_HUNTER), (FRX, 2.0, (0.0, 0.0), PL_HUNTER)],
+          'per_shot': 4, 'rate': 1 / 3.63, 'charge': 3.0, 'nomag': True, 'speed': 11.0,
+          'range': 180.0, 'aim': (3.0, 30.0, 6.0, 30.0)}),
+        # ... x Reach's explosion_small / explosion_large per armour class (the fuel rod's blast is
+        # explosion_large in Reach)
+        ('PL = Reach own, Reach mat', W + r'fuel rod gun\fuel rod', 'shot',
+         {'parts': [(FRX, 175.0, (0.6, 1.8), dict(GL_SMALL_LARGE, **PL_HUNTER)),
+                    (FRX, 2.0, (0.0, 0.0), PL_HUNTER)],
+          'rate': 1 / 0.95, 'charge': 0.0, 'nomag': True, 'speed': 11.0, 'range': 180.0,
+          'aim': (3.0, 30.0, 6.0, 30.0)}),
+        # FUEL ROD ratio by the direct hit: 75 x 177/160 = 83 (all blast: the fuel rod has no
+        # impact), stuck + 75 x 125/160 = 58.6 direct; radius 0.5 x 0.6/0.5, 1.5 x 1.8/2.25; TIMES x
+        # 1.25/0.4 = 3.125: a bolt 2.97 s, a volley charge 9.4 s / cycle 11.3 s; 14 x 11/15; range:
+        # the fuel rod's 0 is UNSET -> Reach's 180; aim 4 x 3/4, 25 x 30/25, 6 x 6/8, 25 x 30/25
+        ('PL = FR ratio, bolt', W + r'fuel rod gun\fuel rod', 'shot',
+         {'parts': [(FRX, 82.97, (0.6, 1.2), PL_HUNTER)], 'rate': 1 / 2.97, 'charge': 0.0,
+          'nomag': True, 'speed': 10.27, 'range': 180.0, 'aim': (3.0, 30.0, 4.5, 30.0)}),
+        ('PL = FR ratio, bolt stuck', W + r'fuel rod gun\fuel rod', 'shot',
+         {'parts': [(FRX, 82.97, (0.6, 1.2), PL_HUNTER), (FRX, 58.6, (0.0, 0.0), PL_HUNTER)],
+          'rate': 1 / 2.97, 'charge': 0.0, 'nomag': True, 'speed': 10.27, 'range': 180.0,
+          'aim': (3.0, 30.0, 4.5, 30.0)}),
+        ('PL = FR ratio, volley x4', W + r'fuel rod gun\fuel rod', 'shot',
+         {'parts': [(FRX, 82.97, (0.6, 1.2), PL_HUNTER)], 'per_shot': 4, 'rate': 1 / 11.34,
+          'charge': 9.375, 'nomag': True, 'speed': 10.27, 'range': 180.0,
+          'aim': (3.0, 30.0, 4.5, 30.0)}),
+        # ... the CHARGE KEPT (no yardstick charges in Reach: the 0.75 s hold and the 3.0 s charge
+        # have no counterpart -> Reach's own), only recovery / spew spacing x 3.125: a bolt 0.75 +
+        # 0.625 = 1.375 s, a volley 3.0 + 0.63 x 3.125 = 4.97 s
+        ('PL = FR ratio, charge kept, bolt', W + r'fuel rod gun\fuel rod', 'shot',
+         {'parts': [(FRX, 82.97, (0.6, 1.2), PL_HUNTER)], 'rate': 1 / 1.375, 'charge': 0.0,
+          'nomag': True, 'speed': 10.27, 'range': 180.0, 'aim': (3.0, 30.0, 4.5, 30.0)}),
+        ('PL = FR ratio, charge kept, x4', W + r'fuel rod gun\fuel rod', 'shot',
+         {'parts': [(FRX, 82.97, (0.6, 1.2), PL_HUNTER)], 'per_shot': 4, 'rate': 1 / 4.97,
+          'charge': 3.0, 'nomag': True, 'speed': 10.27, 'range': 180.0,
+          'aim': (3.0, 30.0, 4.5, 30.0)}),
+        # PLASMA GRENADE ratio (the same family: explosion_small both, a free AND a stuck burst in
+        # both games) on its table (Elite shield x4, Jackal shield x1.5, Hunter armour x0.25, Flood
+        # x2): free 120 x 177/252 = 84.3 over 0.5 x 0.6/0.54, 2.0 x 1.8/1.8; stuck: Halo 1 240 (120
+        # area + 120 attached) x 302/352 = 205.9 -> + 121.6 attached; the HOLES (a thrown grenade has
+        # no rate, flight, aim) by the RL ratio (the GL's precedent): times x 2.0/0.8 = 2.5 (a bolt
+        # 2.375 s, a volley charge 7.5 / cycle 9.075), 12 x 11/8, 128 x 180/175, aim 0 x 3/5, 35 x
+        # 30/60, 12 x 6/10, 35 x 30/25
+        ('PL = PG ratio, bolt', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(PGX, 84.29, (0.556, 2.0))], 'rate': 1 / 2.375, 'nomag': True,
+          'speed': 16.5, 'range': 131.7, 'aim': (0.0, 17.5, 7.2, 42.0)}),
+        ('PL = PG ratio, bolt stuck', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(PGX, 84.29, (0.556, 2.0)), (PGA, 121.6, (0.0, 0.0))], 'rate': 1 / 2.375,
+          'nomag': True, 'speed': 16.5, 'range': 131.7, 'aim': (0.0, 17.5, 7.2, 42.0)}),
+        ('PL = PG ratio, volley x4', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(PGX, 84.29, (0.556, 2.0))], 'per_shot': 4, 'rate': 1 / 9.075, 'charge': 7.5,
+          'nomag': True, 'speed': 16.5, 'range': 131.7, 'aim': (0.0, 17.5, 7.2, 42.0)}),
+        # ... the CHARGE KEPT: a bolt 0.75 + 0.2 x 2.5 = 1.25 s, a volley 3.0 + 0.63 x 2.5 = 4.575 s
+        ('PL = PG ratio, charge kept, bolt', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(PGX, 84.29, (0.556, 2.0))], 'rate': 1 / 1.25, 'nomag': True,
+          'speed': 16.5, 'range': 131.7, 'aim': (0.0, 17.5, 7.2, 42.0)}),
+        ('PL = PG ratio, charge kept, x4', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(PGX, 84.29, (0.556, 2.0))], 'per_shot': 4, 'rate': 1 / 4.575, 'charge': 3.0,
+          'nomag': True, 'speed': 16.5, 'range': 131.7, 'aim': (0.0, 17.5, 7.2, 42.0)}),
+        # ROCKET ratio by the direct hit: 315 x 177/440 = 126.7 over 0.5 x 0.6/0.75, 2.0 x 1.8/2.5,
+        # stuck + 315 x 125/440 = 89.5; times x 2.5 as above
+        ('PL = RL ratio, bolt', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 126.7, (0.4, 1.44))], 'rate': 1 / 2.375, 'nomag': True,
+          'speed': 16.5, 'range': 131.7, 'aim': (0.0, 17.5, 7.2, 42.0)}),
+        ('PL = RL ratio, volley x4', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 126.7, (0.4, 1.44))], 'per_shot': 4, 'rate': 1 / 9.075, 'charge': 7.5,
+          'nomag': True, 'speed': 16.5, 'range': 131.7, 'aim': (0.0, 17.5, 7.2, 42.0)}),
+        # peers
+        ('Fuel Rod (restored)', W + r'fuel rod gun\fuel rod', 'shot'),
+        ('Rocket Launcher', W + r'rocket launcher\rocket launcher', 'shot'),
+        ('Plasma grenade (1/s)', W + r'rocket launcher\rocket launcher', 'shot',
+         {'damage_tags': [PGX], 'radius': (0.5, 2.0), 'rate': 1.0,
+          'nomag': True, 'speed': 0.0, 'range': 0.0, 'aim': (0.0, 0.0, 0.0, 0.0)}),
+        ('Plasma grenade stuck (1/s)', W + r'rocket launcher\rocket launcher', 'shot',
+         {'damage_tags': [PGX, PGA], 'rate': 1.0,
+          'nomag': True, 'speed': 0.0, 'range': 0.0, 'aim': (0.0, 0.0, 0.0, 0.0)}),
+        ('Brute Shot port, default', W + r'brute shot\brute shot', 'shot'),
+        ('Concussion Rifle (port)', W + r'concussion rifle\concussion rifle', 'shot'),
+        ('Grenade Launcher (port)', W + r'grenade launcher\grenade launcher', 'shot'),
     ]},
 }
 
