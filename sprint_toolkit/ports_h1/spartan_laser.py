@@ -247,7 +247,19 @@ PORT.update({
                                            'palette': r'fx\particles\_gradients\laser_red_01.bitmap',
                                            'premultiply': True},
                            'sl_beam_body': {'profile': r'fx\contrails\_bitmaps\beam.bitmap',
-                                            'palette': r'fx\particles\_gradients\laser_red_01.bitmap'}},
+                                            'palette': r'fx\particles\_gradients\laser_red_01.bitmap'},
+                           # THE FOCUS RIFLE'S BEAM RECIPE (user, 2026-10-13, B7 boot 4: 'the Spartan
+                           # Laser looks better like this -- copy it into the build'; judged on the
+                           # h1_beam_variant test copy): Reach's 1p beam layers -- a CORE on Reach's
+                           # energy_trail + a PULSE on Reach's pulse texture (512 x 64) -- through the
+                           # laser's own palette, both additive, replacing sl_beam_add on the core and
+                           # the glow; the alpha-blended body (sl_beam_body) kept
+                           'sl_beam_core': {'profile': r'reach:fx\bitmaps\contrails\energy_trail.bitmap',
+                                            'palette': r'fx\particles\_gradients\laser_red_01.bitmap',
+                                            'premultiply': True},
+                           'sl_beam_pulse': {'profile': r'reach:fx\bitmaps\contrails\pulse.bitmap',
+                                             'palette': r'fx\particles\_gradients\laser_red_01.bitmap',
+                                             'premultiply': True, 'size': (512, 64)}},
         'drop_materials': ['invalid'],
         # the template's overheat steam spawns at a marker: Halo 3's side vent
         'markers': {'fx_side_vent': 'overheat'},
@@ -462,7 +474,8 @@ PORT.update({
                    # colour so the texture's colours show. Widths a start (Halo 3's thickness
                    # function reads empty)
                    'contrail': {'from': SR + 'sniper', 'out': SL + 'beam', 'no_physics': True,
-                                'blend': 'add', 'bitmap': SL + 'bitmaps\\sl_beam_add',
+                                # 2026-10-13 (user): the Focus Rifle's recipe -- Reach's energy_trail core
+                                'blend': 'add', 'bitmap': SL + 'bitmaps\\sl_beam_core',
                                 'sequence': (0, 0),
                                 'states': [{'duration': (0.25, 0.3), 'transition': (0.3, 0.4),
                                             'width': 0.22, 'argb': (1.0, 1.0, 1.0, 1.0)},
@@ -471,11 +484,14 @@ PORT.update({
                                 # thinner -- more luminous?' A second ADDITIVE layer on the same
                                 # texture and width: additive layers add up (Halo 3 drives its
                                 # palette above 1 in HDR)
+                                # 2026-10-13 (user, the h1_beam_variant test): the glow = Reach's PULSE
+                                # layer (tiling 0.15; its scroll draws static in Halo 1 -- B7 boot 4), wider
                                 'extra': [{'out': SL + 'beam glow', 'blend': 'add',
-                                           'bitmap': SL + 'bitmaps\\sl_beam_add', 'sequence': (0, 0),
+                                           'bitmap': SL + 'bitmaps\\sl_beam_pulse', 'sequence': (0, 0),
+                                           'repeats': (0.15, 1.0), 'scroll': (5.0, 0.0),
                                            'states': [{'duration': (0.25, 0.3), 'transition': (0.3, 0.4),
-                                                       'width': 0.22, 'argb': (1.0, 1.0, 1.0, 1.0)},
-                                                      {'width': 0.18, 'argb': (0.0, 1.0, 1.0, 1.0)}]},
+                                                       'width': 0.3, 'argb': (1.0, 1.0, 1.0, 1.0)},
+                                                      {'width': 0.18 * 0.3 / 0.22, 'argb': (0.0, 1.0, 1.0, 1.0)}]},
                                           {'out': SL + 'beam body', 'blend': 'alpha_blend',
                                            'bitmap': SL + 'bitmaps\\sl_beam_body', 'sequence': (0, 0),
                                            'states': [{'duration': (0.25, 0.3), 'transition': (0.3, 0.4),
