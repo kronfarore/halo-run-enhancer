@@ -136,8 +136,24 @@ PORT = reserved(
             # what Halo 1 cannot do: speed up a projectile over a short acceleration range (it
             # changes speed over the whole range)
             'lacks': 'the acceleration range (12 -> 16 over 6..15 wu)'}},
-    # step 11: the source game's ai\generic entry (26 fields, verified 2026-10-07)
-    firing_profile={'mode': 'source', 'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map', 'from_weapon': 'objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle'},
+    # step 11: the source game's ai\generic entry (m10: weapon properties #1, firing pattern #1 --
+    # max firing distance 15, rate 3.625, desired range 6-8, WDM 0.75, bursts 0.99-1.4 s every
+    # 1.31-2.06 s, drop 0.125-0.35 / 6-9) laid over a Halo 1 FUEL ROD carrier ('cr' has no carrier).
+    # Halo 1's fuel rod carriers (h1_weapon_carriers, 2026-10-13): grunt specops fuel rod (+ airdef),
+    # both WDM 0.5, actor flags 0, drop 0.5-1.0 loaded / 2-6 ammo -- they agree, no donor_variant.
+    # ARMED WDM RULE: base 0.5 x fuel rod 60 / port dps (h1_role_compare 5b on the BUILT port:
+    # default 21.5 + 21.5 every 0.333 s = 129 -> 0.233; balanced 26.9 every 1.04 s = 26 -> 1.15,
+    # above 1.0 applied as is: the DMR's rule)
+    # BALANCED DROP (user 2026-10-12, every weapon): H1 yardstick carriers x source port / source
+    # yardstick, the source values from the MAP (m10): Reach CR 0.125-0.35 / 6-9, Reach fuel rod
+    # (flak_cannon) 0.25-0.4 / 2-4 -> loaded 0.5 x 0.125/0.25 = 0.25, 1.0 x 0.35/0.4 = 0.875; ammo
+    # 2 x 6/2 = 6, 6 x 9/4 = 13.5 -> 13
+    firing_profile={'balanced_set': ['0x1D8=0.25:Drop Weapon Loaded', '0x1DC=0.875:Drop Weapon Loaded Max',
+                                     '0x1E0=h6:Drop Weapon Ammo', '0x1E2=h13:Drop Weapon Ammo Max'],
+                    'mode': 'source', 'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map', 'from_weapon': 'objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle',
+                    'donor_weapon': 'weapons\\fuel rod gun\\fuel rod',
+                    'wdm_rule': {'base': 0.5, 'yardstick_dps': 60.0, 'port_dps': 129.0,
+                                 'balanced_port_dps': 26.0}},
 )
 
 PORT.update({

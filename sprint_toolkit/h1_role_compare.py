@@ -1005,6 +1005,9 @@ SETS = {
     # 200 + 240 = 440, 0.8 s, reload 116 fr; the plasma grenade (unstuck) 2 + 25..250 over 0.54 ->
     # 1.8 = 252. A row's parts: (blast, impact)
     'concussion_rifle': {'port': 'Concussion Rifle', 'weapons': [
+        # the BUILT port (step 5b): its tags (+ --balanced rows)
+        ('Concussion Rifle (port)', W + r'concussion rifle\concussion rifle', 'shot'),
+        ('Concussion Rifle melee (port)', W + r'concussion rifle\concussion rifle', 'melee'),
         # Reach's own numbers on a neutral table (the rocket's: x1, Flood x2) ...
         ('CR = Reach own', W + r'rocket launcher\rocket launcher', 'shot',
          {'parts': [(RLX, 21.5, (1.0, 2.0)), (RLX, 21.5, (0.0, 0.0))], 'rate': 3.0, 'mag': 6,

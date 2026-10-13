@@ -2201,6 +2201,175 @@
     "port_dps": 90.0,
     "balanced_port_dps": 130.0
    }
+  },
+  "weapons\\concussion rifle\\concussion rifle": {
+   "source": "Halo Reach ai\\generic objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle (weapon properties #1, firing pattern #1) over weapons\\fuel rod gun\\fuel rod carriers",
+   "fields": {
+    "0x74": [
+     "<f",
+     15.0,
+     "Maximum Firing Distance"
+    ],
+    "0x78": [
+     "<f",
+     3.625,
+     "Rate Of Fire"
+    ],
+    "0x7C": [
+     "<f",
+     0.034906583838164806,
+     "Projectile Error"
+    ],
+    "0x80": [
+     "<f",
+     1.0,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     1.25,
+     "First Burst Delay Time Max"
+    ],
+    "0x8C": [
+     "<f",
+     1.0,
+     "Surprise Delay Time"
+    ],
+    "0x94": [
+     "<f",
+     0.20000000298023224,
+     "Death Fire-Wildly Chance"
+    ],
+    "0x98": [
+     "<f",
+     0.5,
+     "Death Fire-Wildly Time"
+    ],
+    "0x9C": [
+     "<f",
+     6.0,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     8.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     0.8999999910593033,
+     "Target Tracking"
+    ],
+    "0xC0": [
+     "<f",
+     0.6750000044703484,
+     "Target Leading"
+    ],
+    "0xC4": [
+     "<f",
+     0.23255813953488372,
+     "Weapon Damage Modifier"
+    ],
+    "0xCC": [
+     "<f",
+     0.125,
+     "Burst Origin Radius"
+    ],
+    "0xD0": [
+     "<f",
+     0.04363323003053665,
+     "Burst Origin Angle"
+    ],
+    "0xD4": [
+     "<f",
+     0.14250000193715096,
+     "Burst Return Length"
+    ],
+    "0xD8": [
+     "<f",
+     0.25,
+     "Burst Return Length Max"
+    ],
+    "0xDC": [
+     "<f",
+     0.07417649123817682,
+     "Burst Return Angle"
+    ],
+    "0xE0": [
+     "<f",
+     0.9874999970197678,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     1.4000000059604645,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     1.3125,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     2.0625,
+     "Burst Separation Max"
+    ],
+    "0x1D8": [
+     "<f",
+     0.125,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.3499999940395355,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     6,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     9,
+     "Drop Weapon Ammo Max"
+    ]
+   },
+   "donor_weapon": "weapons\\fuel rod gun\\fuel rod",
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     1.1538461538461537,
+     "Weapon Damage Modifier"
+    ],
+    "0x1D8": [
+     "<f",
+     0.25,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.875,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     6,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     13,
+     "Drop Weapon Ammo Max"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.5,
+    "yardstick_dps": 60.0,
+    "port_dps": 129.0,
+    "balanced_port_dps": 26.0
+   }
   }
  }
 }
