@@ -871,6 +871,24 @@ def own_beam(a, b, write):
         # the template's object WIDGETS removed (the Brute Shot, test 5: the rocket's light-
         # volume exhaust streak rode the grenade, turning with the shot angle)
         pt.data.tagdata.obje_attrs.widgets.STEPTREE[:] = []
+    if b.get('widget_tint'):
+        # the template's LIGHT-VOLUME widget as an OWN recoloured copy (the Concussion Rifle, boot
+        # 6: the fuel rod's `hunter fuel rod` volume IS its green glowing ball -- no attachment,
+        # so every attachment colour test left it green): `out`, `hither` / `yon` ARGB on every
+        # frame, `radius` x on both radii
+        from reclaimer.hek.defs.mgs2 import mgs2_def
+        W = b['widget_tint']
+        for wd in pt.data.tagdata.obje_attrs.widgets.STEPTREE:
+            if wd.reference.tag_class.enum_name != 'light_volume':
+                continue
+            vt = mgs2_def.build(filepath=path(wd.reference.filepath, '.light_volume'))
+            for fr in vt.data.tagdata.frames.STEPTREE:
+                for bd, argb in ((fr.tint_color_hither, W['hither']), (fr.tint_color_yon, W['yon'])):
+                    bd.a, bd.r, bd.g, bd.b = argb
+                fr.radius_hither *= W.get('radius', 1.0)
+                fr.radius_yon *= W.get('radius', 1.0)
+            save(vt, path(W['out'], '.light_volume'), write)
+            wd.reference.filepath = W['out']
     for i, spec in b.get('set_attachments', {}).items():
         # a kept attachment re-pointed (index AFTER keep_attachments): the Brute Shot's
         # trail = Halo 1's frag-grenade smoke effect in the rocket's exhaust-effect slot
