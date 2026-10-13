@@ -5041,7 +5041,8 @@
    "fp_animations": "weapons\\focus rifle\\fp\\fp",
    "requires": [
     "proj weapons\\focus rifle\\beam"
-   ]
+   ],
+   "hands": "two"
   }
  ],
  "Halo 3": [
