@@ -5214,6 +5214,350 @@
    "requires": [
     "proj weapons\\storm rifle\\bolt"
    ]
+  },
+  {
+   "weapon": "Plasma Launcher",
+   "source": "Halo Reach",
+   "donor": "Plasma Pistol",
+   "default_on": false,
+   "desc": "Halo Reach's Plasma Launcher: its model, first-person animations, sounds and numbers. A tap fires one sticky plasma bolt; hold the trigger three seconds and release for a volley of four that homes on your target. Bolts stick to whatever they hit and burst a moment later. Twelve bolts a battery; a volley overheats it.",
+   "balance_desc": "Measured against the Plasma Grenade: a weaker burst (84, 206 when stuck), single bolts every 1.25 s, a slower volley, faster bolts and Halo 1-style aim assist; the charge, heat and battery stay Reach's.",
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma launcher\\explosion",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 56.0,
+     "card": "Explosion Damage",
+     "original": 17.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma launcher\\explosion",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 84.29,
+     "card": "Explosion Damage",
+     "original": 175.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma launcher\\explosion",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 84.29,
+     "card": "Explosion Damage",
+     "original": 175.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma launcher\\explosion",
+     "field": "Radius",
+     "block": null,
+     "value": 0.556,
+     "card": "Explosion Damage",
+     "original": 0.6
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma launcher\\explosion",
+     "field": "Radius Max",
+     "block": null,
+     "value": 2.0,
+     "card": "Explosion Damage",
+     "original": 1.8
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma launcher\\attached",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 121.6,
+     "card": "Stuck Damage",
+     "original": 125.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma launcher\\attached",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 121.6,
+     "card": "Stuck Damage",
+     "original": 125.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma launcher\\attached",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 121.6,
+     "card": "Stuck Damage",
+     "original": 125.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma launcher\\impact",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 0.0,
+     "card": "Bolt Damage",
+     "original": 2.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma launcher\\impact",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 0.0,
+     "card": "Bolt Damage",
+     "original": 2.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\plasma launcher\\impact",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 0.0,
+     "card": "Bolt Damage",
+     "original": 2.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma launcher\\plasma launcher",
+     "field": "Rounds Per Second",
+     "block": "Triggers",
+     "value": 0.8,
+     "card": "More Shooting",
+     "original": 1.0526,
+     "index": 0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma launcher\\plasma launcher",
+     "field": "Rounds Per Second Max",
+     "block": "Triggers",
+     "value": 0.8,
+     "card": "More Shooting",
+     "original": 1.0526,
+     "index": 0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma launcher\\plasma launcher",
+     "field": "Rounds Per Second",
+     "block": "Triggers",
+     "value": 1.9,
+     "card": "More Shooting",
+     "original": 4.75,
+     "index": 1
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma launcher\\plasma launcher",
+     "field": "Rounds Per Second Max",
+     "block": "Triggers",
+     "value": 1.9,
+     "card": "More Shooting",
+     "original": 4.75,
+     "index": 1
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma launcher\\plasma launcher",
+     "field": "Spew Time",
+     "block": "Triggers",
+     "value": 1.5789473684210527,
+     "card": "More Shooting",
+     "original": 0.631578947368421,
+     "index": 1
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma launcher\\bolt",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 0.55,
+     "card": "Projectile",
+     "original": 0.36666666666666664
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma launcher\\bolt",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 0.14666666666666667,
+     "card": "Projectile",
+     "original": 0.23333333333333334
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma launcher\\bolt",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 131.7,
+     "card": "Projectile",
+     "original": 180.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma launcher\\bolt",
+     "field": "Timer",
+     "block": null,
+     "value": 0.556,
+     "card": "Projectile",
+     "original": 0.25
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma launcher\\bolt",
+     "field": "Timer Max",
+     "block": null,
+     "value": 5.263,
+     "card": "Projectile",
+     "original": 2.5
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma launcher\\bolt",
+     "field": "Arming Time",
+     "block": null,
+     "value": 0.0,
+     "card": "Projectile",
+     "original": 1.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma launcher\\bolt",
+     "field": "Air Gravity Scale",
+     "block": null,
+     "value": 0.111,
+     "card": "Projectile",
+     "original": 0.1
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma launcher\\bolt",
+     "field": "Water Gravity Scale",
+     "block": null,
+     "value": 0.667,
+     "card": "Projectile",
+     "original": 0.5
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma launcher\\bolt guided",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 0.55,
+     "card": "Projectile",
+     "original": 0.36666666666666664
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma launcher\\bolt guided",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 0.14666666666666667,
+     "card": "Projectile",
+     "original": 0.23333333333333334
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma launcher\\bolt guided",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 131.7,
+     "card": "Projectile",
+     "original": 180.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma launcher\\bolt guided",
+     "field": "Timer",
+     "block": null,
+     "value": 0.556,
+     "card": "Projectile",
+     "original": 0.25
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma launcher\\bolt guided",
+     "field": "Timer Max",
+     "block": null,
+     "value": 5.263,
+     "card": "Projectile",
+     "original": 2.5
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma launcher\\bolt guided",
+     "field": "Arming Time",
+     "block": null,
+     "value": 0.0,
+     "card": "Projectile",
+     "original": 1.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma launcher\\bolt guided",
+     "field": "Air Gravity Scale",
+     "block": null,
+     "value": 0.111,
+     "card": "Projectile",
+     "original": 0.1
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\plasma launcher\\bolt guided",
+     "field": "Water Gravity Scale",
+     "block": null,
+     "value": 0.667,
+     "card": "Projectile",
+     "original": 0.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma launcher\\plasma launcher",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 0.0,
+     "card": "Autoaim",
+     "original": 3.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma launcher\\plasma launcher",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 17.5,
+     "card": "Autoaim",
+     "original": 30.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma launcher\\plasma launcher",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 7.2,
+     "card": "Magnetism",
+     "original": 6.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\plasma launcher\\plasma launcher",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 42.0,
+     "card": "Magnetism",
+     "original": 30.0
+    }
+   ],
+   "weap": "weapons\\plasma launcher\\plasma launcher",
+   "fp_animations": "weapons\\plasma launcher\\fp\\fp",
+   "requires": [
+    "proj weapons\\plasma launcher\\bolt"
+   ]
   }
  ],
  "Halo 3": [
