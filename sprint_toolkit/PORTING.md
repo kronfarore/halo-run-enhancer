@@ -1938,9 +1938,13 @@ one round EVERY tick at a full 30 and two ticks at 15..29.9. The per-round value
 overheated the gun in ~1 s (user: 'under 2 s'). **THE SENTINEL BEAM, PROBED (c40, 2026-10-13): it
 fires 15/s** (shots 67 ms apart; 38 rounds to the 0.9 overheat in 2.47 s; 84 rounds a battery) -- its
 doubled per-round values are RIGHT, no change. The SAME 29..30 tag, accel 0.05: 30/s on the Focus
-Rifle, 15/s on the Sentinel Beam. The likely difference (NOT isolated): the Sentinel Beam kept the
-plasma rifle template's AGE rate-of-fire penalty 0.2 (the Focus Rifle: Reach's 0) -- any rate a hair
-under 30 takes two ticks. Measure every port's rate. Halo 1 cools while firing
+Rifle, 15/s on the Sentinel Beam. A field diff of the two weapons: the ONLY rate-relevant difference
+is the AGE penalty -- the Sentinel Beam kept the plasma rifle template's rate-of-fire penalty 0.2 (the
+Focus Rifle: Reach's 0, which Reach's plasma rifle shares). It scales with the battery used, which is
+> 0 after the FIRST round: 30 x (1 - 0.2 x 0.012) = 29.9 < 30 -> two ticks from the second shot on
+(the probe's first gap is already 67 ms). Not isolated by a boot. So a 30/s port needs age rate-of-fire
+penalty 0 in BOTH versions (the Focus Rifle's balanced fit assumes 30/s; no row or card touches it).
+Measure every port's rate. Halo 1 cools while firing
 (confirmed again: heat 0.045 -> 1.0 over 29 rounds at 0.29/s); vent 3.07 s as fitted.
 
 **THE BEAM -- the best so far (user):** Reach's 1p `beam_system` = a `center` ribbon on energy_trail
