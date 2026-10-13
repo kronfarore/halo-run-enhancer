@@ -120,7 +120,7 @@
    "target": "Elite (minor)",
    "weapon": "Storm Rifle",
    "shots": 25,
-   "seconds": 8.2,
+   "seconds": 2.4,
    "inputs": {
     "character chain": "objects\\characters\\storm_elite\\ai\\storm_elite.character -> ai\\generic.character",
     "enemy body (legendary)": [
@@ -224,10 +224,7 @@
     "hit on shield": 8.0,
     "hit on body": 8.0
    },
-   "flags": [
-    "fight outlasts the target's shield recharge delay (8 s)",
-    "includes overheat 3.00 s"
-   ]
+   "flags": []
   },
   {
    "direction": "player->enemy",
@@ -590,7 +587,7 @@
    "target": "Knight",
    "weapon": "Storm Rifle",
    "shots": 40,
-   "seconds": 12.6,
+   "seconds": 6.8,
    "inputs": {
     "character chain": "objects\\characters\\storm_knight\\ai\\storm_knight.character -> ai\\generic.character",
     "enemy body (legendary)": [
@@ -695,7 +692,7 @@
    "flags": [
     "Knight hlmt: root damage info (used) shield energy_shield_thin_for / indirect hard_metal_thin_for, legacy `new damage info` says shield energy_shield_thin_cov_elite / indirect hard_metal_thin_cov_elite",
     "fight outlasts the target's shield recharge delay (4 s)",
-    "includes overheat 3.00 s"
+    "includes 1 overheat(s) of 3.00 s"
    ]
   },
   {
@@ -949,7 +946,7 @@
   "Knight mechanics NOT modelled: teleport/blink away when hurt (breaks the fight and lets the shield recharge after its 4 s delay), Watcher shielding / resurrection of Knights, the face-plate pop exposing the skull section, Knight Commanders / Battlewagons (tougher variants), alternative Knight weapons (incineration cannon, scattershot, binary rifle, light rifle) -- this table is the default storm_knight with its Suppressor (forerunner SMG npc).",
   "Elite mechanics NOT modelled: evasion rolls / cover breaks, plasma grenades, stimuli overrides (aggressive / berserk characters), the hlmt armor-lock and engineer-shield sections (Reach leftovers on storm_elite_ai).",
   "Every multiplier in these rows is 1.0: the Storm Rifle and the Suppressor are plasma_FAST (1.0 vs energy_shield_thin); only plasma_SLOW carries the Halo-style 1.6 vs shields / 0.4 vs hard_metal_thin in Halo 4. So the Storm Rifle is no shield-stripper on paper.",
-  "Storm Rifle held trigger: overheats on the 12th bolt (0.09 heat per bolt, threshold 1), then (1 - 0.1 recovery threshold) / 0.3 per s = 3.0 s locked (the real heat is 1.08, so ~3.27 s). A feathering player (heat loss 0.55/s while not firing) avoids the lockout; the held-trigger number is a worst case, not how people use it.",
+  "Storm Rifle held trigger: heat DRAINS while firing (user, 2026-10-13: Halo 3 and Halo 4 both visibly drain while the trigger is held; the earlier Focus Rifle reading that heat falls only when not firing was wrong). 0.09 heat per bolt, heat loss 0.55/s between bolts; at threshold 1 the gun locks until (heat - 0.1 recovery threshold) / 0.3 per s.",
   "Headshots are excluded by method; Halo 4 jpt headshot damage multiplier reads 0 on all three player weapons (engine default applies to BR shots via its headshot flag)."
  ]
 }

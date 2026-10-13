@@ -208,6 +208,35 @@ def player_time(n, interval, mag=0, reload=0.0, heat_per_shot=0.0, overheat_at=1
     return t
 
 
+def player_time_drain(n, interval, heat_per_shot, loss_per_sec, overheat_at=1.0,
+                      recovery_at=0.0, overheated_loss_per_sec=0.0, mag=0, reload=0.0):
+    """player_time with heat that DRAINS WHILE FIRING (user, 2026-10-13: H3 and H4 both
+    drain while the trigger is held; the earlier Focus Rifle reading was wrong). Each
+    shot adds heat_per_shot; between shots heat falls by loss_per_sec x interval. At the
+    threshold the gun locks until heat falls to recovery_at at the overheated loss rate.
+    Returns (seconds, overheats)."""
+    if n is None:
+        return None, 0
+    t, heat, inmag, over = 0.0, 0.0, mag, 0
+    for i in range(1, n):
+        heat += heat_per_shot
+        dt = interval
+        if mag:
+            inmag -= 1
+            if inmag <= 0:
+                dt = max(dt, reload)
+                inmag = mag
+        if heat_per_shot and heat >= overheat_at - 1e-9:
+            over += 1
+            lock = (heat - recovery_at) / (overheated_loss_per_sec or loss_per_sec or 1.0)
+            dt = max(dt, lock)
+            heat = recovery_at
+        else:
+            heat = max(0.0, heat - loss_per_sec * dt)
+        t += dt
+    return t, over
+
+
 def ai_times(n, shots_per_sec, burst_duration=0.0, burst_separation=0.0):
     """(held, paced) seconds until the AI's n-th hit. Paced: bursts of `burst_duration`
     seconds at the same rate, `burst_separation` seconds between them."""

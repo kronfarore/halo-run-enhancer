@@ -334,6 +334,7 @@ def player_weapon(label, weapon, graph):
     over = tc.num(w.get('overheated threshold')) or 1.0
     rthr = tc.num(w.get('heat recovery threshold'))
     oloss = tc.num(w.get('overheated heat loss per second'))
+    loss = tc.num(w.get('heat loss per second'))
     mag = int(tc.num(w.get('magazines/[0]/rounds loaded maximum')))
     rps_shot = int(tc.num(w.get(B + 'rounds per shot'), 1))
     reload_s, reload_src = reload_seconds(graph) if mag and rps_shot else (None, None)
@@ -343,6 +344,7 @@ def player_weapon(label, weapon, graph):
          'interval': 1.0 / rps if rps else rec, 'heat per round': heat,
          'overheated threshold': over, 'heat recovery threshold': rthr,
          'overheated heat loss per second': oloss, 'overheat pause': pause,
+         'heat loss per second': loss,
          'magazine': mag if rps_shot else 0, 'reload': reload_s or 0.0,
          'reload source': reload_src}
     if not spf:
@@ -438,16 +440,22 @@ def main():
 
         # ---- player -> enemy
         for m in weapons:
+            overheats = 0
             ms, why_s = G.multiplier(m['groups'], E['shield material'])
             mb, why_b = G.multiplier(m['groups'], E['body material'])
             hit = m['shot']['damage upper bound'] * m['shot']['projectiles per shot'] * pds
             n, _ = tc.shots_to_kill(e_shield, e_body, hit * ms, hit * mb)
             if m['shots per fire']:
                 secs = burst_time(n, m)
+            elif m['heat per round']:
+                # heat DRAINS while firing (user, 2026-10-13: H3 and H4 both do in play;
+                # the Focus Rifle 'cools only when not firing' reading was wrong)
+                secs, overheats = tc.player_time_drain(
+                    n, m['interval'], m['heat per round'], m['heat loss per second'],
+                    m['overheated threshold'], m['heat recovery threshold'],
+                    m['overheated heat loss per second'], m['magazine'], m['reload'])
             else:
-                secs = tc.player_time(n, m['interval'], m['magazine'], m['reload'],
-                                      m['heat per round'], m['overheated threshold'],
-                                      m['overheat pause'])
+                secs = tc.player_time(n, m['interval'], m['magazine'], m['reload'])
             flags = list(e_flags)
             if secs is not None and secs > vit['shield recharge delay']:
                 flags.append('fight outlasts the target\'s shield recharge delay (%g s)'
@@ -455,8 +463,8 @@ def main():
             pauses = []
             if m['magazine'] and n and n > m['magazine']:
                 pauses.append('reload(s) %.2f s' % m['reload'])
-            if m['heat per round'] and n and n * m['heat per round'] >= m['overheated threshold']:
-                pauses.append('overheat %.2f s' % m['overheat pause'])
+            if m['heat per round'] and n and not m['shots per fire'] and overheats:
+                pauses.append('%d overheat(s) of %.2f s' % (overheats, m['overheat pause']))
                 if m['overheat pause'] >= vit['shield recharge delay']:
                     flags.append('an overheat pause is as long as the shield recharge delay')
             if pauses:
@@ -592,10 +600,10 @@ def main():
         'Every multiplier in these rows is 1.0: the Storm Rifle and the Suppressor are plasma_FAST '
         '(1.0 vs energy_shield_thin); only plasma_SLOW carries the Halo-style 1.6 vs shields / 0.4 '
         'vs hard_metal_thin in Halo 4. So the Storm Rifle is no shield-stripper on paper.',
-        'Storm Rifle held trigger: overheats on the 12th bolt (0.09 heat per bolt, threshold 1), '
-        'then (1 - 0.1 recovery threshold) / 0.3 per s = 3.0 s locked (the real heat is 1.08, '
-        'so ~3.27 s). A feathering player (heat loss 0.55/s while not firing) avoids the lockout; '
-        'the held-trigger number is a worst case, not how people use it.',
+        'Storm Rifle held trigger: heat DRAINS while firing (user, 2026-10-13: Halo 3 and Halo 4 '
+        'both visibly drain while the trigger is held; the earlier Focus Rifle reading that heat '
+        'falls only when not firing was wrong). 0.09 heat per bolt, heat loss 0.55/s between '
+        'bolts; at threshold 1 the gun locks until (heat - 0.1 recovery threshold) / 0.3 per s.',
         'Headshots are excluded by method; Halo 4 jpt headshot damage multiplier reads 0 on all '
         'three player weapons (engine default applies to BR shots via its headshot flag).',
     ]

@@ -23,13 +23,11 @@ CAVEATS = [
     "by the AI's accuracy, which climbs over the first seconds -- the tables use full "
     "accuracy; ramp-start numbers are in each row). AI trigger rate is capped at the "
     "weapon's own top rate (assumption, all games).",
-    "PLASMA HEAT is modelled differently per game: H1 lets heat drain while firing "
-    "(measured with the Plasma Repeater port probe); H2 and H3/ODST also let it drain while "
-    "firing (ASSUMPTION -- without the drain the Plasma Rifle would overheat after 7 bolts, "
-    "which does not match play; the no-drain times are in the rows); Reach uses the "
-    "Plasma Repeater's measured heat curve (rate falls 15 -> 3/s); Halo 4 drains ONLY when "
-    "not firing (the rule confirmed in game for the Focus Rifle port), so the Storm Rifle "
-    "overheats every ~11 bolts.",
+    "PLASMA HEAT drains WHILE firing in every game (user, 2026-10-13: Halo 3 and Halo 4 "
+    "both visibly drain while the trigger is held; the earlier 'cools only when not firing' "
+    "Focus Rifle reading was wrong). H1 was measured with the Plasma Repeater port probe; "
+    "H2 assumes the same; Reach uses the Plasma Repeater's measured heat curve (rate falls "
+    "15 -> 3/s). Halo 4's Storm Rifle first overheats on about the 27th bolt.",
     "Reload pauses come from the tag's reload time, or the first-person reload animation "
     'where the tag has none (H3 AR/BR, Reach, H4). Damage is the point-blank upper bound '
     '(no fall-off with range). Default AI weapons come from scenario squads (census where '
