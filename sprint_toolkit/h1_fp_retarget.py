@@ -304,7 +304,7 @@ _HAND_BIND = {}
 _FINGERS = ('thumb', 'index', 'middle', 'ring', 'pinky')
 
 
-def _resolve_arms(world, h3_nodes, weapon):
+def _resolve_arms(world, h3_nodes, weapon, anim=None):
     """HALO 4 (the Storm Rifle, wave C1): Halo 4's arms are not Halo 1's (shoulders +-7.05 vs
     +-9.40 cm, upper arm 9.15 vs 10.25, forearm 11.67 vs 10.89; bones along local -y / +y,
     Halo 1's along +x). In place on `world` (camera space): every arm / finger rotation into
@@ -326,7 +326,11 @@ def _resolve_arms(world, h3_nodes, weapon):
         # `hand_offset` {side: (x, y, z) wu in the GUN's frame}: the Halo 1 wrist moved off Halo 4's
         # (the Storm Rifle, boot 4: Halo 1's chunkier glove and cuff sink into the gun's rear where
         # Halo 4's slim hand wraps the grip -- seen in the melee's side view)
-        off = WEAPONS[weapon].get('hand_offset', {}).get(side)
+        # `hand_offset_anims` {source animation: {side: offset}} overrides it per animation (boot 5,
+        # user: idle fine without, the fidget better with, the melee grip lost with it)
+        offs = WEAPONS[weapon].get('hand_offset', {})
+        offs = WEAPONS[weapon].get('hand_offset_anims', {}).get(anim, offs)
+        off = offs.get(side)
         if off and 'gun' in src:
             T = tuple(t + d for t, d in zip(T, R.qrot(src['gun'][0], off)))
         qu, qf, qh = (R.qmul(src[n][0], a) for n in (up, fo, ha))
@@ -334,6 +338,13 @@ def _resolve_arms(world, h3_nodes, weapon):
         la = _vlen(_HAND_BIND[_h1(weapon, fo)][1])
         lb = _vlen(_HAND_BIND[_h1(weapon, ha)][1])
         st = _vsub(T, S)
+        # OUT OF REACH (the Storm Rifle, boot 5: Halo 4's melee stretches the left arm ~4 cm past
+        # Halo 1's reach, frames 4-24 -- clamped, the hand stopped short INSIDE the gun): the
+        # shoulder moves toward the wrist by the shortfall (off screen), the hand lands on Halo 4's
+        reach = la + lb - 1e-6
+        if _vlen(st) > reach:
+            S = tuple(s + d * (1.0 - reach / _vlen(st)) for s, d in zip(S, st))
+            st = _vsub(T, S)
         c = max(abs(la - lb) + 1e-6, min(_vlen(st), la + lb - 1e-6))
         u = tuple(x / (_vlen(st) or 1.0) for x in st)
         cos_a = max(-1.0, min(1.0, (la * la + c * c - lb * lb) / (2 * la * c)))
@@ -386,7 +397,7 @@ def _finger_by_direction(world, src, h3_nodes, weapon, n, kp, side):
 
 
 def retarget_frame(h3_nodes, pose, defaults, weapon, corr, grip_ref=None,
-                   extra=(0.0, 0.0, 0.0)):
+                   extra=(0.0, 0.0, 0.0), anim=None):
     """One Halo 3 BASE frame -> {H1 name: (q in Halo 1 TAG convention, t wu)} LOCAL.
 
     Solved in world space: every H3 node's world transform, re-expressed relative to
@@ -409,7 +420,7 @@ def retarget_frame(h3_nodes, pose, defaults, weapon, corr, grip_ref=None,
     for n, C in corr.items():
         world[n] = _mul(world[n], C)
     if h4_tags.is_h4(WEAPONS[weapon]['graph']):
-        _resolve_arms(world, h3_nodes, weapon)
+        _resolve_arms(world, h3_nodes, weapon, anim)
     grip = WEAPONS[weapon].get('left_hand_offset')
     if grip and grip_ref is not None:
         _move_left_hand(world, h3_nodes, grip, WEAPONS[weapon]['grip_node'], grip_ref, extra)
@@ -497,7 +508,7 @@ def retarget(weapon, anim_name, nodes=None, anims=None, defaults=None):
         # where the left wrist rests on the gun: the idle's first frame, before any IK
         ref = retarget_frame(nodes, anims['first_person:idle'][1][0], defaults, weapon, corr)
     extra = WEAPONS[weapon].get('left_hand_offset_anims', {}).get(anim_name, (0.0, 0.0, 0.0))
-    return typ, [retarget_frame(nodes, f, defaults, weapon, corr, ref, extra) for f in frames]
+    return typ, [retarget_frame(nodes, f, defaults, weapon, corr, ref, extra, anim_name) for f in frames]
 
 
 LOOPING = ('first-person idle', 'first-person posing', 'first-person moving')
