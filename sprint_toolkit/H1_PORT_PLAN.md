@@ -1205,6 +1205,19 @@ PARALLEL PREFACE (put in front of each prompt of a pair):
 > step); never `kit_lock.py release --force` a lock whose holder is running. Do NOT write the
 > next weapon's prompt: write "<Bx>: what <weapon> taught" and tell me you are done.
 
+### Parallel pair 2: B6 Plasma Launcher + C1 Storm Rifle (prepared 2026-10-13)
+
+B6 is wave B's last weapon, C1 the PILOT of wave C (Halo 4 source): different source games and
+tool families (B6: the Reach route + the explosive / charge / sticky recipes; C1: a new `h4:`
+source -- geometry, textures, Wwise sounds, an FP graph on a DIFFERENT arm skeleton). The pilot
+will touch shared pipeline scripts more than a normal port: every such change is small, proven
+(narrowed proof) and committed at once through kit_commit.
+
+| session | weapon | test level | extra HUD sequences |
+|---|---|---|---|
+| 1 | B6 Plasma Launcher | a30 | hud_reticles 52-53 |
+| 2 | C1 Storm Rifle (pilot) | b30 (`--level b30` on EVERY staging run) | hud_reticles 54-57 |
+
 ## Hand-off prompt for a weapon session
 
 > Port the <WEAPON> into Halo 1 (H1_PORT_PLAN.md, wave <X>, #<n>). Source: <game>.
@@ -2046,10 +2059,12 @@ PARALLEL PREFACE (put in front of each prompt of a pair):
 > rebuild stays BATCHED (wave B, my go). When done: catalog entry, enhancer hand-off, PORTING
 > section, memory, `python port_backup.py --game h1`, and "B7: what the Focus Rifle taught".
 
-### The Plasma Launcher (wave B6), filled in -- the last of wave B
+### The Plasma Launcher (wave B6), filled in -- the last of wave B, PARALLEL with C1
 
-> PARALLEL RULES APPLY: other sessions may be working on the same kit (H1_PORT_PLAN.md "Running
-> two ports in parallel", incl. REWORK status). Your test level is a30 -- pass `--level a30` on
+> PARALLEL: another port session (C1, the Storm Rifle -- the Halo 4 pilot) runs at the same time
+> on the same kit. Read H1_PORT_PLAN.md "Running two ports in parallel" first (incl. REWORK status
+> and "Hardened after pair 1": `kit_commit.py` for every commit, `--commit` on the record writers)
+> and follow its rules. Your test level is a30 -- pass `--level a30` on
 > every `h1_port_test_map.py` run and restore with `h1_port_test_map.py plasma_launcher --restore
 > a30`. Extra HUD sequences: hud_reticles 52-53 only. If a script says `kit lock: WAITING`, let it
 > wait. Do NOT write the next weapon's prompt: write "B6: what the Plasma Launcher taught" and tell
@@ -2110,3 +2125,87 @@ PARALLEL PREFACE (put in front of each prompt of a pair):
 > hand-off, PORTING section, memory, `python port_backup.py --game h1`, "B6: what the Plasma
 > Launcher taught". Wave B then closes with the wave check (`port_tool_proof.py --full --rev
 > d096b49`) and the batched ten-map rebuild -- both on my go, not in this session.
+
+### The Storm Rifle pilot (wave C1), filled in -- PARALLEL with B6
+
+> PARALLEL: another port session (B6, the Plasma Launcher) runs at the same time on the same kit.
+> Read H1_PORT_PLAN.md "Running two ports in parallel" first (incl. "Hardened after pair 1":
+> `kit_commit.py` for every commit, `--commit` on the record writers, the opt-in `--with-busy`
+> proof) and follow its rules. Your test level is b30 -- pass `--level b30` on every
+> `h1_port_test_map.py` run and restore with `h1_port_test_map.py storm_rifle --restore b30`.
+> Extra HUD sequences: hud_reticles 54-57 only. If a script says `kit lock: WAITING`, let it wait;
+> never `kit_lock.py release --force` a lock whose holder is running. Do NOT write the next
+> weapon's prompt: write "C1: what the Storm Rifle taught" (the HALO 4 RECIPE the next eight
+> inherit) and tell me you are done.
+>
+> Port the Storm Rifle into Halo 1 (H1_PORT_PLAN.md, wave C, #C1, the PILOT of the HALO 4 route).
+> Source: Halo 4, `objects\weapons\rifle\storm_assault_carbine\storm_assault_carbine` (H4EK); FP
+> graph `objects\characters\storm_fp\weapons\rifle\fp_assault_carbine\storm_fp_assault_carbine`;
+> FP arms `objects\characters\storm_fp\storm_fp.render_model`.
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Running two ports in parallel", "Phase 0: DONE", "Pilot
+> A1" to "A9", "B1: what the DMR taught" -- the REACH PILOT, the model for this one: a new source
+> game added to the SAME config pipeline as `reach:` paths -- to "B7"; B3 (the Plasma Repeater:
+> heat on a Covenant automatic, Reach's analogue of this weapon) and B7 (the Focus Rifle: measured
+> rates, heat display) matter most), PORTING.md ("What ported actually means" steps 0-11 and 5b,
+> closing checks 0-10, the Halo 1 sections -- the DMR and the Plasma Repeater first --, the Halo 1
+> SAW sections (the only Halo 4 -> Halo 1 port so far: saw_to_jms, h4_bitmap, h1_saw_sounds),
+> "Reading H4 source data", the Halo 4 port-kit sections, "Balance" incl. the ARMED WDM RULE, THE
+> HIT-EFFECT RULE, the two-handed rule, the balanced drop rule) and memory h1-dmr-reach-pilot,
+> h1-plasma-repeater-port, h1-focus-rifle-port, h1-parallel-ports, halo-weapon-port-h4-to-h1,
+> saw-own-sounds, h1-fmod-bank-sounds, h4-port-kit, halo4-support-scoping, h1-armed-test-balanced-god,
+> h1-armed-wdm-rule, h1-armed-two-handed-rule, h1-armed-balanced-drop-rule, h1-hit-effect-rule,
+> port-muzzle-flash-rule, port-flashlight-sound-rule, h1-port-phase0, halo-port-own-messages,
+> port-findings-are-observations, shared-worktree-commits. `ports_h1/plasma_repeater.py` is the
+> nearest shape (a heat-limited Covenant automatic on the Reach route); copy it into
+> `ports_h1/storm_rifle.py` and edit only that file plus the shared tools you GENERALIZE FOR HALO 4
+> (the pilot's job; every extended tool keeps the done ports byte-identical: narrowed proof,
+> commit at once via kit_commit).
+>
+> START WITH STEP 4a, with me: Halo 4 has NO Plasma Rifle and NO Flamethrower. Candidates the
+> PLASMA PISTOL (provisional: the only heat-based plasma weapon both games have), the ASSAULT RIFLE
+> and the NEEDLER (the automatic role); and a CARRIER yardstick to consider with me, the Sentinel
+> Beam's kind: Halo 4's Elites carry the Storm Rifle where Halo 1's Elites carry the Plasma Rifle
+> (the Elite's main weapon in each game). DEFAULT = Halo 4's own numbers, BALANCED = the ratio rows
+> (ask me whether wave C keeps that rule). Read the Halo 4 storm rifle (H4EK `tool
+> export-tag-to-xml`, cwd = the kit, absolute paths; extend h3_weapon_values with `--kit h4` as the
+> DMR did for Reach): damage per bolt + group, rate (Halo 1 measured: 15..29.9 fire 15/s, 30 fires
+> 30/s -- B7), heat per round / loss / thresholds / VENT, battery (if any), error, velocity, range,
+> aim assist, melee. Time to kill: h1_role_compare 'storm_rifle' set vs Plasma Rifle, Assault Rifle,
+> Needler and the Plasma Repeater port (its Reach cousin). Then 4b, the template diff,
+> port_sound_refs and the muzzle-flash comparison BEFORE boot 1.
+>
+> THE ROUTE (the pilot's real question -- lay the options out for me before building, as the DMR
+> did):
+> - FP ARMS: checked by the coordinating session 2026-10-13 -- Halo 4's `storm_fp` is NOT Halo 1's
+>   (80 nodes vs 37: helper / fixup bones; shoulders +-7.05 vs +-9.40, upper arm 9.15 vs 10.25,
+>   forearm 11.67 vs 10.89; the core chain upperarm -> forearm -> hand -> three-joint fingers maps by
+>   name). So (a) a RETARGET of Halo 4's own fp graph must RE-SOLVE the arms (hands kept on the gun,
+>   two-bone IK: h1_fp_retarget's `_move_left_hand` is the start), not copy them as Halo 3's and
+>   Reach's were; and first: can the H4 graph be DECODED (the Foundry route, PORTING's Halo 4 kit
+>   sections, or Python as Reach's)? (b) the PROVEN Reach route driving the Storm Rifle mesh with
+>   the Plasma Repeater's (or Halo 3's plasma rifle's) FP animations -- a different gun's motion;
+>   (c) the SAW route (the mesh on a Halo 1 donor's skeleton, the donor's animations retimed).
+>   Prefer the most faithful route the pilot can PROVE, record what the others would need.
+> - GEOMETRY: h4_rm.load on the XML export (raw vertices per mesh), the world + FP models; check the
+>   root rotation and the `primary trigger` marker (Armed). TEXTURES: h4_bitmap.py (H4EK's own
+>   exporters fail: decode the tag; take the LAST size match). SOUNDS: Halo 4's Wwise banks
+>   (h4_wwise.py --extract, the SAW's route) -> h1_port_sounds with a per-config `bank` source, 22k
+>   ADPCM, never under sound\sfx. HUD: Halo 4's chud for the reticle (supersample recipe) and any
+>   heat display (B3's gauge / B7's heat ramp).
+> - Prefer a NEW SOURCE in the existing config pipeline (`h4:` paths beside `reach:`) over
+>   reviving the SAW-hardwired tools (saw_to_jms, saw_port_values, h1_saw_sounds stay SAW-only;
+>   read them for the Halo 4 decoding, never break the SAW's output).
+>
+> Reserved: pickup messages 85/86; hud_msg_icons 46 (+ _r); hud_reticles 35 (+ _r; extras 54-57);
+> label `st` taught to characters\cyborg from `pr`; sounds under `sound\weapons\storm_rifle_port`;
+> weapon folder `weapons\storm rifle`; catalog name `Storm Rifle` (halo.json's).
+>
+> Step 11: `st` has no carrier -- list Halo 1's carriers of the donor weapon (WDM, actor flags; the
+> plasma-rifle Elites are the natural donors); `firing_profile` (Halo 4's ai\generic Storm Rifle
+> entry on m020 is verified) with `donor_weapon` (+ `donor_variant`), a `wdm_rule` and a
+> `balanced_set`, written with `--commit`; the enhancer session writes its keys through
+> port_catalog_keys.py before the Armed boot. Tests: `h1_port_test_map.py storm_rifle --level b30
+> --stage` (dry default), fixes, `--balanced`, `--armed grunt,jackal,elite`;
+> `h1_port_test_map.py storm_rifle --restore b30`. The ten-map rebuild is BATCHED (my go). When done:
+> catalog entry, enhancer hand-off, PORTING section ("Halo 1: the Storm Rifle, the Halo 4 pilot"),
+> memory, `python port_backup.py --game h1`, and "C1: what the Storm Rifle taught".
