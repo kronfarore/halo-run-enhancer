@@ -1842,6 +1842,74 @@ Triggers balance rows and cards reached trigger 0 ONLY -> `index: 'all'` rows + 
 chain tool changed since 9fb39f7); h1_reticle_proof (crop / stretch, supersample); ammo_meter.plan
 unchanged for every n but 1 -- each 0 changed apart from bitmap-header noise, the kit restored exact.
 
+### Halo 1: the Concussion Rifle, wave B5 (2026-10-12/13, 12 boots + Armed on a30, PARALLEL with B7) -- a knockback bolt, a Covenant look recoloured layer by layer
+
+The whole weapon is `ports_h1/concussion_rifle.py`: a copy of the Halo 1 ROCKET LAUNCHER (user: 'if
+it's easier') firing a bolt built on the restored FUEL ROD's projectile and explosion.
+
+**Step 4a (user): yardstick the FUEL ROD; DEFAULT = Reach's own, BALANCED = the ratio per field;
+materials: the fuel rod's table in default, x Reach's plasma_fast / explosion_large in balanced;
+HUNTERS: Reach's values in both (the fuel rod's x0 has no ratio).** Reach: impact 21.5 (`collision`)
++ blast 0..21.5 over 1 -> 2 wu (core 0.8, `plasma_fast`) = 43 a hit at 3/s (129 dps = the Plasma
+Rifle's 130); the knockback 2.5 = Reach's own GRAVITY HAMMER IMPULSE (2.5). Balanced: blast 26.9
+(lower 14.3 by the sibling rule), impact 0 (the fuel rod has none), knockback 4 x 2.5/1.5 = 6.67,
+1.04 s a shot, 5 / 11 / 24, magnetism 6 -- 26 dps against the fuel rod's 60. The user judged
+Reach's raw 2.5 knockback 'decent enough' in default (the hammer's tuned 7.5 not needed). Step 6: the
+rocket box ratio-scaled by the carry (7, balanced 6).
+
+**Flight, MEASURED (h1_projectile_probe).** A Halo 1 projectile with final > initial did NOT speed
+up along the range: the balanced bolt (11.2 -> 12.3) flew a constant 12.17-12.18 wu/s from its
+first tick (observation; the GL's grenade slowed along the range). Two balanced traps, one boot
+each: (1) Reach's MINIMUM VELOCITY 11 against an 11.2 wu/s bolt -- in Halo 1 it DETONATES (the
+Brute Shot) -> balanced 0 (the fuel rod's zero); (2) MAXIMUM RANGE 0 copied from the fuel rod
+destroyed the bolt on creation (probe: 0 projectiles over 5 shots) -- the fuel rod's 0 is UNSET (it
+falls by gravity), not a value to carry: no row, Reach's 100 in both. Read a yardstick's zero as
+'unset' before a ratio writes it.
+
+**The look: every green layer of the fuel rod, found one by one (boots 2-9).** Muzzle flash: the
+plasma pistol's `fire bolt` (user: 'a normal plasma release'; Reach's flash gradient is violet),
+fins dropped, x0.7, tinted violet, an own violet muzzle light on the rocket's slot. The fuel rod's
+green came from FIVE places, none of them visible to 4b or the template diff:
+- the blast's particle system TYPE states `birth` / `death` carry a COLOUR MULTIPLIER (green) over
+  every particle state -- recolouring the particle states alone changed nothing (`psys_tint`
+  `@<type state>`, h1_pickable_weapons);
+- `c` particles (sparks, `c fire`) are coloured by the creating object's CHANGE COLOUR -- the fuel rod
+  copy has none (`change_color` violet, the Beam Rifle's finding);
+- a solid glow shader_model on the plasma rifle template draws its green REFLECTION tint over the
+  diffuse -> ADDITIVE glow shaders for the bolt model (Reach's own `concussion_rifle_grenade`);
+- each material response names its effect TWICE: the nested POTENTIAL response kept the fuel rod's
+  impact effects (green burn, green flare) -> `impact_tint` `potential`, impact particles violet,
+  the burn = Halo 1's plain plasma burn (user: blue is fine);
+- the green ball in flight was the template's light-volume WIDGET (`hunter fuel rod`), no
+  attachment at all -- a one-colour-per-element diagnostic boot (sparks red, light blue, model
+  yellow / white) left it green and so pointed at it -> `widget_tint`. Its sprite sheet is CYAN and
+  the volume draws ADDITIVELY in layers: a pink tint came out blue, then white (clipped) -> the tint
+  per channel = target / sprite colour and alpha 0.45 so the layers stop clipping ('big success');
+  final size x0.75 (user).
+READ THE DEPLOYED MAP (port_refs_audit's plugin walker, colours by offset) before a look boot: it
+proved each tag was right and moved the search to the next layer. Explosion visual ~0.75 wu (Reach's
+flash 0.73), inside the 1 wu full-damage core; the outer damage edge has no visual, as in Reach.
+
+**Look, the rest:** Reach's model (b_gun not tilted, left_hand + primary_trigger markers); the
+INDICATOR / OVERHEAT panels lit blue from Reach's `plasma_launcher_holo` (static meters); every
+material needs a shader before `tool model` -- an unmapped one makes tool ASK for a type and loop on
+the empty input (50 minutes, 4 GB of prompts). Crosshair: hud_reticles #17 'mirror horizontal' =
+the sprite (one crescent + three HALF triangles) with its RIGHT edge on the centre and its mirror
+on the other side, its registration (box centre) moved onto the crescent, sized from the user's
+screenshot (88 x 38 px), supersampled x2. Ammo: 6 / 5 ticks (Reach's pips are a shader bar).
+
+**MCC's Halo 1 plugin:** `Instantaneous Acceleration` is a vector3 (`... i / j / k`; Halo 1 reads
+`i`) -- a knockback balance row must name `Instantaneous Acceleration i`.
+
+**Step 11:** donor the fuel rod (grunt specops fuel rod, WDM 0.5, no actor flags), Reach m10's
+ai\generic entry; WDM rule 0.233 / 1.15; balanced drop 0.25-0.875 / 6-13. Enhancer: hands 'two'
+(Reach files it as a rifle: Grunts half rate, Jackals shieldless; e86e829), 16 cards from the rocket
+(e49524a; knockback uncarded). Armed: all three species fire it (user).
+
+**Tools from the Concussion Rifle** (h1_pickable_weapons, each opt-in, narrowed proofs cr1-cr4 0
+changed): `set_attachments` copy `tint`, `psys_tint` `@<type state>`, `impact_tint` `potential`,
+`widget_tint`; h1_role_compare `concussion_rifle` set.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:

@@ -157,7 +157,23 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'in progress',
+    # 2026-10-13: tested on a30 over 12 boots (dry default 1-9: mechanics + the look found layer by
+    # layer; balanced 10-12, probe-measured) + Armed (all three species fire it) -- confirmed by the
+    # user; the ten-map rebuild is BATCHED for wave B (user's go)
+    'status': 'done',
+    # CLOSE-OUT RECORD (2026-10-13). 4b + template diff + port_sound_refs + the muzzle flash BEFORE
+    # boot 1. Yardstick: the FUEL ROD (user); default = Reach's own, balanced = the fuel rod ratio.
+    # Weapon (rocket copy): 6 / 18 / 30, 3/s, reload 3.33 s, error 0.15 / 0.4, no zoom, aim 4/15 8/15;
+    #   balanced 0.96/s, 5 / 11 / 24, magnetism 6, a 5-tick meter (flash 2).
+    # Bolt (fuel rod copy): 12 -> 16 wu/s (flies ~constant: probe), gravity 0.25, range 100, min
+    #   velocity 11 (balanced 0); impact 21.5 (balanced 0) + blast 11.47..21.5 over 1 -> 2, knockback
+    #   2.5 (balanced 26.9 / 14.3 over 1 -> 1.33, 6.67); fuel rod table, Hunters Reach's values,
+    #   balanced shields x1.33 / x0.67.
+    # Look: Reach's model + bolt model, the plasma pistol flash in violet, a pink light volume, violet
+    #   sparks / blast / impacts, the plain plasma burn, Reach's crosshair supersampled.
+    # Closing checks: port_refs_audit 0 problems, port_sound_refs all OWN (the bolt's own sound fields
+    #   empty, as Reach's), hit-effect rule x1 (3/s < 3.5), check 8: Armed Grunt / Jackal / Elite
+    #   fire it (hands 'two', WDM 0.233 / 1.15, drop 0.25-0.875 / 6-13 balanced). Knockback uncarded.
 
     # geometry + look (h1_h3_weapon_model.py; Reach through reach_tags). Reach's ONE model for world
     # AND first person. concussion_rifle.render_model: b_gun (root, identity: not tilted) >

@@ -29,7 +29,9 @@ balanced x3, Armed; batched for wave B); read "B2: what the Needle Rifle taught"
 Plasma Repeater). B3 (Plasma Repeater, 2026-10-12) is DONE and tested (batched); read "B3: what the
 Plasma Repeater taught" before B4. B4 (Grenade Launcher, 2026-10-12) is DONE and tested (19 boots +
 Armed x2; batched for wave B); read "B4: what the Grenade Launcher taught" before B5 (the Concussion
-Rifle; its prompt is at the end of this file).
+Rifle; its prompt is at the end of this file). B5 (Concussion Rifle, 2026-10-13, parallel with B7) is
+DONE and tested (12 boots + Armed; batched for wave B); read "B5: what the Concussion Rifle taught"
+before B6 (the Plasma Launcher).
 
 ## Phase 0: DONE (2026-10-07)
 
@@ -873,6 +875,39 @@ burst), gravity 0.25, range 100. Reach's fuel rod (flak_cannon) 5 / 20 / 30, rec
 + 0..60 over 0.5 -> 2.25 (`explosion_large`). Read the knockback against the Gravity Hammer's tuned
 blast (A9: knockback is TUNED IN GAME), and the bolt's look (plasma; the particle-sprite lesson
 above before any own effect).
+
+## B5: what the Concussion Rifle taught (2026-10-13) -- read before B6 (the Plasma Launcher)
+
+PORTING.md "Halo 1: the Concussion Rifle, wave B5" is the full record; `ports_h1/concussion_rifle.py`
+is the example of a KNOCKBACK explosive bolt and of RECOLOURING a borrowed Covenant look layer by
+layer. Run in PARALLEL with B7 (the kit lock worked: each shared step waited its turn). Everything in
+"Pilot A1" to "B4" still holds; the Concussion Rifle added:
+
+**New user rules / decisions:**
+- Hunters a yardstick table makes immune: Reach's values in default, the damage itself carries the
+  balanced offset (user: 'Use Reach's values for Hunters in default and offset in the balanced').
+- Proposals that change a DEFAULT value (a tuned knockback, a fitted flight) wait until the user has
+  seen Reach's own numbers in game (user, 4a). Reach's raw 2.5 knockback was 'decent enough'.
+- A yardstick's ZERO may mean UNSET (the fuel rod's range 0: it falls by gravity) -- a ratio on it is
+  degenerate: keep the source value (range 0 destroyed the balanced bolt on creation).
+
+**Process (observations -- check them on the next port):**
+- Read the DEPLOYED map's values (port_refs_audit's plugin walker) before a look boot; when every
+  tag is right and the game disagrees, colour each element differently in ONE diagnostic boot.
+- A borrowed Covenant look is green in FIVE places 4b and the template diff do not show: particle
+  system TYPE-state colour multipliers, `c` particles taking the projectile's CHANGE COLOUR, a glow
+  shader_model's REFLECTION tint, the material responses' nested POTENTIAL effect, and the
+  projectile's light-volume WIDGET. Tint against a coloured sprite = target / sprite per channel;
+  additive layers clip to white (lower the alpha).
+- Minimum velocity DETONATES (A7) -- check it against the BALANCED initial velocity too.
+- Final > initial did not speed the bolt up (probe: constant ~12.2 wu/s) -- unconfirmed.
+- Every material needs a shader before `tool model` (an unmapped one makes tool loop on a prompt).
+- MCC's Halo 1 plugin: knockback = `Instantaneous Acceleration i` (a vector3).
+- A catalog regeneration can overwrite the enhancer's just-written keys; check them after one, and
+  check a shared file's diff for the OTHER session's work before `git commit -- <path>` (twice here).
+- Tools: h1_pickable_weapons `set_attachments` copy `tint`, `psys_tint` `@<type state>`,
+  `impact_tint` `potential`, `widget_tint` (all opt-in, proofs cr1-cr4); h1_projectile_probe run in
+  the FOREGROUND (a background run logged nothing).
 
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
