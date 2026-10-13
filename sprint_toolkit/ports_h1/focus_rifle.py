@@ -177,18 +177,20 @@ PORT.update({
         # sentinel_beam palette) and an outer violet layer, each MODULATED by a greyscale knot map
         # (Reach's pulse, floor 0.35 / 0.25) sliding along the beam on GAME time (pickable contrail
         # `secondary`, function slide, 0.4 / 0.3 s)
-        'baked_textures': {'fo_beam': {'profile': R + r'fx\bitmaps\contrails\energy_trail.bitmap',
-                                       'stops': [(0.0, (0, 0, 0)), (0.3, (170, 55, 15)), (0.6, (255, 140, 60)),
-                                                 (0.85, (255, 215, 175)), (1.0, (255, 255, 255))],
-                                       'premultiply': True},
+        # BOOTS 9-12 (user: 'none of them show blue, violet or purple'): an ADDED contrail layer on the
+        # beam did not draw once it carried a secondary map (boot 11's diagnostic: the core's own
+        # texture drew violet at once) -> the violet FOLDED INTO THE CORE (boot 12, user: 'looks
+        # right now, apply it'): one texture = a narrow white-orange centre (energy_trail ^ 2.2) +
+        # blue-violet bands outside it (energy_trail ^ 0.45, hollow stops, gain 1.6), the core 0.2 wu
+        'baked_textures': {'fo_beam': {'components': [
+                               {'profile': R + r'fx\bitmaps\contrails\energy_trail.bitmap', 'power': 2.2,
+                                'stops': [(0.0, (0, 0, 0)), (0.3, (170, 55, 15)), (0.6, (255, 140, 60)),
+                                          (0.85, (255, 215, 175)), (1.0, (255, 255, 255))]},
+                               {'profile': R + r'fx\bitmaps\contrails\energy_trail.bitmap', 'power': 0.45,
+                                'stops': [(0.0, (0, 0, 0)), (0.2, (70, 40, 255)), (0.55, (110, 80, 255)),
+                                          (0.8, (40, 25, 140)), (1.0, (0, 0, 0))], 'gain': 1.6}]},
                            'fo_beam_sec': {'profile': R + r'fx\bitmaps\contrails\pulse.bitmap',
-                                           'size': (512, 64), 'grey': 0.35},
-                           'fo_beam_violet': {'profile': R + r'fx\bitmaps\contrails\energy_trail.bitmap',
-                                              'stops': [(0.0, (0, 0, 0)), (0.4, (70, 45, 200)),
-                                                        (0.8, (130, 100, 255)), (1.0, (170, 150, 255))],
-                                              'premultiply': True, 'gain': 0.7},
-                           'fo_beam_violet_sec': {'profile': R + r'fx\bitmaps\contrails\pulse.bitmap',
-                                                  'size': (512, 64), 'grey': 0.25}},
+                                           'size': (512, 64), 'grey': 0.35}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Reach's OWN fp_focus_rifle retargeted (the DMR's
@@ -452,19 +454,12 @@ PORT.update({
                               'bitmap': FO + 'bitmaps\\fo_beam', 'sequence': (0, 0),
                               'secondary': {'bitmap': FO + 'bitmaps\\fo_beam_sec', 'function': 'slide',
                                             'period': 0.4, 'scale': 1.0},
-                              # BOOT 4: the PULSE (Reach's 12-sided `pulse` tube, 1p tiling 0.15,
-                              # scroll -5 / s): a second additive layer on the same marker, a little
-                              # wider than the core, its knots moving along the beam (Halo 1's u
-                              # animation sign vs Reach's: to see in game)
-                              # BOOT 8: this layer = the VIOLET outer layer (0.26 wu), its own knot map
-                              # sliding (0.3 s); its u scroll kept (inert)
-                              'extra': [{'out': FO + 'beam pulse', 'bitmap': FO + 'bitmaps\\fo_beam_violet',
-                                         'sequence': (0, 0), 'repeats': (0.15, 1.0), 'scroll': (5.0, 0.0),
-                                         'secondary': {'bitmap': FO + 'bitmaps\\fo_beam_violet_sec',
-                                                       'function': 'slide', 'period': 0.3, 'scale': 1.0},
-                                         'states': [{'duration': (0.0, 0.0), 'transition': (0.2, 0.2),
-                                                     'width': 0.26, 'argb': (1.0, 1.0, 1.0, 1.0)},
-                                                    {'width': 0.004, 'argb': (0.0, 0.0, 0.0, 0.0)}]}]}},
+                              # BOOT 12 (user): the core 0.2 wu (x 0.2 / 0.095 on the Sentinel's states)
+                              # for the folded-in violet. The extra layers of boots 4-10 (a gold pulse
+                              # tube, then violet with its own knot map) are GONE: the added layer drew
+                              # in boot 4 (no secondary map) but not from boot 8 on (with one) --
+                              # an OBSERVATION from this port; one textured contrail does it all
+                              'width': 0.2 / 0.095}},
         # Reach: spew 30/s. BOOT 2 (user: 'overheats in under 2 s'; the PROBE): Halo 1 fires 29..30 at
         # 30/s -- 29 rounds in 0.97 s, shots 33 ms apart, heat 0.045 -> 1.0 (cools while firing at 0.29),
         # vent 3.07 s -- the per-round values doubled for 15/s overheated it at 1 s. Now Reach's own
