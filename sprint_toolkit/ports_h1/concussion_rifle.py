@@ -350,13 +350,25 @@ PORT.update({
                    'change_color': {'from': 'weapons' + B + 'plasma pistol' + B + 'bolt', 'rgb': VIOLET},
                    'set_attachments': {0: {'class': 'effect', 'type': FR + 'effects' + B + 'fuel rod tail sparks',
                                            'copy': {'out': CR + 'effects' + B + 'bolt sparks',
-                                                    'tint': (1.0,) + ((1.0, 0.0, 0.0) if DIAG else VIOLET), 'scale': 0.5, 'count': 0.6}}},
+                                                    'tint': (1.0,) + ((1.0, 0.0, 0.0) if DIAG else VIOLET), 'scale': 0.5 * 0.75, 'count': 0.6}}},
                    # the GLOW BALL = the fuel rod's light volume, an own copy: white-pink at the
                    # core (hither), Reach pink outward (yon) -- the screenshot's hot core in a halo
-                   'widget_tint': {'out': CR + 'bolt glow volume', 'hither': (1.0, 1.0, 0.8, 0.95),
-                                   'yon': (1.0,) + PINK},
+                   # BOOT 7 (user): 'the flying projectile is blue now' -- the volume's sprite
+                   # sheet (`flares pr overcharge`) is CYAN (bright 110 / 164 / 168, mid 36 / 85 /
+                   # 88) and the tint multiplies it: per channel compensated, target / sprite
+                   # normalised -- the halo Reach's mid pink 168 / 125 / 151 -> 1 / 0.31 / 0.37, the
+                   # core white-pink -> 1 / 0.63 / 0.64 (red is capped by the sprite: dimmer)
+                   # BOOT 8 (user): 'a lot whiter, but not pink at all' -- the volume draws
+                   # ADDITIVELY in layers: every channel clipped -> white. The exact ratio (Reach
+                   # pink 1 / 0.45 / 0.75 over the sprite's mid 0.41 / 0.97 / 1 -> 1 / 0.19 / 0.31)
+                   # with the alpha (brightness) at 0.45 so the layers stop clipping; the core a
+                   # little whiter
+                   # BOOT 9 (user): 'Big success. Change its size for the final version to 75% of
+                   # the current size' -> the volume, the flare and the sparks x0.75
+                   'widget_tint': {'out': CR + 'bolt glow volume', 'hither': (0.45, 1.0, 0.45, 0.55),
+                                   'yon': (0.45, 1.0, 0.19, 0.31), 'radius': 0.75},
                    'glow': {'light': (FR + 'fuel rod exhaust', CR + 'bolt glow'), 'flare': CR + 'bolt glow',
-                            'rgb': (0.0, 0.0, 1.0) if DIAG else PINK, 'flare_radius': 0.12, 'marker': 'contrail'},
+                            'rgb': (0.0, 0.0, 1.0) if DIAG else PINK, 'flare_radius': 0.12 * 0.75, 'marker': 'contrail'},
                    # BOOT 2 (user): 'the scorch mark can stay, the green plasma burn would be good to
                    # change' -> own copies of the fuel rod's impact effects with Halo 1's plain plasma
                    # burn (the Beam Rifle's swap)
@@ -484,7 +496,9 @@ PORT.update({
                 row('jpt!', CR + 'explosion', 'Damage Upper Bound Max', 26.9, 21.5, 'Explosion Damage'),
                 row('jpt!', CR + 'explosion', 'Radius', 1.0, 1.0, 'Explosion Damage'),
                 row('jpt!', CR + 'explosion', 'Radius Max', 1.333, 2.0, 'Explosion Damage'),
-                row('jpt!', CR + 'explosion', 'Instantaneous Acceleration', 6.67, 2.5, 'Knockback'),
+                # MCC's Halo 1 plugin splits the field into a vector3: the legacy scalar is `i`
+                # (boot 10: 'Instantaneous Acceleration' was 'not found in plugin')
+                row('jpt!', CR + 'explosion', 'Instantaneous Acceleration i', 6.67, 2.5, 'Knockback'),
                 # materials (user): the fuel rod's table x Reach's plasma_fast / explosion_large --
                 # Elite / cyborg shield 1 x 1/0.75, Jackal shield 1 x 0.5/0.75; Hunters: Reach's
                 # own values in both (the damage itself carries the offset; the fuel rod's 0 has no
