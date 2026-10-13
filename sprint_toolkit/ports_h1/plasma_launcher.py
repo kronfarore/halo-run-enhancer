@@ -38,7 +38,10 @@ RQ = (47 / 2.0 * 0.945, 44 / 2.0 * 0.945)
 # the FULLY CHARGED cue (boot 2, user: 'another fully charged identification would be good'):
 # Reach's rear display turns RED-ORANGE at full charge (the user's fully-charged screenshot) ->
 # the holo ring + screen slide blue -> red-orange at the top of the charge (D out = primary charged)
-CHARGE_RAMP = [(0.0, HOLO_BLUE), (0.97, HOLO_BLUE), (1.0, (1.0, 0.32, 0.12))]
+# BOOT 6 (user: 'the lights turn on later than 3 s'; h1_weapon_state_probe): Halo 1's exported
+# PRIMARY CHARGED runs over the charge AND the hold (5 s: 0.50 at 3.0 s, 1.0 at the auto-discharge);
+# a second word (+0xE4) reaches 1.0 at 3.0 s but is not an export -> the switch at 0.50..0.52
+CHARGE_RAMP = [(0.0, HOLO_BLUE), (0.495, HOLO_BLUE), (0.52, (1.0, 0.32, 0.12)), (1.0, (1.0, 0.32, 0.12))]
 # Halo 1 material indices (h1_role_compare.H1_MATERIALS order)
 JACKAL_SHIELD, WATER = 16, 28
 FORCE_FIELDS = [10, 18, 26, 32]      # force field, engineer force field, monitor, hunter shield
@@ -562,8 +565,13 @@ PORT.update({
                                 # 59 stays free: the diagonal charge bar is a live meter (no static art)
                                 {'art': (R + B.join(['ui', 'chud', 'bitmaps', 'scopes', 'plasma_launcher_scope_bits2']), 1),
                                  'name': 'plasma launcher pips', 'index': 58, 'scale': (0.38, 0.38),
-                                 'mirror4': (263, -164), 'overlay': 1.02 / (0.38 * 0.5), 'alpha': 0.85,
-                                 'offset': (0, 0), 'rgb': (110, 190, 245), 'normalize': True,
+                                 # BOOT 5 (user screenshot): drawn at (+-304, -355 / +25) px -- x1.13 too
+                                 # wide and 165 px too HIGH (Halo 1 centres the overlay on the sprite's
+                                 # CELL, 256 x 256 here, not on its registration: the rings' cells are
+                                 # square-ish) -> overlay x268/304, the anchor 165 x 0.88 px down at
+                                 # ~1.11 px a unit (the Needle Rifle's calibration)
+                                 'mirror4': (263, -164), 'overlay': 1.02 / (0.38 * 0.5) * 268 / 304, 'alpha': 0.85,
+                                 'offset': (round(35 / 1.11), round(165 * 268 / 304 / 1.11)), 'rgb': (110, 190, 245), 'normalize': True,
                                  'gamma': 1.0}],
                 # BOOT 3: the offsets fixed (RQ) drew the art ~10 % narrower (345 against 382 cell px) ->
                 # the overlay x382/345 keeps the size the user called close
