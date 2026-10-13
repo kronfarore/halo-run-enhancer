@@ -8,11 +8,13 @@ unchanged); bitmaps decode by the pixel blob's end check (multi-image tags: the 
 the 7 heat stages); the FP graph is COMPRESSED-ONLY -> decoded through Foundry in Blender
 (h4_fp_dump.py) and the arms RE-SOLVED on Halo 1's lengths (h1_fp_retarget._resolve_arms).
 
-HALO 4's HEAT (h3_weapon_values --kit h4, 2026-10-13): 0.09 a round (overheats on the 12th bolt at
-10/s), loss 0.55/s, 0.3/s overheated, recovery 0.1, warning 0.8; Halo 4 cools only while NOT firing.
-Halo 1 cools WHILE firing (B3) and has one loss: approximation A (user) -- loss 0.3 (Halo 4's 3.0 s
-overheat lockout to 0.1 kept), heat fitted 0.1125 a round (the 12th bolt again); idle cooling from
-full 3.3 s (Halo 4: 1.8 s). The MANUAL VENT (Halo 4's reload: vent_enter / loop / exit) has no
+HALO 4's HEAT (h3_weapon_values --kit h4, 2026-10-13): 0.09 a round, loss 0.55/s, 0.3/s overheated,
+recovery 0.1, warning 0.8. Halo 4 DRAINS heat while the trigger is held (user's correction relayed
+2026-10-13: the old 'cools only while not firing' rule was wrong) -> it overheats on the 27th bolt
+(~2.6 s at 10/s: 0.09 - 0.055 a bolt). Halo 1 also cools while firing (B3) but has ONE loss:
+approximation A' (user, after the correction) -- loss 0.3 (Halo 4's 3.0 s overheat lockout to 0.1
+kept), heat fitted 0.0665 a round (the 27th bolt again); cooling between bursts 0.3/s (Halo 4: 0.55).
+Boots 1-2 ran the first fit A (0.1125: the 12th bolt, built on the wrong rule). The MANUAL VENT (Halo 4's reload: vent_enter / loop / exit) has no
 Halo 1 counterpart: the overheat is the vent (B3's precedent)."""
 from ._common import B, reserved, row
 
@@ -47,9 +49,9 @@ PORT = reserved(
         'pick': 'Plasma Pistol',
         'reason': ("the only heat-based plasma weapon both games have (Halo 4 has NO plasma rifle). "
                    "Wave C keeps the rule: DEFAULT = Halo 4's own numbers, BALANCED = the ratio "
-                   "rows. Halo 1 approximation A for the one heat loss (user): 0.3 = Halo 4's "
-                   "overheated loss, heat a round fitted so it still overheats on the 12th bolt "
-                   "(Halo 1 cools while firing). The pistol is TAPPED: its rate gives no ratio -> "
+                   "rows. Halo 1 approximation A' for the one heat loss (user): 0.3 = Halo 4's "
+                   "overheated loss, heat a round fitted so it overheats on the 27th bolt as Halo 4 "
+                   "does (both games drain heat while firing; Halo 4 has two losses). The pistol is TAPPED: its rate gives no ratio -> "
                    "Halo 4's 10/s. Materials: the template (plasma rifle) bolt table in DEFAULT; "
                    "BALANCED = the plasma pistol bolt's table x Halo 4's plasma_fast / plasma_slow "
                    "(shields x0.625, Elite / cyborg body x2.5). The ratio's battery is degenerate "
@@ -64,7 +66,7 @@ PORT = reserved(
         'balanced': {
             'damage': 10.29,             # 18 x 8/14
             'rate': (10.0, 10.0),        # tapped yardstick: Halo 4's own
-            'heat_per_round': 0.12,      # 0.16 x 0.09/0.18 = 0.08 (13 bolts, Halo 4's rule) -> fitted under Halo 1's
+            'heat_per_round': 0.0639,    # 0.16 x 0.09/0.18 = 0.08, losses 0.596 / 0.433 draining: 47 bolts -> fitted on the one 0.433
             'loss': 0.433,               # 0.65 x 0.3/0.45 (the overheated losses: approximation A)
             'recovery': 0.25,            # 0.25 x 0.1/0.1
             'battery': 0.006,            # degenerate ratio (0.0006) -> Halo 4's own
@@ -124,6 +126,13 @@ PORT.update({
         # Halo 4's one muzzle carries both
         'extra_markers': [('primary trigger1', 0, (0.3008, 0.0, 0.0268), (1.0, 0.0, 0.0, 0.0))],
         'ground_point': 'auto',
+        # BOOT 1 (user: 'the world model does not render'): the weapon kept the TEMPLATE's hull
+        # (the plasma rifle's, other nodes) -- an own hull (h1_box_collision.py) from the world
+        # model's extent (x -0.098..0.294, y +-0.024, z -0.027..0.074): body + grip, as the Plasma
+        # Repeater's
+        'collision': {'material': 'metal',
+                      'boxes': [((-0.098, -0.024, 0.0), (0.294, 0.024, 0.074)),
+                                ((-0.02, -0.015, -0.027), (0.05, 0.015, 0.0))]},
         # Halo 1's `tool model` keeps 31 characters of a shader name: every
         # `storm_assault_carbine_default_c...` read as ONE name (it looped on the type prompt) -> short
         # Halo 1 names (`material_names`), the shaders / bitmaps keyed by them
@@ -151,7 +160,10 @@ PORT.update({
         # heat, the template's gauge input); the dim teal BASE (si 0, 0.26, 0.21) and bright WIRE
         # outline (si 0, 1, 0.45) as lit shapes (Halo 4 tints them by heat: not reproduced)
         'meters': {
-            'st_display_heat': {'map': H4 + SBM + 'buildup.bitmap', 'stages': True,
+            # BOOT 2 (user: 'the heat gauge starts with the first section already lit'): B out =
+            # heat FLOORED at 0.1 (B3's probe) and stage 1's threshold was 0.08 -> the stages
+            # remapped onto 0.1..1 (`value_floor`)
+            'st_display_heat': {'map': H4 + SBM + 'buildup.bitmap', 'stages': True, 'value_floor': 0.1,
                                 'from': PR + r'fp\shaders\gauge', 'value': 'B_out',
                                 'color': (1.0, 0.2, 0.1), 'color_off': (0.1, 0.02, 0.01)},
             'st_display_base': {'map': H4 + SBM + 'cac_display_base.bitmap', 'from': PR + r'fp\shaders\gauge',
@@ -162,13 +174,13 @@ PORT.update({
                                 'shape': 'a', 'gradient': 0.0,
                                 'static': r'weapons\needler\shaders\needler luminous',
                                 'color': (0.0, 1.0, 0.45)}},
-        # THE BATTERY COUNTER (Halo 4: covglyph_ones / _tens, the 10 Covenant numerals by
-        # primary_ammunition_ones / _tens): Halo 1's numeric shader (the AR's / BR's), its digits
-        # Halo 4's own (`digits`: 10 x 64 px, the AR plate's layout); it shows out A x limit -> out A
-        # = 1 - age (pickable: function 0 inverted on D in), limit 99
-        'numeric': {'from': r'weapons\assault rifle\fp\shaders\numbers', 'limit': 99,
-                    'places': {'st_glyph_ones': 0, 'st_glyph_tens': 1},
-                    'digits': H4 + SBM + 'covglyph.bitmap'},
+        # THE BATTERY COUNTER (Halo 4's material covglyph_ones / _tens: the 10 Covenant numerals by
+        # primary_ammunition_ones / _tens) -- BOOT 2 (user): 'there is no on-gun counter in the
+        # original, safe to disable' (Halo 4's colour map is `counter_hide`, a 1 x 1 placeholder: the
+        # counter never draws there). Its two quads DROPPED; boot 2's numeric shader with Halo 4's
+        # digits (`numeric` 'digits', glyph in RGB + alpha) worked and stays a tool feature
+        'drop_materials': ('storm_assault_carbine_default_covglyph_ones',
+                           'storm_assault_carbine_default_covglyph_tens'),
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's OWN storm_fp_assault_carbine (user,
@@ -186,6 +198,15 @@ PORT.update({
         'drop_nodes': tuple(DROP),
         'h1_dir': r'weapons\storm rifle\fp',
         'h1_model': r'weapons\storm rifle\fp\fp',
+        # BOOT 1 (user: 'one flicker in the overheat transition, the hand disappears and returns'):
+        # Halo 4's `overheated` is NOT between overheating and o_h_exit -- overheating's end meets
+        # o_h_exit's start within 0.08 cm, `overheated` sits 16-25 cm from every state (Halo 4 holds
+        # overheating's end until it cools). And Halo 1 plays `overheated` ONCE: 1.97 + 1.0 s < the
+        # 3.0 s lockout -> a frame of idle. Now: Halo 1's overheated = overheating's LAST frame held
+        # 40 frames (the Sentinel Beam's hold), both joins seamless
+        # BOOT 2 (user: 'the hold lasts a bit too long'): Halo 1 plays the exit only after the hold
+        # -- 40 frames ran to 3.3 s; 31 = 1.97 + 1.03 s = the 3.0 s lockout
+        'holds': {'first-person overheated': ('first_person:overheating', 31)},
         'align': 'same_space',
         'anims': {
             'first_person:idle': 'first-person idle',
@@ -197,7 +218,6 @@ PORT.update({
             'first_person:moving': 'first-person moving',
             'first_person:look': 'first-person overlays',
             'first_person:overheating': 'first-person overheating',
-            'first_person:overheated': 'first-person overheated',
             'first_person:o_h_exit': 'first-person o-h-exit',
             'first_person:throw_grenade': 'first-person throw-grenade',
             'first_person:throw_overheated': 'first-person throw-overheated',
@@ -297,12 +317,13 @@ PORT.update({
                    # THE HIT-EFFECT RULE: a 10/s weapon (max(default 10, balanced 10))
                    'impact_thin': {'materials': [22], 'out': ST + 'effects\\impact\\',
                                    'thin': {}, 'rate': 10.0}},
-        # APPROXIMATION A (user, step 4a): 10/s flat (Halo 1 fires a 10.0 tag every 3 ticks:
-        # 10/30 x 3 reaches 1 -- MEASURE it, B7), heat 0.1125 a round (the 12th bolt overheats
-        # with Halo 1 cooling 0.03 between rounds; Halo 4: 0.09 x 12 with no cooling), one loss 0.3
-        # (Halo 4's overheated one: 1 -> 0.1 in 3.0 s), battery 0.006 (Halo 4's campaign = mp)
+        # APPROXIMATION A' (user, after the drain correction): 10/s flat (boot 1's probe: 10.0/s, gaps
+        # 100 ms), heat 0.0665 a round = the 27th bolt overheats with Halo 1 cooling 0.03 between
+        # rounds (27 x 0.0665 - 26 x 0.03 = 1.016; 26 bolts 0.979), as Halo 4's 0.09 - 0.055 a bolt;
+        # one loss 0.3 (Halo 4's overheated one: 1 -> 0.1 in 3.0 s, the probe 3.00 s), battery 0.006
+        # (Halo 4's campaign = mp). Boots 1-2: fit A, 0.1125 (the 12th bolt: probe-confirmed)
         'trigger': {'rounds_per_second': (10.0, 10.0), 'acceleration_time': 0.0,
-                    'deceleration_time': 0.0, 'heat_generated_per_round': 0.1125,
+                    'deceleration_time': 0.0, 'heat_generated_per_round': 0.0665,
                     'age_generated_per_round': 0.006,
                     # the FP muzzle in the idle (h1_fp_muzzle: the built FP model + animations)
                     'first_person_offset': (0.3654, -0.0403, -0.0306)},
@@ -339,6 +360,7 @@ PORT.update({
             'weap_attrs.age.misfire_chance': 0.0,
             'weap_attrs.triggers.0.firing_effects.1.misfire_effect.filepath': '',
             'obje_attrs.bounding_radius': 0.3,
+            'obje_attrs.collision_model.filepath': ST + 'storm rifle',
             'item_attrs.collision_sound.filepath': SND + 'st_drop',
             # STEP 4b (port_field_audit --port storm_rifle, before boot 1). List 2, no card: camo
             # ding 0.3 x 0.4/0.6, illumination recovery 0.15 x 0.1/0.05. KEPT: the bolt's water
@@ -348,15 +370,10 @@ PORT.update({
             # decisions above (functions, heat, age penalties, the FP offset)
             'weap_attrs.interface.active_camo_ding': 0.2,
             'weap_attrs.triggers.0.misc.illumination_recovery_time': 0.3,
-            # the ON-GUN functions (model 'numeric' / glow 'st_overheat'): out A = 1 - age (the
-            # battery counter; function 0 was the template's colour wander, used by nothing of the
-            # port's), out D = overheated (function 3, the template's age, used by nothing; C in =
-            # overheated); out B stays heat (the template's flares + the heat meter)
+            # the ON-GUN functions (glow 'st_overheat'): out D = overheated (function 3, the
+            # template's age, used by nothing; C in = overheated); out B stays heat (the template's
+            # flares + the heat meter). (Boot 2's counter read out A = 1 - age: dropped with it)
             'weap_attrs.C_in': 'overheated',
-            'obje_attrs.functions.0.function': 'one',
-            'obje_attrs.functions.0.period': 0.0,
-            'obje_attrs.functions.0.scale_function_by': 'D_in',
-            'obje_attrs.functions.0.flags.invert': True,
             'obje_attrs.functions.3.scale_function_by': 'C_in',
         },
         'melee': (PR + 'melee', ST + 'melee'),
@@ -394,11 +411,11 @@ PORT.update({
         'entry': {
             'weapon': 'Storm Rifle', 'source': 'Halo 4', 'donor': 'Plasma Rifle', 'default_on': False,
             'desc': "Halo 4's Storm Rifle: its model, first-person animations, sounds and numbers. A "
-                    "Covenant automatic on heat and battery: 10 bolts a second, overheating on the "
-                    "12th bolt for a 3 s vent. 167 shots a battery.",
+                    "Covenant automatic on heat and battery: 10 bolts a second, overheating after "
+                    "27 bolts (about 2.6 s) for a 3 s vent. 167 shots a battery.",
             'balance_desc': "Measured against the Plasma Pistol, the only heat plasma weapon both "
                             "games have: 10.3 damage a bolt (fast plasma: better on armour, worse on "
-                            "shields than the pistol's), 13 bolts to overheat and a 1.7 s vent, a "
+                            "shields than the pistol's), 47 bolts to overheat and a 1.7 s vent, a "
                             "faster bolt with more range and Halo 1-style aim assist.",
             # step 9 (swap, ONE multiplier): the H1 plasma pistol's ready 14 fr x Storm Rifle 19 /
             # Halo 4 plasma pistol 16 = 16.6 over the built ready 19 (no reload: a battery weapon)
@@ -415,10 +432,11 @@ PORT.update({
                 row('jpt!', ST + 'bolt', 'Elite', 2.5, 1.0, 'Bolt materials'),
                 row('jpt!', ST + 'bolt', 'Cyborg Energy Shield', 0.375, 2.0, 'Bolt materials'),
                 row('jpt!', ST + 'bolt', 'Cyborg', 1.5, 0.5, 'Bolt materials'),
-                # heat: 0.16 x 0.09/0.18 = 0.08 (13 bolts, Halo 4's rule) -> fitted 0.12 under Halo 1's
-                # cooling while firing; the vent: one loss 0.65 x 0.3/0.45 = 0.433 to the recovery
-                # 0.25 x 0.1/0.1 (1.73 s)
-                row('weap', ST + 'storm rifle', 'Heat Generated Per Round', 0.12, 0.1125, 'Heat', block='Triggers'),
+                # heat: 0.16 x 0.09/0.18 = 0.08 a round, losses 0.65 x 0.55/0.6 = 0.596 / 0.65 x 0.3/0.45 =
+                # 0.433, draining while firing: 47 bolts to overheat -> on Halo 1's ONE loss 0.433
+                # (approximation A': the vent, 1 -> 0.25 in 1.73 s) the heat fitted 0.0639 (47 bolts:
+                # 47 x 0.0639 - 46 x 0.0433 = 1.012; 46: 0.991)
+                row('weap', ST + 'storm rifle', 'Heat Generated Per Round', 0.0639, 0.0665, 'Heat', block='Triggers'),
                 row('weap', ST + 'storm rifle', 'Heat Loss Per Second', 0.433, 0.3, 'Heat'),
                 row('weap', ST + 'storm rifle', 'Heat Recovery Threshold', 0.25, 0.1, 'Heat'),
                 # bolt: 25 x 50/20 = 62.5 wu/s (per tick); range 50 x 100/40 = 125
