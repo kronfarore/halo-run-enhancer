@@ -5042,7 +5042,20 @@
    "requires": [
     "proj weapons\\focus rifle\\beam"
    ],
-   "hands": "two"
+   "hands": "two",
+   "tag_map": {
+    "proj weapons\\plasma rifle\\bolt": "proj weapons\\focus rifle\\beam",
+    "jpt! weapons\\plasma rifle\\bolt": "jpt! weapons\\focus rifle\\beam",
+    "jpt! weapons\\plasma rifle\\melee": "jpt! weapons\\focus rifle\\melee"
+   },
+   "card_map": {
+    "Bullet Damage": "Beam Damage"
+   },
+   "skip_cards": [
+    "Salvo Shooting",
+    "Ramp Up",
+    "Misfire"
+   ]
   }
  ],
  "Halo 3": [
