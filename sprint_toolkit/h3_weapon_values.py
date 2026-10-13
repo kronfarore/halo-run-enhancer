@@ -23,6 +23,14 @@ spartans\fp\weapons; the melee is ONE `melee damage` field (shown as 1st / 3rd);
 magazine has no reload time (the animation sets it).
 
     python h3_weapon_values.py --kit reach rifle\dmr\dmr=rifle\fp_dmr\fp_dmr pistol\magnum\magnum
+
+HALO 4 (`--kit h4`, the Storm Rifle pilot, 2026-10-13): H4EK's export is HALO 3-SHAPED
+(`<block name=..>`, full `path,group` references), so the Halo 3 readers run unchanged; FP
+graphs sit under storm_fp\weapons; the melee is one `melee damage` field (a shared global, as
+Reach's). Extra rows (h4 only): the heat VENT (venting time / exit heat), the heat warning
+threshold and the aim-assist MODE block (Halo 4's first aim-assist struct, then a mode block).
+
+    python h3_weapon_values.py --kit h4 rifle\storm_assault_carbine\storm_assault_carbine=rifle\fp_assault_carbine\storm_fp_assault_carbine
 """
 import argparse
 import io
@@ -40,7 +48,12 @@ FP = 'objects\\characters\\masterchief\\fp\\weapons\\'
 KITS = {'h3': (H3EK, CACHE, FP),
         'reach': (os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'HREK'),
                   os.path.join(HERE, 'out', 'reach_export'),
-                  'objects\\characters\\spartans\\fp\\weapons\\')}
+                  'objects\\characters\\spartans\\fp\\weapons\\'),
+        'h4': (os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'H4EK'),
+               os.path.join(HERE, 'out', 'h4_export'),
+               'objects\\characters\\storm_fp\\weapons\\')}
+#: kits whose export is Halo 3-shaped (block wrappers, `path,group` references)
+H3_SHAPED = ('h3', 'h4')
 KIT = 'h3'
 
 
@@ -77,7 +90,7 @@ def field(s, name, after=None):
 
 def ref(s, name, ext=None, near=None):
     v = field(s, name)
-    if KIT != 'h3':
+    if KIT not in H3_SHAPED:
         return find_tag(v, ext, near) if v else None
     return v.split(',')[0] if v and ',' in v and v.split(',')[0] else None
 
@@ -117,7 +130,7 @@ def values(weapon, graph=None):
     if s is None:
         raise SystemExit('no %s%s.weapon in H3EK' % (W, weapon))
     # Halo 3 writes <block name=..>; Reach a <field name=.. type="block"/> before the elements
-    blk = '<block name="%s"' if KIT == 'h3' else '<field name="%s" value='
+    blk = '<block name="%s"' if KIT in H3_SHAPED else '<field name="%s" value='
     bar = s[s.find(blk % 'barrels'):]
     mag = s[s.find(blk % 'magazines'):]
     proj = ref(bar, 'projectile', 'projectile', W + weapon)
@@ -161,6 +174,14 @@ def values(weapon, graph=None):
         'damage group': field(ds, 'general_damage'),
         'instantaneous accel': field(ds, 'instantaneous acceleration'),
     }
+    if KIT == 'h4':
+        modes = s[s.find('<block name="aim assist modes"'):]
+        v['heat warning threshold'] = field(s, 'heat warning threshold')
+        v['heat VENT time / exit heat'] = '%s / %s' % (field(s, 'heat venting time'),
+                                                      field(s, 'heat venting exit heat'))
+        v['aim mode autoaim / magnet'] = '%s/%s %s/%s' % (
+            field(modes, 'autoaim angle'), field(modes, 'autoaim range'),
+            field(modes, 'magnetism angle'), field(modes, 'magnetism range'))
     if graph:
         gs = export(FP + graph + '.model_animation_graph')
         fr = {}
