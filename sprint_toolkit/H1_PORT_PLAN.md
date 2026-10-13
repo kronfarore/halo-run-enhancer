@@ -1215,7 +1215,7 @@ will touch shared pipeline scripts more than a normal port: every such change is
 
 | session | weapon | test level | extra HUD sequences |
 |---|---|---|---|
-| 1 | B6 Plasma Launcher | a30 | hud_reticles 52-53 |
+| 1 | B6 Plasma Launcher | a30 | hud_reticles 52-53 + 58-59 (granted 2026-10-13) |
 | 2 | C1 Storm Rifle (pilot) | b30 (`--level b30` on EVERY staging run) | hud_reticles 54-57 |
 
 ## Hand-off prompt for a weapon session
@@ -2067,7 +2067,7 @@ will touch shared pipeline scripts more than a normal port: every such change is
 > and "Hardened after pair 1": `kit_commit.py` for every commit, `--commit` on the record writers)
 > and follow its rules. Your test level is a30 -- pass `--level a30` on
 > every `h1_port_test_map.py` run and restore with `h1_port_test_map.py plasma_launcher --restore
-> a30`. Extra HUD sequences: hud_reticles 52-53 only. If a script says `kit lock: WAITING`, let it
+> a30`. Extra HUD sequences: hud_reticles 52-53 and 58-59 only (54-57 are C1's). If a script says `kit lock: WAITING`, let it
 > wait. Do NOT write the next weapon's prompt: write "B6: what the Plasma Launcher taught" and tell
 > me you are done.
 >
@@ -2112,7 +2112,7 @@ will touch shared pipeline scripts more than a normal port: every such change is
 > BEFORE boot 1. HUD art (a lock / charge display, if any): size it from a Reach SCREENSHOT, ask
 > me for one; the crosshair: the supersample recipe. The model gets `'ground_point': 'auto'`.
 >
-> Reserved: pickup messages 81/82; hud_msg_icons 44 (+ _r); hud_reticles 33 (+ _r; extras 52-53);
+> Reserved: pickup messages 81/82; hud_msg_icons 44 (+ _r); hud_reticles 33 (+ _r; extras 52-53, 58-59);
 > label `pl` taught to characters\cyborg from `rl`; sounds under `sound\weapons\plasma_launcher_port`;
 > weapon folder `weapons\plasma launcher`; catalog name `Plasma Launcher`.
 >
