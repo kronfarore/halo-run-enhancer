@@ -7,8 +7,12 @@ sound, tool\port_sounds\halo1, weapon_ports_catalog.json, ai_firing_profiles.jso
 
     python port_sha_snapshot.py snap <name>               hash the set -> out\sha_<name>.json
     python port_sha_snapshot.py diff <a> <b>              files added / removed / changed
-    python port_sha_snapshot.py restore <a> <b> <backup>  every file differing a -> b back from
-                                                          a backup taken at a (then snap + diff)
+    python port_sha_snapshot.py restore <a> <b> <backup>  every file changed / removed a -> b back
+                                                          from a backup taken at a (then snap +
+                                                          diff); files new in b are LEFT (EXTRA)
+    diff lists apart, without failing: NOWDONE (a port done since a: not in a), EXTRA (left by
+    `restore a`), NOWBUSY (a port in progress at b: not in b) -- each snap records its
+    in-progress folders in sha_<name>.meta.json
     python port_sha_snapshot.py regen [key ...]           the wave-A --write chain, per config:
         h1_h3_weapon_model <key> -> h1_fp_retarget <key> --write + tool animations <h1_dir>
         -> h1_port_sounds <key> --write -> h1_pickable_weapons --only <key> --write
@@ -114,7 +118,34 @@ def snap(name):
     os.makedirs(OUT, exist_ok=True)
     path = os.path.join(OUT, 'sha_%s.json' % name)
     json.dump(out, open(path, 'w'), indent=0, sort_keys=True)
+    # the folders left out as in progress AT THIS SNAP: diff tells a port that turned done
+    # since (its folders ADDED) from a real addition
+    json.dump({'in_progress': in_progress()[0]}, open(meta_path(name), 'w'), indent=0)
+    if os.path.exists(extras_path(name)):            # a new snap: an older restore's record is stale
+        os.remove(extras_path(name))
     print('%d files -> %s' % (len(out), path))
+
+
+def meta_path(name):
+    return os.path.join(OUT, 'sha_%s.meta.json' % name)
+
+
+def busy_at(name):
+    """The in-progress folders recorded with snap `name` ([] for a snap older than the record)."""
+    try:
+        return json.load(open(meta_path(name))).get('in_progress', [])
+    except (OSError, ValueError):
+        return []
+
+
+def extras_path(name):
+    """The files `restore <name> ...` found added and LEFT in place (not the regen's to delete)."""
+    return os.path.join(OUT, 'sha_%s.extras.json' % name)
+
+
+def rel_lower(k):
+    """A snapshot key as a lower-case absolute path (the form in_progress() lists)."""
+    return (os.path.join(os.path.dirname(HCEEK), k) if k.startswith('HCEEK') else os.path.join(TOOL, k)).lower()
 
 
 def diff(a, b):
@@ -127,6 +158,25 @@ def diff(a, b):
     bitm = [k for k in changed if k.lower().endswith('.bitmap')
             and A.get('px:' + k) == B.get('px:' + k) and 'unreadable' not in str(A.get('px:' + k))]
     other = [k for k in changed if k not in bitm]
+    # ADDED, not a failure: under a port in progress at snap a (it turned done since: fo3, 196 of
+    # the Concussion Rifle's), or left in place by `restore a ...` (another session's file)
+    was_busy, now_busy = busy_at(a), busy_at(b)
+    # REMOVED, not a failure: under a port in progress at snap b (set to 'rework' since)
+    busy = [k for k in removed if any(rel_lower(k).startswith(d) for d in now_busy)]
+    removed = [k for k in removed if k not in busy]
+    for k in busy:
+        print('NOWBUSY ', k, '(its port is in progress at %s: not in that snapshot)' % b)
+    try:
+        left = set(json.load(open(extras_path(a))))
+    except (OSError, ValueError):
+        left = set()
+    now_done = [k for k in added if any(rel_lower(k).startswith(d) for d in was_busy)]
+    extra = [k for k in added if k in left and k not in now_done]
+    added = [k for k in added if k not in now_done and k not in extra]
+    for k in now_done:
+        print('NOWDONE ', k, '(its port was in progress at %s: not in that snapshot)' % a)
+    for k in extra:
+        print('EXTRA   ', k, '(not in %s: left in place by the restore, not the regen\'s)' % a)
     for k in added:
         print('ADDED   ', k)
     for k in removed:
@@ -135,8 +185,10 @@ def diff(a, b):
         print('CHANGED ', k)
     for k in bitm:
         print('BITMAP  ', k, '(header only: pixels identical)')
-    print('%d files compared: %d added, %d removed, %d changed (+%d bitmap tags, pixels identical)'
-          % (len(keys(A) | keys(B)), len(added), len(removed), len(other), len(bitm)))
+    print('%d files compared: %d added, %d removed, %d changed (+%d bitmap tags, pixels identical; '
+          '+%d of ports done since, +%d extras left by the restore, -%d of ports in progress since)'
+          % (len(keys(A) | keys(B)), len(added), len(removed), len(other), len(bitm),
+             len(now_done), len(extra), len(busy)))
     return not (added or removed or other)
 
 
@@ -144,8 +196,11 @@ def restore(a, b, backup):
     """Put back every file that differs between snapshots a (the state to return to) and b
     (now), from `backup` -- a copy of ROOTS taken with snapshot a: <backup>\\tags\\<d>,
     <backup>\\data\\<d>, <backup>\\tool\\halo1, <backup>\\tool\\<json> (the layout the DMR pilot's
-    backups used). Files only in b are deleted. A regen run must be followed by this: the
-    wave-A chain re-writes 12 tested files as content-equal tag noise (H1_PORT_PLAN "B1")."""
+    backups used). Files only in b are NOT deleted: they are reported (EXTRA) and recorded
+    (extras_path(a)), so the restore check lists them apart -- the regen rewrites existing files,
+    a new file is another session's (fo-proof, 2026-10-13: the delete took the B7 session's test
+    copy under weapons\\spartan laser\\test). A regen run must be followed by this: the wave-A
+    chain re-writes 12 tested files as content-equal tag noise (H1_PORT_PLAN "B1")."""
     A = json.load(open(os.path.join(OUT, 'sha_%s.json' % a)))
     B_ = json.load(open(os.path.join(OUT, 'sha_%s.json' % b)))
     keys = lambda D: {k for k in D if not k.startswith('px:')}  # noqa: E731
@@ -160,7 +215,8 @@ def restore(a, b, backup):
         if k.startswith('port_sounds'):
             return os.path.join(backup, 'tool', *p[1:])
         return os.path.join(backup, 'tool', k)
-    n = 0
+    was_busy, now_busy = busy_at(a), busy_at(b)
+    n, extras = 0, []
     for k in sorted(keys(A) | keys(B_)):
         if A.get(k) == B_.get(k):
             continue
@@ -169,12 +225,21 @@ def restore(a, b, backup):
             # the restore wiped the enhancer's catalog commit made while the proof ran)
             print('LEFT    %s (changed by another writer during the proof, not by the regen)' % k)
             continue
+        if k not in B_ and any(rel_lower(k).startswith(d) for d in now_busy):
+            # its port went to 'rework' during the proof: another session's files now
+            print('LEFT    %s (its port is in progress at %s)' % (k, b))
+            continue
         if k not in A:
-            os.remove(real(k))
-        else:
-            shutil.copy2(back(k), real(k))
+            done_since = any(rel_lower(k).startswith(d) for d in was_busy)
+            print('EXTRA   %s (not in %s: left in place%s)'
+                  % (k, a, '; its port turned done since' if done_since else ''))
+            extras.append(k)
+            continue
+        shutil.copy2(back(k), real(k))
         n += 1
-    print('%d file(s) restored from %s -- snap again and diff against %s to prove it' % (n, backup, a))
+    json.dump(extras, open(extras_path(a), 'w'), indent=0)
+    print('%d file(s) restored from %s, %d extra(s) left -- snap again and diff against %s to prove it'
+          % (n, backup, len(extras), a))
 
 
 def run(*cmd):
