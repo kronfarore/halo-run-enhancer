@@ -1164,6 +1164,16 @@ restored, 0 extras, restore check 0 changed; f7be336). (c) COMMITS:
 hunk you did not list (20200bf, 7e1babd swept the other session's hunks; a whole-file
 regeneration such as the catalog shows the other port's entry as its own hunk). Refused: wait for
 the other session's commit or ask the user -- never list a hunk that is not yours.
+(d) SHARED RECORDS (2026-10-13): `make_port_catalog_h1_ports`, `ai_firing_profile` and
+`port_catalog_keys` change ONLY their own entry / keys in the file as read under the lock (an
+entry keeps its place; a bare `make_port_catalog_h1_ports` writes DONE ports only -- name an
+in-progress port to write it) and print every other entry that differs from HEAD as `FOREIGN
+... kept as read`. `--commit "msg"` on all three commits just that change INSIDE the same lock
+hold (`kit_commit.commit_json`: the change applied to HEAD's JSON, committed through a temporary
+index, compare-and-swap on HEAD) -- no write->commit window, the foreign edits stay uncommitted.
+Verified: full / restored / named regens byte-identical to HEAD; a scratch repo with a foreign
+new entry + a foreign enhancer key: each `--commit` carried only its own lines, one retried
+over a commit made mid-write (no chain step imports these tools: no narrowed proof).
 
 ### Parallel pair 1: B5 Concussion Rifle + B7 Focus Rifle
 

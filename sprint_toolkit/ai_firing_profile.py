@@ -34,6 +34,11 @@ Halo 3 (+ ODST), Halo Reach.
 
     python ai_firing_profile.py --port sentinel_beam [--dry]
     python ai_firing_profile.py --port smg --dry
+
+PARALLEL SESSIONS (2026-10-13): a write reads the file under the kit lock and changes ONLY
+its own weapon's profile; every other profile that differs from HEAD (the other session's
+uncommitted one) is printed FOREIGN and kept as read. `--commit MSG` (repeatable: one
+paragraph each) commits just this profile inside the same lock hold (kit_commit.commit_json).
 """
 import argparse
 import json
@@ -136,15 +141,31 @@ def build(from_map, from_game, from_weapon, to_weapon, to_game='Halo 1', char='a
             'fields': fields}
     if not write:
         return prof
+    return save(to_game, to_weapon, prof, commit=write if isinstance(write, list) else None)
+
+
+def save(game, weapon, prof, commit=None):
+    """Write ONE profile into the file as read now (under the kit lock: every caller runs in
+    kit_lock.script) and print the FOREIGN profiles that differ from HEAD, kept as read.
+    `commit`: message paragraphs -> commit this profile only (kit_commit.commit_json)."""
+    sys.path.insert(0, HERE)
+    import kit_commit
     try:
         with open(PROFILE_FILE, encoding='utf-8') as fh:
             data = json.load(fh)
-    except Exception:
+    except FileNotFoundError:                    # never {} for an unreadable file: that rewrote all
         data = {}
-    data.setdefault(to_game, {})[to_weapon] = prof
+    kit_commit.report_foreign('firing profile', kit_commit.head_json(PROFILE_FILE), data,
+                              {(game, weapon): None})
+
+    def apply(d):
+        d.setdefault(game, {})[weapon] = prof
+    apply(data)
     with open(PROFILE_FILE, 'w', encoding='utf-8') as fh:
         json.dump(data, fh, indent=1)
-    return data[to_game][to_weapon]
+    if commit:
+        kit_commit.commit_json(PROFILE_FILE, apply, commit)
+    return data[game][weapon]
 
 
 def parse_sets(sets):
@@ -174,15 +195,7 @@ def same_game(donor_weapon, to_weapon, to_game='Halo 1', why='', fields=None, wr
             'donor_weapon': donor_weapon, 'fields': dict(fields or {})}
     if not write:
         return prof
-    try:
-        with open(PROFILE_FILE, encoding='utf-8') as fh:
-            data = json.load(fh)
-    except Exception:
-        data = {}
-    data.setdefault(to_game, {})[to_weapon] = prof
-    with open(PROFILE_FILE, 'w', encoding='utf-8') as fh:
-        json.dump(data, fh, indent=1)
-    return data[to_game][to_weapon]
+    return save(to_game, to_weapon, prof, commit=write if isinstance(write, list) else None)
 
 
 WDM = '0xC4'                     # Halo 1 actor_variant Weapon Damage Modifier
@@ -262,14 +275,7 @@ def from_config(key, write=True):
         # ratio rule; the default keeps the source's own), over the WDM rule's
         prof.setdefault('balanced_fields', {}).update(parse_sets(fp['balanced_set']))
     if write:
-        try:
-            with open(PROFILE_FILE, encoding='utf-8') as fh:
-                data = json.load(fh)
-        except Exception:
-            data = {}
-        data.setdefault('Halo 1', {})[weapon] = prof
-        with open(PROFILE_FILE, 'w', encoding='utf-8') as fh:
-            json.dump(data, fh, indent=1)
+        save('Halo 1', weapon, prof, commit=write if isinstance(write, list) else None)
     print(prof['source'], '->', weapon)
     for off, (fmt, v, name) in sorted(prof['fields'].items(), key=lambda kv: int(kv[0], 16)):
         print('  %-6s %-32s %s' % (off, name, round(v, 4) if isinstance(v, float) else v))
@@ -298,14 +304,20 @@ def main():
     # armed with it might drop an empty battery -- the plasma-rifle Elite's 0.7 / 0.9
     # (actv +0x1D8 / +0x1DC, read off the tag) make it drop charged, whatever 0 means
     ap.add_argument('--set', action='append', metavar='0xOFF=VALUE:NAME')
+    ap.add_argument('--commit', action='append', metavar='MSG',
+                    help='commit this profile only, under the same lock hold (repeatable)')
     a = ap.parse_args()
+    if a.commit and a.dry:
+        ap.error('--commit with --dry')
+    write = a.commit or True                     # a list = write + commit (save)
     if a.port:
-        from_config(a.port, write=not a.dry)
+        from_config(a.port, write=False if a.dry else write)
         return
     if not a.to_weapon:
         ap.error('--to-weapon (or --port)')
     if a.donor_weapon:
-        prof = same_game(a.donor_weapon, a.to_weapon, a.to_game, a.why, parse_sets(a.set))
+        prof = same_game(a.donor_weapon, a.to_weapon, a.to_game, a.why, parse_sets(a.set),
+                         write=write)
         for off, (fmt, v, name) in sorted(prof['fields'].items()):
             print('  %-6s %-24s %s' % (off, name, v))
         print(prof['source'], '->', a.to_weapon)
@@ -313,7 +325,8 @@ def main():
         return
     if not (a.from_map and a.from_weapon):
         ap.error('--from-map and --from-weapon (or --donor-weapon)')
-    prof = build(a.from_map, a.from_game, a.from_weapon, a.to_weapon, a.to_game, a.char)
+    prof = build(a.from_map, a.from_game, a.from_weapon, a.to_weapon, a.to_game, a.char,
+                 write=write)
     print(prof['source'])
     for off, (fmt, v, name) in sorted(prof['fields'].items(), key=lambda kv: int(kv[0], 16)):
         print('  %-6s %-32s %s' % (off, name, round(v, 4) if isinstance(v, float) else v))

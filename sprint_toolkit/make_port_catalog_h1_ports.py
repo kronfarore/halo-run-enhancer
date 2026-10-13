@@ -28,9 +28,16 @@ SMG's from its config) -- the patcher only reads it.
 Checks before writing: a non-empty 'balance' needs a 'balance_desc'; every row names a
 field and an original; 'donor' names a weapon halo.json knows.
 
-    python make_port_catalog_h1_ports.py                 # every configured weapon
-    python make_port_catalog_h1_ports.py smg             # one (config key)
+    python make_port_catalog_h1_ports.py                 # every DONE port
+    python make_port_catalog_h1_ports.py smg             # one (config key), any status
     python make_port_catalog_h1_ports.py --dry smg       # print, write nothing
+    python make_port_catalog_h1_ports.py smg --commit "msg" [--commit "paragraph"]
+
+PARALLEL SESSIONS (2026-10-13): the file is read under the kit lock and ONLY the named
+entries change; every other entry that differs from HEAD (the other session's uncommitted
+entry, the enhancer's keys) is printed FOREIGN and kept as read. `--commit` commits just this
+run's entries (kit_commit.commit_json: applied to HEAD's JSON) inside the same lock hold -- no
+write->commit window, and the foreign edits stay uncommitted.
 """
 import argparse
 import json
@@ -118,16 +125,13 @@ def check(key, e, known):
         raise SystemExit('%s: %s' % (key, '; '.join(problems)))
 
 
-def main(only=None, dry=False):
-    known = set(json.load(open(HALO_JSON, encoding='utf-8'))['Player Modifiers']
-                ['Specific Weapon Modifier'])
-    cat = json.load(open(OUT, encoding='utf-8')) if os.path.exists(OUT) else {}
+def merge_into(cat, built):
+    """Merge the built entries [(key, p, entry)] into `cat` (the file's JSON) in place and touch
+    nothing else: run on the working copy as read under the kit lock, and on HEAD's JSON for a
+    --commit. Returns {weapon: names kept from the old entry}."""
     h1 = cat.setdefault('Halo 1', [])
-    for key, p in ports_h1.all_ports():
-        if p.get('catalog') is None or (only and key not in only):
-            continue
-        entry = entry_for(key, p)
-        check(key, entry, known)
+    kept = {}
+    for key, p, entry in built:
         renamed = p['catalog'].get('renamed_from', ())
         h1[:] = [e for e in h1 if e.get('weapon') not in renamed]    # entries under an old name
         old = next((e for e in h1 if e.get('weapon') == entry['weapon']), {})
@@ -137,25 +141,71 @@ def main(only=None, dry=False):
             blk = ammo_block(p, saw)
             if blk:
                 merged['ammo'] = blk
-        h1[:] = [e for e in h1 if e.get('weapon') != entry['weapon']] + [merged]
-        kept = sorted(set(old) - set(entry))
+        at = next((i for i, e in enumerate(h1) if e.get('weapon') == entry['weapon']), None)
+        if at is None:                           # a new entry goes last; an old one keeps its
+            h1.append(merged)                    # place (no reorder churn in the file)
+        else:
+            h1[at] = merged
+        kept[entry['weapon']] = sorted(set(old) - set(entry))
+    return kept
+
+
+def main(only=None, dry=False, commit=None):
+    """`only`: config keys; None = every DONE port (2026-10-13: a port in progress is the other
+    parallel session's -- name it to write it). `commit`: message paragraphs -> commit THIS run's
+    entries only (kit_commit.commit_json), inside the same kit-lock hold as the write."""
+    import kit_commit
+    known = set(json.load(open(HALO_JSON, encoding='utf-8'))['Player Modifiers']
+                ['Specific Weapon Modifier'])
+    built, skipped = [], []
+    for key, p in ports_h1.all_ports():
+        if p.get('catalog') is None or (only and key not in only):
+            continue
+        if not only and p.get('status') != 'done':
+            skipped.append(key)
+            continue
+        entry = entry_for(key, p)
+        check(key, entry, known)
+        built.append((key, p, entry))
+    if only and len(built) != len(set(only)):
+        raise SystemExit('no catalog section for: %s' % ', '.join(
+            sorted(set(only) - {k for k, _p, _e in built})))
+    if skipped:
+        print('not done, left as they are (name one to write it): %s' % ', '.join(skipped))
+    # read UNDER THE LOCK (main runs inside kit_lock.script): only the built entries change
+    cat = json.load(open(OUT, encoding='utf-8')) if os.path.exists(OUT) else {}
+    as_read = json.loads(json.dumps(cat))
+    kept = merge_into(cat, built)
+    for key, p, entry in built:
         print('Halo 1 / %-12s %d balance row(s), requires %s%s'
               % (entry['weapon'], len(entry.get('balance', [])), entry.get('requires'),
-                 ('  (kept: %s)' % ', '.join(kept)) if kept and dry else ''))
+                 ('  (kept: %s)' % ', '.join(kept[entry['weapon']]))
+                 if kept[entry['weapon']] and dry else ''))
         if dry:
-            print(json.dumps(merged, indent=1)[:3000])
+            print(json.dumps(next(e for e in cat['Halo 1'] if e.get('weapon') == entry['weapon']),
+                             indent=1)[:3000])
+    mine = {}
+    for key, p, entry in built:
+        for name in (entry['weapon'],) + tuple(p['catalog'].get('renamed_from', ())):
+            mine[('Halo 1', name)] = None
+    kit_commit.report_foreign('catalog', kit_commit.head_json(OUT), as_read, mine)
     if dry:
         print('(dry run: nothing written)')
         return
     json.dump(cat, open(OUT, 'w', encoding='utf-8'), indent=1)
     print('wrote %s' % OUT)
+    if commit:
+        kit_commit.commit_json(OUT, lambda d: merge_into(d, built), commit)
 
 
 if __name__ == '__main__':
     import kit_lock   # the shared-kit lock: two port sessions in parallel (H1_PORT_PLAN.md)
     with kit_lock.script('make_port_catalog_h1_ports'):
         ap = argparse.ArgumentParser()
-        ap.add_argument('weapons', nargs='*', help='config keys (default: every configured one)')
+        ap.add_argument('weapons', nargs='*', help='config keys (default: every DONE one)')
         ap.add_argument('--dry', action='store_true')
+        ap.add_argument('--commit', action='append', metavar='MSG',
+                        help='commit THESE entries only, under the same lock hold (repeatable: '
+                             'one message paragraph each)')
         a = ap.parse_args()
-        main(a.weapons or None, a.dry)
+        main(a.weapons or None, a.dry, a.commit)
