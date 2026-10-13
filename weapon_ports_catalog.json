@@ -5067,8 +5067,8 @@
    "source": "Halo 4",
    "donor": "Plasma Rifle",
    "default_on": false,
-   "desc": "Halo 4's Storm Rifle: its model, first-person animations, sounds and numbers. A Covenant automatic on heat and battery: 10 bolts a second, overheating on the 12th bolt for a 3 s vent. 167 shots a battery.",
-   "balance_desc": "Measured against the Plasma Pistol, the only heat plasma weapon both games have: 10.3 damage a bolt (fast plasma: better on armour, worse on shields than the pistol's), 13 bolts to overheat and a 1.7 s vent, a faster bolt with more range and Halo 1-style aim assist.",
+   "desc": "Halo 4's Storm Rifle: its model, first-person animations, sounds and numbers. A Covenant automatic on heat and battery: 10 bolts a second, overheating after 27 bolts (about 2.6 s) for a 3 s vent. 167 shots a battery.",
+   "balance_desc": "Measured against the Plasma Pistol, the only heat plasma weapon both games have: 10.3 damage a bolt (fast plasma: better on armour, worse on shields than the pistol's), 47 bolts to overheat and a 1.7 s vent, a faster bolt with more range and Halo 1-style aim assist.",
    "anims": {
     "swap": 0.8736842105263158
    },
@@ -5141,9 +5141,9 @@
      "tag": "weapons\\storm rifle\\storm rifle",
      "field": "Heat Generated Per Round",
      "block": "Triggers",
-     "value": 0.12,
+     "value": 0.0639,
      "card": "Heat",
-     "original": 0.1125
+     "original": 0.0665
     },
     {
      "class": "weap",
