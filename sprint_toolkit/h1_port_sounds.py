@@ -168,6 +168,12 @@ def render(weapon):
             x = np.zeros(n)
             for p in parts:
                 x[:len(p)] += p
+            # `slice` {name: (t0, t1) s}: only that stretch of the mix (the Plasma Launcher: Reach's
+            # charge LOOP decodes silent -- its rising 5 s 'in' gives the loop its full-charge
+            # sustain, 3.0 - 4.5 s), before the level and `loop_len`
+            if name in w.get('slice', {}):
+                t0, t1 = w['slice'][name]
+                x = x[int(t0 * RATE):int(t1 * RATE)]
             act = x[np.abs(x) > 0.01]
             rms = 20 * np.log10(np.sqrt((act ** 2).mean()) + 1e-12) if len(act) else -99
             x = x * 10 ** ((target - rms) / 20)

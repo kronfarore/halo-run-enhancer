@@ -255,6 +255,12 @@ def make_hud(w, key, write):
         for G in h['zoom_glyphs']:
             if write:
                 art, (rx, ry) = AR.layer_art(*G['art'])
+                # `flip` 'x' / 'y' / 'xy': the art mirrored (the Plasma Launcher's scope rings:
+                # animated widgets, scale 0 in the chud -- in Reach they draw turned 180 deg)
+                if 'x' in G.get('flip', ''):
+                    art, rx = art.transpose(Image.FLIP_LEFT_RIGHT), art.width - rx
+                if 'y' in G.get('flip', ''):
+                    art, ry = art.transpose(Image.FLIP_TOP_BOTTOM), art.height - ry
                 sx, sy = G['scale']
                 a = art.split()[3].resize((round(art.width * sx), round(art.height * sy)), Image.LANCZOS)
                 if 'frame_alpha' in G:
