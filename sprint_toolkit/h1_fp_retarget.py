@@ -345,33 +345,38 @@ def _resolve_arms(world, h3_nodes, weapon):
             if parts[0] != side or len(parts) != 3 or parts[1] not in _FINGERS or _skip(weapon, n):
                 continue
             kp = h3_nodes[_kept(weapon, h3_nodes, p)][0]
-            # BOOT 1 (the Storm Rifle, user: 'the left hand's fingers are at weird angles'): a finger
-            # keeps its DEVIATION FROM ITS OWN BIND -- Halo 4 world x F_f, F_f = inverse(H4 bind,
-            # hand-relative) x A x (H1 bind, hand-relative): the two games' bind hands do not curl
-            # alike, so A alone (an absolute rotation) bent Halo 1's fingers by the difference
-            world[n] = (R.qmul(src[n][0], _finger_axes(h3_nodes, n, side)),
-                        R.xform(world[kp], _HAND_BIND[_h1(weapon, n)][1]))
+            # FINGERS BY DIRECTION (the Storm Rifle, boots 1-3, user: 'weird finger angles'): the two
+            # games' finger bones follow different axis conventions (Halo 4: local -y / +y per side,
+            # Halo 1: +x) and their bind hands differ in shape (Halo 4's curled, Halo 1's flat), so
+            # neither an absolute rotation (boot 1: 100-170 deg off) nor a deviation from each bind
+            # (boot 3: Halo 4's curl lost) carries over. Each Halo 1 segment starts RIGID on its solved
+            # parent (Halo 1's bind) and turns by the smallest rotation that points it along Halo 4's
+            # segment (this joint -> the next; the tip along Halo 4's own bone axis): a curl turns it
+            # about the knuckle, whatever the conventions
+            world[n] = _finger_by_direction(world, src, h3_nodes, weapon, n, kp, side)
 
 
-_FINGER_AXES = {}
+_HAND_REL = {}
 
 
-def _finger_axes(h3_nodes, n, side):
-    """F_f for one Halo 4 finger node (see _resolve_arms), from the two arms' bind poses."""
-    if n in _FINGER_AXES:
-        return _FINGER_AXES[n]
-    d4 = h4_tags.rm_defaults(h4_tags.PREFIX + h4_tags.ARMS_RM)
-    w4 = {}
-    for m, p in h3_nodes:                            # Halo 4 bind world (rotation convention)
-        if m in d4:
-            w4[m] = _mul(w4[h3_nodes[p][0]], d4[m]) if p >= 0 and h3_nodes[p][0] in w4 else d4[m]
-    names, parents, bind, _ = R.load_model(R.HANDS)
-    w1 = R.compose(names, parents, bind)
-    hand4, hand1 = w4[side + '_hand'][0], w1[h1_arm_name(side + '_hand')][0]
-    rel4 = R.qmul(R.qconj(hand4), w4[n][0])
-    rel1 = R.qmul(R.qconj(hand1), w1[h1_arm_name(n)][0])
-    _FINGER_AXES[n] = R.qmul(R.qmul(R.qconj(rel4), h4_tags.ARM_AXES[side]), rel1)
-    return _FINGER_AXES[n]
+def _finger_by_direction(world, src, h3_nodes, weapon, n, kp, side):
+    """Halo 1 world (q, t) of finger node n: rigid on its solved parent kp, then aimed along Halo 4."""
+    if not _HAND_REL:
+        names, parents, bind, _ = R.load_model(R.HANDS)
+        w1 = R.compose(names, parents, bind)
+        for m, pm in zip(names, parents):
+            if pm is not None:
+                _HAND_REL[m] = R.qmul(R.qconj(w1[pm][0]), w1[m][0])      # bind local rotation
+    h1n = _h1(weapon, n)
+    q0 = R.qmul(world[kp][0], _HAND_REL[h1n])
+    t = R.xform(world[kp], _HAND_BIND[h1n][1])
+    seg = n.rsplit('_', 1)
+    nxt = {'low': 'mid', 'mid': 'tip'}.get(seg[1])
+    if nxt and seg[0] + '_' + nxt in src:
+        target = _vsub(src[seg[0] + '_' + nxt][1], src[n][1])
+    else:                                            # the tip: Halo 4's bone axis
+        target = R.qrot(src[n][0], (0.0, -1.0 if side == 'l' else 1.0, 0.0))
+    return (R.qmul(_rot_between(R.qrot(q0, (1.0, 0.0, 0.0)), target), q0), t)
 
 
 def retarget_frame(h3_nodes, pose, defaults, weapon, corr, grip_ref=None,
