@@ -1021,8 +1021,13 @@ def own_beam(a, b, write):
         T = b['impact_tint']
         done = {}
         for x in pd.material_responses.STEPTREE:
-            for k in x.desc['NAME_MAP']:
-                ref = getattr(x, k)
+            # `potential`: the POTENTIAL response's effect too (the Concussion Rifle, boot 4: the
+            # fuel rod names each impact effect twice, and the untouched nested copy kept playing
+            # the green burn); opt-in, the earlier ports keep their tags
+            refs = [getattr(x, k) for k in x.desc['NAME_MAP']]
+            if T.get('potential'):
+                refs.append(x.potential_response.effect)
+            for ref in refs:
                 if not (hasattr(ref, 'filepath') and ref.filepath) or ref.tag_class.enum_name != 'effect':
                     continue
                 src_e = ref.filepath
