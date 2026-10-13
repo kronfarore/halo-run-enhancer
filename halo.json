@@ -9913,8 +9913,8 @@
 				"Salvo Shooting": {
 					"desc": "How fast it fires and how many rounds one pull sends.",
 					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
-					"game": ["Halo Reach", "Halo 4"],
-					"tag": { "Halo Reach": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle", "Halo 4": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle" },
+					"game": ["Halo Reach", "Halo 4", "Halo 1"],
+					"tag": { "Halo Reach": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle", "Halo 4": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle", "Halo 1": "weap weapons\\focus rifle\\focus rifle" },
 					"targets": [
 						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased", "games": ["Halo Reach"] },
 						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased", "games": ["Halo Reach"] },
@@ -9923,7 +9923,9 @@
 						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased", "games": ["Halo 4"] },
 						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased", "games": ["Halo 4"] },
 						{ "step": "+1", "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "easier_when": "increased", "games": ["Halo 4"] },
-						{ "step": "+1", "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "easier_when": "increased", "games": ["Halo 4"] }
+						{ "step": "+1", "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "easier_when": "increased", "games": ["Halo 4"] },
+						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second", "easier_when": "increased", "games": ["Halo 1"] }
 					],
 					"split_from": "More Shooting"
 				},
