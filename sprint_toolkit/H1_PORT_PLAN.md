@@ -909,6 +909,43 @@ layer. Run in PARALLEL with B7 (the kit lock worked: each shared step waited its
   `impact_tint` `potential`, `widget_tint` (all opt-in, proofs cr1-cr4); h1_projectile_probe run in
   the FOREGROUND (a background run logged nothing).
 
+## B7: what the Focus Rifle taught (2026-10-13) -- parallel with B5
+
+PORTING.md "Halo 1: the Focus Rifle, wave B7" is the full record; `ports_h1/focus_rifle.py` is the
+example of a CONTINUOUS BEAM at 30/s on heat + battery (the Sentinel Beam's wiring on the plasma rifle),
+of an ANIMATED, multi-colour baked beam and of a heat-ramp display. Everything in "Pilot A1" to "B5"
+still holds; the Focus Rifle added:
+
+**New user rules / decisions:**
+- THE BEAM RECIPE (user: 'the best beam we have produced so far'; applied to the Spartan Laser,
+  57b5e67): the source's beam_system profile x its palette baked; ONE contrail whose texture SUMS the
+  colour layers (`baked_textures` `components`); motion = a contrail SECONDARY MAP (greyscale knots)
+  with a `slide` function -- map functions run on game time. Judge variants on the test SECONDARY
+  (`h1_beam_variant.py --spec`), one boot per question.
+- Reach's heat: the user's stopwatch decides an open engine question (here: Reach cools while firing).
+
+**Process (observations -- check them on the next port):**
+- MEASURE THE RATE: a 29..30 tag fired 30/s (the probe), not the "15/s cap" -- the cap holds for
+  15..29.9 (two ticks). Per-round values follow the measured rate. **The Sentinel Beam** (done) was
+  built on the cap: its 30/s doubles its intended dps / heat / battery use -- check it (next task).
+- A contrail's own u scroll drew static at 30/s; an ADDED contrail drew without a secondary map (boot 4)
+  but not with one (boots 8-10) -- one textured contrail is the reliable form here.
+- Glow that follows heat: give an export input `heat` (the template's illumination input was free once
+  the muzzle-light attachment went into the firing effect) and slide the repeater's colour ramp by it.
+- Scope fit: the lens on the centre row / column of the source screenshot; `--port` overrides
+  `--span` / `--aspect` in h1_h3_scope previews (write the fit into the config first).
+- Crosshair supersample: the cell art = sprite x h1_add_reticle.SCALE (1.268) x scale x 2.
+- Tools now: `h1_fp_muzzle.py` (FP marker in camera space), `h1_beam_variant.py` (test beam re-skins,
+  spec layers, `--out`), baked_textures `size (w, h)` / `stops` / `gain` / `grey` / `components`,
+  pickable contrail `repeats` / `scroll` / `secondary`.
+
+**Parallel run (pair 1), what to keep:** test copies under the IN-PROGRESS port's folder (the other
+session's proof restores done-port folders); check a shared file's diff before a by-path commit (both
+sessions swept the other's hunk once); a port turning DONE mid-proof shows as ADDED in the restore
+check (harmless); a level's build fails while the other port's palette tags are broken -- wait for it.
+The wave check (`port_tool_proof --full --rev d096b49`) is still due before wave B's batched rebuild
+(B6 not yet ported).
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one

@@ -1910,6 +1910,73 @@ ai\generic entry; WDM rule 0.233 / 1.15; balanced drop 0.25-0.875 / 6-13. Enhanc
 changed): `set_attachments` copy `tint`, `psys_tint` `@<type state>`, `impact_tint` `potential`,
 `widget_tint`; h1_role_compare `concussion_rifle` set.
 
+### Halo 1: the Focus Rifle, wave B7 (2026-10-12/13, 13 boots + Armed on b30, PARALLEL with B5) -- a continuous beam at 30/s, an animated Reach-colour beam, a heat-ramp display
+
+The whole weapon is `ports_h1/focus_rifle.py` (CLOSE-OUT RECORD in it), on a copy of the Halo 1 PLASMA
+RIFLE (the yardstick, user) wired as the SENTINEL BEAM (the hum on the rate of fire, an own one-sprite
+firing effect, a copy of Halo 1's Sentinel beam projectile with the plasma bolt's damage table).
+
+**Step 4a (user): the PLASMA RIFLE.** Reach: 3 a round (plasma_fast) x 30/s, heat 0.025, loss 0.35 /
+0.23 overheated, recovery 0.1, battery 0.0016125 (620), zoom 3.5 / 9.5, 4000 wu/s, range 120. **Reach
+COOLS WHILE FIRING:** the user's stopwatch ~2.5 s = 0.75 heat/s - 0.35 (no cooling would be 1.33 s;
+the meter never visibly falls). Halo 1 has ONE loss: the mean 0.29 (the Beam Rifle's precedent).
+Balanced = the plasma-rifle ratio by TIME TO OVERHEAT (both games cool while firing: H1 PR 2.67 s x
+2.47 / Reach PR 2.17 = 3.0 s), 130 dps, battery by time (9.3 s). Materials: the bolt's table default, x
+Reach's plasma_fast / plasma_slow balanced (the repeater's rule). The Halo 4 port of the same weapon was
+the reference (Reach's own values; heat cards from the Sentinel Beam there).
+
+**THE RATE, MEASURED (boot 2, `h1_weapon_state_probe`):** a 29..30 tag fires **30 rounds a second**
+in Halo 1 -- 29 rounds in 0.97 s, shots 33 ms apart. The "15/s cap" (SMG 22.5, Sentinel Beam 30)
+does NOT hold at 30: the repeater's rule (rate/30 a tick, a shot when the sum reaches 1, reset) gives
+one round EVERY tick at 30 and two ticks at 15..29.9. The per-round values doubled for 15/s
+overheated the gun in ~1 s (user: 'under 2 s'). **The Sentinel Beam (done) doubled its per-round
+values on the same 15/s assumption** -- its check is the next task (user). Halo 1 cools while firing
+(confirmed again: heat 0.045 -> 1.0 over 29 rounds at 0.29/s); vent 3.07 s as fitted.
+
+**THE BEAM -- the best so far (user):** Reach's 1p `beam_system` = a `center` ribbon on energy_trail
++ a 12-gon `pulse` tube, both through the palette `sentinel_beam` (MISSING from HREK; Halo 3's
+fx\contrails\_gradients\sentinel_beam is it: black -> gold -> white). Baked (the Spartan Laser's
+route) onto an own copy of the Sentinel contrail. Then, step by step in game:
+- **Motion:** the contrail's own `texture animation u` drew STATIC (every 30/s beam is new and starts
+  at the same phase). A contrail **SECONDARY MAP** -- a greyscale knot map from Reach's pulse (floor
+  0.35), u animation source `none`, function `slide`, period 0.4 s -- runs on GAME TIME and MOVES
+  (boot 8; pickable contrail `secondary`).
+- **Reach's colour** (the user's firing screenshot: white-hot core, warm orange-peach edges, a
+  blue-violet haze): an ADDED violet contrail on the same marker drew nothing from boot 8 on (it had
+  drawn as a gold pulse in boot 4, without a secondary map -- not isolated further); boot 11's
+  diagnostic put the violet on the CORE texture and it drew at once. Final: ONE contrail 0.2 wu whose
+  texture SUMS a narrow white-orange centre (energy_trail ^ 2.2, colour stops) and hollow blue-violet
+  bands (energy_trail ^ 0.45, gain 1.6) -- `baked_textures` `components` (boot 12-13, user 'looks
+  right'). Test tool: `h1_beam_variant.py <port> <name> --spec layers.json` (a weapon copy on the
+  test secondary; `--clean`).
+- **Applied to the Spartan Laser** (user: 'looks better like this -- copy it into the build'): its
+  core on energy_trail and its glow on Reach's pulse through laser_red_01 (57b5e67; the batched rebuild).
+
+**Look, the rest:** the display tiles = Reach's heat meter (user: 'a heat tracking meter as well'):
+weapon input B = heat (was illumination; the muzzle-light attachment dropped -- its light is in the
+firing effect), function 2 = the heat out C, the repeater's colour RAMP slid by it (blue -> orange);
+indicator / plasma strip static lit shapes in Reach's colours. Scope: Reach's chud fitted to the user's
+screenshot (lens 1293 x 707 -> span 931.1, aspect 1.2506). Crosshair #22 supersampled -- the cell art
+includes h1_add_reticle.SCALE (1.268): scale 2.0, overlay 0.155 (2.4 overflowed the cell). The beam
+starts at the FP muzzle (`h1_fp_muzzle.py`, the lost marker_dir.py as a tool) minus 1 unit (user).
+
+**Step 11.** Donor = the Elite minor plasma rifle (15 carriers 0.4-0.6, no actor flags); Reach's m10
+profile (drop 37.5-47.5 %); WDM 0.5 x 130 / 90 = 0.722, balanced 0.5; balanced drop 0.75-0.95.
+Enhancer (2721d29, 5b81e9a): hands 'two', heat + battery cards from the plasma rifle itself, Salvo
+Shooting skipped (30/s already a round a tick), Error Angle muted (user, card-level). Armed boot: all
+three species fire it.
+
+**PARALLEL (the first pair, with B5):** a test copy of a DONE port under its own folder was deleted by
+the other session's proof restore (`h1_beam_variant --out`: put it under the in-progress port); a
+by-path commit of a shared file swept the other session's hunk in (20200bf); a port turning DONE during
+a proof shows its folders as ADDED in the restore check (fo3: 196, the Concussion Rifle's -- untouched);
+a level fails to build while the other session's tags in its palette are broken (b30, B5's bolt).
+Heredocs ate backslashes in a config once more (every port config failed to load for a minute): configs
+through the Edit tool only.
+
+**Proofs:** fo1 (bake size), fo2 (stops / gain / grey + contrail secondary), fo3 (components) -- 0
+changed apart from bitmap headers, the kit restored exact; the scroll keys rode in B5's cr proofs.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:

@@ -97,7 +97,39 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'in progress',
+    # DONE 2026-10-13: 13 boots on b30 (parallel with B5) + the Armed boot; the ten-map rebuild is
+    # BATCHED for wave B (user's go). CLOSE-OUT RECORD:
+    # STEP 4a: yardstick the Plasma Rifle (user); Reach cools while firing (user's stopwatch ~2.5 s);
+    #   the PROBE (boot 2): Halo 1 fires the 29..30 tag at 30/s -> Reach's own per-round values;
+    #   default heat 0.0229 / one loss 0.29 (the mean) -> 2.47 s; balanced = the plasma-rifle ratio by
+    #   time to overheat (4.33, 0.0175 / 0.197 / 0.25, battery 1/280); materials bolt table / x fast-slow.
+    # STEP 4b (port_field_audit --port focus_rifle, final): weapon list 2 = the rate (one round a tick)
+    #   and the hum's 0.05 / 0.1 ramp; camo ding, illumination recovery, noise 'shout', type
+    #   'undefined', deviation 1 written. List 5 (29) = every line a decision here: B in heat + function 2
+    #   (the display ramp), the hum wiring, Reach's heat / zoom / age, the FP offset, the dropped
+    #   attachments. Projectile list 2: Reach's own damage ranges; velocity 1200 (the Sentinel beam's,
+    #   proven; Reach's 4000 and the ratio's 8000 cross the range in one tick: no overpenetration, the
+    #   Spartan Laser's finding); responses = Reach's (overpenetrate flesh / glass / liquid / plants).
+    #   Damage: camo damage 0.048, instantaneous acceleration 0.1.
+    # TEMPLATE DIFF (h1_port_template_diff, final): weapon 70, HUD 18 (reticle 34, icon 45, the scope
+    #   screen effect), the gun shaders 2 each, the three lit shapes; display / indicator / illum_plasma
+    #   shader_models MISSING by design (the lit-shape chicagos take those materials).
+    # Closing checks: 0 port_refs_audit 0 problems (the boot-13 test copy: own beam + damage + melee);
+    #   2 validate_halo_json 0 problems; 4 port_backup h1; 5 n/a (Halo 1: the bank manifest); 6 = 4b;
+    #   7 port_sound_refs OWN only (hum, drop, zooms, dry), the FP-animation / flyby / impact sounds own
+    #   (by hand), port_sounds --check 0; 8 the Armed boot: Grunt / Jackal / Elite from the Elite minor
+    #   plasma rifle + Reach's profile, WDM 0.722 / 0.5, Grunts x0.5, Jackals shieldless, balanced drop
+    #   0.75-0.95; 9 the shield hit: material #22 has NO response effect on this beam (nothing to thin;
+    #   h1_hit_effect_load: 0 load); 10 the muzzle flash: one orange sprite at the bore vs Reach's 1p
+    #   flash (recorded at fire_effect).
+    # THE LOOK: Reach's scope fitted to the user's screenshot; crosshair #22 supersampled; the display
+    #   tiles a heat ramp; THE BEAM: one contrail 0.2 wu, a white-orange centre + blue-violet bands
+    #   (components), a knot map sliding on game time (contrail secondary map: the contrail's own u
+    #   scroll drew static). Recipe applied to the Spartan Laser (user, 57b5e67).
+    # Not reproduced: Reach's two heat losses (one, the mean), the meter filling tile by tile (one ramp),
+    #   the distortion ring and spark embers of the muzzle, the 3p plasma beam, a second contrail layer
+    #   with its own animation (did not draw), Reach's 4000 wu/s.
+    'status': 'done',
 
     # geometry + look (h1_h3_weapon_model.py; Reach through reach_tags). Reach's ONE model for world
     # AND first person. focus_rifle.render_model: 14 nodes -- b_gun (root, identity: not tilted),
