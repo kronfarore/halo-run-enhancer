@@ -440,7 +440,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'betrayal_marines_score',
                'death_penalty_scaling', 'death_penalty_per_round',
                'death_penalty_base',
-               'difficulty_baseline',
+               'difficulty_baseline', 'difficulty_baseline_balanced',
+               'difficulty_baseline_use_balanced',
                'odst_red_plasma_as_brute', 'odst_variants_as_base',
                'odst_downgrade_unupgraded', 'odst_shield_into_health',
                'odst_patch_hub', 'odst_pools_from_map',
@@ -793,6 +794,21 @@ def save_settings():
 
 
 # Configuration
+#: Options -> Run rules -> Difficulty baseline -> "Balanced": the dials that bring every
+#: game's LEGENDARY time-to-kill closest together (sprint_toolkit/ttk_calibrate.py,
+#: reports/ttk_calibration.md, 2026-10-13): vitality = shield one factor per game, damage
+#: one factor, rate of fire vanilla. Calibrated on Legendary; like every baseline dial they
+#: are written into the difficulty being played.
+BALANCED_BASELINE = {
+    'Halo 1': {'vitality': 1.41, 'shield': 1.41, 'damage': 2.63},
+    'Halo 2': {'vitality': 0.77, 'shield': 0.77, 'damage': 0.84},
+    'Halo 3': {'vitality': 1.40, 'shield': 1.40, 'damage': 1.36},
+    'Halo 3: ODST': {'vitality': 1.34, 'shield': 1.34, 'damage': 3.57},
+    'Halo Reach': {'vitality': 0.81, 'shield': 0.81, 'damage': 1.58},
+    'Halo 4': {'vitality': 0.92, 'shield': 0.92, 'damage': 1.20},
+}
+
+
 CONFIG = {
     "font_size_title": 20,
     "font_size_subtitle": 18,
@@ -1132,6 +1148,11 @@ CONFIG = {
     # "leave the shipped value alone"; a stored 0 means the same (the spin boxes show
     # 0 as "vanilla").
     "difficulty_baseline": {},
+    # The "Balanced" option: a SECOND set of the same dials (edited separately, starting
+    # at BALANCED_BASELINE) and the switch that makes patches use it instead of the set
+    # above. Switching it off brings the set above back untouched.
+    "difficulty_baseline_balanced": {g: dict(v) for g, v in BALANCED_BASELINE.items()},
+    "difficulty_baseline_use_balanced": False,
     # ODST's obtainable plasma rifle is the RED tag, which Halo 2 shipped as the
     # separate Brute Plasma Rifle. With this on it is offered under that name and
     # retuned on patch to match Halo 2's version. Normal Plasma Rifle effects reach
@@ -7003,7 +7024,9 @@ class MagnitudeEditorDialog(QDialog):
         the spin boxes display 0 as "vanilla" for exactly that reason, so the option can
         be set for one dial without disturbing the other three.
         """
-        cfg = (CONFIG.get('difficulty_baseline') or {}).get(self.game) or {}
+        key = ('difficulty_baseline_balanced' if CONFIG.get('difficulty_baseline_use_balanced')
+               else 'difficulty_baseline')
+        cfg = (CONFIG.get(key) or {}).get(self.game) or {}
         spec = {k: float(v) for k, v in cfg.items() if v}
         return spec or None
 
@@ -10249,7 +10272,15 @@ class OptionsDialog(QDialog):
 
         self.baseline_spins = {}          # (game, key) -> QDoubleSpinBox
         self.baseline_vanilla = {}        # (game, key) -> QLabel
-        saved = CONFIG.get('difficulty_baseline') or {}
+        # Two sets: the player's own ('custom') and 'balanced'. The spin boxes show the
+        # active one; switching stores them into the set being left and loads the other.
+        self._baseline_sets = {
+            'custom': copy.deepcopy(CONFIG.get('difficulty_baseline') or {}),
+            'balanced': copy.deepcopy(CONFIG.get('difficulty_baseline_balanced')
+                                      or BALANCED_BASELINE)}
+        self._baseline_mode = ('balanced' if CONFIG.get('difficulty_baseline_use_balanced')
+                               else 'custom')
+        saved = self._baseline_sets[self._baseline_mode]
         for r, game in enumerate(BASELINE_GAMES):
             lbl = QLabel(game)
             lbl.setToolTip(game)
@@ -10278,12 +10309,22 @@ class OptionsDialog(QDialog):
                 bgrid.addWidget(cell, r + 2, c + 1)
                 self.baseline_spins[(game, key)] = sp
                 self.baseline_vanilla[(game, key)] = van
-        reset = QPushButton("Reset all dials")
-        reset.setToolTip("Set every dial of every game back to vanilla (0): the games' "
-                         "own values. Takes effect when Options is saved.")
-        reset.clicked.connect(lambda: [sp.setValue(0.0) for sp in self.baseline_spins.values()])
-        bgrid.addWidget(reset, len(BASELINE_GAMES) + 2, 0, 1, len(BASELINE_COLS) + 1,
+        self.baseline_balanced_cb = QCheckBox("Balanced")
+        self.baseline_balanced_cb.setChecked(self._baseline_mode == 'balanced')
+        self.baseline_balanced_cb.setToolTip(
+            "On: the dials switch to the BALANCED set -- the values that bring every game's "
+            "Legendary time to kill (you vs Elites and Brutes / Knights, and them vs you) "
+            "closest together (sprint_toolkit/reports/ttk_calibration.md). Calibrated on "
+            "Legendary; like every dial here they are written into the difficulty you play.\n"
+            "Changes made while it is on are kept in the balanced set.\n"
+            "Off: your own values come back exactly as you left them.")
+        self.baseline_balanced_cb.toggled.connect(self._baseline_switch)
+        bgrid.addWidget(self.baseline_balanced_cb, len(BASELINE_GAMES) + 2, 0, 1, 2)
+        self.baseline_reset_btn = reset = QPushButton("Reset all dials")
+        reset.clicked.connect(self._baseline_reset)
+        bgrid.addWidget(reset, len(BASELINE_GAMES) + 2, 2, 1, len(BASELINE_COLS) - 1,
                         Qt.AlignRight)
+        self._baseline_reset_tip()
         # Deferred: this reads maps, and doing it while the dialog is still being
         # built means the window never paints until it finishes.
         QTimer.singleShot(0, self._refresh_baseline_vanilla)
@@ -13154,11 +13195,13 @@ class OptionsDialog(QDialog):
             'death_penalty_scaling': self.death_pen_cb.isChecked(),
             'death_penalty_base': self.death_pen_base.value(),
             'death_penalty_per_round': self.death_pen_per.value(),
-            'difficulty_baseline': {
-                g: {k: round(self.baseline_spins[(g, k)].value(), 3)
-                    for k, _t in BASELINE_COLS if self.baseline_spins[(g, k)].value()}
-                for g in BASELINE_GAMES
-                if any(self.baseline_spins[(g, k)].value() for k, _t in BASELINE_COLS)},
+            # the boxes hold the ACTIVE set; the other one is kept as it was
+            'difficulty_baseline': (self._baseline_read() if self._baseline_mode == 'custom'
+                                    else self._baseline_sets['custom']),
+            'difficulty_baseline_balanced': (self._baseline_read()
+                                             if self._baseline_mode == 'balanced'
+                                             else self._baseline_sets['balanced']),
+            'difficulty_baseline_use_balanced': self._baseline_mode == 'balanced',
             'auto_new_equipment_abilities': self.auto_nw_abilities_cb.isChecked(),
             'auto_new_weapon_duals': self.auto_nw_duals_cb.isChecked(),
             'auto_new_weapon_upgrades': self.auto_nw_upgrades_cb.isChecked(),
@@ -13602,6 +13645,39 @@ class OptionsDialog(QDialog):
         msg += ("\n\n%s were NOT touched, so the next patch still rebuilds from "
                 "whatever they hold." % (bl[:1].upper() + bl[1:]))
         QMessageBox.information(self, "Restore from archive", msg)
+
+    def _baseline_read(self):
+        """The spin boxes as a set: {game: {dial: value}}, zeros (vanilla) left out."""
+        return {g: {k: round(self.baseline_spins[(g, k)].value(), 3)
+                    for k, _t in BASELINE_COLS if self.baseline_spins[(g, k)].value()}
+                for g in BASELINE_GAMES
+                if any(self.baseline_spins[(g, k)].value() for k, _t in BASELINE_COLS)}
+
+    def _baseline_fill(self, values):
+        for g in BASELINE_GAMES:
+            for k, _t in BASELINE_COLS:
+                self.baseline_spins[(g, k)].setValue(
+                    float(((values or {}).get(g) or {}).get(k) or 0.0))
+
+    def _baseline_switch(self, on):
+        """Balanced on/off: keep what the boxes hold in the set being left, show the
+        other one."""
+        self._baseline_sets[self._baseline_mode] = self._baseline_read()
+        self._baseline_mode = 'balanced' if on else 'custom'
+        self._baseline_fill(self._baseline_sets[self._baseline_mode])
+        self._baseline_reset_tip()
+
+    def _baseline_reset(self):
+        """Reset only the set on show: your own -> vanilla, Balanced -> its calibration."""
+        self._baseline_fill(BALANCED_BASELINE if self._baseline_mode == 'balanced' else {})
+
+    def _baseline_reset_tip(self):
+        self.baseline_reset_btn.setToolTip(
+            "Set every dial of every game back to the BALANCED calibration. Only the "
+            "balanced set changes; your own values stay as they are."
+            if self._baseline_mode == 'balanced' else
+            "Set every dial of every game back to vanilla (0): the games' own values. Only "
+            "your own set changes; the balanced set stays as it is.")
 
     def _refresh_baseline_vanilla(self):
         """Show what each game ships for the four dials, at the selected difficulty.
