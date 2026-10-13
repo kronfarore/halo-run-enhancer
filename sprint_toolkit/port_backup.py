@@ -415,7 +415,13 @@ SCRIPTS += tuple(s for s in ('reach_tags.py', 'port_sha_snapshot.py', 'h3_weapon
 SCRIPTS += tuple(s for s in ('kit_lock.py', 'port_tool_proof.py', 'h1_port_residency.py',
                              'h1_size_test_map.py')
                  if s not in SCRIPTS and os.path.exists(os.path.join(HERE, s)))
-FILES += [(os.path.join(TOOL, 'port_sounds.py'), 'tool/port_sounds.py')] if not any(
+# the Focus Rifle (B7, 2026-10-13): the FP muzzle offset, test beam variants, the live probe (its
+# --bursts measured the 30/s rate), the H1 values / projectile responses, Reach's damage table
+SCRIPTS += tuple(s for s in ('h1_fp_muzzle.py', 'h1_beam_variant.py', 'h1_weapon_state_probe.py',
+                             'h1_weapon_values.py', 'h1_projectile_responses.py',
+                             'reach_damage_table.py', 'reach_tag_fields.py', 'h1_role_compare.py')
+                 if s not in SCRIPTS and os.path.exists(os.path.join(HERE, s)))
+FILES +=[(os.path.join(TOOL, 'port_sounds.py'), 'tool/port_sounds.py')] if not any(
     f[0].endswith('port_sounds.py') for f in FILES) else []
 
 PROFILES = {
