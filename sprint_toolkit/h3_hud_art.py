@@ -34,6 +34,8 @@ def decode(rel):
     `reach:` path is an HREK bitmap (reach_tags.decode_bitmap, the same shapes)."""
     if h1_fp_retarget.reach_tags.is_reach(rel):
         return h1_fp_retarget.reach_tags.decode_bitmap(rel)
+    if h1_fp_retarget.h4_tags.is_h4(rel):       # an H4EK bitmap (h4_tags, the same shapes)
+        return h1_fp_retarget.h4_tags.decode_bitmap(rel)
     xml = h1_fp_retarget.export_xml(rel)
     s = io.open(xml, encoding='utf-8', errors='replace').read()
     g = lambda k: re.search(r'name="%s" value="([^"]*)"' % k, s).group(1)   # noqa: E731
@@ -63,7 +65,7 @@ def decode(rel):
 def sheet(name):
     """(RGBA image, [sprite boxes]) of a whole HUD sheet. A `reach:` name is a full HREK path
     (no extension), e.g. reach:ui\\chud\\bitmaps\\hud_reticles."""
-    if h1_fp_retarget.reach_tags.is_reach(name):
+    if h1_fp_retarget.reach_tags.is_reach(name) or h1_fp_retarget.h4_tags.is_h4(name):
         return decode(name + '.bitmap')
     return decode(REL % name)
 

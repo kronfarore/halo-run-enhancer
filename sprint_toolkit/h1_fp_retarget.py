@@ -43,6 +43,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import h3_fp_pose                       # noqa: E402
 import reach_tags                       # noqa: E402  (a `reach:` source: HALO REACH, wave B)
+import h4_tags                          # noqa: E402  (an `h4:` source: HALO 4, wave C)
 import fp_render as R                   # noqa: E402
 import ports_h1                         # noqa: E402
 
@@ -74,6 +75,8 @@ def export_xml(rel):
     path is an HREK tag (reach_tags: absolute paths, its own cache, FLAT xml)."""
     if reach_tags.is_reach(rel):
         return reach_tags.export_xml(rel)
+    if h4_tags.is_h4(rel):                   # an H4EK tag (Halo 3-shaped xml, its own cache)
+        return h4_tags.export_xml(rel)
     src = os.path.join(H3EK, 'tags', rel)
     os.makedirs(CACHE, exist_ok=True)
     # keyed by the kit PATH, not the basename: generic names collide (the Spike Rifle's
@@ -91,6 +94,8 @@ def rm_defaults(rel):
     """{node: (q (w,x,y,z), t wu)} bind transforms of a Halo 3 render model."""
     if reach_tags.is_reach(rel):
         return reach_tags.rm_defaults(rel)
+    if h4_tags.is_h4(rel):
+        return h4_tags.rm_defaults(rel)
     s = io.open(export_xml(rel), encoding='utf-8', errors='replace').read()
     blk = s[s.find('<block name="nodes"'):]
     blk = blk[:blk.find('</block>')]
@@ -128,6 +133,14 @@ def load(weapon):
         # 3's (reach_tags: the export mislabels the section sizes)
         nodes, anims, events = reach_tags.load_graph(w['graph'])
         defaults = dict(reach_tags.rm_defaults(reach_tags.PREFIX + reach_tags.ARMS_RM))
+        defaults.update(rm_defaults(w['render_model']))
+        return nodes, anims, defaults, events
+    if h4_tags.is_h4(w['graph']):
+        # HALO 4 (the Storm Rifle, wave C1): compressed-only, decoded through Foundry's Blender
+        # import (h4_fp_dump.py -> h4_tags.load_graph); its arms are NOT Halo 1's -- retarget_frame
+        # re-solves them (_resolve_arms)
+        nodes, anims, events = h4_tags.load_graph(w['graph'])
+        defaults = dict(h4_tags.rm_defaults(h4_tags.PREFIX + h4_tags.ARMS_RM))
         defaults.update(rm_defaults(w['render_model']))
         return nodes, anims, defaults, events
     xml = export_xml(w['graph'])
@@ -287,6 +300,54 @@ def _move_left_hand(world, h3_nodes, grip, grip_node, ref, extra=(0.0, 0.0, 0.0)
         world[n] = (q, tuple(x + y for x, y in zip(t, shift)))
 
 
+_HAND_BIND = {}
+_FINGERS = ('thumb', 'index', 'middle', 'ring', 'pinky')
+
+
+def _resolve_arms(world, h3_nodes, weapon):
+    """HALO 4 (the Storm Rifle, wave C1): Halo 4's arms are not Halo 1's (shoulders +-7.05 vs
+    +-9.40 cm, upper arm 9.15 vs 10.25, forearm 11.67 vs 10.89; bones along local -y / +y,
+    Halo 1's along +x). In place on `world` (camera space): every arm / finger rotation into
+    Halo 1's local axes (h4_tags.ARM_AXES), the shoulders at Halo 1's bind offset from the base,
+    a two-bone IK on Halo 1's lengths puts each wrist on Halo 4's wrist (the elbow in Halo 4's
+    arm plane, each bone's roll Halo 4's), the fingers on Halo 1's bind offsets. The weapon
+    nodes are left where Halo 4 has them, so the hands stay on the gun."""
+    if not _HAND_BIND:
+        names, _parents, bind, _ = R.load_model(R.HANDS)
+        _HAND_BIND.update({n: bind[n] for n in names})
+    A = h4_tags.ARM_AXES
+    src = dict(world)
+    qb, tb = src['base']
+    world['base'] = (R.qmul(qb, A['base']), tb)
+    for side in 'lr':
+        a = A[side]
+        up, fo, ha = side + '_upperarm', side + '_forearm', side + '_hand'
+        E4, T = src[fo][1], src[ha][1]
+        qu, qf, qh = (R.qmul(src[n][0], a) for n in (up, fo, ha))
+        S = R.xform(world['base'], _HAND_BIND[_h1(weapon, up)][1])
+        la = _vlen(_HAND_BIND[_h1(weapon, fo)][1])
+        lb = _vlen(_HAND_BIND[_h1(weapon, ha)][1])
+        st = _vsub(T, S)
+        c = max(abs(la - lb) + 1e-6, min(_vlen(st), la + lb - 1e-6))
+        u = tuple(x / (_vlen(st) or 1.0) for x in st)
+        cos_a = max(-1.0, min(1.0, (la * la + c * c - lb * lb) / (2 * la * c)))
+        sin_a = (1.0 - cos_a * cos_a) ** 0.5
+        pe = _vsub(E4, S)
+        perp = _vsub(pe, tuple(sum(p * q for p, q in zip(pe, u)) * x for x in u))
+        pv = tuple(x / (_vlen(perp) or 1.0) for x in perp)
+        E2 = tuple(s + la * (cos_a * uu + sin_a * vv) for s, uu, vv in zip(S, u, pv))
+        W2 = tuple(s + c * uu for s, uu in zip(S, u))
+        qu = R.qmul(_rot_between(R.qrot(qu, (1.0, 0.0, 0.0)), _vsub(E2, S)), qu)
+        qf = R.qmul(_rot_between(R.qrot(qf, (1.0, 0.0, 0.0)), _vsub(W2, E2)), qf)
+        world[up], world[fo], world[ha] = (qu, S), (qf, E2), (qh, W2)
+        for n, p in h3_nodes:                        # parents first (the graph's order)
+            parts = n.split('_')
+            if parts[0] != side or len(parts) != 3 or parts[1] not in _FINGERS or _skip(weapon, n):
+                continue
+            kp = h3_nodes[_kept(weapon, h3_nodes, p)][0]
+            world[n] = (R.qmul(src[n][0], a), R.xform(world[kp], _HAND_BIND[_h1(weapon, n)][1]))
+
+
 def retarget_frame(h3_nodes, pose, defaults, weapon, corr, grip_ref=None,
                    extra=(0.0, 0.0, 0.0)):
     """One Halo 3 BASE frame -> {H1 name: (q in Halo 1 TAG convention, t wu)} LOCAL.
@@ -310,6 +371,8 @@ def retarget_frame(h3_nodes, pose, defaults, weapon, corr, grip_ref=None,
         world = {n: (W[0], tuple(W[1][k] + off[k] for k in range(3))) for n, W in world.items()}
     for n, C in corr.items():
         world[n] = _mul(world[n], C)
+    if h4_tags.is_h4(WEAPONS[weapon]['graph']):
+        _resolve_arms(world, h3_nodes, weapon)
     grip = WEAPONS[weapon].get('left_hand_offset')
     if grip and grip_ref is not None:
         _move_left_hand(world, h3_nodes, grip, WEAPONS[weapon]['grip_node'], grip_ref, extra)

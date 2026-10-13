@@ -82,6 +82,32 @@ def use_bank(w):
     BANK = os.path.join(MCC, w['bank'], 'fmod', 'pc', 'sfx.fsb') if w.get('bank') else H3_FSB
 
 
+#: HALO 4 (the Storm Rifle, wave C1): `bank` 'halo4' = Halo 4's WWISE packages (h4_wwise), not an
+#: FMOD bank. `wwise_bank` names the player bank (`assault_carbine_player`: Halo 4's first-person
+#: events live in <weapon>_player, the SAW's light_machine_gun_player); a sound folder is a Wwise
+#: EVENT, `<event>` = every sound it plays in order (the extract's `<k>_<id>.wav`), `<event>:k,..`
+#: = just those. Extracted once into out\h4_sounds\<bank>\<event>.
+H4_WORK = os.path.join(HERE, 'out', 'h4_sounds')
+
+
+def h4_event(w, spec):
+    """[(float mono, rate)] of one Halo 4 event (spec `<event>[:k,k,..]`)."""
+    import h4_wwise
+    ev, _, pick = spec.partition(':')
+    bank = w['wwise_bank']
+    d = os.path.join(H4_WORK, bank, ev)
+    if not glob.glob(os.path.join(d, '*.wav')):
+        h4_wwise.extract(bank, [ev], os.path.join(H4_WORK, bank))
+    files = sorted(glob.glob(os.path.join(d, '*.wav')),
+                   key=lambda f: int(os.path.basename(f).split('_')[0]))
+    if not files:
+        raise SystemExit('no Halo 4 sounds for %s in %s' % (ev, bank))
+    if pick:
+        want = [int(k) for k in pick.split(',')]
+        files = [f for f in files if int(os.path.basename(f).split('_')[0]) in want]
+    return [tone.read(f) for f in files]
+
+
 def h3_index():
     """{source folder (lower case, ends in \\): [subsong index, ...]} of the source bank."""
     d = open(BANK + '.info', 'rb').read()
@@ -109,13 +135,16 @@ def render(weapon):
     """{sound name: [22 kHz mono float per permutation]}"""
     w = WEAPONS[weapon]
     use_bank(w)
-    idx = h3_index()
+    idx = {} if w.get('bank') == 'halo4' else h3_index()
     out = {}
     for name, (folders, _like, target, *_cls) in w['sounds'].items():
         sets = []
         for f in folders:
             pieces = []
             for g in (f if isinstance(f, tuple) else (f,)):
+                if w.get('bank') == 'halo4':
+                    pieces.append([tone.resample(x, r, RATE) for x, r in h4_event(w, g)])
+                    continue
                 # a folder from ANOTHER weapon names its full bank path (the Spike Rifle's
                 # dry fire is Halo 3's own reuse of `data\sound\weapons\smg\dryfire`)
                 key = ((g if g.lower().startswith('data\\') else w['h3_dir'] + g) + '\\').lower()
@@ -128,6 +157,11 @@ def render(weapon):
         perms = []
         for k in range(max(len(s) for s in sets)):
             parts = [s[k % len(s)] for s in sets]
+            # `offsets` {name: [seconds per folder]}: each layer STARTS at its own time (the Storm
+            # Rifle's posing: Halo 4 cues idle a / b / c at frames 0 / 38 / 68 of one animation)
+            if name in w.get('offsets', {}):
+                parts = [np.concatenate([np.zeros(int(o * RATE)), p])
+                         for p, o in zip(parts, w['offsets'][name])]
             n = max(len(p) for p in parts)
             x = np.zeros(n)
             for p in parts:
