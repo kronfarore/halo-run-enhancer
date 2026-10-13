@@ -1174,6 +1174,15 @@ index, compare-and-swap on HEAD) -- no write->commit window, the foreign edits s
 Verified: full / restored / named regens byte-identical to HEAD; a scratch repo with a foreign
 new entry + a foreign enhancer key: each `--commit` carried only its own lines, one retried
 over a commit made mid-write (no chain step imports these tools: no narrowed proof).
+(e) IN-PROGRESS PORTS IN A PROOF (opt-in, user 2026-10-13): `port_tool_proof ... --with-busy`
+also runs the narrowed steps for the ports NOT done, old tools vs new, in two scratch kits
+(`F:\...\common\_proof_<tag>_busy\{old,new}`, MCC-shaped: ROOTS + the toolkit's out work folders
+copied, the rest junctioned, the copies' kit path rewritten -- an unknown kit spelling in a chain
+file refuses the run; kit lock stays real); `--busy-only` skips the done ports' proof,
+`--busy-also <keys>` adds done ports. `port_sha_snapshot snap/regen --busy` refuse outside that
+scratch. ~10 min of copying. Verified with the SMG's sounds step: unchanged tools 0 changed, a
+temporary manifest tweak in h1_port_sounds -> exactly `port_smg.json` CHANGED; real kit snap
+before/after 0 changed, real out work folders and the real manifest SHA-1 unchanged.
 
 ### Parallel pair 1: B5 Concussion Rifle + B7 Focus Rifle
 

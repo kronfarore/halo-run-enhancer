@@ -21,6 +21,11 @@ sound, tool\port_sounds\halo1, weapon_ports_catalog.json, ai_firing_profiles.jso
         --steps model,retarget,sounds,pickable  only those steps (port_tool_proof's narrowed
         proof: the steps whose scripts use the changed tools)
 
+IN A SCRATCH KIT ONLY (port_tool_proof --with-busy, 2026-10-13): `snap --busy` hashes the
+in-progress ports' folders too and `regen --busy <keys>` regenerates those keys whatever their
+status -- refused unless this copy's kit IS the scratch kit the proof made (environment
+PORT_PROOF_SCRATCH), so the other session's port in the real kit is never written.
+
 KNOWN run-to-run difference (phase 0): `tool bitmaps` writes a garbage `base_address` pointer
 (and the header checksum) into .bitmap tags; the pixels are identical. `diff` lists those
 apart as BITMAP when their PIXELS (processed_pixel_data, hashed at snap time) are equal.
@@ -76,8 +81,8 @@ def in_progress():
     return dirs, bank
 
 
-def files():
-    skip_dirs, skip_files = in_progress()
+def files(busy=False):
+    skip_dirs, skip_files = ([], set()) if busy else in_progress()
     for r in ROOTS:
         if os.path.isfile(r):
             yield r
@@ -105,9 +110,22 @@ def bitmap_pixels(path):
     return hashlib.sha1(bytes(t.data.tagdata.processed_pixel_data.data)).hexdigest()
 
 
-def snap(name):
+SCRATCH_ENV = 'PORT_PROOF_SCRATCH'
+
+
+def scratch_only(what):
+    """--busy runs only in the scratch kit port_tool_proof --with-busy made (never the real kit)."""
+    want = os.environ.get(SCRATCH_ENV)
+    if not want or os.path.normcase(os.path.abspath(want)) != os.path.normcase(os.path.abspath(HCEEK)):
+        raise SystemExit('%s --busy: only in a port_tool_proof scratch kit (this kit is %s, %s=%s)'
+                         % (what, HCEEK, SCRATCH_ENV, want))
+
+
+def snap(name, busy=False):
+    if busy:
+        scratch_only('snap')
     out = {}
-    for p in files():
+    for p in files(busy):
         k = os.path.relpath(p, os.path.dirname(HCEEK) if p.startswith(HCEEK) else TOOL)
         out[k] = sha(p)
         if k.lower().endswith('.bitmap'):            # the pixels alone (see the docstring)
@@ -120,7 +138,7 @@ def snap(name):
     json.dump(out, open(path, 'w'), indent=0, sort_keys=True)
     # the folders left out as in progress AT THIS SNAP: diff tells a port that turned done
     # since (its folders ADDED) from a real addition
-    json.dump({'in_progress': in_progress()[0]}, open(meta_path(name), 'w'), indent=0)
+    json.dump({'in_progress': [] if busy else in_progress()[0]}, open(meta_path(name), 'w'), indent=0)
     if os.path.exists(extras_path(name)):            # a new snap: an older restore's record is stale
         os.remove(extras_path(name))
     print('%d files -> %s' % (len(out), path))
@@ -255,7 +273,7 @@ def run(*cmd):
 STEPS = ('model', 'retarget', 'sounds', 'pickable')
 
 
-def regen(keys, steps=STEPS):
+def regen(keys, steps=STEPS, busy=False):
     sys.path.insert(0, HERE)
     import ports_h1
     secs = {s: ports_h1.section(s) for s in ('model', 'retarget', 'sounds', 'pickable')}
@@ -264,6 +282,11 @@ def regen(keys, steps=STEPS):
     keys = keys or [k for k in allk if src[k] != 'Halo Reach']
     # never another session's port in progress (H1_PORT_PLAN.md, parallel ports)
     done = {k for k, p in ports_h1.all_ports() if p.get('status') == 'done'}
+    if busy:                                     # the scratch kit: the named keys, any status
+        scratch_only('regen')
+        if not keys:
+            raise SystemExit('regen --busy: name the keys')
+        done = set(keys)
     skipped = [k for k in keys if k not in done]
     if skipped:
         print('regen: skipping port(s) not done (another session may be on them): %s'
@@ -291,9 +314,11 @@ def main():
     ap.add_argument('cmd', choices=('snap', 'diff', 'regen', 'restore'))
     ap.add_argument('args', nargs='*')
     ap.add_argument('--steps', help='regen: comma-separated subset of ' + ','.join(STEPS))
+    ap.add_argument('--busy', action='store_true', help='snap / regen in a port_tool_proof '
+                    'scratch kit: in-progress ports included (refused in the real kit)')
     a = ap.parse_args()
     if a.cmd == 'snap':
-        snap(a.args[0])
+        snap(a.args[0], a.busy)
     elif a.cmd == 'diff':
         sys.exit(0 if diff(a.args[0], a.args[1]) else 1)
     elif a.cmd == 'restore':
@@ -303,7 +328,7 @@ def main():
         bad = set(steps) - set(STEPS)
         if bad:
             raise SystemExit('unknown step(s): %s' % ', '.join(sorted(bad)))
-        regen(a.args, steps)
+        regen(a.args, steps, a.busy)
 
 
 if __name__ == '__main__':

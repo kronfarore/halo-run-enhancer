@@ -29,12 +29,26 @@ that changed since --rev (git diff, working copy included) is rolled back.
 
     python port_tool_proof.py --full --rev <wave start> --backup h1_wave_<x>_check_<date> --tag wB
 
+WITH BUSY (`--with-busy`, opt-in, user 2026-10-13): the ports IN PROGRESS (the other parallel
+session's) are left out above, so a shared-tool change met them only at the wave's --full. This
+adds the same narrowed steps for them, old tools vs new, in TWO SCRATCH KITS
+(`F:\...\common\_proof_<tag>_busy\{old,new}`: the ROOTS copied, the rest junctioned, the
+toolkit copies' kit path rewritten -- a kit path the rewrite does not know refuses the run), so
+the real kit and the other session's files are never written; removed after. A port that fails
+to regenerate is reported (with one side's tools only: the change broke or fixed it).
+`--busy-only` skips the done ports' proof (no --backup); `--busy-also <keys>` checks done ports
+the busy way too. The scratch copy costs ~10 minutes (629 s measured, robocopy).
+
+    python port_tool_proof.py --rev <rev> --tools <changed> --backup <b> --tag <t> --with-busy
+    python port_tool_proof.py --rev <rev> --tools <changed> --tag <t> --busy-only
+
 ~20 minutes full (two regens of every step), a few minutes narrowed.
 A reticle-only change (h1_add_reticle) is proven faster by h1_reticle_proof.py.
 """
 import argparse
 import ast
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -42,6 +56,7 @@ import time
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+import kit_lock  # noqa: E402
 import port_sha_snapshot as ps  # noqa: E402
 import ports_h1  # noqa: E402
 
@@ -54,6 +69,7 @@ def run(*cmd, ok=(0,), cwd=None):
     print(r.stdout[-3000:], r.stderr[-3000:], 'rc', r.returncode, '%.0fs' % (time.time() - t), flush=True)
     if r.returncode not in ok:
         raise SystemExit('failed: %s' % ' '.join(cmd))
+    return r
 
 
 #: each chain step's script (port_sha_snapshot.STEPS)
@@ -160,6 +176,195 @@ def drop_toolkit(dst):
     shutil.rmtree(dst)
 
 
+#: the kit path as the chain tools spell it -> the scratch kit (rewrite_kit)
+KIT_SPELLINGS = (re.compile(r"os\.path\.join\('F:' \+ (?:os\.sep|B), 'SteamLibrary', 'steamapps', "
+                            r"'common', 'HCEEK'"),
+                 re.compile(r"""r(['"])F:\\SteamLibrary\\steamapps\\common\\HCEEK"""))
+#: a kit path the rewrite missed (checked on every file the chain imports + the configs)
+KIT_LEFT = re.compile(r"""'common', 'HCEEK'|common\\HCEEK|STEAM, 'HCEEK'|'HCEEK', 'tags'""")
+
+
+#: sprint_toolkit\out folders the chain WRITES (h1_port_sounds WORK, h1_fp_retarget / reach_tags
+#: export caches): each scratch side gets its own copy -- the other session's port works there
+OUT_WORK = ('h3_sounds', 'h3_export', 'reach_export')
+
+
+def _copytree(src, dst):
+    """A folder copy for the scratch, multi-threaded (robocopy /MT: shutil took 12 minutes for
+    the kit ROOTS twice); robocopy exit codes below 8 are success."""
+    r = subprocess.run(['robocopy', src, dst, '/E', '/COPY:DAT', '/DCOPY:T', '/MT:16', '/R:2', '/W:1',
+                        '/NFL', '/NDL', '/NJH', '/NJS', '/NP'], capture_output=True, text=True,
+                       errors='replace')
+    if r.returncode >= 8:
+        raise SystemExit('robocopy %s -> %s failed (%d): %s' % (src, dst, r.returncode,
+                                                               r.stdout[-1500:]))
+
+
+def _junction(link, target):
+    subprocess.run(['cmd', '/c', 'mklink', '/J', link, target], capture_output=True, check=True)
+
+
+def drop_tree(d):
+    """Remove a scratch tree: every junction in it UNLINKED first, never followed."""
+    if not os.path.exists(d):
+        return
+    for root, dirs, _fs in os.walk(d, topdown=True):
+        keep = []
+        for x in dirs:
+            p = os.path.join(root, x)
+            if os.path.isjunction(p):
+                os.rmdir(p)
+            else:
+                keep.append(x)
+        dirs[:] = keep
+    shutil.rmtree(d)
+
+
+def _is_root(p):
+    return os.path.normcase(p) in {os.path.normcase(r) for r in ps.ROOTS}
+
+
+def scratch_side(side, src):
+    """One side (old / new) of the --with-busy scratch, laid out like the MCC folder so every
+    tool's own path arithmetic holds: <side>\\HCEEK (the proof's ROOTS copied -- from `src`, the
+    old side, for new: both start identical whatever the other session writes meanwhile --
+    everything else of the kit junctioned, small top-level files copied for tool.exe),
+    <side>\\tool (top-level files copied, port_sounds\\halo1 copied, sprint_toolkit copied as
+    old_toolkit does, every other folder junctioned) and junctions to the MCC game folders
+    (h1_port_sounds reads the source banks two levels above the toolkit)."""
+    kit = os.path.join(side, 'HCEEK')
+    tool = os.path.join(side, 'tool')
+    os.makedirs(kit)
+    src_kit = os.path.join(src, 'HCEEK') if src else ps.HCEEK
+    src_tool = os.path.join(src, 'tool') if src else ps.TOOL
+    for f in os.listdir(ps.HCEEK):
+        p = os.path.join(ps.HCEEK, f)
+        if f in ('tags', 'data'):
+            os.makedirs(os.path.join(kit, f))
+            for sub in os.listdir(p):
+                sp = os.path.join(p, sub)
+                if _is_root(sp):
+                    _copytree(os.path.join(src_kit, f, sub), os.path.join(kit, f, sub))
+                elif os.path.isdir(sp):
+                    _junction(os.path.join(kit, f, sub), sp)
+                else:
+                    shutil.copy2(sp, os.path.join(kit, f, sub))
+        elif os.path.isdir(p):
+            _junction(os.path.join(kit, f), p)
+        elif os.path.getsize(p) < 64 * 1024 * 1024 and f != os.path.basename(kit_lock.LOCK):
+            shutil.copy2(p, os.path.join(kit, f))
+    mcc = os.path.dirname(ps.TOOL)
+    for f in os.listdir(mcc):
+        if f != 'tool' and os.path.isdir(os.path.join(mcc, f)):
+            _junction(os.path.join(side, f), os.path.join(mcc, f))
+    os.makedirs(tool)
+    for f in os.listdir(ps.TOOL):
+        p = os.path.join(ps.TOOL, f)
+        if f.startswith('_proof_') or f == 'sprint_toolkit':
+            continue
+        if os.path.isfile(p):
+            shutil.copy2(os.path.join(src_tool, f), os.path.join(tool, f))
+        elif f == 'port_sounds':
+            os.makedirs(os.path.join(tool, f))
+            for sub in os.listdir(p):
+                if sub == 'halo1':
+                    _copytree(os.path.join(src_tool, f, sub), os.path.join(tool, f, sub))
+                else:
+                    _junction(os.path.join(tool, f, sub), os.path.join(p, sub))
+        else:
+            _junction(os.path.join(tool, f), p)
+    kt = os.path.join(tool, 'sprint_toolkit')
+    os.makedirs(kt)
+    src_kt = os.path.join(src_tool, 'sprint_toolkit') if src else HERE
+    for f in os.listdir(HERE):
+        p = os.path.join(HERE, f)
+        if os.path.isfile(p) and os.path.getsize(p) < 5 * 1024 * 1024:
+            shutil.copy2(os.path.join(src_kt, f), os.path.join(kt, f))
+        elif os.path.isdir(p) and f == 'ports_h1':
+            shutil.copytree(os.path.join(src_kt, f), os.path.join(kt, f),
+                            ignore=shutil.ignore_patterns('__pycache__'))
+        elif f == 'out':                         # the chain's work folders its own, the rest shared
+            os.makedirs(os.path.join(kt, f))
+            for sub in os.listdir(p):
+                if sub in OUT_WORK and os.path.isdir(os.path.join(p, sub)):
+                    _copytree(os.path.join(src_kt, f, sub), os.path.join(kt, f, sub))
+                elif os.path.isdir(os.path.join(p, sub)):
+                    _junction(os.path.join(kt, f, sub), os.path.join(p, sub))
+        elif os.path.isdir(p) and f != '__pycache__':
+            _junction(os.path.join(kt, f), p)
+    return kit, kt
+
+
+def rewrite_kit(kt, kit, uses):
+    """Point the scratch toolkit `kt` at the scratch kit: every .py's kit path rewritten,
+    kit_lock.py excepted (the lock stays the real one -- the proof holds it). A kit path left
+    in a file the chain imports (`uses`) or in a config refuses the run."""
+    left = []
+    for d in (kt, os.path.join(kt, 'ports_h1')):
+        for f in os.listdir(d):
+            if not f.endswith('.py') or f == 'kit_lock.py':
+                continue
+            p = os.path.join(d, f)
+            s = open(p, encoding='utf-8', errors='surrogateescape', newline='').read()
+            t = KIT_SPELLINGS[0].sub(lambda m: 'os.path.join(%r' % kit, s)
+            t = KIT_SPELLINGS[1].sub(lambda m: 'r' + m.group(1) + kit, t)
+            if t != s:
+                open(p, 'w', encoding='utf-8', errors='surrogateescape', newline='').write(t)
+            if d != kt or f in uses or f == 'port_sha_snapshot.py':
+                left += ['%s:%d' % (f, i + 1) for i, line in enumerate(t.splitlines())
+                         if KIT_LEFT.search(line.split('#')[0])]
+    if left:
+        raise SystemExit('--with-busy: a kit path the scratch rewrite does not know, in %s -- '
+                         'the chain would write the REAL kit; not run' % ', '.join(left))
+
+
+def busy_check(a, keys, steps, uses):
+    """--with-busy: the narrowed chain over `keys` (the ports in progress) in TWO scratch kits,
+    old tools vs new, never the real kit (the other session is writing its port there)."""
+    root = os.path.join(os.path.dirname(ps.HCEEK), '_proof_%s_busy' % a.tag)
+    drop_tree(root)
+    old, new = os.path.join(root, 'old'), os.path.join(root, 'new')
+    print('busy scratch: %s (copying)' % root, flush=True)
+    t = time.time()
+    failed = {}
+    try:
+        kit_o, kt_o = scratch_side(old, None)
+        kit_n, kt_n = scratch_side(new, old)
+        print('  copied in %.0fs' % (time.time() - t), flush=True)
+        for tl in a.tools:                       # the OLD tools on the old side only
+            blob = subprocess.run(['git', 'show', '%s:sprint_toolkit/%s' % (a.rev, tl)], cwd=HERE,
+                                  capture_output=True).stdout
+            if not blob:
+                raise SystemExit('%s not in %s' % (tl, a.rev))
+            open(os.path.join(kt_o, tl), 'wb').write(blob)
+        allu = set().union(*uses.values())
+        rewrite_kit(kt_o, kit_o, allu)
+        rewrite_kit(kt_n, kit_n, allu)
+        for side, kit, kt in (('old', kit_o, kt_o), ('new', kit_n, kt_n)):
+            os.environ[ps.SCRATCH_ENV] = kit
+            try:
+                for k in keys:                   # one at a time: a half-built port may fail
+                    r = run('port_sha_snapshot.py', 'regen', '--busy', '--steps', ','.join(steps), k,
+                            cwd=kt, ok=(0, 1))
+                    if r.returncode:
+                        failed.setdefault(k, []).append(side)
+                name = '%s_busy%s' % (a.tag, side)
+                run('port_sha_snapshot.py', 'snap', '--busy', name, cwd=kt)
+                for f in ('sha_%s.json' % name, 'sha_%s.meta.json' % name):   # to the real out
+                    shutil.copy2(os.path.join(kt, 'out', f), os.path.join(ps.OUT, f))
+            finally:
+                del os.environ[ps.SCRATCH_ENV]
+    finally:
+        drop_tree(root)
+    for k, sides in sorted(failed.items()):
+        print('BUSY REGEN FAILED %s with the %s tools%s' % (k, ' and '.join(sides),
+              ' -- the change broke (or fixed) it' if len(sides) == 1 else
+              ' -- half-built, or broken before the change: not compared'))
+    run('port_sha_snapshot.py', 'diff', a.tag + '_busyold', a.tag + '_busynew', ok=(0, 1))
+    unproven(a.tag + '_busyold', a.tag + '_busynew', keys, steps)
+    print('BUSY CHECK DONE (%s; scratch removed) -- read the diff above' % ', '.join(keys))
+
+
 def backup(dest):
     if os.path.exists(dest):
         raise SystemExit('backup exists: ' + dest)
@@ -184,10 +389,20 @@ def main():
     ap.add_argument('--tools', nargs='+', help='changed tools (sprint_toolkit file names); --full: '
                     'default every chain tool changed since --rev')
     ap.add_argument('--full', action='store_true', help='every step of every port (the wave check)')
-    ap.add_argument('--backup', required=True, help=r'E:\HaloBackups\<this> (must not exist)')
+    ap.add_argument('--backup', help=r'E:\HaloBackups\<this> (must not exist; not with --busy-only)')
     ap.add_argument('--tag', required=True, help='snapshot name prefix')
     ap.add_argument('--exclude', nargs='*', default=[], help='config keys left out of the regen')
+    ap.add_argument('--with-busy', action='store_true', help='also the ports IN PROGRESS, old vs '
+                    'new tools, in two scratch kits (never the real kit)')
+    ap.add_argument('--busy-only', action='store_true', help='only the --with-busy check (the '
+                    'done ports\' proof already ran): no backup, the real kit untouched')
+    ap.add_argument('--busy-also', nargs='*', default=[], help='--with-busy: done ports checked '
+                    'the busy way too (a test of the scratch, or one port\'s check alone)')
     a = ap.parse_args()
+    if a.busy_only or a.busy_also:
+        a.with_busy = True
+    if not a.busy_only and not a.backup:
+        ap.error('--backup is required (but with --busy-only)')
     secs = set()
     for s in ('model', 'retarget', 'sounds', 'pickable'):
         secs |= set(ports_h1.section(s))
@@ -208,6 +423,13 @@ def main():
     if not steps:
         raise SystemExit('no chain step imports %s: nothing for this proof to compare' % ' '.join(a.tools))
     print('steps: %s%s' % (', '.join(steps), ' (full)' if a.full else ''), flush=True)
+    busy_keys = sorted(set(busy) | (set(a.busy_also) & secs))
+    if a.with_busy and not busy_keys:
+        print('--with-busy: no port in progress has a chain section -- nothing for the busy check')
+    if a.busy_only:
+        if busy_keys:
+            busy_check(a, busy_keys, steps, uses)
+        return
     regen_args = ('regen', '--steps', ','.join(steps)) + tuple(keys)
     dest = os.path.join('E:' + os.sep, 'HaloBackups', a.backup)
     backup(dest)
@@ -228,6 +450,8 @@ def main():
     run('port_sha_snapshot.py', 'snap', a.tag + '_restored')
     run('port_sha_snapshot.py', 'diff', a.tag + '_pre', a.tag + '_restored')
     print('PROOF DONE -- read the old/new diff above; the restore diff must say 0 changed')
+    if a.with_busy and busy_keys:
+        busy_check(a, busy_keys, steps, uses)
 
 
 if __name__ == '__main__':
