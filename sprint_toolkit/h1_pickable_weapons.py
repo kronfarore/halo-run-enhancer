@@ -781,6 +781,21 @@ def own_beam(a, b, write):
         # weapons\needler\explosion) -- own copies, the same keys as `explosion`. Only the
         # needle COUNT (7) is the engine's
         own_explosion(pd, b['super_explosion'], write, slot='super')
+    if 'attached' in b:
+        # the STUCK burst (the Plasma Launcher, wave B6): an own copy of `from` (a damage effect) as
+        # the projectile's ATTACHED DETONATION DAMAGE -- Halo 1 deals it to the object the
+        # projectile is stuck to, ON TOP of the area explosion (Reach: instead of it); `dmg`
+        # (lower = upper unless `lower`), `mods` per material, `fields`
+        A = b['attached']
+        at = jpt__def.build(filepath=path(A['from'], '.damage_effect'))
+        ad = at.data.tagdata
+        ad.damage.damage_lower_bound = A.get('lower', A['dmg'])
+        ad.damage.damage_upper_bound[0] = ad.damage.damage_upper_bound[1] = A['dmg']
+        for mat, v in A.get('mods', {}).items():
+            setattr(ad.damage_modifiers, mat, v)
+        set_fields(ad, A.get('fields', {}))
+        save(at, path(A['out'], '.damage_effect'), write)
+        pd.physics.attached_detonation_damage.filepath = A['out']
     if 'range' in b:
         pd.detonation.maximum_range = b['range']
     for dotted, v in b.get('proj_fields', {}).items():   # step 4b on the projectile (the Beam Rifle)
@@ -807,13 +822,17 @@ def own_beam(a, b, write):
             pd.material_responses.STEPTREE[i].response.set_to(resp)
     if 'model' in b:                         # a visible projectile (the stuck spike's gbxmodel)
         pt.data.tagdata.obje_attrs.model.filepath = b['model']
-    if 'detonation_effect' in b:
+    for d_key in ('detonation_effect', 'started_effect'):
+        if d_key not in b:
+            continue
         # an OWN detonation effect copied from another projectile's (the Spike Rifle, test 2:
         # 'detonate like the needles, no damage' -- the needle's burst): particles whose path
         # holds one of `drop_particles` removed, the rest whose path holds one of `tint_match`
-        # recoloured `tint` (RGB, not HSV); parts whose tag path is in `drop_parts` removed
+        # recoloured `tint` (RGB, not HSV); parts whose tag path is in `drop_parts` removed.
+        # `started_effect`: the same for the projectile's DETONATION STARTED effect (the Plasma
+        # Launcher: Halo 1 plays it when the fuse starts -- at rest / stuck: Reach's stick beep)
         from reclaimer.hek.defs.effe import effe_def
-        D = b['detonation_effect']
+        D = b[d_key]
         et = effe_def.build(filepath=path(D['from'], '.effect'))
         for ev in et.data.tagdata.events.STEPTREE:
             pts = ev.particles.STEPTREE
@@ -835,7 +854,10 @@ def own_beam(a, b, write):
             for q in prts:                       # `swaps` {part: own} (the Needle Rifle's burst sound)
                 q.type.filepath = D.get('swaps', {}).get(q.type.filepath, q.type.filepath)
         save(et, path(D['out'], '.effect'), write)
-        pd.detonation.effect.filepath = D['out']
+        if d_key == 'started_effect':
+            pd.physics.detonation_started.filepath = D['out']
+        else:
+            pd.detonation.effect.filepath = D['out']
     if 'reflect' in b:
         # a RICOCHET as the potential response (the Spike Rifle: Halo 3's spike bounces off
         # hard metal / rock / forerunner shields at 0-60 deg, chance 1): per Halo 1 material
