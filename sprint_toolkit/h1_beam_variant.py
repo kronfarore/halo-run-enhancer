@@ -78,6 +78,10 @@ def palette_row(K):
 def bake(K, out_tif):
     """colour = palette[profile] premultiplied x gain, alpha = profile (h1_h3_weapon_model's bake)."""
     v = profile_px(K['profile'], K.get('size', (64, 64)))
+    # `power` < 1 WIDENS the profile (255 x (v / 255) ^ power): a haze reaching past the core (B7
+    # boot 9: both violet layers on the core's own profile drew no violet -- it sat under the
+    # white-hot centre and faded before the edges)
+    v = 255.0 * (v / 255.0) ** K.get('power', 1.0)
     row = palette_row(K)
     col = row[np.clip((v / 255.0 * (len(row) - 1)).round().astype(int), 0, len(row) - 1)]
     col = col * (v / 255.0)[..., None] * K.get('gain', 1.0)
