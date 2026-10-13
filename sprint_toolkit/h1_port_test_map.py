@@ -12,7 +12,9 @@ phase 0, deliverable 4). Replaces the SAW-only saw_scenario.py for new ports.
        weapon_insert drive mechanisms (saw_scenario.py's finding), every level's
        sprint_profile is the sprint mod's invisible weapon. SKIP below lists them; a level
        whose profiles are not in KNOWN is refused;
-     * the enemy actor variants asked for, appended to the Actor Palette when missing.
+     * the enemy actor variants asked for, appended to the Actor Palette when missing;
+     * every OTHER port not 'done' dropped from the weapons palette (+ its placements): a
+       parallel session's broken in-progress tags never fail this build (drop_in_progress).
      Built with `h1_rebuild_all.py --maps <level> --no-ship`, copied to
      HCEEK\maps\port_test\<level>.map, the scenario restored, and (unless --keep-kit-map)
      the normal level rebuilt so HCEEK\maps\<level>.map is the real one again.
@@ -168,7 +170,9 @@ def edit_kit(level, weapon, rounds, actors, secondary=None, mix=None):
     sp = E.scenario_path(level)
     t = scnr_def.build(filepath=sp)
     d = t.data.tagdata
-    for w in ([weapon] + ([secondary] if secondary else [])):
+    staged = [weapon] + ([secondary] if secondary else [])
+    drop_in_progress(d, staged)
+    for w in staged:
         resident(d, w)
     skip = SKIP_ALL + SKIP.get(level, ())
     armed = []
@@ -196,6 +200,49 @@ def edit_kit(level, weapon, rounds, actors, secondary=None, mix=None):
             L.insert_block_element(data, paths.SCNR_XML, E.ACTOR_PALETTE, L._tagref(b'actv', a), a)
         open(sp, 'wb').write(data)
         print('kit: actor palette + %s' % (added or 'nothing'))
+
+
+def in_progress_dirs(keep):
+    """{port key: its lower-case weapon folder} for every port NOT 'done' (in progress, rework),
+    `keep` (the staged weapons' tags) excepted. Two port sessions run in parallel (H1_PORT_PLAN):
+    h1_pickable_weapons writes every port into all ten palettes, so the OTHER session's broken
+    in-progress tags failed this level's test build (b30, B5's bolt, 2026-10-12)."""
+    keep = {os.path.dirname(w).lower() for w in keep}
+    out = {}
+    for key, p in ports_h1.all_ports():
+        if p.get('status') == 'done':
+            continue
+        ds = {(p.get('reservations') or {}).get('weapon_dir')}
+        w = (p.get('pickable') or {}).get('weapon')
+        if w:
+            ds.add(os.path.dirname(w))
+        for d in filter(None, ds):
+            if d.lower() not in keep:
+                out.setdefault(key, set()).add(d.lower())
+    return out
+
+
+def drop_in_progress(d, keep):
+    """The TEST copy's palette without the other in-progress ports' entries (any weapon under
+    their folders) and their placements; later placements' palette indices shifted down."""
+    busy = in_progress_dirs(keep)
+    pal = d.weapons_palette.STEPTREE
+    places = d.weapons.STEPTREE
+    for i in reversed(range(len(pal))):
+        path = pal[i].name.filepath.lower()
+        key = next((k for k, ds in busy.items() if any(path.startswith(x + '\\') for x in ds)), None)
+        if key is None:
+            continue
+        n = 0
+        for j in reversed(range(len(places))):
+            if places[j].type == i:
+                del places[j]
+                n += 1
+            elif places[j].type > i:
+                places[j].type -= 1
+        del pal[i]
+        print('kit: %s palette #%d + %d placement(s) dropped (the %s port is not done; test copy only)'
+              % (path, i, n, key))
 
 
 def resident(d, weapon):
