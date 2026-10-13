@@ -1933,10 +1933,14 @@ the reference (Reach's own values; heat cards from the Sentinel Beam there).
 
 **THE RATE, MEASURED (boot 2, `h1_weapon_state_probe`):** a 29..30 tag fires **30 rounds a second**
 in Halo 1 -- 29 rounds in 0.97 s, shots 33 ms apart. The "15/s cap" (SMG 22.5, Sentinel Beam 30)
-does NOT hold at 30: the repeater's rule (rate/30 a tick, a shot when the sum reaches 1, reset) gives
-one round EVERY tick at 30 and two ticks at 15..29.9. The per-round values doubled for 15/s
-overheated the gun in ~1 s (user: 'under 2 s'). **The Sentinel Beam (done) doubled its per-round
-values on the same 15/s assumption** -- its check is the next task (user). Halo 1 cools while firing
+did NOT hold here: the repeater's rule (rate/30 a tick, a shot when the sum reaches 1, reset) gives
+one round EVERY tick at a full 30 and two ticks at 15..29.9. The per-round values doubled for 15/s
+overheated the gun in ~1 s (user: 'under 2 s'). **THE SENTINEL BEAM, PROBED (c40, 2026-10-13): it
+fires 15/s** (shots 67 ms apart; 38 rounds to the 0.9 overheat in 2.47 s; 84 rounds a battery) -- its
+doubled per-round values are RIGHT, no change. The SAME 29..30 tag, accel 0.05: 30/s on the Focus
+Rifle, 15/s on the Sentinel Beam. The likely difference (NOT isolated): the Sentinel Beam kept the
+plasma rifle template's AGE rate-of-fire penalty 0.2 (the Focus Rifle: Reach's 0) -- any rate a hair
+under 30 takes two ticks. Measure every port's rate. Halo 1 cools while firing
 (confirmed again: heat 0.045 -> 1.0 over 29 rounds at 0.29/s); vent 3.07 s as fitted.
 
 **THE BEAM -- the best so far (user):** Reach's 1p `beam_system` = a `center` ribbon on energy_trail

@@ -926,8 +926,9 @@ still holds; the Focus Rifle added:
 
 **Process (observations -- check them on the next port):**
 - MEASURE THE RATE: a 29..30 tag fired 30/s (the probe), not the "15/s cap" -- the cap holds for
-  15..29.9 (two ticks). Per-round values follow the measured rate. **The Sentinel Beam** (done) was
-  built on the cap: its 30/s doubles its intended dps / heat / battery use -- check it (next task).
+  15..29.9 (two ticks). Per-round values follow the measured rate. **The Sentinel Beam** (done,
+  probed on c40 2026-10-13) DOES fire 15/s with the same 29..30 tag -- its numbers are right; the
+  likely difference is its kept template age rate-of-fire penalty 0.2 (not isolated). MEASURE the rate.
 - A contrail's own u scroll drew static at 30/s; an ADDED contrail drew without a secondary map (boot 4)
   but not with one (boots 8-10) -- one textured contrail is the reliable form here.
 - Glow that follows heat: give an export input `heat` (the template's illumination input was free once
