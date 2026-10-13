@@ -701,9 +701,55 @@ def numeric(w):
             os.remove(stale)
         t = schi_def.build(filepath=os.path.join(TAGS, N['from'] + '.shader_transparent_chicago'))
         t.data.tagdata.schi_attrs.chicago_shader.numeric_counter_limit = N['limit']
+        if N.get('digits'):
+            t.data.tagdata.schi_attrs.maps.STEPTREE[0].bitmap.filepath = numeric_digits(w)
         t.filepath = os.path.join(out, name + '.shader_transparent_chicago')
         t.serialize(temp=False, backup=False)
         print('   numeric shader %s  limit %d  place %d' % (t.filepath, N['limit'], N['places'][name]))
+
+
+def numeric_digits(w):
+    """`digits` (the Storm Rifle, wave C1): the counter's 10 digit images from the SOURCE (Halo 4's
+    covglyph: the Covenant numerals 0-9, 64 px each) -> an own bitmap in the AR plate's layout (one
+    sequence of 10 bitmaps), raw a8r8g8b8 (white, the glyph in alpha). Returns its tag path."""
+    from reclaimer.hek.defs.bitm import bitm_def
+    import h1_h3_scope
+    import h1_fp_retarget
+    imgs = h1_fp_retarget.h4_tags.bitmap_images(w['numeric']['digits'])
+    if len(imgs) != 10:
+        raise SystemExit('digits: %d images, need 10' % len(imgs))
+    t = bitm_def.build(filepath=os.path.join(TAGS, h1_h3_scope.TEMPLATE + '.bitmap'))
+    d = t.data.tagdata
+    proto = d.bitmaps.STEPTREE[0]
+    blob, off = bytearray(), 0
+    for k, im in enumerate(imgs):
+        a = np.array(im.convert('RGBA'))
+        px = np.stack([np.full(a.shape[:2], 255, np.uint8)] * 3 + [a[..., 3]], axis=-1)
+        if k:
+            d.bitmaps.STEPTREE.append()
+            b = d.bitmaps.STEPTREE[-1]
+            for f in proto.NAME_MAP:
+                try:
+                    setattr(b, f, getattr(proto, f))
+                except Exception:
+                    pass
+        b = d.bitmaps.STEPTREE[k]
+        b.width, b.height = im.width, im.height
+        b.registration_point_x, b.registration_point_y = im.width // 2, im.height // 2
+        b.pixels_offset = off
+        blob += px.astype(np.uint8).tobytes()
+        off = len(blob)
+    if not len(d.sequences.STEPTREE):
+        d.sequences.STEPTREE.append()
+    sq = d.sequences.STEPTREE[0]
+    sq.first_bitmap_index, sq.bitmap_count = 0, 10
+    d.processed_pixel_data.data = blob
+    rel = w['dir'] + B + 'bitmaps' + B + 'digits'
+    t.filepath = os.path.join(TAGS, rel + '.bitmap')
+    os.makedirs(os.path.dirname(t.filepath), exist_ok=True)
+    t.serialize(temp=False, backup=False)
+    print('   digits %s: 10 x %dx%d' % (rel, imgs[0].width, imgs[0].height))
+    return rel
 
 
 def numeric_places(w):
@@ -733,6 +779,7 @@ def meters(w):
     from reclaimer.hek.defs.smet import smet_def
     from reclaimer.hek.defs.bitm import bitm_def
     import h1_h3_scope
+    import h1_fp_retarget
     out = os.path.join(TAGS, w['dir'], 'shaders')
     os.makedirs(out, exist_ok=True)
     for name, M in w['meters'].items():
@@ -773,6 +820,20 @@ def meters(w):
             lut[255] = lut[vals[0]] if vals else 1.0
             grad = np.clip(np.round(lut[grad] * 255), 0, 255).astype(np.uint8)
             print('   %s: %d gamma steps -> linear thresholds of %d' % (name, len(vals), n))
+        if M.get('stages'):
+            # `stages` (the Storm Rifle, wave C1): a Halo 4 meter drawn as N IMAGES of one tag, image
+            # k = the panel lit at value k / (N - 1) (`buildup`: 7 heat stages filling bottom-up) ->
+            # ONE Halo 1 meter: shape = every stage's coverage, a texel's threshold = the first stage
+            # it is lit in (halfway to the stage before: lit while the value is above it)
+            imgs = [np.array(x) for x in h1_fp_retarget.h4_tags.bitmap_images(M['map'])]
+            n = len(imgs)
+            lit = [im[..., 3].astype(np.float64) for im in imgs]
+            shape = np.clip(np.maximum.reduce(lit), 0, 255).astype(np.uint8)
+            first = np.full(shape.shape, n - 1, np.float64)
+            for k in range(n - 1, -1, -1):
+                first[lit[k] > 32] = k
+            grad = np.clip(np.round(np.maximum(first - 0.5, 0.0) / (n - 1) * 255), 0, 255).astype(np.uint8)
+            print('   %s: %d stages -> one meter' % (name, n))
         h, wd = shape.shape
         t = bitm_def.build(filepath=os.path.join(TAGS, h1_h3_scope.TEMPLATE + '.bitmap'))
         d = t.data.tagdata

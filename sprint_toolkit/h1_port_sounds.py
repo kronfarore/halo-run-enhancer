@@ -86,7 +86,8 @@ def use_bank(w):
 #: FMOD bank. `wwise_bank` names the player bank (`assault_carbine_player`: Halo 4's first-person
 #: events live in <weapon>_player, the SAW's light_machine_gun_player); a sound folder is a Wwise
 #: EVENT, `<event>` = every sound it plays in order (the extract's `<k>_<id>.wav`), `<event>:k,..`
-#: = just those. Extracted once into out\h4_sounds\<bank>\<event>.
+#: = just those, `<event>@<bank>` = an event of ANOTHER bank (the bolt's flyby in proj_cov_whizby,
+#: its impacts in plasma_impact_generic, the drop's). Extracted once into out\h4_sounds\<bank>\<event>.
 H4_WORK = os.path.join(HERE, 'out', 'h4_sounds')
 
 
@@ -94,7 +95,8 @@ def h4_event(w, spec):
     """[(float mono, rate)] of one Halo 4 event (spec `<event>[:k,k,..]`)."""
     import h4_wwise
     ev, _, pick = spec.partition(':')
-    bank = w['wwise_bank']
+    ev, _, bank = ev.partition('@')
+    bank = bank or w['wwise_bank']
     d = os.path.join(H4_WORK, bank, ev)
     if not glob.glob(os.path.join(d, '*.wav')):
         h4_wwise.extract(bank, [ev], os.path.join(H4_WORK, bank))

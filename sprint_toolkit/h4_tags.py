@@ -324,7 +324,20 @@ def decode_bitmap(rel, index=0):
     bitmap -- h3_hud_art.decode's shape (the export is Halo 3-shaped)."""
     import h3_sprite_box
     rel = strip(rel)
-    return bitmap_images(rel)[index], h3_sprite_box.sprites(export_xml(rel))
+    # a bitmap with no sequences (Halo 4's HUD art: one image a tag) = one sprite, the whole
+    # image registered at its centre
+    boxes = h3_sprite_box.sprites(export_xml(rel)) or [(0.0, 1.0, 0.0, 1.0, 0.5, 0.5)]
+    return bitmap_images(rel)[index], boxes
+
+
+#: Halo 4's HUD art per widget unit (the Storm Rifle's CUI screen: ac_tick 48 px drawn 16 x 16,
+#: ac_circle 384 px drawn 128 x 128) -- Reach's 4K chud art is 2-3 (reach_tags.px_per_unit)
+HUD_PX_PER_UNIT = 3.0
+
+
+def px_per_unit(rel):
+    """Pixels a widget unit of an H4EK HUD bitmap (h3_hud_art scales a sprite to Halo 3's 1)."""
+    return HUD_PX_PER_UNIT
 
 
 def main():

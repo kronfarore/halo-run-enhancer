@@ -80,8 +80,8 @@ def sprite(name, index, native=False):
     l, r, t, b, rx, ry = boxes[index]
     w, h = img.size
     crop = img.crop((round(l * w), round(t * h), round(r * w), round(b * h)))
-    if h1_fp_retarget.reach_tags.is_reach(name) and not native:
-        k = h1_fp_retarget.reach_tags.px_per_unit(name + '.bitmap')
+    if (h1_fp_retarget.reach_tags.is_reach(name) or h1_fp_retarget.h4_tags.is_h4(name)) and not native:
+        k = density(name)
         if k != 1.0:
             crop = crop.resize((max(1, round(crop.width / k)), max(1, round(crop.height / k))),
                                Image.LANCZOS)
@@ -93,6 +93,8 @@ def density(name):
     """Pixels a Halo 3 sprite pixel of a sheet: Reach's 4K art 2-3 (px_per_unit), else 1."""
     if h1_fp_retarget.reach_tags.is_reach(name):
         return h1_fp_retarget.reach_tags.px_per_unit(name + '.bitmap')
+    if h1_fp_retarget.h4_tags.is_h4(name):       # Halo 4's HUD art: 3 px a widget unit
+        return h1_fp_retarget.h4_tags.px_per_unit(name + '.bitmap')
     return 1.0
 
 
