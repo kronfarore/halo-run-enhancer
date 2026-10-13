@@ -1142,11 +1142,28 @@ Rules for the sessions (in each parallel prompt's preface):
 4. Records: your own "Bx: what <weapon> taught" section, PORTING section and memory file;
    MEMORY.md and this plan are edited with one small Edit each (re-read first). The NEXT
    prompts are written by the coordinating session, not by the port sessions.
-5. Git: commit by path only; an `index.lock` error means the other session is committing --
-   retry.
+5. Git: commit by path only, through `kit_commit.py` (below); an `index.lock` error means the
+   other session is committing -- retry.
 6. Observation, not yet seen: `tool` verbs other than build-cache-file (model, bitmaps,
    sounds, animations) running in both sessions at once write only their own tags; if one
    fails oddly, rerun it.
+
+**Hardened after pair 1 (2026-10-13), the three gaps it hit are machinery now:** (a)
+`h1_port_test_map` drops every OTHER port not 'done' (palette entry + its placements) from the
+TEMPORARY scenario it builds, so the other session's broken in-progress tags no longer fail
+your level's test build (B5's bolt broke every b30 build) -- verified on b30 with a missing-tag
+fake port: fails without the drop, builds with it, kit scenario SHA-1 unchanged (9a0067c). (b)
+`port_sha_snapshot restore` puts back CHANGED and REMOVED files only; a file new since the pre
+snap is LEFT and reported EXTRA (the restore deleted B7's test copy under `weapons\spartan
+laser\test`), a port set to 'rework' mid-proof is left alone; each snap records its in-progress
+folders (`sha_<name>.meta.json`), so the restore check lists NOWDONE (a port done during the
+proof: fo3's 196 "ADDED"), EXTRA and NOWBUSY apart without failing -- verified on a scratch tree and by proof kh1 (6 files
+restored, 0 extras, restore check 0 changed; f7be336). (c) COMMITS:
+`python kit_commit.py show <paths>` prints every hunk against HEAD (`-U0`) with an id;
+`python kit_commit.py commit --mine <your ids> -m ... -- <paths>` refuses while a path holds a
+hunk you did not list (20200bf, 7e1babd swept the other session's hunks; a whole-file
+regeneration such as the catalog shows the other port's entry as its own hunk). Refused: wait for
+the other session's commit or ask the user -- never list a hunk that is not yours.
 
 ### Parallel pair 1: B5 Concussion Rifle + B7 Focus Rifle
 
