@@ -458,6 +458,9 @@ PORT.update({
             # 4b list 3: the item's acceleration scale (how far blasts throw it) 1.5 x 1/0.8 (Reach
             # CR / fuel rod onto the H1 fuel rod; the rocket template's 2.0)
             'obje_attrs.acceleration_scale': 1.875,
+            # 4b list 3 (found in the final step check): active camo ding -- the H1 fuel rod's 0 (a
+            # zero on one side) -> Reach's own 0.75 (the rocket template's 1.0 had stayed)
+            'weap_attrs.interface.active_camo_ding': 0.75,
             'obje_attrs.attachments.0.type.filepath': CR + 'muzzle light'},
         # THE MUZZLE-FLASH RULE (closing check 10). Reach's FIRST-PERSON flash (fxiring.effect,
         # `1st_person`): glow_soft (bounding radius 0.106 wu), muzzle_flash_round (0.071, coloured by

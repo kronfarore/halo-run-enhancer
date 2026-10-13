@@ -1909,6 +1909,12 @@ ai\generic entry; WDM rule 0.233 / 1.15; balanced drop 0.25-0.875 / 6-13. Enhanc
 **Tools from the Concussion Rifle** (h1_pickable_weapons, each opt-in, narrowed proofs cr1-cr4 0
 changed): `set_attachments` copy `tint`, `psys_tint` `@<type state>`, `impact_tint` `potential`,
 `widget_tint`; h1_role_compare `concussion_rifle` set.
+**Final step check (2026-10-13, user):** 4b list 3 line by line found `active camo ding` (Reach 0.75,
+the H1 fuel rod 0 -> the source value) left at the rocket's 1.0 -- applied; write proof 29 port tags /
+3,489 fields, exactly that one changed. Closing 0 refs 0 problems, 2 validate_halo_json 0 problems, 6
+4b list 2 = recorded decisions only (knockback default Reach's, impact knockback moot with balanced
+impact 0), 7 port_sound_refs all OWN + port_sounds --check 0, 8 Armed fires (user), 9 hit effect x1,
+10 muzzle flash compared; 1/3/5 n/a (Halo 1).
 
 ### Halo 1: the Focus Rifle, wave B7 (2026-10-12/13, 13 boots + Armed on b30, PARALLEL with B5) -- a continuous beam at 30/s, an animated Reach-colour beam, a heat-ramp display
 
