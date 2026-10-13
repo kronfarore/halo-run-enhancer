@@ -5061,6 +5061,159 @@
     "jpt! weapons\\rocket launcher\\explosion": "jpt! weapons\\concussion rifle\\explosion & weapons\\concussion rifle\\impact",
     "jpt! weapons\\rocket launcher\\melee": "jpt! weapons\\concussion rifle\\melee"
    }
+  },
+  {
+   "weapon": "Storm Rifle",
+   "source": "Halo 4",
+   "donor": "Plasma Rifle",
+   "default_on": false,
+   "desc": "Halo 4's Storm Rifle: its model, first-person animations, sounds and numbers. A Covenant automatic on heat and battery: 10 bolts a second, overheating on the 12th bolt for a 3 s vent. 167 shots a battery.",
+   "balance_desc": "Measured against the Plasma Pistol, the only heat plasma weapon both games have: 10.3 damage a bolt (fast plasma: better on armour, worse on shields than the pistol's), 13 bolts to overheat and a 1.7 s vent, a faster bolt with more range and Halo 1-style aim assist.",
+   "anims": {
+    "swap": 0.8736842105263158
+   },
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\storm rifle\\bolt",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 10.29,
+     "card": "Bolt Damage",
+     "original": 8.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\storm rifle\\bolt",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 10.29,
+     "card": "Bolt Damage",
+     "original": 8.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\storm rifle\\bolt",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 10.29,
+     "card": "Bolt Damage",
+     "original": 8.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\storm rifle\\bolt",
+     "field": "Elite Energy Shield",
+     "block": null,
+     "value": 1.25,
+     "card": "Bolt materials",
+     "original": 2.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\storm rifle\\bolt",
+     "field": "Elite",
+     "block": null,
+     "value": 2.5,
+     "card": "Bolt materials",
+     "original": 1.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\storm rifle\\bolt",
+     "field": "Cyborg Energy Shield",
+     "block": null,
+     "value": 0.375,
+     "card": "Bolt materials",
+     "original": 2.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\storm rifle\\bolt",
+     "field": "Cyborg",
+     "block": null,
+     "value": 1.5,
+     "card": "Bolt materials",
+     "original": 0.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\storm rifle\\storm rifle",
+     "field": "Heat Generated Per Round",
+     "block": "Triggers",
+     "value": 0.12,
+     "card": "Heat",
+     "original": 0.1125
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\storm rifle\\storm rifle",
+     "field": "Heat Loss Per Second",
+     "block": null,
+     "value": 0.433,
+     "card": "Heat",
+     "original": 0.3
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\storm rifle\\storm rifle",
+     "field": "Heat Recovery Threshold",
+     "block": null,
+     "value": 0.25,
+     "card": "Heat",
+     "original": 0.1
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\storm rifle\\bolt",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 2.0833333333333335,
+     "card": "Projectile",
+     "original": 1.6666666666666667
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\storm rifle\\bolt",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 2.0833333333333335,
+     "card": "Projectile",
+     "original": 1.6666666666666667
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\storm rifle\\bolt",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 125.0,
+     "card": "Projectile",
+     "original": 100.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\storm rifle\\storm rifle",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 6.25,
+     "card": "Autoaim",
+     "original": 5.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\storm rifle\\storm rifle",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 15.0,
+     "card": "Magnetism",
+     "original": 10.0
+    }
+   ],
+   "weap": "weapons\\storm rifle\\storm rifle",
+   "fp_animations": "weapons\\storm rifle\\fp\\fp",
+   "requires": [
+    "proj weapons\\storm rifle\\bolt"
+   ]
   }
  ],
  "Halo 3": [
