@@ -2370,6 +2370,156 @@
     "port_dps": 129.0,
     "balanced_port_dps": 26.0
    }
+  },
+  "weapons\\storm rifle\\storm rifle": {
+   "source": "Halo 4 ai\\generic objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine (weapon properties #15, firing pattern #15) over weapons\\plasma rifle\\plasma rifle carriers (always characters\\elite\\elite minor\\elite minor plasma rifle)",
+   "fields": {
+    "0x74": [
+     "<f",
+     16.0,
+     "Maximum Firing Distance"
+    ],
+    "0x78": [
+     "<f",
+     10.0625,
+     "Rate Of Fire"
+    ],
+    "0x7C": [
+     "<f",
+     0.016362461145035923,
+     "Projectile Error"
+    ],
+    "0x80": [
+     "<f",
+     0.75,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     1.0,
+     "First Burst Delay Time Max"
+    ],
+    "0x8C": [
+     "<f",
+     1.0,
+     "Surprise Delay Time"
+    ],
+    "0x94": [
+     "<f",
+     0.20000000298023224,
+     "Death Fire-Wildly Chance"
+    ],
+    "0x98": [
+     "<f",
+     0.5,
+     "Death Fire-Wildly Time"
+    ],
+    "0x9C": [
+     "<f",
+     5.0,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     7.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     0.949999988079071,
+     "Target Tracking"
+    ],
+    "0xC0": [
+     "<f",
+     0.7249999940395355,
+     "Target Leading"
+    ],
+    "0xCC": [
+     "<f",
+     0.26874999701976776,
+     "Burst Origin Radius"
+    ],
+    "0xD0": [
+     "<f",
+     0.0872664600610733,
+     "Burst Origin Angle"
+    ],
+    "0xD4": [
+     "<f",
+     0.35499999299645424,
+     "Burst Return Length"
+    ],
+    "0xD8": [
+     "<f",
+     0.5374999940395355,
+     "Burst Return Length Max"
+    ],
+    "0xDC": [
+     "<f",
+     0.15271630510687828,
+     "Burst Return Angle"
+    ],
+    "0xE0": [
+     "<f",
+     0.8250000178813934,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     1.2750000059604645,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     0.6875,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     2.0625,
+     "Burst Separation Max"
+    ],
+    "0x1D8": [
+     "<f",
+     0.5,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.8999999761581421,
+     "Drop Weapon Loaded Max"
+    ],
+    "0xC4": [
+     "<f",
+     0.5625,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "donor_weapon": "weapons\\plasma rifle\\plasma rifle",
+   "donor_variant": "characters\\elite\\elite minor\\elite minor plasma rifle",
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.4368932038834951,
+     "Weapon Damage Modifier"
+    ],
+    "0x1D8": [
+     "<f",
+     0.5,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.9,
+     "Drop Weapon Loaded Max"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.5,
+    "yardstick_dps": 90.0,
+    "port_dps": 80.0,
+    "balanced_port_dps": 103.0
+   }
   }
  }
 }
