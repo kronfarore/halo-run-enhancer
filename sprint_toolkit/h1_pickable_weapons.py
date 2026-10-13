@@ -261,6 +261,25 @@ def make_hud(w, key, write):
                     art, rx = art.transpose(Image.FLIP_LEFT_RIGHT), art.width - rx
                 if 'y' in G.get('flip', ''):
                     art, ry = art.transpose(Image.FLIP_TOP_BOTTOM), art.height - ry
+                if 'mirror4' in G:
+                    # `mirror4` (dx, dy) art px: FOUR copies in one glyph -- the art centred at
+                    # (dx, dy) from the glyph centre (y down), mirrored into the other quadrants (the
+                    # Plasma Launcher's scope pips: one widget, 'mirror horizontal, vertical')
+                    dx, dy = G['mirror4']
+                    W2 = 2 * (abs(int(dx)) + art.width)
+                    H2 = 2 * (abs(int(dy)) + art.height)
+                    comp = Image.new('RGBA', (W2, H2), (255, 255, 255, 0))
+                    for fx, fy in ((1, 1), (-1, 1), (1, -1), (-1, -1)):
+                        piece = art
+                        if fx < 0:
+                            piece = piece.transpose(Image.FLIP_LEFT_RIGHT)
+                        if fy < 0:
+                            piece = piece.transpose(Image.FLIP_TOP_BOTTOM)
+                        layer = Image.new('RGBA', (W2, H2), (255, 255, 255, 0))
+                        layer.paste(piece, (round(W2 / 2.0 + fx * dx - art.width / 2.0),
+                                            round(H2 / 2.0 + fy * dy - art.height / 2.0)))
+                        comp = Image.alpha_composite(comp, layer)
+                    art, rx, ry = comp, W2 / 2.0, H2 / 2.0
                 sx, sy = G['scale']
                 a = art.split()[3].resize((round(art.width * sx), round(art.height * sy)), Image.LANCZOS)
                 if 'frame_alpha' in G:
