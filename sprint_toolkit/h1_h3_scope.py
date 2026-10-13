@@ -140,9 +140,11 @@ def bake_maps(chud, size=512, span=640.0, aspect=1.0, per_widget=None):
     used = []
     per_widget = per_widget or {}
     for name, w in widgets(chud):
-        if not zoom_only(w) or 'hud_reticles' in w['bitmap'] or not fullscreen(w):
-            continue
         o = per_widget.get(name, {})
+        # `zoom`: True takes a widget whose zoom state reads 0 (the Plasma Launcher's chud: its
+        # state data did not decode -- 'BAD' in the export -- so its scope collection is named)
+        if not (o.get('zoom') or zoom_only(w)) or 'hud_reticles' in w['bitmap'] or not fullscreen(w):
+            continue
         if o.get('drop'):
             used.append('%s DROPPED' % name)
             continue
@@ -151,6 +153,12 @@ def bake_maps(chud, size=512, span=640.0, aspect=1.0, per_widget=None):
             continue
         w = dict(w, **{k: tuple(v) for k, v in o.items() if k in ('scale', 'offset', 'origin')})
         target = blur if o.get('blur') else dark
+        # `rotate` (deg, counter-clockwise on screen): the copies go to their own layer, turned
+        # about the crosshair in chud units (the Plasma Launcher's side cells: one placement,
+        # turned +-120 deg by the chud's animation)
+        final = target
+        if o.get('rotate'):
+            target = np.zeros((size, size))
         if w['scale'] == (0.0, 0.0):
             print('   WARNING %s: scale 0 (animated by %s?) -- give it a scale' % (name, w['active']))
             continue
@@ -202,6 +210,12 @@ def bake_maps(chud, size=512, span=640.0, aspect=1.0, per_widget=None):
                 yq = slice(int(round(size / 2)), size) if sy > 0 else slice(0, int(round(size / 2)))
                 target[yq, xs] = np.maximum(target[yq, xs], edge)
                 target[ys, xq] = np.maximum(target[ys, xq], edge)
+        if o.get('rotate'):
+            iso = round(size * aspect)                   # x px per unit = y px per unit
+            L = Image.fromarray((target * 255).astype(np.uint8)).resize((iso, size), Image.LANCZOS)
+            L = L.rotate(o['rotate'], resample=Image.BICUBIC, center=(iso / 2.0, size / 2.0))
+            target = np.array(L.resize((size, size), Image.LANCZOS)) / 255.0
+            final[:] = np.maximum(final, target)
         used.append('%s (%s #%d, %d copies%s)' % (name, w['bitmap'].rsplit('\\', 1)[-1], w['sequence'], len(copies),
                                                  ', BLUR x%g' % o['blur'] if o.get('blur') else ''))
     # 'blur_inside' (any widget naming it): the blur only where the mask is DARK -- the

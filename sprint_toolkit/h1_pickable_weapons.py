@@ -1432,6 +1432,16 @@ def edit_weapon(key, write):
                     part.type.filepath = new
         if len(found) != len(swaps):
             raise SystemExit('%s: %d of %d sound parts found' % (src, len(found), len(swaps)))
+        # `light`: a LIGHT part appended to event 0 (the Plasma Launcher: the muzzle light of
+        # fire_effect's recipe on a copied flash -- a weapon attachment draws at the hidden
+        # third-person gun in first person)
+        if fl.get('light'):
+            prts = et.data.tagdata.events.STEPTREE[0].parts.STEPTREE
+            if not any(q.type.filepath == fl['light'] for q in prts):
+                prts.append(copy.deepcopy(prts[0]))
+                lp = prts[len(prts) - 1]
+                lp.type.tag_class.set_to('light')
+                lp.type.filepath = fl['light']
         save(et, path(out, '.effect'), write)
         for tr in a.triggers.STEPTREE:
             for fe in tr.firing_effects.STEPTREE:
