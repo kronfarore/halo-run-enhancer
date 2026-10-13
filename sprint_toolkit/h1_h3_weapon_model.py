@@ -711,7 +711,7 @@ def numeric(w):
 def numeric_digits(w):
     """`digits` (the Storm Rifle, wave C1): the counter's 10 digit images from the SOURCE (Halo 4's
     covglyph: the Covenant numerals 0-9, 64 px each) -> an own bitmap in the AR plate's layout (one
-    sequence of 10 bitmaps), raw a8r8g8b8 (white, the glyph in alpha). Returns its tag path."""
+    sequence of 10 bitmaps), raw a8r8g8b8 (the glyph in RGB and alpha, black around it). Returns its tag path."""
     from reclaimer.hek.defs.bitm import bitm_def
     import h1_h3_scope
     import h1_fp_retarget
@@ -724,7 +724,10 @@ def numeric_digits(w):
     blob, off = bytearray(), 0
     for k, im in enumerate(imgs):
         a = np.array(im.convert('RGBA'))
-        px = np.stack([np.full(a.shape[:2], 255, np.uint8)] * 3 + [a[..., 3]], axis=-1)
+        # the glyph in the COLOUR channels too (the Storm Rifle, boot 1: 'two white squares' -- the
+        # numeric chicago ADDS its map: white RGB everywhere drew the whole quad; the AR plate's
+        # digits sit on black)
+        px = np.stack([a[..., 3]] * 4, axis=-1)
         if k:
             d.bitmaps.STEPTREE.append()
             b = d.bitmaps.STEPTREE[-1]
