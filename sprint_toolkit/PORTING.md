@@ -2088,6 +2088,11 @@ WDM rule base 0.5 x the grenade's 120 dps / the TAP dps (the AI taps): 0.33 / 0.
 0.4-1.0 loaded. Enhancer (its keys): hands 'heavy', trigger_index 'all', the plasma pistol's charged-
 shot cards skipped. Armed: all three species fire it (user).
 
+**Close-out pass (user: 'check every ported step'):** 5b on the BUILT port (h1_role_compare rows:
+tap 186 dps / balanced 67-71, volley 236 / 112 -- the WDM rule's numbers held); step 9's balanced
+SWAP had been missed -- the RL ratio (H1 rocket ready 22 fr x Reach 26/26) = `anims` swap x0.846, no
+reload (a battery); 4b list 2 / list 3 flags decided by name and written into the config.
+
 **Tool changes (each opt-in, narrowed proofs pl1-pl7 0 changed):** reach_tags 96-bit node masks
 (the first Reach FP graph above 64 nodes) + a bare `&` in chud names; h3_anim_decode.blobs keeps only
 tgda-proven chunks (an outer chunk the size of a member shifted the rest); h1_pickable_weapons
