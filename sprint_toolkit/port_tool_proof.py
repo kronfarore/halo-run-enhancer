@@ -28,6 +28,13 @@ wave's start revision; `--tools` may be left out: every sprint_toolkit tool the 
 that changed since --rev (git diff, working copy included) is rolled back.
 
     python port_tool_proof.py --full --rev <wave start> --backup h1_wave_<x>_check_<date> --tag wB
+  It CANNOT run across a wave whose port CONFIGS gained keys the old tools do not know (wave B,
+  2026-10-14: the beam recipe / ground points -- the old model tool crashed on the Spartan Laser).
+  Then THE REPRODUCTION CHECK is the wave check: today's tools regenerate every step of every
+  DONE port and must reproduce the kit exactly (diff pre / new), then the kit is restored:
+    python port_tool_proof.py --reproduce --backup h1_wave_<x>_reproduce_<date> --tag wBr
+ANY FAILURE after the backup restores the kit to <tag>_pre and proves it (wB left 108 files of
+old-tool output behind before this, recovered by hand).
 
 WITH BUSY (`--with-busy`, opt-in, user 2026-10-13): the ports IN PROGRESS (the other parallel
 session's) are left out above, so a shared-tool change met them only at the wave's --full. This
@@ -385,7 +392,10 @@ def backup(dest):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--rev', required=True, help='git revision holding the OLD tools')
+    ap.add_argument('--rev', help='git revision holding the OLD tools (not with --reproduce)')
+    ap.add_argument('--reproduce', action='store_true',
+                    help='THE WAVE CHECK: every step of every done port with TODAY\'s tools must '
+                         'reproduce the kit exactly (no old tools; implies --full)')
     ap.add_argument('--tools', nargs='+', help='changed tools (sprint_toolkit file names); --full: '
                     'default every chain tool changed since --rev')
     ap.add_argument('--full', action='store_true', help='every step of every port (the wave check)')
@@ -399,6 +409,13 @@ def main():
     ap.add_argument('--busy-also', nargs='*', default=[], help='--with-busy: done ports checked '
                     'the busy way too (a test of the scratch, or one port\'s check alone)')
     a = ap.parse_args()
+    if a.reproduce:
+        if a.with_busy or a.busy_only or a.busy_also:
+            ap.error('--reproduce compares the kit with itself: no --with-busy')
+        a.full = True
+        a.tools = a.tools or ['(none: --reproduce)']
+    elif not a.rev:
+        ap.error('--rev is required (but with --reproduce)')
     if a.busy_only or a.busy_also:
         a.with_busy = True
     if not a.busy_only and not a.backup:
@@ -434,18 +451,39 @@ def main():
     dest = os.path.join('E:' + os.sep, 'HaloBackups', a.backup)
     backup(dest)
     run('port_sha_snapshot.py', 'snap', a.tag + '_pre')
-    # the OLD tools run from a temporary COPY of the toolkit, never written over the working
-    # copy: a second port session may be running these very scripts (H1_PORT_PLAN.md, parallel)
-    copy = old_toolkit(a.tag, a.rev, a.tools)
     try:
-        run('port_sha_snapshot.py', *regen_args, cwd=copy)
-        run('port_sha_snapshot.py', 'snap', a.tag + '_old')
-    finally:
-        drop_toolkit(copy)
-    run('port_sha_snapshot.py', *regen_args)
-    run('port_sha_snapshot.py', 'snap', a.tag + '_new')
-    run('port_sha_snapshot.py', 'diff', a.tag + '_old', a.tag + '_new', ok=(0, 1))
-    unproven(a.tag + '_old', a.tag + '_new', keys, steps)
+        if a.reproduce:
+            # THE REPRODUCTION CHECK (the wave check, 2026-10-14): today's tools + today's
+            # configs must regenerate the kit EXACTLY as it is. Old tools vs new cannot run
+            # across a wave whose CONFIGS gained keys the old tools do not know (wave B: the
+            # beam recipe on the Spartan Laser, ground points everywhere -- wB crashed on
+            # the Spartan Laser's model step); this catches what the narrowed proofs could
+            # miss (a later step reading an earlier step's changed output, a hand edit).
+            run('port_sha_snapshot.py', *regen_args)
+            run('port_sha_snapshot.py', 'snap', a.tag + '_new')
+            run('port_sha_snapshot.py', 'diff', a.tag + '_pre', a.tag + '_new', ok=(0, 1))
+        else:
+            # the OLD tools run from a temporary COPY of the toolkit, never written over the
+            # working copy: a second port session may be running these very scripts
+            copy = old_toolkit(a.tag, a.rev, a.tools)
+            try:
+                run('port_sha_snapshot.py', *regen_args, cwd=copy)
+                run('port_sha_snapshot.py', 'snap', a.tag + '_old')
+            finally:
+                drop_toolkit(copy)
+            run('port_sha_snapshot.py', *regen_args)
+            run('port_sha_snapshot.py', 'snap', a.tag + '_new')
+            run('port_sha_snapshot.py', 'diff', a.tag + '_old', a.tag + '_new', ok=(0, 1))
+            unproven(a.tag + '_old', a.tag + '_new', keys, steps)
+    except BaseException:
+        # a regen that FAILS halfway leaves the kit part-regenerated (wB, 2026-10-14: 108 files
+        # of old-tool output left behind) -- put the pre state back before giving up
+        print('PROOF FAILED -- restoring the kit to %s_pre from %s' % (a.tag, dest), flush=True)
+        run('port_sha_snapshot.py', 'snap', a.tag + '_abort')
+        run('port_sha_snapshot.py', 'restore', a.tag + '_pre', a.tag + '_abort', dest)
+        run('port_sha_snapshot.py', 'snap', a.tag + '_restored')
+        run('port_sha_snapshot.py', 'diff', a.tag + '_pre', a.tag + '_restored')
+        raise
     run('port_sha_snapshot.py', 'restore', a.tag + '_pre', a.tag + '_new', dest)
     run('port_sha_snapshot.py', 'snap', a.tag + '_restored')
     run('port_sha_snapshot.py', 'diff', a.tag + '_pre', a.tag + '_restored')
