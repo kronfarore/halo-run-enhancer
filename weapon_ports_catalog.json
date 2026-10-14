@@ -5819,6 +5819,391 @@
      }
     ]
    }
+  },
+  {
+   "weapon": "Boltshot",
+   "source": "Halo 4",
+   "donor": "Pistol",
+   "default_on": false,
+   "desc": "Halo 4's Boltshot: its model, first-person animations, sounds and numbers. A Forerunner sidearm: a tap fires a bolt (10 a magazine), holding the trigger 0.6 s charges a 15-pellet close-range blast for 5 rounds that overheats the gun for 1.8 s.",
+   "balance_desc": "Measured against the Pistol (the bolt) and the Shotgun (the blast): 12.5 damage a bolt at 7 a second from a 15-round magazine, Pistol aim assist and reload; the blast's pellets hit like the Shotgun's (20.5, reaching 34 wu) and cost 7 rounds -- two blasts a magazine.",
+   "anims": {
+    "reload": 1.3137254901960784,
+    "swap": 2.0588235294117645
+   },
+   "anim_sounds": {
+    "reload": [
+     {
+      "mult": 1.3137254901960784,
+      "from": "sound\\weapons\\boltshot_port\\bo_reload",
+      "to": "sound\\weapons\\boltshot_port\\bo_reload_balanced"
+     }
+    ]
+   },
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\boltshot\\bolt",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 12.5,
+     "card": "Bolt Damage",
+     "original": 7.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\boltshot\\bolt",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 12.5,
+     "card": "Bolt Damage",
+     "original": 7.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\boltshot\\bolt",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 12.5,
+     "card": "Bolt Damage",
+     "original": 7.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Rounds Per Second",
+     "block": "Triggers",
+     "value": 7.0,
+     "card": "Rate of fire",
+     "original": 10.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Rounds Per Second Max",
+     "block": "Triggers",
+     "value": 7.0,
+     "card": "Rate of fire",
+     "original": 10.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 15.0,
+     "card": "Magazine",
+     "original": 10.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Rounds Reloaded",
+     "block": "Magazines",
+     "value": 15.0,
+     "card": "Magazine",
+     "original": 10.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 75.0,
+     "card": "Magazine",
+     "original": 30.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 120.0,
+     "card": "Magazine",
+     "original": 40.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Rounds",
+     "block": "Magazines/Magazines",
+     "value": 150,
+     "card": "Ammo pickup",
+     "original": 60
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Error Angle",
+     "block": "Triggers",
+     "value": 0.533,
+     "card": "Error Angle",
+     "original": 0.4
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Error Angle Max",
+     "block": "Triggers",
+     "value": 2.286,
+     "card": "Error Angle",
+     "original": 2.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\boltshot\\bolt",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 9.0,
+     "card": "Projectile",
+     "original": 90.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\boltshot\\bolt",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 9.0,
+     "card": "Projectile",
+     "original": 90.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 3.0,
+     "card": "Autoaim",
+     "original": 2.25
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 30.0,
+     "card": "Autoaim",
+     "original": 20.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 6.0,
+     "card": "Magnetism",
+     "original": 5.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 30.0,
+     "card": "Magnetism",
+     "original": 20.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\boltshot\\pellet",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 16.0,
+     "card": "Blast Damage",
+     "original": 6.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\boltshot\\pellet",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 20.48,
+     "card": "Blast Damage",
+     "original": 10.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\boltshot\\pellet",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 20.48,
+     "card": "Blast Damage",
+     "original": 10.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\boltshot\\pellet",
+     "field": "Air Damage Range Max",
+     "block": null,
+     "value": 3.2,
+     "card": "Blast falloff",
+     "original": 4.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\boltshot\\pellet",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 4.666666666666667,
+     "card": "Blast projectile",
+     "original": 16.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\boltshot\\pellet",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 3.3333333333333335,
+     "card": "Blast projectile",
+     "original": 16.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\boltshot\\pellet",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 33.8,
+     "card": "Blast projectile",
+     "original": 5.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Error Angle",
+     "block": "Triggers",
+     "value": 11.67,
+     "card": "Blast spread",
+     "original": 3.5,
+     "index": 1
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Error Angle Max",
+     "block": "Triggers",
+     "value": 11.67,
+     "card": "Blast spread",
+     "original": 3.5,
+     "index": 1
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Rounds Per Shot",
+     "block": "Triggers",
+     "value": 7,
+     "card": "Blast cost",
+     "original": 5,
+     "index": 1
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Sequence Index",
+     "block": "Meter Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Alpha Multiplier",
+     "block": "Meter Elements",
+     "value": 17,
+     "card": "Ammo display",
+     "original": 25,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Sequence Index",
+     "block": "Static Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\boltshot\\boltshot",
+     "field": "Loaded Ammo Cutoff",
+     "block": null,
+     "value": 5,
+     "card": "Ammo display",
+     "original": 3,
+     "index": 0
+    }
+   ],
+   "weap": "weapons\\boltshot\\boltshot",
+   "fp_animations": "weapons\\boltshot\\fp\\fp",
+   "requires": [
+    "proj weapons\\boltshot\\bolt"
+   ],
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\boltshot\\boltshot",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "powerups\\pistol ammo\\pistol ammo",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+      "label": "Assault Rifle Ammo"
+     },
+     {
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+      "label": "Flamethrower Ammo"
+     },
+     {
+      "tag": "powerups\\needler ammo\\needler ammo",
+      "label": "Needler Ammo"
+     },
+     {
+      "tag": "powerups\\pistol ammo\\pistol ammo",
+      "label": "Pistol Ammo"
+     },
+     {
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+      "label": "Sniper Rifle Ammo"
+     }
+    ]
+   }
   }
  ],
  "Halo 3": [
