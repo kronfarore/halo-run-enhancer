@@ -32,6 +32,10 @@ REL = 'ui\\chud\\bitmaps\\%s.bitmap'
 def decode(rel):
     """(RGBA image of the top mip, sprite boxes) of ANY Halo 3 bitmap tag (H3EK path); a
     `reach:` path is an HREK bitmap (reach_tags.decode_bitmap, the same shapes)."""
+    if os.path.isabs(rel) and rel.lower().endswith(('.png', '.tif', '.tiff', '.tga')):
+        # a LOCAL image (the Suppressor, C2: H4EK references its default diffuse but does not
+        # ship it -- a port's own stand-in image): one sprite, the whole image
+        return Image.open(rel).convert('RGBA'), [(0.0, 1.0, 0.0, 1.0, 0.5, 0.5)]
     if h1_fp_retarget.reach_tags.is_reach(rel):
         return h1_fp_retarget.reach_tags.decode_bitmap(rel)
     if h1_fp_retarget.h4_tags.is_h4(rel):       # an H4EK bitmap (h4_tags, the same shapes)
