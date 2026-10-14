@@ -143,7 +143,7 @@ PORT.update({
     # Not reproduced: Reach's two heat losses (one, the mean), the meter filling tile by tile (one ramp),
     #   the distortion ring and spark embers of the muzzle, the 3p plasma beam, a second contrail layer
     #   with its own animation (did not draw), Reach's 4000 wu/s.
-    'status': 'done',
+    'status': 'rework',
 
     # geometry + look (h1_h3_weapon_model.py; Reach through reach_tags). Reach's ONE model for world
     # AND first person. focus_rifle.render_model: 14 nodes -- b_gun (root, identity: not tilted),
