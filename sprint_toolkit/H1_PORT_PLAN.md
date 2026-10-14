@@ -949,6 +949,43 @@ check (harmless); a level's build fails while the other port's palette tags are 
 The wave check (`port_tool_proof --full --rev d096b49`) is still due before wave B's batched rebuild
 (B6 not yet ported).
 
+## B6: what the Plasma Launcher taught (2026-10-14) -- wave B complete
+
+PORTING.md "Halo 1: the Plasma Launcher, wave B6" is the full record; `ports_h1/plasma_launcher.py` is
+the example of a MULTI-BOLT CHARGE as a charged pair, a HOMING volley, a STICKY bolt and a fully baked
+Reach SCOPE with coloured glyphs. Run in PARALLEL with C1 (the kit lock queued every shared step).
+Everything in "Pilot A1" to "B7" still holds; the Plasma Launcher added:
+
+**New user rules / decisions:**
+- Yardstick by FAMILY: the plasma grenade (same Reach damage group, free AND stuck burst in both
+  games) over the provisional fuel rod; a CHARGE no yardstick has keeps the source's times ('charge
+  kept'), only recovery / spacing take the ratio.
+- An autoaim angle that drives a mechanic (homing) is not zeroed by a ratio's zero (user).
+- Accepted losses go in `lacks` as they are found (a volley from one bolt of battery).
+- hud_reticles 58-59 were granted for this port; 58 is used (the scope's bolt pips), 59 is NOT needed
+  -- free for the next port.
+
+**Process (observations -- check them on the next port):**
+- MEASURE a charged weapon's timing (`h1_weapon_state_probe`): Halo 1's exported primary charged
+  runs over charge + hold; a pair's trigger 1 fires ONCE (no spew, even with its own charge); a tap
+  interval rounds ~2 ticks up.
+- Halo 1 deals ATTACHED detonation damage when the projectile sticks, not when it bursts.
+- A cue that must switch at an exact moment: a function STEP (clip-and-normalise a narrow band on an
+  object function), never a colour-ramp threshold (the ramp sampling drifts non-linearly).
+- Reach chud: state data may not decode (`zoom` per widget); animated widgets hide rotations / flips /
+  scales the export does not show -- compare against a source screenshot (`rotate`, `mirror_local`,
+  glyph `flip`). A glyph cell's art needs a margin, and a non-square glyph's anchor is measured.
+- A Reach looping sound may decode SILENT: check every loop's RMS before using it (`slice` a sustain).
+- A sound_looping's START plays when it is attached (weapon ready), not when its scale rises.
+- Damage copies bring their template's SCREEN FLASH (the grenade's 1 s): check it at the weapon's rate.
+- Config edits: a trailing comment on a dict line swallows the keys after it (twice); comments on
+  their own lines.
+- A Reach FP graph above 64 nodes (65 here) and an outer chunk the size of a member: reach_tags /
+  h3_anim_decode handle both now.
+
+**Wave B is complete with B6.** The wave check (`port_tool_proof --full --rev d096b49`) and the
+batched ten-map rebuild remain -- both on the user's go.
+
 ## C1: what the Storm Rifle taught (2026-10-14) -- the HALO 4 RECIPE, read before C2 (the Suppressor)
 
 PORTING.md "Halo 1: the Storm Rifle, the Halo 4 pilot" is the full record; `ports_h1/storm_rifle.py` is
