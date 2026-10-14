@@ -111,7 +111,7 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'rework',             # 2026-10-14: 5 dry boots, balanced, Armed (grunt, jackal, elite) on b30
+    'status': 'done',             # 2026-10-14: 5 dry boots, balanced, Armed (grunt, jackal, elite) on b30
     # CLOSE-OUT RECORD (2026-10-14):
     # STEP 4b (port_field_audit --port storm_rifle, final): list 2 = ratio suggestions only (wave C's
     #   DEFAULT keeps Halo 4's own: 10/s, error 0.5 -> 2.75 deg, battery 0.006, aim from the MODE block
@@ -320,7 +320,12 @@ PORT.update({
         'weapon': ST + 'storm rifle',
         'template': PR + 'plasma rifle',
         'world_model': ST + 'storm rifle',
-        'fp_model': ST + 'fp\\fp',
+        # ONE model tag for world AND first person (user, 2026-10-14): Halo 1's map builder crashes
+        # past 32 MiB of model vertices + indices (memory h1-model-buffer-32mib-cap); the world and
+        # fp gbxmodels are the same geometry (only the permutation name differs), so the weapon
+        # names the world tag twice and the map stores it once (-0.66 MB). fp\fp.gbxmodel is still
+        # written by the model step for the FP tools (fp_render, h1_fp_muzzle, h1_fp_hand_clip)
+        'fp_model': ST + 'storm rifle',
         'fp_anims': ST + 'fp\\fp',
         'label': 'st',
         'teach': ('st', 'pr'),
