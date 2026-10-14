@@ -1196,6 +1196,61 @@ SETS = {
         ('SMG (port)', W + r'smg\smg', 'shot', {'rate': 15.0, 'cap': 15.0}),
         ('Storm Rifle (port)', W + r'storm rifle\storm rifle', 'shot', {'heat_model': 'tag'}),
     ]},
+    # the BOLTSHOT (wave C3), step 4a. Halo 4 (H4EK 2026-10-14, h3_weapon_values --kit h4 + the
+    # export): ONE trigger, latch-autofire with a charge -- a tap fires barrel 0, a 0.6 s charge
+    # (then charged 0.8 s -> discharge) fires barrel 1. BOLT 7.5 (bullet_slow, no falloff to 40)
+    # x recovery 0.1 s, 2700 wu/s, range 40, error 0.4 -> 2; BLAST: ONE projectile with a 5 x 3
+    # `conical spread` (15 pellets, 3.5 deg) x 10 (lower 6 over 2.5 -> 4 wu; bullet_slow, category
+    # shotgun), 480 wu/s, range 5.5, recovery 1.0 s, 5 ROUNDS a blast; mag 10 (30 / 40), reload_full
+    # 51 fr; aim (mode block) 2.25/20 5/20; strike_melee. Yardsticks: magnum 15 x 0.2 s, 8 (24 / 40),
+    # 3000 wu/s, range 250, 0.15 -> 1.75, reload_empty 51 fr, aim 2.25/20 5/20; shotgun 15 pellets
+    # (5 x 3, 3 deg) x 10.5 (lower 3 over 1.5 -> 3.75), 480, range 6.5, 1.0 s, 6 (18 / 24); plasma
+    # pistol (pve) bolt 14 (plasma_slow) x 0.1 s, charge 0.8 -> charged bolt 200 (emp) + 36 area
+    # (plasma_slow, 0.25 -> 0.5), 12 wu/s. Halo 1: pistol 25 x 3.5/s, 12 (60 / 120), 300 wu/s,
+    # range 40, 0.2 -> 2, aim 3/30 6/30; shotgun 15 x 21.5 (lower 8 over 1.5 -> 3), 1/s, 140 ->
+    # 100, range 40, error 10; plasma pistol tap 18 (5/s tapped), CHARGE 0.6 s -> 70 guided 29
+    # deg/s. A blast cycle = the 0.6 s charge + the 1.0 s recovery (rows: rate 1/1.6, charge 0.6,
+    # 'mag' = BLASTS a magazine: 10 / 5 = 2). Bolt rows on the pistol bullet's table (bullet_slow
+    # both sides), blast rows on the shotgun pellet's.
+    'boltshot': {'port': 'Boltshot', 'weapons': [
+        ('BO bolt = H4 own', W + r'pistol\pistol', 'shot',
+         {'dmg': 7.5, 'rate': 10.0, 'mag': 10, 'reload': 51 / 30.0, 'speed': 2700.0,
+          'range': 40.0, 'aim': (2.25, 20.0, 5.0, 20.0)}),
+        # PISTOL ratio: 25 x 7.5/15; 3.5/s x 0.2/0.1; 12 x 10/8; reload 67 fr x 51/51; 300 x
+        # 2700/3000; range 40 x 40/250 = 6.4 (listed 40: the magnum's 250 makes it degenerate);
+        # aim x1 (the same mode block)
+        ('BO bolt = Pistol ratio', W + r'pistol\pistol', 'shot',
+         {'dmg': 12.5, 'rate': 7.0, 'mag': 15, 'speed': 270.0, 'range': 40.0}),
+        # PLASMA PISTOL ratio: 18 x 7.5/14 (on the bullet's table: bullet_slow vs plasma_slow is a
+        # cross-group ratio); 5/s tapped x 0.1/0.1; no magazine -> the pistol ratio's 15
+        ('BO bolt = PP ratio', W + r'pistol\pistol', 'shot',
+         {'dmg': 9.64, 'rate': 5.0, 'mag': 15, 'speed': 270.0, 'range': 40.0,
+          'aim': (2.81, 20.0, 7.5, 20.0)}),
+        ('BO blast = H4 own', W + r'shotgun\shotgun', 'shot',
+         {'dmg': 10.0, 'rate': 1 / 1.6, 'charge': 0.6, 'mag': 2, 'reload': 51 / 30.0,
+          'speed': 480.0, 'range': 5.5, 'aim': (2.25, 20.0, 5.0, 20.0)}),
+        # SHOTGUN ratio: 21.5 x 10/10.5 a pellet (lower 8 x 6/3 = 16 over 1.5 x 2.5/1.5 = 2.5 ->
+        # 3 x 4/3.75 = 3.2 wu), 15 pellets; recovery 1.0 x 1.0/1.0 + Halo 4's charge KEPT (no
+        # shotgun charges); error 10 x 3.5/3 = 11.7 deg; 140 x 480/480; range 40 x 5.5/6.5 = 33.8
+        ('BO blast = Shotgun ratio', W + r'shotgun\shotgun', 'shot',
+         {'dmg': 20.48, 'rate': 1 / 1.6, 'charge': 0.6, 'mag': 2, 'reload': 67 / 30.0,
+          'speed': 140.0, 'range': 33.8, 'aim': (3.0, 30.0, 6.0, 30.0)}),
+        # PLASMA PISTOL ratio by the shot: 70 x 150 / 236 (Halo 4's 200 emp + 36 area) as ONE bolt
+        # on the charged bolt's table (Halo 1's own overcharge shape)
+        ('BO blast = PP ratio (1 bolt)', W + r'plasma pistol\plasma pistol', 'shot',
+         {'damage_tags': [W + r'plasma rifle\charged bolt'], 'dmg': 44.5, 'per_shot': 1,
+          'rate': 1 / 1.6, 'charge': 0.6, 'mag': 2, 'reload': 67 / 30.0, 'speed': 15.0,
+          'range': 40.0, 'aim': (3.0, 30.0, 6.0, 30.0)}),
+        # peers
+        ('Pistol', W + r'pistol\pistol', 'shot'),
+        ('Plasma Pistol (tap 5/s)', W + r'plasma pistol\plasma pistol', 'shot',
+         {'rate': 5.0, 'charge': 0.0, 'heat_sim': True}),
+        ('Plasma Pistol overcharge', W + r'plasma pistol\plasma pistol', 'shot',
+         {'damage_tags': [W + r'plasma rifle\charged bolt'], 'charge': 0.6, 'rate': 1 / 1.6}),
+        ('Shotgun', W + r'shotgun\shotgun', 'shot'),
+        ('Mauler (port)', W + r'mauler\mauler', 'shot'),
+        ('Pistol melee', W + r'pistol\pistol', 'melee'),
+    ]},
     # the PLASMA LAUNCHER (wave B6), step 4a. Reach (HREK 2026-10-13): charge 3.0 s in four 0.75 s
     # steps (1..4 bolts; a bolt needs a 0.75 s hold), held 2 s more -> discharge; 4.75/s, recovery
     # 0.2; heat 0.4 a bolt (oh 1, loss 0.85, rec 0.1: a volley overheats), battery 12 bolts; 11 -> 7
