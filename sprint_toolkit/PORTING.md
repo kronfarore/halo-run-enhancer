@@ -1777,11 +1777,14 @@ output; `--full --rev <wave start>` at the end of every wave (wave B: d096b49).
 
 **HEAT REVISIT (2026-10-14, after C1; ea50476, catalog 48bd3d1).** The user's rule (Reach drains heat
 while firing) means Reach's passive loss (0.25 -> 0.06/s) runs under the 0.03 a tick: full heat after
-14 rounds / ~1.25 s, not 12 / 1.0. Refit with the same measured trigger rule: default ramp 1.6 s,
-heat 0.108 (overheat on the 14th round at 1.27 s, every shot within a tick of Reach's curve; was 1.35
-/ 0.12); balanced (plasma-rifle ratio, 24 rounds draining) ramp 2.9 s, heat 0.072 (was 2.6 / 0.077 /
-22). Tags rebuilt (`h1_pickable_weapons --only plasma_repeater --write`); the ten-map rebuild stays
-batched.
+14 rounds / ~1.25 s, not 12 / 1.0. Refit: default ramp 1.6 s (was 1.35), heat first 0.108 by the
+model -- THE PROBE (b30) overheated it on the 13th: cooling is exact (0.4/30 every tick between
+shots) but the ramp holds 15/s longer than `H1_RAMP` says (factor ~0.92 at a 1.6 s tag, 0.857 at
+1.4: not a constant) -> heat 0.106, the middle of the measured window; PROBE 2: all three held
+bursts overheat on the 14th round at 1.13-1.20 s (heat 0.97-0.98 after the 13th). Balanced
+(plasma-rifle ratio, 24 rounds draining) ramp 2.9 s, heat 0.0714 = 24 rounds for any ramp factor
+0.86-0.92 (not probed; was 2.6 / 0.077 / 22). Tags rebuilt (`h1_pickable_weapons --only
+plasma_repeater --write`); the ten-map rebuild stays batched.
 
 ### Halo 1: the Grenade Launcher, wave B4 (2026-10-12, 19 boots + Armed x2 on a30) -- a bouncing grenade, a charged pair for Reach's EMP, a particle sprite of its own
 

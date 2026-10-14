@@ -41,8 +41,8 @@ PORT = reserved(
                    "OVERHEAT stands in for Reach's manual vent and the rate decline follows the "
                    "heat -- Halo 1's trigger ramps the rate over the HELD time, fitted so its rate "
                    "at each heat is within ~1/s of Reach's (default: Reach's 14 rounds to full "
-                   "heat draining -> heat 0.108, ramp 20 -> 3.05 over 1.6 s; balanced 24 rounds -> "
-                   "0.072, 20 -> 3.4 over 2.9 s; heat revisit 2026-10-14, first fitted 12 / 22 "
+                   "heat draining -> heat 0.106, ramp 20 -> 3.05 over 1.6 s; balanced 24 rounds -> "
+                   "0.0714, 20 -> 3.4 over 2.9 s; heat revisit 2026-10-14, first fitted 12 / 22 "
                    "under the old no-drain rule); deceleration time = the vent, so rate and heat "
                    "recover together. "
                    "Materials (user): the H1 plasma rifle bolt's table in the DEFAULT; BALANCED = "
@@ -61,7 +61,7 @@ PORT = reserved(
         'balanced': {
             'damage': 8.34,              # 13 x 6.42/10
             'rate': (15.0, 3.333),       # 7 x 15/6 = 17.5 -> Halo 1's 15/s cap; 10 x 3/9 (4b's positional pairing)
-            'heat_per_round': 0.072,     # 0.03 x 0.08/0.15 = 0.016 a tick: hot after 24 rounds draining (heat revisit 2026-10-14; was 0.077 / 22 under the old no-drain rule)
+            'heat_per_round': 0.0714,    # 0.03 x 0.08/0.15 = 0.016 a tick: hot after 24 rounds draining (heat revisit 2026-10-14; was 0.077 / 22 under the old no-drain rule)
             'ramp_s': 2.9,               # fitted under Halo 1's fire rule (the probe; the ratio gun hot in 2.3 s draining; was 2.6)
             'vent_s': 2.9,               # 2.5 x 0.35/0.3 (overheated losses) -> loss 1/2.9
             'battery': 0.01,             # 0.005 x 0.005/0.0025 (100 rounds)
@@ -371,10 +371,13 @@ PORT.update({
         # HEAT REVISIT (2026-10-14, the user's rule from C1: Reach DRAINS heat while firing -- the
         # 0.25 -> 0.06/s passive loss runs under the 0.03 a tick): Reach is fully hot after 14
         # rounds / ~1.25 s, not 12 / 1.0 -> refit (h1_role_compare plasma_repeater, the same
-        # h1_ticks rule): ramp 1.6 s, heat 0.108 -- overheat on the 14th round at 1.27 s, every shot
-        # time within a tick of Reach's draining curve (was 1.35 s / 0.12)
+        # h1_ticks rule): ramp 1.6 s, heat 0.108 first (the model: the 14th round) -- THE PROBE
+        # (b30, 3 held bursts): the 13th at 1.00 s, every shot's heat = 0.108 - 0.4/30 a tick between
+        # shots (cooling exact) but the ramp holds 15/s longer than H1_RAMP says (12th shot 0.867 s,
+        # not 0.933: factor ~0.92 at a 1.6 s ramp, 0.857 at 1.4) -> heat 0.106, the middle of the
+        # measured window 0.104-0.1076: the 14th round at ~1.13 s (Reach 1.23) (was 1.35 s / 0.12)
         'trigger': {'rounds_per_second': (20.0, 3.05), 'acceleration_time': 1.6,
-                    'deceleration_time': 2.5, 'heat_generated_per_round': 0.108,
+                    'deceleration_time': 2.5, 'heat_generated_per_round': 0.106,
                     'age_generated_per_round': 0.005,
                     'first_person_offset': (0.288, -0.0373, -0.0422)},
         # Reach's vent: 2.5 s to heat 0 -> overheated at 1, back at 0, one loss 0.4/s
@@ -524,9 +527,10 @@ PORT.update({
                 # balanced gun kept the default's ramp and never overheated). Both written
                 row('weap', RP + 'plasma repeater', 'Rate Of Fire Acceleration Rate', 1 / (2.9 * 30), 1 / (1.6 * 30), 'More Shooting', block='Triggers'),
                 row('weap', RP + 'plasma repeater', 'Rate Of Fire Deceleration Rate', 1 / (2.9 * 30), 1 / (2.5 * 30), 'More Shooting', block='Triggers'),
-                # (the probe's fire rule: refitted to overheat on the 24th round, 2.1 s; the ratio
-                # gun draining 2.3 s -- heat revisit 2026-10-14, was 0.077 / the 22nd)
-                row('weap', RP + 'plasma repeater', 'Heat Generated Per Round', 0.072, 0.108, 'Heat', block='Triggers'),
+                # (the probe's fire rule: refitted to overheat on the 24th round, ~2.0 s, for any ramp
+                # factor 0.86-0.92 (the default's probe: 0.92); the ratio gun draining 2.3 s -- heat
+                # revisit 2026-10-14, was 0.077 / the 22nd)
+                row('weap', RP + 'plasma repeater', 'Heat Generated Per Round', 0.0714, 0.106, 'Heat', block='Triggers'),
                 # the vent: 2.5 x 0.35/0.3 = 2.9 s from 1 to 0
                 row('weap', RP + 'plasma repeater', 'Heat Loss Per Second', 1 / 2.9, 0.4, 'Heat'),
                 # battery: 0.005 x 0.005/0.0025 = 0.01 (100 rounds)
