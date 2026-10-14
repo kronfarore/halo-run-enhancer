@@ -46,7 +46,8 @@ RQ = (47 / 2.0 * 0.945, 44 / 2.0 * 0.945)
 # 0.001 uv scale) -> the switch at 0.50 + 0.10
 # BOOT 8 (user): 'still early, set it back 0.3 s' -> +0.06 on the 5 s scale
 # BOOT 9 (user): 'push the charge lights back another 0.15 s' -> +0.03
-CHARGE_RAMP = [(0.0, HOLO_BLUE), (0.685, HOLO_BLUE), (0.71, (1.0, 0.32, 0.12)), (1.0, (1.0, 0.32, 0.12))]
+# BOOT 10 (user): 'another 0.15 s' -> +0.03 (pips confirmed perfect)
+CHARGE_RAMP = [(0.0, HOLO_BLUE), (0.715, HOLO_BLUE), (0.74, (1.0, 0.32, 0.12)), (1.0, (1.0, 0.32, 0.12))]
 # Halo 1 material indices (h1_role_compare.H1_MATERIALS order)
 JACKAL_SHIELD, WATER = 16, 28
 FORCE_FIELDS = [10, 18, 26, 32]      # force field, engineer force field, monitor, hunter shield
