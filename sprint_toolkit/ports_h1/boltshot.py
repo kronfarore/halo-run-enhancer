@@ -229,10 +229,15 @@ PORT.update({
                         'sound\\sfx\\weapons\\weapon_anims\\pistol_posing', -26.5),
             # the overheat's exit (o_h_exit's cue; Halo 1 plaspistol_overheat_exit -18.5)
             'bo_oh_exit': (['play_weapons_stasis_pistol_overheat_exit:0,1'],
-                           'sound\sfx\weapons\weapon_anims\plaspistol_overheat_exit', -18.5),
+                           B.join(['sound', 'sfx', 'weapons', 'weapon_anims', 'plaspistol_overheat_exit']), -18.5),
             'bo_drop': (['play_wea_drop_pistol_fr_bolt_pistol_nonplayer'],
                         'sound\\sfx\\impulse\\weapon_drops\\pistol_impact', -28.8),
+            # the BALANCED reload's sound (the patcher retimes the reload x1.314 and swaps it in:
+            # catalog anim_sounds; the BR's recipe)
+            'bo_reload_balanced': (['play_wea_stasis_pistol_reload_full:0,1'],
+                                   'sound\\sfx\\weapons\\weapon_anims\\pistol_reload', -19.0),
         },
+        'stretch': {'bo_reload_balanced': 67 / 51.0},
         'offsets': {'bo_pose': [0.0, 27 / 30.0, 62 / 30.0]},
         'slice': {'bo_charge_loop': (2.0, 4.0)},
         'loop_len': {'bo_charge_loop': 1.5},
@@ -309,7 +314,7 @@ PORT.update({
         # THE OVERHEAT (Halo 4: overheated threshold 1, recovery 0.1, loss 0.6 / 0.5 overheated; the
         # bolt 0 heat, the blast 1.0 a round): Halo 1's ONE loss = the overheated one (the Storm
         # Rifle's A') -> 1.8 s lockout after every blast, nothing fires. The blast's heat per round
-        # sits on trigger 1 (`fields`); whether Halo 1 counts it per round (x5) or per shot: probe
+        # sits on trigger 1 (`fields`): Halo 1 adds it per SHOT (the plugin: "each time the trigger is fired")
         'heat': {'recovery_threshold': 0.1, 'overheated_threshold': 1.0, 'loss_per_second': 0.5},
         # Halo 4: minimum error 0, error angle 0.4 -> 2 (bloom decel 0.5)
         'error_deg': {'minimum_error': 0.0, 'error_angle': (0.4, 2.0)},
@@ -354,6 +359,10 @@ PORT.update({
             # pistol's `fire bullet` to the bolt's; `fields` run last)
             'weap_attrs.triggers.1.firing_effects.0.firing_effect.filepath': BO + 'effects\\fire blast',
             'item_attrs.collision_sound.filepath': SND + 'bo_drop',
+            # STEP 6: the template's magazine names `powerups\pistol ammo` (pistol ammo tops it
+            # up). Halo 4 gives no pickup amount (Forerunner ammo boxes) -> the YARDSTICK's pickup :
+            # initial (the H1 pistol's 120 : 60) on Halo 4's initial 30 = 60 (the DMR / Suppressor)
+            'weap_attrs.magazines.0.magazine_items.0.rounds': 60,
             'obje_attrs.collision_model.filepath': BO + 'boltshot',
         },
         # THE MUZZLE-FLASH RULE (closing check 10, before boot 1). Halo 4's FIRST-PERSON particles
@@ -388,6 +397,7 @@ PORT.update({
         'melee': (PISTOL + 'melee', BO + 'melee'),
         'melee_response': PISTOL + 'melee_response',
         'messages': ('Picked up a boltshot', 'Picked up %d rounds for boltshot'),
+        'extra_sounds': [SND + 'bo_reload_balanced'],
         'icon': 'boltshot',
         # the PISTOL's HUD; the crosshair from Halo 4's CUI screen (ui\hud\weapons\forerunner\
         # burst_gun) and the USER'S SCREENSHOTS (2026-10-14, 1080p, at rest + charged): THREE
@@ -427,6 +437,75 @@ PORT.update({
                 'ammo_meter': {'sizes': (10, 15), 'base': BO + 'bitmaps\\boltshot_ammo',
                                'art': {'h3': (H4 + BR4 + 'ammo_burstgun', 0)}}},
         'palette_levels': LEVELS,
+    },
+
+    # weapon_ports_catalog.json (make_port_catalog_h1_ports.py boltshot). DEFAULT = Halo 4's own
+    # numbers in the tags; BALANCED = the PISTOL ratio for the bolt / magazine / aim, the SHOTGUN
+    # ratio for the blast (step 4a, user 2026-10-14). Assembly Halo1 units: angles in degrees,
+    # velocity in wu per TICK. Trigger rows reach trigger 0 unless `index` (the GL's finding)
+    'catalog': {
+        'entry': {
+            'weapon': 'Boltshot', 'source': 'Halo 4', 'donor': 'Pistol', 'default_on': False,
+            'desc': "Halo 4's Boltshot: its model, first-person animations, sounds and numbers. A "
+                    "Forerunner sidearm: a tap fires a bolt (10 a magazine), holding the trigger "
+                    "0.6 s charges a 15-pellet close-range blast for 5 rounds that overheats the "
+                    "gun for 1.8 s.",
+            'balance_desc': "Measured against the Pistol (the bolt) and the Shotgun (the blast): "
+                            "12.5 damage a bolt at 7 a second from a 15-round magazine, Pistol "
+                            "aim assist and reload; the blast's pellets hit like the Shotgun's "
+                            "(20.5, reaching 34 wu) and cost 7 rounds -- two blasts a magazine.",
+            # step 9: the balanced reload = the H1 pistol's 67 fr x Boltshot 51 / magnum 51 = 67 over
+            # the built 51 = x1.314; swap (ready + put-away, ONE multiplier): the pistol's ready 35
+            # x 17 / 17 = 35 over the built 17 = x2.06
+            'anims': {'reload': 67 / 51.0, 'swap': 35 / 17.0},
+            'anim_sounds': {'reload': [
+                {'mult': 67 / 51.0, 'from': SND + 'bo_reload', 'to': SND + 'bo_reload_balanced'}]},
+            'balance': [
+                # the bolt: 25 x 7.5/15 (the pistol bullet's table, bullet_slow both sides)
+                row('jpt!', BO + 'bolt', 'Damage Lower Bound', 12.5, 7.5, 'Bolt Damage'),
+                row('jpt!', BO + 'bolt', 'Damage Upper Bound', 12.5, 7.5, 'Bolt Damage'),
+                row('jpt!', BO + 'bolt', 'Damage Upper Bound Max', 12.5, 7.5, 'Bolt Damage'),
+                # 3.5/s x 0.2/0.1 (trigger 0)
+                row('weap', BO + 'boltshot', 'Rounds Per Second', 7.0, 10.0, 'Rate of fire', block='Triggers'),
+                row('weap', BO + 'boltshot', 'Rounds Per Second Max', 7.0, 10.0, 'Rate of fire', block='Triggers'),
+                # magazine 12 x 10/8, initial 60 x 30/24, maximum 120 x 40/40 (= the pistol's)
+                row('weap', BO + 'boltshot', 'Rounds Loaded Maximum', 15.0, 10.0, 'Magazine', block='Magazines'),
+                row('weap', BO + 'boltshot', 'Rounds Reloaded', 15.0, 10.0, 'Magazine', block='Magazines'),
+                row('weap', BO + 'boltshot', 'Rounds Total Initial', 75.0, 30.0, 'Magazine', block='Magazines'),
+                row('weap', BO + 'boltshot', 'Rounds Total Maximum', 120.0, 40.0, 'Magazine', block='Magazines'),
+                # STEP 6 balanced: the pistol's pickup : initial (120 : 60) on the balanced 75
+                row('weap', BO + 'boltshot', 'Rounds', 150, 60, 'Ammo pickup', block='Magazines/Magazines'),
+                # the bolt's spread: 0.2 x 0.4/0.15, 2 x 2/1.75 (trigger 0)
+                row('weap', BO + 'boltshot', 'Error Angle', 0.533, 0.4, 'Error Angle', block='Triggers'),
+                row('weap', BO + 'boltshot', 'Error Angle Max', 2.286, 2.0, 'Error Angle', block='Triggers'),
+                # 300 x 2700/3000 = 270 wu/s; range 40 kept (the ratio's 6.4 is degenerate, user)
+                row('proj', BO + 'bolt', 'Initial Velocity', 270 / 30.0, 2700 / 30.0, 'Projectile'),
+                row('proj', BO + 'bolt', 'Final Velocity', 270 / 30.0, 2700 / 30.0, 'Projectile'),
+                # aim: the same mode block on both Halo 4 sides (x1) -> the pistol's 3/30 6/30
+                row('weap', BO + 'boltshot', 'Autoaim Angle', 3.0, 2.25, 'Autoaim'),
+                row('weap', BO + 'boltshot', 'Autoaim Range', 30.0, 20.0, 'Autoaim'),
+                row('weap', BO + 'boltshot', 'Magnetism Angle', 6.0, 5.0, 'Magnetism'),
+                row('weap', BO + 'boltshot', 'Magnetism Range', 30.0, 20.0, 'Magnetism'),
+                # THE BLAST (Shotgun ratio): a pellet 21.5 x 10/10.5 = 20.48, lower 8 x 6/3 = 16 over
+                # 1.5 x 2.5/1.5 = 2.5 -> 3 x 4/3.75 = 3.2 wu; 140 -> 100 wu/s (x 480/480); range 40 x
+                # 5.5/6.5 = 33.8; cone 10 x 3.5/3 = 11.67 deg; 7 rounds a blast (15 / 2, user)
+                row('jpt!', BO + 'pellet', 'Damage Lower Bound', 16.0, 6.0, 'Blast Damage'),
+                row('jpt!', BO + 'pellet', 'Damage Upper Bound', 20.48, 10.0, 'Blast Damage'),
+                row('jpt!', BO + 'pellet', 'Damage Upper Bound Max', 20.48, 10.0, 'Blast Damage'),
+                row('proj', BO + 'pellet', 'Air Damage Range Max', 3.2, 4.0, 'Blast falloff'),
+                row('proj', BO + 'pellet', 'Initial Velocity', 140 / 30.0, 480 / 30.0, 'Blast projectile'),
+                row('proj', BO + 'pellet', 'Final Velocity', 100 / 30.0, 480 / 30.0, 'Blast projectile'),
+                row('proj', BO + 'pellet', 'Maximum Range', 33.8, 5.5, 'Blast projectile'),
+                dict(row('weap', BO + 'boltshot', 'Error Angle', 11.67, 3.5, 'Blast spread', block='Triggers'), index=1),
+                dict(row('weap', BO + 'boltshot', 'Error Angle Max', 11.67, 3.5, 'Blast spread', block='Triggers'), index=1),
+                dict(row('weap', BO + 'boltshot', 'Rounds Per Shot', 7, 5, 'Blast cost', block='Triggers'), index=1),
+                # the 15 magazine's meter: boltshot_ammo sequence 1 (ammo_meter 10 15); alpha
+                # multiplier 255 // n; low-ammo flash 3 of 10 -> 5 of 15 (the pistol's 4 of 12)
+                dict(row('wphi', BO + 'boltshot', 'Sequence Index', 1, 0, 'Ammo display', block='Meter Elements'), index=0),
+                dict(row('wphi', BO + 'boltshot', 'Alpha Multiplier', 17, 25, 'Ammo display', block='Meter Elements'), index=0),
+                dict(row('wphi', BO + 'boltshot', 'Sequence Index', 1, 0, 'Ammo display', block='Static Elements'), index=0),
+                dict(row('wphi', BO + 'boltshot', 'Loaded Ammo Cutoff', 5, 3, 'Ammo display'), index=0),
+            ]},
     },
 
     # step 4b (port_field_audit.py --port boltshot): the source pair (Halo 4 Boltshot vs the bolt's
