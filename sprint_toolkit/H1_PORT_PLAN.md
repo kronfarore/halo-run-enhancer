@@ -1008,8 +1008,8 @@ extra rows: heat warning, vent, the aim-assist MODE block -- read aim from the m
   `nodes` b_gun etc -> `frame b ...`, `look` -> overlays. Every storm_fp graph shares the skeleton: the
   DROP list and h4_tags.ARM_AXES carry over. Expect per-animation fixes: `holds` for an `overheated`
   that is not between its neighbours, `hand_offset_anims` for a grip the H1 glove sinks into. Render
-  Halo 4's own arms (scratch h4_ref_render.py; promote it if C2 needs it) beside fp_render BEFORE the
-  boot.
+  Halo 4's own arms (`h4_fp_reference.py`, Blender) beside fp_render BEFORE the boot, and count the
+  hand-in-gun intersections per animation (`h1_fp_hand_clip.py <key> <anims> [--try x,y,z]`).
 - TEXTURES: H4 .material: read the self-illum colour / scale and the control map; multi-image bitmaps
   decode through h4_tags.bitmap_images; constant meter shapes = static lit (`display_base` / `wire`).
 - HUD: CUI (.cui_screen), 3 px a unit (h3_hud_art handles h4: names); crosshair supersampled. On-gun
@@ -1026,14 +1026,15 @@ overheat is the vent. B3 Plasma Repeater and the H4-kit Focus Rifle still carry 
 after C1, user).
 
 **Process (observations):**
-- Arms are where the boots go (5 of 7 here). Count hand-in-gun intersections and render Halo 4's arms
-  per animation before asking for a boot; fix per animation, not globally (a global hand offset broke
+- Arms are where the boots go (5 of 7 here). Count hand-in-gun intersections (`h1_fp_hand_clip.py`)
+  and render Halo 4's arms (`h4_fp_reference.py`) per animation before asking for a boot; fix per animation, not globally (a global hand offset broke
   the melee).
 - The parallel pair (with B6) ran cleanly under kit_commit / kit_lock; a config `teach` added mid-proof
   showed as one changed cyborg.model_animations in the proof -- expected, not a regression.
 - Tools now: h4_tags.py, h4_fp_dump.py, h1_fp_retarget `_resolve_arms` / `_continuous` / `holds` /
   `hand_offset(_anims)`, h1_h3_weapon_model meters 'stages' + `value_floor` and numeric 'digits',
-  h1_port_sounds 'halo4' + `event@bank` + 'offsets', h3_weapon_values `--kit h4`, h1_role_compare
+  h1_port_sounds 'halo4' + `event@bank` + 'offsets', h3_weapon_values `--kit h4`, h4_fp_reference.py,
+  h1_fp_hand_clip.py, h1_species_skill_compare.py (the species skill rule, read-only), h1_role_compare
   `loss_oh`.
 
 **For C2 (the Suppressor, H4EK `objects\weapons\rifle\storm_forerunner_smg`):** a Forerunner

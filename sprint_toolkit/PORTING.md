@@ -2131,7 +2131,8 @@ frame's hemisphere per node (`_continuous`): w >= 0 locals flipped near 180 deg 
 spun through each flip (melee, the fidget). `hand_offset` / `hand_offset_anims` (gun-space, per side,
 per source animation): Halo 1's chunkier glove sinks into a grip Halo 4's slim hand wraps -- applied to
 the FIDGET only (user: idle fine without, the melee grip lost with it). Reference: Halo 4's own arms
-rendered from b_camera_control in Blender (scratch h4_ref_render.py) against fp_render, same frames.
+rendered from b_camera_control in Blender (`h4_fp_reference.py`) against fp_render, same frames;
+hand-in-gun counts per animation: `h1_fp_hand_clip.py`.
 Halo 1 plays `overheated` once; Halo 4's `overheated` is not between overheating and o_h_exit (a 19 cm
 jump) -> `holds`: overheating's last frame held 31 frames (40 too long, user). User verdict after 5 dry
 boots: idle and overheat good, the fidget acceptable, the melee grip approximate ("That settles the

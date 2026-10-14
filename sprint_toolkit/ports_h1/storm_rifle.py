@@ -112,6 +112,20 @@ PORT = reserved(
 
 PORT.update({
     'status': 'done',             # 2026-10-14: 5 dry boots, balanced, Armed (grunt, jackal, elite) on b30
+    # CLOSE-OUT RECORD (2026-10-14):
+    # STEP 4b (port_field_audit --port storm_rifle, final): list 2 = ratio suggestions only (wave C's
+    #   DEFAULT keeps Halo 4's own: 10/s, error 0.5 -> 2.75 deg, battery 0.006, aim from the MODE block
+    #   15 / 20 -- not the base 25); list 4 deliberate (bounding radius 0.3, no ramp: accel / decel 0,
+    #   magnetism range 20); list 5 = boot-tested decisions (C in overheated + function 0 one x C in:
+    #   the chevron; message 85; recovery 0.1 = Halo 4's; age penalties / misfire 0; the FP offset).
+    #   List 3: no line with a Halo 1 field needs a change -- deviation angle 0, projectile water
+    #   gravity 0, bolt instantaneous acceleration 0 / breaking outward radius 0, rounds between
+    #   tracers stay the template's (Halo 1's plasma rifle); flags lines have no Halo 1 field.
+    # TEMPLATE DIFF (h1_port_template_diff, final, 376 lines): weapon 36 (the numbers above, own
+    #   hull / sounds / fp / hud / melee / bolt, label st), bolt 27 (range 100, final velocity 50,
+    #   flyby, the hit-effect rule's own impact effects), damage 2 (8), melee 0, the two firing
+    #   effects 148 each (the muzzle flash, user 'perfect'), HUD 4 (reticle 35 x0.343, icon 46),
+    #   shaders (own maps), the heat meter (5) and two lit display shapes (own maps).
 
     # geometry + look (h1_h3_weapon_model.py; Halo 4 through h4_tags). Halo 4's ONE render model for
     # world AND first person: 4 nodes -- b_gun (root, identity: not tilted), b_cannister, b_top_vent,
