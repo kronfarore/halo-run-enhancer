@@ -173,8 +173,14 @@ assist -- built and balanced. Sets live in its SETS table (first: the H4 Focus R
 against the Beam Rifle, the Sentinel Beam and the Sniper Rifle bridge).
 `python port_ttk.py <set> [--why]` turns that into TIME TO KILL on the game's real enemies:
 character vitality (normal/legendary, parent chain), the model's shield/body materials, the
-globals damage table (damage group x armor, printed per lookup), overheat pauses (heat cools
-only while NOT firing -- confirmed), shield overflow into the body. Body shots only.
+globals damage table (damage group x armor, printed per lookup), overheat pauses, shield
+overflow into the body. Body shots only. HEAT DRAINS WHILE FIRING (user, 2026-10-13: Halo 2 /
+3 / ODST / Reach / 4; the earlier "cools only while NOT firing -- confirmed" was WRONG, fixed in
+a8d79b2). HEAT REVISIT (2026-10-14): the H4 Focus Rifle port = Reach exactly under drain (75
+shots / 2.50 s, the user's Reach stopwatch; the old rule said 40 / 1.33 s) -- its tags were
+right; its balanced option 2 (Overheated Heat Loss 0.375, recovery 2.4 s) still sits between
+the Beam Rifle and the Sentinel Beam on every enemy -- no change. The Halo 1 Plasma Repeater
+(B3) WAS refit: Reach full heat 14 rounds draining, not 12 (ea50476).
 
 **Step 3 is TWO things, and the Halo 1 SAW shipped with only one of them** (found
 2026-10-02). `saw_port_values.py` wrote the port's own numbers into
@@ -1768,6 +1774,14 @@ and -- rp4, by design -- every port's gbxmodel (its new ground point); h1_reticl
 the kit restored each time. After rp4 the proof is NARROWED (user): only the steps whose scripts
 import a changed tool are regenerated, 'NOT COMPARED' names ports whose later steps read a changed
 output; `--full --rev <wave start>` at the end of every wave (wave B: d096b49).
+
+**HEAT REVISIT (2026-10-14, after C1; ea50476, catalog 48bd3d1).** The user's rule (Reach drains heat
+while firing) means Reach's passive loss (0.25 -> 0.06/s) runs under the 0.03 a tick: full heat after
+14 rounds / ~1.25 s, not 12 / 1.0. Refit with the same measured trigger rule: default ramp 1.6 s,
+heat 0.108 (overheat on the 14th round at 1.27 s, every shot within a tick of Reach's curve; was 1.35
+/ 0.12); balanced (plasma-rifle ratio, 24 rounds draining) ramp 2.9 s, heat 0.072 (was 2.6 / 0.077 /
+22). Tags rebuilt (`h1_pickable_weapons --only plasma_repeater --write`); the ten-map rebuild stays
+batched.
 
 ### Halo 1: the Grenade Launcher, wave B4 (2026-10-12, 19 boots + Armed x2 on a30) -- a bouncing grenade, a charged pair for Reach's EMP, a particle sprite of its own
 
