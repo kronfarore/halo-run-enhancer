@@ -160,7 +160,7 @@ PORT.update({
     # 2026-10-13: tested on a30 over 12 boots (dry default 1-9: mechanics + the look found layer by
     # layer; balanced 10-12, probe-measured) + Armed (all three species fire it) -- confirmed by the
     # user; the ten-map rebuild is BATCHED for wave B (user's go)
-    'status': 'rework',
+    'status': 'done',
     # CLOSE-OUT RECORD (2026-10-13). 4b + template diff + port_sound_refs + the muzzle flash BEFORE
     # boot 1. Yardstick: the FUEL ROD (user); default = Reach's own, balanced = the fuel rod ratio.
     # Weapon (rocket copy): 6 / 18 / 30, 3/s, reload 3.33 s, error 0.15 / 0.4, no zoom, aim 4/15 8/15;
@@ -309,7 +309,12 @@ PORT.update({
         'weapon': CR + 'concussion rifle',
         'template': RL + 'rocket launcher',
         'world_model': CR + 'concussion rifle',
-        'fp_model': CR + 'fp' + B + 'fp',
+        # ONE model tag for world AND first person (user, 2026-10-14): Halo 1's map builder crashes
+        # past 32 MiB of model vertices + indices (memory h1-model-buffer-32mib-cap); the world and
+        # fp gbxmodels are the same geometry (only the permutation name differs), so the weapon
+        # names the world tag twice and the map stores it once (-0.85 MB). fp\fp.gbxmodel is still
+        # written by the model step for the FP tools (fp_render, h1_fp_muzzle, h1_fp_hand_clip)
+        'fp_model': CR + 'concussion rifle',
         'fp_anims': CR + 'fp' + B + 'fp',
         'label': 'cr',
         # the reserved pose donor: the plasma rifle (a Covenant rifle, carried by Elites)
