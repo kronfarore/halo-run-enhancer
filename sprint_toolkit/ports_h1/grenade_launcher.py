@@ -196,7 +196,7 @@ PORT.update({
     # 2026-10-12: tested on a30 over 19 boots (dry default + look / bounce / EMP iterations, the
     # probe-measured fuse, balanced) + Armed x2 (incl. Jackal overcharge) -- confirmed by the user;
     # the ten-map rebuild is BATCHED for wave B (user's go)
-    'status': 'rework',
+    'status': 'done',
     # CLOSE-OUT RECORD (2026-10-12). 4b + template diff + port_sound_refs + the muzzle flash BEFORE
     # boot 1. Yardstick: the FRAG GRENADE, holes by the ROCKET LAUNCHER (user); frag table both.
     # Weapon (rocket copy): 2 triggers (the plasma pistol's charged pair), 1 / 8 / 16, reload 2.1 s,
@@ -402,7 +402,12 @@ PORT.update({
         'weapon': GL + 'grenade launcher',
         'template': RL + 'rocket launcher',
         'world_model': GL + 'grenade launcher',
-        'fp_model': GL + 'fp' + B + 'fp',
+        # ONE model tag for world AND first person (user, 2026-10-14): Halo 1's map builder crashes
+        # past 32 MiB of model vertices + indices (memory h1-model-buffer-32mib-cap); the world and
+        # fp gbxmodels are the same geometry (only the permutation name differs), so the weapon
+        # names the world tag twice and the map stores it once (-0.71 MB). fp\fp.gbxmodel is still
+        # written by the model step for the FP tools (fp_render, h1_fp_muzzle, h1_fp_hand_clip)
+        'fp_model': GL + 'grenade launcher',
         'fp_anims': GL + 'fp' + B + 'fp',
         'label': 'gl',
         # the reserved pose donor: the shotgun (a two-handed rifle-class launcher, not the rocket's
