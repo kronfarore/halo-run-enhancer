@@ -2520,6 +2520,155 @@
     "port_dps": 80.0,
     "balanced_port_dps": 103.0
    }
+  },
+  "weapons\\plasma launcher\\plasma launcher": {
+   "source": "Halo Reach ai\\generic objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher (weapon properties #14, firing pattern #14) over weapons\\fuel rod gun\\fuel rod carriers",
+   "fields": {
+    "0x74": [
+     "<f",
+     20.0,
+     "Maximum Firing Distance"
+    ],
+    "0x7C": [
+     "<f",
+     0.029452429967932403,
+     "Projectile Error"
+    ],
+    "0x80": [
+     "<f",
+     0.5,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     1.0,
+     "First Burst Delay Time Max"
+    ],
+    "0x8C": [
+     "<f",
+     1.0,
+     "Surprise Delay Time"
+    ],
+    "0x9C": [
+     "<f",
+     8.0,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     10.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     0.9749999940395355,
+     "Target Tracking"
+    ],
+    "0xC0": [
+     "<f",
+     0.7249999940395355,
+     "Target Leading"
+    ],
+    "0xC4": [
+     "<f",
+     0.32608695652173914,
+     "Weapon Damage Modifier"
+    ],
+    "0xCC": [
+     "<f",
+     0.25,
+     "Burst Origin Radius"
+    ],
+    "0xD0": [
+     "<f",
+     0.05235987529158592,
+     "Burst Origin Angle"
+    ],
+    "0xD4": [
+     "<f",
+     0.25,
+     "Burst Return Length"
+    ],
+    "0xD8": [
+     "<f",
+     0.5,
+     "Burst Return Length Max"
+    ],
+    "0xDC": [
+     "<f",
+     0.10471975058317184,
+     "Burst Return Angle"
+    ],
+    "0xE0": [
+     "<f",
+     2.0,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     2.75,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     0.23750000074505806,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     0.6875,
+     "Burst Separation Max"
+    ],
+    "0xFC": [
+     "<f",
+     0.008726646192371845,
+     "Special Projectile Error"
+    ],
+    "0x1D8": [
+     "<f",
+     0.20000000298023224,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.44999998807907104,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     4,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     6,
+     "Drop Weapon Ammo Max"
+    ]
+   },
+   "donor_weapon": "weapons\\fuel rod gun\\fuel rod",
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.8955223880597015,
+     "Weapon Damage Modifier"
+    ],
+    "0x1D8": [
+     "<f",
+     0.4,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     1.0,
+     "Drop Weapon Loaded Max"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.5,
+    "yardstick_dps": 120.0,
+    "port_dps": 184.0,
+    "balanced_port_dps": 67.0
+   }
   }
  }
 }
