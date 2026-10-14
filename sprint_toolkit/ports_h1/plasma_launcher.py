@@ -725,9 +725,13 @@ PORT.update({
                     "numbers. A tap fires one sticky plasma bolt; hold the trigger three seconds and "
                     "release for a volley of four that homes on your target. Bolts stick to whatever "
                     "they hit and burst a moment later. Twelve bolts a battery; a volley overheats it.",
-            'balance_desc': "Measured against the Plasma Grenade: a weaker burst (84, 206 when stuck), "
-                            "single bolts every 1.25 s, a slower volley, faster bolts and Halo 1-style "
-                            "aim assist; the charge, heat and battery stay Reach's.",
+            'balance_desc': "Measured against the Plasma Grenade: a weaker burst (84), single bolts "
+                            "every 1.25 s, faster bolts that slow sooner, a longer fuse once stuck and "
+                            "Halo 1-style aim assist; the charge, heat and battery stay Reach's.",
+            # STEP 9 (the close-out check): the swap by the RL ratio (the grenade has no ready, the
+            # GL's precedent): H1 rocket ready 22 fr x Reach PL 26 / Reach RL 26 = 22 against the
+            # port's 26 -> x0.846. No reload (a battery)
+            'anims': {'swap': 22 / 26.0},
             'balance': [
                 # the free burst: 120 x 177/252 = 84.3; lower 80 x 17.5/25 = 56; radius 0.5 x
                 # 0.6/0.54, 2.0 x 1.8/1.8
@@ -770,6 +774,18 @@ PORT.update({
     # step 4b (port_field_audit.py --port plasma_launcher): the source pair (Reach plasma launcher vs
     # the yardstick -- the weapon's holes by the RL, the bolt / bursts by Reach's plasma grenade)
     # against the target pair (the H1 port vs the H1 rocket / plasma grenade)
+    # 4b, the close-out pass (2026-10-14). List 2 left, each decided: the first-person offset's ratio
+    # (-0.2) and the illumination recovery's (0.75) -- aiming geometry / the muzzle-light fade, not
+    # balance: no row; the air / water damage range -- Reach 0,0 = unset (the GL's): 0..180 / the
+    # grenade's 0..10 kept. List 3 FLAGS by name: weapon 'cannot fire at maximum age' = Reach's
+    # (kept); Reach 'allows binoculars', the secondary 'uses ghost reticle', 'AI cannot fire tracking
+    # projectiles' -- no Halo 1 field (Halo 1's AI only taps the pair: its bolts unguided anyway);
+    # trigger 0 / 1 'projectile is client side only' kept (Halo 1's own explosive and plasma
+    # triggers carry it: the rocket, the plasma pistol); trigger 1 'can fire with partial ammo' (the
+    # pistol's charged shot) kept -- a battery weapon, it gates nothing (the low-battery volley is the
+    # age check: lacks). Reach's charge flag 'can fire from partial charge' -> lacks. Bounding radius
+    # 0.2 (the template's) = the model's half diagonal (0.197): kept; bounding offset 0 = Reach's.
+    # List 5: heat / age / misfire / zoom / functions / triggers -- the port's own (decisions above).
     'field_audit': {
         'source_kit': 'HREK',
         'source': {'weapon': (RW + r'\plasma_launcher.weapon', r'objects\weapons\support_high\rocket_launcher\rocket_launcher.weapon'),
