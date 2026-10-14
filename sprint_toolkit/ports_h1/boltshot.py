@@ -24,6 +24,11 @@ SW = r'objects\weapons\pistol\storm_stasis_pistol'
 SFP = r'objects\characters\storm_fp\weapons\pistol\fp_stasis_pistol\storm_fp_stasis_pistol'
 SBM = SW + r'\bitmaps\storm_stasis_pistol_default' + B
 BR4 = r'ui\hud\weapons\forerunner\burst_gun\bitmap' + B      # Halo 4's crosshair art (CUI)
+# the base maps (boot 1): RGB = Halo 4's colour map x the material's albedo_tint, A = the control
+# map's R (specular) -- written by this snippet (2026-10-14), kept beside the kit data:
+#   d = h4_tags.bitmap_images(SBM + 'storm_stasis_pistol_diff.bitmap')[0]; c = ... '_control' ...
+#   rgb = d.rgb x 0.706 (alien metal) / 0.78 (metal); a = c.R
+BASE = r'F:\SteamLibrary\steamapps\common\HCEEK\data\weapons\boltshot\source' + B
 BO = 'weapons\\boltshot\\'
 SND = 'sound\\weapons\\boltshot_port\\'
 PISTOL = 'weapons\\pistol\\'
@@ -130,7 +135,10 @@ PORT.update({
         # slabs), 50 / 60 (lumps), 70 (a dark sliver in the slide); 80 intact (max 1.07 mm) ->
         # 9150 -> 7320 triangles, ~0.44 -> 0.36 MiB of the model buffer (a small gun: little to gain)
         'decimate': {'keep': 80.0, 'protect': 1.0, 'views': [((-0.1988, 0.0651, 0.0576), (0.9957, -0.0667, -0.0647), (0.0635, -0.0195, 0.9978), 1.0), ((-0.1982, 0.066, 0.058), (0.995, -0.0669, -0.0743), (0.0741, -0.0051, 0.9972), 1.0), ((-0.1988, 0.0651, 0.0576), (0.9957, -0.0667, -0.0647), (0.0635, -0.0195, 0.9978), 1.0), ((0.0735, 0.0, -0.0154), (0.0, 0.0, 1.0), (0.0, 1.0, 0.0), 1.0), ((0.0735, 0.0003, -0.0154), (0.0016, -0.0156, 0.9999), (-0.0075, 0.9999, 0.0156), 1.0), ((0.0735, 0.0003, -0.0154), (-0.0057, -0.003, 1.0), (0.004, 1.0, 0.003), 1.0), ((-0.1964, 0.0648, 0.0656), (0.9924, -0.0657, -0.1042), (0.103, -0.0222, 0.9944), 1.0), ((-0.1908, 0.0647, 0.0545), (0.996, -0.0662, -0.0591), (0.0601, 0.0122, 0.9981), 1.0), ((-0.1964, 0.0648, 0.0656), (0.9924, -0.0657, -0.1042), (0.103, -0.0222, 0.9944), 1.0), ((-0.1229, 0.1737, -0.1246), (0.0425, -0.1285, 0.9908), (-0.8578, 0.5037, 0.1022), 0.5), ((-0.1571, 0.0639, 0.1282), (0.9086, -0.0148, -0.4173), (0.4137, 0.168, 0.8948), 0.5), ((-0.1229, 0.1737, -0.1246), (0.0425, -0.1285, 0.9908), (-0.8578, 0.5037, 0.1022), 0.5), ((-0.1988, 0.0651, 0.0576), (0.9957, -0.0667, -0.0647), (0.0635, -0.0195, 0.9978), 0.5), ((-0.1341, 0.1522, 0.1608), (0.7904, -0.3336, -0.5138), (0.5472, 0.0072, 0.837), 0.5), ((-0.1988, 0.0651, 0.0576), (0.9957, -0.0667, -0.0647), (0.0635, -0.0195, 0.9978), 0.5), ((-0.1988, 0.0651, 0.0576), (0.9957, -0.0667, -0.0647), (0.0635, -0.0195, 0.9978), 0.5), ((-0.1341, 0.1522, 0.1608), (0.7904, -0.3336, -0.5138), (0.5472, 0.0072, 0.837), 0.5), ((-0.1988, 0.0651, 0.0576), (0.9957, -0.0667, -0.0647), (0.0635, -0.0195, 0.9978), 0.5), ((-0.1988, 0.0651, 0.0576), (0.9957, -0.0667, -0.0647), (0.0635, -0.0195, 0.9978), 0.5), ((-0.0558, -0.0274, 0.1748), (0.8245, 0.56, 0.0817), (0.3226, -0.5837, 0.7452), 0.5), ((-0.1988, 0.0651, 0.0576), (0.9957, -0.0667, -0.0647), (0.0635, -0.0195, 0.9978), 0.5)]},
-        'markers': {'left_hand': 'left hand', 'fx_vent': 'vent', 'primary_trigger': 'primary trigger'},
+        # + Halo 4's charging-effect locations (its `charging` effect: plate glows at top_plate /
+        # bottom_plate, a vent glow at fx_vent, the core at the muzzle) for the CHARGE GLOW below
+        'markers': {'left_hand': 'left hand', 'fx_vent': 'vent', 'primary_trigger': 'primary trigger',
+                    'top_plate': 'top plate', 'bottom_plate': 'bottom plate'},
         'ground_point': 'auto',
         # an own hull from the world model's extent (h1_box_collision; the Storm Rifle's boot 1:
         # the template's hull hid the world model) -- set from the built JMS extent
@@ -139,12 +147,40 @@ PORT.update({
                       'boxes': [((-0.017, -0.015, -0.037), (0.161, 0.015, 0.067))]},
         'material_names': {'storm_stasis_pistol_' + k: 'bo_' + k for k in (
             'alien_metal', 'metal', 'glow')},
-        'shaders': {'bo_alien_metal': (H4 + SBM + 'storm_stasis_pistol_diff.bitmap', None),
-                    'bo_metal': (H4 + SBM + 'storm_stasis_pistol_diff.bitmap', None)},
-        'template': PISTOL + r'fp\shaders\silver',     # the pistol's reflective metal
+        # BOOT 1 (user: 'the gun is missing its texture' -- it drew WHITE): the colour map's alpha
+        # is solid, so Halo 1's reflection mask (multipurpose R = the base map's alpha) was 255
+        # everywhere: full chrome. Halo 4 keeps specular in the CONTROL map (control_map_spglrf: R
+        # specular, G gloss, B reflection). Base maps built from both (the Suppressor's route, a
+        # prepared PNG as the base map): RGB = the colour map x albedo_tint (alien metal 0.706, metal
+        # 0.78), A = the control map's R (specular: lit edges, a dark body); built by
+        # BASE_MAPS below. Template: the AR's gun shader (the Suppressor's, user-approved; the
+        # pistol's `silver` is a mirror)
+        'shaders': {'bo_alien_metal': (BASE + 'bo_alien_metal_base.png', None),
+                    'bo_metal': (BASE + 'bo_metal_base.png', None)},
+        'template': r'weapons\assault rifle\fp\shaders\gun',
         'glow': {},
-        'glow_shaders': {'bo_glow': {'rgb': (1.0, 0.91, 0.18), 'additive': True, 'islands': True,
-                                     'islands_of': 'storm_stasis_pistol_glow'}},
+        # BOOT 1 (user: 'the normal glowing parts need some work'; Halo 4 at rest: the sight, the rear
+        # rings and the side strips lit hard orange with bloom, ours a faint yellow spot): the glow
+        # islands lit end to end and wider, the Suppressor's tuned settings (gain 2.2, falloff 0.35,
+        # radius 1.3), the colour read off the user's screenshot (core yellow-orange)
+        'glow_shaders': {'bo_glow': {'rgb': (1.0, 0.72, 0.15), 'additive': True, 'islands': True,
+                                     'islands_of': 'storm_stasis_pistol_glow',
+                                     'gain': 2.2, 'falloff': 0.35, 'radius': 1.3},
+                         # THE CHARGE GLOW (boot 1, user: 'more indication -- a muzzle light and / or
+                         # more glowing parts, which is what it does normally'): Halo 4's charging
+                         # effect lights the four plates, the vents and a core at the muzzle; Halo 1
+                         # draws weapon attachments at the hidden third-person gun in first person ->
+                         # the Spartan Laser's recipe: radial cards built INTO the model at those
+                         # markers (on their nodes: the plate cards open with the plates), an additive
+                         # shader FADING with B out = primary charged
+                         'bo_charge_glow': {'rgb': (1.0, 0.6, 0.12), 'additive': True, 'radial': True,
+                                            'hot': True, 'falloff': 1.4, 'fade_source': 'B_out'}},
+        'glow_points': ([{'marker': 'primary trigger', 'shader': 'bo_charge_glow', 'size': 5.0,
+                          'forward': 0.5}] +
+                        [{'marker': m, 'index': i, 'shader': 'bo_charge_glow', 'size': 2.5}
+                         for m in ('top plate', 'bottom plate') for i in (0, 1)] +
+                        [{'marker': 'vent', 'index': i, 'shader': 'bo_charge_glow', 'size': 1.5}
+                         for i in (0, 1)]),
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's OWN storm_fp_stasis_pistol (the Storm
@@ -187,6 +223,24 @@ PORT.update({
         'also_as': {'first-person reload-empty': 'first_person:reload_full',
                     'first-person overheating': 'first_person:fire_2'},
         'holds': {'first-person overheated': ('first_person:fire_2', 32)},
+        # BOOT 1 (user: 'the FP position is too far up and forward -- down 2 units and back 1')
+        'view_offset': (-0.01, 0.0, -0.02),
+        # BOOT 1 (user: 'the side plates don't flip out during the charge'): Halo 4 opens its four
+        # plates by a charge-driven OVERLAY (`flaps`: exactly the four plate bones) Halo 1 cannot play
+        # -> the open plates of fire_2's last frame (fire_2 keeps them open, o_h_exit closes them)
+        # baked into `overcharged` (full charge)
+        'node_from': {'first-person overcharged': [
+            ('first_person:fire_2', -1, ['frame b left top plate', 'frame b right top plate',
+                                         'frame b left low plate', 'frame b right low plate'])]},
+        # BOOT 1 (user's charge video: 'something is going on with that right hand'): in the blast's
+        # held pose Halo 4's right hand re-grips forward and Halo 1's glove sinks into the gun
+        # (h1_fp_hand_clip right, fire_2: 1977 -> 572 at 2 cm to the gun's right; the idle grip's
+        # fingers did not help: 181 -> 194). The user: every other animation fine -> only the
+        # blast's chain: overcharged (2044 -> 429) ramping in, fire_2 (+ the held overheat), o_h_exit
+        # (1797 -> 1049) ramping out -- Halo 1 snaps between FP animations (`ramp`: no pop)
+        'hand_offset_anims': {'first_person:overcharged': {'r': (0.0, -0.02, 0.0), 'ramp': {'in': 6}},
+                              'first_person:fire_2': {'r': (0.0, -0.02, 0.0)},
+                              'first_person:o_h_exit': {'r': (0.0, -0.02, 0.0), 'ramp': {'out': 12}}},
     },
 
     # Halo 4's own sounds (h1_port_sounds.py boltshot, `bank` 'halo4'). The player bank
@@ -213,8 +267,10 @@ PORT.update({
                           'play_wea_forerunner_bolt_pistol_player_charged_fire:3'],
                          'sound\\sfx\\weapons\\shotgun\\fire', -16.7),
             # the held charge: the 6 s hum (charge_in 3) as a seamless loop (`slice` its sustain)
+            # BOOT 1 (user: 'the hum for charging is a bit quiet'): -11.2 (the plasma rifle's charge
+            # level) -> -6
             'bo_charge_loop': (['play_wea_forerunner_bolt_pistol_player_charge_in:3'],
-                               'sound\\sfx\\weapons\\plasma rifle\\charge', -11.2),
+                               'sound\\sfx\\weapons\\plasma rifle\\charge', -6.0),
             'bo_dryfire': (['play_wea_forerunner_bolt_pistol_player_dry_fire'],
                            'sound\\sfx\\weapons\\pistol\\dryfire', -15.3),
             'bo_ready': (['play_weapons_stasis_pistol_ready:0,1'],
@@ -304,13 +360,24 @@ PORT.update({
             'dmg': 10.0, 'acceleration': 0.1, 'velocity': 480.0, 'range': 5.5,
             'fields': {'damage.damage_lower_bound': 6.0},
             'proj_fields': {'proj_attrs.physics.air_damage_range': (2.5, 4.0)},
+            # BOOT 1 (user: 'the charge fires something, but I can't see the pellets'): Halo 1's
+            # pellet is invisible and lives 5.5 wu -- Halo 4 draws charged_energy_wave / slug
+            # particles over it. Every pellet a tracer: the AR bullet's contrail (attachments_from)
+            # recoloured the Forerunner orange (the Spiker's recipe; trigger 1 has 0 rounds between
+            # tracers: every pellet)
+            'attachments_from': r'weapons\assault rifle\bullet',
+            'contrail': {'from': r'weapons\assault rifle\bullet', 'out': BO + 'pellet trail',
+                         'rgb': (1.0, 0.6, 0.12)},
             # the blast lands 15 pellets at once, ~1/s: the shotgun's per-hit effect at its rate
             'impact_thin': {'materials': [22], 'out': BO + 'effects\\impact\\pellet ',
                             'thin': {}, 'rate': 1.0},
             'triggers': [1]}],
         # THE BOLT RATE: Halo 4 recovery 0.1 s (rounds per second 30 = recovery-limited) = 10/s
         'trigger': {'rounds_per_second': (10.0, 10.0), 'acceleration_time': 0.0,
-                    'deceleration_time': 0.0},
+                    'deceleration_time': 0.0,
+                    # the FP muzzle in the idle after boot 1's move (h1_fp_muzzle: the built FP model +
+                    # animations): where the bolt and the pellet tracers start in first person
+                    'first_person_offset': (0.3349, -0.0427, -0.0437)},
         # THE OVERHEAT (Halo 4: overheated threshold 1, recovery 0.1, loss 0.6 / 0.5 overheated; the
         # bolt 0 heat, the blast 1.0 a round): Halo 1's ONE loss = the overheated one (the Storm
         # Rifle's A') -> 1.8 s lockout after every blast, nothing fires. The blast's heat per round
@@ -435,7 +502,10 @@ PORT.update({
                 # Halo 4's own round pips (ammo_burstgun: 10 in a row, the screenshot's top right),
                 # one a round (ammo_meter `art`, the Mauler's), for 10 (default) and 15 (balanced)
                 'ammo_meter': {'sizes': (10, 15), 'base': BO + 'bitmaps\\boltshot_ammo',
-                               'art': {'h3': (H4 + BR4 + 'ammo_burstgun', 0)}}},
+                               # BOOT 1 (user: 'squished and not readable'): scaled to Halo 3's unit
+                               # the ten pips merged into ONE strip (taken as one tick) -> read at the
+                               # strip's own density (`native`: ten pips, 33 px apart)
+                               'art': {'h3': (H4 + BR4 + 'ammo_burstgun', 0), 'native': True}}},
         'palette_levels': LEVELS,
     },
 
