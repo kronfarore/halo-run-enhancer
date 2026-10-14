@@ -275,7 +275,7 @@ PORT = reserved(
 PORT.update({
     # 2026-10-14: tested on a30 over 16 dry boots + balanced + Armed x2 (PARALLEL with C1, the Storm
     # Rifle) -- confirmed by the user; the ten-map rebuild is BATCHED for wave B (user's go)
-    'status': 'rework',
+    'status': 'done',
     # CLOSE-OUT RECORD (2026-10-14). 4b + template diff + port_sound_refs + the muzzle flash before
     # boot 1. Yardstick: the PLASMA GRENADE (user); default = Reach's own, balanced = the grenade
     # ratio, holes by the rocket ratio, Reach's charge kept.
@@ -316,6 +316,7 @@ PORT.update({
         'world': R + RW + r'\plasma_launcher.render_model',
         'fp': R + RW + r'\plasma_launcher.render_model',
         'world_name': 'plasma launcher',
+        'decimate': {'keep': 50.0, 'protect': 1.0, 'views': [((-0.1083, 0.0656, 0.0745), (1.0, -0.0001, -0.0001), (0.0001, -0.0001, 1.0), 1.0), ((-0.1095, 0.0654, 0.0754), (0.9999, -0.001, 0.0134), (-0.0134, -0.0019, 0.9999), 1.0), ((-0.1083, 0.0656, 0.0745), (1.0, -0.0001, -0.0001), (0.0001, -0.0001, 1.0), 1.0), ((-0.0173, 0.0865, 0.054), (1.0, 0.0, 0.0), (0.0, 0.0, 1.0), 1.0), ((-0.0171, 0.0868, 0.0536), (1.0, 0.0011, -0.0033), (0.0033, 0.0052, 1.0), 1.0), ((-0.0173, 0.0865, 0.054), (1.0, 0.0, 0.0), (0.0, 0.0, 1.0), 1.0), ((-0.1083, 0.0656, 0.0745), (1.0, -0.0001, -0.0001), (0.0001, -0.0001, 1.0), 1.0), ((-0.0932, 0.0666, 0.0724), (0.9999, 0.0134, -0.0109), (0.0107, 0.0134, 0.9999), 1.0), ((-0.1083, 0.0656, 0.0745), (1.0, -0.0001, -0.0001), (0.0001, -0.0001, 1.0), 1.0), ((-0.1553, 0.1323, 0.0371), (0.6865, 0.1968, 0.7), (-0.7017, 0.4317, 0.5668), 0.5), ((-0.1285, 0.0759, 0.0542), (0.9975, -0.0313, -0.0635), (0.0659, 0.0835, 0.9943), 0.5), ((-0.1553, 0.1323, 0.0371), (0.6865, 0.1968, 0.7), (-0.7017, 0.4317, 0.5668), 0.5), ((-0.1083, 0.0656, 0.0745), (1.0, -0.0001, -0.0001), (0.0001, -0.0001, 1.0), 0.5), ((-0.1125, 0.0571, -0.0441), (0.6548, -0.1568, 0.7393), (-0.7275, 0.1343, 0.6728), 0.5), ((-0.1083, 0.0656, 0.0745), (1.0, -0.0001, -0.0001), (0.0001, -0.0001, 1.0), 0.5)]},
         'ground_point': 'auto',
         'markers': {'left_hand': 'left hand'},
         # every material needs a shader or `tool model` ASKS for a type and loops (the CR's 50 min)
