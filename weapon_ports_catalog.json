@@ -5538,6 +5538,287 @@
    "anims": {
     "swap": 0.8461538461538461
    }
+  },
+  {
+   "weapon": "Suppressor",
+   "source": "Halo 4",
+   "donor": "Assault Rifle",
+   "default_on": false,
+   "desc": "Halo 4's Suppressor: its model, first-person animations, sounds and numbers. A 48-round Forerunner automatic firing slow, glowing hardlight shards, 15 a second; Assault Rifle ammo tops it up.",
+   "balance_desc": "Measured against the Assault Rifle, which both games have: 8.3 damage a shard (Halo 1 fires it at 15 a second), a 90 magazine, 288 at the start / 787 most, a 2.9 s reload, a wider spray, 40 wu range and Halo 1-style aim assist.",
+   "anims": {
+    "reload": 1.4745762711864407,
+    "swap": 1.45
+   },
+   "anim_sounds": {
+    "reload": {
+     "mult": 1.4745762711864407,
+     "from": "sound\\weapons\\suppressor_port\\su_reload",
+     "to": "sound\\weapons\\suppressor_port\\su_reload_balanced"
+    }
+   },
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\suppressor\\shard",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 8.33,
+     "card": "Bullet Damage",
+     "original": 6.25
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\suppressor\\shard",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 8.33,
+     "card": "Bullet Damage",
+     "original": 6.25
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\suppressor\\shard",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 8.33,
+     "card": "Bullet Damage",
+     "original": 6.25
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\suppressor\\suppressor",
+     "field": "Rounds Per Second",
+     "block": "Triggers",
+     "value": 22.5,
+     "card": "More Shooting",
+     "original": 15.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\suppressor\\suppressor",
+     "field": "Rounds Per Second Max",
+     "block": "Triggers",
+     "value": 22.5,
+     "card": "More Shooting",
+     "original": 15.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\suppressor\\suppressor",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 90.0,
+     "card": "Magazine",
+     "original": 48.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\suppressor\\suppressor",
+     "field": "Rounds Reloaded",
+     "block": "Magazines",
+     "value": 90.0,
+     "card": "Magazine",
+     "original": 48.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\suppressor\\suppressor",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 288.0,
+     "card": "Magazine",
+     "original": 192.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\suppressor\\suppressor",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 787.0,
+     "card": "Magazine",
+     "original": 336.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\suppressor\\suppressor",
+     "field": "Rounds",
+     "block": "Magazines/Magazines",
+     "value": 288,
+     "card": "Ammo pickup",
+     "original": 192
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\suppressor\\suppressor",
+     "field": "Error Angle",
+     "block": "Triggers",
+     "value": 2.5,
+     "card": "Error Angle",
+     "original": 0.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\suppressor\\suppressor",
+     "field": "Error Angle Max",
+     "block": "Triggers",
+     "value": 8.13,
+     "card": "Error Angle",
+     "original": 3.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\suppressor\\shard",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 40.0,
+     "card": "Projectile",
+     "original": 100.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\suppressor\\suppressor",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 9.0,
+     "card": "Autoaim",
+     "original": 7.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\suppressor\\suppressor",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 23.4,
+     "card": "Autoaim",
+     "original": 15.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\suppressor\\suppressor",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 12.0,
+     "card": "Magnetism",
+     "original": 10.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\suppressor\\suppressor",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 31.25,
+     "card": "Magnetism",
+     "original": 20.0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\suppressor\\suppressor",
+     "field": "Sequence Index",
+     "block": "Meter Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\suppressor\\suppressor",
+     "field": "Alpha Multiplier",
+     "block": "Meter Elements",
+     "value": 2,
+     "card": "Ammo display",
+     "original": 5,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\suppressor\\suppressor",
+     "field": "Sequence Index",
+     "block": "Static Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\suppressor\\suppressor",
+     "field": "Loaded Ammo Cutoff",
+     "block": null,
+     "value": 15,
+     "card": "Ammo display",
+     "original": 8,
+     "index": 0
+    }
+   ],
+   "weap": "weapons\\suppressor\\suppressor",
+   "fp_animations": "weapons\\suppressor\\fp\\fp",
+   "requires": [
+    "proj weapons\\suppressor\\shard"
+   ],
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\suppressor\\suppressor",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "powerups\\assault rifle ammo\\assault rifle ammo",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+      "label": "Assault Rifle Ammo"
+     },
+     {
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+      "label": "Flamethrower Ammo"
+     },
+     {
+      "tag": "powerups\\needler ammo\\needler ammo",
+      "label": "Needler Ammo"
+     },
+     {
+      "tag": "powerups\\pistol ammo\\pistol ammo",
+      "label": "Pistol Ammo"
+     },
+     {
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+      "label": "Sniper Rifle Ammo"
+     }
+    ]
+   }
   }
  ],
  "Halo 3": [
