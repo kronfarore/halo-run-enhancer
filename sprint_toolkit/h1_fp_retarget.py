@@ -558,6 +558,9 @@ def write_jmas(weapon, only=None):
     jobs = list(w['anims'].items())
     jobs += [(h3name, h1name) for h1name, (h3name, _n) in w.get('holds', {}).items()]
     jobs += list(w.get('replacement_overlays', {}).items())
+    # `also_as` {h1 name: source}: one source animation written under a second Halo 1 name too (the
+    # Boltshot: Halo 4 has only reload_full -- Halo 1's reload-empty plays the same)
+    jobs += [(src, h1name) for h1name, src in w.get('also_as', {}).items()]
     for h3name, h1name in jobs:
         if only and h1name not in only and h3name not in only:
             continue

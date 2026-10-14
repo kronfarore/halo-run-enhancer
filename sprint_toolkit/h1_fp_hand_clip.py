@@ -71,7 +71,7 @@ def main():
         for off in tries:
             if off is not None:          # a trial: this side only, every animation
                 cfg['hand_offset'] = {a.side: off}
-                cfg['hand_offset_anims'] = None
+                cfg['hand_offset_anims'] = {}
             _typ, fr = T.retarget(w, anim, nodes, anims, defaults)
             total = 0
             for k in range(0, len(fr), a.step):
@@ -80,7 +80,13 @@ def main():
                 pts = ht.mean(1)
                 pts = pts[np.linalg.norm(pts - np.array(W[WRIST[a.side]][1]), axis=1) < a.radius]
                 total += int(inside(pts, gt).sum())
-            cfg['hand_offset'], cfg['hand_offset_anims'] = keep
+            # put back as found: a key the config never had stays absent (None broke the next
+            # animation's `.get(...)` -- the Boltshot, which has no hand offsets yet)
+            for k, v in zip(('hand_offset', 'hand_offset_anims'), keep):
+                if v is None:
+                    cfg.pop(k, None)
+                else:
+                    cfg[k] = v
             line.append('%s:%d' % ('config' if off is None else ','.join('%g' % x for x in off), total))
         print('%-36s %s' % (anim, '  '.join(line)))
 
