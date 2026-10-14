@@ -163,7 +163,18 @@ melee (Energy Blade on Grunts/Jackals) gets a stand-in swing (enhancer side, 5dc
 
 Check (closing step 8): the port is in `used_weapons()`, and the donor for a Grunt slot
 and an Elite slot is the intended one. BALANCED DROP (2026-10-12, every port): the profile's
-`balanced_set` holds Drop Weapon Loaded / Ammo by the ratio rule (see the Plasma Repeater). Back up `ai_firing_profiles.json`,
+`balanced_set` holds Drop Weapon Loaded / Ammo by the ratio rule (see the Plasma Repeater).
+THE SPECIES SKILL RULE (2026-10-14, user; C1 Storm Rifle the pilot, then every port; default AND
+balanced): `h1_enemy_weapons.species_skill_rule` scales each Armed slot's error, tracking, leading,
+surprise delay and first-burst delay (the pair by sums) by the slot's OWN stock variant over the
+donor, tracking / leading capped at 1 -- a fixed donor (the Elite minor plasma rifle) had Grunts
+aim like Elites, a per-slot similarity donor (a Marine, a Flood Elite) gave each species another
+species' skill. Halo 4 (and the other sources' ai\generic) gives no species an own entry. Burst
+shape and rate stay the weapon's (+ the Grunt half rate). Stock character: Grunt minor PP vs
+Elite minor PR error x2, tracking x0.56, surprise x5; Jackal error x0.33, tracking x0.67. A
+profile's `species_skill: False` opts out; `SPECIES_SKILL_HOLD` keeps in-progress ports out
+(the Plasma Launcher, until the user's go). Proof of the opt-in pilot: the Plasma Repeater's
+Armed b30 build byte-identical. Back up `ai_firing_profiles.json`,
 `ai_firing_profile.py` and `h1_enemy_weapons.py` (port_backup h1 carries them).
 
 **And step 5 has a ROLE check (2026-10-05):** `python port_role_compare.py <set>

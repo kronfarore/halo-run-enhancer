@@ -673,10 +673,14 @@ def actor_flag_rule(m, bases, weapon):
 # weapon's (the stock pairs mix tapped and automatic weapons). A delay PAIR scales by the ratio
 # of its sums (min / max ratios alone could cross); tracking / leading capped at 1. Ports opt in
 # with firing-profile 'species_skill' until SPECIES_SKILL_ALL (the rollout to every port).
+# ROLLED OUT (user, 2026-10-14, after the Storm Rifle's Armed boot): every port with a firing
+# profile; a profile's 'species_skill': False opts out. HELD until the user's go: the ports
+# still in progress (B6 Plasma Launcher -- 'fully done, on my go').
 SPECIES_SKILL = [((0x7C,), 'error'), ((0xBC,), 'tracking'), ((0xC0,), 'leading'),
                  ((0x80, 0x84), 'first burst delay'), ((0x8C,), 'surprise delay')]
 SPECIES_SKILL_CAP = {0xBC: 1.0, 0xC0: 1.0}
-SPECIES_SKILL_ALL = False
+SPECIES_SKILL_ALL = True
+SPECIES_SKILL_HOLD = {BS.join(('weapons', 'plasma launcher', 'plasma launcher'))}
 
 
 def species_skill_rule(m, slots, weapon, index):
@@ -684,7 +688,7 @@ def species_skill_rule(m, slots, weapon, index):
     bytes)]. The source's STOCK values come from the donor index (patch-time card edits on the
     map's own variants must not leak in), else the map."""
     pv = profiles().get(weapon) or {}
-    if not (SPECIES_SKILL_ALL and pv) and not pv.get('species_skill'):
+    if not pv or weapon in SPECIES_SKILL_HOLD or not pv.get('species_skill', SPECIES_SKILL_ALL):
         return None
     notes = []
     for base, source, donor in slots:
