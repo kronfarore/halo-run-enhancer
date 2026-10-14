@@ -594,6 +594,29 @@ def bitmaps(w):
                     for _ts, vs in glow_pieces(jm, spec.get('islands_of', name), spec):
                         U = np.array([(x.tex_u % 1.0, x.tex_v % 1.0) for x in vs])
                         (u0, v0), (u1, v1) = U.min(0), U.max(0)
+                        if spec.get('strip'):
+                            # a STRIP glow (the Suppressor, boot 3: its lights are long thin
+                            # strips -- a radial glow lights a blob in the middle): brightness
+                            # falls off ACROSS the island's long axis (its UVs' principal axis),
+                            # full along it, fading over the last `end_fade` of each end
+                            for flip in (False, True):
+                                Q = U.copy()
+                                if flip:
+                                    Q[:, 1] = 1 - Q[:, 1]
+                                Q = Q * N
+                                cq = Q.mean(0)
+                                ev, evec = np.linalg.eigh(np.cov((Q - cq).T) + np.eye(2) * 1e-9)
+                                ax, bx = evec[:, 1], evec[:, 0]
+                                t = (Q - cq) @ ax
+                                s = (Q - cq) @ bx
+                                L = max(np.abs(t).max(), 1.0)
+                                Wd = max(np.abs(s).max(), 1.0) * spec.get('radius', 1.15) + 1
+                                tt = (xx - cq[0]) * ax[0] + (yy - cq[1]) * ax[1]
+                                ss = (xx - cq[0]) * bx[0] + (yy - cq[1]) * bx[1]
+                                across = np.clip(1 - np.abs(ss) / Wd, 0, 1) ** spec.get('falloff', 0.6)
+                                along = np.clip((1 - np.abs(tt) / (L + Wd)) / spec.get('end_fade', 0.25), 0, 1)
+                                v = np.maximum(v, across * along)
+                            continue
                         for vv0, vv1 in ((v0, v1), (1 - v1, 1 - v0)):
                             cx, cy = (u0 + u1) / 2 * N, (vv0 + vv1) / 2 * N
                             r = max(u1 - u0, vv1 - vv0) / 2 * N * spec.get('radius', 1.15) + 1
@@ -602,7 +625,10 @@ def bitmaps(w):
                 v = v * spec.get('gain', 1.0)
                 lo = np.clip(v * 2.0, 0.0, 1.0)[..., None] * np.array(rgb)[None, None, :]
                 hot = (np.clip(v * 2.0 - 1.0, 0.0, 1.0) if spec.get('hot', True) else np.zeros_like(v))[..., None]
-                c = lo * (1 - hot) + hot
+                # `core`: the hot core's power (> 1 narrows it toward the centre) and `hot_rgb` its
+                # colour (the Suppressor, boot 3: a white core read as 'pure white' -> pale yellow)
+                hot = hot ** spec.get('core', 1.0)
+                c = lo * (1 - hot) + hot * np.array(spec.get('hot_rgb', (1.0, 1.0, 1.0)))[None, None, :]
                 col = np.zeros((N, N, 4), np.uint8)
                 col[..., :3] = np.round(c * 255)
                 col[..., 3] = 255
