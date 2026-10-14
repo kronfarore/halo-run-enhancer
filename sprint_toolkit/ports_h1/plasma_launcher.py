@@ -44,7 +44,8 @@ RQ = (47 / 2.0 * 0.945, 44 / 2.0 * 0.945)
 # BOOT 7 (user): 'the orange lights come online too early' (~2.5 s; boot 6's 0.97 came LATE, ~4.3 s):
 # Halo 1 samples the ramp ~0.10 further along than the charge value (the lit shapes' own UVs x the
 # 0.001 uv scale) -> the switch at 0.50 + 0.10
-CHARGE_RAMP = [(0.0, HOLO_BLUE), (0.595, HOLO_BLUE), (0.62, (1.0, 0.32, 0.12)), (1.0, (1.0, 0.32, 0.12))]
+# BOOT 8 (user): 'still early, set it back 0.3 s' -> +0.06 on the 5 s scale
+CHARGE_RAMP = [(0.0, HOLO_BLUE), (0.655, HOLO_BLUE), (0.68, (1.0, 0.32, 0.12)), (1.0, (1.0, 0.32, 0.12))]
 # Halo 1 material indices (h1_role_compare.H1_MATERIALS order)
 JACKAL_SHIELD, WATER = 16, 28
 FORCE_FIELDS = [10, 18, 26, 32]      # force field, engineer force field, monitor, hunter shield
@@ -227,8 +228,13 @@ PORT = reserved(
             'lacks': "the 0.75 s hold before a single bolt, the 2- and 3-bolt charge levels "
                      "(approximated: tap = 1 bolt, full charge = a 4-bolt spew), the lock TIME "
                      "(0.5 s acquire / grace / decay -- approximated: the volley homes on the "
-                     "autoaim target at release), the stuck burst's 300 on bystanders (Halo 1: 125 "
-                     "direct on the victim + the 175 area)"}},
+                     "autoaim target at release), the stuck bonus (Halo 1 deals attached damage at the "
+                     "stick: the burst alone, 175 -- boot 1), the volley's 0.21 s spacing (one shot: "
+                     "the pair fires trigger 1 once, its spew never runs -- probe), the volley's battery "
+                     "check (Halo 1 checks only that the battery is not empty: a volley fires 4 bolts "
+                     "from one bolt left -- user, boot 8: accept), Reach's rising charge 'in' (the loop "
+                     "is its sustain), the charge pips round the crosshair, the lock rings and the "
+                     "scope's charge bar (no HUD input / live meter)"}},
     # step 11: the source game's ai\generic entry (24 fields, verified 2026-10-07) laid over a Halo 1
     # FUEL ROD carrier ('pl' has no carrier; the grenade yardstick is thrown). Halo 1's carriers
     # (h1_weapon_carriers, 2026-10-13): fuel rod -- grunt specops fuel rod (+ airdef), both WDM 0.5,
@@ -567,13 +573,20 @@ PORT.update({
                                 # (263, -164) art px, art x0.38 in the cell, overlay 1.02 / (0.38 x 0.5).
                                 # 59 stays free: the diagonal charge bar is a live meter (no static art)
                                 {'art': (R + B.join(['ui', 'chud', 'bitmaps', 'scopes', 'plasma_launcher_scope_bits2']), 1),
-                                 'name': 'plasma launcher pips', 'index': 58, 'scale': (0.38, 0.38),
+                                 # BOOT 8 (user): 'the pips have shrunk' (dots near the centre): the wider
+                                 # upper row made the art 2 px wider than the 256 px cell -> a 512 frame,
+                                 # drawn at another scale -> art x0.37 (fits), overlay / anchor recomputed
+                                 # (the anchor kept: boot 7's lower pips were exact)
+                                 'name': 'plasma launcher pips', 'index': 58, 'scale': (0.37, 0.37),
                                  # BOOT 5 (user screenshot): drawn at (+-304, -355 / +25) px -- x1.13 too
                                  # wide and 165 px too HIGH (Halo 1 centres the overlay on the sprite's
                                  # CELL, 256 x 256 here, not on its registration: the rings' cells are
                                  # square-ish) -> overlay x268/304, the anchor 165 x 0.88 px down at
                                  # ~1.11 px a unit (the Needle Rifle's calibration)
-                                 'mirror4': (263 + round(20 / 1.02), -164, 263),  # BOOT 7: the upper pair 20 px further out 'overlay': 1.02 / (0.38 * 0.5) * 268 / 304, 'alpha': 0.85,
+                                 # BOOT 7: the upper pair 20 px further out. BOOT 8: this comment had
+                                 # swallowed the overlay and alpha keys (the pips drew tiny)
+                                 'mirror4': (263 + round(20 / 1.02), -164, 263),
+                                 'overlay': 1.02 / (0.37 * 0.5) * 268 / 304, 'alpha': 0.85,
                                  'offset': (round(35 / 1.11), round(165 * 268 / 304 / 1.11)), 'rgb': (110, 190, 245), 'normalize': True,
                                  'gamma': 1.0}],
                 # BOOT 3: the offsets fixed (RQ) drew the art ~10 % narrower (345 against 382 cell px) ->
