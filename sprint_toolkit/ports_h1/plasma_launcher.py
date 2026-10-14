@@ -462,7 +462,8 @@ PORT.update({
             # BOOT 12 (user): the step at 0.50 showed at ~2.25 s (not the probe's 3.0) -> scaled
             # by 3.0 / 2.25: 0.667
             # BOOT 13 (user): 'try 3.3 s' -> 0.667 x 3.3 / 3.0 = 0.733
-            'obje_attrs.functions.0.bounds': (0.728, 0.738),
+            # BOOT 14 (user): 'close, still early, another 0.3 s' -> 3.6 s: 0.800
+            'obje_attrs.functions.0.bounds': (0.795, 0.805),
             'obje_attrs.functions.0.usage': 'charged',
             # 4b list 3: Reach's charged illumination 0.5 (the rocket's 0: a zero on one side)
             'weap_attrs.triggers.0.charging.charged_illumination': 0.5,
