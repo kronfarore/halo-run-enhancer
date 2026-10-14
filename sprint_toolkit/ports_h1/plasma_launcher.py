@@ -588,7 +588,8 @@ PORT.update({
                                  # swallowed the overlay and alpha keys (the pips drew tiny)
                                  'mirror4': (263 + round(20 / 1.02), -164, 263),
                                  'overlay': 1.02 / (0.37 * 0.5) * 268 / 304, 'alpha': 0.85,
-                                 'offset': (round(35 / 1.11) - 9, round(165 * 268 / 304 / 1.11)),  # BOOT 9: ~10 px right of centre 'rgb': (110, 190, 245), 'normalize': True,
+                                 # BOOT 9 (user): the pips ~10 px right of centre -> 9 units left
+                                 'offset': (round(35 / 1.11) - 9, round(165 * 268 / 304 / 1.11)), 'rgb': (110, 190, 245), 'normalize': True,
                                  'gamma': 1.0}],
                 # BOOT 3: the offsets fixed (RQ) drew the art ~10 % narrower (345 against 382 cell px) ->
                 # the overlay x382/345 keeps the size the user called close
