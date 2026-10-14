@@ -23,6 +23,7 @@ H4 = 'h4:'                                          # an H4EK path (h4_tags)
 SW = r'objects\weapons\pistol\storm_stasis_pistol'
 SFP = r'objects\characters\storm_fp\weapons\pistol\fp_stasis_pistol\storm_fp_stasis_pistol'
 SBM = SW + r'\bitmaps\storm_stasis_pistol_default' + B
+BR4 = r'ui\hud\weapons\forerunner\burst_gun\bitmap' + B      # Halo 4's crosshair art (CUI)
 BO = 'weapons\\boltshot\\'
 SND = 'sound\\weapons\\boltshot_port\\'
 PISTOL = 'weapons\\pistol\\'
@@ -175,9 +176,17 @@ PORT.update({
             'first_person:moving': 'first-person moving',
             'first_person:look': 'first-person overlays',
             'first_person:throw_grenade': 'first-person throw-grenade',
+            'first_person:o_h_exit': 'first-person o-h-exit',
         },
         # Halo 4 has one reload: Halo 1's reload-empty plays the same (`also_as`)
-        'also_as': {'first-person reload-empty': 'first_person:reload_full'},
+        # THE BLAST OVERHEATS (step 4b, 2026-10-14: barrel 1 heat 1.0 a round, threshold 1): Halo 4
+        # plays fire_2, HOLDS its last frame while overheated and plays o_h_exit (fire_2's end =
+        # o_h_exit's start, 0.00 apart; `overheated` is another pose -- ready_overheated's end, the
+        # Storm Rifle's case) -> Halo 1's overheating = fire_2, overheated = fire_2's last frame held
+        # for the rest of the 1.8 s lockout (1.8 - 22/30 s = 32 fr), then o-h-exit
+        'also_as': {'first-person reload-empty': 'first_person:reload_full',
+                    'first-person overheating': 'first_person:fire_2'},
+        'holds': {'first-person overheated': ('first_person:fire_2', 32)},
     },
 
     # Halo 4's own sounds (h1_port_sounds.py boltshot, `bank` 'halo4'). The player bank
@@ -218,6 +227,9 @@ PORT.update({
                          'play_bolt_first_person_posing_var1_player_b',
                          'play_bolt_first_person_posing_var1_player_c'],
                         'sound\\sfx\\weapons\\weapon_anims\\pistol_posing', -26.5),
+            # the overheat's exit (o_h_exit's cue; Halo 1 plaspistol_overheat_exit -18.5)
+            'bo_oh_exit': (['play_weapons_stasis_pistol_overheat_exit:0,1'],
+                           'sound\sfx\weapons\weapon_anims\plaspistol_overheat_exit', -18.5),
             'bo_drop': (['play_wea_drop_pistol_fr_bolt_pistol_nonplayer'],
                         'sound\\sfx\\impulse\\weapon_drops\\pistol_impact', -28.8),
         },
@@ -250,7 +262,8 @@ PORT.update({
                    'first-person posing': SND + 'bo_pose',
                    'first-person melee': SND + 'bo_melee',
                    'first-person reload-empty': SND + 'bo_reload',
-                   'first-person reload-full': SND + 'bo_reload'},
+                   'first-person reload-full': SND + 'bo_reload',
+                   'first-person o-h-exit': SND + 'bo_oh_exit'},
         'add_triggers': [0],
         # THE BOLT (trigger 0, a tap): Halo 4 storm_stasis_pistol_bolt 7.5 (lower = upper),
         # bullet_slow, instantaneous acceleration 0.1, 2700 wu/s flat, range 40 (air damage range
@@ -258,7 +271,20 @@ PORT.update({
         'bullet': {'projectile': (PISTOL + 'bullet', BO + 'bolt'),
                    'damage': (PISTOL + 'bullet', BO + 'bolt'),
                    'dmg': 7.5, 'acceleration': 0.1, 'velocity': 2700.0, 'range': 40.0,
-                   'proj_fields': {'proj_attrs.physics.air_damage_range': (0.0, 40.0)},
+                   # step 4b list 2 (H4 bolt vs magnum onto the H1 pistol bullet): water gravity
+                   # 0.4 x 0/0.2 = 0; list 3 (a zero on one side -> Halo 4's own): water damage
+                   # range 5..10 (magnum 0..10); damage: active camouflage 0.45 x 0.25/0.5, the
+                   # breaking effect Halo 4's (magnum 0)
+                   'proj_fields': {'proj_attrs.physics.air_damage_range': (0.0, 40.0),
+                                   'proj_attrs.physics.water_gravity_scale': 0.0,
+                                   'proj_attrs.physics.water_damage_range': (5.0, 10.0)},
+                   'fields': {'damage.active_camouflage_damage': 0.225,
+                              'breaking_effect.forward_velocity': 35.0,
+                              'breaking_effect.forward_radius': 0.12,
+                              'breaking_effect.forward_exponent': 0.2,
+                              'breaking_effect.outward_velocity': 3.0,
+                              'breaking_effect.outward_radius': 0.3,
+                              'breaking_effect.outward_exponent': 0.2},
                    # THE HIT-EFFECT RULE: max(default 10/s, balanced 7/s)
                    'impact_thin': {'materials': [22], 'out': BO + 'effects\\impact\\',
                                    'thin': {}, 'rate': 10.0},
@@ -280,6 +306,11 @@ PORT.update({
         # THE BOLT RATE: Halo 4 recovery 0.1 s (rounds per second 30 = recovery-limited) = 10/s
         'trigger': {'rounds_per_second': (10.0, 10.0), 'acceleration_time': 0.0,
                     'deceleration_time': 0.0},
+        # THE OVERHEAT (Halo 4: overheated threshold 1, recovery 0.1, loss 0.6 / 0.5 overheated; the
+        # bolt 0 heat, the blast 1.0 a round): Halo 1's ONE loss = the overheated one (the Storm
+        # Rifle's A') -> 1.8 s lockout after every blast, nothing fires. The blast's heat per round
+        # sits on trigger 1 (`fields`); whether Halo 1 counts it per round (x5) or per shot: probe
+        'heat': {'recovery_threshold': 0.1, 'overheated_threshold': 1.0, 'loss_per_second': 0.5},
         # Halo 4: minimum error 0, error angle 0.4 -> 2 (bloom decel 0.5)
         'error_deg': {'minimum_error': 0.0, 'error_angle': (0.4, 2.0)},
         # Halo 4: 10 loaded, 30 at pickup, 40 most, 10 reloaded. Reload time: Halo 4 none (the
@@ -309,6 +340,8 @@ PORT.update({
             # THE BLAST trigger: 15 projectiles a shot, 5 rounds a shot, Halo 4's 1.0 s recovery
             'weap_attrs.triggers.1.firing.rounds_per_second': (1.0, 1.0),
             'weap_attrs.triggers.1.firing.rounds_per_shot': 5,
+            'weap_attrs.triggers.1.misc.heat_generated_per_round': 1.0,
+            'weap_attrs.triggers.0.misc.heat_generated_per_round': 0.0,
             'weap_attrs.triggers.1.projectile.projectiles_per_shot': 15,
             'weap_attrs.triggers.1.projectile.distribution_function': 'point',
             'weap_attrs.triggers.1.projectile.minimum_error': 0.0,
@@ -356,9 +389,43 @@ PORT.update({
         'melee_response': PISTOL + 'melee_response',
         'messages': ('Picked up a boltshot', 'Picked up %d rounds for boltshot'),
         'icon': 'boltshot',
+        # the PISTOL's HUD; the crosshair from Halo 4's CUI screen (ui\hud\weapons\forerunner\
+        # burst_gun) and the USER'S SCREENSHOTS (2026-10-14, 1080p, at rest + charged): THREE
+        # concentric rings of four corner brackets, one art piece per ring (img_boltpistol_inner 24 px
+        # drawn 8 units, _middle 48 -> 16, _outer 96 -> 32: Halo 4's 3 px a unit). The art IS the
+        # top-left piece (a stepped top edge, then a diagonal down and out -- the screenshot); the
+        # other corners mirror it. Box centres in widget units (y down) from the CUI props: inner
+        # (+-5, -4 / 5), mid (+-10, -10 / 11), outer (-14 / 14..15, +-16). Opacity at REST (the
+        # CUI's widget_idle binding at 0, the screenshot): inner 0.85, mid 0.4, outer 0.1; charged
+        # all 1 -- Halo 1's crosshair is static: the REST look (not reproduced: the rings lighting
+        # outward with the charge, the inner ring's spread). On screen (1080p): inner ~28 px, mid
+        # ~48, outer ~78 across. SUPERSAMPLE recipe: F 2, the ~64-unit span at scale 3.5 in the 512
+        # cell; overlay = 1.5 px a unit / (123/97 x 3.5 x 2 x 0.75) -- SIMULATED against the
+        # screenshot (2026-10-14): inner ~28 / mid ~47 / outer ~79 px (Halo 4 28 / 47 / 75), margin ~19 px
         'hud': {'donor': PISTOL + 'pistol', 'out': BO + 'boltshot',
+                'reticle': (H4 + BR4 + 'img_boltpistol_inner', 0, 'boltshot'),
+                'reticle_xform': {'offset': (-5.0, -4.0), 'gain': 0.85},
+                'reticle_layers': [
+                    (H4 + BR4 + 'img_boltpistol_inner', 0, 1.0, {'flip_x': True, 'offset': (5.0, -4.0), 'gain': 0.85}),
+                    (H4 + BR4 + 'img_boltpistol_inner', 0, 1.0, {'flip_y': True, 'offset': (-5.0, 5.0), 'gain': 0.85}),
+                    (H4 + BR4 + 'img_boltpistol_inner', 0, 1.0, {'flip_x': True, 'flip_y': True, 'offset': (5.0, 5.0), 'gain': 0.85}),
+                    (H4 + BR4 + 'img_boltpistol_middle', 0, 1.0, {'offset': (-10.0, -10.0), 'gain': 0.4}),
+                    (H4 + BR4 + 'img_boltpistol_middle', 0, 1.0, {'flip_x': True, 'offset': (10.0, -10.0), 'gain': 0.4}),
+                    (H4 + BR4 + 'img_boltpistol_middle', 0, 1.0, {'flip_y': True, 'offset': (-10.0, 11.0), 'gain': 0.4}),
+                    (H4 + BR4 + 'img_boltpistol_middle', 0, 1.0, {'flip_x': True, 'flip_y': True, 'offset': (10.0, 11.0), 'gain': 0.4}),
+                    (H4 + BR4 + 'img_boltpistol_outer', 0, 1.0, {'offset': (-14.0, -16.0), 'gain': 0.1}),
+                    (H4 + BR4 + 'img_boltpistol_outer', 0, 1.0, {'flip_x': True, 'offset': (14.0, -16.0), 'gain': 0.1}),
+                    (H4 + BR4 + 'img_boltpistol_outer', 0, 1.0, {'flip_y': True, 'offset': (-14.0, 16.0), 'gain': 0.1}),
+                    (H4 + BR4 + 'img_boltpistol_outer', 0, 1.0, {'flip_x': True, 'flip_y': True, 'offset': (15.0, 16.0), 'gain': 0.1})],
+                'reticle_split': 100,
+                'reticle_min_width': 2,
+                'reticle_supersample': 2,
+                'reticle_scale': 3.5, 'reticle_overlay': 1.5 / (123 / 97.0 * 3.5 * 2 * 0.75),
                 'flash_base': 12,                # the pistol's low-ammo cutoff is of 12
-                'ammo_meter': {'sizes': (10, 15), 'base': BO + 'bitmaps\\boltshot_ammo'}},
+                # Halo 4's own round pips (ammo_burstgun: 10 in a row, the screenshot's top right),
+                # one a round (ammo_meter `art`, the Mauler's), for 10 (default) and 15 (balanced)
+                'ammo_meter': {'sizes': (10, 15), 'base': BO + 'bitmaps\\boltshot_ammo',
+                               'art': {'h3': (H4 + BR4 + 'ammo_burstgun', 0)}}},
         'palette_levels': LEVELS,
     },
 
@@ -371,7 +438,7 @@ PORT.update({
                    'projectile': (SW + r'\projectiles\storm_stasis_pistol_bolt.projectile',
                                   r'objects\weapons\pistol\storm_magnum\projectiles\storm_magnum_bullet.projectile'),
                    'damage_effect': (SW + r'\projectiles\damage_effects\storm_stasis_pistol_bolt.damage_effect',
-                                     r'objects\weapons\pistol\storm_magnum\projectiles\damage_effects\storm_magnum_bullet.damage_effect')},
+                                     r'objects\weapons\pistol\storm_magnum\projectiles\storm_magnum_bullet.damage_effect')},
         'target': {'weapon': (BO + 'boltshot.weapon', PISTOL + 'pistol.weapon'),
                    'projectile': (BO + 'bolt.projectile', PISTOL + 'bullet.projectile'),
                    'damage_effect': (BO + 'bolt.damage_effect', PISTOL + 'bullet.damage_effect')}},
