@@ -576,8 +576,11 @@ PORT.update({
                 # BOOT 3 (user): 'the rings in the middle seem mirrored' -- against the screenshot
                 # they are turned 180 deg (Reach's open side upper right, ours lower left): `flip`
                 'zoom_glyphs': [{'art': (R + r'ui\chud\bitmaps\scopes\plasma_launcher_scope_bits.bitmap', None),
-                                 'name': 'plasma launcher ring outer', 'index': 52, 'scale': (0.5, 0.5),
-                                 'overlay': 312 / (504 * 0.5 * 0.5), 'alpha': 0.55, 'offset': (0, 0),
+                                 # BALANCED BOOT (user): 'a stray line of pixels at 3 o'clock' -- at x0.5
+                                 # the 504 px ring filled 252 of the 256 cell: its edge bled (the GL's
+                                 # crosshair lesson) -> x0.47, ~7 px margin, the overlay x0.5/0.47
+                                 'name': 'plasma launcher ring outer', 'index': 52, 'scale': (0.47, 0.47),
+                                 'overlay': 312 / (504 * 0.47 * 0.5), 'alpha': 0.55, 'offset': (0, 0),
                                  'rgb': (110, 190, 245), 'normalize': True, 'gamma': 1.6,
                                  'flip': 'xy'},
                                 {'art': (R + r'ui\chud\bitmaps\scopes\plasma_launcher_scope_bits2', 0),
