@@ -102,7 +102,12 @@ PORT = reserved(
                     # THE BALANCED DROP RULE: Halo 1's plasma-pistol carriers drop 0.7 - 0.9 (9 of 11
                     # actor variants) x Halo 4 storm rifle 0.5 - 0.9 / Halo 4 plasma pistol 0.7 - 0.9
                     # (m020 ai\generic) = 0.5 - 0.9: the default's own values
-                    'balanced_set': ['0x1D8=0.5:Drop Weapon Loaded', '0x1DC=0.9:Drop Weapon Loaded Max']},
+                    'balanced_set': ['0x1D8=0.5:Drop Weapon Loaded', '0x1DC=0.9:Drop Weapon Loaded Max'],
+                    # THE SPECIES SKILL RULE (user, 2026-10-14, this port the pilot): Halo 4 gives no
+                    # species its own Storm Rifle entry (all inherit ai\generic) and the one donor
+                    # made Grunts / Jackals aim like the Elite -- each slot's error / tracking /
+                    # leading / surprise + first-burst delay x its own stock variant / the donor
+                    'species_skill': True},
 )
 
 PORT.update({

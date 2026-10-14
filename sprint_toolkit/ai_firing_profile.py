@@ -269,6 +269,10 @@ def from_config(key, write=True):
         # armoured Marine). h1_enemy_weapons.donor_for reads it before any saved choice
         prof['donor_variant'] = fp['donor_variant']
         prof['source'] += ' (always %s)' % fp['donor_variant']
+    if fp.get('species_skill'):
+        # THE SPECIES SKILL RULE (user, 2026-10-14; h1_enemy_weapons.species_skill_rule): the
+        # skill fields scaled per slot by the slot's own stock variant over the donor
+        prof['species_skill'] = True
     wdm_rule(prof, fp.get('wdm_rule'))
     if fp.get('balanced_set'):
         # explicit BALANCED fields (the Plasma Repeater, 2026-10-12: the drop battery by the

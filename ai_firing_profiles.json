@@ -2497,6 +2497,7 @@
    },
    "donor_weapon": "weapons\\plasma rifle\\plasma rifle",
    "donor_variant": "characters\\elite\\elite minor\\elite minor plasma rifle",
+   "species_skill": true,
    "balanced_fields": {
     "0xC4": [
      "<f",

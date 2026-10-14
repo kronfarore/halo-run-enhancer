@@ -547,7 +547,9 @@ class Level:
         sl = self.free_slots.pop(0)
         bases.append(vs.fill_slot(self.m, sl, self.tags[source], weref, dmin, major_ref))
         write_profile(self.m, bases[-1], prof)
-        rule = grunt_rate_rule(self.m, bases, unit, weapon)
+        skill = species_skill_rule(self.m, ([(bases[0], major, dmaj)] if need == 2 else [])
+                                   + [(bases[-1], source, dmin)], weapon, index)
+        rule = '; '.join(x for x in (skill, grunt_rate_rule(self.m, bases, unit, weapon)) if x) or None
         units = ([self.ref(major, hv.REF_UNIT)] if need == 2 else []) + [unit]
         swap, shield_note = jackal_shield_rule(self.m, bases, units, weapon)
         flags_note = actor_flag_rule(self.m, bases, weapon)
@@ -660,6 +662,50 @@ def actor_flag_rule(m, bases, weapon):
     names = [n for n, v in ACTOR_FLAG_BITS.items() if bits & v]
     return ('%s on %s (species-wide)' % (', '.join(n.replace('_', ' ') for n in names),
                                          ', '.join(done))) if done else None
+
+
+# THE SPECIES SKILL RULE (user, 2026-10-14, C1 Storm Rifle pilot; default AND balanced): a port's
+# clone fires with its donor's firing block + the port's profile -- one donor for every species
+# (the Storm Rifle: the Elite minor plasma rifle), so a Grunt aimed like an Elite. The SKILL
+# fields are scaled per slot by the slot's OWN stock variant over the donor (Halo 1's species
+# character: a Grunt minor plasma pistol has 2x the Elite minor plasma rifle's error, 0.56x its
+# tracking, 5x its surprise delay; a Jackal 0.33x the error). Burst shape and rate stay the
+# weapon's (the stock pairs mix tapped and automatic weapons). A delay PAIR scales by the ratio
+# of its sums (min / max ratios alone could cross); tracking / leading capped at 1. Ports opt in
+# with firing-profile 'species_skill' until SPECIES_SKILL_ALL (the rollout to every port).
+SPECIES_SKILL = [((0x7C,), 'error'), ((0xBC,), 'tracking'), ((0xC0,), 'leading'),
+                 ((0x80, 0x84), 'first burst delay'), ((0x8C,), 'surprise delay')]
+SPECIES_SKILL_CAP = {0xBC: 1.0, 0xC0: 1.0}
+SPECIES_SKILL_ALL = False
+
+
+def species_skill_rule(m, slots, weapon, index):
+    """Scale the skill fields of each filled slot: slots = [(base, source variant, donor
+    bytes)]. The source's STOCK values come from the donor index (patch-time card edits on the
+    map's own variants must not leak in), else the map."""
+    pv = profiles().get(weapon) or {}
+    if not (SPECIES_SKILL_ALL and pv) and not pv.get('species_skill'):
+        return None
+    notes = []
+    for base, source, donor in slots:
+        e = next((e for e in index if e['name'] == source), None)
+        src = bytes.fromhex(e['bytes']) if e else bytes(m.data[base:base + hv.ACTV_SIZE])
+        if donor is None or src == donor[:len(src)]:
+            continue
+        parts = []
+        for offs, label in SPECIES_SKILL:
+            s = sum(struct.unpack_from('<f', src, o)[0] for o in offs)
+            d = sum(struct.unpack_from('<f', donor, o)[0] for o in offs)
+            if s <= 0 or d <= 0 or abs(s - d) < 1e-9:
+                continue
+            r = s / d
+            for o in offs:
+                v = struct.unpack_from('<f', m.data, base + o)[0] * r
+                struct.pack_into('<f', m.data, base + o, min(v, SPECIES_SKILL_CAP.get(o, v)))
+            parts.append('%s x%.2f' % (label, r))
+        if parts and not notes:
+            notes.append('%s: %s' % (source.rsplit(BS, 1)[-1], ', '.join(parts)))
+    return ('species skill (' + '; '.join(notes) + ')') if notes else None
 
 
 def grunt_rate_rule(m, bases, unit, weapon):
