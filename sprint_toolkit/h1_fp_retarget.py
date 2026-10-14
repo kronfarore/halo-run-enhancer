@@ -331,6 +331,17 @@ def _resolve_arms(world, h3_nodes, weapon, anim=None):
         offs = WEAPONS[weapon].get('hand_offset', {})
         offs = WEAPONS[weapon].get('hand_offset_anims', {}).get(anim, offs)
         off = offs.get(side)
+        # `ramp` {'in': n, 'out': n} frames (the Boltshot, boot 1): the offset grows over the first n
+        # frames / shrinks over the last n -- Halo 1 SNAPS between FP animations, so an offset only
+        # some animations carry would pop the hand where they meet the others
+        if off and offs.get('ramp') and _FRAME:
+            k, n = _FRAME
+            wgt = 1.0
+            if offs['ramp'].get('in'):
+                wgt = min(wgt, (k + 1) / float(offs['ramp']['in']))
+            if offs['ramp'].get('out'):
+                wgt = min(wgt, (n - 1 - k) / float(offs['ramp']['out']))
+            off = tuple(c * max(0.0, wgt) for c in off)
         if off and 'gun' in src:
             T = tuple(t + d for t, d in zip(T, R.qrot(src['gun'][0], off)))
         qu, qf, qh = (R.qmul(src[n][0], a) for n in (up, fo, ha))
@@ -493,6 +504,9 @@ def replacement_frames(weapon, h3_nodes, frames, animated, defaults):
     return out
 
 
+_FRAME = []        # [frame index, frame count] while retarget() solves one frame
+
+
 def retarget(weapon, anim_name, nodes=None, anims=None, defaults=None):
     """(type, [ {H1 node: (q tag convention, t wu)} per frame ])"""
     if nodes is None:
@@ -508,7 +522,12 @@ def retarget(weapon, anim_name, nodes=None, anims=None, defaults=None):
         # where the left wrist rests on the gun: the idle's first frame, before any IK
         ref = retarget_frame(nodes, anims['first_person:idle'][1][0], defaults, weapon, corr)
     extra = WEAPONS[weapon].get('left_hand_offset_anims', {}).get(anim_name, (0.0, 0.0, 0.0))
-    return typ, [retarget_frame(nodes, f, defaults, weapon, corr, ref, extra, anim_name) for f in frames]
+    out = []
+    for k, f in enumerate(frames):              # the frame's place (hand_offset_anims `ramp`)
+        _FRAME[:] = [k, len(frames)]
+        out.append(retarget_frame(nodes, f, defaults, weapon, corr, ref, extra, anim_name))
+    _FRAME[:] = []
+    return typ, out
 
 
 LOOPING = ('first-person idle', 'first-person posing', 'first-person moving')
@@ -567,6 +586,15 @@ def write_jmas(weapon, only=None):
         typ, frames = retarget(weapon, h3name, nodes, anims, defaults)
         if h1name in w.get('holds', {}):           # a still: the source's LAST frame held
             frames = [frames[-1]] * w['holds'][h1name][1]
+        # `node_from` {h1 name: [(source animation, frame, [Halo 1 node names]), ...]}: those nodes'
+        # LOCAL transforms taken from one frame of another source animation, in every frame (the
+        # Boltshot: Halo 4 opens its plates by a charge-driven overlay Halo 1 cannot play -> the
+        # open plates of fire_2's last frame baked into `overcharged`; the held post-blast pose's
+        # right fingers from the idle grip)
+        for src, k, names_ in w.get('node_from', {}).get(h1name, ()):
+            _t, sf = retarget(weapon, src, nodes, anims, defaults)
+            pick = sf[k]
+            frames = [dict(fr, **{n: pick[n] for n in names_}) for fr in frames]
         # `pad_end` {h1 name: n}: the animation LONGER, its motion unchanged -- its last frame
         # held n more frames (the Gravity Hammer's pommel jab, boot 8: a longer melee state)
         # `repeat` {h1 name: n}: a loop played n times in a row (the Plasma Repeater, boot 1: Halo

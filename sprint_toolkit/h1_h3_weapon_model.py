@@ -355,21 +355,32 @@ def add_point_cards(jm, G):
     attachments at the hidden third-person gun in first person): three crossed square cards
     (`size` cm) centred `forward` cm ahead of the marker `marker` (JMS name), UVs 0..1 on a
     RADIAL glow shader G['shader'] (glow_shaders `radial`; a `fade_source` makes it follow
-    the charge). Assumes the marker's node chain rests unrotated (checked: the laser's
-    `frame gun`, h3_rm_info)."""
+    the charge). The marker's bind position through its node chain WITH the nodes' rotations
+    (the Boltshot, 2026-10-14: plates on nodes turned +-90 deg; an unrotated chain -- the laser's
+    `frame gun` -- comes out as the plain sum it was). `index`: which instance of a marker name
+    (the Boltshot's top / bottom plate markers, one per side)."""
     from reclaimer.model.jms.file import JmsMaterial, JmsTriangle, JmsVertex
     mk = [m for m in jm.markers if m.name == G['marker']]
-    if not mk:
-        print('   glow point: no marker %r' % G['marker'])
+    if len(mk) <= G.get('index', 0):
+        print('   glow point: no marker %r #%d' % (G['marker'], G.get('index', 0)))
         return
-    m = mk[0]
+    m = mk[G.get('index', 0)]
     node = m.parent
-    P = np.array([m.pos_x, m.pos_y, m.pos_z], float)
-    i = node
-    while i >= 0:                               # the node's bind position (unrotated chain)
+
+    def world(i):
+        # JMS stores Halo 1's INVERSE rotation (h3_rm_to_jms conjugates Halo 3's): undo it
         n = jm.nodes[i]
-        P = P + np.array([n.pos_x, n.pos_y, n.pos_z])
-        i = n.parent_index if hasattr(n, 'parent_index') else -1
+        q = (-n.rot_i, -n.rot_j, -n.rot_k, n.rot_w)
+        p = (n.pos_x, n.pos_y, n.pos_z)
+        par = n.parent_index if hasattr(n, 'parent_index') else -1
+        if par is None or par < 0:
+            return q, p
+        pq, pp = world(par)
+        d = h3_rm_to_jms._qrot(pq, p)
+        return h3_rm_to_jms._qmul(pq, q), (pp[0] + d[0], pp[1] + d[1], pp[2] + d[2])
+    nq, npos = world(node)
+    d = h3_rm_to_jms._qrot(nq, (m.pos_x, m.pos_y, m.pos_z))
+    P = np.array([npos[0] + d[0], npos[1] + d[1], npos[2] + d[2]], float)
     P = P + np.array([G.get('forward', 0.0), 0.0, 0.0])
     jm.materials.append(JmsMaterial(G['shader']))
     si = len(jm.materials) - 1

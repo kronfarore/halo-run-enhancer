@@ -92,12 +92,14 @@ def layout(n):
     return best
 
 
-def h3_tick(sheet, seq):
+def h3_tick(sheet, seq, native=False):
     """A HALO 3 round icon as the tick (the Mauler, test 1 2026-10-08: 'the original pips'):
     the first icon of a chud ballistic-meter sprite (alpha = the shape; Halo 3 draws one icon
     a round in a row), plus Halo 3's own pitch between icons, in px of that sprite."""
+    # `native` (the Boltshot, 2026-10-14): a Halo 4 / Reach strip read at its OWN density -- scaled
+    # to Halo 3's unit (330 -> 110 px) Halo 4's ten pips merged into one strip, taken as ONE tick
     import h3_hud_art
-    art, _reg = h3_hud_art.sprite(sheet, seq)
+    art, _reg = h3_hud_art.sprite(sheet, seq, native=native)
     a = np.array(art.split()[3])
     on = a.max(axis=0) > 8
     starts = [x for x in range(len(on)) if on[x] and (x == 0 or not on[x - 1])]
@@ -114,7 +116,7 @@ def render(n, art=None):
     row at Halo 3's own spacing, no slant, at most its native size (h3_tick)."""
     rounds_per, n_ticks, _s, _mult = plan(n)
     if art:
-        tick, pitch = h3_tick(*art['h3'])
+        tick, pitch = h3_tick(*art['h3'], native=art.get('native', False))
         th, tw = tick.shape
         s = min(1.0, BOX_W / (n_ticks * pitch), BOX_H / float(th))
         t = np.array(Image.fromarray(tick).resize((max(1, round(tw * s)), max(1, round(th * s))),
