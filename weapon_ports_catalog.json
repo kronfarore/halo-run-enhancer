@@ -5213,6 +5213,19 @@
    "fp_animations": "weapons\\storm rifle\\fp\\fp",
    "requires": [
     "proj weapons\\storm rifle\\bolt"
+   ],
+   "hands": "two",
+   "tag_map": {
+    "proj weapons\\plasma rifle\\bolt": "proj weapons\\storm rifle\\bolt",
+    "jpt! weapons\\plasma rifle\\bolt": "jpt! weapons\\storm rifle\\bolt",
+    "jpt! weapons\\plasma rifle\\melee": "jpt! weapons\\storm rifle\\melee"
+   },
+   "skip_cards": [
+    "Ammo Inventory",
+    "Ammo Loaded",
+    "Reload Time",
+    "Ramp Up",
+    "Misfire"
    ]
   },
   {
