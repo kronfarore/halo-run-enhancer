@@ -1,0 +1,106 @@
+{
+ "game": "Halo 1",
+ "weapon": "Boltshot",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\boltshot_port\\bo_fire",
+   "perms": [
+    "bo_fire_1.wav",
+    "bo_fire_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\boltshot_port\\bo_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\boltshot_port\\bo_blast",
+   "perms": [
+    "bo_blast_1.wav",
+    "bo_blast_2.wav",
+    "bo_blast_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\boltshot_port\\bo_blast"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\boltshot_port\\bo_charge_loop",
+   "perms": [
+    "bo_charge_loop_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\boltshot_port\\bo_charge_loop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\boltshot_port\\bo_dryfire",
+   "perms": [
+    "bo_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\boltshot_port\\bo_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\boltshot_port\\bo_ready",
+   "perms": [
+    "bo_ready_1.wav",
+    "bo_ready_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\boltshot_port\\bo_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\boltshot_port\\bo_melee",
+   "perms": [
+    "bo_melee_1.wav",
+    "bo_melee_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\boltshot_port\\bo_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\boltshot_port\\bo_reload",
+   "perms": [
+    "bo_reload_1.wav",
+    "bo_reload_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\boltshot_port\\bo_reload"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\boltshot_port\\bo_pose",
+   "perms": [
+    "bo_pose_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\boltshot_port\\bo_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\boltshot_port\\bo_oh_exit",
+   "perms": [
+    "bo_oh_exit_1.wav",
+    "bo_oh_exit_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\boltshot_port\\bo_oh_exit"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\boltshot_port\\bo_drop",
+   "perms": [
+    "bo_drop_1.wav",
+    "bo_drop_2.wav",
+    "bo_drop_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\boltshot_port\\bo_drop"
+   ]
+  }
+ ]
+}
