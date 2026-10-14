@@ -275,7 +275,7 @@ PORT = reserved(
 PORT.update({
     # 2026-10-14: tested on a30 over 16 dry boots + balanced + Armed x2 (PARALLEL with C1, the Storm
     # Rifle) -- confirmed by the user; the ten-map rebuild is BATCHED for wave B (user's go)
-    'status': 'rework',
+    'status': 'done',
     # CLOSE-OUT RECORD (2026-10-14). 4b + template diff + port_sound_refs + the muzzle flash before
     # boot 1. Yardstick: the PLASMA GRENADE (user); default = Reach's own, balanced = the grenade
     # ratio, holes by the rocket ratio, Reach's charge kept.
@@ -417,7 +417,12 @@ PORT.update({
         'weapon': PL + 'plasma launcher',
         'template': PP + 'plasma pistol',
         'world_model': PL + 'plasma launcher',
-        'fp_model': PL + 'fp' + B + 'fp',
+        # ONE model tag for world AND first person (user, 2026-10-14): Halo 1's map builder crashes
+        # past 32 MiB of model vertices + indices (memory h1-model-buffer-32mib-cap); the world and
+        # fp gbxmodels are the same geometry (only the permutation name differs), so the weapon
+        # names the world tag twice and the map stores it once (-0.54 MB). fp\fp.gbxmodel is still
+        # written by the model step for the FP tools (fp_render, h1_fp_muzzle, h1_fp_hand_clip)
+        'fp_model': PL + 'plasma launcher',
         'fp_anims': PL + 'fp' + B + 'fp',
         'label': 'pl',
         # the reserved pose donor: the rocket (Reach files the launcher as weapon class 'missile':
