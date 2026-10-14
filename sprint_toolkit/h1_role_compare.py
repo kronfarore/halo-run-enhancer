@@ -1161,6 +1161,41 @@ SETS = {
           'heat_model': {'rate': ('time', 20.0, 3.4, 2.9), 'hpr': 0.0714, 'oh': 1.0,
                          'loss': 1 / 2.9, 'rec': 0.01, 'cool_firing': True, 'h1_ticks': True}}),
     ]},
+    # the SUPPRESSOR (wave C2), step 4a. Halo 4 (H4EK 2026-10-14, h3_weapon_values --kit h4): a
+    # hardlight shard 6.25 (plasma_fast; air damage range 0-60 to a lower bound 0) x 15/s, mag 48
+    # (192 / 336), reload 59 / 68 fr, error 0.5 -> 3 deg, 60 -> 15 wu/s over the first 2.5 wu
+    # (acceleration range 0-2.5: ~15 wu/s in flight), range 100, aim (mode block) 7.5/15 10/20;
+    # AR 7.5 (bullet_slow) x 10/s, 32 (160 / 256), 59 / 68 fr, 0.15 -> 2.4, 1500 wu/s, range 100,
+    # aim 5/16 10/16; needler 6 (needle) x 12/s (ramp 0.4), 22 (44 / 66), 44 fr, 0.25 -> 3, 11 wu/s
+    # homing, range 25, aim 8/26 16/26. Halo 1: AR 10 x 15/s, 60 (240 / 600), 87 fr; needler 10
+    # (detonation) x 3 -> 10/s, 20 (80 / 80), 70 fr. Rates: Halo 1 fires 15..29.9 at 15/s (A1, B7)
+    'suppressor': {'port': 'Suppressor', 'weapons': [
+        # Halo 4's own on the AR bullet's table (Halo 4: plasma_fast / bullet_slow = 1, C1)
+        ('SU = H4 own', W + r'assault rifle\assault rifle', 'shot',
+         {'dmg': 6.25, 'rate': 15.0, 'mag': 48, 'reload': 59 / 30.0, 'speed': 15.0,
+          'range': 100.0, 'aim': (7.5, 15.0, 10.0, 20.0)}),
+        # AR ratio: 10 x 6.25/7.5; 15 x 15/10 = 22.5 tag -> fires 15/s; 60 x 48/32; 87 x 59/59 fr;
+        # speed degenerate (Halo 4's AR is hitscan) -> Halo 4's 15; range 40 x 100/100; aim 6 x
+        # 7.5/5, 25 x 15/16; 12 x 10/10, 25 x 20/16
+        ('SU = AR ratio @15', W + r'assault rifle\assault rifle', 'shot',
+         {'dmg': 8.33, 'rate': 15.0, 'mag': 90, 'reload': 2.9, 'speed': 15.0, 'range': 40.0,
+          'aim': (9.0, 23.4, 12.0, 31.25)}),
+        # NEEDLER ratio: 10 x 6.25/6 (the detonation, no supercombine) on the needle's table x
+        # plasma_fast / needle (C1); 10 x 15/12 = 12.5 tag -> 10/s (3 ticks); 20 x 48/22; 70 x 59/44
+        # fr; 4 x 15/11 wu/s; range 20 x 100/25; aim 6 x 7.5/8, 25 x 15/26; 12 x 10/16, 25 x 20/26
+        ('SU = Needler ratio', W + r'needler\needler', 'shot',
+         {'damage_tags': [W + r'needler\detonation damage'], 'dmg': 10.42, 'rate': 10.0,
+          'mag': 44, 'reload': 3.13, 'speed': 5.45, 'range': 80.0, 'aim': (5.63, 14.4, 7.5, 19.2),
+          'mods': {'elite_energy_shield': 0.5, 'elite': 4.0, 'cyborg_energy_shield': 0.5,
+                   'cyborg_armor': 4.0}}),
+        # peers
+        ('Assault Rifle', W + r'assault rifle\assault rifle', 'shot'),
+        ('Plasma Rifle', W + r'plasma rifle\plasma rifle', 'shot', {'heat_model': 'tag'}),
+        ('Needler (no supercombine)', W + r'needler\needler', 'shot',
+         {'damage_tags': [W + r'needler\detonation damage'], 'delay': 0.75}),
+        ('SMG (port)', W + r'smg\smg', 'shot', {'rate': 15.0, 'cap': 15.0}),
+        ('Storm Rifle (port)', W + r'storm rifle\storm rifle', 'shot', {'heat_model': 'tag'}),
+    ]},
     # the PLASMA LAUNCHER (wave B6), step 4a. Reach (HREK 2026-10-13): charge 3.0 s in four 0.75 s
     # steps (1..4 bolts; a bolt needs a 0.75 s hold), held 2 s more -> discharge; 4.75/s, recovery
     # 0.2; heat 0.4 a bolt (oh 1, loss 0.85, rec 0.1: a volley overheats), battery 12 bolts; 11 -> 7
