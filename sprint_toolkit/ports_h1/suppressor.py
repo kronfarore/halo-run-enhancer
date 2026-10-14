@@ -10,9 +10,14 @@ range; Halo 1 slows a projectile linearly over its WHOLE range with the final ve
 probe) -> 15 -> 15 (user, 4a: within ~0.1 s of Halo 4 at every distance). Its damage effect has NO
 falloff ('damage scales based on distance' unset: the 0..60 air damage range is inert) -> a flat 6.25.
 
-H4EK REFERENCES BUT DOES NOT SHIP THE DEFAULT DIFFUSE (storm_forerunner_smg_default_diff): a STAND-IN
-(h4_standin_diffuse.py: grey from the control map x the metal's albedo tint 0.431) until the user
-decides (the DLC skins' diffuses -- mechanical, Didact -- are in the kit)."""
+THE DIFFUSE (user: 'get the real texture'): H4EK's _default_metal.material names a colour map
+(storm_forerunner_smg_default_diff) that is shipped NOWHERE -- not in H4EK, not in MCC's maps. The
+SHIPPED default material (m020.map: bitmaps normal / SHATTER control / cube / detail spec, specular
+100, mix 0.9, reflection gamma 0.42, fresnel power 0.5936) is H4EK's _shatter_metal.material: the
+srf_char_forerunner_andrew shader draws its diffuse from the control map's df channel (spdfgl: G) x
+albedo tint 0.494, no colour map -> h4_standin_diffuse.py (channel mode): grey = 0.494 x G, the
+specular channel (R) as the base map's alpha (Halo 1's reflection mask). Dark gunmetal (mean 0.12),
+as the user's Halo 4 screenshot shows it."""
 from ._common import B, reserved, row
 
 H4 = 'h4:'                                          # an H4EK path (h4_tags)
@@ -24,11 +29,13 @@ SU = 'weapons\\suppressor\\'
 SND = 'sound\\weapons\\suppressor_port\\'
 AR = 'weapons\\assault rifle\\'
 LEVELS = ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40']
-# the STAND-IN diffuse (h4_standin_diffuse.py, in the port's own data folder)
-STANDIN = r'F:\SteamLibrary\steamapps\common\HCEEK\data\weapons\suppressor\source\su_metal_standin.png'
-# Forerunner hardlight orange (PROVISIONAL -- the user's Halo 4 screenshot sets it): the shard's
-# streak and the gun's glow strips
-ORANGE = (1.0, 0.55, 0.12)
+# the diffuse (h4_standin_diffuse.py <shatter control> <this>, in the port's own data folder)
+STANDIN = r'F:\SteamLibrary\steamapps\common\HCEEK\data\weapons\suppressor\source\su_metal_diffuse.png'
+SHATTER_CONTROL = SW + r'\bitmaps\storm_forerunner_smg_shatter\storm_forerunner_smg_shatter_control.bitmap'
+# Forerunner hardlight yellow-orange, from the user's Halo 4 screenshot (2026-10-14): the glow strips'
+# unclipped edges RGB 214 / 161 / 29 (the cores clip to 244 / 228 / 32) -> the shard's streak, the
+# gun's glow strips and the muzzle tint
+ORANGE = (1.0, 0.75, 0.13)
 
 # the Halo 4 FP skeleton's arm nodes Halo 1's 37-node arms lack -- the Storm Rifle's DROP list (C1);
 # this graph's 93 nodes = the same 80 arm / camera nodes + 13 gun bones (checked 2026-10-14)
@@ -138,9 +145,13 @@ PORT.update({
         'template': AR + r'fp\shaders\gun',
         'glow': {},
         # the glow strips (Halo 4: self-illum x12 on the control map's near-white texels there) --
-        # an additive radial glow per UV island (the Storm Rifle's)
+        # an additive radial glow per UV island (the Storm Rifle's).
+        # BOOT 1 (user: 'the illuminated parts are a bit underwhelming'): the strips are long thin
+        # islands and a radial glow lit their middles only -> gain 2.2, falloff 0.35, radius 1.3: the
+        # whole strip lit, a yellow-white core (Halo 4's cores clip to 244 / 228 / 32)
         'glow_shaders': {'su_glow': {'rgb': ORANGE, 'additive': True, 'islands': True,
-                                     'islands_of': 'storm_forerunner_smg_default_glow'}},
+                                     'islands_of': 'storm_forerunner_smg_default_glow',
+                                     'gain': 2.2, 'falloff': 0.35, 'radius': 1.3}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's own storm_fp_forerunner_smg (Foundry,
@@ -155,6 +166,15 @@ PORT.update({
         'drop_nodes': tuple(DROP),
         'h1_dir': r'weapons\suppressor\fp',
         'h1_model': r'weapons\suppressor\fp\fp',
+        # BOOT 1 (user's video: 'the left hand position, not sure if it's weird'): Halo 4's left
+        # fingers curl over the gun's front-left, visible above / left of the drum; ours sat lower
+        # and behind the drum (a tan sliver). Rendered through Halo 4's reference camera (FOV 70)
+        # with trial offsets: (0, +0.01, +0.01) gun space matches the look. The hand-in-gun count
+        # DOUBLES (idle 3229 -> 6150: Halo 1's chunkier palm sits inside the gun, unseen) -- the
+        # look decides (the count stands in for it). Idle / posing / fire only; ready, reloads,
+        # melee, grenade on Halo 4's own wrists
+        'hand_offset_anims': {a: {'l': (0.0, 0.01, 0.01)} for a in
+                              ('first_person:idle', 'first_person:posing:var1', 'first_person:fire_1:var1')},
         'align': 'same_space',
         'anims': {
             'first_person:idle': 'first-person idle',
@@ -257,14 +277,32 @@ PORT.update({
                                    'proj_attrs.physics.air_gravity_scale': 0.0,
                                    'proj_attrs.flags.oriented_along_velocity': True},
                    # every response effect that plays the AR's bullet impacts -> the shard's own
+                   # BOOT 1 (user: 'looking forward to the impact sound'): Halo 4's shard plays
+                   # plasma impact + the forerunner sweetener on every hard surface (its material
+                   # effects) -> su_impact over the AR bullet's hard-surface hits; flesh, shield and
+                   # water hits stay the game's (Halo 4's own flesh / shield sets not ported)
                    'impact_tint': {'match': (), 'rgb': None, 'out': SU + 'effects\\impact\\',
-                                   'sounds': {}},
+                                   'sounds': {'sound\\sfx\\impulse\\impacts\\' + s: SND + 'su_impact'
+                                              for s in ('dirthits', 'granhit', 'metalhit', 'woodhit',
+                                                        'snow_hits', 'glass_hits', 'bullet_ricc',
+                                                        'ice_hits')}},
                    # THE HIT-EFFECT RULE: a 15/s weapon (default 15; balanced 22.5 fires 15/s)
                    'impact_thin': {'materials': [22], 'out': SU + 'effects\\impact\\',
                                    'thin': {}, 'rate': 15.0},
                    # the LOOK: Halo 4's shard = a tracer system + light volumes in hardlight
                    # orange -> the AR tracer's contrail recoloured (the Spike Rifle's), every round
-                   'contrail': {'from': AR + 'bullet', 'out': SU + 'shard', 'rgb': ORANGE}},
+                   'contrail': {'from': AR + 'bullet', 'out': SU + 'shard', 'rgb': ORANGE,
+                                # BOOT 1 (user: 'shards are a bit too translucent'): an additive
+                                # streak cannot be opaque -> brighter towards a hot yellow-white and
+                                # wider (the AR tracer's 0.05 -> 0.07), plus the glow below
+                                'states': [{'transition': (0.01, 0.0125), 'width': 0.07,
+                                            'argb': (1.0, 1.0, 0.88, 0.45)},
+                                           {'width': 0.07, 'argb': (1.0, 1.0, 0.88, 0.45)}]},
+                   # BOOT 1: a GLOWING shard (Halo 4: a lens flare + light volumes on every shard) --
+                   # the Concussion Rifle's recipe: own copies of the fuel rod exhaust light + flare
+                   'glow': {'light': (r'weapons\fuel rod gun\fuel rod exhaust', SU + 'shard glow'),
+                            'flare': SU + 'shard glow', 'rgb': ORANGE, 'flare_radius': 0.06,
+                            'marker': ''}},
         # Halo 4: 15/s flat (rate ramp 0 / 0)
         # STEP 4b list 2: error deceleration Halo 4 0.6 / its AR 0.5 x the H1 AR's 1.0 = 1.2 s
         'trigger': {'rounds_per_second': (15.0, 15.0), 'acceleration_time': 0.0,
@@ -302,6 +340,8 @@ PORT.update({
             'firing_effect': (AR + 'effects\\fire bullet', SU + 'effects\\fire shard',
                               {r'sound\sfx\weapons\assault rifle\fire': SND + 'su_fire'},
                               {'match': 'flash', 'drop_off_axis': 0.012, 'scale': 1.0,
+                               # BOOT 1 (user: 'not at the muzzle yet, a bit higher'): 1 unit up
+                               'shift': (0.0, 0.0, 0.01),
                                'drop_particles': ('casing', 'smoke h fp'),
                                'drop_parts': (r'sound\sfx\weapons\pistol\eject',),
                                'tint': (1.0,) + ORANGE}),
