@@ -100,6 +100,22 @@ Answered since:
   Boltshot not yet in the palettes): ALL TEN BUILD; model buffer 22.9 (c20) - 27.1 MiB
   (a10, b30), least margin a10 4.9 MiB / a30 5.0 / b30 4.9 -- a SAW-sized port costs ~1.4.
   Check this cap before every ten-map rebuild (scratch sum of the gbxmodels a built map names).
+  **DECIMATION (user, 2026-10-14): `h1_decimate.py`** -- `model['decimate'] = {'keep': %}` in a
+  config; the model step runs Blender's collapse decimation on the JMS before `tool model`, the
+  surface the player sees in FIRST PERSON (views sampled from the port's FP animations, stored in
+  the config by `set`) collapsed last, materials <= 64 triangles + `lock` whole, bone weights and
+  source normals kept. `show <key>` / `preview <key> --keep N --render` (FP + side, full vs kept)
+  / `set <key> --keep N`. Applied: DMR, Repeater, GL, Concussion, Focus, Storm 40 %, Plasma
+  Launcher 50, Needle 60 (Needle 40 broke its stock ring, Launcher 40 lumpy on the hidden side):
+  the eight 5.57 -> 2.68 MiB. Proof dc1 (tool, no port opted in) 0 changed; wave check
+  `--reproduce` dcR: 13 changed = 7 FP antr + 6 tool-sounds (the known noise), no gbxmodel
+  (decimation deterministic). TEN MAPS REBUILT + SHIPPED (all ten, live + baselines first copied
+  to E:\HaloBackups\h1_decimate_rebuild_2026-10-14): residency 21 done ports x 10 ok; refs 0
+  problems; sound refs 0 BORROW; bank: the 21 done ports' 680 samples present (only the in-progress
+  Boltshot / Suppressor manifests not installed). Model buffer 19.2 (c20) - 23.45 MiB (a10, b30):
+  8.5 MiB left. User's boot: DMR at 40 % on c10, FP + both sides on the ground look right.
+  RULE for new Reach / Halo 4 ports: `h1_decimate.py preview --render` at 40 first, `set` the
+  lowest % whose side view stays intact (FP is protected).
 - If margin is ever wanted: leaner models (fewer LODs: vertex buffer
   is the tight one); shared sounds/bitmaps; recycle unused d40 palette/placement entries.
 - Cheap improvement: `h1_rebuild_all.py` could record tool's own "total tag size / vbuf
