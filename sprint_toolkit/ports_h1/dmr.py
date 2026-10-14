@@ -85,7 +85,7 @@ PORT = reserved(
 PORT.update({
     # 2026-10-10: tested on a30 over 4 boots (dry default, fixes, balanced, Armed) -- everything
     # confirmed by the user; the ten-map rebuild is BATCHED (wave B, on the user's go)
-    'status': 'rework',
+    'status': 'done',
 
     # geometry + look (h1_h3_weapon_model.py; Reach through reach_tags). Reach has ONE model
     # for world AND first person (the weapon's own render model; the FP graph moves it).
@@ -204,7 +204,12 @@ PORT.update({
         'weapon': DMR + 'dmr',
         'template': SR + 'sniper rifle',
         'world_model': DMR + 'dmr',
-        'fp_model': DMR + 'fp\\fp',
+        # ONE model tag for world AND first person (user, 2026-10-14): Halo 1's map builder crashes
+        # past 32 MiB of model vertices + indices (memory h1-model-buffer-32mib-cap); the world and
+        # fp gbxmodels are the same geometry (only the permutation name differs), so the weapon
+        # names the world tag twice and the map stores it once (-0.98 MB). fpp.gbxmodel is still
+        # written by the model step for the FP tools (fp_render, h1_fp_muzzle, h1_fp_hand_clip)
+        'fp_model': DMR + 'dmr',
         'fp_anims': DMR + 'fp\\fp',
         'label': 'dm',
         'teach': ('dm', 'ar'),
