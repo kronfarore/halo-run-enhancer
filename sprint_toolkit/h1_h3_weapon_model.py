@@ -1014,16 +1014,28 @@ def shaders(w, glow):
         print('   shader %s  glow %s' % (t.filepath, tuple(round(c, 2) for c in glow.get(name, ()))))
 
 
+def base_jms(w, key):
+    """The source render model as a JMS, materials dropped and renamed -- what `decimate` and the
+    marker / card steps below start from (h1_decimate.py's show / preview read it too)."""
+    jm, _rm = h3_rm_to_jms.convert(w[key], markers=w.get('markers'),
+                                   frame=w.get('world_frame') if key == 'world' else None)
+    drop_materials(jm, w.get('drop_materials', ()))
+    # `material_names` {Halo 3 name: Halo 1 name}: Halo 1's `tool model` DROPS a trailing
+    # digit of a material name when it looks for the shader (the Spartan Laser, test 1:
+    # `spartan_laser_decal2` drew with `spartan_laser_decal`'s shader)
+    for m in jm.materials:
+        m.name = w.get('material_names', {}).get(m.name, m.name)
+    return jm
+
+
 def models(w):
     for key, sub, fname in (('world', '', w['world_name']), ('fp', B + 'fp', 'fp')):
-        jm, _rm = h3_rm_to_jms.convert(w[key], markers=w.get('markers'),
-                                             frame=w.get('world_frame') if key == 'world' else None)
-        drop_materials(jm, w.get('drop_materials', ()))
-        # `material_names` {Halo 3 name: Halo 1 name}: Halo 1's `tool model` DROPS a trailing
-        # digit of a material name when it looks for the shader (the Spartan Laser, test 1:
-        # `spartan_laser_decal2` drew with `spartan_laser_decal`'s shader)
-        for m in jm.materials:
-            m.name = w.get('material_names', {}).get(m.name, m.name)
+        jm = base_jms(w, key)
+        # `decimate` {'keep': % of the triangles, 'views', 'protect', 'lock'}: Halo 1's 32 MiB
+        # model buffer (h1_decimate.py; world and fp alike, before any marker / card is placed)
+        if w.get('decimate'):
+            import h1_decimate
+            h1_decimate.decimate_jms(jm, w['decimate'], '%s %s' % (w['dir'], key))
         # `extra_markers` [(name, node index, (x, y, z) wu, (w, i, j, k) as Halo 1 tags store it)]:
         # markers the source model lacks. THE `ground point` (the Plasma Repeater, boot 5): every
         # stock Halo 1 weapon has ONE, on its side surface near the balance point, turned 90 deg
