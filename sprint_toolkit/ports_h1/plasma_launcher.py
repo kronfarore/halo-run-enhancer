@@ -273,7 +273,32 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'in_progress',
+    # 2026-10-14: tested on a30 over 16 dry boots + balanced + Armed x2 (PARALLEL with C1, the Storm
+    # Rifle) -- confirmed by the user; the ten-map rebuild is BATCHED for wave B (user's go)
+    'status': 'done',
+    # CLOSE-OUT RECORD (2026-10-14). 4b + template diff + port_sound_refs + the muzzle flash before
+    # boot 1. Yardstick: the PLASMA GRENADE (user); default = Reach's own, balanced = the grenade
+    # ratio, holes by the rocket ratio, Reach's charge kept.
+    # Weapon (plasma pistol copy, the charged PAIR): tap = 1 unguided bolt at 1.13/s (0.95 s probed),
+    #   3.0 s charge + 2.0 s hold -> a 4-bolt volley in ONE shot (spew from trigger 1 never runs:
+    #   probe), 1.5..2.5 deg error, homing 45 deg/s; heat 0.4 a bolt (a volley 1.6: overheats),
+    #   battery 12 bolts (age 1/12 + misfire 0.9999); zoom 3x; aim 3/30 6/30.
+    # Bolt (plasma grenade copy): 11 -> 7 wu/s, gravity 0.1, range 180, attaches everywhere (Jackal
+    #   shield / force fields reflect, water passes), fuse 0.25..2.5 s at rest, arming 1; burst
+    #   17.5..175 over 0.6 -> 1.8 (grenade table), impact 2, NO attached damage (Halo 1 deals it at
+    #   the stick: user); balanced 56..84.3 over 0.556 -> 2.0, 1.25 s taps, 16.5 -> 4.4 wu/s, range
+    #   131.7, fuse 0.56..5.3, arming 0, aim 3/17.5 7.2/42 (autoaim angle kept: user).
+    # Look: Reach's model (rear holo / screen / emitter lit blue), the full-charge STEP (function 0 on
+    #   primary charged at 0.889 -> red-orange, tuned with the user), the muzzle charge glow, a blue
+    #   bolt (pale core + glow flare), the pistol's flash x1.5 without fins + muzzle light; Reach's
+    #   crosshair (#31 quartered, origin 0.945), the 3x hex scope (cells rotated / mirrored locally)
+    #   + rings (52 / 53) + bolt pips (58) as zoom glyphs; 59 granted but NOT needed (the charge bar
+    #   is a live meter).
+    # Closing checks: port_refs_audit 0 problems, validate_halo_json 0, 4b list 2 = recorded
+    #   decisions only, port_sound_refs all OWN (KEEP: the water splash, user) + port_sounds --check 0,
+    #   Armed: Grunts / Jackals / Elites fire it (user), hit-effect rule x1 (<= 1.13 shots/s), the
+    #   muzzle flash compared, the screen flash cut on the player (Armed boot: impact none, burst
+    #   0.25 s at 0.25, blue).
     # user, boot 1 reply (2026-10-13): 'keep the water splash' -- a bolt into water plays the
     # grenade's `bounce water` (Reach's launcher has no water sound of its own)
     'sound_keeps': {B.join(['sound', 'sfx', 'impulse', 'impacts', 'med_splash']):
