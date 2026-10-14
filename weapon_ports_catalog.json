@@ -3994,9 +3994,9 @@
      "tag": "weapons\\plasma repeater\\plasma repeater",
      "field": "Heat Generated Per Round",
      "block": "Triggers",
-     "value": 0.072,
+     "value": 0.0714,
      "card": "Heat",
-     "original": 0.108
+     "original": 0.106
     },
     {
      "class": "weap",
