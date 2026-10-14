@@ -196,7 +196,7 @@ PORT.update({
     # 2026-10-12: tested on a30 over 19 boots (dry default + look / bounce / EMP iterations, the
     # probe-measured fuse, balanced) + Armed x2 (incl. Jackal overcharge) -- confirmed by the user;
     # the ten-map rebuild is BATCHED for wave B (user's go)
-    'status': 'done',
+    'status': 'rework',
     # CLOSE-OUT RECORD (2026-10-12). 4b + template diff + port_sound_refs + the muzzle flash BEFORE
     # boot 1. Yardstick: the FRAG GRENADE, holes by the ROCKET LAUNCHER (user); frag table both.
     # Weapon (rocket copy): 2 triggers (the plasma pistol's charged pair), 1 / 8 / 16, reload 2.1 s,
