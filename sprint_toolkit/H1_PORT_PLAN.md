@@ -1315,6 +1315,19 @@ will touch shared pipeline scripts more than a normal port: every such change is
 | 1 | B6 Plasma Launcher | a30 | hud_reticles 52-53 + 58-59 (granted 2026-10-13) |
 | 2 | C1 Storm Rifle (pilot) | b30 (`--level b30` on EVERY staging run) | hud_reticles 54-57 |
 
+### Parallel pair 3: C2 Suppressor + C3 Boltshot (prepared 2026-10-14)
+
+Both on the Halo 4 recipe C1 proved ("C1: what the Storm Rifle taught": `h4:` paths, Foundry FP
+decode + arm re-solve on the shared storm_fp skeleton). Different weapons underneath: C2 an
+automatic on a MAGAZINE (A1/A2 rules), C3 a semi-automatic pistol with a CHARGED blast (the
+charged-pair recipe of B4 / B6). Shared-pipeline changes either needs: small, proven, committed
+at once through kit_commit.
+
+| session | weapon | test level | extra HUD sequences |
+|---|---|---|---|
+| 1 | C2 Suppressor | a30 | hud_reticles 60-63 |
+| 2 | C3 Boltshot | b30 (`--level b30` on EVERY staging run) | hud_reticles 64-67 |
+
 ## Hand-off prompt for a weapon session
 
 > Port the <WEAPON> into Halo 1 (H1_PORT_PLAN.md, wave <X>, #<n>). Source: <game>.
@@ -2307,3 +2320,120 @@ will touch shared pipeline scripts more than a normal port: every such change is
 > `h1_port_test_map.py storm_rifle --restore b30`. The ten-map rebuild is BATCHED (my go). When done:
 > catalog entry, enhancer hand-off, PORTING section ("Halo 1: the Storm Rifle, the Halo 4 pilot"),
 > memory, `python port_backup.py --game h1`, and "C1: what the Storm Rifle taught".
+
+### The Suppressor (wave C2), filled in -- PARALLEL with C3
+
+> PARALLEL: another port session (C3, the Boltshot) runs at the same time on the same kit. Read
+> H1_PORT_PLAN.md "Running two ports in parallel" first (incl. REWORK status and "Hardened after
+> pair 1": `kit_commit.py` for every commit, `--commit` on the record writers) and follow its rules.
+> Your test level is a30 -- pass `--level a30` on every `h1_port_test_map.py` run and restore with
+> `h1_port_test_map.py suppressor --restore a30`. Extra HUD sequences: hud_reticles 60-63 only. If a
+> script says `kit lock: WAITING`, let it wait (a rebuild or the other session's shared step); never
+> `kit_lock.py release --force` a lock whose holder is running. Do NOT write the next weapon's
+> prompt: write "C2: what the Suppressor taught" and tell me you are done.
+>
+> Port the Suppressor into Halo 1 (H1_PORT_PLAN.md, wave C, #C2). Source: Halo 4,
+> `h4:objects\weapons\rifle\storm_forerunner_smg\storm_forerunner_smg` (H4EK); FP graph
+> `objects\characters\storm_fp\weapons\rifle\fp_forerunner_smg\storm_fp_forerunner_smg`.
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Running two ports in parallel", "Phase 0: DONE", "Pilot A1"
+> and "A2" (the plain MAGAZINE rules: reload, ammo pickup, magazine meter, carry), "B1" (the source-
+> game recipe), "B7" (measured rates) and "C1: what the Storm Rifle taught" -- THE HALO 4 RECIPE; its
+> last paragraph is written for THIS weapon), PORTING.md ("What ported actually means" steps 0-11
+> and 5b, closing checks 0-10, the Halo 1 sections -- the Storm Rifle first, the SMG for the magazine
+> automatic --, "Balance" incl. the ARMED WDM RULE, THE HIT-EFFECT RULE (a fast automatic), the
+> two-handed rule, the balanced drop rule, the species skill rule) and memory h1-storm-rifle-pilot,
+> h1-smg-pilot, h1-battle-rifle-port, h1-focus-rifle-port, h1-parallel-ports,
+> h1-armed-test-balanced-god, h1-armed-wdm-rule, h1-armed-two-handed-rule,
+> h1-armed-balanced-drop-rule, h1-armed-species-skill-rule, h1-hit-effect-rule,
+> port-muzzle-flash-rule, port-flashlight-sound-rule, h1-port-phase0, halo-port-own-messages,
+> h1-fmod-bank-sounds, port-findings-are-observations, shared-worktree-commits.
+> `ports_h1/storm_rifle.py` is the Halo 4 shape, `smg.py` the magazine automatic: copy into
+> `ports_h1/suppressor.py` and edit only that file plus shared tools you generalize (small change,
+> narrowed proof, commit at once via kit_commit).
+>
+> START WITH STEP 4a, with me: candidates the ASSAULT RIFLE (provisional: automatic, magazine) and
+> the NEEDLER (an automatic firing visible projectiles); DEFAULT = Halo 4's own numbers, BALANCED =
+> the ratio rows (wave C's rule as the Storm Rifle settled it). Halo 4 side:
+> `h3_weapon_values.py --kit h4 storm_forerunner_smg=<fp graph>` (aim from the aim-assist MODE
+> block): damage per round + group, rate (measure it in Halo 1 with h1_weapon_state_probe: 15..29.9
+> fire 15/s, 30 fires 30/s), magazine 48 / carry / reload, the DECELERATING hardlight projectile
+> (60 -> 15 wu/s: Halo 1's final velocity is a speed FLOOR -- B4's probe), error / bloom, range, aim
+> assist, melee. Time to kill: h1_role_compare 'suppressor' set vs AR, Plasma Rifle, Needler and
+> the SMG / Storm Rifle ports. Then 4b, the template diff, port_sound_refs and the muzzle-flash
+> comparison BEFORE boot 1. FP: check this graph's node list against the storm_rifle DROP list
+> first, render Halo 4's arms (`h4_fp_reference.py`) and count hand-in-gun hits
+> (`h1_fp_hand_clip.py`) per animation before boot 1. HUD art from a Halo 4 SCREENSHOT (ask me); the
+> crosshair: the supersample recipe. The model gets `'ground_point': 'auto'`.
+>
+> Reserved: pickup messages 87/88; hud_msg_icons 47 (+ _r); hud_reticles 36 (+ _r; extras 60-63);
+> label `su` taught to characters\cyborg from `ar`; sounds under `sound\weapons\suppressor_port`
+> (`bank: 'halo4'`); weapon folder `weapons\suppressor`; catalog name `Suppressor`.
+>
+> Step 11: `su` has no carrier -- list Halo 1's carriers of the donor weapon (WDM, actor flags);
+> `firing_profile` (Halo 4's ai\generic Suppressor entry on m020 is verified) with `donor_weapon`
+> (+ `donor_variant`), a `wdm_rule` and a `balanced_set`, written with `--commit`; the enhancer
+> session writes its keys through port_catalog_keys.py before the Armed boot. Tests:
+> `h1_port_test_map.py suppressor --level a30 --stage` (dry default), fixes, `--balanced`,
+> `--armed grunt,jackal,elite`; `h1_port_test_map.py suppressor --restore a30`. The ten-map rebuild
+> stays BATCHED (my go). When done: catalog entry, enhancer hand-off, PORTING section, memory,
+> `python port_backup.py --game h1`, "C2: what the Suppressor taught".
+
+### The Boltshot (wave C3), filled in -- PARALLEL with C2
+
+> PARALLEL: another port session (C2, the Suppressor) runs at the same time on the same kit. Read
+> H1_PORT_PLAN.md "Running two ports in parallel" first (incl. REWORK status and "Hardened after
+> pair 1": `kit_commit.py` for every commit, `--commit` on the record writers) and follow its rules.
+> Your test level is b30 -- pass `--level b30` on every `h1_port_test_map.py` run and restore with
+> `h1_port_test_map.py boltshot --restore b30`. Extra HUD sequences: hud_reticles 64-67 only. If a
+> script says `kit lock: WAITING`, let it wait; never `kit_lock.py release --force` a lock whose
+> holder is running. Do NOT write the next weapon's prompt: write "C3: what the Boltshot taught"
+> and tell me you are done.
+>
+> Port the Boltshot into Halo 1 (H1_PORT_PLAN.md, wave C, #C3). Source: Halo 4,
+> `h4:objects\weapons\pistol\storm_stasis_pistol\storm_stasis_pistol` (H4EK); FP graph
+> `objects\characters\storm_fp\weapons\pistol\fp_stasis_pistol\storm_fp_stasis_pistol`.
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Running two ports in parallel", "Phase 0: DONE", "Pilot A1"
+> to "A9", "B4: what the Grenade Launcher taught" and "B6: what the Plasma Launcher taught" (THE
+> CHARGED PAIR of triggers: a tap and a charged release; trigger 1 never spews; the charge STEP
+> function), "B7" (measured rates) and "C1: what the Storm Rifle taught" (THE HALO 4 RECIPE)),
+> PORTING.md ("What ported actually means" steps 0-11 and 5b, closing checks 0-10, the Halo 1
+> sections -- the Storm Rifle first, then the Plasma Launcher and the Grenade Launcher for the charge,
+> the Battle Rifle / DMR for a precision magazine sidearm --, "Balance" incl. the ARMED WDM RULE,
+> THE HIT-EFFECT RULE, the two-handed rule, the balanced drop rule, the species skill rule) and
+> memory h1-storm-rifle-pilot, h1-plasma-launcher-port, h1-grenade-launcher-port, h1-dmr-reach-pilot,
+> h1-parallel-ports, h1-armed-test-balanced-god, h1-armed-wdm-rule, h1-armed-two-handed-rule,
+> h1-armed-balanced-drop-rule, h1-armed-species-skill-rule, h1-hit-effect-rule,
+> port-muzzle-flash-rule, port-flashlight-sound-rule, h1-port-phase0, halo-port-own-messages,
+> h1-fmod-bank-sounds, port-findings-are-observations, shared-worktree-commits.
+> `ports_h1/storm_rifle.py` is the Halo 4 shape, `plasma_launcher.py` / `grenade_launcher.py` the
+> charged pair: copy into `ports_h1/boltshot.py` and edit only that file plus shared tools you
+> generalize (small change, narrowed proof, commit at once via kit_commit).
+>
+> START WITH STEP 4a, with me: the Boltshot has TWO modes, so a ratio PER MODE -- candidates the
+> PISTOL (provisional for the semi-auto bolt: magazine sidearm, precision) and the SHOTGUN (for the
+> charged blast: ~0.6 s charge, 5-round pellet blast, 5.5 wu range), the PLASMA PISTOL as the
+> alternative (Halo 1's own charge sidearm); DEFAULT = Halo 4's own numbers, BALANCED = the ratio
+> rows. Halo 4 side: `h3_weapon_values.py --kit h4 storm_stasis_pistol=<fp graph>`: per trigger /
+> barrel -- damage + group, rate / recovery, the charge (time, what it fires, how many rounds it
+> spends from the 10-round magazine), pellets + spread, velocity, range, aim assist (mode block),
+> melee. Halo 1 has no charged blast on a magazine pistol: lay out the approximation with me (the
+> charged pair: tap = the bolt, charged release = the blast as projectiles per shot) and record what
+> it does not reproduce. Time to kill per mode: h1_role_compare 'boltshot' set vs Pistol, Plasma
+> Pistol, Shotgun and the Mauler port. Then 4b, the template diff, port_sound_refs and the muzzle-
+> flash comparison BEFORE boot 1. FP: the graph's nodes vs the storm_rifle DROP list (a PISTOL hold:
+> expect new hand fixes), `h4_fp_reference.py` + `h1_fp_hand_clip.py` per animation before boot 1.
+> HUD art from a Halo 4 SCREENSHOT (ask me), crosshair supersampled; `'ground_point': 'auto'`.
+>
+> Reserved: pickup messages 89/90; hud_msg_icons 48 (+ _r); hud_reticles 37 (+ _r; extras 64-67);
+> label `bo` taught to characters\cyborg from `pp`; sounds under `sound\weapons\boltshot_port`
+> (`bank: 'halo4'`); weapon folder `weapons\boltshot`; catalog name `Boltshot`.
+>
+> Step 11: `bo` has no carrier -- list Halo 1's carriers of the donor weapon (WDM, actor flags);
+> `firing_profile` (Halo 4's ai\generic Boltshot entry on m020 is verified) with `donor_weapon`
+> (+ `donor_variant`), a `wdm_rule` and a `balanced_set`, written with `--commit`; the enhancer
+> session writes its keys (hands, cards, `trigger_index` for the second trigger) through
+> port_catalog_keys.py before the Armed boot. Tests: `h1_port_test_map.py boltshot --level b30
+> --stage` (dry default), fixes, `--balanced`, `--armed grunt,jackal,elite`;
+> `h1_port_test_map.py boltshot --restore b30`. The ten-map rebuild stays BATCHED (my go). When
+> done: catalog entry, enhancer hand-off, PORTING section, memory, `python port_backup.py --game
+> h1`, "C3: what the Boltshot taught".
