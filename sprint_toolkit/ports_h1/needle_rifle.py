@@ -153,7 +153,7 @@ PORT.update({
     #   hit = own copy x0.808 (4/s); 10 the flash = the needler's centre sprites (sideways pairs
     #   dropped). The player is NEVER supercombined in Halo 1 campaign (engine gate, confirmed by a
     #   live read: the supercombine session) -- not a port defect.
-    'status': 'done',
+    'status': 'rework',
 
     # geometry + look (h1_h3_weapon_model.py; Reach through reach_tags). Reach's ONE model for
     # world AND first person. needle_rifle.render_model: 15 nodes -- b_gun (root), b_scope (+
