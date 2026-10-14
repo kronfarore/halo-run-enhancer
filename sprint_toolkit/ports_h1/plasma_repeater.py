@@ -131,7 +131,7 @@ PORT.update({
     #   flash = the plasma rifle's sprites, the vertical pair dropped.
     # PROOFS rp1-rp4 (rp4: the 14 ports' gbxmodels + JMS = the ground point only); the narrowed
     #   proof and the wave check (--full) from here on.
-    'status': 'done',
+    'status': 'rework',
 
     # geometry + look (h1_h3_weapon_model.py; Reach through reach_tags). Reach's ONE model for
     # world AND first person. plasma_repeater.render_model: 7 nodes -- b_gun (root, identity: not
