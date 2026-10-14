@@ -1741,7 +1741,7 @@
 					"desc": "Targeted Leading Fraction",
 					"debug_desc": "Everything homing on the Plasma Pistol lives on the CHARGED bolt, and no card named that tag -- the weapon's Projectile card points at the ordinary bolt, which is why the whole set read as absent. Measured on the charged bolt: `Guided Angular Velocity` 2.0 lower and upper, At Rest 50.0, Outer Range Error Radius 0.5, identical in Halo 3, ODST, Reach and Halo 4. Halo 2 carries only the pair, at **80.0** -- forty times the later games, which is why a Halo 2 charged bolt turns so much harder.\n\nLEADING is a separate row and a separate idea: `Targeted Leading Fraction` is how far AHEAD of a moving target the round aims, where the angular velocities above are how sharply it can turn once it is flying. Shipped 0.75 on the Flak Cannon from Halo 3 on, 0.5 on the Needler in Halo 2 and 1.0 from Halo 3, 1.0 on Reach's Plasma Launcher, and 0.5 rising to 1.0 on the Plasma Pistol's charged bolt. The Rocket Launcher and Incineration Cannon ship 0, so the row is inert on those two until something raises it. Halo 1 has no such field, and no Homing card reaches it.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt"},
+					"tag": { "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt" },
 					"split_from": "Homing",
 					"targets": [
 						{ "step": "*1.2", "field": "Targeted Leading Fraction", "min": 0, "max": 1, "easier_when": "increased" }
@@ -1751,7 +1751,7 @@
 					"desc": "Guided Angular Velocity Lower, Guided Angular Velocity Upper, Guided Angular Velocity At Rest",
 					"debug_desc": "Everything homing on the Plasma Pistol lives on the CHARGED bolt, and no card named that tag -- the weapon's Projectile card points at the ordinary bolt, which is why the whole set read as absent. Measured on the charged bolt: `Guided Angular Velocity` 2.0 lower and upper, At Rest 50.0, Outer Range Error Radius 0.5, identical in Halo 3, ODST, Reach and Halo 4. Halo 2 carries only the pair, at **80.0** -- forty times the later games, which is why a Halo 2 charged bolt turns so much harder.\n\nLEADING is a separate row and a separate idea: `Targeted Leading Fraction` is how far AHEAD of a moving target the round aims, where the angular velocities above are how sharply it can turn once it is flying. Shipped 0.75 on the Flak Cannon from Halo 3 on, 0.5 on the Needler in Halo 2 and 1.0 from Halo 3, 1.0 on Reach's Plasma Launcher, and 0.5 rising to 1.0 on the Plasma Pistol's charged bolt. The Rocket Launcher and Incineration Cannon ship 0, so the row is inert on those two until something raises it. Halo 1 has no such field, and no Homing card reaches it.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt"},
+					"tag": { "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt" },
 					"split_from": "Homing",
 					"targets": [
 						{ "step": "*1.2", "field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "easier_when": "increased" },
@@ -1763,7 +1763,7 @@
 					"desc": "Guided Projectile (Outer Range) Error Radius",
 					"debug_desc": "Everything homing on the Plasma Pistol lives on the CHARGED bolt, and no card named that tag -- the weapon's Projectile card points at the ordinary bolt, which is why the whole set read as absent. Measured on the charged bolt: `Guided Angular Velocity` 2.0 lower and upper, At Rest 50.0, Outer Range Error Radius 0.5, identical in Halo 3, ODST, Reach and Halo 4. Halo 2 carries only the pair, at **80.0** -- forty times the later games, which is why a Halo 2 charged bolt turns so much harder.\n\nLEADING is a separate row and a separate idea: `Targeted Leading Fraction` is how far AHEAD of a moving target the round aims, where the angular velocities above are how sharply it can turn once it is flying. Shipped 0.75 on the Flak Cannon from Halo 3 on, 0.5 on the Needler in Halo 2 and 1.0 from Halo 3, 1.0 on Reach's Plasma Launcher, and 0.5 rising to 1.0 on the Plasma Pistol's charged bolt. The Rocket Launcher and Incineration Cannon ship 0, so the row is inert on those two until something raises it. Halo 1 has no such field, and no Homing card reaches it.",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt"},
+					"tag": { "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt" },
 					"split_from": "Homing",
 					"targets": [
 						{ "step": "*0.8", "field": { "Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo 3: ODST": "Guided Projectile Outer Range Error Radius", "Halo Reach": "Guided Projectile Outer Range Error Radius" }, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "easier_when": "decreased" }
@@ -1773,28 +1773,28 @@
 					"desc": "Weapon spread.",
 					"debug_desc": "The spread pair, plus `Deviation Angle`, which folds in here the same way it does on every other spread card.\\n\\n**This is the card the zero-then-live sweep was built for.** The plasma pistol has had these fields since Halo 2 and ships them at 0 in every game up to ODST, so it never got a spread card -- its only one is Dual Weapon Error, which covers Halo 2/3/ODST. Reach fills them in (0.4 / 2.0, deviation 4.0) and nothing noticed, because a diff of NEW fields cannot see a field that was always there.\\n\\nReach declares Error Angle once, so nth 0 is correct here.",
 					"game": ["Halo Reach", "Halo 4"],
-					"tag": {"default": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "default": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"targets": [
-						{ "step": "*0.8","field": "Error Angle", "block": "Barrels", "index": "all", "nth": 0, "min": 0, "group": "Error Angle", "easier_when": "decreased" },
-						{ "step": "*0.8","field": "Error Angle Max", "block": "Barrels", "index": "all", "nth": 0, "min": 0, "group": "Error Angle", "easier_when": "decreased" },
-						{ "step": "*0.8","field": "Deviation Angle", "min": 0, "group": "Error Angle", "easier_when": "decreased" },
-						{ "step": "*0.8","field": "Deviation Angle", "block": "Aim Assist Modes", "index": "all", "group": "Error Angle", "min": 0, "games": ["Halo 4"], "easier_when": "decreased"}
+						{ "step": "*0.8", "field": "Error Angle", "block": "Barrels", "index": "all", "nth": 0, "min": 0, "group": "Error Angle", "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Error Angle Max", "block": "Barrels", "index": "all", "nth": 0, "min": 0, "group": "Error Angle", "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Deviation Angle", "min": 0, "group": "Error Angle", "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Deviation Angle", "block": "Aim Assist Modes", "index": "all", "group": "Error Angle", "min": 0, "games": ["Halo 4"], "easier_when": "decreased" }
 					]
 				},
 				"Magnetism": {
 					"desc": "How hard your aim is pulled toward a target.",
 					"debug_desc": "`Magnetism Angle` and `Magnetism Range` are the pull on your reticle near a target, with `Magnetism Falloff Range` (Halo 3 onward) and Reach's `Magnetism Near Falloff Range` shaping where it fades. One decision, one input.\\n\\n**Halo 2 declares this pair TWICE** (weap root 0x19C and 0x210) and the first is a different, mostly-zero field -- reading it makes Halo 2 look like it barely uses magnetism. The real pair is the second, next to Autoaim, so every Halo 2 row here is pinned to `nth: 1`. Every other game states nth 0 explicitly, because a gamed value falls back to the nearest EARLIER game and Halo 3 would otherwise inherit Halo 2's 1.\\n\\nThis is the weapon's own magnetism. The general Magnetism card is a different thing -- matg's Magnetism Friction and Adhesion, the controller-level aim friction that applies to everything.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"targets": [
-						{ "step": "*1.2","field": "Magnetism Angle", "group": "Magnetism", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Range", "group": "Magnetism", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Near Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}, "easier_when": "increased"}
+						{ "step": "*1.2", "field": "Magnetism Angle", "group": "Magnetism", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": { "Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Range", "group": "Magnetism", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": { "Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": { "Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Near Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": { "Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1 }, "easier_when": "increased" }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -1802,14 +1802,14 @@
 					"desc": "How hard the game steers your shots onto a target.",
 					"debug_desc": "`Autoaim Angle` is the cone the game will bend a shot into, `Autoaim Range` how far out it does so, and `Autoaim Falloff Range` (Halo 3 onward) where that help starts tapering off. All three are one decision -- how much the game shoots for you -- so they share one input.\\n\\nAutoaim is the shot bending toward the target; Magnetism is your reticle being pulled. They are separate fields and separate cards.\\n\\nShipped values differ wildly by weapon and game: the Halo 3 assault rifle is 5deg/15 with falloff 7.5, the sniper 1deg/10, and Reach's sniper 0.8deg/20. Cutting these to 0 removes aim assist entirely, which is the harder direction.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"targets": [
-						{ "step": "*1.2","field": "Autoaim Angle", "group": "Autoaim", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Angle", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Range", "group": "Autoaim", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Falloff Range", "group": "Autoaim", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased"}
+						{ "step": "*1.2", "field": "Autoaim Angle", "group": "Autoaim", "min": 0, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Angle", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Range", "group": "Autoaim", "min": 0, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Falloff Range", "group": "Autoaim", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased" }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -1817,9 +1817,9 @@
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 1": "antr weapons\\plasma pistol\\fp\\fp", "Halo 2": "jmad *fp_plasma_pistol*", "Halo 3": "jmad *fp_plasma_pistol*", "Halo 3: ODST": "jmad *fp_plasma_pistol*", "Halo Reach": "jmad *fp_plasma_pistol*"},
+					"tag": { "Halo 1": "antr weapons\\plasma pistol\\fp\\fp", "Halo 2": "jmad *fp_plasma_pistol*", "Halo 3": "jmad *fp_plasma_pistol*", "Halo 3: ODST": "jmad *fp_plasma_pistol*", "Halo Reach": "jmad *fp_plasma_pistol*" },
 					"targets": [
-						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased"}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased" }
 					]
 				},
 				"Reload Time": {
@@ -1828,7 +1828,7 @@
 					"game": ["Halo 2", "Halo 4"],
 					"tag": "jmad *fp_plasma_pistol*",
 					"targets": [
-						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true, "easier_when": "decreased"}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "easier_when": "decreased" }
 					]
 				},
 				"Rider Damage": {
@@ -1837,9 +1837,9 @@
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
 					"tag": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_bolt & objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_overcharge_bolt",
 					"targets": [
-						{ "step": "*1.2","field": "Rider Direct Damage Scale", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "min": 0, "easier_when": "increased"}
+						{ "step": "*1.2", "field": "Rider Direct Damage Scale", "min": 0, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "min": 0, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "min": 0, "easier_when": "increased" }
 					]
 				},
 				"Melee Seeking Angles": {
@@ -1847,7 +1847,7 @@
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
 					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"default": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "default": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"split_from": "Melee Seeking",
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "min": 0, "block": { "Halo Reach": "Melee Damage Parameters" }, "index": "all", "easier_when": "increased" },
@@ -1859,7 +1859,7 @@
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
 					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"default": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "default": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"split_from": "Melee Seeking",
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Pyramid Depth", "min": 0, "block": { "Halo Reach": "Melee Damage Parameters" }, "index": "all", "easier_when": "increased" }
@@ -1870,7 +1870,7 @@
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.\n\nThis weapon ships BOTH penalties at 0, so it is marked `ignore` and stays out of the offer pool: an operator on a stored 0 does nothing, and a card that reads as broken is worse than no card. The wiring is here and verified, so enabling it later -- for a run that wants to IMPOSE a penalty with `=` -- is a one-word edit.",
 					"game": ["Halo Reach", "Halo 4"],
 					"ignore": "yes",
-					"tag": {"default": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "default": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"targets": [
 						{ "step": "*0.8", "field": "Reload Penalty", "block": "Barrels", "index": "all", "min": 0, "group": "Accuracy Penalties", "easier_when": "decreased" },
 						{ "step": "*0.8", "field": "Switch Penalty", "block": "Barrels", "index": "all", "min": 0, "group": "Accuracy Penalties", "easier_when": "decreased" }
@@ -1879,60 +1879,54 @@
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
-					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"targets": [
-						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
-						{ "step": "*1.2","field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased"}
+						{ "field": "Distribution Function", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "set": "horizontal fan" },
+						{ "step": "*1.2", "field": "Distribution Angle", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased" }
 					]
 				},
 				"Target Tracking": {
 					"desc": "How long this weapon takes to lock on, and how long the lock survives.",
 					"debug_desc": "Reach's `Target Tracking` block on the weapon: Acquire Time is how long you must hold the target before the lock takes, Grace Time how long a lock survives losing it, Decay Time how long it takes to bleed away after that.\n\nNew in Reach -- no earlier game has the block. Only 11 weapon tags populate it and four belong to weapons the player gets cards for: needler and plasma pistol carry Grace/Decay only (their soft tracking has no acquire delay), while rocket launcher (1.5s) and plasma launcher (0.5s) carry a real Acquire Time -- that is the wait before the reticle locks.\n\nSeparate from Homing, which is how hard the round steers once it is already in the air.",
 					"game": ["Halo Reach", "Halo 4"],
-					"tag": {"default": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "default": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"targets": [
-						{ "step": "*0.8","field": "Acquire Time", "block": "Target Tracking", "min": 0, "easier_when": "decreased"},
-						{ "step": "*1.2","field": "Grace Time", "block": "Target Tracking", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Decay Time", "block": "Target Tracking", "min": 0, "easier_when": "increased"}
+						{ "step": "*0.8", "field": "Acquire Time", "block": "Target Tracking", "min": 0, "easier_when": "decreased" },
+						{ "step": "*1.2", "field": "Grace Time", "block": "Target Tracking", "min": 0, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Decay Time", "block": "Target Tracking", "min": 0, "easier_when": "increased" }
 					]
 				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {
-						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3: ODST": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"
-					},
+					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3: ODST": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"targets": [
 						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
-						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
-						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
-						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\plasma rifle\\charged bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
-						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\plasma rifle\\charged bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
+						{ "field": "Impact Noise", "tag": { "Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt" }, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] },
+						{ "field": "Detonation Noise", "tag": { "Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt" }, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] },
+						{ "field": "Impact Noise", "tag": { "Halo 1": "proj weapons\\plasma rifle\\charged bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt" }, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] },
+						{ "field": "Detonation Noise", "tag": { "Halo 1": "proj weapons\\plasma rifle\\charged bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt" }, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] }
 					]
 				},
 				"Homing Turn Rate (Charged)": {
 					"desc": "Guided Angular Velocity Lower, Guided Angular Velocity Upper, Guided Angular Velocity At Rest",
 					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.",
-					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt"},
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 1"],
+					"tag": { "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt", "Halo 1": "proj weapons\\plasma rifle\\charged bolt" },
 					"split_from": "Homing (Charged)",
 					"targets": [
-						{ "step": "*1.2", "field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach", "Halo 4"], "group": "Guided Angular Velocity", "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach", "Halo 4"], "group": "Guided Angular Velocity", "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Guided Angular Velocity", "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Homing Accuracy (Charged)": {
 					"desc": "Guided Projectile (Outer Range) Error Radius",
 					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt"},
+					"tag": { "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt" },
 					"split_from": "Homing (Charged)",
 					"targets": [
 						{ "step": "*0.8", "field": { "Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo 3: ODST": "Guided Projectile Outer Range Error Radius", "Halo Reach": "Guided Projectile Outer Range Error Radius" }, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "easier_when": "decreased" }
@@ -1941,11 +1935,7 @@
 				"Dual Weapon Error": {
 					"desc": "Weapon Spread while dual wielding",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
-					},
+					"tag": { "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol" },
 					"targets": [
 						{ "step": "*0.8", "field": "Minimum Error", "block": "Barrels", "group": "Error Angle", "easier_when": "decreased" },
 						{ "step": "*0.8", "field": "Error Angle", "block": "Barrels", "group": "Error Angle", "easier_when": "decreased" },
@@ -1956,10 +1946,7 @@
 				"Dual Weapon Damage": {
 					"desc": "Damage dealt while dual wielding",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
-					},
+					"tag": { "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol" },
 					"targets": [
 						{ "step": "*1.2", "field": "Dual Wield Damage Scale", "block": "Barrels", "min": "0", "easier_when": "increased" }
 					],
@@ -1968,7 +1955,7 @@
 				"Projectile Range": {
 					"desc": "Maximum Range, Air Damage Range, Air Damage Range Max, Water Damage Range, Water Damage Range Max",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"tag": {"Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt"},
+					"tag": { "Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt" },
 					"split_from": "Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Maximum Range", "group": "Range", "easier_when": "increased" },
@@ -1981,7 +1968,7 @@
 				"Projectile Velocity": {
 					"desc": "Initial Velocity, Final Velocity, Minimum Velocity",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"tag": {"Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt"},
+					"tag": { "Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt" },
 					"split_from": "Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Initial Velocity", "group": "Velocity", "easier_when": "increased" },
@@ -1993,7 +1980,7 @@
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"tag": {"Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt"},
+					"tag": { "Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt" },
 					"split_from": "Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "easier_when": "increased" }
@@ -2003,7 +1990,7 @@
 					"game": ["Halo 1", "Halo 4"],
 					"desc": "Air Gravity Scale, Water Gravity Scale",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"tag": {"Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt"},
+					"tag": { "Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt" },
 					"split_from": "Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo 4"], "easier_when": "increased" },
@@ -2012,7 +1999,7 @@
 				},
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": {"Halo 1": "jpt! weapons\\plasma pistol\\bolt", "Halo 2": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_bolt", "Halo 3": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_bolt", "Halo Reach": "jpt! objects\\weapons\\pistol\\plasma_pistol\\projectiles\\damage_effects\\plasma_pistol_bolt", "Halo 4": "jpt! objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\damage_effects\\storm_plasma_pistol_bolt"},
+					"tag": { "Halo 1": "jpt! weapons\\plasma pistol\\bolt", "Halo 2": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_bolt", "Halo 3": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_bolt", "Halo Reach": "jpt! objects\\weapons\\pistol\\plasma_pistol\\projectiles\\damage_effects\\plasma_pistol_bolt", "Halo 4": "jpt! objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\damage_effects\\storm_plasma_pistol_bolt" },
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased" },
 						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased" },
@@ -2021,7 +2008,7 @@
 				},
 				"Charged Projectile Range": {
 					"desc": "Maximum Range, Air Damage Range, Air Damage Range Max, Water Damage Range, Water Damage Range Max",
-					"tag": {"Halo 1": "proj weapons\\plasma rifle\\charged bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt"},
+					"tag": { "Halo 1": "proj weapons\\plasma rifle\\charged bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt" },
 					"split_from": "Charged Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Maximum Range", "group": "Range", "easier_when": "increased" },
@@ -2033,7 +2020,7 @@
 				},
 				"Charged Projectile Velocity": {
 					"desc": "Initial Velocity, Final Velocity, Minimum Velocity",
-					"tag": {"Halo 1": "proj weapons\\plasma rifle\\charged bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt"},
+					"tag": { "Halo 1": "proj weapons\\plasma rifle\\charged bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt" },
 					"split_from": "Charged Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Initial Velocity", "group": "Velocity", "easier_when": "increased" },
@@ -2043,7 +2030,7 @@
 				},
 				"Charged Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": {"Halo 1": "jpt! weapons\\plasma rifle\\charged bolt", "Halo 2": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_overcharge_bolt", "Halo 3": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_overcharge_bolt", "Halo Reach": "jpt! objects\\weapons\\pistol\\plasma_pistol\\projectiles\\damage_effects\\plasma_pistol_charged_bolt & objects\\weapons\\pistol\\plasma_pistol\\projectiles\\damage_effects\\plasma_pistol_charged_bolt_aoe", "Halo 4": "jpt! objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\damage_effects\\storm_plasma_pistol_charged_bolt & objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\damage_effects\\storm_plasma_pistol_charged_bolt_aoe"},
+					"tag": { "Halo 1": "jpt! weapons\\plasma rifle\\charged bolt", "Halo 2": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_overcharge_bolt", "Halo 3": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_overcharge_bolt", "Halo Reach": "jpt! objects\\weapons\\pistol\\plasma_pistol\\projectiles\\damage_effects\\plasma_pistol_charged_bolt & objects\\weapons\\pistol\\plasma_pistol\\projectiles\\damage_effects\\plasma_pistol_charged_bolt_aoe", "Halo 4": "jpt! objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\damage_effects\\storm_plasma_pistol_charged_bolt & objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\damage_effects\\storm_plasma_pistol_charged_bolt_aoe" },
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased" },
 						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased" },
@@ -2052,11 +2039,8 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
-					"desc_overrides": {
-						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons.",
-						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons."
-					},
-					"tag": {"Halo 1": "jpt! weapons\\plasma pistol\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
+					"desc_overrides": { "Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons.", "Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons." },
+					"tag": { "Halo 1": "jpt! weapons\\plasma pistol\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee" },
 					"targets": [
 						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased" },
 						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased" },
@@ -2065,7 +2049,7 @@
 				},
 				"Heat Threshold": {
 					"desc": "Heat Recovery Threshold",
-					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"split_from": "Heat Recovery",
 					"targets": {
 						"Halo 1": [
@@ -2084,7 +2068,7 @@
 				},
 				"Heat Loss": {
 					"desc": "Heat Loss Per Second",
-					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"split_from": "Heat Recovery",
 					"targets": {
 						"Halo 1": [
@@ -2106,17 +2090,17 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null}, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null}, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null}, "easier_when": "increased" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": { "Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null }, "easier_when": "increased" }
 					]
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
 					"requires_zoom": true,
-					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"targets": [
 						{ "step": "*0.8", "field": "Weapon Zoom Time", "min": 0, "zero_is": 0.2, "easier_when": "decreased" }
@@ -2124,34 +2108,22 @@
 				},
 				"Misfire": {
 					"desc": "When Misifirng starts and how likely it is",
-					"tag": {
-						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"
-					},
+					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"targets": [
-						{ "step": "*1.2", "field": "Age Misfire Start", "min": 0, "max": 1.0, "easier_when": "increased"  },
+						{ "step": "*1.2", "field": "Age Misfire Start", "min": 0, "max": 1.0, "easier_when": "increased" },
 						{ "step": "*1.2", "field": "Age Misfire Chance", "min": 0, "max": 1.0, "easier_when": "increased" }
 					]
 				},
 				"Charging Time": {
 					"desc": "Time it takes to overcharge",
-					"tag": {
-						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"
-					},
+					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"targets": [
 						{ "step": "*0.8", "field": "Charging Time", "block": { "Halo 1": "Triggers", "Halo 2": "New Triggers" }, "easier_when": "decreased" }
 					]
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
-					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"targets": [
 						{ "step": "+1", "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "group": "Projectiles Per Shot", "easier_when": "increased" },
 						{ "step": "+1", "field": "Rounds Per Shot", "block": "Barrels", "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "easier_when": "increased" }
@@ -2159,20 +2131,14 @@
 				},
 				"Charged Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many (charged shot)",
-					"tag": {
-						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"
-					},
+					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"targets": [
 						{ "min": 1, "step": "*1.2", "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": 1, "easier_when": "increased" }
 					]
 				},
 				"Heat Per Round": {
 					"desc": "Heat Generated Per Round",
-					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"split_from": "Per Round",
 					"targets": [
 						{ "step": "*0.8", "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "easier_when": "decreased" }
@@ -2180,7 +2146,7 @@
 				},
 				"Age Per Round": {
 					"desc": "Age Generated Per Round, Campaign Age Generated Per Round",
-					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"split_from": "Per Round",
 					"targets": [
 						{ "step": "*1.2", "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "group": "Age Generated Per Round", "easier_when": "increased" },
@@ -2189,7 +2155,7 @@
 				},
 				"Heat Per Round (Charged)": {
 					"desc": "Heat Generated Per Round",
-					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"split_from": "Per Round (Charged)",
 					"targets": [
 						{ "step": "*0.8", "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": 1, "easier_when": "decreased" }
@@ -2197,7 +2163,7 @@
 				},
 				"Age Per Round (Charged)": {
 					"desc": "Age Generated Per Round, Campaign Age Generated Per Round",
-					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"split_from": "Per Round (Charged)",
 					"targets": [
 						{ "step": "*1.2", "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": 1, "group": "Age Generated Per Round", "easier_when": "increased" },
@@ -2208,7 +2174,7 @@
 					"skip_games": ["Halo 3: ODST"],
 					"game": ["Halo 3", "Halo 4"],
 					"desc": "Charged Drain Rate",
-					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"split_from": "Per Round (Charged)",
 					"targets": [
 						{ "step": "*0.8", "field": "Charged Drain Rate", "block": "New Triggers", "games": ["Halo 3", "Halo 4"], "easier_when": "decreased" }
@@ -2218,7 +2184,7 @@
 					"desc": "How fast it fires and how many rounds one pull sends.",
 					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"easier_when": "increased",
 					"targets": [
 						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased" },
@@ -2232,12 +2198,7 @@
 					"desc": "How fast you can pull the trigger again. Lower is faster.",
 					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"
-					},
+					"tag": { "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"easier_when": "decreased",
 					"targets": [
 						{ "step": "*0.8", "field": "Fire Recovery Time", "block": "Barrels", "easier_when": "decreased" }
@@ -2247,7 +2208,7 @@
 					"desc": "How fast it fires and how many rounds one pull sends.",
 					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"easier_when": "increased",
 					"targets": [
 						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "index": 1, "easier_when": "increased" },
@@ -2260,7 +2221,7 @@
 				"Projectiles Per Shot (Charged)": {
 					"desc": "Projectiles and ammo per shot.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
+					"tag": { "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"targets": [
 						{ "step": "+1", "field": "Rounds Per Shot", "block": "Barrels", "index": 1, "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "easier_when": "increased" },
 						{ "step": "+1", "field": "Projectiles Per Shot", "block": "Barrels", "index": 1, "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "easier_when": "increased" }
@@ -2271,12 +2232,7 @@
 					"desc": "How fast you can pull the trigger again. Lower is faster.",
 					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"
-					},
+					"tag": { "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
 					"easier_when": "decreased",
 					"targets": [
 						{ "step": "*0.8", "field": "Fire Recovery Time", "block": "Barrels", "index": 1, "easier_when": "decreased" }
@@ -2655,16 +2611,16 @@
 					"desc": "How hard your aim is pulled toward a target.",
 					"debug_desc": "`Magnetism Angle` and `Magnetism Range` are the pull on your reticle near a target, with `Magnetism Falloff Range` (Halo 3 onward) and Reach's `Magnetism Near Falloff Range` shaping where it fades. One decision, one input.\\n\\n**Halo 2 declares this pair TWICE** (weap root 0x19C and 0x210) and the first is a different, mostly-zero field -- reading it makes Halo 2 look like it barely uses magnetism. The real pair is the second, next to Autoaim, so every Halo 2 row here is pinned to `nth: 1`. Every other game states nth 0 explicitly, because a gamed value falls back to the nearest EARLIER game and Halo 3 would otherwise inherit Halo 2's 1.\\n\\nThis is the weapon's own magnetism. The general Magnetism card is a different thing -- matg's Magnetism Friction and Adhesion, the controller-level aim friction that applies to everything.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
+					"tag": { "Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
 					"targets": [
-						{ "step": "*1.2","field": "Magnetism Angle", "group": "Magnetism", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Range", "group": "Magnetism", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Near Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}, "easier_when": "increased"}
+						{ "step": "*1.2", "field": "Magnetism Angle", "group": "Magnetism", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": { "Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Range", "group": "Magnetism", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": { "Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": { "Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Near Falloff Range", "group": "Magnetism", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "min": 0, "games": ["Halo 4"], "nth": { "Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1 }, "easier_when": "increased" }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -2672,14 +2628,14 @@
 					"desc": "How hard the game steers your shots onto a target.",
 					"debug_desc": "`Autoaim Angle` is the cone the game will bend a shot into, `Autoaim Range` how far out it does so, and `Autoaim Falloff Range` (Halo 3 onward) where that help starts tapering off. All three are one decision -- how much the game shoots for you -- so they share one input.\\n\\nAutoaim is the shot bending toward the target; Magnetism is your reticle being pulled. They are separate fields and separate cards.\\n\\nShipped values differ wildly by weapon and game: the Halo 3 assault rifle is 5deg/15 with falloff 7.5, the sniper 1deg/10, and Reach's sniper 0.8deg/20. Cutting these to 0 removes aim assist entirely, which is the harder direction.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
+					"tag": { "Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
 					"targets": [
-						{ "step": "*1.2","field": "Autoaim Angle", "group": "Autoaim", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Angle", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Range", "group": "Autoaim", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Falloff Range", "group": "Autoaim", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "easier_when": "increased"},
-						{ "step": "*1.2","field": "Autoaim Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased"}
+						{ "step": "*1.2", "field": "Autoaim Angle", "group": "Autoaim", "min": 0, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Angle", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Range", "group": "Autoaim", "min": 0, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Falloff Range", "group": "Autoaim", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Autoaim Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "min": 0, "games": ["Halo 4"], "easier_when": "increased" }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -2687,18 +2643,18 @@
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
 					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
-					"tag": {"Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_impact & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo 3": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_impact & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo 3: ODST": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_impact & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation"},
+					"tag": { "Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_impact & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo 3": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_impact & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo 3: ODST": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_impact & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation" },
 					"targets": [
-						{ "step": "*1.2","field": "Rider Direct Damage Scale", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "min": 0, "easier_when": "increased"}
+						{ "step": "*1.2", "field": "Rider Direct Damage Scale", "min": 0, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "min": 0, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "min": 0, "easier_when": "increased" }
 					]
 				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 1": "antr weapons\\needler\\fp\\fp", "Halo 2": "jmad *fp_needler*", "Halo 3": "jmad *fp_needler*", "Halo Reach": "jmad *fp_needler*"},
+					"tag": { "Halo 1": "antr weapons\\needler\\fp\\fp", "Halo 2": "jmad *fp_needler*", "Halo 3": "jmad *fp_needler*", "Halo Reach": "jmad *fp_needler*" },
 					"targets": [
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased" }
 					]
@@ -2708,7 +2664,7 @@
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
 					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"default": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
+					"tag": { "default": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
 					"split_from": "Melee Seeking",
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "min": 0, "block": { "Halo Reach": "Melee Damage Parameters" }, "index": "all", "easier_when": "increased" },
@@ -2720,7 +2676,7 @@
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
 					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"default": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
+					"tag": { "default": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
 					"split_from": "Melee Seeking",
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Pyramid Depth", "min": 0, "block": { "Halo Reach": "Melee Damage Parameters" }, "index": "all", "easier_when": "increased" }
@@ -2731,7 +2687,7 @@
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.\n\nThis weapon ships BOTH penalties at 0, so it is marked `ignore` and stays out of the offer pool: an operator on a stored 0 does nothing, and a card that reads as broken is worse than no card. The wiring is here and verified, so enabling it later -- for a run that wants to IMPOSE a penalty with `=` -- is a one-word edit.",
 					"game": ["Halo Reach", "Halo 4"],
 					"ignore": "yes",
-					"tag": {"default": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
+					"tag": { "default": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
 					"targets": [
 						{ "step": "*0.8", "field": "Reload Penalty", "block": "Barrels", "index": "all", "min": 0, "group": "Accuracy Penalties", "easier_when": "decreased" },
 						{ "step": "*0.8", "field": "Switch Penalty", "block": "Barrels", "index": "all", "min": 0, "group": "Accuracy Penalties", "easier_when": "decreased" }
@@ -2740,46 +2696,39 @@
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
-					"tag": {"Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
+					"tag": { "Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
 					"targets": [
-						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
-						{ "step": "*1.2","field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased"}
+						{ "field": "Distribution Function", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "set": "horizontal fan" },
+						{ "step": "*1.2", "field": "Distribution Angle", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased" }
 					]
 				},
 				"Target Tracking": {
 					"desc": "How long this weapon takes to lock on, and how long the lock survives.",
 					"debug_desc": "Reach's `Target Tracking` block on the weapon: Acquire Time is how long you must hold the target before the lock takes, Grace Time how long a lock survives losing it, Decay Time how long it takes to bleed away after that.\n\nNew in Reach -- no earlier game has the block. Only 11 weapon tags populate it and four belong to weapons the player gets cards for: needler and plasma pistol carry Grace/Decay only (their soft tracking has no acquire delay), while rocket launcher (1.5s) and plasma launcher (0.5s) carry a real Acquire Time -- that is the wait before the reticle locks.\n\nSeparate from Homing, which is how hard the round steers once it is already in the air.",
 					"game": ["Halo Reach", "Halo 4"],
-					"tag": {"default": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
+					"tag": { "default": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
 					"targets": [
-						{ "step": "*0.8","field": "Acquire Time", "block": "Target Tracking", "min": 0, "easier_when": "decreased"},
-						{ "step": "*1.2","field": "Grace Time", "block": "Target Tracking", "min": 0, "easier_when": "increased"},
-						{ "step": "*1.2","field": "Decay Time", "block": "Target Tracking", "min": 0, "easier_when": "increased"}
+						{ "step": "*0.8", "field": "Acquire Time", "block": "Target Tracking", "min": 0, "easier_when": "decreased" },
+						{ "step": "*1.2", "field": "Grace Time", "block": "Target Tracking", "min": 0, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Decay Time", "block": "Target Tracking", "min": 0, "easier_when": "increased" }
 					]
 				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {
-						"Halo 1": "weap weapons\\needler\\needler",
-						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo 3: ODST": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"
-					},
+					"tag": { "Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3: ODST": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
 					"targets": [
 						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
-						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3: ODST": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
-						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3: ODST": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
+						{ "field": "Impact Noise", "tag": { "Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3: ODST": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard" }, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] },
+						{ "field": "Detonation Noise", "tag": { "Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3: ODST": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard" }, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] }
 					]
 				},
 				"Homing Leading": {
 					"desc": "Targeted Leading Fraction",
 					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.\n\nLEADING is a separate row and a separate idea: `Targeted Leading Fraction` is how far AHEAD of a moving target the round aims, where the angular velocities above are how sharply it can turn once it is flying. Shipped 0.75 on the Flak Cannon from Halo 3 on, 0.5 on the Needler in Halo 2 and 1.0 from Halo 3, 1.0 on Reach's Plasma Launcher, and 0.5 rising to 1.0 on the Plasma Pistol's charged bolt. The Rocket Launcher and Incineration Cannon ship 0, so the row is inert on those two until something raises it. Halo 1 has no such field, and no Homing card reaches it.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"},
+					"tag": { "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard" },
 					"split_from": "Homing",
 					"targets": [
 						{ "step": "*1.2", "field": "Targeted Leading Fraction", "min": 0, "max": 1, "easier_when": "increased" }
@@ -2788,20 +2737,21 @@
 				"Homing Turn Rate": {
 					"desc": "Guided Angular Velocity Lower, Guided Angular Velocity Upper, Guided Angular Velocity At Rest",
 					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.\n\nLEADING is a separate row and a separate idea: `Targeted Leading Fraction` is how far AHEAD of a moving target the round aims, where the angular velocities above are how sharply it can turn once it is flying. Shipped 0.75 on the Flak Cannon from Halo 3 on, 0.5 on the Needler in Halo 2 and 1.0 from Halo 3, 1.0 on Reach's Plasma Launcher, and 0.5 rising to 1.0 on the Plasma Pistol's charged bolt. The Rocket Launcher and Incineration Cannon ship 0, so the row is inert on those two until something raises it. Halo 1 has no such field, and no Homing card reaches it.",
-					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"},
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 1"],
+					"tag": { "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard", "Halo 1": "proj weapons\\needler\\needle" },
 					"split_from": "Homing",
 					"targets": [
-						{ "step": "*1.2", "field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach", "Halo 4"], "group": "Guided Angular Velocity", "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "easier_when": "increased", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach", "Halo 4"], "group": "Guided Angular Velocity", "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Guided Angular Velocity", "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Homing Accuracy": {
 					"desc": "Guided Projectile (Outer Range) Error Radius",
 					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.\n\nLEADING is a separate row and a separate idea: `Targeted Leading Fraction` is how far AHEAD of a moving target the round aims, where the angular velocities above are how sharply it can turn once it is flying. Shipped 0.75 on the Flak Cannon from Halo 3 on, 0.5 on the Needler in Halo 2 and 1.0 from Halo 3, 1.0 on Reach's Plasma Launcher, and 0.5 rising to 1.0 on the Plasma Pistol's charged bolt. The Rocket Launcher and Incineration Cannon ship 0, so the row is inert on those two until something raises it. Halo 1 has no such field, and no Homing card reaches it.",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"},
+					"tag": { "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard" },
 					"split_from": "Homing",
 					"targets": [
 						{ "step": "*0.8", "field": { "Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo 3: ODST": "Guided Projectile Outer Range Error Radius", "Halo Reach": "Guided Projectile Outer Range Error Radius" }, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "easier_when": "decreased" }
@@ -2810,10 +2760,7 @@
 				"Dual Weapon Error": {
 					"desc": "Weapon Spread while dual wielding",
 					"game": ["Halo 2"],
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler"
-					},
+					"tag": { "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler" },
 					"targets": [
 						{ "step": "*0.8", "field": "Minimum Error", "block": "Barrels", "group": "Error Angle", "easier_when": "decreased" },
 						{ "step": "*0.8", "field": "Error Angle", "block": "Barrels", "group": "Error Angle", "easier_when": "decreased" },
@@ -2824,9 +2771,7 @@
 				"Dual Weapon Damage": {
 					"desc": "Damage dealt while dual wielding",
 					"game": ["Halo 2"],
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
-					},
+					"tag": { "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler" },
 					"targets": [
 						{ "step": "*1.2", "field": "Dual Wield Damage Scale", "block": "Barrels", "min": "0", "easier_when": "increased" }
 					],
@@ -2835,7 +2780,7 @@
 				"Projectile Range": {
 					"desc": "Maximum Range, Air Damage Range, Air Damage Range Max, Water Damage Range, Water Damage Range Max",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"},
+					"tag": { "Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard" },
 					"split_from": "Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Maximum Range", "group": "Range", "easier_when": "increased" },
@@ -2848,7 +2793,7 @@
 				"Projectile Velocity": {
 					"desc": "Initial Velocity, Final Velocity, Minimum Velocity",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"},
+					"tag": { "Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard" },
 					"split_from": "Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Initial Velocity", "group": "Velocity", "easier_when": "increased" },
@@ -2860,7 +2805,7 @@
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"},
+					"tag": { "Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard" },
 					"split_from": "Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "easier_when": "increased" }
@@ -2868,8 +2813,8 @@
 				},
 				"Needle Timer": {
 					"desc": "Timer, Timer Max",
-					"tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"},
-					"constraints": [{"field": "Timer Max", "of": "Timer", "not_below": true}],
+					"tag": { "Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard" },
+					"constraints": [{ "field": "Timer Max", "of": "Timer", "not_below": true }],
 					"split_from": "Needle Timer",
 					"targets": [
 						{ "step": "*1.2", "field": "Timer", "easier_when": "increased" },
@@ -2879,8 +2824,8 @@
 				"Supercombine Timer": {
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"desc": "Super Detonation Time",
-					"tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"},
-					"constraints": [{"field": "Timer Max", "of": "Timer", "not_below": true}],
+					"tag": { "Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard" },
+					"constraints": [{ "field": "Timer Max", "of": "Timer", "not_below": true }],
 					"split_from": "Needle Timer",
 					"targets": [
 						{ "step": "*1.2", "field": "Super Detonation Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "easier_when": "increased" }
@@ -2888,10 +2833,10 @@
 				},
 				"Supercombine Needle Count": {
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"requires_config": {"Halo 1": "h1_supercombine_count", "default": null},
+					"requires_config": { "Halo 1": "h1_supercombine_count", "default": null },
 					"desc": "Super Detonation Projectile Count",
-					"tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"},
-					"constraints": [{"field": "Timer Max", "of": "Timer", "not_below": true}],
+					"tag": { "Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard" },
+					"constraints": [{ "field": "Timer Max", "of": "Timer", "not_below": true }],
 					"split_from": "Needle Timer",
 					"targets": [
 						{ "step": "-1", "field": "Super Detonation Projectile Count", "games": ["Halo 1"], "zero_is": 7, "min": 2, "easier_when": "decreased" },
@@ -2900,8 +2845,8 @@
 				},
 				"Needle Fuse": {
 					"desc": "Arming Time, Minimum Velocity",
-					"tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"},
-					"constraints": [{"field": "Timer Max", "of": "Timer", "not_below": true}],
+					"tag": { "Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard" },
+					"constraints": [{ "field": "Timer Max", "of": "Timer", "not_below": true }],
 					"split_from": "Needle Timer",
 					"targets": [
 						{ "step": "*0.8", "field": "Arming Time", "min": 0, "group": "Fuse", "easier_when": "decreased" },
@@ -2910,7 +2855,7 @@
 				},
 				"Needle Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": {"Halo 1": "jpt! weapons\\needler\\detonation damage", "Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_detonation", "Halo 3": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_impact", "Halo Reach": "jpt! objects\\weapons\\pistol\\needler\\projectiles\\damage_effects\\needler_shard_impact", "Halo 4": "jpt! objects\\weapons\\pistol\\storm_needler\\projectiles\\damage_effects\\storm_needler_shard_impact"},
+					"tag": { "Halo 1": "jpt! weapons\\needler\\detonation damage", "Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_detonation", "Halo 3": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_impact", "Halo Reach": "jpt! objects\\weapons\\pistol\\needler\\projectiles\\damage_effects\\needler_shard_impact", "Halo 4": "jpt! objects\\weapons\\pistol\\storm_needler\\projectiles\\damage_effects\\storm_needler_shard_impact" },
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased" },
 						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased" },
@@ -2919,7 +2864,7 @@
 				},
 				"Explosion Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound (both the attached and free-floating super detonation)",
-					"tag": {"Halo 1": "jpt! weapons\\needler\\explosion", "Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo 3": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo Reach": "jpt! objects\\weapons\\pistol\\needler\\projectiles\\damage_effects\\needler_shard_attached_super_detonation", "Halo 4": "jpt! objects\\weapons\\pistol\\storm_needler\\projectiles\\damage_effects\\storm_needler_shard_attached_super_detonation"},
+					"tag": { "Halo 1": "jpt! weapons\\needler\\explosion", "Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo 3": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo Reach": "jpt! objects\\weapons\\pistol\\needler\\projectiles\\damage_effects\\needler_shard_attached_super_detonation", "Halo 4": "jpt! objects\\weapons\\pistol\\storm_needler\\projectiles\\damage_effects\\storm_needler_shard_attached_super_detonation" },
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased" },
 						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased" },
@@ -2928,7 +2873,7 @@
 				},
 				"Explosion Radius": {
 					"desc": "Size of the needle super detionation",
-					"tag": {"Halo 1": "jpt! weapons\\needler\\explosion", "Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo 3": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo Reach": "jpt! objects\\weapons\\pistol\\needler\\projectiles\\damage_effects\\needler_shard_super_detonation", "Halo 4": "jpt! objects\\weapons\\pistol\\storm_needler\\projectiles\\damage_effects\\storm_needler_shard_super_detonation"},
+					"tag": { "Halo 1": "jpt! weapons\\needler\\explosion", "Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo 3": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo Reach": "jpt! objects\\weapons\\pistol\\needler\\projectiles\\damage_effects\\needler_shard_super_detonation", "Halo 4": "jpt! objects\\weapons\\pistol\\storm_needler\\projectiles\\damage_effects\\storm_needler_shard_super_detonation" },
 					"targets": [
 						{ "step": "*1.2", "field": "Radius", "group": "Radius", "easier_when": "increased" },
 						{ "step": "*1.2", "field": "Radius Max", "group": "Radius", "easier_when": "increased" }
@@ -2936,11 +2881,8 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
-					"desc_overrides": {
-						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.",
-						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
-					},
-					"tag": {"Halo 1": "jpt! weapons\\needler\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
+					"desc_overrides": { "Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", "Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons." },
+					"tag": { "Halo 1": "jpt! weapons\\needler\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee" },
 					"targets": [
 						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased" },
 						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased" },
@@ -2949,17 +2891,17 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"tag": {"Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
+					"tag": { "Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null}, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null}, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null}, "easier_when": "increased" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": { "Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null }, "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null }, "easier_when": "increased" }
 					]
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
 					"requires_zoom": true,
-					"tag": {"Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
+					"tag": { "Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"targets": [
 						{ "step": "*0.8", "field": "Weapon Zoom Time", "min": 0, "zero_is": 0.2, "easier_when": "decreased" }
@@ -2967,7 +2909,7 @@
 				},
 				"Ammo Inventory": {
 					"desc": "Rounds Total Initial, Rounds Total Maximum",
-					"tag": {"Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
+					"tag": { "Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
 					"split_from": "Magazine",
 					"targets": [
 						{ "min": 1, "step": "*1.5", "inverse_steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Rounds Total Initial", "block": "Magazines", "easier_when": "increased" },
@@ -2977,7 +2919,7 @@
 				},
 				"Ammo Loaded": {
 					"desc": "Rounds Loaded Maximum, Rounds Reloaded",
-					"tag": {"Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
+					"tag": { "Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
 					"split_from": "Magazine",
 					"targets": [
 						{ "min": 1, "step": "*1.5", "inverse_steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Rounds Loaded Maximum", "block": "Magazines", "easier_when": "increased" },
@@ -2989,13 +2931,15 @@
 					"desc": "How long you spend reloading. *0.5 is twice as fast.",
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 1": "antr weapons\\needler\\fp\\fp", "Halo 2": "jmad *fp_needler*", "Halo 3": "jmad *fp_needler*", "Halo Reach": "jmad *fp_needler*"},
-					"targets": [ { "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "easier_when": "decreased" } ]
+					"tag": { "Halo 1": "antr weapons\\needler\\fp\\fp", "Halo 2": "jmad *fp_needler*", "Halo 3": "jmad *fp_needler*", "Halo Reach": "jmad *fp_needler*" },
+					"targets": [
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "easier_when": "decreased" }
+					]
 				},
 				"Salvo Shooting": {
 					"desc": "How fast it fires and how many rounds one pull sends.",
 					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
-					"tag": {"Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
+					"tag": { "Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
 					"easier_when": "increased",
 					"targets": {
 						"Halo 1": [
@@ -3033,12 +2977,7 @@
 					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
 					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"
-					},
+					"tag": { "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
 					"easier_when": "decreased",
 					"targets": [
 						{ "step": "*0.8", "field": "Fire Recovery Time", "block": "Barrels", "easier_when": "decreased" }
@@ -3047,13 +2986,7 @@
 				"Ramp Up": {
 					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
 					"debug_desc": "`Acceleration Time` is how long the weapon takes to reach its full rate of fire, `Deceleration Time` how long it takes to wind back down. Per barrel.\n\nNo card clamps Deceleration against Acceleration any more -- the constraint was removed on 2026-08-26 for retesting. The reasoning behind it was that guns spin up slowly and spin down fast, which holds for the plasma rifle, brute plasma rifle and needler, but is NOT universal: measuring every weapon that sets these fields disproves the stronger claim this text used to make: six weapon-games ship the OPPOSITE. Halo 3 and ODST's machinegun turret and plasma cannon both run 1.25 up / 2.0 down, Reach's plasma launcher 0.7 / 1.0, and Reach's spike rifle 0.0 / 0.2 -- it has no spin-up at all and still takes time to stop.\n\nSo the weapons that ship deceleration above acceleration deliberately carry NO constraint: clamping them would quietly rewrite their vanilla behaviour the first time the card was patched.\n\nAlso note Reach's stringid Rate Of Fire Acceleration/Deceleration fields are dead -- these numeric Time fields are the ones that carry the values.",
-					"tag": {
-						"Halo 1": "weap weapons\\needler\\needler",
-						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"
-					},
+					"tag": { "Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
 					"targets": [
 						{ "step": "*0.8", "field": "Acceleration Time", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "easier_when": "decreased" },
 						{ "step": "*0.8", "field": "Deceleration Time", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "easier_when": "decreased" }
@@ -3061,7 +2994,7 @@
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
-					"tag": {"Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
+					"tag": { "Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
 					"targets": [
 						{ "step": "+1", "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "group": "Projectiles Per Shot", "easier_when": "increased" },
 						{ "step": "+1", "field": "Rounds Per Shot", "block": "Triggers", "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "games": ["Halo 1"], "easier_when": "increased" },
@@ -3073,18 +3006,13 @@
 				},
 				"Error Angle": {
 					"desc": "Weapon Spread",
-					"tag": {
-						"Halo 1": "weap weapons\\needler\\needler",
-						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"
-					},
+					"tag": { "Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
 					"targets": [
-						{ "step": "*1.2","field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1}, "group": "Error Angle", "easier_when": "increased"},
-						{ "step": "*1.2","field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1}, "group": "Error Angle", "easier_when": "increased"},
-						{ "step": "*1.2","field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1}, "group": "Error Angle", "easier_when": "increased"},
-						{ "step": "*1.2","field": "Deviation Angle", "games": ["Halo Reach", "Halo 4"], "min": 0, "group": "Error Angle", "easier_when": "increased" },
-						{ "step": "*1.2","field": "Deviation Angle", "block": "Aim Assist Modes", "index": "all", "group": "Error Angle", "min": 0, "games": ["Halo 4"], "easier_when": "increased"}
+						{ "step": "*1.2", "field": "Minimum Error", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1 }, "group": "Error Angle", "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Error Angle", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1 }, "group": "Error Angle", "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Error Angle Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1 }, "group": "Error Angle", "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Deviation Angle", "games": ["Halo Reach", "Halo 4"], "min": 0, "group": "Error Angle", "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Deviation Angle", "block": "Aim Assist Modes", "index": "all", "group": "Error Angle", "min": 0, "games": ["Halo 4"], "easier_when": "increased" }
 					]
 				}
 			},
@@ -10941,13 +10869,14 @@
 				"Homing Turn Rate": {
 					"desc": "Guided Angular Velocity Lower, Guided Angular Velocity Upper, Guided Angular Velocity At Rest",
 					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.\n\nLEADING is a separate row and a separate idea: `Targeted Leading Fraction` is how far AHEAD of a moving target the round aims, where the angular velocities above are how sharply it can turn once it is flying. Shipped 0.75 on the Flak Cannon from Halo 3 on, 0.5 on the Needler in Halo 2 and 1.0 from Halo 3, 1.0 on Reach's Plasma Launcher, and 0.5 rising to 1.0 on the Plasma Pistol's charged bolt. The Rocket Launcher and Incineration Cannon ship 0, so the row is inert on those two until something raises it. Halo 1 has no such field, and no Homing card reaches it.",
-					"game": ["Halo Reach"],
-					"tag": "proj objects\\weapons\\support_high\\plasma_launcher\\projectiles\\plasma_launcher_grenade",
+					"game": ["Halo Reach", "Halo 1"],
+					"tag": { "Halo Reach": "proj objects\\weapons\\support_high\\plasma_launcher\\projectiles\\plasma_launcher_grenade", "Halo 1": "proj weapons\\plasma launcher\\bolt guided" },
 					"split_from": "Homing",
 					"targets": [
-						{ "step": "*1.2", "field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Guided Angular Velocity At Rest", "games": ["Halo Reach"], "group": "Guided Angular Velocity", "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "easier_when": "increased", "games": ["Halo Reach"] },
+						{ "step": "*1.2", "field": "Guided Angular Velocity At Rest", "games": ["Halo Reach"], "group": "Guided Angular Velocity", "easier_when": "increased" },
+						{ "step": "*1.2", "field": "Guided Angular Velocity", "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Homing Accuracy": {
