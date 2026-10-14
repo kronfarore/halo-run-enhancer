@@ -1,0 +1,108 @@
+{
+ "game": "Halo 1",
+ "weapon": "Plasma Launcher",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\plasma_launcher_port\\pl_fire",
+   "perms": [
+    "pl_fire_1.wav",
+    "pl_fire_2.wav",
+    "pl_fire_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_launcher_port\\pl_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_launcher_port\\pl_explode",
+   "perms": [
+    "pl_explode_1.wav",
+    "pl_explode_2.wav",
+    "pl_explode_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_launcher_port\\pl_explode"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_launcher_port\\pl_charge_loop",
+   "perms": [
+    "pl_charge_loop_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_launcher_port\\pl_charge_loop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_launcher_port\\pl_projectile",
+   "perms": [
+    "pl_projectile_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_launcher_port\\pl_projectile"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_launcher_port\\pl_stick",
+   "perms": [
+    "pl_stick_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_launcher_port\\pl_stick"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_launcher_port\\pl_ready",
+   "perms": [
+    "pl_ready_1.wav",
+    "pl_ready_2.wav",
+    "pl_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_launcher_port\\pl_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_launcher_port\\pl_melee",
+   "perms": [
+    "pl_melee_1.wav",
+    "pl_melee_2.wav",
+    "pl_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_launcher_port\\pl_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_launcher_port\\pl_pose",
+   "perms": [
+    "pl_pose_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_launcher_port\\pl_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_launcher_port\\pl_empty",
+   "perms": [
+    "pl_empty_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_launcher_port\\pl_empty"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\plasma_launcher_port\\pl_drop",
+   "perms": [
+    "pl_drop_1.wav",
+    "pl_drop_2.wav",
+    "pl_drop_3.wav",
+    "pl_drop_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\plasma_launcher_port\\pl_drop"
+   ]
+  }
+ ]
+}
