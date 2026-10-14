@@ -95,7 +95,10 @@ PORT = reserved(
             'peers': ['Pistol', 'Plasma Pistol', 'Shotgun', 'Mauler (port)'],
             'why': 'magazine 10 semi-auto bolt; a 0.6 s charge fires a 15-pellet blast for 5 rounds: a ratio per mode',
             'lacks': ("the fixed 5 x 3 pellet grid (Halo 1: random inside the error cone); the "
-                      "charging rumble; the AI's charged shot (Halo 1's AI only taps a charged pair)")}},
+                      "charging rumble; the AI's charged shot (Halo 1's AI only taps a charged pair); "
+                      "the full magazine of bolts: Halo 1 auto-reloads once fewer rounds are loaded "
+                      "than the blast costs (boot 2: 6 bolts of 10, 4 left) -- the user kept Halo 4's "
+                      "5 a blast (balanced 7: 8 bolts of 15)")}},
     # step 11: Halo 4's ai\generic Boltshot entry (m020) over a base -- 'bo' has no carrier. Halo 1's
     # PLASMA PISTOL carriers (h1_weapon_carriers, 2026-10-14): Grunt minor / major / flee, Jackal
     # minor / major, the engineer 0.5; Flood combat (both) 0.4 -- Halo 1's sidearm of the
@@ -165,7 +168,10 @@ PORT.update({
         # radius 1.3), the colour read off the user's screenshot (core yellow-orange)
         'glow_shaders': {'bo_glow': {'rgb': (1.0, 0.72, 0.15), 'additive': True, 'islands': True,
                                      'islands_of': 'storm_stasis_pistol_glow',
-                                     'gain': 2.2, 'falloff': 0.35, 'radius': 1.3},
+                                     'gain': 2.2, 'falloff': 0.35, 'radius': 1.3,
+                                     # BOOT 2 (user: 'the glow is white, not orange'): the islands'
+                                     # default white-hot centre saturated every tiny island white
+                                     'hot': False},
                          # THE CHARGE GLOW (boot 1, user: 'more indication -- a muzzle light and / or
                          # more glowing parts, which is what it does normally'): Halo 4's charging
                          # effect lights the four plates, the vents and a core at the muzzle; Halo 1
@@ -224,7 +230,8 @@ PORT.update({
                     'first-person overheating': 'first_person:fire_2'},
         'holds': {'first-person overheated': ('first_person:fire_2', 32)},
         # BOOT 1 (user: 'the FP position is too far up and forward -- down 2 units and back 1')
-        'view_offset': (-0.01, 0.0, -0.02),
+        # BOOT 2 (user: '2 more units down')
+        'view_offset': (-0.01, 0.0, -0.04),
         # BOOT 1 (user: 'the side plates don't flip out during the charge'): Halo 4 opens its four
         # plates by a charge-driven OVERLAY (`flaps`: exactly the four plate bones) Halo 1 cannot play
         # -> the open plates of fire_2's last frame (fire_2 keeps them open, o_h_exit closes them)
@@ -368,6 +375,21 @@ PORT.update({
             'attachments_from': r'weapons\assault rifle\bullet',
             'contrail': {'from': r'weapons\assault rifle\bullet', 'out': BO + 'pellet trail',
                          'rgb': (1.0, 0.6, 0.12)},
+            # BOOT 2 (user's picks: 'burst at range end' + 'orange impacts'): a pellet that reaches
+            # its 5.5 wu detonates -> a small orange spark burst there (the needle's `detonate`,
+            # the Spike Rifle's recipe: debris / smoke / decal / sound dropped, flash + flare tinted,
+            # x0.25 -- 15 at once); the impacts' environment sparks and flashes tinted orange
+            # (shields and blood keep their own)
+            'detonation_effect': {'from': r'weapons\needler\effects\needle detonate',
+                                  'out': BO + 'effects\\pellet burst',
+                                  'drop_particles': ('debris', 'smoke'),
+                                  'drop_parts': (r'effects\decals\bullet holes\dirt pistol',
+                                                 r'sound\sfx\weapons\needler\expl'),
+                                  'tint_match': ('flash h pistol detonate', 'flare h stealth cannon'),
+                                  'tint': (1.0, 0.6, 0.12), 'scale': 0.25},
+            'impact_tint': {'match': ('sparks impact', 'sparks trail', 'flash h generic',
+                                      'flash c generic', 'flare h stealth cannon'),
+                            'rgb': (1.0, 0.6, 0.12), 'out': BO + 'effects\\impact\\pellet '},
             # the blast lands 15 pellets at once, ~1/s: the shotgun's per-hit effect at its rate
             'impact_thin': {'materials': [22], 'out': BO + 'effects\\impact\\pellet ',
                             'thin': {}, 'rate': 1.0},
@@ -375,9 +397,9 @@ PORT.update({
         # THE BOLT RATE: Halo 4 recovery 0.1 s (rounds per second 30 = recovery-limited) = 10/s
         'trigger': {'rounds_per_second': (10.0, 10.0), 'acceleration_time': 0.0,
                     'deceleration_time': 0.0,
-                    # the FP muzzle in the idle after boot 1's move (h1_fp_muzzle: the built FP model +
+                    # the FP muzzle in the idle after boot 2's move (h1_fp_muzzle: the built FP model +
                     # animations): where the bolt and the pellet tracers start in first person
-                    'first_person_offset': (0.3349, -0.0427, -0.0437)},
+                    'first_person_offset': (0.3349, -0.0427, -0.0637)},
         # THE OVERHEAT (Halo 4: overheated threshold 1, recovery 0.1, loss 0.6 / 0.5 overheated; the
         # bolt 0 heat, the blast 1.0 a round): Halo 1's ONE loss = the overheated one (the Storm
         # Rifle's A') -> 1.8 s lockout after every blast, nothing fires. The blast's heat per round
@@ -446,16 +468,21 @@ PORT.update({
         # flash (flash h generic 0.100-0.125 + its sparks trail) without smoke / casing, tinted;
         # its fire sound kept once (the shotgun plays it in both events: the Brute Shot's
         # drop_event_parts)
+        # BOOT 2 (user: 'the muzzle flash is below the muzzle, not on it'): the Suppressor's finding
+        # on the same Halo 4 / storm_fp setup (3 boots: 4 units up) as the start -- `shift` 0.04 up
+        # on both flashes (the blast's: every particle, `match` 'particles')
         'sound_effects': {
             'firing_effect': (PISTOL + 'effects\\fire bullet', BO + 'effects\\fire bolt',
                               {r'sound\sfx\weapons\pistol\fire': SND + 'bo_fire'},
                               {'match': 'flash', 'drop_off_axis': 0.012, 'scale': 1.5,
+                               'shift': (0.0, 0.0, 0.04),
                                'drop_particles': ('casing', 'smoke'),
                                'drop_parts': [r'sound\sfx\weapons\pistol\eject'],
                                'tint': (1.0, 1.0, 0.91, 0.18)}),
             'firing_effect@1': (PISTOL + 'effects\\fire bullet', BO + 'effects\\fire blast',
                                 {r'sound\sfx\weapons\shotgun\fire': SND + 'bo_blast'},
                                 {'copy_from': SG + 'effects\\shotgun firing',
+                                 'match': 'particles', 'shift': (0.0, 0.0, 0.04),
                                  'drop_particles': ('casing', 'smoke'),
                                  'drop_event_parts': {1: [r'sound\sfx\weapons\shotgun\fire']},
                                  'tint': (1.0, 1.0, 0.91, 0.18)}),
