@@ -5234,7 +5234,7 @@
    "donor": "Plasma Pistol",
    "default_on": false,
    "desc": "Halo Reach's Plasma Launcher: its model, first-person animations, sounds and numbers. A tap fires one sticky plasma bolt; hold the trigger three seconds and release for a volley of four that homes on your target. Bolts stick to whatever they hit and burst a moment later. Twelve bolts a battery; a volley overheats it.",
-   "balance_desc": "Measured against the Plasma Grenade: a weaker burst (84, 206 when stuck), single bolts every 1.25 s, a slower volley, faster bolts and Halo 1-style aim assist; the charge, heat and battery stay Reach's.",
+   "balance_desc": "Measured against the Plasma Grenade: a weaker burst (84), single bolts every 1.25 s, faster bolts that slow sooner, a longer fuse once stuck and Halo 1-style aim assist; the charge, heat and battery stay Reach's.",
    "balance": [
     {
      "class": "jpt!",
@@ -5534,7 +5534,10 @@
     "Charged Drain Rate",
     "Misfire",
     "Reload Time"
-   ]
+   ],
+   "anims": {
+    "swap": 0.8461538461538461
+   }
   }
  ],
  "Halo 3": [
