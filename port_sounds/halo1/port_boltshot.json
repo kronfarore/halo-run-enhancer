@@ -101,6 +101,16 @@
    "aliases": [
     "sound\\weapons\\boltshot_port\\bo_drop"
    ]
+  },
+  {
+   "tag": "sound\\weapons\\boltshot_port\\bo_reload_balanced",
+   "perms": [
+    "bo_reload_balanced_1.wav",
+    "bo_reload_balanced_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\boltshot_port\\bo_reload_balanced"
+   ]
   }
  ]
 }
