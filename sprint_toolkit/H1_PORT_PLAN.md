@@ -1193,6 +1193,28 @@ vbuf 22.5-27.7 MiB of 64 (a10 highest), files 277-355 MiB (d40 355.1, a10 352.1)
 weapon placements 99 of 128. The 384 MiB question was then settled on
 purpose: a 458.8 MiB a10 loads and plays (0.1) -- no file-size cap. Spawn check in game: the user's.
 
+**WAVE B + C1 BATCH: EIGHT MAPS REBUILT + SHIPPED (2026-10-14, user's go), the wave check
+done.** a10 a50 b40 c10 c20 c40 d20 d40 -- NOT a30 / b30 (the parallel sessions' test
+levels; their baselines stay at the wave-A build until they are free). 21 done ports (wave A,
+the seven of wave B, the Storm Rifle). Live + baselines first copied to
+E:\HaloBackups\h1_waveBC_rebuild_2026-10-14. `h1_rebuild_all` now leaves every port that is not
+'done' out of a SHIPPING build (palette entries + placements dropped for the build, scenario put
+back; none was in progress then). Checks on the deployed eight: residency 21 x 8, 0 missing;
+port_refs_audit 0 problems (21 ports); port_sound_refs 0 BORROW; port_sounds --check 0.
+Capacity: tag 20.3-21.6 MiB, vbuf 33.7-38.9 MiB (a10 highest: 25 MiB left for the last eight
+ports), files 396-458 MiB -- the REAL d40 at 458 MiB loads and plays (user's boot).
+WAVE CHECK: `port_tool_proof --full --rev d096b49` CANNOT run across this wave -- the port
+CONFIGS gained keys the wave-start tools do not know (the beam recipe on the Spartan Laser,
+ground points everywhere); the old model tool crashed on the Spartan Laser and the aborted
+proof left 108 files of old-tool output in nine done ports' folders (restored from its backup,
+exact). Since then any failure restores the kit (a3dbffe) and THE WAVE CHECK is
+`port_tool_proof --reproduce` (today's tools must regenerate the kit): wBr, 21 ports, every
+step -> 16 changed + 209 bitmap headers, all explained: 7 FP model_animations (the known
+content-equal noise, B1/C1 records) and 6 sound tags (tool sounds' sample count, B7's record),
+not re-verified one by one; cyborg labels and BOTH reticle sheets checked: identical label by
+label and sequence by sequence (59 sequences, pixels + sprite bounds; the sheet writer re-packs
+the pixel blob, so the file hash differs). Kit restored exact after every run.
+
 ## Running two ports in parallel (user, 2026-10-12)
 
 Two port sessions may run at once. Each port's OWN work (its config, its weapon / sound / data
