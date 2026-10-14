@@ -344,8 +344,9 @@ PORT.update({
                               {r'sound\sfx\weapons\assault rifle\fire': SND + 'su_fire'},
                               {'match': 'flash', 'drop_off_axis': 0.012, 'scale': 1.0,
                                # BOOT 1 (user: 'not at the muzzle yet, a bit higher'): 1 unit up;
-                               # BOOT 2 ('needs to move further up'): 2 units
-                               'shift': (0.0, 0.0, 0.02),
+                               # BOOT 2 ('needs to move further up'): 2 units; BOOT 3 ('2 more
+                               # units up'): 4 units
+                               'shift': (0.0, 0.0, 0.04),
                                'drop_particles': ('casing', 'smoke h fp'),
                                'drop_parts': (r'sound\sfx\weapons\pistol\eject',),
                                'tint': (1.0,) + ORANGE}),
