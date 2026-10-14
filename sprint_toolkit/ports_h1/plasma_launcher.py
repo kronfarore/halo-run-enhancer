@@ -247,9 +247,21 @@ PORT = reserved(
     # FUEL ROD carrier ('pl' has no carrier; the grenade yardstick is thrown). Halo 1's carriers
     # (h1_weapon_carriers, 2026-10-13): fuel rod -- grunt specops fuel rod (+ airdef), both WDM 0.5,
     # they agree (the CR's donor); rocket -- the Flood combat Elite / human (0.4); plasma pistol --
-    # 29 (Grunts, Jackals, Flood, enhancer slots). WDM rule / balanced drop: after 5b on the built port
-    firing_profile={'mode': 'source', 'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map', 'from_weapon': 'objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher',
-                    'donor_weapon': 'weapons\\fuel rod gun\\fuel rod'},
+    # 29 (Grunts, Jackals, Flood, enhancer slots).
+    # Reach m10 (ai_firing_profile dry, 2026-10-14): weapon properties / firing pattern #14 -- max
+    # firing distance 20, desired range 8-10, WDM 0.75, bursts 2-2.75 s every 0.24-0.69 s (Reach's AI
+    # holds the charge; Halo 1's AI only TAPS a charged pair: single unguided bolts, as Reach's AI
+    # bolts are unguided), drop 0.2-0.45 loaded / 4-6 ammo.
+    # ARMED WDM RULE: base 0.5 (the fuel rod Grunts) x the yardstick (plasma grenade, 1/s: 120 dps) /
+    # the port's TAP dps (the AI taps): default 175 every 0.95 s = 184 -> 0.33; balanced 84.3 every
+    # 1.25 s = 67 -> 0.89
+    # BALANCED DROP (a battery: loaded only, the Focus Rifle's form): H1 fuel rod carriers 0.5-1.0 x
+    # Reach PL 0.2-0.45 / Reach fuel rod 0.25-0.4 (m10) -> 0.4, 1.125 -> capped at a full battery 1.0
+    firing_profile={'balanced_set': ['0x1D8=0.4:Drop Weapon Loaded', '0x1DC=1.0:Drop Weapon Loaded Max'],
+                    'mode': 'source', 'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map', 'from_weapon': 'objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher',
+                    'donor_weapon': 'weapons\\fuel rod gun\\fuel rod',
+                    'wdm_rule': {'base': 0.5, 'yardstick_dps': 120.0, 'port_dps': 184.0,
+                                 'balanced_port_dps': 67.0}},
 )
 
 PORT.update({
