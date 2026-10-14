@@ -31,7 +31,9 @@ Plasma Repeater taught" before B4. B4 (Grenade Launcher, 2026-10-12) is DONE and
 Armed x2; batched for wave B); read "B4: what the Grenade Launcher taught" before B5 (the Concussion
 Rifle; its prompt is at the end of this file). B5 (Concussion Rifle, 2026-10-13, parallel with B7) is
 DONE and tested (12 boots + Armed; batched for wave B); read "B5: what the Concussion Rifle taught"
-before B6 (the Plasma Launcher).
+before B6 (the Plasma Launcher). C1 (Storm Rifle, the Halo 4 pilot, 2026-10-14, parallel with B6) is
+DONE and tested (dry boots, balanced, Armed on b30; its ten-map rebuild BATCHED, user's go); read "C1:
+what the Storm Rifle taught" -- the Halo 4 recipe -- before C2 (the Suppressor).
 
 ## Phase 0: DONE (2026-10-07)
 
@@ -947,6 +949,63 @@ check (harmless); a level's build fails while the other port's palette tags are 
 The wave check (`port_tool_proof --full --rev d096b49`) is still due before wave B's batched rebuild
 (B6 not yet ported).
 
+## C1: what the Storm Rifle taught (2026-10-14) -- the HALO 4 RECIPE, read before C2 (the Suppressor)
+
+PORTING.md "Halo 1: the Storm Rifle, the Halo 4 pilot" is the full record; `ports_h1/storm_rifle.py` is
+the example of a HALO 4-SOURCE port (on the plasma rifle template). Everything in "Pilot A1" to "B7"
+still holds -- "B1: what the DMR taught" most of all: Halo 4 goes the same way Reach went. The route the
+next eight inherit:
+
+**Halo 4 goes through wave A's pipeline, behind `h4:`.** Name every source tag `h4:objects\...`
+(h4_tags.py exports H4EK to Halo 3-shaped XML into `out\h4_export`); step 4a's Halo 4 side:
+`h3_weapon_values.py --kit h4 <w>=<fp graph>` (FP graphs under objects\characters\storm_fp\weapons;
+extra rows: heat warning, vent, the aim-assist MODE block -- read aim from the mode block). Sounds:
+`sounds['bank'] = 'halo4'`, `wwise_bank` = `<x>_player`. Run order unchanged.
+- GEOMETRY: ONE render model for world and FP (`model.world` = `model.fp` = the .render_model). Short
+  `material_names` (Halo 1 keeps 31 chars of a shader name; a material without a shader hangs `tool
+  model`). An OWN collision hull (`collision` boxes) -- the template's hides the world model.
+- FP, route (a) = Halo 4's own graph, two steps: `h4_fp_dump.py` in Blender (Foundry decodes the
+  COMPRESSED-ONLY graph -> out\h4_fp\<graph>.json; rerun when the graph changes), then
+  h1_fp_retarget with the re-solve (automatic for h4: graphs): `drop_nodes` = the storm_rifle DROP list
+  (pedestal / aim nodes, helpers / fixups / twists / armour, grips, pinky0, l_hand_marker_offset),
+  `nodes` b_gun etc -> `frame b ...`, `look` -> overlays. Every storm_fp graph shares the skeleton: the
+  DROP list and h4_tags.ARM_AXES carry over. Expect per-animation fixes: `holds` for an `overheated`
+  that is not between its neighbours, `hand_offset_anims` for a grip the H1 glove sinks into. Render
+  Halo 4's own arms (scratch h4_ref_render.py; promote it if C2 needs it) beside fp_render BEFORE the
+  boot.
+- TEXTURES: H4 .material: read the self-illum colour / scale and the control map; multi-image bitmaps
+  decode through h4_tags.bitmap_images; constant meter shapes = static lit (`display_base` / `wire`).
+- HUD: CUI (.cui_screen), 3 px a unit (h3_hud_art handles h4: names); crosshair supersampled. On-gun
+  displays as `meters` 'stages' (+ `value_floor` 0.1 on heat). Check the source's own screen: Halo 4 has
+  NO on-gun battery counter on the Storm Rifle (the digits existed in the model; dropped, user).
+- SOUNDS: fire = a multi-layer Wwise event; flyby / impact in SHARED banks (`event@bank`); projectile
+  loops are empty in MCC (none to port).
+
+**Heat: the user's rule (2026-10-13).** Halo 2 / 3 / ODST / Reach / 4 DRAIN heat while the trigger is held;
+Halo 1 too, with ONE loss. Fit: loss = the source's OVERHEATED loss (keeps the lockout), heat a round
+fitted to the source's shots-to-overheat under drain (h1_role_compare `loss_oh`, approximation A').
+Probe it (`h1_weapon_state_probe`). The Halo 4 manual vent (reload) has no Halo 1 counterpart: the
+overheat is the vent. B3 Plasma Repeater and the H4-kit Focus Rifle still carry the old rule (revisit
+after C1, user).
+
+**Process (observations):**
+- Arms are where the boots go (5 of 7 here). Count hand-in-gun intersections and render Halo 4's arms
+  per animation before asking for a boot; fix per animation, not globally (a global hand offset broke
+  the melee).
+- The parallel pair (with B6) ran cleanly under kit_commit / kit_lock; a config `teach` added mid-proof
+  showed as one changed cyborg.model_animations in the proof -- expected, not a regression.
+- Tools now: h4_tags.py, h4_fp_dump.py, h1_fp_retarget `_resolve_arms` / `_continuous` / `holds` /
+  `hand_offset(_anims)`, h1_h3_weapon_model meters 'stages' + `value_floor` and numeric 'digits',
+  h1_port_sounds 'halo4' + `event@bank` + 'offsets', h3_weapon_values `--kit h4`, h1_role_compare
+  `loss_oh`.
+
+**For C2 (the Suppressor, H4EK `objects\weapons\rifle\storm_forerunner_smg`):** a Forerunner
+automatic firing fast projectiles from a MAGAZINE (no heat: the plain-magazine rules of A1 / A2 apply,
+the heat section above does not); same storm_fp skeleton, so the DROP list and the arm re-solve carry
+over (check its FP graph's node list against it first). Yardstick (step 4a, the user's pick): the
+Assault Rifle (automatic, magazine) or the Needler (automatic projectile). Measure the rate with the
+probe (A1's 15/s cap vs B7's 30/s).
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one
@@ -1040,7 +1099,7 @@ those tools are SAW-hardwired: the pilot generalizes them.
 
 | # | weapon | new things it tests |
 |---|---|---|
-| C1 | **Storm Rifle** (pilot) | generalizing the SAW tools; heat |
+| C1 | **Storm Rifle** (pilot) -- DONE 2026-10-14 | the h4: source (not the SAW tools), Halo 4's compressed FP graph decoded + the arms re-solved; heat -- see "C1: what the Storm Rifle taught" |
 | C2 | Suppressor | an automatic, a fast projectile |
 | C3 | Boltshot | a charged secondary shot, approximated |
 | C4 | LightRifle | burst + zoom |

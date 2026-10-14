@@ -1,0 +1,139 @@
+{
+ "game": "Halo 1",
+ "weapon": "Storm Rifle",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\storm_rifle_port\\st_fire",
+   "perms": [
+    "st_fire_1.wav",
+    "st_fire_2.wav",
+    "st_fire_3.wav",
+    "st_fire_4.wav",
+    "st_fire_5.wav",
+    "st_fire_6.wav",
+    "st_fire_7.wav",
+    "st_fire_8.wav",
+    "st_fire_9.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\storm_rifle_port\\st_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\storm_rifle_port\\st_dryfire",
+   "perms": [
+    "st_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\storm_rifle_port\\st_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\storm_rifle_port\\st_ready",
+   "perms": [
+    "st_ready_1.wav",
+    "st_ready_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\storm_rifle_port\\st_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\storm_rifle_port\\st_melee",
+   "perms": [
+    "st_melee_1.wav",
+    "st_melee_2.wav",
+    "st_melee_3.wav",
+    "st_melee_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\storm_rifle_port\\st_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\storm_rifle_port\\st_pose",
+   "perms": [
+    "st_pose_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\storm_rifle_port\\st_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\storm_rifle_port\\st_overheat",
+   "perms": [
+    "st_overheat_1.wav",
+    "st_overheat_2.wav",
+    "st_overheat_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\storm_rifle_port\\st_overheat"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\storm_rifle_port\\st_oh_exit",
+   "perms": [
+    "st_oh_exit_1.wav",
+    "st_oh_exit_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\storm_rifle_port\\st_oh_exit"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\storm_rifle_port\\st_drop",
+   "perms": [
+    "st_drop_1.wav",
+    "st_drop_2.wav",
+    "st_drop_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\storm_rifle_port\\st_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\storm_rifle_port\\st_flyby",
+   "perms": [
+    "st_flyby_1.wav",
+    "st_flyby_2.wav",
+    "st_flyby_3.wav",
+    "st_flyby_4.wav",
+    "st_flyby_5.wav",
+    "st_flyby_6.wav",
+    "st_flyby_7.wav",
+    "st_flyby_8.wav",
+    "st_flyby_9.wav",
+    "st_flyby_10.wav",
+    "st_flyby_11.wav",
+    "st_flyby_12.wav",
+    "st_flyby_13.wav",
+    "st_flyby_14.wav",
+    "st_flyby_15.wav",
+    "st_flyby_16.wav",
+    "st_flyby_17.wav",
+    "st_flyby_18.wav",
+    "st_flyby_19.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\storm_rifle_port\\st_flyby"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\storm_rifle_port\\st_impact",
+   "perms": [
+    "st_impact_1.wav",
+    "st_impact_2.wav",
+    "st_impact_3.wav",
+    "st_impact_4.wav",
+    "st_impact_5.wav",
+    "st_impact_6.wav",
+    "st_impact_7.wav",
+    "st_impact_8.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\storm_rifle_port\\st_impact"
+   ]
+  }
+ ]
+}

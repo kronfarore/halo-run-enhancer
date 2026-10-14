@@ -1991,6 +1991,80 @@ through the Edit tool only.
 **Proofs:** fo1 (bake size), fo2 (stops / gain / grey + contrail secondary), fo3 (components) -- 0
 changed apart from bitmap headers, the kit restored exact; the scroll keys rode in B5's cr proofs.
 
+### Halo 1: the Storm Rifle, the Halo 4 pilot (wave C1, 2026-10-13/14, 7 boots + Armed on b30, PARALLEL with B6) -- Halo 4 as a SOURCE, its compressed FP graph decoded and the arms re-solved, Wwise sounds, a CUI HUD
+
+The whole weapon is `ports_h1/storm_rifle.py`, on a copy of the Halo 1 PLASMA RIFLE (heat / battery HUD,
+gauge, overheat states). Halo 4 enters wave A's pipeline behind `h4:` paths, as Reach did behind
+`reach:` (B1); the SAW's Halo 4 tools (saw_to_jms etc.) were not needed.
+
+**THE h4: SOURCE (`h4_tags.py`).** `tool export-tag-to-xml` of H4EK (absolute paths, cwd = the kit)
+writes Halo 3-SHAPED XML: the Halo 3 readers run unchanged (`h3_weapon_values --kit h4`, h1_h3_weapon_model,
+h3_hud_art). Bitmaps: a multi-image tag (the 10 Covenant digits, the 7 heat stages) is ONE pixel blob
+after a u32 total size, ending at the next `lbgt` chunk (`bitmap_images` / `decode_bitmap`). Halo 4's
+render model = world AND first person (like Reach): 4 nodes (b_gun root not tilted, cannister, two vents).
+
+**THE FP GRAPH IS COMPRESSED-ONLY** (no float copy, unlike Reach). `h4_fp_dump.py` (Blender + Foundry,
+reusing `h4_fp_jump.build_rig`) decodes it and dumps rest + every frame's armature matrices to
+`out\h4_fp\<graph>.json`; h4_tags.load_graph reads that. Blender space = G(-90 deg about z) x Halo x
+3.048; the per-bone convention is identity. Foundry samples N+1 frames: keep N. OVERLAYS import as full
+poses stacked on idle frame 0 -> deltas from frame 0 (`overlay_deltas`). Foundry leaves a stray
+`<folder><basename>` copy of the graph / render model in H4EK: removed (h4_fp_dump does it itself).
+
+**THE ARMS ARE RE-SOLVED** (`h1_fp_retarget._resolve_arms`; storm_fp is NOT Halo 1's skeleton: 84 nodes,
+other proportions). Per frame: base re-axed (h4_tags.ARM_AXES per side), two-bone IK on HALO 1's bone
+lengths to Halo 4's wrists with the elbow in Halo 4's arm plane; a wrist out of Halo 1's reach moves the
+SHOULDER toward it by the shortfall (Halo 4's melee stretches the left arm ~4 cm past it -- clamped, the
+hand stopped inside the gun). FINGERS BY DIRECTION: each Halo 1 segment rigid on its solved parent, then
+the smallest rotation onto Halo 4's segment (joint -> next joint, the tip along Halo 4's bone axis) --
+absolute axes (100-170 deg off: Halo 4's finger bones have their own conventions) and deviation-from-bind
+(Halo 4's bind hand is curled, Halo 1's flat) both failed in game. Quaternions kept in the previous
+frame's hemisphere per node (`_continuous`): w >= 0 locals flipped near 180 deg and MCC's frame blend
+spun through each flip (melee, the fidget). `hand_offset` / `hand_offset_anims` (gun-space, per side,
+per source animation): Halo 1's chunkier glove sinks into a grip Halo 4's slim hand wraps -- applied to
+the FIDGET only (user: idle fine without, the melee grip lost with it). Reference: Halo 4's own arms
+rendered from b_camera_control in Blender (scratch h4_ref_render.py) against fp_render, same frames.
+Halo 1 plays `overheated` once; Halo 4's `overheated` is not between overheating and o_h_exit (a 19 cm
+jump) -> `holds`: overheating's last frame held 31 frames (40 too long, user). User verdict after 5 dry
+boots: idle and overheat good, the fidget acceptable, the melee grip approximate ("That settles the
+animation work").
+
+**SOUNDS: WWISE** (`h1_port_sounds` bank 'halo4'). First-person events live in the bank `<x>_player`
+(here `assault_carbine_player`); the fire event has 6 layers; `<event>@<bank>` names another bank's event
+(the flyby in proj_cov_whizby, the impact in plasma_impact_generic); 'offsets' trims per folder. The
+projectile loop events are EMPTY in MCC. All own, under sound\weapons\storm_rifle_port.
+
+**HUD: CUI** (.cui_screen, 1280x720 canvas, art 3 px a widget unit: h4_tags.px_per_unit). The crosshair
+from ac_tick + layers + ac_circle, scale 2.3, supersampled (512 px cell). The on-gun HEAT panel = 7
+stage images -> one Halo 1 meter (`meters` 'stages', a texel's threshold = the first stage it is lit in);
+`value_floor` 0.1 (Halo 1's heat out B is floored at 0.1: stage 1 lit from cold, boot 2). The battery
+counter (10 Covenant digits) was built (`numeric` 'digits', glyph in RGB too: the numeric chicago ADDS
+its map -- white quads otherwise) and then DROPPED (user: Halo 4 shows no counter on the gun). The
+overheat chevron on function 0 (= overheated): the template's function 3 carries INVERT (lit at rest).
+
+**HALO 1 TRAPS (new):** `tool` keeps 31 characters of a shader name (`material_names` st_*); `tool model`
+loops on a prompt for a material without a shader; the template's collision hull hid the world model
+(an own hull: h1_box_collision boxes).
+
+**Step 4a (user): the PLASMA PISTOL** (Halo 4 has no plasma rifle; the only heat plasma weapon in both).
+Halo 4: 8 a bolt (plasma_fast) x 10/s, heat 0.09, loss 0.55 / 0.3 overheated, recovery 0.1, battery
+0.006 (167), 50 wu/s, range 100. **HEAT DRAINS WHILE FIRING in Halo 2 / 3 / ODST / Reach / 4** (user,
+relayed mid-port: the old 'cools only while not firing' reading was wrong) -> 27 bolts / 2.6 s, 3.0 s
+vent. Halo 1 also cools while firing but with ONE loss: approximation A' -- loss 0.3 (the overheated one,
+the 3 s lockout kept), heat fitted 0.0665 (the 27th bolt). Balanced (ratio): 10.29, heat 0.0639 on 0.433,
+recovery 0.25 -> 47 bolts, 1.73 s vent; 62.5 wu/s, range 125, aim 6.25 / 15; PP bolt table x Halo 4's
+plasma_fast / slow; battery = Halo 4's own (the ratio degenerate). PROBES (h1_weapon_state_probe): a
+10.0 tag fires 10.0/s; A' = 27 bolts in 2.61 s + 3.00 s vent. The user: balanced is "very hard to
+overheat". The shared tools' old heat rule was fixed in passing (port_ttk, port_role_compare: a8d79b2);
+B3 Plasma Repeater and the H4-kit Focus Rifle were reported affected (revisit after C1, user).
+
+**Step 11.** Halo 4 m020 ai\generic Storm Rifle entry over the Elite minor plasma rifle (one donor for
+every slot, B3's choice); WDM 0.5 x 90 / 80 (default), / 103 (balanced); balanced drop 0.5-0.9. Enhancer
+(bd7646c, 1f2385b): hands 'two', own bolt + melee tag_map, skip Ammo / Reload / Ramp Up / Misfire, 18
+cards from the plasma rifle. Armed boot: Grunts (x0.5, two-handed), Jackals (shieldless), Elites.
+
+**Proofs:** st1-st7 narrowed (model / retarget / sounds / pickable of the done ports): 0 changed apart
+from bitmap headers, restore 0 each.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:

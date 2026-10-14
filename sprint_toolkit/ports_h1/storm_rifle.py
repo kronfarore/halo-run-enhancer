@@ -106,7 +106,7 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'in_progress',
+    'status': 'done',             # 2026-10-14: 5 dry boots, balanced, Armed (grunt, jackal, elite) on b30
 
     # geometry + look (h1_h3_weapon_model.py; Halo 4 through h4_tags). Halo 4's ONE render model for
     # world AND first person: 4 nodes -- b_gun (root, identity: not tilted), b_cannister, b_top_vent,
