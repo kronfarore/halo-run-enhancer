@@ -111,7 +111,7 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'done',             # 2026-10-14: 5 dry boots, balanced, Armed (grunt, jackal, elite) on b30
+    'status': 'rework',             # 2026-10-14: 5 dry boots, balanced, Armed (grunt, jackal, elite) on b30
     # CLOSE-OUT RECORD (2026-10-14):
     # STEP 4b (port_field_audit --port storm_rifle, final): list 2 = ratio suggestions only (wave C's
     #   DEFAULT keeps Halo 4's own: 10/s, error 0.5 -> 2.75 deg, battery 0.006, aim from the MODE block
