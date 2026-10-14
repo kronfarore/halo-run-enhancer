@@ -154,7 +154,25 @@ PORT.update({
                                      # BOOT 2 (user: 'now pure white'): the white-hot core
                                      # took over at gain 2.2 -> no hot core: the whole strip in
                                      # the screenshot's yellow-orange
-                                     'gain': 2.2, 'falloff': 0.35, 'radius': 1.3, 'hot': False}},
+                                     # BOOT 4 (user: 'any concept to make it really pop?' -> try the
+                                     # halo + the hot centreline together, on different parts): B
+                                     # = every strip a STRIP glow (falls off across the long axis,
+                                     # not radially) with a narrow pale-yellow core line
+                                     'strip': True, 'gain': 1.6, 'falloff': 0.5, 'radius': 1.2,
+                                     # BOOT 5 (user: 'the back glow lights are too light' -- the rear
+                                     # strips / drum ring without the halo read pale-white): the core
+                                     # narrower (power 3) and yellower
+                                     'hot': True, 'core': 3.0, 'hot_rgb': (1.0, 0.9, 0.5)},
+                         # A = the HALO (bloom stand-in): a soft wide strip glow on the cards below
+                         'su_halo': {'rgb': ORANGE, 'additive': True, 'islands': True,
+                                     'islands_of': 'storm_forerunner_smg_default_glow',
+                                     'strip': True, 'gain': 0.8, 'falloff': 1.5, 'radius': 1.0,
+                                     'hot': False}},
+        # BOOT 4 test: halo cards (each strip copied x2.2 about its centre, lifted 0.05) on the FRONT-LEFT
+        # strips only (islands 2 / 5 / 8: the long strip, the short one, the front ring; within 3.5
+        # of (16, 1, 2) JMS units) -- the rear-left strips (12 / 13 / 17) show B alone.
+        # BOOT 5 (user: front good, the rear too light): the halo on EVERY strip
+        'glow_cards': {'su_halo': {'of': 'su_glow', 'shader': 'su_halo', 'scale': 2.2, 'lift': 0.05}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's own storm_fp_forerunner_smg (Foundry,
@@ -346,7 +364,8 @@ PORT.update({
                                # BOOT 1 (user: 'not at the muzzle yet, a bit higher'): 1 unit up;
                                # BOOT 2 ('needs to move further up'): 2 units; BOOT 3 ('2 more
                                # units up'): 4 units
-                               'shift': (0.0, 0.0, 0.04),
+                               # BOOT 4 ('1 unit back down'): 3 units
+                               'shift': (0.0, 0.0, 0.03),
                                'drop_particles': ('casing', 'smoke h fp'),
                                'drop_parts': (r'sound\sfx\weapons\pistol\eject',),
                                'tint': (1.0,) + ORANGE}),
