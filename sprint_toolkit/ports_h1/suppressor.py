@@ -225,7 +225,12 @@ PORT.update({
         'weapon': SU + 'suppressor',
         'template': AR + 'assault rifle',
         'world_model': SU + 'suppressor',
-        'fp_model': SU + 'fp\\fp',
+        # ONE model tag for world AND first person (user, 2026-10-14): Halo 1's map builder crashes
+        # past 32 MiB of model vertices + indices (memory h1-model-buffer-32mib-cap); the world and
+        # fp gbxmodels are the same geometry (only the permutation name differs), so the weapon
+        # names the world tag twice and the map stores it once (-0.80 MB). fp\fp.gbxmodel is still
+        # written by the model step for the FP tools (fp_render, h1_fp_muzzle, h1_fp_hand_clip)
+        'fp_model': SU + 'suppressor',
         'fp_anims': SU + 'fp\\fp',
         'label': 'su',
         'teach': ('su', 'ar'),
@@ -267,7 +272,10 @@ PORT.update({
             'weap_attrs.magazines.0.magazine_items.0.rounds': 192,
             # STEP 4b list 2: illumination recovery 0.04 x 0.1/0.1 (Halo 4 / its AR x the H1 AR)
             'weap_attrs.triggers.0.misc.illumination_recovery_time': 0.04,
-            'item_attrs.collision_sound.filepath': SND + 'su_drop'},
+            'item_attrs.collision_sound.filepath': SND + 'su_drop',
+            # the OWN hull (h1_box_collision.py suppressor --write; model['collision']): stage 1's
+            # a30 build crashed with the AR's hull (other nodes) on the 13-node model
+            'obje_attrs.collision_model.filepath': SU + 'suppressor'},
         # Halo 4: minimum error 0, error angle 0.5 -> 3
         'error_deg': {'minimum_error': 0.0, 'error_angle': (0.5, 3.0)},
         # Halo 4: 48 loaded, 192 at the start, 336 most; reload time: none in the tag (the animation
