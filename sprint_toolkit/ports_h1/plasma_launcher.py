@@ -47,7 +47,13 @@ RQ = (47 / 2.0 * 0.945, 44 / 2.0 * 0.945)
 # BOOT 8 (user): 'still early, set it back 0.3 s' -> +0.06 on the 5 s scale
 # BOOT 9 (user): 'push the charge lights back another 0.15 s' -> +0.03
 # BOOT 10 (user): 'another 0.15 s' -> +0.03 (pips confirmed perfect)
-CHARGE_RAMP = [(0.0, HOLO_BLUE), (0.715, HOLO_BLUE), (0.74, (1.0, 0.32, 0.12)), (1.0, (1.0, 0.32, 0.12))]
+# BOOT 11 (user): 'still early' -- the switch value moved +0.22 since boot 7 (~1.1 s on the 5 s
+# scale) but the lights only ~0.3-0.4 s: Halo 1's sampling of this tiny ramp is not 'value + 0.1'.
+# The ramp is no longer read against the charge: object function 0 (A out, the template's inverted
+# age for the pistol's on-gun display -- unused here) = primary charged clipped and normalised to
+# 0.495..0.505 = a 0 / 1 STEP at 3.0 s (the probe: 0.50 at 3.0 s); the ramp just blue below 0.3,
+# red above 0.7 of that step
+CHARGE_RAMP = [(0.0, HOLO_BLUE), (0.3, HOLO_BLUE), (0.7, (1.0, 0.32, 0.12)), (1.0, (1.0, 0.32, 0.12))]
 # Halo 1 material indices (h1_role_compare.H1_MATERIALS order)
 JACKAL_SHIELD, WATER = 16, 28
 FORCE_FIELDS = [10, 18, 26, 32]      # force field, engineer force field, monitor, hunter shield
@@ -281,10 +287,10 @@ PORT.update({
         # an additive glow in Reach's bolt blue
         'meters': {'circular_indicator': {'map': HOLO, 'from': GAUGE, 'shape': 'r',
                                           'gradient': 0.0, 'static': STATIC, 'color': HOLO_BLUE,
-                                          'ramp': CHARGE_RAMP, 'ramp_source': 'D_out'},
+                                          'ramp': CHARGE_RAMP, 'ramp_source': 'A_out'},
                    'plasma_launcher_display': {'map': HOLO, 'from': GAUGE, 'shape': 'r',
                                                'gradient': 0.0, 'static': STATIC, 'color': HOLO_BLUE,
-                                               'ramp': CHARGE_RAMP, 'ramp_source': 'D_out'}},
+                                               'ramp': CHARGE_RAMP, 'ramp_source': 'A_out'}},
         # THE BOLT'S MODEL: Reach's own plasma_launcher_grenade (one node; materials
         # plasma_nade_metal / plasma_launcher_projectile -- the CR's bolt materials) glowing
         # ADDITIVELY (the CR's boot 3: a solid glow shader_model draws the template's reflection
@@ -448,6 +454,13 @@ PORT.update({
             'weap_attrs.triggers.0.charging.charging_time': 3.0,
             'weap_attrs.triggers.0.charging.charge_hold_time': 2.0,
             'weap_attrs.triggers.0.charging.overcharged_action': 'discharge',
+            # THE FULL-CHARGE STEP (boot 11): A out = 1 from primary charged 0.50 (= 3.0 s) on
+            'obje_attrs.functions.0.flags.invert': False,
+            'obje_attrs.functions.0.function': 'one',
+            'obje_attrs.functions.0.scale_function_by': 'B_in',
+            'obje_attrs.functions.0.bounds_mode': 'clip_and_normalize',
+            'obje_attrs.functions.0.bounds': (0.495, 0.505),
+            'obje_attrs.functions.0.usage': 'charged',
             # 4b list 3: Reach's charged illumination 0.5 (the rocket's 0: a zero on one side)
             'weap_attrs.triggers.0.charging.charged_illumination': 0.5,
             # trigger 1 = the VOLLEY. BOOT 1 PROBE: a spew time on trigger 1 fires ONE bolt (the
