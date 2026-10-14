@@ -153,7 +153,7 @@ PORT.update({
     #   hit = own copy x0.808 (4/s); 10 the flash = the needler's centre sprites (sideways pairs
     #   dropped). The player is NEVER supercombined in Halo 1 campaign (engine gate, confirmed by a
     #   live read: the supercombine session) -- not a port defect.
-    'status': 'rework',
+    'status': 'done',
 
     # geometry + look (h1_h3_weapon_model.py; Reach through reach_tags). Reach's ONE model for
     # world AND first person. needle_rifle.render_model: 15 nodes -- b_gun (root), b_scope (+
@@ -305,7 +305,12 @@ PORT.update({
         'weapon': NR + 'needle rifle',
         'template': N + 'needler',
         'world_model': NR + 'needle rifle',
-        'fp_model': NR + 'fp\\fp',
+        # ONE model tag for world AND first person (user, 2026-10-14): Halo 1's map builder crashes
+        # past 32 MiB of model vertices + indices (memory h1-model-buffer-32mib-cap); the world and
+        # fp gbxmodels are the same geometry (only the permutation name differs), so the weapon
+        # names the world tag twice and the map stores it once (-0.39 MB). fp\fp.gbxmodel is still
+        # written by the model step for the FP tools (fp_render, h1_fp_muzzle, h1_fp_hand_clip)
+        'fp_model': NR + 'needle rifle',
         'fp_anims': NR + 'fp\\fp',
         'label': 'nr',
         'teach': ('nr', 'pr'),
