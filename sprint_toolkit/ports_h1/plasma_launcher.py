@@ -45,7 +45,8 @@ RQ = (47 / 2.0 * 0.945, 44 / 2.0 * 0.945)
 # Halo 1 samples the ramp ~0.10 further along than the charge value (the lit shapes' own UVs x the
 # 0.001 uv scale) -> the switch at 0.50 + 0.10
 # BOOT 8 (user): 'still early, set it back 0.3 s' -> +0.06 on the 5 s scale
-CHARGE_RAMP = [(0.0, HOLO_BLUE), (0.655, HOLO_BLUE), (0.68, (1.0, 0.32, 0.12)), (1.0, (1.0, 0.32, 0.12))]
+# BOOT 9 (user): 'push the charge lights back another 0.15 s' -> +0.03
+CHARGE_RAMP = [(0.0, HOLO_BLUE), (0.685, HOLO_BLUE), (0.71, (1.0, 0.32, 0.12)), (1.0, (1.0, 0.32, 0.12))]
 # Halo 1 material indices (h1_role_compare.H1_MATERIALS order)
 JACKAL_SHIELD, WATER = 16, 28
 FORCE_FIELDS = [10, 18, 26, 32]      # force field, engineer force field, monitor, hunter shield
@@ -587,7 +588,7 @@ PORT.update({
                                  # swallowed the overlay and alpha keys (the pips drew tiny)
                                  'mirror4': (263 + round(20 / 1.02), -164, 263),
                                  'overlay': 1.02 / (0.37 * 0.5) * 268 / 304, 'alpha': 0.85,
-                                 'offset': (round(35 / 1.11), round(165 * 268 / 304 / 1.11)), 'rgb': (110, 190, 245), 'normalize': True,
+                                 'offset': (round(35 / 1.11) - 9, round(165 * 268 / 304 / 1.11)),  # BOOT 9: ~10 px right of centre 'rgb': (110, 190, 245), 'normalize': True,
                                  'gamma': 1.0}],
                 # BOOT 3: the offsets fixed (RQ) drew the art ~10 % narrower (345 against 382 cell px) ->
                 # the overlay x382/345 keeps the size the user called close
