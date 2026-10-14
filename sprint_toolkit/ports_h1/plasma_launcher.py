@@ -275,7 +275,7 @@ PORT = reserved(
 PORT.update({
     # 2026-10-14: tested on a30 over 16 dry boots + balanced + Armed x2 (PARALLEL with C1, the Storm
     # Rifle) -- confirmed by the user; the ten-map rebuild is BATCHED for wave B (user's go)
-    'status': 'done',
+    'status': 'rework',
     # CLOSE-OUT RECORD (2026-10-14). 4b + template diff + port_sound_refs + the muzzle flash before
     # boot 1. Yardstick: the PLASMA GRENADE (user); default = Reach's own, balanced = the grenade
     # ratio, holes by the rocket ratio, Reach's charge kept.
