@@ -173,7 +173,8 @@ species' skill. Halo 4 (and the other sources' ai\generic) gives no species an o
 shape and rate stay the weapon's (+ the Grunt half rate). Stock character: Grunt minor PP vs
 Elite minor PR error x2, tracking x0.56, surprise x5; Jackal error x0.33, tracking x0.67. A
 profile's `species_skill: False` opts out; `SPECIES_SKILL_HOLD` keeps in-progress ports out
-(the Plasma Launcher, until the user's go). Proof of the opt-in pilot: the Plasma Repeater's
+(the Plasma Launcher was held until done; wired in on the user's go, 2026-10-14 -- its spec-ops
+Grunt fuel rod donor: the Jackal / Elite slots now carry their own species' skill). Proof of the opt-in pilot: the Plasma Repeater's
 Armed b30 build byte-identical. Back up `ai_firing_profiles.json`,
 `ai_firing_profile.py` and `h1_enemy_weapons.py` (port_backup h1 carries them).
 

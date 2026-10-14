@@ -674,13 +674,13 @@ def actor_flag_rule(m, bases, weapon):
 # of its sums (min / max ratios alone could cross); tracking / leading capped at 1. Ports opt in
 # with firing-profile 'species_skill' until SPECIES_SKILL_ALL (the rollout to every port).
 # ROLLED OUT (user, 2026-10-14, after the Storm Rifle's Armed boot): every port with a firing
-# profile; a profile's 'species_skill': False opts out. HELD until the user's go: the ports
-# still in progress (B6 Plasma Launcher -- 'fully done, on my go').
+# profile; a profile's 'species_skill': False opts out. HELD until the user's go: ports still
+# in progress (the B6 Plasma Launcher was held until done; wired in on the user's go, 2026-10-14).
 SPECIES_SKILL = [((0x7C,), 'error'), ((0xBC,), 'tracking'), ((0xC0,), 'leading'),
                  ((0x80, 0x84), 'first burst delay'), ((0x8C,), 'surprise delay')]
 SPECIES_SKILL_CAP = {0xBC: 1.0, 0xC0: 1.0}
 SPECIES_SKILL_ALL = True
-SPECIES_SKILL_HOLD = {BS.join(('weapons', 'plasma launcher', 'plasma launcher'))}
+SPECIES_SKILL_HOLD = set()
 
 
 def species_skill_rule(m, slots, weapon, index):
