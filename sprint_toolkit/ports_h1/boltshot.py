@@ -104,6 +104,10 @@ PORT = reserved(
                     'donor_variant': 'characters\\jackal\\jackal minor plasma pistol',
                     'wdm_rule': {'base': 0.5, 'yardstick_dps': 88.0, 'port_dps': 75.0,
                                  'balanced_port_dps': 87.5},
+                    # dry run (2026-10-14): ai\generic #21, WDM 0.5867 / 0.5029 (balanced), drop 0.7-0.9.
+                    # THE BALANCED DROP RULE: Halo 1's plasma-pistol carriers drop 0.7 - 0.9 x Halo 4
+                    # Boltshot 0.7 - 0.9 / Halo 4 plasma pistol 0.7 - 0.9 (m020 ai\generic) = 0.7 - 0.9
+                    'balanced_set': ['0x1D8=0.7:Drop Weapon Loaded', '0x1DC=0.9:Drop Weapon Loaded Max'],
                     'species_skill': True},
 )
 
@@ -121,6 +125,10 @@ PORT.update({
         'world': H4 + SW + r'\storm_stasis_pistol.render_model',
         'fp': H4 + SW + r'\storm_stasis_pistol.render_model',
         'world_name': 'boltshot',
+        # DECIMATION (h1_decimate, 2026-10-14; H1_PORT_PLAN 0.1): the side view broke at 40 (holes,
+        # slabs), 50 / 60 (lumps), 70 (a dark sliver in the slide); 80 intact (max 1.07 mm) ->
+        # 9150 -> 7320 triangles, ~0.44 -> 0.36 MiB of the model buffer (a small gun: little to gain)
+        'decimate': {'keep': 80.0, 'protect': 1.0, 'views': [((-0.1988, 0.0651, 0.0576), (0.9957, -0.0667, -0.0647), (0.0635, -0.0195, 0.9978), 1.0), ((-0.1982, 0.066, 0.058), (0.995, -0.0669, -0.0743), (0.0741, -0.0051, 0.9972), 1.0), ((-0.1988, 0.0651, 0.0576), (0.9957, -0.0667, -0.0647), (0.0635, -0.0195, 0.9978), 1.0), ((0.0735, 0.0, -0.0154), (0.0, 0.0, 1.0), (0.0, 1.0, 0.0), 1.0), ((0.0735, 0.0003, -0.0154), (0.0016, -0.0156, 0.9999), (-0.0075, 0.9999, 0.0156), 1.0), ((0.0735, 0.0003, -0.0154), (-0.0057, -0.003, 1.0), (0.004, 1.0, 0.003), 1.0), ((-0.1964, 0.0648, 0.0656), (0.9924, -0.0657, -0.1042), (0.103, -0.0222, 0.9944), 1.0), ((-0.1908, 0.0647, 0.0545), (0.996, -0.0662, -0.0591), (0.0601, 0.0122, 0.9981), 1.0), ((-0.1964, 0.0648, 0.0656), (0.9924, -0.0657, -0.1042), (0.103, -0.0222, 0.9944), 1.0), ((-0.1229, 0.1737, -0.1246), (0.0425, -0.1285, 0.9908), (-0.8578, 0.5037, 0.1022), 0.5), ((-0.1571, 0.0639, 0.1282), (0.9086, -0.0148, -0.4173), (0.4137, 0.168, 0.8948), 0.5), ((-0.1229, 0.1737, -0.1246), (0.0425, -0.1285, 0.9908), (-0.8578, 0.5037, 0.1022), 0.5), ((-0.1988, 0.0651, 0.0576), (0.9957, -0.0667, -0.0647), (0.0635, -0.0195, 0.9978), 0.5), ((-0.1341, 0.1522, 0.1608), (0.7904, -0.3336, -0.5138), (0.5472, 0.0072, 0.837), 0.5), ((-0.1988, 0.0651, 0.0576), (0.9957, -0.0667, -0.0647), (0.0635, -0.0195, 0.9978), 0.5), ((-0.1988, 0.0651, 0.0576), (0.9957, -0.0667, -0.0647), (0.0635, -0.0195, 0.9978), 0.5), ((-0.1341, 0.1522, 0.1608), (0.7904, -0.3336, -0.5138), (0.5472, 0.0072, 0.837), 0.5), ((-0.1988, 0.0651, 0.0576), (0.9957, -0.0667, -0.0647), (0.0635, -0.0195, 0.9978), 0.5), ((-0.1988, 0.0651, 0.0576), (0.9957, -0.0667, -0.0647), (0.0635, -0.0195, 0.9978), 0.5), ((-0.0558, -0.0274, 0.1748), (0.8245, 0.56, 0.0817), (0.3226, -0.5837, 0.7452), 0.5), ((-0.1988, 0.0651, 0.0576), (0.9957, -0.0667, -0.0647), (0.0635, -0.0195, 0.9978), 0.5)]},
         'markers': {'left_hand': 'left hand', 'fx_vent': 'vent', 'primary_trigger': 'primary trigger'},
         'ground_point': 'auto',
         # an own hull from the world model's extent (h1_box_collision; the Storm Rifle's boot 1:
@@ -230,7 +238,10 @@ PORT.update({
         'weapon': BO + 'boltshot',
         'template': PISTOL + 'pistol',
         'world_model': BO + 'boltshot',
-        'fp_model': BO + 'fp\\fp',
+        # ONE model tag for world AND first person (user, 2026-10-14; the Suppressor's rule): Halo 1's
+        # map builder crashes past 32 MiB of model vertices + indices (memory
+        # h1-model-buffer-32mib-cap); fp\fp.gbxmodel is still written for the FP tools
+        'fp_model': BO + 'boltshot',
         'fp_anims': BO + 'fp\\fp',
         'label': 'bo',
         'teach': ('bo', 'pp'),
