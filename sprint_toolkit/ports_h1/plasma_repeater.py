@@ -5,7 +5,8 @@ Needle Rifle (needle_rifle.py) is the nearest shape for the Reach plumbing; the 
 
 REACH'S HEAT LIVES IN THE WEAPON FUNCTIONS (step 4a, 2026-10-11 -- ManagedBlam's own function
 Evaluate; field semantics from the tooltips in HREK tool.exe): `heat generated per round function`
-= 0.03 a TICK the barrel fires (the per-round field reads 0): fully hot after ~1.1 s / 12 rounds;
+= 0.03 a TICK the barrel fires (the per-round field reads 0): fully hot after ~1.25 s / 14 rounds
+(the passive loss DRAINS while firing -- heat revisit 2026-10-14; the old no-drain reading: 12);
 rate 15 -> 3 by heat^1.5 (`heat_driven_rate_of_fire`); NEVER overheats (heat stops at 1, the gun
 keeps firing at 3/s; `auto_venting` at 0.971 only drives a steam effect); passive loss = the
 `heat_loss` function 0.25/s cold -> 0.06/s hot (overrides the 0.0333 field); MANUAL vent on
@@ -39,9 +40,11 @@ PORT = reserved(
                    "ratio, so it barely moves Reach's numbers. Halo 1 approximation B (user): the "
                    "OVERHEAT stands in for Reach's manual vent and the rate decline follows the "
                    "heat -- Halo 1's trigger ramps the rate over the HELD time, fitted so its rate "
-                   "at each heat is within ~1/s of Reach's (default: heat 1/12 a round = Reach's "
-                   "12 rounds to full heat, ramp 15 -> 3 over 1.4 s; balanced 1/22, 15 -> 3.33 over "
-                   "2.65 s); deceleration time = the vent, so rate and heat recover together. "
+                   "at each heat is within ~1/s of Reach's (default: Reach's 14 rounds to full "
+                   "heat draining -> heat 0.108, ramp 20 -> 3.05 over 1.6 s; balanced 24 rounds -> "
+                   "0.072, 20 -> 3.4 over 2.9 s; heat revisit 2026-10-14, first fitted 12 / 22 "
+                   "under the old no-drain rule); deceleration time = the vent, so rate and heat "
+                   "recover together. "
                    "Materials (user): the H1 plasma rifle bolt's table in the DEFAULT; BALANCED = "
                    "that table x Reach's plasma_fast / plasma_slow for the armour class of the "
                    "matching Reach model (Elite shield x0.625, Elite BODY hard_metal_thin x2.5, "
@@ -58,8 +61,8 @@ PORT = reserved(
         'balanced': {
             'damage': 8.34,              # 13 x 6.42/10
             'rate': (15.0, 3.333),       # 7 x 15/6 = 17.5 -> Halo 1's 15/s cap; 10 x 3/9 (4b's positional pairing)
-            'heat_per_round': 0.077,     # 0.03 x 0.08/0.15 = 0.016 a tick: hot after 22 rounds (H1 cools while firing)
-            'ramp_s': 2.6,               # fitted under Halo 1's fire rule (the probe; Reach hot in 1.95 s)
+            'heat_per_round': 0.072,     # 0.03 x 0.08/0.15 = 0.016 a tick: hot after 24 rounds draining (heat revisit 2026-10-14; was 0.077 / 22 under the old no-drain rule)
+            'ramp_s': 2.9,               # fitted under Halo 1's fire rule (the probe; the ratio gun hot in 2.3 s draining; was 2.6)
             'vent_s': 2.9,               # 2.5 x 0.35/0.3 (overheated losses) -> loss 1/2.9
             'battery': 0.01,             # 0.005 x 0.005/0.0025 (100 rounds)
             'velocity': (50.0, 70.0),    # 50 x 25/25, 35/25
@@ -365,8 +368,13 @@ PORT.update({
         # h1_ticks): start 20 (the first six shots every 2 ticks = 15/s, Reach's), ramp 1.35 s,
         # floor 3.05 (10 ticks = 3/s), heat 0.12 a round -- the first 12 shot times within a
         # tick of Reach's, overheat on the 12th round at 1.03 s (Reach full heat 12 / 1.0 s)
-        'trigger': {'rounds_per_second': (20.0, 3.05), 'acceleration_time': 1.35,
-                    'deceleration_time': 2.5, 'heat_generated_per_round': 0.12,
+        # HEAT REVISIT (2026-10-14, the user's rule from C1: Reach DRAINS heat while firing -- the
+        # 0.25 -> 0.06/s passive loss runs under the 0.03 a tick): Reach is fully hot after 14
+        # rounds / ~1.25 s, not 12 / 1.0 -> refit (h1_role_compare plasma_repeater, the same
+        # h1_ticks rule): ramp 1.6 s, heat 0.108 -- overheat on the 14th round at 1.27 s, every shot
+        # time within a tick of Reach's draining curve (was 1.35 s / 0.12)
+        'trigger': {'rounds_per_second': (20.0, 3.05), 'acceleration_time': 1.6,
+                    'deceleration_time': 2.5, 'heat_generated_per_round': 0.108,
                     'age_generated_per_round': 0.005,
                     'first_person_offset': (0.288, -0.0373, -0.0422)},
         # Reach's vent: 2.5 s to heat 0 -> overheated at 1, back at 0, one loss 0.4/s
@@ -482,7 +490,7 @@ PORT.update({
             'balance_desc': "Measured against the Plasma Rifle, which both games have: 8.3 damage a "
                             "bolt (the plasma rifle's family, faster on armour and slower on "
                             "shields, as Reach's fast plasma), 15 down to 3.3 bolts a second over "
-                            "22 shots, a 2.9 s vent, 100 shots a battery, a faster bolt and Halo "
+                            "24 shots, a 2.9 s vent, 100 shots a battery, a faster bolt and Halo "
                             "1-style aim assist.",
             # step 9 (swap, ONE multiplier): the H1 plasma rifle's ready 29 fr x Reach repeater 20
             # / Reach plasma rifle 20 = 29 over the built ready (no reload: a battery weapon)
@@ -505,18 +513,20 @@ PORT.update({
                 row('jpt!', RP + 'bolt', 'Metal (Thin)', 0.625, 0.25, 'Bolt materials'),
                 row('jpt!', RP + 'bolt', 'Metal (Thick)', 0.5, 0.25, 'Bolt materials'),
                 # rate (4b's positional pairing): 15 (Halo 1's cap; 7 x 15/6 = 17.5) -> 10 x 3/9 = 3.33, the ramp fitted to
-                # 22 rounds (heat 0.016 a tick x Reach's), the deceleration = the vent
-                # (the probe's fire rule: floor 3.4 = 9 ticks = 3.33/s; the ramp refitted 2.6 s)
+                # 24 rounds draining (heat 0.016 a tick x Reach's), the deceleration = the vent
+                # (the probe's fire rule: floor 3.4 = 9 ticks = 3.33/s; the ramp refitted 2.9 s,
+                # heat revisit 2026-10-14; was 2.6 / 22 rounds under the old no-drain rule)
                 row('weap', RP + 'plasma repeater', 'Rounds Per Second Max', 3.4, 3.05, 'More Shooting', block='Triggers'),
-                row('weap', RP + 'plasma repeater', 'Acceleration Time', 2.6, 1.35, 'More Shooting', block='Triggers'),
+                row('weap', RP + 'plasma repeater', 'Acceleration Time', 2.9, 1.6, 'More Shooting', block='Triggers'),
                 row('weap', RP + 'plasma repeater', 'Deceleration Time', 2.9, 2.5, 'More Shooting', block='Triggers'),
                 # BOOT 7 (probe + the built map read back): the engine ramps by the RUNTIME rates the
                 # map build computes, 1 / (time x 30) -- the time rows alone changed nothing (the
                 # balanced gun kept the default's ramp and never overheated). Both written
-                row('weap', RP + 'plasma repeater', 'Rate Of Fire Acceleration Rate', 1 / (2.6 * 30), 1 / (1.35 * 30), 'More Shooting', block='Triggers'),
+                row('weap', RP + 'plasma repeater', 'Rate Of Fire Acceleration Rate', 1 / (2.9 * 30), 1 / (1.6 * 30), 'More Shooting', block='Triggers'),
                 row('weap', RP + 'plasma repeater', 'Rate Of Fire Deceleration Rate', 1 / (2.9 * 30), 1 / (2.5 * 30), 'More Shooting', block='Triggers'),
-                # (the probe's fire rule: refitted to overheat on the 22nd round, 1.97 s; Reach 1.95)
-                row('weap', RP + 'plasma repeater', 'Heat Generated Per Round', 0.077, 0.12, 'Heat', block='Triggers'),
+                # (the probe's fire rule: refitted to overheat on the 24th round, 2.1 s; the ratio
+                # gun draining 2.3 s -- heat revisit 2026-10-14, was 0.077 / the 22nd)
+                row('weap', RP + 'plasma repeater', 'Heat Generated Per Round', 0.072, 0.108, 'Heat', block='Triggers'),
                 # the vent: 2.5 x 0.35/0.3 = 2.9 s from 1 to 0
                 row('weap', RP + 'plasma repeater', 'Heat Loss Per Second', 1 / 2.9, 0.4, 'Heat'),
                 # battery: 0.005 x 0.005/0.0025 = 0.01 (100 rounds)

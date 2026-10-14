@@ -64,7 +64,7 @@ H1_RAMP = 1.2 / 1.4
 # Reach's Plasma Repeater heat (B3; the set's comment): heat_loss = 0.06 + 0.19 x its spline,
 # read through ManagedBlam's Evaluate at these heats
 RP_REACH = {'rate': ('heat', 15.0, 3.0, 1.5), 'hpr': 0.0, 'hpt': 0.03, 'oh': None, 'rec': 0.0,
-            'vent': 2.5,
+            'vent': 2.5, 'cool_firing': True,
             'loss': [(0.0, 0.25), (0.1, 0.1623), (0.25, 0.1189), (0.4, 0.0934), (0.5, 0.0818),
                      (0.6, 0.0732), (0.75, 0.0648), (0.9, 0.0607), (1.0, 0.06)]}
 
@@ -715,14 +715,14 @@ SETS = {
         # the BUILT port (5b, 2026-10-11, after boot 6): its tags under Halo 1's measured trigger
         # (`heat_model` 'tag': h1_ticks, cooling while firing) -- default 20 -> 3.05 over 1.35 s,
         # 0.12 heat, vent 2.5 s; BALANCED the catalog's rows written out (apply_rows does not
-        # reach a heat model): 7.584 / 7.584-9.1, 20 -> 3.4 over 2.6 s, 0.077 heat, loss 1/2.9,
+        # reach a heat model): 7.584 / 7.584-9.1, 20 -> 3.4 over 2.9 s, 0.072 heat, loss 1/2.9,
         # battery 0.01, the fast/slow materials, 50 -> 70 wu/s, Halo 1-style aim
         ('Plasma Repeater (port)', W + r'plasma repeater\plasma repeater', 'shot',
          {'heat_model': 'tag'}),
         ('Plasma Repeater balanced', W + r'plasma repeater\plasma repeater', 'shot',
          {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.33, 27.78), 'age': 0.01,
           'mods': dict(RP_FAST_SLOW),
-          'heat_model': {'rate': ('time', 20.0, 3.4, 2.6), 'hpr': 0.077, 'oh': 1.0,
+          'heat_model': {'rate': ('time', 20.0, 3.4, 2.9), 'hpr': 0.072, 'oh': 1.0,
                          'loss': 1 / 2.9, 'rec': 0.01, 'cool_firing': True, 'h1_ticks': True}}),
         ('RP = Reach own (true)', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 6.417, 'speed': 25.0, 'range': 100.0, 'aim': (5.0, 15.0, 10.0, 20.0),
@@ -735,12 +735,13 @@ SETS = {
           'age': 0.005, 'heat_model': dict(RP_REACH, rate=('time', 15.0, 3.0, 1.4),
                                            hpt=0.0)}),
         # approximation B (user 2026-10-11: the OVERHEAT stands in for the vent; the rate decline
-        # must follow the heat): Reach is fully hot after 12 rounds -> heat 1/12 a round, the
-        # ramp 15 -> 3 over 1.4 s (fitted: Halo 1's rate at each heat within ~1/s of Reach's),
-        # overheat = the 2.5 s vent (one loss 0.4 to 0), deceleration time 2.5 s
+        # must follow the heat): Reach is fully hot after 14 rounds DRAINING (heat revisit
+        # 2026-10-14; 12 under the old no-drain rule) -> heat 0.108, ramp 20 -> 3.05 over 1.6 s
+        # (fitted: every shot within a tick of Reach's), overheat = the 2.5 s vent (one loss 0.4
+        # to 0), deceleration time 2.5 s
         ('RP = Reach own, H1 B', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 6.417, 'speed': 25.0, 'range': 100.0, 'aim': (5.0, 15.0, 10.0, 20.0),
-          'age': 0.005, 'heat_model': {'rate': ('time', 20.0, 3.05, 1.35), 'hpr': 0.12,
+          'age': 0.005, 'heat_model': {'rate': ('time', 20.0, 3.05, 1.6), 'hpr': 0.108,
                                        'oh': 1.0, 'loss': 0.4, 'rec': 0.01, 'cool_firing': True,
                                        'h1_ticks': True}}),
         # PLASMA RIFLE ratio (H1 PR x repeater / Reach PR): 13 x 6.42/10 = 8.34; rate 10 x 15/9
@@ -751,7 +752,7 @@ SETS = {
         ('RP = PR ratio (true)', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.3, 27.8), 'age': 0.01,
           'heat_model': {'rate': ('heat', 15.0, 3.5, 1.5), 'hpr': 0.0, 'hpt': 0.016,
-                         'oh': None, 'rec': 0.0, 'vent': 2.9,
+                         'oh': None, 'rec': 0.0, 'vent': 2.9, 'cool_firing': True,
                          'loss': [(h, 0.352 * l) for h, l in RP_REACH['loss']]}}),
         # materials: the bolt's table x Reach's plasma_fast / plasma_slow (RP_FAST_SLOW); or the
         # Carbine's precedent (plasma_fast = a bullet on shields: shields x1)
@@ -759,24 +760,25 @@ SETS = {
          {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.3, 27.8), 'age': 0.01,
           'mods': dict(RP_FAST_SLOW),
           'heat_model': {'rate': ('heat', 15.0, 3.5, 1.5), 'hpr': 0.0, 'hpt': 0.016,
-                         'oh': None, 'rec': 0.0, 'vent': 2.9,
+                         'oh': None, 'rec': 0.0, 'vent': 2.9, 'cool_firing': True,
                          'loss': [(h, 0.352 * l) for h, l in RP_REACH['loss']]}}),
         ('RP = PR ratio, shields x1', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.3, 27.8), 'age': 0.01,
           'mods': {'elite_energy_shield': 1.0, 'cyborg_energy_shield': 1.0},
           'heat_model': {'rate': ('heat', 15.0, 3.5, 1.5), 'hpr': 0.0, 'hpt': 0.016,
-                         'oh': None, 'rec': 0.0, 'vent': 2.9,
+                         'oh': None, 'rec': 0.0, 'vent': 2.9, 'cool_firing': True,
                          'loss': [(h, 0.352 * l) for h, l in RP_REACH['loss']]}}),
         ('RP = PR ratio, H1 A', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.3, 27.8), 'age': 0.01,
           'heat_model': {'rate': ('time', 15.0, 3.5, 2.6), 'hpr': 0.0, 'oh': None,
                          'rec': 0.0, 'loss': 0.0}}),
-        # BALANCED (user): PR ratio, H1 B (22 rounds hot -> 1/22, ramp 2.7 s fitted, vent 2.9 s)
+        # BALANCED (user): PR ratio, H1 B (24 rounds hot draining -> 0.072, ramp 2.9 s fitted, vent
+        # 2.9 s; heat revisit 2026-10-14, was 22 rounds / 0.077 / 2.6 s)
         # on the bolt's table x Reach's plasma_fast / plasma_slow per armour class
         ('RP = PR ratio, H1 B', W + r'plasma rifle\plasma rifle', 'shot',
          {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.3, 27.8), 'age': 0.01,
           'mods': dict(RP_FAST_SLOW),
-          'heat_model': {'rate': ('time', 20.0, 3.4, 2.6), 'hpr': 0.077, 'oh': 1.0,
+          'heat_model': {'rate': ('time', 20.0, 3.4, 2.9), 'hpr': 0.072, 'oh': 1.0,
                          'loss': 1 / 2.9, 'rec': 0.01, 'cool_firing': True, 'h1_ticks': True}}),
         # PLASMA PISTOL ratio: 18 x 6.42/16 = 7.22; rate: the pistol is tapped -> Reach's own;
         # heat 0.03 x 0.16/0.14 = 0.034 a tick; loss x 0.65/0.6; vent 2.5 x 0.45/0.65 = 1.7 s;
@@ -786,7 +788,7 @@ SETS = {
          {'dmg': 7.22, 'speed': 31.25, 'range': 125.0, 'aim': (6.25, 15.0, 15.0, 20.0),
           'age': 0.005,
           'heat_model': {'rate': ('heat', 15.0, 3.0, 1.5), 'hpr': 0.0, 'hpt': 0.0343,
-                         'oh': None, 'rec': 0.0, 'vent': 1.7,
+                         'oh': None, 'rec': 0.0, 'vent': 1.7, 'cool_firing': True,
                          'loss': [(h, 1.083 * l) for h, l in RP_REACH['loss']]}}),
         ('Plasma Rifle', W + r'plasma rifle\plasma rifle', 'shot', {'heat_model': 'tag'}),
         ('Plasma Pistol (tap 5/s)', W + r'plasma pistol\plasma pistol', 'shot',
@@ -1154,7 +1156,7 @@ SETS = {
         ('Plasma Repeater balanced', W + r'plasma repeater\plasma repeater', 'shot',
          {'dmg': 8.34, 'speed': 50.0, 'aim': (5.0, 31.25, 13.33, 27.78), 'age': 0.01,
           'mods': dict(RP_FAST_SLOW),
-          'heat_model': {'rate': ('time', 20.0, 3.4, 2.6), 'hpr': 0.077, 'oh': 1.0,
+          'heat_model': {'rate': ('time', 20.0, 3.4, 2.9), 'hpr': 0.072, 'oh': 1.0,
                          'loss': 1 / 2.9, 'rec': 0.01, 'cool_firing': True, 'h1_ticks': True}}),
     ]},
     # the PLASMA LAUNCHER (wave B6), step 4a. Reach (HREK 2026-10-13): charge 3.0 s in four 0.75 s
