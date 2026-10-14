@@ -131,7 +131,7 @@ PORT.update({
     #   flash = the plasma rifle's sprites, the vertical pair dropped.
     # PROOFS rp1-rp4 (rp4: the 14 ports' gbxmodels + JMS = the ground point only); the narrowed
     #   proof and the wave check (--full) from here on.
-    'status': 'rework',
+    'status': 'done',
 
     # geometry + look (h1_h3_weapon_model.py; Reach through reach_tags). Reach's ONE model for
     # world AND first person. plasma_repeater.render_model: 7 nodes -- b_gun (root, identity: not
@@ -326,7 +326,12 @@ PORT.update({
         'weapon': RP + 'plasma repeater',
         'template': PR + 'plasma rifle',
         'world_model': RP + 'plasma repeater',
-        'fp_model': RP + 'fp\\fp',
+        # ONE model tag for world AND first person (user, 2026-10-14): Halo 1's map builder crashes
+        # past 32 MiB of model vertices + indices (memory h1-model-buffer-32mib-cap); the world and
+        # fp gbxmodels are the same geometry (only the permutation name differs), so the weapon
+        # names the world tag twice and the map stores it once (-0.50 MB). fp\fp.gbxmodel is still
+        # written by the model step for the FP tools (fp_render, h1_fp_muzzle, h1_fp_hand_clip)
+        'fp_model': RP + 'plasma repeater',
         'fp_anims': RP + 'fp\\fp',
         'label': 'rp',
         'teach': ('rp', 'pr'),
