@@ -151,7 +151,10 @@ PORT.update({
         # whole strip lit, a yellow-white core (Halo 4's cores clip to 244 / 228 / 32)
         'glow_shaders': {'su_glow': {'rgb': ORANGE, 'additive': True, 'islands': True,
                                      'islands_of': 'storm_forerunner_smg_default_glow',
-                                     'gain': 2.2, 'falloff': 0.35, 'radius': 1.3}},
+                                     # BOOT 2 (user: 'now pure white'): the white-hot core
+                                     # took over at gain 2.2 -> no hot core: the whole strip in
+                                     # the screenshot's yellow-orange
+                                     'gain': 2.2, 'falloff': 0.35, 'radius': 1.3, 'hot': False}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's own storm_fp_forerunner_smg (Foundry,
@@ -340,8 +343,9 @@ PORT.update({
             'firing_effect': (AR + 'effects\\fire bullet', SU + 'effects\\fire shard',
                               {r'sound\sfx\weapons\assault rifle\fire': SND + 'su_fire'},
                               {'match': 'flash', 'drop_off_axis': 0.012, 'scale': 1.0,
-                               # BOOT 1 (user: 'not at the muzzle yet, a bit higher'): 1 unit up
-                               'shift': (0.0, 0.0, 0.01),
+                               # BOOT 1 (user: 'not at the muzzle yet, a bit higher'): 1 unit up;
+                               # BOOT 2 ('needs to move further up'): 2 units
+                               'shift': (0.0, 0.0, 0.02),
                                'drop_particles': ('casing', 'smoke h fp'),
                                'drop_parts': (r'sound\sfx\weapons\pistol\eject',),
                                'tint': (1.0,) + ORANGE}),
