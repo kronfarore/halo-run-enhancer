@@ -3822,7 +3822,7 @@
    "donor": "Plasma Rifle",
    "default_on": false,
    "desc": "Halo Reach's Plasma Repeater: its model, first-person animations, sounds and numbers. A Covenant automatic on heat and battery: it starts at 15 bolts a second and slows as it heats; a full gun vents for 2.5 s (Reach's manual vent, here the overheat). 200 shots a battery.",
-   "balance_desc": "Measured against the Plasma Rifle, which both games have: 8.3 damage a bolt (the plasma rifle's family, faster on armour and slower on shields, as Reach's fast plasma), 15 down to 3.3 bolts a second over 22 shots, a 2.9 s vent, 100 shots a battery, a faster bolt and Halo 1-style aim assist.",
+   "balance_desc": "Measured against the Plasma Rifle, which both games have: 8.3 damage a bolt (the plasma rifle's family, faster on armour and slower on shields, as Reach's fast plasma), 15 down to 3.3 bolts a second over 24 shots, a 2.9 s vent, 100 shots a battery, a faster bolt and Halo 1-style aim assist.",
    "anims": {
     "swap": 1.380952380952381
    },
@@ -3958,9 +3958,9 @@
      "tag": "weapons\\plasma repeater\\plasma repeater",
      "field": "Acceleration Time",
      "block": "Triggers",
-     "value": 2.6,
+     "value": 2.9,
      "card": "More Shooting",
-     "original": 1.35
+     "original": 1.6
     },
     {
      "class": "weap",
@@ -3976,9 +3976,9 @@
      "tag": "weapons\\plasma repeater\\plasma repeater",
      "field": "Rate Of Fire Acceleration Rate",
      "block": "Triggers",
-     "value": 0.01282051282051282,
+     "value": 0.011494252873563218,
      "card": "More Shooting",
-     "original": 0.024691358024691357
+     "original": 0.020833333333333332
     },
     {
      "class": "weap",
@@ -3994,9 +3994,9 @@
      "tag": "weapons\\plasma repeater\\plasma repeater",
      "field": "Heat Generated Per Round",
      "block": "Triggers",
-     "value": 0.077,
+     "value": 0.072,
      "card": "Heat",
-     "original": 0.12
+     "original": 0.108
     },
     {
      "class": "weap",
