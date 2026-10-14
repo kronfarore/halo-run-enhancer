@@ -2008,6 +2008,81 @@ through the Edit tool only.
 **Proofs:** fo1 (bake size), fo2 (stops / gain / grey + contrail secondary), fo3 (components) -- 0
 changed apart from bitmap headers, the kit restored exact; the scroll keys rode in B5's cr proofs.
 
+### Halo 1: the Plasma Launcher, wave B6 (2026-10-13/14, 16 boots + balanced + Armed x2 on a30, PARALLEL with C1) -- a multi-bolt charge as a charged pair, a homing volley, a sticky bolt, a Reach hex scope
+
+The whole weapon is `ports_h1/plasma_launcher.py`: a copy of the Halo 1 PLASMA PISTOL (its charged
+trigger pair, heat, battery) firing bolts built on the Halo 1 PLASMA GRENADE's projectile and explosion.
+
+**Step 4a (user): yardstick the PLASMA GRENADE, Reach's charge KEPT, holes by the ROCKET ratio;
+the grenade's table in both versions.** The grenade is the bolt's own family (Reach explosion_small,
+175 / 300 against 250 / 350) and the only candidate with a free AND a stuck burst in both games. No
+Reach yardstick charges: the 0.75 s hold and the 3.0 s charge stay Reach's, only recovery / spacing
+take the time ratio (times by ratio made a 7.5-9.4 s volley charge). Autoaim ANGLE kept Reach's in
+balanced (user): the rocket's 0 would switch off the homing. h1_role_compare `plasma_launcher`.
+
+**Reach's charge in Halo 1, MEASURED (h1_projectile_probe, h1_weapon_state_probe):**
+- the pair: a tap fires trigger 0 at once (Reach needs a 0.75 s hold: lost; the tap paced at Reach's
+  0.95 s single-bolt cycle -- 1.0526/s fired every 31 ticks, 1.13/s every 28-29: Halo 1 rounds ~2
+  ticks up); a full charge released, or held past the 2 s hold ('discharge'), fires trigger 1.
+- THE SPEW NEVER RUNS from the pair's trigger 1 -- its own spew time, or its own 1-tick charge +
+  discharge + spew (a test secondary): ONE bolt each time. The volley = 4 PROJECTILES PER SHOT with
+  each its own error (1.5 -> 2.5 deg; a 4 deg horizontal fan read as 'two pairs of two'). Lost: Reach's
+  0.21 s spacing, the 2- and 3-bolt levels. Heat 1.6 / battery 4 bolts on the one round.
+- A volley fires from ONE bolt of battery left: Halo 1 checks only that the battery is not empty (user:
+  accept). Battery 12 = age 0.0833333 + the Spartan Laser's misfire 0.9999 / 1.0.
+- The exported PRIMARY CHARGED runs over charge + HOLD (5 s: 0.50 at 3.0 s, 1.0 at the auto-discharge;
+  a second word, +0xE4, reaches 1.0 at 3.0 s and is not exported).
+
+**Homing:** trigger 1's bolt guided at Reach's 45 deg/s -- Halo 1 steers at the autoaim target at
+release ('visibly tracks', user); the tap unguided (Halo 1's AI only taps a pair: Reach's AI bolts are
+unguided too). Lost: the lock time / grace / decay, the lock rings.
+
+**Sticking:** the needle's DEFAULT `attach` on every material (the grenade's own `attach` is a
+potential response with empty conditions), the Jackal shield and force fields reflect, water passes;
+fuse 'when at rest' 0.25..2.5 s (stuck = at rest), 'detonation max time if attached' off. Halo 1 deals
+ATTACHED detonation damage AT THE STICK (boot 1: 'kills before the explosion') -> none: the burst alone
+(Reach's stuck 300 lost). Stick beep: a response effect's sound was never heard; the projectile's
+DETONATION STARTED effect (`started_effect`, the fuse start) plays it.
+
+**The full-charge cue (user: 'another fully charged identification'):** Reach turns the rear display
+red at full charge. A colour RAMP read against the charge drifted (Halo 1's sampling of a tiny ramp is
+not linear: +0.22 on the ramp moved the lights ~0.35 s, not 1.1). Fixed by a STEP: the unused object
+function 0 (A out) = primary charged clip-and-normalised to a narrow band (0.884..0.894 after tuning by
+eye; the probe's 0.50 at 3 s showed at ~2.25 s), the ramp read on A out (blue < 0.3, red > 0.7).
+The muzzle charge glow: the Spartan Laser's radial cards faded by D out.
+
+**Look / HUD:** Reach's model -- the rear holo ring / screen / emitter lit (static, Reach blue); the
+bolt Reach's model, a pale-blue additive core + a blue glow flare (pure white at first). Muzzle: the
+pistol's `fire bolt` copied (both events), fins dropped, x1.5, Reach blue, a muzzle light part
+(`sound_effects` `light`). Crosshair: hud_reticles #31 is ONE QUADRANT (two pointer halves + a tick),
+drawn four times with Reach's widget origin 0.945 (the halves overlap 5.5 %; h1_add_reticle applies a
+layer's `stretch` to its offset TOO -- offsets in sprite px). The 3x SCOPE: Reach's chud state data did
+not decode (every widget zoom 0) -> per_widget `zoom`; its side cells are the top cell turned +-120 deg
+by the chud animation (`rotate`); its small cells mirror about their OWN offset (`mirror_local`); the
+central lens animated (scale 0) fitted to the user's screenshot (aspect 1.25, the Focus Rifle's). The
+coloured symbols as zoom glyphs: the two rings (52 / 53, art turned 180 deg: `flip`, a 7 px cell margin
+or the edge bleeds) and the four bolt pips in ONE glyph (58, `mirror4` with per-row x). Halo 1 centres a
+glyph overlay on its sprite CELL, not its registration: a non-square glyph needs its anchor offset
+measured off a screenshot. hud_reticles 59 was granted but NOT needed (the scope's charge bar is a live
+meter). Pickup icon x1.3 (a heavy weapon).
+
+**Sounds:** Reach's bank. Reach's charge LOOP decodes SILENT (the GL's frag_armed lesson again): the
+loop = the 'in''s full-charge sustain 3.0-4.5 s (`slice` + `loop_len`), no start sound (a
+sound_looping's start plays when it is attached, on ready). Water splash KEPT (user). Screen flash on
+the player (Armed boot): the grenade's 1 s / 0.7 green flash on BOTH damage tags -> impact none, burst
+0.25 s at 0.25 in Reach blue.
+
+**Step 11:** donor the fuel rod (grunt specops fuel rod, WDM 0.5), Reach m10's ai\generic entry (#14);
+WDM rule base 0.5 x the grenade's 120 dps / the TAP dps (the AI taps): 0.33 / 0.89; balanced drop
+0.4-1.0 loaded. Enhancer (its keys): hands 'heavy', trigger_index 'all', the plasma pistol's charged-
+shot cards skipped. Armed: all three species fire it (user).
+
+**Tool changes (each opt-in, narrowed proofs pl1-pl7 0 changed):** reach_tags 96-bit node masks
+(the first Reach FP graph above 64 nodes) + a bare `&` in chud names; h3_anim_decode.blobs keeps only
+tgda-proven chunks (an outer chunk the size of a member shifted the rest); h1_pickable_weapons
+`attached`, `started_effect`, sound_effects `light`, zoom_glyphs `overlay` / `flip` / `mirror4`;
+h1_h3_scope per_widget `zoom` / `rotate` / `mirror_local`; h1_port_sounds `slice`.
+
 ### Halo 1: the Storm Rifle, the Halo 4 pilot (wave C1, 2026-10-13/14, 7 boots + Armed on b30, PARALLEL with B6) -- Halo 4 as a SOURCE, its compressed FP graph decoded and the arms re-solved, Wwise sounds, a CUI HUD
 
 The whole weapon is `ports_h1/storm_rifle.py`, on a copy of the Halo 1 PLASMA RIFLE (heat / battery HUD,
