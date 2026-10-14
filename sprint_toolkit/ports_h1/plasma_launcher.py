@@ -74,14 +74,22 @@ ATTACH = [i for i in range(33) if i not in [JACKAL_SHIELD, WATER] + FORCE_FIELDS
 BOLT = {
     'damage': (PG + 'explosion', PL + 'impact'),
     'dmg': 2.0, 'acceleration': 0.1,
-    'fields': {'radius': (0.0, 0.0)},
+    # ARMED BOOT (user): 'reduce the screen flash on the player by a lot' -- both copies carried the
+    # plasma grenade's 1 s flash at 0.7 (green): every hit flashed twice, up to a tap a second ->
+    # the impact none (duration 0, the Concussion Rifle's), the burst short and faint, Reach blue
+    'fields': {'radius': (0.0, 0.0), 'screen_flash.duration': 0.0},
     'explosion': {'effect': (PG + 'effects' + B + 'explosion', PL + 'effects' + B + 'bolt explosion'),
                   'part': PG + 'explosion',
                   'out_dir': PL + 'effects' + B,
                   'damage': (PG + 'explosion', PL + 'explosion'),
                   'lower': 17.5, 'upper': (175.0, 175.0), 'radius': (0.6, 1.8),
                   'fields': {'damage.aoe_core_radius': 0.4 * 0.48 / 0.432,
-                             'damage.instantaneous_acceleration': 4.0 * 1.75 / 2.0},
+                             'damage.instantaneous_acceleration': 4.0 * 1.75 / 2.0,
+                             'screen_flash.duration': 0.25,
+                             'screen_flash.maximum_intensity': 0.25,
+                             'screen_flash.tint_lower_bound.r': BLUE[0],
+                             'screen_flash.tint_lower_bound.g': BLUE[1],
+                             'screen_flash.tint_lower_bound.b': BLUE[2]},
                   'swaps': {B.join(['sound', 'sfx', 'weapons', 'plasma grenade', 'plasmagrenexpl']): SND + 'pl_explode'}},
     'velocity': (11.0, 7.0), 'range': 180.0,
     'model': PL + 'bolt' + B + 'bolt',
