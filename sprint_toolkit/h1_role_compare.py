@@ -1173,6 +1173,16 @@ SETS = {
     # (Reach): fuel rod 100 + 0..60 (explosion_large) = 160, 0.4 s; plasma grenade 2 + 25..250 over
     # 0.54 -> 1.8, stuck 35..350 (explosion_small, the bolt's own group); rocket 200 + 240 = 440, 0.8 s
     'plasma_launcher': {'port': 'Plasma Launcher', 'weapons': [
+        # the BUILT port (step 5b): its tags (+ --balanced rows). The charged PAIR reads trigger 1
+        # (the volley: 4 projectiles a shot, a 3 s charge); the TAP row is trigger 1's bolt at the
+        # measured tap pace (0.95 s; balanced 1.25 s -- --balanced applies the rate row only to
+        # trigger 0, so the pace is given here) -- the AI taps, so the TAP is the WDM rule's dps
+        ('Plasma Launcher (port), volley', W + r'plasma launcher\plasma launcher', 'shot'),
+        ('Plasma Launcher (port), tap', W + r'plasma launcher\plasma launcher', 'shot',
+         {'per_shot': 1, 'charge': 0.0, 'rate': 1 / 0.95}),
+        ('Plasma Launcher (port), tap balanced', W + r'plasma launcher\plasma launcher', 'shot',
+         {'per_shot': 1, 'charge': 0.0, 'rate': 1 / 1.25}),
+        ('Plasma Launcher melee (port)', W + r'plasma launcher\plasma launcher', 'melee'),
         # Reach's own on the fuel rod's table (Flood x2), Hunters by Reach's explosion_small
         # (hard_metal_thick 0.25, skin x1: the fuel rod's x0 has no ratio -- the CR's rule)
         ('PL = Reach own, bolt', W + r'fuel rod gun\fuel rod', 'shot',
