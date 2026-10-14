@@ -84,6 +84,22 @@ Answered since:
   through a resident-only weapon's HUD), ALL its tag data past 384 MiB (from 442.9 MiB):
   it loads and plays in MCC. Custom Edition's 384 MiB cap does not apply; the binding limits
   are tool's 64 MiB tag space and 64 MiB vertex buffers.
+- **A THIRD LIMIT: THE 32 MiB MODEL BUFFER (found by C2, 2026-10-14) -- THE BINDING ONE.**
+  `tool build-cache-file` dies (EXCEPTION_ACCESS_VIOLATION right after "streaming model vertex
+  and index buffers...", no message, tool's own vbuf line looks fine) once the map's MODEL
+  vertices x 68 + strip indices x 2 pass 32 MiB (33,554,432; models only, not the BSP;
+  bisected on a30). With every port resident a10 / a30 / b30 / b40 / d40 failed. **RULE for
+  new ports: `pickable['fp_model']` = `world_model` when the source is ONE render model**
+  (the world and fp gbxmodels are the same geometry, only the permutation name differs, so
+  the map stored it twice; the model step still writes fp\fp.gbxmodel for fp_render /
+  h1_fp_muzzle / h1_fp_hand_clip). Done 2026-10-14 for the Suppressor (C2) and the eight
+  Reach / Halo 4 ports (DMR 0.98 MB, Needle 0.39, Repeater 0.50, GL 0.71, Concussion 0.85,
+  Plasma Launcher 0.54, Focus 1.21, Storm 0.66 = 6.3 MB a map): pickable proofs clean
+  (weapon tag diff = first person model only), the user's boot (Focus Rifle on c10: FP + on
+  the ground render as before). Ten `--no-ship` builds then (in-progress Suppressor carried,
+  Boltshot not yet in the palettes): ALL TEN BUILD; model buffer 22.9 (c20) - 27.1 MiB
+  (a10, b30), least margin a10 4.9 MiB / a30 5.0 / b30 4.9 -- a SAW-sized port costs ~1.4.
+  Check this cap before every ten-map rebuild (scratch sum of the gbxmodels a built map names).
 - If margin is ever wanted: leaner models (fewer LODs: vertex buffer
   is the tight one); shared sounds/bitmaps; recycle unused d40 palette/placement entries.
 - Cheap improvement: `h1_rebuild_all.py` could record tool's own "total tag size / vbuf
