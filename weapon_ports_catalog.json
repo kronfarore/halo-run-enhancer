@@ -5504,6 +5504,36 @@
    "fp_animations": "weapons\\plasma launcher\\fp\\fp",
    "requires": [
     "proj weapons\\plasma launcher\\bolt"
+   ],
+   "hands": "heavy",
+   "trigger_index": "all",
+   "tag_map": {
+    "proj weapons\\plasma pistol\\bolt": "proj weapons\\plasma launcher\\bolt & weapons\\plasma launcher\\bolt guided",
+    "jpt! weapons\\plasma pistol\\bolt": "jpt! weapons\\plasma launcher\\explosion & weapons\\plasma launcher\\impact",
+    "jpt! weapons\\plasma pistol\\melee": "jpt! weapons\\plasma launcher\\melee",
+    "jpt! weapons\\rocket launcher\\explosion": "jpt! weapons\\plasma launcher\\explosion & weapons\\plasma launcher\\impact"
+   },
+   "card_map": {
+    "Bullet Damage": "Explosion Damage"
+   },
+   "card_donors": {
+    "Rocket Launcher": [
+     "Radius"
+    ],
+    "Plasma Rifle": [
+     "Salvo Shooting"
+    ]
+   },
+   "skip_cards": [
+    "Charged Projectile Range",
+    "Charged Projectile Velocity",
+    "Charged Damage",
+    "Charged Projectiles Per Shot",
+    "Heat Per Round (Charged)",
+    "Age Per Round (Charged)",
+    "Charged Drain Rate",
+    "Misfire",
+    "Reload Time"
    ]
   }
  ],
