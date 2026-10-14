@@ -62,11 +62,42 @@ def steam_update_pending():
     return os.path.isdir(os.path.join(MCC, '..', '..', 'downloading', '976730'))
 
 
-def build(mp):
+def _drop_in_progress(mp):
+    """A SHIPPING build never carries a port that is not 'done' (two port sessions run in
+    parallel, H1_PORT_PLAN.md: h1_pickable_weapons writes an in-progress port into all ten
+    palettes). Its palette entries + placements are dropped from the scenario for the build
+    (h1_port_test_map.drop_in_progress); returns the backup path to put back, or None."""
+    import port_env  # noqa: F401
+    from reclaimer.hek.defs.scnr import scnr_def
+    import h1_port_test_map as T
+    sp = os.path.join(paths.HCEEK, 'tags', 'levels', mp, mp + '.scenario')
+    busy = T.in_progress_dirs([])
+    t = scnr_def.build(filepath=sp)
+    d = t.data.tagdata
+    hit = [e.name.filepath for e in d.weapons_palette.STEPTREE
+           if any(e.name.filepath.lower().startswith(x + '\\') for ds in busy.values() for x in ds)]
+    if not hit:
+        return None
+    keep = sp + '.before_rebuild'
+    shutil.copy2(sp, keep)
+    T.drop_in_progress(d, [])
+    t.filepath = sp
+    t.serialize(temp=False, backup=False)
+    return keep
+
+
+def build(mp, drop_busy=False):
     t0 = time.time()
-    r = subprocess.run([paths.TOOL_EXE, 'build-cache-file', 'levels\\%s\\%s' % (mp, mp),
-                        'classic', 'none', '1'], cwd=paths.HCEEK,
-                       capture_output=True, text=True, errors='replace')
+    keep = _drop_in_progress(mp) if drop_busy else None
+    try:
+        r = subprocess.run([paths.TOOL_EXE, 'build-cache-file', 'levels\\%s\\%s' % (mp, mp),
+                            'classic', 'none', '1'], cwd=paths.HCEEK,
+                           capture_output=True, text=True, errors='replace')
+    finally:
+        if keep:
+            shutil.copy2(keep, keep[:-len('.before_rebuild')])
+            os.remove(keep)
+            print('  kit scenario restored (in-progress ports were left out of this build)')
     out = os.path.join(paths.HCEEK, 'maps', mp + '.map')
     if 'successfully built' not in (r.stdout or ''):
         text = (r.stdout or '') + (r.stderr or '')
@@ -124,6 +155,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--maps', default='', help='comma list; default all 10')
     ap.add_argument('--no-ship', action='store_true', help='build and check only')
+    ap.add_argument('--with-in-progress', action='store_true',
+                    help='ship ports that are not done too (default: a shipping build leaves them out)')
     ap.add_argument('--allow-missing-slots', action='store_true',
                     help='ship a level with fewer than 20 enemy-weapon slots')
     a = ap.parse_args()
@@ -142,7 +175,7 @@ def main():
     ok, failed = [], []
     for mp in maps:
         print('\n[%s] building...' % mp, flush=True)
-        built, msg = build(mp)
+        built, msg = build(mp, drop_busy=not (a.no_ship or a.with_in_progress))
         if not built:
             print('  FAILED', msg)
             failed.append(mp)
