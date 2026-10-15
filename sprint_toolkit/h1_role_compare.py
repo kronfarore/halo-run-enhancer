@@ -401,13 +401,20 @@ SETS = {
     # H4 shotgun: 15 x 10.5 (lower 3 over 1.5 -> 3.75), 5 x 3 grid of 3 deg, 1.0 s, 6 (18 / 24),
     # 480 wu/s, range 6.5, aim 6/5.5 12/5.5. H4 sword: dash_melee 250. Every row on the pellet's table.
     'scattershot': {'port': 'Scattershot', 'weapons': [
+        # the BUILT port (step 5b): its tags (+ --balanced rows). A shell reload from empty = the enter
+        # (35 fr, the first shell) + a loop a shell (21 fr; balanced x0.75) -- Halo 1's measured cycles. The
+        # super row: every shot's 6 shards stuck in one target (the supercombine count 6, h1_supercombine_count)
+        ('Scattershot (port)', W + r'scattershot\scattershot', 'shot',
+         {'reload': (35 + 4 * 21) / 30.0}),
+        ('Scattershot (port) + super', W + r'scattershot\scattershot', 'shot',
+         {'reload': (35 + 4 * 21) / 30.0, 'super': (1, W + r'scattershot\supercombine', None)}),
         ('SS = H4 own (sg pellet)', W + r'shotgun\shotgun', 'shot',
          {'per_shot': 6, 'dmg': 12.0, 'rate': 2.0, 'mag': 5, 'reload': (14 + 5 * 21 + 39) / 30.0,
           'speed': 75.0, 'range': 6.7, 'aim': (6.0, 7.0, 12.0, 6.5)}),
         ('SS = H4 own + super', W + r'shotgun\shotgun', 'shot',
          {'per_shot': 6, 'dmg': 12.0, 'rate': 2.0, 'mag': 5, 'reload': (14 + 5 * 21 + 39) / 30.0,
           'speed': 75.0, 'range': 6.7, 'aim': (6.0, 7.0, 12.0, 6.5),
-          'super': (1, W + r'needler\explosion', 250.0)}),
+          'super': (1, W + r'needler\explosion', 290.0)}),
         # SHOTGUN ratio: 21.5 x 12/10.5 a shard, 15 x 6/15 shards; 1.0 s x 0.5/1.0; 12 x 5/6; shell
         # 0.4 s x 21/16 (10 shells); aim 15 x 7/5.5, 15 x 6.5/5.5
         ('SS = Shotgun ratio', W + r'shotgun\shotgun', 'shot',
