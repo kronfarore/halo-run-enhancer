@@ -2952,7 +2952,7 @@
    "fields": {
     "0x74": [
      "<f",
-     3.0,
+     4.0,
      "Maximum Firing Distance"
     ],
     "0x78": [
@@ -2992,12 +2992,12 @@
     ],
     "0x9C": [
      "<f",
-     3.0,
+     1.0,
      "Desired Combat Range"
     ],
     "0xA0": [
      "<f",
-     5.0,
+     3.0,
      "Desired Combat Range Max"
     ],
     "0xBC": [
