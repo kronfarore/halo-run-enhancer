@@ -389,8 +389,20 @@ def make_hud(w, key, write):
             # NO chud (the LightRifle, C4: Halo 4's scope is polyart, drawn as coloured zoom_glyphs):
             # a CLEAR mask -- nothing darkened, alpha 0 (no blur: Halo 4's zoom has neither)
             import numpy as np
-            h1_h3_scope.write(np.zeros((S.get('size', 512),) * 2), S['out'], alpha=S.get('alpha', 0))
-            print('   scope: clear mask (no chud)')
+            n = S.get('size', 512)
+            blur = None
+            if S.get('blur_outside'):
+                # `blur_outside` (rx, ry) texels (+ `blur_edge` texels): Halo 1's blur OUTSIDE an
+                # ellipse round the lens (user, LightRifle boot 4: 'apply the H1 blur outside the
+                # central circle') -- the mask's alpha, the donor's convolution
+                rx, ry = S['blur_outside']
+                yy, xx = np.mgrid[0:n, 0:n] + 0.5 - n / 2.0
+                r = np.sqrt((xx / rx) ** 2 + (yy / ry) ** 2)
+                edge = S.get('blur_edge', 12.0) / float(min(rx, ry))
+                blur = np.clip((r - 1.0) / edge, 0.0, 1.0)
+            h1_h3_scope.write(np.zeros((n, n)), S['out'], alpha=S.get('alpha', 0), blur=blur)
+            print('   scope: clear mask (no chud)%s' % (', blurred outside %s' % (S['blur_outside'],)
+                                                     if blur is not None else ''))
         elif write:
             dark, blur, used = h1_h3_scope.bake_maps(S['chud'], size=S.get('size', 512), span=S.get('span', 640.0),
                                                      aspect=S.get('aspect', 1.0), per_widget=S.get('per_widget'))
