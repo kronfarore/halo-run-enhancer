@@ -209,6 +209,66 @@ def extract(bank_name, events, out_dir):
     return done
 
 
+def extract_object(bank_name, oid, out_dir):
+    """Decode every SOUND under one HIRC object (a random / blend / switch container: its children's
+    ids found in its body, depth-first, as event_sounds reads one level) to <out_dir>/<n>_<sound id>.wav.
+    The media are looked up in the bank's DIDX by the sound's SOURCE id (then sfxstream.pck): the
+    LightRifle's fire layers (C4, 2026-10-15) sit behind a switch the event walk does not follow."""
+    import subprocess
+    p, s = read_pck(BANKS), read_pck(STREAMS)
+    b = bank_bytes(BANKS, p['banks'][fnv(bank_name)])
+    objs = hirc(b)
+    byid = {o: (t, d) for t, o, d in objs}
+    c = chunks(b)
+    didx = {}
+    if 'DIDX' in c and 'DATA' in c:
+        at, n = c['DIDX']
+        for i in range(n // 12):
+            mid, off, size = struct.unpack_from('<III', b, at + i * 12)
+            didx[mid] = (c['DATA'][0] + off, size)
+    # a node's PARENT = the first container id in its body (v88: offset 6 in a container, 31 in an
+    # embedded sound -- its DirectParentID); children by that link, so the walk never climbs
+    containers = {o for t, o, _d in objs if t in (5, 6, 7, 9)}
+    kids = {}
+    for t, o, d in objs:
+        if t in (2, 5, 6, 9):
+            for i in range(len(d) - 3):
+                v = struct.unpack_from('<I', d, i)[0]
+                if v in containers and v != o:
+                    kids.setdefault(v, []).append(o)
+                    break
+    sounds = []
+
+    def walk(o):
+        if byid.get(o, (None,))[0] == 2:
+            sounds.append(o)
+        for v in kids.get(o, ()):
+            walk(v)
+    walk(oid)
+    os.makedirs(out_dir, exist_ok=True)
+    done = 0
+    for k, sid in enumerate(sounds):
+        src = struct.unpack_from('<I', byid[sid][1], 8)[0]
+        if src in didx:
+            at, size = didx[src]
+            blob = b[at:at + size]
+        elif src in s['streams']:
+            blk, size, start, _lg = s['streams'][src]
+            with open(STREAMS, 'rb') as f:
+                f.seek(start * blk)
+                blob = f.read(size)
+        else:
+            print('   object %#x sound %#x: media %#x not found' % (oid, sid, src))
+            continue
+        wem = os.path.join(out_dir, '%d_%08x.wem' % (k, sid))
+        open(wem, 'wb').write(blob)
+        subprocess.run([VGM, '-o', wem[:-4] + '.wav', wem], capture_output=True)
+        os.remove(wem)
+        done += os.path.exists(wem[:-4] + '.wav')
+    print('   object %#x in %s: %d sound(s)' % (oid, bank_name, done))
+    return done
+
+
 if __name__ == '__main__':
     if '--extract' in sys.argv:
         # python h4_wwise.py --extract <bank> <out dir> <event> [<event> ...]

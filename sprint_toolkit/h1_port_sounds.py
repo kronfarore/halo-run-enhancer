@@ -99,7 +99,14 @@ def h4_event(w, spec):
     bank = bank or w['wwise_bank']
     d = os.path.join(H4_WORK, bank, ev)
     if not glob.glob(os.path.join(d, '*.wav')):
-        h4_wwise.extract(bank, [ev], os.path.join(H4_WORK, bank))
+        if ev.startswith('obj_'):
+            # `obj_<hex id>` (the LightRifle, C4): every sound UNDER one HIRC container of the bank
+            # (random / blend / switch children, depth-first) -- an event whose real sounds sit behind
+            # a SWITCH the event walk does not follow (homing_rifle_player_fire: the 5 sounds it
+            # reached were a quiet detail layer; the fire layers are the switch's blend children)
+            h4_wwise.extract_object(bank, int(ev[4:], 16), d)
+        else:
+            h4_wwise.extract(bank, [ev], os.path.join(H4_WORK, bank))
     files = sorted(glob.glob(os.path.join(d, '*.wav')),
                    key=lambda f: int(os.path.basename(f).split('_')[0]))
     if not files:
