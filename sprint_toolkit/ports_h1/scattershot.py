@@ -152,7 +152,13 @@ PORT = reserved(
                     # below). ARMED TEST 2 (user): 'they mostly fire outside their effective range': Halo
                     # 4's ai\generic Maximum Firing Distance 12 wu, the shards die at 3.2 - 6.7 -> 5 wu
                     # (Halo 4's own desired combat range max; the donor Flood Elite's 7)
-                    'set': ['0x74=5.0:Maximum Firing Distance']},
+                    # ARMED TEST 3 (user): 'they close in, but don't fire often enough -- mostly look
+                    # around': Halo 4's Scattershot cadence (first burst 0.75 - 1.0 s, 2.5 - 3.5 s between
+                    # bursts) -> the Halo 1 donor's first-burst delay (Flood Elite shotgun 0 - 0.2) and
+                    # Halo 4's SHOTGUN AI gaps (1.125 - 2.0, m020); bursts stay the Scattershot's 0.625 - 1
+                    'set': ['0x74=5.0:Maximum Firing Distance',
+                            '0x80=0.0:First Burst Delay Time', '0x84=0.2:First Burst Delay Time Max',
+                            '0xE8=1.125:Burst Separation', '0xEC=2.0:Burst Separation Max']},
 )
 
 PORT.update({
