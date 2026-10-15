@@ -180,7 +180,11 @@ PORT.update({
                                    # stood above the gun outline (the floating square)
                                    'lift': 0.05, 'skip_piece_normals': [(1.0, 0.0, 0.0), (-1.0, 0.0, 0.0),
                                                                   (0.655, 0.0, 0.756)],
-                                   'skip_piece_dot': 0.9}},
+                                   'skip_piece_dot': 0.9,
+                                   # BOOT 7 (user: 'the circle is tilted off the gun', both rings on the
+                                   # world model): cards scale in the piece's own plane only; a
+                                   # round piece (the rings) x1.4 both ways
+                                   'round_scale': 1.4}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's own storm_fp_forerunner_smg (Foundry,
