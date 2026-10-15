@@ -1076,6 +1076,30 @@ over (check its FP graph's node list against it first). Yardstick (step 4a, the 
 Assault Rifle (automatic, magazine) or the Needler (automatic projectile). Measure the rate with the
 probe (A1's 15/s cap vs B7's 30/s).
 
+## C2: what the Suppressor taught (2026-10-15) -- parallel with C3
+
+PORTING.md "Halo 1: the Suppressor, wave C2" is the full record; `ports_h1/suppressor.py` is the example
+of a Halo 4 MAGAZINE automatic on the AR template (the Spike Rifle's visible-projectile shape on C1's
+Halo 4 route). Everything in "C1: what the Storm Rifle taught" held; what is new:
+
+- **A third capacity limit: the 32 MiB MODEL BUFFER** (phase 0.1 knew tag space + vbuf only). tool
+  crashes silently past model vertices x 68 + indices x 2 = 32 MiB. Every new port: world = FP model tag
+  when the source is one render model, `h1_decimate.py preview --render` at 40 and `set` the lowest %
+  whose side view holds; check a test build early (a crash with no message = this cap first).
+- **Read the SHIPPED material, not H4EK's .material.** A Halo 4 colour map can be missing everywhere;
+  the cache tag names the bitmaps the game draws (a tag-reference scan) and its parameter floats identify
+  the H4EK material it really is (the Suppressor's default = its shatter material). Forerunner
+  `srf_char_forerunner_andrew` has no colour map at all: diffuse = control df channel x albedo tint.
+- **Hand-in-gun counts are a proxy; the look decides.** Render Halo 1's arms through Halo 4's reference
+  camera (same FOV, same FP space) beside Halo 4's own render, then pick offsets by eye.
+- **Glow strips without bloom:** `strip` islands glow + a narrow coloured core + halo cards widened in
+  their own plane (`along`, `round_scale`, `skip_piece_normals`). Verify card placement in a side / top
+  render of the built gbxmodel before a boot.
+- Halo 4 sounds: one entry with several wavs = permutations, several entries = layers; an event's bank is
+  found by scanning all banks for its FNV id.
+- Process: 8 dry boots (look 6, FP 2), balanced 1, Armed 1. The rate probe was not run (15 / 22.5 -> 15/s
+  carried from the SMG).
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one

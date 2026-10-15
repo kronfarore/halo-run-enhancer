@@ -2175,6 +2175,71 @@ cards from the plasma rifle. Armed boot: Grunts (x0.5, two-handed), Jackals (shi
 **Proofs:** st1-st7 narrowed (model / retarget / sounds / pickable of the done ports): 0 changed apart
 from bitmap headers, restore 0 each.
 
+### Halo 1: the Suppressor, wave C2 (2026-10-14/15, 8 dry boots + balanced + Armed on a30, PARALLEL with C3) -- a Halo 4 magazine automatic, a shader with no colour map, the 32 MiB model-buffer cap
+
+The whole weapon is `ports_h1/suppressor.py`, on a copy of the Halo 1 ASSAULT RIFLE (also the yardstick):
+the Halo 4 route of the Storm Rifle (h4: paths, Foundry FP decode, arms re-solved, Wwise sounds, CUI
+crosshair) on the magazine shape of the SMG / Spike Rifle (a slow visible projectile on every round).
+
+**Step 4a (user): the ASSAULT RIFLE.** Halo 4: shard 6.25 (plasma_fast) x 15/s, 48 (192 / 336), reload
+59 / 68 fr, error 0.5 -> 3, aim (mode block) 7.5/15 10/20. The shard flies 60 -> 15 wu/s over its FIRST
+2.5 wu (`acceleration range` 0..2.5), then 15; Halo 1 slows a projectile over its WHOLE range (the final
+velocity a floor) -> 15 -> 15 (within ~0.1 s at every distance). Halo 4's shard has NO damage falloff:
+its damage effect's 'scales based on distance' flag is unset, the 0..60 air damage range inert. Balanced
+(AR ratio): 8.33, 22.5 tag (Halo 1 fires 15..29.9 at 15/s: 125 dps), 90 (288 / 787: no dual wield, no
+x1.5), 2.9 s, error 2.5 (the maximum's ratio; the minimum's own gave 6.7) -> 8.13, range 40, aim 9/23.4
+12/31.25. The rate was NOT probed on this port (the SMG's 15 / 22.5 -> 15/s measurements carried).
+
+**THE DIFFUSE THAT DOES NOT EXIST.** H4EK's `_default_metal.material` names a colour map
+(storm_forerunner_smg_default_diff) shipped NOWHERE (not H4EK, not MCC's maps). The SHIPPED default
+material (m020.map: bitmaps normal / SHATTER control / cube / detail spec; specular 100, mix 0.9, reflection
+gamma 0.42, fresnel power 0.5936) = H4EK's `_shatter_metal.material`: `srf_char_forerunner_andrew` takes its
+diffuse from the control map's df channel (`control_map_spdfgl`: G, by the slot name) x albedo tint 0.494.
+`h4_standin_diffuse.py` (channel mode) bakes grey = tint x G, the specular channel R into the base map's
+alpha (Halo 1's reflection mask). Read a Halo 4 cache tag's references: scan its data for tag-reference
+structs (group magic, datum @0xC) and match parameter floats against the H4EK materials.
+
+**THE 32 MiB MODEL-BUFFER CAP** (found here; memory h1-model-buffer-32mib-cap): `tool build-cache-file`
+crashes with a bare access violation after 'streaming model vertex and index buffers' once a map's MODEL
+vertices x 68 + indices x 2 pass 32 MiB (crash registers: EBP = total model vertices). Bisect: build the
+level with the port's tag references swapped one group at a time, then its parts, vertices, attributes --
+everything above ~1000 vertices crashed, a finished port dropped instead built. Fixes (user): world = FP
+model tag (one gbxmodel, -0.8 MB here), the 8 Reach / Halo 4 ports reworked and decimated (h1_decimate.py,
+another session); this port decimated to 60 % (40 / 50 lumpy on the side).
+
+**FP.** The graph's 93 nodes = the C1 DROP list + 13 gun bones: no new drop. Left hand: Halo 4's fingers
+curl over the front-left of the gun, ours sat behind the drum. The hand-in-gun COUNT pointed DOWN (fewer
+intersections); the look pointed UP -- rendered through Halo 4's reference camera (FOV 70, a pinhole of the
+FP space), (0, +1, +1) cm matched (the count doubles: the chunkier palm inside the gun, unseen). Idle /
+posing / fire only. View 2 units lower (user); the FP muzzle re-measured for the shard's first-person offset.
+
+**LOOK.** Glow = the shipped look from the user's Halo 4 screenshot (strip edges 214 / 161 / 29 -> rgb
+1 / 0.75 / 0.13); the strips are long thin UV islands: an islands glow lit their middles -> `strip`
+(falls off across the long axis), a narrow `core` (power 3) in `hot_rgb` pale yellow (white read 'pure
+white'), plus HALO CARDS (glow_cards: each strip copied, widened 2.2 in its own plane, `along` 1.05, rings
+`round_scale` 1.4, `skip_piece_normals` for pieces facing along the barrel and the tilted top plate --
+x2.2 in 3D ran a strip through the gun, floated a square, tilted the rings). The shard: the AR tracer
+contrail recoloured, brighter (1 / 0.88 / 0.45), wider 0.07, + the fuel rod exhaust light / flare as a
+shard glow. Muzzle: Halo 4's FP flash is a LIGHT only (+ plate sparkles) -> the AR's centre flash kept,
+tinted, 3 units up (user); off-axis flashes, FP smoke, casing dropped.
+
+**SOUNDS** (bank forerunner_smg_player): fire = play_forerunner_smg_player_fire_single, 3 LAYERS (`event:k`
+entries layered; several wavs in one entry = permutations); the drop's event lives in the BOLTSHOT's
+player bank (found by scanning all 578 banks for the event id, bank names by FNV of H4EK soundbank tag
+names); impact = plasma_impact_generic + forerunner_impact_sweetener over the AR's hard-surface hits
+(impact_tint `sounds`). Pickup sound: the AR's (user: KEEP).
+
+**Step 11.** Halo 4 m020 ai\generic Suppressor entry over the AR (donor_weapon); WDM 0.4 x 150 / 93.75 =
+0.64, balanced / 125 = 0.48; balanced drop 0.3 x 0.7/0.5 = 0.42 - 0.9 (Halo 4's own sets no rounds: no
+row); species skill. Enhancer (75b11d1): hands 'two', own shard + melee tag_map, no rate skips. Armed
+boot: Grunts (x0.5), Jackals (shieldless), Elites -- passed.
+
+**Tools new / generalized (each committed with its proof):** h3_hud_art.decode local images,
+h4_standin_diffuse.py, h1_h3_weapon_model islands `strip` / `core` / `hot_rgb` (proof su1 0 changed) and
+glow_cards `along` / `skip_piece_normals` / `round_scale` (su2 caught a key-name clash with the Mauler's
+`skip_normals`: renamed, su3 0 changed), h1_role_compare 'suppressor'. Trap: `ai_firing_profile.build()`
+WRITES by default (write=True) -- pass write=False to read a source entry.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:
