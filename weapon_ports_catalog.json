@@ -6514,6 +6514,12 @@
       "label": "Sniper Rifle Ammo"
      }
     ]
+   },
+   "hands": "two",
+   "tag_map": {
+    "proj weapons\\pistol\\bullet": "proj weapons\\light rifle\\bolt",
+    "jpt! weapons\\pistol\\bullet": "jpt! weapons\\light rifle\\bolt",
+    "jpt! weapons\\pistol\\melee": "jpt! weapons\\light rifle\\melee"
    }
   },
   {
