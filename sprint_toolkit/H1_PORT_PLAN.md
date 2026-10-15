@@ -1151,6 +1151,33 @@ in "C1"-"C3" held; what is new:
 - Process: 7 dry boots (mode 1, sound / glow 1, burst 1, scope 4), balanced 1, Armed 2. Narrowed proofs lr1-lr5
   0 changed; check 6 0 changed. Trap: `ai_firing_profile.py` without `--port` writes despite `--dry`.
 
+## C5: what the Scattershot taught (2026-10-15) -- parallel with C4
+
+PORTING.md "Halo 1: the Scattershot, wave C5" is the full record; `ports_h1/scattershot.py` is the example of a
+SHELL-BY-SHELL pellet gun on the shotgun template, of a shard that bounces and SUPERCOMBINES, and of a
+SHORT-RANGE Armed weapon. Everything in "C1" - "C4" held; what is new:
+
+- **Measure, do not guess (the user's rule, again).** Three reload theories built from shell COUNTS each fitted
+  on paper and failed in game (three boots); a live measurement (weapon probe + the first-person record found
+  by the held weapon's handle) settled it in one. **Halo 1's shell reload:** one magazine cycle a round, cycle
+  1 = the ENTER's length; first person plays enter, `reload-empty` while more than one round is left, and
+  `reload-full` for the LAST one (missing -> idle, no exit). A shell port needs: a shell in the enter,
+  `reload-full`, exits without a shell. The stock shotgun lacks reload-full too (its last shell is silent).
+- **A Halo 4 projectile can carry TWO response tables** (`old material responses` + `material response`):
+  Halo 4 reads the newer one. Read both in 4b.
+- **Short range in Halo 1's AI** (Armed, 10 tests): the charge flag; the DONOR's desired range (Halo 4's
+  desired range outside the cap = parked); a firing cap inside the reach; the AI judges reach by the
+  projectile's MAXIMUM RANGE -- a random fuse (shards dying early) breaks that, a longer range only moves the
+  fight out: fix the reach.
+- **A long FP gun and the view offset:** 2 units down hid the rear 0 - 0.1 wu in front of the eye -- start at
+  Halo 4's own placement (offset 0, the gun bone matches) and judge through h1_fp_camera_render.
+- **Per-shot glow:** an in-place card layer faded by A out = the template's ejection port (Halo 4's
+  eject_port, its own recovery time) -- the Promethean shot flare.
+- **Probe trust:** h1_projectile_probe lost track of these shards ('gone' in a tick while they flew) --
+  confirm a probe reading visually before acting on it.
+- Process: 4 dry boots (view + glow 1, reload x3 + the measurement), balanced 1, Armed 10. Narrowed proofs
+  ss1-ss3 (h1_fp_retarget `reverse`, `resample`, `sequence`) 0 changed; check 6 0 changed. Model 0.60 MiB.
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one

@@ -2381,6 +2381,68 @@ RE-CHECK (user): 4b list 2 had one line left (error deceleration: the ratio 0.28
 on the final weapon -- refs 0, sound refs 0 BORROW, port_sounds --check 0, validate_halo_json 0, check 6 0
 changed of 1,019,648 fields, `used_weapons()` holds the port.
 
+### Halo 1: the Scattershot, wave C5 (2026-10-15, 4 dry boots + balanced + 10 Armed on b30, PARALLEL with C4) -- a Halo 4 shell-by-shell pellet gun whose shards bounce and supercombine; Halo 1's shell reload measured
+
+The whole weapon is `ports_h1/scattershot.py`, on a copy of the Halo 1 SHOTGUN (template and yardstick).
+
+**Step 4a (user): yardstick SHOTGUN.** Halo 4's shotgun is the same family: balanced = H1 shotgun x
+Scattershot / H4 shotgun -- 6 x 24.57, 0.5 s, 10 shells, 295 vs 322 dps (Halo 4's 144 vs 157.5); the
+sword ratio maps damage only (87 dps). The Scattershot's 6 shards are the BARREL's (projectiles per shot 6,
+a random 4 -> 7 deg cone, no `conical spread` -- unlike the Mauler / Boltshot), which Halo 1's barrel does
+exactly. Kept Halo 4's own in both versions: shard speed (the ratio's 22 wu/s would crawl), the ricochet,
+and the SUPERCOMBINE (user: 'port it': 6 stuck -> attached 250 + area 40 = one Halo 1 damage 45 -> 290, the
+needler explosion's table; the count via h1_supercombine_count, a balance row 6 / 6).
+
+**Step 4b found the shard's TWO response tables:** `old material responses` (16 rows: fizzles, 90-95 %
+bounces, a 50 % soft bounce) and the newer `material response` (4 rows) -- the one Halo 4 reads (its own
+shotgun bullet fills it too): bounce off EVERY world surface and Hunter armour (chance 1, any angle,
+frictions 0.1), attach in every other unit. 4a had laid out the old table; read both blocks.
+
+**Halo 1's SHELL RELOAD, MEASURED (boots 1-4).** Three theories built from the user's shell counts each
+failed in game; a live measurement settled it: the magazine (weapon +0x280: state, ticks, cycle length at
++0x284, loaded at +0x28A) runs ONE CYCLE A ROUND, adding it at the cycle's end -- cycle 1 lasts the ENTER
+animation's length, every later one the loop's (the tag's reload time), then a 2-tick chamber. First person
+(a record found by searching memory for the held weapon's handle: anim index at +0x10, frame at +0x12)
+plays `enter`, then `reload-empty` while MORE than one round is left, and asks for `reload-full` for the
+LAST round -- missing in this graph and in the stock shotgun's, so it fell back to IDLE (the last shell
+loaded silently, no exit followed: 'never a pump'); with nothing left after the enter (1 missing) it plays
+exit-full. Recipe: the enter carries the first shell (Halo 4's reload_enter + one continue_empty: 35 fr,
+so the reload times exactly like Halo 4's), `reload-full` = the shell loop (`also_as`), exits WITHOUT a
+shell (exit-full = the enter reversed, exit-empty = Halo 4's chamber pump). Tools: h1_fp_retarget
+`reverse`, `resample` (written for a disproved theory, kept generic), `sequence` (narrowed proofs ss1-ss3,
+0 changed). A stale cue: `tool animations` keeps an existing FP tag's sound references and the pickable
+step only SETS cues -- move the compiled tag aside before recompiling when a cue is dropped.
+
+**The look (user, boots 1-3):** 'part of the rifle is missing' was the VIEW OFFSET: the Suppressor's 2
+units down swept this long gun's rear top (0 - 0.1 wu in front of the eye) out of the view while the far
+muzzle barely moved -- Halo 4's own placement (offset 0) matches its gun bone exactly. Glow: the energy bars
+as a saturated strip glow (a pale core read white on thin bars) + a per-SHOT flash: the bars copied in place
+with an additive shader faded by A out = the shotgun template's EJECTION PORT function (recovery 1.0 s,
+Halo 4's own; Halo 4 drives its flare from `eject_port`) -- every Promethean gun that lights up on a shot can
+use it. The halo cards were dropped for the 0.6 MiB budget (70 % decimation + the flash cards = 0.60).
+Supercombine: the needler's particle system dropped, its screen flash (magenta) and light tinted. Melee FP 3
+units lower (ramped).
+
+**ARMED, the short-range recipe (10 tests).** Halo 4's ai\generic distances do not work in Halo 1: the
+carriers hung back (no charge), then fired from 12 wu (Halo 4's cap), then parked at Halo 4's desired 3 - 5
+wu outside a tighter cap and looked around. What worked: actor flag `always_charge_in_attacking_mode` (the
+enhancer's `actor_flags`), the Flood shotgun's desired range 1 - 3 and berserk firing band 0.75 - 2.75,
+first burst 0 - 0.2 s, bursts 1.125 - 2.0 s apart (Halo 4's shotgun AI), and a FIXED shard reach: the AI
+judges reach by the projectile's maximum range, so Halo 4's random fuse (deaths anywhere in 3.2 - 6.7) made
+it fire into the fizzle zone, and a longer range only moved the fight out (user) -> every free shard flies
+the full 6.7 wu (fuse 0.5 s = Halo 4's stuck time), cap 6.5. Squads an encounter holds at firing positions
+stay there (the charge acts in attacking mode only). Shard minimum velocity 0: the projectile probe read
+every AI shard 'gone' within a tick, the user then saw them fly -- but the probe read the same afterwards:
+its tracking of these shards is unreliable (do not build on h1_projectile_probe life / travel for fast
+pellets without a visual check).
+
+**Closing:** 4b list 2 = decisions; template diff traced; muzzle-flash rule; hit-effect rule x1 (2 shots/s);
+refs 0, sound refs all own but the ammo pickup (KEEP), port_sounds --check 0, validate_halo_json 0, check 6
+59 tags 0 changed; 5b 144 / 295 dps (the built rows = 4a's). Step 11: m020 #18 over the Flood combat Elite
+shotgun (user), WDM 0.335 / 0.164, drop 0.5 - 0.9. Enhancer keys (its session): hands two, tag_map (shard,
+melee, the needler explosion -> the supercombine), card_donors Needler explosion damage / radius; the charge
+`actor_flags` still to write.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:
