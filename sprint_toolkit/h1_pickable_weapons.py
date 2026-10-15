@@ -400,7 +400,15 @@ def make_hud(w, key, write):
                 r = np.sqrt((xx / rx) ** 2 + (yy / ry) ** 2)
                 edge = S.get('blur_edge', 12.0) / float(min(rx, ry))
                 blur = np.clip((r - 1.0) / edge, 0.0, 1.0)
-            h1_h3_scope.write(np.zeros((n, n)), S['out'], alpha=S.get('alpha', 0), blur=blur)
+            dark = np.zeros((n, n))
+            if S.get('dark_bands'):
+                # `dark_bands` (y0, ramp texels, strength): the top and bottom of the view darkened
+                # beyond y0 from the centre, ramping in over `ramp` (user, LightRifle boot 5: 'darken
+                # the top and bottom area' -- Halo 4's visor shade above / below its scope frame)
+                y0, ramp, k = S['dark_bands']
+                yy = np.abs(np.mgrid[0:n, 0:n][0] + 0.5 - n / 2.0)
+                dark = k * np.clip((yy - y0) / float(ramp), 0.0, 1.0)
+            h1_h3_scope.write(dark, S['out'], alpha=S.get('alpha', 0), blur=blur)
             print('   scope: clear mask (no chud)%s' % (', blurred outside %s' % (S['blur_outside'],)
                                                      if blur is not None else ''))
         elif write:
