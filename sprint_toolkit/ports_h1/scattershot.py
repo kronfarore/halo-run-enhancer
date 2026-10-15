@@ -37,9 +37,12 @@ SG = 'weapons\\shotgun\\'
 AR = 'weapons\\assault rifle\\'
 N = 'weapons\\needler\\'
 LEVELS = ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40']
-# Forerunner orange: the energy bars' si_color (1, 0.416, 0.2 x5) -- PROVISIONAL until the user's
-# Halo 4 screenshot
-ORANGE = (1.0, 0.42, 0.2)
+# Forerunner orange (boot 1: the user's Halo 4 screenshots, 2026-10-15; the bars' si_color 1, 0.416, 0.2
+# x5): the bars at rest (~250 / 120 / 20) = ORANGE, on a shot (~255 / 170 / 40, toward white in the cores)
+# = FLASH, the shards' red-orange streaks with yellow heads = SHARD
+ORANGE = (1.0, 0.47, 0.08)
+FLASH = (1.0, 0.68, 0.16)
+SHARD = (1.0, 0.36, 0.16)
 
 # the Storm Rifle's DROP list: every storm_fp graph shares the skeleton (checked 2026-10-15: this graph's
 # 91 bones = the 80 arm / camera nodes + the gun's 11)
@@ -181,11 +184,31 @@ PORT.update({
         # the AR's gun shader (the Suppressor's / Boltshot's, user-approved)
         'template': AR + r'fp\shaders\gun',
         'glow': {},
-        # the energy bars: an additive radial glow per UV island (the Boltshot's tuned settings, no
-        # white-hot centre)
+        # the energy bars: an additive glow per UV island (the Boltshot's tuned settings, no white-hot
+        # centre). BOOT 1 (user: 'glow can be improved -- the Boltshot's glowing display is a good example;
+        # the original also lights up on every shot'; the Halo 4 screenshots: the bars lit orange at rest,
+        # the whole bar set flaring yellow-orange on a shot): two layers on the bars --
+        #   ss_glow   the bar itself, a STRIP glow (falls off across the bar, the Suppressor's B) with a
+        #             narrow pale core
+        #   ss_flash  the SHOT: each bar copied x3 across, bright and hot, its brightness = A out (the
+        #             template's primary EJECTION PORT function: 1 on a shot, back to 0 over the ejection
+        #             port recovery time -- Halo 4's own 1.0 s; Halo 4 drives its flare from the same
+        #             `eject_port` function)
         'glow_shaders': {'ss_glow': {'rgb': ORANGE, 'additive': True, 'islands': True,
                                      'islands_of': 'storm_spread_gun_energy_bar_default',
-                                     'gain': 2.2, 'falloff': 0.35, 'radius': 1.3, 'hot': False}},
+                                     'strip': True, 'gain': 1.8, 'falloff': 0.45, 'radius': 1.2,
+                                     'hot': True, 'core': 3.0, 'hot_rgb': (1.0, 0.85, 0.5)},
+                         'ss_flash': {'rgb': FLASH, 'additive': True, 'islands': True,
+                                      'islands_of': 'storm_spread_gun_energy_bar_default',
+                                      'strip': True, 'gain': 2.5, 'falloff': 0.8, 'radius': 1.2,
+                                      'hot': True, 'core': 2.0, 'hot_rgb': (1.0, 0.95, 0.75),
+                                      'fade_source': 'A_out'}},
+        # THE MODEL BUFFER BUDGET (0.6 MiB): a card layer copies each bar triangle (891 a layer) -- both
+        # layers made 0.67 MiB -> the halo cards dropped (ss_halo unused for now), the flash kept: 0.60 MiB
+        'glow_cards': {'ss_flash': {'of': 'ss_glow', 'shader': 'ss_flash', 'scale': 3.0, 'along': 1.1,
+                                    'lift': 0.06, 'round_scale': 1.6,
+                                    'skip_piece_normals': [(1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)],
+                                    'skip_piece_dot': 0.9}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's OWN storm_fp_spread_gun (Foundry, h4_fp_dump.py
@@ -216,25 +239,37 @@ PORT.update({
             'first_person:throw_grenade': 'first-person throw-grenade',
             'first_person:reload_enter': 'first-person enter',
             'first_person:reload_continue_empty': 'first-person reload-empty',
-            'first_person:chamber_1': 'first-person exit-empty',
         },
         # Halo 4 has no reload exit with rounds left (its graph: enter, continue_empty, chamber_1) ->
         # Halo 1's exit-full = reload_enter played BACKWARDS (back to the idle grip)
-        'reverse': {'first-person exit-full': 'first_person:reload_enter'},
-        # the Boltshot's / Suppressor's start on the storm_fp setup: tuned at the boots
-        'view_offset': (0.0, 0.0, -0.02),
+        # BOOT 1 (user: 'reloading doesn't reload each shell separately' -- empty: 3 shell animations, the
+        # last two shells during the exit; 4 missing: 2; 3: 1; 2 and 1: 0). HALO 1's RULE (fits all five):
+        # the reload timer runs from the enter's start, and before each shell the exit starts once the time
+        # left is under the EXIT's length -- the 1.33 s chamber_1 ate two 0.7 s shells. Every shell shows
+        # only when enter + exit < one shell. User's pick ('every shell shown'): reload_enter at 2x (7 fr),
+        # BOTH exits = the enter reversed in 6 fr; chamber_1 (the pump after an empty magazine) dropped --
+        # fire_1 has the cocking motion. Balanced shell 0.525 s: 0.233 + 0.2 still fits
+        'reverse': {'first-person exit-full': 'first_person:reload_enter',
+                    'first-person exit-empty': 'first_person:reload_enter'},
+        'resample': {'first-person enter': 7, 'first-person exit-full': 6, 'first-person exit-empty': 6},
+        # BOOT 1 (user: 'part of the rifle is missing'): the start (the Suppressor's 2 units down) swept the
+        # gun's REAR top -- 0-0.1 wu in front of the eye on this long gun -- down out of the view (the muzzle,
+        # far away, barely moved). Halo 4's own placement (the gun bone matches it exactly at 0): no offset
+        'view_offset': (0.0, 0.0, 0.0),
+        # BOOT 1 (user: 'melee: move FP 1 unit lower'): the melee alone, ramped in / out (the Boltshot's)
+        'view_offset_anims': {'first_person:melee_strike_1': {'offset': (0.0, 0.0, -0.01),
+                                                              'ramp': {'in': 4, 'out': 8}}},
     },
 
     # Halo 4's own sounds (h1_port_sounds.py scattershot, `bank` 'halo4'). The player bank spread_gun_player
     # (the FP frame_event_list's player events; the legacy sg_fire1 / sg_* shotgun cues are EMPTY in MCC).
     # HIRC (2026-10-15): fire = a random crack of 4 [0-3] + 4 single layers [4, 5, 6, 7] + a random tail of
     # 4 [8-11]; reload_loop = three random layers [0-2] [3-5] [6-11]; reload_enter / reload_exit / ready /
-    # melee = random of 3 / 2 / 4 / 3; posing var1 = idle_b part 1 @0, 2 @40, 3 @70; dry fire 1; the drop
+    # melee = random of 3 / 2 / 4 / 3 (reload_exit = chamber_1's: dropped with it, boot 1); posing var1 = idle_b part 1 @0, 2 @40, 3 @70; dry fire 1; the drop
     # (spread_gun_player) random of 3; the shard's end (sg_detonate: proj_spreadgun) random of 7. Levels =
     # the active RMS of the stock Halo 1 sound each stands in for (h1_stock_sound_levels 2026-10-15):
     # shotgun fire -16.7, shotgun_ready -15.3, shotgun_melee -13.5, shotgun_posing -23.0, shotgun_reload1_1
-    # (enter) -19.9..-24.0 -> -22.0, shotgun_reload2_1 (a shell) -20.0..-23.4 -> -21.9, shotgun_reload4
-    # (exit-empty) -14.9, the AR dry fire (the shotgun's EMPTY plays it) -17.6, shotgun_impact -20.7;
+    # (enter) -19.9..-24.0 -> -22.0, shotgun_reload2_1 (a shell) -20.0..-23.4 -> -21.9, the AR dry fire (the shotgun's EMPTY plays it) -17.6, shotgun_impact -20.7;
     # impacts the Suppressor's (-11.3)
     'sounds': {
         'catalog': 'Scattershot',
@@ -264,8 +299,6 @@ PORT.update({
                            'play_wea_spreadgun_player_reload_loop:3,4,5',
                            'play_wea_spreadgun_player_reload_loop:6,7,8,9,10,11'],
                           'sound\\sfx\\weapons\\weapon_anims\\shotgun_reload2_1', -21.9),
-            'ss_reload_exit': (['play_wea_spreadgun_player_reload_exit:0,1'],
-                               'sound\\sfx\\weapons\\weapon_anims\\shotgun_reload4', -14.9),
             'ss_drop': (['play_wea_drop_rifle_fr_spread_gun_nonplayer:0,1,2'],
                         'sound\\sfx\\impulse\\weapon_drops\\shotgun_impact', -20.7),
             # the shard's end (Halo 4 sg_detonate's spreadgun_proj_explode); six end at once: the level of
@@ -306,8 +339,7 @@ PORT.update({
                    'first-person posing': SND + 'ss_pose',
                    'first-person melee': SND + 'ss_melee',
                    'first-person enter': SND + 'ss_reload_enter',
-                   'first-person reload-empty': SND + 'ss_reload',
-                   'first-person exit-empty': SND + 'ss_reload_exit'},
+                   'first-person reload-empty': SND + 'ss_reload'},
         # THE SHARD (on a copy of the shotgun PELLET; bullet_slow / shotgun both sides: the pellet's table)
         'bullet': {'projectile': (SG + 'pellet', SS + 'shard'),
                    'damage': (SG + 'pellet', SS + 'shard'),
@@ -367,13 +399,13 @@ PORT.update({
                                        'particle_tint': ORANGE, 'tint_match': ('',),
                                        # the needle explosion's pink light -> an own orange copy (its
                                        # particle system stays the needler's: judged at the boot)
-                                       'light': {'rgb': ORANGE, 'out': SS + 'effects\\supercombine light'}},
+                                       'light': {'rgb': FLASH, 'out': SS + 'effects\\supercombine light'}},
                    # the LOOK: Halo 4's shard = a glowing energy ball (flare + light + trail) -> the AR
                    # tracer's contrail recoloured + the Suppressor's glow (fuel rod exhaust light + flare)
                    'attachments_from': AR + 'bullet',
-                   'contrail': {'from': AR + 'bullet', 'out': SS + 'shard trail', 'rgb': ORANGE},
+                   'contrail': {'from': AR + 'bullet', 'out': SS + 'shard trail', 'rgb': SHARD},
                    'glow': {'light': (r'weapons\fuel rod gun\fuel rod exhaust', SS + 'shard glow'),
-                            'flare': SS + 'shard glow', 'rgb': ORANGE, 'flare_radius': 0.06,
+                            'flare': SS + 'shard glow', 'rgb': FLASH, 'flare_radius': 0.06,
                             'marker': ''},
                    # every response effect that plays the pellet's bullet impacts -> the shard's own
                    'impact_tint': {'match': (), 'rgb': None, 'out': SS + 'effects\\impact\\',
@@ -385,7 +417,10 @@ PORT.update({
         # Halo 4: recovery 0.5 s = 2 shots / s; error 4 -> 7 deg, at once (acceleration 0), back in 0.25 s
         'trigger': {'rounds_per_second': (2.0, 2.0), 'acceleration_time': 0.0, 'deceleration_time': 0.0,
                     'error_acceleration_time': 0.0, 'error_deceleration_time': 0.25,
-                    'rounds_between_tracers': 0},
+                    'rounds_between_tracers': 0,
+                    # BOOT 1: the shot flash fades with A out = the ejection port function (glow
+                    # `ss_flash`): Halo 4's own ejection port recovery, 1.0 s (the H1 shotgun's 0.15)
+                    'ejection_port_recovery_time': 1.0},
         'error_deg': {'minimum_error': 0.0, 'error_angle': (4.0, 7.0)},
         # Halo 4: 5 loaded, 15 at pickup, 20 most, ONE round a reload cycle; the cycle = reload_continue
         # _empty's 21 fr (0.7 s; Halo 1's shotgun: 0.4 s = its 12 fr shell); chamber time 0 (the H4 shotgun
