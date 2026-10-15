@@ -13735,6 +13735,7 @@
 				"Heat Threshold": {
 					"desc": "Heat Recovery Threshold",
 					"split_from": "Heat Recovery",
+					"ignore": true,
 					"game": ["Halo 1"],
 					"tag": { "Halo 1": "weap weapons\\boltshot\\boltshot" },
 					"targets": [
@@ -13744,6 +13745,7 @@
 				"Heat Loss": {
 					"desc": "Heat Loss Per Second",
 					"split_from": "Heat Recovery",
+					"ignore": true,
 					"game": ["Halo 1"],
 					"tag": { "Halo 1": "weap weapons\\boltshot\\boltshot" },
 					"targets": [
@@ -13753,6 +13755,7 @@
 				"Heat Per Round (Charged)": {
 					"desc": "Heat Generated Per Round",
 					"split_from": "Per Round (Charged)",
+					"ignore": true,
 					"game": ["Halo 1"],
 					"tag": { "Halo 1": "weap weapons\\boltshot\\boltshot" },
 					"targets": [
