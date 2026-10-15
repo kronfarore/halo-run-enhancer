@@ -12,6 +12,11 @@ Output (RGBA): RGB = albedo_tint x the diffuse channel x `gain` (grey), A = the 
 
     python h4_standin_diffuse.py <h4 control .bitmap> <out .png> [--tint 0.494] [--gain 1.0]
     python h4_standin_diffuse.py <h4 control .bitmap> <out .png> --mode lightness [--tint 0.431] [--mean 150]
+    python h4_standin_diffuse.py <h4 control .bitmap> <out .png> --mode color --color <h4 colour .bitmap> --tint 0.706
+
+`--mode color` (the Boltshot, C3 boot 1: a Halo 4 colour map that SHIPS, but with a solid alpha -- as
+Halo 1's reflection mask the gun drew full chrome, white): RGB = the colour map x `tint` x `gain`, A =
+the control map's `--specular` channel (control_map_spglrf: R).
 """
 import argparse
 import os
@@ -31,7 +36,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('control')
     ap.add_argument('out')
-    ap.add_argument('--mode', choices=('channel', 'lightness'), default='channel')
+    ap.add_argument('--mode', choices=('channel', 'lightness', 'color'), default='channel')
+    ap.add_argument('--color', help='color mode: the Halo 4 colour map (.bitmap)')
     ap.add_argument('--tint', type=float, default=0.494)     # the material's albedo_tint (grey)
     ap.add_argument('--diffuse', default='G')                # control_map_spdfgl: df = G
     ap.add_argument('--specular', default='R')               # sp = R -> alpha (reflection mask)
@@ -39,6 +45,17 @@ def main():
     ap.add_argument('--mean', type=float, default=150.0)     # lightness mode only
     a = ap.parse_args()
     c = np.asarray(h4_tags.bitmap_images(a.control)[0].convert('RGBA')).astype(np.float64) / 255.0
+    if a.mode == 'color':
+        d = np.asarray(h4_tags.bitmap_images(a.color)[0].convert('RGBA')).astype(np.float64) / 255.0
+        rgb = np.clip(d[..., :3] * a.tint * a.gain, 0.0, 1.0)
+        out = np.zeros(rgb.shape[:2] + (4,), np.uint8)
+        out[..., :3] = np.round(rgb * 255.0)
+        out[..., 3] = np.round(c[..., CH[a.specular]] * 255.0)
+        os.makedirs(os.path.dirname(a.out), exist_ok=True)
+        Image.fromarray(out).save(a.out)
+        print('wrote %s %s rgb mean %.1f, alpha mean %.1f' % (a.out, out.shape[1::-1], out[..., :3].mean(),
+                                                              out[..., 3].mean()))
+        return
     if a.mode == 'lightness':
         g = (0.35 + 0.65 * c[..., :3].mean(axis=2)) * a.tint
         g = np.clip(g * (a.mean / 255.0) / g.mean(), 0.0, 1.0)
