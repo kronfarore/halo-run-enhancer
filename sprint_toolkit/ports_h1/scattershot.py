@@ -156,7 +156,13 @@ PORT = reserved(
                     # around': Halo 4's Scattershot cadence (first burst 0.75 - 1.0 s, 2.5 - 3.5 s between
                     # bursts) -> the Halo 1 donor's first-burst delay (Flood Elite shotgun 0 - 0.2) and
                     # Halo 4's SHOTGUN AI gaps (1.125 - 2.0, m020); bursts stay the Scattershot's 0.625 - 1
-                    'set': ['0x74=5.0:Maximum Firing Distance',
+                    # ARMED TEST 4 (user): 'grunts behave; Elites fire from too far away'. The map's slots:
+                    # every slot capped at 5 wu, but the Elite slots keep their species' BERSERK firing band
+                    # (3.25 - 4, stealth 1.5 - 4) under the charge flag, and at 4 - 5 wu about half the
+                    # shards have died -> the shotgun carriers' own band (the Flood Elite shotgun's 0.75 -
+                    # 2.75) on every slot, the cap 5 -> 4 wu
+                    'set': ['0x74=4.0:Maximum Firing Distance',
+                            '0x168=0.75:Berserk Firing Range', '0x16C=2.75:Berserk Firing Range Max',
                             '0x80=0.0:First Burst Delay Time', '0x84=0.2:First Burst Delay Time Max',
                             '0xE8=1.125:Burst Separation', '0xEC=2.0:Burst Separation Max']},
 )
