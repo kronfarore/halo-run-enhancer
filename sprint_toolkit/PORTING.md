@@ -2360,13 +2360,21 @@ under the plate above it). The ammo HUD = Halo 4's three segment strips (`ammo_m
 **Step 11:** donor the AR carriers (the Battle Rifle's precedent; the pistol's carriers are crewmen /
 Flood / the suicidal Marine), Halo 4 m020 ai\generic #16, WDM 0.4 x 88 / 43.6 = 0.81 (balanced / 72.7 =
 0.48), balanced drop 0.3 - 1.0 (the Magnum 0.6 - 0.8 on m020), species skill. Trap:
-`ai_firing_profile.py` WITHOUT `--port` writes even with `--dry`.
+`ai_firing_profile.py` WITHOUT `--port` writes even with `--dry`. Enhancer (5d4e87c): hands 'two', tag_map
+bolt + melee, no skips (a rate card moves only the spacing inside the burst), 18 cards from the Pistol.
+
+**The Armed boot found three things the player never sees** (fixed, Armed 2 passed): NO third-person
+muzzle flash on enemies (the FP `drop_off_axis` had dropped the pistol's 3P side flashes too ->
+`keep_3p_off_axis`, `scale_3p` 1.5); the pistol template's grey-white full-screen HIT FLASH (not Halo 4's:
+its impact_bullet_forerifle response is a 0.2 s 'early' ORANGE directional flash -> that colour / timing at a
+15 % wash x 0.3); an INVISIBLE incoming bolt at 3000 wu/s (the AR tracer contrail recoloured, every round).
+Check these three before any port's Armed boot.
 
 **Closing:** refs audit 0; sound refs 0 BORROW (pickup KEEP: Halo 4's pickup event is in no bank); check 6
 60 tags 0 changed; 5b h1_role_compare `lightrifle` (44 / 73 dps). **Tool changes (opt-in, narrowed proofs
-lr1-lr4 0 changed):** h4_wwise.extract_object + h1_port_sounds `obj_`; ammo_meter `rows`; h1_pickable_weapons
-zoom_glyphs `image` (+ a cell that grows), chud-less `scope` (+ `blur_outside`, `dark_bands`); new
-h4_polyart.py / h4_polyart_scope.py (read-only art tools).
+lr1-lr5 0 changed):** h4_wwise.extract_object + h1_port_sounds `obj_`; ammo_meter `rows`; h1_pickable_weapons
+zoom_glyphs `image` (+ a cell that grows), chud-less `scope` (+ `blur_outside`, `dark_bands`), sound_effects
+`keep_3p_off_axis` / `scale_3p`; new h4_polyart.py / h4_polyart_scope.py (read-only art tools).
 
 ## Halo 3
 

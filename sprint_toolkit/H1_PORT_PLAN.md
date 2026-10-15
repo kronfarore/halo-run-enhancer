@@ -1144,7 +1144,11 @@ in "C1"-"C3" held; what is new:
   Railgun, Incineration Cannon) can reuse it.
 - **Forerunner firing light-up:** glow cards faded by `A_out` (the pistol template's firing illumination).
 - **Ammo HUD from Halo 4's segment strips:** `ammo_meter` `rows` (a column = one shot).
-- Process: 7 dry boots (mode 1, sound / glow 1, burst 1, scope 4), balanced 1, Armed 1. Narrowed proofs lr1-lr4
+- **The Armed boot catches what the player never sees** (Armed 1): no third-person muzzle flash (the FP
+  off-axis drop took the template's 3P side flashes: `keep_3p_off_axis` / `scale_3p`), the pistol template's
+  white hit flash (Halo 4's own damage_response: short orange, low intensity), an invisible fast bolt (the
+  AR tracer contrail recoloured). Check all three on every port BEFORE its Armed boot.
+- Process: 7 dry boots (mode 1, sound / glow 1, burst 1, scope 4), balanced 1, Armed 2. Narrowed proofs lr1-lr5
   0 changed; check 6 0 changed. Trap: `ai_firing_profile.py` without `--port` writes despite `--dry`.
 
 ### The phase-0 brief (as planned 2026-10-06; results above)

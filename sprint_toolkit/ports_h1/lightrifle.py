@@ -148,7 +148,9 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'in progress',
+    # 2026-10-15: tested on a30 over 7 dry boots, balanced and 2 Armed boots (grunt, jackal, elite) -- all
+    # confirmed by the user; the ten-map rebuild is BATCHED (the user's go)
+    'status': 'done',
 
     # BORROWED sounds kept ON PURPOSE (port_sound_refs prints these as KEEP)
     'sound_keeps': {r'sound\sfx\weapons\weapon_pickup_ammo\pistol_ammo':
