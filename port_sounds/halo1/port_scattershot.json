@@ -74,11 +74,7 @@
    "tag": "sound\\weapons\\scattershot_port\\ss_reload_exit",
    "perms": [
     "ss_reload_exit_1.wav",
-    "ss_reload_exit_2.wav",
-    "ss_reload_exit_3.wav",
-    "ss_reload_exit_4.wav",
-    "ss_reload_exit_5.wav",
-    "ss_reload_exit_6.wav"
+    "ss_reload_exit_2.wav"
    ],
    "aliases": [
     "sound\\weapons\\scattershot_port\\ss_reload_exit"
