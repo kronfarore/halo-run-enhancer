@@ -115,6 +115,39 @@ def render(n, art=None):
     `art` (optional): {'h3': (sheet, sequence)} -- Halo 3's round icon as the tick, in ONE
     row at Halo 3's own spacing, no slant, at most its native size (h3_tick)."""
     rounds_per, n_ticks, _s, _mult = plan(n)
+    if art and art.get('rows'):
+        # `rows` [(sheet, seq), ...] top to bottom (the LightRifle, C4 2026-10-15; user: 'the Halo 4
+        # art is 36, the rows just look different'): Halo 4 stacks one strip per ROW (top / middle /
+        # bottom, its own segment shape each) and a COLUMN is one 3-round shot. Tick (column c, row r)
+        # = round 3c + (rows - r): the rightmost column's top segment is the first round fired
+        strips = [h3_tick(sh, sq, native=art.get('native', False)) for sh, sq in art['rows']]
+        nr = len(strips)
+        cols = -(-n_ticks // nr)
+        pitch = strips[0][1]
+        heights = [t.shape[0] for t, _p in strips]
+        gap = art.get('row_gap', 0)
+        s = min(1.0, BOX_W / (cols * pitch), BOX_H / float(sum(heights) + gap * (nr - 1)))
+        static_a = np.zeros((H, W), np.uint8)
+        meter_l = np.zeros((H, W), np.uint8)
+        meter_a = np.zeros((H, W), np.uint8)
+        y = 5 + art.get('y', 0)
+        for r, (tick, _p) in enumerate(strips):
+            th, tw = tick.shape
+            t = np.array(Image.fromarray(tick).resize((max(1, round(tw * s)), max(1, round(th * s))),
+                                                      Image.LANCZOS))
+            h_, w_ = t.shape
+            for c in range(cols):
+                k = nr * c + (nr - r)
+                if k > n_ticks:
+                    continue
+                x = int(5 + c * pitch * s + 0.5)
+                sl = (slice(y, y + h_), slice(x, x + w_))
+                meter_a[sl] = np.maximum(meter_a[sl], t)
+                meter_l[sl] = np.where(t > 0, threshold(k, n), meter_l[sl])
+                ys, xs = slice(y - 4, y - 4 + h_), slice(x - 4, x - 4 + w_)
+                static_a[ys, xs] = np.maximum(static_a[ys, xs], t)
+            y += h_ + round(gap * s)
+        return static_a, meter_l, meter_a, (nr, cols, s, n_ticks, rounds_per)
     if art:
         tick, pitch = h3_tick(*art['h3'], native=art.get('native', False))
         th, tw = tick.shape

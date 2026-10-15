@@ -254,7 +254,14 @@ def make_hud(w, key, write):
         ovs[:] = []
         for G in h['zoom_glyphs']:
             if write:
-                art, (rx, ry) = AR.layer_art(*G['art'])
+                if 'image' in G:
+                    # `image` (the LightRifle, C4): a prepared RGBA PNG as the glyph (Halo 4's polyart
+                    # scope frame, rasterized and fitted to the source screenshot), registered at
+                    # `reg` px (default its centre)
+                    art = Image.open(G['image']).convert('RGBA')
+                    rx, ry = G.get('reg', (art.width / 2.0, art.height / 2.0))
+                else:
+                    art, (rx, ry) = AR.layer_art(*G['art'])
                 # `flip` 'x' / 'y' / 'xy': the art mirrored (the Plasma Launcher's scope rings:
                 # animated widgets, scale 0 in the chud -- in Reach they draw turned 180 deg)
                 if 'x' in G.get('flip', ''):
@@ -307,9 +314,16 @@ def make_hud(w, key, write):
                     v = (v / max(v.max(), 1.0)) ** G.get('gamma', 1.0)
                     a = Image.fromarray(np.clip(np.round(v * 255), 0, 255).astype(np.uint8))
                 a = a.point(lambda v, k=G.get('alpha', 1.0): int(round(v * k)))
-                canvas = Image.new('L', (AR.SIZE, AR.SIZE), 0)
-                canvas.paste(a, (round(AR.CENTRE[0] - rx * sx), round(AR.CENTRE[1] - ry * sy)))
-                white = canvas if G.get('normalize') else Image.new('L', (AR.SIZE, AR.SIZE), 255)
+                # the cell: the reticle's 256 px unless the glyph reaches past it (the LightRifle's
+                # quarter-screen frame pieces): then a square big enough, centred
+                SZ, CEN = AR.SIZE, AR.CENTRE
+                reach = max(rx * sx, a.width - rx * sx, ry * sy, a.height - ry * sy) + 4
+                if reach > min(CEN[0], CEN[1], SZ - CEN[0], SZ - CEN[1]):
+                    SZ = 2 * int(reach + 1)
+                    CEN = (SZ // 2, SZ // 2)
+                canvas = Image.new('L', (SZ, SZ), 0)
+                canvas.paste(a, (round(CEN[0] - rx * sx), round(CEN[1] - ry * sy)))
+                white = canvas if G.get('normalize') else Image.new('L', (SZ, SZ), 255)
                 img = Image.merge('RGBA', (white, white, white, canvas))
                 x0, y0, x1, y1 = canvas.getbbox()
                 x0, y0, x1, y1 = x0 - 2, y0 - 2, x1 + 2, y1 + 2
@@ -317,7 +331,7 @@ def make_hud(w, key, write):
                 crop = Image.new('RGBA', (w2, h2), (255, 255, 255, 0))
                 crop.paste(img.crop((x0, y0, x1, y1)), (0, 0))
                 blank = Image.new('RGBA', (4, 4), (255, 255, 255, 0))
-                frames = [(blank, (2, 2)), (crop, (AR.CENTRE[0] - x0, AR.CENTRE[1] - y0))]
+                frames = [(blank, (2, 2)), (crop, (CEN[0] - x0, CEN[1] - y0))]
                 for sheet in ('hud_reticles', 'hud_reticles_r'):
                     h1_hud_sheet.put_frames(sheet, G['name'], frames, AR.TEMPLATE_SEQ, G['index'])
             ovs.append(copy.deepcopy(tmpl))
@@ -371,7 +385,13 @@ def make_hud(w, key, write):
             src = wphi_def.build(filepath=path(h['screen_effect_from'], '.weapon_hud_interface')).data.tagdata
             for se in src.screen_effect.STEPTREE:
                 d.screen_effect.STEPTREE.append(copy.deepcopy(se))
-        if write:
+        if write and 'chud' not in S:
+            # NO chud (the LightRifle, C4: Halo 4's scope is polyart, drawn as coloured zoom_glyphs):
+            # a CLEAR mask -- nothing darkened, alpha 0 (no blur: Halo 4's zoom has neither)
+            import numpy as np
+            h1_h3_scope.write(np.zeros((S.get('size', 512),) * 2), S['out'], alpha=S.get('alpha', 0))
+            print('   scope: clear mask (no chud)')
+        elif write:
             dark, blur, used = h1_h3_scope.bake_maps(S['chud'], size=S.get('size', 512), span=S.get('span', 640.0),
                                                      aspect=S.get('aspect', 1.0), per_widget=S.get('per_widget'))
             h1_h3_scope.write(dark, S['out'], alpha=S.get('alpha', 255), blur=blur)
