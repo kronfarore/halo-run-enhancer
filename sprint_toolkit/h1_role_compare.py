@@ -1170,6 +1170,8 @@ SETS = {
     # homing, range 25, aim 8/26 16/26. Halo 1: AR 10 x 15/s, 60 (240 / 600), 87 fr; needler 10
     # (detonation) x 3 -> 10/s, 20 (80 / 80), 70 fr. Rates: Halo 1 fires 15..29.9 at 15/s (A1, B7)
     'suppressor': {'port': 'Suppressor', 'weapons': [
+        # the BUILT port (step 5b): its tags (+ --balanced rows); Halo 1 fires 15 and 22.5 at 15/s
+        ('Suppressor (port)', W + r'suppressor\suppressor', 'shot', {'rate': 15.0, 'cap': 15.0}),
         # Halo 4's own on the AR bullet's table (Halo 4: plasma_fast / bullet_slow = 1, C1)
         ('SU = H4 own', W + r'assault rifle\assault rifle', 'shot',
          {'dmg': 6.25, 'rate': 15.0, 'mag': 48, 'reload': 59 / 30.0, 'speed': 15.0,
