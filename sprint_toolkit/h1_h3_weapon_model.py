@@ -382,11 +382,23 @@ def add_point_cards(jm, G):
     d = h3_rm_to_jms._qrot(nq, (m.pos_x, m.pos_y, m.pos_z))
     P = np.array([npos[0] + d[0], npos[1] + d[1], npos[2] + d[2]], float)
     P = P + np.array([G.get('forward', 0.0), 0.0, 0.0])
+    # `at` (x, y, z cm, model space): the card's centre itself (the marker still names the node);
+    # `normal`: ONE card perpendicular to it instead of three crossed (the Boltshot's sight display,
+    # boot 4: 'restrict the glow to the display area' -- the crossed cards reached over the gun)
+    if G.get('at'):
+        P = np.array(G['at'], float)
     jm.materials.append(JmsMaterial(G['shader']))
     si = len(jm.materials) - 1
     h = G.get('size', 6.0) / 2.0
     X, Y, Z = np.eye(3)
-    for U, V, N in ((Y, Z, X), (X, Z, Y), (X, Y, Z)):
+    planes = ((Y, Z, X), (X, Z, Y), (X, Y, Z))
+    if G.get('normal'):
+        N = np.array(G['normal'], float)
+        N = N / np.linalg.norm(N)
+        U = np.cross(N, Z if abs(N[2]) < 0.9 else X)
+        U = U / np.linalg.norm(U)
+        planes = ((U, np.cross(N, U), N),)
+    for U, V, N in planes:
         idx = []
         for du, dv in ((-1, -1), (1, -1), (1, 1), (-1, 1)):
             q = P + U * du * h + V * dv * h
