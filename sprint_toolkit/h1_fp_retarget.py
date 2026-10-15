@@ -594,12 +594,17 @@ def write_jmas(weapon, only=None):
     # `also_as` {h1 name: source}: one source animation written under a second Halo 1 name too (the
     # Boltshot: Halo 4 has only reload_full -- Halo 1's reload-empty plays the same)
     jobs += [(src, h1name) for h1name, src in w.get('also_as', {}).items()]
+    # `reverse` {h1 name: source}: the source played BACKWARDS under a Halo 1 name (the Scattershot:
+    # Halo 4 has no reload exit with rounds left -- Halo 1's exit-full = reload_enter reversed)
+    jobs += [(src, h1name) for h1name, src in w.get('reverse', {}).items()]
     for h3name, h1name in jobs:
         if only and h1name not in only and h3name not in only:
             continue
         typ, frames = retarget(weapon, h3name, nodes, anims, defaults)
         if h1name in w.get('holds', {}):           # a still: the source's LAST frame held
             frames = [frames[-1]] * w['holds'][h1name][1]
+        if h1name in w.get('reverse', {}):
+            frames = frames[::-1]
         # `node_from` {h1 name: [(source animation, frame, [Halo 1 node names]), ...]}: those nodes'
         # LOCAL transforms taken from one frame of another source animation, in every frame (the
         # Boltshot: Halo 4 opens its plates by a charge-driven overlay Halo 1 cannot play -> the
