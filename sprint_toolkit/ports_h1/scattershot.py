@@ -246,27 +246,22 @@ PORT.update({
             'first_person:throw_grenade': 'first-person throw-grenade',
             'first_person:reload_continue_empty': 'first-person reload-empty',
         },
-        # THE SHELL RELOAD. BOOT 1 (user: 'reloading doesn't reload each shell separately' -- empty: 3 shell
-        # animations, the last two shells during the exit; 4 missing: 2; 3: 1; 2 and 1: 0). A first theory
-        # (the exit starts once the time left is under its length) was disproved by BOOT 2 (enter 2x + 0.2 s
-        # exits: the counts unchanged). HALO 1's RULE (its own shotgun's frames show it: the enter ends at
-        # the loading port, both exits start with a shell going in, exit-empty then pumps): ONE ROUND A
-        # STAGE -- the enter loads one, each loop one, the exit one -> loops = missing - 2 whatever the
-        # lengths. So Halo 4's stages carry their shell: enter = reload_enter + one shell; exit-full = one
-        # shell + reload_enter reversed (Halo 4 has no exit with rounds left); exit-empty = one shell + Halo
-        # 4's chamber_1 (the pump is back). 1 missing: the enter's shell fills it, the exit shows one more
-        # BOOT 3 (user: 1 round -> 2 shell motions, 2 -> 1, 3 -> 2, 4 -> 3, 5 -> 4): the rule, fitting all
-        # three boots -- the FIRST round loads at once, then one every shell time, so the reload ends after
-        # (n - 1) shells; first person plays the enter, then the loops, and CUTS to the exit when it ends:
-        # only the shells COMPLETED by then show, + the exit's. The 35 fr enter finished too late -> the
-        # enter (Halo 4's 14 fr + a shell 21 fr) squeezed into 15 fr (0.5 s, under the balanced 0.525 s
-        # shell too): exactly n shell motions for every n
-        'sequence': {'first-person enter': [{'from': 'first_person:reload_enter', 'frames': 5},
-                                           {'from': 'first_person:reload_continue_empty', 'frames': 10}],
-                     'first-person exit-full': ['first_person:reload_continue_empty',
-                                                {'from': 'first_person:reload_enter', 'reverse': True}],
-                     'first-person exit-empty': ['first_person:reload_continue_empty',
-                                                 'first_person:chamber_1']},
+        # THE SHELL RELOAD -- MEASURED (boot 4, h1_weapon_state_probe + the first-person record found by its
+        # weapon handle: anim index at +0x10, frame at +0x12). Boots 1-3 guessed from the user's shell counts
+        # (1 -> 2, 2 -> 1, 3 -> 2, 4 -> 3, 5 -> 4 with shells in enter + exits) and every guess failed.
+        # HALO 1's SHELL RELOAD: the magazine runs ONE CYCLE A ROUND, adding it at the cycle's end; cycle 1
+        # lasts the ENTER animation's length, every later one the shell loop's (21 ticks), then a 2-tick
+        # chamber. First person: enter, then `reload-empty` while MORE THAN ONE round is still to load, but
+        # with exactly one left it asks for `reload-full` -- missing in this graph (and in the stock
+        # shotgun's): it falls back to IDLE while the last round loads silently, and no exit follows; with
+        # none left after the enter (1 missing) it plays exit-full. So: the enter carries the first shell
+        # (Halo 4's reload_enter + one continue_empty, 35 fr -> the reload times exactly as Halo 4's: 14 + 21
+        # a shell), `reload-full` = the shell loop too, and the exits carry NO shell: exit-full = the enter
+        # reversed (tilt out; Halo 4 has no exit with rounds left), exit-empty = Halo 4's chamber_1 (the pump)
+        'also_as': {'first-person reload-full': 'first_person:reload_continue_empty'},
+        'sequence': {'first-person enter': ['first_person:reload_enter', 'first_person:reload_continue_empty'],
+                     'first-person exit-full': [{'from': 'first_person:reload_enter', 'reverse': True}],
+                     'first-person exit-empty': ['first_person:chamber_1']},
         # BOOT 1 (user: 'part of the rifle is missing'): the start (the Suppressor's 2 units down) swept the
         # gun's REAR top -- 0-0.1 wu in front of the eye on this long gun -- down out of the view (the muzzle,
         # far away, barely moved). Halo 4's own placement (the gun bone matches it exactly at 0): no offset
@@ -309,17 +304,14 @@ PORT.update({
             'ss_pose': (['play_wea_spreadgun_idle_b_part_1', 'play_wea_spreadgun_idle_b_part_2',
                          'play_wea_spreadgun_idle_b_part_3'],
                         'sound\\sfx\\weapons\\weapon_anims\\shotgun_posing', -23.0),
-            # the stages' own sounds (boot 2: a shell in the enter and in each exit): the enter's foley + a
-            # shell at its frame 5; exit-empty = a shell + the chamber's reload_exit at 21 fr; exit-full = ss_reload
+            # the stages' own sounds (boot 4, the measured stages): the enter = its foley + the first shell at
+            # frame 14; exit-empty = Halo 4's chamber sound (reload_exit, chamber_1's own cue); exit-full silent
             'ss_reload_enter': (['play_wea_spreadgun_player_reload_enter:0,1,2',
                                  'play_wea_spreadgun_player_reload_loop:0,1,2',
                                  'play_wea_spreadgun_player_reload_loop:3,4,5',
                                  'play_wea_spreadgun_player_reload_loop:6,7,8,9,10,11'],
                                 'sound\\sfx\\weapons\\weapon_anims\\shotgun_reload1_1', -22.0),
-            'ss_reload_exit': (['play_wea_spreadgun_player_reload_loop:0,1,2',
-                                'play_wea_spreadgun_player_reload_loop:3,4,5',
-                                'play_wea_spreadgun_player_reload_loop:6,7,8,9,10,11',
-                                'play_wea_spreadgun_player_reload_exit:0,1'],
+            'ss_reload_exit': (['play_wea_spreadgun_player_reload_exit:0,1'],
                                'sound\\sfx\\weapons\\weapon_anims\\shotgun_reload4', -14.9),
             'ss_reload': (['play_wea_spreadgun_player_reload_loop:0,1,2',
                            'play_wea_spreadgun_player_reload_loop:3,4,5',
@@ -343,9 +335,8 @@ PORT.update({
                                    'sound\\sfx\\weapons\\weapon_anims\\shotgun_reload2_1', -21.9),
         },
         'offsets': {'ss_pose': [0.0, 40 / 30.0, 70 / 30.0],
-                    # the enter's shell at its frame 5 (boot 3: the 15 fr enter)
-                    'ss_reload_enter': [0.0, 5 / 30.0, 5 / 30.0, 5 / 30.0],
-                    'ss_reload_exit': [0.0, 0.0, 0.0, 21 / 30.0]},
+                    # the enter's shell at its frame 14 (after Halo 4's 14 fr reload_enter)
+                    'ss_reload_enter': [0.0, 14 / 30.0, 14 / 30.0, 14 / 30.0]},
         'stretch': {'ss_reload_balanced': 0.75},
     },
 
@@ -369,7 +360,7 @@ PORT.update({
                    'first-person melee': SND + 'ss_melee',
                    'first-person enter': SND + 'ss_reload_enter',
                    'first-person reload-empty': SND + 'ss_reload',
-                   'first-person exit-full': SND + 'ss_reload',
+                   'first-person reload-full': SND + 'ss_reload',
                    'first-person exit-empty': SND + 'ss_reload_exit'},
         # THE SHARD (on a copy of the shotgun PELLET; bullet_slow / shotgun both sides: the pellet's table)
         'bullet': {'projectile': (SG + 'pellet', SS + 'shard'),
