@@ -6236,8 +6236,8 @@
    "source": "Halo 4",
    "donor": "Pistol",
    "default_on": false,
-   "desc": "Halo 4's LightRifle: its model, first-person animations, sounds and numbers. A 36-round Forerunner rifle with a 3x zoom: the trigger fires a 3-round burst, the grenade key a single stronger shot (3 rounds); no grenades while it is held. Pistol ammo tops it up.",
-   "balance_desc": "Measured against the Pistol, which both games have: 8.9 damage a burst round, 39 a single shot (1.75 a second), a 54 magazine, 270 at the start / 432 most, a 3.3 s reload, a slower bolt (300 wu/s), 40 wu range and Halo 1-style aim assist.",
+   "desc": "Halo 4's LightRifle: its model, first-person animations, sounds and numbers. A 36-round Forerunner rifle firing 3-round bursts, with a 3x zoom (Halo 4's stronger scoped shot is not reproduced). Pistol ammo tops it up.",
+   "balance_desc": "Measured against the Pistol, which both games have: 8.9 damage a burst round, a 54 magazine, 270 at the start / 432 most, a 3.3 s reload, a slower bolt (300 wu/s), 40 wu range and Halo 1-style aim assist.",
    "anims": {
     "reload": 1.3216216216216217,
     "swap": 2.19
@@ -6278,53 +6278,6 @@
      "value": 8.89,
      "card": "Bullet Damage",
      "original": 5.333
-    },
-    {
-     "class": "jpt!",
-     "tag": "weapons\\light rifle\\bolt scoped",
-     "field": "Damage Lower Bound",
-     "block": null,
-     "value": 39.17,
-     "card": "Bullet Damage",
-     "original": 23.5
-    },
-    {
-     "class": "jpt!",
-     "tag": "weapons\\light rifle\\bolt scoped",
-     "field": "Damage Upper Bound",
-     "block": null,
-     "value": 39.17,
-     "card": "Bullet Damage",
-     "original": 23.5
-    },
-    {
-     "class": "jpt!",
-     "tag": "weapons\\light rifle\\bolt scoped",
-     "field": "Damage Upper Bound Max",
-     "block": null,
-     "value": 39.17,
-     "card": "Bullet Damage",
-     "original": 23.5
-    },
-    {
-     "class": "weap",
-     "tag": "weapons\\light rifle\\light rifle",
-     "field": "Rounds Per Second",
-     "block": "Triggers",
-     "value": 1.75,
-     "card": "More Shooting",
-     "original": 2.5,
-     "index": 1
-    },
-    {
-     "class": "weap",
-     "tag": "weapons\\light rifle\\light rifle",
-     "field": "Rounds Per Second Max",
-     "block": "Triggers",
-     "value": 1.75,
-     "card": "More Shooting",
-     "original": 2.5,
-     "index": 1
     },
     {
      "class": "weap",
@@ -6392,26 +6345,6 @@
      "index": 0
     },
     {
-     "class": "weap",
-     "tag": "weapons\\light rifle\\light rifle",
-     "field": "Error Angle",
-     "block": "Triggers",
-     "value": 0.057,
-     "card": "Error Angle",
-     "original": 0.15,
-     "index": 1
-    },
-    {
-     "class": "weap",
-     "tag": "weapons\\light rifle\\light rifle",
-     "field": "Error Angle Max",
-     "block": "Triggers",
-     "value": 0.57,
-     "card": "Error Angle",
-     "original": 0.5,
-     "index": 1
-    },
-    {
      "class": "proj",
      "tag": "weapons\\light rifle\\bolt",
      "field": "Initial Velocity",
@@ -6432,33 +6365,6 @@
     {
      "class": "proj",
      "tag": "weapons\\light rifle\\bolt",
-     "field": "Maximum Range",
-     "block": null,
-     "value": 40.0,
-     "card": "Projectile",
-     "original": 250.0
-    },
-    {
-     "class": "proj",
-     "tag": "weapons\\light rifle\\bolt scoped",
-     "field": "Initial Velocity",
-     "block": null,
-     "value": 10.0,
-     "card": "Projectile",
-     "original": 100.0
-    },
-    {
-     "class": "proj",
-     "tag": "weapons\\light rifle\\bolt scoped",
-     "field": "Final Velocity",
-     "block": null,
-     "value": 10.0,
-     "card": "Projectile",
-     "original": 100.0
-    },
-    {
-     "class": "proj",
-     "tag": "weapons\\light rifle\\bolt scoped",
      "field": "Maximum Range",
      "block": null,
      "value": 40.0,
