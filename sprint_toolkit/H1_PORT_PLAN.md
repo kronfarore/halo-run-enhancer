@@ -1102,6 +1102,28 @@ Halo 4 route). Everything in "C1: what the Storm Rifle taught" held; what is new
 - Process: 8 dry boots (look 6, FP 2), balanced 1, Armed 1. The rate probe was not run (15 / 22.5 -> 15/s
   carried from the SMG).
 
+## C3: what the Boltshot taught (2026-10-15) -- parallel with C2
+
+PORTING.md "Halo 1: the Boltshot, wave C3" is the full record; `ports_h1/boltshot.py` is the example of a
+CHARGED PAIR on a MAGAZINE template (the pistol + `add_triggers`) and of a weapon that OVERHEATS per charged
+shot. Everything in "C1" and "C2" held; what is new:
+
+- **A ratio per MODE** works: one yardstick per trigger (pistol bolt, shotgun blast), rows for trigger 1 by
+  `index` 1. A Halo 4 blast's pellets live in the PROJECTILE's `conical spread`, not the barrel.
+- **Read every barrel in step 4b, not just the table:** the blast's heat 1.0 a shot = an overheat after
+  every blast (the leftover overheated animations were the hint). Halo 1 adds trigger heat per SHOT and
+  charges during the overheat.
+- **Halo 1 auto-reloads under the costliest trigger's rounds per shot** (6 bolts of 10 with a 5-round
+  blast): a cost above 1 on a second trigger takes bolts out of every magazine -- ask the user (kept here).
+- **A charge-driven Halo 4 overlay** (the plates' `flaps`) cannot play in Halo 1: bake its end pose into the
+  full-charge animation (`node_from`). Charge glows go INTO the model at the source effect's markers.
+- **Per-animation FP fixes need ramps** (Halo 1 snaps between FP animations): `hand_offset_anims` /
+  `view_offset_anims` `ramp`. A hand-clip count that falls may mean the hand LEFT the grip -- look first.
+- **White gun = a solid reflection mask** (Halo 4 colour map with a solid alpha): the control map's
+  specular as the base map's alpha. Islands glow: `hot: False` for tiny islands.
+- Process: 6 dry boots (look 4, FP 2), balanced 1, Armed 1. Five narrowed proofs (bo1-bo5), all 0 changed;
+  closing check 6 0 changed.
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one

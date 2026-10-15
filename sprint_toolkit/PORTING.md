@@ -2245,6 +2245,60 @@ offsets), `h1_gbxmodel_render.py` (a built gbxmodel side / top, glow geometry hi
 Halo 1: flatten, re-run the writers, 0 changed). Trap: `ai_firing_profile.build()`
 WRITES by default (write=True) -- pass write=False to read a source entry.
 
+### Halo 1: the Boltshot, wave C3 (2026-10-14/15, 6 dry boots + balanced + Armed on b30, PARALLEL with C2) -- a Halo 4 sidearm with a charged pellet blast that overheats, a charged pair on a magazine template
+
+The whole weapon is `ports_h1/boltshot.py`, on a copy of the Halo 1 PISTOL with a second trigger
+(`add_triggers`, the Grenade Launcher's charged pair): a tap fires the bolt (trigger 0), a 0.6 s charge
+the blast (trigger 1).
+
+**Step 4a (user): a ratio PER MODE.** The bolt by the PISTOL (bullet_slow both sides), the blast by the
+SHOTGUN -- Halo 4's own shotgun is a near-twin. Halo 4's blast is ONE projectile whose `conical spread`
+(yaw 5 x pitch 3) makes 15 pellets: read the PROJECTILE, not the barrel ('projectiles per shot 1'). The
+charge kept (no yardstick charges; Halo 1's plasma pistol charges 0.6 s too); the bolt's range kept 40 (the
+ratio 6.4 is degenerate: the Magnum's 250); balanced 7 rounds a blast (two a magazine).
+
+**Step 4b found the overheat:** barrel 1 generates 1.0 heat a shot at threshold 1 -- every blast
+OVERHEATS for 1.8 s (loss 0.5 overheated; Halo 1's one loss = that one, the Storm Rifle's A'). The leftover
+`overheated` / `o_h_exit` / `*_overheated` animations were the clue. Halo 1 adds trigger heat per SHOT,
+not per round (the plugin's tooltip), and charges DURING the overheat (h1_role_compare: cycle = max).
+Halo 4 holds fire_2's last frame through the lockout (fire_2's end = o_h_exit's start; `overheated` is
+another pose) -> Halo 1 overheating = fire_2 (`also_as`), overheated = its last frame held 32 fr, o-h-exit.
+
+**Halo 1 limits found (recorded in `lacks`):** Halo 1 AUTO-RELOADS once fewer rounds are loaded than ANY
+trigger costs -- 6 bolts of 10 (balanced 9 of 15); the user kept Halo 4's 5 a blast. The fixed 5 x 3 grid
+(Halo 1: random in the cone). The AI only taps the pair. Halo 4 opens the plates by a charge-driven
+OVERLAY (`flaps`) Halo 1 cannot play -> fire_2's open plates baked into `overcharged` (`node_from`).
+
+**The look (user, boots 1-5):** the gun drew WHITE: Halo 4's colour map has a solid alpha, so the
+reflection mask (multipurpose R) was 255 -- base maps from the colour map x albedo tint + the CONTROL map's
+specular (R) as the alpha, the AR's gun shader. The glow islands' default white-hot centre saturates tiny
+islands white (`hot: False`). The charge cue: Halo 4 lights plates / vents / a core with effects; Halo 1
+draws weapon attachments at the hidden third-person gun -> radial cards built into the model at Halo 4's
+own effect markers, faded by the charge (`glow_points`, now rotation-aware + `index`); the sight display one
+card in its own plane (`at` + `normal`). Pellets invisible at 5.5 wu: the AR's tracer contrail recoloured,
+a burst at range end AND on contact (`default_responses` detonate). Halo 4's pip strip read at its own
+density (`ammo_meter` `native`: scaled to Halo 3 units the ten pips merged into one). FP down 2 units / back
+1, the MELEE alone 2 more (`view_offset_anims`, ramped); muzzle flash 4.0 up, 2.0 forward (the
+Suppressor's start), its life 0.075 -> 0.12 s (`own_particles`: the lifespan is in the shared particle).
+
+**Hands:** a 2 cm right-hand offset that halved the hand-in-gun count on `overcharged` moved the hand OFF
+Halo 4's grip (the count fell because the hand left the gun -- the user's video caught it); a ramped
+offset reads as a slide. Final: 1 cm on fire_2 (the post-blast hold), set at once, the exit ramping out
+(`hand_offset_anims` `ramp`). Halo 1 snaps between FP animations: any per-animation offset needs a ramp
+where it meets another animation, or a recoil to hide in.
+
+**Step 11:** donor the Jackal minor plasma pistol (Halo 1's Covenant sidearm), Halo 4 m020 ai\generic
+#21, WDM 0.5 x 88 / 75 = 0.587 (balanced 0.503), drop 0.7 - 0.9 both; species skill on. Enhancer (its
+keys): hands 'one', the bolt / charged card split of the plasma pistol (charged cards on the pellet /
+trigger 1). Armed: Grunts, Jackals, Elites (user: works).
+
+**Closing:** refs audit 0 problems; sound refs all own but the ammo pickup (KEEP: Halo 4's pickup tag is
+empty); check 6 (`h1_tag_writes_proof`) 69 tags 0 changed; step 5b h1_role_compare `boltshot` (built rows:
+`rounds_per_shot` / `reserve` model the auto-reload). **Tool changes (each opt-in, narrowed proofs
+bo1-bo5 0 changed):** h1_fp_retarget `also_as`, `node_from`, hand_offset_anims `ramp`,
+`view_offset_anims`; h1_h3_weapon_model glow_points rotations / `index` / `at` / `normal`; ammo_meter
+`native`; h1_pickable_weapons sound_effects `own_particles`; h1_fp_hand_clip (read-only) absent-key fix.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:
