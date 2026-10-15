@@ -392,6 +392,37 @@ SETS = {
         ('Pistol melee', W + r'pistol\pistol', 'melee'),
         ('Spike Rifle (blade peer)', W + r'spiker\spiker', 'melee'),
     ]},
+    # the SCATTERSHOT (wave C5), step 4a. Halo 4 (H4EK 2026-10-15, h3_weapon_values --kit h4 + the
+    # export): the 6 shards are the BARREL's (projectiles per shot 6, random in error 4 -> 7 deg, no
+    # `conical spread`), 12 a shard (bullet_slow, NO falloff), recovery 0.5 s, 5 (15 / 20) shell by
+    # shell (enter 14 + 21 a shell + chamber 39 fr), 75 -> 10 wu/s over 2-3 wu, a 0.15-0.5 s timer from
+    # the muzzle (dies at ~3.2-6.7 wu), ricochets off hard surfaces, aim (mode) 6/7 12/6.5,
+    # strike_melee. Its tag also names a SUPER detonation (6 stuck within 0.1 s, 250 attached).
+    # H4 shotgun: 15 x 10.5 (lower 3 over 1.5 -> 3.75), 5 x 3 grid of 3 deg, 1.0 s, 6 (18 / 24),
+    # 480 wu/s, range 6.5, aim 6/5.5 12/5.5. H4 sword: dash_melee 250. Every row on the pellet's table.
+    'scattershot': {'port': 'Scattershot', 'weapons': [
+        ('SS = H4 own (sg pellet)', W + r'shotgun\shotgun', 'shot',
+         {'per_shot': 6, 'dmg': 12.0, 'rate': 2.0, 'mag': 5, 'reload': (14 + 5 * 21 + 39) / 30.0,
+          'speed': 75.0, 'range': 6.7, 'aim': (6.0, 7.0, 12.0, 6.5)}),
+        ('SS = H4 own + super', W + r'shotgun\shotgun', 'shot',
+         {'per_shot': 6, 'dmg': 12.0, 'rate': 2.0, 'mag': 5, 'reload': (14 + 5 * 21 + 39) / 30.0,
+          'speed': 75.0, 'range': 6.7, 'aim': (6.0, 7.0, 12.0, 6.5),
+          'super': (1, W + r'needler\explosion', 250.0)}),
+        # SHOTGUN ratio: 21.5 x 12/10.5 a shard, 15 x 6/15 shards; 1.0 s x 0.5/1.0; 12 x 5/6; shell
+        # 0.4 s x 21/16 (10 shells); aim 15 x 7/5.5, 15 x 6.5/5.5
+        ('SS = Shotgun ratio', W + r'shotgun\shotgun', 'shot',
+         {'per_shot': 6, 'dmg': 24.57, 'rate': 2.0, 'mag': 10, 'reload': 10 * 0.4 * 21 / 16.0,
+          'speed': 75.0, 'range': 6.7, 'aim': (6.0, 19.1, 12.0, 17.7)}),
+        # SWORD ratio (damage only): 151 x 72/250 a shot = 7.25 a shard
+        ('SS = Sword ratio (dmg)', W + r'shotgun\shotgun', 'shot',
+         {'per_shot': 6, 'dmg': 7.25, 'rate': 2.0, 'mag': 5, 'reload': (14 + 5 * 21 + 39) / 30.0,
+          'speed': 75.0, 'range': 6.7, 'aim': (6.0, 7.0, 12.0, 6.5)}),
+        ('Shotgun', W + r'shotgun\shotgun', 'shot'),
+        ('Mauler port', W + r'mauler\mauler', 'shot'),
+        ('Sword slash (restored)', W + r'energy sword\energy sword', 'melee'),
+        ('Sword lunge (restored)', W + r'energy sword\energy sword', 'shot'),
+        ('Shotgun melee', W + r'shotgun\shotgun', 'melee'),
+    ]},
     # the Brute Shot (wave A7), step 4a. Its damage is the grenade's DETONATION (no impact
     # damage): H3 shot_grenade_explosion 26..73, radius 0.3 -> 1.1 (core 0.3), 'bullet'
     # category / explosion_small. The grenade does NOT bounce in Halo 3: impact (detonate) on
