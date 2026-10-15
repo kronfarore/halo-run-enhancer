@@ -1430,6 +1430,27 @@ at once through kit_commit.
 | 1 | C2 Suppressor | a30 | hud_reticles 60-63 |
 | 2 | C3 Boltshot | b30 (`--level b30` on EVERY staging run) | hud_reticles 64-67 |
 
+### Parallel pair 4: C4 LightRifle + C5 Scattershot (prepared 2026-10-15)
+
+Both on the Halo 4 recipe (C1-C3). Different weapons underneath: C4 a precision rifle whose
+unscoped / scoped MODES fire differently (the Battle Rifle's burst + scope recipes), C5 a
+pellet weapon whose pellets BOUNCE (the Mauler's pellets, the Spike Rifle's ricochet).
+
+**THE MODEL BUFFER BUDGET (2026-10-15).** The tightest maps have ~7.6 MiB of the 32 MiB model
+buffer left with every done port resident (a10 / a30 / b30; `h1_model_buffer.py`), and six ports
+remain -- the last four of wave C must still fit after this pair. So each of C4 / C5 keeps its
+model (world = FP tag, one render model) at **<= 0.6 MiB**: `h1_decimate.py preview <key> --keep 40
+--render`, the lowest % whose side view holds, `set` -- BEFORE the first test build, and read
+`h1_model_buffer.py ports` after (the Suppressor sits at 0.53 at 60 %, the Boltshot 0.37).
+Above 0.6 MiB: ask the user before building.
+
+| session | weapon | test level | extra HUD sequences |
+|---|---|---|---|
+| 1 | C4 LightRifle | a30 | hud_reticles 68-71 |
+| 2 | C5 Scattershot | b30 (`--level b30` on EVERY staging run) | hud_reticles 72-75 |
+
+(Pair 3's 60-67 were never used; they stay unassigned.)
+
 ## Hand-off prompt for a weapon session
 
 > Port the <WEAPON> into Halo 1 (H1_PORT_PLAN.md, wave <X>, #<n>). Source: <game>.
@@ -2539,3 +2560,122 @@ at once through kit_commit.
 > `h1_port_test_map.py boltshot --restore b30`. The ten-map rebuild stays BATCHED (my go). When
 > done: catalog entry, enhancer hand-off, PORTING section, memory, `python port_backup.py --game
 > h1`, "C3: what the Boltshot taught".
+
+### The LightRifle (wave C4), filled in -- PARALLEL with C5
+
+> PARALLEL: another port session (C5, the Scattershot) runs at the same time on the same kit. Read
+> H1_PORT_PLAN.md "Running two ports in parallel" first (incl. REWORK status and "Hardened after
+> pair 1": `kit_commit.py` for every commit, `--commit` on the record writers) and "Parallel pair 4"
+> (THE MODEL BUFFER BUDGET: your model <= 0.6 MiB, decimated before the first test build). Your test
+> level is a30 -- pass `--level a30` on every `h1_port_test_map.py` run and restore with
+> `h1_port_test_map.py lightrifle --restore a30`. Extra HUD sequences: hud_reticles 68-71 only. If a
+> script says `kit lock: WAITING`, let it wait; never `kit_lock.py release --force` a lock whose
+> holder is running. Do NOT write the next weapon's prompt: write "C4: what the LightRifle taught"
+> and tell me you are done.
+>
+> Port the LightRifle into Halo 1 (H1_PORT_PLAN.md, wave C, #C4). Source: Halo 4,
+> `h4:objects\weapons\rifle\storm_forerunner_rifle\storm_forerunner_rifle` (H4EK; NOT the _npc /
+> _alt_sku variants); FP graph
+> `objects\characters\storm_fp\weapons\rifle\fp_forerunner_rifle\storm_fp_forerunner_rifle`.
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Running two ports in parallel", "Phase 0: DONE" incl. 0.1 and
+> the 32 MiB model-buffer cap, "A2: what the Battle Rifle taught" (the spew BURST, the source scope
+> baked into a Halo 1 zoom mask), "B1" / "B2" (the DMR and Needle Rifle scopes, `--fit` from a
+> screenshot, coloured glyphs), "C1: what the Storm Rifle taught" (THE HALO 4 RECIPE), "C2" (the
+> model-buffer rule, shipped materials, arms judged through Halo 4's camera) and "C3" (per-mode
+> ratios, per-animation FP ramps)), PORTING.md ("What ported actually means" steps 0-11 and 5b,
+> closing checks 0-10, the Halo 1 sections -- the Suppressor and Boltshot first, the Battle Rifle /
+> DMR for the burst + scope --, "Balance" incl. the ARMED WDM RULE, THE HIT-EFFECT RULE, the
+> two-handed rule, the balanced drop rule, the species skill rule) and memory
+> h1-model-buffer-32mib-cap, h1-ports-index, h1-parallel-ports, h1-armed-test-balanced-god,
+> h1-coloured-scope-glyphs, h1-reticle-supersample, port-process-tools-index,
+> port-muzzle-flash-rule, port-flashlight-sound-rule, h1-port-phase0, halo-port-own-messages,
+> h1-fmod-bank-sounds, port-findings-are-observations, shared-worktree-commits.
+> `ports_h1/suppressor.py` is the Halo 4 magazine shape, `battle_rifle.py` / `dmr.py` the burst and
+> scope: copy into `ports_h1/lightrifle.py` and edit only that file plus shared tools you generalize
+> (small change, narrowed proof, commit at once via kit_commit).
+>
+> START WITH STEP 4a, with me: candidates the PISTOL (provisional: magazine precision mid-range),
+> the SNIPER RIFLE and the ASSAULT RIFLE; DEFAULT = Halo 4's own numbers, BALANCED = the ratio rows.
+> Halo 4 side (`h3_weapon_values.py --kit h4`, aim from the aim-assist MODE block): the TWO MODES --
+> unscoped a burst, scoped a single stronger shot -- per mode: damage + group, rounds per shot,
+> burst spacing, recovery; magazine 36 / carry / reload; zoom levels; error; velocity; range;
+> melee. Halo 1's zoom does not switch a trigger: lay the approximations out with me (e.g. the burst
+> everywhere; a zoom-gated second trigger is not available -- record what is lost) before any
+> number. Time to kill: h1_role_compare 'lightrifle' set vs Pistol, Sniper, AR and the Battle Rifle /
+> DMR ports. Then 4b, the template diff, port_sound_refs and the muzzle-flash comparison BEFORE
+> boot 1; the decimation (budget above) and `h1_model_buffer.py` before the first test build. Scope
+> art from a Halo 4 SCREENSHOT (ask me; `h1_h3_scope --fit`), crosshair supersampled;
+> `'ground_point': 'auto'`.
+>
+> Reserved: pickup messages 91/92; hud_msg_icons 49 (+ _r); hud_reticles 38 (+ _r; extras 68-71);
+> label `lr` taught to characters\cyborg from `ar`; sounds under `sound\weapons\light_rifle_port`
+> (`bank: 'halo4'`); weapon folder `weapons\light rifle`; catalog name `LightRifle`.
+>
+> Step 11: `lr` has no carrier -- list Halo 1's carriers of the donor weapon (WDM, actor flags);
+> `firing_profile` (Halo 4's ai\generic LightRifle entry on m020 is verified) with `donor_weapon`
+> (+ `donor_variant`), a `wdm_rule` and a `balanced_set`, written with `--commit`; the enhancer
+> session writes its keys through port_catalog_keys.py before the Armed boot. Tests:
+> `h1_port_test_map.py lightrifle --level a30 --stage` (dry default), fixes, `--balanced`, `--armed
+> grunt,jackal,elite`; `h1_port_test_map.py lightrifle --restore a30`. The ten-map rebuild stays
+> BATCHED (my go). When done: catalog entry, enhancer hand-off, PORTING section, memory,
+> `python port_backup.py --game h1`, "C4: what the LightRifle taught".
+
+### The Scattershot (wave C5), filled in -- PARALLEL with C4
+
+> PARALLEL: another port session (C4, the LightRifle) runs at the same time on the same kit. Read
+> H1_PORT_PLAN.md "Running two ports in parallel" first (incl. REWORK status and "Hardened after
+> pair 1": `kit_commit.py` for every commit, `--commit` on the record writers) and "Parallel pair 4"
+> (THE MODEL BUFFER BUDGET: your model <= 0.6 MiB, decimated before the first test build). Your test
+> level is b30 -- pass `--level b30` on every `h1_port_test_map.py` run and restore with
+> `h1_port_test_map.py scattershot --restore b30`. Extra HUD sequences: hud_reticles 72-75 only. If
+> a script says `kit lock: WAITING`, let it wait; never `kit_lock.py release --force` a lock whose
+> holder is running. Do NOT write the next weapon's prompt: write "C5: what the Scattershot
+> taught" and tell me you are done.
+>
+> Port the Scattershot into Halo 1 (H1_PORT_PLAN.md, wave C, #C5). Source: Halo 4,
+> `h4:objects\weapons\rifle\storm_spread_gun\storm_spread_gun` (H4EK; NOT the _npc variant); FP
+> graph `objects\characters\storm_fp\weapons\rifle\fp_spread_gun\storm_fp_spread_gun`.
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Running two ports in parallel", "Phase 0: DONE" incl. 0.1 and
+> the 32 MiB model-buffer cap, "A5: what the Spike Rifle taught" (RICOCHET on a projectile), "A6:
+> what the Mauler taught" (PELLETS on the source projectile, the shotgun-template traps), "C1: what
+> the Storm Rifle taught" (THE HALO 4 RECIPE), "C2" (the model-buffer rule, shipped materials, arms
+> judged through Halo 4's camera, glow strips) and "C3" (a Halo 4 blast's pellets live in the
+> projectile's `conical spread`, per-animation FP ramps)), PORTING.md ("What ported actually means"
+> steps 0-11 and 5b, closing checks 0-10, the Halo 1 sections -- the Suppressor and Boltshot first,
+> the Mauler and the Spike Rifle for the pellets + bounce --, "Balance" incl. the ARMED WDM RULE,
+> THE HIT-EFFECT RULE (pellets), the two-handed rule, the balanced drop rule, the species skill
+> rule) and memory h1-model-buffer-32mib-cap, h1-ports-index, h1-parallel-ports,
+> h1-armed-test-balanced-god, h1-reticle-supersample, port-process-tools-index,
+> port-muzzle-flash-rule, port-flashlight-sound-rule, h1-port-phase0, halo-port-own-messages,
+> h1-fmod-bank-sounds, port-findings-are-observations, shared-worktree-commits.
+> `ports_h1/suppressor.py` / `boltshot.py` are the Halo 4 shape (the Boltshot's blast = Halo 4
+> pellets), `brute_mauler.py` the pellet magazine weapon: copy into `ports_h1/scattershot.py` and
+> edit only that file plus shared tools you generalize (small change, narrowed proof, commit at once
+> via kit_commit).
+>
+> START WITH STEP 4a, with me: candidates the SHOTGUN (provisional: magazine pellet weapon, close
+> range) and the restored ENERGY SWORD (the close-quarters role), with the Mauler port as a peer;
+> DEFAULT = Halo 4's own numbers, BALANCED = the ratio rows. Halo 4 side (`h3_weapon_values.py
+> --kit h4`, aim from the mode block): pellets per shot + their spread (the projectile's `conical
+> spread`), damage per pellet + group, falloff, rate / recovery, magazine 5 / carry / reload (shell
+> by shell or whole), velocity, range, the BOUNCE (how many ricochets, what each does, when a pellet
+> dies), aim assist, melee. Halo 1 bounces by material response (the Spike Rifle's recipe): lay out
+> with me how close that gets and record what it does not reproduce. Time to kill: h1_role_compare
+> 'scattershot' set vs Shotgun, Energy Sword and the Mauler port. Then 4b, the template diff (incl.
+> the template projectile's material responses), port_sound_refs and the muzzle-flash comparison
+> BEFORE boot 1; the decimation (budget above) and `h1_model_buffer.py` before the first test build.
+> HUD art from a Halo 4 SCREENSHOT (ask me), crosshair supersampled; `'ground_point': 'auto'`.
+>
+> Reserved: pickup messages 93/94; hud_msg_icons 50 (+ _r); hud_reticles 39 (+ _r; extras 72-75);
+> label `ss` taught to characters\cyborg from `sg`; sounds under `sound\weapons\scattershot_port`
+> (`bank: 'halo4'`); weapon folder `weapons\scattershot`; catalog name `Scattershot`.
+>
+> Step 11: `ss` has no carrier -- list Halo 1's carriers of the donor weapon (WDM, actor flags; the
+> shotgun is carried by Flood combat forms); `firing_profile` (Halo 4's ai\generic Scattershot entry
+> on m020 is verified) with `donor_weapon` (+ `donor_variant`), a `wdm_rule` and a `balanced_set`,
+> written with `--commit`; the enhancer session writes its keys through port_catalog_keys.py before
+> the Armed boot. Short range: check the actor flag `always_charge_in_attacking_mode` (A9). Tests:
+> `h1_port_test_map.py scattershot --level b30 --stage` (dry default), fixes, `--balanced`, `--armed
+> grunt,jackal,elite`; `h1_port_test_map.py scattershot --restore b30`. The ten-map rebuild stays
+> BATCHED (my go). When done: catalog entry, enhancer hand-off, PORTING section, memory,
+> `python port_backup.py --game h1`, "C5: what the Scattershot taught".
