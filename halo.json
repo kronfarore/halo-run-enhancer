@@ -13357,60 +13357,75 @@
 				"Salvo Shooting (Charged)": {
 					"desc": "How fast it fires and how many rounds one pull sends.",
 					"debug_desc": "Barrel 1, the charged blast. It fires ONE shot that costs **5 rounds** -- the whole cost is Rounds Per Shot, not Shots Per Fire, which is 1 like the tap. Rounds Per Second is 30 on both barrels and does nothing here until Shots Per Fire goes above 1.\n\nThe two fire modes are two BARRELS on one weapon, so each has its own card: this one writes barrel 1 and its sibling writes the other. Fire Recovery Time, Projectiles Per Shot and Error Angle stay shared across both barrels, because nothing else claims them.",
-					"game": ["Halo 4"],
-					"tag": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
+					"game": ["Halo 4", "Halo 1"],
+					"tag": { "Halo 4": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead", "Halo 1": "weap weapons\\boltshot\\boltshot" },
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Barrels", "index": 1, "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Barrels", "index": 1, "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased" },
-						{ "step": "+1", "field": "Shots Per Fire", "block": "Barrels", "index": 1, "group": "Shots Per Fire", "zero_is": 1, "easier_when": "increased" },
-						{ "step": "+1", "field": "Shots Per Fire Max", "block": "Barrels", "index": 1, "group": "Shots Per Fire", "zero_is": 1, "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Barrels", "index": 1, "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased", "games": ["Halo 4"] },
+						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Barrels", "index": 1, "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased", "games": ["Halo 4"] },
+						{ "step": "+1", "field": "Shots Per Fire", "block": "Barrels", "index": 1, "group": "Shots Per Fire", "zero_is": 1, "easier_when": "increased", "games": ["Halo 4"] },
+						{ "step": "+1", "field": "Shots Per Fire Max", "block": "Barrels", "index": 1, "group": "Shots Per Fire", "zero_is": 1, "easier_when": "increased", "games": ["Halo 4"] },
+						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second", "easier_when": "increased", "games": ["Halo 1"], "index": 1 },
+						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second", "easier_when": "increased", "games": ["Halo 1"], "index": 1 }
 					],
 					"split_from": "More Shooting (Charged)"
 				},
 				"Projectiles Per Shot (Charged)": {
 					"desc": "Projectiles and ammo per shot.",
-					"game": ["Halo 4"],
-					"tag": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
+					"game": ["Halo 4", "Halo 1"],
+					"tag": { "Halo 4": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead", "Halo 1": "weap weapons\\boltshot\\boltshot" },
 					"targets": [
-						{ "step": "+1", "field": "Rounds Per Shot", "block": "Barrels", "index": 1, "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "easier_when": "increased" },
-						{ "step": "+1", "field": "Projectiles Per Shot", "block": "Barrels", "index": 1, "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "easier_when": "increased" }
+						{ "step": "+1", "field": "Rounds Per Shot", "block": "Barrels", "index": 1, "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 4"] },
+						{ "step": "+1", "field": "Projectiles Per Shot", "block": "Barrels", "index": 1, "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 4"] },
+						{ "step": "+1", "field": "Projectiles Per Shot", "block": "Triggers", "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 1"], "index": 1 },
+						{ "step": "+1", "field": "Rounds Per Shot", "block": "Triggers", "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 1"], "index": 1 }
 					],
 					"split_from": "More Shooting (Charged)"
 				},
 				"Charged Shot Damage": {
 					"desc": "How hard a charged Boltshot blast hits.",
 					"debug_desc": "The Boltshot is two weapons in one trigger and they are tuned separately. The tap fires `storm_stasis_pistol_bolt`, 7.5 flat damage, 40 m of range at 2700 velocity and no blast at all. Holding it fires `storm_stasis_pistol_charged_blast`, which is a shotgun: **5.5 m of range at 480 velocity with a 2.5-4.0 metre damage radius**, and `storm_stasis_pistol_charged_shot` doing 6-10 a pellet.\n\nThey had been flattened into one Bullet Damage and one Projectile card, so the charged blast could not be tuned without dragging the tap along with it. Note the AI copy `storm_stasis_pistol_bolt_npc` follows the tap, not the charge -- Crawlers and Watchers carry the pawnhead variant of this weapon.",
-					"game": ["Halo 4"],
-					"tag": "jpt! objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\damage_effects\\storm_stasis_pistol_charged_shot",
+					"game": ["Halo 4", "Halo 1"],
+					"tag": { "Halo 4": "jpt! objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\damage_effects\\storm_stasis_pistol_charged_shot", "Halo 1": "jpt! weapons\\boltshot\\pellet" },
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased" }
+						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 4"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 4"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased", "games": ["Halo 4"] },
+						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Charged Shot Range": {
 					"desc": "Maximum Range, Air Damage Range, Air Damage Range Max",
 					"debug_desc": "The Boltshot is two weapons in one trigger and they are tuned separately. The tap fires `storm_stasis_pistol_bolt`, 7.5 flat damage, 40 m of range at 2700 velocity and no blast at all. Holding it fires `storm_stasis_pistol_charged_blast`, which is a shotgun: **5.5 m of range at 480 velocity with a 2.5-4.0 metre damage radius**, and `storm_stasis_pistol_charged_shot` doing 6-10 a pellet.\n\nThey had been flattened into one Bullet Damage and one Projectile card, so the charged blast could not be tuned without dragging the tap along with it. Note the AI copy `storm_stasis_pistol_bolt_npc` follows the tap, not the charge -- Crawlers and Watchers carry the pawnhead variant of this weapon.",
-					"game": ["Halo 4"],
-					"tag": "proj objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_charged_blast",
+					"game": ["Halo 4", "Halo 1"],
+					"tag": { "Halo 4": "proj objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_charged_blast", "Halo 1": "proj weapons\\boltshot\\pellet" },
 					"easier_when": "decreased",
 					"split_from": "Charged Shot Range",
 					"targets": [
-						{ "step": "*0.8", "field": "Maximum Range", "group": "Range", "min": 0, "easier_when": "decreased" },
-						{ "step": "*0.8", "field": "Air Damage Range", "group": "Range", "min": 0, "easier_when": "decreased" },
-						{ "step": "*0.8", "field": "Air Damage Range Max", "group": "Range", "min": 0, "easier_when": "decreased" }
+						{ "step": "*0.8", "field": "Maximum Range", "group": "Range", "min": 0, "easier_when": "decreased", "games": ["Halo 4"] },
+						{ "step": "*0.8", "field": "Air Damage Range", "group": "Range", "min": 0, "easier_when": "decreased", "games": ["Halo 4"] },
+						{ "step": "*0.8", "field": "Air Damage Range Max", "group": "Range", "min": 0, "easier_when": "decreased", "games": ["Halo 4"] },
+						{ "step": "*1.2", "field": "Maximum Range", "group": "Range", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Air Damage Range", "group": "Range", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Air Damage Range Max", "group": "Range", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Water Damage Range", "group": "Range", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Water Damage Range Max", "group": "Range", "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Charged Shot Velocity": {
 					"desc": "Initial Velocity, Final Velocity",
 					"debug_desc": "The Boltshot is two weapons in one trigger and they are tuned separately. The tap fires `storm_stasis_pistol_bolt`, 7.5 flat damage, 40 m of range at 2700 velocity and no blast at all. Holding it fires `storm_stasis_pistol_charged_blast`, which is a shotgun: **5.5 m of range at 480 velocity with a 2.5-4.0 metre damage radius**, and `storm_stasis_pistol_charged_shot` doing 6-10 a pellet.\n\nThey had been flattened into one Bullet Damage and one Projectile card, so the charged blast could not be tuned without dragging the tap along with it. Note the AI copy `storm_stasis_pistol_bolt_npc` follows the tap, not the charge -- Crawlers and Watchers carry the pawnhead variant of this weapon.",
-					"game": ["Halo 4"],
-					"tag": "proj objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_charged_blast",
+					"game": ["Halo 4", "Halo 1"],
+					"tag": { "Halo 4": "proj objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_charged_blast", "Halo 1": "proj weapons\\boltshot\\pellet" },
 					"easier_when": "decreased",
 					"split_from": "Charged Shot Range",
 					"targets": [
-						{ "step": "*0.8", "field": "Initial Velocity", "group": "Velocity", "min": 0, "easier_when": "decreased" },
-						{ "step": "*0.8", "field": "Final Velocity", "group": "Velocity", "min": 0, "easier_when": "decreased" }
+						{ "step": "*0.8", "field": "Initial Velocity", "group": "Velocity", "min": 0, "easier_when": "decreased", "games": ["Halo 4"] },
+						{ "step": "*0.8", "field": "Final Velocity", "group": "Velocity", "min": 0, "easier_when": "decreased", "games": ["Halo 4"] },
+						{ "step": "*1.2", "field": "Initial Velocity", "group": "Velocity", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Final Velocity", "group": "Velocity", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Minimum Velocity", "group": "Velocity", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Magnetism": {
@@ -13520,7 +13535,7 @@
 					"desc": "Maximum Range, Air Damage Range, Air Damage Range Max, Water Damage Range, Water Damage Range Max",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"game": ["Halo 4", "Halo 1"],
-					"tag": { "Halo 4": "proj objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt & objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt_npc", "Halo 1": "proj weapons\\boltshot\\bolt & weapons\\boltshot\\pellet" },
+					"tag": { "Halo 4": "proj objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt & objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt_npc", "Halo 1": "proj weapons\\boltshot\\bolt" },
 					"split_from": "Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Maximum Range", "group": "Range", "easier_when": "increased", "games": ["Halo 4"] },
@@ -13539,7 +13554,7 @@
 					"desc": "Initial Velocity, Final Velocity, Minimum Velocity",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"game": ["Halo 4", "Halo 1"],
-					"tag": { "Halo 4": "proj objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt & objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt_npc", "Halo 1": "proj weapons\\boltshot\\bolt & weapons\\boltshot\\pellet" },
+					"tag": { "Halo 4": "proj objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt & objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt_npc", "Halo 1": "proj weapons\\boltshot\\bolt" },
 					"split_from": "Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Initial Velocity", "group": "Velocity", "easier_when": "increased", "games": ["Halo 4"] },
@@ -13564,7 +13579,7 @@
 					"desc": "Air Gravity Scale, Water Gravity Scale",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"game": ["Halo 4", "Halo 1"],
-					"tag": { "Halo 4": "proj objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt & objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt_npc", "Halo 1": "proj weapons\\boltshot\\bolt & weapons\\boltshot\\pellet" },
+					"tag": { "Halo 4": "proj objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt & objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt_npc", "Halo 1": "proj weapons\\boltshot\\bolt" },
 					"split_from": "Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 4"] },
@@ -13576,7 +13591,7 @@
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo 4", "Halo 1"],
-					"tag": { "Halo 4": "jpt! objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\damage_effects\\storm_stasis_pistol_bolt", "Halo 1": "jpt! weapons\\boltshot\\bolt & weapons\\boltshot\\pellet" },
+					"tag": { "Halo 4": "jpt! objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\damage_effects\\storm_stasis_pistol_bolt", "Halo 1": "jpt! weapons\\boltshot\\bolt" },
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 4"] },
 						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 4"] },
@@ -13667,8 +13682,8 @@
 						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Barrels", "index": 0, "group": "Rounds Per Second", "zero_is": 30, "easier_when": "increased", "games": ["Halo 4"] },
 						{ "step": "+1", "field": "Shots Per Fire", "block": "Barrels", "index": 0, "group": "Shots Per Fire", "zero_is": 1, "easier_when": "increased", "games": ["Halo 4"] },
 						{ "step": "+1", "field": "Shots Per Fire Max", "block": "Barrels", "index": 0, "group": "Shots Per Fire", "zero_is": 1, "easier_when": "increased", "games": ["Halo 4"] },
-						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second", "easier_when": "increased", "games": ["Halo 1"], "index": "all" },
-						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second", "easier_when": "increased", "games": ["Halo 1"], "index": "all" }
+						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second", "easier_when": "increased", "games": ["Halo 1"] }
 					],
 					"split_from": "More Shooting"
 				},
@@ -13688,8 +13703,8 @@
 					"targets": [
 						{ "step": "+1", "field": "Projectiles Per Shot", "block": "Barrels", "index": "all", "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 4"] },
 						{ "step": "+1", "field": "Rounds Per Shot", "block": "Barrels", "index": 0, "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "games": ["Halo 4"], "easier_when": "increased" },
-						{ "step": "+1", "field": "Projectiles Per Shot", "block": "Triggers", "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 1"], "index": "all" },
-						{ "step": "+1", "field": "Rounds Per Shot", "block": "Triggers", "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 1"], "index": "all" }
+						{ "step": "+1", "field": "Projectiles Per Shot", "block": "Triggers", "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 1"] },
+						{ "step": "+1", "field": "Rounds Per Shot", "block": "Triggers", "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 1"] }
 					]
 				},
 				"Error Angle": {
@@ -13714,7 +13729,7 @@
 					"tag": { "Halo 4": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead", "Halo 1": "weap weapons\\boltshot\\boltshot" },
 					"targets": [
 						{ "step": "*0.8", "field": "Charging Time", "block": "New Triggers", "easier_when": "decreased", "games": ["Halo 4"] },
-						{ "step": "*0.8", "field": "Charging Time", "block": "Triggers", "easier_when": "decreased", "games": ["Halo 1"], "index": "all" }
+						{ "step": "*0.8", "field": "Charging Time", "block": "Triggers", "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Heat Threshold": {
@@ -13735,13 +13750,13 @@
 						{ "step": "*0.8", "field": "Heat Loss Per Second", "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
-				"Heat Per Round": {
+				"Heat Per Round (Charged)": {
 					"desc": "Heat Generated Per Round",
-					"split_from": "Per Round",
+					"split_from": "Per Round (Charged)",
 					"game": ["Halo 1"],
 					"tag": { "Halo 1": "weap weapons\\boltshot\\boltshot" },
 					"targets": [
-						{ "step": "*0.8", "field": "Heat Generated Per Round", "block": "Triggers", "easier_when": "decreased", "games": ["Halo 1"], "index": "all" }
+						{ "step": "*0.8", "field": "Heat Generated Per Round", "block": "Triggers", "index": 1, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				}
 			},
