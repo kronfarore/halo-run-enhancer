@@ -414,7 +414,12 @@ PORT.update({
                 # screenshot +-355 px wide / +-343 px tall -> a 1024 mask (1.09 px a texel tall, the 4:3
                 # box 1.453 px a texel wide: h1_h3_scope) blurred outside 244 x 315 texels
                 'scope': {'out': LR + 'bitmaps\\scope_mask', 'size': 1024, 'alpha': 0,
-                          'blur_outside': (244, 315), 'blur_edge': 14},
+                          'blur_outside': (244, 315), 'blur_edge': 14,
+                          # BOOT 5 (user: 'too large' -- the gamma erased the 1/255 corner pixels that
+                          # pin each quadrant's crop: the top sprites shrank, their art drew ~250 px low;
+                          # corners now 10/255 -- and 'darken the top and bottom area'): from 300 px off
+                          # the centre (275 texels) to half dark over 120 px (110 texels)
+                          'dark_bands': (275, 110, 0.5)},
                 # BOOT 4 (user: 'it somewhat replicates the original, but it doesn't look good' --
                 # solid opaque panels, stair-stepped edges): MCC draws every non-zero texel near-opaque
                 # (the Needle Rifle's glyph lesson) -> `normalize`: the coverage ^1.6 in RGB as well,
