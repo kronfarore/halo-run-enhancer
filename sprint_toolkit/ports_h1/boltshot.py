@@ -192,7 +192,12 @@ PORT.update({
                          for m in ('top plate', 'bottom plate') for i in (0, 1)] +
                         [{'marker': 'vent', 'index': i, 'shader': 'bo_charge_glow', 'size': 1.5}
                          for i in (0, 1)] +
-                        [{'marker': 'sight', 'shader': 'bo_display_glow', 'size': 2.5}]),
+                        # BOOT 4 (user: 'a nice glow on the display -- restrict it to the display
+                        # area, it extends into the weapon'): ONE card in the display's plane (its
+                        # glow piece: 0.75..1.35 / +-0.31 / 5.03..5.85 cm, normal -0.78 / 0 / 0.54),
+                        # 1 cm, 0.1 cm in front of it -- not three crossed 2.5 cm cards
+                        [{'marker': 'sight', 'shader': 'bo_display_glow', 'size': 1.0,
+                          'at': (0.968, 0.0, 5.497), 'normal': (-0.78, 0.0, 0.54)}]),
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's OWN storm_fp_stasis_pistol (the Storm
@@ -254,8 +259,12 @@ PORT.update({
         # BOOT 3 (user's charge video: 'the hand clips through the weapon and is not on the grip when
         # overcharging'): the offset on overcharged moved the hand OFF Halo 4's grip (the count fell
         # because the hand left the gun) -> none there; fire_2 ramps it in over its first 4 frames
-        'hand_offset_anims': {'first_person:fire_2': {'r': (0.0, -0.02, 0.0), 'ramp': {'in': 4}},
-                              'first_person:o_h_exit': {'r': (0.0, -0.02, 0.0), 'ramp': {'out': 12}}},
+        # BOOT 4 (user: 'the hand still slides off the grip after the charged shot -- the overheated
+        # state moves it to the right'): the ramp made the 2 cm move visible as a slide, and 2 cm
+        # reads as off the grip in the held pose -> 1 cm (h1_fp_hand_clip fire_2: 1977 none / 1135
+        # at 1 cm / 572 at 2 cm), set at once (the recoil hides the change), the exit ramping out
+        'hand_offset_anims': {'first_person:fire_2': {'r': (0.0, -0.01, 0.0)},
+                              'first_person:o_h_exit': {'r': (0.0, -0.01, 0.0), 'ramp': {'out': 12}}},
         # BOOT 3 (user: 'the FP needs more adjustment, 2 more units down -- unless we can adjust only
         # the melee'): the MELEE alone 2 units further down, ramped in / out (melee_strike_1 37 fr)
         'view_offset_anims': {'first_person:melee_strike_1': {'offset': (0.0, 0.0, -0.02),
@@ -489,19 +498,20 @@ PORT.update({
         # BOOT 2 (user: 'the muzzle flash is below the muzzle, not on it'): the Suppressor's finding
         # on the same Halo 4 / storm_fp setup (3 boots: 4 units up) as the start -- `shift` 0.04 up
         # on both flashes (the blast's: every particle, `match` 'particles'); BOOT 3 (user: '1 unit
-        # forward, away from the camera'): + 0.01 forward
+        # forward, away from the camera'): + 0.01 forward; BOOT 4 ('0.5 units down and forward
+        # again'): 0.5 down, 1 more forward
         'sound_effects': {
             'firing_effect': (PISTOL + 'effects\\fire bullet', BO + 'effects\\fire bolt',
                               {r'sound\sfx\weapons\pistol\fire': SND + 'bo_fire'},
                               {'match': 'flash', 'drop_off_axis': 0.012, 'scale': 1.5,
-                               'shift': (0.01, 0.0, 0.04),
+                               'shift': (0.02, 0.0, 0.035),
                                'drop_particles': ('casing', 'smoke'),
                                'drop_parts': [r'sound\sfx\weapons\pistol\eject'],
                                'tint': (1.0, 1.0, 0.91, 0.18)}),
             'firing_effect@1': (PISTOL + 'effects\\fire bullet', BO + 'effects\\fire blast',
                                 {r'sound\sfx\weapons\shotgun\fire': SND + 'bo_blast'},
                                 {'copy_from': SG + 'effects\\shotgun firing',
-                                 'match': 'particles', 'shift': (0.01, 0.0, 0.04),
+                                 'match': 'particles', 'shift': (0.02, 0.0, 0.035),
                                  'drop_particles': ('casing', 'smoke'),
                                  'drop_event_parts': {1: [r'sound\sfx\weapons\shotgun\fire']},
                                  'tint': (1.0, 1.0, 0.91, 0.18)}),
