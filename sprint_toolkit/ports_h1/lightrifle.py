@@ -151,6 +151,22 @@ PORT.update({
     # 2026-10-15: tested on a30 over 7 dry boots, balanced and 2 Armed boots (grunt, jackal, elite) -- all
     # confirmed by the user; the ten-map rebuild is BATCHED (the user's go)
     'status': 'done',
+    # CLOSE-OUT RECORD (2026-10-15, re-checked on the final weapon at the user's request):
+    # STEP 4b (port_field_audit --port lightrifle): weapon list 2 = 0 (error deceleration 0.28, active camo
+    #   ding 0.27, illumination recovery 0.08 written; the rest covered by balance rows); projectile and
+    #   damage list 2 = 0 (active camouflage damage 0.9 written). List 4 deliberate: the burst (charge 1
+    #   tick + discharge, 30/s: Halo 4's 3 shots a fire). List 5 = decisions: message 91, zoom 3x, reload
+    #   time 2.36 (the 73 fr reload in the pistol's shape), trigger flags (+ does_not_repeat: Halo 4's
+    #   latch), error acceleration 0 (Halo 4's), spew 0.15 (user), the hit flash (Halo 4's orange response,
+    #   Armed boot 1). List 3, every line with a Halo 1 field: the zoomed BARREL 1's values (2.5/s, 3 rounds
+    #   a shot, recovery 0.4) = the scoped mode, not ported (option A); weapon functions 3 / attachments 2
+    #   = Halo 4's spawn energy-core and ground effects (not ported; the template's 1 function + muzzle light
+    #   kept); sort order 0 and deviation angle 0 kept (the template's, = Halo 4's sort order); projectile
+    #   functions / attachment / change colours = Halo 4's bolt streak effect -> the AR tracer contrail
+    #   (Armed boot 1); detonation timer 'when at rest' vs the pistol bullet's 'on first bounce' -- the bolt
+    #   never bounces or rests (no detonation): the template's kept; damage flags: 'can cause headshots' =
+    #   the pistol bullet's `headshot` (kept), the rest no Halo 1 field; instantaneous acceleration 0.2 and
+    #   the breaking effect written (Halo 4's own: a zero on one side).
 
     # BORROWED sounds kept ON PURPOSE (port_sound_refs prints these as KEEP)
     'sound_keeps': {r'sound\sfx\weapons\weapon_pickup_ammo\pistol_ammo':
@@ -387,8 +403,10 @@ PORT.update({
                     'deceleration_time': 0.0,
                     'charging_time': 1 / 30.0, 'overcharged_action': 'discharge',
                     'spew_time': 0.15, 'does_not_repeat_automatically': True,
-                    # Halo 4 bloom: deceleration 0.7 (acceleration none)
-                    'error_acceleration_time': 0.0, 'error_deceleration_time': 0.7},
+                    # Halo 4 bloom: acceleration 0 (the Magnum none: list 5, Halo 4's own kept);
+                    # CLOSE-OUT 4b list 2: deceleration by the ratio, 0.2 (the pistol) x 0.7 / 0.5 (Halo 4
+                    # LightRifle / Magnum) = 0.28 (Halo 4's own 0.7 had been written)
+                    'error_acceleration_time': 0.0, 'error_deceleration_time': 0.28},
         # Halo 4: minimum error 0, error angle 0.15 flat (burst)
         'error_deg': {'minimum_error': 0.0, 'error_angle': (0.15, 0.15)},
         # Halo 4: 36 loaded, 108 at pickup, 144 most. Reload time: Halo 4 none (the animation's 73 fr

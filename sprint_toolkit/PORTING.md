@@ -2374,7 +2374,12 @@ Check these three before any port's Armed boot.
 60 tags 0 changed; 5b h1_role_compare `lightrifle` (44 / 73 dps). **Tool changes (opt-in, narrowed proofs
 lr1-lr5 0 changed):** h4_wwise.extract_object + h1_port_sounds `obj_`; ammo_meter `rows`; h1_pickable_weapons
 zoom_glyphs `image` (+ a cell that grows), chud-less `scope` (+ `blur_outside`, `dark_bands`), sound_effects
-`keep_3p_off_axis` / `scale_3p`; new h4_polyart.py / h4_polyart_scope.py (read-only art tools).
+`keep_3p_off_axis` / `scale_3p`; new h4_polyart.py / h4_polyart_scope.py (read-only art tools) and
+h4_sound_research.py (read-only: `cues` an FP graph's sound cues per animation + each .sound tag's player
+event, `event` which banks hold an event, `tree` a Wwise container down to its sounds and media). CLOSE-OUT
+RE-CHECK (user): 4b list 2 had one line left (error deceleration: the ratio 0.28 written); every check re-run
+on the final weapon -- refs 0, sound refs 0 BORROW, port_sounds --check 0, validate_halo_json 0, check 6 0
+changed of 1,019,648 fields, `used_weapons()` holds the port.
 
 ## Halo 3
 
