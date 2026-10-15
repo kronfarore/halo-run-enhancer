@@ -1215,6 +1215,15 @@ SETS = {
     # 'mag' = BLASTS a magazine: 10 / 5 = 2). Bolt rows on the pistol bullet's table (bullet_slow
     # both sides), blast rows on the shotgun pellet's.
     'boltshot': {'port': 'Boltshot', 'weapons': [
+        # the BUILT port (step 5b): its tags (+ --balanced rows). The charged pair reads trigger 1
+        # (the blast: 15 pellets; it OVERHEATS -- the cycle = max(charge 0.6, lockout 1.8 s));
+        # the BOLT row reads trigger 0's bolt at its 10/s (balanced row 7/s). Reloads come in per
+        # magazine / 5 rounds (the tool's rounds per shot): the bolt row's Hunter times are rough
+        ('Boltshot (port), bolt', W + r'boltshot\boltshot', 'shot',
+         {'damage_tags': [W + r'boltshot\bolt'], 'per_shot': 1, 'charge': 0.0, 'rate': 10.0,
+          'heat': (0.0, 1.0, 0.5, 0.1), 'speed': 2700.0, 'range': 40.0,
+          'rounds_per_shot': 1, 'reserve': 4}),
+        ('Boltshot (port), blast', W + r'boltshot\boltshot', 'shot'),
         ('BO bolt = H4 own', W + r'pistol\pistol', 'shot',
          {'dmg': 7.5, 'rate': 10.0, 'mag': 10, 'reload': 51 / 30.0, 'speed': 2700.0,
           'range': 40.0, 'aim': (2.25, 20.0, 5.0, 20.0)}),
@@ -1250,7 +1259,7 @@ SETS = {
         ('Plasma Pistol overcharge', W + r'plasma pistol\plasma pistol', 'shot',
          {'damage_tags': [W + r'plasma rifle\charged bolt'], 'charge': 0.6, 'rate': 1 / 1.6}),
         ('Shotgun', W + r'shotgun\shotgun', 'shot'),
-        ('Mauler (port)', W + r'mauler\mauler', 'shot'),
+        ('Mauler port', W + r'mauler\mauler', 'shot'),
         ('Pistol melee', W + r'pistol\pistol', 'melee'),
     ]},
     # the PLASMA LAUNCHER (wave B6), step 4a. Reach (HREK 2026-10-13): charge 3.0 s in four 0.75 s
@@ -1504,6 +1513,13 @@ def weapon(label, rel, mode, overrides, extra=None):
                 if len(part) > 3:
                     d['mods'].update(part[3])
                 out['damage'].append(d)
+        # `rounds_per_shot` / `reserve` (the Boltshot's bolt row): the row's own rounds a shot, and the
+        # rounds Halo 1 keeps back -- it auto-reloads once fewer are loaded than ANY trigger costs
+        # (the blast's 5: 4 kept back; a balanced `Rounds Per Shot` row moves it)
+        if extra and extra.get('rounds_per_shot'):
+            out['rounds_per_shot'] = extra['rounds_per_shot']
+        if extra and extra.get('reserve') is not None:
+            out['reserve'] = extra['reserve']
         if extra and extra.get('mag'):
             out['mag'] = extra['mag']
         if extra and extra.get('reload'):
@@ -1587,6 +1603,8 @@ def apply_rows(out, rows):
                 out['charge'] = v
             elif f in ('Rounds Per Second', 'Rounds Per Second Max'):
                 out['rps'] = v if f == 'Rounds Per Second Max' else max(v, out.get('rps') or 0)
+            elif f == 'Rounds Per Shot' and out.get('reserve') is not None:
+                out['reserve'] = int(v) - 1             # the blast's cost row (the Boltshot)
             elif f == 'Rounds Loaded Maximum':          # a magazine row (the SMG's 112)
                 out['mag'] = int(v)
             elif f in AIM:
@@ -1800,7 +1818,7 @@ def kill(wpn, body, shield, bmat, smat):
     if wpn.get('heat_model'):
         t = wpn['charge'] + model_times(wpn, shots)[-1]
     if wpn.get('mag') and wpn.get('reload'):
-        per_mag = max(1, wpn['mag'] // max(1, wpn.get('rounds_per_shot') or 1))
+        per_mag = max(1, (wpn['mag'] - wpn.get('reserve', 0)) // max(1, wpn.get('rounds_per_shot') or 1))
         t += ((shots - 1) // per_mag) * wpn['reload']
     return shots, t + wpn.get('delay', 0.0)
 
