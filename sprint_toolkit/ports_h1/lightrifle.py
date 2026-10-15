@@ -405,15 +405,23 @@ PORT.update({
         #     --wires main_wire,main_wire_inner,outer_holo_wires,inner_holo_wires,ring_wire,main_hatch_wire,
         #             ghost_wire_close,ghost_wire_mid,lower_accent_wire,upper_accent_wire,range_box
         #     --fills outer_holo,inner_holo,main_hatch_extrusion,hatch_a,hatch_b,hatch_c,range_box_ghost
-        #     --fill-alpha 0.6 --xform 1.05,0.975,0,-112
+        #     --fill-alpha 0.45 --xform 1.05,0.975,0,-112
         # Each quadrant = a coloured zoom glyph (the Needle Rifle's recipe) at the reserved hud_reticles
         # 68-71, registered at its inner corner (the screen centre), overlay x4 (0.5 screen px a sheet
         # px at x1). The mask: CLEAR (no chud), the pistol's zoom readouts dropped
         'hud': {'donor': PISTOL + 'pistol', 'out': LR + 'light rifle',
-                'scope': {'out': LR + 'bitmaps\\scope_mask', 'size': 256, 'alpha': 0},
+                # BOOT 4 (user: 'apply the H1 blur outside the central circle'): the ring on the boot-4
+                # screenshot +-355 px wide / +-343 px tall -> a 1024 mask (1.09 px a texel tall, the 4:3
+                # box 1.453 px a texel wide: h1_h3_scope) blurred outside 244 x 315 texels
+                'scope': {'out': LR + 'bitmaps\\scope_mask', 'size': 1024, 'alpha': 0,
+                          'blur_outside': (244, 315), 'blur_edge': 14},
+                # BOOT 4 (user: 'it somewhat replicates the original, but it doesn't look good' --
+                # solid opaque panels, stair-stepped edges): MCC draws every non-zero texel near-opaque
+                # (the Needle Rifle's glyph lesson) -> `normalize`: the coverage ^1.6 in RGB as well,
+                # x 0.6; the holo panels at 0.45 (h4_polyart_scope --fill-alpha 0.45)
                 'zoom_glyphs': [{'image': SCOPE + q + '.png', 'reg': reg, 'name': 'light rifle scope ' + q,
                                  'index': i, 'scale': (1.0, 1.0), 'overlay': 3.604, 'offset': off,
-                                 'rgb': (255, 120, 30), 'alpha': 1.0}
+                                 'rgb': (255, 120, 30), 'alpha': 0.6, 'normalize': True, 'gamma': 1.6}
                                 # BOOT 3 (user's zoomed screenshot): all four quadrants drew ON TOP of each
                                 # other, centred -- MCC draws a zoom overlay centred on its SPRITE (the
                                 # registration point is ignored). Now each quadrant's crop is the whole
