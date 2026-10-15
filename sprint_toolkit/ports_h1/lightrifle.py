@@ -55,7 +55,20 @@ JPT_FIELDS = {'damage.active_camouflage_damage': 0.9,
               'breaking_effect.forward_exponent': 8.0,
               'breaking_effect.outward_velocity': 3.0,
               'breaking_effect.outward_radius': 0.5,
-              'breaking_effect.outward_exponent': 0.2}
+              'breaking_effect.outward_exponent': 0.2,
+              # ARMED BOOT 1 (user: 'the screen flash needs to be reduced -- grey-white, is that the
+              # original?'): NO -- the pistol template's full-white wash. Halo 4's own response
+              # (globals\damage_responses\impact_bullet_forerifle): a 0.2 s directional flash, 'early'
+              # fade, shielded ORANGE (1, 0.3, 0) at alpha 0.3 - 0.8 (unshielded red). Halo 1 tints the
+              # whole screen: Halo 4's colour and timing at a low intensity (lighten: a 15 % wash,
+              # x0.3 -- a 3-round burst lands three)
+              'screen_flash.duration': 0.2,
+              'screen_flash.fade_function': 'early',
+              'screen_flash.maximum_intensity': 0.3,
+              'screen_flash.tint_lower_bound.a': 0.15,
+              'screen_flash.tint_lower_bound.r': 1.0,
+              'screen_flash.tint_lower_bound.g': 0.3,
+              'screen_flash.tint_lower_bound.b': 0.0}
 
 IMPACT_SOUNDS = {'match': (), 'rgb': None, 'out': 'weapons\\light rifle\\effects\\impact\\',
                  'sounds': {'sound\\sfx\\impulse\\impacts\\' + x: 'sound\\weapons\\light_rifle_port\\lr_impact'
@@ -346,6 +359,16 @@ PORT.update({
                    # (the Suppressor's: plasma impact + the forerunner sweetener); flesh, shield and
                    # water hits stay the game's
                    'impact_tint': IMPACT_SOUNDS,
+                   # ARMED BOOT 1 (user: 'the projectile is not visible -- a problem when getting
+                   # shot'): Halo 4's bolt draws an orange hardlight streak (storm_forerunner_rifle_
+                   # bullet: a tracer + light); the pistol's bullet nothing -> the AR tracer's contrail
+                   # on every round, recoloured and brightened (the Suppressor's recipe)
+                   'attachments_from': r'weapons\assault rifle\bullet',
+                   'contrail': {'from': r'weapons\assault rifle\bullet', 'out': LR + 'bolt trail',
+                                'rgb': ORANGE,
+                                'states': [{'transition': (0.01, 0.0125), 'width': 0.06,
+                                            'argb': (1.0, 1.0, 0.75, 0.3)},
+                                           {'width': 0.06, 'argb': (1.0, 1.0, 0.75, 0.3)}]},
                    # THE HIT-EFFECT RULE: a burst lands 3 rounds 1/30 s apart -> the tag rate 30/s
                    'impact_thin': {'materials': [22], 'out': LR + 'effects\\impact\\',
                                    'thin': {}, 'rate': 30.0},
@@ -400,7 +423,12 @@ PORT.update({
                               # The pistol's (h1_effect_particles): the on-axis FP centre flash
                               # 0.045-0.056 (KEPT, tinted orange: the glow's stand-in), two side
                               # flashes at +-0.023 (dropped), FP smoke (dropped), casing + eject
+                              # ARMED BOOT 1 (user: 'no muzzle effect visible on the enemies'): the
+                              # off-axis drop had taken the pistol's third-person side flashes too ->
+                              # kept, and every third-person flash x1.5 (Halo 4 draws a muzzle glow
+                              # light volume + a core tracer there)
                               {'match': 'flash', 'drop_off_axis': 0.012, 'scale': 1.0,
+                               'keep_3p_off_axis': True, 'scale_3p': 1.5,
                                'drop_particles': ('casing', 'smoke h fp'),
                                'drop_parts': (r'sound\sfx\weapons\pistol\eject',),
                                'tint': (1.0,) + ORANGE}),
