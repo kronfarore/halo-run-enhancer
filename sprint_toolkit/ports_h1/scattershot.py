@@ -40,7 +40,8 @@ LEVELS = ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40']
 # Forerunner orange (boot 1: the user's Halo 4 screenshots, 2026-10-15; the bars' si_color 1, 0.416, 0.2
 # x5): the bars at rest (~250 / 120 / 20) = ORANGE, on a shot (~255 / 170 / 40, toward white in the cores)
 # = FLASH, the shards' red-orange streaks with yellow heads = SHARD
-ORANGE = (1.0, 0.47, 0.08)
+# BOOT 2 (user: 'glow looks better, just needs to be the darker orange shade'): 0.47 -> 0.33 green
+ORANGE = (1.0, 0.33, 0.04)
 FLASH = (1.0, 0.68, 0.16)
 SHARD = (1.0, 0.36, 0.16)
 
@@ -205,8 +206,11 @@ PORT.update({
                                       'fade_source': 'A_out'}},
         # THE MODEL BUFFER BUDGET (0.6 MiB): a card layer copies each bar triangle (891 a layer) -- both
         # layers made 0.67 MiB -> the halo cards dropped (ss_halo unused for now), the flash kept: 0.60 MiB
-        'glow_cards': {'ss_flash': {'of': 'ss_glow', 'shader': 'ss_flash', 'scale': 3.0, 'along': 1.1,
-                                    'lift': 0.06, 'round_scale': 1.6,
+        # BOOT 2 (user: 'the flash works -- move it to the parts that actually should be lit'): the x3 cards
+        # spread over the gun around the bars -> the bars THEMSELVES flare (each copied in place, x1.05,
+        # lifted 0.01: Halo 4's lit shapes are the energy_bar material)
+        'glow_cards': {'ss_flash': {'of': 'ss_glow', 'shader': 'ss_flash', 'scale': 1.05, 'along': 1.0,
+                                    'lift': 0.01, 'round_scale': 1.05,
                                     'skip_piece_normals': [(1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)],
                                     'skip_piece_dot': 0.9}},
     },
@@ -237,21 +241,23 @@ PORT.update({
             'first_person:moving': 'first-person moving',
             'first_person:look': 'first-person overlays',
             'first_person:throw_grenade': 'first-person throw-grenade',
-            'first_person:reload_enter': 'first-person enter',
             'first_person:reload_continue_empty': 'first-person reload-empty',
         },
-        # Halo 4 has no reload exit with rounds left (its graph: enter, continue_empty, chamber_1) ->
-        # Halo 1's exit-full = reload_enter played BACKWARDS (back to the idle grip)
-        # BOOT 1 (user: 'reloading doesn't reload each shell separately' -- empty: 3 shell animations, the
-        # last two shells during the exit; 4 missing: 2; 3: 1; 2 and 1: 0). HALO 1's RULE (fits all five):
-        # the reload timer runs from the enter's start, and before each shell the exit starts once the time
-        # left is under the EXIT's length -- the 1.33 s chamber_1 ate two 0.7 s shells. Every shell shows
-        # only when enter + exit < one shell. User's pick ('every shell shown'): reload_enter at 2x (7 fr),
-        # BOTH exits = the enter reversed in 6 fr; chamber_1 (the pump after an empty magazine) dropped --
-        # fire_1 has the cocking motion. Balanced shell 0.525 s: 0.233 + 0.2 still fits
-        'reverse': {'first-person exit-full': 'first_person:reload_enter',
-                    'first-person exit-empty': 'first_person:reload_enter'},
-        'resample': {'first-person enter': 7, 'first-person exit-full': 6, 'first-person exit-empty': 6},
+        # THE SHELL RELOAD. BOOT 1 (user: 'reloading doesn't reload each shell separately' -- empty: 3 shell
+        # animations, the last two shells during the exit; 4 missing: 2; 3: 1; 2 and 1: 0). A first theory
+        # (the exit starts once the time left is under its length) was disproved by BOOT 2 (enter 2x + 0.2 s
+        # exits: the counts unchanged). HALO 1's RULE (its own shotgun's frames show it: the enter ends at
+        # the loading port, both exits start with a shell going in, exit-empty then pumps): ONE ROUND A
+        # STAGE -- the enter loads one, each loop one, the exit one -> loops = missing - 2 whatever the
+        # lengths. So Halo 4's stages carry their shell: enter = reload_enter + one shell; exit-full = one
+        # shell + reload_enter reversed (Halo 4 has no exit with rounds left); exit-empty = one shell + Halo
+        # 4's chamber_1 (the pump is back). 1 missing: the enter's shell fills it, the exit shows one more
+        'sequence': {'first-person enter': ['first_person:reload_enter',
+                                           'first_person:reload_continue_empty'],
+                     'first-person exit-full': ['first_person:reload_continue_empty',
+                                                {'from': 'first_person:reload_enter', 'reverse': True}],
+                     'first-person exit-empty': ['first_person:reload_continue_empty',
+                                                 'first_person:chamber_1']},
         # BOOT 1 (user: 'part of the rifle is missing'): the start (the Suppressor's 2 units down) swept the
         # gun's REAR top -- 0-0.1 wu in front of the eye on this long gun -- down out of the view (the muzzle,
         # far away, barely moved). Halo 4's own placement (the gun bone matches it exactly at 0): no offset
@@ -293,8 +299,18 @@ PORT.update({
             'ss_pose': (['play_wea_spreadgun_idle_b_part_1', 'play_wea_spreadgun_idle_b_part_2',
                          'play_wea_spreadgun_idle_b_part_3'],
                         'sound\\sfx\\weapons\\weapon_anims\\shotgun_posing', -23.0),
-            'ss_reload_enter': (['play_wea_spreadgun_player_reload_enter:0,1,2'],
+            # the stages' own sounds (boot 2: a shell in the enter and in each exit): the enter's foley + a
+            # shell at 14 fr; exit-empty = a shell + the chamber's reload_exit at 21 fr; exit-full = ss_reload
+            'ss_reload_enter': (['play_wea_spreadgun_player_reload_enter:0,1,2',
+                                 'play_wea_spreadgun_player_reload_loop:0,1,2',
+                                 'play_wea_spreadgun_player_reload_loop:3,4,5',
+                                 'play_wea_spreadgun_player_reload_loop:6,7,8,9,10,11'],
                                 'sound\\sfx\\weapons\\weapon_anims\\shotgun_reload1_1', -22.0),
+            'ss_reload_exit': (['play_wea_spreadgun_player_reload_loop:0,1,2',
+                                'play_wea_spreadgun_player_reload_loop:3,4,5',
+                                'play_wea_spreadgun_player_reload_loop:6,7,8,9,10,11',
+                                'play_wea_spreadgun_player_reload_exit:0,1'],
+                               'sound\\sfx\\weapons\\weapon_anims\\shotgun_reload4', -14.9),
             'ss_reload': (['play_wea_spreadgun_player_reload_loop:0,1,2',
                            'play_wea_spreadgun_player_reload_loop:3,4,5',
                            'play_wea_spreadgun_player_reload_loop:6,7,8,9,10,11'],
@@ -316,7 +332,9 @@ PORT.update({
                                     'play_wea_spreadgun_player_reload_loop:6,7,8,9,10,11'],
                                    'sound\\sfx\\weapons\\weapon_anims\\shotgun_reload2_1', -21.9),
         },
-        'offsets': {'ss_pose': [0.0, 40 / 30.0, 70 / 30.0]},
+        'offsets': {'ss_pose': [0.0, 40 / 30.0, 70 / 30.0],
+                    'ss_reload_enter': [0.0, 14 / 30.0, 14 / 30.0, 14 / 30.0],
+                    'ss_reload_exit': [0.0, 0.0, 0.0, 21 / 30.0]},
         'stretch': {'ss_reload_balanced': 0.75},
     },
 
@@ -339,7 +357,9 @@ PORT.update({
                    'first-person posing': SND + 'ss_pose',
                    'first-person melee': SND + 'ss_melee',
                    'first-person enter': SND + 'ss_reload_enter',
-                   'first-person reload-empty': SND + 'ss_reload'},
+                   'first-person reload-empty': SND + 'ss_reload',
+                   'first-person exit-full': SND + 'ss_reload',
+                   'first-person exit-empty': SND + 'ss_reload_exit'},
         # THE SHARD (on a copy of the shotgun PELLET; bullet_slow / shotgun both sides: the pellet's table)
         'bullet': {'projectile': (SG + 'pellet', SS + 'shard'),
                    'damage': (SG + 'pellet', SS + 'shard'),
@@ -396,10 +416,15 @@ PORT.update({
                                        'damage': (N + 'explosion', SS + 'supercombine'),
                                        'lower': 45.0, 'upper': (290.0, 290.0), 'radius': (0.375, 1.25),
                                        'drop_parts': ('sound\\sfx\\impulse\\impacts\\needler_super_expl',),
-                                       'particle_tint': ORANGE, 'tint_match': ('',),
-                                       # the needle explosion's pink light -> an own orange copy (its
-                                       # particle system stays the needler's: judged at the boot)
-                                       'light': {'rgb': FLASH, 'out': SS + 'effects\\supercombine light'}},
+                                       'particle_tint': FLASH, 'tint_match': ('',),
+                                       # the needle explosion's pink light -> an own orange copy
+                                       'light': {'rgb': FLASH, 'out': SS + 'effects\\supercombine light'},
+                                       # BOOT 2 (user: 'supercombine works; a leftover needle explosion in
+                                       # there, might need a lower radius'): the needler's pink PARTICLE
+                                       # SYSTEM dropped (Halo 4's super = sparks + light + screen fx); the
+                                       # tinted bolts x0.6
+                                       'drop_classes': ('particle_system',), 'scale': 0.6,
+                                       'out_dir': SS + 'effects\\'},
                    # the LOOK: Halo 4's shard = a glowing energy ball (flare + light + trail) -> the AR
                    # tracer's contrail recoloured + the Suppressor's glow (fuel rod exhaust light + flare)
                    'attachments_from': AR + 'bullet',
