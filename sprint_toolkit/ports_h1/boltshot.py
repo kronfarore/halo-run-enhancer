@@ -141,7 +141,7 @@ PORT.update({
         # + Halo 4's charging-effect locations (its `charging` effect: plate glows at top_plate /
         # bottom_plate, a vent glow at fx_vent, the core at the muzzle) for the CHARGE GLOW below
         'markers': {'left_hand': 'left hand', 'fx_vent': 'vent', 'primary_trigger': 'primary trigger',
-                    'top_plate': 'top plate', 'bottom_plate': 'bottom plate'},
+                    'top_plate': 'top plate', 'bottom_plate': 'bottom plate', 'sight': 'sight'},
         'ground_point': 'auto',
         # an own hull from the world model's extent (h1_box_collision; the Storm Rifle's boot 1:
         # the template's hull hid the world model) -- set from the built JMS extent
@@ -166,7 +166,10 @@ PORT.update({
         # rings and the side strips lit hard orange with bloom, ours a faint yellow spot): the glow
         # islands lit end to end and wider, the Suppressor's tuned settings (gain 2.2, falloff 0.35,
         # radius 1.3), the colour read off the user's screenshot (core yellow-orange)
-        'glow_shaders': {'bo_glow': {'rgb': (1.0, 0.72, 0.15), 'additive': True, 'islands': True,
+        # BOOT 3 (user: 'a lot better; the display could use more glow, and it's more yellow than
+        # orange'): the colour deeper orange (0.72 -> 0.55 green) + a static radial card on the sight
+        # display (Halo 4's `sight` marker; `bo_display_glow`, not faded)
+        'glow_shaders': {'bo_glow': {'rgb': (1.0, 0.55, 0.1), 'additive': True, 'islands': True,
                                      'islands_of': 'storm_stasis_pistol_glow',
                                      'gain': 2.2, 'falloff': 0.35, 'radius': 1.3,
                                      # BOOT 2 (user: 'the glow is white, not orange'): the islands'
@@ -180,13 +183,16 @@ PORT.update({
                          # markers (on their nodes: the plate cards open with the plates), an additive
                          # shader FADING with B out = primary charged
                          'bo_charge_glow': {'rgb': (1.0, 0.6, 0.12), 'additive': True, 'radial': True,
-                                            'hot': True, 'falloff': 1.4, 'fade_source': 'B_out'}},
+                                            'hot': True, 'falloff': 1.4, 'fade_source': 'B_out'},
+                         'bo_display_glow': {'rgb': (1.0, 0.55, 0.1), 'additive': True, 'radial': True,
+                                             'falloff': 1.6}},
         'glow_points': ([{'marker': 'primary trigger', 'shader': 'bo_charge_glow', 'size': 5.0,
                           'forward': 0.5}] +
                         [{'marker': m, 'index': i, 'shader': 'bo_charge_glow', 'size': 2.5}
                          for m in ('top plate', 'bottom plate') for i in (0, 1)] +
                         [{'marker': 'vent', 'index': i, 'shader': 'bo_charge_glow', 'size': 1.5}
-                         for i in (0, 1)]),
+                         for i in (0, 1)] +
+                        [{'marker': 'sight', 'shader': 'bo_display_glow', 'size': 2.5}]),
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's OWN storm_fp_stasis_pistol (the Storm
@@ -245,9 +251,15 @@ PORT.update({
         # fingers did not help: 181 -> 194). The user: every other animation fine -> only the
         # blast's chain: overcharged (2044 -> 429) ramping in, fire_2 (+ the held overheat), o_h_exit
         # (1797 -> 1049) ramping out -- Halo 1 snaps between FP animations (`ramp`: no pop)
-        'hand_offset_anims': {'first_person:overcharged': {'r': (0.0, -0.02, 0.0), 'ramp': {'in': 6}},
-                              'first_person:fire_2': {'r': (0.0, -0.02, 0.0)},
+        # BOOT 3 (user's charge video: 'the hand clips through the weapon and is not on the grip when
+        # overcharging'): the offset on overcharged moved the hand OFF Halo 4's grip (the count fell
+        # because the hand left the gun) -> none there; fire_2 ramps it in over its first 4 frames
+        'hand_offset_anims': {'first_person:fire_2': {'r': (0.0, -0.02, 0.0), 'ramp': {'in': 4}},
                               'first_person:o_h_exit': {'r': (0.0, -0.02, 0.0), 'ramp': {'out': 12}}},
+        # BOOT 3 (user: 'the FP needs more adjustment, 2 more units down -- unless we can adjust only
+        # the melee'): the MELEE alone 2 units further down, ramped in / out (melee_strike_1 37 fr)
+        'view_offset_anims': {'first_person:melee_strike_1': {'offset': (0.0, 0.0, -0.02),
+                                                              'ramp': {'in': 4, 'out': 8}}},
     },
 
     # Halo 4's own sounds (h1_port_sounds.py boltshot, `bank` 'halo4'). The player bank
@@ -387,6 +399,12 @@ PORT.update({
                                                  r'sound\sfx\weapons\needler\expl'),
                                   'tint_match': ('flash h pistol detonate', 'flare h stealth cannon'),
                                   'tint': (1.0, 0.6, 0.12), 'scale': 0.25},
+            # BOOT 3 (user: 'no orange impacts when close to a target, only further away'): a pellet
+            # that HITS played only its material's impact (dust on dirt / stone) -- the burst was the
+            # range end's alone. Now every pellet DETONATES on contact (units + world; the GL's
+            # material lists): the same orange burst on every hit
+            'default_responses': {'detonate': [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+                                               25, 26, 30, 32] + [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 27, 31]},
             'impact_tint': {'match': ('sparks impact', 'sparks trail', 'flash h generic',
                                       'flash c generic', 'flare h stealth cannon'),
                             'rgb': (1.0, 0.6, 0.12), 'out': BO + 'effects\\impact\\pellet '},
@@ -470,19 +488,20 @@ PORT.update({
         # drop_event_parts)
         # BOOT 2 (user: 'the muzzle flash is below the muzzle, not on it'): the Suppressor's finding
         # on the same Halo 4 / storm_fp setup (3 boots: 4 units up) as the start -- `shift` 0.04 up
-        # on both flashes (the blast's: every particle, `match` 'particles')
+        # on both flashes (the blast's: every particle, `match` 'particles'); BOOT 3 (user: '1 unit
+        # forward, away from the camera'): + 0.01 forward
         'sound_effects': {
             'firing_effect': (PISTOL + 'effects\\fire bullet', BO + 'effects\\fire bolt',
                               {r'sound\sfx\weapons\pistol\fire': SND + 'bo_fire'},
                               {'match': 'flash', 'drop_off_axis': 0.012, 'scale': 1.5,
-                               'shift': (0.0, 0.0, 0.04),
+                               'shift': (0.01, 0.0, 0.04),
                                'drop_particles': ('casing', 'smoke'),
                                'drop_parts': [r'sound\sfx\weapons\pistol\eject'],
                                'tint': (1.0, 1.0, 0.91, 0.18)}),
             'firing_effect@1': (PISTOL + 'effects\\fire bullet', BO + 'effects\\fire blast',
                                 {r'sound\sfx\weapons\shotgun\fire': SND + 'bo_blast'},
                                 {'copy_from': SG + 'effects\\shotgun firing',
-                                 'match': 'particles', 'shift': (0.0, 0.0, 0.04),
+                                 'match': 'particles', 'shift': (0.01, 0.0, 0.04),
                                  'drop_particles': ('casing', 'smoke'),
                                  'drop_event_parts': {1: [r'sound\sfx\weapons\shotgun\fire']},
                                  'tint': (1.0, 1.0, 0.91, 0.18)}),
