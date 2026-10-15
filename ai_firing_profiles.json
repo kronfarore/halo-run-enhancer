@@ -2670,6 +2670,126 @@
     "port_dps": 184.0,
     "balanced_port_dps": 67.0
    }
+  },
+  "weapons\\suppressor\\suppressor": {
+   "source": "Halo 4 ai\\generic objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg (weapon properties #22, firing pattern #22) over weapons\\assault rifle\\assault rifle carriers",
+   "fields": {
+    "0x74": [
+     "<f",
+     15.0,
+     "Maximum Firing Distance"
+    ],
+    "0x7C": [
+     "<f",
+     0.07853981480002403,
+     "Projectile Error"
+    ],
+    "0x80": [
+     "<f",
+     0.75,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     1.0,
+     "First Burst Delay Time Max"
+    ],
+    "0x8C": [
+     "<f",
+     1.0,
+     "Surprise Delay Time"
+    ],
+    "0x94": [
+     "<f",
+     0.20000000298023224,
+     "Death Fire-Wildly Chance"
+    ],
+    "0x98": [
+     "<f",
+     0.5,
+     "Death Fire-Wildly Time"
+    ],
+    "0x9C": [
+     "<f",
+     2.0,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     10.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     0.7999999821186066,
+     "Target Tracking"
+    ],
+    "0xC0": [
+     "<f",
+     0.6500000059604645,
+     "Target Leading"
+    ],
+    "0xC4": [
+     "<f",
+     0.64,
+     "Weapon Damage Modifier"
+    ],
+    "0xE0": [
+     "<f",
+     1.5,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     2.5,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     0.5,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     1.149999976158142,
+     "Burst Separation Max"
+    ],
+    "0x1D8": [
+     "<f",
+     0.699999988079071,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.8999999761581421,
+     "Drop Weapon Loaded Max"
+    ]
+   },
+   "donor_weapon": "weapons\\assault rifle\\assault rifle",
+   "species_skill": true,
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.48,
+     "Weapon Damage Modifier"
+    ],
+    "0x1D8": [
+     "<f",
+     0.42,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.9,
+     "Drop Weapon Loaded Max"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.4,
+    "yardstick_dps": 150.0,
+    "port_dps": 93.75,
+    "balanced_port_dps": 125.0
+   }
   }
  }
 }
