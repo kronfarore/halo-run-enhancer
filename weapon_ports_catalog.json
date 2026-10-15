@@ -5551,11 +5551,18 @@
     "swap": 1.45
    },
    "anim_sounds": {
-    "reload": {
-     "mult": 1.4745762711864407,
-     "from": "sound\\weapons\\suppressor_port\\su_reload",
-     "to": "sound\\weapons\\suppressor_port\\su_reload_balanced"
-    }
+    "reload": [
+     {
+      "mult": 1.4745762711864407,
+      "from": "sound\\weapons\\suppressor_port\\su_reload",
+      "to": "sound\\weapons\\suppressor_port\\su_reload_balanced"
+     },
+     {
+      "mult": 1.4745762711864407,
+      "from": "sound\\weapons\\suppressor_port\\su_reload_empty",
+      "to": "sound\\weapons\\suppressor_port\\su_reload_empty_balanced"
+     }
+    ]
    },
    "balance": [
     {
