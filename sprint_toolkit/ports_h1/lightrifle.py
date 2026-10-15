@@ -405,7 +405,8 @@ PORT.update({
         #     --wires main_wire,main_wire_inner,outer_holo_wires,inner_holo_wires,ring_wire,main_hatch_wire,
         #             ghost_wire_close,ghost_wire_mid,lower_accent_wire,upper_accent_wire,range_box
         #     --fills outer_holo,inner_holo,main_hatch_extrusion,hatch_a,hatch_b,hatch_c,range_box_ghost
-        #     --fill-alpha 0.45 --xform 1.05,0.975,0,-112 --band 300,120,0.6 (BOOT 6 test)
+        #     --fill-alpha 0.45 --xform 1.05,0.975,0,-112
+        # BOOT 7 (the orange `--band 300,120,0.6` fill as a test): user reverted it -- BOOT 6 ACCEPTED AS DONE
         # Each quadrant = a coloured zoom glyph (the Needle Rifle's recipe) at the reserved hud_reticles
         # 68-71, registered at its inner corner (the screen centre), overlay x4 (0.5 screen px a sheet
         # px at x1). The mask: CLEAR (no chud), the pistol's zoom readouts dropped
