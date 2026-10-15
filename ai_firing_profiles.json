@@ -3091,6 +3091,156 @@
     "port_dps": 144.0,
     "balanced_port_dps": 295.0
    }
+  },
+  "weapons\\light rifle\\light rifle": {
+   "source": "Halo 4 ai\\generic objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle (weapon properties #16, firing pattern #16) over weapons\\assault rifle\\assault rifle carriers",
+   "fields": {
+    "0x74": [
+     "<f",
+     20.0,
+     "Maximum Firing Distance"
+    ],
+    "0x78": [
+     "<f",
+     1.0,
+     "Rate Of Fire"
+    ],
+    "0x7C": [
+     "<f",
+     0.008726645959541202,
+     "Projectile Error"
+    ],
+    "0x80": [
+     "<f",
+     0.75,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     1.5,
+     "First Burst Delay Time Max"
+    ],
+    "0x8C": [
+     "<f",
+     1.0,
+     "Surprise Delay Time"
+    ],
+    "0x94": [
+     "<f",
+     0.20000000298023224,
+     "Death Fire-Wildly Chance"
+    ],
+    "0x98": [
+     "<f",
+     0.5,
+     "Death Fire-Wildly Time"
+    ],
+    "0x9C": [
+     "<f",
+     5.0,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     9.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     0.949999988079071,
+     "Target Tracking"
+    ],
+    "0xC0": [
+     "<f",
+     0.699999988079071,
+     "Target Leading"
+    ],
+    "0xC4": [
+     "<f",
+     0.8073394495412844,
+     "Weapon Damage Modifier"
+    ],
+    "0xCC": [
+     "<f",
+     0.10000000149011612,
+     "Burst Origin Radius"
+    ],
+    "0xD0": [
+     "<f",
+     0.0872664600610733,
+     "Burst Origin Angle"
+    ],
+    "0xD4": [
+     "<f",
+     0.3999999910593033,
+     "Burst Return Length"
+    ],
+    "0xD8": [
+     "<f",
+     0.5999999940395355,
+     "Burst Return Length Max"
+    ],
+    "0xDC": [
+     "<f",
+     0.1745329201221466,
+     "Burst Return Angle"
+    ],
+    "0xE0": [
+     "<f",
+     0.75,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     1.5,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     1.25,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     2.0,
+     "Burst Separation Max"
+    ],
+    "0x1D8": [
+     "<f",
+     0.6000000238418579,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.8999999761581421,
+     "Drop Weapon Loaded Max"
+    ]
+   },
+   "donor_weapon": "weapons\\assault rifle\\assault rifle",
+   "species_skill": true,
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.48418156808803303,
+     "Weapon Damage Modifier"
+    ],
+    "0x1D8": [
+     "<f",
+     0.3,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     1.0,
+     "Drop Weapon Loaded Max"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.4,
+    "yardstick_dps": 88.0,
+    "port_dps": 43.6,
+    "balanced_port_dps": 72.7
+   }
   }
  }
 }
