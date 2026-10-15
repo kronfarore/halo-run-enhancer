@@ -137,6 +137,11 @@ PORT = reserved(
 PORT.update({
     'status': 'in progress',
 
+    # BORROWED sounds kept ON PURPOSE (port_sound_refs prints these as KEEP)
+    'sound_keeps': {r'sound\sfx\weapons\weapon_pickup_ammo\pistol_ammo':
+                    "Halo 4's pickup event (play_weapons_storm_homing_rifle_ammo_pickup) is in no MCC "
+                    "bank: user, boot 2 ('pickup sound can stay borrowed')"},
+
     # geometry + look (h1_h3_weapon_model.py; Halo 4 through h4_tags). ONE render model for world AND
     # first person: 8 nodes (b_gun root), regions `default` (mesh 0: 3463 verts) + `knight` (mesh 1: 9471
     # verts) -- both drawn on the player's gun; the sku / industrial skins are empty. Materials: body
