@@ -131,8 +131,8 @@ PORT = reserved(
     # step 11: Halo 4's ai\generic Scattershot entry (m020, verified 2026-10-07) over a Halo 1 SHOTGUN
     # carrier ('ss' has no carrier). Halo 1's shotgun carriers (h1_weapon_carriers, 2026-10-15): Flood combat
     # Elite / human (WDM 0.15; their actor ALREADY has always_charge_in_attacking_mode), Marine plain /
-    # anchor and armoured Marine major (0.6) -- no Covenant one; the Mauler's split. PROVISIONAL (the user
-    # picks): the Mauler's pinned donor, the Flood combat Elite, base 0.15. ARMED WDM RULE: 0.15 x shotgun
+    # anchor and armoured Marine major (0.6) -- no Covenant one; the Mauler's split. USER (2026-10-15): the
+    # Mauler's pinned donor, the Flood combat Elite, base 0.15, for every slot. ARMED WDM RULE: 0.15 x shotgun
     # 322 / Scattershot dps -- default 6 x 12 x 2 = 144 (0.335), balanced 6 x 24.57 x 2 = 295 (0.164).
     # Short range (6.7 wu: the AI judges reach by the projectile's maximum range): Armed slots keep their
     # own species' actor (no charge) -- the Mauler (range 8) passed its Armed boot without one; the
@@ -142,7 +142,11 @@ PORT = reserved(
                     'donor_weapon': 'weapons\\shotgun\\shotgun',
                     'donor_variant': 'characters\\floodcombat elite\\floodcombat elite shotgun',
                     'wdm_rule': {'base': 0.15, 'yardstick_dps': 322.0, 'port_dps': 144.0,
-                                 'balanced_port_dps': 295.0}},
+                                 'balanced_port_dps': 295.0},
+                    # THE BALANCED DROP RULE: H1 shotgun carriers' 0.3 - 0.9 x Halo 4 Scattershot 0.5 - 0.9 /
+                    # Halo 4 shotgun 0.3 - 0.9 (m020 ai\generic) = 0.5 - 0.9 (= the default); ammo: the
+                    # Scattershot has none (shotgun 8 - 12) -- a zero on one side: no row
+                    'balanced_set': ['0x1D8=0.5:Drop Weapon Loaded', '0x1DC=0.9:Drop Weapon Loaded Max']},
 )
 
 PORT.update({
