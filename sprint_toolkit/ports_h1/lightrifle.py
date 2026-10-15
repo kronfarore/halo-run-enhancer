@@ -42,6 +42,24 @@ ORANGE = (1.0, 0.6, 0.1)
 # graph's 88 bones = the same 80 arm / camera nodes + the render model's 8 gun bones)
 from .storm_rifle import DROP  # noqa: E402
 
+# STEP 4b (port_field_audit --port lightrifle), the damage effects (both rounds): active camouflage
+# damage by the ratio 0.45 x 1/0.5 = 0.9 (list 2); the BREAKING EFFECT a zero on one side (the Magnum's
+# 0) -> Halo 4's own (list 3, the BR's rule). Flags: Halo 4 'can cause headshots' on both = the pistol
+# bullet's own `headshot` (kept); 'ignores headshot obstructions', 'ignore seat scale', 'does not spill
+# over' (the scoped round) have no Halo 1 field
+JPT_FIELDS = {'damage.active_camouflage_damage': 0.9,
+              'breaking_effect.forward_velocity': 35.0,
+              'breaking_effect.forward_radius': 0.12,
+              'breaking_effect.forward_exponent': 8.0,
+              'breaking_effect.outward_velocity': 3.0,
+              'breaking_effect.outward_radius': 0.5,
+              'breaking_effect.outward_exponent': 0.2}
+
+IMPACT_SOUNDS = {'match': (), 'rgb': None, 'out': 'weapons\\light rifle\\effects\\impact\\',
+                 'sounds': {'sound\\sfx\\impulse\\impacts\\' + x: 'sound\\weapons\\light_rifle_port\\lr_impact'
+                            for x in ('dirthits', 'granhit', 'metalhit', 'woodhit', 'snow_hits',
+                                      'glass_hits', 'bullet_ricc', 'ice_hits')}}
+
 # the render model's 8 nodes, all animated by the FP graph
 GUN = ('gun', 'scope', 'cartridge', 'top_main', 'center', 'front_main', 'top', 'ammo')
 
@@ -109,8 +127,13 @@ PORT.update({
         'world': H4 + SW + r'\storm_forerunner_rifle.render_model',
         'fp': H4 + SW + r'\storm_forerunner_rifle.render_model',
         'world_name': 'light rifle',
+        'decimate': {'keep': 60.0, 'protect': 1.0, 'views': [((-0.0722, 0.0555, 0.0691), (0.9962, -0.0359, -0.0788), (0.0788, -0.0017, 0.9969), 1.0), ((-0.0725, 0.0551, 0.0696), (0.9967, -0.0366, -0.073), (0.0727, -0.0099, 0.9973), 1.0), ((-0.0722, 0.0555, 0.0691), (0.9962, -0.0359, -0.0788), (0.0788, -0.0017, 0.9969), 1.0), ((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 0.0, 1.0), 1.0), ((0.0, 0.0, 0.0), (1.0, 0.0076, -0.0063), (0.0064, -0.0128, 0.9999), 1.0), ((0.0, 0.0, 0.0), (1.0, -0.0026, 0.0031), (-0.0031, 0.0032, 1.0), 1.0), ((-0.0722, 0.0555, 0.0691), (0.9962, -0.036, -0.0788), (0.0788, -0.0018, 0.9969), 1.0), ((-0.0666, 0.055, 0.0691), (0.9955, -0.0276, -0.0907), (0.0908, 0.0039, 0.9959), 1.0), ((-0.0722, 0.0555, 0.0691), (0.9962, -0.036, -0.0788), (0.0788, -0.0018, 0.9969), 1.0), ((-0.0584, 0.065, 0.1224), (0.6784, -0.3657, 0.6372), (-0.6856, -0.0037, 0.7279), 0.5), ((-0.0574, 0.0527, 0.0722), (0.996, -0.0283, -0.0847), (0.0815, -0.0975, 0.9919), 0.5), ((-0.0584, 0.065, 0.1224), (0.6784, -0.3657, 0.6372), (-0.6856, -0.0037, 0.7279), 0.5), ((-0.0722, 0.0555, 0.0691), (0.9962, -0.0359, -0.0788), (0.0788, -0.0017, 0.9969), 0.5), ((-0.0371, 0.1266, 0.1093), (0.6865, -0.6955, -0.212), (-0.2586, -0.5061, 0.8228), 0.5), ((-0.0722, 0.0555, 0.0691), (0.9962, -0.0359, -0.0788), (0.0788, -0.0017, 0.9969), 0.5), ((-0.0824, 0.0556, 0.0709), (0.9985, -0.0485, -0.0235), (0.0225, -0.0213, 0.9995), 0.5), ((-0.0379, 0.1261, 0.1057), (0.6842, -0.697, -0.2145), (-0.2532, -0.5029, 0.8264), 0.5), ((-0.0824, 0.0556, 0.0709), (0.9985, -0.0485, -0.0235), (0.0225, -0.0213, 0.9995), 0.5), ((-0.0722, 0.0555, 0.0691), (0.9962, -0.0359, -0.0788), (0.0788, -0.0017, 0.9969), 0.5), ((-0.0901, -0.063, 0.1958), (-0.0677, 0.0492, -0.9965), (0.0117, -0.9987, -0.0501), 0.5), ((-0.0722, 0.0555, 0.0691), (0.9962, -0.0359, -0.0788), (0.0788, -0.0017, 0.9969), 0.5)]},
         'markers': {'primary_trigger': 'primary trigger'},
         'ground_point': 'auto',
+        # an own hull (the template's hides the world model, C1): the render model's extent (x
+        # -0.086..0.327, y +-0.017, z -0.014..0.091)
+        'collision': {'material': 'metal',
+                      'boxes': [((-0.086, -0.017, -0.014), (0.327, 0.017, 0.091))]},
         # Halo 1's `tool model` keeps 31 characters of a shader name (C1)
         'material_names': {'storm_forerunner_rifle_body': 'lr_body',
                            'storm_forerunner_rifle_body_alien': 'lr_alien',
@@ -136,7 +159,7 @@ PORT.update({
     'retarget': {
         'graph': H4 + SFP + '.model_animation_graph',
         'render_model': H4 + SW + r'\storm_forerunner_rifle.render_model',
-        'nodes': {'b_' + n: 'frame b ' + n.replace('_', ' ') for n in GUN},
+        'nodes': {n: 'frame b ' + n.replace('_', ' ') for n in GUN},
         'drop_nodes': tuple(DROP),
         'h1_dir': r'weapons\light rifle\fp',
         'h1_model': r'weapons\light rifle\fp\fp',
@@ -203,7 +226,7 @@ PORT.update({
                                    'sound\\sfx\\weapons\\weapon_anims\\pistol_reload', -19.0),
         },
         'offsets': {'lr_pose': [0.0, 60 / 30.0]},
-        'stretch': {'lr_reload_balanced': 67 / 50.0},
+        'stretch': {'lr_reload_balanced': 97.8 / 74.0},
     },
 
     # ---------------------------------------------------------------------------------------
@@ -236,6 +259,11 @@ PORT.update({
                    'damage': (PISTOL + 'bullet', LR + 'bolt'),
                    'dmg': 5.333, 'acceleration': 0.2, 'velocity': 3000.0, 'range': 250.0,
                    'proj_fields': {'proj_attrs.physics.flyby_sound.filepath': SND + 'lr_flyby'},
+                   'fields': dict(JPT_FIELDS),
+                   # every hard-surface impact the pistol bullet plays -> Halo 4's Forerunner impact
+                   # (the Suppressor's: plasma impact + the forerunner sweetener); flesh, shield and
+                   # water hits stay the game's
+                   'impact_tint': IMPACT_SOUNDS,
                    # THE HIT-EFFECT RULE: a burst lands 3 rounds 1/30 s apart -> the tag rate 30/s
                    'impact_thin': {'materials': [22], 'out': LR + 'effects\\impact\\',
                                    'thin': {}, 'rate': 30.0},
@@ -247,6 +275,8 @@ PORT.update({
             'damage': (PISTOL + 'bullet', LR + 'bolt scoped'),
             'dmg': 23.5, 'acceleration': 0.2, 'velocity': 3000.0, 'range': 250.0,
             'proj_fields': {'proj_attrs.physics.flyby_sound.filepath': SND + 'lr_flyby_scoped'},
+            'fields': dict(JPT_FIELDS),
+            'impact_tint': dict(IMPACT_SOUNDS, out=LR + 'effects\\impact\\scoped '),
             # THE HIT-EFFECT RULE: 2.5/s
             'impact_thin': {'materials': [22], 'out': LR + 'effects\\impact\\scoped ',
                             'thin': {}, 'rate': 2.5},
@@ -290,12 +320,28 @@ PORT.update({
             'item_attrs.collision_sound.filepath': SND + 'lr_drop',
             'weap_attrs.magazines.0.magazine_items.0.rounds': 216,
             'obje_attrs.collision_model.filepath': LR + 'light rifle',
+            # STEP 4b list 2 (ratio onto the pistol): active camo ding 0.65 x 0.25/0.6 = 0.27,
+            # illumination recovery 0.1 x 0.04/0.05 = 0.08 (both triggers); aim, magazine and error =
+            # Halo 4's own (the default). List 3: deviation angle 0 kept (the template's: the
+            # Suppressor's), sort order / ai scariness / falloff ranges no Halo 1 field
+            'weap_attrs.interface.active_camo_ding': 0.65 * 0.25 / 0.6,
+            'weap_attrs.triggers.0.misc.illumination_recovery_time': 0.08,
+            'weap_attrs.triggers.1.misc.illumination_recovery_time': 0.08,
         },
         'sound_effects': {
             'firing_effect': (PISTOL + 'effects\\fire bullet', LR + 'effects\\fire bolt',
                               {r'sound\sfx\weapons\pistol\fire': SND + 'lr_fire'},
-                              {'drop_parts': (r'sound\sfx\weapons\pistol\eject',),
-                               'drop_particles': ('casing',)}),
+                              # THE MUZZLE-FLASH RULE (closing check 10, before boot 1). Halo 4's
+                              # homingrifle_firing: NO flash sprite -- a lens flare + screen effect,
+                              # a core_energy tracer and an orange muzzle_glow_1p light volume at
+                              # primary_trigger, sparks at the hardlight markers; no smoke, no casing.
+                              # The pistol's (h1_effect_particles): the on-axis FP centre flash
+                              # 0.045-0.056 (KEPT, tinted orange: the glow's stand-in), two side
+                              # flashes at +-0.023 (dropped), FP smoke (dropped), casing + eject
+                              {'match': 'flash', 'drop_off_axis': 0.012, 'scale': 1.0,
+                               'drop_particles': ('casing', 'smoke h fp'),
+                               'drop_parts': (r'sound\sfx\weapons\pistol\eject',),
+                               'tint': (1.0,) + ORANGE}),
             'empty_effect': (PISTOL + 'effects\\empty', LR + 'effects\\empty',
                              {r'sound\sfx\weapons\pistol\dryfire': SND + 'lr_dryfire'})},
         'melee': (PISTOL + 'melee', LR + 'melee'),
@@ -324,6 +370,68 @@ PORT.update({
                 'flash_base': 12,                # the pistol's low-ammo cutoff is of 12
                 'ammo_meter': {'sizes': (36, 54), 'base': LR + 'bitmaps\\light_rifle_ammo'}},
         'palette_levels': LEVELS,
+    },
+
+    # weapon_ports_catalog.json (make_port_catalog_h1_ports.py lightrifle). DEFAULT = Halo 4's own
+    # numbers in the tags; BALANCED = the PISTOL ratio per mode (step 4a, user 2026-10-15). Assembly
+    # Halo1 units: angles in degrees, velocity in wu per TICK (3000 wu/s = 100; 300 = 10)
+    'catalog': {
+        'entry': {
+            'weapon': 'LightRifle', 'source': 'Halo 4', 'donor': 'Pistol', 'default_on': False,
+            'desc': "Halo 4's LightRifle: its model, first-person animations, sounds and numbers. A "
+                    "36-round Forerunner rifle with a 3x zoom: the trigger fires a 3-round burst, the "
+                    "grenade key a single stronger shot (3 rounds); no grenades while it is held. "
+                    "Pistol ammo tops it up.",
+            'balance_desc': "Measured against the Pistol, which both games have: 8.9 damage a burst "
+                            "round, 39 a single shot (1.75 a second), a 54 magazine, 270 at the start "
+                            "/ 432 most, a 3.3 s reload, a slower bolt (300 wu/s), 40 wu range and "
+                            "Halo 1-style aim assist.",
+            # step 9: the balanced reload, H1 pistol 67 fr x 73/50 = 97.8 fr over the BUILT 74 (reload
+            # empty; ONE multiplier) = x1.32; swap: H1 pistol ready 35 fr x 25/16 (Halo 4 LightRifle /
+            # Magnum ready) = 54.7 over the built 25 = x2.19
+            'anims': {'reload': 97.8 / 74.0, 'swap': 2.19},
+            'anim_sounds': {'reload': [{'mult': 97.8 / 74.0, 'from': SND + 'lr_reload',
+                                        'to': SND + 'lr_reload_balanced'}]},
+            'balance': [
+                row('jpt!', LR + 'bolt', 'Damage Lower Bound', 8.89, 5.333, 'Bullet Damage'),
+                row('jpt!', LR + 'bolt', 'Damage Upper Bound', 8.89, 5.333, 'Bullet Damage'),
+                row('jpt!', LR + 'bolt', 'Damage Upper Bound Max', 8.89, 5.333, 'Bullet Damage'),
+                row('jpt!', LR + 'bolt scoped', 'Damage Lower Bound', 39.17, 23.5, 'Bullet Damage'),
+                row('jpt!', LR + 'bolt scoped', 'Damage Upper Bound', 39.17, 23.5, 'Bullet Damage'),
+                row('jpt!', LR + 'bolt scoped', 'Damage Upper Bound Max', 39.17, 23.5, 'Bullet Damage'),
+                # the scoped shot's rate (trigger 1): 3.5 x 2.5/5; the burst has no cycle row (tapping)
+                dict(row('weap', LR + 'light rifle', 'Rounds Per Second', 1.75, 2.5, 'More Shooting', block='Triggers'), index=1),
+                dict(row('weap', LR + 'light rifle', 'Rounds Per Second Max', 1.75, 2.5, 'More Shooting', block='Triggers'), index=1),
+                row('weap', LR + 'light rifle', 'Rounds Loaded Maximum', 54.0, 36.0, 'Magazine', block='Magazines'),
+                row('weap', LR + 'light rifle', 'Rounds Reloaded', 54.0, 36.0, 'Magazine', block='Magazines'),
+                row('weap', LR + 'light rifle', 'Rounds Total Initial', 270.0, 108.0, 'Magazine', block='Magazines'),
+                row('weap', LR + 'light rifle', 'Rounds Total Maximum', 432.0, 144.0, 'Magazine', block='Magazines'),
+                # STEP 6 balanced: the pistol's pickup : initial (2 : 1) on the balanced 270
+                row('weap', LR + 'light rifle', 'Rounds', 540, 216, 'Ammo pickup', block='Magazines/Magazines'),
+                # error (pistol 0.2 -> 2.0 x LightRifle / Magnum): the burst's 0.15 flat against 0.15 ->
+                # 1.75 inverts the minimum -> the maximum's ratio for both (the Suppressor's rule):
+                # burst 0.017 -> 0.17, scoped 0.057 -> 0.57
+                dict(row('weap', LR + 'light rifle', 'Error Angle', 0.017, 0.15, 'Error Angle', block='Triggers'), index=0),
+                dict(row('weap', LR + 'light rifle', 'Error Angle Max', 0.17, 0.15, 'Error Angle', block='Triggers'), index=0),
+                dict(row('weap', LR + 'light rifle', 'Error Angle', 0.057, 0.15, 'Error Angle', block='Triggers'), index=1),
+                dict(row('weap', LR + 'light rifle', 'Error Angle Max', 0.57, 0.5, 'Error Angle', block='Triggers'), index=1),
+                row('proj', LR + 'bolt', 'Initial Velocity', 10.0, 100.0, 'Projectile'),
+                row('proj', LR + 'bolt', 'Final Velocity', 10.0, 100.0, 'Projectile'),
+                row('proj', LR + 'bolt', 'Maximum Range', 40.0, 250.0, 'Projectile'),
+                row('proj', LR + 'bolt scoped', 'Initial Velocity', 10.0, 100.0, 'Projectile'),
+                row('proj', LR + 'bolt scoped', 'Final Velocity', 10.0, 100.0, 'Projectile'),
+                row('proj', LR + 'bolt scoped', 'Maximum Range', 40.0, 250.0, 'Projectile'),
+                row('weap', LR + 'light rifle', 'Autoaim Angle', 3.0, 2.25, 'Autoaim'),
+                row('weap', LR + 'light rifle', 'Autoaim Range', 30.0, 20.0, 'Autoaim'),
+                row('weap', LR + 'light rifle', 'Magnetism Angle', 6.0, 5.0, 'Magnetism'),
+                row('weap', LR + 'light rifle', 'Magnetism Range', 30.0, 20.0, 'Magnetism'),
+                # the 54 magazine's meter: light_rifle_ammo sequence 1 (ammo_meter 36 54), step 4;
+                # low-ammo flash 12 of 36 -> 18 of 54 (the BR's)
+                dict(row('wphi', LR + 'light rifle', 'Sequence Index', 1, 0, 'Ammo display', block='Meter Elements'), index=0),
+                dict(row('wphi', LR + 'light rifle', 'Alpha Multiplier', 4, 7, 'Ammo display', block='Meter Elements'), index=0),
+                dict(row('wphi', LR + 'light rifle', 'Sequence Index', 1, 0, 'Ammo display', block='Static Elements'), index=0),
+                dict(row('wphi', LR + 'light rifle', 'Loaded Ammo Cutoff', 18, 12, 'Ammo display'), index=0),
+            ]},
     },
 
     # step 4b (port_field_audit.py --port lightrifle): the source pair (Halo 4 LightRifle vs the

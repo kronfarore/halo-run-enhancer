@@ -1,0 +1,173 @@
+{
+ "game": "Halo 1",
+ "weapon": "LightRifle",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\light_rifle_port\\lr_fire",
+   "perms": [
+    "lr_fire_1.wav",
+    "lr_fire_2.wav",
+    "lr_fire_3.wav",
+    "lr_fire_4.wav",
+    "lr_fire_5.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\light_rifle_port\\lr_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\light_rifle_port\\lr_dryfire",
+   "perms": [
+    "lr_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\light_rifle_port\\lr_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\light_rifle_port\\lr_ready",
+   "perms": [
+    "lr_ready_1.wav",
+    "lr_ready_2.wav",
+    "lr_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\light_rifle_port\\lr_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\light_rifle_port\\lr_melee",
+   "perms": [
+    "lr_melee_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\light_rifle_port\\lr_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\light_rifle_port\\lr_reload",
+   "perms": [
+    "lr_reload_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\light_rifle_port\\lr_reload"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\light_rifle_port\\lr_pose",
+   "perms": [
+    "lr_pose_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\light_rifle_port\\lr_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\light_rifle_port\\lr_zoom_in",
+   "perms": [
+    "lr_zoom_in_1.wav",
+    "lr_zoom_in_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\light_rifle_port\\lr_zoom_in"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\light_rifle_port\\lr_zoom_out",
+   "perms": [
+    "lr_zoom_out_1.wav",
+    "lr_zoom_out_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\light_rifle_port\\lr_zoom_out"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\light_rifle_port\\lr_drop",
+   "perms": [
+    "lr_drop_1.wav",
+    "lr_drop_2.wav",
+    "lr_drop_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\light_rifle_port\\lr_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\light_rifle_port\\lr_flyby",
+   "perms": [
+    "lr_flyby_1.wav",
+    "lr_flyby_2.wav",
+    "lr_flyby_3.wav",
+    "lr_flyby_4.wav",
+    "lr_flyby_5.wav",
+    "lr_flyby_6.wav",
+    "lr_flyby_7.wav",
+    "lr_flyby_8.wav",
+    "lr_flyby_9.wav",
+    "lr_flyby_10.wav",
+    "lr_flyby_11.wav",
+    "lr_flyby_12.wav",
+    "lr_flyby_13.wav",
+    "lr_flyby_14.wav",
+    "lr_flyby_15.wav",
+    "lr_flyby_16.wav",
+    "lr_flyby_17.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\light_rifle_port\\lr_flyby"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\light_rifle_port\\lr_flyby_scoped",
+   "perms": [
+    "lr_flyby_scoped_1.wav",
+    "lr_flyby_scoped_2.wav",
+    "lr_flyby_scoped_3.wav",
+    "lr_flyby_scoped_4.wav",
+    "lr_flyby_scoped_5.wav",
+    "lr_flyby_scoped_6.wav",
+    "lr_flyby_scoped_7.wav",
+    "lr_flyby_scoped_8.wav",
+    "lr_flyby_scoped_9.wav",
+    "lr_flyby_scoped_10.wav",
+    "lr_flyby_scoped_11.wav",
+    "lr_flyby_scoped_12.wav",
+    "lr_flyby_scoped_13.wav",
+    "lr_flyby_scoped_14.wav",
+    "lr_flyby_scoped_15.wav",
+    "lr_flyby_scoped_16.wav",
+    "lr_flyby_scoped_17.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\light_rifle_port\\lr_flyby_scoped"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\light_rifle_port\\lr_impact",
+   "perms": [
+    "lr_impact_1.wav",
+    "lr_impact_2.wav",
+    "lr_impact_3.wav",
+    "lr_impact_4.wav",
+    "lr_impact_5.wav",
+    "lr_impact_6.wav",
+    "lr_impact_7.wav",
+    "lr_impact_8.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\light_rifle_port\\lr_impact"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\light_rifle_port\\lr_reload_balanced",
+   "perms": [
+    "lr_reload_balanced_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\light_rifle_port\\lr_reload_balanced"
+   ]
+  }
+ ]
+}
