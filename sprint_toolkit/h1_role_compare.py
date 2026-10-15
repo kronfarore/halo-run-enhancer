@@ -1312,6 +1312,9 @@ SETS = {
     # 25 x 3.5/s, 12, 67 fr; sniper 101 x 2/s, 4, 94 fr; AR 10 x 15/s, 60, 87 fr. Scoped rows: 'mag'
     # = SHOTS (36 / 3). Each row on its yardstick bullet's table.
     'lightrifle': {'port': 'LightRifle', 'weapons': [
+        # the BUILT port (step 5b): its tags (+ --balanced rows). The burst: 3 rounds 1/30 s apart (spew
+        # 0.15, the user's), one a pull -- the cycle is the player's tapping; Halo 4's 0.367 s assumed
+        ('LightRifle (port)', W + r'light rifle\light rifle', 'shot', {'burst': (3, 1 / 30.0, 0.367)}),
         ('LR burst = H4 own', W + r'pistol\pistol', 'shot',
          {'dmg': 5.333, 'burst': (3, 1 / 30.0, 0.367), 'mag': 36, 'reload': 73 / 30.0,
           'speed': 3000.0, 'range': 250.0, 'aim': (2.25, 20.0, 5.0, 20.0)}),

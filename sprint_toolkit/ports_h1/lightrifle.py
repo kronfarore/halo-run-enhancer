@@ -113,9 +113,25 @@ PORT = reserved(
                       "projectile and large fly-by) -- Halo 1's zoom cannot switch a trigger, and the "
                       "grenade-key trigger (option C) failed in boot 1; Halo 4's 0.3 s burst recovery "
                       "(tapping sets the cycle); sprint")}},
-    # step 11 (filled at step 11): Halo 4's ai\generic LightRifle entry (m020) over a base
+    # step 11: Halo 4's ai\generic LightRifle entry (m020) over a base -- 'lr' has no carrier. Halo 1's
+    # carriers of the yardstick (h1_weapon_carriers, 2026-10-15): the PISTOL -- crewmen 0.5, Flood combat
+    # forms 0.4, the suicidal Marine 0.5; the ASSAULT RIFLE (the class 'lr' is taught from) -- Marines /
+    # Flood 0.4, armoured Marines 0.5 - 0.6, the Grunts' plasma pistol with AR 0.5 / 0.6. No actor flags
+    # set on any. Donor = the AR, base 0.4 (the Battle Rifle's precedent: the same burst rifle, the same
+    # yardstick). WDM RULE: 0.4 x the pistol's player dps 88 / the port's at Halo 4's 0.367 s burst
+    # rhythm (h1_role_compare lightrifle, the built port: 5.33 x 3 = 43.6, balanced 8.89 x 3 = 72.7)
     firing_profile={'mode': 'source', 'from_game': 'Halo 4', 'from_map': 'halo4\\maps\\m020.map',
-                    'from_weapon': 'objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle'},
+                    'from_weapon': 'objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle',
+                    'donor_weapon': 'weapons\\assault rifle\\assault rifle',
+                    'wdm_rule': {'base': 0.4, 'yardstick_dps': 88.0, 'port_dps': 43.6,
+                                 'balanced_port_dps': 72.7},
+                    # THE BALANCED DROP RULE: Halo 1's pistol carriers 0.3 - 0.9 (the Battle Rifle's
+                    # reading) x Halo 4 LightRifle 0.6 - 0.9 / Halo 4 Magnum 0.6 - 0.8 (m020 ai\generic)
+                    # = 0.3 - 1.01 -> 1.0 (a fraction); rounds: the LightRifle sets none (Magnum 24 -
+                    # 32): a zero on one side, no row
+                    'balanced_set': ['0x1D8=0.3:Drop Weapon Loaded', '0x1DC=1.0:Drop Weapon Loaded Max'],
+                    # THE SPECIES SKILL RULE (C1): each slot's aim on its own species' stock skill
+                    'species_skill': True},
 )
 
 PORT.update({
