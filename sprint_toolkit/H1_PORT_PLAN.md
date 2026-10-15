@@ -1124,6 +1124,29 @@ shot. Everything in "C1" and "C2" held; what is new:
 - Process: 6 dry boots (look 4, FP 2), balanced 1, Armed 1. Five narrowed proofs (bo1-bo5), all 0 changed;
   closing check 6 0 changed.
 
+## C4: what the LightRifle taught (2026-10-15) -- parallel with C5
+
+PORTING.md "Halo 1: the LightRifle, wave C4" is the full record; `ports_h1/lightrifle.py` is the example of a
+Halo 4 BURST rifle on the pistol template and of a Halo 4 POLYART SCOPE as coloured zoom glyphs. Everything
+in "C1"-"C3" held; what is new:
+
+- **A zoom-switched mode is not portable** (Halo 4 `latch-zoom`: zoomed = another barrel). The grenade-key
+  second trigger (`secondary trigger overrides grenades`) cannot sit beside a CHARGED trigger 0 -- Halo 1
+  hands the charge to trigger 1 -- and the BR burst IS a charge. Option A (burst only); the scoped shot lost.
+- **Burst rounds follow the spew TIME** (30/s: 1-2 ticks -> 1 round, 3 -> 2, 0.15 s -> 3; the BR's 0.15 s at
+  10/s -> 3). Observation from two ports now: start any burst port at spew 0.15 s.
+- **Read barrels and switches, not summaries:** h3_weapon_values shows barrel 0 only; a Halo 4 fire event's
+  real sounds may sit behind a SWITCH the event walk skips (`obj_<id>` specs; listen-check thin fire sounds).
+- **Halo 4 scopes are polyart** (no bitmaps): h4_polyart (rasterize) + h4_polyart_scope (fit to the source
+  screenshot, quadrant PNGs) -> `zoom_glyphs` `image` over a chud-less clear `scope` (`blur_outside`,
+  `dark_bands`). MCC centres a zoom overlay on its SPRITE (registration ignored): pin crops, place by
+  `offset`; `normalize` erases faint pin pixels (use >= 10/255). The remaining polyart scopes (Binary Rifle,
+  Railgun, Incineration Cannon) can reuse it.
+- **Forerunner firing light-up:** glow cards faded by `A_out` (the pistol template's firing illumination).
+- **Ammo HUD from Halo 4's segment strips:** `ammo_meter` `rows` (a column = one shot).
+- Process: 7 dry boots (mode 1, sound / glow 1, burst 1, scope 4), balanced 1, Armed 1. Narrowed proofs lr1-lr4
+  0 changed; check 6 0 changed. Trap: `ai_firing_profile.py` without `--port` writes despite `--dry`.
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one

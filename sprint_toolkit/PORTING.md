@@ -2299,6 +2299,75 @@ bo1-bo5 0 changed):** h1_fp_retarget `also_as`, `node_from`, hand_offset_anims `
 `view_offset_anims`; h1_h3_weapon_model glow_points rotations / `index` / `at` / `normal`; ammo_meter
 `native`; h1_pickable_weapons sound_effects `own_particles`; h1_fp_hand_clip (read-only) absent-key fix.
 
+### Halo 1: the LightRifle, wave C4 (2026-10-15, 7 dry boots + balanced + Armed on a30, PARALLEL with C5) -- a Halo 4 burst rifle whose zoom switches the shot, a polyart scope as coloured overlays
+
+The whole weapon is `ports_h1/lightrifle.py`, on a copy of the Halo 1 PISTOL (also the yardstick): the Halo 4
+route of the Suppressor on the burst + zoom shape of the Battle Rifle.
+
+**Step 4a (user): the PISTOL.** Halo 4: ONE trigger, `latch-zoom` -- barrel 0 unzoomed = a 3-round burst
+(5.33 plasma_fast a round at 30/s, recovery 0.3), barrel 1 zoomed = ONE `_combined` shot of 23.5 for 3
+ROUNDS (2.5/s, its own projectile + large fly-by). Read the barrels, not the table (h3_weapon_values shows
+barrel 0 only). Balanced = the pistol ratio per mode (burst 8.89 x 3, the cycle 0.524 s; scoped 39.2);
+the Sniper ratio put Flood combat forms at 35 s (the sniper bullet's table).
+
+**THE MODE SWITCH IS NOT PORTABLE.** Halo 1's zoom does not switch triggers. Option C (user's first
+choice): the scoped shot on the GRENADE key -- weapon flag `secondary trigger overrides grenades` (Bungie's
+own `digsite\weapons\smg` sets it with `prevents grenade throwing`, its spew burst on trigger 1). FAILED
+(boot 1): the burst is a 1-tick CHARGE on trigger 0, and Halo 1 hands a charged trigger 0 to trigger 1
+when a weapon has two (the plasma pistol, the Boltshot) -- the right trigger fired nothing, the grenade key
+fired the single shot. Option A kept: the burst on both zoom levels, the scoped shot recorded as lost.
+(The digsite layout -- single shot on the trigger, burst on the grenade key -- would work but inverts
+Halo 4.)
+
+**THE BURST'S ROUND COUNT FOLLOWS THE SPEW TIME (observation):** at 30/s a spew of 1 tick fired 1 round,
+2 ticks 1, 3 ticks 2; the user tuned 0.15 s = exactly 3 (the Battle Rifle's 0.15 s at 10/s gave 3 too).
+A rate card changes only the spacing inside the burst.
+
+**THE FIRE SOUND WAS THE WRONG ONE (boot 1).** The event walk (h4_wwise.extract) follows an event's actions
+one level into containers; the LightRifle fire event's real sounds sit behind a SWITCH of two blends of
+layered randoms -- the walk reached only a quiet detail container (5 x 0.45 s at -25 dB rms). Eleven of the
+event's 14 targets exist in no MCC bank. `obj_<hex id>` sound specs (h4_wwise.extract_object: every sound
+under one container, children by the DirectParentID -- the first container id in a body, offset 6 in a
+container / 31 in an embedded sound -- media by the bank's DIDX source id) took blend A's three layers + the
+crack; blend B (2.2-3.2 s, heavier) left as the scoped shot's. Listen-check every Halo 4 fire event that
+resolves to fewer / shorter sounds than expected.
+
+**THE SCOPE IS POLYART.** Halo 4's forerunner_rifle_scope draws 3D vector meshes (polyart_asset: half-float
+x / y / z / alpha + triangles + a camera), no bitmaps. `h4_polyart.py` rasterizes them through their camera;
+`h4_polyart_scope.py` fits the frame to the user's zoomed screenshot (the CUI's parallax / zoom-in moves it:
+scale x 1.05 / y 0.975, 112 px up, by maximising overlap with the screenshot's saturated orange), splits it
+into four quadrant PNGs (a sheet px = 2 screen px). Drawn as coloured ZOOM GLYPHS (the Needle Rifle's
+recipe, `zoom_glyphs` `image`) at hud_reticles 68-71 over a CLEAR mask (`scope` with no chud). Lessons:
+- MCC draws a zoom overlay CENTRED ON ITS SPRITE -- the registration point is ignored (boot 3: all four
+  quadrants stacked in the middle). Pin each crop to its full size (corner pixels) and place by `offset`:
+  quadrant corner / 1.11 px a HUD unit - (2 - 256) x units a sheet px.
+- `normalize` (alpha ^ gamma into RGB) kills faint texels: the 1/255 corner pins vanished, the top
+  sprites shrank to 256 px and drew 250 px low (boot 5); 10/255 survives and stays invisible.
+- Solid opaque panels / hard edges (boot 4) = MCC's near-opaque non-zero texels: `normalize` + gamma 1.6,
+  x 0.6, the holo panels 0.45 (user: 'much better').
+- The H1 blur outside the lens: `blur_outside` (an ellipse in mask texels: 1.09 px a texel tall, the 4:3
+  box 1.453 wide); the top / bottom shade: `dark_bands`. An orange band fill in the glyphs (`--band`) was
+  tried and reverted (user).
+
+**The rest:** body = the colour map (grey, solid alpha) in the Boltshot's colour mode with the control
+map's specular as alpha; the shipped glow material names a camo `sku_diff` -- drawn as additive islands
+anyway. The scope hexagon = a display card (the Boltshot's); the FIRING LIGHT-UP (user: 'every Forerunner
+weapon lights up') = glow cards + a flare faded by `A_out` (the pistol template's firing illumination,
+0.08 s recovery); keep firing cards off pieces facing along the barrel (a 2.6x card on the hexagon reached
+under the plate above it). The ammo HUD = Halo 4's three segment strips (`ammo_meter` `rows`: a column = one
+3-round shot). Decimated 60 % (0.53 MiB with the cards, budget 0.6). FP: 2 units down; hands as built.
+
+**Step 11:** donor the AR carriers (the Battle Rifle's precedent; the pistol's carriers are crewmen /
+Flood / the suicidal Marine), Halo 4 m020 ai\generic #16, WDM 0.4 x 88 / 43.6 = 0.81 (balanced / 72.7 =
+0.48), balanced drop 0.3 - 1.0 (the Magnum 0.6 - 0.8 on m020), species skill. Trap:
+`ai_firing_profile.py` WITHOUT `--port` writes even with `--dry`.
+
+**Closing:** refs audit 0; sound refs 0 BORROW (pickup KEEP: Halo 4's pickup event is in no bank); check 6
+60 tags 0 changed; 5b h1_role_compare `lightrifle` (44 / 73 dps). **Tool changes (opt-in, narrowed proofs
+lr1-lr4 0 changed):** h4_wwise.extract_object + h1_port_sounds `obj_`; ammo_meter `rows`; h1_pickable_weapons
+zoom_glyphs `image` (+ a cell that grows), chud-less `scope` (+ `blur_outside`, `dark_bands`); new
+h4_polyart.py / h4_polyart_scope.py (read-only art tools).
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:
