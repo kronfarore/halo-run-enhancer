@@ -163,7 +163,12 @@ PORT = reserved(
                     # 2.75) on every slot, the cap 5 -> 4 wu
                     # ARMED TEST 6 (user): 'they fire at me and hit me, but sometimes just outside the
                     # projectile range' -> the cap 4 -> 3 wu, inside the shards' guaranteed 3.2 wu
-                    'set': ['0x74=3.0:Maximum Firing Distance',
+                    # ARMED TEST 7 (user): 'still pretty impassive, the Jackals too': Halo 4's DESIRED
+                    # combat range 3 - 5 wu sat outside the 3 wu cap -> they parked and looked around.
+                    # Desired 1 - 3 (the Flood Elite shotgun's own), the cap back to 4: they close in to
+                    # 1 - 3 and fire there (4 at most)
+                    'set': ['0x74=4.0:Maximum Firing Distance',
+                            '0x9C=1.0:Desired Combat Range', '0xA0=3.0:Desired Combat Range Max',
                             '0x168=0.75:Berserk Firing Range', '0x16C=2.75:Berserk Firing Range Max',
                             '0x80=0.0:First Burst Delay Time', '0x84=0.2:First Burst Delay Time Max',
                             '0xE8=1.125:Burst Separation', '0xEC=2.0:Burst Separation Max']},
