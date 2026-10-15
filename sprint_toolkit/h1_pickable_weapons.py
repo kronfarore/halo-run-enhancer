@@ -1461,10 +1461,18 @@ def edit_weapon(key, write):
                 if fl['match'] not in x.particle_type.filepath:
                     continue
                 o = x.relative_offset
-                if fl.get('drop_off_axis') is not None and max(abs(o.j), abs(o.k)) > fl['drop_off_axis']:
+                # `keep_3p_off_axis` (the LightRifle, Armed boot 1: 'no muzzle effect visible on the
+                # enemies' -- the off-axis drop meant for the FP flash took the pistol's third-person
+                # side flashes too): the drop applies to FIRST-PERSON particles only; `scale_3p`: an
+                # extra radius multiplier for the third-person ones
+                tp = x.create_in_camera.enum_name == 'third_person_only'
+                if (fl.get('drop_off_axis') is not None and max(abs(o.j), abs(o.k)) > fl['drop_off_axis']
+                        and not (tp and fl.get('keep_3p_off_axis'))):
                     pts.pop(i)
                     continue
-                x.radius[0], x.radius[1] = x.radius[0] * fl.get('scale', 1.0), x.radius[1] * fl.get('scale', 1.0)
+                k3 = fl.get('scale_3p', 1.0) if tp else 1.0
+                x.radius[0], x.radius[1] = (x.radius[0] * fl.get('scale', 1.0) * k3,
+                                            x.radius[1] * fl.get('scale', 1.0) * k3)
                 dx, dy, dz = fl.get('shift', (0.0, 0.0, 0.0))
                 o.i, o.j, o.k = o.i + dx, o.j + dy, o.k + dz
                 # `own_particles` {'out': path prefix, 'lifespan': x, 'fade_out': s}: the matched
