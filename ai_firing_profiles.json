@@ -2790,6 +2790,162 @@
     "port_dps": 93.75,
     "balanced_port_dps": 125.0
    }
+  },
+  "weapons\\boltshot\\boltshot": {
+   "source": "Halo 4 ai\\generic objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol (weapon properties #21, firing pattern #21) over weapons\\plasma pistol\\plasma pistol carriers (always characters\\jackal\\jackal minor plasma pistol)",
+   "fields": {
+    "0x74": [
+     "<f",
+     13.0,
+     "Maximum Firing Distance"
+    ],
+    "0x78": [
+     "<f",
+     5.5,
+     "Rate Of Fire"
+    ],
+    "0x7C": [
+     "<f",
+     0.02617993811145425,
+     "Projectile Error"
+    ],
+    "0x80": [
+     "<f",
+     0.75,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     1.0,
+     "First Burst Delay Time Max"
+    ],
+    "0x8C": [
+     "<f",
+     1.0,
+     "Surprise Delay Time"
+    ],
+    "0x94": [
+     "<f",
+     0.20000000298023224,
+     "Death Fire-Wildly Chance"
+    ],
+    "0x98": [
+     "<f",
+     0.800000011920929,
+     "Death Fire-Wildly Time"
+    ],
+    "0x9C": [
+     "<f",
+     4.0,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     9.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     0.949999988079071,
+     "Target Tracking"
+    ],
+    "0xC0": [
+     "<f",
+     0.699999988079071,
+     "Target Leading"
+    ],
+    "0xC4": [
+     "<f",
+     0.5866666666666667,
+     "Weapon Damage Modifier"
+    ],
+    "0xCC": [
+     "<f",
+     0.2500000074505806,
+     "Burst Origin Radius"
+    ],
+    "0xD0": [
+     "<f",
+     0.04363323003053665,
+     "Burst Origin Angle"
+    ],
+    "0xD4": [
+     "<f",
+     0.21249999850988388,
+     "Burst Return Length"
+    ],
+    "0xD8": [
+     "<f",
+     0.5000000149011612,
+     "Burst Return Length Max"
+    ],
+    "0xDC": [
+     "<f",
+     0.0872664600610733,
+     "Burst Return Angle"
+    ],
+    "0xE0": [
+     "<f",
+     0.6550000011920929,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     0.9750000238418579,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     1.0,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     2.25,
+     "Burst Separation Max"
+    ],
+    "0x15C": [
+     "<f",
+     10.0,
+     "Special-Fire Delay"
+    ],
+    "0x1D8": [
+     "<f",
+     0.699999988079071,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.8999999761581421,
+     "Drop Weapon Loaded Max"
+    ]
+   },
+   "donor_weapon": "weapons\\plasma pistol\\plasma pistol",
+   "donor_variant": "characters\\jackal\\jackal minor plasma pistol",
+   "species_skill": true,
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.5028571428571429,
+     "Weapon Damage Modifier"
+    ],
+    "0x1D8": [
+     "<f",
+     0.7,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.9,
+     "Drop Weapon Loaded Max"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.5,
+    "yardstick_dps": 88.0,
+    "port_dps": 75.0,
+    "balanced_port_dps": 87.5
+   }
   }
  }
 }
