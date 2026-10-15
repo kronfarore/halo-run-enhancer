@@ -426,6 +426,20 @@ def retarget_frame(h3_nodes, pose, defaults, weapon, corr, grip_ref=None,
         icam = R.inverse(cam)
         world = {n: _mul(icam, W) for n, W in world.items()}
     off = WEAPONS[weapon].get('view_offset')
+    # `view_offset_anims` {source animation: {'offset': (x, y, z), 'ramp': {'in': n, 'out': n}}}: a
+    # further whole-rig offset in ONE animation (the Boltshot, boot 3: 'the melee sits too high'),
+    # ramped in / out over n frames like hand_offset_anims (Halo 1 snaps between FP animations)
+    va = WEAPONS[weapon].get('view_offset_anims', {}).get(anim)
+    if va:
+        wgt = 1.0
+        if va.get('ramp') and _FRAME:
+            k, n = _FRAME
+            if va['ramp'].get('in'):
+                wgt = min(wgt, (k + 1) / float(va['ramp']['in']))
+            if va['ramp'].get('out'):
+                wgt = min(wgt, (n - 1 - k) / float(va['ramp']['out']))
+        wgt = max(0.0, wgt)
+        off = tuple((off[k] if off else 0.0) + va['offset'][k] * wgt for k in range(3))
     if off:                                                  # the whole rig, view space (wu)
         world = {n: (W[0], tuple(W[1][k] + off[k] for k in range(3))) for n, W in world.items()}
     for n, C in corr.items():
