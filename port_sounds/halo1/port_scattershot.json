@@ -61,10 +61,27 @@
    "perms": [
     "ss_reload_enter_1.wav",
     "ss_reload_enter_2.wav",
-    "ss_reload_enter_3.wav"
+    "ss_reload_enter_3.wav",
+    "ss_reload_enter_4.wav",
+    "ss_reload_enter_5.wav",
+    "ss_reload_enter_6.wav"
    ],
    "aliases": [
     "sound\\weapons\\scattershot_port\\ss_reload_enter"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\scattershot_port\\ss_reload_exit",
+   "perms": [
+    "ss_reload_exit_1.wav",
+    "ss_reload_exit_2.wav",
+    "ss_reload_exit_3.wav",
+    "ss_reload_exit_4.wav",
+    "ss_reload_exit_5.wav",
+    "ss_reload_exit_6.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\scattershot_port\\ss_reload_exit"
    ]
   },
   {
