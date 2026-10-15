@@ -110,7 +110,34 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'in progress',
+    'status': 'done',             # 2026-10-15: 8 dry boots, balanced, Armed (grunt, jackal, elite) on a30
+    # CLOSE-OUT RECORD (2026-10-15):
+    # STEP 4b (port_field_audit --port suppressor, final): weapon list 2 = 0 (error deceleration 1.2,
+    #   illumination recovery 0.04 written); list 4 deliberate (rate ramp 0 / 0 and tracers 0 = Halo 4's
+    #   own; tracers on every round = the shard's streak); list 5 = decisions (message 87, reload time 2.0
+    #   = the full reload's 1.97 s, the FP offset = the measured FP muzzle). Projectile list 2: speed (user,
+    #   4a: 15 -> 15) and the air damage range (INERT both sides: Halo 4's distance flag is off, the AR
+    #   bullet's lower = upper) -- kept. List 3 decided: deviation angle 0 (the template's), bounding radius
+    #   0 (the Spike Rifle's), the material responses = the AR bullet's (Halo 4's shard bounces only at
+    #   20-30 wu/s: never at 15), damage category kept 'bullet' (the Beam Rifle's precedent: Halo 1 has no
+    #   plasma_fast counterpart that changes damage).
+    # TEMPLATE DIFF (h1_port_template_diff, final, 566 lines): weapon 29 (the numbers above, own tags,
+    #   label su), shard 30 (own impact effects: the impact sound + the hit-effect rule; the glow light;
+    #   oriented along velocity; 15 wu/s, range 100, no gravity, own flyby), damage 2 (6.25), melee 0 (the
+    #   AR's: Halo 4 shares strike_melee), fire effect 491 (off-axis flashes / FP smoke / casing / eject
+    #   dropped, the centre flash tinted and 3 units up), empty 1, HUD 11 (reticle 36, icon 47, the 48
+    #   meter), shader 2 (own maps). Every line a decision below.
+    # 5b (h1_role_compare suppressor, the built port): default = Halo 4's own row (94 dps, Elite minor
+    #   2.53 s normal); balanced = the AR-ratio row (125 dps, 1.93 s; the AR 150, 1.60 s).
+    # AUDITS on the a30 test copy: port_refs_audit 0 problems; port_sound_refs all OWN but the KEEPs below.
+    # CAPACITY: Halo 1's 32 MiB model-buffer cap found on this port (memory h1-model-buffer-32mib-cap):
+    #   world = fp tag, decimated to 60 %.
+
+    # BORROWED sounds kept ON PURPOSE (port_sound_refs prints these as KEEP)
+    'sound_keeps': {r'sound\sfx\weapons\assault rifle\flashlight': 'the flashlight rule: the game\'s own',
+                    r'sound\sfx\weapons\weapon_pickup_ammo\ar_ammo':
+                        'user, boot 1: the ammo pickup sound does not need adapting (Halo 4 names only a '
+                        'fallback event, ammo_pickup_generic, no bank)'},
 
     # geometry + look (h1_h3_weapon_model.py; Halo 4 through h4_tags). ONE render model for world AND
     # first person: 13 nodes (b_gun root, not tilted; three shells a side, chamber + cartridge, top_1
