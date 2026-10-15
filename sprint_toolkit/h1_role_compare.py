@@ -1262,6 +1262,62 @@ SETS = {
         ('Mauler port', W + r'mauler\mauler', 'shot'),
         ('Pistol melee', W + r'pistol\pistol', 'melee'),
     ]},
+    # the LIGHTRIFLE (wave C4), step 4a. Halo 4 (H4EK 2026-10-15, h3_weapon_values --kit h4 + the
+    # export): ONE trigger, `latch-zoom` -- barrel 0 unzoomed, barrel 1 zoomed. UNSCOPED: a BURST of 3
+    # (shots per fire 3) at 30/s, recovery 0.3 s (cycle 2/30 + 0.3 = 0.367 s, the BR's assumption),
+    # 5.33 a round (plasma_fast = bullet_slow in Halo 4, C1), error 0.15 flat; SCOPED: ONE shot of
+    # 23.5 (`_combined`) for 3 ROUNDS, 2.5/s (recovery 0.4), error 0.15 -> 0.5; both 3000 wu/s, range
+    # 250; mag 36 (108 / 144), reload 73 / 64 fr; zoom 1 level 3x; aim (mode block) 2.25/20 5/20;
+    # strike_melee. Yardsticks: magnum 15 (bullet_slow) x 0.2 s, 8 (24 / 40), 50 fr, 2x, 3000, 250;
+    # sniper 80 (sniper) x 0.767 s = 1.30/s, 4 (12 / 20), 86 fr, 2799, 500, (4, 9), aim 1/25 2/25;
+    # AR 7.5 (bullet_slow) x 10/s, 32 (160 / 256), 68 fr, 1500, 100, aim 5/16 10/16. Halo 1: pistol
+    # 25 x 3.5/s, 12, 67 fr; sniper 101 x 2/s, 4, 94 fr; AR 10 x 15/s, 60, 87 fr. Scoped rows: 'mag'
+    # = SHOTS (36 / 3). Each row on its yardstick bullet's table.
+    'lightrifle': {'port': 'LightRifle', 'weapons': [
+        ('LR burst = H4 own', W + r'pistol\pistol', 'shot',
+         {'dmg': 5.333, 'burst': (3, 1 / 30.0, 0.367), 'mag': 36, 'reload': 73 / 30.0,
+          'speed': 3000.0, 'range': 250.0, 'aim': (2.25, 20.0, 5.0, 20.0)}),
+        ('LR scoped = H4 own', W + r'pistol\pistol', 'shot',
+         {'dmg': 23.5, 'rate': 2.5, 'mag': 12, 'reload': 73 / 30.0,
+          'speed': 3000.0, 'range': 250.0, 'aim': (2.25, 20.0, 5.0, 20.0)}),
+        # PISTOL ratio: 25 x 5.33/15; bursts 3.5/s x 2.727/5 = 1.91/s; 25 x 23.5/15 at 3.5 x 2.5/5;
+        # 12 x 36/8; 67 x 73/50 fr; 300 x 3000/3000; 40 x 250/250; aim x1 (same mode block)
+        ('LR burst = Pistol ratio', W + r'pistol\pistol', 'shot',
+         {'dmg': 8.89, 'burst': (3, 1 / 30.0, 0.524), 'mag': 54, 'reload': 3.26}),
+        ('LR scoped = Pistol ratio', W + r'pistol\pistol', 'shot',
+         {'dmg': 39.17, 'rate': 1.75, 'mag': 18, 'reload': 3.26}),
+        # SNIPER ratio: 101 x 5.33/80; bursts 2 x 2.727/1.304 = 4.18/s; 101 x 23.5/80 at 2 x
+        # 2.5/1.304; 4 x 36/4; 94 x 73/86 fr; 1000 x 3000/2799; 1000 x 250/500; aim 1 x 2.25/1, 35
+        # x 20/25; 2 x 5/2
+        ('LR burst = Sniper ratio', W + r'sniper rifle\sniper rifle', 'shot',
+         {'dmg': 6.73, 'burst': (3, 1 / 30.0, 0.239), 'mag': 36, 'reload': 2.66, 'speed': 1072.0,
+          'range': 500.0, 'aim': (2.25, 28.0, 5.0, 28.0)}),
+        ('LR scoped = Sniper ratio', W + r'sniper rifle\sniper rifle', 'shot',
+         {'dmg': 29.67, 'rate': 3.83, 'mag': 12, 'reload': 2.66, 'speed': 1072.0,
+          'range': 500.0, 'aim': (2.25, 28.0, 5.0, 28.0)}),
+        ('LR burst = Sniper ratio (pistol)', W + r'pistol\pistol', 'shot',
+         {'dmg': 6.73, 'burst': (3, 1 / 30.0, 0.239), 'mag': 36, 'reload': 2.66, 'speed': 1072.0,
+          'range': 500.0, 'aim': (2.25, 28.0, 5.0, 28.0)}),
+        ('LR scoped = Sniper ratio (pistol)', W + r'pistol\pistol', 'shot',
+         {'dmg': 29.67, 'rate': 3.83, 'mag': 12, 'reload': 2.66, 'speed': 1072.0,
+          'range': 500.0, 'aim': (2.25, 28.0, 5.0, 28.0)}),
+        # AR ratio: 10 x 5.33/7.5; 15 x 8.18/10 = 12.3 rounds/s = 4.09 bursts/s; 10 x 23.5/7.5 at
+        # 15 x 7.5/10 rounds/s / 3; 60 x 36/32; 87 x 73/68 fr; 324 x 3000/1500; 40 x 250/100; aim 6 x
+        # 2.25/5, 25 x 20/16; 12 x 5/10
+        ('LR burst = AR ratio', W + r'assault rifle\assault rifle', 'shot',
+         {'dmg': 7.11, 'burst': (3, 1 / 30.0, 0.245), 'mag': 67, 'reload': 3.11, 'speed': 648.0,
+          'range': 100.0, 'aim': (2.7, 31.25, 6.0, 31.25)}),
+        ('LR scoped = AR ratio', W + r'assault rifle\assault rifle', 'shot',
+         {'dmg': 31.33, 'rate': 3.75, 'mag': 22, 'reload': 3.11, 'speed': 648.0,
+          'range': 100.0, 'aim': (2.7, 31.25, 6.0, 31.25)}),
+        # peers
+        ('Pistol', W + r'pistol\pistol', 'shot'),
+        ('Sniper Rifle', W + r'sniper rifle\sniper rifle', 'shot'),
+        ('Assault Rifle', W + r'assault rifle\assault rifle', 'shot'),
+        ('Battle Rifle (port)', W + r'battle rifle\battle rifle', 'shot',
+         {'burst': (3, 0.1, 0.413)}),
+        ('DMR (port)', W + r'dmr\dmr', 'shot'),
+    ]},
     # the PLASMA LAUNCHER (wave B6), step 4a. Reach (HREK 2026-10-13): charge 3.0 s in four 0.75 s
     # steps (1..4 bolts; a bolt needs a 0.75 s hold), held 2 s more -> discharge; 4.75/s, recovery
     # 0.2; heat 0.4 a bolt (oh 1, loss 0.85, rec 0.1: a volley overheats), battery 12 bolts; 11 -> 7
