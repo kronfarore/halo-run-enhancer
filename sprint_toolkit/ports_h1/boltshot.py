@@ -589,13 +589,14 @@ PORT.update({
         'entry': {
             'weapon': 'Boltshot', 'source': 'Halo 4', 'donor': 'Pistol', 'default_on': False,
             'desc': "Halo 4's Boltshot: its model, first-person animations, sounds and numbers. A "
-                    "Forerunner sidearm: a tap fires a bolt (10 a magazine), holding the trigger "
-                    "0.6 s charges a 15-pellet close-range blast for 5 rounds that overheats the "
-                    "gun for 1.8 s.",
+                    "Forerunner sidearm: a tap fires a bolt, holding the trigger 0.6 s charges a "
+                    "15-pellet close-range blast for 5 of its 10 rounds that overheats the gun for "
+                    "1.8 s. It reloads once fewer than 5 rounds are left: 6 bolts a magazine.",
             'balance_desc': "Measured against the Pistol (the bolt) and the Shotgun (the blast): "
                             "12.5 damage a bolt at 7 a second from a 15-round magazine, Pistol "
                             "aim assist and reload; the blast's pellets hit like the Shotgun's "
-                            "(20.5, reaching 34 wu) and cost 7 rounds -- two blasts a magazine.",
+                            "(20.5, reaching 34 wu) and cost 7 rounds -- two blasts or 9 bolts a "
+                            "magazine.",
             # step 9: the balanced reload = the H1 pistol's 67 fr x Boltshot 51 / magnum 51 = 67 over
             # the built 51 = x1.314; swap (ready + put-away, ONE multiplier): the pistol's ready 35
             # x 17 / 17 = 35 over the built 17 = x2.06
