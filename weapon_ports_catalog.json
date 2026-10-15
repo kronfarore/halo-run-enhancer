@@ -6609,6 +6609,270 @@
      }
     ]
    }
+  },
+  {
+   "weapon": "Scattershot",
+   "source": "Halo 4",
+   "donor": "Shotgun",
+   "default_on": false,
+   "desc": "Halo 4's Scattershot: its model, first-person animations, sounds and numbers. A Forerunner shotgun firing 6 glowing shards that bounce off hard surfaces and fade out a few metres away; six shards stuck in one target burst. 5 shells, loaded one at a time; Shotgun ammo tops it up.",
+   "balance_desc": "Measured against the Shotgun, which both games have: 24.6 damage a shard, a 10-shell magazine, 20 at pickup / 50 most, faster shells, a wider cone and Halo 1-style aim assist. The shards keep Halo 4's speed, bounce and range.",
+   "anims": {
+    "reload": 0.75
+   },
+   "anim_sounds": {
+    "reload": [
+     {
+      "mult": 0.75,
+      "from": "sound\\weapons\\scattershot_port\\ss_reload",
+      "to": "sound\\weapons\\scattershot_port\\ss_reload_balanced"
+     }
+    ]
+   },
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\scattershot\\shard",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 24.57,
+     "card": "Shard Damage",
+     "original": 12.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\scattershot\\shard",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 24.57,
+     "card": "Shard Damage",
+     "original": 12.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\scattershot\\shard",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 24.57,
+     "card": "Shard Damage",
+     "original": 12.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\scattershot\\scattershot",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 10.0,
+     "card": "Magazine",
+     "original": 5.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\scattershot\\scattershot",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 20.0,
+     "card": "Magazine",
+     "original": 15.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\scattershot\\scattershot",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 50.0,
+     "card": "Magazine",
+     "original": 20.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\scattershot\\scattershot",
+     "field": "Reload Time",
+     "block": "Magazines",
+     "value": 0.525,
+     "card": "Magazine",
+     "original": 0.7
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\scattershot\\scattershot",
+     "field": "Rounds",
+     "block": "Magazines/Magazines",
+     "value": 50,
+     "card": "Ammo pickup",
+     "original": 38
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\scattershot\\scattershot",
+     "field": "Error Angle",
+     "block": "Triggers",
+     "value": 13.33,
+     "card": "Error Angle",
+     "original": 4.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\scattershot\\scattershot",
+     "field": "Error Angle Max",
+     "block": "Triggers",
+     "value": 23.33,
+     "card": "Error Angle",
+     "original": 7.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\scattershot\\scattershot",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 6.0,
+     "card": "Autoaim",
+     "original": 6.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\scattershot\\scattershot",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 19.1,
+     "card": "Autoaim",
+     "original": 7.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\scattershot\\scattershot",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 12.0,
+     "card": "Magnetism",
+     "original": 12.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\scattershot\\scattershot",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 17.7,
+     "card": "Magnetism",
+     "original": 6.5
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\scattershot\\shard",
+     "field": "Super Detonation Projectile Count",
+     "block": null,
+     "value": 6,
+     "card": "Supercombine Shard Count",
+     "original": 6
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\scattershot\\scattershot",
+     "field": "Sequence Index",
+     "block": "Meter Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\scattershot\\scattershot",
+     "field": "Alpha Multiplier",
+     "block": "Meter Elements",
+     "value": 25,
+     "card": "Ammo display",
+     "original": 50,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\scattershot\\scattershot",
+     "field": "Sequence Index",
+     "block": "Static Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0,
+     "index": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\scattershot\\scattershot",
+     "field": "Loaded Ammo Cutoff",
+     "block": null,
+     "value": 2,
+     "card": "Ammo display",
+     "original": 1,
+     "index": 0
+    }
+   ],
+   "weap": "weapons\\scattershot\\scattershot",
+   "fp_animations": "weapons\\scattershot\\fp\\fp",
+   "requires": [
+    "proj weapons\\scattershot\\shard"
+   ],
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\scattershot\\scattershot",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "powerups\\shotgun ammo\\shotgun ammo",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+      "label": "Assault Rifle Ammo"
+     },
+     {
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+      "label": "Flamethrower Ammo"
+     },
+     {
+      "tag": "powerups\\needler ammo\\needler ammo",
+      "label": "Needler Ammo"
+     },
+     {
+      "tag": "powerups\\pistol ammo\\pistol ammo",
+      "label": "Pistol Ammo"
+     },
+     {
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+      "label": "Sniper Rifle Ammo"
+     }
+    ]
+   }
   }
  ],
  "Halo 3": [
