@@ -505,6 +505,11 @@ PORT.update({
                               {r'sound\sfx\weapons\pistol\fire': SND + 'bo_fire'},
                               {'match': 'flash', 'drop_off_axis': 0.012, 'scale': 1.5,
                                'shift': (0.02, 0.0, 0.035),
+                               # BOOT 5 (user: 'increase the duration of the muzzle flash slightly'):
+                               # Halo 1's pistol flash lives 0.075 s (2-3 frames) -> own copies x1.6
+                               # (0.12 s) with a 0.04 s fade-out (the blast's shotgun flash already 0.3 s)
+                               'own_particles': {'out': BO + 'effects\\particles\\bolt ',
+                                                 'lifespan': 1.6, 'fade_out': 0.04},
                                'drop_particles': ('casing', 'smoke'),
                                'drop_parts': [r'sound\sfx\weapons\pistol\eject'],
                                'tint': (1.0, 1.0, 0.91, 0.18)}),
