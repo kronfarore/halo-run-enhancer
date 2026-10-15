@@ -427,8 +427,12 @@ PORT.update({
             # x1.28 (ONE multiplier: the full reload's); swap (the ready's): H1 AR ready 29 fr x
             # 20/20 (Halo 4 AR ready 20) over the built 20 = x1.45
             'anims': {'reload': 87 / 59.0, 'swap': 1.45},
-            'anim_sounds': {'reload': {'mult': 87 / 59.0, 'from': SND + 'su_reload',
-                                       'to': SND + 'su_reload_balanced'}},
+            # both reloads play their own sound (Halo 4: reload_full / reload_empty events) -> a LIST
+            # of swaps (the Battle Rifle's), each stretched x87/59 (the one reload multiplier)
+            'anim_sounds': {'reload': [{'mult': 87 / 59.0, 'from': SND + 'su_reload',
+                                        'to': SND + 'su_reload_balanced'},
+                                       {'mult': 87 / 59.0, 'from': SND + 'su_reload_empty',
+                                        'to': SND + 'su_reload_empty_balanced'}]},
             'balance': [
                 row('jpt!', SU + 'shard', 'Damage Lower Bound', 8.33, 6.25, 'Bullet Damage'),
                 row('jpt!', SU + 'shard', 'Damage Upper Bound', 8.33, 6.25, 'Bullet Damage'),
