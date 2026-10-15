@@ -209,6 +209,8 @@ PORT.update({
         'hand_offset_anims': {a: {'l': (0.0, 0.01, 0.01)} for a in
                               ('first_person:idle', 'first_person:posing:var1', 'first_person:fire_1:var1')},
         'align': 'same_space',
+        # BALANCED BOOT (user: 'lower the entire FP by 2 units'; 1 unit = 0.01 wu)
+        'view_offset': (0.0, 0.0, -0.02),
         'anims': {
             'first_person:idle': 'first-person idle',
             'first_person:posing:var1': 'first-person posing',
@@ -343,7 +345,8 @@ PORT.update({
                     'rounds_between_tracers': 0,
                     # the FP muzzle in the idle (h1_fp_muzzle weapons\suppressor\fp\fp): the shard's
                     # streak starts at the first-person muzzle (the Storm Rifle's)
-                    'first_person_offset': (0.3317, -0.0259, -0.0331)},
+                    # (balanced boot: the FP view 2 units lower -> re-measured, up -0.0331 -> -0.0531)
+                    'first_person_offset': (0.3317, -0.0259, -0.0531)},
         'fields': {
             'weap_attrs.magazines.0.magazine_items.0.rounds': 192,
             # STEP 4b list 2: illumination recovery 0.04 x 0.1/0.1 (Halo 4 / its AR x the H1 AR)
