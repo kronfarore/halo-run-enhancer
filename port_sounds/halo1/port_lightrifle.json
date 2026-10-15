@@ -8,9 +8,7 @@
    "perms": [
     "lr_fire_1.wav",
     "lr_fire_2.wav",
-    "lr_fire_3.wav",
-    "lr_fire_4.wav",
-    "lr_fire_5.wav"
+    "lr_fire_3.wav"
    ],
    "aliases": [
     "sound\\weapons\\light_rifle_port\\lr_fire"
@@ -117,31 +115,6 @@
    ],
    "aliases": [
     "sound\\weapons\\light_rifle_port\\lr_flyby"
-   ]
-  },
-  {
-   "tag": "sound\\weapons\\light_rifle_port\\lr_flyby_scoped",
-   "perms": [
-    "lr_flyby_scoped_1.wav",
-    "lr_flyby_scoped_2.wav",
-    "lr_flyby_scoped_3.wav",
-    "lr_flyby_scoped_4.wav",
-    "lr_flyby_scoped_5.wav",
-    "lr_flyby_scoped_6.wav",
-    "lr_flyby_scoped_7.wav",
-    "lr_flyby_scoped_8.wav",
-    "lr_flyby_scoped_9.wav",
-    "lr_flyby_scoped_10.wav",
-    "lr_flyby_scoped_11.wav",
-    "lr_flyby_scoped_12.wav",
-    "lr_flyby_scoped_13.wav",
-    "lr_flyby_scoped_14.wav",
-    "lr_flyby_scoped_15.wav",
-    "lr_flyby_scoped_16.wav",
-    "lr_flyby_scoped_17.wav"
-   ],
-   "aliases": [
-    "sound\\weapons\\light_rifle_port\\lr_flyby_scoped"
    ]
   },
   {
