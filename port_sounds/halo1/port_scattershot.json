@@ -1,0 +1,141 @@
+{
+ "game": "Halo 1",
+ "weapon": "Scattershot",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\scattershot_port\\ss_fire",
+   "perms": [
+    "ss_fire_1.wav",
+    "ss_fire_2.wav",
+    "ss_fire_3.wav",
+    "ss_fire_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\scattershot_port\\ss_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\scattershot_port\\ss_dryfire",
+   "perms": [
+    "ss_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\scattershot_port\\ss_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\scattershot_port\\ss_ready",
+   "perms": [
+    "ss_ready_1.wav",
+    "ss_ready_2.wav",
+    "ss_ready_3.wav",
+    "ss_ready_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\scattershot_port\\ss_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\scattershot_port\\ss_melee",
+   "perms": [
+    "ss_melee_1.wav",
+    "ss_melee_2.wav",
+    "ss_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\scattershot_port\\ss_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\scattershot_port\\ss_pose",
+   "perms": [
+    "ss_pose_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\scattershot_port\\ss_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\scattershot_port\\ss_reload_enter",
+   "perms": [
+    "ss_reload_enter_1.wav",
+    "ss_reload_enter_2.wav",
+    "ss_reload_enter_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\scattershot_port\\ss_reload_enter"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\scattershot_port\\ss_reload",
+   "perms": [
+    "ss_reload_1.wav",
+    "ss_reload_2.wav",
+    "ss_reload_3.wav",
+    "ss_reload_4.wav",
+    "ss_reload_5.wav",
+    "ss_reload_6.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\scattershot_port\\ss_reload"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\scattershot_port\\ss_drop",
+   "perms": [
+    "ss_drop_1.wav",
+    "ss_drop_2.wav",
+    "ss_drop_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\scattershot_port\\ss_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\scattershot_port\\ss_burst",
+   "perms": [
+    "ss_burst_1.wav",
+    "ss_burst_2.wav",
+    "ss_burst_3.wav",
+    "ss_burst_4.wav",
+    "ss_burst_5.wav",
+    "ss_burst_6.wav",
+    "ss_burst_7.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\scattershot_port\\ss_burst"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\scattershot_port\\ss_impact",
+   "perms": [
+    "ss_impact_1.wav",
+    "ss_impact_2.wav",
+    "ss_impact_3.wav",
+    "ss_impact_4.wav",
+    "ss_impact_5.wav",
+    "ss_impact_6.wav",
+    "ss_impact_7.wav",
+    "ss_impact_8.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\scattershot_port\\ss_impact"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\scattershot_port\\ss_reload_balanced",
+   "perms": [
+    "ss_reload_balanced_1.wav",
+    "ss_reload_balanced_2.wav",
+    "ss_reload_balanced_3.wav",
+    "ss_reload_balanced_4.wav",
+    "ss_reload_balanced_5.wav",
+    "ss_reload_balanced_6.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\scattershot_port\\ss_reload_balanced"
+   ]
+  }
+ ]
+}
