@@ -597,17 +597,33 @@ def write_jmas(weapon, only=None):
     # `reverse` {h1 name: source}: the source played BACKWARDS under a Halo 1 name (the Scattershot:
     # Halo 4 has no reload exit with rounds left -- Halo 1's exit-full = reload_enter reversed)
     jobs += [(src, h1name) for h1name, src in w.get('reverse', {}).items()]
+    # `sequence` {h1 name: [part, ...]}: SOURCE ANIMATIONS PLAYED ONE AFTER ANOTHER under one Halo 1 name,
+    # a part = a source name or {'from': source, 'reverse': True, 'frames': n} (the Scattershot, boot 2:
+    # Halo 1's shotgun loads a round in the enter and in each exit -- a shell goes in at the end of the
+    # enter and at the start of the exits, so those are Halo 4's enter + one shell, one shell + chamber)
+    seq_parts = {h1name: [x if isinstance(x, dict) else {'from': x} for x in parts]
+                 for h1name, parts in w.get('sequence', {}).items()}
+    jobs += [(parts[0]['from'], h1name) for h1name, parts in seq_parts.items()]
     for h3name, h1name in jobs:
         if only and h1name not in only and h3name not in only:
             continue
         typ, frames = retarget(weapon, h3name, nodes, anims, defaults)
+        if h1name in seq_parts:
+            frames = []
+            for P in seq_parts[h1name]:
+                _t, pf = retarget(weapon, P['from'], nodes, anims, defaults)
+                if P.get('reverse'):
+                    pf = pf[::-1]
+                if P.get('frames'):
+                    pf = [pf[round(i * (len(pf) - 1) / (P['frames'] - 1))] for i in range(P['frames'])]
+                frames += pf
         if h1name in w.get('holds', {}):           # a still: the source's LAST frame held
             frames = [frames[-1]] * w['holds'][h1name][1]
         if h1name in w.get('reverse', {}):
             frames = frames[::-1]
         # `resample` {h1 name: n}: the animation FASTER (or slower) -- n frames picked evenly from the
-        # source's, first and last kept (the Scattershot, boot 1: Halo 1 starts a shell reload's exit
-        # once the time left is under the exit's length, so enter + exit must fit inside one shell)
+        # source's, first and last kept (written for the Scattershot's boot-1 reload theory, which boot 2
+        # disproved: Halo 1 loads a round per stage, not by the exit's length -- see `sequence`)
         if w.get('resample', {}).get(h1name):
             n = w['resample'][h1name]
             frames = [frames[round(i * (len(frames) - 1) / (n - 1))] for i in range(n)]
