@@ -2952,7 +2952,7 @@
    "fields": {
     "0x74": [
      "<f",
-     5.0,
+     4.0,
      "Maximum Firing Distance"
     ],
     "0x78": [
@@ -3064,6 +3064,16 @@
      "<f",
      0.8999999761581421,
      "Drop Weapon Loaded Max"
+    ],
+    "0x168": [
+     "<f",
+     0.75,
+     "Berserk Firing Range"
+    ],
+    "0x16C": [
+     "<f",
+     2.75,
+     "Berserk Firing Range Max"
     ]
    },
    "donor_weapon": "weapons\\shotgun\\shotgun",
