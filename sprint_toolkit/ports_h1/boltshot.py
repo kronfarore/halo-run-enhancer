@@ -25,9 +25,10 @@ SFP = r'objects\characters\storm_fp\weapons\pistol\fp_stasis_pistol\storm_fp_sta
 SBM = SW + r'\bitmaps\storm_stasis_pistol_default' + B
 BR4 = r'ui\hud\weapons\forerunner\burst_gun\bitmap' + B      # Halo 4's crosshair art (CUI)
 # the base maps (boot 1): RGB = Halo 4's colour map x the material's albedo_tint, A = the control
-# map's R (specular) -- written by this snippet (2026-10-14), kept beside the kit data:
-#   d = h4_tags.bitmap_images(SBM + 'storm_stasis_pistol_diff.bitmap')[0]; c = ... '_control' ...
-#   rgb = d.rgb x 0.706 (alien metal) / 0.78 (metal); a = c.R
+# map's R (specular), in the port's own data folder -- h4_standin_diffuse.py `color` mode (SBM below):
+#   python h4_standin_diffuse.py <SBM>storm_stasis_pistol_control.bitmap <BASE>bo_alien_metal_base.png
+#          --mode color --color <SBM>storm_stasis_pistol_diff.bitmap --tint 0.706
+#   (bo_metal_base.png the same with --tint 0.78)
 BASE = r'F:\SteamLibrary\steamapps\common\HCEEK\data\weapons\boltshot\source' + B
 BO = 'weapons\\boltshot\\'
 SND = 'sound\\weapons\\boltshot_port\\'
@@ -127,7 +128,12 @@ PORT.update({
     # sound own but the ammo PICKUP, a KEEP (user, boot 1: Halo 4's ammo_pickup_generic tag is empty);
     # step 4b (port_field_audit) list 2 = the balance rows + the non-card fields applied (water
     # gravity / damage range, camo, breaking effect), list 3 decided (the overheat; the bounding
-    # radius / deviation angle kept the template's, the Storm Rifle's reading); template diff traced
+    # radius / deviation angle kept the template's, the Storm Rifle's reading); re-run at close-out:
+    # list 2 '0 to port' (weapon, bolt, damage). The BLAST pair too (port_field_audit.audit, the
+    # config holds one pair: H4 charged_blast / charged_shot vs H4 shotgun bullet onto the H1 pellet
+    # vs the H1 shotgun pellet): list 2 = the air damage range max 3.2 (the balanced row); list 4/5
+    # deliberate (H4's acceleration 0.1, detonate on contact: user boot 3); list 3: the conical
+    # spread = trigger 1's error angle, category shotgun = Halo 4's own blast's; template diff traced
     # to the config's decisions; the muzzle-flash rule (check 10) done and boot-tuned; THE HIT-
     # EFFECT RULE on both projectiles (bolt 10/s x0.19, pellets 1/s x1); step 11 profile + species
     # skill; Armed confirmed (user)
