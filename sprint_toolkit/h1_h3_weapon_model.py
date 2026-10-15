@@ -1144,11 +1144,28 @@ def models(w):
                 P = np.array([(x.pos_x, x.pos_y, x.pos_z) for x in vs]).mean(0)
                 Nm = np.array([(x.norm_i, x.norm_j, x.norm_k) for x in vs]).mean(0)
                 Nm = Nm / (np.linalg.norm(Nm) or 1.0)
+                # `skip_piece_normals`: WHOLE pieces whose mean normal faces along these (dot >=
+                # `skip_piece_dot`; `skip_normals` is glow_pieces' per-triangle filter) get no card (the
+                # Suppressor, boot 6: its small forward-facing end pieces' cards floated off the
+                # gun front as squares, seen edge-on as lines in first person)
+                if any(np.dot(Nm, sn) >= C.get('skip_piece_dot', 0.9) for sn in C.get('skip_piece_normals', ())):
+                    continue
+                # `along`: the scale ALONG the piece's long axis (default = `scale`): a long strip
+                # grows across but not in length (the Suppressor, boot 6: x2.2 made a strip's card
+                # run through the next part of the gun)
+                Pts = np.array([(x.pos_x, x.pos_y, x.pos_z) for x in vs])
+                ev, evec = np.linalg.eigh(np.cov((Pts - P).T) + np.eye(3) * 1e-12)
+                Ax = evec[:, 2]
                 for t in ts:
                     idx = []
                     for v in (t.v0, t.v1, t.v2):
                         x = _copy.copy(jm.verts[v])
-                        q = P + (np.array([x.pos_x, x.pos_y, x.pos_z]) - P) * C.get('scale', 1.8) + Nm * C.get('lift', 0.05)
+                        if 'along' in C:
+                            dv = np.array([x.pos_x, x.pos_y, x.pos_z]) - P
+                            da = Ax * (dv @ Ax)
+                            q = P + (dv - da) * C.get('scale', 1.8) + da * C['along'] + Nm * C.get('lift', 0.05)
+                        else:
+                            q = P + (np.array([x.pos_x, x.pos_y, x.pos_z]) - P) * C.get('scale', 1.8) + Nm * C.get('lift', 0.05)
                         x.pos_x, x.pos_y, x.pos_z = float(q[0]), float(q[1]), float(q[2])
                         jm.verts.append(x)
                         idx.append(len(jm.verts) - 1)
