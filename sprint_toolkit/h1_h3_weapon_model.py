@@ -1161,9 +1161,20 @@ def models(w):
                     for v in (t.v0, t.v1, t.v2):
                         x = _copy.copy(jm.verts[v])
                         if 'along' in C:
+                            # the piece's own frame (PCA): long axis, second axis, THICKNESS (its
+                            # plane normal) -- the Suppressor, boot 7: a RING has no long axis and
+                            # scaling 'across' took in its thickness, so the card left the ring's
+                            # plane, tilted off the gun. In-plane only, thickness kept, lifted along
+                            # the plane normal (oriented like the vertex normals); a ROUND piece
+                            # (axes within `round_ratio`) scales `round_scale` both ways in plane
                             dv = np.array([x.pos_x, x.pos_y, x.pos_z]) - P
-                            da = Ax * (dv @ Ax)
-                            q = P + (dv - da) * C.get('scale', 1.8) + da * C['along'] + Nm * C.get('lift', 0.05)
+                            A1, A2, A3 = evec[:, 2], evec[:, 1], evec[:, 0]
+                            Nn = A3 if A3 @ Nm >= 0 else -A3
+                            round_ = ev[2] <= ev[1] * C.get('round_ratio', 2.0)
+                            s1 = C.get('round_scale', C.get('scale', 1.8)) if round_ else C['along']
+                            s2 = C.get('round_scale', C.get('scale', 1.8)) if round_ else C.get('scale', 1.8)
+                            q = (P + A1 * (dv @ A1) * s1 + A2 * (dv @ A2) * s2 + A3 * (dv @ A3)
+                                 + Nn * C.get('lift', 0.05))
                         else:
                             q = P + (np.array([x.pos_x, x.pos_y, x.pos_z]) - P) * C.get('scale', 1.8) + Nm * C.get('lift', 0.05)
                         x.pos_x, x.pos_y, x.pos_z = float(q[0]), float(q[1]), float(q[2])
