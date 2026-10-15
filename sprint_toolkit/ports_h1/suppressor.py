@@ -172,7 +172,15 @@ PORT.update({
         # strips only (islands 2 / 5 / 8: the long strip, the short one, the front ring; within 3.5
         # of (16, 1, 2) JMS units) -- the rear-left strips (12 / 13 / 17) show B alone.
         # BOOT 5 (user: front good, the rear too light): the halo on EVERY strip
-        'glow_cards': {'su_halo': {'of': 'su_glow', 'shader': 'su_halo', 'scale': 2.2, 'lift': 0.05}},
+        # BOOT 6 (user: 'the back strip is too long, through another part'; 'the front glow is a square
+        # floating off the gun, a line in FP'): x2.2 ACROSS a strip only (`along` 1.05), and no card
+        # on the pieces facing along the barrel (+-x: the front / end caps)
+        'glow_cards': {'su_halo': {'of': 'su_glow', 'shader': 'su_halo', 'scale': 2.2, 'along': 1.05,
+                                   # + the tilted top plate (island 4, normal 0.66 / 0 / 0.76): its card
+                                   # stood above the gun outline (the floating square)
+                                   'lift': 0.05, 'skip_piece_normals': [(1.0, 0.0, 0.0), (-1.0, 0.0, 0.0),
+                                                                  (0.655, 0.0, 0.756)],
+                                   'skip_piece_dot': 0.9}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's own storm_fp_forerunner_smg (Foundry,
