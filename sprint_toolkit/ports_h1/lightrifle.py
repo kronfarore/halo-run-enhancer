@@ -173,17 +173,22 @@ PORT.update({
                          # same pieces again, hotter and wider, FADED by A out = the pistol template's
                          # firing ILLUMINATION (on per shot, back to 0 over the 0.08 s illumination
                          # recovery) -- the Boltshot's charge glow, keyed to the shot
-                         'lr_fire_glow': {'rgb': (1.0, 0.75, 0.3), 'additive': True, 'islands': True,
+                         # BOOT 3 (user: 'the light could be more orange, like the original'): the
+                         # firing colour from the user's crop of Halo 4's lit hexagon (core 255 / 190 /
+                         # 60, rim 255 / 130 / 20) -> deeper orange
+                         'lr_fire_glow': {'rgb': (1.0, 0.55, 0.1), 'additive': True, 'islands': True,
                                           'islands_of': 'storm_forerunner_rifle_glow_blinn',
                                           'strip': True, 'gain': 2.0, 'falloff': 0.8, 'radius': 1.3,
                                           'hot': False, 'fade_source': 'A_out'},
-                         'lr_fire_display': {'rgb': (1.0, 0.75, 0.3), 'additive': True, 'radial': True,
+                         'lr_fire_display': {'rgb': (1.0, 0.6, 0.12), 'additive': True, 'radial': True,
                                              'falloff': 1.2, 'fade_source': 'A_out'}},
         # ONE card 0.1 cm in front of the hexagon (normal -0.99 / 0 / -0.14), 1.3 cm: the lens + its
-        # bloom; + the firing flare there, 2.4 cm, 0.05 cm further out
+        # bloom; + the firing flare there, 0.05 cm further out. BOOT 3 (user's crop: 'when firing the light
+        # moves under the plate above it'): the 2.4 cm flare and the x2.6 fire card on the hexagon piece
+        # reached up under the scope's top plate -> the flare 1.5 cm, no fire card on the +-x pieces
         'glow_points': [{'marker': 'scope hardlight', 'shader': 'lr_display_glow', 'size': 1.3,
                          'at': (3.99, 0.0, 8.37), 'normal': (-0.99, 0.0, -0.14)},
-                        {'marker': 'scope hardlight', 'shader': 'lr_fire_display', 'size': 2.4,
+                        {'marker': 'scope hardlight', 'shader': 'lr_fire_display', 'size': 1.5,
                          'at': (3.94, 0.0, 8.36), 'normal': (-0.99, 0.0, -0.14)}],
         # halo cards x2 ACROSS each side strip / slit (the Suppressor's `along` 1.05); none on the
         # pieces facing along the barrel (the hexagon, rings, iris discs: +-x). The firing cards: EVERY
@@ -192,7 +197,9 @@ PORT.update({
                                    'lift': 0.05, 'skip_piece_normals': [(1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)],
                                    'skip_piece_dot': 0.9, 'round_scale': 1.4},
                        'lr_fire': {'of': 'lr_glow', 'shader': 'lr_fire_glow', 'scale': 2.6, 'along': 1.1,
-                                   'lift': 0.08, 'round_scale': 1.8}},
+                                   'lift': 0.08, 'round_scale': 1.8,
+                                   'skip_piece_normals': [(1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)],
+                                   'skip_piece_dot': 0.9}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's own storm_fp_forerunner_rifle (Foundry,
@@ -273,7 +280,9 @@ PORT.update({
             # the Suppressor's Forerunner impact (plasma impact + the forerunner sweetener)
             'lr_impact': (['play_wea_plasma_impact_dirt@plasma_impact_generic',
                            'play_wea_forerunner_impact_generic@forerunner_impact_sweetener'],
-                          'sound\\sfx\\weapons\\plasma rifle\\plasmahit', -11.3),
+                          # BOOT 3 (user: 'the impact sound is too loud'): -11.3 (the Suppressor's)
+                          # -> -18 (a 3-round burst lands three at once)
+                          'sound\\sfx\\weapons\\plasma rifle\\plasmahit', -18.0),
             # the BALANCED reload's sound (the patcher retimes the reloads and swaps it in)
             'lr_reload_balanced': (['play_npc_storm_fp_forerunner_rifle_foley_first_person_reload_empty'],
                                    'sound\\sfx\\weapons\\weapon_anims\\pistol_reload', -19.0),
@@ -403,10 +412,20 @@ PORT.update({
         'hud': {'donor': PISTOL + 'pistol', 'out': LR + 'light rifle',
                 'scope': {'out': LR + 'bitmaps\\scope_mask', 'size': 256, 'alpha': 0},
                 'zoom_glyphs': [{'image': SCOPE + q + '.png', 'reg': reg, 'name': 'light rifle scope ' + q,
-                                 'index': i, 'scale': (1.0, 1.0), 'overlay': 4.0, 'offset': (0, 0),
+                                 'index': i, 'scale': (1.0, 1.0), 'overlay': 3.604, 'offset': off,
                                  'rgb': (255, 120, 30), 'alpha': 1.0}
-                                for q, reg, i in (('tl', (480, 270), 68), ('tr', (0, 270), 69),
-                                                  ('bl', (480, 0), 70), ('br', (0, 0), 71))],
+                                # BOOT 3 (user's zoomed screenshot): all four quadrants drew ON TOP of each
+                                # other, centred -- MCC draws a zoom overlay centred on its SPRITE (the
+                                # registration point is ignored). Now each quadrant's crop is the whole
+                                # 480 x 270 (corner pixels: h4_polyart_scope), a 512 x 512 sprite with the
+                                # quadrant at sheet px 2..482; a quadrant px = 960/480 screen px = 1.802
+                                # HUD units (1.11 px a unit: the Needle Rifle's calibration) -> overlay
+                                # 1.802 / 0.5 = 3.604; offset = the quadrant's screen corner / 1.11 -
+                                # (2 - 256) x 1.802 units (y down)
+                                for q, reg, i, off in (('tl', (480, 270), 68, (-407, -29)),
+                                                       ('tr', (0, 270), 69, (458, -29)),
+                                                       ('bl', (480, 0), 70, (-407, 458)),
+                                                       ('br', (0, 0), 71, (458, 458)))],
                 'reticle': (H4 + LRUI + 'outer_l', 0, 'light rifle'),
                 'reticle_xform': {'offset': (-14.0, -10.0), 'gain': 0.85},
                 'reticle_layers': [(H4 + LRUI + 'outer_l', 0, 1.0, {'flip_x': True, 'offset': (14.5, -10.0), 'gain': 0.85}),

@@ -87,6 +87,11 @@ def main():
         q = img[y0:y0 + cy, x0:x0 + cx]
         q = np.array(Image.fromarray(q.astype(np.float32)).resize((cx // a.down, cy // a.down), Image.BOX))
         A = (np.clip(q, 0, 1) * 255).astype(np.uint8)
+        # a 1/255 alpha pixel in each corner: the glyph's crop (h1_pickable_weapons: the content's
+        # bounding box) is then the WHOLE quadrant -- MCC draws a zoom overlay centred on its sprite
+        # (the registration point is ignored: the LightRifle's boot 3), so the offsets need a known crop
+        for yy, xx in ((0, 0), (0, -1), (-1, 0), (-1, -1)):
+            A[yy, xx] = max(A[yy, xx], 1)
         white = np.full_like(A, 255)
         Image.fromarray(np.dstack([white, white, white, A]), 'RGBA').save(os.path.join(a.out, name + '.png'))
         print('%s: %d x %d, registration at the screen centre (%s)' % (
