@@ -1,0 +1,150 @@
+{
+ "game": "Halo 1",
+ "weapon": "Suppressor",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\suppressor_port\\su_fire",
+   "perms": [
+    "su_fire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\suppressor_port\\su_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\suppressor_port\\su_dryfire",
+   "perms": [
+    "su_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\suppressor_port\\su_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\suppressor_port\\su_ready",
+   "perms": [
+    "su_ready_1.wav",
+    "su_ready_2.wav",
+    "su_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\suppressor_port\\su_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\suppressor_port\\su_melee",
+   "perms": [
+    "su_melee_1.wav",
+    "su_melee_2.wav",
+    "su_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\suppressor_port\\su_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\suppressor_port\\su_reload",
+   "perms": [
+    "su_reload_1.wav",
+    "su_reload_2.wav",
+    "su_reload_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\suppressor_port\\su_reload"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\suppressor_port\\su_reload_empty",
+   "perms": [
+    "su_reload_empty_1.wav",
+    "su_reload_empty_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\suppressor_port\\su_reload_empty"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\suppressor_port\\su_reload_balanced",
+   "perms": [
+    "su_reload_balanced_1.wav",
+    "su_reload_balanced_2.wav",
+    "su_reload_balanced_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\suppressor_port\\su_reload_balanced"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\suppressor_port\\su_reload_empty_balanced",
+   "perms": [
+    "su_reload_empty_balanced_1.wav",
+    "su_reload_empty_balanced_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\suppressor_port\\su_reload_empty_balanced"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\suppressor_port\\su_pose",
+   "perms": [
+    "su_pose_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\suppressor_port\\su_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\suppressor_port\\su_drop",
+   "perms": [
+    "su_drop_1.wav",
+    "su_drop_2.wav",
+    "su_drop_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\suppressor_port\\su_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\suppressor_port\\su_flyby",
+   "perms": [
+    "su_flyby_1.wav",
+    "su_flyby_2.wav",
+    "su_flyby_3.wav",
+    "su_flyby_4.wav",
+    "su_flyby_5.wav",
+    "su_flyby_6.wav",
+    "su_flyby_7.wav",
+    "su_flyby_8.wav",
+    "su_flyby_9.wav",
+    "su_flyby_10.wav",
+    "su_flyby_11.wav",
+    "su_flyby_12.wav",
+    "su_flyby_13.wav",
+    "su_flyby_14.wav",
+    "su_flyby_15.wav",
+    "su_flyby_16.wav",
+    "su_flyby_17.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\suppressor_port\\su_flyby"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\suppressor_port\\su_impact",
+   "perms": [
+    "su_impact_1.wav",
+    "su_impact_2.wav",
+    "su_impact_3.wav",
+    "su_impact_4.wav",
+    "su_impact_5.wav",
+    "su_impact_6.wav",
+    "su_impact_7.wav",
+    "su_impact_8.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\suppressor_port\\su_impact"
+   ]
+  }
+ ]
+}
