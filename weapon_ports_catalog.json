@@ -6216,6 +6216,21 @@
       "label": "Sniper Rifle Ammo"
      }
     ]
+   },
+   "hands": "one",
+   "trigger_index": "all",
+   "tag_map": {
+    "proj weapons\\pistol\\bullet": "proj weapons\\boltshot\\bolt & weapons\\boltshot\\pellet",
+    "jpt! weapons\\pistol\\bullet": "jpt! weapons\\boltshot\\bolt & weapons\\boltshot\\pellet",
+    "jpt! weapons\\pistol\\melee": "jpt! weapons\\boltshot\\melee"
+   },
+   "card_donors": {
+    "Plasma Pistol": [
+     "Heat Threshold",
+     "Heat Loss",
+     "Heat Per Round",
+     "Charging Time"
+    ]
    }
   }
  ],
