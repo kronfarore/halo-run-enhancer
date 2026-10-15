@@ -121,7 +121,18 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'in_progress',
+    'status': 'done',             # 2026-10-15: 6 dry boots, balanced, Armed (grunt, jackal, elite) on b30
+    # CLOSE-OUT RECORD (2026-10-15): port_refs_audit on the built b30 test map 0 problems (own bolt /
+    # pellet / melee; the pistol's melee response + trigger feedback GLOBAL); port_sound_refs: every
+    # sound own but the ammo PICKUP, a KEEP (user, boot 1: Halo 4's ammo_pickup_generic tag is empty);
+    # step 4b (port_field_audit) list 2 = the balance rows + the non-card fields applied (water
+    # gravity / damage range, camo, breaking effect), list 3 decided (the overheat; the bounding
+    # radius / deviation angle kept the template's, the Storm Rifle's reading); template diff traced
+    # to the config's decisions; the muzzle-flash rule (check 10) done and boot-tuned; THE HIT-
+    # EFFECT RULE on both projectiles (bolt 10/s x0.19, pellets 1/s x1); step 11 profile + species
+    # skill; Armed confirmed (user)
+    'sound_keeps': {r'sound\sfx\weapons\weapon_pickup_ammo\pistol_ammo':
+                    "Halo 4 has no ammo pickup sound (ammo_pickup_generic is empty): user, boot 1"},
 
     # geometry + look (h1_h3_weapon_model.py; Halo 4 through h4_tags). Halo 4's ONE render model for
     # world AND first person: 17 nodes (b_gun root), 3 permutations = SKINS (default / piston /
