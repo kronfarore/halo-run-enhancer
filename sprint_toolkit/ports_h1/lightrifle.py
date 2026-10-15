@@ -32,6 +32,8 @@ LRUI = r'ui\hud\weapons\forerunner\forerunner_rifle\bitmap' + B    # Halo 4's cr
 #          --mode color --color <SBM>storm_forerunner_rifle_diff.bitmap --tint 1.0
 BASE = r'F:\SteamLibrary\steamapps\common\HCEEK\data\weapons\light rifle\source' + B
 LR = 'weapons\\light rifle\\'
+# the scope's quadrant PNGs (h4_polyart_scope.py, in the port's own data folder)
+SCOPE = r'F:\SteamLibrary\steamapps\common\HCEEK\data\weapons\light rifle\scope' + B
 SND = 'sound\\weapons\\light_rifle_port\\'
 PISTOL = 'weapons\\pistol\\'
 LEVELS = ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40']
@@ -166,15 +168,31 @@ PORT.update({
                                      'hot': False},
                          # the Boltshot's display glow: a static radial card in the hexagon's plane
                          'lr_display_glow': {'rgb': (1.0, 0.62, 0.15), 'additive': True, 'radial': True,
-                                             'falloff': 1.6}},
-        # ONE card 0.1 cm in front of the hexagon (normal -0.99 / 0 / -0.14), 1.3 cm: the lens + its bloom
+                                             'falloff': 1.6},
+                         # BOOT 2 (user: 'like every Forerunner weapon it lights up when firing'): the
+                         # same pieces again, hotter and wider, FADED by A out = the pistol template's
+                         # firing ILLUMINATION (on per shot, back to 0 over the 0.08 s illumination
+                         # recovery) -- the Boltshot's charge glow, keyed to the shot
+                         'lr_fire_glow': {'rgb': (1.0, 0.75, 0.3), 'additive': True, 'islands': True,
+                                          'islands_of': 'storm_forerunner_rifle_glow_blinn',
+                                          'strip': True, 'gain': 2.0, 'falloff': 0.8, 'radius': 1.3,
+                                          'hot': False, 'fade_source': 'A_out'},
+                         'lr_fire_display': {'rgb': (1.0, 0.75, 0.3), 'additive': True, 'radial': True,
+                                             'falloff': 1.2, 'fade_source': 'A_out'}},
+        # ONE card 0.1 cm in front of the hexagon (normal -0.99 / 0 / -0.14), 1.3 cm: the lens + its
+        # bloom; + the firing flare there, 2.4 cm, 0.05 cm further out
         'glow_points': [{'marker': 'scope hardlight', 'shader': 'lr_display_glow', 'size': 1.3,
-                         'at': (3.99, 0.0, 8.37), 'normal': (-0.99, 0.0, -0.14)}],
+                         'at': (3.99, 0.0, 8.37), 'normal': (-0.99, 0.0, -0.14)},
+                        {'marker': 'scope hardlight', 'shader': 'lr_fire_display', 'size': 2.4,
+                         'at': (3.94, 0.0, 8.36), 'normal': (-0.99, 0.0, -0.14)}],
         # halo cards x2 ACROSS each side strip / slit (the Suppressor's `along` 1.05); none on the
-        # pieces facing along the barrel (the hexagon, rings, iris discs: +-x)
+        # pieces facing along the barrel (the hexagon, rings, iris discs: +-x). The firing cards: EVERY
+        # piece (the muzzle iris and rings light up too), x2.6
         'glow_cards': {'lr_halo': {'of': 'lr_glow', 'shader': 'lr_halo', 'scale': 2.0, 'along': 1.05,
                                    'lift': 0.05, 'skip_piece_normals': [(1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)],
-                                   'skip_piece_dot': 0.9, 'round_scale': 1.4}},
+                                   'skip_piece_dot': 0.9, 'round_scale': 1.4},
+                       'lr_fire': {'of': 'lr_glow', 'shader': 'lr_fire_glow', 'scale': 2.6, 'along': 1.1,
+                                   'lift': 0.08, 'round_scale': 1.8}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's own storm_fp_forerunner_rifle (Foundry,
@@ -307,11 +325,13 @@ PORT.update({
         # rule (rounds = spew ticks / spacing ticks + 2) gives 3 rounds at a 1-tick spew. Halo 4's 0.3
         # s recovery is not reproduced (the BR: tapping sets the cycle)
         # BOOT 1 (the secondary, option A): 30/s with a 1-tick spew fired ONE round a pull, not 3.
-        # BOOT 2 tests two spews in one boot: primary 2 ticks, secondary (test-only) 3 ticks, 30/s
+        # BOOT 2 tested two spews in one boot at 30/s: 2 ticks fired 1 round, 3 ticks 2 rounds; the
+        # user tuned it in game: spew 0.15 s = EXACTLY 3 rounds (the Battle Rifle's 0.15 at 10/s gave
+        # 3 too -- OBSERVATION: the burst's round count follows the spew time more than the rate)
         'trigger': {'rounds_per_second': (30.0, 30.0), 'acceleration_time': 0.0,
                     'deceleration_time': 0.0,
                     'charging_time': 1 / 30.0, 'overcharged_action': 'discharge',
-                    'spew_time': 2 / 30.0, 'does_not_repeat_automatically': True,
+                    'spew_time': 0.15, 'does_not_repeat_automatically': True,
                     # Halo 4 bloom: deceleration 0.7 (acceleration none)
                     'error_acceleration_time': 0.0, 'error_deceleration_time': 0.7},
         # Halo 4: minimum error 0, error angle 0.15 flat (burst)
@@ -365,9 +385,28 @@ PORT.update({
         # four `outer_l` corners 16 x 8 at opacity 0.85 -- top_left (-22, -14), top_right (6.5, -14)
         # flip x, bottom_left (-22, 7) flip x, bottom_right (6.5, 7) -- and `inner` top (-8, -8) /
         # bottom (-8, 0) flip y at 0.6; offsets = widget centres, the Suppressor's calibration). The
-        # side / chip ticks are opacity 0 (animated in Halo 4, not drawn at rest). PROVISIONAL until the
-        # user's Halo 4 screenshot. Zoom: the pistol's mask until the scope from the screenshot
+        # side / chip ticks are opacity 0 (animated in Halo 4, not drawn at rest). Boot 1: 'crosshair is
+        # good'.
+        # THE SCOPE (boot 2, user: 'orange overlays'): Halo 4's zoomed scope is POLYART (3D vector
+        # frames, forerunner_rifle_scope), drawn orange with translucent panels and no darkening /
+        # blur. h4_polyart_scope.py rasterized the pieces (wires 1.0, holo fills 0.6) and fitted them to
+        # the user's zoomed 1080p screenshot (scale x 1.05 / y 0.975, 112 px up: the CUI's parallax /
+        # zoom-in animation), cut into four 480 x 270 quadrants (a sheet px = 2 screen px):
+        #   python h4_polyart_scope.py "<SCOPE>" ui\hud\weapons\forerunner\forerunner_rifle\polyart
+        #     --wires main_wire,main_wire_inner,outer_holo_wires,inner_holo_wires,ring_wire,main_hatch_wire,
+        #             ghost_wire_close,ghost_wire_mid,lower_accent_wire,upper_accent_wire,range_box
+        #     --fills outer_holo,inner_holo,main_hatch_extrusion,hatch_a,hatch_b,hatch_c,range_box_ghost
+        #     --fill-alpha 0.6 --xform 1.05,0.975,0,-112
+        # Each quadrant = a coloured zoom glyph (the Needle Rifle's recipe) at the reserved hud_reticles
+        # 68-71, registered at its inner corner (the screen centre), overlay x4 (0.5 screen px a sheet
+        # px at x1). The mask: CLEAR (no chud), the pistol's zoom readouts dropped
         'hud': {'donor': PISTOL + 'pistol', 'out': LR + 'light rifle',
+                'scope': {'out': LR + 'bitmaps\\scope_mask', 'size': 256, 'alpha': 0},
+                'zoom_glyphs': [{'image': SCOPE + q + '.png', 'reg': reg, 'name': 'light rifle scope ' + q,
+                                 'index': i, 'scale': (1.0, 1.0), 'overlay': 4.0, 'offset': (0, 0),
+                                 'rgb': (255, 120, 30), 'alpha': 1.0}
+                                for q, reg, i in (('tl', (480, 270), 68), ('tr', (0, 270), 69),
+                                                  ('bl', (480, 0), 70), ('br', (0, 0), 71))],
                 'reticle': (H4 + LRUI + 'outer_l', 0, 'light rifle'),
                 'reticle_xform': {'offset': (-14.0, -10.0), 'gain': 0.85},
                 'reticle_layers': [(H4 + LRUI + 'outer_l', 0, 1.0, {'flip_x': True, 'offset': (14.5, -10.0), 'gain': 0.85}),
@@ -380,7 +419,14 @@ PORT.update({
                 'reticle_supersample': 2,
                 'reticle_scale': 1.6, 'reticle_overlay': 1.5 / (123 / 97.0 * 1.6 * 2 * 0.75),
                 'flash_base': 12,                # the pistol's low-ammo cutoff is of 12
-                'ammo_meter': {'sizes': (36, 54), 'base': LR + 'bitmaps\\light_rifle_ammo'}},
+                # BOOT 2 (user: '36 small ticks -- the Halo 4 art is 36, the rows just look different'):
+                # Halo 4's three segment strips (top pointed, middle / bottom square; 12 columns), a
+                # column = one 3-round shot (ammo_meter `rows`), at their native density
+                'ammo_meter': {'sizes': (36, 54), 'base': LR + 'bitmaps\\light_rifle_ammo',
+                               'art': {'rows': [(H4 + LRUI + 'ammo_lightrifle_top', 0),
+                                                (H4 + LRUI + 'ammo_lightrifle_middle', 0),
+                                                (H4 + LRUI + 'ammo_lightrifle_bottom', 0)],
+                                       'native': True}}},
         'palette_levels': LEVELS,
     },
 
