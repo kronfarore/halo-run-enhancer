@@ -5825,6 +5825,12 @@
       "label": "Sniper Rifle Ammo"
      }
     ]
+   },
+   "hands": "two",
+   "tag_map": {
+    "proj weapons\\assault rifle\\bullet": "proj weapons\\suppressor\\shard",
+    "jpt! weapons\\assault rifle\\bullet": "jpt! weapons\\suppressor\\shard",
+    "jpt! weapons\\assault rifle\\melee": "jpt! weapons\\suppressor\\melee"
    }
   },
   {
