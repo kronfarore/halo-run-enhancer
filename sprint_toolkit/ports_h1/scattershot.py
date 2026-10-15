@@ -13,12 +13,15 @@ other unit; 6 stuck in one target within 0.1 s super-detonate (250 attached + 40
 continue_empty 21 a shell, chamber_1 39 after an empty one; no reload exit with rounds left), aim (mode
 block) 6/7 12/6.5, strike_melee (shared).
 
-THE APPROXIMATIONS (step 4a, user): Halo 1 slows a projectile LINEARLY over its whole maximum range with the
-final velocity a floor (B4's probe) -- so the range is the death distance's top (6.7 wu: 75 -> 10 over it)
-and the timer is RE-FITTED to Halo 4's death window: d(t) = 75/9.7 (1 - e^-9.7t) gives 3.2 wu at 0.055 s,
-6.7 at 0.208 s -> timer 0.055 - 0.21 s (Halo 4: 3.2 - 6.7 wu over 0.15 - 0.5 s, mostly at 10 wu/s). Not
-reproduced: the 10 wu/s drift of a late shard (Halo 1's shard is faster there), the super detonation's 0.1 s
-window (Halo 1 counts stuck shards), Halo 4's finer materials."""
+THE APPROXIMATIONS. Step 4a (user): Halo 1 slows a projectile LINEARLY over its whole maximum range with the
+final velocity a floor (B4's probe), so at first the range was the death distance's top (6.7) and the timer
+was re-fitted to Halo 4's random death window (0.055 - 0.21 s -> 3.2 - 6.7 wu). ARMED TEST 9 (user): the AI
+judges reach by the maximum range, so the random early deaths made it fire into the fizzle zone -> the reach
+is FIXED at Halo 4's full 6.7 wu (fuse 0.5 s = Halo 4's stuck time; the range ends a free shard at ~0.21 s).
+Not reproduced: the random 3.2 - 6.7 death (every shard flies 6.7: more reach than Halo 4's average), the
+10 wu/s drift of a late shard, the super detonation's 0.1 s window (Halo 1 counts stuck shards), Halo 4's
+finer materials, Halo 4's own AI distances (desired 3 - 5, firing 12: Halo 1's AI needed the Flood
+shotgun's 1 - 3 and the charge flag)"""
 from ._common import B, reserved, row
 
 H4 = 'h4:'                                          # an H4EK path (h4_tags)
@@ -176,7 +179,34 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'in progress',
+    # 2026-10-15: dry boots 1-4 (look, glow, reload x4 -- measured on boot 4), balanced 1, Armed 10 on b30;
+    # confirmed by the user ('we'll accept this state'); the ten-map rebuild is BATCHED (user's go)
+    'status': 'done',
+    # CLOSE-OUT RECORD (2026-10-15). 4b (port_field_audit): list 2 = the balance rows + the user's Halo 4
+    #   speed / reach decisions (velocity ratio 140 x 75/480 and range 40 x 26/6.5 degenerate), the pellet
+    #   count ratio ('projectiles per shot -> 90': Halo 4's shotgun keeps its 15 in the projectile's conical
+    #   spread) -- 0 to port; written by list 2: water gravity 0 / damage range 0..10, camo 0.09, breaking
+    #   effect forward radius 0.192 / exponent 1.333 / outward velocity 0.3 / radius 0.286 (+ outward
+    #   exponent 0.2, list 3). List 3 by NAME: the shard's TWO response tables -- Halo 4 reads the newer
+    #   `material response` (bounce off the world + Hunter armour, attach in units), the old table only
+    #   in 4a's first reading; flags 0x20020805 (oriented along velocity, max time if attached kept;
+    #   AI minor tracking threat / disable instantaneous first tick / no cross-burst supercombine: no Halo
+    #   1 field); weapon type shotgun + 'every round must be chambered' kept (Halo 4's both sides agree).
+    # Template diff (h1_port_template_diff): weapon 23 (the numbers, own tags, label ss, empty = own dry
+    #   fire, misfire cleared), shard 155 (own responses, effects, timer, range, flags incl. super), damage
+    #   9 (12, no falloff, breaking effect), firing effect 159 (smoke + casing dropped, tinted, shifted),
+    #   HUD 11, shaders 2 -- every line a decision above. Muzzle-flash rule: the shotgun's flash + sparks
+    #   (~ Halo 4's on-axis flashes / bits), no smoke / casing (Halo 4 none). Hit-effect rule: 2 shots/s, x1.
+    # Closing checks: port_refs_audit 0 problems (shotgun melee response + trigger feedback global);
+    #   port_sound_refs all own but the ammo pickup (KEEP); port_sounds --check 0; validate_halo_json 0;
+    #   check 6 h1_tag_writes_proof 59 tags / 1,103,898 fields 0 changed; 5b h1_role_compare scattershot:
+    #   144 dps default, 295 balanced (the Shotgun 322) -- = the 4a rows.
+    # Step 11: m020 ai\generic #18 over the Flood combat Elite shotgun (user), WDM 0.335 / 0.164, drop
+    #   0.5 - 0.9; Armed needed (tests 1-10): the CHARGE (always_charge_in_attacking_mode -- the enhancer's
+    #   catalog actor_flags, test map --actor-flags), firing cap 6.5, desired 1 - 3, berserk 0.75 - 2.75,
+    #   first burst 0 - 0.2, bursts 1.125 - 2.0 apart, and the fixed 6.7 reach. Shard minimum velocity 0
+    #   (test 5; the probe's 'every AI shard dies on its first tick' reading proved unreliable).
+    # Model: 70 % decimation + the flash cards = 0.60 MiB (the pair-4 budget, exactly).
     # BORROWED sounds kept ON PURPOSE (port_sound_refs prints these as KEEP)
     'sound_keeps': {r'sound\sfx\weapons\assault rifle\flashlight': "the flashlight rule: the game's own",
                     r'sound\sfx\weapons\weapon_pickup_ammo\shotgun_ammo':
