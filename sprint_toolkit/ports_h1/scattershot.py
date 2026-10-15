@@ -167,7 +167,8 @@ PORT = reserved(
                     # combat range 3 - 5 wu sat outside the 3 wu cap -> they parked and looked around.
                     # Desired 1 - 3 (the Flood Elite shotgun's own), the cap back to 4: they close in to
                     # 1 - 3 and fire there (4 at most)
-                    'set': ['0x74=4.0:Maximum Firing Distance',
+                    # ARMED TEST 9: the reach FIXED at 6.7 (above) -> the cap 6.5, just inside it
+                    'set': ['0x74=6.5:Maximum Firing Distance',
                             '0x9C=1.0:Desired Combat Range', '0xA0=3.0:Desired Combat Range Max',
                             '0x168=0.75:Berserk Firing Range', '0x16C=2.75:Berserk Firing Range Max',
                             '0x80=0.0:First Burst Delay Time', '0x84=0.2:First Burst Delay Time Max',
@@ -397,7 +398,11 @@ PORT.update({
                    # ARMED TEST 8 (user): 'they get mostly in range -- increase the pellet range just a
                    # bit'; user's pick: BOTH versions, 6.7 -> 8 wu (+20 %, a deliberate step past Halo 4's
                    # reach), the fuse re-fitted below
-                   'dmg': 12.0, 'acceleration': 0.06, 'velocity': (75.0, 10.0), 'range': 8.0,
+                   # ARMED TEST 9 (user): 'same issue -- they adjusted to the range; increasing it won't fix
+                   # this'. The AI judges reach by the MAXIMUM RANGE, but the random fuse killed shards
+                   # anywhere in 3.2 - 6.7 -> user's pick: a FIXED reach, Halo 4's full 6.7 wu, no early
+                   # random deaths (more reach than Halo 4's average; recorded)
+                   'dmg': 12.0, 'acceleration': 0.06, 'velocity': (75.0, 10.0), 'range': 6.7,
                    # no falloff (Halo 4): lower = upper. STEP 4b list 2 (H4 shard vs H4 shotgun bullet onto
                    # the H1 pellet): active camouflage 0.18 x 0.2/0.4; breaking effect forward radius 0.8 x
                    # 0.12/0.5, exponent 2 x 0.2/0.3, outward velocity 0.5 x 3/5, radius 0.2 x 0.5/0.35;
@@ -419,9 +424,10 @@ PORT.update({
                        # the life (the docstring's re-fit), started at the muzzle (Halo 4 'immediately'; the
                        # template pellet's 'on first bounce' with timer 0 would end every ricochet -- A5)
                        'proj_attrs.detonation_timer_starts': 'immediately',
-                       # range 8: d(t) = 9.23 (1 - e^-8.125t) -> 3.8 wu at 0.065 s, 8 at 0.248 s (was
-                       # 0.055 - 0.21 for Halo 4's 3.2 - 6.7)
-                       'proj_attrs.detonation.timer': (0.065, 0.248),
+                       # the fuse = Halo 4's timer HIGH, 0.5 s: a free shard reaches the 6.7 wu range end at
+                       # ~0.21 s first (the range ends it), a STUCK one bursts after 0.5 s (Halo 4's
+                       # 'detonation max time if attached')
+                       'proj_attrs.detonation.timer': (0.5, 0.5),
                        # ARMED TEST 5: Halo 4's 5 -> 0. The projectile probe read every AI-fired shard
                        # 'gone' within a tick (life 33 ms, travel 0); with 0 the user saw them fly and hit
                        # (test 6) -- but the probe still read the same afterwards, so its shard tracking
