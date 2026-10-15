@@ -121,6 +121,21 @@ PORT.update({
     #   0 (the Spike Rifle's), the material responses = the AR bullet's (Halo 4's shard bounces only at
     #   20-30 wu/s: never at 15), damage category kept 'bullet' (the Beam Rifle's precedent: Halo 1 has no
     #   plasma_fast counterpart that changes damage).
+    #   List 3, every line with a Halo 1 field (re-checked at close-out, flags by NAME from the Halo 4 MCC
+    #   plugin): weapon flags 6656 vs the AR's 2560 = bit 12 'Loop FP Firing Animation' (no Halo 1 flag:
+    #   Halo 1 restarts fire-1 a round -- the Spike Rifle's; firing passed every boot); weapon functions
+    #   4 vs 3 and attachments 3 vs 1 = Halo 4's own shader / FX hooks -> the template's 4 functions and
+    #   2 attachments (muzzle light, flashlight) kept; projectile functions / change colours blocks and
+    #   attachment[0] (Halo 4's projectile EFFECT, the streak) -> the contrail + shard glow; projectile
+    #   flags 131073 = 'Oriented Along Velocity' (set) + bit 17 'Disable Instantaneous First Tick' (no
+    #   Halo 1 field); water damage range 0..10 vs 5..10 (a zero on one side) INERT like the air range ->
+    #   the template's 0..5 kept; damage flags (the AR's bit 19, the Suppressor's 0; Halo 1's template 0)
+    #   nothing to write.
+    # TAG WRITES PROVEN (closing check 6; Halo 1 = port_field_audit.flatten): 54 tags (every
+    #   weapons\suppressor tag, cyborg animations, hud_item_messages, hud_reticles / _msg_icons + _r, the
+    #   ten scenarios), the model + pickable writers re-run: 1,036,348 fields, 4 changed = the bitmaps'
+    #   base address (tool's garbage pointer). Checks 7 / 2: port_sounds --check 0, validate_halo_json 0;
+    #   8: in used_weapons(), donors for every Armed slot; 9: shield-hit effect x0.098 (all 25 particles).
     # TEMPLATE DIFF (h1_port_template_diff, final, 566 lines): weapon 29 (the numbers above, own tags,
     #   label su), shard 30 (own impact effects: the impact sound + the hit-effect rule; the glow light;
     #   oriented along velocity; 15 wu/s, range 100, no gravity, own flyby), damage 2 (6.25), melee 0 (the

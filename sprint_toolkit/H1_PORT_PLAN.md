@@ -1097,6 +1097,8 @@ Halo 4 route). Everything in "C1: what the Storm Rifle taught" held; what is new
   render of the built gbxmodel before a boot.
 - Halo 4 sounds: one entry with several wavs = permutations, several entries = layers; an event's bank is
   found by scanning all banks for its FNV id.
+- Tools (read-only, promoted): h1_fp_camera_render, h1_gbxmodel_render, h1_model_buffer, h4_cache_refs,
+  h1_tag_writes_proof (closing check 6 for Halo 1 -- earlier ports did it by hand).
 - Process: 8 dry boots (look 6, FP 2), balanced 1, Armed 1. The rate probe was not run (15 / 22.5 -> 15/s
   carried from the SMG).
 

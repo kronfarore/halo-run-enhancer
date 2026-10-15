@@ -2237,7 +2237,12 @@ boot: Grunts (x0.5), Jackals (shieldless), Elites -- passed.
 **Tools new / generalized (each committed with its proof):** h3_hud_art.decode local images,
 h4_standin_diffuse.py, h1_h3_weapon_model islands `strip` / `core` / `hot_rgb` (proof su1 0 changed) and
 glow_cards `along` / `skip_piece_normals` / `round_scale` (su2 caught a key-name clash with the Mauler's
-`skip_normals`: renamed, su3 0 changed), h1_role_compare 'suppressor'. Trap: `ai_firing_profile.build()`
+`skip_normals`: renamed, su3 0 changed), h1_role_compare 'suppressor'. Read-only tools promoted at
+close-out: `h1_fp_camera_render.py` (the FP retarget through Halo 4's reference camera, trial hand
+offsets), `h1_gbxmodel_render.py` (a built gbxmodel side / top, glow geometry highlighted),
+`h1_model_buffer.py map|ports` (the 32 MiB cap), `h4_cache_refs.py` (a shipped Halo 4 tag's references
++ which H4EK material's values it holds), `h1_tag_writes_proof.py <key> snap|diff` (closing check 6 for
+Halo 1: flatten, re-run the writers, 0 changed). Trap: `ai_firing_profile.build()`
 WRITES by default (write=True) -- pass write=False to read a source entry.
 
 ## Halo 3
