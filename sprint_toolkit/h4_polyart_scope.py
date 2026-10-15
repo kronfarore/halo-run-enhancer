@@ -73,6 +73,7 @@ def main():
     ap.add_argument('--fit')
     ap.add_argument('--xform')
     ap.add_argument('--down', type=int, default=2)
+    ap.add_argument('--band', help='y0,ramp,alpha: an orange fill beyond y0 px from the centre')
     a = ap.parse_args()
     wires = render(a.folder, a.wires.split(','))
     fills = render(a.folder, [x for x in a.fills.split(',') if x])
@@ -80,6 +81,14 @@ def main():
     sx, sy, dx, dy = (fit(np.maximum(wires, fills), a.fit) if a.fit else
                       [float(x) for x in a.xform.split(',')])
     img = place(img, sx, sy, int(dx), int(dy))
+    if a.band:
+        # `--band y0,ramp,alpha` screen px (the LightRifle, boot 6, user: 'fill the top and bottom with
+        # the same orange as a test'): the glyph filled beyond y0 px from the centre, ramping in over
+        # `ramp` px to `alpha` (before the glyph's normalize ^1.6 / x alpha) -- the orange tint a Halo 1
+        # mask cannot give
+        y0, ramp, k = (float(x) for x in a.band.split(','))
+        yy = np.abs(np.arange(H) + 0.5 - H / 2.0)[:, None] * np.ones((1, W))
+        img = np.maximum(img, k * np.clip((yy - y0) / ramp, 0.0, 1.0))
     os.makedirs(a.out, exist_ok=True)
     Image.fromarray((np.clip(img, 0, 1) * 255).astype(np.uint8)).save(os.path.join(a.out, 'full.png'))
     cx, cy = W // 2, H // 2
