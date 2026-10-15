@@ -605,6 +605,12 @@ def write_jmas(weapon, only=None):
             frames = [frames[-1]] * w['holds'][h1name][1]
         if h1name in w.get('reverse', {}):
             frames = frames[::-1]
+        # `resample` {h1 name: n}: the animation FASTER (or slower) -- n frames picked evenly from the
+        # source's, first and last kept (the Scattershot, boot 1: Halo 1 starts a shell reload's exit
+        # once the time left is under the exit's length, so enter + exit must fit inside one shell)
+        if w.get('resample', {}).get(h1name):
+            n = w['resample'][h1name]
+            frames = [frames[round(i * (len(frames) - 1) / (n - 1))] for i in range(n)]
         # `node_from` {h1 name: [(source animation, frame, [Halo 1 node names]), ...]}: those nodes'
         # LOCAL transforms taken from one frame of another source animation, in every frame (the
         # Boltshot: Halo 4 opens its plates by a charge-driven overlay Halo 1 cannot play -> the
