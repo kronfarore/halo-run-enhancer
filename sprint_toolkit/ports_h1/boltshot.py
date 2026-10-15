@@ -98,7 +98,7 @@ PORT = reserved(
                       "charging rumble; the AI's charged shot (Halo 1's AI only taps a charged pair); "
                       "the full magazine of bolts: Halo 1 auto-reloads once fewer rounds are loaded "
                       "than the blast costs (boot 2: 6 bolts of 10, 4 left) -- the user kept Halo 4's "
-                      "5 a blast (balanced 7: 8 bolts of 15)")}},
+                      "5 a blast (balanced 7: 9 bolts of 15)")}},
     # step 11: Halo 4's ai\generic Boltshot entry (m020) over a base -- 'bo' has no carrier. Halo 1's
     # PLASMA PISTOL carriers (h1_weapon_carriers, 2026-10-14): Grunt minor / major / flee, Jackal
     # minor / major, the engineer 0.5; Flood combat (both) 0.4 -- Halo 1's sidearm of the
