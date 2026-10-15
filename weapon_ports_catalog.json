@@ -6778,6 +6778,19 @@
       "label": "Sniper Rifle Ammo"
      }
     ]
+   },
+   "hands": "two",
+   "tag_map": {
+    "proj weapons\\shotgun\\pellet": "proj weapons\\scattershot\\shard",
+    "jpt! weapons\\shotgun\\pellet": "jpt! weapons\\scattershot\\shard",
+    "jpt! weapons\\shotgun\\melee": "jpt! weapons\\scattershot\\melee",
+    "jpt! weapons\\needler\\explosion": "jpt! weapons\\scattershot\\supercombine"
+   },
+   "card_donors": {
+    "Needler": [
+     "Explosion Damage",
+     "Explosion Radius"
+    ]
    }
   }
  ],
