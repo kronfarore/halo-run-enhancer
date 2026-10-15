@@ -394,7 +394,10 @@ PORT.update({
         # THE SHARD (on a copy of the shotgun PELLET; bullet_slow / shotgun both sides: the pellet's table)
         'bullet': {'projectile': (SG + 'pellet', SS + 'shard'),
                    'damage': (SG + 'pellet', SS + 'shard'),
-                   'dmg': 12.0, 'acceleration': 0.06, 'velocity': (75.0, 10.0), 'range': 6.7,
+                   # ARMED TEST 8 (user): 'they get mostly in range -- increase the pellet range just a
+                   # bit'; user's pick: BOTH versions, 6.7 -> 8 wu (+20 %, a deliberate step past Halo 4's
+                   # reach), the fuse re-fitted below
+                   'dmg': 12.0, 'acceleration': 0.06, 'velocity': (75.0, 10.0), 'range': 8.0,
                    # no falloff (Halo 4): lower = upper. STEP 4b list 2 (H4 shard vs H4 shotgun bullet onto
                    # the H1 pellet): active camouflage 0.18 x 0.2/0.4; breaking effect forward radius 0.8 x
                    # 0.12/0.5, exponent 2 x 0.2/0.3, outward velocity 0.5 x 3/5, radius 0.2 x 0.5/0.35;
@@ -416,7 +419,9 @@ PORT.update({
                        # the life (the docstring's re-fit), started at the muzzle (Halo 4 'immediately'; the
                        # template pellet's 'on first bounce' with timer 0 would end every ricochet -- A5)
                        'proj_attrs.detonation_timer_starts': 'immediately',
-                       'proj_attrs.detonation.timer': (0.055, 0.21),
+                       # range 8: d(t) = 9.23 (1 - e^-8.125t) -> 3.8 wu at 0.065 s, 8 at 0.248 s (was
+                       # 0.055 - 0.21 for Halo 4's 3.2 - 6.7)
+                       'proj_attrs.detonation.timer': (0.065, 0.248),
                        # ARMED TEST 5: Halo 4's 5 -> 0. The projectile probe read every AI-fired shard
                        # 'gone' within a tick (life 33 ms, travel 0); with 0 the user saw them fly and hit
                        # (test 6) -- but the probe still read the same afterwards, so its shard tracking
