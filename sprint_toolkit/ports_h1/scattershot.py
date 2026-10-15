@@ -197,12 +197,15 @@ PORT.update({
         #             `eject_port` function)
         'glow_shaders': {'ss_glow': {'rgb': ORANGE, 'additive': True, 'islands': True,
                                      'islands_of': 'storm_spread_gun_energy_bar_default',
-                                     'strip': True, 'gain': 1.8, 'falloff': 0.45, 'radius': 1.2,
-                                     'hot': True, 'core': 3.0, 'hot_rgb': (1.0, 0.85, 0.5)},
+                                     # BOOT 3 (user: 'the glow is unchanged -- make both glows pop more
+                                     # with some intense colour'; the screenshot: thin bars read pale
+                                     # yellow -- the pale core took them over): no core, saturated, fuller
+                                     'strip': True, 'gain': 2.8, 'falloff': 0.25, 'radius': 1.4,
+                                     'hot': False},
                          'ss_flash': {'rgb': FLASH, 'additive': True, 'islands': True,
                                       'islands_of': 'storm_spread_gun_energy_bar_default',
-                                      'strip': True, 'gain': 2.5, 'falloff': 0.8, 'radius': 1.2,
-                                      'hot': True, 'core': 2.0, 'hot_rgb': (1.0, 0.95, 0.75),
+                                      'strip': True, 'gain': 3.2, 'falloff': 0.3, 'radius': 1.4,
+                                      'hot': True, 'core': 3.0, 'hot_rgb': (1.0, 0.62, 0.12),
                                       'fade_source': 'A_out'}},
         # THE MODEL BUFFER BUDGET (0.6 MiB): a card layer copies each bar triangle (891 a layer) -- both
         # layers made 0.67 MiB -> the halo cards dropped (ss_halo unused for now), the flash kept: 0.60 MiB
@@ -252,8 +255,14 @@ PORT.update({
         # lengths. So Halo 4's stages carry their shell: enter = reload_enter + one shell; exit-full = one
         # shell + reload_enter reversed (Halo 4 has no exit with rounds left); exit-empty = one shell + Halo
         # 4's chamber_1 (the pump is back). 1 missing: the enter's shell fills it, the exit shows one more
-        'sequence': {'first-person enter': ['first_person:reload_enter',
-                                           'first_person:reload_continue_empty'],
+        # BOOT 3 (user: 1 round -> 2 shell motions, 2 -> 1, 3 -> 2, 4 -> 3, 5 -> 4): the rule, fitting all
+        # three boots -- the FIRST round loads at once, then one every shell time, so the reload ends after
+        # (n - 1) shells; first person plays the enter, then the loops, and CUTS to the exit when it ends:
+        # only the shells COMPLETED by then show, + the exit's. The 35 fr enter finished too late -> the
+        # enter (Halo 4's 14 fr + a shell 21 fr) squeezed into 15 fr (0.5 s, under the balanced 0.525 s
+        # shell too): exactly n shell motions for every n
+        'sequence': {'first-person enter': [{'from': 'first_person:reload_enter', 'frames': 5},
+                                           {'from': 'first_person:reload_continue_empty', 'frames': 10}],
                      'first-person exit-full': ['first_person:reload_continue_empty',
                                                 {'from': 'first_person:reload_enter', 'reverse': True}],
                      'first-person exit-empty': ['first_person:reload_continue_empty',
@@ -263,7 +272,8 @@ PORT.update({
         # far away, barely moved). Halo 4's own placement (the gun bone matches it exactly at 0): no offset
         'view_offset': (0.0, 0.0, 0.0),
         # BOOT 1 (user: 'melee: move FP 1 unit lower'): the melee alone, ramped in / out (the Boltshot's)
-        'view_offset_anims': {'first_person:melee_strike_1': {'offset': (0.0, 0.0, -0.01),
+        # BOOT 3 (user: 'lower the melee FP 2 units'): 1 -> 3 units
+        'view_offset_anims': {'first_person:melee_strike_1': {'offset': (0.0, 0.0, -0.03),
                                                               'ramp': {'in': 4, 'out': 8}}},
     },
 
@@ -300,7 +310,7 @@ PORT.update({
                          'play_wea_spreadgun_idle_b_part_3'],
                         'sound\\sfx\\weapons\\weapon_anims\\shotgun_posing', -23.0),
             # the stages' own sounds (boot 2: a shell in the enter and in each exit): the enter's foley + a
-            # shell at 14 fr; exit-empty = a shell + the chamber's reload_exit at 21 fr; exit-full = ss_reload
+            # shell at its frame 5; exit-empty = a shell + the chamber's reload_exit at 21 fr; exit-full = ss_reload
             'ss_reload_enter': (['play_wea_spreadgun_player_reload_enter:0,1,2',
                                  'play_wea_spreadgun_player_reload_loop:0,1,2',
                                  'play_wea_spreadgun_player_reload_loop:3,4,5',
@@ -333,7 +343,8 @@ PORT.update({
                                    'sound\\sfx\\weapons\\weapon_anims\\shotgun_reload2_1', -21.9),
         },
         'offsets': {'ss_pose': [0.0, 40 / 30.0, 70 / 30.0],
-                    'ss_reload_enter': [0.0, 14 / 30.0, 14 / 30.0, 14 / 30.0],
+                    # the enter's shell at its frame 5 (boot 3: the 15 fr enter)
+                    'ss_reload_enter': [0.0, 5 / 30.0, 5 / 30.0, 5 / 30.0],
                     'ss_reload_exit': [0.0, 0.0, 0.0, 21 / 30.0]},
         'stretch': {'ss_reload_balanced': 0.75},
     },
@@ -424,7 +435,11 @@ PORT.update({
                                        # SYSTEM dropped (Halo 4's super = sparks + light + screen fx); the
                                        # tinted bolts x0.6
                                        'drop_classes': ('particle_system',), 'scale': 0.6,
-                                       'out_dir': SS + 'effects\\'},
+                                       'out_dir': SS + 'effects\\',
+                                       # BOOT 3 (user: 'the screen flash on the player is still pink'):
+                                       # the needle explosion's screen flash tint (A R G B 0, 1, 0, 1:
+                                       # magenta) -> FLASH
+                                       'fields': {'screen_flash.tint_lower_bound': (0.0,) + FLASH}},
                    # the LOOK: Halo 4's shard = a glowing energy ball (flare + light + trail) -> the AR
                    # tracer's contrail recoloured + the Suppressor's glow (fuel rod exhaust light + flare)
                    'attachments_from': AR + 'bullet',
