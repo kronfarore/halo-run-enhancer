@@ -1427,6 +1427,23 @@ def edit_weapon(key, write):
                 x.radius[0], x.radius[1] = x.radius[0] * fl.get('scale', 1.0), x.radius[1] * fl.get('scale', 1.0)
                 dx, dy, dz = fl.get('shift', (0.0, 0.0, 0.0))
                 o.i, o.j, o.k = o.i + dx, o.j + dy, o.k + dz
+                # `own_particles` {'out': path prefix, 'lifespan': x, 'fade_out': s}: the matched
+                # particle as an OWN copy living x times longer (the Boltshot, boot 5: 'increase
+                # the duration of the muzzle flash slightly' -- the lifespan is in the PARTICLE
+                # tag, shared by every weapon's flash)
+                OP = fl.get('own_particles')
+                if OP:
+                    from reclaimer.hek.defs.part import part_def
+                    src_p = x.particle_type.filepath
+                    own_p = OP['out'] + src_p.rsplit('\\', 1)[-1]
+                    pt_ = part_def.build(filepath=path(src_p, '.particle'))
+                    qd = pt_.data.tagdata
+                    qd.lifespan[0], qd.lifespan[1] = (qd.lifespan[0] * OP.get('lifespan', 1.0),
+                                                      qd.lifespan[1] * OP.get('lifespan', 1.0))
+                    if 'fade_out' in OP:
+                        qd.fade_out_time = OP['fade_out']
+                    save(pt_, path(own_p, '.particle'), write)
+                    x.particle_type.filepath = own_p
         # `tint` (ARGB): every particle of the copy recoloured, RGB not HSV (the plasma
         # pistol's green flash IS a tint on a white sprite -- the Sentinel Beam's finding)
         for ev in (et.data.tagdata.events.STEPTREE if fl.get('tint') else ()):
