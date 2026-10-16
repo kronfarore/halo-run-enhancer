@@ -7,7 +7,10 @@ HALO 4 (h3_weapon_values --kit h4 + the export, 2026-10-16): ONE trigger, ONE ba
 (storm_forerunner_sniper_rifle_bullet jpt, damage group `sniper`, instantaneous acceleration 0.5, a
 `headshot` label, no detonation / aoe), 30/s with a 1.0 s fire recovery (= 1 shot a second); magazine 2
 (6 / 8), reload 86 / 71 fr (empty / full, primary keyframe 42); 2799 wu/s instant, range 500, no gravity;
-error 4 deg flat, minimum 0 -- barrel flags 512 = the H4 sniper's (error unzoomed only); zoom 2 levels
+error 4 deg flat, minimum 0, x0.1 ZOOMED (`iron sights modifiers` spread multiplier 0.1; the H4 sniper 1.0)
+-> 4 deg hip / 0.4 deg scoped -- Halo 1 cannot scale error by zoom: the sniper template's 'use error
+when unzoomed' (4 / 0) is the nearest (4b, 2026-10-16; barrel flag 512 is 'don't clear fire bit after
+recovering', both Halo 4 snipers -- NOT an error flag, as step 4a first read it); zoom 2 levels
 (4x, 10x); aim struct 1/10 4/14, the MODE block: mode 0 (unzoomed) none, modes 1-2 (zoomed) 1/25 1.6/25,
 deviation 0.4; melee the shared strike_melee. The bullet OVERPENETRATES soft / tough organic / thin metal
 / thin shields / glass / plants / liquid in BOTH response tables (old + new, C5's trap); thick shields /
@@ -299,7 +302,20 @@ PORT.update({
             # STEP 6: the H1 sniper's pickup : initial (16 : 12) on Halo 4's 6
             'weap_attrs.magazines.0.magazine_items.0.rounds': 8,
             'obje_attrs.collision_model.filepath': BI + 'binary rifle',
+            # STEP 4b list 2 (ratio vs Halo 4's sniper onto the H1 sniper): illumination recovery 0.1 x
+            # 0.1/0.05 = 0.2. The rest of list 2 is decided: aim angles / ranges (the audit reads Halo 4's
+            # UNZOOMED mode 0 = none; the zoomed modes + the sniper's zoomed-only flag are the same
+            # behaviour), rounds total maximum 9.6 (= the balanced row 10; default Halo 4's 8), error 40
+            # deg (degenerate: user, 4 deg)
+            'weap_attrs.triggers.0.misc.illumination_recovery_time': 0.2,
         },
+        # STEP 4b FLAGS, by NAME (H4EK ManagedBlam, 2026-10-16): weapon -- Binary 'cannot fire at maximum
+        # age' (no age: inert) + 'hide FP weapon when in iron sights' (= the H4 sniper's; Halo 1 hides the
+        # FP gun when zoomed), the H4 sniper's 'strict deviation angle' (Binary: clear) has no Halo 1 field;
+        # secondary 'magnetizes only when zoomed' (both) = Halo 1's 'aim assists only when zoomed' (kept),
+        # the H4 sniper's 'weapon can headshot' is CLEAR on the Binary; barrel 'don't clear fire bit after
+        # recovering' (both); damage 'can cause headshots' + 'ignores headshot obstructions' (both) +
+        # 'causes incineration dissolve' (Binary only: no Halo 1 counterpart -- lacks)
         'sound_effects': {
             # THE MUZZLE-FLASH RULE (check 10, before boot 1; h4_effect_particles / h1_effect_particles,
             # 2026-10-16). Halo 4's fr_sniper_rifle_firing, first person at primary_trigger: muzzle_flash
@@ -338,6 +354,8 @@ PORT.update({
                 #             ghostwire_post1_accent,ghostwire_post2_base,ghostwire_post2_shelf,
                 #             ghostwire_post2_accent
                 #     --fills holo_extrusion_base,holo_extrusion_shelf --fill-alpha 0.45 --fit h4_zoom1.png
+                # fit: overlap 0.307 -> scale x 1.025 y 1.0, shift -8 -120 px (= --xform 1.025,1.0,-8,-120;
+                # the LightRifle's 1.05 / 0.975, -112)
                 # A CLEAR mask (no chud) with the H1 blur outside the lens and the dark top / bottom bands
                 # (the LightRifle's approved values)
                 'scope': {'out': BI + 'bitmaps\\scope_mask', 'size': 1024, 'alpha': 0,
