@@ -1584,6 +1584,14 @@ SETS = {
     # 2/25; fuel rod 100 + 60 over 0.5 -> 2.25, 0.4 s, 5 / 15 / 20, 90 fr, 19.5 -> 8.45, 80, aim 4/25 8/25.
     # Every row: the charge per shot (interval = the charge), one round a reload
     'railgun': {'port': 'Railgun', 'weapons': [
+        # the BUILT port (step 5b, 2026-10-16): its tags (+ --balanced rows). The slug's hit is the
+        # projectile's ATTACHED damage (this tool reads impact + detonation): given as parts on the built
+        # tags; the 0.75 s charge a shot (interval = the charge), one round a reload, the 0.2 s fuse
+        ('Railgun (port)', W + r'railgun\railgun', 'shot',
+         {'parts': [(W + r'railgun\slug impact', 120.0, (0.0, 0.0)),
+                    (W + r'railgun\explosion', 180.0, (0.55, 1.0))],
+          'rate': 1 / 0.75, 'charge': 0.75, 'delay': 0.2}),
+        ('Railgun melee (port)', W + r'railgun\railgun', 'melee'),
         # DEFAULT candidates: Halo 4's own; the impact on the sniper bullet's table (a kinetic slug) or
         # on the rocket's, the blast on the rocket's; + the 0.2 s stick fuse
         ('RG = H4 own (SR+RL tables)', W + r'rocket launcher\rocket launcher', 'shot',
