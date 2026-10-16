@@ -2722,6 +2722,76 @@ them): `h4_event_layers.py` (a Wwise event's layers as spec indices + length / l
 marked), `h4_layer_mix.py` (candidate layer mixes to listen to), `h4_projectile_summary.py` (a Halo 4
 projectile's fuse / flight / every damage effect it names).
 
+### Halo 1: the Railgun, wave C7 (2026-10-16, 6 dry boots + balanced + Armed x3 on a30, PARALLEL with C9) -- a Halo 4 charged slug on the rocket template with the fuel rod's one trigger, a charge meter on the gun, a halo1.dll charge latch
+
+The whole weapon is `ports_h1/railgun.py` (its CLOSE-OUT RECORD lists every check), on a copy of the Halo 1 ROCKET
+LAUNCHER (also the yardstick: two-handed heavy, magazine + reload, its HUD, melee, explosion table) with the
+restored FUEL ROD's one-trigger charge (A8).
+
+**Step 4a (user).** Source = `storm_rail_gun_pve` (MP vs _pve: the charge HOLD 0.5 / 1.5 s, error 0.2 / 0.15, the
+slug MP 60 bullet + 120 explosion_large, _pve 120 `needle` + 180 explosion_small over 0.55 -> 1.0, core 0.54; no
+aoe spike). Halo 4: `charge-with-magazine`, charging 0.75 s, the charge held up to 1.5 s, then 'discharge'; an
+early release fires barrel 0 = no projectile. 1 / 4 / 6, reload_empty 82 fr, 100 wu/s flat, range 0 (unset),
+aim mode 0 2.5/25 7.5/25, no zoom. The slug STICKS (the `material response` table: default attach) and bursts
+0.2 s later ('detonation max time if attached'): no overpenetration. Yardstick: the ROCKET ratio (direct 300 /
+440, Halo 4's split: 85.9 + 128.9); the rocket's table for hit AND blast (both versions). Rejected: the Fuel Rod
+ratio (Hunters immune), the Sniper ratio (378.8 at 35.7 wu/s). h1_role_compare 'railgun'.
+- **The hit = the projectile's ATTACHED damage** (Halo 1 deals it at the stick, B6) and no impact damage: Halo 4's
+  impact-then-burst exactly (120 on the stuck unit, the 180 blast 0.2 s later, fuse 'when at rest').
+- **The charge (boots 2-3, user):** Halo 1's one trigger fires ONLY by its discharge -- a release while charged
+  fires nothing (the shot came 2.25 s after the press with Halo 4's hold) -> charge hold 0: it fires the moment the
+  0.75 s charge completes; Halo 4's choice of the release moment is lost. The charged PAIR (Halo 4's release) was
+  rejected: Halo 1's AI only taps a pair (A8).
+- **A guaranteed overheat (boot 3) does nothing:** probed, Halo 1 keeps CHARGING through the reload / overheat
+  (the charge word +0xE4 restarts 0.07 s after the shot while held) -- reverted.
+
+**THE CHARGE LATCH (halo1.dll, `h1_charge_latch.py` v2; its own section above has the bytes).** Live probes on
+a30 (h1_weapon_state_probe; trigger state +0x229, flags +0x22C, charge +0xE4): held, stock gives ONE slug + a
+wasted 2nd charge (the player-only 'does not repeat' latch holds the rest); the user's actual case -- fire, LET
+GO, press and HOLD during the reload -- fires an UNCHARGED slug the moment the gun is ready (state never leaves
+idle). v1 (a release latch) missed it; v2 (a 'just discharged' marker) fixed both, confirmed live. Opt-in per
+tag: weapon flags bit 30 = config `charge_needs_release` (h1_pickable_weapons, narrowed proof rg1 0 changed; the
+Railgun and the Spartan Laser, the laser through status 'rework', check 6: exactly its flags field). Enhancer
+option `h1_charge_latch` (Options -> Patching -> Halo 1, default off). Armed AI keeps firing (test 4).
+
+**Look / FP / HUD.** One render model, 80 % decimation (40 / 60 smoothed the top rail; the crest decal LOCKED
+whole) = 0.45 MiB; a UNSC colour map that ships (the `color` stand-in). Halo 4's own graph (25 animations, 85
+bones): fire_2 -> fire-1, `overcharged` (the charged hold) -> Halo 1's `overcharged`, which Halo 1 plays DURING
+the charge: 35 fr cut by the shot -> 15 fr + 8 held = 0.75 s, reading full at 0.5 s (user: reaction time).
+- **THE ON-GUN DISPLAY is a charge meter** (boot 1: textured self-illuminated shaders drew it pale with green
+  bars): the bars' texture = R the shape, A the fill, clipped by `primary_charged` -> a Halo 1 meter on B out
+  (the plasma pistol's function 3 on B in = primary charged, the GL's object function), the alpha inverted
+  (`gradient_range` (0.667, 0): full at 2/3 of the charge); the screen + OK / NA icons static lit yellow shapes.
+- **Crosshair** from the CUI (rail_halfcircle + rail_circle x1.1 + a 2 x 9 white-pixel tick), 1.34 px a unit from
+  the user's idle screenshot. A layer's `offset` is MULTIPLIED by its `stretch` in h1_add_reticle (the tick went
+  off-canvas at 22.5 x 27): divide by the stretch. The `charge_l` / `charge_r` arcs (a charge meter in the CUI)
+  are not reproducible (the charge crosshair never draws, A8).
+- **Ammo pip** = Halo 4's `ammo_railgun` silhouette, native density (the Binary Rifle's `art`).
+- **The tracer** = Halo 4's rg_firing_tracer_3p (electrical_beam + plasma_energy through grad_bluelight_1) by the
+  beam recipe on the sniper's contrail (`attachments_from` the sniper bullet), from the FP muzzle.
+- **The charge seen on ENEMIES (Armed):** the model's glow star is lost at range; Halo 1 draws a held weapon's
+  ATTACHMENTS on the third-person gun (the Jackals' charged plasma pistol = its attachment 2, light `plasma
+  rifle\overcharge` on its charge) -> new opt-in `charge_light` (h1_pickable_weapons, narrowed proof rg2 0
+  changed): an own recoloured light + flare at the muzzle on B out; shows in first person too ('looks fine').
+
+**Sounds:** bank `railgun_player`: fire = 5 layers (`obj_`), the charge a 3-way random (1.3-1.5 s) as a
+sound_looping start on B out, reload 5 cues (`offsets`), the explosion / flyby in `proj_railgun`, the ammo
+pickup `weapon_sync`; the impact events ship in no bank (the burst covers it). Flash (check 10): the rocket's has
+a back-blast at `primary ejection` the railgun lacks -> the plasma pistol's on-axis flash x2, blue (its kept smoke
+is GREEN: tinted too).
+
+**Step 11:** phase 0 searched only the MP name -- the _pve tag HAS an ai\generic entry in nine campaign maps
+(m020 #37: burst 2.6 s every 4-6 s, range 10-15, tracking 0.95). `source` mode over the rocket carriers (Flood
+Elite / human, WDM 0.4) + Rate Of Fire 0 (A8); WDM RULE on the held cycle (one slug a reload, user): 0.575 /
+0.867. The hit flash: the rocket's damage tags flash NOTHING (duration 0) -> Halo 4's orange (impact_bullet_slow
+/ explosion_small_lowpass), 0.5 / a 30 % wash, then x2 duration (0.4 / 0.5 s, user). Enhancer keys (its
+session): hands 'heavy', tag_map, Charging Time card from the plasma pistol.
+
+**Process / traps:** `h1_box_collision.py <key> --write` is a step of its own (the first build failed: the hull's
+model_collision_geometry missing). The live Halo 1 FMOD bank lost every port's sounds mid-session (a proof's
+restore?) -- `port_sounds.py --check` before every boot. A queued `h1_port_test_map --stage` waits on the kit lock
+and then REPLACES the live map: stop it before a live test on that level.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:

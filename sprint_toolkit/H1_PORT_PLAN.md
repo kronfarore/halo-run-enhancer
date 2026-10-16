@@ -1245,6 +1245,39 @@ on a fuse, a frag fireball around the plasma grenade's table. Everything in "C1"
   0.25 MiB (80 %). ENHANCER HAND-OFF: hands set; cards for the enhancer session (a Fuse Time card on the charge's
   timer is the natural new one; the pistol's zoom is gone: no Zoom card source).
 
+## C7: what the Railgun taught (2026-10-16) -- parallel with C9
+
+PORTING.md "Halo 1: the Railgun, wave C7" is the full record; `ports_h1/railgun.py` is the example of a Halo 4
+CHARGED single-shot on the rocket template (the fuel rod's one trigger), of an on-gun CHARGE METER and of a
+charge seen on enemies. Everything in "C1" - "C8" held; what is new:
+
+- **Halo 1's one-trigger charge fires ONLY by its discharge.** A release while charged fires nothing, so a source
+  that holds the charge and fires on release (Halo 4's charge hold) cannot be copied: hold 0 fires the moment
+  the charge completes (user, option 1); the moment of release is lost. The charged PAIR keeps the release but
+  Halo 1's AI only taps a pair (A8). Probed live: the discharge resets the trigger, the start routine then fires
+  the slug AND starts the next charge -- held shots / a press during the reload chain or fire UNCHARGED.
+- **halo1.dll CHARGE LATCH (v2, its own session, bc1a3d9):** one slug a press, a press during the reload charges
+  in full; opt-in per tag (weapon flags bit 30, config `charge_needs_release`: the Railgun and the Spartan
+  Laser), enhancer option `h1_charge_latch`. v1 passed its designer's tests and missed the USER's case -- ask the
+  user to reproduce the bug under the probe before calling a fix done.
+- **A guaranteed overheat does not stop a charge weapon** (Halo 1 charges through the reload and the overheat).
+- **Halo 1 plays `overcharged` DURING the charge** (not only while held charged): time it to the charge; the user
+  wants charge cues to read FULL ~0.25 s before the shot (reaction time).
+- **An on-gun Halo 4 display may be a METER** (its texture: R = shape, A = fill, clipped by a function): a
+  textured self-lit shader draws it wrong (pale, green). The Storm Rifle's `meters` recipe on the charge output.
+- **The charge on ENEMIES needs an ATTACHMENT** (`charge_light`, new): model glows are lost at range; Halo 1 draws
+  attachments on the third-person gun (the Jackals' plasma pistol charge light); it shows in first person too.
+- **Read step 11 under every tag name:** phase 0 found no ai\generic entry for the MP tag; the _pve tag has one in
+  nine maps -- the Railgun fires on Halo 4's own profile (rate 0, the WDM rule).
+- **The rocket's damage tags carry no screen flash:** a port on the rocket template needs its own hit flash
+  (Halo 4's colours; the user wanted it stronger and longer than the LightRifle's).
+- **4b on the final weapon caught a kept source value** (the AOE core radius: no card -> the ratio outright).
+- Traps: `h1_box_collision.py <key> --write` is a separate step; a reticle layer's `offset` is multiplied by its
+  `stretch`; the live FMOD bank can lose every port's sounds (check before each boot); a queued staging run
+  replaces the live map when the lock frees.
+- Process: 6 dry boots (look 1, display / charge 4, ammo pip 1), balanced 1, Armed 3 (flash x2, muzzle charge
+  light). Narrowed proofs rg1 / rg2 0 changed; check 6 0 changed. Model 0.45 MiB (a30 5.3 MiB left).
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one
