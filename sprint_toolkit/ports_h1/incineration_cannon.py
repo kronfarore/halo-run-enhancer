@@ -79,7 +79,8 @@ BOMBLET = {
                   'scale': 0.625, 'out_dir': IC + 'effects' + B,
                   'damage': (RL + 'explosion', IC + 'bomblet explosion'),
                   'lower': 30.0, 'upper': (120.0, 120.0), 'radius': (0.61, 1.25),
-                  'fields': {'damage.aoe_core_radius': 0.6},
+                  # STEP 4b: Halo 4's own knockback 2.5 (the rocket copy's 6; balanced 6 x 2.5/3 = 5)
+                  'fields': {'damage.aoe_core_radius': 0.6, 'damage.instantaneous_acceleration': 2.5},
                   'swaps': {B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'expl']): SND + 'ic_bomblet_explode'}},
     'velocity': (5.0, 6.0), 'range': 7.0,
     'proj_fields': {'proj_attrs.physics.air_gravity_scale': 5.0,
@@ -87,10 +88,23 @@ BOMBLET = {
                     'proj_attrs.detonation.timer': (0.6, 1.0),
                     'proj_attrs.detonation_timer_starts': 'immediately',
                     'proj_attrs.detonation.minimum_velocity': 3.0,
-                    'proj_attrs.flags.oriented_along_velocity': True},
+                    'proj_attrs.flags.oriented_along_velocity': True,
+                    # STEP 4b list 2 (H4 submunition vs the H4 frag onto the H1 frag): danger radius 2.25 x 3/2.5,
+                    # air damage range 0..10 x 500/10, water gravity 1 x 0/0.75. List 3 (a zero on one side: the
+                    # source value): bounding radius 0.5, collision radius 0.1. Timer (0.5-0.77 by the ratio) and
+                    # gravity (5.56) are BALANCED rows; default Halo 4's own
+                    'proj_attrs.detonation.danger_radius': 2.25 * 3 / 2.5,
+                    'proj_attrs.physics.air_damage_range': (0.0, 500.0),
+                    'proj_attrs.physics.water_gravity_scale': 0.0,
+                    'obje_attrs.bounding_radius': 0.5,
+                    'proj_attrs.collision_radius': 0.1},
     'default_responses': {'detonate': UNITS},
     # the frag's per-material DETONATION effects would replace the burst on contact (the GL's trap)
     'clear_detonation_effects': True,
+    # 4b template diff: Halo 4's flag 'no impact effects on bounce' -> the frag's per-bounce reflection effects
+    # (dirt / metal / snow / energy) cleared, the unit hits' too (the frag's dirt puffs on flesh); the frag's
+    # `shock wave` part (0 damage: camera shake + a physics push to 8 wu) stays in the burst, as on the rocket
+    'clear_response_effects': True,
     # the frag's smoke trail + light dropped; Halo 4's bomblet is a small orange ball of light
     'keep_attachments': (),
     'model': '',
@@ -112,7 +126,8 @@ SHELL = {
                   'out_dir': IC + 'effects' + B,
                   'damage': (RL + 'explosion', IC + 'explosion'),
                   'lower': 40.0, 'upper': (240.0, 240.0), 'radius': (0.75, 2.0),
-                  'fields': {'damage.aoe_core_radius': 0.75,
+                  # STEP 4b: Halo 4's own knockback 3 (the rocket copy's 6; balanced 6 x 3/3 = 6)
+                  'fields': {'damage.aoe_core_radius': 0.75, 'damage.instantaneous_acceleration': 3.0,
                              'screen_flash.duration': 0.25,
                              'screen_flash.maximum_intensity': 0.3,
                              'screen_flash.tint_lower_bound.r': 1.0,
@@ -126,7 +141,14 @@ SHELL = {
     'velocity': (21.0, 21.0), 'range': 175.0,
     # the rocket's timer (on first bounce, 0) kept: every response detonates (the Brute Shot's note)
     'proj_fields': {'proj_attrs.physics.air_gravity_scale': 0.0,
-                    'proj_attrs.detonation.minimum_velocity': 0.0},
+                    'proj_attrs.detonation.minimum_velocity': 0.0,
+                    # STEP 4b list 2 (H4 shell vs the H4 rocket onto the H1 rocket): bounding radius 0.1 x 0.5/0.1,
+                    # air damage range 0..100 x 50/150, water gravity 0.4 x 0/0.4; COLLISION RADIUS 0.1 x 0.1/0.02
+                    # = 0.5 by the ratio (Halo 4's own 0.1 -- for the user: a near miss within 0.5 wu hits)
+                    'obje_attrs.bounding_radius': 0.5,
+                    'proj_attrs.physics.air_damage_range': (0.0, 100 * 50 / 150.0),
+                    'proj_attrs.physics.water_gravity_scale': 0.0,
+                    'proj_attrs.collision_radius': 0.5},
     # Halo 4's shell is a glowing orange orb with an energy trail: the rocket's mesh, exhaust, exhaust particles,
     # flight loop (Halo 4's projectile loops are empty in MCC, C1) and light-volume widget dropped; its CONTRAIL
     # kept as an own orange additive copy, points at rest (the Brute Shot's arc lesson); an orange glow
@@ -209,6 +231,7 @@ PORT.update({
         'world': H4 + SW + r'\storm_forerunner_incineration_launcher.render_model',
         'fp': H4 + SW + r'\storm_forerunner_incineration_launcher.render_model',
         'world_name': 'incineration cannon',
+        'decimate': {'keep': 60.0, 'protect': 1.0, 'views': [((-0.1529, 0.0779, 0.0466), (0.9988, -0.0434, 0.021), (-0.0211, -0.0028, 0.9998), 1.0), ((-0.1522, 0.0775, 0.049), (0.9983, -0.0477, 0.0336), (-0.034, -0.008, 0.9994), 1.0), ((-0.1529, 0.0779, 0.0466), (0.9988, -0.0434, 0.021), (-0.0211, -0.0028, 0.9998), 1.0), ((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 0.0, 1.0), 1.0), ((0.0, 0.0, 0.0), (1.0, -0.0036, 0.0047), (-0.0047, 0.0059, 1.0), 1.0), ((0.0, 0.0, 0.0), (1.0, 0.0026, -0.0027), (0.0027, -0.0089, 1.0), 1.0), ((-0.1529, 0.0779, 0.0466), (0.9989, -0.0431, 0.021), (-0.0211, -0.0026, 0.9998), 1.0), ((-0.0879, 0.0763, 0.053), (0.9889, -0.0346, -0.1443), (0.1447, 0.0102, 0.9894), 1.0), ((-0.1529, 0.0779, 0.0466), (0.9989, -0.0431, 0.021), (-0.0211, -0.0026, 0.9998), 1.0), ((-0.1775, 0.1166, 0.001), (0.6862, 0.1976, 0.7001), (-0.7022, 0.4312, 0.5666), 0.5), ((-0.1727, 0.077, 0.044), (0.9975, -0.0462, -0.0538), (0.0575, 0.0826, 0.9949), 0.5), ((-0.1775, 0.1166, 0.001), (0.6862, 0.1976, 0.7001), (-0.7022, 0.4312, 0.5666), 0.5), ((-0.1529, 0.0779, 0.0466), (0.9988, -0.0433, 0.0212), (-0.0213, -0.0026, 0.9998), 0.5), ((-0.1881, 0.0949, 0.0317), (0.9596, -0.1751, 0.2203), (-0.2353, -0.0695, 0.9694), 0.5), ((-0.1529, 0.0779, 0.0466), (0.9988, -0.0433, 0.0212), (-0.0213, -0.0026, 0.9998), 0.5), ((-0.1529, 0.0779, 0.0466), (0.9988, -0.0433, 0.0212), (-0.0213, -0.0026, 0.9998), 0.5), ((-0.1881, 0.0957, 0.0321), (0.9589, -0.1792, 0.2198), (-0.2354, -0.0711, 0.9693), 0.5), ((-0.1529, 0.0779, 0.0466), (0.9988, -0.0433, 0.0212), (-0.0213, -0.0026, 0.9998), 0.5), ((-0.1529, 0.0779, 0.0466), (0.9989, -0.043, 0.021), (-0.0212, -0.0027, 0.9998), 0.5), ((-0.1862, 0.1083, -0.0066), (0.8341, -0.3901, 0.3899), (-0.4487, -0.0691, 0.891), 0.5), ((-0.1529, 0.0779, 0.0466), (0.9989, -0.043, 0.021), (-0.0212, -0.0027, 0.9998), 0.5)]},
         'ground_point': 'auto',
         'markers': {'primary_trigger': 'primary trigger', 'left_hand': 'left hand'},
         # Halo 1's `tool model` keeps 31 characters of a shader name (C1)
@@ -277,7 +300,12 @@ PORT.update({
         'wwise_bank': 'forerunner_incineration_launcher_player',
         'dir': B.join(['sound', 'weapons', 'incineration_cannon_port']),
         'sounds': {
-            'ic_fire': (['play_wea_forerunner_incineration_launcher_player_fire'],
+            # fire = 4 layers (h4_event_layers): a random of 3 (the main, 3.5-5.4 s), a random of 2 (the low body,
+            # 200-370 Hz), a 0.46 s punch (99 Hz), a 0.76 s sub (-19.6 dB)
+            'ic_fire': (['play_wea_forerunner_incineration_launcher_player_fire:0,1,2',
+                         'play_wea_forerunner_incineration_launcher_player_fire:3,4',
+                         'play_wea_forerunner_incineration_launcher_player_fire:5',
+                         'play_wea_forerunner_incineration_launcher_player_fire:6'],
                         'sound\\sfx\\weapons\\rocket launcher\\fire', -15.1),
             'ic_explode': (['play_wea_forerunner_incinerator_proj_explosion@proj_forerunner_incinerator'],
                            'sound\\sfx\\weapons\\frag grenade\\expl', -7.9),
@@ -294,13 +322,23 @@ PORT.update({
                           'sound\\sfx\\weapons\\weapon_anims\\rocket_reload_e', -22.5),
             'ic_reload_balanced': (['play_weapons_incinerator_player_reload_empty'],
                                    'sound\\sfx\\weapons\\weapon_anims\\rocket_reload_e', -22.5),
-            'ic_pose': (['play_weapons_incinerator_player_posing_var1'],
+            # posing var1: the graph's per-animation event plays nothing in the bank; its cues are the separate
+            # posing_var1_player a / b / c events (frame events @0, @33, @79). fire1_var1 (the FP fire cue) ships in
+            # no bank: none (the fire sound plays from the firing effect)
+            'ic_pose': (['play_incinerator_first_person_posing_var1_player_a',
+                         'play_incinerator_first_person_posing_var1_player_b',
+                         'play_incinerator_first_person_posing_var1_player_c'],
                         'sound\\sfx\\weapons\\weapon_anims\\rocket_posing', -22.1),
-            'ic_fire_anim': (['play_weapons_incinerator_player_fire1_var1'],
-                             'sound\\sfx\\weapons\\weapon_anims\\rocket_ready', -18.3),
+            # 4b (the sound fields by hand): Halo 4's own zoom sounds over the rocket template's sniper ones (levels:
+            # the Binary Rifle's measurements of sniper_2x / 10x_zoom)
+            'ic_zoom_in': (['play_wea_forerunner_incineration_launcher_player_zoom_in'],
+                           'sound\sfx\weapons\sniper rifle\sniper_2x_zoom', -28.9),
+            'ic_zoom_out': (['play_wea_forerunner_incineration_launcher_player_zoom_out'],
+                            'sound\sfx\weapons\sniper rifle\sniper_10x_zoom', -29.2),
         },
         # the BALANCED reload's sound (the patcher swaps it in with the retimed reload: catalog anim_sounds)
         'stretch': {'ic_reload_balanced': 97.0 / 90.0},
+        'offsets': {'ic_pose': [0.0, 33 / 30.0, 79 / 30.0]},
     },
 
     # ---------------------------------------------------------------------------------------
@@ -321,7 +359,6 @@ PORT.update({
         'sounds': {'first-person ready': SND + 'ic_ready',
                    'first-person posing': SND + 'ic_pose',
                    'first-person melee': SND + 'ic_melee',
-                   'first-person fire-1': SND + 'ic_fire_anim',
                    'first-person reload-empty': SND + 'ic_reload',
                    'first-person reload-full': SND + 'ic_reload'},
         'extra_sounds': [SND + 'ic_reload_balanced'],
@@ -347,6 +384,10 @@ PORT.update({
             'weap_attrs.aiming.zoom_ranges': (1.8, 1.8),
             'obje_attrs.collision_model.filepath': IC + 'incineration cannon',
             'weap_attrs.triggers.0.firing_effects.0.empty_effect.filepath': SND + 'ic_dryfire',
+            'weap_attrs.interface.zoom_in_sound.filepath': SND + 'ic_zoom_in',
+            'weap_attrs.interface.zoom_out_sound.filepath': SND + 'ic_zoom_out',
+            # STEP 4b list 2: first person offset Halo 4 0 vs its rocket's -0.05 onto the H1 rocket's -0.1 -> 0
+            'weap_attrs.triggers.0.projectile.first_person_offset': (0.0, 0.0, 0.0),
         },
         # THE MUZZLE-FLASH RULE (check 10, before boot 1). Halo 4's fr_incin_firing, FIRST PERSON (camera 'only in
         # first person'): firing_muzzle_flash_1p (bounding 0.078 wu) + firing_energy_wave_1p 0.084 / 0.074 (+ one wide
@@ -420,7 +461,7 @@ PORT.update({
                 {'mult': 97.0 / 90.0, 'from': SND + 'ic_reload', 'to': SND + 'ic_reload_balanced'}]},
             'balance': [
                 # the shell: impact 200 x 315/440, the burst 240 (lower 40) x 315/440 over 0.75 x 0.5/0.9, 2.0 x
-                # 2.0/2.5; AOE core 0.75 x 0.5/0.9 (the rocket's core / inner radius)
+                # 2.0/2.5; AOE core 0.75 x 0.6/0.75 (4b: the rockets' cores)
                 row('jpt!', IC + 'impact', 'Damage Lower Bound', 143.18, 200.0, 'Shell Damage'),
                 row('jpt!', IC + 'impact', 'Damage Upper Bound', 143.18, 200.0, 'Shell Damage'),
                 row('jpt!', IC + 'impact', 'Damage Upper Bound Max', 143.18, 200.0, 'Shell Damage'),
@@ -429,14 +470,21 @@ PORT.update({
                 row('jpt!', IC + 'explosion', 'Damage Upper Bound Max', 171.82, 240.0, 'Shell Damage'),
                 row('jpt!', IC + 'explosion', 'Radius', 0.417, 0.75, 'Shell Damage'),
                 row('jpt!', IC + 'explosion', 'Radius Max', 1.6, 2.0, 'Shell Damage'),
-                row('jpt!', IC + 'explosion', 'AOE Core Radius', 0.417, 0.75, 'Shell Damage'),
-                # a bomblet: 120 (lower 30) x 315/440 over 0.61 x 0.5/0.9, 1.25 x 2.0/2.5; core 0.6 x 0.5/0.9
+                row('jpt!', IC + 'explosion', 'AOE Core Radius', 0.6, 0.75, 'Shell Damage'),
+                # a bomblet: 120 (lower 30) x 315/440 over 0.61 x 0.5/0.9, 1.25 x 2.0/2.5; core 0.6 x 0.6/0.75 (4b)
                 row('jpt!', IC + 'bomblet explosion', 'Damage Lower Bound', 21.48, 30.0, 'Bomblet Damage'),
                 row('jpt!', IC + 'bomblet explosion', 'Damage Upper Bound', 85.91, 120.0, 'Bomblet Damage'),
                 row('jpt!', IC + 'bomblet explosion', 'Damage Upper Bound Max', 85.91, 120.0, 'Bomblet Damage'),
                 row('jpt!', IC + 'bomblet explosion', 'Radius', 0.339, 0.61, 'Bomblet Damage'),
                 row('jpt!', IC + 'bomblet explosion', 'Radius Max', 1.0, 1.25, 'Bomblet Damage'),
-                row('jpt!', IC + 'bomblet explosion', 'AOE Core Radius', 0.333, 0.6, 'Bomblet Damage'),
+                row('jpt!', IC + 'bomblet explosion', 'AOE Core Radius', 0.48, 0.6, 'Bomblet Damage'),
+                # 4b list 2: knockback by the rockets' 6/3 (default Halo 4's own 3 / 2.5)
+                row('jpt!', IC + 'explosion', 'Instantaneous Acceleration i', 6.0, 3.0, 'Shell Damage'),
+                row('jpt!', IC + 'bomblet explosion', 'Instantaneous Acceleration i', 5.0, 2.5, 'Bomblet Damage'),
+                # 4b list 2, the bomblet vs the frags: timer 0.6-1.0 x 0.5/(0.6-0.65); gravity 5 x 1/0.9
+                row('proj', IC + 'bomblet', 'Timer', 0.5, 0.6, 'Projectile'),
+                row('proj', IC + 'bomblet', 'Timer Max', 0.769, 1.0, 'Projectile'),
+                row('proj', IC + 'bomblet', 'Air Gravity Scale', 5.556, 5.0, 'Projectile'),
                 # the RL ratio: 0.8 s x 2.0/0.8 = 2.0 s (0.5/s); 6 x 8/6 = 8 most (4 x 4/4 = 4 kept)
                 row('weap', IC + 'incineration cannon', 'Rounds Per Second', 0.5, 1.25, 'More Shooting', block='Triggers'),
                 row('weap', IC + 'incineration cannon', 'Rounds Per Second Max', 0.5, 1.25, 'More Shooting', block='Triggers'),
