@@ -7276,6 +7276,213 @@
     ]
    },
    "hands": "one"
+  },
+  {
+   "weapon": "Railgun",
+   "source": "Halo 4",
+   "donor": "Rocket Launcher",
+   "default_on": false,
+   "desc": "Halo 4's Railgun: its model, first-person animations, sounds and numbers. Hold to charge for 0.75 s and release (or keep holding: it fires by itself 1.5 s later); the slug sticks and bursts: 120 + 180 damage. One round, then a reload. Rocket Launcher ammo tops it up.",
+   "balance_desc": "Measured against the Rocket Launcher, which both games have: 86 + 129 damage a slug over a 0.8 wu blast, 8 rounds most, a 120 wu/s slug, a slower reload and Halo 1-style aim assist.",
+   "anims": {
+    "reload": 1.078,
+    "swap": 0.846
+   },
+   "anim_sounds": {
+    "reload": [
+     {
+      "mult": 1.078,
+      "from": "sound\\weapons\\railgun_port\\rg_reload",
+      "to": "sound\\weapons\\railgun_port\\rg_reload_balanced"
+     }
+    ]
+   },
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\railgun\\slug impact",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 85.9,
+     "card": "Projectile Damage",
+     "original": 120.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\railgun\\slug impact",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 85.9,
+     "card": "Projectile Damage",
+     "original": 120.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\railgun\\slug impact",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 85.9,
+     "card": "Projectile Damage",
+     "original": 120.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\railgun\\explosion",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 128.9,
+     "card": "Explosion Damage",
+     "original": 180.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\railgun\\explosion",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 128.9,
+     "card": "Explosion Damage",
+     "original": 180.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\railgun\\explosion",
+     "field": "Radius From",
+     "block": null,
+     "value": 0.306,
+     "card": "Explosion Radius",
+     "original": 0.55
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\railgun\\explosion",
+     "field": "Radius To",
+     "block": null,
+     "value": 0.8,
+     "card": "Explosion Radius",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\railgun\\railgun",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 8.0,
+     "card": "Magazine",
+     "original": 6.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\railgun\\slug",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 4.0,
+     "card": "Projectile",
+     "original": 3.333
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\railgun\\slug",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 4.0,
+     "card": "Projectile",
+     "original": 3.333
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\railgun\\railgun",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 14.6,
+     "card": "Autoaim",
+     "original": 25.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\railgun\\railgun",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 9.0,
+     "card": "Magnetism",
+     "original": 7.5
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\railgun\\railgun",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 35.0,
+     "card": "Magnetism",
+     "original": 25.0
+    }
+   ],
+   "weap": "weapons\\railgun\\railgun",
+   "fp_animations": "weapons\\railgun\\fp\\fp",
+   "requires": [
+    "proj weapons\\railgun\\slug"
+   ],
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\railgun\\railgun",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+      "label": "Assault Rifle Ammo"
+     },
+     {
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+      "label": "Flamethrower Ammo"
+     },
+     {
+      "tag": "powerups\\needler ammo\\needler ammo",
+      "label": "Needler Ammo"
+     },
+     {
+      "tag": "powerups\\pistol ammo\\pistol ammo",
+      "label": "Pistol Ammo"
+     },
+     {
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+      "label": "Sniper Rifle Ammo"
+     }
+    ]
+   }
   }
  ],
  "Halo 3": [
