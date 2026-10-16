@@ -72,6 +72,34 @@ def clamp_to_type(field_type, value):
     v = min(max(value, rng[0]), rng[1])
     return v, v != value
 
+
+def round_count(new, old, op, scale=1, offset=0, clamp_min=None, clamp_max=None):
+    """A whole-number field's result (user, 2026-10-16).
+
+    1. A half rounds AWAY from the original value. Python's round() rounds halves to
+       even, so 2 x 0.75 = 1.5 came back as 2 (the first penalty pick on a 2-round
+       magazine did nothing) while 5 x 0.5 = 2.5 went down to 2.
+    2. A pick meant to change the value changes it by at least 1, in its direction,
+       unless the field's floor / cap (clamp_min / clamp_max, in MEANING units) forbids
+       it. A 'set' is exact and never nudged."""
+    def inside(v):
+        m = scale * v + offset
+        return (clamp_min is None or m >= clamp_min) and (clamp_max is None or m <= clamp_max)
+    if new > old:
+        r = int(math.floor(new + 0.5))
+    elif new < old:
+        r = int(math.ceil(new - 0.5))
+    else:
+        return int(round(new))
+    if not inside(r):     # rounding stepped past a floor / cap: the other neighbour of `new`
+        r = next((v for v in (int(math.floor(new)), int(math.ceil(new))) if inside(v)), r)
+    if op != 'set' and r == old:
+        nudged = int(old) + (1 if new > old else -1)
+        m = scale * nudged + offset
+        if (clamp_min is None or m >= clamp_min) and (clamp_max is None or m <= clamp_max):
+            r = nudged
+    return r
+
 # Assembly range types -> (sub-field struct type, byte width of each half).
 # rangef/range/ranged are two float32s; range16 is two int16s.
 # Two-component fields, flattened into a pair of leaves so either half can be
@@ -556,7 +584,7 @@ class HaloMap:
                     if clamp_max is not None:
                         meaning = min(meaning, clamp_max)
                     new = (meaning - offset) / scale
-                    new = float(new) if is_float else int(round(new))
+                    new = float(new) if is_float else round_count(new, old, op, scale, offset, clamp_min, clamp_max)
                     new, was = clamp_to_type(ftype, new)
                     n_clamped += was
                     struct.pack_into(fmt, self.data, off, display_to_raw(ftype, new))

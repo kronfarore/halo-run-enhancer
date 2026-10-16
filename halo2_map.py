@@ -335,7 +335,7 @@ class Halo2Map:
                 if clamp_max is not None:
                     meaning = min(meaning, clamp_max)
                 new = (meaning - offset) / scale
-                new = float(new) if is_float else int(round(new))
+                new = float(new) if is_float else hm.round_count(new, old, op, scale, offset, clamp_min, clamp_max)
                 new, was = hm.clamp_to_type(ftype, new)
                 n_clamped += was
                 struct.pack_into(fmt, self.data, off, hm.display_to_raw(ftype, new))
