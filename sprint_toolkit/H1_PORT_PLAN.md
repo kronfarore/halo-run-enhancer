@@ -1505,6 +1505,22 @@ Above 0.6 MiB: ask the user before building.
 
 (Pair 3's 60-67 were never used; they stay unassigned.)
 
+### Parallel pair 5: C6 Binary Rifle + C8 Sticky Detonator (prepared 2026-10-16)
+
+The last four mixed into two pairs by tool family: pair 5 = a polyart-SCOPED one-shot sniper (C6, the
+LightRifle's scope tools) + a sticky explosive with REMOTE detonation to approximate (C8, the Brute
+Shot / Grenade Launcher / Plasma Launcher explosive tools); pair 6 = C7 Railgun (a charge shot) + C9
+Incineration Cannon (a cluster explosion).
+
+**MODEL BUFFER BUDGET (2026-10-16):** ~6.5 MiB left in the tightest maps (a30 / b30, every done port
+resident; `h1_model_buffer.py`), four ports to go: each still keeps its model <= 0.6 MiB (world = FP tag,
+decimated before the first test build). Above 0.6: ask the user.
+
+| session | weapon | test level | extra HUD sequences |
+|---|---|---|---|
+| 1 | C6 Binary Rifle | a30 | hud_reticles 76-79 |
+| 2 | C8 Sticky Detonator | b30 (`--level b30` on EVERY staging run) | hud_reticles 80-83 |
+
 ## Hand-off prompt for a weapon session
 
 > Port the <WEAPON> into Halo 1 (H1_PORT_PLAN.md, wave <X>, #<n>). Source: <game>.
@@ -2733,3 +2749,130 @@ Above 0.6 MiB: ask the user before building.
 > grunt,jackal,elite`; `h1_port_test_map.py scattershot --restore b30`. The ten-map rebuild stays
 > BATCHED (my go). When done: catalog entry, enhancer hand-off, PORTING section, memory,
 > `python port_backup.py --game h1`, "C5: what the Scattershot taught".
+
+### The Binary Rifle (wave C6), filled in -- PARALLEL with C8
+
+> PARALLEL: another port session (C8, the Sticky Detonator) runs at the same time on the same kit.
+> Read H1_PORT_PLAN.md "Running two ports in parallel" first (incl. REWORK status and "Hardened after
+> pair 1": `kit_commit.py` for every commit, `--commit` on the record writers) and "Parallel pair 5"
+> (the model-buffer budget: <= 0.6 MiB, decimated before the first test build). Your test level is
+> a30 -- pass `--level a30` on every `h1_port_test_map.py` run and restore with `h1_port_test_map.py
+> binary_rifle --restore a30`. Extra HUD sequences: hud_reticles 76-79 only (a quadrant scope needs
+> four). If a script says `kit lock: WAITING`, let it wait; never `kit_lock.py release --force` a
+> lock whose holder is running. Do NOT write the next weapon's prompt: write "C6: what the Binary
+> Rifle taught" and tell me you are done.
+>
+> Port the Binary Rifle into Halo 1 (H1_PORT_PLAN.md, wave C, #C6). Source: Halo 4,
+> `h4:objects\weapons\rifle\storm_forerunner_sniper_rifle\storm_forerunner_sniper_rifle` (H4EK; not
+> the _npc variant); FP graph
+> `objects\characters\storm_fp\weapons\rifle\fp_forerunner_sniper_rifle\storm_fp_forerunner_sniper_rifle`.
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Running two ports in parallel", "Phase 0: DONE" incl. 0.1 and
+> the 32 MiB model-buffer cap, "A4: what the Beam Rifle taught" (a sniper on a template that is not
+> the yardstick), "C1" (THE HALO 4 RECIPE) to "C3", "C4: what the LightRifle taught" (THE POLYART
+> SCOPE: h4_polyart + h4_polyart_scope, `zoom_glyphs` over a clear scope, MCC centres a zoom overlay
+> on its sprite; the Armed-boot checks: 3P muzzle flash, hit flash, a visible fast bolt) and "C5"
+> (measure, do not guess; two response tables; a long FP gun's view offset)), PORTING.md ("What
+> ported actually means" steps 0-11 and 5b, closing checks 0-10, the Halo 1 sections -- the
+> LightRifle first, the Beam Rifle for the sniper --, "Balance" incl. the ARMED WDM RULE, THE
+> HIT-EFFECT RULE, the two-handed rule, the balanced drop rule, the species skill rule) and memory
+> h1-model-buffer-32mib-cap, h1-ports-index, h1-parallel-ports, h1-armed-test-balanced-god,
+> h1-coloured-scope-glyphs, h1-reticle-supersample, port-process-tools-index,
+> port-muzzle-flash-rule, port-flashlight-sound-rule, h1-port-phase0, halo-port-own-messages,
+> h1-fmod-bank-sounds, port-findings-are-observations, shared-worktree-commits.
+> `ports_h1/lightrifle.py` is the nearest shape (Halo 4 + a polyart scope), `beam_rifle.py` the
+> sniper: copy into `ports_h1/binary_rifle.py` and edit only that file plus shared tools you
+> generalize (small change, narrowed proof, commit at once via kit_commit).
+>
+> START WITH STEP 4a, with me: candidates the SNIPER RIFLE (provisional: magazine sniper, two zoom
+> levels) and the ROCKET LAUNCHER (the one-hit power-weapon role), with the Beam Rifle port as a
+> peer; DEFAULT = Halo 4's own numbers, BALANCED = the ratio rows. Halo 4 side (`h3_weapon_values.py
+> --kit h4`, aim from the mode block): damage + group (one-hit kills: against which Halo 1 enemies
+> on Legendary?), magazine 2 / carry / reload, rate / recovery, zoom levels (4x / 10x), the beam /
+> projectile (velocity, overpenetration -- the Beam Rifle's and Spartan Laser's traps), any charge,
+> error, aim assist, melee. Time to kill: h1_role_compare 'binary_rifle' set vs Sniper, Rocket
+> Launcher and the Beam Rifle / Spartan Laser ports. Then 4b, the template diff, port_sound_refs
+> and the muzzle-flash comparison BEFORE boot 1; the decimation and `h1_model_buffer.py` before the
+> first test build. The scope: the LightRifle's polyart route, sized from a Halo 4 SCREENSHOT (ask
+> me), two zoom levels; the beam's look: the BEAM RECIPE (B7) if it draws one. `'ground_point':
+> 'auto'`.
+>
+> Reserved: pickup messages 95/96; hud_msg_icons 51 (+ _r); hud_reticles 40 (+ _r; extras 76-79);
+> label `bi` taught to characters\cyborg from `sr`; sounds under `sound\weapons\binary_rifle_port`
+> (`bank: 'halo4'`); weapon folder `weapons\binary rifle`; catalog name `Binary Rifle`.
+>
+> Step 11: `bi` has no carrier -- list Halo 1's carriers of the donor weapon (WDM, actor flags);
+> `firing_profile` (Halo 4's ai\generic Binary Rifle entry on m020 is verified) with `donor_weapon`
+> (+ `donor_variant`), a `wdm_rule` (a one-hit weapon in enemy hands: show me the Legendary
+> numbers) and a `balanced_set`, written with `--commit`; the enhancer session writes its keys
+> through port_catalog_keys.py before the Armed boot. Tests: `h1_port_test_map.py binary_rifle
+> --level a30 --stage` (dry default), fixes, `--balanced`, `--armed grunt,jackal,elite`;
+> `h1_port_test_map.py binary_rifle --restore a30`. The ten-map rebuild stays BATCHED (my go). When
+> done: catalog entry, enhancer hand-off, PORTING section, memory, `python port_backup.py --game h1`,
+> "C6: what the Binary Rifle taught".
+
+### The Sticky Detonator (wave C8), filled in -- PARALLEL with C6
+
+> PARALLEL: another port session (C6, the Binary Rifle) runs at the same time on the same kit. Read
+> H1_PORT_PLAN.md "Running two ports in parallel" first (incl. REWORK status and "Hardened after
+> pair 1": `kit_commit.py` for every commit, `--commit` on the record writers) and "Parallel pair 5"
+> (the model-buffer budget: <= 0.6 MiB, decimated before the first test build). Your test level is
+> b30 -- pass `--level b30` on every `h1_port_test_map.py` run and restore with `h1_port_test_map.py
+> sticky_detonator --restore b30`. Extra HUD sequences: hud_reticles 80-83 only. If a script says
+> `kit lock: WAITING`, let it wait; never `kit_lock.py release --force` a lock whose holder is
+> running. Do NOT write the next weapon's prompt: write "C8: what the Sticky Detonator taught" and
+> tell me you are done.
+>
+> Port the Sticky Detonator into Halo 1 (H1_PORT_PLAN.md, wave C, #C8). Source: Halo 4,
+> `h4:objects\weapons\pistol\storm_sticky_detonator\storm_sticky_detonator` -- AND its campaign
+> variant `storm_sticky_detonator_pve` (Halo 4's campaign tuning; earlier Halo 4 work preferred the
+> _pve tags): diff the two first and let me pick which one is the source; FP graph
+> `objects\characters\storm_fp\weapons\pistol\fp_sticky_detonator\storm_fp_sticky_detonator`.
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Running two ports in parallel", "Phase 0: DONE" incl. 0.1 and
+> the 32 MiB model-buffer cap, "A5" (the STUCK projectile: the needle recipe), "A7: what the Brute
+> Shot taught" (the explosion chain, a grenade on a rocket template), "B4: what the Grenade Launcher
+> taught" (the projectile probe; the hold-to-detonate the GL already had to approximate), "B6: what
+> the Plasma Launcher taught" (a sticky bolt, the charge STEP function), "C1" (THE HALO 4 RECIPE) to
+> "C5" (the Armed-boot checks of C4; short-range AI of C5)), PORTING.md ("What ported actually
+> means" steps 0-11 and 5b, closing checks 0-10, the Halo 1 sections -- the Scattershot / LightRifle
+> first, the Plasma Launcher and the Grenade Launcher for the sticky / detonating explosive --,
+> "Balance" incl. the ARMED WDM RULE, THE HIT-EFFECT RULE, the two-handed rule, the balanced drop
+> rule, the species skill rule) and memory h1-model-buffer-32mib-cap, h1-ports-index,
+> h1-parallel-ports, h1-armed-test-balanced-god, h1-reticle-supersample, port-process-tools-index,
+> port-muzzle-flash-rule, port-flashlight-sound-rule, h1-port-phase0, halo-port-own-messages,
+> h1-fmod-bank-sounds, halo4-midnight-flight-skip (the _pve preference), port-findings-are-observations,
+> shared-worktree-commits. `ports_h1/plasma_launcher.py` / `grenade_launcher.py` are the nearest
+> shape (sticky / detonating explosives), `scattershot.py` the Halo 4 plumbing: copy into
+> `ports_h1/sticky_detonator.py` and edit only that file plus shared tools you generalize (small
+> change, narrowed proof, commit at once via kit_commit).
+>
+> START WITH STEP 4a, with me: candidates the ROCKET LAUNCHER (provisional: a single-shot explosive),
+> the PLASMA GRENADE (a sticky explosive) and the restored FUEL ROD; with the Grenade Launcher, Plasma
+> Launcher and Brute Shot ports as peers; DEFAULT = Halo 4's own numbers, BALANCED = the ratio rows.
+> FIRST read what h3_weapon_values (--kit h4) does not print: how the charge STICKS (to bipeds,
+> vehicles, surfaces), the DETONATION (the second trigger press; is there a fuse fallback), the
+> explosion (damage, radii, group), the projectile's arc (gravity, velocity), magazine 1 / carry /
+> reload. Halo 1 has no remote detonation: lay the approximations out with me before any number --
+> e.g. a sticky projectile on a fuse (the plasma grenade's), a second trigger whose shot detonates
+> what is stuck, the Grenade Launcher's charged-release shape -- and record what each does not
+> reproduce. Time to kill: h1_role_compare 'sticky_detonator' set vs RL, Plasma Grenade, Fuel Rod
+> and the explosive ports. Then 4b, the template diff (incl. the template projectile's material
+> DETONATION effects), port_sound_refs (+ the projectile's own sound fields by hand) and the
+> muzzle-flash comparison BEFORE boot 1; the decimation and `h1_model_buffer.py` before the first
+> test build. HUD art (Halo 4's detonator display) from a Halo 4 SCREENSHOT (ask me), crosshair
+> supersampled; `'ground_point': 'auto'`.
+>
+> Reserved: pickup messages 99/100; hud_msg_icons 53 (+ _r); hud_reticles 42 (+ _r; extras 80-83);
+> label `sd` taught to characters\cyborg from `hp`; sounds under
+> `sound\weapons\sticky_detonator_port` (`bank: 'halo4'`); weapon folder `weapons\sticky detonator`;
+> catalog name `Sticky Detonator`.
+>
+> Step 11: phase 0 found NO Halo 4 ai\generic entry for the Sticky Detonator (search again under the
+> _pve tag first); otherwise `firing_profile` is a SAME-GAME stand-in: `donor_weapon` = the Halo 1
+> weapon its carriers should fire like (choose with me; list the carriers, their WDM and actor
+> flags), plus a `wdm_rule` and a `balanced_set`, written with `--commit`; the enhancer session
+> writes its keys (hands, cards, `trigger_index` for a second trigger) through port_catalog_keys.py
+> before the Armed boot. Tests: `h1_port_test_map.py sticky_detonator --level b30 --stage` (dry
+> default), fixes, `--balanced`, `--armed grunt,jackal,elite`; `h1_port_test_map.py sticky_detonator
+> --restore b30`. The ten-map rebuild stays BATCHED (my go). When done: catalog entry, enhancer
+> hand-off, PORTING section, memory, `python port_backup.py --game h1`, "C8: what the Sticky
+> Detonator taught".
