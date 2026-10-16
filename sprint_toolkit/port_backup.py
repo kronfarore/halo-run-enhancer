@@ -434,7 +434,13 @@ SCRIPTS += tuple(s for s in ('h4_tags.py', 'h4_fp_dump.py', 'h4_fp_jump.py', 'h4
                              'h1_tag_writes_proof.py', 'kit_commit.py', 'port_catalog_keys.py',
                              'port_field_audit.py', 'port_sound_refs.py', 'h1_supercombine_count.py',
                              'h1_hit_effect_load.py', 'h1_fp_state_probe.py', 'h1_projectile_probe.py',
-                             'h1_melee_fire_probe.py', 'death_penalty.py')
+                             'h1_melee_fire_probe.py', 'death_penalty.py',
+                             # the polyart scope (C4: missing from this list until C6's re-check) and C6's
+                             # read-only tools: flags by name, .material values, a scope fit overlay, the
+                             # Armed player-side numbers, a source AI entry for any weapon
+                             'h4_polyart.py', 'h4_polyart_scope.py', 'h4_flag_names.py',
+                             'h4_material_params.py', 'h4_scope_overlay.py', 'h1_armed_player_ttk.py',
+                             'ai_firing_entry.py')
                  if s not in SCRIPTS and os.path.exists(os.path.join(HERE, s)))
 FILES +=[(os.path.join(TOOL, 'port_sounds.py'), 'tool/port_sounds.py')] if not any(
     f[0].endswith('port_sounds.py') for f in FILES) else []

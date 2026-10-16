@@ -2513,6 +2513,15 @@ reproduced, observation only). A test build failed once and built on rerun (the 
 `kit_commit` refuses a file holding the other session's hunks: with the user's go, the own hunk went in by
 `git apply --cached` of a filtered patch (bytes: CRLF).
 
+**Close-out re-check (user):** 4b on the final weapon found list 3's BOUNDING SPHERE still the sniper
+template's (0.4125 at 0; the muzzle at 0.506 wu sat outside it) -> Halo 4's own 0.325 at 0.1 (a zero on the
+yardstick's side: the source value). Decide EVERY list-3 line with a Halo 1 field, not just the flags. 5b
+now has the built port's row. Read-only tools promoted from the scratchpad: `h4_flag_names.py` (flags by
+name), `h4_material_params.py` (.material values), `h4_scope_overlay.py` (a polyart fit over its
+screenshot), `h1_armed_player_ttk.py` (an Armed port's hits to kill the player per difficulty, `--dmg` for a
+balanced row), `ai_firing_entry.py` (any weapon's source AI entry, never writes); port_backup lists them and
+h4_polyart / h4_polyart_scope (missing since C4).
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:

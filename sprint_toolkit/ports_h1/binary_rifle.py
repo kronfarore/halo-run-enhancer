@@ -142,6 +142,14 @@ PORT.update({
     #   Grunt / Jackal / Elite from the Flood Elite sniper + Halo 4's profile; 9 the shield hit x1.0 (1.53/s,
     #   under 3.5); 10 the flash = the LightRifle port's x2 (Halo 4's 0.084-0.15 wu). Model buffer a30 25.9
     #   of 32 MiB (the port 0.59 MiB with the firing cards).
+    # CLOSE-OUT RE-CHECK (user, 2026-10-16): 4b on the final weapon -- list 2 = the error angle only (user's
+    #   4 deg); list 3 held the BOUNDING SPHERE, kept from the template unnoticed -> Halo 4's own 0.325 at
+    #   0.1 (check 6: exactly those 2 fields changed); attachments / functions = Halo 4's spawn energy-core +
+    #   ground effects, not ported (the LightRifle's decision). 5b on the BUILT port (h1_role_compare
+    #   binary_rifle [--balanced], 'Binary Rifle (port)' row): 129 / 1 s, balanced 162.9 / 0.65 s, = the
+    #   rows (that tool applies no projectile rows -- the LightRifle's balanced speed shows its default too).
+    #   Scratchpad tools promoted (read-only): h4_flag_names, h4_material_params, h4_scope_overlay,
+    #   h1_armed_player_ttk, ai_firing_entry; port_backup lists them + h4_polyart / h4_polyart_scope.
     # Tool changes (opt-in, narrowed proof bi1 0 changed): h1_pickable_weapons zoom_glyphs `levels`;
     #   h4_tags.export_xml through a short name past MAX_PATH (no proof: only paths that failed before).
 
@@ -394,6 +402,11 @@ PORT.update({
             # behaviour), rounds total maximum 9.6 (= the balanced row 10; default Halo 4's 8), error 40
             # deg (degenerate: user, 4 deg)
             'weap_attrs.triggers.0.misc.illumination_recovery_time': 0.2,
+            # STEP 4b list 3 (the close-out re-check, user): the BOUNDING SPHERE -- Halo 4 Binary 0.325 at
+            # (0.1, 0, 0), the H4 sniper 0 / 0: a zero on one side -> the source's own (the Battle Rifle's
+            # rule); the sniper template's 0.4125 at 0 had been kept unnoticed
+            'obje_attrs.bounding_radius': 0.325,
+            'obje_attrs.bounding_offset.x': 0.1,
         },
         # STEP 4b FLAGS, by NAME (H4EK ManagedBlam, 2026-10-16): weapon -- Binary 'cannot fire at maximum
         # age' (no age: inert) + 'hide FP weapon when in iron sights' (= the H4 sniper's; Halo 1 hides the

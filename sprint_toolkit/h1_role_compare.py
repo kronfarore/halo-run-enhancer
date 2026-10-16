@@ -1369,6 +1369,8 @@ SETS = {
     # 175, aim 5/60 10/25. Halo 1: sniper 101, 2/s, 4 (12 / 24), 94 fr, 1000 / 1000, aim 1/35 2/35;
     # rocket 315 (+ 2 wu splash), 0.5/s, 2 (4 / 8), 126 fr, range 128.
     'binary_rifle': {'port': 'Binary Rifle', 'weapons': [
+        # the BUILT port (step 5b): its tags (+ --balanced rows)
+        ('Binary Rifle (port)', W + r'binary rifle\binary rifle', 'shot'),
         # DEFAULT = Halo 4's own numbers on the sniper bullet's table (the 'sniper' group's)
         ('BiR = H4 own', W + r'sniper rifle\sniper rifle', 'shot',
          {'dmg': 129.0, 'rate': 1.0, 'mag': 2, 'reload': 86 / 30.0, 'speed': 2799.0,
