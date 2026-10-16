@@ -152,7 +152,7 @@ PORT.update({
     # penetration control, balanced A/B, Armed x6, the vent) -- confirmed by the user; the ten-
     # map rebuild is BATCHED with the SMG, BR, Carbine, Beam Rifle, Spike Rifle, Mauler and Brute
     # Shot (user's go)
-    'status': 'rework',
+    'status': 'done',
     # CLOSE-OUT RECORD (2026-10-10). 4b + template diff + port_sound_refs ran BEFORE boot 1.
     # Yardstick: Rocket Launcher with both aoe spike bumps (user, A/B: A) -> the Brute Shot's
     #   balanced grenade corrected to 73/440 (52.3, WDM 0.91).
@@ -622,6 +622,10 @@ PORT.update({
         # Halo 3's 80 as the copy's mean; balanced 55 (x 80/80 the rocket's)
         # the ROCKET's melee tag (the same 40 / 50..60 as the template's; step 4b list 4: its
         # breaking effect is the yardstick's -- Halo 3's smash and smash agree)
+        # THE CHARGE LATCH (user 2026-10-16, after the Railgun's C7 tests: 'the Spartan Laser would
+        # benefit from it as well'): halo1.dll h1_charge_latch.py v2 (enhancer option, opt-in) -- one
+        # beam a press while held, a press during the vent charges in full; weapon flags bit 30
+        'charge_needs_release': True,
         'melee': (RL + 'melee', SL + 'melee'),
         'melee_dmg': 80.0,
         'melee_response': PP + 'melee_response',
