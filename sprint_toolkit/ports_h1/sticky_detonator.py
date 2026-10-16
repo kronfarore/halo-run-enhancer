@@ -104,6 +104,11 @@ CHARGE = {
                     'proj_attrs.flags.detonation_max_time_if_attached': False},
     'default_responses': {'attach': ATTACH, 'detonate': [JACKAL_SHIELD] + FORCE_FIELDS,
                           'overpenetrate': [WATER]},
+    # CLOSE-OUT RE-CHECK: the grenade copy's Jackal-shield POTENTIAL response is `reflect` with an empty
+    # window -- which Halo 1 applies always (B6: the grenade's unit `attach` works that way) -- so the charge
+    # would bounce off a Jackal shield and burst 0.5 s after landing; Halo 4 bursts it at once -> the potential
+    # `detonate` too (the other materials' potentials are the enum's 0 = unset, or the units' `attach`)
+    'reflect': {'materials': [JACKAL_SHIELD], 'response': 'detonate', 'angle_deg': (0.0, 0.0)},
     # the grenade's per-material DETONATION effects would replace the burst (the GL's trap)
     'clear_detonation_effects': True,
     # the grenade's blue light + armed light dropped; Halo 4's orange charge light (a light + flare)
@@ -120,6 +125,10 @@ CHARGE = {
                        'swaps': {B.join(['sound', 'sfx', 'impulse', 'impacts', 'dirthits']): SND + 'sd_stick'}},
     'impact_tint': {'match': (), 'rgb': None, 'out': SD + 'effects' + B + 'impact' + B,
                     'drop_particles': ('smoke c generic', 'flash h shield impact'),
+                    # CLOSE-OUT RE-CHECK: the POTENTIAL responses' effects too (the units' always-on
+                    # `attach` and the Jackal shield's `detonate` named the grenade's own bounce: plasma
+                    # particles on every stick to a unit -- the Concussion Rifle's `potential`)
+                    'potential': True,
                     'sounds': {B.join(['sound', 'sfx', 'impulse', 'impacts', 'dirthits']): SND + 'sd_stick'}},
 }
 

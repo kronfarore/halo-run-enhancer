@@ -440,7 +440,10 @@ SCRIPTS += tuple(s for s in ('h4_tags.py', 'h4_fp_dump.py', 'h4_fp_jump.py', 'h4
                              # Armed player-side numbers, a source AI entry for any weapon
                              'h4_polyart.py', 'h4_polyart_scope.py', 'h4_flag_names.py',
                              'h4_material_params.py', 'h4_scope_overlay.py', 'h1_armed_player_ttk.py',
-                             'ai_firing_entry.py')
+                             'ai_firing_entry.py',
+                             # C8's read-only tools: a Wwise event's layers, candidate layer mixes to
+                             # listen to, a Halo 4 projectile's fuse / flight / damage at a glance
+                             'h4_event_layers.py', 'h4_layer_mix.py', 'h4_projectile_summary.py')
                  if s not in SCRIPTS and os.path.exists(os.path.join(HERE, s)))
 FILES +=[(os.path.join(TOOL, 'port_sounds.py'), 'tool/port_sounds.py')] if not any(
     f[0].endswith('port_sounds.py') for f in FILES) else []
