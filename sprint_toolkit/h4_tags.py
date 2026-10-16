@@ -98,8 +98,16 @@ def export_xml(rel):
     os.makedirs(CACHE, exist_ok=True)
     out = os.path.join(CACHE, rel.replace('\\', '~').replace('/', '~') + '.xml')
     if not os.path.exists(out) or os.path.getmtime(out) < os.path.getmtime(src):
-        subprocess.run([os.path.join(H4EK, 'tool.exe'), 'export-tag-to-xml', src, out],
+        # tool.exe cannot write past MAX_PATH (260): the Binary Rifle's control bitmap / materials
+        # (C6, 2026-10-16: a 267-char cache path, the export silently missing) -> a short name in
+        # the cache, moved into place by Python (long paths enabled)
+        dst = out if len(out) < 250 else os.path.join(CACHE, '_long_export.xml')
+        if dst != out and os.path.exists(dst):
+            os.remove(dst)
+        subprocess.run([os.path.join(H4EK, 'tool.exe'), 'export-tag-to-xml', src, dst],
                        cwd=H4EK, capture_output=True, timeout=600)
+        if dst != out and os.path.exists(dst):
+            os.replace(dst, out)
     if not os.path.exists(out):
         raise SystemExit('H4EK tool export-tag-to-xml failed for ' + rel)
     return out
