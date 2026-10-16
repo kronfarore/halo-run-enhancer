@@ -167,7 +167,7 @@ PORT = reserved(
             'blast': 128.9,              #                 x 180/300
             'radius': (0.306, 0.8),      # 0.5 x 0.55/0.9, 2.0 x 1.0/2.5
             'charge_s': 0.75,            # KEPT: no rocket charges (the Plasma Launcher's 'charge kept')
-            'charge_hold_s': 1.5,        # KEPT, likewise
+            'charge_hold_s': 0.0,        # boot 2 (user, option 1): no hold in either version
             'fire_recovery_s': 1.5,      # 2.0 x 0.6/0.8 (moot on a 1-round magazine)
             'magazine': 1,               # 2 x 1/2
             'rounds_total_initial': 4,   # 4 x 4/4
@@ -307,8 +307,10 @@ PORT.update({
         },
         # BOOT 1 (user: 'the charge animation restarts in the middle of the animation partly'): Halo 1 LOOPS
         # `overcharged` while the trigger stays charged; Halo 4's is 35 fr (1.17 s) and the _pve hold is 1.5 s
-        # -> retimed to 45 fr (1.5 s): it plays once, then the discharge fires
-        'resample': {'first-person overcharged': 45},
+        # -> retimed to 45 fr (1.5 s) for boot 2. BOOT 2 (user: 'I can't release the shot after the charge, I
+        # need to keep holding until it fires on its own'): Halo 1's one-trigger charge fires ONLY by its
+        # discharge (a release while charged fires nothing) -> charge hold 0 (option 1, user: fires the moment
+        # the 0.75 s charge completes); with no hold the retime has no purpose: Halo 4's own 35 fr again
     },
 
     # Halo 4's own sounds (h1_port_sounds.py railgun, `bank` 'halo4'): the player bank railgun_player
@@ -366,7 +368,7 @@ PORT.update({
     # The weapon (h1_pickable_weapons.py --only railgun) on a COPY of the Halo 1 ROCKET LAUNCHER (the
     # yardstick: two-handed heavy, a magazine + reload, the rocket's HUD, melee and explosion table) with the
     # FUEL ROD's ONE-TRIGGER CHARGE (A8: charge, then 'discharge'; an early release fires nothing) -- Halo
-    # 4's charge-with-magazine: charging 0.75 s, held up to 1.5 s, then it fires by itself. DEFAULT = HALO
+    # 4's charge-with-magazine: charging 0.75 s, then it fires by itself (no hold: boot 2). DEFAULT = HALO
     # 4's OWN NUMBERS; the rocket-ratio values are the balance rows. STEP 6, the ammo pickup: the rocket's
     # ammo box (Halo 4's _pve names a UNSC ammo box with 0 rounds: Halo 4 has no ammo pickups), its 2 rounds
     # x Halo 4 carry 6 / H1 rocket 8 -> 1 slug a box (the Brute Shot's rule)
@@ -417,9 +419,14 @@ PORT.update({
                       'tag': SND + 'rg_charging', 'marker': 'primary trigger', 'scale': 'B_out'},
         'fields': {
             'weap_attrs.B_in': 'primary_charged',
-            # THE TRIGGER (the fuel rod's way): charge 0.75 s, hold 1.5 s (_pve), then DISCHARGE
+            # THE TRIGGER (the fuel rod's way): charge 0.75 s, then DISCHARGE. Halo 4 holds the charge 1.5 s
+            # (_pve) and fires on release; Halo 1's one trigger fires ONLY by its discharge (boot 2: a release
+            # while charged fired nothing, the shot came 2.25 s after the press) -> hold 0 (user, option 1:
+            # it fires the moment the charge completes; an early release still cancels). Lost: choosing the
+            # moment of release. Rejected: the plasma pistol's charged pair (Halo 4's release, but Halo 1's AI
+            # only taps a pair -- A8: Armed enemies would never fire the slug)
             'weap_attrs.triggers.0.charging.charging_time': 0.75,
-            'weap_attrs.triggers.0.charging.charge_hold_time': 1.5,
+            'weap_attrs.triggers.0.charging.charge_hold_time': 0.0,
             'weap_attrs.triggers.0.charging.overcharged_action': 'discharge',
             'weap_attrs.triggers.0.flags.does_not_repeat_automatically': True,
             'weap_attrs.triggers.0.flags.projectile_is_client_side_only': False,
@@ -478,8 +485,8 @@ PORT.update({
     'catalog': {
         'entry': {
             'weapon': 'Railgun', 'source': 'Halo 4', 'donor': 'Rocket Launcher', 'default_on': False,
-            'desc': "Halo 4's Railgun: its model, first-person animations, sounds and numbers. Hold to "
-                    "charge for 0.75 s and release (or keep holding: it fires by itself 1.5 s later); "
+            'desc': "Halo 4's Railgun: its model, first-person animations, sounds and numbers. Hold the "
+                    "trigger for 0.75 s and it fires (let go earlier to cancel); "
                     "the slug sticks and bursts: 120 + 180 damage. One round, then a reload. Rocket "
                     "Launcher ammo tops it up.",
             'balance_desc': "Measured against the Rocket Launcher, which both games have: 86 + 129 damage "
