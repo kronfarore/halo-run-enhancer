@@ -7172,7 +7172,7 @@
      "tag": "weapons\\sticky detonator\\sticky detonator",
      "field": "Autoaim Angle",
      "block": null,
-     "value": 0.0,
+     "value": 4.0,
      "card": "Autoaim",
      "original": 4.0
     },
