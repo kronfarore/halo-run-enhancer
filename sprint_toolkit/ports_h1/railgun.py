@@ -85,10 +85,21 @@ SLUG = {
     'projectile': (RL + 'rocket', RG + 'slug'),
     'damage': None, 'no_impact_damage': True,
     'attached': {'from': RL + 'explosion', 'out': RG + 'slug impact', 'dmg': 120.0,
-                 # 4b (no field audit reads the attached tag): instantaneous acceleration by the ratio on the
-                 # rocket explosion's 6 -- Halo 4 impact 0.05 / Halo 4 rocket impact 1.5 = 0.2
+                 # 4b BY HAND (no field audit reads the attached tag; Halo 4 railgun impact_pve vs Halo 4 rocket
+                 # impact onto this copy of the H1 rocket explosion): instantaneous acceleration 6 x 0.05/1.5 =
+                 # 0.2; active camo damage 1 x 0.2/1 = 0.2 (close-out re-check, user); the BREAKING EFFECT: the
+                 # Halo 4 rocket impact has none (all 0: a zero on one side -> the source values; the copy had
+                 # carried the rocket blast's 80 / 1 / 2 / 16 / 3 / 0 shove onto the hit); category kept
+                 # (the rocket's table); flags agree (none)
                  'fields': dict(HIT_FLASH, **{'radius': (0.0, 0.0),
-                                             'damage.instantaneous_acceleration': 6.0 * 0.05 / 1.5})},
+                                             'damage.instantaneous_acceleration': 6.0 * 0.05 / 1.5,
+                                             'damage.active_camouflage_damage': 0.2,
+                                             'breaking_effect.forward_velocity': 35.0,
+                                             'breaking_effect.forward_radius': 0.12,
+                                             'breaking_effect.forward_exponent': 0.2,
+                                             'breaking_effect.outward_velocity': 3.0,
+                                             'breaking_effect.outward_radius': 0.5,
+                                             'breaking_effect.outward_exponent': 0.2})},
     'explosion': {'effect': (RL + 'effects' + B + 'rocket explosion', RG + 'effects' + B + 'slug explosion'),
                   'damage': (RL + 'explosion', RG + 'explosion'),
                   'scale': 0.4, 'out_dir': RG + 'effects' + B,
@@ -122,6 +133,9 @@ SLUG = {
                     # STEP 4b list 2: bounding radius 0.1 x 0/0.1 = 0; air damage range 0..100 x 60/150 = 0..40
                     'obje_attrs.bounding_radius': 0.0,
                     'proj_attrs.physics.air_damage_range': (0.0, 40.0),
+                    # STEP 4b list 3 (close-out re-check, user): DANGER RADIUS -- Halo 4 2.5 / its rocket 3 / the
+                    # H1 rocket 0 (a zero on one side -> the source value; the AI's cue to dodge the blast)
+                    'proj_attrs.detonation.danger_radius': 2.5,
                     'proj_attrs.flags.oriented_along_velocity': True,
                     'proj_attrs.flags.detonation_max_time_if_attached': False},
     'default_responses': {'attach': ATTACH, 'reflect': FORCE_FIELDS, 'overpenetrate': [WATER, LEAVES]},
@@ -255,6 +269,14 @@ PORT.update({
     #   (Halo 4's 0.085-0.53 wu). 4b re-check on the final weapon: lists 2 = 0 / 0 / the blast radius (balance
     #   rows) + the AOE CORE -> the ratio 0.432 (no card: Halo 4's own 0.54 had been kept; check 6: that 1 field).
     #   Template diff traced (the rocket's leaves potential kept: LEAVES). 5b: 120 + 180 / 85.9 + 128.9 (= 4a).
+    # CLOSE-OUT RE-CHECK (user: 'every ported step, especially 4b'): list 3 line by line -> the projectile's
+    #   DANGER RADIUS 2.5 (Halo 4's; the rocket copy's 0); the ATTACHED hit tag, which the field audit does not
+    #   read, by hand (h1_jpt_pair_4b.py) -> active camo damage 0.2 and Halo 4's own breaking effect (the copy
+    #   had carried the rocket blast's shove onto the hit). Check 6: exactly those 8 fields. The slug's stick
+    #   responses play the rocket's per-material impact effects with 3 stock sounds (dirt_burst, water_burst,
+    #   woodhit; h1_proj_effects.py): Halo 4's railgun impact events ship in no bank. Scratch tools promoted
+    #   (read-only, port_backup lists them + h1_charge_latch.py): h4_tag_pair_diff, ai_firing_search,
+    #   h1_trigger_trace, h1_proj_effects, h1_jpt_pair_4b.
     # Shared tools (narrowed proofs, 0 changed): rg1 h1_pickable_weapons `charge_needs_release` (bit 30); rg2
     #   `charge_light`. h1_role_compare 'railgun' set (+ 5b rows); the enhancer option h1_charge_latch.
     # Not reproduced: choosing the moment of release (Halo 4 holds a charge 1.5 s), the electric arcs along the

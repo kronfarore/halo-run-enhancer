@@ -443,7 +443,12 @@ SCRIPTS += tuple(s for s in ('h4_tags.py', 'h4_fp_dump.py', 'h4_fp_jump.py', 'h4
                              'ai_firing_entry.py',
                              # C8's read-only tools: a Wwise event's layers, candidate layer mixes to
                              # listen to, a Halo 4 projectile's fuse / flight / damage at a glance
-                             'h4_event_layers.py', 'h4_layer_mix.py', 'h4_projectile_summary.py')
+                             'h4_event_layers.py', 'h4_layer_mix.py', 'h4_projectile_summary.py',
+                             # C7's: the halo1.dll charge latch (its own session) and the read-only tools: an
+                             # H4 tag pair diff (MP vs _pve), an AI entry over every map, a charge trigger's
+                             # probe timeline, a projectile's effects / sounds, 4b by hand for a damage effect
+                             'h1_charge_latch.py', 'h4_tag_pair_diff.py', 'ai_firing_search.py',
+                             'h1_trigger_trace.py', 'h1_proj_effects.py', 'h1_jpt_pair_4b.py')
                  if s not in SCRIPTS and os.path.exists(os.path.join(HERE, s)))
 FILES +=[(os.path.join(TOOL, 'port_sounds.py'), 'tool/port_sounds.py')] if not any(
     f[0].endswith('port_sounds.py') for f in FILES) else []
