@@ -129,7 +129,21 @@ PORT.update({
         # tuned settings; `hot` off -- tiny islands saturate white)
         'glow_shaders': {'bi_glow': {'rgb': ORANGE, 'additive': True, 'islands': True,
                                      'islands_of': 'storm_forerunner_sniper_rifle_default_metal_glow',
-                                     'gain': 2.2, 'falloff': 0.35, 'radius': 1.3, 'hot': False}},
+                                     'gain': 2.2, 'falloff': 0.35, 'radius': 1.3, 'hot': False},
+                         # BOOT 1 (user: 'make them glow more intense orange when firing'): the LightRifle's
+                         # FIRING LIGHT-UP (C4 boot 2) -- the glow pieces again, hotter and wider, FADED by A
+                         # out = the sniper template's firing ILLUMINATION (weapon export A, on per shot,
+                         # back to 0 over the illumination recovery, 0.2 s after 4b)
+                         'bi_fire_glow': {'rgb': (1.0, 0.55, 0.12), 'additive': True, 'islands': True,
+                                          'islands_of': 'storm_forerunner_sniper_rifle_default_metal_glow',
+                                          'strip': True, 'gain': 2.0, 'falloff': 0.8, 'radius': 1.3,
+                                          'hot': False, 'fade_source': 'A_out'}},
+        # the firing cards: every glow piece copied x2.0 about its centre in its own plane, lifted (the
+        # LightRifle's lr_fire; no cards on pieces facing along the barrel: they reached under plates there)
+        'glow_cards': {'bi_fire': {'of': 'bi_glow', 'shader': 'bi_fire_glow', 'scale': 2.0, 'along': 1.1,
+                                   'lift': 0.08, 'round_scale': 1.6,
+                                   'skip_piece_normals': [(1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)],
+                                   'skip_piece_dot': 0.9}},
         # the beam's textures (THE BEAM RECIPE, B7): Halo 4's tracer profiles x their palettes, baked --
         # the core = the lance's fr_sniper_tracer through grad_forerunner_muzzle_smg, the glow = glow_red's
         # fr_rifle_tracer_glow through grad_forerunner_muzzle_spread; both additive (premultiplied)
@@ -364,7 +378,12 @@ PORT.update({
                 # each quadrant a coloured zoom glyph at the reserved hud_reticles 76-79 (pair 5), its crop
                 # pinned to the full 480 x 270 (MCC centres a zoom overlay on its sprite), placed by
                 # `offset` (the LightRifle's calibration: quadrant corner / 1.11 - (2 - 256) x 1.802 units)
-                'zoom_glyphs': [{'image': SCOPE + q + '.png', 'reg': reg, 'name': 'binary rifle scope ' + q,
+                # BOOT 1 (user: 'zoom stage 2 is missing' + the Halo 4 10x screenshot): the glyph sequences
+                # held one sprite (zoom 1) -- `levels`: the same pieces fitted to the 10x shot (h4_zoom2.png,
+                # --fit, scope\z2) as sprite 2: overlap 0.300 -> scale x 1.05 y 1.0, shift 0 -120 px (zoom 1:
+                # 1.025 / 1.0, -8 -120 -- Halo 4's two stages differ only slightly)
+                'zoom_glyphs': [{'image': SCOPE + q + '.png', 'levels': [SCOPE + 'z2' + B + q + '.png'],
+                                 'reg': reg, 'name': 'binary rifle scope ' + q,
                                  'index': i, 'scale': (1.0, 1.0), 'overlay': 3.604, 'offset': off,
                                  'rgb': (255, 110, 30), 'alpha': 0.6, 'normalize': True, 'gamma': 1.6}
                                 for q, reg, i, off in (('tl', (480, 270), 76, (-407, -29)),
@@ -375,19 +394,25 @@ PORT.update({
                 # #0 dropped (the DMR's); its reticle draws from its OWN sheet -> the shared hud_reticles;
                 # the zoom angle ticks / distance / elevation numbers dropped
                 'drop_crosshairs': [1, 2, 3, 4, 5],
+                # the low-ammo flash: Halo 4's `low ammo threshold` 1 (the sniper's 1 of 4 came out 0 on a
+                # 2-round magazine; the HUD `fields` key of the Sticky Detonator, C8 boot 1)
+                'fields': {'flash_cutoffs.loaded_ammo_cutoff': 1},
                 'reticle_bitmap': r'ui\hud\bitmaps\combined\hud_reticles',
                 'reticle_scaling': 0,
                 'drop_elements': {'static': ['age'],
                                   'number': ['distance_to_target', 'elevation_to_target']},
-                'reticle': (H4 + BIUI + 'outer', 0, 'binary rifle'),
-                'reticle_xform': {'offset': (-47.0, -38.0), 'gain': 0.9},
-                'reticle_layers': [(H4 + BIUI + 'outer', 0, 1.0, {'flip_x': True, 'offset': (45.0, -38.0), 'gain': 0.9}),
-                                   (H4 + BIUI + 'outer', 0, 1.0, {'flip_y': True, 'offset': (-47.0, 39.0), 'gain': 0.9}),
-                                   (H4 + BIUI + 'outer', 0, 1.0, {'flip_x': True, 'flip_y': True, 'offset': (45.0, 39.0), 'gain': 0.9}),
-                                   (H4 + BIUI + 'inner_2', 0, 1.0, {'flip_x': True, 'offset': (-69.0, -12.0), 'gain': 0.2}),
-                                   (H4 + BIUI + 'inner_2', 0, 1.0, {'offset': (66.0, -12.0), 'gain': 0.2}),
-                                   (H4 + BIUI + 'inner_2', 0, 1.0, {'flip_x': True, 'flip_y': True, 'offset': (-69.0, 14.0), 'gain': 0.2}),
-                                   (H4 + BIUI + 'inner_2', 0, 1.0, {'flip_y': True, 'offset': (65.0, 14.0), 'gain': 0.2})],
+                # BOOT 1 (user: 'we can't have the tightened crosshair in zoomed state? Then the tightened
+                # version always'): Halo 1 has one aim reticle at every zoom -> Halo 4's ZOOMED reticle,
+                # four `inner_2` steps (flat ends + a diagonal) read off the user's zoom-1 screenshot:
+                # centres +-12 / +-8 px at 1080p = +-8.8 / +-6.1 units (the boot-1 brackets' calibration,
+                # 0.71 units a px), drawn at the art's own scale (3 px a unit, as `outer`), full opacity;
+                # top-left and bottom-right mirrored. (The unzoomed brackets of boot 1: `outer` 24 x 32 at
+                # (-47, -38) / (45, -38) flip x / (-47, 39) flip y / (45, 39) flip x+y, gain 0.9.)
+                'reticle': (H4 + BIUI + 'inner_2', 0, 'binary rifle'),
+                'reticle_xform': {'flip_x': True, 'offset': (-8.8, -6.1)},
+                'reticle_layers': [(H4 + BIUI + 'inner_2', 0, 1.0, {'offset': (8.8, -6.1)}),
+                                   (H4 + BIUI + 'inner_2', 0, 1.0, {'offset': (-8.8, 6.1)}),
+                                   (H4 + BIUI + 'inner_2', 0, 1.0, {'flip_x': True, 'offset': (8.8, 6.1)})],
                 'reticle_split': 1,
                 'reticle_min_width': 2,
                 'reticle_supersample': 2,
