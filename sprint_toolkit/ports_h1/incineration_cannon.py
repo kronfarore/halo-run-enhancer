@@ -153,16 +153,10 @@ BOMBLET = {
     # Halo 4's bomblet: a small orange ball with a short trail -- the fuel rod's ball x0.4, its tail contrail
     # recoloured and narrower, its light + flare orange; the sparks dropped
     'model': '',
-    'keep_attachments': (0,),
-    # BOOT 2 (user: 'no visible projectiles on the bomblets'): the ball was x0.4 (0.008 - 0.04 wu) and olive -> x0.7 on
-    # the orange sprite, the flare 0.06 -> 0.1
-    # BOOT 8 (user: 'the trail keeps bouncing and changing angles'): the fuel rod tail's long ribbon kinked at every
-    # bounce -> a SHORT thin streak (points live 0.08-0.1 s, 0.04 -> 0.02 wu), the Binary Rifle's state form
-    'contrail': {'from': FR + 'tail', 'out': IC + 'bomblet trail', 'rgb': (1.0, 1.0, 1.0),
-                 'bitmap': TRAIL_MAP, 'sequence': (0, 0),
-                 'states': [{'duration': (0.08, 0.1), 'transition': (0.05, 0.08), 'width': 0.04,
-                             'argb': (1.0, 1.0, 1.0, 1.0)},
-                            {'width': 0.02, 'argb': (0.0, 1.0, 1.0, 1.0)}]},
+    # BOOT 9 (user: 'the bomblets' trail is still problematic'): a ribbon on an object that bounces every few frames kinks
+    # however short it is (boot 8's 0.08-0.1 s streak too) -> NO trail: the glowing orange ball alone (Halo 4's
+    # submunition trail not reproduced). Boot 2: the ball x0.7 on the orange sprite, the flare 0.1
+    'keep_attachments': (),
     'widget_tint': {'out': IC + 'bomblet volume', 'hither': ORB_HITHER, 'yon': ORB_YON, 'radius': 0.7, 'map': ORB_MAP},
     'glow': {'light': (FR + 'fuel rod exhaust', IC + 'bomblet glow'),
              'flare': IC + 'bomblet glow', 'rgb': ORANGE, 'flare_radius': 0.1, 'marker': 'contrail'},
@@ -534,7 +528,12 @@ PORT.update({
                                # INSIDE the barrel (the muzzle face, glow pieces 10 / 11 / 28, at x 20.6-20.8): the flash
                                # (+2.5 cm) was buried in the gun -> shifted 5 cm forward (x 24.5: ~4 cm past the face), x1.8
                                # BOOT 8 (user: 'barely visible now -- enhance it from this position'): x1.8 -> x3.0
-                               'match': 'flash', 'scale': 3.0, 'shift': (0.05, 0.0, 0.0),
+                               # BOOT 9 (user: 'move it down, triple its lifetime'): 2 cm lower (z 6.7 -> 4.7 cm, between
+                               # the muzzle's lower bars) and an own particle copy living x3 (boot 4's missing flash was
+                               # the burial in the barrel, not the copy)
+                               'match': 'flash', 'scale': 3.0, 'shift': (0.05, 0.0, -0.02),
+                               'own_particles': {'out': IC + 'effects' + B + 'particles' + B + 'shell ',
+                                                 'lifespan': 3.0, 'fade_out': 0.1},
                                'tint': (1.0,) + ORANGE})},
         # BOOT 2-3: the magazine's RELOADING EFFECT (three contracting rings, also drawn first person) never showed in
         # classic first person -- REMOVED (user, boot 4); the reload glow (B out, the model's `ic_reload_glow`) instead
