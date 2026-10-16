@@ -121,7 +121,29 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'in_progress',
+    # 2026-10-16: tested on a30 over 4 dry boots, balanced and Armed (grunt, jackal, elite) -- all confirmed by
+    # the user; the ten-map rebuild is BATCHED (the user's go)
+    'status': 'done',
+    # CLOSE-OUT RECORD (2026-10-16). STEP 4b (port_field_audit --port binary_rifle): weapon list 2 = 7, all
+    #   decided (illumination recovery 0.2 written; aim = the zoomed modes + zoomed-only flag; max rounds = the
+    #   balanced row; error 4 deg, user); list 4 = the deliberate settings (aim 1/25 1.6/25, deviation 0.4,
+    #   rate 1/s = Halo 4's 1.0 s recovery); list 5 = message 95, zoom (4, 10), pickup rounds 8. Projectile:
+    #   list 2 = 0; list 4 velocity 2799 / range 500 (Halo 4's own: overpenetration confirmed at 2799, boot 3).
+    #   Damage: list 2 = the balanced row (162.9); instantaneous acceleration 0.5 written. FLAGS decided by name
+    #   (ManagedBlam, above). TEMPLATE DIFF (h1_port_template_diff binary_rifle): every line traced -- weapon
+    #   27 (numbers, own tags / sounds, night vision off), bullet 27 (beam + glow contrails, Forerunner impact
+    #   sounds, the sniper's responses kept), damage 3, melee 0, firing effect (the LightRifle copy x2 / x1.2,
+    #   recoloured), HUD (the sniper's zoom crosshairs / readouts dropped, reticle 40 on the shared sheet,
+    #   glyphs 76-79 with 2 levels, the shard meter, the clear blurred mask), shaders 2.
+    # Closing checks: 0 port_refs_audit 0 problems (a30 test copy: own bullet / damage / melee); 2
+    #   validate_halo_json 0; 3 port_sounds --check 0; 4 port_backup h1; 5 n/a (Halo 1: the bank manifest);
+    #   6 h1_tag_writes_proof 54 tags / 1,095,660 fields 0 changed; 7 port_sound_refs all OWN (the pickup
+    #   now Halo 4's own, weapon_sync), 0 BORROW, 0 KEEP; 8 used_weapons() holds it, the Armed build fires
+    #   Grunt / Jackal / Elite from the Flood Elite sniper + Halo 4's profile; 9 the shield hit x1.0 (1.53/s,
+    #   under 3.5); 10 the flash = the LightRifle port's x2 (Halo 4's 0.084-0.15 wu). Model buffer a30 25.9
+    #   of 32 MiB (the port 0.59 MiB with the firing cards).
+    # Tool changes (opt-in, narrowed proof bi1 0 changed): h1_pickable_weapons zoom_glyphs `levels`;
+    #   h4_tags.export_xml through a short name past MAX_PATH (no proof: only paths that failed before).
 
     # geometry + look (h1_h3_weapon_model.py; Halo 4 through h4_tags). ONE render model for world AND first
     # person: 19 nodes (b_gun root), regions `default` (mesh 0) + `knight_arm` (mesh 1) -- both drawn on the
@@ -250,6 +272,11 @@ PORT.update({
                            'sound\\sfx\\weapons\\sniper rifle\\sniper_2x_zoom', -28.9),
             'bi_zoom_out': (['play_wea_forerunner_sniper_player_zoom_out'],
                             'sound\\sfx\\weapons\\sniper rifle\\sniper_10x_zoom', -29.2),
+            # the ammo PICKUP (close-out, port_sound_refs: the sniper's sniper_ammo was a BORROW): Halo 4's
+            # ammo_pickup_generic plays play_weapon_ammo_pickup_fallback -- in the weapon_sync bank (one
+            # sound; the LightRifle's homing_rifle pickup event is in no bank, a KEEP there)
+            'bi_ammo': (['play_weapon_ammo_pickup_fallback@weapon_sync'],
+                        'sound\\sfx\\weapons\\weapon_pickup_ammo\\sniper_ammo', -30.5),
             'bi_drop': (['play_wea_drop_rifle_shotgun_nonplayer@homing_rifle_player'],
                         'sound\\sfx\\impulse\\weapon_drops\\shotgun_impact', -20.7),
             'bi_flyby': (['play_proj_forerunner_whizby_large@proj_forerunner_whizby_large'],
@@ -355,6 +382,7 @@ PORT.update({
             'weap_attrs.interface.zoom_in_sound.filepath': SND + 'bi_zoom_in',
             'weap_attrs.interface.zoom_out_sound.filepath': SND + 'bi_zoom_out',
             'item_attrs.collision_sound.filepath': SND + 'bi_drop',
+            'weap_attrs.interface.pickup_sound.filepath': SND + 'bi_ammo',
             # the sniper's integrated night vision: not the Binary Rifle's
             'weap_attrs.flags.enables_integrated_night_vision': False,
             # STEP 6: the H1 sniper's pickup : initial (16 : 12) on Halo 4's 6
