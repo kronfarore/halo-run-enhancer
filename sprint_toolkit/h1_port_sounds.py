@@ -32,6 +32,7 @@ sounds start at frame 0.
 import argparse
 import glob
 import json
+import itertools
 import os
 import shutil
 import subprocess
@@ -181,6 +182,15 @@ def render(weapon):
             if name in w.get('slice', {}):
                 t0, t1 = w['slice'][name]
                 x = x[int(t0 * RATE):int(t1 * RATE)]
+            # `low_shelf` {name: (hz, dB)}: the band below hz raised (two one-pole low-passes, 12
+            # dB/oct, added back), before the level (the Sticky Detonator, boot 2: 'more oomph')
+            if name in w.get('low_shelf', {}):
+                hz, db = w['low_shelf'][name]
+                a = np.exp(-2 * np.pi * hz / RATE)
+                lo = x
+                for _ in range(2):
+                    lo = np.array(list(itertools.accumulate(lo * (1 - a), lambda s, v: a * s + v)))
+                x = x + lo * (10 ** (db / 20.0) - 1)
             act = x[np.abs(x) > 0.01]
             rms = 20 * np.log10(np.sqrt((act ** 2).mean()) + 1e-12) if len(act) else -99
             x = x * 10 ** ((target - rms) / 20)
@@ -308,6 +318,10 @@ def write_tags(weapon, audio):
             setattr(dd, f, getattr(ref, f))
         if cls:
             dd.sound_class.set_to(cls)
+        # `gain` {name: tag gain modifier} (opt-in, after the copy from `like`): louder than the PCM
+        # ceiling allows (the Sticky Detonator, boot 3: +3 dB of PCM went into the limiter, unheard)
+        if name in w.get('gain', {}):
+            dd.gain_modifier = w['gain'][name]
         tps = [p for pr in dd.pitch_ranges.STEPTREE for p in pr.permutations.STEPTREE]
         if len(tps) != len(pcm):
             raise SystemExit('%s: %d permutations for %d wavs' % (name, len(tps), len(pcm)))
