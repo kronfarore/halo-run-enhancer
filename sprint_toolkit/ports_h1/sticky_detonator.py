@@ -60,11 +60,9 @@ ATTACH = [i for i in range(33) if i not in [JACKAL_SHIELD, WATER] + FORCE_FIELDS
 # THE CHARGE (approximation A, user 4a): the plasma grenade's projectile, Halo 4's own numbers
 CHARGE = {
     'projectile': (PG + 'plasma grenade', SD + 'charge'),
-    # the IMPACT: Halo 4's 5 `collision` (accel 0.5) on a copy of the grenade's explosion table, no
-    # radius, no screen flash (the Plasma Launcher's armed-boot finding: a copy keeps its 1 s flash)
-    'damage': (PG + 'explosion', SD + 'impact'),
-    'dmg': 5.0, 'acceleration': 0.5,
-    'fields': {'radius': (0.0, 0.0), 'screen_flash.duration': 0.0},
+    # the IMPACT: Halo 4's 5 `collision` (accel 0.5). BOOT 1 (user: 'the impact / attaching does damage,
+    # which is weird -- shift all damage to the actual explosion'): no impact damage, its 5 into the burst
+    'damage': None, 'no_impact_damage': True,
     # THE BURST: Halo 4 _pve 75..500 over 0.4 -> 2.5 (AOE core 0.4, explosion_small, accel 2 = Halo 4's
     # plasma grenade's 2: x1 -> the grenade's own 4); the frag grenade's fireball effect, its damage
     # part repointed to an own copy of the PLASMA GRENADE's table (the yardstick's, user); the screen
@@ -73,7 +71,7 @@ CHARGE = {
                   'part': FG + 'explosion',
                   'out_dir': SD + 'effects' + B,
                   'damage': (PG + 'explosion', SD + 'explosion'),
-                  'lower': 75.0, 'upper': (500.0, 500.0), 'radius': (0.4, 2.5),
+                  'lower': 80.0, 'upper': (505.0, 505.0), 'radius': (0.4, 2.5),
                   'fields': {'damage.aoe_core_radius': 0.4,
                              'screen_flash.duration': 0.25,
                              'screen_flash.maximum_intensity': 0.3,
@@ -111,9 +109,15 @@ CHARGE = {
     'glow': {'light': ('weapons' + B + 'fuel rod gun' + B + 'fuel rod exhaust', SD + 'charge glow'),
              'flare': SD + 'charge glow', 'rgb': ORANGE, 'flare_radius': 0.08, 'marker': ''},
     # the fuse start (stuck / at rest): the grenade's `detonation start` with Halo 4's attach beep
+    # BOOT 1 (user: 'the attached grenade has leftover plasma grenade effects'): the grenade's particles
+    # dropped (green energy smoke, shield flash, plasma electric bolts, stealth flares) -- Halo 4's stick
+    # is the beep + the charge's own light; the water bubbles kept
     'started_effect': {'from': PG + 'effects' + B + 'detonation start', 'out': SD + 'effects' + B + 'stuck',
+                       'drop_particles': ('smoke c generic', 'flash h shield impact', 'plasma electric bolts',
+                                          'flare h stealth cannon'),
                        'swaps': {B.join(['sound', 'sfx', 'impulse', 'impacts', 'dirthits']): SND + 'sd_stick'}},
     'impact_tint': {'match': (), 'rgb': None, 'out': SD + 'effects' + B + 'impact' + B,
+                    'drop_particles': ('smoke c generic', 'flash h shield impact'),
                     'sounds': {B.join(['sound', 'sfx', 'impulse', 'impacts', 'dirthits']): SND + 'sd_stick'}},
 }
 
@@ -160,7 +164,12 @@ PORT = reserved(
         # 410, PL tap 186, Brute Shot 243
         'measured': 'h1_role_compare.py sticky_detonator',
         'not_reproduced': ("the second-press detonation (stick + a 0.5 s fuse), the mid-air burst, the "
-                           "30 s fallback, the stuck burst's 2.0 wu radius (the free 2.5 everywhere)"),
+                           "30 s fallback, the stuck burst's 2.0 wu radius (the free 2.5 everywhere); "
+                           "Halo 4's idle_empty (the charge gone from the muzzle): Halo 1 has no empty "
+                           "idle, so after the LAST charge (no reserve) the loaded charge shows again -- "
+                           "the `first-person ammunition` overlay would hide it but also hide the charge "
+                           "for the whole reload (Halo 1 counts the round at its end): kept as is (user, "
+                           "boot 1)"),
         'candidates': {
             'source_weapon': 'objects\\weapons\\pistol\\storm_sticky_detonator\\storm_sticky_detonator_pve',
             'provisional': 'Rocket Launcher',
@@ -250,7 +259,10 @@ PORT.update({
     # Halo 4's own sounds (h1_port_sounds.py sticky_detonator, `bank` 'halo4'). The player bank
     # sticky_detonator_player (the weapon's Player sound bank; the FP frame_event_list for the cues), the
     # projectile's proj_sticky_detonator. HIRC (2026-10-16): fire = 10 layers -- random [0-3], [4, 5],
-    # [6, 7] (4-5 s tails), 8 (a 30 ms haptic click: dropped), [9-11], 12, 13, [14-16], [17, 18], 19;
+    # [6, 7] (4-5 s tails), 8 (a 30 ms haptic click: dropped), [9-11], 12, 13, [14-16], [17, 18], 19.
+    # BOOT 1 (user: 'the firing sound is the wrong kind of sound'; of seven candidate mixes the user picked
+    # the player mix WITHOUT 12 / 13 -- the two loud short layers, -5.6 / -19.5 dB, the same recordings as
+    # the nonplayer event's 9 / 10);
     # trigger (the detonate press) = random [0-2] + 3; mech_reload_a = [0, 1] + [2, 3], _b / _c / _d
     # random of 2 (reload_empty / _full: a @3, b @21, c @36, d @45); lens_open / _close random of 2
     # (fire_1 @10 / fire_2 @15; ready @0); switchto_mech random of 2 (ready @0); idle_player a @0, b @60,
@@ -268,8 +280,6 @@ PORT.update({
                          'play_weapons_storm_sticky_detonator_player_fire:4,5',
                          'play_weapons_storm_sticky_detonator_player_fire:6,7',
                          'play_weapons_storm_sticky_detonator_player_fire:9,10,11',
-                         'play_weapons_storm_sticky_detonator_player_fire:12',
-                         'play_weapons_storm_sticky_detonator_player_fire:13',
                          'play_weapons_storm_sticky_detonator_player_fire:14,15,16',
                          'play_weapons_storm_sticky_detonator_player_fire:17,18',
                          'play_weapons_storm_sticky_detonator_player_fire:19'],
@@ -355,12 +365,12 @@ PORT.update({
             'weap_attrs.interface.zoom_out_sound.filepath': '',
             'item_attrs.collision_sound.filepath': SND + 'sd_drop',
             'obje_attrs.collision_model.filepath': SD + 'sticky detonator',
-            # STEP 6 (provisional, the user decides at boot 1): the template's `pistol ammo` would give 120
-            # charges -- the YARDSTICK's hole is the rocket's: rocket launcher ammo, its pickup : initial
-            # (2 : 4) on Halo 4's initial 4 = 2 charges
+            # STEP 6 (user, boot 1, 2026-10-16: 'plasma grenades'): the yardstick's own item -- a plasma
+            # grenade picked up gives one charge (the GL's frag precedent: it gives the grenade too). The
+            # template's `pistol ammo` would have given 120
             'weap_attrs.magazines.0.magazine_items.0.equipment.filepath':
-                r'powerups\rocket launcher ammo\rocket launcher ammo',
-            'weap_attrs.magazines.0.magazine_items.0.rounds': 2,
+                r'weapons\plasma grenade\plasma grenade',
+            'weap_attrs.magazines.0.magazine_items.0.rounds': 1,
         },
         # THE MUZZLE-FLASH RULE (check 10, before boot 1). Halo 4's FIRST-PERSON particles (fx\sgl_firing,
         # camera mode 'only in first person', all at primary_trigger, on-axis): muzzle_flash_round (bounding
@@ -373,7 +383,11 @@ PORT.update({
         'sound_effects': {
             'firing_effect': (PISTOL + 'effects\\fire bullet', SD + 'effects\\fire charge',
                               {r'sound\sfx\weapons\pistol\fire': SND + 'sd_fire'},
-                              {'match': 'flash', 'drop_off_axis': 0.012,
+                              # BOOT 1 (user: 'muzzle flash could be a bit more intense'): the centre
+                              # flash x1.5 (the Boltshot's) and living x1.6 (0.12 s, the Boltshot's boot 5)
+                              {'match': 'flash', 'drop_off_axis': 0.012, 'scale': 1.5,
+                               'own_particles': {'out': SD + 'effects' + B + 'particles' + B + 'charge ',
+                                                 'lifespan': 1.6, 'fade_out': 0.04},
                                'drop_particles': ('casing',),
                                'drop_parts': [r'sound\sfx\weapons\pistol\eject'],
                                'tint': (1.0,) + ORANGE, 'tint_match': ('flash',)}),
@@ -401,6 +415,9 @@ PORT.update({
                 'reticle_supersample': 2,
                 'reticle_scale': 2.8, 'reticle_overlay': 1.41 / (123 / 97.0 * 2.8 * 2 * 0.75),
                 'flash_base': 12,
+                # BOOT 1 (user: 'low ammo warning is active with 6 remaining, on the ammo total'): the
+                # pistol's total-ammo flash cutoff 13 -> the rocket launcher's 1
+                'fields': {'flash_cutoffs.total_ammo_cutoff': 1},
                 'ammo_meter': {'sizes': (1,), 'base': SD + 'bitmaps\\sticky_detonator_ammo'}},
         'palette_levels': LEVELS,
     },
