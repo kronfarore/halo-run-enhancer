@@ -207,6 +207,17 @@ PORT.update({
     #   first burst 0 - 0.2, bursts 1.125 - 2.0 apart, and the fixed 6.7 reach. Shard minimum velocity 0
     #   (test 5; the probe's 'every AI shard dies on its first tick' reading proved unreliable).
     # Model: 70 % decimation + the flash cards = 0.60 MiB (the pair-4 budget, exactly).
+    # CLOSE-OUT RE-CHECK (user, 2026-10-16: 'every ported step, especially 4b'): port_field_audit on the
+    #   FINAL weapon -- list 2 = projectiles per shot (degenerate: Halo 4's shotgun keeps 15 in its
+    #   projectile's conical spread), range / velocity (the user's Halo 4 reach), air damage range (inert
+    #   both sides) -- 0 to port; list 4 = rate 2/s (recovery-limited), error deceleration 0.25 and
+    #   ejection port 1.0 (written above); list 5 = message index, the material responses (Halo 4's newer
+    #   table). List 3 decided: Halo 4's weapon functions (5 vs the template's 3) and attachments (4 vs
+    #   1) = its shader / FX hooks (glow, flare, power-on): the template's kept, the look rebuilt in the
+    #   model; the shard's attachments / functions / change colours (its energy ball) -> the contrail +
+    #   glow; impact noise 'shout' (new); 'ai velocity scale' 0.6 / 0.7 / 0.8 (Halo 4's AI shards slower)
+    #   and 'autoaim leading max lead time' have no Halo 1 field (not reproduced); the super damage by
+    #   hand (above). Melee: strike_melee on both Halo 4 sides (one shared tag) -> nothing to port.
     # BORROWED sounds kept ON PURPOSE (port_sound_refs prints these as KEEP)
     'sound_keeps': {r'sound\sfx\weapons\assault rifle\flashlight': "the flashlight rule: the game's own",
                     r'sound\sfx\weapons\weapon_pickup_ammo\shotgun_ammo':
@@ -454,6 +465,9 @@ PORT.update({
                        # the life (the docstring's re-fit), started at the muzzle (Halo 4 'immediately'; the
                        # template pellet's 'on first bounce' with timer 0 would end every ricochet -- A5)
                        'proj_attrs.detonation_timer_starts': 'immediately',
+                       # CLOSE-OUT 4b re-check, list 3 (an enum, the source pair differs): Halo 4's
+                       # impact noise 'shout' (its shotgun 'medium') -- the AI hears the shards land
+                       'proj_attrs.impact_noise': 'shout',
                        # the fuse = Halo 4's timer HIGH, 0.5 s: a free shard reaches the 6.7 wu range end at
                        # ~0.21 s first (the range ends it), a STUCK one bursts after 0.5 s (Halo 4's
                        # 'detonation max time if attached')
@@ -505,7 +519,23 @@ PORT.update({
                                        # BOOT 3 (user: 'the screen flash on the player is still pink'):
                                        # the needle explosion's screen flash tint (A R G B 0, 1, 0, 1:
                                        # magenta) -> FLASH
-                                       'fields': {'screen_flash.tint_lower_bound': (0.0,) + FLASH}},
+                                       # CLOSE-OUT 4b re-check (the super damage is in no audit pair: by hand
+                                       # against Halo 4's ATTACHED super detonation): AOE core radius 0.3,
+                                       # category high explosive, instantaneous acceleration 2.75 (attached;
+                                       # area 2.0), breaking effect 35 / 0.12 / 0.2, 3 / 0.3 / 0.2 -- were the
+                                       # needler explosion's (0, grenade, 2.0, 30 / 2 / 0, 15 / 1 / 0). Not
+                                       # reproduced: Halo 4's AI stun (radius 3.5) and shake (8 wu) of the area
+                                       # part (no counterpart field set in the needler copy -- kept at its 0)
+                                       'fields': {'screen_flash.tint_lower_bound': (0.0,) + FLASH,
+                                                  'damage.aoe_core_radius': 0.3,
+                                                  'damage.category': 'high_explosive',
+                                                  'damage.instantaneous_acceleration': 2.75,
+                                                  'breaking_effect.forward_velocity': 35.0,
+                                                  'breaking_effect.forward_radius': 0.12,
+                                                  'breaking_effect.forward_exponent': 0.2,
+                                                  'breaking_effect.outward_velocity': 3.0,
+                                                  'breaking_effect.outward_radius': 0.3,
+                                                  'breaking_effect.outward_exponent': 0.2}},
                    # the LOOK: Halo 4's shard = a glowing energy ball (flare + light + trail) -> the AR
                    # tracer's contrail recoloured + the Suppressor's glow (fuel rod exhaust light + flare)
                    'attachments_from': AR + 'bullet',
@@ -522,6 +552,9 @@ PORT.update({
         # THE HIT-EFFECT RULE counts SHOTS (the Mauler, user): 2/s is under 3.5/s -> x1, no impact_thin
         # Halo 4: recovery 0.5 s = 2 shots / s; error 4 -> 7 deg, at once (acceleration 0), back in 0.25 s
         'trigger': {'rounds_per_second': (2.0, 2.0), 'acceleration_time': 0.0, 'deceleration_time': 0.0,
+                    # 4b list 4 (the source pair agrees: 0.25 both; the H1 shotgun's 0): KEPT 0.25, Halo
+                    # 4's own -- the shotgun's fixed 10 / 10 cone makes its 0 meaningless, and at 2 shots/s
+                    # (0.5 s apart) 0 and 0.25 both reset the cone to 4 deg before every shot
                     'error_acceleration_time': 0.0, 'error_deceleration_time': 0.25,
                     'rounds_between_tracers': 0,
                     # BOOT 1: the shot flash fades with A out = the ejection port function (glow
