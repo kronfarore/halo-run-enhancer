@@ -7483,6 +7483,366 @@
      }
     ]
    }
+  },
+  {
+   "weapon": "Incineration Cannon",
+   "source": "Halo 4",
+   "donor": "Rocket Launcher",
+   "default_on": false,
+   "desc": "Halo 4's Incineration Cannon: its model, first-person animations, sounds and numbers. A one-shot Forerunner launcher whose slow shell bursts and scatters five bomblets that bounce off the ground and explode on anything they touch.",
+   "balance_desc": "Measured against the Rocket Launcher, which both games have: a 315 hit (143 impact + 172 burst) over 1.6 m, 86 per bomblet, one shot every 2 s, a faster shell, up to 8 rounds and Halo 1-style aim assist.",
+   "anims": {
+    "reload": 1.0777777777777777,
+    "swap": 0.8461538461538461
+   },
+   "anim_sounds": {
+    "reload": [
+     {
+      "mult": 1.0777777777777777,
+      "from": "sound\\weapons\\incineration_cannon_port\\ic_reload",
+      "to": "sound\\weapons\\incineration_cannon_port\\ic_reload_balanced"
+     }
+    ]
+   },
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\incineration cannon\\impact",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 143.18,
+     "card": "Shell Damage",
+     "original": 200.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\incineration cannon\\impact",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 143.18,
+     "card": "Shell Damage",
+     "original": 200.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\incineration cannon\\impact",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 143.18,
+     "card": "Shell Damage",
+     "original": 200.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\incineration cannon\\explosion",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 28.64,
+     "card": "Shell Damage",
+     "original": 40.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\incineration cannon\\explosion",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 171.82,
+     "card": "Shell Damage",
+     "original": 240.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\incineration cannon\\explosion",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 171.82,
+     "card": "Shell Damage",
+     "original": 240.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\incineration cannon\\explosion",
+     "field": "Radius",
+     "block": null,
+     "value": 0.417,
+     "card": "Shell Damage",
+     "original": 0.75
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\incineration cannon\\explosion",
+     "field": "Radius Max",
+     "block": null,
+     "value": 1.6,
+     "card": "Shell Damage",
+     "original": 2.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\incineration cannon\\explosion",
+     "field": "AOE Core Radius",
+     "block": null,
+     "value": 0.6,
+     "card": "Shell Damage",
+     "original": 0.75
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\incineration cannon\\bomblet explosion",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 21.48,
+     "card": "Bomblet Damage",
+     "original": 30.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\incineration cannon\\bomblet explosion",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 85.91,
+     "card": "Bomblet Damage",
+     "original": 120.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\incineration cannon\\bomblet explosion",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 85.91,
+     "card": "Bomblet Damage",
+     "original": 120.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\incineration cannon\\bomblet explosion",
+     "field": "Radius",
+     "block": null,
+     "value": 0.339,
+     "card": "Bomblet Damage",
+     "original": 0.61
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\incineration cannon\\bomblet explosion",
+     "field": "Radius Max",
+     "block": null,
+     "value": 1.0,
+     "card": "Bomblet Damage",
+     "original": 1.25
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\incineration cannon\\bomblet explosion",
+     "field": "AOE Core Radius",
+     "block": null,
+     "value": 0.48,
+     "card": "Bomblet Damage",
+     "original": 0.6
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\incineration cannon\\explosion",
+     "field": "Instantaneous Acceleration i",
+     "block": null,
+     "value": 6.0,
+     "card": "Shell Damage",
+     "original": 3.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\incineration cannon\\bomblet explosion",
+     "field": "Instantaneous Acceleration i",
+     "block": null,
+     "value": 5.0,
+     "card": "Bomblet Damage",
+     "original": 2.5
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\incineration cannon\\bomblet",
+     "field": "Timer",
+     "block": null,
+     "value": 0.5,
+     "card": "Projectile",
+     "original": 0.6
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\incineration cannon\\bomblet",
+     "field": "Timer Max",
+     "block": null,
+     "value": 0.769,
+     "card": "Projectile",
+     "original": 1.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\incineration cannon\\bomblet",
+     "field": "Air Gravity Scale",
+     "block": null,
+     "value": 5.556,
+     "card": "Projectile",
+     "original": 5.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\incineration cannon\\incineration cannon",
+     "field": "Rounds Per Second",
+     "block": "Triggers",
+     "value": 0.5,
+     "card": "More Shooting",
+     "original": 1.25
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\incineration cannon\\incineration cannon",
+     "field": "Rounds Per Second Max",
+     "block": "Triggers",
+     "value": 0.5,
+     "card": "More Shooting",
+     "original": 1.25
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\incineration cannon\\incineration cannon",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 8.0,
+     "card": "Magazine",
+     "original": 6.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\incineration cannon\\shell",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 0.84,
+     "card": "Projectile",
+     "original": 0.7
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\incineration cannon\\shell",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 0.35,
+     "card": "Projectile",
+     "original": 0.7
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\incineration cannon\\shell",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 128.0,
+     "card": "Projectile",
+     "original": 175.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\incineration cannon\\incineration cannon",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 5.0,
+     "card": "Autoaim",
+     "original": 5.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\incineration cannon\\incineration cannon",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 35.0,
+     "card": "Autoaim",
+     "original": 60.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\incineration cannon\\incineration cannon",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 12.0,
+     "card": "Magnetism",
+     "original": 10.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\incineration cannon\\incineration cannon",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 35.0,
+     "card": "Magnetism",
+     "original": 25.0
+    }
+   ],
+   "weap": "weapons\\incineration cannon\\incineration cannon",
+   "fp_animations": "weapons\\incineration cannon\\fp\\fp",
+   "requires": [
+    "proj weapons\\incineration cannon\\shell"
+   ],
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\incineration cannon\\incineration cannon",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+      "label": "Assault Rifle Ammo"
+     },
+     {
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+      "label": "Flamethrower Ammo"
+     },
+     {
+      "tag": "powerups\\needler ammo\\needler ammo",
+      "label": "Needler Ammo"
+     },
+     {
+      "tag": "powerups\\pistol ammo\\pistol ammo",
+      "label": "Pistol Ammo"
+     },
+     {
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+      "label": "Sniper Rifle Ammo"
+     }
+    ]
+   }
   }
  ],
  "Halo 3": [
