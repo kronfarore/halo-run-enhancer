@@ -156,8 +156,13 @@ BOMBLET = {
     'keep_attachments': (0,),
     # BOOT 2 (user: 'no visible projectiles on the bomblets'): the ball was x0.4 (0.008 - 0.04 wu) and olive -> x0.7 on
     # the orange sprite, the flare 0.06 -> 0.1
-    'contrail': {'from': FR + 'tail', 'out': IC + 'bomblet trail', 'rgb': (1.0, 1.0, 1.0), 'width': 0.5,
-                 'bitmap': TRAIL_MAP, 'sequence': (0, 0)},
+    # BOOT 8 (user: 'the trail keeps bouncing and changing angles'): the fuel rod tail's long ribbon kinked at every
+    # bounce -> a SHORT thin streak (points live 0.08-0.1 s, 0.04 -> 0.02 wu), the Binary Rifle's state form
+    'contrail': {'from': FR + 'tail', 'out': IC + 'bomblet trail', 'rgb': (1.0, 1.0, 1.0),
+                 'bitmap': TRAIL_MAP, 'sequence': (0, 0),
+                 'states': [{'duration': (0.08, 0.1), 'transition': (0.05, 0.08), 'width': 0.04,
+                             'argb': (1.0, 1.0, 1.0, 1.0)},
+                            {'width': 0.02, 'argb': (0.0, 1.0, 1.0, 1.0)}]},
     'widget_tint': {'out': IC + 'bomblet volume', 'hither': ORB_HITHER, 'yon': ORB_YON, 'radius': 0.7, 'map': ORB_MAP},
     'glow': {'light': (FR + 'fuel rod exhaust', IC + 'bomblet glow'),
              'flare': IC + 'bomblet glow', 'rgb': ORANGE, 'flare_radius': 0.1, 'marker': 'contrail'},
@@ -476,7 +481,9 @@ PORT.update({
                     'deceleration_time': 0.0,
                     # BOOT 1 (user: 'make it pop even more when firing'): the firing light-up (A out) fades
                     # over the illumination recovery -- the rocket's 0.3 s -> 0.5 s (Halo 4's shot cycle 0.8 s)
-                    'illumination_recovery_time': 0.5},
+                    'illumination_recovery_time': 0.5,
+                    # BOOT 8: the reload glow fades over the ejection port recovery = the reload (90 fr x 1.2 = 3.6 s)
+                    'ejection_port_recovery_time': 3.6},
         # Halo 4: error 0 / 0 (the rocket's 0 / 0)
         'error_deg': {'minimum_error': 0.0, 'error_angle': (0.0, 0.0)},
         # Halo 4: 1 loaded, 4 at pickup, 6 most, 1 reloaded. Reload: Halo 4 none (reload_empty 90 fr = 3.0 s) in
@@ -497,7 +504,7 @@ PORT.update({
             # is `integrated_light` (the flashlight); the sniper / LightRifle templates' is `illumination` (per shot)
             'weap_attrs.A_in': 'illumination',
             # BOOT 4: B in = primary ammunition (inverted by function 1 = B out: the reload glow)
-            'weap_attrs.B_in': 'primary_ammunition',
+            'weap_attrs.B_in': 'primary_ejection_port',  # BOOT 8: the reload glow's fade (was primary_ammunition, inverted)
             'weap_attrs.interface.zoom_in_sound.filepath': SND + 'ic_zoom_in',
             'weap_attrs.interface.zoom_out_sound.filepath': SND + 'ic_zoom_out',
             # STEP 4b list 2: first person offset Halo 4 0 vs its rocket's -0.05 onto the H1 rocket's -0.1 -> 0
@@ -526,13 +533,17 @@ PORT.update({
                                # BOOT 7 (user: 'no muzzle flash still'): the model's primary trigger sits at x 17.0 cm, 3.8 cm
                                # INSIDE the barrel (the muzzle face, glow pieces 10 / 11 / 28, at x 20.6-20.8): the flash
                                # (+2.5 cm) was buried in the gun -> shifted 5 cm forward (x 24.5: ~4 cm past the face), x1.8
-                               'match': 'flash', 'scale': 1.8, 'shift': (0.05, 0.0, 0.0),
+                               # BOOT 8 (user: 'barely visible now -- enhance it from this position'): x1.8 -> x3.0
+                               'match': 'flash', 'scale': 3.0, 'shift': (0.05, 0.0, 0.0),
                                'tint': (1.0,) + ORANGE})},
         # BOOT 2-3: the magazine's RELOADING EFFECT (three contracting rings, also drawn first person) never showed in
         # classic first person -- REMOVED (user, boot 4); the reload glow (B out, the model's `ic_reload_glow`) instead
+        # BOOT 8 (user: 'let the glow fade out over the reload -- otherwise it stays lit with no ammunition left at
+        # all'): B in = the PRIMARY EJECTION PORT (1 on each shot, back to 0 over the trigger's ejection port recovery:
+        # the Scattershot's per-shot glow), not inverted; the recovery = the reload (3.6 s) -> lit at the shot, fading
+        # across the reload, dark when nothing is left to load (boot 7's inverted ammunition stayed lit)
         'obje_functions': [{'from': RL + 'rocket launcher', 'index': 0},
-                           {'from': RL + 'rocket launcher', 'index': 0, 'set': {'scale_function_by': 'B_in'},
-                            'flags': {'invert': True}}],
+                           {'from': RL + 'rocket launcher', 'index': 0, 'set': {'scale_function_by': 'B_in'}}],
         'melee': (RL + 'melee', IC + 'melee'),
         'melee_response': RL + 'melee_response',
         'messages': ('Picked up an incineration cannon', 'Picked up %d rounds for incineration cannon'),
@@ -574,10 +585,16 @@ PORT.update({
                 #     --wires a_primary_wire,a_secondary_wire,b_primary_wire,b_secondary_wire01,b_secondary_wire02,
                 #             b_secondary_wire03,a_inner_ring
                 #     --fills a_primary_holo,a_secondary_holo,b_primary_holo,b_secondary_holo --fill-alpha 0.45
-                #     --xform 0.88,0.88,0,0  (boot 7: 'make it fit the screen we have, now too big' -- at 1.0 the ring was ~15 %
-                #     larger than Halo 4's; boot 3 0.95 / boot 4 0.9 / boot 5 -95 px showed the art's own ends as cuts)
-                #   python h1_scope_quadrants.py "<SCOPE>" --mirror left --fade 120  (the right quadrants = the left
-                #     mirrored; the art fades out over the outer 120 screen px instead of ending in hard cuts)
+                #     --xform 1.0,1.0,0,-103 --pad 200
+                #   python h1_scope_quadrants.py "<SCOPE>" --mirror left --fade 0  (the right quadrants = the left mirrored)
+                # BOOT 8 (user: 'cut off at the bottom and not centered -- the same mistakes again'): MEASURED, not guessed
+                # (band centre-lines through x 600-700, the user's Halo 4 zoom shot vs the raw raster): Halo 4 top 150 /
+                # bottom 915 -> centre 532, half-height 383; the raw raster (x1.0) 255 / 1015 -> 635, 380; the half-widths
+                # match too (506). So the SIZE was right at x1.0 all along (boots 3-4's 0.95 / 0.9 and boot 7's 0.88 were
+                # wrong) -- only a -103 px shift. Every earlier shift cut the frame because h4_polyart_scope moved FINISHED
+                # pixels (art below the 1080 px canvas never existed) -> `--pad 200`: rasterized 200 px beyond each edge,
+                # the screen cut out after the move. Check on the composite before staging: top band rows 60-240 (Halo 4
+                # 70-230), bottom 840-970 (830-1000), art to every screen edge
                 # A CLEAR mask (no chud) with the H1 blur outside the lens and the dark top / bottom bands (the
                 # LightRifle's / Binary Rifle's approved values); a donor without a zoom screen effect borrows the
                 # sniper's (the Beam Rifle's route), its night vision / desaturation cleared

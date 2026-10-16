@@ -54,9 +54,12 @@ def project(P, cam, W, H):
     return np.stack([x, y], 1)
 
 
-def raster(pa, W, H, ss=4):
-    """Coverage x vertex alpha, float H x W in 0..1 (triangles composited with max)."""
-    S = project(pa['verts'], pa['cam'], W * ss, H * ss)
+def raster(pa, W, H, ss=4, pad=0):
+    """Coverage x vertex alpha, float H x W in 0..1 (triangles composited with max).
+    `pad` px (the Incineration Cannon, C9 boot 8): the canvas grown by `pad` on every side, the SAME projection
+    (the art beyond the screen kept, so a scope frame can be shifted without a cut edge) -> (H + 2 pad) x (W + 2 pad)."""
+    S = project(pa['verts'], pa['cam'], W * ss, H * ss) + pad * ss
+    W, H = W + 2 * pad, H + 2 * pad
     A = pa['verts'][:, 3]
     img = np.zeros((H * ss, W * ss), np.float32)
     for a, b, c in pa['tris']:

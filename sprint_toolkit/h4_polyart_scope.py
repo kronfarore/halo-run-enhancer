@@ -28,21 +28,23 @@ import h4_polyart  # noqa: E402
 W, H = 1920, 1080
 
 
-def render(folder, names):
-    acc = np.zeros((H, W), np.float32)
+def render(folder, names, pad=0):
+    acc = np.zeros((H + 2 * pad, W + 2 * pad), np.float32)
     for n in names:
-        acc = np.maximum(acc, h4_polyart.raster(h4_polyart.load(folder + '\\' + n), W, H))
+        acc = np.maximum(acc, h4_polyart.raster(h4_polyart.load(folder + '\\' + n), W, H, pad=pad))
     return acc
 
 
-def place(img, sx, sy, dx, dy):
-    """img scaled about the screen centre, then shifted (dx, dy) px."""
-    W2, H2 = int(W * sx), int(H * sy)
+def place(img, sx, sy, dx, dy, pad=0):
+    """img scaled about the screen centre, then shifted (dx, dy) px. `pad`: img is the padded raster (render's
+    `pad`, C9): the screen window is cut from it after the move, so art from beyond the screen fills the edges."""
+    h, w = img.shape
+    W2, H2 = int(w * sx), int(h * sy)
     r = np.array(Image.fromarray(img.astype(np.float32)).resize((W2, H2), Image.BILINEAR))
-    canvas = np.zeros((H + 2 * 400, W + 2 * 400), np.float32)
-    ox, oy = 400 + (W - W2) // 2, 400 + (H - H2) // 2
+    canvas = np.zeros((h + 2 * 400, w + 2 * 400), np.float32)
+    ox, oy = 400 + (w - W2) // 2, 400 + (h - H2) // 2
     canvas[oy:oy + H2, ox:ox + W2] = r
-    return canvas[400 - dy:400 - dy + H, 400 - dx:400 - dx + W]
+    return canvas[400 + pad - dy:400 + pad - dy + H, 400 + pad - dx:400 + pad - dx + W]
 
 
 def fit(img, shot):
@@ -72,15 +74,17 @@ def main():
     ap.add_argument('--fill-alpha', type=float, default=0.35)
     ap.add_argument('--fit')
     ap.add_argument('--xform')
+    ap.add_argument('--pad', type=int, default=0,
+                    help='px rasterized beyond every screen edge (C9): a moved frame keeps its outer art')
     ap.add_argument('--down', type=int, default=2)
     ap.add_argument('--band', help='y0,ramp,alpha: an orange fill beyond y0 px from the centre')
     a = ap.parse_args()
-    wires = render(a.folder, a.wires.split(','))
-    fills = render(a.folder, [x for x in a.fills.split(',') if x])
+    wires = render(a.folder, a.wires.split(','), a.pad)
+    fills = render(a.folder, [x for x in a.fills.split(',') if x], a.pad)
     img = np.maximum(wires * a.wire_alpha, fills * a.fill_alpha)
     sx, sy, dx, dy = (fit(np.maximum(wires, fills), a.fit) if a.fit else
                       [float(x) for x in a.xform.split(',')])
-    img = place(img, sx, sy, int(dx), int(dy))
+    img = place(img, sx, sy, int(dx), int(dy), a.pad)
     if a.band:
         # `--band y0,ramp,alpha` screen px (the LightRifle, boot 6, user: 'fill the top and bottom with
         # the same orange as a test'): the glyph filled beyond y0 px from the centre, ramping in over
