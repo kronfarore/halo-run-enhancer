@@ -1,0 +1,121 @@
+{
+ "game": "Halo 1",
+ "weapon": "Sticky Detonator",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\sticky_detonator_port\\sd_fire",
+   "perms": [
+    "sd_fire_1.wav",
+    "sd_fire_2.wav",
+    "sd_fire_3.wav",
+    "sd_fire_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sticky_detonator_port\\sd_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\sticky_detonator_port\\sd_fire_anim",
+   "perms": [
+    "sd_fire_anim_1.wav",
+    "sd_fire_anim_2.wav",
+    "sd_fire_anim_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sticky_detonator_port\\sd_fire_anim"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\sticky_detonator_port\\sd_dryfire",
+   "perms": [
+    "sd_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sticky_detonator_port\\sd_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\sticky_detonator_port\\sd_ready",
+   "perms": [
+    "sd_ready_1.wav",
+    "sd_ready_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sticky_detonator_port\\sd_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\sticky_detonator_port\\sd_melee",
+   "perms": [
+    "sd_melee_1.wav",
+    "sd_melee_2.wav",
+    "sd_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sticky_detonator_port\\sd_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\sticky_detonator_port\\sd_reload",
+   "perms": [
+    "sd_reload_1.wav",
+    "sd_reload_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sticky_detonator_port\\sd_reload"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\sticky_detonator_port\\sd_reload_balanced",
+   "perms": [
+    "sd_reload_balanced_1.wav",
+    "sd_reload_balanced_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sticky_detonator_port\\sd_reload_balanced"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\sticky_detonator_port\\sd_pose",
+   "perms": [
+    "sd_pose_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sticky_detonator_port\\sd_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\sticky_detonator_port\\sd_explode",
+   "perms": [
+    "sd_explode_1.wav",
+    "sd_explode_2.wav",
+    "sd_explode_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sticky_detonator_port\\sd_explode"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\sticky_detonator_port\\sd_stick",
+   "perms": [
+    "sd_stick_1.wav",
+    "sd_stick_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sticky_detonator_port\\sd_stick"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\sticky_detonator_port\\sd_drop",
+   "perms": [
+    "sd_drop_1.wav",
+    "sd_drop_2.wav",
+    "sd_drop_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sticky_detonator_port\\sd_drop"
+   ]
+  }
+ ]
+}
