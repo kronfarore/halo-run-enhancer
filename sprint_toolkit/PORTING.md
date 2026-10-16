@@ -1448,6 +1448,86 @@ stock. Per weapon at once (needler 7 beside a port at 3) follows with the Needle
 boot. If (2) still needs 7: the counts are not read where shown -- re-probe live before a second
 boot.
 
+### Halo 1: a CHARGE trigger that waits for a RELEASE (Railgun C7, Spartan Laser A8, 2026-10-16) -- halo1.dll patch, BUILT, NOT APPLIED
+
+The fuel rod's one trigger (charging time > 0, overcharged action `discharge`, charge hold 0)
+chains while it is held: the Railgun recharges right after the slug and the Spartan Laser
+"fires every 2.5 s" held. A guaranteed overheat (Railgun boot 3) changed nothing. Static
+reading of `halo1.dll` (MCC build of 2026-06-22, rva at 0x180000000), checked against the
+Railgun probe of 2026-10-16 (`out/weapon_state_probe.jsonl`, note 'railgun boot 4'). The
+held-trigger case itself was NEVER probed (every run let go mid-recharge). So the chain past
+the second charge is the user's observation, not a trace.
+
+* **Trigger state** = weapon +0x228 + 0x2C a trigger: +0x228 idle ticks (byte), **+0x229 STATE**,
+  +0x22A timer, **+0x22C flags** (bit 0 = "up since the last shot": set on every tick the trigger
+  is up (+0xB754BA), cleared by the fire +0xB799DB), +0x238 the held ramp (+= accel while
+  down, 0 at once with deceleration 0). The weapon tick's per-trigger switch is at +0xB75559.
+  States: 0 idle, 2 charging, 3 charged (hold), 4 recovering, 7 "wait until let go" (+0xB755B3),
+  others not needed here.
+* **The charge, measured tick by tick:** press -> start +0xB77D48 -> state 2, timer 22 (0.75 s)
+  -> state 3 timer 0 -> +0xB78C68 -> `discharge` +0xB78B64 -> **idle and ramp 0: the discharge
+  fires NOTHING**. The trigger is still down, so the ramp is 1 again a tick later. About 3 ticks
+  on (rounds per second 10), idle re-enters the start, and **the start FIRES the slug because
+  ramp > 0 (+0xB77EA7 -> fire +0xB78DE8) and then sets state 2 on the same call**: charge 2.
+  The probe's slug tick is 0.87 s after the press, and the same tick shows state 2 and flags
+  0x21 -> 0x20.
+* **Halo 1 already has a release latch, but only for a player.** `does not repeat
+  automatically` (trigger flags bit 3) makes the idle "ready" test +0xB77C20 wait for flags bit
+  0, but only when weapon +0x1C0 bit 1 is set. That bit is set at pickup when the holder's
+  unit +0x1F8 (its player) is not -1 (+0xBDD12A), so **AI never latch**. The fire routine itself
+  leaves state 7 (wait until let go, +0xB7995D) and the start then overwrites it with state 2.
+  The wasted charge 2 is stock behaviour (the fuel rod Grunts do it too).
+* **The patch: `h1_charge_latch.py`** (--show / --on [--live] / --off = --restore / --flag; test
+  wrapper `h1_charge_latch_test.cmd`). It is **opt-in per tag: weapon flags bit 30** (weap
+  +0x308, byte +0x30B mask 0x40; bit 31 belongs to the melee patch, and halo1.dll reads no bit
+  above 15 of that word). For an opted-in weapon whose trigger has not been up since its last
+  shot (flags bit 0 clear), the start routine returns early:
+  S1 `+0xB77E5D` (charging time > 0, before the ramp-fire; the 5-byte `mov r9,[rsp+0x20]`) means
+  no fire and no charge, so a held AI cannot re-fire uncharged. S2 `+0xB77EF4` (after the
+  ramp-fire, before `state 2`; the 8 bytes `movsxd rax,[r15+0x34] ; lea rdx,[rdi+0x34]`) means
+  the slug fires but no new charge starts, so the fire's state 7 stands.
+
+  | rva | stock | patched |
+  |---|---|---|
+  | +0xB77E5D | `4c8b4c2420` | `e8 49278200` call CHECK_A |
+  | +0xB77EF4 | `49634734 488d5734` | `e8 0a238200 909090` call STUB2 |
+  | CHECK_A +0x139A5AB (21, int3) | `cc` x21 | `4c8b4c2428 41f6810b03000040 7501 c3 e97c040000` |
+  | CHECK_B +0x139AA3C (20, int3) | `cc` x20 | `f684372c02000001 7401 c3 4883c408 e950d57dff` |
+  | STUB2 +0x139A203 (13, int3) | `cc` x13 | `49634734 488d5734 e99b030000` |
+
+  CHECK_A: `mov r9,[rsp+0x28]` (the tag, S1's own load) ; not opted in -> ret. CHECK_B: flags
+  bit 0 set -> ret; else `add rsp,8 ; jmp +0xB77FA0` (the start routine's epilogue; rsp is
+  constant in its body). r9 is dead at S2, both sites rewrite the flags before reading them,
+  and nothing uses the stack beyond the call's slot. The caves are vetted like the
+  supercombine's: after a `ret`, no .pdata, no relocation, unused by the other five patches.
+  **Verified offline** (a copy of the current dll): on -> disassembles as above, off ->
+  byte-identical. Not applied: the user approves first.
+* **Expected:** held, ONE slug about 0.1 s after the charge completes, then the trigger rests
+  (state 7) until it is let go; let go + press = a fresh charge. Early release still cancels.
+  AI: one slug a burst. The next burst charges because an AI lets go between bursts (A8's
+  Rate Of Fire 0 profile with its burst pause). An AI that never let go would stop firing:
+  that is test 4.
+* **TEST PLAN (one boot, a30, Railgun; the Spartan Laser is the same code).** MCC can run
+  (live write + rename swap). Commands from `tool\sprint_toolkit` in cmd.exe:
+  0. `h1_charge_latch_test.cmd on`, load a30 with the Railgun in hand, then
+     `h1_charge_latch_test.cmd rail`. That is a LIVE tag write; the built map is untouched.
+  1. Baseline first, still stock: `h1_charge_latch_test.cmd rail off`, then
+     `h1_weapon_state_probe.cmd "railgun latch OFF: hold 6 s"` and HOLD fire 6 s. This records
+     the unprobed held case: does a second slug come?
+  2. `h1_charge_latch_test.cmd rail`, then `h1_weapon_state_probe.cmd "railgun latch ON: hold
+     6 s, release, tap-hold 2 s"`. Expect one slug with state 7 held (no state 2 after the
+     slug), then a normal second shot after the release.
+  3. Early release (press 0.3 s): nothing fires (stock).
+  4. Armed: a Grunt / Elite carrying the Railgun or Spartan Laser fires MORE than once over
+     several bursts. If one shot then silence: the AI never lets go, so S1 has to skip AI (test
+     unit +0x1F8 like +0xB77C20 does).
+  5. Plasma pistol and stock fuel rod Grunts unchanged (bit 30 clear).
+  If 2 fails, read the .jsonl (+0x229 state, +0x22C bit 0) before a second boot.
+* **After approval:** the port opt-in `'charge_needs_release': True` -> `edit_weapon` sets
+  `a.flags.data |= 1 << 30` (beside `melee_blocks_fire`), and an enhancer option
+  `h1_charge_latch` wired like `h1_supercombine_count`. Neither is written yet: the C7 and A8
+  configs belong to their sessions.
+
 ### Halo 1: when the Grunt Birthday Party skull fires (Needle Rifle, 2026-10-11) -- research + live probe
 
 User, boot 7 (a30): the port's needle headshots Grunts (jpt `can cause headshots`, like
