@@ -152,7 +152,7 @@ PORT.update({
     # penetration control, balanced A/B, Armed x6, the vent) -- confirmed by the user; the ten-
     # map rebuild is BATCHED with the SMG, BR, Carbine, Beam Rifle, Spike Rifle, Mauler and Brute
     # Shot (user's go)
-    'status': 'done',
+    'status': 'rework',
     # CLOSE-OUT RECORD (2026-10-10). 4b + template diff + port_sound_refs ran BEFORE boot 1.
     # Yardstick: Rocket Launcher with both aoe spike bumps (user, A/B: A) -> the Brute Shot's
     #   balanced grenade corrected to 73/440 (52.3, WDM 0.91).
