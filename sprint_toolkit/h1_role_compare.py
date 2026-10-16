@@ -1506,6 +1506,64 @@ SETS = {
         ('Concussion Rifle (port)', W + r'concussion rifle\concussion rifle', 'shot'),
         ('Grenade Launcher (port)', W + r'grenade launcher\grenade launcher', 'shot'),
     ]},
+    # the STICKY DETONATOR (wave C8), step 4a. Halo 4 _pve (the user's pick over the MP tag, H4EK
+    # 2026-10-16): 1 loaded / 4 / 6, reload 58 fr (reload_full 51), recovery 1.0 s, error 0.15 /
+    # 0.4, aim 4/15 8/15; the charge 24 -> 10 wu/s, gravity 0.25, range 20, impact 5 (collision);
+    # sticks to everything but shields (bounces + bursts there), detonated by the second press,
+    # 30 s fallback after sticking; burst 75..500 explosion_small over 0.4 -> 2.5 (attached 50..500
+    # over 0.4 -> 2.0). Halo 1 approximation A (user): stick + a fuse once at rest, the free burst
+    # only (Halo 1 deals attached damage at the stick, B6). Halo 4's yardsticks: rocket 200 impact +
+    # 240 explosion_large over 0.9 -> 2.5, 0.8 s, 2 / 4 / 6, 116 fr, 10 -> 20 wu/s, 175, aim 5/60
+    # 10/25; fuel rod 100 + 60 over 0.5 -> 2.25, 0.4 s, 5 / 15 / 20, 90 fr, 19.5 -> 8.45, 80, aim
+    # 4/25 8/25; plasma grenade free 250 over 0.3 -> 1.45, attached 350 (fuse 0.9 at rest).
+    'sticky_detonator': {'port': 'Sticky Detonator', 'weapons': [
+        # DEFAULT candidate: Halo 4's own, on the plasma grenade's table and on the rocket's
+        ('SD = H4 own, PG table', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(PGX, 500.0, (0.4, 2.5)), (RLX, 5.0, (0.0, 0.0))], 'rate': 1.0, 'mag': 1,
+          'reload': 58 / 30.0, 'speed': 24.0, 'range': 20.0, 'aim': (4.0, 15.0, 8.0, 15.0)}),
+        ('SD = H4 own, RL table', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 500.0, (0.4, 2.5)), (RLX, 5.0, (0.0, 0.0))], 'rate': 1.0, 'mag': 1,
+          'reload': 58 / 30.0, 'speed': 24.0, 'range': 20.0, 'aim': (4.0, 15.0, 8.0, 15.0)}),
+        # ROCKET ratio by the direct hit: 315 x 505/440 = 361.5 over 0.4 x 0.5/0.9, 2.5 x 2.0/2.5;
+        # times x 2.0/0.8 = 2.5 (recovery 2.5 s); 2 x 1/2; 125 fr x 58/116; 12 x 24/10; 128 x
+        # 20/175; aim 0 x 4/5, 35 x 15/60; 12 x 8/10, 35 x 15/25
+        ('SD = RL ratio', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 361.5, (0.222, 2.0))], 'rate': 0.4, 'mag': 1,
+          'reload': 4.1667 * 58 / 116, 'speed': 28.8, 'range': 14.6,
+          'aim': (0.0, 8.75, 9.6, 21.0)}),
+        # PLASMA GRENADE ratio (the sticky family; both explosion_small-ish, a free + stuck burst in
+        # both games) on its table: free 120 x 500/250 = 240 over 0.4 x 0.5/0.3, 2.5 x 2.0/1.45; by
+        # the STUCK kill (Halo 1 240 = 120 area + 120 attached vs Halo 4's attached 350): 500 x
+        # 240/350 = 342.9 as the burst alone; holes by the RL ratio (the GL's precedent)
+        ('SD = PG free + RL holes', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(PGX, 240.0, (0.667, 3.45))], 'rate': 0.4, 'mag': 1,
+          'reload': 4.1667 * 58 / 116, 'speed': 28.8, 'range': 14.6,
+          'aim': (0.0, 8.75, 9.6, 21.0)}),
+        ('SD = PG stuck + RL holes', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(PGX, 342.9, (0.667, 3.45))], 'rate': 0.4, 'mag': 1,
+          'reload': 4.1667 * 58 / 116, 'speed': 28.8, 'range': 14.6,
+          'aim': (0.0, 8.75, 9.6, 21.0)}),
+        # FUEL ROD ratio by the direct hit: 75 x 505/160 = 236.7 on its table (Hunters immune) over
+        # 0.4 x 0.5/0.5, 2.5 x 1.5/2.25; times x 1.25/0.4 = 3.125; 4 x 1/5 -> 1; 90 fr -> 3.0 s x
+        # 58/90; 14 x 24/19.5; range: the fuel rod's 0 is UNSET -> Halo 4's 20; aim 4 x 4/4, 25 x
+        # 15/25; 6 x 8/8, 25 x 15/25
+        ('SD = FR ratio', W + r'fuel rod gun\fuel rod', 'shot',
+         {'parts': [(FRX, 236.7, (0.4, 1.67))], 'rate': 0.32, 'mag': 1, 'charge': 0.0,
+          'reload': 3.0 * 58 / 90, 'speed': 17.2, 'range': 20.0, 'aim': (4.0, 15.0, 6.0, 15.0)}),
+        # peers
+        ('Rocket Launcher', W + r'rocket launcher\rocket launcher', 'shot'),
+        ('Fuel Rod (restored)', W + r'fuel rod gun\fuel rod', 'shot'),
+        ('Plasma grenade (1/s)', W + r'rocket launcher\rocket launcher', 'shot',
+         {'damage_tags': [PGX], 'radius': (0.5, 2.0), 'rate': 1.0,
+          'nomag': True, 'speed': 0.0, 'range': 0.0, 'aim': (0.0, 0.0, 0.0, 0.0)}),
+        ('Plasma grenade stuck (1/s)', W + r'rocket launcher\rocket launcher', 'shot',
+         {'damage_tags': [PGX, PGA], 'rate': 1.0,
+          'nomag': True, 'speed': 0.0, 'range': 0.0, 'aim': (0.0, 0.0, 0.0, 0.0)}),
+        ('Grenade Launcher (port)', W + r'grenade launcher\grenade launcher', 'shot'),
+        ('Plasma Launcher (port), tap', W + r'plasma launcher\plasma launcher', 'shot',
+         {'per_shot': 1, 'charge': 0.0, 'rate': 1 / 0.95}),
+        ('Brute Shot port, default', W + r'brute shot\brute shot', 'shot'),
+    ]},
 }
 
 ENEMIES = [
