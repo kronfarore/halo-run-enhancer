@@ -403,11 +403,12 @@ PORT.update({
                     'deceleration_time': 0.0, 'first_person_offset': FP_MUZZLE},
         # Halo 4: minimum error 0, error 0.15 -> 0.8 (the bloom never builds at one round a reload)
         'error_deg': {'minimum_error': 0.0, 'error_angle': (0.15, 0.8)},
-        # BOOT 3 (user: 'give the weapon a guaranteed overheat after firing with a timeout that is exactly the
-        # reload time'): heat 1.0 a round (every shot overheats; Halo 4's own 0.36 a round never did), back at
-        # 0.1 -> the vent = (1 - 0.1) / loss = the reload 82 / 30 s: loss 0.9 / 2.733 = 0.3293 (balanced: the
-        # 88.4 fr reload, 0.3054 -- a row). Halo 1 charges during the overheat, only the discharge waits (A8)
-        'heat': {'recovery_threshold': 0.1, 'overheated_threshold': 1.0, 'loss_per_second': 0.9 / (82 / 30.0)},
+        # BOOT 3 (user: 'a guaranteed overheat after firing, timed out exactly at the reload'): heat 1.0 a round,
+        # back at 0.1, loss 0.9 / 2.733 s. BOOT 4 (user: 'the heat does nothing, revert it'; the probe: heat
+        # word +0x204 1.0 -> 0 over ~4.5 s, but Halo 1 keeps CHARGING through the reload and the overheat -- the
+        # charge word +0xE4 restarts 0.07 s after the shot while the trigger stays held -- and the discharge
+        # fires the moment the gun is ready: shots CHAIN while held, the Spartan Laser's case). Reverted; the
+        # chaining is accepted for now (a halo1.dll patch is the candidate fix, user)
         # Halo 4: 1 loaded, 4 at pickup, 6 most, 1 reloaded; reload = reload_empty 82 fr (Halo 1 needs a
         # number: the animation's 82 / 30)
         'magazine': {'rounds_loaded_maximum': 1, 'rounds_reloaded': 1,
@@ -435,8 +436,6 @@ PORT.update({
             # only taps a pair -- A8: Armed enemies would never fire the slug)
             'weap_attrs.triggers.0.charging.charging_time': 0.75,
             'weap_attrs.triggers.0.charging.charge_hold_time': 0.0,
-            # the guaranteed overheat (boot 3, user; `heat` above)
-            'weap_attrs.triggers.0.misc.heat_generated_per_round': 1.0,
             'weap_attrs.triggers.0.charging.overcharged_action': 'discharge',
             'weap_attrs.triggers.0.flags.does_not_repeat_automatically': True,
             'weap_attrs.triggers.0.flags.projectile_is_client_side_only': False,
@@ -516,8 +515,6 @@ PORT.update({
                 row('jpt!', RG + 'explosion', 'Radius From', 0.306, 0.55, 'Explosion Radius'),
                 row('jpt!', RG + 'explosion', 'Radius To', 0.8, 1.0, 'Explosion Radius'),
                 row('weap', RG + 'railgun', 'Rounds Total Maximum', 8.0, 6.0, 'Magazine', block='Magazines'),
-                # the overheat = the reload (boot 3, user): 0.9 / the balanced reload 88.4 / 30 s
-                row('weap', RG + 'railgun', 'Heat Loss Per Second', 0.9 / (88.4 / 30.0), 0.9 / (82 / 30.0), 'Heat Loss'),
                 row('proj', RG + 'slug', 'Initial Velocity', 4.0, 3.333, 'Projectile'),
                 row('proj', RG + 'slug', 'Final Velocity', 4.0, 3.333, 'Projectile'),
                 row('weap', RG + 'railgun', 'Autoaim Range', 14.6, 25.0, 'Autoaim'),
