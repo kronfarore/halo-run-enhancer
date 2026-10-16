@@ -1087,7 +1087,11 @@ def own_beam(a, b, write):
         save(lt, path(G['light'][1], '.light'), write)
         att = pt.data.tagdata.obje_attrs.attachments.STEPTREE
         if not any(x.type.filepath == G['light'][1] for x in att):
-            att.append(copy.deepcopy(att[0]))
+            # `keep_attachments` () may have emptied the list (the Sticky Detonator, C8): a fresh entry
+            if len(att):
+                att.append(copy.deepcopy(att[0]))
+            else:
+                att.append()
             x = att[len(att) - 1]
             x.type.tag_class.set_to('light')
             x.type.filepath = G['light'][1]
