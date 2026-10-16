@@ -7282,7 +7282,7 @@
    "source": "Halo 4",
    "donor": "Rocket Launcher",
    "default_on": false,
-   "desc": "Halo 4's Railgun: its model, first-person animations, sounds and numbers. Hold to charge for 0.75 s and release (or keep holding: it fires by itself 1.5 s later); the slug sticks and bursts: 120 + 180 damage. One round, then a reload. Rocket Launcher ammo tops it up.",
+   "desc": "Halo 4's Railgun: its model, first-person animations, sounds and numbers. Hold the trigger for 0.75 s and it fires (let go earlier to cancel); the slug sticks and bursts: 120 + 180 damage. One round, then a reload. Rocket Launcher ammo tops it up.",
    "balance_desc": "Measured against the Rocket Launcher, which both games have: 86 + 129 damage a slug over a 0.8 wu blast, 8 rounds most, a 120 wu/s slug, a slower reload and Halo 1-style aim assist.",
    "anims": {
     "reload": 1.078,
