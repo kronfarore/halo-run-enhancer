@@ -1448,7 +1448,7 @@ stock. Per weapon at once (needler 7 beside a port at 3) follows with the Needle
 boot. If (2) still needs 7: the counts are not read where shown -- re-probe live before a second
 boot.
 
-### Halo 1: a CHARGE trigger that waits for a RELEASE (Railgun C7, Spartan Laser A8, 2026-10-16) -- halo1.dll patch: v1 LIVE-tested (hole found), v2 BUILT
+### Halo 1: a CHARGE trigger that waits for a RELEASE (Railgun C7, Spartan Laser A8, 2026-10-16) -- halo1.dll patch: v2 CONFIRMED live 2026-10-16 (Railgun)
 
 The fuel rod's one trigger (charging time > 0, overcharged action `discharge`, charge hold 0)
 chains while it is held: the Railgun recharges right after the slug and the Spartan Laser
@@ -1550,6 +1550,14 @@ the second charge is the user's observation, not a trace.
   at the discharge, cleared at the slug), then a rest while held.
   (c) tap-release: nothing fires.
   (d) test 4: Armed AI, several bursts.
+* **v2 CONFIRMED live (C7, a30 balanced build, 2026-10-16; out/weapon_state_probe.jsonl).**
+  (a) Shot, let go, press held from 13.26 s: at the reload end (15.99) state 2 starts, the
+  discharge marks 0x81 at 16.75, and the slug fires at 16.86. No uncharged slug.
+  (b) Held 31.36 -> 36.02 s: one slug at 32.22 (flags 0x81 -> 0x20), then nothing. A normal
+  shot takes 0.87 s from press to slug.
+  (c) The tap was not captured. (d) Armed AI is still open (the Railgun's Armed boot).
+  The C7 session wires `charge_needs_release` and edit_weapon's bit 30. The enhancer option
+  `h1_charge_latch` is not wired yet.
 * **TEST PLAN (one boot, a30, Railgun; the Spartan Laser is the same code).** MCC can run
   (live write + rename swap). Commands from `tool\sprint_toolkit` in cmd.exe:
   0. `h1_charge_latch_test.cmd on`, load a30 with the Railgun in hand, then
