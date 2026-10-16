@@ -43,6 +43,9 @@ SCOPE = r'F:\SteamLibrary\steamapps\common\HCEEK\data\weapons\binary rifle\scope
 # screenshot, 2026-10-16: the top display median 255 / 136 / 67, the side lights 255 / 101-132 / 63-80,
 # the stripe 255 / 131 / 42; edges ~250 / 95 / 53)
 ORANGE = (1.0, 0.45, 0.2)
+# the beam (boot 2, the user's Halo 4 screenshot of a shot): profile value -> colour
+BEAM_STOPS = [(0.0, (141, 63, 38)), (0.35, (210, 102, 43)), (0.6, (255, 175, 83)),
+              (0.82, (255, 255, 143)), (1.0, (255, 255, 221))]
 
 # the Storm Rifle's DROP list: every storm_fp graph shares the skeleton (checked 2026-10-16: this graph's
 # 99 nodes = the same 80 arm / camera nodes + the render model's 19 gun bones)
@@ -148,12 +151,17 @@ PORT.update({
         # the core = the lance's fr_sniper_tracer through grad_forerunner_muzzle_smg, the glow = glow_red's
         # fr_rifle_tracer_glow through grad_forerunner_muzzle_spread; both additive (premultiplied)
         'baked_textures': {'bi_beam_core': {'profile': H4 + r'fx\bitmaps\2d\tracer\fr_sniper_tracer.bitmap',
-                                            'palette': H4 + r'fx\bitmaps\gradient\grad_forerunner_muzzle_smg.bitmap',
+                                            # BOOT 2 (user's Halo 4 screenshot of the beam leaving the muzzle):
+                                            # colour STOPS instead of Halo 4's palettes (the glow's spread palette
+                                            # read RED) -- the shot's bands by brightness: core 255 / 255 / 221,
+                                            # yellow 255 / 255 / 143, orange 255 / 175 / 83, haze 210 / 102 / 43,
+                                            # outer 141 / 63 / 38
+                                            'stops': BEAM_STOPS,
                                             # a bolt sprite Halo 4 TILES along the ribbon (uv tiling 0.25): its
                                             # length kept (the Focus Rifle's pulse), repeated on the contrail
                                             'premultiply': True, 'size': (256, 64)},
                            'bi_beam_glow': {'profile': H4 + r'fx\bitmaps\2d\tracer\fr_rifle_tracer_glow.bitmap',
-                                            'palette': H4 + r'fx\bitmaps\gradient\grad_forerunner_muzzle_spread.bitmap',
+                                            'stops': BEAM_STOPS,
                                             'premultiply': True, 'gain': 1.5}},
     },
 
@@ -381,8 +389,10 @@ PORT.update({
                 # BOOT 1 (user: 'zoom stage 2 is missing' + the Halo 4 10x screenshot): the glyph sequences
                 # held one sprite (zoom 1) -- `levels`: the same pieces fitted to the 10x shot (h4_zoom2.png,
                 # --fit, scope\z2) as sprite 2: overlap 0.300 -> scale x 1.05 y 1.0, shift 0 -120 px (zoom 1:
-                # 1.025 / 1.0, -8 -120 -- Halo 4's two stages differ only slightly)
-                'zoom_glyphs': [{'image': SCOPE + q + '.png', 'levels': [SCOPE + 'z2' + B + q + '.png'],
+                # 1.025 / 1.0, -8 -120 -- Halo 4's two stages differ only slightly). BOOT 2 (user: 'stage 2
+                # looks like it's simply shifting slightly to the right -- use the exact same layout as
+                # stage 1'): sprite 2 = the stage-1 quadrant (scope\z2 kept, unused)
+                'zoom_glyphs': [{'image': SCOPE + q + '.png', 'levels': [SCOPE + q + '.png'],
                                  'reg': reg, 'name': 'binary rifle scope ' + q,
                                  'index': i, 'scale': (1.0, 1.0), 'overlay': 3.604, 'offset': off,
                                  'rgb': (255, 110, 30), 'alpha': 0.6, 'normalize': True, 'gamma': 1.6}
