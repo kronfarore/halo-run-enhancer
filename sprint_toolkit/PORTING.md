@@ -2455,6 +2455,64 @@ weapon's handle + the magazine, `--analyse --port <key>` per reload) and `h4_eff
 4 half of check 10). `port_backup.py --game h1` listed no wave-C tool (h4_tags, h4_fp_dump, h1_decimate,
 kit_commit, h1_tag_writes_proof ...): added.
 
+### Halo 1: the Binary Rifle, wave C6 (2026-10-16, 4 dry boots + balanced + Armed on a30, PARALLEL with C8) -- a Halo 4 two-shot sniper on the sniper template, a two-stage polyart scope, a beam from the muzzle
+
+The whole weapon is `ports_h1/binary_rifle.py` (its CLOSE-OUT RECORD lists every check), on a copy of the Halo
+1 SNIPER RIFLE (also the yardstick): the Halo 4 route of the LightRifle on the DMR's sniper template.
+
+**Step 4a (user): the SNIPER.** Halo 4: 129 (`sniper` group) a shot, recovery 1.0 s, magazine 2 (6 / 8),
+86 / 71 fr, 2799 wu/s, range 500, zoom 4x / 10x, aim from the MODE block (mode 0 = unzoomed: none; 1-2 =
+zoomed 1/25 1.6/25). Sniper ratio balanced: 162.9, 1.53/s, 10 most, 1000 / 1000, 2x / 8.89x. The Rocket
+Launcher ratio was rejected (92 at 0.4/s: a bullet against an explosive's direct hit). One-hit body kills on
+Legendary: Grunts and Jackals only (either version).
+- **Read flags by NAME, not by bit (4b, corrected 4a):** H4EK exports flags as numbers and the Halo 3 order
+  gives nonsense; ManagedBlam in Blender (`TagFieldFlags.Items`: FlagIndex / FlagName) named barrel bit 9
+  'don't clear fire bit after recovering' -- not an error flag. Halo 4 scales the Binary's error by ZOOM
+  (`iron sights modifiers` spread multiplier 0.1: 4 deg hip / 0.4 scoped); Halo 1 cannot -- the sniper's
+  'use error when unzoomed' (4 / 0) is the nearest.
+- **tool.exe cannot write past MAX_PATH:** the Binary's control bitmap and .material exports went missing
+  silently (a 267-char cache path) -> `h4_tags.export_xml` exports through a short name. H4EK `.material`
+  values: a parameter's function blob (`adgt` after its name: colours as BGRA bytes at +4, floats after).
+
+**Look:** no shipped colour map (the Suppressor's case) -> the control map's diffuse channel x albedo 0.804,
+then x3.5 (the user's lit body reads 120-160 in Halo 4). Glow orange-red from the user's idle screenshot
+(1, 0.45, 0.2); BOOT 1 (user: 'more intense orange when firing'): the LightRifle's firing light-up (cards
+faded by A out -- the sniper template exports A = illumination too). Decimated 60 % (0.59 MiB with the 55
+firing cards, budget 0.6). FP at Halo 4's own placement (offset 0): good at boot 1.
+
+**The scope:** Halo 4's `attach_beam_scope` polyart (canard pieces hidden in the CUI), fitted to the zoom-1
+screenshot (scale 1.025 / 1.0, -120 px) as the LightRifle's four quadrant glyphs (hud_reticles 76-79). ZOOM
+STAGE 2 drew nothing: Halo 1 draws sprite N at zoom level N, the glyph sequence held one sprite ->
+`zoom_glyphs` `levels` (h1_pickable_weapons, narrowed proof bi1). A separate 10x fit (1.05 / 1.0) looked
+'shifted slightly to the right' (user): stage 2 uses stage 1's layout. Blur: the screen effect's convolution
+radius 11 -> 8 (user). THE CROSSHAIR: Halo 1 has one aim reticle at every zoom -- the user took Halo 4's
+ZOOMED (tightened) reticle always (`inner_2` steps at +-8.8 / +-6.1 units).
+
+**The beam:** Halo 4's tracer = 4 aligned ribbons on a TILED bolt sprite (uv tiling 0.25) -> the beam recipe
+with the sprite's length kept (256 x 64, `repeats` 0.25). The palettes read red; the user's screenshot of a
+shot set colour STOPS (white-yellow core -> orange haze). THE TRAIL WAS INVISIBLE (boot 3: 'because of the
+angle we fire it from'): Halo 1 lays a contrail's first point one update out (93 wu at 2799 wu/s) on a line
+from the EYE -- the trigger's first-person offset = the FP muzzle (h1_fp_muzzle), the Beam Rifle / DMR fix.
+Overpenetration at 2799 wu/s: confirmed (the Spartan Laser's 4000 / one-tick failure did not repeat).
+
+**Sounds:** the fire event's 6 actions are LAYERS -- as one event spec h1_port_sounds read its 18 sounds as
+permutations (one layer a shot): `obj_<id>` per action (C4). The pickup: Halo 4's
+play_weapon_ammo_pickup_fallback is in the `weapon_sync` bank (the LightRifle's pickup event is in none) --
+own, 0 BORROW. Flash (check 10): Halo 4's FP flash 0.084-0.15 wu on-axis, no smoke / casing; the sniper's
+sideways brake fans differ by DIRECTION, not offset (drop_off_axis cannot take them) -> `copy_from` the
+LightRifle port's flash x2, third person x1.2.
+
+**Step 11:** donor the Flood Elite sniper (every slot), Halo 4 m020 ai\generic #26, WDM RULE as is (user):
+0.4 x 202 / 129 = 0.626 (balanced / 250 = 0.323) -- 145 a hit to the player on Legendary (2 hits; the stock
+sniper Flood Elite 3). Balanced drop 0.45 - 0.95. Hit flash: Halo 4's impact_bullet_sniper (orange, 0.7 s
+early) at the LightRifle's intensity. Enhancer (8bdb20c, c0b553a): hands 'two', tag_map bullet + melee, 17
+cards from the Sniper Rifle. Armed boot passed first time.
+
+**Process:** the world model slid when dropped in boot 1 and not in boot 2 (nothing changed for it -- not
+reproduced, observation only). A test build failed once and built on rerun (the other session's `tool`).
+`kit_commit` refuses a file holding the other session's hunks: with the user's go, the own hunk went in by
+`git apply --cached` of a filtered patch (bytes: CRLF).
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:

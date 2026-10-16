@@ -1178,6 +1178,28 @@ SHORT-RANGE Armed weapon. Everything in "C1" - "C4" held; what is new:
 - Process: 4 dry boots (view + glow 1, reload x3 + the measurement), balanced 1, Armed 10. Narrowed proofs
   ss1-ss3 (h1_fp_retarget `reverse`, `resample`, `sequence`) 0 changed; check 6 0 changed. Model 0.60 MiB.
 
+## C6: what the Binary Rifle taught (2026-10-16) -- parallel with C8
+
+PORTING.md "Halo 1: the Binary Rifle, wave C6" is the full record; `ports_h1/binary_rifle.py` is the example of a
+Halo 4 SNIPER on the sniper template, of a TWO-STAGE polyart scope and of a fast beam seen from the muzzle.
+Everything in "C1" - "C5" held; what is new:
+
+- **Name Halo 4 flags through ManagedBlam, never by bit:** step 4a misread a barrel flag as 'error unzoomed'
+  ('don't clear fire bit after recovering'); Halo 4 scales error by zoom through `iron sights modifiers`.
+- **H4EK exports past MAX_PATH fail silently** (tool.exe): fixed in h4_tags.export_xml. `.material` values sit in
+  each parameter's function blob.
+- **A zoom glyph needs one sprite PER zoom level** (`zoom_glyphs` `levels`); for a two-zoom scope the user took
+  stage 1's layout for both.
+- **One aim reticle at every zoom:** pick the source's zoomed or unzoomed reticle with the user (here: zoomed).
+- **A fast projectile's contrail needs the FP muzzle offset** from the first boot: Halo 1's first contrail point
+  is one update out on the eye's line (93 wu at 2799 wu/s) -- end-on, invisible.
+- **A Halo 4 event with several actions = layers** (`obj_` per action); a pickup event may live in a shared bank
+  (`weapon_sync`) -- search before keeping a borrow.
+- **Beam colours from a screenshot of a shot** (colour stops) when the source palettes read off.
+- **The sniper template's flash fans differ by direction:** `copy_from` a nearer approved flash.
+- Process: 4 dry boots (look / scope / crosshair 1, scope stage 2 1, beam colour 1, trail + blur 1), balanced 1,
+  Armed 1 (passed). Narrowed proof bi1 0 changed; check 6 0 changed. Model 0.59 MiB; a30 6.1 MiB left.
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one
