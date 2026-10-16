@@ -7482,6 +7482,17 @@
       "label": "Sniper Rifle Ammo"
      }
     ]
+   },
+   "hands": "heavy",
+   "tag_map": {
+    "proj weapons\\rocket launcher\\rocket": "proj weapons\\railgun\\slug",
+    "jpt! weapons\\rocket launcher\\explosion": "jpt! weapons\\railgun\\slug impact & weapons\\railgun\\explosion",
+    "jpt! weapons\\rocket launcher\\melee": "jpt! weapons\\railgun\\melee"
+   },
+   "card_donors": {
+    "Plasma Pistol": [
+     "Charging Time"
+    ]
    }
   },
   {
