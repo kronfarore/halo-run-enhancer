@@ -4192,7 +4192,20 @@ class ModifierDatabase:
                          'enemy_type': 'Marine' if ally else enemy, 'step': self.ARMED_STEP}],
         }
 
-    def armed_cards(self, mission_id, weapons, game, ally=False, vanished=(), added=()):
+    #: draw weight of a HELD weapon's Armed card, in ordinary cards (user, 2026-10-16):
+    #: 2x, 4x with 'every weapon' on; minus one each time it is offered, never below 2
+    ARMED_HELD_WEIGHT, ARMED_HELD_WEIGHT_ALL, ARMED_HELD_FLOOR = 2, 4, 2
+
+    def armed_weight(self, enemy, weapon, held, offered=None):
+        if weapon not in held:
+            return 1
+        base = self.ARMED_HELD_WEIGHT_ALL if CONFIG.get('h1_armed_all_weapons') \
+            else self.ARMED_HELD_WEIGHT
+        used = int((offered or {}).get('%s||%s' % (enemy, weapon)) or 0)
+        return max(self.ARMED_HELD_FLOOR, base - used)
+
+    def armed_cards(self, mission_id, weapons, game, ally=False, vanished=(), added=(),
+                    offered=None):
         """The Armed cards this level can offer for the players' `weapons` -- none for
         an enemy type a Thunderstorm / Downpour took out of the run."""
         if game != 'Halo 1' or not CONFIG.get('h1_enemy_weapon_cards', True):
@@ -4215,25 +4228,27 @@ class ModifierDatabase:
         held = list(names)
         if CONFIG.get('h1_armed_all_weapons'):
             # Options -> 'every weapon': the rest of Halo 1's weapons join the draw as
-            # ordinary cards, and a weapon the players HOLD counts twice (user,
-            # 2026-10-16: "twice as often compared to a regular card"). The doubling is a
-            # second entry of the same card -- every draw picks from a plain list; the one
-            # draw without replacement uses sample_distinct.
+            # ordinary cards (user, 2026-10-16)
             for w in self.get_game_weapons('Halo 1'):
                 if ok(w):
                     names.append(w)
-            names += held
+        # WEIGHTS (armed_weight): a held weapon's card is listed that many times -- the
+        # SAME card object, so it is one card drawn more often; every draw picks from a
+        # plain list, the one draw without replacement uses sample_distinct.
         if ally:
-            made = {}
-            return [made.setdefault(w, self.armed_card('Marine', w, ally=True)) for w in names]
+            cards = []
+            for w in names:
+                c = self.armed_card('Marine', w, ally=True)
+                cards += [c] * self.armed_weight('Marine', w, held, offered)
+            return cards
         here = list((self.mission_enemies.get(mission_id) or {}).get('enemies', [])) +             list(added or ())
         # an Incursion card / faction skull brings a type back even where it had vanished
-        cards, made = [], {}
+        cards = []
         for e in self.H1_ARMED_ENEMIES:
             if (e in here and e not in set(vanished or ())) or e in set(added or ()):
                 for w in names:
-                    # the doubled entry is the SAME card, so it is one card drawn twice as often
-                    cards.append(made.setdefault((e, w), self.armed_card(e, w)))
+                    c = self.armed_card(e, w)
+                    cards += [c] * self.armed_weight(e, w, held, offered)
         return cards
 
     def map_equip_mod(self, name, game):
@@ -4529,6 +4544,10 @@ class RunState:
         # time and time multiplier as the player typed them, plus the par-time / score
         # settings in force -- data to check whether the par-time change does anything.
         self.levels = []
+        # 'enemy||weapon' -> how often that Armed card was OFFERED while its weapon was
+        # held: its draw weight drops by one each time, to a floor (ModifierDatabase.
+        # armed_cards). Saved with the run, so a co-op partner draws the same way.
+        self.armed_offered = {}
 
     def weapons_for(self, player):
         return self.player1_weapons if player == 'player1' else self.player2_weapons
@@ -4605,6 +4624,7 @@ class RunState:
             "inverted_steps": list(getattr(self, 'inverted_steps', []) or []),
             "last_patch": self.last_patch,
             "levels": list(getattr(self, 'levels', []) or []),
+            "armed_offered": dict(getattr(self, 'armed_offered', {}) or {}),
             "rounds": self.rounds
         }
 
@@ -4659,6 +4679,8 @@ class RunState:
         lp = data.get('last_patch')
         state.last_patch = lp if isinstance(lp, dict) else None
         state.levels = [x for x in (data.get('levels') or []) if isinstance(x, dict)]
+        state.armed_offered = {str(k): int(v) for k, v in (data.get('armed_offered') or {}).items()
+                               if isinstance(v, (int, float))}
 
         p1_mod = p1data.get('selected_mod')
         p2_mod = p2data.get('selected_mod')
@@ -11844,8 +11866,9 @@ class OptionsDialog(QDialog):
         self.h1_armed_all_cb.setToolTip(
             "On: Armed cards are also offered for every other Halo 1 weapon some character "
             "spawns with (ported weapons while they are offered on the level), as ordinary "
-            "cards; a weapon you or your partner hold comes up twice as often as an ordinary "
-            "card (Marine Armed cards: twice their low Ally weight).\n"
+            "cards.\nA weapon you or your partner HOLD always counts more: 2x an ordinary "
+            "card, 4x while this is on, one less each time its card is offered, never below "
+            "2x (Marine Armed cards the same, on their low Ally weight).\n"
             "Off (default): only the weapons the players hold.")
         self.h1_armed_cards_cb.toggled.connect(self.h1_armed_all_cb.setEnabled)
         self.h1_armed_all_cb.setEnabled(self.h1_armed_cards_cb.isChecked())
@@ -14374,6 +14397,23 @@ class HaloGUI(QMainWindow):
     def _vanished(self):
         """Enemy types an active Thunderstorm / Downpour took out of the run."""
         return self.db.vanished_enemies(active_skull_names(self.run_state))
+
+    def _armed_offered(self):
+        rs = getattr(self, 'run_state', None)
+        if rs is not None and not isinstance(getattr(rs, 'armed_offered', None), dict):
+            rs.armed_offered = {}
+        return rs.armed_offered if rs is not None else {}
+
+    def _note_armed_offered(self, card):
+        """A held weapon's Armed card was offered: its draw weight drops by one next time."""
+        if not isinstance(card, dict) or not str(card.get('name') or '').startswith('Armed: '):
+            return
+        t = (card.get('targets') or [{}])[0]
+        w, e = t.get('enemy_weapon'), t.get('enemy_type')
+        if w and e and w in (self._run_weapons() or []):
+            d = self._armed_offered()
+            k = '%s||%s' % (e, w)
+            d[k] = int(d.get(k) or 0) + 1
 
     def _swapped_in(self):
         """Enemy types a Halo 1 Incursion card brought into the run."""
@@ -17139,14 +17179,17 @@ class RunEnhancer:
                 # Marine 'Armed' cards ride the Ally pool at the LOWEST priority (user,
                 # 2026-10-02): a quarter of the weight of an ordinary ally card each.
                 marines = self.db.filter_blacklisted(
-                    self.db.armed_cards(mid, self._run_weapons(), game, ally=True), bl, game)
+                    self.db.armed_cards(mid, self._run_weapons(), game, ally=True,
+                                        offered=self._armed_offered()), bl, game)
                 if marines:
                     regular = self.db.filter_blacklisted(self.db.wildcard_pool, bl, game)
                     pool = regular + marines
                     mod = random.choices(pool, weights=[1.0] * len(regular)
                                          + [0.25] * len(marines), k=1)[0]
+                    self._note_armed_offered(mod)
             elif picked == 'bane':
                 mod = copy.deepcopy(random.choice(enemy_mods))
+                self._note_armed_offered(mod)
                 mod['bane'] = True
             if mod is not None:
                 return picked, mod
@@ -17179,7 +17222,8 @@ class RunEnhancer:
                                                           betrayal=self._betrayal_active(), vanished=self._vanished(), added=self._swapped_in())
         enemy_mods += self.db.filter_blacklisted(
             self.db.armed_cards(mid, self._run_weapons(), game,
-                                vanished=self._vanished(), added=self._swapped_in()), bl, game)
+                                vanished=self._vanished(), added=self._swapped_in(),
+                                offered=self._armed_offered()), bl, game)
         wpool = self._new_weapon_pool(for_player)
 
         # A level with a named STORY fight gets a guaranteed Boss card on every pair.
@@ -17253,6 +17297,7 @@ class RunEnhancer:
         wi = 0
         for i in range(3):
             enemy_choice = random.choice(enemy_mods) if enemy_mods else None
+            self._note_armed_offered(enemy_choice)
             new_weapon = None
             p1_choice = p2_choice = None
             wildcard = exhaust = skull = hero = boss_mod = None
@@ -17326,6 +17371,23 @@ class RunEnhancer:
     def _vanished(self):
         """Enemy types an active Thunderstorm / Downpour took out of the run."""
         return self.db.vanished_enemies(active_skull_names(self.run_state))
+
+    def _armed_offered(self):
+        rs = getattr(self, 'run_state', None)
+        if rs is not None and not isinstance(getattr(rs, 'armed_offered', None), dict):
+            rs.armed_offered = {}
+        return rs.armed_offered if rs is not None else {}
+
+    def _note_armed_offered(self, card):
+        """A held weapon's Armed card was offered: its draw weight drops by one next time."""
+        if not isinstance(card, dict) or not str(card.get('name') or '').startswith('Armed: '):
+            return
+        t = (card.get('targets') or [{}])[0]
+        w, e = t.get('enemy_weapon'), t.get('enemy_type')
+        if w and e and w in (self._run_weapons() or []):
+            d = self._armed_offered()
+            k = '%s||%s' % (e, w)
+            d[k] = int(d.get(k) or 0) + 1
 
     def _swapped_in(self):
         """Enemy types a Halo 1 Incursion card brought into the run."""
@@ -17454,8 +17516,11 @@ class RunEnhancer:
                                                           betrayal=self._betrayal_active(), vanished=self._vanished(), added=self._swapped_in())
         enemy_mods += self.db.filter_blacklisted(
             self.db.armed_cards(mid, self._run_weapons(), game,
-                                vanished=self._vanished(), added=self._swapped_in()), bl, game)
+                                vanished=self._vanished(), added=self._swapped_in(),
+                                offered=self._armed_offered()), bl, game)
         enemies = sample_distinct(enemy_mods, len(slots))
+        for c in enemies:
+            self._note_armed_offered(c)
         # Option: the Other slot too, rolled exactly like a normal round's (_draw_other)
         with_other = bool(CONFIG.get('identity_other_card'))
         active_neg = self._active_negative_names() if with_other else set()
