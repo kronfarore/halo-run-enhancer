@@ -7493,7 +7493,10 @@
     "Plasma Pistol": [
      "Charging Time"
     ]
-   }
+   },
+   "skip_cards": [
+    "Projectile Range"
+   ]
   },
   {
    "weapon": "Incineration Cannon",
