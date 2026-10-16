@@ -157,7 +157,10 @@ BOMBLET = {
     # however short it is (boot 8's 0.08-0.1 s streak too) -> NO trail: the glowing orange ball alone (Halo 4's
     # submunition trail not reproduced). Boot 2: the ball x0.7 on the orange sprite, the flare 0.1
     'keep_attachments': (),
-    'widget_tint': {'out': IC + 'bomblet volume', 'hither': ORB_HITHER, 'yon': ORB_YON, 'radius': 0.7, 'map': ORB_MAP},
+    # BOOT 10 (user: 'the bomblets still hold their trail'): the 'trail' was the light VOLUME itself -- a 0.55 wu beam
+    # along the flight (the fuel rod's), swinging at every bounce -> x0.1 long (0.055 wu): a compact glowing blob
+    'widget_tint': {'out': IC + 'bomblet volume', 'hither': ORB_HITHER, 'yon': ORB_YON, 'radius': 0.7, 'map': ORB_MAP,
+                    'length': 0.1},
     'glow': {'light': (FR + 'fuel rod exhaust', IC + 'bomblet glow'),
              'flare': IC + 'bomblet glow', 'rgb': ORANGE, 'flare_radius': 0.1, 'marker': 'contrail'},
     'change_color': {'from': 'weapons' + B + 'plasma pistol' + B + 'bolt', 'rgb': ORANGE},

@@ -1031,6 +1031,9 @@ def own_beam(a, b, write):
                     bd.a, bd.r, bd.g, bd.b = argb
                 fr.radius_hither *= W.get('radius', 1.0)
                 fr.radius_yon *= W.get('radius', 1.0)
+                # `length` x (the Incineration Cannon, boot 10: a light volume is a BEAM along the projectile's
+                # direction -- the fuel rod's 0.55 wu -- on a bouncing bomblet it swung like a trail)
+                fr.length *= W.get('length', 1.0)
             save(vt, path(W['out'], '.light_volume'), write)
             wd.reference.filepath = W['out']
     for i, spec in b.get('set_attachments', {}).items():
