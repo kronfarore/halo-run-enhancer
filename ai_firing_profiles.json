@@ -3407,6 +3407,31 @@
     "port_dps": 129.0,
     "balanced_port_dps": 250.0
    }
+  },
+  "weapons\\sticky detonator\\sticky detonator": {
+   "source": "Halo 1 weapons\\rocket launcher\\rocket launcher (own carriers, no ai\\generic entry for the Sticky Detonator (_pve or MP) in any Halo 4 map; fires like the Halo 1 rocket launcher carriers (user, 2026-10-16))",
+   "donor_weapon": "weapons\\rocket launcher\\rocket launcher",
+   "fields": {
+    "0xC4": [
+     "<f",
+     0.12514851485148515,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "species_skill": true,
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.45631768953068597,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.4,
+    "yardstick_dps": 158.0,
+    "port_dps": 505.0,
+    "balanced_port_dps": 138.5
+   }
   }
  }
 }
