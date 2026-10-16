@@ -1448,7 +1448,7 @@ stock. Per weapon at once (needler 7 beside a port at 3) follows with the Needle
 boot. If (2) still needs 7: the counts are not read where shown -- re-probe live before a second
 boot.
 
-### Halo 1: a CHARGE trigger that waits for a RELEASE (Railgun C7, Spartan Laser A8, 2026-10-16) -- halo1.dll patch, BUILT, NOT APPLIED
+### Halo 1: a CHARGE trigger that waits for a RELEASE (Railgun C7, Spartan Laser A8, 2026-10-16) -- halo1.dll patch: v1 LIVE-tested (hole found), v2 BUILT
 
 The fuel rod's one trigger (charging time > 0, overcharged action `discharge`, charge hold 0)
 chains while it is held: the Railgun recharges right after the slug and the Spartan Laser
@@ -1507,6 +1507,49 @@ the second charge is the user's observation, not a trace.
   AI: one slug a burst. The next burst charges because an AI lets go between bursts (A8's
   Rate Of Fire 0 profile with its burst pause). An AI that never let go would stop firing:
   that is test 4.
+* **v1 LIVE (C7, a30, 2026-10-16): tests 1-2 pass, and a hole.** Test 1 (latch off, held 11 s):
+  one slug at +0.87 s, the wasted charge 2, then nothing while held. The player's stock latch
+  holds, so the user's "chain" is NOT a held-trigger chain. It is this: **fire, LET GO, press
+  and HOLD during the reload -> an UNCHARGED slug the moment the reload ends.** That still
+  happened with v1 on. The trace showed flags 0x21 -> 0x20 at reload end, with state never
+  leaving 0. During the reload the start routine returns early (the magazine test, before
+  S1). Once the gun is ready, the ramp is already > 0, so the ramp-fire fires. The release
+  had set bit 0, so v1 let it through. The ramp-fire cannot tell "the discharge's slug" from
+  "became ready while held".
+* **v2 (built 2026-10-16, offline-verified, not yet live): a 'just discharged' marker, trigger
+  flags bit 7** (+0x22C mask 0x80; nothing in halo1.dll tests it). Rules:
+  * The DISCHARGE tail sets bit 7: M `+0xB78C3D` `mov [rsi+rbx+0x238],r14d` (the ramp reset)
+    becomes a call to MARK, which does the same mov plus `bts word [rsi+rbx+0x22C],7`. It
+    runs for every weapon.
+  * For an opted-in weapon whose bit 0 is set, the start routine consumes bit 7:
+    `btr word [rdi+rsi+0x22C],7`. If bit 7 was set, the ramp-fire goes on (the legitimate
+    slug). If it was clear, `and dword [rdi+rsi+0x238],0`, so there is no ramp-fire and a
+    FRESH charge starts instead.
+  * Pressed during the reload therefore means a full charge once the gun is ready, and the
+    slug comes 0.75 s later.
+
+  | v2 rva | stock | patched |
+  |---|---|---|
+  | +0xB77E5D / +0xB77EF4 | as v1 | as v1 (call CHECK_A / call STUB2) |
+  | +0xB78C3D | `4489b41e38020000` | `e8 4a208200 909090` call MARK |
+  | CHECK_A +0x139A5AB | `cc` x21 | as v1 |
+  | CHECK_B +0x139AA3C | `cc` x20 | `f684372c02000001 0f8469feffff e93cfdffff cc` |
+  | CHECK_C +0x139A78B | `cc` x21 | `660fbab4372c02000007 7208 83a4373802000000 c3` |
+  | EXIT +0x139A8B3 | `cc` x13 | `4883c408 e9e4d67dff cc cc cc cc` |
+  | STUB2 +0x139A203 | `cc` x13 | as v1 |
+  | MARK +0x139AC8C | `cc` x20 | `4489b41e38020000 660fbaac1e2c02000007 c3 cc` |
+
+  `--on` recognises v1 (file or live) and takes it out first; `--off` removes either version.
+  Offline: game file (v1) -> `--on` -> v2 disassembles as above -> `--off` = the pre-v1 dll,
+  byte-identical; stock -> v2 -> stock also identical.
+* **v2 TEST (C7 keeps the Railgun's live flag on):** `h1_charge_latch_test.cmd on` (upgrades
+  v1 live + file), then probe:
+  (a) the hole: fire, let go, press and hold during the reload. Expect state 2 (a charge) at
+  reload end, a slug ~0.85 s later, and NO 0x21 -> 0x20 at reload end.
+  (b) the normal shot: press and hold. Expect one slug ~0.1 s after the discharge (bit 7 set
+  at the discharge, cleared at the slug), then a rest while held.
+  (c) tap-release: nothing fires.
+  (d) test 4: Armed AI, several bursts.
 * **TEST PLAN (one boot, a30, Railgun; the Spartan Laser is the same code).** MCC can run
   (live write + rename swap). Commands from `tool\sprint_toolkit` in cmd.exe:
   0. `h1_charge_latch_test.cmd on`, load a30 with the Railgun in hand, then

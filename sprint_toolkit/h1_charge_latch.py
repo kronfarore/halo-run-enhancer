@@ -17,23 +17,33 @@ state 2 again). Flags bit 0 = 'up since the last shot' (set on every tick the tr
 'does not repeat automatically' waits for it in +0xB77C20 -- but only for a weapon whose
 +0x1C0 bit 1 is set (= held by a PLAYER, item pickup +0xBDD12A), never for AI.
 
-THE PATCH (opt-in per tag: weapon flags bit 30 = weap +0x308, byte +0x30B mask 0x40 -- the
-melee patch owns bit 31; halo1.dll reads no bit above 15 of that word). In the start routine,
-for an opted-in weapon whose trigger has NOT been up since its last shot (flags bit 0 clear):
-  S1 +0xB77E5D  (charging time > 0, before the ramp-fire)  -> return: no fire, no charge
-  S2 +0xB77EF4  (after the ramp-fire, before 'state 2')     -> return: the shot, no new charge
-Held: one slug, then the trigger rests until it is let go; let go + press = a fresh charge.
-For AI the same (the stock latch skips AI): one slug a burst, the next burst charges again
-because an AI lets go between bursts. Stock weapons (bit 30 clear) run the stock code.
+THE PATCH, v2 (opt-in per tag: weapon flags bit 30 = weap +0x308, byte +0x30B mask 0x40 -- the
+melee patch owns bit 31; halo1.dll reads no bit above 15 of that word). Two markers in the trigger
+flags word +0x22C: bit 0 (stock, 'up since the last shot') and bit 7 (NEW, 'just discharged':
+set by every discharge, read only for an opted-in weapon). In the start routine of an
+opted-in weapon:
+  bit 0 clear (not let go since the last shot)  -> return: no fire, no charge   (v1)
+  bit 7 set (the discharge's own slug)           -> clear bit 7, the ramp-fire goes on
+  bit 7 clear (e.g. pressed during the reload)   -> ramp +0x238 = 0: no ramp-fire, a fresh charge
+Sites: S1 +0xB77E5D (charging time > 0, before the ramp-fire), S2 +0xB77EF4 (after it, before
+'state 2'), M +0xB78C3D (the discharge tail's `mov [rsi+rbx+0x238],r14d`).
+v1 (bit 0 only) let a press DURING THE RELOAD ramp-fire an uncharged slug the moment the gun
+was ready (C7 live trace 2026-10-16): the release had set bit 0. v2's bit 7 tells that press
+apart from the discharge's slug. Held: one slug, then rest until let go. Press while not
+ready: a full charge once ready. AI: one slug a burst (the stock latch skips AI).
 Caves in int3 padding (vetted: after a ret, no .pdata, no reloc; .text slack is full):
   CHECK_A +0x139A5AB (21)  mov r9,[rsp+0x28] ; test byte [r9+0x30B],0x40 ; jnz +1 ; ret ;
                            jmp CHECK_B          (r9 = the weapon tag, = S1's replaced load)
-  CHECK_B +0x139AA3C (20)  test byte [rdi+rsi+0x22C],1 ; jz +1 ; ret ;
-                           add rsp,8 ; jmp +0xB77FA0 (the start routine's epilogue)
+  CHECK_B +0x139AA3C (20)  test byte [rdi+rsi+0x22C],1 ; je EXIT ; jmp CHECK_C
+  CHECK_C +0x139A78B (21)  btr word [rdi+rsi+0x22C],7 ; jc +8 ;
+                           and dword [rdi+rsi+0x238],0 ; ret
+  EXIT    +0x139A8B3 (13)  add rsp,8 ; jmp +0xB77FA0 (the start routine's epilogue)
   STUB2   +0x139A203 (13)  movsxd rax,[r15+0x34] ; lea rdx,[rdi+0x34] ; jmp CHECK_A
-                           (S2's replaced 8 bytes)
-r9 is dead at S2 and IS S1's load; flags are rewritten after both sites; no stack use beyond
-the call's own slot. LIVE + FILE like h1_supercombine_count.py. In co-op BOTH machines need it.
+  MARK    +0x139AC8C (20)  mov [rsi+rbx+0x238],r14d ; bts word [rsi+rbx+0x22C],7 ; ret
+r9 is dead at S2 and IS S1's load; flags are rewritten after every site; no stack use beyond
+the call's own slot. MARK runs for every weapon (bit 7 is read by nothing else). v1 bytes are
+recognised and replaced by --on / removed by --off. LIVE + FILE like h1_supercombine_count.py.
+In co-op BOTH machines need it.
 
     python sprint_toolkit/h1_charge_latch.py --show
     python sprint_toolkit/h1_charge_latch.py --on           # live + file
@@ -61,10 +71,14 @@ FLAG_MASK = 0x40
 
 S1 = 0xB77E5D                 # mov r9,[rsp+0x20]                       (5)
 S2 = 0xB77EF4                 # movsxd rax,[r15+0x34] ; lea rdx,[rdi+0x34] (8)
+M = 0xB78C3D                  # mov [rsi+rbx+0x238],r14d  (the discharge) (8)
 EPILOGUE = 0xB77FA0
-CHECK_A = 0x139A5AB           # int3 padding, 21 bytes after a ret
-CHECK_B = 0x139AA3C           # int3 padding, 20 bytes after a ret
-STUB2 = 0x139A203             # int3 padding, 13 bytes after a ret
+CHECK_A = 0x139A5AB           # int3 padding runs after a ret (21 / 20 / 21 / 13 / 13 / 20)
+CHECK_B = 0x139AA3C
+CHECK_C = 0x139A78B
+EXIT = 0x139A8B3
+STUB2 = 0x139A203
+MARK = 0x139AC8C
 
 
 def _rel(next_ip, target):
@@ -76,32 +90,97 @@ CODE_A = (H('4c8b4c2428')                 # mov r9, [rsp+0x28]      the tag (S1'
           + H('7501') + H('c3')           # jnz +1 ; ret            no: stock
           + H('e9') + _rel(CHECK_A + 21, CHECK_B))
 CODE_B = (H('f684372c02000001')           # test byte [rdi+rsi+0x22C], 1  up since the shot?
-          + H('7401') + H('c3')           # jz +1 ; ret             yes: go on
-          + H('4883c408')                 # add rsp, 8              no: leave the start routine
-          + H('e9') + _rel(CHECK_B + 20, EPILOGUE))
+          + H('0f84') + _rel(CHECK_B + 14, EXIT)    # no: leave the start routine
+          + H('e9') + _rel(CHECK_B + 19, CHECK_C))
+CODE_C = (H('660fbab4372c02000007')       # btr word [rdi+rsi+0x22C], 7  just discharged?
+          + H('7208')                     # jc +8                   yes: the slug may fire
+          + H('83a4373802000000')         # and dword [rdi+rsi+0x238], 0  no: no ramp-fire
+          + H('c3'))
+CODE_EXIT = (H('4883c408')                # add rsp, 8
+             + H('e9') + _rel(EXIT + 9, EPILOGUE))
 CODE_STUB2 = (H('49634734') + H('488d5734')   # the replaced S2 instructions
               + H('e9') + _rel(STUB2 + 13, CHECK_A))
-assert (len(CODE_A), len(CODE_B), len(CODE_STUB2)) == (21, 20, 13)
+CODE_MARK = (H('4489b41e38020000')        # mov [rsi+rbx+0x238], r14d  (the replaced one)
+             + H('660fbaac1e2c02000007')  # bts word [rsi+rbx+0x22C], 7  'just discharged'
+             + H('c3'))
+assert tuple(map(len, (CODE_A, CODE_B, CODE_C, CODE_EXIT, CODE_STUB2, CODE_MARK))) == (
+    21, 19, 21, 9, 13, 19)
+
+
+def _cave(rva, size, code):
+    return (rva, H('c3'), b'\xcc' * size, code + b'\xcc' * (size - len(code)), b'')
+
 
 # (rva, context before, stock, patched, context after) -- in "on" order: caves first
 SITES = [
-    (CHECK_A, H('c3'), b'\xcc' * 21, CODE_A, b''),
-    (CHECK_B, H('c3'), b'\xcc' * 20, CODE_B, b''),
-    (STUB2, H('c3'), b'\xcc' * 13, CODE_STUB2, b''),
+    _cave(CHECK_A, 21, CODE_A), _cave(CHECK_B, 20, CODE_B), _cave(CHECK_C, 21, CODE_C),
+    _cave(EXIT, 13, CODE_EXIT), _cave(STUB2, 13, CODE_STUB2), _cave(MARK, 20, CODE_MARK),
     (S1, H('0f86eb000000'), H('4c8b4c2420'), H('e8') + _rel(S1 + 5, CHECK_A),
      H('41f78108030000')),
     (S2, H('2c020000'), H('49634734488d5734'), H('e8') + _rel(S2 + 5, STUB2) + H('909090'),
      H('f3410f104648')),
+    (M, H('488d15331ad200'), H('4489b41e38020000'), H('e8') + _rel(M + 5, MARK) + H('909090'),
+     H('8bcf488b5c2430')),
 ]
+
+# v1 (commit 483d86d, bit 0 only): recognised so --on / --off can take it out first
+_V1_B = (H('f684372c02000001') + H('7401') + H('c3') + H('4883c408')
+         + H('e9') + _rel(CHECK_B + 20, EPILOGUE))
+V1_SITES = [
+    (CHECK_A, H('c3'), b'\xcc' * 21, CODE_A, b''),
+    (CHECK_B, H('c3'), b'\xcc' * 20, _V1_B, b''),
+    (STUB2, H('c3'), b'\xcc' * 13, CODE_STUB2, b''),
+    SITES[6], SITES[7],
+]
+V1_LABEL = 'v1 (bit 0 only; --on upgrades, --off removes)'
 
 
 def file_state(path=DLL):
-    return sc.file_state(path, SITES)
+    s = sc.file_state(path, SITES)
+    if s == 'unknown' and sc.file_state(path, V1_SITES) in ('on', 'partial'):
+        return V1_LABEL
+    return s
+
+
+def _row(field, ok, new, reason):
+    return {'tag': 'halo1.dll', 'effect': NAME + ' (v1)', 'field': field, 'ok': ok,
+            'old': 'v1', 'new': new if ok else None, 'reason': None if ok else reason}
+
+
+def _retire_v1(path, live_only):
+    """Rows: v1 taken out of the running MCC and/or the file wherever it is found."""
+    rows = []
+
+    def live(h, base):
+        if sc.live_state(h, base, V1_SITES) in ('on', 'partial'):
+            ok, err = sc.live_set(h, base, False, V1_SITES)
+            rows.append(_row('running MCC', ok, 'off', err))
+    try:
+        if os.path.normcase(os.path.abspath(path)) == os.path.normcase(DLL):
+            _live(live)
+    except Exception as e:
+        rows.append(_row('running MCC', False, None, str(e)))
+    try:
+        if (not live_only and os.path.exists(path)
+                and sc.file_state(path, V1_SITES) in ('on', 'partial')):
+            ok, msg = sc.file_set(False, path, V1_SITES)
+            rows.append(_row('halo1.dll file', ok, 'off', msg))
+    except Exception as e:
+        rows.append(_row('halo1.dll file', False, None, str(e)))
+    return rows
 
 
 def sync(on, path=DLL, quiet=True, live_only=False):
-    """The enhancer's call shape (h1_supercombine_count.sync): live AND file; never raises."""
-    return sc.sync(on, path, quiet, live_only, SITES, NAME)
+    """The enhancer's call shape (h1_supercombine_count.sync): live AND file; never raises.
+    A v1 patch found on either side is taken out first."""
+    return _retire_v1(path, live_only) + sc.sync(on, path, quiet, live_only, SITES, NAME)
+
+
+def _live_state(h, base):
+    s = sc.live_state(h, base, SITES)
+    if s == 'unknown' and sc.live_state(h, base, V1_SITES) in ('on', 'partial'):
+        return V1_LABEL
+    return s
 
 
 def live_flags(h, base, weap=None, on=None):
@@ -159,7 +238,7 @@ def main(argv=None):
             print('%-55s charge %.2f s  release-latch %s' % (p, charge, 'ON' if opted else 'off'))
         return
     print('file  %s  (%s)' % (file_state(a.dll), a.dll))
-    r = _live(lambda h, base: sc.live_state(h, base, SITES))
+    r = _live(_live_state)
     print('live  %s' % (r if r else 'MCC / halo1.dll not running'))
 
 
