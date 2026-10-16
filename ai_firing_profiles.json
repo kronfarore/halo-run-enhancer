@@ -3432,6 +3432,111 @@
     "port_dps": 505.0,
     "balanced_port_dps": 138.5
    }
+  },
+  "weapons\\railgun\\railgun": {
+   "source": "Halo 4 ai\\generic objects\\weapons\\rifle\\storm_rail_gun\\storm_rail_gun_pve (weapon properties #37, firing pattern #37) over weapons\\rocket launcher\\rocket launcher carriers",
+   "fields": {
+    "0x74": [
+     "<f",
+     20.0,
+     "Maximum Firing Distance"
+    ],
+    "0x7C": [
+     "<f",
+     0.03926990646868944,
+     "Projectile Error"
+    ],
+    "0x80": [
+     "<f",
+     1.0,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     1.25,
+     "First Burst Delay Time Max"
+    ],
+    "0x8C": [
+     "<f",
+     1.0,
+     "Surprise Delay Time"
+    ],
+    "0x9C": [
+     "<f",
+     10.0,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     15.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     0.949999988079071,
+     "Target Tracking"
+    ],
+    "0xC0": [
+     "<f",
+     0.699999988079071,
+     "Target Leading"
+    ],
+    "0xE0": [
+     "<f",
+     2.5999999046325684,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     2.5999999046325684,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     4.0,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     6.0,
+     "Burst Separation Max"
+    ],
+    "0x1D8": [
+     "<f",
+     0.6000000238418579,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.8999999761581421,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x78": [
+     "<f",
+     0.0,
+     "Rate Of Fire"
+    ],
+    "0xC4": [
+     "<f",
+     0.5758222222222222,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "donor_weapon": "weapons\\rocket launcher\\rocket launcher",
+   "species_skill": true,
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.8669894475481068,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.4,
+    "yardstick_dps": 158.0,
+    "port_dps": 109.7560975609756,
+    "balanced_port_dps": 72.89592760180996
+   }
   }
  }
 }
