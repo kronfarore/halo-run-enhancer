@@ -116,6 +116,7 @@ CR_COLLISION = {'hunter_armor': 0.75, 'jackal_energy_shield': 0.75, 'flood_comba
 # (hard_metal_thick 0.25, soft_organic x1) -- the fuel rod's immune x0 has no ratio
 PL_HUNTER = {'hunter_armor': 0.25, 'hunter_skin': 1.0}
 PGA = W + r'plasma grenade\attached'
+SRB = W + r'sniper rifle\sniper bullet'
 
 SETS = {
     # the restored fuel rod against the explosive power weapons of Halo 1
@@ -1569,6 +1570,64 @@ SETS = {
         ('Plasma Launcher (port), tap', W + r'plasma launcher\plasma launcher', 'shot',
          {'per_shot': 1, 'charge': 0.0, 'rate': 1 / 0.95}),
         ('Brute Shot port, default', W + r'brute shot\brute shot', 'shot'),
+    ]},
+    # the RAILGUN (wave C7), step 4a. Halo 4 _pve (H4EK 2026-10-16; MP in brackets): trigger
+    # `charge-with-magazine`, charging 0.75 s, charged (hold) 1.5 s [0.5] then 'discharge' (fires by
+    # itself); the early release fires barrel 0 = no projectile. Recovery 0.6 s, 1 loaded / 4 / 6, every
+    # reload is reload_empty 82 fr; heat 0.36 a round (loss 1/s: never builds at one shot a reload). The
+    # slug 100 wu/s flat, range 0 (unset), no gravity: impact 120 `needle` [60 bullet] + a blast 0..180
+    # explosion_small [120 explosion_large] over 0.55 [0.675] -> 1.0, core 0.54 = 300 [180] direct; no
+    # aoe spike. It STICKS (material response default = attach) and bursts 0.2 s later ('detonation max
+    # time if attached'): no overpenetration. Aim (mode 0, unzoomed) 2.5/25 7.5/25, no zoom, error 0.15
+    # [0.2] -> 0.8. Halo 4 yardsticks: rocket 200 + 240 = 440, 0.8 s, 2 / 4 / 6, 116 fr, 10 -> 20, 175,
+    # aim 5/60 10/25; sniper 80 (sniper), 0.767 s, 4 / 12 / 20, 86 fr, 2799, 500, aim (zoomed only) 1/25
+    # 2/25; fuel rod 100 + 60 over 0.5 -> 2.25, 0.4 s, 5 / 15 / 20, 90 fr, 19.5 -> 8.45, 80, aim 4/25 8/25.
+    # Every row: the charge per shot (interval = the charge), one round a reload
+    'railgun': {'port': 'Railgun', 'weapons': [
+        # DEFAULT candidates: Halo 4's own; the impact on the sniper bullet's table (a kinetic slug) or
+        # on the rocket's, the blast on the rocket's; + the 0.2 s stick fuse
+        ('RG = H4 own (SR+RL tables)', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(SRB, 120.0, (0.0, 0.0)), (RLX, 180.0, (0.55, 1.0))], 'rate': 1 / 0.75,
+          'charge': 0.75, 'mag': 1, 'reload': 82 / 30.0, 'speed': 100.0, 'range': 0.0,
+          'aim': (2.5, 25.0, 7.5, 25.0), 'delay': 0.2}),
+        ('RG = H4 own (RL table)', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 120.0, (0.0, 0.0)), (RLX, 180.0, (0.55, 1.0))], 'rate': 1 / 0.75,
+          'charge': 0.75, 'mag': 1, 'reload': 82 / 30.0, 'speed': 100.0, 'range': 0.0,
+          'aim': (2.5, 25.0, 7.5, 25.0), 'delay': 0.2}),
+        ('RG = H4 MP own (SR+RL)', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(SRB, 60.0, (0.0, 0.0)), (RLX, 120.0, (0.675, 1.0))], 'rate': 1 / 0.75,
+          'charge': 0.75, 'mag': 1, 'reload': 82 / 30.0, 'speed': 100.0, 'range': 0.0,
+          'aim': (2.5, 25.0, 7.5, 25.0), 'delay': 0.2}),
+        # ROCKET ratio by the direct hit: 315 x 300/440 = 214.8 (impact 85.9 + blast 128.9, Halo 4's
+        # split) on the rocket's table; radius 0.5 x 0.55/0.9, 2.0 x 1.0/2.5; charge KEPT (no rocket
+        # charges); 2 x 1/2; 125 fr x 82/116 = 88.4; 12 x 100/10; range unset (Halo 4's 0); aim: 0 x
+        # 2.5/5 degenerate -> the source angle (C8), 35 x 25/60; 12 x 7.5/10, 35 x 25/25
+        ('RG = RL ratio', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 85.9, (0.0, 0.0)), (RLX, 128.9, (0.306, 0.8))], 'rate': 1 / 0.75,
+          'charge': 0.75, 'mag': 1, 'reload': 88.4 / 30.0, 'speed': 120.0, 'range': 0.0,
+          'aim': (2.5, 14.6, 9.0, 35.0), 'delay': 0.2}),
+        # FUEL ROD ratio by the direct hit: 75 x 300/160 = 140.6 (56.3 + 84.4) on its table (Hunters
+        # immune); radius 0.5 x 0.55/0.5, 1.5 x 1.0/2.25; charge KEPT (Halo 4's fuel rod does not
+        # charge); 4 x 1/5 -> 1; 90 fr x 82/90; 14 x 100/19.5; aim 4 x 2.5/4, 25; 6 x 7.5/8, 25
+        ('RG = FR ratio', W + r'fuel rod gun\fuel rod', 'shot',
+         {'parts': [(FRX, 56.3, (0.0, 0.0)), (FRX, 84.4, (0.55, 0.667))], 'rate': 1 / 0.75,
+          'charge': 0.75, 'mag': 1, 'reload': 82 / 30.0, 'speed': 71.8, 'range': 0.0,
+          'aim': (2.5, 25.0, 5.6, 25.0), 'delay': 0.2}),
+        # SNIPER ratio: 101 x 300/80 = 378.8 on the bullet's table (no splash); 4 x 1/4; 94 fr x 82/86
+        # = 89.6; 1000 x 100/2799 = 35.7; aim: Halo 4's sniper has none unzoomed (degenerate) -> own
+        ('RG = Sniper ratio', W + r'sniper rifle\sniper rifle', 'shot',
+         {'parts': [(SRB, 378.8, (0.0, 0.0))], 'rate': 1 / 0.75, 'charge': 0.75, 'mag': 1,
+          'reload': 89.6 / 30.0, 'speed': 35.7, 'range': 0.0, 'aim': (2.5, 25.0, 7.5, 25.0)}),
+        # peers
+        ('Rocket Launcher', W + r'rocket launcher\rocket launcher', 'shot'),
+        ('Sniper Rifle', W + r'sniper rifle\sniper rifle', 'shot'),
+        ('Fuel Rod (restored)', W + r'fuel rod gun\fuel rod', 'shot'),
+        ('Spartan Laser (port)', W + r'spartan laser\spartan laser', 'shot'),
+        ('Binary Rifle (port)', W + r'binary rifle\binary rifle', 'shot'),
+    ], 'enemies': [
+        ('Sentinel', r'characters\sentinel\sentinel', 'sentinel'),
+        ('Flood combat (elite)', r'characters\floodcombat elite\floodcombat elite plasma rifle',
+         'floodcombat elite'),
     ]},
 }
 
