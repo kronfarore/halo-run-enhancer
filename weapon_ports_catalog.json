@@ -7371,15 +7371,6 @@
      "original": 6.0
     },
     {
-     "class": "weap",
-     "tag": "weapons\\railgun\\railgun",
-     "field": "Heat Loss Per Second",
-     "block": null,
-     "value": 0.30542986425339363,
-     "card": "Heat Loss",
-     "original": 0.32926829268292684
-    },
-    {
      "class": "proj",
      "tag": "weapons\\railgun\\slug",
      "field": "Initial Velocity",
