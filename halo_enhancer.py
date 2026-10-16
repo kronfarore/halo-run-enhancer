@@ -2306,6 +2306,25 @@ def active_skull_names(run_state):
     return names
 
 
+def sample_distinct(pool, n):
+    """n different cards from `pool`, a card listed twice (an Armed card of a weapon the
+    players hold, h1_armed_all_weapons) being twice as likely -- random.sample would hand
+    out both copies as two picks. Fewer distinct cards than n: drawn with replacement,
+    like before."""
+    if not pool:
+        return [None] * n
+    distinct = {id(c): c for c in pool}
+    if len(distinct) < n:
+        return [random.choice(pool) for _ in range(n)]
+    out, seen = [], set()
+    while len(out) < n:
+        c = random.choice(pool)
+        if id(c) not in seen:
+            seen.add(id(c))
+            out.append(c)
+    return out
+
+
 def active_run_mods(run_state):
     """Every card dict locked into this run (committed rounds plus the current round's
     selections) -- the same slots active_skull_names reads, any kind of card."""
@@ -4193,21 +4212,29 @@ class ModifierDatabase:
         for w in weapons or []:
             if ok(w):
                 names.append(w)
+        held = list(names)
         if CONFIG.get('h1_armed_all_weapons'):
-            # Options -> 'every weapon': the rest of Halo 1's weapons join the draw. Each
-            # card of a weapon nobody holds is put in with a 50% chance per draw, so the
-            # players' own weapons stay twice as likely (user, 2026-10-16) without the
-            # draws themselves needing weights.
+            # Options -> 'every weapon': the rest of Halo 1's weapons join the draw as
+            # ordinary cards, and a weapon the players HOLD counts twice (user,
+            # 2026-10-16: "twice as often compared to a regular card"). The doubling is a
+            # second entry of the same card -- every draw picks from a plain list; the one
+            # draw without replacement uses sample_distinct.
             for w in self.get_game_weapons('Halo 1'):
-                if ok(w) and random.random() < 0.5:
+                if ok(w):
                     names.append(w)
+            names += held
         if ally:
-            return [self.armed_card('Marine', w, ally=True) for w in names]
+            made = {}
+            return [made.setdefault(w, self.armed_card('Marine', w, ally=True)) for w in names]
         here = list((self.mission_enemies.get(mission_id) or {}).get('enemies', [])) +             list(added or ())
         # an Incursion card / faction skull brings a type back even where it had vanished
-        return [self.armed_card(e, w) for e in self.H1_ARMED_ENEMIES
-                if (e in here and e not in set(vanished or ())) or e in set(added or ())
-                for w in names]
+        cards, made = [], {}
+        for e in self.H1_ARMED_ENEMIES:
+            if (e in here and e not in set(vanished or ())) or e in set(added or ()):
+                for w in names:
+                    # the doubled entry is the SAME card, so it is one card drawn twice as often
+                    cards.append(made.setdefault((e, w), self.armed_card(e, w)))
+        return cards
 
     def map_equip_mod(self, name, game):
         """The equipment counterpart of map_swap_mod, for a game whose equipment has
@@ -11816,8 +11843,9 @@ class OptionsDialog(QDialog):
         self.h1_armed_all_cb.setChecked(bool(CONFIG.get('h1_armed_all_weapons')))
         self.h1_armed_all_cb.setToolTip(
             "On: Armed cards are also offered for every other Halo 1 weapon some character "
-            "spawns with (ported weapons while they are offered on the level). A weapon you or "
-            "your partner hold stays twice as likely to come up as one nobody holds.\n"
+            "spawns with (ported weapons while they are offered on the level), as ordinary "
+            "cards; a weapon you or your partner hold comes up twice as often as an ordinary "
+            "card (Marine Armed cards: twice their low Ally weight).\n"
             "Off (default): only the weapons the players hold.")
         self.h1_armed_cards_cb.toggled.connect(self.h1_armed_all_cb.setEnabled)
         self.h1_armed_all_cb.setEnabled(self.h1_armed_cards_cb.isChecked())
@@ -17427,8 +17455,7 @@ class RunEnhancer:
         enemy_mods += self.db.filter_blacklisted(
             self.db.armed_cards(mid, self._run_weapons(), game,
                                 vanished=self._vanished(), added=self._swapped_in()), bl, game)
-        enemies = (random.sample(enemy_mods, len(slots)) if len(enemy_mods) >= len(slots)
-                   else [random.choice(enemy_mods) if enemy_mods else None for _ in slots])
+        enemies = sample_distinct(enemy_mods, len(slots))
         # Option: the Other slot too, rolled exactly like a normal round's (_draw_other)
         with_other = bool(CONFIG.get('identity_other_card'))
         active_neg = self._active_negative_names() if with_other else set()
