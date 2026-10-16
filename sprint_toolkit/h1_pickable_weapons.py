@@ -445,6 +445,9 @@ def make_hud(w, key, write):
     if want is not None and seq != want:
         raise SystemExit('%s: icon %r is hud_msg_icons #%d, reserved #%d' % (key, w['icon'], seq, want))
     d.messaging_information.sequence_index = seq
+    # `fields` (dotted, opt-in, last): any HUD field (the Sticky Detonator, boot 1: the pistol's total-
+    # ammo flash cutoff 13 flashed a 6-charge weapon -- the rocket launcher's 1)
+    set_fields(d, h.get('fields', {}))
     save(t, path(h['out'], '.weapon_hud_interface'), write)
     return h['out']
 
@@ -1158,6 +1161,13 @@ def own_beam(a, b, write):
                     et = effe_def.build(filepath=path(src_e, '.effect'))
                     n = 0
                     for ev in et.data.tagdata.events.STEPTREE:
+                        # `drop_particles` (path substrings, opt-in): the template's particles removed
+                        # (the Sticky Detonator, boot 1: 'leftover plasma grenade effects' on a stick)
+                        pts = ev.particles.STEPTREE
+                        for i in range(len(pts) - 1, -1, -1):
+                            if any(s in pts[i].particle_type.filepath for s in T.get('drop_particles', ())):
+                                pts.pop(i)
+                                n += 1
                         for q in ev.particles.STEPTREE:
                             if any(m in q.particle_type.filepath for m in T['match']):
                                 q.flags.tint_as_hsv = False
