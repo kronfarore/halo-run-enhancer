@@ -119,7 +119,7 @@ BOMBLET = {
                     # 'on first bounce', which in Halo 1 runs from REST (the Grenade Launcher's probe, B4): land,
                     # settle (perpendicular friction 0.8), burst 0.1-0.3 s later; a unit hit still detonates at once
                     'proj_attrs.detonation.timer': (0.1, 0.3),
-                    'proj_attrs.detonation_timer_starts': 'on_first_bounce',
+                    'proj_attrs.detonation_timer_starts': 'when_at_rest',  # BOOT 6 (user: 'bounce, then explode in the air'): 'on first bounce' started at the FIRST bounce -> 'when at rest' (the Sticky Detonator's)
                     # BOOT 1 (user: 'the cluster explosion mainly is in the air'): Halo 4's minimum velocity 3 is
                     # an at-rest threshold there, but in HALO 1 IT DETONATES (A7): a bomblet launched up at 5 wu/s
                     # under x5 gravity passed 3 wu/s near its apex and burst mid-air -> 0, the timer decides
@@ -348,7 +348,12 @@ PORT.update({
         'glow_cards': {'ic_fire': {'of': 'ic_glow', 'shader': 'ic_fire_glow', 'scale': 2.0, 'along': 1.1,
                                    'lift': 0.08, 'round_scale': 1.6},
                        'ic_reload': {'of': 'ic_glow', 'shader': 'ic_reload_glow', 'scale': 2.4, 'along': 1.15,
-                                     'lift': 0.1, 'round_scale': 1.8}},
+                                     'lift': 0.1, 'round_scale': 1.8},
+                       # BOOT 6 (user: 'still missing the last flagged part'; two-sided did not do it): piece 12 sits
+                       # in a slot and faces INTO the gun -- its card hid behind the slot wall. Its own card, lifted
+                       # 0.5 cm against that inward normal (= outward; `near` its centre, x -1.1 y +1.9 z 8.0 cm)
+                       'ic_fire_slot': {'of': 'ic_glow', 'shader': 'ic_fire_glow', 'near': ((-1.1, 1.9, 8.0), 0.6),
+                                        'scale': 2.0, 'along': 1.1, 'lift': -0.5, 'round_scale': 1.6}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's own storm_fp_forerunner_incineration_launcher
@@ -515,7 +520,7 @@ PORT.update({
                                # living x1.6 (an own particle copy: the Boltshot's / Sticky Detonator's recipe)
                                # BOOT 4 (user: 'muzzle flash is absent now'): the own longer-living particle copy
                                # is the only change since boot 3's visible flash -> dropped; x2.2 kept
-                               'match': 'flash', 'scale': 2.2,
+                               'match': 'flash', 'scale': 1.5,  # BOOT 6 (user: 'still no muzzle flash'): x2.2 was the last difference from boot 3's visible flash
                                'tint': (1.0,) + ORANGE})},
         # BOOT 2-3: the magazine's RELOADING EFFECT (three contracting rings, also drawn first person) never showed in
         # classic first person -- REMOVED (user, boot 4); the reload glow (B out, the model's `ic_reload_glow`) instead
@@ -563,7 +568,7 @@ PORT.update({
                 #     --wires a_primary_wire,a_secondary_wire,b_primary_wire,b_secondary_wire01,b_secondary_wire02,
                 #             b_secondary_wire03,a_inner_ring
                 #     --fills a_primary_holo,a_secondary_holo,b_primary_holo,b_secondary_holo --fill-alpha 0.45
-                #     --xform 1.0,1.0,0,-95  (boot 4; boot 1-2: 0.95,0.95,0,-20; boot 3: 0.9)
+                #     --xform 1.0,1.0,0,0  (boot 6: any shrink or shift exposed the frame's own ends -- boot 3 0.95, boot 4 0.9, boot 5 -95 px)
                 # A CLEAR mask (no chud) with the H1 blur outside the lens and the dark top / bottom bands (the
                 # LightRifle's / Binary Rifle's approved values); a donor without a zoom screen effect borrows the
                 # sniper's (the Beam Rifle's route), its night vision / desaturation cleared
