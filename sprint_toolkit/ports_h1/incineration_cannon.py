@@ -1,15 +1,182 @@
-r"""Incineration Cannon (Halo 4, wave C9): PHASE-0 STUB -- reservations, yardstick candidates and the step-11
-source. The port session fills in model / retarget / pickable / sounds / catalog / test
-(see sentinel_beam.py for a complete config) and starts with step 4a: the yardstick is
-picked WITH the user, then recorded in yardstick['pick'] / ['reason']."""
-from ._common import reserved
+r"""Incineration Cannon (Halo 4, wave C9): IN PROGRESS -- step 4a decided (user, 2026-10-16); 4b next.
+
+HALO 4 (H4EK 2026-10-16, h3_weapon_values --kit h4 + h4_projectile_summary + the effect exports): trigger
+`latch`, no charge, recovery 0.8 s (rounds per second 30 = recovery-limited), 1 loaded / 4 / 6 (Ammopack 6 / 8),
+rounds reloaded 2 (= 1 with one loaded), zoom 1 level 1.8x, aim (mode block = the weapon's) 5/60 10/25, error 0,
+strike_melee. FP (Foundry, h4_fp_dump): fire_1 19, idle 99, ready 31 (ready_initial 29), put_away 5,
+melee_strike_1 47 (primary keyframe 4), reload_empty 90 = reload_full 90, throw_grenade 44, posing var1 108 / var2
+89 / var3 89, moving 21 / look 9 (overlays), first_time_pickup 75; 95 bones = the 80 arm / camera nodes + the
+render model's 15 gun nodes.
+
+THE SHELL (storm_forerunner_incineration_launcher.projectile): 21 wu/s flat, range 175, no gravity, timer
+'immediately' 0, flag 'disable instantaneous first tick'; impact 200 `collision` (accel 1.5) + the burst 40..240
+explosion_large over 0.75 -> 2.0 (core 0.75, accel 3) -- the Halo 4 ROCKET's own 200 + 240 (its burst 0.9 ->
+2.5). `material response` (the table Halo 4 reads): default detonate, plants / liquid overpenetrate,
+energy_shield_invulnerable bounce.
+THE CLUSTER: the burst's effect fr_incin_main_detonation, event 6 `submunition`, 0.2 s after the burst: 5 parts
+`submunition.projectile`, each 5 wu/s, pitched 45 deg off 'up' (flag 'face up regardless of location'), the
+effect's conical distribution (1 yaw x 5 pitch, spread 33 deg, exponent 0.5). A bomblet: 5 -> 6 wu/s, gravity x5,
+range 7, timer 'immediately' 0.6-1.0 s, minimum velocity 3; BOUNCES off the world (default_material 'never
+against units', friction 0.1 / 0.1; invulnerable shields bounce) and DETONATES on a unit; impact 200 `collision`
+(the shell's own impact tag) + 30..120 explosion_large over 0.61 -> 1.25 (core 0.6, accel 2.5). Flags 'oriented
+along velocity', 'no impact effects on bounce'. NO BURN: no damage over time in the weapon, either projectile,
+the three damage effects or the seven effects -- 'incineration' is the look.
+
+THE APPROXIMATION (user, step 4a): option A, NATIVE BOMBLETS -- Halo 1's effect parts create projectiles too
+(stock `effects\bursts\ar burst` fires 6 AR bullets): the shell's own burst effect gets an event 0.2 s after the
+burst with 5 parts = an own bomblet projectile, 5 wu/s in a random cone round the surface normal
+(h1_pickable_weapons `add_projectiles`, C9). LOST: the even 45 deg ring (random within a cone). TO CHECK on boot
+1: an effect-made projectile's OWNER (kill credit, AI reactions).
+
+THE WEAPON: a copy of the Halo 1 ROCKET LAUNCHER (two-handed heavy, 1-round template family, its HUD and melee;
+the Brute Shot's explosive-on-a-rocket recipe) firing an own SHELL on the rocket's projectile around an own copy
+of the rocket's damage table (the yardstick's, user), the bomblets on the FRAG GRENADE's projectile (it bounces)."""
+import math  # noqa: F401
+
+from ._common import B, reserved, row  # noqa: F401
+from .storm_rifle import DROP
+
+H4 = 'h4:'                                          # an H4EK path (h4_tags)
+SW = r'objects\weapons\support_high\storm_forerunner_incineration_launcher'
+SFP = (r'objects\characters\storm_fp\weapons\support_high\fp_forerunner_incineration_launcher'
+       r'\storm_fp_forerunner_incineration_launcher')
+ICUI = r'ui\hud\weapons\forerunner\forerunner_incineration_cannon\bitmap' + B   # Halo 4's crosshair art (CUI)
+IC = 'weapons\\incineration cannon\\'
+SND = 'sound\\weapons\\incineration_cannon_port\\'
+RL = 'weapons\\rocket launcher\\'
+FG = 'weapons\\frag grenade\\'
+LEVELS = ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40']
+# the diffuse (h4_standin_diffuse.py <control> <this>, channel mode, tint 0.396 = the _metal material's albedo
+# tint read from the tag bytes, h4_material_params) in the port's data folder
+STANDIN = r'F:\SteamLibrary\steamapps\common\HCEEK\data\weapons\incineration cannon\source\ic_metal_diffuse.png'
+# the glow material: srf_char_blinn_selfillum si_color (1, 0.208, 0) x15 -- RED in the user's idle screenshot
+# (2026-10-16: the gun's lights read red-orange)
+RED = (1.0, 0.21, 0.05)
+# the shell / bomblets / flash: Forerunner hardlight orange (the Binary Rifle's approved value)
+ORANGE = (1.0, 0.45, 0.2)
+# the render model's 15 nodes (b_gun root), all in the FP graph
+GUN = ('gun', 'low_hinge', 'r_bk_knob', 'l_low_flap', 'l_fr_top_flap', 'cylinder_a', 'r_bk_top_flap',
+       'l_bk_top_flap', 'cylinder_b', 'r_fr_top_flap', 'r_cylinder', 'l_cylinder', 'r_low_flap', 'cylinder_c',
+       'l_bk_knob')
+# Halo 1 material indices (h1_role_compare H1_MATERIALS): Halo 4's bomblet bounces off the world and the
+# invulnerable shields and DETONATES on a unit (its default_material bounce is 'never against units')
+UNITS = [11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25, 26, 30, 32]
+
+# THE BOMBLET (approximation A, user 4a): the FRAG GRENADE's projectile (Halo 1's bouncing grenade), Halo 4's
+# own numbers; built with no trigger (`triggers` []) -- the shell's burst effect creates it
+BOMBLET = {
+    'projectile': (FG + 'frag grenade', IC + 'bomblet'),
+    # the IMPACT on a unit: Halo 4's 200 `collision` (the shell's own impact tag; user 4a: kept in default) --
+    # the same own copy the shell names
+    'damage': (RL + 'explosion', IC + 'impact'),
+    'dmg': 200.0, 'acceleration': 1.5,
+    'fields': {'radius': (0.0, 0.0)},
+    # THE BOMBLET'S BURST: Halo 4 30..120 explosion_large over 0.61 -> 1.25 (core 0.6, accel 2.5) on an own copy
+    # of the ROCKET's table (the yardstick's); the frag grenade's effect x0.625 (the Brute Shot's tuned 0.55 for
+    # 1.1 wu, x 1.25/1.1)
+    'explosion': {'effect': (FG + 'effects' + B + 'explosion', IC + 'effects' + B + 'bomblet explosion'),
+                  'part': FG + 'explosion',
+                  'scale': 0.625, 'out_dir': IC + 'effects' + B,
+                  'damage': (RL + 'explosion', IC + 'bomblet explosion'),
+                  'lower': 30.0, 'upper': (120.0, 120.0), 'radius': (0.61, 1.25),
+                  'fields': {'damage.aoe_core_radius': 0.6},
+                  'swaps': {B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'expl']): SND + 'ic_bomblet_explode'}},
+    'velocity': (5.0, 6.0), 'range': 7.0,
+    'proj_fields': {'proj_attrs.physics.air_gravity_scale': 5.0,
+                    'proj_attrs.detonation.arming_time': 0.0,
+                    'proj_attrs.detonation.timer': (0.6, 1.0),
+                    'proj_attrs.detonation_timer_starts': 'immediately',
+                    'proj_attrs.detonation.minimum_velocity': 3.0,
+                    'proj_attrs.flags.oriented_along_velocity': True},
+    'default_responses': {'detonate': UNITS},
+    # the frag's per-material DETONATION effects would replace the burst on contact (the GL's trap)
+    'clear_detonation_effects': True,
+    # the frag's smoke trail + light dropped; Halo 4's bomblet is a small orange ball of light
+    'keep_attachments': (),
+    'model': '',
+    'glow': {'light': ('weapons' + B + 'fuel rod gun' + B + 'fuel rod exhaust', IC + 'bomblet glow'),
+             'flare': IC + 'bomblet glow', 'rgb': ORANGE, 'flare_radius': 0.12, 'marker': ''},
+    'triggers': [],
+}
+
+# THE SHELL on the ROCKET's projectile, Halo 4's own numbers
+SHELL = {
+    'projectile': (RL + 'rocket', IC + 'shell'),
+    'damage': (RL + 'explosion', IC + 'impact'),
+    'dmg': 200.0, 'acceleration': 1.5,
+    'fields': {'radius': (0.0, 0.0)},
+    # THE BURST: Halo 4 40..240 explosion_large over 0.75 -> 2.0 (core 0.75, accel 3) on an own copy of the
+    # rocket's table; the rocket's own explosion effect (a fireball, 2.0 wu = the rocket's), the screen flash
+    # yellow + short (A7; the Sticky Detonator's approved 0.25 s / 0.3); + THE CLUSTER
+    'explosion': {'effect': (RL + 'effects' + B + 'rocket explosion', IC + 'effects' + B + 'shell explosion'),
+                  'out_dir': IC + 'effects' + B,
+                  'damage': (RL + 'explosion', IC + 'explosion'),
+                  'lower': 40.0, 'upper': (240.0, 240.0), 'radius': (0.75, 2.0),
+                  'fields': {'damage.aoe_core_radius': 0.75,
+                             'screen_flash.duration': 0.25,
+                             'screen_flash.maximum_intensity': 0.3,
+                             'screen_flash.tint_lower_bound.r': 1.0,
+                             'screen_flash.tint_lower_bound.g': 0.85,
+                             'screen_flash.tint_lower_bound.b': 0.4},
+                  'swaps': {B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'expl']): SND + 'ic_explode'},
+                  # THE CLUSTER (option A): 5 bomblets 0.2 s after the burst at the 'normal' location, 5 wu/s, a
+                  # random cone (Halo 4: 45 deg off the surface + a 33 deg spread -> 60 deg, judged in game)
+                  'add_projectiles': [{'projectile': IC + 'bomblet', 'count': 5, 'velocity': (5.0, 5.0),
+                                       'cone_deg': 60.0, 'delay': 0.2, 'location': 1}]},
+    'velocity': (21.0, 21.0), 'range': 175.0,
+    # the rocket's timer (on first bounce, 0) kept: every response detonates (the Brute Shot's note)
+    'proj_fields': {'proj_attrs.physics.air_gravity_scale': 0.0,
+                    'proj_attrs.detonation.minimum_velocity': 0.0},
+    # Halo 4's shell is a glowing orange orb with an energy trail: the rocket's mesh, exhaust, exhaust particles,
+    # flight loop (Halo 4's projectile loops are empty in MCC, C1) and light-volume widget dropped; its CONTRAIL
+    # kept as an own orange additive copy, points at rest (the Brute Shot's arc lesson); an orange glow
+    'model': '',
+    'keep_attachments': (1,),
+    'drop_widgets': True,
+    'contrail': {'from': RL + 'exhaust', 'out': IC + 'shell trail', 'rgb': ORANGE, 'velocity': (0.0, 0.0),
+                 'no_physics': True, 'blend': 'add'},
+    'glow': {'light': ('weapons' + B + 'fuel rod gun' + B + 'fuel rod exhaust', IC + 'shell glow'),
+             'flare': IC + 'shell glow', 'rgb': ORANGE, 'flare_radius': 0.25, 'marker': ''},
+    'triggers': [0],
+}
 
 PORT = reserved(
     order=34, wave='C9', name='Incineration Cannon', source='Halo 4',
     messages=(101, 102), icon=54, reticle=43, label='ic', teach_from='pc',
     sound_dir='sound\\weapons\\incineration_cannon_port', weapon_dir='weapons\\incineration cannon',
     yardstick={
-        'pick': None, 'reason': None,          # step 4a, with the user
+        # step 4a (user, 2026-10-16; h3_weapon_values --kit h4 + h4_projectile_summary + h1_role_compare
+        # incineration_cannon). Halo 4: rocket 200 impact + 240 explosion_large over 0.9 -> 2.5, 0.8 s, 2 / 4 / 6,
+        # 116 fr, 10 -> 20 wu/s, gravity 0.02, 175, aim 5/60 10/25; fuel rod 100 + 60 over 0.5 -> 2.25, 0.4 s, 5 /
+        # 15 / 20, 90 fr, 19.5 -> 8.45, 80, aim 4/25 8/25. Halo 1: rocket 315 over 0.5 -> 2.0, 2.0 s, 2 / 4 / 8,
+        # reload tag 5.0 s over a 125 fr animation, 12 -> 10, 128, zoom 2.0, aim 0/35 12/35; restored fuel rod 75
+        # over 0.5 -> 1.5 (Hunters immune).
+        'pick': 'Rocket Launcher',
+        'reason': ("user, step 4a 2026-10-16: the ROCKET LAUNCHER -- Halo 4's shell IS its rocket's damage (200 + "
+                   "240), so the ratio 315/440 is clean; the Fuel Rod ratio came out weak (82 dps) with Hunters "
+                   "immune. The cluster: option A, native bomblets in a random cone; the bomblet's 200 impact on a "
+                   "unit kept in default (Halo 4's own). DEFAULT = Halo 4's own numbers on the rocket's table."),
+        # DEFAULT = Halo 4's own; these are the BALANCED rows (the ROCKET ratio by the direct hit, 315/440):
+        'balanced': {
+            'impact': 143.2,                 # 200 x 315/440
+            'damage': 171.8,                 # 240 x 315/440 (lower 40 -> 28.6)
+            'radius': (0.417, 1.6),          # 0.75 x 0.5/0.9, 2.0 x 2.0/2.5
+            'bomblet_damage': 85.9,          # 120 x 315/440 (lower 30 -> 21.5)
+            'bomblet_radius': (0.339, 1.0),  # 0.61 x 0.5/0.9, 1.25 x 2.0/2.5
+            'fire_recovery_s': 2.0,          # 0.8 x 2.0/0.8
+            'magazine': 1,                   # 1 x 2/2
+            'rounds_total_initial': 4,       # 4 x 4/4
+            'rounds_total_maximum': 8,       # 6 x 8/6
+            'reload_s': 125 * 90 / 116.0 / 30.0,   # 125 fr x 90/116 = 97 fr
+            'velocity': (25.2, 10.5),        # 12 x 21/10, 10 x 21/20
+            'range': 128.0,                  # 128 x 175/175
+            'aim': (5.0, 35.0, 12.0, 35.0)},  # the source angle 5 KEPT (the rocket's 0: C8's rule), 35 x 60/60;
+                                              # 12 x 10/10, 35 x 25/25
+        # Time to kill (h1_role_compare incineration_cannon, direct hits): default 440 at 1.25/s = 550 dps (+2
+        # bomblets 850, +5 1300) -- one shell everything, Legendary too; balanced 315 at 0.5/s = 158 (= the
+        # rocket), + 5 bomblets 372; Legendary Elite major / commander 2 shells without bomblets
+        'measured': 'h1_role_compare.py incineration_cannon',
+        'not_reproduced': ("the cluster's even 45 deg ring (Halo 1: a random cone round the surface normal)"),
         'candidates': {
             'source_weapon': 'objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher',
             'provisional': 'Rocket Launcher',
@@ -17,7 +184,300 @@ PORT = reserved(
             'direct': None,
             'peers': ['Rocket Launcher', 'Flak Cannon'],
             'why': 'a rocket-launcher-type weapon, 1-round magazine, explosive projectile, 1.8x zoom',
-            'lacks': 'cluster explosion / burn'}},
+            'lacks': 'the cluster (native bomblets, approximated: a random cone); no burn exists in Halo 4'}},
     # step 11: the source game's ai\generic entry (24 fields, verified 2026-10-07)
-    firing_profile={'mode': 'source', 'from_game': 'Halo 4', 'from_map': 'halo4\\maps\\m020.map', 'from_weapon': 'objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher'},
+    firing_profile={'mode': 'source', 'from_game': 'Halo 4', 'from_map': 'halo4\\maps\\m020.map',
+                    'from_weapon': 'objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher'},
 )
+
+PORT.update({
+    'status': 'in progress',
+    # BORROWED sounds kept ON PURPOSE (port_sound_refs prints these as KEEP)
+    'sound_keeps': {r'sound\sfx\impulse\weapon_drops\rlauncher_impact':
+                    "Halo 4's own drop (wea_drop_launcher_fr_incinerator_nonplayer) ships in no MCC bank: "
+                    "the rocket launcher's kept"},
+
+    # geometry + look (h1_h3_weapon_model.py; Halo 4 through h4_tags). Halo 4's ONE render model for world AND
+    # first person: 15 nodes (b_gun root; low hinge, cylinders, top / low flaps, knobs), regions default (mesh 0:
+    # the body, 4,971 vertices) and knight_arm (meshes 1-2, 8,638: the flaps / cylinders over the front -- NOT an
+    # arm, and the .model's default variant draws both regions: all kept); materials _default_metal
+    # (srf_char_forerunner_andrew, NO colour map: the control-map stand-in) and _default_glow
+    # (srf_char_blinn_selfillum, si_color (1, 0.208, 0) x15). Markers: primary_trigger, left_hand(_spartan_fp),
+    # barrel, vent, plates (the firing / reload effects' locations), flashlight
+    'model': {
+        'dir': r'weapons\incineration cannon',
+        'world': H4 + SW + r'\storm_forerunner_incineration_launcher.render_model',
+        'fp': H4 + SW + r'\storm_forerunner_incineration_launcher.render_model',
+        'world_name': 'incineration cannon',
+        'ground_point': 'auto',
+        'markers': {'primary_trigger': 'primary trigger', 'left_hand': 'left hand'},
+        # Halo 1's `tool model` keeps 31 characters of a shader name (C1)
+        'material_names': {'storm_forerunner_incineration_launcher_default_metal': 'ic_metal',
+                           'storm_forerunner_incineration_launcher_default_glow': 'ic_glow'},
+        'shaders': {'ic_metal': (STANDIN, None)},
+        'template': 'weapons\\assault rifle\\' + r'fp\shaders\gun',
+        'glow': {},
+        # the glow material: an additive glow per UV island in Halo 4's red (the Binary Rifle's tuned settings)
+        'glow_shaders': {'ic_glow': {'rgb': RED, 'additive': True, 'islands': True,
+                                     'islands_of': 'storm_forerunner_incineration_launcher_default_glow',
+                                     'gain': 2.2, 'falloff': 0.35, 'radius': 1.3, 'hot': False},
+                         # Halo 4's hardlight plate LIGHT-UPS per shot (the muzzle-flash rule below): the Binary
+                         # Rifle's firing glow -- the glow pieces again, hotter orange and wider, FADED by A out =
+                         # the rocket template's firing ILLUMINATION (on per shot, back to 0 over its 0.3 s
+                         # recovery)
+                         'ic_fire_glow': {'rgb': (1.0, 0.55, 0.12), 'additive': True, 'islands': True,
+                                          'islands_of': 'storm_forerunner_incineration_launcher_default_glow',
+                                          'strip': True, 'gain': 2.0, 'falloff': 0.8, 'radius': 1.3,
+                                          'hot': False, 'fade_source': 'A_out'}},
+        'glow_cards': {'ic_fire': {'of': 'ic_glow', 'shader': 'ic_fire_glow', 'scale': 2.0, 'along': 1.1,
+                                   'lift': 0.08, 'round_scale': 1.6,
+                                   'skip_piece_normals': [(1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)],
+                                   'skip_piece_dot': 0.9}},
+    },
+
+    # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's own storm_fp_forerunner_incineration_launcher
+    # (Foundry, h4_fp_dump.py -> out\h4_fp 2026-10-16: 25 animations, 95 bones), the arms RE-SOLVED
+    'retarget': {
+        'graph': H4 + SFP + '.model_animation_graph',
+        'render_model': H4 + SW + r'\storm_forerunner_incineration_launcher.render_model',
+        'nodes': {n: 'frame b ' + n.replace('_', ' ') for n in GUN},
+        'drop_nodes': tuple(DROP),
+        'h1_dir': r'weapons\incineration cannon\fp',
+        'h1_model': r'weapons\incineration cannon\fp\fp',
+        'align': 'same_space',
+        # C5: a long FP gun -- start at Halo 4's own placement and judge through h1_fp_camera_render
+        'view_offset': (0.0, 0.0, 0.0),
+        'anims': {
+            'first_person:idle': 'first-person idle',
+            'first_person:posing:var1': 'first-person posing',
+            'first_person:ready': 'first-person ready',
+            'first_person:put_away': 'first-person put-away',
+            'first_person:fire_1:var1': 'first-person fire-1',
+            'first_person:melee_strike_1': 'first-person melee',
+            'first_person:moving': 'first-person moving',
+            'first_person:look': 'first-person overlays',
+            'first_person:throw_grenade': 'first-person throw-grenade',
+            'first_person:reload_empty': 'first-person reload-empty',
+            'first_person:reload_full': 'first-person reload-full',
+        },
+    },
+
+    # Halo 4's own sounds (h1_port_sounds.py incineration_cannon, `bank` 'halo4'): the player bank
+    # forerunner_incineration_launcher_player (one event per FP animation: play_weapons_incinerator_player_<anim>;
+    # the fire / dry fire events), the projectile bank proj_forerunner_incinerator (the shell's and the bomblet's
+    # explosions; the sound tags name `proj_incinerator_launcher`, which ships nowhere -- found by the events' FNV
+    # ids in the shipped banks, the name by its FNV). The DROP event (wea_drop_launcher_fr_incinerator_nonplayer)
+    # ships in NO bank: the rocket's own drop sound kept (`sound_keeps`, the Sticky Detonator's ammo-pickup
+    # precedent -- for the user at close-out). Levels = the stock Halo 1 sound each stands in for (the Brute Shot's measurements, 2026-10-09):
+    # rocket fire -15.1, frag expl -7.9, rocket_reload_e -22.5, rocket_ready -18.3, rocket_melee -21.8,
+    # rocket_posing -22.1, rlauncher_impact -23.0, rocket_ammo -28.8, AR dryfire -17.6
+    'sounds': {
+        'catalog': 'Incineration Cannon',
+        'bank': 'halo4',
+        'wwise_bank': 'forerunner_incineration_launcher_player',
+        'dir': B.join(['sound', 'weapons', 'incineration_cannon_port']),
+        'sounds': {
+            'ic_fire': (['play_wea_forerunner_incineration_launcher_player_fire'],
+                        'sound\\sfx\\weapons\\rocket launcher\\fire', -15.1),
+            'ic_explode': (['play_wea_forerunner_incinerator_proj_explosion@proj_forerunner_incinerator'],
+                           'sound\\sfx\\weapons\\frag grenade\\expl', -7.9),
+            # a bomblet: smaller than the shell's burst (Halo 4's own event; level by ear at boot 1)
+            'ic_bomblet_explode': (['play_wea_forerunner_incinerator_submunition_proj_explode@proj_forerunner_incinerator'],
+                                   'sound\\sfx\\weapons\\frag grenade\\expl', -10.9),
+            'ic_dryfire': (['play_wea_forerunner_incinerator_player_dry_fire'],
+                           'sound\\sfx\\weapons\\assault rifle\\dryfire', -17.6),
+            'ic_ready': (['play_weapons_incinerator_player_ready'],
+                         'sound\\sfx\\weapons\\weapon_anims\\rocket_ready', -18.3),
+            'ic_melee': (['play_weapons_incinerator_player_melee_strike1'],
+                         'sound\\sfx\\weapons\\weapon_anims\\rocket_melee', -21.8),
+            'ic_reload': (['play_weapons_incinerator_player_reload_empty'],
+                          'sound\\sfx\\weapons\\weapon_anims\\rocket_reload_e', -22.5),
+            'ic_reload_balanced': (['play_weapons_incinerator_player_reload_empty'],
+                                   'sound\\sfx\\weapons\\weapon_anims\\rocket_reload_e', -22.5),
+            'ic_pose': (['play_weapons_incinerator_player_posing_var1'],
+                        'sound\\sfx\\weapons\\weapon_anims\\rocket_posing', -22.1),
+            'ic_fire_anim': (['play_weapons_incinerator_player_fire1_var1'],
+                             'sound\\sfx\\weapons\\weapon_anims\\rocket_ready', -18.3),
+        },
+        # the BALANCED reload's sound (the patcher swaps it in with the retimed reload: catalog anim_sounds)
+        'stretch': {'ic_reload_balanced': 97.0 / 90.0},
+    },
+
+    # ---------------------------------------------------------------------------------------
+    # The weapon (h1_pickable_weapons.py --only incineration_cannon) on a COPY of the Halo 1 ROCKET LAUNCHER
+    # firing the SHELL above; the BOMBLET built beside it. DEFAULT = HALO 4's OWN NUMBERS; the ratio values are
+    # the balance rows
+    'pickable': {
+        'weapon': IC + 'incineration cannon',
+        'template': RL + 'rocket launcher',
+        'world_model': IC + 'incineration cannon',
+        # ONE model tag for world AND first person (the 32 MiB model buffer, H1_PORT_PLAN 0.1)
+        'fp_model': IC + 'incineration cannon',
+        'fp_anims': IC + 'fp' + B + 'fp',
+        'label': 'ic',
+        # two-handed HEAVY (reserved: 'ic' taught from the plasma cannon's 'pc')
+        'teach': ('ic', 'pc'),
+        'keys': {'first-person melee': 4},          # Halo 4 melee_strike_1 primary keyframe 4
+        'sounds': {'first-person ready': SND + 'ic_ready',
+                   'first-person posing': SND + 'ic_pose',
+                   'first-person melee': SND + 'ic_melee',
+                   'first-person fire-1': SND + 'ic_fire_anim',
+                   'first-person reload-empty': SND + 'ic_reload',
+                   'first-person reload-full': SND + 'ic_reload'},
+        'extra_sounds': [SND + 'ic_reload_balanced'],
+        # the bomblet FIRST (no trigger), then the shell whose burst effect names it
+        'projectiles': [BOMBLET],
+        'bullet': SHELL,
+        # Halo 4: recovery 0.8 s = 1.25/s
+        'trigger': {'rounds_per_second': (1 / 0.8, 1 / 0.8), 'acceleration_time': 0.0,
+                    'deceleration_time': 0.0},
+        # Halo 4: error 0 / 0 (the rocket's 0 / 0)
+        'error_deg': {'minimum_error': 0.0, 'error_angle': (0.0, 0.0)},
+        # Halo 4: 1 loaded, 4 at pickup, 6 most, 1 reloaded. Reload: Halo 4 none (reload_empty 90 fr = 3.0 s) in
+        # the H1 rocket's shape (5.0 tag over its 125 fr = 4.17 s animation: x1.2)
+        'magazine': {'rounds_loaded_maximum': 1, 'rounds_reloaded': 1,
+                     'rounds_total_initial': 4, 'rounds_total_maximum': 6,
+                     'reload_time': 90 / 30.0 * 5.0 / (125 / 30.0)},
+        # Halo 4 aim assist (the mode block, = the weapon's): 5/60 10/25
+        'aiming': {'autoaim_angle': 5.0, 'autoaim_range': 60.0,
+                   'magnetism_angle': 10.0, 'magnetism_range': 25.0},
+        'fields': {
+            # Halo 4: one zoom level, 1.8x (the rocket's 2.0)
+            'weap_attrs.aiming.zoom_levels': 1,
+            'weap_attrs.aiming.zoom_ranges': (1.8, 1.8),
+            'obje_attrs.collision_model.filepath': IC + 'incineration cannon',
+            'weap_attrs.triggers.0.firing_effects.0.empty_effect.filepath': SND + 'ic_dryfire',
+        },
+        # THE MUZZLE-FLASH RULE (check 10, before boot 1). Halo 4's fr_incin_firing, FIRST PERSON (camera 'only in
+        # first person'): firing_muzzle_flash_1p (bounding 0.078 wu) + firing_energy_wave_1p 0.084 / 0.074 (+ one wide
+        # 0.49 wave) at primary_trigger, muzzle rings 0.009 / 0.027 at secondary_trigger, and hardlight LIGHT-UPS on
+        # the gun (back plate 0.045, barrel 0.032, barrel slide 0.079, top plate 0.057, top plate slide 0.089, vent
+        # 0.010); NO smoke, NO casing; third person the same + energy waves 1.5-2.5 wu. The rocket's (h1_effect_
+        # particles): one `flash h ar` 0.07-0.10 at primary trigger, a second at PRIMARY EJECTION (the back-blast;
+        # the port's model has no such marker) and 24-28 FP smoke puffs there (+ 9-12 third-person) -- Halo 4 has
+        # neither back-blast nor smoke -> the copy starts from the LIGHTRIFLE port's Forerunner flash (user-approved,
+        # C4; the Binary Rifle's route: the on-axis centre flash 0.045-0.056, 3P flashes 0.053-0.141, no casing /
+        # smoke) x1.5 (FP 0.068-0.084 = Halo 4's flash / wave), tinted orange. The plate light-ups: the firing GLOW
+        # (glow cards faded by A out, the Binary Rifle's recipe). Not reproduced: the 0.49 wave, the tiny rings,
+        # third person's 1.5-2.5 wu waves
+        'sound_effects': {
+            'firing_effect': (RL + 'effects\\fire rocket', IC + 'effects\\fire shell',
+                              {'sound\\weapons\\light_rifle_port\\lr_fire': SND + 'ic_fire'},
+                              {'copy_from': 'weapons\\light rifle\\effects\\fire bolt',
+                               'match': 'flash', 'scale': 1.5,
+                               'tint': (1.0,) + ORANGE})},
+        'melee': (RL + 'melee', IC + 'melee'),
+        'melee_response': RL + 'melee_response',
+        'messages': ('Picked up an incineration cannon', 'Picked up %d rounds for incineration cannon'),
+        'icon': 'incineration cannon',
+        # the ROCKET's HUD; the crosshair from Halo 4's CUI (incinerationcannon.cui_screen, 3 art px a unit, widget
+        # centres = left + width/2, top + height/2): `top_l` incin_middle 32 x 32 at (-25, -16) = the base, then
+        # top_r (25, -16) flip x, bottom_l (-25, 17) flip y, bottom_r (25, 17) flip x+y; `top` / `bottom` incin_top
+        # 64 x 16 at (0, -28) / (0, 28) flip y, opacity 0.65; `range_top` / `range_bottom` incin_range at (0, -12) /
+        # (0, 12) flip y, 0.3; the outer brackets incin_outer 16 x 32 at opacity 0.1 and the white_pix middle
+        # ticks 0.2 left out (barely visible). SIZE from the user's idle screenshot (1080p, 2026-10-16): the octagon
+        # ~110 px across 72 units, ~102 px over 68 = 1.5 px a unit (the Boltshot's). SUPERSAMPLE (memory
+        # h1-reticle-supersample; sheet px a unit = 123/97 x scale x F): F 2, the 42-unit half-span at scale 2.25 =
+        # 240 of the 256 half-cell; overlay = 1.5 / (123/97 x 2.25 x 2 x 0.75) = 0.351
+        'hud': {'donor': RL + 'rocket_launcher', 'out': IC + 'incineration cannon',
+                'reticle': (H4 + ICUI + 'incin_middle', 0, 'incineration cannon'),
+                'reticle_xform': {'offset': (-25.0, -16.0)},
+                'reticle_layers': [(H4 + ICUI + 'incin_middle', 0, 1.0, {'flip_x': True, 'offset': (25.0, -16.0)}),
+                                   (H4 + ICUI + 'incin_middle', 0, 1.0, {'flip_y': True, 'offset': (-25.0, 17.0)}),
+                                   (H4 + ICUI + 'incin_middle', 0, 1.0, {'flip_x': True, 'flip_y': True,
+                                                                          'offset': (25.0, 17.0)}),
+                                   (H4 + ICUI + 'incin_top', 0, 1.0, {'gain': 0.65, 'offset': (0.0, -28.0)}),
+                                   (H4 + ICUI + 'incin_top', 0, 1.0, {'gain': 0.65, 'flip_y': True,
+                                                                       'offset': (0.0, 28.0)}),
+                                   (H4 + ICUI + 'incin_range', 0, 1.0, {'gain': 0.3, 'offset': (0.0, -12.0)}),
+                                   (H4 + ICUI + 'incin_range', 0, 1.0, {'gain': 0.3, 'flip_y': True,
+                                                                         'offset': (0.0, 12.0)})],
+                'reticle_split': 100,
+                'reticle_min_width': 2,
+                'reticle_supersample': 2,
+                'reticle_scale': 2.25, 'reticle_overlay': 1.5 / (123 / 97.0 * 2.25 * 2 * 0.75),
+                'flash_base': 2,
+                'ammo_meter': {'sizes': (1,), 'base': IC + 'bitmaps\\incineration_cannon_ammo'}},
+        'palette_levels': LEVELS,
+    },
+
+    # weapon_ports_catalog.json (make_port_catalog_h1_ports.py incineration_cannon). DEFAULT = Halo 4's own numbers
+    # in the tags; BALANCED = the ROCKET LAUNCHER ratio by the direct hit, 315/440 (step 4a, user). Assembly Halo1
+    # units: angles in degrees, velocity in wu per TICK
+    'catalog': {
+        'entry': {
+            'weapon': 'Incineration Cannon', 'source': 'Halo 4', 'donor': 'Rocket Launcher', 'default_on': False,
+            'desc': "Halo 4's Incineration Cannon: its model, first-person animations, sounds and numbers. A "
+                    "one-shot Forerunner launcher whose slow shell bursts and scatters five bomblets that "
+                    "bounce off the ground and explode on anything they touch.",
+            'balance_desc': "Measured against the Rocket Launcher, which both games have: a 315 hit "
+                            "(143 impact + 172 burst) over 1.6 m, 86 per bomblet, one shot every 2 s, a "
+                            "faster shell, up to 8 rounds and Halo 1-style aim assist.",
+            # step 9: the balanced reload = the H1 rocket's 125 fr x 90/116 = 97 over the built 90; swap (ready +
+            # put-away, ONE multiplier): the rocket's ready 22 x 31/26 = 26.2 over the built 31
+            'anims': {'reload': 97.0 / 90.0, 'swap': 22 * 31 / 26.0 / 31.0},
+            'anim_sounds': {'reload': [
+                {'mult': 97.0 / 90.0, 'from': SND + 'ic_reload', 'to': SND + 'ic_reload_balanced'}]},
+            'balance': [
+                # the shell: impact 200 x 315/440, the burst 240 (lower 40) x 315/440 over 0.75 x 0.5/0.9, 2.0 x
+                # 2.0/2.5; AOE core 0.75 x 0.5/0.9 (the rocket's core / inner radius)
+                row('jpt!', IC + 'impact', 'Damage Lower Bound', 143.18, 200.0, 'Shell Damage'),
+                row('jpt!', IC + 'impact', 'Damage Upper Bound', 143.18, 200.0, 'Shell Damage'),
+                row('jpt!', IC + 'impact', 'Damage Upper Bound Max', 143.18, 200.0, 'Shell Damage'),
+                row('jpt!', IC + 'explosion', 'Damage Lower Bound', 28.64, 40.0, 'Shell Damage'),
+                row('jpt!', IC + 'explosion', 'Damage Upper Bound', 171.82, 240.0, 'Shell Damage'),
+                row('jpt!', IC + 'explosion', 'Damage Upper Bound Max', 171.82, 240.0, 'Shell Damage'),
+                row('jpt!', IC + 'explosion', 'Radius', 0.417, 0.75, 'Shell Damage'),
+                row('jpt!', IC + 'explosion', 'Radius Max', 1.6, 2.0, 'Shell Damage'),
+                row('jpt!', IC + 'explosion', 'AOE Core Radius', 0.417, 0.75, 'Shell Damage'),
+                # a bomblet: 120 (lower 30) x 315/440 over 0.61 x 0.5/0.9, 1.25 x 2.0/2.5; core 0.6 x 0.5/0.9
+                row('jpt!', IC + 'bomblet explosion', 'Damage Lower Bound', 21.48, 30.0, 'Bomblet Damage'),
+                row('jpt!', IC + 'bomblet explosion', 'Damage Upper Bound', 85.91, 120.0, 'Bomblet Damage'),
+                row('jpt!', IC + 'bomblet explosion', 'Damage Upper Bound Max', 85.91, 120.0, 'Bomblet Damage'),
+                row('jpt!', IC + 'bomblet explosion', 'Radius', 0.339, 0.61, 'Bomblet Damage'),
+                row('jpt!', IC + 'bomblet explosion', 'Radius Max', 1.0, 1.25, 'Bomblet Damage'),
+                row('jpt!', IC + 'bomblet explosion', 'AOE Core Radius', 0.333, 0.6, 'Bomblet Damage'),
+                # the RL ratio: 0.8 s x 2.0/0.8 = 2.0 s (0.5/s); 6 x 8/6 = 8 most (4 x 4/4 = 4 kept)
+                row('weap', IC + 'incineration cannon', 'Rounds Per Second', 0.5, 1.25, 'More Shooting', block='Triggers'),
+                row('weap', IC + 'incineration cannon', 'Rounds Per Second Max', 0.5, 1.25, 'More Shooting', block='Triggers'),
+                row('weap', IC + 'incineration cannon', 'Rounds Total Maximum', 8.0, 6.0, 'Magazine', block='Magazines'),
+                # flight: 12 x 21/10 = 25.2, 10 x 21/20 = 10.5 wu/s; range 128 x 175/175
+                row('proj', IC + 'shell', 'Initial Velocity', 25.2 / 30.0, 21.0 / 30.0, 'Projectile'),
+                row('proj', IC + 'shell', 'Final Velocity', 10.5 / 30.0, 21.0 / 30.0, 'Projectile'),
+                row('proj', IC + 'shell', 'Maximum Range', 128.0, 175.0, 'Projectile'),
+                # aim: the angle KEPT Halo 4's 5 (the rocket's 0: C8's rule), 35 x 60/60; 12 x 10/10, 35 x 25/25
+                row('weap', IC + 'incineration cannon', 'Autoaim Angle', 5.0, 5.0, 'Autoaim'),
+                row('weap', IC + 'incineration cannon', 'Autoaim Range', 35.0, 60.0, 'Autoaim'),
+                row('weap', IC + 'incineration cannon', 'Magnetism Angle', 12.0, 10.0, 'Magnetism'),
+                row('weap', IC + 'incineration cannon', 'Magnetism Range', 35.0, 25.0, 'Magnetism'),
+            ]},
+    },
+
+    # step 4b (port_field_audit.py --port incineration_cannon): the source pairs (Halo 4's Incineration Cannon vs
+    # its yardstick, the Halo 4 rocket launcher -- weapon, shell, burst, impact, melee; the bomblet vs the Halo 4
+    # frag grenade, its burst vs the rocket's explosion) against the target pairs (the H1 port vs its templates:
+    # the rocket launcher, its rocket, its explosion; the bomblet vs the H1 frag grenade)
+    'field_audit': {
+        'source_kit': 'H4EK',
+        'source': {'weapon': (SW + r'\storm_forerunner_incineration_launcher.weapon',
+                              r'objects\weapons\support_high\storm_rocket_launcher\storm_rocket_launcher.weapon'),
+                   'projectile': (SW + r'\projectiles\storm_forerunner_incineration_launcher.projectile',
+                                  r'objects\weapons\support_high\storm_rocket_launcher\projectiles\storm_rocket_launcher_rocket.projectile'),
+                   'damage_effect': (SW + r'\projectiles\damage_effects\storm_forerunner_incineration_launcher_explosion.damage_effect',
+                                     r'objects\weapons\support_high\storm_rocket_launcher\projectiles\damage_effects\storm_rocket_launcher_rocket_explosion.damage_effect'),
+                   'impact': (SW + r'\projectiles\damage_effects\storm_forerunner_incineration_launcher_impact.damage_effect',
+                              r'objects\weapons\support_high\storm_rocket_launcher\projectiles\damage_effects\storm_rocket_launcher_rocket_impact.damage_effect'),
+                   'bomblet': (SW + r'\projectiles\submunition.projectile',
+                               r'objects\weapons\grenade\storm_frag_grenade\storm_frag_grenade.projectile'),
+                   'bomblet_damage': (SW + r'\projectiles\damage_effects\storm_forerunner_incineration_launcher_submunition.damage_effect',
+                                      r'objects\weapons\support_high\storm_rocket_launcher\projectiles\damage_effects\storm_rocket_launcher_rocket_explosion.damage_effect')},
+        'target': {'weapon': (IC + 'incineration cannon.weapon', RL + 'rocket launcher.weapon'),
+                   'projectile': (IC + 'shell.projectile', RL + 'rocket.projectile'),
+                   'damage_effect': (IC + 'explosion.damage_effect', RL + 'explosion.damage_effect'),
+                   'impact': (IC + 'impact.damage_effect', RL + 'explosion.damage_effect'),
+                   'bomblet': (IC + 'bomblet.projectile', FG + 'frag grenade.projectile'),
+                   'bomblet_damage': (IC + 'bomblet explosion.damage_effect', RL + 'explosion.damage_effect')}},
+
+    # the dry test: b30 (this session's level, parallel pair 6), Halo 4's own loadout (1 loaded, 4 in all)
+    'test': {'level': 'b30', 'rounds': (1, 4), 'grunt': None, 'elite': None},
+})
