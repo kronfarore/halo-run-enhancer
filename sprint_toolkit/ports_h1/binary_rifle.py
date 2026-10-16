@@ -302,7 +302,13 @@ PORT.update({
                    'impact_thin': {'materials': [22], 'out': BI + 'effects\\impact\\', 'thin': {}, 'rate': 1.533}},
         # semi-automatic (Halo 4: 1.0 s recovery); the sniper's trigger otherwise (use error when
         # unzoomed: Halo 4's barrel flag 512 = the H4 sniper's)
-        'trigger': {'rounds_per_second': (1.0, 1.0), 'does_not_repeat_automatically': True},
+        'trigger': {'rounds_per_second': (1.0, 1.0), 'does_not_repeat_automatically': True,
+                    # BOOT 3 (user: 'the trail isn't visible, because of the angle we fire it from'): Halo 1
+                    # lays a contrail's first point where the bullet is after one update (93 wu out at 2799
+                    # wu/s) on a line from the EYE -- seen end-on. The trigger's first-person offset = the FP
+                    # `primary trigger` in camera space, idle frame 0 (h1_fp_muzzle.py, forward / left / up
+                    # wu): the trail from the muzzle (the Beam Rifle / DMR / Needle Rifle fix)
+                    'first_person_offset': (0.5244, -0.0498, -0.0135)},
         # Halo 4: minimum error 0, error angle 4 flat (unzoomed only: the sniper's flag)
         'error_deg': {'minimum_error': 0.0, 'error_angle': (4.0, 4.0)},
         # Halo 4: 2 loaded, 6 at pickup, 8 most; reload time 0 (the animation, as the sniper)
@@ -406,7 +412,10 @@ PORT.update({
                 'drop_crosshairs': [1, 2, 3, 4, 5],
                 # the low-ammo flash: Halo 4's `low ammo threshold` 1 (the sniper's 1 of 4 came out 0 on a
                 # 2-round magazine; the HUD `fields` key of the Sticky Detonator, C8 boot 1)
-                'fields': {'flash_cutoffs.loaded_ammo_cutoff': 1},
+                # BOOT 3 (user: 'decrease the blur radius on the zoom slightly'): the screen effect's
+                # convolution radius out 0..11 (the sniper's; the LightRifle 15) -> 0..8
+                'fields': {'flash_cutoffs.loaded_ammo_cutoff': 1,
+                           'screen_effect.0.convolution.radius_out_bounds': (0.0, 8.0)},
                 'reticle_bitmap': r'ui\hud\bitmaps\combined\hud_reticles',
                 'reticle_scaling': 0,
                 'drop_elements': {'static': ['age'],
