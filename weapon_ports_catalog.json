@@ -7030,6 +7030,12 @@
       "label": "Sniper Rifle Ammo"
      }
     ]
+   },
+   "hands": "two",
+   "tag_map": {
+    "proj weapons\\sniper rifle\\sniper bullet": "proj weapons\\binary rifle\\bullet",
+    "jpt! weapons\\sniper rifle\\sniper bullet": "jpt! weapons\\binary rifle\\bullet",
+    "jpt! weapons\\sniper rifle\\melee": "jpt! weapons\\binary rifle\\melee"
    }
   },
   {
