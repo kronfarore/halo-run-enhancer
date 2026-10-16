@@ -191,8 +191,25 @@ PORT = reserved(
                       'Binary Rifle (port)'],
             'why': '1-round magazine, 0.75 s charge, slug with impact + explosion damage',
             'lacks': "Halo 4's sprint; the heat (inert); the 'allows binoculars' flag"}},
-    # step 11: NO source entry found (phase 0; re-checked at step 11 under the _pve tag)
-    firing_profile={'mode': 'same_game', 'donor_weapon': None, 'why': 'no ai\\generic entry for objects\\weapons\\rifle\\storm_rail_gun\\storm_rail_gun found in Halo 4 maps -- pick a Halo 1 stand-in'},
+    # step 11 (2026-10-16): phase 0 searched only the MP tag. The _pve tag HAS a Halo 4 ai\generic entry in nine
+    # campaign maps (ai_firing_entry.py; m020 #37): max firing distance 20, error 0.039, first burst 1.0-1.25 s,
+    # surprise 1.0, desired range 10-15, tracking 0.95 / leading 0.7, burst 2.6 s every 4-6 s, drop 0.6-0.9
+    # (m020; 0.3-0.45 m30/m40, 0.66-0.99 m70/m90). No rate of fire: the base's would ride along -- the
+    # SPARTAN LASER's lesson (A8): a charging AI needs Rate Of Fire 0 (it HOLDS for the burst) and a burst
+    # longer than the charge (2.6 s > 0.75 s: one slug a burst). Base donor: Halo 1's ROCKET LAUNCHER carriers
+    # (h1_weapon_carriers: the Flood combat Elite and human, both WDM 0.4, no actor flags; the Elite's rate
+    # 0.25, the human's 1.0 -- set to 0 here). ARMED WDM RULE (user 2026-10-16: 'Rule: 0.575 / 0.867'): 0.4 x
+    # rocket 158 / the railgun's HELD cycle (one slug a reload: the charge restarts during it) -- default 300
+    # / 2.733 s = 109.8 (0.575), balanced 214.8 / 2.947 s = 72.9 (0.867). Against the player: Normal 1 hit
+    # (172 / 186), Legendary 1 (310 / 335); the stock rocket Flood 0.4 (Normal 2). Balanced drop: Halo 1's
+    # rocket carriers drop 0 / 0 (a zero on one side): no row
+    firing_profile={'mode': 'source', 'from_game': 'Halo 4', 'from_map': 'halo4\\maps\\m020.map',
+                    'from_weapon': 'objects\\weapons\\rifle\\storm_rail_gun\\storm_rail_gun_pve',
+                    'donor_weapon': 'weapons\\rocket launcher\\rocket launcher',
+                    'set': ['0x78=0.0:Rate Of Fire'],
+                    'wdm_rule': {'base': 0.4, 'yardstick_dps': 158.0, 'port_dps': 300.0 / (82 / 30.0),
+                                 'balanced_port_dps': 214.8 / (88.4 / 30.0)},
+                    'species_skill': True},
 )
 
 PORT.update({
