@@ -295,6 +295,19 @@ PORT.update({
                    'damage': (SR + 'sniper bullet', BI + 'bullet'),
                    'dmg': 129.0, 'acceleration': 0.5, 'velocity': 2799.0, 'range': 500.0,
                    'proj_fields': {'proj_attrs.physics.flyby_sound.filepath': SND + 'bi_flyby'},
+                   # THE HIT FLASH (C4's Armed-boot check, before the Armed boot): the sniper bullet's is a RED
+                   # full-screen flash, 0.2 s, late fade, max 0.2 at alpha 0.7. Halo 4's own response
+                   # (globals\damage_responses\impact_bullet_sniper, the Binary's jpt): a 0.7 s 'early'
+                   # DIRECTIONAL flash, shielded ORANGE (1, 0.3, 0) at alpha 0.5 - 1 (unshielded red). Halo 1
+                   # tints the whole screen: Halo 4's colour and timing at the LightRifle's approved intensity
+                   # (a 15 % wash x0.3)
+                   'fields': {'screen_flash.duration': 0.7,
+                              'screen_flash.fade_function': 'early',
+                              'screen_flash.maximum_intensity': 0.3,
+                              'screen_flash.tint_lower_bound.a': 0.15,
+                              'screen_flash.tint_lower_bound.r': 1.0,
+                              'screen_flash.tint_lower_bound.g': 0.3,
+                              'screen_flash.tint_lower_bound.b': 0.0},
                    # THE BEAM RECIPE (B7): Halo 4's tracer = 4 aligned ribbons (lance 0.25 s + lance_large on
                    # fr_sniper_tracer, glow_red 0.6 s + glow_orange on fr_rifle_tracer_glow, palettes
                    # grad_forerunner_muzzle_smg / _spread) -> the sniper's contrail with no physics (its
