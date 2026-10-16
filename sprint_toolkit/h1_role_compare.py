@@ -1629,6 +1629,59 @@ SETS = {
         ('Flood combat (elite)', r'characters\floodcombat elite\floodcombat elite plasma rifle',
          'floodcombat elite'),
     ]},
+    # the INCINERATION CANNON (wave C9), step 4a. Halo 4 (H4EK 2026-10-16): trigger `latch`, no charge,
+    # recovery 0.8 s, 1 loaded / 4 / 6, reload 91 fr (empty = full), zoom 1.8, aim 5/60 10/25. The shell
+    # 21 wu/s flat, range 175, no gravity: impact 200 `collision` + blast 40..240 explosion_large over
+    # 0.75 -> 2.0 (core 0.75) = the Halo 4 ROCKET's own 200 + 240 (its blast 0.9 -> 2.5). THE CLUSTER: the
+    # detonation effect's event 6 (0.2 s after the burst) makes 5 `submunition` projectiles, 5 wu/s,
+    # pitched 45 deg off the surface + a 33 deg conical spread; each bounces off the world (friction 0.1),
+    # bursts on a unit, at 0.6-1.0 s from creation or below 3 wu/s (range 7, gravity x5): impact 200
+    # `collision` (the shell's tag) + 30..120 explosion_large over 0.61 -> 1.25 (core 0.6). No burn /
+    # damage over time anywhere. Bomblets on a target: 0 (they scatter 3-5 wu away) to 5 (a big target)
+    'incineration_cannon': {'port': 'Incineration Cannon', 'weapons': [
+        # DEFAULT candidates: Halo 4's own on the rocket's table (Halo 4's shell IS its rocket's damage)
+        ('IC = H4 own, direct', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 200.0, (0.0, 0.0)), (RLX, 240.0, (0.75, 2.0))], 'rate': 1 / 0.8, 'mag': 1,
+          'reload': 91 / 30.0, 'speed': 21.0, 'range': 175.0, 'aim': (5.0, 60.0, 10.0, 25.0)}),
+        ('IC = H4 own, + 2 bomblets', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 200.0, (0.0, 0.0)), (RLX, 240.0, (0.75, 2.0)), (RLX, 240.0, (0.61, 1.25))],
+          'rate': 1 / 0.8, 'mag': 1, 'reload': 91 / 30.0, 'speed': 21.0, 'range': 175.0,
+          'aim': (5.0, 60.0, 10.0, 25.0)}),
+        ('IC = H4 own, + 5 bomblets', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 200.0, (0.0, 0.0)), (RLX, 240.0, (0.75, 2.0)), (RLX, 600.0, (0.61, 1.25))],
+          'rate': 1 / 0.8, 'mag': 1, 'reload': 91 / 30.0, 'speed': 21.0, 'range': 175.0,
+          'aim': (5.0, 60.0, 10.0, 25.0)}),
+        # ROCKET ratio by the direct hit: 315/440 -> impact 143.2 + blast 171.8, a bomblet 85.9; radius
+        # 0.75 x 0.5/0.9, 2.0 x 2.0/2.5; bomblet 0.61 x 0.5/0.9, 1.25 x 0.8; times x 2.0/0.8 (2.0 s); 1
+        # loaded; 125 fr x 91/116 = 98.1; 12 x 21/10; 128 x 175/175; aim: the source angle 5 (C8), 35 x
+        # 60/60; 12 x 10/10, 35 x 25/25
+        ('IC = RL ratio, direct', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 143.2, (0.0, 0.0)), (RLX, 171.8, (0.417, 1.6))], 'rate': 0.5, 'mag': 1,
+          'reload': 98.1 / 30.0, 'speed': 25.2, 'range': 128.0, 'aim': (5.0, 35.0, 12.0, 35.0)}),
+        ('IC = RL ratio, + 5 bomblets', W + r'rocket launcher\rocket launcher', 'shot',
+         {'parts': [(RLX, 143.2, (0.0, 0.0)), (RLX, 171.8, (0.417, 1.6)), (RLX, 429.5, (0.339, 1.0))],
+          'rate': 0.5, 'mag': 1, 'reload': 98.1 / 30.0, 'speed': 25.2, 'range': 128.0,
+          'aim': (5.0, 35.0, 12.0, 35.0)}),
+        # FUEL ROD ratio by the direct hit: 75/160 -> 93.75 + 112.5, a bomblet 56.25, on its table (Hunters
+        # immune: B5's rule -> Halo 4's values for Hunters in default); radius 0.75 x 0.5/0.5, 2.0 x
+        # 1.5/2.25; times x 1.25/0.4 (2.5 s); 1 loaded; 3.0 s x 91/90; 14 x 21/19.5; range: the fuel
+        # rod's 0 is UNSET -> Halo 4's 175; aim 4 x 5/4, 25 x 60/25; 6 x 10/8, 25
+        ('IC = FR ratio, direct', W + r'fuel rod gun\fuel rod', 'shot',
+         {'parts': [(FRX, 93.75, (0.0, 0.0)), (FRX, 112.5, (0.75, 1.333))], 'rate': 0.4, 'mag': 1,
+          'charge': 0.0, 'reload': 3.0 * 91 / 90, 'speed': 15.1, 'range': 175.0,
+          'aim': (5.0, 60.0, 7.5, 25.0)}),
+        ('IC = FR ratio, + 5 bomblets', W + r'fuel rod gun\fuel rod', 'shot',
+         {'parts': [(FRX, 93.75, (0.0, 0.0)), (FRX, 112.5, (0.75, 1.333)), (FRX, 281.25, (0.61, 0.833))],
+          'rate': 0.4, 'mag': 1, 'charge': 0.0, 'reload': 3.0 * 91 / 90, 'speed': 15.1, 'range': 175.0,
+          'aim': (5.0, 60.0, 7.5, 25.0)}),
+        # peers
+        ('Rocket Launcher', W + r'rocket launcher\rocket launcher', 'shot'),
+        ('Fuel Rod (restored)', W + r'fuel rod gun\fuel rod', 'shot'),
+        ('Brute Shot (port)', W + r'brute shot\brute shot', 'shot'),
+        ('Concussion Rifle (port)', W + r'concussion rifle\concussion rifle', 'shot'),
+        ('Sticky Detonator (port)', W + r'sticky detonator\sticky detonator', 'shot'),
+        ('Grenade Launcher (port)', W + r'grenade launcher\grenade launcher', 'shot'),
+    ]},
 }
 
 ENEMIES = [
