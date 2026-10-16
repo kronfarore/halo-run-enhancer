@@ -1433,6 +1433,10 @@ def edit_weapon(key, write):
         # the opt-in of h1_melee_blocks_fire.py (halo1.dll): weapon flags bit 31 -- no trigger
         # while the wielder's melee animation plays
         a.flags.data |= 1 << 31
+    if w.get('charge_needs_release'):
+        # the opt-in of h1_charge_latch.py (halo1.dll): weapon flags bit 30 -- a held charge trigger
+        # fires one slug a press and charges again only after a release (the Railgun, C7)
+        a.flags.data |= 1 << 30
     a.interface.first_person_model.filepath = w['fp_model']
     a.interface.first_person_animations.filepath = w['fp_anims']
     if 'melee' in w:

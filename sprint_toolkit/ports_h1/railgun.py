@@ -484,6 +484,11 @@ PORT.update({
                               {B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'fire']): SND + 'rg_fire'},
                               FIRE_FLASH)},
         # Halo 4 shares strike_melee with its rocket: x1 = the H1 rocket's own melee (copied)
+        # THE CHARGE LATCH (halo1.dll h1_charge_latch.py v2, bc1a3d9; user 2026-10-16: 'fire, let go, hold
+        # again fires a quick second shot'): a held trigger fires one slug, and a press during the reload
+        # charges in full -- weapon flags bit 30 (the patch is an enhancer option; without it the bit is
+        # inert). Live probes on a30: v1 missed the press-during-reload case, v2 confirmed (both cases)
+        'charge_needs_release': True,
         'melee': (RL + 'melee', RG + 'melee'),
         'melee_response': RL + 'melee_response',
         'messages': ('Picked up a railgun', 'Picked up %d rounds for railgun'),
