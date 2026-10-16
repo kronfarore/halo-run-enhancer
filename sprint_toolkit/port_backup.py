@@ -421,6 +421,21 @@ SCRIPTS += tuple(s for s in ('h1_fp_muzzle.py', 'h1_beam_variant.py', 'h1_weapon
                              'h1_weapon_values.py', 'h1_projectile_responses.py',
                              'reach_damage_table.py', 'reach_tag_fields.py', 'h1_role_compare.py')
                  if s not in SCRIPTS and os.path.exists(os.path.join(HERE, s)))
+# wave C (Halo 4 source, C1-C5, added 2026-10-16 at the Scattershot's close-out: the list stopped at wave
+# B): the `h4:` reader + Foundry FP decode / reference, Wwise + sound research, materials / stand-in maps,
+# the model-buffer cap + decimation, the FP camera / hand checks, check 6, the commit / catalog-key tools of
+# the parallel sessions, the supercombine count, the effect / FP-state probes
+SCRIPTS += tuple(s for s in ('h4_tags.py', 'h4_fp_dump.py', 'h4_fp_jump.py', 'h4_fp_reference.py',
+                             'h4_wwise.py', 'h4_sound_research.py', 'h4_cache_refs.py',
+                             'h4_standin_diffuse.py', 'h4_effect_particles.py', 'h4_rm.py',
+                             'h1_decimate.py', 'h1_decimate_blend.py', 'h1_decimate_render.py',
+                             'h1_model_buffer.py', 'h1_box_collision.py', 'h1_gbxmodel_render.py',
+                             'h1_fp_camera_render.py', 'h1_fp_hand_clip.py', 'h1_species_skill_compare.py',
+                             'h1_tag_writes_proof.py', 'kit_commit.py', 'port_catalog_keys.py',
+                             'port_field_audit.py', 'port_sound_refs.py', 'h1_supercombine_count.py',
+                             'h1_hit_effect_load.py', 'h1_fp_state_probe.py', 'h1_projectile_probe.py',
+                             'h1_melee_fire_probe.py', 'death_penalty.py')
+                 if s not in SCRIPTS and os.path.exists(os.path.join(HERE, s)))
 FILES +=[(os.path.join(TOOL, 'port_sounds.py'), 'tool/port_sounds.py')] if not any(
     f[0].endswith('port_sounds.py') for f in FILES) else []
 
