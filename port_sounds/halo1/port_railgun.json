@@ -1,0 +1,134 @@
+{
+ "game": "Halo 1",
+ "weapon": "Railgun",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\railgun_port\\rg_fire",
+   "perms": [
+    "rg_fire_1.wav",
+    "rg_fire_2.wav",
+    "rg_fire_3.wav",
+    "rg_fire_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\railgun_port\\rg_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\railgun_port\\rg_charge",
+   "perms": [
+    "rg_charge_1.wav",
+    "rg_charge_2.wav",
+    "rg_charge_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\railgun_port\\rg_charge"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\railgun_port\\rg_dryfire",
+   "perms": [
+    "rg_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\railgun_port\\rg_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\railgun_port\\rg_ready",
+   "perms": [
+    "rg_ready_1.wav",
+    "rg_ready_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\railgun_port\\rg_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\railgun_port\\rg_melee",
+   "perms": [
+    "rg_melee_1.wav",
+    "rg_melee_2.wav",
+    "rg_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\railgun_port\\rg_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\railgun_port\\rg_reload",
+   "perms": [
+    "rg_reload_1.wav",
+    "rg_reload_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\railgun_port\\rg_reload"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\railgun_port\\rg_pose",
+   "perms": [
+    "rg_pose_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\railgun_port\\rg_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\railgun_port\\rg_ammo",
+   "perms": [
+    "rg_ammo_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\railgun_port\\rg_ammo"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\railgun_port\\rg_drop",
+   "perms": [
+    "rg_drop_1.wav",
+    "rg_drop_2.wav",
+    "rg_drop_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\railgun_port\\rg_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\railgun_port\\rg_flyby",
+   "perms": [
+    "rg_flyby_1.wav",
+    "rg_flyby_2.wav",
+    "rg_flyby_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\railgun_port\\rg_flyby"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\railgun_port\\rg_explode",
+   "perms": [
+    "rg_explode_1.wav",
+    "rg_explode_2.wav",
+    "rg_explode_3.wav",
+    "rg_explode_4.wav",
+    "rg_explode_5.wav",
+    "rg_explode_6.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\railgun_port\\rg_explode"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\railgun_port\\rg_reload_balanced",
+   "perms": [
+    "rg_reload_balanced_1.wav",
+    "rg_reload_balanced_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\railgun_port\\rg_reload_balanced"
+   ]
+  }
+ ]
+}

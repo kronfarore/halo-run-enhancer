@@ -20,14 +20,124 @@ over 0.55 -> 1.0, core 0.54 (accel 2.5, 'detonates explosives'); no aoe spike bu
 Halo 4 reads (`material response`, C5) = default ATTACH, energy_shield_invulnerable bounce; timer 0.2 s
 'when at rest' + 'detonation max time if attached' = it STICKS and bursts 0.2 s later. No overpenetration."""
 from ._common import B, reserved, row  # noqa: F401
+from .storm_rifle import DROP
 
 H4 = 'h4:'                                          # an H4EK path (h4_tags)
-SW = r'objects\weapons\rifle\storm_rail_gun'
-SFP = r'objects\characters\storm_fp\weapons\rifle\fp_rail_gun\storm_fp_rail_gun'
 RG = 'weapons\\railgun\\'
 SND = 'sound\\weapons\\railgun_port\\'
 RL = 'weapons\\rocket launcher\\'
 LEVELS = ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40']
+SW = r'objects\weapons\rifle\storm_rail_gun'
+SFP = r'objects\characters\storm_fp\weapons\rifle\fp_rail_gun\storm_fp_rail_gun'
+SBM = SW + r'\bitmaps\storm_rail_gun_default' + B
+SRC = r'F:\SteamLibrary\steamapps\common\HCEEK\data\weapons\railgun\source' + B
+# Halo 4's display yellow (the bars material's albedo tint)
+YELLOW = (1.0, 0.855, 0.0)
+# the render model's 5 nodes, all animated by the FP graph (b_cover_01 / _02 = the barrel covers, b_bullet
+# / b_cartridge = the loaded slug and its cartridge)
+GUN_NODES = ('b_gun', 'b_cover_01', 'b_bullet', 'b_cartridge', 'b_cover_02')
+RGUI = r'ui\hud\weapons\human\railgun\bitmap' + B   # Halo 4's crosshair art (CUI railgun)
+# an own collision hull (the template's hides the world model, C1): the built JMS's extent (x -0.099..0.265,
+# y +-0.012, z -0.012..0.092 wu) as one box
+COLLISION = {'material': 'metal', 'boxes': [((-0.099, -0.012, -0.012), (0.265, 0.012, 0.092))]}
+PP = 'weapons\\plasma pistol\\'
+# Halo 4's railgun blue: grad_bluelight_1 near its top (the tracer palette) and the user's fully-charged
+# screenshot (the arcs along the rail pale cyan-blue)
+BLUE = (0.45, 0.75, 1.0)
+# the trigger's first-person offset = the FP `primary trigger` in camera space, idle frame 0 (h1_fp_muzzle.py
+# "weapons\railgun\fp\fp", 2026-10-16): the trail starts at the muzzle (C6)
+FP_MUZZLE = (0.3559, -0.0365, -0.0196)
+# Halo 1 material indices (the Sticky Detonator's / Plasma Launcher's): Halo 4's `material response` table
+# = default ATTACH, energy_shield_invulnerable BOUNCE -> the force fields reflect, water passes
+WATER, LEAVES = 28, 29
+FORCE_FIELDS = [10, 18, 26, 32]      # force field, engineer force field, monitor, hunter shield
+# LEAVES (the template diff, 2026-10-16): the rocket overpenetrates foliage with a potential `detonate` at
+# skip 0.9 (its only set potential; the rest are the enum's 0) -- kept the rocket's (Halo 4's old table
+# detonates on plants; a slug stuck in a leaf would burst in the canopy)
+ATTACH = [i for i in range(33) if i not in [WATER, LEAVES] + FORCE_FIELDS]
+
+# THE SLUG on a copy of Halo 1's ROCKET projectile (no gravity, its explosion chain; the yardstick's own).
+# Halo 4: impact 120 + a blast 0..180 over 0.55 -> 1.0 (core 0.54), it STICKS and bursts 0.2 s later. Halo 1
+# deals a projectile's ATTACHED damage to what it sticks to, at the stick (B6) -- that IS Halo 4's hit: the
+# 120 as the attached damage (a copy of the rocket explosion's table, no radius), no impact damage (no
+# double hit), the blast = the rocket's explosion effect x0.4 (1.0 / 2.5 wu) around an own copy of its
+# damage, 0.2 s after it comes to rest (stuck = at rest: the Sticky Detonator's fuse). 100 wu/s flat, range 0
+# (Halo 4's unset: unlimited, the fuel rod's 0), no gravity. The look: Halo 4's bolt model (an extra model),
+# a blue light + flare, and THE TRACER (rg_firing_tracer_3p: an electrical_beam ribbon + plasma_energy
+# wisps through grad_bluelight_1) by the beam recipe on the sniper's contrail (attachments_from the sniper
+# bullet), from the FP muzzle
+SLUG = {
+    'projectile': (RL + 'rocket', RG + 'slug'),
+    'damage': None, 'no_impact_damage': True,
+    'attached': {'from': RL + 'explosion', 'out': RG + 'slug impact', 'dmg': 120.0,
+                 # 4b (no field audit reads the attached tag): instantaneous acceleration by the ratio on the
+                 # rocket explosion's 6 -- Halo 4 impact 0.05 / Halo 4 rocket impact 1.5 = 0.2
+                 'fields': {'radius': (0.0, 0.0), 'damage.instantaneous_acceleration': 6.0 * 0.05 / 1.5}},
+    'explosion': {'effect': (RL + 'effects' + B + 'rocket explosion', RG + 'effects' + B + 'slug explosion'),
+                  'damage': (RL + 'explosion', RG + 'explosion'),
+                  'scale': 0.4, 'out_dir': RG + 'effects' + B,
+                  'lower': 0.0, 'upper': (180.0, 180.0), 'radius': (0.55, 1.0),
+                  # STEP 4b list 2 (Halo 4 railgun / Halo 4 rocket onto the H1 rocket), no card covers them:
+                  # acceleration 6 x 2.5/3 = 5, camo damage 1 x 1/0.9, the breaking effect's forward velocity 80 x
+                  # 30/35, radius 1 x 2/0.5, exponent 2 x 0/0.5 = 0, outward velocity 16 x 15/6 (outward exponent:
+                  # a zero on one side -> Halo 4's 0, list 3); aoe core = Halo 4's own 0.54 (the ratio's 0.432 is
+                  # the balanced side of the radius rows); category kept the rocket's high_explosive (its table)
+                  'fields': {'damage.aoe_core_radius': 0.54,
+                             'damage.instantaneous_acceleration': 6.0 * 2.5 / 3.0,
+                             'damage.active_camouflage_damage': 1.0 / 0.9,
+                             'breaking_effect.forward_velocity': 80.0 * 30 / 35.0,
+                             'breaking_effect.forward_radius': 1.0 * 2.0 / 0.5,
+                             'breaking_effect.forward_exponent': 0.0,
+                             'breaking_effect.outward_velocity': 16.0 * 15 / 6.0,
+                             'breaking_effect.outward_exponent': 0.0},
+                  'swaps': {B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'expl']): SND + 'rg_explode'}},
+    'velocity': (100.0, 100.0), 'range': 0.0,
+    'model': RG + 'slug' + B + 'slug',
+    'proj_fields': {'proj_attrs.physics.air_gravity_scale': 0.0,
+                    'proj_attrs.physics.water_gravity_scale': 0.0,
+                    'proj_attrs.detonation.arming_time': 0.0,
+                    'proj_attrs.detonation.timer': (0.2, 0.2),
+                    'proj_attrs.detonation_timer_starts': 'when_at_rest',
+                    'proj_attrs.detonation.minimum_velocity': 0.0,
+                    'proj_attrs.physics.guided_angular_velocity': 0.0,
+                    'proj_attrs.physics.flyby_sound.filepath': SND + 'rg_flyby',
+                    'proj_attrs.collision_radius': 0.0,
+                    # STEP 4b list 2: bounding radius 0.1 x 0/0.1 = 0; air damage range 0..100 x 60/150 = 0..40
+                    'obje_attrs.bounding_radius': 0.0,
+                    'proj_attrs.physics.air_damage_range': (0.0, 40.0),
+                    'proj_attrs.flags.oriented_along_velocity': True,
+                    'proj_attrs.flags.detonation_max_time_if_attached': False},
+    'default_responses': {'attach': ATTACH, 'reflect': FORCE_FIELDS, 'overpenetrate': [WATER, LEAVES]},
+    'clear_detonation_effects': True,
+    'attachments_from': 'weapons\\sniper rifle\\sniper bullet',
+    'contrail': {'from': 'weapons\\sniper rifle\\sniper', 'out': RG + 'tracer', 'no_physics': True,
+                 'blend': 'add', 'bitmap': RG + 'bitmaps\\rg_tracer_core', 'sequence': (0, 0),
+                 'repeats': (0.25, 1.0),
+                 'states': [{'duration': (0.25, 0.3), 'transition': (0.2, 0.3),
+                             'width': 0.1, 'argb': (1.0, 1.0, 1.0, 1.0)},
+                            {'width': 0.08, 'argb': (0.0, 1.0, 1.0, 1.0)}],
+                 'extra': [{'out': RG + 'tracer glow', 'blend': 'add',
+                            'bitmap': RG + 'bitmaps\\rg_tracer_glow', 'sequence': (0, 0),
+                            'repeats': (0.125, 1.0),
+                            'states': [{'duration': (0.4, 0.5), 'transition': (0.3, 0.4),
+                                        'width': 0.22, 'argb': (1.0, 1.0, 1.0, 1.0)},
+                                       {'width': 0.18, 'argb': (0.0, 1.0, 1.0, 1.0)}]}]},
+    'glow': {'light': ('weapons' + B + 'fuel rod gun' + B + 'fuel rod exhaust', RG + 'slug glow'),
+             'flare': RG + 'slug glow', 'rgb': BLUE, 'flare_radius': 0.12, 'marker': ''},
+    'triggers': [0],
+}
+
+# THE MUZZLE-FLASH RULE (check 10, before boot 1; h4_effect_particles / h1_effect_particles, 2026-10-16).
+# Halo 4's firing.effect, FIRST PERSON at primary_trigger: plasma ring 0.106, flash ring 0.53, soft flare
+# 0.085, muzzle smoke 0.214, blue sparks 0.057 / 0.41, the rail flare 0.042 at rail_charge (+ a light, a warp
+# screen effect); third person 0.09-0.48 + long flashes 0.14-0.21; NO casing, NO back-blast. The rocket's: a
+# `flash h ar` 0.07-0.1 at the muzzle AND a back-blast flash + 24-28 smoke at `primary ejection` (the railgun
+# vents nothing backwards). -> the PLASMA PISTOL's bolt flash (Halo 1's own energy flash, green -- retinted: on-axis
+# flashes 0.04-0.25 + white smoke; its two sideways flashes at +-2.09 rad dropped), x2 (0.08-0.5 = Halo 4's
+# 0.085-0.53), tinted the railgun blue -- the smoke too (the template diff: the plasma pistol's smoke is
+# GREEN, r 0.05 / b 0; Halo 4's shot carries blue plasma haze, plasma_blue_tiny up to 0.41 wu)
+FIRE_FLASH = {'copy_from': PP + 'effects\\fire bolt', 'match': 'flash', 'drop_off_axis': 0.012,
+              'scale': 2.0, 'tint': (1.0,) + BLUE}
 
 PORT = reserved(
     order=32, wave='C7', name='Railgun', source='Halo 4',
@@ -86,4 +196,312 @@ PORT = reserved(
 
 PORT.update({
     'status': 'in progress',
+
+    # geometry + look (h1_h3_weapon_model.py; Halo 4 through h4_tags). ONE render model for world AND first
+    # person: 5 nodes (b_gun root, b_cover_01 / _02, b_bullet, b_cartridge), 1 region / mesh. Markers:
+    # primary_trigger, secondary_trigger, muzzle_flash, rail_charge (the charge effect), fx_display_light,
+    # primary_ejection, flashlight, the hands. Materials (H4 .material, 2026-10-16): default = colour map
+    # storm_railgun_diff (shipped, a real UNSC colour map) x diffuse 0.903, control_map_spglrf, specular 9;
+    # screen = the yellow display texture (PHASE / FAULT, CAPACITOR, two CELL columns); bars = white strips
+    # x albedo (1, 0.855, 0), self-illum 4; ok / na = 32 px yellow icons; the UNSC eagle crest decal
+    'model': {
+        'dir': r'weapons\railgun',
+        'world': H4 + SW + r'\storm_rail_gun.render_model',
+        'fp': H4 + SW + r'\storm_rail_gun.render_model',
+        'world_name': 'railgun',
+        'decimate': {'keep': 80.0, 'protect': 1.0, 'lock': ('rg_crest',), 'views': [((-0.1082, 0.047, 0.0842), (0.9988, -0.0295, -0.0384), (0.0384, -0.0011, 0.9993), 1.0), ((-0.1088, 0.0464, 0.0835), (0.9991, -0.0291, -0.0317), (0.0314, -0.0102, 0.9995), 1.0), ((-0.1082, 0.047, 0.0842), (0.9988, -0.0295, -0.0384), (0.0384, -0.0011, 0.9993), 1.0), ((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 0.0, 1.0), 1.0), ((0.0002, 0.0012, 0.0003), (1.0, -0.0076, -0.0012), (0.001, -0.0263, 0.9997), 1.0), ((-0.0001, -0.0, 0.0), (1.0, -0.005, 0.0026), (-0.0025, 0.007, 1.0), 1.0), ((-0.1082, 0.047, 0.0842), (0.9988, -0.0295, -0.0384), (0.0384, -0.0011, 0.9993), 1.0), ((-0.0702, 0.0463, 0.0765), (0.9996, -0.0141, -0.0261), (0.0262, 0.007, 0.9996), 1.0), ((-0.1082, 0.047, 0.0842), (0.9988, -0.0295, -0.0384), (0.0384, -0.0011, 0.9993), 1.0), ((-0.1555, 0.0203, 0.0482), (0.3288, -0.247, 0.9115), (-0.9439, -0.117, 0.3088), 0.5), ((-0.1084, 0.0548, 0.0703), (0.9958, -0.0807, -0.0426), (0.0571, 0.1867, 0.9807), 0.5), ((-0.1555, 0.0203, 0.0482), (0.3288, -0.247, 0.9115), (-0.9439, -0.117, 0.3088), 0.5), ((-0.1082, 0.047, 0.0842), (0.9988, -0.0295, -0.0384), (0.0384, -0.0011, 0.9993), 0.5), ((-0.0866, 0.1095, 0.0989), (0.7212, -0.6881, -0.0795), (-0.4083, -0.5151, 0.7536), 0.5), ((-0.1082, 0.047, 0.0842), (0.9988, -0.0295, -0.0384), (0.0384, -0.0011, 0.9993), 0.5), ((-0.0775, 0.0372, 0.073), (1.0, 0.0017, 0.0001), (-0.0001, 0.0002, 1.0), 0.5), ((-0.1191, 0.1095, 0.0804), (0.5392, -0.5663, -0.6233), (0.8385, 0.43, 0.3347), 0.5), ((-0.0775, 0.0372, 0.073), (1.0, 0.0017, 0.0001), (-0.0001, 0.0002, 1.0), 0.5), ((-0.0775, 0.0372, 0.073), (1.0, 0.0016, 0.0002), (-0.0002, 0.0001, 1.0), 0.5), ((-0.0997, -0.0592, 0.178), (-0.0258, 0.0717, -0.9971), (0.0017, -0.9974, -0.0718), 0.5), ((-0.0775, 0.0372, 0.073), (1.0, 0.0016, 0.0002), (-0.0002, 0.0001, 1.0), 0.5)]},
+        'markers': {'primary_trigger': 'primary trigger', 'left_hand': 'left hand',
+                    'rail_charge': 'rail charge'},
+        'ground_point': 'auto',
+        # an own hull (the template's hides the world model, C1): set from the built JMS's extent
+        'collision': COLLISION,
+        # the SLUG's model: Halo 4's bolt render model (1 material = the gun's body)
+        'extra_models': {'slug': {'from': H4 + SW + r'\projectiles\storm_rail_gun_bolt.render_model',
+                                  'dir': RG + 'slug',
+                                  'material_names': {'storm_rail_gun_default': 'rg_body'}}},
+        # THE CHARGE (the user's fully-charged screenshot: blue electric arcs along the left rail, the gun
+        # tinted blue; Halo 4's charging.effect at rail_charge: rail_electricity, a magnet ring, a flare, a
+        # light): Halo 1 draws weapon attachments at the hidden third-person gun in first person (A8), so a
+        # glow BUILT INTO the model -- a star of radial cards at `rail charge` whose additive shader fades with
+        # B out = primary charged (the Spartan Laser's charge glow)
+        'glow_points': [{'marker': 'rail charge', 'shader': 'rg_charge_glow', 'size': 5.0, 'forward': 1.0}],
+        'glow_shaders': {'rg_charge_glow': {'rgb': BLUE, 'additive': True, 'radial': True,
+                                            'hot': True, 'falloff': 1.4, 'fade_source': 'B_out'}},
+        # the TRACER's textures (THE BEAM RECIPE, B7 / C6): Halo 4's rg_firing_tracer_3p profiles through its
+        # palette grad_bluelight_1 -- the core = electrical_beam (512 x 64, its length kept and tiled), the
+        # glow = plasma_energy_diff (1024 x 64); both additive (premultiplied)
+        'baked_textures': {'rg_tracer_core': {'profile': H4 + r'fx\bitmaps\2d\tracer\electrical_beam.bitmap',
+                                              'palette': H4 + r'fx\bitmaps\gradient\grad_bluelight_1.bitmap',
+                                              'premultiply': True, 'gain': 1.5, 'size': (512, 64)},
+                           'rg_tracer_glow': {'profile': H4 + r'fx\bitmaps\2d\tracer\plasma_energy_diff.bitmap',
+                                              'palette': H4 + r'fx\bitmaps\gradient\grad_bluelight_1.bitmap',
+                                              'premultiply': True, 'gain': 1.5, 'size': (1024, 64)}},
+        # Halo 1's `tool model` keeps 31 characters of a shader name (C1)
+        'material_names': {'storm_rail_gun_default': 'rg_body', 'storm_rail_gun_screen': 'rg_screen',
+                           'storm_rail_gun_bars': 'rg_bars', 'storm_rail_gun_ok': 'rg_ok',
+                           'storm_rail_gun_na': 'rg_na', 'storm_unsc_decals_eagle_crest': 'rg_crest'},
+        # the base map: RGB = Halo 4's colour map x 0.903 (diffuse_intensity; no albedo tint), A = the
+        # control map's R (specular) -- h4_standin_diffuse.py `color` mode (the Boltshot's / Sticky's):
+        #   python h4_standin_diffuse.py <BM>storm_railgun_control.bitmap <SRC>rg_body_base.png
+        #          --mode color --color <BM>storm_railgun_diff.bitmap --tint 0.903
+        # the display pieces: their own texture as base AND self-illumination (lit as Halo 4's screen)
+        'shaders': {'rg_body': (SRC + 'rg_body_base.png', None),
+                    'rg_screen': (H4 + SBM + 'storm_rail_gun_screen.bitmap', H4 + SBM + 'storm_rail_gun_screen.bitmap'),
+                    'rg_bars': (H4 + SBM + 'storm_rail_gun_bars.bitmap', H4 + SBM + 'storm_rail_gun_bars.bitmap'),
+                    'rg_ok': (H4 + SBM + 'storm_rail_gun_ok.bitmap', H4 + SBM + 'storm_rail_gun_ok.bitmap'),
+                    'rg_na': (H4 + SBM + 'storm_rail_gun_na.bitmap', H4 + SBM + 'storm_rail_gun_na.bitmap'),
+                    'rg_crest': (H4 + r'objects\bitmaps\storm_decals\bitmaps\storm_unsc_decals_eagle_crest_diff.bitmap', None)},
+        'decals': ('rg_crest',),
+        # Halo 4's display yellow (the bars' albedo 1 / 0.855 / 0; the user's idle screenshot: the screen
+        # ~255 / 215 / 0)
+        'glow': {'rg_screen': YELLOW, 'rg_bars': YELLOW, 'rg_ok': YELLOW, 'rg_na': YELLOW},
+        # the AR's gun shader (the Suppressor's / Boltshot's / Sticky's, user-approved)
+        'template': r'weapons\assault rifle\fp\shaders\gun',
+    },
+
+    # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's own storm_fp_rail_gun (Foundry, h4_fp_dump.py ->
+    # out\h4_fp, 2026-10-16), the arms RE-SOLVED. 25 animations, 85 bones (the 80 storm_fp arm / camera nodes
+    # + the render model's 5): fire_2 23 (the charged shot; there is no fire_1), overcharged 35 (the charged
+    # HOLD), idle 101, posing var1 94 / var2 112, ready 21 (ready_initial 31), put_away 6, melee_strike_1 35
+    # (/_2 37, dash 41), reload_empty 83 / reload_full 60, throw_grenade 45, moving 21 / look 10 (overlays);
+    # sprint / jump / land / fall / acceleration_screens: no Halo 1 state
+    'retarget': {
+        'graph': H4 + SFP + '.model_animation_graph',
+        'render_model': H4 + SW + r'\storm_rail_gun.render_model',
+        'nodes': {n[2:]: 'frame ' + n.replace('_', ' ') for n in GUN_NODES},
+        'drop_nodes': tuple(DROP),
+        'h1_dir': r'weapons\railgun\fp',
+        'h1_model': r'weapons\railgun\fp\fp',
+        'align': 'same_space',
+        'view_offset': (0.0, 0.0, 0.0),
+        'anims': {
+            'first_person:idle': 'first-person idle',
+            'first_person:posing:var1': 'first-person posing',
+            'first_person:ready': 'first-person ready',
+            'first_person:put_away': 'first-person put-away',
+            # the fuel rod's ONE trigger: the discharge plays fire-1
+            'first_person:fire_2': 'first-person fire-1',
+            # the charged hold: Halo 1's plasma pistol plays `overcharged` while its trigger is charged
+            'first_person:overcharged': 'first-person overcharged',
+            'first_person:melee_strike_1': 'first-person melee',
+            'first_person:moving': 'first-person moving',
+            'first_person:look': 'first-person overlays',
+            'first_person:throw_grenade': 'first-person throw-grenade',
+            'first_person:reload_empty': 'first-person reload-empty',
+            'first_person:reload_full': 'first-person reload-full',
+        },
+    },
+
+    # Halo 4's own sounds (h1_port_sounds.py railgun, `bank` 'halo4'): the player bank railgun_player
+    # (h4_sound_research event, 2026-10-16); FP cues from the frame_event_list (h4_sound_research cues).
+    # fire = play_wea_railgun_player_fire: 5 actions = LAYERS (h4_event_layers: randoms 0x092245df (3),
+    # 0x3c95a894 (3), 0x37bf198d (2), 0x0c243376 (4) + the single 0x36bb6e1a); charge = a 3-way random
+    # (0x0472a183); ready = switchto_mech + switchto_fly @0; reload = mech_a @1, fly_a @30, mech_b @36,
+    # fly_b + mech_c @54 (both reloads); posing = idle_a @5 + idle_b @50; the explosion / flyby in
+    # proj_railgun; the impact events ship in no bank (the burst covers the hit). Levels = the stock Halo 1
+    # ROCKET sound each stands in for (h1_stock_sound_levels)
+    'sounds': {
+        'catalog': 'Railgun',
+        'bank': 'halo4',
+        'wwise_bank': 'railgun_player',
+        'dir': B.join(['sound', 'weapons', 'railgun_port']),
+        'sounds': {
+            'rg_fire': (['obj_092245df', 'obj_3c95a894', 'obj_36bb6e1a', 'obj_37bf198d', 'obj_0c243376'],
+                        'sound\\sfx\\weapons\\rocket launcher\\fire', -15.1),
+            'rg_charge': (['play_wea_railgun_player_charge'],
+                          'sound\\sfx\\weapons\\plasma rifle\\startcharge', -12.0),
+            'rg_dryfire': (['play_wea_rail_gun_player_dry_fire'],
+                           'sound\\sfx\\weapons\\assault rifle\\dryfire', -17.6),
+            'rg_ready': (['play_wea_rail_gun_switchto_mech_player', 'play_wea_rail_gun_switchto_fly_player'],
+                         'sound\\sfx\\weapons\\weapon_anims\\rocket_ready', -18.3),
+            'rg_melee': (['play_wea_railgun1_foley_melee_player'],
+                         'sound\\sfx\\weapons\\weapon_anims\\rocket_melee', -21.8),
+            'rg_reload': (['play_wea_rail_gun_reload_mech_a', 'play_wea_rail_gun_reload_fly_a',
+                           'play_wea_rail_gun_reload_mech_b', 'play_wea_rail_gun_reload_fly_b',
+                           'play_wea_rail_gun_reload_mech_c'],
+                          'sound\\sfx\\weapons\\weapon_anims\\rocket_reload_e', -22.5),
+            'rg_pose': (['play_wea_rail_gun_idle_player_a', 'play_wea_rail_gun_idle_player_b'],
+                        'sound\\sfx\\weapons\\weapon_anims\\rocket_posing', -22.1),
+            'rg_ammo': (['play_weapon_ammo_pickup_fallback@weapon_sync'],
+                        'sound\\sfx\\weapons\\weapon_pickup_ammo\\sniper_ammo', -30.5),
+            'rg_drop': (['play_wea_drop_rifle_shotgun_nonplayer@homing_rifle_player'],
+                        'sound\\sfx\\impulse\\weapon_drops\\shotgun_impact', -20.7),
+            'rg_flyby': (['play_proj_railgun_whizby@proj_railgun'],
+                         'sound\\sfx\\impulse\\impacts\\plasrif_projectile', -26.2),
+            'rg_explode': (['play_wea_railgun_explosion@proj_railgun'],
+                           'sound\\sfx\\weapons\\frag grenade\\expl', -7.9),
+            # the BALANCED reload (the patcher retimes it x1.078, then swaps this in)
+            'rg_reload_balanced': (['play_wea_rail_gun_reload_mech_a', 'play_wea_rail_gun_reload_fly_a',
+                                    'play_wea_rail_gun_reload_mech_b', 'play_wea_rail_gun_reload_fly_b',
+                                    'play_wea_rail_gun_reload_mech_c'],
+                                   'sound\\sfx\\weapons\\weapon_anims\\rocket_reload_e', -22.5),
+        },
+        'offsets': {'rg_ready': [0.0, 0.0],
+                    'rg_reload': [1 / 30.0, 30 / 30.0, 36 / 30.0, 54 / 30.0, 54 / 30.0],
+                    'rg_reload_balanced': [1 / 30.0, 30 / 30.0, 36 / 30.0, 54 / 30.0, 54 / 30.0],
+                    'rg_pose': [5 / 30.0, 50 / 30.0]},
+        'stretch': {'rg_reload_balanced': 88.4 / 82.0},
+    },
+
+    # ---------------------------------------------------------------------------------------
+    # The weapon (h1_pickable_weapons.py --only railgun) on a COPY of the Halo 1 ROCKET LAUNCHER (the
+    # yardstick: two-handed heavy, a magazine + reload, the rocket's HUD, melee and explosion table) with the
+    # FUEL ROD's ONE-TRIGGER CHARGE (A8: charge, then 'discharge'; an early release fires nothing) -- Halo
+    # 4's charge-with-magazine: charging 0.75 s, held up to 1.5 s, then it fires by itself. DEFAULT = HALO
+    # 4's OWN NUMBERS; the rocket-ratio values are the balance rows. STEP 6, the ammo pickup: the rocket's
+    # ammo box (Halo 4's _pve names a UNSC ammo box with 0 rounds: Halo 4 has no ammo pickups), its 2 rounds
+    # x Halo 4 carry 6 / H1 rocket 8 -> 1 slug a box (the Brute Shot's rule)
+    'pickable': {
+        'weapon': RG + 'railgun',
+        'template': RL + 'rocket launcher',
+        'world_model': RG + 'railgun',
+        # ONE model tag for world AND first person (Halo 1's 32 MiB model buffer: plan 0.1)
+        'fp_model': RG + 'railgun',
+        'fp_anims': RG + 'fp\\fp',
+        'label': 'rg',
+        # two-handed HEAVY: Halo 1's rocket pose (the reserved donor)
+        'teach': ('rg', 'rl'),
+        'keys': {'first-person melee': 4,            # Halo 4 melee_strike_1 primary keyframe 4
+                 'first-person reload-empty': 36,    # reload_empty primary keyframe 36
+                 'first-person reload-full': 36},
+        'sounds': {'first-person ready': SND + 'rg_ready',
+                   'first-person posing': SND + 'rg_pose',
+                   'first-person melee': SND + 'rg_melee',
+                   'first-person reload-empty': SND + 'rg_reload',
+                   'first-person reload-full': SND + 'rg_reload'},
+        'extra_sounds': [SND + 'rg_reload_balanced'],
+        'bullet': SLUG,
+        # the fuel rod's trigger (A8): rounds per second 10, 'does not repeat automatically' -- one slug a
+        # charge; Halo 4's 0.6 s recovery is moot on a 1-round magazine (the reload follows)
+        # the trail from the FP muzzle (C6): the trigger's first-person offset = the FP `primary trigger` in
+        # camera space, idle frame 0 (h1_fp_muzzle.py; set after the first model build)
+        'trigger': {'rounds_per_second': (10.0, 10.0), 'acceleration_time': 0.0,
+                    'deceleration_time': 0.0, 'first_person_offset': FP_MUZZLE},
+        # Halo 4: minimum error 0, error 0.15 -> 0.8 (the bloom never builds at one round a reload)
+        'error_deg': {'minimum_error': 0.0, 'error_angle': (0.15, 0.8)},
+        # Halo 4: 1 loaded, 4 at pickup, 6 most, 1 reloaded; reload = reload_empty 82 fr (Halo 1 needs a
+        # number: the animation's 82 / 30)
+        'magazine': {'rounds_loaded_maximum': 1, 'rounds_reloaded': 1,
+                     'rounds_total_initial': 4, 'rounds_total_maximum': 6,
+                     'reload_time': 82 / 30.0},
+        # Halo 4 aim assist: the MODE block's mode 0 (unzoomed; the railgun has no zoom)
+        'aiming': {'autoaim_angle': 2.5, 'autoaim_range': 25.0,
+                   'magnetism_angle': 7.5, 'magnetism_range': 25.0},
+        # THE CHARGE as an object function (the GL's): out 0 = the rocket's function 0, out 1 = the plasma
+        # pistol's function 3 (`one` x B in) with weapon B in = primary charged -> B out = the charge
+        'obje_functions': [{'from': RL + 'rocket launcher', 'index': 0},
+                           {'from': 'weapons\\plasma pistol\\plasma pistol', 'index': 3}],
+        # the CHARGE SOUND: Halo 4's charge (a one-shot whir) as the start of a sound_looping at the muzzle
+        # scaled by B out -- it plays from the press while the charge builds (the GL's charge cue)
+        'fire_loop': {'like': B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'charging']),
+                      'start': SND + 'rg_charge', 'loop': '', 'end': '',
+                      'tag': SND + 'rg_charging', 'marker': 'primary trigger', 'scale': 'B_out'},
+        'fields': {
+            'weap_attrs.B_in': 'primary_charged',
+            # THE TRIGGER (the fuel rod's way): charge 0.75 s, hold 1.5 s (_pve), then DISCHARGE
+            'weap_attrs.triggers.0.charging.charging_time': 0.75,
+            'weap_attrs.triggers.0.charging.charge_hold_time': 1.5,
+            'weap_attrs.triggers.0.charging.overcharged_action': 'discharge',
+            'weap_attrs.triggers.0.flags.does_not_repeat_automatically': True,
+            'weap_attrs.triggers.0.flags.projectile_is_client_side_only': False,
+            # Halo 4's railgun has NO zoom: the rocket's 2x goes, and its zoom sounds with it
+            'weap_attrs.aiming.zoom_levels': 0,
+            'weap_attrs.interface.zoom_in_sound.filepath': '',
+            'weap_attrs.interface.zoom_out_sound.filepath': '',
+            # STEP 6: the rocket's ammo box, 1 slug (2 x 6 / 8 = 1.5 -> 1)
+            'weap_attrs.magazines.0.magazine_items.0.rounds': 1,
+            'weap_attrs.triggers.0.firing_effects.0.empty_effect.filepath': SND + 'rg_dryfire',
+            'weap_attrs.interface.pickup_sound.filepath': SND + 'rg_ammo',
+            'item_attrs.collision_sound.filepath': SND + 'rg_drop',
+            'obje_attrs.collision_model.filepath': RG + 'railgun',
+            # STEP 4b list 2 (Halo 4 railgun / Halo 4 rocket onto the H1 rocket): active camo ding 1 x 0.75/1,
+            # illumination recovery 0.3 x 0.05/0.2; list 3: error deceleration Halo 4's 0.5 (the rocket's 0: a
+            # zero on one side); the heat 0.36 a round NOT written (Halo 4's loss 1/s: inert at one round a
+            # reload; Halo 1 would draw no meter for it on the rocket HUD either)
+            'weap_attrs.interface.active_camo_ding': 0.75,
+            'weap_attrs.triggers.0.misc.illumination_recovery_time': 0.3 * 0.05 / 0.2,
+            'weap_attrs.triggers.0.firing.error_deceleration_time': 0.5,
+        },
+        # THE MUZZLE-FLASH RULE (check 10, before boot 1): see SLUG / the firing effect below
+        'sound_effects': {
+            'firing_effect': (RL + 'effects' + B + 'fire rocket', RG + 'effects' + B + 'fire slug',
+                              {B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'fire']): SND + 'rg_fire'},
+                              FIRE_FLASH)},
+        # Halo 4 shares strike_melee with its rocket: x1 = the H1 rocket's own melee (copied)
+        'melee': (RL + 'melee', RG + 'melee'),
+        'melee_response': RL + 'melee_response',
+        'messages': ('Picked up a railgun', 'Picked up %d rounds for railgun'),
+        'icon': 'railgun',
+        # the ROCKET's HUD with Halo 4's crosshair (railgun.cui_screen, at rest): `u_shape` = rail_halfcircle
+        # 64 x 32 at (-32, -8) -> centre (0, 8); `inner_ring` = rail_circle 32 x 32 at (-16, -16) x1.1,
+        # opacity 0.3; `reticule_tick_bottom` = a white pixel 2 x 9 at (-1.1, 18) -> centre (-0.1, 22.5); the
+        # `charge_l` / `charge_r` arcs (rail_charge through a meter shader on the charge) are the CHARGE
+        # display -- Halo 1's charge crosshair never draws in MCC (A8): not reproduced. Sized on the user's
+        # idle screenshot (2026-10-16, 1080p): the U 86 px for its 64 units = 1.34 px a unit (the Sticky
+        # Detonator's calibration formula)
+        'hud': {'donor': RL + 'rocket_launcher', 'out': RG + 'railgun',
+                'reticle': (H4 + RGUI + 'rail_halfcircle', 0, 'railgun'),
+                'reticle_xform': {'offset': (0.0, 8.0)},
+                'reticle_layers': [(H4 + RGUI + 'rail_circle', 0, 1.1, 0.5),
+                                   (H4 + r'ui\cui\common\white_pix', 0, 1.0,
+                                    {'stretch': (6.0, 27.0), 'offset': (-0.1 / 6.0, 22.5 / 27.0)})],
+                'reticle_min_width': 2,
+                'reticle_supersample': 2,
+                'reticle_scale': 2.8, 'reticle_overlay': 1.34 / (123 / 97.0 * 2.8 * 2 * 0.75),
+                'fields': {'flash_cutoffs.total_ammo_cutoff': 1},
+                'ammo_meter': {'sizes': (1,), 'base': RG + 'bitmaps\\railgun_ammo'}},
+        'palette_levels': LEVELS,
+    },
+
+    # weapon_ports_catalog.json (make_port_catalog_h1_ports.py railgun). DEFAULT = Halo 4's own numbers in the
+    # tags; BALANCED = the ROCKET ratio (step 4a, user 2026-10-16). Assembly Halo1 units: angles in degrees,
+    # velocity in wu per TICK (100 wu/s = 3.333; 120 = 4.0)
+    'catalog': {
+        'entry': {
+            'weapon': 'Railgun', 'source': 'Halo 4', 'donor': 'Rocket Launcher', 'default_on': False,
+            'desc': "Halo 4's Railgun: its model, first-person animations, sounds and numbers. Hold to "
+                    "charge for 0.75 s and release (or keep holding: it fires by itself 1.5 s later); "
+                    "the slug sticks and bursts: 120 + 180 damage. One round, then a reload. Rocket "
+                    "Launcher ammo tops it up.",
+            'balance_desc': "Measured against the Rocket Launcher, which both games have: 86 + 129 damage "
+                            "a slug over a 0.8 wu blast, 8 rounds most, a 120 wu/s slug, a slower reload "
+                            "and Halo 1-style aim assist.",
+            # step 9: the balanced reload 125 fr x 82/116 = 88.4 over the built 82 (x1.078). Swap: H1 rocket
+            # ready 22 fr x Halo 4 railgun 21 / Halo 4 rocket 26 = 17.8 over the built 21 (x0.846)
+            'anims': {'reload': 1.078, 'swap': 0.846},
+            'anim_sounds': {'reload': [
+                {'mult': 1.078, 'from': SND + 'rg_reload', 'to': SND + 'rg_reload_balanced'}]},
+            'balance': [
+                row('jpt!', RG + 'slug impact', 'Damage Lower Bound', 85.9, 120.0, 'Projectile Damage'),
+                row('jpt!', RG + 'slug impact', 'Damage Upper Bound', 85.9, 120.0, 'Projectile Damage'),
+                row('jpt!', RG + 'slug impact', 'Damage Upper Bound Max', 85.9, 120.0, 'Projectile Damage'),
+                row('jpt!', RG + 'explosion', 'Damage Upper Bound', 128.9, 180.0, 'Explosion Damage'),
+                row('jpt!', RG + 'explosion', 'Damage Upper Bound Max', 128.9, 180.0, 'Explosion Damage'),
+                row('jpt!', RG + 'explosion', 'Radius From', 0.306, 0.55, 'Explosion Radius'),
+                row('jpt!', RG + 'explosion', 'Radius To', 0.8, 1.0, 'Explosion Radius'),
+                row('weap', RG + 'railgun', 'Rounds Total Maximum', 8.0, 6.0, 'Magazine', block='Magazines'),
+                row('proj', RG + 'slug', 'Initial Velocity', 4.0, 3.333, 'Projectile'),
+                row('proj', RG + 'slug', 'Final Velocity', 4.0, 3.333, 'Projectile'),
+                row('weap', RG + 'railgun', 'Autoaim Range', 14.6, 25.0, 'Autoaim'),
+                row('weap', RG + 'railgun', 'Magnetism Angle', 9.0, 7.5, 'Magnetism'),
+                row('weap', RG + 'railgun', 'Magnetism Range', 35.0, 25.0, 'Magnetism'),
+            ]},
+    },
+
+    # step 4b (port_field_audit.py --port railgun): the source pair (Halo 4 railgun _pve vs the yardstick,
+    # Halo 4's rocket launcher) against the target pair (the H1 port vs its template, the H1 rocket)
+    'field_audit': {
+        'source_kit': 'H4EK',
+        'source': {'weapon': (SW + r'\storm_rail_gun_pve.weapon',
+                              r'objects\weapons\support_high\storm_rocket_launcher\storm_rocket_launcher.weapon'),
+                   'projectile': (SW + r'\projectiles\storm_rail_gun_bolt_pve.projectile',
+                                  r'objects\weapons\support_high\storm_rocket_launcher\projectiles\storm_rocket_launcher_rocket.projectile'),
+                   'damage_effect': (SW + r'\projectiles\damage_effects\storm_rail_gun_bolt_explosion_pve.damage_effect',
+                                     r'objects\weapons\support_high\storm_rocket_launcher\projectiles\damage_effects\storm_rocket_launcher_rocket_explosion.damage_effect')},
+        'target': {'weapon': (RG + 'railgun.weapon', RL + 'rocket launcher.weapon'),
+                   'projectile': (RG + 'slug.projectile', RL + 'rocket.projectile'),
+                   'damage_effect': (RG + 'explosion.damage_effect', RL + 'explosion.damage_effect')}},
+
+    # the dry test: a30 (this session's level, parallel pair 6), Halo 4's own loadout (1 + 4)
+    'test': {'level': 'a30', 'rounds': (1, 4), 'grunt': None, 'elite': None},
 })
