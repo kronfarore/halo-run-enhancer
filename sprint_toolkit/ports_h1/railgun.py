@@ -1,5 +1,8 @@
-r"""Railgun (Halo 4, wave C7): IN PROGRESS -- step 4a decided (user, 2026-10-16); the port sections
-(model / retarget / pickable / sounds / catalog / test) follow.
+r"""Railgun (Halo 4, wave C7) on a copy of the Halo 1 ROCKET LAUNCHER (also the yardstick) with the restored
+FUEL ROD's one-trigger charge (A8): DONE 2026-10-16 (dry boots 1-6, balanced, Armed x3 on a30; the CLOSE-OUT
+RECORD under PORT.update). The Halo 4 route of binary_rifle.py / sticky_detonator.py; the slug's stick + fuse is
+the Sticky Detonator's, its hit the projectile's ATTACHED damage (B6); the charge latch is halo1.dll
+h1_charge_latch.py (v2, an enhancer option).
 
 HALO 4 (H4EK 2026-10-16, h3_weapon_values --kit h4 + h4_projectile_summary + h4_flag_names): the SOURCE is
 the campaign tag `storm_rail_gun_pve` (user, over the MP tag). MP vs _pve: the charged (hold) time 0.5 vs
@@ -93,10 +96,10 @@ SLUG = {
                   # STEP 4b list 2 (Halo 4 railgun / Halo 4 rocket onto the H1 rocket), no card covers them:
                   # acceleration 6 x 2.5/3 = 5, camo damage 1 x 1/0.9, the breaking effect's forward velocity 80 x
                   # 30/35, radius 1 x 2/0.5, exponent 2 x 0/0.5 = 0, outward velocity 16 x 15/6 (outward exponent:
-                  # a zero on one side -> Halo 4's 0, list 3); aoe core = Halo 4's own 0.54 (the ratio's 0.432 is
-                  # the balanced side of the radius rows); category kept the rocket's high_explosive (its table)
+                  # a zero on one side -> Halo 4's 0, list 3); aoe core 0.6 x 0.54/0.75 = 0.432 (no card or row: the
+                  # ratio outright -- the close-out 4b re-check; boot 1 had Halo 4's own 0.54); category kept the rocket's high_explosive (its table)
                   'fields': {**HIT_FLASH, 'screen_flash.duration': 0.5,
-                             'damage.aoe_core_radius': 0.54,
+                             'damage.aoe_core_radius': 0.6 * 0.54 / 0.75,
                              'damage.instantaneous_acceleration': 6.0 * 2.5 / 3.0,
                              'damage.active_camouflage_damage': 1.0 / 0.9,
                              'breaking_effect.forward_velocity': 80.0 * 30 / 35.0,
@@ -226,7 +229,36 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'in progress',
+    # 2026-10-16: tested on a30 over 6 dry boots, balanced and 3 Armed (grunt, jackal, elite) -- confirmed by
+    # the user; the ten-map rebuild is BATCHED (the user's go, the final wave C rebuild)
+    'status': 'done',
+    # CLOSE-OUT RECORD (2026-10-16).
+    # Boots: 1 look / FP / sounds / crosshair / flash good; the display pale-green and the charge animation
+    #   restarting -> 2 the display as Halo 4's charge meter + overcharged retimed; 'release does not fire' ->
+    #   charge hold 0 (option 1, user); 3 animation + meter to the 0.75 s charge, a guaranteed overheat (tried:
+    #   inert -- Halo 1 charges through the reload -- reverted, boot 4); 4 display + animation read full at 0.5
+    #   s (reaction time, user); 5 Halo 4's ammo pip; 6 ok. Balanced: 'checks out'. Armed: firing ok; the hit
+    #   flash (the rocket's tags flash nothing) -> Halo 4's orange, then x2 duration; 'no charge at the muzzle'
+    #   -> `charge_light` at the muzzle (enemies AND first person: 'looks fine').
+    # THE CHARGE LATCH (halo1.dll, its own session, bc1a3d9): stock Halo 1 starts a 2nd charge while held (the
+    #   discharge fires nothing; the start routine fires the slug AND charges again) and a press during the
+    #   reload fires an UNCHARGED slug when the gun is ready (probed: state never leaves idle). v1 (release
+    #   latch) missed the reload case (live probe), v2 (a 'just discharged' marker, trigger flags bit 7) fixed
+    #   both, confirmed live. Opt-in: weapon flags bit 30 (`charge_needs_release`, the Railgun + the Spartan
+    #   Laser); enhancer option h1_charge_latch (default off). Armed AI fired over several bursts (test 4).
+    # Closing checks: 0 port_refs_audit 0 problems (a30 test copy: own slug / slug impact / melee); 2
+    #   validate_halo_json 0; 3 port_sounds --check 0 (the live bank had lost every port's sounds since 14:27 --
+    #   reinstalled; the enhancer session's catch); 4 port_backup h1; 5 n/a (Halo 1); 6 h1_tag_writes_proof
+    #   64 tags / 969,712 fields 0 changed (15 bitmap base addresses); 7 port_sound_refs all OWN, 0 BORROW; 8 the
+    #   Armed build armed Grunt / Jackal / Elite from the rocket carriers + Halo 4's profile (used_weapons);
+    #   9 the shield hit x1.0 (one slug a ~3 s cycle, under 3.5/s); 10 the flash = the plasma pistol's x2 blue
+    #   (Halo 4's 0.085-0.53 wu). 4b re-check on the final weapon: lists 2 = 0 / 0 / the blast radius (balance
+    #   rows) + the AOE CORE -> the ratio 0.432 (no card: Halo 4's own 0.54 had been kept; check 6: that 1 field).
+    #   Template diff traced (the rocket's leaves potential kept: LEAVES). 5b: 120 + 180 / 85.9 + 128.9 (= 4a).
+    # Shared tools (narrowed proofs, 0 changed): rg1 h1_pickable_weapons `charge_needs_release` (bit 30); rg2
+    #   `charge_light`. h1_role_compare 'railgun' set (+ 5b rows); the enhancer option h1_charge_latch.
+    # Not reproduced: choosing the moment of release (Halo 4 holds a charge 1.5 s), the electric arcs along the
+    #   rail (a glow star + light instead), the overcharge ammo-box magazine, sprint; heat (inert in Halo 4).
 
     # geometry + look (h1_h3_weapon_model.py; Halo 4 through h4_tags). ONE render model for world AND first
     # person: 5 nodes (b_gun root, b_cover_01 / _02, b_bullet, b_cartridge), 1 region / mesh. Markers:
