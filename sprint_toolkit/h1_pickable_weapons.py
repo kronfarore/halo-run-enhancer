@@ -819,6 +819,30 @@ def own_explosion(pd, X, write, slot='detonation'):
         prts = et.data.tagdata.events.STEPTREE[0].parts.STEPTREE
         prts.append(copy.deepcopy(src_part))
         prts[len(prts) - 1].type.filepath = A['out']
+    # `add_projectiles`: a CLUSTER (the Incineration Cannon, C9: Halo 4's detonation effect spawns 5
+    # submunitions 0.2 s after the burst; Halo 1's effect parts create projectiles too -- stock
+    # `effects\bursts\ar burst` fires 6 AR bullets): [{'projectile': tag, 'count': n, 'velocity': (lo,
+    # hi) wu/s, 'cone_deg': the random cone around the location's direction, 'delay': s, 'location':
+    # index}] -- each its own event (a copy of event 0 without parts or particles), `count` parts
+    for A in X.get('add_projectiles', ()):
+        src_part = next(p for ev in et.data.tagdata.events.STEPTREE for p in ev.parts.STEPTREE
+                        if p.type.filepath == j_own and p.type.tag_class.enum_name == 'damage_effect')
+        evs = et.data.tagdata.events.STEPTREE
+        evs.append(copy.deepcopy(evs[0]))
+        ev = evs[len(evs) - 1]
+        ev.parts.STEPTREE[:] = []
+        ev.particles.STEPTREE[:] = []
+        ev.delay_bounds[0] = ev.delay_bounds[1] = A.get('delay', 0.0)
+        prts = ev.parts.STEPTREE
+        for _ in range(A['count']):
+            prts.append(copy.deepcopy(src_part))
+            x = prts[len(prts) - 1]
+            x.type.tag_class.set_to('projectile')
+            x.type.filepath = A['projectile']
+            x.velocity_bounds[0], x.velocity_bounds[1] = A['velocity']
+            x.velocity_cone_angle = math.radians(A.get('cone_deg', 0.0))
+            if 'location' in A:
+                x.location = A['location']
     if n != 1:
         raise SystemExit('%s: %d parts name %s' % (e_src, n, part_src))
     if len(found) != len(X.get('swaps', {})):

@@ -41,7 +41,10 @@ CLASS = {'weapon': 'weap', 'projectile': 'proj', 'damage_effect': 'jpt!',
          # a second IMPACT damage effect (the Gravity Hammer, 2026-10-10: its slam's crush_melee
          # vs the yardstick sword's dash_melee onto the port's `crush` -- the blast is the
          # `damage_effect` pair)
-         'impact': 'jpt!'}
+         'impact': 'jpt!',
+         # a CLUSTER's sub-projectile and its burst (the Incineration Cannon, C9: Halo 4's submunition vs the
+         # frag grenade onto the port's bomblet on the Halo 1 frag; its burst vs the rocket's explosion)
+         'bomblet': 'proj', 'bomblet_damage': 'jpt!'}
 
 #: the source weapon and the donor it is measured against, per tag kind (Halo 4)
 SOURCE = dict(kit='H4EK', tags={
