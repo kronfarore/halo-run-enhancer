@@ -114,8 +114,12 @@ BOMBLET = {
     'velocity': (5.0, 6.0), 'range': 7.0,
     'proj_fields': {'proj_attrs.physics.air_gravity_scale': 5.0,
                     'proj_attrs.detonation.arming_time': 0.0,
-                    'proj_attrs.detonation.timer': (0.6, 1.0),
-                    'proj_attrs.detonation_timer_starts': 'immediately',
+                    # BOOT 4 (user: 'bomblets visible now, they detonate before reaching the ground'): Halo 4's
+                    # 0.6-1.0 s from creation ran out mid-air (Halo 1's gravity keeps them up longer) -> the fuse
+                    # 'on first bounce', which in Halo 1 runs from REST (the Grenade Launcher's probe, B4): land,
+                    # settle (perpendicular friction 0.8), burst 0.1-0.3 s later; a unit hit still detonates at once
+                    'proj_attrs.detonation.timer': (0.1, 0.3),
+                    'proj_attrs.detonation_timer_starts': 'on_first_bounce',
                     # BOOT 1 (user: 'the cluster explosion mainly is in the air'): Halo 4's minimum velocity 3 is
                     # an at-rest threshold there, but in HALO 1 IT DETONATES (A7): a bomblet launched up at 5 wu/s
                     # under x5 gravity passed 3 wu/s near its apex and burst mid-air -> 0, the timer decides
@@ -323,13 +327,28 @@ PORT.update({
                          'ic_fire_glow': {'rgb': (1.0, 0.65, 0.25), 'additive': True, 'islands': True,
                                           'islands_of': 'storm_forerunner_incineration_launcher_default_glow',
                                           'strip': True, 'gain': 3.0, 'falloff': 0.6, 'radius': 1.8,  # BOOT 1 ('pop even more when firing'): hotter, wider
-                                          'hot': False, 'fade_source': 'A_out'}},
+                                          'hot': False, 'fade_source': 'A_out',
+                                          # BOOT 4 (user: one tile still unlit in FP, screenshot): glow piece 12
+                                          # (x -1.1, y +1.9, z 8.0 -- the HIGHEST) faces INTO the gun (its twin 13
+                                          # faces out); the card copies its winding and was back-face culled
+                                          'two_sided': True},
+                         # BOOT 4 (user: 'try the empty-chamber glow for the reload instead of the rings'): Halo 4's
+                         # reload lights the gun up as it draws energy in -- Halo 1 has no reload state to read, but
+                         # PRIMARY AMMUNITION is 0 from the shot until the reload has loaded the round: the glow pieces
+                         # again, Halo 4's red-orange, FADED by B out = B in (primary ammunition) INVERTED (`obje_functions`
+                         # function 1) -- lit from the shot through the reload, off once loaded
+                         'ic_reload_glow': {'rgb': (1.0, 0.3, 0.08), 'additive': True, 'islands': True,
+                                            'islands_of': 'storm_forerunner_incineration_launcher_default_glow',
+                                            'strip': True, 'gain': 2.6, 'falloff': 0.7, 'radius': 1.6,
+                                            'hot': False, 'fade_source': 'B_out', 'two_sided': True}},
         # BOOT 3 (user: 'the firing glow is not aligned with the glowing parts; the highest glow part has none, in FP'):
         # the Binary Rifle's `skip_piece_normals` (+-x) skipped every piece facing along the barrel -- the muzzle-end
         # bars nearest the view (h1_gbxmodel_render: no card there, nor on one rear square) -> no skips; the cards
         # back to the Binary Rifle's x2.0 / round 1.6 so they hug the strips (boot 2's x2.6 / 2.0 stood off them)
         'glow_cards': {'ic_fire': {'of': 'ic_glow', 'shader': 'ic_fire_glow', 'scale': 2.0, 'along': 1.1,
-                                   'lift': 0.08, 'round_scale': 1.6}},
+                                   'lift': 0.08, 'round_scale': 1.6},
+                       'ic_reload': {'of': 'ic_glow', 'shader': 'ic_reload_glow', 'scale': 2.4, 'along': 1.15,
+                                     'lift': 0.1, 'round_scale': 1.8}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's own storm_fp_forerunner_incineration_launcher
@@ -469,6 +488,8 @@ PORT.update({
             # BOOT 2 (user: 'no change on a shot'): the firing glow fades by A out, and the ROCKET's weapon input A
             # is `integrated_light` (the flashlight); the sniper / LightRifle templates' is `illumination` (per shot)
             'weap_attrs.A_in': 'illumination',
+            # BOOT 4: B in = primary ammunition (inverted by function 1 = B out: the reload glow)
+            'weap_attrs.B_in': 'primary_ammunition',
             'weap_attrs.interface.zoom_in_sound.filepath': SND + 'ic_zoom_in',
             'weap_attrs.interface.zoom_out_sound.filepath': SND + 'ic_zoom_out',
             # STEP 4b list 2: first person offset Halo 4 0 vs its rocket's -0.05 onto the H1 rocket's -0.1 -> 0
@@ -492,29 +513,15 @@ PORT.update({
                               {'copy_from': 'weapons\\light rifle\\effects\\fire bolt',
                                # BOOT 3 (user: 'the muzzle flash can be a bit more pompous'): x1.5 -> x2.2 and
                                # living x1.6 (an own particle copy: the Boltshot's / Sticky Detonator's recipe)
+                               # BOOT 4 (user: 'muzzle flash is absent now'): the own longer-living particle copy
+                               # is the only change since boot 3's visible flash -> dropped; x2.2 kept
                                'match': 'flash', 'scale': 2.2,
-                               'own_particles': {'out': IC + 'effects' + B + 'particles' + B + 'shell ',
-                                                 'lifespan': 1.6, 'fade_out': 0.04},
                                'tint': (1.0,) + ORANGE})},
-        # BOOT 2 (user: 'try adding the effect on reload' -- Halo 4's reload draws energy IN from the air: fr_incin_reload's
-        # reload_energy_wave / glow / vent rings): Halo 1 plays the magazine's RELOADING EFFECT when a reload starts ->
-        # an own effect of three orange rings CONTRACTING onto the gun 0.2 s apart -- the Wraith mortar's `light ring
-        # expand` (the Gravity Hammer's ring; stock 0.25 -> 20 x its radius in 0.1-0.2 s) with its radius animation
-        # REVERSED (2.0 -> 0.05 x 0.2 wu = 0.4 wu onto the gun), living 0.5-0.6 s, at the effect's own location (the
-        # ring lies perpendicular to the barrel). A first try: where Halo 1 draws a weapon effect in first person is
-        # boot 3's question
-        'reload_effect': {'from': 'vehicles' + B + 'wraith' + B + 'effects' + B + 'wraith mortar explosion',
-                          'out': IC + 'effects' + B + 'reload draw',
-                          'add_particles': [{'from': 'vehicles' + B + 'wraith' + B + 'effects' + B + 'wraith mortar explosion',
-                                             'match': 'light ring expand', 'location': 0, 'radius': (0.2, 0.2),
-                                             'count': 2, 'tint': (1.0, 1.0, 0.45, 0.2), 'delay': d,
-                                             # BOOT 3 (user: 'no effect visible on the reload'; classic,
-                                             # first person): drawn on the FIRST-PERSON gun
-                                             'camera': 'first_person_if_possible',
-                                             'particle': {'out': IC + 'effects' + B + 'reload ring',
-                                                          'lifespan': (0.5, 0.6), 'fade_out': 0.1,
-                                                          'radius_animation': (2.0, 0.05)}}
-                                            for d in (0.0, 0.2, 0.4)]},
+        # BOOT 2-3: the magazine's RELOADING EFFECT (three contracting rings, also drawn first person) never showed in
+        # classic first person -- REMOVED (user, boot 4); the reload glow (B out, the model's `ic_reload_glow`) instead
+        'obje_functions': [{'from': RL + 'rocket launcher', 'index': 0},
+                           {'from': RL + 'rocket launcher', 'index': 0, 'set': {'scale_function_by': 'B_in'},
+                            'flags': {'invert': True}}],
         'melee': (RL + 'melee', IC + 'melee'),
         'melee_response': RL + 'melee_response',
         'messages': ('Picked up an incineration cannon', 'Picked up %d rounds for incineration cannon'),
@@ -556,7 +563,7 @@ PORT.update({
                 #     --wires a_primary_wire,a_secondary_wire,b_primary_wire,b_secondary_wire01,b_secondary_wire02,
                 #             b_secondary_wire03,a_inner_ring
                 #     --fills a_primary_holo,a_secondary_holo,b_primary_holo,b_secondary_holo --fill-alpha 0.45
-                #     --xform 0.9,0.9,0,-20  (boot 3; boot 1-2: 0.95)
+                #     --xform 1.0,1.0,0,-95  (boot 4; boot 1-2: 0.95,0.95,0,-20; boot 3: 0.9)
                 # A CLEAR mask (no chud) with the H1 blur outside the lens and the dark top / bottom bands (the
                 # LightRifle's / Binary Rifle's approved values); a donor without a zoom screen effect borrows the
                 # sniper's (the Beam Rifle's route), its night vision / desaturation cleared
@@ -573,13 +580,16 @@ PORT.update({
                                  # quadrants = the left ones MIRRORED (tr = tl, br = bl flipped; the fitted
                                  # run kept as *_fit.png), alpha 0.6 -> 0.9, coverage gamma 1.6 -> 1.2
                                  'rgb': (255, 110, 30), 'alpha': 0.9, 'normalize': True, 'gamma': 1.2}
-                                # BOOT 3 (user: 'cut off or too far zoomed in'; screenshot): the ring sat ~90 px BELOW
-                                # the centre, its bottom band off screen -> every glyph 81 units up (90 px / 1.11 px a
-                                # unit) and the raster x0.9 (was 0.95), the right quadrants mirrored again
-                                for q, reg, i, off in (('tl', (480, 270), 88, (-407, -110)),
-                                                       ('tr', (0, 270), 89, (458, -110)),
-                                                       ('bl', (480, 0), 90, (-407, 377)),
-                                                       ('br', (0, 0), 91, (458, 377)))],
+                                # BOOT 3 moved the glyphs 81 units up -- BOOT 4 (user: 'cut off again, repeating the past
+                                # mistakes'): the hard edges were the SPRITES' own borders (bottom at y 920, sides at x
+                                # 77 / 1835): each quadrant must cover exactly its screen quarter (the LightRifle's
+                                # calibration) -- position goes INTO THE RASTER, the offsets stay calibrated. Measured on
+                                # the boot-4 shot by the orange band profiles: the same 1.2 : 1 ring as Halo 4's at 0.89x
+                                # its size, centred at y 507 vs Halo 4's 531 -> raster x1.0, shifted -95 px
+                                for q, reg, i, off in (('tl', (480, 270), 88, (-407, -29)),
+                                                       ('tr', (0, 270), 89, (458, -29)),
+                                                       ('bl', (480, 0), 90, (-407, 458)),
+                                                       ('br', (0, 0), 91, (458, 458)))],
                 # (the rocket HUD's two zoom-typed crosshairs, the sniper scope reticle, go with the scope step's
                 # zoom-type drop: Halo 4 keeps its normal crosshair inside the polyart frame)
                 # BOOT 1 (user: 'it uses the generic ammo tick meter -- import its own'): Halo 4's CUI
