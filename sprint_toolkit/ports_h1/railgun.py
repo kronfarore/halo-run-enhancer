@@ -41,6 +41,7 @@ RGUI = r'ui\hud\weapons\human\railgun\bitmap' + B   # Halo 4's crosshair art (CU
 # y +-0.012, z -0.012..0.092 wu) as one box
 COLLISION = {'material': 'metal', 'boxes': [((-0.099, -0.012, -0.012), (0.265, 0.012, 0.092))]}
 PP = 'weapons\\plasma pistol\\'
+PR = 'weapons\\plasma rifle\\'
 # Halo 4's railgun blue: grad_bluelight_1 near its top (the tracer palette) and the user's fully-charged
 # screenshot (the arcs along the rail pale cyan-blue)
 BLUE = (0.45, 0.75, 1.0)
@@ -244,17 +245,31 @@ PORT.update({
         # control map's R (specular) -- h4_standin_diffuse.py `color` mode (the Boltshot's / Sticky's):
         #   python h4_standin_diffuse.py <BM>storm_railgun_control.bitmap <SRC>rg_body_base.png
         #          --mode color --color <BM>storm_railgun_diff.bitmap --tint 0.903
-        # the display pieces: their own texture as base AND self-illumination (lit as Halo 4's screen)
         'shaders': {'rg_body': (SRC + 'rg_body_base.png', None),
-                    'rg_screen': (H4 + SBM + 'storm_rail_gun_screen.bitmap', H4 + SBM + 'storm_rail_gun_screen.bitmap'),
-                    'rg_bars': (H4 + SBM + 'storm_rail_gun_bars.bitmap', H4 + SBM + 'storm_rail_gun_bars.bitmap'),
-                    'rg_ok': (H4 + SBM + 'storm_rail_gun_ok.bitmap', H4 + SBM + 'storm_rail_gun_ok.bitmap'),
-                    'rg_na': (H4 + SBM + 'storm_rail_gun_na.bitmap', H4 + SBM + 'storm_rail_gun_na.bitmap'),
                     'rg_crest': (H4 + r'objects\bitmaps\storm_decals\bitmaps\storm_unsc_decals_eagle_crest_diff.bitmap', None)},
         'decals': ('rg_crest',),
-        # Halo 4's display yellow (the bars' albedo 1 / 0.855 / 0; the user's idle screenshot: the screen
-        # ~255 / 215 / 0)
-        'glow': {'rg_screen': YELLOW, 'rg_bars': YELLOW, 'rg_ok': YELLOW, 'rg_na': YELLOW},
+        'glow': {},
+        # THE ON-GUN DISPLAY. BOOT 1 (user: 'the yellow display does not look that good -- in the original it
+        # also charges up on the charge up'): as textured self-illuminated shader_models it drew PALE with GREEN
+        # bars (the bars' texture is a meter map: R = the shape, G a constant 227, A = the fill gradient). Halo
+        # 4: the bars (srf_constant_meter-like, albedo (1, 0.855, 0), si 4) CLIP by `primary_charged` against
+        # their alpha -- they fill bottom-up as the gun charges; ok / na carry a primary_charged function too.
+        # -> the Storm Rifle's display recipe: the BARS a Halo 1 meter on B out (= primary charged, the GL's
+        # object function), shape R, the alpha gradient inverted (bright = the bottom = lit first:
+        # `gradient_range` (1, 0)); the SCREEN and the OK / NA icons static lit shapes in Halo 4's yellow
+        'meters': {
+            'rg_bars': {'map': H4 + SBM + 'storm_rail_gun_bars.bitmap', 'from': PR + r'fp\shaders\gauge',
+                        'shape': 'r', 'gradient': 'alpha', 'gradient_range': (1.0, 0.0), 'value': 'B_out',
+                        'color': YELLOW, 'color_off': (0.12, 0.1, 0.0)},
+            'rg_screen': {'map': H4 + SBM + 'storm_rail_gun_screen.bitmap', 'from': PR + r'fp\shaders\gauge',
+                          'gradient': 0.0, 'static': r'weapons\needler\shaders\needler luminous',
+                          'color': YELLOW},
+            'rg_ok': {'map': H4 + SBM + 'storm_rail_gun_ok.bitmap', 'from': PR + r'fp\shaders\gauge',
+                      'gradient': 0.0, 'static': r'weapons\needler\shaders\needler luminous',
+                      'color': YELLOW},
+            'rg_na': {'map': H4 + SBM + 'storm_rail_gun_na.bitmap', 'from': PR + r'fp\shaders\gauge',
+                      'gradient': 0.0, 'static': r'weapons\needler\shaders\needler luminous',
+                      'color': YELLOW}},
         # the AR's gun shader (the Suppressor's / Boltshot's / Sticky's, user-approved)
         'template': r'weapons\assault rifle\fp\shaders\gun',
     },
@@ -290,6 +305,10 @@ PORT.update({
             'first_person:reload_empty': 'first-person reload-empty',
             'first_person:reload_full': 'first-person reload-full',
         },
+        # BOOT 1 (user: 'the charge animation restarts in the middle of the animation partly'): Halo 1 LOOPS
+        # `overcharged` while the trigger stays charged; Halo 4's is 35 fr (1.17 s) and the _pve hold is 1.5 s
+        # -> retimed to 45 fr (1.5 s): it plays once, then the discharge fires
+        'resample': {'first-person overcharged': 45},
     },
 
     # Halo 4's own sounds (h1_port_sounds.py railgun, `bank` 'halo4'): the player bank railgun_player
