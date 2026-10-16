@@ -46,6 +46,8 @@ SND = 'sound\\weapons\\incineration_cannon_port\\'
 RL = 'weapons\\rocket launcher\\'
 FG = 'weapons\\frag grenade\\'
 LEVELS = ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40']
+# the scope's quadrant PNGs (h4_polyart_scope.py, from the user's Halo 4 zoom screenshot h4_zoom1.png, 2026-10-16)
+SCOPE = r'F:\SteamLibrary\steamapps\common\HCEEK\data\weapons\incineration cannon\scope' + B
 # the diffuse (h4_standin_diffuse.py <control> <this>, channel mode, tint 0.396 = the _metal material's albedo
 # tint read from the tag bytes, h4_material_params) in the port's data folder
 STANDIN = r'F:\SteamLibrary\steamapps\common\HCEEK\data\weapons\incineration cannon\source\ic_metal_diffuse.png'
@@ -482,6 +484,36 @@ PORT.update({
                 'reticle_supersample': 2,
                 'reticle_scale': 2.25, 'reticle_overlay': 1.5 / (123 / 97.0 * 2.25 * 2 * 0.75),
                 'flash_base': 2,
+                # BOOT 1 (user: 'zoom hud is missing'): THE SCOPE (C4's POLYART recipe). Halo 4's
+                # incinerationcannon_scope draws 3D vector frames; h4_polyart_scope.py rasterized the wires + holo
+                # fills and was checked against the user's zoom screenshot (h4_zoom1.png) by overlay: the fitted
+                # run (all pieces, overlap 0.175) squashed the round ring (x 0.85) under the ghost layers and the
+                # EXTRUSION shards (they spread past the orange band) -- without ghosts / extrusions, at Halo 4's
+                # own scale x 0.95, 20 px up, the band and notches sit on Halo 4's:
+                #   python h4_polyart_scope.py "<SCOPE>" ui\hud\weapons\forerunner\forerunner_incineration_cannon\polyart
+                #     --wires a_primary_wire,a_secondary_wire,b_primary_wire,b_secondary_wire01,b_secondary_wire02,
+                #             b_secondary_wire03,a_inner_ring
+                #     --fills a_primary_holo,a_secondary_holo,b_primary_holo,b_secondary_holo --fill-alpha 0.45
+                #     --xform 0.95,0.95,0,-20
+                # A CLEAR mask (no chud) with the H1 blur outside the lens and the dark top / bottom bands (the
+                # LightRifle's / Binary Rifle's approved values); a donor without a zoom screen effect borrows the
+                # sniper's (the Beam Rifle's route), its night vision / desaturation cleared
+                'screen_effect_from': 'weapons\\sniper rifle\\sniper rifle',
+                'screen_effect_clear': ('night_vision', 'desaturation'),
+                'scope': {'out': IC + 'bitmaps\\scope_mask', 'size': 1024, 'alpha': 0,
+                          'blur_outside': (244, 315), 'blur_edge': 14,
+                          'dark_bands': (275, 110, 0.5)},
+                # each quadrant a coloured zoom glyph at the reserved hud_reticles 88-91 (pair 6), the LightRifle's
+                # calibration (crop pinned to the full 480 x 270, placed by `offset`)
+                'zoom_glyphs': [{'image': SCOPE + q + '.png', 'reg': reg, 'name': 'incineration cannon scope ' + q,
+                                 'index': i, 'scale': (1.0, 1.0), 'overlay': 3.604, 'offset': off,
+                                 'rgb': (255, 110, 30), 'alpha': 0.6, 'normalize': True, 'gamma': 1.6}
+                                for q, reg, i, off in (('tl', (480, 270), 88, (-407, -29)),
+                                                       ('tr', (0, 270), 89, (458, -29)),
+                                                       ('bl', (480, 0), 90, (-407, 458)),
+                                                       ('br', (0, 0), 91, (458, 458)))],
+                # (the rocket HUD's two zoom-typed crosshairs, the sniper scope reticle, go with the scope step's
+                # zoom-type drop: Halo 4 keeps its normal crosshair inside the polyart frame)
                 # BOOT 1 (user: 'it uses the generic ammo tick meter -- import its own'): Halo 4's CUI
                 # `bitmap_ammo_ticks` = ammo_incinerator (177 x 54 px = 59 x 18 units: ONE shell a round), at its
                 # native density
