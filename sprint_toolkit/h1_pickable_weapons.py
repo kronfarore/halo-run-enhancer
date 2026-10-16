@@ -254,84 +254,89 @@ def make_hud(w, key, write):
         ovs[:] = []
         for G in h['zoom_glyphs']:
             if write:
-                if 'image' in G:
-                    # `image` (the LightRifle, C4): a prepared RGBA PNG as the glyph (Halo 4's polyart
-                    # scope frame, rasterized and fitted to the source screenshot), registered at
-                    # `reg` px (default its centre)
-                    art = Image.open(G['image']).convert('RGBA')
-                    rx, ry = G.get('reg', (art.width / 2.0, art.height / 2.0))
-                else:
-                    art, (rx, ry) = AR.layer_art(*G['art'])
-                # `flip` 'x' / 'y' / 'xy': the art mirrored (the Plasma Launcher's scope rings:
-                # animated widgets, scale 0 in the chud -- in Reach they draw turned 180 deg)
-                if 'x' in G.get('flip', ''):
-                    art, rx = art.transpose(Image.FLIP_LEFT_RIGHT), art.width - rx
-                if 'y' in G.get('flip', ''):
-                    art, ry = art.transpose(Image.FLIP_TOP_BOTTOM), art.height - ry
-                if 'mirror4' in G:
-                    # `mirror4` (dx, dy) art px: FOUR copies in one glyph -- the art centred at
-                    # (dx, dy) from the glyph centre (y down), mirrored into the other quadrants (the
-                    # Plasma Launcher's scope pips: one widget, 'mirror horizontal, vertical')
-                    # (dx, dy) or (dx UPPER row, dy, dx LOWER row): the rows' own x (the Plasma
-                    # Launcher, boot 7: 'the upper pips pushed outward, the lower ones perfect')
-                    dx, dy, *dx_low = G['mirror4']
-                    dx_low = dx_low[0] if dx_low else dx
-                    W2 = 2 * (max(abs(int(dx)), abs(int(dx_low))) + art.width)
-                    H2 = 2 * (abs(int(dy)) + art.height)
-                    comp = Image.new('RGBA', (W2, H2), (255, 255, 255, 0))
-                    for fx, fy in ((1, 1), (-1, 1), (1, -1), (-1, -1)):
-                        piece = art
-                        if fx < 0:
-                            piece = piece.transpose(Image.FLIP_LEFT_RIGHT)
-                        if fy < 0:
-                            piece = piece.transpose(Image.FLIP_TOP_BOTTOM)
-                        layer = Image.new('RGBA', (W2, H2), (255, 255, 255, 0))
-                        row_dx = dx if (fy * dy) <= 0 else dx_low      # dy < 0: the upper row
-                        layer.paste(piece, (round(W2 / 2.0 + fx * row_dx - art.width / 2.0),
-                                            round(H2 / 2.0 + fy * dy - art.height / 2.0)))
-                        comp = Image.alpha_composite(comp, layer)
-                    art, rx, ry = comp, W2 / 2.0, H2 / 2.0
-                sx, sy = G['scale']
-                a = art.split()[3].resize((round(art.width * sx), round(art.height * sy)), Image.LANCZOS)
-                if 'frame_alpha' in G:
-                    # the glyph's grey FRAME faint, its coloured SYMBOL strong (boot 3: the
-                    # whole sprite drew as a solid block): alpha x (frame + (1 - frame) x the
-                    # source pixel's saturation)
-                    import numpy as np
-                    rgb = np.asarray(art.convert('RGB').resize(a.size, Image.LANCZOS)).astype(float)
-                    sat = (rgb.max(2) - rgb.min(2)) / np.maximum(rgb.max(2), 1.0)
-                    sat = sat / max(sat.max(), 1e-6)
-                    k = G['frame_alpha'] + (1.0 - G['frame_alpha']) * sat
-                    a = Image.fromarray(np.clip(np.asarray(a) * k, 0, 255).astype(np.uint8))
-                if G.get('normalize'):
-                    # boot 6: Reach keeps these glyphs in ALPHA only and faint (max 98 / 255:
-                    # symbol 50-98, frame 16-30, box fill ~16; RGB solid white) and MCC drew every
-                    # non-zero texel near-opaque (solid boxes, the symbol dark) -> alpha / its max,
-                    # ^`gamma` (the fill and frame fall away, the symbol stays), and the SAME
-                    # intensity in RGB (whichever channel MCC weights)
-                    import numpy as np
-                    v = np.asarray(a).astype(float)
-                    v = (v / max(v.max(), 1.0)) ** G.get('gamma', 1.0)
-                    a = Image.fromarray(np.clip(np.round(v * 255), 0, 255).astype(np.uint8))
-                a = a.point(lambda v, k=G.get('alpha', 1.0): int(round(v * k)))
-                # the cell: the reticle's 256 px unless the glyph reaches past it (the LightRifle's
-                # quarter-screen frame pieces): then a square big enough, centred
-                SZ, CEN = AR.SIZE, AR.CENTRE
-                reach = max(rx * sx, a.width - rx * sx, ry * sy, a.height - ry * sy) + 4
-                if reach > min(CEN[0], CEN[1], SZ - CEN[0], SZ - CEN[1]):
-                    SZ = 2 * int(reach + 1)
-                    CEN = (SZ // 2, SZ // 2)
-                canvas = Image.new('L', (SZ, SZ), 0)
-                canvas.paste(a, (round(CEN[0] - rx * sx), round(CEN[1] - ry * sy)))
-                white = canvas if G.get('normalize') else Image.new('L', (SZ, SZ), 255)
-                img = Image.merge('RGBA', (white, white, white, canvas))
-                x0, y0, x1, y1 = canvas.getbbox()
-                x0, y0, x1, y1 = x0 - 2, y0 - 2, x1 + 2, y1 + 2
-                w2, h2 = 1 << (x1 - x0 - 1).bit_length(), 1 << (y1 - y0 - 1).bit_length()
-                crop = Image.new('RGBA', (w2, h2), (255, 255, 255, 0))
-                crop.paste(img.crop((x0, y0, x1, y1)), (0, 0))
+                # `levels` [png, ...] (the Binary Rifle, C6 boot 1: 'zoom stage 2 is missing' -- Halo 1 draws
+                # sprite N at zoom level N, and the sequence held only sprite 1): further images, one a
+                # further zoom level, each processed as `image` (same `reg`, scale, alpha). Opt-in
                 blank = Image.new('RGBA', (4, 4), (255, 255, 255, 0))
-                frames = [(blank, (2, 2)), (crop, (CEN[0] - x0, CEN[1] - y0))]
+                frames = [(blank, (2, 2))]
+                for src in ([G['image']] + list(G.get('levels', ())) if 'image' in G else [None]):
+                    if 'image' in G:
+                        # `image` (the LightRifle, C4): a prepared RGBA PNG as the glyph (Halo 4's polyart
+                        # scope frame, rasterized and fitted to the source screenshot), registered at
+                        # `reg` px (default its centre)
+                        art = Image.open(src).convert('RGBA')
+                        rx, ry = G.get('reg', (art.width / 2.0, art.height / 2.0))
+                    else:
+                        art, (rx, ry) = AR.layer_art(*G['art'])
+                    # `flip` 'x' / 'y' / 'xy': the art mirrored (the Plasma Launcher's scope rings:
+                    # animated widgets, scale 0 in the chud -- in Reach they draw turned 180 deg)
+                    if 'x' in G.get('flip', ''):
+                        art, rx = art.transpose(Image.FLIP_LEFT_RIGHT), art.width - rx
+                    if 'y' in G.get('flip', ''):
+                        art, ry = art.transpose(Image.FLIP_TOP_BOTTOM), art.height - ry
+                    if 'mirror4' in G:
+                        # `mirror4` (dx, dy) art px: FOUR copies in one glyph -- the art centred at
+                        # (dx, dy) from the glyph centre (y down), mirrored into the other quadrants (the
+                        # Plasma Launcher's scope pips: one widget, 'mirror horizontal, vertical')
+                        # (dx, dy) or (dx UPPER row, dy, dx LOWER row): the rows' own x (the Plasma
+                        # Launcher, boot 7: 'the upper pips pushed outward, the lower ones perfect')
+                        dx, dy, *dx_low = G['mirror4']
+                        dx_low = dx_low[0] if dx_low else dx
+                        W2 = 2 * (max(abs(int(dx)), abs(int(dx_low))) + art.width)
+                        H2 = 2 * (abs(int(dy)) + art.height)
+                        comp = Image.new('RGBA', (W2, H2), (255, 255, 255, 0))
+                        for fx, fy in ((1, 1), (-1, 1), (1, -1), (-1, -1)):
+                            piece = art
+                            if fx < 0:
+                                piece = piece.transpose(Image.FLIP_LEFT_RIGHT)
+                            if fy < 0:
+                                piece = piece.transpose(Image.FLIP_TOP_BOTTOM)
+                            layer = Image.new('RGBA', (W2, H2), (255, 255, 255, 0))
+                            row_dx = dx if (fy * dy) <= 0 else dx_low      # dy < 0: the upper row
+                            layer.paste(piece, (round(W2 / 2.0 + fx * row_dx - art.width / 2.0),
+                                                round(H2 / 2.0 + fy * dy - art.height / 2.0)))
+                            comp = Image.alpha_composite(comp, layer)
+                        art, rx, ry = comp, W2 / 2.0, H2 / 2.0
+                    sx, sy = G['scale']
+                    a = art.split()[3].resize((round(art.width * sx), round(art.height * sy)), Image.LANCZOS)
+                    if 'frame_alpha' in G:
+                        # the glyph's grey FRAME faint, its coloured SYMBOL strong (boot 3: the
+                        # whole sprite drew as a solid block): alpha x (frame + (1 - frame) x the
+                        # source pixel's saturation)
+                        import numpy as np
+                        rgb = np.asarray(art.convert('RGB').resize(a.size, Image.LANCZOS)).astype(float)
+                        sat = (rgb.max(2) - rgb.min(2)) / np.maximum(rgb.max(2), 1.0)
+                        sat = sat / max(sat.max(), 1e-6)
+                        k = G['frame_alpha'] + (1.0 - G['frame_alpha']) * sat
+                        a = Image.fromarray(np.clip(np.asarray(a) * k, 0, 255).astype(np.uint8))
+                    if G.get('normalize'):
+                        # boot 6: Reach keeps these glyphs in ALPHA only and faint (max 98 / 255:
+                        # symbol 50-98, frame 16-30, box fill ~16; RGB solid white) and MCC drew every
+                        # non-zero texel near-opaque (solid boxes, the symbol dark) -> alpha / its max,
+                        # ^`gamma` (the fill and frame fall away, the symbol stays), and the SAME
+                        # intensity in RGB (whichever channel MCC weights)
+                        import numpy as np
+                        v = np.asarray(a).astype(float)
+                        v = (v / max(v.max(), 1.0)) ** G.get('gamma', 1.0)
+                        a = Image.fromarray(np.clip(np.round(v * 255), 0, 255).astype(np.uint8))
+                    a = a.point(lambda v, k=G.get('alpha', 1.0): int(round(v * k)))
+                    # the cell: the reticle's 256 px unless the glyph reaches past it (the LightRifle's
+                    # quarter-screen frame pieces): then a square big enough, centred
+                    SZ, CEN = AR.SIZE, AR.CENTRE
+                    reach = max(rx * sx, a.width - rx * sx, ry * sy, a.height - ry * sy) + 4
+                    if reach > min(CEN[0], CEN[1], SZ - CEN[0], SZ - CEN[1]):
+                        SZ = 2 * int(reach + 1)
+                        CEN = (SZ // 2, SZ // 2)
+                    canvas = Image.new('L', (SZ, SZ), 0)
+                    canvas.paste(a, (round(CEN[0] - rx * sx), round(CEN[1] - ry * sy)))
+                    white = canvas if G.get('normalize') else Image.new('L', (SZ, SZ), 255)
+                    img = Image.merge('RGBA', (white, white, white, canvas))
+                    x0, y0, x1, y1 = canvas.getbbox()
+                    x0, y0, x1, y1 = x0 - 2, y0 - 2, x1 + 2, y1 + 2
+                    w2, h2 = 1 << (x1 - x0 - 1).bit_length(), 1 << (y1 - y0 - 1).bit_length()
+                    crop = Image.new('RGBA', (w2, h2), (255, 255, 255, 0))
+                    crop.paste(img.crop((x0, y0, x1, y1)), (0, 0))
+                    frames.append((crop, (CEN[0] - x0, CEN[1] - y0)))
                 for sheet in ('hud_reticles', 'hud_reticles_r'):
                     h1_hud_sheet.put_frames(sheet, G['name'], frames, AR.TEMPLATE_SEQ, G['index'])
             ovs.append(copy.deepcopy(tmpl))
