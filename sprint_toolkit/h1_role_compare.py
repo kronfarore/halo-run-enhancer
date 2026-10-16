@@ -1519,6 +1519,10 @@ SETS = {
     # 10/25; fuel rod 100 + 60 over 0.5 -> 2.25, 0.4 s, 5 / 15 / 20, 90 fr, 19.5 -> 8.45, 80, aim
     # 4/25 8/25; plasma grenade free 250 over 0.3 -> 1.45, attached 350 (fuse 0.9 at rest).
     'sticky_detonator': {'port': 'Sticky Detonator', 'weapons': [
+        # the BUILT port (step 5b, 2026-10-16): its tags (+ --balanced rows); the charge's burst is its
+        # detonation effect's damage (no impact damage since boot 1)
+        ('Sticky Detonator (port)', W + r'sticky detonator\sticky detonator', 'shot'),
+        ('Sticky Detonator melee (port)', W + r'sticky detonator\sticky detonator', 'melee'),
         # DEFAULT candidate: Halo 4's own, on the plasma grenade's table and on the rocket's
         ('SD = H4 own, PG table', W + r'rocket launcher\rocket launcher', 'shot',
          {'parts': [(PGX, 500.0, (0.4, 2.5)), (RLX, 5.0, (0.0, 0.0))], 'rate': 1.0, 'mag': 1,

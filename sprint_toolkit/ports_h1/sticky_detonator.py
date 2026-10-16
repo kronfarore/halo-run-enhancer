@@ -198,7 +198,25 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'in_progress',
+    # 2026-10-16: dry boots 1-4 (look / sounds 1, fire sound 2-4), balanced 2 (the autoaim angle), Armed 1 on
+    # b30; accepted by the user. The ten-map rebuild is BATCHED (the user's go)
+    'status': 'done',
+    # CLOSE-OUT RECORD (2026-10-16): port_refs_audit on the built b30 test map 0 problems (own charge + melee;
+    # the pistol's melee response + trigger feedback GLOBAL); port_sound_refs: every sound own but the ammo
+    # pickup (KEEP, below); port_sounds --check 0; validate_halo_json 0; check 6 (h1_tag_writes_proof) 46 tags
+    # / 795,390 fields 0 changed. 4b re-run on the final weapon: list 2 = the magazine (the rocket ratio's 1;
+    # the pistol template's 12 is not the yardstick), the timer (the user's 0.5 s fuse), the air / water damage
+    # ranges (Halo 4's 0,0 = unset: the range / the template's kept) -- 0 to port; written by list 2: camo ding
+    # 0.4875, illumination recovery 0.05, gravity 0.278 / water 0.333, danger radius 1.125. Template diff:
+    # every line a decision above (firing effect: side flashes / casing / eject out, the centre flash x1.5
+    # orange, smoke grey; the charge: own responses, effects, timer, model, light; the HUD's reticle, meter,
+    # total-ammo flash). The muzzle-flash rule (check 10) before boot 1 + boot 1 'more intense'. THE HIT-
+    # EFFECT RULE: 1 charge/s -> x1 (the stick's own impact copy). 5b (h1_role_compare sticky_detonator, the
+    # built port): 505 dps default, 139 balanced (= the 4a rows + the impact's 5). Model 0.25 MiB (80 %).
+    # BORROWED sounds kept ON PURPOSE (port_sound_refs prints these as KEEP)
+    'sound_keeps': {r'sound\sfx\weapons\weapon_pickup_ammo\pistol_ammo':
+                    "the _pve tag's own ammo pickup (the Halo 3 brute_shot_ammo sound) ships "
+                    "in no MCC bank: the pistol's kept (user, close-out)"},
 
     # geometry + look (h1_h3_weapon_model.py; Halo 4 through h4_tags). Halo 4's ONE render model for world
     # AND first person: 3 nodes (b_gun root, b_sight = the flip-up screen, b_grenade = the loaded charge),
