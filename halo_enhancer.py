@@ -423,7 +423,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards',
                'h1_overheat_unzoom', 'h1_overheat_no_rezoom', 'h1_covenant_avoid_ff',
                'h1_melee_blocks_fire', 'h1_supercombine_count', 'h1_supercombine_players',
-               'h1_birthday_party',
+               'h1_birthday_party', 'h1_charge_latch',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -1047,6 +1047,13 @@ CONFIG = {
     # that belongs to a player unless a multiplayer game engine runs). A 1-byte halo1.dll
     # patch in the same tool (sync_players). Off = stock. CONFIRMED in game 2026-10-11
     "h1_supercombine_players": False,
+    # Options -> Patching -> Halo 1: a CHARGE weapon fires one shot a press -- held, it does not
+    # charge again until the trigger is let go, and a press during the reload charges in full
+    # (no quick uncharged shot), for weapons whose tag opts in (weapon flags bit 30: the Railgun,
+    # the Spartan Laser). A halo1.dll patch (sprint_toolkit/h1_charge_latch.py, v2), live AND in
+    # the file; inert for every other weapon. Off = put back to stock. Opt-in (user 2026-10-16);
+    # CONFIRMED in game on the Railgun 2026-10-16
+    "h1_charge_latch": False,
     # Options -> Patching -> Halo 1: the Grunt Birthday Party skull also spawns a CLASSIC
     # effect on the dead Grunt (its own confetti is Anniversary-only, never drawn in classic
     # graphics). A halo1.dll patch (sprint_toolkit/h1_birthday_party.py), live AND in the
@@ -7226,6 +7233,18 @@ class MagnitudeEditorDialog(QDialog):
                      'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
 
     @staticmethod
+    def _apply_h1_charge_latch():
+        """Halo 1's charge-latch halo1.dll patch, synced to its option on every patch (any
+        game), like _apply_h1_melee_blocks_fire."""
+        sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        try:
+            import h1_charge_latch
+            return h1_charge_latch.sync(bool(CONFIG.get('h1_charge_latch')))
+        except Exception as e:
+            return [{'tag': 'halo1.dll', 'effect': 'Charge weapons wait for a release',
+                     'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
+
+    @staticmethod
     def _apply_h1_birthday_party():
         """Halo 1's classic Grunt Birthday Party effect halo1.dll patch, synced to its option
         on every patch (any game), like _apply_h1_melee_blocks_fire."""
@@ -9461,6 +9480,7 @@ class MagnitudeEditorDialog(QDialog):
         results.extend(self._apply_h1_melee_blocks_fire())
         results.extend(self._apply_h1_supercombine_count())
         results.extend(self._apply_h1_birthday_party())
+        results.extend(self._apply_h1_charge_latch())
         if CONFIG.get('death_penalty_scaling'):
             results.extend(self._apply_death_penalty())
         results.extend(self._restore_sword_drain(plan))
@@ -11842,6 +11862,20 @@ class OptionsDialog(QDialog):
             "supercombine on you, as from Halo 2 on. Same handling as the option above: "
             "running game and halo1.dll, both machines in co-op.")
         h1form.addRow("", self.h1_supercombine_players_cb)
+        self.h1_charge_latch_cb = QCheckBox(
+            "Charge weapons fire once a press: Railgun, Spartan Laser (halo1.dll)")
+        self.h1_charge_latch_cb.setChecked(bool(CONFIG.get('h1_charge_latch')))
+        self.h1_charge_latch_cb.setToolTip(
+            "The Railgun and the Spartan Laser charge, then fire by themselves. Stock Halo 1 "
+            "starts the next charge while the trigger is still held, and a trigger pressed "
+            "during the reload fires a quick shot with no charge the moment the gun is "
+            "ready. This makes them fire one shot a press: held, nothing more until you let "
+            "go; pressed during the reload, a full charge first -- only for weapons whose "
+            "tag opts in (those two); every other weapon is unchanged.\n\n"
+            "Applied when you patch, whatever state MCC is in: into the running game "
+            "(at once) and into halo1.dll (every later start). Unticked, the next patch "
+            "puts halo1.dll back to stock. In co-op both machines need it.")
+        h1form.addRow("", self.h1_charge_latch_cb)
         self.h1_birthday_party_cb = QCheckBox(
             "Grunt Birthday Party effect in classic graphics (halo1.dll)")
         self.h1_birthday_party_cb.setChecked(bool(CONFIG.get('h1_birthday_party')))
@@ -13129,6 +13163,7 @@ class OptionsDialog(QDialog):
             'h1_supercombine_count': self.h1_supercombine_count_cb.isChecked(),
             'h1_supercombine_players': self.h1_supercombine_players_cb.isChecked(),
             'h1_birthday_party': self.h1_birthday_party_cb.isChecked(),
+            'h1_charge_latch': self.h1_charge_latch_cb.isChecked(),
             'h1_covenant_avoid_ff': self.h1_covenant_ff_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
             'odst_red_plasma_as_brute': self.red_plasma_cb.isChecked(),
