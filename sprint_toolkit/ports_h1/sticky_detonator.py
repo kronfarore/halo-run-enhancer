@@ -154,7 +154,8 @@ PORT = reserved(
             'reload_s': 4.1667 * 58 / 116,   # RL: 125 fr x 58/116
             'velocity': (28.8, 5.0),         # RL: 24 x 12/10, 10 x 10/20
             'range': 14.6,                   # RL: 128 x 20/175
-            'aim': (0.0, 8.75, 9.6, 21.0),   # RL: 0 x 4/5, 35 x 15/60; 12 x 8/10, 35 x 15/25
+            'aim': (4.0, 8.75, 9.6, 21.0),   # RL: 35 x 15/60; 12 x 8/10, 35 x 15/25; the angle KEPT
+                                             # Halo 4's 4 (the rocket's 0: balanced boot, user)
             'gravity': 0.25,                 # the rocket's 0 vs 0.02: near-zero, no ratio -> Halo 4's
             'error_deg': (0.15, 0.0, 0.4),   # the rocket's 0 / 0 degenerate -> Halo 4's own
             'melee': 55.0},                  # strike_melee both -> the rocket's 55 (x1)
@@ -182,7 +183,18 @@ PORT = reserved(
     # step 11: NO ai\generic entry for the Sticky Detonator in any Halo 4 map, under either name
     # (re-checked 2026-10-16 with the _pve tag first: m020, m10-m90, ff91 / ff92; the _pve tag ships in
     # every campaign map) -> a same-game stand-in, chosen with the user before the Armed boot
-    firing_profile={'mode': 'same_game', 'donor_weapon': None, 'why': 'no ai\\generic entry for objects\\weapons\\pistol\\storm_sticky_detonator\\storm_sticky_detonator(_pve) in any Halo 4 map -- pick a Halo 1 stand-in'},
+    # (user, 2026-10-16): donor = the ROCKET LAUNCHER -- the yardstick (the plasma grenade) is thrown, so the
+    # rocket fills the hole (the Grenade Launcher's precedent). Halo 1's rocket carriers (h1_weapon_carriers
+    # 2026-10-16): the Flood combat Elite and human rocket launcher variants, both WDM 0.4, no actor flags
+    # -- they agree, no donor_variant. ARMED WDM RULE: 0.4 x rocket 158 / the port's dps column (default
+    # 505 x 1/s = 505 -> 0.125; balanced 346.3 x 0.4/s = 138.5 -> 0.456). THE BALANCED DROP RULE: no
+    # Halo 4 Sticky Detonator ai entry (a zero on the source side) -> no balanced drop rows
+    firing_profile={'mode': 'same_game', 'donor_weapon': 'weapons\\rocket launcher\\rocket launcher',
+                    'why': 'no ai\\generic entry for the Sticky Detonator (_pve or MP) in any Halo 4 map; '
+                           'fires like the Halo 1 rocket launcher carriers (user, 2026-10-16)',
+                    'wdm_rule': {'base': 0.4, 'yardstick_dps': 158.0, 'port_dps': 505.0,
+                                 'balanced_port_dps': 138.5},
+                    'species_skill': True},
 )
 
 PORT.update({
@@ -313,7 +325,7 @@ PORT.update({
                                     'play_wea_sticky_det_mech_reload_b:0,1',
                                     'play_wea_sticky_det_mech_reload_c:0,1',
                                     'play_wea_sticky_det_mech_reload_d:0,1'],
-                                   'sound\sfx\weapons\weapon_anims\pistol_reload', -19.0),
+                                   'sound\\sfx\\weapons\\weapon_anims\\pistol_reload', -19.0),
             'sd_pose': (['play_wea_sticky_det_idle_player_a', 'play_wea_sticky_det_idle_player_b',
                          'play_wea_sticky_det_idle_player_c'],
                         'sound\\sfx\\weapons\\weapon_anims\\pistol_posing', -26.5),
@@ -478,7 +490,10 @@ PORT.update({
                 row('proj', SD + 'charge', 'Final Velocity', 5.0 / 30.0, 10.0 / 30.0, 'Projectile'),
                 row('proj', SD + 'charge', 'Maximum Range', 14.6, 20.0, 'Projectile'),
                 # aim: 0 x 4/5, 35 x 15/60; 12 x 8/10, 35 x 15/25
-                row('weap', SD + 'sticky detonator', 'Autoaim Angle', 0.0, 4.0, 'Autoaim'),
+                # BALANCED BOOT (user: 'aim assist never activates, the crosshair is never red'): the
+                # rocket's 0 deg switched it off -> the angle KEPT Halo 4's 4 (the Plasma Launcher's rule:
+                # a zero on one side is not a ratio), the ranges by the ratio (user)
+                row('weap', SD + 'sticky detonator', 'Autoaim Angle', 4.0, 4.0, 'Autoaim'),
                 row('weap', SD + 'sticky detonator', 'Autoaim Range', 8.75, 15.0, 'Autoaim'),
                 row('weap', SD + 'sticky detonator', 'Magnetism Angle', 9.6, 8.0, 'Magnetism'),
                 row('weap', SD + 'sticky detonator', 'Magnetism Range', 21.0, 15.0, 'Magnetism'),
