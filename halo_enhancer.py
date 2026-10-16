@@ -420,7 +420,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h1_spawn_starting_weapons', 'h1_spawn_all_weapons',
                'h2_spawn_starting_weapons', 'h2_spawn_all_weapons',
                'h1_replace_first_weapons', 'h1_enemy_weapon_enabled',
-               'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards',
+               'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards', 'h1_armed_all_weapons',
                'h1_overheat_unzoom', 'h1_overheat_no_rezoom', 'h1_covenant_avoid_ff',
                'h1_melee_blocks_fire', 'h1_supercombine_count', 'h1_supercombine_players',
                'h1_birthday_party', 'h1_charge_latch',
@@ -1022,6 +1022,9 @@ CONFIG = {
     # Halo 1 enemy weapons (h1_enemy_weapons.py): replace every enemy variant carrying a
     # player's STARTING weapon; per-enemy switch and fallback weapon (None = Auto).
     "h1_replace_first_weapons": False,
+    # Armed cards for EVERY Halo 1 weapon a character spawns with, not only the ones the
+    # players hold (opt-in, user 2026-10-16); a held weapon's card stays twice as likely.
+    "h1_armed_all_weapons": False,
     "h1_enemy_weapon_enabled": {},
     "h1_enemy_weapon_fallback": {},
     # ...and offer 'Armed: <weapon>' enemy cards (Marines through the Ally pool)
@@ -4177,16 +4180,27 @@ class ModifierDatabase:
             return []
         used = self.h1_used_weapons()
         names = []
-        for w in weapons or []:
+
+        def ok(w):
             path = self.h1_weapon_path(w) if w else None
             if w and self._is_port(w, game) and not (
                     CONFIG.get('weapon_ports_in_pools') and w in self.ports_on_level(mission_id)):
-                continue           # a port is only an Armed card while ports are offered here
-            if (w and w not in names and not self.is_grenade(w) and not self.is_equipment(w)
-                    and not is_sprint_item(w) and path
-                    # only weapons some character in the game really spawns with
-                    and (used is None or path in used)):
+                return False       # a port is only an Armed card while ports are offered here
+            return bool(w and w not in names and not self.is_grenade(w)
+                        and not self.is_equipment(w) and not is_sprint_item(w) and path
+                        # only weapons some character in the game really spawns with
+                        and (used is None or path in used))
+        for w in weapons or []:
+            if ok(w):
                 names.append(w)
+        if CONFIG.get('h1_armed_all_weapons'):
+            # Options -> 'every weapon': the rest of Halo 1's weapons join the draw. Each
+            # card of a weapon nobody holds is put in with a 50% chance per draw, so the
+            # players' own weapons stay twice as likely (user, 2026-10-16) without the
+            # draws themselves needing weights.
+            for w in self.get_game_weapons('Halo 1'):
+                if ok(w) and random.random() < 0.5:
+                    names.append(w)
         if ally:
             return [self.armed_card('Marine', w, ally=True) for w in names]
         here = list((self.mission_enemies.get(mission_id) or {}).get('enemies', [])) +             list(added or ())
@@ -11798,6 +11812,16 @@ class OptionsDialog(QDialog):
             "that moves 10% more of them onto that weapon per pick. Marines get the same "
             "cards through the Ally slot, at the lowest priority.")
         h1form.addRow("", self.h1_armed_cards_cb)
+        self.h1_armed_all_cb = QCheckBox("    ...for every weapon, not only the ones you hold")
+        self.h1_armed_all_cb.setChecked(bool(CONFIG.get('h1_armed_all_weapons')))
+        self.h1_armed_all_cb.setToolTip(
+            "On: Armed cards are also offered for every other Halo 1 weapon some character "
+            "spawns with (ported weapons while they are offered on the level). A weapon you or "
+            "your partner hold stays twice as likely to come up as one nobody holds.\n"
+            "Off (default): only the weapons the players hold.")
+        self.h1_armed_cards_cb.toggled.connect(self.h1_armed_all_cb.setEnabled)
+        self.h1_armed_all_cb.setEnabled(self.h1_armed_cards_cb.isChecked())
+        h1form.addRow("", self.h1_armed_all_cb)
         self.h1_covenant_ff_cb = QCheckBox("Covenant avoid friendly fire")
         self.h1_covenant_ff_cb.setChecked(bool(CONFIG.get('h1_covenant_avoid_ff')))
         self.h1_covenant_ff_cb.setToolTip(
@@ -13153,6 +13177,7 @@ class OptionsDialog(QDialog):
             'h2_spawn_starting_weapons': self.h2_spawn_weapons_cb.isChecked(),
             'h2_spawn_all_weapons': self.h2_spawn_all_cb.isChecked(),
             'h1_replace_first_weapons': self.h1_replace_first_cb.isChecked(),
+            'h1_armed_all_weapons': self.h1_armed_all_cb.isChecked(),
             'h1_enemy_weapon_enabled': {e: cb.isChecked() for e, (cb, _c) in self.h1_enemy_rows.items()},
             'h1_enemy_weapon_fallback': {e: c.currentData() for e, (_cb, c) in self.h1_enemy_rows.items()
                                          if c.currentData()},
