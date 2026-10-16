@@ -1498,8 +1498,12 @@ def edit_weapon(key, write):
                     x.particle_type.filepath = own_p
         # `tint` (ARGB): every particle of the copy recoloured, RGB not HSV (the plasma
         # pistol's green flash IS a tint on a white sprite -- the Sentinel Beam's finding)
+        # `tint_match` (path substrings, opt-in): only those particles (the Sticky Detonator, C8: its
+        # kept smoke stays grey, the flash goes orange)
         for ev in (et.data.tagdata.events.STEPTREE if fl.get('tint') else ()):
             for x in ev.particles.STEPTREE:
+                if 'tint_match' in fl and not any(m in x.particle_type.filepath for m in fl['tint_match']):
+                    continue
                 x.flags.tint_as_hsv = False
                 for b in (x.tint_lower_bound, x.tint_upper_bound):
                     b.a, b.r, b.g, b.b = fl['tint']
