@@ -6797,7 +6797,10 @@
      "Explosion Damage",
      "Explosion Radius"
     ]
-   }
+   },
+   "actor_flags": [
+    "always_charge_in_attacking_mode"
+   ]
   }
  ],
  "Halo 3": [
