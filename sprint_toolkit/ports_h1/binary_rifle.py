@@ -36,9 +36,10 @@ STANDIN = r'F:\SteamLibrary\steamapps\common\HCEEK\data\weapons\binary rifle\sou
 # the scope's quadrant PNGs (h4_polyart_scope.py, in the port's own data folder) -- after the user's
 # Halo 4 screenshot
 SCOPE = r'F:\SteamLibrary\steamapps\common\HCEEK\data\weapons\binary rifle\scope' + B
-# Forerunner hardlight orange (the glow material's si_color 1 / 0.357 / 0 -- a start; the user's Halo 4
-# screenshot sets it, as on the Suppressor / LightRifle)
-ORANGE = (1.0, 0.5, 0.08)
+# Forerunner hardlight orange-red (the glow material's si_color 1 / 0.357 / 0; the user's Halo 4 idle
+# screenshot, 2026-10-16: the top display median 255 / 136 / 67, the side lights 255 / 101-132 / 63-80,
+# the stripe 255 / 131 / 42; edges ~250 / 95 / 53)
+ORANGE = (1.0, 0.45, 0.2)
 
 # the Storm Rifle's DROP list: every storm_fp graph shares the skeleton (checked 2026-10-16: this graph's
 # 99 nodes = the same 80 arm / camera nodes + the render model's 19 gun bones)
@@ -110,6 +111,7 @@ PORT.update({
         'world': H4 + SW + r'\storm_forerunner_sniper_rifle.render_model',
         'fp': H4 + SW + r'\storm_forerunner_sniper_rifle.render_model',
         'world_name': 'binary rifle',
+        'decimate': {'keep': 60.0, 'protect': 1.0, 'views': [((-0.054, 0.0489, 0.0669), (1.0, 0.0017, -0.0034), (0.0034, 0.0022, 1.0), 1.0), ((-0.0546, 0.0486, 0.0674), (1.0, 0.0022, 0.003), (-0.003, -0.0051, 1.0), 1.0), ((-0.054, 0.0489, 0.0669), (1.0, 0.0017, -0.0034), (0.0034, 0.0022, 1.0), 1.0), ((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 0.0, 1.0), 1.0), ((0.0, 0.0, 0.0), (1.0, 0.0058, -0.0046), (0.0048, -0.0252, 0.9997), 1.0), ((0.0, 0.0, 0.0), (1.0, -0.0027, 0.0042), (-0.0042, 0.0102, 0.9999), 1.0), ((-0.054, 0.0489, 0.0669), (1.0, 0.0017, -0.0034), (0.0034, 0.0022, 1.0), 1.0), ((-0.0189, 0.0512, 0.0618), (0.9992, 0.0087, -0.0386), (0.0383, 0.0402, 0.9985), 1.0), ((-0.054, 0.0489, 0.0669), (1.0, 0.0017, -0.0034), (0.0034, 0.0022, 1.0), 1.0), ((-0.0904, 0.0772, 0.0808), (0.6822, -0.333, 0.6509), (-0.6619, 0.097, 0.7433), 0.5), ((-0.0611, 0.0445, 0.0565), (0.9955, -0.0104, -0.0939), (0.0929, -0.0737, 0.9929), 0.5), ((-0.0904, 0.0772, 0.0808), (0.6822, -0.333, 0.6509), (-0.6619, 0.097, 0.7433), 0.5), ((-0.054, 0.0489, 0.0669), (1.0, 0.0017, -0.0034), (0.0034, 0.0022, 1.0), 0.5), ((-0.092, 0.083, 0.061), (0.9363, -0.3168, 0.1515), (-0.2107, -0.1616, 0.9641), 0.5), ((-0.054, 0.0489, 0.0669), (1.0, 0.0017, -0.0034), (0.0034, 0.0022, 1.0), 0.5), ((-0.0634, 0.0489, 0.0669), (1.0, 0.0017, -0.0034), (0.0034, 0.0022, 1.0), 0.5), ((-0.1045, 0.0846, 0.0629), (0.9675, -0.2363, 0.0902), (-0.135, -0.1812, 0.9741), 0.5), ((-0.0634, 0.0489, 0.0669), (1.0, 0.0017, -0.0034), (0.0034, 0.0022, 1.0), 0.5), ((-0.054, 0.0489, 0.0669), (1.0, 0.0017, -0.0034), (0.0034, 0.0022, 1.0), 0.5), ((0.1093, -0.1219, 0.1917), (-0.6112, 0.4706, -0.6364), (-0.1871, -0.8672, -0.4616), 0.5), ((-0.054, 0.0489, 0.0669), (1.0, 0.0017, -0.0034), (0.0034, 0.0022, 1.0), 0.5)]},
         'ground_point': 'auto',
         # an own hull (the template's hides the world model, C1): the render model's extent
         'collision': {'material': 'metal',
@@ -130,10 +132,12 @@ PORT.update({
         # fr_rifle_tracer_glow through grad_forerunner_muzzle_spread; both additive (premultiplied)
         'baked_textures': {'bi_beam_core': {'profile': H4 + r'fx\bitmaps\2d\tracer\fr_sniper_tracer.bitmap',
                                             'palette': H4 + r'fx\bitmaps\gradient\grad_forerunner_muzzle_smg.bitmap',
-                                            'premultiply': True},
+                                            # a bolt sprite Halo 4 TILES along the ribbon (uv tiling 0.25): its
+                                            # length kept (the Focus Rifle's pulse), repeated on the contrail
+                                            'premultiply': True, 'size': (256, 64)},
                            'bi_beam_glow': {'profile': H4 + r'fx\bitmaps\2d\tracer\fr_rifle_tracer_glow.bitmap',
                                             'palette': H4 + r'fx\bitmaps\gradient\grad_forerunner_muzzle_spread.bitmap',
-                                            'premultiply': True}},
+                                            'premultiply': True, 'gain': 1.5}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's own storm_fp_forerunner_sniper_rifle (Foundry,
@@ -180,7 +184,12 @@ PORT.update({
         'wwise_bank': 'forerunner_sniper_player',
         'dir': B.join(['sound', 'weapons', 'binary_rifle_port']),
         'sounds': {
-            'bi_fire': (['play_wea_forerunner_sniper_player_fire'],
+            # the event's 6 actions are LAYERS (C4's obj_ specs; the plain event spec read its 18 sounds as
+            # permutations -- one layer a shot): randoms 0x2b993bae (5, 1.0-1.9 s), 0x091068ba (4, 1.9-2.7
+            # s), 0x07d539ba (3, 1.1-1.7 s), 0x13f48f32 (4, 0.6-0.9 s) + the single sounds 0x3d5e806e
+            # (0.16 s) and 0x272b3727 (0.34 s); every source in the bank (h4_sound_research tree)
+            'bi_fire': (['obj_2b993bae', 'obj_091068ba', 'obj_07d539ba', 'obj_3d5e806e', 'obj_13f48f32',
+                         'obj_272b3727'],
                         'sound\\sfx\\weapons\\sniper rifle\\fire', -12.4),
             'bi_dryfire': (['play_wea_forerunner_sniper_player_dry_fire'],
                            'sound\\sfx\\weapons\\assault rifle\\dryfire', -17.6),
@@ -250,7 +259,7 @@ PORT.update({
                    # vapour drifts with the wind), the baked core texture, a wider glow layer
                    'contrail': {'from': SR + 'sniper', 'out': BI + 'beam', 'no_physics': True,
                                 'blend': 'add', 'bitmap': BI + 'bitmaps\\bi_beam_core',
-                                'sequence': (0, 0),
+                                'sequence': (0, 0), 'repeats': (0.25, 1.0),
                                 'states': [{'duration': (0.2, 0.25), 'transition': (0.2, 0.3),
                                             'width': 0.08, 'argb': (1.0, 1.0, 1.0, 1.0)},
                                            {'width': 0.06, 'argb': (0.0, 1.0, 1.0, 1.0)}],
@@ -292,10 +301,21 @@ PORT.update({
             'obje_attrs.collision_model.filepath': BI + 'binary rifle',
         },
         'sound_effects': {
-            # THE MUZZLE-FLASH RULE (check 10, before boot 1): see the close-out below once compared
+            # THE MUZZLE-FLASH RULE (check 10, before boot 1; h4_effect_particles / h1_effect_particles,
+            # 2026-10-16). Halo 4's fr_sniper_rifle_firing, first person at primary_trigger: muzzle_flash
+            # 0.084, muzzle_flash_diamond 0.079-0.148, muzzle_flash_large 0.12, a soft glow 0.40 / 0.13,
+            # vent rings 0.006-0.009 (+ plate / cylinder / vent light-ups 0.016-0.157 on the gun); third
+            # person 0.11-0.19 + glow accents; NO smoke, NO casing. The sniper template's: two SIDEWAYS
+            # brake fans of 15-20 sprites (dir +-2.01 rad, 0.043-0.125 wu: the DMR's 'too big and wide'),
+            # a forward fan 0.025-0.05, three FP smokes, a warthog casing -> the copy starts from the
+            # LIGHTRIFLE port's Forerunner flash (user-approved, C4: the pistol's on-axis FP centre flash
+            # 0.045-0.056, 3P flashes 0.053-0.141 kept, bubbles, no casing / smoke), x2 (FP 0.09-0.11 =
+            # Halo 4's flash / large) and x0.6 more in third person (x1.2: 0.064-0.17 = Halo 4's 3P)
             'firing_effect': (SR + 'effects\\fire bullet', BI + 'effects\\fire bullet',
-                              {'sound\\sfx\\weapons\\sniper rifle\\fire': SND + 'bi_fire'},
-                              {'match': 'flash', 'tint': (1.0,) + ORANGE})},
+                              {'sound\\weapons\\light_rifle_port\\lr_fire': SND + 'bi_fire'},
+                              {'copy_from': 'weapons\\light rifle\\effects\\fire bolt',
+                               'match': 'flash', 'scale': 2.0, 'scale_3p': 0.6,
+                               'tint': (1.0,) + ORANGE})},
         'melee': (SR + 'melee', BI + 'melee'),
         'melee_response': SR + 'melee_response',
         'messages': ('Picked up a binary rifle', 'Picked up %d rounds for binary rifle'),
@@ -309,10 +329,30 @@ PORT.update({
         # widget centres, the LightRifle's calibration)
         'hud': {'donor': SR + 'sniper rifle', 'out': BI + 'binary rifle',
                 'screen_effect_clear': ('night_vision', 'desaturation'),
-                # the polyart scope comes with the user's Halo 4 screenshot; until then a CLEAR mask with
-                # the H1 blur outside the lens (the LightRifle's boot-4 values)
+                # THE SCOPE (C4's POLYART recipe): Halo 4's attach_beam_scope draws 3D vector frames (the
+                # canard pieces visible 0 in the CUI). h4_polyart_scope.py fitted the wires + holo fills to
+                # the user's zoom-1 screenshot (h4_zoom1.png, 1080p, 2026-10-16), four 480 x 270 quadrants:
+                #   python h4_polyart_scope.py "<SCOPE>" ui\hud\weapons\forerunner\attach_beam\polyart
+                #     --wires mainwire_base,mainwire_shelf,mainwire_accent,extrusion_wire_base,
+                #             extrusion_wire_shelf,ghostwire_post1_base,ghostwire_post1_shelf,
+                #             ghostwire_post1_accent,ghostwire_post2_base,ghostwire_post2_shelf,
+                #             ghostwire_post2_accent
+                #     --fills holo_extrusion_base,holo_extrusion_shelf --fill-alpha 0.45 --fit h4_zoom1.png
+                # A CLEAR mask (no chud) with the H1 blur outside the lens and the dark top / bottom bands
+                # (the LightRifle's approved values)
                 'scope': {'out': BI + 'bitmaps\\scope_mask', 'size': 1024, 'alpha': 0,
-                          'blur_outside': (244, 315), 'blur_edge': 14},
+                          'blur_outside': (244, 315), 'blur_edge': 14,
+                          'dark_bands': (275, 110, 0.5)},
+                # each quadrant a coloured zoom glyph at the reserved hud_reticles 76-79 (pair 5), its crop
+                # pinned to the full 480 x 270 (MCC centres a zoom overlay on its sprite), placed by
+                # `offset` (the LightRifle's calibration: quadrant corner / 1.11 - (2 - 256) x 1.802 units)
+                'zoom_glyphs': [{'image': SCOPE + q + '.png', 'reg': reg, 'name': 'binary rifle scope ' + q,
+                                 'index': i, 'scale': (1.0, 1.0), 'overlay': 3.604, 'offset': off,
+                                 'rgb': (255, 110, 30), 'alpha': 0.6, 'normalize': True, 'gamma': 1.6}
+                                for q, reg, i, off in (('tl', (480, 270), 76, (-407, -29)),
+                                                       ('tr', (0, 270), 77, (458, -29)),
+                                                       ('bl', (480, 0), 78, (-407, 458)),
+                                                       ('br', (0, 0), 79, (458, 458)))],
                 # the SNIPER HUD's zoom overlays (crosshairs2, _sm, caption, two zoom crosshairs): all but
                 # #0 dropped (the DMR's); its reticle draws from its OWN sheet -> the shared hud_reticles;
                 # the zoom angle ticks / distance / elevation numbers dropped
