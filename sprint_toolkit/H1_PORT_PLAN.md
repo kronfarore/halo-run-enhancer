@@ -1588,6 +1588,22 @@ decimated before the first test build). Above 0.6: ask the user.
 | 1 | C6 Binary Rifle | a30 | hud_reticles 76-79 |
 | 2 | C8 Sticky Detonator | b30 (`--level b30` on EVERY staging run) | hud_reticles 80-83 |
 
+### Parallel pair 6: C7 Railgun + C9 Incineration Cannon (prepared 2026-10-16) -- THE LAST PAIR
+
+The last two of the 25: a CHARGED single-shot slug (C7: the Spartan Laser's one-trigger charge, the
+Binary Rifle's fast projectile + scope) and a CLUSTER explosive (C9: the Brute Shot / Grenade
+Launcher explosion chain, a projectile that splits). Model buffer: 5.7 MiB left in the tightest maps
+(a30 / b30) for these two -- each still <= 0.6 MiB, decimated before its first test build.
+
+| session | weapon | test level | extra HUD sequences |
+|---|---|---|---|
+| 1 | C7 Railgun | a30 | hud_reticles 84-87 |
+| 2 | C9 Incineration Cannon | b30 (`--level b30` on EVERY staging run) | hud_reticles 88-91 |
+
+After this pair (all 25 done): the WAVE C CHECK (`port_tool_proof --reproduce`) and the FINAL batched
+ten-map rebuild + validation (residency, refs, sounds, model buffer per map) -- on the user's go, in
+the coordinating session.
+
 ## Hand-off prompt for a weapon session
 
 > Port the <WEAPON> into Halo 1 (H1_PORT_PLAN.md, wave <X>, #<n>). Source: <game>.
@@ -2943,3 +2959,124 @@ decimated before the first test build). Above 0.6: ask the user.
 > --restore b30`. The ten-map rebuild stays BATCHED (my go). When done: catalog entry, enhancer
 > hand-off, PORTING section, memory, `python port_backup.py --game h1`, "C8: what the Sticky
 > Detonator taught".
+
+### The Railgun (wave C7), filled in -- PARALLEL with C9
+
+> PARALLEL: another port session (C9, the Incineration Cannon) runs at the same time on the same kit.
+> Read H1_PORT_PLAN.md "Running two ports in parallel" first (incl. REWORK status and "Hardened after
+> pair 1": `kit_commit.py` for every commit, `--commit` on the record writers) and "Parallel pair 6"
+> (the model-buffer budget: <= 0.6 MiB, decimated before the first test build). Your test level is
+> a30 -- pass `--level a30` on every `h1_port_test_map.py` run and restore with `h1_port_test_map.py
+> railgun --restore a30`. Extra HUD sequences: hud_reticles 84-87 only. If a script says `kit lock:
+> WAITING`, let it wait; never `kit_lock.py release --force` a lock whose holder is running. Do NOT
+> write a next prompt: write "C7: what the Railgun taught" and tell me you are done.
+>
+> Port the Railgun into Halo 1 (H1_PORT_PLAN.md, wave C, #C7). Source: Halo 4,
+> `h4:objects\weapons\rifle\storm_rail_gun\storm_rail_gun` -- AND its campaign variant
+> `storm_rail_gun_pve`: diff the two first and let me pick the source (C8 found MP vs _pve differ in the
+> projectile + damage only); FP graph `objects\characters\storm_fp\weapons\rifle\fp_rail_gun\storm_fp_rail_gun`.
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Running two ports in parallel", "Phase 0: DONE" incl. 0.1 and
+> the 32 MiB model-buffer cap, "A8: what the Spartan Laser taught" (the fuel-rod ONE-TRIGGER CHARGE,
+> AI rate of fire 0), "C1" (THE HALO 4 RECIPE) to "C5", "C6: what the Binary Rifle taught" (a fast
+> projectile's contrail needs the FP muzzle offset, a two-stage polyart scope, Halo 4 flags by name
+> through ManagedBlam) and "C8" (MP vs _pve, sound layers, the loudness ceiling = the tag's gain,
+> small-magazine HUD cutoffs, keep the source autoaim angle)), PORTING.md ("What ported actually
+> means" steps 0-11 and 5b, closing checks 0-10, the Halo 1 sections -- the Binary Rifle and the
+> Sticky Detonator first, the Spartan Laser for the charge --, "Balance" incl. the ARMED WDM RULE,
+> THE HIT-EFFECT RULE, the two-handed rule, the balanced drop rule, the species skill rule) and
+> memory h1-model-buffer-32mib-cap, h1-ports-index, h1-parallel-ports, h1-armed-test-balanced-god,
+> h1-coloured-scope-glyphs, h1-reticle-supersample, port-process-tools-index,
+> port-muzzle-flash-rule, port-flashlight-sound-rule, h1-port-phase0, halo-port-own-messages,
+> h1-fmod-bank-sounds, port-findings-are-observations, shared-worktree-commits.
+> `ports_h1/binary_rifle.py` is the nearest shape (Halo 4, a fast shot, a scope),
+> `spartan_laser.py` the charge: copy into `ports_h1/railgun.py` and edit only that file plus shared
+> tools you generalize (small change, narrowed proof, commit at once via kit_commit).
+>
+> START WITH STEP 4a, with me: candidates the ROCKET LAUNCHER (provisional: a 1-round power weapon),
+> the SNIPER RIFLE (a single precise shot) and the restored FUEL ROD (Halo 1's own charge-to-fire), with
+> the Spartan Laser and Binary Rifle ports as peers; DEFAULT = Halo 4's own numbers, BALANCED = the
+> ratio rows. Halo 4 side (`h3_weapon_values.py --kit h4`, aim from the mode block; flags by name):
+> the CHARGE (time, what an early release does, overcharge), the slug (impact + its explosion: damage,
+> radii, group; velocity 100 wu/s; overpenetration), magazine 1 / carry / reload, zoom, error, aim
+> assist, melee. Time to kill: h1_role_compare 'railgun' set vs RL, Sniper, Fuel Rod and the Spartan
+> Laser / Binary Rifle ports. Then 4b, the template diff, port_sound_refs and the muzzle-flash
+> comparison BEFORE boot 1; the decimation and `h1_model_buffer.py` before the first test build. Scope
+> / HUD art from a Halo 4 SCREENSHOT (ask me; the polyart route if it is polyart), crosshair
+> supersampled; the slug's trail with the FP muzzle offset from boot 1; `'ground_point': 'auto'`.
+>
+> Reserved: pickup messages 97/98; hud_msg_icons 52 (+ _r); hud_reticles 41 (+ _r; extras 84-87);
+> label `rg` taught to characters\cyborg from `rl`; sounds under `sound\weapons\railgun_port`
+> (`bank: 'halo4'`); weapon folder `weapons\railgun`; catalog name `Railgun`.
+>
+> Step 11: phase 0 found NO Halo 4 ai\generic entry for the Railgun (search again under the _pve tag);
+> otherwise a SAME-GAME stand-in: `donor_weapon` = the Halo 1 weapon its carriers fire like (choose with
+> me; list the carriers, their WDM and actor flags; a charge weapon: the Spartan Laser's AI rate of
+> fire 0 / burst lesson), a `wdm_rule` (a power weapon in enemy hands: show me the Legendary numbers)
+> and a `balanced_set`, written with `--commit`; the enhancer session writes its keys through
+> port_catalog_keys.py before the Armed boot. Tests: `h1_port_test_map.py railgun --level a30 --stage`
+> (dry default), fixes, `--balanced`, `--armed grunt,jackal,elite`; `h1_port_test_map.py railgun
+> --restore a30`. The ten-map rebuild stays BATCHED (my go). When done: catalog entry, enhancer
+> hand-off, PORTING section, memory, `python port_backup.py --game h1`, "C7: what the Railgun taught".
+
+### The Incineration Cannon (wave C9), filled in -- PARALLEL with C7
+
+> PARALLEL: another port session (C7, the Railgun) runs at the same time on the same kit. Read
+> H1_PORT_PLAN.md "Running two ports in parallel" first (incl. REWORK status and "Hardened after pair
+> 1": `kit_commit.py` for every commit, `--commit` on the record writers) and "Parallel pair 6" (the
+> model-buffer budget: <= 0.6 MiB, decimated before the first test build). Your test level is b30 --
+> pass `--level b30` on every `h1_port_test_map.py` run and restore with `h1_port_test_map.py
+> incineration_cannon --restore b30`. Extra HUD sequences: hud_reticles 88-91 only. If a script says
+> `kit lock: WAITING`, let it wait; never `kit_lock.py release --force` a lock whose holder is
+> running. Do NOT write a next prompt: write "C9: what the Incineration Cannon taught" and tell me
+> you are done.
+>
+> Port the Incineration Cannon into Halo 1 (H1_PORT_PLAN.md, wave C, #C9). Source: Halo 4,
+> `h4:objects\weapons\support_high\storm_forerunner_incineration_launcher\storm_forerunner_incineration_launcher`
+> (H4EK; the `_knight` variant is the Knights' AI weapon -- read it for step 11, not as the source); FP
+> graph `objects\characters\storm_fp\weapons\support_high\fp_forerunner_incineration_launcher\storm_fp_forerunner_incineration_launcher`.
+> Read sprint_toolkit/H1_PORT_PLAN.md ("Running two ports in parallel", "Phase 0: DONE" incl. 0.1 and
+> the 32 MiB model-buffer cap, "A7: what the Brute Shot taught" (the explosion chain on a rocket
+> template), "B4" / "B5" (the projectile probe; Covenant / borrowed looks recoloured in their five hidden
+> places; a zero that means unset), "C1" (THE HALO 4 RECIPE) to "C6" and "C8: what the Sticky
+> Detonator taught" (a frag fireball around a stock table, MP vs _pve, sound layers + the gain ceiling,
+> small-magazine HUD cutoffs, keep the source autoaim angle)), PORTING.md ("What ported actually means"
+> steps 0-11 and 5b, closing checks 0-10, the Halo 1 sections -- the Sticky Detonator first, the
+> Brute Shot / Grenade Launcher / Concussion Rifle for the explosive --, "Balance" incl. the ARMED WDM
+> RULE, THE HIT-EFFECT RULE, the two-handed rule, the balanced drop rule, the species skill rule) and
+> memory h1-model-buffer-32mib-cap, h1-ports-index, h1-parallel-ports, h1-armed-test-balanced-god,
+> h1-reticle-supersample, port-process-tools-index, port-muzzle-flash-rule,
+> port-flashlight-sound-rule, explosion-visual-scale, h1-port-phase0, halo-port-own-messages,
+> h1-fmod-bank-sounds, port-findings-are-observations, shared-worktree-commits.
+> `ports_h1/sticky_detonator.py` is the nearest shape (a Halo 4 explosive), `brute_shot.py` the
+> explosion chain on a rocket template: copy into `ports_h1/incineration_cannon.py` and edit only that
+> file plus shared tools you generalize (small change, narrowed proof, commit at once via kit_commit).
+>
+> START WITH STEP 4a, with me: candidates the ROCKET LAUNCHER (provisional: Halo 4 types it a rocket
+> launcher, 1 round, 1.8x zoom) and the restored FUEL ROD, with the Brute Shot / Concussion Rifle /
+> Sticky Detonator ports as peers; DEFAULT = Halo 4's own numbers, BALANCED = the ratio rows. FIRST read
+> what h3_weapon_values (--kit h4) does not print: the CLUSTER -- the main projectile's detonation, what
+> it spawns (how many sub-projectiles, their spread, velocity, fuse, damage), any burn / damage over
+> time -- the explosions' damage, radii and groups, the projectile's flight (21 wu/s, gravity), magazine
+> 1 / carry / reload, any charge. Halo 1 projectiles can spawn projectiles on detonation (check the
+> stock tags first) -- lay the approximation of the cluster and any burn out with me and record what is
+> lost. Time to kill: h1_role_compare 'incineration_cannon' set vs RL, Fuel Rod and the explosive ports
+> (direct hit AND the cluster). Then 4b, the template diff (incl. the template projectile's material
+> DETONATION effects), port_sound_refs (+ the projectile's own sound fields by hand) and the
+> muzzle-flash comparison BEFORE boot 1; the decimation and `h1_model_buffer.py` before the first test
+> build. HUD / scope art from a Halo 4 SCREENSHOT (ask me), crosshair supersampled; `'ground_point':
+> 'auto'`.
+>
+> Reserved: pickup messages 101/102; hud_msg_icons 54 (+ _r); hud_reticles 43 (+ _r; extras 88-91);
+> label `ic` taught to characters\cyborg from `pc`; sounds under
+> `sound\weapons\incineration_cannon_port` (`bank: 'halo4'`); weapon folder
+> `weapons\incineration cannon`; catalog name `Incineration Cannon`.
+>
+> Step 11: Halo 4's ai\generic Incineration Cannon entry on m020 is verified (also read the `_knight`
+> weapon's AI values); list Halo 1's carriers of the donor weapon (WDM, actor flags); `firing_profile`
+> with `donor_weapon` (+ `donor_variant`), a `wdm_rule` (a heavy weapon in enemy hands: show me the
+> Legendary numbers; the two-handed rule's heavy-support exception) and a `balanced_set`, written with
+> `--commit`; the enhancer session writes its keys through port_catalog_keys.py before the Armed boot.
+> Tests: `h1_port_test_map.py incineration_cannon --level b30 --stage` (dry default), fixes,
+> `--balanced`, `--armed grunt,jackal,elite`; `h1_port_test_map.py incineration_cannon --restore
+> b30`. The ten-map rebuild stays BATCHED (my go). When done: catalog entry, enhancer hand-off, PORTING
+> section, memory, `python port_backup.py --game h1`, "C9: what the Incineration Cannon taught".
