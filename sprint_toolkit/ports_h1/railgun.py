@@ -67,13 +67,24 @@ ATTACH = [i for i in range(33) if i not in [WATER, LEAVES] + FORCE_FIELDS]
 # a blue light + flare, and THE TRACER (rg_firing_tracer_3p: an electrical_beam ribbon + plasma_energy
 # wisps through grad_bluelight_1) by the beam recipe on the sniper's contrail (attachments_from the sniper
 # bullet), from the FP muzzle
+# THE HIT FLASH (Armed boot, user 2026-10-16: 'the hit flash needs to be intensified'): the rocket's
+# damage tags carry NO screen flash (duration 0). Halo 4's own responses -- the hit impact_bullet_slow
+# (0.2 s, early, shielded orange 1 / 0.3 / 0, unshielded red), the blast explosion_small_lowpass (0.25 s
+# shielded, 0.75 unshielded, the same colours) -- Halo 1 has one flash a damage effect: the shielded
+# orange at Halo 4's timing, at 0.5 / a 30 % wash (the LightRifle's approved 0.3 / 15 %, stronger for a
+# power weapon)
+HIT_FLASH = {'screen_flash.duration': 0.2, 'screen_flash.fade_function': 'early',
+             'screen_flash.maximum_intensity': 0.5,
+             'screen_flash.tint_lower_bound.a': 0.3, 'screen_flash.tint_lower_bound.r': 1.0,
+             'screen_flash.tint_lower_bound.g': 0.3, 'screen_flash.tint_lower_bound.b': 0.0}
 SLUG = {
     'projectile': (RL + 'rocket', RG + 'slug'),
     'damage': None, 'no_impact_damage': True,
     'attached': {'from': RL + 'explosion', 'out': RG + 'slug impact', 'dmg': 120.0,
                  # 4b (no field audit reads the attached tag): instantaneous acceleration by the ratio on the
                  # rocket explosion's 6 -- Halo 4 impact 0.05 / Halo 4 rocket impact 1.5 = 0.2
-                 'fields': {'radius': (0.0, 0.0), 'damage.instantaneous_acceleration': 6.0 * 0.05 / 1.5}},
+                 'fields': dict(HIT_FLASH, **{'radius': (0.0, 0.0),
+                                             'damage.instantaneous_acceleration': 6.0 * 0.05 / 1.5})},
     'explosion': {'effect': (RL + 'effects' + B + 'rocket explosion', RG + 'effects' + B + 'slug explosion'),
                   'damage': (RL + 'explosion', RG + 'explosion'),
                   'scale': 0.4, 'out_dir': RG + 'effects' + B,
@@ -83,7 +94,8 @@ SLUG = {
                   # 30/35, radius 1 x 2/0.5, exponent 2 x 0/0.5 = 0, outward velocity 16 x 15/6 (outward exponent:
                   # a zero on one side -> Halo 4's 0, list 3); aoe core = Halo 4's own 0.54 (the ratio's 0.432 is
                   # the balanced side of the radius rows); category kept the rocket's high_explosive (its table)
-                  'fields': {'damage.aoe_core_radius': 0.54,
+                  'fields': {**HIT_FLASH, 'screen_flash.duration': 0.25,
+                             'damage.aoe_core_radius': 0.54,
                              'damage.instantaneous_acceleration': 6.0 * 2.5 / 3.0,
                              'damage.active_camouflage_damage': 1.0 / 0.9,
                              'breaking_effect.forward_velocity': 80.0 * 30 / 35.0,
