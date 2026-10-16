@@ -259,7 +259,8 @@ PORT.update({
         # `gradient_range` (1, 0)); the SCREEN and the OK / NA icons static lit shapes in Halo 4's yellow
         'meters': {
             'rg_bars': {'map': H4 + SBM + 'storm_rail_gun_bars.bitmap', 'from': PR + r'fp\shaders\gauge',
-                        'shape': 'r', 'gradient': 'alpha', 'gradient_range': (1.0, 0.0), 'value': 'B_out',
+                        # BOOT 4 (user, reaction time): full at 2/3 of the charge (0.5 s of 0.75)
+                        'shape': 'r', 'gradient': 'alpha', 'gradient_range': (0.667, 0.0), 'value': 'B_out',
                         'color': YELLOW, 'color_off': (0.12, 0.1, 0.0)},
             'rg_screen': {'map': H4 + SBM + 'storm_rail_gun_screen.bitmap', 'from': PR + r'fp\shaders\gauge',
                           'gradient': 0.0, 'static': r'weapons\needler\shaders\needler luminous',
@@ -313,7 +314,10 @@ PORT.update({
         # the 0.75 s charge completes); with no hold the retime has no purpose: Halo 4's own 35 fr again.
         # BOOT 3 (user: 'the charge animation needs to fit the new charge time'): it plays during the CHARGE
         # and was cut by the shot -> 35 -> 23 fr (0.75 s: the shot lands on its last frame)
-        'resample': {'first-person overcharged': 23},
+        # BOOT 4 (user: 'the charge meter and animation should signify full load before it is actually fully
+        # charged, for human reaction times'): the motion in 0.5 s (15 fr), its last pose held 8 fr more = 0.75 s
+        'resample': {'first-person overcharged': 15},
+        'pad_end': {'first-person overcharged': 8},
     },
 
     # Halo 4's own sounds (h1_port_sounds.py railgun, `bank` 'halo4'): the player bank railgun_player
