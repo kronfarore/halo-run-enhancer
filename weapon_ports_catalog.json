@@ -6801,6 +6801,236 @@
    "actor_flags": [
     "always_charge_in_attacking_mode"
    ]
+  },
+  {
+   "weapon": "Binary Rifle",
+   "source": "Halo 4",
+   "donor": "Sniper Rifle",
+   "default_on": false,
+   "desc": "Halo 4's Binary Rifle: its model, first-person animations, sounds and numbers. A Forerunner sniper with two shots a magazine and 4x / 10x zoom: 129 damage a shot, one a second, through soft targets. Sniper Rifle ammo tops it up.",
+   "balance_desc": "Measured against the Sniper Rifle, which both games have: 163 damage a shot at 1.5 a second, 10 rounds most, a 1000 wu/s bullet with a 1000 wu reach, 2x / 8.9x zoom and Halo 1-style aim assist.",
+   "anims": {
+    "reload": 1.12,
+    "swap": 1.16
+   },
+   "anim_sounds": {
+    "reload": [
+     {
+      "mult": 1.12,
+      "from": "sound\\weapons\\binary_rifle_port\\bi_reload_empty",
+      "to": "sound\\weapons\\binary_rifle_port\\bi_reload_empty_balanced"
+     },
+     {
+      "mult": 1.12,
+      "from": "sound\\weapons\\binary_rifle_port\\bi_reload_full",
+      "to": "sound\\weapons\\binary_rifle_port\\bi_reload_full_balanced"
+     }
+    ]
+   },
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\binary rifle\\bullet",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 162.9,
+     "card": "Bullet Damage",
+     "original": 129.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\binary rifle\\bullet",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 162.9,
+     "card": "Bullet Damage",
+     "original": 129.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\binary rifle\\bullet",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 162.9,
+     "card": "Bullet Damage",
+     "original": 129.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\binary rifle\\binary rifle",
+     "field": "Rounds Per Second",
+     "block": "Triggers",
+     "value": 1.533,
+     "card": "More Shooting",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\binary rifle\\binary rifle",
+     "field": "Rounds Per Second Max",
+     "block": "Triggers",
+     "value": 1.533,
+     "card": "More Shooting",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\binary rifle\\binary rifle",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 10.0,
+     "card": "Magazine",
+     "original": 8.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\binary rifle\\bullet",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 33.333,
+     "card": "Projectile",
+     "original": 93.3
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\binary rifle\\bullet",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 33.333,
+     "card": "Projectile",
+     "original": 93.3
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\binary rifle\\bullet",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 1000.0,
+     "card": "Projectile",
+     "original": 500.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\binary rifle\\binary rifle",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 1.0,
+     "card": "Autoaim",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\binary rifle\\binary rifle",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 35.0,
+     "card": "Autoaim",
+     "original": 25.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\binary rifle\\binary rifle",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 1.6,
+     "card": "Magnetism",
+     "original": 1.6
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\binary rifle\\binary rifle",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 35.0,
+     "card": "Magnetism",
+     "original": 25.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\binary rifle\\binary rifle",
+     "field": "Magnification Range",
+     "block": null,
+     "value": 2.0,
+     "card": "Zoom",
+     "original": 4.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\binary rifle\\binary rifle",
+     "field": "Magnification Range Max",
+     "block": null,
+     "value": 8.89,
+     "card": "Zoom",
+     "original": 10.0
+    }
+   ],
+   "weap": "weapons\\binary rifle\\binary rifle",
+   "fp_animations": "weapons\\binary rifle\\fp\\fp",
+   "requires": [
+    "proj weapons\\binary rifle\\bullet"
+   ],
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\binary rifle\\binary rifle",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+      "label": "Assault Rifle Ammo"
+     },
+     {
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+      "label": "Flamethrower Ammo"
+     },
+     {
+      "tag": "powerups\\needler ammo\\needler ammo",
+      "label": "Needler Ammo"
+     },
+     {
+      "tag": "powerups\\pistol ammo\\pistol ammo",
+      "label": "Pistol Ammo"
+     },
+     {
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+      "label": "Sniper Rifle Ammo"
+     }
+    ]
+   }
   }
  ],
  "Halo 3": [
