@@ -26,6 +26,8 @@ Boltshot's / LightRifle's Halo 4 sidearm route) firing a CHARGE built on the Hal
 projectile (the Plasma Launcher's sticky bolt: plasma_launcher.py BOLT) with the FRAG GRENADE's
 explosion effect (Halo 4's burst is a human fireball, sgl_*) around an own copy of the plasma grenade's
 damage table (the yardstick's table, user)."""
+import math
+
 from ._common import B, reserved, row  # noqa: F401
 from .storm_rifle import DROP
 
@@ -404,6 +406,9 @@ PORT.update({
                    'magnetism_angle': 8.0, 'magnetism_range': 15.0},
         'fields': {
             'weap_attrs.aiming.zoom_levels': 0,
+            # CLOSE-OUT 4b list 3 (the Binary Rifle's rule: decide every line with a Halo 1 field): Halo 4's aim
+            # deviation angle 2 deg (the pistol's 0: a zero on one side -> the source value)
+            'weap_attrs.aiming.deviation_angle': math.radians(2.0),
             # STEP 4b list 2 (H4 Sticky Detonator vs H4 rocket onto the H1 pistol): camo ding 0.65 x 0.75/1
             # = 0.4875, illumination recovery 0.1 x 0.1/0.2 = 0.05
             'weap_attrs.interface.active_camo_ding': 0.65 * 0.75 / 1.0,

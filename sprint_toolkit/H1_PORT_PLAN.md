@@ -1200,6 +1200,48 @@ Everything in "C1" - "C5" held; what is new:
 - Process: 4 dry boots (look / scope / crosshair 1, scope stage 2 1, beam colour 1, trail + blur 1), balanced 1,
   Armed 1 (passed). Narrowed proof bi1 0 changed; check 6 0 changed. Model 0.59 MiB; a30 6.1 MiB left.
 
+## C8: what the Sticky Detonator taught (2026-10-16) -- parallel with C6
+
+PORTING.md "Halo 1: the Sticky Detonator, wave C8" is the full record; `ports_h1/sticky_detonator.py` is the example
+of a Halo 4 REMOTE-DETONATED explosive on the pistol template: a sticky charge (the Plasma Launcher's bolt recipe)
+on a fuse, a frag fireball around the plasma grenade's table. Everything in "C1" - "C6" held; what is new:
+
+- **MP vs `_pve`: diff first, pick with the user.** The two weapons differ only in the projectile + damage (MP 10 ->
+  15 wu/s, 240 explosion_large; _pve 24 -> 10, 500 explosion_small). The _pve tag ships in every campaign map;
+  neither has an ai\generic entry (step 11 re-checked: a same-game stand-in).
+- **Remote detonation -> stick + fuse (option A, user):** the needle's `attach` on every material, Jackal shields
+  / force fields DETONATE (Halo 4 bounces + bursts at once), fuse 0.5 s 'when at rest' (= stuck). Halo 1 deals
+  attached damage at the stick (B6) and the user wants ALL damage in the burst: no impact damage either (its 5
+  folded into the burst). Lost: choosing the moment, the mid-air burst, traps.
+- **A Halo 4 charged sequence as ONE Halo 1 animation:** fire-1 = fire_1 + fire_2 (`sequence`: the screen up, the
+  detonate press at 1.0 s ~ when a charge sticks + 0.5 s, the screen down) with its own cue sound (`offsets`).
+- **Halo 1 has no empty idle:** a 1-round gun whose loaded charge is visible shows it again after the LAST round.
+  The fix exists -- Halo 1's `first-person ammunition` overlay (the Needler's, picked by rounds loaded) from Halo
+  4's `ammunition` replacement -- but Halo 1 counts the round at the END of a reload, so the charge would stay
+  hidden through every reload. The user kept it as is.
+- **A Halo 4 fire event can mix the wrong layers:** 'wrong kind of sound' = two loud short layers (the nonplayer
+  event's recordings). Candidate MIXES of the same layers were indistinguishable to the user; candidates from
+  DIFFERENT material (layer subsets, the nonplayer event) found it in one round.
+- **Loudness has a PCM ceiling:** a dense mix sits at the soft limiter; +3 dB of PCM was not heard. The TAG's gain
+  modifier (0.5 on every stock fire sound) is the knob above it (`gain` 1.0; `low_shelf` for weight) -- 'a bit
+  better, accept'.
+- **Small magazines inherit the template's low-ammo cutoffs:** the pistol's total-ammo flash 13 flashed at 6
+  charges -> HUD `fields` (the rocket's 1). A ratio row's autoaim angle 0 (the rocket's) kills the red reticle:
+  keep the source angle, ranges by the ratio (the Plasma Launcher's rule, now for any port).
+- **PARALLEL GAP:** `h1_port_test_map`'s NORMAL level rebuild after the test copy includes the other session's
+  in-progress port (only the TEMPORARY scenario drops it) and fails while its tags are mid-build -- the test copy
+  is fine: `--keep-kit-map` stages it; the kit's own HCEEK\maps\b30.map stays the older build (the batched rebuild
+  replaces it).
+- Tools (all opt-in, narrowed proofs sd1-sd6 0 changed): h1_h3_weapon_model `extra_models` `material_names` (the
+  charge's long material name hung `tool model` on its shader-type prompt); h1_pickable_weapons a projectile `glow`
+  onto an emptied attachment list, `sound_effects` `tint_match`, `impact_tint` `drop_particles`, HUD `fields`;
+  h1_port_sounds `low_shelf`, `gain`.
+- Step 6: PLASMA GRENADES top it up (user; a pickup gives the grenade too, the GL's frag precedent). Step 11: the
+  ROCKET LAUNCHER's carriers (user), WDM 0.125 / 0.456, species skill; hands 'one'.
+- Process: 4 dry boots (look / sounds 1, fire sound 3), balanced 2 (aim assist), Armed 1. Check 6 0 changed. Model
+  0.25 MiB (80 %). ENHANCER HAND-OFF: hands set; cards for the enhancer session (a Fuse Time card on the charge's
+  timer is the natural new one; the pistol's zoom is gone: no Zoom card source).
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one

@@ -2522,6 +2522,62 @@ screenshot), `h1_armed_player_ttk.py` (an Armed port's hits to kill the player p
 balanced row), `ai_firing_entry.py` (any weapon's source AI entry, never writes); port_backup lists them and
 h4_polyart / h4_polyart_scope (missing since C4).
 
+### Halo 1: the Sticky Detonator, wave C8 (2026-10-16, 4 dry boots + balanced x2 + Armed on b30, PARALLEL with C6) -- a Halo 4 remote-detonated sticky charge as a stick + fuse, on the pistol template
+
+The whole weapon is `ports_h1/sticky_detonator.py`, on a copy of the Halo 1 PISTOL (one hand, a magazine + reload,
+HUD, melee) firing a CHARGE built on the Halo 1 PLASMA GRENADE's projectile (the Plasma Launcher's sticky bolt)
+with the FRAG GRENADE's explosion effect (Halo 4's burst is a human fireball) around an own copy of the plasma
+grenade's damage table.
+
+**Step 4a (user).** Source = `storm_sticky_detonator_pve` over the MP tag (they differ only in the projectile and
+its damage: _pve 24 -> 10 wu/s, 75..500 explosion_small over 0.4 -> 2.5, attached 50..500 over 0.4 -> 2.0; MP 10
+-> 15, 75..240 explosion_large). Halo 4's charge sticks to everything but energy_shield_thick / _invulnerable
+(it bounces there, and its 'after first bounce' 1e-6 s timer bursts it at once); the trigger is `double-latch-
+tether` (the next press detonates, stuck or in flight); `max latch time to detonate` 30 s is the fallback. Halo 1
+has no remote detonation: APPROXIMATION A (user) -- stick + a 0.5 s fuse 'when at rest' (stuck = at rest; ~ Halo
+4's fastest arm 0.1 + tether 0.3 s), the Jackal shield / force fields DETONATE, the free burst only (B6: attached
+damage lands at the stick). Rejected: a fuse from launch, a halo1.dll second press. Yardstick: the PLASMA GRENADE
+by the STUCK kill (Halo 1 120 + 120 vs Halo 4 350: 500 x 240/350), its holes by the ROCKET ratio (the GL's
+precedent); DEFAULT = Halo 4's own on the grenade's table. h1_role_compare `sticky_detonator`.
+
+**Boots.** 1: plasma-grenade leftovers on the stick (`started_effect` / `impact_tint` `drop_particles`); the
+impact did damage -> none, its 5 into the burst (505); the pistol's total-ammo flash at 13 flashed 6 charges ->
+HUD `fields` total cutoff 1; muzzle flash x1.5, x1.6 life (`tint_match` keeps the kept smoke grey); the fire
+sound 'the wrong kind' -> of seven candidate files the player mix WITHOUT its two loud short layers (12 / 13 =
+the nonplayer event's recordings; mixes of the same layers were indistinguishable); step 6: PLASMA GRENADES top
+it up. 2: 'more oomph' -> a +6 dB `low_shelf` below 150 Hz + 3 dB; 3: 'unchanged' (the dense mix sits on the
+soft limiter: -13.8 -> -12.2 active) -> the TAG gain modifier 0.5 -> 1.0 (`gain`): 4: 'a bit better, accept'.
+Balanced 1: 'aim assist never activates' (the rocket ratio's 0 deg) -> the angle kept 4, ranges by the ratio.
+Armed (rocket-launcher carriers, user): 'sensible, accept'.
+
+**First person.** Halo 4's own graph (27 animations, 83 bones; Foundry), route (a). fire-1 = fire_1 + fire_2
+(`sequence`): the shot, the screen flipping up (b_sight), the detonate press at 1.0 s, the screen down -- its cues
+(lens open @10, trigger @30, lens close @45) one `offsets` sound. The loaded charge (b_grenade) is visible on the
+muzzle; after a shot Halo 4 parks it off-screen (idle_empty) until reload_empty slides a new one in. Halo 1 has
+no empty idle, so after the LAST charge it shows again: Halo 1's `first-person ammunition` overlay from Halo 4's
+`ammunition` replacement would hide it, but Halo 1 counts the round at the END of the reload (the charge hidden
+for the whole reload) -- kept as is (user).
+
+**Look / HUD.** One render model (3 nodes), 80 % decimation (40 / 60 broke the grip and rail) = 0.25 MiB; the base
+map = colour x 0.9 + control R (the Boltshot's `color` mode); the screen a static blue lit card. Crosshair from
+the CUI (`img_circle` at (-32, -34) + `sticky_lines` at (-11, -2), 3 art px a unit), sized on the user's idle
+screenshot (the ring ~62 px = 1.41 px a unit): supersample 2, scale 2.8, overlay 0.264 -- right first time. The
+armed look (side bracket, charge icon) is not reproduced: the charge bursts 0.5 s after sticking.
+
+**Step 11.** No ai\generic entry under either name in any Halo 4 map (re-checked, _pve first). Same-game stand-in
+on the ROCKET LAUNCHER (user; Flood combat Elite / human carriers, WDM 0.4, no flags), WDM rule 0.125 / 0.456,
+species skill; no balanced drop rows (no source entry). hands 'one'.
+
+**Close-out:** refs audit 0 problems; sound refs all own but the ammo pickup (KEEP: the _pve tag's
+brute_shot_ammo ships in no bank; user); port_sounds --check 0; validate_halo_json 0; check 6 0 changed; 4b list
+2 decided, list 3 decided line by line (the aim deviation angle 2 deg from Halo 4 -- the C6 rule); 5b 505 / 139
+dps (= 4a). Tools (opt-in, narrowed proofs sd1-sd6 0 changed): h1_h3_weapon_model `extra_models`
+`material_names` (a long material name on an extra model hangs `tool model` on its shader-type prompt);
+h1_pickable_weapons projectile `glow` onto an emptied attachment list, `tint_match`, `impact_tint`
+`drop_particles`, HUD `fields`; h1_port_sounds `low_shelf`, `gain`. PARALLEL GAP: `h1_port_test_map`'s normal
+level rebuild includes the other session's in-progress port and fails while its tags are mid-build (only the
+TEMPORARY scenario drops it): `--keep-kit-map` stages the (good) test copy.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:
