@@ -2578,6 +2578,19 @@ h1_pickable_weapons projectile `glow` onto an emptied attachment list, `tint_mat
 level rebuild includes the other session's in-progress port and fails while its tags are mid-build (only the
 TEMPORARY scenario drops it): `--keep-kit-map` stages the (good) test copy.
 
+**Close-out re-check (user: 'every ported step, especially 4b').** 4b lists 2 / 4 / 5 decided; the template diff
+traced line by line found what the field audit cannot: the plasma grenade copy's POTENTIAL responses. Halo 1
+applies a potential with an EMPTY window always (B6: that is how the grenade sticks to units), and the
+grenade's Jackal-shield potential is `reflect` -- over my default `detonate` the charge would have bounced off
+a shield and burst 0.5 s after landing. -> the potential `detonate` (the `reflect` spec's `response`), and
+`impact_tint` `potential` so the shield's potential effect is the port's own, not the grenade's plasma
+bounce. (The other potentials are the enum's 0 = unset, or the units' `attach` with no effect.) Read a
+template projectile's POTENTIAL responses beside its defaults for every port built on a grenade. Check 8: in
+`used_weapons`, donors found; check 9: x1.0. Read-only tools promoted from the scratchpad (port_backup lists
+them): `h4_event_layers.py` (a Wwise event's layers as spec indices + length / level / brightness, STOP actions
+marked), `h4_layer_mix.py` (candidate layer mixes to listen to), `h4_projectile_summary.py` (a Halo 4
+projectile's fuse / flight / every damage effect it names).
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:

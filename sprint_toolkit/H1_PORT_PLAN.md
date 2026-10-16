@@ -1236,6 +1236,9 @@ on a fuse, a frag fireball around the plasma grenade's table. Everything in "C1"
   charge's long material name hung `tool model` on its shader-type prompt); h1_pickable_weapons a projectile `glow`
   onto an emptied attachment list, `sound_effects` `tint_match`, `impact_tint` `drop_particles`, HUD `fields`;
   h1_port_sounds `low_shelf`, `gain`.
+- **A grenade template's POTENTIAL responses** (close-out re-check): Halo 1 applies a potential with an empty
+  window always; the plasma grenade's Jackal-shield potential `reflect` overrode the port's default `detonate`.
+  Read the potentials in the template diff for any port on a grenade copy (the Incineration Cannon next).
 - Step 6: PLASMA GRENADES top it up (user; a pickup gives the grenade too, the GL's frag precedent). Step 11: the
   ROCKET LAUNCHER's carriers (user), WDM 0.125 / 0.456, species skill; hands 'one'.
 - Process: 4 dry boots (look / sounds 1, fire sound 3), balanced 2 (aim assist), Armed 1. Check 6 0 changed. Model
