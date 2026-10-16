@@ -34,6 +34,7 @@ Weapon nodes map by a per-weapon table (`WEAPONS`, from ports_h1/<weapon>.py). T
 """
 import argparse
 import io
+import math
 import os
 import re
 import subprocess
@@ -645,6 +646,13 @@ def write_jmas(weapon, only=None):
             frames = frames * w['repeat'][h1name]
         if w.get('pad_end', {}).get(h1name):
             frames = frames + [frames[-1]] * w['pad_end'][h1name]
+        # `blend_end` {h1 name: (source animation, frame, n)}: the LAST n frames eased (smoothstep) into one frame of
+        # another source animation (the Incineration Cannon, boot 2: Halo 4's melee ends with the left wrist ~4 cm
+        # low / 6 cm aside and Halo 4 BLENDS into idle; Halo 1 snaps -- 'the left arm lingers lower, then reverts')
+        if w.get('blend_end', {}).get(h1name):
+            src, k, n = w['blend_end'][h1name]
+            _t, sf = retarget(weapon, src, nodes, anims, defaults)
+            frames = _blend_end(frames, sf[k], n)
         if typ != 'overlay':
             frames = frames + [frames[0] if h1name in LOOPING else frames[-1]]
             if h4_tags.is_h4(w['graph']):
@@ -659,6 +667,29 @@ def write_jmas(weapon, only=None):
         write_jma(path, jma)
         written.append((path, len(frames)))
     return written
+
+
+def _blend_end(frames, target, n):
+    """`blend_end`: the last n frames moved toward `target` (one frame: {node: (quat w,i,j,k, pos, ...)}) by a
+    smoothstep weight reaching 1 on the last frame -- quaternions normalized-lerped on the short arc, positions
+    lerped, any further element (scale) kept from the frame."""
+    out = list(frames)
+    m = len(out)
+    n = min(n, m)
+    for j in range(m - n, m):
+        t = (j - (m - n) + 1) / float(n)
+        t = t * t * (3 - 2 * t)
+        fr = {}
+        for nd, v in out[j].items():
+            q0, p0 = v[0], v[1]
+            q1, p1 = target[nd][0], target[nd][1]
+            if sum(a * b for a, b in zip(q0, q1)) < 0:
+                q1 = tuple(-x for x in q1)
+            q = tuple(a + (b - a) * t for a, b in zip(q0, q1))
+            s = math.sqrt(sum(x * x for x in q)) or 1.0
+            fr[nd] = (tuple(x / s for x in q), tuple(a + (b - a) * t for a, b in zip(p0, p1))) + tuple(v[2:])
+        out[j] = fr
+    return out
 
 
 def preview(weapon, anim_name, frame, out):

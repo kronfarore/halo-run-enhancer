@@ -612,6 +612,103 @@ def scaled_particle_system(src, k, out_dir, write, tint=None):
     return own
 
 
+def add_particles(et, specs, write):
+    """`add_particles` (own_explosion's, made a function for the Incineration Cannon's `reload_effect`):
+    particle entries copied from other effects into effect `et` -- see own_explosion."""
+    from reclaimer.hek.defs.effe import effe_def
+    for A in specs:
+        src = effe_def.build(filepath=path(A['from'], '.effect')).data.tagdata
+        got = [q for ev in src.events.STEPTREE for q in ev.particles.STEPTREE
+               if A['match'] in q.particle_type.filepath]
+        if not got:
+            raise SystemExit('%s: no particle matches %r' % (A['from'], A['match']))
+        evs = et.data.tagdata.events.STEPTREE
+        dst = evs[0].particles.STEPTREE
+        if A.get('delay'):
+            # a DELAYED ring (the Gravity Hammer's staggered rings): its own event, a copy of
+            # event 0 without parts or particles, started `delay` s after the blast
+            evs.append(copy.deepcopy(evs[0]))
+            ev = evs[len(evs) - 1]
+            ev.parts.STEPTREE[:] = []
+            ev.particles.STEPTREE[:] = []
+            ev.delay_bounds[0] = ev.delay_bounds[1] = A['delay']
+            dst = ev.particles.STEPTREE
+        for q in got:
+            dst.append(copy.deepcopy(q))
+            x = dst[len(dst) - 1]
+            if 'count' in A:             # more of the same additive ring = brighter
+                x.created_count[0] = x.created_count[1] = A['count']
+            if 'offset' in A:            # in the LOCATION's frame (i = its direction)
+                x.relative_offset.i, x.relative_offset.j, x.relative_offset.k = A['offset']
+            if 'radius' in A:
+                x.radius[0], x.radius[1] = A['radius']
+            if 'location' in A:          # an index of THIS effect's locations (1 = 'gravity')
+                x.location = A['location']
+            if 'env' in A:               # the Grenade Launcher's EMP bolts (boot 3: 'air_only' ones
+                # never showed at a ground detonation): 'any_environment'
+                x.create_in_env.set_to(A['env'])
+            if 'distribution' in A:      # boot 4: the plasma grenade's 'buildup_and_falloff' spreads
+                # its bolts over ITS 2 s event -- in a 0 s explosion event none were created; 'start'
+                x.distribution_function.set_to(A['distribution'])
+            if 'particle' in A:
+                # an OWN copy of the particle tag (the Gravity Hammer, boot 4: the stock ring
+                # lives 0.1-0.2 s -- 3-6 frames, not seen): `lifespan` (lo, hi) s, `fade_out` s,
+                # `radius_animation` (start, end) x the entry's radius
+                from reclaimer.hek.defs.part import part_def
+                Q = A['particle']
+                qt = part_def.build(filepath=path(x.particle_type.filepath, '.particle'))
+                qd = qt.data.tagdata
+                if 'lifespan' in Q:
+                    qd.lifespan[0], qd.lifespan[1] = Q['lifespan']
+                if 'fade_out' in Q:
+                    qd.fade_out_time = Q['fade_out']
+                if 'radius_animation' in Q:
+                    qd.rendering.radius_animation[0], qd.rendering.radius_animation[1] = Q['radius_animation']
+                for name, on in Q.get('flags', {}).items():   # particle flags by name
+                    setattr(qd.flags, name, on)
+                if 'bitmap' in Q:
+                    # its OWN sprite from a source game's MASK (the Grenade Launcher's EMP pulse:
+                    # Reach's emp_mask, white in RGB, the mask in alpha; the entry's tint colours
+                    # it): `mask` (a reach:/H3 bitmap path), `size` px, `out` the bitmap tag
+                    import h1_hud_sheet
+                    import h3_hud_art
+                    from PIL import Image
+                    M = Q['bitmap']
+                    img, _ = h3_hud_art.decode(M['mask'])
+                    a = img.getchannel('A').resize((M['size'], M['size']), Image.LANCZOS)
+                    # `compile`: HCEEK's DXT5 (boot 9: a raw a8r8g8b8 particle sprite never drew),
+                    # the mask PREMULTIPLIED (grey = alpha: right for additive and blended)
+                    rgb = a if M.get('compile') else Image.new('L', a.size, 255)
+                    # `opaque`: alpha 255 everywhere, the shape in the (premultiplied) colour on black
+                    # -- the stock flash sprites' own form (boot 12: they decode fully opaque)
+                    alpha = Image.new('L', a.size, 255) if M.get('opaque') else a
+                    if write:
+                        # `container`: another stock sheet to splice into (a larger one: the EMP's
+                        # 128 px `shield charge rings`, one full-frame sprite)
+                        h1_hud_sheet.sprite_bitmap(M.get('container', qd.bitmap.filepath),
+                                                   Image.merge('RGBA', (rgb, rgb, rgb, alpha)), M['out'],
+                                                   compile=M.get('compile', False))
+                    qd.bitmap.filepath = M['out']
+                if 'bitmap_copy' in Q:
+                    # a byte COPY of an existing bitmap tag under an own path (a test: does Halo 1
+                    # draw a particle sprite from a new path at all?)
+                    src_b, dst_b = Q['bitmap_copy']
+                    if write:
+                        os.makedirs(os.path.dirname(path(dst_b, '.bitmap')), exist_ok=True)
+                        shutil.copy2(path(src_b, '.bitmap'), path(dst_b, '.bitmap'))
+                    qd.bitmap.filepath = dst_b
+                save(qt, path(Q['out'], '.particle'), write)
+                x.particle_type.filepath = Q['out']
+            for bd in ((x.tint_lower_bound, x.tint_upper_bound) if 'tint' in A else ()):
+                bd.a, bd.r, bd.g, bd.b = A['tint']
+            if 'tint_bounds' in A:           # (lower ARGB, upper ARGB): a random tint per particle
+                x.flags.tint_as_hsv = False
+                for bd, c in zip((x.tint_lower_bound, x.tint_upper_bound), A['tint_bounds']):
+                    bd.a, bd.r, bd.g, bd.b = c
+            if 'spin' in A:                  # angular velocity bounds, deg/s
+                x.angular_velocity[0], x.angular_velocity[1] = (math.radians(v) for v in A['spin'])
+
+
 def own_explosion(pd, X, write, slot='detonation'):
     """An EXPLOSIVE projectile's own detonation (the Brute Shot, 2026-10-09: Halo 3's damage
     is the grenade's DETONATION damage, no impact damage): own copies of the template's
@@ -703,97 +800,7 @@ def own_explosion(pd, X, write, slot='detonation'):
     # to the effect's direction that grows x80): [{'from': effect, 'match': particle path
     # substring, 'radius': (lo, hi)[, 'tint': (a, r, g, b), 'location': index, 'count': n,
     # 'offset': (i, j, k), 'delay': s, 'particle': {own copy}]}]
-    for A in X.get('add_particles', ()):
-        src = effe_def.build(filepath=path(A['from'], '.effect')).data.tagdata
-        got = [q for ev in src.events.STEPTREE for q in ev.particles.STEPTREE
-               if A['match'] in q.particle_type.filepath]
-        if not got:
-            raise SystemExit('%s: no particle matches %r' % (A['from'], A['match']))
-        evs = et.data.tagdata.events.STEPTREE
-        dst = evs[0].particles.STEPTREE
-        if A.get('delay'):
-            # a DELAYED ring (the Gravity Hammer's staggered rings): its own event, a copy of
-            # event 0 without parts or particles, started `delay` s after the blast
-            evs.append(copy.deepcopy(evs[0]))
-            ev = evs[len(evs) - 1]
-            ev.parts.STEPTREE[:] = []
-            ev.particles.STEPTREE[:] = []
-            ev.delay_bounds[0] = ev.delay_bounds[1] = A['delay']
-            dst = ev.particles.STEPTREE
-        for q in got:
-            dst.append(copy.deepcopy(q))
-            x = dst[len(dst) - 1]
-            if 'count' in A:             # more of the same additive ring = brighter
-                x.created_count[0] = x.created_count[1] = A['count']
-            if 'offset' in A:            # in the LOCATION's frame (i = its direction)
-                x.relative_offset.i, x.relative_offset.j, x.relative_offset.k = A['offset']
-            if 'radius' in A:
-                x.radius[0], x.radius[1] = A['radius']
-            if 'location' in A:          # an index of THIS effect's locations (1 = 'gravity')
-                x.location = A['location']
-            if 'env' in A:               # the Grenade Launcher's EMP bolts (boot 3: 'air_only' ones
-                # never showed at a ground detonation): 'any_environment'
-                x.create_in_env.set_to(A['env'])
-            if 'distribution' in A:      # boot 4: the plasma grenade's 'buildup_and_falloff' spreads
-                # its bolts over ITS 2 s event -- in a 0 s explosion event none were created; 'start'
-                x.distribution_function.set_to(A['distribution'])
-            if 'particle' in A:
-                # an OWN copy of the particle tag (the Gravity Hammer, boot 4: the stock ring
-                # lives 0.1-0.2 s -- 3-6 frames, not seen): `lifespan` (lo, hi) s, `fade_out` s,
-                # `radius_animation` (start, end) x the entry's radius
-                from reclaimer.hek.defs.part import part_def
-                Q = A['particle']
-                qt = part_def.build(filepath=path(x.particle_type.filepath, '.particle'))
-                qd = qt.data.tagdata
-                if 'lifespan' in Q:
-                    qd.lifespan[0], qd.lifespan[1] = Q['lifespan']
-                if 'fade_out' in Q:
-                    qd.fade_out_time = Q['fade_out']
-                if 'radius_animation' in Q:
-                    qd.rendering.radius_animation[0], qd.rendering.radius_animation[1] = Q['radius_animation']
-                for name, on in Q.get('flags', {}).items():   # particle flags by name
-                    setattr(qd.flags, name, on)
-                if 'bitmap' in Q:
-                    # its OWN sprite from a source game's MASK (the Grenade Launcher's EMP pulse:
-                    # Reach's emp_mask, white in RGB, the mask in alpha; the entry's tint colours
-                    # it): `mask` (a reach:/H3 bitmap path), `size` px, `out` the bitmap tag
-                    import h1_hud_sheet
-                    import h3_hud_art
-                    from PIL import Image
-                    M = Q['bitmap']
-                    img, _ = h3_hud_art.decode(M['mask'])
-                    a = img.getchannel('A').resize((M['size'], M['size']), Image.LANCZOS)
-                    # `compile`: HCEEK's DXT5 (boot 9: a raw a8r8g8b8 particle sprite never drew),
-                    # the mask PREMULTIPLIED (grey = alpha: right for additive and blended)
-                    rgb = a if M.get('compile') else Image.new('L', a.size, 255)
-                    # `opaque`: alpha 255 everywhere, the shape in the (premultiplied) colour on black
-                    # -- the stock flash sprites' own form (boot 12: they decode fully opaque)
-                    alpha = Image.new('L', a.size, 255) if M.get('opaque') else a
-                    if write:
-                        # `container`: another stock sheet to splice into (a larger one: the EMP's
-                        # 128 px `shield charge rings`, one full-frame sprite)
-                        h1_hud_sheet.sprite_bitmap(M.get('container', qd.bitmap.filepath),
-                                                   Image.merge('RGBA', (rgb, rgb, rgb, alpha)), M['out'],
-                                                   compile=M.get('compile', False))
-                    qd.bitmap.filepath = M['out']
-                if 'bitmap_copy' in Q:
-                    # a byte COPY of an existing bitmap tag under an own path (a test: does Halo 1
-                    # draw a particle sprite from a new path at all?)
-                    src_b, dst_b = Q['bitmap_copy']
-                    if write:
-                        os.makedirs(os.path.dirname(path(dst_b, '.bitmap')), exist_ok=True)
-                        shutil.copy2(path(src_b, '.bitmap'), path(dst_b, '.bitmap'))
-                    qd.bitmap.filepath = dst_b
-                save(qt, path(Q['out'], '.particle'), write)
-                x.particle_type.filepath = Q['out']
-            for bd in ((x.tint_lower_bound, x.tint_upper_bound) if 'tint' in A else ()):
-                bd.a, bd.r, bd.g, bd.b = A['tint']
-            if 'tint_bounds' in A:           # (lower ARGB, upper ARGB): a random tint per particle
-                x.flags.tint_as_hsv = False
-                for bd, c in zip((x.tint_lower_bound, x.tint_upper_bound), A['tint_bounds']):
-                    bd.a, bd.r, bd.g, bd.b = c
-            if 'spin' in A:                  # angular velocity bounds, deg/s
-                x.angular_velocity[0], x.angular_velocity[1] = (math.radians(v) for v in A['spin'])
+    add_particles(et, X.get('add_particles', ()), write)
     # `add_damage`: further damage parts beside the explosion's (the Grenade Launcher's release:
     # Reach's tethered blast + its EMP) -- each an own copy of `from` (a damage effect) with
     # `lower`, `upper`, `radius`, `mods` (every Halo 1 material when `zero` is set: the rest 0)
@@ -1010,6 +1017,11 @@ def own_beam(a, b, write):
             if wd.reference.tag_class.enum_name != 'light_volume':
                 continue
             vt = mgs2_def.build(filepath=path(wd.reference.filepath, '.light_volume'))
+            # `map`: another sprite for the volume (the Incineration Cannon, boot 2: the fuel rod ball's `flares pr
+            # overcharge` is cyan -- red 0.41 -- so no tint can make it orange; a MONOCHROME flare tints exactly)
+            if 'map' in W:
+                vt.data.tagdata.map.filepath = W['map']
+                vt.data.tagdata.map_sequence_index = W.get('map_sequence', 0)
             for fr in vt.data.tagdata.frames.STEPTREE:
                 for bd, argb in ((fr.tint_color_hither, W['hither']), (fr.tint_color_yon, W['yon'])):
                     bd.a, bd.r, bd.g, bd.b = argb
@@ -1747,6 +1759,19 @@ def edit_weapon(key, write):
         for tr in a.triggers.STEPTREE:
             for fe in tr.firing_effects.STEPTREE:
                 fe.firing_effect.filepath = F['out']
+    if 'reload_effect' in w:
+        # the MAGAZINE's reloading effect (Halo 1 plays it when a reload starts) as an own effect built from
+        # `from` (the Incineration Cannon, boot 2: Halo 4's reload draws energy IN -- a contracting ring): every
+        # part / particle of `from` cleared, then `add_particles` (own_explosion's keys, delays included)
+        from reclaimer.hek.defs.effe import effe_def
+        R = w['reload_effect']
+        et = effe_def.build(filepath=path(R['from'], '.effect'))
+        for ev in et.data.tagdata.events.STEPTREE:
+            ev.parts.STEPTREE[:] = []
+            ev.particles.STEPTREE[:] = []
+        add_particles(et, R['add_particles'], write)
+        save(et, path(R['out'], '.effect'), write)
+        a.magazines.STEPTREE[0].reloading_effect.filepath = R['out']
     if 'charge_loop' in w:
         add_charge_loop(d, w['charge_loop'])
     if 'hum' in w:
