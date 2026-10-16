@@ -111,7 +111,10 @@ BOMBLET = {
                              'screen_flash.tint_lower_bound.g': 0.33,
                              'screen_flash.tint_lower_bound.b': 0.08},
                   'swaps': {B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'expl']): SND + 'ic_bomblet_explode'}},
-    'velocity': (5.0, 6.0), 'range': 7.0,
+    # BOOT 7, MEASURED (h1_projectile_probe, 3 shots): every bomblet lived ~1.2 s at a steady 5.5-6 wu/s and burst at
+    # its 7 wu RANGE, never at rest -- Halo 4's final 6 is a SPEED FLOOR in Halo 1 (B4): it kept being pushed back up
+    # after each bounce -> final 0: the speed falls with distance to 0 at 7 wu, it rests, the at-rest fuse runs
+    'velocity': (5.0, 0.0), 'range': 7.0,
     'proj_fields': {'proj_attrs.physics.air_gravity_scale': 5.0,
                     'proj_attrs.detonation.arming_time': 0.0,
                     # BOOT 4 (user: 'bomblets visible now, they detonate before reaching the ground'): Halo 4's
@@ -353,7 +356,7 @@ PORT.update({
                        # in a slot and faces INTO the gun -- its card hid behind the slot wall. Its own card, lifted
                        # 0.5 cm against that inward normal (= outward; `near` its centre, x -1.1 y +1.9 z 8.0 cm)
                        'ic_fire_slot': {'of': 'ic_glow', 'shader': 'ic_fire_glow', 'near': ((-1.1, 1.9, 8.0), 0.6),
-                                        'scale': 2.0, 'along': 1.1, 'lift': -0.5, 'round_scale': 1.6}},
+                                        'scale': 2.0, 'along': 1.1, 'lift': -0.2, 'round_scale': 1.6}},  # BOOT 7 (user: the tile's card floats off the gun): -0.5 -> -0.2
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's own storm_fp_forerunner_incineration_launcher
@@ -520,7 +523,10 @@ PORT.update({
                                # living x1.6 (an own particle copy: the Boltshot's / Sticky Detonator's recipe)
                                # BOOT 4 (user: 'muzzle flash is absent now'): the own longer-living particle copy
                                # is the only change since boot 3's visible flash -> dropped; x2.2 kept
-                               'match': 'flash', 'scale': 1.5,  # BOOT 6 (user: 'still no muzzle flash'): x2.2 was the last difference from boot 3's visible flash
+                               # BOOT 7 (user: 'no muzzle flash still'): the model's primary trigger sits at x 17.0 cm, 3.8 cm
+                               # INSIDE the barrel (the muzzle face, glow pieces 10 / 11 / 28, at x 20.6-20.8): the flash
+                               # (+2.5 cm) was buried in the gun -> shifted 5 cm forward (x 24.5: ~4 cm past the face), x1.8
+                               'match': 'flash', 'scale': 1.8, 'shift': (0.05, 0.0, 0.0),
                                'tint': (1.0,) + ORANGE})},
         # BOOT 2-3: the magazine's RELOADING EFFECT (three contracting rings, also drawn first person) never showed in
         # classic first person -- REMOVED (user, boot 4); the reload glow (B out, the model's `ic_reload_glow`) instead
@@ -568,7 +574,10 @@ PORT.update({
                 #     --wires a_primary_wire,a_secondary_wire,b_primary_wire,b_secondary_wire01,b_secondary_wire02,
                 #             b_secondary_wire03,a_inner_ring
                 #     --fills a_primary_holo,a_secondary_holo,b_primary_holo,b_secondary_holo --fill-alpha 0.45
-                #     --xform 1.0,1.0,0,0  (boot 6: any shrink or shift exposed the frame's own ends -- boot 3 0.95, boot 4 0.9, boot 5 -95 px)
+                #     --xform 0.88,0.88,0,0  (boot 7: 'make it fit the screen we have, now too big' -- at 1.0 the ring was ~15 %
+                #     larger than Halo 4's; boot 3 0.95 / boot 4 0.9 / boot 5 -95 px showed the art's own ends as cuts)
+                #   python h1_scope_quadrants.py "<SCOPE>" --mirror left --fade 120  (the right quadrants = the left
+                #     mirrored; the art fades out over the outer 120 screen px instead of ending in hard cuts)
                 # A CLEAR mask (no chud) with the H1 blur outside the lens and the dark top / bottom bands (the
                 # LightRifle's / Binary Rifle's approved values); a donor without a zoom screen effect borrows the
                 # sniper's (the Beam Rifle's route), its night vision / desaturation cleared
