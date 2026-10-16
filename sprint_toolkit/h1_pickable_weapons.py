@@ -1798,6 +1798,10 @@ def edit_weapon(key, write):
             f = copy.deepcopy(src.obje_attrs.functions.STEPTREE[spec['index']])
             for k, v in spec.get('set', {}).items():
                 getattr(f, k).set_to(v)
+            # `flags` {name: bool} (the Incineration Cannon, boot 4: its reload glow = B in (primary ammunition)
+            # INVERTED -- lit from the shot until the reload has loaded the round)
+            for k, v in spec.get('flags', {}).items():
+                setattr(f.flags, k, v)
             new.append(f)
         fs[:] = []
         for f in new:
