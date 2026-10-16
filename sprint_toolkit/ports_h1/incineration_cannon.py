@@ -74,10 +74,15 @@ UNITS = [11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25, 26, 30, 32]
 FR = 'weapons' + B + 'fuel rod gun' + B
 FR_PROJ = FR + 'grunt fuel rod'
 WORLD = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 18, 27, 31]
-# the fuel rod ball's sprite reads ~0.41 / 0.97 / 1 (B5): tint = target / sprite per channel, clipped; alpha 0.45 (B5:
-# additive layers clip to white); the core (hither) a little whiter
-ORB_HITHER = (0.45, 1.0, 0.7, 0.45)
-ORB_YON = (0.45, 1.0, 0.46, 0.2)
+# BOOT 2 (user: 'the shell is a green ball'): the fuel rod ball's sprite `flares pr overcharge` is CYAN (red ~0.41) and a
+# tint only multiplies -- the ball came out olive-green. The volume now draws the MONOCHROME `flares weapon lens` (64 x
+# 64 y8; h1_pickable_weapons widget_tint `map`), which tints exactly: Halo 4's orange, the core (hither) whiter
+ORB_MAP = B.join(['effects', 'particles', 'lens flare', 'bitmaps', 'flares weapon lens'])
+ORB_HITHER = (0.8, 1.0, 0.8, 0.55)
+ORB_YON = (0.8, 1.0, 0.45, 0.2)
+# the fuel rod tail's `shadow beam contrail add` is a colour texture too: the trails draw the Binary Rifle port's baked
+# Forerunner bolt (orange-white, its own beam core -- resident in every map), untinted
+TRAIL_MAP = 'weapons' + B + 'binary rifle' + B + 'bitmaps' + B + 'bi_beam_core'
 
 # THE BOMBLET (approximation A, user 4a): Halo 4's own numbers; built with no trigger (`triggers` []) -- the shell's
 # burst effect creates it. BOUNCES off the world (Halo 4 friction 0.1 / 0.1), DETONATES on a unit
@@ -97,7 +102,14 @@ BOMBLET = {
                   'damage': (RL + 'explosion', IC + 'bomblet explosion'),
                   'lower': 30.0, 'upper': (120.0, 120.0), 'radius': (0.61, 1.25),
                   # STEP 4b: Halo 4's own knockback 2.5 (the rocket copy's 6; balanced 6 x 2.5/3 = 5)
-                  'fields': {'damage.aoe_core_radius': 0.6, 'damage.instantaneous_acceleration': 2.5},
+                  'fields': {'damage.aoe_core_radius': 0.6, 'damage.instantaneous_acceleration': 2.5,
+                             # BOOT 2: a small orange flash per bomblet (Halo 4's submunition has its own area
+                             # screen effect; the rocket copy's lasted 0 s)
+                             'screen_flash.duration': 0.3,
+                             'screen_flash.maximum_intensity': 0.3,
+                             'screen_flash.tint_lower_bound.r': 1.0,
+                             'screen_flash.tint_lower_bound.g': 0.33,
+                             'screen_flash.tint_lower_bound.b': 0.08},
                   'swaps': {B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'expl']): SND + 'ic_bomblet_explode'}},
     'velocity': (5.0, 6.0), 'range': 7.0,
     'proj_fields': {'proj_attrs.physics.air_gravity_scale': 5.0,
@@ -119,8 +131,12 @@ BOMBLET = {
                     'obje_attrs.bounding_radius': 0.5,
                     'proj_attrs.collision_radius': 0.1},
     'default_responses': {'reflect': WORLD, 'detonate': UNITS, 'overpenetrate': [28, 29]},
+    # BOOT 2 (user: 'the bomblets are unchanged' -- still bursting in the air): Halo 1's friction is the fraction of
+    # speed REMOVED (the frag: parallel 0.7-0.8, perpendicular 0.8-0.9), so Halo 4's 0.1 / 0.1 bounced near-elastic --
+    # a bomblet launched up hopped high and its 0.6-1.0 s fuse ran out mid-hop. Perpendicular 0.8 (the frag's: a low
+    # bounce), parallel 0.3 (some of Halo 4's slide)
     'reflect': [{'materials': WORLD, 'response': 'reflect', 'angle_deg': (0.0, 0.0),
-                 'parallel_friction': 0.1, 'perpendicular_friction': 0.1, 'effect_from_default': False},
+                 'parallel_friction': 0.3, 'perpendicular_friction': 0.8, 'effect_from_default': False},
                 {'materials': [30], 'response': 'detonate', 'angle_deg': (0.0, 0.0), 'effect_from_default': False}],
     # per-material DETONATION effects would replace the burst on contact (the GL's trap)
     'clear_detonation_effects': True,
@@ -131,10 +147,13 @@ BOMBLET = {
     # recoloured and narrower, its light + flare orange; the sparks dropped
     'model': '',
     'keep_attachments': (0,),
-    'contrail': {'from': FR + 'tail', 'out': IC + 'bomblet trail', 'rgb': ORANGE, 'width': 0.4},
-    'widget_tint': {'out': IC + 'bomblet volume', 'hither': ORB_HITHER, 'yon': ORB_YON, 'radius': 0.4},
+    # BOOT 2 (user: 'no visible projectiles on the bomblets'): the ball was x0.4 (0.008 - 0.04 wu) and olive -> x0.7 on
+    # the orange sprite, the flare 0.06 -> 0.1
+    'contrail': {'from': FR + 'tail', 'out': IC + 'bomblet trail', 'rgb': (1.0, 1.0, 1.0), 'width': 0.5,
+                 'bitmap': TRAIL_MAP, 'sequence': (0, 0)},
+    'widget_tint': {'out': IC + 'bomblet volume', 'hither': ORB_HITHER, 'yon': ORB_YON, 'radius': 0.7, 'map': ORB_MAP},
     'glow': {'light': (FR + 'fuel rod exhaust', IC + 'bomblet glow'),
-             'flare': IC + 'bomblet glow', 'rgb': ORANGE, 'flare_radius': 0.06, 'marker': 'contrail'},
+             'flare': IC + 'bomblet glow', 'rgb': ORANGE, 'flare_radius': 0.1, 'marker': 'contrail'},
     'change_color': {'from': 'weapons' + B + 'plasma pistol' + B + 'bolt', 'rgb': ORANGE},
     'triggers': [],
 }
@@ -154,11 +173,16 @@ SHELL = {
                   'lower': 40.0, 'upper': (240.0, 240.0), 'radius': (0.75, 2.0),
                   # STEP 4b: Halo 4's own knockback 3 (the rocket copy's 6; balanced 6 x 3/3 = 6)
                   'fields': {'damage.aoe_core_radius': 0.75, 'damage.instantaneous_acceleration': 3.0,
-                             'screen_flash.duration': 0.25,
-                             'screen_flash.maximum_intensity': 0.3,
+                             # BOOT 2 (user: 'the screen flash is underwhelming -- increase it and fit the gun's
+                             # theme'): Halo 4's detonation area screen effect = exposure boost 5-6 over 0.6 / 1.0 s, a
+                             # red-orange colour replace (1, 0.12, 0) x0.8 and an orange filter (0.81, 0.33, 0.08) ->
+                             # 0.8 s, intensity 0.6, the filter's orange (was the Sticky Detonator's 0.25 s / 0.3 yellow)
+                             'screen_flash.priority': 'medium',
+                             'screen_flash.duration': 0.8,
+                             'screen_flash.maximum_intensity': 0.6,
                              'screen_flash.tint_lower_bound.r': 1.0,
-                             'screen_flash.tint_lower_bound.g': 0.85,
-                             'screen_flash.tint_lower_bound.b': 0.4},
+                             'screen_flash.tint_lower_bound.g': 0.33,
+                             'screen_flash.tint_lower_bound.b': 0.08},
                   'swaps': {B.join(['sound', 'sfx', 'weapons', 'frag grenade', 'expl']): SND + 'ic_explode'},
                   # THE CLUSTER (option A): 5 bomblets 0.2 s after the burst at the 'normal' location, 5 wu/s, a
                   # random cone (Halo 4: 45 deg off the surface + a 33 deg spread -> 60 deg, judged in game)
@@ -185,18 +209,19 @@ SHELL = {
     # C1: no flight sound); the impact particles orange (the Concussion Rifle's `impact_tint`)
     'model': '',
     'keep_attachments': (0, 1),
-    'contrail': {'from': FR + 'tail', 'out': IC + 'shell trail', 'rgb': ORANGE},
+    'contrail': {'from': FR + 'tail', 'out': IC + 'shell trail', 'rgb': (1.0, 1.0, 1.0),
+                 'bitmap': TRAIL_MAP, 'sequence': (0, 0)},
     'set_attachments': {1: {'class': 'effect', 'type': FR + 'effects' + B + 'fuel rod tail sparks',
                             'copy': {'out': IC + 'effects' + B + 'shell sparks', 'tint': (1.0,) + ORANGE,
                                      'scale': 1.0, 'count': 1.0}}},
-    'widget_tint': {'out': IC + 'shell volume', 'hither': ORB_HITHER, 'yon': ORB_YON},
+    'widget_tint': {'out': IC + 'shell volume', 'hither': ORB_HITHER, 'yon': ORB_YON, 'map': ORB_MAP},
     'glow': {'light': (FR + 'fuel rod exhaust', IC + 'shell glow'), 'flare': IC + 'shell glow',
              'rgb': ORANGE, 'flare_radius': 0.12, 'marker': 'contrail'},
     'change_color': {'from': 'weapons' + B + 'plasma pistol' + B + 'bolt', 'rgb': ORANGE},
-    'impact_tint': {'match': ('stealth cannon', 'shield impact', 'c generic'), 'rgb': ORANGE,
-                    'potential': True, 'out': IC + 'effects' + B + 'impact' + B,
-                    'decals': {B.join(['effects', 'decals', 'bullet holes', 'plasma green burn large']):
-                               B.join(['effects', 'decals', 'bullet holes', 'plasma burn large'])}},
+    # BOOT 2 (user: 'the ground splash has the plasma burn and impact as well -- fit it to the weapon'): the fuel rod's
+    # per-material impact effects (plasma splash + burn decal) cleared; the burst is the rocket's fireball with its own
+    # scorch (`grenade char`)
+    'clear_response_effects': True,
     'triggers': [0],
 }
 
@@ -255,7 +280,9 @@ PORT.update({
     # BORROWED sounds kept ON PURPOSE (port_sound_refs prints these as KEEP)
     'sound_keeps': {r'sound\sfx\impulse\weapon_drops\rlauncher_impact':
                     "Halo 4's own drop (wea_drop_launcher_fr_incinerator_nonplayer) ships in no MCC bank: "
-                    "the rocket launcher's kept"},
+                    "the rocket launcher's kept",
+                    r'sound\sfx\weapons\weapon_pickup_ammo\rocket_ammo':
+                    "Halo 4 has no Incineration Cannon ammo pickup sound: the rocket launcher's kept (user, boot 2)"},
 
     # geometry + look (h1_h3_weapon_model.py; Halo 4 through h4_tags). Halo 4's ONE render model for world AND
     # first person: 15 nodes (b_gun root; low hinge, cylinders, top / low flaps, knobs), regions default (mesh 0:
@@ -313,6 +340,10 @@ PORT.update({
         # C5: a long FP gun -- start at Halo 4's own placement and judge through h1_fp_camera_render
         # BOOT 1 (user: 'lower the FP by 2 units'; 1 unit = 0.01 wu, the Suppressor's)
         'view_offset': (0.0, 0.0, -0.02),
+        # BOOT 2 (user: 'after a melee the left arm lingers lower than idle before reverting'): Halo 4's
+        # melee_strike_1 ends with the left wrist ~4 cm low / 6 cm aside of idle's first pose and Halo 4 BLENDS;
+        # Halo 1 snaps -> its last 12 frames (0.4 s, the recovery) eased into idle frame 0
+        'blend_end': {'first-person melee': ('first_person:idle', 0, 12)},
         'anims': {
             'first_person:idle': 'first-person idle',
             'first_person:posing:var1': 'first-person posing',
@@ -430,6 +461,9 @@ PORT.update({
             'weap_attrs.aiming.zoom_ranges': (1.8, 1.8),
             'obje_attrs.collision_model.filepath': IC + 'incineration cannon',
             'weap_attrs.triggers.0.firing_effects.0.empty_effect.filepath': SND + 'ic_dryfire',
+            # BOOT 2 (user: 'no change on a shot'): the firing glow fades by A out, and the ROCKET's weapon input A
+            # is `integrated_light` (the flashlight); the sniper / LightRifle templates' is `illumination` (per shot)
+            'weap_attrs.A_in': 'illumination',
             'weap_attrs.interface.zoom_in_sound.filepath': SND + 'ic_zoom_in',
             'weap_attrs.interface.zoom_out_sound.filepath': SND + 'ic_zoom_out',
             # STEP 4b list 2: first person offset Halo 4 0 vs its rocket's -0.05 onto the H1 rocket's -0.1 -> 0
@@ -453,6 +487,22 @@ PORT.update({
                               {'copy_from': 'weapons\\light rifle\\effects\\fire bolt',
                                'match': 'flash', 'scale': 1.5,
                                'tint': (1.0,) + ORANGE})},
+        # BOOT 2 (user: 'try adding the effect on reload' -- Halo 4's reload draws energy IN from the air: fr_incin_reload's
+        # reload_energy_wave / glow / vent rings): Halo 1 plays the magazine's RELOADING EFFECT when a reload starts ->
+        # an own effect of three orange rings CONTRACTING onto the gun 0.2 s apart -- the Wraith mortar's `light ring
+        # expand` (the Gravity Hammer's ring; stock 0.25 -> 20 x its radius in 0.1-0.2 s) with its radius animation
+        # REVERSED (2.0 -> 0.05 x 0.2 wu = 0.4 wu onto the gun), living 0.5-0.6 s, at the effect's own location (the
+        # ring lies perpendicular to the barrel). A first try: where Halo 1 draws a weapon effect in first person is
+        # boot 3's question
+        'reload_effect': {'from': 'vehicles' + B + 'wraith' + B + 'effects' + B + 'wraith mortar explosion',
+                          'out': IC + 'effects' + B + 'reload draw',
+                          'add_particles': [{'from': 'vehicles' + B + 'wraith' + B + 'effects' + B + 'wraith mortar explosion',
+                                             'match': 'light ring expand', 'location': 0, 'radius': (0.2, 0.2),
+                                             'count': 2, 'tint': (1.0, 1.0, 0.45, 0.2), 'delay': d,
+                                             'particle': {'out': IC + 'effects' + B + 'reload ring',
+                                                          'lifespan': (0.5, 0.6), 'fade_out': 0.1,
+                                                          'radius_animation': (2.0, 0.05)}}
+                                            for d in (0.0, 0.2, 0.4)]},
         'melee': (RL + 'melee', IC + 'melee'),
         'melee_response': RL + 'melee_response',
         'messages': ('Picked up an incineration cannon', 'Picked up %d rounds for incineration cannon'),
@@ -507,7 +557,10 @@ PORT.update({
                 # calibration (crop pinned to the full 480 x 270, placed by `offset`)
                 'zoom_glyphs': [{'image': SCOPE + q + '.png', 'reg': reg, 'name': 'incineration cannon scope ' + q,
                                  'index': i, 'scale': (1.0, 1.0), 'overlay': 3.604, 'offset': off,
-                                 'rgb': (255, 110, 30), 'alpha': 0.6, 'normalize': True, 'gamma': 1.6}
+                                 # BOOT 2 (user: 'not symmetrical, and a bit less transparent'): the right
+                                 # quadrants = the left ones MIRRORED (tr = tl, br = bl flipped; the fitted
+                                 # run kept as *_fit.png), alpha 0.6 -> 0.9, coverage gamma 1.6 -> 1.2
+                                 'rgb': (255, 110, 30), 'alpha': 0.9, 'normalize': True, 'gamma': 1.2}
                                 for q, reg, i, off in (('tl', (480, 270), 88, (-407, -29)),
                                                        ('tr', (0, 270), 89, (458, -29)),
                                                        ('bl', (480, 0), 90, (-407, 458)),
