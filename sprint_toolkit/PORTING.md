@@ -2443,6 +2443,18 @@ shotgun (user), WDM 0.335 / 0.164, drop 0.5 - 0.9. Enhancer keys (its session): 
 melee, the needler explosion -> the supercombine), card_donors Needler explosion damage / radius; the charge
 `actor_flags` still to write.
 
+**Close-out re-check (user, 2026-10-16: 'every ported step, especially 4b'):** 4b re-run on the FINAL weapon
+(the reach / fuse / minimum velocity / ejection port had changed since) -- list 2 decisions only; two lines
+had no decision yet: the shard's impact noise (Halo 4 'shout', the template's 'medium': set) and the error
+deceleration (Halo 4's 0.25 kept, written down). The SUPERCOMBINE damage is in no audit pair: by hand
+against Halo 4's attached super detonation -- AOE core 0.3, category high explosive, acceleration 2.75,
+breaking effect Halo 4's (the needler copy's values replaced). Checks 6 / 8 / 9 re-proven (59 tags 0
+changed; in `used_weapons()`, Flood Elite donor every slot; hit-effect load 1.64 < the shotgun's 2.05, x1).
+Tools left in a scratchpad, now in the toolkit: `h1_fp_state_probe.py` (the first-person record by the held
+weapon's handle + the magazine, `--analyse --port <key>` per reload) and `h4_effect_particles.py` (the Halo
+4 half of check 10). `port_backup.py --game h1` listed no wave-C tool (h4_tags, h4_fp_dump, h1_decimate,
+kit_commit, h1_tag_writes_proof ...): added.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:
