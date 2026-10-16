@@ -459,6 +459,16 @@ PORT.update({
         'fire_loop': {'like': B.join(['sound', 'sfx', 'weapons', 'plasma rifle', 'charging']),
                       'start': SND + 'rg_charge', 'loop': '', 'end': '',
                       'tag': SND + 'rg_charging', 'marker': 'primary trigger', 'scale': 'B_out'},
+        # THE CHARGE-UP SEEN ON ENEMIES (Armed boot, user 2026-10-16: 'no visible charge-up on the enemy' --
+        # 'enemies should show the charge-up like Halo 4'): the model's charge glow (glow_points) is a 5 cm
+        # star, lost at range. Halo 4 draws charging_3p (a light volume + a cheap light) at rail_charge; Halo 1
+        # shows a held weapon's ATTACHMENTS on the third-person gun -- the Jackals' charged plasma pistol glow
+        # is its attachment 2, light weapons\plasma rifle\overcharge (radius 1.5, a lens flare to 0.175 wu)
+        # on its charge output. The same light, the railgun blue, on B out (= primary charged). User (Armed
+        # boot 2): 'no charge at the MUZZLE of the enemies, only the normal charge up visible' (the rail glow
+        # does show) -- Halo 4's charging.effect draws at rail_charge AND primary_trigger -> at the muzzle
+        'charge_light': [{'from': 'weapons\\plasma rifle\\overcharge', 'out': RG + 'charge light',
+                          'rgb': BLUE, 'marker': 'primary trigger', 'scale': 'B_out'}],
         'fields': {
             'weap_attrs.B_in': 'primary_charged',
             # THE TRIGGER (the fuel rod's way): charge 0.75 s, then DISCHARGE. Halo 4 holds the charge 1.5 s

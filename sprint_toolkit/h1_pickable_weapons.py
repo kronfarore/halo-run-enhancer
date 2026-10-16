@@ -1391,6 +1391,48 @@ def add_fire_loop(d, f, write):
     x.change_color.set_to('none')
 
 
+def add_charge_light(d, c, write):
+    """`charge_light` [{'from', 'out', 'rgb', 'marker', 'scale'[, 'radius', 'flare_radius', 'alpha']}]
+    (the Railgun, C7 Armed boot: 'no visible charge-up on the enemy'): an own recoloured copy of a
+    light (`from`, e.g. the plasma pistol's charge light weapons\\plasma rifle\\overcharge) and its
+    lens flare, attached at `marker` with its primary scale an existing weapon output (`scale`, e.g.
+    'B_out' = primary charged). Halo 1 draws weapon attachments on the third-person gun: the Jackals'
+    charged plasma pistol glow (its attachment 2, on D out)."""
+    from reclaimer.hek.defs.ligh import ligh_def
+    from reclaimer.hek.defs.lens import lens_def
+    lt = ligh_def.build(filepath=path(c['from'], '.light'))
+    ld = lt.data.tagdata
+    for bound in (ld.color.color_lower_bound, ld.color.color_upper_bound):
+        bound.r, bound.g, bound.b = c['rgb']
+        if 'alpha' in c:
+            bound.a = c['alpha']
+    if 'radius' in c:
+        ld.shape.radius = c['radius']
+    if ld.lens_flare.filepath:
+        ft = lens_def.build(filepath=path(ld.lens_flare.filepath, '.lens_flare'))
+        for r in ft.data.tagdata.reflections.STEPTREE:
+            r.tint_color.r, r.tint_color.g, r.tint_color.b = c['rgb']
+            if 'flare_radius' in c:
+                r.radius[0], r.radius[1] = 0.0, c['flare_radius']
+        save(ft, path(c['out'], '.lens_flare'), write)
+        ld.lens_flare.filepath = c['out']
+    save(lt, path(c['out'], '.light'), write)
+    atts = d.obje_attrs.attachments.STEPTREE
+    if any(a.type.filepath == c['out'] for a in atts):
+        return
+    if len(atts):
+        atts.append(copy.deepcopy(atts[0]))
+    else:
+        atts.append()
+    x = atts[len(atts) - 1]
+    x.type.tag_class.set_to('light')
+    x.type.filepath = c['out']
+    x.marker = c['marker']
+    x.primary_scale.set_to(c['scale'])
+    x.secondary_scale.set_to('none')
+    x.change_color.set_to('none')
+
+
 def add_charge_loop(d, c):
     """A looping sound attachment whose scale follows the weapon's charge."""
     o = d.obje_attrs
@@ -1786,6 +1828,8 @@ def edit_weapon(key, write):
         add_hum(d, w['hum'], write)
     if 'fire_loop' in w:
         add_fire_loop(d, w['fire_loop'], write)
+    for C in w.get('charge_light', ()):
+        add_charge_light(d, C, write)
     if 'obje_functions' in w:
         # the object FUNCTIONS (out N = function N, scaled by an export 'in'), rebuilt from
         # another weapon's (the BR, test 6: the on-gun counter reads A out, and the pistol
