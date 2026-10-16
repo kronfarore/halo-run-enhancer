@@ -3251,6 +3251,162 @@
     "port_dps": 43.6,
     "balanced_port_dps": 72.7
    }
+  },
+  "weapons\\binary rifle\\binary rifle": {
+   "source": "Halo 4 ai\\generic objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle (weapon properties #26, firing pattern #26) over weapons\\sniper rifle\\sniper rifle carriers (always characters\\floodcombat elite\\floodcombat elite sniper rifle)",
+   "fields": {
+    "0x74": [
+     "<f",
+     100.0,
+     "Maximum Firing Distance"
+    ],
+    "0x78": [
+     "<f",
+     0.5,
+     "Rate Of Fire"
+    ],
+    "0x7C": [
+     "<f",
+     0.016362461145035923,
+     "Projectile Error"
+    ],
+    "0x80": [
+     "<f",
+     0.75,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     1.0,
+     "First Burst Delay Time Max"
+    ],
+    "0x8C": [
+     "<f",
+     1.0,
+     "Surprise Delay Time"
+    ],
+    "0x94": [
+     "<f",
+     0.30000001192092896,
+     "Death Fire-Wildly Chance"
+    ],
+    "0x98": [
+     "<f",
+     0.75,
+     "Death Fire-Wildly Time"
+    ],
+    "0x9C": [
+     "<f",
+     15.0,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     25.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     0.875,
+     "Target Tracking"
+    ],
+    "0xC0": [
+     "<f",
+     0.7249999940395355,
+     "Target Leading"
+    ],
+    "0xC4": [
+     "<f",
+     0.6263565891472869,
+     "Weapon Damage Modifier"
+    ],
+    "0xCC": [
+     "<f",
+     0.23750000447034836,
+     "Burst Origin Radius"
+    ],
+    "0xD0": [
+     "<f",
+     0.05672319885343313,
+     "Burst Origin Angle"
+    ],
+    "0xD4": [
+     "<f",
+     0.2187500074505806,
+     "Burst Return Length"
+    ],
+    "0xD8": [
+     "<f",
+     0.2750000059604645,
+     "Burst Return Length Max"
+    ],
+    "0xDC": [
+     "<f",
+     0.06544984504580498,
+     "Burst Return Angle"
+    ],
+    "0xE0": [
+     "<f",
+     0.38750000670552254,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     0.527500007301569,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     1.75,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     2.4499999582767487,
+     "Burst Separation Max"
+    ],
+    "0x158": [
+     "<f",
+     1.0,
+     "Special-Fire Chance"
+    ],
+    "0x1D8": [
+     "<f",
+     0.75,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.949999988079071,
+     "Drop Weapon Loaded Max"
+    ]
+   },
+   "donor_weapon": "weapons\\sniper rifle\\sniper rifle",
+   "donor_variant": "characters\\floodcombat elite\\floodcombat elite sniper rifle",
+   "species_skill": true,
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.32320000000000004,
+     "Weapon Damage Modifier"
+    ],
+    "0x1D8": [
+     "<f",
+     0.45,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.95,
+     "Drop Weapon Loaded Max"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.4,
+    "yardstick_dps": 202.0,
+    "port_dps": 129.0,
+    "balanced_port_dps": 250.0
+   }
   }
  }
 }
