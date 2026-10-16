@@ -1359,6 +1359,41 @@ SETS = {
          {'burst': (3, 0.1, 0.413)}),
         ('DMR (port)', W + r'dmr\dmr', 'shot'),
     ]},
+    # the BINARY RIFLE (wave C6), step 4a. Halo 4 (H4EK 2026-10-16, h3_weapon_values --kit h4): 129
+    # (sniper group, one bullet, no detonation / aoe) a shot, recovery 1.0 s, magazine 2 (6 / 8), reload
+    # 86 / 71 fr, 2799 wu/s instant, range 500, error 4 deg (barrel flag = the H4 sniper's: unzoomed),
+    # zoom (4, 10), aim struct 1/10 4/14, MODE block: 0 = none, 1-2 = 1/25 1.6/25 (aim assist zoomed
+    # only); overpenetrates soft / flesh / thin metal / thin shields (both response tables). H4 sniper
+    # 80, 0.767 s, 4 (12 / 20), 86 / 72 fr, error 0.05, zoom (4, 9), mode 1/25 2/25. H4 rocket 200
+    # (collision) + 240 (explosion_large, 0.9 -> 2.5 wu) = 440 direct, 0.8 s, 2 (4 / 6), 116 fr, range
+    # 175, aim 5/60 10/25. Halo 1: sniper 101, 2/s, 4 (12 / 24), 94 fr, 1000 / 1000, aim 1/35 2/35;
+    # rocket 315 (+ 2 wu splash), 0.5/s, 2 (4 / 8), 126 fr, range 128.
+    'binary_rifle': {'port': 'Binary Rifle', 'weapons': [
+        # DEFAULT = Halo 4's own numbers on the sniper bullet's table (the 'sniper' group's)
+        ('BiR = H4 own', W + r'sniper rifle\sniper rifle', 'shot',
+         {'dmg': 129.0, 'rate': 1.0, 'mag': 2, 'reload': 86 / 30.0, 'speed': 2799.0,
+          'range': 500.0, 'aim': (1.0, 25.0, 1.6, 25.0)}),
+        # SNIPER ratio: 101 x 129/80; 2/s x 0.767/1.0; 4 x 2/4; 94 fr x 86/86; 1000 x 2799/2799;
+        # 1000 x 500/500; aim 1 x 1/1, 2 x 1.6/2 (mode blocks), 35 x 25/25
+        ('BiR = Sniper ratio', W + r'sniper rifle\sniper rifle', 'shot',
+         {'dmg': 162.9, 'rate': 1.533, 'mag': 2, 'reload': 94 / 30.0,
+          'aim': (1.0, 35.0, 1.6, 35.0)}),
+        # ROCKET ratio: 315 x 129/440 (the rocket's direct hit, both parts); 0.5/s x 0.8/1.0; 2 x 2/2;
+        # 126 fr x 86/116; speed degenerate (a 10 -> 20 wu/s rocket): Halo 4's own; range 128 x 500/175;
+        # aim degenerate (0/35): Halo 4's own. On the sniper bullet's table (a bullet, no splash)
+        ('BiR = RL ratio', W + r'sniper rifle\sniper rifle', 'shot',
+         {'dmg': 92.4, 'rate': 0.4, 'mag': 2, 'reload': 3.11, 'speed': 2799.0, 'range': 366.0,
+          'aim': (1.0, 25.0, 1.6, 25.0)}),
+        # peers
+        ('Sniper Rifle', W + r'sniper rifle\sniper rifle', 'shot'),
+        ('Rocket Launcher', W + r'rocket launcher\rocket launcher', 'shot'),
+        ('Beam Rifle (port)', W + r'beam rifle\beam rifle', 'shot', {'heat_sim': True}),
+        ('Spartan Laser (port)', W + r'spartan laser\spartan laser', 'shot'),
+    ], 'enemies': [
+        ('Sentinel', r'characters\sentinel\sentinel', 'sentinel'),
+        ('Flood combat (elite)', r'characters\floodcombat elite\floodcombat elite plasma rifle',
+         'floodcombat elite'),
+    ]},
     # the PLASMA LAUNCHER (wave B6), step 4a. Reach (HREK 2026-10-13): charge 3.0 s in four 0.75 s
     # steps (1..4 bolts; a bolt needs a 0.75 s hold), held 2 s more -> discharge; 4.75/s, recovery
     # 0.2; heat 0.4 a bolt (oh 1, loss 0.85, rec 0.1: a volley overheats), battery 12 bolts; 11 -> 7
