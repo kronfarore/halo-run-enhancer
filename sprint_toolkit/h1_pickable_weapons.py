@@ -644,6 +644,10 @@ def add_particles(et, specs, write):
                 x.radius[0], x.radius[1] = A['radius']
             if 'location' in A:          # an index of THIS effect's locations (1 = 'gravity')
                 x.location = A['location']
+            if 'camera' in A:            # the Incineration Cannon's reload rings (boot 3: none seen in first person
+                # -- a weapon effect spawns on the third-person weapon): 'first_person_if_possible' draws them on the
+                # first-person gun, as the rocket's own FP firing smoke
+                x.create_in_camera.set_to(A['camera'])
             if 'env' in A:               # the Grenade Launcher's EMP bolts (boot 3: 'air_only' ones
                 # never showed at a ground detonation): 'any_environment'
                 x.create_in_env.set_to(A['env'])
@@ -829,7 +833,7 @@ def own_explosion(pd, X, write, slot='detonation'):
     # `add_projectiles`: a CLUSTER (the Incineration Cannon, C9: Halo 4's detonation effect spawns 5
     # submunitions 0.2 s after the burst; Halo 1's effect parts create projectiles too -- stock
     # `effects\bursts\ar burst` fires 6 AR bullets): [{'projectile': tag, 'count': n, 'velocity': (lo,
-    # hi) wu/s, 'cone_deg': the random cone around the location's direction, 'delay': s, 'location':
+    # hi) wu PER TICK (measured, boot 3: 5 flew 154 wu/s), 'cone_deg': the random cone around the location's direction, 'delay': s, 'location':
     # index}] -- each its own event (a copy of event 0 without parts or particles), `count` parts
     for A in X.get('add_projectiles', ()):
         src_part = next(p for ev in et.data.tagdata.events.STEPTREE for p in ev.parts.STEPTREE
