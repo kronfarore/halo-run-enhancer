@@ -234,6 +234,10 @@ PORT.update({
         'decimate': {'keep': 60.0, 'protect': 1.0, 'views': [((-0.1529, 0.0779, 0.0466), (0.9988, -0.0434, 0.021), (-0.0211, -0.0028, 0.9998), 1.0), ((-0.1522, 0.0775, 0.049), (0.9983, -0.0477, 0.0336), (-0.034, -0.008, 0.9994), 1.0), ((-0.1529, 0.0779, 0.0466), (0.9988, -0.0434, 0.021), (-0.0211, -0.0028, 0.9998), 1.0), ((0.0, 0.0, 0.0), (1.0, 0.0, 0.0), (0.0, 0.0, 1.0), 1.0), ((0.0, 0.0, 0.0), (1.0, -0.0036, 0.0047), (-0.0047, 0.0059, 1.0), 1.0), ((0.0, 0.0, 0.0), (1.0, 0.0026, -0.0027), (0.0027, -0.0089, 1.0), 1.0), ((-0.1529, 0.0779, 0.0466), (0.9989, -0.0431, 0.021), (-0.0211, -0.0026, 0.9998), 1.0), ((-0.0879, 0.0763, 0.053), (0.9889, -0.0346, -0.1443), (0.1447, 0.0102, 0.9894), 1.0), ((-0.1529, 0.0779, 0.0466), (0.9989, -0.0431, 0.021), (-0.0211, -0.0026, 0.9998), 1.0), ((-0.1775, 0.1166, 0.001), (0.6862, 0.1976, 0.7001), (-0.7022, 0.4312, 0.5666), 0.5), ((-0.1727, 0.077, 0.044), (0.9975, -0.0462, -0.0538), (0.0575, 0.0826, 0.9949), 0.5), ((-0.1775, 0.1166, 0.001), (0.6862, 0.1976, 0.7001), (-0.7022, 0.4312, 0.5666), 0.5), ((-0.1529, 0.0779, 0.0466), (0.9988, -0.0433, 0.0212), (-0.0213, -0.0026, 0.9998), 0.5), ((-0.1881, 0.0949, 0.0317), (0.9596, -0.1751, 0.2203), (-0.2353, -0.0695, 0.9694), 0.5), ((-0.1529, 0.0779, 0.0466), (0.9988, -0.0433, 0.0212), (-0.0213, -0.0026, 0.9998), 0.5), ((-0.1529, 0.0779, 0.0466), (0.9988, -0.0433, 0.0212), (-0.0213, -0.0026, 0.9998), 0.5), ((-0.1881, 0.0957, 0.0321), (0.9589, -0.1792, 0.2198), (-0.2354, -0.0711, 0.9693), 0.5), ((-0.1529, 0.0779, 0.0466), (0.9988, -0.0433, 0.0212), (-0.0213, -0.0026, 0.9998), 0.5), ((-0.1529, 0.0779, 0.0466), (0.9989, -0.043, 0.021), (-0.0212, -0.0027, 0.9998), 0.5), ((-0.1862, 0.1083, -0.0066), (0.8341, -0.3901, 0.3899), (-0.4487, -0.0691, 0.891), 0.5), ((-0.1529, 0.0779, 0.0466), (0.9989, -0.043, 0.021), (-0.0212, -0.0027, 0.9998), 0.5)]},
         'ground_point': 'auto',
         'markers': {'primary_trigger': 'primary trigger', 'left_hand': 'left hand'},
+        # an own hull (the template's hides the world model, C1): the render model's extent (all three meshes: x
+        # -0.233..0.21, y +-0.033, z -0.019..0.114 wu)
+        'collision': {'material': 'metal',
+                      'boxes': [((-0.233, -0.033, -0.019), (0.21, 0.033, 0.114))]},
         # Halo 1's `tool model` keeps 31 characters of a shader name (C1)
         'material_names': {'storm_forerunner_incineration_launcher_default_metal': 'ic_metal',
                            'storm_forerunner_incineration_launcher_default_glow': 'ic_glow'},
@@ -332,9 +336,9 @@ PORT.update({
             # 4b (the sound fields by hand): Halo 4's own zoom sounds over the rocket template's sniper ones (levels:
             # the Binary Rifle's measurements of sniper_2x / 10x_zoom)
             'ic_zoom_in': (['play_wea_forerunner_incineration_launcher_player_zoom_in'],
-                           'sound\sfx\weapons\sniper rifle\sniper_2x_zoom', -28.9),
+                           'sound\\sfx\\weapons\\sniper rifle\\sniper_2x_zoom', -28.9),
             'ic_zoom_out': (['play_wea_forerunner_incineration_launcher_player_zoom_out'],
-                            'sound\sfx\weapons\sniper rifle\sniper_10x_zoom', -29.2),
+                            'sound\\sfx\\weapons\\sniper rifle\\sniper_10x_zoom', -29.2),
         },
         # the BALANCED reload's sound (the patcher swaps it in with the retimed reload: catalog anim_sounds)
         'stretch': {'ic_reload_balanced': 97.0 / 90.0},
