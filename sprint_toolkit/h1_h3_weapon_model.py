@@ -1222,6 +1222,10 @@ def extra_models(w):
         if X['from'].endswith('.render_model'):
             jm, _rm = h3_rm_to_jms.convert(X['from'], markers=X.get('markers'), frame=X.get('frame'))
             drop_materials(jm, X.get('drop_materials', ()))
+            # `material_names` (the Sticky Detonator, C8): the charge shares the gun's material, whose
+            # long Halo 4 name has no shader -- `tool model` then waits on its shader-type prompt
+            for m in jm.materials:
+                m.name = X.get('material_names', {}).get(m.name, m.name)
         else:
             jm = h3_rm_to_jms.convert_particle_model(X['from'], X['material'])
         d = os.path.join(HCEEK, 'data', X['dir'], 'models')
