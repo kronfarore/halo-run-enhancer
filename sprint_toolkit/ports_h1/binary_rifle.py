@@ -98,9 +98,26 @@ PORT = reserved(
             'why': 'magazine 2, two zoom levels, near-instant: a one-hit-kill sniper',
             'lacks': ("Halo 4's headshot bonus (Halo 1 has no per-weapon headshot multiplier beyond the "
                       "sniper bullet's own); sprint; the scoped-beam glare effect on the 3P model")}},
-    # step 11: the source game's ai\generic entry (25 fields, verified 2026-10-07) -- filled at step 11
+    # step 11: Halo 4's ai\generic Binary Rifle entry (m020 #26: rate of fire 0.5, bursts 0.39-0.53 s every
+    # 1.75-2.45 s, desired range 15-25, drop 0.75-0.95, WDM 0.375 -- replaced by the rule) over a base -- 'bi'
+    # has no carrier. Halo 1's carriers of the yardstick (h1_weapon_carriers, 2026-10-16): the SNIPER -- the
+    # Flood combat Elite 0.4, armoured Marines 0.6 (four variants). Donor = the Flood Elite sniper for EVERY
+    # slot (the Beam Rifle's / DMR's precedent). ARMED WDM RULE (user 2026-10-16: 'the rule as is'): 0.4 x
+    # the sniper's player dps 202 / the port's 129 = 0.626 (balanced / 250 = 0.323). Against the player
+    # (75 shield + 75 health, enemy damage x1.8 on Legendary): 145 a hit default (2 hits, the first leaves
+    # 5), 95 balanced (2); Normal 81 (2) / 53 (3); the stock sniper Flood Elite 72.7 (3) / 40.4 (4)
     firing_profile={'mode': 'source', 'from_game': 'Halo 4', 'from_map': 'halo4\\maps\\m020.map',
-                    'from_weapon': 'objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle'},
+                    'from_weapon': 'objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle',
+                    'donor_weapon': 'weapons\\sniper rifle\\sniper rifle',
+                    'donor_variant': 'characters\\floodcombat elite\\floodcombat elite sniper rifle',
+                    'wdm_rule': {'base': 0.4, 'yardstick_dps': 202.0, 'port_dps': 129.0,
+                                 'balanced_port_dps': 250.0},
+                    # THE BALANCED DROP RULE: Halo 1's sniper carriers 0.3 - 0.9 x Halo 4 Binary 0.75 - 0.95 /
+                    # Halo 4 sniper 0.5 - 0.9 (m020 ai\generic #34) = 0.45 - 0.95; rounds: the Binary sets
+                    # none (sniper 6 - 10): a zero on one side, no row
+                    'balanced_set': ['0x1D8=0.45:Drop Weapon Loaded', '0x1DC=0.95:Drop Weapon Loaded Max'],
+                    # THE SPECIES SKILL RULE (C1): each slot's aim on its own species' stock skill
+                    'species_skill': True},
 )
 
 PORT.update({
