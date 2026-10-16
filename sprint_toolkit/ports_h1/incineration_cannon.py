@@ -62,10 +62,25 @@ GUN = ('gun', 'low_hinge', 'r_bk_knob', 'l_low_flap', 'l_fr_top_flap', 'cylinder
 # invulnerable shields and DETONATES on a unit (its default_material bounce is 'never against units')
 UNITS = [11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25, 26, 30, 32]
 
-# THE BOMBLET (approximation A, user 4a): the FRAG GRENADE's projectile (Halo 1's bouncing grenade), Halo 4's
-# own numbers; built with no trigger (`triggers` []) -- the shell's burst effect creates it
+# BOOT 1 (user: 'no projectile is visible'): a model-less projectile draws through its LIGHT-VOLUME WIDGET (Halo 1's
+# plasma bolt: no model, a widget); the rocket / frag copies had none. Both projectiles now sit on Halo 1's FUEL ROD
+# projectile (`grunt fuel rod`: its `hunter fuel rod` volume IS a glowing ball -- the Concussion Rifle's route, B5),
+# its green look recoloured layer by layer (volume, tail contrail, sparks, light + flare, change colour, impacts), its
+# rod mesh dropped. Its responses: detonate everywhere but water / plants (overpenetrate) and the Hunter shield
+# (reflect); its POTENTIALS detonate everywhere but the Elite shield (#30 'disappear') -- Halo 1 applies an
+# empty-window potential always (C8): #30 -> detonate on both, the bomblet's world potentials -> reflect
+FR = 'weapons' + B + 'fuel rod gun' + B
+FR_PROJ = FR + 'grunt fuel rod'
+WORLD = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 18, 27, 31]
+# the fuel rod ball's sprite reads ~0.41 / 0.97 / 1 (B5): tint = target / sprite per channel, clipped; alpha 0.45 (B5:
+# additive layers clip to white); the core (hither) a little whiter
+ORB_HITHER = (0.45, 1.0, 0.7, 0.45)
+ORB_YON = (0.45, 1.0, 0.46, 0.2)
+
+# THE BOMBLET (approximation A, user 4a): Halo 4's own numbers; built with no trigger (`triggers` []) -- the shell's
+# burst effect creates it. BOUNCES off the world (Halo 4 friction 0.1 / 0.1), DETONATES on a unit
 BOMBLET = {
-    'projectile': (FG + 'frag grenade', IC + 'bomblet'),
+    'projectile': (FR_PROJ, IC + 'bomblet'),
     # the IMPACT on a unit: Halo 4's 200 `collision` (the shell's own impact tag; user 4a: kept in default) --
     # the same own copy the shell names
     'damage': (RL + 'explosion', IC + 'impact'),
@@ -87,7 +102,10 @@ BOMBLET = {
                     'proj_attrs.detonation.arming_time': 0.0,
                     'proj_attrs.detonation.timer': (0.6, 1.0),
                     'proj_attrs.detonation_timer_starts': 'immediately',
-                    'proj_attrs.detonation.minimum_velocity': 3.0,
+                    # BOOT 1 (user: 'the cluster explosion mainly is in the air'): Halo 4's minimum velocity 3 is
+                    # an at-rest threshold there, but in HALO 1 IT DETONATES (A7): a bomblet launched up at 5 wu/s
+                    # under x5 gravity passed 3 wu/s near its apex and burst mid-air -> 0, the timer decides
+                    'proj_attrs.detonation.minimum_velocity': 0.0,
                     'proj_attrs.flags.oriented_along_velocity': True,
                     # STEP 4b list 2 (H4 submunition vs the H4 frag onto the H1 frag): danger radius 2.25 x 3/2.5,
                     # air damage range 0..10 x 500/10, water gravity 1 x 0/0.75. List 3 (a zero on one side: the
@@ -98,24 +116,30 @@ BOMBLET = {
                     'proj_attrs.physics.water_gravity_scale': 0.0,
                     'obje_attrs.bounding_radius': 0.5,
                     'proj_attrs.collision_radius': 0.1},
-    'default_responses': {'detonate': UNITS},
-    # the frag's per-material DETONATION effects would replace the burst on contact (the GL's trap)
+    'default_responses': {'reflect': WORLD, 'detonate': UNITS, 'overpenetrate': [28, 29]},
+    'reflect': [{'materials': WORLD, 'response': 'reflect', 'angle_deg': (0.0, 0.0),
+                 'parallel_friction': 0.1, 'perpendicular_friction': 0.1, 'effect_from_default': False},
+                {'materials': [30], 'response': 'detonate', 'angle_deg': (0.0, 0.0), 'effect_from_default': False}],
+    # per-material DETONATION effects would replace the burst on contact (the GL's trap)
     'clear_detonation_effects': True,
-    # 4b template diff: Halo 4's flag 'no impact effects on bounce' -> the frag's per-bounce reflection effects
-    # (dirt / metal / snow / energy) cleared, the unit hits' too (the frag's dirt puffs on flesh); the frag's
-    # `shock wave` part (0 damage: camera shake + a physics push to 8 wu) stays in the burst, as on the rocket
+    # 4b template diff: Halo 4's flag 'no impact effects on bounce' -> every response effect cleared (a unit hit
+    # shows the burst); the frag effect's `shock wave` part (0 damage: camera shake + a physics push to 8 wu) stays
     'clear_response_effects': True,
-    # the frag's smoke trail + light dropped; Halo 4's bomblet is a small orange ball of light
-    'keep_attachments': (),
+    # Halo 4's bomblet: a small orange ball with a short trail -- the fuel rod's ball x0.4, its tail contrail
+    # recoloured and narrower, its light + flare orange; the sparks dropped
     'model': '',
-    'glow': {'light': ('weapons' + B + 'fuel rod gun' + B + 'fuel rod exhaust', IC + 'bomblet glow'),
-             'flare': IC + 'bomblet glow', 'rgb': ORANGE, 'flare_radius': 0.12, 'marker': ''},
+    'keep_attachments': (0,),
+    'contrail': {'from': FR + 'tail', 'out': IC + 'bomblet trail', 'rgb': ORANGE, 'width': 0.4},
+    'widget_tint': {'out': IC + 'bomblet volume', 'hither': ORB_HITHER, 'yon': ORB_YON, 'radius': 0.4},
+    'glow': {'light': (FR + 'fuel rod exhaust', IC + 'bomblet glow'),
+             'flare': IC + 'bomblet glow', 'rgb': ORANGE, 'flare_radius': 0.06, 'marker': 'contrail'},
+    'change_color': {'from': 'weapons' + B + 'plasma pistol' + B + 'bolt', 'rgb': ORANGE},
     'triggers': [],
 }
 
-# THE SHELL on the ROCKET's projectile, Halo 4's own numbers
+# THE SHELL, Halo 4's own numbers (on the fuel rod projectile: BOOT 1, above)
 SHELL = {
-    'projectile': (RL + 'rocket', IC + 'shell'),
+    'projectile': (FR_PROJ, IC + 'shell'),
     'damage': (RL + 'explosion', IC + 'impact'),
     'dmg': 200.0, 'acceleration': 1.5,
     'fields': {'radius': (0.0, 0.0)},
@@ -139,9 +163,10 @@ SHELL = {
                   'add_projectiles': [{'projectile': IC + 'bomblet', 'count': 5, 'velocity': (5.0, 5.0),
                                        'cone_deg': 60.0, 'delay': 0.2, 'location': 1}]},
     'velocity': (21.0, 21.0), 'range': 175.0,
-    # the rocket's timer (on first bounce, 0) kept: every response detonates (the Brute Shot's note)
+    # the fuel rod's timer (on first bounce, 0) kept: every response detonates (the Brute Shot's note)
     'proj_fields': {'proj_attrs.physics.air_gravity_scale': 0.0,
                     'proj_attrs.detonation.minimum_velocity': 0.0,
+                    'proj_attrs.flags.oriented_along_velocity': True,
                     # STEP 4b list 2 (H4 shell vs the H4 rocket onto the H1 rocket): bounding radius 0.1 x 0.5/0.1,
                     # air damage range 0..100 x 50/150, water gravity 0.4 x 0/0.4; COLLISION RADIUS 0.1 x 0.1/0.02
                     # = 0.5 by the ratio (Halo 4's own 0.1 -- for the user: a near miss within 0.5 wu hits)
@@ -149,16 +174,27 @@ SHELL = {
                     'proj_attrs.physics.air_damage_range': (0.0, 100 * 50 / 150.0),
                     'proj_attrs.physics.water_gravity_scale': 0.0,
                     'proj_attrs.collision_radius': 0.5},
-    # Halo 4's shell is a glowing orange orb with an energy trail: the rocket's mesh, exhaust, exhaust particles,
-    # flight loop (Halo 4's projectile loops are empty in MCC, C1) and light-volume widget dropped; its CONTRAIL
-    # kept as an own orange additive copy, points at rest (the Brute Shot's arc lesson); an orange glow
+    # Halo 4's shell detonates on everything but invulnerable shields: the Hunter shield too (the fuel rod reflects)
+    'default_responses': {'detonate': [32]},
+    'reflect': [{'materials': [30], 'response': 'detonate', 'angle_deg': (0.0, 0.0), 'effect_from_default': False}],
+    'clear_detonation_effects': True,
+    # Halo 4's shell: an orange orb with an energy trail and sparks -- the fuel rod's ball, tail contrail and tail
+    # sparks recoloured, its light + flare orange, its rod mesh dropped (Halo 4's projectile loops are empty in MCC,
+    # C1: no flight sound); the impact particles orange (the Concussion Rifle's `impact_tint`)
     'model': '',
-    'keep_attachments': (1,),
-    'drop_widgets': True,
-    'contrail': {'from': RL + 'exhaust', 'out': IC + 'shell trail', 'rgb': ORANGE, 'velocity': (0.0, 0.0),
-                 'no_physics': True, 'blend': 'add'},
-    'glow': {'light': ('weapons' + B + 'fuel rod gun' + B + 'fuel rod exhaust', IC + 'shell glow'),
-             'flare': IC + 'shell glow', 'rgb': ORANGE, 'flare_radius': 0.25, 'marker': ''},
+    'keep_attachments': (0, 1),
+    'contrail': {'from': FR + 'tail', 'out': IC + 'shell trail', 'rgb': ORANGE},
+    'set_attachments': {1: {'class': 'effect', 'type': FR + 'effects' + B + 'fuel rod tail sparks',
+                            'copy': {'out': IC + 'effects' + B + 'shell sparks', 'tint': (1.0,) + ORANGE,
+                                     'scale': 1.0, 'count': 1.0}}},
+    'widget_tint': {'out': IC + 'shell volume', 'hither': ORB_HITHER, 'yon': ORB_YON},
+    'glow': {'light': (FR + 'fuel rod exhaust', IC + 'shell glow'), 'flare': IC + 'shell glow',
+             'rgb': ORANGE, 'flare_radius': 0.12, 'marker': 'contrail'},
+    'change_color': {'from': 'weapons' + B + 'plasma pistol' + B + 'bolt', 'rgb': ORANGE},
+    'impact_tint': {'match': ('stealth cannon', 'shield impact', 'c generic'), 'rgb': ORANGE,
+                    'potential': True, 'out': IC + 'effects' + B + 'impact' + B,
+                    'decals': {B.join(['effects', 'decals', 'bullet holes', 'plasma green burn large']):
+                               B.join(['effects', 'decals', 'bullet holes', 'plasma burn large'])}},
     'triggers': [0],
 }
 
@@ -247,17 +283,17 @@ PORT.update({
         # the glow material: an additive glow per UV island in Halo 4's red (the Binary Rifle's tuned settings)
         'glow_shaders': {'ic_glow': {'rgb': RED, 'additive': True, 'islands': True,
                                      'islands_of': 'storm_forerunner_incineration_launcher_default_glow',
-                                     'gain': 2.2, 'falloff': 0.35, 'radius': 1.3, 'hot': False},
+                                     'gain': 3.0, 'falloff': 0.35, 'radius': 1.5, 'hot': False},  # BOOT 1 (user: 'improve the glow'): 2.2 / 1.3 -> 3.0 / 1.5
                          # Halo 4's hardlight plate LIGHT-UPS per shot (the muzzle-flash rule below): the Binary
                          # Rifle's firing glow -- the glow pieces again, hotter orange and wider, FADED by A out =
                          # the rocket template's firing ILLUMINATION (on per shot, back to 0 over its 0.3 s
                          # recovery)
-                         'ic_fire_glow': {'rgb': (1.0, 0.55, 0.12), 'additive': True, 'islands': True,
+                         'ic_fire_glow': {'rgb': (1.0, 0.65, 0.25), 'additive': True, 'islands': True,
                                           'islands_of': 'storm_forerunner_incineration_launcher_default_glow',
-                                          'strip': True, 'gain': 2.0, 'falloff': 0.8, 'radius': 1.3,
+                                          'strip': True, 'gain': 3.0, 'falloff': 0.6, 'radius': 1.8,  # BOOT 1 ('pop even more when firing'): hotter, wider
                                           'hot': False, 'fade_source': 'A_out'}},
-        'glow_cards': {'ic_fire': {'of': 'ic_glow', 'shader': 'ic_fire_glow', 'scale': 2.0, 'along': 1.1,
-                                   'lift': 0.08, 'round_scale': 1.6,
+        'glow_cards': {'ic_fire': {'of': 'ic_glow', 'shader': 'ic_fire_glow', 'scale': 2.6, 'along': 1.1,
+                                   'lift': 0.08, 'round_scale': 2.0,
                                    'skip_piece_normals': [(1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)],
                                    'skip_piece_dot': 0.9}},
     },
@@ -273,7 +309,8 @@ PORT.update({
         'h1_model': r'weapons\incineration cannon\fp\fp',
         'align': 'same_space',
         # C5: a long FP gun -- start at Halo 4's own placement and judge through h1_fp_camera_render
-        'view_offset': (0.0, 0.0, 0.0),
+        # BOOT 1 (user: 'lower the FP by 2 units'; 1 unit = 0.01 wu, the Suppressor's)
+        'view_offset': (0.0, 0.0, -0.02),
         'anims': {
             'first_person:idle': 'first-person idle',
             'first_person:posing:var1': 'first-person posing',
@@ -371,7 +408,10 @@ PORT.update({
         'bullet': SHELL,
         # Halo 4: recovery 0.8 s = 1.25/s
         'trigger': {'rounds_per_second': (1 / 0.8, 1 / 0.8), 'acceleration_time': 0.0,
-                    'deceleration_time': 0.0},
+                    'deceleration_time': 0.0,
+                    # BOOT 1 (user: 'make it pop even more when firing'): the firing light-up (A out) fades
+                    # over the illumination recovery -- the rocket's 0.3 s -> 0.5 s (Halo 4's shot cycle 0.8 s)
+                    'illumination_recovery_time': 0.5},
         # Halo 4: error 0 / 0 (the rocket's 0 / 0)
         'error_deg': {'minimum_error': 0.0, 'error_angle': (0.0, 0.0)},
         # Halo 4: 1 loaded, 4 at pickup, 6 most, 1 reloaded. Reload: Halo 4 none (reload_empty 90 fr = 3.0 s) in
@@ -442,7 +482,11 @@ PORT.update({
                 'reticle_supersample': 2,
                 'reticle_scale': 2.25, 'reticle_overlay': 1.5 / (123 / 97.0 * 2.25 * 2 * 0.75),
                 'flash_base': 2,
-                'ammo_meter': {'sizes': (1,), 'base': IC + 'bitmaps\\incineration_cannon_ammo'}},
+                # BOOT 1 (user: 'it uses the generic ammo tick meter -- import its own'): Halo 4's CUI
+                # `bitmap_ammo_ticks` = ammo_incinerator (177 x 54 px = 59 x 18 units: ONE shell a round), at its
+                # native density
+                'ammo_meter': {'sizes': (1,), 'base': IC + 'bitmaps\\incineration_cannon_ammo',
+                               'art': {'h3': (H4 + ICUI + 'ammo_incinerator', 0), 'native': True}}},
         'palette_levels': LEVELS,
     },
 
@@ -524,10 +568,10 @@ PORT.update({
                    'bomblet_damage': (SW + r'\projectiles\damage_effects\storm_forerunner_incineration_launcher_submunition.damage_effect',
                                       r'objects\weapons\support_high\storm_rocket_launcher\projectiles\damage_effects\storm_rocket_launcher_rocket_explosion.damage_effect')},
         'target': {'weapon': (IC + 'incineration cannon.weapon', RL + 'rocket launcher.weapon'),
-                   'projectile': (IC + 'shell.projectile', RL + 'rocket.projectile'),
+                   'projectile': (IC + 'shell.projectile', FR_PROJ + '.projectile'),
                    'damage_effect': (IC + 'explosion.damage_effect', RL + 'explosion.damage_effect'),
                    'impact': (IC + 'impact.damage_effect', RL + 'explosion.damage_effect'),
-                   'bomblet': (IC + 'bomblet.projectile', FG + 'frag grenade.projectile'),
+                   'bomblet': (IC + 'bomblet.projectile', FR_PROJ + '.projectile'),
                    'bomblet_damage': (IC + 'bomblet explosion.damage_effect', RL + 'explosion.damage_effect')}},
 
     # the dry test: b30 (this session's level, parallel pair 6), Halo 4's own loadout (1 loaded, 4 in all)
