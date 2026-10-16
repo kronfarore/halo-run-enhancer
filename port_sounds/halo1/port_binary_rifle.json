@@ -1,0 +1,186 @@
+{
+ "game": "Halo 1",
+ "weapon": "Binary Rifle",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\binary_rifle_port\\bi_fire",
+   "perms": [
+    "bi_fire_1.wav",
+    "bi_fire_2.wav",
+    "bi_fire_3.wav",
+    "bi_fire_4.wav",
+    "bi_fire_5.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\binary_rifle_port\\bi_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\binary_rifle_port\\bi_dryfire",
+   "perms": [
+    "bi_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\binary_rifle_port\\bi_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\binary_rifle_port\\bi_ready",
+   "perms": [
+    "bi_ready_1.wav",
+    "bi_ready_2.wav",
+    "bi_ready_3.wav",
+    "bi_ready_4.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\binary_rifle_port\\bi_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\binary_rifle_port\\bi_melee",
+   "perms": [
+    "bi_melee_1.wav",
+    "bi_melee_2.wav",
+    "bi_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\binary_rifle_port\\bi_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\binary_rifle_port\\bi_reload_empty",
+   "perms": [
+    "bi_reload_empty_1.wav",
+    "bi_reload_empty_2.wav",
+    "bi_reload_empty_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\binary_rifle_port\\bi_reload_empty"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\binary_rifle_port\\bi_reload_full",
+   "perms": [
+    "bi_reload_full_1.wav",
+    "bi_reload_full_2.wav",
+    "bi_reload_full_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\binary_rifle_port\\bi_reload_full"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\binary_rifle_port\\bi_pose",
+   "perms": [
+    "bi_pose_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\binary_rifle_port\\bi_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\binary_rifle_port\\bi_zoom_in",
+   "perms": [
+    "bi_zoom_in_1.wav",
+    "bi_zoom_in_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\binary_rifle_port\\bi_zoom_in"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\binary_rifle_port\\bi_zoom_out",
+   "perms": [
+    "bi_zoom_out_1.wav",
+    "bi_zoom_out_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\binary_rifle_port\\bi_zoom_out"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\binary_rifle_port\\bi_ammo",
+   "perms": [
+    "bi_ammo_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\binary_rifle_port\\bi_ammo"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\binary_rifle_port\\bi_drop",
+   "perms": [
+    "bi_drop_1.wav",
+    "bi_drop_2.wav",
+    "bi_drop_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\binary_rifle_port\\bi_drop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\binary_rifle_port\\bi_flyby",
+   "perms": [
+    "bi_flyby_1.wav",
+    "bi_flyby_2.wav",
+    "bi_flyby_3.wav",
+    "bi_flyby_4.wav",
+    "bi_flyby_5.wav",
+    "bi_flyby_6.wav",
+    "bi_flyby_7.wav",
+    "bi_flyby_8.wav",
+    "bi_flyby_9.wav",
+    "bi_flyby_10.wav",
+    "bi_flyby_11.wav",
+    "bi_flyby_12.wav",
+    "bi_flyby_13.wav",
+    "bi_flyby_14.wav",
+    "bi_flyby_15.wav",
+    "bi_flyby_16.wav",
+    "bi_flyby_17.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\binary_rifle_port\\bi_flyby"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\binary_rifle_port\\bi_impact",
+   "perms": [
+    "bi_impact_1.wav",
+    "bi_impact_2.wav",
+    "bi_impact_3.wav",
+    "bi_impact_4.wav",
+    "bi_impact_5.wav",
+    "bi_impact_6.wav",
+    "bi_impact_7.wav",
+    "bi_impact_8.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\binary_rifle_port\\bi_impact"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\binary_rifle_port\\bi_reload_empty_balanced",
+   "perms": [
+    "bi_reload_empty_balanced_1.wav",
+    "bi_reload_empty_balanced_2.wav",
+    "bi_reload_empty_balanced_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\binary_rifle_port\\bi_reload_empty_balanced"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\binary_rifle_port\\bi_reload_full_balanced",
+   "perms": [
+    "bi_reload_full_balanced_1.wav",
+    "bi_reload_full_balanced_2.wav",
+    "bi_reload_full_balanced_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\binary_rifle_port\\bi_reload_full_balanced"
+   ]
+  }
+ ]
+}
