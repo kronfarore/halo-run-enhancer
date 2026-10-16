@@ -283,6 +283,11 @@ PORT.update({
                          'play_weapons_storm_sticky_detonator_player_fire:14,15,16',
                          'play_weapons_storm_sticky_detonator_player_fire:17,18',
                          'play_weapons_storm_sticky_detonator_player_fire:19'],
+                        # BOOT 2 (user: 'could use a bit more oomph'; of three files the user picked
+                        # BOTH +6 dB below 150 Hz (`low_shelf`) and +3 dB) -> -12.8 + 3
+                        # BOOT 3 (user: 'unchanged'): the +3 dB went into the soft limiter (-13.8 ->
+                        # -12.2 active, peaks at the ceiling) -> the stock level again and the TAG's gain
+                        # modifier 0.5 -> 1.0 (+6 dB above the PCM ceiling, `gain` below)
                         'sound\\sfx\\weapons\\pistol\\fire', -12.8),
             # fire-1's own cues (fire_1 + fire_2): the screen up @10, the detonate press @30, down @45
             'sd_fire_anim': (['play_wea_sticky_det_mech_lens_open:0,1',
@@ -303,6 +308,12 @@ PORT.update({
                            'play_wea_sticky_det_mech_reload_c:0,1',
                            'play_wea_sticky_det_mech_reload_d:0,1'],
                           'sound\\sfx\\weapons\\weapon_anims\\pistol_reload', -19.0),
+            'sd_reload_balanced': (['play_wea_sticky_det_mech_reload_a:0,1',
+                                    'play_wea_sticky_det_mech_reload_a:2,3',
+                                    'play_wea_sticky_det_mech_reload_b:0,1',
+                                    'play_wea_sticky_det_mech_reload_c:0,1',
+                                    'play_wea_sticky_det_mech_reload_d:0,1'],
+                                   'sound\sfx\weapons\weapon_anims\pistol_reload', -19.0),
             'sd_pose': (['play_wea_sticky_det_idle_player_a', 'play_wea_sticky_det_idle_player_b',
                          'play_wea_sticky_det_idle_player_c'],
                         'sound\\sfx\\weapons\\weapon_anims\\pistol_posing', -26.5),
@@ -316,9 +327,15 @@ PORT.update({
             'sd_drop': (['play_wea_drop_pistol_sticky_det_nonplayer'],
                         'sound\\sfx\\impulse\\weapon_drops\\pistol_impact', -28.8),
         },
+        'low_shelf': {'sd_fire': (150.0, 6.0)},
+        'gain': {'sd_fire': 1.0},
+        # the BALANCED reload's sound (the patcher retimes the reload by the catalog's `anims` and swaps
+        # it in: catalog anim_sounds; the Boltshot's recipe)
+        'stretch': {'sd_reload_balanced': 62.5 / 59.0},
         'offsets': {'sd_fire_anim': [10 / 30.0, 30 / 30.0, 30 / 30.0, 45 / 30.0],
                     'sd_ready': [0.0, 0.0],
                     'sd_reload': [3 / 30.0, 3 / 30.0, 21 / 30.0, 36 / 30.0, 45 / 30.0],
+                    'sd_reload_balanced': [3 / 30.0, 3 / 30.0, 21 / 30.0, 36 / 30.0, 45 / 30.0],
                     'sd_pose': [0.0, 60 / 30.0, 88 / 30.0]},
     },
 
@@ -396,6 +413,7 @@ PORT.update({
         'melee': (PISTOL + 'melee', SD + 'melee'),
         'melee_response': PISTOL + 'melee_response',
         'messages': ('Picked up a sticky detonator', 'Picked up %d rounds for sticky detonator'),
+        'extra_sounds': [SND + 'sd_reload_balanced'],
         'icon': 'sticky detonator',
         # the PISTOL's HUD; the crosshair from Halo 4's CUI (sticky_launcher.cui_screen, 3 art px a unit):
         # `lt` = img_circle 64 x 64 units at (-32, -34) -- the open-bottomed ring, centre (0, -2); the
@@ -420,6 +438,51 @@ PORT.update({
                 'fields': {'flash_cutoffs.total_ammo_cutoff': 1},
                 'ammo_meter': {'sizes': (1,), 'base': SD + 'bitmaps\\sticky_detonator_ammo'}},
         'palette_levels': LEVELS,
+    },
+
+    # weapon_ports_catalog.json (make_port_catalog_h1_ports.py sticky_detonator). DEFAULT = Halo 4's own
+    # numbers in the tags; BALANCED = the PLASMA GRENADE ratio by the stuck kill for the burst, the ROCKET
+    # ratio for the holes (step 4a, user). Assembly Halo1 units: angles in degrees, velocity in wu per TICK
+    'catalog': {
+        'entry': {
+            'weapon': 'Sticky Detonator', 'source': 'Halo 4', 'donor': 'Pistol', 'default_on': False,
+            'desc': "Halo 4's Sticky Detonator: its model, first-person animations, sounds and numbers. "
+                    "A one-shot launcher whose charge sticks to whatever it hits -- walls, floors, "
+                    "enemies -- and explodes half a second later; on a Jackal's shield it explodes "
+                    "at once. Halo 1 has no remote detonation: the fuse replaces the second trigger "
+                    "press. Plasma grenades top up its charges.",
+            'balance_desc': "Measured against the Plasma Grenade stuck to its target, with the Rocket "
+                            "Launcher for the rest: a 346 burst over 3.4 m, one charge every 2.5 s, "
+                            "a faster, shorter arc, up to 8 charges and Halo 1-style aim assist.",
+            # step 9: the balanced reload = the H1 rocket's 125 fr x 58/116 = 62.5 over the built 59 =
+            # x1.059; swap (ready + put-away, ONE multiplier): the rocket's ready 22 x 21/26 = 17.8 over
+            # the built 22 = x0.808
+            'anims': {'reload': 62.5 / 59.0, 'swap': 22 * 21 / 26.0 / 22.0},
+            'anim_sounds': {'reload': [
+                {'mult': 62.5 / 59.0, 'from': SND + 'sd_reload', 'to': SND + 'sd_reload_balanced'}]},
+            'balance': [
+                # the burst: 505 x 240/350 (the stuck kill), lower 80 x 240/350; radius 0.4 x 0.5/0.3,
+                # 2.5 x 2.0/1.45; AOE core 0.4 x 0.4/0.25 (4b list 2)
+                row('jpt!', SD + 'explosion', 'Damage Lower Bound', 54.86, 80.0, 'Charge Damage'),
+                row('jpt!', SD + 'explosion', 'Damage Upper Bound', 346.29, 505.0, 'Charge Damage'),
+                row('jpt!', SD + 'explosion', 'Damage Upper Bound Max', 346.29, 505.0, 'Charge Damage'),
+                row('jpt!', SD + 'explosion', 'Radius', 0.667, 0.4, 'Charge Damage'),
+                row('jpt!', SD + 'explosion', 'Radius Max', 3.448, 2.5, 'Charge Damage'),
+                row('jpt!', SD + 'explosion', 'AOE Core Radius', 0.64, 0.4, 'Charge Damage'),
+                # the RL ratio: 1.0 s x 2.0/0.8 = 2.5 s (0.4/s); 6 x 8/6 = 8 most (4 x 4/4 = 4 kept)
+                row('weap', SD + 'sticky detonator', 'Rounds Per Second', 0.4, 1.0, 'More Shooting', block='Triggers'),
+                row('weap', SD + 'sticky detonator', 'Rounds Per Second Max', 0.4, 1.0, 'More Shooting', block='Triggers'),
+                row('weap', SD + 'sticky detonator', 'Rounds Total Maximum', 8.0, 6.0, 'Magazine', block='Magazines'),
+                # flight: 24 x 12/10 = 28.8, 10 x 10/20 = 5 wu/s; range 20 x 128/175 = 14.6
+                row('proj', SD + 'charge', 'Initial Velocity', 28.8 / 30.0, 24.0 / 30.0, 'Projectile'),
+                row('proj', SD + 'charge', 'Final Velocity', 5.0 / 30.0, 10.0 / 30.0, 'Projectile'),
+                row('proj', SD + 'charge', 'Maximum Range', 14.6, 20.0, 'Projectile'),
+                # aim: 0 x 4/5, 35 x 15/60; 12 x 8/10, 35 x 15/25
+                row('weap', SD + 'sticky detonator', 'Autoaim Angle', 0.0, 4.0, 'Autoaim'),
+                row('weap', SD + 'sticky detonator', 'Autoaim Range', 8.75, 15.0, 'Autoaim'),
+                row('weap', SD + 'sticky detonator', 'Magnetism Angle', 9.6, 8.0, 'Magnetism'),
+                row('weap', SD + 'sticky detonator', 'Magnetism Range', 21.0, 15.0, 'Magnetism'),
+            ]},
     },
 
     # step 4b (port_field_audit.py --port sticky_detonator): the source pair (Halo 4's Sticky Detonator
