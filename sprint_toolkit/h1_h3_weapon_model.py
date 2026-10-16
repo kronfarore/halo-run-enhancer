@@ -1039,6 +1039,10 @@ def shaders(w, glow):
             # object functions in first person (the plasma pistol's own charge gauge is a
             # meter shader on D out)
             t.data.tagdata.schi_attrs.chicago_shader.framebuffer_fade_source.set_to(spec['fade_source'])
+        if spec.get('two_sided'):
+            # drawn from both sides (the Incineration Cannon, boot 4: its highest glow piece faces INTO the gun, so
+            # its firing card -- the piece's winding copied -- was back-face culled from the first-person view)
+            t.data.tagdata.schi_attrs.chicago_shader.chicago_shader_flags.two_sided = True
         t.filepath = os.path.join(out, name + '.shader_transparent_chicago')
         t.serialize(temp=False, backup=False)
         print('   shader %s  ADDITIVE glow %s%s' % (t.filepath, tuple(spec['rgb']),
