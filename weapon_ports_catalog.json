@@ -7031,6 +7031,244 @@
      }
     ]
    }
+  },
+  {
+   "weapon": "Sticky Detonator",
+   "source": "Halo 4",
+   "donor": "Pistol",
+   "default_on": false,
+   "desc": "Halo 4's Sticky Detonator: its model, first-person animations, sounds and numbers. A one-shot launcher whose charge sticks to whatever it hits -- walls, floors, enemies -- and explodes half a second later; on a Jackal's shield it explodes at once. Halo 1 has no remote detonation: the fuse replaces the second trigger press. Plasma grenades top up its charges.",
+   "balance_desc": "Measured against the Plasma Grenade stuck to its target, with the Rocket Launcher for the rest: a 346 burst over 3.4 m, one charge every 2.5 s, a faster, shorter arc, up to 8 charges and Halo 1-style aim assist.",
+   "anims": {
+    "reload": 1.0593220338983051,
+    "swap": 0.8076923076923077
+   },
+   "anim_sounds": {
+    "reload": [
+     {
+      "mult": 1.0593220338983051,
+      "from": "sound\\weapons\\sticky_detonator_port\\sd_reload",
+      "to": "sound\\weapons\\sticky_detonator_port\\sd_reload_balanced"
+     }
+    ]
+   },
+   "balance": [
+    {
+     "class": "jpt!",
+     "tag": "weapons\\sticky detonator\\explosion",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 54.86,
+     "card": "Charge Damage",
+     "original": 80.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\sticky detonator\\explosion",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 346.29,
+     "card": "Charge Damage",
+     "original": 505.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\sticky detonator\\explosion",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 346.29,
+     "card": "Charge Damage",
+     "original": 505.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\sticky detonator\\explosion",
+     "field": "Radius",
+     "block": null,
+     "value": 0.667,
+     "card": "Charge Damage",
+     "original": 0.4
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\sticky detonator\\explosion",
+     "field": "Radius Max",
+     "block": null,
+     "value": 3.448,
+     "card": "Charge Damage",
+     "original": 2.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\sticky detonator\\explosion",
+     "field": "AOE Core Radius",
+     "block": null,
+     "value": 0.64,
+     "card": "Charge Damage",
+     "original": 0.4
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\sticky detonator\\sticky detonator",
+     "field": "Rounds Per Second",
+     "block": "Triggers",
+     "value": 0.4,
+     "card": "More Shooting",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\sticky detonator\\sticky detonator",
+     "field": "Rounds Per Second Max",
+     "block": "Triggers",
+     "value": 0.4,
+     "card": "More Shooting",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\sticky detonator\\sticky detonator",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 8.0,
+     "card": "Magazine",
+     "original": 6.0
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\sticky detonator\\charge",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 0.9600000000000001,
+     "card": "Projectile",
+     "original": 0.8
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\sticky detonator\\charge",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 0.16666666666666666,
+     "card": "Projectile",
+     "original": 0.3333333333333333
+    },
+    {
+     "class": "proj",
+     "tag": "weapons\\sticky detonator\\charge",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 14.6,
+     "card": "Projectile",
+     "original": 20.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\sticky detonator\\sticky detonator",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 0.0,
+     "card": "Autoaim",
+     "original": 4.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\sticky detonator\\sticky detonator",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 8.75,
+     "card": "Autoaim",
+     "original": 15.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\sticky detonator\\sticky detonator",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 9.6,
+     "card": "Magnetism",
+     "original": 8.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\sticky detonator\\sticky detonator",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 21.0,
+     "card": "Magnetism",
+     "original": 15.0
+    }
+   ],
+   "weap": "weapons\\sticky detonator\\sticky detonator",
+   "fp_animations": "weapons\\sticky detonator\\fp\\fp",
+   "requires": [
+    "proj weapons\\sticky detonator\\charge"
+   ],
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\sticky detonator\\sticky detonator",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "weapons\\plasma grenade\\plasma grenade",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+      "label": "Assault Rifle Ammo"
+     },
+     {
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+      "label": "Flamethrower Ammo"
+     },
+     {
+      "tag": "powerups\\needler ammo\\needler ammo",
+      "label": "Needler Ammo"
+     },
+     {
+      "tag": "powerups\\pistol ammo\\pistol ammo",
+      "label": "Pistol Ammo"
+     },
+     {
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
+     },
+     {
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+      "label": "Sniper Rifle Ammo"
+     },
+     {
+      "tag": "weapons\\plasma grenade\\plasma grenade",
+      "label": "Plasma Grenade"
+     }
+    ]
+   }
   }
  ],
  "Halo 3": [
