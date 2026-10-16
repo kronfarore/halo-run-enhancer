@@ -72,8 +72,9 @@ ATTACH = [i for i in range(33) if i not in [WATER, LEAVES] + FORCE_FIELDS]
 # (0.2 s, early, shielded orange 1 / 0.3 / 0, unshielded red), the blast explosion_small_lowpass (0.25 s
 # shielded, 0.75 unshielded, the same colours) -- Halo 1 has one flash a damage effect: the shielded
 # orange at Halo 4's timing, at 0.5 / a 30 % wash (the LightRifle's approved 0.3 / 15 %, stronger for a
-# power weapon)
-HIT_FLASH = {'screen_flash.duration': 0.2, 'screen_flash.fade_function': 'early',
+# power weapon). ARMED BOOT 3 (user: 'increase the hit flash duration', no boot): Halo 4's x2 -- the hit
+# 0.4 s, the blast 0.5 s (Halo 4's unshielded blast flash 0.75 s)
+HIT_FLASH = {'screen_flash.duration': 0.4, 'screen_flash.fade_function': 'early',
              'screen_flash.maximum_intensity': 0.5,
              'screen_flash.tint_lower_bound.a': 0.3, 'screen_flash.tint_lower_bound.r': 1.0,
              'screen_flash.tint_lower_bound.g': 0.3, 'screen_flash.tint_lower_bound.b': 0.0}
@@ -94,7 +95,7 @@ SLUG = {
                   # 30/35, radius 1 x 2/0.5, exponent 2 x 0/0.5 = 0, outward velocity 16 x 15/6 (outward exponent:
                   # a zero on one side -> Halo 4's 0, list 3); aoe core = Halo 4's own 0.54 (the ratio's 0.432 is
                   # the balanced side of the radius rows); category kept the rocket's high_explosive (its table)
-                  'fields': {**HIT_FLASH, 'screen_flash.duration': 0.25,
+                  'fields': {**HIT_FLASH, 'screen_flash.duration': 0.5,
                              'damage.aoe_core_radius': 0.54,
                              'damage.instantaneous_acceleration': 6.0 * 2.5 / 3.0,
                              'damage.active_camouflage_damage': 1.0 / 0.9,
