@@ -310,7 +310,10 @@ PORT.update({
         # -> retimed to 45 fr (1.5 s) for boot 2. BOOT 2 (user: 'I can't release the shot after the charge, I
         # need to keep holding until it fires on its own'): Halo 1's one-trigger charge fires ONLY by its
         # discharge (a release while charged fires nothing) -> charge hold 0 (option 1, user: fires the moment
-        # the 0.75 s charge completes); with no hold the retime has no purpose: Halo 4's own 35 fr again
+        # the 0.75 s charge completes); with no hold the retime has no purpose: Halo 4's own 35 fr again.
+        # BOOT 3 (user: 'the charge animation needs to fit the new charge time'): it plays during the CHARGE
+        # and was cut by the shot -> 35 -> 23 fr (0.75 s: the shot lands on its last frame)
+        'resample': {'first-person overcharged': 23},
     },
 
     # Halo 4's own sounds (h1_port_sounds.py railgun, `bank` 'halo4'): the player bank railgun_player
@@ -400,6 +403,11 @@ PORT.update({
                     'deceleration_time': 0.0, 'first_person_offset': FP_MUZZLE},
         # Halo 4: minimum error 0, error 0.15 -> 0.8 (the bloom never builds at one round a reload)
         'error_deg': {'minimum_error': 0.0, 'error_angle': (0.15, 0.8)},
+        # BOOT 3 (user: 'give the weapon a guaranteed overheat after firing with a timeout that is exactly the
+        # reload time'): heat 1.0 a round (every shot overheats; Halo 4's own 0.36 a round never did), back at
+        # 0.1 -> the vent = (1 - 0.1) / loss = the reload 82 / 30 s: loss 0.9 / 2.733 = 0.3293 (balanced: the
+        # 88.4 fr reload, 0.3054 -- a row). Halo 1 charges during the overheat, only the discharge waits (A8)
+        'heat': {'recovery_threshold': 0.1, 'overheated_threshold': 1.0, 'loss_per_second': 0.9 / (82 / 30.0)},
         # Halo 4: 1 loaded, 4 at pickup, 6 most, 1 reloaded; reload = reload_empty 82 fr (Halo 1 needs a
         # number: the animation's 82 / 30)
         'magazine': {'rounds_loaded_maximum': 1, 'rounds_reloaded': 1,
@@ -427,6 +435,8 @@ PORT.update({
             # only taps a pair -- A8: Armed enemies would never fire the slug)
             'weap_attrs.triggers.0.charging.charging_time': 0.75,
             'weap_attrs.triggers.0.charging.charge_hold_time': 0.0,
+            # the guaranteed overheat (boot 3, user; `heat` above)
+            'weap_attrs.triggers.0.misc.heat_generated_per_round': 1.0,
             'weap_attrs.triggers.0.charging.overcharged_action': 'discharge',
             'weap_attrs.triggers.0.flags.does_not_repeat_automatically': True,
             'weap_attrs.triggers.0.flags.projectile_is_client_side_only': False,
@@ -506,6 +516,8 @@ PORT.update({
                 row('jpt!', RG + 'explosion', 'Radius From', 0.306, 0.55, 'Explosion Radius'),
                 row('jpt!', RG + 'explosion', 'Radius To', 0.8, 1.0, 'Explosion Radius'),
                 row('weap', RG + 'railgun', 'Rounds Total Maximum', 8.0, 6.0, 'Magazine', block='Magazines'),
+                # the overheat = the reload (boot 3, user): 0.9 / the balanced reload 88.4 / 30 s
+                row('weap', RG + 'railgun', 'Heat Loss Per Second', 0.9 / (88.4 / 30.0), 0.9 / (82 / 30.0), 'Heat Loss'),
                 row('proj', RG + 'slug', 'Initial Velocity', 4.0, 3.333, 'Projectile'),
                 row('proj', RG + 'slug', 'Final Velocity', 4.0, 3.333, 'Projectile'),
                 row('weap', RG + 'railgun', 'Autoaim Range', 14.6, 25.0, 'Autoaim'),
