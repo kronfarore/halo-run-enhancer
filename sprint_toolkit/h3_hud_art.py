@@ -81,6 +81,10 @@ def sprite(name, index, native=False):
     `native`: the crop at the sheet's OWN density, unscaled (the Grenade Launcher's crosshair,
     boot 2: the 4K art's fine lines kept; the caller divides by `density`)."""
     img, boxes = sheet(name)
+    if not boxes and index == 0:
+        # a sheet with NO sprite boxes (Reach's ballistic_meters, 2026-10-17: one 24-pill strip the chud
+        # cuts by manual texture coordinates): sequence 0 is the whole image, registered at its centre
+        boxes = [(0.0, 1.0, 0.0, 1.0, 0.5, 0.5)]
     l, r, t, b, rx, ry = boxes[index]
     w, h = img.size
     crop = img.crop((round(l * w), round(t * h), round(r * w), round(b * h)))

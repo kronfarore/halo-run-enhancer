@@ -721,7 +721,10 @@ PORT.update({
                 'reticle_scale': 1.3, 'reticle_overlay': 1.6 / 1.3 / 2,
                 'reticle_supersample': 2,
                 'reticle_min_width': 2,
-                'ammo_meter': {'sizes': (1,), 'base': GL + 'bitmaps' + B + 'grenade_launcher_ammo'},
+                'ammo_meter': {'sizes': (1,), 'base': GL + 'bitmaps' + B + 'grenade_launcher_ammo',
+                               # Reach draws NO ammo meter for it: its HUD frag grenade instead (user 2026-10-17:
+                               # 'the next best icon, like a grenade')
+                               'art': {'h3': (R + r'ui\chud\bitmaps\grenade_scematics', 0)}},
                 'flash_base': 2},
         'palette_levels': LEVELS,
     },

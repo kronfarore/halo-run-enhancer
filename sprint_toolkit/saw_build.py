@@ -69,8 +69,11 @@ def main():
     py('h1_saw_sounds.py', '--write')
     py('saw_anims.py', 'original')
     py('saw_anims.py', 'balanced')      # shipped too, for the patcher's balance option
+    # Halo 4's own rounds, three rows of 24 (generic-meter audit, user 2026-10-17)
     py('ammo_meter.py', '72', '135',
-       'weapons' + B + 'saw' + B + 'bitmaps' + B + 'saw_ammo')
+       'weapons' + B + 'saw' + B + 'bitmaps' + B + 'saw_ammo',
+       '--art', '{"h3": ["h4:ui\\\\hud\\\\weapons\\\\human\\\\lmg\\\\bitmap\\\\ammo_lmg", 0], '
+                '"native": true, "grid": true}')
     py('saw_weapon.py')
     # AFTER saw_weapon, never before: saw_weapon builds the port's tag FROM the Assault
     # Rifle's, so it resets item_attrs.message_index to 4 -- the Assault Rifle's "Picked

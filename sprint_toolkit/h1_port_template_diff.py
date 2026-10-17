@@ -26,16 +26,25 @@ TAGS = os.path.join(pfa.STEAM, 'HCEEK', 'tags')
 def pairs(p):
     w = p['pickable']
     out = [('weapon', w['weapon'] + '.weapon', w['template'] + '.weapon')]
-    for kind, ext in (('projectile', '.projectile'), ('damage', '.damage_effect')):
-        src, own = (w.get('bullet') or {}).get(kind) or (None, None)
-        if own:
-            out.append(('bullet ' + kind, own + ext, src + ext))
-    # an explosive projectile's own detonation (the Brute Shot): effect + its damage part
-    X = (w.get('bullet') or {}).get('explosion') or {}
-    for kind, ext in (('effect', '.effect'), ('damage', '.damage_effect')):
-        if X.get(kind):
-            src, own = X[kind]
-            out.append(('explosion ' + kind, own + ext, src + ext))
+
+    def projectile_pairs(P, label, xlabel):
+        for kind, ext in (('projectile', '.projectile'), ('damage', '.damage_effect')):
+            src, own = P.get(kind) or (None, None)
+            if own:
+                out.append((label + kind, own + ext, src + ext))
+        # an explosive projectile's own detonation (the Brute Shot): effect + its damage part
+        X = P.get('explosion') or {}
+        for kind, ext in (('effect', '.effect'), ('damage', '.damage_effect')):
+            if X.get(kind):
+                src, own = X[kind]
+                out.append((xlabel + kind, own + ext, src + ext))
+
+    projectile_pairs(w.get('bullet') or {}, 'bullet ', 'explosion ')
+    # the projectiles built BESIDE the trigger's (`projectiles`: the Incineration Cannon's bomblet, created by
+    # the shell's burst effect) -- left out of the close-out diff until 2026-10-17
+    for P in w.get('projectiles') or []:
+        name = P['projectile'][1].split(B)[-1]
+        projectile_pairs(P, name + ' ', name + ' explosion ')
     if w.get('melee'):
         out.append(('melee', w['melee'][1] + '.damage_effect', w['melee'][0] + '.damage_effect'))
     for field, (src, own, _swaps, *opt) in (w.get('sound_effects') or {}).items():

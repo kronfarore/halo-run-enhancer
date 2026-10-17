@@ -92,7 +92,14 @@ def layout(n):
     return best
 
 
-def h3_tick(sheet, seq, native=False):
+def _runs(on):
+    """(starts, ends) of the True runs of a 1-D mask."""
+    starts = [x for x in range(len(on)) if on[x] and (x == 0 or not on[x - 1])]
+    ends = [x + 1 for x in range(len(on)) if on[x] and (x == len(on) - 1 or not on[x + 1])]
+    return starts, ends
+
+
+def h3_tick(sheet, seq, native=False, cut=8):
     """A HALO 3 round icon as the tick (the Mauler, test 1 2026-10-08: 'the original pips'):
     the first icon of a chud ballistic-meter sprite (alpha = the shape; Halo 3 draws one icon
     a round in a row), plus Halo 3's own pitch between icons, in px of that sprite."""
@@ -101,13 +108,40 @@ def h3_tick(sheet, seq, native=False):
     import h3_hud_art
     art, _reg = h3_hud_art.sprite(sheet, seq, native=native)
     a = np.array(art.split()[3])
-    on = a.max(axis=0) > 8
-    starts = [x for x in range(len(on)) if on[x] and (x == 0 or not on[x - 1])]
-    ends = [x + 1 for x in range(len(on)) if on[x] and (x == len(on) - 1 or not on[x + 1])]
+    starts, ends = _runs(a.max(axis=0) > cut)
     rows = np.where(a[:, starts[0]:ends[0]].max(axis=1) > 8)[0]
     tick = a[rows[0]:rows[-1] + 1, starts[0]:ends[0]]
     pitch = (starts[1] - starts[0]) if len(starts) > 1 else tick.shape[1] * 1.5
     return tick, float(pitch)
+
+
+def h3_grid(sheet, seq, native=False, cut=8):
+    """(tick, pitch, row pitch, icons in the first row) of a round-icon sprite, for `grid` only.
+    `cut` (2026-10-17): the alpha that separates icons -- the Suppressor's slanted pips touch at
+    their antialiased edges (alpha 8 merged a row of 24 into one tick); the tick itself keeps
+    every alpha inside its box. The FIRST row only: h3_tick on a multi-row sheet (Halo 3's BR /
+    SMG / Spiker) gives its whole first COLUMN as one tick. A row is a band of icons; a band under
+    half the height of the one above is that row's own foot, merged into it (the Brute Shot's /
+    Mauler's shells have a 1-2 px transparent line -- as far apart as the SMG's real rows, proof am1)."""
+    import h3_hud_art
+    art, _reg = h3_hud_art.sprite(sheet, seq, native=native)
+    a = np.array(art.split()[3])
+    rs, re_ = _runs(a.max(axis=1) > cut)                    # bands of icon rows
+    i = 0
+    while i + 1 < len(rs):
+        if (re_[i + 1] - rs[i + 1]) * 2 < re_[i] - rs[i]:
+            re_[i] = re_.pop(i + 1)
+            rs.pop(i + 1)
+        else:
+            i += 1
+    band = a[rs[0]:re_[0]]
+    starts, ends = _runs(band.max(axis=0) > cut)
+    rows = np.where(a[:, starts[0]:ends[0]].max(axis=1) > 8)[0]
+    rows = rows[(rows >= max(0, rs[0] - 2)) & (rows < re_[0] + 2)]  # the soft edge, not the next row
+    tick = a[rows[0]:rows[-1] + 1, starts[0]:ends[0]]
+    pitch = (starts[1] - starts[0]) if len(starts) > 1 else tick.shape[1] * 1.5
+    row_pitch = (rs[1] - rs[0]) if len(rs) > 1 else tick.shape[0] * 1.25
+    return tick, float(pitch), float(row_pitch), len(starts)
 
 
 def render(n, art=None):
@@ -148,8 +182,36 @@ def render(n, art=None):
                 static_a[ys, xs] = np.maximum(static_a[ys, xs], t)
             y += h_ + round(gap * s)
         return static_a, meter_l, meter_a, (nr, cols, s, n_ticks, rounds_per)
+    if art and art.get('grid'):
+        # `grid` (2026-10-17, the generic-meter audit): the source's own ROWS -- `grid` icons a row
+        # (True: as many as the sheet's first row holds), row by row like the AR's ticks: tick 1
+        # top-left, the last round fired is the top-left one. Halo 3's BR / SMG / Spiker, Halo 4's
+        # Suppressor and SAW draw their rounds in 2-3 rows
+        tick, pitch, row_pitch, src_per = h3_grid(*art['h3'], native=art.get('native', False),
+                                                  cut=art.get('cut', 8))
+        per = src_per if art['grid'] is True else int(art['grid'])
+        rows = -(-n_ticks // per)
+        per = min(per, n_ticks)
+        th, tw = tick.shape
+        s = min(1.0, BOX_W / ((per - 1) * pitch + tw), BOX_H / ((rows - 1) * row_pitch + th))
+        t = np.array(Image.fromarray(tick).resize((max(1, round(tw * s)), max(1, round(th * s))),
+                                                  Image.LANCZOS))
+        static_a = np.zeros((H, W), np.uint8)
+        meter_l = np.zeros((H, W), np.uint8)
+        meter_a = np.zeros((H, W), np.uint8)
+        h_, w_ = t.shape
+        for k in range(1, n_ticks + 1):
+            r, c = (k - 1) // per, (k - 1) % per
+            x = int(5 + c * pitch * s + 0.5)
+            y = int(5 + art.get('y', 0) + r * row_pitch * s + 0.5)
+            sl = (slice(y, y + h_), slice(x, x + w_))
+            meter_a[sl] = np.maximum(meter_a[sl], t)
+            meter_l[sl] = np.where(t > 0, threshold(k, n), meter_l[sl])
+            ys, xs = slice(y - 4, y - 4 + h_), slice(x - 4, x - 4 + w_)
+            static_a[ys, xs] = np.maximum(static_a[ys, xs], t)
+        return static_a, meter_l, meter_a, (rows, per, s, n_ticks, rounds_per)
     if art:
-        tick, pitch = h3_tick(*art['h3'], native=art.get('native', False))
+        tick, pitch = h3_tick(*art['h3'], native=art.get('native', False), cut=art.get('cut', 8))
         th, tw = tick.shape
         s = min(1.0, BOX_W / (n_ticks * pitch), BOX_H / float(th))
         t = np.array(Image.fromarray(tick).resize((max(1, round(tw * s)), max(1, round(th * s))),
@@ -253,4 +315,13 @@ def main(*sizes_then_base, art=None):
 
 
 if __name__ == '__main__':
-    main(*sys.argv[1:])
+    # `--art <json>` (the SAW, saw_build.py, 2026-10-17): the `art` dict as JSON, `h3` given as a list
+    argv = sys.argv[1:]
+    art = None
+    if '--art' in argv:
+        import json
+        i = argv.index('--art')
+        art = json.loads(argv[i + 1])
+        art['h3'] = tuple(art['h3'])
+        del argv[i:i + 2]
+    main(*argv, art=art)

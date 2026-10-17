@@ -513,7 +513,10 @@ PORT.update({
                 # sheet sequence per magazine (21 default, 18 balanced: a balance row selects it),
                 # the low-ammo flash scaled from the needler's 8 of 20 (`flash_base`)
                 'flash_base': 20,
-                'ammo_meter': {'sizes': (21, 18), 'base': NR + 'bitmaps\\nr_ammo'}},
+                'ammo_meter': {'sizes': (21, 18), 'base': NR + 'bitmaps\\nr_ammo',
+                               # Reach's own pill (generic-meter audit, user 2026-10-17): its chud cuts a 24-pill
+                               # strip with no sprite boxes by texture coordinates
+                               'art': {'h3': (R + r'ui\chud\bitmaps\ballistic_meters', 0), 'native': True}}},
         'palette_levels': LEVELS,
     },
 

@@ -136,7 +136,13 @@ BOMBLET = {
                     'proj_attrs.physics.air_damage_range': (0.0, 500.0),
                     'proj_attrs.physics.water_gravity_scale': 0.0,
                     'obje_attrs.bounding_radius': 0.5,
-                    'proj_attrs.collision_radius': 0.1},
+                    'proj_attrs.collision_radius': 0.1,
+                    # 4b LIST 3, the close-out re-check (user 2026-10-17; the Boltshot's / Focus Rifle's rule: a zero
+                    # on one side or an enum -> Halo 4's own): water damage range 5..10, impact / detonation noise
+                    # 'shout' (the fuel rod copy's 0..10, 'silent' / 'loud')
+                    'proj_attrs.physics.water_damage_range': (5.0, 10.0),
+                    'proj_attrs.impact_noise': 'shout',
+                    'proj_attrs.physics.detonation_noise': 'shout'},
     'default_responses': {'reflect': WORLD, 'detonate': UNITS, 'overpenetrate': [28, 29]},
     # BOOT 2 (user: 'the bomblets are unchanged' -- still bursting in the air): Halo 1's friction is the fraction of
     # speed REMOVED (the frag: parallel 0.7-0.8, perpendicular 0.8-0.9), so Halo 4's 0.1 / 0.1 bounced near-elastic --
@@ -211,7 +217,10 @@ SHELL = {
                     'obje_attrs.bounding_radius': 0.5,
                     'proj_attrs.physics.air_damage_range': (0.0, 100 * 50 / 150.0),
                     'proj_attrs.physics.water_gravity_scale': 0.0,
-                    'proj_attrs.collision_radius': 0.5},
+                    'proj_attrs.collision_radius': 0.5,
+                    # 4b LIST 3, the close-out re-check (user 2026-10-17): water damage range Halo 4's own 5..10
+                    # (a zero on one side; the fuel rod copy's 0..10)
+                    'proj_attrs.physics.water_damage_range': (5.0, 10.0)},
     # Halo 4's shell detonates on everything but invulnerable shields: the Hunter shield too (the fuel rod reflects)
     'default_responses': {'detonate': [32]},
     'reflect': [{'materials': [30], 'response': 'detonate', 'angle_deg': (0.0, 0.0), 'effect_from_default': False}],
@@ -317,7 +326,9 @@ PORT.update({
     # The muzzle-flash rule (check 10): boots 3-9 ('more pompous', 'move down, triple its lifetime' -> fixed).
     # THE HIT-EFFECT RULE: 1.25 shells/s -> x1. 5b (h1_role_compare incineration_cannon, the built port): 550 dps
     # default, 158 balanced (= the 4a rocket-ratio rows). Model 0.59 MiB (60 %). Enhancer keys + 17 cards:
-    # 14731ab (the enhancer session). Armed boot passed (user, 2026-10-17).
+    # 14731ab (the enhancer session). Armed boot passed (user, 2026-10-17). RE-CHECK (user, same day): 4b list 3
+    # had three lines undecided -> Halo 4's own (water damage range shell + bomblet, bomblet noise; check 6: exactly
+    # those 4 fields); the template diff now covers `projectiles` (the bomblet: 171 lines, all decisions above).
     # BORROWED sounds kept ON PURPOSE (port_sound_refs prints these as KEEP)
     'sound_keeps': {r'sound\sfx\impulse\weapon_drops\rlauncher_impact':
                     "Halo 4's own drop (wea_drop_launcher_fr_incinerator_nonplayer) ships in no MCC bank: "

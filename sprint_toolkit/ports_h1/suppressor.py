@@ -451,7 +451,11 @@ PORT.update({
                 'reticle_min_width': 2,
                 'reticle_supersample': 2,
                 'reticle_scale': 1.6, 'reticle_overlay': 1.5 / (123 / 97.0 * 1.6 * 2 * 0.75),
-                'ammo_meter': {'sizes': (48, 90), 'base': SU + 'bitmaps\\suppressor_ammo'}},
+                'ammo_meter': {'sizes': (48, 90), 'base': SU + 'bitmaps\\suppressor_ammo',
+                               # Halo 4's own pips (generic-meter audit, user 2026-10-17): they touch at their soft
+                               # edges -> cut at alpha 128, and 24 a row (two stay joined at any cut)
+                               'art': {'h3': (H4 + r'ui\hud\weapons\forerunner\forerunner_smg\bitmap\ammo_forerunnersmg', 0),
+                                       'native': True, 'grid': 24, 'cut': 128}}},
         'palette_levels': LEVELS,
     },
 

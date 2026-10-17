@@ -480,7 +480,10 @@ PORT.update({
                 # BOOT 1 (user: 'low ammo warning is active with 6 remaining, on the ammo total'): the
                 # pistol's total-ammo flash cutoff 13 -> the rocket launcher's 1
                 'fields': {'flash_cutoffs.total_ammo_cutoff': 1},
-                'ammo_meter': {'sizes': (1,), 'base': SD + 'bitmaps\\sticky_detonator_ammo'}},
+                'ammo_meter': {'sizes': (1,), 'base': SD + 'bitmaps\\sticky_detonator_ammo',
+                               # Halo 4's own charge icon (generic-meter audit, user 2026-10-17)
+                               'art': {'h3': (H4 + r'ui\hud\weapons\human\sticky\bitmap\ammo_sticky', 0),
+                                       'native': True}}},
         'palette_levels': LEVELS,
     },
 

@@ -394,7 +394,9 @@ PORT.update({
         'hud': {'donor': AR + 'assault rifle', 'out': SK + 'spiker',
                 'reticle': ('hud_reticles', 2, 'spiker'),
                 'reticle_thicken': 1,
-                'ammo_meter': {'sizes': (40, 75), 'base': SK + 'bitmaps\\spiker_ammo'}},
+                'ammo_meter': {'sizes': (40, 75), 'base': SK + 'bitmaps\\spiker_ammo',
+                               # Halo 3's own rounds, in its rows (generic-meter audit, user 2026-10-17)
+                               'art': {'h3': ('ballistic_meters', 9), 'grid': True}}},
         'palette_levels': ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40'],
     },
 

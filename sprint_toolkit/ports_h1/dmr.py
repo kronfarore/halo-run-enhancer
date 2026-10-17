@@ -357,7 +357,10 @@ PORT.update({
                                   'number': ['distance_to_target', 'elevation_to_target']},
                 'reticle': (R + r'ui\chud\bitmaps\hud_reticles', 14, 'dmr'),
                 'reticle_min_width': 3,
-                'ammo_meter': {'sizes': (15,), 'base': DMR + 'bitmaps\\dmr_ammo'}},
+                'ammo_meter': {'sizes': (15,), 'base': DMR + 'bitmaps\\dmr_ammo',
+                               # Reach's own pill (generic-meter audit, user 2026-10-17): its chud cuts a 24-pill
+                               # strip with no sprite boxes by texture coordinates
+                               'art': {'h3': (R + r'ui\chud\bitmaps\ballistic_meters', 0), 'native': True}}},
         'palette_levels': LEVELS,
     },
 
