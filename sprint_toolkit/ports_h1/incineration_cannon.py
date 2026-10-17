@@ -672,9 +672,9 @@ PORT.update({
                 # 4b list 2: knockback by the rockets' 6/3 (default Halo 4's own 3 / 2.5)
                 row('jpt!', IC + 'explosion', 'Instantaneous Acceleration i', 6.0, 3.0, 'Shell Damage'),
                 row('jpt!', IC + 'bomblet explosion', 'Instantaneous Acceleration i', 5.0, 2.5, 'Bomblet Damage'),
-                # 4b list 2, the bomblet vs the frags: timer 0.6-1.0 x 0.5/(0.6-0.65); gravity 5 x 1/0.9
-                row('proj', IC + 'bomblet', 'Timer', 0.5, 0.6, 'Projectile'),
-                row('proj', IC + 'bomblet', 'Timer Max', 0.769, 1.0, 'Projectile'),
+                # 4b list 2, the bomblet vs the frags: gravity 5 x 1/0.9. Its fuse rows (0.6-1.0 x 0.5/(0.6-0.65)) DROPPED at
+                # the balanced boot: the fuse is now 0.1-0.3 s once AT REST (boots 4-8), an approximation like the
+                # Sticky Detonator's -- the same in both versions
                 row('proj', IC + 'bomblet', 'Air Gravity Scale', 5.556, 5.0, 'Projectile'),
                 # the RL ratio: 0.8 s x 2.0/0.8 = 2.0 s (0.5/s); 6 x 8/6 = 8 most (4 x 4/4 = 4 kept)
                 row('weap', IC + 'incineration cannon', 'Rounds Per Second', 0.5, 1.25, 'More Shooting', block='Triggers'),

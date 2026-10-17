@@ -1647,6 +1647,10 @@ SETS = {
     # `collision` (the shell's tag) + 30..120 explosion_large over 0.61 -> 1.25 (core 0.6). No burn /
     # damage over time anywhere. Bomblets on a target: 0 (they scatter 3-5 wu away) to 5 (a big target)
     'incineration_cannon': {'port': 'Incineration Cannon', 'weapons': [
+        # the BUILT port (step 5b, 2026-10-17): its tags (+ --balanced rows); direct hit = the shell's impact + burst
+        # (the bomblets' 5 x 120 come on top when they reach the target: the + 5 bomblets rows)
+        ('Incineration Cannon (port)', W + r'incineration cannon\incineration cannon', 'shot'),
+        ('Incineration Cannon melee (port)', W + r'incineration cannon\incineration cannon', 'melee'),
         # DEFAULT candidates: Halo 4's own on the rocket's table (Halo 4's shell IS its rocket's damage)
         ('IC = H4 own, direct', W + r'rocket launcher\rocket launcher', 'shot',
          {'parts': [(RLX, 200.0, (0.0, 0.0)), (RLX, 240.0, (0.75, 2.0))], 'rate': 1 / 0.8, 'mag': 1,
