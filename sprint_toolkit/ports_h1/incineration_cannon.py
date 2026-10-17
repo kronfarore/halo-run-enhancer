@@ -282,9 +282,23 @@ PORT = reserved(
             'peers': ['Rocket Launcher', 'Flak Cannon'],
             'why': 'a rocket-launcher-type weapon, 1-round magazine, explosive projectile, 1.8x zoom',
             'lacks': 'the cluster (native bomblets, approximated: a random cone); no burn exists in Halo 4'}},
-    # step 11: the source game's ai\generic entry (24 fields, verified 2026-10-07)
+    # step 11 (user, 2026-10-17): the source game's ai\generic entry, m020 #30 (verified 2026-10-07): firing distance 20,
+    # burst 0.5 s every 2.5-4 s, desired range 8-16, Halo 4's damage modifier 0.75, drops 0.5-1.0 loaded with 3-4 rounds.
+    # The Knights' `_knight` weapon: NO entry along its character chain (storm_knight_commander -> storm_knight ->
+    # ai\generic: no weapon / firing-pattern blocks, ai\generic none for _knight) -- engine fallbacks; it differs from
+    # the source only by recovery 2.0 s and 8 rounds most. DONOR = the ROCKET LAUNCHER (the yardstick): Halo 1's carriers
+    # (h1_weapon_carriers 2026-10-17) the Flood combat Elite and the Flood human rocket variants, both WDM 0.4, no actor
+    # flags -- they agree, no donor_variant. ARMED WDM RULE (user): 0.4 x rocket 158 / the port's dps column -- default
+    # 550 -> 0.115 (Legendary: 91 a direct hit, 2 hits to kill the player; + ~25 per bomblet that reaches),
+    # balanced 158 -> 0.40 (227, 1 hit: the Halo 1 rocket carriers' own). The two-handed rule's HEAVY-SUPPORT exception:
+    # Grunts fire it at full rate. THE BALANCED DROP RULE: no rows (Halo 1's rocket carriers drop it unloaded -- loaded
+    # 0 --, Halo 4's rocket entry sets no drop values: a zero on one side). THE SPECIES SKILL RULE: on
     firing_profile={'mode': 'source', 'from_game': 'Halo 4', 'from_map': 'halo4\\maps\\m020.map',
-                    'from_weapon': 'objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher'},
+                    'from_weapon': 'objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher',
+                    'donor_weapon': 'weapons\\rocket launcher\\rocket launcher',
+                    'wdm_rule': {'base': 0.4, 'yardstick_dps': 158.0, 'port_dps': 550.0,
+                                 'balanced_port_dps': 158.0},
+                    'species_skill': True},
 )
 
 PORT.update({
