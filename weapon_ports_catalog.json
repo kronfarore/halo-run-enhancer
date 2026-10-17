@@ -7675,24 +7675,6 @@
     {
      "class": "proj",
      "tag": "weapons\\incineration cannon\\bomblet",
-     "field": "Timer",
-     "block": null,
-     "value": 0.5,
-     "card": "Projectile",
-     "original": 0.6
-    },
-    {
-     "class": "proj",
-     "tag": "weapons\\incineration cannon\\bomblet",
-     "field": "Timer Max",
-     "block": null,
-     "value": 0.769,
-     "card": "Projectile",
-     "original": 1.0
-    },
-    {
-     "class": "proj",
-     "tag": "weapons\\incineration cannon\\bomblet",
      "field": "Air Gravity Scale",
      "block": null,
      "value": 5.556,
