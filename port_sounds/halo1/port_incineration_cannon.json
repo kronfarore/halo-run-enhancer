@@ -1,0 +1,121 @@
+{
+ "game": "Halo 1",
+ "weapon": "Incineration Cannon",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\incineration_cannon_port\\ic_fire",
+   "perms": [
+    "ic_fire_1.wav",
+    "ic_fire_2.wav",
+    "ic_fire_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\incineration_cannon_port\\ic_fire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\incineration_cannon_port\\ic_explode",
+   "perms": [
+    "ic_explode_1.wav",
+    "ic_explode_2.wav",
+    "ic_explode_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\incineration_cannon_port\\ic_explode"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\incineration_cannon_port\\ic_bomblet_explode",
+   "perms": [
+    "ic_bomblet_explode_1.wav",
+    "ic_bomblet_explode_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\incineration_cannon_port\\ic_bomblet_explode"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\incineration_cannon_port\\ic_dryfire",
+   "perms": [
+    "ic_dryfire_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\incineration_cannon_port\\ic_dryfire"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\incineration_cannon_port\\ic_ready",
+   "perms": [
+    "ic_ready_1.wav",
+    "ic_ready_2.wav",
+    "ic_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\incineration_cannon_port\\ic_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\incineration_cannon_port\\ic_melee",
+   "perms": [
+    "ic_melee_1.wav",
+    "ic_melee_2.wav",
+    "ic_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\incineration_cannon_port\\ic_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\incineration_cannon_port\\ic_reload",
+   "perms": [
+    "ic_reload_1.wav",
+    "ic_reload_2.wav",
+    "ic_reload_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\incineration_cannon_port\\ic_reload"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\incineration_cannon_port\\ic_reload_balanced",
+   "perms": [
+    "ic_reload_balanced_1.wav",
+    "ic_reload_balanced_2.wav",
+    "ic_reload_balanced_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\incineration_cannon_port\\ic_reload_balanced"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\incineration_cannon_port\\ic_pose",
+   "perms": [
+    "ic_pose_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\incineration_cannon_port\\ic_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\incineration_cannon_port\\ic_zoom_in",
+   "perms": [
+    "ic_zoom_in_1.wav",
+    "ic_zoom_in_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\incineration_cannon_port\\ic_zoom_in"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\incineration_cannon_port\\ic_zoom_out",
+   "perms": [
+    "ic_zoom_out_1.wav",
+    "ic_zoom_out_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\incineration_cannon_port\\ic_zoom_out"
+   ]
+  }
+ ]
+}
