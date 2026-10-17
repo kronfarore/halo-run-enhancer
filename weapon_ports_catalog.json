@@ -7838,6 +7838,12 @@
       "label": "Sniper Rifle Ammo"
      }
     ]
+   },
+   "hands": "heavy",
+   "tag_map": {
+    "proj weapons\\rocket launcher\\rocket": "proj weapons\\incineration cannon\\shell",
+    "jpt! weapons\\rocket launcher\\explosion": "jpt! weapons\\incineration cannon\\explosion & weapons\\incineration cannon\\impact & weapons\\incineration cannon\\bomblet explosion",
+    "jpt! weapons\\rocket launcher\\melee": "jpt! weapons\\incineration cannon\\melee"
    }
   }
  ],
