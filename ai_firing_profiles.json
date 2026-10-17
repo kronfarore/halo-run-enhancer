@@ -3537,6 +3537,146 @@
     "port_dps": 109.7560975609756,
     "balanced_port_dps": 72.89592760180996
    }
+  },
+  "weapons\\incineration cannon\\incineration cannon": {
+   "source": "Halo 4 ai\\generic objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher (weapon properties #30, firing pattern #30) over weapons\\rocket launcher\\rocket launcher carriers",
+   "fields": {
+    "0x74": [
+     "<f",
+     20.0,
+     "Maximum Firing Distance"
+    ],
+    "0x78": [
+     "<f",
+     3.0,
+     "Rate Of Fire"
+    ],
+    "0x7C": [
+     "<f",
+     0.02617993811145425,
+     "Projectile Error"
+    ],
+    "0x80": [
+     "<f",
+     1.0,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     1.25,
+     "First Burst Delay Time Max"
+    ],
+    "0x8C": [
+     "<f",
+     1.0,
+     "Surprise Delay Time"
+    ],
+    "0x9C": [
+     "<f",
+     8.0,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     16.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     0.949999988079071,
+     "Target Tracking"
+    ],
+    "0xC0": [
+     "<f",
+     0.699999988079071,
+     "Target Leading"
+    ],
+    "0xC4": [
+     "<f",
+     0.11490909090909092,
+     "Weapon Damage Modifier"
+    ],
+    "0xCC": [
+     "<f",
+     1.0,
+     "Burst Origin Radius"
+    ],
+    "0xD0": [
+     "<f",
+     0.0872664600610733,
+     "Burst Origin Angle"
+    ],
+    "0xD4": [
+     "<f",
+     0.75,
+     "Burst Return Length"
+    ],
+    "0xD8": [
+     "<f",
+     1.5,
+     "Burst Return Length Max"
+    ],
+    "0xDC": [
+     "<f",
+     0.0872664600610733,
+     "Burst Return Angle"
+    ],
+    "0xE0": [
+     "<f",
+     0.5,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     0.5,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     2.5,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     4.0,
+     "Burst Separation Max"
+    ],
+    "0x1D8": [
+     "<f",
+     0.5,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     1.0,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     3,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     4,
+     "Drop Weapon Ammo Max"
+    ]
+   },
+   "donor_weapon": "weapons\\rocket launcher\\rocket launcher",
+   "species_skill": true,
+   "balanced_fields": {
+    "0xC4": [
+     "<f",
+     0.4,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "wdm_rule": {
+    "base": 0.4,
+    "yardstick_dps": 158.0,
+    "port_dps": 550.0,
+    "balanced_port_dps": 158.0
+   }
   }
  }
 }
