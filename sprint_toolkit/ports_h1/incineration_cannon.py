@@ -302,7 +302,22 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'in progress',
+    'status': 'done',
+    # CLOSE-OUT RECORD (2026-10-17): port_refs_audit on the built b30 test copy 0 problems (own shell, impact,
+    # melee; the rocket's melee response + trigger feedback GLOBAL); port_sound_refs: every sound own but the
+    # drop + ammo pickup (KEEP, below); port_sounds --check 0; validate_halo_json 0; check 6
+    # (h1_tag_writes_proof) 65 tags / 1,094,962 fields 0 changed. 4b re-run on the final weapon: list 2 = 0 to
+    # port (rounds loaded, fp offset, air damage range, water gravity, bomblet water gravity + acceleration
+    # already written); list 4 = rounds reloaded 1 (the one-round magazine), ejection recovery 3.6 (the reload
+    # glow fade, user 'perfect'), illumination recovery 0.5 (the firing glow). Template diff (347 lines): every
+    # line a decision above -- the shell on the fuel rod (its responses' effects cleared, [30] / [32] detonate,
+    # own trail / sparks / glow, orange change colour, flat flight), the burst's second event = the 5 bomblets
+    # (0.2 s, 1/6 wu/tick, 60 deg), the screen flash, the LightRifle fire bolt x3 shifted forward / down, the
+    # HUD (reticle 43, zoom glyphs 88-91, own meter, loaded-ammo flash cutoff 0 for the one-round magazine).
+    # The muzzle-flash rule (check 10): boots 3-9 ('more pompous', 'move down, triple its lifetime' -> fixed).
+    # THE HIT-EFFECT RULE: 1.25 shells/s -> x1. 5b (h1_role_compare incineration_cannon, the built port): 550 dps
+    # default, 158 balanced (= the 4a rocket-ratio rows). Model 0.59 MiB (60 %). Enhancer keys + 17 cards:
+    # 14731ab (the enhancer session). Armed boot passed (user, 2026-10-17).
     # BORROWED sounds kept ON PURPOSE (port_sound_refs prints these as KEEP)
     'sound_keeps': {r'sound\sfx\impulse\weapon_drops\rlauncher_impact':
                     "Halo 4's own drop (wea_drop_launcher_fr_incinerator_nonplayer) ships in no MCC bank: "

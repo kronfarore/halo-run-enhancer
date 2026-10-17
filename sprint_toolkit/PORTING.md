@@ -2792,6 +2792,68 @@ model_collision_geometry missing). The live Halo 1 FMOD bank lost every port's s
 restore?) -- `port_sounds.py --check` before every boot. A queued `h1_port_test_map --stage` waits on the kit lock
 and then REPLACES the live map: stop it before a live test on that level.
 
+### Halo 1: the Incineration Cannon, wave C9 (2026-10-16/17, 11 dry boots + balanced + Armed on b30, PARALLEL with C7) -- a Halo 4 cluster launcher: a flat shell whose burst throws 5 bomblets, native effect-part projectiles
+The whole weapon is `ports_h1/incineration_cannon.py` (its CLOSE-OUT RECORD lists every check), a copy of the Halo 1
+ROCKET LAUNCHER (weapon, HUD, melee, explosion table) whose SHELL and BOMBLET are copies of the restored fuel rod
+projectile (`grunt fuel rod`: a glowing widget, no model).
+
+**Step 4a (user).** Source `storm_forerunner_incineration_launcher`: the shell = 200 impact + 40..240
+explosion_large over 0.75 -> 2.0 (the Halo 4 rocket's own numbers), flat, 1 loaded / 4 / 6, recovery 0.8 s, reload
+90 fr, zoom 1.8; the burst releases 5 bomblets at 5 wu/s 0.2 s later, each 30..120 over 0.61 -> 1.25, range 7,
+gravity x5; NO burn anywhere (Halo 4's "incineration" is the look). Yardstick: the ROCKET ratio (315 / 440);
+DEFAULT = Halo 4's numbers on the rocket's damage table, BALANCED = the ratio rows; the bomblet's 200 impact kept
+in default. h1_role_compare 'incineration_cannon': 550 dps default, 158 balanced.
+- **The cluster = option A, native bomblets** (user): the shell's explosion effect gets a second event of
+  PROJECTILE parts (new `add_projectiles` in own_explosion: count, velocity, cone, delay, location) -- Halo 1
+  effects spawn projectiles, randomly in the cone. No script, no dll.
+
+**HALO 1 PROJECTILE FACTS (measured on the bomblets, boots 3-11):**
+- **An effect part's velocity is PER TICK** (5 flew 154 wu/s): write wu/s / 30.
+- **A projectile below its `minimum velocity` DETONATES** (bomblets burst mid-air at 3) -> 0.
+- **`final velocity` > 0 is a speed FLOOR** (the bomblets were pushed along at 6 wu/s until their range) -> 0, and
+  the fuse 'when at rest' (`timer` 0.1-0.3 s): they land, roll out, burst. The 'on first bounce' fuse starts at
+  the first bounce (burst in the air after it).
+- **A potential response with an empty `between` window is ALWAYS applied**: the fuel rod's [30] (Elite shield)
+  'disappear' made bomblets vanish -> detonate.
+- **Friction = the fraction of speed REMOVED** (reflect specs parallel 0.3 / perpendicular 0.8 on WORLD).
+- **A widget light volume is a BEAM along the flight direction** (its `length`): the bomblets' "trail" (two
+  boots blamed the contrail) was the fuel rod volume's 0.55 wu length -> widget_tint `length` x0.1.
+- **The fuel rod's volume sprite is CYAN:** a tint only multiplies it (olive-green shell) -> widget_tint `map`, a
+  monochrome sprite (the Binary Rifle's bi_beam_core), then the orange tint.
+
+**Look / FP / HUD.** One render model (the `knight_arm` region is the front flaps, NOT an arm: kept), 60 %
+decimation = 0.59 MiB; a box collision (`h1_box_collision`). Halo 4's own graph through h1_fp_retarget;
+`blend_end` (new) eases the melee's last frames into idle (boot 2: 'the arm lingers').
+- **Glow (boots 1-9):** the self-lit pieces as `glow_shaders` -- the FIRING glow on A out = **A in
+  `illumination`** (the rocket's A in was the flashlight), the muzzle piece faced inward -> `two_sided` (new); a
+  missing tile = a `glow_card` near the muzzle with `lift` -0.2 (-0.5 floated). The RELOAD glow: the magazine's
+  `reloading_effect` never shows in FP and an inverted-ammo glow stayed lit -> **B in `primary_ejection_port` with
+  `ejection_port_recovery_time` 3.6** = a glow that fades over the reload (user: 'perfect'); obje_functions `flags`
+  (new).
+- **Muzzle flash (check 10):** the primary trigger marker sits 17 cm INSIDE the barrel -> the LightRifle's fire
+  bolt copied, x3, shifted forward 5 cm and down 2 cm, its particles' lifespan x3 (user: 'more pompous').
+- **Zoom (boots 1-9, the costliest item):** Halo 4's polyart scope as zoom glyphs 88-91 (the LightRifle recipe). It
+  came out right ONLY when the frame was MEASURED against the user's two Halo 4 screenshots (band profiles of the
+  orange): scale 1.0, shift -103 px, rasterized with `--pad 200` (new in h4_polyart / h4_polyart_scope: the art
+  beyond the screen kept, so a shifted frame has no cut edge). Eyeballed fits cut it or zoomed it for four boots.
+- **Hit flash:** the rocket's table flashes nothing -> the shell 0.8 s / 0.6 orange (1, 0.33, 0.08), bomblets 0.3 /
+  0.3 (boot 2: 'underwhelming, fit the theme').
+- Reticle 43 + ammo meter from the CUI's incin_* / ammo_incinerator art (the ammo meter OWN: user point 9 of boot 1,
+  generic tick meters on other ports are a follow-up); pickup icon 54, larger after boot 1.
+
+**Sounds:** bank `forerunner_incineration_launcher_player` (fire 4 layers, pose a/b/c with offsets, zoom in/out),
+the projectile bank `proj_forerunner_incinerator` (found by FNV hash, not by name); the posing event is empty,
+fire1_var1 ships in no bank. KEEP: the rocket's drop and ammo pickup.
+
+**Step 11:** Halo 4 m020 ai\generic over the rocket carriers (Flood Elite / human), WDM RULE 0.115 default / 0.40
+balanced (user), no drop rows, species skill on. Enhancer keys (its session, 14731ab): hands 'heavy', tag_map
+(shell; explosion -> burst & impact & bomblet burst; melee), 17 cards from the Rocket Launcher; no bomblet-count /
+fuse card yet.
+
+**Process / traps:** a proof aborted on another session's mid-edit config (restore with `port_sha_snapshot`,
+re-run); `ai_firing_profile.py` without `--port` WRITES even with `--dry` (use `build(write=False)`); kit_commit
+hunk ids change after a `git add`. Narrowed proofs ic1b-ic6 0 changed; check 6 0 changed (65 tags).
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:

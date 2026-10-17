@@ -1278,6 +1278,29 @@ charge seen on enemies. Everything in "C1" - "C8" held; what is new:
 - Process: 6 dry boots (look 1, display / charge 4, ammo pip 1), balanced 1, Armed 3 (flash x2, muzzle charge
   light). Narrowed proofs rg1 / rg2 0 changed; check 6 0 changed. Model 0.45 MiB (a30 5.3 MiB left).
 
+## C9: what the Incineration Cannon taught (2026-10-17) -- parallel with C7
+
+PORTING.md "Halo 1: the Incineration Cannon, wave C9" is the full record; `ports_h1/incineration_cannon.py` is the
+example of a CLUSTER weapon (a projectile whose burst spawns projectiles) and of a fuel-rod-widget projectile on the
+rocket template. Everything in "C1" - "C8" held; what is new:
+
+- **Effects spawn projectiles:** own_explosion `add_projectiles` (count, velocity, cone, delay) -- a cluster needs
+  no script. An effect part's velocity is PER TICK (wu/s / 30).
+- **Halo 1 projectiles that should land and burst:** `minimum velocity` 0 (below it they detonate), `final
+  velocity` 0 (above 0 it is a speed floor), fuse 'when at rest'; a potential response with an empty window is
+  always applied (check the template's [30] 'disappear'); friction = the speed removed.
+- **A widget light volume is a beam along the flight** (`length`): a "trail" on a slow projectile is the volume, not
+  the contrail. The fuel rod's sprite is cyan: recolour with widget_tint `map` (a monochrome sprite), not a tint.
+- **MEASURE a polyart scope against the user's screenshots** (band profiles), never eyeball it; rasterize with
+  `--pad` so a shifted frame keeps its edges. Four zoom boots were lost to guesses ('repeating the same mistakes').
+- **A reload glow = B in `primary_ejection_port` + `ejection_port_recovery_time` = the reload time** (fades over
+  the reload); the magazine's reloading_effect is invisible in FP. A firing glow = A in `illumination`.
+- **The muzzle marker can sit inside the barrel:** shift the flash forward, then judge it in game.
+- **Probes on demand, short** (user): start a live probe only when the user is ready to act, read it out at once.
+- Process: 11 dry boots (zoom 5, bomblets 6, glow 4 -- overlapping), balanced 1, Armed 1. New shared-tool features
+  (add_projectiles, widget_tint map / length, add_particles camera, reload_effect, obje_functions flags,
+  blend_end, glow two_sided) each behind a narrowed proof, 0 changed. Model 0.59 MiB.
+
 ### The phase-0 brief (as planned 2026-10-06; results above)
 
 1. **Capacity.** Every port is made resident in all ten maps (palette entry plus one
