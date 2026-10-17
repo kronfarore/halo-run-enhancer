@@ -2854,6 +2854,31 @@ fuse card yet.
 re-run); `ai_firing_profile.py` without `--port` WRITES even with `--dry` (use `build(write=False)`); kit_commit
 hunk ids change after a `git add`. Narrowed proofs ic1b-ic6 0 changed; check 6 0 changed (65 tags).
 
+**Re-check (user, 2026-10-17):**
+- **4b list 3 had three lines undecided.** The water damage range (shell and bomblet) and the bomblet's impact /
+  detonation noise were set to Halo 4's own values (the Boltshot / Focus Rifle rule). Check 6 changed exactly 4 fields.
+- **The close-out template diff never saw the bomblet.** `h1_port_template_diff` now covers `projectiles`.
+- **Two scratch scripts became tools:** `h4_scope_bands.py` (measure a scope frame against the screenshots) and
+  `h4_event_banks.py` (Halo 4 event -> bank).
+
+**AMMO METERS FROM THE SOURCE (user, the same day, 9832499).** Eleven ports drew the AR's generic tick; each now
+draws its source game's own:
+- Halo 3 `ballistic_meters` for the BR 7, SMG 10, Carbine 5 and Spiker 9.
+- Halo 4 `ammo_sticky` for the Sticky Detonator, `ammo_forerunnersmg` for the Suppressor and `ammo_lmg` for the SAW.
+- Reach's 24-pill strip for the DMR, Needle Rifle and Concussion Rifle (the Concussion Rifle's pills matched to the user's screenshot).
+- Reach's HUD frag grenade for the Grenade Launcher (Reach draws no meter for it).
+
+New `ammo_meter` art keys:
+- `grid` = the source's rows, row by row.
+- `cut` = the alpha that separates pips that touch (the Suppressor: 128, `grid` 24).
+- `--art <json>` on the command line (saw_build).
+
+`h3_hud_art`: a sheet with no sprite boxes is one sprite.
+
+TRAP (proof am1): splitting rows on transparent lines cut the Brute Shot's / Mauler's shells, which have a 1-2 px
+gap inside them. So `h3_tick` keeps its old code; rows exist only on `grid`, and a band under half the height of the
+one above is merged into it. The narrowed re-proof was skipped (user) and is OWED.
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:
