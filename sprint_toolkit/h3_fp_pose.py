@@ -86,7 +86,12 @@ def poses(tag, e, nodes, animated=None):
                          % (len(sR), len(sT), n, m))
     if animated is not None:
         animated.update(rot=set(aR), trans=set(aT), scale=set(aS))
-    anim = dec.read_animation(tag, dict(e, frames_at=flags_at + 48 + 32,
+    # a 3P move / turn carries its root motion (`movement`) between the masks and the frames
+    # (masterchief combat:sword:move_front: 160 bytes = 20 x dx,dy; unit quaternions only
+    # read past it); FP animations have none
+    if e.get('pill_offset_data'):
+        raise ValueError('pill offset data: its place in the blob is not known')
+    anim = dec.read_animation(tag, dict(e, frames_at=flags_at + 48 + e.get('movement_data', 0) + 32,
                                         animated=(len(aR), len(aT), len(aS))))
     N = len(nodes)
     out = []
@@ -107,6 +112,19 @@ def poses(tag, e, nodes, animated=None):
             scl[i] = anim['scales'][f][k]
         out.append(list(zip(rot, trn, scl)))
     return out
+
+
+def movement(tag, e):
+    """The root motion per frame, [(dx, dy[, dyaw]) wu / radians] -- plain floats right after
+    the node masks ([] when the animation has none). dx,dy: 2 floats a frame, dx,dy,dyaw: 3
+    (combat:sword:turn_left: dyaw 0.196 a frame)."""
+    size = e.get('movement_data', 0)
+    if not size:
+        return []
+    b = tag.data[e['at']:e['at'] + e['size']]
+    at = e['default_data'] + e['compressed_data'] + 48
+    k = size // e['frames'] // 4
+    return [struct.unpack_from('<%df' % k, b, at + 4 * k * f) for f in range(e['frames'])]
 
 
 def load(graph, xml):

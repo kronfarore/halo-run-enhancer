@@ -2056,6 +2056,11 @@ def teach_cyborg(write):
             third_person_melee_as_fp(t.data.tagdata, w)
         if w.get('fire_anim') == 'melee':
             third_person_fire_as_melee(t.data.tagdata, w)
+    for w in WEAPONS.values():
+        # a port's OWN third person: Halo 3 animations in a class of its own (the sword)
+        if w.get('third_person'):
+            import h1_3p_retarget
+            h1_3p_retarget.install(t.data.tagdata, w['third_person'])
     t.filepath = p
     save(t, p, write)
 

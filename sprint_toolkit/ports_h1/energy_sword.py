@@ -67,6 +67,27 @@ PORT = {
         # 1/2 were empty (copied from b), so fire plays the 3P melee swing, as the hammer's
         # (h1_pickable_weapons.third_person_fire_as_melee)
         'fire_anim': 'melee',
+        # ... and then its OWN third person: Halo 3's masterchief sword set copied onto the
+        # cyborg (h1_3p_retarget.py: the same core skeleton) in a `sword` class of its own --
+        # the Elite's graph keeps `fb` in a class `sword` too. Stand and crouch; vehicle seats,
+        # turns, airborne, landing, throw and aim stay the pistol's
+        'third_person': {
+            'graph': r'objects\characters\masterchief\masterchief.model_animation_graph',
+            'h3_class': 'sword', 'class': 'sword', 'from_class': 'pistol', 'label': 'fb',
+            'stances': {'stand': 'combat', 'crouch': 'crouch'},
+            'class_anims': {s: {'stand': 'combat:sword:' + h3, 'crouch': 'crouch:sword:' + h3}
+                            for s, h3 in (('idle', 'idle'), ('move-front', 'move_front'),
+                                          ('move-back', 'move_back'), ('move-left', 'move_left'),
+                                          ('move-right', 'move_right'))},
+            # the slash on melee, the lunge on fire (Halo 3 has no crouched sword melee:
+            # crouched, the standing ones play, as the stock crouch pistol melee does)
+            'type_anims': {'melee': 'combat:sword:melee_strike_1',
+                           'fire-1': 'combat:sword:melee_lunge',
+                           'fire-2': 'combat:sword:melee_lunge'},
+            # Halo 1's stand moves carry no root motion, its crouch moves do
+            'root_motion': ['crouch sword move-front', 'crouch sword move-back',
+                            'crouch sword move-left', 'crouch sword move-right'],
+        },
         'keys': {'first-person melee': 5},
         # Halo 3's own sword sounds (h1_port_sounds.py energy_sword): the Elite's swing
         # (SWORD_SWING) is silent for 0.45 s and was heard 0.3 s late (user, 2026-10-06)
