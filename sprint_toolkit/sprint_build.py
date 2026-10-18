@@ -128,7 +128,11 @@ def main():
                          "both graphics modes — a read_write build references the shared "
                          "bitmaps.map and corrupts the UI/classic view.")
     ap.add_argument('--build-only', action='store_true')
+    ap.add_argument('--force-presprint', action='store_true',
+                    help='rebuild from .presprint even on a ported scenario (wipes the ports)')
     a = ap.parse_args()
+    import batch_build  # noqa: E402
+    batch_build.refuse_if_ported([a.map], a.force_presprint)
     # Build SELF-CONTAINED by default, for BOTH graphics modes (matches batch_build).
     # A read_write build references the shared bitmaps.map by index, which corrupts the
     # UI and the classic view; a self-contained ('none') build renders correctly in

@@ -48,6 +48,34 @@ VERSIONS = {
 }
 
 
+PORT_MARKERS = (b'weapons\\saw\\saw', b'characters\\enhancer\\slot')
+
+
+def ported_maps(maps):
+    """Levels whose current scenario carries port data (the SAW, the enemy-weapon
+    slots). Rebuilding those from .presprint would silently wipe every port."""
+    hit = []
+    for mp in maps:
+        scn = os.path.join(HCEEK, 'tags', 'levels', mp, mp + '.scenario')
+        if os.path.exists(scn):
+            with open(scn, 'rb') as f:
+                data = f.read()
+            if any(k in data for k in PORT_MARKERS):
+                hit.append(mp)
+    return hit
+
+
+def refuse_if_ported(maps, force):
+    hit = ported_maps(maps)
+    if hit and not force:
+        sys.exit('REFUSING: %s carry weapon-port data (SAW / enemy-weapon slots). This script '
+                 'rebuilds from the pristine .presprint scenario and would wipe every port.\n'
+                 'Use instead:  python h1_rebuild_all.py --maps %s --no-ship\n'
+                 '(installs sprint.hsc, leaves the scenario alone). '
+                 'Pass --force-presprint only for the old bisecting use.'
+                 % (', '.join(hit), ','.join(hit)))
+
+
 def pristine_source(scn):
     """Path to a pristine scenario to insert from. Prefer the .presprint backup;
     else the current scenario if it has no sprint_profile yet (then snapshot it as
@@ -113,7 +141,12 @@ def main():
     ap.add_argument('--maps', default='', help='comma list; default all 10')
     ap.add_argument('--speed', type=int, default=150)
     ap.add_argument('--out', default=os.path.join(HERE, 'out'))
+    ap.add_argument('--force-presprint', action='store_true',
+                    help='rebuild from .presprint even on a ported scenario (wipes the ports)')
     a = ap.parse_args()
+
+    maps = [m.strip() for m in a.maps.split(',') if m.strip()] or MAPS
+    refuse_if_ported(maps, a.force_presprint)
 
     # Sync sprint.hsc into global_scripts.hsc once, before any build, so every map
     # in the batch is compiled with the current sprint logic (idempotent).
