@@ -1493,6 +1493,17 @@ a30 27.26, b40 26.56, d40 26.19, c40 25.84, c10 25.00, a50 24.37, d20 24.27, c20
 Checks on the deployed ten: residency 29 x 10, 0 missing; port_refs_audit 0 problems (29 ports);
 port_sound_refs 0 BORROW; port_sounds --check 0.
 
+**THE 32 MiB MODEL-BUFFER CAP IS TOOL'S -- LIFTED (2026-10-18, user's go).** Disassembly: tool.exe's cache
+build (0x4079d0) takes a fixed `HeapAlloc(GetProcessHeap(), 0, 0x2000000)` and 0x407330 writes every
+model's vertices (x68) then indices (x2) into it with no bounds check -- the crash. `tool_mb128.exe`
+(HCEEK, made by h1_model_buffer_test_map.py: the two `push 0x2000000` at VA 0x4079e8 / 0x4079f6 ->
+0x8000000) built a b30 with 38.66 MiB of model data (16 Warthog pads at the start; ALL index data past
+32 MiB): the user's boot -- pads and every other model normal. Then all ten maps built with both tools:
+BYTE-IDENTICAL (a10 built twice as the control). paths.TOOL_EXE now picks tool_mb128.exe when it exists
+(H1_TOOL_EXE overrides; tool.exe untouched); h1_rebuild_all names its tool; h1_model_buffer measures
+against the tool in use. The next limit for grenades / turrets / vehicles everywhere is tool's vbuf
+line (64 MiB; a10 34.4) -- not yet known whether that one is tool's or MCC's.
+
 ## Running two ports in parallel (user, 2026-10-12)
 
 Two port sessions may run at once. Each port's OWN work (its config, its weapon / sound / data

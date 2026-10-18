@@ -169,8 +169,8 @@ def main():
         sys.exit('A Steam update of MCC is pending -- it would delete the shipped maps. '
                  'Let it finish first.')
     install_script.install(paths.GLOBAL_SCRIPTS)
-    print('Building %d level(s), classic, self-contained. Baselines: %s'
-          % (len(maps), root or 'sibling .bak files'))
+    print('Building %d level(s), classic, self-contained. Baselines: %s. Tool: %s'
+          % (len(maps), root or 'sibling .bak files', os.path.basename(paths.TOOL_EXE)))
 
     ok, failed = [], []
     for mp in maps:

@@ -2,6 +2,8 @@ r"""Halo 1's 32 MiB MODEL-BUFFER CAP (found 2026-10-14, the C2 Suppressor; memor
 `tool build-cache-file` crashes with a bare EXCEPTION_ACCESS_VIOLATION right after "streaming model
 vertex and index buffers..." once a map's MODEL vertices x 68 + strip indices x 2 pass 32 MiB (the
 crash registers: EBP = the total model vertex count). tool's own "vbuf" line does not show it.
+THE CAP IS TOOL'S (2026-10-18): a fixed 32 MiB HeapAlloc in the cache build; MCC runs more (b30 boot,
+38.7 MiB). Builds use tool_mb128.exe (128 MiB) when it exists (paths.py): CAP follows the tool in use.
 Read-only.
 
     python h1_model_buffer.py map <built .map>       the map's model buffer: total, margin, largest models
@@ -22,7 +24,8 @@ import port_env  # noqa: E402,F401
 from reclaimer.hek.defs.mod2 import mod2_def  # noqa: E402
 
 TAGS = os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'HCEEK', 'tags')
-CAP = 32 * 1024 * 1024
+import paths  # noqa: E402
+CAP = (128 if paths.TOOL_EXE.lower().endswith('tool_mb128.exe') else 32) * 1024 * 1024
 
 
 def cost(rel):
@@ -55,8 +58,9 @@ def main():
                 rows.append((c[0] * 68 + c[1] * 2, c[0], c[1], name))
         tv, ti = sum(r[1] for r in rows), sum(r[2] for r in rows)
         b = tv * 68 + ti * 2
-        print('%d models: %d vertices, %d indices = %.2f MiB of 32 (%.2f MiB left)'
-              % (len(rows), tv, ti, b / 2 ** 20, (CAP - b) / 2 ** 20))
+        print('%d models: %d vertices, %d indices = %.2f MiB of %d (%.2f MiB left; %s)'
+              % (len(rows), tv, ti, b / 2 ** 20, CAP >> 20, (CAP - b) / 2 ** 20,
+                 os.path.basename(paths.TOOL_EXE)))
         for r in sorted(rows, reverse=True)[:10]:
             print('   %6.3f MiB  %6d v  %6d i  %s' % (r[0] / 2 ** 20, r[1], r[2], r[3]))
         return

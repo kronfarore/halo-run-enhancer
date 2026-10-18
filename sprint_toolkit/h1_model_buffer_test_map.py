@@ -54,7 +54,7 @@ OLD, NEW = 0x2000000, 0x8000000
 def patched_tool():
     import pefile
     import struct
-    src = paths.TOOL_EXE if not os.environ.get('H1_TOOL_EXE') else os.path.join(HCEEK, 'tool.exe')
+    src = paths.TOOL_EXE_STOCK
     pe = pefile.PE(src, fast_load=True)
     base = pe.OPTIONAL_HEADER.ImageBase
     b = bytearray(open(src, 'rb').read())

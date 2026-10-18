@@ -25,8 +25,13 @@ HALO1_SUBDIRS = ['Halo1MCC', 'Halo1']
 TOOL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SCNR_XML = os.path.join(PLUGINS, 'Halo1', 'scnr.xml')
-# H1_TOOL_EXE: a patched copy for one test build (h1_model_buffer_test_map.py); unset = tool.exe
-TOOL_EXE = os.environ.get('H1_TOOL_EXE') or os.path.join(HCEEK, 'tool.exe')
+# Halo 1 builds use tool_mb128.exe when it exists (user, 2026-10-18): tool.exe with its fixed 32 MiB
+# model-buffer HeapAlloc raised to 128 MiB (h1_model_buffer_test_map.py makes it; MCC ran 38.7 MiB of
+# model data on b30; all ten maps build byte-identical with either). H1_TOOL_EXE overrides both.
+TOOL_EXE_STOCK = os.path.join(HCEEK, 'tool.exe')
+TOOL_EXE_MB128 = os.path.join(HCEEK, 'tool_mb128.exe')
+TOOL_EXE = os.environ.get('H1_TOOL_EXE') or (
+    TOOL_EXE_MB128 if os.path.exists(TOOL_EXE_MB128) else TOOL_EXE_STOCK)
 
 # The compiled-into-every-level script file. sprint.hsc is (re)installed into this
 # by install_script.py before each build, so the built maps always carry the
