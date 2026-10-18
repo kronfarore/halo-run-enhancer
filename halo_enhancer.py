@@ -402,6 +402,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'new_weapon_chance', 'new_equipment_chance', 'balance_item_counts',
                'include_grenades',
                'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
+               'weapon_card_share', 'weapon_card_pity',
                'two_player_coop', 'coop_no_starting_weapons', 'null_coop_starting_equipment',
                'zoom_ui_on_scopeless', 'turret_zoom_first_person', 'vehicle_turret_zoom',
                'keep_reticle_zoomed',
@@ -849,6 +850,15 @@ CONFIG = {
     # Scales how often 'special' (escalating-odds) player effects surface; <1 makes
     # them rarer. ~0.67 = about a third less often.
     "special_rate_factor": 0.67,
+    # The player card is drawn in two steps (user, 2026-10-18: weapon cards came up far
+    # too rarely -- the 32 General cards outnumbered any one weapon's 2:1, and a weapon
+    # with few cards drowned among a big one's): a weapon card with this chance, else a
+    # General card; the weapon is then chosen EVENLY among the held weapons with cards
+    # left, not by card count.
+    "weapon_card_share": 0.5,
+    # ...and each round a held weapon's cards were not offered, its weight in that
+    # choice rises by this much (0.5 = +50% per round); offered -> back to 1.
+    "weapon_card_pity": 0.5,
     # When patching, set the scenario's starting Primary/Secondary Weapon to the
     # players' picked weapons (profiles 0 & 1: single-player + co-op start).
     "set_starting_weapons": True,
@@ -4527,6 +4537,10 @@ class RunState:
         self.new_weapon_count = 0   # #4: how many new-weapon pairs P1 was offered
         self.new_equipment_count = 0   # ...and new-equipment pairs
         self.special_counters = {}  # special effect name -> rounds since last picked
+        # player -> {weapon: rounds its cards were not offered} (weapon_card_pity), and
+        # the weapons offered to each player in the current round's draw
+        self.weapon_card_misses = {}
+        self.offered_card_weapons = {}
         # patcher: (tag, name) of every effect already applied to a map — anything not
         # in here is "new" (highlighted / optionally shown first) until the next patch.
         self.patched_effect_keys = set()
@@ -4619,6 +4633,8 @@ class RunState:
             "timestamp": datetime.now().isoformat(),
             "blacklist": list(self.blacklist),
             "special_counters": dict(self.special_counters),
+            "weapon_card_misses": {p: dict(v) for p, v in self.weapon_card_misses.items()},
+            "offered_card_weapons": {p: sorted(v) for p, v in self.offered_card_weapons.items()},
             "free_negative_pending": dict(self.free_negative_pending),
             "patched_effect_keys": [list(k) for k in self.patched_effect_keys],
             "card_directions": dict(getattr(self, 'card_directions', {}) or {}),
@@ -4716,6 +4732,12 @@ class RunState:
         state.blacklist = {l.replace('General' + _sep + 'General ', 'General' + _sep, 1)
                            for l in data.get('blacklist', [])}
         state.special_counters = dict(data.get('special_counters', {}))
+        state.weapon_card_misses = {p: dict(v) for p, v in
+                                    (data.get('weapon_card_misses') or {}).items()
+                                    if isinstance(v, dict)}
+        state.offered_card_weapons = {p: set(v) for p, v in
+                                      (data.get('offered_card_weapons') or {}).items()
+                                      if isinstance(v, list)}
         fnp = data.get('free_negative_pending') or {}
         state.free_negative_pending = {'player1': bool(fnp.get('player1')),
                                        'player2': bool(fnp.get('player2'))}
@@ -11410,6 +11432,28 @@ class OptionsDialog(QDialog):
         self.special_rate.setToolTip("Scales how often special (escalating) effects appear; <1 = rarer.\nThese effects are your prime way to get tankier.")
         rform.addRow("Special-effect rate:", self.special_rate)
 
+        self.weapon_card_share = QDoubleSpinBox()
+        self.weapon_card_share.setRange(0.0, 1.0)
+        self.weapon_card_share.setSingleStep(0.05)
+        self.weapon_card_share.setDecimals(2)
+        self.weapon_card_share.setValue(float(CONFIG.get('weapon_card_share', 0.5)))
+        self.weapon_card_share.setToolTip(
+            "How often a player card is a card for one of your weapons rather than a "
+            "general card. 0.5 = half the time. The weapon is then picked evenly among "
+            "the weapons you hold, so one with only a few cards gets as many turns as one "
+            "with many. Shared with a co-op partner through the run.")
+        rform.addRow("Weapon card share:", self.weapon_card_share)
+        self.weapon_card_pity = QDoubleSpinBox()
+        self.weapon_card_pity.setRange(0.0, 5.0)
+        self.weapon_card_pity.setSingleStep(0.1)
+        self.weapon_card_pity.setDecimals(2)
+        self.weapon_card_pity.setValue(float(CONFIG.get('weapon_card_pity', 0.5)))
+        self.weapon_card_pity.setToolTip(
+            "Every round one of your weapons gets no card offered, its chance of being "
+            "the next weapon card goes up by this much (0.5 = +50% per round). Back to "
+            "normal once one of its cards is offered. 0 = off.")
+        rform.addRow("Weapon card catch-up:", self.weapon_card_pity)
+
         self.vehicle_cards_cb = QCheckBox("Vehicles: offer vehicle cards")
         self.vehicle_cards_cb.setChecked(bool(CONFIG.get('vehicle_cards')))
         self.vehicle_cards_cb.setToolTip(
@@ -13339,6 +13383,8 @@ class OptionsDialog(QDialog):
             'upgrade_inherits_base': self.upgrade_inherit_cb.isChecked(),
             'weapon_choice_negatives': self.negatives_cb.isChecked(),
             'special_rate_factor': round(self.special_rate.value(), 2),
+            'weapon_card_share': round(self.weapon_card_share.value(), 2),
+            'weapon_card_pity': round(self.weapon_card_pity.value(), 2),
             'set_starting_weapons': self.starting_weapons_cb.isChecked(),
             'set_starting_equipment': self.starting_equipment_cb.isChecked(),
             'equipment_all_selected': self.equipment_all_selected_cb.isChecked(),
@@ -16113,6 +16159,7 @@ class HaloGUI(QMainWindow):
             self.run_state.rounds.append(round_data)
             self._blacklist_exclusive_siblings(round_data)
             self._update_special_counters(p1_pair.get('player1_mod'), p2_pair.get('player2_mod'))
+            self._update_weapon_card_misses()
 
             self._sync_save_button()
             self.generate_btn.setEnabled(True)
@@ -16126,6 +16173,23 @@ class HaloGUI(QMainWindow):
             QTimer.singleShot(150, self.on_generate)
 
         self.update_history()
+
+    def _update_weapon_card_misses(self):
+        """After a round (weapon_card_pity): every held weapon whose cards were not
+        offered to that player this round gains a miss; an offered one goes back to 0."""
+        rs = self.run_state
+        for pk in ('player1', 'player2'):
+            offered = rs.offered_card_weapons.get(pk) or set()
+            held = set()
+            for w in rs.weapons_for(pk) or ():
+                if w:
+                    held.add(self.db.base_for_upgrade(w) or w)
+            mine = rs.weapon_card_misses.setdefault(pk, {})
+            for w in held | set(mine):
+                mine[w] = 0 if w in offered else mine.get(w, 0) + 1
+            for w in [w for w in mine if w not in held]:
+                del mine[w]
+            rs.offered_card_weapons[pk] = set()
 
     def _update_special_counters(self, p1_mod, p2_mod):
         """After a round: a picked special's counter resets to 0, an unpicked
@@ -16168,7 +16232,7 @@ class HaloGUI(QMainWindow):
                 mods = self.db.get_player_modifiers_filtered(
                     self.run_state.weapons_for(mod_type),
                     list(bl) + self.enhancer.identity_locked_labels(), game)
-                pair[f'{mod_type}_mod'] = random.choice(mods) if mods else None
+                pair[f'{mod_type}_mod'] = self.enhancer._weighted_pick(mods, mod_type)
         elif mod_type in ('identity_up', 'identity_down'):
             # one half of a NEW identity pair: another card of the same weapon (the
             # inverted half only from cards that can be inverted)
@@ -17210,12 +17274,38 @@ class RunEnhancer:
             candidates = [(k, w) for k, w in candidates if k != picked]
         return None, None
 
-    def _weighted_pick(self, mods):
-        """Pick a player mod. A special effect's weight equals its counter =
-        rounds since it was last picked (linear; starts at 1, 0 right after a
-        pick so it's suppressed for one round). Everything else is weight 1."""
+    @staticmethod
+    def card_item(mod):
+        """The weapon / equipment a player card belongs to, or None for a General card."""
+        return mod.get('weapon') or mod.get('equipment') or None
+
+    def _weighted_pick(self, mods, player=None):
+        """Pick a player card in two steps (weapon_card_share): a weapon card with that
+        chance, else a General one -- whichever side has cards, if only one does. A
+        weapon card's weapon is chosen evenly among the held weapons with cards in the
+        pool (a weapon with nothing left is skipped), each weighted up by
+        weapon_card_pity per round its cards went unoffered (`player`'s misses); then
+        one of its cards. Inside a side, a special effect's weight equals its counter =
+        rounds since it was last picked (linear; starts at 1, 0 right after a pick so
+        it's suppressed for one round). Everything else is weight 1."""
         if not mods:
             return None
+        items, general = {}, []
+        for m in mods:
+            w = self.card_item(m)
+            (items.setdefault(w, []) if w else general).append(m)
+        share = float(CONFIG.get('weapon_card_share', 0.5))
+        if items and (not general or random.random() < share):
+            pity = float(CONFIG.get('weapon_card_pity', 0.5))
+            misses = (self.run_state.weapon_card_misses or {}).get(player) or {}
+            names = sorted(items)
+            w = random.choices(names, weights=[1.0 + pity * misses.get(n, 0) for n in names],
+                               k=1)[0]
+            mods = items[w]
+            if player:
+                self.run_state.offered_card_weapons.setdefault(player, set()).add(w)
+        elif general:
+            mods = general
         # special_rate_factor (~0.67) trims how often special effects surface —
         # their escalating counter weight is scaled down relative to normal mods.
         sf = CONFIG.get('special_rate_factor', 0.67)
@@ -17229,6 +17319,7 @@ class RunEnhancer:
         mid = self.run_state.mission_id
         game = self.db.get_game_for_mission(mid)
         bl = self.run_state.blacklist
+        self.run_state.offered_card_weapons[for_player] = set()     # weapon_card_pity
         # a Weapon Identity pair's cards only ever appear as that pair
         pmods = self.db.get_player_modifiers_filtered(
             self.run_state.weapons_for(for_player), list(bl) + self.identity_locked_labels(), game)
@@ -17329,7 +17420,7 @@ class RunEnhancer:
                 new_weapon = offered[wi]
                 wi += 1
             else:
-                choice = self._weighted_pick(pmods)
+                choice = self._weighted_pick(pmods, for_player)
                 if for_player == 'player1':
                     p1_choice = choice
                 else:
