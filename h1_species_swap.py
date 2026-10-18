@@ -346,16 +346,17 @@ class Swapper:
         return None
 
     def target(self, e):
-        """(palette index, count multiplier, label) for one tier entry, or None."""
+        """(palette index, count multiplier, label) for one tier entry, or None. The
+        multiplier is None for a plain or clone entry (headcounts decide its count)."""
         key = e if isinstance(e, str) else tuple(e)
         if key in self.cache:
             return self.cache[key]
         out = None
         if isinstance(e, str) or e[0] == 'count':
-            name, mult = (e, 1) if isinstance(e, str) else (e[1], e[2])
+            name, mult = (e, None) if isinstance(e, str) else (e[1], e[2])
             res = self.resolve(name)
             idx = self.entry(res) if res else None
-            out = (idx, mult, name.rsplit(BS, 1)[-1] + ('' if mult == 1 else ' x%d' % mult)) \
+            out = (idx, mult, name.rsplit(BS, 1)[-1] + ('' if mult in (None, 1) else ' x%d' % mult)) \
                 if idx is not None else None
         else:
             _k, base, wkey = e
@@ -364,7 +365,7 @@ class Swapper:
             if weapon and base in self.lv.tags:
                 idx, note = self.lv.clone(base, weapon, self.index_fn())
                 if idx is not None:
-                    out = (idx, 1, '%s with %s' % (base.rsplit(BS, 1)[-1], wkey))
+                    out = (idx, None, '%s with %s' % (base.rsplit(BS, 1)[-1], wkey))
                     if note:
                         self.notes.append('%s with %s: %s' % (base.rsplit(BS, 1)[-1], wkey, note))
                 else:
@@ -485,12 +486,28 @@ def apply(m, hp, cards, levels=None):
     return rows
 
 
+# How much of one ordinary enemy a single actor of a species is worth, for squad COUNTS
+# when a squad changes species (user, 2026-10-18, after the H1 co-op run: Flood should
+# come in larger numbers than what they replace, and a Flood squad turned into anything
+# else should shrink -- infection forms most of all). Count x headcount(old) /
+# headcount(new): 6 Elites -> 9 combat forms, 6 combat forms -> 4 Elites, 10 infection
+# forms -> 2 Grunts (or 3 combat forms), 4 carriers -> 2 Elites. Unlisted species count
+# 1. An explicit count entry (infection x5 / x10, carriers x1 / x2) keeps its own
+# multiplier, times the replaced species' headcount.
+HEADCOUNT = (('flood_infection', 0.2), ('floodcarrier', 0.5), ('floodcombat', 2.0 / 3.0))
+
+
+def headcount(name):
+    sp = species(name)
+    return next((w for k, w in HEADCOUNT if sp.startswith(k)), 1.0)
+
+
 def _convert_squad(m, lv, sw, rng, s, choose):
     """Repoint one squad: its actor type, and each starting-location override on its own
     (an infection squad can carry combat-form overrides). `choose(variant)` gives the
-    tier entries to draw from, or None to keep that actor. A count multiplier (infection
-    forms x5 / x10, two carriers) applies when the squad's own type changes. Returns 1
-    when anything changed."""
+    tier entries to draw from, or None to keep that actor. When the squad's own type
+    changes its counts scale: a count entry's multiplier (infection forms x5 / x10, two
+    carriers) and the headcount ratio (HEADCOUNT). Returns 1 when anything changed."""
     sq = s['off']
     changed = 0
 
@@ -514,10 +531,15 @@ def _convert_squad(m, lv, sw, rng, s, choose):
         if pick:
             idx, mult, _label = pick
             struct.pack_into('<h', m.data, sq + hv.SQ_TYPE, idx)
-            if mult != 1:
+            # an explicit count entry (infection x5 / x10, carriers) already says how many
+            # stand in for one enemy; otherwise the two species' headcounts decide
+            k = headcount(src) * (mult if mult is not None else 1.0 / headcount(name_at(idx)))
+            if abs(k - 1.0) > 1e-6:
                 for off in (SQ_NORMAL, SQ_INSANE):
                     n = _i16(m, sq + off)
-                    struct.pack_into('<h', m.data, sq + off, max(0, min(0x7FFF, n * mult)))
+                    if n > 0:
+                        struct.pack_into('<h', m.data, sq + off,
+                                         max(1, min(0x7FFF, int(round(n * k)))))
             changed = 1
     for sl in hv._elems(m, sq + hv.SL, hv.SL_SZ):
         o = _i16(m, sl + hv.SL_TYPE)
