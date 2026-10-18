@@ -9241,7 +9241,9 @@ def _apply_sprint(m, game, registry, cfg):
                    max(0, int(cfg.get('camo_cooldown_ticks', _CAMO_COOLDOWN_TICKS))))
 
     if cfg.get('os_mult') is not None:
-        set_global(m, 'os_shield', float(cfg['os_mult']) * _OS_SHIELD_BASE)
+        # Per game: object_set_shield takes 1/vit_max units, and vit_max is 75 in Halo 1
+        # but 70 in Halo 2. The H1 constant here left every H2 overshield ~7% short.
+        set_global(m, 'os_shield', float(cfg['os_mult']) / _vit_max(game))
     if cfg.get('os_duration_ticks') is not None:
         set_global(m, 'os_ticks', max(1, int(cfg['os_duration_ticks'])))
     if cfg.get('os_cooldown_ticks') is not None:

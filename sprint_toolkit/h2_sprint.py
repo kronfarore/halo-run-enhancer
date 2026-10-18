@@ -186,7 +186,12 @@ def apply(map_path, mult=1.5, profile='wimpy', out_path=None, side='cancel',
         if run_sideways is None:
             run_sideways = STOCK_RUN_SIDEWAYS / (1.0 - side_pen)
         if run_backward is None:
-            run_backward = STOCK_RUN_BACKWARD / (1.0 - side_pen)
+            # Backward is the NEGATIVE end of the forward axis, and the penalty getter
+            # (+8E8370, consumed at +6C2357) scales that whole signed axis with the
+            # FORWARD penalty -- not the sideways one. Sizing it against side_pen left a
+            # gun moving backward 43% too fast (4.286 x 0.667 = 2.86 vs stock 2.0),
+            # reported in co-op 2026-10-18.
+            run_backward = STOCK_RUN_BACKWARD / (1.0 - fwd_pen)
         if verbose:
             print('side delta %.2f: fwd pen %.3f, side pen %.3f' % (side_delta, fwd_pen, side_pen))
 
