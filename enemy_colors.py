@@ -530,18 +530,18 @@ def _steps(knobs, who, group):
     return (list(pair) + [0, 0])[:2]
 
 
-def shift(rgb8, group, up, down, times=1):
+def shift(rgb8, group, up, down, times=1, wrap=True):
     """`times` cards of one group on an [r, g, b] colour, one at a time, with the
     white -> black wrap. The TOP is capped per card (a channel pinned at 255 is what the
     wrap reads), but the bottom is NOT: a channel pushed below 0 keeps that debt, so a
     later card of its own group pays it back before the colour moves -- the end result
     does not depend on which group came first. Clamp to 0..255 once, at the end
-    (drift does)."""
+    (drift does). `wrap` False: never wrap (a slot that starts white, see drift)."""
     ch = DRIFT_CHANNEL[group]
     v = list(rgb8)
     for _ in range(times):
         v = [min(255, x + (up if c == ch else -down)) for c, x in enumerate(v)]
-        if v[ch] == 255 and up > 0 and all(x >= 255 - up for c, x in enumerate(v) if c != ch):
+        if wrap and v[ch] == 255 and up > 0 and all(x >= 255 - up for c, x in enumerate(v) if c != ch):
             v = [0, 0, 0]
     return v
 
@@ -578,8 +578,13 @@ def drift(game, events, knobs=None, base=None, catalog=None):
             if not src:
                 continue
             v = [int(src[i:i + 2], 16) for i in (0, 2, 4)]
+            # a slot that STARTS white (stock FFFFFF = no tint: Flood flesh, Halo 4
+            # armour tints) is already at the wrap point -- its first card or two wrapped
+            # it to black, and Halo 1's human Flood combat forms went scorched-black on
+            # every Flood level (co-op run 2026-10-17). It drifts into a tint, no wrap.
+            wrap = src.upper() != 'FFFFFF'
             for group, up, down, n in steps:
-                v = shift(v, group, up, down, n)
+                v = shift(v, group, up, down, n, wrap=wrap)
             new = '%02X%02X%02X' % tuple(max(0, min(255, x)) for x in v)
             if new != src.upper():
                 out.setdefault(rid, {})[key] = new
