@@ -45,7 +45,8 @@ import h1_teach_weapon as tw      # noqa: E402
 BS = chr(92)
 GAME = 'Halo 1'
 INDEX_FILE = os.path.join(HERE, 'h1_actv_index.json')
-INDEX_VERSION = 2            # bump when an index entry gains a field (2: 'spawns')
+INDEX_VERSION = 3            # bump when an index entry gains a field (2: 'spawns', 3: level
+                             # named without '.map.bak')
 
 # enemy type -> unit (bipd) path keywords. Checked in order: the Flood combat forms
 # carry 'elite' / 'human' in their names, so they come before the Elite.
@@ -135,7 +136,9 @@ def build_index(map_paths, open_map):
                 continue
             maj = hv._ref_name(m, b, hv.REF_MAJOR)
             mb = tags.get(maj)
-            out.append({'level': os.path.basename(p)[:-4], 'name': name,
+            # 'a10.map.bak' and 'a10.map' are one level: the name must not change when
+            # the level gains its baseline, or the fingerprint moves after every patch
+            out.append({'level': os.path.basename(p).split('.')[0], 'name': name,
                         'spawns': spawned.get(name, 0),
                         'unit': hv._ref_name(m, b, hv.REF_UNIT),
                         'weapon': hv._ref_name(m, b, hv.REF_WEAPON),
@@ -1167,7 +1170,10 @@ def apply(m, hp, spec):
                         new='%s -- firing from %s' % (alias.rsplit(BS, 1)[-1], short_donor(donor))))
     if lv.log:
         row = _row('enemy weapons', 'donor index', old='%d variants' % len(index),
-                   new='fingerprint %s; %d donor choice(s), %d saved before' % (
+                   # how many choices were saved before differs between the machine
+                   # that made them and the co-op partner that received them, so it
+                   # goes after ' -- ', which the patch code ignores
+                   new='fingerprint %s; %d donor choice(s) -- %d saved before' % (
                        index_fingerprint(index), len(lv.chosen),
                        sum(1 for k in lv.chosen if k in lv.forced)))
         row['donors'] = dict(lv.chosen)        # the patcher stores these with the magnitudes

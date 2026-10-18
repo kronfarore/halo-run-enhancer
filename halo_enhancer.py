@@ -7260,6 +7260,7 @@ class MagnitudeEditorDialog(QDialog):
         running MCC and in the file, which h1_overheat_unzoom swaps in even while MCC
         holds it. Rows only for what changed or failed."""
         sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        os.environ['HALO_MCC_ROOT'] = mcc_root()     # where halo1.dll is (h1_overheat_unzoom)
         try:
             import h1_overheat_unzoom
             return h1_overheat_unzoom.sync(bool(CONFIG.get('h1_overheat_unzoom')),
@@ -7274,6 +7275,7 @@ class MagnitudeEditorDialog(QDialog):
         (any game): live in a running MCC and in the file (swapped in while MCC holds it).
         Rows only for what changed or failed."""
         sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        os.environ['HALO_MCC_ROOT'] = mcc_root()     # where halo1.dll is (h1_overheat_unzoom)
         try:
             import h1_melee_blocks_fire
             return h1_melee_blocks_fire.sync(bool(CONFIG.get('h1_melee_blocks_fire', True)))
@@ -7286,6 +7288,7 @@ class MagnitudeEditorDialog(QDialog):
         """Halo 1's per-projectile supercombine count halo1.dll patch, synced to its option
         on every patch (any game), like _apply_h1_melee_blocks_fire."""
         sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        os.environ['HALO_MCC_ROOT'] = mcc_root()     # where halo1.dll is (h1_overheat_unzoom)
         try:
             import h1_supercombine_count
             return (h1_supercombine_count.sync(bool(CONFIG.get('h1_supercombine_count')))
@@ -7300,6 +7303,7 @@ class MagnitudeEditorDialog(QDialog):
         """Halo 1's charge-latch halo1.dll patch, synced to its option on every patch (any
         game), like _apply_h1_melee_blocks_fire."""
         sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        os.environ['HALO_MCC_ROOT'] = mcc_root()     # where halo1.dll is (h1_overheat_unzoom)
         try:
             import h1_charge_latch
             return h1_charge_latch.sync(bool(CONFIG.get('h1_charge_latch')))
@@ -7312,6 +7316,7 @@ class MagnitudeEditorDialog(QDialog):
         """Halo 1's classic Grunt Birthday Party effect halo1.dll patch, synced to its option
         on every patch (any game), like _apply_h1_melee_blocks_fire."""
         sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        os.environ['HALO_MCC_ROOT'] = mcc_root()     # where halo1.dll is (h1_overheat_unzoom)
         try:
             import h1_birthday_party
             return h1_birthday_party.sync(bool(CONFIG.get('h1_birthday_party')))
@@ -7498,8 +7503,13 @@ class MagnitudeEditorDialog(QDialog):
                                   title="Port sounds",
                                   label="Checking the ported weapons' sound banks") or []
         except Exception as e:
+            # numpy was missing on BOTH co-op machines (2026-10-17): the ports played
+            # without their own sounds and the row was easy to read past
+            hint = (' -- run "pip install numpy" (or pip install -r requirements.txt); '
+                    'until then the ported weapons may play without their own sounds'
+                    if isinstance(e, ImportError) else '')
             return [{'effect': 'port sound bank', 'field': folder, 'ok': False,
-                     'reason': 'port sound banks not checked: %s' % e}]
+                     'reason': 'port sound banks not checked: %s%s' % (e, hint)}]
 
     def _restore_sword_drain(self, plan):
         """Put the hardcoded sword cost per kill back when this run no longer sets it.
@@ -9496,6 +9506,9 @@ class MagnitudeEditorDialog(QDialog):
             if any(isinstance(t, dict) and (t.get('sprint') or t.get('enemy_weapon'))
                    for t in (eff.get('targets') or [])):
                 continue          # Armed cards report through their 'enemy weapons' rows
+            if any(isinstance(t, dict) and (t.get('map_swap') or t.get('map_equip'))
+                   for t in (eff.get('targets') or [])):
+                continue          # Map Presence reports through its 'map weapons' rows
             results.append({'tag': eff.get('tag'), 'effect': eff.get('name'),
                             'ok': True, 'skip': True, 'reason': 'no value changed'})
 

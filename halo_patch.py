@@ -10368,8 +10368,16 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                'effect': 'Keep HUD during titles'}
         if rep.get('skip'):
             row.update(ok=True, skip=True, reason=rep.get('reason'))
+        elif rep.get('ok') and rep.get('removed', 0) == 0 and not rep.get('released'):
+            # a skip that is IN EFFECT: the map was built without the hide calls, so
+            # the HUD already stays up (read as "skipped but applies" in the 2026-10-17
+            # co-op logs)
+            row.update(ok=True, skip=True,
+                       reason='already in the map: it was built without the title hide '
+                              'calls, so the HUD stays up (%d restore(s) kept)'
+                              % rep.get('kept', 0))
         elif rep.get('ok'):
-            row.update(ok=True, skip=(rep.get('removed', 0) == 0 and not rep.get('released')),
+            row.update(ok=True, skip=False,
                        old='hidden',
                        new='%d hide call(s) removed, %d restore(s) kept%s'
                            % (rep.get('removed', 0), rep.get('kept', 0),

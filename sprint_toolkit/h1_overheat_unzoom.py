@@ -59,8 +59,20 @@ import death_penalty as dp  # noqa: E402  (attach/read/write helpers)
 
 H = bytes.fromhex
 
-DLL = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                    '..', '..', 'halo1', 'halo1.dll'))
+def _find_dll():
+    """MCC's halo1.dll. The enhancer hands its MCC folder over in HALO_MCC_ROOT (the
+    folder its maps resolve under): a tool unpacked OUTSIDE <MCC>/tool -- on the
+    Desktop, or one level deeper -- missed the dll and every file write failed while
+    the live write still landed (co-op session 2026-10-17, both machines). Then the
+    tool-relative and the default Steam folders."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    roots = [os.environ.get('HALO_MCC_ROOT'), os.path.join(here, '..', '..'),
+             r'C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection']
+    cands = [os.path.normpath(os.path.join(r, 'halo1', 'halo1.dll')) for r in roots if r]
+    return next((c for c in cands if os.path.isfile(c)), cands[0])
+
+
+DLL = _find_dll()
 TEXT_FILE_DELTA = 0xC00   # .text: file offset = rva - 0xC00 (both sites and the cave)
 NAME = 'Overheat drops the zoom'
 
