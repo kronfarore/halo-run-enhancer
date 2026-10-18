@@ -9133,6 +9133,19 @@ def _apply_sprint(m, game, registry, cfg):
     pa = {int(p): (n or 'none') for p, n in pa.items()}
     active = {n for n in pa.values() if n != 'none'}
 
+    # The sprint token must never be left on the floor for the other player. Swapping
+    # onto a ground weapon mid-sprint dropped it in an online co-op test (2026-10-18), and
+    # the partner picked it up -- an invisible weapon with the sprint exemption. Neither
+    # game has a "cannot be dropped" flag; weapon flags bit 10, Detonates When Dropped, is
+    # what made the H1 energy sword and fuel rod vanish on drop before it was cleared from
+    # them. Raw offsets: the flag dword is weap +0x308 in Halo 1 and +0x12C in Halo 2.
+    _flag_off = {'Halo 1': 0x308, 'Halo 2': 0x12C}.get(gname)
+    _tok = m.find_tags('weap', _SPRINT_WEAP_BY_GAME.get(gname, _SPRINT_WEAP))
+    if _flag_off is not None and _tok and _tok[0][1] is not None:
+        _o = _tok[0][1] + _flag_off
+        _f = struct.unpack_from('<I', m.data, _o)[0]
+        struct.pack_into('<I', m.data, _o, _f | (1 << 10))
+
     # Deployed maps span several script generations, so check that this map's script
     # actually carries what each requested ability needs BEFORE writing anything --
     # enabling regeneration on a map built before vit_max existed would silently

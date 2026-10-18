@@ -58,6 +58,7 @@ WEAP_FLAGS = 0x12C
 # sprint weapon, which sets both.)
 FLAG_MUST_BE_READIED = 1 << 3        # forces it active, so the engine swaps to it
 FLAG_NO_SLOT_COST = 1 << 4           # doesn't occupy a weapon slot, so no free slot needed
+FLAG_DETONATES_WHEN_DROPPED = 1 << 10  # removes a dropped token so a partner can't take it
 
 TOKEN = 'objects' + chr(92) + 'weapons' + chr(92) + 'melee' + chr(92) + 'unarmed' \
         + chr(92) + 'unarmed'
@@ -128,10 +129,10 @@ def apply(map_path, mult=1.5, profile='wimpy', out_path=None, side='cancel',
     _, e, _ = hit
     flags, = struct.unpack_from('<I', m.data, token['base'] + WEAP_FLAGS)
     struct.pack_into('<I', m.data, token['base'] + WEAP_FLAGS,
-                     flags | FLAG_MUST_BE_READIED | FLAG_NO_SLOT_COST)
+                     flags | FLAG_MUST_BE_READIED | FLAG_NO_SLOT_COST | FLAG_DETONATES_WHEN_DROPPED)
     if verbose:
         print('token flags 0x%08X -> 0x%08X (must be readied + no slot cost)'
-              % (flags, flags | FLAG_MUST_BE_READIED | FLAG_NO_SLOT_COST))
+              % (flags, flags | FLAG_MUST_BE_READIED | FLAG_NO_SLOT_COST | FLAG_DETONATES_WHEN_DROPPED))
 
     struct.pack_into('<I', m.data, e + PROF_PRIMARY + 4, token['datum'])
     struct.pack_into('<hh', m.data, e + PROF_PRI_LOADED, 0, 0)

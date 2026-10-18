@@ -78,6 +78,9 @@
 ; ---- per-player selected ability (0 none,1 sprint,2 overshield,3 camo,4 medikit) ----
 (global short ability0 0)
 (global short ability1 0)
+; Effective per-slot ability, resolved each tick from ability0/1 -- see ability_control.
+(global short ea0 0)
+(global short ea1 0)
 
 ; ---- per-player runtime state ----
 (global boolean sa0 false)            ; player 1: active
@@ -114,61 +117,61 @@
 
 (script static void ability_start0
 	(set sa0 true)
-	(if (= ability0 1)
+	(if (= ea0 1)
 		(begin
 			(set sl0 sprint_ticks)
 			(player_add_equipment (player0) sprint_profile 0)))
-	(if (= ability0 2)
+	(if (= ea0 2)
 		(begin
 			(set sl0 os_ticks)
 			(object_set_shield (player0) os_shield)))            ; overshield: set current shield once
-	(if (= ability0 3)
+	(if (= ea0 3)
 		(begin
 			(set sl0 camo_ticks)
 			(object_create camo_ability0)
 			(objects_attach (player0) "" camo_ability0 "")
 			(objects_detach (player0) camo_ability0)))
-	(if (= ability0 4)
+	(if (= ea0 4)
 		(begin (set sl0 medi_ticks) (set fxp0 0) (ab_ladder)))                                ; medikit heals per tick (medi_tick0)
 	(player_action_test_reset))         ; clear any pending fire so sprint doesn't insta-cancel
 
 (script static void ability_stop0
 	(set sa0 false)
-	(if (= ability0 1) (set sc0 sprint_cooldown))
-	(if (= ability0 2) (set sc0 os_cooldown))
-	(if (= ability0 3) (set sc0 camo_cooldown))
-	(if (= ability0 4) (set sc0 medi_cooldown))
-	(if (= ability0 3) (object_destroy camo_ability0))    ; clear it if it wasn't picked up
-	(if (= ability0 1) (objects_delete_by_definition "weapons\sprint\sprint")))
+	(if (= ea0 1) (set sc0 sprint_cooldown))
+	(if (= ea0 2) (set sc0 os_cooldown))
+	(if (= ea0 3) (set sc0 camo_cooldown))
+	(if (= ea0 4) (set sc0 medi_cooldown))
+	(if (= ea0 3) (object_destroy camo_ability0))    ; clear it if it wasn't picked up
+	(if (= ea0 1) (objects_delete_by_definition "weapons\sprint\sprint")))
 
 (script static void ability_start1
 	(set sa1 true)
-	(if (= ability1 1)
+	(if (= ea1 1)
 		(begin
 			(set sl1 sprint_ticks)
 			(player_add_equipment (player1) sprint_profile 0)))
-	(if (= ability1 2)
+	(if (= ea1 2)
 		(begin
 			(set sl1 os_ticks)
 			(object_set_shield (player1) os_shield)))            ; overshield: set current shield once
-	(if (= ability1 3)
+	(if (= ea1 3)
 		(begin
 			(set sl1 camo_ticks)
 			(object_create camo_ability1)
 			(objects_attach (player1) "" camo_ability1 "")
 			(objects_detach (player1) camo_ability1)))
-	(if (= ability1 4)
+	(if (= ea1 4)
 		(begin (set sl1 medi_ticks) (set fxp1 0)))                                ; medikit heals per tick (medi_tick1)
 	(player_action_test_reset))
 
 (script static void ability_stop1
 	(set sa1 false)
-	(if (= ability1 1) (set sc1 sprint_cooldown))
-	(if (= ability1 2) (set sc1 os_cooldown))
-	(if (= ability1 3) (set sc1 camo_cooldown))
-	(if (= ability1 4) (set sc1 medi_cooldown))
-	(if (= ability1 3) (object_destroy camo_ability1))    ; clear it if it wasn't picked up
-	(if (= ability1 1) (objects_delete_by_definition "weapons\sprint\sprint")))
+	(if (= ea1 1) (set sc1 sprint_cooldown))
+	(if (= ea1 2) (set sc1 os_cooldown))
+	(if (= ea1 3) (set sc1 camo_cooldown))
+	(if (= ea1 4) (set sc1 medi_cooldown))
+	(if (= ea1 3) (object_destroy camo_ability1))    ; clear it if it wasn't picked up
+	(if (= ea1 1) (objects_delete_by_definition "weapons\sprint\sprint")))
 
 ;-----------------------------------------------------------------------------
 ; Medikit heal tick -- one slice of the heal, shield written back untouched.
@@ -377,6 +380,14 @@
 ; Per-tick control.
 ;-----------------------------------------------------------------------------
 (script continuous ability_control
+	; Co-op slot order. The patcher writes ability0 = the run's player 1 (the HOST) and
+	; ability1 = player 2, but in co-op the script's (player0) is the JOINING player and
+	; (player1) the host -- observed online in BOTH games, 2026-10-18. So in co-op the
+	; picks are crossed here; single player is untouched, since its one player is always
+	; (player0). Resolved every tick so a late join still lands right.
+	(if (> (player_count) 1)
+		(begin (set ea0 ability1) (set ea1 ability0))
+		(begin (set ea0 ability0) (set ea1 ability1)))
 	; A trigger pull cancels sprint and ends camo. player_action_test_primary_trigger
 	; is an ANY-player test (no unit arg), read once per tick only while an ability is up.
 	(set ability_fired false)
@@ -403,14 +414,14 @@
 			(set sl0 (- sl0 1))
 			; Overshield is set once at activation; camo runs its natural duration;
 			; the medikit heals a slice every tick of its window.
-			(if (= ability0 4) (begin (medi_tick0) (medi_pulse0)))
+			(if (= ea0 4) (begin (medi_tick0) (medi_pulse0)))
 			(if (or (<= sl0 0)
-					(and (= ability0 1)
+					(and (= ea0 1)
 						 (or ability_fired
 							 (not (unit_has_weapon_readied (player0) "weapons\sprint\sprint"))
 							 (not (= (unit_get_current_flashlight_state (player0)) fp0)))))
 				(ability_stop0)))
-		(if (and (> ability0 0)
+		(if (and (> ea0 0)
 				 (not (= (unit_get_current_flashlight_state (player0)) fp0))
 				 (= sc0 0))
 			(ability_start0)))
@@ -434,14 +445,14 @@
 			(if sa1
 				(begin
 					(set sl1 (- sl1 1))
-					(if (= ability1 4) (begin (medi_tick1) (medi_pulse1)))
+					(if (= ea1 4) (begin (medi_tick1) (medi_pulse1)))
 					(if (or (<= sl1 0)
-							(and (= ability1 1)
+							(and (= ea1 1)
 								 (or ability_fired
 									 (not (unit_has_weapon_readied (player1) "weapons\sprint\sprint"))
 									 (not (= (unit_get_current_flashlight_state (player1)) fp1)))))
 						(ability_stop1)))
-				(if (and (> ability1 0)
+				(if (and (> ea1 0)
 						 (not (= (unit_get_current_flashlight_state (player1)) fp1))
 						 (= sc1 0))
 					(ability_start1)))

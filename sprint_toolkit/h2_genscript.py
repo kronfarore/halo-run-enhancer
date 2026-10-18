@@ -98,6 +98,9 @@ BLOCK = r'''; ------------------------------------------------------------------
 ; ---- per-player selected ability -------------------------------------------
 (global short ability0 0)
 (global short ability1 0)
+; Effective per-slot ability, resolved each tick from ability0/1 -- see ability_control.
+(global short ea0 0)
+(global short ea1 0)
 
 ; ---- per-player runtime state ----------------------------------------------
 (global boolean sa0 false)            ; player 1: ability active
@@ -138,7 +141,7 @@ BLOCK = r'''; ------------------------------------------------------------------
 ; while player 2 is still sprinting, player 1 keeps the token until player 2 stops too.
 ; That overlap is an engine limit, not a bug to chase: there is no per-unit remove verb.
 (script static void ab_sprint_stop
-	(if (not (or (and sa0 (= ability0 1)) (and sa1 (= ability1 1))))
+	(if (not (or (and sa0 (= ea0 1)) (and sa1 (= ea1 1))))
 		(objects_delete_by_definition "objects\weapons\melee\unarmed\unarmed")))
 
 ; ---- activation / deactivation, one pair per player -------------------------
@@ -146,33 +149,33 @@ BLOCK = r'''; ------------------------------------------------------------------
 
 (script static void ability_start0
 	(set sa0 true)
-	(if (= ability0 1) (begin (set sl0 sprint_ticks) (ab_sprint_give0)))
-	(if (= ability0 2) (begin (set sl0 os_ticks) (object_set_shield (player0) os_shield)))
-	(if (= ability0 3) (begin (set sl0 camo_ticks) (set cn0 camo_reapply) (ab_camo_spawn0)))
-	(if (= ability0 4) (set sl0 medi_ticks)))
+	(if (= ea0 1) (begin (set sl0 sprint_ticks) (ab_sprint_give0)))
+	(if (= ea0 2) (begin (set sl0 os_ticks) (object_set_shield (player0) os_shield)))
+	(if (= ea0 3) (begin (set sl0 camo_ticks) (set cn0 camo_reapply) (ab_camo_spawn0)))
+	(if (= ea0 4) (set sl0 medi_ticks)))
 
 (script static void ability_stop0
 	(set sa0 false)
-	(if (= ability0 1) (set sc0 sprint_cooldown))
-	(if (= ability0 2) (set sc0 os_cooldown))
-	(if (= ability0 3) (set sc0 camo_cooldown))
-	(if (= ability0 4) (set sc0 medi_cooldown))
-	(if (= ability0 1) (ab_sprint_stop)))
+	(if (= ea0 1) (set sc0 sprint_cooldown))
+	(if (= ea0 2) (set sc0 os_cooldown))
+	(if (= ea0 3) (set sc0 camo_cooldown))
+	(if (= ea0 4) (set sc0 medi_cooldown))
+	(if (= ea0 1) (ab_sprint_stop)))
 
 (script static void ability_start1
 	(set sa1 true)
-	(if (= ability1 1) (begin (set sl1 sprint_ticks) (ab_sprint_give1)))
-	(if (= ability1 2) (begin (set sl1 os_ticks) (object_set_shield (player1) os_shield)))
-	(if (= ability1 3) (begin (set sl1 camo_ticks) (set cn1 camo_reapply) (ab_camo_spawn1)))
-	(if (= ability1 4) (set sl1 medi_ticks)))
+	(if (= ea1 1) (begin (set sl1 sprint_ticks) (ab_sprint_give1)))
+	(if (= ea1 2) (begin (set sl1 os_ticks) (object_set_shield (player1) os_shield)))
+	(if (= ea1 3) (begin (set sl1 camo_ticks) (set cn1 camo_reapply) (ab_camo_spawn1)))
+	(if (= ea1 4) (set sl1 medi_ticks)))
 
 (script static void ability_stop1
 	(set sa1 false)
-	(if (= ability1 1) (set sc1 sprint_cooldown))
-	(if (= ability1 2) (set sc1 os_cooldown))
-	(if (= ability1 3) (set sc1 camo_cooldown))
-	(if (= ability1 4) (set sc1 medi_cooldown))
-	(if (= ability1 1) (ab_sprint_stop)))
+	(if (= ea1 1) (set sc1 sprint_cooldown))
+	(if (= ea1 2) (set sc1 os_cooldown))
+	(if (= ea1 3) (set sc1 camo_cooldown))
+	(if (= ea1 4) (set sc1 medi_cooldown))
+	(if (= ea1 1) (ab_sprint_stop)))
 
 ; ---- regeneration ------------------------------------------------------------
 ; unit_set_current_vitality takes ABSOLUTE units while the getters return [0,1], so
@@ -242,6 +245,14 @@ __FX1__
 
 ; ---- per-tick control --------------------------------------------------------
 (script continuous ability_control
+	; Co-op slot order. The patcher writes ability0 = the run's player 1 (the HOST) and
+	; ability1 = player 2, but in co-op the script's (player0) is the JOINING player and
+	; (player1) the host -- observed online in BOTH games, 2026-10-18. So in co-op the
+	; picks are crossed here; single player is untouched, since its one player is always
+	; (player0). Resolved every tick so a late join still lands right.
+	(if (> (player_count) 1)
+		(begin (set ea0 ability1) (set ea1 ability0))
+		(begin (set ea0 ability0) (set ea1 ability1)))
 	; ---- player 1 ----
 	(if (> sc0 0)
 		(begin
@@ -258,19 +269,19 @@ __FX1__
 	(if sa0
 		(begin
 			(set sl0 (- sl0 1))
-			(if (= ability0 4) (begin (medi_tick0) (medi_pulse0)))
+			(if (= ea0 4) (begin (medi_tick0) (medi_pulse0)))
 			; Camo duration is owned by the SCRIPT: the engine cuts the Arbiter's cloak
 			; after ~4s whatever the pickup's Powerup Time says, so the pickup is kept
 			; short and re-applied until the window runs out. That makes the patcher's
 			; duration authoritative and Chief and the Arbiter behave the same.
-			(if (= ability0 3)
+			(if (= ea0 3)
 				(begin
 					(set cn0 (- cn0 1))
 					(if (< cn0 1) (begin (set cn0 camo_reapply) (ab_camo_spawn0)))))
 			(if (<= sl0 0) (ability_stop0)))
 		; The hijacked verb reads THIS unit's flashlight, so the rising edge is the
 		; press -- exactly as H1 does. See the header for why it is not an action test.
-		(if (and (> ability0 0) (= sc0 0)
+		(if (and (> ea0 0) (= sc0 0)
 				 (unit_get_enterable_by_player (player0)) (not fp0))
 			(ability_start0)))
 	(set fp0 (unit_get_enterable_by_player (player0)))
@@ -293,15 +304,15 @@ __FX1__
 			(if sa1
 				(begin
 					(set sl1 (- sl1 1))
-					(if (= ability1 4) (begin (medi_tick1) (medi_pulse1)))
-					(if (= ability1 3)
+					(if (= ea1 4) (begin (medi_tick1) (medi_pulse1)))
+					(if (= ea1 3)
 						(begin
 							(set cn1 (- cn1 1))
 							(if (< cn1 1) (begin (set cn1 camo_reapply) (ab_camo_spawn1)))))
 					(if (<= sl1 0) (ability_stop1)))
 				; The SAME verb as player 1, just passed player 2's unit -- that is the
 				; whole point of reading the unit rather than the local input array.
-				(if (and (> ability1 0) (= sc1 0)
+				(if (and (> ea1 0) (= sc1 0)
 						 (unit_get_enterable_by_player (player1)) (not fp1))
 					(ability_start1)))
 			(set fp1 (unit_get_enterable_by_player (player1)))))
