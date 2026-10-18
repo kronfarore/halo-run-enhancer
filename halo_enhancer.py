@@ -3781,7 +3781,8 @@ class ModifierDatabase:
 
     # Cards the Player Health / Player Shield pair supersedes. Starting Health and
     # Starting Shield Modifier scale the scenario profile rather than the pool, and
-    # Enemy Damage Reduction is a third route to the same felt outcome.
+    # Enemy Damage Reduction (a third route to the same felt outcome) was removed
+    # from halo.json on the user's word, 2026-10-18.
     SUPERSEDED_VITALITY_CARDS = ('Starting Health Modifier', 'Starting Shield Modifier')
 
     def _config_ok(self, mod, game=None):
