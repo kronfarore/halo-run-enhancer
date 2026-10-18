@@ -34,6 +34,8 @@ DONE and tested (12 boots + Armed; batched for wave B); read "B5: what the Concu
 before B6 (the Plasma Launcher). C1 (Storm Rifle, the Halo 4 pilot, 2026-10-14, parallel with B6) is
 DONE and tested (dry boots, balanced, Armed on b30; its ten-map rebuild BATCHED, user's go); read "C1:
 what the Storm Rifle taught" -- the Halo 4 recipe -- before C2 (the Suppressor).
+**ALL 25 DONE (C7 / C9 the last, 2026-10-17); wave C checked and all ten maps rebuilt + shipped
+2026-10-18 -- see "WAVE C CHECKED" below.**
 
 ## Phase 0: DONE (2026-10-07)
 
@@ -1471,6 +1473,25 @@ content-equal noise, B1/C1 records) and 6 sound tags (tool sounds' sample count,
 not re-verified one by one; cyborg labels and BOTH reticle sheets checked: identical label by
 label and sequence by sequence (59 sequences, pixels + sprite bounds; the sheet writer re-packs
 the pixel blob, so the file hash differs). Kit restored exact after every run.
+
+**WAVE C CHECKED + ALL TEN MAPS REBUILT + SHIPPED (2026-10-18, user's go) -- ALL 25 PORTS DONE.**
+29 done ports (the SAW, sword, fuel rod, beam + the 25) resident in all ten maps.
+WAVE CHECK `port_tool_proof --reproduce --backup h1_wave_C_reproduce_2026-10-18 --tag wCr`: every step of
+every done port with today's tools -> 22 changed + 268 bitmap headers (pixels identical); kit restored,
+diff 0. The 22 were then checked ONE BY ONE (regenerated again -- retarget for 10 ports, sounds for 4,
+pickable for all 29 -- copies kept, kit restored, diff 0): 10 FP model_animations = 0 animations differ
+(h1_antr_diff); both reticle sheets 92 of 92 sequences identical (pixels, sprite bounds, registration);
+10 tool sounds same size, only the tag checksum (bytes 40-43) and one small field per 124-byte
+permutation differ (the sample-count noise), audio identical. This covers the ammo-meter re-proof owed
+since 9832499 (reproduce = every step of every done port). Two earlier tries stopped at the start when the
+E: and then the F: drive dropped out (WinError 433 / the lock file not found); nothing was written.
+REBUILD: live + baselines of all ten first copied to E:\HaloBackups\h1_waveC_rebuild_2026-10-18 (verified;
+live == baseline on all ten before). `h1_rebuild_all.py`: 10 ok, shipped. Capacity: tag 21.7-23.0 MiB of
+64, vbuf 29.2-34.4 MiB of 64, files 477-554 MiB (d40 554.4, a10 551.5) -- a10 at 551.5 MiB boots and
+plays (user); d40 to be booted. MODEL BUFFER (h1_model_buffer, 32 MiB cap): a10 / b30 27.39 (4.61 left),
+a30 27.26, b40 26.56, d40 26.19, c40 25.84, c10 25.00, a50 24.37, d20 24.27, c20 23.19 (8.81 left).
+Checks on the deployed ten: residency 29 x 10, 0 missing; port_refs_audit 0 problems (29 ports);
+port_sound_refs 0 BORROW; port_sounds --check 0.
 
 ## Running two ports in parallel (user, 2026-10-12)
 
