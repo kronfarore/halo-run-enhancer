@@ -63,6 +63,10 @@ PORT = {
         # h1_melee_blocks_fire.py (Halo 1 blocks only 3/4 of a melee); the ball's 3P melee
         # (28 fr) already outlasts the slash (24). CONFIRMED in game 2026-10-10
         'melee_blocks_fire': True,
+        # the lunge seen in third person (co-op partner, 2026-10-17 point 4): label fb's fire
+        # 1/2 were empty (copied from b), so fire plays the 3P melee swing, as the hammer's
+        # (h1_pickable_weapons.third_person_fire_as_melee)
+        'fire_anim': 'melee',
         'keys': {'first-person melee': 5},
         # Halo 3's own sword sounds (h1_port_sounds.py energy_sword): the Elite's swing
         # (SWORD_SWING) is silent for 0.45 s and was heard 0.3 s late (user, 2026-10-06)
