@@ -110,7 +110,7 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'done',             # 2026-10-15: 8 dry boots, balanced, Armed (grunt, jackal, elite) on a30
+    'status': 'rework',           # 2026-10-15: 8 dry boots, balanced, Armed (grunt, jackal, elite) on a30
     # CLOSE-OUT RECORD (2026-10-15):
     # STEP 4b (port_field_audit --port suppressor, final): weapon list 2 = 0 (error deceleration 1.2,
     #   illumination recovery 0.04 written); list 4 deliberate (rate ramp 0 / 0 and tracers 0 = Halo 4's
