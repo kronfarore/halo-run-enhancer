@@ -14716,6 +14716,21 @@ class HaloGUI(QMainWindow):
         form.addRow("Time:", time_row)
         form.addRow("Time multiplier:", self.nl_mult)
         lay.addLayout(form)
+        # Score / Time straight from the running MCC (pgcr_live). Runs off the GUI
+        # thread and only ever fills the fields: typing them stays possible throughout.
+        self.nl_read_btn = QPushButton("⤓ Read from MCC")
+        self.nl_read_btn.setStyleSheet("""
+            QPushButton { background-color: #24384f; color: #e0e0e0; padding: 5px 12px;
+                border: 1px solid #3a5a80; border-radius: 4px; }
+            QPushButton:hover { background-color: #2f4a68; }
+            QPushButton:disabled { background-color: #2a2a2a; color: #777; }
+        """)
+        self.nl_read_btn.setToolTip(
+            "On the level's summary screen: fills Score, Time and Time multiplier from the "
+            "running MCC (its campaign metagame record). The fields stay editable.")
+        self.nl_read_btn.clicked.connect(self.on_read_level_from_mcc)
+        lay.addWidget(self.nl_read_btn)
+        self._nl_mcc_read = None
         self.next_level_btn = QPushButton("▶ NEXT LEVEL")
         self.next_level_btn.setStyleSheet("""
             QPushButton { background-color: #2a4a7a; color: white; font-weight: bold;
@@ -14812,6 +14827,52 @@ class HaloGUI(QMainWindow):
         if idle:
             self._sync_rec_step()
 
+    def on_read_level_from_mcc(self):
+        """Fill Score / Time / Time multiplier from the running MCC, on a worker thread (the first read of
+        a launch scans the module image for its signatures; later ones are cached)."""
+        self.nl_read_btn.setEnabled(False)
+        self.nl_read_btn.setText("⤓ Reading…")
+        result = {}
+
+        def work():
+            try:
+                sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+                import pgcr_live
+                result['rep'] = pgcr_live.read_results()
+                rs = getattr(self, 'run_state', None)
+                pgcr_live.log({'mode': 'gui', 'note': 'Next level box: %s / %s'
+                               % (self._current_game(), getattr(rs, 'mission_id', None)),
+                               'read': {k: v for k, v in result['rep'].items() if k != 'g'}})
+            except Exception as e:
+                result['rep'] = {'ok': False, 'reason': str(e)}
+
+        t = threading.Thread(target=work, daemon=True)
+        t.start()
+
+        def poll():
+            if t.is_alive():
+                QTimer.singleShot(100, poll)
+                return
+            self.nl_read_btn.setEnabled(True)
+            self.nl_read_btn.setText("⤓ Read from MCC")
+            rep = result.get('rep') or {}
+            if not rep.get('ok'):
+                self.update_status("Read from MCC: %s -- type the values instead."
+                                   % rep.get('reason', 'failed'))
+                return
+            self.nl_score.setText(str(rep['score']))
+            s = int(rep['seconds'])
+            self.nl_time_h.setText(str(s // 3600) if s >= 3600 else '')
+            self.nl_time_m.setText('%02d' % (s % 3600 // 60))
+            self.nl_time_s.setText('%02d' % (s % 60))
+            self.nl_mult.setText('%g' % rep['time_multiplier'])
+            self._nl_mcc_read = {k: rep.get(k) for k in (
+                'score', 'seconds', 'time_multiplier', 'kill_points', 'penalties', 'deaths')}
+            self.update_status("Read from MCC: score %s, time %s, time multiplier %g."
+                               % (rep['score'], rep['time'], rep['time_multiplier']))
+
+        QTimer.singleShot(100, poll)
+
     def _read_time(self):
         """('h:mm:ss', seconds) from the three time fields, or (None, None) when all
         three are empty. An empty hour (or minute / second) counts as 0."""
@@ -14869,7 +14930,11 @@ class HaloGUI(QMainWindow):
             'score_step': CONFIG.get('score_step'),
             'score_cap_mult': CONFIG.get('score_cap_mult'),
             'patch_code': (rs.last_patch or {}).get('code'),
+            # what Read from MCC returned, when it was used (the fields may differ
+            # if the player corrected them)
+            'mcc_read': getattr(self, '_nl_mcc_read', None),
         }
+        self._nl_mcc_read = None
         pf = self._level_patch_file(game, mid)
         if pf is not None:
             entry['patch_file'] = pf.name
