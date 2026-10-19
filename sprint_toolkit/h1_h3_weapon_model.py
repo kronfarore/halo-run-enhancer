@@ -1060,11 +1060,21 @@ def shaders(w, glow):
             m.model_shader.flags.alpha_blended_decal = True
         if name in glow:
             si = m.self_illumination
+            rgb = glow[name]
+            if w.get('illum_source'):
+                # the self-illumination FOLLOWS the weapon (the Mauler, 2026-10-19: dark at an
+                # empty magazine): `color source` A..D = the object's change colour, which the
+                # weapon lerps black -> the glow colour by a function (h1_pickable_weapons
+                # `change_colors`); the shader's own bounds white, so the colour lives there
+                si.color_source.set_to(w['illum_source'])
+                rgb = (1.0, 1.0, 1.0)
             for bound in (si.color_lower_bound, si.color_upper_bound):
-                bound.r, bound.g, bound.b = glow[name]
+                bound.r, bound.g, bound.b = rgb
         t.filepath = os.path.join(out, name + '.shader_model')
         t.serialize(temp=False, backup=False)
-        print('   shader %s  glow %s' % (t.filepath, tuple(round(c, 2) for c in glow.get(name, ()))))
+        print('   shader %s  glow %s%s' % (t.filepath, tuple(round(c, 2) for c in glow.get(name, ())),
+                                         '  from change colour %s' % w['illum_source']
+                                         if name in glow and w.get('illum_source') else ''))
 
 
 def base_jms(w, key):

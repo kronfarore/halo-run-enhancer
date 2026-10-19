@@ -1753,6 +1753,23 @@ def edit_weapon(key, write):
         cc.flags.blend_in_hsv = False
         for b, rgb in zip((cc.color_lower_bound, cc.color_upper_bound), w['change_color_a']):
             b.r, b.g, b.b = rgb
+    if 'change_colors' in w:
+        # change colours BUILT, A.. in order (the Mauler, 2026-10-19: its glow dark at an empty
+        # magazine): a model shader's self-illumination `color source` is the object's change
+        # colour, and one with NO permutations runs lower -> upper by its `scale_by` (the
+        # banshee: blue -> white by A in = driver seat power; the plasma rifle's wander) --
+        # [{'scale_by', 'lower', 'upper'}], copies of the plasma rifle's block, RGB blend
+        src = weap_def.build(filepath=path('weapons\\plasma rifle\\plasma rifle', '.weapon')).data.tagdata
+        ccs = d.obje_attrs.change_colors.STEPTREE
+        ccs[:] = []
+        for C in w['change_colors']:
+            cc = copy.deepcopy(src.obje_attrs.change_colors.STEPTREE[0])
+            cc.flags.blend_in_hsv = False
+            cc.darken_by.set_to('none')
+            cc.scale_by.set_to(C['scale_by'])
+            for b, rgb in zip((cc.color_lower_bound, cc.color_upper_bound), (C['lower'], C['upper'])):
+                b.r, b.g, b.b = rgb
+            ccs.append(cc)
     if 'own_light' in w:
         from reclaimer.hek.defs.ligh import ligh_def
         L = w['own_light']
