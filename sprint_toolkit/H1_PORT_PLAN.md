@@ -1504,6 +1504,16 @@ BYTE-IDENTICAL (a10 built twice as the control). paths.TOOL_EXE now picks tool_m
 against the tool in use. The next limit for grenades / turrets / vehicles everywhere is tool's vbuf
 line (64 MiB; a10 34.4) -- not yet known whether that one is tool's or MCC's.
 
+**ALL 16 REACH / HALO 4 PORTS BACK TO FULL DETAIL + ALL TEN REBUILT + SHIPPED (2026-10-19, user).**
+Decimation off for DMR, Needle, Repeater, GL, Concussion, Plasma Launcher, Focus, Storm, Suppressor,
+Boltshot, LightRifle, Scattershot, Binary, Railgun, Sticky, Incineration (efb17f6). model / retarget /
+pickable regenerated in one kit-lock hold (backup E:\HaloBackups\h1_undecimate_2026-10-19): only those
+ports' files changed, reticle sheets 92/92 sequences identical, the 5 changed FP antr 0 animations differ.
+Ports 10.59 -> 15.18 MiB a map. Rebuild with tool_mb128 (live + baselines first to
+E:\HaloBackups\h1_undecimate_rebuild_2026-10-19): 10 ok; model data 27.8-31.97 MiB (a10 / b30 highest),
+vbuf 33.8-39.0 of 64 (a10), tag 21.7-23.0, files 481-559 MiB; residency 29 x 10, refs 0, BORROW 0,
+port_sounds 0. Visual check in first person: the user's.
+
 ## Running two ports in parallel (user, 2026-10-12)
 
 Two port sessions may run at once. Each port's OWN work (its config, its weapon / sound / data
