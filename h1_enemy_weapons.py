@@ -1206,3 +1206,38 @@ def covenant_avoid_friendly_fire(m):
              reason=None if done else 'no Grunt / Jackal / Elite actor')
     r.update(tag='actr', new='avoid friends line of fire + crouch: ' + ', '.join(done))
     return [r]
+
+
+# ----------------------------------------------------------------------------- Hunter drop
+# Options -> Patching -> Halo 1 'Hunters drop a Fuel Rod' (opt-in, user 2026-10-19). The
+# rebuilt maps carry `characters\hunter\effects\death` on the Hunter coll's body DEPLETED
+# effect (ports_h1/fuel_rod.py 'death_effect'): a weapon part that spawns the pickable Fuel
+# Rod with its 12 default rounds. CONFIRMED on b30 2026-10-18. Off = the patcher blanks that
+# reference, as stock (the damaged-effect ref beside it is the empty form: 'effe', 0, 0, -1).
+HUNTER_COLL = 'characters' + BS + 'hunter' + BS + 'hunter'
+HUNTER_DROP = 'characters' + BS + 'hunter' + BS + 'effects' + BS + 'death'
+COLL_DAMAGED_EFFECT, COLL_DEPLETED_EFFECT = 152, 168
+
+
+def hunter_fuel_rod_drop(m, on):
+    off = m.get_tag_meta('coll', HUNTER_COLL)
+    eid = m.tag_id(('effe', HUNTER_DROP))
+    if off is None or eid is None:
+        if not on:
+            return []
+        r = _row('Hunters drop a Fuel Rod', 'body depleted effect', skip=True,
+                 reason='no Hunter on this level' if off is None
+                 else 'this map was not rebuilt with the drop')
+        r['tag'] = 'coll'
+        return [r]
+    ref = off + COLL_DEPLETED_EFFECT
+    hooked = struct.unpack_from('<I', m.data, ref + 12)[0] == eid
+    if not on and not hooked:
+        return []
+    if not on:
+        m.data[ref:ref + 16] = m.data[off + COLL_DAMAGED_EFFECT:off + COLL_DAMAGED_EFFECT + 16]
+    r = _row('Hunters drop a Fuel Rod', 'body depleted effect', ok=hooked,
+             new=('on' if on else 'off') if hooked else None,
+             reason=None if hooked else 'the Hunter coll does not carry the drop')
+    r['tag'] = 'coll'
+    return [r]

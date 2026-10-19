@@ -1982,6 +1982,42 @@ def edit_death_drop(key, write):
         print('   %s: + weapon part %s (%d parts)' % (rel, w['weapon'], len(parts)))
         t.filepath = p
         save(t, p, write)
+    # an enemy whose coll has NO death effect to ride on (the Hunter): a NEW effect, the
+    # template's stock tag cut down to its first part (now the weapon) on one marker, hooked
+    # to the coll's effect slot
+    from reclaimer.hek.defs.coll import coll_def
+    for rel, d in w.get('death_effect', {}).items():
+        tp = path(d['template'], '.effect')
+        t = effe_def.build(filepath=tp + BACKUP if os.path.exists(tp + BACKUP) else tp)
+        td = t.data.tagdata
+        locs = td.locations.STEPTREE
+        while len(locs) > 1:
+            locs.pop()
+        locs[0].marker_name = d['marker']
+        events = td.events.STEPTREE
+        while len(events) > 1:
+            events.pop()
+        parts = events[0].parts.STEPTREE
+        while len(parts) > 1:
+            parts.pop()
+        x = parts[0]
+        x.location = 0
+        x.type.tag_class.set_to('weapon')
+        x.type.filepath = w['weapon']
+        x.angular_velocity_bounds[0] = x.angular_velocity_bounds[1] = 0.0
+        p = path(rel, '.effect')
+        print('   %s: NEW effect, weapon part %s on marker %r' % (rel, w['weapon'], d['marker']))
+        t.filepath = p
+        save(t, p, write)
+        cp = path(d['coll'], '.model_collision_geometry')
+        c = coll_def.build(filepath=cp + BACKUP if os.path.exists(cp + BACKUP) else cp)
+        body = c.data.tagdata.body
+        slot = body[d['slot']]
+        print('   %s: %s %r -> %s' % (d['coll'], d['slot'], slot.filepath, rel))
+        slot.tag_class.set_to('effect')
+        slot.filepath = rel
+        c.filepath = cp
+        save(c, cp, write)
 
 
 def edit_drops(key, write):

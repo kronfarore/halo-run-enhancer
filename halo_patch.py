@@ -9719,7 +9719,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               h4_keep_loadout=False, clear_profile_equipment=False,
               clear_profile_grenades=False, spawn_grenades=None,
               h4_ability_visibility=None, h1_enemy_weapons=None,
-              h1_covenant_avoid_ff=False,
+              h1_covenant_avoid_ff=False, h1_hunter_drop=False,
               camo_after_ladder=False, fix_h2_fuel_rod=False,
               player_armour=False, no_immunities=False, h1_levels=None,
               baseline_root=None, map_subdir=None):
@@ -9885,6 +9885,11 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # line-of-fire flags on the Grunt / Jackal / Elite actor tags
         import h1_enemy_weapons as _ew
         results.extend(_ew.covenant_avoid_friendly_fire(m))
+    if str(game).strip() == 'Halo 1':
+        # Options -> Halo 1 'Hunters drop a Fuel Rod' (opt-in): the rebuilt maps carry the
+        # drop; off blanks it, so this runs either way
+        import h1_enemy_weapons as _ew
+        results.extend(_ew.hunter_fuel_rod_drop(m, bool(h1_hunter_drop)))
     if weapon_ports and str(game).strip() == 'Halo 1':
         # A port's actv balance rows (the fuel rod's AI Rate Of Fire) belong to EVERY
         # variant that carries the port's weapon, not only the stock ones the rows name:

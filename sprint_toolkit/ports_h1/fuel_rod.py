@@ -136,6 +136,19 @@ PORT = {
         # it detonated anyway); a plasma pistol Grunt drops 70-90%
         'drops': {r'characters\grunt\grunt specops fuel rod': ((0.5, 1.0), (2, 6)),
                   r'characters\grunt\grunt specops fuel rod airdef': ((0.5, 1.0), (2, 6))},
+        # HUNTERS DROP IT (2026-10-18; the user ran dry fighting Hunters in co-op): their
+        # `hunter fuel rod` has no model and no magazine, so the engine's own drop leaves
+        # nothing, and their coll has no death effect at all. A NEW effect, the Sentinel
+        # drop's recipe: one weapon part, from the fuel-rod arm's `primary trigger` marker,
+        # on the body DEPLETED slot. NOT destroyed (b30 boot, 2026-10-18: no drop): every
+        # stock coll with a destroyed effect is a unit that pops or explodes (Sentinel,
+        # Engineer, Carrier, infection form); vehicles, which leave a wreck, put their death
+        # on depleted -- a Hunter leaves a corpse. An effect spawns the weapon with its
+        # magazine defaults: 12 rounds total (user, 2026-10-18: keep the default).
+        'death_effect': {r'characters\hunter\effects\death': {
+            'template': r'characters\sentinel\effects\death',
+            'coll': r'characters\hunter\hunter', 'slot': 'body_depleted_effect',
+            'marker': 'primary trigger'}},
     },
 
     # Halo 3's fuel rod is the flak_cannon; every sound it cues sits on frame 0

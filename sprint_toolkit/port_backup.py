@@ -364,6 +364,8 @@ def h1_port_items():
         files = list(extra.get('shared', ()))
         files += [x + '.actor_variant' for x in w.get('drops', {})]
         files += [x + '.effect' for x in w.get('death_drop', ())]
+        for x, d in w.get('death_effect', {}).items():
+            files += [x + '.effect', d['coll'] + '.model_collision_geometry']
         files += [r'levels\%s\%s.scenario' % (l, l) for l in w.get('palette_levels', ())]
         if w:
             files += [x.replace('/', '\\') for x in H1_SHARED_ALL]

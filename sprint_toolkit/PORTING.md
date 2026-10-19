@@ -423,7 +423,19 @@ pickup icons, enhancer cards, Sentinel Beam (H3 geometry reads with `h4_rm.load`
 Halo 1's Sentinels fire an AI weapon that has no model and is never dropped. The port is
 Halo 3's beam, built from scratch. The DROP (the user's option B) is a `weapon` part on
 the Sentinel's body-destroyed effect, `characters\sentinel\effects\death` (threshold 0, so
-it plays on every kill). Tools, all generic per weapon:
+it plays on every kill).
+
+**An enemy with NO death effect (the Hunter, 2026-10-18):** config key `death_effect`
+(ports_h1/fuel_rod.py) -- h1_pickable_weapons writes a NEW effect from a template (the
+Sentinel's stock death effect cut to one part, now the weapon, on a chosen marker) and hooks
+it to a coll slot (coll `.before_pickable` kept). THE SLOT: body DESTROYED fires only for a
+unit that pops or explodes (Sentinel, Engineer, Carrier, infection form -- b30 boot: a Hunter
+never reached it); a unit that leaves a corpse needs body DEPLETED (vehicles put their death
+there too). An effect spawns the weapon with its magazine defaults (rounds_total_initial).
+The enhancer makes it opt-in: Options -> Halo 1 'Hunters drop a Fuel Rod'
+(h1_enemy_weapons.hunter_fuel_rod_drop blanks the coll ref when off).
+
+Tools, all generic per weapon:
 
   geometry + look   h3_rm_to_jms.py (H3 render model -> JMS on its OWN skeleton, nodes
                     `frame <name>`, quaternions conjugated, index buffers are TRIANGLE
