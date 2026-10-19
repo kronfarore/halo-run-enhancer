@@ -1238,8 +1238,8 @@
 					"tag": {"Halo 1": "proj weapons\\assault rifle\\bullet", "Halo 3": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_assault_rifle\\projectiles\\storm_assault_rifle_bullet"},
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach", "Halo 4"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach", "Halo 4"], "easier_when": "increased" }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach", "Halo 4"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach", "Halo 4"], "easier_when": "decreased" }
 					]
 				},
 				"Bullet Damage": {
@@ -1572,8 +1572,8 @@
 					"tag": {"Halo 1": "proj weapons\\pistol\\bullet", "Halo 2": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3: ODST": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet & objects\\weapons\\pistol\\automag\\projectiles\\automag_bullet", "Halo Reach": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 4": "proj objects\\weapons\\pistol\\storm_magnum\\projectiles\\storm_magnum_bullet"},
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach", "Halo 4"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach", "Halo 4"], "easier_when": "increased" }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach", "Halo 4"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach", "Halo 4"], "easier_when": "decreased" }
 					]
 				},
 				"Bullet Damage": {
@@ -1984,8 +1984,8 @@
 					"tag": { "Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt" },
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo 4"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo 4"], "easier_when": "increased" }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo 4"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo 4"], "easier_when": "decreased" }
 					]
 				},
 				"Bullet Damage": {
@@ -3813,8 +3813,8 @@
 					"tag": { "Halo 1": "proj weapons\\shotgun\\pellet", "Halo 2": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 3": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_shotgun\\projectiles\\storm_shotgun_bullet" },
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo 4"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo 4"], "easier_when": "increased" }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo 4"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo 4"], "easier_when": "decreased" }
 					]
 				},
 				"Bullet Damage": {
@@ -4278,8 +4278,8 @@
 					"game": ["Halo 1"],
 					"tag": { "Halo 1": "proj weapons\\smg\\bullet" },
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				}
 			},
@@ -4844,8 +4844,8 @@
 					"game": ["Halo 1"],
 					"tag": { "Halo 1": "proj weapons\\battle rifle\\bullet" },
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				}
 			},
@@ -4999,10 +4999,10 @@
 					"game": ["Halo 2", "Halo 3", "Halo 1"],
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 2", "Halo 3"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 2", "Halo 3"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 2", "Halo 3"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 2", "Halo 3"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Radius": {
@@ -5750,8 +5750,8 @@
 					"game": ["Halo 1"],
 					"tag": { "Halo 1": "proj weapons\\covenant carbine\\slug" },
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				}
 			},
@@ -5956,8 +5956,8 @@
 					"game": ["Halo 3", "Halo 4"],
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3", "Halo 4"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3", "Halo 4"], "easier_when": "increased" }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3", "Halo 4"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3", "Halo 4"], "easier_when": "decreased" }
 					]
 				},
 				"Radius": {
@@ -7194,8 +7194,8 @@
 					"game": ["Halo 1"],
 					"tag": { "Halo 1": "proj weapons\\mauler\\pellet" },
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Error Angle": {
@@ -7412,10 +7412,10 @@
 					"tag": { "Halo 3": "proj objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_shard\\spike_shard", "Halo 1": "proj weapons\\spiker\\spike" },
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Bullet Damage": {
@@ -8165,8 +8165,8 @@
 					"tag": "proj objects\\weapons\\turret\\flamethrower\\projectiles\\flamethrower_stream",
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3"], "easier_when": "increased" }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3"], "easier_when": "decreased" }
 					]
 				},
 				"Salvo Shooting": {
@@ -9421,8 +9421,8 @@
 					"tag": { "default": "proj objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_grenade", "Halo 4": "proj objects\\weapons\\rifle\\storm_concussion_rifle\\projectiles\\storm_concussion_rifle_grenade" },
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach", "Halo 4"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach", "Halo 4"], "easier_when": "increased" }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach", "Halo 4"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach", "Halo 4"], "easier_when": "decreased" }
 					]
 				},
 				"Explosion Damage": {
@@ -10404,10 +10404,10 @@
 					"tag": { "Halo Reach": "proj objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade", "Halo 1": "proj weapons\\grenade launcher\\grenade" },
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Explosion Damage": {
@@ -11140,10 +11140,10 @@
 					"tag": { "Halo Reach": "proj objects\\weapons\\support_high\\plasma_launcher\\projectiles\\plasma_launcher_grenade", "Halo 1": "proj weapons\\plasma launcher\\bolt & weapons\\plasma launcher\\bolt guided" },
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Explosion Damage": {
@@ -12348,12 +12348,12 @@
 					"tag": { "Halo 4": "proj objects\\weapons\\rifle\\storm_lmg\\projectiles\\storm_lmg_bullet", "Halo 1": "proj weapons\\saw\\bullet", "Halo Reach": "proj objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers" },
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 4"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 4"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"], "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"], "easier_when": "increased" }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 4"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 4"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"], "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"], "easier_when": "decreased" }
 					]
 				},
 				"Bullet Damage": {
@@ -12772,10 +12772,10 @@
 					"tag": { "Halo 4": "proj objects\\weapons\\rifle\\storm_spread_gun\\projectiles\\storm_spread_gun_shard", "Halo 1": "proj weapons\\scattershot\\shard" },
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 4"] },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 4"] },
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 4"] },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 4"] },
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Bullet Damage": {
@@ -13249,8 +13249,8 @@
 					"game": ["Halo 1"],
 					"tag": { "Halo 1": "proj weapons\\light rifle\\bolt" },
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				}
 			},
@@ -13409,10 +13409,10 @@
 					"tag": { "Halo 4": "proj objects\\weapons\\rifle\\storm_forerunner_smg\\projectiles\\storm_forerunner_smg_shard", "Halo 1": "proj weapons\\suppressor\\shard" },
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 4"] },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 4"] },
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 4"] },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 4"] },
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Bullet Damage": {
@@ -13777,10 +13777,10 @@
 					"tag": { "Halo 4": "proj objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt & objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt_npc", "Halo 1": "proj weapons\\boltshot\\bolt" },
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 4"] },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 4"] },
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 4"] },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 4"] },
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Bullet Damage": {
@@ -14509,8 +14509,8 @@
 					"tag": "proj objects\\weapons\\pistol\\storm_sticky_detonator\\projectiles\\storm_sticky_detonator_grenade_pve",
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased" },
-						{ "step": "*1.2", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "increased" }
+						{ "step": "*0.8", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased" },
+						{ "step": "*0.8", "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "easier_when": "decreased" }
 					]
 				},
 				"Explosion Damage": {
