@@ -8102,8 +8102,10 @@
 				},
 				"Flame Damage": {
 					"desc": "Damage per flame blob",
+					"desc_overrides": { "Halo 1": "Damage per flame blob, and the burn it leaves on what it sticks to." },
+					"debug_desc": "Halo 1: two jpt! tags, joined. `impact damage` (18 / 20-23, flame) is the blob's hit. `explosion` (10 / 12-13, flame, 0.4 radius) is the BURN: the flame projectile ATTACHES to flesh and armour materials (Grunt, Jackal, Elite, Hunter, Flood, human, cyborg -- default response 'attach', skip 0) and plays `effects\\burning` (fire particles + the 0-damage `burning` jpt!, screen flash and rumble only) until it detonates on its random attached timer (see Burn Duration) through `flame detonation`, which deals `explosion`. Halo 1 has no burning status or damage over time; several stuck blobs going off at different times is what reads as ticking damage. Shields (Elite / Jackal / Hunter shield, force fields) make it detonate at once instead of sticking.",
 					"game": ["Halo 3", "Halo 1"],
-					"tag": { "Halo 3": "jpt! objects\\weapons\\turret\\flamethrower\\damage_effects\\flamethrower_impact", "Halo 1": "jpt! weapons\\flamethrower\\impact damage" },
+					"tag": { "Halo 3": "jpt! objects\\weapons\\turret\\flamethrower\\damage_effects\\flamethrower_impact", "Halo 1": "jpt! weapons\\flamethrower\\impact damage & weapons\\flamethrower\\explosion" },
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 3", "Halo 3: ODST"] },
 						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 3", "Halo 3: ODST"] },
@@ -8111,6 +8113,16 @@
 						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage", "easier_when": "increased", "games": ["Halo 1"] }
+					]
+				},
+				"Burn Duration": {
+					"desc": "How long a flame burns on its target before its damage lands.",
+					"debug_desc": "Halo 1: the flame projectile's detonation `Timer` / `Timer Max` (1.3-8.0 s). Flags 'random attached detonation time' + 'minimum unattached detonation time': a blob STUCK to a target goes off at a random time between Timer and Timer Max and deals the burn (`explosion`, see Flame Damage); a blob that never sticks goes off at Timer. So only `Timer Max` moves: the burn's window, without touching the stream's reach. The burn is ONE hit per blob, not damage over time, so a shorter burn means the same damage sooner. Timer Max never goes below Timer.",
+					"game": ["Halo 1"],
+					"tag": { "Halo 1": "proj weapons\\flamethrower\\flame" },
+					"constraints": [{ "field": "Timer Max", "of": "Timer", "not_below": true }],
+					"targets": [
+						{ "step": "*0.8", "field": "Timer Max", "min": 0, "easier_when": "decreased", "games": ["Halo 1"] }
 					]
 				},
 				"Projectile Range": {
