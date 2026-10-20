@@ -100,13 +100,15 @@ def main():
     ap.add_argument('map')
     ap.add_argument('target', help='character leaf name, e.g. hunter, storm_hunter')
     ap.add_argument('--squads', help='comma list of squad-name substrings to swap (default all)')
+    ap.add_argument('--source', help='start from this map file instead of the baseline '
+                                     '(e.g. a fresh kit build)')
     ap.add_argument('--hunter-drop', action='store_true',
                     help="also apply the 'Hunters drop a Fuel Rod' option")
     a = ap.parse_args()
     live = V.resolve(a.game, a.map)
     if not live:
         raise SystemExit('map not found')
-    m = HP.open_map(V.baseline_for(a.game, live), a.game)
+    m = HP.open_map(a.source or V.baseline_for(a.game, live), a.game)
     if a.hunter_drop:
         import hunter_drop
         for r in hunter_drop.apply(m, a.game, True):

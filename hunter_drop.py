@@ -1,5 +1,5 @@
-r"""Options -> Weapon: 'Hunters drop a Fuel Rod' (opt-in, user 2026-10-19), every game but
-Halo 2 (that one needs an H2EK rebuild with a new effect; parked by the user).
+r"""Options -> Weapon: 'Hunters drop a Fuel Rod' (opt-in, user 2026-10-19), every game; Halo 2
+(2026-10-20) needs its levels rebuilt with the drop (sprint_toolkit/h2_hunter_drop.py).
 
 No game's Hunter can drop its own gun: in every game it is a modelless arm weapon with no
 magazine (measured on the E: baselines, 2026-10-19). Per game:
@@ -63,6 +63,15 @@ DEBRIS = {
                    'events': (0x2C, 0x40), 'parts': (0x1C, 0x64), 'type': 0x14,
                    'effect': _FX + 'back_destroyed', 'part': 1},
 }
+
+# Halo 2: built in (sprint_toolkit/h2_hunter_drop.py -- a new effect on the Hunter model's
+# body death response, 'new damage info / damage sections[0] / instant responses[0]',
+# threshold 0, destroyed); off blanks the reference, like Halo 1. Cache offsets (Halo2
+# plugin): New Damage Info +0x60 (0xF8), Damage Sections +0xBC (0x38), Instant Responses
+# +0xC (0x50), Transition Effect tagRef +0xC (class, then the datum at +0x10).
+H2_EFFECT = _p('objects', 'characters', 'hunter', 'effects', 'death')
+H2_RESPONSE = ((0x60, 0xF8), (0xBC, 0x38), (0xC, 0x50))
+H2_TRANSITION = 0xC
 
 TOSS = {
     'Halo 4': (_p('objects', 'characters', 'storm_hunter', 'hunter_fuel_rod',
@@ -252,11 +261,41 @@ def _toss(m, game):
                  old=(old or '-').split(BS)[-1], new=rod_name.split(BS)[-1])]
 
 
+def _halo2(m, on):
+    hlmt = _tag(m, 'hlmt', HUNTER)
+    effe = _tag(m, 'effe', H2_EFFECT)
+    if hlmt is None or effe is None:
+        if not on:
+            return []
+        return [_row('Hunter model', skip=True,
+                     reason='no Hunter on this level' if hlmt is None
+                     else 'this map was not rebuilt with the drop')]
+    at = hlmt['base']
+    for off, esz in H2_RESPONSE:
+        el = _elems(m, at + off, esz)
+        if not el:
+            return [_row('body responses', ok=False, tag='hlmt',
+                         reason='no death response on the Hunter')]
+        at = el[0]
+    ref = at + H2_TRANSITION + 4
+    hooked = m.u32(ref) == effe['datum']
+    if not on:
+        if hooked:
+            struct.pack_into('<I', m.data, ref, 0xFFFFFFFF)
+            return [_row('body death response effect', tag='hlmt', old='death', new='off')]
+        return []
+    return [_row('body death response effect', ok=hooked, tag='hlmt',
+                 new='on' if hooked else None,
+                 reason=None if hooked else 'the Hunter model does not carry the drop')]
+
+
 def apply(m, game, on):
     game = str(game).strip()
     if game == 'Halo 1':
         import h1_enemy_weapons as ew
         return ew.hunter_fuel_rod_drop(m, bool(on))
+    if game == 'Halo 2':
+        return _halo2(m, bool(on))
     if not on:
         return []
     if game in DEBRIS:
