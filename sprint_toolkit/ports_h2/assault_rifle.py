@@ -26,7 +26,18 @@ PORT = {
     'donor': {'weapon': 'objects\\weapons\\rifle\\smg\\smg', 'message_prefix': 'smg',
               'why': 'spew magazine bullet 1/1/1, ammo HUD; clear can-be-dual-wielded. Alt: battle_rifle (br), two-handed non-dual'},
     'yardstick': {
-        'pick': None, 'reason': None,          # step 4a, WITH the user
+        # step 4a, user 2026-10-20: the SMG; balance_Assault_Rifle_Halo3_to_Halo2.json
+        # (balance_port.py "Assault Rifle" "Halo 3" "Halo 2" --hop "SMG:Halo 3>Halo 2")
+        'pick': 'SMG',
+        'reason': ('user 2026-10-20: same role (magazine full-auto bullet projectile), the clone '
+                   'donor, ONE hop. Halo 2 scale ~= Halo 3 (most ratios x1): balanced damage '
+                   '7.125 (x0.95), autoaim 6, rider 0.75 / 0.75, melee 20-60, velocity 80, ammo '
+                   '32 / 96 / 384 and reload 58 frames unchanged (x1; the dual-wield carry rule '
+                   'does not run SMG -> AR). SPREAD by the SIBLING ratio (user): the raw ratios '
+                   'put minimum error 0.4 above the cone lower bound 0.08 (x4 / x0.8), so all '
+                   'three take the upper bound x1: 0.1 / 0.1-3 = Halo 3 own spread. Elite minor '
+                   'legendary TTK 2.10 s (default 1.90; H2 SMG 2.07, BR 3.15, PR 4.76, SAW 0.95)'),
+        'spread_override': {'Minimum Error': 0.1, 'Error Angle': 0.1, 'Error Angle Max': 3.0},
         'candidates': {
             'provisional': 'SMG',
             'alternatives': ['Battle Rifle', 'Plasma Rifle'],
