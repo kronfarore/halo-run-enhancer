@@ -364,7 +364,11 @@ PORT = {
         'overlay_reference': 'first_person:idle',
     },
 
-    'firing_profile': {'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\rifle\\assault_rifle\\assault_rifle', 'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
+    # step 11 -- `python ai_firing_profile.py --h2-port assault_rifle`: Halo 3's ai\generic AR entry
+    # (010_jungle) name-for-name into H2EK ai\generic, over the H2 SMG's (the yardstick)
+    'firing_profile': {'from_game': 'Halo 3', 'from_map': r'halo3\maps\010_jungle.map',
+                       'from_weapon': r'objects\weapons\rifle\assault_rifle\assault_rifle',
+                       'donor_weapon': r'objects\weapons\rifle\smg\smg'},
     # 03a is the SAW's Armed test level (h2-armed-cards session, staged 2026-10-20 18:08): the
     # AR's Chief test runs on 03b (one test level per session)
     'test': {'level': '03b_newmombasa', 'dervish_level': '04a_gasgiant'},
