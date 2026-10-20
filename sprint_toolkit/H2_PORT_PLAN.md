@@ -20,6 +20,12 @@ done 2026-10-17) is the template; this file is its Halo 2 counterpart. Rules (us
 Done before this plan: the **SAW** (Halo 4 source on the cut GPMG, 2026-09-23/24; PORTING.md
 "## Halo 2"). Phase 0 (this setup) is **DONE (2026-10-20)**; next: the AR pilot (A1).
 
+**SAW: status 'rework' (user, 2026-10-20)** -- remove its dependency on existing weapons (it is a
+GPMG clone carrying the GPMG's / Warthog chaingun's / sniper rifle's leftovers; the list is in
+ports_h2/saw.py). While 'rework': proofs leave it alone AND a SHIPPING `h2_rebuild_all` leaves it
+OUT of the maps (rule 2b) -- rebuild with `--no-ship`, or finish the rework first. **Halo 2 Armed
+cards**: their own session (0.5's split; the enhancer session owns the enhancer's files).
+
 ## Phase 0: DONE (2026-10-20)
 
 What phase 0 set up, and how a weapon session uses it. Do not re-plan it; use it. The research
@@ -39,7 +45,7 @@ build the size check):
 | weapon PALETTE per scenario | 256 | 20 (04b, 08a) - 33 (01b) |
 | equipment placements / palette | 256 / 256 | (not used by ports) |
 | file size | not checked by tool; MCC loads 491-802 MiB maps today | 491 (08a) - 802 MiB (08b) |
-| MCC runtime (tag memory, geometry / texture caches) | UNKNOWN -- the size test map below is staged for a boot | |
+| MCC runtime (tag memory, geometry / texture caches) | **BOOTED OK (user, 2026-10-20)**: 08b at 846 MiB and 07a at 796 MiB, each with 21 extra SAW-sized weapons resident, load and play (classic) | |
 
 Per level (tool's own lines, the 2026-10-05 builds; `h2_size_test_map.py`'s parser):
 
@@ -97,13 +103,12 @@ TIFFs (every pixel's low bits = n) -- the cost of real ports, nothing shared:
 only ~0.015 MiB; geometry ~1 MiB, bitmaps ~1.5 MiB counted. tool reported NO limit and NO error
 on any of the builds (01b included, at 128 placements + 21 palette-only weapons; 01b's palette 54
 of 256). **So capacity is not a concern on tool's side: all 21 fit in every level.** What stays
-unknown is MCC's RUNTIME: **staged for the user's boot (2026-10-20 17:12, CLASSIC)** -- the live
-`08b_deltacontrol` (846 MiB) and `07a_highcharity` (796 MiB) are these test builds (21 stand-ins
-resident, never placed; the level must load and play as normal). Restore:
-`python h2_port_test_map.py size_test --restore 08b_deltacontrol` (and `07a_highcharity`); the
-real maps are in E:\HaloBackups\h2_port_test. The stand-ins stay in the kit until then
-(`h2_size_test_map.py clean` removes every one: out\h2_size_test.json lists its 735 files);
-results per run in out\h2_size_test_runs.json.
+was MCC's RUNTIME -- **SETTLED (user's boot, 2026-10-20, classic): both size-test builds, the
+live `08b_deltacontrol` at 846 MiB and `07a_highcharity` (High Charity, the Gravemind mission) at
+796 MiB, each with 21 distinct SAW-sized stand-ins resident, "boot and play fine".** Both live maps
+then restored from E:\HaloBackups\h2_port_test (h2_port_test_map --restore) and the 735 stand-in
+files removed from the kit (`h2_size_test_map.py clean`; `make` + `distinct` rebuild them for a
+later test); results per run in out\h2_size_test_runs.json.
 
 ### 0.2 Per-weapon configs: `sprint_toolkit/ports_h2/<key>.py`
 

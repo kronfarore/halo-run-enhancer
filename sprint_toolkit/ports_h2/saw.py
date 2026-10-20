@@ -13,7 +13,17 @@ PORT = {
     'order': 0,
     'name': 'SAW',
     'source': 'Halo 4',
-    'status': 'done',
+    # REWORK (user, 2026-10-20): remove the SAW's dependency on existing weapons -- it was built on
+    # the cut GPMG and still carries its leftovers (proofs leave a 'rework' port alone; back to
+    # 'done' when finished). Measured 2026-10-20 (saw.weapon and its own tags' references):
+    #   weapon tag = a GPMG clone: ai type name 'sniper', weapon name (3P label) 'sr' = the sniper's,
+    #   dual-only msg 'gpmg_dual'; material effects + smoke of the WARTHOG CHAINGUN
+    #   (effects/materials/objects/weapons/warthog_chaingun, effects/bitmaps/smoke/smoke_warthog_gun),
+    #   BR muzzle-flash bitmaps, sound/weapons/chain_gun/ammo_rattle, sniper_rifle/sniper_ammo pickup;
+    #   FP graphs = the SNIPER RIFLE's, cloned + retimed (H2_PORT_PLAN 0.4: a Halo 4 source has no
+    #   copyable arms, so a re-solve or another donor); firing effect saw_fire = the SMG's particles
+    #   (+ a remastered SMG fire_lod sound); the GPMG itself sits in every level's palette
+    'status': 'rework',
     'reservations': {
         'message_prefix': 'saw2',              # hud_messages ids saw2_* (h2_port_messages)
         'glyph': 0xE13D,                       # pickup icon codepoint, 8 English fonts
