@@ -63,11 +63,18 @@ def roots():
     return out, files
 
 
+#: keys treated as DONE for one proof although their status is not (h2_port_tool_proof
+#: --include): the SAW is 'rework' while its rework has not started (2026-10-20), and it is the
+#: only other Halo 2 port -- a proof leaving it out would prove against nothing
+INCLUDE = set()
+
+
 def skipped():
-    """(dir prefixes, files) never touched: ports not 'done' + the size-test stand-ins."""
+    """(dir prefixes, files) never touched: ports not 'done' (nor INCLUDEd) + the size-test
+    stand-ins."""
     dirs, files = [], set()
-    for _k, p in ports_h2.all_ports():
-        if p.get('status') == 'done':
+    for k, p in ports_h2.all_ports():
+        if p.get('status') == 'done' or k in INCLUDE:
             continue
         for d in ports_h2.owned_dirs(p):
             for root in ('tags', 'data'):

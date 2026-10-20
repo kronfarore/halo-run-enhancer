@@ -5,7 +5,7 @@ is a HEIGHT map, so a source normal map is integrated back into heights; each ne
 SEEDED from a Bungie tag carrying the wanted settings and `tool bitmaps` re-imports into it).
 The config's `textures` section:
 
-    kind          'h4' (h4_bitmap decodes the source tags; other sources: the pilot adds a reader)
+    kind          'h4' (h4_bitmap decodes the source tags) or 'h3' (h3_main: Halo 3's maps, reseeded shaders)
     src_dir       the source bitmap tags
     rel           kit-relative folder of the port's bitmaps (data + tags)
     shaders       kit-relative folder of the port's shaders
@@ -128,11 +128,77 @@ def point(tag, cls, old, new, every=False):
     h2_tagref.set_reference(tag, cls, old, new, every=every)
 
 
+def h3_main(t, argv):
+    """kind 'h3' (the Assault Rifle, wave-A pilot, 2026-10-20): Halo 3's own maps decoded from
+    the H3EK tags (h3_hud_art.decode: any format, the top mip), a Halo 3 bump map being a
+    NORMAL map integrated into Halo 2's HEIGHT map (height_from_normal, as the SAW's); every
+    shader RESEEDED each run from a Bungie Halo 2 shader carrying the template wanted and its
+    bitmap references repointed (every copy) -- so a re-run is the same result.
+
+        bitmaps   [(H3EK bitmap tag, port bitmap name, Bungie seed bitmap tag, 'color' | 'bump' |
+                    'bump_snorm' (a signed DXN normal map, the AR's),
+                    (w, h) or None = the source's size)]
+        shaders   [(port shader name, Bungie seed shader tag, {seed bitmap: port bitmap or
+                    another tag})] -- a seed bitmap left out of the map stays Bungie's
+        rel, shaders_dir, bump_gain, report_rows
+    """
+    import h3_hud_art
+    data = os.path.join(H2EK, 'data', t['rel'])
+    tags = os.path.join(H2EK, 'tags', t['rel'])
+    os.makedirs(data, exist_ok=True)
+    os.makedirs(tags, exist_ok=True)
+    if '--skip-decode' not in argv:
+        print('decoding the Halo 3 maps:')
+        for src, name, _seed, mode, size in t['bitmaps']:
+            img, _ = h3_hud_art.decode(src)
+            if mode in ('bump', 'bump_snorm'):
+                if mode == 'bump_snorm':
+                    # Halo 3's DXN (BC5) normals are SIGNED: decoded as unsigned bytes they sit
+                    # at 0 and 255 for a flat surface (measured on the AR's bump); re-centre
+                    a = np.asarray(img.convert('RGB')).astype(np.int16)
+                    a = np.where(a >= 128, a - 256, a)[:, :, :2] / 127.0
+                    a = np.clip((a + 1.0) * 127.5, 0, 255).astype(np.uint8)
+                    img = Image.fromarray(np.dstack([a, np.full(a.shape[:2], 255, np.uint8)]), 'RGB')
+                out = height_from_normal(img.convert('RGB'), t.get('bump_gain', 2.2))
+            else:
+                out = img.convert('RGBA' if img.mode == 'RGBA' else 'RGB')
+            if size:
+                out = out.resize(tuple(size), Image.LANCZOS)
+            out.save(os.path.join(data, name + '.tif'), compression=None)
+            print('   %-40s %s %dx%d -> %s.tif' % (src.split(B)[-1], out.mode, out.size[0],
+                                                   out.size[1], name))
+    print('seeding the bitmap tags:')
+    for _src, name, seed, _mode, _size in t['bitmaps']:
+        dest = os.path.join(tags, name + '.bitmap')
+        if os.path.exists(dest):
+            print('   %-28s already exists, left alone' % (name + '.bitmap'))
+            continue
+        shutil.copy(os.path.join(H2EK, 'tags', seed + '.bitmap'), dest)
+        print('   %-28s seeded from %s' % (name + '.bitmap', seed))
+    print('tool bitmaps:')
+    run('bitmaps', t['rel'])
+    print('the shaders (reseeded, repointed):')
+    sdir = os.path.join(H2EK, 'tags', t['shaders_dir'])
+    os.makedirs(sdir, exist_ok=True)
+    for name, seed, refs in t['shaders']:
+        dest = os.path.join(sdir, name + '.shader')
+        shutil.copy(os.path.join(H2EK, 'tags', seed + '.shader'), dest)
+        print('   %-28s from %s' % (name + '.shader', seed))
+        have = h2_tagref.references(dest)
+        for old, new in refs.items():
+            if ('bitm', old) in have:
+                h2_tagref.set_reference(dest, 'bitm', old, new, every=True)
+    print('bump slope, against the game it has to sit in:')
+    report(t)
+
+
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     if not argv or argv[0].startswith('-'):
         raise SystemExit(__doc__)
     t = ports_h2.get(argv[0], 'textures')
+    if t.get('kind') == 'h3':
+        return h3_main(t, argv)
     if t.get('kind') != 'h4':
         raise SystemExit('textures kind %r has no reader yet -- the wave pilot adds it' % t.get('kind'))
     if '--skip-decode' not in argv:

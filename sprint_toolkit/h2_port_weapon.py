@@ -7,8 +7,11 @@ clones are wired together; nothing Bungie shipped is edited. The config's `weapo
 
     weapon     the port's .weapon (kit-relative, with extension)
     clones     [(source tag file, the port's copy)] -- copied once (--force replaces)
-    wiring     [(tag file, class, the path it names now, what it should name, why)] --
-               h2_tagref edits, each proved by tool's re-export; already-wired is a no-op
+    wiring     [(tag file, class, the path it names now, what it should name, why[, opt])] --
+               h2_tagref edits, each proved by tool's re-export; already-wired is a no-op;
+               opt {'every': True} moves identical references together (a weapon's two FP
+               models), {'nth': k} the k-th of them (a .model whose render model and collision
+               model pool ONE path -- the AR, 2026-10-20)
     shared     [(path, why)] -- what stays someone else's, on purpose (printed)
 
     python h2_port_weapon.py <key> [--force]
@@ -38,13 +41,16 @@ def clone(w, force):
 
 
 def wire(w):
-    for tag, cls, old, new, why in w['wiring']:
+    for row in w['wiring']:
+        tag, cls, old, new, why = row[:5]
+        opt = row[5] if len(row) > 5 else {}
         path = os.path.join(TAGS, tag)
         have = h2_tagref.references(path)
         if (cls, new) in have and (cls, old) not in have:
             print('   %-34s %s already points at the port' % (os.path.basename(tag), why))
             continue
-        h2_tagref.set_reference(path, cls, old, new)
+        h2_tagref.set_reference(path, cls, old, new, every=opt.get('every', False),
+                                nth=opt.get('nth'))
         print('      (%s)' % why)
 
 

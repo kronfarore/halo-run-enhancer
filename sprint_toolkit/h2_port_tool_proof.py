@@ -10,7 +10,11 @@ kit is put back from a backup between and after:
     is shipped), pre vs end (must be 0: the kit restored exactly)
 
     python h2_port_tool_proof.py --tag p2 --rev <commit before the change> [--steps meter,reticle]
-                                 [--keys saw,assault_rifle]
+                                 [--keys saw,assault_rifle] [--include saw]
+
+--include <keys>: ports whose status is not 'done' proved AS IF done -- their files are hashed,
+backed up and put back like a done port's (h2_port_snapshot.INCLUDE). Written for the SAW while it
+is 'rework' with its rework not started (the AR pilot, 2026-10-20): the only other Halo 2 port.
 
 OLD tools = the toolkit as it was at --rev: its sprint_toolkit\*.py and ports_h2\ are extracted
 (git archive) to tool\_proof_<tag>_toolkit\sprint_toolkit and the same commands run from there
@@ -111,11 +115,14 @@ def main():
     ap.add_argument('--rev', required=True)
     ap.add_argument('--steps', default='')
     ap.add_argument('--keys', default='')
+    ap.add_argument('--include', default='',
+                    help='busy ports to prove as if done (their files hashed, backed up, restored)')
     a = ap.parse_args()
     import ports_h2
+    S.INCLUDE.update(k for k in a.include.split(',') if k)
     steps = [s for s in a.steps.split(',') if s]
-    keys = [k for k in a.keys.split(',') if k] or ports_h2.done_keys()
-    busy = [k for k in keys if k not in ports_h2.done_keys()]
+    keys = [k for k in a.keys.split(',') if k] or (ports_h2.done_keys() + sorted(S.INCLUDE))
+    busy = [k for k in keys if k not in ports_h2.done_keys() and k not in S.INCLUDE]
     if busy:
         raise SystemExit('not done (proofs cover DONE ports only): %s' % ', '.join(busy))
     t = a.tag

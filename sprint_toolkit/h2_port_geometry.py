@@ -4,10 +4,9 @@ Generalized from saw_to_jms_h2.py (the SAW, 2026-09-23; see its notes, all still
 `ports_h2/<key>.py` config's `geometry` section. Each value the SAW had as a module constant is a
 key of that section:
 
-    kind            'h4_dump' (the only reader so far: an H4 render-model XML dump, h4_rm.load).
-                    Halo 3 / Reach sources need their reader added here by the wave's pilot
-                    (Halo 1's wave A read H3 render models with h3_rm_to_jms; the H2 skeleton
-                    work is in H2_PORT_PLAN 0.4)
+    kind            'h4_dump' (an H4 render-model XML dump onto the donor's skeleton, h4_rm.load)
+                    or 'h3' (a Halo 3 render model on its OWN skeleton -- h3_convert; the AR
+                    pilot, 2026-10-20). A Reach reader is wave B's pilot's to add
     dump            the source dump
     data_dir        data\<data_dir>\render\<world>.jms, \<fp>\render\<fp>.jms
     world, fp       the world / first-person model names
@@ -39,7 +38,7 @@ class Geo:
     def __init__(self, g):
         self.g = g
         self.scale = g.get('scale', 1.0)
-        self.part_material = g['part_material']
+        self.part_material = g.get('part_material')
         self.lift = g.get('lift')
         self.fp_nudge = tuple(g.get('fp_nudge', (0.0, 0.0, 0.0)))
         self.muzzle_drop = g.get('muzzle_drop', 0.0)
@@ -132,6 +131,122 @@ def convert(geo, rm, template, node_map, lift=0.0, nudge=(0.0, 0.0, 0.0)):
     return out
 
 
+def h3_convert(g, rel, world):
+    """kind 'h3' (the Assault Rifle, the wave-A pilot, 2026-10-20): a Halo 3 render model as a
+    Halo 2 JMS on its OWN skeleton -- no donor template. Halo 3's FP arms ARE Halo 2's
+    (H2_PORT_PLAN 0.4), so the port keeps its source's weapon nodes (the AR's gun, magazine,
+    ophandle, safety, switch) and its own Halo 3 FP animations drive them (h2_port_fp_anims.py).
+
+    Conventions, measured on the masterchief FP arms (H3 fp.render_model vs Bungie's own H2
+    fp_arms.jms, every node equal): a JMS 8210 node = the Halo 3 bind COMPOSED into model space
+    (translation x100, the rotation as Halo 3 stores it, sign flipped to w <= 0 as Bungie writes
+    it); a MARKER stays node-relative exactly as Halo 3's (x100); vertices model space x100,
+    v = 1 - the tag's (h3_rm_to_jms / saw_to_jms_h2), indices triangle strips.
+
+    Section keys: world_rm / fp_rm (H3EK render model tags), node_names {h3: H2 JMS name}
+    (default 'frame <name>'), materials {Halo 3 shader basename: H2 material name, None =
+    dropped}, regions {H2 material: region} (default 'standard'), permutation, markers
+    {Halo 3 marker: H2 name} (unlisted markers dropped), muzzle_drop, ground_point."""
+    import h4_rm
+    import h1_fp_retarget
+    import h3_rm_to_jms as H3
+    rm = h4_rm.load(h1_fp_retarget.export_xml(rel))
+    names = g.get('node_names', {})
+    out = h2_jms.Model()
+    for i, n in enumerate(rm['nodes']):
+        q, p = H3._world(rm['nodes'], i)
+        if q[3] > 0:
+            q = tuple(-c for c in q)
+        par = n['parent'] if n['parent'] is not None and n['parent'] >= 0 else -1
+        out.nodes.append(h2_jms.Node(names.get(n['name'], 'frame ' + n['name']), par, q,
+                                     tuple(c * UNITS for c in p)))
+    mats, mat_index, src_mat = [], {}, {}
+    for k, path in enumerate(rm['materials']):
+        base = (path or '').rsplit('\\', 1)[-1]
+        name = g['materials'].get(base)
+        if name is None:
+            continue
+        if name not in mat_index:
+            mat_index[name] = len(mats)
+            mats.append(h2_jms.Material(name, '(%d) %s %s' % (
+                len(mats) + 1, g.get('permutation', 'standard'),
+                g.get('regions', {}).get(name, 'standard'))))
+        src_mat[k] = mat_index[name]
+    out.materials = mats
+    ci = rm['compression']
+    (x0, x1, y0), (y1, z0, z1) = ci['pos0'], ci['pos1']
+    (u0, u1), (v0, v1) = ci['uv0'], ci['uv1']
+    lo, span = (x0, y0, z0), (x1 - x0, y1 - y0, z1 - z0)
+    for me in rm['meshes']:
+        base = len(out.verts)
+        for v in me['verts']:
+            pos = tuple((lo[k] + v['pos'][k] * span[k]) * UNITS for k in range(3))
+            uv = (u0 + v['uv'][0] * (u1 - u0), 1.0 - (v0 + v['uv'][1] * (v1 - v0)))
+            infl = sorted([(n, w) for n, w in zip(v['nodes'], v['w']) if n >= 0 and w > 0],
+                          key=lambda t: -t[1]) or [(0, 1.0)]
+            tot = sum(w for _n, w in infl)
+            out.verts.append(h2_jms.Vertex(pos, v['n'] or (0.0, 0.0, 1.0),
+                                           [(n, w / tot) for n, w in infl], [uv]))
+        strip = 'strip' in (me['index_type'] or '')
+        for part in me['parts']:
+            if part['material'] not in src_mat:
+                continue
+            idx = me['indices'][part['start']:part['start'] + part['count']]
+            tris = H3.strip_tris(idx) if strip else [tuple(idx[i:i + 3])
+                                                     for i in range(0, len(idx) - 2, 3)]
+            for a, b, c in tris:
+                out.tris.append((src_mat[part['material']], (base + a, base + b, base + c)))
+    if len(out.tris) < g.get('min_tris', 1000):
+        raise SystemExit('only %d triangles from %s' % (len(out.tris), rel))
+    for m in rm['markers']:
+        nm = g.get('markers', {}).get(m['name'])
+        if nm is None:
+            continue
+        pos = [c * UNITS for c in m['pos']]
+        if nm in ('primary_trigger', 'primary trigger'):
+            pos[2] -= g.get('muzzle_drop', 0.0)
+        out.markers.append(h2_jms.Marker(nm, m['node'], m['rot'], pos, -1.0))
+    gp = g.get('ground_point')
+    if world and gp:
+        # the middle of the model's x and z extent on its -y surface (Halo 1's 'auto', the
+        # user's rule for every port), the rotation of Bungie's own (the SMG's) ground point;
+        # on node 0, whose bind is identity at the origin in a Halo 3 weapon
+        xs = [v.pos[0] for v in out.verts]
+        ys = [v.pos[1] for v in out.verts]
+        zs = [v.pos[2] for v in out.verts]
+        out.markers.append(h2_jms.Marker('ground point', 0, tuple(gp['rot']),
+                                         ((min(xs) + max(xs)) / 2.0, min(ys),
+                                          (min(zs) + max(zs)) / 2.0), -1.0))
+    return out
+
+
+def h3_jobs(g):
+    base = os.path.join(H2EK, 'data', g['data_dir'])
+    return [('world', g['world_rm'], os.path.join(base, 'render', g['world'] + '.jms'), True),
+            ('fp', g['fp_rm'], os.path.join(base, g['fp'], 'render', g['fp'] + '.jms'), False)]
+
+
+def h3_main(key, g, rest):
+    opts = dict((a[2:].split('=', 1) + [''])[:2] for a in rest if a.startswith('--'))
+    only = set(filter(None, opts.get('only', '').split(',')))
+    for label, rel, out_path, world in h3_jobs(g):
+        if only and label not in only:
+            continue
+        jm = h3_convert(g, rel, world)
+        h2_jms.write(out_path, jm)
+        xs = [v.pos[0] for v in jm.verts]
+        zs = [v.pos[2] for v in jm.verts]
+        print('wrote %s' % out_path)
+        print('   %d nodes %s' % (len(jm.nodes), [n.name for n in jm.nodes]))
+        print('   %d verts, %d tris, materials %s'
+              % (len(jm.verts), len(jm.tris), [(m.name, m.spec) for m in jm.materials]))
+        print('   x %.2f..%.2f  z %.2f..%.2f' % (min(xs), max(xs), min(zs), max(zs)))
+        for mk in jm.markers:
+            print('   marker %-18s node %d %s' % (mk.name, mk.node, tuple(round(c, 2) for c in mk.pos)))
+    if '--render' in rest:
+        tool_render(g, g.get('render') or [])
+
+
 def jobs(g):
     """(label, template, output, is_fp, nudge or None) for every model of the section."""
     base = os.path.join(H2EK, 'data', g['data_dir'])
@@ -165,6 +280,8 @@ def main(argv=None):
     geo = Geo(g)
     args = [a for a in rest if not a.startswith('--')]
     opts = dict((a[2:].split('=', 1) + [''])[:2] for a in rest if a.startswith('--'))
+    if g.get('kind') == 'h3':
+        return h3_main(key, g, rest)
     if g.get('kind') != 'h4_dump':
         raise SystemExit('geometry kind %r has no reader yet -- the wave pilot adds it here'
                          % g.get('kind'))

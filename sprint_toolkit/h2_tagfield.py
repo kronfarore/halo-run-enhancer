@@ -237,15 +237,31 @@ def group_of(tag_path):
     return os.path.splitext(tag_path)[1].lstrip('.')
 
 
+def tag_key(tag_path):
+    """The per-tag cache group: '<group>@<kit-relative path>' (the AR, 2026-10-20)."""
+    rel = os.path.abspath(tag_path)
+    tags = os.path.join(H2EK, 'tags') + os.sep
+    if rel.lower().startswith(tags.lower()):
+        rel = rel[len(tags):]
+    return '%s@%s' % (group_of(tag_path), os.path.splitext(rel)[0].lower())
+
+
 def offset_of(tag_path, name, block='', index=0, nth=0, verbose=True):
-    """Where this field lives in the file, searched for once and then remembered."""
+    """Where this field lives in the file, searched for once and then remembered.
+
+    The cache holds ABSOLUTE file offsets, which are only right for tags laid out like the one
+    they were found in -- a loose tag pools its paths inline, so another weapon's longer path
+    moves every later field (the AR on the SAW's cached barrel offsets, 2026-10-20: every write
+    'changed 0 fields'). So a cached offset is used only where the bytes there still decode to
+    the field's current value; this tag's own entry ('<group>@<path>') is tried first, the
+    group's (first found, kept for the tags it came from) second, else the field is searched
+    for and remembered for THIS tag."""
     key = ('%s[%d].%s' % (block, index, name) if block else name)
     if nth:
         key += '#%d' % nth
     group = group_of(tag_path)
-    known = _cache().get(group, {}).get(key)
-    if known is not None:
-        return known
+    cache = _cache()
+    tried = [cache.get(tag_key(tag_path), {}).get(key), cache.get(group, {}).get(key)]
 
     original = open(tag_path, 'rb').read()
     xml = export(tag_path)
@@ -259,6 +275,10 @@ def offset_of(tag_path, name, block='', index=0, nth=0, verbose=True):
     code, _size, n = SCALARS[ftype]
     if len(values) < n:
         raise ValueError('%s printed %d numbers, expected %d' % (name, len(values), n))
+    for known in tried:
+        if known is not None and known in candidates(bytearray(original), ftype, values,
+                                                     (known, known + _size * n)):
+            return known
     probe = stored(ftype, values[0]) + 0.5 if code == '<f' else int(values[0]) + 3
 
     cands = candidates(bytearray(original), ftype, values,
@@ -295,7 +315,9 @@ def offset_of(tag_path, name, block='', index=0, nth=0, verbose=True):
             if len(moved) == 1 and rows[moved[0]] is row:
                 if verbose:
                     print('      found at 0x%04X' % at)
-                _remember(group, key, at)
+                if cache.get(group, {}).get(key) is None:
+                    _remember(group, key, at)
+                _remember(tag_key(tag_path), key, at)
                 return at
     finally:
         if os.path.exists(probe_path):
