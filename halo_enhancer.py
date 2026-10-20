@@ -10529,10 +10529,11 @@ class OptionsDialog(QDialog):
         self.hunter_drop_cb.setChecked(bool(CONFIG.get('hunter_drop')))
         self.hunter_drop_cb.setToolTip(
             "A Hunter that dies leaves the game's own pickable Fuel Rod with its usual "
-            "rounds -- every Hunter's arm cannon is never dropped. Halo 1, Halo 3, ODST, "
-            "Reach and Halo 4 (not Halo 2 yet).\nHalo 1: only on maps rebuilt with "
-            "the drop; without the Fuel Rod's Balanced switch its blast does not hurt "
-            "Hunters.\nHalo 3 / ODST: the back-shield and spike debris now fall at death "
+            "rounds -- every Hunter's arm cannon is never dropped. All six games.\n"
+            "Halo 1 and Halo 2: only on levels rebuilt with the drop (all ten Halo 1 "
+            "levels are; Halo 2's Hunter levels are not yet). Halo 1 without the Fuel "
+            "Rod's Balanced switch: its blast does not hurt Hunters.\n"
+            "Halo 3 / ODST: the back-shield and spike debris now fall at death "
             "(one spike becomes the Fuel Rod) instead of when the armour breaks.")
         wform.addRow("Hunters:", self.hunter_drop_cb)
 
