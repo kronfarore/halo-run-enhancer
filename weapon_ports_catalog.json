@@ -5606,9 +5606,9 @@
      "tag": "weapons\\suppressor\\suppressor",
      "field": "Rounds Per Second Max",
      "block": "Triggers",
-     "value": 22.5,
+     "value": 23.5,
      "card": "More Shooting",
-     "original": 15.0
+     "original": 16.0
     },
     {
      "class": "weap",
