@@ -9,7 +9,7 @@ PORT = {
     'wave': 'A1',
     'name': 'Assault Rifle',
     'source': 'Halo 3',
-    'status': 'reserved',
+    'status': 'in progress',
     'source_tag': 'objects\\weapons\\rifle\\assault_rifle\\assault_rifle',
     'reservations': {
         'message_prefix': 'ar2',
