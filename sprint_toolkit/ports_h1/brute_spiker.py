@@ -100,7 +100,7 @@ PORT.update({
     # 2026-10-08: tested on a30 over 13 boots (dry default, stuck spike, glow x4 incl. one A/B,
     # stagger A/B, balanced, Armed x5: hit effect + first-dropship Jackals) -- confirmed by the
     # user; the ten-map rebuild is BATCHED with the SMG, BR, Carbine and Beam Rifle (user's go)
-    'status': 'rework',
+    'status': 'done',
     # geometry + look (h1_h3_weapon_model.py). Halo 3's three materials all sample the same
     # `brute_bolter` base map (+ bump, + the brute_bolter_illum self-illumination): the body
     # `bolt_thrower` (detail metal_dirty), `bolt_thrower_dull` (rubber detail: the grip) and

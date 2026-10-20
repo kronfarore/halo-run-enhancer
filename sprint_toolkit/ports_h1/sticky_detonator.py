@@ -211,7 +211,7 @@ PORT = reserved(
 PORT.update({
     # 2026-10-16: dry boots 1-4 (look / sounds 1, fire sound 2-4), balanced 2 (the autoaim angle), Armed 1 on
     # b30; accepted by the user. The ten-map rebuild is BATCHED (the user's go)
-    'status': 'rework',
+    'status': 'done',
     # CLOSE-OUT RECORD (2026-10-16): port_refs_audit on the built b30 test map 0 problems (own charge + melee;
     # the pistol's melee response + trigger feedback GLOBAL); port_sound_refs: every sound own but the ammo
     # pickup (KEEP, below); port_sounds --check 0; validate_halo_json 0; check 6 (h1_tag_writes_proof) 46 tags

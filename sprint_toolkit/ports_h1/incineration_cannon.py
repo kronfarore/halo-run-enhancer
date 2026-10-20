@@ -311,7 +311,7 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'rework',
+    'status': 'done',
     # CLOSE-OUT RECORD (2026-10-17): port_refs_audit on the built b30 test copy 0 problems (own shell, impact,
     # melee; the rocket's melee response + trigger feedback GLOBAL); port_sound_refs: every sound own but the
     # drop + ammo pickup (KEEP, below); port_sounds --check 0; validate_halo_json 0; check 6

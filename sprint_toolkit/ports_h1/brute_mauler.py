@@ -92,7 +92,7 @@ PORT.update({
     # 2026-10-09: tested on a30 over 7 boots (dry default, fixes x2, balanced x3 incl. glow,
     # Armed) -- confirmed by the user; the ten-map rebuild is BATCHED with the SMG, BR,
     # Carbine, Beam Rifle and Spike Rifle (user's go)
-    'status': 'rework',
+    'status': 'done',
     # geometry + look (h1_h3_weapon_model.py). Halo 3's four materials all sample the same
     # `excavator` base map (+ bump): the body `excavator` (detail metal_dirty, self-illum
     # excavator_illum in ORANGE at 8 -> 4), `excavator_dull` (rubber detail, no illum: the

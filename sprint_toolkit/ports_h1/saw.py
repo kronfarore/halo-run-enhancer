@@ -9,7 +9,7 @@ PORT = {
     'wave': 'pre-plan',
     'name': 'SAW',
     'source': 'Halo 4',
-    'status': 'rework',
+    'status': 'done',
     # label 'ar': the SAW is taught nothing -- it uses the Assault Rifle's animations
     'reservations': {'messages': (47, 48), 'icon': 25, 'reticle': None, 'label': 'ar',
                      'teach_from': None, 'sound_dir': r'sound\weapons\saw_port',

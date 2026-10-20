@@ -122,7 +122,7 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'rework',             # 2026-10-15: 6 dry boots, balanced, Armed (grunt, jackal, elite) on b30
+    'status': 'done',             # 2026-10-15: 6 dry boots, balanced, Armed (grunt, jackal, elite) on b30
     # CLOSE-OUT RECORD (2026-10-15): port_refs_audit on the built b30 test map 0 problems (own bolt /
     # pellet / melee; the pistol's melee response + trigger feedback GLOBAL); port_sound_refs: every
     # sound own but the ammo PICKUP, a KEEP (user, boot 1: Halo 4's ammo_pickup_generic tag is empty);

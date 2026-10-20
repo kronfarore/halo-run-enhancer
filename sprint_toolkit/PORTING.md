@@ -2917,6 +2917,20 @@ TRAP (proof am1): splitting rows on transparent lines cut the Brute Shot's / Mau
 gap inside them. So `h3_tick` keeps its old code; rows exist only on `grid`, and a band under half the height of the
 one above is merged into it. The narrowed re-proof was skipped (user) and is OWED.
 
+**AMMO METERS AS TALL AS STOCK (user 2026-10-19 'drawn comparatively small'; fixed 2026-10-20, a30 boot CONFIRMED).**
+A Halo 1 HUD element draws its bitmap 1:1 (every port and stock wphi meter element has scale 0), so the
+on-screen size IS the sheet's pixel size -- and `ammo_meter` capped the source art at its own size (min(1.0, box)):
+Halo 3 icons at 1:1 and Reach / Halo 4 art at native density came out a third to a fifth the height of Halo 1's
+(Concussion Rifle 10x20 pills vs the shotgun's 64 px shells). New `art` keys: `tick_h` = the stock tick height
+of the meter's kind (AR 30, pistol / needler 59, shotgun / rocket 64, sniper 36 -- measured from
+hud_ammo_meters), reached by re-wrapping into as few rows as reach the largest scale (`_wrap`, inside the 445 x 104
+box: the art starts at x 5 and the sprite box ends at 450); `hard` = alpha contrast around 128 for enlarged small
+art (the Concussion Rifle's pill, 4). `rows` art (Light Rifle: a column is a shot) only scales, it never wraps.
+Thresholds stay step x k whatever the layout, so the patcher's Magazine rescale is untouched. 19 ports (the
+18 `ammo_meter` configs + saw_build); the Fuel Rod left as is (user). Measuring: tick = the meter pixels of one
+luminance (= one threshold). Test rig: `h1_all_ports_test_map.py --level a30 --source kit --keys ...` after
+`h1_rebuild_all.py --maps a30 --no-ship` (changed HUDs are not in the shipped map).
+
 ## Halo 3
 
 Halo 3 has no single orchestrator; the order is:

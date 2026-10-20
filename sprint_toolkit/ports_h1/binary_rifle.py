@@ -123,7 +123,7 @@ PORT = reserved(
 PORT.update({
     # 2026-10-16: tested on a30 over 4 dry boots, balanced and Armed (grunt, jackal, elite) -- all confirmed by
     # the user; the ten-map rebuild is BATCHED (the user's go)
-    'status': 'rework',
+    'status': 'done',
     # CLOSE-OUT RECORD (2026-10-16). STEP 4b (port_field_audit --port binary_rifle): weapon list 2 = 7, all
     #   decided (illumination recovery 0.2 written; aim = the zoomed modes + zoomed-only flag; max rounds = the
     #   balanced row; error 4 deg, user); list 4 = the deliberate settings (aim 1/25 1.6/25, deviation 0.4,
