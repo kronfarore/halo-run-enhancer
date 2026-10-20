@@ -106,7 +106,7 @@ PORT.update({
     # 2026-10-09: tested on a30 over 9 boots (dry default + 3 fix boots, balanced, Armed x4 incl.
     # actor flags) -- confirmed by the user; the ten-map rebuild is BATCHED with the SMG, BR,
     # Carbine, Beam Rifle, Spike Rifle and Mauler (user's go)
-    'status': 'done',
+    'status': 'rework',
     # CLOSE-OUT RECORD (2026-10-09). 4b + template diff + port_sound_refs ran BEFORE boot 1.
     # Yardstick: Rocket Launcher (user). The grenade does NOT bounce in Halo 3 (impact detonate,
     #   20 wu air burst); the bounce = a later enhancer option (user).

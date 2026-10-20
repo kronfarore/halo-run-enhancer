@@ -150,7 +150,7 @@ PORT = reserved(
 PORT.update({
     # 2026-10-15: tested on a30 over 7 dry boots, balanced and 2 Armed boots (grunt, jackal, elite) -- all
     # confirmed by the user; the ten-map rebuild is BATCHED (the user's go)
-    'status': 'done',
+    'status': 'rework',
     # CLOSE-OUT RECORD (2026-10-15, re-checked on the final weapon at the user's request):
     # STEP 4b (port_field_audit --port lightrifle): weapon list 2 = 0 (error deceleration 0.28, active camo
     #   ding 0.27, illumination recovery 0.08 written; the rest covered by balance rows); projectile and

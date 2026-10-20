@@ -69,7 +69,7 @@ PORT = reserved(
 PORT.update({
     # 2026-10-07: tested on a30 over 4 boots (dry default, dry balanced, Armed Grunts +
     # Elites) -- everything confirmed by the user; the ten-map rebuild waits for the go
-    'status': 'done',
+    'status': 'rework',
     # geometry + look (h1_h3_weapon_model.py): both H3 shaders sample the same `smg` base
     # map; only the metal one self-illuminates (smg_illum)
     'model': {

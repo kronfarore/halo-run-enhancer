@@ -181,7 +181,7 @@ PORT = reserved(
 PORT.update({
     # 2026-10-15: dry boots 1-4 (look, glow, reload x4 -- measured on boot 4), balanced 1, Armed 10 on b30;
     # confirmed by the user ('we'll accept this state'); the ten-map rebuild is BATCHED (user's go)
-    'status': 'done',
+    'status': 'rework',
     # CLOSE-OUT RECORD (2026-10-15). 4b (port_field_audit): list 2 = the balance rows + the user's Halo 4
     #   speed / reach decisions (velocity ratio 140 x 75/480 and range 40 x 26/6.5 degenerate), the pellet
     #   count ratio ('projectiles per shot -> 90': Halo 4's shotgun keeps its 15 in the projectile's conical

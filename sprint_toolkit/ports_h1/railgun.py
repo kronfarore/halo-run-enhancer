@@ -245,7 +245,7 @@ PORT = reserved(
 PORT.update({
     # 2026-10-16: tested on a30 over 6 dry boots, balanced and 3 Armed (grunt, jackal, elite) -- confirmed by
     # the user; the ten-map rebuild is BATCHED (the user's go, the final wave C rebuild)
-    'status': 'done',
+    'status': 'rework',
     # the slug's stick responses play the rocket's per-material impact effects: Halo 4's railgun impact events
     # ship in NO bank (h4_sound_research event: not in sfxbank.pck) -- user, close-out 2026-10-16: KEEP
     'sound_keeps': {r'sound\sfx\impulse\impacts\dirt_burst': "the rocket's dirt impact on the slug's stick: "

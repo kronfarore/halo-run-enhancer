@@ -110,7 +110,7 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'done',             # 2026-10-15: 8 dry boots, balanced, Armed (grunt, jackal, elite) on a30
+    'status': 'rework',             # 2026-10-15: 8 dry boots, balanced, Armed (grunt, jackal, elite) on a30
     #   RE-CHECK 2026-10-19/20 (user): firing glow (su_fire_glow on D out = rate of fire), 3 boots on a30
     # CLOSE-OUT RECORD (2026-10-15):
     # STEP 4b (port_field_audit --port suppressor, final): weapon list 2 = 0 (error deceleration 1.2,
