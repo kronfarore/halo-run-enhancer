@@ -288,6 +288,29 @@ has only 'Halo 1'; `ai_firing_profile.py` writes Halo 1 actor variants only). Sp
   enhancer's files without telling that session.** Open: per-weapon vs per-block parent
   fallback; what an enemy does with a weapon its graph does not cover.
 
+### 0.5b Armed (2026-10-20, the Armed-cards session)
+
+- **Tool**: `ai_firing_profile.py --h2-port <key>` -> `h2_ai_firing.py` appends / replaces the
+  port's Weapons Properties (loose elem 0xE0, root +0x144, chunk v1; refs at 0x4 / 0xD0, cache
+  fields 0xC..0xBC at +8) and Firing Pattern Properties (elem 0x1C, root +0x150; path then a
+  2 x 0x40 pattern chunk) elements in H2EK `ai\generic.character`, under the H2 kit lock,
+  export-checked (others unchanged, the port's rows = values written). Values: the source's entry
+  by name (both patterns), over a stock same-game `donor_weapon`; zeros copy; timid / aggressive
+  ranges scaled from the donor by the normal-range move. Record `ai_firing_profiles.json['Halo 2']`.
+  `h2_ai_firing.py --list | --show <weapon> | --remove <weapon>`. Stock tag: E:\HaloBackups\h2_ai_firing.
+- **SAW written** (config firing_profile: Halo 4 storm_lmg on m020 over the H2 SMG): ranges 20 /
+  5-15, both patterns tracking 0.9 -> 1.0, bursts 0.56-0.75 s every 0.75-2.25 s, WDM 0.75 (Halo
+  4's), drop 0.4-0.8 loaded / no reserve. Every port session runs this at step 11 (donor_weapon
+  is the session's choice -- usually the yardstick); the Sticky Detonator gives donor_weapon + set only.
+- **In the built cache** (03a test build): the SAW's ai\generic entry is there with the written values.
+- **Armed test**: `h2_port_test_map.py <key> --armed elite,grunt,jackal,brute [--share x] --stage`
+  (h2_armed_test -> the enhancer's pass `h2_enemy_weapons.arm`, tool root). SAW on
+  03a_oldmombasa: 35 Elite / 57 Grunt / 36 Jackal units armed, vehicle-bound squads left alone,
+  STAGED 2026-10-20 -- IN-GAME RESULT: pending the user's boot (CLASSIC).
+- **Enhancer**: cards + patch-pass call + Balanced = the enhancer session's; spec in
+  `sprint_toolkit/H2_ARMED_HANDOFF.md` (that session was offline: written, not yet agreed).
+  Open: two-handed rule, WDM rule base (H2 stock WDM = 0), species skill, the SAW's sniper 3P label.
+
 ### 0.6 Parallel machinery (H2EK)
 
 - **THE H2 KIT LOCK** (`kit_lock.py`, kit='h2' -> `H2EK\.port_kit.lock`, token KIT_LOCK_TOKEN_H2,

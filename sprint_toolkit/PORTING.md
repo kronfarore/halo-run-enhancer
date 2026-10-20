@@ -178,6 +178,23 @@ Grunt fuel rod donor: the Jackal / Elite slots now carry their own species' skil
 Armed b30 build byte-identical. Back up `ai_firing_profiles.json`,
 `ai_firing_profile.py` and `h1_enemy_weapons.py` (port_backup h1 carries them).
 
+**STEP 11 IN HALO 2 (2026-10-20, H2_PORT_PLAN 0.5b).** Halo 2 looks firing data up BY WEAPON
+in the shared `ai\generic` character (every species' parent), so a port's AI data goes INTO THE
+KIT TAG, once: `python ai_firing_profile.py --h2-port <key>` reads `ports_h2/<key>.py`
+`firing_profile` = {from_game, from_map, from_weapon (the source's ai\generic entry, copied by
+NAME, both patterns kept apart), donor_weapon (a stock Halo 2 weapon whose entry is the base:
+flags / enums from Reach or Halo 4 sources and fields the source lacks), set ['<field>[#k]=v']}
+and appends / replaces the weapon's Weapons Properties + Firing Pattern Properties elements in
+H2EK `ai\generic.character` (`h2_ai_firing.py`, H2 kit lock, every write checked by
+`tool export-tag-to-xml`: all other elements export unchanged, the port's rows = the values
+written; stock tag backed up once to E:\HaloBackups\h2_ai_firing). Zeros copy (0 = 'the weapon's
+own' in Halo 2 as in the sources). A Halo 2-only range a Reach / Halo 4 source lacks (timid /
+aggressive combat range) is the donor's scaled by how the normal combat range moved. Record:
+`ai_firing_profiles.json['Halo 2']`. The Armed TEST: `h2_port_test_map.py <key> --level L
+--armed elite,grunt,jackal,brute --stage` (every unit of those species takes the port in the test
+map, via the enhancer's own pass `h2_enemy_weapons.arm`). The cards + patch pass: the enhancer
+session (sprint_toolkit/H2_ARMED_HANDOFF.md).
+
 **And step 5 has a ROLE check (2026-10-05):** `python port_role_compare.py <set>
 [--balanced]` puts the port beside the weapons whose role it shares -- damage per shot,
 dps, shots/seconds to overheat, overheat recovery, battery, headshots, range, zoom, aim

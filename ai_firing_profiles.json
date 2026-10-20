@@ -3678,5 +3678,109 @@
     "balanced_port_dps": 158.0
    }
   }
+ },
+ "Halo 2": {
+  "objects\\weapons\\rifle\\saw\\saw": {
+   "source": "Halo 4 ai\\generic objects\\weapons\\rifle\\storm_lmg\\storm_lmg (weapons properties #40, firing pattern #39, 2 patterns) over Halo 2 objects\\weapons\\rifle\\smg\\smg",
+   "donor_weapon": "objects\\weapons\\rifle\\smg\\smg",
+   "weapon": "objects\\weapons\\rifle\\saw\\saw",
+   "props": {
+    "Maximum Firing Range": 20.0,
+    "Minimum Firing Range": 0.0,
+    "Normal Combat Range": 5.0,
+    "Normal Combat Range Max": 15.0,
+    "Bombardment Range": 0.0,
+    "Maximum Special Target Distance": 30.0,
+    "Super-Ballistic Range": 0.0,
+    "Ballistic Firing Bounds": 0.0,
+    "Ballistic Firing Bounds Max": 0.0,
+    "Ballistic Fraction Bounds": 0.0,
+    "Ballistic Fraction Bounds Max": 0.0,
+    "First Burst Delay Time": 0.25,
+    "First Burst Delay Time Max": 0.25,
+    "Surprise Delay Time": 1.0,
+    "Surprise Fire-Wildly Time": 0.0,
+    "Death Fire-Wildly Chance": 0.0,
+    "Death Fire-Wildly Time": 0.0,
+    "Custom Stand Gun Offset i": 0.0,
+    "Custom Stand Gun Offset j": 0.0,
+    "Custom Stand Gun Offset k": 0.0,
+    "Custom Crouch Gun Offset i": 0.0,
+    "Custom Crouch Gun Offset j": 0.0,
+    "Custom Crouch Gun Offset k": 0.0,
+    "Special-Fire Chance": 0.0,
+    "Special-Fire Delay": 0.0,
+    "Special Damage Modifier": 0.0,
+    "Special Projectile Error": 0.0,
+    "Drop Weapon Loaded": 0.4000000059604645,
+    "Drop Weapon Loaded Max": 0.800000011920929,
+    "Drop Weapon Ammo": 0,
+    "Drop Weapon Ammo Max": 0,
+    "Normal Accuracy Bounds": 0.0,
+    "Normal Accuracy Bounds Max": 0.20000000298023224,
+    "Normal Accuracy Time": 6.0,
+    "Heroic Accuracy Bounds": 0.20000000298023224,
+    "Heroic Accuracy Bounds Max": 0.6000000238418579,
+    "Heroic Accuracy Time": 4.5,
+    "Legendary Accuracy Bounds": 0.30000001192092896,
+    "Legendary Accuracy Bounds Max": 1.0,
+    "Legendary Accuracy Time": 3.0,
+    "Timid Combat Range": 6.666666507720947,
+    "Timid Combat Range Max": 19.285715103149414,
+    "Aggressive Combat Range": 3.3333332538604736,
+    "Aggressive Combat Range Max": 12.857142448425293
+   },
+   "patterns": [
+    {
+     "Rate Of Fire": 0.0,
+     "Target Tracking": 0.8999999761581421,
+     "Target Leading": 0.5,
+     "Burst Origin Radius": 0.30000001192092896,
+     "Burst Origin Angle": 0.0872664600610733,
+     "Burst Return Length": 0.2750000059604645,
+     "Burst Return Length Max": 0.5,
+     "Burst Return Angle": 0.1745329201221466,
+     "Burst Duration": 0.5600000023841858,
+     "Burst Duration Max": 0.75,
+     "Burst Separation": 0.75,
+     "Burst Separation Max": 2.25,
+     "Weapon Damage Modifier": 0.75,
+     "Projectile Error": 0.03490658476948738,
+     "Burst Angular Velocity": 0.0,
+     "Maximum Error Angle": 0.0872664600610733
+    },
+    {
+     "Rate Of Fire": 0.0,
+     "Target Tracking": 1.0,
+     "Target Leading": 0.8999999761581421,
+     "Burst Origin Radius": 0.30000001192092896,
+     "Burst Origin Angle": 0.0872664600610733,
+     "Burst Return Length": 0.2750000059604645,
+     "Burst Return Length Max": 0.5,
+     "Burst Return Angle": 0.1745329201221466,
+     "Burst Duration": 0.5600000023841858,
+     "Burst Duration Max": 0.75,
+     "Burst Separation": 0.75,
+     "Burst Separation Max": 2.25,
+     "Weapon Damage Modifier": 0.75,
+     "Projectile Error": 0.01308996882289648,
+     "Burst Angular Velocity": 0.0,
+     "Maximum Error Angle": 0.0872664600610733
+    }
+   ],
+   "set": [],
+   "donor_only": [],
+   "not_copied": [
+    "Weapons Flags",
+    "Special-Fire Mode",
+    "Special-Fire Situation"
+   ],
+   "scaled_by_normal_range": [
+    "Timid Combat Range",
+    "Timid Combat Range Max",
+    "Aggressive Combat Range",
+    "Aggressive Combat Range Max"
+   ]
+  }
  }
 }

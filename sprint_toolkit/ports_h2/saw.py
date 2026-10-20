@@ -309,7 +309,13 @@ PORT = {
                  'first-person animations, so its reload can be retimed.'),
     },
 
-    'firing_profile': None,          # no Halo 2 Armed card yet (H2_PORT_PLAN 0.5)
+    # step 11 -- the Armed card's AI data (H2_PORT_PLAN 0.5b): `python ai_firing_profile.py
+    # --h2-port saw` writes the SAW's entries into H2EK ai\generic (Weapons Properties + Firing
+    # Pattern Properties): Halo 4's storm_lmg entry name-for-name over the H2 SMG's (the yardstick;
+    # its flags / enums kept, its timid / aggressive ranges scaled by the normal-range move)
+    'firing_profile': {'from_game': 'Halo 4', 'from_map': r'halo4\maps\m020.map',
+                       'from_weapon': r'objects\weapons\rifle\storm_lmg\storm_lmg',
+                       'donor_weapon': r'objects\weapons\rifle\smg\smg'},
 
     'backup': {'trees': [r'objects\weapons\rifle\saw'],
                'extra': [H3EK + r'\storm_lmg_rm.xml']},

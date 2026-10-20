@@ -4,6 +4,7 @@ Halo 2 counterpart of h1_port_test_map.py, replacing the SAW-only h2_saw_place.p
 
     python h2_port_test_map.py <key> --level 03a [--profiles "starting profile,respawn profile"]
                                      [--rounds 72,216] [--stage] [--keep-kit-map]
+                                     [--armed elite,grunt,jackal[,brute]] [--share 1]
     python h2_port_test_map.py <key> --restore <level>
     python h2_port_test_map.py --status
 
@@ -22,6 +23,10 @@ E:\HaloBackups\h2_port_test\<level>.map -- never over a backup of its own staged
 test map copied live. OWNERSHIP: E:\HaloBackups\h2_port_test\stage.json records which port staged
 each level; staging or restoring a level another port owns is refused (--force overrides).
 --restore puts the live map back from that backup and frees the level.
+ARMED (--armed SPECIES, 0.5b): after the build, every squad unit of those species in the TEST map
+spawns with the port (h2_armed_test.arm: squad / starting-location weapon indices -> the port's
+palette entry; vehicle-bound squads untouched); its firing data comes from the kit's ai\generic
+(ai_firing_profile.py --h2-port <key>, which must have run).
 Tests are in CLASSIC (a rebuilt H2 map is a classic-side build; memory halo2-loose-tag-format).
 """
 import argparse
@@ -119,7 +124,7 @@ def owner_check(info, level, key, force):
         raise SystemExit('%s is staged by %s -- one test level per session (--force overrides)' % (level, cur))
 
 
-def build(key, level, profiles, rounds, keep_kit_map=False):
+def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.0):
     p = ports_h2.load(key)
     weapon = R.weapon_path(p)
     scn, res = scenario(level), R.resource(level)
@@ -151,6 +156,10 @@ def build(key, level, profiles, rounds, keep_kit_map=False):
             if ok:
                 os.makedirs(TEST_DIR, exist_ok=True)
                 shutil.copy2(kit_map, os.path.join(TEST_DIR, level + '.map'))
+                if armed:
+                    import h2_armed_test
+                    h2_armed_test.report(*h2_armed_test.arm(
+                        os.path.join(TEST_DIR, level + '.map'), weapon, armed, share))
         finally:
             for f, k in keep.items():
                 if f == kit_map and keep_kit_map:
@@ -205,6 +214,8 @@ def main():
     ap.add_argument('--status', action='store_true')
     ap.add_argument('--force', action='store_true')
     ap.add_argument('--keep-kit-map', action='store_true')
+    ap.add_argument('--armed', default='', help='species whose squads spawn with the port')
+    ap.add_argument('--share', type=float, default=1.0)
     a = ap.parse_args()
     if a.status:
         print(json.dumps(stage_info(), indent=1) or '{}')
@@ -223,7 +234,8 @@ def main():
     rounds = tuple(int(x) for x in a.rounds.split(',')) if a.rounds else \
         tuple((cfg.get('test') or {}).get('rounds') or ()) or None
     profiles = [x.strip() for x in a.profiles.split(',') if x.strip()]
-    built = build(a.key, level, profiles, rounds, a.keep_kit_map)
+    armed = [x.strip() for x in a.armed.split(',') if x.strip()]
+    built = build(a.key, level, profiles, rounds, a.keep_kit_map, armed, a.share)
     print('test map: %s' % built)
     if a.stage:
         with kit_lock.held('h2_port_test_map %s --stage %s' % (a.key, level), owner=a.key, kit='h2'):

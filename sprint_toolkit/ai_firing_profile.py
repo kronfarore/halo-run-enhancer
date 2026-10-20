@@ -42,6 +42,7 @@ paragraph each) commits just this profile inside the same lock hold (kit_commit.
 """
 import argparse
 import json
+import math
 import os
 import struct
 import sys
@@ -289,10 +290,232 @@ def from_config(key, write=True):
     return prof
 
 
+# --- HALO 2 DESTINATION (2026-10-20, H2_PORT_PLAN.md 0.5b) -------------------------------
+# Halo 2 has a shared ai\generic like the sources, with the same field names and TWO patterns
+# per weapon, so nothing is averaged or renamed: the source entry is copied name-for-name over a
+# same-game donor's entry and WRITTEN INTO THE KIT TAG (h2_ai_firing.py) -- not a patch-time
+# profile like Halo 1's actv slots. ai_firing_profiles.json['Halo 2'] keeps a record of the values
+# (for the enhancer's Balanced switching), written under the Halo 1 lock like every record.
+
+FMT_H2 = dict(FMT, flags32='<I', int32='<i')
+SAME_ENUMS = ('Halo 3', 'Halo 3: ODST')     # enum tables = Halo 2's (Reach / Halo 4 grew them)
+
+
+def source_entry(from_map, from_game, from_weapon, char='ai\\generic'):
+    """The source's entry PER PATTERN: ({field: (type, value)}, [{field: (type, value)}, ...],
+    where). Patterns from Firing Pattern Properties, else Halo 3's inner block."""
+    reg = _plugins()
+    pl = reg(from_game).get('char')
+    lay = SOURCES[from_game]
+    m = hp.open_map(from_map, from_game)
+    base = dict(m.find_tags('char', char)).get(char)
+    if base is None:
+        raise SystemExit('no %s in %s' % (char, from_map))
+
+    def elem(off, esz, ref):
+        n = m.i32(base + off)
+        b = hp._block_base(m, base + off) if n > 0 else None
+        for i in range(max(0, n)):
+            if hp._tag_name_by_id(m, m.u32(b + i * esz + ref + 0xC)) == from_weapon:
+                return b + i * esz, i
+        return None, None
+
+    def inner(e, ioff, iesz):
+        n = m.i32(e + ioff)
+        ib = hp._block_base(m, e + ioff) if n > 0 else None
+        return [ib + k * iesz for k in range(max(0, n))]
+
+    pe, pi = elem(*lay['props'])
+    fe, fi = elem(*lay['pattern'][:3])
+    if pe is None and fe is None:
+        raise SystemExit('%s has no entry for %s' % (char, from_weapon))
+    pats = (inner(fe, *lay['pattern'][3:]) if fe is not None
+            else inner(pe, *lay['inner']) if (pe is not None and 'inner' in lay) else [])
+    props, patterns = {}, [{} for _ in pats]
+    for f in pl.fields:
+        fmt = FMT_H2.get(f['type'])
+        if not fmt:
+            continue
+        chain = f['block_chain']
+        if chain == ['Weapons Properties'] and pe is not None:
+            props[f['name']] = (f['type'], struct.unpack_from(fmt, m.data, pe + f['offset'])[0])
+        elif chain and chain[-1] == 'Firing Patterns' and (
+                (chain[0] == 'Firing Pattern Properties' and fe is not None) or
+                (chain[0] == 'Weapons Properties' and fe is None)):
+            for k, a in enumerate(pats):
+                patterns[k][f['name']] = (f['type'], struct.unpack_from(fmt, m.data, a + f['offset'])[0])
+    return props, patterns, '%s %s %s (weapons properties #%s, firing pattern #%s, %d patterns)' % (
+        from_game, char, from_weapon, pi, fi, len(pats))
+
+
+def _xml_key(name):
+    """Assembly plugin field name -> (the name tool's XML export prints, component index)."""
+    n, idx = name, 0
+    if n.endswith(' Max'):
+        n, idx = n[:-4], 1
+    elif n[-2:] in (' i', ' j', ' k'):
+        n, idx = n[:-2], ' i j k'.split(' ').index(n[-1:]) - 1
+    n = n.lower().replace('maximum special target distance', 'max special target distance')
+    return n, idx
+
+
+def _parse_set(s):
+    """'<plugin field name>[#pattern]=value' -> (name, pattern or None, value)."""
+    k, v = s.rsplit('=', 1)
+    pat = None
+    if '#' in k:
+        k, p = k.rsplit('#', 1)
+        pat = int(p)
+    return k.strip(), pat, float(v)
+
+
+def h2_profile(key, write=True):
+    """Halo 2 step 11 from ports_h2/<key>.py 'firing_profile':
+      {'from_game', 'from_map', 'from_weapon'[, 'char'],   the source entry (copied by name)
+       'donor_weapon': <stock Halo 2 weapon tag>,           the base (fields the source lacks)
+       'set': ['<field>[#pattern]=value', ...]}             explicit values on top
+    A same-game port (no source entry: the Sticky Detonator) gives only donor_weapon + set.
+    Writes the entries into H2EK ai\\generic.character (H2 kit lock, export-checked) and the
+    record ai_firing_profiles.json['Halo 2'][weapon]."""
+    sys.path.insert(0, HERE)
+    import h2_ai_firing as H
+    import h2_port_residency as R
+    import kit_lock
+    import ports_h2
+    p = ports_h2.load(key)
+    fp = p.get('firing_profile') or {}
+    weapon = R.weapon_path(p)
+    donor = fp.get('donor_weapon')
+    if not donor:
+        raise SystemExit('%s: firing_profile has no donor_weapon (a stock Halo 2 weapon whose '
+                         'ai\\generic entry is the base)' % key)
+    tag = bytearray(open(H.GENERIC, 'rb').read())
+    dpe, dfe, dpats = H.find(tag, donor)
+    if dpe is None or dfe is None or len(dpats) != 2:
+        raise SystemExit('donor %s: no complete entry in ai\\generic (props %s, patterns %d)'
+                         % (donor, dpe is not None, len(dpats)))
+    props_elem = bytearray(tag[dpe:dpe + H.PROPS_ES])
+    pats = [bytearray(tag[a:a + H.PAT_ES]) for a in dpats]
+    b = H.blocks(tag)
+    melee = next(pth[1] for e, pth, _s, _t in b['props'][1] if e == dpe)
+    if fp.get('from_map'):
+        src = fp['from_map']
+        sprops, spats, where = source_entry(src if os.path.isabs(src) else os.path.join(MCC, src),
+                                            fp['from_game'], fp['from_weapon'],
+                                            fp.get('char', 'ai\\generic'))
+        source = '%s over Halo 2 %s' % (where, donor)
+    else:
+        sprops, spats, source = {}, [], 'Halo 2 %s (same game: no source entry%s)' % (
+            donor, ', ' + fp['why'] if fp.get('why') else '')
+    if len(spats) == 1:
+        spats = spats * 2                         # one source pattern: both ends of the blend
+    dst = _plugins()('Halo 2').get('char')
+    written = {'props': {}, 'patterns': [{}, {}]}
+    expect = {}
+    skipped = []
+
+    def put(buf, off, ftype, v, block, name, pat=None):
+        fmt = FMT_H2[ftype]
+        if fmt in ('<h', '<H', '<i', '<I'):
+            v = int(round(v))
+        struct.pack_into(fmt, buf, off, v)
+        v = struct.unpack_from(fmt, buf, off)[0]
+        (written['props'] if pat is None else written['patterns'][pat])[name] = v
+        xn, idx = _xml_key(name)
+        shown = math.degrees(v) if ftype == 'degree' else v
+        expect.setdefault((block, xn + ('' if pat is None else '#%d' % pat)), {})[idx] = shown
+
+    sets = [_parse_set(s) for s in fp.get('set') or ()]
+    for f in dst.fields:
+        ftype, name, chain = f['type'], f['name'], f['block_chain']
+        if ftype not in FMT_H2:
+            continue
+        if chain == ['Weapons Properties']:
+            src = sprops.get(name)
+            if src and (ftype.startswith('flags') or ftype.startswith('enum')) \
+                    and fp.get('from_game') not in SAME_ENUMS:
+                skipped.append(name)
+                src = None
+            v = next((v for n, pt, v in sets if n == name and pt is None), None)
+            if v is None and src is not None:
+                v = src[1]
+            if v is not None:
+                put(props_elem, H.props_loose(f['offset']), ftype, v, 'weapons properties', name)
+        elif chain == ['Firing Pattern Properties', 'Firing Patterns']:
+            for k in range(2):
+                src = spats[k].get(name) if spats else None
+                v = next((v for n, pt, v in sets if n == name and pt in (None, k)), None)
+                if v is None and src is not None:
+                    v = src[1]
+                if v is not None:
+                    put(pats[k], f['offset'], ftype, v, 'firing pattern properties', name, k)
+    # Halo 2-only ranges a Reach / Halo 4 source lacks (timid / aggressive combat range):
+    # APPROXIMATED, not left at the donor's -- the donor's bounds scaled per end by how the
+    # normal combat range moved (the SAW: SMG 3-7 -> storm_lmg 5-15)
+    nf = {f['name']: f for f in dst.fields if f['block_chain'] == ['Weapons Properties']}
+    donor_elem = tag[dpe:dpe + H.PROPS_ES]
+    scaled = []
+    for rng in ('Timid Combat Range', 'Aggressive Combat Range'):
+        for end in ('', ' Max'):
+            name, ref = rng + end, 'Normal Combat Range' + end
+            if name in sprops or ref not in written['props'] or any(n == name for n, _p, _v in sets):
+                continue
+            old_ref = struct.unpack_from('<f', donor_elem, H.props_loose(nf[ref]['offset']))[0]
+            old = struct.unpack_from('<f', donor_elem, H.props_loose(nf[name]['offset']))[0]
+            if old_ref > 0:
+                put(props_elem, H.props_loose(nf[name]['offset']), 'float32',
+                    old * written['props'][ref] / old_ref, 'weapons properties', name)
+                scaled.append(name)
+    missing = sorted(n for n, pt, v in sets if not any(
+        f['name'] == n for f in dst.fields if f['block_chain'] in
+        (['Weapons Properties'], ['Firing Pattern Properties', 'Firing Patterns'])))
+    if missing:
+        raise SystemExit('%s: set rows name no Halo 2 field: %s' % (key, missing))
+    only_donor = sorted(f['name'] for f in dst.fields if f['block_chain'] == ['Weapons Properties']
+                        and f['type'] in FMT_H2 and f['name'] not in written['props']
+                        and f['name'] not in skipped)
+
+    def pred(want):
+        def ok(text):
+            first = text.splitlines()[0] if text else ''
+            import re
+            nums = [float(x) for x in re.findall(r'-?\d+(?:\.\d+)?(?:e-?\d+)?', first)]
+            return all(i < len(nums) and abs(nums[i] - w) <= max(1e-4, abs(w) * 1e-4)
+                       for i, w in want.items())
+        return ok
+    checks = {k: pred(w) for k, w in expect.items()}
+    prof = {'source': source, 'donor_weapon': donor, 'weapon': weapon,
+            'props': written['props'], 'patterns': written['patterns'],
+            'set': list(fp.get('set') or ()), 'donor_only': only_donor,
+            'not_copied': skipped, 'scaled_by_normal_range': scaled}
+    print(source, '->', weapon)
+    for n, v in written['props'].items():
+        print('  %-36s %s' % (n, round(v, 4) if isinstance(v, float) else v))
+    for n in written['patterns'][0]:
+        a, c = written['patterns'][0][n], written['patterns'][1][n]
+        print('  pattern %-28s %-10s %s' % (n, round(a, 4), round(c, 4)))
+    print('  kept the donor\'s: %s' % (', '.join(only_donor + skipped) or 'nothing'))
+    if scaled:
+        print('  scaled by the normal combat range: %s' % ', '.join(scaled))
+    if not write:
+        print('(dry: nothing written)')
+        return prof
+    with kit_lock.held('ai_firing_profile --h2-port %s' % key, owner=key, kit='h2'):
+        res = H.write_checked(weapon, bytes(props_elem), melee, [bytes(x) for x in pats],
+                              {(blk, n): ok for (blk, n), ok in checks.items()})
+    print('ai\\generic: %s; export-checked (%d rows of the port, %d other rows unchanged)'
+          % ('entry replaced' if res['replaced'] else 'entry appended', res['rows'], res['others']))
+    save('Halo 2', weapon, prof, commit=write if isinstance(write, list) else None)
+    print('recorded', PROFILE_FILE, "['Halo 2']")
+    return prof
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--port', help='a Halo 1 port config key (ports_h1/<key>.py): run its '
                                    'firing_profile section')
+    ap.add_argument('--h2-port', help='a Halo 2 port config key (ports_h2/<key>.py): write its '
+                                      'ai\\generic entries into H2EK (h2_ai_firing)')
     ap.add_argument('--dry', action='store_true', help='with --port: print, write nothing')
     ap.add_argument('--from-map')
     ap.add_argument('--from-game', default='Halo 4')
@@ -314,6 +537,9 @@ def main():
     if a.commit and a.dry:
         ap.error('--commit with --dry')
     write = a.commit or True                     # a list = write + commit (save)
+    if a.h2_port:
+        h2_profile(a.h2_port, write=False if a.dry else write)
+        return
     if a.port:
         from_config(a.port, write=False if a.dry else write)
         return
