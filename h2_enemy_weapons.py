@@ -49,6 +49,17 @@ NEVER = ('brute_tartarus', 'heretic_leader', 'heretic_leader_hologram', 'marine_
 WPAL, WPAL_ES = 0x98, 0x28
 PROPS, PROPS_ES, PROPS_W = 0xCC, 0xCC, 0x8          # datum of the weapon tagref (+0x4)
 FPP, FPP_ES, FPP_W, FPP_PAT, PAT_ES = 0xD4, 0x10, 0x4, 0x8, 0x40
+SQUAD_CHAR, SQUAD_WEAP, LOC_CHAR, LOC_WEAP = 0x36, 0x3C, 0x20, 0x22
+SHIELDLESS_JACKAL = r'objects\characters\jackal\ai\jackal_sniper'
+# weap (Assembly Halo2MCC): flags +0x12C (bit 22 can be / 23 only dual wielded), weapon class /
+# name string ids +0x288 / +0x28C, Barrels +0x2D0 (0xEC: rounds per second +0x4 bounds,
+# fire recovery time +0x20)
+WEAP_FLAGS, DUAL_BITS, WEAP_CLASS, WEAP_BARRELS, WEAP_BARREL_ES = 0x12C, 3 << 22, 0x288, 0x2D0, 0xEC
+# jmad: Modes +0x34 (0x14; label +0x0) > Weapon Class +0x4 (0x14; label +0x0) > Weapon Type +0x4
+# (0x34); Weapon List +0x54 (0x8: weapon name, weapon class) -- all 'sort' blocks
+JMAD_MODES, JMAD_MODE_ES, MODE_CLASSES, CLASS_ES, CLASS_TYPES, TYPE_ES = 0x34, 0x14, 0x4, 0x14, 0x4, 0x34
+JMAD_WEAPON_LIST, WL_ES = 0x54, 0x8
+GRUNT_GRAPHS = (r'objects\characters\grunt\grunt',)     # heretic Grunts use it too
 
 
 def enemy_of(char_path):
@@ -85,8 +96,41 @@ def palette(m, hp, base):
     return [hp._tag_name_by_id(m, struct.unpack_from('<I', m.data, e + 0x4)[0]) for e in pal]
 
 
+def weapon_info(m, hp, weapon):
+    """{'class', 'name', 'dual', 'rate', 'class_sid'} of a weapon tag in the map, or None. `rate` =
+    the first barrel's rounds per second (upper), else 1 / its fire recovery time."""
+    t = dict(m.find_tags('weap', weapon)).get(weapon)
+    if t is None:
+        return None
+    flags = m.u32(t + WEAP_FLAGS)
+    br = m.follow_all(t, [WEAP_BARRELS], [WEAP_BARREL_ES], 'all')
+    rate = None
+    if br:
+        rps = struct.unpack_from('<f', m.data, br[0] + 0x8)[0]
+        rec = struct.unpack_from('<f', m.data, br[0] + 0x20)[0]
+        rate = rps if rps > 0 else (1.0 / rec if rec > 0 else None)
+    sid = m.u32(t + WEAP_CLASS)
+    return {'class': m.resolve_stringid(sid), 'class_sid': sid,
+            'name': m.resolve_stringid(m.u32(t + WEAP_CLASS + 4)),
+            'dual': bool(flags & DUAL_BITS), 'rate': rate}
+
+
+def two_handed(info):
+    """THE TWO-HANDED TEST (user rule, Halo 1 2026-10-08, carried to Halo 2 2026-10-20): not a
+    pistol and not dual-wieldable (Halo 2's SMG is class 'rifle' but dual-wields)."""
+    return bool(info) and info['class'] != 'pistol' and not info['dual']
+
+
+def grunt_half(info):
+    """Grunts fire a two-handed weapon at HALF rate -- except heavy support ('missile': the fuel
+    rod, the rocket launcher)."""
+    return two_handed(info) and info['class'] != 'missile'
+
+
 def arm(m, hp, cards, salt=None):
-    """Rewrite squad weapons by share. Returns (rows, {enemy: {weapon: units}})."""
+    """Rewrite squad weapons by share. A JACKAL given a two-handed weapon becomes the shieldless
+    Jackal (jackal_sniper: the same biped, variant 'shieldless', with the two-handed rifle set).
+    Returns (rows, {enemy: {weapon: units}})."""
     base = hp._scnr_base(m)
     wnames = palette(m, hp, base)
     widx = {(n or '').lower(): i for i, n in enumerate(wnames)}
@@ -94,22 +138,39 @@ def arm(m, hp, cards, salt=None):
     cpal = m.follow_all(base, [lay['palette'][0]], [lay['palette'][1]], 'all')
     cnames = [hp._tag_name_by_id(m, struct.unpack_from('<I', m.data, e + lay['pal_id_at'])[0])
               for e in cpal]
+    sniper = next((i for i, n in enumerate(cnames) if (n or '').lower() == SHIELDLESS_JACKAL), None)
     salt = salt or os.path.basename(str(getattr(m, 'path', '') or ''))
     rows, missing, done = [], set(), {}
-    usable = {}
+    usable, info = {}, {}
     for enemy, ws in (cards or {}).items():
         ok = {}
         for w, s in ws.items():
             if w and w.lower() in widx and s > 0:
                 ok[w.lower()] = s
+                if w.lower() not in info:
+                    info[w.lower()] = weapon_info(m, hp, wnames[widx[w.lower()]])
             elif w:
                 missing.add(w)
         if ok:
             usable[enemy] = ok
-    seen = set()
+    seen, shieldless, no_sniper = set(), 0, 0
+    squad_pick = None                   # (squad unit, weapon) of the squad the locations follow
+
+    def unshield(char_at, c):
+        nonlocal shieldless, no_sniper
+        if char_at is None or (cnames[c] or '').lower() == SHIELDLESS_JACKAL:
+            return
+        if sniper is None:
+            no_sniper += 1
+            return
+        struct.pack_into('<h', m.data, char_at, sniper)
+        shieldless += 1
+
     for u in hp._ts_units(m, GAME, base, lay, ts):
         c = u['char']
         enemy = enemy_of(cnames[c]) if c is not None and 0 <= c < len(cnames) else None
+        if u['kind'] == 'squad':
+            squad_pick = None
         if enemy not in usable or u['protected']:
             continue
         a0, a1 = u['weap_at']
@@ -117,22 +178,155 @@ def arm(m, hp, cards, salt=None):
             continue
         seen.add(a0)
         if u['kind'] == 'loc' and struct.unpack_from('<h', m.data, a0)[0] < 0:
-            continue                                # inherits its squad's draw
+            # inherits its squad's draw -- and, a Jackal with its own character entry, the
+            # squad's shieldless switch
+            if enemy == 'Jackal' and squad_pick and two_handed(info.get(squad_pick)):
+                unshield(u['char_at'], c)
+            continue
         w = _pick(usable[enemy], _draw(salt, a0))
+        if u['kind'] == 'squad':
+            squad_pick = w
         if w is None:
             continue
         struct.pack_into('<h', m.data, a0, widx[w])
         struct.pack_into('<h', m.data, a1, -1)
+        if enemy == 'Jackal' and two_handed(info.get(w)):
+            unshield(u['char_at'] if u['char_at'] is not None
+                     else (a0 - SQUAD_WEAP + SQUAD_CHAR if u['kind'] == 'squad'
+                           else a0 - LOC_WEAP + LOC_CHAR), c)
         by = done.setdefault(enemy, {})
         by[w] = by.get(w, 0) + 1
     for enemy, ws in sorted(done.items()):
         for w, n in sorted(ws.items()):
             rows.append({'tag': 'scnr enemy weapons\\' + enemy, 'field': 'Armed: ' + w.split('\\')[-1],
                          'ok': True, 'reason': '%d squad units / locations' % n})
+    if shieldless or no_sniper:
+        rows.append({'tag': 'scnr enemy weapons\\Jackal', 'field': 'Shieldless Jackals (two-handed)',
+                     'ok': not no_sniper, 'reason': '%d switched to jackal_sniper%s' % (
+                         shieldless, '; %d kept their shield: no jackal_sniper in this level' % no_sniper
+                         if no_sniper else '')})
     for w in sorted(missing):
         rows.append({'tag': 'scnr enemy weapons', 'field': 'Armed: ' + w.split('\\')[-1], 'ok': True,
                      'skip': True, 'reason': 'not in this level\'s weapon palette'})
     return rows, done
+
+
+def _sorted_block(m, at, count, es, key):
+    """Re-sort a relocated block's elements in place (Halo 2 'sort' blocks: modes, weapon
+    classes and the weapon list are kept in ascending string-id order -- binary-searched)."""
+    els = [bytes(m.data[at + i * es:at + (i + 1) * es]) for i in range(count)]
+    els.sort(key=key)
+    m.data[at:at + count * es] = b''.join(els)
+
+
+def teach_grunts(m, hp, weapons):
+    """THE GRUNT TEACH. Halo 2's Grunt graph has no 'rifle' class (any / missile / pistol /
+    unarmed), so a Grunt handed a rifle-class weapon spawns with its biped default instead (seen
+    in game 2026-10-20: SAW Grunts carried nothing new). Every mode holding the 'missile' class
+    (the fuel rod's two-handed set) gets a copy of it labelled with the weapon's class -- its
+    weapon types / actions / overlays are SHARED by pointer, nothing is duplicated -- in sorted
+    position, and the graph's Weapon List gets the (type, class) pairs tool would have written.
+    Grunts then hold a rifle like a fuel rod (an approximation: no Grunt rifle set exists)."""
+    rows = []
+    want = {}
+    for w in weapons:
+        i = weapon_info(m, hp, w)
+        if i and i['class'] not in ('pistol', 'missile', 'unarmed', 'any'):
+            want.setdefault(i['class_sid'], i['class'])
+    if not want:
+        return rows
+    for gname in GRUNT_GRAPHS:
+        t = dict(m.find_tags('jmad', gname)).get(gname)
+        if t is None:
+            continue
+        modes = m.follow_all(t, [JMAD_MODES], [JMAD_MODE_ES], 'all')
+        jobs, wl_new = [], []
+        for md in modes:
+            cls = m.follow_all(md, [MODE_CLASSES], [CLASS_ES], 'all')
+            labels = [m.u32(c) for c in cls]
+            donor = next((c for c in cls if m.resolve_stringid(m.u32(c)) == 'missile'), None)
+            if donor is None:
+                continue
+            types = [m.u32(x) for x in m.follow_all(donor, [CLASS_TYPES], [TYPE_ES], 'all')]
+            new = []
+            for sid in want:
+                if sid in labels:
+                    continue
+                e = bytearray(m.data[donor:donor + CLASS_ES])
+                struct.pack_into('<I', e, 0, sid)
+                new.append(bytes(e))
+                for ty in types:
+                    if m.resolve_stringid(ty) != 'any':
+                        wl_new.append((ty, sid))
+            if new:
+                jobs.append((md, MODE_CLASSES, CLASS_ES, new))
+        if not jobs:
+            continue
+        wl = m.follow_all(t, [JMAD_WEAPON_LIST], [WL_ES], 'all')
+        have = {(m.u32(e), m.u32(e + 4)) for e in wl}
+        wl_add = [struct.pack('<II', a, b) for a, b in sorted(set(wl_new)) if (a, b) not in have]
+        if wl_add:
+            jobs.append((t, JMAD_WEAPON_LIST, WL_ES, wl_add))
+        offs = m.grow_blocks(jobs)
+        for (tb, bo, es, _n), off in zip(jobs, offs):
+            _sorted_block(m, off, m.i32(tb + bo), es,
+                          (lambda b: struct.unpack_from('<II', b, 0)) if bo == JMAD_WEAPON_LIST
+                          else (lambda b: struct.unpack_from('<I', b, 0)[0]))
+        rows.append({'tag': 'jmad ' + gname, 'field': 'Grunt teach: ' + '/'.join(sorted(want.values())),
+                     'ok': True, 'reason': '%d modes got the class (copy of missile), weapon list +%d'
+                     % (len([j for j in jobs if j[1] == MODE_CLASSES]), len(wl_add))})
+    return rows
+
+
+def grunt_rates(m, hp, weapons):
+    """THE GRUNT HALF RATE (user rule): every Grunt character in the map gets its OWN Firing
+    Pattern Properties entry for each two-handed, non-heavy weapon handed to Grunts -- ai\\generic's
+    two patterns with Rate Of Fire = half (the pattern's own rate, or the weapon's barrel rate
+    where the pattern says 0 = 'the weapon's own'). Halo 2 resolves firing data per weapon up the
+    parent chain (stock Grunts carry needlers with only a plasma-pistol entry of their own), so
+    the other weapons keep ai\\generic's."""
+    rows = []
+    grunts =[(n, t) for n, t in m.find_tags('char', 'objects\\characters\\*')
+              if enemy_of(n) == 'Grunt']
+    for w in weapons:
+        i = weapon_info(m, hp, w)
+        if not grunt_half(i):
+            continue
+        _pe, pats, fe = entry(m, hp, w, with_fpp=True)
+        if fe is None or not pats:
+            rows.append({'tag': 'char grunt', 'field': 'Grunt half rate: ' + w.split('\\')[-1],
+                         'ok': False, 'reason': 'no ai\\generic firing patterns in this map'})
+            continue
+        halves = []
+        for p in pats:
+            r = struct.unpack_from('<f', m.data, p)[0] or (i['rate'] or 0.0)
+            e = bytearray(m.data[p:p + PAT_ES])
+            struct.pack_into('<f', e, 0, r / 2.0)
+            halves.append(bytes(e))
+        if not halves or not struct.unpack_from('<f', halves[0], 0)[0]:
+            rows.append({'tag': 'char grunt', 'field': 'Grunt half rate: ' + w.split('\\')[-1],
+                         'ok': False, 'reason': 'no rate to halve'})
+            continue
+        n = 0
+        for cname, ct in grunts:
+            own = m.follow_all(ct, [FPP], [FPP_ES], 'all')
+            hit = next((e for e in own if (hp._tag_name_by_id(m, m.u32(e + FPP_W)) or '').lower()
+                        == w.lower()), None)
+            if hit is not None:
+                for k, p in enumerate(m.follow_all(hit, [FPP_PAT], [PAT_ES], 'all')[:len(halves)]):
+                    m.data[p:p + PAT_ES] = halves[k]
+                n += 1
+                continue
+            el = bytearray(m.data[fe:fe + FPP_ES])
+            struct.pack_into('<iI', el, FPP_PAT, 0, 0)      # patterns: grown below
+            count = m.i32(ct + FPP)
+            off = m.grow_block(ct, FPP, FPP_ES, [bytes(el)])
+            m.grow_block(off + count * FPP_ES, FPP_PAT, PAT_ES, halves)
+            n += 1
+        rows.append({'tag': 'char grunt*', 'field': 'Grunt half rate: ' + w.split('\\')[-1],
+                     'ok': True, 'reason': '%d Grunt characters, rate %s' % (
+                         n, ' / '.join('%.3g' % struct.unpack_from('<f', h, 0)[0] for h in halves))})
+    return rows
 
 
 def profiles():
@@ -161,23 +355,24 @@ def eligible_weapons():
     return list(STOCK) + sorted(w for w in profiles() if w not in STOCK)
 
 
-def entry(m, hp, weapon, char='ai\\generic'):
-    """(props element, [pattern elements]) of `weapon` in the map's ai\\generic, or (None, [])."""
+def entry(m, hp, weapon, char='ai\\generic', with_fpp=False):
+    """(props element, [pattern elements]) of `weapon` in the map's ai\\generic, or (None, []);
+    with_fpp: (props, patterns, its Firing Pattern Properties element)."""
     hit = dict(m.find_tags('char', char)).get(char)
     if hit is None:
-        return None, []
+        return (None, [], None) if with_fpp else (None, [])
     want = weapon.lower()
     pe = None
     for e in m.follow_all(hit, [PROPS], [PROPS_ES], 'all'):
         if (hp._tag_name_by_id(m, m.u32(e + PROPS_W)) or '').lower() == want:
             pe = e
             break
-    pats = []
+    pats, fe = [], None
     for e in m.follow_all(hit, [FPP], [FPP_ES], 'all'):
         if (hp._tag_name_by_id(m, m.u32(e + FPP_W)) or '').lower() == want:
-            pats = m.follow_all(e, [FPP_PAT], [PAT_ES], 'all')
+            pats, fe = m.follow_all(e, [FPP_PAT], [PAT_ES], 'all'), e
             break
-    return pe, pats
+    return (pe, pats, fe) if with_fpp else (pe, pats)
 
 
 def balance(m, hp, registry, weapons):
@@ -216,8 +411,14 @@ def _put(m, at, ftype, v):
     struct.pack_into(fmt, m.data, at, int(round(v)) if fmt in ('<h', '<H') else v)
 
 
-def apply(m, hp, spec, registry=None):
-    """The patch pass: Armed cards, then the Balanced AI rows of switched-on ports."""
-    rows, _done = arm(m, hp, (spec or {}).get('cards') or {})
+def apply(m, hp, spec, registry=None, salt=None):
+    """The patch pass: Armed cards (Jackals shieldless with two-handed weapons), the Grunt teach
+    and half rate for what Grunts were handed, then the Balanced AI rows of switched-on ports
+    (before the Grunt copies, so the Grunt entries carry the balanced values too)."""
+    rows, done = arm(m, hp, (spec or {}).get('cards') or {}, salt=salt)
     rows += balance(m, hp, registry, (spec or {}).get('balanced'))
+    grunt = sorted((done.get('Grunt') or {}))
+    if grunt:
+        rows += teach_grunts(m, hp, grunt)
+        rows += grunt_rates(m, hp, grunt)
     return rows

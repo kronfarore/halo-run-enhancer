@@ -24,9 +24,10 @@ sys.path.insert(0, ROOT)
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 
 
-
-def arm(map_path, weapon, species, share=1.0, out=None):
-    """The enhancer's own pass (h2_enemy_weapons.arm) with one card per species at `share`."""
+def arm(map_path, weapon, species, share=1.0, out=None, balanced=True):
+    """The enhancer's own pass (h2_enemy_weapons.apply: arming, shieldless Jackals, the Grunt
+    teach + half rate, Balanced AI rows) with one card per species at `share`. Balanced by
+    default: an Armed test runs the balanced numbers (memory h1-armed-test-balanced-god)."""
     import halo_patch as hp
     import h2_enemy_weapons as E
     m = hp.open_map(map_path, 'Halo 2')
@@ -43,9 +44,12 @@ def arm(map_path, weapon, species, share=1.0, out=None):
     idx = next((i for i, n in enumerate(wnames) if (n or '').lower() == weapon.lower()), None)
     if idx is None:
         raise SystemExit('%s is not in the weapon palette of %s' % (weapon, map_path))
-    rows, done = E.arm(m, hp, cards, salt=os.path.basename(map_path))
+    sys.path.insert(0, HERE)
+    import ai_firing_profile as A
+    rows = E.apply(m, hp, {'cards': cards, 'balanced': [weapon] if balanced else []},
+                   registry=A._plugins()('Halo 2'), salt=os.path.basename(map_path))
     m.save(out or map_path)
-    return idx, {e: sum(ws.values()) for e, ws in done.items()}, rows
+    return idx, rows
 
 
 def main():
@@ -54,16 +58,16 @@ def main():
     ap.add_argument('weapon')
     ap.add_argument('--species', default='elite,grunt,jackal,brute')
     ap.add_argument('--share', type=float, default=1.0)
+    ap.add_argument('--default', action='store_true', help='the default AI numbers, not Balanced')
     a = ap.parse_args()
-    report(*arm(a.map, a.weapon, a.species.split(','), a.share))
+    report(*arm(a.map, a.weapon, a.species.split(','), a.share, balanced=not a.default))
 
 
-def report(idx, armed, rows):
-    print('   armed (palette #%d): %s' % (idx, ', '.join('%s x%d' % kv for kv in sorted(armed.items()))
-                                         or 'NOTHING'))
+def report(idx, rows):
+    print('   the port is weapon palette #%d' % idx)
     for r in rows:
-        if r.get('skip'):
-            print('   skipped: %s (%s)' % (r['field'], r['reason']))
+        print('   %s %-40s %s' % ('SKIP' if r.get('skip') else 'ok  ' if r.get('ok') else 'FAIL',
+                                  r['field'], r.get('reason', '')))
 
 
 if __name__ == '__main__':

@@ -488,6 +488,24 @@ def h2_profile(key, write=True):
             'props': written['props'], 'patterns': written['patterns'],
             'set': list(fp.get('set') or ()), 'donor_only': only_donor,
             'not_copied': skipped, 'scaled_by_normal_range': scaled}
+    # THE HALO 2 ARMED WDM RULE (user, 2026-10-20): the default keeps the source game's own
+    # Weapon Damage Modifier; BALANCED = that WDM x Halo 2's damage number of the balanced
+    # difficulty baseline (halo_enhancer.BALANCED_BASELINE, the cross-game TTK calibration).
+    # A source WDM of 0 ('unmodified') counts as 1.0. h2_enemy_weapons.balance writes the rows
+    # into the map for a port whose Balanced box is on.
+    import halo_enhancer as he
+    dmg = he.BALANCED_BASELINE['Halo 2']['damage']
+    prof['balanced_patterns'] = [
+        {'Weapon Damage Modifier': (pt.get('Weapon Damage Modifier') or 1.0) * dmg}
+        for pt in written['patterns']]
+    prof['balanced_rule'] = 'WDM x %g (BALANCED_BASELINE Halo 2 damage)' % dmg
+    for s in fp.get('balanced_set') or ():          # explicit BALANCED rows on top
+        name, pat, v = _parse_set(s)
+        for k in ((pat,) if pat is not None else range(len(prof['balanced_patterns']))):
+            if any(f['name'] == name and f['block_chain'] == ['Weapons Properties'] for f in dst.fields):
+                prof.setdefault('balanced_props', {})[name] = v
+            else:
+                prof['balanced_patterns'][k][name] = v
     print(source, '->', weapon)
     for n, v in written['props'].items():
         print('  %-36s %s' % (n, round(v, 4) if isinstance(v, float) else v))
@@ -495,6 +513,9 @@ def h2_profile(key, write=True):
         a, c = written['patterns'][0][n], written['patterns'][1][n]
         print('  pattern %-28s %-10s %s' % (n, round(a, 4), round(c, 4)))
     print('  kept the donor\'s: %s' % (', '.join(only_donor + skipped) or 'nothing'))
+    print('  BALANCED (%s): %s%s' % (prof['balanced_rule'], ' / '.join(
+        ', '.join('%s %.4g' % kv for kv in row.items()) for row in prof['balanced_patterns']),
+        ''.join('; %s %.4g' % kv for kv in (prof.get('balanced_props') or {}).items())))
     if scaled:
         print('  scaled by the normal combat range: %s' % ', '.join(scaled))
     if not write:

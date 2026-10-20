@@ -160,6 +160,7 @@ def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.
                     import h2_armed_test
                     h2_armed_test.report(*h2_armed_test.arm(
                         os.path.join(TEST_DIR, level + '.map'), weapon, armed, share))
+                    print('   (Armed = BALANCED AI rows; shieldless Jackals, Grunt teach + half rate)')
         finally:
             for f, k in keep.items():
                 if f == kit_map and keep_kit_map:

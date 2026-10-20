@@ -31,9 +31,25 @@ done and committed; the interface is one module call and one spec dict.
      Brute, Flood Combat Form (floodcombat_elite / _human), **Marine** (the Ally twin). Left out:
      Tartarus, the Heretic leader, Johnson boss, councilors, Hunters, Sentinels, Drones, story
      characters.
-   - Balanced: for a weapon in `spec['balanced']` the profile's `balanced_props` {field: value} /
-     `balanced_patterns` [{..}, {..}] (Assembly Halo 2 `char` names) are written over the map's
-     `ai\generic` entry (fixed-size writes). No port has Balanced AI rows yet (the SAW: none).
+   - **Jackals + two-handed** (user, 2026-10-20): a Jackal unit handed a two-handed weapon
+     (not class pistol, not dual-wieldable -- Halo 2's SMG is class 'rifle' but dual-wields)
+     becomes `jackal_sniper` (the same biped, variant 'shieldless', with the rifle set). Every
+     level that fields Jackals has it in its palette; elsewhere the row says it kept the shield.
+   - **Grunt teach** (seen in game 2026-10-20: Grunts never carried the SAW -- their graph has no
+     'rifle' class, so they spawn with the biped default): every mode of
+     `objects\characters\grunt\grunt` holding the 'missile' class (the fuel rod's two-handed
+     set) gets a copy labelled with the weapon's class, child data SHARED by pointer, in sorted
+     string-id order (these are binary-searched 'sort' blocks), plus the Weapon List pairs tool
+     writes (`(rl, rifle)`). Heretic Grunts use the same graph. Grunts hold a rifle like a fuel rod.
+   - **Grunt half rate** (the Halo 1 rule): every Grunt character in the map gets its own Firing
+     Pattern Properties entry for each two-handed, non-'missile' weapon handed to Grunts =
+     ai\generic's patterns at half rate (the pattern's rate, or the barrel's rounds per second
+     where the pattern says 0); the SAW 20 -> 10. Other weapons resolve on ai\generic as before.
+   - **Balanced**: for a weapon in `spec['balanced']` the profile's `balanced_props` /
+     `balanced_patterns` (Assembly Halo 2 `char` names) are written over the map's `ai\generic`
+     entry BEFORE the Grunt copies (so those carry them too). THE WDM RULE (user, 2026-10-20):
+     default = the source game's own WDM, BALANCED = it x `BALANCED_BASELINE['Halo 2']['damage']`
+     (0.84; a source 0 counts as 1.0) -- written by ai_firing_profile --h2-port (SAW 0.75 / 0.63).
    - `eligible_weapons()` (below) = the weapons with firing data in Halo 2.
 
 ## What the enhancer needs to add (yours)
@@ -58,16 +74,9 @@ done and committed; the interface is one module call and one spec dict.
    cards themselves; `weapon_ports.weap_path(p)` must resolve the SAW (its catalog entry has
    `balance` rows -> `objects\weapons\rifle\saw\saw`).
 
-## Open (decide with the user)
+## Open
 
-- **Two-handed rule** (Halo 1: Grunts fire two-handed weapons at half rate, Jackals lose the
-  shield): Halo 2 looks firing data up per weapon on `ai\generic`; a Grunt-only rate needs a
-  Grunt override entry (grunt.character's own Firing Pattern Properties, same layout -- h2_ai_firing
-  can write it with `--tag`) or a patch-time write. Not built.
-- **WDM rule** (Halo 1: WDM = base x yardstick dps / port dps): Halo 2's stock patterns carry WDM 0
-  (37 of 38; the Sentinel beam 0.57), i.e. 'unmodified' -- the SAW took Halo 4's 0.75 by name. The
-  rule's base for Halo 2 needs a measurement (what 0 means against 0.75) before it applies.
-- **Species skill rule**: every Halo 2 species inherits `ai\generic`'s accuracy; per-species skill
-  would need species override entries. Not built.
-- **3P animation**: the SAW's 3P label is the sniper's (`sr`, a GPMG leftover under rework); what a
-  species without that set does with it -- see the in-game result in H2_PORT_PLAN 0.5b.
+- **Species skill rule** (Halo 1: per-species accuracy scaling): every Halo 2 species inherits
+  `ai\generic`'s accuracy; a per-species skill needs species override entries like the Grunt
+  half rate's. Not built; the user has not asked for it in Halo 2.
+- **God shield on port tests** (Halo 1 rule): h2_port_test_map has none yet.

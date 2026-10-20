@@ -304,12 +304,22 @@ has only 'Halo 1'; `ai_firing_profile.py` writes Halo 1 actor variants only). Sp
   is the session's choice -- usually the yardstick); the Sticky Detonator gives donor_weapon + set only.
 - **In the built cache** (03a test build): the SAW's ai\generic entry is there with the written values.
 - **Armed test**: `h2_port_test_map.py <key> --armed elite,grunt,jackal,brute [--share x] --stage`
-  (h2_armed_test -> the enhancer's pass `h2_enemy_weapons.arm`, tool root). SAW on
-  03a_oldmombasa: 35 Elite / 57 Grunt / 36 Jackal units armed, vehicle-bound squads left alone,
-  STAGED 2026-10-20 -- IN-GAME RESULT: pending the user's boot (CLASSIC).
-- **Enhancer**: cards + patch-pass call + Balanced = the enhancer session's; spec in
-  `sprint_toolkit/H2_ARMED_HANDOFF.md` (that session was offline: written, not yet agreed).
-  Open: two-handed rule, WDM rule base (H2 stock WDM = 0), species skill, the SAW's sniper 3P label.
+  (h2_armed_test -> the enhancer's pass `h2_enemy_weapons.apply`, tool root; BALANCED rows).
+  TEST 1 (user, 2026-10-20, 03a CLASSIC): **Elites and Jackals carry and fire the SAW; Grunts do
+  NOT carry it** -- their graph has no 'rifle' class (any / missile / pistol / unarmed), so they
+  spawn with the biped default (Halo 1's missing-label behaviour again).
+- **Rules added (user, 2026-10-20)**, all in h2_enemy_weapons: two-handed = not class pistol and
+  not dual-wieldable (H2's SMG is class 'rifle' but dual-wields); **Grunt teach** = each Grunt
+  mode's 'missile' class (fuel rod) copied as the weapon's class (shared children, sorted order,
+  Weapon List pair) at patch time; **Grunt half rate** = own Firing Pattern Properties entries in
+  every Grunt character, rate halved (SAW 20 -> 10), heavy 'missile' weapons excepted; **Jackals
+  with two-handed weapons -> jackal_sniper** (variant 'shieldless'; in every level with Jackals);
+  **WDM**: default = the source's own (SAW 0.75), BALANCED = x BALANCED_BASELINE Halo 2 damage
+  0.84 (SAW 0.63). TEST 2 staged on 03a: 35 Elite / 56 Grunt / 36 Jackal units (25 to
+  jackal_sniper), Grunt graph 14 modes taught -- IN-GAME RESULT pending.
+- **Enhancer**: cards + patch-pass call + options = the enhancer session's; spec in
+  `sprint_toolkit/H2_ARMED_HANDOFF.md`, to be handed over once the test passes (user).
+  Open: species skill; a god shield for H2 port tests.
 
 ### 0.6 Parallel machinery (H2EK)
 

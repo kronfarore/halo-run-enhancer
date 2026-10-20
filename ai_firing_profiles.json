@@ -3780,7 +3780,16 @@
     "Timid Combat Range Max",
     "Aggressive Combat Range",
     "Aggressive Combat Range Max"
-   ]
+   ],
+   "balanced_patterns": [
+    {
+     "Weapon Damage Modifier": 0.63
+    },
+    {
+     "Weapon Damage Modifier": 0.63
+    }
+   ],
+   "balanced_rule": "WDM x 0.84 (BALANCED_BASELINE Halo 2 damage)"
   }
  }
 }
