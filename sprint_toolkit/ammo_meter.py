@@ -144,6 +144,32 @@ def h3_grid(sheet, seq, native=False, cut=8):
     return tick, float(pitch), float(row_pitch), len(starts)
 
 
+def _wrap(n_ticks, tw, th, pitch, row_pitch, tick_h):
+    """(per row, rows, scale) for `tick_h` (the stock tick height of the meter's kind, user
+    2026-10-20: 'match stock tick height, wrap the rows'): the scale that brings the tick to
+    tick_h px, as far as the box allows, over the FEWEST rows that reach the largest scale."""
+    best = None
+    for rows in range(1, 9):
+        per = -(-n_ticks // rows)
+        # BOX_W - 5: the art starts at x 5 and the sprite box ends at BOX_W
+        s = min(tick_h / float(th), (BOX_W - 5) / ((per - 1) * pitch + tw),
+                BOX_H / ((rows - 1) * row_pitch + th))
+        if best is None or s > best[2] + 1e-9:
+            best = (per, rows, s)
+    return best
+
+
+def _scaled(tick, s, art):
+    """The tick resized by s. `hard` (the Concussion Rifle, user 2026-10-20: 'draw it with hard
+    edges'): the alpha's contrast x hard around 128, so an enlarged small pill keeps a crisp edge."""
+    th, tw = tick.shape
+    t = np.array(Image.fromarray(tick).resize((max(1, round(tw * s)), max(1, round(th * s))),
+                                              Image.LANCZOS))
+    if art.get('hard'):
+        t = np.clip((t.astype(np.float32) - 128) * art['hard'] + 128, 0, 255).astype(np.uint8)
+    return t
+
+
 def render(n, art=None):
     """n is the MAGAZINE, and the sheet holds as many ticks as it takes to show it.
     `art` (optional): {'h3': (sheet, sequence)} -- Halo 3's round icon as the tick, in ONE
@@ -160,15 +186,15 @@ def render(n, art=None):
         pitch = strips[0][1]
         heights = [t.shape[0] for t, _p in strips]
         gap = art.get('row_gap', 0)
-        s = min(1.0, BOX_W / (cols * pitch), BOX_H / float(sum(heights) + gap * (nr - 1)))
+        # `tick_h` here: the tallest segment's target (no wrap: a column is one shot)
+        s = min(art['tick_h'] / float(max(heights)) if art.get('tick_h') else 1.0,
+                BOX_W / (cols * pitch), BOX_H / float(sum(heights) + gap * (nr - 1)))
         static_a = np.zeros((H, W), np.uint8)
         meter_l = np.zeros((H, W), np.uint8)
         meter_a = np.zeros((H, W), np.uint8)
         y = 5 + art.get('y', 0)
         for r, (tick, _p) in enumerate(strips):
-            th, tw = tick.shape
-            t = np.array(Image.fromarray(tick).resize((max(1, round(tw * s)), max(1, round(th * s))),
-                                                      Image.LANCZOS))
+            t = _scaled(tick, s, art)
             h_, w_ = t.shape
             for c in range(cols):
                 k = nr * c + (nr - r)
@@ -189,13 +215,15 @@ def render(n, art=None):
         # Suppressor and SAW draw their rounds in 2-3 rows
         tick, pitch, row_pitch, src_per = h3_grid(*art['h3'], native=art.get('native', False),
                                                   cut=art.get('cut', 8))
-        per = src_per if art['grid'] is True else int(art['grid'])
-        rows = -(-n_ticks // per)
-        per = min(per, n_ticks)
         th, tw = tick.shape
-        s = min(1.0, BOX_W / ((per - 1) * pitch + tw), BOX_H / ((rows - 1) * row_pitch + th))
-        t = np.array(Image.fromarray(tick).resize((max(1, round(tw * s)), max(1, round(th * s))),
-                                                  Image.LANCZOS))
+        if art.get('tick_h'):                # the rows re-wrapped to reach the stock tick height
+            per, rows, s = _wrap(n_ticks, tw, th, pitch, row_pitch, art['tick_h'])
+        else:
+            per = src_per if art['grid'] is True else int(art['grid'])
+            rows = -(-n_ticks // per)
+            per = min(per, n_ticks)
+            s = min(1.0, BOX_W / ((per - 1) * pitch + tw), BOX_H / ((rows - 1) * row_pitch + th))
+        t = _scaled(tick, s, art)
         static_a = np.zeros((H, W), np.uint8)
         meter_l = np.zeros((H, W), np.uint8)
         meter_a = np.zeros((H, W), np.uint8)
@@ -213,9 +241,12 @@ def render(n, art=None):
     if art:
         tick, pitch = h3_tick(*art['h3'], native=art.get('native', False), cut=art.get('cut', 8))
         th, tw = tick.shape
-        s = min(1.0, BOX_W / (n_ticks * pitch), BOX_H / float(th))
-        t = np.array(Image.fromarray(tick).resize((max(1, round(tw * s)), max(1, round(th * s))),
-                                                  Image.LANCZOS))
+        per, rows, row_pitch = n_ticks, 1, th * 1.25
+        if art.get('tick_h'):                # wrapped into rows when one row cannot reach it
+            per, rows, s = _wrap(n_ticks, tw, th, pitch, row_pitch, art['tick_h'])
+        else:
+            s = min(1.0, BOX_W / (n_ticks * pitch), BOX_H / float(th))
+        t = _scaled(tick, s, art)
         static_a = np.zeros((H, W), np.uint8)
         meter_l = np.zeros((H, W), np.uint8)
         meter_a = np.zeros((H, W), np.uint8)
@@ -224,13 +255,15 @@ def render(n, art=None):
         # the AR's box, the smaller balanced row sat low under the counter -- 'move it up')
         y = 5 + art.get('y', 0)
         for k in range(1, n_ticks + 1):
-            x = int(5 + (k - 1) * pitch * s + 0.5)
-            sl = (slice(y, y + h_), slice(x, x + w_))
+            r, c = (k - 1) // per, (k - 1) % per
+            x = int(5 + c * pitch * s + 0.5)
+            yk = int(y + r * row_pitch * s + 0.5)
+            sl = (slice(yk, yk + h_), slice(x, x + w_))
             meter_a[sl] = np.maximum(meter_a[sl], t)
             meter_l[sl] = np.where(t > 0, threshold(k, n), meter_l[sl])
-            ys, xs = slice(y - 4, y - 4 + h_), slice(x - 4, x - 4 + w_)
+            ys, xs = slice(yk - 4, yk - 4 + h_), slice(x - 4, x - 4 + w_)
             static_a[ys, xs] = np.maximum(static_a[ys, xs], t)
-        return static_a, meter_l, meter_a, (1, n_ticks, s, n_ticks, rounds_per)
+        return static_a, meter_l, meter_a, (rows, per, s, n_ticks, rounds_per)
     tick = ar_tick()
     rows, per, s = layout(n_ticks)
     th, tw = tick.shape
