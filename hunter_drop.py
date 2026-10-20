@@ -22,7 +22,7 @@ magazine (measured on the E: baselines, 2026-10-19). Per game:
               reach_pools.apply_fix). Reach's gun 'Tossed Weapon' (+0x43C) dropped NOTHING.
   Halo 4      the Hunter gun's 'Tossed Override' (weap +0x290) -> storm_fuel_rod_cannon --
               stock precedent: the Crawler's modelless head weapons toss a real sniper
-              rifle through it (m70)
+              rifle through it -- CONFIRMED (m70 spire 3, 2026-10-20)
 
 The cache-map routes start from the baseline every patch, so off writes nothing.
 """
