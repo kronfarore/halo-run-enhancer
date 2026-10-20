@@ -15,6 +15,12 @@ For each level (all 13 except 01b_spacestation, which is reserved for another te
 
 A level that fails to build or check is NOT shipped; the others still are.
 
+WEAPON PORTS (H2_PORT_PLAN.md, 2026-10-20): the whole run holds the H2 kit lock; a port whose
+ports_h2 config is not 'done' is NEUTRALISED in a SHIPPING build (its palette entry renamed to a
+stock weapon for the build, the weapons resource put back after -- h2_port_residency.neutralise),
+so an in-progress port never ships; --no-ship builds keep every port. Each built level reports how
+many done ports are resident (their weapon tags in the map); a done port missing fails the level.
+
     python h2_rebuild_all.py                    all levels but 01b
     python h2_rebuild_all.py --maps 03a,03b     some of them (short or full names)
     python h2_rebuild_all.py --include-01b      01b as well
@@ -33,7 +39,10 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 sys.path.insert(0, ROOT)
 import h2_batch  # noqa: E402
+import h2_port_residency  # noqa: E402
 import halo_patch  # noqa: E402
+import kit_lock  # noqa: E402
+import ports_h2  # noqa: E402
 
 MCC = os.path.dirname(ROOT)
 SUBDIR = os.path.join('halo2', 'h2_maps_win64_dx11')
@@ -63,7 +72,7 @@ def object_names(m):
             .decode('latin-1') for i in range(n if b else 0)}
 
 
-def check(path):
+def check(path, shipping=True):
     m = halo_patch.open_map(path, 'Halo 2')
     names = object_names(m)
     camo = {'ab_camo0', 'ab_camo1'} <= names
@@ -75,11 +84,36 @@ def check(path):
         saw_path = None
     saw = bool(saw_path) and any(t.get('class') == 'weap' and t.get('name') == saw_path
                                  for t in m.tags)
-    note = 'ability pickups %s, markers %s, SAW %s' % (
+    weaps = {t.get('name') for t in m.tags if t.get('class') == 'weap'}
+    want = [(k, h2_port_residency.weapon_path(p)) for k, p in ports_h2.all_ports()
+            if p.get('status') == 'done' or not shipping]
+    missing = [k for k, w in want if w not in weaps]
+    note = 'ability pickups %s, markers %s, SAW %s, ports %d/%d resident' % (
         'yes' if camo else 'NO', '+'.join(x[-1] for x in markers) or 'none',
-        'yes' if saw else 'no')
+        'yes' if saw else 'no', len(want) - len(missing), len(want))
     problem = None if camo else 'no ab_camo0/1 pickups -- the ability plumbing did not land'
+    if missing and not problem:
+        problem = 'port(s) not resident: %s' % ', '.join(missing)
     return note, problem
+
+
+def neutralise_busy(level):
+    """Rename every not-done port's palette entry for a SHIPPING build. Returns the resource's
+    original bytes (to put back) or None when there was nothing to do."""
+    busy = [h2_port_residency.weapon_path(p) for _k, p in ports_h2.all_ports()
+            if p.get('status') != 'done']
+    res = h2_port_residency.resource(level)
+    if not busy or not os.path.exists(res):
+        return None
+    original = open(res, 'rb').read()
+    data = bytearray(original)
+    gone = h2_port_residency.neutralise(data, busy)
+    if not gone:
+        return None
+    open(res, 'wb').write(bytes(data))
+    print('  left out of the shipping build (not done): %s'
+          % ', '.join(p.split(chr(92))[-1] for _i, p in gone))
+    return original
 
 
 def build(level, logdir):
@@ -107,6 +141,11 @@ def ship(level, built, root):
 
 
 def main():
+    with kit_lock.script('h2_rebuild_all', kit='h2'):
+        _main()
+
+
+def _main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--maps', default='', help='comma list; short (03a) or full names')
     ap.add_argument('--include-01b', action='store_true', help='rebuild 01b_spacestation too')
@@ -135,12 +174,17 @@ def main():
     for level in levels:
         t0 = time.time()
         print('\n[%s] building (tag, scripts, cache)...' % level, flush=True)
-        built, msg = build(level, a.logdir)
+        keep = None if a.no_ship else neutralise_busy(level)
+        try:
+            built, msg = build(level, a.logdir)
+        finally:
+            if keep is not None:
+                open(h2_port_residency.resource(level), 'wb').write(keep)
         if not built:
             print('  FAILED', msg)
             failed.append(level)
             continue
-        note, problem = check(built)
+        note, problem = check(built, shipping=not a.no_ship)
         print('  built in %.0fs (%s) -- %s' % (time.time() - t0, msg, note))
         if problem:
             print('  NOT SHIPPED:', problem)

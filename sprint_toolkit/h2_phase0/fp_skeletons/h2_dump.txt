@@ -1,0 +1,110 @@
+=== h2_mc_fp_arms.jms : 37 nodes, 3 markers, 4980 verts
+ 0 b_base                       par=-                        pos=(   0.000    0.000    0.000) rot=(0.000 0.000 0.000 -1.000) len= verts=0
+ 1 b_l_upperarm                 par=b_base                   pos=(   0.000    9.399    0.000) rot=(0.000 0.000 0.000 -1.000) len=9.399 verts=402
+ 2 b_l_forearm                  par=b_l_upperarm             pos=(  10.251    9.399    0.000) rot=(0.000 0.000 0.000 -1.000) len=10.251 verts=971
+ 3 b_l_hand                     par=b_l_forearm              pos=(  21.144    9.399   -0.000) rot=(0.000 0.000 0.000 -1.000) len=10.894 verts=427
+ 4 b_l_index_low                par=b_l_hand                 pos=(  24.610    9.834    1.515) rot=(0.001 0.070 -0.017 -0.997) len=3.807 verts=96
+ 5 b_l_index_mid                par=b_l_index_low            pos=(  26.295    9.894    1.752) rot=(-0.001 0.070 0.017 -0.997) len=1.703 verts=109
+ 6 b_l_index_tip                par=b_l_index_mid            pos=(  27.386    9.855    1.905) rot=(-0.005 0.070 0.065 -0.995) len=1.102 verts=102
+ 7 b_l_middle_low               par=b_l_hand                 pos=(  24.784   10.121    0.326) rot=(0.000 0.000 0.000 -1.000) len=3.725 verts=97
+ 8 b_l_middle_mid               par=b_l_middle_low           pos=(  26.712   10.121    0.326) rot=(0.000 0.000 0.022 -1.000) len=1.927 verts=109
+ 9 b_l_middle_tip               par=b_l_middle_mid           pos=(  27.924   10.068    0.326) rot=(0.000 0.000 0.074 -0.997) len=1.214 verts=102
+10 b_l_ring_low                 par=b_l_hand                 pos=(  24.821   10.040   -0.889) rot=(-0.000 -0.039 -0.009 -0.999) len=3.836 verts=98
+11 b_l_ring_mid                 par=b_l_ring_low             pos=(  26.548   10.070   -1.025) rot=(-0.000 -0.039 -0.009 -0.999) len=1.733 verts=109
+12 b_l_ring_tip                 par=b_l_ring_mid             pos=(  27.757   10.091   -1.120) rot=(0.004 -0.039 0.104 -0.994) len=1.213 verts=102
+13 b_l_pinky_low                par=b_l_hand                 pos=(  24.389    9.792   -1.817) rot=(-0.000 -0.100 -0.004 -0.995) len=3.740 verts=101
+14 b_l_pinky_mid                par=b_l_pinky_low            pos=(  25.752    9.804   -2.094) rot=(0.002 -0.100 0.017 -0.995) len=1.390 verts=109
+15 b_l_pinky_tip                par=b_l_pinky_mid            pos=(  26.695    9.770   -2.286) rot=(0.008 -0.100 0.078 -0.992) len=0.963 verts=102
+16 b_l_thumb_low                par=b_l_hand                 pos=(  21.998    8.995    1.468) rot=(-0.042 0.319 0.124 -0.939) len=1.746 verts=82
+17 b_l_thumb_mid                par=b_l_thumb_low            pos=(  23.186    8.594    2.379) rot=(-0.035 0.267 0.071 -0.960) len=1.550 verts=128
+18 b_l_thumb_tip                par=b_l_thumb_mid            pos=(  24.117    8.423    2.938) rot=(-0.038 0.225 0.069 -0.971) len=1.099 verts=102
+19 b_r_upperarm                 par=b_base                   pos=(   0.000   -9.399    0.000) rot=(0.000 0.000 0.000 -1.000) len=9.399 verts=402
+20 b_r_forearm                  par=b_r_upperarm             pos=(  10.258   -9.399    0.000) rot=(0.000 0.000 0.000 -1.000) len=10.258 verts=971
+21 b_r_hand                     par=b_r_forearm              pos=(  21.145   -9.399    0.000) rot=(0.000 0.000 0.000 -1.000) len=10.886 verts=402
+22 b_r_thumb_low                par=b_r_hand                 pos=(  21.998   -8.998    1.469) rot=(0.042 0.319 -0.124 -0.939) len=1.745 verts=102
+23 b_r_thumb_mid                par=b_r_thumb_low            pos=(  23.154   -8.608    2.356) rot=(0.036 0.267 -0.075 -0.960) len=1.508 verts=99
+24 b_r_thumb_tip                par=b_r_thumb_mid            pos=(  24.069   -8.431    2.904) rot=(0.039 0.225 -0.073 -0.971) len=1.082 verts=102
+25 b_r_index_low                par=b_r_hand                 pos=(  24.610   -9.834    1.515) rot=(-0.001 0.070 0.017 -0.997) len=3.807 verts=80
+26 b_r_index_mid                par=b_r_index_low            pos=(  26.289   -9.894    1.751) rot=(0.001 0.070 -0.017 -0.997) len=1.696 verts=122
+27 b_r_index_tip                par=b_r_index_mid            pos=(  27.400   -9.854    1.907) rot=(0.005 0.070 -0.065 -0.995) len=1.123 verts=102
+28 b_r_ring_low                 par=b_r_hand                 pos=(  24.821  -10.040   -0.887) rot=(-0.000 -0.039 0.009 -0.999) len=3.836 verts=78
+29 b_r_ring_mid                 par=b_r_ring_low             pos=(  26.543  -10.070   -1.023) rot=(-0.000 -0.039 0.009 -0.999) len=1.728 verts=122
+30 b_r_ring_tip                 par=b_r_ring_mid             pos=(  27.744  -10.091   -1.117) rot=(-0.005 -0.039 -0.104 -0.994) len=1.205 verts=102
+31 b_r_pinky_low                par=b_r_hand                 pos=(  24.389   -9.792   -1.817) rot=(0.000 -0.100 0.004 -0.995) len=3.739 verts=86
+32 b_r_pinky_mid                par=b_r_pinky_low            pos=(  25.746   -9.804   -2.093) rot=(-0.002 -0.100 -0.017 -0.995) len=1.384 verts=122
+33 b_r_pinky_tip                par=b_r_pinky_mid            pos=(  26.676   -9.771   -2.282) rot=(-0.008 -0.100 -0.078 -0.992) len=0.950 verts=102
+34 b_r_middle_low               par=b_r_hand                 pos=(  24.784  -10.121    0.327) rot=(0.000 0.000 0.000 -1.000) len=3.725 verts=85
+35 b_r_middle_mid               par=b_r_middle_low           pos=(  26.707  -10.121    0.327) rot=(0.000 0.000 -0.022 -1.000) len=1.922 verts=129
+36 b_r_middle_tip               par=b_r_middle_mid           pos=(  27.930  -10.067    0.327) rot=(0.000 0.000 -0.074 -0.997) len=1.224 verts=102
+  marker left hand            node=b_l_hand                 pos=(2.275 -0.856 0.040)
+  marker right_hand           node=b_r_hand                 pos=(2.275 1.152 0.040)
+  marker flashlight           node=b_base                   pos=(-3.000 6.000 9.000)
+  materials: ['(1) L5 arms left', '(2) L5 arms right']
+=== h2_dervish_fp_arms.jms : 31 nodes, 1 markers, 5508 verts
+ 0 b_base                       par=-                        pos=(   0.000    0.000    0.000) rot=(0.000 0.000 0.000 -1.000) len= verts=0
+ 1 b_r_upperarm                 par=b_base                   pos=(   0.000   -9.399    0.000) rot=(0.000 0.000 0.000 -1.000) len=9.399 verts=1126
+ 2 b_r_forearm                  par=b_r_upperarm             pos=(  10.251   -9.399    0.000) rot=(0.000 0.000 -0.000 -1.000) len=10.251 verts=1295
+ 3 b_r_hand                     par=b_r_forearm              pos=(  21.144   -9.399    0.000) rot=(-0.000 -0.000 -0.000 -1.000) len=10.893 verts=288
+ 4 b_r_thumb_low                par=b_r_hand                 pos=(  22.510   -9.340    0.918) rot=(-0.093 0.416 -0.230 -0.875) len=1.647 verts=159
+ 5 b_r_thumb_mid                par=b_r_thumb_low            pos=(  24.066   -8.415    3.106) rot=(-0.053 0.093 -0.290 -0.951) len=2.839 verts=97
+ 6 b_r_thumb_tip                par=b_r_thumb_mid            pos=(  25.547   -7.429    3.482) rot=(0.005 -0.165 -0.296 -0.941) len=1.819 verts=97
+ 7 b_r_index_low                par=b_r_hand                 pos=(  25.644  -10.482    0.862) rot=(-0.707 0.016 -0.043 -0.706) len=4.708 verts=143
+ 8 b_r_index_mid                par=b_r_index_low            pos=(  28.145  -10.386    1.072) rot=(-0.689 -0.176 -0.216 -0.669) len=2.512 verts=126
+ 9 b_r_index_tip                par=b_r_index_mid            pos=(  30.123   -9.142    1.220) rot=(-0.675 -0.229 -0.268 -0.648) len=2.341 verts=95
+10 b_r_ring_low                 par=b_r_hand                 pos=(  25.646  -10.482   -0.826) rot=(-0.706 -0.043 0.016 -0.707) len=4.703 verts=143
+11 b_r_ring_mid                 par=b_r_ring_low             pos=(  28.147  -10.386   -1.036) rot=(-0.669 -0.216 -0.176 -0.689) len=2.512 verts=126
+12 b_r_ring_tip                 par=b_r_ring_mid             pos=(  30.125   -9.142   -1.181) rot=(-0.648 -0.268 -0.229 -0.675) len=2.341 verts=95
+13 b_r_pinky_low                par=b_r_hand                 pos=(  22.499   -9.322   -0.856) rot=(-0.876 -0.227 0.416 -0.091) len=1.604 verts=159
+14 b_r_pinky_mid                par=b_r_pinky_low            pos=(  24.061   -8.407   -3.044) rot=(-0.954 -0.270 0.082 -0.103) len=2.839 verts=97
+15 b_r_pinky_tip                par=b_r_pinky_mid            pos=(  25.589   -7.500   -3.428) rot=(-0.944 -0.286 -0.165 -0.008) len=1.819 verts=97
+16 b_l_upperarm                 par=b_base                   pos=(   0.000    9.399    0.000) rot=(0.000 0.000 0.000 -1.000) len=9.399 verts=1164
+17 b_l_forearm                  par=b_l_upperarm             pos=(  10.251    9.399    0.000) rot=(0.000 0.000 -0.000 -1.000) len=10.251 verts=1295
+18 b_l_hand                     par=b_l_forearm              pos=(  21.144    9.399    0.000) rot=(-0.000 -0.000 -0.000 -1.000) len=10.893 verts=288
+19 b_l_thumb_low                par=b_l_hand                 pos=(  22.510    9.340    0.918) rot=(0.093 0.416 0.230 -0.875) len=1.647 verts=159
+20 b_l_thumb_mid                par=b_l_thumb_low            pos=(  24.066    8.415    3.106) rot=(0.053 0.093 0.290 -0.951) len=2.840 verts=97
+21 b_l_thumb_tip                par=b_l_thumb_mid            pos=(  25.547    7.429    3.482) rot=(-0.005 -0.165 0.296 -0.941) len=1.818 verts=97
+22 b_l_index_low                par=b_l_hand                 pos=(  25.644   10.482    0.862) rot=(-0.706 0.043 -0.016 -0.707) len=4.708 verts=143
+23 b_l_index_mid                par=b_l_index_low            pos=(  28.145   10.386    1.072) rot=(-0.677 0.218 0.173 -0.682) len=2.512 verts=126
+24 b_l_index_tip                par=b_l_index_mid            pos=(  30.124    9.142    1.220) rot=(-0.659 0.272 0.225 -0.665) len=2.342 verts=95
+25 b_l_ring_low                 par=b_l_hand                 pos=(  25.646   10.482   -0.826) rot=(-0.707 -0.016 0.043 -0.706) len=4.703 verts=143
+26 b_l_ring_mid                 par=b_l_ring_low             pos=(  28.147   10.386   -1.036) rot=(-0.681 0.174 0.218 -0.677) len=2.512 verts=126
+27 b_l_ring_tip                 par=b_l_ring_mid             pos=(  30.125    9.142   -1.181) rot=(-0.664 0.225 0.271 -0.659) len=2.341 verts=95
+28 b_l_pinky_low                par=b_l_hand                 pos=(  22.499    9.322   -0.856) rot=(-0.876 0.227 0.416 0.091) len=1.604 verts=159
+29 b_l_pinky_mid                par=b_l_pinky_low            pos=(  24.061    8.407   -3.044) rot=(-0.958 0.254 0.123 -0.046) len=2.839 verts=97
+30 b_l_pinky_tip                par=b_l_pinky_mid            pos=(  25.589    7.500   -3.428) rot=(-0.938 0.303 -0.131 -0.101) len=1.819 verts=97
+  marker left hand elite      node=b_l_hand                 pos=(3.309 -0.931 0.044)
+  materials: ['(1) L5 base l_arm', '(2) L5 base l_arm', '(3) L5 base r_arm', '(4) L5 base r_arm']
+=== h2_fp_smg.jms : 4 nodes, 3 markers, 5364 verts
+ 0 frame gun                    par=-                        pos=(  -0.073    0.000    0.780) rot=(0.000 0.000 0.000 -1.000) len= verts=3528
+ 1 frame stock                  par=frame gun                pos=(  -9.568    0.000    3.639) rot=(0.000 0.000 0.000 -1.000) len=9.916 verts=1440
+ 2 frame charging_handle        par=frame gun                pos=(   3.462   -0.591    3.802) rot=(0.208 0.000 0.000 -0.978) len=4.687 verts=228
+ 3 frame magazine               par=frame gun                pos=(   3.151    1.317    3.160) rot=(0.000 0.000 0.000 -1.000) len=4.218 verts=168
+  marker primary trigger      node=frame gun                pos=(10.073 0.000 2.646)
+  marker left_hand            node=frame gun                pos=(5.779 0.205 -1.229)
+  marker flashlight           node=frame gun                pos=(12.073 0.000 2.646)
+  materials: ['(1) standard standard', '(2) standard standard', '(4) standard standard']
+=== h2_fp_br.jms : 4 nodes, 7 markers, 7464 verts
+ 0 frame gun                    par=-                        pos=(   0.000    0.000    0.000) rot=(0.000 0.000 0.000 -1.000) len= verts=6486
+ 1 frame magazine               par=frame gun                pos=(  -5.248    0.000    0.812) rot=(0.000 0.000 0.000 -1.000) len=5.310 verts=336
+ 2 frame OpHandle               par=frame gun                pos=(   1.582    0.425    5.220) rot=(0.000 0.000 0.000 -1.000) len=5.471 verts=348
+ 3 frame safety                 par=frame gun                pos=(   1.089    0.808    3.406) rot=(0.000 0.000 0.000 -1.000) len=3.666 verts=294
+  marker primary_trigger      node=frame gun                pos=(19.192 0.000 4.585)
+  marker primary_ejection     node=frame gun                pos=(-4.686 -1.221 5.718)
+  marker flashlight           node=frame gun                pos=(-6.540 4.743 7.726)
+  marker left_hand            node=frame gun                pos=(10.469 0.209 1.318)
+  marker muzzle_flash         node=frame gun                pos=(17.216 0.000 4.257)
+  marker muzzle_flash         node=frame gun                pos=(17.216 -0.215 4.681)
+  marker muzzle_flash         node=frame gun                pos=(17.216 0.215 4.681)
+  materials: ['(1) standard standard', '(10) standard standard', '(2) standard standard', '(3) standard standard', '(4) standard knob', '(5) standard standard']
+=== h2_fp_gpmg.jms : 4 nodes, 6 markers, 1470 verts
+ 0 frame gun                    par=-                        pos=(   5.574    0.000    3.724) rot=(0.000 0.000 0.000 -1.000) len= verts=960
+ 1 frame magazine               par=frame gun                pos=(   6.369    0.000   -1.513) rot=(0.000 0.000 0.000 -1.000) len=5.297 verts=348
+ 2 frame bullet                 par=frame magazine           pos=(   6.123    0.000    2.621) rot=(0.000 0.000 0.000 -1.000) len=4.141 verts=0
+ 3 frame OpHandle               par=frame gun                pos=(   7.800    1.286    4.230) rot=(0.000 0.000 0.000 -1.000) len=2.620 verts=162
+  marker left_hand            node=frame gun                pos=(7.243 0.524 -3.206)
+  marker left_hand_elite      node=frame gun                pos=(9.272 0.524 -3.589)
+  marker primary ejection     node=frame gun                pos=(5.396 -1.497 0.417)
+  marker primary_trigger      node=frame gun                pos=(32.104 0.000 0.034)
+  marker right_hand           node=frame gun                pos=(-5.584 -0.324 -4.766)
+  marker right_hand_elite     node=frame gun                pos=(-6.589 -0.507 -4.145)
+  materials: ['(1) base gun']

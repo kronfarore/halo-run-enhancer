@@ -455,6 +455,74 @@ SCRIPTS += tuple(s for s in ('h4_tags.py', 'h4_fp_dump.py', 'h4_fp_jump.py', 'h4
 FILES +=[(os.path.join(TOOL, 'port_sounds.py'), 'tool/port_sounds.py')] if not any(
     f[0].endswith('port_sounds.py') for f in FILES) else []
 
+# --- Halo 2 PORTS, from their configs (ports_h2/<weapon>.py; H2_PORT_PLAN.md phase 0) -----
+# Every configured weapon AUTOMATICALLY: the folders it owns (weapon, effects, sound, both
+# species' FP graph folders -- tags + data), the files it owns inside shared folders (its HUD
+# and the five HUD bitmaps + their TIFFs), and what every port EDITS IN PLACE: each level's
+# weapons resource (+ the .before_residency copy h2_port_residency leaves) and scenario, the
+# hud_messages list (tag + its .txt in every data folder), the eight fonts (already above).
+# A config's 'backup' section adds {'trees': [tag-relative folders], 'extra': [absolute files]}.
+import ports_h2  # noqa: E402
+
+
+def h2_port_items():
+    trees, shared, seen = [], [], set()
+    rel = lambda t: t.replace('\\', '/')
+
+    def tree(root, d):
+        src = os.path.join(H2EK, root, *d.split('\\'))
+        if src.lower() not in seen:
+            seen.add(src.lower())
+            trees.append((src, '%s/%s' % (root, rel(d)), True))
+
+    def one(src, dst):
+        if src.lower() not in seen:
+            seen.add(src.lower())
+            shared.append((src, dst))
+
+    for _key, p in ports_h2.all_ports():
+        for d in ports_h2.owned_dirs(p) + list((p.get('backup') or {}).get('trees', ())):
+            for root in ('tags', 'data'):
+                tree(root, d)
+        for f in ports_h2.owned_files(p):
+            one(os.path.join(H2EK, 'tags', *f.split('\\')), 'tags/' + rel(f))
+            if f.endswith('.bitmap'):
+                t = os.path.splitext(f)[0] + '.tif'
+                one(os.path.join(H2EK, 'data', *t.split('\\')), 'data/' + rel(t))
+        for x in (p.get('backup') or {}).get('extra', ()):
+            one(x, 'source/' + os.path.basename(x))
+    for lvl in ports_h2.LEVELS:
+        base = os.path.join(H2EK, 'tags', 'scenarios', 'solo', lvl)
+        for f, d in ((os.path.join(base, 'resources', lvl + '.scenario_weapons_resource'),
+                      'shared/scenarios/%s.scenario_weapons_resource' % lvl),
+                     (os.path.join(base, lvl + '.scenario'), 'shared/scenarios/%s.scenario' % lvl)):
+            one(f, d)
+            if os.path.exists(f + '.before_residency'):
+                one(f + '.before_residency', d + '.before_residency')
+    one(os.path.join(H2EK, 'tags', 'ui', 'hud', 'hud_messages.multilingual_unicode_string_list'),
+        'tags/ui/hud/hud_messages.multilingual_unicode_string_list')
+    for d in sorted(glob.glob(os.path.join(H2EK, 'data*'))):
+        t = os.path.join(d, 'ui', 'hud', 'hud_messages.txt')
+        if os.path.exists(t):
+            one(t, '%s/ui/hud/hud_messages.txt' % os.path.basename(d))
+    return trees, shared
+
+
+_h2t, _h2s = h2_port_items()
+_seen2 = {t[0].lower() for t in H2_TREES} | {x[0].lower() for x in H2_SHARED}
+H2_TREES += [t for t in _h2t if t[0].lower() not in _seen2]
+H2_SHARED += [x for x in _h2s if x[0].lower() not in _seen2]
+H2_SCRIPTS += tuple(s for s in (
+    'H2_PORT_PLAN.md', 'kit_lock.py', 'h2_size_test_map.py', 'h2_stringid.py', 'h2_port_snapshot.py',
+    'h2_port_tool_proof.py', 'h2_tool_noise_check.py', 'h2_port_residency.py', 'h2_port_test_map.py', 'h2_rebuild_all.py',
+    'h2_port_geometry.py', 'h2_port_textures.py', 'h2_port_weapon.py', 'h2_port_numbers.py',
+    'h2_port_collision.py', 'h2_port_meter.py', 'h2_port_hud_plate.py', 'h2_port_reticle.py',
+    'h2_port_scope.py', 'h2_port_glyph.py', 'h2_port_messages.py', 'h2_port_animations.py',
+    'h2_port_sounds.py', 'saw_port_foley.py', 'saw_port_sounds.py', 'h3_weapon_glyph.py')
+    if s not in H2_SCRIPTS)
+H2_SCRIPTS += tuple('ports_h2/' + f for f in sorted(os.listdir(os.path.join(HERE, 'ports_h2')))
+                    if f.endswith('.py'))
+
 PROFILES = {
     'h1': {'trees': TREES, 'shared': SHARED, 'files': FILES, 'maps': MAPS,
            'scripts': SCRIPTS, 'label': 'saw-h1'},

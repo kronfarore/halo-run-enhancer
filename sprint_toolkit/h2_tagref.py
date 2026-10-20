@@ -55,7 +55,11 @@ def references(tag_path):
     `<tag_reference name="x" />` with no type at all, so only the ones with a path
     appear -- which is also the only kind that can be repointed.
     """
-    out_xml = os.path.join(os.environ.get('TEMP', '.'), '_h2tagref.xml')
+    # per-process (two sessions at once must not read each other's export), and removed
+    # first so a failed export can never hand back the PREVIOUS tag's references
+    out_xml = os.path.join(os.environ.get('TEMP', '.'), '_h2tagref_%d.xml' % os.getpid())
+    if os.path.exists(out_xml):
+        os.remove(out_xml)
     subprocess.run([os.path.join(H2EK, 'tool.exe'), 'export-tag-to-xml',
                     os.path.abspath(tag_path), out_xml],
                    cwd=H2EK, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

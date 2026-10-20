@@ -1,4 +1,6 @@
-r"""Put the Halo 2 SAW in the player's hands, build the level and deploy it.
+r"""h2_saw_place.py -- SUPERSEDED 2026-10-20 by h2_port_test_map.py (any port, any level, stage/restore with ownership). The SAW's 03a test placement it made (03a_oldmombasa.scenario.before_saw) is still in the kit scenario.
+
+Put the Halo 2 SAW in the player's hands, build the level and deploy it.
 
 The cheapest possible test. `gpmg` is in no scenario's palette and neither is the port,
 so something has to place it -- and the cheapest place in Halo 2 is the **player starting

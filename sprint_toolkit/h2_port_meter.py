@@ -1,0 +1,174 @@
+r"""Step 7 of a Halo 2 port: an ammo meter for the port's magazine, its own HUD (cloned from the
+donor's), and the HUD's small stowed-weapon (backpack) icon (generalized from h2_saw_meter.py).
+
+Halo 2 draws the ammo readout as ONE bitmap of tick art revealed as the magazine empties, so the
+count is purely a property of the art (battle_rifle_meter 197x34 = 2 rows of 18, smg_meter
+198x42 = 3 of 20; the tick is 6 px wide in both). BLUE IS THE THRESHOLD, a property of the CELL:
+the threshold field is laid over every pixel first, then the tick art without touching blue
+(PORTING "Steps 6 and 7"). The config's `meter` section:
+
+    donor_meter, rel, name        the donor's meter tag, the meters folder, the port's bitmap name
+    donor_hud, port_hud, weapon   the HUD cloned donor -> port, the weapon repointed at it
+    rounds, rows, canvas, tick_w  the art (keep the donor's canvas so the widget does not move)
+    backpack, backpack_port, backpack_size, model_3p   the stowed icon drawn from the port's mesh
+    preview                       a --show preview file name in %TEMP%
+
+    python h2_port_meter.py <key> [--rounds 72] [--show]
+"""
+import os
+import shutil
+import subprocess
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+
+import h2_tagref  # noqa: E402
+import ports_h2  # noqa: E402
+import numpy as np  # noqa: E402
+from PIL import Image  # noqa: E402
+
+B = os.sep
+H2EK = h2_tagref.H2EK
+TAGS = os.path.join(H2EK, 'tags')
+
+
+def donor_art(m):
+    out = os.path.join(os.environ.get('TEMP', '.'), '_h2meter')
+    subprocess.run([os.path.join(H2EK, 'tool.exe'), 'export-bitmap-tga', m['donor_meter'], out],
+                   cwd=H2EK, capture_output=True, text=True)
+    path = out + os.path.basename(m['donor_meter']) + '_00_00.tga'
+    if not os.path.exists(path):
+        raise SystemExit('could not export %s' % m['donor_meter'])
+    return Image.open(path).convert('RGBA')
+
+
+def tick_sprite(img, tick_w):
+    a = np.asarray(img)
+    alpha = a[:, :, 3]
+    cols = [i for i in range(a.shape[1]) if alpha[:, i].sum() > 0]
+    rows = [i for i in range(a.shape[0]) if alpha[i, :].sum() > 0]
+    x0 = cols[0]
+    y0, y1 = rows[0], rows[0] + (a.shape[0] // 2) - 2
+    return img.crop((x0, y0, x0 + tick_w, y1))
+
+
+def thresholds(n):
+    """254 down to 4 over the magazine, whatever its size (measured on both shipped meters)."""
+    return [int(round(254 - i * 250.0 / max(n - 1, 1))) for i in range(n)]
+
+
+def build(m, rounds, rows):
+    donor = donor_art(m)
+    tick_w = m['tick_w']
+    sprite = tick_sprite(donor, tick_w)
+    per_row = -(-rounds // rows)
+    w, h = m['canvas']
+    pitch = w / float(per_row)
+    row_pitch = h / float(rows)
+    tick_h = int(row_pitch) - 1
+    small = np.asarray(sprite.resize((tick_w, tick_h), Image.LANCZOS)).astype(np.uint8)
+
+    sheet = np.zeros((h, w, 4), dtype=np.uint8)
+    thr = thresholds(rounds)
+    edges = [int(round(c * pitch)) for c in range(per_row)] + [w]
+    bands = [int(round(r * row_pitch)) for r in range(rows)] + [h]
+    # the threshold field first, over every pixel (blue = the cell's threshold)
+    for r in range(rows):
+        for c in range(per_row):
+            i = min(r * per_row + c, rounds - 1)
+            sheet[bands[r]:bands[r + 1], edges[c]:edges[c + 1], 2] = thr[i]
+    # then the tick art: red, green and alpha; blue is not touched
+    for i in range(rounds):
+        r, c = divmod(i, per_row)
+        x = edges[c] + max((edges[c + 1] - edges[c] - tick_w) // 2, 0)
+        y = bands[r] + max((bands[r + 1] - bands[r] - tick_h) // 2, 0)
+        if x + tick_w > w or y + tick_h > h:
+            continue
+        for k in (0, 1, 3):
+            sheet[y:y + tick_h, x:x + tick_w, k] = small[:, :, k]
+    print('   %d ticks, %d rows of %d, pitch %.2f x %.2f, tick %dx%d on a %dx%d sheet, '
+          'blue %d..%d' % (rounds, rows, per_row, pitch, row_pitch, tick_w, tick_h, w, h,
+                           thr[-1], thr[0]))
+    return Image.fromarray(sheet, 'RGBA')
+
+
+def point(tag, cls, old, new):
+    have = h2_tagref.references(tag)
+    if (cls, new) in have and (cls, old) not in have:
+        print('   %-28s already points at the port' % os.path.basename(tag))
+        return
+    h2_tagref.set_reference(tag, cls, old, new)
+
+
+def run_lines(p):
+    return ((p.stdout or '') + (p.stderr or '')).replace(chr(13), chr(10)).split(chr(10))
+
+
+def backpack(m):
+    import h3_weapon_glyph as wg
+    verts, idx = wg.mesh(m['model_3p'])
+    w, h = m['backpack_size']
+    cov = wg.close_gaps(wg.silhouette(verts, idx, w, h, margin=0), 3)
+    px = wg.stylise(cov)
+    im = Image.new('RGBA', (w, h))
+    im.putdata([(r * 17, g * 17, b * 17, a * 17) for a, r, g, b in px])
+    port = m['backpack_port']
+    data = os.path.join(H2EK, 'data', os.path.dirname(port))
+    os.makedirs(data, exist_ok=True)
+    tif = os.path.join(data, os.path.basename(port) + '.tif')
+    im.save(tif, compression=None)
+    print('   %s  %dx%d, %d ink' % (os.path.basename(tif), w, h, sum(1 for q in px if q[0])))
+    dest = os.path.join(TAGS, port + '.bitmap')
+    if not os.path.exists(dest):
+        shutil.copy(os.path.join(TAGS, m['backpack'] + '.bitmap'), dest)
+    p = subprocess.run([os.path.join(H2EK, 'tool.exe'), 'bitmaps', os.path.dirname(port)],
+                       cwd=H2EK, capture_output=True, text=True)
+    for line in run_lines(p):
+        line = ' '.join(line.split())
+        if os.path.basename(port) in line or 'bitmap created' in line:
+            print('   | %s' % line)
+    point(os.path.join(TAGS, m['port_hud'] + '.new_hud_definition'), 'bitm', m['backpack'], port)
+
+
+def main(argv=None):
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if not argv or argv[0].startswith('-'):
+        raise SystemExit(__doc__)
+    m = ports_h2.get(argv[0], 'meter')
+    rounds = m['rounds']
+    if '--rounds' in argv:
+        rounds = int(argv[argv.index('--rounds') + 1])
+    art = build(m, rounds, m.get('rows', 3))
+    data = os.path.join(H2EK, 'data', m['rel'])
+    os.makedirs(data, exist_ok=True)
+    tif = os.path.join(data, m['name'] + '.tif')
+    art.save(tif, compression=None)
+    print('   wrote %s' % tif)
+    if '--show' in argv:
+        png = os.path.join(os.environ.get('TEMP', '.'), m.get('preview', m['name'] + '_preview.png'))
+        art.resize((art.size[0] * 3, art.size[1] * 3), Image.NEAREST).save(png)
+        print('   preview %s' % png)
+        return
+    dest = os.path.join(TAGS, m['rel'], m['name'] + '.bitmap')
+    if not os.path.exists(dest):
+        shutil.copy(os.path.join(TAGS, m['donor_meter'] + '.bitmap'), dest)
+        print('   %s.bitmap seeded from %s' % (m['name'], os.path.basename(m['donor_meter'])))
+    p = subprocess.run([os.path.join(H2EK, 'tool.exe'), 'bitmaps', m['rel']],
+                       cwd=H2EK, capture_output=True, text=True)
+    for line in run_lines(p):
+        line = ' '.join(line.split())
+        if m['name'] in line or 'bitmap created' in line:
+            print('   | %s' % line)
+    hud = os.path.join(TAGS, m['port_hud'] + '.new_hud_definition')
+    if not os.path.exists(hud):
+        shutil.copy(os.path.join(TAGS, m['donor_hud'] + '.new_hud_definition'), hud)
+        print('   %s cloned from %s' % (m['port_hud'], m['donor_hud']))
+    point(hud, 'bitm', m['donor_meter'], B.join([m['rel'], m['name']]))
+    point(os.path.join(TAGS, m['weapon']), 'nhdt', m['donor_hud'], m['port_hud'])
+    print('the HUD weapon symbol:')
+    backpack(m)
+
+
+if __name__ == '__main__':
+    main()

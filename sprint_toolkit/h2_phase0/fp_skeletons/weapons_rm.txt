@@ -1,0 +1,74 @@
+=== objects\weapons\rifle\assault_rifle\fp_assault_rifle\fp_assault_rifle.render_model : 5 nodes
+    0 gun                      par=-                    local=( -0.000  -0.000  -0.000)
+    1 magazine                 par=gun                  local=( -4.801   0.000   1.435)
+    2 ophandle                 par=gun                  local=(  1.753   0.831   5.725)
+    3 safety                   par=gun                  local=(  0.832   1.365   3.522)
+    4 switch                   par=gun                  local=(  6.930   1.246   3.118)
+   marker flashlight             node=gun
+   marker left_hand              node=gun
+   marker muzzle_flash           node=gun
+   marker muzzle_flash           node=gun
+   marker muzzle_flash           node=gun
+   marker muzzle_flash           node=gun
+   marker muzzle_flash           node=gun
+   marker primary_ejection       node=gun
+   marker primary_trigger        node=gun
+=== objects\weapons\rifle\battle_rifle\fp_battle_rifle\fp_battle_rifle.render_model : 4 nodes
+    0 gun                      par=-                    local=(  0.000   0.000   0.000)
+    1 magazine                 par=gun                  local=( -7.620   0.002   1.324)
+    2 ophandle                 par=gun                  local=(  0.362   0.387   5.561)
+    3 safety                   par=gun                  local=(  2.395   0.444   3.662)
+   marker flashlight             node=gun
+   marker left_hand              node=gun
+   marker muzzle_flash           node=gun
+   marker muzzle_flash           node=gun
+   marker muzzle_flash           node=gun
+   marker primary_ejection       node=gun
+   marker primary_trigger        node=gun
+=== reach:objects\weapons\rifle\dmr\dmr.render_model : 4 nodes
+    0 b_gun                    par=-                    local=(  0.000   0.000   0.000)
+    1 b_magazine               par=b_gun                local=( -7.236   0.004   1.318)
+    2 b_safety                 par=b_gun                local=(  2.779   0.446   3.656)
+    3 b_ophandle               par=b_gun                local=(  0.746   0.389   5.555)
+   marker flashlight             node=b_gun
+   marker left_hand              node=b_gun
+   marker left_hand_elite        node=b_gun
+   marker left_hand_elite_fp     node=b_gun
+   marker left_hand_marine       node=b_gun
+   marker left_hand_spartan      node=b_gun
+   marker left_hand_spartan_fp   node=b_gun
+   marker muzzle_flash           node=b_gun
+   marker muzzle_flash           node=b_gun
+   marker muzzle_flash           node=b_gun
+   marker muzzle_flash           node=b_gun
+   marker primary_ejection       node=b_gun
+   marker primary_trigger        node=b_gun
+   marker right_hand             node=b_gun
+   marker right_hand_elite       node=b_gun
+   marker right_hand_marine      node=b_gun
+   marker right_hand_spartan     node=b_gun
+   marker weapon_stow_anchor     node=b_gun
+=== h4:objects\weapons\rifle\storm_br\storm_br.render_model : 4 nodes
+    0 b_gun                    par=-                    local=(  0.000   0.000   0.000)
+    1 b_safety                 par=b_gun                local=(  2.779   0.446   3.656)
+    2 b_magazine               par=b_gun                local=( -7.236   0.004   1.318)
+    3 b_ophandle               par=b_gun                local=(  0.746   0.389   5.555)
+   marker flashlight             node=b_gun
+   marker left_hand              node=b_gun
+   marker left_hand_elite        node=b_gun
+   marker left_hand_elite_fp     node=b_gun
+   marker left_hand_marine       node=b_gun
+   marker left_hand_reload       node=b_magazine
+   marker left_hand_spartan      node=b_gun
+   marker left_hand_spartan_fp   node=b_gun
+   marker muzzle_flash           node=b_gun
+   marker muzzle_flash           node=b_gun
+   marker muzzle_flash           node=b_gun
+   marker muzzle_flash           node=b_gun
+   marker primary_ejection       node=b_gun
+   marker primary_trigger        node=b_gun
+   marker right_hand             node=b_gun
+   marker right_hand_elite       node=b_gun
+   marker right_hand_marine      node=b_gun
+   marker right_hand_spartan     node=b_gun
+   marker weapon_stow_anchor     node=b_gun

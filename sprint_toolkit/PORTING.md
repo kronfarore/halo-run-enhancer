@@ -3565,6 +3565,35 @@ the lengths first, which cannot move anything, then the strings from the end bac
 `tool verify-tag-load` proves nothing: it is silent for a good tag AND for one that does not
 exist.
 
+### Halo 2 ports from here on: phase 0 (2026-10-20) -- H2_PORT_PLAN.md
+
+The SAW's eighteen scripts are now CONFIG-DRIVEN tools (`h2_port_<step>.py <key>`, one
+`ports_h2/<key>.py` per weapon; the old `h2_saw_*.py` names run them for 'saw'). What phase 0
+measured, each a fact to build on (details and commands in H2_PORT_PLAN.md and
+`sprint_toolkit\h2_phase0\`):
+
+* **Residency = a weapons-PALETTE entry, no placement.** Every level's
+  `scenario_weapons_resource` (not the scenario, which tool stomps with it) gets the port's
+  palette entry; 21 SAW-sized stand-ins in 07a's palette with NO placement were all built in.
+  tool caps weapon PLACEMENTS at 128 a scenario (MAXIMUM_WEAPON_DATUMS_PER_SCENARIO; palette
+  256) and 01b already ships 128, so Halo 1's resident-only placement cannot be the route.
+  `h2_port_residency.py`.
+* **tool has no tag-data cap for a campaign cache** (its one size check is armed for a single
+  shared-cache type, 50 MiB); 07a ships 75.4 MiB of tag data.
+* **tool DE-DUPLICATES identical resource data** (geometry, bitmaps): byte-copied stand-ins
+  cost tool's counters 54 MiB and the file 0.3 MiB. A size test needs DISTINCT data
+  (`h2_size_test_map.py distinct`).
+* **A string id is LENGTH-in-the-high-byte + a 24-bit index**, pooled unterminated in field
+  order: `h2_stringid.py` renames ids to any length (tool-verified), so a port's message prefix
+  no longer has to match its donor's length (the `saw2` rule is history).
+* **Halo 3's FP arms ARE Halo 2's, both species** (masterchief 37 nodes, dervish 31, 0.0002
+  units at most): a Halo 3 source's own FP animations copy node-for-node onto masterchief AND
+  dervish -- no donor graph to retime. Reach: by name below `base` (+10 helpers, a 90 deg frame).
+  Halo 4: an IK re-solve (and no elite FP at all). The dervish arms JMS is version 8209.
+* **Halo 2 has a shared `ai\generic`** (Weapons Properties char +0xCC / 0xCC each, Firing
+  Pattern Properties +0xD4 / 0x10, Halo 3's field names); the SAW has no entry yet, and the
+  enhancer's Armed cards are Halo 1-only (H2_PORT_PLAN 0.5).
+
 ---
 
 ## Halo Reach

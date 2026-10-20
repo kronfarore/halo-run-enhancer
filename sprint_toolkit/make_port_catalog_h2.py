@@ -17,7 +17,13 @@ Halo 2's redirections:
 Unlike Halo 3, the port owns its animation graphs, so `anims` is filled: the reload can be
 scaled because retiming it cannot reach any live weapon.
 
-    python make_port_catalog_h2.py [--write]
+    python make_port_catalog_h2.py [<key>] [--write]
+
+PER PORT (H2_PORT_PLAN.md phase 0, 2026-10-20): <key> names a ports_h2 config (default 'saw');
+its `catalog` section gives the table, the donor-tag -> port-tag redirections (`port_tags`), the
+SHARED tags whose rows are dropped, the FP graph pattern, the reload multiplier and the entry's
+description. Only that port's entry changes (others kept as read); the write holds the Halo 1
+kit lock, which guards every shared record (weapon_ports_catalog.json is one file for all games).
 """
 import json
 import os
@@ -57,10 +63,29 @@ FP_ANIMATIONS = B.join(['objects', 'characters', '*', 'fp', 'weapons', 'rifle',
 #: graphs: H4 SAW 128, H4 AR 68, H3 AR 58, H3 SMG 50, H2 SMG 50, so the chain is
 #: 58/68 x 50/50 = 0.853. The Halo 3 port arrived at the same multiplier independently.
 RELOAD_MULT = round(109.0 / 128.0, 6)
+WEAPON_TAG = SAW + B + 'saw'
+DESC = ('%s carried from %s into Halo 2, built on the cut GPMG and balanced through '
+        'the Assault Rifle into Halo 3 and the SMG out of it. It owns its own '
+        'first-person animations, so its reload can be retimed.')
+
+
+def setup(key):
+    """Point the module at one ports_h2 config's `catalog` section."""
+    global TABLE, PORT_TAGS, SHARED, FP_ANIMATIONS, RELOAD_MULT, WEAPON_TAG, DESC
+    sys.path.insert(0, HERE)
+    import ports_h2
+    c = ports_h2.get(key, 'catalog')
+    TABLE = os.path.join(HERE, c['table'])
+    PORT_TAGS = {tuple(k): v for k, v in c['port_tags']}
+    SHARED = {tuple(x) for x in c.get('shared', ())}
+    FP_ANIMATIONS, RELOAD_MULT = c['fp_animations'], c.get('reload_mult')
+    WEAPON_TAG, DESC = c['weapon_tag'], c['desc']
 
 
 def main():
     write = '--write' in sys.argv
+    keys = [a for a in sys.argv[1:] if not a.startswith('--')]
+    setup(keys[0] if keys else 'saw')
     t = json.load(open(TABLE, encoding='utf-8'))
     rows, dropped = [], []
     for r in t['rows']:
@@ -91,7 +116,7 @@ def main():
     have = {r['field']: r['value'] for r in rows if r.get('block') == 'Magazines'}
     parts = ('Rounds Inventory Maximum', 'Rounds Loaded Maximum')
     if all(isinstance(have.get(p), (int, float)) for p in parts):
-        rows.append({'class': 'weap', 'tag': SAW + B + 'saw', 'field': 'Rounds Total Maximum',
+        rows.append({'class': 'weap', 'tag': WEAPON_TAG, 'field': 'Rounds Total Maximum',
                      'block': 'Magazines', 'value': round(float(sum(have[p] for p in parts)), 6),
                      'card': 'Magazine', 'original': None,
                      'note': 'derived from %s' % ' + '.join(parts)})
@@ -100,14 +125,12 @@ def main():
     entry = {
         'weapon': t['ported'], 'source': t['source'], 'donor': t['donor'],
         'default_on': True,
-        'desc': '%s carried from %s into Halo 2, built on the cut GPMG and balanced through '
-                'the Assault Rifle into Halo 3 and the SMG out of it. It owns its own '
-                'first-person animations, so its reload can be retimed.'
-                % (t['ported'], t['source']),
+        'desc': DESC % (t['ported'], t['source']) if '%s' in DESC else DESC,
         'balance': rows,
         'fp_animations': FP_ANIMATIONS,
-        'anims': {'reload': RELOAD_MULT},
     }
+    if RELOAD_MULT is not None:
+        entry['anims'] = {'reload': RELOAD_MULT}
 
     print('%d balance row(s)' % len(rows))
     by_tag = {}
@@ -115,13 +138,22 @@ def main():
         by_tag[r['tag']] = by_tag.get(r['tag'], 0) + 1
     for tag, n in sorted(by_tag.items()):
         print('   %-62s %d' % (tag, n))
-    print('\nanimations: reload x%.6f (128 built -> 109 balanced), graphs %s'
-          % (RELOAD_MULT, FP_ANIMATIONS))
+    print('\nanimations: reload x%s, graphs %s' % (RELOAD_MULT, FP_ANIMATIONS))
     print('\n%d row(s) dropped:' % len(dropped))
     for card, why in dropped:
         print('   %-20s %s' % (card, why))
 
     if write:
+        sys.path.insert(0, HERE)
+        import kit_lock
+        with kit_lock.held('make_port_catalog_h2 %s' % entry['weapon'], owner='catalog'):
+            _write(entry)
+    else:
+        print('\n(dry run -- pass --write)')
+
+
+def _write(entry):
+    if True:
         cat = json.load(open(OUT, encoding='utf-8')) if os.path.exists(OUT) else {}
         cat.setdefault('Halo 2', [])
         for old in cat['Halo 2']:
@@ -133,8 +165,6 @@ def main():
                          + [entry])
         json.dump(cat, open(OUT, 'w', encoding='utf-8'), indent=1)
         print('\nwrote %s' % OUT)
-    else:
-        print('\n(dry run -- pass --write)')
 
 
 if __name__ == '__main__':

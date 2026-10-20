@@ -1,4 +1,6 @@
-r"""Step 8: stop the Halo 2 port calling itself a GPMG.
+r"""h2_saw_messages.py -- RETIRED 2026-09-29 by h2_port_messages.py (the port owns saw2_* lines; the GPMG's localization lines were restored). Its --restore still needs the .bin backups on E:\\HaloBackups\\mcc_localization; the code is in git history.
+
+Step 8: stop the Halo 2 port calling itself a GPMG.
 
 MCC does not take HUD text from the map. It reads `data\UI\Localization\<LANG>_Halo2.bin`,
 a loose file next to the game -- the same discovery that made the Halo 3 pickup prompt

@@ -23,9 +23,15 @@ method had to guess: that codepoint (0xE128) appears in TWO complete sets of pro
 nothing in the file says which set is the cut weapon's. Owning our own lines removes the
 guess -- the port's glyph is 0xE13D, added by `h2_saw_glyph.py`.
 
-    python h2_port_messages.py                 # show what it would add
-    python h2_port_messages.py --write         # add them, all languages, and import
-    python h2_port_messages.py --repoint       # point saw.weapon at them
+    python h2_port_messages.py [<key>]                 # show what it would add
+    python h2_port_messages.py [<key>] --write         # add them, all languages, and import
+    python h2_port_messages.py [<key>] --repoint       # point the port's weapon at them
+
+PER PORT (H2_PORT_PLAN.md phase 0, 2026-10-20): <key> names a ports_h2 config (default 'saw'):
+its reservations give the prefix + glyph, its `messages` section the donor (prefix, icon macro,
+display names) and the weapon. THE PREFIX NO LONGER HAS TO MATCH THE DONOR'S LENGTH: --repoint
+renames through h2_stringid (the length byte of each string-id field is rewritten with the pooled
+run, verified by tool's export); a same-length prefix is still the old in-place overwrite.
 """
 import argparse
 import glob
@@ -44,10 +50,23 @@ SRC = os.path.join(EK, 'data', 'ui', 'hud', 'hud_messages.txt')
 TAG = os.path.join(EK, 'tags', LIST + '.multilingual_unicode_string_list')
 WEAPON = os.path.join(EK, 'tags', 'objects', 'weapons', 'rifle', 'saw', 'saw.weapon')
 
-DONOR, PORT = 'gpmg', 'saw2'          # SAME LENGTH -- see the module docstring
+DONOR, PORT = 'gpmg', 'saw2'          # the SAW's (setup() sets them per config)
 DONOR_ICON = '&sentinel_grenade_weapon'
 GLYPH = 0xE13D                        # h2_saw_glyph.py
 DONOR_NAME, PORT_NAME = 'GPMG', 'SAW'
+
+
+def setup(key):
+    """Point the module at one ports_h2 config."""
+    global WEAPON, DONOR, PORT, DONOR_ICON, GLYPH, DONOR_NAME, PORT_NAME
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import ports_h2
+    cfg = ports_h2.load(key)
+    m, r = ports_h2.get(key, 'messages'), cfg['reservations']
+    WEAPON = os.path.join(EK, 'tags', m['weapon'])
+    DONOR, PORT = m['donor_prefix'], r['message_prefix']
+    DONOR_ICON, GLYPH = m['donor_icon'], r['glyph']
+    DONOR_NAME, PORT_NAME = m['donor_name'], m['port_name']
 
 
 def run(verb, *args):
@@ -92,11 +111,13 @@ def append(path, lines):
     return True
 
 
-def main():
+def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument('key', nargs='?', default='saw')
     ap.add_argument('--write', action='store_true')
     ap.add_argument('--repoint', action='store_true')
-    a = ap.parse_args()
+    a = ap.parse_args(argv)
+    setup(a.key)
 
     if not os.path.exists(SRC):
         run('extract-unicode-strings', LIST)
@@ -109,9 +130,8 @@ def main():
     print('%d line(s) cloned from %s_*, icon -> U+%04X' % (len(lines), DONOR, GLYPH))
     for l in lines:
         print('   %s' % l.replace(chr(GLYPH), '<glyph>')[:98])
-    print('\nid lengths match the donor (H2 pools them, so they must): %s'
-          % all(len(l.split(' = ')[0]) == len(DONOR) + len(l.split(' = ')[0]) - len(PORT)
-                for l in lines))
+    print('\nprefix %s for %s: %s' % (PORT, DONOR, 'same length -- --repoint overwrites in place'
+          if len(PORT) == len(DONOR) else 'another length -- --repoint renames through h2_stringid'))
 
     if a.write:
         if not os.path.exists(TAG + '.before_saw'):
@@ -139,7 +159,19 @@ def main():
         if missing:
             raise SystemExit('these did not make it in: %s' % missing)
 
-    if a.repoint:
+    if a.repoint and len(PORT) != len(DONOR):
+        # a prefix of another length: the length-aware rename (h2_stringid), tool-verified
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import h2_stringid
+        ren = {k: PORT + k[len(DONOR):] for k in entries(s, DONOR)}
+        have = [v for _i, _n, v in h2_stringid.string_ids(h2_stringid.export(WEAPON))]
+        ren = {k: v for k, v in ren.items() if k in have}
+        if ren:
+            shutil.copy2(WEAPON, WEAPON + '.before_messages')
+            print('   ' + h2_stringid.rename(WEAPON, ren, write=True))
+        else:
+            print('   nothing to repoint')
+    elif a.repoint:
         d = bytearray(io.open(WEAPON, 'rb').read())
         before = len(d)
         n = 0
