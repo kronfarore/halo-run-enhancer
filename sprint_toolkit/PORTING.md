@@ -1026,6 +1026,17 @@ OBSERVATION until a second port agrees, except the user RULES):
   `glow_spot_list.py` (lit-texel spots: centre, normal, extent -- for the glow filters).
 * 5b tool fix: `h1_role_compare` kept only the last Damage Upper Bound row (both bounds alike
   in earlier ports); it now keeps the range's two bounds (the Mauler's 12.6..17.5 -> 15.05).
+* **Re-check 2026-10-19/20 (user: 'deactivate the glow when the weapon has no ammo loaded'; switch
+  off at empty, not dim). CONFIRMED on b30** (FP, an Armed Elite's Mauler, dropped empty vs
+  loaded). Halo 3's own glow ignores the magazine (self_illum_intensity 8 -> 4 over 8 s, no
+  input). Halo 1 route: a model shader's self-illumination `color source` A..D is the OBJECT'S
+  CHANGE COLOUR, and a change colour with no permutations runs lower -> upper by its `scale_by`
+  (stock Halo 1 does this only on vehicles: the banshee's cockpit by driver seat power) -- it
+  works on a weapon in first person too. The Mauler: A in = primary ammunition (rounds loaded; the
+  shotgun template's ejection port, read by nothing), function 0 clip-and-normalize 0..0.02 (any
+  round = 1), change colour A black -> HOT by A out, the three lit shaders' source A with white
+  bounds (model `illum_source`, pickable `change_colors`), the additive window / slit cards
+  `fade_source` A_out. Tools proof mg1 (model + pickable of every done port): 0 changed.
 
 ### Halo 1: the Brute Shot, wave A7 (2026-10-09, 9 boots on a30) -- an explosive grenade launcher
 

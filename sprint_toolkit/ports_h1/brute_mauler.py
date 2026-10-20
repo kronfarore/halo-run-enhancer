@@ -92,7 +92,7 @@ PORT.update({
     # 2026-10-09: tested on a30 over 7 boots (dry default, fixes x2, balanced x3 incl. glow,
     # Armed) -- confirmed by the user; the ten-map rebuild is BATCHED with the SMG, BR,
     # Carbine, Beam Rifle and Spike Rifle (user's go)
-    'status': 'rework',
+    'status': 'done',
     # geometry + look (h1_h3_weapon_model.py). Halo 3's four materials all sample the same
     # `excavator` base map (+ bump): the body `excavator` (detail metal_dirty, self-illum
     # excavator_illum in ORANGE at 8 -> 4), `excavator_dull` (rubber detail, no illum: the
@@ -120,6 +120,14 @@ PORT.update({
         # with a white core fading to ORANGE: the bloom
         'illum_dilate': 1,
         'glow': {'excavator': HOT, 'excavator_metal': HOT, 'excavator_shiny': HOT},
+        # RE-CHECK (user, 2026-10-19: 'deactivate the glow when the weapon has no ammo loaded';
+        # switch off at empty, not dim -- the user's pick): the three shaders take their
+        # self-illumination from CHANGE COLOUR A = black -> HOT by A out = ANY round loaded
+        # (pickable `change_colors` + fields); the glow cards fade by A out. Halo 3's own glow
+        # ignores the magazine (self_illum_intensity 8 -> 4 over 8 s, no input)
+        # CONFIRMED on b30 (user, 2026-10-20): dark at 0 loaded in FP, in an Elite's hands and on
+        # the ground; on with any round, back on after the reload
+        'illum_source': 'A',
         # TEST 2 (user): 'much better -- but in H3 they have DISTINCT SHAPES; ours look like
         # lights drawn onto the weapon' (the radial spot cards: round blobs over the faces).
         # Now the window SHAPES: each lit triangle copied in place (scale 1.0, lifted 0.02,
@@ -130,11 +138,13 @@ PORT.update({
         # there -- the render check of test 2); the drum windows face back / forward TILTED
         # (dot 0.84..0.99) and stay
         'glow_shaders': {'mauler_window': {'rgb': ORANGE_GLOW, 'additive': True, 'mask': ILLUM,
-                                           'mask_channel': 'rgb', 'dilate': 1, 'gain': 1.0},
+                                           'mask_channel': 'rgb', 'dilate': 1, 'gain': 1.0,
+                                           'fade_source': 'A_out'},
                          # the body's thin SLITS (test 5, below): the same mask, grown 3 px,
                          # x2 gain -- a line reads only when thick and saturated
                          'mauler_slit': {'rgb': ORANGE_GLOW, 'additive': True, 'mask': ILLUM,
-                                         'mask_channel': 'rgb', 'dilate': 3, 'gain': 2.0}},
+                                         'mask_channel': 'rgb', 'dilate': 3, 'gain': 2.0,
+                                         'fade_source': 'A_out'}},
         'glow_cards': {'excavator_metal': {'shader': 'mauler_window', 'lit': ILLUM,
                                            'scale': 1.0, 'lift': 0.02,
                                            'skip_normals': ((1.0, 0.0, 0.0), (-1.0, 0.0, 0.0)),
@@ -295,7 +305,18 @@ PORT.update({
             'weap_attrs.triggers.0.firing_effects.0.empty_effect.filepath': SND + 'ml_dryfire',
             'weap_attrs.triggers.0.firing_effects.0.misfire_effect.filepath': '',
             'weap_attrs.interface.pickup_sound.filepath': SND + 'ml_ammo',
-            'item_attrs.collision_sound.filepath': SND + 'ml_drop'},
+            'item_attrs.collision_sound.filepath': SND + 'ml_drop',
+            # RE-CHECK 2026-10-19 (the glow off at an empty magazine): the shotgun template's
+            # A (primary ejection port; nothing on the Mauler reads A out) -> PRIMARY AMMUNITION
+            # (rounds loaded: 0 from the last shot until the reload loads the magazine -- the
+            # Incineration Cannon's boot 4), its function 0 clipped and normalized to 0..0.02:
+            # any round loaded = 1 (one of five = 0.2), none = 0
+            'weap_attrs.A_in': 'primary_ammunition',
+            'obje_attrs.functions.0.usage': 'rounds loaded',
+            'obje_attrs.functions.0.bounds_mode': 'clip_and_normalize',
+            'obje_attrs.functions.0.bounds': (0.0, 0.02)},
+        # change colour A = the model shaders' self-illumination (model `illum_source`)
+        'change_colors': [{'scale_by': 'A_out', 'lower': (0.0, 0.0, 0.0), 'upper': HOT}],
         'sound_effects': {
             # Halo 3's mauler flash: muzzle_flash_long + round, flash_large, glow_soft, fiery
             # sparks, muzzle smoke, a light -- no casing (the shotgun's casing event dropped)
