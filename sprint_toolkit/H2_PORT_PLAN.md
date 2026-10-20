@@ -177,6 +177,18 @@ finished port has no turret path left to repoint -- the new tool checks first); 
 writer looked for its table beside itself (the catalog proof above covers it). Not in the proof, by
 design: `h2_anim_retime` (re-running it resamples an already-retimed graph through tool, which can
 truncate a tag) and the one-time guarded `h2_saw_yardstick`.
+The proof tool's later form (`--rev <commit>`: that commit's toolkit extracted and run against
+today's) checked on commit 06d3c25: `--tag revchk --rev HEAD --steps weapon,numbers,messages,
+animations,catalog` -> old vs new, pre vs new and pre vs end all 0 / 0 / 0.
+
+### 0.8 Backup
+
+`port_backup.py --game h2` now derives everything from the configs (each port's owned folders,
+its HUD + HUD bitmaps + their TIFFs, all 13 weapons resources + scenarios, hud_messages tag + every
+.txt, the eight fonts, the scripts incl. ports_h2/*.py): phase 0's ->
+`F:\HaloPortBackups\2026-10-20_h2-port-phase0` (336 files, 237.6 MB). The proofs' pre-run kit
+copies are on E: (`E:\HaloBackups\h2_proof_<tag>_pre`, ~1.1 GB each: delete old ones freely once a
+later proof passed).
 
 ### 0.3 Reservations
 
