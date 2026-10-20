@@ -2399,6 +2399,21 @@ offsets), `h1_gbxmodel_render.py` (a built gbxmodel side / top, glow geometry hi
 Halo 1: flatten, re-run the writers, 0 changed). Trap: `ai_firing_profile.build()`
 WRITES by default (write=True) -- pass write=False to read a source entry.
 
+**Re-check 2026-10-19/20 (user: "the weapon glow when firing like the other Forerunner weapons"), 3 boots
+on a30.** Halo 4's light-up is NOT the glow material (no function on it): the weapon's object function
+`visable` = primary_barrel_firing (increasing instant, decreasing linear 0.6 s, turn off with
+primary_ammunition) scales an attached `fr_smg_firing` effect (hard_light_1p / 3p particles at the moving
+plates' markers + a cheap light, colour 239 / 110 / 12). A FAST automatic cannot use the LightRifle's
+per-shot illumination fade (0.04 s recovery at 15/s = a 1 / 0.17 strobe at the 30 Hz tick). Halo 1's
+smooth held-fire signal is the trigger's RATE OF FIRE ramp (the Sentinel Beam's hum source): rate 15 -> 16
+(Halo 1 fires 15 .. 29.9 at 15/s: unchanged; balanced rows 22.5 -> 23.5 so the bounds still differ),
+acceleration 0, deceleration Halo 4's 0.6 s; `rewire` puts primary_rate_of_fire on weapon export D ->
+function 3 (turn off with function 0, the loaded fraction), obje D (compass) cleared; `su_fire_glow`
+(strip glow, fade D out) on `su_fire` cards over every strip. User boots: x2.6 cards too big, x1.3 not
+visible enough -> x1.9 / rings x1.45; Halo 4's light colour read yellow over the strips -> (1, 0.30, 0).
+Balanced rate confirmed; no glow seen on Armed enemies' guns (user: fine). Config-only (no shared tool);
+proof su4 (fresh snapshot vs mg1_restored): 13389 files, 0 changed.
+
 ### Halo 1: the Boltshot, wave C3 (2026-10-14/15, 6 dry boots + balanced + Armed on b30, PARALLEL with C2) -- a Halo 4 sidearm with a charged pellet blast that overheats, a charged pair on a magazine template
 
 The whole weapon is `ports_h1/boltshot.py`, on a copy of the Halo 1 PISTOL with a second trigger

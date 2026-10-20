@@ -110,7 +110,8 @@ PORT = reserved(
 )
 
 PORT.update({
-    'status': 'rework',           # 2026-10-15: 8 dry boots, balanced, Armed (grunt, jackal, elite) on a30
+    'status': 'done',             # 2026-10-15: 8 dry boots, balanced, Armed (grunt, jackal, elite) on a30
+    #   RE-CHECK 2026-10-19/20 (user): firing glow (su_fire_glow on D out = rate of fire), 3 boots on a30
     # CLOSE-OUT RECORD (2026-10-15):
     # STEP 4b (port_field_audit --port suppressor, final): weapon list 2 = 0 (error deceleration 1.2,
     #   illumination recovery 0.04 written); list 4 deliberate (rate ramp 0 / 0 and tracers 0 = Halo 4's
@@ -208,7 +209,18 @@ PORT.update({
                          'su_halo': {'rgb': ORANGE, 'additive': True, 'islands': True,
                                      'islands_of': 'storm_forerunner_smg_default_glow',
                                      'strip': True, 'gain': 0.8, 'falloff': 1.5, 'radius': 1.0,
-                                     'hot': False}},
+                                     'hot': False},
+                         # REWORK 2026-10-19 (user: 'the weapon glow when firing like the other
+                         # Forerunner weapons'): the LightRifle's firing light-up -- the strips
+                         # again, hotter and wider, FADED by D out (the rate of fire: on while
+                         # firing, 0.6 s fade; the trigger below). Colour = Halo 4's own firing
+                         # light (fr_smg_firing.cheap_light colour 239 / 110 / 12) -> (1, 0.46, 0.05).
+                         # BOOT 3 (user: 'visible, could use some more red / orange'; additive over
+                         # the yellow strips) -> (1, 0.30, 0)
+                         'su_fire_glow': {'rgb': (1.0, 0.30, 0.0), 'additive': True, 'islands': True,
+                                          'islands_of': 'storm_forerunner_smg_default_glow',
+                                          'strip': True, 'gain': 2.0, 'falloff': 0.8, 'radius': 1.3,
+                                          'hot': False, 'fade_source': 'D_out'}},
         # BOOT 4 test: halo cards (each strip copied x2.2 about its centre, lifted 0.05) on the FRONT-LEFT
         # strips only (islands 2 / 5 / 8: the long strip, the short one, the front ring; within 3.5
         # of (16, 1, 2) JMS units) -- the rear-left strips (12 / 13 / 17) show B alone.
@@ -225,7 +237,17 @@ PORT.update({
                                    # BOOT 7 (user: 'the circle is tilted off the gun', both rings on the
                                    # world model): cards scale in the piece's own plane only; a
                                    # round piece (the rings) x1.4 both ways
-                                   'round_scale': 1.4}},
+                                   'round_scale': 1.4},
+                       # the firing cards (the LightRifle's lr_fire): every strip, lifted past the
+                       # halo; the same skipped pieces as su_halo (barrel-facing caps, the tilted top
+                       # plate). BOOT 1 (user: 'pretty good -- shrink it a bit onto the existing glow
+                       # panels'): x2.6 / rings x1.8 / lift 0.08 -> x1.3 / x1.15 / 0.06. BOOT 2 (user:
+                       # 'not visible enough, partly back'): halfway -> x1.9 / x1.45 / 0.07
+                       'su_fire': {'of': 'su_glow', 'shader': 'su_fire_glow', 'scale': 1.9, 'along': 1.05,
+                                   'lift': 0.07, 'round_scale': 1.45,
+                                   'skip_piece_normals': [(1.0, 0.0, 0.0), (-1.0, 0.0, 0.0),
+                                                          (0.655, 0.0, 0.756)],
+                                   'skip_piece_dot': 0.9}},
     },
 
     # FP animations (h1_fp_retarget.py): ROUTE (a), Halo 4's own storm_fp_forerunner_smg (Foundry,
@@ -381,8 +403,13 @@ PORT.update({
                             'marker': ''}},
         # Halo 4: 15/s flat (rate ramp 0 / 0)
         # STEP 4b list 2: error deceleration Halo 4 0.6 / its AR 0.5 x the H1 AR's 1.0 = 1.2 s
-        'trigger': {'rounds_per_second': (15.0, 15.0), 'acceleration_time': 0.0,
-                    'deceleration_time': 0.0, 'error_deceleration_time': 1.2,
+        # THE FIRING GLOW (user, 2026-10-19): Halo 4's `visable` = primary_barrel_firing, on at once
+        # while firing, back to 0 linearly over 0.6 s, off with primary_ammunition. Halo 1's nearest
+        # signal is the trigger's RATE OF FIRE ramp (the Sentinel Beam's hum source: smooth, follows
+        # acceleration / deceleration time, 0 unless the bounds differ) -> 15 .. 16 (Halo 1 fires
+        # 15 .. 29.9 at 15/s: the rate is unchanged), acceleration 0, deceleration Halo 4's 0.6 s
+        'trigger': {'rounds_per_second': (15.0, 16.0), 'acceleration_time': 0.0,
+                    'deceleration_time': 0.6, 'error_deceleration_time': 1.2,
                     'rounds_between_tracers': 0,
                     # the FP muzzle in the idle (h1_fp_muzzle weapons\suppressor\fp\fp): the shard's
                     # streak starts at the first-person muzzle (the Storm Rifle's)
@@ -395,7 +422,17 @@ PORT.update({
             'item_attrs.collision_sound.filepath': SND + 'su_drop',
             # the OWN hull (h1_box_collision.py suppressor --write; model['collision']): stage 1's
             # a30 build crashed with the AR's hull (other nodes) on the 13-node model
-            'obje_attrs.collision_model.filepath': SU + 'suppressor'},
+            'obje_attrs.collision_model.filepath': SU + 'suppressor',
+            # the template's object export D (compass) cleared: the weapon's export D carries the
+            # rate of fire (rewire below), so function 3 has one source
+            'obje_attrs.D_in': 'none'},
+        # the firing glow's signal: the AR template's layout (A integrated light, B ammo, C
+        # illumination) + D = primary rate of fire -> function 3 (D out, the su_fire_glow shader's
+        # fade) turning off with function 0 (the loaded fraction: Halo 4's off with
+        # primary_ammunition)
+        'rewire': {'inputs': ('integrated_light', 'primary_ammunition', 'illumination',
+                              'primary_rate_of_fire'),
+                   'functions': {3: (3, 'D_in', 'firing glow', {'turn_off_with': 0})}},
         # Halo 4: minimum error 0, error angle 0.5 -> 3
         'error_deg': {'minimum_error': 0.0, 'error_angle': (0.5, 3.0)},
         # Halo 4: 48 loaded, 192 at the start, 336 most; reload time: none in the tag (the animation
@@ -486,7 +523,7 @@ PORT.update({
                 row('jpt!', SU + 'shard', 'Damage Upper Bound', 8.33, 6.25, 'Bullet Damage'),
                 row('jpt!', SU + 'shard', 'Damage Upper Bound Max', 8.33, 6.25, 'Bullet Damage'),
                 row('weap', SU + 'suppressor', 'Rounds Per Second', 22.5, 15.0, 'More Shooting', block='Triggers'),
-                row('weap', SU + 'suppressor', 'Rounds Per Second Max', 22.5, 15.0, 'More Shooting', block='Triggers'),
+                row('weap', SU + 'suppressor', 'Rounds Per Second Max', 23.5, 16.0, 'More Shooting', block='Triggers'),  # the glow's ramp: bounds differ
                 row('weap', SU + 'suppressor', 'Rounds Loaded Maximum', 90.0, 48.0, 'Magazine', block='Magazines'),
                 row('weap', SU + 'suppressor', 'Rounds Reloaded', 90.0, 48.0, 'Magazine', block='Magazines'),
                 row('weap', SU + 'suppressor', 'Rounds Total Initial', 288.0, 192.0, 'Magazine', block='Magazines'),
