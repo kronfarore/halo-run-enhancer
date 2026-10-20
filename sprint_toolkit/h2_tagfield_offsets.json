@@ -16,6 +16,9 @@
   "bitmap widgets[12].fullscreen sequence index": 1660,
   "bitmap widgets[12].halfscreen sequence index": 1661,
   "bitmap widgets[12].quarterscreen sequence index": 1662,
+  "bitmap widgets[14].fullscreen sequence index": 1900,
+  "bitmap widgets[14].halfscreen sequence index": 1901,
+  "bitmap widgets[14].quarterscreen sequence index": 1902,
   "bitmap widgets[3].fullscreen sequence index": 580,
   "bitmap widgets[3].halfscreen sequence index": 581,
   "bitmap widgets[3].quarterscreen sequence index": 582,
@@ -37,6 +40,11 @@
   "bitmap widgets[9].fullscreen sequence index": 1300,
   "bitmap widgets[9].halfscreen sequence index": 1301,
   "bitmap widgets[9].quarterscreen sequence index": 1302
+ },
+ "new_hud_definition@ui\\hud\\assault_rifle": {
+  "bitmap widgets[14].fullscreen sequence index": 1900,
+  "bitmap widgets[14].halfscreen sequence index": 1901,
+  "bitmap widgets[14].quarterscreen sequence index": 1902
  },
  "projectile": {
   "final velocity": 844,

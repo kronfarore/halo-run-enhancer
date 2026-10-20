@@ -50,7 +50,9 @@ B = chr(92)
 PORT_SOUNDS = {'SAW': B.join(['sound', 'weapons', 'saw_port'])}
 #: the build-time marker: each port's sounds sit this far below their as-built gain. One
 #: value PER PORT, so two ports in one map can never pool with each other.
-MARKER_DB = {'SAW': 0.01}
+MARKER_DB = {'SAW': 0.01,
+             # Halo 2's Assault Rifle (the AR pilot, 2026-10-20): its own entries, apart from the SAW's
+             'Assault Rifle': 0.02}
 #: game -> (snd! playback index offset, ugh! Playbacks block offset, element size,
 #:          Gain Base offset) -- Assembly's MCC plugins
 LAYOUT = {'Halo 3': (0x0C, 0x10, 0x44, 0x1C),

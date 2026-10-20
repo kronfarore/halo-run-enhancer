@@ -284,7 +284,17 @@ def main(argv=None):
     if ('bitm', PORT) in have and ('bitm', DONOR) not in have:
         print('   the HUD already points at the port plate')
     else:
-        h2_tagref.set_reference(hud, 'bitm', DONOR, PORT)
+        # a BR-shaped HUD names its plate TWICE (weapon_background_single seq 0 and
+        # weapon_background_out seq 1 -- the AR, 2026-10-20; the SAW's GPMG HUD once): every
+        # copy moves, and on the one-image plate each widget's sequence index becomes 0
+        h2_tagref.set_reference(hud, 'bitm', DONOR, PORT,
+                                every=have.count(('bitm', DONOR)) > 1)
+    import h2_port_scope
+    import h2_tagfield
+    for idx, _name, ref, seq in h2_port_scope.widgets(hud):
+        if ref == PORT and any(seq):
+            for field in ('fullscreen', 'halfscreen', 'quarterscreen'):
+                h2_tagfield.set_field(hud, field + ' sequence index', 0, 'bitmap widgets', idx)
 
 
 if __name__ == '__main__':

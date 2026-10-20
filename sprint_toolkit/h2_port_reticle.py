@@ -10,7 +10,13 @@ The config's `reticle` section:
     footprint                    share of the donor's footprint the art fills (0.6 for the SAW)
     h4_art, layout               Halo 4 art folder + [(bitmap, left, top, w, h, flipx, flipy, opacity)]
     preview                      preview file name in %TEMP%
-A Halo 3 / Reach source: the pilot adds its art reader (the layout shape stays).
+    h3_art                       a HALO 3 source instead (the AR, 2026-10-20): {'sheet': the H3
+                                 chud sheet, 'sequence': the port's sprite, 'yardstick': the
+                                 sprite of the weapon whose Halo 2 crosshair the donor's is (the
+                                 same chud widget scale)} -- sized by the ratio rule: the port's
+                                 sprite x (donor ink / yardstick sprite ink) (h3_compose)
+A Reach source: wave B's pilot adds its art reader. Every crosshair widget naming the port's
+bitmap gets its three sequence indices set to 0 (a one-image bitmap; the SAW's were already 0).
 
     python h2_port_reticle.py <key> [--write]
 """
@@ -39,15 +45,18 @@ TEMP = os.environ.get('TEMP', '.')
 REL = DONOR = NAME = PORT = HUD = H4_ART = PREVIEW = None
 DONOR_SEQUENCE = FOOTPRINT = None
 LAYOUT = []
+H3_ART = {}
 
 
 def setup(key):
     global REL, DONOR, NAME, PORT, HUD, H4_ART, PREVIEW, DONOR_SEQUENCE, FOOTPRINT, LAYOUT
     r = ports_h2.get(key, 'reticle')
-    REL, DONOR, NAME, HUD, H4_ART = r['rel'], r['donor'], r['name'], r['hud'], r['h4_art']
+    REL, DONOR, NAME, HUD, H4_ART = r['rel'], r['donor'], r['name'], r['hud'], r.get('h4_art')
     PORT = B.join([REL, NAME])
     DONOR_SEQUENCE, FOOTPRINT = r['donor_sequence'], r['footprint']
-    LAYOUT = [tuple(x) for x in r['layout']]
+    LAYOUT = [tuple(x) for x in r.get('layout', ())]
+    H3_ART.clear()
+    H3_ART.update(r.get('h3_art') or {})
     PREVIEW = r.get('preview', NAME + '_preview.png')
 
 
@@ -112,6 +121,38 @@ def compose(donor):
     return out
 
 
+def _ink(img):
+    a = np.asarray(img)[:, :, 3] > 8
+    ys, xs = np.nonzero(a)
+    return max(xs.max() - xs.min() + 1, ys.max() - ys.min() + 1)
+
+
+def h3_compose(donor):
+    """A Halo 3 chud sprite (white, the shape in the alpha) at Halo 2's size by the ratio rule,
+    in the donor's colour, centred on its registration point."""
+    import h3_hud_art
+    a = np.asarray(donor)
+    ink = a[:, :, 3] > 0
+    colour = a[:, :, :3][ink].mean(0) if ink.any() else np.array([0, 0, 202.0])
+    art, reg = h3_hud_art.sprite(H3_ART['sheet'], H3_ART['sequence'])
+    yard, _ = h3_hud_art.sprite(H3_ART['sheet'], H3_ART['yardstick'])
+    k = _ink(donor) / float(_ink(yard))
+    w, h = max(1, int(round(art.width * k))), max(1, int(round(art.height * k)))
+    art = art.resize((w, h), Image.LANCZOS)
+    side = max(w, h, donor.width, donor.height)
+    side += side % 2
+    out = Image.new('RGBA', (side, side), (0, 0, 0, 0))
+    px = np.asarray(art).astype(float)
+    px[:, :, 0], px[:, :, 1], px[:, :, 2] = colour[0], colour[1], colour[2]
+    piece = Image.fromarray(px.astype('uint8'), 'RGBA')
+    out.alpha_composite(piece, (int(round(side / 2.0 - reg[0] * k)),
+                                int(round(side / 2.0 - reg[1] * k))))
+    print('   Halo 3 sprite %s #%d x %.3f (donor ink %d / yardstick #%d ink %d) -> %dx%d on %dx%d'
+          % (H3_ART['sheet'], H3_ART['sequence'], k, _ink(donor), H3_ART['yardstick'],
+             _ink(yard), w, h, side, side))
+    return out
+
+
 def sequence_indices(tag):
     """Every crosshair widget's three sequence index fields, as tool.exe reports them."""
     out = os.path.join(TEMP, '_hud_seq.xml')
@@ -140,7 +181,7 @@ def main(argv=None):
     setup(a.key)
 
     donor = donor_image()
-    art = compose(donor)
+    art = h3_compose(donor) if H3_ART else compose(donor)
     d = np.asarray(donor)
     n = np.asarray(art)
     print('donor reticle %dx%d, %d ink pixels; the port\'s %d'
@@ -175,6 +216,12 @@ def main(argv=None):
         print('   the HUD already points at the port reticle')
     else:
         h2_tagref.set_reference(hud, 'bitm', DONOR, PORT, every=True)
+    import h2_port_scope
+    import h2_tagfield
+    for idx, _name, ref, seq in h2_port_scope.widgets(hud):
+        if ref == PORT and any(seq):
+            for field in ('fullscreen', 'halfscreen', 'quarterscreen'):
+                h2_tagfield.set_field(hud, field + ' sequence index', 0, 'bitmap widgets', idx)
     print('the crosshair widgets now read:')
     for name, ref, seq in sequence_indices(hud):
         if 'reticle' in ref or 'crosshair' in name:

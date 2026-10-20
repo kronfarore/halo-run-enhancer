@@ -34,6 +34,10 @@ import os
 import sys
 
 VERSION = '8210'
+#: versions read the same way up to TRIANGLES (all this reader parses): the dervish FP arms are
+#: 8209 (H2_PORT_PLAN 0.4), the battle rifle's authored collision hull 8205 (the AR, 2026-10-20).
+#: Written back, a model is always 8210.
+READABLE = ('8210', '8209', '8205')
 NL = '\r\n'
 
 #: section header, its record keyword, and the comment lines Bungie writes under the count
@@ -153,8 +157,8 @@ def _floats(tok):
 
 def read(path):
     t = _tokens(open(path, encoding='latin-1').read())
-    if t[0] != VERSION:
-        raise ValueError('%s is JMS version %s, not %s' % (path, t[0], VERSION))
+    if t[0] not in READABLE:
+        raise ValueError('%s is JMS version %s, not one of %s' % (path, t[0], READABLE))
     i = 1
     m = Model()
 

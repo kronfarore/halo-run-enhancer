@@ -13,6 +13,8 @@ clones are wired together; nothing Bungie shipped is edited. The config's `weapo
                models), {'nth': k} the k-th of them (a .model whose render model and collision
                model pool ONE path -- the AR, 2026-10-20)
     shared     [(path, why)] -- what stays someone else's, on purpose (printed)
+    string_ids {old: new} renamed through h2_stringid (adjacent string-id fields: the AR's
+               3P label `rifle`/`smg` -> `rifle`/`br`), string_ids_done (field, value) its guard
 
     python h2_port_weapon.py <key> [--force]
 """
@@ -65,6 +67,18 @@ def main(argv=None):
     clone(w, '--force' in argv)
     print('wiring them together:')
     wire(w)
+    if w.get('string_ids'):
+        # the third-person LABEL (weapon class / weapon name: what the characters' 3P graphs
+        # key on, H2_PORT_PLAN 0.3) -- a run of adjacent string ids, h2_stringid (any length,
+        # tool-verified); skipped once `string_ids_done` (field, value) reads true
+        import h2_stringid
+        tag = os.path.join(TAGS, w['weapon'])
+        field, want = w['string_ids_done']
+        now = {n: v for _i, n, v in h2_stringid.string_ids(h2_stringid.export(tag))}
+        if now.get(field) == want:
+            print('   %-34s %s already %r' % (os.path.basename(tag), field, want))
+        else:
+            print('   ' + h2_stringid.rename(tag, w['string_ids'], write=True))
     print('still pointing at somebody else, on purpose:')
     for path, why in w.get('shared', ()):
         print('   %-52s %s' % (path, why))

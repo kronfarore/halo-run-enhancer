@@ -12,6 +12,8 @@ The config's `sounds` section:
     sounds                   {own sound: (audio folder or 'foley:CUES', sound class)}
     repoint_fx, repoint_weapon   (the sound named now, the own sound) on the effect / the weapon
     graph_sounds, graph_sound_dir   ((donor sound, own sound), ...) on both FP graphs
+    h3_bank                  {audio folder: [Halo 3 bank source folders]} -- rendered into
+                             <audio> first (render_h3_bank; a Halo 3 source, the AR)
     gain, boost              per sound (dB)
     backup, graph_backup     first-run backups (E:)
 The sound folder is the config's `reservations['sound_dir']`, the graphs its `fp_graph`.
@@ -116,6 +118,44 @@ def render_foley(name, cues_name, d):
             o.writeframes(np.clip(np.round(x * 32767), -32768, 32767).astype(np.int16).tobytes())
 
 
+def render_h3_bank(c):
+    """`h3_bank` {sound folder under AUDIO: [Halo 3 bank folders]} (the AR, wave-A pilot,
+    2026-10-20): every permutation of a HALO 3 sound decoded from MCC's halo3 sfx.fsb by its
+    source folder (h1_port_sounds.h3_index / decode, Halo 1 wave A's), resampled to 48 kHz
+    mono at its NATIVE level (peaks soft-limited at 0.95), one wav each -- several folders
+    mixed permutation k with permutation k. Written fresh every run."""
+    import wave
+    import numpy as np
+    import h1_port_sounds as P
+    import h1_saw_tone as tone
+    P.use_bank({})
+    idx = P.h3_index()
+    for name, folders in c['h3_bank'].items():
+        sets = []
+        for f in folders:
+            subs = idx.get(f.lower().rstrip('\\') + '\\')
+            if not subs:
+                raise SystemExit('%s: no %s in Halo 3\'s bank' % (name, f))
+            sets.append([tone.resample(*P.decode(s), 48000) for s in subs])
+        d = os.path.join(AUDIO, name)
+        shutil.rmtree(d, ignore_errors=True)
+        os.makedirs(d)
+        for k in range(max(len(s) for s in sets)):
+            parts = [s[k % len(s)] for s in sets]
+            x = np.zeros(max(len(p) for p in parts))
+            for p in parts:
+                x[:len(p)] += p
+            if np.abs(x).max() > 0.95:
+                x = 0.95 * np.tanh(x / 0.95)
+            with wave.open(os.path.join(d, '%s_%d.wav' % (name, k + 1)), 'wb') as o:
+                o.setnchannels(1)
+                o.setsampwidth(2)
+                o.setframerate(48000)
+                o.writeframes(np.clip(np.round(x * 32767), -32768, 32767).astype(np.int16).tobytes())
+        print('   %-14s %d permutation(s) from %s' % (name, max(len(s) for s in sets),
+                                                    ', '.join(f.split('\\')[-1] for f in folders)))
+
+
 def backup_graphs():
     for g in GRAPHS:
         keep = os.path.join(GRAPH_BACKUP, g)
@@ -181,6 +221,10 @@ def main(argv=None):
     ap.add_argument('--write', action='store_true')
     a = ap.parse_args(argv)
     setup(a.key)
+    c = ports_h2.get(a.key, 'sounds')
+    if c.get('h3_bank') and a.write:
+        print('the Halo 3 sounds, from MCC\'s halo3 bank:')
+        render_h3_bank(c)
     plain = [src for src, _c in SOUNDS.values() if ':' not in src]
     if plain and not glob.glob(os.path.join(AUDIO, plain[0], '*.wav')):
         raise SystemExit('no source audio in %s -- extract it first' % os.path.join(AUDIO, plain[0]))

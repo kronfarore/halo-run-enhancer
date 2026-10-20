@@ -7,6 +7,13 @@ the pipeline sections (ports_h2/__init__.py; ports_h2/saw.py is the complete exa
 AR = r'objects\weapons\rifle\assault_rifle'      # the source's folder (H3EK) AND the port's (H2EK)
 SMG = r'objects\weapons\rifle\smg'                # the donor (H2EK)
 FX = r'effects\objects\weapons\rifle\assault_rifle'   # the reserved effects folder
+NEW_HUD = r'ui\hud\bitmaps\new_hud'
+import os as _os
+# the Halo 3 world render model's export (h1_fp_retarget.export_xml's cache; regenerable): the
+# silhouette the HUD plate, backpack icon and pickup glyph are drawn from
+H3_RM_XML = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), 'out', 'h3_export',
+                          'objects~weapons~rifle~assault_rifle~assault_rifle.render_model.xml')
+H3SND = r'data\sound\weapons'           # source folders in MCC's halo3 sfx.fsb (.info)
 H2EK = r'F:\SteamLibrary\steamapps\common\H2EK'
 
 PORT = {
@@ -64,8 +71,16 @@ PORT = {
         # *_pbr ones are MCC's remastered set, unused by any part
         'materials': {'assault_rifle': 'assault_rifle', 'assault_rifle_rubber': 'assault_rifle_rubber',
                       'assault_rifle_env': 'assault_rifle_env', 'display': 'assault_rifle_display',
-                      'compass': 'assault_rifle_compass', 'tens': 'assault_rifle_tens',
-                      'ones': 'assault_rifle_ones'},
+                      'compass': 'assault_rifle_compass',
+                      # Bungie's BR counter digits are `tens=?` / `ones=?` (no shadow, two-sided
+                      # transparent); the shader is the name without the symbols
+                      'tens': 'assault_rifle_tens=?', 'ones': 'assault_rifle_ones=?'},
+        # the world .model is the BR's clone: its variants name permutation `base`, region `gun`
+        # (battle_rifle_L5.jms '(1) L5 base gun'); the FP render model is used directly
+        'world_permutation': 'base', 'world_region': 'gun',
+        # Bungie's case (the BR's render, FP and collision JMS: `frame OpHandle`; its graphs say
+        # `ophandle` -- tool matches without case)
+        'node_names': {'ophandle': 'frame OpHandle'},
         'markers': {'primary_trigger': 'primary_trigger', 'primary_ejection': 'primary_ejection',
                     'left_hand': 'left_hand', 'flashlight': 'flashlight', 'muzzle_flash': 'muzzle_flash'},
         # the SAW's 1.40 was measured against the SMG's effect -- but the SMG's `frame gun` node
@@ -160,7 +175,14 @@ PORT = {
              FX + r'\assault_rifle_bullet', 'material effects (the weapon)'),
             (AR + r'\projectiles\assault_rifle_bullet.projectile', 'foot', r'effects\materials\objects\weapons\smg',
              FX + r'\assault_rifle_bullet', 'impact material effects'),
+            # the HUD is the BR's clone (step 7: single, two-handed; the SMG's is dual-wield shaped)
+            (AR + r'\assault_rifle.weapon', 'nhdt', r'ui\hud\smg', r'ui\hud\assault_rifle', 'its own HUD (step 7)'),
         ],
+        # the 3P label: the BATTLE RIFLE's (`rifle` / `br`) -- every character's 3P graph holds the
+        # two-handed BR; the SMG's `smg` is a one-handed (dual-wield) hold. A stock label, no new 3P
+        # animations (H2_PORT_PLAN 0.3); Halo 3's own is `rifle` / `ar`, which no Halo 2 graph has
+        'string_ids': {'rifle': 'rifle', 'smg': 'br'},
+        'string_ids_done': ('weapon name', 'br'),
         'shared': [(r'the particles inside assault_rifle_fire', "the SMG's (Halo 3 particles do not port)"),
                    (r'objects\weapons\damage_effects\*_melee', 'shared by every Halo 2 weapon'),
                    (r'effects\objects\weapons\pistol\needler\ready, ...\battle_rifle\reload',
@@ -209,6 +231,111 @@ PORT = {
         ],
     },
 
+    # step 5 -- h2_port_collision.py: the BATTLE RIFLE's authored hull (the world .model's donor,
+    # the closest two-handed rifle) scaled per axis to the AR's render mesh
+    'collision': {
+        'donor': r'objects\weapons\rifle\battle_rifle\battle_rifle',
+        'port': AR + r'\assault_rifle',
+        'src': r'battle_rifle\collision\battle_rifle_collision.jms',     # under data\!extracted
+        'out': AR + r'\collision\assault_rifle.jms',                     # under data
+        'port_render_jms': AR + r'\render\assault_rifle.jms',
+        'donor_render_jms': r'battle_rifle\render\battle_rifle_L5.jms',
+        'max_growth': 1.25,
+    },
+
+    # step 7 -- the HUD: a clone of the BATTLE RIFLE's (single, two-handed; the SMG's is dual-wield
+    # shaped: its plate x4, meter x2), 32 ticks on the BR meter's canvas, the plate and backpack
+    # drawn from the AR's own mesh, Halo 3's crosshair (chud hud_reticles #0), the scope widgets
+    # blanked (the AR does not zoom)
+    'meter': {
+        'donor_meter': NEW_HUD + r'\meters\battle_rifle_meter',
+        'rel': NEW_HUD + r'\meters',
+        'name': 'assault_rifle_meter',
+        'donor_hud': r'ui\hud\battle_rifle',
+        'port_hud': r'ui\hud\assault_rifle',
+        'weapon': AR + r'\assault_rifle.weapon',
+        'rounds': 32, 'rows': 2,             # Halo 3's AR counter: 2 rows of 16
+        'canvas': (197, 34), 'tick_w': 6,
+        'backpack': NEW_HUD + r'\backpack_weapons',
+        'backpack_port': NEW_HUD + r'\assault_rifle_backpack',
+        'backpack_size': (62, 30),
+        'model_3p': H3_RM_XML,
+        'preview': 'assault_rifle_meter_preview.png',
+    },
+    'hud_plate': {
+        'rel': NEW_HUD + r'\backgrounds',
+        'donor': NEW_HUD + r'\backgrounds\battle_rifle_bkd',
+        'other': NEW_HUD + r'\backgrounds\smg_bkd',
+        'name': 'assault_rifle_bkd',
+        'hud': r'ui\hud\assault_rifle',
+        'model_3p': H3_RM_XML,
+        'fallback_box': (105, 191, 5, 34),
+        'stretch': 1.4,
+    },
+    'reticle': {
+        'rel': NEW_HUD + r'\crosshairs',
+        'donor': NEW_HUD + r'\crosshairs\hud_reticles',
+        'donor_sequence': 17,                # the BR's fullscreen crosshair (140 px)
+        'name': 'assault_rifle_reticle',
+        'hud': r'ui\hud\assault_rifle',
+        'footprint': 1.0,
+        # the ratio rule on the art: H3 AR sprite #0 x (H2 BR crosshair ink / H3 BR sprite #1 ink),
+        # both H3 sprites drawn at the same chud widget scale 0.59
+        'h3_art': {'sheet': 'hud_reticles', 'sequence': 0, 'yardstick': 1},
+        'preview': 'assault_rifle_reticle_preview.png',
+    },
+    'scope': {
+        'rel': NEW_HUD + r'\scope_masks',
+        'donor': NEW_HUD + r'\scope_masks\battle_rifle_scope_mask',
+        'name': 'assault_rifle_blank',
+        'hud': r'ui\hud\assault_rifle.new_hud_definition',
+        'widgets': ('scope_mask', 'left_crosshair', 'right_crosshair', 'bottom_crosshair',
+                    'top_crosshair', '2x', 'distance_meter'),
+        'size': (8, 8),
+    },
+
+    # step 8 -- the pickup icon at U+E13E, the messages (smg_* -> ar2_*: a SHORTER prefix than the
+    # donor's, h2_stringid -- the first in game)
+    'glyph': {
+        'box': (160, 62),
+        'model_3p': H3_RM_XML,
+        'tif': 'assault_rifle_h2_glyph.tif',
+    },
+    'messages': {
+        'donor_prefix': 'smg', 'donor_icon': '&smg',
+        'donor_name': 'SMG', 'port_name': 'Assault Rifle',
+        'weapon': AR + r'\assault_rifle.weapon',
+    },
+
+    # step 10 -- h2_port_sounds.py: Halo 3's OWN sounds from MCC's halo3 sfx.fsb (render_h3_bank,
+    # 48 kHz at their native level), classic Opus. Halo 3's AR fires a per-shot sound (ar_fire, 3
+    # permutations -- no loop to cut, unlike its SMG) and dry-fires Halo 3's BR dryfire.
+    # The seeded graphs (the BR's) cue the BR's four: reload, ready, melee 1, reload_half
+    'sounds': {
+        'weapon': AR + r'\assault_rifle.weapon',
+        'fire_fx': FX + r'\assault_rifle_fire.effect',
+        'audio': _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), 'out',
+                               'h2_sounds', 'assault_rifle'),
+        'audio_key': 'Assault Rifle',
+        'h3_bank': {'ar_fire': [H3SND + r'\assault_rifle\ar_fire'],
+                    'ar_dryfire': [H3SND + r'\battle_rifle\dryfire'],
+                    'ar_reload': [H3SND + r'\assault_rifle\ar_reload'],
+                    'ar_ready': [H3SND + r'\assault_rifle\ar_ready'],
+                    'ar_melee1': [H3SND + r'\assault_rifle\ar_melee1']},
+        'sounds': {'ar_fire': ('ar_fire', 'weapon_fire'), 'ar_dryfire': ('ar_dryfire', 'weapon_empty'),
+                   'ar_reload': ('ar_reload', 'weapon_reload'), 'ar_ready': ('ar_ready', 'weapon_ready'),
+                   'ar_melee1': ('ar_melee1', 'weapon_melee')},
+        'repoint_fx': (r'sound\weapons\smg\fire', 'ar_fire'),
+        'repoint_weapon': (r'sound\weapons\smg\dryfire', 'ar_dryfire'),
+        'graph_sounds': (('battle_rifle_reload', 'ar_reload'), ('battle_rifle_ready', 'ar_ready'),
+                         ('br_melee_strike_1', 'ar_melee1'), ('battle_rifle_reload_half', 'ar_reload')),
+        'graph_sound_dir': r'sound\weapons\battle_rifle' + '\\',
+        'gain': {},
+        'boost': {},
+        'backup': r'E:\HaloBackups\H2EK_assault_rifle_before_sounds',
+        'graph_backup': r'E:\HaloBackups\H2EK_assault_rifle_graphs_before_sounds',
+    },
+
     # step 9 -- h2_port_fp_anims.py: Halo 3's OWN FP animations, both species, through
     # `tool fp-model-animations` (the arms JMS = Bungie's, tool extract-render-data; the dervish's
     # is version 8209)
@@ -238,6 +365,8 @@ PORT = {
     },
 
     'firing_profile': {'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\rifle\\assault_rifle\\assault_rifle', 'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
-    'test': {'level': '03a_oldmombasa', 'dervish_level': '04a_gasgiant'},
+    # 03a is the SAW's Armed test level (h2-armed-cards session, staged 2026-10-20 18:08): the
+    # AR's Chief test runs on 03b (one test level per session)
+    'test': {'level': '03b_newmombasa', 'dervish_level': '04a_gasgiant'},
     'residency': {'levels': 'all', 'placements': False},
 }

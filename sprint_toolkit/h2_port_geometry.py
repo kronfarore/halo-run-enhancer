@@ -145,7 +145,9 @@ def h3_convert(g, rel, world):
 
     Section keys: world_rm / fp_rm (H3EK render model tags), node_names {h3: H2 JMS name}
     (default 'frame <name>'), materials {Halo 3 shader basename: H2 material name, None =
-    dropped}, regions {H2 material: region} (default 'standard'), permutation, markers
+    dropped; Bungie's name SYMBOLS may follow, e.g. `=?` on the BR's counter digits},
+    regions {H2 material: region}, permutation / region (FP), world_permutation /
+    world_region (what the world .model's variants name; default 'standard'), markers
     {Halo 3 marker: H2 name} (unlisted markers dropped), muzzle_drop, ground_point."""
     import h4_rm
     import h1_fp_retarget
@@ -168,9 +170,12 @@ def h3_convert(g, rel, world):
             continue
         if name not in mat_index:
             mat_index[name] = len(mats)
-            mats.append(h2_jms.Material(name, '(%d) %s %s' % (
-                len(mats) + 1, g.get('permutation', 'standard'),
-                g.get('regions', {}).get(name, 'standard'))))
+            # the WORLD model's region / permutation must be the ones its .model's variants name
+            # (the BR's: `base` / `gun`; a mismatch renders nothing), the FP model's are free
+            perm = g.get('world_permutation' if world else 'permutation', 'standard')
+            region = g.get('regions', {}).get(name) or g.get('world_region' if world else 'region',
+                                                             'standard')
+            mats.append(h2_jms.Material(name, '(%d) %s %s' % (len(mats) + 1, perm, region)))
         src_mat[k] = mat_index[name]
     out.materials = mats
     ci = rm['compression']
