@@ -71,6 +71,9 @@ SCALARS = {
     # bounds are two numbers side by side; `--set` takes them as "lo,hi"
     'real bounds': ('<f', 4, 2), 'angle bounds': ('<f', 4, 2),
     'short integer bounds': ('<h', 2, 2),
+    # vectors / points (the AR's `first person weapon offset`, a real vector 3d, 2026-10-20)
+    'real vector 3d': ('<f', 4, 3), 'real point 3d': ('<f', 4, 3),
+    'real vector 2d': ('<f', 4, 2), 'real point 2d': ('<f', 4, 2),
 }
 
 

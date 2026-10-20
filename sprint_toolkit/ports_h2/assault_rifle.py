@@ -98,7 +98,7 @@ PORT = {
         'kind': 'h3',
         'rel': AR + r'\bitmaps',
         'shaders_dir': AR + r'\shaders',
-        'bump_gain': 1.6,                      # 2.2 (the SAW's) measured 28.7 vs the SMG's 20.6
+        'bump_gain': 1.0,                      # slope = Bungie's SMG (user boot 1: 'world texture a little rough' at 1.6)
         'bitmaps': [(AR + r'\bitmaps\assault_rifle.bitmap', 'assault_rifle', SMG + r'\bitmaps\smg', 'color', None),
                     (AR + r'\bitmaps\assault_rifle_bump.bitmap', 'assault_rifle_bump', SMG + r'\bitmaps\smg_bump',
                      'bump_snorm', None),
@@ -221,13 +221,14 @@ PORT = {
             (AR + r'\projectiles\assault_rifle_bullet.projectile', 'maximum range', '', 0, 0, 40.0),
             (AR + r'\damage_effects\assault_rifle_bullet.damage_effect', 'damage upper bound', '', 0, 0, [7.5, 7.5]),
             (AR + r'\damage_effects\assault_rifle_bullet.damage_effect', 'instantaneous acceleration', '', 0, 0, 0.125),
+            # first-person placement (user, boot 1 on 03b: 'move it back and down 3 units', 1 unit =
+            # 0.01 wu): the SMG's 0.02, 0, 0 -> -0.01, 0, -0.03
+            (AR + r'\assault_rifle.weapon', 'first person weapon offset', '', 0, 0, [-0.01, 0.0, -0.03]),
         ],
         'skipped': [
             ('melee damage 70', 'Halo 2 weapons share strike_melee / smash_melee: a row would move every weapon'),
             ('reload time', "the magazine's reload time does not drive the player's reload (the SAW, user): "
                             "the AR's own 58-frame animation does"),
-            ('first person weapon offset', "Halo 3's is 0,0,0 against the SMG's 0.02 forward -- left the "
-                                           "SMG's until the first look in game"),
         ],
     },
 
@@ -300,6 +301,9 @@ PORT = {
         'box': (160, 62),
         'model_3p': H3_RM_XML,
         'tif': 'assault_rifle_h2_glyph.tif',
+        # Halo 2's HUD blue (user, boot 1: 'the pickup icon is white, the H2 icons are blue'),
+        # sampled from the classic HUD in the user's 03b screenshot (meter ticks / ammo digits)
+        'colour': (110, 171, 233),
     },
     'messages': {
         'donor_prefix': 'smg', 'donor_icon': '&smg',

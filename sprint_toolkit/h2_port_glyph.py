@@ -9,8 +9,10 @@ H2_PORT_PLAN 0.3). The config's `glyph` section:
     box        the glyph's size (= its on-screen size; Bungie's widest is 160x62)
     model_3p   the port's mesh (an H4 render dump, h3_weapon_glyph.mesh)
     tif        the drawn glyph's file name in %TEMP%
+    colour     optional RGB the glyph is drawn in (default white, Halo 3's look; the AR: Halo
+               2's HUD blue, sampled from a classic screenshot)
 
-    python h2_port_glyph.py <key> [--cp 0xE13E] [--write] [--restore]
+    python h2_port_glyph.py <key> [--cp 0xE13E] [--write [--redraw]] [--restore]
 """
 import argparse
 import os
@@ -37,9 +39,13 @@ FONTS = ('conduit-9', 'conduit-12', 'conduit-13', 'fixedsys-9',
 BOX = CP = MODEL = TIF = None
 
 
+COLOUR = None
+
+
 def setup(key):
-    global BOX, CP, MODEL, TIF
+    global BOX, CP, MODEL, TIF, COLOUR
     g = ports_h2.get(key, 'glyph')
+    COLOUR = tuple(g['colour']) if g.get('colour') else None
     BOX, MODEL = tuple(g['box']), g['model_3p']
     CP = ports_h2.load(key)['reservations']['glyph']
     TIF = g.get('tif', key + '_h2_glyph.tif')
@@ -54,23 +60,44 @@ def art(path, box=None):
     cov = wg.close_gaps(wg.silhouette(verts, idx, box[0], box[1], margin=0), 5)
     px = wg.stylise(cov)
     im = Image.new('RGBA', box)
-    im.putdata([(r * 17, g * 17, b * 17, a * 17) for a, r, g, b in px])
+    if COLOUR:
+        # the glyph DRAWN in a colour (the AR, boot 1, user: 'the pickup icon is white, the H2
+        # icons are blue' -- a new codepoint's pixels are shown as written, nothing tints them)
+        # tool's encoder writes a SEMI-transparent pixel with its WHITE shorthand (measured: of a
+        # glyph drawn at alpha 170 only the 255 pixels kept their colour), so a coloured glyph is
+        # OPAQUE wherever it has ink and its shading (Halo 3's grey body, bright outline) moves
+        # from the alpha into the brightness
+        # body (wg.FILL) = the colour, outline (wg.EDGE) = halfway to white, the antialiased fringe
+        # dimmed by its coverage
+        def tint(a):
+            if a >= wg.EDGE:
+                return tuple((c + 255) // 2 for c in COLOUR)
+            k = min(1.0, a / float(wg.FILL))
+            return tuple(int(c * k) for c in COLOUR)
+        im.putdata([tint(a) + (255,) if a else (0, 0, 0, 0) for a, r, g, b in px])
+    else:
+        im.putdata([(r * 17, g * 17, b * 17, a * 17) for a, r, g, b in px])
     im.save(path, compression=None)
     return sum(1 for q in px if q[0])
 
 
-def one(name, tif, cp, write):
+def one(name, tif, cp, write, redraw=False):
     live = os.path.join(LIVE, name)
     before = open(live, 'rb').read()
-    if hf.glyph_of(before, cp) is not None:
-        print('   %-20s 0x%04X already drawn by glyph %d'
-              % (name, cp, hf.glyph_of(before, cp)))
+    mine = hf.glyph_of(before, cp)
+    if mine is not None and not redraw:
+        print('   %-20s 0x%04X already drawn by glyph %d' % (name, cp, mine))
         return True
-    after = fa.add(before, cp)
-    problem = fa.verify(before, after, cp)
-    if problem:
-        print('   %-20s REFUSED: %s' % (name, problem))
-        return False
+    if mine is not None:
+        # --redraw (the AR, boot 1: its glyph recoloured): tool replaces a MAPPED codepoint in
+        # place; every other glyph must come out unchanged
+        after = before
+    else:
+        after = fa.add(before, cp)
+        problem = fa.verify(before, after, cp)
+        if problem:
+            print('   %-20s REFUSED: %s' % (name, problem))
+            return False
     if not write:
         print('   %-20s would add glyph %d' % (name, hf.header(before)[0]))
         return True
@@ -88,9 +115,9 @@ def one(name, tif, cp, write):
     done = open(work, 'rb').read()
     i = hf.glyph_of(done, cp)
     rec = hf.record(done, i)
-    disturbed = [k for k in range(hf.header(before)[0])
-                 if hf.record(before, k)[:6] != hf.record(done, k)[:6]
-                 or hf.payload(before, k) != hf.payload(done, k)]
+    disturbed = [k for k in range(hf.header(before)[0]) if k != mine
+                 and (hf.record(before, k)[:6] != hf.record(done, k)[:6]
+                      or hf.payload(before, k) != hf.payload(done, k))]
     if disturbed:
         print('   %-20s REFUSED: %d shipped glyph(s) changed' % (name, len(disturbed)))
         return False
@@ -106,6 +133,7 @@ def main(argv=None):
     ap.add_argument('--cp', type=lambda s: int(s, 0), default=None)
     ap.add_argument('--write', action='store_true')
     ap.add_argument('--restore', action='store_true')
+    ap.add_argument('--redraw', action='store_true', help='replace the existing glyph in place')
     a = ap.parse_args(argv)
     setup(a.key)
     if a.cp is None:
@@ -130,7 +158,7 @@ def main(argv=None):
     print('adding 0x%04X (decimal %d):' % (a.cp, a.cp))
     ok = True
     for name in FONTS:
-        ok &= one(name, tif, a.cp, a.write)
+        ok &= one(name, tif, a.cp, a.write, a.redraw)
     if not a.write:
         print('(dry run -- pass --write)')
     sys.exit(0 if ok else 1)
