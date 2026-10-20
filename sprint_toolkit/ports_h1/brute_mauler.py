@@ -338,8 +338,9 @@ PORT.update({
                 # TEST 1 (user): 'the ammo meter needs to be replaced by the original pips' --
                 # Halo 3's own round icon (chud excavator: ballistic_meters #13, five pips)
                 # one a round in a row, at Halo 3's spacing (ammo_meter `art`)
+                # ticks as tall as stock Halo 1's shotgun meter's (64 px), the rows re-wrapped to reach it (user 2026-10-20: 'drawn comparatively small')
                 'ammo_meter': {'sizes': (5, 10), 'base': ML + 'bitmaps\\mauler_ammo',
-                               'art': {'h3': ('ballistic_meters', 13)}},
+                               'art': {'tick_h': 64, 'h3': ('ballistic_meters', 13)}},
                 'flash_base': 12},
         'palette_levels': ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40'],
     },

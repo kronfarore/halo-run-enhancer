@@ -667,8 +667,9 @@ PORT.update({
                 # BOOT 1 (user: 'it uses the generic ammo tick meter -- import its own'): Halo 4's CUI
                 # `bitmap_ammo_ticks` = ammo_incinerator (177 x 54 px = 59 x 18 units: ONE shell a round), at its
                 # native density
+                # ticks as tall as stock Halo 1's rocket launcher meter's (64 px), the rows re-wrapped to reach it (user 2026-10-20: 'drawn comparatively small')
                 'ammo_meter': {'sizes': (1,), 'base': IC + 'bitmaps\\incineration_cannon_ammo',
-                               'art': {'h3': (H4 + ICUI + 'ammo_incinerator', 0), 'native': True}}},
+                               'art': {'tick_h': 64, 'h3': (H4 + ICUI + 'ammo_incinerator', 0), 'native': True}}},
         'palette_levels': LEVELS,
     },
 

@@ -489,8 +489,9 @@ PORT.update({
         'hud': {'donor': RL + 'rocket_launcher', 'out': BS + 'brute shot',
                 'reticle': ('hud_reticles', 17, 'brute shot'),
                 'reticle_thicken': 1,
+                # ticks as tall as stock Halo 1's shotgun meter's (64 px), the rows re-wrapped to reach it (user 2026-10-20: 'drawn comparatively small')
                 'ammo_meter': {'sizes': (6,), 'base': BS + 'bitmaps\\brute_shot_ammo',
-                               'art': {'h3': ('ballistic_meters', 6)}},
+                               'art': {'tick_h': 64, 'h3': ('ballistic_meters', 6)}},
                 'flash_base': 2},
         'palette_levels': ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40'],
     },

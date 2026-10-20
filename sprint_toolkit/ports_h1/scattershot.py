@@ -614,8 +614,9 @@ PORT.update({
                 'reticle_supersample': 2,
                 'reticle_scale': 1.0, 'reticle_overlay': 1.5 / (123 / 97.0 * 1.0 * 2 * 0.75),
                 'flash_base': 12,                # the shotgun's low-ammo cutoff is of 12
+                # ticks as tall as stock Halo 1's shotgun meter's (64 px), the rows re-wrapped to reach it (user 2026-10-20: 'drawn comparatively small')
                 'ammo_meter': {'sizes': (5, 10), 'base': SS + 'bitmaps\\scattershot_ammo',
-                               'art': {'h3': (H4 + SAM + 'ammo_spreadgun', 0), 'native': True}}},
+                               'art': {'tick_h': 64, 'h3': (H4 + SAM + 'ammo_spreadgun', 0), 'native': True}}},
         'palette_levels': LEVELS,
     },
 

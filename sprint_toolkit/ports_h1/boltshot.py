@@ -578,11 +578,12 @@ PORT.update({
                 'flash_base': 12,                # the pistol's low-ammo cutoff is of 12
                 # Halo 4's own round pips (ammo_burstgun: 10 in a row, the screenshot's top right),
                 # one a round (ammo_meter `art`, the Mauler's), for 10 (default) and 15 (balanced)
+                # ticks as tall as stock Halo 1's pistol meter's (59 px), the rows re-wrapped to reach it (user 2026-10-20: 'drawn comparatively small')
                 'ammo_meter': {'sizes': (10, 15), 'base': BO + 'bitmaps\\boltshot_ammo',
                                # BOOT 1 (user: 'squished and not readable'): scaled to Halo 3's unit
                                # the ten pips merged into ONE strip (taken as one tick) -> read at the
                                # strip's own density (`native`: ten pips, 33 px apart)
-                               'art': {'h3': (H4 + BR4 + 'ammo_burstgun', 0), 'native': True}}},
+                               'art': {'tick_h': 59, 'h3': (H4 + BR4 + 'ammo_burstgun', 0), 'native': True}}},
         'palette_levels': LEVELS,
     },
 

@@ -507,8 +507,9 @@ PORT.update({
                 'reticle_supersample': 2,
                 'reticle_scale': 1.6, 'reticle_overlay': 1.5 / (123 / 97.0 * 1.6 * 2 * 0.75),
                 # Halo 4's own round shards (ammo_forerunnersniper: 2 in a row), one a round, native density
+                # ticks as tall as stock Halo 1's sniper rifle meter's (36 px), the rows re-wrapped to reach it (user 2026-10-20: 'drawn comparatively small')
                 'ammo_meter': {'sizes': (2,), 'base': BI + 'bitmaps\\binary_rifle_ammo',
-                               'art': {'h3': (H4 + BIUI + 'ammo_forerunnersniper', 0), 'native': True}}},
+                               'art': {'tick_h': 36, 'h3': (H4 + BIUI + 'ammo_forerunnersniper', 0), 'native': True}}},
         'palette_levels': LEVELS,
     },
 

@@ -7,6 +7,12 @@ HCEEK\maps\all_ports_test\<level>.map and staged live (h1_port_test_map.stage; t
 backed up, `python h1_port_test_map.py --restore <level> --force` puts it back).
 
     python h1_all_ports_test_map.py --level d40 [--radius 1.0] [--no-stage]
+
+A KIT build instead of the shipped map (the ammo meters, 2026-10-20: 19 ports' HUDs changed, so the
+shipped map shows the old ones): build it with `h1_rebuild_all.py --maps a30 --no-ship` first, then
+    python h1_all_ports_test_map.py --level a30 --source kit --keys smg,dmr,...
+`--source` kit = HCEEK\maps\<level>.map (or a map path); `--keys` = only these ports, whatever
+their status (a port in rework is left out otherwise).
 """
 import argparse
 import contextlib
@@ -27,10 +33,13 @@ OWNER = 'all_ports_test'
 STANDALONE = {'saw': r'weapons\saw\saw'}      # built before the configs had a pickable section
 
 
-def weapon_tags():
+def weapon_tags(keys=None):
     out = []
     for key, P in ports_h1.all_ports():
-        if P.get('status') != 'done':
+        if keys is not None:
+            if key not in keys:
+                continue
+        elif P.get('status') != 'done':
             continue
         w = (P.get('pickable') or {}).get('weapon') or STANDALONE.get(key)
         if w:
@@ -43,20 +52,29 @@ def main():
     ap.add_argument('--level', default='d40')
     ap.add_argument('--radius', type=float, default=1.0)
     ap.add_argument('--no-stage', action='store_true')
+    ap.add_argument('--source', help="'kit' (the kit's own build of the level, h1_rebuild_all --no-ship) or a map path")
+    ap.add_argument('--keys', help='comma list of port keys, any status (default: every done port)')
     a = ap.parse_args()
     cwd = os.getcwd()
     os.chdir(TOOL)
     import halo_enhancer as he
     import halo_patch as hp
     he.load_settings()
-    src = he.baseline_source(hp.default_map_path(he.mcc_root(), 'halo1', a.level), GAME)
+    if a.source:
+        src = (os.path.join(paths.HCEEK, 'maps', a.level + '.map') if a.source == 'kit'
+               else os.path.abspath(os.path.join(cwd, a.source)))
+    else:
+        src = he.baseline_source(hp.default_map_path(he.mcc_root(), 'halo1', a.level), GAME)
     with contextlib.redirect_stdout(io.StringIO()):
         m = hp.open_map(src, GAME)
     reg = hp.PluginRegistry(he.CONFIG.get('assembly_plugins_dir'),
                             he.CONFIG.get('plugin_subdirs_by_game', {}).get(GAME, []))
     os.chdir(cwd)
     print('%s from %s; markers: %s' % (a.level, src, hp.reach_named_markers(m, GAME)))
-    tags = weapon_tags()
+    keys = a.keys.split(',') if a.keys else None
+    tags = weapon_tags(keys)
+    if keys and len(tags) != len(keys):
+        raise SystemExit('unknown or unplaceable key(s): %s' % sorted(set(keys) - {k for k, _t in tags}))
     half = (len(tags) + 1) // 2
     groups = [[t for _k, t in tags[:half]], [t for _k, t in tags[half:]]]
     res = hp._apply_spawn_weapons(m, GAME, {'groups': groups, 'radius': a.radius}, reg)

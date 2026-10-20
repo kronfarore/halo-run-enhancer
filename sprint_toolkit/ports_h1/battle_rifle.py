@@ -346,9 +346,10 @@ PORT.update({
                 'reticle': ('hud_reticles', 1, 'battle rifle'),
                 'reticle_thicken': 1,
                 'flash_base': 12,                # the pistol's low-ammo cutoff is of 12
+                # ticks as tall as stock Halo 1's AR meter's (30 px), the rows re-wrapped to reach it (user 2026-10-20: 'drawn comparatively small')
                 'ammo_meter': {'sizes': (36, 54), 'base': BR + 'bitmaps\\battle_rifle_ammo',
                                # Halo 3's own rounds, in its rows (generic-meter audit, user 2026-10-17)
-                               'art': {'h3': ('ballistic_meters', 7), 'grid': True}}},
+                               'art': {'tick_h': 30, 'h3': ('ballistic_meters', 7), 'grid': True}}},
         'palette_levels': ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40'],
     },
 

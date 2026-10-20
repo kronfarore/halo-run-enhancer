@@ -595,8 +595,9 @@ PORT.update({
                 # BOOT 5 (user: 'get the original ammo meter in'): Halo 4's `bitmap_ammo_ticks` (railgun.cui_screen:
                 # 49 x 20 at (143, 60)) draws ammo_railgun -- a silhouette of the gun, one a round -- at native
                 # density (the Binary Rifle's shard route)
+                # ticks as tall as stock Halo 1's rocket launcher meter's (64 px), the rows re-wrapped to reach it (user 2026-10-20: 'drawn comparatively small')
                 'ammo_meter': {'sizes': (1,), 'base': RG + 'bitmaps\\railgun_ammo',
-                               'art': {'h3': (H4 + RGUI + 'ammo_railgun', 0), 'native': True}}},
+                               'art': {'tick_h': 64, 'h3': (H4 + RGUI + 'ammo_railgun', 0), 'native': True}}},
         'palette_levels': LEVELS,
     },
 

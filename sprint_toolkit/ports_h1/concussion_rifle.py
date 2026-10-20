@@ -511,10 +511,11 @@ PORT.update({
                 'reticle_scale': 1.3, 'reticle_overlay': 88 / (252 * 0.75),
                 'reticle_supersample': 2,
                 'reticle_min_width': 2,
+                # ticks as tall as stock Halo 1's shotgun meter's (64 px), the rows re-wrapped to reach it (user 2026-10-20: 'drawn comparatively small'); the enlarged pill kept hard-edged (user)
                 'ammo_meter': {'sizes': (6, 5), 'base': CR + 'bitmaps' + B + 'concussion_rifle_ammo',
                                # Reach's shader bar draws its ballistic pill (the user's screenshot 2026-10-17: six
                                # 6 x 12 px pills, 10 px apart)
-                               'art': {'h3': (R + r'ui\chud\bitmaps\ballistic_meters', 0), 'native': True}},
+                               'art': {'tick_h': 64, 'hard': 4, 'h3': (R + r'ui\chud\bitmaps\ballistic_meters', 0), 'native': True}},
                 'flash_base': 2},
         'palette_levels': LEVELS,
     },

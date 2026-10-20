@@ -523,8 +523,9 @@ PORT.update({
                 # BOOT 2 (user: '36 small ticks -- the Halo 4 art is 36, the rows just look different'):
                 # Halo 4's three segment strips (top pointed, middle / bottom square; 12 columns), a
                 # column = one 3-round shot (ammo_meter `rows`), at their native density
+                # ticks as tall as stock Halo 1's AR meter's (30 px), the rows re-wrapped to reach it (user 2026-10-20: 'drawn comparatively small')
                 'ammo_meter': {'sizes': (36, 54), 'base': LR + 'bitmaps\\light_rifle_ammo',
-                               'art': {'rows': [(H4 + LRUI + 'ammo_lightrifle_top', 0),
+                               'art': {'tick_h': 30, 'rows': [(H4 + LRUI + 'ammo_lightrifle_top', 0),
                                                 (H4 + LRUI + 'ammo_lightrifle_middle', 0),
                                                 (H4 + LRUI + 'ammo_lightrifle_bottom', 0)],
                                        'native': True}}},
