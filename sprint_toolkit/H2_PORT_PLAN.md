@@ -187,7 +187,7 @@ animations,catalog` -> old vs new, pre vs new and pre vs end all 0 / 0 / 0.
 its HUD + HUD bitmaps + their TIFFs, all 13 weapons resources + scenarios, hud_messages tag + every
 .txt, the eight fonts, the scripts incl. ports_h2/*.py): phase 0's ->
 `F:\HaloPortBackups\2026-10-20_h2-port-phase0` (336 files, 237.6 MB). The proofs' pre-run kit
-copies are on E: (`E:\HaloBackups\h2_proof_<tag>_pre`, ~1.1 GB each: delete old ones freely once a
+copies are on E: (`E:\HaloBackups\h2_proof_<tag>_pre`, ~300 MB each: delete old ones freely once a
 later proof passed).
 
 ### 0.3 Reservations
