@@ -423,7 +423,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h1_replace_first_weapons', 'h1_enemy_weapon_enabled',
                'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards', 'h1_armed_all_weapons',
                'h1_overheat_unzoom', 'h1_overheat_no_rezoom', 'h1_covenant_avoid_ff',
-               'h1_hunter_drop',
+               'hunter_drop',
                'h1_melee_blocks_fire', 'h1_supercombine_count', 'h1_supercombine_players',
                'h1_birthday_party', 'h1_charge_latch',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
@@ -1077,10 +1077,10 @@ CONFIG = {
     # Options -> Patching -> Halo 1: Grunt / Jackal / Elite actors get the human actors'
     # 'avoid friends line of fire' + 'crouch when in line of fire' flags (user, 2026-10-09)
     "h1_covenant_avoid_ff": False,
-    # Options -> Patching -> Halo 1: Hunters drop the pickable Fuel Rod (12 rounds) when they
-    # die -- a death effect the rebuilt maps carry on the Hunter coll; off blanks it at patch
-    # time (h1_enemy_weapons.hunter_fuel_rod_drop). Opt-in (user, 2026-10-19)
-    "h1_hunter_drop": False,
+    # Options -> Weapon: Hunters drop the game's pickable Fuel Rod when they die -- Halo 1,
+    # 3, ODST, Reach, 4 (hunter_drop.py has each game's route). Opt-in (user, 2026-10-19);
+    # (Halo 1 only, as 'h1_hunter_drop', for one day before)
+    "hunter_drop": False,
     # Options -> Weapon ports: ported weapons join every weapon pick (initial
     # selection, New Weapon, automatic rolls) on levels whose map carries them
     "weapon_ports_in_pools": False,
@@ -9443,7 +9443,7 @@ class MagnitudeEditorDialog(QDialog):
                 h4_ability_visibility=CONFIG.get('h4_ability_visibility') or None,
                 h1_enemy_weapons=self._h1_enemy_weapons_spec(armed_picks),
                 h1_covenant_avoid_ff=bool(CONFIG.get('h1_covenant_avoid_ff')),
-                h1_hunter_drop=bool(CONFIG.get('h1_hunter_drop')),
+                hunter_drop=bool(CONFIG.get('hunter_drop')),
                 h1_levels=(self.parent_gui.db.h1_level_maps()
                            if self.game == 'Halo 1' and getattr(self.parent_gui, 'db', None)
                            else None),
@@ -10524,6 +10524,17 @@ class OptionsDialog(QDialog):
             "Zooming from a moving vehicle is very disorienting. Static mounted turrets "
             "are not affected by this switch. Vehicle guns zoom one stage only.")
         wform.addRow("", self.vehicle_zoom_cb)
+
+        self.hunter_drop_cb = QCheckBox("Hunters drop a Fuel Rod")
+        self.hunter_drop_cb.setChecked(bool(CONFIG.get('hunter_drop')))
+        self.hunter_drop_cb.setToolTip(
+            "A Hunter that dies leaves the game's own pickable Fuel Rod with its usual "
+            "rounds -- every Hunter's arm cannon is never dropped. Halo 1, Halo 3, ODST, "
+            "Reach and Halo 4 (not Halo 2 yet).\nHalo 1: only on maps rebuilt with "
+            "the drop; without the Fuel Rod's Balanced switch its blast does not hurt "
+            "Hunters.\nHalo 3 / ODST: the back-shield and spike debris now fall at death "
+            "(one spike becomes the Fuel Rod) instead of when the armour breaks.")
+        wform.addRow("Hunters:", self.hunter_drop_cb)
 
         self.keep_reticle_cb = QCheckBox("Keep the reticle while zoomed")
         self.keep_reticle_cb.setChecked(bool(CONFIG.get('keep_reticle_zoomed', True)))
@@ -11945,13 +11956,6 @@ class OptionsDialog(QDialog):
             "'crouch when in line of fire'). Not perfect, but they try -- most noticeable "
             "when they carry explosives (Armed cards).")
         h1form.addRow("", self.h1_covenant_ff_cb)
-        self.h1_hunter_drop_cb = QCheckBox("Hunters drop a Fuel Rod")
-        self.h1_hunter_drop_cb.setChecked(bool(CONFIG.get('h1_hunter_drop')))
-        self.h1_hunter_drop_cb.setToolTip(
-            "A Hunter that dies leaves the pickable Fuel Rod with 12 rounds (Halo 1's Hunters "
-            "carry an arm cannon that is never dropped). Only on maps rebuilt with the drop.\n"
-            "Without the Fuel Rod's Balanced switch its blast does not hurt Hunters.")
-        h1form.addRow("", self.h1_hunter_drop_cb)
 
         self.h1_overheat_unzoom_cb = QCheckBox("Overheating drops the zoom (halo1.dll)")
         self.h1_overheat_unzoom_cb.setChecked(bool(CONFIG.get('h1_overheat_unzoom')))
@@ -13312,7 +13316,7 @@ class OptionsDialog(QDialog):
             'h1_birthday_party': self.h1_birthday_party_cb.isChecked(),
             'h1_charge_latch': self.h1_charge_latch_cb.isChecked(),
             'h1_covenant_avoid_ff': self.h1_covenant_ff_cb.isChecked(),
-            'h1_hunter_drop': self.h1_hunter_drop_cb.isChecked(),
+            'hunter_drop': self.hunter_drop_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
             'odst_red_plasma_as_brute': self.red_plasma_cb.isChecked(),
             'odst_variants_as_base': self.odst_variants_cb.isChecked(),
