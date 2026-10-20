@@ -16,6 +16,7 @@ The FIRING data is not touched here: it is in the kit's ai\generic (h2_ai_firing
 """
 import argparse
 import os
+import struct
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -24,15 +25,53 @@ sys.path.insert(0, ROOT)
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 
 
-def arm(map_path, weapon, species, share=1.0, out=None, balanced=True):
+# the player's damage pool in Halo 2 = the MODEL (hlmt New Damage Info +0x60, 0xF8; memory
+# halo-player-vitality-and-hud): Maximum Vitality +0x28, Maximum Shield Vitality +0x8C, shield
+# Stun Time +0x98, shield Recharge Time +0x9C
+PLAYER_MODELS = ('objects\\characters\\masterchief\\masterchief',
+                 'objects\\characters\\dervish\\dervish')
+HLMT_DAMAGE, HLMT_DAMAGE_ES = 0x60, 0xF8
+GOD = ((0x28, 1e6), (0x8C, 1e6), (0x98, 0.0), (0x9C, 0.1))
+
+
+def god_shield(m):
+    """THE GOD SHIELD on every port test (user, Halo 1 2026-10-09: 'an increased shield in all
+    the port testing'): the player models' body + shield 1e6, no shield stun, 0.1 s recharge."""
+    out = []
+    for path in PLAYER_MODELS:
+        for _n, t in m.find_tags('hlmt', path):
+            for e in m.follow_all(t, [HLMT_DAMAGE], [HLMT_DAMAGE_ES], 'all')[:1]:
+                for off, v in GOD:
+                    struct.pack_into('<f', m.data, e + off, v)
+                out.append(path.rsplit(chr(92), 1)[-1])
+    return out
+
+
+def test_map(map_path, weapon=None, species=(), share=1.0, balanced=True, god=True):
+    """One open + save of a built test map: the Armed pass (if species) and the god shield."""
+    import halo_patch as hp
+    m = hp.open_map(map_path, 'Halo 2')
+    if getattr(m, 'compressed', False):
+        raise SystemExit('%s is compressed -- Halo2Map.save cannot write it' % map_path)
+    res = arm(map_path, weapon, species, share, balanced=balanced, m=m) if species else None
+    if god:
+        print('   god shield (player body + shield 1e6, no stun): %s' % (', '.join(god_shield(m)) or 'NO player model found'))
+    m.save(map_path)
+    if res:
+        report(*res)
+
+
+def arm(map_path, weapon, species, share=1.0, out=None, balanced=True, m=None):
     """The enhancer's own pass (h2_enemy_weapons.apply: arming, shieldless Jackals, the Grunt
     teach + half rate, Balanced AI rows) with one card per species at `share`. Balanced by
     default: an Armed test runs the balanced numbers (memory h1-armed-test-balanced-god)."""
     import halo_patch as hp
     import h2_enemy_weapons as E
-    m = hp.open_map(map_path, 'Halo 2')
-    if getattr(m, 'compressed', False):
-        raise SystemExit('%s is compressed -- Halo2Map.save cannot write it' % map_path)
+    own = m is None
+    if own:
+        m = hp.open_map(map_path, 'Halo 2')
+        if getattr(m, 'compressed', False):
+            raise SystemExit('%s is compressed -- Halo2Map.save cannot write it' % map_path)
     names = {s.lower(): e for e in E.ENEMY_CHARS for s in (e, e.split()[0])}
     cards = {}
     for s in species:
@@ -48,7 +87,8 @@ def arm(map_path, weapon, species, share=1.0, out=None, balanced=True):
     import ai_firing_profile as A
     rows = E.apply(m, hp, {'cards': cards, 'balanced': [weapon] if balanced else []},
                    registry=A._plugins()('Halo 2'), salt=os.path.basename(map_path))
-    m.save(out or map_path)
+    if own:
+        m.save(out or map_path)
     return idx, rows
 
 

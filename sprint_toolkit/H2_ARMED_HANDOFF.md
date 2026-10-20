@@ -31,10 +31,15 @@ done and committed; the interface is one module call and one spec dict.
      Brute, Flood Combat Form (floodcombat_elite / _human), **Marine** (the Ally twin). Left out:
      Tartarus, the Heretic leader, Johnson boss, councilors, Hunters, Sentinels, Drones, story
      characters.
-   - **Jackals + two-handed** (user, 2026-10-20): a Jackal unit handed a two-handed weapon
-     (not class pistol, not dual-wieldable -- Halo 2's SMG is class 'rifle' but dual-wields)
-     becomes `jackal_sniper` (the same biped, variant 'shieldless', with the rifle set). Every
-     level that fields Jackals has it in its palette; elsewhere the row says it kept the shield.
+   - **Jackals + two-handed** (user, 2026-10-20): a Jackal handed a two-handed weapon (not class
+     pistol, not dual-wieldable -- Halo 2's SMG is class 'rifle' but dual-wields) spawns WITHOUT
+     its arm shield: its starting location's **Actor Variant Name** (+0x30, string id) =
+     'shieldless', the jackal model's own variant -- exactly what Bungie does for an ordinary
+     'jackal' location on 03a (and 21 jackal_sniper ones). The character stays the ordinary
+     Jackal. (Test 2 switched them to jackal_sniper instead: those fired but did not visibly aim --
+     its SNIPER STYLE: suppressing fire, no cover peek / investigate / surprise. Kit twin
+     characters were tried next and dropped: tool keeps no palette entry a squad does not use.)
+     A squad has no variant field, so a squad's draw reaches its Jackals through its locations.
    - **Grunt teach** (seen in game 2026-10-20: Grunts never carried the SAW -- their graph has no
      'rifle' class, so they spawn with the biped default): every mode of
      `objects\characters\grunt\grunt` holding the 'missile' class (the fuel rod's two-handed
@@ -45,6 +50,12 @@ done and committed; the interface is one module call and one spec dict.
      Pattern Properties entry for each two-handed, non-'missile' weapon handed to Grunts =
      ai\generic's patterns at half rate (the pattern's rate, or the barrel's rounds per second
      where the pattern says 0); the SAW 20 -> 10. Other weapons resolve on ai\generic as before.
+   - **Species skill** (the Halo 1 rule, Halo 2 form, 2026-10-20): Halo 2 has no per-species aim
+     block; a species' skill is its own Weapons Properties entry for its signature weapon. The
+     Grunt's own plasma pistol vs ai\generic's: accuracy bounds x0.25-0.5, accuracy time x3-6,
+     surprise delay x3, surprise fire-wildly x1.5; the Jackal's: surprise delay x2. Every Grunt /
+     Jackal character gets its own entry for each weapon handed to that species = ai\generic's
+     with those fields scaled (a 0 in the species' entry is skipped; bounds capped at 1).
    - **Balanced**: for a weapon in `spec['balanced']` the profile's `balanced_props` /
      `balanced_patterns` (Assembly Halo 2 `char` names) are written over the map's `ai\generic`
      entry BEFORE the Grunt copies (so those carry them too). THE WDM RULE (user, 2026-10-20):
@@ -74,9 +85,15 @@ done and committed; the interface is one module call and one spec dict.
    cards themselves; `weapon_ports.weap_path(p)` must resolve the SAW (its catalog entry has
    `balance` rows -> `objects\weapons\rifle\saw\saw`).
 
-## Open
+## Seen in game, for the enhancer to know
 
-- **Species skill rule** (Halo 1: per-species accuracy scaling): every Halo 2 species inherits
-  `ai\generic`'s accuracy; a per-species skill needs species override entries like the Grunt
-  half rate's. Not built; the user has not asked for it in Halo 2.
-- **God shield on port tests** (Halo 1 rule): h2_port_test_map has none yet.
+- **Flee -> plasma pistol** (user, test 2): a fleeing Grunt or Jackal drops a rifle-class weapon
+  and draws a plasma pistol. That is the character's Retreat Properties 'backup weapon' (the
+  plasma pistol for both, never the old weapon); their graphs' 'flee' mode has no rifle class
+  (Grunt: any / pistol, Jackal: pistol / unarmed), as with a stock fuel-rod Grunt. Left as Halo 2
+  does it unless the user decides otherwise.
+
+## Test tooling
+
+- **God shield**: h2_port_test_map now sets it on every test (player models masterchief /
+  dervish: body + shield 1e6, no stun; `--mortal` turns it off) -- test-map only, not enhancer.

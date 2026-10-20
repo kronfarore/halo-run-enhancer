@@ -49,8 +49,13 @@ NEVER = ('brute_tartarus', 'heretic_leader', 'heretic_leader_hologram', 'marine_
 WPAL, WPAL_ES = 0x98, 0x28
 PROPS, PROPS_ES, PROPS_W = 0xCC, 0xCC, 0x8          # datum of the weapon tagref (+0x4)
 FPP, FPP_ES, FPP_W, FPP_PAT, PAT_ES = 0xD4, 0x10, 0x4, 0x8, 0x40
-SQUAD_CHAR, SQUAD_WEAP, LOC_CHAR, LOC_WEAP = 0x36, 0x3C, 0x20, 0x22
-SHIELDLESS_JACKAL = r'objects\characters\jackal\ai\jackal_sniper'
+LOC_WEAP = 0x22
+#: a Jackal handed a two-handed weapon loses its arm shield: its STARTING LOCATION's Actor Variant
+#: Name (+0x30, a string id) = 'shieldless' -- the jackal model's own variant, exactly what Bungie
+#: does for one ordinary 'jackal' location on 03a (and 21 jackal_sniper ones). The character stays
+#: the ordinary Jackal: test 2 switched them to jackal_sniper, and those fired but did not visibly
+#: aim (the SNIPER STYLE: suppressing fire, no cover peek / investigate / surprise).
+LOC_VARIANT, SHIELDLESS_VARIANT = 0x30, 'shieldless'
 # weap (Assembly Halo2MCC): flags +0x12C (bit 22 can be / 23 only dual wielded), weapon class /
 # name string ids +0x288 / +0x28C, Barrels +0x2D0 (0xEC: rounds per second +0x4 bounds,
 # fire recovery time +0x20)
@@ -127,10 +132,32 @@ def grunt_half(info):
     return two_handed(info) and info['class'] != 'missile'
 
 
+def find_stringid(m, text):
+    """The map's string id for `text` (Halo 2: low 16 bits = string-table index, high byte =
+    the length -- halo2_map.resolve_stringid read backwards), or None."""
+    try:
+        cnt, blob, idx = m.u32(0x30), m.u32(0x34), m.u32(0x3C)
+    except Exception:
+        return None
+    key = text.encode('latin-1') + b'\0'
+    at = blob - 1
+    while True:
+        at = m.data.find(key, at + 1)
+        if at < 0:
+            return None
+        if at == blob or m.data[at - 1] == 0:
+            break
+    off = at - blob
+    arr = memoryview(m.data)[idx:idx + cnt * 4].cast('i')
+    for i in range(cnt):
+        if arr[i] == off:
+            return (len(text) << 24) | i
+    return None
+
+
 def arm(m, hp, cards, salt=None):
-    """Rewrite squad weapons by share. A JACKAL given a two-handed weapon becomes the shieldless
-    Jackal (jackal_sniper: the same biped, variant 'shieldless', with the two-handed rifle set).
-    Returns (rows, {enemy: {weapon: units}})."""
+    """Rewrite squad weapons by share. A JACKAL given a two-handed weapon spawns shieldless (its
+    starting location's Actor Variant Name = 'shieldless'). Returns (rows, {enemy: {weapon: units}})."""
     base = hp._scnr_base(m)
     wnames = palette(m, hp, base)
     widx = {(n or '').lower(): i for i, n in enumerate(wnames)}
@@ -138,7 +165,7 @@ def arm(m, hp, cards, salt=None):
     cpal = m.follow_all(base, [lay['palette'][0]], [lay['palette'][1]], 'all')
     cnames = [hp._tag_name_by_id(m, struct.unpack_from('<I', m.data, e + lay['pal_id_at'])[0])
               for e in cpal]
-    sniper = next((i for i, n in enumerate(cnames) if (n or '').lower() == SHIELDLESS_JACKAL), None)
+    sid = find_stringid(m, SHIELDLESS_VARIANT)
     salt = salt or os.path.basename(str(getattr(m, 'path', '') or ''))
     rows, missing, done = [], set(), {}
     usable, info = {}, {}
@@ -153,18 +180,19 @@ def arm(m, hp, cards, salt=None):
                 missing.add(w)
         if ok:
             usable[enemy] = ok
-    seen, shieldless, no_sniper = set(), 0, 0
-    squad_pick = None                   # (squad unit, weapon) of the squad the locations follow
+    seen, shieldless, kept = set(), 0, 0
+    squad_pick = None                   # the weapon the squad drew; its locations follow it
 
-    def unshield(char_at, c):
-        nonlocal shieldless, no_sniper
-        if char_at is None or (cnames[c] or '').lower() == SHIELDLESS_JACKAL:
+    def unshield(loc):
+        """A Jackal LOCATION spawns without the arm shield. Squads have no variant field: a
+        squad's draw reaches its Jackals through its locations (the branch for inheriting ones)."""
+        nonlocal shieldless, kept
+        if sid is None:
+            kept += 1
             return
-        if sniper is None:
-            no_sniper += 1
-            return
-        struct.pack_into('<h', m.data, char_at, sniper)
-        shieldless += 1
+        if m.u32(loc + LOC_VARIANT) != sid:
+            struct.pack_into('<I', m.data, loc + LOC_VARIANT, sid)
+            shieldless += 1
 
     for u in hp._ts_units(m, GAME, base, lay, ts):
         c = u['char']
@@ -181,7 +209,7 @@ def arm(m, hp, cards, salt=None):
             # inherits its squad's draw -- and, a Jackal with its own character entry, the
             # squad's shieldless switch
             if enemy == 'Jackal' and squad_pick and two_handed(info.get(squad_pick)):
-                unshield(u['char_at'], c)
+                unshield(a0 - LOC_WEAP)
             continue
         w = _pick(usable[enemy], _draw(salt, a0))
         if u['kind'] == 'squad':
@@ -190,21 +218,19 @@ def arm(m, hp, cards, salt=None):
             continue
         struct.pack_into('<h', m.data, a0, widx[w])
         struct.pack_into('<h', m.data, a1, -1)
-        if enemy == 'Jackal' and two_handed(info.get(w)):
-            unshield(u['char_at'] if u['char_at'] is not None
-                     else (a0 - SQUAD_WEAP + SQUAD_CHAR if u['kind'] == 'squad'
-                           else a0 - LOC_WEAP + LOC_CHAR), c)
+        if enemy == 'Jackal' and two_handed(info.get(w)) and u['kind'] == 'loc':
+            unshield(a0 - LOC_WEAP)
         by = done.setdefault(enemy, {})
         by[w] = by.get(w, 0) + 1
     for enemy, ws in sorted(done.items()):
         for w, n in sorted(ws.items()):
             rows.append({'tag': 'scnr enemy weapons\\' + enemy, 'field': 'Armed: ' + w.split('\\')[-1],
                          'ok': True, 'reason': '%d squad units / locations' % n})
-    if shieldless or no_sniper:
+    if shieldless or kept:
         rows.append({'tag': 'scnr enemy weapons\\Jackal', 'field': 'Shieldless Jackals (two-handed)',
-                     'ok': not no_sniper, 'reason': '%d switched to jackal_sniper%s' % (
-                         shieldless, '; %d kept their shield: no jackal_sniper in this level' % no_sniper
-                         if no_sniper else '')})
+                     'ok': not kept, 'reason': '%d Jackal locations set to variant shieldless%s' % (
+                         shieldless, '; %d KEPT the shield: no \'shieldless\' string id in this map'
+                         % kept if kept else '')})
     for w in sorted(missing):
         rows.append({'tag': 'scnr enemy weapons', 'field': 'Armed: ' + w.split('\\')[-1], 'ok': True,
                      'skip': True, 'reason': 'not in this level\'s weapon palette'})
@@ -411,9 +437,92 @@ def _put(m, at, ftype, v):
     struct.pack_into(fmt, m.data, at, int(round(v)) if fmt in ('<h', '<H') else v)
 
 
+#: THE SPECIES SKILL RULE in Halo 2 (user, Halo 1 2026-10-14; Halo 2 2026-10-20). Halo 2 has no
+#: per-species aim block: a species' skill is its OWN Weapons Properties entry for its signature
+#: weapon, beside ai\generic's for the same weapon -- the Grunt's plasma pistol aims at about half
+#: generic's accuracy bounds (Legendary 0.2-0.5 vs 0.6-1.0), takes 3-6x the accuracy time and waits
+#: 3 s to surprise-fire (generic 1); the Jackal's equals generic's but waits 2 s. Each field below =
+#: ai\generic's entry for the weapon handed out x (species' own / generic) for the signature
+#: weapon, where generic's is not 0; bounds capped at 1. (cache offsets in the 0xCC element)
+SKILL_FIELDS = (('First Burst Delay Time', 0x48), ('First Burst Delay Time Max', 0x4C),
+                ('Surprise Delay Time', 0x50), ('Surprise Fire-Wildly Time', 0x54),
+                ('Normal Accuracy Bounds', 0x98), ('Normal Accuracy Bounds Max', 0x9C),
+                ('Normal Accuracy Time', 0xA0), ('Heroic Accuracy Bounds', 0xA4),
+                ('Heroic Accuracy Bounds Max', 0xA8), ('Heroic Accuracy Time', 0xAC),
+                ('Legendary Accuracy Bounds', 0xB0), ('Legendary Accuracy Bounds Max', 0xB4),
+                ('Legendary Accuracy Time', 0xB8))
+BOUNDS = (0x98, 0x9C, 0xA4, 0xA8, 0xB0, 0xB4)
+_C = 'objects' + chr(92) + 'characters' + chr(92)
+SKILL_SPECIES = {'Grunt': (_C + 'grunt' + chr(92) + 'ai' + chr(92) + 'grunt',
+                           'objects' + chr(92) + 'weapons' + chr(92) + 'pistol' + chr(92) +
+                           'plasma_pistol' + chr(92) + 'plasma_pistol'),
+                 'Jackal': (_C + 'jackal' + chr(92) + 'ai' + chr(92) + 'jackal',
+                            'objects' + chr(92) + 'weapons' + chr(92) + 'pistol' + chr(92) +
+                            'plasma_pistol' + chr(92) + 'plasma_pistol')}
+
+
+def _own_props(m, hp, ct, weapon):
+    for e in m.follow_all(ct, [PROPS], [PROPS_ES], 'all'):
+        if (hp._tag_name_by_id(m, m.u32(e + PROPS_W)) or '').lower() == weapon.lower():
+            return e
+    return None
+
+
+def skill_ratios(m, hp, enemy):
+    """{offset: ratio} of a species' signature entry over ai\\generic's, or {} (no signature)."""
+    base, sig = SKILL_SPECIES.get(enemy, (None, None))
+    ct = dict(m.find_tags('char', base)).get(base) if base else None
+    gen_pe, _p = entry(m, hp, sig) if sig else (None, [])
+    own = _own_props(m, hp, ct, sig) if ct is not None else None
+    if own is None or gen_pe is None:
+        return {}
+    out = {}
+    for _n, off in SKILL_FIELDS:
+        g = struct.unpack_from('<f', m.data, gen_pe + off)[0]
+        o = struct.unpack_from('<f', m.data, own + off)[0]
+        # the species writing 0 (the Grunt's first-burst delay) is no skill data: skipped
+        if g > 0 and o > 0 and abs(o - g) > 1e-6:
+            out[off] = o / g
+    return out
+
+
+def species_skill(m, hp, done):
+    """Every Grunt / Jackal character in the map gets its own Weapons Properties entry for each
+    weapon handed to that species (none of its own yet): ai\\generic's, skill fields scaled."""
+    rows = []
+    for enemy in sorted(SKILL_SPECIES):
+        weapons = sorted((done or {}).get(enemy) or ())
+        ratios = skill_ratios(m, hp, enemy) if weapons else {}
+        if not ratios:
+            continue
+        chars = [(n, t) for n, t in m.find_tags('char', _C + '*') if enemy_of(n) == enemy]
+        for w in weapons:
+            gen_pe, _p = entry(m, hp, w)
+            if gen_pe is None:
+                continue
+            el = bytearray(m.data[gen_pe:gen_pe + PROPS_ES])
+            for off, r in ratios.items():
+                v = struct.unpack_from('<f', el, off)[0] * r
+                struct.pack_into('<f', el, off, min(v, 1.0) if off in BOUNDS else v)
+            n = 0
+            for _cn, ct in chars:
+                if _own_props(m, hp, ct, w) is not None:
+                    continue                 # the species' own data for this weapon wins
+                m.grow_block(ct, PROPS, PROPS_ES, [bytes(el)])
+                n += 1
+            names = {off: nm for nm, off in SKILL_FIELDS}
+            rows.append({'tag': 'char ' + enemy.lower() + '*', 'field': 'Species skill: ' + w.split(chr(92))[-1],
+                         'ok': True, 'reason': '%d %s characters; %s' % (n, enemy, ', '.join(
+                             '%s x%.2f' % (names[o].replace('Accuracy ', 'acc ').replace(' Bounds', ''), r)
+                             for o, r in sorted(ratios.items())))})
+    return rows
+
+
+
 def apply(m, hp, spec, registry=None, salt=None):
     """The patch pass: Armed cards (Jackals shieldless with two-handed weapons), the Grunt teach
-    and half rate for what Grunts were handed, then the Balanced AI rows of switched-on ports
+    and half rate for what Grunts were handed, the species skill (Grunt / Jackal own entries),
+    then the Balanced AI rows of switched-on ports
     (before the Grunt copies, so the Grunt entries carry the balanced values too)."""
     rows, done = arm(m, hp, (spec or {}).get('cards') or {}, salt=salt)
     rows += balance(m, hp, registry, (spec or {}).get('balanced'))
@@ -421,4 +530,5 @@ def apply(m, hp, spec, registry=None, salt=None):
     if grunt:
         rows += teach_grunts(m, hp, grunt)
         rows += grunt_rates(m, hp, grunt)
+    rows += species_skill(m, hp, done)
     return rows

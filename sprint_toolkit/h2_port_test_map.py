@@ -124,7 +124,7 @@ def owner_check(info, level, key, force):
         raise SystemExit('%s is staged by %s -- one test level per session (--force overrides)' % (level, cur))
 
 
-def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.0):
+def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.0, god=True):
     p = ports_h2.load(key)
     weapon = R.weapon_path(p)
     scn, res = scenario(level), R.resource(level)
@@ -156,11 +156,13 @@ def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.
             if ok:
                 os.makedirs(TEST_DIR, exist_ok=True)
                 shutil.copy2(kit_map, os.path.join(TEST_DIR, level + '.map'))
-                if armed:
+                if armed or god:
                     import h2_armed_test
-                    h2_armed_test.report(*h2_armed_test.arm(
-                        os.path.join(TEST_DIR, level + '.map'), weapon, armed, share))
-                    print('   (Armed = BALANCED AI rows; shieldless Jackals, Grunt teach + half rate)')
+                    h2_armed_test.test_map(os.path.join(TEST_DIR, level + '.map'), weapon, armed,
+                                           share, god=god)
+                if armed:
+                    print('   (Armed = BALANCED AI rows; shieldless Jackals, Grunt teach + half '
+                          'rate, species skill)')
         finally:
             for f, k in keep.items():
                 if f == kit_map and keep_kit_map:
@@ -217,6 +219,8 @@ def main():
     ap.add_argument('--keep-kit-map', action='store_true')
     ap.add_argument('--armed', default='', help='species whose squads spawn with the port')
     ap.add_argument('--share', type=float, default=1.0)
+    ap.add_argument('--mortal', action='store_true',
+                    help='NO god shield (every other port test has one: the Halo 1 rule)')
     a = ap.parse_args()
     if a.status:
         print(json.dumps(stage_info(), indent=1) or '{}')
@@ -236,7 +240,7 @@ def main():
         tuple((cfg.get('test') or {}).get('rounds') or ()) or None
     profiles = [x.strip() for x in a.profiles.split(',') if x.strip()]
     armed = [x.strip() for x in a.armed.split(',') if x.strip()]
-    built = build(a.key, level, profiles, rounds, a.keep_kit_map, armed, a.share)
+    built = build(a.key, level, profiles, rounds, a.keep_kit_map, armed, a.share, god=not a.mortal)
     print('test map: %s' % built)
     if a.stage:
         with kit_lock.held('h2_port_test_map %s --stage %s' % (a.key, level), owner=a.key, kit='h2'):
