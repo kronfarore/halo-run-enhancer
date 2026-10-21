@@ -236,12 +236,12 @@ def arm(m, hp, cards, salt=None):
             squad_team = struct.unpack_from('<h', m.data, u['weap_at'][0] - SQUAD_WEAP + SQUAD_TEAM)[0]
         if enemy not in usable:
             continue
-        # THE SIDE (2026-10-21, the 06b Armed test): an enemy card arms only units HOSTILE to the
-        # player, the Ally card (Marine) only friendly ones -- on Arbiter levels the Spec Ops
-        # Elites are allies and an 'Armed: Elite' card must not arm them. Team = the squad's,
-        # else the character's biped team; allies = halo_patch._player_friends (ai_allegiance).
+        # THE SIDE (user, 2026-10-21): an enemy-type card arms EVERY unit of its type, allied ones
+        # too -- the Arbiter's allied Spec Ops Elites / Grunts are covered by 'Armed: Elite' /
+        # 'Armed: Grunt' -- while the Ally card stays Marines', and only friendly ones. Team = the
+        # squad's, else the character's biped team; allies = halo_patch._player_friends.
         team = squad_team if squad_team > 0 else (char_team[c] if 0 <= c < len(char_team) else None)
-        if (team in friends) != (enemy in ALLY_TYPES):
+        if enemy in ALLY_TYPES and team not in friends:
             continue
         a0, a1 = u['weap_at']
         if a0 in seen:
