@@ -51,7 +51,8 @@ def god_shield(m):
 #: Character Palette -- a character absent there cannot be added at patch time)
 _C = 'objects' + chr(92) + 'characters' + chr(92)
 BASE_CHAR = {'Grunt': 'grunt', 'Jackal': 'jackal', 'Elite': 'elite', 'Brute': 'brute', 'Bugger': 'bugger',
-             'Flood Combat Form': 'floodcombat_elite', 'Marine': 'marine'}
+             'Flood Combat Form': 'floodcombat_elite', 'Marine': 'marine',
+             'Sentinel': 'sentinel_aggressor'}
 PER_SPECIES = 2
 
 
