@@ -58,6 +58,37 @@ def thresholds(n):
     return [int(round(254 - i * 250.0 / max(n - 1, 1))) for i in range(n)]
 
 
+def source_tick(m, sprite, tick_w):
+    """`tick_art` {'h3': (chud sheet, sequence), 'h': px} (the Spike Rifle, boot 1: 'the pips
+    look different from the original'): the SOURCE game's own round -- the first pip of Halo 3's
+    meter sprite, its ALPHA as the shape (Halo 3 keeps the threshold in the colour), scaled to
+    tick_w x h, filled with the donor tick's own lit colour (R, G; blue is the threshold)."""
+    import h3_hud_art
+    sheet, seq = m['tick_art']['h3']
+    art, _reg = h3_hud_art.sprite(sheet, seq)
+    a = np.asarray(art.convert('RGBA'))[:, :, 3]
+    cols = np.nonzero(a.sum(0))[0]
+    x0 = x1 = int(cols[0])
+    while x1 + 1 < a.shape[1] and a[:, x1 + 1].any():
+        x1 += 1
+    pip = a[:, x0:x1 + 1]
+    rows = np.nonzero(pip.sum(1))[0]
+    y0 = y1 = int(rows[0])
+    while y1 + 1 < pip.shape[0] and pip[y1 + 1].any():
+        y1 += 1
+    pip = pip[y0:y1 + 1]
+    h = m['tick_art']['h']
+    alpha = np.asarray(Image.fromarray(pip, 'L').resize((tick_w, h), Image.LANCZOS))
+    lit = np.asarray(sprite)
+    ink = lit[lit[:, :, 3] > 128]
+    rgb = ink[:, :3].max(0) if len(ink) else np.array([0, 254, 254])
+    out = np.zeros((h, tick_w, 4), np.uint8)
+    out[:, :, 0], out[:, :, 1], out[:, :, 2] = rgb[0], rgb[1], rgb[2]
+    out[:, :, 3] = alpha
+    print('   tick art: %s #%d pip %dx%d -> %dx%d' % (sheet, seq, x1 - x0 + 1, y1 - y0 + 1, tick_w, h))
+    return out
+
+
 def build(m, rounds, rows):
     donor = donor_art(m)
     tick_w = m['tick_w']
@@ -67,7 +98,11 @@ def build(m, rounds, rows):
     pitch = w / float(per_row)
     row_pitch = h / float(rows)
     tick_h = int(row_pitch) - 1
-    small = np.asarray(sprite.resize((tick_w, tick_h), Image.LANCZOS)).astype(np.uint8)
+    if m.get('tick_art'):
+        small = source_tick(m, sprite, tick_w)
+        tick_h = small.shape[0]
+    else:
+        small = np.asarray(sprite.resize((tick_w, tick_h), Image.LANCZOS)).astype(np.uint8)
 
     sheet = np.zeros((h, w, 4), dtype=np.uint8)
     thr = thresholds(rounds)

@@ -115,9 +115,22 @@ def port_lines(s, english=None):
 
 def append(path, lines):
     s = read(path)
-    if entries(s, PORT):
-        return False
     eol = '\r\n'
+    have = entries(s, PORT)
+    if have:
+        # already there: REPLACE the port's own lines where they differ (the Spike Rifle,
+        # 2026-10-21: the icons moved above U+E3FF so Halo 2 tints them -- a new codepoint)
+        want = dict(l.split(' = ', 1) for l in lines)
+        if all(have.get(k) == v for k, v in want.items()):
+            return False
+        for k, v in want.items():
+            if k in have:
+                s = re.sub(r'^%s = .*?(\r?)$' % re.escape(k),
+                           lambda m: '%s = %s%s' % (k, v, m.group(1)), s, count=1, flags=re.M)
+            else:
+                s = s.rstrip(eol) + eol + '%s = %s' % (k, v) + eol
+        io.open(path, 'w', encoding='utf-16', newline='').write(s)
+        return True
     body = s.rstrip(eol) + eol + eol.join(lines) + eol
     if body.count('\n') != body.count(eol):
         raise SystemExit('%s: mixed line endings' % path)

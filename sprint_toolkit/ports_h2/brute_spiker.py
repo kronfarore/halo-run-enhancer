@@ -25,7 +25,7 @@ PORT = {
     'source_tag': 'objects\\weapons\\rifle\\spike_rifle\\spike_rifle',
     'reservations': {
         'message_prefix': 'spk2',
-        'glyph': 0xE140,
+        'glyph': 0xE540,           # was 0xE140 (boot 1: above U+E3FF so Halo 2 tints it)
         'weapon_dir': 'objects\\weapons\\rifle\\spike_rifle',
         'effects_dir': 'effects\\objects\\weapons\\rifle\\spike_rifle',
         'fp_graph': 'weapons\\rifle\\fp_spike_rifle\\fp_spike_rifle',
@@ -85,6 +85,9 @@ PORT = {
         'muzzle_drop': 0.0,
         'ground_point': {'rot': (0.7071068883, -1.8e-09, -7.42e-08, -0.7071067095)},   # the SMG's
         'render': ['spike_rifle', r'spike_rifle\fp_spike_rifle'],
+        # boot 1 (user): the dual LEFT gun was upside down -- Halo 2 mirrors it across the FP
+        # root's local y, and Halo 3 binds the Spiker's FP `gun` turned 180 deg (local y = up)
+        'fp_root_identity': True,
     },
 
     # step 2 -- h2_port_textures.py kind 'h3': Halo 3's own maps; shaders reseeded from Bungie's
@@ -325,6 +328,10 @@ PORT = {
         'weapon': SR + r'\spike_rifle.weapon',
         'rounds': 40, 'rows': 2,             # the SMG's 3 rows of 20 -> 2 rows of 20
         'canvas': (198, 42), 'tick_w': 6,
+        # boot 1 (user: 'the pips look different from the original'): Halo 3's OWN round -- chud
+        # ballistic_meters #9, a tab 8x20 with a slanted foot at a 15 px pitch; scaled by the
+        # pitch (9.9 / 15): 6 wide, 15 tall
+        'tick_art': {'h3': ('ballistic_meters', 9), 'h': 15},
         'backpack': NEW_HUD + r'\backpack_weapons',
         'backpack_port': NEW_HUD + r'\brute_spiker_backpack',
         'backpack_size': (62, 30),
@@ -358,16 +365,21 @@ PORT = {
         'preview': 'brute_spiker_reticle_preview.png',
     },
 
-    # step 8 -- the pickup icon at U+E140, the messages (smg_* -> spk2_*: a LONGER prefix than
+    # step 8 -- the pickup icon at U+E540, the messages (smg_* -> spk2_*: a LONGER prefix than
     # the donor's -- the first length-changing rename in game; the dual lines included)
+    # BOOT 1 (user: 'all icons are violet on the Arbiter'): halo2.dll's text renderer draws a glyph
+    # in the line's colour (HUD blue / Arbiter violet) for U+E112-E12B (Bungie's weapon icons) and
+    # for anything OUTSIDE U+E000-E3FF; every other codepoint in E000-E3FF is forced WHITE and drawn
+    # x0.72 (VA 0x1807552E1, the scale at 0x180B1B878). User: move the ports above U+E3FF (E140 ->
+    # E540: +0x400), drawn WHITE like Bungie's, at 0.72 of 160x62 so the on-screen size stays
     'glyph': {
-        'box': (160, 62),
+        'box': (115, 45),
         'model_3p': H3_RM_XML,
         'tif': 'spike_rifle_h2_glyph.tif',
-        # the AR's (user-confirmed): Halo 2's HUD blue, outline + the mesh's feature lines,
-        # a SOLID body (a dithered one sheared in game)
-        'colour': (110, 171, 233),
-        'style': {'line': (134, 202, 255), 'body': (72, 118, 172)},
+        # white like Bungie's (the renderer tints it); the AR's two-tone look kept as luminance:
+        # lines white, the solid body at the AR's body / line ratio (~0.6)
+        'colour': (255, 255, 255),
+        'style': {'line': (255, 255, 255), 'body': (153, 153, 153)},
     },
     'messages': {
         'donor_prefix': 'smg', 'donor_icon': '&smg',
@@ -465,6 +477,7 @@ PORT = {
                     'first_person:dual:idle:var1', 'first_person:dual:idle:var2', 'first_person:dual:idle:var3',
                     'first_person:dual:posing:var1', 'first_person:dual:posing:var2'],
         'overlay_reference': 'first_person:idle',
+        'root_identity': 'gun',       # with geometry fp_root_identity (boot 1: the dual left gun)
         # Halo 3 names the one single-wield reload / the Chief's one fire `:var1`; Halo 2's SMG
         # (the seed: its events and sounds stay on same-name animations) names them plain
         'rename': {'first_person:reload_empty:var1': 'first_person:reload_empty',

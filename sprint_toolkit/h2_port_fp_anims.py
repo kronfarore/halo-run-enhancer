@@ -41,6 +41,8 @@ Section `fp_anims` of ports_h2/<key>.py:
     skip        [Halo 3 animation names left out]
     looping     [Halo 3 names whose end wraps to frame 0]
     rename      {Halo 3 name: Halo 2 name}
+    root_identity  the weapon root node whose bind h2_port_geometry `fp_root_identity` made
+                identity -- its frames re-expressed (reroot; the Spike Rifle's dual left gun)
 
     species.seed  a Bungie Halo 2 graph the port's is seeded from (tool_import: its blend screen,
                   sound references and same-name animations' events survive the import)
@@ -148,6 +150,22 @@ def overlay_frames(nodes, frames, animated, ref_pose):
     return out
 
 
+def reroot(nodes, frames, name):
+    """`root_identity` (the Spike Rifle, boot 1): the weapon root's bind is identity in the JMS
+    (h2_port_geometry fp_root_identity), so its absolute frames become G(t) x G_bind^-1 x
+    G_identity = (q(t) * conj(q_bind), t(t)) -- the mesh lands exactly where it did."""
+    i = [n for n, _p in nodes].index(name)
+    qb = DEFAULTS[name][0]
+    inv = (qb[0], -qb[1], -qb[2], -qb[3])
+    out = []
+    for fr in frames:
+        fr = list(fr)
+        q, t = fr[i]
+        fr[i] = (qnorm(qmul(q, inv)), t)
+        out.append(fr)
+    return out
+
+
 def write_jma(path, nodes, names, frames):
     lines = ['16394', '0', str(len(frames)), '30.0000000000', '1', 'unnamedActor', str(len(nodes))]
     for (n, p), nm in zip(nodes, names):
@@ -189,6 +207,8 @@ def build(key, species, only=None, write=True):
             fr, ext = base_frames(nodes, frames, h3name in cfg.get('looping', ())), '.jmr'
         else:
             fr, ext = base_frames(nodes, frames, h3name in cfg.get('looping', ())), '.jmm'
+        if cfg.get('root_identity'):
+            fr = reroot(nodes, fr, cfg['root_identity'])
         path = os.path.join(src, file_name(h3name, rename) + ext)
         if write:
             write_jma(path, nodes, names, fr)

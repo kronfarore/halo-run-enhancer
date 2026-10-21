@@ -132,6 +132,19 @@ def convert(geo, rm, template, node_map, lift=0.0, nudge=(0.0, 0.0, 0.0)):
     return out
 
 
+def _qmul(a, b):
+    aw, ax, ay, az = a
+    bw, bx, by, bz = b
+    return (aw * bw - ax * bx - ay * by - az * bz, aw * bx + ax * bw + ay * bz - az * by,
+            aw * by - ax * bz + ay * bw + az * bx, aw * bz + ax * by - ay * bx + az * bw)
+
+
+def _qrot(q, v):
+    w, x, y, z = q
+    p = _qmul(_qmul(q, (0.0, v[0], v[1], v[2])), (w, -x, -y, -z))
+    return p[1:]
+
+
 def h3_convert(g, rel, world):
     """kind 'h3' (the Assault Rifle, the wave-A pilot, 2026-10-20): a Halo 3 render model as a
     Halo 2 JMS on its OWN skeleton -- no donor template. Halo 3's FP arms ARE Halo 2's
@@ -156,8 +169,19 @@ def h3_convert(g, rel, world):
     rm = h4_rm.load(h1_fp_retarget.export_xml(rel))
     names = g.get('node_names', {})
     out = h2_jms.Model()
+    # fp_root_identity (the Spike Rifle, boot 1, 2026-10-21): Halo 2 MIRRORS the left-hand dual
+    # weapon across its root node's local y. Bungie's FP guns bind that node at identity (y =
+    # sideways); Halo 3's FP Spiker binds it turned 180 deg about the y=z diagonal (local y = UP),
+    # so the left gun came out UPSIDE DOWN. The root's bind becomes identity at the same place;
+    # vertices are model space (unchanged), markers on the root are re-expressed in the new frame,
+    # and h2_port_fp_anims `root_identity` re-expresses the root's animated frames to match
+    root_q = None
+    if not world and g.get('fp_root_identity'):
+        root_q = H3._world(rm['nodes'], 0)[0]
     for i, n in enumerate(rm['nodes']):
         q, p = H3._world(rm['nodes'], i)
+        if i == 0 and root_q is not None:
+            q = (0.0, 0.0, 0.0, -1.0)
         if q[3] > 0:
             q = tuple(-c for c in q)
         par = n['parent'] if n['parent'] is not None and n['parent'] >= 0 else -1
@@ -209,9 +233,18 @@ def h3_convert(g, rel, world):
         if nm is None:
             continue
         pos = [c * UNITS for c in m['pos']]
+        rot = m['rot']
+        if root_q is not None and m['node'] == 0:
+            # root-relative: p' = R_root p (the same model-space point from the identity root);
+            # the marker's own rotation composed the same way
+            x, y, z, w = root_q
+            pos = list(_qrot((w, x, y, z), pos))
+            mx, my, mz, mw = rot
+            r = _qmul((w, x, y, z), (mw, mx, my, mz))
+            rot = (r[1], r[2], r[3], r[0])
         if nm in ('primary_trigger', 'primary trigger'):
             pos[2] -= g.get('muzzle_drop', 0.0)
-        out.markers.append(h2_jms.Marker(nm, m['node'], m['rot'], pos, -1.0))
+        out.markers.append(h2_jms.Marker(nm, m['node'], rot, pos, -1.0))
     gp = g.get('ground_point')
     if world and gp:
         # the middle of the model's x and z extent on its -y surface (Halo 1's 'auto', the
