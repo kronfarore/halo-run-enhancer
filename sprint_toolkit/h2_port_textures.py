@@ -174,11 +174,15 @@ def h3_main(t, argv):
                     'bump_snorm' (a signed DXN normal map, the AR's) | 'color_premul' |
                     ('tint', (r, g, b), dilate px) (a grey illum mask coloured, the Spiker's) |
                     ('alpha_from', source, channel) (another map's channel as alpha) | 'flat_bump'
-                    (no source: a flat height),
+                    (no source: a flat height) | ('gradient', 'u'|'v', reverse[, (lo, hi)]) (no
+                    source: a meter's reveal ramp over a UV window) | ('mask_from', source,
+                    channel) (the colour x another map's channel: a self-illum map),
                     (w, h) or None = the source's size)]
-        shaders   [(port shader name, Bungie seed shader tag, {seed bitmap: port bitmap or
-                    another tag})] -- a seed bitmap left out of the map stays Bungie's
+        shaders   [(port shader name, Bungie seed shader tag, {seed bitmap['#n']: port bitmap or
+                    another tag})] -- a seed bitmap left out of the map stays Bungie's; '#n' moves
+                    only its n-th copy
         rel, shaders_dir, bump_gain, report_rows
+        string_ids  {port shader name: {old string id: new}} renamed after the reseed
     """
     import h3_hud_art
     decode = h1_decode if t.get('kind') == 'h1' else h3_hud_art.decode
@@ -194,6 +198,22 @@ def h3_main(t, argv):
                 out = Image.new('RGB', tuple(size or (64, 64)), (128, 128, 128))
                 out.save(os.path.join(data, name + '.tif'), compression=None)
                 print('   %-40s flat height %dx%d -> %s.tif' % ('(none)', out.size[0], out.size[1], name))
+                continue
+            if isinstance(mode, tuple) and mode[0] == 'gradient':
+                # ('gradient', 'u' | 'v', reverse[, (lo, hi)]): no source -- a linear ramp 0 -> 255
+                # along one texture axis (only over the window lo..hi of it, the part the quad's UVs
+                # sample), in every channel: a METER's reveal map (Halo 2's meter shader shows a texel
+                # while the meter value passes its level; the Flamethrower's heat gauge)
+                w, h = tuple(size or (32, 128))
+                lo, hi = mode[3] if len(mode) > 3 else (0.0, 1.0)
+                at = np.linspace(0.0, 1.0, h if mode[1] == 'v' else w)
+                ramp = np.clip((at - lo) / (hi - lo), 0.0, 1.0) * 255.0
+                if len(mode) > 2 and mode[2]:
+                    ramp = 255.0 - ramp
+                g = np.tile(ramp[:, None], (1, w)) if mode[1] == 'v' else np.tile(ramp[None, :], (h, 1))
+                out = Image.fromarray(np.dstack([g] * 4).astype(np.uint8), 'RGBA')
+                out.save(os.path.join(data, name + '.tif'), compression=None)
+                print('   %-40s %s gradient %dx%d -> %s.tif' % ('(none)', mode[1], w, h, name))
                 continue
             img, _ = decode(src)
             if mode in ('bump', 'bump_snorm'):
@@ -224,6 +244,14 @@ def h3_main(t, argv):
                 ch = np.asarray(other.convert('RGBA').resize(img.size, Image.LANCZOS))[:, :, mode[2]]
                 rgb = np.asarray(img.convert('RGB'))
                 out = Image.fromarray(np.dstack([rgb, ch]).astype(np.uint8), 'RGBA')
+            elif isinstance(mode, tuple) and mode[0] == 'mask_from':
+                # ('mask_from', other source, channel): the colour x ANOTHER map's channel -- a
+                # self-illumination map from Halo 1's multipurpose GREEN (its self-illum mask): only
+                # the lit parts keep their colour (the Flamethrower's tank window and lights)
+                other, _ = decode(mode[1])
+                ch = np.asarray(other.convert('RGBA').resize(img.size, Image.LANCZOS))[:, :, mode[2]]
+                rgb = np.asarray(img.convert('RGB')).astype(np.float32) * (ch[:, :, None] / 255.0)
+                out = Image.fromarray(rgb.astype(np.uint8), 'RGB')
             elif mode == 'color_premul':
                 # for an ADDITIVE shader: colour x alpha, so a transparent texel adds nothing
                 # (the AR's holo display, boot 2: an opaque template drew every layer's square)
@@ -256,8 +284,36 @@ def h3_main(t, argv):
         print('   %-28s from %s' % (name + '.shader', seed))
         have = h2_tagref.references(dest)
         for old, new in refs.items():
+            # 'path#n': only the n-th copy (a seed naming one bitmap as base AND self-illum map)
+            old, _h, nth = old.partition('#')
             if ('bitm', old) in have:
-                h2_tagref.set_reference(dest, 'bitm', old, new, every=True)
+                if nth:
+                    h2_tagref.set_reference(dest, 'bitm', old, new, nth=int(nth))
+                else:
+                    h2_tagref.set_reference(dest, 'bitm', old, new, every=True)
+                have = h2_tagref.references(dest)
+        if t.get('string_ids', {}).get(name):
+            # a reseeded shader's string ids renamed (its animation INPUT: the Flamethrower's hundreds
+            # digit reads `primary_ammunition_hundreds`, which no Halo 2 weapon exports -> digit 0)
+            import h2_stringid
+            for old, new in t['string_ids'][name].items():
+                if len(old) != len(new):
+                    print('      ' + h2_stringid.rename(dest, {old: new}, write=True))
+                    continue
+                # SAME length: only the pooled string changes (no length byte to find -- the
+                # rename's length-field search can be ambiguous, as in BR `tens`: 5 candidates);
+                # kept when tool's export shows exactly that string id changed
+                d = open(dest, 'rb').read()
+                if d.count(old.encode()) != 1:
+                    raise SystemExit('%s: %d pooled copies of %s' % (name, d.count(old.encode()), old))
+                before = h2_stringid.string_ids(h2_stringid.export(dest))
+                open(dest, 'wb').write(d.replace(old.encode(), new.encode()))
+                after = h2_stringid.string_ids(h2_stringid.export(dest))
+                diff = [(a, b) for a, b in zip(before, after) if a != b]
+                if len(before) != len(after) or len(diff) != 1 or diff[0][1][2] != new:
+                    open(dest, 'wb').write(d)
+                    raise SystemExit('%s: renaming %s changed %s; restored' % (name, old, diff))
+                print('      %s: string id %s -> %s' % (name, old, new))
     print('bump slope, against the game it has to sit in:')
     report(t)
 

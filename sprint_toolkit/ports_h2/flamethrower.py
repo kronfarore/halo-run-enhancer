@@ -34,7 +34,7 @@ PORT = {
     'source_tag': r'weapons\flamethrower\flamethrower',      # HCEEK (Halo 1)
     'reservations': {
         'message_prefix': 'ft2',
-        'glyph': 0xE153,                     # free in all eight English fonts (phase 0 checked E13E..E153)
+        'glyph': 0xE553,           # was 0xE153: above U+E3FF so Halo 2 tints it (user, 2026-10-21; the AR / Spiker scheme +0x400)
         'weapon_dir': r'objects\weapons\support_low\flamethrower',
         'effects_dir': r'effects\objects\weapons\support_low\flamethrower',
         'fp_graph': r'weapons\support_low\fp_flamethrower\fp_flamethrower',
@@ -99,13 +99,14 @@ PORT = {
         'root_identity': True,
         # Halo 1 shader basename (#permutation for the counter's digits: 0 ones, 1 tens, 2 hundreds)
         # -> Halo 2 material. The counter on the BR's digit shaders (tens / ones, Bungie's `=?`
-        # symbols; the AR's route): Halo 2 has no hundreds digit -- dropped (100 reads 00)
+        # symbols; the AR's route); the hundreds digit on its own shader reading an input nothing exports
+        # (stays 0: textures 'string_ids', boot 1)
         'materials': {'ft gun': 'flamethrower', 'ft ammo': 'flamethrower_ammo',
                       'ft screen': 'flamethrower_screen', 'ft heat_display': 'flamethrower_heat_display',
                       'ft numbers#1': 'flamethrower_tens=?', 'ft numbers#0': 'flamethrower_ones=?',
-                      'ft numbers#2': None,
+                      'ft numbers#2': 'flamethrower_hundreds=?',
                       'ft_numbers#1': 'flamethrower_tens=?', 'ft_numbers#0': 'flamethrower_ones=?',
-                      'ft_numbers#2': None},
+                      'ft_numbers#2': 'flamethrower_hundreds=?'},
         'node_names': {},                    # Halo 1 names them `frame gun` / `frame ammo` / `frame cover`
         'world_permutation': 'base', 'world_region': 'gun',      # the BR's .model's variants
         'markers': {'primary trigger': 'primary_trigger', 'left hand': 'left_hand',
@@ -133,22 +134,46 @@ PORT = {
                      ('alpha_from', H1FT + r'\bitmaps\flamethrower multipurpose', 0), None),
                     (None, 'flamethrower_bump', SMG + r'\bitmaps\smg_bump', 'flat_bump', (64, 64)),
                     (H1FT + r'\bitmaps\flamethrower_screen', 'flamethrower_screen',
-                     r'objects\weapons\rifle\shotgun\bitmaps\illum_sights', 'color', None)],
+                     r'objects\weapons\rifle\shotgun\bitmaps\illum_sights', 'color', None),
+                    # boot 1 ('the screen and the weapon overall is missing some details'): Halo 1's
+                    # SELF-ILLUMINATION -- the diffuse x its multipurpose GREEN (the self-illum mask:
+                    # the lit tank window, the lights), on Bungie's lit PR template
+                    (H1FT + r'\bitmaps\flamethrower', 'flamethrower_illum', SMG + r'\bitmaps\smg',
+                     ('mask_from', H1FT + r'\bitmaps\flamethrower multipurpose', 1), None),
+                    # the gun's HEAT BAR (boot 1: Bungie's PR gauge art showed as a brown block on Halo
+                    # 1's quad): Halo 1's own red bar as the meter's colour, and a REVEAL ramp over the
+                    # rows the quad samples (0.466-0.966: Halo 1 scrolled the texture)
+                    (H1FT + r'\bitmaps\flamethrower_heat_display', 'flamethrower_heat_meter',
+                     r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_heat_gauge', 'color', None),
+                    (None, 'flamethrower_heat_alpha',
+                     r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_heat_gauge_alpha',
+                     ('gradient', 'v', True, (0.466, 0.966)), (32, 128))],
         'shaders': [
-            ('flamethrower', SMG + r'\shaders\smg_painted_metal',
-             {SMG + r'\bitmaps\smg': FT + r'\bitmaps\flamethrower',
-              SMG + r'\bitmaps\smg_bump': FT + r'\bitmaps\flamethrower_bump',
-              SMG + r'\bitmaps\smg_bump_active_camo': FT + r'\bitmaps\flamethrower_bump'}),
-            ('flamethrower_ammo', SMG + r'\shaders\smg_bare_metal',
-             {SMG + r'\bitmaps\smg': FT + r'\bitmaps\flamethrower',
-              SMG + r'\bitmaps\smg_bump': FT + r'\bitmaps\flamethrower_bump',
-              SMG + r'\bitmaps\smg_bump_active_camo': FT + r'\bitmaps\flamethrower_bump'}),
+            # the gun and the tank lit (boot 1): Bungie's PR `plasma_rifle_luminous` (tex_bump_env_illum:
+            # bump, base, self-illum -- the base named twice; '#1' = the self-illum copy, moved first)
+            ('flamethrower', r'objects\weapons\rifle\plasma_rifle\shaders\plasma_rifle_luminous',
+             {r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle#1': FT + r'\bitmaps\flamethrower_illum',
+              r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle': FT + r'\bitmaps\flamethrower',
+              r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_bump': FT + r'\bitmaps\flamethrower_bump'}),
+            ('flamethrower_ammo', r'objects\weapons\rifle\plasma_rifle\shaders\plasma_rifle_luminous',
+             {r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle#1': FT + r'\bitmaps\flamethrower_illum',
+              r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle': FT + r'\bitmaps\flamethrower',
+              r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_bump': FT + r'\bitmaps\flamethrower_bump'}),
             ('flamethrower_screen', r'objects\weapons\rifle\shotgun\shaders\shotgun_light',
              {r'objects\weapons\rifle\shotgun\bitmaps\illum_sights': FT + r'\bitmaps\flamethrower_screen'}),
-            ('flamethrower_heat_display', r'objects\weapons\rifle\plasma_rifle\shaders\plasma_rifle_gauge', {}),
+            ('flamethrower_heat_display', r'objects\weapons\rifle\plasma_rifle\shaders\plasma_rifle_gauge',
+             # the alpha FIRST: the meter's new path is as long as `..._heat_gauge_alpha`, and a
+             # repoint refuses two records of one length
+             {r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_heat_gauge_alpha': FT + r'\bitmaps\flamethrower_heat_alpha',
+              r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_heat_gauge': FT + r'\bitmaps\flamethrower_heat_meter'}),
             ('flamethrower_tens', r'objects\weapons\rifle\battle_rifle\shaders\tens', {}),
             ('flamethrower_ones', r'objects\weapons\rifle\battle_rifle\shaders\ones', {}),
+            # Halo 1's THIRD digit (boot 1: 'only two digits, the original has three'): Halo 2 exports
+            # only primary_ammunition_ones / _tens (halo2.dll) -- the hundreds digit reads 'primary_ammunition_zero' (same length: a pooled-string swap), which no
+            # weapon exports and stays 0: 084 as Halo 1 shows it; a full tank reads 000 (Halo 1: 100)
+            ('flamethrower_hundreds', r'objects\weapons\rifle\battle_rifle\shaders\tens', {}),
         ],
+        'string_ids': {'flamethrower_hundreds': {'primary_ammunition_tens': 'primary_ammunition_zero'}},
         'report_rows': [(FT + r'\bitmaps\flamethrower_bump', 'the port (flat)'),
                         (SMG + r'\bitmaps\smg_bump', 'Bungie SMG')],
     },
@@ -174,7 +199,7 @@ PORT = {
                    (r'effects\objects\weapons\rifle\smg\smg_muzzle_flash.light', FX + r'\flamethrower_muzzle_flash.light'),
                    (r'effects\materials\objects\weapons\smg.material_effects', FX + r'\flamethrower.material_effects'),
                    (r'effects\materials\objects\weapons\plasma_rifle.material_effects', FX + r'\flame.material_effects'),
-                   (r'effects\objects\weapons\rifle\brute_plasma_rifle\red_plasma_streak.contrail', FX + r'\flame_streak.contrail'),
+                   (r'effects\generic\fires\fire_medium.effect', FX + r'\flame_burning.effect'),
                    (r'effects\objects\weapons\rifle\brute_plasma_rifle\red_plasma_streak.light_volume', FX + r'\flame_streak.light_volume'),
                    # the RELOAD sound: the seed graph (the PR's) has no reload animation, so no reload
                    # sound event -- the magazine's reloading effect carries it instead: a clone of
@@ -208,10 +233,31 @@ PORT = {
              FX + r'\flamethrower', 'material effects (the weapon)'),
             (FT + r'\projectiles\flame.projectile', 'foot', r'effects\materials\objects\weapons\plasma_rifle',
              FX + r'\flame', 'impact material effects'),
-            (FT + r'\projectiles\flame.projectile', 'cont', r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak',
-             FX + r'\flame_streak', "the flame's trail (contrail)", {'nth': 0}),
+            # the FLAME (boot 1: 'projectiles are not flames at all'). Halo 1's flame is a projectile
+            # whose detonation timer starts at once and whose `flame detonation` effect -- `burning`:
+            # fire particles + smoke, five 0.5-1.5 s events -- rides it for its whole 1.3-8 s life
+            # (and the weapon's fp_defoliant particle systems while firing). Halo 2's object
+            # ATTACHMENTS take effects (the plasma grenade's armed glow): the PR bolt's contrail
+            # attachment becomes an attached EFFECT -- a clone of Bungie's `fire_medium` (H2 fire
+            # particles + fire physics). Order: the light volume first, then the reclass, then the path
             (FT + r'\projectiles\flame.projectile', 'MGS2', r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak',
              FX + r'\flame_streak', "the flame's glow (light volume)", {'nth': 0}),
+            (FT + r'\projectiles\flame.projectile', 'cont', r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak',
+             r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak', "the flame's attachment -> an effect",
+             {'class': 'effe'}),
+            (FT + r'\projectiles\flame.projectile', 'effe', r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak',
+             FX + r'\flame_burning', "the flame's fire (Halo 2's fire_medium, attached)"),
+            # where a flame hits: fire (Halo 1: `flame char` + a burst), not the plasma splash
+            (FT + r'\projectiles\flame.projectile', 'effe', r'effects\impact\plasma_slow\soft_terrain',
+             FX + r'\flame_burning', 'impact on soft materials -> fire', {'every': True}),
+            (FT + r'\projectiles\flame.projectile', 'effe', r'effects\impact\plasma_slow\hard_metal_thick',
+             FX + r'\flame_burning', 'impact on hard materials -> fire', {'every': True}),
+            # the muzzle: the SMG fire effect's flash particles -> Bungie's fire particles (its sound,
+            # light and physics kept)
+            (FX + r'\flamethrower_fire.effect', 'prt3', r'effects\objects\weapons\rifle\smg\fire_burst_center',
+             r'effects\generic\fires\fire', 'muzzle flash -> fire', {'every': True}),
+            (FX + r'\flamethrower_fire.effect', 'prt3', r'effects\objects\weapons\rifle\smg\fire_burst_long',
+             r'effects\generic\fires\white_rolling_flame', 'muzzle streak -> rolling flame', {'every': True}),
             # the HUD is the BR's clone (step 7: single, two-handed; the SMG's is dual-wield shaped)
             (FT + r'\flamethrower.weapon', 'nhdt', r'ui\hud\smg', r'ui\hud\flamethrower', 'its own HUD (step 7)'),
             (FT + r'\flamethrower.weapon', 'effe', r'effects\objects\weapons\rifle\battle_rifle\reload',
@@ -246,12 +292,19 @@ PORT = {
             # +36 (two unexported tag references between: ready effect / ready damage effect; found by
             # a probe scan), then overheated +40, detonation threshold / fraction, loss +52, illumination
             # +56, overheated loss +60
-            (FT + r'\flamethrower.weapon', 'heat recovery threshold', '', 0, 0, 0.12, {'anchor': ('ready time', 36)}),
+            # BOOT 1 (user: 'no heat functionality, I can fire the entire ammo load'): the per-value PR
+            # ratio broke the MECHANIC -- heat x1.88 but loss x2.84: 0.135 x 10.8/s - 1.25/s = +0.21/s,
+            # overheat after 4.8 s, the 100-fuel tank empties in 4.6 s (the boot shows Halo 2 adds heat
+            # per SHOT and drains it while firing). Now HALO 1'S OWN HEAT PER SECOND: Halo 1 fires 10/s
+            # (its 30 Hz trigger) x 0.072 = 0.72/s -> 0.0667 a shot at 10.8/s; loss 0.44 (one rate in
+            # Halo 1, both here), recovery 0.30: overheat after 1 / (0.72 - 0.44) = 3.6 s held (tank
+            # 4.6 s), cool-down (1 - 0.3) / 0.44 = 1.6 s
+            (FT + r'\flamethrower.weapon', 'heat recovery threshold', '', 0, 0, 0.3, {'anchor': ('ready time', 36)}),
             (FT + r'\flamethrower.weapon', 'overheated threshold', '', 0, 0, 1.0, {'anchor': ('ready time', 40)}),
-            (FT + r'\flamethrower.weapon', 'heat loss per second', '', 0, 0, 1.250333, {'anchor': ('ready time', 52)}),
-            (FT + r'\flamethrower.weapon', 'overheated heat loss per second', '', 0, 0, 0.513333, {'anchor': ('ready time', 60)}),
+            (FT + r'\flamethrower.weapon', 'heat loss per second', '', 0, 0, 0.44, {'anchor': ('ready time', 52)}),
+            (FT + r'\flamethrower.weapon', 'overheated heat loss per second', '', 0, 0, 0.44, {'anchor': ('ready time', 60)}),
             (FT + r'\flamethrower.weapon', 'heat illumination', '', 0, 0, 1.0, {'anchor': ('ready time', 56)}),
-            (FT + r'\flamethrower.weapon', 'heat generated per round', 'barrels', 0, 0, 0.135,
+            (FT + r'\flamethrower.weapon', 'heat generated per round', 'barrels', 0, 0, 0.066667,
              {'anchor': ('illumination recovery time', 4)}),
             # FUEL (no PR counterpart: Halo 1 raw): 100 loaded / 300 initial / 600 maximum, 2 a shot
             (FT + r'\flamethrower.weapon', 'rounds loaded maximum', 'magazines', 0, 0, 100),
@@ -284,7 +337,11 @@ PORT = {
             # air damage range 100 > 16: no falloff). The fields reading 0 are PINNED by the struct's
             # order (AI perception, collision, arming, danger radius, timer, minimum velocity,
             # maximum range -- h2_port_numbers.pin, probed)
-            (FT + r'\projectiles\flame.projectile', 'initial velocity', '', 0, 0, 1.008),
+            # BOOT 1 ('projectiles are not flames at all ... mirror their exact behavior'): the flame moves
+            # as HALO 1's does -- 3.6 wu/s -> 0, without Halo 2's player speed-up (the PR ratio's 1.0
+            # wu/s crawled); Halo 1's projectile flags carry no such speed-up
+            (FT + r'\projectiles\flame.projectile', 'flags', '', 0, 1, 0),
+            (FT + r'\projectiles\flame.projectile', 'initial velocity', '', 0, 0, 3.6),
             (FT + r'\projectiles\flame.projectile', 'final velocity', '', 0, 0, 0.0),
             (FT + r'\projectiles\flame.projectile', 'maximum range', '', 0, 0, 16.0),
             (FT + r'\projectiles\flame.projectile', 'timer', '', 0, 0, [1.3, 8.0], {'anchor': ('maximum range', -12)}),
@@ -306,17 +363,10 @@ PORT = {
             (FT + r'\projectiles\flame.projectile', 'bounding radius', '', 0, 0, 0.15),
             (FT + r'\damage_effects\flame.damage_effect', 'active camouflage damage', '', 0, 0, 1.25,
              {'anchor': ('damage upper bound', 16)}),
-            # the flame's LOOK: the Brute plasma rifle's red streak recoloured to flame orange (a, r, g,
-            # b), head -> tail, and widened (Halo 1's flame is a 0.5 wu collision ball) -- in game
-            (FX + r'\flame_streak.contrail', 'color lower bound', 'point states', 0, 0, [0.6, 1.0, 0.55, 0.15]),
-            (FX + r'\flame_streak.contrail', 'color upper bound', 'point states', 0, 0, [0.6, 1.0, 0.55, 0.15]),
-            (FX + r'\flame_streak.contrail', 'color lower bound', 'point states', 1, 0, [0.15, 1.0, 0.25, 0.05]),
-            (FX + r'\flame_streak.contrail', 'color upper bound', 'point states', 1, 0, [0.15, 1.0, 0.25, 0.05]),
-            (FX + r'\flame_streak.contrail', 'width', 'point states', 0, 0, 0.35),
-            (FX + r'\flame_streak.contrail', 'width', 'point states', 1, 0, 0.35),
             # first-person placement: Halo 1's animations carry Halo 1's view (camera = origin), so
             # start with none (the SMG's 0.02, 0, 0 is for its own graph) -- checked in game
-            (FT + r'\flamethrower.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, 0.0]),
+            # boot 1 (user): '1 unit forward and down' (1 unit = 0.01 wu, the AR's convention)
+            (FT + r'\flamethrower.weapon', 'first person weapon offset', '', 0, 0, [0.01, 0.0, -0.01]),
         ],
         'skipped': [
             ('melee damage', 'Halo 2 weapons share strike_melee / smash_melee: a row would move every weapon'),
@@ -375,7 +425,11 @@ PORT = {
         'hud': r'ui\hud\flamethrower',
         'footprint': 1.0,
         'h3_art': {'kind': 'h1', 'sheet': r'ui\hud\bitmaps\combined\hud_reticles', 'sequence': 5,
-                   'yardstick': 4},
+                   'yardstick': 4,
+                   # boot 1 (user: 'crosshair is too big'): Halo 1's ON-SCREEN size, measured on the
+                   # user's 1080p screenshots -- Halo 1's ring 119 px across, ours 236 px from 177 ink
+                   # px -> 177 x 119 / 236 = 89 ink px (the AR's rule: the source game's own size)
+                   'target_ink': 89},
         'preview': 'flamethrower_reticle_preview.png',
     },
     'scope': {
@@ -388,18 +442,45 @@ PORT = {
         'size': (8, 8),
     },
 
+    # step 7b -- h2_port_hud_widgets.py: the HEAT METER (boot 1: 'no heat meter'). Two of the blanked
+    # scope widgets become the Plasma Rifle's heat widgets (its `heat_meter_right` / `heat_background_
+    # right`: input WEAPON heat / WEAPON time on overheat, its meter + pulse art and shaders, its
+    # flags), placed UNDER the fuel meter (the BR's ammo meter sits at -196,42, 34 px tall -> y 80).
+    # Widget fields reading 0 are pinned from the widget's `anchor` (input 1 at -24, probed)
+    'hud_widgets': {
+        'hud': r'ui\hud\flamethrower.new_hud_definition',
+        'widgets': [
+            {'name': 'distance_meter', 'bitmap': NEW_HUD + r'\meters\plasma_meter_r',
+             'shader': r'ui\hud\shaders\plasma_meter',
+             'fields': [('input 1', 49, ('anchor', -24)), ('[Y] unit flags', 48), ('[N] unit flags', 1024),
+                        ('[N] weapon flags', 6), ('fullscreen offset', [-189, 80]),
+                        ('halfscreen offset', [-95, 40]), ('quarterscreen offset', [-95, 40]), ('anchor', 0)]},
+            {'name': '2x', 'bitmap': NEW_HUD + r'\meters\plasma_bkd_r',
+             'shader': r'ui\hud\shaders\widget_gradient_flash_pulse',
+             'fields': [('input 1', 55, ('anchor', -24)), ('[Y] unit flags', 48), ('[N] unit flags', 1024),
+                        ('[N] weapon flags', 6), ('fullscreen offset', [-190, 80]),
+                        ('halfscreen offset', [-95, 40]), ('quarterscreen offset', [-95, 40]), ('anchor', 0)]},
+        ],
+    },
+
     # step 8 -- the pickup icon at U+E153 (Halo 2's look, the AR's: HUD blue, outline + feature lines,
     # solid body), the messages smg_* -> ft2_*
     'glyph': {
-        'box': (160, 62),
+        'box': (115, 45),          # 0.72 of 160x62, Bungie's on-screen size (the AR's rework)
         'model_3p': WORLD_JMS,
         'tif': 'flamethrower_h2_glyph.tif',
-        'colour': (110, 171, 233),
-        'style': {'line': (134, 202, 255), 'body': (72, 118, 172)},
+        'colour': (255, 255, 255),       # white: the renderer tints it (blue Chief / violet Arbiter)
+        'style': {'line': (255, 255, 255), 'body': (153, 153, 153)},
     },
     'messages': {
         'donor_prefix': 'smg', 'donor_icon': '&smg',
         'donor_name': 'SMG', 'port_name': 'Flamethrower',
+        # boot 1: 'Picked up an Flamethrower' (the SMG's article) -> the article with the name
+        'names': [('an SMG', 'a Flamethrower'), ('SMG', 'Flamethrower')],
+        # boot 1 (user: 'show me both icons'): Halo 2 SHIPS a flamethrower icon, U+E117 (macro
+        # &flamethrower, all eight English fonts, in the band Halo 2 tints) -- the remnant of the cut
+        # weapon. For the comparison boot: the PICKUP line draws Bungie's, the SWAP line the port's
+        'line_icons': {'pickup': 0xE117},
         'weapon': FT + r'\flamethrower.weapon',
     },
 
@@ -466,7 +547,7 @@ PORT = {
         'weapon_nodes': ['gun', 'ammo', 'cover'],
         # (Halo 1, Halo 2[, opt]). Halo 2's overheat = ONE animation `overheating` (the PR's 89 frames)
         # + `o_h_exit`: Halo 1's overheating (enter, 10) then its overheated loop to ~the overheat's
-        # length ((1 - 0.12) / 0.513 = 1.7 s = 52 frames). No reload-full / put-away / 2nd melee in
+        # length ((1 - 0.3) / 0.44 = 1.6 s = 48 frames, the boot-1 heat). No reload-full / put-away / 2nd melee in
         # Halo 1: the reload-empty serves both reloads, the melee both strikes, the ready reversed is
         # the put-away; throw-overheated has no Halo 2 slot (dropped)
         'map': [('first-person idle', 'first_person:idle', {'loop': True}),
@@ -479,7 +560,7 @@ PORT = {
                 ('first-person melee', 'first_person:melee_strike_2'),
                 ('first-person throw-grenade', 'first_person:throw_grenade'),
                 ('first-person overheating', 'first_person:overheating',
-                 {'then': 'first-person overheated', 'frames': 52}),
+                 {'then': 'first-person overheated', 'frames': 48}),
                 ('first-person o-h-exit', 'first_person:o_h_exit'),
                 ('first-person moving', 'first_person:moving'),
                 ('first-person overlays', 'first_person:overlays'),

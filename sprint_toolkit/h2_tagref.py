@@ -337,6 +337,35 @@ def add_attachment(tag_path, donor_path, cls, element=0, tries=400, count_at=Non
                      % os.path.basename(tag_path))
 
 
+def set_class(tag_path, cls, path, new_cls, nth=0):
+    """Change the CLASS of the `nth` `cls` reference to `path` (the path stays): a field that takes
+    several classes -- an object attachment's `type` (light, light volume, contrail, effect, ...).
+    The Flamethrower (S1, boot 1): its flame's contrail attachment becomes an attached EFFECT, the
+    way Halo 1's flame carries its fire for its whole life. The record's 4CC is rewritten in place
+    (nothing moves), each candidate record tried and kept only when tool.exe's reference list is the
+    old one with exactly that entry's class changed."""
+    before = references(tag_path)
+    hits = [i for i, r in enumerate(before) if r == (cls, path)]
+    if nth >= len(hits):
+        raise ValueError('%s names %d %s references to %s, not %d'
+                         % (os.path.basename(tag_path), len(hits), cls, path, nth + 1))
+    want = list(before)
+    want[hits[nth]] = (new_cls, path)
+    original = open(tag_path, 'rb').read()
+    tries = candidates(original, cls, len(path))
+    for rec in tries:
+        out = bytearray(original)
+        out[rec:rec + 4] = new_cls.encode('latin-1')[::-1]
+        open(tag_path, 'wb').write(bytes(out))
+        if references(tag_path) == want:
+            print('%s: %s %s -> class %s  (%d references, all others unchanged)'
+                  % (os.path.basename(tag_path), cls, path, new_cls, len(want)))
+            return
+    open(tag_path, 'wb').write(original)
+    raise ValueError('none of the %d candidate records gave the intended result; %s restored'
+                     % (len(tries), os.path.basename(tag_path)))
+
+
 def set_reference(tag_path, cls, old_path, new_path, every=False, nth=None):
     """Repoint a reference and prove it with tool.exe, or put the tag back.
 

@@ -12,7 +12,9 @@ clones are wired together; nothing Bungie shipped is edited. The config's `weapo
                opt {'every': True} moves identical references together (a weapon's two FP
                models), {'nth': k} the k-th of them (a .model whose render model and collision
                model pool ONE path -- the AR, 2026-10-20); an EMPTY current path ('') FILLS an
-               empty reference (h2_tagref.fill_reference -- the Spike Rifle's projectile model)
+               empty reference (h2_tagref.fill_reference -- the Spike Rifle's projectile model);
+               {'class': X} changes the reference's CLASS, the path kept (h2_tagref.set_class --
+               the Flamethrower's flame: a contrail attachment made an attached effect)
     shared     [(path, why)] -- what stays someone else's, on purpose (printed)
     string_ids {old: new} renamed through h2_stringid (adjacent string-id fields: the AR's
                3P label `rifle`/`smg` -> `rifle`/`br`), string_ids_done (field, value) its guard
@@ -78,6 +80,15 @@ def wire(w):
         opt = row[5] if len(row) > 5 else {}
         path = os.path.join(TAGS, tag)
         have = h2_tagref.references(path)
+        if opt.get('class'):
+            # {'class': X}: the reference's CLASS changes, its path stays (old == new) -- the
+            # Flamethrower's flame: its contrail attachment becomes an attached effect
+            if (cls, old) not in have:
+                print('   %-34s %s already a %s' % (os.path.basename(tag), why, opt['class']))
+            else:
+                h2_tagref.set_class(path, cls, old, opt['class'], nth=opt.get('nth') or 0)
+                print('      (%s)' % why)
+            continue
         if (cls, new) in have and (cls, old) not in have:
             print('   %-34s %s already points at the port' % (os.path.basename(tag), why))
             continue

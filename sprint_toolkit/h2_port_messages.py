@@ -70,9 +70,14 @@ def setup(key):
     # optional ordered [(old, new)] in place of the one name swap: an article that changes
     # with the name ('an SMG' -> 'a Spike Rifle', then 'SMG' -> ...; the Spike Rifle)
     NAMES[:] = [tuple(x) for x in m.get('names', ())]
+    # optional {line suffix: codepoint}: one line drawn with ANOTHER icon (the Flamethrower, boot 1:
+    # Bungie's own cut flamethrower icon U+E117 beside the port's, for the user to compare in game)
+    LINE_ICONS.clear()
+    LINE_ICONS.update(m.get('line_icons', {}))
 
 
 NAMES = []
+LINE_ICONS = {}
 
 
 def rename(v):
@@ -105,7 +110,8 @@ def port_lines(s, english=None):
     for k, v in entries(s, DONOR).items():
         name = PORT + k[len(DONOR):]
         if DONOR_ICON in v:
-            out.append('%s = %s' % (name, v.replace(DONOR_ICON, chr(GLYPH))))
+            icon = LINE_ICONS.get(k[len(DONOR) + 1:], GLYPH)
+            out.append('%s = %s' % (name, v.replace(DONOR_ICON, chr(icon))))
         elif english and name in english:
             out.append('%s = %s' % (name, english[name]))
         else:

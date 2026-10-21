@@ -76,6 +76,8 @@ SCALARS = {
     'real vector 2d': ('<f', 4, 2), 'real point 2d': ('<f', 4, 2),
     # colours, in the order tool prints them (a, r, g, b) -- the Flamethrower's contrail, S1
     'real argb color': ('<f', 4, 4), 'real rgb color': ('<f', 4, 3),
+    # a HUD widget's screen offsets (two shorts) -- the Flamethrower's heat meter, S1
+    'point 2d': ('<h', 2, 2),
 }
 
 
