@@ -19,6 +19,7 @@ SMG = r'objects\weapons\rifle\smg'                       # the donor (H2EK)
 FX = r'effects\objects\weapons\support_low\flamethrower'  # the reserved effects folder
 H1FT = r'weapons\flamethrower'                           # the source's folder (HCEEK)
 H2EK = r'F:\SteamLibrary\steamapps\common\H2EK'
+import os as _os
 NEW_HUD = r'ui\hud\bitmaps\new_hud'
 # the port's own world mesh (step 1's JMS): the silhouette the HUD plate, backpack icon and pickup
 # glyph are drawn from (h3_weapon_glyph.mesh reads a .jms) -- Halo 1 has no Halo 3 render model
@@ -170,7 +171,11 @@ PORT = {
                    (r'effects\materials\objects\weapons\smg.material_effects', FX + r'\flamethrower.material_effects'),
                    (r'effects\materials\objects\weapons\plasma_rifle.material_effects', FX + r'\flame.material_effects'),
                    (r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak.contrail', FX + r'\flame_streak.contrail'),
-                   (r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak.light_volume', FX + r'\flame_streak.light_volume')],
+                   (r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak.light_volume', FX + r'\flame_streak.light_volume'),
+                   # the RELOAD sound: the seed graph (the PR's) has no reload animation, so no reload
+                   # sound event -- the magazine's reloading effect carries it instead: a clone of
+                   # Bungie's sound-only BR dryfire effect (step 10 repoints its sound)
+                   (r'effects\objects\weapons\rifle\battle_rifle\empty.effect', FX + r'\flamethrower_reload.effect')],
         'wiring': [
             (FT + r'\flamethrower.weapon', 'hlmt', SMG + r'\smg', FT + r'\flamethrower', 'world model'),
             (FT + r'\flamethrower.model', 'mode', r'objects\weapons\rifle\battle_rifle\battle_rifle',
@@ -205,6 +210,8 @@ PORT = {
              FX + r'\flame_streak', "the flame's glow (light volume)", {'nth': 0}),
             # the HUD is the BR's clone (step 7: single, two-handed; the SMG's is dual-wield shaped)
             (FT + r'\flamethrower.weapon', 'nhdt', r'ui\hud\smg', r'ui\hud\flamethrower', 'its own HUD (step 7)'),
+            (FT + r'\flamethrower.weapon', 'effe', r'effects\objects\weapons\rifle\battle_rifle\reload',
+             FX + r'\flamethrower_reload', "the magazine's reloading effect (Halo 1's reload sound, step 10)"),
         ],
         # the 3P label: the BR's `rifle` / `br` (every character's graph holds the two-handed BR; the
         # Grunt's taught by the AR, h2_graph_teach). Halo 1's label `ft` has no Halo 2 graph
@@ -377,6 +384,58 @@ PORT = {
         'donor_prefix': 'smg', 'donor_icon': '&smg',
         'donor_name': 'SMG', 'port_name': 'Flamethrower',
         'weapon': FT + r'\flamethrower.weapon',
+    },
+
+    # step 10 -- h2_port_sounds.py: Halo 1's OWN sounds from MCC's CLASSIC halo1 bank (h1_bank; 22 kHz
+    # XBOX IMA, the .lst index -- memory h1-fmod-bank-sounds), 48 kHz, classic Opus. Halo 1 plays its
+    # flame as a LOOP (fire_ft: `fire`); Halo 2 fires a sound per shot -> `fire` cut into 8 per-shot
+    # slices (one shot interval 1/10.8 s + a 30 ms raised-cosine crossfade). The PR seed's graph
+    # events cue: ready, melee, posing, OVERHEAT (Halo 1's overheat effect is silent: `burnout`, the
+    # flame dying, approximates it) and the overheat EXIT (`light`, the re-ignition); the reload rides
+    # the magazine's reloading effect; the flame's flyby is SILENT (Halo 1's flames have none)
+    'sounds': {
+        'weapon': FT + r'\flamethrower.weapon',
+        'fire_fx': FX + r'\flamethrower_fire.effect',
+        'audio': _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), 'out',
+                               'h2_sounds', 'flamethrower'),
+        'audio_key': 'Flamethrower',
+        'h1_bank': {'ft_fire': (r'sound\old_sfx\weapons\flamethrower\fire',
+                                {'slices': 8, 'seconds': 0.1226, 'fade': 0.03}),
+                    'ft_dryfire': (r'sound\old_sfx\weapons\flamethrower\empty', {}),
+                    'ft_reload': (r'sound\old_sfx\weapons\weapon_anims\flamethrower_reload', {}),
+                    'ft_ready': (r'sound\old_sfx\weapons\weapon_anims\flamethrower_ready', {}),
+                    'ft_melee': (r'sound\old_sfx\weapons\weapon_anims\flamethrower_melee', {}),
+                    'ft_posing': (r'sound\old_sfx\weapons\weapon_anims\flamethrower_posing', {}),
+                    'ft_overheat': (r'sound\old_sfx\weapons\flamethrower\burnout', {}),
+                    'ft_oh_exit': (r'sound\old_sfx\weapons\flamethrower\light', {}),
+                    'ft_ammo': (r'sound\old_sfx\weapons\weapon_pickup_ammo\ar_ammo', {}),
+                    'ft_flyby': (None, {})},
+        'sounds': {'ft_fire': ('ft_fire', 'weapon_fire'), 'ft_dryfire': ('ft_dryfire', 'weapon_empty'),
+                   'ft_reload': ('ft_reload', 'weapon_reload'), 'ft_ready': ('ft_ready', 'weapon_ready'),
+                   'ft_melee': ('ft_melee', 'weapon_melee'), 'ft_posing': ('ft_posing', 'weapon_ready'),
+                   'ft_overheat': ('ft_overheat', 'weapon_overheat'),
+                   'ft_oh_exit': ('ft_oh_exit', 'weapon_ready'),
+                   'ft_ammo': ('ft_ammo', 'weapon_reload'), 'ft_flyby': ('ft_flyby', 'projectile_flyby')},
+        'repoint_fx': [(r'sound\weapons\smg\fire', 'ft_fire'),
+                       (r'sound_remastered\weapons\smg\fire_lod', 'ft_fire')],
+        'repoint_weapon': [(r'sound\weapons\smg\dryfire', 'ft_dryfire'),
+                           (r'sound\weapons\smg\smg_ammo', 'ft_ammo')],
+        'repoint_tags': [(FX + r'\flamethrower_reload.effect', r'sound\weapons\battle_rifle\dryfire', 'ft_reload'),
+                         (FT + r'\projectiles\flame.projectile', r'sound\weapons\plasma_rifle\plasma_proj', 'ft_flyby')],
+        'graph_sounds': tuple((s, n) for s, n in (
+            ('plasrifle_ready', 'ft_ready'), ('plasrifle_dual_ready', 'ft_ready'),
+            ('plasrifle_melee1', 'ft_melee'),
+            ('plasrifle_overheat', 'ft_overheat'), ('plasrifle_dual_overheat_l', 'ft_overheat'),
+            ('plasrifle_dual_overheat_r', 'ft_overheat'),
+            ('plasrifle_oh_exit', 'ft_oh_exit'), ('plasrifle_dual_ohexit_l', 'ft_oh_exit'),
+            ('plasrifle_dual_ohexit_r', 'ft_oh_exit'),
+            ('plasrifle_posing_zero', 'ft_posing'), ('plasrifle_posing_one', 'ft_posing'))
+            + tuple(('plasrifle_dual_pose%d_%s' % (k, side), 'ft_posing') for k in range(4) for side in 'lr')),
+        'graph_sound_dir': r'sound\weapons\plasma_rifle' + '\\',
+        'gain': {'ft_flyby': -40.0},
+        'boost': {},
+        'backup': r'E:\HaloBackups\H2EK_flamethrower_before_sounds',
+        'graph_backup': r'E:\HaloBackups\H2EK_flamethrower_graphs_before_sounds',
     },
 
     # step 9 -- h2_port_fp_anims.py kind 'h1': Halo 1's OWN FP animations (HCEEK weapons\flamethrower\

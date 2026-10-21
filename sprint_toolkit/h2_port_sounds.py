@@ -15,6 +15,9 @@ The config's `sounds` section:
     graph_sounds, graph_sound_dir   ((donor sound, own sound), ...) on both FP graphs
     h3_bank                  {audio folder: [Halo 3 bank source folders]} -- rendered into
                              <audio> first (render_h3_bank; a Halo 3 source, the AR)
+    h1_bank                  {audio folder: (Halo 1 classic bank path | None, opt)} -- the same for
+                             a HALO 1 source (render_h1_bank: loop slices, silence; the Flamethrower)
+    repoint_tags             [(tag, the sound named now, own sound)] -- any other tag
     gain, boost              per sound (dB)
     backup, graph_backup     first-run backups (E:)
 The sound folder is the config's `reservations['sound_dir']`, the graphs its `fp_graph`.
@@ -68,6 +71,8 @@ def setup(key):
         rp.append((FIRE_FX, old, SND_DIR + B + new))
     for old, new in pairs(c.get('repoint_weapon')):
         rp.append((WEAPON, old, SND_DIR + B + new))
+    # any other tag (the Flamethrower: its reloading effect, its flame's flyby)
+    rp += [(t, old, SND_DIR + B + new) for t, old, new in c.get('repoint_tags', ())]
     rp += [(g, c['graph_sound_dir'] + s, SND_DIR + B + n) for g in GRAPHS
            for s, n in c.get('graph_sounds', ())]
     REPOINT = rp
@@ -162,6 +167,57 @@ def render_h3_bank(c):
                                                     ', '.join(f.split('\\')[-1] for f in folders)))
 
 
+def render_h1_bank(c):
+    """`h1_bank` {audio folder: (Halo 1 bank path | None, opt)} (the Flamethrower, S1, 2026-10-21):
+    every permutation of a HALO 1 sound decoded from MCC's CLASSIC bank (halo1\\sound\\pc\\
+    sounds_adpcm.fsb, 22 kHz XBOX IMA, found through its .lst index -- memory h1-fmod-bank-sounds;
+    vgmstream), resampled to 48 kHz mono, one wav each. opt: {'slices': n, 'seconds': s, 'fade': f}
+    cuts a LOOP into n per-shot permutations of s seconds with raised-cosine ends of f seconds
+    (Halo 2 fires a sound per shot; slices one shot interval + f long sum to a steady loop); a
+    None path = one short SILENT permutation (a slot Halo 1 leaves quiet: the flame's flyby).
+    Written fresh every run."""
+    import wave
+    import numpy as np
+    import h1_fsb
+    import h1_port_sounds as P
+    import h1_saw_tone as tone
+    pc = os.path.join(P.MCC, 'halo1', 'sound', 'pc')
+    _v, ents = h1_fsb.read_lst(os.path.join(pc, 'lst', 'sounds_adpcm.lst.bin'))
+    index = {str(p).lower(): (first, count) for p, first, count in ents}
+    P.BANK = os.path.join(pc, 'sounds_adpcm.fsb')
+    for name, (path, opt) in c['h1_bank'].items():
+        if path is None:
+            perms = [np.zeros(int(0.05 * 48000))]
+        else:
+            if path.lower() not in index:
+                raise SystemExit('%s: no %s in Halo 1\'s classic bank index' % (name, path))
+            first, count = index[path.lower()]
+            perms = [tone.resample(*P.decode(first + k), 48000) for k in range(count)]
+        if opt.get('slices'):
+            x, n = perms[0], opt['slices']
+            ln, f = int(opt['seconds'] * 48000), int(opt['fade'] * 48000)
+            ramp = 0.5 - 0.5 * np.cos(np.linspace(0.0, np.pi, f))
+            starts = np.linspace(0, max(0, len(x) - ln), n).astype(int)
+            perms = []
+            for s in starts:
+                y = x[s:s + ln].copy()
+                y[:f] *= ramp
+                y[-f:] *= ramp[::-1]
+                perms.append(y)
+        d = os.path.join(AUDIO, name)
+        shutil.rmtree(d, ignore_errors=True)
+        os.makedirs(d)
+        for k, x in enumerate(perms):
+            if np.abs(x).max() > 0.95:
+                x = 0.95 * np.tanh(x / 0.95)
+            with wave.open(os.path.join(d, '%s_%d.wav' % (name, k + 1)), 'wb') as o:
+                o.setnchannels(1)
+                o.setsampwidth(2)
+                o.setframerate(48000)
+                o.writeframes(np.clip(np.round(x * 32767), -32768, 32767).astype(np.int16).tobytes())
+        print('   %-14s %d permutation(s) from %s' % (name, len(perms), path or '(silence)'))
+
+
 def backup_graphs():
     for g in GRAPHS:
         keep = os.path.join(GRAPH_BACKUP, g)
@@ -231,7 +287,10 @@ def main(argv=None):
     if c.get('h3_bank') and a.write:
         print('the Halo 3 sounds, from MCC\'s halo3 bank:')
         render_h3_bank(c)
-    plain = [src for src, _c in SOUNDS.values() if ':' not in src]
+    if c.get('h1_bank') and a.write:
+        print('the Halo 1 sounds, from MCC\'s classic halo1 bank:')
+        render_h1_bank(c)
+    plain =[src for src, _c in SOUNDS.values() if ':' not in src]
     if plain and not glob.glob(os.path.join(AUDIO, plain[0], '*.wav')):
         raise SystemExit('no source audio in %s -- extract it first' % os.path.join(AUDIO, plain[0]))
     if not a.write:
