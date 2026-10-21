@@ -480,6 +480,99 @@ Sequential at the start: the AR pilot ALONE; then pairs, scaled up slowly. Each 
    written by the coordinating session.
 6. If a script says `kit lock: WAITING`, let it wait; never `release --force` a running holder.
 
+### Parallel pair 1: S1 Flamethrower (special) + A3 Spike Rifle (prepared 2026-10-21)
+
+After the AR pilot, the first PAIR (user: scale up slowly). **The Flamethrower is a special case**
+(user, 2026-10-21): not on the spreadsheet's list (Halo 2 never had one), wanted first because the
+user's current run uses it -- `ports_h2/flamethrower.py`, reservations `ft2` / U+E153 /
+`support_low\flamethrower`. **Its source is HALO 1** (proposed; confirmed with the user at the start):
+Halo 3's flamethrower is a turret weapon with no first-person model or graph, Halo 1's is a full FP
+weapon and Halo 1's arm skeleton IS Halo 2's masterchief (0.4). The Spike Rifle (A3) is the partner:
+the AR's route almost unchanged (H2 SMG clone, own H3 skeleton + animations on both species), so the
+two touch different tool families (a Halo 1 reader vs the proven Halo 3 one).
+
+| session | weapon | test levels (`--level` on EVERY h2_port_test_map run) |
+|---|---|---|
+| 1 | S1 Flamethrower | 05a_deltaapproach (Chief) + 06b_floodzone (Arbiter, Flood) |
+| 2 | A3 Spike Rifle | 08a_deltacliffs (Chief, Brutes) + 04b_floodlab (Arbiter) |
+
+PARALLEL PREFACE (in front of each prompt of a pair):
+
+> PARALLEL: another port session (<the other weapon>) runs at the same time on the same kit (H2EK).
+> Read H2_PORT_PLAN.md "Running ports in parallel" first and follow its rules. Your test levels are
+> <levels> -- pass `--level` on every `h2_port_test_map.py` run and restore with
+> `h2_port_test_map.py <key> --restore <level>`; stage one level at a time. Shared H2 tags (hud_messages,
+> the eight fonts, the HUD bitmap folders, the 13 weapons resources, ai\generic, the Grunt graph) only
+> under `python kit_lock.py --kit h2 run --owner <key> -- <command>`; if a script says `kit lock:
+> WAITING`, let it wait. A change to a shared h2_port_* tool: small, proven (`h2_port_tool_proof.py
+> --tag X --rev <commit before> --steps <steps> --include saw` -- the SAW and the AR must stay
+> identical), committed at once by path (kit_commit.py). Do NOT write the next weapon's prompt: write
+> "<#>: what <weapon> taught" and tell me you are done.
+
+### The Flamethrower (S1, special), filled in -- PARALLEL with A3
+
+> [PARALLEL PREFACE: the other weapon = the Spike Rifle; your levels = 05a_deltaapproach (Chief) and
+> 06b_floodzone (Arbiter)]
+> Port the FLAMETHROWER into Halo 2 (H2_PORT_PLAN.md "Parallel pair 1", #S1 -- a special case the user
+> needs SOON: their current run uses it). Halo 2 never had one.
+> Read H2_PORT_PLAN.md (Phase 0, "A1: what the Assault Rifle taught" -- the route you follow --, this
+> pair), PORTING.md "## Halo 2" and "Halo 2: the Assault Rifle", Halo 1's own flamethrower notes
+> (PORTING / H1_PORT_PLAN: the Sentinel Beam's heat + flame lessons, memory h1-held-fire-glow-rate-ramp,
+> h1-overheat-unzoom), sprint_toolkit/h2_phase0/*.md and memory h2-port-phase0, h2-ar-pilot,
+> h2-armed-cards, h2-armed-test-rules, port-findings-are-observations, shared-worktree-commits.
+> Your config: ports_h2/flamethrower.py (a stub; status 'in progress' first, one small commit).
+> Reserved: prefix `ft2`, glyph U+E153 (DECIMAL 57683), `objects\weapons\support_low\flamethrower`,
+> effects `effects\objects\weapons\support_low\flamethrower`, FP graphs
+> `objects\characters\{masterchief,dervish}\fp\weapons\support_low\fp_flamethrower\fp_flamethrower`,
+> HUD `ui\hud\flamethrower` + `flamethrower_*`, sounds `sound\weapons\flamethrower_port`, catalog name
+> `Flamethrower`.
+> STEP 0 WITH ME: the SOURCE. Proposed HALO 1 (`HCEEK weapons\flamethrower`: gbxmodel, fp\ model +
+> FP animations, flame projectile, heat display) -- Halo 3's is a turret weapon with no first-person
+> model or graph. Halo 1's FP arms are Halo 2's masterchief node for node (0.4), so its FP animations
+> should carry to the Chief as Halo 3's did for the AR (write Halo 2 source animations from Halo 1's
+> antr, then Bungie's `tool fp-model-animations`, as h2_port_fp_anims does for Halo 3); the DERVISH
+> has no Halo 1 source (same arm chain, 4-digit hands): re-pose the hand from the Chief's frames, or
+> the SAW route -- tell me which and why. Add Halo 1 readers to the shared tools as `kind: 'h1'`
+> (Reclaimer reads HCEEK; Halo 1's h1_* tools and memory h1-fp-* know the format).
+> STEP 4a WITH ME, before any number: yardstick candidates in the config (provisional the Plasma Rifle,
+> alternatives Shotgun, Sentinel Beam -- Halo 1's is itself derived --, SMG); every yardstick needs a
+> Halo 1 AND Halo 2 card (halo.json). The donor (proposed): the H2 SMG as the AR, or the plasma rifle
+> if heat rather than the magazine limits it -- by Halo 1's own numbers.
+> Then the AR's route step for step, step 4b included (`port_field_audit.py --port flamethrower`), both
+> species in game, residency in all 13 levels, the Armed side (`ai_firing_profile.py --h2-port`: Halo 1
+> has no ai\generic -- pick a Halo 2 stand-in entry and record it; Flood carry it in Halo 1), the
+> Armed test `--armed all`, the closing checks on a built level, catalog, enhancer hand-off, PORTING,
+> memory, port_backup --game h2, status 'done', "S1: what the Flamethrower taught". No 13-level
+> rebuild until I say so -- but tell me as soon as it is done: I want it in the maps for my run.
+
+### The Spike Rifle (A3), filled in -- PARALLEL with S1
+
+> [PARALLEL PREFACE: the other weapon = the Flamethrower; your levels = 08a_deltacliffs (Chief) and
+> 04b_floodlab (Arbiter)]
+> Port the SPIKE RIFLE (Brute Spiker) into Halo 2 (H2_PORT_PLAN.md wave A, #A3). Source: Halo 3,
+> `objects\weapons\rifle\spike_rifle\spike_rifle` (H3EK).
+> Read H2_PORT_PLAN.md (Phase 0, "A1: what the Assault Rifle taught" -- your route, step for step --,
+> this pair), PORTING.md "## Halo 2" and "Halo 2: the Assault Rifle", Halo 1's A5 record (H1_PORT_PLAN
+> "A5: what the Spike Rifle taught": the blades' melee, the slow projectile), sprint_toolkit/h2_phase0/
+> *.md and memory h2-port-phase0, h2-ar-pilot, h2-armed-cards, h2-armed-test-rules,
+> port-findings-are-observations, shared-worktree-commits.
+> Your config: ports_h2/brute_spiker.py (a stub; status 'in progress' first). Reserved: prefix `spk2`
+> (any length works -- `ar2` stayed the SMG's length, so yours is the FIRST length-changing rename in
+> game: confirm the pickup lines), glyph U+E140 (DECIMAL 57664), `objects\weapons\rifle\spike_rifle`,
+> effects, FP graphs `...\fp\weapons\rifle\fp_spike_rifle\fp_spike_rifle` (both species), HUD
+> `ui\hud\brute_spiker` + `brute_spiker_*`, sounds `sound\weapons\brute_spiker_port`, catalog name
+> `Spike Rifle`.
+> STEP 4a WITH ME first: provisional the SMG (one hop, both dual-wield), alternatives Needler, Plasma
+> Rifle; the Brute Plasma Rifle has no Halo 3 card. NEW for this port: DUAL WIELD -- Halo 2 HAS it,
+> so keep `can be dual wielded` (the SMG donor has it): the dual HUD (the SMG's plate x4 / meter x2),
+> dual FP animations (Halo 3 ships them in the graph -- check which the H2 graph needs), the dual
+> message (`*_pickup_or_dual`, `*_swap_or_dual`, `*_dual`). The blades' melee. The 3P label: the
+> Brutes carry it in Halo 3 -- check which class Halo 2's Brute / Elite / Grunt graphs give it.
+> Then the AR's route step for step (step 4b included), both species in game, residency in all 13,
+> Armed (`--h2-port`, H3's ai\generic spike rifle entry; the Brutes!), `--armed all`, closing checks,
+> catalog, enhancer hand-off, PORTING, memory, backup, status 'done', "A3: what the Spike Rifle taught".
+> No 13-level rebuild until I say so.
+
 ## Hand-off prompt for a weapon session
 
 > Port the <WEAPON> into Halo 2 (H2_PORT_PLAN.md, wave <X>, #<n>). Source: <game>, `<tag>`.
