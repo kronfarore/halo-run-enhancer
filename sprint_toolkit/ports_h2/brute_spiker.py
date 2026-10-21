@@ -26,7 +26,22 @@ PORT = {
     'donor': {'weapon': 'objects\\weapons\\rifle\\smg\\smg', 'message_prefix': 'smg',
               'why': 'spew magazine 1/1/1 AND dual-wieldable -- keep the flag'},
     'yardstick': {
-        'pick': None, 'reason': None,          # step 4a, WITH the user
+        # step 4a, user 2026-10-21: the SMG; balance_Spike_Rifle_Halo3_to_Halo2.json
+        # (balance_port.py "Spike Rifle" "Halo 3" "Halo 2" --hop "SMG:Halo 3>Halo 2");
+        # TTK h2_spiker_ttk_4a.py h2_spiker_ttk_4a_variants.json
+        'pick': 'SMG',
+        'reason': ('user 2026-10-21: one hop, same role, both dual-wield; nearly every ratio x1: '
+                   'balanced damage 8.55 (x0.95), rate 8, ammo 40 / 120 / 160, velocity 25 / 17.5, '
+                   'spread 0 / 0.4-1.25, autoaim 6 / 12, magnetism 12 / 18, rider 0.75, dual wield '
+                   'damage scale 0.667, dual error 0.25 / 0.75-1.5 (x1). Elite minor legendary TTK '
+                   '2.12 s (default 2.00; H2 SMG 2.07, AR port 1.90, PR 4.76, BPR 4.60). '
+                   'Alternatives: Plasma Rifle (spike 14 / 9.8, no ammo rows), Needler (no damage '
+                   'row, magazine 63, contradictory rate ratios)'),
+        # the user's picks beside the yardstick (2026-10-21):
+        'melee': ('own clone of strike_melee x Halo 3 cut_melee 72 / strike_melee 70 '
+                  '(20.57-61.71; the blades)'),
+        'projectile': "Halo 3's own air gravity 0.2 (no SMG card row) AND minimum velocity 12 (user: "
+                      "not the SMG rule's 0)",
         'candidates': {
             'provisional': 'SMG',
             'alternatives': ['Needler', 'Plasma Rifle'],
