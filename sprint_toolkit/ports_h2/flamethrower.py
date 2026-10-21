@@ -50,7 +50,7 @@ PORT = {
                   'x0.77 (21.5 -> 16.5 a flame, 2 a shot), rate x0.9 (12 -> 10.8/s) and the heat model '
                   '(0.072 -> 0.135 a shot, loss 0.44 -> 1.25/s, recovery 0.30 -> 0.12; overheats after '
                   '~2.7 s held, Halo 1 ~3.6 s); fuel 100/300/600, reload 3.4 s and range 16 wu have no '
-                  'Plasma Rifle counterpart -> Halo 1 raw. Damage group (user): Halo 2's own `burning` '
+                  'Plasma Rifle counterpart -> Halo 1 raw. Damage group (user): Halo 2 own `burning` '
                   '(Halo 1 category flame) -- Elite 0.65 s, Brute 0.28, Jackal 0.19, Flood 0.28 point blank',
         'damage_group': 'burning',
         'candidates': {
