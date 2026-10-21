@@ -516,7 +516,32 @@ PORT = {
                 "moved) and seeded in the per-tag cache; every write still proved by tool (one field)",
         }},
 
-    'firing_profile': {'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\rifle\\spike_rifle\\spike_rifle', 'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
-    'test': {'level': '08a_deltacliffs', 'dervish_level': '04b_floodlab'},   # parallel pair 1
+    # make_port_catalog_h2.py brute_spiker: the SMG table's rows (read from the H2 SMG's weapon /
+    # projectile / damage effect) onto the Spiker's own; the MELEE rows onto its OWN blade melee
+    # (strike_melee's rows x72/70, user 4a -- not dropped: the port names its own clone);
+    # reload built = balanced (56 = 56 x 50/50)
+    'catalog': {
+        'table': 'balance_Spike_Rifle_Halo3_to_Halo2.json',
+        'weapon_tag': SR + r'\spike_rifle',
+        'port_tags': [(('weap', SMG + r'\smg'), SR + r'\spike_rifle'),
+                      (('proj', SMG + r'\projectiles\smg_bullet'), SR + r'\projectiles\spike_rifle_spike'),
+                      (('jpt!', SMG + r'\damage_effects\smg_bullet'), SR + r'\damage_effects\spike_rifle_spike'),
+                      (('jpt!', r'objects\weapons\damage_effects\strike_melee'), SR + r'\damage_effects\spike_rifle_melee')],
+        'shared': [],
+        # user 4a: the spike keeps Halo 3's minimum velocity 12 (the SMG rule gave 0)
+        'value_overrides': {'Minimum Velocity': 12.0},
+        'fp_animations': r'objects\characters\*\fp\weapons\rifle\fp_spike_rifle\fp_spike_rifle',
+        'reload_mult': None,
+        'desc': ('%s carried from %s into Halo 2 with its own model, textures, sounds, blade melee and '
+                 'its own Halo 3 first-person animations for both species -- dual wield included -- '
+                 'balanced through the SMG.'),
+    },
+
+    # step 11 -- `python ai_firing_profile.py --h2-port brute_spiker`: Halo 3's ai\generic spike
+    # rifle entry (010_jungle) name-for-name into H2EK ai\generic, over the H2 SMG's (the yardstick)
+    'firing_profile': {'from_game': 'Halo 3', 'from_map': r'halo3\maps\010_jungle.map',
+                       'from_weapon': r'objects\weapons\rifle\spike_rifle\spike_rifle',
+                       'donor_weapon': r'objects\weapons\rifle\smg\smg'},
+    'test': {'level': '08a_deltacliffs', 'dervish_level': '04b_floodlab', 'rounds': (40, 120)},   # parallel pair 1
     'residency': {'levels': 'all', 'placements': False},
 }

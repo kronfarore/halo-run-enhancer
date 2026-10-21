@@ -9021,6 +9021,457 @@
     }
    ],
    "fp_animations": "objects\\characters\\*\\fp\\weapons\\rifle\\fp_assault_rifle\\fp_assault_rifle"
+  },
+  {
+   "weapon": "Spike Rifle",
+   "source": "Halo 3",
+   "donor": "SMG",
+   "default_on": true,
+   "desc": "Spike Rifle carried from Halo 3 into Halo 2 with its own model, textures, sounds, blade melee and its own Halo 3 first-person animations for both species -- dual wield included -- balanced through the SMG.",
+   "balance": [
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 12.0,
+     "card": "Magnetism",
+     "original": 12.000000333930423,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 18.0,
+     "card": "Magnetism",
+     "original": 18.0,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 6.0,
+     "card": "Autoaim",
+     "original": 4.99999985454646
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 12.0,
+     "card": "Autoaim",
+     "original": 12.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_spike",
+     "field": "Rider Direct Damage Scale",
+     "block": null,
+     "value": 0.75,
+     "card": "Rider Damage",
+     "original": 1.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_spike",
+     "field": "Rider Maximum Transfer Damage Scale",
+     "block": null,
+     "value": 0.75,
+     "card": "Rider Damage",
+     "original": 1.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_spike",
+     "field": "Rider Minimum Transfer Damage Scale",
+     "block": null,
+     "value": 0,
+     "card": "Rider Damage",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Acceleration Time",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Ramp Up",
+     "original": 1.0,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Deceleration Time",
+     "block": "Barrels",
+     "value": 0.2,
+     "card": "Ramp Up",
+     "original": 0.20000000298023224,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Firing Noise",
+     "block": "Barrels",
+     "value": 2.0,
+     "card": "Firing Noise",
+     "original": 2.0,
+     "index": "all"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_melee",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 20.571429,
+     "card": "Melee Damage",
+     "original": 72.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_melee",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 61.714286,
+     "card": "Melee Damage",
+     "original": 72.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_melee",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 61.714286,
+     "card": "Melee Damage",
+     "original": 72.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_rifle_spike",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 70.0,
+     "card": "Projectile Range",
+     "original": 70.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_rifle_spike",
+     "field": "Air Damage Range",
+     "block": null,
+     "value": 0,
+     "card": "Projectile Range",
+     "original": 0.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_rifle_spike",
+     "field": "Air Damage Range Max",
+     "block": null,
+     "value": 60.0,
+     "card": "Projectile Range",
+     "original": 60.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_rifle_spike",
+     "field": "Water Damage Range",
+     "block": null,
+     "value": 0.0,
+     "card": "Projectile Range",
+     "original": 0.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_rifle_spike",
+     "field": "Water Damage Range Max",
+     "block": null,
+     "value": 10.0,
+     "card": "Projectile Range",
+     "original": 10.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_rifle_spike",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 25.0,
+     "card": "Projectile Velocity",
+     "original": 25.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_rifle_spike",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 17.5,
+     "card": "Projectile Velocity",
+     "original": 17.5
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_rifle_spike",
+     "field": "Minimum Velocity",
+     "block": null,
+     "value": 12.0,
+     "card": "Projectile Velocity",
+     "original": 12.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_spike",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 0,
+     "card": "Bullet Damage",
+     "original": 0.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_spike",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 8.55,
+     "card": "Bullet Damage",
+     "original": 9.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_spike",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 8.55,
+     "card": "Bullet Damage",
+     "original": 9.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 120.0,
+     "card": "Ammo Inventory",
+     "original": 120.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Rounds Inventory Maximum",
+     "block": "Magazines",
+     "value": 120.0,
+     "card": "Ammo Inventory",
+     "original": 120.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 160.0,
+     "card": "Ammo Inventory",
+     "original": 160.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 40.0,
+     "card": "Ammo Loaded",
+     "original": 40.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Rounds Reloaded",
+     "block": "Magazines",
+     "value": 40.0,
+     "card": "Ammo Loaded",
+     "original": 40.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 160.0,
+     "card": "Ammo Loaded",
+     "original": 160.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Rounds Per Second",
+     "block": "Barrels",
+     "value": 8.0,
+     "card": "Salvo Shooting",
+     "original": 8.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Rounds Per Second Max",
+     "block": "Barrels",
+     "value": 8.0,
+     "card": "Salvo Shooting",
+     "original": 8.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Shots Per Fire",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Salvo Shooting",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Shots Per Fire Max",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Salvo Shooting",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Rounds Per Shot",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Projectiles Per Shot",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Projectiles Per Shot",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Projectiles Per Shot",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Fire Recovery Time",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Fire Recovery Time",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Minimum Error",
+     "block": "Barrels",
+     "value": 0.0,
+     "card": "Error Angle",
+     "original": 0.0,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Error Angle",
+     "block": "Barrels",
+     "value": 0.4,
+     "card": "Error Angle",
+     "original": 0.4999999961268166,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Error Angle Max",
+     "block": "Barrels",
+     "value": 1.25,
+     "card": "Error Angle",
+     "original": 1.249999963636615,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Minimum Error",
+     "block": "Barrels",
+     "value": 0.25,
+     "card": "Dual Weapon Error",
+     "original": 0.2499999980634083
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Error Angle",
+     "block": "Barrels",
+     "value": 0.75,
+     "card": "Dual Weapon Error",
+     "original": 0.7500000208706514
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Error Angle Max",
+     "block": "Barrels",
+     "value": 1.5,
+     "card": "Dual Weapon Error",
+     "original": 1.5000000417413029
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Dual Wield Damage Scale",
+     "block": "Barrels",
+     "value": 0.666667,
+     "card": "Dual Weapon Damage",
+     "original": 0.800000011920929
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Magnification Levels",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Magnification Range",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Magnification Range Max",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 160.0,
+     "card": "Magazine",
+     "original": null,
+     "note": "derived from Rounds Inventory Maximum + Rounds Loaded Maximum"
+    }
+   ],
+   "fp_animations": "objects\\characters\\*\\fp\\weapons\\rifle\\fp_spike_rifle\\fp_spike_rifle"
   }
  ],
  "Halo 3: ODST": [

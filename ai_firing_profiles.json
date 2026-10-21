@@ -3895,6 +3895,111 @@
     }
    ],
    "balanced_rule": "WDM x 0.84 (BALANCED_BASELINE Halo 2 damage)"
+  },
+  "objects\\weapons\\rifle\\spike_rifle\\spike_rifle": {
+   "source": "Halo 3 ai\\generic objects\\weapons\\rifle\\spike_rifle\\spike_rifle (weapons properties #2, firing pattern #2, 2 patterns) over Halo 2 objects\\weapons\\rifle\\smg\\smg",
+   "donor_weapon": "objects\\weapons\\rifle\\smg\\smg",
+   "weapon": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+   "props": {
+    "Weapons Flags": 0,
+    "Maximum Firing Range": 14.0,
+    "Minimum Firing Range": 0.5,
+    "Normal Combat Range": 2.5,
+    "Normal Combat Range Max": 7.0,
+    "Bombardment Range": 0.0,
+    "Maximum Special Target Distance": 7.0,
+    "Timid Combat Range": 4.0,
+    "Timid Combat Range Max": 9.0,
+    "Aggressive Combat Range": 2.0,
+    "Aggressive Combat Range Max": 5.0,
+    "Super-Ballistic Range": 0.0,
+    "Ballistic Firing Bounds": 0.0,
+    "Ballistic Firing Bounds Max": 0.0,
+    "Ballistic Fraction Bounds": 0.0,
+    "Ballistic Fraction Bounds Max": 0.0,
+    "First Burst Delay Time": 0.10000000149011612,
+    "First Burst Delay Time Max": 0.800000011920929,
+    "Surprise Delay Time": 1.0,
+    "Surprise Fire-Wildly Time": 0.5,
+    "Death Fire-Wildly Chance": 0.20000000298023224,
+    "Death Fire-Wildly Time": 0.800000011920929,
+    "Custom Stand Gun Offset i": 0.0,
+    "Custom Stand Gun Offset j": 0.0,
+    "Custom Stand Gun Offset k": 0.0,
+    "Custom Crouch Gun Offset i": 0.0,
+    "Custom Crouch Gun Offset j": 0.0,
+    "Custom Crouch Gun Offset k": 0.0,
+    "Special-Fire Mode": 0,
+    "Special-Fire Situation": 0,
+    "Special-Fire Chance": 0.0,
+    "Special-Fire Delay": 0.0,
+    "Special Damage Modifier": 0.0,
+    "Special Projectile Error": 0.0,
+    "Drop Weapon Loaded": 0.4000000059604645,
+    "Drop Weapon Loaded Max": 0.800000011920929,
+    "Drop Weapon Ammo": 60,
+    "Drop Weapon Ammo Max": 100,
+    "Normal Accuracy Bounds": 0.0,
+    "Normal Accuracy Bounds Max": 0.5,
+    "Normal Accuracy Time": 9.0,
+    "Heroic Accuracy Bounds": 0.25,
+    "Heroic Accuracy Bounds Max": 0.75,
+    "Heroic Accuracy Time": 6.0,
+    "Legendary Accuracy Bounds": 0.5,
+    "Legendary Accuracy Bounds Max": 1.0,
+    "Legendary Accuracy Time": 3.0
+   },
+   "patterns": [
+    {
+     "Rate Of Fire": 6.0,
+     "Target Tracking": 0.5,
+     "Target Leading": 0.25,
+     "Burst Origin Radius": 0.15000000596046448,
+     "Burst Origin Angle": 0.3490658402442932,
+     "Burst Return Length": 0.20000000298023224,
+     "Burst Return Length Max": 0.30000001192092896,
+     "Burst Return Angle": 0.3490658402442932,
+     "Burst Duration": 0.6000000238418579,
+     "Burst Duration Max": 1.600000023841858,
+     "Burst Separation": 1.399999976158142,
+     "Burst Separation Max": 2.799999952316284,
+     "Weapon Damage Modifier": 0.0,
+     "Projectile Error": 0.013089969754219055,
+     "Burst Angular Velocity": 0.0,
+     "Maximum Error Angle": 0.03490658476948738
+    },
+    {
+     "Rate Of Fire": 10.0,
+     "Target Tracking": 1.0,
+     "Target Leading": 0.75,
+     "Burst Origin Radius": 0.15000000596046448,
+     "Burst Origin Angle": 0.3490658402442932,
+     "Burst Return Length": 0.20000000298023224,
+     "Burst Return Length Max": 0.30000001192092896,
+     "Burst Return Angle": 0.3490658402442932,
+     "Burst Duration": 0.6000000238418579,
+     "Burst Duration Max": 1.600000023841858,
+     "Burst Separation": 1.399999976158142,
+     "Burst Separation Max": 2.799999952316284,
+     "Weapon Damage Modifier": 0.0,
+     "Projectile Error": 0.0,
+     "Burst Angular Velocity": 0.0,
+     "Maximum Error Angle": 0.01745329238474369
+    }
+   ],
+   "set": [],
+   "donor_only": [],
+   "not_copied": [],
+   "scaled_by_normal_range": [],
+   "balanced_patterns": [
+    {
+     "Weapon Damage Modifier": 0.84
+    },
+    {
+     "Weapon Damage Modifier": 0.84
+    }
+   ],
+   "balanced_rule": "WDM x 0.84 (BALANCED_BASELINE Halo 2 damage)"
   }
  }
 }
