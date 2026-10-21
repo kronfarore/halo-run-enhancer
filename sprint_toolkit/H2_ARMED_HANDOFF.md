@@ -120,6 +120,7 @@ done and committed; the interface is one module call and one spec dict.
 - Test 5 (07a): the Brute type teach; the test layout (below) -- PASSED (user, 2026-10-21:
   'Armed test passes completely now').
 - Flee test (03a, the level's own Elite-led squads, `--no-replace`): PASSED (user, 2026-10-21).
+- Sentinel test (06b, Sentinels + Flood at the start): Sentinels fire the SAW -- PASSED (user, 2026-10-21).
 
 ## Test tooling
 
