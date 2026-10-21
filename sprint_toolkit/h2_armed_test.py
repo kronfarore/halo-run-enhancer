@@ -110,7 +110,50 @@ def replace_start(m, hp, enemies):
     return rows
 
 
-def test_map(map_path, weapon=None, species=(), share=1.0, balanced=True, god=True, replace=True):
+CHEAT_DAMAGE = 'objects\\weapons\\rifle\\covenant_carbine\\damage_effects\\carbine_slug'
+CHEAT_DAMAGE_X, CHEAT_SPEED_X = 1000.0, 2.0
+CHEAT_DAMAGE_FIELDS = ('Damage Lower Bound', 'Damage Upper Bound', 'Damage Upper Bound Max')
+CHEAT_SPEED_FIELDS = ('Run Forward', 'Run Backward', 'Run Sideways', 'Run Acceleration',
+                      'Sneak Forward', 'Sneak Backward', 'Sneak Sideways', 'Sneak Acceleration')
+
+
+def _scale(m, tag, plugin, field, block, index, x):
+    """Multiply one float field (plugin offsets, block element `index`); returns (old, new) or None."""
+    fld = plugin.find(field, block, 0)
+    if not fld:
+        return None
+    base = m.follow(tag, fld['block_offsets'], fld.get('block_sizes'), index) if fld['block_offsets'] else tag
+    if base is None:
+        return None
+    v = struct.unpack_from('<f', m.data, base + fld['offset'])[0]
+    struct.pack_into('<f', m.data, base + fld['offset'], v * x)
+    return v, v * x
+
+
+def cheat_map(m):
+    """The Armed-test cheat (h2_port_test_map.CHEAT_WEAPON): the Carbine's slug damage x1000 and
+    the player's matg Player Information run / sneak speeds + accelerations x2 (the 'Speed and
+    Acceleration' card's fields, every element)."""
+    sys.path.insert(0, HERE)
+    import ai_firing_profile as A
+    reg = A._plugins()('Halo 2')
+    out = []
+    jpt, matg = reg.get('jpt!'), reg.get('matg')
+    for _n, t in m.find_tags('jpt!', CHEAT_DAMAGE):
+        r = [_scale(m, t, jpt, f, None, 0, CHEAT_DAMAGE_X) for f in CHEAT_DAMAGE_FIELDS]
+        out.append('carbine_slug damage %s' % ', '.join('%.3g -> %.4g' % x for x in r if x))
+    for _n, t in m.find_tags('matg', 'globals' + chr(92) + 'globals'):
+        n = m.i32(t + matg.find('Run Forward', 'Player Information', 0)['block_offsets'][0])
+        for k in range(max(0, n)):
+            r = [_scale(m, t, matg, f, 'Player Information', k, CHEAT_SPEED_X) for f in CHEAT_SPEED_FIELDS]
+            run = r[0]
+            out.append('player run x%g (Player Information #%d: run forward %.3g -> %.3g)'
+                       % (CHEAT_SPEED_X, k, run[0], run[1]) if run else 'Player Information #%d: ?' % k)
+    return out
+
+
+def test_map(map_path, weapon=None, species=(), share=1.0, balanced=True, god=True, replace=True,
+             cheat=False):
     """One open + save of a built test map: the Armed pass (if species; the nearest squads first
     replaced by the tested types unless replace=False) and the god shield."""
     import halo_patch as hp
@@ -121,6 +164,8 @@ def test_map(map_path, weapon=None, species=(), share=1.0, balanced=True, god=Tr
         if species else None
     if god:
         print('   god shield (player body + shield 1e6, no stun): %s' % (', '.join(god_shield(m)) or 'NO player model found'))
+    if cheat:
+        print('   cheat: %s' % ('; '.join(cheat_map(m)) or 'NOTHING written (no carbine_slug / matg?)'))
     m.save(map_path)
     if res:
         report(*res)

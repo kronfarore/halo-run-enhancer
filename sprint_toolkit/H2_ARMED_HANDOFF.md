@@ -107,7 +107,9 @@ done and committed; the interface is one module call and one spec dict.
   weapon (-> every unit armed).
 - Test 4 (07a): Brutes and Drones carry and fire it; Brutes should use the Brute Shot set (->
   the type teach).
-- Test 5 (07a): the Brute type teach; the test layout (below). The flee test: 03b (separate).
+- Test 5 (07a): the Brute type teach; the test layout (below) -- PASSED (user, 2026-10-21:
+  'Armed test passes completely now').
+- Flee test (03a, the level's own Elite-led squads, `--no-replace`): pending.
 
 ## Test tooling
 
@@ -117,5 +119,8 @@ done and committed; the interface is one module call and one spec dict.
   pass -- every type at once, no walking through the level. `--no-replace` keeps the level's own.
   TEST ONLY: the enhancer does not do this.
 
+- **Cheat** (user, 2026-10-21, every Armed test): the Covenant Carbine as the starting profiles'
+  secondary (36 / 360), its carbine_slug damage x1000, and the player's matg run / sneak speed +
+  acceleration x2. No Marine carries the Carbine, so allies do not clear the test enemies.
 - **God shield**: h2_port_test_map now sets it on every test (player models masterchief /
   dervish: body + shield 1e6, no stun; `--mortal` turns it off) -- test-map only, not enhancer.

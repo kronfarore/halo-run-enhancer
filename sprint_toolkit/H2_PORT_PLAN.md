@@ -308,18 +308,19 @@ has only 'Halo 1'; `ai_firing_profile.py` writes Halo 1 actor variants only). Sp
   TEST 1 (user, 2026-10-20, 03a CLASSIC): **Elites and Jackals carry and fire the SAW; Grunts do
   NOT carry it** -- their graph has no 'rifle' class (any / missile / pistol / unarmed), so they
   spawn with the biped default (Halo 1's missing-label behaviour again).
-- **Rules added (user, 2026-10-20)**, all in h2_enemy_weapons: two-handed = not class pistol and
-  not dual-wieldable (H2's SMG is class 'rifle' but dual-wields); **Grunt teach** = each Grunt
-  mode's 'missile' class (fuel rod) copied as the weapon's class (shared children, sorted order,
-  Weapon List pair) at patch time; **Grunt half rate** = own Firing Pattern Properties entries in
-  every Grunt character, rate halved (SAW 20 -> 10), heavy 'missile' weapons excepted; **Jackals
-  with two-handed weapons -> jackal_sniper** (variant 'shieldless'; in every level with Jackals);
-  **WDM**: default = the source's own (SAW 0.75), BALANCED = x BALANCED_BASELINE Halo 2 damage
-  0.84 (SAW 0.63). TEST 2 staged on 03a: 35 Elite / 56 Grunt / 36 Jackal units (25 to
-  jackal_sniper), Grunt graph 14 modes taught -- IN-GAME RESULT pending.
+- **The pass** (h2_enemy_weapons, every rule user-given and confirmed in game 2026-10-20/21): every
+  unit of a carded type armed; TEACH (a mode lacking the weapon's class gets a donor class: Grunt
+  missile then pistol, Jackal / Drone pistol -- else the unit refuses the weapon or drops it
+  fleeing); Brutes on the Brute Shot set (a weapon type = support 'any'); Grunt half rate for
+  two-handed non-heavy weapons; Jackals with two-handed weapons shieldless via the location's
+  Actor Variant Name (not jackal_sniper: its style stopped them aiming); species skill (Grunt /
+  Jackal own entries scaled from their own plasma pistol). WDM: default the source's (SAW 0.75),
+  BALANCED x BALANCED_BASELINE Halo 2 damage 0.84 (0.63). Two-handed = not pistol, not dual-wield.
+- **Tests**: 1-3 on 03a, 4-5 on 07a (Brutes + Drones; start squads replaced) -- PASSED 2026-10-21.
+  Flee test: 03a, own squads (`--no-replace`), pending. Armed-test rules: start squads replaced,
+  cheat Carbine x1000 + run x2, god shield, balanced (memory h2-armed-test-rules).
 - **Enhancer**: cards + patch-pass call + options = the enhancer session's; spec in
-  `sprint_toolkit/H2_ARMED_HANDOFF.md`, to be handed over once the test passes (user).
-  Open: species skill; a god shield for H2 port tests.
+  `sprint_toolkit/H2_ARMED_HANDOFF.md`, handed over once the user confirms everything works.
 
 ### 0.6 Parallel machinery (H2EK)
 

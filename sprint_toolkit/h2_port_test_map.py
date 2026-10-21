@@ -82,10 +82,20 @@ def profile_refs(data):
     return out
 
 
-def arm_profiles(data, weapon, names, rounds=None):
-    """Point each named profile's primary at `weapon` (pool + length, back to front)."""
+SECONDARY = 0x3C                  # profile secondary weapon tagref (its rounds at +0x10, like the primary's)
+#: THE ARMED-TEST CHEAT (user, 2026-10-21: 'provide a cheat weapon to quickly dispose of enemies
+#: and increase the player movement speed'): the Covenant Carbine as the profiles' SECONDARY, its
+#: damage effect x1000 in the test map (h2_armed_test.cheat) -- no Marine carries it, so allies do
+#: not clear the test enemies -- and the player's run / sneak speed and acceleration x2.
+CHEAT_WEAPON = 'objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine'
+CHEAT_ROUNDS = (36, 360)
+
+
+def arm_profiles(data, weapon, names, rounds=None, slot=PRIMARY):
+    """Point each named profile's primary (or `slot` = SECONDARY) at `weapon` (pool + length,
+    back to front)."""
     refs = profile_refs(data)
-    targets = [r for r in refs if r[1] in names and r[3] == PRIMARY]
+    targets = [r for r in refs if r[1] in names and r[3] == slot]
     if len(targets) != len(names):
         raise SystemExit('profiles %s not all found (have %s)' % (names, sorted({r[1] for r in refs})))
     # back to front by pool offset; an EMPTY ref pools nothing, so it shares its offset with
@@ -100,10 +110,10 @@ def arm_profiles(data, weapon, names, rounds=None):
             data[pool:pool] = new + b'\0'
         struct.pack_into('<I', data, at + 8, len(new))
         if rounds:
-            struct.pack_into('<hh', data, at - PRIMARY + LOADED, rounds[0], rounds[1])
+            struct.pack_into('<hh', data, at + (LOADED - PRIMARY), rounds[0], rounds[1])
     after = profile_refs(data)
     return [(nm, bytes(data[p:p + ln]).decode('latin-1')) for _i, nm, _a, off, p, ln in after
-            if off == PRIMARY and nm in names]
+            if off == slot and nm in names]
 
 
 def stage_info():
@@ -141,6 +151,10 @@ def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.
                 names = [r[1] for r in profile_refs(d) if r[3] == PRIMARY][:2]
                 profiles = [n for n in names if not n.startswith('ab_')]
             got = arm_profiles(d, weapon, profiles, rounds)
+            if armed:
+                arm_profiles(d, CHEAT_WEAPON, profiles, CHEAT_ROUNDS, slot=SECONDARY)
+                print('   cheat: + %s as the secondary (%d / %d rounds)'
+                      % (CHEAT_WEAPON.rsplit(chr(92), 1)[-1], CHEAT_ROUNDS[0], CHEAT_ROUNDS[1]))
             open(scn, 'wb').write(bytes(d))
             print('%s: %s' % (level, ', '.join('%s -> %s' % (n, w.split('\\')[-1]) for n, w in got)))
             r = bytearray(open(res, 'rb').read())
@@ -160,7 +174,7 @@ def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.
                 if armed or god:
                     import h2_armed_test
                     h2_armed_test.test_map(os.path.join(TEST_DIR, level + '.map'), weapon, armed,
-                                           share, god=god, replace=replace)
+                                           share, god=god, replace=replace, cheat=bool(armed))
                 if armed:
                     print('   (Armed = BALANCED AI rows; shieldless Jackals, Grunt teach + half '
                           'rate, species skill)')
