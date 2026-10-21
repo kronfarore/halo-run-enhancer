@@ -77,10 +77,17 @@ def replace_start(m, hp, enemies):
         idx = next((i for i, n in enumerate(cnames) if n.lower() == path.lower()), None)
         want.append((e, idx))
     usable = [(e, i) for e, i in want if i is not None]
+    friends, char_team = E.side_of(m, hp, cp, hp._BETRAYAL['Halo 2'])
     cands = []
     for sq in m.follow_all(base, [0x160], [0x74], 'all'):
         if struct.unpack_from('<h', m.data, sq + 0x34)[0] >= 0:
             continue                                        # spawns in a vehicle
+        team = struct.unpack_from('<h', m.data, sq + 0x24)[0]
+        sc = struct.unpack_from('<h', m.data, sq + 0x36)[0]
+        if team <= 0 and 0 <= sc < len(char_team):
+            team = char_team[sc]
+        if team in friends:
+            continue                                        # the player's side (Arbiter levels)
         locs = m.follow_all(sq, [0x48], [0x64], 'all')
         if not locs:
             continue
@@ -90,13 +97,17 @@ def replace_start(m, hp, enemies):
         if not chars or not all(E.enemy_of(cnames[c]) for c in chars):
             continue
         d = min(math.dist(p0, struct.unpack_from('<fff', m.data, l + 4)) for l in locs)
-        cands.append((d, sq, locs))
+        cands.append((d, sq, locs, team))
     cands.sort(key=lambda x: x[0])
     rows, k = [], 0
-    for d, sq, locs in cands[:PER_SPECIES * len(usable)]:
+    for d, sq, locs, team in cands[:PER_SPECIES * len(usable)]:
         e, ci = usable[k % len(usable)]
         k += 1
         struct.pack_into('<h', m.data, sq + 0x36, ci)
+        # keep the squad on ITS side: a Team of 0 means 'the character's team', so a hostile
+        # Sentinel squad turned into Elites would join the Arbiter -- write the team it had
+        if team is not None and team > 0:
+            struct.pack_into('<h', m.data, sq + 0x24, team)
         for l in locs:
             if struct.unpack_from('<h', m.data, l + 0x20)[0] >= 0:
                 struct.pack_into('<h', m.data, l + 0x20, ci)

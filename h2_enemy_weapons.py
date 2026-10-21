@@ -54,7 +54,16 @@ NEVER = ('brute_tartarus', 'heretic_leader', 'heretic_leader_hologram', 'marine_
 WPAL, WPAL_ES = 0x98, 0x28
 PROPS, PROPS_ES, PROPS_W = 0xCC, 0xCC, 0x8          # datum of the weapon tagref (+0x4)
 FPP, FPP_ES, FPP_W, FPP_PAT, PAT_ES = 0xD4, 0x10, 0x4, 0x8, 0x40
-LOC_WEAP = 0x22
+LOC_WEAP, SQUAD_WEAP, SQUAD_TEAM = 0x22, 0x3C, 0x24
+ALLY_TYPES = ('Marine',)          # the Ally card's types: they arm the player's side
+
+
+def side_of(m, hp, cpal, lay):
+    """(teams allied with the player, each palette character's biped team)."""
+    ids = [struct.unpack_from('<I', m.data, e + lay['pal_id_at'])[0] for e in cpal]
+    names = [hp._tag_name_by_id(m, i) if i != 0xFFFFFFFF else None for i in ids]
+    friends, char_team = hp._player_friends(m, GAME, names, ids)
+    return set(friends), list(char_team)
 #: a Jackal handed a two-handed weapon loses its arm shield: its STARTING LOCATION's Actor Variant
 #: Name (+0x30, a string id) = 'shieldless' -- the jackal model's own variant, exactly what Bungie
 #: does for one ordinary 'jackal' location on 03a (and 21 jackal_sniper ones). The character stays
@@ -183,6 +192,7 @@ def arm(m, hp, cards, salt=None):
     cnames = [hp._tag_name_by_id(m, struct.unpack_from('<I', m.data, e + lay['pal_id_at'])[0])
               for e in cpal]
     sid = find_stringid(m, SHIELDLESS_VARIANT)
+    friends, char_team = side_of(m, hp, cpal, lay)
     salt = salt or os.path.basename(str(getattr(m, 'path', '') or ''))
     rows, missing, done = [], set(), {}
     usable, info = {}, {}
@@ -211,12 +221,21 @@ def arm(m, hp, cards, salt=None):
             struct.pack_into('<I', m.data, loc + LOC_VARIANT, sid)
             shieldless += 1
 
+    squad_team = 0
     for u in hp._ts_units(m, GAME, base, lay, ts):
         c = u['char']
         enemy = enemy_of(cnames[c]) if c is not None and 0 <= c < len(cnames) else None
         if u['kind'] == 'squad':
             squad_pick = None
+            squad_team = struct.unpack_from('<h', m.data, u['weap_at'][0] - SQUAD_WEAP + SQUAD_TEAM)[0]
         if enemy not in usable:
+            continue
+        # THE SIDE (2026-10-21, the 06b Armed test): an enemy card arms only units HOSTILE to the
+        # player, the Ally card (Marine) only friendly ones -- on Arbiter levels the Spec Ops
+        # Elites are allies and an 'Armed: Elite' card must not arm them. Team = the squad's,
+        # else the character's biped team; allies = halo_patch._player_friends (ai_allegiance).
+        team = squad_team if squad_team > 0 else (char_team[c] if 0 <= c < len(char_team) else None)
+        if (team in friends) != (enemy in ALLY_TYPES):
             continue
         a0, a1 = u['weap_at']
         if a0 in seen:
