@@ -40,7 +40,8 @@ done and committed; the interface is one module call and one spec dict.
      'jackal' location on 03a (and 21 jackal_sniper ones). The character stays the ordinary
      Jackal. (Test 2 switched them to jackal_sniper instead: those fired but did not visibly aim --
      its SNIPER STYLE: suppressing fire, no cover peek / investigate / surprise. Kit twin
-     characters were tried next and dropped: tool keeps no palette entry a squad does not use.)
+     characters were tried next and dropped: tool takes the Character Palette from the master AI
+     resource, ai_resources\<lvl>_master.scenario_ai_resource -- found by the AR pilot.)
      A squad has no variant field, so a squad's draw reaches its Jackals through its locations.
    - **The teach** (`TEACH`): a Halo 2 unit refuses a weapon whose class its graph lacks (SAW
      Grunts spawned with their default: the Grunt graph is any / missile / pistol / unarmed) and
@@ -59,6 +60,10 @@ done and committed; the interface is one module call and one spec dict.
      (name, class). A name that already has a type (the shotgun's sg) keeps it. NOTE: the SAW's
      weapon name is still the sniper rifle's 'sr' (a GPMG leftover under rework), so a Brute with
      a sniper rifle would take the Brute Shot set too until the rework renames it.
+     GRUNTS too (2026-10-21): the kit Grunt graph now has a 'rifle' class (the AR pilot's
+     h2_graph_teach.py: pistol cloned, pr -> br, so allied Grunts take the AR / BR held like a
+     plasma rifle); a two-handed weapon with no type of its own there gets the fuel rod's
+     'missile any' set as its type, so SAW Grunts keep the two-handed hold of Armed test 3.
    - **Grunt half rate** (the Halo 1 rule): every Grunt character in the map gets its own Firing
      Pattern Properties entry for each two-handed, non-'missile' weapon handed to Grunts =
      ai\generic's patterns at half rate (the pattern's rate, or the barrel's rounds per second
