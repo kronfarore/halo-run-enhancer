@@ -228,8 +228,8 @@ PORT = {
             (AR + r'\damage_effects\assault_rifle_bullet.damage_effect', 'instantaneous acceleration', '', 0, 0, 0.125),
             # first-person placement (user, boot 1 on 03b: 'move it back and down 3 units', 1 unit =
             # 0.01 wu): the SMG's 0.02, 0, 0 -> -0.01, 0, -0.03
-            # boot 2: 'one forward and 2 down' -> 0, 0, -0.05
-            (AR + r'\assault_rifle.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, -0.05]),
+            # boot 2: 'one forward and 2 down' (0, 0, -0.05) -- boot 3: 'revert to the last boot'
+            (AR + r'\assault_rifle.weapon', 'first person weapon offset', '', 0, 0, [-0.01, 0.0, -0.03]),
         ],
         'skipped': [
             ('melee damage 70', 'Halo 2 weapons share strike_melee / smash_melee: a row would move every weapon'),
@@ -317,7 +317,9 @@ PORT = {
         # boot 2 (user: 'missing the fine lines every vanilla weapon has', the BR's icon beside it):
         # Halo 2's look -- translucent body (dithered), outline + the mesh's feature lines in the
         # BR icon's line colour (sampled: 134,202,255); h2_port_glyph.h2_style
-        'style': {'line': (134, 202, 255), 'body': (110, 171, 233)},
+        # the body SOLID (boot 3: the dithered body sheared in game), a darker blue = the BR icon's
+        # body as it reads over the level (sampled 4.png ~ 80..96,112,144)
+        'style': {'line': (134, 202, 255), 'body': (72, 118, 172)},
     },
     'messages': {
         'donor_prefix': 'smg', 'donor_icon': '&smg',

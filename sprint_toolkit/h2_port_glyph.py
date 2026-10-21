@@ -164,7 +164,12 @@ def h2_style(V, idx, cov, box):
     line_c, body_c = STYLE['line'], STYLE['body']
     out = np.zeros((H, W, 4), np.uint8)
     yy, xx = np.mgrid[0:H, 0:W]
-    body = inner & ((xx + yy) % 2 == 0) & ~lines
+    # the DITHER (opt-in, 'dither': True) MANGLED the icon in game (the AR, boot 3): a checkerboard
+    # has no runs, the glyph's payload grew 2.7 -> 8.3 KB and Halo 2 drew it sheared -- so the
+    # body is SOLID by default, a darker blue standing in for the translucency
+    body = inner & ~lines
+    if STYLE.get('dither'):
+        body &= (xx + yy) % 2 == 0
     out[body] = tuple(body_c) + (255,)
     out[outline | lines] = tuple(line_c) + (255,)
     return Image.fromarray(out, 'RGBA')
