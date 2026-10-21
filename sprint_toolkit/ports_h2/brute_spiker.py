@@ -310,7 +310,11 @@ PORT = {
             (SR + r'\projectiles\spike_rifle_spike.projectile', f, 'material responses', i, nth, v)
             for i, rows in (
                 # 0 default_material = H3 default_material: impact, never bounces (chance 0)
-                (0, [('response', 1, 4), ('between', 0, [0.0, 30.0]), ('and', 0, [20.0, 30.0])]),
+                # BOOT 2 (user: 'they don't stick to bodies'): Halo 3's spike sticks in a body as
+                # an impact MODEL particle (fx object_impact); Halo 2 does it the NEEDLE's way --
+                # ATTACH on default_material (bodies fall through to it), gone on the 1 s at-rest
+                # timer. Also soft_organic and hard_floodflesh (9, 5)
+                (0, [('response', 0, 3), ('response', 1, 4), ('between', 0, [0.0, 30.0]), ('and', 0, [20.0, 30.0])]),
                 # 1 liquid_thin, 2 liquid_thick: already Halo 3's (overpenetrate 0.5 / 5, 0.75 / 2.5)
                 # 3 hard_metal_thick = H3: impact, bounce at 0-60 deg, 20-30 wu/s, chance 1
                 (3, [('response', 0, 0), ('response', 1, 4), ('chance fraction', 0, 1.0),
@@ -318,7 +322,8 @@ PORT = {
                 # 4 hard_metal_solid = H3: fizzle, bounce chance 1
                 (4, [('response', 1, 4), ('chance fraction', 0, 1.0),
                      ('between', 0, [0.0, 60.0]), ('and', 0, [20.0, 30.0])]),
-                # 5 hard_floodflesh: Halo 3 has none (falls to default) -- Halo 2's fizzle kept
+                # 5 hard_floodflesh: Halo 3 has none (falls to default) -- attach (boot 2)
+                (5, [('response', 0, 3)]),
                 # 6 hard_terrain = H3: impact, bounce chance 1
                 (6, [('response', 0, 0), ('response', 1, 4), ('chance fraction', 0, 1.0),
                      ('between', 0, [0.0, 60.0]), ('and', 0, [20.0, 30.0])]),
@@ -328,7 +333,7 @@ PORT = {
                 # 8 energy_shield_thick = H3: fizzle, bounce chance 0
                 (8, [('response', 1, 4), ('between', 0, [0.0, 30.0]), ('and', 0, [20.0, 30.0])]),
                 # 9 soft_organic: Halo 3 none (default: impact) -- the audit's 0 distance
-                (9, [('maximum distance', 0, 0.0)]),
+                (9, [('response', 0, 3), ('maximum distance', 0, 0.0)]),     # attach (boot 2)
             )
             for f, nth, v in rows
         ] + [
@@ -599,6 +604,7 @@ PORT = {
     'firing_profile': {'from_game': 'Halo 3', 'from_map': r'halo3\maps\010_jungle.map',
                        'from_weapon': r'objects\weapons\rifle\spike_rifle\spike_rifle',
                        'donor_weapon': r'objects\weapons\rifle\smg\smg'},
-    'test': {'level': '08a_deltacliffs', 'dervish_level': '04b_floodlab', 'rounds': (40, 120)},   # parallel pair 1
+    # 08a (Uprising) and 04b (Oracle) are both ARBITER levels: the Chief on 05b (user, 2026-10-21)
+    'test': {'level': '05b_deltatowers', 'dervish_level': '08a_deltacliffs', 'rounds': (40, 120)},   # parallel pair 1
     'residency': {'levels': 'all', 'placements': False},
 }
