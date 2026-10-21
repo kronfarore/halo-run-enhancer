@@ -84,7 +84,13 @@ PORT = {
                     'flashlight': 'flashlight'},
         'muzzle_drop': 0.0,
         'ground_point': {'rot': (0.7071068883, -1.8e-09, -7.42e-08, -0.7071067095)},   # the SMG's
-        'render': ['spike_rifle', r'spike_rifle\fp_spike_rifle'],
+        'render': ['spike_rifle', r'spike_rifle\fp_spike_rifle', r'spike_rifle\projectiles\spike'],
+        # boot 1 (user: 'the spike is not visible'): the projectile's OWN model -- Halo 3's stuck
+        # spike (fx\particles\models\weapons\brute_spike, a 12 cm shard along +x), Bungie's needle's
+        # way (one node, permutation base / region needle, the needler_shard .model's)
+        'particle_models': {'spike': {'from': r'fx\particles\models\weapons\brute_spike\brute_spike.particle_model',
+                                      'data_dir': SR + r'\projectiles\spike', 'material': 'spike_rifle_spike',
+                                      'node': 'frame needle', 'permutation': 'base', 'region': 'needle'}},
         # boot 1 (user): the dual LEFT gun was upside down -- Halo 2 mirrors it across the FP
         # root's local y, and Halo 3 binds the Spiker's FP `gun` turned 180 deg (local y = up)
         'fp_root_identity': True,
@@ -111,7 +117,10 @@ PORT = {
                      ('tint', (0.75, 0.78, 1.0), 2), None),
                     (SR + r'\bitmaps\brute_bolter_illum.bitmap', 'spike_rifle_illum_amber',
                      r'objects\weapons\melee\gravity_hammer\bitmaps\gravity_hammer_illum',
-                     ('tint', (1.0, 205 / 255.0, 87 / 255.0), 2), None)],
+                     ('tint', (1.0, 205 / 255.0, 87 / 255.0), 2), None),
+                    # the projectile's spike (boot 1): Halo 3's own grey-metal spike map
+                    (r'fx\particles\models\weapons\brute_spike\_bitmaps\spike.bitmap', 'spike_rifle_spike',
+                     r'objects\weapons\support_low\brute_shot\bitmaps\brute_shot', 'color', None)],
         'shaders': [
             ('spike_rifle', r'objects\weapons\melee\gravity_hammer\shaders\hammer',
              {r'objects\weapons\melee\gravity_hammer\bitmaps\gravity_hammer': SR + r'\bitmaps\spike_rifle',
@@ -125,6 +134,10 @@ PORT = {
              {r'objects\weapons\support_low\brute_shot\bitmaps\brute_shot': SR + r'\bitmaps\spike_rifle',
               r'objects\weapons\support_low\brute_shot\bitmaps\brute_shot_bump': SR + r'\bitmaps\spike_rifle_bump',
               r'objects\weapons\support_low\brute_shot\bitmaps\brute_shot_bump_active_camo': SR + r'\bitmaps\spike_rifle_bump'}),
+            # the spike: the Brute Shot BLADE's shader (polished metal), flat bump (Halo 3's spike has none)
+            ('spike_rifle_spike', r'objects\weapons\support_low\brute_shot\shaders\brute_shot_blade',
+             {r'objects\weapons\support_low\brute_shot\bitmaps\brute_shot': SR + r'\bitmaps\spike_rifle_spike',
+              r'objects\weapons\support_low\brute_shot\bitmaps\brute_shot_bump': r'shaders\default_bitmaps\bitmaps\gray_50_percent'}),
         ],
         'report_rows': [(SR + r'\bitmaps\spike_rifle_bump', 'the port'),
                         (r'objects\weapons\support_low\brute_shot\bitmaps\brute_shot_bump', 'Bungie Brute Shot')],
@@ -138,6 +151,9 @@ PORT = {
     'weapon': {
         'weapon': SR + r'\spike_rifle.weapon',
         'clones': [(SMG + r'\smg.weapon', SR + r'\spike_rifle.weapon'),
+                   # boot 1: the spike's own .model (the needle's: variants base / needle)
+                   (r'objects\weapons\pistol\needler\projectiles\needler_shard\needler_shard.model',
+                    SR + r'\projectiles\spike\spike.model'),
                    (r'objects\weapons\rifle\battle_rifle\battle_rifle.model', SR + r'\spike_rifle.model'),
                    (SMG + r'\projectiles\smg_bullet.projectile', SR + r'\projectiles\spike_rifle_spike.projectile'),
                    (SMG + r'\damage_effects\smg_bullet.damage_effect', SR + r'\damage_effects\spike_rifle_spike.damage_effect'),
@@ -145,9 +161,37 @@ PORT = {
                    (r'objects\weapons\damage_effects\strike_melee.damage_effect', SR + r'\damage_effects\spike_rifle_melee.damage_effect'),
                    (r'effects\objects\weapons\rifle\smg\fire_bullet.effect', FX + r'\spike_rifle_fire.effect'),
                    (r'effects\objects\weapons\rifle\smg\smg_muzzle_flash.light', FX + r'\spike_rifle_muzzle_flash.light'),
-                   (r'effects\materials\objects\weapons\smg.material_effects', FX + r'\spike_rifle_spike.material_effects')],
+                   (r'effects\materials\objects\weapons\smg.material_effects', FX + r'\spike_rifle_spike.material_effects'),
+                   # boot 1: the in-flight streak -- Halo 3 draws the spike as a LIGHT VOLUME
+                   # (fx\projectile.light_volume_system: a white hot core + an orange glow); Halo
+                   # 2's needle has the same (MGS2): its clone, recoloured (light_volume_colour)
+                   (r'effects\objects\weapons\pistol\needler\needle.light_volume', FX + r'\spike_rifle_spike.light_volume')],
+        # the clone's colour function bytes (B, G, R as Halo 3 stores them): the needle's pink ->
+        # Halo 3's outer_glow orange (239, 57, 12); every write tool-verified (byte_edits)
+        'byte_edits': [(FX + r'\spike_rifle_spike.light_volume', 'f3 70 f3', '0c 39 ef')],
+        # Halo 2 hangs a projectile's light volume on the OBJECT ATTACHMENTS block; the SMG bullet
+        # clone has none: an MGS2 attachment copied in (h2_tagref.add_attachment, tool-verified),
+        # then repointed at the Spiker's own (wiring). The donor must share the clone's STRUCT
+        # VERSION: 852-byte projectile roots (the SMG bullet's) carry 44-byte attachment elements,
+        # 604-byte ones (the needle's) 32 -- the plasma pistol bolt is 852 with one 44-byte MGS2
+        'attachments': [(SR + r'\projectiles\spike_rifle_spike.projectile',
+                         r'objects\weapons\pistol\plasma_pistol\projectiles\plasma_pistol_bolt.projectile',
+                         'MGS2', 0,
+                         # the block field: the projectile flags (460) minus the object struct's
+                         # five trailing 12-byte blocks (attachments first); the chunk follows the
+                         # material effects path in field order (the needle's own layout)
+                         {'count_at': 400, 'after': FX + r'\spike_rifle_spike'})],
         'wiring': [
             (SR + r'\spike_rifle.weapon', 'hlmt', SMG + r'\smg', SR + r'\spike_rifle', 'world model'),
+            # the SMG bullet's object `model` is EMPTY: filled (boot 1, 'the spike is not visible')
+            (SR + r'\projectiles\spike_rifle_spike.projectile', 'hlmt', '', SR + r'\projectiles\spike\spike',
+             "the spike's own model (Halo 3's mesh, the needle's way)"),
+            (SR + r'\projectiles\spike_rifle_spike.projectile', 'MGS2',
+             r'effects\objects\weapons\pistol\plasma_pistol\plasma_bolt', FX + r'\spike_rifle_spike',
+             "the in-flight streak (light volume, Halo 3's colour)"),
+            (SR + r'\projectiles\spike\spike.model', 'mode',
+             r'objects\weapons\pistol\needler\projectiles\needler_shard\needler_shard',
+             SR + r'\projectiles\spike\spike', "the spike's render model (Halo 3's mesh)"),
             (SR + r'\spike_rifle.model', 'mode', r'objects\weapons\rifle\battle_rifle\battle_rifle',
              SR + r'\spike_rifle', 'the world render model (it and the collision pool ONE path)', {'nth': 0}),
             (SR + r'\spike_rifle.weapon', 'mode', SMG + r'\fp_smg\fp_smg',

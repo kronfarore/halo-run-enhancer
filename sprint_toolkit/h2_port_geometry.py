@@ -392,6 +392,38 @@ def h1_jobs(g):
             ('fp', g['fp_gbx'], os.path.join(base, g['fp'], 'render', g['fp'] + '.jms'), False)]
 
 
+def h3_particle_model(pm):
+    """`particle_models` {name: {'from': H3EK .particle_model, 'data_dir', 'material', 'node',
+    'permutation', 'region'}} (the Spike Rifle, boot 1: 'the spike is not visible'): a Halo 3
+    PARTICLE MODEL (one rigid mesh: raw vertices compressed to the bounds, raw indices a strip)
+    as a one-node Halo 2 JMS -- the projectile's own model, Bungie's needle's way (frame needle,
+    base / needle). Read as h3_rm_to_jms.convert_particle_model reads it."""
+    import io
+    import re
+    import h1_fp_retarget
+    import h3_rm_to_jms as H3
+    s = io.open(h1_fp_retarget.export_xml(pm['from']), encoding='utf-8', errors='replace').read()
+
+    def nums(name, blk=s):
+        return [tuple(float(x) for x in v.split(','))
+                for v in re.findall(r'name="%s" value="([^"]*)"' % re.escape(name), blk)]
+    (x0, x1, y0), (y1, z0, z1) = nums('position bounds 0')[0], nums('position bounds 1')[0]
+    (u0, u1), (v0, v1) = nums('texcoord bounds 0')[0], nums('texcoord bounds 1')[0]
+    raw = s[s.find('<block name="raw vertices"'):s.find('<block name="raw indices"')]
+    pos, uv, nrm = nums('position', raw), nums('texcoord', raw), nums('normal', raw)
+    idx = [int(v) for v in re.findall(r'name="word" value="(\d+)"', s[s.find('<block name="raw indices"'):])]
+    out = h2_jms.Model()
+    out.nodes = [h2_jms.Node(pm.get('node', 'frame spike'), -1, (0.0, 0.0, 0.0, -1.0), (0.0, 0.0, 0.0))]
+    out.materials = [h2_jms.Material(pm['material'], '(1) %s %s' % (pm.get('permutation', 'base'),
+                                                                    pm.get('region', 'needle')))]
+    lo, span = (x0, y0, z0), (x1 - x0, y1 - y0, z1 - z0)
+    for p, t, n in zip(pos, uv, nrm):
+        out.verts.append(h2_jms.Vertex(tuple((lo[k] + p[k] * span[k]) * UNITS for k in range(3)), n,
+                                       [(0, 1.0)], [(u0 + t[0] * (u1 - u0), 1.0 - (v0 + t[1] * (v1 - v0)))]))
+    out.tris = [(0, tri) for tri in H3.strip_tris(idx)]
+    return out
+
+
 def h3_jobs(g):
     base = os.path.join(H2EK, 'data', g['data_dir'])
     return [('world', g['world_rm'], os.path.join(base, 'render', g['world'] + '.jms'), True),
@@ -402,6 +434,15 @@ def h3_main(key, g, rest):
     opts = dict((a[2:].split('=', 1) + [''])[:2] for a in rest if a.startswith('--'))
     only = set(filter(None, opts.get('only', '').split(',')))
     h1 = g.get('kind') == 'h1'
+    for name, pm in (g.get('particle_models') or {}).items():
+        if only and name not in only:
+            continue
+        jm = h3_particle_model(pm)
+        pm_path = os.path.join(H2EK, 'data', pm['data_dir'], 'render', name + '.jms')
+        h2_jms.write(pm_path, jm)
+        xs = [v.pos[0] for v in jm.verts]
+        print('wrote %s\n   %d verts, %d tris, x %.2f..%.2f' % (pm_path, len(jm.verts), len(jm.tris),
+                                                           min(xs), max(xs)))
     for label, rel, out_path, world in (h1_jobs(g) if h1 else h3_jobs(g)):
         if only and label not in only:
             continue

@@ -194,6 +194,149 @@ def retarget_one(data, cls, old_path, new_path, which, rec):
     return bytes(out)
 
 
+def fill_reference(tag_path, cls, new_path, tries=400):
+    """Fill an EMPTY `cls` reference (length 0: nothing pooled) with `new_path` -- the Spike
+    Rifle's projectile, cloned from the SMG bullet whose object `model` is empty (boot 1: 'the
+    spike is not visible'). The record gets the length; the path + null is INSERTED where tool
+    expects it in FIELD order, which a loose tag does not say -- so every candidate place (the
+    end of the record's own element array, then just after each pooled string that follows it)
+    is tried and tool.exe decides: kept only when the reference list is the old one plus exactly
+    this reference and every numeric field reads as before (h2_tagfield). Else restored."""
+    import h2_tagfield as tf
+    original = open(tag_path, 'rb').read()
+    before = references(tag_path)
+    rows_before = [r for r in tf.read_all(tf.export(tag_path))]
+    want = cls.encode('latin-1')[::-1]
+    recs = []
+    for start, end in _arrays(original):
+        for i in range(start, max(start, end - 15), 4):
+            if original[i:i + 4] == want:
+                _ptr, n, datum = struct.unpack_from('<III', original, i + 4)
+                if n == 0 and datum == NULL:
+                    recs.append((i, end))
+    if not recs:
+        raise ValueError('no empty %s reference in %s' % (cls, tag_path))
+    raw = new_path.encode('latin-1') + b'\0'
+    for rec, arr_end in recs:
+        spots = [arr_end]
+        at = arr_end
+        while len(spots) < tries:
+            nxt = original.find(b'\0', at)
+            if nxt < 0:
+                break
+            at = nxt + 1
+            if at not in spots:
+                spots.append(at)
+        for spot in spots:
+            out = bytearray(original)
+            struct.pack_into('<I', out, rec + 8, len(new_path))
+            out[spot:spot] = raw
+            open(tag_path, 'wb').write(bytes(out))
+            after = references(tag_path)
+            if sorted(after) != sorted(before + [(cls, new_path)]):
+                continue
+            x = tf.export(tag_path)
+            rows = tf.read_all(x) if x else []
+            if [r[4] for r in rows] != [r[4] for r in rows_before]:
+                continue
+            print('%s: %s (empty) -> %s  (record 0x%X, path at 0x%X; %d references, every field '
+                  'as before)' % (os.path.basename(tag_path), cls, new_path, rec, spot, len(after)))
+            return spot, len(raw)
+    open(tag_path, 'wb').write(original)
+    raise ValueError('no place for %s gave the intended result; %s restored'
+                     % (new_path, os.path.basename(tag_path)))
+
+
+def add_attachment(tag_path, donor_path, cls, element=0, tries=400, count_at=None, after=None):
+    """Give an object tag with NO attachments the `element`th ATTACHMENT of a donor object of the
+    same group whose type is a `cls` reference (the Spike Rifle, boot 1: the needle's light volume
+    -- Halo 2 hangs a projectile's MGS2 / contrail on the object's attachments block; the SMG
+    bullet clone has none). An empty block emits no chunk, so one is CREATED: 'dfbt', version 0,
+    count 1, the donor's element bytes, then its pooled path; inserted in FIELD order -- which a
+    loose tag does not say -- and the root struct's in-struct block count set to 1. Every
+    (count field, insertion place) pair is tried; tool.exe decides: kept only when the reference
+    list is the old one plus that reference and every old field reads as before (the new
+    attachment's own rows aside). Else restored."""
+    import h2_tagfield as tf
+    donor = open(donor_path, 'rb').read()
+    original = open(tag_path, 'rb').read()
+    want = cls.encode('latin-1')[::-1]
+    chunk = None
+    i = donor.find(SIG)
+    while i >= 0:
+        _v, n, sz = struct.unpack_from('<III', donor, i + 4)
+        if n > element and donor[i + CHUNK + element * sz:i + CHUNK + element * sz + 4] == want:
+            chunk = (i, n, sz)
+            break
+        i = donor.find(SIG, i + 4)
+    if chunk is None:
+        raise ValueError('%s has no block whose element %d is a %s reference' % (donor_path, element, cls))
+    at, n, sz = chunk
+    elem = donor[at + CHUNK + element * sz:at + CHUNK + (element + 1) * sz]
+    plen = struct.unpack_from('<I', elem, 8)[0]
+    # this element's pooled data: the earlier elements' strings come first, in element order
+    pool = at + CHUNK + n * sz
+    for k in range(element):
+        e = donor[at + CHUNK + k * sz:at + CHUNK + (k + 1) * sz]
+        pool += struct.unpack_from('<I', e, 8)[0] + 1 if struct.unpack_from('<I', e, 8)[0] else 0
+        pool += sum(e[o + 3] for o in range(16, sz, 4) if e[o + 3] and e[o + 3] < 64)  # sid strings
+    path = donor[pool:pool + plen]
+    sids = b''.join(donor[pool + plen + 1:pool + plen + 1 + sum(elem[o + 3] for o in range(16, sz, 4)
+                                                                    if elem[o + 3] and elem[o + 3] < 64)])
+    if sids:
+        raise ValueError('the donor attachment names a marker / colour string; not handled')
+    new_chunk = SIG + struct.pack('<III', 0, 1, sz) + elem + path + b'\0'
+    before = references(tag_path)
+    rows_before = tf.read_all(tf.export(tag_path))
+    rs, re_ = _arrays(original)[0]
+    # count-field candidates: every u32 reading 0 in the target's root, nearest first to where the
+    # donor's root reads n (the root structs need not be the same size: the SMG bullet's is 852
+    # bytes, the needle's 604 -- each saved with its own struct version; Bungie's in-struct block
+    # fields still carry 2004 pointers, so no pattern beyond the count is reliable)
+    d_rs, d_re = _arrays(donor)[0]
+    anchors = [o for o in range(0, d_re - d_rs - 3, 4) if struct.unpack_from('<I', donor, d_rs + o)[0] == n]
+    counts = [o for o in range(0, re_ - rs - 3, 4) if struct.unpack_from('<I', original, rs + o)[0] == 0]
+    counts.sort(key=lambda o: min([abs(o - a) for a in anchors] or [0]))
+    # hints first: `count_at` the block field's ABSOLUTE offset (from the field order: the
+    # Spiker's projectile flags at 460 minus the object struct's five trailing 12-byte blocks),
+    # `after` the pooled path the chunk follows (the needle's: its material effects path)
+    if count_at is not None:
+        counts = [count_at - rs] + [o for o in counts if o != count_at - rs]
+    spots = [re_]
+    if after:
+        k = original.find(after.encode('latin-1') + b'\0', re_)
+        if k >= 0:
+            spots = [k + len(after) + 1, re_]
+    p = re_
+    while len(spots) < tries:
+        nxt = original.find(b'\0', p)
+        if nxt < 0:
+            break
+        p = nxt + 1
+        spots.append(p)
+    for co in counts:
+        for spot in spots:
+            out = bytearray(original)
+            struct.pack_into('<I', out, rs + co, 1)
+            out[spot:spot] = new_chunk
+            open(tag_path, 'wb').write(bytes(out))
+            after = references(tag_path)
+            if sorted(after) != sorted(before + [(cls, path.decode('latin-1'))]):
+                continue
+            x = tf.export(tag_path)
+            rows = tf.read_all(x) if x else []
+            old = [r[4] for r in rows if not r[0].startswith('attachments')]
+            if old != [r[4] for r in rows_before]:
+                continue
+            print('%s: + attachment %s %s (from %s #%d; count field root+0x%X, chunk at 0x%X; '
+                  'every old field as before)' % (os.path.basename(tag_path), cls, path.decode(),
+                                                  os.path.basename(donor_path), element, co, spot))
+            return path.decode('latin-1')
+    open(tag_path, 'wb').write(original)
+    raise ValueError('no (count field, place) pair gave the intended result; %s restored'
+                     % os.path.basename(tag_path))
+
+
 def set_reference(tag_path, cls, old_path, new_path, every=False, nth=None):
     """Repoint a reference and prove it with tool.exe, or put the tag back.
 
