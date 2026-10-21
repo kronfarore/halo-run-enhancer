@@ -566,7 +566,10 @@ game, CLASSIC, in five boots on 03b (Chief) and 04a (Arbiter), plus Armed tests 
 confirmed every item (record below). Residency: palette entry in all 13 levels; it SHIPS with
 the batched 13-level rebuild (user's go) -- `h2_port_residency.py --check` on the shipped maps then.
 Backup `F:\HaloPortBackups\2026-10-21_ar-h2`. Enhancer hand-off sent ("Halo enhancer project":
-catalog keys, volume marker 'Assault Rifle' 0.02, the Grunt rifle class).
+catalog keys, volume marker 'Assault Rifle' 0.02, the Grunt rifle class). Enhancer's reply
+(2026-10-21): nothing to write now -- it reads the catalog entry and files directly; the AR's Halo 2
+CARDS (donor SMG) need a BUILT level carrying the port, so **ping the "Halo enhancer project" session
+after the batched 13-level rebuild** and it derives them (port_cards).
 
 **Step 4a (user): yardstick the SMG**, spread by the SIBLING ratio (the raw SMG ratios put
 minimum error 0.4 above the cone's lower bound 0.08 -> 0.1 / 0.1-3 = Halo 3's own). Halo 2's scale
