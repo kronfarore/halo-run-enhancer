@@ -422,6 +422,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h2_spawn_starting_weapons', 'h2_spawn_all_weapons',
                'h1_replace_first_weapons', 'h1_enemy_weapon_enabled',
                'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards', 'h1_armed_all_weapons',
+               'h2_enemy_weapon_cards', 'h2_armed_all_weapons',
                'h1_overheat_unzoom', 'h1_overheat_no_rezoom', 'h1_covenant_avoid_ff',
                'hunter_drop',
                'h1_melee_blocks_fire', 'h1_supercombine_count', 'h1_supercombine_players',
@@ -1040,6 +1041,10 @@ CONFIG = {
     "h1_enemy_weapon_fallback": {},
     # ...and offer 'Armed: <weapon>' enemy cards (Marines through the Ally pool)
     "h1_enemy_weapon_cards": True,
+    # Halo 2's twins (h2_enemy_weapons.py, H2_ARMED_HANDOFF.md): Armed cards on, and the
+    # every-weapon draw off, as Halo 1
+    "h2_enemy_weapon_cards": True,
+    "h2_armed_all_weapons": False,
     # Options -> Patching -> Halo 1: an overheat drops the zoom, as in Halo 2-4. A
     # halo1.dll patch (sprint_toolkit/h1_overheat_unzoom.py), engine-wide: every heat
     # weapon, live in a running MCC AND in the file. Off = put back to stock.
@@ -3948,6 +3953,14 @@ class ModifierDatabase:
     # Hunter left out: its fuel rod is built in, an Armed card on it did nothing in game
     # (user, 2026-10-02). Sentinels tested in game: they fire and drop an assault rifle.
     H1_ARMED_ENEMIES = ('Grunt', 'Jackal', 'Elite', 'Flood Combat Form', 'Sentinel')
+    # Halo 2 (h2_enemy_weapons.ENEMY_CHARS): Drones ('Bugger') hold hand weapons there and
+    # carried + fired the SAW in the port's Armed test 4 (07a); Hunters, Sentinels and the
+    # bosses keep their built-in guns
+    H2_ARMED_ENEMIES = ('Grunt', 'Jackal', 'Elite', 'Brute', 'Bugger', 'Flood Combat Form')
+    ARMED_ENEMIES = {'Halo 1': H1_ARMED_ENEMIES, 'Halo 2': H2_ARMED_ENEMIES}
+    #: game -> (cards option, every-weapon option)
+    ARMED_OPTIONS = {'Halo 1': ('h1_enemy_weapon_cards', 'h1_armed_all_weapons'),
+                     'Halo 2': ('h2_enemy_weapon_cards', 'h2_armed_all_weapons')}
     ARMED_STEP = '+0.1'
 
     def h1_level_maps(self):
@@ -4184,21 +4197,43 @@ class ModifierDatabase:
                 self._h1_used = False
         return self._h1_used or None
 
-    def armed_card(self, enemy, weapon_name, ally=False):
+    def h2_weapon_path(self, weapon_name):
+        """A weapon's Halo 2 weap tag path (a port: its port tag), or None."""
+        tag = self.weap_tag_for(weapon_name, 'Halo 2') if weapon_name else None
+        tag = tag.split(' & ')[0] if tag else None
+        return tag[5:] if tag and tag.startswith('weap ') else None
+
+    def h2_armed_weapons(self):
+        """Halo 2 weapon tag paths (lower case) an Armed card may hand out: those with
+        firing data (h2_enemy_weapons.eligible_weapons -- stock infantry weapons plus every
+        port recorded in ai_firing_profiles.json['Halo 2']). Read from files, never maps."""
+        if getattr(self, '_h2_armed', None) is None:
+            try:
+                import h2_enemy_weapons as ew2
+                self._h2_armed = {w.lower() for w in ew2.eligible_weapons()}
+            except Exception:
+                self._h2_armed = set()
+        return self._h2_armed
+
+    def armed_card(self, enemy, weapon_name, ally=False, game='Halo 1'):
         """'Armed: <weapon>' -- each pick moves 10% more of `enemy`'s spawns onto a
-        variant carrying the weapon (h1_enemy_weapons.cards). Synthesized, like Map
-        Presence, so it follows the players' weapons."""
+        variant carrying the weapon (h1_enemy_weapons.cards; Halo 2: h2_enemy_weapons
+        hands the squads' units the weapon). Synthesized, like Map Presence, so it
+        follows the players' weapons."""
         who = 'Marines' if ally else enemy + 's'
+        how = ('a variant carrying the %s: an existing one, or an enhancer variant slot '
+               'taught it (firing copied from the most similar enemy in the game that '
+               'carries it)' % weapon_name) if game == 'Halo 1' else (
+               'the %s: their squads\' units are handed it (every unit of the type, '
+               'dropship and vehicle squads too), their animation graphs taught its class, '
+               'firing from ai\\generic' % weapon_name)
         return {
             'name': 'Armed: %s' % weapon_name,
             'desc': '%s carry the %s more often.' % (who, weapon_name),
-            'debug_desc': 'Each pick moves 10%% of the level\'s %s onto a variant carrying '
-                          'the %s: an existing one, or an enhancer variant slot taught it '
-                          '(firing copied from the most similar enemy in the game that '
-                          'carries it). Above 100%% in total the weapons share by weight.'
-                          % (who, weapon_name),
+            'debug_desc': 'Each pick moves 10%% of the level\'s %s onto %s. Above 100%% '
+                          'in total the weapons share by weight.' % (who, how),
             'tag': 'scnr enemy weapons' + chr(92) + (enemy if not ally else 'Marine'),
-            'games': ['Halo 1'], 'synth': True,
+            'games': [game], 'synth': True,
             'enemy': None if ally else enemy, 'ally_enemy': 'Marine' if ally else None,
             'wildcard': bool(ally), 'special': False, 'dual_only': False, 'skull': None,
             'affected_by_skull': None, 'desc_overrides': None, 'ignore': None,
@@ -4212,10 +4247,11 @@ class ModifierDatabase:
     #: 2x, 4x with 'every weapon' on; minus one each time it is offered, never below 2
     ARMED_HELD_WEIGHT, ARMED_HELD_WEIGHT_ALL, ARMED_HELD_FLOOR = 2, 4, 2
 
-    def armed_weight(self, enemy, weapon, held, offered=None):
+    def armed_weight(self, enemy, weapon, held, offered=None, game='Halo 1'):
         if weapon not in held:
             return 1
-        base = self.ARMED_HELD_WEIGHT_ALL if CONFIG.get('h1_armed_all_weapons') \
+        all_key = self.ARMED_OPTIONS.get(game, self.ARMED_OPTIONS['Halo 1'])[1]
+        base = self.ARMED_HELD_WEIGHT_ALL if CONFIG.get(all_key) \
             else self.ARMED_HELD_WEIGHT
         used = int((offered or {}).get('%s||%s' % (enemy, weapon)) or 0)
         return max(self.ARMED_HELD_FLOOR, base - used)
@@ -4224,28 +4260,33 @@ class ModifierDatabase:
                     offered=None):
         """The Armed cards this level can offer for the players' `weapons` -- none for
         an enemy type a Thunderstorm / Downpour took out of the run."""
-        if game != 'Halo 1' or not CONFIG.get('h1_enemy_weapon_cards', True):
+        if game not in self.ARMED_ENEMIES:
             return []
-        used = self.h1_used_weapons()
+        cards_key, all_key = self.ARMED_OPTIONS[game]
+        if not CONFIG.get(cards_key, True):
+            return []
+        used = self.h1_used_weapons() if game == 'Halo 1' else self.h2_armed_weapons()
         names = []
 
         def ok(w):
-            path = self.h1_weapon_path(w) if w else None
+            path = (self.h1_weapon_path(w) if game == 'Halo 1' else self.h2_weapon_path(w)) \
+                if w else None
             if w and self._is_port(w, game) and not (
                     CONFIG.get('weapon_ports_in_pools') and w in self.ports_on_level(mission_id)):
                 return False       # a port is only an Armed card while ports are offered here
             return bool(w and w not in names and not self.is_grenade(w)
                         and not self.is_equipment(w) and not is_sprint_item(w) and path
-                        # only weapons some character in the game really spawns with
-                        and (used is None or path in used))
+                        # Halo 1: only weapons some character in the game really spawns
+                        # with; Halo 2: weapons ai\generic has firing data for
+                        and (used is None or (path.lower() if game == 'Halo 2' else path) in used))
         for w in weapons or []:
             if ok(w):
                 names.append(w)
         held = list(names)
-        if CONFIG.get('h1_armed_all_weapons'):
-            # Options -> 'every weapon': the rest of Halo 1's weapons join the draw as
+        if CONFIG.get(all_key):
+            # Options -> 'every weapon': the rest of the game's weapons join the draw as
             # ordinary cards (user, 2026-10-16)
-            for w in self.get_game_weapons('Halo 1'):
+            for w in self.get_game_weapons(game):
                 if ok(w):
                     names.append(w)
         # WEIGHTS (armed_weight): a held weapon's card is listed that many times -- the
@@ -4254,17 +4295,17 @@ class ModifierDatabase:
         if ally:
             cards = []
             for w in names:
-                c = self.armed_card('Marine', w, ally=True)
-                cards += [c] * self.armed_weight('Marine', w, held, offered)
+                c = self.armed_card('Marine', w, ally=True, game=game)
+                cards += [c] * self.armed_weight('Marine', w, held, offered, game)
             return cards
         here = list((self.mission_enemies.get(mission_id) or {}).get('enemies', [])) +             list(added or ())
         # an Incursion card / faction skull brings a type back even where it had vanished
         cards = []
-        for e in self.H1_ARMED_ENEMIES:
+        for e in self.ARMED_ENEMIES[game]:
             if (e in here and e not in set(vanished or ())) or e in set(added or ()):
                 for w in names:
-                    c = self.armed_card(e, w)
-                    cards += [c] * self.armed_weight(e, w, held, offered)
+                    c = self.armed_card(e, w, game=game)
+                    cards += [c] * self.armed_weight(e, w, held, offered, game)
         return cards
 
     def map_equip_mod(self, name, game):
@@ -5755,6 +5796,22 @@ class MagnitudeEditorDialog(QDialog):
             'donors': {k[len(DONOR_KEY_PREFIX):]: v for k, v in self.presets.items()
                        if k.startswith(DONOR_KEY_PREFIX)},
         }
+
+    def _h2_enemy_weapons_spec(self, armed_picks):
+        """Halo 2 only: this patch's Armed cards as h2_enemy_weapons.apply wants them
+        (H2_ARMED_HANDOFF.md), or None when there are none."""
+        if self.game != 'Halo 2' or not armed_picks:
+            return None
+        db = getattr(self.parent_gui, 'db', None)
+        if db is None:
+            return None
+        cards = {e: {db.h2_weapon_path(w): sh for w, sh in ws.items() if db.h2_weapon_path(w)}
+                 for e, ws in armed_picks.items()}
+        cards = {e: ws for e, ws in cards.items() if ws}
+        if not cards:
+            return None
+        # Balanced ports: their ai\generic entry takes the profile's balanced rows
+        return {'cards': cards, 'balanced': self._balanced_port_weapons()}
 
     def _balanced_port_weapons(self):
         """Weapon tag paths of this game's switched-on ports that play Balanced."""
@@ -9442,6 +9499,7 @@ class MagnitudeEditorDialog(QDialog):
                 spawn_grenades=self._spawn_grenades_spec(),
                 h4_ability_visibility=CONFIG.get('h4_ability_visibility') or None,
                 h1_enemy_weapons=self._h1_enemy_weapons_spec(armed_picks),
+                h2_enemy_weapons=self._h2_enemy_weapons_spec(armed_picks),
                 h1_covenant_avoid_ff=bool(CONFIG.get('h1_covenant_avoid_ff')),
                 hunter_drop=bool(CONFIG.get('hunter_drop')),
                 h1_levels=(self.parent_gui.db.h1_level_maps()
@@ -12486,6 +12544,27 @@ class OptionsDialog(QDialog):
         _sync_h2_spawn()
         h2form.addRow("", self.h2_spawn_all_cb)
 
+        self.h2_armed_cards_cb = QCheckBox("Offer 'Armed: <weapon>' enemy cards")
+        self.h2_armed_cards_cb.setChecked(bool(CONFIG.get('h2_enemy_weapon_cards', True)))
+        self.h2_armed_cards_cb.setToolTip(
+            "For every weapon the players hold, each armed enemy on the level (Grunts, "
+            "Jackals, Elites, Brutes, Drones, Flood combat forms) gets a card that hands "
+            "10% more of them that weapon per pick. Marines get the same cards through "
+            "the Ally slot, at the lowest priority. A Jackal with a two-handed weapon "
+            "loses its arm shield; Grunts fire two-handed weapons at half rate.\n\n"
+            "Applied to the map when you patch; nothing to rebuild.")
+        h2form.addRow("Enemy weapons:", self.h2_armed_cards_cb)
+        self.h2_armed_all_cb = QCheckBox("    ...for every weapon, not only the ones you hold")
+        self.h2_armed_all_cb.setChecked(bool(CONFIG.get('h2_armed_all_weapons')))
+        self.h2_armed_all_cb.setToolTip(
+            "On: Armed cards are also offered for every other Halo 2 weapon the AI has "
+            "firing data for (ported weapons while they are offered on the level), as "
+            "ordinary cards. A weapon you or your partner HOLD always counts more, as in "
+            "Halo 1.\nOff (default): only the weapons the players hold.")
+        self.h2_armed_cards_cb.toggled.connect(self.h2_armed_all_cb.setEnabled)
+        self.h2_armed_all_cb.setEnabled(self.h2_armed_cards_cb.isChecked())
+        h2form.addRow("", self.h2_armed_all_cb)
+
         for label, keys, tip in H2_PATCH_SETS:
             cb = QCheckBox(label)
             cb.setToolTip(tip)
@@ -13303,6 +13382,8 @@ class OptionsDialog(QDialog):
             'h1_spawn_all_weapons': self.h1_spawn_all_cb.isChecked(),
             'h2_spawn_starting_weapons': self.h2_spawn_weapons_cb.isChecked(),
             'h2_spawn_all_weapons': self.h2_spawn_all_cb.isChecked(),
+            'h2_enemy_weapon_cards': self.h2_armed_cards_cb.isChecked(),
+            'h2_armed_all_weapons': self.h2_armed_all_cb.isChecked(),
             'h1_replace_first_weapons': self.h1_replace_first_cb.isChecked(),
             'h1_armed_all_weapons': self.h1_armed_all_cb.isChecked(),
             'h1_enemy_weapon_enabled': {e: cb.isChecked() for e, (cb, _c) in self.h1_enemy_rows.items()},
