@@ -59,7 +59,8 @@ PER_SPECIES = 2
 def replace_start(m, hp, enemies):
     """THE ARMED TEST LAYOUT (user, 2026-10-21: 'replace enemies to test them all quickly at the
     start'; memory halo-test-enemy-placement): the enemy squads nearest the first player starting
-    location (on foot: no vehicle) become the tested types, round robin, PER_SPECIES squads each --
+    location (on foot: no vehicle) become the tested types, round robin PER STARTING LOCATION until
+    each has PER_SPECIES units --
     the squad's character, every location's own character, location variants cleared (a variant
     is per species). Story characters, bosses, Hunters and Sentinels are never touched."""
     import math
@@ -99,22 +100,31 @@ def replace_start(m, hp, enemies):
         d = min(math.dist(p0, struct.unpack_from('<fff', m.data, l + 4)) for l in locs)
         cands.append((d, sq, locs, team))
     cands.sort(key=lambda x: x[0])
-    rows, k = [], 0
-    for d, sq, locs, team in cands[:PER_SPECIES * len(usable)]:
-        e, ci = usable[k % len(usable)]
-        k += 1
-        struct.pack_into('<h', m.data, sq + 0x36, ci)
+    # PER LOCATION, not per squad (the AR pilot, 2026-10-21 -- 04a's first --armed all: whole
+    # squads by distance gave the Brutes / Jackals / Drones squads the level's script places LATER,
+    # and the user met only Elites and Grunts): the species are dealt round robin over the
+    # STARTING LOCATIONS of the nearest squads, so the first squads to spawn carry the mix; every
+    # location's character is written (one left at -1 would fall back to the squad's)
+    rows, k, need = [], 0, PER_SPECIES * len(usable)
+    for d, sq, locs, team in cands:
+        if k >= need:
+            break
+        got = []
+        for l in locs:
+            e, ci = usable[k % len(usable)]
+            if k == 0 or not got:
+                struct.pack_into('<h', m.data, sq + 0x36, ci)
+            struct.pack_into('<h', m.data, l + 0x20, ci)
+            struct.pack_into('<I', m.data, l + 0x30, 0)
+            got.append(e)
+            k += 1
         # keep the squad on ITS side: a Team of 0 means 'the character's team', so a hostile
         # Sentinel squad turned into Elites would join the Arbiter -- write the team it had
         if team is not None and team > 0:
             struct.pack_into('<h', m.data, sq + 0x24, team)
-        for l in locs:
-            if struct.unpack_from('<h', m.data, l + 0x20)[0] >= 0:
-                struct.pack_into('<h', m.data, l + 0x20, ci)
-            struct.pack_into('<I', m.data, l + 0x30, 0)
         nm = m.data[sq:sq + 0x20].split(b'\0')[0].decode('latin-1')
         rows.append({'tag': 'scnr squads', 'field': 'Test layout: %s' % nm, 'ok': True,
-                     'reason': '-> %s (%.0f wu from the start, %d locations)' % (e, d, len(locs))})
+                     'reason': '-> %s (%.0f wu from the start)' % (', '.join(got), d)})
     for e, i in want:
         if i is None:
             rows.append({'tag': 'scnr squads', 'field': 'Test layout: %s' % e, 'ok': True, 'skip': True,
