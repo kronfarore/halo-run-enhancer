@@ -227,13 +227,28 @@ def arm(m, hp, cards, salt=None):
             struct.pack_into('<I', m.data, loc + LOC_VARIANT, sid)
             shieldless += 1
 
-    squad_team = 0
+    squad_team, inherited = 0, {}
     for u in hp._ts_units(m, GAME, base, lay, ts):
         c = u['char']
         enemy = enemy_of(cnames[c]) if c is not None and 0 <= c < len(cnames) else None
         if u['kind'] == 'squad':
             squad_pick = None
             squad_team = struct.unpack_from('<h', m.data, u['weap_at'][0] - SQUAD_WEAP + SQUAD_TEAM)[0]
+        a0, a1 = u['weap_at']
+        if u['kind'] == 'loc' and struct.unpack_from('<h', m.data, a0)[0] < 0:
+            # A LOCATION WITH NO WEAPON OF ITS OWN spawns with its squad's -- whatever its own
+            # character (stock mixed squads: an Elite squad's Grunt locations, 03a e1_cov_inf4_0).
+            # When the squad drew a weapon, these units carry it too, so they are counted under
+            # THEIR type: the teach / Grunt half rate / species skill / shieldless switch follow
+            # (2026-10-21: the AR pilot's per-location test layout showed them uncounted).
+            if squad_pick and enemy and a0 not in seen:
+                seen.add(a0)
+                if enemy == 'Jackal' and two_handed(info.get(squad_pick)):
+                    unshield(a0 - LOC_WEAP)
+                by = done.setdefault(enemy, {})
+                by[squad_pick] = by.get(squad_pick, 0) + 1
+                inherited[(enemy, squad_pick)] = inherited.get((enemy, squad_pick), 0) + 1
+            continue
         if enemy not in usable:
             continue
         # THE SIDE (user, 2026-10-21): an enemy-type card arms EVERY unit of its type, allied ones
@@ -243,16 +258,9 @@ def arm(m, hp, cards, salt=None):
         team = squad_team if squad_team > 0 else (char_team[c] if 0 <= c < len(char_team) else None)
         if enemy in ALLY_TYPES and team not in friends:
             continue
-        a0, a1 = u['weap_at']
         if a0 in seen:
             continue
         seen.add(a0)
-        if u['kind'] == 'loc' and struct.unpack_from('<h', m.data, a0)[0] < 0:
-            # inherits its squad's draw -- and, a Jackal with its own character entry, the
-            # squad's shieldless switch
-            if enemy == 'Jackal' and squad_pick and two_handed(info.get(squad_pick)):
-                unshield(a0 - LOC_WEAP)
-            continue
         w = _pick(usable[enemy], _draw(salt, a0))
         if u['kind'] == 'squad':
             squad_pick = w
@@ -267,7 +275,9 @@ def arm(m, hp, cards, salt=None):
     for enemy, ws in sorted(done.items()):
         for w, n in sorted(ws.items()):
             rows.append({'tag': 'scnr enemy weapons\\' + enemy, 'field': 'Armed: ' + w.split('\\')[-1],
-                         'ok': True, 'reason': '%d squad units / locations' % n})
+                         'ok': True, 'reason': '%d squad units / locations%s' % (
+                             n, ' (%d of them inherit the squad\'s)' % inherited[(enemy, w)]
+                             if inherited.get((enemy, w)) else '')})
     if shieldless or kept:
         rows.append({'tag': 'scnr enemy weapons\\Jackal', 'field': 'Shieldless Jackals (two-handed)',
                      'ok': not kept, 'reason': '%d Jackal locations set to variant shieldless%s' % (
