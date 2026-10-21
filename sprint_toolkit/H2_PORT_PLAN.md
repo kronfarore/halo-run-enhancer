@@ -18,7 +18,8 @@ done 2026-10-17) is the template; this file is its Halo 2 counterpart. Rules (us
 - Tests in **CLASSIC** (a rebuilt Halo 2 map is a classic-side build; memory halo2-loose-tag-format).
 
 Done before this plan: the **SAW** (Halo 4 source on the cut GPMG, 2026-09-23/24; PORTING.md
-"## Halo 2"). Phase 0 (this setup) is **DONE (2026-10-20)**; next: the AR pilot (A1).
+"## Halo 2"). Phase 0 (this setup) is **DONE (2026-10-20)**. **A1, the AR pilot, is DONE (2026-10-21)**:
+read "A1: what the Assault Rifle taught" (end of this file) before A2.
 
 **SAW: status 'rework' (user, 2026-10-20)** -- remove its dependency on existing weapons (it is a
 GPMG clone carrying the GPMG's / Warthog chaingun's / sniper rifle's leftovers; the list is in
@@ -557,3 +558,84 @@ Sequential at the start: the AR pilot ALONE; then pairs, scaled up slowly. Each 
 > assault_rifle --write`, which you generalize for the AR's table), the enhancer hand-off, PORTING
 > notes, memory, `python port_backup.py --game h2`, status 'done', and "A1: what the Assault Rifle
 > taught" in H2_PORT_PLAN.md (every tool you generalized, every observation) before wave A2 starts.
+
+## A1: what the Assault Rifle taught (2026-10-20/21, the pilot, DONE)
+
+The Halo 3 AR is a complete Halo 2 port: `ports_h2/assault_rifle.py` (status 'done'), tested in
+game, CLASSIC, in five boots on 03b (Chief) and 04a (Arbiter), plus Armed tests on 04a; the user
+confirmed every item (record below). Residency: palette entry in all 13 levels; it SHIPS with
+the batched 13-level rebuild (user's go) -- `h2_port_residency.py --check` on the shipped maps then.
+Backup `F:\HaloPortBackups\2026-10-21_ar-h2`. Enhancer hand-off sent ("Halo enhancer project":
+catalog keys, volume marker 'Assault Rifle' 0.02, the Grunt rifle class).
+
+**Step 4a (user): yardstick the SMG**, spread by the SIBLING ratio (the raw SMG ratios put
+minimum error 0.4 above the cone's lower bound 0.08 -> 0.1 / 0.1-3 = Halo 3's own). Halo 2's scale
+is ~Halo 3's for every candidate (most ratios x1): balanced damage 7.125, ammo 32 / 96 / 384, rate
+10, reload 58 frames (x1). TTK beside the peers (h2_ar_ttk_4a.py, legendary, body): Elite 2.10 s
+(H2 SMG 2.07, BR 3.15, PR 4.76, SAW 0.95).
+
+**The route: the AR's OWN skeleton and OWN Halo 3 animations, both species** -- the 0.4 claim held.
+New tool `h2_port_fp_anims.py`: Halo 3's FP graphs (h3_fp_pose) composed into model space and
+written as H2 source animations (JMA 16394: ABSOLUTE frames; tool drops the last frame; .jmm base,
+.jmo overlay), imported by Bungie's `tool fp-model-animations <source> <arms dir> <weapon dir>`.
+Nodes left out of an H3 animation take the render models' binds. The graph is SEEDED from the H2
+BR's: an import over an existing tag keeps its blend screen (pitch_and_turn), sound references
+and same-name frame events (a from-scratch tag has none and reported "post-processing failed").
+Masterchief 16 animations / 43 nodes (switch included), dervish 15 / 37 -- placement, every
+animation and the reload confirmed for both. Bungie's own source animations exist in
+`H2EK\data\digsite` (the format came from them).
+
+**Tools generalized** (each proven on the SAW, `--include saw` -- the SAW is 'rework' and the
+proofs otherwise skip it; arp1-arp6, only tool's own re-import noise ever differed):
+- h2_port_geometry kind 'h3' (own skeleton; world_permutation / world_region = the world
+  .model's -- the BR's `base` / `gun`; name symbols `=?` on the counter digits);
+- h2_port_textures kind 'h3' (signed-DXN bump re-centred, shaders reseeded each run,
+  'color_premul' for additive layers); bump gain 1.0 = the SMG's slope (user: 1.6 'rough');
+- h2_port_weapon: wiring {'nth'} / {'every'}, `string_ids` (the 3P label);
+- h2_tagfield: cached ABSOLUTE offsets are now VALIDATED (the SAW's barrel offsets wrote nothing
+  into the SMG-shaped AR) + per-tag cache; vector types (the FP offset);
+- h2_jms reads 8205 / 8209 / 8210; h2_port_reticle `h3_art` (+ `target_ink`), sequence indices 0;
+  h2_port_hud_plate moves a plate named twice; h2_port_sounds `h3_bank` (Halo 3's bank, 48 kHz);
+  h2_port_glyph `colour` / `style` 'h2' / `--redraw`; make_port_catalog_h2 `value_overrides`;
+- NEW h2_graph_teach.py (a 3P graph taught a weapon class), h2_port_test_map `--armed all`;
+  h2_port_tool_proof `--include`.
+
+**Observations (one port each -- check them on the next):**
+1. DONOR SHAPE: weapon = the SMG's clone, world .model + HUD + collision = the BR's (single,
+   two-handed; the SMG's HUD names its plate x4 / meter x2 for dual wield).
+2. 3P LABEL: the BR's `rifle` / `br` (stock; Halo 3's `ar` exists in no H2 graph). Allies take a
+   weapon only if their 3P graph holds its class: Elites / Marines did; the GRUNT graph had no
+   `rifle` at all (it refuses H2's own BR) -> user: teach it -> h2_graph_teach cloned `pistol` as
+   `rifle` (pr -> br) in all 20 modes of H2EK grunt.model_animation_graph (a SHARED Bungie tag:
+   every rifle-class weapon is now Grunt-tradeable; stock kept in E:\HaloBackups\h2_graph_teach).
+   Confirmed in game. The loose jmad mode tree is decoded in its docstring (IINA / SSTA struct
+   descriptors in the data stream).
+3. AI data: `ai_firing_profile.py --h2-port` (the Armed session's) over the H2 SMG; the ally give
+   needs it in the BUILT map (the first test map predated it).
+4. FP OFFSET: Halo 3's own animations still need Halo 2's offset: user -> -0.01, 0, -0.03.
+5. CROSSHAIR: the ratio rule on the HUD art (H3 sprite x H2 BR / H3 BR, the same via the SMG)
+   gave 145 px -- 'too big'; user measured Halo 3's on-screen 72 px (1080p) -> target_ink 64 =
+   Halo 3's on-screen size. Balanced spread = default here, so no balanced enlargement.
+6. PICKUP GLYPH: a new codepoint is drawn as written (stock icons are tinted somewhere else) -> drawn
+   in the HUD blue; Bungie's style = outline + the mesh's feature lines; tool's encoder WHITENS
+   semi-transparent pixels, and a dithered body (no runs, 8.3 KB) SHEARED in game -> solid body
+   (2.3 KB, Bungie's 1.9-2.7 KB). Confirmed. The SAW's glyph is still white (its rework).
+7. HOLO DISPLAY: an opaque template drew every layer's square -> Bungie's additive plasma_illum +
+   premultiplied bitmaps (fixed the colours too, user).
+8. MUZZLE: no drop needed (the SAW's 1.40 = the SMG gun node's own offset; markers are
+   node-relative). Sounds: Halo 3's per-shot ar_fire (no loop cut). Message prefix `ar2` is the
+   SMG's length -- the length-aware rename is still unconfirmed in game.
+9. HIT EFFECT / SCREEN FLASH: Halo 1's rule has no target here -- Halo 2's shield-hit particles
+   are 'only in third person'; the screen flash is the stock SMG's (fired faster by the SMG).
+   Unchanged, as Halo 1 left flashes.
+10. Not done / approximations: H3 frame events -> the BR seed's (melee primary keyframe 5 vs 4; no
+   reload keyframe = H2 convention); no sprint animation (H3 has none); posing sounds unused (the
+   BR seed cues none); ammo counter digits = the BR's counter shaders; camo untested (the user's
+   no-Arbiter-camo dll patch).
+
+**The Armed test standard (user, 2026-10-21): `h2_port_test_map.py <key> --level L --armed all
+--stage`** -- every species' base character added to the scenario AND master AI resource palettes
+(tool builds the palette from the AI resource), and the species dealt PER STARTING LOCATION over the
+squads nearest the start (h2_armed_test; per squad gave species to squads the script places later).
+04a: Elite, Grunt, Jackal, Brute, Drone, Flood at the start -- all fire the AR (user).
+Test levels: 03a / 03b / 07a are the Armed session's SAW tests; one level per session.

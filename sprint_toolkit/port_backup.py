@@ -518,7 +518,9 @@ H2_SCRIPTS += tuple(s for s in (
     'h2_port_geometry.py', 'h2_port_textures.py', 'h2_port_weapon.py', 'h2_port_numbers.py',
     'h2_port_collision.py', 'h2_port_meter.py', 'h2_port_hud_plate.py', 'h2_port_reticle.py',
     'h2_port_scope.py', 'h2_port_glyph.py', 'h2_port_messages.py', 'h2_port_animations.py',
-    'h2_port_sounds.py', 'saw_port_foley.py', 'saw_port_sounds.py', 'h3_weapon_glyph.py')
+    'h2_port_sounds.py', 'saw_port_foley.py', 'saw_port_sounds.py', 'h3_weapon_glyph.py',
+    'h2_port_fp_anims.py', 'h2_graph_teach.py', 'h2_armed_test.py', 'h2_ar_ttk_4a.py',
+    'balance_Assault_Rifle_Halo3_to_Halo2.json')
     if s not in H2_SCRIPTS)
 H2_SCRIPTS += tuple('ports_h2/' + f for f in sorted(os.listdir(os.path.join(HERE, 'ports_h2')))
                     if f.endswith('.py'))

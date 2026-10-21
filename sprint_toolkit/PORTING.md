@@ -3611,6 +3611,56 @@ measured, each a fact to build on (details and commands in H2_PORT_PLAN.md and
   Pattern Properties +0xD4 / 0x10, Halo 3's field names); the SAW has no entry yet, and the
   enhancer's Armed cards are Halo 1-only (H2_PORT_PLAN 0.5).
 
+
+### Halo 2: the Assault Rifle, the wave-A pilot (2026-10-20/21) -- a Halo 3 source end to end
+
+The whole weapon is `ports_h2/assault_rifle.py`; what it taught is H2_PORT_PLAN.md "A1". Run order
+(every tool reads its config section):
+
+    h2_port_geometry.py assault_rifle --render      kind 'h3': world + FP JMS on the AR's OWN skeleton
+    h2_port_textures.py assault_rifle               kind 'h3': H3 maps, height bump, reseeded shaders
+    h2_port_weapon.py assault_rifle                 SMG clone; BR .model; own proj / jpt / effe / ligh / foot;
+                                                    3P label rifle/br (string_ids)
+    h2_port_numbers.py assault_rifle                Halo 3's own values + the FP offset
+    h2_port_collision.py assault_rifle --write      the BR's hull (JMS 8205) scaled
+    h2_port_fp_anims.py assault_rifle --write --import [--reseed]   Halo 3's FP animations, both species
+    kit_lock.py --kit h2 run -- python h2_port_meter / hud_plate / reticle / scope / glyph / messages ...
+    h2_port_sounds.py assault_rifle --write         Halo 3's sounds from halo3\fmod\pc\sfx.fsb
+    h2_port_residency.py assault_rifle --write      palette entry, all 13 levels
+    ai_firing_profile.py --h2-port assault_rifle    Halo 3's ai\generic entry into H2EK ai\generic
+    make_port_catalog_h2.py assault_rifle --write
+    h2_graph_teach.py <grunt graph> --clone pistol=rifle --type pr=br --write   (once, shared)
+    h2_port_test_map.py assault_rifle --level 05a --stage           the dry test (rounds 32 / 96)
+    h2_port_test_map.py assault_rifle --level 04a --armed all --stage   the Armed test, every species
+
+**First-person animations from Halo 3 (the new part).** Halo 3's FP arms ARE Halo 2's, so no
+retarget: `h2_port_fp_anims.py` composes each H3 frame into model space and writes Halo 2 source
+animations, which Bungie's `tool fp-model-animations <source dir> <arms dir> <weapon dir>` imports.
+The H2 source format, read off Bungie's own files in `H2EK\data\digsite\...\fp_battle_rifle\
+animations` (`first-person reload-empty.JMM`, version 16394): header, nodes (name, parent; arms
+`b_<name>`, weapon `frame_<name>`), then per frame per node translation / quaternion (i j k w) /
+scale -- ABSOLUTE model-space transforms in the JMS bind convention; tool DROPS THE LAST FRAME;
+the extension is the type (.jmm base, .jmo overlay -- an overlay is absolute frames whose difference
+to the first is the delta); the file name is the animation name with ':' -> ' ', '_' -> '-'.
+- A node Halo 3 leaves out of an animation sits at its bind: take it from the arms' and the
+  weapon's FP render models (h1_fp_retarget's rule) -- without it every forearm sat on its upper arm.
+- SEED the graph from a Bungie graph of the same use (the H2 BR's): the import keeps its blend
+  screen, sound references and frame events for same-name animations. A from-scratch graph has no
+  blend screen (pitch_and_turn) and tool reports "post-processing graph failed".
+- The arms dir is a `render` folder holding Bungie's arms JMS (extract-render-data; the dervish's
+  is JMS 8209), the weapon dir the FP weapon JMS's folder.
+
+**An H3 render model as H2 JMS** (h2_port_geometry kind 'h3'): node = the H3 bind composed into
+model space (x100, the rotation as stored, w <= 0); markers node-relative exactly as H3's; the
+world JMS must carry the region / permutation its .model's variants name (the BR's `base` / `gun`).
+
+**The H2 weapon's 3P label and allies.** An ally takes a weapon only if its 3P graph holds the
+weapon's class / type; Grunts hold no `rifle` (h2_graph_teach.py now gives them one).
+
+**Tag-edit lessons:** h2_tagfield's offset cache was ABSOLUTE per tag group -- right only for tags
+laid out like the first one (now validated against the field's value, per tag); `tool replace-font-
+char` stores a semi-transparent pixel as white, and a high-entropy glyph (a dither) shears in game.
+
 ---
 
 ## Halo Reach

@@ -1,7 +1,7 @@
-r"""Assault Rifle into Halo 2 (H2_PORT_PLAN.md wave A (Halo 3), #A1) -- a phase-0 STUB (2026-10-20):
-reservations, yardstick candidates, the proposed donor and the AI source. The port session fills
-the pipeline sections (ports_h2/__init__.py; ports_h2/saw.py is the complete example) and sets
-'status' to 'in progress' at its start, 'done' at its end.
+r"""Assault Rifle into Halo 2 (H2_PORT_PLAN.md wave A (Halo 3), #A1, the PILOT) -- DONE 2026-10-21.
+Halo 3's own model, textures, sounds and FP animations (both species, h2_port_fp_anims.py), on the
+H2 SMG's weapon tag; tested in game (03b / 05a Chief, 04a Arbiter, 04a Armed --armed all). What it
+taught: H2_PORT_PLAN.md "A1"; the recipe: PORTING.md "Halo 2: the Assault Rifle".
 """
 
 AR = r'objects\weapons\rifle\assault_rifle'      # the source's folder (H3EK) AND the port's (H2EK)
@@ -21,7 +21,7 @@ PORT = {
     'wave': 'A1',
     'name': 'Assault Rifle',
     'source': 'Halo 3',
-    'status': 'in progress',
+    'status': 'done',
     'source_tag': 'objects\\weapons\\rifle\\assault_rifle\\assault_rifle',
     'reservations': {
         'message_prefix': 'ar2',
@@ -407,6 +407,13 @@ PORT = {
         'desc': ('%s carried from %s into Halo 2 with its own model, textures, sounds and its own '
                  'Halo 3 first-person animations for both species, balanced through the SMG.'),
     },
+
+    # port_backup.py --game h2: the owned folders are derived; these are the AR's other edits
+    'backup': {'extra': [H2EK + r'\data\!extracted\fp_arms_masterchief\fp_arms.jms',
+                         H2EK + r'\data\!extracted\fp_arms_dervish\dervish_fp_arms.jms',
+                         H2EK + r'\tags\objects\characters\grunt\grunt.model_animation_graph',
+                         r'E:\HaloBackups\h2_graph_teach\grunt.model_animation_graph',
+                         H2EK + r'\tags\ai\generic.character']},
 
     # allies TAKE a weapon only if their 3P graph holds its class/type (user, boot on 04a: the Elite
     # took the AR, the Grunt did not -- the Grunt graph has no `rifle` class, Halo 2's own BR is
