@@ -63,6 +63,13 @@ def main():
             own_dir = weap.rsplit(chr(92), 1)[0].lower()
             # Halo 1 ports keep their sounds in sound\weapons\<x>_port (never sound\sfx)
             port_dir = 'sound' + chr(92) + 'weapons' + chr(92) + own_dir.rsplit(chr(92), 1)[-1].replace(' ', '_') + '_port'
+            if game == 'Halo 2':
+                # a Halo 2 port's RESERVED sound folder (ports_h2; the Spike Rifle's is
+                # brute_spiker_port, not its weapon folder's spike_rifle_port)
+                import ports_h2
+                for _k, P2 in ports_h2.all_ports():
+                    if P2['name'] == e['weapon'] and P2['reservations'].get('sound_dir'):
+                        port_dir = P2['reservations']['sound_dir']
             for mp in ([p.map] if p.map else [os.path.join(a.MCC, x) for x in a.MAPS.get(game, [])]):
                 if not os.path.exists(mp):
                     continue
