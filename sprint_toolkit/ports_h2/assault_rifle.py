@@ -214,9 +214,23 @@ PORT = {
             # the rate ramp (nth 0) off: Halo 3's AR fires a flat 10
             (AR + r'\assault_rifle.weapon', 'acceleration time', 'barrels', 0, 0, 0.0),
             (AR + r'\assault_rifle.weapon', 'deceleration time', 'barrels', 0, 0, 0.0),
-            # the bloom ramp (nth 2): Halo 3 0.5 / 0.5
-            (AR + r'\assault_rifle.weapon', 'acceleration time', 'barrels', 0, 2, 0.5),
-            (AR + r'\assault_rifle.weapon', 'deceleration time', 'barrels', 0, 2, 0.5),
+            # the bloom ramp: Halo 3 0.5 / 0.5. Halo 2's barrel: nth 0 = the rate ramp, nth 1 = the
+            # ERROR ramp, nth 2 = the DUAL-weapon error ramp, nth 3 = the barrel climb (4b audit
+            # 2026-10-21: the first build wrote nth 2; the BR's nth 1 is 0.1 / 0.1, its nth 2 0)
+            (AR + r'\assault_rifle.weapon', 'acceleration time', 'barrels', 0, 1, 0.5),
+            (AR + r'\assault_rifle.weapon', 'deceleration time', 'barrels', 0, 1, 0.5),
+            (AR + r'\assault_rifle.weapon', 'acceleration time', 'barrels', 0, 2, 0.75),   # the donor's
+            (AR + r'\assault_rifle.weapon', 'deceleration time', 'barrels', 0, 2, 0.3),    # (no dual)
+            # step 4b (port_field_audit.py --port assault_rifle, list 2: the ratio H3 AR / H3 SMG x
+            # the H2 SMG) -- and list 3's bounding offset by hand: the source's (no ratio from a 0)
+            (AR + r'\assault_rifle.weapon', 'bounding radius', '', 0, 0, 0.190909),
+            (AR + r'\assault_rifle.weapon', 'bounding offset', '', 0, 0, [0.075, 0.0, 0.05]),
+            (AR + r'\assault_rifle.weapon', 'acceleration scale', '', 0, 0, 0.657895),
+            (AR + r'\assault_rifle.weapon', 'ready time', '', 0, 0, 0.0),
+            (AR + r'\assault_rifle.weapon', 'reload time', 'magazines', 0, 0, 0.0),
+            (AR + r'\assault_rifle.weapon', 'rounds between tracers', 'barrels', 0, 0, 0),
+            (AR + r'\assault_rifle.weapon', 'dual wield damage scale', 'barrels', 0, 0, 0.0),
+            (AR + r'\projectiles\assault_rifle_bullet.projectile', 'maximum distance', 'material responses', 9, 0, 0.0),
             (AR + r'\assault_rifle.weapon', 'minimum error', 'barrels', 0, 1, 0.1),
             (AR + r'\assault_rifle.weapon', 'error angle', 'barrels', 0, 1, [0.1, 3.0]),
             # Halo 3's AR has no barrel climb (the SMG's 0..0.7 'late')
@@ -341,12 +355,20 @@ PORT = {
                     'ar_dryfire': [H3SND + r'\battle_rifle\dryfire'],
                     'ar_reload': [H3SND + r'\assault_rifle\ar_reload'],
                     'ar_ready': [H3SND + r'\assault_rifle\ar_ready'],
-                    'ar_melee1': [H3SND + r'\assault_rifle\ar_melee1']},
+                    'ar_melee1': [H3SND + r'\assault_rifle\ar_melee1'],
+                    # close-out (port_sound_refs BORROWs, 2026-10-21): Halo 3's own ammo pickup (its
+                    # AR plays the BR's) and its far-distance fire layer over the SMG's remastered one
+                    'ar_ammo': [H3SND + r'\battle_rifle\battle_rifle_ammo'],
+                    'ar_fire_lod': [H3SND + r'\assault_rifle\assault_rifle_lod_far']},
         'sounds': {'ar_fire': ('ar_fire', 'weapon_fire'), 'ar_dryfire': ('ar_dryfire', 'weapon_empty'),
                    'ar_reload': ('ar_reload', 'weapon_reload'), 'ar_ready': ('ar_ready', 'weapon_ready'),
-                   'ar_melee1': ('ar_melee1', 'weapon_melee')},
-        'repoint_fx': (r'sound\weapons\smg\fire', 'ar_fire'),
-        'repoint_weapon': (r'sound\weapons\smg\dryfire', 'ar_dryfire'),
+                   'ar_melee1': ('ar_melee1', 'weapon_melee'),
+                   'ar_ammo': ('ar_ammo', 'weapon_reload'),         # the SMG's smg_ammo class
+                   'ar_fire_lod': ('ar_fire_lod', 'weapon_fire')},
+        'repoint_fx': [(r'sound\weapons\smg\fire', 'ar_fire'),
+                       (r'sound_remastered\weapons\smg\fire_lod', 'ar_fire_lod')],
+        'repoint_weapon': [(r'sound\weapons\smg\dryfire', 'ar_dryfire'),
+                           (r'sound\weapons\smg\smg_ammo', 'ar_ammo')],
         'graph_sounds': (('battle_rifle_reload', 'ar_reload'), ('battle_rifle_ready', 'ar_ready'),
                          ('br_melee_strike_1', 'ar_melee1'), ('battle_rifle_reload_half', 'ar_reload')),
         'graph_sound_dir': r'sound\weapons\battle_rifle' + '\\',
@@ -391,6 +413,36 @@ PORT = {
                        'donor_weapon': r'objects\weapons\rifle\smg\smg'},
     # 03a is the SAW's Armed test level (h2-armed-cards session, staged 2026-10-20 18:08): the
     # AR's Chief test runs on 03b (one test level per session)
+    # step 4b -- port_field_audit.py --port assault_rifle: every field NO card covers where the
+    # Halo 3 AR differs from the Halo 3 SMG (the yardstick) -- list 2 must say 0 to port
+    'field_audit': {
+        'source_kit': 'H3EK',
+        'source': {'weapon': (AR + r'\assault_rifle.weapon', r'objects\weapons\rifle\smg\smg.weapon'),
+                   'projectile': (AR + r'\projectiles\assault_rifle_bullet.projectile',
+                                  r'objects\weapons\rifle\smg\projectiles\smg_bullet.projectile'),
+                   'damage_effect': (AR + r'\damage_effects\assault_rifle_bullet.damage_effect',
+                                     r'objects\weapons\rifle\smg\damage_effects\smg_bullet.damage_effect')},
+        'target': {'weapon': (AR + r'\assault_rifle.weapon', SMG + r'\smg.weapon'),
+                   'projectile': (AR + r'\projectiles\assault_rifle_bullet.projectile',
+                                  SMG + r'\projectiles\smg_bullet.projectile'),
+                   'damage_effect': (AR + r'\damage_effects\assault_rifle_bullet.damage_effect',
+                                     SMG + r'\damage_effects\smg_bullet.damage_effect')},
+        # the close-out run (2026-10-21): list 2 = 0 to port (weapon, projectile, damage effect).
+        # Lists 3 / 4 / 5, decided:
+        'decisions': {
+            'first person weapon offset': "the user's (boots 1-3): -0.01, 0, -0.03",
+            "flags''": "the SMG's minus 'can be dual wielded' (the AR never had it)",
+            'bounding offset': "the source's 0.075, 0, 0.05 (a 0 on the yardstick: no ratio)",
+            'lightmap shadow mode': "Halo 2's (the SMG's 'default'; an enum)",
+            'active camo ding': "Halo 2's 0 (every H2 automatic carries 0; the source pair 0.2 / 0.18)",
+            'magazines/magazines (count 1)': "the SMG's ammo-pack equipment entry kept (H3 has none; MP pickup only)",
+            'damage reporting type (weapon / projectile)': "the SMG's kept (kill feed / medals only; whether "
+                                                           "Halo 2's enum has an 'assault rifle' entry is unchecked)",
+            'angle change function': "the SMG's 'late' -- moot, the AR's angle change per shot is 0",
+            'attachments / functions / font icon / ground / falloff / fp offset override':
+                'no Halo 2 counterpart (the icon is step 8)',
+        }},
+
     # make_port_catalog_h2.py assault_rifle: the SMG table's rows (read from the H2 SMG's weapon /
     # projectile / damage effect) onto the AR's own; the spread by the sibling ratio (4a); melee
     # rows dropped (strike_melee is every weapon's); reload built = balanced (58 = 58 x 50/50)

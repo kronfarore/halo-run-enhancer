@@ -355,12 +355,20 @@ def from_port(key):
     {'source_kit': 'H3EK', 'source': {kind: (port tag, yardstick tag)},
      'target': {kind: (port tag, donor tag)}} -- tag paths kit-relative with extension."""
     import ports_h1
-    p = ports_h1.load(key)
+    import ports_h2
+    # a HALO 2 port config (ports_h2/<key>.py, the AR pilot 2026-10-21) has the same section;
+    # its target is H2EK. A key in both packages: --port h2:<key>
+    if key.startswith('h2:') or (key in ports_h2.keys() and key not in ports_h1.keys()):
+        p = ports_h2.load(key.split(':', 1)[-1])
+        kit, game = 'H2EK', 'Halo 2'
+    else:
+        p = ports_h1.load(key)
+        kit, game = 'HCEEK', 'Halo 1'
     fa = p['field_audit']
     src = dict(kit=fa['source_kit'], tags=fa['source'],
                label='%s %s vs %s' % (KIT_GAME[fa['source_kit']], p['name'],
                                       p['yardstick'].get('pick') or 'yardstick'))
-    return src, dict(kit='HCEEK', game='Halo 1', tags=fa['target']), p['name']
+    return src, dict(kit=kit, game=game, tags=fa['target']), p['name']
 
 
 def audit(game, show_all=False, source=None, G=None, weapon='SAW'):
@@ -519,11 +527,11 @@ def main():
     ap.add_argument('--game', choices=sorted(GAMES), default='h3')
     ap.add_argument('--json')
     ap.add_argument('--all', action='store_true', help='also list the fields the balance table covers')
-    ap.add_argument('--port', help="a Halo 1 port config key (ports_h1/<key>.py 'field_audit')")
+    ap.add_argument('--port', help="a port config key with a 'field_audit' section (ports_h1 / ports_h2)")
     a = ap.parse_args()
     if a.port:
         src, g, name = from_port(a.port)
-        rep = audit('h1', source=src, G=g, weapon=name)
+        rep = audit('h2' if g['kit'] == 'H2EK' else 'h1', source=src, G=g, weapon=name)
     else:
         rep = audit(a.game)
     show(rep, a.all)

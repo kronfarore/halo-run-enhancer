@@ -47,7 +47,8 @@ sys.path.insert(0, HERE)
 
 B = chr(92)
 #: port -> the folder its own sound tags live in (every game that has them)
-PORT_SOUNDS = {'SAW': B.join(['sound', 'weapons', 'saw_port'])}
+PORT_SOUNDS = {'SAW': B.join(['sound', 'weapons', 'saw_port']),
+               'Assault Rifle': B.join(['sound', 'weapons', 'assault_rifle_port'])}   # Halo 2's port
 #: the build-time marker: each port's sounds sit this far below their as-built gain. One
 #: value PER PORT, so two ports in one map can never pool with each other.
 MARKER_DB = {'SAW': 0.01,

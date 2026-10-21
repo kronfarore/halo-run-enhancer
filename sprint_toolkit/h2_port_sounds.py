@@ -10,7 +10,8 @@ The config's `sounds` section:
     audio_key                port_volume.MARKER_DB key
     foley_module             a module with mix()/count()/RATE and cue lists ('foley:<CUES>[@stretch]')
     sounds                   {own sound: (audio folder or 'foley:CUES', sound class)}
-    repoint_fx, repoint_weapon   (the sound named now, the own sound) on the effect / the weapon
+    repoint_fx, repoint_weapon   (the sound named now, the own sound) on the effect / the weapon,
+                             or a list of such pairs
     graph_sounds, graph_sound_dir   ((donor sound, own sound), ...) on both FP graphs
     h3_bank                  {audio folder: [Halo 3 bank source folders]} -- rendered into
                              <audio> first (render_h3_bank; a Halo 3 source, the AR)
@@ -58,10 +59,15 @@ def setup(key):
     GRAPHS = [B.join(['objects', 'characters', sp, 'fp', r['fp_graph'] + '.model_animation_graph'])
               for sp in ports_h2.SPECIES]
     rp = []
-    if c.get('repoint_fx'):
-        rp.append((FIRE_FX, c['repoint_fx'][0], SND_DIR + B + c['repoint_fx'][1]))
-    if c.get('repoint_weapon'):
-        rp.append((WEAPON, c['repoint_weapon'][0], SND_DIR + B + c['repoint_weapon'][1]))
+
+    def pairs(v):
+        # one (sound named now, own sound) or a LIST of them (the AR: fire + its distance layer;
+        # dry fire + the pickup sound)
+        return [] if not v else ([tuple(x) for x in v] if isinstance(v[0], (list, tuple)) else [tuple(v)])
+    for old, new in pairs(c.get('repoint_fx')):
+        rp.append((FIRE_FX, old, SND_DIR + B + new))
+    for old, new in pairs(c.get('repoint_weapon')):
+        rp.append((WEAPON, old, SND_DIR + B + new))
     rp += [(g, c['graph_sound_dir'] + s, SND_DIR + B + n) for g in GRAPHS
            for s, n in c.get('graph_sounds', ())]
     REPOINT = rp

@@ -3621,7 +3621,9 @@ The whole weapon is `ports_h2/assault_rifle.py`; what it taught is H2_PORT_PLAN.
     h2_port_textures.py assault_rifle               kind 'h3': H3 maps, height bump, reseeded shaders
     h2_port_weapon.py assault_rifle                 SMG clone; BR .model; own proj / jpt / effe / ligh / foot;
                                                     3P label rifle/br (string_ids)
-    h2_port_numbers.py assault_rifle                Halo 3's own values + the FP offset
+    h2_port_numbers.py assault_rifle                Halo 3's own values + the FP offset + step 4b's
+    port_field_audit.py --port assault_rifle        step 4b: list 2 must say 0 to port (BEFORE boot 1:
+                                                    the AR's first build had its bloom in the DUAL ramp)
     h2_port_collision.py assault_rifle --write      the BR's hull (JMS 8205) scaled
     h2_port_fp_anims.py assault_rifle --write --import [--reseed]   Halo 3's FP animations, both species
     kit_lock.py --kit h2 run -- python h2_port_meter / hud_plate / reticle / scope / glyph / messages ...

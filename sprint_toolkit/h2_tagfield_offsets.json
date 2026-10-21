@@ -49,9 +49,14 @@
  "projectile": {
   "final velocity": 844,
   "initial velocity": 840,
+  "material responses[9].maximum distance": 2752,
   "maximum range": 504
  },
+ "projectile@objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet": {
+  "material responses[9].maximum distance": 2752
+ },
  "weapon": {
+  "acceleration scale": 100,
   "ai scariness": 1268,
   "autoaim angle": 840,
   "autoaim range": 844,
@@ -62,34 +67,51 @@
   "barrels[0].deceleration time": 3419,
   "barrels[0].deceleration time#1": 3463,
   "barrels[0].deceleration time#2": 3134,
+  "barrels[0].dual wield damage scale": 3167,
   "barrels[0].ejection port recovery time": 3575,
   "barrels[0].error angle#1": 3548,
   "barrels[0].illumination recovery time": 3579,
   "barrels[0].minimum error#1": 3544,
+  "barrels[0].rounds between tracers": 3113,
   "barrels[0].rounds per second": 3436,
+  "bounding offset": 88,
+  "bounding radius": 84,
   "first person weapon offset": 1188,
   "flags#2": 492,
+  "magazines[0].reload time": 2690,
   "magazines[0].rounds loaded maximum": 3126,
   "magazines[0].rounds reloaded": 3140,
   "magazines[0].rounds total initial": 3122,
   "magazines[0].rounds total maximum": 3124,
   "magnetism angle#1": 848,
-  "magnetism range#1": 852
+  "magnetism range#1": 852,
+  "ready time": 508
  },
  "weapon@objects\\weapons\\rifle\\assault_rifle\\assault_rifle": {
+  "acceleration scale": 100,
   "barrels[0].acceleration time": 3070,
+  "barrels[0].acceleration time#1": 3123,
   "barrels[0].acceleration time#2": 3139,
   "barrels[0].angle change per shot": 3250,
   "barrels[0].deceleration time": 3074,
+  "barrels[0].deceleration time#1": 3127,
   "barrels[0].deceleration time#2": 3143,
+  "barrels[0].dual wield damage scale": 3167,
   "barrels[0].error angle#1": 3183,
   "barrels[0].minimum error#1": 3179,
+  "barrels[0].rounds between tracers": 3113,
   "barrels[0].rounds per second": 3071,
+  "bounding radius": 84,
   "first person weapon offset": 1188,
+  "magazines[0].reload time": 2690,
   "magazines[0].rounds loaded maximum": 2684,
   "magazines[0].rounds reloaded": 2694,
   "magazines[0].rounds total initial": 2680,
-  "magazines[0].rounds total maximum": 2682
+  "magazines[0].rounds total maximum": 2682,
+  "ready time": 508
+ },
+ "weapon@objects\\weapons\\rifle\\battle_rifle\\battle_rifle": {
+  "bounding offset": 88
  },
  "weapon@objects\\weapons\\rifle\\saw\\saw": {
   "barrels[0].error angle#1": 3519,

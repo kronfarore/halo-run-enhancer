@@ -642,3 +642,24 @@ proofs otherwise skip it; arp1-arp6, only tool's own re-import noise ever differ
 squads nearest the start (h2_armed_test; per squad gave species to squads the script places later).
 04a: Elite, Grunt, Jackal, Brute, Drone, Flood at the start -- all fire the AR (user).
 Test levels: 03a / 03b / 07a are the Armed session's SAW tests; one level per session.
+**Close-out re-check (user, 2026-10-21: 'every ported step, especially 4b; any tool left
+uncommitted').** Step 4b had NOT run: `port_field_audit.py --game h2` was the SAW's; `--port` now
+reads ports_h2 configs too (`--port assault_rifle`, the config's `field_audit`). It found:
+- **a real bug**: the bloom ramp (0.5 / 0.5) had gone into Halo 2's DUAL-weapon error ramp (barrel
+  `acceleration / deceleration time` nth 2); the single-wield one is nth 1 (the BR: 0.1 / 0.1 at
+  nth 1, 0 at nth 2). Fixed, nth 2 back to the SMG's 0.75 / 0.3. Barrel order: rate ramp, ERROR
+  ramp, damage error, DUAL error ramp + its min error / error angle, then the live (projectile)
+  minimum error / error angle (nth 1), the barrel-climb ramp (nth 3);
+- list 2 written by the ratio: bounding radius 0.191, acceleration scale 0.658, ready time 0,
+  magazine reload time 0, rounds between tracers 0, dual wield damage scale 0, projectile material
+  response #9 maximum distance 0; list 3: bounding offset = the source's (0.075, 0, 0.05; a zero
+  reads like padding -- found at the BR's 0x58, a weapon's root struct is at a fixed place).
+  Re-run: **list 2 = 0 to port** for weapon, projectile, damage effect; lists 3-5 decided
+  (config `field_audit.decisions`).
+- Closing checks on a built 04a: `port_refs_audit` (own projectile, firing + impact damage),
+  `port_sound_refs` -- two BORROWs fixed: the pickup sound (Halo 3's own `battle_rifle_ammo` ->
+  ar_ammo) and the firing effect's remastered distance layer (Halo 3's `assault_rifle_lod_far` ->
+  ar_fire_lod) -> every sound OWN; `port_volume --weapon "Assault Rifle"`: one own entry #99 at
+  -3.02, nothing shared, headroom 3.02 (PORT_SOUNDS gained the AR); `validate_halo_json` 0
+  problems. Muzzle flash: confirmed by the user (boot 1). NOT covered: `port_glyphs` has no Halo 2
+  (the SAW's glyph neither) -- the fonts are in the backup, a Steam update would take them out.
