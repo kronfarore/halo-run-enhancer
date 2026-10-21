@@ -33,6 +33,11 @@ done and committed; the interface is one module call and one spec dict.
      Brute, **Bugger** (Drones: hand-held weapons in Halo 2), Flood Combat Form (floodcombat_elite /
      _human), **Marine** (the Ally twin). Left out: Tartarus, the Heretic leader, Johnson boss,
      councilors, Hunters, Sentinels, story characters.
+   - **Sides** (user, 2026-10-21, 2b7ef75): an enemy-type card arms EVERY unit of its type,
+     allied ones too ('Armed: Elite' covers the Arbiter's allied Spec Ops Elites; 06b 0 -> 28);
+     the Ally card stays Marines' and arms friendly units only (team = the squad's, else the
+     character's biped team; allies = halo_patch._player_friends). The Armed-test start layout
+     still replaces only hostile squads and keeps each replaced squad's team.
    - **Jackals + two-handed** (user, 2026-10-20): a Jackal handed a two-handed weapon (not class
      pistol, not dual-wieldable -- Halo 2's SMG is class 'rifle' but dual-wields) spawns WITHOUT
      its arm shield: its starting location's **Actor Variant Name** (+0x30, string id) =
