@@ -9,7 +9,10 @@ a = Analysis(
     ['halo_enhancer.py'],
     pathex=['sprint_toolkit'],
     binaries=[],
-    datas=[('halo.json', '.'), ('port_glyphs.json', '.'), ('port_sounds', 'port_sounds')],   # bundle the data files next to the app
+    # the ports' catalog and the AI firing profiles are read from next to weapon_ports /
+    # h1_enemy_weapons / h2_enemy_weapons -- in a onefile build that folder is _MEIPASS
+    datas=[('halo.json', '.'), ('port_glyphs.json', '.'), ('port_sounds', 'port_sounds'),
+           ('weapon_ports_catalog.json', '.'), ('ai_firing_profiles.json', '.')],   # bundle the data files next to the app
     hiddenimports=['h3_font_repack', 'port_glyphs', 'port_sounds', 'port_volume',
                    'h1_fsb', 'numpy',
                    # imported inside functions after a sys.path insert (halo3_reload)
