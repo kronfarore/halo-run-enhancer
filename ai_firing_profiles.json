@@ -4000,6 +4000,77 @@
     }
    ],
    "balanced_rule": "WDM x 0.84 (BALANCED_BASELINE Halo 2 damage)"
+  },
+  "objects\\weapons\\support_low\\flamethrower\\flamethrower": {
+   "source": "Halo 2 objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle (same game: no source entry, Halo 1 has no ai\\generic: the yardstick's own entry, max firing range 13 < 16)",
+   "donor_weapon": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "weapon": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+   "props": {},
+   "patterns": [
+    {},
+    {}
+   ],
+   "set": [],
+   "donor_only": [
+    "Aggressive Combat Range",
+    "Aggressive Combat Range Max",
+    "Ballistic Firing Bounds",
+    "Ballistic Firing Bounds Max",
+    "Ballistic Fraction Bounds",
+    "Ballistic Fraction Bounds Max",
+    "Bombardment Range",
+    "Custom Crouch Gun Offset i",
+    "Custom Crouch Gun Offset j",
+    "Custom Crouch Gun Offset k",
+    "Custom Stand Gun Offset i",
+    "Custom Stand Gun Offset j",
+    "Custom Stand Gun Offset k",
+    "Death Fire-Wildly Chance",
+    "Death Fire-Wildly Time",
+    "Drop Weapon Ammo",
+    "Drop Weapon Ammo Max",
+    "Drop Weapon Loaded",
+    "Drop Weapon Loaded Max",
+    "First Burst Delay Time",
+    "First Burst Delay Time Max",
+    "Heroic Accuracy Bounds",
+    "Heroic Accuracy Bounds Max",
+    "Heroic Accuracy Time",
+    "Legendary Accuracy Bounds",
+    "Legendary Accuracy Bounds Max",
+    "Legendary Accuracy Time",
+    "Maximum Firing Range",
+    "Maximum Special Target Distance",
+    "Minimum Firing Range",
+    "Normal Accuracy Bounds",
+    "Normal Accuracy Bounds Max",
+    "Normal Accuracy Time",
+    "Normal Combat Range",
+    "Normal Combat Range Max",
+    "Special Damage Modifier",
+    "Special Projectile Error",
+    "Special-Fire Chance",
+    "Special-Fire Delay",
+    "Special-Fire Mode",
+    "Special-Fire Situation",
+    "Super-Ballistic Range",
+    "Surprise Delay Time",
+    "Surprise Fire-Wildly Time",
+    "Timid Combat Range",
+    "Timid Combat Range Max",
+    "Weapons Flags"
+   ],
+   "not_copied": [],
+   "scaled_by_normal_range": [],
+   "balanced_patterns": [
+    {
+     "Weapon Damage Modifier": 0.84
+    },
+    {
+     "Weapon Damage Modifier": 0.84
+    }
+   ],
+   "balanced_rule": "WDM x 0.84 (BALANCED_BASELINE Halo 2 damage)"
   }
  }
 }

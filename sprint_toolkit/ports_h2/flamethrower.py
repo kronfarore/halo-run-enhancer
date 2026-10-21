@@ -79,9 +79,12 @@ PORT = {
     # Halo 1's AI data is an actor variant, not ai\generic: ai_firing_profile.py --h2-port reads
     # Halo 3 / ODST / Reach / Halo 4 sources -- the session picks a Halo 2 stand-in entry (e.g. the
     # SMG's or the plasma rifle's) or teaches the reader Halo 1 (H2_PORT_PLAN 0.5b)
-    'firing_profile': {'from_game': 'Halo 1', 'from_weapon': r'weapons\flamethrower\flamethrower',
-                       'note': 'no ai\\generic source: a Halo 2 stand-in, decided in session',
-                       'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties'},
+    # step 11 (decided in session): Halo 1 keeps AI firing data in ACTOR VARIANTS (the Flood carry the
+    # flamethrower there), not ai\generic -- so a Halo 2 STAND-IN: the Plasma Rifle's own entry (the
+    # yardstick; Halo 2's automatic close-range heat weapon), unchanged -- its maximum firing range 13
+    # sits inside the flame's 16, normal combat range 3-7. `ai_firing_profile.py --h2-port flamethrower`
+    'firing_profile': {'donor_weapon': r'objects\weapons\rifle\plasma_rifle\plasma_rifle',
+                       'why': "Halo 1 has no ai\\generic: the yardstick's own entry, max firing range 13 < 16"},
     # step 1 -- h2_port_geometry.py kind 'h1': the Halo 1 gbxmodels on their OWN skeleton (gun / ammo /
     # cover in first person) -- Halo 1's own FP animations drive them (H2_PORT_PLAN 0.4: Halo 1's FP
     # arms ARE Halo 2's masterchief; the reader checked on the cyborg arms: 37/37 nodes = Bungie's
