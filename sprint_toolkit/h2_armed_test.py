@@ -73,6 +73,7 @@ def arm(map_path, weapon, species, share=1.0, out=None, balanced=True, m=None):
         if getattr(m, 'compressed', False):
             raise SystemExit('%s is compressed -- Halo2Map.save cannot write it' % map_path)
     names = {s.lower(): e for e in E.ENEMY_CHARS for s in (e, e.split()[0])}
+    names.update({'drone': 'Bugger', 'drones': 'Bugger', 'flood': 'Flood Combat Form'})
     cards = {}
     for s in species:
         e = names.get(s.strip().lower())
@@ -106,8 +107,9 @@ def main():
 def report(idx, rows):
     print('   the port is weapon palette #%d' % idx)
     for r in rows:
+        who = r['tag'].rsplit(chr(92), 1)[-1] if r['field'].startswith('Armed') else ''
         print('   %s %-40s %s' % ('SKIP' if r.get('skip') else 'ok  ' if r.get('ok') else 'FAIL',
-                                  r['field'], r.get('reason', '')))
+                                  (r['field'] + (' (%s)' % who if who else ''))[:40], r.get('reason', '')))
 
 
 if __name__ == '__main__':

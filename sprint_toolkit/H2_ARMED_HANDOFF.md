@@ -23,14 +23,16 @@ done and committed; the interface is one module call and one spec dict.
      Palette +0x98/0x28) whose character belongs to a carded type draws a deterministic number
      (map name + field address: co-op partners and re-patches agree); below the sum of the
      shares it takes the weapon whose interval holds it (above 100 % the shares count by weight,
-     as Halo 1), secondary -1. Protected units = `halo_patch._ts_units` (vehicle-bound /
-     script-loaded) keep theirs. A location with weapon -1 inherits its squad's draw.
+     as Halo 1), secondary -1. EVERY unit of the type is armed, dropship / vehicle / script-loaded
+     squads too (test 3: Jackals in the early scripted spawns kept their stock weapon and shield
+     while the first version skipped `halo_patch._ts_units`' protected units -- that protection is
+     for SPECIES that cannot ride, not for weapons). A location with weapon -1 inherits its squad's draw.
    - A weapon missing from the level's weapon palette is reported (`skip`), never added (ports
      are resident in all 13 levels by H2_PORT_PLAN 0.1; stock weapons may be absent).
    - Enemy types (`ENEMY_CHARS`): Grunt (grunt, heretic_grunt), Jackal, Elite (elite, heretic),
-     Brute, Flood Combat Form (floodcombat_elite / _human), **Marine** (the Ally twin). Left out:
-     Tartarus, the Heretic leader, Johnson boss, councilors, Hunters, Sentinels, Drones, story
-     characters.
+     Brute, **Bugger** (Drones: hand-held weapons in Halo 2), Flood Combat Form (floodcombat_elite /
+     _human), **Marine** (the Ally twin). Left out: Tartarus, the Heretic leader, Johnson boss,
+     councilors, Hunters, Sentinels, story characters.
    - **Jackals + two-handed** (user, 2026-10-20): a Jackal handed a two-handed weapon (not class
      pistol, not dual-wieldable -- Halo 2's SMG is class 'rifle' but dual-wields) spawns WITHOUT
      its arm shield: its starting location's **Actor Variant Name** (+0x30, string id) =
@@ -40,12 +42,15 @@ done and committed; the interface is one module call and one spec dict.
      its SNIPER STYLE: suppressing fire, no cover peek / investigate / surprise. Kit twin
      characters were tried next and dropped: tool keeps no palette entry a squad does not use.)
      A squad has no variant field, so a squad's draw reaches its Jackals through its locations.
-   - **Grunt teach** (seen in game 2026-10-20: Grunts never carried the SAW -- their graph has no
-     'rifle' class, so they spawn with the biped default): every mode of
-     `objects\characters\grunt\grunt` holding the 'missile' class (the fuel rod's two-handed
-     set) gets a copy labelled with the weapon's class, child data SHARED by pointer, in sorted
-     string-id order (these are binary-searched 'sort' blocks), plus the Weapon List pairs tool
-     writes (`(rl, rifle)`). Heretic Grunts use the same graph. Grunts hold a rifle like a fuel rod.
+   - **The teach** (`TEACH`): a Halo 2 unit refuses a weapon whose class its graph lacks (SAW
+     Grunts spawned with their default: the Grunt graph is any / missile / pistol / unarmed) and
+     drops it in a mode without the class -- fleeing Grunts and Jackals drew their Retreat
+     'backup weapon' (a plasma pistol): their 'flee' mode is pistol-only. Every mode of the
+     enemy's graph lacking the weapon's class but holding a donor class gets a copy of the donor
+     labelled with the class (children SHARED by pointer, sorted string-id order -- binary-searched
+     'sort' blocks -- plus the Weapon List pairs tool writes). Donors: Grunt 'missile' (the fuel
+     rod's two-handed set) then 'pistol'; Jackal and Drone 'pistol'. Elites and Brutes already
+     hold every class. On 07a for a rifle: Grunt 9 modes (flee included), Jackal flee, Drone patrol.
    - **Grunt half rate** (the Halo 1 rule): every Grunt character in the map gets its own Firing
      Pattern Properties entry for each two-handed, non-'missile' weapon handed to Grunts =
      ai\generic's patterns at half rate (the pattern's rate, or the barrel's rounds per second
@@ -87,11 +92,12 @@ done and committed; the interface is one module call and one spec dict.
 
 ## Seen in game, for the enhancer to know
 
-- **Flee -> plasma pistol** (user, test 2): a fleeing Grunt or Jackal drops a rifle-class weapon
-  and draws a plasma pistol. That is the character's Retreat Properties 'backup weapon' (the
-  plasma pistol for both, never the old weapon); their graphs' 'flee' mode has no rifle class
-  (Grunt: any / pistol, Jackal: pistol / unarmed), as with a stock fuel-rod Grunt. Left as Halo 2
-  does it unless the user decides otherwise.
+- Test 1 (03a): Elites and Jackals carried and fired the SAW, Grunts did not (-> the teach).
+- Test 2 (03a): every type fired; Jackals switched to jackal_sniper did not visibly aim (-> the
+  location variant); fleeing Grunts / Jackals dropped the SAW for a plasma pistol (-> the flee teach).
+- Test 3 (03a): Elites and Grunts good; Jackals in early scripted spawns kept shield + stock
+  weapon (-> every unit armed).
+- Test 4 (07a): Brutes and Drones, the flee teach, all units armed -- see H2_PORT_PLAN 0.5b.
 
 ## Test tooling
 

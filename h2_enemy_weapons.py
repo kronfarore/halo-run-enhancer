@@ -42,6 +42,7 @@ ENEMY_CHARS = {
     'Elite': ('elite', 'heretic'),
     'Brute': ('brute',),
     'Flood Combat Form': ('floodcombat_elite', 'floodcombat_human'),
+    'Bugger': ('bugger',),                       # Drones: hand-held weapons in Halo 2
     'Marine': ('marine',),                       # the Ally (Friend) twin
 }
 NEVER = ('brute_tartarus', 'heretic_leader', 'heretic_leader_hologram', 'marine_johnson_boss',
@@ -64,7 +65,12 @@ WEAP_FLAGS, DUAL_BITS, WEAP_CLASS, WEAP_BARRELS, WEAP_BARREL_ES = 0x12C, 3 << 22
 # (0x34); Weapon List +0x54 (0x8: weapon name, weapon class) -- all 'sort' blocks
 JMAD_MODES, JMAD_MODE_ES, MODE_CLASSES, CLASS_ES, CLASS_TYPES, TYPE_ES = 0x34, 0x14, 0x4, 0x14, 0x4, 0x34
 JMAD_WEAPON_LIST, WL_ES = 0x54, 0x8
-GRUNT_GRAPHS = (r'objects\characters\grunt\grunt',)     # heretic Grunts use it too
+#: THE TEACH: per enemy type, its graph and the classes a missing class is copied from, in order
+#: (heretic Grunts use the Grunt graph). Elites and Brutes have every class an Armed weapon needs.
+_G = 'objects' + chr(92) + 'characters' + chr(92)
+TEACH = {'Grunt': (_G + 'grunt' + chr(92) + 'grunt', ('missile', 'pistol')),
+         'Jackal': (_G + 'jackal' + chr(92) + 'jackal', ('pistol',)),
+         'Bugger': (_G + 'bugger' + chr(92) + 'bugger', ('pistol',))}
 
 
 def enemy_of(char_path):
@@ -199,7 +205,7 @@ def arm(m, hp, cards, salt=None):
         enemy = enemy_of(cnames[c]) if c is not None and 0 <= c < len(cnames) else None
         if u['kind'] == 'squad':
             squad_pick = None
-        if enemy not in usable or u['protected']:
+        if enemy not in usable:
             continue
         a0, a1 = u['weap_at']
         if a0 in seen:
@@ -245,23 +251,27 @@ def _sorted_block(m, at, count, es, key):
     m.data[at:at + count * es] = b''.join(els)
 
 
-def teach_grunts(m, hp, weapons):
-    """THE GRUNT TEACH. Halo 2's Grunt graph has no 'rifle' class (any / missile / pistol /
-    unarmed), so a Grunt handed a rifle-class weapon spawns with its biped default instead (seen
-    in game 2026-10-20: SAW Grunts carried nothing new). Every mode holding the 'missile' class
-    (the fuel rod's two-handed set) gets a copy of it labelled with the weapon's class -- its
-    weapon types / actions / overlays are SHARED by pointer, nothing is duplicated -- in sorted
-    position, and the graph's Weapon List gets the (type, class) pairs tool would have written.
-    Grunts then hold a rifle like a fuel rod (an approximation: no Grunt rifle set exists)."""
+def teach(m, hp, enemy, weapons):
+    """THE TEACH. A Halo 2 unit refuses a weapon whose class its graph lacks and spawns with its
+    biped default (seen 2026-10-20: SAW Grunts -- the Grunt graph is any / missile / pistol /
+    unarmed), and a mode without the class makes it drop the weapon there (fleeing Grunts and
+    Jackals drew their backup plasma pistol: their 'flee' mode is pistol-only). Every mode of the
+    enemy's graph that lacks the weapon's class but holds a donor class (TEACH: Grunts the fuel
+    rod's two-handed 'missile' set first, else 'pistol'; Jackals and Drones 'pistol') gets a copy of
+    the donor labelled with the weapon's class -- weapon types / actions / overlays SHARED by
+    pointer, nothing duplicated -- in sorted position, and the graph's Weapon List gets the
+    (type, class) pairs tool would have written. An approximation: the unit holds the rifle with
+    the donor's poses."""
     rows = []
+    gname, donors = TEACH.get(enemy, (None, ()))
     want = {}
     for w in weapons:
         i = weapon_info(m, hp, w)
-        if i and i['class'] not in ('pistol', 'missile', 'unarmed', 'any'):
+        if i and i['class'] not in ('unarmed', 'any'):
             want.setdefault(i['class_sid'], i['class'])
-    if not want:
+    if not want or not gname:
         return rows
-    for gname in GRUNT_GRAPHS:
+    for gname in (gname,):
         t = dict(m.find_tags('jmad', gname)).get(gname)
         if t is None:
             continue
@@ -270,7 +280,8 @@ def teach_grunts(m, hp, weapons):
         for md in modes:
             cls = m.follow_all(md, [MODE_CLASSES], [CLASS_ES], 'all')
             labels = [m.u32(c) for c in cls]
-            donor = next((c for c in cls if m.resolve_stringid(m.u32(c)) == 'missile'), None)
+            by = {m.resolve_stringid(m.u32(c)): c for c in cls}
+            donor = next((by[d] for d in donors if d in by), None)
             if donor is None:
                 continue
             types = [m.u32(x) for x in m.follow_all(donor, [CLASS_TYPES], [TYPE_ES], 'all')]
@@ -298,9 +309,9 @@ def teach_grunts(m, hp, weapons):
             _sorted_block(m, off, m.i32(tb + bo), es,
                           (lambda b: struct.unpack_from('<II', b, 0)) if bo == JMAD_WEAPON_LIST
                           else (lambda b: struct.unpack_from('<I', b, 0)[0]))
-        rows.append({'tag': 'jmad ' + gname, 'field': 'Grunt teach: ' + '/'.join(sorted(want.values())),
-                     'ok': True, 'reason': '%d modes got the class (copy of missile), weapon list +%d'
-                     % (len([j for j in jobs if j[1] == MODE_CLASSES]), len(wl_add))})
+        rows.append({'tag': 'jmad ' + gname, 'field': '%s teach: %s' % (enemy, '/'.join(sorted(want.values()))),
+                     'ok': True, 'reason': '%d modes got the class (copy of %s), weapon list +%d'
+                     % (len([j for j in jobs if j[1] == MODE_CLASSES]), ' / '.join(donors), len(wl_add))})
     return rows
 
 
@@ -526,9 +537,10 @@ def apply(m, hp, spec, registry=None, salt=None):
     (before the Grunt copies, so the Grunt entries carry the balanced values too)."""
     rows, done = arm(m, hp, (spec or {}).get('cards') or {}, salt=salt)
     rows += balance(m, hp, registry, (spec or {}).get('balanced'))
-    grunt = sorted((done.get('Grunt') or {}))
-    if grunt:
-        rows += teach_grunts(m, hp, grunt)
-        rows += grunt_rates(m, hp, grunt)
+    for enemy in sorted(TEACH):
+        if done.get(enemy):
+            rows += teach(m, hp, enemy, sorted(done[enemy]))
+    if done.get('Grunt'):
+        rows += grunt_rates(m, hp, sorted(done['Grunt']))
     rows += species_skill(m, hp, done)
     return rows
