@@ -389,7 +389,13 @@ def set_reference(tag_path, cls, old_path, new_path, every=False, nth=None):
         want[hits[nth]] = (cls, new_path)
 
     original = open(tag_path, 'rb').read()
+    rows_before = None
     if nth is not None:
+        # an nth move pairs a pooled copy with a record by trial; a WRONG pairing can leave the
+        # reference list right and the tag unloadable ('convert old to new field set failed': the
+        # Flamethrower's HUD, 2026-10-21) -- so a pairing must also leave every field row as it was
+        import h2_tagfield as tf
+        rows_before = [r[4] for r in tf.read_all(tf.export(tag_path))]
         copies = len(pooled(original, old_path))
         tries = [(j, rec) for j in range(copies)
                  for rec in candidates(original, cls, len(old_path))]
@@ -403,6 +409,10 @@ def set_reference(tag_path, cls, old_path, new_path, every=False, nth=None):
                       else retarget(original, cls, old_path, new_path, rec))
         open(tag_path, 'wb').write(edited)
         if references(tag_path) == want:
+            if rows_before is not None:
+                x = tf.export(tag_path)
+                if not x or [r[4] for r in tf.read_all(x)] != rows_before:
+                    continue
             print('%s: %s %s -> %s  (%d references, all others unchanged)'
                   % (os.path.basename(tag_path), cls, old_path, new_path, len(want)))
             return
