@@ -277,6 +277,15 @@ PORT = {
             (FT + r'\damage_effects\flame.damage_effect', 'damage lower bound', '', 0, 0, 10.8),
             (FT + r'\damage_effects\flame.damage_effect', 'damage upper bound', '', 0, 0, [15.384615, 17.692308]),
             (FT + r'\damage_effects\flame.damage_effect', 'flags', '', 0, 1, 128, {'anchor': ('damage lower bound', -8)}),
+            # step 4b (port_field_audit.py --port flamethrower, list 2: H1 flamethrower / H1 PR x H2 PR)
+            (FT + r'\flamethrower.weapon', 'bounding radius', '', 0, 0, 0.28),
+            (FT + r'\flamethrower.weapon', 'acceleration scale', '', 0, 0, 0.444444),
+            (FT + r'\flamethrower.weapon', 'illumination recovery time', 'barrels', 0, 0, 0.0),
+            # list 4: ready time 0 in both Halo 1 tags -> the target donor's (the PR's) 0
+            (FT + r'\flamethrower.weapon', 'ready time', '', 0, 0, 0.0),
+            (FT + r'\projectiles\flame.projectile', 'bounding radius', '', 0, 0, 0.15),
+            (FT + r'\damage_effects\flame.damage_effect', 'active camouflage damage', '', 0, 0, 1.25,
+             {'anchor': ('damage upper bound', 16)}),
             # first-person placement: Halo 1's animations carry Halo 1's view (camera = origin), so
             # start with none (the SMG's 0.02, 0, 0 is for its own graph) -- checked in game
             (FT + r'\flamethrower.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, 0.0]),
@@ -285,6 +294,41 @@ PORT = {
             ('melee damage', 'Halo 2 weapons share strike_melee / smash_melee: a row would move every weapon'),
             ("Halo 1's 'burning' effect (fire left on a target)", "no Halo 2 equivalent: 'causes flaming death' instead"),
         ],
+    },
+
+    # step 4b -- port_field_audit.py --port flamethrower: every field NO card covers where Halo 1's
+    # flamethrower differs from Halo 1's Plasma Rifle (the yardstick) -- list 2 must say 0 to port
+    'field_audit': {
+        'source_kit': 'HCEEK',
+        'source': {'weapon': (H1FT + r'\flamethrower.weapon', r'weapons\plasma rifle\plasma rifle.weapon'),
+                   'projectile': (H1FT + r'\flame.projectile', r'weapons\plasma rifle\bolt.projectile'),
+                   'damage_effect': (H1FT + r'\impact damage.damage_effect', r'weapons\plasma rifle\bolt.damage_effect')},
+        'target': {'weapon': (FT + r'\flamethrower.weapon', r'objects\weapons\rifle\plasma_rifle\plasma_rifle.weapon'),
+                   'projectile': (FT + r'\projectiles\flame.projectile',
+                                  r'objects\weapons\rifle\plasma_rifle\projectiles\plasma_rifle_bolt.projectile'),
+                   'damage_effect': (FT + r'\damage_effects\flame.damage_effect',
+                                     r'objects\weapons\rifle\plasma_rifle\damage_effects\plasma_rifle_bolt.damage_effect')},
+        # first run 2026-10-21: list 2 weapon 5 / projectile 1 / damage 5 -> written (numbers, 4b rows) or
+        # decided here. Lists 3 / 4 / 5, decided:
+        'decisions': {
+            'barrels/[0]/rounds per second': "4a's flat 10.8 (H1 12 x the PR's 9/10; Halo 1 has no ramp)",
+            'barrels/[0]/error angle (by name: the DUAL cone)': "4a's LIVE cone nth 1 = 1.0-1.2; the dual cone (nth 0) "
+                                                               "stays the SMG's (not dual wielded)",
+            'damage upper bound (element-wise 16.67, 16.43)': "4a's pair 15.38-17.69 (H1 20-23 x the PR's AVERAGE ratio "
+                                                              "10/13 -- the PR's H2 pair is flat, an element ratio inverts it)",
+            'forward / outward velocity, radius, exponent; rotation; pushback':
+                "breaking-effect / camera-shake cosmetics: flaming_death's 0 (Halo 1's flame shakes nothing)",
+            'instantaneous acceleration': "0 (both Halo 1 tags 0; a flame does not push)",
+            'barrels/[0]/minimum error (nth 0)': "the SMG's dual-cone 0.5 (not dual wielded)",
+            'flags (projectile 112 / damage)': "Halo 1 enums do not carry; damage flags = 'causes flaming death' (128)",
+            'attachments/#count': "the PR bolt's 2 (contrail + light volume = the flame's look)",
+            'impact / detonation noise': "the PR bolt's (Halo 1's 'loud' is an AI-perception enum)",
+            'timer, radii, maximum range, air damage range': 'Halo 1 raw (a 0 on the PR: no ratio), step 4',
+            'damage modifiers/*': "no Halo 2 field: the damage TABLE (group `burning`) carries the material response",
+            'functions (the PR\'s `heat` export)': "the SMG clone has none: the heat display's gauge may sit still "
+                                                  "(checked in game)",
+            'firing effects/[1], old message index, on-ground scale, predicted bitmaps': "the SMG's (clone donor)",
+        },
     },
 
     'test': {'level': '05a_deltaapproach', 'dervish_level': '06b_floodzone'},

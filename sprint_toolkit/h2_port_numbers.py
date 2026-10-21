@@ -46,10 +46,12 @@ def pin(tag_path, name, block, index, nth, anchor, delta):
     key = ('%s[%d].%s' % (block, index, name) if block else name) + ('#%d' % nth if nth else '')
     if key in tf._cache().get(tf.tag_key(tag_path), {}):
         return
-    at = tf.offset_of(tag_path, anchor, block, index, 0, verbose=False) + delta
-    original = open(tag_path, 'rb').read()
     rows = tf.read_all(tf.export(tag_path))
     row = tf.pick(rows, name, block, index, nth)
+    if any(tf._numbers(row[4])):
+        return                  # non-zero now: h2_tagfield finds it by its value
+    at = tf.offset_of(tag_path, anchor, block, index, 0, verbose=False) + delta
+    original = open(tag_path, 'rb').read()
     code = tf.SCALARS[row[3]][0]
     edited = bytearray(original)
     struct.pack_into(code, edited, at, 0.5 if code == '<f' else 3)
