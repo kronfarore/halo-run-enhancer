@@ -35,10 +35,24 @@ PORT = {
     # 1 barrel; clear dual wield), world .model / HUD / collision from a two-handed donor (the BR's, as
     # the AR); the Halo 1 flamethrower also heats -- check whether its magazine or its heat is the
     # limit and pick the donor's block shape by that (the plasma rifle = heat + battery, 0 magazines)
+    # STEP 0 (user, 2026-10-21): source HALO 1 -- the user's rule "if Halo 2 has no turret-style
+    # 3rd-person weapons, Halo 1": H2EK's h_turret_mp_item / c_turret_mp_item sit in Bungie's weapon
+    # palettes but carry 'cannot be used by player', no FP model / graph (3P class `missile`), and the
+    # engine has no third-person hold. Dervish: RE-POSE (arms + wrists from the Chief's Halo 1 frames,
+    # fingers = the Chief finger's curl as a delta on the Elite's own bind; middle dropped). Donor: the
+    # SMG clone + Halo 2's heat fields (fuel AND heat, as Halo 1).
     'donor': {'weapon': r'objects\weapons\rifle\smg\smg', 'message_prefix': 'smg',
               'why': 'spew automatic magazine 1/1/1 (the AR route); alt plasma_rifle (pr) if heat is the limit'},
     'yardstick': {
-        'pick': None, 'reason': None,          # step 4a, WITH the user
+        # step 4a WITH the user (2026-10-21; reports/h2_flamethrower_4a.md, h2_ft_ttk_4a.py)
+        'pick': 'Plasma Rifle',
+        'reason': 'native in both games and the only native candidate that also HEATS: carries damage '
+                  'x0.77 (21.5 -> 16.5 a flame, 2 a shot), rate x0.9 (12 -> 10.8/s) and the heat model '
+                  '(0.072 -> 0.135 a shot, loss 0.44 -> 1.25/s, recovery 0.30 -> 0.12; overheats after '
+                  '~2.7 s held, Halo 1 ~3.6 s); fuel 100/300/600, reload 3.4 s and range 16 wu have no '
+                  'Plasma Rifle counterpart -> Halo 1 raw. Damage group (user): Halo 2's own `burning` '
+                  '(Halo 1 category flame) -- Elite 0.65 s, Brute 0.28, Jackal 0.19, Flood 0.28 point blank',
+        'damage_group': 'burning',
         'candidates': {
             'provisional': 'Plasma Rifle (native in Halo 1 AND Halo 2: an automatic, close-mid range)',
             'alternatives': ['Shotgun (native in both: the close-range role)',
