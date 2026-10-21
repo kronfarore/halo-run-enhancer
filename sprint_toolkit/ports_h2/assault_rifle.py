@@ -391,7 +391,14 @@ PORT = {
                        'donor_weapon': r'objects\weapons\rifle\smg\smg'},
     # 03a is the SAW's Armed test level (h2-armed-cards session, staged 2026-10-20 18:08): the
     # AR's Chief test runs on 03b (one test level per session)
+    # allies TAKE a weapon only if their 3P graph holds its class/type (user, boot on 04a: the Elite
+    # took the AR, the Grunt did not -- the Grunt graph has no `rifle` class, Halo 2's own BR is
+    # refused too). User: "teach the Grunt 'rifle'" -> h2_graph_teach.py cloned the Grunt's `pistol`
+    # class as `rifle` (its `pr` type as `br`) in all 20 modes that carry it (2026-10-21; stock
+    # tag kept in E:\HaloBackups\h2_graph_teach). A SHARED Bungie tag: every rifle-class weapon
+    # (ports and stock BR / SMG / shotgun ...) can now be handed to a Grunt, held as a plasma rifle
+    'graph_teach': [(r'objects\characters\grunt\grunt.model_animation_graph', 'pistol=rifle', {'pr': 'br'})],
     # 03b handed to the SAW's flee test (Armed session, 2026-10-21): the AR's Chief test on 05a
-    'test': {'level': '05a_deltaapproach', 'dervish_level': '04a_gasgiant'},
+    'test': {'level': '05a_deltaapproach', 'dervish_level': '04a_gasgiant', 'rounds': (32, 96)},
     'residency': {'levels': 'all', 'placements': False},
 }
