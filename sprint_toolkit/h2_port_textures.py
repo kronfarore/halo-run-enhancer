@@ -136,7 +136,8 @@ def h3_main(t, argv):
     bitmap references repointed (every copy) -- so a re-run is the same result.
 
         bitmaps   [(H3EK bitmap tag, port bitmap name, Bungie seed bitmap tag, 'color' | 'bump' |
-                    'bump_snorm' (a signed DXN normal map, the AR's),
+                    'bump_snorm' (a signed DXN normal map, the AR's) | 'color_premul' |
+                    ('tint', (r, g, b), dilate px) (a grey illum mask coloured, the Spiker's),
                     (w, h) or None = the source's size)]
         shaders   [(port shader name, Bungie seed shader tag, {seed bitmap: port bitmap or
                     another tag})] -- a seed bitmap left out of the map stays Bungie's
@@ -160,6 +161,17 @@ def h3_main(t, argv):
                     a = np.clip((a + 1.0) * 127.5, 0, 255).astype(np.uint8)
                     img = Image.fromarray(np.dstack([a, np.full(a.shape[:2], 255, np.uint8)]), 'RGB')
                 out = height_from_normal(img.convert('RGB'), t.get('bump_gain', 2.2))
+            elif isinstance(mode, tuple) and mode[0] == 'tint':
+                # ('tint', (r, g, b) 0..1, dilate px): a Halo 3 GREY self-illumination mask
+                # coloured as its shader colours it (Halo 2's self_illum_map is drawn as it is),
+                # thin lines grown by `dilate` px (no bloom; Halo 1's A5 rule) -- the Spike Rifle
+                g = np.asarray(img.convert('L')).astype(np.float32)
+                if mode[2]:
+                    from PIL import ImageFilter
+                    g = np.asarray(Image.fromarray(g.astype(np.uint8), 'L').filter(
+                        ImageFilter.MaxFilter(2 * mode[2] + 1))).astype(np.float32)
+                rgb = np.dstack([g * c for c in mode[1]])
+                out = Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8), 'RGB')
             elif mode == 'color_premul':
                 # for an ADDITIVE shader: colour x alpha, so a transparent texel adds nothing
                 # (the AR's holo display, boot 2: an opaque template drew every layer's square)
