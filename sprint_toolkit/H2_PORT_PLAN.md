@@ -661,5 +661,7 @@ reads ports_h2 configs too (`--port assault_rifle`, the config's `field_audit`).
   ar_ammo) and the firing effect's remastered distance layer (Halo 3's `assault_rifle_lod_far` ->
   ar_fire_lod) -> every sound OWN; `port_volume --weapon "Assault Rifle"`: one own entry #99 at
   -3.02, nothing shared, headroom 3.02 (PORT_SOUNDS gained the AR); `validate_halo_json` 0
-  problems. Muzzle flash: confirmed by the user (boot 1). NOT covered: `port_glyphs` has no Halo 2
-  (the SAW's glyph neither) -- the fonts are in the backup, a Steam update would take them out.
+  problems. Muzzle flash: confirmed by the user (boot 1). FOLLOW-UP DONE (user): `port_glyphs.py` now
+  covers Halo 2 -- the eight h2_fonts, the SAW's U+E13D and the AR's U+E13E captured (`--capture --game
+  halo2`); restoring the stock fonts reproduces the live ones BYTE FOR BYTE (header +0x10, raised by
+  tool for the big glyphs, carried too); the enhancer's existing `ensure('halo2')` call restores them

@@ -60,7 +60,8 @@ done for the SAW in all five games plus the Halo 4 Focus Rifle; the per-game rec
 **When a port is done -- the closing steps (all games):**
 0. `python port_refs_audit.py --game "<game>"` on the REBUILT map: the weapon fires its own
    projectile, names its own damage effects (Halo 1: its own melee too) -- see step 3 below.
-1. If the port added a pickup/HUD glyph (Halo 3, ODST, Reach, Halo 4 -- the loose icon
+1. If the port added a pickup/HUD glyph (Halo 2 -- `--capture --game halo2`, the eight
+   h2_fonts; Halo 3, ODST, Reach, Halo 4 -- the loose icon
    font packages): `python port_glyphs.py --capture` in the tool folder, then commit
    `port_glyphs.json`. Without it the glyph exists only on this machine, and the
    Enhancer cannot restore it after a Steam update or put it on a co-op partner's
