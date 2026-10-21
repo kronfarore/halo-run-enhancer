@@ -90,7 +90,13 @@ TEACH = {'Grunt': (_G + 'grunt' + chr(92) + 'grunt', ('missile', 'pistol')),
 #: labelled with the weapon's NAME (the type lookup is by weapon name: elite rifle br / csr / sg /
 #: sr) = a copy of the support class's 'any' type -- the whole Brute Shot set (pose, moves, aim,
 #: fire), children shared. A weapon whose name already has a type there (the shotgun's sg) keeps it.
-TEACH_TYPE = {'Brute': (_G + 'brute' + chr(92) + 'brute', 'support', 'any')}
+TEACH_TYPE = {'Brute': (_G + 'brute' + chr(92) + 'brute', 'support', 'any'),
+              # Grunts (2026-10-21): the kit Grunt graph now HAS 'rifle' (h2_graph_teach.py, the AR
+              # pilot: pistol cloned, pr -> br -- allied Grunts hold the AR / BR like a plasma rifle),
+              # so the class teach no longer fires for rifles. A two-handed weapon with no type of its
+              # own there (the SAW's sr) gets the fuel rod's set as its type: Grunts keep holding it
+              # two-handed, as the user approved in Armed test 3. br keeps the AR pilot's.
+              'Grunt': (_G + 'grunt' + chr(92) + 'grunt', 'missile', 'any')}
 
 
 def enemy_of(char_path):
