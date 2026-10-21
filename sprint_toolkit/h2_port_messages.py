@@ -67,6 +67,20 @@ def setup(key):
     DONOR, PORT = m['donor_prefix'], r['message_prefix']
     DONOR_ICON, GLYPH = m['donor_icon'], r['glyph']
     DONOR_NAME, PORT_NAME = m['donor_name'], m['port_name']
+    # optional ordered [(old, new)] in place of the one name swap: an article that changes
+    # with the name ('an SMG' -> 'a Spike Rifle', then 'SMG' -> ...; the Spike Rifle)
+    NAMES[:] = [tuple(x) for x in m.get('names', ())]
+
+
+NAMES = []
+
+
+def rename(v):
+    if not NAMES:
+        return v.replace(DONOR_NAME, PORT_NAME)
+    for old, new in NAMES:
+        v = v.replace(old, new)
+    return v
 
 
 def run(verb, *args):
@@ -95,7 +109,7 @@ def port_lines(s, english=None):
         elif english and name in english:
             out.append('%s = %s' % (name, english[name]))
         else:
-            out.append('%s = %s' % (name, v.replace(DONOR_NAME, PORT_NAME)))
+            out.append('%s = %s' % (name, rename(v)))
     return out
 
 

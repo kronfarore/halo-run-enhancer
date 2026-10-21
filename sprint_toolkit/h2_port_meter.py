@@ -98,7 +98,15 @@ def point(tag, cls, old, new):
     if (cls, new) in have and (cls, old) not in have:
         print('   %-28s already points at the port' % os.path.basename(tag))
         return
-    h2_tagref.set_reference(tag, cls, old, new)
+    # a dual-wield HUD names its meter TWICE (ammo_meter_right / _left, the SMG's -- the Spike
+    # Rifle, 2026-10-21): every copy moves, one at a time (every=True refuses when another
+    # record has that path's length, as the AR's FP models)
+    move_each(tag, cls, old, new, have.count((cls, old)))
+
+
+def move_each(tag, cls, old, new, count):
+    for _k in range(max(count, 1)):
+        h2_tagref.set_reference(tag, cls, old, new, nth=0 if count > 1 else None)
 
 
 def run_lines(p):
@@ -128,7 +136,16 @@ def backpack(m):
         line = ' '.join(line.split())
         if os.path.basename(port) in line or 'bitmap created' in line:
             print('   | %s' % line)
-    point(os.path.join(TAGS, m['port_hud'] + '.new_hud_definition'), 'bitm', m['backpack'], port)
+    hud = os.path.join(TAGS, m['port_hud'] + '.new_hud_definition')
+    point(hud, 'bitm', m['backpack'], port)
+    # the port's backpack is ONE image: its widget's sequence indices become 0 (the BR's were
+    # 0 already; the SMG's ask for image 1 of the shared sheet -- the Spike Rifle, 2026-10-21)
+    import h2_port_scope
+    import h2_tagfield
+    for idx, _name, ref, seq in h2_port_scope.widgets(hud):
+        if ref == port and any(seq):
+            for field in ('fullscreen', 'halfscreen', 'quarterscreen'):
+                h2_tagfield.set_field(hud, field + ' sequence index', 0, 'bitmap widgets', idx)
 
 
 def main(argv=None):

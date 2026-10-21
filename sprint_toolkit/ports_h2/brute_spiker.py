@@ -311,6 +311,132 @@ PORT = {
         'nodes_from_render': True,
     },
 
+    # step 7 -- the HUD: a clone of the SMG's (DUAL-WIELD shaped: the plate named x4 --
+    # right / left / right_out / left_out, sequences 0-3 of an 8-image plate --, the meter x2),
+    # 40 ticks (2 rows of 20) on the SMG meter's canvas, the plate's EVERY image repainted
+    # (h2_port_hud_plate all_images), the backpack drawn from the Spiker's own mesh, Halo 3's
+    # crosshair (chud hud_reticles #2). The SMG does not zoom: no scope widgets
+    'meter': {
+        'donor_meter': NEW_HUD + r'\meters\smg_meter',
+        'rel': NEW_HUD + r'\meters',
+        'name': 'brute_spiker_meter',
+        'donor_hud': r'ui\hud\smg',
+        'port_hud': r'ui\hud\brute_spiker',
+        'weapon': SR + r'\spike_rifle.weapon',
+        'rounds': 40, 'rows': 2,             # the SMG's 3 rows of 20 -> 2 rows of 20
+        'canvas': (198, 42), 'tick_w': 6,
+        'backpack': NEW_HUD + r'\backpack_weapons',
+        'backpack_port': NEW_HUD + r'\brute_spiker_backpack',
+        'backpack_size': (62, 30),
+        'model_3p': H3_RM_XML,
+        'preview': 'brute_spiker_meter_preview.png',
+    },
+    'hud_plate': {
+        'rel': NEW_HUD + r'\backgrounds',
+        'donor': NEW_HUD + r'\backgrounds\smg_bkd',
+        'other': NEW_HUD + r'\backgrounds\magnum_bkd',     # the other dual plate: same 8 shapes
+        'name': 'brute_spiker_bkd',
+        'hud': r'ui\hud\brute_spiker',
+        'model_3p': H3_RM_XML,
+        'fallback_box': (105, 191, 5, 34),
+        'stretch': 1.4,
+        # the dual-wield plate: all 8 images (4 shapes, each bright + dim '_out'), written into
+        # Bungie's own colour plate; the dim ones from their bright twins
+        'all_images': {'dim': {4: 0, 5: 1, 6: 2, 7: 3}},
+    },
+    'reticle': {
+        'rel': NEW_HUD + r'\crosshairs',
+        'donor': NEW_HUD + r'\crosshairs\hud_reticles',
+        'donor_sequence': 0,                 # the SMG's fullscreen crosshair (half / quarter 23)
+        'name': 'brute_spiker_reticle',
+        'hud': r'ui\hud\brute_spiker',
+        'footprint': 1.0,
+        # Halo 3's ON-SCREEN size (the AR's rule, user boot 2): the AR's sprite #0 (ink 110) drew
+        # 72 px at 1080p = target_ink 64; the Spiker's #2 (ink 156) at the same chud widget scale
+        # -> 64 x 156 / 110 = 91 (derived from the AR's measurement -- check in game)
+        'h3_art': {'sheet': 'hud_reticles', 'sequence': 2, 'yardstick': 3, 'target_ink': 91},
+        'preview': 'brute_spiker_reticle_preview.png',
+    },
+
+    # step 8 -- the pickup icon at U+E140, the messages (smg_* -> spk2_*: a LONGER prefix than
+    # the donor's -- the first length-changing rename in game; the dual lines included)
+    'glyph': {
+        'box': (160, 62),
+        'model_3p': H3_RM_XML,
+        'tif': 'spike_rifle_h2_glyph.tif',
+        # the AR's (user-confirmed): Halo 2's HUD blue, outline + the mesh's feature lines,
+        # a SOLID body (a dithered one sheared in game)
+        'colour': (110, 171, 233),
+        'style': {'line': (134, 202, 255), 'body': (72, 118, 172)},
+    },
+    'messages': {
+        'donor_prefix': 'smg', 'donor_icon': '&smg',
+        'donor_name': 'SMG', 'port_name': 'Spike Rifle',
+        # the article changes with the name ('Picked up an SMG')
+        'names': [('an SMG', 'a Spike Rifle'), ('SMG', 'Spike Rifle')],
+        'weapon': SR + r'\spike_rifle.weapon',
+    },
+
+    # step 10 -- h2_port_sounds.py: Halo 3's OWN sounds from MCC's halo3 sfx.fsb (render_h3_bank,
+    # 48 kHz at their native level), classic Opus. Halo 3's Spiker: a one-shot fire (6
+    # permutations) + its far-distance layer, single AND DUAL (left / right) ready, reload and
+    # posing, melee, ammo pickup; its empty names Halo 3's SMG dry fire. The seeded graphs (the
+    # H2 SMG's) cue the SMG's 17 graph sounds -- each gets the Spiker's own
+    'sounds': {
+        'weapon': SR + r'\spike_rifle.weapon',
+        'fire_fx': FX + r'\spike_rifle_fire.effect',
+        'audio': _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), 'out',
+                               'h2_sounds', 'brute_spiker'),
+        'audio_key': 'Spike Rifle',
+        'h3_bank': {'spk_fire': [H3SND + r'\spike_rifle\spike_rifle_fire'],
+                    'spk_fire_lod': [H3SND + r'\spike_rifle\spike_lod_far'],
+                    'spk_dryfire': [H3SND + r'\smg\dryfire'],
+                    'spk_reload': [H3SND + r'\spike_rifle\fp_spike_rifle\fp_spike_rifle_reload_full'],
+                    'spk_ready': [H3SND + r'\spike_rifle\fp_spike_rifle\fp_spike_rifle_ready'],
+                    'spk_melee1': [H3SND + r'\spike_rifle\fp_spike_rifle\fp_spike_rifle_melee'],
+                    'spk_posing': [H3SND + r'\spike_rifle\fp_spike_rifle\fp_spike_rifle_posing_var1'],
+                    'spk_ammo': [H3SND + r'\spike_rifle\spike_rifle_ammo'],
+                    'spk_dual_ready': [H3SND + r'\spike_rifle\fp_spike_rifle\fp_spike_rifle_dual_ready_right'],
+                    'spk_dual_reload_left': [H3SND + r'\spike_rifle\fp_spike_rifle\fp_spike_rifle_dual_reload_full_left'],
+                    'spk_dual_reload_right': [H3SND + r'\spike_rifle\fp_spike_rifle\fp_spike_rifle_dual_reload_full_right'],
+                    'spk_dual_posing_1_l': [H3SND + r'\spike_rifle\fp_spike_rifle\fp_spike_rifle_posing_dual_var1\fp_spike_rifle_posing_dual_var1_left'],
+                    'spk_dual_posing_1_r': [H3SND + r'\spike_rifle\fp_spike_rifle\fp_spike_rifle_posing_dual_var1\fp_spike_rifle_posing_dual_var1_right'],
+                    'spk_dual_posing_2_l': [H3SND + r'\spike_rifle\fp_spike_rifle\fp_spike_rifle_posing_dual_var2\fp_spike_rifle_posing_dual_var2_left'],
+                    'spk_dual_posing_2_r': [H3SND + r'\spike_rifle\fp_spike_rifle\fp_spike_rifle_posing_dual_var2\fp_spike_rifle_posing_dual_var2_right']},
+        'sounds': {'spk_fire': ('spk_fire', 'weapon_fire'), 'spk_fire_lod': ('spk_fire_lod', 'weapon_fire'),
+                   'spk_dryfire': ('spk_dryfire', 'weapon_empty'),
+                   'spk_reload': ('spk_reload', 'weapon_reload'), 'spk_ready': ('spk_ready', 'weapon_ready'),
+                   'spk_melee1': ('spk_melee1', 'weapon_melee'), 'spk_posing': ('spk_posing', 'weapon_ready'),
+                   'spk_ammo': ('spk_ammo', 'weapon_reload'),              # the SMG's smg_ammo class
+                   'spk_dual_ready': ('spk_dual_ready', 'weapon_ready'),
+                   'spk_dual_reload_left': ('spk_dual_reload_left', 'weapon_reload'),
+                   'spk_dual_reload_right': ('spk_dual_reload_right', 'weapon_reload'),
+                   'spk_dual_posing_1_l': ('spk_dual_posing_1_l', 'weapon_ready'),
+                   'spk_dual_posing_1_r': ('spk_dual_posing_1_r', 'weapon_ready'),
+                   'spk_dual_posing_2_l': ('spk_dual_posing_2_l', 'weapon_ready'),
+                   'spk_dual_posing_2_r': ('spk_dual_posing_2_r', 'weapon_ready')},
+        'repoint_fx': [(r'sound\weapons\smg\fire', 'spk_fire'),
+                       (r'sound_remastered\weapons\smg\fire_lod', 'spk_fire_lod')],
+        'repoint_weapon': [(r'sound\weapons\smg\dryfire', 'spk_dryfire'),
+                           (r'sound\weapons\smg\smg_ammo', 'spk_ammo')],
+        # the SMG's four dual posing variants (0-3) onto Halo 3's two (var1 / var2)
+        'graph_sounds': (('smg_melee1', 'spk_melee1'), ('smg_ready', 'spk_ready'),
+                         ('smg_reload', 'spk_reload'), ('smg_reload_full', 'spk_reload'),
+                         ('smg_dual_ready', 'spk_dual_ready'),
+                         ('smg_dual_reload_left', 'spk_dual_reload_left'),
+                         ('smg_dual_reload_right', 'spk_dual_reload_right'),
+                         ('smg_dual_posing_0_l', 'spk_dual_posing_1_l'), ('smg_dual_posing_0_r', 'spk_dual_posing_1_r'),
+                         ('smg_dual_posing_1_l', 'spk_dual_posing_2_l'), ('smg_dual_posing_1_r', 'spk_dual_posing_2_r'),
+                         ('smg_dual_posing_2_l', 'spk_dual_posing_1_l'), ('smg_dual_posing_2_r', 'spk_dual_posing_1_r'),
+                         ('smg_dual_posing_3_l', 'spk_dual_posing_2_l'), ('smg_dual_posing_3_r', 'spk_dual_posing_2_r'),
+                         ('smg_posing_var0', 'spk_posing'), ('smg_posing_var1', 'spk_posing')),
+        'graph_sound_dir': r'sound\weapons\smg' + '\\',
+        'gain': {},
+        'boost': {},
+        'backup': r'E:\HaloBackups\H2EK_brute_spiker_before_sounds',
+        'graph_backup': r'E:\HaloBackups\H2EK_brute_spiker_graphs_before_sounds',
+    },
+
     # step 9 -- h2_port_fp_anims.py: Halo 3's OWN FP animations, both species, single AND DUAL
     # (Halo 3 ships `first_person:dual:*` -- Halo 2's own SMG graph uses the same names), through
     # `tool fp-model-animations`. Seeded from Bungie's H2 SMG graphs (dual blend screens, the

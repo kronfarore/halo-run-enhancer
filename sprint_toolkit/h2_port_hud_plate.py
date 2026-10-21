@@ -8,6 +8,14 @@ The config's `hud_plate` section:
     name, hud            the port's plate bitmap name, the HUD that is repointed at it
     model_3p             the port's mesh (an H4 render dump, h3_weapon_glyph.mesh)
     fallback_box, stretch
+    all_images           (the Spike Rifle, 2026-10-21: a DUAL-WIELD plate) {'dim': {dim image:
+                         its bright twin}} -- EVERY image repainted and written back into the
+                         donor tag's own COLOUR PLATE (Bungie's, stored compressed in the
+                         .bitmap: blue background, magenta sequence lines), so the multi-image
+                         bitmap and the widgets' sequence indices stay as Bungie made them. A
+                         dim ('_out') image = its bright twin's repaint x the donor pair's
+                         per-channel ratio, inside the weapon box only (the dim plate has no
+                         divider line). Default: image 0 only (the single-wield plates)
 
     python h2_port_hud_plate.py <key> [--write]
 """
@@ -230,19 +238,82 @@ def repaint(donor, box, mask):
     return out
 
 
+def color_plate(tag):
+    """Bungie's own colour plate inside a loose H2 .bitmap: (RGBA array, (w, h)). The data is
+    the tag's zlib stream (size-prefixed); its width / height are the uint16 pair whose
+    product is the pixel count (`color plate width / height`); pixels are BGRA."""
+    import struct
+    import zlib
+    d = open(tag, 'rb').read()
+    for i in range(len(d) - 1):
+        if d[i] == 0x78 and d[i + 1] in (0x01, 0x5E, 0x9C, 0xDA):
+            try:
+                raw = zlib.decompressobj().decompress(d[i:])
+            except zlib.error:
+                continue
+            if len(raw) >= 1000 and len(raw) % 4 == 0:
+                break
+    else:
+        raise SystemExit('%s carries no colour plate' % tag)
+    n = len(raw) // 4
+    for j in range(0, i - 3):
+        w, h = struct.unpack_from('<HH', d, j)
+        if w and h and w * h == n:
+            a = np.frombuffer(raw, np.uint8).reshape(h, w, 4)[:, :, [2, 1, 0, 3]]
+            return a.astype(np.int16), (w, h)
+    raise SystemExit('%s: no colour plate size matches %d pixels' % (tag, n))
+
+
+def find_in_plate(plate, img):
+    """Where an exported image sits in the colour plate (an exact RGB match of its rows)."""
+    h, w = img.shape[:2]
+    ph, pw = plate.shape[:2]
+    rgb, prgb = img[:, :, :3], plate[:, :, :3]
+    for y in range(ph - h + 1):
+        for x in np.nonzero((prgb[y, :pw - w + 1] == rgb[0, 0]).all(1))[0]:
+            if (prgb[y:y + h, x:x + w] == rgb).all():
+                return int(x), int(y)
+    raise SystemExit('an exported plate image is not in the colour plate')
+
+
+def all_images(donor, sheets, boxes, cfg):
+    """Every image repainted into the donor's colour plate; returns the plate image."""
+    plate, _size = color_plate(os.path.join(TAGS, DONOR + '.bitmap'))
+    out = plate.copy()
+    dim = {int(k): v for k, v in (cfg.get('dim') or {}).items()}
+    for idx, img in enumerate(donor):
+        x, y = find_in_plate(plate, img)
+        if idx in dim:
+            twin = dim[idx]
+            x0, x1, y0, y1 = boxes[twin]
+            src = np.asarray(sheets[twin]).astype(float)
+            ratio = (donor[idx][y0:y1, x0:x1].reshape(-1, 4).sum(0) + 1.0) / \
+                    (donor[twin][y0:y1, x0:x1].reshape(-1, 4).sum(0) + 1.0)
+            new = donor[idx].astype(float)
+            new[y0:y1, x0:x1] = src[y0:y1, x0:x1] * ratio
+            sheet = np.clip(new, 0, 255)
+            print('   image %d: image %d\'s repaint x %s (dim)' % (idx, twin, np.round(ratio, 3)))
+        else:
+            sheet = np.asarray(sheets[idx]).astype(float)
+        # alpha 0 in the plate is the background's; keep the image's own alpha where it is
+        out[y:y + img.shape[0], x:x + img.shape[1]] = sheet.astype(np.int16)
+    return Image.fromarray(np.clip(out, 0, 255).astype('uint8'), 'RGBA')
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('key')
     ap.add_argument('--write', action='store_true')
     a = ap.parse_args(argv)
     setup(a.key)
+    every = ports_h2.get(a.key, 'hud_plate').get('all_images')
 
     donor = donor_images()
     other = [np.asarray(Image.open(p).convert('RGBA')).astype(np.int16)
              for p in export(OTHER, os.path.join(TEMP, '_other_'))]
     print('%d image(s) in the donor plate' % len(donor))
 
-    sheets = []
+    sheets, boxes = [], []
     for idx, img in enumerate(donor):
         box = (weapon_box(img, other[idx])
                if idx < len(other) and other[idx].shape == img.shape else None)
@@ -251,16 +322,20 @@ def main(argv=None):
         # differ in more than the weapon and is not one
         if not box or (box[1] - box[0]) > img.shape[1] * 0.8:
             box = FALLBACK_BOX
+        if every and boxes:
+            box = boxes[0]       # Bungie draws the symbol in the same place on every image
         mask = port_mask(box[1] - box[0], box[3] - box[2])
         sheets.append(Image.fromarray(
             np.clip(repaint(img, box, mask), 0, 255).astype('uint8'), 'RGBA'))
+        boxes.append(box)
         print('   image %d: weapon box x %d..%d y %d..%d' % ((idx,) + box))
 
     # ONLY the first image. Stacking all four into one colour plate makes tool import a
     # single 206x152 bitmap, because a multi-image interface bitmap is split by separator
     # colours this does not write -- and the widget asks for sequence 0 at every screen
-    # size anyway, so the other three were never drawn.
-    sheet = sheets[0]
+    # size anyway, so the other three were never drawn. A dual-wield plate (all_images)
+    # is written into the donor's own colour plate instead, separators and all
+    sheet = all_images(donor, sheets, boxes, every) if every else sheets[0]
     data = os.path.join(H2EK, 'data', REL)
     os.makedirs(data, exist_ok=True)
     tif = os.path.join(data, NAME + '.tif')
@@ -287,12 +362,18 @@ def main(argv=None):
         # a BR-shaped HUD names its plate TWICE (weapon_background_single seq 0 and
         # weapon_background_out seq 1 -- the AR, 2026-10-20; the SAW's GPMG HUD once): every
         # copy moves, and on the one-image plate each widget's sequence index becomes 0
-        h2_tagref.set_reference(hud, 'bitm', DONOR, PORT,
-                                every=have.count(('bitm', DONOR)) > 1)
+        n = have.count(('bitm', DONOR))
+        try:
+            h2_tagref.set_reference(hud, 'bitm', DONOR, PORT, every=n > 1)
+        except ValueError:
+            # every=True refuses when another record has the path's length (the SMG's plate,
+            # named x4 -- the Spike Rifle): one copy at a time
+            for _k in range(n):
+                h2_tagref.set_reference(hud, 'bitm', DONOR, PORT, nth=0)
     import h2_port_scope
     import h2_tagfield
     for idx, _name, ref, seq in h2_port_scope.widgets(hud):
-        if ref == PORT and any(seq):
+        if ref == PORT and any(seq) and not every:
             for field in ('fullscreen', 'halfscreen', 'quarterscreen'):
                 h2_tagfield.set_field(hud, field + ' sequence index', 0, 'bitmap widgets', idx)
 
