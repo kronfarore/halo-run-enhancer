@@ -6,7 +6,8 @@ key of that section:
 
     kind            'h4_dump' (an H4 render-model XML dump onto the donor's skeleton, h4_rm.load)
                     or 'h3' (a Halo 3 render model on its OWN skeleton -- h3_convert; the AR
-                    pilot, 2026-10-20). A Reach reader is wave B's pilot's to add
+                    pilot, 2026-10-20) or 'h1' (a Halo 1 gbxmodel on its OWN skeleton -- h1_convert;
+                    the Flamethrower, S1). A Reach reader is wave B's pilot's to add
     dump            the source dump
     data_dir        data\<data_dir>\render\<world>.jms, \<fp>\render\<fp>.jms
     world, fp       the world / first-person model names
@@ -225,6 +226,139 @@ def h3_convert(g, rel, world):
     return out
 
 
+def h1_convert(g, rel, world):
+    """kind 'h1' (the Flamethrower, S1, 2026-10-21): a Halo 1 gbxmodel (HCEEK) as a Halo 2 JMS on
+    its OWN skeleton. Halo 1's FP arms ARE Halo 2's masterchief (H2_PORT_PLAN 0.4), so the port keeps
+    its source's weapon nodes (the flamethrower's gun, ammo, cover) and Halo 1's own FP animations
+    drive them (h2_port_fp_anims.py kind 'h1').
+
+    Conventions: Halo 1 stores the INVERSE rotation (fp_render), so a node's Halo 3-convention local
+    rotation is the conjugate; then exactly h3_convert's rule (bind composed into model space x100,
+    w <= 0). Vertices are model space (x100), UVs x the gbxmodel's base map scale (0 = 1) with
+    v = 1 - v, triangles a strip (-1 padded; odd triangles flipped). Markers: the permutation's local
+    markers, or the model's marker block (first instance), node-relative, rotation conjugated.
+    The highest LOD (superhigh) of every region / permutation.
+
+    Section keys: world_gbx / fp_gbx (HCEEK gbxmodel paths without extension), node_names {H1 name:
+    H2 JMS name} (default: the H1 name, 'frame x'), materials {H1 shader basename or
+    'basename#permutation' (a counter's digits): H2 material, None = dropped}, root_identity (bool:
+    the root's bind rotation dropped and the vertices re-expressed in its frame -- markers are
+    node-relative already), plus h3_convert's world_permutation /
+    world_region / permutation / region / markers / muzzle_drop / ground_point."""
+    import port_env  # noqa: F401
+    import h3_rm_to_jms as H3
+    from reclaimer.hek.defs.mod2 import mod2_def
+    hceek = os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'HCEEK', 'tags')
+    d = mod2_def.build(filepath=os.path.join(hceek, rel + '.gbxmodel')).data.tagdata
+    names = g.get('node_names', {})
+    nodes = []
+    for n in d.nodes.STEPTREE:
+        rot = (-n.rotation.i, -n.rotation.j, -n.rotation.k, n.rotation.w)      # conjugate
+        if n.parent_node < 0 and g.get('root_identity'):
+            rot = (0.0, 0.0, 0.0, 1.0)
+        nodes.append({'name': n.name, 'parent': n.parent_node,
+                      'rot': rot, 'pos': (n.translation.x, n.translation.y, n.translation.z)})
+    out = h2_jms.Model()
+    for i, n in enumerate(nodes):
+        q, p = H3._world(nodes, i)
+        if q[3] > 0:
+            q = tuple(-c for c in q)
+        out.nodes.append(h2_jms.Node(names.get(n['name'], n['name']), n['parent'], q,
+                                     tuple(c * UNITS for c in p)))
+    # root_identity: the root's bind rotation dropped and the vertices RE-EXPRESSED in its frame (the
+    # Flamethrower's world model stores them tilted with its root; its markers are root-relative)
+    inv_root = None
+    if g.get('root_identity'):
+        n0 = d.nodes.STEPTREE[0]
+        inv_root = (n0.rotation.i, n0.rotation.j, n0.rotation.k, n0.rotation.w)   # conj of the H3 rot
+    us = d.base_map_u_scale or 1.0
+    vs = d.base_map_v_scale or 1.0
+    mats, mat_index, src_mat = [], {}, {}
+    for k, s in enumerate(d.shaders.STEPTREE):
+        base = s.shader.filepath.rsplit('\\', 1)[-1]
+        # a Halo 1 counter names one shader per digit, told apart by its permutation (0 = ones)
+        key = '%s#%d' % (base, s.permutation_index)
+        name = g['materials'][key] if key in g['materials'] else g['materials'].get(base)
+        if name is None:
+            continue
+        if name not in mat_index:
+            mat_index[name] = len(mats)
+            perm = g.get('world_permutation' if world else 'permutation', 'standard')
+            region = g.get('regions', {}).get(name) or g.get('world_region' if world else 'region',
+                                                             'standard')
+            mats.append(h2_jms.Material(name, '(%d) %s %s' % (len(mats) + 1, perm, region)))
+        src_mat[k] = mat_index[name]
+    out.materials = mats
+    geoms = sorted({p.superhigh_geometry_block for r in d.regions.STEPTREE for p in r.permutations.STEPTREE})
+    for gi in geoms:
+        for part in d.geometries.STEPTREE[gi].parts.STEPTREE:
+            if part.shader_index not in src_mat:
+                continue
+            local = list(part.local_nodes)[:part.local_node_count] if part.flags.ZONER else None
+            base = len(out.verts)
+            for v in part.uncompressed_vertices.STEPTREE:
+                infl = []
+                for ni, w in ((v.node_0_index, v.node_0_weight), (v.node_1_index, v.node_1_weight)):
+                    if ni >= 0 and w > 0:
+                        infl.append((local[ni] if local else ni, w))
+                infl = sorted(infl, key=lambda t: -t[1]) or [(0, 1.0)]
+                tot = sum(w for _n, w in infl)
+                pos, nrm = (v.position_x, v.position_y, v.position_z), (v.normal_i, v.normal_j, v.normal_k)
+                if inv_root is not None:
+                    pos, nrm = H3._qrot(inv_root, pos), H3._qrot(inv_root, nrm)
+                out.verts.append(h2_jms.Vertex(
+                    tuple(c * UNITS for c in pos), nrm,
+                    [(n, w / tot) for n, w in infl], [(v.u * us, 1.0 - v.v * vs)]))
+            strip = []
+            for t in part.triangles.STEPTREE:
+                strip.extend((t.v0_index, t.v1_index, t.v2_index))
+            strip = [i for i in strip if i >= 0]
+            for k in range(len(strip) - 2):
+                a, b, c = strip[k], strip[k + 1], strip[k + 2]
+                if a == b or b == c or a == c:
+                    continue
+                if k % 2:
+                    a, b = b, a
+                out.tris.append((src_mat[part.shader_index], (base + a, base + b, base + c)))
+    if len(out.tris) < g.get('min_tris', 200):
+        raise SystemExit('only %d triangles from %s' % (len(out.tris), rel))
+    raw = []
+    for r in d.regions.STEPTREE:
+        for p in r.permutations.STEPTREE:
+            raw += [(m.name, m.node_index, m.translation, m.rotation) for m in p.local_markers.STEPTREE]
+    for m in d.markers.STEPTREE:
+        if m.marker_instances.STEPTREE:
+            i = m.marker_instances.STEPTREE[0]
+            raw.append((m.name, i.node_index, i.translation, i.rotation))
+    seen = set()
+    for name, node, t, r in raw:
+        nm = g.get('markers', {}).get(name)
+        if nm is None or name in seen:
+            continue
+        seen.add(name)
+        pos = (t.x, t.y, t.z)
+        rot = (-r.i, -r.j, -r.k, r.w)
+        pos = [c * UNITS for c in pos]
+        if nm in ('primary_trigger', 'primary trigger'):
+            pos[2] -= g.get('muzzle_drop', 0.0)
+        out.markers.append(h2_jms.Marker(nm, node, rot, pos, -1.0))
+    gp = g.get('ground_point')
+    if world and gp:
+        xs = [v.pos[0] for v in out.verts]
+        ys = [v.pos[1] for v in out.verts]
+        zs = [v.pos[2] for v in out.verts]
+        out.markers.append(h2_jms.Marker('ground point', 0, tuple(gp['rot']),
+                                         ((min(xs) + max(xs)) / 2.0, min(ys),
+                                          (min(zs) + max(zs)) / 2.0), -1.0))
+    return out
+
+
+def h1_jobs(g):
+    base = os.path.join(H2EK, 'data', g['data_dir'])
+    return [('world', g['world_gbx'], os.path.join(base, 'render', g['world'] + '.jms'), True),
+            ('fp', g['fp_gbx'], os.path.join(base, g['fp'], 'render', g['fp'] + '.jms'), False)]
+
+
 def h3_jobs(g):
     base = os.path.join(H2EK, 'data', g['data_dir'])
     return [('world', g['world_rm'], os.path.join(base, 'render', g['world'] + '.jms'), True),
@@ -234,10 +368,11 @@ def h3_jobs(g):
 def h3_main(key, g, rest):
     opts = dict((a[2:].split('=', 1) + [''])[:2] for a in rest if a.startswith('--'))
     only = set(filter(None, opts.get('only', '').split(',')))
-    for label, rel, out_path, world in h3_jobs(g):
+    h1 = g.get('kind') == 'h1'
+    for label, rel, out_path, world in (h1_jobs(g) if h1 else h3_jobs(g)):
         if only and label not in only:
             continue
-        jm = h3_convert(g, rel, world)
+        jm = (h1_convert if h1 else h3_convert)(g, rel, world)
         h2_jms.write(out_path, jm)
         xs = [v.pos[0] for v in jm.verts]
         zs = [v.pos[2] for v in jm.verts]
@@ -285,7 +420,7 @@ def main(argv=None):
     geo = Geo(g)
     args = [a for a in rest if not a.startswith('--')]
     opts = dict((a[2:].split('=', 1) + [''])[:2] for a in rest if a.startswith('--'))
-    if g.get('kind') == 'h3':
+    if g.get('kind') in ('h3', 'h1'):
         return h3_main(key, g, rest)
     if g.get('kind') != 'h4_dump':
         raise SystemExit('geometry kind %r has no reader yet -- the wave pilot adds it here'

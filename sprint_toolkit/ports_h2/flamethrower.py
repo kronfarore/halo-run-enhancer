@@ -14,6 +14,12 @@ AR; the DERVISH has no Halo 1 source (Elite hands: 4 digits) -- the arm chain is
 fingers are not (re-pose the hand, or the SAW route: a donor's H2 dervish graph retimed).
 """
 
+FT = r'objects\weapons\support_low\flamethrower'       # the port's folder (H2EK)
+SMG = r'objects\weapons\rifle\smg'                       # the donor (H2EK)
+FX = r'effects\objects\weapons\support_low\flamethrower'  # the reserved effects folder
+H1FT = r'weapons\flamethrower'                           # the source's folder (HCEEK)
+H2EK = r'F:\SteamLibrary\steamapps\common\H2EK'
+
 PORT = {
     'order': 22,
     'wave': 'S1',
@@ -71,6 +77,40 @@ PORT = {
     'firing_profile': {'from_game': 'Halo 1', 'from_weapon': r'weapons\flamethrower\flamethrower',
                        'note': 'no ai\\generic source: a Halo 2 stand-in, decided in session',
                        'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties'},
+    # step 1 -- h2_port_geometry.py kind 'h1': the Halo 1 gbxmodels on their OWN skeleton (gun / ammo /
+    # cover in first person) -- Halo 1's own FP animations drive them (H2_PORT_PLAN 0.4: Halo 1's FP
+    # arms ARE Halo 2's masterchief; the reader checked on the cyborg arms: 37/37 nodes = Bungie's
+    # fp_arms.jms to 3e-6). Halo 1's world root carries a ~55 deg bind rotation over model-space
+    # vertices: dropped (root_identity), as Halo 2's world weapons sit on an identity `frame gun`
+    'geometry': {
+        'kind': 'h1',
+        'world_gbx': r'weapons\flamethrower\flamethrower',
+        'fp_gbx': r'weapons\flamethrower\fp\fp',
+        'data_dir': FT,
+        'world': 'flamethrower', 'fp': 'fp_flamethrower',
+        'root_identity': True,
+        # Halo 1 shader basename (#permutation for the counter's digits: 0 ones, 1 tens, 2 hundreds)
+        # -> Halo 2 material. The counter on the BR's digit shaders (tens / ones, Bungie's `=?`
+        # symbols; the AR's route): Halo 2 has no hundreds digit -- dropped (100 reads 00)
+        'materials': {'ft gun': 'flamethrower', 'ft ammo': 'flamethrower_ammo',
+                      'ft screen': 'flamethrower_screen', 'ft heat_display': 'flamethrower_heat_display',
+                      'ft numbers#1': 'flamethrower_tens=?', 'ft numbers#0': 'flamethrower_ones=?',
+                      'ft numbers#2': None,
+                      'ft_numbers#1': 'flamethrower_tens=?', 'ft_numbers#0': 'flamethrower_ones=?',
+                      'ft_numbers#2': None},
+        'node_names': {},                    # Halo 1 names them `frame gun` / `frame ammo` / `frame cover`
+        'world_permutation': 'base', 'world_region': 'gun',      # the BR's .model's variants
+        'markers': {'primary trigger': 'primary_trigger', 'left hand': 'left_hand',
+                    'defoliant spawn': 'muzzle_flash',
+                    # first person: Halo 1 spawns the flame at `spawn fire`, its pilot light at `pilot`
+                    'spawn fire': 'primary_trigger', 'pilot': 'pilot', 'flashlight': 'flashlight',
+                    'steam vent01': 'steam_vent', 'steam vent02': 'steam_vent'},
+        'muzzle_drop': 0.0,
+        'ground_point': {'rot': (0.7071068883, -1.8e-09, -7.42e-08, -0.7071067095)},   # the SMG's
+        'min_tris': 200,
+        'render': ['flamethrower', r'flamethrower\fp_flamethrower'],
+    },
+
     'test': {'level': '05a_deltaapproach', 'dervish_level': '06b_floodzone'},
     'residency': {'levels': 'all', 'placements': False},
 }
