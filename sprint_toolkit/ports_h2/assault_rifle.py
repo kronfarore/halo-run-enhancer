@@ -21,11 +21,11 @@ PORT = {
     'wave': 'A1',
     'name': 'Assault Rifle',
     'source': 'Halo 3',
-    'status': 'rework',      # 2026-10-21: the pickup icon above U+E3FF (the Spike Rifle's boot-1 finding)
+    'status': 'done',
     'source_tag': 'objects\\weapons\\rifle\\assault_rifle\\assault_rifle',
     'reservations': {
         'message_prefix': 'ar2',
-        'glyph': 0xE13E,
+        'glyph': 0xE53E,           # was 0xE13E (rework: above U+E3FF so Halo 2 tints it)
         'weapon_dir': 'objects\\weapons\\rifle\\assault_rifle',
         'effects_dir': 'effects\\objects\\weapons\\rifle\\assault_rifle',
         'fp_graph': 'weapons\\rifle\\fp_assault_rifle\\fp_assault_rifle',
@@ -319,21 +319,28 @@ PORT = {
         'size': (8, 8),
     },
 
-    # step 8 -- the pickup icon at U+E13E, the messages (smg_* -> ar2_*: a SHORTER prefix than the
-    # donor's, h2_stringid -- the first in game)
+    # step 8 -- the pickup icon at U+E53E (was U+E13E), the messages (smg_* -> ar2_*: a SHORTER
+    # prefix than the donor's, h2_stringid -- the first in game)
+    # REWORK 2026-10-21 (the Spike Rifle's boot 1; user: 'move above U+E3FF'): halo2.dll draws
+    # U+E112-E12B and everything outside U+E000-E3FF in the line's colour (HUD blue / Arbiter
+    # violet) and forces every other E000-E3FF glyph WHITE at x0.72 -- why this icon looked white
+    # (boot 1 below) and stayed blue on the Arbiter. Now U+E53E, drawn WHITE like Bungie's at
+    # 0.72 of 160x62 (the same on-screen size); the colours below stay as the history of boots 1-3
     'glyph': {
-        'box': (160, 62),
+        'box': (115, 45),
         'model_3p': H3_RM_XML,
         'tif': 'assault_rifle_h2_glyph.tif',
         # Halo 2's HUD blue (user, boot 1: 'the pickup icon is white, the H2 icons are blue'),
         # sampled from the classic HUD in the user's 03b screenshot (meter ticks / ammo digits)
-        'colour': (110, 171, 233),
+        'colour': (255, 255, 255),       # rework (was the HUD blue 110,171,233)
         # boot 2 (user: 'missing the fine lines every vanilla weapon has', the BR's icon beside it):
         # Halo 2's look -- translucent body (dithered), outline + the mesh's feature lines in the
         # BR icon's line colour (sampled: 134,202,255); h2_port_glyph.h2_style
         # the body SOLID (boot 3: the dithered body sheared in game), a darker blue = the BR icon's
         # body as it reads over the level (sampled 4.png ~ 80..96,112,144)
-        'style': {'line': (134, 202, 255), 'body': (72, 118, 172)},
+        # (was 'style': {'line': (134, 202, 255), 'body': (72, 118, 172)})
+        # rework: white, the renderer tints it; the two tones kept as luminance (body/line ~0.6)
+        'style': {'line': (255, 255, 255), 'body': (153, 153, 153)},
     },
     'messages': {
         'donor_prefix': 'smg', 'donor_icon': '&smg',
