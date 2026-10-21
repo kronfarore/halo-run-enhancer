@@ -35,7 +35,7 @@ PROFILE_FILE = os.path.join(HERE, 'ai_firing_profiles.json')
 GAME = 'Halo 2'
 
 #: enemy type (the enhancer's names) -> character folders it covers. Bosses, Hunters (built-in
-#: gun), Sentinels / Drones (built-in weapons) and the story characters are left out.
+#: gun), Sentinel enforcers / constructors and the story characters are left out.
 ENEMY_CHARS = {
     'Grunt': ('grunt', 'heretic_grunt'),
     'Jackal': ('jackal',),
@@ -43,6 +43,10 @@ ENEMY_CHARS = {
     'Brute': ('brute',),
     'Flood Combat Form': ('floodcombat_elite', 'floodcombat_human'),
     'Bugger': ('bugger',),                       # Drones: hand-held weapons in Halo 2
+    # Sentinel AGGRESSORS (+ major / eliminator): a biped with no unit weapons, its beam
+    # handed by the squad; its graph is 'any' in every mode, so no teach (user 2026-10-21:
+    # as Halo 1's Sentinels). The enforcer is a vehicle with mounted guns: not carded.
+    'Sentinel': ('sentinel_aggressor',),
     'Marine': ('marine',),                       # the Ally (Friend) twin
 }
 NEVER = ('brute_tartarus', 'heretic_leader', 'heretic_leader_hologram', 'marine_johnson_boss',

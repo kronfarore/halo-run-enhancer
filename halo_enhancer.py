@@ -3956,7 +3956,9 @@ class ModifierDatabase:
     # Halo 2 (h2_enemy_weapons.ENEMY_CHARS): Drones ('Bugger') hold hand weapons there and
     # carried + fired the SAW in the port's Armed test 4 (07a); Hunters, Sentinels and the
     # bosses keep their built-in guns
-    H2_ARMED_ENEMIES = ('Grunt', 'Jackal', 'Elite', 'Brute', 'Bugger', 'Flood Combat Form')
+    # Sentinel: the aggressor biped (user, 2026-10-21, as Halo 1); not the enforcer vehicle
+    H2_ARMED_ENEMIES = ('Grunt', 'Jackal', 'Elite', 'Brute', 'Bugger', 'Flood Combat Form',
+                        'Sentinel')
     ARMED_ENEMIES = {'Halo 1': H1_ARMED_ENEMIES, 'Halo 2': H2_ARMED_ENEMIES}
     #: game -> (cards option, every-weapon option)
     ARMED_OPTIONS = {'Halo 1': ('h1_enemy_weapon_cards', 'h1_armed_all_weapons'),
