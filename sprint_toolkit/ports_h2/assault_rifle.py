@@ -21,7 +21,7 @@ PORT = {
     'wave': 'A1',
     'name': 'Assault Rifle',
     'source': 'Halo 3',
-    'status': 'done',
+    'status': 'rework',      # 2026-10-21: the pickup icon above U+E3FF (the Spike Rifle's boot-1 finding)
     'source_tag': 'objects\\weapons\\rifle\\assault_rifle\\assault_rifle',
     'reservations': {
         'message_prefix': 'ar2',
