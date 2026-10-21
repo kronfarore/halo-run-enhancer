@@ -317,7 +317,12 @@ has only 'Halo 1'; `ai_firing_profile.py` writes Halo 1 actor variants only). Sp
   Jackal own entries scaled from their own plasma pistol). WDM: default the source's (SAW 0.75),
   BALANCED x BALANCED_BASELINE Halo 2 damage 0.84 (0.63). Two-handed = not pistol, not dual-wield.
 - **Tests**: 1-3 on 03a, 4-5 on 07a (Brutes + Drones; start squads replaced) -- PASSED 2026-10-21.
-  Flee test: 03a, own squads (`--no-replace`), PASSED 2026-10-21. Hand-off sent to the enhancer session. Armed-test rules: start squads replaced,
+  Flee test: 03a, own squads (`--no-replace`), PASSED 2026-10-21. Hand-off sent to the enhancer session.
+- **Enhancer side DONE** (the enhancer session, 5681e97 + 22a815f, 2026-10-21): Halo 2 Armed cards
+  (Grunt, Jackal, Elite, Brute, Bugger, Flood Combat Form + Marine Ally), eligibility =
+  h2_enemy_weapons.eligible_weapons(), apply_run gate after the skulls, Options -> Halo 2
+  h2_enemy_weapon_cards (on) / h2_armed_all_weapons (off); the exe bundles ai_firing_profiles.json.
+  Tested there in memory on 03a; not yet booted through the enhancer itself. Armed-test rules: start squads replaced,
   cheat Carbine x1000 + run x2, god shield, balanced (memory h2-armed-test-rules).
 - **Enhancer**: cards + patch-pass call + options = the enhancer session's; spec in
   `sprint_toolkit/H2_ARMED_HANDOFF.md`, handed over once the user confirms everything works.
