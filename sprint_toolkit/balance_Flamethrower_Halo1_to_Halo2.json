@@ -1,0 +1,916 @@
+{
+ "ported": "Flamethrower",
+ "source": "Halo 1",
+ "target": "Halo 2",
+ "donor": "Plasma Rifle",
+ "hops": [
+  [
+   "Plasma Rifle",
+   "Plasma Rifle",
+   "Halo 1",
+   "Halo 2"
+  ]
+ ],
+ "rows": [
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Angle",
+   "dst_field": "Magnetism Angle",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 1,
+   "dst_index": 0,
+   "ported_src": 3.999999969014533,
+   "donor_dst": 9.000000250447817,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Magnetism Angle",
+     "value_from": 12.000000333930423,
+     "field_to": "Magnetism Angle",
+     "value_to": 9.000000250447817
+    }
+   ],
+   "donor_src": 12.000000333930423,
+   "original": 3.999999969014533,
+   "ratio": 0.75,
+   "balanced": 2.9999999767608996
+  },
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Range",
+   "dst_field": "Magnetism Range",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 1,
+   "dst_index": 0,
+   "ported_src": 20.0,
+   "donor_dst": 18.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Magnetism Range",
+     "value_from": 25.0,
+     "field_to": "Magnetism Range",
+     "value_to": 18.0
+    }
+   ],
+   "donor_src": 25.0,
+   "original": 20.0,
+   "ratio": 0.72,
+   "balanced": 14.399999999999999
+  },
+  {
+   "card": "Autoaim",
+   "field": "Autoaim Angle",
+   "dst_field": "Autoaim Angle",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 1.5000000417413029,
+   "donor_dst": 6.000000166965211,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Autoaim Angle",
+     "value_from": 4.99999985454646,
+     "field_to": "Autoaim Angle",
+     "value_to": 6.000000166965211
+    }
+   ],
+   "donor_src": 4.99999985454646,
+   "original": 1.5000000417413029,
+   "ratio": 1.2000000683018939,
+   "balanced": 1.8000001525424072
+  },
+  {
+   "card": "Autoaim",
+   "field": "Autoaim Range",
+   "dst_field": "Autoaim Range",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 16.0,
+   "donor_dst": 12.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Autoaim Range",
+     "value_from": 25.0,
+     "field_to": "Autoaim Range",
+     "value_to": 12.0
+    }
+   ],
+   "donor_src": 25.0,
+   "original": 16.0,
+   "ratio": 0.48,
+   "balanced": 7.68
+  },
+  {
+   "card": "Firing Noise",
+   "field": "Firing Noise",
+   "dst_field": "Firing Noise",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 0,
+   "dst_index": "all",
+   "ported_src": 3,
+   "donor_dst": 2,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Firing Noise",
+     "value_from": 2,
+     "field_to": "Firing Noise",
+     "value_to": 2
+    }
+   ],
+   "donor_src": 2,
+   "original": 3.0,
+   "ratio": 1.0,
+   "balanced": 3.0
+  },
+  {
+   "card": "Firing Noise",
+   "field": "Impact Noise",
+   "dst_field": "Impact Noise",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": null,
+   "donor_dst": null,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Impact Noise",
+     "value_from": null,
+     "field_to": "Impact Noise",
+     "value_to": null
+    }
+   ],
+   "donor_src": null
+  },
+  {
+   "card": "Firing Noise",
+   "field": "Detonation Noise",
+   "dst_field": "Detonation Noise",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": null,
+   "donor_dst": null,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Detonation Noise",
+     "value_from": null,
+     "field_to": "Detonation Noise",
+     "value_to": null
+    }
+   ],
+   "donor_src": null
+  },
+  {
+   "card": "Flame Damage",
+   "field": "Damage Lower Bound",
+   "note": "Plasma Rifle has no Damage Lower Bound target in Halo 1"
+  },
+  {
+   "card": "Flame Damage",
+   "field": "Damage Upper Bound",
+   "note": "Plasma Rifle has no Damage Upper Bound target in Halo 1"
+  },
+  {
+   "card": "Flame Damage",
+   "field": "Damage Upper Bound Max",
+   "note": "Plasma Rifle has no Damage Upper Bound Max target in Halo 1"
+  },
+  {
+   "card": "Burn Duration",
+   "field": "Timer Max",
+   "note": "Plasma Rifle has no Timer Max target in Halo 1"
+  },
+  {
+   "card": "Projectile Range",
+   "field": "Maximum Range",
+   "dst_field": "Maximum Range",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 16.0,
+   "donor_dst": 40.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Maximum Range",
+     "value_from": 0.0,
+     "field_to": "Maximum Range",
+     "value_to": 40.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 16.0,
+   "ratio": null,
+   "balanced": 16.0
+  },
+  {
+   "card": "Projectile Range",
+   "field": "Air Damage Range",
+   "dst_field": "Air Damage Range",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 100.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Air Damage Range",
+     "value_from": 20.0,
+     "field_to": "Air Damage Range",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 20.0,
+   "original": 100.0,
+   "ratio": 0.0,
+   "balanced": 0.0
+  },
+  {
+   "card": "Projectile Range",
+   "field": "Air Damage Range Max",
+   "dst_field": "Air Damage Range Max",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 100.0,
+   "donor_dst": 40.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Air Damage Range Max",
+     "value_from": 50.0,
+     "field_to": "Air Damage Range Max",
+     "value_to": 40.0
+    }
+   ],
+   "donor_src": 50.0,
+   "original": 100.0,
+   "ratio": 0.8,
+   "balanced": 80.0
+  },
+  {
+   "card": "Projectile Range",
+   "field": "Water Damage Range",
+   "dst_field": "Water Damage Range",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 100.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Water Damage Range",
+     "value_from": 20.0,
+     "field_to": "Water Damage Range",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 20.0,
+   "original": 100.0,
+   "ratio": 0.0,
+   "balanced": 0.0
+  },
+  {
+   "card": "Projectile Range",
+   "field": "Water Damage Range Max",
+   "dst_field": "Water Damage Range Max",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 100.0,
+   "donor_dst": 10.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Water Damage Range Max",
+     "value_from": 50.0,
+     "field_to": "Water Damage Range Max",
+     "value_to": 10.0
+    }
+   ],
+   "donor_src": 50.0,
+   "original": 100.0,
+   "ratio": 0.2,
+   "balanced": 20.0
+  },
+  {
+   "card": "Projectile Velocity",
+   "field": "Initial Velocity",
+   "dst_field": "Initial Velocity",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.12000000476837158,
+   "donor_dst": 14.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Initial Velocity",
+     "value_from": 1.6666667461395264,
+     "field_to": "Initial Velocity",
+     "value_to": 14.0
+    }
+   ],
+   "donor_src": 1.6666667461395264,
+   "original": 3.6000001430511475,
+   "ratio": 8.399999599456807,
+   "balanced": 1.0079999919891363
+  },
+  {
+   "card": "Projectile Velocity",
+   "field": "Final Velocity",
+   "dst_field": "Final Velocity",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 14.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Final Velocity",
+     "value_from": 0.8333333730697632,
+     "field_to": "Final Velocity",
+     "value_to": 14.0
+    }
+   ],
+   "donor_src": 0.8333333730697632,
+   "original": 0.0,
+   "ratio": 16.799999198913614,
+   "balanced": 0.0
+  },
+  {
+   "card": "Projectile Velocity",
+   "field": "Minimum Velocity",
+   "dst_field": "Minimum Velocity",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Minimum Velocity",
+     "value_from": 0.0,
+     "field_to": "Minimum Velocity",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Salvo Shooting",
+   "field": "Rounds Per Second",
+   "dst_field": "Rounds Per Second",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 12.0,
+   "donor_dst": 6.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Rounds Per Second",
+     "value_from": 7.0,
+     "field_to": "Rounds Per Second",
+     "value_to": 6.0
+    }
+   ],
+   "donor_src": 7.0,
+   "original": 12.0,
+   "ratio": 0.8571428571428571,
+   "balanced": 10.285714285714285
+  },
+  {
+   "card": "Salvo Shooting",
+   "field": "Rounds Per Second Max",
+   "dst_field": "Rounds Per Second Max",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 12.0,
+   "donor_dst": 9.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Rounds Per Second Max",
+     "value_from": 10.0,
+     "field_to": "Rounds Per Second Max",
+     "value_to": 9.0
+    }
+   ],
+   "donor_src": 10.0,
+   "original": 12.0,
+   "ratio": 0.9,
+   "balanced": 10.8
+  },
+  {
+   "card": "Projectiles Per Shot",
+   "field": "Projectiles Per Shot",
+   "dst_field": "Projectiles Per Shot",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 2,
+   "donor_dst": 1,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Projectiles Per Shot",
+     "value_from": 1,
+     "field_to": "Projectiles Per Shot",
+     "value_to": 1
+    }
+   ],
+   "donor_src": 1,
+   "original": 2.0,
+   "ratio": 1.0,
+   "balanced": 2.0
+  },
+  {
+   "card": "Projectiles Per Shot",
+   "field": "Rounds Per Shot",
+   "dst_field": "Rounds Per Shot",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 2,
+   "donor_dst": 0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Rounds Per Shot",
+     "value_from": 0,
+     "field_to": "Rounds Per Shot",
+     "value_to": 0
+    }
+   ],
+   "donor_src": 0,
+   "original": 2.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Heat Per Round",
+   "field": "Heat Generated Per Round",
+   "dst_field": "Heat Generated Per Round",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.07199999690055847,
+   "donor_dst": 0.15000000596046448,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Heat Generated Per Round",
+     "value_from": 0.07999999821186066,
+     "field_to": "Heat Generated Per Round",
+     "value_to": 0.15000000596046448
+    }
+   ],
+   "donor_src": 0.07999999821186066,
+   "original": 0.07199999690055847,
+   "ratio": 1.8750001164153245,
+   "balanced": 0.13500000257045014
+  },
+  {
+   "card": "Zoom",
+   "field": "Magnification Levels",
+   "dst_field": "Magnification Levels",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0,
+   "donor_dst": 0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Magnification Levels",
+     "value_from": 0,
+     "field_to": "Magnification Levels",
+     "value_to": 0
+    }
+   ],
+   "donor_src": 0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Zoom",
+   "field": "Magnification Range",
+   "dst_field": "Magnification Range",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Magnification Range",
+     "value_from": 0.0,
+     "field_to": "Magnification Range",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Zoom",
+   "field": "Magnification Range Max",
+   "dst_field": "Magnification Range Max",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Magnification Range Max",
+     "value_from": 0.0,
+     "field_to": "Magnification Range Max",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Weapon Swap Speed",
+   "field": "Ready / Put Away Animation",
+   "dst_field": "Ready / Put Away Animation",
+   "dst_block": null,
+   "dst_class": "jmad",
+   "dst_tag": "*fp_plasma_rifle*",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": null,
+   "donor_dst": null,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Ready / Put Away Animation",
+     "value_from": null,
+     "field_to": "Ready / Put Away Animation",
+     "value_to": null
+    }
+   ],
+   "donor_src": null
+  },
+  {
+   "card": "Melee Damage",
+   "field": "Damage Lower Bound",
+   "dst_field": "Damage Lower Bound",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\damage_effects\\strike_melee",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 60.0,
+   "donor_dst": 20.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Damage Lower Bound",
+     "value_from": 40.0,
+     "field_to": "Damage Lower Bound",
+     "value_to": 20.0
+    }
+   ],
+   "donor_src": 40.0,
+   "original": 60.0,
+   "ratio": 0.5,
+   "balanced": 30.0
+  },
+  {
+   "card": "Melee Damage",
+   "field": "Damage Upper Bound",
+   "dst_field": "Damage Upper Bound",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\damage_effects\\strike_melee",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 70.0,
+   "donor_dst": 60.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Damage Upper Bound",
+     "value_from": 50.0,
+     "field_to": "Damage Upper Bound",
+     "value_to": 60.0
+    }
+   ],
+   "donor_src": 50.0,
+   "original": 70.0,
+   "ratio": 1.2,
+   "balanced": 84.0
+  },
+  {
+   "card": "Melee Damage",
+   "field": "Damage Upper Bound Max",
+   "dst_field": "Damage Upper Bound Max",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\damage_effects\\strike_melee",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 80.0,
+   "donor_dst": 60.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Damage Upper Bound Max",
+     "value_from": 60.0,
+     "field_to": "Damage Upper Bound Max",
+     "value_to": 60.0
+    }
+   ],
+   "donor_src": 60.0,
+   "original": 80.0,
+   "ratio": 1.0,
+   "balanced": 80.0
+  },
+  {
+   "card": "Heat Threshold",
+   "field": "Heat Recovery Threshold",
+   "dst_field": "Heat Recovery Threshold",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.30000001192092896,
+   "donor_dst": 0.10000000149011612,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Heat Recovery Threshold",
+     "value_from": 0.25,
+     "field_to": "Heat Recovery Threshold",
+     "value_to": 0.10000000149011612
+    }
+   ],
+   "donor_src": 0.25,
+   "original": 0.30000001192092896,
+   "ratio": 0.4000000059604645,
+   "balanced": 0.120000006556511
+  },
+  {
+   "card": "Heat Loss",
+   "field": "Heat Loss Per Second",
+   "dst_field": "Heat Loss Per Second",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.4399999976158142,
+   "donor_dst": 0.8525000214576721,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Heat Loss Per Second",
+     "value_from": 0.30000001192092896,
+     "field_to": "Heat Loss Per Second",
+     "value_to": 0.8525000214576721
+    }
+   ],
+   "donor_src": 0.30000001192092896,
+   "original": 0.4399999976158142,
+   "ratio": 2.841666625274554,
+   "balanced": 1.2503333083457426
+  },
+  {
+   "card": "Error Angle",
+   "field": "Minimum Error",
+   "dst_field": "Minimum Error",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 1,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Minimum Error",
+     "value_from": 0.0,
+     "field_to": "Minimum Error",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Error Angle",
+   "field": "Error Angle",
+   "dst_field": "Error Angle",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 1,
+   "dst_index": 0,
+   "ported_src": 1.9999999845072665,
+   "donor_dst": 0.2499999980634083,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Error Angle",
+     "value_from": 0.2499999980634083,
+     "field_to": "Error Angle",
+     "value_to": 0.2499999980634083
+    }
+   ],
+   "donor_src": 0.2499999980634083,
+   "original": 1.9999999845072665,
+   "ratio": 1.0,
+   "balanced": 1.9999999845072665
+  },
+  {
+   "card": "Error Angle",
+   "field": "Error Angle Max",
+   "dst_field": "Error Angle Max",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+   "dst_nth": 1,
+   "dst_index": 0,
+   "ported_src": 7.999999938029066,
+   "donor_dst": 0.7500000208706514,
+   "legs": [
+    {
+     "donor": "Plasma Rifle",
+     "frm": "Halo 1",
+     "to": "Halo 2",
+     "field_from": "Error Angle Max",
+     "value_from": 2.49999992727323,
+     "field_to": "Error Angle Max",
+     "value_to": 0.7500000208706514
+    }
+   ],
+   "donor_src": 2.49999992727323,
+   "original": 7.999999938029066,
+   "ratio": 0.30000001707547347,
+   "balanced": 2.4000001180125063
+  },
+  {
+   "card": "Ammo Inventory",
+   "field": "Rounds Total Initial",
+   "note": "Plasma Rifle has no Rounds Total Initial target in Halo 1"
+  },
+  {
+   "card": "Ammo Inventory",
+   "field": "Rounds Total Maximum",
+   "note": "Plasma Rifle has no Rounds Total Maximum target in Halo 1"
+  },
+  {
+   "card": "Ammo Loaded",
+   "field": "Rounds Loaded Maximum",
+   "note": "Plasma Rifle has no Rounds Loaded Maximum target in Halo 1"
+  },
+  {
+   "card": "Ammo Loaded",
+   "field": "Rounds Reloaded",
+   "note": "Plasma Rifle has no Rounds Reloaded target in Halo 1"
+  },
+  {
+   "card": "Reload Time",
+   "field": "Reload Animation",
+   "note": "Plasma Rifle has no Reload Animation target in Halo 1"
+  }
+ ]
+}

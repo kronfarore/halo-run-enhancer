@@ -9472,6 +9472,256 @@
     }
    ],
    "fp_animations": "objects\\characters\\*\\fp\\weapons\\rifle\\fp_spike_rifle\\fp_spike_rifle"
+  },
+  {
+   "weapon": "Flamethrower",
+   "source": "Halo 1",
+   "donor": "Plasma Rifle",
+   "default_on": true,
+   "desc": "Flamethrower carried from Halo 1 into Halo 2 with its own model, textures, sounds and its own Halo 1 first-person animations (the Arbiter's re-posed), balanced through the Plasma Rifle.",
+   "balance": [
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 3.0,
+     "card": "Magnetism",
+     "original": 3.999999969014533,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 14.4,
+     "card": "Magnetism",
+     "original": 20.0,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 1.8,
+     "card": "Autoaim",
+     "original": 1.5000000417413029
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 7.68,
+     "card": "Autoaim",
+     "original": 16.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Firing Noise",
+     "block": "Barrels",
+     "value": 3.0,
+     "card": "Firing Noise",
+     "original": 3.0,
+     "index": "all"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\projectiles\\flame",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 16.0,
+     "card": "Projectile Range",
+     "original": 16.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\projectiles\\flame",
+     "field": "Air Damage Range",
+     "block": null,
+     "value": 100.0,
+     "card": "Projectile Range",
+     "original": 100.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\projectiles\\flame",
+     "field": "Air Damage Range Max",
+     "block": null,
+     "value": 100.0,
+     "card": "Projectile Range",
+     "original": 100.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\projectiles\\flame",
+     "field": "Water Damage Range",
+     "block": null,
+     "value": 100.0,
+     "card": "Projectile Range",
+     "original": 100.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\projectiles\\flame",
+     "field": "Water Damage Range Max",
+     "block": null,
+     "value": 100.0,
+     "card": "Projectile Range",
+     "original": 100.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\projectiles\\flame",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 1.008,
+     "card": "Projectile Velocity",
+     "original": 3.6000001430511475
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\projectiles\\flame",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 0.0,
+     "card": "Projectile Velocity",
+     "original": 0.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\projectiles\\flame",
+     "field": "Minimum Velocity",
+     "block": null,
+     "value": 0,
+     "card": "Projectile Velocity",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Rounds Per Second",
+     "block": "Barrels",
+     "value": 10.285714,
+     "card": "Salvo Shooting",
+     "original": 12.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Rounds Per Second Max",
+     "block": "Barrels",
+     "value": 10.8,
+     "card": "Salvo Shooting",
+     "original": 12.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Projectiles Per Shot",
+     "block": "Barrels",
+     "value": 2.0,
+     "card": "Projectiles Per Shot",
+     "original": 2.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Rounds Per Shot",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Projectiles Per Shot",
+     "original": 2.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Heat Generated Per Round",
+     "block": "Barrels",
+     "value": 0.135,
+     "card": "Heat Per Round",
+     "original": 0.07199999690055847
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Magnification Levels",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Magnification Range",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Magnification Range Max",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Heat Recovery Threshold",
+     "block": null,
+     "value": 0.12,
+     "card": "Heat Threshold",
+     "original": 0.30000001192092896
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Heat Loss Per Second",
+     "block": null,
+     "value": 1.250333,
+     "card": "Heat Loss",
+     "original": 0.4399999976158142
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Minimum Error",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Error Angle",
+     "original": 0.0,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Error Angle",
+     "block": "Barrels",
+     "value": 2.0,
+     "card": "Error Angle",
+     "original": 1.9999999845072665,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Error Angle Max",
+     "block": "Barrels",
+     "value": 2.4,
+     "card": "Error Angle",
+     "original": 7.999999938029066,
+     "nth": 1
+    }
+   ],
+   "fp_animations": "objects\\characters\\*\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower"
   }
  ],
  "Halo 3: ODST": [

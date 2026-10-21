@@ -271,9 +271,11 @@ PORT = {
             # the ERROR ramp (nth 1, A1's 4b lesson): Halo 1's 0 / 0 -> the full cone at once
             (FT + r'\flamethrower.weapon', 'acceleration time', 'barrels', 0, 1, 0.0),
             (FT + r'\flamethrower.weapon', 'deceleration time', 'barrels', 0, 1, 0.0),
-            # the live cone (nth 1): H1 0 / 2-8 deg x the PR's (0.25/0.5, 0.75/5.0) -> 0 / 1.0-1.2
+            # the live cone (nth 1): H1 0 / 2-8 deg x the PR's (0.25/0.25, 0.75/2.5) -> 0 / 2.0-2.4.
+            # The Halo 1 PR's cone is read from MCC's MAP (0.25-2.5 deg, balance_port / the catalog):
+            # the HCEEK tag says 0.5-5, and the 4a table (h2_ft_ttk_4a, HCEEK) gave 1.0-1.2 from it
             (FT + r'\flamethrower.weapon', 'minimum error', 'barrels', 0, 1, 0.0),
-            (FT + r'\flamethrower.weapon', 'error angle', 'barrels', 0, 1, [1.0, 1.2]),
+            (FT + r'\flamethrower.weapon', 'error angle', 'barrels', 0, 1, [2.0, 2.4]),
             # no barrel climb, no tracers (Halo 1's flame)
             (FT + r'\flamethrower.weapon', 'angle change per shot', 'barrels', 0, 0, [0.0, 0.0]),
             (FT + r'\flamethrower.weapon', 'rounds between tracers', 'barrels', 0, 0, 0),
@@ -531,6 +533,27 @@ PORT = {
         },
     },
 
-    'test': {'level': '05a_deltaapproach', 'dervish_level': '06b_floodzone'},
+    # make_port_catalog_h2.py flamethrower: the Plasma Rifle table's rows (balance_port.py Flamethrower
+    # "Halo 1" "Halo 2" --hop "Plasma Rifle:Halo 1>Halo 2") onto the port's own weapon / flame / damage;
+    # melee rows dropped (strike_melee is every weapon's); the air damage range kept at Halo 1's no-
+    # falloff 100 (the PR's 20-50 -> 0-40 ratio would add a falloff Halo 1's flame never had)
+    'catalog': {
+        'table': 'balance_Flamethrower_Halo1_to_Halo2.json',
+        'weapon_tag': FT + r'\flamethrower',
+        'port_tags': [(('weap', r'objects\weapons\rifle\plasma_rifle\plasma_rifle'), FT + r'\flamethrower'),
+                      (('proj', r'objects\weapons\rifle\plasma_rifle\projectiles\plasma_rifle_bolt'),
+                       FT + r'\projectiles\flame'),
+                      (('jpt!', r'objects\weapons\rifle\plasma_rifle\damage_effects\plasma_rifle_bolt'),
+                       FT + r'\damage_effects\flame')],
+        'shared': [('jpt!', r'objects\weapons\damage_effects\strike_melee')],
+        'value_overrides': {'Air Damage Range': 100.0, 'Air Damage Range Max': 100.0,
+                            'Water Damage Range': 100.0, 'Water Damage Range Max': 100.0},
+        'fp_animations': r'objects\characters\*\fp\weapons\support_low\fp_flamethrower\fp_flamethrower',
+        'reload_mult': None,
+        'desc': ('%s carried from %s into Halo 2 with its own model, textures, sounds and its own '
+                 'Halo 1 first-person animations (the Arbiter\'s re-posed), balanced through the Plasma Rifle.'),
+    },
+
+    'test': {'level': '05a_deltaapproach', 'dervish_level': '06b_floodzone', 'rounds': (100, 300)},
     'residency': {'levels': 'all', 'placements': False},
 }
