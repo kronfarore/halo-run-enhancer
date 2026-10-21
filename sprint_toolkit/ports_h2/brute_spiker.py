@@ -193,6 +193,153 @@ PORT = {
                    (r'effects\bitmaps\weapons_fire\*, smoke_warthog_gun', "the SMG's own weapon bitmaps")],
     },
 
+    # step 4 -- h2_port_numbers.py: Halo 3's OWN values (DEFAULT; the balanced rows are the
+    # catalog's, step 4a's SMG table). h3_weapon_values.py rifle\spike_rifle\spike_rifle
+    'numbers': {
+        'numbers': [
+            # flags'': the SMG's, 'can be dual wielded' KEPT (Halo 3's Spiker is dual-wieldable)
+            (SR + r'\spike_rifle.weapon', 'autoaim angle', '', 0, 0, 5.0),
+            (SR + r'\spike_rifle.weapon', 'autoaim range', '', 0, 0, 12.0),
+            (SR + r'\spike_rifle.weapon', 'magnetism angle', '', 0, 1, 12.0),
+            (SR + r'\spike_rifle.weapon', 'magnetism range', '', 0, 1, 18.0),
+            (SR + r'\spike_rifle.weapon', 'rounds loaded maximum', 'magazines', 0, 0, 40),
+            (SR + r'\spike_rifle.weapon', 'rounds reloaded', 'magazines', 0, 0, 40),
+            (SR + r'\spike_rifle.weapon', 'rounds total initial', 'magazines', 0, 0, 120),
+            (SR + r'\spike_rifle.weapon', 'rounds total maximum', 'magazines', 0, 0, 160),
+            (SR + r'\spike_rifle.weapon', 'rounds per second', 'barrels', 0, 0, [8.0, 8.0]),
+            # Halo 2's barrel: nth 0 = the rate ramp, nth 1 = the ERROR ramp, nth 2 = the
+            # DUAL-weapon error ramp, nth 3 = the barrel climb (the AR's 4b audit). Halo 3's
+            # Spiker: rate ramp 1 / 0.2 (moot at a flat 8), bloom ramp 1 / 0.2
+            (SR + r'\spike_rifle.weapon', 'acceleration time', 'barrels', 0, 0, 1.0),
+            (SR + r'\spike_rifle.weapon', 'deceleration time', 'barrels', 0, 0, 0.2),
+            (SR + r'\spike_rifle.weapon', 'acceleration time', 'barrels', 0, 1, 1.0),
+            (SR + r'\spike_rifle.weapon', 'deceleration time', 'barrels', 0, 1, 0.2),
+            # single-wield spread (nth 1) and the DUAL error (nth 0, Halo 3's dual weapon error)
+            (SR + r'\spike_rifle.weapon', 'minimum error', 'barrels', 0, 1, 0.0),
+            (SR + r'\spike_rifle.weapon', 'error angle', 'barrels', 0, 1, [0.5, 1.25]),
+            (SR + r'\spike_rifle.weapon', 'minimum error', 'barrels', 0, 0, 0.25),
+            (SR + r'\spike_rifle.weapon', 'error angle', 'barrels', 0, 0, [0.75, 1.5]),
+            (SR + r'\spike_rifle.weapon', 'dual wield damage scale', 'barrels', 0, 0, 0.8),
+            # Halo 3's Spiker has no barrel climb (the SMG's 0..0.7 'late')
+            (SR + r'\spike_rifle.weapon', 'angle change per shot', 'barrels', 0, 0, [0.0, 0.0]),
+            # the slow ARCING spike (user, 4a: gravity 0.2 AND minimum velocity 12, Halo 3's own)
+            (SR + r'\projectiles\spike_rifle_spike.projectile', 'initial velocity', '', 0, 0, 25.0),
+            (SR + r'\projectiles\spike_rifle_spike.projectile', 'final velocity', '', 0, 0, 17.5),
+            (SR + r'\projectiles\spike_rifle_spike.projectile', 'minimum velocity', '', 0, 0, 12.0),
+            (SR + r'\projectiles\spike_rifle_spike.projectile', 'air gravity scale', '', 0, 0, 0.2),
+            (SR + r'\projectiles\spike_rifle_spike.projectile', 'maximum range', '', 0, 0, 70.0),
+            (SR + r'\projectiles\spike_rifle_spike.projectile', 'air damage range', '', 0, 0, [0.0, 60.0]),
+            (SR + r'\projectiles\spike_rifle_spike.projectile', 'water damage range', '', 0, 0, [0.0, 10.0]),
+            (SR + r'\damage_effects\spike_rifle_spike.damage_effect', 'damage upper bound', '', 0, 0, [9.0, 9.0]),
+            (SR + r'\damage_effects\spike_rifle_spike.damage_effect', 'instantaneous acceleration', '', 0, 0, 0.125),
+            # the BLADE (user, 4a): own melee, Halo 3's cut_melee 72 flat (strike_melee 70 / H2 20-60)
+            (SR + r'\damage_effects\spike_rifle_melee.damage_effect', 'damage lower bound', '', 0, 0, 72.0),
+            (SR + r'\damage_effects\spike_rifle_melee.damage_effect', 'damage upper bound', '', 0, 0, [72.0, 72.0]),
+            # first-person placement: the AR's (Halo 3's own animations still need Halo 2's offset,
+            # A1 observation 4) -- check in game
+            (SR + r'\spike_rifle.weapon', 'first person weapon offset', '', 0, 0, [-0.01, 0.0, -0.03]),
+        ] + [
+            # step 4b (port_field_audit.py --port h2:brute_spiker, list 2: the ratio H3 Spiker /
+            # H3 SMG x the H2 SMG). The audit names Halo 3's DUAL error ramp (Spiker 0 / 0, SMG
+            # 1.1 / 0.3) by name only; Halo 2's dual ramp is nth 2 -> 0 / 0
+            (SR + r'\spike_rifle.weapon', 'bounding radius', '', 0, 0, 0.163636),
+            (SR + r'\spike_rifle.weapon', 'bounding offset', '', 0, 0, [0.075, 0.0, 0.0]),
+            (SR + r'\spike_rifle.weapon', 'acceleration scale', '', 0, 0, 0.657895),
+            (SR + r'\spike_rifle.weapon', 'rounds between tracers', 'barrels', 0, 0, 0),
+            (SR + r'\spike_rifle.weapon', 'acceleration time', 'barrels', 0, 2, 0.0),
+            (SR + r'\spike_rifle.weapon', 'deceleration time', 'barrels', 0, 2, 0.0),
+            (SR + r'\projectiles\spike_rifle_spike.projectile', 'water gravity scale', '', 0, 0, 0.4),
+            (SR + r'\projectiles\spike_rifle_spike.projectile', 'bounding radius', '', 0, 0, 0.5),
+            # Halo 3's spike: `oriented along velocity` (Halo 2's bit 0, the needler shard's; H3's
+            # bit 18 has no Halo 2 name), the timer starts WHEN AT REST, 1 s (a stuck spike goes)
+            (SR + r'\projectiles\spike_rifle_spike.projectile', 'flags', '', 0, 1, 1),
+            (SR + r'\projectiles\spike_rifle_spike.projectile', 'detonation timer starts', '', 0, 0, 2),
+            (SR + r'\projectiles\spike_rifle_spike.projectile', 'timer', '', 0, 0, [1.0, 1.0]),
+            (SR + r'\projectiles\spike_rifle_spike.projectile', 'acceleration range', '', 0, 0, [0.0, 6.0]),
+        ] + [
+            # THE RICOCHET: the material responses BY MATERIAL NAME (the audit pairs them by index;
+            # Halo 3 has 16, the SMG clone 10). Halo 2's enum = Halo 3's (0 impact, 1 fizzle,
+            # 2 overpenetrate, 4 bounce); nth 0 the default response, nth 1 the potential one
+            (SR + r'\projectiles\spike_rifle_spike.projectile', f, 'material responses', i, nth, v)
+            for i, rows in (
+                # 0 default_material = H3 default_material: impact, never bounces (chance 0)
+                (0, [('response', 1, 4), ('between', 0, [0.0, 30.0]), ('and', 0, [20.0, 30.0])]),
+                # 1 liquid_thin, 2 liquid_thick: already Halo 3's (overpenetrate 0.5 / 5, 0.75 / 2.5)
+                # 3 hard_metal_thick = H3: impact, bounce at 0-60 deg, 20-30 wu/s, chance 1
+                (3, [('response', 0, 0), ('response', 1, 4), ('chance fraction', 0, 1.0),
+                     ('between', 0, [0.0, 60.0]), ('and', 0, [20.0, 30.0])]),
+                # 4 hard_metal_solid = H3: fizzle, bounce chance 1
+                (4, [('response', 1, 4), ('chance fraction', 0, 1.0),
+                     ('between', 0, [0.0, 60.0]), ('and', 0, [20.0, 30.0])]),
+                # 5 hard_floodflesh: Halo 3 has none (falls to default) -- Halo 2's fizzle kept
+                # 6 hard_terrain = H3: impact, bounce chance 1
+                (6, [('response', 0, 0), ('response', 1, 4), ('chance fraction', 0, 1.0),
+                     ('between', 0, [0.0, 60.0]), ('and', 0, [20.0, 30.0])]),
+                # 7 brittle_glass = H3: fizzle (the SMG overpenetrates 5)
+                (7, [('response', 0, 1), ('response', 1, 4), ('maximum distance', 0, 0.0),
+                     ('between', 0, [0.0, 60.0]), ('and', 0, [20.0, 30.0])]),
+                # 8 energy_shield_thick = H3: fizzle, bounce chance 0
+                (8, [('response', 1, 4), ('between', 0, [0.0, 30.0]), ('and', 0, [20.0, 30.0])]),
+                # 9 soft_organic: Halo 3 none (default: impact) -- the audit's 0 distance
+                (9, [('maximum distance', 0, 0.0)]),
+            )
+            for f, nth, v in rows
+        ] + [
+            # every bouncing response: Halo 3's angular noise 4, friction 0.35 / 0.7
+            (SR + r'\projectiles\spike_rifle_spike.projectile', f, 'material responses', i, 0, v)
+            for i in (0, 3, 4, 6, 7, 8)
+            for f, v in (('angular noise', 4.0), ('parallel friction', 0.35), ('perpendicular friction', 0.7))
+        ],
+        'skipped': [
+            ('reload time', "the magazine's reload time does not drive the player's reload (the SAW, user): "
+                            "the Spiker's own 56-frame animation does"),
+        ],
+    },
+
+    # step 4b -- port_field_audit.py --port brute_spiker: every field NO card covers where the
+    # Halo 3 Spiker differs from the Halo 3 SMG (the yardstick) -- list 2 must say 0 to port
+    'field_audit': {
+        'source_kit': 'H3EK',
+        'source': {'weapon': (SR + r'\spike_rifle.weapon', r'objects\weapons\rifle\smg\smg.weapon'),
+                   'projectile': (SR + r'\projectiles\spike_shard\spike_shard.projectile',
+                                  r'objects\weapons\rifle\smg\projectiles\smg_bullet.projectile'),
+                   'damage_effect': (SR + r'\damage_effects\spike_rifle_spike.damage_effect',
+                                     r'objects\weapons\rifle\smg\damage_effects\smg_bullet.damage_effect')},
+        'target': {'weapon': (SR + r'\spike_rifle.weapon', SMG + r'\smg.weapon'),
+                   'projectile': (SR + r'\projectiles\spike_rifle_spike.projectile',
+                                  SMG + r'\projectiles\smg_bullet.projectile'),
+                   'damage_effect': (SR + r'\damage_effects\spike_rifle_spike.damage_effect',
+                                     SMG + r'\damage_effects\smg_bullet.damage_effect')},
+        # 2026-10-21 (run as --port h2:brute_spiker: the key exists in ports_h1 too, and a bare
+        # key reads Halo 1's). After the numbers' 4b rows, list 2 still prints rows the audit
+        # PAIRS WRONGLY -- every one decided:
+        'decisions': {
+            'barrels minimum error / error angle (list 2)': "the audit pairs Halo 3's SINGLE spread with "
+                "Halo 2's nth 0 = the DUAL error; written: single (nth 1) 0 / 0.5-1.25, dual (nth 0) "
+                "0.25 / 0.75-1.5 (Halo 3's dual weapon error)",
+            'barrels acceleration / deceleration time (list 2)': "Halo 3's DUAL error ramp (Spiker 0 / 0) "
+                "-> Halo 2's dual ramp nth 2 = 0 / 0 (the audit names nth 0, the rate ramp: Halo 3's 1 / 0.2)",
+            'dual wield damage scale': "Halo 3's 0.8 (DEFAULT); the balanced 0.667 is the SMG table's row",
+            'material responses (lists 2 / 4 / 5)': "paired BY MATERIAL NAME, not index (Halo 3 16, the SMG "
+                "clone 10): default_material impact (bounce chance 0), hard_metal_thick / hard_terrain "
+                "impact + BOUNCE chance 1 at 0-60 deg / 20-30 wu/s, hard_metal_solid fizzle + bounce 1, "
+                "brittle_glass fizzle, energy_shield_thick fizzle; angular noise 4, friction 0.35 / 0.7; "
+                "liquid_thin / thick = Halo 3's already; hard_floodflesh (no Halo 3 entry) Halo 2's fizzle; "
+                "soft_organic overpenetrate distance 0 (Halo 3: default = impact)",
+            "projectile flags'": "Halo 3 262145 = bit 0 'oriented along velocity' (Halo 2's bit 0) + bit 18 "
+                "(no Halo 2 name): 1",
+            'detonation timer starts / timer': "Halo 3's 'when at rest', 1 s (Halo 2's enum 2)",
+            'bounding offset': "the source's 0.075, 0, 0 (a 0 on the yardstick: no ratio)",
+            'lightmap shadow mode': "Halo 2's (the SMG's 'default'; an enum)",
+            'damage reporting type': "the SMG's kept (kill feed / medals only)",
+            'active camo ding': "Halo 2's 0 (every H2 automatic carries 0)",
+            'attachments / functions / font icons / ground / fp offset blocks / change colors':
+                'no Halo 2 counterpart (the icon is step 8)',
+            'ZERO-VALUED FIELDS': "h2_tagfield cannot probe a field reading 0: their offsets were found by "
+                "probing a COPY (a byte flip / a float at each offset, tool's export says which field "
+                "moved) and seeded in the per-tag cache; every write still proved by tool (one field)",
+        }},
+
     'firing_profile': {'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\rifle\\spike_rifle\\spike_rifle', 'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
     'test': {'level': '08a_deltacliffs', 'dervish_level': '04b_floodlab'},   # parallel pair 1
     'residency': {'levels': 'all', 'placements': False},
