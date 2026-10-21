@@ -111,6 +111,40 @@ PORT = {
         'render': ['flamethrower', r'flamethrower\fp_flamethrower'],
     },
 
+    # step 2 -- h2_port_textures.py kind 'h1': Halo 1's own maps (HCEEK, h1_decode). Halo 1's
+    # shader_model has NO bump map -> a flat height (Halo 1's look); its multipurpose RED (the
+    # reflection mask) becomes the diffuse's ALPHA, Halo 2's specular mask (Bungie's SMG diffuse
+    # carries one there). Shaders reseeded from Bungie's: the SMG's metals, the shotgun's lit sight
+    # (tex_bump_illum, opaque) for the fuel screen, the Plasma Rifle's HEAT GAUGE as it is
+    # (meter_active_camo: Halo 2's own heat display on Halo 1's heat-display quad), the BR's digits
+    'textures': {
+        'kind': 'h1',
+        'rel': FT + r'\bitmaps',
+        'shaders_dir': FT + r'\shaders',
+        'bitmaps': [(H1FT + r'\bitmaps\flamethrower', 'flamethrower', SMG + r'\bitmaps\smg',
+                     ('alpha_from', H1FT + r'\bitmaps\flamethrower multipurpose', 0), None),
+                    (None, 'flamethrower_bump', SMG + r'\bitmaps\smg_bump', 'flat_bump', (64, 64)),
+                    (H1FT + r'\bitmaps\flamethrower_screen', 'flamethrower_screen',
+                     r'objects\weapons\rifle\shotgun\bitmaps\illum_sights', 'color', None)],
+        'shaders': [
+            ('flamethrower', SMG + r'\shaders\smg_painted_metal',
+             {SMG + r'\bitmaps\smg': FT + r'\bitmaps\flamethrower',
+              SMG + r'\bitmaps\smg_bump': FT + r'\bitmaps\flamethrower_bump',
+              SMG + r'\bitmaps\smg_bump_active_camo': FT + r'\bitmaps\flamethrower_bump'}),
+            ('flamethrower_ammo', SMG + r'\shaders\smg_bare_metal',
+             {SMG + r'\bitmaps\smg': FT + r'\bitmaps\flamethrower',
+              SMG + r'\bitmaps\smg_bump': FT + r'\bitmaps\flamethrower_bump',
+              SMG + r'\bitmaps\smg_bump_active_camo': FT + r'\bitmaps\flamethrower_bump'}),
+            ('flamethrower_screen', r'objects\weapons\rifle\shotgun\shaders\shotgun_light',
+             {r'objects\weapons\rifle\shotgun\bitmaps\illum_sights': FT + r'\bitmaps\flamethrower_screen'}),
+            ('flamethrower_heat_display', r'objects\weapons\rifle\plasma_rifle\shaders\plasma_rifle_gauge', {}),
+            ('flamethrower_tens', r'objects\weapons\rifle\battle_rifle\shaders\tens', {}),
+            ('flamethrower_ones', r'objects\weapons\rifle\battle_rifle\shaders\ones', {}),
+        ],
+        'report_rows': [(FT + r'\bitmaps\flamethrower_bump', 'the port (flat)'),
+                        (SMG + r'\bitmaps\smg_bump', 'Bungie SMG')],
+    },
+
     'test': {'level': '05a_deltaapproach', 'dervish_level': '06b_floodzone'},
     'residency': {'levels': 'all', 'placements': False},
 }

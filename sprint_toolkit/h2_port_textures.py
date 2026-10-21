@@ -6,6 +6,8 @@ SEEDED from a Bungie tag carrying the wanted settings and `tool bitmaps` re-impo
 The config's `textures` section:
 
     kind          'h4' (h4_bitmap decodes the source tags) or 'h3' (h3_main: Halo 3's maps, reseeded shaders)
+                  or 'h1' (h3_main with h1_decode: Halo 1's HCEEK maps; mode 'flat_bump' for its
+                  bump-less shader_model -- the Flamethrower, S1)
     src_dir       the source bitmap tags
     rel           kit-relative folder of the port's bitmaps (data + tags)
     shaders       kit-relative folder of the port's shaders
@@ -128,6 +130,39 @@ def point(tag, cls, old, new, every=False):
     h2_tagref.set_reference(tag, cls, old, new, every=every)
 
 
+def h1_decode(src, index=0):
+    """A Halo 1 bitmap tag (HCEEK, reclaimer) -> (PIL image of bitmap `index`'s top mip, None), the
+    shape h3_hud_art.decode hands back. DXT1/3/5 through PIL's BCn decoder; 32-bit formats are
+    stored B, G, R, A (x8r8g8b8: alpha forced opaque); a8 / y8 / ay8 / a8y8 one or two bytes."""
+    import port_env  # noqa: F401
+    from reclaimer.hek.defs.bitm import bitm_def
+    path = os.path.join(os.path.dirname(H2EK), 'HCEEK', 'tags', src)
+    if not path.endswith('.bitmap'):
+        path += '.bitmap'
+    d = bitm_def.build(filepath=path).data.tagdata
+    b = d.bitmaps.STEPTREE[index]
+    w, h, fmt = b.width, b.height, b.format.enum_name
+    raw = bytes(d.processed_pixel_data.data)[b.pixels_offset:]
+    if fmt in ('dxt1', 'dxt3', 'dxt5'):
+        n = {'dxt1': 1, 'dxt3': 2, 'dxt5': 3}[fmt]
+        size = max(1, (w + 3) // 4) * max(1, (h + 3) // 4) * (8 if n == 1 else 16)
+        img = Image.frombytes('RGBA', (w, h), raw[:size], 'bcn', n)
+    elif fmt in ('a8r8g8b8', 'x8r8g8b8'):
+        a = np.frombuffer(raw[:w * h * 4], np.uint8).reshape(h, w, 4)[:, :, [2, 1, 0, 3]].copy()
+        if fmt == 'x8r8g8b8':
+            a[:, :, 3] = 255
+        img = Image.fromarray(a, 'RGBA')
+    elif fmt in ('a8', 'y8', 'ay8'):
+        g = np.frombuffer(raw[:w * h], np.uint8).reshape(h, w)
+        img = Image.fromarray(np.dstack([g, g, g, g if fmt != 'y8' else np.full_like(g, 255)]), 'RGBA')
+    elif fmt == 'a8y8':
+        a = np.frombuffer(raw[:w * h * 2], np.uint8).reshape(h, w, 2)
+        img = Image.fromarray(np.dstack([a[:, :, 0]] * 3 + [a[:, :, 1]]), 'RGBA')
+    else:
+        raise SystemExit('Halo 1 bitmap format %s (%s) not handled' % (fmt, src))
+    return img, None
+
+
 def h3_main(t, argv):
     """kind 'h3' (the Assault Rifle, wave-A pilot, 2026-10-20): Halo 3's own maps decoded from
     the H3EK tags (h3_hud_art.decode: any format, the top mip), a Halo 3 bump map being a
@@ -137,13 +172,16 @@ def h3_main(t, argv):
 
         bitmaps   [(H3EK bitmap tag, port bitmap name, Bungie seed bitmap tag, 'color' | 'bump' |
                     'bump_snorm' (a signed DXN normal map, the AR's) | 'color_premul' |
-                    ('tint', (r, g, b), dilate px) (a grey illum mask coloured, the Spiker's),
+                    ('tint', (r, g, b), dilate px) (a grey illum mask coloured, the Spiker's) |
+                    ('alpha_from', source, channel) (another map's channel as alpha) | 'flat_bump'
+                    (no source: a flat height),
                     (w, h) or None = the source's size)]
         shaders   [(port shader name, Bungie seed shader tag, {seed bitmap: port bitmap or
                     another tag})] -- a seed bitmap left out of the map stays Bungie's
         rel, shaders_dir, bump_gain, report_rows
     """
     import h3_hud_art
+    decode = h1_decode if t.get('kind') == 'h1' else h3_hud_art.decode
     data = os.path.join(H2EK, 'data', t['rel'])
     tags = os.path.join(H2EK, 'tags', t['rel'])
     os.makedirs(data, exist_ok=True)
@@ -151,7 +189,13 @@ def h3_main(t, argv):
     if '--skip-decode' not in argv:
         print('decoding the Halo 3 maps:')
         for src, name, _seed, mode, size in t['bitmaps']:
-            img, _ = h3_hud_art.decode(src)
+            if mode == 'flat_bump':
+                # a source with NO bump map (Halo 1's shader_model): a flat height, Halo 1's look
+                out = Image.new('RGB', tuple(size or (64, 64)), (128, 128, 128))
+                out.save(os.path.join(data, name + '.tif'), compression=None)
+                print('   %-40s flat height %dx%d -> %s.tif' % ('(none)', out.size[0], out.size[1], name))
+                continue
+            img, _ = decode(src)
             if mode in ('bump', 'bump_snorm'):
                 if mode == 'bump_snorm':
                     # Halo 3's DXN (BC5) normals are SIGNED: decoded as unsigned bytes they sit
@@ -172,6 +216,14 @@ def h3_main(t, argv):
                         ImageFilter.MaxFilter(2 * mode[2] + 1))).astype(np.float32)
                 rgb = np.dstack([g * c for c in mode[1]])
                 out = Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8), 'RGB')
+            elif isinstance(mode, tuple) and mode[0] == 'alpha_from':
+                # ('alpha_from', other source, channel): the colour with ANOTHER map's channel as
+                # its alpha -- Halo 1's multipurpose RED (the reflection mask) as the specular mask
+                # a Halo 2 diffuse carries in alpha (the Flamethrower, S1)
+                other, _ = decode(mode[1])
+                ch = np.asarray(other.convert('RGBA').resize(img.size, Image.LANCZOS))[:, :, mode[2]]
+                rgb = np.asarray(img.convert('RGB'))
+                out = Image.fromarray(np.dstack([rgb, ch]).astype(np.uint8), 'RGBA')
             elif mode == 'color_premul':
                 # for an ADDITIVE shader: colour x alpha, so a transparent texel adds nothing
                 # (the AR's holo display, boot 2: an opaque template drew every layer's square)
@@ -215,7 +267,7 @@ def main(argv=None):
     if not argv or argv[0].startswith('-'):
         raise SystemExit(__doc__)
     t = ports_h2.get(argv[0], 'textures')
-    if t.get('kind') == 'h3':
+    if t.get('kind') in ('h3', 'h1'):
         return h3_main(t, argv)
     if t.get('kind') != 'h4':
         raise SystemExit('textures kind %r has no reader yet -- the wave pilot adds it' % t.get('kind'))
