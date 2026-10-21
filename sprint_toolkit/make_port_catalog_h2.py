@@ -64,6 +64,9 @@ FP_ANIMATIONS = B.join(['objects', 'characters', '*', 'fp', 'weapons', 'rifle',
 #: 58/68 x 50/50 = 0.853. The Halo 3 port arrived at the same multiplier independently.
 RELOAD_MULT = round(109.0 / 128.0, 6)
 WEAPON_TAG = SAW + B + 'saw'
+#: {source field: balanced value} a step-4a decision puts over the table's ratio (the AR,
+#: 2026-10-20: the spread by the SIBLING ratio -- Minimum Error / Error Angle / Error Angle Max)
+OVERRIDES = {}
 DESC = ('%s carried from %s into Halo 2, built on the cut GPMG and balanced through '
         'the Assault Rifle into Halo 3 and the SMG out of it. It owns its own '
         'first-person animations, so its reload can be retimed.')
@@ -71,7 +74,7 @@ DESC = ('%s carried from %s into Halo 2, built on the cut GPMG and balanced thro
 
 def setup(key):
     """Point the module at one ports_h2 config's `catalog` section."""
-    global TABLE, PORT_TAGS, SHARED, FP_ANIMATIONS, RELOAD_MULT, WEAPON_TAG, DESC
+    global TABLE, PORT_TAGS, SHARED, FP_ANIMATIONS, RELOAD_MULT, WEAPON_TAG, DESC, OVERRIDES
     sys.path.insert(0, HERE)
     import ports_h2
     c = ports_h2.get(key, 'catalog')
@@ -80,6 +83,7 @@ def setup(key):
     SHARED = {tuple(x) for x in c.get('shared', ())}
     FP_ANIMATIONS, RELOAD_MULT = c['fp_animations'], c.get('reload_mult')
     WEAPON_TAG, DESC = c['weapon_tag'], c['desc']
+    OVERRIDES = dict(c.get('value_overrides') or {})
 
 
 def main():
@@ -98,6 +102,8 @@ def main():
         if key not in PORT_TAGS:
             dropped.append((r['card'], '%s (no port tag for %s)' % (r['dst_field'], key[1])))
             continue
+        if r['field'] in OVERRIDES:
+            r = dict(r, balanced=OVERRIDES[r['field']])
         row = {'class': key[0], 'tag': PORT_TAGS[key], 'field': r['dst_field'],
                'block': r.get('dst_block'),
                'value': round(float(r['balanced']), 6) if isinstance(r['balanced'], float)

@@ -391,6 +391,23 @@ PORT = {
                        'donor_weapon': r'objects\weapons\rifle\smg\smg'},
     # 03a is the SAW's Armed test level (h2-armed-cards session, staged 2026-10-20 18:08): the
     # AR's Chief test runs on 03b (one test level per session)
+    # make_port_catalog_h2.py assault_rifle: the SMG table's rows (read from the H2 SMG's weapon /
+    # projectile / damage effect) onto the AR's own; the spread by the sibling ratio (4a); melee
+    # rows dropped (strike_melee is every weapon's); reload built = balanced (58 = 58 x 50/50)
+    'catalog': {
+        'table': 'balance_Assault_Rifle_Halo3_to_Halo2.json',
+        'weapon_tag': AR + r'\assault_rifle',
+        'port_tags': [(('weap', SMG + r'\smg'), AR + r'\assault_rifle'),
+                      (('proj', SMG + r'\projectiles\smg_bullet'), AR + r'\projectiles\assault_rifle_bullet'),
+                      (('jpt!', SMG + r'\damage_effects\smg_bullet'), AR + r'\damage_effects\assault_rifle_bullet')],
+        'shared': [('jpt!', r'objects\weapons\damage_effects\strike_melee')],
+        'value_overrides': {'Minimum Error': 0.1, 'Error Angle': 0.1, 'Error Angle Max': 3.0},
+        'fp_animations': r'objects\characters\*\fp\weapons\rifle\fp_assault_rifle\fp_assault_rifle',
+        'reload_mult': None,
+        'desc': ('%s carried from %s into Halo 2 with its own model, textures, sounds and its own '
+                 'Halo 3 first-person animations for both species, balanced through the SMG.'),
+    },
+
     # allies TAKE a weapon only if their 3P graph holds its class/type (user, boot on 04a: the Elite
     # took the AR, the Grunt did not -- the Grunt graph has no `rifle` class, Halo 2's own BR is
     # refused too). User: "teach the Grunt 'rifle'" -> h2_graph_teach.py cloned the Grunt's `pistol`

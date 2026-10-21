@@ -8651,6 +8651,376 @@
    "anims": {
     "reload": 0.851562
    }
+  },
+  {
+   "weapon": "Assault Rifle",
+   "source": "Halo 3",
+   "donor": "SMG",
+   "default_on": true,
+   "desc": "Assault Rifle carried from Halo 3 into Halo 2 with its own model, textures, sounds and its own Halo 3 first-person animations for both species, balanced through the SMG.",
+   "balance": [
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 10.0,
+     "card": "Magnetism",
+     "original": 9.99999970909292,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 20.0,
+     "card": "Magnetism",
+     "original": 20.0,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 6.0,
+     "card": "Autoaim",
+     "original": 4.99999985454646
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 15.0,
+     "card": "Autoaim",
+     "original": 15.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\damage_effects\\assault_rifle_bullet",
+     "field": "Rider Direct Damage Scale",
+     "block": null,
+     "value": 0.75,
+     "card": "Rider Damage",
+     "original": 1.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\damage_effects\\assault_rifle_bullet",
+     "field": "Rider Maximum Transfer Damage Scale",
+     "block": null,
+     "value": 0.75,
+     "card": "Rider Damage",
+     "original": 1.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\damage_effects\\assault_rifle_bullet",
+     "field": "Rider Minimum Transfer Damage Scale",
+     "block": null,
+     "value": 0,
+     "card": "Rider Damage",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Distribution Function",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Distribution Function",
+     "original": 0.0,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Distribution Angle",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Distribution Function",
+     "original": 0.0,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Firing Noise",
+     "block": "Barrels",
+     "value": 2.0,
+     "card": "Firing Noise",
+     "original": 2.0,
+     "index": "all"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 40.0,
+     "card": "Projectile Range",
+     "original": 40.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet",
+     "field": "Air Damage Range",
+     "block": null,
+     "value": 0,
+     "card": "Projectile Range",
+     "original": 0.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet",
+     "field": "Air Damage Range Max",
+     "block": null,
+     "value": 40.0,
+     "card": "Projectile Range",
+     "original": 40.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet",
+     "field": "Water Damage Range",
+     "block": null,
+     "value": 5.0,
+     "card": "Projectile Range",
+     "original": 5.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet",
+     "field": "Water Damage Range Max",
+     "block": null,
+     "value": 10.0,
+     "card": "Projectile Range",
+     "original": 10.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 80.0,
+     "card": "Projectile Velocity",
+     "original": 80.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 80.0,
+     "card": "Projectile Velocity",
+     "original": 80.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet",
+     "field": "Minimum Velocity",
+     "block": null,
+     "value": 0,
+     "card": "Projectile Velocity",
+     "original": 0.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\damage_effects\\assault_rifle_bullet",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 0,
+     "card": "Bullet Damage",
+     "original": 0.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\damage_effects\\assault_rifle_bullet",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 7.125,
+     "card": "Bullet Damage",
+     "original": 7.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\damage_effects\\assault_rifle_bullet",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 7.125,
+     "card": "Bullet Damage",
+     "original": 7.5
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Magnification Levels",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Magnification Range",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Magnification Range Max",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 96.0,
+     "card": "Ammo Inventory",
+     "original": 96.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Rounds Inventory Maximum",
+     "block": "Magazines",
+     "value": 352.0,
+     "card": "Ammo Inventory",
+     "original": 352.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 32.0,
+     "card": "Ammo Loaded",
+     "original": 32.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Rounds Reloaded",
+     "block": "Magazines",
+     "value": 32.0,
+     "card": "Ammo Loaded",
+     "original": 32.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Rounds Per Second",
+     "block": "Barrels",
+     "value": 10.0,
+     "card": "Salvo Shooting",
+     "original": 10.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Rounds Per Second Max",
+     "block": "Barrels",
+     "value": 10.0,
+     "card": "Salvo Shooting",
+     "original": 10.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Shots Per Fire",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Salvo Shooting",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Shots Per Fire Max",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Salvo Shooting",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Fire Recovery Time",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Fire Recovery Time",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Projectiles Per Shot",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Projectiles Per Shot",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Rounds Per Shot",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Projectiles Per Shot",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Minimum Error",
+     "block": "Barrels",
+     "value": 0.1,
+     "card": "Error Angle",
+     "original": 0.09999999922536333,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Error Angle",
+     "block": "Barrels",
+     "value": 0.1,
+     "card": "Error Angle",
+     "original": 0.09999999922536333,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Error Angle Max",
+     "block": "Barrels",
+     "value": 3.0,
+     "card": "Error Angle",
+     "original": 3.0000000834826057,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 384.0,
+     "card": "Magazine",
+     "original": null,
+     "note": "derived from Rounds Inventory Maximum + Rounds Loaded Maximum"
+    }
+   ],
+   "fp_animations": "objects\\characters\\*\\fp\\weapons\\rifle\\fp_assault_rifle\\fp_assault_rifle"
   }
  ],
  "Halo 3: ODST": [
