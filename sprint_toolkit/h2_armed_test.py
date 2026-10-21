@@ -47,13 +47,78 @@ def god_shield(m):
     return out
 
 
-def test_map(map_path, weapon=None, species=(), share=1.0, balanced=True, god=True):
-    """One open + save of a built test map: the Armed pass (if species) and the god shield."""
+#: the base character each enemy type is replaced with for the Armed test (must be in the level's
+#: Character Palette -- a character absent there cannot be added at patch time)
+_C = 'objects' + chr(92) + 'characters' + chr(92)
+BASE_CHAR = {'Grunt': 'grunt', 'Jackal': 'jackal', 'Elite': 'elite', 'Brute': 'brute', 'Bugger': 'bugger',
+             'Flood Combat Form': 'floodcombat_elite', 'Marine': 'marine'}
+PER_SPECIES = 2
+
+
+def replace_start(m, hp, enemies):
+    """THE ARMED TEST LAYOUT (user, 2026-10-21: 'replace enemies to test them all quickly at the
+    start'; memory halo-test-enemy-placement): the enemy squads nearest the first player starting
+    location (on foot: no vehicle) become the tested types, round robin, PER_SPECIES squads each --
+    the squad's character, every location's own character, location variants cleared (a variant
+    is per species). Story characters, bosses, Hunters and Sentinels are never touched."""
+    import math
+    import h2_enemy_weapons as E
+    base = hp._scnr_base(m)
+    ps = m.follow_all(base, [0x100], [0x34], 'all')
+    if not ps:
+        return []
+    p0 = struct.unpack_from('<fff', m.data, ps[0])
+    cp = m.follow_all(base, [0x178], [0x8], 'all')
+    cnames = [(hp._tag_name_by_id(m, m.u32(e + 4)) or '') for e in cp]
+    want = []
+    for e in enemies:
+        path = '%s%s%sai%s%s' % (_C, BASE_CHAR.get(e, '?'), chr(92), chr(92), BASE_CHAR.get(e, '?'))
+        idx = next((i for i, n in enumerate(cnames) if n.lower() == path.lower()), None)
+        want.append((e, idx))
+    usable = [(e, i) for e, i in want if i is not None]
+    cands = []
+    for sq in m.follow_all(base, [0x160], [0x74], 'all'):
+        if struct.unpack_from('<h', m.data, sq + 0x34)[0] >= 0:
+            continue                                        # spawns in a vehicle
+        locs = m.follow_all(sq, [0x48], [0x64], 'all')
+        if not locs:
+            continue
+        chars = [struct.unpack_from('<h', m.data, sq + 0x36)[0]] + \
+            [struct.unpack_from('<h', m.data, l + 0x20)[0] for l in locs]
+        chars = [c for c in chars if c >= 0]
+        if not chars or not all(E.enemy_of(cnames[c]) for c in chars):
+            continue
+        d = min(math.dist(p0, struct.unpack_from('<fff', m.data, l + 4)) for l in locs)
+        cands.append((d, sq, locs))
+    cands.sort(key=lambda x: x[0])
+    rows, k = [], 0
+    for d, sq, locs in cands[:PER_SPECIES * len(usable)]:
+        e, ci = usable[k % len(usable)]
+        k += 1
+        struct.pack_into('<h', m.data, sq + 0x36, ci)
+        for l in locs:
+            if struct.unpack_from('<h', m.data, l + 0x20)[0] >= 0:
+                struct.pack_into('<h', m.data, l + 0x20, ci)
+            struct.pack_into('<I', m.data, l + 0x30, 0)
+        nm = m.data[sq:sq + 0x20].split(b'\0')[0].decode('latin-1')
+        rows.append({'tag': 'scnr squads', 'field': 'Test layout: %s' % nm, 'ok': True,
+                     'reason': '-> %s (%.0f wu from the start, %d locations)' % (e, d, len(locs))})
+    for e, i in want:
+        if i is None:
+            rows.append({'tag': 'scnr squads', 'field': 'Test layout: %s' % e, 'ok': True, 'skip': True,
+                         'reason': 'not in this level\'s character palette'})
+    return rows
+
+
+def test_map(map_path, weapon=None, species=(), share=1.0, balanced=True, god=True, replace=True):
+    """One open + save of a built test map: the Armed pass (if species; the nearest squads first
+    replaced by the tested types unless replace=False) and the god shield."""
     import halo_patch as hp
     m = hp.open_map(map_path, 'Halo 2')
     if getattr(m, 'compressed', False):
         raise SystemExit('%s is compressed -- Halo2Map.save cannot write it' % map_path)
-    res = arm(map_path, weapon, species, share, balanced=balanced, m=m) if species else None
+    res = arm(map_path, weapon, species, share, balanced=balanced, m=m, replace=replace) \
+        if species else None
     if god:
         print('   god shield (player body + shield 1e6, no stun): %s' % (', '.join(god_shield(m)) or 'NO player model found'))
     m.save(map_path)
@@ -61,7 +126,7 @@ def test_map(map_path, weapon=None, species=(), share=1.0, balanced=True, god=Tr
         report(*res)
 
 
-def arm(map_path, weapon, species, share=1.0, out=None, balanced=True, m=None):
+def arm(map_path, weapon, species, share=1.0, out=None, balanced=True, m=None, replace=False):
     """The enhancer's own pass (h2_enemy_weapons.apply: arming, shieldless Jackals, the Grunt
     teach + half rate, Balanced AI rows) with one card per species at `share`. Balanced by
     default: an Armed test runs the balanced numbers (memory h1-armed-test-balanced-god)."""
@@ -86,7 +151,8 @@ def arm(map_path, weapon, species, share=1.0, out=None, balanced=True, m=None):
         raise SystemExit('%s is not in the weapon palette of %s' % (weapon, map_path))
     sys.path.insert(0, HERE)
     import ai_firing_profile as A
-    rows = E.apply(m, hp, {'cards': cards, 'balanced': [weapon] if balanced else []},
+    layout = replace_start(m, hp, list(cards)) if replace else []
+    rows = layout + E.apply(m, hp, {'cards': cards, 'balanced': [weapon] if balanced else []},
                    registry=A._plugins()('Halo 2'), salt=os.path.basename(map_path))
     if own:
         m.save(out or map_path)

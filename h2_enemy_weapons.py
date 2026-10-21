@@ -71,6 +71,13 @@ _G = 'objects' + chr(92) + 'characters' + chr(92)
 TEACH = {'Grunt': (_G + 'grunt' + chr(92) + 'grunt', ('missile', 'pistol')),
          'Jackal': (_G + 'jackal' + chr(92) + 'jackal', ('pistol',)),
          'Bugger': (_G + 'bugger' + chr(92) + 'bugger', ('pistol',))}
+#: THE TYPE TEACH (user, 2026-10-21): a BRUTE holds a two-handed weapon like the Brute Shot. The
+#: Brute graph has the classes (rifle: any / pr / sg; support: any / bs) but its rifle 'any' set
+#: is the one-handed carry, so every mode holding both gets, in the weapon's class, a weapon TYPE
+#: labelled with the weapon's NAME (the type lookup is by weapon name: elite rifle br / csr / sg /
+#: sr) = a copy of the support class's 'any' type -- the whole Brute Shot set (pose, moves, aim,
+#: fire), children shared. A weapon whose name already has a type there (the shotgun's sg) keeps it.
+TEACH_TYPE = {'Brute': (_G + 'brute' + chr(92) + 'brute', 'support', 'any')}
 
 
 def enemy_of(char_path):
@@ -315,6 +322,67 @@ def teach(m, hp, enemy, weapons):
     return rows
 
 
+def teach_type(m, hp, enemy, weapons):
+    """The type teach (TEACH_TYPE) for the two-handed weapons handed to `enemy`."""
+    rows = []
+    gname, dclass, dtype = TEACH_TYPE.get(enemy, (None, None, None))
+    if not gname:
+        return rows
+    t = dict(m.find_tags('jmad', gname)).get(gname)
+    if t is None:
+        return rows
+    want = []
+    for w in weapons:
+        i = weapon_info(m, hp, w)
+        if two_handed(i) and i['class'] not in ('unarmed', 'any', dclass):
+            want.append((i['class_sid'], m.u32(dict(m.find_tags('weap', w))[w] + WEAP_CLASS + 4),
+                         i['name']))
+    if not want:
+        return rows
+    per_class, wl_new, modes_hit = {}, [], 0       # one grow job per class element
+    for md in m.follow_all(t, [JMAD_MODES], [JMAD_MODE_ES], 'all'):
+        cls = {m.u32(c): c for c in m.follow_all(md, [MODE_CLASSES], [CLASS_ES], 'all')}
+        donor_cls = next((c for sid, c in cls.items() if m.resolve_stringid(sid) == dclass), None)
+        if donor_cls is None:
+            continue
+        donor = next((x for x in m.follow_all(donor_cls, [CLASS_TYPES], [TYPE_ES], 'all')
+                      if m.resolve_stringid(m.u32(x)) == dtype), None)
+        if donor is None:
+            continue
+        hit = False
+        for csid, nsid, _n in want:
+            c = cls.get(csid)
+            if c is None:
+                continue
+            if nsid in [m.u32(x) for x in m.follow_all(c, [CLASS_TYPES], [TYPE_ES], 'all')]:
+                continue
+            e = bytearray(m.data[donor:donor + TYPE_ES])
+            struct.pack_into('<I', e, 0, nsid)
+            if bytes(e) not in per_class.setdefault(c, []):
+                per_class[c].append(bytes(e))
+            wl_new.append((nsid, csid))
+            hit = True
+        modes_hit += hit
+    jobs = [(c, CLASS_TYPES, TYPE_ES, els) for c, els in per_class.items()]
+    if not jobs:
+        return rows
+    wl = m.follow_all(t, [JMAD_WEAPON_LIST], [WL_ES], 'all')
+    have = {(m.u32(e), m.u32(e + 4)) for e in wl}
+    wl_add = [struct.pack('<II', a, b) for a, b in sorted(set(wl_new)) if (a, b) not in have]
+    if wl_add:
+        jobs.append((t, JMAD_WEAPON_LIST, WL_ES, wl_add))
+    offs = m.grow_blocks(jobs)
+    for (tb, bo, es, _n), off in zip(jobs, offs):
+        _sorted_block(m, off, m.i32(tb + bo), es,
+                      (lambda b: struct.unpack_from('<II', b, 0)) if bo == JMAD_WEAPON_LIST
+                      else (lambda b: struct.unpack_from('<I', b, 0)[0]))
+    rows.append({'tag': 'jmad ' + gname, 'field': '%s type teach: %s' % (
+        enemy, '/'.join(sorted({n for _c, _s, n in want}))), 'ok': True,
+        'reason': '%d modes: the %s set (%s %s) as the weapon\'s type, weapon list +%d'
+        % (modes_hit, enemy, dclass, dtype, len(wl_add))})
+    return rows
+
+
 def grunt_rates(m, hp, weapons):
     """THE GRUNT HALF RATE (user rule): every Grunt character in the map gets its OWN Firing
     Pattern Properties entry for each two-handed, non-heavy weapon handed to Grunts -- ai\\generic's
@@ -540,6 +608,9 @@ def apply(m, hp, spec, registry=None, salt=None):
     for enemy in sorted(TEACH):
         if done.get(enemy):
             rows += teach(m, hp, enemy, sorted(done[enemy]))
+    for enemy in sorted(TEACH_TYPE):
+        if done.get(enemy):
+            rows += teach_type(m, hp, enemy, sorted(done[enemy]))
     if done.get('Grunt'):
         rows += grunt_rates(m, hp, sorted(done['Grunt']))
     rows += species_skill(m, hp, done)

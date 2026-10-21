@@ -51,6 +51,14 @@ done and committed; the interface is one module call and one spec dict.
      'sort' blocks -- plus the Weapon List pairs tool writes). Donors: Grunt 'missile' (the fuel
      rod's two-handed set) then 'pistol'; Jackal and Drone 'pistol'. Elites and Brutes already
      hold every class. On 07a for a rifle: Grunt 9 modes (flee included), Jackal flee, Drone patrol.
+   - **Brute type teach** (`TEACH_TYPE`, user 2026-10-21: Brutes hold a two-handed weapon like
+     the Brute Shot): the Brute graph has the classes, but its rifle 'any' set is the one-handed
+     carry. Every Brute mode holding both the weapon's class and 'support' gets, in the weapon's
+     class, a weapon TYPE labelled with the weapon's NAME (type lookup is by weapon name) = a copy
+     of support 'any' (the whole Brute Shot set), children shared, sorted; the Weapon List gets
+     (name, class). A name that already has a type (the shotgun's sg) keeps it. NOTE: the SAW's
+     weapon name is still the sniper rifle's 'sr' (a GPMG leftover under rework), so a Brute with
+     a sniper rifle would take the Brute Shot set too until the rework renames it.
    - **Grunt half rate** (the Halo 1 rule): every Grunt character in the map gets its own Firing
      Pattern Properties entry for each two-handed, non-'missile' weapon handed to Grunts =
      ai\generic's patterns at half rate (the pattern's rate, or the barrel's rounds per second
@@ -97,9 +105,17 @@ done and committed; the interface is one module call and one spec dict.
   location variant); fleeing Grunts / Jackals dropped the SAW for a plasma pistol (-> the flee teach).
 - Test 3 (03a): Elites and Grunts good; Jackals in early scripted spawns kept shield + stock
   weapon (-> every unit armed).
-- Test 4 (07a): Brutes and Drones, the flee teach, all units armed -- see H2_PORT_PLAN 0.5b.
+- Test 4 (07a): Brutes and Drones carry and fire it; Brutes should use the Brute Shot set (->
+  the type teach).
+- Test 5 (07a): the Brute type teach; the test layout (below). The flee test: 03b (separate).
 
 ## Test tooling
+
+- **Test layout** (user, 2026-10-21): `h2_port_test_map.py <key> --level L --armed TYPES --stage`
+  first turns the squads nearest the player start (on foot) into the tested types, round robin,
+  2 squads each (squad + location characters; location variants cleared), then runs the Armed
+  pass -- every type at once, no walking through the level. `--no-replace` keeps the level's own.
+  TEST ONLY: the enhancer does not do this.
 
 - **God shield**: h2_port_test_map now sets it on every test (player models masterchief /
   dervish: body + shield 1e6, no stun; `--mortal` turns it off) -- test-map only, not enhancer.
