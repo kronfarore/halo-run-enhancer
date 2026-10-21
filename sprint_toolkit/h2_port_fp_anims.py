@@ -196,6 +196,143 @@ def build(key, species, only=None, write=True):
     return nodes, out
 
 
+def h1_key(name):
+    """A Halo 1 FP node name -> Halo 2's graph name (`frame l wriste` -> l_hand, `frame bone24` ->
+    base; weapon nodes `frame gun` -> gun). Checked on the cyborg arms: 37/37 = Bungie's fp_arms."""
+    s = name.lower().replace('frame ', '')
+    s = s[2:] if s.startswith('b_') else s
+    return s.replace(' ', '_').replace('bone24', 'base').replace('wriste', 'hand').replace('middlelow', 'middle_low')
+
+
+def jms_binds(path):
+    """{graph name: (parent name or None, (q (w,x,y,z), t wu) LOCAL)} of a Halo 2 JMS (model-space
+    binds, JMS rotation convention) -- the parent's inverse taken out."""
+    import h2_jms
+    m = h2_jms.read(path)
+    names = [h1_key(n.name) for n in m.nodes]
+    world = [((n.rot[3], n.rot[0], n.rot[1], n.rot[2]), tuple(c / UNITS for c in n.pos)) for n in m.nodes]
+    out = {}
+    for i, n in enumerate(m.nodes):
+        q, t = world[i]
+        if n.parent < 0:
+            out[names[i]] = (None, (q, t))
+            continue
+        pq, pt = world[n.parent]
+        pi = (pq[0], -pq[1], -pq[2], -pq[3])
+        out[names[i]] = (names[n.parent], (qnorm(qmul(pi, q)),
+                                           qrot(pi, (t[0] - pt[0], t[1] - pt[1], t[2] - pt[2]))))
+    return out, names
+
+
+def h1_frames(antr_rel, anim):
+    """[(H1 node name, parent index)], [[(q (w,x,y,z) Halo 3 convention, t wu)] LOCAL per frame] of
+    one Halo 1 animation, through Reclaimer -- its JMA is the SOURCE form (N + 1 frames: tool drops
+    the last, Halo 1's and Halo 2's rule); Halo 1's stored inverse rotation conjugated."""
+    import port_env  # noqa: F401
+    from reclaimer.hek.defs.antr import antr_def
+    from reclaimer.animation.animation_decompilation import extract_animation
+    path = os.path.join(os.path.dirname(H2EK), 'HCEEK', 'tags', antr_rel + '.model_animations')
+    d = antr_def.build(filepath=path).data.tagdata
+    names = [a.name for a in d.animations.STEPTREE]
+    jma = extract_animation(names.index(anim), d, write_jma=False)
+    nodes = [(n.name, n.parent_index if n.parent_index != i else -1) for i, n in enumerate(jma.nodes)]
+    frames = [[((s.rot_w, -s.rot_i, -s.rot_j, -s.rot_k), (s.pos_x / UNITS, s.pos_y / UNITS, s.pos_z / UNITS))
+               for s in f] for f in jma.frames]
+    return nodes, frames, d.animations.STEPTREE[names.index(anim)].type.enum_name
+
+
+def build_h1(key, species, only=None, write=True):
+    """kind 'h1' (the Flamethrower, S1, 2026-10-21): Halo 1's OWN FP animations as Halo 2 source
+    animations. Halo 1's FP arms ARE Halo 2's masterchief and Halo 1's view is the animation origin,
+    which is where Bungie's own H2 sources keep `b_camera_control` (identity, digsite fp_battle_rifle)
+    -- so each Halo 1 frame composed into model space IS the Halo 2 frame; camera_control is written
+    at identity. Nodes in the H2 arms JMS's order, then the weapon nodes, then camera_control.
+
+    DERVISH (`repose`, the user's pick at step 0): the arm chain is the Chief's (shoulders, upper arm,
+    forearm and wrist lengths equal), so base / arms / hands take the Chief's model-space frames; each
+    Elite FINGER (thumb, index, ring, pinky: no middle) takes the Chief finger's CURL -- its local
+    rotation relative to the Chief's bind -- on the Elite's own bind (local = elite bind x (chief bind^-1
+    x chief local)), translation the Elite's bind.
+
+    Section `fp_anims` (kind 'h1'): antr (HCEEK FP animation tag), map [(H1 animation, H2 name[,
+    {'loop': True} | {'then': H1 animation, 'frames': n} (append frames of another, looped, until n) |
+    {'reverse': True, 'frames': n} (sampled backwards: a put_away from the ready)])], weapon_nodes (H2
+    names), species {name: {'arms' (H2 arms JMS), 'source', 'seed', 'repose'}}, chief_arms (the
+    masterchief JMS: the Chief's bind for the curl)."""
+    cfg = ports_h2.get(key, 'fp_anims')
+    sp = cfg['species'][species]
+    elite, order = jms_binds(sp['arms'])
+    chief, _ = jms_binds(cfg['chief_arms'])
+    weapon_nodes = list(cfg['weapon_nodes'])
+    names_h2 = order + weapon_nodes + ['camera_control']
+    parents = {}
+    src = os.path.join(H2EK, 'data', sp['source'], 'animations')
+    if write and not only and os.path.isdir(src):
+        shutil.rmtree(src)
+    out = []
+    for row in cfg['map']:
+        h1name, h2name = row[:2]
+        opt = row[2] if len(row) > 2 else {}
+        if only and h2name not in only:
+            continue
+        nodes, frames, typ = h1_frames(cfg['antr'], h1name)
+        if opt.get('then'):
+            _n2, more, _t = h1_frames(cfg['antr'], opt['then'])
+            body, k = list(frames[:-1]), 0
+            while len(body) < opt['frames']:
+                body.append(more[k % (len(more) - 1)])
+                k += 1
+            frames = body + [body[-1]]
+        if opt.get('reverse'):
+            n = opt['frames']
+            idx = [round((len(frames) - 1) * (1 - i / float(n - 1))) for i in range(n)]
+            frames = [frames[i] for i in idx] + [frames[idx[-1]]]
+        if opt.get('loop'):
+            frames = frames[:-1] + [frames[0]]
+        keys = [h1_key(n) for n, _p in nodes]
+        h1_nodes = [(n, p) for n, p in nodes]
+        rows = []
+        for f in frames:
+            world = dict(zip(keys, compose(h1_nodes, f)))
+            fr = []
+            for nm in names_h2:
+                if nm == 'camera_control':
+                    fr.append(((1.0, 0.0, 0.0, 0.0), (0.0, 0.0, 0.0)))
+                elif nm in world and (species == 'masterchief' or not sp.get('repose')
+                                      or not _is_finger(nm)):
+                    fr.append(world[nm])
+                else:
+                    # an Elite finger: the Chief's curl on the Elite's bind, under its parent's frame
+                    par, (eq, et) = elite[nm]
+                    cpar, (cq, _ct) = chief[nm]
+                    li = dict(zip(keys, f))[nm][0]
+                    delta = qmul((cq[0], -cq[1], -cq[2], -cq[3]), li)
+                    q = qnorm(qmul(eq, delta))
+                    pq, pt = dict(zip(names_h2, fr))[par]
+                    d = qrot(pq, et)
+                    fr.append((qnorm(qmul(pq, q)), (pt[0] + d[0], pt[1] + d[1], pt[2] + d[2])))
+            rows.append(fr)
+        for nm in names_h2:
+            if nm == 'camera_control':
+                parents[nm] = 0
+            elif nm in elite and species != 'masterchief':
+                parents[nm] = names_h2.index(elite[nm][0]) if elite[nm][0] else -1
+            else:
+                par = dict((h1_key(n), (h1_key(nodes[p][0]) if p >= 0 else None)) for n, p in nodes).get(nm)
+                parents[nm] = names_h2.index(par) if par else -1
+        ext = '.jmo' if typ == 'overlay' else '.jmm'
+        path = os.path.join(src, file_name(h2name, {}) + ext)
+        if write:
+            jnodes = [(nm, parents[nm]) for nm in names_h2]
+            write_jma(path, jnodes, [jma_name(nm, set(weapon_nodes)) for nm in names_h2], rows)
+        out.append((h1name + ' -> ' + h2name, typ, len(frames) - 1, len(rows), os.path.basename(path)))
+    return [(n, parents.get(n, -1)) for n in names_h2], out
+
+
+def _is_finger(nm):
+    return any(f in nm for f in ('thumb', 'index', 'middle', 'ring', 'pinky'))
+
+
 def stage_arms(cfg, species):
     """The character directory tool wants: <source>\\arms\\render\\<arms>.jms (a copy of Bungie's
     own arms JMS, `tool extract-render-data` output)."""
@@ -251,7 +388,8 @@ def main(argv=None):
     want = [argv[argv.index('--species') + 1]] if '--species' in argv else list(cfg['species'])
     only = [argv[argv.index('--only') + 1]] if '--only' in argv else None
     for species in want:
-        nodes, rows = build(key, species, only, write='--write' in argv)
+        nodes, rows = (build_h1 if cfg.get('kind') == 'h1' else build)(key, species, only,
+                                                                      write='--write' in argv)
         print('%s: %d nodes, %d animations%s' % (species, len(nodes), len(rows),
                                                   ' written' if '--write' in argv else ''))
         for h3name, typ, n, m, fn in rows:

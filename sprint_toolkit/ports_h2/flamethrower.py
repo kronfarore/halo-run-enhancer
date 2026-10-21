@@ -296,6 +296,62 @@ PORT = {
         ],
     },
 
+    # step 5 -- h2_port_collision.py: the BATTLE RIFLE's authored hull (the world .model's donor, two
+    # handed) scaled per axis to the flamethrower's render mesh, on the port's own world skeleton
+    'collision': {
+        'donor': r'objects\weapons\rifle\battle_rifle\battle_rifle',
+        'port': FT + r'\flamethrower',
+        'src': r'battle_rifle\collision\battle_rifle_collision.jms',     # under data\!extracted
+        'out': FT + r'\collision\flamethrower.jms',                      # under data
+        'port_render_jms': FT + r'\render\flamethrower.jms',
+        'donor_render_jms': r'battle_rifle\render\battle_rifle_L5.jms',
+        'max_growth': 2.5,                   # the flamethrower is ~2x the BR's length
+        'nodes_from_render': True,
+    },
+
+    # step 9 -- h2_port_fp_anims.py kind 'h1': Halo 1's OWN FP animations (HCEEK weapons\flamethrower\
+    # fp\fp), composed into Halo 2 source animations and imported by `tool fp-model-animations`; the
+    # graphs SEEDED from the Plasma Rifle's (its blend screen, its overheat events / sounds). The
+    # Dervish RE-POSED (user, step 0): the Chief's arm chain, the Elite's fingers with the Chief's curl
+    'fp_anims': {
+        'kind': 'h1',
+        'antr': H1FT + r'\fp\fp',
+        'chief_arms': H2EK + r'\data\!extracted\fp_arms_masterchief\fp_arms.jms',
+        'weapon_nodes': ['gun', 'ammo', 'cover'],
+        # (Halo 1, Halo 2[, opt]). Halo 2's overheat = ONE animation `overheating` (the PR's 89 frames)
+        # + `o_h_exit`: Halo 1's overheating (enter, 10) then its overheated loop to ~the overheat's
+        # length ((1 - 0.12) / 0.513 = 1.7 s = 52 frames). No reload-full / put-away / 2nd melee in
+        # Halo 1: the reload-empty serves both reloads, the melee both strikes, the ready reversed is
+        # the put-away; throw-overheated has no Halo 2 slot (dropped)
+        'map': [('first-person idle', 'first_person:idle', {'loop': True}),
+                ('first-person posing', 'first_person:posing:var1', {'loop': True}),
+                ('first-person ready', 'first_person:ready'),
+                ('first-person ready', 'first_person:put_away', {'reverse': True, 'frames': 6}),
+                ('first-person reload-empty', 'first_person:reload_empty'),
+                ('first-person reload-empty', 'first_person:reload_full'),
+                ('first-person melee', 'first_person:melee_strike_1'),
+                ('first-person melee', 'first_person:melee_strike_2'),
+                ('first-person throw-grenade', 'first_person:throw_grenade'),
+                ('first-person overheating', 'first_person:overheating',
+                 {'then': 'first-person overheated', 'frames': 52}),
+                ('first-person o-h-exit', 'first_person:o_h_exit'),
+                ('first-person moving', 'first_person:moving'),
+                ('first-person overlays', 'first_person:overlays'),
+                ('first-person overlays', 'first_person:pitch_and_turn')],
+        'species': {
+            'masterchief': {
+                'arms': H2EK + r'\data\!extracted\fp_arms_masterchief\fp_arms.jms',
+                'source': r'objects\characters\masterchief\fp\weapons\support_low\fp_flamethrower',
+                'seed': r'objects\characters\masterchief\fp\weapons\rifle\fp_plasma_rifle\fp_plasma_rifle'},
+            'dervish': {
+                'arms': H2EK + r'\data\!extracted\fp_arms_dervish\dervish_fp_arms.jms',
+                'source': r'objects\characters\dervish\fp\weapons\support_low\fp_flamethrower',
+                'seed': r'objects\characters\dervish\fp\weapons\rifle\fp_plasma_rifle\fp_plasma_rifle',
+                'repose': True},
+        },
+        'weapon_dir': FT + r'\fp_flamethrower',
+    },
+
     # step 4b -- port_field_audit.py --port flamethrower: every field NO card covers where Halo 1's
     # flamethrower differs from Halo 1's Plasma Rifle (the yardstick) -- list 2 must say 0 to port
     'field_audit': {
