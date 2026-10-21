@@ -19,6 +19,10 @@ SMG = r'objects\weapons\rifle\smg'                       # the donor (H2EK)
 FX = r'effects\objects\weapons\support_low\flamethrower'  # the reserved effects folder
 H1FT = r'weapons\flamethrower'                           # the source's folder (HCEEK)
 H2EK = r'F:\SteamLibrary\steamapps\common\H2EK'
+NEW_HUD = r'ui\hud\bitmaps\new_hud'
+# the port's own world mesh (step 1's JMS): the silhouette the HUD plate, backpack icon and pickup
+# glyph are drawn from (h3_weapon_glyph.mesh reads a .jms) -- Halo 1 has no Halo 3 render model
+WORLD_JMS = H2EK + r'\data' + '\\' + FT + r'\render\flamethrower.jms'
 
 PORT = {
     'order': 22,
@@ -307,6 +311,72 @@ PORT = {
         'donor_render_jms': r'battle_rifle\render\battle_rifle_L5.jms',
         'max_growth': 2.5,                   # the flamethrower is ~2x the BR's length
         'nodes_from_render': True,
+    },
+
+    # step 7 -- the HUD: a clone of the BATTLE RIFLE's (single, two-handed), the FUEL as 50 ticks (one
+    # a shot = 2 fuel; Halo 2's meter reveals by fraction) on the BR meter's canvas, plate / backpack /
+    # glyph drawn from the flamethrower's OWN world mesh (its H2 JMS: h3_weapon_glyph.mesh reads one),
+    # Halo 1's crosshair (hud_reticles #5) sized by the PLASMA RIFLE ratio (H2 PR #4 ink / H1 PR #4
+    # ink), the scope widgets blanked (no zoom in Halo 1). Heat shows on the gun (the PR's gauge)
+    'meter': {
+        'donor_meter': NEW_HUD + r'\meters\battle_rifle_meter',
+        'rel': NEW_HUD + r'\meters',
+        'name': 'flamethrower_meter',
+        'donor_hud': r'ui\hud\battle_rifle',
+        'port_hud': r'ui\hud\flamethrower',
+        'weapon': FT + r'\flamethrower.weapon',
+        'rounds': 50, 'rows': 2,
+        'canvas': (197, 34), 'tick_w': 6,
+        'backpack': NEW_HUD + r'\backpack_weapons',
+        'backpack_port': NEW_HUD + r'\flamethrower_backpack',
+        'backpack_size': (62, 30),
+        'model_3p': WORLD_JMS,
+        'preview': 'flamethrower_meter_preview.png',
+    },
+    'hud_plate': {
+        'rel': NEW_HUD + r'\backgrounds',
+        'donor': NEW_HUD + r'\backgrounds\battle_rifle_bkd',
+        'other': NEW_HUD + r'\backgrounds\smg_bkd',
+        'name': 'flamethrower_bkd',
+        'hud': r'ui\hud\flamethrower',
+        'model_3p': WORLD_JMS,
+        'fallback_box': (105, 191, 5, 34),
+        'stretch': 1.4,
+    },
+    'reticle': {
+        'rel': NEW_HUD + r'\crosshairs',
+        'donor': NEW_HUD + r'\crosshairs\hud_reticles',
+        'donor_sequence': 4,                 # the Plasma Rifle's fullscreen crosshair (the yardstick)
+        'name': 'flamethrower_reticle',
+        'hud': r'ui\hud\flamethrower',
+        'footprint': 1.0,
+        'h3_art': {'kind': 'h1', 'sheet': r'ui\hud\bitmaps\combined\hud_reticles', 'sequence': 5,
+                   'yardstick': 4},
+        'preview': 'flamethrower_reticle_preview.png',
+    },
+    'scope': {
+        'rel': NEW_HUD + r'\scope_masks',
+        'donor': NEW_HUD + r'\scope_masks\battle_rifle_scope_mask',
+        'name': 'flamethrower_blank',
+        'hud': r'ui\hud\flamethrower.new_hud_definition',
+        'widgets': ('scope_mask', 'left_crosshair', 'right_crosshair', 'bottom_crosshair',
+                    'top_crosshair', '2x', 'distance_meter'),
+        'size': (8, 8),
+    },
+
+    # step 8 -- the pickup icon at U+E153 (Halo 2's look, the AR's: HUD blue, outline + feature lines,
+    # solid body), the messages smg_* -> ft2_*
+    'glyph': {
+        'box': (160, 62),
+        'model_3p': WORLD_JMS,
+        'tif': 'flamethrower_h2_glyph.tif',
+        'colour': (110, 171, 233),
+        'style': {'line': (134, 202, 255), 'body': (72, 118, 172)},
+    },
+    'messages': {
+        'donor_prefix': 'smg', 'donor_icon': '&smg',
+        'donor_name': 'SMG', 'port_name': 'Flamethrower',
+        'weapon': FT + r'\flamethrower.weapon',
     },
 
     # step 9 -- h2_port_fp_anims.py kind 'h1': Halo 1's OWN FP animations (HCEEK weapons\flamethrower\

@@ -14,7 +14,9 @@ The config's `reticle` section:
                                  chud sheet, 'sequence': the port's sprite, 'yardstick': the
                                  sprite of the weapon whose Halo 2 crosshair the donor's is (the
                                  same chud widget scale)} -- sized by the ratio rule: the port's
-                                 sprite x (donor ink / yardstick sprite ink) (h3_compose)
+                                 sprite x (donor ink / yardstick sprite ink) (h3_compose);
+                                 'kind': 'h1' reads a HALO 1 sheet instead (HCEEK, h1_sprite: the
+                                 Flamethrower, S1)
 A Reach source: wave B's pilot adds its art reader. Every crosshair widget naming the port's
 bitmap gets its three sequence indices set to 0 (a one-image bitmap; the SAW's were already 0).
 
@@ -127,6 +129,22 @@ def _ink(img):
     return max(xs.max() - xs.min() + 1, ys.max() - ys.min() + 1)
 
 
+def h1_sprite(sheet, sequence):
+    """(RGBA sprite, registration point px) of a HALO 1 HUD sheet's sequence (HCEEK, Reclaimer;
+    its first sprite) -- the shape h3_hud_art.sprite hands back (the Flamethrower, S1)."""
+    import port_env  # noqa: F401
+    import h2_port_textures
+    from reclaimer.hek.defs.bitm import bitm_def
+    path = os.path.join(os.path.dirname(H2EK), 'HCEEK', 'tags', sheet + '.bitmap')
+    sp = bitm_def.build(filepath=path).data.tagdata.sequences.STEPTREE[sequence].sprites.STEPTREE[0]
+    img, _ = h2_port_textures.h1_decode(sheet, sp.bitmap_index)
+    w, h = img.size
+    box = (int(round(sp.left_side * w)), int(round(sp.top_side * h)),
+           int(round(sp.right_side * w)), int(round(sp.bottom_side * h)))
+    reg = (sp.registration_point_x * w - box[0], sp.registration_point_y * h - box[1])
+    return img.crop(box), reg
+
+
 def h3_compose(donor):
     """A Halo 3 chud sprite (white, the shape in the alpha) at Halo 2's size by the ratio rule,
     in the donor's colour, centred on its registration point."""
@@ -134,8 +152,9 @@ def h3_compose(donor):
     a = np.asarray(donor)
     ink = a[:, :, 3] > 0
     colour = a[:, :, :3][ink].mean(0) if ink.any() else np.array([0, 0, 202.0])
-    art, reg = h3_hud_art.sprite(H3_ART['sheet'], H3_ART['sequence'])
-    yard, _ = h3_hud_art.sprite(H3_ART['sheet'], H3_ART['yardstick'])
+    sprite = h1_sprite if H3_ART.get('kind') == 'h1' else h3_hud_art.sprite
+    art, reg = sprite(H3_ART['sheet'], H3_ART['sequence'])
+    yard, _ = sprite(H3_ART['sheet'], H3_ART['yardstick'])
     k = _ink(donor) / float(_ink(yard))
     if H3_ART.get('target_ink'):
         # an ON-SCREEN size measured in game instead (the AR, boot 2: Halo 3's 72 px at 1080p)
@@ -150,7 +169,7 @@ def h3_compose(donor):
     piece = Image.fromarray(px.astype('uint8'), 'RGBA')
     out.alpha_composite(piece, (int(round(side / 2.0 - reg[0] * k)),
                                 int(round(side / 2.0 - reg[1] * k))))
-    print('   Halo 3 sprite %s #%d x %.3f (donor ink %d / yardstick #%d ink %d) -> %dx%d on %dx%d'
+    print('   source sprite %s #%d x %.3f (donor ink %d / yardstick #%d ink %d) -> %dx%d on %dx%d'
           % (H3_ART['sheet'], H3_ART['sequence'], k, _ink(donor), H3_ART['yardstick'],
              _ink(yard), w, h, side, side))
     return out

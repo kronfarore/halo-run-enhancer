@@ -125,7 +125,18 @@ EXCLUDE = ((0.077, 0.216, 0.0028, 0.0132, None),
 
 
 def mesh(path):
-    """(vertices in world units, index strip) from a render_model XML."""
+    """(vertices in world units, index strip) from a render_model XML -- or from a Halo 2 JMS (the
+    port's own world mesh, a `.jms` path: the Flamethrower, S1, has no Halo 3 render model), its
+    triangle list joined into one strip by degenerate triangles."""
+    if path.lower().endswith('.jms'):
+        import h2_jms
+        m = h2_jms.read(path)
+        strip = []
+        for _mat, (a, b, c) in m.tris:
+            if strip:
+                strip += [strip[-1], a]
+            strip += [a, b, c]
+        return [tuple(c / 100.0 for c in v.pos) for v in m.verts], strip
     lo = hi = None
     pos, idx, mode = [], [], None
     rp = re.compile(r'name="position" value="([-\d.e,]+)"')
