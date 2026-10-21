@@ -370,9 +370,10 @@ _ANY_FIELDED = set().union(*_FIELDED.values()) if _FIELDED else set()
 # A port's tag that the deployed maps lack but the EDITING KIT has is not a fault: the
 # levels were built before that tag was wired in (Halo 1's SAW bullet and melee until
 # a10/b30 are rebuilt). Those are listed apart, as 'awaiting a rebuild'.
-KIT_TAGS = {'Halo 1': r'F:\SteamLibrary\steamapps\common\HCEEK\tags'}
-KIT_EXT = {'weap': 'weapon', 'proj': 'projectile', 'jpt!': 'damage_effect',
-           'antr': 'model_animations', 'wphi': 'weapon_hud_interface'}
+# the kits and their extensions are port_cards' (Halo 1 HCEEK, Halo 2 H2EK), so a port whose
+# cards were derived from the kit is checked against the same kit
+sys.path.insert(0, os.path.join(TOOL, 'sprint_toolkit'))
+from port_cards import KIT_TAGS, KIT_EXT          # noqa: E402
 pending = []
 
 
@@ -386,7 +387,10 @@ def awaiting_rebuild(label, game, tag):
     ext = KIT_EXT.get(cls)
     if not ext:
         return False
-    return all(os.path.exists(os.path.join(KIT_TAGS[game], p.strip() + '.' + ext))
+    import glob
+    # a '*' path (Halo 2's per-character first-person graphs) counts when any match exists
+    return all(glob.glob(os.path.join(KIT_TAGS[game], p.strip() + '.' + ext)) if '*' in p
+               else os.path.exists(os.path.join(KIT_TAGS[game], p.strip() + '.' + ext))
                for p in rest.split(' & ') if p.strip())
 
 

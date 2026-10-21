@@ -36,9 +36,13 @@ os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 
 HALO_JSON = os.path.join(ROOT, 'halo.json')
 SECTION = ('Player Modifiers', 'Specific Weapon Modifier')
-KIT_TAGS = {'Halo 1': r'F:\SteamLibrary\steamapps\common\HCEEK\tags'}
+# tags are checked in the EDITING KIT, so a port's cards need no built map (user, 2026-10-21:
+# 'do the cards when asked, don't wait for a rebuild'); Halo 3 on still read the built map
+KIT_TAGS = {'Halo 1': r'F:\SteamLibrary\steamapps\common\HCEEK\tags',
+            'Halo 2': r'F:\SteamLibrary\steamapps\common\H2EK\tags'}
 KIT_EXT = {'weap': 'weapon', 'proj': 'projectile', 'jpt!': 'damage_effect',
-           'antr': 'model_animations', 'wphi': 'weapon_hud_interface'}
+           'antr': 'model_animations', 'wphi': 'weapon_hud_interface',
+           'jmad': 'model_animation_graph'}
 INHERITS = {'Halo 3': ['Halo 3: ODST']}       # targets name these too ('games' is literal)
 
 
@@ -80,10 +84,11 @@ class Checker:
             wfile = os.path.join(root, wpath + '.weapon')
             if os.path.exists(wfile):
                 self.refs = open(wfile, 'rb').read()
-                folder = os.path.dirname(wfile)
-                for f in os.listdir(folder):
-                    if f.endswith('.projectile'):
-                        self.refs += open(os.path.join(folder, f), 'rb').read()
+                # Halo 2 keeps them in a projectiles\ subfolder: walk the weapon's folder
+                for d, _sub, fs in os.walk(os.path.dirname(wfile)):
+                    for f in fs:
+                        if f.endswith('.projectile'):
+                            self.refs += open(os.path.join(d, f), 'rb').read()
         if game not in KIT_TAGS:
             for mid, g in db.mission_games.items():
                 if g == game and weapon in db.ports_on_level(mid, scan=True):
@@ -110,6 +115,8 @@ class Checker:
         if not wpath:
             return None
         if self.game in KIT_TAGS:
+            if self.game != 'Halo 1':
+                return None          # no loose-tag reader for its weapon layout: donor ladder
             f = os.path.join(KIT_TAGS[self.game], wpath + '.weapon')
             if not os.path.exists(f):
                 return None
