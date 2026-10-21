@@ -5,8 +5,10 @@ A port carries its original numbers by default; the balance option (step 5) swap
 ones. Each value goes through h2_tagfield (the field is FOUND by probing a copy, and tool.exe's
 export confirms the write). The config's `numbers` section:
 
-    numbers   [(tag file, field, block, element, nth, value or [values])] -- `nth` because tool
-              flattens nested structs (a barrel prints two "minimum error"s; the live one is 1)
+    numbers   [(tag file, field, block, element, nth, value or [values][, opt])] -- `nth` because
+              tool flattens nested structs (a barrel prints two "minimum error"s; the live one is
+              1); opt {'anchor': (field, byte delta)} places a field still reading ZERO by a
+              non-zero neighbour (pin(): probed, then remembered)
     skipped   [(field, why)] -- source values deliberately NOT carried (printed)
 
     python h2_port_numbers.py <key> [--show]
@@ -34,6 +36,38 @@ def show(n):
                  now, ','.join('%g' % v for v in wants)))
 
 
+def pin(tag_path, name, block, index, nth, anchor, delta):
+    """A field still reading ZERO cannot be found by its value (it reads like the padding around
+    it): place it at `delta` bytes from a non-zero neighbour of the same struct (`anchor`, found
+    as usual), PROVE it the way h2_tagfield does -- a probe written there into a copy must move
+    that field and nothing else in tool's export -- and remember it for this tag, so set_field
+    uses it (the Flamethrower, S1: the projectile's timer / radii, the damage flags)."""
+    import struct
+    key = ('%s[%d].%s' % (block, index, name) if block else name) + ('#%d' % nth if nth else '')
+    if key in tf._cache().get(tf.tag_key(tag_path), {}):
+        return
+    at = tf.offset_of(tag_path, anchor, block, index, 0, verbose=False) + delta
+    original = open(tag_path, 'rb').read()
+    rows = tf.read_all(tf.export(tag_path))
+    row = tf.pick(rows, name, block, index, nth)
+    code = tf.SCALARS[row[3]][0]
+    edited = bytearray(original)
+    struct.pack_into(code, edited, at, 0.5 if code == '<f' else 3)
+    probe = '%s._pin_%d%s' % (os.path.splitext(tag_path)[0], os.getpid(), os.path.splitext(tag_path)[1])
+    try:
+        open(probe, 'wb').write(bytes(edited))
+        after = tf.read_all(tf.export(probe) or '')
+    finally:
+        if os.path.exists(probe):
+            os.remove(probe)
+    moved = [i for i, (a, b) in enumerate(zip(rows, after)) if a[4] != b[4]]
+    if len(after) != len(rows) or len(moved) != 1 or rows[moved[0]] is not row:
+        raise LookupError('%s is not at %s %+d (0x%04X): the probe moved %d fields'
+                          % (key, anchor, delta, at, len(moved)))
+    print('   %-44s pinned at 0x%04X (%s %+d)' % (key, at, anchor, delta))
+    tf._remember(tf.tag_key(tag_path), key, at)
+
+
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     if not argv or argv[0].startswith('-'):
@@ -44,8 +78,11 @@ def main(argv=None):
         show(n)
         return
     print('writing the source weapon\'s numbers into the port:')
-    for tag, name, block, index, nth, want in n['numbers']:
+    for row in n['numbers']:
+        tag, name, block, index, nth, want = row[:6]
         try:
+            if len(row) > 6 and row[6].get('anchor'):
+                pin(os.path.join(TAGS, tag), name, block, index, nth, *row[6]['anchor'])
             tf.set_field(os.path.join(TAGS, tag), name, want, block, index, nth)
         except Exception as exc:
             print('   %-30s FAILED: %s' % (name, exc))

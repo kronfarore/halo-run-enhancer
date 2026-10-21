@@ -145,6 +145,148 @@ PORT = {
                         (SMG + r'\bitmaps\smg_bump', 'Bungie SMG')],
     },
 
+    # step 3 -- h2_port_weapon.py: the H2 SMG's weapon (spew, 1 magazine / 1 trigger / 1 barrel; the
+    # heat fields are plain fields, step 4), the BR's world .model (two-handed). The FLAME:
+    #   projectile = the Plasma Rifle bolt's clone (the yardstick's; Halo 2's player projectile WITH
+    #     flight attachments -- its contrail + light volume cloned to be the flame's look; 'faster
+    #     when owned by player' kept with the PR's velocity ratio);
+    #   impact damage = Bungie's globals\flaming_death clone: category `flame`, group `burning` (the
+    #     user's 4a pick) -- and step 4 sets damage flag bit 7 'causes flaming death' (H2's own burning,
+    #     tool.exe's damage_effect_definitions: the stand-in for Halo 1's burning effect)
+    'weapon': {
+        'weapon': FT + r'\flamethrower.weapon',
+        'clones': [(SMG + r'\smg.weapon', FT + r'\flamethrower.weapon'),
+                   (r'objects\weapons\rifle\battle_rifle\battle_rifle.model', FT + r'\flamethrower.model'),
+                   (r'objects\weapons\rifle\plasma_rifle\projectiles\plasma_rifle_bolt.projectile',
+                    FT + r'\projectiles\flame.projectile'),
+                   (r'globals\flaming_death.damage_effect', FT + r'\damage_effects\flame.damage_effect'),
+                   (SMG + r'\damage_effects\smg_trigger.damage_effect', FT + r'\damage_effects\flamethrower_trigger.damage_effect'),
+                   (r'effects\objects\weapons\rifle\smg\fire_bullet.effect', FX + r'\flamethrower_fire.effect'),
+                   (r'effects\objects\weapons\rifle\smg\smg_muzzle_flash.light', FX + r'\flamethrower_muzzle_flash.light'),
+                   (r'effects\materials\objects\weapons\smg.material_effects', FX + r'\flamethrower.material_effects'),
+                   (r'effects\materials\objects\weapons\plasma_rifle.material_effects', FX + r'\flame.material_effects'),
+                   (r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak.contrail', FX + r'\flame_streak.contrail'),
+                   (r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak.light_volume', FX + r'\flame_streak.light_volume')],
+        'wiring': [
+            (FT + r'\flamethrower.weapon', 'hlmt', SMG + r'\smg', FT + r'\flamethrower', 'world model'),
+            (FT + r'\flamethrower.model', 'mode', r'objects\weapons\rifle\battle_rifle\battle_rifle',
+             FT + r'\flamethrower', 'the world render model (it and the collision pool ONE path)', {'nth': 0}),
+            (FT + r'\flamethrower.weapon', 'mode', SMG + r'\fp_smg\fp_smg',
+             FT + r'\fp_flamethrower\fp_flamethrower', 'first person model, Master Chief', {'nth': 0}),
+            (FT + r'\flamethrower.weapon', 'mode', SMG + r'\fp_smg\fp_smg',
+             FT + r'\fp_flamethrower\fp_flamethrower', 'first person model, Dervish (one FP model)', {'nth': 0}),
+            (FT + r'\flamethrower.weapon', 'jmad', r'objects\characters\masterchief\fp\weapons\rifle\fp_smg\fp_smg',
+             r'objects\characters\masterchief\fp\weapons\support_low\fp_flamethrower\fp_flamethrower',
+             "Master Chief FP graph: Halo 1's own animations"),
+            (FT + r'\flamethrower.weapon', 'jmad', r'objects\characters\dervish\fp\weapons\rifle\fp_smg\fp_smg',
+             r'objects\characters\dervish\fp\weapons\support_low\fp_flamethrower\fp_flamethrower',
+             "Dervish FP graph: Halo 1's animations re-posed"),
+            (FT + r'\flamethrower.weapon', 'proj', SMG + r'\projectiles\smg_bullet',
+             FT + r'\projectiles\flame', 'projectile'),
+            (FT + r'\projectiles\flame.projectile', 'jpt!', r'objects\weapons\rifle\plasma_rifle\damage_effects\plasma_rifle_bolt',
+             FT + r'\damage_effects\flame', 'impact damage'),
+            (FT + r'\flamethrower.weapon', 'jpt!', SMG + r'\damage_effects\smg_trigger',
+             FT + r'\damage_effects\flamethrower_trigger', 'firing damage'),
+            (FT + r'\flamethrower.weapon', 'effe', r'effects\objects\weapons\rifle\smg\fire_bullet',
+             FX + r'\flamethrower_fire', 'firing effect'),
+            (FT + r'\flamethrower.weapon', 'ligh', r'effects\objects\weapons\rifle\smg\smg_muzzle_flash',
+             FX + r'\flamethrower_muzzle_flash', 'muzzle flash light'),
+            (FT + r'\flamethrower.weapon', 'foot', r'effects\materials\objects\weapons\smg',
+             FX + r'\flamethrower', 'material effects (the weapon)'),
+            (FT + r'\projectiles\flame.projectile', 'foot', r'effects\materials\objects\weapons\plasma_rifle',
+             FX + r'\flame', 'impact material effects'),
+            (FT + r'\projectiles\flame.projectile', 'cont', r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak',
+             FX + r'\flame_streak', "the flame's trail (contrail)", {'nth': 0}),
+            (FT + r'\projectiles\flame.projectile', 'MGS2', r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak',
+             FX + r'\flame_streak', "the flame's glow (light volume)", {'nth': 0}),
+            # the HUD is the BR's clone (step 7: single, two-handed; the SMG's is dual-wield shaped)
+            (FT + r'\flamethrower.weapon', 'nhdt', r'ui\hud\smg', r'ui\hud\flamethrower', 'its own HUD (step 7)'),
+        ],
+        # the 3P label: the BR's `rifle` / `br` (every character's graph holds the two-handed BR; the
+        # Grunt's taught by the AR, h2_graph_teach). Halo 1's label `ft` has no Halo 2 graph
+        'string_ids': {'rifle': 'rifle', 'smg': 'br'},
+        'string_ids_done': ('weapon name', 'br'),
+        'shared': [(r'the particles inside flamethrower_fire', "the SMG's (Halo 1's particle systems do not port)"),
+                   (r'objects\weapons\damage_effects\*_melee', 'shared by every Halo 2 weapon'),
+                   (r'effects\impact\plasma_slow\* (the projectile material responses)', "the PR bolt's (step 4b)"),
+                   (r'sound\weapons\plasma_rifle\plasma_proj (flyby)', "the PR bolt's (step 10)"),
+                   (r'objects\powerups\smg_ammo\smg_ammo', "the SMG's ammo pickup item (unused in campaign)")],
+    },
+
+    # step 4 -- h2_port_numbers.py: Halo 1's flamethrower through the PLASMA RIFLE's ratio (4a, the
+    # user): H2 PR / H1 PR per value; a value the PR lacks (fuel, reload, range, timer) = Halo 1 raw.
+    # h1_weapon_values.py "weapons\flamethrower\flamethrower" / h2_ft_ttk_4a.py
+    'numbers': {
+        'numbers': [
+            # flags'': the SMG's minus 'can be dual wielded' (0x400000); 'loop fp firing animation' kept
+            (FT + r'\flamethrower.weapon', 'flags', '', 0, 2, 131072),
+            # aim assist: H1 1.5 deg / 16 wu, magnetism 4 deg / 20 wu x the PR's (6/5, 12/25; 9/12, 18/25)
+            (FT + r'\flamethrower.weapon', 'autoaim angle', '', 0, 0, 1.8),
+            (FT + r'\flamethrower.weapon', 'autoaim range', '', 0, 0, 7.68),
+            (FT + r'\flamethrower.weapon', 'magnetism angle', '', 0, 1, 3.0),
+            (FT + r'\flamethrower.weapon', 'magnetism range', '', 0, 1, 14.4),
+            # HEAT: H1 0.072 a shot, loss 0.44/s, recovery 0.30, overheat 1.0; H2 PR / H1 PR = 0.15/0.08,
+            # 0.8525/0.30, 0.10/0.25, 1/1. Halo 1 has ONE loss rate: the overheated one = the PR's 0.35
+            # x (0.44 / 0.30). Illumination 1 (both). All read 0 in the SMG: pinned after `ready time`
+            # +36 (two unexported tag references between: ready effect / ready damage effect; found by
+            # a probe scan), then overheated +40, detonation threshold / fraction, loss +52, illumination
+            # +56, overheated loss +60
+            (FT + r'\flamethrower.weapon', 'heat recovery threshold', '', 0, 0, 0.12, {'anchor': ('ready time', 36)}),
+            (FT + r'\flamethrower.weapon', 'overheated threshold', '', 0, 0, 1.0, {'anchor': ('ready time', 40)}),
+            (FT + r'\flamethrower.weapon', 'heat loss per second', '', 0, 0, 1.250333, {'anchor': ('ready time', 52)}),
+            (FT + r'\flamethrower.weapon', 'overheated heat loss per second', '', 0, 0, 0.513333, {'anchor': ('ready time', 60)}),
+            (FT + r'\flamethrower.weapon', 'heat illumination', '', 0, 0, 1.0, {'anchor': ('ready time', 56)}),
+            (FT + r'\flamethrower.weapon', 'heat generated per round', 'barrels', 0, 0, 0.135,
+             {'anchor': ('illumination recovery time', 4)}),
+            # FUEL (no PR counterpart: Halo 1 raw): 100 loaded / 300 initial / 600 maximum, 2 a shot
+            (FT + r'\flamethrower.weapon', 'rounds loaded maximum', 'magazines', 0, 0, 100),
+            (FT + r'\flamethrower.weapon', 'rounds reloaded', 'magazines', 0, 0, 100),
+            (FT + r'\flamethrower.weapon', 'rounds total initial', 'magazines', 0, 0, 300),
+            (FT + r'\flamethrower.weapon', 'rounds total maximum', 'magazines', 0, 0, 600),
+            (FT + r'\flamethrower.weapon', 'reload time', 'magazines', 0, 0, 3.4),
+            (FT + r'\flamethrower.weapon', 'rounds per shot', 'barrels', 0, 0, 2),
+            (FT + r'\flamethrower.weapon', 'projectiles per shot', 'barrels', 0, 0, 2),
+            # rate: H1 12 x (9/10) = 10.8, flat (Halo 1 has no ramp)
+            (FT + r'\flamethrower.weapon', 'rounds per second', 'barrels', 0, 0, [10.8, 10.8]),
+            (FT + r'\flamethrower.weapon', 'acceleration time', 'barrels', 0, 0, 0.0),
+            (FT + r'\flamethrower.weapon', 'deceleration time', 'barrels', 0, 0, 0.0),
+            # the ERROR ramp (nth 1, A1's 4b lesson): Halo 1's 0 / 0 -> the full cone at once
+            (FT + r'\flamethrower.weapon', 'acceleration time', 'barrels', 0, 1, 0.0),
+            (FT + r'\flamethrower.weapon', 'deceleration time', 'barrels', 0, 1, 0.0),
+            # the live cone (nth 1): H1 0 / 2-8 deg x the PR's (0.25/0.5, 0.75/5.0) -> 0 / 1.0-1.2
+            (FT + r'\flamethrower.weapon', 'minimum error', 'barrels', 0, 1, 0.0),
+            (FT + r'\flamethrower.weapon', 'error angle', 'barrels', 0, 1, [1.0, 1.2]),
+            # no barrel climb, no tracers (Halo 1's flame)
+            (FT + r'\flamethrower.weapon', 'angle change per shot', 'barrels', 0, 0, [0.0, 0.0]),
+            (FT + r'\flamethrower.weapon', 'rounds between tracers', 'barrels', 0, 0, 0),
+            # the FLAME: velocity 3.6 -> 0 x (14/50) (the PR's; 'faster when owned by player' kept);
+            # maximum range 16, lifetime 1.3-8 s, radii: Halo 1 raw; damage over its whole range (H1
+            # air damage range 100 > 16: no falloff). The fields reading 0 are PINNED by the struct's
+            # order (AI perception, collision, arming, danger radius, timer, minimum velocity,
+            # maximum range -- h2_port_numbers.pin, probed)
+            (FT + r'\projectiles\flame.projectile', 'initial velocity', '', 0, 0, 1.008),
+            (FT + r'\projectiles\flame.projectile', 'final velocity', '', 0, 0, 0.0),
+            (FT + r'\projectiles\flame.projectile', 'maximum range', '', 0, 0, 16.0),
+            (FT + r'\projectiles\flame.projectile', 'timer', '', 0, 0, [1.3, 8.0], {'anchor': ('maximum range', -12)}),
+            (FT + r'\projectiles\flame.projectile', 'collision radius', '', 0, 0, 0.5, {'anchor': ('maximum range', -24)}),
+            (FT + r'\projectiles\flame.projectile', 'AI perception radius', '', 0, 0, 2.0, {'anchor': ('maximum range', -28)}),
+            (FT + r'\projectiles\flame.projectile', 'danger radius', '', 0, 0, 0.4, {'anchor': ('maximum range', -16)}),
+            (FT + r'\projectiles\flame.projectile', 'air damage range', '', 0, 0, [100.0, 100.0]),
+            # damage: H1 18 / 20-23 x the PR's (6/10, 10/13); 'causes flaming death' (damage flags
+            # bit 7, nth 1 -- the first `flags` is the effect's own: scale by distance / players only)
+            (FT + r'\damage_effects\flame.damage_effect', 'damage lower bound', '', 0, 0, 10.8),
+            (FT + r'\damage_effects\flame.damage_effect', 'damage upper bound', '', 0, 0, [15.384615, 17.692308]),
+            (FT + r'\damage_effects\flame.damage_effect', 'flags', '', 0, 1, 128, {'anchor': ('damage lower bound', -8)}),
+            # first-person placement: Halo 1's animations carry Halo 1's view (camera = origin), so
+            # start with none (the SMG's 0.02, 0, 0 is for its own graph) -- checked in game
+            (FT + r'\flamethrower.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, 0.0]),
+        ],
+        'skipped': [
+            ('melee damage', 'Halo 2 weapons share strike_melee / smash_melee: a row would move every weapon'),
+            ("Halo 1's 'burning' effect (fire left on a target)", "no Halo 2 equivalent: 'causes flaming death' instead"),
+        ],
+    },
+
     'test': {'level': '05a_deltaapproach', 'dervish_level': '06b_floodzone'},
     'residency': {'levels': 'all', 'placements': False},
 }
