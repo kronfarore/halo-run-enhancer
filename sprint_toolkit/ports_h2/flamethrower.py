@@ -153,7 +153,8 @@ PORT = {
     # step 3 -- h2_port_weapon.py: the H2 SMG's weapon (spew, 1 magazine / 1 trigger / 1 barrel; the
     # heat fields are plain fields, step 4), the BR's world .model (two-handed). The FLAME:
     #   projectile = the Plasma Rifle bolt's clone (the yardstick's; Halo 2's player projectile WITH
-    #     flight attachments -- its contrail + light volume cloned to be the flame's look; 'faster
+    #     flight attachments -- a contrail + light volume: the BRUTE plasma rifle's red pair cloned,
+    #     the warmest Bungie has, recoloured orange in step 4, as the flame's look; 'faster
     #     when owned by player' kept with the PR's velocity ratio);
     #   impact damage = Bungie's globals\flaming_death clone: category `flame`, group `burning` (the
     #     user's 4a pick) -- and step 4 sets damage flag bit 7 'causes flaming death' (H2's own burning,
@@ -170,8 +171,8 @@ PORT = {
                    (r'effects\objects\weapons\rifle\smg\smg_muzzle_flash.light', FX + r'\flamethrower_muzzle_flash.light'),
                    (r'effects\materials\objects\weapons\smg.material_effects', FX + r'\flamethrower.material_effects'),
                    (r'effects\materials\objects\weapons\plasma_rifle.material_effects', FX + r'\flame.material_effects'),
-                   (r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak.contrail', FX + r'\flame_streak.contrail'),
-                   (r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak.light_volume', FX + r'\flame_streak.light_volume'),
+                   (r'effects\objects\weapons\rifle\brute_plasma_rifle\red_plasma_streak.contrail', FX + r'\flame_streak.contrail'),
+                   (r'effects\objects\weapons\rifle\brute_plasma_rifle\red_plasma_streak.light_volume', FX + r'\flame_streak.light_volume'),
                    # the RELOAD sound: the seed graph (the PR's) has no reload animation, so no reload
                    # sound event -- the magazine's reloading effect carries it instead: a clone of
                    # Bungie's sound-only BR dryfire effect (step 10 repoints its sound)
@@ -259,8 +260,11 @@ PORT = {
             (FT + r'\flamethrower.weapon', 'projectiles per shot', 'barrels', 0, 0, 2),
             # rate: H1 12 x (9/10) = 10.8, flat (Halo 1 has no ramp)
             (FT + r'\flamethrower.weapon', 'rounds per second', 'barrels', 0, 0, [10.8, 10.8]),
-            (FT + r'\flamethrower.weapon', 'acceleration time', 'barrels', 0, 0, 0.0),
-            (FT + r'\flamethrower.weapon', 'deceleration time', 'barrels', 0, 0, 0.0),
+            # (zero now: a re-run finds them by the rate, not by the shared offset cache)
+            (FT + r'\flamethrower.weapon', 'acceleration time', 'barrels', 0, 0, 0.0,
+             {'anchor': ('rounds per second', 8)}),
+            (FT + r'\flamethrower.weapon', 'deceleration time', 'barrels', 0, 0, 0.0,
+             {'anchor': ('rounds per second', 12)}),
             # the ERROR ramp (nth 1, A1's 4b lesson): Halo 1's 0 / 0 -> the full cone at once
             (FT + r'\flamethrower.weapon', 'acceleration time', 'barrels', 0, 1, 0.0),
             (FT + r'\flamethrower.weapon', 'deceleration time', 'barrels', 0, 1, 0.0),
@@ -297,6 +301,14 @@ PORT = {
             (FT + r'\projectiles\flame.projectile', 'bounding radius', '', 0, 0, 0.15),
             (FT + r'\damage_effects\flame.damage_effect', 'active camouflage damage', '', 0, 0, 1.25,
              {'anchor': ('damage upper bound', 16)}),
+            # the flame's LOOK: the Brute plasma rifle's red streak recoloured to flame orange (a, r, g,
+            # b), head -> tail, and widened (Halo 1's flame is a 0.5 wu collision ball) -- in game
+            (FX + r'\flame_streak.contrail', 'color lower bound', 'point states', 0, 0, [0.6, 1.0, 0.55, 0.15]),
+            (FX + r'\flame_streak.contrail', 'color upper bound', 'point states', 0, 0, [0.6, 1.0, 0.55, 0.15]),
+            (FX + r'\flame_streak.contrail', 'color lower bound', 'point states', 1, 0, [0.15, 1.0, 0.25, 0.05]),
+            (FX + r'\flame_streak.contrail', 'color upper bound', 'point states', 1, 0, [0.15, 1.0, 0.25, 0.05]),
+            (FX + r'\flame_streak.contrail', 'width', 'point states', 0, 0, 0.35),
+            (FX + r'\flame_streak.contrail', 'width', 'point states', 1, 0, 0.35),
             # first-person placement: Halo 1's animations carry Halo 1's view (camera = origin), so
             # start with none (the SMG's 0.02, 0, 0 is for its own graph) -- checked in game
             (FT + r'\flamethrower.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, 0.0]),

@@ -74,6 +74,8 @@ SCALARS = {
     # vectors / points (the AR's `first person weapon offset`, a real vector 3d, 2026-10-20)
     'real vector 3d': ('<f', 4, 3), 'real point 3d': ('<f', 4, 3),
     'real vector 2d': ('<f', 4, 2), 'real point 2d': ('<f', 4, 2),
+    # colours, in the order tool prints them (a, r, g, b) -- the Flamethrower's contrail, S1
+    'real argb color': ('<f', 4, 4), 'real rgb color': ('<f', 4, 3),
 }
 
 

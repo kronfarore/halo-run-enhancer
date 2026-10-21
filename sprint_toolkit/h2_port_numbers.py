@@ -44,8 +44,8 @@ def pin(tag_path, name, block, index, nth, anchor, delta):
     uses it (the Flamethrower, S1: the projectile's timer / radii, the damage flags)."""
     import struct
     key = ('%s[%d].%s' % (block, index, name) if block else name) + ('#%d' % nth if nth else '')
-    if key in tf._cache().get(tf.tag_key(tag_path), {}):
-        return
+    # (a cached offset is NOT trusted for a zero: a longer path written earlier in the file -- a
+    # re-wiring -- shifts every later byte, and zero cannot be re-validated by its value)
     rows = tf.read_all(tf.export(tag_path))
     row = tf.pick(rows, name, block, index, nth)
     if any(tf._numbers(row[4])):
