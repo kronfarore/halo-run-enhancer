@@ -160,6 +160,12 @@ def h3_main(t, argv):
                     a = np.clip((a + 1.0) * 127.5, 0, 255).astype(np.uint8)
                     img = Image.fromarray(np.dstack([a, np.full(a.shape[:2], 255, np.uint8)]), 'RGB')
                 out = height_from_normal(img.convert('RGB'), t.get('bump_gain', 2.2))
+            elif mode == 'color_premul':
+                # for an ADDITIVE shader: colour x alpha, so a transparent texel adds nothing
+                # (the AR's holo display, boot 2: an opaque template drew every layer's square)
+                a = np.asarray(img.convert('RGBA')).astype(np.float32)
+                a[:, :, :3] *= a[:, :, 3:4] / 255.0
+                out = Image.fromarray(a.astype(np.uint8), 'RGBA')
             else:
                 out = img.convert('RGBA' if img.mode == 'RGBA' else 'RGB')
             if size:

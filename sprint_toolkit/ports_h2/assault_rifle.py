@@ -102,10 +102,12 @@ PORT = {
         'bitmaps': [(AR + r'\bitmaps\assault_rifle.bitmap', 'assault_rifle', SMG + r'\bitmaps\smg', 'color', None),
                     (AR + r'\bitmaps\assault_rifle_bump.bitmap', 'assault_rifle_bump', SMG + r'\bitmaps\smg_bump',
                      'bump_snorm', None),
+                    # the holo layers ADDITIVE (boot 2, user: 'the layers have clear squares'): the
+                    # colour premultiplied by Halo 3's alpha, so what was transparent adds nothing
                     (AR + r'\bitmaps\display.bitmap', 'assault_rifle_display',
-                     r'objects\weapons\rifle\shotgun\bitmaps\illum_sights', 'color', None),
+                     r'objects\weapons\rifle\shotgun\bitmaps\illum_sights', 'color_premul', None),
                     (AR + r'\bitmaps\compass.bitmap', 'assault_rifle_compass',
-                     r'objects\weapons\rifle\shotgun\bitmaps\illum_sights', 'color', None)],
+                     r'objects\weapons\rifle\shotgun\bitmaps\illum_sights', 'color_premul', None)],
         'shaders': [
             ('assault_rifle', SMG + r'\shaders\smg_painted_metal',
              {SMG + r'\bitmaps\smg': AR + r'\bitmaps\assault_rifle',
@@ -119,10 +121,13 @@ PORT = {
              {SMG + r'\bitmaps\smg': AR + r'\bitmaps\assault_rifle',
               SMG + r'\bitmaps\smg_bump': AR + r'\bitmaps\assault_rifle_bump',
               SMG + r'\bitmaps\smg_bump_active_camo': AR + r'\bitmaps\assault_rifle_bump'}),
-            ('assault_rifle_display', r'objects\weapons\rifle\shotgun\shaders\shotgun_light',
-             {r'objects\weapons\rifle\shotgun\bitmaps\illum_sights': AR + r'\bitmaps\assault_rifle_display'}),
-            ('assault_rifle_compass', r'objects\weapons\rifle\shotgun\shaders\shotgun_light',
-             {r'objects\weapons\rifle\shotgun\bitmaps\illum_sights': AR + r'\bitmaps\assault_rifle_compass'}),
+            # the holo display + compass: Bungie's ADDITIVE self-illumination (the plasma cannon's
+            # plasma_illum, transparent\two_add_env_illum) -- the shotgun's lit sight is opaque
+            # (tex_bump_illum) and drew every layer's square (boot 2)
+            ('assault_rifle_display', r'objects\weapons\fixed\plasma_cannon\shaders\plasma_illum',
+             {r'objects\weapons\fixed\plasma_cannon\bitmaps\plasma_cannon': AR + r'\bitmaps\assault_rifle_display'}),
+            ('assault_rifle_compass', r'objects\weapons\fixed\plasma_cannon\shaders\plasma_illum',
+             {r'objects\weapons\fixed\plasma_cannon\bitmaps\plasma_cannon': AR + r'\bitmaps\assault_rifle_compass'}),
             # the counter: the BR's own digit plate + detail map, Bungie's (an H2 counter's look)
             ('assault_rifle_tens', r'objects\weapons\rifle\battle_rifle\shaders\tens', {}),
             ('assault_rifle_ones', r'objects\weapons\rifle\battle_rifle\shaders\ones', {}),
@@ -223,7 +228,8 @@ PORT = {
             (AR + r'\damage_effects\assault_rifle_bullet.damage_effect', 'instantaneous acceleration', '', 0, 0, 0.125),
             # first-person placement (user, boot 1 on 03b: 'move it back and down 3 units', 1 unit =
             # 0.01 wu): the SMG's 0.02, 0, 0 -> -0.01, 0, -0.03
-            (AR + r'\assault_rifle.weapon', 'first person weapon offset', '', 0, 0, [-0.01, 0.0, -0.03]),
+            # boot 2: 'one forward and 2 down' -> 0, 0, -0.05
+            (AR + r'\assault_rifle.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, -0.05]),
         ],
         'skipped': [
             ('melee damage 70', 'Halo 2 weapons share strike_melee / smash_melee: a row would move every weapon'),
@@ -282,7 +288,11 @@ PORT = {
         'footprint': 1.0,
         # the ratio rule on the art: H3 AR sprite #0 x (H2 BR crosshair ink / H3 BR sprite #1 ink),
         # both H3 sprites drawn at the same chud widget scale 0.59
-        'h3_art': {'sheet': 'hud_reticles', 'sequence': 0, 'yardstick': 1},
+        'h3_art': {'sheet': 'hud_reticles', 'sequence': 0, 'yardstick': 1,
+                   # boot 2 (user's Halo 3 screenshot): Halo 3 draws the AR crosshair 72 px across
+                   # at 1080p, ours drew 162 (145 ink px x 1.117 screen px a bitmap px) -- 'too
+                   # big': Halo 3's ON-SCREEN size, 72 / 1.117 = 64 ink px (the ratio gave 145)
+                   'target_ink': 64},
         'preview': 'assault_rifle_reticle_preview.png',
     },
     'scope': {
@@ -304,6 +314,10 @@ PORT = {
         # Halo 2's HUD blue (user, boot 1: 'the pickup icon is white, the H2 icons are blue'),
         # sampled from the classic HUD in the user's 03b screenshot (meter ticks / ammo digits)
         'colour': (110, 171, 233),
+        # boot 2 (user: 'missing the fine lines every vanilla weapon has', the BR's icon beside it):
+        # Halo 2's look -- translucent body (dithered), outline + the mesh's feature lines in the
+        # BR icon's line colour (sampled: 134,202,255); h2_port_glyph.h2_style
+        'style': {'line': (134, 202, 255), 'body': (110, 171, 233)},
     },
     'messages': {
         'donor_prefix': 'smg', 'donor_icon': '&smg',

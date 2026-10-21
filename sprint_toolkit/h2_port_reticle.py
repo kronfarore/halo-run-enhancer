@@ -137,6 +137,9 @@ def h3_compose(donor):
     art, reg = h3_hud_art.sprite(H3_ART['sheet'], H3_ART['sequence'])
     yard, _ = h3_hud_art.sprite(H3_ART['sheet'], H3_ART['yardstick'])
     k = _ink(donor) / float(_ink(yard))
+    if H3_ART.get('target_ink'):
+        # an ON-SCREEN size measured in game instead (the AR, boot 2: Halo 3's 72 px at 1080p)
+        k = H3_ART['target_ink'] / float(_ink(art))
     w, h = max(1, int(round(art.width * k))), max(1, int(round(art.height * k)))
     art = art.resize((w, h), Image.LANCZOS)
     side = max(w, h, donor.width, donor.height)
