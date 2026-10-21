@@ -12,6 +12,8 @@ hull's own centre. The config's `collision` section:
     out               the port's hull JMS, under data (tool collision builds the tag from its folder)
     port_render_jms   data-relative; donor_render_jms under data\!extracted
     max_growth
+    nodes_from_render  True: the hull takes the port's RENDER skeleton (influences remapped by
+                      name, else node 0) -- the Spiker, whose own nodes are not the BR donor's
 
     python h2_port_collision.py <key> [--factor 1.1] [--write]
 """
@@ -60,16 +62,21 @@ def measure(c):
     return [max(1.0, min(c['max_growth'], r)) for r in ratio]
 
 
-def grow(model, factor):
+def grow(model, factor, skeleton=None):
+    """skeleton: a render JMS whose nodes the hull takes instead of the donor's (influences
+    remapped by name, a node the render model lacks -> node 0) -- `nodes_from_render`."""
     _half, mid = extents(model)
     out = h2_jms.Model()
-    out.nodes = list(model.nodes)
+    out.nodes = list(skeleton.nodes if skeleton else model.nodes)
+    names = [n.name.lower() for n in out.nodes]
+    remap = {i: (names.index(n.name.lower()) if n.name.lower() in names else 0)
+             for i, n in enumerate(model.nodes)}
     out.materials = list(model.materials)
     out.tris = list(model.tris)
     out.markers = list(model.markers)
     for v in model.verts:
         pos = tuple(mid[k] + (v.pos[k] - mid[k]) * factor[k] for k in range(3))
-        out.verts.append(h2_jms.Vertex(pos, v.normal, v.influences, v.uvs))
+        out.verts.append(h2_jms.Vertex(pos, v.normal, [(remap[n], w) for n, w in v.influences], v.uvs))
     return out
 
 
@@ -88,7 +95,12 @@ def main(argv=None):
     print('donor hull: %d verts, %d tris, materials %s'
           % (len(hull.verts), len(hull.tris), [m.name for m in hull.materials]))
     factor = [a.factor] * 3 if a.factor is not None else measure(c)
-    grown = grow(hull, factor)
+    skeleton = (h2_jms.read(os.path.join(DATA, c['port_render_jms'])) if c.get('nodes_from_render')
+                else None)
+    grown = grow(hull, factor, skeleton)
+    if skeleton:
+        print('   nodes: the render model\'s %s (the donor\'s %s)'
+              % ([n.name for n in grown.nodes], [n.name for n in hull.nodes]))
     before, _ = extents(hull)
     after, _ = extents(grown)
     print('   growing %s: %s -> %s'

@@ -296,6 +296,56 @@ PORT = {
         ],
     },
 
+    # step 5 -- h2_port_collision.py: the BATTLE RIFLE's authored hull (the world .model's donor)
+    # scaled per axis to the Spiker's render mesh
+    'collision': {
+        'donor': r'objects\weapons\rifle\battle_rifle\battle_rifle',
+        'port': SR + r'\spike_rifle',
+        'src': r'battle_rifle\collision\battle_rifle_collision.jms',     # under data\!extracted
+        'out': SR + r'\collision\spike_rifle.jms',                       # under data
+        'port_render_jms': SR + r'\render\spike_rifle.jms',
+        'donor_render_jms': r'battle_rifle\render\battle_rifle_L5.jms',
+        'max_growth': 1.25,
+        # the BR hull's nodes (gun, magazine, OpHandle, safety) are not the Spiker's own world
+        # skeleton (gun, barrel, bullet, magazine, slide, safety): the hull takes the render's
+        'nodes_from_render': True,
+    },
+
+    # step 9 -- h2_port_fp_anims.py: Halo 3's OWN FP animations, both species, single AND DUAL
+    # (Halo 3 ships `first_person:dual:*` -- Halo 2's own SMG graph uses the same names), through
+    # `tool fp-model-animations`. Seeded from Bungie's H2 SMG graphs (dual blend screens, the
+    # SMG's sound refs / events for same-name animations)
+    'fp_anims': {
+        'species': {
+            'masterchief': {
+                'graph': r'objects\characters\masterchief\fp\weapons\rifle\fp_spike_rifle\fp_spike_rifle.model_animation_graph',
+                'arms_rm': r'objects\characters\masterchief\fp\fp.render_model',
+                'arms': H2EK + r'\data\!extracted\fp_arms_masterchief\fp_arms.jms',
+                'source': r'objects\characters\masterchief\fp\weapons\rifle\fp_spike_rifle',
+                'seed': r'objects\characters\masterchief\fp\weapons\rifle\fp_smg\fp_smg'},
+            'dervish': {
+                'graph': r'objects\characters\dervish\fp\weapons\rifle\fp_spike_rifle\fp_spike_rifle.model_animation_graph',
+                'arms_rm': r'objects\characters\dervish\fp\fp.render_model',
+                'arms': H2EK + r'\data\!extracted\fp_arms_dervish\dervish_fp_arms.jms',
+                'source': r'objects\characters\dervish\fp\weapons\rifle\fp_spike_rifle',
+                'seed': r'objects\characters\dervish\fp\weapons\rifle\fp_smg\fp_smg'},
+        },
+        'weapon_dir': SR + r'\fp_spike_rifle',
+        'weapon_rm': SR + r'\fp_spike_rifle\fp_spike_rifle.render_model',
+        'weapon_nodes': ['gun', 'ammo_drum', 'barrel_1', 'barrel_2', 'clamp_left', 'clamp_right', 'slide'],
+        # Halo 2 has no equipment (throw_equipment is Halo 3's deployable)
+        'skip': ['first_person:throw_equipment'],
+        'looping': ['first_person:idle', 'first_person:posing:var1',
+                    'first_person:dual:idle:var1', 'first_person:dual:idle:var2', 'first_person:dual:idle:var3',
+                    'first_person:dual:posing:var1', 'first_person:dual:posing:var2'],
+        'overlay_reference': 'first_person:idle',
+        # Halo 3 names the one single-wield reload / the Chief's one fire `:var1`; Halo 2's SMG
+        # (the seed: its events and sounds stay on same-name animations) names them plain
+        'rename': {'first_person:reload_empty:var1': 'first_person:reload_empty',
+                   'first_person:reload_full:var1': 'first_person:reload_full',
+                   'first_person:fire_1:var1': 'first_person:fire_1'},
+    },
+
     # step 4b -- port_field_audit.py --port brute_spiker: every field NO card covers where the
     # Halo 3 Spiker differs from the Halo 3 SMG (the yardstick) -- list 2 must say 0 to port
     'field_audit': {
