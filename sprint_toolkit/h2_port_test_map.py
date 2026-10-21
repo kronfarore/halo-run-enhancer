@@ -4,7 +4,7 @@ Halo 2 counterpart of h1_port_test_map.py, replacing the SAW-only h2_saw_place.p
 
     python h2_port_test_map.py <key> --level 03a [--profiles "starting profile,respawn profile"]
                                      [--rounds 72,216] [--stage] [--keep-kit-map]
-                                     [--armed elite,grunt,jackal[,brute]] [--share 1]
+                                     [--armed all | elite,grunt,jackal[,brute]] [--share 1]
     python h2_port_test_map.py <key> --restore <level>
     python h2_port_test_map.py --status
 
@@ -134,13 +134,78 @@ def owner_check(info, level, key, force):
         raise SystemExit('%s is staged by %s -- one test level per session (--force overrides)' % (level, cur))
 
 
+#: --armed all (user, 2026-10-21: 'a map that tests ALL enemies at once at the start of the map --
+#: the standard rule'): every enemy species, each one's base character put into the level's
+#: CHARACTER PALETTE before the build if the level lacks it (no Halo 2 level carries all: 08a / 07a
+#: have five of seven) -- h2_armed_test's start layout then turns the squads nearest the start
+#: into every species, 2 squads each
+ALL_ENEMIES = ('elite', 'grunt', 'jackal', 'brute', 'drone', 'flood', 'sentinel')
+BASE_CHAR = {'elite': 'elite', 'grunt': 'grunt', 'jackal': 'jackal', 'brute': 'brute',
+             'drone': 'bugger', 'bugger': 'bugger', 'flood': 'floodcombat_elite',
+             'sentinel': 'sentinel_aggressor', 'marine': 'marine'}
+CHAR_PALETTE = None        # loose root offset of scnr Character Palette (cache 0x178), set below
+
+
+def add_characters(d, species):
+    """Each species' base character (objects\\characters\\<x>\\ai\\<x>) appended to the scenario's
+    Character Palette (16-byte tagref elements) unless the level has it. Returns the added."""
+    import h2_loosetag as L
+    at = L._loose(0x178)
+    added = []
+    for s in species:
+        b = BASE_CHAR.get(s)
+        if not b:
+            continue
+        path = chr(92).join(['objects', 'characters', b, 'ai', b])
+        if path.encode('latin-1') + b'\0' in d:
+            continue
+        L.insert_element(d, at, 16, L.make_tagref(b'char', path), paths=(path,),
+                         tagref_offsets=(0,))
+        added.append(b)
+    return added
+
+
+#: tool STOMPS the scenario's character palette with the level's master AI resource (the first
+#: --armed all build: the 7 characters added to the scenario never reached the map) -- its
+#: Character Palette is root +48 (04a: count 6 = the 16-byte chunk of character tagrefs)
+AI_CHAR_PALETTE = 48
+
+
+def ai_resource(level):
+    return os.path.join(h2_batch.H2EK, 'tags', 'scenarios', 'solo', level, 'ai_resources',
+                        level + '_master.scenario_ai_resource')
+
+
+def add_characters_ai(r, species):
+    """add_characters for the master AI resource (the palette tool builds from); refuses unless
+    root +48's count is a 16-byte chunk of character tagrefs."""
+    import h2_loosetag as L
+    n = L.root_count(r, AI_CHAR_PALETTE)
+    chunk = L.locate(r, AI_CHAR_PALETTE, 16)
+    if chunk is None or b'characters' not in bytes(r[chunk + 16 + n * 16:chunk + 16 + n * 16 + 40]):
+        raise SystemExit('the AI resource\'s root +%d is not the character palette' % AI_CHAR_PALETTE)
+    added = []
+    for s in species:
+        b = BASE_CHAR.get(s)
+        if not b:
+            continue
+        path = chr(92).join(['objects', 'characters', b, 'ai', b])
+        if path.encode('latin-1') + b'\0' in r:
+            continue
+        L.insert_element(r, AI_CHAR_PALETTE, 16, L.make_tagref(b'char', path), paths=(path,),
+                         tagref_offsets=(0,))
+        added.append(b)
+    return added
+
+
 def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.0, god=True,
           replace=True):
     p = ports_h2.load(key)
     weapon = R.weapon_path(p)
     scn, res = scenario(level), R.resource(level)
     kit_map = os.path.join(h2_batch.MAPS_OUT, level + '.map')
-    keep = {f: f + '.port_test_keep' for f in (scn, res, kit_map) if os.path.exists(f)}
+    air = ai_resource(level)
+    keep = {f: f + '.port_test_keep' for f in (scn, res, kit_map, air) if os.path.exists(f)}
     os.makedirs(LOGDIR, exist_ok=True)
     with kit_lock.held('h2_port_test_map %s %s' % (key, level), owner=key, kit='h2'):
         for f, k in keep.items():
@@ -151,6 +216,14 @@ def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.
                 names = [r[1] for r in profile_refs(d) if r[3] == PRIMARY][:2]
                 profiles = [n for n in names if not n.startswith('ab_')]
             got = arm_profiles(d, weapon, profiles, rounds)
+            if armed and replace:
+                added = add_characters(d, armed)
+                if os.path.exists(air):
+                    ra = bytearray(open(air, 'rb').read())
+                    added = add_characters_ai(ra, armed)
+                    open(air, 'wb').write(bytes(ra))
+                print('   character palette: %s' % (('+ ' + ', '.join(added)) if added
+                                                     else 'every tested species already there'))
             if armed:
                 arm_profiles(d, CHEAT_WEAPON, profiles, CHEAT_ROUNDS, slot=SECONDARY)
                 print('   cheat: + %s as the secondary (%d / %d rounds)'
@@ -185,7 +258,7 @@ def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.
                     continue
                 shutil.copy2(k, f)
                 os.remove(k)
-            print('   kit restored (scenario, weapons resource%s)'
+            print('   kit restored (scenario, weapons resource, AI resource%s)'
                   % ('' if keep_kit_map else ', the kit\'s own .map output'))
     if not ok:
         raise SystemExit(1)
@@ -258,6 +331,8 @@ def main():
         tuple((cfg.get('test') or {}).get('rounds') or ()) or None
     profiles = [x.strip() for x in a.profiles.split(',') if x.strip()]
     armed = [x.strip() for x in a.armed.split(',') if x.strip()]
+    if armed == ['all']:
+        armed = list(ALL_ENEMIES)
     built = build(a.key, level, profiles, rounds, a.keep_kit_map, armed, a.share, god=not a.mortal,
                   replace=not a.no_replace)
     print('test map: %s' % built)
