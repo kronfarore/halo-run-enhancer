@@ -391,6 +391,7 @@ PORT = {
                        'donor_weapon': r'objects\weapons\rifle\smg\smg'},
     # 03a is the SAW's Armed test level (h2-armed-cards session, staged 2026-10-20 18:08): the
     # AR's Chief test runs on 03b (one test level per session)
-    'test': {'level': '03b_newmombasa', 'dervish_level': '04a_gasgiant'},
+    # 03b handed to the SAW's flee test (Armed session, 2026-10-21): the AR's Chief test on 05a
+    'test': {'level': '05a_deltaapproach', 'dervish_level': '04a_gasgiant'},
     'residency': {'levels': 'all', 'placements': False},
 }
