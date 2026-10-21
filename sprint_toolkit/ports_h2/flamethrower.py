@@ -19,7 +19,7 @@ PORT = {
     'wave': 'S1',
     'name': 'Flamethrower',
     'source': 'Halo 1',
-    'status': 'reserved',
+    'status': 'in progress',
     'source_tag': r'weapons\flamethrower\flamethrower',      # HCEEK (Halo 1)
     'reservations': {
         'message_prefix': 'ft2',
