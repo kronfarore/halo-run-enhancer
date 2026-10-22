@@ -21,7 +21,7 @@ PORT = {
     'wave': 'A3',
     'name': 'Spike Rifle',
     'source': 'Halo 3',
-    'status': 'in progress',
+    'status': 'done',
     'source_tag': 'objects\\weapons\\rifle\\spike_rifle\\spike_rifle',
     'reservations': {
         'message_prefix': 'spk2',

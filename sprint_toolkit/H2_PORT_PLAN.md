@@ -758,3 +758,52 @@ reads ports_h2 configs too (`--port assault_rifle`, the config's `field_audit`).
   covers Halo 2 -- the eight h2_fonts, the SAW's U+E13D and the AR's U+E13E captured (`--capture --game
   halo2`); restoring the stock fonts reproduces the live ones BYTE FOR BYTE (header +0x10, raised by
   tool for the big glyphs, carried too); the enhancer's existing `ensure('halo2')` call restores them
+
+## A3: what the Spike Rifle taught (2026-10-21/22, parallel with S1, DONE)
+
+The Halo 3 Spike Rifle is a complete Halo 2 port: `ports_h2/brute_spiker.py` (status 'done'), tested
+in game, CLASSIC, in 9 boots on 08a (Arbiter) and 05b (Chief), Armed `--armed all` on 05b -- every
+item confirmed by the user. Residency: palette entry in all 13 levels; ships with the batched rebuild.
+Backup `F:\HaloPortBackups\2026-10-22_2026-10-22_spiker-h2`. PORTING "Halo 2: the Spike Rifle, wave
+A3" is the recipe. Enhancer hand-off: the shared notes (a3_spike_rifle.md); the enhancer session was
+offline -- as with the AR, its cards come from a built level after the batched rebuild.
+
+**Step 4a (user): yardstick the SMG** (one hop, both dual): 8.55 / 8/s / 40-120-160 / 25->17.5;
+Elite TTK 2.12 s. Plus: own BLADE melee (strike_melee x72/70), Halo 3's gravity 0.2 AND min velocity 12.
+
+**The AR's route held** (own skeleton + own H3 FP animations, both species) -- now an observation of
+TWO ports. **New, each a tool option (opt-in, proven on the SAW / AR):**
+1. DUAL WIELD kept (the SMG donor): H3's `first_person:dual:*` = H2's names. Halo 2 draws the LEFT
+   gun MIRRORED across the FP root's local y: the root bind must be identity like Bungie's
+   (geometry `fp_root_identity` + fp_anims `root_identity`). Dual HUD = the SMG's: the 8-image plate
+   written into the donor's own compressed colour plate (hud_plate `all_images`), meter named x2.
+2. THE CHIEF'S LEFT HAND: an SMG-seeded FP graph carries a single-wield IK entry (left hand -> the
+   weapon's left_hand marker; the Chief grips the SMG two-handed) -- on a one-handed port it pins
+   the hand in the gun (fp_anims `drop_ik`). H3's Chief anims park that hand under the gun (H3
+   hides it): `rest_left_arm` holds it low (the Arbiter's way), reloads / grenade eased in.
+3. THE PICKUP ICON (user rule, every H2 port): the reserved E1xx codepoint, UNTINTED (white lines,
+   grey body, 160x62). halo2.dll tints only U+E112-E12B / non-private-use, forces E000-E3FF white
+   x0.72; at and above U+E400 MCC's own glyph hook draws a placeholder (5 codepoints tested).
+   The AR went E13E -> E53E -> back to E13E the same way.
+4. THE SPIKE: the SMG bullet has no model or attachments -> H3's spike mesh as its model
+   (`particle_models`, h2_tagref.fill_reference) + the needle's light volume recoloured to H3's
+   orange (h2_tagref.add_attachment: the donor must share the STRUCT VERSION -- 852-byte projectile
+   roots carry 44-byte attachment elements, 604-byte ones 32; byte_edits). Material responses
+   BY NAME (the field audit pairs them by index): H3's ricochet; bodies ATTACH the needle's way.
+5. 3P: ONE-HANDED weapons take class `pistol` (H3's own; the SMG's `rifle` is the Jackal's
+   two-handed stance) with type `smg` (the Chief / Elite dual stance); the kit Brute graph taught
+   `pistol` (rifle cloned: its one-handed carry). Jackals keep their shield: the INVERSE shield rule
+   (h2-armed-cards 4043b32: a one-handed weapon gives shieldless / sniper Jackals their shield back).
+6. Look: Brute seeds (gravity hammer tex_bump_env_illum, Brute Shot body / blade); H3's grey illum
+   mask TINTED per shader, each lit spot a SOFT glow (`('tint', rgb, 0, 1.5)`: grown spots read as
+   'crosses taped on'); meter pips = H3's own round (meter `tick_art`); BR hull on the port's own
+   skeleton (collision `nodes_from_render`); messages `names` ('an SMG' -> 'a Spike Rifle').
+
+**Observations:** the length-changing prefix rename (smg -> spk2) works in game -- CONFIRMED (with the
+AR's shorter one, now two ports). 08a and 04b are ARBITER levels: Chief tests on 05b. h2_tagfield
+cannot probe a 0 field: probe a copy, seed the per-tag cache; any insert (path, chunk, longer string
+id) shifts that tag's cached offsets -- re-derive, prove the zero fields by a test write and back.
+A tool proof restores shared records (catalog, AI profiles, fonts) to its start: never write one
+while the other session's proof holds the H2 kit lock. A PermissionError on H2 fonts = a LEVEL is
+running (not MCC). Not done / approximations: H3 frame events -> the SMG seed's; the stuck spike
+lasts 1 s (H3's model particle 4-5 s); impacts use the SMG bullet's material effects.

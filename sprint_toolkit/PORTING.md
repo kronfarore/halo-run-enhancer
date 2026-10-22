@@ -3710,6 +3710,12 @@ an attachment from a donor of the SAME struct version: 852-byte projectile roots
 attachment elements, 604-byte ones 32). Material responses BY NAME (not index): Halo 3's ricochet
 (impact + bounce at 0-60 deg on terrain / metal), bodies ATTACH the needle's way, 1 s at rest.
 
+**THIRD PERSON, ONE-HANDED.** Class `pistol` (Halo 3's own), type the SMG's `smg` (the Chief /
+Elite dual stance): Jackals, Grunts, Marines, Flood hold it in their one-handed pistol stance (the
+SMG's `rifle` is the Jackal's two-handed carbine stance). The Brute graph had no `pistol`: taught it
+(h2_graph_teach rifle=pistol -- its rifle `any` set is the one-handed carry). A one-handed weapon
+gives shieldless / sniper Jackals their shield back (h2_enemy_weapons.jackal_shield, both directions).
+
 **Tag-edit lessons:** h2_tagfield cannot probe a field reading 0 -- find it by probing a COPY (a byte
 flip / a float, tool's export names what moved) and seed the per-tag cache; any insert (a path, a
 chunk, a longer string id) shifts every later cached offset of that tag -- re-derive them and prove
