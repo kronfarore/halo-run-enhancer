@@ -356,7 +356,12 @@ has only 'Halo 1'; `ai_firing_profile.py` writes Halo 1 actor variants only). Sp
   the pipeline writes; a port not 'done' and the size-test stand-ins are never hashed, backed up
   or restored) and `h2_port_tool_proof.py --tag X --rev <commit before the change> [--steps ...]` (the toolkit
   at --rev extracted to a temporary copy and run against today's, kit put back from the backup;
-  the narrowed form = --steps naming the steps that use the changed tool).
+  the narrowed form = --steps naming the steps that use the changed tool). A proof holds the
+  HALO 1 lock too, for its whole run, taken first (2026-10-22): it restores the shared records
+  (catalog, AI profiles, fonts) at its end, and their writers take the Halo 1 lock -- with the H2
+  lock alone the Spike Rifle's proof spk8 silently reverted the Flamethrower's catalog write. H1
+  before H2 is the order ai_firing_profile nests them in; no holder waits H2 -> H1. Still: COMMIT
+  a shared-record edit at once (a write lost to any restore is then one checkout away).
 - **SHIPPING BUILDS LEAVE NON-DONE PORTS OUT** -- `h2_rebuild_all.py` holds the H2 lock, renames
   every not-done port's palette entry for a shipping build (put back after; `--no-ship` keeps
   them), and fails a level whose built map misses a done port's weapon tag.

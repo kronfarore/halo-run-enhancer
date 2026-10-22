@@ -127,7 +127,13 @@ def main():
         raise SystemExit('not done (proofs cover DONE ports only): %s' % ', '.join(busy))
     t = a.tag
     logp = os.path.join(S.OUT, 'h2_proof_%s.log' % t)
-    with kit_lock.held('h2_port_tool_proof %s' % t, owner='proof', kit='h2'), open(logp, 'w') as log:
+    # the HALO 1 lock too, for the whole run, taken FIRST: the proof restores the SHARED RECORDS
+    # (weapon_ports_catalog.json, ai_firing_profiles.json, the fonts) at its end, and their writers
+    # take the Halo 1 lock -- with the H2 lock alone a catalog write made mid-proof was silently
+    # reverted (spk8 / the Flamethrower's balanced rows, 2026-10-22). H1 before H2 is the order
+    # ai_firing_profile already nests them in, so no holder waits the other way round
+    with kit_lock.held('h2_port_tool_proof %s (shared records)' % t, owner='proof'), \
+            kit_lock.held('h2_port_tool_proof %s' % t, owner='proof', kit='h2'), open(logp, 'w') as log:
         old = extract(a.rev, t)
         print('[%s] snap + backup pre' % t, flush=True)
         S.snap(t + '_pre')
