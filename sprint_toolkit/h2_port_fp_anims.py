@@ -41,6 +41,8 @@ Section `fp_anims` of ports_h2/<key>.py:
     skip        [Halo 3 animation names left out]
     looping     [Halo 3 names whose end wraps to frame 0]
     rename      {Halo 3 name: Halo 2 name}
+    rest_left_arm  {'species', 'pose': (animation, frame), 'blend': {animation: frames}} -- the
+                left arm held out of view in single-wield animations (rest_left_arm; the Spiker)
     root_identity  the weapon root node whose bind h2_port_geometry `fp_root_identity` made
                 identity -- its frames re-expressed (reroot; the Spike Rifle's dual left gun)
 
@@ -182,6 +184,57 @@ def write_jma(path, nodes, names, frames):
         fh.write('\r\n'.join(lines) + '\r\n')
 
 
+def slerp(a, b, w):
+    d = sum(x * y for x, y in zip(a, b))
+    if d < 0:
+        b, d = tuple(-c for c in b), -d
+    if d > 0.9995:
+        return qnorm(tuple(x + (y - x) * w for x, y in zip(a, b)))
+    th = math.acos(d)
+    s = math.sin(th)
+    return tuple((math.sin((1 - w) * th) * x + math.sin(w * th) * y) / s for x, y in zip(a, b))
+
+
+def rest_left_arm(nodes, anims, rest):
+    """`rest_left_arm` {'species': [...], 'pose': (animation, frame), 'blend': {animation: frames}}
+    (the Spike Rifle, boot 4 on 05b): Halo 3's CHIEF single-wield Spiker animations park the left hand
+    UNDER the gun (Halo 3 does not show it there); Halo 2 draws it, poking into the weapon. The
+    Arbiter's own animator keeps that hand low, out of view, except for the reload and the grenade
+    throw -- so the Chief gets the same: every left-arm node ('l_*') of every SINGLE-wield animation
+    holds the `pose` frame's local transforms; the `blend` animations keep Halo 3's left-arm motion,
+    eased in from the pose and back over that many frames; overlays stop moving the left arm. Dual
+    animations ('first_person:dual:') are untouched."""
+    left = [i for i, (n, _p) in enumerate(nodes) if n.startswith('l_')]
+    pa, pf = rest['pose']
+    pose = locals_of(nodes, anims[pa][1][pf])
+    for name, (typ, frames, animated) in anims.items():
+        if name.startswith('first_person:dual:'):
+            continue
+        if typ == 'overlay':
+            for k in ('rot', 'trans'):
+                if k in animated:
+                    animated[k] = set(animated[k]) - set(left)
+            continue
+        n = rest.get('blend', {}).get(name)
+        new = []
+        for f, fr in enumerate(frames):
+            fr = list(fr)
+            w = 0.0
+            if n:
+                w = min(1.0, f / float(n), (len(frames) - 1 - f) / float(n))
+                w = w * w * (3 - 2 * w)                     # smoothstep
+            for i in left:
+                q, t = pose[i]
+                r, tt, s = fr[i]
+                if w > 0 and r is not None:
+                    q = slerp(q, r, w)
+                if w > 0 and tt is not None:
+                    t = tuple(a + (b - a) * w for a, b in zip(t, tt))
+                fr[i] = (q, t, s)
+            new.append(fr)
+        frames[:] = new
+
+
 def build(key, species, only=None, write=True):
     cfg = ports_h2.get(key, 'fp_anims')
     sp = cfg['species'][species]
@@ -195,6 +248,9 @@ def build(key, species, only=None, write=True):
     src = os.path.join(H2EK, 'data', sp['source'], 'animations')
     if write and not only and os.path.isdir(src):
         shutil.rmtree(src)
+    rest = cfg.get('rest_left_arm') or {}
+    if species in rest.get('species', ()):
+        rest_left_arm(nodes, anims, rest)
     ref_pose = anims[cfg.get('overlay_reference', 'first_person:idle')][1][0]
     rename = cfg.get('rename', {})
     out = []

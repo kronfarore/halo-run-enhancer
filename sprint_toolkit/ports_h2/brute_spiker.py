@@ -527,6 +527,14 @@ PORT = {
                     'first_person:dual:posing:var1', 'first_person:dual:posing:var2'],
         'overlay_reference': 'first_person:idle',
         'root_identity': 'gun',       # with geometry fp_root_identity (boot 1: the dual left gun)
+        # boot 4 (05b, user's screenshot: the Chief's left arm 'moves into the weapon' after the
+        # ready): Halo 3's Chief animations park the left hand UNDER the gun (23, -3, -6 cm; Halo 3
+        # never shows it there); the Arbiter's keep it low out of view (8, 6, -25). The Chief gets the
+        # Arbiter's way: the ready's first frame (15, 4, -27: low) held in every single-wield
+        # animation; the reloads and the grenade throw keep Halo 3's left-hand motion, eased in/out
+        'rest_left_arm': {'species': ['masterchief'], 'pose': ('first_person:ready', 0),
+                          'blend': {'first_person:reload_empty:var1': 12, 'first_person:reload_full:var1': 12,
+                                    'first_person:throw_grenade': 8}},
         # Halo 3 names the one single-wield reload / the Chief's one fire `:var1`; Halo 2's SMG
         # (the seed: its events and sounds stay on same-name animations) names them plain
         'rename': {'first_person:reload_empty:var1': 'first_person:reload_empty',
