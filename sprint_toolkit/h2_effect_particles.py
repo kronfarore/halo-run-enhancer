@@ -154,7 +154,7 @@ def main():
         if src == 'Halo 1' and stag:
             import h1_effect_particles as H1
             from reclaimer.hek.defs.weap import weap_def
-            w = weap_def.build(filepath=os.path.join(H1.TAGS, stag + '.weapon')).data.tagdata
+            w = weap_def.build(filepath=os.path.join(H1.TAGS, stag + '.weapon')).data.tagdata.weap_attrs
             for t in w.triggers.STEPTREE:
                 for f in t.firing_effects.STEPTREE:
                     if f.firing_effect.filepath:

@@ -63,6 +63,8 @@ STOCK = {
     'Brute Shot': ('support_low\\brute_shot\\brute_shot', 'support_low\\fp_brute_shot\\fp_brute_shot'),
     'Sword': ('melee\\energy_blade\\energy_blade', None),
     'Energy Blade': ('melee\\energy_blade\\energy_blade', None),
+    'Sentinel Beam': ('objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam',
+                      'support_low\\fp_sentinel_beam\\fp_sentinel_beam'),
 }
 
 ERROR_FIELDS = ('Minimum Error', 'Error Angle', 'Error Angle Max')
@@ -91,12 +93,14 @@ def port_paths(entry):
 def resolve(name, cat):
     """(label, weapon path, FP graph, catalog entry or None) for a set member, or None."""
     name = name[:-len(' (port)')] if name.endswith(' (port)') else name
+    if name not in cat and name not in STOCK:
+        name = name.split(' (')[0].strip()      # a config's note: 'Plasma Rifle (native in ...)'
     if name in cat:
         w, fp = port_paths(cat[name])
         return ('%s (port)' % name, w, fp, cat[name])
     if name in STOCK:
         w, fp = STOCK[name]
-        return (name, W + w, (FP + fp + '.model_animation_graph') if fp else None, None)
+        return (name, w if w.startswith('objects\\') else W + w, (FP + fp + '.model_animation_graph') if fp else None, None)
     return None
 
 
@@ -165,6 +169,13 @@ def read(label, path, fp, entry, balanced, log):
               vel=(pr.f('initial velocity'), pr.f('final velocity')), range=pr.f('maximum range'))
     if balanced and entry:
         w, ex = overlay(w, ex, entry)
+    if not (w['rps'][0] or w['rps'][1]) and w['fire recovery']:
+        # a weapon paced by its fire recovery alone (Halo 2's shotgun: rate 0, recovery 1.0 s)
+        w['rps'] = [1.0 / w['fire recovery']] * 2
+        w['fire recovery'] = 0.0
+    per = tag.f('magazines/[0]/rounds reloaded') if mags else 0
+    if per and w['mag'] and per < w['mag']:
+        w['reload'] *= w['mag'] / per         # shell by shell: the tag's time is per shell
     return w, ex
 
 
@@ -191,6 +202,8 @@ def ttk(g, targets, w):
     groups = (w['general_damage'], w['specific_damage'])
     per = w['upper'] * (w['projectiles per shot'] or 1.0)
     out = []
+    if not (w['rps'][0] or w['rps'][1]):
+        return [(t[0], None, None) for t in targets]   # no rate (a melee weapon): no fire TTK
     for label, esh, ebo, shm, bom in targets:
         msh = g.multiplier(groups, shm)[0] if esh > 0 else 0
         n, _ = tc.shots_to_kill(esh, ebo, per * msh, per * g.multiplier(groups, bom)[0])
@@ -230,6 +243,9 @@ def main():
     targets = enemies(g)
     rows = []
     for label, path, fp, entry in members:
+        if not t2.Tag(path + '.weapon', {}).s('barrels/[0]/projectile', False):
+            skipped.append('%s (no projectile: melee)' % label)
+            continue
         w, ex = read(label, path, fp, entry, a.balanced, log)
         rate = w['rps'][1] or w['rps'][0]
         dps = w['upper'] * (w['projectiles per shot'] or 1.0) * rate
