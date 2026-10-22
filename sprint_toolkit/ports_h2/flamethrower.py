@@ -115,7 +115,8 @@ PORT = {
                     'defoliant spawn': 'muzzle_flash',
                     # first person: Halo 1 spawns the flame at `spawn fire`, its pilot light at `pilot`
                     'spawn fire': 'primary_trigger', 'pilot': 'pilot', 'flashlight': 'flashlight',
-                    'steam vent01': 'steam_vent', 'steam vent02': 'steam_vent'},
+                    # `vent`: the PR overheat effect's marker (boot 3: the overheat effect)
+                    'steam vent01': 'vent', 'steam vent02': 'vent'},
         'muzzle_drop': 0.0,
         'ground_point': {'rot': (0.7071068883, -1.8e-09, -7.42e-08, -0.7071067095)},   # the SMG's
         'min_tris': 200,
@@ -147,6 +148,10 @@ PORT = {
                     # rows the quad samples (0.466-0.966: Halo 1 scrolled the texture)
                     (H1FT + r'\bitmaps\flamethrower_heat_display', 'flamethrower_heat_meter',
                      r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_heat_gauge', 'color', None),
+                    # the FLAME's look (boot 3): Halo 1's own `burning flame` sprite (sheet sprite 4,
+                    # one whole flame), the contrail's texture
+                    (r'effects\particles\flash\bitmaps\burning flame', 'flame_sprite',
+                     r'effects\bitmaps\contrails\plasma_contrail', ('sprite', 4), (64, 64)),
                     (None, 'flamethrower_heat_alpha',
                      r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_heat_gauge_alpha',
                      ('gradient', 'v', True, (0.466, 0.966)), (32, 128))],
@@ -199,7 +204,14 @@ PORT = {
                    (r'effects\objects\weapons\rifle\smg\smg_muzzle_flash.light', FX + r'\flamethrower_muzzle_flash.light'),
                    (r'effects\materials\objects\weapons\smg.material_effects', FX + r'\flamethrower.material_effects'),
                    (r'effects\materials\objects\weapons\plasma_rifle.material_effects', FX + r'\flame.material_effects'),
-                   (r'effects\objects\weapons\support_high\rocket_launcher\rocket_exhaust.effect', FX + r'\flame_burning.effect'),
+                   (r'effects\objects\weapons\rifle\brute_plasma_rifle\red_plasma_streak.contrail', FX + r'\flame_contrail.contrail'),
+                   (r'effects\objects\weapons\rifle\brute_plasma_rifle\red_plasma_streak.light_volume', FX + r'\flame_glow.light_volume'),
+                   # boot 3 (user: 'build the support for the pilot flame and overheat effect'): the PILOT
+                   # (Halo 1: a small blue flame at `pilot` while the weapon is ready) = the plasma pistol's
+                   # blue charge glow; the OVERHEAT effect = the plasma rifle's (Halo 1's own is the same
+                   # `plasma overheat` particles at its steam vents)
+                   (r'effects\objects\weapons\pistol\plasma_pistol\charging_bolt.effect', FX + r'\flamethrower_pilot.effect'),
+                   (r'effects\objects\weapons\rifle\plasma_rifle\overheated.effect', FX + r'\flamethrower_overheated.effect'),
                    # the RELOAD sound: the seed graph (the PR's) has no reload animation, so no reload
                    # sound event -- the magazine's reloading effect carries it instead: a clone of
                    # Bungie's sound-only BR dryfire effect (step 10 repoints its sound)
@@ -232,44 +244,38 @@ PORT = {
              FX + r'\flamethrower', 'material effects (the weapon)'),
             (FT + r'\projectiles\flame.projectile', 'foot', r'effects\materials\objects\weapons\plasma_rifle',
              FX + r'\flame', 'impact material effects'),
-            # the FLAME (boot 1: 'projectiles are not flames at all'). Halo 1's flame is a projectile
-            # whose detonation timer starts at once and whose `flame detonation` effect -- `burning`:
-            # fire particles + smoke, five 0.5-1.5 s events -- rides it for its whole 1.3-8 s life
-            # (and the weapon's fp_defoliant particle systems while firing). Halo 2's object
-            # ATTACHMENTS take effects (the plasma grenade's armed glow): the PR bolt's contrail
-            # attachment becomes an attached EFFECT. Boot 2 ('flames too big immediately and too close
-            # to the player; they don't travel'): Bungie's scenery `fire_medium` emits big particles in
-            # WORLD space where it starts -> now a clone of the ROCKET's attached `rocket_exhaust`
-            # (H2's own flame that rides its projectile: rocket_flame + core + smoke). The light volume
-            # (the red glow the user saw fly 'far too long') -> an EMPTY Bungie effect. Both
-            # attachments reclassed, then the first (the contrail's) -> the flame, the other -> empty
-            (FT + r'\projectiles\flame.projectile', 'MGS2', r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak',
-             r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak', "the glow attachment -> an effect",
-             {'class': 'effe'}),
+            # the FLAME. Halo 1 (HCEEK, per second -- its AR bullet reads 324): a flame projectile at 3.6
+            # wu/s + the shooter's velocity, living 1.3 s in flight, carrying `flame detonation` ->
+            # `burning`: small flame sprites (radius 0.1-0.25 wu) and smoke. Boots 1-3 (a plasma streak;
+            # Bungie's scenery fire; the rocket exhaust -- both drop big WORLD-space fire where they
+            # start: 'too big, in my face, not moving'): now a CONTRAIL, the one Halo 2 attachment that
+            # travels with its projectile, drawn with Halo 1's own `burning flame` sprite (textures),
+            # thin and bright at the head, wide and fading red at the tail; 21.6 flames a second overlap
+            # into the stream. The light volume kept as the flame's warm glow (the Brute rifle's red)
             (FT + r'\projectiles\flame.projectile', 'cont', r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak',
-             r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak', "the flame's attachment -> an effect",
-             {'class': 'effe'}),
-            (FT + r'\projectiles\flame.projectile', 'effe', r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak',
-             FX + r'\flame_burning', "the flame's fire (Halo 2's rocket exhaust, attached)", {'nth': 0}),
-            (FT + r'\projectiles\flame.projectile', 'effe', r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak',
-             EMPTY_FX, 'the old glow: nothing'),
+             FX + r'\flame_contrail', "the flame (a contrail with Halo 1's flame sprite)", {'nth': 0}),
+            (FT + r'\projectiles\flame.projectile', 'MGS2', r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak',
+             FX + r'\flame_glow', "the flame's glow (light volume)", {'nth': 0}),
+            (FX + r'\flame_contrail.contrail', 'bitm', r'effects\bitmaps\contrails\plasma_contrail',
+             FT + r'\bitmaps\flame_sprite', "Halo 1's burning flame sprite"),
             # where a flame hits: no big fire (boot 2); Halo 1's `flame char` is a scorch + a small
             # flash -- the clone's material effects keep the scorch decals
             (FT + r'\projectiles\flame.projectile', 'effe', r'effects\impact\plasma_slow\soft_terrain',
              EMPTY_FX, 'impact on soft materials -> nothing big', {'every': True}),
             (FT + r'\projectiles\flame.projectile', 'effe', r'effects\impact\plasma_slow\hard_metal_thick',
              EMPTY_FX, 'impact on hard materials -> nothing big', {'every': True}),
-            # the muzzle: the SMG fire effect's flash particles -> Bungie's fire particles (its sound,
-            # light and physics kept)
-            (FX + r'\flamethrower_fire.effect', 'prt3', r'effects\objects\weapons\rifle\smg\fire_burst_center',
-             r'effects\generic\fires\fire', 'muzzle flash -> fire', {'every': True}),
-            (FX + r'\flamethrower_fire.effect', 'prt3', r'effects\objects\weapons\rifle\smg\fire_burst_long',
-             r'effects\generic\fires\white_rolling_flame', 'muzzle streak -> rolling flame', {'every': True}),
+            # the OVERHEAT effect into the clone's EMPTY `overheated` slot (h2_tagref.fill_reference,
+            # field-checked: an empty reference is not exported, only the result says which was filled)
+            (FT + r'\flamethrower.weapon', 'effe', '', FX + r'\flamethrower_overheated', 'the overheat effect',
+             {'field': 'overheated'}),
             # the HUD is the BR's clone (step 7: single, two-handed; the SMG's is dual-wield shaped)
             (FT + r'\flamethrower.weapon', 'nhdt', r'ui\hud\smg', r'ui\hud\flamethrower', 'its own HUD (step 7)'),
             (FT + r'\flamethrower.weapon', 'effe', r'effects\objects\weapons\rifle\battle_rifle\reload',
              FX + r'\flamethrower_reload', "the magazine's reloading effect (Halo 1's reload sound, step 10)"),
         ],
+        # the PILOT flame: a second attachment beside the muzzle light, at the FP model's `pilot`
+        # marker, no scale function = always on (Halo 1: `ready`) -- h2_tagref.append_attachment
+        'append_attachments': [(FT + r'\flamethrower.weapon', 'effe', FX + r'\flamethrower_pilot', 'pilot', 'ligh')],
         # the 3P label: the BR's `rifle` / `br` (every character's graph holds the two-handed BR; the
         # Grunt's taught by the AR, h2_graph_teach). Halo 1's label `ft` has no Halo 2 graph
         'string_ids': {'rifle': 'rifle', 'smg': 'br'},
@@ -379,6 +385,22 @@ PORT = {
              {'anchor': ('damage upper bound', 16)}),
             # first-person placement: Halo 1's animations carry Halo 1's view (camera = origin), so
             # start with none (the SMG's 0.02, 0, 0 is for its own graph) -- checked in game
+            # the flame's CONTRAIL (boot 3): a head of 0.15 s (thin 0.12, bright yellow-white) blending
+            # in 0.08 s into a tail of 0.25 s (wide 0.45 = Halo 1's flame sprites, deep red, fading
+            # out); points drift up 0.3-0.6 wu/s (Halo 1's cold smoke puff physics); one sprite a length
+            (FX + r'\flame_contrail.contrail', 'texture repeats u', '', 0, 0, 1.0),
+            (FX + r'\flame_contrail.contrail', 'point velocity', '', 0, 0, [0.3, 0.6],
+             {'anchor': ('point generation rate', 4)}),
+            (FX + r'\flame_contrail.contrail', 'duration', 'point states', 0, 0, [0.15, 0.15],
+             {'anchor': ('transition duration', -8)}),
+            (FX + r'\flame_contrail.contrail', 'transition duration', 'point states', 0, 0, [0.08, 0.08]),
+            (FX + r'\flame_contrail.contrail', 'width', 'point states', 0, 0, 0.12),
+            (FX + r'\flame_contrail.contrail', 'color lower bound', 'point states', 0, 0, [0.9, 1.0, 0.85, 0.45]),
+            (FX + r'\flame_contrail.contrail', 'color upper bound', 'point states', 0, 0, [0.9, 1.0, 0.85, 0.45]),
+            (FX + r'\flame_contrail.contrail', 'duration', 'point states', 1, 0, [0.25, 0.25]),
+            (FX + r'\flame_contrail.contrail', 'width', 'point states', 1, 0, 0.45),
+            (FX + r'\flame_contrail.contrail', 'color lower bound', 'point states', 1, 0, [0.0, 1.0, 0.35, 0.05]),
+            (FX + r'\flame_contrail.contrail', 'color upper bound', 'point states', 1, 0, [0.0, 1.0, 0.35, 0.05]),
             # boot 1 (user): '1 unit forward and down' (1 unit = 0.01 wu, the AR's convention)
             (FT + r'\flamethrower.weapon', 'first person weapon offset', '', 0, 0, [0.01, 0.0, -0.01]),
         ],
@@ -546,8 +568,9 @@ PORT = {
             ('plasrifle_posing_zero', 'ft_posing'), ('plasrifle_posing_one', 'ft_posing'))
             + tuple(('plasrifle_dual_pose%d_%s' % (k, side), 'ft_posing') for k in range(4) for side in 'lr')),
         'graph_sound_dir': r'sound\weapons\plasma_rifle' + '\\',
-        'gain': {'ft_flyby': -40.0},
-        'boost': {},
+        # boot 3 (user: 'the overheat sound exists, but is too quiet'): +6 dB
+        'gain': {'ft_flyby': -40.0, 'ft_overheat': 0.0},     # Halo 2's gain base tops out at 0 dB
+        'boost': {'ft_overheat': 3.0},                        # the rest of the +6 in the samples
         'backup': r'E:\HaloBackups\H2EK_flamethrower_before_sounds',
         'graph_backup': r'E:\HaloBackups\H2EK_flamethrower_graphs_before_sounds',
     },

@@ -194,7 +194,7 @@ def retarget_one(data, cls, old_path, new_path, which, rec):
     return bytes(out)
 
 
-def fill_reference(tag_path, cls, new_path, tries=400):
+def fill_reference(tag_path, cls, new_path, tries=400, field=None):
     """Fill an EMPTY `cls` reference (length 0: nothing pooled) with `new_path` -- the Spike
     Rifle's projectile, cloned from the SMG bullet whose object `model` is empty (boot 1: 'the
     spike is not visible'). The record gets the length; the path + null is INSERTED where tool
@@ -210,12 +210,15 @@ def fill_reference(tag_path, cls, new_path, tries=400):
     recs = []
     for start, end in _arrays(original):
         for i in range(start, max(start, end - 15), 4):
-            if original[i:i + 4] == want:
+            # with `field`, a CLASS-LESS empty record too (class -1: the Flamethrower's
+            # `overheated` effect, cloned from the SMG which has none)
+            if original[i:i + 4] == want or (field and original[i:i + 4] == b'\xff' * 4):
                 _ptr, n, datum = struct.unpack_from('<III', original, i + 4)
                 if n == 0 and datum == NULL:
                     recs.append((i, end))
     if not recs:
         raise ValueError('no empty %s reference in %s' % (cls, tag_path))
+    recs.sort(key=lambda r: original[r[0]:r[0] + 4] == want)    # class-less ones first
     raw = new_path.encode('latin-1') + b'\0'
     for rec, arr_end in recs:
         spots = [arr_end]
@@ -229,6 +232,7 @@ def fill_reference(tag_path, cls, new_path, tries=400):
                 spots.append(at)
         for spot in spots:
             out = bytearray(original)
+            out[rec:rec + 4] = want
             struct.pack_into('<I', out, rec + 8, len(new_path))
             out[spot:spot] = raw
             open(tag_path, 'wb').write(bytes(out))
@@ -239,12 +243,86 @@ def fill_reference(tag_path, cls, new_path, tries=400):
             rows = tf.read_all(x) if x else []
             if [r[4] for r in rows] != [r[4] for r in rows_before]:
                 continue
+            # `field`: the empty reference MEANT (a tag has several empty ones of a class, and an
+            # empty reference is not exported, so only the result can say which was filled -- the
+            # Flamethrower's `overheated` effect, 2026-10-22)
+            if field and ('<tag_reference name="%s" type="%s">%s<' % (field, cls, new_path)) not in x:
+                continue
             print('%s: %s (empty) -> %s  (record 0x%X, path at 0x%X; %d references, every field '
                   'as before)' % (os.path.basename(tag_path), cls, new_path, rec, spot, len(after)))
             return spot, len(raw)
     open(tag_path, 'wb').write(original)
     raise ValueError('no place for %s gave the intended result; %s restored'
                      % (new_path, os.path.basename(tag_path)))
+
+
+def append_attachment(tag_path, cls, new_path, marker, like_cls):
+    """APPEND an attachment to an object whose attachments block already has elements (the
+    Flamethrower, boot 3: its pilot flame beside the SMG clone's muzzle light; add_attachment only
+    CREATES a first one). The new element is a copy of the block's element whose type is a `like_cls`
+    reference, with the type `cls` `new_path`, the marker `marker` and no scale functions (always on);
+    its pooled data (path + null, then the marker -- string ids are pooled unterminated, in field
+    order) follows the last element's. The chunk's count and the root struct's block count go up by
+    one; the root's count field is found by trial. Kept only when tool.exe reports the old references
+    plus this one, every old field row unchanged and the new element's marker reading `marker`."""
+    import h2_tagfield as tf
+    original = open(tag_path, 'rb').read()
+    want_cls = like_cls.encode('latin-1')[::-1]
+    before = references(tag_path)
+    rows_before = [r for r in tf.read_all(tf.export(tag_path))]
+    chunk = None
+    i = original.find(SIG)
+    while i >= 0:
+        _v, n, sz = struct.unpack_from('<III', original, i + 4)
+        if 0 < n < 16 and sz in (32, 44) and original[i + CHUNK:i + CHUNK + 4] == want_cls \
+                and struct.unpack_from('<I', original, i + CHUNK + 12)[0] == NULL:
+            chunk = (i, n, sz)
+            break
+        i = original.find(SIG, i + 4)
+    if chunk is None:
+        raise ValueError('%s: no attachments block starting with a %s reference' % (tag_path, like_cls))
+    at, n, sz = chunk
+    arr = at + CHUNK
+    sid_offs = [o for o in range(16, sz, 4)]
+
+    def pooled_len(e):
+        plen = struct.unpack_from('<I', e, 8)[0]
+        return (plen + 1 if plen else 0) + sum(e[o + 3] for o in sid_offs if 0 < e[o + 3] < 64)
+    pool_end = arr + n * sz + sum(pooled_len(original[arr + k * sz:arr + (k + 1) * sz]) for k in range(n))
+    elem = bytearray(original[arr:arr + sz])
+    elem[0:4] = cls.encode('latin-1')[::-1]
+    struct.pack_into('<III', elem, 4, 0, len(new_path), NULL)
+    for o in sid_offs:
+        if 0 < elem[o + 3] < 64:
+            struct.pack_into('<I', elem, o, 0)        # every string id empty (no scale functions)
+    struct.pack_into('<I', elem, sid_offs[0], len(marker) << 24)   # the marker: the first one
+    pool = new_path.encode('latin-1') + b'\0' + marker.encode('latin-1')
+    body = bytearray(original)
+    body[pool_end:pool_end] = pool                    # after the old pooled data
+    body[arr + n * sz:arr + n * sz] = elem            # after the old elements
+    struct.pack_into('<I', body, at + 8, n + 1)
+    rs, re_ = _arrays(original)[0]
+    counts = [o for o in range(rs, min(re_, at) - 3, 4) if struct.unpack_from('<I', original, o)[0] == n]
+    for c in counts:
+        out = bytearray(body)
+        struct.pack_into('<I', out, c, n + 1)
+        open(tag_path, 'wb').write(bytes(out))
+        after = references(tag_path)
+        if sorted(after) != sorted(before + [(cls, new_path)]):
+            continue
+        x = tf.export(tag_path)
+        rows = tf.read_all(x) if x else []
+        old = [r for r in rows if not (r[0] == 'attachments' and int(r[1]) == n)]
+        if [r[4] for r in old] != [r[4] for r in rows_before]:
+            continue
+        if not any(r[0] == 'attachments' and int(r[1]) == n and r[2] == 'marker' and r[4].strip() == marker
+                   for r in rows):
+            continue
+        print('%s: + attachment %d %s %s at marker %s (block count at 0x%X; every old field as before)'
+              % (os.path.basename(tag_path), n, cls, new_path, marker, c))
+        return
+    open(tag_path, 'wb').write(original)
+    raise ValueError('no count field gave the intended result; %s restored' % os.path.basename(tag_path))
 
 
 def add_attachment(tag_path, donor_path, cls, element=0, tries=400, count_at=None, after=None):

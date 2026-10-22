@@ -95,7 +95,8 @@ def wire(w):
         if old == '':
             # the clone's reference is EMPTY (the Spike Rifle's projectile model): filled,
             # tool-verified (h2_tagref.fill_reference)
-            h2_tagref.fill_reference(path, cls, new)
+            # {'field': name}: WHICH empty reference (the Flamethrower's `overheated` effect)
+            h2_tagref.fill_reference(path, cls, new, field=opt.get('field'))
             print('      (%s)' % why)
             continue
         h2_tagref.set_reference(path, cls, old, new, every=opt.get('every', False),
@@ -122,6 +123,14 @@ def main(argv=None):
             continue
         h2_tagref.add_attachment(path, os.path.join(TAGS, donor), cls, element,
                                  **(row[4] if len(row) > 4 else {}))
+    for tag, cls, new, marker, like in w.get('append_attachments', ()):
+        # an attachment APPENDED beside the clone's own (the Flamethrower's pilot flame);
+        # h2_tagref.append_attachment, tool-verified
+        path = os.path.join(TAGS, tag)
+        if (cls, new) in h2_tagref.references(path):
+            print('   %-34s already has %s' % (os.path.basename(tag), new.split('\\')[-1]))
+            continue
+        h2_tagref.append_attachment(path, cls, new, marker, like)
     if w.get('byte_edits'):
         print('byte edits in the clones:')
         byte_edits(w)

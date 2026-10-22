@@ -176,7 +176,8 @@ def h3_main(t, argv):
                     ('alpha_from', source, channel) (another map's channel as alpha) | 'flat_bump'
                     (no source: a flat height) | ('gradient', 'u'|'v', reverse[, (lo, hi)]) (no
                     source: a meter's reveal ramp over a UV window) | ('mask_from', source,
-                    channel) (the colour x another map's channel: a self-illum map),
+                    channel) (the colour x another map's channel: a self-illum map) | ('sprite', k[,
+                    then]) (one sprite of a Halo 1 sprite sheet),
                     (w, h) or None = the source's size)]
         shaders   [(port shader name, Bungie seed shader tag, {seed bitmap['#n']: port bitmap or
                     another tag})] -- a seed bitmap left out of the map stays Bungie's; '#n' moves
@@ -216,6 +217,19 @@ def h3_main(t, argv):
                 print('   %-40s %s gradient %dx%d -> %s.tif' % ('(none)', mode[1], w, h, name))
                 continue
             img, _ = decode(src)
+            if isinstance(mode, tuple) and mode[0] == 'sprite':
+                # ('sprite', k[, then mode]): sprite k of a Halo 1 sprite sheet's first sequence -- the
+                # Flamethrower's flame contrail drawn with Halo 1's own `burning flame` sprite
+                import port_env  # noqa: F401
+                from reclaimer.hek.defs.bitm import bitm_def
+                sheet = bitm_def.build(filepath=os.path.join(os.path.dirname(H2EK), 'HCEEK', 'tags',
+                                                             src + '.bitmap')).data.tagdata
+                sp = sheet.sequences.STEPTREE[0].sprites.STEPTREE[mode[1]]
+                img, _ = decode(src, sp.bitmap_index)
+                w0, h0 = img.size
+                img = img.crop((int(sp.left_side * w0), int(sp.top_side * h0),
+                                int(sp.right_side * w0), int(sp.bottom_side * h0)))
+                mode = mode[2] if len(mode) > 2 else 'color'
             if mode in ('bump', 'bump_snorm'):
                 if mode == 'bump_snorm':
                     # Halo 3's DXN (BC5) normals are SIGNED: decoded as unsigned bytes they sit
