@@ -5,6 +5,7 @@ Halo 2 counterpart of h1_port_test_map.py, replacing the SAW-only h2_saw_place.p
     python h2_port_test_map.py <key> --level 03a [--profiles "starting profile,respawn profile"]
                                      [--rounds 72,216] [--stage] [--keep-kit-map]
                                      [--armed all | elite,grunt,jackal[,brute]] [--share 1]
+                                     [--original] [--mortal]
     python h2_port_test_map.py <key> --restore <level>
     python h2_port_test_map.py --status
 
@@ -27,7 +28,9 @@ ARMED (--armed SPECIES, 0.5b): after the build, every squad unit of those specie
 spawns with the port (h2_armed_test.arm: squad / starting-location weapon indices -> the port's
 palette entry; vehicle-bound squads untouched); its firing data comes from the kit's ai\generic
 (ai_firing_profile.py --h2-port <key>, which must have run).
-Tests are in CLASSIC (a rebuilt H2 map is a classic-side build; memory halo2-loose-tag-format).
+BALANCED: every test map plays the port's Balanced numbers -- the catalog rows written the
+enhancer's way (h2_armed_test.port_balance; Armed: the Balanced AI rows too). --original stages
+the Balanced box OFF instead. Tests are in CLASSIC (a rebuilt H2 map is a classic-side build; memory halo2-loose-tag-format).
 """
 import argparse
 import json
@@ -199,7 +202,7 @@ def add_characters_ai(r, species):
 
 
 def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.0, god=True,
-          replace=True):
+          replace=True, balanced=True):
     p = ports_h2.load(key)
     weapon = R.weapon_path(p)
     scn, res = scenario(level), R.resource(level)
@@ -244,13 +247,13 @@ def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.
             if ok:
                 os.makedirs(TEST_DIR, exist_ok=True)
                 shutil.copy2(kit_map, os.path.join(TEST_DIR, level + '.map'))
-                if armed or god:
-                    import h2_armed_test
-                    h2_armed_test.test_map(os.path.join(TEST_DIR, level + '.map'), weapon, armed,
-                                           share, god=god, replace=replace, cheat=bool(armed))
+                import h2_armed_test
+                h2_armed_test.test_map(os.path.join(TEST_DIR, level + '.map'), weapon, armed,
+                                       share, balanced=balanced, god=god, replace=replace,
+                                       cheat=bool(armed))
                 if armed:
-                    print('   (Armed = BALANCED AI rows; shieldless Jackals, Grunt teach + half '
-                          'rate, species skill)')
+                    print('   (Armed = %s AI rows; shieldless Jackals, Grunt teach + half '
+                          'rate, species skill)' % ('BALANCED' if balanced else 'DEFAULT'))
         finally:
             for f, k in keep.items():
                 if f == kit_map and keep_kit_map:
@@ -310,6 +313,9 @@ def main():
     ap.add_argument('--no-replace', action='store_true',
                     help='--armed: keep the level\'s own enemies (default: the squads nearest the '
                          'start become the tested types, 2 each)')
+    ap.add_argument('--original', action='store_true',
+                    help="the port's ORIGINAL numbers (the enhancer's Balanced box off); every "
+                         'test is BALANCED by default')
     ap.add_argument('--mortal', action='store_true',
                     help='NO god shield (every other port test has one: the Halo 1 rule)')
     a = ap.parse_args()
@@ -334,7 +340,7 @@ def main():
     if armed == ['all']:
         armed = list(ALL_ENEMIES)
     built = build(a.key, level, profiles, rounds, a.keep_kit_map, armed, a.share, god=not a.mortal,
-                  replace=not a.no_replace)
+                  replace=not a.no_replace, balanced=not a.original)
     print('test map: %s' % built)
     if a.stage:
         with kit_lock.held('h2_port_test_map %s --stage %s' % (a.key, level), owner=a.key, kit='h2'):

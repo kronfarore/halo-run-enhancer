@@ -324,7 +324,9 @@ has only 'Halo 1'; `ai_firing_profile.py` writes Halo 1 actor variants only). Sp
   h2_enemy_weapons.eligible_weapons(), apply_run gate after the skulls, Options -> Halo 2
   h2_enemy_weapon_cards (on) / h2_armed_all_weapons (off); the exe bundles ai_firing_profiles.json.
   Tested there in memory on 03a; not yet booted through the enhancer itself. Armed-test rules: start squads replaced,
-  cheat Carbine x1000 + run x2, god shield, balanced (memory h2-armed-test-rules).
+  cheat Carbine x1000 + run x2, god shield, balanced (memory h2-armed-test-rules). EVERY test map
+  (Armed or not) plays the port's BALANCED weapon numbers -- the catalog rows written the
+  enhancer's way (h2_armed_test.port_balance); `--original` = the Balanced box off (user 2026-10-22).
 - **Enhancer**: cards + patch-pass call + options = the enhancer session's; spec in
   `sprint_toolkit/H2_ARMED_HANDOFF.md`, handed over once the user confirms everything works.
 

@@ -174,14 +174,42 @@ def cheat_map(m):
     return out
 
 
+def port_balance(m, weapon, balanced=True):
+    """THE BALANCE SETTING on every port test (user 2026-10-22: 'This should be part of the normal
+    test process'): the port's catalog entry through the enhancer's own path --
+    weapon_ports.active_ports (Balanced on, or off = each row's `original`) into
+    halo_patch.apply_weapon_ports (balance rows, ammo pick, animation retiming). The kit's tags
+    hold the source game's own numbers, so without this no boot ever plays the Balanced weapon."""
+    import halo_patch as hp
+    import weapon_ports as W
+    sys.path.insert(0, HERE)
+    import ai_firing_profile as A
+    port = next((p for p in W.ports_for('Halo 2')
+                 if (W.weap_path(p) or '').lower() == (weapon or '').lower()), None)
+    if port is None:
+        return None
+    cfg = {'weapon_ports': {'Halo 2': {port['weapon']: {'enabled': True, 'balanced': balanced}}}}
+    entries = [e for e in W.active_ports('Halo 2', cfg) if e.get('weapon') == port['weapon']]
+    return hp.apply_weapon_ports(m, 'Halo 2', A._plugins()('Halo 2'), entries)
+
+
 def test_map(map_path, weapon=None, species=(), share=1.0, balanced=True, god=True, replace=True,
              cheat=False):
-    """One open + save of a built test map: the Armed pass (if species; the nearest squads first
-    replaced by the tested types unless replace=False) and the god shield."""
+    """One open + save of a built test map: the port's Balanced (or Original) numbers, the Armed
+    pass (if species; the nearest squads first replaced by the tested types unless
+    replace=False) and the god shield."""
     import halo_patch as hp
     m = hp.open_map(map_path, 'Halo 2')
     if getattr(m, 'compressed', False):
         raise SystemExit('%s is compressed -- Halo2Map.save cannot write it' % map_path)
+    if weapon:
+        rows = port_balance(m, weapon, balanced)
+        if rows is None:
+            print("   %s: no catalog entry -- the kit's own numbers (no Balanced / Original test)" % weapon)
+        for r in rows or ():
+            print('   %s: %s %s -> %s%s' % ('BALANCED' if balanced else 'ORIGINAL', r.get('field'),
+                                          r.get('old'), r.get('new'),
+                                          '' if r.get('ok') else '  NOT OK: %s' % r.get('reason')))
     res = arm(map_path, weapon, species, share, balanced=balanced, m=m, replace=replace) \
         if species else None
     if god:
