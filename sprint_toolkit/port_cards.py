@@ -236,6 +236,9 @@ def plan(weapon, only_cards=None, only_game=None):
                 if bad:
                     report.append((game, name, 'SKIPPED', bad))
                     continue
+                # two donor parts mapped onto ONE port tag (Halo 2's strike + smash melee onto
+                # the Spike Rifle's own blade) are written once
+                mapped = list(dict.fromkeys(mapped))
                 # halo.json's form: the class once, on the first part
                 tag = ' & '.join([mapped[0]] + [x.partition(' ')[2] for x in mapped[1:]])
                 dtargets = _resolve(dcard.get('targets'), game, db.games) or []
