@@ -1,14 +1,92 @@
 {
+ "contrail": {
+  "point generation rate": 84,
+  "point states[0].color lower bound": 434,
+  "point states[0].color upper bound": 450,
+  "point states[0].transition duration": 426,
+  "point states[0].width": 430,
+  "point states[1].color lower bound": 506,
+  "point states[1].color upper bound": 522,
+  "point states[1].duration": 490,
+  "point states[1].width": 502,
+  "texture repeats u": 108
+ },
+ "contrail@effects\\objects\\weapons\\support_low\\flamethrower\\flame_contrail": {
+  "point generation rate": 84,
+  "point states[0].color lower bound": 454,
+  "point states[0].color upper bound": 470,
+  "point states[0].duration": 418,
+  "point states[0].transition duration": 426,
+  "point states[0].width": 450,
+  "point states[1].color lower bound": 526,
+  "point states[1].color upper bound": 542,
+  "point states[1].duration": 490,
+  "point states[1].width": 522,
+  "point velocity": 88,
+  "texture repeats u": 108
+ },
+ "contrail@effects\\objects\\weapons\\support_low\\flamethrower\\flame_streak": {
+  "point states[0].color lower bound": 434,
+  "point states[0].color upper bound": 450,
+  "point states[0].width": 430,
+  "point states[1].color lower bound": 506,
+  "point states[1].color upper bound": 522,
+  "point states[1].width": 502
+ },
  "damage_effect": {
   "damage lower bound": 108,
   "damage upper bound": 112,
   "instantaneous acceleration": 148
  },
+ "damage_effect@objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame": {
+  "active camouflage damage": 128,
+  "flags#1": 100
+ },
+ "effect": {
+  "particle systems[0].flags": 295,
+  "particle systems[1].camera mode": 607,
+  "particle systems[1].flags": 363,
+  "particle systems[2].camera mode": 675,
+  "particle systems[2].flags": 433,
+  "particle systems[3].flags": 501
+ },
  "effect@effects\\objects\\weapons\\rifle\\spike_rifle\\spike_rifle_fire": {
   "particle systems[2].camera mode": 675
  },
+ "effect@effects\\objects\\weapons\\support_low\\flamethrower\\flame_burning": {
+  "particle systems[2].flags": 430,
+  "particle systems[3].flags": 498
+ },
+ "effect@effects\\objects\\weapons\\support_low\\flamethrower\\flamethrower_pilot": {
+  "particle systems[0].flags": 295,
+  "particle systems[1].flags": 363,
+  "particle systems[2].flags": 431,
+  "particle systems[3].flags": 499
+ },
  "model_animation_graph": {
-  "animations[12].desired compression": 4104
+  "animations[10].production flags": 4624,
+  "animations[12].desired compression": 4104,
+  "animations[13].production flags": 4996,
+  "animations[1].production flags": 3508,
+  "animations[4].production flags": 3880,
+  "animations[5].production flags": 4004,
+  "animations[8].production flags": 4376
+ },
+ "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower": {
+  "animations[10].production flags": 4236,
+  "animations[13].production flags": 4608,
+  "animations[1].production flags": 3120,
+  "animations[4].production flags": 3492,
+  "animations[5].production flags": 3616,
+  "animations[8].production flags": 3988
+ },
+ "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower": {
+  "animations[10].production flags": 4624,
+  "animations[13].production flags": 4996,
+  "animations[1].production flags": 3508,
+  "animations[4].production flags": 3880,
+  "animations[5].production flags": 4004,
+  "animations[8].production flags": 4376
  },
  "new_hud_definition": {
   "bitmap widgets[0].halfscreen sequence index": 221,
@@ -37,11 +115,25 @@
   "bitmap widgets[7].fullscreen sequence index": 1060,
   "bitmap widgets[7].halfscreen sequence index": 1061,
   "bitmap widgets[7].quarterscreen sequence index": 1062,
+  "bitmap widgets[8].[N] unit flags": 1132,
+  "bitmap widgets[8].[N] weapon flags": 1136,
+  "bitmap widgets[8].[Y] unit flags": 1124,
+  "bitmap widgets[8].anchor": 1144,
+  "bitmap widgets[8].fullscreen offset": 1184,
   "bitmap widgets[8].fullscreen sequence index": 1180,
+  "bitmap widgets[8].halfscreen offset": 1188,
   "bitmap widgets[8].halfscreen sequence index": 1181,
+  "bitmap widgets[8].quarterscreen offset": 1192,
   "bitmap widgets[8].quarterscreen sequence index": 1182,
+  "bitmap widgets[9].[N] unit flags": 1252,
+  "bitmap widgets[9].[N] weapon flags": 1256,
+  "bitmap widgets[9].[Y] unit flags": 1244,
+  "bitmap widgets[9].anchor": 1264,
+  "bitmap widgets[9].fullscreen offset": 1304,
   "bitmap widgets[9].fullscreen sequence index": 1300,
+  "bitmap widgets[9].halfscreen offset": 1308,
   "bitmap widgets[9].halfscreen sequence index": 1301,
+  "bitmap widgets[9].quarterscreen offset": 1312,
   "bitmap widgets[9].quarterscreen sequence index": 1302
  },
  "new_hud_definition@ui\\hud\\assault_rifle": {
@@ -49,21 +141,77 @@
   "bitmap widgets[14].halfscreen sequence index": 1901,
   "bitmap widgets[14].quarterscreen sequence index": 1902
  },
+ "new_hud_definition@ui\\hud\\flamethrower": {
+  "bitmap widgets[8].[N] unit flags": 1132,
+  "bitmap widgets[8].[N] weapon flags": 1136,
+  "bitmap widgets[8].[Y] unit flags": 1124,
+  "bitmap widgets[8].anchor": 1144,
+  "bitmap widgets[8].fullscreen offset": 1184,
+  "bitmap widgets[8].halfscreen offset": 1188,
+  "bitmap widgets[8].input 1": 1120,
+  "bitmap widgets[8].quarterscreen offset": 1192,
+  "bitmap widgets[9].[N] unit flags": 1252,
+  "bitmap widgets[9].[N] weapon flags": 1256,
+  "bitmap widgets[9].[Y] unit flags": 1244,
+  "bitmap widgets[9].anchor": 1264,
+  "bitmap widgets[9].fullscreen offset": 1304,
+  "bitmap widgets[9].halfscreen offset": 1308,
+  "bitmap widgets[9].input 1": 1240,
+  "bitmap widgets[9].quarterscreen offset": 1312
+ },
  "projectile": {
   "air damage range": 820,
+  "bounding radius": 84,
   "final velocity": 844,
+  "flags#1": 460,
   "initial velocity": 840,
+  "material responses[0].and": 1264,
+  "material responses[0].angular noise": 1308,
+  "material responses[0].between": 1256,
+  "material responses[0].parallel friction": 1364,
+  "material responses[0].perpendicular friction": 1368,
+  "material responses[0].response": 1329,
+  "material responses[0].response#1": 1248,
+  "material responses[3].and": 1744,
+  "material responses[3].angular noise": 1788,
+  "material responses[3].between": 1736,
   "material responses[3].chance fraction": 1674,
+  "material responses[3].parallel friction": 1844,
+  "material responses[3].perpendicular friction": 1848,
   "material responses[3].response": 1636,
   "material responses[3].response#1": 1670,
+  "material responses[4].and": 1904,
+  "material responses[4].angular noise": 1948,
+  "material responses[4].between": 1896,
   "material responses[4].chance fraction": 1834,
+  "material responses[4].parallel friction": 2004,
+  "material responses[4].perpendicular friction": 2008,
   "material responses[4].response#1": 1830,
+  "material responses[5].response": 2129,
+  "material responses[6].and": 2224,
+  "material responses[6].angular noise": 2268,
+  "material responses[6].between": 2216,
   "material responses[6].chance fraction": 2154,
+  "material responses[6].parallel friction": 2324,
+  "material responses[6].perpendicular friction": 2328,
   "material responses[6].response": 2116,
   "material responses[6].response#1": 2150,
+  "material responses[7].and": 2384,
+  "material responses[7].angular noise": 2428,
+  "material responses[7].between": 2376,
   "material responses[7].maximum distance": 2422,
+  "material responses[7].parallel friction": 2484,
+  "material responses[7].perpendicular friction": 2488,
   "material responses[7].response": 2276,
+  "material responses[7].response#1": 2368,
+  "material responses[8].and": 2544,
+  "material responses[8].angular noise": 2588,
+  "material responses[8].between": 2536,
+  "material responses[8].parallel friction": 2644,
+  "material responses[8].perpendicular friction": 2648,
+  "material responses[8].response#1": 2528,
   "material responses[9].maximum distance": 2752,
+  "material responses[9].response": 2769,
   "maximum range": 504,
   "water damage range": 832,
   "water gravity scale": 828
@@ -183,6 +331,28 @@
   "water damage range": 832,
   "water gravity scale": 828
  },
+ "projectile@objects\\weapons\\support_low\\flamethrower\\projectiles\\flame": {
+  "AI perception radius": 476,
+  "bounding radius": 84,
+  "collision radius": 480,
+  "danger radius": 488,
+  "flags#1": 460,
+  "timer": 492
+ },
+ "shader": {
+  "animation properties[0].time period": 904,
+  "parameters[2].const color": 395,
+  "parameters[3].const color": 447,
+  "parameters[4].const color": 499
+ },
+ "shader@objects\\weapons\\support_low\\flamethrower\\shaders\\flamethrower_pilot": {
+  "animation properties[0].time period": 904
+ },
+ "shader@objects\\weapons\\support_low\\flamethrower\\shaders\\flamethrower_screen": {
+  "parameters[2].const color": 395,
+  "parameters[3].const color": 447,
+  "parameters[4].const color": 499
+ },
  "weapon": {
   "acceleration scale": 100,
   "ai scariness": 1268,
@@ -199,11 +369,14 @@
   "barrels[0].ejection port recovery time": 3575,
   "barrels[0].error angle": 3172,
   "barrels[0].error angle#1": 3548,
+  "barrels[0].heat generated per round": 3297,
   "barrels[0].illumination recovery time": 3579,
   "barrels[0].minimum error": 3168,
   "barrels[0].minimum error#1": 3544,
+  "barrels[0].projectiles per shot": 3191,
   "barrels[0].rounds between tracers": 3113,
   "barrels[0].rounds per second": 3436,
+  "barrels[0].rounds per shot": 3127,
   "bounding offset": 88,
   "bounding radius": 84,
   "first person weapon offset": 1188,
@@ -270,5 +443,30 @@
   "magazines[0].rounds reloaded": 2732,
   "magazines[0].rounds total initial": 2718,
   "magazines[0].rounds total maximum": 2720
+ },
+ "weapon@objects\\weapons\\support_low\\flamethrower\\flamethrower": {
+  "barrels[0].acceleration time": 3312,
+  "barrels[0].acceleration time#1": 3141,
+  "barrels[0].angle change per shot": 3277,
+  "barrels[0].deceleration time": 3316,
+  "barrels[0].deceleration time#1": 3145,
+  "barrels[0].error angle#1": 3416,
+  "barrels[0].heat generated per round": 3480,
+  "barrels[0].illumination recovery time": 3476,
+  "barrels[0].minimum error#1": 3197,
+  "barrels[0].projectiles per shot": 3406,
+  "barrels[0].rounds between tracers": 3131,
+  "barrels[0].rounds per second": 3304,
+  "barrels[0].rounds per shot": 3342,
+  "heat illumination": 564,
+  "heat loss per second": 560,
+  "heat recovery threshold": 544,
+  "magazines[0].reload time": 2904,
+  "magazines[0].rounds loaded maximum": 2898,
+  "magazines[0].rounds reloaded": 2908,
+  "magazines[0].rounds total initial": 2894,
+  "magazines[0].rounds total maximum": 2896,
+  "overheated heat loss per second": 568,
+  "overheated threshold": 548
  }
 }
