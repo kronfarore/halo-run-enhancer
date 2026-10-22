@@ -435,6 +435,12 @@ PORT = {
             # rocket's one looping sprite never changes), flags 'looping' off in step 4
             (FX + r'\flamethrower_pilot.effect', '010000000000803f0000803f', '01000000000040410000803f'),
             (FX + r'\flamethrower_pilot.effect', '010000000ad7a33c', '010000000000803e'),
+            # boot 18 ('some purple-pink explosion on the ground, not simple scorch marks'): the Covenant
+            # turret impact's smoke systems are tinted for plasma -> they emit nothing (their emission
+            # rates 10 / 5-10 / 3-5 -> 0); the impact is Halo 1's char decal alone, as Halo 1 draws it
+            (FX + r'\flame_char_impact.effect', '01000000000020410000a040', '010000000000000000000000'),
+            (FX + r'\flame_char_impact.effect', '010100000000a04000002041', '010100000000000000000000'),
+            (FX + r'\flame_char_impact.effect', '01000000000040400000a040', '010000000000000000000000'),
             # boot 17: the world model carries the pilot CARD now -> the attachment effect emits nothing
             (FX + r'\flamethrower_pilot.effect', '01000000000040410000803f', '010000000000000000000000'),
             # the fuel SCREEN's self-illum colour is an animation function (a const colour is unused):
