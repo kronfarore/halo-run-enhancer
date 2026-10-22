@@ -9582,9 +9582,10 @@
      "tag": "objects\\weapons\\support_low\\flamethrower\\projectiles\\flame",
      "field": "Initial Velocity",
      "block": null,
-     "value": 1.008,
+     "value": 3.6,
      "card": "Projectile Velocity",
-     "original": 3.6000001430511475
+     "original": 3.6000001430511475,
+     "note": "user 2026-10-22 (boot 16 video: the ratio's 1.0 wu/s left the flame hovering at the gun, ~1.3 wu reach): Halo 1's 3.6 (~4.7 wu in its 1.3 s); the one speed row off the Plasma Rifle ratio"
     },
     {
      "class": "proj",
