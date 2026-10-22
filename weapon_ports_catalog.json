@@ -9646,10 +9646,10 @@
      "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
      "field": "Heat Generated Per Round",
      "block": "Barrels",
-     "value": 0.141492,
+     "value": 0.15,
      "card": "Heat Per Round",
      "original": 0.07199999690055847,
-     "note": "user 2026-10-22 (boot 13): Balanced stays the Plasma Rifle ratio, the heat gain recalibrated so held fire overheats at Halo 1's 3.6 s (ratio: 0.135 x 10.8/s - loss 1.25/s -> 5.9 s; now 0.141492 -> 3.6 s), the damage raised by the same margin x1.0481"
+     "note": "user 2026-10-22 (boots 13-14): Balanced stays the Plasma Rifle ratio, the heat gain recalibrated so held fire overheats at Halo 1's 3.6 s (~shot 37, before the 50-shot tank runs dry; heat loss 1.25/s counted per shot at the effective 10.14 shots/s that boot 2 measured on Halo 1's numbers): 0.135 -> 0.150; the damage raised by the same margin x1.1111"
     },
     {
      "class": "weap",
@@ -9731,30 +9731,30 @@
      "tag": "objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame",
      "field": "Damage Lower Bound",
      "block": null,
-     "value": 11.3193,
+     "value": 12.0,
      "card": "Projectile Damage",
      "original": 18.0,
-     "note": "user 2026-10-22 (boot 13): Balanced stays the Plasma Rifle ratio, the heat gain recalibrated so held fire overheats at Halo 1's 3.6 s (ratio: 0.135 x 10.8/s - loss 1.25/s -> 5.9 s; now 0.141492 -> 3.6 s), the damage raised by the same margin x1.0481"
+     "note": "user 2026-10-22 (boots 13-14): Balanced stays the Plasma Rifle ratio, the heat gain recalibrated so held fire overheats at Halo 1's 3.6 s (~shot 37, before the 50-shot tank runs dry; heat loss 1.25/s counted per shot at the effective 10.14 shots/s that boot 2 measured on Halo 1's numbers): 0.135 -> 0.150; the damage raised by the same margin x1.1111"
     },
     {
      "class": "jpt!",
      "tag": "objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame",
      "field": "Damage Upper Bound",
      "block": null,
-     "value": 16.1244,
+     "value": 17.094,
      "card": "Projectile Damage",
      "original": 20.0,
-     "note": "user 2026-10-22 (boot 13): Balanced stays the Plasma Rifle ratio, the heat gain recalibrated so held fire overheats at Halo 1's 3.6 s (ratio: 0.135 x 10.8/s - loss 1.25/s -> 5.9 s; now 0.141492 -> 3.6 s), the damage raised by the same margin x1.0481"
+     "note": "user 2026-10-22 (boots 13-14): Balanced stays the Plasma Rifle ratio, the heat gain recalibrated so held fire overheats at Halo 1's 3.6 s (~shot 37, before the 50-shot tank runs dry; heat loss 1.25/s counted per shot at the effective 10.14 shots/s that boot 2 measured on Halo 1's numbers): 0.135 -> 0.150; the damage raised by the same margin x1.1111"
     },
     {
      "class": "jpt!",
      "tag": "objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame",
      "field": "Damage Upper Bound Max",
      "block": null,
-     "value": 18.5431,
+     "value": 19.6581,
      "card": "Projectile Damage",
      "original": 23.0,
-     "note": "user 2026-10-22 (boot 13): Balanced stays the Plasma Rifle ratio, the heat gain recalibrated so held fire overheats at Halo 1's 3.6 s (ratio: 0.135 x 10.8/s - loss 1.25/s -> 5.9 s; now 0.141492 -> 3.6 s), the damage raised by the same margin x1.0481"
+     "note": "user 2026-10-22 (boots 13-14): Balanced stays the Plasma Rifle ratio, the heat gain recalibrated so held fire overheats at Halo 1's 3.6 s (~shot 37, before the 50-shot tank runs dry; heat loss 1.25/s counted per shot at the effective 10.14 shots/s that boot 2 measured on Halo 1's numbers): 0.135 -> 0.150; the damage raised by the same margin x1.1111"
     }
    ],
    "fp_animations": "objects\\characters\\*\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower"
