@@ -9582,9 +9582,10 @@
      "tag": "objects\\weapons\\support_low\\flamethrower\\projectiles\\flame",
      "field": "Initial Velocity",
      "block": null,
-     "value": 1.008,
+     "value": 3.6,
      "card": "Projectile Velocity",
-     "original": 3.6000001430511475
+     "original": 3.6000001430511475,
+     "note": "user 2026-10-22 (boot 11: 'Balanced doesn't consume ammo, heat doesn't rise fast enough to overheat ... we can allow ourselves some leeway'): Halo 1's working value, not the Plasma Rifle ratio"
     },
     {
      "class": "proj",
@@ -9636,18 +9637,20 @@
      "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
      "field": "Rounds Per Shot",
      "block": "Barrels",
-     "value": 0,
+     "value": 2,
      "card": "Projectiles Per Shot",
-     "original": 2.0
+     "original": 2.0,
+     "note": "user 2026-10-22 (boot 11: 'Balanced doesn't consume ammo, heat doesn't rise fast enough to overheat ... we can allow ourselves some leeway'): Halo 1's working value, not the Plasma Rifle ratio"
     },
     {
      "class": "weap",
      "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
      "field": "Heat Generated Per Round",
      "block": "Barrels",
-     "value": 0.135,
+     "value": 0.066667,
      "card": "Heat Per Round",
-     "original": 0.07199999690055847
+     "original": 0.07199999690055847,
+     "note": "user 2026-10-22 (boot 11: 'Balanced doesn't consume ammo, heat doesn't rise fast enough to overheat ... we can allow ourselves some leeway'): Halo 1's working value, not the Plasma Rifle ratio"
     },
     {
      "class": "weap",
@@ -9681,18 +9684,20 @@
      "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
      "field": "Heat Recovery Threshold",
      "block": null,
-     "value": 0.12,
+     "value": 0.3,
      "card": "Heat Threshold",
-     "original": 0.30000001192092896
+     "original": 0.30000001192092896,
+     "note": "user 2026-10-22 (boot 11: 'Balanced doesn't consume ammo, heat doesn't rise fast enough to overheat ... we can allow ourselves some leeway'): Halo 1's working value, not the Plasma Rifle ratio"
     },
     {
      "class": "weap",
      "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
      "field": "Heat Loss Per Second",
      "block": null,
-     "value": 1.250333,
+     "value": 0.44,
      "card": "Heat Loss",
-     "original": 0.4399999976158142
+     "original": 0.4399999976158142,
+     "note": "user 2026-10-22 (boot 11: 'Balanced doesn't consume ammo, heat doesn't rise fast enough to overheat ... we can allow ourselves some leeway'): Halo 1's working value, not the Plasma Rifle ratio"
     },
     {
      "class": "weap",

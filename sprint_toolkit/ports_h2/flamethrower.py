@@ -349,10 +349,6 @@ PORT = {
             # the shotgun sight's dark green BGRA 07 30 0e -> a moderate grey (boot 8: full white
             # read washed out)
             (FT + r'\shaders\flamethrower_screen.shader', '0120000007300eff', '012000008c8c8cff'),
-            # the FP pilot card's glow: the exhaust shader pulses its self-illum between 0.0 and 0.05
-            # (a periodic, type 3) -- on an additive card that is black (boot 9: 'still no pilot flame
-            # in first person') -> 0.6 to 1.0, on a 0.25 s period (step 4)
-            (FT + r'\shaders\flamethrower_pilot.shader', '0300090000000000cdcc4c3d', '030009009a99193f0000803f'),
             # the heat gauge's OFF part (above the heat level): the PR draws it at 0.5-0.67 opacity
             # (meter_off_opacity, a periodic on `one`) -- on Halo 1's red bar it read as 'starts
             # filled' (boots 8-10); Halo 1 shows only the heat -> 0
@@ -366,6 +362,14 @@ PORT = {
         # by heat), is 36 bytes: slot 0 = input 0 = EMPTY -> red, slot 3 = input 1 = FULL -> the BR's
         # cyan; the input the fuel FRACTION (filled below: 100 and 0 both read '00')
         'function_edits': [
+            # the FP pilot card's glow (boots 10-11: not visible, the card in view -- Halo 1's pose
+            # rendered): the exhaust's self_illum_color is animated by a SCALAR periodic (no colour
+            # flag, no colours: the exhaust shows by its environment reflection) -> the same periodic
+            # as a COLOUR function (byte 1 0x20; as in type 1, the colour slots take the place of the
+            # first four floats): slot 0 dim grey, slots 1-3 white -- the blue is in the bitmap
+            (FT + r'\shaders\flamethrower_pilot.shader',
+             '0300090000000000cdcc4c3d00000000000000000000803f00000000000000bf0000803f0000803f00000000000000000000803f',
+             '03200900999999ffffffffffffffffffffffffff0000803f00000000000000bf0000803f0000803f00000000000000000000803f'),
             (FT + r'\shaders\flamethrower_tens.shader', '01200000f4e08eff0000000000000000ffffff000000803f0000803f',
              '022003004040ffff0000000000000000f4e08eff000000000000803f000000000000803f'),
             (FT + r'\shaders\flamethrower_ones.shader', '01200000f4e08eff0000000000000000ffffff000000803f0000803f',
