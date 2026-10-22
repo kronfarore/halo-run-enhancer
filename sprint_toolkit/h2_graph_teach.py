@@ -181,6 +181,57 @@ def teach(path, src, dst, type_renames, write=False):
     return edits
 
 
+def drop_ik(path, write=False, classes=('any',)):
+    """Remove the IK block of the named weapon CLASSES (the Spike Rifle, boot 5, 2026-10-22): a FP
+    graph seeded from Bungie's SMG carries its single-wield class `any`'s IK entry `left_hand` ->
+    weapon marker `left_hand` (the Chief grips the SMG two-handed). On a ONE-handed port it drags the
+    Chief's left hand onto that marker, into the gun, whatever the animations say. The class's ik
+    chunk (header, elements, their strings) is deleted and the in-struct count zeroed (an empty
+    block has no chunk). Proved: our walk still ends where the modes block ends, and tool reads
+    every original row unchanged but the IK strings. Returns the number of IK entries removed."""
+    d = bytearray(open(path, 'rb').read())
+    at, end, elems, chunks = modes_chunk(bytes(d))
+    cuts = []
+    for e in elems:
+        if e[0] != 'class' or label(d, e) not in classes:
+            continue
+        _k, _c, _i, so, ds, de = e
+        if not struct.unpack_from('<I', d, so + 16)[0]:
+            continue
+        ik = [c for c, v in chunks.items() if v[0] == 'ik' and ds <= c < de]
+        if len(ik) != 1:
+            raise SystemExit('class %s: %d ik chunks' % (label(d, e), len(ik)))
+        c = ik[0]
+        _kind, n, sz, cend = chunks[c]
+        cuts.append((so, c, cend, n))
+    print('%s: %d IK block(s) in %s' % (os.path.basename(path), len(cuts), '/'.join(classes)))
+    if not cuts or not write:
+        return sum(c[3] for c in cuts)
+    before = h2_stringid.export(path)
+    original = bytes(d)
+    for so, c, cend, n in sorted(cuts, key=lambda t: -t[1]):
+        struct.pack_into('<I', d, so + 16, 0)
+        del d[c:cend]
+    open(path, 'wb').write(bytes(d))
+    bad = []
+    try:
+        modes_chunk(bytes(d))
+    except SystemExit as e:
+        bad.append('walk: %s' % e)
+    after = h2_stringid.export(path)
+    gone = [r for r in before if r not in after]
+    if [r for r in after if r not in before]:
+        bad.append('new rows')
+    if any('ik' not in (r[0] + r[2]).lower() and 'left_hand' not in r[2] for r in gone):
+        bad.append('lost non-IK rows %s' % gone[:4])
+    if bad:
+        open(path, 'wb').write(original)
+        raise SystemExit('refused, restored: %s' % '; '.join(bad))
+    print('   removed: -%d bytes, tool reads every other row unchanged (%d IK rows gone)'
+          % (len(original) - len(d), len(gone)))
+    return sum(c[3] for c in cuts)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('graph')

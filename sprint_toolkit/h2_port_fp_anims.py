@@ -41,6 +41,8 @@ Section `fp_anims` of ports_h2/<key>.py:
     skip        [Halo 3 animation names left out]
     looping     [Halo 3 names whose end wraps to frame 0]
     rename      {Halo 3 name: Halo 2 name}
+    drop_ik     [species] -- after the import, the graph's single-wield (class `any`) IK entries
+                removed (h2_graph_teach.drop_ik: a seed's two-handed left-hand grip; the Spiker)
     rest_left_arm  {'species', 'pose': (animation, frame), 'blend': {animation: frames}} -- the
                 left arm held out of view in single-wield animations (rest_left_arm; the Spiker)
     root_identity  the weapon root node whose bind h2_port_geometry `fp_root_identity` made
@@ -487,6 +489,11 @@ def main(argv=None):
             tool_import(cfg, species, reseed='--reseed' in argv)
             if cfg.get('clear_verify'):
                 clear_verify(cfg, species)
+            if species in cfg.get('drop_ik', ()):
+                # the seed's single-wield IK (Bungie's SMG: the Chief's left hand gripping the
+                # weapon's left_hand marker) dropped -- the Spiker is one-handed (boot 5)
+                import h2_graph_teach
+                h2_graph_teach.drop_ik(graph_path(cfg['species'][species]), write=True)
 
 
 if __name__ == '__main__':

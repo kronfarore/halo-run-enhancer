@@ -532,6 +532,10 @@ PORT = {
         # never shows it there); the Arbiter's keep it low out of view (8, 6, -25). The Chief gets the
         # Arbiter's way: the ready's first frame (15, 4, -27: low) held in every single-wield
         # animation; the reloads and the grenade throw keep Halo 3's left-hand motion, eased in/out
+        # boot 5 (user's video: the arm still rose into the gun): the CAUSE -- the Chief graph's seed
+        # (Bungie's SMG) carries a single-wield IK entry, left hand -> the weapon's `left_hand` marker
+        # (the Chief grips the SMG two-handed); the Arbiter's and the AR's (BR seed) have none. Dropped
+        'drop_ik': ['masterchief'],
         'rest_left_arm': {'species': ['masterchief'], 'pose': ('first_person:ready', 0),
                           'blend': {'first_person:reload_empty:var1': 12, 'first_person:reload_full:var1': 12,
                                     'first_person:throw_grenade': 8}},
