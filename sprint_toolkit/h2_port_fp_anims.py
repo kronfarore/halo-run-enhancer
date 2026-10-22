@@ -399,6 +399,19 @@ def tool_import(cfg, species, reseed=False):
     return text
 
 
+def clear_verify(cfg, species):
+    """`clear_verify` (the Flamethrower, boot 2: 'overheat animation plays, but no sound'): tool's
+    import flags every animation whose length changed 'verify sound events' (production flags 2) --
+    the seed's events stay but await a designer's check; Bungie's shipped graphs carry 0. Cleared."""
+    import h2_tagfield as tf
+    g = graph_path(cfg['species'][species])
+    rows = tf.read_all(tf.export(g))
+    for r in rows:
+        if r[0] == 'animations' and r[2] == 'production flags' and tf._numbers(r[4]) and \
+                int(tf._numbers(r[4])[0]) & 2:
+            tf.set_field(g, 'production flags', int(tf._numbers(r[4])[0]) & ~2, 'animations', int(r[1]))
+
+
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     if not argv or argv[0].startswith('-'):
@@ -416,6 +429,8 @@ def main(argv=None):
             print('   %-34s %-11s %3d frames -> %3d in %s' % (h3name, typ, n, m, fn))
         if '--import' in argv:
             tool_import(cfg, species, reseed='--reseed' in argv)
+            if cfg.get('clear_verify'):
+                clear_verify(cfg, species)
 
 
 if __name__ == '__main__':

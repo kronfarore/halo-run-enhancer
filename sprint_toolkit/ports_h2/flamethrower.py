@@ -21,6 +21,9 @@ H1FT = r'weapons\flamethrower'                           # the source's folder (
 H2EK = r'F:\SteamLibrary\steamapps\common\H2EK'
 import os as _os
 NEW_HUD = r'ui\hud\bitmaps\new_hud'
+# a Bungie effect with nothing in it (no parts, no particles): where a slot must stay filled but show
+# nothing (the flame's old glow attachment, its impacts)
+EMPTY_FX = r'effects\objects\weapons\support_high\rocket_launcher\rocket_overpenetrate_glass'
 # the port's own world mesh (step 1's JMS): the silhouette the HUD plate, backpack icon and pickup
 # glyph are drawn from (h3_weapon_glyph.mesh reads a .jms) -- Halo 1 has no Halo 3 render model
 WORLD_JMS = H2EK + r'\data' + '\\' + FT + r'\render\flamethrower.jms'
@@ -99,14 +102,13 @@ PORT = {
         'root_identity': True,
         # Halo 1 shader basename (#permutation for the counter's digits: 0 ones, 1 tens, 2 hundreds)
         # -> Halo 2 material. The counter on the BR's digit shaders (tens / ones, Bungie's `=?`
-        # symbols; the AR's route); the hundreds digit on its own shader reading an input nothing exports
-        # (stays 0: textures 'string_ids', boot 1)
+        # symbols; the AR's route); the hundreds digit dropped (boot 2, the user: 100 cannot show)
         'materials': {'ft gun': 'flamethrower', 'ft ammo': 'flamethrower_ammo',
                       'ft screen': 'flamethrower_screen', 'ft heat_display': 'flamethrower_heat_display',
                       'ft numbers#1': 'flamethrower_tens=?', 'ft numbers#0': 'flamethrower_ones=?',
-                      'ft numbers#2': 'flamethrower_hundreds=?',
+                      'ft numbers#2': None,
                       'ft_numbers#1': 'flamethrower_tens=?', 'ft_numbers#0': 'flamethrower_ones=?',
-                      'ft_numbers#2': 'flamethrower_hundreds=?'},
+                      'ft_numbers#2': None},
         'node_names': {},                    # Halo 1 names them `frame gun` / `frame ammo` / `frame cover`
         'world_permutation': 'base', 'world_region': 'gun',      # the BR's .model's variants
         'markers': {'primary trigger': 'primary_trigger', 'left hand': 'left_hand',
@@ -168,12 +170,10 @@ PORT = {
               r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_heat_gauge': FT + r'\bitmaps\flamethrower_heat_meter'}),
             ('flamethrower_tens', r'objects\weapons\rifle\battle_rifle\shaders\tens', {}),
             ('flamethrower_ones', r'objects\weapons\rifle\battle_rifle\shaders\ones', {}),
-            # Halo 1's THIRD digit (boot 1: 'only two digits, the original has three'): Halo 2 exports
-            # only primary_ammunition_ones / _tens (halo2.dll) -- the hundreds digit reads 'primary_ammunition_zero' (same length: a pooled-string swap), which no
-            # weapon exports and stays 0: 084 as Halo 1 shows it; a full tank reads 000 (Halo 1: 100)
-            ('flamethrower_hundreds', r'objects\weapons\rifle\battle_rifle\shaders\tens', {}),
+            # Halo 1's THIRD digit: boot 1 added it (a shader reading 'primary_ammunition_zero', which no
+            # weapon exports: always 0 -- Halo 2 exports only primary_ammunition_ones / _tens); boot 2
+            # (user: '000 is useless for a full tank'): removed again, two digits
         ],
-        'string_ids': {'flamethrower_hundreds': {'primary_ammunition_tens': 'primary_ammunition_zero'}},
         'report_rows': [(FT + r'\bitmaps\flamethrower_bump', 'the port (flat)'),
                         (SMG + r'\bitmaps\smg_bump', 'Bungie SMG')],
     },
@@ -199,8 +199,7 @@ PORT = {
                    (r'effects\objects\weapons\rifle\smg\smg_muzzle_flash.light', FX + r'\flamethrower_muzzle_flash.light'),
                    (r'effects\materials\objects\weapons\smg.material_effects', FX + r'\flamethrower.material_effects'),
                    (r'effects\materials\objects\weapons\plasma_rifle.material_effects', FX + r'\flame.material_effects'),
-                   (r'effects\generic\fires\fire_medium.effect', FX + r'\flame_burning.effect'),
-                   (r'effects\objects\weapons\rifle\brute_plasma_rifle\red_plasma_streak.light_volume', FX + r'\flame_streak.light_volume'),
+                   (r'effects\objects\weapons\support_high\rocket_launcher\rocket_exhaust.effect', FX + r'\flame_burning.effect'),
                    # the RELOAD sound: the seed graph (the PR's) has no reload animation, so no reload
                    # sound event -- the magazine's reloading effect carries it instead: a clone of
                    # Bungie's sound-only BR dryfire effect (step 10 repoints its sound)
@@ -238,20 +237,28 @@ PORT = {
             # fire particles + smoke, five 0.5-1.5 s events -- rides it for its whole 1.3-8 s life
             # (and the weapon's fp_defoliant particle systems while firing). Halo 2's object
             # ATTACHMENTS take effects (the plasma grenade's armed glow): the PR bolt's contrail
-            # attachment becomes an attached EFFECT -- a clone of Bungie's `fire_medium` (H2 fire
-            # particles + fire physics). Order: the light volume first, then the reclass, then the path
+            # attachment becomes an attached EFFECT. Boot 2 ('flames too big immediately and too close
+            # to the player; they don't travel'): Bungie's scenery `fire_medium` emits big particles in
+            # WORLD space where it starts -> now a clone of the ROCKET's attached `rocket_exhaust`
+            # (H2's own flame that rides its projectile: rocket_flame + core + smoke). The light volume
+            # (the red glow the user saw fly 'far too long') -> an EMPTY Bungie effect. Both
+            # attachments reclassed, then the first (the contrail's) -> the flame, the other -> empty
             (FT + r'\projectiles\flame.projectile', 'MGS2', r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak',
-             FX + r'\flame_streak', "the flame's glow (light volume)", {'nth': 0}),
+             r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak', "the glow attachment -> an effect",
+             {'class': 'effe'}),
             (FT + r'\projectiles\flame.projectile', 'cont', r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak',
              r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak', "the flame's attachment -> an effect",
              {'class': 'effe'}),
             (FT + r'\projectiles\flame.projectile', 'effe', r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak',
-             FX + r'\flame_burning', "the flame's fire (Halo 2's fire_medium, attached)"),
-            # where a flame hits: fire (Halo 1: `flame char` + a burst), not the plasma splash
+             FX + r'\flame_burning', "the flame's fire (Halo 2's rocket exhaust, attached)", {'nth': 0}),
+            (FT + r'\projectiles\flame.projectile', 'effe', r'effects\objects\weapons\rifle\plasma_rifle\plasma_streak',
+             EMPTY_FX, 'the old glow: nothing'),
+            # where a flame hits: no big fire (boot 2); Halo 1's `flame char` is a scorch + a small
+            # flash -- the clone's material effects keep the scorch decals
             (FT + r'\projectiles\flame.projectile', 'effe', r'effects\impact\plasma_slow\soft_terrain',
-             FX + r'\flame_burning', 'impact on soft materials -> fire', {'every': True}),
+             EMPTY_FX, 'impact on soft materials -> nothing big', {'every': True}),
             (FT + r'\projectiles\flame.projectile', 'effe', r'effects\impact\plasma_slow\hard_metal_thick',
-             FX + r'\flame_burning', 'impact on hard materials -> fire', {'every': True}),
+             EMPTY_FX, 'impact on hard materials -> nothing big', {'every': True}),
             # the muzzle: the SMG fire effect's flash particles -> Bungie's fire particles (its sound,
             # light and physics kept)
             (FX + r'\flamethrower_fire.effect', 'prt3', r'effects\objects\weapons\rifle\smg\fire_burst_center',
@@ -344,7 +351,11 @@ PORT = {
             (FT + r'\projectiles\flame.projectile', 'initial velocity', '', 0, 0, 3.6),
             (FT + r'\projectiles\flame.projectile', 'final velocity', '', 0, 0, 0.0),
             (FT + r'\projectiles\flame.projectile', 'maximum range', '', 0, 0, 16.0),
-            (FT + r'\projectiles\flame.projectile', 'timer', '', 0, 0, [1.3, 8.0], {'anchor': ('maximum range', -12)}),
+            # boot 2 ('the projectile flies for far too long'): Halo 1's flame flags 112 = 'MINIMUM
+            # unattached detonation time' + 'random attached detonation time' -- in flight it lives the
+            # timer's MINIMUM, 1.3 s (~4.7 wu at 3.6); 1.3-8 s only once stuck. Halo 2 has neither flag
+            # (only 'detonation max time if attached'): the flight value, 1.3 s
+            (FT + r'\projectiles\flame.projectile', 'timer', '', 0, 0, [1.3, 1.3], {'anchor': ('maximum range', -12)}),
             (FT + r'\projectiles\flame.projectile', 'collision radius', '', 0, 0, 0.5, {'anchor': ('maximum range', -24)}),
             (FT + r'\projectiles\flame.projectile', 'AI perception radius', '', 0, 0, 2.0, {'anchor': ('maximum range', -28)}),
             (FT + r'\projectiles\flame.projectile', 'danger radius', '', 0, 0, 0.4, {'anchor': ('maximum range', -16)}),
@@ -357,7 +368,10 @@ PORT = {
             # step 4b (port_field_audit.py --port flamethrower, list 2: H1 flamethrower / H1 PR x H2 PR)
             (FT + r'\flamethrower.weapon', 'bounding radius', '', 0, 0, 0.28),
             (FT + r'\flamethrower.weapon', 'acceleration scale', '', 0, 0, 0.444444),
-            (FT + r'\flamethrower.weapon', 'illumination recovery time', 'barrels', 0, 0, 0.0),
+            # boot 2 ('muzzle is not lit'): the weapon's muzzle light is scaled by `illumination`, and a
+            # 0 recovery (the 4b ratio from Halo 1's 0) gives it no time to show -> the SMG's 0.05
+            (FT + r'\flamethrower.weapon', 'illumination recovery time', 'barrels', 0, 0, 0.05,
+             {'anchor': ('heat generated per round', -4)}),
             # list 4: ready time 0 in both Halo 1 tags -> the target donor's (the PR's) 0
             (FT + r'\flamethrower.weapon', 'ready time', '', 0, 0, 0.0),
             (FT + r'\projectiles\flame.projectile', 'bounding radius', '', 0, 0, 0.15),
@@ -399,8 +413,10 @@ PORT = {
         'donor_hud': r'ui\hud\battle_rifle',
         'port_hud': r'ui\hud\flamethrower',
         'weapon': FT + r'\flamethrower.weapon',
-        'rounds': 50, 'rows': 2,
-        'canvas': (197, 34), 'tick_w': 6,
+        # boot 2 (user: 'one draining meter rather than ammo pips'): one 1-px column a threshold
+        # step -- 197 columns in one row = a bar that drains with the fuel fraction, 14 px tall
+        'rounds': 197, 'rows': 1,
+        'canvas': (197, 14), 'tick_w': 1,
         'backpack': NEW_HUD + r'\backpack_weapons',
         'backpack_port': NEW_HUD + r'\flamethrower_backpack',
         'backpack_size': (62, 30),
@@ -445,7 +461,7 @@ PORT = {
     # step 7b -- h2_port_hud_widgets.py: the HEAT METER (boot 1: 'no heat meter'). Two of the blanked
     # scope widgets become the Plasma Rifle's heat widgets (its `heat_meter_right` / `heat_background_
     # right`: input WEAPON heat / WEAPON time on overheat, its meter + pulse art and shaders, its
-    # flags), placed UNDER the fuel meter (the BR's ammo meter sits at -196,42, 34 px tall -> y 80).
+    # flags), placed UNDER the fuel meter (at -196,42; boot 2 a 14 px bar -> y 60).
     # Widget fields reading 0 are pinned from the widget's `anchor` (input 1 at -24, probed)
     'hud_widgets': {
         'hud': r'ui\hud\flamethrower.new_hud_definition',
@@ -453,13 +469,13 @@ PORT = {
             {'name': 'distance_meter', 'bitmap': NEW_HUD + r'\meters\plasma_meter_r',
              'shader': r'ui\hud\shaders\plasma_meter',
              'fields': [('input 1', 49, ('anchor', -24)), ('[Y] unit flags', 48), ('[N] unit flags', 1024),
-                        ('[N] weapon flags', 6), ('fullscreen offset', [-189, 80]),
-                        ('halfscreen offset', [-95, 40]), ('quarterscreen offset', [-95, 40]), ('anchor', 0)]},
+                        ('[N] weapon flags', 6), ('fullscreen offset', [-189, 60]),
+                        ('halfscreen offset', [-95, 30]), ('quarterscreen offset', [-95, 30]), ('anchor', 0)]},
             {'name': '2x', 'bitmap': NEW_HUD + r'\meters\plasma_bkd_r',
              'shader': r'ui\hud\shaders\widget_gradient_flash_pulse',
              'fields': [('input 1', 55, ('anchor', -24)), ('[Y] unit flags', 48), ('[N] unit flags', 1024),
-                        ('[N] weapon flags', 6), ('fullscreen offset', [-190, 80]),
-                        ('halfscreen offset', [-95, 40]), ('quarterscreen offset', [-95, 40]), ('anchor', 0)]},
+                        ('[N] weapon flags', 6), ('fullscreen offset', [-190, 60]),
+                        ('halfscreen offset', [-95, 30]), ('quarterscreen offset', [-95, 30]), ('anchor', 0)]},
         ],
     },
 
@@ -545,6 +561,9 @@ PORT = {
         'antr': H1FT + r'\fp\fp',
         'chief_arms': H2EK + r'\data\!extracted\fp_arms_masterchief\fp_arms.jms',
         'weapon_nodes': ['gun', 'ammo', 'cover'],
+        # boot 2 ('no sound' on the overheat): the import flags changed animations 'verify sound
+        # events' -- cleared, as Bungie's graphs ship (h2_port_fp_anims.clear_verify)
+        'clear_verify': True,
         # (Halo 1, Halo 2[, opt]). Halo 2's overheat = ONE animation `overheating` (the PR's 89 frames)
         # + `o_h_exit`: Halo 1's overheating (enter, 10) then its overheated loop to ~the overheat's
         # length ((1 - 0.3) / 0.44 = 1.6 s = 48 frames, the boot-1 heat). No reload-full / put-away / 2nd melee in
