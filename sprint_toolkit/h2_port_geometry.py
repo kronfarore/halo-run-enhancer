@@ -392,6 +392,10 @@ def h1_convert(g, rel, world):
         if nm in ('primary_trigger', 'primary trigger'):
             pos[2] -= g.get('muzzle_drop', 0.0)
         out.markers.append(h2_jms.Marker(nm, node, rot, pos, -1.0))
+    for nm, node, rot, pos in (g.get('world_extra_markers', ()) if world else ()):
+        # markers only the FP model has in Halo 1 (the Flamethrower's pilot / steam vents), placed on
+        # the world model where the weapon's attachments look them up (boot 5: the pilot never drew)
+        out.markers.append(h2_jms.Marker(nm, node, tuple(rot), list(pos), -1.0))
     gp = g.get('ground_point')
     if world and gp:
         xs = [v.pos[0] for v in out.verts]

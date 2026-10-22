@@ -37,7 +37,7 @@ PORT = {
     'source_tag': r'weapons\flamethrower\flamethrower',      # HCEEK (Halo 1)
     'reservations': {
         'message_prefix': 'ft2',
-        'glyph': 0xE553,           # was 0xE153: above U+E3FF so Halo 2 tints it (user, 2026-10-21; the AR / Spiker scheme +0x400)
+        'glyph': 0xE153,           # 2026-10-22: back from E553 (MCC claims E400+: its placeholder); user: untinted
         'weapon_dir': r'objects\weapons\support_low\flamethrower',
         'effects_dir': r'effects\objects\weapons\support_low\flamethrower',
         'fp_graph': r'weapons\support_low\fp_flamethrower\fp_flamethrower',
@@ -120,6 +120,12 @@ PORT = {
         # boot 4 (user: 'move the digits a bit apart'): the two counter quads touch (Halo 1 drew three
         # in a row); each pushed out by 12% of their spacing
         'digit_spread': (('flamethrower_tens=?', 'flamethrower_ones=?'), 0.12),
+        # boot 5 ('no visible pilot flame'): Halo 1 has `pilot` / the steam vents on the FP model only;
+        # the weapon's attachments look markers up on the WORLD model -- placed there at the FP
+        # markers' offsets from primary_trigger (the two models share the gun's axes and length)
+        'world_extra_markers': [('pilot', 0, (0.437775, -0.317111, -0.155106, 0.826883), (44.7091, 0.4053, 6.8813)),
+                                ('vent', 0, (0.641769, 0.309753, 0.634685, 0.298932), (17.9504, 3.4267, 1.9751)),
+                                ('vent', 0, (0.707975, 0.012502, 0.706127, -0.000299), (19.7424, -0.223, 4.6328))],
         'muzzle_drop': 0.0,
         'ground_point': {'rot': (0.7071068883, -1.8e-09, -7.42e-08, -0.7071067095)},   # the SMG's
         'min_tris': 200,
@@ -300,8 +306,12 @@ PORT = {
         'byte_edits': [
             (FX + r'\flame_burning.effect', '0000003fcdcc0c3f', '9a99193e9a99993e'),
             (FX + r'\flame_burning.effect', '010008006666263f', '010008000ad7a33d'),
-            (FX + r'\flamethrower_pilot.effect', '0000003fcdcc0c3f', 'a69b443c6f12833c'),
-            (FX + r'\flamethrower_pilot.effect', '010008006666263f', '010008006f12033c'),
+            # (boot 5: the pilot 0.02-0.03 / 0.012 wu)
+            (FX + r'\flamethrower_pilot.effect', '0000003fcdcc0c3f', '0ad7a33c8fc2f53c'),
+            (FX + r'\flamethrower_pilot.effect', '010008006666263f', '01000800a69b443c'),
+            # the fuel SCREEN's self-illum colour is an animation function (the const colour is
+            # unused: boot 5, 'unchanged'): the shotgun sight's dark green BGRA 07 30 0e -> white
+            (FT + r'\shaders\flamethrower_screen.shader', '0120000007300eff', '01200000ffffffff'),
             (FX + r'\flamethrower_pilot.effect', '01200000ffffffff0000803f00000000ffffffff',
              '01200000ff9040ff0000803f00000000ff9040ff'),
             # the DIGITS fade to red as the tank empties (boot 3, user): the BR digit shaders' self-illum
@@ -313,12 +323,19 @@ PORT = {
             (FT + r'\shaders\flamethrower_ones.shader', '01200000f4e08eff0000000000000000ffffff00',
              '012000004040ffff0000000000000000f4e08eff')],
         # the pilot effect sits at the weapon's `pilot` marker (the rocket's is `exhaust`)
-        'string_id_renames': [(FX + r'\flamethrower_pilot.effect', {'exhaust': 'pilot'})],
-        # the digits' colour input: the weapon's fuel fraction (an engine export, as the BR digits'
-        # primary_ammunition_tens and the PR gauge's heat -- neither weapon declares a function)
+        # and the flame's at `root` (boot 5, 'no visible projectile': a projectile has no model, so no
+        # `exhaust`; Bungie's effects on model-less bolts name `root` -- the plasma pistol's charged glow)
+        'string_id_renames': [(FX + r'\flamethrower_pilot.effect', {'exhaust': 'pilot'}),
+                              (FX + r'\flame_burning.effect', {'exhaust': 'root'}),
+                              # boot 5 ('a constant red'): `primary_ammunition` is no weapon export
+                              # (only the digits' _ones / _tens) -> the tens digit drives the colour
+                              (FT + r'\shaders\flamethrower_tens.shader', {'primary_ammunition': 'primary_ammunition_tens'}),
+                              (FT + r'\shaders\flamethrower_ones.shader', {'primary_ammunition': 'primary_ammunition_tens'})],
+        # the digits' colour input: the TENS digit (an engine export: what the BR digits read; the PR
+        # gauge reads `heat` -- neither weapon declares a function)
         'string_id_fills': [
-            (FT + r'\shaders\flamethrower_tens.shader', 'input name', 'animation properties', 0, 1, 'primary_ammunition'),
-            (FT + r'\shaders\flamethrower_ones.shader', 'input name', 'animation properties', 0, 1, 'primary_ammunition')],
+            (FT + r'\shaders\flamethrower_tens.shader', 'input name', 'animation properties', 0, 1, 'primary_ammunition_tens'),
+            (FT + r'\shaders\flamethrower_ones.shader', 'input name', 'animation properties', 0, 1, 'primary_ammunition_tens')],
         # the 3P label: the BR's `rifle` / `br` (every character's graph holds the two-handed BR; the
         # Grunt's taught by the AR, h2_graph_teach). Halo 1's label `ft` has no Halo 2 graph
         'string_ids': {'rifle': 'rifle', 'smg': 'br'},
@@ -545,10 +562,12 @@ PORT = {
     # step 8 -- the pickup icon at U+E153 (Halo 2's look, the AR's: HUD blue, outline + feature lines,
     # solid body), the messages smg_* -> ft2_*
     'glyph': {
-        'box': (115, 45),          # 0.72 of 160x62, Bungie's on-screen size (the AR's rework)
+        'box': (160, 62),          # Bungie's size at E153 (halo2.dll draws the E000-E3FF band x0.72)
         'model_3p': WORLD_JMS,
         'tif': 'flamethrower_h2_glyph.tif',
-        'colour': (255, 255, 255),       # white: the renderer tints it (blue Chief / violet Arbiter)
+        # UNTINTED (user, 2026-10-22, the H2 icon rule): halo2.dll forces the band white; white
+        # lines over a grey body, as the SAW's first icon / the AR / the Spiker
+        'colour': (255, 255, 255),
         'style': {'line': (255, 255, 255), 'body': (153, 153, 153)},
     },
     'messages': {
@@ -558,8 +577,8 @@ PORT = {
         'names': [('an SMG', 'a Flamethrower'), ('SMG', 'Flamethrower')],
         # boot 1 (user: 'show me both icons'): Halo 2 SHIPS a flamethrower icon, U+E117 (macro
         # &flamethrower, all eight English fonts, in the band Halo 2 tints) -- the remnant of the cut
-        # weapon. For the comparison boot: the PICKUP line draws Bungie's, the SWAP line the port's
-        'line_icons': {'pickup': 0xE117},
+        # weapon. Boots 2-5 drew it on the PICKUP line for a comparison; 2026-10-22 (the H2 icon rule):
+        # both lines draw the port's own E153 (Bungie's E117 stays an option for the user)
         'weapon': FT + r'\flamethrower.weapon',
     },
 
