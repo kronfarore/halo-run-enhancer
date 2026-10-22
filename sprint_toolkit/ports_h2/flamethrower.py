@@ -136,7 +136,8 @@ PORT = {
         # forward to the nozzle's HEAD (x 42-45), at the mouth of its claw (which faces the camera's
         # left, +y), smaller -- checked on Halo 1's FP idle render (a forward-pointing card is edge-on
         # to the camera; one behind the head is hidden)
-        'fp_cards': [('flamethrower_pilot', (42.6, 1.6, 3.9), (1.4, 2.2))],
+        # boot 16 video: 'slightly up' -> +0.7
+        'fp_cards': [('flamethrower_pilot', (42.6, 1.6, 4.6), (1.4, 2.2))],
         # boot 5 ('no visible pilot flame'): Halo 1 has `pilot` / the steam vents on the FP model only;
         # the weapon's attachments look markers up on the WORLD model -- placed there at the FP
         # markers' offsets from primary_trigger (the two models share the gun's axes and length)
@@ -395,17 +396,24 @@ PORT = {
             # the flame's SIZE over its age: type 1 constants (0.15-0.3 / 0.08) -> type 2 transitions
             # (a scalar transition: +4 the value at input 0, +8 at input 1 -- Bungie's PR gauge
             # meter_value): flame 0.06 -> 0.35, core 0.04 -> 0.12 (Halo 1's sprites grow as they fly).
-            # Boot 13 ('starts big and shrinks'): the emitter age runs the other way -- +8 is the START.
-            # Boot 14 ('not sure it grows'): a wider range, unmistakable -- flame 0.02 -> 0.4, core
-            # 0.01 -> 0.14 (the 2nd pair of rows takes boot 14's tags there)
+            # Boots 13-16: the user's one-shot VIDEO (boot 16, the flame at the ratio's 1.0 wu/s) shows
+            # it plainly -- the first frame the largest, then shrinking: +4 IS the start (age 0); boot
+            # 13's 'starts big' was perspective (3.6 wu/s, leaving the camera). And far too big: Halo
+            # 1's sprites are radius 0.1-0.25 -> flame 0.05 -> 0.3, core 0.03 -> 0.1 (the 2nd pair of
+            # rows takes boot 16's tags there)
             (FX + r'\flame_burning.effect', '010108009a99193e9a99993e00000000000000000000803f0000803f',
-             '02000000cdcccc3e0ad7a33c0000000000000000000000000000803f000000000000803f'),
+             '02000000cdcc4c3d9a99993e0000000000000000000000000000803f000000000000803f'),
             (FX + r'\flame_burning.effect', '010008000ad7a33d0000000000000000000000000000803f0000803f',
-             '02000000295c0f3e0ad7233c0000000000000000000000000000803f000000000000803f'),
-            (FX + r'\flame_burning.effect', '020000003333b33e8fc2753d0000000000000000000000000000803f000000000000803f',
-             '02000000cdcccc3e0ad7a33c0000000000000000000000000000803f000000000000803f'),
-            (FX + r'\flame_burning.effect', '020000008fc2f53d0ad7233d0000000000000000000000000000803f000000000000803f',
-             '02000000295c0f3e0ad7233c0000000000000000000000000000803f000000000000803f'),
+             '020000008fc2f53ccdcccc3d0000000000000000000000000000803f000000000000803f'),
+            (FX + r'\flame_burning.effect', '02000000cdcccc3e0ad7a33c0000000000000000000000000000803f000000000000803f',
+             '02000000cdcc4c3d9a99993e0000000000000000000000000000803f000000000000803f'),
+            (FX + r'\flame_burning.effect', '02000000295c0f3e0ad7233c0000000000000000000000000000803f000000000000803f',
+             '020000008fc2f53ccdcccc3d0000000000000000000000000000803f000000000000803f'),
+            # the FP pilot FLICKERS (boot 16 video: 'not animated'): the compass shader's constant
+            # white -> a periodic COLOUR (Bungie's exhaust periodic, colour slots in place of its first
+            # four floats: dim grey / white), its time period set in step 4
+            (FT + r'\shaders\flamethrower_pilot.shader', '01200000ffffffff0000000000000000ffffff000000803f0000803f',
+             '03200900808080ffffffffffffffffffffffffff0000803f00000000000000bf0000803f0000803f00000000000000000000803f'),
             (FT + r'\shaders\flamethrower_tens.shader', '01200000f4e08eff0000000000000000ffffff000000803f0000803f',
              '022003004040ffff0000000000000000f4e08eff000000000000803f000000000000803f'),
             (FT + r'\shaders\flamethrower_ones.shader', '01200000f4e08eff0000000000000000ffffff000000803f0000803f',
@@ -546,6 +554,10 @@ PORT = {
             # the pilot's flames EMIT (boot 6, 'static'): 'looping particle' off
             (FX + r'\flamethrower_pilot.effect', 'flags', 'particle systems', 0, 0, 0),
             (FX + r'\flamethrower_pilot.effect', 'flags', 'particle systems', 1, 0, 0),
+            # the FP pilot's flicker period: 0.15 s (the compass reads 0 -- pinned 12 bytes after the
+            # animation's `type`: type / input / range / time period)
+            (FT + r'\shaders\flamethrower_pilot.shader', 'time period', 'animation properties', 0, 0, 0.15,
+             {'anchor': ('type', 12)}),
             # the screen's speculars (the shotgun sight's were green): grey
             (FT + r'\shaders\flamethrower_screen.shader', 'const color', 'parameters', 3, 0, [0.15, 0.15, 0.15]),
             (FT + r'\shaders\flamethrower_screen.shader', 'const color', 'parameters', 4, 0, [0.07, 0.07, 0.07]),
