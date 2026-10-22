@@ -25,7 +25,7 @@ PORT = {
     'source_tag': 'objects\\weapons\\rifle\\assault_rifle\\assault_rifle',
     'reservations': {
         'message_prefix': 'ar2',
-        'glyph': 0xE53E,           # was 0xE13E (rework: above U+E3FF so Halo 2 tints it)
+        'glyph': 0xE13E,           # 2026-10-22: back from E53E (MCC claims E400+); user: untinted
         'weapon_dir': 'objects\\weapons\\rifle\\assault_rifle',
         'effects_dir': 'effects\\objects\\weapons\\rifle\\assault_rifle',
         'fp_graph': 'weapons\\rifle\\fp_assault_rifle\\fp_assault_rifle',
@@ -327,7 +327,7 @@ PORT = {
     # (boot 1 below) and stayed blue on the Arbiter. Now U+E53E, drawn WHITE like Bungie's at
     # 0.72 of 160x62 (the same on-screen size); the colours below stay as the history of boots 1-3
     'glyph': {
-        'box': (115, 45),
+        'box': (160, 62),                # back to Bungie's size at E13E (x0.72 on screen)
         'model_3p': H3_RM_XML,
         'tif': 'assault_rifle_h2_glyph.tif',
         # Halo 2's HUD blue (user, boot 1: 'the pickup icon is white, the H2 icons are blue'),

@@ -25,7 +25,7 @@ PORT = {
     'source_tag': 'objects\\weapons\\rifle\\spike_rifle\\spike_rifle',
     'reservations': {
         'message_prefix': 'spk2',
-        'glyph': 0xE540,           # was 0xE140 (boot 1: above U+E3FF so Halo 2 tints it)
+        'glyph': 0xE140,           # boots 1-5: E540 is MCC's (placeholder); user: untinted at E140
         'weapon_dir': 'objects\\weapons\\rifle\\spike_rifle',
         'effects_dir': 'effects\\objects\\weapons\\rifle\\spike_rifle',
         'fp_graph': 'weapons\\rifle\\fp_spike_rifle\\fp_spike_rifle',
@@ -414,19 +414,19 @@ PORT = {
         'preview': 'brute_spiker_reticle_preview.png',
     },
 
-    # step 8 -- the pickup icon at U+E540, the messages (smg_* -> spk2_*: a LONGER prefix than
+    # step 8 -- the pickup icon at U+E140, the messages (smg_* -> spk2_*: a LONGER prefix than
     # the donor's -- the first length-changing rename in game; the dual lines included)
-    # BOOT 1 (user: 'all icons are violet on the Arbiter'): halo2.dll's text renderer draws a glyph
-    # in the line's colour (HUD blue / Arbiter violet) for U+E112-E12B (Bungie's weapon icons) and
-    # for anything OUTSIDE U+E000-E3FF; every other codepoint in E000-E3FF is forced WHITE and drawn
-    # x0.72 (VA 0x1807552E1, the scale at 0x180B1B878). User: move the ports above U+E3FF (E140 ->
-    # E540: +0x400), drawn WHITE like Bungie's, at 0.72 of 160x62 so the on-screen size stays
+    # THE ICON COLOUR, boots 1-5: halo2.dll's text renderer (VA 0x1807552E1) draws a glyph in the
+    # line's colour (HUD blue / Arbiter violet) for U+E112-E12B (Bungie's weapon icons) and outside
+    # U+E000-E3FF, and forces every other E000-E3FF glyph WHITE x0.72 (the scale at 0x180B1B878).
+    # Above U+E3FF MCC'S OWN glyph hook (halo2.dll asks MCC first: vtable +0x1F0) claims the
+    # codepoint: E540 / E800 / EC00 / F100 / F600 drew MCC's placeholder or nothing; a line with
+    # U+2B60 never showed. User (boot 5): keep the icon UNTINTED, as it was first -- back to U+E140,
+    # drawn as it is (white lines over a grey body) at Bungie's 160x62 (x0.72 on screen)
     'glyph': {
-        'box': (115, 45),
+        'box': (160, 62),
         'model_3p': H3_RM_XML,
         'tif': 'spike_rifle_h2_glyph.tif',
-        # white like Bungie's (the renderer tints it); the AR's two-tone look kept as luminance:
-        # lines white, the solid body at the AR's body / line ratio (~0.6)
         'colour': (255, 255, 255),
         'style': {'line': (255, 255, 255), 'body': (153, 153, 153)},
     },
