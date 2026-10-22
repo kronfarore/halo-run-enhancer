@@ -136,8 +136,12 @@ PORT = {
         # forward to the nozzle's HEAD (x 42-45), at the mouth of its claw (which faces the camera's
         # left, +y), smaller -- checked on Halo 1's FP idle render (a forward-pointing card is edge-on
         # to the camera; one behind the head is hidden)
-        # boot 16 video: 'slightly up' -> +0.7
-        'fp_cards': [('flamethrower_pilot', (42.6, 1.6, 4.6), (1.4, 2.2))],
+        # boot 16 video: 'slightly up' -> +0.7; boot 17: flickering, 'a little to the right' (-y) 0.4
+        'fp_cards': [('flamethrower_pilot', (42.6, 1.2, 4.6), (1.4, 2.2))],
+        # boot 17: 'copy it to third person' -- the same card on the world model, at the same offset
+        # from its nozzle head (FP head centre (43.89, 0.5, 4.44) -> world (44.78, 0.23, 6.54)); the
+        # attachment effect (a blue dot on AI) emits nothing now (step 3)
+        'world_cards': [('flamethrower_pilot', (43.49, 0.93, 6.7), (1.4, 2.2))],
         # boot 5 ('no visible pilot flame'): Halo 1 has `pilot` / the steam vents on the FP model only;
         # the weapon's attachments look markers up on the WORLD model -- placed there at the FP
         # markers' offsets from primary_trigger (the two models share the gun's axes and length)
@@ -188,7 +192,10 @@ PORT = {
                      r'objects\cinematics\human\pillarofautumn\bitmaps\poa_exhaust',
                      # boot 13: bright, the core near white (an additive card adds nothing visible on
                      # 06b's bright snow at boot 12's peak blue 173 -- Halo 2's own flames are white-hot)
-                     ('sprite', 4, ('tint', (1.2, 1.5, 2.0), 0)), (64, 64))],
+                     ('sprite', 4, ('tint', (1.2, 1.5, 2.0), 0)), (64, 64)),
+                    # the SCORCH (boot 17): Halo 1's own char decal bitmap, on the seed of the H2 char decal's
+                    (r'effects\decals\bullet holes\bitmaps\impact flame thrower char', 'flame_char',
+                     r'effects\decals\bullet_holes\bitmaps\dirt_pistol', 'color', None)],
         'shaders': [
             # the gun and the tank lit (boot 1): Bungie's PR `plasma_rifle_luminous` (tex_bump_env_illum:
             # bump, base, self-illum -- the base named twice; '#1' = the self-illum copy, moved first)
@@ -257,6 +264,11 @@ PORT = {
                    (r'effects\objects\weapons\support_high\rocket_launcher\rocket_exhaust.effect', FX + r'\flame_burning.effect'),
                    (r'effects\generic\fires\fire.particle', FX + r'\flame_fire.particle'),
                    (r'effects\objects\weapons\support_high\rocket_launcher\rocket_flame.particle', FX + r'\flame_flash.particle'),
+                   # where a flame hits (boot 17: 'still plasma, should be scorch marks'): Halo 1's own
+                   # `flame thrower char` decal (radius 0.15-0.3) on a clone of Bungie's char decal, in an
+                   # impact effect cloned from the Covenant turret's (char decals + fiery smoke)
+                   (r'effects\decals\bullet_holes\grenade_char.decal', FX + r'\flame_char.decal'),
+                   (r'effects\impact\plasma_fast\c_turret_ap\c_turret_ap.effect', FX + r'\flame_char_impact.effect'),
                    # boot 3 (user: 'build the support for the pilot flame and overheat effect'): the PILOT
                    # (Halo 1: a small blue flame at `pilot` while the weapon is ready) = the same rocket
                    # flame, tiny and tinted blue (boot 4: the plasma pistol's charge sparks were invisible);
@@ -341,6 +353,53 @@ PORT = {
              EMPTY_FX, 'impact on soft materials -> nothing big', {'every': True}),
             (FT + r'\projectiles\flame.projectile', 'effe', r'effects\impact\plasma_slow\hard_metal_thick',
              EMPTY_FX, 'impact on hard materials -> nothing big', {'every': True}),
+            # the SCORCH (boot 17): the char impact = both its decals Halo 1's char, its plasma twirls
+            # and flash the turret's own small fiery smoke, its phantom bolt sound the flame's silent one
+            (FX + r'\flame_char.decal', 'bitm', r'effects\decals\bullet_holes\bitmaps\dirt_pistol',
+             FT + r'\bitmaps\flame_char', "Halo 1's flame-thrower char"),
+            (FX + r'\flame_char_impact.effect', 'deca', r'effects\decals\bullet_holes\grenade_char',
+             FX + r'\flame_char', 'the char decal'),
+            (FX + r'\flame_char_impact.effect', 'deca', r'effects\decals\blast_scorches\phantom_plasma_burn',
+             FX + r'\flame_char', 'no plasma burn: the char decal'),
+            (FX + r'\flame_char_impact.effect', 'snd!', r'sound\vehicles\phantom\phantom_bolt_impact',
+             r'sound\weapons\flamethrower_port\ft_flyby', 'no bolt impact sound (the silent flyby)'),
+            (FX + r'\flame_char_impact.effect', 'prt3', r'effects\generic\energy\plasma_twirl',
+             r'effects\generic\smoke\smoke_fiery_small', 'no plasma twirl: fiery smoke'),
+            (FX + r'\flame_char_impact.effect', 'prt3', r'effects\generic\energy\plasma_twirl_perpendicular',
+             r'effects\generic\smoke\smoke_fiery_small', 'no plasma twirl: fiery smoke'),
+            (FX + r'\flame_char_impact.effect', 'prt3', r'effects\generic\energy\flash_c_generic',
+             r'effects\generic\smoke\smoke_fiery_small', 'no plasma flash: fiery smoke'),
+            # every plasma impact of the flame's material effects -> the char impact; the end-of-life
+            # FIZZLE -> nothing (a flame burns out). `impact` (48 copies) and `fizzle` (5) are paths of
+            # ONE length, so {'every'} cannot tell their records apart: one copy a row (nth 0, each
+            # pairing tool-checked); a row past the last copy reads 'already'
+        ] + [(FX + r'\flame.material_effects', 'effe', r'effects\impact\plasma_fast\plasma_rifle\impact',
+              FX + r'\flame_char_impact', 'impacts: the char', {'nth': 0})] * 48 + [
+            (FX + r'\flame.material_effects', 'effe', r'effects\impact\plasma_fast\plasma_rifle\fizzle',
+             EMPTY_FX, 'fizzle: nothing', {'nth': 0})] * 5 + [
+            (FX + r'\flame.material_effects', 'effe', r'effects\impact\impact_plasma_medium' + '\\' + m,
+             FX + r'\flame_char_impact', 'impacts: the char', {'nth': 0})
+            # (several of these share a length too: one copy a row, as many rows as copies)
+            for m, n in (('tough_terrain', 5), ('tough_terrain_mud', 1), ('tough_organic', 1),
+                         ('tough_organic_wood', 2), ('tough_organic_flesh_brute', 1),
+                         ('tough_organic_flesh_bugger', 1), ('soft_organic_flesh', 2),
+                         ('soft_organic_flesh_elite', 2),
+                         # (boot 18: every OTHER material's plasma impact too -- 38 more, one copy each,
+                         # soft_terrain_snow among them)
+                         ('brittle', 1), ('brittle_elec', 1), ('brittle_elec_cov', 1),
+                         ('brittle_explosive', 1), ('brittle_glass', 1), ('brittle_glass_for_unbreakable', 1),
+                         ('brittle_mech', 1), ('brittle_mech_cov', 1), ('default', 1), ('energy', 1),
+                         ('energy_holo', 1), ('energy_shield_thick', 1), ('energy_shield_thick_cov', 1),
+                         ('energy_shield_thin', 1), ('energy_shield_thin_cov', 1), ('hard', 1),
+                         ('hard_floodflesh', 1), ('hard_metal_thin', 1), ('hard_metal_thin_cov_elite', 1),
+                         ('hard_metal_thin_cov_grunt', 1), ('hard_metal_thin_hum_masterchief', 1),
+                         ('hard_terrain', 1), ('liquid', 1), ('soft', 1), ('soft_inorganic', 1),
+                         ('soft_organic', 1), ('soft_organic_flesh_bugger', 1),
+                         ('soft_organic_flesh_grunt', 1), ('soft_organic_flesh_hunter', 1),
+                         ('soft_organic_plant', 1), ('soft_organic_plant_grassy', 1), ('soft_terrain', 1),
+                         ('soft_terrain_snow', 1), ('tough', 1), ('tough_floodflesh', 1),
+                         ('tough_inorganic', 1), ('tough_inorganic_plastic', 1),
+                         ('tough_inorganic_rubber', 1)) for _k in range(n)] + [
             # the OVERHEAT effect into the clone's EMPTY `overheated` slot (h2_tagref.fill_reference,
             # field-checked: an empty reference is not exported, only the result says which was filled)
             (FT + r'\flamethrower.weapon', 'effe', '', FX + r'\flamethrower_overheated', 'the overheat effect',
@@ -376,6 +435,8 @@ PORT = {
             # rocket's one looping sprite never changes), flags 'looping' off in step 4
             (FX + r'\flamethrower_pilot.effect', '010000000000803f0000803f', '01000000000040410000803f'),
             (FX + r'\flamethrower_pilot.effect', '010000000ad7a33c', '010000000000803e'),
+            # boot 17: the world model carries the pilot CARD now -> the attachment effect emits nothing
+            (FX + r'\flamethrower_pilot.effect', '01000000000040410000803f', '010000000000000000000000'),
             # the fuel SCREEN's self-illum colour is an animation function (a const colour is unused):
             # the shotgun sight's dark green BGRA 07 30 0e -> a moderate grey (boot 8: full white
             # read washed out)
@@ -558,6 +619,8 @@ PORT = {
             # animation's `type`: type / input / range / time period)
             (FT + r'\shaders\flamethrower_pilot.shader', 'time period', 'animation properties', 0, 0, 0.15,
              {'anchor': ('type', 12)}),
+            # the scorch's size: Halo 1's flame-thrower char (radius 0.15-0.3; the grenade char's 1-1.25)
+            (FX + r'\flame_char.decal', 'radius', '', 0, 0, [0.15, 0.3]),
             # the screen's speculars (the shotgun sight's were green): grey
             (FT + r'\shaders\flamethrower_screen.shader', 'const color', 'parameters', 3, 0, [0.15, 0.15, 0.15]),
             (FT + r'\shaders\flamethrower_screen.shader', 'const color', 'parameters', 4, 0, [0.07, 0.07, 0.07]),

@@ -359,7 +359,9 @@ def h1_convert(g, rel, world):
                 out.tris.append((src_mat[part.shader_index], (base + a, base + b, base + c)))
     if len(out.tris) < g.get('min_tris', 200):
         raise SystemExit('only %d triangles from %s' % (len(out.tris), rel))
-    for card in (() if world else g.get('fp_cards', ())):
+    # `world_cards` the same on the WORLD model (the Flamethrower's third-person pilot, boot 17:
+    # 'copy it to third person' -- the attachment effect read as a blue dot)
+    for card in g.get('world_cards' if world else 'fp_cards', ()):
         # fp_cards [(material, centre, (width, height)[, axis])]: two crossed cards on node 0, the
         # material's own UVs 0-1 (v along the height) -- the Flamethrower's FIRST-PERSON pilot flame
         # (boot 8: Halo 2 draws attachment effects at the WORLD model's markers, even in FP). axis
@@ -369,9 +371,9 @@ def h1_convert(g, rel, world):
         axis = card[3] if len(card) > 3 else 'z'
         if mat not in mat_index:
             mat_index[mat] = len(mats)
-            mats.append(h2_jms.Material(mat, '(%d) %s %s' % (len(mats) + 1,
-                                                          g.get('permutation', 'standard'),
-                                                          g.get('region', 'standard'))))
+            mats.append(h2_jms.Material(mat, '(%d) %s %s' % (
+                len(mats) + 1, g.get('world_permutation' if world else 'permutation', 'standard'),
+                g.get('world_region' if world else 'region', 'standard'))))
         cx, cy, cz = centre
         # (width offset, normal) per card; the height runs along `axis`
         cards = ((((w / 2, 0.0, 0.0), (0.0, -1.0, 0.0)), ((0.0, w / 2, 0.0), (1.0, 0.0, 0.0))) if axis == 'z'
