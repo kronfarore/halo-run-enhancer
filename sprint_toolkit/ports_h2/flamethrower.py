@@ -173,8 +173,12 @@ PORT = {
              {r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle#1': FT + r'\bitmaps\flamethrower_illum',
               r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle': FT + r'\bitmaps\flamethrower',
               r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_bump': FT + r'\bitmaps\flamethrower_bump'}),
-            ('flamethrower_screen', r'objects\weapons\rifle\shotgun\shaders\shotgun_light',
-             {r'objects\weapons\rifle\shotgun\bitmaps\illum_sights': FT + r'\bitmaps\flamethrower_screen'}),
+            # the fuel SCREEN: Halo 1 self-lights it by its own multipurpose map (= the screen bitmap).
+            # Boots 1-6 on the shotgun sight's tex_bump_illum stayed black (its illum colour, then
+            # white, changed nothing) -> the BR digits' illum_detail, which visibly glows on this gun:
+            # the screen bitmap as its self-illum map, no frame input (string_ids), white (step 3)
+            ('flamethrower_screen', r'objects\weapons\rifle\battle_rifle\shaders\tens',
+             {r'objects\weapons\rifle\battle_rifle\bitmaps\numbers_plate': FT + r'\bitmaps\flamethrower_screen'}),
             ('flamethrower_heat_display', r'objects\weapons\rifle\plasma_rifle\shaders\plasma_rifle_gauge',
              # the alpha FIRST: the meter's new path is as long as `..._heat_gauge_alpha`, and a
              # repoint refuses two records of one length
@@ -186,6 +190,8 @@ PORT = {
             # weapon exports: always 0 -- Halo 2 exports only primary_ammunition_ones / _tens); boot 2
             # (user: '000 is useless for a full tank'): removed again, two digits
         ],
+        # the screen on the digit shader: no frame input (its bitmap has one image)
+        'string_ids': {'flamethrower_screen': {'primary_ammunition_tens': ''}},
         'report_rows': [(FT + r'\bitmaps\flamethrower_bump', 'the port (flat)'),
                         (SMG + r'\bitmaps\smg_bump', 'Bungie SMG')],
     },
@@ -222,6 +228,9 @@ PORT = {
                    # the OVERHEAT effect = the plasma rifle's (Halo 1's own is the same `plasma overheat`
                    # particles at its steam vents)
                    (r'effects\objects\weapons\support_high\rocket_launcher\rocket_exhaust.effect', FX + r'\flamethrower_pilot.effect'),
+                   # boot 6 ('a green flame, static'): the orange fire sprite x a blue tint reads green
+                   # -> Bungie's TINTABLE flame (white_rolling_flame: an alpha sprite, the tint is its colour)
+                   (r'effects\generic\fires\white_rolling_flame.particle', FX + r'\pilot_flame.particle'),
                    (r'effects\objects\weapons\rifle\plasma_rifle\overheated.effect', FX + r'\flamethrower_overheated.effect'),
                    # the RELOAD sound: the seed graph (the PR's) has no reload animation, so no reload
                    # sound event -- the magazine's reloading effect carries it instead: a clone of
@@ -279,9 +288,9 @@ PORT = {
             (FX + r'\flame_burning.effect', 'prt3', r'effects\objects\weapons\support_high\rocket_launcher\rocket_flame_core',
              FX + r'\flame_fire', "the flame's core: a fire sprite"),
             (FX + r'\flamethrower_pilot.effect', 'prt3', r'effects\objects\weapons\support_high\rocket_launcher\rocket_flame',
-             FX + r'\flame_fire', 'the pilot: a fire sprite'),
+             FX + r'\pilot_flame', 'the pilot: a tintable flame'),
             (FX + r'\flamethrower_pilot.effect', 'prt3', r'effects\objects\weapons\support_high\rocket_launcher\rocket_flame_core',
-             FX + r'\flame_fire', "the pilot's core: a fire sprite"),
+             FX + r'\pilot_flame', "the pilot's core: a tintable flame"),
             # where a flame hits: no big fire (boot 2); Halo 1's `flame char` is a scorch + a small
             # flash -- the clone's material effects keep the scorch decals
             (FT + r'\projectiles\flame.projectile', 'effe', r'effects\impact\plasma_slow\soft_terrain',
@@ -309,31 +318,38 @@ PORT = {
             # (boot 5: the pilot 0.02-0.03 / 0.012 wu)
             (FX + r'\flamethrower_pilot.effect', '0000003fcdcc0c3f', '0ad7a33c8fc2f53c'),
             (FX + r'\flamethrower_pilot.effect', '010008006666263f', '01000800a69b443c'),
-            # the fuel SCREEN's self-illum colour is an animation function (the const colour is
-            # unused: boot 5, 'unchanged'): the shotgun sight's dark green BGRA 07 30 0e -> white
-            (FT + r'\shaders\flamethrower_screen.shader', '0120000007300eff', '01200000ffffffff'),
+            # boot 6 ('green, static'): the pilot EMITS -- 12 flames a second living 0.25 s (the
+            # rocket's one looping sprite never changes), flags 'looping' off in step 4
+            (FX + r'\flamethrower_pilot.effect', '010000000000803f0000803f', '01000000000040410000803f'),
+            (FX + r'\flamethrower_pilot.effect', '010000000ad7a33c', '010000000000803e'),
+            # the fuel SCREEN's self-illum colour is an animation function (a const colour is unused):
+            # the BR digit's cyan BGRA f4 e0 8e -> white
+            (FT + r'\shaders\flamethrower_screen.shader', '01200000f4e08eff', '01200000ffffffff'),
             (FX + r'\flamethrower_pilot.effect', '01200000ffffffff0000803f00000000ffffffff',
              '01200000ff9040ff0000803f00000000ff9040ff'),
             # the DIGITS fade to red as the tank empties (boot 3, user): the BR digit shaders' self-illum
             # colour is a two-colour function with no input (constant: slot 0, the BR's cyan); with the
             # input `primary_ammunition` (filled below) slot 0 = EMPTY -> red, slot 3 = FULL -> the cyan
-            # (as Bungie's Sentinel beam's red/white by shield_vitality, the Carbine's display by ammo)
+            # (as Bungie's Sentinel beam's red/white by shield_vitality, the Carbine's display by ammo).
+            # Boot 6 ('starts red, ends red'): byte 2 is the colour COUNT -- 0 = one colour (slot 0
+            # only, whatever the input); Bungie's PR heat gauge (green -> red by heat) has 3 there
             (FT + r'\shaders\flamethrower_tens.shader', '01200000f4e08eff0000000000000000ffffff00',
-             '012000004040ffff0000000000000000f4e08eff'),
+             '012003004040ffff0000000000000000f4e08eff'),
             (FT + r'\shaders\flamethrower_ones.shader', '01200000f4e08eff0000000000000000ffffff00',
-             '012000004040ffff0000000000000000f4e08eff')],
+             '012003004040ffff0000000000000000f4e08eff')],
         # the pilot effect sits at the weapon's `pilot` marker (the rocket's is `exhaust`)
         # and the flame's at `root` (boot 5, 'no visible projectile': a projectile has no model, so no
         # `exhaust`; Bungie's effects on model-less bolts name `root` -- the plasma pistol's charged glow)
         'string_id_renames': [(FX + r'\flamethrower_pilot.effect', {'exhaust': 'pilot'}),
-                              (FX + r'\flame_burning.effect', {'exhaust': 'root'}),
-                              # boot 5 ('a constant red'): `primary_ammunition` is no weapon export
-                              # (only the digits' _ones / _tens) -> the tens digit drives the colour
-                              (FT + r'\shaders\flamethrower_tens.shader', {'primary_ammunition': 'primary_ammunition_tens'}),
-                              (FT + r'\shaders\flamethrower_ones.shader', {'primary_ammunition': 'primary_ammunition_tens'})],
-        # the digits' colour input: the TENS digit (an engine export: what the BR digits read; the PR
-        # gauge reads `heat` -- neither weapon declares a function)
+                              (FX + r'\flame_burning.effect', {'exhaust': 'root'})],
+        # the digits' colour input: the TENS digit (an engine export, 0-1: what the BR digits read --
+        # boot 5's `primary_ammunition` is no weapon export; the PR gauge reads `heat`, neither
+        # weapon declares a function). The pilot only while the weapon is READY (Halo 1's pilot; the
+        # PR's heat flares scale by `ready`, the plasma pistol's charge glow by primary_charged): an
+        # attachment with no scale is made once, on the world model -- boot 6 drew it only there
         'string_id_fills': [
+            (FT + r'\flamethrower.weapon', 'primary scale', 'attachments', 1, 0, 'ready',
+             {'after': 'flamethrower_pilot\x00pilot'}),      # the pilot element's pooled path + marker
             (FT + r'\shaders\flamethrower_tens.shader', 'input name', 'animation properties', 0, 1, 'primary_ammunition_tens'),
             (FT + r'\shaders\flamethrower_ones.shader', 'input name', 'animation properties', 0, 1, 'primary_ammunition_tens')],
         # the 3P label: the BR's `rifle` / `br` (every character's graph holds the two-handed BR; the
@@ -453,12 +469,11 @@ PORT = {
             (FX + r'\flame_burning.effect', 'flags', 'particle systems', 3, 0, 136),
             (FX + r'\flamethrower_pilot.effect', 'flags', 'particle systems', 2, 0, 136),
             (FX + r'\flamethrower_pilot.effect', 'flags', 'particle systems', 3, 0, 136),
-            # boot 4 (user's close-up: the fuel screen black): the shotgun sight's shader tints its
-            # self-illumination GREEN (0.44, 0.74, 0.12) -- Halo 1's blue screen x green = black. White:
-            # the screen glows as Halo 1 draws it; the speculars grey (the sight's were green too)
-            (FT + r'\shaders\flamethrower_screen.shader', 'const color', 'parameters', 2, 0, [1.0, 1.0, 1.0]),
-            (FT + r'\shaders\flamethrower_screen.shader', 'const color', 'parameters', 3, 0, [0.15, 0.15, 0.15]),
-            (FT + r'\shaders\flamethrower_screen.shader', 'const color', 'parameters', 4, 0, [0.07, 0.07, 0.07]),
+            # the pilot's flames EMIT (boot 6, 'static'): 'looping particle' off
+            (FX + r'\flamethrower_pilot.effect', 'flags', 'particle systems', 0, 0, 0),
+            (FX + r'\flamethrower_pilot.effect', 'flags', 'particle systems', 1, 0, 0),
+            # (boots 4-5: the screen's shotgun-sight const colours -- unused by the shader; the screen
+            # is on the BR digit shader since boot 6, its colour a byte edit in step 3)
             # boot 1 (user): '1 unit forward and down' (1 unit = 0.01 wu, the AR's convention)
             (FT + r'\flamethrower.weapon', 'first person weapon offset', '', 0, 0, [0.01, 0.0, -0.01]),
         ],

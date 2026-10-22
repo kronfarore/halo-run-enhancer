@@ -133,14 +133,19 @@ def rename(tag_path, renames, write=False, verbose=True):
     return 'renamed %d' % n
 
 
-def fill_empty(tag_path, name, block, index, nth, value, verbose=True):
+def fill_empty(tag_path, name, block, index, nth, value, verbose=True, after=None):
     """Give an EMPTY string id a value (the Flamethrower's digits, boot 4: their self-illum colour
     animation's `input name` set to `primary_ammunition`, so the colour follows the fuel). The
     field is named as h2_tagfield.pick names it (block, element, nth). An empty id has length 0 and
     nothing pooled, so its place is found by trial: every zero-length 4-byte slot of every element
     array gets the length, the string goes in at that array's end (where its element's pooled data
     starts, ahead of any child chunk), and tool's export must read the field as `value` and every
-    other field unchanged. None does -> the file is put back and the fill refused."""
+    other field unchanged. None does -> the file is put back and the fill refused.
+
+    `after` (bytes, unique in the tag): the string goes in right after it, and only the element
+    array whose pooled data holds that place is searched -- for an element that is not the first,
+    whose pooled data follows the earlier elements' (the Flamethrower's pilot attachment, element 1:
+    its scale after `...flamethrower_pilot\\0pilot`)."""
     import h2_tagfield as tf
     original = open(tag_path, 'rb').read()
     rows = tf.read_all(tf.export(tag_path))
@@ -155,20 +160,30 @@ def fill_empty(tag_path, name, block, index, nth, value, verbose=True):
     want = rows[:k] + [row[:4] + (value,)] + rows[k + 1:]
     raw = value.encode('latin-1')
     tries = 0
-    for a0, b0 in sorted(_arrays(original), key=lambda r: r[1] - r[0]):     # small structs first
+    arrays = sorted(_arrays(original), key=lambda r: r[1] - r[0])           # small structs first
+    if after is not None:
+        if original.count(after) != 1:
+            raise SystemExit('%s: %r occurs %d times' % (os.path.basename(tag_path), after,
+                                                          original.count(after)))
+        at = original.find(after) + len(after)
+        # the array whose pooled data (from its end to the next chunk) holds `at`
+        arrays = [(a0, b0) for a0, b0 in arrays
+                  if b0 <= at and (original.find(SIG, b0) < 0 or original.find(SIG, b0) >= at)]
+    for a0, b0 in arrays:
         for p in range(a0, b0 - 3, 4):
             if original[p + 3] != 0 or original[p:p + 4] == b'\xff' * 4:
                 continue
             d = bytearray(original)
             d[p + 3] = len(raw)
-            d[b0:b0] = raw
+            spot = b0 if after is None else at
+            d[spot:spot] = raw
             open(tag_path, 'wb').write(bytes(d))
             tries += 1
             x = tf.export(tag_path)
             if x and tf.read_all(x) == want:
                 if verbose:
                     print('   %s: %s = %r (length at 0x%X, pooled at 0x%X; try %d), verified by tool'
-                          % (os.path.basename(tag_path), name, value, p, b0, tries))
+                          % (os.path.basename(tag_path), name, value, p, spot, tries))
                 return 'filled'
     open(tag_path, 'wb').write(original)
     raise SystemExit('%s: no place for %s = %r in %d tries -- restored'

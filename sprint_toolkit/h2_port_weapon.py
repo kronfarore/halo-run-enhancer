@@ -89,11 +89,15 @@ def marker_renames(w):
             print('   %-34s %s already renamed' % (os.path.basename(tag), ', '.join(ren.values())))
             continue
         print('   ' + h2_stringid.rename(path, ren, write=True))
-    for tag, name, block, index, nth, value in w.get('string_id_fills', ()):
+    for row in w.get('string_id_fills', ()):
         # an EMPTY string id given a value (h2_stringid.fill_empty, tool-verified): the
-        # Flamethrower's digit colour animations read `primary_ammunition`
+        # Flamethrower's digit colour animations read `primary_ammunition_tens`; opt {'after': text}
+        # places the string after that unique pooled text (an element past the first)
+        tag, name, block, index, nth, value = row[:6]
+        after = row[6].get('after') if len(row) > 6 else None
         print('   %-34s %s' % (os.path.basename(tag), h2_stringid.fill_empty(
-            os.path.join(TAGS, tag), name, block, index, nth, value)))
+            os.path.join(TAGS, tag), name, block, index, nth, value,
+            after=after.encode('latin-1') if after else None)))
 
 
 def wire(w):
