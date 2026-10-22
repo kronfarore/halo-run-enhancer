@@ -327,31 +327,32 @@ PORT = {
             (FT + r'\shaders\flamethrower_screen.shader', '01200000f4e08eff', '01200000ffffffff'),
             (FX + r'\flamethrower_pilot.effect', '01200000ffffffff0000803f00000000ffffffff',
              '01200000ff9040ff0000803f00000000ff9040ff'),
-            # the DIGITS fade to red as the tank empties (boot 3, user): the BR digit shaders' self-illum
-            # colour is a two-colour function with no input (constant: slot 0, the BR's cyan); with the
-            # input `primary_ammunition` (filled below) slot 0 = EMPTY -> red, slot 3 = FULL -> the cyan
-            # (as Bungie's Sentinel beam's red/white by shield_vitality, the Carbine's display by ammo).
-            # Boot 6 ('starts red, ends red'): byte 2 is the colour COUNT -- 0 = one colour (slot 0
-            # only, whatever the input); Bungie's PR heat gauge (green -> red by heat) has 3 there
-            (FT + r'\shaders\flamethrower_tens.shader', '01200000f4e08eff0000000000000000ffffff00',
-             '012003004040ffff0000000000000000f4e08eff'),
-            (FT + r'\shaders\flamethrower_ones.shader', '01200000f4e08eff0000000000000000ffffff00',
-             '012003004040ffff0000000000000000f4e08eff')],
+        ],
+        # the DIGITS' colour (boots 5-7 'red, always'): function TYPE 1 is CONSTANT -- it ignores
+        # its input whatever its colours; type 2, a TRANSITION (Bungie's PR heat gauge: green -> red
+        # by heat), is 36 bytes: slot 0 = input 0 = EMPTY -> red, slot 3 = input 1 = FULL -> the BR's
+        # cyan; the input the fuel FRACTION (filled below: 100 and 0 both read '00')
+        'function_edits': [
+            (FT + r'\shaders\flamethrower_tens.shader', '01200000f4e08eff0000000000000000ffffff000000803f0000803f',
+             '022003004040ffff0000000000000000f4e08eff000000000000803f000000000000803f'),
+            (FT + r'\shaders\flamethrower_ones.shader', '01200000f4e08eff0000000000000000ffffff000000803f0000803f',
+             '022003004040ffff0000000000000000f4e08eff000000000000803f000000000000803f')],
         # the pilot effect sits at the weapon's `pilot` marker (the rocket's is `exhaust`)
         # and the flame's at `root` (boot 5, 'no visible projectile': a projectile has no model, so no
         # `exhaust`; Bungie's effects on model-less bolts name `root` -- the plasma pistol's charged glow)
         'string_id_renames': [(FX + r'\flamethrower_pilot.effect', {'exhaust': 'pilot'}),
                               (FX + r'\flame_burning.effect', {'exhaust': 'root'})],
-        # the digits' colour input: the TENS digit (an engine export, 0-1: what the BR digits read --
-        # boot 5's `primary_ammunition` is no weapon export; the PR gauge reads `heat`, neither
-        # weapon declares a function). The pilot only while the weapon is READY (Halo 1's pilot; the
+        # the digits' colour input: the fuel FRACTION `primary_ammunition` (the engine value the
+        # Carbine's own `ammo` function imports; boots 5-7 were red because the function was constant,
+        # not for this input -- the tens digit could not tell 100 from 0, the user's point of the
+        # colour). The pilot only while the weapon is READY (Halo 1's pilot; the
         # PR's heat flares scale by `ready`, the plasma pistol's charge glow by primary_charged): an
         # attachment with no scale is made once, on the world model -- boot 6 drew it only there
         'string_id_fills': [
             (FT + r'\flamethrower.weapon', 'primary scale', 'attachments', 1, 0, 'ready',
              {'after': 'flamethrower_pilot\x00pilot'}),      # the pilot element's pooled path + marker
-            (FT + r'\shaders\flamethrower_tens.shader', 'input name', 'animation properties', 0, 1, 'primary_ammunition_tens'),
-            (FT + r'\shaders\flamethrower_ones.shader', 'input name', 'animation properties', 0, 1, 'primary_ammunition_tens')],
+            (FT + r'\shaders\flamethrower_tens.shader', 'input name', 'animation properties', 0, 1, 'primary_ammunition'),
+            (FT + r'\shaders\flamethrower_ones.shader', 'input name', 'animation properties', 0, 1, 'primary_ammunition')],
         # the 3P label: the BR's `rifle` / `br` (every character's graph holds the two-handed BR; the
         # Grunt's taught by the AR, h2_graph_teach). Halo 1's label `ft` has no Halo 2 graph
         'string_ids': {'rifle': 'rifle', 'smg': 'br'},

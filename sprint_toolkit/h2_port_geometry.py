@@ -268,7 +268,8 @@ def h1_convert(g, rel, world):
     Conventions: Halo 1 stores the INVERSE rotation (fp_render), so a node's Halo 3-convention local
     rotation is the conjugate; then exactly h3_convert's rule (bind composed into model space x100,
     w <= 0). Vertices are model space (x100), UVs x the gbxmodel's base map scale (0 = 1) with
-    v = 1 - v, triangles a strip (-1 padded; odd triangles flipped). Markers: the permutation's local
+    v = 1 - v, triangles a strip (-1 padded; even triangles flipped: each face then agrees with its
+    vertex normals). Markers: the permutation's local
     markers, or the model's marker block (first instance), node-relative, rotation conjugated.
     The highest LOD (superhigh) of every region / permutation.
 
@@ -350,7 +351,10 @@ def h1_convert(g, rel, world):
                 a, b, c = strip[k], strip[k + 1], strip[k + 2]
                 if a == b or b == c or a == c:
                     continue
-                if k % 2:
+                # Halo 1's strips start CLOCKWISE for Halo 2: the EVEN triangles flip (boots 1-7
+                # flipped the odd ones -- every face pointed away from its own normals, the gun drew
+                # inside-out: the fuel screen and heat bar culled, the stripes seen only from inside)
+                if not k % 2:
                     a, b = b, a
                 out.tris.append((src_mat[part.shader_index], (base + a, base + b, base + c)))
     if len(out.tris) < g.get('min_tris', 200):

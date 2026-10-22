@@ -77,6 +77,57 @@ def byte_edits(w):
               % (os.path.basename(tag), old, new, n, len(moved)))
 
 
+def function_edits(w):
+    """`function_edits` [(tag, old hex, new hex)] -- a whole FUNCTION (a `data` block of 1-byte
+    elements) replaced by one of ANOTHER length (the Flamethrower's digits, boot 7: Halo 2's
+    function type 1 is CONSTANT -- it ignores its input -- and type 2, the transition Bungie's PR
+    heat gauge uses, is 36 bytes, not 28). `old` must be the block's whole content and unique; its
+    chunk count and the owning element's count field are rewritten, the owner found by trial
+    (every u32 equal to the old length); kept only when tool's export reads every row as before
+    except that block's bytes, which read `new`. Already applied = left alone."""
+    import struct
+    import h2_tagfield as tf
+    for tag, old, new in w.get('function_edits', ()):
+        path = os.path.join(TAGS, tag)
+        a, b = bytes.fromhex(old), bytes.fromhex(new)
+        d = open(path, 'rb').read()
+        if d.count(a) != 1:
+            print('   %-34s %s... %s' % (os.path.basename(tag), new[:16],
+                                         'already' if d.count(b) else 'NOT FOUND (%d)' % d.count(a)))
+            continue
+        q = d.find(a)
+        if d[q - 16:q - 12] != b'dfbt' or struct.unpack_from('<II', d, q - 8) != (len(a), 1):
+            raise SystemExit('%s: %s is not a whole data block' % (tag, old[:16]))
+        rows = tf.read_all(tf.export(path))
+
+        def split(rr, run):
+            # the rows minus the first run of `data` Value rows equal to `run`
+            vals = [int(r[4]) & 255 if r[2] == 'Value' else -1 for r in rr]
+            for i in range(len(rr) - len(run) + 1):
+                if vals[i:i + len(run)] == list(run):
+                    return rr[:i] + rr[i + len(run):]
+            return None
+        rest = split(rows, a)
+        done = False
+        for p in range(q - 20, -1, -1):           # every byte: a loose tag's structs are unaligned
+            if struct.unpack_from('<I', d, p)[0] != len(a):
+                continue
+            out = bytearray(d)
+            out[q:q + len(a)] = b
+            struct.pack_into('<I', out, q - 8, len(b))
+            struct.pack_into('<I', out, p, len(b))
+            open(path, 'wb').write(bytes(out))
+            x = tf.export(path)
+            if x and split(tf.read_all(x), b) == rest:
+                print('   %-34s function %d -> %d bytes (count at 0x%X), tool: every other row as before'
+                      % (os.path.basename(tag), len(a), len(b), p))
+                done = True
+                break
+        if not done:
+            open(path, 'wb').write(d)
+            raise SystemExit('%s: no count field made the function read %s -- restored' % (tag, new[:16]))
+
+
 def marker_renames(w):
     """`string_id_renames` [(tag, {old id: new id})] -- string ids in a cloned tag renamed through
     h2_stringid (any length, tool-verified; the Flamethrower's pilot effect: its location marker
@@ -160,6 +211,9 @@ def main(argv=None):
     if w.get('byte_edits'):
         print('byte edits in the clones:')
         byte_edits(w)
+    if w.get('function_edits'):
+        print('functions replaced in the clones:')
+        function_edits(w)
     if w.get('string_id_renames') or w.get('string_id_fills'):
         print('string ids renamed in the clones:')
         marker_renames(w)
