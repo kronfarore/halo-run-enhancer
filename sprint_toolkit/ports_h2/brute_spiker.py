@@ -8,6 +8,20 @@ SR = r'objects\weapons\rifle\spike_rifle'        # the source's folder (H3EK) AN
 SMG = r'objects\weapons\rifle\smg'                # the donor (H2EK)
 FX = r'effects\objects\weapons\rifle\spike_rifle'  # the reserved effects folder
 NEW_HUD = r'ui\hud\bitmaps\new_hud'
+# check 10's sparks (weapon byte_edits): the SMG's long burst emitter's functions (old, new) --
+# count 1 -> 5-10, lifespan 0.1 -> 0.1-0.2, velocity 0.001 -> 1-1.5, emission angle 0 -> 0-10;
+# its size 1.2-1.6 -> 0.008-0.015 is the UNIQUE anchor the others are found beside
+SPARK_FUNCTIONS = [
+    ('010000000000803f0000000000000000000000000000803f0000803f',
+     '010100000000a0400000204100000000000000000000803f0000803f'),
+    ('01000000cdcccc3dcdcccc3d00000000000000000000803f0000803f',
+     '01010000cdcccc3dcdcc4c3e00000000000000000000803f0000803f'),
+    ('010004046f12833a6f12833a00000000000000000000803f0000803f',
+     '010104040000803f0000c03f00000000000000000000803f0000803f'),
+    ('01000404000000000000000000000000000000000000803f0000803f',
+     '01010404000000000000204100000000000000000000803f0000803f')]
+SPARK_SIZE = ('010100009a99993fcdcccc3f00000000000000000000803f0000803f',
+              '010100006f12033c8fc2753c00000000000000000000803f0000803f')
 import os as _os
 # the Halo 3 world render model's export (h1_fp_retarget.export_xml's cache; regenerable): the
 # silhouette the HUD plate, backpack icon and pickup glyph are drawn from
@@ -168,7 +182,18 @@ PORT = {
                    (r'effects\objects\weapons\pistol\needler\needle.light_volume', FX + r'\spike_rifle_spike.light_volume')],
         # the clone's colour function bytes (B, G, R as Halo 3 stores them): the needle's pink ->
         # Halo 3's outer_glow orange (239, 57, 12); every write tool-verified (byte_edits)
-        'byte_edits': [(FX + r'\spike_rifle_spike.light_volume', 'f3 70 f3', '0c 39 ef')],
+        'byte_edits': [(FX + r'\spike_rifle_spike.light_volume', 'f3 70 f3', '0c 39 ef')] + [
+            # CHECK 10, THE MUZZLE FLASH (2026-10-22, h2_effect_particles; user: 'rebuild the flash'):
+            # Halo 3's first-person flash is a glow + round flash + long flash, fiery SPARKS and smoke;
+            # the clone wore the SMG's two bullet bursts. The SMG's third-person long burst (system 1,
+            # one emitter) becomes Halo 3's spark_fiery (count 5-10, lifespan 0.1-0.2 s, velocity
+            # 1-1.5, a 10 deg cone; Halo 2's spark sprite at Bungie's own small scale, 0.008-0.015 --
+            # the burst's 1.2-1.6 is that particle's scale, not a spark's). Its functions are
+            # byte-identical to other emitters', so each is found beside the emitter's UNIQUE size
+            # function (the anchor; the size row last). Function: type 1, byte 1 = ranged, +4 / +8.
+            (FX + r'\spike_rifle_fire.effect', a, b, {'before' if k < 3 else 'after': SPARK_SIZE[0]})
+            for k, (a, b) in enumerate(SPARK_FUNCTIONS)] + [
+            (FX + r'\spike_rifle_fire.effect', SPARK_SIZE[0], SPARK_SIZE[1])],
         # Halo 2 hangs a projectile's light volume on the OBJECT ATTACHMENTS block; the SMG bullet
         # clone has none: an MGS2 attachment copied in (h2_tagref.add_attachment, tool-verified),
         # then repointed at the Spiker's own (wiring). The donor must share the clone's STRUCT
@@ -224,6 +249,10 @@ PORT = {
              FX + r'\spike_rifle_spike', 'impact material effects'),
             # the HUD is the SMG's clone (step 7: dual-wield shaped -- plate x4, meter x2 -- kept)
             (SR + r'\spike_rifle.weapon', 'nhdt', r'ui\hud\smg', r'ui\hud\brute_spiker', 'its own HUD (step 7)'),
+            # check 10: the SMG's third-person long burst -> Halo 3's fiery SPARKS (Bungie's own
+            # spark sprite; numbers in byte_edits, both camera modes in step 4)
+            (FX + r'\spike_rifle_fire.effect', 'prt3', r'effects\objects\weapons\rifle\smg\fire_burst_long',
+             r'effects\generic\sparks\sparks_animated_fiery', "Halo 3's first-person sparks"),
         ],
         # the 3P label: class `pistol` (Halo 3's own; boot 8, user: 'Jackals don't wield it with one
         # hand' -- the SMG's `rifle` is the Jackal's two-handed carbine / sniper stance), type the
@@ -289,6 +318,10 @@ PORT = {
             # first-person placement: the AR's (Halo 3's own animations still need Halo 2's offset,
             # A1 observation 4) -- check in game
             (SR + r'\spike_rifle.weapon', 'first person weapon offset', '', 0, 0, [-0.01, 0.0, -0.03]),
+            # check 10 (the muzzle flash): the sparks (system 1) and the SMG's smoke (system 2) drawn
+            # in first person too, as Halo 3's are (camera mode 3 = both first and third)
+            (FX + r'\spike_rifle_fire.effect', 'camera mode', 'particle systems', 1, 0, 3),
+            (FX + r'\spike_rifle_fire.effect', 'camera mode', 'particle systems', 2, 0, 3),
         ] + [
             # step 4b (port_field_audit.py --port h2:brute_spiker, list 2: the ratio H3 Spiker /
             # H3 SMG x the H2 SMG). The audit names Halo 3's DUAL error ramp (Spiker 0 / 0, SMG

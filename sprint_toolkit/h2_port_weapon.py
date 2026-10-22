@@ -53,19 +53,39 @@ def byte_edits(w):
     import h2_tagfield as tf
     for row in w.get('byte_edits', ()):
         # an optional 4th value names the FIELDS the edit may move instead of function data
-        # `Value` rows (the Flamethrower's emitter size input: an `Input Variable` enum, boot 12)
+        # `Value` rows (the Flamethrower's emitter size input: an `Input Variable` enum, boot 12);
+        # as a dict {'fields': (...), 'before' / 'after': anchor hex}: ONE occurrence only, the
+        # nearest before / after a UNIQUE anchor run (the Spike Rifle's sparks, check 10: one
+        # emitter's functions, byte-identical to other emitters', found beside its unique size)
         tag, old, new = row[:3]
-        fields = row[3] if len(row) > 3 else ('Value',)
+        opt = row[3] if len(row) > 3 else ('Value',)
+        opt = opt if isinstance(opt, dict) else {'fields': opt}
+        fields = tuple(opt.get('fields') or ('Value',))
         path = os.path.join(TAGS, tag)
         a, b = bytes.fromhex(old), bytes.fromhex(new)
         d = open(path, 'rb').read()
-        n = d.count(a)
-        if not n:
-            print('   %-34s %s -> %s %s' % (os.path.basename(tag), old, new,
-                                           'already' if d.count(b) else 'NOT FOUND'))
-            continue
+        anchor = opt.get('before') or opt.get('after')
+        if anchor:
+            k = bytes.fromhex(anchor)
+            if d.count(k) != 1:
+                print('   %-34s %s... %s' % (os.path.basename(tag), new[:16],
+                                             'already (anchor gone)' if d.count(b) else
+                                             'ANCHOR %s found %d times' % (anchor[:16], d.count(k))))
+                continue
+            q = d.rfind(a, 0, d.find(k)) if opt.get('before') else d.find(a, d.find(k) + len(k))
+            if q < 0:
+                print('   %-34s %s... NOT FOUND beside the anchor' % (os.path.basename(tag), old[:16]))
+                continue
+            n, out = 1, d[:q] + b + d[q + len(a):]
+        else:
+            n = d.count(a)
+            if not n:
+                print('   %-34s %s -> %s %s' % (os.path.basename(tag), old, new,
+                                               'already' if d.count(b) else 'NOT FOUND'))
+                continue
+            out = d.replace(a, b)
         rows = tf.read_all(tf.export(path))
-        open(path, 'wb').write(d.replace(a, b))
+        open(path, 'wb').write(out)
         x = tf.export(path)
         after = tf.read_all(x) if x else []
         moved = [i for i, (p, q) in enumerate(zip(rows, after)) if p[4] != q[4]]

@@ -135,6 +135,12 @@ def _parse_h2(path):
                         walk(e, '%s/[%s]' % (p, e.get('index')))
             elif c.tag == 'tag_reference':
                 vals[p] = ('tag reference', (c.text or '').strip())
+            elif c.tag == 'block_index' and c.get('type'):
+                # named by its TYPE ('location'): the name attribute is only 'long block index'
+                q = (p0 + '/' if p0 else '') + c.get('type').lower()
+                while q in vals:
+                    q += "'"
+                vals[q] = ('block index', c.get('index') or '')
             elif c.tag == 'field':
                 typ = c.get('type') or ''
                 if typ in SKIP_TYPES or not name or name.startswith('runtime'):
