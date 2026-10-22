@@ -248,6 +248,17 @@ def h3_main(t, argv):
                     from PIL import ImageFilter
                     g = np.asarray(Image.fromarray(g.astype(np.uint8), 'L').filter(
                         ImageFilter.MaxFilter(2 * mode[2] + 1))).astype(np.float32)
+                if len(mode) > 3 and mode[3]:
+                    # a 4th value = SOFT radius (the Spiker, Armed boot: grown spots read as 'crosses
+                    # taped on'): each spot a radial glow -- a gaussian of the mask, renormalised so
+                    # its core keeps the mask's peak, then max'ed with the mask (the core stays sharp)
+                    from PIL import ImageFilter
+                    peak = g.max()
+                    b = np.asarray(Image.fromarray(g.astype(np.uint8), 'L').filter(
+                        ImageFilter.GaussianBlur(mode[3]))).astype(np.float32)
+                    if b.max() > 0:
+                        b = np.clip(b * (peak / b.max()) * 1.5, 0, 255)
+                    g = np.maximum(g, b)
                 rgb = np.dstack([g * c for c in mode[1]])
                 out = Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8), 'RGB')
             elif isinstance(mode, tuple) and mode[0] == 'alpha_from':

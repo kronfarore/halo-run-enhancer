@@ -114,10 +114,10 @@ PORT = {
                      r'objects\weapons\support_low\brute_shot\bitmaps\brute_shot_bump', 'bump_snorm', None),
                     (SR + r'\bitmaps\brute_bolter_illum.bitmap', 'spike_rifle_illum_blue',
                      r'objects\weapons\melee\gravity_hammer\bitmaps\gravity_hammer_illum',
-                     ('tint', (0.75, 0.78, 1.0), 2), None),
+                     ('tint', (0.75, 0.78, 1.0), 0, 1.5), None),     # Armed boot: soft glows, not grown blocks
                     (SR + r'\bitmaps\brute_bolter_illum.bitmap', 'spike_rifle_illum_amber',
                      r'objects\weapons\melee\gravity_hammer\bitmaps\gravity_hammer_illum',
-                     ('tint', (1.0, 205 / 255.0, 87 / 255.0), 2), None),
+                     ('tint', (1.0, 205 / 255.0, 87 / 255.0), 0, 1.5), None),
                     # the projectile's spike (boot 1): Halo 3's own grey-metal spike map
                     (r'fx\particles\models\weapons\brute_spike\_bitmaps\spike.bitmap', 'spike_rifle_spike',
                      r'objects\weapons\support_low\brute_shot\bitmaps\brute_shot', 'color', None)],
