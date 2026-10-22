@@ -495,30 +495,30 @@ def show(report, show_all=False):
             len(r['port']), len(r['done']), ', '.join(leaf(x['target_field']) for x in r['done']) or '-'))
         for x in r['port']:
             flag = '' if x['target_port'] == x['target_donor'] else '   (port already %s)' % x['target_port']
-            print('   %-58s H4 SAW %-16s AR %-16s | tgt AR %-16s -> %s%s%s' % (
+            print('   %-58s source %-16s yardstick %-16s | target %-16s -> %s%s%s' % (
                 x['target_field'][-58:], x['h4_port'][:16], (x['h4_donor'] or '-')[:16],
                 x['target_donor'][:16], x['suggested'], '' if x['match'] == 'exact' else '  [%s]' % x['match'], flag))
         if r.get('clone'):
             print('-- 4. source pair AGREES, but the port holds another value than %s -- its '
                   "clone donor's, or a deliberate setting (%d)" % (tgt, len(r['clone'])))
             for x in r['clone']:
-                print('   %-58s H4 both %-12s | %s %-16s port %s' % (
+                print('   %-58s source both %-12s | %s %-16s port %s' % (
                     x['target_field'][-58:], x['h4'][:12], tgt, x['target_donor'][:16], x['target_port'][:24]))
         if r.get('extra'):
-            print('-- 5. no Halo 4 counterpart, and the port differs from %s (%d)'
+            print('-- 5. no source counterpart, and the port differs from %s (%d)'
                   % (tgt, len(r['extra'])))
             for x in r['extra']:
                 print('   %-58s %s %-24s port %s' % (x['target_field'][-58:], tgt,
                                                     x['target_donor'][:24], x['target_port'][:24]))
         print('-- 3. decide by hand (%d)' % len(r['decide']))
         for x in r['decide']:
-            print('   %-58s H4 SAW %-16s AR %-16s | tgt AR %-16s  %s' % (
+            print('   %-58s source %-16s yardstick %-16s | target %-16s  %s' % (
                 (x.get('target_field') or x['field'])[-58:], x['h4_port'][:16], (x['h4_donor'] or '-')[:16],
                 (x.get('target_donor') or '-')[:16], x['why']))
         if show_all:
             print('-- covered by the balance table (%d)' % len(r['covered']))
             for x in r['covered']:
-                print('   %-58s H4 SAW %-16s tags %-16s balanced %s' % (
+                print('   %-58s source %-16s tags %-16s balanced %s' % (
                     x['target_field'][-58:], x['h4_port'][:16], x['target_port'], x.get('balanced')))
 
 

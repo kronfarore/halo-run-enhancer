@@ -823,4 +823,9 @@ they are: the impact VISUALS are Halo 2's bullet effects (Halo 3 particles do no
 spike model is Halo 3's main impact visual), and one dual-ready sound (Halo 3's right one).
 **Check 10 run after the fact (2026-10-22, h2_effect_particles):** the first-person flash is the SMG's
 unchanged (two burst sprites at primary_trigger); Halo 3's is a glow + round flash at primary_trigger,
-a long flash at muzzle_brake, sparks and smoke. The user approved the look at boot 1; recorded, not changed.
+a long flash at muzzle_brake, sparks and smoke. REBUILT (user, 2026-10-22; e2e586e): the SMG's third-person long
+burst became Halo 3's fiery sparks (Bungie's sparks_animated_fiery, 5-10 at 0.1-0.2 s, 1-1.5 wu/s, a 10 deg cone)
+and it and the smoke draw in first person too; the long flash itself is left out (no free system: adding one is a
+block insert) and the port has no muzzle_brake marker. byte_edits gained `before` / `after` anchors (an emitter's
+functions repeat across emitters). Final checks (built 05b): refs OWN, 21 own sounds / 0 BORROW, volume #104
+headroom 3.03, resident; 4b: list 2 weapon / damage 0, projectile 7 = index-pairing rows checked BY NAME.

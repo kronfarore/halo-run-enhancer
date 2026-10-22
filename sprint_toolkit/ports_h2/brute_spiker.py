@@ -668,7 +668,12 @@ PORT = {
                 "soft_organic overpenetrate distance 0 (Halo 3: default = impact)",
             "projectile flags'": "Halo 3 262145 = bit 0 'oriented along velocity' (Halo 2's bit 0) + bit 18 "
                 "(no Halo 2 name): 1",
-            'detonation timer starts / timer': "Halo 3's 'when at rest', 1 s (Halo 2's enum 2)",
+            'detonation timer starts / timer': "Halo 3's 'when at rest' (Halo 2's enum 2), 4-5 s (H3's "
+                "impact particle lifespan, 2026-10-22; first 1 s)",
+            'list 2 after the last run (2026-10-22, 7 rows)': "material responses [1] / [2] initial friction "
+                "+ maximum distance, [3] / [4] / [6] chance fraction: the audit pairs BY INDEX; checked BY "
+                "NAME, every one equals Halo 3's (liquid_thin 0.5 / 5, liquid_thick 0.75 / 2.5, "
+                "hard_metal_thick / solid + hard_terrain chance 1) -- nothing to port",
             'bounding offset': "the source's 0.075, 0, 0 (a 0 on the yardstick: no ratio)",
             'lightmap shadow mode': "Halo 2's (the SMG's 'default'; an enum)",
             'damage reporting type': "the SMG's kept (kill feed / medals only)",
