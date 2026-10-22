@@ -72,9 +72,18 @@ def byte_edits(w):
                                              'already (anchor gone)' if d.count(b) else
                                              'ANCHOR %s found %d times' % (anchor[:16], d.count(k))))
                 continue
-            q = d.rfind(a, 0, d.find(k)) if opt.get('before') else d.find(a, d.find(k) + len(k))
+            # 'within': N bytes -- the run must START within N bytes of the anchor (a struct field
+            # found by its own element's unique neighbour: the Flamethrower's material responses,
+            # boot 20); the new run found there instead = already applied
+            kp = d.find(k)
+            w = opt.get('within')
+            lo, hi = ((max(0, kp - w) if w else 0, kp) if opt.get('before')
+                      else (kp + len(k), kp + len(k) + w + len(a) if w else len(d)))
+            q = d.rfind(a, lo, kp) if opt.get('before') else d.find(a, lo, hi)
             if q < 0:
-                print('   %-34s %s... NOT FOUND beside the anchor' % (os.path.basename(tag), old[:16]))
+                done = (d.rfind(b, lo, kp) if opt.get('before') else d.find(b, lo, hi)) >= 0
+                print('   %-34s %s... %s' % (os.path.basename(tag), new[:16], 'already' if w and done
+                                             else 'NOT FOUND beside the anchor'))
                 continue
             n, out = 1, d[:q] + b + d[q + len(a):]
         else:

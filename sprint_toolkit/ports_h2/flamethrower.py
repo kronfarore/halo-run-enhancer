@@ -347,12 +347,13 @@ PORT = {
              FX + r'\pilot_flame', 'the pilot: a tintable flame'),
             (FX + r'\flamethrower_pilot.effect', 'prt3', r'effects\objects\weapons\support_high\rocket_launcher\rocket_flame_core',
              FX + r'\pilot_flame', "the pilot's core: a tintable flame"),
-            # where a flame hits: no big fire (boot 2); Halo 1's `flame char` is a scorch + a small
-            # flash -- the clone's material effects keep the scorch decals
+            # where a flame hits: the projectile's per-material RESPONSES play a hit (the material effects
+            # tag does not -- boot 19: no impact at all). Boot 2 emptied them (the PR's plasma impacts);
+            # now Halo 1's char decal (the char impact, step 3 below)
             (FT + r'\projectiles\flame.projectile', 'effe', r'effects\impact\plasma_slow\soft_terrain',
-             EMPTY_FX, 'impact on soft materials -> nothing big', {'every': True}),
+             FX + r'\flame_char_impact', 'impact on soft materials -> the char', {'every': True}),
             (FT + r'\projectiles\flame.projectile', 'effe', r'effects\impact\plasma_slow\hard_metal_thick',
-             EMPTY_FX, 'impact on hard materials -> nothing big', {'every': True}),
+             FX + r'\flame_char_impact', 'impact on hard materials -> the char', {'every': True}),
             # the SCORCH (boot 17): the char impact = both its decals Halo 1's char, its plasma twirls
             # and flash the turret's own small fiery smoke, its phantom bolt sound the flame's silent one
             (FX + r'\flame_char.decal', 'bitm', r'effects\decals\bullet_holes\bitmaps\dirt_pistol',
@@ -441,6 +442,23 @@ PORT = {
             (FX + r'\flame_char_impact.effect', '01000000000020410000a040', '010000000000000000000000'),
             (FX + r'\flame_char_impact.effect', '010100000000a04000002041', '010100000000000000000000'),
             (FX + r'\flame_char_impact.effect', '01000000000040400000a040', '010000000000000000000000'),
+            # the flame's MATERIAL RESPONSES as Halo 1's (boot 19: 'glides through objects'; the PR
+            # bolt's FIZZLE on metal / glass / Flood = gone with no hit). Halo 1: bodies -> ATTACH and
+            # burn, ground / metal / glass -> the char. Halo 2 puts bodies on default_material with the
+            # ground: user, boot 19 -> 'stick to bodies' (the Spike Rifle's way). Each 160-byte
+            # element = flags, response (2 bytes each), its effect ref, its MATERIAL NAME string id at
+            # +20 -- the unique anchor; the flags + response run 16 bytes before it (0 impact,
+            # 1 fizzle, 3 attach)
+            (FT + r'\projectiles\flame.projectile', '00000000', '00000300',
+             {'fields': ('response',), 'before': 'ffffffff1c050010', 'within': 16}),   # default_material: attach
+            (FT + r'\projectiles\flame.projectile', '00000100', '00000000',
+             {'fields': ('response',), 'before': 'ffffffffa6000010', 'within': 16}),   # hard_metal_thick: impact
+            (FT + r'\projectiles\flame.projectile', '00000100', '00000000',
+             {'fields': ('response',), 'before': 'ffffffffa7000010', 'within': 16}),   # hard_metal_solid: impact
+            (FT + r'\projectiles\flame.projectile', '00000100', '00000300',
+             {'fields': ('response',), 'before': 'ffffffffa500000f', 'within': 16}),   # hard_floodflesh: attach
+            (FT + r'\projectiles\flame.projectile', '00000100', '00000000',
+             {'fields': ('response',), 'before': 'ffffffffb300000d', 'within': 16}),   # brittle_glass: impact
             # boot 17: the world model carries the pilot CARD now -> the attachment effect emits nothing
             (FX + r'\flamethrower_pilot.effect', '01000000000040410000803f', '010000000000000000000000'),
             # the fuel SCREEN's self-illum colour is an animation function (a const colour is unused):
