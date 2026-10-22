@@ -204,8 +204,12 @@ PORT = {
              {r'objects\weapons\rifle\shotgun\bitmaps\illum_sights': FT + r'\bitmaps\flamethrower_screen'}),
             # the FP PILOT card: Bungie's time-animated additive (the Pillar of Autumn's engine exhaust:
             # one_add_illum, its self-illum colour pulsing on a 2 s period -- the one shipped example)
-            ('flamethrower_pilot', r'objects\cinematics\human\pillarofautumn\shaders\poa_engine_exhaust',
-             {r'objects\cinematics\human\pillarofautumn\bitmaps\poa_exhaust': FT + r'\bitmaps\flamethrower_pilot_flame'}),
+            # boot 14 ('no pilot flame still', after boots 10-14 on poa_engine_exhaust): no Bungie FP weapon
+            # draws one_add_illum -- their FP glow parts are two_add_env_illum (the compass / display
+            # kind) or *_active_camo -> the AR port's compass shader (two_add_env_illum, constant white,
+            # drawn in first person in the AR's boots)
+            ('flamethrower_pilot', r'objects\weapons\rifle\assault_rifle\shaders\assault_rifle_compass',
+             {r'objects\weapons\rifle\assault_rifle\bitmaps\assault_rifle_compass': FT + r'\bitmaps\flamethrower_pilot_flame'}),
             ('flamethrower_heat_display', r'objects\weapons\rifle\plasma_rifle\shaders\plasma_rifle_gauge',
              # the alpha FIRST: the meter's new path is as long as `..._heat_gauge_alpha`, and a
              # repoint refuses two records of one length
@@ -387,24 +391,17 @@ PORT = {
             # the flame's SIZE over its age: type 1 constants (0.15-0.3 / 0.08) -> type 2 transitions
             # (a scalar transition: +4 the value at input 0, +8 at input 1 -- Bungie's PR gauge
             # meter_value): flame 0.06 -> 0.35, core 0.04 -> 0.12 (Halo 1's sprites grow as they fly).
-            # Boot 13 ('starts big and shrinks'): the emitter age runs the other way -- the ends swapped
-            # (the 2nd pair of rows takes boot 13's tags there)
+            # Boot 13 ('starts big and shrinks'): the emitter age runs the other way -- +8 is the START.
+            # Boot 14 ('not sure it grows'): a wider range, unmistakable -- flame 0.02 -> 0.4, core
+            # 0.01 -> 0.14 (the 2nd pair of rows takes boot 14's tags there)
             (FX + r'\flame_burning.effect', '010108009a99193e9a99993e00000000000000000000803f0000803f',
-             '020000003333b33e8fc2753d0000000000000000000000000000803f000000000000803f'),
+             '02000000cdcccc3e0ad7a33c0000000000000000000000000000803f000000000000803f'),
             (FX + r'\flame_burning.effect', '010008000ad7a33d0000000000000000000000000000803f0000803f',
-             '020000008fc2f53d0ad7233d0000000000000000000000000000803f000000000000803f'),
-            (FX + r'\flame_burning.effect', '020000008fc2753d3333b33e0000000000000000000000000000803f000000000000803f',
-             '020000003333b33e8fc2753d0000000000000000000000000000803f000000000000803f'),
-            (FX + r'\flame_burning.effect', '020000000ad7233d8fc2f53d0000000000000000000000000000803f000000000000803f',
-             '020000008fc2f53d0ad7233d0000000000000000000000000000803f000000000000803f'),
-            # the FP pilot card's glow (boots 10-11: not visible, the card in view -- Halo 1's pose
-            # rendered): the exhaust's self_illum_color is animated by a SCALAR periodic (no colour
-            # flag, no colours: the exhaust shows by its environment reflection) -> the same periodic
-            # as a constant WHITE colour (type 1, the digits' form; boot 12's periodic colour guess
-            # stayed unseen -- one unknown fewer); the blue is in the bitmap
-            (FT + r'\shaders\flamethrower_pilot.shader',
-             '0300090000000000cdcc4c3d00000000000000000000803f00000000000000bf0000803f0000803f00000000000000000000803f',
-             '01200000ffffffff0000000000000000ffffffff0000803f0000803f'),
+             '02000000295c0f3e0ad7233c0000000000000000000000000000803f000000000000803f'),
+            (FX + r'\flame_burning.effect', '020000003333b33e8fc2753d0000000000000000000000000000803f000000000000803f',
+             '02000000cdcccc3e0ad7a33c0000000000000000000000000000803f000000000000803f'),
+            (FX + r'\flame_burning.effect', '020000008fc2f53d0ad7233d0000000000000000000000000000803f000000000000803f',
+             '02000000295c0f3e0ad7233c0000000000000000000000000000803f000000000000803f'),
             (FT + r'\shaders\flamethrower_tens.shader', '01200000f4e08eff0000000000000000ffffff000000803f0000803f',
              '022003004040ffff0000000000000000f4e08eff000000000000803f000000000000803f'),
             (FT + r'\shaders\flamethrower_ones.shader', '01200000f4e08eff0000000000000000ffffff000000803f0000803f',
@@ -545,8 +542,6 @@ PORT = {
             # the pilot's flames EMIT (boot 6, 'static'): 'looping particle' off
             (FX + r'\flamethrower_pilot.effect', 'flags', 'particle systems', 0, 0, 0),
             (FX + r'\flamethrower_pilot.effect', 'flags', 'particle systems', 1, 0, 0),
-            # the FP pilot's flicker: the exhaust's 2 s pulse -> 0.25 s
-            (FT + r'\shaders\flamethrower_pilot.shader', 'time period', 'animation properties', 0, 0, 0.25),
             # the screen's speculars (the shotgun sight's were green): grey
             (FT + r'\shaders\flamethrower_screen.shader', 'const color', 'parameters', 3, 0, [0.15, 0.15, 0.15]),
             (FT + r'\shaders\flamethrower_screen.shader', 'const color', 'parameters', 4, 0, [0.07, 0.07, 0.07]),
