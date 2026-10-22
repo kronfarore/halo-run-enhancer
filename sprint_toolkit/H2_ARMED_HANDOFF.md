@@ -48,6 +48,11 @@ done and committed; the interface is one module call and one spec dict.
      characters were tried next and dropped: tool takes the Character Palette from the master AI
      resource, ai_resources\<lvl>_master.scenario_ai_resource -- found by the AR pilot.)
      A squad has no variant field, so a squad's draw reaches its Jackals through its locations.
+     THE INVERSE (user, 2026-10-22, the Spike Rifle's Armed test on 05b: 'a single handed weapon,
+     so they can keep their shield ... both ways handled the same way'): a Jackal location handed a
+     ONE-handed weapon spawns WITH the shield -- a 'shieldless' variant is cleared, and a
+     jackal_sniper location becomes the ordinary jackal (else jackal_major). 03a, needler card: 25
+     locations given their shield back (21 snipers + Bungie's one); BR card: 39 shieldless.
    - **The teach** (`TEACH`): a Halo 2 unit refuses a weapon whose class its graph lacks (SAW
      Grunts spawned with their default: the Grunt graph is any / missile / pistol / unarmed) and
      drops it in a mode without the class -- fleeing Grunts and Jackals drew their Retreat

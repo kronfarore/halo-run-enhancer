@@ -69,7 +69,10 @@ def side_of(m, hp, cpal, lay):
 #: does for one ordinary 'jackal' location on 03a (and 21 jackal_sniper ones). The character stays
 #: the ordinary Jackal: test 2 switched them to jackal_sniper, and those fired but did not visibly
 #: aim (the SNIPER STYLE: suppressing fire, no cover peek / investigate / surprise).
-LOC_VARIANT, SHIELDLESS_VARIANT = 0x30, 'shieldless'
+LOC_VARIANT, SHIELDLESS_VARIANT, LOC_CHAR = 0x30, 'shieldless', 0x20
+_JK = 'objects' + chr(92) + 'characters' + chr(92) + 'jackal' + chr(92) + 'ai' + chr(92)
+SNIPER_JACKAL = _JK + 'jackal_sniper'
+SHIELDED_JACKALS = (_JK + 'jackal', _JK + 'jackal_major')    # the inverse's target, in order
 # weap (Assembly Halo2MCC): flags +0x12C (bit 22 can be / 23 only dual wielded), weapon class /
 # name string ids +0x288 / +0x28C, Barrels +0x2D0 (0xEC: rounds per second +0x4 bounds,
 # fire recovery time +0x20)
@@ -189,7 +192,9 @@ def find_stringid(m, text):
 
 def arm(m, hp, cards, salt=None):
     """Rewrite squad weapons by share. A JACKAL given a two-handed weapon spawns shieldless (its
-    starting location's Actor Variant Name = 'shieldless'). Returns (rows, {enemy: {weapon: units}})."""
+    starting location's Actor Variant Name = 'shieldless'); one given a ONE-handed weapon spawns
+    WITH its shield (the inverse, user 2026-10-22: the variant cleared, a jackal_sniper location
+    made the ordinary Jackal). Returns (rows, {enemy: {weapon: units}})."""
     base = hp._scnr_base(m)
     wnames = palette(m, hp, base)
     widx = {(n or '').lower(): i for i, n in enumerate(wnames)}
@@ -213,8 +218,10 @@ def arm(m, hp, cards, salt=None):
                 missing.add(w)
         if ok:
             usable[enemy] = ok
-    seen, shieldless, kept = set(), 0, 0
+    seen, shieldless, kept, reshielded = set(), 0, 0, 0
     squad_pick = None                   # the weapon the squad drew; its locations follow it
+    lname = [(n or '').lower() for n in cnames]
+    shielded = next((lname.index(x) for x in SHIELDED_JACKALS if x in lname), None)
 
     def unshield(loc):
         """A Jackal LOCATION spawns without the arm shield. Squads have no variant field: a
@@ -226,6 +233,30 @@ def arm(m, hp, cards, salt=None):
         if m.u32(loc + LOC_VARIANT) != sid:
             struct.pack_into('<I', m.data, loc + LOC_VARIANT, sid)
             shieldless += 1
+
+    def reshield(loc, c):
+        """THE INVERSE (user, 2026-10-22, the Spike Rifle: 'a single handed weapon, so they can keep
+        their shield ... both ways handled the same way'): a Jackal LOCATION handed a one-handed
+        weapon spawns WITH the arm shield -- a 'shieldless' Actor Variant Name is cleared (the
+        character's own variant again), and a jackal_sniper (shieldless by its character) becomes
+        the ordinary Jackal at this location."""
+        nonlocal reshielded
+        hit = False
+        if sid is not None and m.u32(loc + LOC_VARIANT) == sid:
+            struct.pack_into('<I', m.data, loc + LOC_VARIANT, 0)
+            hit = True
+        if 0 <= c < len(lname) and lname[c] == SNIPER_JACKAL and shielded is not None:
+            struct.pack_into('<h', m.data, loc + LOC_CHAR, shielded)
+            struct.pack_into('<I', m.data, loc + LOC_VARIANT, 0)
+            hit = True
+        reshielded += hit
+
+    def jackal_shield(loc, c, w):
+        """Both directions in one place: two-handed -> shieldless, one-handed -> shielded."""
+        if two_handed(info.get(w)):
+            unshield(loc)
+        else:
+            reshield(loc, c)
 
     squad_team, inherited = 0, {}
     for u in hp._ts_units(m, GAME, base, lay, ts):
@@ -243,8 +274,8 @@ def arm(m, hp, cards, salt=None):
             # (2026-10-21: the AR pilot's per-location test layout showed them uncounted).
             if squad_pick and enemy and a0 not in seen:
                 seen.add(a0)
-                if enemy == 'Jackal' and two_handed(info.get(squad_pick)):
-                    unshield(a0 - LOC_WEAP)
+                if enemy == 'Jackal':
+                    jackal_shield(a0 - LOC_WEAP, c, squad_pick)
                 by = done.setdefault(enemy, {})
                 by[squad_pick] = by.get(squad_pick, 0) + 1
                 inherited[(enemy, squad_pick)] = inherited.get((enemy, squad_pick), 0) + 1
@@ -268,8 +299,8 @@ def arm(m, hp, cards, salt=None):
             continue
         struct.pack_into('<h', m.data, a0, widx[w])
         struct.pack_into('<h', m.data, a1, -1)
-        if enemy == 'Jackal' and two_handed(info.get(w)) and u['kind'] == 'loc':
-            unshield(a0 - LOC_WEAP)
+        if enemy == 'Jackal' and u['kind'] == 'loc':
+            jackal_shield(a0 - LOC_WEAP, c, w)
         by = done.setdefault(enemy, {})
         by[w] = by.get(w, 0) + 1
     for enemy, ws in sorted(done.items()):
@@ -283,6 +314,11 @@ def arm(m, hp, cards, salt=None):
                      'ok': not kept, 'reason': '%d Jackal locations set to variant shieldless%s' % (
                          shieldless, '; %d KEPT the shield: no \'shieldless\' string id in this map'
                          % kept if kept else '')})
+    if reshielded:
+        rows.append({'tag': 'scnr enemy weapons\\Jackal', 'field': 'Shielded Jackals (one-handed)',
+                     'ok': True, 'reason': '%d Jackal locations given their shield back (variant '
+                     'cleared / jackal_sniper -> %s)' % (reshielded, cnames[shielded].rsplit(chr(92), 1)[-1]
+                                                          if shielded is not None else '?')})
     for w in sorted(missing):
         rows.append({'tag': 'scnr enemy weapons', 'field': 'Armed: ' + w.split('\\')[-1], 'ok': True,
                      'skip': True, 'reason': 'not in this level\'s weapon palette'})
