@@ -448,7 +448,10 @@ All of PORTING.md's steps 1-11 (the Halo 2 section's pipeline), plus:
   value -- damage per round AND per second, rate, magazine / heat / battery, range, aim assist --
   for the provisional and its alternatives side by side, the time to kill each gives; the user
   picks; recorded in the config's `yardstick` and PORTING);
-- **step 5b**: the step-5b peers compared with the balanced values the user picked;
+- **step 5b**: the step-5b peers compared with the balanced values the user picked (4a and 5b:
+  `h2_role_compare.py <key> [--balanced]`, the config's candidates + peers);
+- **check 10, the muzzle flash, before boot 1**: `h2_effect_particles.py <key>` (port / donor /
+  source first-person systems side by side);
 - **both species**: an FP model + graph for masterchief AND dervish, each checked in game
   (a Chief level and an Arbiter level, e.g. 03a + 04a);
 - **in every level**: `h2_port_residency.py <key> --write` (all 13, 01b included) and
@@ -818,3 +821,6 @@ lifespan). (3) Impacts: the spike's own Halo 3 impact sounds by surface (hard / 
 fly-by and the weapon's drop sounds (h2_port_sounds repoints a sound named several times). Left as
 they are: the impact VISUALS are Halo 2's bullet effects (Halo 3 particles do not port; the stuck
 spike model is Halo 3's main impact visual), and one dual-ready sound (Halo 3's right one).
+**Check 10 run after the fact (2026-10-22, h2_effect_particles):** the first-person flash is the SMG's
+unchanged (two burst sprites at primary_trigger); Halo 3's is a glow + round flash at primary_trigger,
+a long flash at muzzle_brake, sparks and smoke. The user approved the look at boot 1; recorded, not changed.

@@ -104,6 +104,11 @@ done for the SAW in all five games plus the Halo 4 Focus Rifle; the per-game rec
    (the DMR: the BR port's pistol sprites + casing) and/or `match` / `drop_off_axis` / `scale`
    / `shift` (the SMG); record the source numbers beside the choice in the config.
    `python h1_effect_particles.py "<port fire effect>" "<template's>"` lists both sides' particles.
+   HALO 2 (2026-10-22): `python h2_effect_particles.py <key>` lists the port's, its DONOR's and its
+   SOURCE's first-person systems (marker, particle, per emitter count / lifespan / size / offset /
+   direction; the source's `bounding radius estimate`). Halo 2's size is the emitter's function
+   constant, scaled again by the particle tag -- NOT world units: judge it against the donor and
+   Bungie's stock flashes, and match the source in markers, number and direction.
 
 **Step 4 has a second half: the fields NO CARD covers (2026-10-05).** The balance table
 only knows fields some card targets; every other field of a clone is its donor's. Run
@@ -124,7 +129,11 @@ it INTO that role -- and run the same check on the balanced numbers. Halo 4 / Re
 [--balanced]` (role table + time to kill at normal / legendary from HCEEK tags: per-material
 damage modifiers, actor-variant vitality, globals difficulty scales). It found, on the
 restored fuel rod, that its explosion does x0 to Hunters (Bungie's Grunt friendly-fire
-guard) and that 'Charging Time 0' alone leaves it firing 10 rounds/s.
+guard) and that 'Charging Time 0' alone leaves it firing 10 rounds/s. HALO 2 (2026-10-22):
+`h2_role_compare.py <key> [--balanced]` -- the config's yardstick candidates + step-5b peers (stock
+Halo 2 weapons or other ports), role table (single-wield error) + legendary time to kill on Elite /
+Brute / Grunt / Jackal minor through ttk_halo2; --balanced lays the catalog rows over the ports. It
+replaces the per-port h2_*_ttk_4a.py scripts (it reproduces the AR's and the Spike Rifle's 4a times).
 
 **STEP 11, THE ARMED CARD (Halo 1 only, 2026-10-06).** 'Armed: <weapon>' cards are not in
 halo.json: the enhancer SYNTHESIZES them (`armed_card` / `armed_cards`) for every weapon a
@@ -240,7 +249,7 @@ it). All six ports pass (H1/H2/H3/ODST/Reach SAW, H4 Focus Rifle).
 |---|---|---|
 | weapon -> projectile (trigger / barrel `Projectile`) | OWN | OWN |
 | projectile -> `Impact Damage` | OWN | OWN |
-| weapon -> melee DAMAGE | **OWN** -- every H1 weapon has its own melee damage tag (`weapons\assault rifle\melee`); clone it and point `Player Melee Damage` at the clone | **SHARED GLOBAL** -- `strike_melee` / `smash_melee` (13-38 users per map); keep it, and no catalog row may retune it (Reach dropped its three melee rows for exactly this) |
+| weapon -> melee DAMAGE | **OWN** -- every H1 weapon has its own melee damage tag (`weapons\assault rifle\melee`); clone it and point `Player Melee Damage` at the clone | **SHARED GLOBAL** -- `strike_melee` / `smash_melee` (13-38 users per map); keep it, and no catalog row may retune it (Reach dropped its three melee rows for exactly this). EXCEPTION, a melee of the weapon's OWN (Halo 2 Spike Rifle, user 2026-10-21: the blades): a CLONE of the global under the port's folder, wired on every melee field, and then its rows retune only the clone |
 | weapon -> melee RESPONSE, firing damage (shake/rumble) | donor's is fine: feedback, no per-weapon damage numbers | global, or the port's own |
 
 A DONOR'S damage tag in a damage-bearing field is the Halo 1 bug pattern: the audit
