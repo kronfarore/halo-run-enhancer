@@ -249,23 +249,23 @@
   "magazines[0].rounds total maximum": 3095
  },
  "weapon@objects\\weapons\\rifle\\spike_rifle\\spike_rifle": {
-  "barrels[0].acceleration time": 3116,
-  "barrels[0].acceleration time#1": 3160,
+  "barrels[0].acceleration time": 3117,
+  "barrels[0].acceleration time#1": 3161,
   "barrels[0].acceleration time#2": 3152,
-  "barrels[0].angle change per shot": 3296,
-  "barrels[0].deceleration time": 3120,
-  "barrels[0].deceleration time#1": 3164,
+  "barrels[0].angle change per shot": 3297,
+  "barrels[0].deceleration time": 3121,
+  "barrels[0].deceleration time#1": 3165,
   "barrels[0].deceleration time#2": 3156,
-  "barrels[0].dual wield damage scale": 3204,
-  "barrels[0].error angle": 3196,
-  "barrels[0].error angle#1": 3220,
-  "barrels[0].minimum error": 3192,
-  "barrels[0].minimum error#1": 3216,
+  "barrels[0].dual wield damage scale": 3205,
+  "barrels[0].error angle": 3197,
+  "barrels[0].error angle#1": 3221,
+  "barrels[0].minimum error": 3193,
+  "barrels[0].minimum error#1": 3217,
   "barrels[0].rounds between tracers": 3126,
-  "barrels[0].rounds per second": 3108,
-  "magazines[0].rounds loaded maximum": 2721,
-  "magazines[0].rounds reloaded": 2731,
-  "magazines[0].rounds total initial": 2717,
-  "magazines[0].rounds total maximum": 2719
+  "barrels[0].rounds per second": 3109,
+  "magazines[0].rounds loaded maximum": 2722,
+  "magazines[0].rounds reloaded": 2732,
+  "magazines[0].rounds total initial": 2718,
+  "magazines[0].rounds total maximum": 2720
  }
 }

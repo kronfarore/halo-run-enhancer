@@ -225,10 +225,14 @@ PORT = {
             # the HUD is the SMG's clone (step 7: dual-wield shaped -- plate x4, meter x2 -- kept)
             (SR + r'\spike_rifle.weapon', 'nhdt', r'ui\hud\smg', r'ui\hud\brute_spiker', 'its own HUD (step 7)'),
         ],
-        # the 3P label: the SMG's own `rifle` / `smg`, kept (no rename). Halo 3's is `pistol` /
-        # `spr`, which no Halo 2 graph has; `smg` is a type of the masterchief / elite `dual`
-        # class (their dual-wield stance), of every rifle-class graph's (marine, flood combat,
-        # masterchief), and `rifle` / `any` is the Brute's (rifle: pr, sg) and the taught Grunt's
+        # the 3P label: class `pistol` (Halo 3's own; boot 8, user: 'Jackals don't wield it with one
+        # hand' -- the SMG's `rifle` is the Jackal's two-handed carbine / sniper stance), type the
+        # SMG's `smg` kept (a type of the masterchief / elite `dual` class: their dual stance; the
+        # elite / dervish pistol class has it too). Jackals / Grunts / Marines / Flood hold it in
+        # their one-handed pistol stance; Brutes had no `pistol` -> the kit Brute graph taught it
+        # (graph_teach: rifle cloned as pistol -- the Brute's rifle `any` set is its one-handed carry)
+        'string_ids': {'rifle': 'pistol'},
+        'string_ids_done': ('weapon class', 'pistol'),
         'shared': [(r'the particles inside spike_rifle_fire', "the SMG's (Halo 3 particles do not port)"),
                    (r'objects\weapons\damage_effects\strike_melee_response, smash_melee(_response)',
                     "the melee's responses + the second hit, shared by every Halo 2 weapon"),
@@ -614,7 +618,15 @@ PORT = {
     # port_backup.py --game h2: the owned folders are derived; these are the Spiker's other edits
     'backup': {'extra': [H2EK + r'\data\!extracted\fp_arms_masterchief\fp_arms.jms',
                          H2EK + r'\data\!extracted\fp_arms_dervish\dervish_fp_arms.jms',
-                         H2EK + r'\tags\ai\generic.character']},
+                         H2EK + r'\tags\ai\generic.character',
+                         H2EK + r'\tags\objects\characters\brute\brute.model_animation_graph',
+                         r'E:\HaloBackups\h2_graph_teach\brute.model_animation_graph']},
+
+    # boot 8 (user: 'teach the Brutes'): the Spiker's 3P class is `pistol`; the Brute graph had none
+    # -> h2_graph_teach.py cloned its `rifle` class (the one-handed carry: any / pr / sg) as `pistol`
+    # in every mode that carries it (2026-10-22; stock kept in E:\HaloBackups\h2_graph_teach). A
+    # SHARED Bungie tag: every pistol-class weapon is now Brute-holdable, carried like a rifle
+    'graph_teach': [(r'objects\characters\brute\brute.model_animation_graph', 'rifle=pistol', {})],
 
     # step 11 -- `python ai_firing_profile.py --h2-port brute_spiker`: Halo 3's ai\generic spike
     # rifle entry (010_jungle) name-for-name into H2EK ai\generic, over the H2 SMG's (the yardstick)
