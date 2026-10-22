@@ -273,7 +273,26 @@ def repoint():
         if ('snd!', new) in have and ('snd!', old) not in have:
             print('   %-16s already names %s' % (os.path.basename(rel), new))
             continue
-        h2_tagref.set_reference(path, 'snd!', old, new)
+        n = have.count(('snd!', old))
+        if n <= 1:
+            h2_tagref.set_reference(path, 'snd!', old, new)
+        else:
+            # a sound named SEVERAL times (the Spike Rifle's impact material effects: flesh x7):
+            # every copy, else one at a time -- and kept only when tool's export reads every
+            # field row as before (an nth pairing can pass the reference check and still break
+            # the tag: the Flamethrower's HUD finding)
+            import h2_tagfield as tf
+            original = open(path, 'rb').read()
+            rows = tf.read_all(tf.export(path))
+            try:
+                h2_tagref.set_reference(path, 'snd!', old, new, every=True)
+            except ValueError:
+                for _k in range(n):
+                    h2_tagref.set_reference(path, 'snd!', old, new, nth=0)
+            x = tf.export(path)
+            if not x or tf.read_all(x) != rows:
+                open(path, 'wb').write(original)
+                raise SystemExit('%s: moving %s x%d changed other rows -- restored' % (rel, old, n))
         print('   %-16s %s -> %s' % (os.path.basename(rel), old, new))
 
 

@@ -3716,6 +3716,15 @@ SMG's `rifle` is the Jackal's two-handed carbine stance). The Brute graph had no
 (h2_graph_teach rifle=pistol -- its rifle `any` set is the one-handed carry). A one-handed weapon
 gives shieldless / sniper Jackals their shield back (h2_enemy_weapons.jackal_shield, both directions).
 
+**ANIMATION EVENTS (fp_anims `source_events`).** A seeded graph keeps the SEED's frame / sound events
+(same-name animations only; others get none). Halo 3's own are written instead: in a tool-imported
+graph the 124-byte animation element holds the frame events block at +0x4C and the sound events
+block at +0x58; in the data region each animation's name and blob are followed by ONE `sdpa`
+descriptor (16 bytes) and then its event chunks ('dfbt' v0: frame events 4 bytes = type, frame;
+sound events 8 = sound reference, frame, marker string id). Halo 2's frame-event enum carries Halo
+3's names (0 primary_keyframe, 1 secondary_keyframe, 4 allow_interruption). Impacts: the spike's own
+impact / fly-by / drop sounds through `repoint_tags` (a sound named several times moves every copy).
+
 **Tag-edit lessons:** h2_tagfield cannot probe a field reading 0 -- find it by probing a COPY (a byte
 flip / a float, tool's export names what moved) and seed the per-tag cache; any insert (a path, a
 chunk, a longer string id) shifts every later cached offset of that tag -- re-derive them and prove

@@ -764,7 +764,7 @@ reads ports_h2 configs too (`--port assault_rifle`, the config's `field_audit`).
 The Halo 3 Spike Rifle is a complete Halo 2 port: `ports_h2/brute_spiker.py` (status 'done'), tested
 in game, CLASSIC, in 9 boots on 08a (Arbiter) and 05b (Chief), Armed `--armed all` on 05b -- every
 item confirmed by the user. Residency: palette entry in all 13 levels; ships with the batched rebuild.
-Backup `F:\HaloPortBackups\2026-10-22_2026-10-22_spiker-h2`. PORTING "Halo 2: the Spike Rifle, wave
+Backup `F:\HaloPortBackups\2026-10-22_spiker-h2`. PORTING "Halo 2: the Spike Rifle, wave
 A3" is the recipe. Enhancer hand-off: the shared notes (a3_spike_rifle.md); the enhancer session was
 offline -- as with the AR, its cards come from a built level after the batched rebuild.
 
@@ -805,5 +805,14 @@ cannot probe a 0 field: probe a copy, seed the per-tag cache; any insert (path, 
 id) shifts that tag's cached offsets -- re-derive, prove the zero fields by a test write and back.
 A tool proof restores shared records (catalog, AI profiles, fonts) to its start: never write one
 while the other session's proof holds the H2 kit lock. A PermissionError on H2 fonts = a LEVEL is
-running (not MCC). Not done / approximations: H3 frame events -> the SMG seed's; the stuck spike
-lasts 1 s (H3's model particle 4-5 s); impacts use the SMG bullet's material effects.
+running (not MCC).
+
+**Approximations closed (user, 2026-10-22):** (1) EVENTS: every animation's frame and sound events
+are Halo 3's own (fp_anims `source_events`: the 124-byte element's frame / sound event blocks at
++0x4C / +0x58, the chunks after each animation's one `sdpa` descriptor, tool-verified) -- sounds at
+H3's frames, the dual reloads' left / right sounds, the posing variants unswapped, H3's melee / reload
+/ throw keyframes and allow-interruption. (2) The stuck spike rests 4-5 s (H3's impact particle
+lifespan). (3) Impacts: the spike's own Halo 3 impact sounds by surface (hard / dirt / soft), its
+fly-by and the weapon's drop sounds (h2_port_sounds repoints a sound named several times). Left as
+they are: the impact VISUALS are Halo 2's bullet effects (Halo 3 particles do not port; the stuck
+spike model is Halo 3's main impact visual), and one dual-ready sound (Halo 3's right one).

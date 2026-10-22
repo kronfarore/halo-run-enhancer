@@ -237,6 +237,128 @@ def rest_left_arm(nodes, anims, rest):
         frames[:] = new
 
 
+FE_COUNT, SE_COUNT = 0x4C, 0x58     # a tool-imported graph's 124-byte animation element
+
+
+def source_events(cfg, species):
+    """`source_events` {'sounds': {Halo 3 sound basename: the graph's sound reference basename, or
+    None = dropped}} (the Spike Rifle, 2026-10-22: the frame and sound events were the SMG seed's --
+    sounds a frame late, the dual reloads silent, no melee / reload / throw keyframes): every
+    animation's FRAME and SOUND events rewritten from the Halo 3 graph's own (types by name:
+    primary / secondary keyframe, allow interruption -- Halo 2's enum carries Halo 3's names).
+
+    LAYOUT (measured on both species' graphs): the element (124 bytes, tool's import) holds the
+    frame events block at +0x4C and the sound events block at +0x58 (count, 2 pointers); in the data
+    region each animation's pooled name is followed by its blob and ONE 'sdpa' struct descriptor
+    (16 bytes), and then its event chunks in field order: frame events ('dfbt', v0, n, 4: type,
+    frame) and sound events (n, 8: sound reference, frame, marker string id -- empty: nothing pooled).
+    Each animation's two chunks are replaced (last first, so earlier offsets hold) and its counts set.
+    Proved: tool's export reads every row outside the event blocks unchanged and the events as
+    written; else the graph is restored."""
+    import re
+    import struct
+    import h2_tagfield as tf
+    import h2_anim
+    sp = cfg['species'][species]
+    path = graph_path(sp)
+    x = tf.export(path)
+    refs = [r.rsplit('\\', 1)[-1] for r in re.findall(
+        r'<tag_reference name="sound" type="snd!">([^<]*)<',
+        x[x.find('<block name="sound references"'):x.find('<block name="animations"')])]
+    names = re.findall(r'<element index="\d+">\s*<field name="name" type="string id">([^<]*)<',
+                       x[x.find('<block name="animations"'):])
+    # Halo 3's events
+    h3x = open(h1_fp_retarget.export_xml(sp['graph']), encoding='utf-8', errors='replace').read()
+    h3refs = [r.rsplit('\\', 1)[-1] for r in re.findall(
+        r'name="sound" value="([^"]*),snd!"',
+        h3x[h3x.find('<block name="sound references"'):h3x.find('<block name="effect references"')])]
+    rename = cfg.get('rename', {})
+    types = {'primary_keyframe': 0, 'secondary_keyframe': 1, 'left_foot': 2, 'right_foot': 3,
+             'allow_interruption': 4}
+    want = {}
+    for part in re.split(r'<element index="\d+" name="first_person', h3x[h3x.find('<block name="animations"'):])[1:]:
+        name = 'first_person' + part[:part.find('"')]
+        name = rename.get(name, name)
+        fe = [(types[t], int(f)) for t, f in re.findall(
+            r'name="type" value="([^"]*)" type="short enum"/>\s*<field name="frame" value="(-?\d+)"', part)]
+        se = []
+        for i, f in re.findall(r'name="sound" value=",(-?\d+)" type="short block index"/>\s*'
+                               r'<field name="frame" value="(-?\d+)"', part):
+            target = cfg['source_events']['sounds'].get(h3refs[int(i)]) if int(i) >= 0 else None
+            if target is not None:
+                se.append((refs.index(target), int(f)))
+        want[name] = (fe, se)
+    d = bytearray(open(path, 'rb').read())
+    original = bytes(d)
+    ch, n, es = h2_anim.animations_chunk(bytes(d))
+    if es != 124:
+        raise SystemExit('%s: %d-byte animation elements; the event offsets are mapped for 124'
+                         % (os.path.basename(path), es))
+    base = ch + 16
+    pos, at = [], base + n * es
+    for nm in names:
+        i = bytes(d).find(nm.encode('latin-1'), at)
+        pos.append(i)
+        at = i + len(nm)
+    rows_before = tf.read_all(x)
+    changed = []
+    for k in reversed(range(n)):
+        nm = names[k]
+        if nm not in want:
+            continue
+        e = base + k * es
+        end = pos[k + 1] if k + 1 < n else len(d)
+        s = bytes(d).find(b'sdpa', pos[k], end)
+        at = s + 16
+        old_end = at
+        fe_n, se_n = struct.unpack_from('<I', d, e + FE_COUNT)[0], struct.unpack_from('<I', d, e + SE_COUNT)[0]
+        for cnt, size in ((fe_n, 4), (se_n, 8)):
+            if cnt:
+                if d[old_end:old_end + 4] != b'dfbt' or struct.unpack_from('<II', d, old_end + 8) != (cnt, size):
+                    raise SystemExit('%s: unexpected event chunk at 0x%X' % (nm, old_end))
+                body = old_end + 16 + cnt * size
+                if size == 8:       # marker name strings pooled after the elements
+                    body += sum(d[old_end + 16 + j * 8 + 7] for j in range(cnt))
+                old_end = body
+        fe, se = want[nm]
+        new = b''
+        if fe:
+            new += b'dfbt' + struct.pack('<III', 0, len(fe), 4) + b''.join(struct.pack('<hh', t, f) for t, f in fe)
+        if se:
+            new += b'dfbt' + struct.pack('<III', 0, len(se), 8) + b''.join(struct.pack('<hhI', r, f, 0) for r, f in se)
+        if d[at:old_end] == new and (fe_n, se_n) == (len(fe), len(se)):
+            continue
+        d[at:old_end] = new
+        struct.pack_into('<I', d, e + FE_COUNT, len(fe))
+        struct.pack_into('<I', d, e + SE_COUNT, len(se))
+        changed.append(nm)
+    if not changed:
+        print('   %s: events already Halo 3\'s' % os.path.basename(path))
+        return
+    open(path, 'wb').write(bytes(d))
+    after = tf.export(path)
+    ok = bool(after)
+    if ok:
+        strip = lambda xx: re.sub(r'<block name="(frame|sound) events">.*?</block>', '', xx, flags=re.S)
+        ok = tf.read_all(strip(after)) == tf.read_all(strip(x))
+        for nm in changed:
+            part = after[after.find('>%s<' % nm) + 1:]
+            nxt = part.find('<field name="name" type="string id">')
+            part = part[:nxt if nxt >= 0 else len(part)]
+            got_fe = [(int(t.split(',')[0]), int(f)) for t, f in re.findall(
+                r'<field name="type" type="[^"]*">([^<]*)</field>\s*<field name="frame" type="short integer">(-?\d+)<', part)]
+            got_se = [(int(i), int(f)) for i, f in re.findall(
+                r'type="sound" index="(-?\d+)">[^<]*</block_index>\s*<field name="frame" type="short integer">(-?\d+)<', part)]
+            if (got_fe, got_se) != want[nm]:
+                ok = False
+                print('   %s: tool reads %s, wanted %s' % (nm, (got_fe, got_se), want[nm]))
+    if not ok:
+        open(path, 'wb').write(original)
+        raise SystemExit('%s: the events did not read back as written -- restored' % os.path.basename(path))
+    print('   %s: Halo 3\'s events in %d animations (%+d bytes); every other row unchanged'
+          % (os.path.basename(path), len(changed), len(d) - len(original)))
+
+
 def build(key, species, only=None, write=True):
     cfg = ports_h2.get(key, 'fp_anims')
     sp = cfg['species'][species]
@@ -489,6 +611,8 @@ def main(argv=None):
             tool_import(cfg, species, reseed='--reseed' in argv)
             if cfg.get('clear_verify'):
                 clear_verify(cfg, species)
+            if cfg.get('source_events'):
+                source_events(cfg, species)
             if species in cfg.get('drop_ik', ()):
                 # the seed's single-wield IK (Bungie's SMG: the Chief's left hand gripping the
                 # weapon's left_hand marker) dropped -- the Spiker is one-handed (boot 5)

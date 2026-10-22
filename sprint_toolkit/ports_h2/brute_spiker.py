@@ -302,10 +302,13 @@ PORT = {
             (SR + r'\projectiles\spike_rifle_spike.projectile', 'water gravity scale', '', 0, 0, 0.4),
             (SR + r'\projectiles\spike_rifle_spike.projectile', 'bounding radius', '', 0, 0, 0.5),
             # Halo 3's spike: `oriented along velocity` (Halo 2's bit 0, the needler shard's; H3's
-            # bit 18 has no Halo 2 name), the timer starts WHEN AT REST, 1 s (a stuck spike goes)
+            # bit 18 has no Halo 2 name), the timer starts WHEN AT REST. Halo 3's own projectile
+            # timer is 1 s, but its STUCK spike is the impact effect's model particle, which lives
+            # 4-5 s (fx\impact.effect particle lifespan 4.0..5.0); in Halo 2 the projectile itself
+            # is the stuck spike, so it rests 4-5 s (2026-10-22, user: fix the approximations)
             (SR + r'\projectiles\spike_rifle_spike.projectile', 'flags', '', 0, 1, 1),
             (SR + r'\projectiles\spike_rifle_spike.projectile', 'detonation timer starts', '', 0, 0, 2),
-            (SR + r'\projectiles\spike_rifle_spike.projectile', 'timer', '', 0, 0, [1.0, 1.0]),
+            (SR + r'\projectiles\spike_rifle_spike.projectile', 'timer', '', 0, 0, [4.0, 5.0]),
             (SR + r'\projectiles\spike_rifle_spike.projectile', 'acceleration range', '', 0, 0, [0.0, 6.0]),
         ] + [
             # THE RICOCHET: the material responses BY MATERIAL NAME (the audit pairs them by index;
@@ -467,7 +470,15 @@ PORT = {
                     'spk_dual_posing_1_l': [H3SND + r'\spike_rifle\fp_spike_rifle\fp_spike_rifle_posing_dual_var1\fp_spike_rifle_posing_dual_var1_left'],
                     'spk_dual_posing_1_r': [H3SND + r'\spike_rifle\fp_spike_rifle\fp_spike_rifle_posing_dual_var1\fp_spike_rifle_posing_dual_var1_right'],
                     'spk_dual_posing_2_l': [H3SND + r'\spike_rifle\fp_spike_rifle\fp_spike_rifle_posing_dual_var2\fp_spike_rifle_posing_dual_var2_left'],
-                    'spk_dual_posing_2_r': [H3SND + r'\spike_rifle\fp_spike_rifle\fp_spike_rifle_posing_dual_var2\fp_spike_rifle_posing_dual_var2_right']},
+                    'spk_dual_posing_2_r': [H3SND + r'\spike_rifle\fp_spike_rifle\fp_spike_rifle_posing_dual_var2\fp_spike_rifle_posing_dual_var2_right'],
+                    # 2026-10-22 (user: fix the approximations): the spike's OWN impacts, fly-by and
+                    # the weapon's drops (the SMG bullet's / SMG's before)
+                    'spk_impact': [H3SND + r'\spike_rifle\spike_impacts'],
+                    'spk_impact_dirt': [H3SND + r'\spike_rifle\spike_impacts_dirt'],
+                    'spk_impact_soft': [H3SND + r'\spike_rifle\spike_impacts_soft'],
+                    'spk_flyby': [H3SND + r'\spike_rifle\spike_flyby'],
+                    'spk_drop': [H3SND + r'\spike_rifle\spike_rifle_drops\spike_rifle_drop'],
+                    'spk_drop_soft': [H3SND + r'\spike_rifle\spike_rifle_drops\spike_rifle_drop_soft']},
         'sounds': {'spk_fire': ('spk_fire', 'weapon_fire'), 'spk_fire_lod': ('spk_fire_lod', 'weapon_fire'),
                    'spk_dryfire': ('spk_dryfire', 'weapon_empty'),
                    'spk_reload': ('spk_reload', 'weapon_reload'), 'spk_ready': ('spk_ready', 'weapon_ready'),
@@ -479,7 +490,35 @@ PORT = {
                    'spk_dual_posing_1_l': ('spk_dual_posing_1_l', 'weapon_ready'),
                    'spk_dual_posing_1_r': ('spk_dual_posing_1_r', 'weapon_ready'),
                    'spk_dual_posing_2_l': ('spk_dual_posing_2_l', 'weapon_ready'),
-                   'spk_dual_posing_2_r': ('spk_dual_posing_2_r', 'weapon_ready')},
+                   'spk_dual_posing_2_r': ('spk_dual_posing_2_r', 'weapon_ready'),
+                   # Halo 2's classes for these (the SMG bullet's / the SMG's own)
+                   'spk_impact': ('spk_impact', 'projectile_impact'),
+                   'spk_impact_dirt': ('spk_impact_dirt', 'projectile_impact'),
+                   'spk_impact_soft': ('spk_impact_soft', 'projectile_impact'),
+                   'spk_flyby': ('spk_flyby', 'projectile_flyby'),
+                   'spk_drop': ('spk_drop', 'object_impacts'),
+                   'spk_drop_soft': ('spk_drop_soft', 'object_impacts')},
+        # the material effects (one clone serves the weapon and the spike): every SMG bullet impact
+        # sound onto Halo 3's three spike impacts by surface (hard / dirt / soft), the SMG's drops
+        # onto the Spiker's; the projectile's fly-by onto Halo 3's spike_flyby
+        'repoint_tags': [(FX + r'\spike_rifle_spike.material_effects', r'sound\weapons\impacts_riccs\%s' % old, new)
+                         for old, new in (('bullet_impact_metal_thick', 'spk_impact'),
+                                          ('bullet_impact_metal_thick_r', 'spk_impact'),
+                                          ('bullet_impact_metal_thin', 'spk_impact'),
+                                          ('bullet_impact_vehicle', 'spk_impact'),
+                                          ('bullet_impact_stone', 'spk_impact'),
+                                          ('bullet_impact_stone_r', 'spk_impact'),
+                                          ('bullet_impact_glass', 'spk_impact'),
+                                          ('bullet_impact_energy', 'spk_impact'),
+                                          ('bullet_impact_vest', 'spk_impact'),
+                                          ('bullet_impact_dirt', 'spk_impact_dirt'),
+                                          ('bullet_impact_wood', 'spk_impact_dirt'),
+                                          ('bullet_impact_water', 'spk_impact_dirt'),
+                                          ('bullet_impact_flesh_dry', 'spk_impact_soft'))]
+                        + [(FX + r'\spike_rifle_spike.material_effects', r'sound\weapons\smg\smg_drop', 'spk_drop'),
+                           (FX + r'\spike_rifle_spike.material_effects', r'sound\weapons\smg\smg_drop_soft', 'spk_drop_soft'),
+                           (SR + r'\projectiles\spike_rifle_spike.projectile',
+                            r'sound\weapons\impacts_riccs\bullet_flyby_short', 'spk_flyby')],
         'repoint_fx': [(r'sound\weapons\smg\fire', 'spk_fire'),
                        (r'sound_remastered\weapons\smg\fire_lod', 'spk_fire_lod')],
         'repoint_weapon': [(r'sound\weapons\smg\dryfire', 'spk_dryfire'),
@@ -540,6 +579,20 @@ PORT = {
         # (Bungie's SMG) carries a single-wield IK entry, left hand -> the weapon's `left_hand` marker
         # (the Chief grips the SMG two-handed); the Arbiter's and the AR's (BR seed) have none. Dropped
         'drop_ik': ['masterchief'],
+        # 2026-10-22 (user: fix the approximations): the frame + sound events were the SMG seed's
+        # (sounds a frame late, dual reloads silent, posing var1/var2 swapped, no melee / reload /
+        # throw keyframes) -> Halo 3's own, per animation (source_events). One dual ready sound (the
+        # right's: the port renders one), so Halo 3's left ready event is dropped
+        'source_events': {'sounds': {
+            'fp_spike_rifle_melee': 'spk_melee1', 'fp_spike_rifle_ready': 'spk_ready',
+            'fp_spike_rifle_reload_full': 'spk_reload', 'fp_spike_rifle_posing_var1': 'spk_posing',
+            'fp_spike_rifle_dual_ready_right': 'spk_dual_ready', 'fp_spike_rifle_dual_ready_left': None,
+            'fp_spike_rifle_dual_reload_full_left': 'spk_dual_reload_left',
+            'fp_spike_rifle_dual_reload_full_right': 'spk_dual_reload_right',
+            'fp_spike_rifle_posing_dual_var1_left': 'spk_dual_posing_1_l',
+            'fp_spike_rifle_posing_dual_var1_right': 'spk_dual_posing_1_r',
+            'fp_spike_rifle_posing_dual_var2_left': 'spk_dual_posing_2_l',
+            'fp_spike_rifle_posing_dual_var2_right': 'spk_dual_posing_2_r'}},
         'rest_left_arm': {'species': ['masterchief'], 'pose': ('first_person:ready', 0),
                           'blend': {'first_person:reload_empty:var1': 12, 'first_person:reload_full:var1': 12,
                                     'first_person:throw_grenade': 8}},
