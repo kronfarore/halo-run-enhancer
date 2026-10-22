@@ -359,20 +359,28 @@ def h1_convert(g, rel, world):
                 out.tris.append((src_mat[part.shader_index], (base + a, base + b, base + c)))
     if len(out.tris) < g.get('min_tris', 200):
         raise SystemExit('only %d triangles from %s' % (len(out.tris), rel))
-    for mat, centre, (w, h) in (() if world else g.get('fp_cards', ())):
-        # fp_cards [(material, centre, (width, height))]: two crossed upright cards (x-z and y-z
-        # planes) on node 0, the material's own UVs 0-1 -- the Flamethrower's FIRST-PERSON pilot
-        # flame (boot 8: Halo 2 draws attachment effects at the WORLD model's markers, even in FP)
+    for card in (() if world else g.get('fp_cards', ())):
+        # fp_cards [(material, centre, (width, height)[, axis])]: two crossed cards on node 0, the
+        # material's own UVs 0-1 (v along the height) -- the Flamethrower's FIRST-PERSON pilot flame
+        # (boot 8: Halo 2 draws attachment effects at the WORLD model's markers, even in FP). axis
+        # 'z' (default) = upright; 'x' = the height along the gun's forward axis (a flame licking
+        # forward off the barrel: boot 15, 'move it forward and turn it')
+        mat, centre, (w, h) = card[:3]
+        axis = card[3] if len(card) > 3 else 'z'
         if mat not in mat_index:
             mat_index[mat] = len(mats)
             mats.append(h2_jms.Material(mat, '(%d) %s %s' % (len(mats) + 1,
                                                           g.get('permutation', 'standard'),
                                                           g.get('region', 'standard'))))
         cx, cy, cz = centre
-        for ax, nrm in (((w / 2, 0.0), (0.0, -1.0, 0.0)), ((0.0, w / 2), (1.0, 0.0, 0.0))):
+        # (width offset, normal) per card; the height runs along `axis`
+        cards = ((((w / 2, 0.0, 0.0), (0.0, -1.0, 0.0)), ((0.0, w / 2, 0.0), (1.0, 0.0, 0.0))) if axis == 'z'
+                 else (((0.0, w / 2, 0.0), (0.0, 0.0, 1.0)), ((0.0, 0.0, w / 2), (0.0, -1.0, 0.0))))
+        up = (0.0, 0.0, h) if axis == 'z' else (h, 0.0, 0.0)
+        for ax, nrm in cards:
             base = len(out.verts)
             for su, sv in ((-1, 0), (1, 0), (1, 1), (-1, 1)):
-                pos = (cx + su * ax[0], cy + su * ax[1], cz + (sv - 0.5) * h)
+                pos = tuple(c + su * ax[i] + (sv - 0.5) * up[i] for i, c in enumerate((cx, cy, cz)))
                 out.verts.append(h2_jms.Vertex(pos, nrm, [(0, 1.0)], [((su + 1) / 2, float(sv))]))
             k = mat_index[mat]
             for t in ((0, 1, 2), (0, 2, 3), (0, 2, 1), (0, 3, 2)):       # both faces

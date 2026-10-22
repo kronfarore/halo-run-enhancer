@@ -132,7 +132,11 @@ PORT = {
         # boot 10 ('still not visible'; its FP screenshot): `pilot` sits INSIDE the nozzle mouth
         # (Halo 1's camera-facing sprite glows out of it; the gun's vertices within 4 units span y
         # -2.1..2.9) -> a larger card (2.5 x 3.5) just in front of the muzzle (primary_trigger x 33.0)
-        'fp_cards': [('flamethrower_pilot', (34.2, 0.2, 4.3), (2.5, 3.5))],
+        # boot 15: VISIBLE for the first time (two_add_env_illum) -- 'move it forward and turn it':
+        # forward to the nozzle's HEAD (x 42-45), at the mouth of its claw (which faces the camera's
+        # left, +y), smaller -- checked on Halo 1's FP idle render (a forward-pointing card is edge-on
+        # to the camera; one behind the head is hidden)
+        'fp_cards': [('flamethrower_pilot', (42.6, 1.6, 3.9), (1.4, 2.2))],
         # boot 5 ('no visible pilot flame'): Halo 1 has `pilot` / the steam vents on the FP model only;
         # the weapon's attachments look markers up on the WORLD model -- placed there at the FP
         # markers' offsets from primary_trigger (the two models share the gun's axes and length)
