@@ -9471,7 +9471,11 @@
      "note": "derived from Rounds Inventory Maximum + Rounds Loaded Maximum"
     }
    ],
-   "fp_animations": "objects\\characters\\*\\fp\\weapons\\rifle\\fp_spike_rifle\\fp_spike_rifle"
+   "fp_animations": "objects\\characters\\*\\fp\\weapons\\rifle\\fp_spike_rifle\\fp_spike_rifle",
+   "tag_map": {
+    "jpt! objects\\weapons\\damage_effects\\strike_melee": "jpt! objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_melee",
+    "jpt! objects\\weapons\\damage_effects\\smash_melee": "jpt! objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_melee"
+   }
   },
   {
    "weapon": "Flamethrower",
