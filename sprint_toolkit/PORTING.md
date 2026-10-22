@@ -3664,6 +3664,57 @@ weapon's class / type; Grunts hold no `rifle` (h2_graph_teach.py now gives them 
 laid out like the first one (now validated against the field's value, per tag); `tool replace-font-
 char` stores a semi-transparent pixel as white, and a high-entropy glyph (a dither) shears in game.
 
+### Halo 2: the Spike Rifle, wave A3 (2026-10-21/22) -- the AR's route + DUAL WIELD
+
+The whole weapon is `ports_h2/brute_spiker.py`; what it taught is H2_PORT_PLAN.md "A3". The AR's
+run order, plus (every addition opt-in by config key, each proven on the SAW / AR):
+
+    h2_port_geometry   particle_models (Halo 3's spike particle model -> the projectile's model);
+                       fp_root_identity (the FP root bind made identity -- see DUAL below)
+    h2_port_textures   ('tint', rgb, dilate): a Halo 3 GREY illum mask coloured (Halo 2's
+                       self_illum_map draws as it is); seeds = Bungie's BRUTE weapons
+                       (gravity hammer tex_bump_env_illum, Brute Shot body / blade)
+    h2_port_weapon     attachments (a light volume hung on the projectile), byte_edits (its
+                       colour), an empty current path = fill_reference (the projectile model)
+    h2_port_collision  nodes_from_render (the BR hull on the port's own world skeleton)
+    h2_port_meter      tick_art (Halo 3's own round from the chud meter sprite); a meter named
+                       twice; the one-image backpack's widget sequence 0
+    h2_port_hud_plate  all_images (a dual-wield plate: every image into the donor's colour plate)
+    h2_port_messages   names (an article that changes with the name); existing lines REPLACED
+    h2_port_fp_anims   root_identity, rest_left_arm, drop_ik
+    h2_tagref          fill_reference, add_attachment;   h2_graph_teach.drop_ik
+
+**DUAL WIELD (kept from the SMG donor).** Halo 3 ships `first_person:dual:*` and Halo 2 uses the
+same names, so the AR's import carries them. Halo 2 draws the LEFT gun MIRRORED across the FP root
+node's local y: Bungie binds that root at identity, Halo 3's Spiker turned 180 deg (local y = up),
+so the left gun came out upside down -> the root's bind made identity and its frames re-expressed.
+The dual HUD is the SMG's: the plate named x4 (sequences 0-3 of an 8-image bitmap: 4 corner shapes,
+bright + dim) -- written into Bungie's own colour plate, which the .bitmap stores zlib-compressed
+(blue background, magenta sequence lines); the meter named x2.
+
+**THE CHIEF'S LEFT HAND (IK).** A FP graph seeded from Bungie's SMG carries a single-wield IK entry,
+left hand -> the weapon's `left_hand` marker (the Chief grips the SMG two-handed): on a one-handed
+port it pins the hand inside the gun whatever the animations say. Halo 3's Chief animations also
+park that hand under the gun (Halo 3 does not show it): `drop_ik` + `rest_left_arm` (the Arbiter's
+way: held low, the reloads / grenade throw keep Halo 3's motion eased in and out).
+
+**THE PICKUP ICON (halo2.dll).** The text renderer tints U+E112-E12B (Bungie's weapon icons) and
+anything outside U+E000-E3FF with the line's colour (HUD blue / Arbiter violet); every other
+E000-E3FF glyph is forced WHITE at x0.72. At and above U+E400 halo2.dll asks MCC first (its own
+button-glyph hook) and MCC draws a placeholder or nothing. User: ports keep their reserved E1xx
+codepoint, UNTINTED: white lines over a grey body, 160x62.
+
+**THE SPIKE.** The SMG bullet has no model and no attachments: Halo 3's spike mesh as its model
+(filled into the empty `model` reference) and an orange light volume (the needle's, recoloured;
+an attachment from a donor of the SAME struct version: 852-byte projectile roots carry 44-byte
+attachment elements, 604-byte ones 32). Material responses BY NAME (not index): Halo 3's ricochet
+(impact + bounce at 0-60 deg on terrain / metal), bodies ATTACH the needle's way, 1 s at rest.
+
+**Tag-edit lessons:** h2_tagfield cannot probe a field reading 0 -- find it by probing a COPY (a byte
+flip / a float, tool's export names what moved) and seed the per-tag cache; any insert (a path, a
+chunk, a longer string id) shifts every later cached offset of that tag -- re-derive them and prove
+the zero fields by a test write and back.
+
 ---
 
 ## Halo Reach

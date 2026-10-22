@@ -611,6 +611,11 @@ PORT = {
                  'balanced through the SMG.'),
     },
 
+    # port_backup.py --game h2: the owned folders are derived; these are the Spiker's other edits
+    'backup': {'extra': [H2EK + r'\data\!extracted\fp_arms_masterchief\fp_arms.jms',
+                         H2EK + r'\data\!extracted\fp_arms_dervish\dervish_fp_arms.jms',
+                         H2EK + r'\tags\ai\generic.character']},
+
     # step 11 -- `python ai_firing_profile.py --h2-port brute_spiker`: Halo 3's ai\generic spike
     # rifle entry (010_jungle) name-for-name into H2EK ai\generic, over the H2 SMG's (the yardstick)
     'firing_profile': {'from_game': 'Halo 3', 'from_map': r'halo3\maps\010_jungle.map',
