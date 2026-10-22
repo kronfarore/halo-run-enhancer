@@ -119,9 +119,10 @@ PORT = {
                     'steam vent01': 'vent', 'steam vent02': 'vent'},
         # boot 4 (user: 'move the digits a bit apart'): the two counter quads touch (Halo 1 drew three
         # in a row); each pushed out by 12% of their spacing
-        # boot 8 ('the numbers can be re-aligned'): the pair sat over the divider, half in the heat
-        # box -> both moved a third of their spacing towards the ones side (into the fuel box)
-        'digit_spread': (('flamethrower_tens=?', 'flamethrower_ones=?'), 0.12, 0.33),
+        # boot 8 ('the numbers can be re-aligned'); boot 9's +0.33 towards the ones side was the
+        # wrong way ('they need to move LEFT and DOWN on the box'): 0.2 of their spacing towards the
+        # tens side from where Halo 1 put them, and down 0.15 of a digit's height
+        'digit_spread': (('flamethrower_tens=?', 'flamethrower_ones=?'), 0.12, -0.2, 0.15),
         # boot 8 (the user's plasma pistol check: its charge glow shows in FP, ours never did): Halo 2
         # draws attachment effects at the WORLD model's markers even in first person (boot 5: `pilot`
         # on the FP model only -> nothing anywhere), and the flamethrower's world model hangs at the
@@ -170,7 +171,8 @@ PORT = {
                     # texture -- left with the contrail in boot 4: a particle needs a SPRITES bitmap)
                     (None, 'flamethrower_heat_alpha',
                      r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_heat_gauge_alpha',
-                     ('gradient', 'v', True, (0.466, 0.966)), (32, 128)),
+                     # boot 9 ('it should start empty'): the ramp the other way round
+                     ('gradient', 'v', False, (0.466, 0.966)), (32, 128)),
                     # the FP PILOT card (boot 8): Halo 1's `burning flame` sprite 4, its grey tinted
                     # Halo 1's pilot blue, on the seed of the shader that draws it (additive: black = clear)
                     (r'effects\particles\flash\bitmaps\burning flame', 'flamethrower_pilot_flame',
@@ -343,6 +345,10 @@ PORT = {
             # the shotgun sight's dark green BGRA 07 30 0e -> a moderate grey (boot 8: full white
             # read washed out)
             (FT + r'\shaders\flamethrower_screen.shader', '0120000007300eff', '012000008c8c8cff'),
+            # the FP pilot card's glow: the exhaust shader pulses its self-illum between 0.0 and 0.05
+            # (a periodic, type 3) -- on an additive card that is black (boot 9: 'still no pilot flame
+            # in first person') -> 0.6 to 1.0, on a 0.25 s period (step 4)
+            (FT + r'\shaders\flamethrower_pilot.shader', '0300090000000000cdcc4c3d', '030009009a99193f0000803f'),
             (FX + r'\flamethrower_pilot.effect', '01200000ffffffff0000803f00000000ffffffff',
              '01200000ff9040ff0000803f00000000ff9040ff'),
         ],
@@ -491,6 +497,8 @@ PORT = {
             # the pilot's flames EMIT (boot 6, 'static'): 'looping particle' off
             (FX + r'\flamethrower_pilot.effect', 'flags', 'particle systems', 0, 0, 0),
             (FX + r'\flamethrower_pilot.effect', 'flags', 'particle systems', 1, 0, 0),
+            # the FP pilot's flicker: the exhaust's 2 s pulse -> 0.25 s
+            (FT + r'\shaders\flamethrower_pilot.shader', 'time period', 'animation properties', 0, 0, 0.25),
             # the screen's speculars (the shotgun sight's were green): grey
             (FT + r'\shaders\flamethrower_screen.shader', 'const color', 'parameters', 3, 0, [0.15, 0.15, 0.15]),
             (FT + r'\shaders\flamethrower_screen.shader', 'const color', 'parameters', 4, 0, [0.07, 0.07, 0.07]),

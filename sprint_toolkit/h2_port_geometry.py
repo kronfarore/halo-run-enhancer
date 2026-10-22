@@ -386,6 +386,9 @@ def h1_convert(g, rel, world):
         # numbers can be re-aligned' -- they sat over the box divider)
         (ma, mb), f = sp[:2]
         shift = sp[2] if len(sp) > 2 else 0.0
+        # a 4th value moves both DOWN the screen by that fraction of A's height (along A's image
+        # vertical: its high-v vertices are the top -- boot 9, 'left and down on the box')
+        down = sp[3] if len(sp) > 3 else 0.0
         cen, own = {}, {}
         for name in (ma, mb):
             k = mat_index.get(name)
@@ -393,10 +396,14 @@ def h1_convert(g, rel, world):
             P = [out.verts[v].pos for v in own[name]]
             cen[name] = [sum(p[i] for p in P) / max(1, len(P)) for i in range(3)]
         d_ab = [cen[mb][i] - cen[ma][i] for i in range(3)]
+        hi = [out.verts[v].pos for v in own[ma] if out.verts[v].uvs[0][1] >= 0.5]
+        lo = [out.verts[v].pos for v in own[ma] if out.verts[v].uvs[0][1] < 0.5]
+        up = [sum(p[i] for p in hi) / max(1, len(hi)) - sum(p[i] for p in lo) / max(1, len(lo))
+              for i in range(3)]
         for name, s in ((ma, shift - f), (mb, shift + f)):
             for v in own[name]:
                 vx = out.verts[v]
-                vx.pos = tuple(vx.pos[i] + s * d_ab[i] for i in range(3))
+                vx.pos = tuple(vx.pos[i] + s * d_ab[i] - down * up[i] for i in range(3))
     raw = []
     for r in d.regions.STEPTREE:
         for p in r.permutations.STEPTREE:
