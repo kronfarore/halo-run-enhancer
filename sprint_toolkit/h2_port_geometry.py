@@ -359,12 +359,33 @@ def h1_convert(g, rel, world):
                 out.tris.append((src_mat[part.shader_index], (base + a, base + b, base + c)))
     if len(out.tris) < g.get('min_tris', 200):
         raise SystemExit('only %d triangles from %s' % (len(out.tris), rel))
+    for mat, centre, (w, h) in (() if world else g.get('fp_cards', ())):
+        # fp_cards [(material, centre, (width, height))]: two crossed upright cards (x-z and y-z
+        # planes) on node 0, the material's own UVs 0-1 -- the Flamethrower's FIRST-PERSON pilot
+        # flame (boot 8: Halo 2 draws attachment effects at the WORLD model's markers, even in FP)
+        if mat not in mat_index:
+            mat_index[mat] = len(mats)
+            mats.append(h2_jms.Material(mat, '(%d) %s %s' % (len(mats) + 1,
+                                                          g.get('permutation', 'standard'),
+                                                          g.get('region', 'standard'))))
+        cx, cy, cz = centre
+        for ax, nrm in (((w / 2, 0.0), (0.0, -1.0, 0.0)), ((0.0, w / 2), (1.0, 0.0, 0.0))):
+            base = len(out.verts)
+            for su, sv in ((-1, 0), (1, 0), (1, 1), (-1, 1)):
+                pos = (cx + su * ax[0], cy + su * ax[1], cz + (sv - 0.5) * h)
+                out.verts.append(h2_jms.Vertex(pos, nrm, [(0, 1.0)], [((su + 1) / 2, float(sv))]))
+            k = mat_index[mat]
+            for t in ((0, 1, 2), (0, 2, 3), (0, 2, 1), (0, 3, 2)):       # both faces
+                out.tris.append((k, tuple(base + i for i in t)))
     sp = g.get('digit_spread')
     if sp:
         # digit_spread ((material A, material B), f): two counter quads pushed APART along the line
         # between their centres, each by f x that distance (the Flamethrower's two digits, boot 4:
         # 'move the digits a bit apart'; Halo 1 drew three side by side)
-        (ma, mb), f = sp
+        # an optional 3rd value SHIFTS both along the row (towards B, x the spacing: boot 8, 'the
+        # numbers can be re-aligned' -- they sat over the box divider)
+        (ma, mb), f = sp[:2]
+        shift = sp[2] if len(sp) > 2 else 0.0
         cen, own = {}, {}
         for name in (ma, mb):
             k = mat_index.get(name)
@@ -372,7 +393,7 @@ def h1_convert(g, rel, world):
             P = [out.verts[v].pos for v in own[name]]
             cen[name] = [sum(p[i] for p in P) / max(1, len(P)) for i in range(3)]
         d_ab = [cen[mb][i] - cen[ma][i] for i in range(3)]
-        for name, s in ((ma, -f), (mb, f)):
+        for name, s in ((ma, shift - f), (mb, shift + f)):
             for v in own[name]:
                 vx = out.verts[v]
                 vx.pos = tuple(vx.pos[i] + s * d_ab[i] for i in range(3))

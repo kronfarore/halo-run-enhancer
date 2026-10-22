@@ -119,7 +119,16 @@ PORT = {
                     'steam vent01': 'vent', 'steam vent02': 'vent'},
         # boot 4 (user: 'move the digits a bit apart'): the two counter quads touch (Halo 1 drew three
         # in a row); each pushed out by 12% of their spacing
-        'digit_spread': (('flamethrower_tens=?', 'flamethrower_ones=?'), 0.12),
+        # boot 8 ('the numbers can be re-aligned'): the pair sat over the divider, half in the heat
+        # box -> both moved a third of their spacing towards the ones side (into the fuel box)
+        'digit_spread': (('flamethrower_tens=?', 'flamethrower_ones=?'), 0.12, 0.33),
+        # boot 8 (the user's plasma pistol check: its charge glow shows in FP, ours never did): Halo 2
+        # draws attachment effects at the WORLD model's markers even in first person (boot 5: `pilot`
+        # on the FP model only -> nothing anywhere), and the flamethrower's world model hangs at the
+        # hip, out of view. So the FP pilot is FP GEOMETRY: two crossed cards (1.2 x 2.4 cm) standing
+        # on the `pilot` marker (32.04, 0.44, 3.36), Halo 1's flame sprite in blue on Bungie's
+        # time-animated additive shader (step 2); the world-model pilot stays the attachment
+        'fp_cards': [('flamethrower_pilot', (32.04, 0.44, 4.56), (1.2, 2.4))],
         # boot 5 ('no visible pilot flame'): Halo 1 has `pilot` / the steam vents on the FP model only;
         # the weapon's attachments look markers up on the WORLD model -- placed there at the FP
         # markers' offsets from primary_trigger (the two models share the gun's axes and length)
@@ -161,7 +170,12 @@ PORT = {
                     # texture -- left with the contrail in boot 4: a particle needs a SPRITES bitmap)
                     (None, 'flamethrower_heat_alpha',
                      r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_heat_gauge_alpha',
-                     ('gradient', 'v', True, (0.466, 0.966)), (32, 128))],
+                     ('gradient', 'v', True, (0.466, 0.966)), (32, 128)),
+                    # the FP PILOT card (boot 8): Halo 1's `burning flame` sprite 4, its grey tinted
+                    # Halo 1's pilot blue, on the seed of the shader that draws it (additive: black = clear)
+                    (r'effects\particles\flash\bitmaps\burning flame', 'flamethrower_pilot_flame',
+                     r'objects\cinematics\human\pillarofautumn\bitmaps\poa_exhaust',
+                     ('sprite', 4, ('tint', (0.45, 0.65, 1.0), 0)), (64, 64))],
         'shaders': [
             # the gun and the tank lit (boot 1): Bungie's PR `plasma_rifle_luminous` (tex_bump_env_illum:
             # bump, base, self-illum -- the base named twice; '#1' = the self-illum copy, moved first)
@@ -173,12 +187,17 @@ PORT = {
              {r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle#1': FT + r'\bitmaps\flamethrower_illum',
               r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle': FT + r'\bitmaps\flamethrower',
               r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_bump': FT + r'\bitmaps\flamethrower_bump'}),
-            # the fuel SCREEN: Halo 1 self-lights it by its own multipurpose map (= the screen bitmap).
-            # Boots 1-6 on the shotgun sight's tex_bump_illum stayed black (its illum colour, then
-            # white, changed nothing) -> the BR digits' illum_detail, which visibly glows on this gun:
-            # the screen bitmap as its self-illum map, no frame input (string_ids), white (step 3)
-            ('flamethrower_screen', r'objects\weapons\rifle\battle_rifle\shaders\tens',
-             {r'objects\weapons\rifle\battle_rifle\bitmaps\numbers_plate': FT + r'\bitmaps\flamethrower_screen'}),
+            # the fuel SCREEN: Halo 1 self-lights it by its own multipurpose map (= the screen bitmap):
+            # the shotgun sight's tex_bump_illum (lit base + self-illum, OPAQUE). Boots 1-7 it never
+            # showed -- the model was inside-out (boot 8); boot 8 on the BR digit shader read
+            # 'holographic, transparent, hard to read' (its detail globs, full white): back here, the
+            # glow a moderate grey (step 3)
+            ('flamethrower_screen', r'objects\weapons\rifle\shotgun\shaders\shotgun_light',
+             {r'objects\weapons\rifle\shotgun\bitmaps\illum_sights': FT + r'\bitmaps\flamethrower_screen'}),
+            # the FP PILOT card: Bungie's time-animated additive (the Pillar of Autumn's engine exhaust:
+            # one_add_illum, its self-illum colour pulsing on a 2 s period -- the one shipped example)
+            ('flamethrower_pilot', r'objects\cinematics\human\pillarofautumn\shaders\poa_engine_exhaust',
+             {r'objects\cinematics\human\pillarofautumn\bitmaps\poa_exhaust': FT + r'\bitmaps\flamethrower_pilot_flame'}),
             ('flamethrower_heat_display', r'objects\weapons\rifle\plasma_rifle\shaders\plasma_rifle_gauge',
              # the alpha FIRST: the meter's new path is as long as `..._heat_gauge_alpha`, and a
              # repoint refuses two records of one length
@@ -190,8 +209,6 @@ PORT = {
             # weapon exports: always 0 -- Halo 2 exports only primary_ammunition_ones / _tens); boot 2
             # (user: '000 is useless for a full tank'): removed again, two digits
         ],
-        # the screen on the digit shader: no frame input (its bitmap has one image)
-        'string_ids': {'flamethrower_screen': {'primary_ammunition_tens': ''}},
         'report_rows': [(FT + r'\bitmaps\flamethrower_bump', 'the port (flat)'),
                         (SMG + r'\bitmaps\smg_bump', 'Bungie SMG')],
     },
@@ -323,8 +340,9 @@ PORT = {
             (FX + r'\flamethrower_pilot.effect', '010000000000803f0000803f', '01000000000040410000803f'),
             (FX + r'\flamethrower_pilot.effect', '010000000ad7a33c', '010000000000803e'),
             # the fuel SCREEN's self-illum colour is an animation function (a const colour is unused):
-            # the BR digit's cyan BGRA f4 e0 8e -> white
-            (FT + r'\shaders\flamethrower_screen.shader', '01200000f4e08eff', '01200000ffffffff'),
+            # the shotgun sight's dark green BGRA 07 30 0e -> a moderate grey (boot 8: full white
+            # read washed out)
+            (FT + r'\shaders\flamethrower_screen.shader', '0120000007300eff', '012000008c8c8cff'),
             (FX + r'\flamethrower_pilot.effect', '01200000ffffffff0000803f00000000ffffffff',
              '01200000ff9040ff0000803f00000000ff9040ff'),
         ],
@@ -473,8 +491,9 @@ PORT = {
             # the pilot's flames EMIT (boot 6, 'static'): 'looping particle' off
             (FX + r'\flamethrower_pilot.effect', 'flags', 'particle systems', 0, 0, 0),
             (FX + r'\flamethrower_pilot.effect', 'flags', 'particle systems', 1, 0, 0),
-            # (boots 4-5: the screen's shotgun-sight const colours -- unused by the shader; the screen
-            # is on the BR digit shader since boot 6, its colour a byte edit in step 3)
+            # the screen's speculars (the shotgun sight's were green): grey
+            (FT + r'\shaders\flamethrower_screen.shader', 'const color', 'parameters', 3, 0, [0.15, 0.15, 0.15]),
+            (FT + r'\shaders\flamethrower_screen.shader', 'const color', 'parameters', 4, 0, [0.07, 0.07, 0.07]),
             # boot 1 (user): '1 unit forward and down' (1 unit = 0.01 wu, the AR's convention)
             (FT + r'\flamethrower.weapon', 'first person weapon offset', '', 0, 0, [0.01, 0.0, -0.01]),
         ],
