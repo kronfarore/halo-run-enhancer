@@ -310,6 +310,13 @@ PORT = {
              FX + r'\flame_fire', 'the flame: a fire sprite'),
             (FX + r'\flame_burning.effect', 'prt3', r'effects\objects\weapons\support_high\rocket_launcher\rocket_flame_core',
              FX + r'\flame_fire', "the flame's core: a fire sprite"),
+            # the first-person MUZZLE FLASH (closing check 10, h2_effect_particles: Halo 1's is `fp flash
+            # flame` -- 3-5 flame sprites at `spawn fire`, first person only; the port wore the SMG's
+            # two burst sprites): the SMG's bursts drawn with the fire sprite, its smoke kept
+            (FX + r'\flamethrower_fire.effect', 'prt3', r'effects\objects\weapons\rifle\smg\fire_burst_center',
+             FX + r'\flame_fire', 'the FP flash: fire, not a bullet burst', {'every': True}),
+            (FX + r'\flamethrower_fire.effect', 'prt3', r'effects\objects\weapons\rifle\smg\fire_burst_long',
+             FX + r'\flame_fire', 'the FP flash: fire, not a bullet burst'),
             (FX + r'\flamethrower_pilot.effect', 'prt3', r'effects\objects\weapons\support_high\rocket_launcher\rocket_flame',
              FX + r'\pilot_flame', 'the pilot: a tintable flame'),
             (FX + r'\flamethrower_pilot.effect', 'prt3', r'effects\objects\weapons\support_high\rocket_launcher\rocket_flame_core',
@@ -338,6 +345,16 @@ PORT = {
         'byte_edits': [
             (FX + r'\flame_burning.effect', '0000003fcdcc0c3f', '9a99193e9a99993e'),
             (FX + r'\flame_burning.effect', '010008006666263f', '010008000ad7a33d'),
+            # the flame GROWS (boot 6, user: 'would be nice if the flame started small and expanded'):
+            # the size functions read the EMITTER's age (= the flame's, the effect is born with the
+            # projectile), not the particle's (a looping sprite reborn every 0.02 s: always ~0) --
+            # each emitter function starts with four 2-byte enums (input, range, output modifier,
+            # its input), the size the 5th; found by the unique run before it (its predecessor's
+            # data pointer). 0 particle age -> 4 emitter age; the curves in function_edits
+            (FX + r'\flame_burning.effect', '00aa6a03cccf800100000200', '00aa6a03cccf800104000200',
+             ('Input Variable',)),
+            (FX + r'\flame_burning.effect', '78af6a03cccf800100000200', '78af6a03cccf800104000200',
+             ('Input Variable',)),
             # (boot 5: the pilot 0.02-0.03 / 0.012 wu)
             (FX + r'\flamethrower_pilot.effect', '0000003fcdcc0c3f', '0ad7a33c8fc2f53c'),
             (FX + r'\flamethrower_pilot.effect', '010008006666263f', '01000800a69b443c'),
@@ -362,6 +379,13 @@ PORT = {
         # by heat), is 36 bytes: slot 0 = input 0 = EMPTY -> red, slot 3 = input 1 = FULL -> the BR's
         # cyan; the input the fuel FRACTION (filled below: 100 and 0 both read '00')
         'function_edits': [
+            # the flame's SIZE over its age: type 1 constants (0.15-0.3 / 0.08) -> type 2 transitions
+            # (a scalar transition: +4 the value at input 0, +8 at input 1 -- Bungie's PR gauge
+            # meter_value): flame 0.06 -> 0.35, core 0.04 -> 0.12 (Halo 1's sprites grow as they fly)
+            (FX + r'\flame_burning.effect', '010108009a99193e9a99993e00000000000000000000803f0000803f',
+             '020000008fc2753d3333b33e0000000000000000000000000000803f000000000000803f'),
+            (FX + r'\flame_burning.effect', '010008000ad7a33d0000000000000000000000000000803f0000803f',
+             '020000000ad7233d8fc2f53d0000000000000000000000000000803f000000000000803f'),
             # the FP pilot card's glow (boots 10-11: not visible, the card in view -- Halo 1's pose
             # rendered): the exhaust's self_illum_color is animated by a SCALAR periodic (no colour
             # flag, no colours: the exhaust shows by its environment reflection) -> the same periodic

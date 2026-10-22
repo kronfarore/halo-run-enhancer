@@ -51,7 +51,11 @@ def byte_edits(w):
     export then differs from before in exactly the bytes replaced (function data `Value` rows,
     one per byte) and in nothing else; already applied = left alone."""
     import h2_tagfield as tf
-    for tag, old, new in w.get('byte_edits', ()):
+    for row in w.get('byte_edits', ()):
+        # an optional 4th value names the FIELDS the edit may move instead of function data
+        # `Value` rows (the Flamethrower's emitter size input: an `Input Variable` enum, boot 12)
+        tag, old, new = row[:3]
+        fields = row[3] if len(row) > 3 else ('Value',)
         path = os.path.join(TAGS, tag)
         a, b = bytes.fromhex(old), bytes.fromhex(new)
         d = open(path, 'rb').read()
@@ -68,8 +72,10 @@ def byte_edits(w):
         # the bytes that DIFFER between old and new (a colour keeps a channel: the Flamethrower's
         # blue pilot keeps the white tint's blue byte)
         diff = sum(x != y for x, y in zip(a, b))
+        if fields != ('Value',):
+            diff = len(fields)                 # one moved row a named field
         if (len(a) != len(b) or len(after) != len(rows) or len(moved) != n * diff
-                or any(rows[i][2] != 'Value' for i in moved)):
+                or any(rows[i][2] not in fields for i in moved)):
             open(path, 'wb').write(d)
             raise SystemExit('%s: %s -> %s moved %d rows, not %d data bytes; restored'
                              % (tag, old, new, len(moved), n * diff))
