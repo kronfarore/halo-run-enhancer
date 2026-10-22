@@ -129,7 +129,10 @@ PORT = {
         # hip, out of view. So the FP pilot is FP GEOMETRY: two crossed cards (1.2 x 2.4 cm) standing
         # on the `pilot` marker (32.04, 0.44, 3.36), Halo 1's flame sprite in blue on Bungie's
         # time-animated additive shader (step 2); the world-model pilot stays the attachment
-        'fp_cards': [('flamethrower_pilot', (32.04, 0.44, 4.56), (1.2, 2.4))],
+        # boot 10 ('still not visible'; its FP screenshot): `pilot` sits INSIDE the nozzle mouth
+        # (Halo 1's camera-facing sprite glows out of it; the gun's vertices within 4 units span y
+        # -2.1..2.9) -> a larger card (2.5 x 3.5) just in front of the muzzle (primary_trigger x 33.0)
+        'fp_cards': [('flamethrower_pilot', (34.2, 0.2, 4.3), (2.5, 3.5))],
         # boot 5 ('no visible pilot flame'): Halo 1 has `pilot` / the steam vents on the FP model only;
         # the weapon's attachments look markers up on the WORLD model -- placed there at the FP
         # markers' offsets from primary_trigger (the two models share the gun's axes and length)
@@ -171,8 +174,9 @@ PORT = {
                     # texture -- left with the contrail in boot 4: a particle needs a SPRITES bitmap)
                     (None, 'flamethrower_heat_alpha',
                      r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_heat_gauge_alpha',
-                     # boot 9 ('it should start empty'): the ramp the other way round
-                     ('gradient', 'v', False, (0.466, 0.966)), (32, 128)),
+                     # (boot 9 reversed this ramp: 'still starts filled, now top to bottom' -- the
+                     # fill direction was right; the 'full' look is the gauge's OFF part, step 3)
+                     ('gradient', 'v', True, (0.466, 0.966)), (32, 128)),
                     # the FP PILOT card (boot 8): Halo 1's `burning flame` sprite 4, its grey tinted
                     # Halo 1's pilot blue, on the seed of the shader that draws it (additive: black = clear)
                     (r'effects\particles\flash\bitmaps\burning flame', 'flamethrower_pilot_flame',
@@ -349,6 +353,11 @@ PORT = {
             # (a periodic, type 3) -- on an additive card that is black (boot 9: 'still no pilot flame
             # in first person') -> 0.6 to 1.0, on a 0.25 s period (step 4)
             (FT + r'\shaders\flamethrower_pilot.shader', '0300090000000000cdcc4c3d', '030009009a99193f0000803f'),
+            # the heat gauge's OFF part (above the heat level): the PR draws it at 0.5-0.67 opacity
+            # (meter_off_opacity, a periodic on `one`) -- on Halo 1's red bar it read as 'starts
+            # filled' (boots 8-10); Halo 1 shows only the heat -> 0
+            (FT + r'\shaders\flamethrower_heat_display.shader', '03000a000000003f83c02a3f',
+             '03000a000000000000000000'),
             (FX + r'\flamethrower_pilot.effect', '01200000ffffffff0000803f00000000ffffffff',
              '01200000ff9040ff0000803f00000000ff9040ff'),
         ],
