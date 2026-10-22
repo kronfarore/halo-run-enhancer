@@ -65,13 +65,35 @@ def byte_edits(w):
         x = tf.export(path)
         after = tf.read_all(x) if x else []
         moved = [i for i, (p, q) in enumerate(zip(rows, after)) if p[4] != q[4]]
-        if (len(after) != len(rows) or len(moved) != n * len(a)
+        # the bytes that DIFFER between old and new (a colour keeps a channel: the Flamethrower's
+        # blue pilot keeps the white tint's blue byte)
+        diff = sum(x != y for x, y in zip(a, b))
+        if (len(a) != len(b) or len(after) != len(rows) or len(moved) != n * diff
                 or any(rows[i][2] != 'Value' for i in moved)):
             open(path, 'wb').write(d)
             raise SystemExit('%s: %s -> %s moved %d rows, not %d data bytes; restored'
-                             % (tag, old, new, len(moved), n * len(a)))
+                             % (tag, old, new, len(moved), n * diff))
         print('   %-34s %s -> %s  (%d place(s), tool: %d data bytes, nothing else)'
               % (os.path.basename(tag), old, new, n, len(moved)))
+
+
+def marker_renames(w):
+    """`string_id_renames` [(tag, {old id: new id})] -- string ids in a cloned tag renamed through
+    h2_stringid (any length, tool-verified; the Flamethrower's pilot effect: its location marker
+    `exhaust` -> `pilot`); already renamed = left alone."""
+    import h2_stringid
+    for tag, ren in w.get('string_id_renames', ()):
+        path = os.path.join(TAGS, tag)
+        now = [v for _i, _n, v in h2_stringid.string_ids(h2_stringid.export(path))]
+        if not any(old in now for old in ren):
+            print('   %-34s %s already renamed' % (os.path.basename(tag), ', '.join(ren.values())))
+            continue
+        print('   ' + h2_stringid.rename(path, ren, write=True))
+    for tag, name, block, index, nth, value in w.get('string_id_fills', ()):
+        # an EMPTY string id given a value (h2_stringid.fill_empty, tool-verified): the
+        # Flamethrower's digit colour animations read `primary_ammunition`
+        print('   %-34s %s' % (os.path.basename(tag), h2_stringid.fill_empty(
+            os.path.join(TAGS, tag), name, block, index, nth, value)))
 
 
 def wire(w):
@@ -134,6 +156,9 @@ def main(argv=None):
     if w.get('byte_edits'):
         print('byte edits in the clones:')
         byte_edits(w)
+    if w.get('string_id_renames') or w.get('string_id_fills'):
+        print('string ids renamed in the clones:')
+        marker_renames(w)
     print('wiring them together:')
     wire(w)
     if w.get('string_ids'):

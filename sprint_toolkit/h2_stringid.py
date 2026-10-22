@@ -95,9 +95,17 @@ def rename(tag_path, renames, write=False, verbose=True):
               if all(data[p + 4 * k + 3] == len(v) for k, v in enumerate(old))]
         pooled = ''.join(old).encode('latin-1')
         pat = [m.start() for m in re.finditer(re.escape(pooled), bytes(data))]
-        if len(at) != 1 or len(pat) != 1:
-            raise SystemExit('%s: ambiguous run %s (length fields %d, pooled %d)'
+        if not at or not pat:
+            raise SystemExit('%s: run %s not found (length fields %d, pooled %d)'
                              % (os.path.basename(tag_path), old, len(at), len(pat)))
+        if len(at) != 1 or len(pat) != 1:
+            if len(runs) != 1 or not write:
+                raise SystemExit('%s: ambiguous run %s (length fields %d, pooled %d)'
+                                 % (os.path.basename(tag_path), old, len(at), len(pat)))
+            # ONE run, several candidate places (the Flamethrower's pilot: `exhaust` is also inside
+            # the pooled `rocket_exhaust_smoke`, and seven other ids are 7 long): every (length
+            # field, pooled place) pair is tried and tool decides, as h2_tagref does
+            return _rename_by_trial(tag_path, data, rows, run, at, pat, renames, verbose)
         edits.append((at[0], pat[0], old, new))
     # back to front, so earlier offsets stay valid; lengths are fixed-size (no shift)
     for lat, pat, old, new in sorted(edits, key=lambda e: -e[1]):
@@ -123,6 +131,75 @@ def rename(tag_path, renames, write=False, verbose=True):
         print('   %s: %d id(s) renamed, verified by tool (%d -> %d bytes)'
               % (os.path.basename(tag_path), n, len(original), len(data)))
     return 'renamed %d' % n
+
+
+def fill_empty(tag_path, name, block, index, nth, value, verbose=True):
+    """Give an EMPTY string id a value (the Flamethrower's digits, boot 4: their self-illum colour
+    animation's `input name` set to `primary_ammunition`, so the colour follows the fuel). The
+    field is named as h2_tagfield.pick names it (block, element, nth). An empty id has length 0 and
+    nothing pooled, so its place is found by trial: every zero-length 4-byte slot of every element
+    array gets the length, the string goes in at that array's end (where its element's pooled data
+    starts, ahead of any child chunk), and tool's export must read the field as `value` and every
+    other field unchanged. None does -> the file is put back and the fill refused."""
+    import h2_tagfield as tf
+    original = open(tag_path, 'rb').read()
+    rows = tf.read_all(tf.export(tag_path))
+    row = tf.pick(rows, name, block, index, nth)
+    if row[3] not in ('string id', 'old string id'):
+        raise SystemExit('%s: %s is a %s, not a string id' % (os.path.basename(tag_path), name, row[3]))
+    if row[4] == value:
+        return 'already %r' % value
+    if row[4]:
+        raise SystemExit('%s: %s reads %r, not empty' % (os.path.basename(tag_path), name, row[4]))
+    k = rows.index(row)
+    want = rows[:k] + [row[:4] + (value,)] + rows[k + 1:]
+    raw = value.encode('latin-1')
+    tries = 0
+    for a0, b0 in sorted(_arrays(original), key=lambda r: r[1] - r[0]):     # small structs first
+        for p in range(a0, b0 - 3, 4):
+            if original[p + 3] != 0 or original[p:p + 4] == b'\xff' * 4:
+                continue
+            d = bytearray(original)
+            d[p + 3] = len(raw)
+            d[b0:b0] = raw
+            open(tag_path, 'wb').write(bytes(d))
+            tries += 1
+            x = tf.export(tag_path)
+            if x and tf.read_all(x) == want:
+                if verbose:
+                    print('   %s: %s = %r (length at 0x%X, pooled at 0x%X; try %d), verified by tool'
+                          % (os.path.basename(tag_path), name, value, p, b0, tries))
+                return 'filled'
+    open(tag_path, 'wb').write(original)
+    raise SystemExit('%s: no place for %s = %r in %d tries -- restored'
+                     % (os.path.basename(tag_path), name, value, tries))
+
+
+def _rename_by_trial(tag_path, data, rows, run, at, pat, renames, verbose):
+    """rename() for one run whose length fields / pooled strings are not unique: each pairing is
+    written and kept only when tool's export reads exactly the renamed ids, everything else as
+    before; none does -> the file is put back and the rename refused."""
+    original = bytes(data)
+    old = [v for _i, _n, v in run]
+    new = [renames[v] for v in old]
+    idx = {i for i, _n, _v in run}
+    want = [(n, t, renames[v] if i in idx else v) for i, (n, t, v) in enumerate(rows)]
+    for lat in at:
+        for p in pat:
+            d = bytearray(original)
+            for k, v in enumerate(new):
+                d[lat + 4 * k + 3] = len(v)
+            d[p:p + len(''.join(old))] = ''.join(new).encode('latin-1')
+            open(tag_path, 'wb').write(bytes(d))
+            if export(tag_path) == want:
+                if verbose:
+                    print('   %s: %d id(s) renamed (length field 0x%X, pooled 0x%X of %d x %d '
+                          'candidates), verified by tool' % (os.path.basename(tag_path), len(old),
+                                                             lat, p, len(at), len(pat)))
+                return 'renamed %d' % len(old)
+    open(tag_path, 'wb').write(original)
+    raise SystemExit('%s: no pairing of %d length fields x %d pooled places reads %s -- restored'
+                     % (os.path.basename(tag_path), len(at), len(pat), new))
 
 
 def main():

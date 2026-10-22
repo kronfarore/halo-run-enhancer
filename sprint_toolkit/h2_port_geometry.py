@@ -355,6 +355,23 @@ def h1_convert(g, rel, world):
                 out.tris.append((src_mat[part.shader_index], (base + a, base + b, base + c)))
     if len(out.tris) < g.get('min_tris', 200):
         raise SystemExit('only %d triangles from %s' % (len(out.tris), rel))
+    sp = g.get('digit_spread')
+    if sp:
+        # digit_spread ((material A, material B), f): two counter quads pushed APART along the line
+        # between their centres, each by f x that distance (the Flamethrower's two digits, boot 4:
+        # 'move the digits a bit apart'; Halo 1 drew three side by side)
+        (ma, mb), f = sp
+        cen, own = {}, {}
+        for name in (ma, mb):
+            k = mat_index.get(name)
+            own[name] = sorted({v for m, t in out.tris if m == k for v in t})
+            P = [out.verts[v].pos for v in own[name]]
+            cen[name] = [sum(p[i] for p in P) / max(1, len(P)) for i in range(3)]
+        d_ab = [cen[mb][i] - cen[ma][i] for i in range(3)]
+        for name, s in ((ma, -f), (mb, f)):
+            for v in own[name]:
+                vx = out.verts[v]
+                vx.pos = tuple(vx.pos[i] + s * d_ab[i] for i in range(3))
     raw = []
     for r in d.regions.STEPTREE:
         for p in r.permutations.STEPTREE:
