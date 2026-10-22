@@ -181,7 +181,9 @@ PORT = {
                     # Halo 1's pilot blue, on the seed of the shader that draws it (additive: black = clear)
                     (r'effects\particles\flash\bitmaps\burning flame', 'flamethrower_pilot_flame',
                      r'objects\cinematics\human\pillarofautumn\bitmaps\poa_exhaust',
-                     ('sprite', 4, ('tint', (0.45, 0.65, 1.0), 0)), (64, 64))],
+                     # boot 13: bright, the core near white (an additive card adds nothing visible on
+                     # 06b's bright snow at boot 12's peak blue 173 -- Halo 2's own flames are white-hot)
+                     ('sprite', 4, ('tint', (1.2, 1.5, 2.0), 0)), (64, 64))],
         'shaders': [
             # the gun and the tank lit (boot 1): Bungie's PR `plasma_rifle_luminous` (tex_bump_env_illum:
             # bump, base, self-illum -- the base named twice; '#1' = the self-illum copy, moved first)
@@ -245,6 +247,7 @@ PORT = {
                    # particle = Bungie's own fire sprite (effects\generic\fires\fire, screen facing)
                    (r'effects\objects\weapons\support_high\rocket_launcher\rocket_exhaust.effect', FX + r'\flame_burning.effect'),
                    (r'effects\generic\fires\fire.particle', FX + r'\flame_fire.particle'),
+                   (r'effects\objects\weapons\support_high\rocket_launcher\rocket_flame.particle', FX + r'\flame_flash.particle'),
                    # boot 3 (user: 'build the support for the pilot flame and overheat effect'): the PILOT
                    # (Halo 1: a small blue flame at `pilot` while the weapon is ready) = the same rocket
                    # flame, tiny and tinted blue (boot 4: the plasma pistol's charge sparks were invisible);
@@ -313,10 +316,12 @@ PORT = {
             # the first-person MUZZLE FLASH (closing check 10, h2_effect_particles: Halo 1's is `fp flash
             # flame` -- 3-5 flame sprites at `spawn fire`, first person only; the port wore the SMG's
             # two burst sprites): the SMG's bursts drawn with the fire sprite, its smoke kept
+            # (boot 13 drew the fire sprite there: 'I can't see the muzzle flash' -> the rocket's
+            # own flame-flash sprite, a muzzle sprite made for a 0.1 s life)
             (FX + r'\flamethrower_fire.effect', 'prt3', r'effects\objects\weapons\rifle\smg\fire_burst_center',
-             FX + r'\flame_fire', 'the FP flash: fire, not a bullet burst', {'every': True}),
+             FX + r'\flame_flash', 'the FP flash: a flame, not a bullet burst', {'every': True}),
             (FX + r'\flamethrower_fire.effect', 'prt3', r'effects\objects\weapons\rifle\smg\fire_burst_long',
-             FX + r'\flame_fire', 'the FP flash: fire, not a bullet burst'),
+             FX + r'\flame_flash', 'the FP flash: a flame, not a bullet burst'),
             (FX + r'\flamethrower_pilot.effect', 'prt3', r'effects\objects\weapons\support_high\rocket_launcher\rocket_flame',
              FX + r'\pilot_flame', 'the pilot: a tintable flame'),
             (FX + r'\flamethrower_pilot.effect', 'prt3', r'effects\objects\weapons\support_high\rocket_launcher\rocket_flame_core',
@@ -381,19 +386,25 @@ PORT = {
         'function_edits': [
             # the flame's SIZE over its age: type 1 constants (0.15-0.3 / 0.08) -> type 2 transitions
             # (a scalar transition: +4 the value at input 0, +8 at input 1 -- Bungie's PR gauge
-            # meter_value): flame 0.06 -> 0.35, core 0.04 -> 0.12 (Halo 1's sprites grow as they fly)
+            # meter_value): flame 0.06 -> 0.35, core 0.04 -> 0.12 (Halo 1's sprites grow as they fly).
+            # Boot 13 ('starts big and shrinks'): the emitter age runs the other way -- the ends swapped
+            # (the 2nd pair of rows takes boot 13's tags there)
             (FX + r'\flame_burning.effect', '010108009a99193e9a99993e00000000000000000000803f0000803f',
-             '020000008fc2753d3333b33e0000000000000000000000000000803f000000000000803f'),
+             '020000003333b33e8fc2753d0000000000000000000000000000803f000000000000803f'),
             (FX + r'\flame_burning.effect', '010008000ad7a33d0000000000000000000000000000803f0000803f',
-             '020000000ad7233d8fc2f53d0000000000000000000000000000803f000000000000803f'),
+             '020000008fc2f53d0ad7233d0000000000000000000000000000803f000000000000803f'),
+            (FX + r'\flame_burning.effect', '020000008fc2753d3333b33e0000000000000000000000000000803f000000000000803f',
+             '020000003333b33e8fc2753d0000000000000000000000000000803f000000000000803f'),
+            (FX + r'\flame_burning.effect', '020000000ad7233d8fc2f53d0000000000000000000000000000803f000000000000803f',
+             '020000008fc2f53d0ad7233d0000000000000000000000000000803f000000000000803f'),
             # the FP pilot card's glow (boots 10-11: not visible, the card in view -- Halo 1's pose
             # rendered): the exhaust's self_illum_color is animated by a SCALAR periodic (no colour
             # flag, no colours: the exhaust shows by its environment reflection) -> the same periodic
-            # as a COLOUR function (byte 1 0x20; as in type 1, the colour slots take the place of the
-            # first four floats): slot 0 dim grey, slots 1-3 white -- the blue is in the bitmap
+            # as a constant WHITE colour (type 1, the digits' form; boot 12's periodic colour guess
+            # stayed unseen -- one unknown fewer); the blue is in the bitmap
             (FT + r'\shaders\flamethrower_pilot.shader',
              '0300090000000000cdcc4c3d00000000000000000000803f00000000000000bf0000803f0000803f00000000000000000000803f',
-             '03200900999999ffffffffffffffffffffffffff0000803f00000000000000bf0000803f0000803f00000000000000000000803f'),
+             '01200000ffffffff0000000000000000ffffffff0000803f0000803f'),
             (FT + r'\shaders\flamethrower_tens.shader', '01200000f4e08eff0000000000000000ffffff000000803f0000803f',
              '022003004040ffff0000000000000000f4e08eff000000000000803f000000000000803f'),
             (FT + r'\shaders\flamethrower_ones.shader', '01200000f4e08eff0000000000000000ffffff000000803f0000803f',
