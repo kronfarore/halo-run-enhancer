@@ -42,6 +42,17 @@
   "active camouflage damage": 128,
   "flags#1": 100
  },
+ "damage_effect@objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame_burn": {
+  "AOE core radius": 104,
+  "flags#1": 100,
+  "radius": 80
+ },
+ "decal": {
+  "radius": 104
+ },
+ "decal@effects\\objects\\weapons\\support_low\\flamethrower\\flame_char": {
+  "radius": 104
+ },
  "effect": {
   "particle systems[0].flags": 295,
   "particle systems[1].camera mode": 607,
@@ -94,9 +105,11 @@
   "bitmap widgets[11].fullscreen sequence index": 1540,
   "bitmap widgets[11].halfscreen sequence index": 1541,
   "bitmap widgets[11].quarterscreen sequence index": 1542,
+  "bitmap widgets[12].[Y] extra flags": 1606,
   "bitmap widgets[12].fullscreen sequence index": 1660,
   "bitmap widgets[12].halfscreen sequence index": 1661,
   "bitmap widgets[12].quarterscreen sequence index": 1662,
+  "bitmap widgets[13].[N] extra flags": 1734,
   "bitmap widgets[14].fullscreen sequence index": 1900,
   "bitmap widgets[14].halfscreen sequence index": 1901,
   "bitmap widgets[14].quarterscreen sequence index": 1902,
@@ -142,6 +155,9 @@
   "bitmap widgets[14].quarterscreen sequence index": 1902
  },
  "new_hud_definition@ui\\hud\\flamethrower": {
+  "bitmap widgets[12].[N] extra flags": 1614,
+  "bitmap widgets[12].[Y] extra flags": 1606,
+  "bitmap widgets[13].[N] extra flags": 1734,
   "bitmap widgets[8].[N] unit flags": 1132,
   "bitmap widgets[8].[N] weapon flags": 1136,
   "bitmap widgets[8].[Y] unit flags": 1124,
@@ -341,12 +357,14 @@
  },
  "shader": {
   "animation properties[0].time period": 904,
+  "animation properties[0].type": 726,
   "parameters[2].const color": 395,
   "parameters[3].const color": 447,
   "parameters[4].const color": 499
  },
  "shader@objects\\weapons\\support_low\\flamethrower\\shaders\\flamethrower_pilot": {
-  "animation properties[0].time period": 904
+  "animation properties[0].time period": 738,
+  "animation properties[0].type": 726
  },
  "shader@objects\\weapons\\support_low\\flamethrower\\shaders\\flamethrower_screen": {
   "parameters[2].const color": 395,

@@ -33,7 +33,7 @@ PORT = {
     'wave': 'S1',
     'name': 'Flamethrower',
     'source': 'Halo 1',
-    'status': 'in progress',
+    'status': 'done',
     'source_tag': r'weapons\flamethrower\flamethrower',      # HCEEK (Halo 1)
     'reservations': {
         'message_prefix': 'ft2',
@@ -958,8 +958,8 @@ PORT = {
             'impact / detonation noise': "the PR bolt's (Halo 1's 'loud' is an AI-perception enum)",
             'timer, radii, maximum range, air damage range': 'Halo 1 raw (a 0 on the PR: no ratio), step 4',
             'damage modifiers/*': "no Halo 2 field: the damage TABLE (group `burning`) carries the material response",
-            'functions (the PR\'s `heat` export)': "the SMG clone has none: the heat display's gauge may sit still "
-                                                  "(checked in game)",
+            'functions (the PR\'s `heat` export)': "the SMG clone has none: the heat bar reads the weapon's heat "
+                                                  "directly (boots 24-26, confirmed in game)",
             'firing effects/[1], old message index, on-ground scale, predicted bitmaps': "the SMG's (clone donor)",
         },
     },
