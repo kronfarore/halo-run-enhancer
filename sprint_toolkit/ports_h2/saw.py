@@ -442,6 +442,10 @@ PORT = {
         'graph_backup': r'E:\HaloBackups\H2EK_saw_graphs_before_foley',
     },
 
+    # BORROWED sounds kept ON PURPOSE (port_sound_refs prints them KEEP): Halo 4's ammo pickup event is
+    # in no MCC bank (the Halo 1 SAW's finding) -- user 2026-10-23: keep a Bungie Halo 2 sound
+    'sound_keeps': {r'sound\weapons\smg\smg_ammo': "Halo 4's ammo pickup is in no MCC bank (user: keep the SMG's)"},
+
     # residency: palette entry in every level's weapons resource (h2_port_residency.py). The
     # SAW also has one resident-only placement per level (put there 2026-10-01..04, before the
     # 128-placement cap was measured) -- new ports take the PALETTE ONLY (H2_PORT_PLAN 0.1)

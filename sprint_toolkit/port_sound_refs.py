@@ -50,6 +50,10 @@ def main():
     import ports_h1
     keeps = {('Halo 1', P['name']): {k.lower() for k in P.get('sound_keeps', {})}
              for _k, P in ports_h1.all_ports()}
+    # ... and a Halo 2 port's (the SAW rework, 2026-10-23: the SMG's ammo pickup, Halo 4 has none)
+    import ports_h2
+    keeps.update({('Halo 2', P['name']): {k.lower() for k in P.get('sound_keeps', {})}
+                  for _k, P in ports_h2.all_ports()})
     for game, v in cat.items():
         if p.game and game != p.game:
             continue
