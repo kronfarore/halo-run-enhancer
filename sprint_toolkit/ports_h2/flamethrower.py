@@ -193,9 +193,9 @@ PORT = {
                      # boot 13: bright, the core near white (an additive card adds nothing visible on
                      # 06b's bright snow at boot 12's peak blue 173 -- Halo 2's own flames are white-hot)
                      ('sprite', 4, ('tint', (1.2, 1.5, 2.0), 0)), (64, 64)),
-                    # the SCORCH (boot 17): Halo 1's own char decal bitmap, on the seed of the H2 char decal's
-                    (r'effects\decals\bullet holes\bitmaps\impact flame thrower char', 'flame_char',
-                     r'effects\decals\bullet_holes\bitmaps\dirt_pistol', 'color', None)],
+                    # (boot 17's flame_char -- Halo 1's char decal bitmap -- dropped in boot 22: it never
+                    # drew in Halo 2's double-multiply decal; the scorch is Bungie's bitmap)
+                    ],
         'shaders': [
             # the gun and the tank lit (boot 1): Bungie's PR `plasma_rifle_luminous` (tex_bump_env_illum:
             # bump, base, self-illum -- the base named twice; '#1' = the self-illum copy, moved first)
@@ -356,8 +356,10 @@ PORT = {
              FX + r'\flame_char_impact', 'impact on hard materials -> the char', {'every': True}),
             # the SCORCH (boot 17): the char impact = both its decals Halo 1's char, its plasma twirls
             # and flash the turret's own small fiery smoke, its phantom bolt sound the flame's silent one
+            # (boot 21 'no scorch marks': Halo 1's grey char with its partial alpha never drew in Halo
+            # 2's double-multiply decal -> Bungie's own scorch bitmap, drawn by its default_scorch decal)
             (FX + r'\flame_char.decal', 'bitm', r'effects\decals\bullet_holes\bitmaps\dirt_pistol',
-             FT + r'\bitmaps\flame_char', "Halo 1's flame-thrower char"),
+             r'effects\decals\blast_scorches\bitmaps\default_scorch', "Bungie's scorch"),
             (FX + r'\flame_char_impact.effect', 'deca', r'effects\decals\bullet_holes\grenade_char',
              FX + r'\flame_char', 'the char decal'),
             (FX + r'\flame_char_impact.effect', 'deca', r'effects\decals\blast_scorches\phantom_plasma_burn',
@@ -401,6 +403,10 @@ PORT = {
                          ('soft_terrain_snow', 1), ('tough', 1), ('tough_floodflesh', 1),
                          ('tough_inorganic', 1), ('tough_inorganic_plastic', 1),
                          ('tough_inorganic_rubber', 1)) for _k in range(n)] + [
+            # a flame that STUCK leaves its scorch when it burns out (boot 21: attached flames play no
+            # impact): the projectile's empty `detonation effect (ground)` -> the char impact
+            (FT + r'\projectiles\flame.projectile', 'effe', '', FX + r'\flame_char_impact',
+             'a stuck flame burns out into a scorch', {'field': 'detonation effect (ground)'}),
             # the OVERHEAT effect into the clone's EMPTY `overheated` slot (h2_tagref.fill_reference,
             # field-checked: an empty reference is not exported, only the result says which was filled)
             (FT + r'\flamethrower.weapon', 'effe', '', FX + r'\flamethrower_overheated', 'the overheat effect',
@@ -419,6 +425,9 @@ PORT = {
         'byte_edits': [
             (FX + r'\flame_burning.effect', '0000003fcdcc0c3f', '9a99193e9a99993e'),
             (FX + r'\flame_burning.effect', '010008006666263f', '010008000ad7a33d'),
+            # the flame's sprite LIFE: the rocket's 0.02 s (a looping sprite reborn every frame -- its fire
+            # animation never plays; boot 21: an attached flame 'lingers with no animation') -> 0.5 s
+            (FX + r'\flame_burning.effect', '010000000ad7a33c0000c03f', '010000000000003f0000c03f'),
             # the flame GROWS (boot 6, user: 'would be nice if the flame started small and expanded'):
             # the size functions read the EMITTER's age (= the flame's, the effect is born with the
             # projectile), not the particle's (a looping sprite reborn every 0.02 s: always ~0) --

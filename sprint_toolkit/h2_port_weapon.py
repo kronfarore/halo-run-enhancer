@@ -201,7 +201,15 @@ def wire(w):
                 h2_tagref.set_class(path, cls, old, opt['class'], nth=opt.get('nth') or 0)
                 print('      (%s)' % why)
             continue
-        if (cls, new) in have and (cls, old) not in have:
+        if old == '' and opt.get('field'):
+            # a FILL naming its field: done when THAT field reads the path (the path may sit in
+            # other fields already -- the Flamethrower's char impact in its material responses,
+            # boot 22, which the check below took for this row's own)
+            import h2_tagfield as tf
+            if ('<tag_reference name="%s" type="%s">%s<' % (opt['field'], cls, new)) in (tf.export(path) or ''):
+                print('   %-34s %s already filled' % (os.path.basename(tag), why))
+                continue
+        elif (cls, new) in have and (cls, old) not in have:
             print('   %-34s %s already points at the port' % (os.path.basename(tag), why))
             continue
         if old == '':
