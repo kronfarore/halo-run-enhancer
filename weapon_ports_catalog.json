@@ -9786,6 +9786,16 @@
      "card": "Projectile Damage",
      "original": 13.0,
      "note": "user 2026-10-23 (boot 22): Halo 1's burn -- every flame detonates (1.3 s in flight, 1.3-8 s stuck) with `explosion` 10 / 12-13; the Plasma Rifle ratio (x0.6 / x0.769) and the flame's balance margin x1.1111"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
+     "field": "Overheated Heat Loss Per Second",
+     "block": null,
+     "value": 0.513333,
+     "card": "Heat Loss",
+     "original": 0.44,
+     "note": "user 2026-10-23: the Plasma Rifle ratio (0.35 / 0.30) on Halo 1's 0.44"
     }
    ],
    "fp_animations": "objects\\characters\\*\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower"
