@@ -193,8 +193,13 @@ PORT = {
                      ('gradient', 'v', False, (0.466, 0.966), 'alpha'), (32, 128)),
                     # (boot 3's flame_sprite -- Halo 1's `burning flame` sprite 4 as the contrail's
                     # texture -- left with the contrail in boot 4: a particle needs a SPRITES bitmap)
+                    # boot 24 ('goes a bit above the display border'): the quad is taller than the painted
+                    # border (Halo 1 scrolled this texture, never filling the quad's top) -- the shape
+                    # cut at row 0.89 (the quad samples 0.466 at its bottom -> 0.966 at its top: the
+                    # top ~15% of it stays empty)
                     (H1FT + r'\bitmaps\flamethrower_heat_display', 'flamethrower_heat_alpha',
-                     r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_heat_gauge_alpha', 'color', None),
+                     r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_heat_gauge_alpha',
+                     ('alpha_window', 0.0, 0.89), None),
                     # the FP PILOT card (boot 8): Halo 1's `burning flame` sprite 4, its grey tinted
                     # Halo 1's pilot blue, on the seed of the shader that draws it (additive: black = clear)
                     (r'effects\particles\flash\bitmaps\burning flame', 'flamethrower_pilot_flame',

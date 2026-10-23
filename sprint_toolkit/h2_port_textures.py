@@ -280,6 +280,14 @@ def h3_main(t, argv):
                 ch = np.asarray(other.convert('RGBA').resize(img.size, Image.LANCZOS))[:, :, mode[2]]
                 rgb = np.asarray(img.convert('RGB')).astype(np.float32) * (ch[:, :, None] / 255.0)
                 out = Image.fromarray(rgb.astype(np.uint8), 'RGB')
+            elif isinstance(mode, tuple) and mode[0] == 'alpha_window':
+                # ('alpha_window', lo, hi): the colour with its ALPHA zeroed outside the rows lo..hi
+                # (fractions of the height, top = 0) -- a meter's SHAPE cut where the fill must stop
+                # (the Flamethrower's heat bar, boot 24: 'goes a bit above the display border')
+                a = np.asarray(img.convert('RGBA')).copy()
+                rows = np.linspace(0.0, 1.0, a.shape[0])
+                a[(rows < mode[1]) | (rows > mode[2]), :, 3] = 0
+                out = Image.fromarray(a, 'RGBA')
             elif mode == 'color_premul':
                 # for an ADDITIVE shader: colour x alpha, so a transparent texel adds nothing
                 # (the AR's holo display, boot 2: an opaque template drew every layer's square)
