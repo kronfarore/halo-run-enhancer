@@ -186,16 +186,58 @@ def copy_holds(d, who):
     return done
 
 
+def status():
+    """What in the kit is NOT refitted yet ([] = all done)."""
+    from reclaimer.hek.defs.mod2 import mod2_def
+    from reclaimer.hek.defs.weap import weap_def
+    from reclaimer.hek.defs.pctl import pctl_def
+    from reclaimer.hek.defs.antr import antr_def
+    todo = []
+    if mod2_def.build(filepath=path(MODEL)).data.tagdata.nodes.STEPTREE[0].rotation.w < 0.99999:
+        todo.append('model')
+    att = weap_def.build(filepath=path(WEAPON)).data.tagdata.obje_attrs.attachments.STEPTREE
+    if any(a.type.filepath.lower() in [s.lower() for s in FP_SYSTEMS] for a in att):
+        todo.append('weapon')
+    if any(pt.flags.dont_draw_in_first_person
+           for rel in TP_SYSTEMS
+           for pt in pctl_def.build(filepath=path(rel + '.particle_system')).data.tagdata.particle_types.STEPTREE):
+        todo.append('flames')
+    d = antr_def.build(filepath=path(r'characters\cyborg\cyborg.model_animations')).data.tagdata
+    if any(x.label == 'ft' and 'pr' not in [y.label for y in wc.weapon_types.STEPTREE]
+           for u in d.units.STEPTREE for wc in u.weapons.STEPTREE for x in wc.weapon_types.STEPTREE):
+        todo.append('cyborg')
+    return todo
+
+
+def ensure():
+    """h1_rebuild_all's first step (inside its kit lock): refit whatever a kit restore or an
+    old tag copy put back; nothing to do on a refitted kit."""
+    todo = status()
+    if not todo:
+        print('flamethrower refit: kit tags already refitted')
+        return
+    print('flamethrower refit: re-applying (%s)' % ', '.join(todo))
+    apply(True)
+
+
+def apply(write):
+    level_model(write)
+    weapon_attachments(write)
+    third_person_flames(write)
+    # the cyborg's holds: teach_cyborg rebuilds its antr from its own backup every run
+    import h1_pickable_weapons
+    h1_pickable_weapons.teach_cyborg(write)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--write', action='store_true')
+    ap.add_argument('--status', action='store_true', help='print what is not refitted, write nothing')
     a = ap.parse_args()
-    level_model(a.write)
-    weapon_attachments(a.write)
-    third_person_flames(a.write)
-    # the cyborg's holds: teach_cyborg rebuilds its antr from its own backup every run
-    import h1_pickable_weapons
-    h1_pickable_weapons.teach_cyborg(a.write)
+    if a.status:
+        print(status() or 'all refitted')
+        return
+    apply(a.write)
     if not a.write:
         print('\n(dry run -- --write to save)')
 

@@ -636,6 +636,35 @@ ACTOR_FLAG_BITS = {'always_charge_in_attacking_mode': 0x01000000,
 STOCK_ACTOR_FLAGS = {BS.join(('weapons', 'flamethrower', 'flamethrower')): ('always_charge_in_attacking_mode',)}
 
 
+# A STOCK weapon whose kit tags had to be refitted for enemy hands (sprint_toolkit/
+# h1_flamethrower_level.py, shipped by h1_rebuild_all): a level built before that -- stock
+# maps after a Steam verify, old baselines -- would arm enemies with a gun that points at the
+# sky and puts ghost flames on the player's first-person gun. Such a card is skipped there.
+FLAMETHROWER = BS.join(('weapons', 'flamethrower', 'flamethrower'))
+WEAP_ATTACHMENTS, ATTACHMENT = 0x140, 0x48      # obje Attachments block; element, type ref +0
+MOD2_NODES, MOD2_NODE, NODE_ROTATION = 0xB8, 0x9C, 0x34
+
+
+def stock_unfit(m, weapon):
+    """None when the level carries the refitted weapon, else why not (the flamethrower:
+    its model node levelled, no first-person-only flame attachments)."""
+    if weapon != FLAMETHROWER:
+        return None
+    mb = dict(m.find_tags('mod2', weapon)).get(weapon)
+    wb = dict(m.find_tags('weap', weapon)).get(weapon)
+    if mb is None or wb is None:
+        return None                        # not on the level: the caller's own skip
+    nodes = tw._elems(m, mb + MOD2_NODES, MOD2_NODE)
+    if nodes and struct.unpack_from('<f', m.data, nodes[0] + NODE_ROTATION + 12)[0] < 0.9999:
+        return ("this level's flamethrower model is Bungie's tilted one (enemies would aim at "
+                'the sky): rebuild the Halo 1 levels (h1_rebuild_all.py)')
+    for a in tw._elems(m, wb + WEAP_ATTACHMENTS, ATTACHMENT):
+        if 'fp_defoliant' in (hv._ref_name(m, a, 0) or ''):
+            return ("this level's flamethrower still has first-person-only flames (ghost flames "
+                    "at the player's gun): rebuild the Halo 1 levels (h1_rebuild_all.py)")
+    return None
+
+
 def port_actor_flags(weapon):
     if weapon in STOCK_HANDS:
         return sum(ACTOR_FLAG_BITS[f] for f in STOCK_ACTOR_FLAGS.get(weapon, ()))
@@ -1103,6 +1132,11 @@ def cards(lv, index, picks):
             if lv.m.tag_id(('weap', weapon)) is None:
                 out.append(_row('enemy weapons', '%s +%s' % (enemy, weapon.rsplit(BS, 1)[-1]),
                                 skip=True, reason='the level has no %s' % weapon.rsplit(BS, 1)[-1]))
+                continue
+            unfit = stock_unfit(lv.m, weapon)
+            if unfit:
+                out.append(_row('enemy weapons', '%s +%s' % (enemy, weapon.rsplit(BS, 1)[-1]),
+                                skip=True, reason=unfit))
                 continue
             moved = 0
             notes = []

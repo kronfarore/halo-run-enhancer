@@ -127,11 +127,15 @@ def check(path, allow_missing_slots=False):
     sprint = bool(m.find_tags('weap', halo_patch._SPRINT_WEAP))
     saw = bool(m.find_tags('weap', SAW))
     confetti = bool(m.find_tags('effe', CONFETTI))
-    note = '%2d slots, sprint %s, SAW %s, confetti %s' % (slots, 'yes' if sprint else 'NO',
-                                                          'yes' if saw else 'no',
-                                                          'yes' if confetti else 'no')
+    import h1_enemy_weapons
+    unfit = h1_enemy_weapons.stock_unfit(m, h1_enemy_weapons.FLAMETHROWER)
+    note = '%2d slots, sprint %s, SAW %s, confetti %s, flamethrower %s' % (
+        slots, 'yes' if sprint else 'NO', 'yes' if saw else 'no', 'yes' if confetti else 'no',
+        'NOT refitted' if unfit else 'refitted')
     problem = None
-    if not sprint:
+    if unfit:
+        problem = unfit + ' -- h1_flamethrower_level.py --write, then build again'
+    elif not sprint:
         problem = 'no sprint weapon -- not a toolkit scenario?'
     elif slots < SLOT_COUNT and not allow_missing_slots:
         problem = ('%d of %d enemy-weapon slots -- add the rest to the Actor Palette in '
@@ -169,6 +173,10 @@ def main():
         sys.exit('A Steam update of MCC is pending -- it would delete the shipped maps. '
                  'Let it finish first.')
     install_script.install(paths.GLOBAL_SCRIPTS)
+    # the stock flamethrower refitted for enemy hands (Armed: Flamethrower, 2026-10-23):
+    # re-applied if a kit restore put Bungie's tags back -- every build carries it
+    import h1_flamethrower_level
+    h1_flamethrower_level.ensure()
     print('Building %d level(s), classic, self-contained. Baselines: %s. Tool: %s'
           % (len(maps), root or 'sibling .bak files', os.path.basename(paths.TOOL_EXE)))
 
