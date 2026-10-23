@@ -9798,7 +9798,25 @@
      "note": "user 2026-10-23: the Plasma Rifle ratio (0.35 / 0.30) on Halo 1's 0.44"
     }
    ],
-   "fp_animations": "objects\\characters\\*\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower"
+   "fp_animations": "objects\\characters\\*\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower",
+   "card_map": {
+    "Bullet Damage": "Flame Damage"
+   },
+   "tag_map": {
+    "jpt! objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt": "jpt! objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame & objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame_burn"
+   },
+   "card_donors": {
+    "SMG": [
+     "Ammo Inventory",
+     "Ammo Loaded",
+     "Reload Time"
+    ]
+   },
+   "skip_cards": [
+    "Misfire",
+    "Ramp Up",
+    "Age Per Round"
+   ]
   }
  ],
  "Halo 3: ODST": [
