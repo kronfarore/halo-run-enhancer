@@ -9759,7 +9759,7 @@
     },
     {
      "class": "jpt!",
-     "tag": "objects\\weapons\\support_low\flamethrower\\damage_effects\flame_burn",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame_burn",
      "field": "Damage Lower Bound",
      "block": null,
      "value": 6.6667,
@@ -9769,7 +9769,7 @@
     },
     {
      "class": "jpt!",
-     "tag": "objects\\weapons\\support_low\flamethrower\\damage_effects\flame_burn",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame_burn",
      "field": "Damage Upper Bound",
      "block": null,
      "value": 10.2564,
@@ -9779,7 +9779,7 @@
     },
     {
      "class": "jpt!",
-     "tag": "objects\\weapons\\support_low\flamethrower\\damage_effects\flame_burn",
+     "tag": "objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame_burn",
      "field": "Damage Upper Bound Max",
      "block": null,
      "value": 11.1111,
