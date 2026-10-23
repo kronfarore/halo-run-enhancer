@@ -61,6 +61,10 @@
   "particle systems[2].flags": 433,
   "particle systems[3].flags": 501
  },
+ "effect@effects\\objects\\weapons\\rifle\\saw\\saw_fire": {
+  "particle systems[1].camera mode": 589,
+  "particle systems[2].camera mode": 657
+ },
  "effect@effects\\objects\\weapons\\rifle\\spike_rifle\\spike_rifle_fire": {
   "particle systems[2].camera mode": 675
  },
@@ -76,12 +80,23 @@
  },
  "model_animation_graph": {
   "animations[10].production flags": 4624,
+  "animations[11].production flags": 3800,
   "animations[12].desired compression": 4104,
+  "animations[12].production flags": 3924,
   "animations[13].production flags": 4996,
+  "animations[14].production flags": 4172,
   "animations[1].production flags": 3508,
+  "animations[3].production flags": 2808,
   "animations[4].production flags": 3880,
   "animations[5].production flags": 4004,
   "animations[8].production flags": 4376
+ },
+ "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\rifle\\fp_saw\\fp_saw": {
+  "animations[11].production flags": 3536,
+  "animations[12].production flags": 3660,
+  "animations[13].production flags": 3784,
+  "animations[14].production flags": 3908,
+  "animations[3].production flags": 2544
  },
  "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower": {
   "animations[10].production flags": 4236,
@@ -90,6 +105,14 @@
   "animations[4].production flags": 3492,
   "animations[5].production flags": 3616,
   "animations[8].production flags": 3988
+ },
+ "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_saw\\fp_saw": {
+  "animations[11].production flags": 3800,
+  "animations[12].production flags": 3924,
+  "animations[13].production flags": 4048,
+  "animations[14].production flags": 4172,
+  "animations[3].production flags": 2808,
+  "animations[4].production flags": 2932
  },
  "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower": {
   "animations[10].production flags": 4624,
@@ -174,6 +197,9 @@
   "bitmap widgets[9].halfscreen offset": 1308,
   "bitmap widgets[9].input 1": 1240,
   "bitmap widgets[9].quarterscreen offset": 1312
+ },
+ "new_hud_definition@ui\\hud\\saw": {
+  "bitmap widgets[12].[N] extra flags": 1614
  },
  "projectile": {
   "air damage range": 820,
@@ -435,12 +461,17 @@
   "bounding offset": 88
  },
  "weapon@objects\\weapons\\rifle\\saw\\saw": {
-  "barrels[0].error angle#1": 3519,
-  "barrels[0].rounds per second": 3407,
-  "magazines[0].rounds loaded maximum": 3097,
-  "magazines[0].rounds reloaded": 3111,
-  "magazines[0].rounds total initial": 3093,
-  "magazines[0].rounds total maximum": 3095
+  "barrels[0].acceleration time": 2909,
+  "barrels[0].deceleration time": 2913,
+  "barrels[0].deceleration time#1": 2967,
+  "barrels[0].error angle": 2989,
+  "barrels[0].error angle#1": 3023,
+  "barrels[0].minimum error#1": 3009,
+  "barrels[0].rounds per second": 2911,
+  "magazines[0].rounds loaded maximum": 2524,
+  "magazines[0].rounds reloaded": 2524,
+  "magazines[0].rounds total initial": 2520,
+  "magazines[0].rounds total maximum": 2522
  },
  "weapon@objects\\weapons\\rifle\\spike_rifle\\spike_rifle": {
   "barrels[0].acceleration time": 3117,

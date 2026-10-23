@@ -368,7 +368,12 @@ def from_port(key):
     src = dict(kit=fa['source_kit'], tags=fa['source'],
                label='%s %s vs %s' % (KIT_GAME[fa['source_kit']], p['name'],
                                       p['yardstick'].get('pick') or 'yardstick'))
-    return src, dict(kit=kit, game=game, tags=fa['target']), p['name']
+    target = dict(kit=kit, game=game, tags=fa['target'])
+    # `hops` (the SAW rework, 2026-10-23): a yardstick reached through another game -- the SAW's
+    # H4 AR > H3 AR, H3 SMG > H2 SMG, GAMES['h2']'s shape
+    if fa.get('hops'):
+        target['hops'] = fa['hops']
+    return src, target, p['name']
 
 
 def audit(game, show_all=False, source=None, G=None, weapon='SAW'):

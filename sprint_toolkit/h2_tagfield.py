@@ -283,6 +283,10 @@ def offset_of(tag_path, name, block='', index=0, nth=0, verbose=True):
     if len(values) < n:
         raise ValueError('%s printed %d numbers, expected %d' % (name, len(values), n))
     for known in tried:
+        # a cached offset past the end belongs to an older, longer layout of this path (the SAW
+        # rework, 2026-10-23: saw.weapon re-cloned from the SMG, its GPMG-era offsets cached)
+        if known is not None and known + _size * n > len(original):
+            continue
         if known is not None and known in candidates(bytearray(original), ftype, values,
                                                      (known, known + _size * n)):
             return known

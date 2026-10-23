@@ -256,9 +256,7 @@ def source_events(cfg, species):
     Proved: tool's export reads every row outside the event blocks unchanged and the events as
     written; else the graph is restored."""
     import re
-    import struct
     import h2_tagfield as tf
-    import h2_anim
     sp = cfg['species'][species]
     path = graph_path(sp)
     x = tf.export(path)
@@ -267,6 +265,56 @@ def source_events(cfg, species):
         x[x.find('<block name="sound references"'):x.find('<block name="animations"')])]
     names = re.findall(r'<element index="\d+">\s*<field name="name" type="string id">([^<]*)<',
                        x[x.find('<block name="animations"'):])
+    if cfg.get('kind') == 'h4':
+        want = h4_events(cfg, refs)
+    else:
+        want = h3_events(cfg, sp, refs)
+    write_events(path, x, names, want)
+
+
+def h4_events(cfg, refs):
+    """kind 'h4' `source_events` {'cues': {Halo 2 animation: [(sound, frame)]}} (the SAW rework,
+    2026-10-23): FRAME events from the Halo 4 graph's .frame_event_list (primary / secondary keyframe,
+    allow interruption; a type listed twice -- Halo 4's melee_strike_1 has primary keyframes at 4 and
+    5 -- keeps its first frame), onto every Halo 2 animation `map` makes of it. SOUND events are the
+    config's: the SAW's foley mixes fold Halo 4's several cues of an animation into ONE sound at
+    frame 0 (saw_port_sounds). A cue names the graph's sound reference by basename, either the port's
+    own or the seed's that `sounds` `graph_sounds` repoints to it (the events may be written before
+    the sounds step)."""
+    import re
+    import h4_tags
+    fel = os.path.splitext(cfg['retarget']['graph'])[0] + '.frame_event_list'
+    s = open(h4_tags.export_xml(fel), encoding='utf-8', errors='replace').read()
+    types = {'primary keyframe': 0, 'secondary keyframe': 1, 'left foot': 2, 'right foot': 3,
+             'allow interruption': 4}
+    events = {}
+    parts = re.split(r'<field name="animation name" value="(first_person:[^"]*)" type="string id"/>'
+                     r'\s*<field name="animation frame count"', s)
+    for nm, body in zip(parts[1::2], parts[2::2]):
+        ae = body[:body.find('<block name="sound events"')]
+        first = {}
+        for f, t in re.findall(r'name="frame" value="(-?\d+)".*?name="type" value="([^"]*)"', ae, re.S):
+            if t in types:
+                first[types[t]] = min(int(f), first.get(types[t], int(f)))
+        events[nm] = sorted(((t, f) for t, f in first.items()), key=lambda e: (e[1], e[0]))
+    alias = {}
+    for donor, own in ports_h2.get(cfg['_key'], 'sounds').get('graph_sounds', ()):
+        alias.setdefault(own, []).append(donor)
+    want = {}
+    for row in cfg['map']:
+        h4name, h2name = row[:2]
+        se = []
+        for snd, f in cfg.get('source_events', {}).get('cues', {}).get(h2name, ()):
+            hit = [n for n in [snd] + alias.get(snd, []) if n in refs]
+            if not hit:
+                raise SystemExit('%s: no sound reference %s (graph: %s)' % (h2name, snd, refs))
+            se.append((refs.index(hit[0]), f))
+        want[h2name] = (events.get(h4name, []), se)
+    return want
+
+
+def h3_events(cfg, sp, refs):
+    import re
     # Halo 3's events
     h3x = open(h1_fp_retarget.export_xml(sp['graph']), encoding='utf-8', errors='replace').read()
     h3refs = [r.rsplit('\\', 1)[-1] for r in re.findall(
@@ -288,6 +336,14 @@ def source_events(cfg, species):
             if target is not None:
                 se.append((refs.index(target), int(f)))
         want[name] = (fe, se)
+    return want
+
+
+def write_events(path, x, names, want):
+    import re
+    import struct
+    import h2_tagfield as tf
+    import h2_anim
     d = bytearray(open(path, 'rb').read())
     original = bytes(d)
     ch, n, es = h2_anim.animations_chunk(bytes(d))
@@ -333,7 +389,7 @@ def source_events(cfg, species):
         struct.pack_into('<I', d, e + SE_COUNT, len(se))
         changed.append(nm)
     if not changed:
-        print('   %s: events already Halo 3\'s' % os.path.basename(path))
+        print('   %s: events already the source\'s' % os.path.basename(path))
         return
     open(path, 'wb').write(bytes(d))
     after = tf.export(path)
@@ -355,7 +411,7 @@ def source_events(cfg, species):
     if not ok:
         open(path, 'wb').write(original)
         raise SystemExit('%s: the events did not read back as written -- restored' % os.path.basename(path))
-    print('   %s: Halo 3\'s events in %d animations (%+d bytes); every other row unchanged'
+    print('   %s: the source\'s events in %d animations (%+d bytes); every other row unchanged'
           % (os.path.basename(path), len(changed), len(d) - len(original)))
 
 
@@ -441,6 +497,64 @@ def h1_frames(antr_rel, anim):
     return nodes, frames, d.animations.STEPTREE[names.index(anim)].type.enum_name
 
 
+_H4 = {}
+
+
+def h4_frames(cfg, anim):
+    """kind 'h4' (the SAW rework, 2026-10-23): one HALO 4 FP animation in h1_frames' shape. Halo 4's
+    arms are not Halo 2's (H2_PORT_PLAN 0.4), but Halo 1's are Halo 2's masterchief -- so Halo 1's
+    proven Halo 4 route does the arms: the Foundry dump (h4_fp_dump.py -> h4_tags.load_graph) and
+    h1_fp_retarget's re-solve (_resolve_arms: Halo 4's wrists, Halo 1's bone lengths), its output in
+    Halo 1's FP space -- which build_h1 already writes as Halo 2 frames. Section `retarget` = an
+    h1_fp_retarget WEAPONS entry (graph, render_model, nodes, drop_nodes[, hand_offset(_anims),
+    view_offset(_anims), ...]); no `align`: the FP JMS is the Halo 4 render model in its own space.
+    A base animation gets its last frame repeated (tool drops it); an OVERLAY (Halo 1's form: a
+    reference + per-frame deltas) becomes absolute frames -- `overlay_reference`'s frame 0 with each
+    animated track's delta applied (the kind 'h3' rule)."""
+    import h1_fp_retarget as R1
+    w = 'h2:' + cfg['retarget']['graph']
+    R1.WEAPONS[w] = dict(cfg['retarget'])
+    if w not in _H4:
+        _H4[w] = R1.load(w)
+    nodes, anims, defaults, _ev = _H4[w]
+    names, parents = R1.h1_skeleton(w, nodes)
+    idx = {n: i for i, n in enumerate(names)}
+    jn = [(n, idx[p] if p is not None else -1) for n, p in zip(names, parents)]
+    typ, frames = R1.retarget(w, anim, nodes, anims, defaults)
+    if typ == 'overlay':
+        _t, base = R1.retarget(w, cfg.get('overlay_reference', 'first_person:idle'), nodes, anims, defaults)
+        ref = base[0]
+        animated = anims[anim][2]
+        rot = {R1._h1(w, nodes[i][0]) for i in animated['rot']}
+        tr = {R1._h1(w, nodes[i][0]) for i in animated['trans']}
+        out = [ref]
+        for d in frames[1:]:
+            # tag convention (conjugated): conj(q_ref * delta) = delta_tag * q_ref_tag
+            out.append({n: (qnorm(qmul(d[n][0], q)) if n in rot else q,
+                            tuple(a + b for a, b in zip(t, d[n][1])) if n in tr else t)
+                        for n, (q, t) in ((n, v[:2]) for n, v in ref.items())})
+        frames = out
+    else:
+        frames = frames + [frames[-1]]
+    rows = [[((q[0], -q[1], -q[2], -q[3]), tuple(t)) for q, t in (fr[n][:2] for n in names)]
+            for fr in frames]
+    return jn, rows, typ
+
+
+def _source_frames(cfg, name):
+    return h4_frames(cfg, name) if cfg.get('kind') == 'h4' else h1_frames(cfg['antr'], name)
+
+
+def _continuous(rows):
+    """Every node's quaternion in the hemisphere of the frame before (kind 'h4': Halo 4's locals come
+    out of rotation matrices with w >= 0 -- h1_fp_retarget._continuous, the Storm Rifle's boot 2)."""
+    out = [list(rows[0])]
+    for fr in rows[1:]:
+        out.append([((tuple(-c for c in q) if sum(a * b for a, b in zip(q, p[0])) < 0 else q), t)
+                    for (q, t), p in zip(fr, out[-1])])
+    return out
+
+
 def build_h1(key, species, only=None, write=True):
     """kind 'h1' (the Flamethrower, S1, 2026-10-21): Halo 1's OWN FP animations as Halo 2 source
     animations. Halo 1's FP arms ARE Halo 2's masterchief and Halo 1's view is the animation origin,
@@ -475,9 +589,9 @@ def build_h1(key, species, only=None, write=True):
         opt = row[2] if len(row) > 2 else {}
         if only and h2name not in only:
             continue
-        nodes, frames, typ = h1_frames(cfg['antr'], h1name)
+        nodes, frames, typ = _source_frames(cfg, h1name)
         if opt.get('then'):
-            _n2, more, _t = h1_frames(cfg['antr'], opt['then'])
+            _n2, more, _t = _source_frames(cfg, opt['then'])
             body, k = list(frames[:-1]), 0
             while len(body) < opt['frames']:
                 body.append(more[k % (len(more) - 1)])
@@ -512,6 +626,8 @@ def build_h1(key, species, only=None, write=True):
                     d = qrot(pq, et)
                     fr.append((qnorm(qmul(pq, q)), (pt[0] + d[0], pt[1] + d[1], pt[2] + d[2])))
             rows.append(fr)
+        if cfg.get('kind') == 'h4':
+            rows = _continuous(rows)
         for nm in names_h2:
             if nm == 'camera_control':
                 parents[nm] = 0
@@ -601,7 +717,7 @@ def main(argv=None):
     want = [argv[argv.index('--species') + 1]] if '--species' in argv else list(cfg['species'])
     only = [argv[argv.index('--only') + 1]] if '--only' in argv else None
     for species in want:
-        nodes, rows = (build_h1 if cfg.get('kind') == 'h1' else build)(key, species, only,
+        nodes, rows = (build_h1 if cfg.get('kind') in ('h1', 'h4') else build)(key, species, only,
                                                                       write='--write' in argv)
         print('%s: %d nodes, %d animations%s' % (species, len(nodes), len(rows),
                                                   ' written' if '--write' in argv else ''))
@@ -612,7 +728,7 @@ def main(argv=None):
             if cfg.get('clear_verify'):
                 clear_verify(cfg, species)
             if cfg.get('source_events'):
-                source_events(cfg, species)
+                source_events(dict(cfg, _key=key), species)
             if species in cfg.get('drop_ik', ()):
                 # the seed's single-wield IK (Bungie's SMG: the Chief's left hand gripping the
                 # weapon's left_hand marker) dropped -- the Spiker is one-handed (boot 5)
