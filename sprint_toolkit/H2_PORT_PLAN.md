@@ -834,3 +834,38 @@ and it and the smoke draw in first person too; the long flash itself is left out
 block insert) and the port has no muzzle_brake marker. byte_edits gained `before` / `after` anchors (an emitter's
 functions repeat across emitters). Final checks (built 05b): refs OWN, 21 own sounds / 0 BORROW, volume #104
 headroom 3.03, resident; 4b: list 2 weapon / damage 0, projectile 7 = index-pairing rows checked BY NAME.
+
+## S1: what the Flamethrower taught (2026-10-21/23, parallel with A3, DONE)
+
+The Halo 1 Flamethrower is a complete Halo 2 port: `ports_h2/flamethrower.py` (status 'done'), tested
+in game, CLASSIC, in 26 boots on 05a (Chief) and 06b (Arbiter), Armed `--armed all --share 1.0` on 06b
+-- every item confirmed by the user. Residency: palette entry in all 13 levels; ships with the
+batched rebuild. PORTING "Halo 2: the Flamethrower, S1" is the recipe.
+
+**Step 4a (user): source Halo 1** (Halo 2 has no turret-held 3P weapon; Halo 3's is a turret),
+**yardstick the Plasma Rifle** (the only native heat weapon), damage group `burning`, donor the SMG
+clone + heat fields, the Dervish RE-POSED from the Chief's Halo 1 frames. **Balanced, set with the
+user after boots 11-16**: the ratio kept except the heat (recalibrated so held fire overheats at Halo
+1's 3.6 s -- the ratio's 0.135 / 1.25 never overheated before the 50-shot tank ran dry), damage x the
+same margin (x1.111), fuel 2 a shot (the PR has no magazine: Halo 1 raw), speed Halo 1's 3.6 (the
+ratio's 1.0 left the flame hovering at the gun), the overheated cool-down the ratio's 0.513.
+
+**A Halo 1 source works on the AR's route** (Halo 1's FP arms ARE Halo 2's masterchief): kind 'h1'
+readers in geometry / textures / fp_anims / reticle. Observations, each a tool option (opt-in):
+1. Halo 1 strips: flip the EVEN triangles -- the inverse drew the gun INSIDE-OUT for 7 boots
+   (single quads culled, details only from inside). Count faces against their normals first.
+2. A flame on a projectile = an attached EFFECT (Bungie's rocket_exhaust, local looping particles,
+   smoke disabled), location `root` on a model-less projectile, growth by `emitter age` + a type-2
+   transition; Halo 2's function type 1 is constant (function_edits for type 2).
+3. Weapon attachments draw at the WORLD model's markers in first person: an FP-only detail = FP
+   geometry (cards on two_add_env_illum).
+4. Hits play the MATERIAL EFFECTS tag (response effect slots are 'DO NOT USE'); attached
+   projectiles play no impact -> `detonation effect (ground)`; burn damage = detonation damage.
+5. Bungie's meter shader: fill order in the meter map's alpha, shape in the alpha map; the OFF part
+   draws faintly. Illum colours often sit in animation functions.
+6. The BR HUD clone's weak-spot / headshot widgets need switching off for a non-headshot weapon.
+7. AI ranges = the weapon's effective reach (flame 4.7 wu; the PR stand-in fired from 13).
+8. Shared-record writes must be committed at once; proofs now hold BOTH kit locks (spk8 reverted a
+   catalog write); catalog entries with user rows stay reproducible (value_overrides / extra_rows).
+Final checks: refs OWN (melee shared by design), every sound OWN / 0 BORROW, resident in all 13,
+5b in reports/h2_flamethrower_5b.txt, check 10 (FP flash = the rocket's flame sprite).

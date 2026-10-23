@@ -3739,6 +3739,64 @@ flip / a float, tool's export names what moved) and seed the per-tag cache; any 
 chunk, a longer string id) shifts every later cached offset of that tag -- re-derive them and prove
 the zero fields by a test write and back.
 
+### Halo 2: the Flamethrower, S1 (2026-10-21/23) -- a HALO 1 source
+
+The whole weapon is `ports_h2/flamethrower.py`; what it taught is H2_PORT_PLAN.md "S1". The AR's run
+order with a Halo 1 reader on every step (kind 'h1'), plus (every addition opt-in by config key):
+
+    h2_port_geometry   kind h1 (h1_convert: gbxmodel -> JMS, root_identity, #permutation digit
+                       materials); digit_spread (pair apart / shifted / down), fp_cards +
+                       world_cards (crossed cards: the pilot flame), world_extra_markers
+    h2_port_textures   kind h1 (h1_decode); alpha_from, flat_bump, mask_from, sprite, tint after
+                       sprite; gradient (... , 'alpha': a meter's fill order), alpha_window
+    h2_port_weapon     {'class'} wiring (set_class), append_attachments, byte_edits {fields,
+                       before / after + within}, function_edits (a function of another LENGTH),
+                       string_id_renames / string_id_fills, field-named fills
+    h2_port_numbers    pin anchors for fields reading 0;   h2_port_hud_widgets (a widget turned
+                       into another);   make_port_catalog_h2: value_overrides {value, note} +
+                       extra_rows (a catalog entry with user-set rows stays reproducible)
+    h2_tagref          set_class, append_attachment, fill_reference(field=, class-less records)
+    h2_stringid        fill_empty(after=), rename tries every pairing of ONE ambiguous run
+
+**HALO 1 GEOMETRY.** Halo 1 strips start CLOCKWISE for Halo 2: flip the EVEN triangles. Boots 1-7 had
+the odd ones flipped -- every face against its vertex normals, the gun drawn INSIDE-OUT: single quads
+(the fuel screen, the heat bar) culled whatever their shaders, details seen only from inside, the gun
+dark. Check: count faces whose geometric normal disagrees with their vertex normals (FP: 0 of 2166).
+
+**HALO 2 EFFECTS ON A PROJECTILE.** A contrail and a light volume are what a PR bolt LOOKS like; the
+flame is an attached EFFECT (the contrail slot's class changed): Bungie's rocket_exhaust -- its
+rocket_flame systems are LOCAL looping particles riding the rocket; its world-space smoke switched
+off (particle-system flags +8 'disabled for debugging', which Bungie ships set). A model-less
+projectile has no markers: the effect's location must be `root`. Emitter functions start with four
+2-byte enums (input / range / output modifier / its input): size growing with the flame = input
+`emitter age` (4) and a type-2 TRANSITION (+4 = the value at age 0). Function type 1 is CONSTANT (it
+ignores its input): a colour that follows an input needs type 2 (36 bytes) -- function_edits.
+
+**WEAPON ATTACHMENTS DRAW AT THE WORLD MODEL'S MARKERS, even in first person** (the plasma pistol's
+charge glow works because its world muzzle is near the view). A first-person-only detail (Halo 1's
+pilot flame) = FP geometry: crossed cards on two_add_env_illum (the template Bungie's FP glow parts
+use -- none draws one_add_illum), a periodic COLOUR function (0x20) for the flicker.
+
+**HITS.** A material response's own effect slots are 'DO NOT USE (OLD effect)': a hit plays the
+projectile's MATERIAL EFFECTS tag. Attached projectiles play no impact -- `detonation effect (ground)`
+leaves the scorch when a stuck flame burns out. Halo 2 puts bodies on default_material with the
+ground (attach = stick to enemies AND the ground). A decal on Bungie's double-multiply layer needs a
+Bungie-style bitmap (Halo 1's char with partial alpha never drew). Halo 1's burn damage over time =
+every flame's DETONATION (`explosion`, radius 0.4): the projectile's `detonation damage` and
+`attached detonation damage`.
+
+**METER SHADERS.** Bungie's PR gauge keeps the FILL ORDER in the meter map's ALPHA (white RGB) and the
+SHAPE in the alpha map; its OFF part draws at 0.5-0.67 opacity (meter_off_opacity). Illum shaders'
+colour often lives in an ANIMATION function, not the const colour.
+
+**THE BR HUD CLONE** shows the BR's weak-spot / headshot indicators inside the crosshair (widgets 13
+/ 12): a weapon without headshots switches them off ([N] extra flags = the [Y] ones).
+
+**BALANCED** is the catalog's rows (every test map plays them): a value the yardstick lacks (fuel on a
+magazine-less PR) is the source's raw; a user-recalibrated row carries its note and lives in the
+config (`value_overrides` / `extra_rows`), so `make_port_catalog_h2 --write` reproduces it. AI ranges
+= the weapon's effective reach (here 3.6 wu/s x 1.3 s = 4.7 wu).
+
 ---
 
 ## Halo Reach
