@@ -182,18 +182,19 @@ PORT = {
                     # the lit tank window, the lights), on Bungie's lit PR template
                     (H1FT + r'\bitmaps\flamethrower', 'flamethrower_illum', SMG + r'\bitmaps\smg',
                      ('mask_from', H1FT + r'\bitmaps\flamethrower multipurpose', 1), None),
-                    # the gun's HEAT BAR (boot 1: Bungie's PR gauge art showed as a brown block on Halo
-                    # 1's quad): Halo 1's own red bar as the meter's colour, and a REVEAL ramp over the
-                    # rows the quad samples (0.466-0.966: Halo 1 scrolled the texture)
-                    (H1FT + r'\bitmaps\flamethrower_heat_display', 'flamethrower_heat_meter',
-                     r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_heat_gauge', 'color', None),
+                    # the gun's HEAT BAR. Boot 23 (Armed: 'the heat display does not fill'): Bungie's PR
+                    # gauge keeps its FILL ORDER in the METER map's alpha (white RGB; a ramp along the
+                    # gauge) and its SHAPE in the alpha map -- boots 1-22 had the two the other way round
+                    # (Halo 1's red bar as the meter map: the heat compared against its colour). Now the
+                    # meter map = a ramp over the rows the quad samples (0.466 at its bottom -> 0.966 at
+                    # its top: fills bottom-up), the alpha map = Halo 1's bar (its shape); red (step 3)
+                    (None, 'flamethrower_heat_meter',
+                     r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_heat_gauge',
+                     ('gradient', 'v', False, (0.466, 0.966), 'alpha'), (32, 128)),
                     # (boot 3's flame_sprite -- Halo 1's `burning flame` sprite 4 as the contrail's
                     # texture -- left with the contrail in boot 4: a particle needs a SPRITES bitmap)
-                    (None, 'flamethrower_heat_alpha',
-                     r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_heat_gauge_alpha',
-                     # (boot 9 reversed this ramp: 'still starts filled, now top to bottom' -- the
-                     # fill direction was right; the 'full' look is the gauge's OFF part, step 3)
-                     ('gradient', 'v', True, (0.466, 0.966)), (32, 128)),
+                    (H1FT + r'\bitmaps\flamethrower_heat_display', 'flamethrower_heat_alpha',
+                     r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_heat_gauge_alpha', 'color', None),
                     # the FP PILOT card (boot 8): Halo 1's `burning flame` sprite 4, its grey tinted
                     # Halo 1's pilot blue, on the seed of the shader that draws it (additive: black = clear)
                     (r'effects\particles\flash\bitmaps\burning flame', 'flamethrower_pilot_flame',
@@ -498,6 +499,9 @@ PORT = {
             # filled' (boots 8-10); Halo 1 shows only the heat -> 0
             (FT + r'\shaders\flamethrower_heat_display.shader', '03000a000000003f83c02a3f',
              '03000a000000000000000000'),
+            # the heat bar RED at every heat (Halo 1's bar; the PR fades green -> red): its on-colour
+            # transition's cool end, slot 0 BGRA 00 ff 00 -> 00 00 ff
+            (FT + r'\shaders\flamethrower_heat_display.shader', '0220030000ff0000', '022003000000ff00'),
             (FX + r'\flamethrower_pilot.effect', '01200000ffffffff0000803f00000000ffffffff',
              '01200000ff9040ff0000803f00000000ff9040ff'),
         ],
@@ -681,6 +685,13 @@ PORT = {
              {'anchor': ('damage lower bound', -28)}),
             (FT + r'\damage_effects\flame_burn.damage_effect', 'AOE core radius', '', 0, 0, 0.1,
              {'anchor': ('damage lower bound', -4)}),
+            # the HUD (the BR's clone) drew the BR's WEAK-SPOT / HEADSHOT indicators inside the crosshair
+            # on vulnerable targets (Armed test: 'another symbol appears within the crosshair'): a
+            # flamethrower has neither -- each widget's [N] condition = its own [Y] one (never shown).
+            # (A HUD rebuild -- meter / plate / reticle / scope steps -- needs this step after it)
+            (r'ui\hud\flamethrower.new_hud_definition', '[N] extra flags', 'bitmap widgets', 13, 0, 25),
+            (r'ui\hud\flamethrower.new_hud_definition', '[N] extra flags', 'bitmap widgets', 12, 0, 4,
+             {'anchor': ('[Y] extra flags', 8)}),
             # the scorch's size: Halo 1's flame-thrower char (radius 0.15-0.3; the grenade char's 1-1.25)
             (FX + r'\flame_char.decal', 'radius', '', 0, 0, [0.15, 0.3]),
             # the screen's speculars (the shotgun sight's were green): grey

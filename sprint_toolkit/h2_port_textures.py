@@ -212,7 +212,10 @@ def h3_main(t, argv):
                 if len(mode) > 2 and mode[2]:
                     ramp = 255.0 - ramp
                 g = np.tile(ramp[:, None], (1, w)) if mode[1] == 'v' else np.tile(ramp[None, :], (h, 1))
-                out = Image.fromarray(np.dstack([g] * 4).astype(np.uint8), 'RGBA')
+                # a 5th value 'alpha': white RGB, the ramp in ALPHA only -- the layout of Bungie's PR
+                # gauge meter_map (its fill order in alpha; the colour is the shader's), boot 23
+                rgb = np.full_like(g, 255.0) if len(mode) > 4 and mode[4] == 'alpha' else g
+                out = Image.fromarray(np.dstack([rgb, rgb, rgb, g]).astype(np.uint8), 'RGBA')
                 out.save(os.path.join(data, name + '.tif'), compression=None)
                 print('   %-40s %s gradient %dx%d -> %s.tif' % ('(none)', mode[1], w, h, name))
                 continue
