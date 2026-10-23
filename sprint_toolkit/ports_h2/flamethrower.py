@@ -252,6 +252,12 @@ PORT = {
                    (r'objects\weapons\rifle\plasma_rifle\projectiles\plasma_rifle_bolt.projectile',
                     FT + r'\projectiles\flame.projectile'),
                    (r'globals\flaming_death.damage_effect', FT + r'\damage_effects\flame.damage_effect'),
+                   # THE BURN (boot 22, user: 'Halo 1 does have burn damage over time'): every Halo 1
+                   # flame DETONATES when its timer ends -- 1.3 s in flight, or 1.3-8 s after it sticks --
+                   # and its `flame detonation` effect applies `explosion` (radius 0.4, 10 / 12-13, flame):
+                   # a target covered in stuck flames takes a staggered string of burns. Its own damage
+                   # effect, a clone of the flame's (category flame, 'causes flaming death')
+                   (r'globals\flaming_death.damage_effect', FT + r'\damage_effects\flame_burn.damage_effect'),
                    (SMG + r'\damage_effects\smg_trigger.damage_effect', FT + r'\damage_effects\flamethrower_trigger.damage_effect'),
                    (r'effects\objects\weapons\rifle\smg\fire_bullet.effect', FX + r'\flamethrower_fire.effect'),
                    (r'effects\objects\weapons\rifle\smg\smg_muzzle_flash.light', FX + r'\flamethrower_muzzle_flash.light'),
@@ -403,6 +409,11 @@ PORT = {
                          ('soft_terrain_snow', 1), ('tough', 1), ('tough_floodflesh', 1),
                          ('tough_inorganic', 1), ('tough_inorganic_plastic', 1),
                          ('tough_inorganic_rubber', 1)) for _k in range(n)] + [
+            # the BURN: the flame's detonation (in flight at its timer's end, or stuck) applies it
+            (FT + r'\projectiles\flame.projectile', 'jpt!', '', FT + r'\damage_effects\flame_burn',
+             "a stuck flame's burn (Halo 1's explosion)", {'field': 'attached detonation damage'}),
+            (FT + r'\projectiles\flame.projectile', 'jpt!', '', FT + r'\damage_effects\flame_burn',
+             "a flame burning out (Halo 1's explosion)", {'field': 'detonation damage'}),
             # a flame that STUCK leaves its scorch when it burns out (boot 21: attached flames play no
             # impact): the projectile's empty `detonation effect (ground)` -> the char impact
             (FT + r'\projectiles\flame.projectile', 'effe', '', FX + r'\flame_char_impact',
@@ -652,6 +663,16 @@ PORT = {
             # animation's `type`: type / input / range / time period)
             (FT + r'\shaders\flamethrower_pilot.shader', 'time period', 'animation properties', 0, 0, 0.15,
              {'anchor': ('type', 12)}),
+            # the BURN's numbers: Halo 1's `explosion` (10 / 12-13, radius 0.4, core 0.1) through the
+            # Plasma Rifle ratio (lower x0.6, upper x0.769: the flame's own 4a ratio); 'causes flaming
+            # death' as the flame (flags nth 1); radius / core pinned before `damage lower bound`
+            (FT + r'\damage_effects\flame_burn.damage_effect', 'damage lower bound', '', 0, 0, 6.0),
+            (FT + r'\damage_effects\flame_burn.damage_effect', 'damage upper bound', '', 0, 0, [9.230769, 10.0]),
+            (FT + r'\damage_effects\flame_burn.damage_effect', 'flags', '', 0, 1, 128, {'anchor': ('damage lower bound', -8)}),
+            (FT + r'\damage_effects\flame_burn.damage_effect', 'radius', '', 0, 0, [0.4, 0.4],
+             {'anchor': ('damage lower bound', -28)}),
+            (FT + r'\damage_effects\flame_burn.damage_effect', 'AOE core radius', '', 0, 0, 0.1,
+             {'anchor': ('damage lower bound', -4)}),
             # the scorch's size: Halo 1's flame-thrower char (radius 0.15-0.3; the grenade char's 1-1.25)
             (FX + r'\flame_char.decal', 'radius', '', 0, 0, [0.15, 0.3]),
             # the screen's speculars (the shotgun sight's were green): grey
