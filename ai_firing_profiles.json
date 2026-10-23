@@ -3677,6 +3677,154 @@
     "port_dps": 550.0,
     "balanced_port_dps": 158.0
    }
+  },
+  "weapons\\flamethrower\\flamethrower": {
+   "source": "Halo 3 ai\\generic objects\\weapons\\turret\\flamethrower\\flamethrower (weapon properties #40, firing pattern #39) over weapons\\shotgun\\shotgun carriers (always characters\\floodcombat elite\\floodcombat elite shotgun); STOCK Halo 1 weapon, no Halo 1 character spawns with it",
+   "fields": {
+    "0x74": [
+     "<f",
+     4.5,
+     "Maximum Firing Distance"
+    ],
+    "0x7C": [
+     "<f",
+     0.004363323096185923,
+     "Projectile Error"
+    ],
+    "0x80": [
+     "<f",
+     0.0,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     0.2,
+     "First Burst Delay Time Max"
+    ],
+    "0x94": [
+     "<f",
+     0.20000000298023224,
+     "Death Fire-Wildly Chance"
+    ],
+    "0x98": [
+     "<f",
+     0.5,
+     "Death Fire-Wildly Time"
+    ],
+    "0x9C": [
+     "<f",
+     1.0,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     3.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     0.75,
+     "Target Tracking"
+    ],
+    "0xC0": [
+     "<f",
+     0.75,
+     "Target Leading"
+    ],
+    "0xCC": [
+     "<f",
+     0.17999999690800905,
+     "Burst Origin Radius"
+    ],
+    "0xD0": [
+     "<f",
+     0.13089969754219055,
+     "Burst Origin Angle"
+    ],
+    "0xD4": [
+     "<f",
+     0.15500000584870577,
+     "Burst Return Length"
+    ],
+    "0xD8": [
+     "<f",
+     0.20750000281259418,
+     "Burst Return Length Max"
+    ],
+    "0xDC": [
+     "<f",
+     0.0872664600610733,
+     "Burst Return Angle"
+    ],
+    "0xE0": [
+     "<f",
+     0.5,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     0.699999988079071,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     1.0250000059604645,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     1.425000011920929,
+     "Burst Separation Max"
+    ],
+    "0x1D8": [
+     "<f",
+     0.5,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.8999999761581421,
+     "Drop Weapon Loaded Max"
+    ],
+    "0x1E0": [
+     "<h",
+     100,
+     "Drop Weapon Ammo"
+    ],
+    "0x1E2": [
+     "<h",
+     150,
+     "Drop Weapon Ammo Max"
+    ],
+    "0x78": [
+     "<f",
+     12.0,
+     "Rate Of Fire"
+    ],
+    "0x168": [
+     "<f",
+     0.75,
+     "Berserk Firing Range"
+    ],
+    "0x16C": [
+     "<f",
+     2.75,
+     "Berserk Firing Range Max"
+    ],
+    "0xC4": [
+     "<f",
+     0.05919117647058823,
+     "Weapon Damage Modifier"
+    ]
+   },
+   "donor_weapon": "weapons\\shotgun\\shotgun",
+   "donor_variant": "characters\\floodcombat elite\\floodcombat elite shotgun",
+   "species_skill": true,
+   "wdm_rule": {
+    "base": 0.15,
+    "yardstick_dps": 322.0,
+    "port_dps": 816.0
+   }
   }
  },
  "Halo 2": {

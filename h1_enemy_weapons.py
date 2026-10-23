@@ -631,11 +631,14 @@ def fire_anim(weapon):
 ACTOR_FLAG_BITS = {'always_charge_in_attacking_mode': 0x01000000,
                    'crouch_when_in_line_of_fire': 0x40000000,
                    'avoid_friends_line_of_fire': 0x80000000}
+# the same for a STOCK weapon no Halo 1 character spawns with (its firing profile in
+# ai_firing_profiles.json): the flamethrower closes in like the Scattershot (2026-10-23)
+STOCK_ACTOR_FLAGS = {BS.join(('weapons', 'flamethrower', 'flamethrower')): ('always_charge_in_attacking_mode',)}
 
 
 def port_actor_flags(weapon):
     if weapon in STOCK_HANDS:
-        return 0
+        return sum(ACTOR_FLAG_BITS[f] for f in STOCK_ACTOR_FLAGS.get(weapon, ()))
     try:
         import weapon_ports
         port = next((p for p in weapon_ports.ports_for(GAME) if weapon_ports.weap_path(p) == weapon), None)
