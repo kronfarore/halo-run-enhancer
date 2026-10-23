@@ -978,7 +978,100 @@ PORT = {
                        FT + r'\damage_effects\flame')],
         'shared': [('jpt!', r'objects\weapons\damage_effects\strike_melee')],
         'value_overrides': {'Air Damage Range': 100.0, 'Air Damage Range Max': 100.0,
-                            'Water Damage Range': 100.0, 'Water Damage Range Max': 100.0},
+                            'Water Damage Range': 100.0, 'Water Damage Range Max': 100.0,
+                            # boots 11-26, set WITH THE USER (each row's note says why): the Plasma Rifle
+                            # ratio kept, the heat recalibrated to Halo 1's 3.6 s overheat, the speed Halo 1's
+                            **{'Initial Velocity': {'value': 3.6,
+                                                    'note': "user 2026-10-22 (boot 16 video: the ratio's 1.0 wu/s left the flame "
+                                                            "hovering at the gun, ~1.3 wu reach): Halo 1's 3.6 (~4.7 wu in its "
+                                                            '1.3 s); the one speed row off the Plasma Rifle ratio'},
+                               'Rounds Per Shot': {'value': 2,
+                                                   'note': "the Plasma Rifle has no magazine -> no ratio: Halo 1's raw 2 a shot "
+                                                           "(step 4a's rule; user boot 11: 'Balanced doesn't consume ammo')"},
+                               'Heat Generated Per Round': {'value': 0.15,
+                                                            'note': 'user 2026-10-22 (boots 13-14): Balanced stays the Plasma '
+                                                                    'Rifle ratio, the heat gain recalibrated so held fire '
+                                                                    "overheats at Halo 1's 3.6 s (~shot 37, before the 50-shot "
+                                                                    'tank runs dry; heat loss 1.25/s counted per shot at the '
+                                                                    "effective 10.14 shots/s that boot 2 measured on Halo 1's "
+                                                                    'numbers): 0.135 -> 0.150; the damage raised by the same '
+                                                                    'margin x1.1111'}}},
+        # rows the 4a table has no source for (the flame and burn damage effects, the overheated
+        # cool-down), appended as written -- make_port_catalog_h2 --write reproduces the entry
+        'extra_rows': [{'class': 'jpt!',
+                        'tag': 'objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame',
+                        'field': 'Damage Lower Bound',
+                        'block': None,
+                        'value': 12.0,
+                        'card': 'Projectile Damage',
+                        'original': 18.0,
+                        'note': 'user 2026-10-22 (boots 13-14): Balanced stays the Plasma Rifle ratio, the heat gain '
+                                "recalibrated so held fire overheats at Halo 1's 3.6 s (~shot 37, before the 50-shot "
+                                'tank runs dry; heat loss 1.25/s counted per shot at the effective 10.14 shots/s that '
+                                "boot 2 measured on Halo 1's numbers): 0.135 -> 0.150; the damage raised by the same "
+                                'margin x1.1111'},
+                       {'class': 'jpt!',
+                        'tag': 'objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame',
+                        'field': 'Damage Upper Bound',
+                        'block': None,
+                        'value': 17.094,
+                        'card': 'Projectile Damage',
+                        'original': 20.0,
+                        'note': 'user 2026-10-22 (boots 13-14): Balanced stays the Plasma Rifle ratio, the heat gain '
+                                "recalibrated so held fire overheats at Halo 1's 3.6 s (~shot 37, before the 50-shot "
+                                'tank runs dry; heat loss 1.25/s counted per shot at the effective 10.14 shots/s that '
+                                "boot 2 measured on Halo 1's numbers): 0.135 -> 0.150; the damage raised by the same "
+                                'margin x1.1111'},
+                       {'class': 'jpt!',
+                        'tag': 'objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame',
+                        'field': 'Damage Upper Bound Max',
+                        'block': None,
+                        'value': 19.6581,
+                        'card': 'Projectile Damage',
+                        'original': 23.0,
+                        'note': 'user 2026-10-22 (boots 13-14): Balanced stays the Plasma Rifle ratio, the heat gain '
+                                "recalibrated so held fire overheats at Halo 1's 3.6 s (~shot 37, before the 50-shot "
+                                'tank runs dry; heat loss 1.25/s counted per shot at the effective 10.14 shots/s that '
+                                "boot 2 measured on Halo 1's numbers): 0.135 -> 0.150; the damage raised by the same "
+                                'margin x1.1111'},
+                       {'class': 'jpt!',
+                        'tag': 'objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame_burn',
+                        'field': 'Damage Lower Bound',
+                        'block': None,
+                        'value': 6.6667,
+                        'card': 'Projectile Damage',
+                        'original': 10.0,
+                        'note': "user 2026-10-23 (boot 22): Halo 1's burn -- every flame detonates (1.3 s in flight, "
+                                '1.3-8 s stuck) with `explosion` 10 / 12-13; the Plasma Rifle ratio (x0.6 / x0.769) and '
+                                "the flame's balance margin x1.1111"},
+                       {'class': 'jpt!',
+                        'tag': 'objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame_burn',
+                        'field': 'Damage Upper Bound',
+                        'block': None,
+                        'value': 10.2564,
+                        'card': 'Projectile Damage',
+                        'original': 12.0,
+                        'note': "user 2026-10-23 (boot 22): Halo 1's burn -- every flame detonates (1.3 s in flight, "
+                                '1.3-8 s stuck) with `explosion` 10 / 12-13; the Plasma Rifle ratio (x0.6 / x0.769) and '
+                                "the flame's balance margin x1.1111"},
+                       {'class': 'jpt!',
+                        'tag': 'objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame_burn',
+                        'field': 'Damage Upper Bound Max',
+                        'block': None,
+                        'value': 11.1111,
+                        'card': 'Projectile Damage',
+                        'original': 13.0,
+                        'note': "user 2026-10-23 (boot 22): Halo 1's burn -- every flame detonates (1.3 s in flight, "
+                                '1.3-8 s stuck) with `explosion` 10 / 12-13; the Plasma Rifle ratio (x0.6 / x0.769) and '
+                                "the flame's balance margin x1.1111"},
+                       {'class': 'weap',
+                        'tag': 'objects\\weapons\\support_low\\flamethrower\\flamethrower',
+                        'field': 'Overheated Heat Loss Per Second',
+                        'block': None,
+                        'value': 0.513333,
+                        'card': 'Heat Loss',
+                        'original': 0.44,
+                        'note': "user 2026-10-23: the Plasma Rifle ratio (0.35 / 0.30) on Halo 1's 0.44"}],
         'fp_animations': r'objects\characters\*\fp\weapons\support_low\fp_flamethrower\fp_flamethrower',
         'reload_mult': None,
         'desc': ('%s carried from %s into Halo 2 with its own model, textures, sounds and its own '

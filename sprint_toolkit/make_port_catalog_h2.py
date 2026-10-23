@@ -67,6 +67,7 @@ WEAPON_TAG = SAW + B + 'saw'
 #: {source field: balanced value} a step-4a decision puts over the table's ratio (the AR,
 #: 2026-10-20: the spread by the SIBLING ratio -- Minimum Error / Error Angle / Error Angle Max)
 OVERRIDES = {}
+EXTRA = []
 DESC = ('%s carried from %s into Halo 2, built on the cut GPMG and balanced through '
         'the Assault Rifle into Halo 3 and the SMG out of it. It owns its own '
         'first-person animations, so its reload can be retimed.')
@@ -74,10 +75,11 @@ DESC = ('%s carried from %s into Halo 2, built on the cut GPMG and balanced thro
 
 def setup(key):
     """Point the module at one ports_h2 config's `catalog` section."""
-    global TABLE, PORT_TAGS, SHARED, FP_ANIMATIONS, RELOAD_MULT, WEAPON_TAG, DESC, OVERRIDES
+    global TABLE, PORT_TAGS, SHARED, FP_ANIMATIONS, RELOAD_MULT, WEAPON_TAG, DESC, OVERRIDES, EXTRA
     sys.path.insert(0, HERE)
     import ports_h2
     c = ports_h2.get(key, 'catalog')
+    EXTRA = list(c.get('extra_rows') or ())
     TABLE = os.path.join(HERE, c['table'])
     PORT_TAGS = {tuple(k): v for k, v in c['port_tags']}
     SHARED = {tuple(x) for x in c.get('shared', ())}
@@ -102,18 +104,29 @@ def main():
         if key not in PORT_TAGS:
             dropped.append((r['card'], '%s (no port tag for %s)' % (r['dst_field'], key[1])))
             continue
+        note = None
         if r['field'] in OVERRIDES:
-            r = dict(r, balanced=OVERRIDES[r['field']])
+            # a value, or {'value': v, 'note': why} (the Flamethrower's user-recalibrated rows)
+            ov = OVERRIDES[r['field']]
+            if isinstance(ov, dict):
+                note = ov.get('note')
+                ov = ov['value']
+            r = dict(r, balanced=ov)
         row = {'class': key[0], 'tag': PORT_TAGS[key], 'field': r['dst_field'],
                'block': r.get('dst_block'),
                'value': round(float(r['balanced']), 6) if isinstance(r['balanced'], float)
                         else r['balanced'],
                'card': r['card'], 'original': r.get('original')}
+        if note:
+            row['note'] = note
         if r.get('dst_nth'):
             row['nth'] = r['dst_nth']
         if r.get('dst_index'):
             row['index'] = r['dst_index']
         rows.append(row)
+    # `extra_rows`: whole rows the table has no source for, appended as given (the Flamethrower's
+    # damage effects and its overheated cool-down, set with the user)
+    rows.extend(dict(r) for r in EXTRA)
 
     # DERIVED (2026-10-05): Halo 2 keeps Rounds Total Maximum = Rounds Inventory Maximum +
     # Rounds Loaded Maximum (the Magazine card writes the inventory and DERIVES the total,
