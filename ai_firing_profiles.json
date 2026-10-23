@@ -4002,18 +4002,32 @@
    "balanced_rule": "WDM x 0.84 (BALANCED_BASELINE Halo 2 damage)"
   },
   "objects\\weapons\\support_low\\flamethrower\\flamethrower": {
-   "source": "Halo 2 objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle (same game: no source entry, Halo 1 has no ai\\generic: the yardstick's own entry, max firing range 13 < 16)",
+   "source": "Halo 2 objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle (same game: no source entry, Halo 1 has no ai\\generic: the yardstick's own entry, its ranges cut to the flame's 4.7 wu reach)",
    "donor_weapon": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
    "weapon": "objects\\weapons\\support_low\\flamethrower\\flamethrower",
-   "props": {},
+   "props": {
+    "Maximum Firing Range": 4.699999809265137,
+    "Normal Combat Range": 1.5,
+    "Normal Combat Range Max": 3.5,
+    "Timid Combat Range": 3.0,
+    "Timid Combat Range Max": 4.5,
+    "Aggressive Combat Range": 1.0,
+    "Aggressive Combat Range Max": 2.5
+   },
    "patterns": [
     {},
     {}
    ],
-   "set": [],
+   "set": [
+    "Maximum Firing Range=4.7",
+    "Normal Combat Range=1.5",
+    "Normal Combat Range Max=3.5",
+    "Aggressive Combat Range=1.0",
+    "Aggressive Combat Range Max=2.5",
+    "Timid Combat Range=3.0",
+    "Timid Combat Range Max=4.5"
+   ],
    "donor_only": [
-    "Aggressive Combat Range",
-    "Aggressive Combat Range Max",
     "Ballistic Firing Bounds",
     "Ballistic Firing Bounds Max",
     "Ballistic Fraction Bounds",
@@ -4039,14 +4053,11 @@
     "Legendary Accuracy Bounds",
     "Legendary Accuracy Bounds Max",
     "Legendary Accuracy Time",
-    "Maximum Firing Range",
     "Maximum Special Target Distance",
     "Minimum Firing Range",
     "Normal Accuracy Bounds",
     "Normal Accuracy Bounds Max",
     "Normal Accuracy Time",
-    "Normal Combat Range",
-    "Normal Combat Range Max",
     "Special Damage Modifier",
     "Special Projectile Error",
     "Special-Fire Chance",
@@ -4056,8 +4067,6 @@
     "Super-Ballistic Range",
     "Surprise Delay Time",
     "Surprise Fire-Wildly Time",
-    "Timid Combat Range",
-    "Timid Combat Range Max",
     "Weapons Flags"
    ],
    "not_copied": [],

@@ -86,8 +86,16 @@ PORT = {
     # flamethrower there), not ai\generic -- so a Halo 2 STAND-IN: the Plasma Rifle's own entry (the
     # yardstick; Halo 2's automatic close-range heat weapon), unchanged -- its maximum firing range 13
     # sits inside the flame's 16, normal combat range 3-7. `ai_firing_profile.py --h2-port flamethrower`
+    # ARMED TEST (2026-10-23, user: 'check their firing range and balance it to the effective range --
+    # for the flamethrower, how far the projectiles last'): the flame reaches 3.6 wu/s x 1.3 s = 4.7 wu
+    # (default AND balanced: both fly at 3.6); the PR's entry fired from 13 wu, its combat range 3-7 --
+    # out of reach. Every range now inside the flame's reach
     'firing_profile': {'donor_weapon': r'objects\weapons\rifle\plasma_rifle\plasma_rifle',
-                       'why': "Halo 1 has no ai\\generic: the yardstick's own entry, max firing range 13 < 16"},
+                       'why': "Halo 1 has no ai\\generic: the yardstick's own entry, its ranges cut to the flame's 4.7 wu reach",
+                       'set': ['Maximum Firing Range=4.7',
+                               'Normal Combat Range=1.5', 'Normal Combat Range Max=3.5',
+                               'Aggressive Combat Range=1.0', 'Aggressive Combat Range Max=2.5',
+                               'Timid Combat Range=3.0', 'Timid Combat Range Max=4.5']},
     # step 1 -- h2_port_geometry.py kind 'h1': the Halo 1 gbxmodels on their OWN skeleton (gun / ammo /
     # cover in first person) -- Halo 1's own FP animations drive them (H2_PORT_PLAN 0.4: Halo 1's FP
     # arms ARE Halo 2's masterchief; the reader checked on the cyborg arms: 37/37 nodes = Bungie's
