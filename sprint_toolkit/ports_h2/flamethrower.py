@@ -190,7 +190,10 @@ PORT = {
                     # its top: fills bottom-up), the alpha map = Halo 1's bar (its shape); red (step 3)
                     (None, 'flamethrower_heat_meter',
                      r'objects\weapons\rifle\plasma_rifle\bitmaps\plasma_rifle_heat_gauge',
-                     ('gradient', 'v', False, (0.466, 0.966), 'alpha'), (32, 128)),
+                     # boot 25 ('filled well before overheat'): with the shape cut at 0.89 the ramp over
+                     # 0.466-0.966 filled the visible bar at 85% heat -> the ramp ends at 0.912: full at
+                     # 95% ((0.89 - 0.466) / (0.912 - 0.466))
+                     ('gradient', 'v', False, (0.466, 0.912), 'alpha'), (32, 128)),
                     # (boot 3's flame_sprite -- Halo 1's `burning flame` sprite 4 as the contrail's
                     # texture -- left with the contrail in boot 4: a particle needs a SPRITES bitmap)
                     # boot 24 ('goes a bit above the display border'): the quad is taller than the painted
