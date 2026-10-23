@@ -2104,6 +2104,11 @@ def teach_cyborg(write):
                     labels.append(new)
                     added.append('%s/%s %s<-%s' % (u.label, wc.name, new, donor))
     print('cyborg: %d label(s) taught: %s' % (len(added), ', '.join(added)))
+    # STOCK holds replaced by a copy of another label (h1_flamethrower_level.py): the
+    # flamethrower's mesh is levelled, so the cyborg's own `ft` poses -- tilted to
+    # straighten Bungie's 55-degree mesh -- would point it at the ground
+    import h1_flamethrower_level
+    h1_flamethrower_level.copy_holds(t.data.tagdata, 'cyborg')
     for w in WEAPONS.values():
         if w.get('melee_blocks_fire'):
             third_person_melee_as_fp(t.data.tagdata, w)
