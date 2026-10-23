@@ -9756,6 +9756,36 @@
      "card": "Projectile Damage",
      "original": 23.0,
      "note": "user 2026-10-22 (boots 13-14): Balanced stays the Plasma Rifle ratio, the heat gain recalibrated so held fire overheats at Halo 1's 3.6 s (~shot 37, before the 50-shot tank runs dry; heat loss 1.25/s counted per shot at the effective 10.14 shots/s that boot 2 measured on Halo 1's numbers): 0.135 -> 0.150; the damage raised by the same margin x1.1111"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\support_low\flamethrower\\damage_effects\flame_burn",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 6.6667,
+     "card": "Projectile Damage",
+     "original": 10.0,
+     "note": "user 2026-10-23 (boot 22): Halo 1's burn -- every flame detonates (1.3 s in flight, 1.3-8 s stuck) with `explosion` 10 / 12-13; the Plasma Rifle ratio (x0.6 / x0.769) and the flame's balance margin x1.1111"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\support_low\flamethrower\\damage_effects\flame_burn",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 10.2564,
+     "card": "Projectile Damage",
+     "original": 12.0,
+     "note": "user 2026-10-23 (boot 22): Halo 1's burn -- every flame detonates (1.3 s in flight, 1.3-8 s stuck) with `explosion` 10 / 12-13; the Plasma Rifle ratio (x0.6 / x0.769) and the flame's balance margin x1.1111"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\support_low\flamethrower\\damage_effects\flame_burn",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 11.1111,
+     "card": "Projectile Damage",
+     "original": 13.0,
+     "note": "user 2026-10-23 (boot 22): Halo 1's burn -- every flame detonates (1.3 s in flight, 1.3-8 s stuck) with `explosion` 10 / 12-13; the Plasma Rifle ratio (x0.6 / x0.769) and the flame's balance margin x1.1111"
     }
    ],
    "fp_animations": "objects\\characters\\*\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower"
