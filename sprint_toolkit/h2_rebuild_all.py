@@ -17,9 +17,11 @@ A level that fails to build or check is NOT shipped; the others still are.
 
 WEAPON PORTS (H2_PORT_PLAN.md, 2026-10-20): the whole run holds the H2 kit lock; a port whose
 ports_h2 config is not 'done' is NEUTRALISED in a SHIPPING build (its palette entry renamed to a
-stock weapon for the build, the weapons resource put back after -- h2_port_residency.neutralise),
-so an in-progress port never ships; --no-ship builds keep every port. Each built level reports how
-many done ports are resident (their weapon tags in the map); a done port missing fails the level.
+stock weapon for the build in the weapons resource AND the scenario's own palette copy; any other
+kit reference -- the AI resource, ai\generic -- becomes a same-length stock path; all put back
+after -- h2_port_residency.neutralise / neutralise_refs), so an in-progress port never ships;
+--no-ship builds keep every port. Each built level reports how many done ports are resident (their weapon tags in
+the map); a done port missing fails the level, and so does a not-done port still in a shipping build.
 
     python h2_rebuild_all.py                    all levels but 01b
     python h2_rebuild_all.py --maps 03a,03b     some of them (short or full names)
@@ -88,32 +90,57 @@ def check(path, shipping=True):
     want = [(k, h2_port_residency.weapon_path(p)) for k, p in ports_h2.all_ports()
             if p.get('status') == 'done' or not shipping]
     missing = [k for k, w in want if w not in weaps]
+    leaked = [w.split(chr(92))[-1] for w in busy_ports() if w in weaps] if shipping else []
     note = 'ability pickups %s, markers %s, SAW %s, ports %d/%d resident' % (
         'yes' if camo else 'NO', '+'.join(x[-1] for x in markers) or 'none',
         'yes' if saw else 'no', len(want) - len(missing), len(want))
     problem = None if camo else 'no ab_camo0/1 pickups -- the ability plumbing did not land'
     if missing and not problem:
         problem = 'port(s) not resident: %s' % ', '.join(missing)
+    if leaked and not problem:
+        problem = ('not-done port(s) still built in: %s -- some tag other than the weapons '
+                   'palettes references them' % ', '.join(leaked))
     return note, problem
 
 
-def neutralise_busy(level):
-    """Rename every not-done port's palette entry for a SHIPPING build. Returns the resource's
-    original bytes (to put back) or None when there was nothing to do."""
-    busy = [h2_port_residency.weapon_path(p) for _k, p in ports_h2.all_ports()
+def busy_ports():
+    return [h2_port_residency.weapon_path(p) for _k, p in ports_h2.all_ports()
             if p.get('status') != 'done']
-    res = h2_port_residency.resource(level)
-    if not busy or not os.path.exists(res):
-        return None
-    original = open(res, 'rb').read()
-    data = bytearray(original)
-    gone = h2_port_residency.neutralise(data, busy)
-    if not gone:
-        return None
-    open(res, 'wb').write(bytes(data))
-    print('  left out of the shipping build (not done): %s'
-          % ', '.join(p.split(chr(92))[-1] for _i, p in gone))
-    return original
+
+
+def neutralise_busy(level):
+    """Rename every not-done port's palette entry for a SHIPPING build -- in the weapons resource
+    AND in the scenario's own copy of the palette (tool loads every tag that copy names before
+    stomping it, so a port left there is built in anyway: h2_port_residency.weapon_palette).
+    Returns {path: original bytes} to put back ({} when there was nothing to do)."""
+    busy = busy_ports()
+    keep, gone, stuck = {}, set(), set()
+    R = h2_port_residency
+    files = ([(R.resource(level), False), (R.scenario(level), True)]
+             + [(f, None) for f in R.ai_resources(level) + [R.GENERIC_CHARACTER]])
+    for path, in_scenario in files:
+        if not busy or not os.path.exists(path):
+            continue
+        original = open(path, 'rb').read()
+        data = bytearray(original)
+        hit = ([p for _i, p in R.neutralise(data, busy, in_scenario=in_scenario)]
+               if in_scenario is not None else [])
+        # any other reference (AI resource weapon list, ai\generic's weapon properties):
+        # a same-length stock stand-in; one with none is left for check() to refuse
+        more, left = R.neutralise_refs(data, busy)
+        hit += more
+        stuck.update(left)
+        if hit:
+            open(path, 'wb').write(bytes(data))
+            keep[path] = original
+            gone.update(hit)
+    if gone:
+        print('  left out of the shipping build (not done): %s'
+              % ', '.join(sorted(p.split(chr(92))[-1] for p in gone)))
+    if stuck:
+        print('  could NOT neutralise (no same-length stock stand-in): %s'
+              % ', '.join(sorted(p.split(chr(92))[-1] for p in stuck)))
+    return keep
 
 
 def build(level, logdir):
@@ -174,12 +201,12 @@ def _main():
     for level in levels:
         t0 = time.time()
         print('\n[%s] building (tag, scripts, cache)...' % level, flush=True)
-        keep = None if a.no_ship else neutralise_busy(level)
+        keep = {} if a.no_ship else neutralise_busy(level)
         try:
             built, msg = build(level, a.logdir)
         finally:
-            if keep is not None:
-                open(h2_port_residency.resource(level), 'wb').write(keep)
+            for path, original in keep.items():
+                open(path, 'wb').write(original)
         if not built:
             print('  FAILED', msg)
             failed.append(level)

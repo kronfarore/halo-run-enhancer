@@ -231,13 +231,15 @@ def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.
                 arm_profiles(d, CHEAT_WEAPON, profiles, CHEAT_ROUNDS, slot=SECONDARY)
                 print('   cheat: + %s as the secondary (%d / %d rounds)'
                       % (CHEAT_WEAPON.rsplit(chr(92), 1)[-1], CHEAT_ROUNDS[0], CHEAT_ROUNDS[1]))
+            busy = [R.weapon_path(q) for k, q in ports_h2.all_ports()
+                    if k != key and q.get('status') != 'done']
+            # the scenario's own palette copy too: tool builds in every tag it names
+            gone_scn = R.neutralise(d, busy, in_scenario=True)
             open(scn, 'wb').write(bytes(d))
             print('%s: %s' % (level, ', '.join('%s -> %s' % (n, w.split('\\')[-1]) for n, w in got)))
             r = bytearray(open(res, 'rb').read())
             idx, new = R.add_palette(r, weapon)
-            busy = [R.weapon_path(q) for k, q in ports_h2.all_ports()
-                    if k != key and q.get('status') != 'done']
-            gone = R.neutralise(r, busy)
+            gone = R.neutralise(r, busy) + gone_scn
             open(res, 'wb').write(bytes(r))
             print('   palette: the port #%d%s; neutralised %s' % (idx, ' (added)' if new else '',
                   ', '.join(x[1].split('\\')[-1] for x in gone) or 'nothing (no other port in progress)'))

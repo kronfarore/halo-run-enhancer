@@ -54,14 +54,29 @@ def levels_arg(s):
     return [short.get(x.strip(), x.strip()) for x in s.split(',') if x.strip()]
 
 
-def weapon_palette(data):
-    """(chunk offset, [paths]) of a weapons resource's palette."""
-    n = L.root_count(data, W_PALETTE)
-    hits = [c for c, _v, cnt, es in L.chunks(data)
-            if cnt == n and es == W_PES and bytes(data[c + 16:c + 20]) == b'paew']
+def scenario(level):
+    return os.path.join(TAGS, 'scenarios', 'solo', level, level + '.scenario')
+
+
+def weapon_palette(data, in_scenario=False):
+    """(chunk offset, [paths]) of a weapons resource's palette -- or, `in_scenario`, of the
+    SCENARIO's own copy of it. tool stomps that copy with the resource at build time, but it
+    LOADS every tag the copy names first: a weapon left there is built in anyway (the old SAW
+    port's entry put the reworked SAW into all 13 shipping builds, 2026-10-24). The scenario's
+    copy is the one chunk of 0x30-byte elements that are all weap tagrefs (all 13 levels)."""
+    if in_scenario:
+        hits = [(c, cnt) for c, _v, cnt, es in L.chunks(data)
+                if es == W_PES and cnt and all(bytes(data[c + 16 + i * W_PES:c + 20 + i * W_PES])
+                                               == b'paew' for i in range(cnt))]
+        if not hits:
+            return None, []
+    else:
+        n = L.root_count(data, W_PALETTE)
+        hits = [(c, cnt) for c, _v, cnt, es in L.chunks(data)
+                if cnt == n and es == W_PES and bytes(data[c + 16:c + 20]) == b'paew']
     if len(hits) != 1:
         raise SystemExit('weapons palette: %d candidate chunks' % len(hits))
-    c = hits[0]
+    c, n = hits[0]
     pool, out = c + 16 + n * W_PES, []
     for i in range(n):
         ln = struct.unpack_from('<I', data, c + 16 + i * W_PES + 8)[0]
@@ -86,10 +101,10 @@ def add_palette(data, path):
     return idx, True
 
 
-def set_palette_path(data, index, new):
+def set_palette_path(data, index, new, in_scenario=False):
     """Rename palette entry `index` in place (its tagref length + its pooled string). Indices,
     placements and names are untouched -- used to NEUTRALISE a port's entry for a build."""
-    c, have = weapon_palette(data)
+    c, have = weapon_palette(data, in_scenario)
     n = len(have)
     pool = c + 16 + n * W_PES
     for i in range(index):
@@ -99,22 +114,80 @@ def set_palette_path(data, index, new):
         raise SystemExit('palette entry %d is empty' % index)
     struct.pack_into('<I', data, c + 16 + index * W_PES + 8, len(new))
     data[pool:pool + len(old) + 1] = new.encode('latin-1') + b'\0'
-    _c, after = weapon_palette(data)
+    _c, after = weapon_palette(data, in_scenario)
     assert after[index] == new and after[:index] == have[:index] and after[index + 1:] == have[index + 1:]
 
 
-def neutralise(data, paths, stand_in=None):
+def neutralise(data, paths, stand_in=None, in_scenario=False):
     """Every palette entry naming one of `paths` renamed to `stand_in` (default: the palette's
     first entry, a stock weapon the level carries anyway) -> those weapons are not built in.
-    Returns [(index, old path)] so a caller can report it."""
-    _c, have = weapon_palette(data)
-    stand_in = stand_in or have[0]
+    `in_scenario`: the scenario tag's own copy of the palette -- neutralise BOTH, or the
+    weapon is still built in (weapon_palette). Returns [(index, old path)] for a report."""
+    _c, have = weapon_palette(data, in_scenario)
+    if not have:
+        return []
+    stand_in = stand_in or next(p for p in have if p and p not in paths)
     done = []
     for i, p in enumerate(have):
         if p in paths:
-            set_palette_path(data, i, stand_in)
+            set_palette_path(data, i, stand_in, in_scenario)
             done.append((i, p))
     return done
+
+
+# Stock Halo 2 weapons, for neutralise_refs' same-length stand-ins.
+STOCK_WEAPONS = (
+    'objects\\weapons\\rifle\\smg\\smg',
+    'objects\\weapons\\rifle\\shotgun\\shotgun',
+    'objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle',
+    'objects\\weapons\\rifle\\battle_rifle\\battle_rifle',
+    'objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle',
+    'objects\\weapons\\rifle\\smg_silenced\\smg_silenced',
+    'objects\\weapons\\rifle\\beam_rifle\\beam_rifle',
+    'objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine',
+    'objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle',
+    'objects\\weapons\\pistol\\magnum\\magnum',
+    'objects\\weapons\\pistol\\needler\\needler',
+    'objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol',
+    'objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher',
+    'objects\\weapons\\support_low\\brute_shot\\brute_shot',
+    'objects\\weapons\\support_high\\flak_cannon\\flak_cannon',
+    'objects\\weapons\\melee\\energy_blade\\energy_blade',
+)
+_PATH_CHARS = set(b'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_\\ -.')
+
+
+def neutralise_refs(data, paths):
+    """Any OTHER pooled reference to one of `paths` (a level's AI resource weapon list,
+    ai\\generic.character's weapon properties -- tool builds in every tag a kit tag names)
+    rewritten in place to a stock weapon path of the SAME length, so no tagref length field has
+    to move. Returns ([renamed old paths], [paths with no same-length stand-in]): the caller
+    must not ship a build that still names the latter (h2_rebuild_all's check fails it)."""
+    done, stuck = [], []
+    for p in paths:
+        old = p.encode('latin-1') + b'\0'
+        new = next((s for s in STOCK_WEAPONS if len(s) == len(p)), None)
+        i, hit = data.find(old), False
+        while i >= 0:
+            if i == 0 or data[i - 1] not in _PATH_CHARS:      # a whole pooled string
+                if new is None:
+                    stuck.append(p)
+                    break
+                data[i:i + len(old)] = new.encode('latin-1') + b'\0'
+                hit = True
+            i = data.find(old, i + 1)
+        if hit:
+            done.append(p)
+    return done, sorted(set(stuck))
+
+
+def ai_resources(level):
+    d = os.path.join(TAGS, 'scenarios', 'solo', level, 'ai_resources')
+    return [os.path.join(d, f) for f in sorted(os.listdir(d))
+            if f.endswith('.scenario_ai_resource')] if os.path.isdir(d) else []
+
+
+GENERIC_CHARACTER = os.path.join(TAGS, 'ai', 'generic.character')
 
 
 def weapon_path(p):
