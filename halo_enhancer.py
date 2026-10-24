@@ -9756,15 +9756,15 @@ class MagnitudeEditorDialog(QDialog):
                 # edit raising part-way through. Say so, or "old -> 32767" reads odd.
                 hint += "   (held at the field's limit)"
             tag = f"   [{r['tag']}]" if r.get('tag') else ""
-            lines.append(f"  OK    {r['effect']}: {r.get('field', '')}  "
+            lines.append(f"  OK    {r.get('effect', '?')}: {r.get('field', '')}  "
                          f"{_val(r, 'old')} -> {_val(r, 'new')}{tag}{hint}")
         for r in skipped:
             tag = f"   [{r['tag']}]" if r.get('tag') else ""
             why = r.get('reason') or r.get('new') or 'no change needed'
-            lines.append(f"  SKIP  {r['effect']}: {r.get('field', '')}  ({why}){tag}")
+            lines.append(f"  SKIP  {r.get('effect', '?')}: {r.get('field', '')}  ({why}){tag}")
         for r in failed:
             tag = f"   [{r['tag']}]" if r.get('tag') else ""
-            lines.append(f"  FAIL  {r['effect']}: {r.get('field')}  ({r.get('reason')}){tag}")
+            lines.append(f"  FAIL  {r.get('effect', '?')}: {r.get('field')}  ({r.get('reason')}){tag}")
         self.results.setPlainText("\n".join(lines))
 
     @staticmethod

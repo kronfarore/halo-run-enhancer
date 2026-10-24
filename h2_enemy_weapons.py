@@ -689,4 +689,6 @@ def apply(m, hp, spec, registry=None, salt=None):
     if done.get('Grunt'):
         rows += grunt_rates(m, hp, sorted(done['Grunt']))
     rows += species_skill(m, hp, done)
+    for r in rows:              # the patch log's results view names every row by its effect
+        r.setdefault('effect', 'enemy weapons')
     return rows
