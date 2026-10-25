@@ -2776,6 +2776,10 @@ class ModifierDatabase:
             # Offered only for a weapon that can zoom: innately in this game, or because
             # the run already holds a Zoom pick for it (Zoom Time, user 2026-10-07)
             'requires_zoom': mod_data.get('requires_zoom'),
+            # Offered only once the run holds a pick of the named card for the same weapon
+            # (any variant: 'Projectiles Per Shot (Charged)' counts) -- Distribution Function
+            # behind Projectiles Per Shot (user, 2026-10-25)
+            'requires_pick': mod_data.get('requires_pick'),
             # An Options gate. `requires_config` names a CONFIG key (and may be
             # per-game, resolved like `tag`); `requires_config_in` optionally lists the
             # values that count as on, for a setting that is a choice rather than a
@@ -3918,6 +3922,15 @@ class ModifierDatabase:
         held = (getattr(self, 'zoom_picks_fn', None) or (lambda: ()))()
         return m['weapon'] in held or self.resolve_weapon(m['weapon']) in held
 
+    def _pick_ok(self, m):
+        """`requires_pick`: the run holds a pick of that card (or a variant of it) for this
+        weapon -- any earlier round, either player, a Weapon Identity x2 half included."""
+        need = m.get('requires_pick')
+        if not need or not m.get('weapon'):
+            return True
+        held = (getattr(self, 'card_picks_fn', None) or (lambda _n: ()))(need)
+        return m['weapon'] in held or self.resolve_weapon(m['weapon']) in held
+
     def filter_blacklisted(self, mods, blacklist, game=None):
         drop = (() if CONFIG.get('starting_vitality_cards')
                 else set(self.SUPERSEDED_VITALITY_CARDS))
@@ -3935,6 +3948,7 @@ class ModifierDatabase:
                 and (m.get('name') not in drop)
                 and self._weapon_fielded(m, game, fielded)
                 and self._zoom_ok(m, game)
+                and self._pick_ok(m)
                 # Enemies the game no longer fields, whose tags nonetheless resolve:
                 # the Flood from ODST on, and the Elites from Halo 3 on. Both are
                 # excluded at patch time too — this is the offer half of the pair.
@@ -14559,6 +14573,8 @@ class HaloGUI(QMainWindow):
         self.db.current_mission_fn = lambda: getattr(self.run_state, 'mission_id', None)
         # weapons the run holds a Zoom pick for (gates Zoom Time: requires_zoom)
         self.db.zoom_picks_fn = self._zoom_picks
+        # weapons the run holds a pick of a named card for (requires_pick)
+        self.db.card_picks_fn = self._card_picks
         self.loaded_run_path = None   # set when a run is loaded; steers the save default
         self.shared_run_path = None   # this run's file in the shared folder, re-used
         self.enhancer = RunEnhancer(self.db, self.run_state)
@@ -16925,6 +16941,22 @@ class HaloGUI(QMainWindow):
         if mags:
             data['magnitudes'] = mags
         return data
+
+    def _card_picks(self, name):
+        """Weapons with a pick of card `name` (or a variant, 'name (...)') anywhere in the
+        run; like _zoom_picks, an Identity round's inverted half does not count."""
+        out = set()
+        for rd in getattr(self.run_state, 'rounds', None) or ():
+            mods = [(rd.get(pk) or {}).get('mod') for pk in ('player1', 'player2')]
+            mods += [((rd.get(pk) or {}).get('identity') or {}).get('up')
+                     for pk in ('player1', 'player2')]
+            for m in mods:
+                if not isinstance(m, dict) or not m.get('weapon'):
+                    continue
+                n = str(m.get('name') or '')
+                if n == name or n.startswith(name + ' ('):
+                    out.add(m['weapon'])
+        return out
 
     def _zoom_picks(self):
         """Weapons with a Zoom card picked anywhere in the run. A Weapon Identity

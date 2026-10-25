@@ -1178,6 +1178,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 1", "Halo 3", "Halo Reach", "Halo 4", "Halo 2"],
@@ -1528,6 +1529,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"tag": {"Halo 1": "weap weapons\\pistol\\pistol", "Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag", "Halo Reach": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 4": "weap objects\\weapons\\pistol\\storm_magnum\\storm_magnum"},
@@ -1920,6 +1922,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"tag": { "Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve" },
@@ -2362,6 +2365,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"tag": {"Halo 1": "weap weapons\\plasma rifle\\plasma rifle", "Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle", "Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle", "Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red", "Halo Reach": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"},
@@ -2737,6 +2741,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"tag": { "Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler" },
@@ -3156,6 +3161,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"tag": {"Halo 1": "weap weapons\\sniper rifle\\sniper rifle", "Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo Reach": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle"},
@@ -3453,6 +3459,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"tag": {"Halo 1": "weap weapons\\rocket launcher\\rocket launcher", "Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo Reach": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo 4": "weap objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher"},
@@ -4090,6 +4097,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo 1"],
@@ -4382,6 +4390,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": "Halo 2",
@@ -4685,6 +4694,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"],
@@ -4974,6 +4984,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 2", "Halo 3", "Halo 1"],
@@ -5291,6 +5302,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"],
@@ -5591,6 +5603,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"],
@@ -5899,6 +5912,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 1"],
@@ -6224,6 +6238,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"],
@@ -6514,6 +6529,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.\n\nUPGRADE MIRROR. This card is not offered on its own -- `upgrade_inherits_base` means the Sentinel Beam's card of the same name is what gets drafted, and this entry exists so `upgrade_twin_tag` can find the tag to patch alongside it. Measured against the ordinary beam, the eliminator is the same weapon: the projectile is identical in all 62 fields, the weapon differs only in Heat and Age Generated Per Round (0.040 vs 0.045, 0.0030 vs 0.0035), and the damage effect only in damage (2.0 vs 3.0).",
 					"game": "Halo 2",
@@ -7660,6 +7676,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 1", "Halo 2"],
@@ -7941,6 +7958,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4", "Halo 1"],
@@ -8507,6 +8525,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 2"],
@@ -9438,6 +9457,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo Reach", "Halo 4", "Halo 1"],
@@ -9742,6 +9762,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo Reach", "Halo 4", "Halo 1"],
@@ -10082,6 +10103,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo Reach", "Halo 4", "Halo 1"],
@@ -10420,6 +10442,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo Reach", "Halo 1"],
@@ -10810,6 +10833,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo Reach", "Halo 1"],
@@ -11097,6 +11121,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo Reach", "Halo 1"],
@@ -11469,6 +11494,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo Reach", "Halo 1"],
@@ -11856,6 +11882,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo Reach"],
@@ -12091,6 +12118,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 4", "Halo 1"],
@@ -12419,6 +12447,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 4", "Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
@@ -13229,6 +13258,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 4", "Halo 1"],
@@ -13521,6 +13551,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 4", "Halo 1"],
@@ -13889,6 +13920,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 4", "Halo 1"],
@@ -14225,6 +14257,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 4", "Halo 1"],
@@ -14548,6 +14581,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 4"],
@@ -14800,6 +14834,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 4", "Halo 1"],
@@ -15083,6 +15118,7 @@
 					]
 				},
 				"Distribution Function": {
+					"requires_pick": "Projectiles Per Shot",
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 4", "Halo 1"],
