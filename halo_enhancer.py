@@ -451,7 +451,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'odst_all_starting_profiles', 'odst_ai_equipment_drops',
                'odst_escort_buff', 'odst_equipment_all_insertions',
                'odst_profiles_by_insertion', 'carry_magnitudes_across_games',
-               'other_chance', 'other_weights', 'other_hero_enabled',
+               'other_chance', 'other_weights', 'other_hero_enabled', 'armed_max_share',
                'other_exhaust_enabled', 'other_skull_enabled', 'other_ally_enabled',
                'other_bane_enabled', 'identity_other_card',
                'skull_duration_value', 'skull_duration_multiply',
@@ -1280,6 +1280,8 @@ CONFIG = {
     # hero here, every skull already active), simply drops out of the roll and the
     # remaining weights share it out.
     "other_chance": 0.35,
+    # Armed cards together take at most this share of an enemy-card draw (user, 2026-10-25)
+    "armed_max_share": 0.25,
     # Hero 4 / Exhaust 3 / Ally 2 are the user's chosen defaults. Skull stays at 1:
     # a skull is a whole-map rule that lasts the REST OF THE RUN, so it should be
     # the rarest of the four.
@@ -2326,23 +2328,58 @@ def active_skull_names(run_state):
     return names
 
 
-def sample_distinct(pool, n):
+def sample_distinct(pool, n, weights=None):
     """n different cards from `pool`, a card listed twice (an Armed card of a weapon the
     players hold, h1_armed_all_weapons) being twice as likely -- random.sample would hand
     out both copies as two picks. Fewer distinct cards than n: drawn with replacement,
-    like before."""
+    like before. `weights` (one per pool entry, armed_capped_weights) scale each entry."""
     if not pool:
         return [None] * n
+    w = weights if weights and any(weights) else None
+
+    def one():
+        return random.choices(pool, weights=w, k=1)[0] if w else random.choice(pool)
     distinct = {id(c): c for c in pool}
     if len(distinct) < n:
-        return [random.choice(pool) for _ in range(n)]
+        return [one() for _ in range(n)]
     out, seen = [], set()
     while len(out) < n:
-        c = random.choice(pool)
+        c = one()
         if id(c) not in seen:
             seen.add(id(c))
             out.append(c)
     return out
+
+
+def is_armed_card(card):
+    return bool(card) and bool(card.get('synth')) and str(card.get('name', '')).startswith('Armed: ')
+
+
+def armed_capped_weights(pool, share=None):
+    """Draw weights for an enemy pool so all its Armed cards TOGETHER take at most `share`
+    of a draw (Options -> Card rolls, 'armed_max_share', default 25%). Armed cards are one
+    per armed species x weapon, each as likely as an ordinary card, so with 'every weapon'
+    on they crowded the normal cards out (2026-10-24 co-op). Below the cap nothing changes;
+    a held weapon's card keeps its extra copies, so it stays more likely WITHIN the share."""
+    if share is None:
+        share = float(CONFIG.get('armed_max_share', 0.25))
+    armed = [is_armed_card(c) for c in pool]
+    n_arm = sum(armed)
+    n_norm = len(pool) - n_arm
+    if not n_arm or not n_norm or share >= 1.0 or n_arm <= share * len(pool):
+        return [1.0] * len(pool)
+    k = 0.0 if share <= 0 else share * n_norm / ((1.0 - share) * n_arm)
+    return [k if a else 1.0 for a in armed]
+
+
+def choose_enemy_card(pool):
+    """One enemy card from `pool` with the Armed share capped (armed_capped_weights)."""
+    if not pool:
+        return None
+    w = armed_capped_weights(pool)
+    if not any(w):
+        w = None
+    return random.choices(pool, weights=w, k=1)[0] if w else random.choice(pool)
 
 
 def active_run_mods(run_state):
@@ -11391,6 +11428,20 @@ class OptionsDialog(QDialog):
             "slot: a level with a story boss still rolls Others.")
         rform.addRow("Other-card chance:", self.other_chance)
 
+        self.armed_max_share = QDoubleSpinBox()
+        self.armed_max_share.setRange(0.0, 100.0)
+        self.armed_max_share.setSingleStep(5.0)
+        self.armed_max_share.setDecimals(0)
+        self.armed_max_share.setSuffix(" %")
+        self.armed_max_share.setValue(float(CONFIG.get('armed_max_share', 0.25)) * 100.0)
+        self.armed_max_share.setToolTip(
+            "The most an enemy card draw can go to 'Armed: <weapon>' cards, all of them "
+            "together. There is one Armed card per armed enemy type and weapon, so without "
+            "a cap they crowd the normal enemy cards out.\n\nBelow the cap nothing "
+            "changes; a weapon you hold stays more likely within it. 100 % = no cap, "
+            "0 % = no Armed card in the enemy slot (Ally Marines are separate).")
+        rform.addRow("Armed cards, max share:", self.armed_max_share)
+
         # Relative weights, not probabilities: a kind that is off or has nothing left
         # to give drops out and the rest share its share.
         self.other_weight_boxes = {}
@@ -13439,6 +13490,7 @@ class OptionsDialog(QDialog):
             'odst_equipment_all_insertions': self.odst_all_ins_cb.isChecked(),
             'odst_profiles_by_insertion': self.odst_prof_ins_cb.isChecked(),
             'other_chance': round(self.other_chance.value(), 2),
+            'armed_max_share': round(self.armed_max_share.value() / 100.0, 2),
             'other_weights': {k: round(sp.value(), 1)
                               for k, (_cb, sp) in self.other_weight_boxes.items()},
             'other_hero_enabled': self.other_weight_boxes['hero'][0].isChecked(),
@@ -17451,7 +17503,7 @@ class RunEnhancer:
                                          + [0.25] * len(marines), k=1)[0]
                     self._note_armed_offered(mod)
             elif picked == 'bane':
-                mod = copy.deepcopy(random.choice(enemy_mods))
+                mod = copy.deepcopy(choose_enemy_card(enemy_mods))
                 self._note_armed_offered(mod)
                 mod['bane'] = True
             if mod is not None:
@@ -17586,7 +17638,7 @@ class RunEnhancer:
         pairs = []
         wi = 0
         for i in range(3):
-            enemy_choice = random.choice(enemy_mods) if enemy_mods else None
+            enemy_choice = choose_enemy_card(enemy_mods)
             self._note_armed_offered(enemy_choice)
             new_weapon = None
             p1_choice = p2_choice = None
@@ -17808,7 +17860,7 @@ class RunEnhancer:
             self.db.armed_cards(mid, self._run_weapons(), game,
                                 vanished=self._vanished(), added=self._swapped_in(),
                                 offered=self._armed_offered()), bl, game)
-        enemies = sample_distinct(enemy_mods, len(slots))
+        enemies = sample_distinct(enemy_mods, len(slots), armed_capped_weights(enemy_mods))
         for c in enemies:
             self._note_armed_offered(c)
         # Option: the Other slot too, rolled exactly like a normal round's (_draw_other)
