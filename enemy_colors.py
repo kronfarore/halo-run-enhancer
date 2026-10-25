@@ -12,7 +12,8 @@ rebuilds from the baseline, so clearing an override restores the stock colour.
 Routes (all confirmed in game, 2026-09-18 -- see the halo-enemy-colors memory):
   actv    Halo 1 actor variant Change Colors (0x22C, elem 0x20; lower +0, upper +0xC)
   h1bipd  Halo 1 biped change colour permutations (0x164/0x2C -> 0x20/0x1C, colour +4 and
-          +0x10) -- ranks whose actor variant leaves the colours to the biped (Grunt minor)
+          +0x10) -- ranks whose actor variant leaves the colours to the biped (Grunt minor,
+          the Flood); every permutation of a slot moves by one delta, keeping its variety
   perm    Halo 2 / 3 / ODST / Reach biped Change Colors -> Initial Permutations, matched by
           the rank's variant name (weight +0, lower +4, upper +0x10, name +0x1C)
   tint    Halo 4 armour materials: Postprocess Definition Float Constant[0], which
@@ -192,14 +193,25 @@ def _h1_bipd_perms(m, name, slot):
 
 
 def _route_h1bipd(m, row, slots):
+    """Every permutation of the slot moves by the SAME delta -- the first permutation's
+    lower bound lands exactly on `col` -- instead of all of them becoming one flat
+    colour: the human Flood's skin slot has three permutations (white, beige, bluish,
+    upper bounds darker) and that variety is what makes a crowd of them look alive."""
     n = 0
     for name in row['targets']:
         for si, col in slots.items():
-            if max(col) < H1_NEAR_BLACK:
-                col = (H1_NEAR_BLACK,) * 3
-            for p in _h1_bipd_perms(m, name, int(si)):
-                struct.pack_into('<3f', m.data, p + 4, *col)
-                struct.pack_into('<3f', m.data, p + 0x10, *col)
+            perms = list(_h1_bipd_perms(m, name, int(si)))
+            if not perms:
+                continue
+            ref = struct.unpack_from('<3f', m.data, perms[0] + 4)
+            delta = [c - r for c, r in zip(col, ref)]
+            for p in perms:
+                for off in (4, 0x10):
+                    old = struct.unpack_from('<3f', m.data, p + off)
+                    new = [max(0.0, min(1.0, o + d)) for o, d in zip(old, delta)]
+                    if max(new) < H1_NEAR_BLACK:      # (0,0,0) reads as "no tint"
+                        new = [H1_NEAR_BLACK] * 3
+                    struct.pack_into('<3f', m.data, p + off, *new)
                 n += 1
     return n
 
@@ -431,6 +443,9 @@ def _route_armour(m, row, slots):
 # mixed build that has washed out to white wraps. (Plain modulo was considered and
 # rejected: the - steps would wrap 0 -> 253, and a very aggressive enemy would cycle
 # out of red, so the colour would stop saying how buffed it is.)
+#   PALE starts (white Flood flesh, white Halo 4 tints) are AT the wrap point: they take
+# half steps and cannot wrap until they have become a real tint (shift, gentle rule).
+# A blanket "never wrap a white start" (ffb82a2) was reverted in 0c39f19.
 DRIFT_CHANNEL = {'aggressive': 0, 'defensive': 2, 'utility': 1}          # R, B, G
 DRIFT_DEFAULTS = {'enabled': False, 'per_game': False,
                   'aggressive': [8, 3], 'defensive': [14, 5], 'utility': [14, 5],
@@ -530,20 +545,39 @@ def _steps(knobs, who, group):
     return (list(pair) + [0, 0])[:2]
 
 
-def shift(rgb8, group, up, down, times=1):
+def is_pale(hexstr):
+    """A near-white start colour (saturation < 0.15, value > 0.9): Halo 1's Flood flesh
+    (FFFFFF = no tint), Halo 4's white armour tints, the Elite stealth grey..."""
+    import colorsys
+    _h, s, v = colorsys.rgb_to_hsv(*rgb(hexstr))
+    return s < 0.15 and v > 0.9
+
+
+def shift(rgb8, group, up, down, times=1, pale=False, armed=True):
     """`times` cards of one group on an [r, g, b] colour, one at a time, with the
     white -> black wrap. The TOP is capped per card (a channel pinned at 255 is what the
     wrap reads), but the bottom is NOT: a channel pushed below 0 keeps that debt, so a
     later card of its own group pays it back before the colour moves -- the end result
     does not depend on which group came first. Clamp to 0..255 once, at the end
-    (drift does)."""
+    (drift does).
+      GENTLE rule for a `pale` start colour (is_pale): a white slot sits AT the wrap
+    point, so its first card wrapped it to black (Halo 1's human Flood, 2026-10-17 and
+    2026-10-24 co-op). It takes half-size steps (rounded up), and the wrap is `armed`
+    only once its lowest channel has dropped below 255 - 3 x the (half) + step -- it has
+    to become a real tint before washing out to white can wrap it. Returns
+    (colour, armed) when `pale`, else the colour."""
     ch = DRIFT_CHANNEL[group]
     v = list(rgb8)
+    if pale:
+        up, down = (up + 1) // 2, (down + 1) // 2
     for _ in range(times):
         v = [min(255, x + (up if c == ch else -down)) for c, x in enumerate(v)]
-        if v[ch] == 255 and up > 0 and all(x >= 255 - up for c, x in enumerate(v) if c != ch):
+        if pale and not armed and min(v) < 255 - 3 * up:
+            armed = True
+        if (armed and v[ch] == 255 and up > 0
+                and all(x >= 255 - up for c, x in enumerate(v) if c != ch)):
             v = [0, 0, 0]
-    return v
+    return (v, armed) if pale else v
 
 
 def drift(game, events, knobs=None, base=None, catalog=None):
@@ -552,7 +586,9 @@ def drift(game, events, knobs=None, base=None, catalog=None):
     as drift_counts returns them (a dict {(who, group): n} is accepted too). Slots with
     no stock colour (the '+' ones) drift only from a player pick."""
     knobs = dict(DRIFT_DEFAULTS, **(knobs or {}))
-    out = {rid: dict(sl) for rid, sl in (base or {}).items()}
+    cat = catalog if catalog is not None else load_catalog()
+    rows = cat.get(str(game).strip(), [])
+    out = migrate(base, rows)
     if isinstance(events, dict):
         events = [(w, g, n) for (w, g), n in events.items()]
     events = [(w, g, n) for w, g, n in (events or ())
@@ -560,8 +596,6 @@ def drift(game, events, knobs=None, base=None, catalog=None):
               and (knobs.get('general_enabled') if w == GENERAL else knobs.get('enabled'))]
     if not events:
         return out
-    cat = catalog if catalog is not None else load_catalog()
-    rows = cat.get(str(game).strip(), [])
     by_id = {r['id']: r for r in rows}
     plan = {}                                   # row id -> [(group, up, down, n), ...]
     for who, group, n in events:
@@ -578,8 +612,15 @@ def drift(game, events, knobs=None, base=None, catalog=None):
             if not src:
                 continue
             v = [int(src[i:i + 2], 16) for i in (0, 2, 4)]
+            # Pale is read off the START colour (stock or pick), once: same on both
+            # co-op machines, and a slot does not change rule halfway through a run.
+            pale = is_pale(src)
+            armed = not pale
             for group, up, down, n in steps:
-                v = shift(v, group, up, down, n)
+                if pale:
+                    v, armed = shift(v, group, up, down, n, pale=True, armed=armed)
+                else:
+                    v = shift(v, group, up, down, n)
             new = '%02X%02X%02X' % tuple(max(0, min(255, x)) for x in v)
             if new != src.upper():
                 out.setdefault(rid, {})[key] = new
@@ -604,6 +645,37 @@ def drift_counts(effects):
 
 
 # ----------------------------------------------------------------------------- entry
+def migrate(overrides, rows):
+    """Overrides {row id: {slot: 'RRGGBB'}} saved against an older catalogue, mapped onto
+    this one (a copy; the input is untouched):
+      `aliases`  rows folded into one because they paint the same biped (the stealth
+                 Flood Elite into the Flood Elite) -- the survivor's own pick wins;
+      `moved`    Halo 1 slots listed packed before 2026-10-25 ('0' was really slot 1 on
+                 the Flood Elite and the carrier) -- only a pick on a slot that is not
+                 editable now moves, so a pick made since stays put."""
+    out = {rid: dict(sl) for rid, sl in (overrides or {}).items()}
+    for r in rows or ():
+        for alias in r.get('aliases', ()):
+            old = out.pop(alias, None)
+            if old:
+                merged = dict(old)
+                merged.update(out.get(r['id'], {}))
+                out[r['id']] = merged
+        moved = r.get('moved')
+        sl = out.get(r['id'])
+        if moved and sl:
+            def live(k):
+                return (str(k).isdigit() and int(k) < len(r['slots'])
+                        and r['slots'][int(k)].get('editable'))
+            # picks on a live slot first: they beat an old packed pick moved onto them
+            fixed = {str(k): v for k, v in sl.items() if live(k)}
+            for k, v in sl.items():
+                if not live(k):
+                    fixed.setdefault(moved.get(str(k), str(k)), v)
+            out[r['id']] = fixed
+    return out
+
+
 def apply(m, game, overrides, catalog=None):
     """Write the overrides {row id: {slot: 'RRGGBB'}} of one game into an open map.
     Returns result rows for the patch log. Rows whose tags are not on this map are
@@ -613,6 +685,7 @@ def apply(m, game, overrides, catalog=None):
         return []
     cat = catalog if catalog is not None else load_catalog()
     rows = {r['id']: r for r in cat.get(game, [])}
+    overrides = migrate(overrides, rows.values())
     out = []
     for rid, slots in sorted(overrides.items()):
         row = rows.get(rid)

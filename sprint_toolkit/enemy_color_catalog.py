@@ -134,7 +134,16 @@ def h1_rows(out):
         route = 'actv'
         if rec['slots'] and rec['slots'][0][3] == 'bipd':
             route = 'h1bipd'
-        slots = [{'stock': lo, 'hi': hi, 'editable': True} for _si, lo, hi, _h in rec['slots']]
+        # Slots keep their real index: a biped slot with no permutations (the Flood
+        # Elite's and the carrier's slot 0 -- their colours are slot 1) is padded as
+        # not editable, so the patcher writes the slot that is drawn.
+        width = max([c[0] + 1 for c in rec['slots']] or [0])
+        slots = [{'stock': None, 'hi': None, 'editable': False} for _ in range(width)]
+        for si, lo, hi, _h in rec['slots']:
+            slots[si] = {'stock': lo, 'hi': hi, 'editable': True}
+        # Catalogues before 2026-10-25 listed the recorded slots packed (index k = the
+        # k-th slot found): settings saved then name the packed index.
+        moved = {str(k): str(c[0]) for k, c in enumerate(rec['slots']) if k != c[0]}
         if actr in seen:
             prev = seen[actr]
             tg = rec['targets'] if route == 'actv' else [rec['bipd']]
@@ -146,8 +155,31 @@ def h1_rows(out):
                      'route': route, 'slots': slots,
                      'targets': sorted(rec['targets']) if route == 'actv' else [rec['bipd']],
                      'maps': len(rec['maps'])})
+        if moved:
+            rows[-1]['moved'] = moved
         seen[actr] = rows[-1]
-    return rows
+    return merge_h1_bipd_rows(rows)
+
+
+def merge_h1_bipd_rows(rows):
+    """One row per biped on the h1bipd route. Actors that share a biped (the stealth
+    Flood Elite and the plain one; the stealth Elite and its energy-sword twin) paint
+    the SAME change colours, so two rows meant the later one silently overwrote the
+    other's colour. The survivor is the row named after the biped, else the one on most
+    maps; the others' ids become its `aliases` (old settings are folded in on patch)."""
+    by_bipd = collections.OrderedDict()
+    for r in rows:
+        if r['route'] == 'h1bipd':
+            by_bipd.setdefault(r['targets'][0], []).append(r)
+    drop = set()
+    for bipd, group in by_bipd.items():
+        if len(group) < 2:
+            continue
+        keep = min(group, key=lambda r: (r['id'] != short(bipd), -r['maps'], r['id']))
+        keep['aliases'] = sorted(r['id'] for r in group if r is not keep)
+        keep['maps'] = max(r['maps'] for r in group)
+        drop.update(id(r) for r in group if r is not keep)
+    return [r for r in rows if id(r) not in drop]
 
 
 # ----------------------------------------------------------------------------- map scans

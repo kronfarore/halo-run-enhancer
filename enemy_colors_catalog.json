@@ -38,27 +38,13 @@
    ]
   },
   {
+   "aliases": [
+    "stealth elite energy sword"
+   ],
    "enemy": "Elite",
    "id": "stealth elite",
    "label": "stealth elite",
    "maps": 4,
-   "route": "h1bipd",
-   "slots": [
-    {
-     "editable": true,
-     "hi": "909090",
-     "stock": "ADADAD"
-    }
-   ],
-   "targets": [
-    "characters\\elite\\elite special"
-   ]
-  },
-  {
-   "enemy": "Elite",
-   "id": "stealth elite energy sword",
-   "label": "stealth energy sword",
-   "maps": 3,
    "route": "h1bipd",
    "slots": [
     {
@@ -112,8 +98,16 @@
    "id": "floodcarrier",
    "label": "floodcarrier",
    "maps": 4,
+   "moved": {
+    "0": "1"
+   },
    "route": "h1bipd",
    "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
     {
      "editable": true,
      "hi": "BAC4CC",
@@ -125,29 +119,23 @@
    ]
   },
   {
+   "aliases": [
+    "floodcombat elite stealth"
+   ],
    "enemy": "Flood Combat Form",
    "id": "floodcombat elite",
    "label": "floodcombat elite",
    "maps": 5,
+   "moved": {
+    "0": "1"
+   },
    "route": "h1bipd",
    "slots": [
     {
-     "editable": true,
-     "hi": "BAC4CC",
-     "stock": "FFFFFF"
-    }
-   ],
-   "targets": [
-    "characters\\floodcombat elite\\floodcombat elite"
-   ]
-  },
-  {
-   "enemy": "Flood Combat Form",
-   "id": "floodcombat elite stealth",
-   "label": "floodcombat elite stealth",
-   "maps": 1,
-   "route": "h1bipd",
-   "slots": [
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
     {
      "editable": true,
      "hi": "BAC4CC",
@@ -199,6 +187,9 @@
    ]
   },
   {
+   "aliases": [
+    "grunt flee minor"
+   ],
    "enemy": "Grunt",
    "id": "grunt minor",
    "label": "minor",
@@ -249,23 +240,6 @@
    "targets": [
     "characters\\grunt\\grunt flee major needler",
     "characters\\grunt\\grunt flee major plasma pistol"
-   ]
-  },
-  {
-   "enemy": "Grunt",
-   "id": "grunt flee minor",
-   "label": "flee minor",
-   "maps": 1,
-   "route": "h1bipd",
-   "slots": [
-    {
-     "editable": true,
-     "hi": "D27128",
-     "stock": "DC802C"
-    }
-   ],
-   "targets": [
-    "characters\\grunt\\grunt"
    ]
   },
   {
