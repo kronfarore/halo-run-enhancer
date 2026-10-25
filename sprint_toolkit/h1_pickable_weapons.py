@@ -1797,6 +1797,19 @@ def edit_weapon(key, write):
             save(ft, path(fl['out'], '.lens_flare'), write)
             lt.data.tagdata.lens_flare.filepath = fl['out']
         save(lt, path(L['out'], '.light'), write)
+        # `attach`: a second light for the weapon ATTACHMENT (scaled by a function, alive the
+        # whole time): the own light's colour as the UPPER bound over a black lower one, as the
+        # stock muzzle flash, so scale 0 (idle) draws nothing; `own_light` stays the per-round
+        # effect light (both bounds full -- an attachment with it shines at rest)
+        if 'attach' in L:
+            A = L['attach']
+            at = copy.deepcopy(lt)
+            ad = at.data.tagdata
+            ad.shape.radius = A.get('radius', ad.shape.radius)
+            ad.effect_parameters.duration = 0.0
+            lo = ad.color.color_lower_bound
+            lo.a, lo.r, lo.g, lo.b = A.get('lower_argb', (0.0, 0.0, 0.0, 0.0))
+            save(at, path(A['out'], '.light'), write)
     if 'fire_effect' in w:
         from reclaimer.hek.defs.effe import effe_def
         F = w['fire_effect']

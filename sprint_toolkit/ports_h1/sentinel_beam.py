@@ -201,7 +201,12 @@ PORT = {
                       # test 3: still nothing to see -- gone HARD (radius x3, full alpha and
                       # brightness on both bounds), to be paddled back once it shows
                       'radius': 6.0, 'argb': (1.0, 1.0, 0.45, 0.4), 'duration': 0.1,
-                      'no_flare': True},
+                      'no_flare': True,
+                      # co-op 2026-10-24: the beam glowed red ALL THE TIME (first person and
+                      # on the ground) -- the attachment used this light, full on both bounds,
+                      # so its function's scale 0 still lit. The attachment gets its own light:
+                      # black lower bound (the stock muzzle flash's), radius near its 2.0
+                      'attach': {'out': SB + 'muzzle flash', 'radius': 2.5}},
         # Halo 1's overheat steam spawns at the plasma rifle's `vent` markers, which this
         # model lacks (test 5: no particles): own copy at `overheat`
         'overheated_effect': {'from': r'weapons\plasma rifle\effects\overheated',
@@ -216,7 +221,7 @@ PORT = {
         # over the plasma rifle's, and the empty click = the beam's own overheat (above)
         'fields': {'item_attrs.collision_sound.filepath': SBS + 'beam_drop',
                    'weap_attrs.triggers.0.firing_effects.0.empty_effect.filepath': SBS + 'beam_overheat'},
-        'attach_swap': {r'weapons\plasma rifle\muzzle flash': SB + 'muzzle light'},
+        'attach_swap': {r'weapons\plasma rifle\muzzle flash': SB + 'muzzle flash'},
         # the template's attachments sit on plasma rifle markers this model lacks
         # THE DROP (user's option B): Halo 1's Sentinel carries no droppable weapon, so its
         # death effect spawns the beam as a weapon part beside the debris. `death` is the
