@@ -204,7 +204,10 @@ def arm(m, hp, cards, salt=None):
               for e in cpal]
     sid = find_stringid(m, SHIELDLESS_VARIANT)
     friends, char_team = side_of(m, hp, cpal, lay)
-    salt = salt or os.path.basename(str(getattr(m, 'path', '') or ''))
+    # the LEVEL name, not the file name: the first patch reads '<level>.map', every later one
+    # '<level>.map.bak' -- salting with the file name re-drew every squad on the 2nd patch
+    # (2026-10-24 co-op logs: 04a 22 -> 24 units, 06a rocket launcher -> fuel rod, new code)
+    salt = salt or os.path.basename(str(getattr(m, 'path', '') or '')).split('.')[0]
     rows, missing, done = [], set(), {}
     usable, info = {}, {}
     for enemy, ws in (cards or {}).items():

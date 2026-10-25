@@ -48,6 +48,14 @@ MORPH_ANIM_MATCH = ('anim:combat:to_', 'anim:combat:from_')
 INFECT_ANIM_MATCH = ('anim:any:any:any:morph',)
 
 
+def level_salt(m):
+    """A seeded draw's salt: the LEVEL name ('03b_newmombasa'), never the file name. The first
+    patch of a level reads '<level>.map', every later one its sibling '<level>.map.bak' -- a
+    file-name salt re-drew everything on the second patch (2026-10-24 co-op logs)."""
+    p = str(getattr(m, 'path', '') or getattr(m, 'map_path', '') or '')
+    return os.path.basename(p.replace(chr(92), '/')).split('.')[0]
+
+
 def open_map(map_path, game=None):
     """Open a map with the right parser for its game: Halo 2 -> `Halo2Map`
     (second-gen), Halo 3 -> `Halo3Map` (third-gen), Reach -> `ReachMap`
@@ -2847,7 +2855,7 @@ def _apply_ladder(m, game, registry, up, down):
         pools = {}
         moves = _ts_moves(game, [(n, ec.species(u), o) for n, u, o in zip(names, units, ok)],
                           up, down, pools=pools)
-        salt = str(getattr(m, 'path', '') or '').rsplit(chr(92), 1)[-1]
+        salt = level_salt(m)
 
         def target(a, addr):
             pool = [j for j in pools.get(a, ()) if used.get(j)]
@@ -3114,7 +3122,7 @@ class _TsWeapons:
         self.units = units
 
     def bind(self, m):
-        self.salt = str(getattr(m, 'path', '') or getattr(m, 'map_path', '') or '')
+        self.salt = level_salt(m)
         tally = {}
         for u in self.units:
             c = u.get('char')
@@ -3143,7 +3151,7 @@ class _TsWeapons:
             return self.best.get(c)
         # deterministic per entry: the same map patched twice (or by the co-op
         # partner) hands every unit the same weapon
-        h = int(hashlib.sha256(('%s|%s|%s' % (self.salt.rsplit(chr(92), 1)[-1], key, c))
+        h = int(hashlib.sha256(('%s|%s|%s' % (self.salt, key, c))
                                .encode()).hexdigest()[:8], 16)
         pick = h % sum(w for _x, w in dist)
         for weap, w in dist:
