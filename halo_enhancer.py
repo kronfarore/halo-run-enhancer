@@ -1823,7 +1823,7 @@ def ability_offer_pool(db, game, run_state, player=None):
     once EITHER player owns them (see ABILITY_ONE_PER_RUN). With 'requires a gun' on
     it's gated to players who already hold a real weapon, which also keeps abilities
     out of the very first pick, when nobody is armed."""
-    if game != 'Halo 1':
+    if game not in ('Halo 1', 'Halo 2'):          # both games' levels carry the ability script
         return []
     if not (CONFIG.get('sprint_feature') and CONFIG.get('sprint_as_card')):
         return []
@@ -8598,15 +8598,19 @@ class MagnitudeEditorDialog(QDialog):
                 'spawn_instead': self._reach_spawns_weapons()}
 
     def _sprint_spec(self):
-        """Sprint config for this patch. None for non-Halo-1 games (no sprint maps
-        exist elsewhere). For Halo 1 it ALWAYS returns a spec — so a patch also turns
+        """Ability config for this patch. None outside Halo 1 and Halo 2 (no ability maps
+        exist elsewhere). For those it ALWAYS returns a spec — so a patch also turns
         sprint OFF when the feature is disabled — and the patcher no-ops on any map
         without the sprint weapon, so this is safe.
 
         `enabled_players` (a set of {0,1}) is PER PLAYER: both on "Start with Sprint",
         else just the player(s) who drafted the Sprint card (co-op). Speed/duration/
         cooldown are engine-global (shared), so the tuning cards stack for everyone."""
-        if self.game != 'Halo 1':
+        # Halo 2's 13 levels carry the same per-player ability script (ability0/1, built by
+        # h2_batch) and the patcher's _apply_sprint handles both games -- the gate here was
+        # Halo 1 only, so no Halo 2 patch ever set an ability (2026-10-24 co-op: 'no
+        # overshield on either player')
+        if self.game not in ('Halo 1', 'Halo 2'):
             return None
         feature = bool(CONFIG.get('sprint_feature'))
         # Shared tuning: fold the drafted Speed/Duration/Cooldown cards onto the
@@ -8753,6 +8757,14 @@ class MagnitudeEditorDialog(QDialog):
         # use to anyone. Drop what no mission of this game fields; a weapon the game
         # has but this LEVEL lacks still reports, which is worth knowing.
         fielded = set(db.get_game_weapons(self.game) or ())
+        # An ENABLED port is fielded too: the pools only list ports while 'ports in weapon
+        # pools' is on, so with it off a port the player already holds (Halo 1's
+        # Flamethrower carried into Halo 2) was dropped here without a word (2026-10-24 co-op)
+        try:
+            import weapon_ports
+            fielded |= {p.get('weapon') for p in weapon_ports.active_ports(self.game, CONFIG)}
+        except Exception:
+            pass
 
         def paths(names):
             out, seen = [], set()
