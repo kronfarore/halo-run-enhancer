@@ -423,6 +423,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h1_replace_first_weapons', 'h1_enemy_weapon_enabled',
                'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards', 'h1_armed_all_weapons',
                'h2_enemy_weapon_cards', 'h2_armed_all_weapons', 'h2_allies_any_weapon',
+               'h2_arbiter_flashlight',
                'h1_overheat_unzoom', 'h1_overheat_no_rezoom', 'h1_covenant_avoid_ff',
                'hunter_drop',
                'h1_melee_blocks_fire', 'h1_supercombine_count', 'h1_supercombine_players',
@@ -1051,6 +1052,9 @@ CONFIG = {
     # Allies (Marines, allied Grunts and Elites) can hold every weapon of the level, so the
     # players can trade any of them (user, 2026-10-25) -- a patch-time graph teach
     "h2_allies_any_weapon": True,
+    # The Arbiter gets the Chief's flashlight on the flashlight key (user, 2026-10-25); the
+    # rebuilt Arbiter levels carry it and every patch switches it on or off
+    "h2_arbiter_flashlight": False,
     # Options -> Patching -> Halo 1: an overheat drops the zoom, as in Halo 2-4. A
     # halo1.dll patch (sprint_toolkit/h1_overheat_unzoom.py), engine-wide: every heat
     # weapon, live in a running MCC AND in the file. Off = put back to stock.
@@ -9632,6 +9636,8 @@ class MagnitudeEditorDialog(QDialog):
                 h4_ability_visibility=CONFIG.get('h4_ability_visibility') or None,
                 h1_enemy_weapons=self._h1_enemy_weapons_spec(armed_picks),
                 h2_enemy_weapons=self._h2_enemy_weapons_spec(armed_picks),
+                h2_arbiter_flashlight=(bool(CONFIG.get('h2_arbiter_flashlight'))
+                                       if self.game == 'Halo 2' else None),
                 h1_covenant_avoid_ff=bool(CONFIG.get('h1_covenant_avoid_ff')),
                 hunter_drop=bool(CONFIG.get('hunter_drop')),
                 h1_levels=(self.parent_gui.db.h1_level_maps()
@@ -12782,6 +12788,13 @@ class OptionsDialog(QDialog):
             "Energy Blade and Brute Shot with their rifle poses (no sword melee). Applied to "
             "the map when you patch; nothing to rebuild.")
         h2form.addRow("Allies:", self.h2_allies_any_cb)
+        self.h2_arbiter_flash_cb = QCheckBox("Arbiter flashlight (instead of nothing on the key)")
+        self.h2_arbiter_flash_cb.setChecked(bool(CONFIG.get('h2_arbiter_flashlight')))
+        self.h2_arbiter_flash_cb.setToolTip(
+            "On: the Arbiter gets the Chief's flashlight on the flashlight key, on levels "
+            "rebuilt with it (the F: Halo 2 set of 2026-10-25). Keep the halo2.dll camo "
+            "patches on, or the same key also cloaks him. Applied when you patch.")
+        h2form.addRow("Arbiter:", self.h2_arbiter_flash_cb)
         self.h2_drop_limit_sp = self._dll_spin(
             'h2_drop_limit', 127, "stock (50)", " objects", 0, "no limit",
             "Bodies and dropped items count together; once this many exist the game deletes "
@@ -13617,6 +13630,7 @@ class OptionsDialog(QDialog):
             'h2_enemy_weapon_cards': self.h2_armed_cards_cb.isChecked(),
             'h2_armed_all_weapons': self.h2_armed_all_cb.isChecked(),
             'h2_allies_any_weapon': self.h2_allies_any_cb.isChecked(),
+            'h2_arbiter_flashlight': self.h2_arbiter_flash_cb.isChecked(),
             'h1_replace_first_weapons': self.h1_replace_first_cb.isChecked(),
             'h1_armed_all_weapons': self.h1_armed_all_cb.isChecked(),
             'h1_enemy_weapon_enabled': {e: cb.isChecked() for e, (cb, _c) in self.h1_enemy_rows.items()},

@@ -1452,11 +1452,41 @@ def _h2_add_respawn_profile(m, registry):
         elems = [blob[i * esize:(i + 1) * esize] for i in range(count + 1)]
         elems.insert(want, elems.pop(last))
         m.data[base:base + (count + 1) * esize] = b''.join(elems)
+    # The level's compiled scripts name starting profiles by INDEX (a constant of value
+    # type 24 holds it): moving ab_sprint from 1 to 2 would make the sprint script hand out
+    # the respawn copy -- the run's weapons -- instead of the sprint token (08b, 2026-10-25)
+    shifted = _h2_shift_profile_refs(m, scnr_base, want) if want < last else 0
     return {'effect': 'respawn profile', 'ok': True,
             'field': 'Player Starting Profile',
             'old': '%d profile(s), no respawn slot' % count,
-            'new': 'added %r at index %d (copied from profile 0)'
-                   % (_H2_RESPAWN_NAME, want)}
+            'new': 'added %r at index %d (copied from profile 0)%s'
+                   % (_H2_RESPAWN_NAME, want,
+                      '; %d script reference(s) moved up' % shifted if shifted else '')}
+
+
+#: Halo 2 Script Expressions (scnr +0x238, element 0x14: salt, opcode, value type +0x4,
+#: flags, next, string, value +0x10) -- memory halo-script-tree-editing. Value type 24 is a
+#: starting-profile constant whose value is the profile's index (08b / 03b measured).
+_H2_EXPRESSIONS, _H2_EXPR_SIZE, _H2_TYPE_STARTING_PROFILE = 0x238, 0x14, 24
+
+
+def _h2_shift_profile_refs(m, scnr_base, from_index):
+    """Every starting-profile constant in the compiled scripts at index >= from_index
+    moves up by one (a profile was inserted there). Returns how many changed."""
+    n = m.i32(scnr_base + _H2_EXPRESSIONS)
+    base = _block_base(m, scnr_base + _H2_EXPRESSIONS)
+    if not n or not base:
+        return 0
+    done = 0
+    for i in range(n):
+        e = base + i * _H2_EXPR_SIZE
+        if struct.unpack_from('<H', m.data, e + 0x4)[0] != _H2_TYPE_STARTING_PROFILE:
+            continue
+        idx = struct.unpack_from('<h', m.data, e + 0x10)[0]
+        if idx >= from_index:
+            struct.pack_into('<h', m.data, e + 0x10, idx + 1)
+            done += 1
+    return done
 
 
 # Halo 2 scnr Squads. Offsets are from the Halo2MCC scnr plugin, checked against
@@ -9746,6 +9776,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               h4_keep_loadout=False, clear_profile_equipment=False,
               clear_profile_grenades=False, spawn_grenades=None,
               h4_ability_visibility=None, h1_enemy_weapons=None, h2_enemy_weapons=None,
+              h2_arbiter_flashlight=None,
               h1_covenant_avoid_ff=False, hunter_drop=False,
               camo_after_ladder=False, fix_h2_fuel_rod=False,
               player_armour=False, no_immunities=False, h1_levels=None,
@@ -9914,6 +9945,24 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         import sys as _sys
         import h2_enemy_weapons as _ew2
         results.extend(_ew2.apply(m, _sys.modules[__name__], h2_enemy_weapons, registry))
+    if h2_arbiter_flashlight is not None and str(game).strip() == 'Halo 2':
+        # Options -> Halo 2 'Arbiter flashlight': rebuilt Arbiter levels carry the Chief's
+        # light + toggle on dervish.biped, built ON; OFF lowers the attachment count and
+        # clears the toggle (sprint_toolkit/h2_arbiter_flashlight.py). The dll camo patches
+        # keep the key from cloaking him. A map built before the kit edit says nothing.
+        import sys as _sys
+        _tk = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sprint_toolkit')
+        if _tk not in _sys.path:
+            _sys.path.insert(0, _tk)
+        ref = {'effect': 'Arbiter flashlight', 'tag': 'bipd objects\\characters\\dervish\\dervish',
+               'field': 'integrated light'}
+        try:
+            import h2_arbiter_flashlight as _af
+            line = _af.apply(m, bool(h2_arbiter_flashlight))
+            if line:
+                results.append({**ref, 'ok': True, 'new': line})
+        except Exception as e:
+            results.append({**ref, 'ok': False, 'reason': str(e)})
     if h1_covenant_avoid_ff and str(game).strip() == 'Halo 1':
         # Options -> Halo 1 'Covenant avoid friendly fire': the human actors' two
         # line-of-fire flags on the Grunt / Jackal / Elite actor tags
