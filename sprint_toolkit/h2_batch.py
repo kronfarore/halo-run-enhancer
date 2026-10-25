@@ -101,6 +101,27 @@ STUB = BEGIN + '''
 \t(unit_add_equipment (player1) ab_sprint false false))
 '''
 
+# Carried inventory (2026-10-24 co-op: Player 1 kept 03a's weapons on 03b and 04a's on
+# 04b). Not a script: the engine hands the previous mission's players over in the game
+# options (halo2.dll 'persistent-players-valid', a 16 x 0xD4 player blob serialised at
+# +8B717B), and that inventory REPLACES the starting profile the enhancer writes
+# (halo_patch._apply_starting_equipment, profiles 0 and 1). Nothing in that blob is gated
+# per level, so EVERY level resets: profile 0 is what the engine spawns into anyway, so
+# where nothing was carried in this is a no-op. Reset, not add; not garbage (that is for
+# respawns). Waits for the units, then one tick more so it lands after the engine's
+# restore. No stock level gives a player equipment that early (03a e5b_reset_player and
+# the 05a/05b teleports come later), and ability tokens only come on a flashlight press.
+RESET = '''
+; The previous mission's carried inventory replaces the starting profile; put profile 0
+; back once the players exist (h2_batch.RESET).
+(script startup ab_inventory_reset
+\t(sleep_until (> (list_count (players)) 0) 1)
+\t(sleep 1)
+\t(unit_add_equipment (player0) "%(profile)s" true false)
+\t(if (> (list_count (players)) 1)
+\t\t(unit_add_equipment (player1) "%(profile)s" true false)))
+'''
+
 # Lines that open a Run Enhancer block, current or legacy. Everything from the first
 # one to EOF is replaced; verified that on 03a/03b/04a the block is the file's tail.
 _MARKERS = (BEGIN, '; Run Enhancer', '(script static void ab_camo_spawn')
@@ -141,12 +162,22 @@ def _strip_existing(text):
         return text.rstrip() + '\n'
     tail = text[m.start():]
     defs = tail.count('(script ')
-    # Four now (camo and sprint, one each per player); two is the legacy shared form.
-    if defs > 4 or 'ab_camo_spawn' not in tail or 'ab_sprint_give' not in tail:
+    # Five now (camo and sprint, one each per player, + the inventory reset); two is the
+    # legacy shared form.
+    if defs > 5 or 'ab_camo_spawn' not in tail or 'ab_sprint_give' not in tail:
         raise SystemExit('refusing to edit this script: the text after the first Run '
                          'Enhancer marker is not just the ability scripts (found %d '
                          'script definitions). Fix it by hand.' % defs)
     return text[:m.start()].rstrip() + '\n'
+
+
+def spawn_profile(level):
+    """Profile 0's name -- the one the engine spawns into (memory halo2-h2-starting-profiles);
+    the toolkit's own ab_* profiles are always appended after it."""
+    names = L.profile_names(bytearray(open(scenario_path(level), 'rb').read()))
+    if not names or names[0].startswith('ab_'):
+        raise SystemExit('%s: no own starting profile at index 0 (%s)' % (level, names))
+    return names[0]
 
 
 def install_stub(level, verbose=True):
@@ -161,7 +192,7 @@ def install_stub(level, verbose=True):
         open(bak, 'w', encoding='latin-1').write(body)
         if verbose:
             print('    backed up -> %s' % os.path.basename(bak))
-    new = body + '\n\n' + STUB
+    new = body + '\n\n' + STUB + RESET % {'profile': spawn_profile(level)}
     if new == text:
         return True, 'already current'
     open(path, 'w', encoding='latin-1').write(new)

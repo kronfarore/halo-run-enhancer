@@ -63,6 +63,10 @@ def references(tag_path):
     subprocess.run([os.path.join(H2EK, 'tool.exe'), 'export-tag-to-xml',
                     os.path.abspath(tag_path), out_xml],
                    cwd=H2EK, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if not os.path.exists(out_xml):
+        # the probe broke the tag (tool asserted, and its popup was killed): no references,
+        # so every caller's before/after comparison rejects the candidate
+        return []
     xml = open(out_xml, encoding='utf-8', errors='replace').read()
     return [(m.group(1), m.group(2)) for m in
             re.finditer(r'<tag_reference name="[^"]*" type="([^"]*)">([^<]+)<', xml)]
@@ -256,7 +260,7 @@ def fill_reference(tag_path, cls, new_path, tries=400, field=None):
                      % (new_path, os.path.basename(tag_path)))
 
 
-def append_attachment(tag_path, cls, new_path, marker, like_cls):
+def append_attachment(tag_path, cls, new_path, marker, like_cls, primary_scale=None):
     """APPEND an attachment to an object whose attachments block already has elements (the
     Flamethrower, boot 3: its pilot flame beside the SMG clone's muzzle light; add_attachment only
     CREATES a first one). The new element is a copy of the block's element whose type is a `like_cls`
@@ -264,7 +268,9 @@ def append_attachment(tag_path, cls, new_path, marker, like_cls):
     its pooled data (path + null, then the marker -- string ids are pooled unterminated, in field
     order) follows the last element's. The chunk's count and the root struct's block count go up by
     one; the root's count field is found by trial. Kept only when tool.exe reports the old references
-    plus this one, every old field row unchanged and the new element's marker reading `marker`."""
+    plus this one, every old field row unchanged and the new element's marker reading `marker`.
+    `primary_scale` names the function that scales it (the Arbiter's flashlight lights, 2026-10-25:
+    integrated_light_power, as on masterchief.biped) -- pooled after the marker, checked the same way."""
     import h2_tagfield as tf
     original = open(tag_path, 'rb').read()
     want_cls = like_cls.encode('latin-1')[::-1]
@@ -297,6 +303,9 @@ def append_attachment(tag_path, cls, new_path, marker, like_cls):
             struct.pack_into('<I', elem, o, 0)        # every string id empty (no scale functions)
     struct.pack_into('<I', elem, sid_offs[0], len(marker) << 24)   # the marker: the first one
     pool = new_path.encode('latin-1') + b'\0' + marker.encode('latin-1')
+    if primary_scale:                                 # marker, change colour (an enum), primary scale
+        struct.pack_into('<I', elem, sid_offs[2], len(primary_scale) << 24)
+        pool += primary_scale.encode('latin-1')
     body = bytearray(original)
     body[pool_end:pool_end] = pool                    # after the old pooled data
     body[arr + n * sz:arr + n * sz] = elem            # after the old elements
@@ -317,6 +326,9 @@ def append_attachment(tag_path, cls, new_path, marker, like_cls):
             continue
         if not any(r[0] == 'attachments' and int(r[1]) == n and r[2] == 'marker' and r[4].strip() == marker
                    for r in rows):
+            continue
+        if primary_scale and not any(r[0] == 'attachments' and int(r[1]) == n and r[2] == 'primary scale'
+                                     and r[4].strip() == primary_scale for r in rows):
             continue
         print('%s: + attachment %d %s %s at marker %s (block count at 0x%X; every old field as before)'
               % (os.path.basename(tag_path), n, cls, new_path, marker, c))
