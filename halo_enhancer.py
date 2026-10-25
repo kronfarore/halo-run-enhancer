@@ -444,7 +444,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'death_penalty_scaling', 'death_penalty_per_round',
                'death_penalty_base',
                'difficulty_baseline', 'difficulty_baseline_balanced',
-               'difficulty_baseline_use_balanced',
+               'difficulty_baseline_use_balanced', 'difficulty_scaling',
+               'difficulty_scaling_pct',
                'odst_red_plasma_as_brute', 'odst_variants_as_base',
                'odst_downgrade_unupgraded', 'odst_shield_into_health',
                'odst_patch_hub', 'odst_pools_from_map',
@@ -1183,6 +1184,10 @@ CONFIG = {
     # above. Switching it off brings the set above back untouched.
     "difficulty_baseline_balanced": {g: dict(v) for g, v in BALANCED_BASELINE.items()},
     "difficulty_baseline_use_balanced": False,
+    # Scaling difficulty (opt-in): each dial above grows by this percent per level
+    # completed (run_state.levels), per game; applied on top of the baseline every patch
+    "difficulty_scaling": False,
+    "difficulty_scaling_pct": {},
     # ODST's obtainable plasma rifle is the RED tag, which Halo 2 shipped as the
     # separate Brute Plasma Rifle. With this on it is offered under that name and
     # retuned on patch to match Halo 2's version. Normal Plasma Rifle effects reach
@@ -2564,6 +2569,9 @@ GAME_SHORT = {'Halo 1': 'H1', 'Halo 2': 'H2', 'Halo 3': 'H3', 'Halo 3: ODST': 'O
 BASELINE_GAMES = ['Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4']
 BASELINE_COLS = [('vitality', 'Vitality'), ('shield', 'Shield'),
                  ('damage', 'Damage'), ('rof', 'Rate of Fire')]
+#: Scaling difficulty (opt-in, user 2026-10-25): percent added to each dial PER LEVEL
+#: completed in the run, linear (+5 % a level -> +25 % after five levels)
+DIFFICULTY_SCALING_DEFAULT = {'vitality': 5.0, 'shield': 5.0, 'damage': 5.0, 'rof': 2.0}
 
 
 def mod_game_scope(mod_data):
@@ -7241,6 +7249,17 @@ class MagnitudeEditorDialog(QDialog):
                else 'difficulty_baseline')
         cfg = (CONFIG.get(key) or {}).get(self.game) or {}
         spec = {k: float(v) for k, v in cfg.items() if v}
+        # Scaling difficulty: + pct per level completed, from the shared run state so both
+        # co-op machines patch the same values (halo_patch.apply_difficulty_baseline)
+        if CONFIG.get('difficulty_scaling'):
+            rs = getattr(self.parent_gui, 'run_state', None) if self.parent_gui else None
+            steps = len(getattr(rs, 'levels', None) or [])
+            pct = ((CONFIG.get('difficulty_scaling_pct') or {}).get(self.game)
+                   or DIFFICULTY_SCALING_DEFAULT)
+            scale = {k: float(v) for k, v in pct.items() if v}
+            if steps and scale:
+                spec['scale'] = scale
+                spec['steps'] = steps
         return spec or None
 
     def _apply_par_time(self):
@@ -10579,6 +10598,34 @@ class OptionsDialog(QDialog):
         bgrid.addWidget(reset, len(BASELINE_GAMES) + 2, 2, 1, len(BASELINE_COLS) - 1,
                         Qt.AlignRight)
         self._baseline_reset_tip()
+        # Scaling difficulty (opt-in): + % per level completed, one row per game
+        srow = len(BASELINE_GAMES) + 3
+        self.scaling_cb = QCheckBox("Scaling difficulty: raise the dials per level completed")
+        self.scaling_cb.setChecked(bool(CONFIG.get('difficulty_scaling')))
+        self.scaling_cb.setToolTip(
+            "On: every patch adds these percentages to the dials above once per level "
+            "completed in this run (Next level), linear -- +5 % a level is +25 % after "
+            "five levels. A dial left on vanilla scales from the game's own value. Read "
+            "from the run, so both co-op machines patch the same numbers.")
+        bgrid.addWidget(self.scaling_cb, srow, 0, 1, 5)
+        self.scaling_spins = {}
+        saved_pct = CONFIG.get('difficulty_scaling_pct') or {}
+        for r, game in enumerate(BASELINE_GAMES):
+            lbl = QLabel(game)
+            bgrid.addWidget(lbl, srow + 1 + r, 0)
+            vals = saved_pct.get(game) or DIFFICULTY_SCALING_DEFAULT
+            for c, (key, title) in enumerate(BASELINE_COLS):
+                sp = QDoubleSpinBox()
+                sp.setRange(0.0, 100.0)
+                sp.setSingleStep(1.0)
+                sp.setDecimals(1)
+                sp.setSuffix(" %/level")
+                sp.setValue(float(vals.get(key) or 0.0))
+                sp.setToolTip("%s — %s: percent added per level completed." % (game, title))
+                sp.setEnabled(self.scaling_cb.isChecked())
+                self.scaling_cb.toggled.connect(sp.setEnabled)
+                bgrid.addWidget(sp, srow + 1 + r, c + 1)
+                self.scaling_spins[(game, key)] = sp
         # Deferred: this reads maps, and doing it while the dialog is still being
         # built means the window never paints until it finishes.
         QTimer.singleShot(0, self._refresh_baseline_vanilla)
@@ -13557,6 +13604,10 @@ class OptionsDialog(QDialog):
                                              if self._baseline_mode == 'balanced'
                                              else self._baseline_sets['balanced']),
             'difficulty_baseline_use_balanced': self._baseline_mode == 'balanced',
+            'difficulty_scaling': self.scaling_cb.isChecked(),
+            'difficulty_scaling_pct': {g: {k: round(self.scaling_spins[(g, k)].value(), 1)
+                                           for k, _t in BASELINE_COLS}
+                                       for g in BASELINE_GAMES},
             'auto_new_equipment_abilities': self.auto_nw_abilities_cb.isChecked(),
             'auto_new_weapon_duals': self.auto_nw_duals_cb.isChecked(),
             'auto_new_weapon_upgrades': self.auto_nw_upgrades_cb.isChecked(),
