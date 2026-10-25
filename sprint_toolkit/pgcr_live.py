@@ -290,10 +290,14 @@ def read_results(pid=None):
                         'build differs, nothing filled' % mult}
             penalties = pick[2]
             secs = elapsed * TIME_SCALE
+            # the summary screen shows (and scores with) the multiplier at 2 decimals; the raw
+            # float made the Keyes score read wrong (2026-10-24 co-op)
+            mult_raw, mult = mult, round(mult, 2)
             return {
                 'ok': True, 'pid': pid, 'cached': cached,
                 'score': int(round(kills * mult + penalties)),
-                'kill_points': kills, 'time_multiplier': mult, 'penalties': penalties,
+                'kill_points': kills, 'time_multiplier': mult, 'time_multiplier_raw': mult_raw,
+                'penalties': penalties,
                 'seconds': secs, 'time': fmt_time(secs),
                 'time_raw': elapsed, 'time_banked': banked, 'time_segment': seg,
                 'time_unit': TIME_UNIT_NOTE, 'deaths': deaths,

@@ -7003,6 +7003,7 @@ class MagnitudeEditorDialog(QDialog):
         difficulty, search) scroll WITH the list, so reaching them from the bottom
         of a long run meant dragging the whole way."""
         self._scroll.verticalScrollBar().setValue(0)
+        self._scroll.horizontalScrollBar().setValue(0)
         # Restart both jump cursors, so the next press of either walks the list
         # from the top rather than from wherever it had got to.
         self._marked_idx = -1
@@ -7036,6 +7037,9 @@ class MagnitudeEditorDialog(QDialog):
                 le.setFocus()
                 le.selectAll()
                 break
+        # ensureWidgetVisible CENTRES a box wider than the viewport, which left the
+        # horizontal bar in the middle (2026-10-24 co-op): keep the list's left edge in view
+        self._scroll.horizontalScrollBar().setValue(0)
 
     @staticmethod
     def _box_of(widget):
@@ -7063,6 +7067,7 @@ class MagnitudeEditorDialog(QDialog):
         self._scroll.ensureWidgetVisible(le, 50, 60)
         le.setFocus()
         le.selectAll()
+        self._scroll.horizontalScrollBar().setValue(0)      # see _jump_to_next_marked
 
     def _clear_layout(self, layout):
         while layout.count():
@@ -7869,6 +7874,7 @@ class MagnitudeEditorDialog(QDialog):
         if lbl is not None:
             lbl.setText("%d/%d" % (idx + 1, len(matches)))
         self._scroll.ensureWidgetVisible(matches[idx], 50, 60)
+        self._scroll.horizontalScrollBar().setValue(0)      # see _jump_to_next_marked
 
     def _effect_box(self, eff):
         is_new = self._is_new(eff)
@@ -14965,10 +14971,10 @@ class HaloGUI(QMainWindow):
             self.nl_time_h.setText(str(s // 3600) if s >= 3600 else '')
             self.nl_time_m.setText('%02d' % (s % 3600 // 60))
             self.nl_time_s.setText('%02d' % (s % 60))
-            self.nl_mult.setText('%g' % rep['time_multiplier'])
+            self.nl_mult.setText('%.2f' % rep['time_multiplier'])
             self._nl_mcc_read = {k: rep.get(k) for k in (
                 'score', 'seconds', 'time_multiplier', 'kill_points', 'penalties', 'deaths')}
-            self.update_status("Read from MCC: score %s, time %s, time multiplier %g."
+            self.update_status("Read from MCC: score %s, time %s, time multiplier %.2f."
                                % (rep['score'], rep['time'], rep['time_multiplier']))
 
         QTimer.singleShot(100, poll)
@@ -15011,7 +15017,7 @@ class HaloGUI(QMainWindow):
         time_t, time_secs = self._read_time()
         mult_t = self.nl_mult.text().strip().replace(',', '.')
         try:
-            mult = float(mult_t) if mult_t else None
+            mult = round(float(mult_t), 2) if mult_t else None
         except ValueError:
             mult = None
         entry = {
