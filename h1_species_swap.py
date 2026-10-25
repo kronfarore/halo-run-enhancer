@@ -495,11 +495,16 @@ def apply(m, hp, cards, levels=None):
 # 1. An explicit count entry (infection x5 / x10, carriers x1 / x2) keeps its own
 # multiplier, times the replaced species' headcount.
 HEADCOUNT = (('flood_infection', 0.2), ('floodcarrier', 0.5), ('floodcombat', 2.0 / 3.0))
+# Counted only when the species ARRIVES (user, 2026-10-25: Hunters brought in by a card can
+# be slightly fewer): 6 Elites -> 4 Hunters, 2 -> 1; Hunters replaced by something else
+# keep their count, so 6 Hunters do not turn into 9 Elites.
+ARRIVING_HEADCOUNT = (('hunter', 1.5),)
 
 
-def headcount(name):
+def headcount(name, arriving=False):
     sp = species(name)
-    return next((w for k, w in HEADCOUNT if sp.startswith(k)), 1.0)
+    table = (ARRIVING_HEADCOUNT + HEADCOUNT) if arriving else HEADCOUNT
+    return next((w for k, w in table if sp.startswith(k)), 1.0)
 
 
 def _convert_squad(m, lv, sw, rng, s, choose):
@@ -533,7 +538,8 @@ def _convert_squad(m, lv, sw, rng, s, choose):
             struct.pack_into('<h', m.data, sq + hv.SQ_TYPE, idx)
             # an explicit count entry (infection x5 / x10, carriers) already says how many
             # stand in for one enemy; otherwise the two species' headcounts decide
-            k = headcount(src) * (mult if mult is not None else 1.0 / headcount(name_at(idx)))
+            k = headcount(src) * (mult if mult is not None
+                                  else 1.0 / headcount(name_at(idx), arriving=True))
             if abs(k - 1.0) > 1e-6:
                 for off in (SQ_NORMAL, SQ_INSANE):
                     n = _i16(m, sq + off)
