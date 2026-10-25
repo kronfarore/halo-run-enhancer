@@ -336,7 +336,7 @@ def _sorted_block(m, at, count, es, key):
     m.data[at:at + count * es] = b''.join(els)
 
 
-def teach(m, hp, enemy, weapons):
+def teach(m, hp, enemy, weapons, entry=None):
     """THE TEACH. A Halo 2 unit refuses a weapon whose class its graph lacks and spawns with its
     biped default (seen 2026-10-20: SAW Grunts -- the Grunt graph is any / missile / pistol /
     unarmed), and a mode without the class makes it drop the weapon there (fleeing Grunts and
@@ -348,7 +348,7 @@ def teach(m, hp, enemy, weapons):
     (type, class) pairs tool would have written. An approximation: the unit holds the rifle with
     the donor's poses."""
     rows = []
-    gname, donors = TEACH.get(enemy, (None, ()))
+    gname, donors = entry or TEACH.get(enemy, (None, ()))
     want = {}
     for w in weapons:
         i = weapon_info(m, hp, w)
@@ -397,6 +397,30 @@ def teach(m, hp, enemy, weapons):
         rows.append({'tag': 'jmad ' + gname, 'field': '%s teach: %s' % (enemy, '/'.join(sorted(want.values()))),
                      'ok': True, 'reason': '%d modes got the class (copy of %s), weapon list +%d'
                      % (len([j for j in jobs if j[1] == MODE_CLASSES]), ' / '.join(donors), len(wl_add))})
+    return rows
+
+
+#: ALLIES HOLD EVERY WEAPON (user, 2026-10-25: 'so we can trade them to them'): the class teach
+#: run on the ally graphs for every weapon in the level's palette, ports included. Marines lack
+#: 'sword' and 'support' (Energy Blade, Brute Shot) -> a copy of their rifle set; allied Grunts
+#: share the Grunt teach; Elites lack classes only in 'flight' -> pistol. Graphs are shared with
+#: the enemy of the same species, which only matters for weapons an Armed card hands out.
+ALLY_TEACH = {'Marine': (_G + 'marine' + chr(92) + 'marine', ('rifle', 'pistol')),
+              'Grunt': TEACH['Grunt'],
+              'Elite': (_G + 'elite' + chr(92) + 'elite', ('pistol', 'rifle'))}
+
+
+def ally_teach(m, hp):
+    """The class teach for every weapon in the level's palette on the ally graphs (ALLY_TEACH)."""
+    base = hp._scnr_base(m)
+    weapons = sorted({w for w in palette(m, hp, base) if w})
+    # mounted turrets ('fixed' class) cannot be traded: leave them out
+    weapons = [w for w in weapons if (weapon_info(m, hp, w) or {}).get('class') != 'fixed']
+    rows = []
+    for who, entry in ALLY_TEACH.items():
+        for r in teach(m, hp, who, weapons, entry=entry):
+            r['field'] = 'Ally ' + r['field']
+            rows.append(r)
     return rows
 
 
@@ -682,7 +706,8 @@ def apply(m, hp, spec, registry=None, salt=None):
     then the Balanced AI rows of switched-on ports
     (before the Grunt copies, so the Grunt entries carry the balanced values too)."""
     rows, done = arm(m, hp, (spec or {}).get('cards') or {}, salt=salt)
-    rows += balance(m, hp, registry, (spec or {}).get('balanced'))
+    if (spec or {}).get('cards'):
+        rows += balance(m, hp, registry, (spec or {}).get('balanced'))
     for enemy in sorted(TEACH):
         if done.get(enemy):
             rows += teach(m, hp, enemy, sorted(done[enemy]))
@@ -692,6 +717,8 @@ def apply(m, hp, spec, registry=None, salt=None):
     if done.get('Grunt'):
         rows += grunt_rates(m, hp, sorted(done['Grunt']))
     rows += species_skill(m, hp, done)
+    if (spec or {}).get('allies'):
+        rows += ally_teach(m, hp)
     for r in rows:              # the patch log's results view names every row by its effect
         r.setdefault('effect', 'enemy weapons')
     return rows

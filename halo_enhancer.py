@@ -422,7 +422,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h2_spawn_starting_weapons', 'h2_spawn_all_weapons',
                'h1_replace_first_weapons', 'h1_enemy_weapon_enabled',
                'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards', 'h1_armed_all_weapons',
-               'h2_enemy_weapon_cards', 'h2_armed_all_weapons',
+               'h2_enemy_weapon_cards', 'h2_armed_all_weapons', 'h2_allies_any_weapon',
                'h1_overheat_unzoom', 'h1_overheat_no_rezoom', 'h1_covenant_avoid_ff',
                'hunter_drop',
                'h1_melee_blocks_fire', 'h1_supercombine_count', 'h1_supercombine_players',
@@ -1046,6 +1046,9 @@ CONFIG = {
     # every-weapon draw off, as Halo 1
     "h2_enemy_weapon_cards": True,
     "h2_armed_all_weapons": False,
+    # Allies (Marines, allied Grunts and Elites) can hold every weapon of the level, so the
+    # players can trade any of them (user, 2026-10-25) -- a patch-time graph teach
+    "h2_allies_any_weapon": True,
     # Options -> Patching -> Halo 1: an overheat drops the zoom, as in Halo 2-4. A
     # halo1.dll patch (sprint_toolkit/h1_overheat_unzoom.py), engine-wide: every heat
     # weapon, live in a running MCC AND in the file. Off = put back to stock.
@@ -5861,18 +5864,20 @@ class MagnitudeEditorDialog(QDialog):
     def _h2_enemy_weapons_spec(self, armed_picks):
         """Halo 2 only: this patch's Armed cards as h2_enemy_weapons.apply wants them
         (H2_ARMED_HANDOFF.md), or None when there are none."""
-        if self.game != 'Halo 2' or not armed_picks:
+        if self.game != 'Halo 2':
             return None
+        allies = bool(CONFIG.get('h2_allies_any_weapon', True))
         db = getattr(self.parent_gui, 'db', None)
-        if db is None:
-            return None
-        cards = {e: {db.h2_weapon_path(w): sh for w, sh in ws.items() if db.h2_weapon_path(w)}
-                 for e, ws in armed_picks.items()}
-        cards = {e: ws for e, ws in cards.items() if ws}
-        if not cards:
+        cards = {}
+        if armed_picks and db is not None:
+            cards = {e: {db.h2_weapon_path(w): sh for w, sh in ws.items() if db.h2_weapon_path(w)}
+                     for e, ws in armed_picks.items()}
+            cards = {e: ws for e, ws in cards.items() if ws}
+        if not cards and not allies:
             return None
         # Balanced ports: their ai\generic entry takes the profile's balanced rows
-        return {'cards': cards, 'balanced': self._balanced_port_weapons()}
+        return {'cards': cards, 'balanced': self._balanced_port_weapons() if cards else None,
+                'allies': allies}
 
     def _balanced_port_weapons(self):
         """Weapon tag paths of this game's switched-on ports that play Balanced."""
@@ -12696,6 +12701,14 @@ class OptionsDialog(QDialog):
         self.h2_armed_cards_cb.toggled.connect(self.h2_armed_all_cb.setEnabled)
         self.h2_armed_all_cb.setEnabled(self.h2_armed_cards_cb.isChecked())
         h2form.addRow("", self.h2_armed_all_cb)
+        self.h2_allies_any_cb = QCheckBox("Allies can hold every weapon (trade any gun to a Marine)")
+        self.h2_allies_any_cb.setChecked(bool(CONFIG.get('h2_allies_any_weapon', True)))
+        self.h2_allies_any_cb.setToolTip(
+            "On (default): Marines, allied Grunts and Elites learn to hold every weapon of the "
+            "level, ported ones included, so you can trade any gun to them. Marines hold the "
+            "Energy Blade and Brute Shot with their rifle poses (no sword melee). Applied to "
+            "the map when you patch; nothing to rebuild.")
+        h2form.addRow("Allies:", self.h2_allies_any_cb)
 
         for label, keys, tip in H2_PATCH_SETS:
             cb = QCheckBox(label)
@@ -13516,6 +13529,7 @@ class OptionsDialog(QDialog):
             'h2_spawn_all_weapons': self.h2_spawn_all_cb.isChecked(),
             'h2_enemy_weapon_cards': self.h2_armed_cards_cb.isChecked(),
             'h2_armed_all_weapons': self.h2_armed_all_cb.isChecked(),
+            'h2_allies_any_weapon': self.h2_allies_any_cb.isChecked(),
             'h1_replace_first_weapons': self.h1_replace_first_cb.isChecked(),
             'h1_armed_all_weapons': self.h1_armed_all_cb.isChecked(),
             'h1_enemy_weapon_enabled': {e: cb.isChecked() for e, (cb, _c) in self.h1_enemy_rows.items()},
