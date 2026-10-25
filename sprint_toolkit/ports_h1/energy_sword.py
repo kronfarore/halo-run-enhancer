@@ -8,6 +8,11 @@ SWORD = B.join(['weapons', 'energy sword', 'energy sword'])
 STRIKE = B.join(['weapons', 'energy sword', 'lunge strike'])
 SWORD_SWING = r'sound\sfx\impulse\animations\elite\stand_sword_melee.mov'
 SWORD_SOUNDS = 'sound\\weapons\\energy_sword_port\\'
+# the third-person lunge (h1_3p_retarget overlay): Halo 3's, relative to its sword idle
+LUNGE_3P = {'overlay': 'combat:sword:melee_lunge', 'on': 'combat:sword:idle',
+            'nodes': ['bip01 spine', 'bip01 spine1', 'bip01 neck', 'bip01 head',
+                      'bip01 l clavicle', 'bip01 r clavicle', 'bip01 l upperarm', 'bip01 r upperarm',
+                      'bip01 l forearm', 'bip01 r forearm', 'bip01 l hand', 'bip01 r hand']}
 
 PORT = {
     'order': 1,
@@ -81,9 +86,11 @@ PORT = {
                                           ('move-right', 'move_right'))},
             # the slash on melee, the lunge on fire (Halo 3 has no crouched sword melee:
             # crouched, the standing ones play, as the stock crouch pistol melee does)
+            # The lunge is an OVERLAY: Halo 1 plays fire slots only as overlays (a10 co-op
+            # 2026-10-25: the replacement lunge never showed, the melee did). Upper body only,
+            # relative to the sword idle, so the legs keep running under it
             'type_anims': {'melee': 'combat:sword:melee_strike_1',
-                           'fire-1': 'combat:sword:melee_lunge',
-                           'fire-2': 'combat:sword:melee_lunge'},
+                           'fire-1': LUNGE_3P, 'fire-2': LUNGE_3P},
             # Halo 1's stand moves carry no root motion, its crouch moves do
             'root_motion': ['crouch sword move-front', 'crouch sword move-back',
                             'crouch sword move-left', 'crouch sword move-right'],

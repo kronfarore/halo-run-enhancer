@@ -194,20 +194,45 @@ def _continuous(frames):
     return out
 
 
+def overlay_frames(d, graph, spec):
+    """An OVERLAY from a Halo 3 one-shot: each listed node's local rotation relative to the
+    reference pose (`on`: frame 0 of a Halo 3 animation), every other node identity, the
+    translations the reference's (static -> not stored). Halo 1 plays a weapon's FIRE slot as
+    an overlay only (every stock cyborg / Elite / Marine fire-1 is one; the sword's lunge as
+    a replacement never showed, a10 co-op 2026-10-25) and composes it base * delta in
+    rotation convention (the stock pistol aim-still grid: hand pitch -77 / 8 / 77 by row,
+    yaw -79 / 10 / 104 by column; delta * base scatters it). The reference frame leads (the
+    compiler drops it)."""
+    names = [n.name for n in d.nodes.STEPTREE]
+    ref = convert(d, graph, spec['on'], False)[1][0]
+    _t, frames, _k, _m = convert(d, graph, spec['overlay'], False)
+    ident = (1.0, 0.0, 0.0, 0.0)
+    out = [{n: (ident, ref[n][1]) for n in names}]
+    for fr in frames:
+        out.append({n: ((R.qmul(R.qconj(ref[n][0]), fr[n][0]) if n in spec['nodes'] else ident),
+                         ref[n][1]) for n in names})
+    return out
+
+
 def jma_for(d, h1name, typ, frames, loop, motion):
     """The JmaAnimation Halo 1's compiler takes: one frame more than the animation keeps (a
-    loop ends on its first frame moved on by a cycle's root motion, a one-shot on its last)."""
+    loop ends on its first frame moved on by a cycle's root motion, a one-shot on its last;
+    an overlay leads with its reference frame, already in `frames`)."""
     names = [n.name for n in d.nodes.STEPTREE]
     root = names[0]
-    if loop:
+    if typ == 'overlay':
+        pass
+    elif loop:
         q, t = frames[0][root]
         end = dict(frames[0], **{root: (q, (t[0] + motion[0], t[1] + motion[1], t[2]))})
     else:
         end = frames[-1]
-    frames = _continuous(frames + [end])
+    if typ != 'overlay':
+        frames = frames + [end]
+    frames = _continuous(frames)
     a0 = d.animations.STEPTREE[[a.name for a in d.animations.STEPTREE].index('stand pistol idle')]
     base = typ == 'base'
-    j = JmaAnimation(h1name, a0.node_list_checksum, 'base' if base else 'replacement',
+    j = JmaAnimation(h1name, a0.node_list_checksum, typ if typ != 'base' else 'base',
                      'dx_dy' if base else 'none', False,
                      antr_nodes_to_jms_nodes(d.nodes.STEPTREE))
     for fr in frames:
@@ -303,6 +328,8 @@ def install(d, cfg):
             h1name = '%s %s %s' % (unit, cfg['class'], slot)
         else:
             h1name = '%s %s %s %s' % (unit, cfg['class'], cfg['label'], slot)
+        if isinstance(h3name, dict):                # {'overlay': ..., 'on': ..., 'nodes': [...]}
+            h3name = ('overlay', h3name['overlay'], h3name['on'], tuple(h3name['nodes']))
         same = [k for k, v in jobs.items() if v[0] == h3name]
         if same:                                    # one Halo 3 animation, one Halo 1 copy
             h1name = same[0]
@@ -320,7 +347,7 @@ def install(d, cfg):
         fb = next(wt for wc in (donor, _class(units[unit], cfg['class'])) if wc
                   for wt in wc.weapon_types.STEPTREE if wt.label == cfg['label'])
         for slot, src in cfg['type_anims'].items():
-            src = src[unit] if isinstance(src, dict) else src
+            src = src[unit] if isinstance(src, dict) and unit in src else src
             tpl = fb.animations.STEPTREE[_slot(TYPE_SLOTS, 'melee')].animation
             want(unit, 'type', slot, src, tpl)
 
@@ -351,7 +378,12 @@ def install(d, cfg):
     slots = dict(zip(todo, free_slots(d, len(todo), keep)))
     slots.update({h: by_name[h] for h in jobs if h in by_name})
     for h1name, (h3name, loop, tpl) in jobs.items():
-        typ, frames, key, motion = convert(d, cfg['graph'], h3name, h1name in cfg.get('root_motion', ()))
+        if isinstance(h3name, tuple):
+            typ, motion = 'overlay', (0.0, 0.0)
+            frames = overlay_frames(d, cfg['graph'], dict(overlay=h3name[1], on=h3name[2], nodes=h3name[3]))
+            h3name = '%s (overlay on %s)' % (h3name[1], h3name[2].split(':')[-1])
+        else:
+            typ, frames, key, motion = convert(d, cfg['graph'], h3name, h1name in cfg.get('root_motion', ()))
         j = jma_for(d, h1name, typ, frames, loop, motion)
         i = slots[h1name]
         blk = copy.deepcopy(A[tpl])
