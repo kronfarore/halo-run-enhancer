@@ -427,6 +427,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'hunter_drop',
                'h1_melee_blocks_fire', 'h1_supercombine_count', 'h1_supercombine_players',
                'h1_birthday_party', 'h1_charge_latch',
+               'h1_drop_limit', 'h1_flashlight_seconds', 'h1_flashlight_recharge_seconds',
+               'h2_drop_limit', 'h2_drop_grace_seconds', 'h2_flashlight_seconds',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -1070,6 +1072,16 @@ CONFIG = {
     # that belongs to a player unless a multiplayer game engine runs). A 1-byte halo1.dll
     # patch in the same tool (sync_players). Off = stock. CONFIRMED in game 2026-10-11
     "h1_supercombine_players": False,
+    # Dropped items + flashlight, halo1.dll / halo2.dll VALUE patches (user, 2026-10-25;
+    # sprint_toolkit/h1_drops_flashlight.py, h2_drops_flashlight.py), live AND in the file,
+    # synced on every patch. None = stock; 0 = no limit where it has a meaning.
+    #   drop limit: garbage (bodies + dropped items) collected once this many exist (stock 50)
+    #   h1 flashlight: battery seconds on (stock 120) / recharge seconds (stock 30)
+    #   h2 drop grace: seconds a dropped item is protected (stock 30); h2 flashlight: the
+    #   auto-off timer outside script-lit dark areas (stock 4)
+    "h1_drop_limit": None, "h1_flashlight_seconds": None,
+    "h1_flashlight_recharge_seconds": None,
+    "h2_drop_limit": None, "h2_drop_grace_seconds": None, "h2_flashlight_seconds": None,
     # Options -> Patching -> Halo 1: a CHARGE weapon fires one shot a press -- held, it does not
     # charge again until the trigger is let go, and a press during the reload charges in full
     # (no quick uncharged shot), for weapons whose tag opts in (weapon flags bit 30: the Railgun,
@@ -7479,6 +7491,31 @@ class MagnitudeEditorDialog(QDialog):
                      'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
 
     @staticmethod
+    def _apply_drops_flashlight():
+        """Dropped-item lifetime and flashlight duration, halo1.dll + halo2.dll value
+        patches, synced to their options on every patch (any game; all None puts both dlls
+        back to stock), live and in the file like _apply_h1_melee_blocks_fire."""
+        import importlib
+        sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        os.environ['HALO_MCC_ROOT'] = mcc_root()
+        rows = []
+        for mod, label, kw in (
+                ('h1_drops_flashlight', 'halo1.dll',
+                 dict(drop_limit=CONFIG.get('h1_drop_limit'),
+                      flashlight_seconds=CONFIG.get('h1_flashlight_seconds'),
+                      flashlight_recharge_seconds=CONFIG.get('h1_flashlight_recharge_seconds'))),
+                ('h2_drops_flashlight', 'halo2.dll',
+                 dict(drop_limit=CONFIG.get('h2_drop_limit'),
+                      drop_grace_seconds=CONFIG.get('h2_drop_grace_seconds'),
+                      flashlight_seconds=CONFIG.get('h2_flashlight_seconds')))):
+            try:
+                rows += importlib.import_module(mod).sync(**kw)
+            except Exception as e:
+                rows.append({'tag': label, 'effect': 'Dropped items / flashlight',
+                             'field': label, 'ok': False, 'reason': str(e)})
+        return rows
+
+    @staticmethod
     def _apply_h1_birthday_party():
         """Halo 1's classic Grunt Birthday Party effect halo1.dll patch, synced to its option
         on every patch (any game), like _apply_h1_melee_blocks_fire."""
@@ -9739,6 +9776,7 @@ class MagnitudeEditorDialog(QDialog):
         results.extend(self._apply_h1_supercombine_count())
         results.extend(self._apply_h1_birthday_party())
         results.extend(self._apply_h1_charge_latch())
+        results.extend(self._apply_drops_flashlight())
         if CONFIG.get('death_penalty_scaling'):
             results.extend(self._apply_death_penalty())
         results.extend(self._restore_sword_drain(plan))
@@ -10271,6 +10309,25 @@ class OptionsDialog(QDialog):
             lay.addWidget(cb)
             self.skull_cat_boxes[k] = cb
         self._opt_page("Skulls").addWidget(box)
+
+    @staticmethod
+    def _dll_spin(key, hi, stock_text, suffix, lo, zero_text, tip):
+        """A dll value box: its minimum (-1) reads `stock_text` and is stored as None; 0
+        reads `zero_text` where 0 has a meaning (no limit / never), else values start at `lo`."""
+        sp = QSpinBox()
+        sp.setRange(-1, hi)
+        sp.setSpecialValueText(stock_text)
+        sp.setSuffix(suffix)
+        v = CONFIG.get(key)
+        sp.setValue(-1 if v is None else max(lo, int(v)))
+        sp.setToolTip(tip + (("\n\n0 = %s." % zero_text) if zero_text else ""))
+        if zero_text is None and lo > 0:
+            sp.valueChanged.connect(lambda x, s=sp, l=lo: s.setValue(l) if -1 < x < l else None)
+        return sp
+
+    @staticmethod
+    def _dll_val(sp):
+        return None if sp.value() < 0 else int(sp.value())
 
     def _opt_page(self, name):
         page = self._opt_pages.get(name)
@@ -12235,6 +12292,22 @@ class OptionsDialog(QDialog):
             "(at once) and into halo1.dll (every later start). Unticked, the next patch "
             "puts halo1.dll back to stock. In co-op both machines need it.")
         h1form.addRow("", self.h1_birthday_party_cb)
+        self.h1_drop_limit_sp = self._dll_spin(
+            'h1_drop_limit', 127, "stock (50)", " objects", 0, "no limit",
+            "Bodies and dropped weapons / equipment count together; once this many lie "
+            "around, the game deletes the ones no player can see (down to 3/5 of it). "
+            "Higher keeps drops longer; 'no limit' leaves only the engine's memory guard. "
+            "halo1.dll, live and in the file; both co-op machines need the same value.")
+        h1form.addRow("Dropped items:", self.h1_drop_limit_sp)
+        self.h1_flash_sp = self._dll_spin(
+            'h1_flashlight_seconds', 3600, "stock (120 s)", " s", 0, "never drains",
+            "How long the flashlight battery lasts while on. An empty battery switches it "
+            "off, which also toggles a flashlight-key ability. halo1.dll.")
+        h1form.addRow("Flashlight on:", self.h1_flash_sp)
+        self.h1_flash_rc_sp = self._dll_spin(
+            'h1_flashlight_recharge_seconds', 3600, "stock (30 s)", " s", 1, None,
+            "Seconds from an empty battery to full while the flashlight is off. halo1.dll.")
+        h1form.addRow("Flashlight recharge:", self.h1_flash_rc_sp)
 
         self.reach_pools_cb = QCheckBox(
             "Reach: offer every weapon and ability the prepared map supports")
@@ -12709,6 +12782,20 @@ class OptionsDialog(QDialog):
             "Energy Blade and Brute Shot with their rifle poses (no sword melee). Applied to "
             "the map when you patch; nothing to rebuild.")
         h2form.addRow("Allies:", self.h2_allies_any_cb)
+        self.h2_drop_limit_sp = self._dll_spin(
+            'h2_drop_limit', 127, "stock (50)", " objects", 0, "no limit",
+            "Bodies and dropped items count together; once this many exist the game deletes "
+            "the unseen ones. halo2.dll, live and in the file; applied on every patch.")
+        h2form.addRow("Dropped items:", self.h2_drop_limit_sp)
+        self.h2_drop_grace_sp = self._dll_spin(
+            'h2_drop_grace_seconds', 3600, "stock (30 s)", " s", 0, None,
+            "Seconds a freshly dropped item is protected from that clean-up. halo2.dll.")
+        h2form.addRow("Drop protection:", self.h2_drop_grace_sp)
+        self.h2_flash_sp = self._dll_spin(
+            'h2_flashlight_seconds', 3600, "stock (4 s)", " s", 0, "stays on",
+            "Halo 2 switches the flashlight off by itself after this long, except where the "
+            "level script lights a dark area. halo2.dll.")
+        h2form.addRow("Flashlight on:", self.h2_flash_sp)
 
         for label, keys, tip in H2_PATCH_SETS:
             cb = QCheckBox(label)
@@ -13543,6 +13630,12 @@ class OptionsDialog(QDialog):
             'h1_supercombine_players': self.h1_supercombine_players_cb.isChecked(),
             'h1_birthday_party': self.h1_birthday_party_cb.isChecked(),
             'h1_charge_latch': self.h1_charge_latch_cb.isChecked(),
+            'h1_drop_limit': self._dll_val(self.h1_drop_limit_sp),
+            'h1_flashlight_seconds': self._dll_val(self.h1_flash_sp),
+            'h1_flashlight_recharge_seconds': self._dll_val(self.h1_flash_rc_sp),
+            'h2_drop_limit': self._dll_val(self.h2_drop_limit_sp),
+            'h2_drop_grace_seconds': self._dll_val(self.h2_drop_grace_sp),
+            'h2_flashlight_seconds': self._dll_val(self.h2_flash_sp),
             'h1_covenant_avoid_ff': self.h1_covenant_ff_cb.isChecked(),
             'hunter_drop': self.hunter_drop_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
