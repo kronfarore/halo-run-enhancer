@@ -427,6 +427,9 @@ PORT = {
         # boot 2 (user: 'the later reload parts, one melee and the fidget are mute'): the SMG seed's
         # dual-wield sound slots are flagged left / right arm only -- every slot's flags cleared
         'clear_sound_ref_flags': True,
+        # 04a boot 5 (user: 'only one of the fidgets ever played'): the SMG seed gave var1 its own 0.5
+        # and the new var2 the default 0.0001 -- both even now
+        'weights': {'first_person:posing:var1': 0.5, 'first_person:posing:var2': 0.5},
         'species': {
             'masterchief': {
                 'arms': H2EK + r'\data\!extracted\fp_arms_masterchief\fp_arms.jms',
@@ -439,6 +442,11 @@ PORT = {
                 # 'direction' (h2_port_fp_anims): each Elite finger segment along the Chief's in model space
                 # ('points' -- aiming at the Chief's joints -- clawed the open hand in fidget 2, 04a boot 4)
                 'repose': 'direction',
+                # 04a boot 5 (user: 'keep the idle finger grip'): the left fingers hold their idle grip
+                # (local to the hand) through both fidgets -- the Elite's four-digit hand does not mirror
+                # the Chief's five-finger flex; the hand and arm still move with Halo 4's fidget
+                'hold_fingers': {'side': 'l', 'pose': ('first_person:idle', 0),
+                                 'anims': ['first_person:posing:var1', 'first_person:posing:var2']},
                 # 04a boot 3 (user: 'in idle and the fidget the fingers phase into the weapon'): the
                 # Elite's bigger left hand sank into the drum on the Chief's wrist (left-hand vertices
                 # inside the gun, idle + fidgets every 8th frame: 4068; the Chief's ~150). Trials (gun

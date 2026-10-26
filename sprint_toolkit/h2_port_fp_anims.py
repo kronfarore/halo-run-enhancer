@@ -614,7 +614,7 @@ def _continuous(rows):
     return out
 
 
-def build_h1(key, species, only=None, write=True):
+def build_h1(key, species, only=None, write=True, cfg_override=None):
     """kind 'h1' (the Flamethrower, S1, 2026-10-21): Halo 1's OWN FP animations as Halo 2 source
     animations. Halo 1's FP arms ARE Halo 2's masterchief and Halo 1's view is the animation origin,
     which is where Bungie's own H2 sources keep `b_camera_control` (identity, digsite fp_battle_rifle)
@@ -632,7 +632,7 @@ def build_h1(key, species, only=None, write=True):
     {'reverse': True, 'frames': n} (sampled backwards: a put_away from the ready)])], weapon_nodes (H2
     names), species {name: {'arms' (H2 arms JMS), 'source', 'seed', 'repose'}}, chief_arms (the
     masterchief JMS: the Chief's bind for the curl)."""
-    cfg = ports_h2.get(key, 'fp_anims')
+    cfg = dict(cfg_override or ports_h2.get(key, 'fp_anims'), _key=key)
     sp = cfg['species'][species]
     elite, order = jms_binds(sp['arms'])
     chief, _ = jms_binds(cfg['chief_arms'])
@@ -724,6 +724,10 @@ def build_h1(key, species, only=None, write=True):
                     q = qnorm(qmul(eq, delta))
                     fr.append((qnorm(qmul(pq, q)), (pt[0] + d[0], pt[1] + d[1], pt[2] + d[2])))
             rows.append(fr)
+        _LAST_ROWS[h2name] = rows
+        hold = sp.get('hold_fingers')
+        if hold and h2name in hold['anims']:
+            rows = hold_fingers(rows, names_h2, elite, hold, cfg, species)
         if cfg.get('kind') == 'h4':
             rows = _continuous(rows)
         for nm in names_h2:
@@ -741,6 +745,40 @@ def build_h1(key, species, only=None, write=True):
             write_jma(path, jnodes, [jma_name(nm, set(weapon_nodes)) for nm in names_h2], rows)
         out.append((h1name + ' -> ' + h2name, typ, len(frames) - 1, len(rows), os.path.basename(path)))
     return [(n, parents.get(n, -1)) for n in names_h2], out
+
+
+def hold_fingers(rows, names, binds, hold, cfg, species):
+    """`hold_fingers` {'side': 'l', 'anims': [...], 'pose': (animation, frame)} (the SAW rework's Dervish,
+    04a boot 5, user: 'keep the idle finger grip' -- the Elite's four-digit hand cannot mirror the
+    Chief's five-finger flex in the fidgets): every finger node of that side keeps its LOCAL transform
+    (relative to its parent) from the pose frame; the hand and arm still move as the animation does."""
+    key = (species, hold['pose'])
+    if key not in _HELD:
+        anim, f = hold['pose']
+        sub = dict(cfg, map=[r for r in cfg['map'] if r[1] == anim][:1])
+        _n, _out = build_h1(cfg['_key'], species, write=False, cfg_override=sub)
+        _HELD[key] = _LAST_ROWS[anim][f]
+    ref = dict(zip(names, _HELD[key]))
+    out = []
+    for fr in rows:
+        cur = dict(zip(names, fr))
+        for nm in names:
+            if not (_is_finger(nm) and nm.startswith(hold['side'] + '_')):
+                continue
+            par = binds[nm][0]
+            pq, pt = ref[par]
+            q, t = ref[nm]
+            inv = (pq[0], -pq[1], -pq[2], -pq[3])
+            lq = qmul(inv, q)
+            lt = qrot(inv, tuple(a - b for a, b in zip(t, pt)))
+            cq, ct = cur[par]
+            d = qrot(cq, lt)
+            cur[nm] = (qnorm(qmul(cq, lq)), tuple(a + b for a, b in zip(ct, d)))
+        out.append([cur[n] for n in names])
+    return out
+
+
+_HELD, _LAST_ROWS = {}, {}
 
 
 def _is_finger(nm):
@@ -806,6 +844,21 @@ def clear_verify(cfg, species):
             tf.set_field(g, 'production flags', int(tf._numbers(r[4])[0]) & ~2, 'animations', int(r[1]))
 
 
+def set_weights(cfg, species):
+    """`weights` {animation: weight} (the SAW rework, 04a boot 5, user: 'only one of the fidgets ever
+    played'): the import keeps a SEED animation's weight for the same name and gives a new name the
+    default 0.0001 -- the SMG seed has posing var0 / var1, so Halo 4's var2 was all but never picked
+    (Halo 2 chooses a variant by weight). Each listed animation's weight set (tool-verified)."""
+    import re
+    import h2_tagfield as tf
+    g = graph_path(cfg['species'][species])
+    names = re.findall(r'<element index="\d+">\s*<field name="name" type="string id">([^<]*)<',
+                       tf.export(g).split('<block name="animations"', 1)[1])
+    for nm, wgt in cfg['weights'].items():
+        if nm in names:
+            tf.set_field(g, 'weight', wgt, 'animations', names.index(nm))
+
+
 def clear_sound_ref_flags(cfg, species):
     """`clear_sound_ref_flags` (the SAW rework, boot 2 on 03a: 'the later reload parts, one melee and
     the fidget are mute'): each element of a graph's SOUND REFERENCES carries flags -- 'first-person
@@ -841,6 +894,8 @@ def main(argv=None):
                 source_events(dict(cfg, _key=key), species)
             if cfg.get('clear_sound_ref_flags'):
                 clear_sound_ref_flags(cfg, species)
+            if cfg.get('weights'):
+                set_weights(cfg, species)
             if species in cfg.get('drop_ik', ()):
                 # the seed's single-wield IK (Bungie's SMG: the Chief's left hand gripping the
                 # weapon's left_hand marker) dropped -- the Spiker is one-handed (boot 5)
