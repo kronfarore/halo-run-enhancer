@@ -8,7 +8,7 @@ The config's `sounds` section:
     weapon, fire_fx          the port's weapon and firing effect (kit-relative, with extension)
     audio                    the folder of source wavs (<audio>\<src>\*.wav)
     audio_key                port_volume.MARKER_DB key
-    foley_module             a module with mix()/count()/RATE and cue lists ('foley:<CUES>[@stretch]')
+    foley_module             a module with mix()/count()/RATE and cue lists ('foley:<CUES>[#a-b][@stretch]': #a-b = cues a..b alone, rebased to 0)
     sounds                   {own sound: (audio folder or 'foley:CUES', sound class)}
     repoint_fx, repoint_weapon   (the sound named now, the own sound) on the effect / the weapon,
                              or a list of such pairs
@@ -117,7 +117,15 @@ def render_foley(name, cues_name, d):
     foley = importlib.import_module(FOLEY)
     cues_name, _at, stretch = cues_name.partition('@')
     stretch = float(stretch or 1.0)
+    cues_name, _h, part = cues_name.partition('#')
     cues = getattr(foley, cues_name)
+    if part:
+        # 'foley:RELOAD#5-6' (the SAW rework, 2026-10-23): ONE piece of a cue list -- cues a..b,
+        # their frames rebased to the first -- for a graph that cues each piece at its own frame
+        # (the frame then moves with a retimed animation; one whole-animation mix does not)
+        a, _d, b = part.partition('-')
+        piece = cues[int(a):int(b or a) + 1]
+        cues = [(c[0], c[1] - piece[0][1]) + tuple(c[2:]) for c in piece]
     for k in range(foley.count(cues)):
         x = foley.mix(cues, k, stretch)
         if np.abs(x).max() > 0.95:

@@ -92,11 +92,12 @@
   "animations[8].production flags": 4376
  },
  "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\rifle\\fp_saw\\fp_saw": {
-  "animations[11].production flags": 3536,
-  "animations[12].production flags": 3660,
-  "animations[13].production flags": 3784,
-  "animations[14].production flags": 3908,
-  "animations[3].production flags": 2544
+  "animations[11].production flags": 4211,
+  "animations[12].production flags": 4335,
+  "animations[13].production flags": 4459,
+  "animations[14].production flags": 4583,
+  "animations[3].production flags": 3219,
+  "animations[8].production flags": 3839
  },
  "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower": {
   "animations[10].production flags": 4236,
@@ -107,12 +108,13 @@
   "animations[8].production flags": 3988
  },
  "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_saw\\fp_saw": {
-  "animations[11].production flags": 3800,
-  "animations[12].production flags": 3924,
-  "animations[13].production flags": 4048,
-  "animations[14].production flags": 4172,
-  "animations[3].production flags": 2808,
-  "animations[4].production flags": 2932
+  "animations[11].production flags": 4475,
+  "animations[12].production flags": 4599,
+  "animations[13].production flags": 4723,
+  "animations[14].production flags": 4847,
+  "animations[3].production flags": 3483,
+  "animations[4].production flags": 2932,
+  "animations[8].production flags": 4103
  },
  "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower": {
   "animations[10].production flags": 4624,

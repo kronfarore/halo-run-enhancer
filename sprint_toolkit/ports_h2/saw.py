@@ -32,6 +32,21 @@ DROP = (['pedestal', 'aim_pitch', 'aim_yaw'] +
         ['r_hand_helper1', 'r_hand_helper2', 'r_hand_helper3', 'r_hand_helper4',
          'l_hand_marker_offset'])
 
+# the reload's Halo 4 cues (saw_port_foley.RELOAD: fly_a @0, mech_a @15, mech_b @30, fly_b @54, mech_c
+# @66, fly_c + mech_d @90), one own sound each, cued at its frame (fp_anims source_events)
+RELOAD_PIECES = [('saw_reload_a', '0'), ('saw_reload_b', '1'), ('saw_reload_c', '2'), ('saw_reload_d', '3'),
+                 ('saw_reload_e', '4'), ('saw_reload_f', '5-6')]
+RELOAD_CUES = [(n, f) for (n, _c), f in zip(RELOAD_PIECES, (0, 15, 30, 54, 66, 90))]
+# the SMG seed graph's sound references (both species, this order) -> the SAW's own
+SMG_GRAPH_SOUNDS = (('smg_melee1', 'saw_melee1'), ('smg_ready', 'saw_ready'), ('smg_reload', 'saw_reload_a'),
+                    ('smg_reload_full', 'saw_reload_b'), ('smg_dual_ready', 'saw_reload_c'),
+                    ('smg_dual_reload_left', 'saw_reload_d'), ('smg_dual_reload_right', 'saw_reload_e'),
+                    ('smg_dual_posing_0_l', 'saw_reload_f'), ('smg_dual_posing_0_r', 'saw_melee2'),
+                    ('smg_dual_posing_1_l', 'saw_pose1_a'), ('smg_dual_posing_1_r', 'saw_pose1_b'),
+                    ('smg_dual_posing_2_l', 'saw_pose1_c'), ('smg_dual_posing_2_r', 'saw_pose2_a'),
+                    ('smg_dual_posing_3_l', 'saw_pose2_b'), ('smg_dual_posing_3_r', 'saw_pose2_c'),
+                    ('smg_posing_var0', 'saw_pose1_a'), ('smg_posing_var1', 'saw_pose2_a'))
+
 PORT = {
     'order': 0,
     'name': 'SAW',
@@ -199,7 +214,8 @@ PORT = {
             (SAW + r'\projectiles\saw_bullet.projectile', 'maximum range', '', 0, 0, 75.0),
             # first-person placement: Halo 4's animations come through Halo 1's FP space (camera =
             # origin, the Flamethrower's), so start with none (the SMG's 0.02, 0, 0 is its own graph's)
-            (SAW + r'\saw.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, 0.0]),
+            # boot 1 on 03a (user): 'move it down 3 units for starters' (1 unit = 0.01 wu)
+            (SAW + r'\saw.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, -0.03]),
             # the HUD (the BR's clone) draws the BR's WEAK-SPOT / HEADSHOT indicators inside the
             # crosshair (the Flamethrower's Armed test): the SAW (the SMG's bullet) has neither -- each
             # widget's [N] condition = its own [Y] one (never shown). After the HUD steps (7)
@@ -258,7 +274,7 @@ PORT = {
             'barrels/[0]/acceleration / deceleration time (nth 0, list 4)': "0 / 0: Halo 4's SAW fires a flat 20 "
                                                                            "(the SMG's 1.0 / 0.2 rate ramp off)",
             "flags'' (list 5)": "the SMG's minus 'can be dual wielded' (Halo 4's SAW is two-handed)",
-            'first person weapon offset': "0, 0, 0: Halo 4's animations come through Halo 1's FP space (the "
+            'first person weapon offset': "0, 0, -0.03 (user, boot 1: down 3 units); started at 0: Halo 4's animations come through Halo 1's FP space (the "
                                           "Flamethrower's start) -- checked in game",
             'sweetener size / damage reporting type (weapon, projectile)': "the SMG's (enums; kill feed / medals only)",
             'attachments/#count (weapon)': "the SMG's one attachment kept",
@@ -390,26 +406,30 @@ PORT = {
                 ('first_person:look', 'first_person:pitch_and_turn')],
         'overlay_reference': 'first_person:idle',
         # Halo 4's own FRAME events (its .frame_event_list: melee hit 4, reload keyframe 67, grenade
-        # release 8, allow interruption ...) and one SOUND cue per animation at frame 0 -- the SAW's
-        # foley mixes already fold Halo 4's cues together (saw_port_sounds). The BR seed has four
-        # sound references (reload, ready, melee, reload_half): reload_half carries the reloads, the
-        # unused `battle_rifle_reload` becomes the fidget's (sounds graph_sounds); both melees play
-        # melee 1 and posing var2 stays silent (no fifth reference -- a block insert)
-        'source_events': {'cues': {'first_person:reload_empty': [('saw_reload', 0)],
-                                   'first_person:reload_full': [('saw_reload', 0)],
-                                   'first_person:ready': [('saw_ready', 0)],
-                                   'first_person:melee_strike_1': [('saw_melee1', 0)],
-                                   'first_person:melee_strike_2': [('saw_melee1', 0)],
-                                   'first_person:posing:var1': [('saw_pose1', 0)]}},
+        # release 8, allow interruption ...) and its SOUND cues, ONE SOUND PER CUE at Halo 4's frame
+        # (boot 1 on 03a, user: 'is the reload sound timed correctly?' -- one whole-reload mix at frame
+        # 0 runs at its own speed while Balanced rebuilds the reload at x0.852 (109 frames): the late
+        # cues fell up to 13 frames behind the hands. A cue's frame scales with the animation). The
+        # SMG seed has 17 sound references (the BR's 4 forced one mix per animation)
+        'source_events': {'cues': {
+            'first_person:reload_empty': RELOAD_CUES, 'first_person:reload_full': RELOAD_CUES,
+            'first_person:ready': [('saw_ready', 0)],
+            'first_person:melee_strike_1': [('saw_melee1', 0)],
+            'first_person:melee_strike_2': [('saw_melee2', 0)],
+            'first_person:posing:var1': [('saw_pose1_a', 0), ('saw_pose1_b', 40), ('saw_pose1_c', 80)],
+            'first_person:posing:var2': [('saw_pose2_a', 0), ('saw_pose2_b', 40), ('saw_pose2_c', 80)]}},
+        # the SMG seed's single-wield IK (the Chief's left hand pinned to the left_hand marker) dropped:
+        # it would hold the hand on the grip through the reload (the Spike Rifle's drop_ik)
+        'drop_ik': ['masterchief'],
         'species': {
             'masterchief': {
                 'arms': H2EK + r'\data\!extracted\fp_arms_masterchief\fp_arms.jms',
                 'source': r'objects\characters\masterchief\fp\weapons\rifle\fp_saw',
-                'seed': r'objects\characters\masterchief\fp\weapons\rifle\fp_battle_rifle\fp_battle_rifle'},
+                'seed': r'objects\characters\masterchief\fp\weapons\rifle\fp_smg\fp_smg'},
             'dervish': {
                 'arms': H2EK + r'\data\!extracted\fp_arms_dervish\dervish_fp_arms.jms',
                 'source': r'objects\characters\dervish\fp\weapons\rifle\fp_saw',
-                'seed': r'objects\characters\dervish\fp\weapons\rifle\fp_battle_rifle\fp_battle_rifle',
+                'seed': r'objects\characters\dervish\fp\weapons\rifle\fp_smg\fp_smg',
                 'repose': True},
         },
         'weapon_dir': SAW + r'\fp_saw',
@@ -421,21 +441,21 @@ PORT = {
         'weapon': SAW + r'\saw.weapon',
         'fire_fx': FX + r'\saw_fire.effect',
         'audio_key': 'SAW',                                 # port_volume.MARKER_DB / saw_port_sounds
-        'sounds': {'saw_fire': ('fire', 'weapon_fire'), 'saw_dryfire': ('dryfire', 'weapon_empty'),
-                   'saw_reload': ('foley:RELOAD', 'weapon_reload'), 'saw_ready': ('foley:READY', 'weapon_ready'),
-                   'saw_melee1': ('foley:MELEE1', 'weapon_melee'),
-                   # Halo 4's own 90-frame posing now (was stretched to the sniper's 70)
-                   'saw_pose1': ('foley:POSE1', 'weapon_animation'),
-                   # the remastered distance layer (was the SMG's fire_lod): Halo 4's own far tail
-                   'saw_fire_lod': ('tail', 'weapon_fire')},
+        'sounds': dict({'saw_fire': ('fire', 'weapon_fire'), 'saw_dryfire': ('dryfire', 'weapon_empty'),
+                        'saw_ready': ('foley:READY', 'weapon_ready'),
+                        'saw_melee1': ('foley:MELEE1', 'weapon_melee'), 'saw_melee2': ('foley:MELEE2', 'weapon_melee'),
+                        # the remastered distance layer (was the SMG's fire_lod): Halo 4's own far tail
+                        'saw_fire_lod': ('tail', 'weapon_fire')},
+                       # ONE sound per Halo 4 cue (h2_port_sounds 'foley:LIST#a-b'), cued at its frame
+                       **{n: ('foley:RELOAD#%s' % c, 'weapon_reload') for n, c in RELOAD_PIECES},
+                       **{'saw_pose%d_%s' % (v, x): ('foley:POSE%d#%d' % (v, k), 'weapon_animation')
+                          for v in (1, 2) for k, x in enumerate('abc')}),
         'repoint_fx': [(r'sound\weapons\smg\fire', 'saw_fire'),
                        (r'sound_remastered\weapons\smg\fire_lod', 'saw_fire_lod')],
         'repoint_weapon': [(r'sound\weapons\smg\dryfire', 'saw_dryfire')],
-        # the BR seed's four references: its reload_half carries both reloads, its unused reload
-        # the fidget (fp_anims source_events)
-        'graph_sounds': (('battle_rifle_reload', 'saw_pose1'), ('battle_rifle_ready', 'saw_ready'),
-                         ('br_melee_strike_1', 'saw_melee1'), ('battle_rifle_reload_half', 'saw_reload')),
-        'graph_sound_dir': r'sound\weapons\battle_rifle' + B,
+        # the SMG seed's 17 references, all repointed (the dual ones unused: a single-wield weapon)
+        'graph_sounds': SMG_GRAPH_SOUNDS,
+        'graph_sound_dir': r'sound\weapons\smg' + B,
         'gain': {'saw_fire': -3.0, 'saw_dryfire': -3.0},
         'boost': {},
         'backup': r'E:\HaloBackups\H2EK_saw_before_sounds',
