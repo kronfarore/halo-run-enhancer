@@ -47,6 +47,9 @@ SMG_GRAPH_SOUNDS = (('smg_melee1', 'saw_melee1'), ('smg_ready', 'saw_ready'), ('
                     ('smg_dual_posing_3_l', 'saw_pose2_b'), ('smg_dual_posing_3_r', 'saw_pose2_c'),
                     ('smg_posing_var0', 'saw_pose1_a'), ('smg_posing_var1', 'saw_pose2_a'))
 
+# the Dervish's left wrist offset (gun frame, wu: out, down) -- fp_anims, 04a boots 3-4
+DERVISH_LEFT = (0.0, 0.01, -0.02)
+
 PORT = {
     'order': 0,
     'name': 'SAW',
@@ -433,16 +436,29 @@ PORT = {
                 'arms': H2EK + r'\data\!extracted\fp_arms_dervish\dervish_fp_arms.jms',
                 'source': r'objects\characters\dervish\fp\weapons\rifle\fp_saw',
                 'seed': r'objects\characters\dervish\fp\weapons\rifle\fp_smg\fp_smg',
-                'repose': 'points',
+                # 'direction' (h2_port_fp_anims): each Elite finger segment along the Chief's in model space
+                # ('points' -- aiming at the Chief's joints -- clawed the open hand in fidget 2, 04a boot 4)
+                'repose': 'direction',
                 # 04a boot 3 (user: 'in idle and the fidget the fingers phase into the weapon'): the
                 # Elite's bigger left hand sank into the drum on the Chief's wrist (left-hand vertices
                 # inside the gun, idle + fidgets every 8th frame: 4068; the Chief's ~150). Trials (gun
                 # frame, wu): out +0.01 and down -0.02 -> 836, the hand still on the grip (rendered).
-                # Gun-holding animations only (h1_fp_retarget hand_offset_anims; the reload / melee /
-                # throw keep Halo 4's wrists -- the Storm Rifle's global offset broke its melee)
-                'retarget': {'hand_offset_anims': {a: {'l': (0.0, 0.01, -0.02)} for a in (
-                    'first_person:idle', 'first_person:posing:var1', 'first_person:posing:var2',
-                    'first_person:fire_1:var1', 'first_person:fire_1:var2')}}},
+                # Boot 4 (user: 'the pop'): the offset in EVERY animation -- full in the gun-holding ones,
+                # faded out after the start and back in before the end of the ones that work the gun
+                # (h1_fp_retarget `edges`), so every animation starts and ends where idle holds the hand
+                'retarget': {'hand_offset_anims': dict(
+                    {a: {'l': DERVISH_LEFT} for a in (
+                        'first_person:idle', 'first_person:posing:var1', 'first_person:posing:var2',
+                        'first_person:fire_1:var1', 'first_person:fire_1:var2', 'first_person:moving',
+                        'first_person:look')},
+                    **{a: {'l': DERVISH_LEFT, 'edges': e} for a, e in (
+                        ('first_person:reload_empty', {'in': 10, 'out': 10}),
+                        ('first_person:reload_full', {'in': 10, 'out': 10}),
+                        ('first_person:melee_strike_1', {'in': 6, 'out': 8}),
+                        ('first_person:melee_strike_2', {'in': 6, 'out': 8}),
+                        ('first_person:throw_grenade', {'in': 8, 'out': 8}),
+                        ('first_person:ready', {'out': 8}),
+                        ('first_person:put_away', {'in': 3}))})}},
         },
         'weapon_dir': SAW + r'\fp_saw',
     },

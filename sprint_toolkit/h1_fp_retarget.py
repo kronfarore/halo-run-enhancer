@@ -343,6 +343,16 @@ def _resolve_arms(world, h3_nodes, weapon, anim=None):
             if offs['ramp'].get('out'):
                 wgt = min(wgt, (n - 1 - k) / float(offs['ramp']['out']))
             off = tuple(c * max(0.0, wgt) for c in off)
+        # `edges` {'in': n, 'out': n} frames (the H2 SAW rework's Dervish, 2026-10-26: 'the pop'): the
+        # INVERSE of `ramp` -- the full offset at the animation's first / last frame, fading to 0 over n
+        # frames inside it, so an animation that works the gun (reload, melee) starts and ends where an
+        # offset idle holds the hand
+        if off and offs.get('edges') and _FRAME:
+            k, n = _FRAME
+            e = offs['edges']
+            wgt = max(1.0 - k / float(e['in']) if e.get('in') else 0.0,
+                      1.0 - (n - 1 - k) / float(e['out']) if e.get('out') else 0.0, 0.0)
+            off = tuple(c * min(1.0, wgt) for c in off)
         if off and 'gun' in src:
             T = tuple(t + d for t, d in zip(T, R.qrot(src['gun'][0], off)))
         qu, qf, qh = (R.qmul(src[n][0], a) for n in (up, fo, ha))
