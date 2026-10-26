@@ -202,7 +202,7 @@ def add_characters_ai(r, species):
 
 
 def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.0, god=True,
-          replace=True, balanced=True):
+          replace=True, balanced=True, secondary=None):
     p = ports_h2.load(key)
     weapon = R.weapon_path(p)
     scn, res = scenario(level), R.resource(level)
@@ -227,7 +227,14 @@ def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.
                     open(air, 'wb').write(bytes(ra))
                 print('   character palette: %s' % (('+ ' + ', '.join(added)) if added
                                                      else 'every tested species already there'))
-            if armed:
+            if secondary:
+                # --secondary <port key> (the SAW rework, 2026-10-26: 'the AR as a player weapon as
+                # well'): another DONE port as the profiles' secondary instead of the Armed cheat
+                sq = ports_h2.load(secondary)
+                arm_profiles(d, R.weapon_path(sq), profiles, tuple((sq.get('test') or {}).get('rounds') or ()) or None,
+                             slot=SECONDARY)
+                print('   secondary: %s (the port %s)' % (R.weapon_path(sq).rsplit(chr(92), 1)[-1], secondary))
+            elif armed:
                 arm_profiles(d, CHEAT_WEAPON, profiles, CHEAT_ROUNDS, slot=SECONDARY)
                 print('   cheat: + %s as the secondary (%d / %d rounds)'
                       % (CHEAT_WEAPON.rsplit(chr(92), 1)[-1], CHEAT_ROUNDS[0], CHEAT_ROUNDS[1]))
@@ -239,6 +246,8 @@ def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.
             print('%s: %s' % (level, ', '.join('%s -> %s' % (n, w.split('\\')[-1]) for n, w in got)))
             r = bytearray(open(res, 'rb').read())
             idx, new = R.add_palette(r, weapon)
+            if secondary:
+                R.add_palette(r, R.weapon_path(ports_h2.load(secondary)))
             gone = R.neutralise(r, busy) + gone_scn
             open(res, 'wb').write(bytes(r))
             print('   palette: the port #%d%s; neutralised %s' % (idx, ' (added)' if new else '',
@@ -252,7 +261,8 @@ def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.
                 import h2_armed_test
                 h2_armed_test.test_map(os.path.join(TEST_DIR, level + '.map'), weapon, armed,
                                        share, balanced=balanced, god=god, replace=replace,
-                                       cheat=bool(armed))
+                                       cheat=bool(armed),
+                                       also=[R.weapon_path(ports_h2.load(secondary))] if secondary else ())
                 if armed:
                     print('   (Armed = %s AI rows; shieldless Jackals, Grunt teach + half '
                           'rate, species skill)' % ('BALANCED' if balanced else 'DEFAULT'))
@@ -318,6 +328,8 @@ def main():
     ap.add_argument('--original', action='store_true',
                     help="the port's ORIGINAL numbers (the enhancer's Balanced box off); every "
                          'test is BALANCED by default')
+    ap.add_argument('--secondary', help="another DONE port's key as the profiles' secondary weapon "
+                                         "(Balanced too), instead of the Armed cheat Carbine")
     ap.add_argument('--mortal', action='store_true',
                     help='NO god shield (every other port test has one: the Halo 1 rule)')
     a = ap.parse_args()
@@ -342,7 +354,7 @@ def main():
     if armed == ['all']:
         armed = list(ALL_ENEMIES)
     built = build(a.key, level, profiles, rounds, a.keep_kit_map, armed, a.share, god=not a.mortal,
-                  replace=not a.no_replace, balanced=not a.original)
+                  replace=not a.no_replace, balanced=not a.original, secondary=a.secondary)
     print('test map: %s' % built)
     if a.stage:
         with kit_lock.held('h2_port_test_map %s --stage %s' % (a.key, level), owner=a.key, kit='h2'):

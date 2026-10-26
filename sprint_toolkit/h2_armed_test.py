@@ -194,7 +194,7 @@ def port_balance(m, weapon, balanced=True):
 
 
 def test_map(map_path, weapon=None, species=(), share=1.0, balanced=True, god=True, replace=True,
-             cheat=False):
+             cheat=False, also=()):
     """One open + save of a built test map: the port's Balanced (or Original) numbers, the Armed
     pass (if species; the nearest squads first replaced by the tested types unless
     replace=False) and the god shield."""
@@ -210,6 +210,10 @@ def test_map(map_path, weapon=None, species=(), share=1.0, balanced=True, god=Tr
             print('   %s: %s %s -> %s%s' % ('BALANCED' if balanced else 'ORIGINAL', r.get('field'),
                                           r.get('old'), r.get('new'),
                                           '' if r.get('ok') else '  NOT OK: %s' % r.get('reason')))
+    for w in also:              # another port in the player's hands (h2_port_test_map --secondary)
+        for r in port_balance(m, w, balanced) or ():
+            print('   %s %s: %s %s -> %s' % (w.rsplit(chr(92), 1)[-1], 'BALANCED' if balanced else 'ORIGINAL',
+                                         r.get('field'), r.get('old'), r.get('new')))
     res = arm(map_path, weapon, species, share, balanced=balanced, m=m, replace=replace) \
         if species else None
     if god:
