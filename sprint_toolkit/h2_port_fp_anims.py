@@ -848,15 +848,40 @@ def set_weights(cfg, species):
     """`weights` {animation: weight} (the SAW rework, 04a boot 5, user: 'only one of the fidgets ever
     played'): the import keeps a SEED animation's weight for the same name and gives a new name the
     default 0.0001 -- the SMG seed has posing var0 / var1, so Halo 4's var2 was all but never picked
-    (Halo 2 chooses a variant by weight). Each listed animation's weight set (tool-verified)."""
+    (Halo 2 chooses a variant by weight); the AR's Dervish fidget read 0. Written by the element
+    layout (a weight reading 0 cannot be probed): the real at +28 of the tool's 124-byte animation
+    element (measured on the AR's Chief graph); every write proved by tool's export (that one row
+    moved, else the graph is restored)."""
     import re
+    import struct
+    import h2_anim
     import h2_tagfield as tf
     g = graph_path(cfg['species'][species])
+    x = tf.export(g)
     names = re.findall(r'<element index="\d+">\s*<field name="name" type="string id">([^<]*)<',
-                       tf.export(g).split('<block name="animations"', 1)[1])
-    for nm, wgt in cfg['weights'].items():
-        if nm in names:
-            tf.set_field(g, 'weight', wgt, 'animations', names.index(nm))
+                       x.split('<block name="animations"', 1)[1])
+    d = bytearray(open(g, 'rb').read())
+    original = bytes(d)
+    ch, _n, es = h2_anim.animations_chunk(bytes(d))
+    if es != 124:
+        raise SystemExit('%s: %d-byte animation elements; the weight offset is mapped for 124' % (g, es))
+    want = {names.index(nm): float(w) for nm, w in cfg['weights'].items() if nm in names}
+    for k, w in want.items():
+        struct.pack_into('<f', d, ch + 16 + k * es + 28, w)
+    if bytes(d) == original:
+        return
+    before = tf.read_all(x)
+    open(g, 'wb').write(bytes(d))
+    after = tf.read_all(tf.export(g))
+    moved = [(a, b) for a, b in zip(before, after) if a != b]
+    ok = len(before) == len(after) and all(
+        b[0] == 'animations' and b[2] == 'weight' and b[1] in want and
+        abs(float(b[4]) - want[b[1]]) < 1e-5 for _a, b in moved)
+    if not ok:
+        open(g, 'wb').write(original)
+        raise SystemExit('%s: the weights did not read back alone -- restored' % os.path.basename(g))
+    for _a, b in moved:
+        print('   %s: %s weight -> %s' % (os.path.basename(g), names[b[1]], b[4]))
 
 
 def clear_sound_ref_flags(cfg, species):

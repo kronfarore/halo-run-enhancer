@@ -906,7 +906,8 @@ needed four. Observations (one port -- check them on the C wave):
    plays them (`clear_sound_ref_flags`).
 5. VARIANT WEIGHTS: the import keeps a seed animation's weight for the same NAME and gives a new name
    0.0001 -- Halo 4's posing var2 (the SMG seed has var0 / var1) all but never played (`weights`).
-   The AR has the same: its Chief var2 0.0001, its Dervish var1 0 (fixed after this rework, below).
+   The AR had the same: its Chief var2 0.0001, its Dervish's only fidget 0 -- fixed 2026-10-26 (user):
+   `weights` in ports_h2/assault_rifle.py, both 0.5 (status rework -> done, rule 2b; tool-verified).
 6. EVENTS from Halo 4 = its `.frame_event_list` (h4_events): melee hit 4, reload keyframe 67.
 7. Every Halo 4 render model reads through the Halo 3 reader (h4_tags exports Halo 3-shaped XML):
    own skeleton, no donor JMS. Chained balance rows can break across games -- read each row's legs.

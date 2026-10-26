@@ -411,6 +411,10 @@ PORT = {
         'skip': ['first_person:throw_equipment'],
         'looping': ['first_person:idle', 'first_person:posing:var1', 'first_person:posing:var2'],
         'overlay_reference': 'first_person:idle',
+        # fidget WEIGHTS (the SAW rework's finding, user 2026-10-26: 'do the AR fix'): the import keeps a
+        # seed animation's weight for the same name and gives a new name 0.0001 -- the Chief's var2 was
+        # 0.0001 (all but never played), the Dervish's only fidget 0 (h2_port_fp_anims `weights`)
+        'weights': {'first_person:posing:var1': 0.5, 'first_person:posing:var2': 0.5},
     },
 
     # step 11 -- `python ai_firing_profile.py --h2-port assault_rifle`: Halo 3's ai\generic AR entry

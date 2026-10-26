@@ -80,6 +80,7 @@
  },
  "model_animation_graph": {
   "animations[10].production flags": 4624,
+  "animations[10].weight": 3778,
   "animations[11].production flags": 3800,
   "animations[12].desired compression": 4104,
   "animations[12].production flags": 3924,
@@ -133,6 +134,10 @@
   "animations[4].production flags": 3492,
   "animations[5].production flags": 3616,
   "animations[8].production flags": 3988
+ },
+ "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_assault_rifle\\fp_assault_rifle": {
+  "animations[10].weight": 3778,
+  "animations[9].weight": 3654
  },
  "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_saw\\fp_saw": {
   "animations[11].production flags": 4475,
