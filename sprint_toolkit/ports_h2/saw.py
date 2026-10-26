@@ -433,7 +433,16 @@ PORT = {
                 'arms': H2EK + r'\data\!extracted\fp_arms_dervish\dervish_fp_arms.jms',
                 'source': r'objects\characters\dervish\fp\weapons\rifle\fp_saw',
                 'seed': r'objects\characters\dervish\fp\weapons\rifle\fp_smg\fp_smg',
-                'repose': 'direction'},
+                'repose': 'points',
+                # 04a boot 3 (user: 'in idle and the fidget the fingers phase into the weapon'): the
+                # Elite's bigger left hand sank into the drum on the Chief's wrist (left-hand vertices
+                # inside the gun, idle + fidgets every 8th frame: 4068; the Chief's ~150). Trials (gun
+                # frame, wu): out +0.01 and down -0.02 -> 836, the hand still on the grip (rendered).
+                # Gun-holding animations only (h1_fp_retarget hand_offset_anims; the reload / melee /
+                # throw keep Halo 4's wrists -- the Storm Rifle's global offset broke its melee)
+                'retarget': {'hand_offset_anims': {a: {'l': (0.0, 0.01, -0.02)} for a in (
+                    'first_person:idle', 'first_person:posing:var1', 'first_person:posing:var2',
+                    'first_person:fire_1:var1', 'first_person:fire_1:var2')}}},
         },
         'weapon_dir': SAW + r'\fp_saw',
     },

@@ -570,7 +570,9 @@ def h4_frames(cfg, anim):
     animated track's delta applied (the kind 'h3' rule)."""
     import h1_fp_retarget as R1
     w = 'h2:' + cfg['retarget']['graph']
-    R1.WEAPONS[w] = dict(cfg['retarget'])
+    # a species' own `retarget` keys over the shared ones (04a boot 3: the Elite's bigger left hand sank
+    # into the drum on the Chief's wrist -- the Dervish's `hand_offset` moves its wrist, the arm re-solved)
+    R1.WEAPONS[w] = dict(cfg['retarget'], **cfg.get('_species_retarget', {}))
     if w not in _H4:
         _H4[w] = R1.load(w)
     nodes, anims, defaults, _ev = _H4[w]
@@ -634,10 +636,11 @@ def build_h1(key, species, only=None, write=True):
     sp = cfg['species'][species]
     elite, order = jms_binds(sp['arms'])
     chief, _ = jms_binds(cfg['chief_arms'])
+    cfg = dict(cfg, _species_retarget=sp.get('retarget', {}))
     CHIEF_W.clear()
     ELITE_W.clear()
     ELITE_AXIS.clear()
-    if sp.get('repose') == 'direction':
+    if sp.get('repose') in ('direction', 'points'):
         ELITE_AXIS.update(bone_axes(elite))
     if sp.get('repose') == 'world':
         CHIEF_W.update(jms_world(cfg['chief_arms']))
@@ -686,7 +689,18 @@ def build_h1(key, species, only=None, write=True):
                     cpar, (cq, _ct) = chief[nm]
                     pq, pt = dict(zip(names_h2, fr))[par]
                     d = qrot(pq, et)
-                    if sp.get('repose') == 'direction':
+                    if sp.get('repose') == 'points' and _seg_next(nm) and _seg_next(nm) in world:
+                        # `repose` 'points' (04a boot 3, user: 'the fingers phase into the weapon'): the
+                        # Elite's fingers are LONGER than the Chief's, so the Chief's directions push the
+                        # tips through the grip -- each segment aims at the Chief's NEXT JOINT instead
+                        # (a longer finger reaching the same points curls tighter, along the Chief's
+                        # path round the grip); a tip keeps the direction rule
+                        q0 = qnorm(qmul(pq, eq))
+                        here = (pt[0] + d[0], pt[1] + d[1], pt[2] + d[2])
+                        aim = tuple(b - a for a, b in zip(here, world[_seg_next(nm)][1]))
+                        fr.append((qnorm(qmul(_rot_between(qrot(q0, ELITE_AXIS[nm]), aim), q0)), here))
+                        continue
+                    if sp.get('repose') in ('direction', 'points'):
                         # `repose` 'direction' (the SAW rework, 04a boot 2: the idle's LEFT fingers stood
                         # up off the fore-grip with 'world'): the Elite segment starts RIGID on its solved
                         # parent (its own bind) and turns by the smallest rotation that points it along
