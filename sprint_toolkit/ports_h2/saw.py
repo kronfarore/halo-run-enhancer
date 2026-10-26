@@ -55,8 +55,9 @@ PORT = {
     'name': 'SAW',
     'source': 'Halo 4',
     'source_tag': H4SAW + r'\storm_lmg',
-    # REWORK (user, 2026-10-20) in progress 2026-10-23 (this session): back to 'done' when finished
-    'status': 'rework',
+    # REWORK (user, 2026-10-20) DONE 2026-10-26: every item confirmed by the user in game (03a Chief,
+    # 04a Arbiter, Armed --armed all on 03a)
+    'status': 'done',
     'reservations': {
         'message_prefix': 'saw2',              # hud_messages ids saw2_* (h2_port_messages)
         'glyph': 0xE13D,                       # pickup icon codepoint, 8 English fonts

@@ -3205,7 +3205,12 @@ this takes the first.
 
 ## Halo 2
 
-The donor is `objects\weapons\rifle\gpmg`, a **cut** Bungie LMG that is in no scenario's
+**REWORKED 2026-10-23** (user: 'remove its dependency on existing weapons'): the SAW no longer
+uses the GPMG at all -- it is rebuilt on the Assault Rifle's recipe; see "Halo 2: the SAW rework"
+at the end of the Halo 2 sections. What follows is the original 2026-09 pipeline, kept as the
+research record (the GPMG itself stays as Bungie shipped it).
+
+The donor was `objects\weapons\rifle\gpmg`, a **cut** Bungie LMG that is in no scenario's
 palette but still owns its own first-person model, HUD and the full set of pickup message
 string ids. Nothing live has to be hijacked -- the ceiling the Halo 3 port ran into does not
 exist here. See `halo2-weapon-port-donor`.
@@ -3796,6 +3801,62 @@ colour often lives in an ANIMATION function, not the const colour.
 magazine-less PR) is the source's raw; a user-recalibrated row carries its note and lives in the
 config (`value_overrides` / `extra_rows`), so `make_port_catalog_h2 --write` reproduces it. AI ranges
 = the weapon's effective reach (here 3.6 wu/s x 1.3 s = 4.7 wu).
+
+### Halo 2: the SAW rework (2026-10-23) -- a HALO 4 source on the AR's route
+
+The whole weapon is `ports_h2/saw.py`; what it taught is H2_PORT_PLAN.md "SAW rework". The first
+Halo 2 port (2026-09, on the cut GPMG) rebuilt on the AR's run order, every GPMG / Warthog-chaingun
+/ sniper leftover gone (pre-rework kit: F:\HaloPortBackups\2026-10-23_saw-rework-pre):
+
+    h2_port_geometry   kind 'h3' on an `h4:` render model (h4_tags exports Halo 3-shaped XML, so the
+                       Halo 3 reader takes it): Halo 4's ONE model for world AND first person, its
+                       own skeleton (b_gun at the grip, b_magazine -> frame gun / frame magazine)
+    h2_port_weapon     --force: the SMG clone, BR .model; own projectile / damage / firing effect /
+                       muzzle light / material effects; label rifle/br
+    h2_port_numbers    Halo 4's own values on the SMG layout; the BR HUD's headshot widgets off;
+                       check 10 (the SMG's long burst + smoke drawn in first person too)
+    port_field_audit --port h2:saw   4b through the SAW's two hops (config `hops`): list 2 = 0
+    h4_fp_dump.py (Blender) -> h2_port_fp_anims.py saw --write --import --reseed   (kind 'h4')
+    h2_port_sounds     own fire / fire_lod (Halo 4's far tail) / dry / reload / ready / melee / fidget
+
+**FIRST-PERSON ANIMATIONS FROM HALO 4 (kind 'h4').** Halo 4's arms are not Halo 2's; Halo 1's ARE
+(Halo 2's masterchief), and Halo 1's wave C re-solves Halo 4's arms onto them. So the route is
+Halo 1's, end to end: the Foundry dump (out\h4_fp\storm_fp_lmg.json), h1_fp_retarget's `retarget`
+with the arm re-solve (the config's `retarget` = an h1_fp_retarget WEAPONS entry: graph,
+render_model, nodes, the Storm Rifle's DROP list; no `align` -- the FP JMS is Halo 4's own model
+space), then the Flamethrower's Halo 1 writer (build_h1; the Dervish RE-POSED: the Chief's arm
+frames, each Elite finger the Chief finger's curl). Quaternion signs made continuous per node
+(Halo 4's locals come out of matrices with w >= 0). An overlay (moving, look) = the idle's frame 0
+with each animated track's delta applied. Halo 4's `look` fills both of Halo 2's aim screens
+(overlays, pitch_and_turn), as Halo 1's did for the Flamethrower. Offline check before any boot: the
+H2 arms JMS + FP gun JMS posed by the written JMA through a 70 deg pinhole (the AR's known-good idle
+reproduces) -- idle, reload, melee, ready, throw, posing per species.
+
+**EVENTS FROM HALO 4.** Halo 4 keeps a graph's events in its `.frame_event_list` (animation events:
+frame, type; sound events: a frame offset). `source_events` (kind 'h4') writes its FRAME events
+(melee hit 4, reload keyframe 67, grenade release 8, allow interruption) and one config SOUND cue per
+animation at frame 0 -- the SAW's foley mixes already fold Halo 4's cues together. A BR seed has
+four sound references: its unused `battle_rifle_reload` became the fidget's.
+
+**BALANCE ROWS (step-4a re-check, user).** The yardstick chain H4 AR > H3 AR, H3 SMG > H2 SMG breaks
+for bullet SPEED (Halo 3's AR flies 80, its SMG 400: x0.0533 -> 16 wu/s) and for the SPREAD (the
+minimum error had no ratio from Halo 4's 0 and landed above the cone). Both are catalog
+`value_overrides` with the user's note: speed 80 (Halo 4's SAW / AR x the H2 SMG), spread by the
+sibling ratio (0 / 0.375-3.44). Read a chained row's legs before trusting it.
+
+**What the boots taught (3 on 03a, 6 on 04a; H2_PORT_PLAN "SAW rework" has the list):**
+- **Seed for SLOTS.** One sound per cue needs sound-reference slots; seed from the SMG (17) rather
+  than the BR (4). The SMG's dual-wield slots carry 'left / right arm only' flags: a single weapon
+  never plays them -- `clear_sound_ref_flags`. A new animation name gets weight 0.0001 from the import
+  (a fidget that never plays) -- `weights`.
+- **One sound per cue** (`'foley:RELOAD#5-6'`): Balanced rebuilds the reload shorter and scales the
+  event frames, never a sound's own length.
+- **The Dervish from a Halo 4 source:** fingers by DIRECTION (`repose: 'direction'`); the bigger Elite
+  hand moved out of the gun by a per-species wrist offset found by COUNTING hand vertices inside the
+  posed gun (offline renders of the H2 arms JMS + FP gun JMS posed by the written JMA; the Chief's own
+  count is the baseline -- a right hand round a pistol grip always counts); the offset in every
+  animation, faded out inside the gun-working ones (`edges`), or it pops; finger gestures held at the
+  idle grip (`hold_fingers`).
 
 ---
 
