@@ -480,7 +480,55 @@ def jms_binds(path):
     return out, names
 
 
-CHIEF_W, ELITE_W = {}, {}
+CHIEF_W, ELITE_W, ELITE_AXIS = {}, {}, {}
+
+
+def bone_axes(binds):
+    """{finger node: unit vector along the bone in its OWN frame} -- toward its child's bind (a tip:
+    its parent's axis, the segment continuing)."""
+    kids = {}
+    for nm, (par, _qt) in binds.items():
+        if par:
+            kids.setdefault(par, []).append(nm)
+    out = {}
+    for nm in binds:
+        if _is_finger(nm) and kids.get(nm):
+            t = binds[kids[nm][0]][1][1]
+            n = math.sqrt(sum(c * c for c in t)) or 1.0
+            out[nm] = tuple(c / n for c in t)
+    for nm, (par, (q, _t)) in binds.items():
+        if _is_finger(nm) and nm not in out and par in out:
+            # the parent's axis expressed in this node's frame
+            out[nm] = qrot((q[0], -q[1], -q[2], -q[3]), out[par])
+    return out
+
+
+def _seg_next(nm):
+    side, f, seg = nm.split('_')
+    nxt = {'low': 'mid', 'mid': 'tip'}.get(seg)
+    return '%s_%s_%s' % (side, f, nxt) if nxt else None
+
+
+def chief_dir(world, nm):
+    """The Chief finger segment's model-space direction: this joint -> the next (a tip: its parent's
+    joint -> this one, the segment continuing)."""
+    nxt = _seg_next(nm)
+    if nxt and nxt in world:
+        a, b = world[nm][1], world[nxt][1]
+    else:
+        side, f, _seg = nm.split('_')
+        a, b = world['%s_%s_mid' % (side, f)][1], world[nm][1]
+    return tuple(y - x for x, y in zip(a, b))
+
+
+def _rot_between(u, v):
+    lu = math.sqrt(sum(x * x for x in u)) or 1.0
+    lv = math.sqrt(sum(x * x for x in v)) or 1.0
+    u = tuple(x / lu for x in u)
+    v = tuple(x / lv for x in v)
+    c = sum(x * y for x, y in zip(u, v))
+    ax = (u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0])
+    return qnorm((1.0 + c,) + ax)
 
 
 def jms_world(path):
@@ -588,6 +636,9 @@ def build_h1(key, species, only=None, write=True):
     chief, _ = jms_binds(cfg['chief_arms'])
     CHIEF_W.clear()
     ELITE_W.clear()
+    ELITE_AXIS.clear()
+    if sp.get('repose') == 'direction':
+        ELITE_AXIS.update(bone_axes(elite))
     if sp.get('repose') == 'world':
         CHIEF_W.update(jms_world(cfg['chief_arms']))
         ELITE_W.update(jms_world(sp['arms']))
@@ -635,6 +686,16 @@ def build_h1(key, species, only=None, write=True):
                     cpar, (cq, _ct) = chief[nm]
                     pq, pt = dict(zip(names_h2, fr))[par]
                     d = qrot(pq, et)
+                    if sp.get('repose') == 'direction':
+                        # `repose` 'direction' (the SAW rework, 04a boot 2: the idle's LEFT fingers stood
+                        # up off the fore-grip with 'world'): the Elite segment starts RIGID on its solved
+                        # parent (its own bind) and turns by the smallest rotation that points it along
+                        # the Chief's segment in model space (this joint -> the next; a tip along the
+                        # Chief tip's direction from its parent) -- h1_fp_retarget's fingers by direction
+                        q0 = qnorm(qmul(pq, eq))
+                        fr.append((qnorm(qmul(_rot_between(qrot(q0, ELITE_AXIS[nm]), chief_dir(world, nm)), q0)),
+                                   (pt[0] + d[0], pt[1] + d[1], pt[2] + d[2])))
+                        continue
                     if sp.get('repose') == 'world':
                         # `repose` 'world' (the SAW rework, boot on 04a: 'strangely large fingers' --
                         # Halo 4's re-solved finger turns are far from the bind, and the two hands'

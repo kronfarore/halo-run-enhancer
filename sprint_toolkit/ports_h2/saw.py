@@ -433,7 +433,7 @@ PORT = {
                 'arms': H2EK + r'\data\!extracted\fp_arms_dervish\dervish_fp_arms.jms',
                 'source': r'objects\characters\dervish\fp\weapons\rifle\fp_saw',
                 'seed': r'objects\characters\dervish\fp\weapons\rifle\fp_smg\fp_smg',
-                'repose': 'world'},
+                'repose': 'direction'},
         },
         'weapon_dir': SAW + r'\fp_saw',
     },
