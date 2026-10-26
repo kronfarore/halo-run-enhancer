@@ -421,6 +421,9 @@ PORT = {
         # the SMG seed's single-wield IK (the Chief's left hand pinned to the left_hand marker) dropped:
         # it would hold the hand on the grip through the reload (the Spike Rifle's drop_ik)
         'drop_ik': ['masterchief'],
+        # boot 2 (user: 'the later reload parts, one melee and the fidget are mute'): the SMG seed's
+        # dual-wield sound slots are flagged left / right arm only -- every slot's flags cleared
+        'clear_sound_ref_flags': True,
         'species': {
             'masterchief': {
                 'arms': H2EK + r'\data\!extracted\fp_arms_masterchief\fp_arms.jms',

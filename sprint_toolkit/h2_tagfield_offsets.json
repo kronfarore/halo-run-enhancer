@@ -89,7 +89,17 @@
   "animations[3].production flags": 2808,
   "animations[4].production flags": 3880,
   "animations[5].production flags": 4004,
-  "animations[8].production flags": 4376
+  "animations[8].production flags": 4376,
+  "sound references[10].flags": 2269,
+  "sound references[11].flags": 2289,
+  "sound references[12].flags": 2309,
+  "sound references[13].flags": 2329,
+  "sound references[14].flags": 2349,
+  "sound references[5].flags": 2169,
+  "sound references[6].flags": 2189,
+  "sound references[7].flags": 2209,
+  "sound references[8].flags": 2229,
+  "sound references[9].flags": 2249
  },
  "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\rifle\\fp_saw\\fp_saw": {
   "animations[11].production flags": 4211,
@@ -97,7 +107,17 @@
   "animations[13].production flags": 4459,
   "animations[14].production flags": 4583,
   "animations[3].production flags": 3219,
-  "animations[8].production flags": 3839
+  "animations[8].production flags": 3839,
+  "sound references[10].flags": 2005,
+  "sound references[11].flags": 2025,
+  "sound references[12].flags": 2045,
+  "sound references[13].flags": 2065,
+  "sound references[14].flags": 2085,
+  "sound references[5].flags": 1905,
+  "sound references[6].flags": 1925,
+  "sound references[7].flags": 1945,
+  "sound references[8].flags": 1965,
+  "sound references[9].flags": 1985
  },
  "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower": {
   "animations[10].production flags": 4236,
@@ -114,7 +134,17 @@
   "animations[14].production flags": 4847,
   "animations[3].production flags": 3483,
   "animations[4].production flags": 2932,
-  "animations[8].production flags": 4103
+  "animations[8].production flags": 4103,
+  "sound references[10].flags": 2269,
+  "sound references[11].flags": 2289,
+  "sound references[12].flags": 2309,
+  "sound references[13].flags": 2329,
+  "sound references[14].flags": 2349,
+  "sound references[5].flags": 2169,
+  "sound references[6].flags": 2189,
+  "sound references[7].flags": 2209,
+  "sound references[8].flags": 2229,
+  "sound references[9].flags": 2249
  },
  "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower": {
   "animations[10].production flags": 4624,

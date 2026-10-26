@@ -708,6 +708,18 @@ def clear_verify(cfg, species):
             tf.set_field(g, 'production flags', int(tf._numbers(r[4])[0]) & ~2, 'animations', int(r[1]))
 
 
+def clear_sound_ref_flags(cfg, species):
+    """`clear_sound_ref_flags` (the SAW rework, boot 2 on 03a: 'the later reload parts, one melee and
+    the fidget are mute'): each element of a graph's SOUND REFERENCES carries flags -- 'first-person
+    only', 'left arm only', 'right arm only' -- and an SMG seed's dual-wield slots are left / right arm
+    only: a single-wield weapon never plays them. Every flag cleared (Bungie's single-wield slots: 0)."""
+    import h2_tagfield as tf
+    g = graph_path(cfg['species'][species])
+    for r in tf.read_all(tf.export(g)):
+        if r[0] == 'sound references' and r[2] == 'flags' and tf._numbers(r[4]) and int(tf._numbers(r[4])[0]):
+            tf.set_field(g, 'flags', 0, 'sound references', int(r[1]))
+
+
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     if not argv or argv[0].startswith('-'):
@@ -729,6 +741,8 @@ def main(argv=None):
                 clear_verify(cfg, species)
             if cfg.get('source_events'):
                 source_events(dict(cfg, _key=key), species)
+            if cfg.get('clear_sound_ref_flags'):
+                clear_sound_ref_flags(cfg, species)
             if species in cfg.get('drop_ik', ()):
                 # the seed's single-wield IK (Bungie's SMG: the Chief's left hand gripping the
                 # weapon's left_hand marker) dropped -- the Spiker is one-handed (boot 5)
