@@ -480,6 +480,15 @@ def jms_binds(path):
     return out, names
 
 
+CHIEF_W, ELITE_W = {}, {}
+
+
+def jms_world(path):
+    """{graph name: model-space bind rotation (w,x,y,z)} of a Halo 2 JMS (its nodes are absolute)."""
+    import h2_jms
+    return {h1_key(n.name): (n.rot[3], n.rot[0], n.rot[1], n.rot[2]) for n in h2_jms.read(path).nodes}
+
+
 def h1_frames(antr_rel, anim):
     """[(H1 node name, parent index)], [[(q (w,x,y,z) Halo 3 convention, t wu)] LOCAL per frame] of
     one Halo 1 animation, through Reclaimer -- its JMA is the SOURCE form (N + 1 frames: tool drops
@@ -577,6 +586,11 @@ def build_h1(key, species, only=None, write=True):
     sp = cfg['species'][species]
     elite, order = jms_binds(sp['arms'])
     chief, _ = jms_binds(cfg['chief_arms'])
+    CHIEF_W.clear()
+    ELITE_W.clear()
+    if sp.get('repose') == 'world':
+        CHIEF_W.update(jms_world(cfg['chief_arms']))
+        ELITE_W.update(jms_world(sp['arms']))
     weapon_nodes = list(cfg['weapon_nodes'])
     names_h2 = order + weapon_nodes + ['camera_control']
     parents = {}
@@ -619,11 +633,20 @@ def build_h1(key, species, only=None, write=True):
                     # an Elite finger: the Chief's curl on the Elite's bind, under its parent's frame
                     par, (eq, et) = elite[nm]
                     cpar, (cq, _ct) = chief[nm]
+                    pq, pt = dict(zip(names_h2, fr))[par]
+                    d = qrot(pq, et)
+                    if sp.get('repose') == 'world':
+                        # `repose` 'world' (the SAW rework, boot on 04a: 'strangely large fingers' --
+                        # Halo 4's re-solved finger turns are far from the bind, and the two hands'
+                        # bind frames differ, so a LOCAL curl lands elsewhere on the Elite): the
+                        # Chief finger's turn from its own bind IN MODEL SPACE, on the Elite's bind
+                        cw, cb, eb = world[nm][0], CHIEF_W[nm], ELITE_W[nm]
+                        fr.append((qnorm(qmul(qmul(cw, (cb[0], -cb[1], -cb[2], -cb[3])), eb)),
+                                   (pt[0] + d[0], pt[1] + d[1], pt[2] + d[2])))
+                        continue
                     li = dict(zip(keys, f))[nm][0]
                     delta = qmul((cq[0], -cq[1], -cq[2], -cq[3]), li)
                     q = qnorm(qmul(eq, delta))
-                    pq, pt = dict(zip(names_h2, fr))[par]
-                    d = qrot(pq, et)
                     fr.append((qnorm(qmul(pq, q)), (pt[0] + d[0], pt[1] + d[1], pt[2] + d[2])))
             rows.append(fr)
         if cfg.get('kind') == 'h4':
