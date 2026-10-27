@@ -7452,13 +7452,16 @@ class MagnitudeEditorDialog(QDialog):
         while venting), synced to their options on every patch (any game, so
         unticking always puts the dll back): live in a
         running MCC and in the file, which h1_overheat_unzoom swaps in even while MCC
-        holds it. Rows only for what changed or failed."""
+        holds it.
+        A row for every state, already-as-wanted included (quiet=False): the dll file's
+        state goes into the patch code (halo_patch.is_dll_state_row)."""
         sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
         os.environ['HALO_MCC_ROOT'] = mcc_root()     # where halo1.dll is (h1_overheat_unzoom)
         try:
             import h1_overheat_unzoom
             return h1_overheat_unzoom.sync(bool(CONFIG.get('h1_overheat_unzoom')),
-                                           bool(CONFIG.get('h1_overheat_no_rezoom', True)))
+                                           bool(CONFIG.get('h1_overheat_no_rezoom', True)),
+                                           quiet=False)
         except Exception as e:
             return [{'tag': 'halo1.dll', 'effect': 'Overheat drops the zoom',
                      'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
@@ -7467,12 +7470,13 @@ class MagnitudeEditorDialog(QDialog):
     def _apply_h1_melee_blocks_fire():
         """Halo 1's melee-blocks-fire halo1.dll patch, synced to its option on every patch
         (any game): live in a running MCC and in the file (swapped in while MCC holds it).
-        Rows only for what changed or failed."""
+        A row for every state (quiet=False), like _apply_h1_overheat_unzoom."""
         sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
         os.environ['HALO_MCC_ROOT'] = mcc_root()     # where halo1.dll is (h1_overheat_unzoom)
         try:
             import h1_melee_blocks_fire
-            return h1_melee_blocks_fire.sync(bool(CONFIG.get('h1_melee_blocks_fire', True)))
+            return h1_melee_blocks_fire.sync(bool(CONFIG.get('h1_melee_blocks_fire', True)),
+                                             quiet=False)
         except Exception as e:
             return [{'tag': 'halo1.dll', 'effect': 'Melee blocks the fire button',
                      'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
@@ -7485,9 +7489,10 @@ class MagnitudeEditorDialog(QDialog):
         os.environ['HALO_MCC_ROOT'] = mcc_root()     # where halo1.dll is (h1_overheat_unzoom)
         try:
             import h1_supercombine_count
-            return (h1_supercombine_count.sync(bool(CONFIG.get('h1_supercombine_count')))
+            return (h1_supercombine_count.sync(bool(CONFIG.get('h1_supercombine_count')),
+                                               quiet=False)
                     + h1_supercombine_count.sync_players(
-                        bool(CONFIG.get('h1_supercombine_players'))))
+                        bool(CONFIG.get('h1_supercombine_players')), quiet=False))
         except Exception as e:
             return [{'tag': 'halo1.dll', 'effect': 'Supercombine needle count per projectile',
                      'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
@@ -7500,7 +7505,7 @@ class MagnitudeEditorDialog(QDialog):
         os.environ['HALO_MCC_ROOT'] = mcc_root()     # where halo1.dll is (h1_overheat_unzoom)
         try:
             import h1_charge_latch
-            return h1_charge_latch.sync(bool(CONFIG.get('h1_charge_latch')))
+            return h1_charge_latch.sync(bool(CONFIG.get('h1_charge_latch')), quiet=False)
         except Exception as e:
             return [{'tag': 'halo1.dll', 'effect': 'Charge weapons wait for a release',
                      'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
@@ -7527,7 +7532,7 @@ class MagnitudeEditorDialog(QDialog):
                       # lights h2_arbiter_flashlight puts on him (2026-10-27)
                       arbiter_flashlight=bool(CONFIG.get('h2_arbiter_flashlight'))))):
             try:
-                rows += importlib.import_module(mod).sync(**kw)
+                rows += importlib.import_module(mod).sync(quiet=False, **kw)
             except Exception as e:
                 rows.append({'tag': label, 'effect': 'Dropped items / flashlight',
                              'field': label, 'ok': False, 'reason': str(e)})
@@ -7541,7 +7546,7 @@ class MagnitudeEditorDialog(QDialog):
         os.environ['HALO_MCC_ROOT'] = mcc_root()     # where halo1.dll is (h1_overheat_unzoom)
         try:
             import h1_birthday_party
-            return h1_birthday_party.sync(bool(CONFIG.get('h1_birthday_party')))
+            return h1_birthday_party.sync(bool(CONFIG.get('h1_birthday_party')), quiet=False)
         except Exception as e:
             return [{'tag': 'halo1.dll', 'effect': 'Grunt Birthday Party in classic graphics',
                      'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
@@ -9858,17 +9863,20 @@ class MagnitudeEditorDialog(QDialog):
         # already-scoped scope, weapon that rounds/trims to 0, an H2-only field on
         # an H1 map), and Failed (an edit that should have landed but didn't).
         applied = [r for r in results if r.get('ok') and not r.get('skip')]
-        # Live MCC writes and dll option syncs are counted apart: the dll rows appear only
-        # when a state changes, so counting them made a repeat patch look different
+        # Live MCC writes and dll option states are counted apart from the map's edits.
+        # Every dll option reports its state on every patch (it is in the patch code);
+        # only the ones this patch CHANGED are listed, the rest is the count
         machine = [r for r in applied if self._hp.is_machine_row(r)]
         applied = [r for r in applied if not self._hp.is_machine_row(r)]
+        dll_states = sum(1 for r in machine if self._hp.is_dll_state_row(r))
+        machine = [r for r in machine if r.get('old') != r.get('new')]
         # "inherits from base" skips (a variant reading its parent's block, correctly
         # left alone) are noise here; the patch log file still records them.
         skipped = [r for r in results if r.get('skip')
                    and r.get('reason') != 'inherits from base']
         failed = [r for r in results if not r.get('ok') and not r.get('skip')]
         lines = [f"Applied {len(applied)}   ·   Skipped {len(skipped)}   ·   Failed {len(failed)}"
-                 + (f"   ·   Game / dll {len(machine)}" if machine else "")]
+                 + (f"   ·   dll settings {dll_states}" if dll_states else "")]
         # #10: a short code standing for what was written, so two players can check
         # they ended up with the same patch instead of comparing lists by eye.
         # Not for a live-only run (map_patch=False): it wrote nothing to the map, and

@@ -144,7 +144,8 @@ def file_state(path=DLL):
 
 def _row(field, ok, new, reason):
     return {'tag': 'halo1.dll', 'effect': NAME + ' (v1)', 'field': field, 'ok': ok,
-            'old': 'v1', 'new': new if ok else None, 'reason': None if ok else reason}
+            'old': 'v1', 'new': new if ok else None, 'reason': None if ok else reason,
+            'sig': False}     # a one-off clean-up, not a state: out of the patch code
 
 
 def _retire_v1(path, live_only):

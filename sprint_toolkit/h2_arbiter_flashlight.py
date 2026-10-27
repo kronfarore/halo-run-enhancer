@@ -12,8 +12,13 @@ What dervish.biped lacks is everything VISIBLE. masterchief.biped carries three 
 
 `integrated_light_power` is an engine-exported unit function (no Functions-block row on
 the Chief either), so the lights fade with the flashlight state on any unit. The Arbiter's
-render model has no `flashlight` marker, so his lights hang on `head` -- on the Chief both
-markers share the head node and differ by ~7 degrees, which is the best stand-in there is.
+render model has no `flashlight` marker. The kit hung his lights on `head` (on the Chief
+both markers share the head node), but the Elite head sways with every idle and step, and the
+beam with it (user 2026-10-27: 'the anchor point is not that great'). His only other marker
+off the limbs is `body` on spine1, chest height; in the bind pose both point straight ahead
+(+x, same as the Chief's `flashlight`), and the lights are `no shadow` + `ignore parent
+object`, so starting inside the chest costs nothing. The patch side moves both lights onto
+`body` (MARKER); a map built with `head` needs no rebuild.
 
 KIT SIDE (this script, under the H2 kit lock): the three pieces are copied onto
 H2EK\tags\objects\characters\dervish\dervish.biped, every write proved by tool.exe
@@ -24,7 +29,8 @@ PATCH SIDE (`apply(m, on)`, for halo_patch -- the option): the patcher works fro
 baseline, which has it on. OFF lowers the bipd's Attachments count (+0x94) to drop the
 two trailing flashlight lights and nulls the Integrated Light Toggle datum (+0xC4 / +0xC8);
 ON puts both back (the light elements stay in place past the count, so ON after OFF on the
-same image works too). A map without dervish.biped, or one built before this, is reported
+same image works too) and points their marker at MARKER. Marker string ids in the cache are
+(length << 24) | string-table index (04b: head 0x04000095, body 0x040000BD). A map without dervish.biped, or one built before this, is reported
 and left alone. Cache layout from the Halo2MCC bipd plugin: Attachments elem 0x18, type
 tagref at +0x0 (class, datum).
 
@@ -48,7 +54,7 @@ TAG = os.path.join(H2EK, 'tags', DERVISH + '.biped')
 TOGGLE = r'objects\characters\masterchief\flashlight'
 LIGHTS = (r'objects\characters\masterchief\flashlight_1p',
           r'objects\characters\masterchief\flashlight_3p')
-MARKER = 'head'
+MARKER = 'body'                         # spine1: steadier than 'head' (see above)
 SCALE = 'integrated_light_power'
 
 ATTACH, ATTACH_SZ = 0x94, 0x18          # bipd Attachments (cache)
@@ -142,6 +148,14 @@ def state(m):
             'toggle': _resolve(m, m.u32(base + TOGGLE_REF + 4))}
 
 
+def _sid(m, name):
+    """The cache string id of `name` ((length << 24) | index), or None when not in the map."""
+    for i in range(m.u32(0x30)):
+        if m.resolve_stringid(i) == name:
+            return (len(name) << 24) | i
+    return None
+
+
 def apply(m, on):
     """Switch the Arbiter's flashlight on/off in an open Halo2Map. Returns a report line,
     or None when the map has nothing to switch (no Arbiter, or built before the kit edit)."""
@@ -157,8 +171,17 @@ def apply(m, on):
     if on and not eff:
         raise ValueError('the flashlight toggle effect is not in this map')
     struct.pack_into('<I', m.data, base + TOGGLE_REF + 4, eff['datum'] if on else NULL)
-    return 'Arbiter flashlight %s (attachments %d -> %d, toggle effect %s)' % (
-        'ON' if on else 'OFF', s['count'], want, 'set' if on else 'cleared')
+    marker = ''
+    if on:
+        sid = _sid(m, MARKER)
+        if sid is None:
+            raise ValueError('marker %r is not in this map' % MARKER)
+        arr = m.p2o(m.u32(base + ATTACH + 4))
+        for i in lights:
+            struct.pack_into('<I', m.data, arr + i * ATTACH_SZ + 8, sid)
+        marker = ', marker %s' % MARKER
+    return 'Arbiter flashlight %s (attachments %d -> %d, toggle effect %s%s)' % (
+        'ON' if on else 'OFF', s['count'], want, 'set' if on else 'cleared', marker)
 
 
 def main():
@@ -182,9 +205,11 @@ def main():
                   % os.path.basename(a.check))
             return 1
         on = s['count'] > s['lights'][0]
-        print('%s: Arbiter flashlight %s -- attachments %d, lights at %s, toggle %s'
+        arr = m.p2o(m.u32(s['base'] + ATTACH + 4))
+        print('%s: Arbiter flashlight %s -- attachments %d, lights at %s, toggle %s, marker %s'
               % (os.path.basename(a.check), 'ON' if on else 'OFF', s['count'], s['lights'],
-                 s['toggle']))
+                 s['toggle'], '/'.join(sorted({m.resolve_stringid(m.u32(arr + i * ATTACH_SZ + 8))
+                                               for i in s['lights']}))))
         return 0
     if not (a.on or a.off):
         sys.exit('--map needs --on or --off')

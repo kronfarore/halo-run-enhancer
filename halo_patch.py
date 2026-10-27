@@ -257,7 +257,7 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None, levels_done=None
 
 # Bump when the MEANING of a written value changes, so codes from before and after
 # don't compare equal and quietly suggest two players are in sync when they aren't.
-SIGNATURE_VERSION = 2
+SIGNATURE_VERSION = 3
 
 
 def is_machine_row(r):
@@ -268,6 +268,19 @@ def is_machine_row(r):
     2026-10-27: a10 and 04b patched twice)."""
     tag = str(r.get('tag') or '')
     return tag == 'MCC process' or tag.lower().endswith('.dll')
+
+
+def is_dll_state_row(r):
+    """A halo1.dll / halo2.dll option's state in the dll FILE after the patch. The
+    enhancer syncs every dll option on every patch and reports each one (quiet=False),
+    already-as-wanted included, so this is the dll's resulting state, the same on a
+    repeat patch -- and it belongs in the patch code: two machines with different dll
+    options are not playing the same patch (user, 2026-10-27). The running-MCC rows are
+    left out (they exist only while MCC is open), and so are one-off clean-ups that mark
+    themselves sig=False (h1_charge_latch retiring its v1)."""
+    return (str(r.get('tag') or '').lower().endswith('.dll')
+            and not str(r.get('field') or '').startswith('running MCC')
+            and r.get('sig', True))
 
 
 def patch_signature(results, map_path=None, difficulty=None):
@@ -287,8 +300,8 @@ def patch_signature(results, map_path=None, difficulty=None):
     for r in results or []:
         if not (r.get('ok') and not r.get('skip')):
             continue                       # skips/failures wrote nothing
-        if is_machine_row(r):
-            continue                       # live / dll state, not what the map holds
+        if is_machine_row(r) and not is_dll_state_row(r):
+            continue                       # live MCC writes: only while MCC is open
         new = r.get('new')
         if isinstance(new, float):
             new = f"{new:.4f}"
