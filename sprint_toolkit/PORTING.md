@@ -3830,7 +3830,8 @@ frames, each Elite finger the Chief finger's curl). Quaternion signs made contin
 with each animated track's delta applied. Halo 4's `look` fills both of Halo 2's aim screens
 (overlays, pitch_and_turn), as Halo 1's did for the Flamethrower. Offline check before any boot: the
 H2 arms JMS + FP gun JMS posed by the written JMA through a 70 deg pinhole (the AR's known-good idle
-reproduces) -- idle, reload, melee, ready, throw, posing per species.
+reproduces) -- idle, reload, melee, ready, throw, posing per species: `python h2_fp_hand_check.py
+render <key> <species> <anim> <frame> <out.png>` (write the picture outside the repo).
 
 **EVENTS FROM HALO 4.** Halo 4 keeps a graph's events in its `.frame_event_list` (animation events:
 frame, type; sound events: a frame offset). `source_events` (kind 'h4') writes its FRAME events
@@ -3856,7 +3857,8 @@ sibling ratio (0 / 0.375-3.44). Read a chained row's legs before trusting it.
   posed gun (offline renders of the H2 arms JMS + FP gun JMS posed by the written JMA; the Chief's own
   count is the baseline -- a right hand round a pistol grip always counts); the offset in every
   animation, faded out inside the gun-working ones (`edges`), or it pops; finger gestures held at the
-  idle grip (`hold_fingers`).
+  idle grip (`hold_fingers`). The count: `python h2_fp_hand_check.py clip <key> <species> <anim>...
+  [--hand l|r] [--fingers]` (SAW, final: Dervish idle fingers 4870, the Chief's 4873).
 
 ---
 
