@@ -260,6 +260,16 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None, levels_done=None
 SIGNATURE_VERSION = 2
 
 
+def is_machine_row(r):
+    """A row for THIS machine's game state, not for the map: a live MCC write ('MCC
+    process') or a halo1.dll / halo2.dll option sync. The dll syncs report only what
+    CHANGED, so the first patch after an option change carried rows a repeat patch did
+    not -- a different code and a different Applied count for the same map (user,
+    2026-10-27: a10 and 04b patched twice)."""
+    tag = str(r.get('tag') or '')
+    return tag == 'MCC process' or tag.lower().endswith('.dll')
+
+
 def patch_signature(results, map_path=None, difficulty=None):
     """A short code identifying WHAT a patch wrote, for two players to compare.
 
@@ -277,8 +287,8 @@ def patch_signature(results, map_path=None, difficulty=None):
     for r in results or []:
         if not (r.get('ok') and not r.get('skip')):
             continue                       # skips/failures wrote nothing
-        if r.get('tag') == 'MCC process':
-            continue                       # a live write: lands only with MCC running
+        if is_machine_row(r):
+            continue                       # live / dll state, not what the map holds
         new = r.get('new')
         if isinstance(new, float):
             new = f"{new:.4f}"

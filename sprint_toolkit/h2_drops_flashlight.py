@@ -27,11 +27,19 @@ FLASHLIGHT -- not a battery: a timer that switches it OFF (unit update +0x8FF9C0
   outside those areas Halo 2's light lasts 4 s. A vehicle seat (+0x14 parent) or unit +0x10A
   bit 2 still switch it off. unit +0x278 is the light level (ramps to 1.0; the per-player
   ability predicate reads it). 'flashlight_seconds' writes the imm32; 0 = forever (1e9 s).
-  Applies to the Arbiter too (his light, h2_arbiter_flashlight.py, rides the same state).
+
+THE ARBITER'S KEY (2026-10-27, his light did not come on in 04b): before any of the above,
+  +0x8FFA47 reads the player record (unit +0x140 -> players +0x224 each) byte +0x80; 1 (the
+  Arbiter) jumps to the CAMO branch +0x8FFBF7, which never touches bit 29 or +0x278 -- so his
+  copied lights (h2_arbiter_flashlight.py) had no light level to follow. 'arbiter_flashlight'
+  NOPs that je (+0x8FFA4F): he takes the Chief's flashlight branch, timer included. Native
+  camo is off anyway (h2_dll_patch no-camo-grant / no-arbiter-camo); a camo powerup is not
+  this key.
 
     python sprint_toolkit/h2_drops_flashlight.py --show
     python sprint_toolkit/h2_drops_flashlight.py --drop-limit 127 --grace 120 --flashlight 120
     python sprint_toolkit/h2_drops_flashlight.py --flashlight 0          # never switches off
+    python sprint_toolkit/h2_drops_flashlight.py --arbiter on            # his key lights the light
     python sprint_toolkit/h2_drops_flashlight.py --off                   # all stock (--restore)
     python sprint_toolkit/h2_drops_flashlight.py --probe --watch 10 --note "03a, light on"
 """
@@ -57,6 +65,7 @@ GC_JL = 0x8DCD79                 # jl +0x8DCEC6 (fewer than 50: no collection)
 GRACE_INSN = 0x91E83E            # movss xmm0, [rip+0x31425a] -> 30.0 at +0xC32AA0
 GRACE_SLOT = 0xDF71C0            # private float, .rdata raw slack
 FLASH_IMM = 0x8FFAAC             # imm32 of mov dword [rbx+0x27c], 4.0
+ARBITER_JE = 0x8FFA4F            # je +0x8FFBF7 (player +0x80 == 1: the camo branch)
 FOREVER = 1e9
 GARBAGE_GLOBALS = 0x18B7350      # qword -> +1 script request, +4 garbage count (word)
 PLAYERS_PTR = 0xE80A28           # h2_memscan.resolve_unit
@@ -109,6 +118,14 @@ def _dec_flash(cur):
     return 0 if v >= FOREVER / 10 else v
 
 
+def _enc_arbiter(on):
+    return [H('909090909090') if on else H('0f84a2010000')]
+
+
+def _dec_arbiter(cur):
+    return 1 if cur[0] == H('909090909090') else None
+
+
 TUNABLES = [
     dt.Tunable('drop_limit', 'Halo 2 garbage count before cleanup', 'objects', 50, [
         (GC_TRIGGER, H('66837804'), H('32'), b''),
@@ -122,15 +139,19 @@ TUNABLES = [
     dt.Tunable('flashlight_seconds', 'Halo 2 flashlight on-time', 's', 4.0, [
         (FLASH_IMM, H('c7837c020000'), H('00008040'), H('8b8338010000')),
     ], _enc_flash, _dec_flash),
+    dt.Tunable('arbiter_flashlight', "Halo 2 Arbiter's key works the flashlight", 'switch', 0, [
+        (ARBITER_JE, H('80bc118000000001'), H('0f84a2010000'), H('33c9')),
+    ], _enc_arbiter, _dec_arbiter),
 ]
 
 
 def sync(drop_limit=None, drop_grace_seconds=None, flashlight_seconds=None,
-         path=DLL, quiet=True, live_only=False, keys=None):
+         arbiter_flashlight=None, path=DLL, quiet=True, live_only=False, keys=None):
     """The enhancer's call: each value or None (= stock) in the running MCC AND halo2.dll.
-    keys limits what is touched (default: all three). Result rows; never raises."""
+    keys limits what is touched (default: all four). Result rows; never raises."""
     vals = {'drop_limit': drop_limit, 'drop_grace_seconds': drop_grace_seconds,
-            'flashlight_seconds': flashlight_seconds}
+            'flashlight_seconds': flashlight_seconds,
+            'arbiter_flashlight': 1 if arbiter_flashlight else None}
     if keys is not None:
         vals = {k: v for k, v in vals.items() if k in keys}
     return dt.sync(TUNABLES, MODULE, vals, path, DLL, quiet=quiet, live_only=live_only)
@@ -213,6 +234,7 @@ def main(argv=None):
     ap.add_argument('--drop-limit', type=int, help='garbage before cleanup, 1..127; 0 = none')
     ap.add_argument('--grace', type=float, help='seconds a dropped item is safe (stock 30)')
     ap.add_argument('--flashlight', type=float, help='on-time seconds; 0 = forever')
+    ap.add_argument('--arbiter', choices=('on', 'off'), help="the Arbiter's key works the flashlight")
     ap.add_argument('--off', '--restore', dest='off', action='store_true', help='all stock')
     ap.add_argument('--show', action='store_true')
     ap.add_argument('--live', action='store_true', help='the running MCC only, not the file')
@@ -228,7 +250,9 @@ def main(argv=None):
     else:
         given = {k: v for k, v in (('drop_limit', a.drop_limit),
                                    ('drop_grace_seconds', a.grace),
-                                   ('flashlight_seconds', a.flashlight)) if v is not None}
+                                   ('flashlight_seconds', a.flashlight),
+                                   ('arbiter_flashlight', a.arbiter and a.arbiter == 'on'))
+                 if v is not None}
         if not given:
             return dt.show(TUNABLES, MODULE, a.dll)
         rows = sync(path=a.dll, quiet=False, live_only=a.live, keys=set(given), **given)

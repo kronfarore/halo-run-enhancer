@@ -265,6 +265,8 @@ def show(tunables, module, path):
 def _fmt(v, unit):
     if v is None:
         return '-'
+    if unit == 'switch':
+        return 'on' if v else 'off'
     if v == 0:
         return 'unlimited'
     return ('%g %s' % (round(v, 2), unit)).strip()

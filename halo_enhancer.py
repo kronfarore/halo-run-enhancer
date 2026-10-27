@@ -2589,8 +2589,20 @@ BASELINE_GAMES = ['Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'H
 BASELINE_COLS = [('vitality', 'Vitality'), ('shield', 'Shield'),
                  ('damage', 'Damage'), ('rof', 'Rate of Fire')]
 #: Scaling difficulty (opt-in, user 2026-10-25): percent added to each dial PER LEVEL
-#: completed in the run, linear (+5 % a level -> +25 % after five levels)
-DIFFICULTY_SCALING_DEFAULT = {'vitality': 5.0, 'shield': 5.0, 'damage': 5.0, 'rof': 2.0}
+#: completed in the run, linear (+2 % a level -> +10 % after five levels). One set for
+#: every game (user 2026-10-27: 1 / 1 / 2 / 0, no per-game rows)
+DIFFICULTY_SCALING_DEFAULT = {'vitality': 1.0, 'shield': 1.0, 'damage': 2.0, 'rof': 0.0}
+
+
+def difficulty_scaling_pct():
+    """The saved scaling percentages {dial: pct}. The per-game form of 2026-10-25
+    ({game: {dial: pct}}) is dropped for the one shared default."""
+    saved = CONFIG.get('difficulty_scaling_pct')
+    if isinstance(saved, dict) and saved and all(
+            k in DIFFICULTY_SCALING_DEFAULT and not isinstance(v, dict)
+            for k, v in saved.items()):
+        return {**DIFFICULTY_SCALING_DEFAULT, **saved}
+    return dict(DIFFICULTY_SCALING_DEFAULT)
 
 
 def mod_game_scope(mod_data):
@@ -7275,8 +7287,7 @@ class MagnitudeEditorDialog(QDialog):
         if CONFIG.get('difficulty_scaling'):
             rs = getattr(self.parent_gui, 'run_state', None) if self.parent_gui else None
             steps = len(getattr(rs, 'levels', None) or [])
-            pct = ((CONFIG.get('difficulty_scaling_pct') or {}).get(self.game)
-                   or DIFFICULTY_SCALING_DEFAULT)
+            pct = difficulty_scaling_pct()
             scale = {k: float(v) for k, v in pct.items() if v}
             if steps and scale:
                 spec['scale'] = scale
@@ -7511,7 +7522,10 @@ class MagnitudeEditorDialog(QDialog):
                 ('h2_drops_flashlight', 'halo2.dll',
                  dict(drop_limit=CONFIG.get('h2_drop_limit'),
                       drop_grace_seconds=CONFIG.get('h2_drop_grace_seconds'),
-                      flashlight_seconds=CONFIG.get('h2_flashlight_seconds')))):
+                      flashlight_seconds=CONFIG.get('h2_flashlight_seconds'),
+                      # the Arbiter's key otherwise goes to camo and never lights the
+                      # lights h2_arbiter_flashlight puts on him (2026-10-27)
+                      arbiter_flashlight=bool(CONFIG.get('h2_arbiter_flashlight'))))):
             try:
                 rows += importlib.import_module(mod).sync(**kw)
             except Exception as e:
@@ -9844,12 +9858,17 @@ class MagnitudeEditorDialog(QDialog):
         # already-scoped scope, weapon that rounds/trims to 0, an H2-only field on
         # an H1 map), and Failed (an edit that should have landed but didn't).
         applied = [r for r in results if r.get('ok') and not r.get('skip')]
+        # Live MCC writes and dll option syncs are counted apart: the dll rows appear only
+        # when a state changes, so counting them made a repeat patch look different
+        machine = [r for r in applied if self._hp.is_machine_row(r)]
+        applied = [r for r in applied if not self._hp.is_machine_row(r)]
         # "inherits from base" skips (a variant reading its parent's block, correctly
         # left alone) are noise here; the patch log file still records them.
         skipped = [r for r in results if r.get('skip')
                    and r.get('reason') != 'inherits from base']
         failed = [r for r in results if not r.get('ok') and not r.get('skip')]
-        lines = [f"Applied {len(applied)}   ·   Skipped {len(skipped)}   ·   Failed {len(failed)}"]
+        lines = [f"Applied {len(applied)}   ·   Skipped {len(skipped)}   ·   Failed {len(failed)}"
+                 + (f"   ·   Game / dll {len(machine)}" if machine else "")]
         # #10: a short code standing for what was written, so two players can check
         # they ended up with the same patch instead of comparing lists by eye.
         # Not for a live-only run (map_patch=False): it wrote nothing to the map, and
@@ -9882,7 +9901,7 @@ class MagnitudeEditorDialog(QDialog):
             # field that has them, so a Firing Noise row says "Loud -> Medium" instead
             # of "2 -> 1" -- which on Reach would not even mean the same thing.
             return r.get(key + '_name') or _fmt(r.get(key))
-        for r in applied:
+        for r in applied + machine:
             hint = ("   (needs negative values for some reason)" if r.get('negated')
                     else "   (auto-computed)" if r.get('derived') else "")
             if r.get('inherited_from'):
@@ -10666,34 +10685,32 @@ class OptionsDialog(QDialog):
         bgrid.addWidget(reset, len(BASELINE_GAMES) + 2, 2, 1, len(BASELINE_COLS) - 1,
                         Qt.AlignRight)
         self._baseline_reset_tip()
-        # Scaling difficulty (opt-in): + % per level completed, one row per game
+        # Scaling difficulty (opt-in): + % per level completed, one row for every game
         srow = len(BASELINE_GAMES) + 3
         self.scaling_cb = QCheckBox("Scaling difficulty: raise the dials per level completed")
         self.scaling_cb.setChecked(bool(CONFIG.get('difficulty_scaling')))
         self.scaling_cb.setToolTip(
             "On: every patch adds these percentages to the dials above once per level "
-            "completed in this run (Next level), linear -- +5 % a level is +25 % after "
-            "five levels. A dial left on vanilla scales from the game's own value. Read "
-            "from the run, so both co-op machines patch the same numbers.")
+            "completed in this run (Next level), linear -- +2 % a level is +10 % after "
+            "five levels. The same percentages in every game. A dial left on vanilla "
+            "scales from the game's own value. Read from the run, so both co-op machines "
+            "patch the same numbers.")
         bgrid.addWidget(self.scaling_cb, srow, 0, 1, 5)
         self.scaling_spins = {}
-        saved_pct = CONFIG.get('difficulty_scaling_pct') or {}
-        for r, game in enumerate(BASELINE_GAMES):
-            lbl = QLabel(game)
-            bgrid.addWidget(lbl, srow + 1 + r, 0)
-            vals = saved_pct.get(game) or DIFFICULTY_SCALING_DEFAULT
-            for c, (key, title) in enumerate(BASELINE_COLS):
-                sp = QDoubleSpinBox()
-                sp.setRange(0.0, 100.0)
-                sp.setSingleStep(1.0)
-                sp.setDecimals(1)
-                sp.setSuffix(" %/level")
-                sp.setValue(float(vals.get(key) or 0.0))
-                sp.setToolTip("%s — %s: percent added per level completed." % (game, title))
-                sp.setEnabled(self.scaling_cb.isChecked())
-                self.scaling_cb.toggled.connect(sp.setEnabled)
-                bgrid.addWidget(sp, srow + 1 + r, c + 1)
-                self.scaling_spins[(game, key)] = sp
+        vals = difficulty_scaling_pct()
+        bgrid.addWidget(QLabel("All games"), srow + 1, 0)
+        for c, (key, title) in enumerate(BASELINE_COLS):
+            sp = QDoubleSpinBox()
+            sp.setRange(0.0, 100.0)
+            sp.setSingleStep(1.0)
+            sp.setDecimals(1)
+            sp.setSuffix(" %/level")
+            sp.setValue(float(vals.get(key) or 0.0))
+            sp.setToolTip("%s: percent added per level completed (every game)." % title)
+            sp.setEnabled(self.scaling_cb.isChecked())
+            self.scaling_cb.toggled.connect(sp.setEnabled)
+            bgrid.addWidget(sp, srow + 1, c + 1)
+            self.scaling_spins[key] = sp
         # Deferred: this reads maps, and doing it while the dialog is still being
         # built means the window never paints until it finishes.
         QTimer.singleShot(0, self._refresh_baseline_vanilla)
@@ -12792,8 +12809,9 @@ class OptionsDialog(QDialog):
         self.h2_arbiter_flash_cb.setChecked(bool(CONFIG.get('h2_arbiter_flashlight')))
         self.h2_arbiter_flash_cb.setToolTip(
             "On: the Arbiter gets the Chief's flashlight on the flashlight key, on levels "
-            "rebuilt with it (the F: Halo 2 set of 2026-10-25). Keep the halo2.dll camo "
-            "patches on, or the same key also cloaks him. Applied when you patch.")
+            "rebuilt with it (the Halo 2 set of 2026-10-27). Every patch also switches "
+            "halo2.dll so his key works the flashlight instead of the camo branch (MCC "
+            "running: live; the file applies at the next start). Applied when you patch.")
         h2form.addRow("Arbiter:", self.h2_arbiter_flash_cb)
         self.h2_drop_limit_sp = self._dll_spin(
             'h2_drop_limit', 127, "stock (50)", " objects", 0, "no limit",
@@ -13726,9 +13744,8 @@ class OptionsDialog(QDialog):
                                              else self._baseline_sets['balanced']),
             'difficulty_baseline_use_balanced': self._baseline_mode == 'balanced',
             'difficulty_scaling': self.scaling_cb.isChecked(),
-            'difficulty_scaling_pct': {g: {k: round(self.scaling_spins[(g, k)].value(), 1)
-                                           for k, _t in BASELINE_COLS}
-                                       for g in BASELINE_GAMES},
+            'difficulty_scaling_pct': {k: round(self.scaling_spins[k].value(), 1)
+                                       for k, _t in BASELINE_COLS},
             'auto_new_equipment_abilities': self.auto_nw_abilities_cb.isChecked(),
             'auto_new_weapon_duals': self.auto_nw_duals_cb.isChecked(),
             'auto_new_weapon_upgrades': self.auto_nw_upgrades_cb.isChecked(),
