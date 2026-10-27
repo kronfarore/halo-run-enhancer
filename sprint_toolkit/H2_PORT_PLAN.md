@@ -874,8 +874,8 @@ Final checks: refs OWN (melee shared by design), every sound OWN / 0 BORROW, res
 The first Halo 2 port (2026-09, Halo 4 storm_lmg on the cut GPMG) rebuilt to the AR's standard
 (user, 2026-10-20: 'remove its dependency on existing weapons'). `ports_h2/saw.py` (status 'done');
 PORTING "Halo 2: the SAW rework" is the recipe. Tested in game, CLASSIC: 3 boots on 03a (Chief), 6 on
-04a (Arbiter), Armed `--armed all` on 03a (Elite, Grunt, Jackal, Brute, Bugger carry and fire it; no
-Flood / Sentinel spawn on 03a -- not seen with the new rifle/br label). Pre-rework kit:
+04a (Arbiter), Armed `--armed all` on 03a (Elite, Grunt, Jackal, Brute, Bugger carry and fire it; Flood
+Combat Forms and Sentinels on 06b 2026-10-27, staged with `--secondary assault_rifle`: pass). Pre-rework kit:
 F:\HaloPortBackups\2026-10-23_saw-rework-pre. The GPMG itself is untouched and stays in the palettes.
 
 **User decisions (2026-10-23):** rebuild on the SMG (the yardstick) with the BR's .model / HUD / hull
@@ -907,7 +907,8 @@ needed four. Observations (one port -- check them on the C wave):
 5. VARIANT WEIGHTS: the import keeps a seed animation's weight for the same NAME and gives a new name
    0.0001 -- Halo 4's posing var2 (the SMG seed has var0 / var1) all but never played (`weights`).
    The AR had the same: its Chief var2 0.0001, its Dervish's only fidget 0 -- fixed 2026-10-26 (user):
-   `weights` in ports_h2/assault_rifle.py, both 0.5 (status rework -> done, rule 2b; tool-verified).
+   `weights` in ports_h2/assault_rifle.py, both 0.5 (status rework -> done, rule 2b; tool-verified;
+   both fidgets seen in game on 06b, 2026-10-27).
 6. EVENTS from Halo 4 = its `.frame_event_list` (h4_events): melee hit 4, reload keyframe 67.
 7. Every Halo 4 render model reads through the Halo 3 reader (h4_tags exports Halo 3-shaped XML):
    own skeleton, no donor JMS. Chained balance rows can break across games -- read each row's legs.
