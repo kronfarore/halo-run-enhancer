@@ -8446,22 +8446,25 @@
 				"Heat Threshold": {
 					"desc": "Heat Recovery Threshold",
 					"split_from": "Heat Recovery",
-					"game": ["Halo 1", "Halo 2"],
-					"tag": { "Halo 1": "weap weapons\\flamethrower\\flamethrower", "Halo 2": "weap objects\\weapons\\support_low\\flamethrower\\flamethrower" },
+					"game": ["Halo 1", "Halo 2", "Halo 3"],
+					"tag": { "Halo 1": "weap weapons\\flamethrower\\flamethrower", "Halo 2": "weap objects\\weapons\\support_low\\flamethrower\\flamethrower", "Halo 3": "weap objects\\weapons\\turret\\flamethrower\\flamethrower" },
 					"targets": [
 						{ "step": "*0.8", "field": "Heat Recovery Threshold", "min": "0", "max": "1", "easier_when": "decreased", "games": ["Halo 1"] },
-						{ "step": "*0.8", "field": "Heat Recovery Threshold", "min": "0", "max": "1", "easier_when": "decreased", "games": ["Halo 2"] }
+						{ "step": "*0.8", "field": "Heat Recovery Threshold", "min": "0", "max": "1", "easier_when": "decreased", "games": ["Halo 2"] },
+						{ "step": "*0.8", "field": "Heat Recovery Threshold", "min": "0", "max": "1", "easier_when": "decreased", "games": ["Halo 3", "Halo 3: ODST"] }
 					]
 				},
 				"Heat Loss": {
 					"desc": "Heat Loss Per Second",
 					"split_from": "Heat Recovery",
-					"game": ["Halo 1", "Halo 2"],
-					"tag": { "Halo 1": "weap weapons\\flamethrower\\flamethrower", "Halo 2": "weap objects\\weapons\\support_low\\flamethrower\\flamethrower" },
+					"game": ["Halo 1", "Halo 2", "Halo 3"],
+					"tag": { "Halo 1": "weap weapons\\flamethrower\\flamethrower", "Halo 2": "weap objects\\weapons\\support_low\\flamethrower\\flamethrower", "Halo 3": "weap objects\\weapons\\turret\\flamethrower\\flamethrower" },
 					"targets": [
 						{ "step": "*1.2", "field": "Heat Loss Per Second", "easier_when": "increased", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Heat Loss Per Second", "group": "Heat Loss", "easier_when": "increased", "games": ["Halo 2"] },
-						{ "step": "*1.2", "field": "Overheated Heat Loss Per Second", "group": "Heat Loss", "easier_when": "increased", "games": ["Halo 2"] }
+						{ "step": "*1.2", "field": "Overheated Heat Loss Per Second", "group": "Heat Loss", "easier_when": "increased", "games": ["Halo 2"] },
+						{ "step": "*1.2", "field": "Heat Loss Per Second", "group": "Heat Loss", "easier_when": "increased", "games": ["Halo 3", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Overheated Heat Loss Per Second", "group": "Heat Loss", "easier_when": "increased", "games": ["Halo 3", "Halo 3: ODST"] }
 					]
 				},
 				"Error Angle": {
@@ -8516,12 +8519,15 @@
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
 					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
-					"game": ["Halo 2"],
-					"tag": { "Halo 2": "jpt! objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame & objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame_burn" },
+					"game": ["Halo 2", "Halo 3"],
+					"tag": { "Halo 2": "jpt! objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame & objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame_burn", "Halo 3": "jpt! objects\\weapons\\turret\\flamethrower\\damage_effects\\flamethrower_impact" },
 					"targets": [
 						{ "step": "*1.2", "field": "Rider Direct Damage Scale", "min": 0, "easier_when": "increased", "games": ["Halo 2"] },
 						{ "step": "*1.2", "field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "min": 0, "easier_when": "increased", "games": ["Halo 2"] },
-						{ "step": "*1.2", "field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "min": 0, "easier_when": "increased", "games": ["Halo 2"] }
+						{ "step": "*1.2", "field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "min": 0, "easier_when": "increased", "games": ["Halo 2"] },
+						{ "step": "*1.2", "field": "Rider Direct Damage Scale", "min": 0, "easier_when": "increased", "games": ["Halo 3", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "min": 0, "easier_when": "increased", "games": ["Halo 3", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "min": 0, "easier_when": "increased", "games": ["Halo 3", "Halo 3: ODST"] }
 					]
 				},
 				"Distribution Function": {
