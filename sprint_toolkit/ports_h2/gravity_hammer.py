@@ -30,8 +30,8 @@ PORT = {
     # plasma rifle (1 magazine, 3 barrels, one-handed). The HUD = the Energy Blade's plasma_sword
     # (battery meter only), the melee fields = the sword's (lunge dash_melee); the phase-0 proposal
     # was the blade (melee-only route)
-    'donor': {'weapon': 'objects\weapons\rifle\beam_rifle\beam_rifle', 'message_prefix': 'be',
-              'hud': 'ui\hud\plasma_sword', 'melee_from': 'objects\weapons\melee\energy_blade\energy_blade',
+    'donor': {'weapon': r'objects\weapons\rifle\beam_rifle\beam_rifle', 'message_prefix': 'be',
+              'hud': r'ui\hud\plasma_sword', 'melee_from': r'objects\weapons\melee\energy_blade\energy_blade',
               'why': "trigger route (step 4a): 0 magazines / 1 latch trigger / battery age per round, "
                      "two-handed; HUD plasma_sword; melee fields the sword's"},
     'yardstick': {
