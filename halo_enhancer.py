@@ -4257,8 +4257,19 @@ class ModifierDatabase:
                                     if not m.find_tags(cls, path_) and part not in gone:
                                         gone.append(part)
                         missing[p['weapon']] = gone
-            except Exception:
-                pass
+            except Exception as e:
+                # A failed scan is NOT an answer. Cached, it read as 'no port on this
+                # level' until the map file changed or PORT_CACHE_VERSION moved, with
+                # nothing printed (review U1, 2026-10-28). Say why, answer 'none' for
+                # this session (the memo keeps the draw from re-statting the drive),
+                # and leave the disk cache alone so the next prewarm (a new session,
+                # or Options OK, which forgets the memo) tries the map again -- the
+                # pool caches follow the same rule (pool_cache_put only after a read).
+                print("port check of %s (%s) failed, not cached: %s"
+                      % (mission_id, os.path.basename(str(path)), e))
+                memo[mission_id] = []
+                self.__dict__.setdefault('_port_missing', {})[mission_id] = {}
+                return []
             cache[key] = {'ports': found, 'missing': missing}
             try:
                 with open(app_data_dir() / self.PORT_LEVELS_FILE, 'w', encoding='utf-8') as f:
