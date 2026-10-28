@@ -188,6 +188,13 @@ def main(argv=None):
     if not argv or argv[0].startswith('-'):
         raise SystemExit(__doc__)
     m = ports_h2.get(argv[0], 'meter')
+    if '--backpack-only' in argv or m.get('backpack_only'):
+        # a port with NO ammo meter (the Spartan Laser, A2: a battery weapon on the beam rifle's HUD,
+        # cloned in step 3): only the stowed-weapon icon -- `backpack`, `backpack_port`,
+        # `backpack_size`, `model_3p`, `port_hud`
+        print('the HUD weapon symbol (no ammo meter):')
+        backpack(m)
+        return
     rounds = m['rounds']
     if '--rounds' in argv:
         rounds = int(argv[argv.index('--rounds') + 1])
