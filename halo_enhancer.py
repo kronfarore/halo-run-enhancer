@@ -6258,6 +6258,15 @@ class MagnitudeEditorDialog(QDialog):
             ilad = self._inverse_ladder(t)
             if ilad and (not txt or self._is_default_step(t, txt)):
                 return self._hp.stack_op('', n, steps=ilad)
+            if t.get('from_zero') and not ilad and vanilla is not None and float(vanilla) == 0.0:
+                # A Zoom card on a weapon with NO vanilla zoom in this game (its
+                # per-game inverse_steps is null: nothing to take away). stack_op
+                # substitutes the from_zero ladder whenever vanilla is 0, before it
+                # reads the mirrored text, so the inverted card used to GRANT the
+                # zoom level and its scope graft -- the un-inverted card's edit.
+                # Inverted it is a no-op (identity_invertible already refuses such a
+                # card for a Weapon Identity pair; review U1, 2026-10-28).
+                return ''
             txt = self._hp.invert_step(txt)
             steps = [self._hp.invert_step(str(s)) for s in steps] if steps else steps
             op = self._hp.stack_op(txt, n, vanilla, t.get('from_zero'), steps=steps)
@@ -6385,7 +6394,10 @@ class MagnitudeEditorDialog(QDialog):
         if not txt and not t.get('from_zero'):
             return picked
         try:
-            return '%s -> %s' % (picked, self._stacked_op(eff, t, txt) or 'nothing')
+            op = self._stacked_op(eff, t, txt)
+            if not op and t.get('from_zero') and (self._step_inverted(eff) != (c < 0)):
+                return '%s -> nothing (inverted: no vanilla zoom here to take away)' % picked
+            return '%s -> %s' % (picked, op or 'nothing')
         except Exception:
             return picked
 
