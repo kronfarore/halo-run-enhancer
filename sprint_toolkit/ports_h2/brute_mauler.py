@@ -250,6 +250,14 @@ PORT = {
              'flags', 'sound references', slot, 0, arm, {'anchor': ('flags', delta, neighbour)})
             for sp in ('masterchief', 'dervish')
             for slot, arm, delta, neighbour in ((4, 2, -20, 5), (14, 4, 20, 13))
+        ] + [
+            # the HUD (the magnum's clone, step 7 -- run this step after a HUD rebuild) draws the
+            # magnum's HEADSHOT (widget 7, [Y] autoaim-headshot) and WEAK-SPOT (8, [Y] autoaim-
+            # vulnerable) indicators inside the crosshair: a pellet weapon has neither (Halo 3's
+            # Mauler) -- each widget's [N] condition = its own [Y] one, never shown (the Flamethrower's)
+            (r'ui\hud\brute_mauler.new_hud_definition', '[N] extra flags', 'bitmap widgets', 8, 0, 25),
+            (r'ui\hud\brute_mauler.new_hud_definition', '[N] extra flags', 'bitmap widgets', 7, 0, 4,
+             {'anchor': ('[Y] extra flags', 8)}),
         ],
         'skipped': [
             ('reload time', "the magazine's reload time does not drive the player's reload (the SAW, user): "
@@ -506,7 +514,49 @@ PORT = {
                 '(the icon is step 8)',
         },
     },
-    'firing_profile': {'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\pistol\\excavator\\excavator', 'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
-    'test': {'level': '05b_deltatowers', 'dervish_level': '08a_deltacliffs'},   # parallel step 2
+    # make_port_catalog_h2.py brute_mauler: the SHOTGUN table's rows (read from the H2 shotgun's
+    # weapon / pellet / damage effect) onto the Mauler's own; the MELEE rows onto its OWN blade melee
+    # (strike_melee's rows x72/70, user 4a); the user's 4a decisions as overrides / extra rows
+    'catalog': {
+        'table': 'balance_Mauler_Halo3_to_Halo2.json',
+        'weapon_tag': MA + r'\excavator',
+        'port_tags': [(('weap', SG + r'\shotgun'), MA + r'\excavator'),
+                      (('proj', SG + r'\projectiles\shotgun_bullet'), MA + r'\projectiles\excavator_shard'),
+                      (('jpt!', SG + r'\damage_effects\shotgun_bullet'), MA + r'\damage_effects\excavator_shard'),
+                      (('jpt!', r'objects\weapons\damage_effects\strike_melee'), MA + r'\damage_effects\excavator_melee')],
+        'shared': [],
+        'value_overrides': {
+            # the table reads Halo 3's pellets off the BARREL (1); they sit on the projectile (15)
+            'Projectiles Per Shot': {'value': 10, 'note': "user 4a 2026-10-28: the H2 shotgun's 10 x 15/15 "
+                                                          "(Halo 3 keeps 15 pellets on the projectile)"},
+            # the shotgun reloads a shell (1): the Mauler a WHOLE magazine
+            'Rounds Reloaded': {'value': 10, 'note': "Halo 3's whole-magazine reload (rounds reloaded = "
+                                                     "loaded; the shotgun's 1 a shell does not apply)"},
+            # DUAL-WIELD CARRY RULE: inventory 24 + 10 loaded = 34 (the ratio's 33.3) x1.5 -> total 50
+            'Rounds Inventory Maximum': {'value': 40, 'note': "user 4a 2026-10-28: the dual-wield carry "
+                                                              "rule x1.5 (the Shotgun yardstick cannot be dual "
+                                                              "wielded) -> 40 + 10 loaded = 50"}},
+        'extra_rows': [{'class': 'weap', 'tag': MA + r'\excavator', 'field': 'Dual Wield Damage Scale',
+                        'block': 'Barrels', 'value': 0.583333, 'card': 'Dual Weapon Damage', 'original': 0.7,
+                        'note': "user 4a 2026-10-28: Halo 3's 0.7 x the SMG's H3 -> H2 0.833 (the Spiker's "
+                                "route; the shotgun has no dual row)"}],
+        'fp_animations': r'objects\characters\*\fp\weapons\pistol\fp_excavator\fp_excavator',
+        'reload_mult': None,
+        'desc': ('%s carried from %s into Halo 2 with its own model, textures, sounds, blade melee and '
+                 'its own Halo 3 first-person animations for both species -- dual wield included -- '
+                 'balanced through the Shotgun.'),
+    },
+
+    # port_backup.py --game h2: the owned folders are derived; these are the Mauler's other edits
+    'backup': {'extra': [H2EK + r'\data\!extracted\magnum', H2EK + r'\data\!extracted\fp_magnum']},
+
+    # step 11 -- `python ai_firing_profile.py --h2-port brute_mauler`: Halo 3's ai\generic Mauler
+    # entry (010_jungle) name-for-name into H2EK ai\generic, over the H2 SHOTGUN's (the yardstick:
+    # a close-range pellet weapon's ranges)
+    'firing_profile': {'from_game': 'Halo 3', 'from_map': r'halo3\maps\010_jungle.map',
+                       'from_weapon': r'objects\weapons\pistol\excavator\excavator',
+                       'donor_weapon': SG + r'\shotgun'},
+    # 05b (Chief, Brutes) + 08a (Arbiter, Brutes): parallel step 2; rounds = Halo 3's 5 / 10
+    'test': {'level': '05b_deltatowers', 'dervish_level': '08a_deltacliffs', 'rounds': (5, 10)},
     'residency': {'levels': 'all', 'placements': False},
 }
