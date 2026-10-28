@@ -2846,6 +2846,24 @@ class ModifierDatabase:
             mod.update(extra)
         return mod
 
+    # The card-level keys a SAVED run's snapshot takes again from the live database
+    # before a patch (HaloGUI._refresh_mod_definition). MUST STAY IN STEP with the
+    # dict literal in _build_mod above: every key it sets, plus `variant_family` from
+    # _step_variants. A key missing here is a third gate level (see memory
+    # halo-skip-games-card-level): the snapshot keeps answering with stale or absent
+    # data -- a skull drafted before halo.json gave it score_points counted 0 in the
+    # score rescale (review U1, 2026-10-28). The identity keys `extra` adds (weapon /
+    # enemy / equipment / source) are what the lookup matches on and are NOT overlaid;
+    # run-time marks (bane, count, _skull_mission, _skull_duration) are not here either.
+    REFRESHED_MOD_KEYS = (
+        'name', 'desc', 'desc_overrides', 'ignore', 'debug_desc', 'tag', 'games',
+        'skip_games', 'wildcard', 'skull', 'skull_enemy', 'score_points',
+        'affected_by_skull', 'swap_enemy', 'duration', 'special', 'dual_only',
+        'harder_when', 'easier_when', 'init_defaults', 'invert_step', 'inverse_floor',
+        'color', 'exclusive', 'invertible', 'split_from', 'requires_zoom',
+        'requires_pick', 'requires_config', 'requires_config_in', 'targets',
+        'variant_family')
+
     def identity_invertible(self, mod, game=None):
         """Can this weapon card be the INVERTED half of a Weapon Identity pair?
           * `"invertible": false` in halo.json says no (the card's own knowledge);
@@ -17456,13 +17474,11 @@ class HaloGUI(QMainWindow):
             # Reach or Halo 4 -- the very fields those deny lists exist because the games
             # dropped. The Options gate and the ignore flag are carried for the same
             # reason: a snapshot must never answer a gate question with stale data.
-            for key in ('name', 'tag', 'field', 'targets', 'special', 'dual_only', 'desc',
-                        'desc_overrides', 'debug_desc', 'skull',
-                        'harder_when', 'easier_when',
-                        'init_defaults', 'games', 'skip_games',
-                        'invert_step', 'inverse_floor',
-                        'requires_config', 'requires_config_in', 'ignore',
-                        'affected_by_skull', 'color'):
+            # The list is ModifierDatabase.REFRESHED_MOD_KEYS, kept beside _build_mod
+            # so the two stay in step: this hand-written copy missed score_points,
+            # skull_enemy, swap_enemy, duration, exclusive, invertible, split_from,
+            # requires_zoom and requires_pick (review U1, 2026-10-28).
+            for key in self.db.REFRESHED_MOD_KEYS:
                 if key in fresh:
                     mod[key] = copy.deepcopy(fresh[key])
         elif self._rebuild_split_card(mod):
