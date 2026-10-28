@@ -36,6 +36,6 @@ PORT = {
         },
     },
     'firing_profile': {'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\pistol\\excavator\\excavator', 'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
-    'test': {'level': '03a_oldmombasa', 'dervish_level': '04a_gasgiant'},
+    'test': {'level': '05b_deltatowers', 'dervish_level': '08a_deltacliffs'},   # parallel step 2
     'residency': {'levels': 'all', 'placements': False},
 }

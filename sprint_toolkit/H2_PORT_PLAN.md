@@ -582,6 +582,145 @@ PARALLEL PREFACE (in front of each prompt of a pair):
 > catalog, enhancer hand-off, PORTING, memory, backup, status 'done', "A3: what the Spike Rifle taught".
 > No 13-level rebuild until I say so.
 
+### Parallel step 2: A2 Spartan Laser + A4 Mauler + A5 Gravity Hammer -- the rest of wave A (prepared 2026-10-28)
+
+User, 2026-10-28: "Write all three remaining Wave A ports." Done before this step: A1 AR, A3 Spike
+Rifle, S1 Flamethrower, the SAW rework -- all four in all 13 shipped levels (h2_port_residency
+--check on the live maps 2026-10-28: 4 of 4 everywhere). THREE sessions at once (pair 1 was two): the
+scale-up the user asked for, one step. Halo 3 ships FP graphs for all three weapons in BOTH species
+(`objects\characters\{masterchief,dervish}\fp\weapons\...\fp_spartan_laser / fp_excavator /
+fp_gravity_hammer`), so all three take the AR's route (own skeleton, own Halo 3 animations, both
+species) -- the route is now an observation of FOUR ports (A1, A3, S1 via Halo 1, the SAW via Halo 4).
+Different tool families, so the three rarely touch the same shared file: A2 a charge beam on
+battery + heat (beam visual, the Charge trigger), A4 a ONE-HANDED DUAL-WIELD pellet weapon (the Spike
+Rifle's dual-wield fixes), A5 a melee weapon with energy + an area blast (a NEW player tag beside
+Tartarus's stub).
+
+| session | weapon | test levels (`--level` on EVERY h2_port_test_map run) |
+|---|---|---|
+| 1 | A2 Spartan Laser | 03b_newmombasa (Chief) + 06a_sentinelwalls (Arbiter) |
+| 2 | A4 Mauler | 05b_deltatowers (Chief, Brutes) + 08a_deltacliffs (Arbiter, Brutes) |
+| 3 | A5 Gravity Hammer | 07a_highcharity (Chief, Brutes) + 08b_deltacontrol (Arbiter, Tartarus) |
+
+(Chief levels: 01b 03a 03b 05a 05b 07a 07b; Arbiter levels: 04a 04b 06a 06b 08a 08b. Each session's
+Armed test (`--armed all`) runs on one of ITS levels.)
+
+The PARALLEL PREFACE of pair 1 applies to each prompt (other weapons = the other two of this step),
+with three additions learned since: proofs hold BOTH kit locks (H1 first, then H2) because they
+restore shared records -- never write the catalog / AI profiles / fonts while another session's proof
+holds the H2 lock, and commit a shared-record write at once; a PermissionError on Halo 2 fonts or a
+map = a LEVEL is running in MCC (ask the user to leave the level, never to close MCC); kill tool.exe
+"ASSERTION FAILED" windows in the background (memory h2-tool-assertion-popup).
+
+COMMON READING for all three (in each prompt): H2_PORT_PLAN.md (Phase 0; "A1: what the Assault Rifle
+taught" -- the route --, "A3: what the Spike Rifle taught", "S1: what the Flamethrower taught", "SAW
+rework: what it taught"; "Running ports in parallel"; this step), PORTING.md "## Halo 2" and its port
+sections, the Halo 1 record of the SAME weapon (H1_PORT_PLAN "A6" Mauler / "A8" Spartan Laser / "A9"
+Gravity Hammer -- what Halo 1 had to approximate, and the user's decisions then), h2_phase0/*.md, and
+memory h2-port-phase0, h2-ar-pilot, h2-spike-rifle-port, h2-flamethrower-port, h2-saw-rework,
+h2-armed-cards, h2-armed-test-rules, h2-tool-assertion-popup, halo-mcc-only-blocks-dlls,
+port-findings-are-observations, shared-worktree-commits. COMMON DONE: status 'in progress' first (one
+small commit) and 'done' last; step 4a WITH THE USER before any number; the AR's route step for step,
+step 4b included (`port_field_audit.py --port h2:<key>`); the pickup icon by the H2 ICON RULE (the
+reserved E1xx, untinted: white lines, grey body, 160x62); both species in game (CLASSIC); residency in
+all 13 levels; the Armed side (`ai_firing_profile.py --h2-port`, H3's ai\generic entry on 010_jungle)
+and `--armed all` on your level; the closing checks on a built level (port_refs_audit, port_sound_refs
+0 BORROW or recorded keeps, port_volume, check 10 the FP flash, port_glyphs --capture --game halo2);
+catalog; the enhancer hand-off; PORTING + memory + "<#>: what <weapon> taught"; port_backup --game h2.
+No 13-level rebuild until the user says so. Do NOT write the next weapon's prompt.
+
+### The Spartan Laser (A2), filled in -- PARALLEL with A4 and A5
+
+> [PARALLEL PREFACE (pair 1's + the three additions above): the other weapons = the Mauler and the
+> Gravity Hammer, each in its own session right now; your levels = 03b_newmombasa (Chief) and
+> 06a_sentinelwalls (Arbiter)]
+> Port the SPARTAN LASER into Halo 2 (H2_PORT_PLAN.md wave A, #A2, "Parallel step 2"). Source: Halo 3,
+> `objects\weapons\support_high\spartan_laser\spartan_laser` (H3EK). Read the COMMON READING of
+> "Parallel step 2", above all Halo 1's "A8: what the Spartan Laser taught" (the charge-up shot through
+> the fuel rod's ONE trigger, the baked Halo 3 beam texture, the user's decisions).
+> Your config: ports_h2/spartan_laser.py (a stub). Reserved: prefix `spl2`, glyph U+E13F (DECIMAL
+> 57663), `objects\weapons\support_high\spartan_laser`, effects
+> `effects\objects\weapons\support_high\spartan_laser`, FP graphs
+> `objects\characters\{masterchief,dervish}\fp\weapons\support_high\fp_spartan_laser\fp_spartan_laser`,
+> HUD `ui\hud\spartan_laser` + `spartan_laser_*`, sounds `sound\weapons\spartan_laser_port`, catalog
+> name `Spartan Laser`.
+> STEP 4a WITH ME first: provisional the Rocket Launcher (Halo 1's pick: the laser's damage is an
+> explosion-class hit), alternatives the Beam Rifle (instant beam + battery + heat in both games), the
+> Sniper Rifle, the Sentinel Beam; no direct yardstick.
+> NEW for this port: (1) the CHARGE-TO-FIRE: Halo 3's spew-charge (2.5 s, one shot on full charge) does
+> not exist in Halo 2 -- its `Charge` trigger (only the Scarab main gun's, 2.8 s, AI) is the closest and
+> untested on a player weapon; prove it in game early, and approximate (never skip) if it fails, recording
+> what is lost; (2) BATTERY + HEAT, no magazine -- the donor proposed is the H2 BEAM RIFLE (battery + heat,
+> instant beam, two-handed, 0 magazines; `be` prefix); its battery HUD (a heat/battery meter, not an ammo
+> counter -- the Flamethrower's meter-shader traps apply); (3) the BEAM: an instant hit plus a visible beam
+> (Halo 1 baked Halo 3's beam into a texture; Halo 2 has its own beam/contrail machinery -- the Sentinel
+> Beam's and the Beam Rifle's); (4) one zoom level (2.5x; the Beam Rifle donor has 2: the scope widgets
+> stay, unlike the SAW's blanked ones); (5) the charge sound and the charge glow of the FP model.
+> Then the COMMON DONE of "Parallel step 2", "A2: what the Spartan Laser taught" last.
+
+### The Mauler (A4), filled in -- PARALLEL with A2 and A5
+
+> [PARALLEL PREFACE (pair 1's + the three additions above): the other weapons = the Spartan Laser and
+> the Gravity Hammer, each in its own session right now; your levels = 05b_deltatowers (Chief) and
+> 08a_deltacliffs (Arbiter)]
+> Port the MAULER (Brute Mauler) into Halo 2 (H2_PORT_PLAN.md wave A, #A4, "Parallel step 2"). Source:
+> Halo 3, `objects\weapons\pistol\excavator\excavator` (H3EK). Read the COMMON READING of "Parallel step 2",
+> above all "A3: what the Spike Rifle taught" (DUAL WIELD -- your weapon is the second dual-wield port, so
+> its fixes become checks of a second port) and Halo 1's "A6: what the Mauler taught".
+> Your config: ports_h2/brute_mauler.py (a stub). Reserved: prefix `mau2`, glyph U+E141 (DECIMAL 57665),
+> `objects\weapons\pistol\excavator`, effects `effects\objects\weapons\pistol\excavator`, FP graphs
+> `objects\characters\{masterchief,dervish}\fp\weapons\pistol\fp_excavator\fp_excavator`, HUD
+> `ui\hud\brute_mauler` + `brute_mauler_*`, sounds `sound\weapons\brute_mauler_port`, catalog name `Mauler`.
+> STEP 4a WITH ME first: provisional the Shotgun (pellets, close range; Halo 1's pick), alternative the
+> Pistol (the one-handed role); no direct yardstick. Halo 2's shotgun is NOT dual-wieldable and the
+> Mauler is: decide with me how the dual carry / damage reads against it.
+> NEW for this port: (1) DUAL WIELD a second time -- the Spike Rifle's rules as checks: the FP root bind
+> identity (`fp_root_identity` / `root_identity`: Halo 2 mirrors the left gun), `drop_ik` for an
+> SMG-shaped seed's single-wield IK, `rest_left_arm` (Halo 3 parks the Chief's left hand under the gun),
+> the dual HUD (`all_images`), the dual messages, the 3P class `pistol` + type `smg` (taught to the Brute
+> graph already), the inverse Jackal shield rule; (2) the DONOR: the proposed H2 shotgun (latch, magazine,
+> pellets per shot as a barrel field) is two-handed with NO dual structures, the Spike Rifle's SMG clone
+> carries them -- choose with the block shape in mind (pellets are a field; a dual HUD / dual animations
+> are not), and record why; (3) PELLETS: projectiles per shot + the spread, Halo 3's own pellet; the
+> shell-by-shell vs magazine reload (Halo 3's Mauler reloads a magazine; Halo 1's shell rule does not
+> apply); (4) the blade melee (H3's); (5) the Brutes carry it (Armed on your Brute levels).
+> Then the COMMON DONE of "Parallel step 2", "A4: what the Mauler taught" last.
+
+### The Gravity Hammer (A5), filled in -- PARALLEL with A2 and A4
+
+> [PARALLEL PREFACE (pair 1's + the three additions above): the other weapons = the Spartan Laser and
+> the Mauler, each in its own session right now; your levels = 07a_highcharity (Chief) and
+> 08b_deltacontrol (Arbiter; Tartarus's level)]
+> Port the GRAVITY HAMMER into Halo 2 as a PLAYER weapon (H2_PORT_PLAN.md wave A, #A5, "Parallel step 2"
+> -- the spreadsheet's 'y': it exists, but only as Tartarus's). Source: Halo 3,
+> `objects\weapons\melee\gravity_hammer\gravity_hammer` (H3EK). Read the COMMON READING of "Parallel step
+> 2", above all Halo 1's "A9: what the Gravity Hammer taught" (melee with energy per swing, the Energy
+> Sword's recipe, the area blast) and h2_phase0/h2_phase0_yardsticks.md "The Gravity Hammer in Halo 2".
+> Your config: ports_h2/gravity_hammer.py (a stub). Reserved: prefix `gh2`, glyph U+E142 (DECIMAL
+> 57666), a NEW folder `objects\weapons\melee\gravity_hammer_port` (Bungie's `melee\gravity_hammer` is
+> TARTARUS's and stays untouched -- he and his damage effects `objects\characters\brute\damage_effects\
+> tartarus_hammer_*` are the 08b boss fight and the enhancer's H2 Gravity Hammer cards), effects
+> `effects\objects\weapons\melee\gravity_hammer_port`, FP graphs
+> `objects\characters\{masterchief,dervish}\fp\weapons\melee\fp_gravity_hammer_port\fp_gravity_hammer_port`,
+> HUD `ui\hud\gravity_hammer` + `gravity_hammer_*`, sounds `sound\weapons\gravity_hammer_port`, catalog
+> name `Gravity Hammer` -- CHECK with the enhancer session first how its existing Halo 2 "Gravity Hammer"
+> cards (Tartarus's) and a player port of the same name should coexist in halo.json / the catalog.
+> STEP 4a WITH ME first: provisional the Energy Blade (H2's only player melee weapon with Bungie's own
+> player numbers), alternative Tartarus's own hammer (a BOSS's numbers: show them, do not default to
+> them); no player hammer exists in Halo 2.
+> NEW for this port: (1) a MELEE weapon on the AR's route: Halo 2's tag is a stub (melee only, no
+> triggers / FP model / animations / HUD / messages / player damage), so the donor proposed is the H2
+> ENERGY BLADE (melee only, ages, the sword HUD; `ps`), the render / collision model Bungie's own Halo 2
+> hammer (3P art exists) or Halo 3's (choose with me), the FP model + animations Halo 3's; (2) ENERGY PER
+> SWING (Halo 3: `cannot fire at maximum age` + age per swing; Halo 1 used the sword's aging); (3) the
+> AREA BLAST on every hit (Halo 3's gravity_hammer_explosion / smash: a detonation-shaped damage on the
+> melee -- Halo 2's melee damage + an attached effect / explosion; approximate if the melee cannot carry
+> one, record what is lost); (4) 3P: Halo 2's masterchief / dervish graphs have the `sword` class but no
+> player hammer class (the Brute graph has it) -- teach one (h2_graph_teach) or choose a class with me;
+> (5) the lunge (the sword's) and the Brutes / Tartarus: the Armed side gives ordinary Brutes the port,
+> never touches Tartarus.
+> Then the COMMON DONE of "Parallel step 2", "A5: what the Gravity Hammer taught" last.
+
 ## Hand-off prompt for a weapon session
 
 > Port the <WEAPON> into Halo 2 (H2_PORT_PLAN.md, wave <X>, #<n>). Source: <game>, `<tag>`.
