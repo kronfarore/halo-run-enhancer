@@ -54,7 +54,12 @@ TAG = os.path.join(H2EK, 'tags', DERVISH + '.biped')
 TOGGLE = r'objects\characters\masterchief\flashlight'
 LIGHTS = (r'objects\characters\masterchief\flashlight_1p',
           r'objects\characters\masterchief\flashlight_3p')
-MARKER = 'body'                         # spine1: steadier than 'head' (see above)
+MARKER = 'flashlight'                   # the marker group _add_marker puts on his model
+FALLBACK = 'head'                       # a map built before that
+RM_TAG = os.path.join(H2EK, 'tags', DERVISH + '.render_model')
+#: the user's pick from h2_arbiter_anchor_live (2026-10-28, 04b): bone `neck` (node 11), the
+#: light at the head marker's bind-pose spot facing model forward
+FLASH_MARKER = (11, (0.102945, 0.082244, 0.0), (0.657372, 0.260507, 0.260506, 0.657370))
 SCALE = 'integrated_light_power'
 
 ATTACH, ATTACH_SZ = 0x94, 0x18          # bipd Attachments (cache)
@@ -96,6 +101,73 @@ def _fill_toggle():
           % (TOGGLE, recs[0], spot))
 
 
+def _add_marker():
+    """A `flashlight` marker group on dervish.render_model (RM_TAG), one marker: FLASH_MARKER.
+    Loose layout (measured on this tag): the marker groups chunk holds 16-byte elements (name
+    string id, markers block count / 2004 pointer / ?), followed in element order by each
+    group's pooled name (unterminated) and its markers chunk ('dfbt', 0, 1, 36) + the 36-byte
+    marker (region, permutation, node, pad, translation, rotation, scale). The new group goes
+    last: element after the old ones, name + chunk after the old pooled data; the chunk count and
+    the root struct's block count go up by one (the root field found by trial). Kept only when
+    tool.exe reads every old field as before and the new group as written; else restored."""
+    import h2_tagfield as tf
+    import h2_tagref as tr
+    original = open(RM_TAG, 'rb').read()
+    if b'flashlight' + tr.SIG in original:
+        return False
+    at = -1
+    i = original.find(tr.SIG)
+    while i >= 0:
+        _v, n, sz = struct.unpack_from('<III', original, i + 4)
+        if sz == 16 and original[i + 16 + n * sz:i + 16 + n * sz + 4] == b'body':
+            at = i
+            break
+        i = original.find(tr.SIG, i + 4)
+    if at < 0:
+        raise ValueError('dervish.render_model: marker groups chunk not found')
+    arr = at + 16
+    # the old pooled data: per group, its name, then its markers chunk (count * 36)
+    p = arr + n * 16
+    for k in range(n):
+        e = original[arr + k * 16:arr + (k + 1) * 16]
+        p += e[3]                                        # name, unterminated (length byte)
+        if original[p:p + 4] != tr.SIG:
+            raise ValueError('marker group %d: no markers chunk where expected' % k)
+        p += 16 + struct.unpack_from('<I', original, p + 8)[0] * struct.unpack_from('<I', original, p + 12)[0]
+    node, t, q = FLASH_MARKER
+    elem = bytearray(original[arr + (n - 1) * 16:arr + n * 16])
+    struct.pack_into('<I', elem, 0, len('flashlight') << 24)
+    marker = struct.pack('<bbBB3f4ff', -1, -1, node, 0, *t, *q, 0.0)
+    pool = b'flashlight' + tr.SIG + struct.pack('<III', 0, 1, 36) + marker
+    body = bytearray(original)
+    body[p:p] = pool
+    body[arr + n * 16:arr + n * 16] = elem
+    struct.pack_into('<I', body, at + 8, n + 1)
+    rows_before = [r[4] for r in tf.read_all(tf.export(RM_TAG))]
+    rs, re_ = tr._arrays(original)[0]
+    for c in [o for o in range(rs, min(re_, at) - 3, 4) if struct.unpack_from('<I', original, o)[0] == n]:
+        out = bytearray(body)
+        struct.pack_into('<I', out, c, n + 1)
+        open(RM_TAG, 'wb').write(bytes(out))
+        x = tf.export(RM_TAG)
+        rows = tf.read_all(x) if x else []
+        # every old row as before, once the new group's 7 (its name + the marker's 6) are out
+        if len(rows) != len(rows_before) + 7:
+            continue
+        k = next((j for j, r in enumerate(rows) if r[4].strip() == 'flashlight'), None)
+        if k is None:
+            continue
+        rest = [r[4] for r in rows[:k] + rows[k + 7:]]
+        mk = [r[4].strip() for r in rows[k + 1:k + 7]]
+        if rest != rows_before or mk[2] != str(node):
+            continue
+        print('dervish.render_model: + marker group flashlight (node %d, %s); block count at 0x%X'
+              % (node, ' / '.join(mk[3:5]), c))
+        return True
+    open(RM_TAG, 'wb').write(original)
+    raise ValueError('no count field gave the intended result; dervish.render_model restored')
+
+
 def kit():
     import h2_tagref
     import kit_lock
@@ -112,6 +184,13 @@ def kit():
                 h2_tagref.append_attachment(TAG, 'ligh', light, MARKER, 'effe', primary_scale=SCALE)
         print('dervish.biped references: %s' % ', '.join(
             '%s %s' % r for r in h2_tagref.references(TAG)))
+        # the lights' own marker (the patch side points them at it when the map has it)
+        rbak = RM_TAG + '.preflashlight'
+        if not os.path.exists(rbak):
+            shutil.copy2(RM_TAG, rbak)
+            print('backed up -> %s' % os.path.basename(rbak))
+        if not _add_marker():
+            print('dervish.render_model: flashlight marker already there')
 
 
 # --- patch side ----------------------------------------------------------------------
@@ -148,6 +227,17 @@ def state(m):
             'toggle': _resolve(m, m.u32(base + TOGGLE_REF + 4))}
 
 
+def _groups(m):
+    """The marker group names of dervish.render_model in an open Halo2Map (mode +0x58, 12-byte
+    elements, name string id first)."""
+    t = _find(m, 'mode', DERVISH)
+    if not t or t['base'] is None:
+        return []
+    n, ptr = m.i32(t['base'] + 0x58), m.u32(t['base'] + 0x5C)
+    g = m.p2o(ptr)
+    return [m.resolve_stringid(m.u32(g + k * 12)) for k in range(max(0, min(n, 64)))]
+
+
 def _sid(m, name):
     """The cache string id of `name` ((length << 24) | index), or None when not in the map."""
     for i in range(m.u32(0x30)):
@@ -173,13 +263,14 @@ def apply(m, on):
     struct.pack_into('<I', m.data, base + TOGGLE_REF + 4, eff['datum'] if on else NULL)
     marker = ''
     if on:
-        sid = _sid(m, MARKER)
+        name = MARKER if MARKER in _groups(m) else FALLBACK
+        sid = _sid(m, name)
         if sid is None:
-            raise ValueError('marker %r is not in this map' % MARKER)
+            raise ValueError('marker %r is not in this map' % name)
         arr = m.p2o(m.u32(base + ATTACH + 4))
         for i in lights:
             struct.pack_into('<I', m.data, arr + i * ATTACH_SZ + 8, sid)
-        marker = ', marker %s' % MARKER
+        marker = ', marker %s' % name
     return 'Arbiter flashlight %s (attachments %d -> %d, toggle effect %s%s)' % (
         'ON' if on else 'OFF', s['count'], want, 'set' if on else 'cleared', marker)
 
