@@ -7696,7 +7696,11 @@ class MagnitudeEditorDialog(QDialog):
 
     def _apply_sword_drain_live(self):
         """The live-only path for the Energy Use sword row: read the typed value,
-        apply it to the stock 0.1 and push it -- or restore when the row is blank."""
+        apply it to the stock 0.1 and push it -- or restore when the row is blank.
+        The value is the PICK-STACKED op (_stacked_op: pick count, Invert step), the
+        same op Patch Map puts in the plan: this path used to push the per-pick
+        step, so after an MCC restart the run played a different sword drain than
+        the map patch had set (review U1, 2026-10-28)."""
         sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
         import sword_energy_live as sel
         rows = []
@@ -7704,7 +7708,7 @@ class MagnitudeEditorDialog(QDialog):
             if not t.get('sword_drain'):
                 continue
             txt = row_value(le).strip()
-            parsed = self._hp.hm.parse_operator(txt) if txt else None
+            parsed = self._hp.hm.parse_operator(self._stacked_op(eff, t, txt) or '') if txt else None
             if parsed:
                 oper, val = parsed
                 amount = self._hp.hm.OP_FUNCS[oper](sel.STOCK_AMOUNT, val)
