@@ -484,7 +484,14 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                # Visual, but it changes map bytes: co-op partners must patch the same
                # colours or the game fails to load, so it travels in the run.
                'enemy_colors', 'enemy_color_drift', 'weapon_ports',
-               'weapon_ports_master', 'weapon_ports_in_pools')
+               'weapon_ports_master', 'weapon_ports_in_pools',
+               # The two Weapon ports page switches the patcher reads at patch time
+               # (weapon_ports.active_ports): the balance rows and the reload / swap
+               # animation retime decide map bytes, so they travel with the run and
+               # persist in settings.json. They used to be written by
+               # OptionsDialog.values() only, so a restart re-ticked them and a co-op
+               # partner patched different animation bytes (review U1, 2026-10-28).
+               'weapon_ports_balance', 'weapon_ports_balance_anims')
 
 
 class _WheelGuard(QObject):
@@ -1111,6 +1118,11 @@ CONFIG = {
     "weapon_ports_in_pools": False,
     # Options -> Weapon ports master switch: off, no port is offered, carded or patched
     "weapon_ports_master": True,
+    # Options -> Weapon ports: apply each port's suggested balance rows (the per-port
+    # 'balanced' choice inside 'weapon_ports' wins where one was made) ...
+    "weapon_ports_balance": True,
+    # ... and retime its reload / weapon-swap animations with it (weapon_ports.py)
+    "weapon_ports_balance_anims": True,
     # {game: {weapon: dB}}: shift a port's own sounds (port_volume.py), 0 = as built.
     "weapon_port_volume": {},
     # Write the knobs into saved / shared run files, so a co-op partner loading the run
