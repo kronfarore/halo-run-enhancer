@@ -18075,20 +18075,33 @@ class RunEnhancer:
         return names
 
     # ------------------------------------------------------------ Weapon Identity
+    def _held_card_weapons(self, player):
+        """The card-weapon names the player's arsenal reaches right now: what
+        generate_pairs offers cards for (an upgrade's cards are its base's while
+        upgrade_inherits_base is on, as get_player_modifiers_filtered maps them)."""
+        game = self.db.get_game_for_mission(self.run_state.mission_id)
+        return {m.get('weapon') for m in self.db.get_player_modifiers_filtered(
+                    self.run_state.weapons_for(player), [], game) if m.get('weapon')}
+
     def identity_pairs(self, player):
         """{weapon: (up card, down card)} -- the player's Weapon Identity pairs, read
         from the run's rounds (so a saved run and the co-op partner know them too). A
         pair with a SATURATED card (in the blacklist: declared saturated by hand or at
-        the end of a patch) is over and frees its weapon."""
+        the end of a patch) is over and frees its weapon. A pair whose weapon the
+        player no longer HOLDS (Change pick swapped or removed it) is dormant: not
+        offered, not locked -- a normal round offers only the held weapons' cards,
+        and the identity used to keep taking a guaranteed slot for a weapon the
+        player had given away (review U1, 2026-10-28). It is back if the weapon is."""
         bl = set(self.run_state.blacklist or [])
+        held = self._held_card_weapons(player)
         out = {}
         for rd in self.run_state.rounds or []:
             ident = (rd.get(player) or {}).get('identity')
             if isinstance(ident, dict) and isinstance(ident.get('up'), dict) \
                     and isinstance(ident.get('down'), dict):
                 out[ident.get('weapon')] = (ident['up'], ident['down'])
-        return {w: p for w, p in out.items()
-                if not ({self.db.get_mod_label(p[0]), self.db.get_mod_label(p[1])} & bl)}
+        return {w: p for w, p in out.items() if w in held
+                and not ({self.db.get_mod_label(p[0]), self.db.get_mod_label(p[1])} & bl)}
 
     def _identity_pool(self, player):
         """{weapon: [cards]} a new identity pair can be drawn from: the player's own
