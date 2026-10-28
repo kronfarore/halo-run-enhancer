@@ -132,6 +132,165 @@ PORT = {
         'report_rows': [(GH + r'\bitmaps\gravity_hammer_port_bump', 'the port'),
                         (r'objects\weapons\melee\gravity_hammer\bitmaps\gravity_hammer_bump', "Bungie's H2 hammer")],
     },
+    # step 3 -- h2_port_weapon.py: the H2 BEAM RIFLE's weapon (0 magazines / 1 latch trigger / its
+    # barrel with battery age per round) cloned, every tag a balance row or a look may touch cloned:
+    #   the STRIKE = the SMG bullet's clone (no model, no attachments, detonation timer 'immediately'):
+    #     its impact damage = the SLAM (Halo 3's crush_melee 150, on a clone of H2's dash_melee), its
+    #     detonation effect (airborne + ground) = the IMPACT effect below;
+    #   the IMPACT effect = Tartarus's tartarus_hammer_impact cloned (Halo 2's own hammer look: blast
+    #     ring, plasma mesh, distortion, arcs) -- its damage part repointed to the port's own BLAST
+    #     (a clone of tartarus_hammer_explosion, Halo 3's numbers): the effect carries the blast as in
+    #     Halo 3 (gravity_hammer_impact -> gravity_hammer_explosion) and Tartarus's brute graph;
+    #   the JAB (melee button, 1st / 2nd / 3rd hit) = a clone of H2's smash_melee (Halo 3's 80), the
+    #     melee lunge = the slam's clone; the responses stay Bungie's (0-damage);
+    #   the world .model = the beam rifle's (no variants; render + collision pool one path: nth 0).
+    'weapon': {
+        'weapon': GH + r'\gravity_hammer_port.weapon',
+        'clones': [(BEAM + r'\beam_rifle.weapon', GH + r'\gravity_hammer_port.weapon'),
+                   (BEAM + r'\beam_rifle.model', GH + r'\gravity_hammer_port.model'),
+                   (r'objects\weapons\rifle\smg\projectiles\smg_bullet.projectile',
+                    GH + r'\projectiles\gravity_hammer_port_strike.projectile'),
+                   (r'objects\weapons\damage_effects\dash_melee.damage_effect',
+                    GH + r'\damage_effects\gravity_hammer_port_slam.damage_effect'),
+                   (r'objects\characters\brute\damage_effects\tartarus_hammer_explosion.damage_effect',
+                    GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect'),
+                   (r'objects\weapons\damage_effects\smash_melee.damage_effect',
+                    GH + r'\damage_effects\gravity_hammer_port_melee.damage_effect'),
+                   (r'objects\weapons\rifle\sniper_rifle\damage_effects\sniper_rifle_trigger.damage_effect',
+                    GH + r'\damage_effects\gravity_hammer_port_trigger.damage_effect'),
+                   (r'effects\objects\characters\brute\tartarus_hammer_impact.effect',
+                    FX + r'\gravity_hammer_port_impact.effect'),
+                   (r'effects\objects\weapons\rifle\beam_rifle\beam_rifle_fire.effect',
+                    FX + r'\gravity_hammer_port_fire.effect'),
+                   (r'effects\materials\objects\weapons\beam_rifle.material_effects',
+                    FX + r'\gravity_hammer_port.material_effects')],
+        'wiring': [
+            (GH + r'\gravity_hammer_port.weapon', 'hlmt', BEAM + r'\beam_rifle', GH + r'\gravity_hammer_port', 'world model'),
+            (GH + r'\gravity_hammer_port.model', 'mode', BEAM + r'\beam_rifle', GH + r'\gravity_hammer_port',
+             'the world render model (it and the collision pool ONE path)', {'nth': 0}),
+            (GH + r'\gravity_hammer_port.weapon', 'mode', BEAM + r'\fp_beam_rifle\fp_beam_rifle',
+             GH + r'\fp_gravity_hammer_port\fp_gravity_hammer_port', 'first person model, Master Chief', {'nth': 0}),
+            # the same path again (every=True refuses: a third record has that path's length -- the AR's)
+            (GH + r'\gravity_hammer_port.weapon', 'mode', BEAM + r'\fp_beam_rifle\fp_beam_rifle',
+             GH + r'\fp_gravity_hammer_port\fp_gravity_hammer_port', 'first person model, Dervish', {'nth': 0}),
+            (GH + r'\gravity_hammer_port.weapon', 'jmad', r'objects\characters\masterchief\fp\weapons\rifle\fp_beam_rifle\fp_beam_rifle',
+             r'objects\characters\masterchief\fp\weapons\melee\fp_gravity_hammer_port\fp_gravity_hammer_port',
+             "Master Chief FP graph: the hammer's own Halo 3 animations"),
+            (GH + r'\gravity_hammer_port.weapon', 'jmad', r'objects\characters\dervish\fp\weapons\rifle\fp_beam_rifle\fp_beam_rifle',
+             r'objects\characters\dervish\fp\weapons\melee\fp_gravity_hammer_port\fp_gravity_hammer_port',
+             "Dervish FP graph: the hammer's own Halo 3 animations"),
+            (GH + r'\gravity_hammer_port.weapon', 'proj', BEAM + r'\projectiles\beam_rifle_beam',
+             GH + r'\projectiles\gravity_hammer_port_strike', 'the strike'),
+            (GH + r'\projectiles\gravity_hammer_port_strike.projectile', 'jpt!', r'objects\weapons\rifle\smg\damage_effects\smg_bullet',
+             GH + r'\damage_effects\gravity_hammer_port_slam', 'impact damage = the slam'),
+            (GH + r'\projectiles\gravity_hammer_port_strike.projectile', 'foot', r'effects\materials\objects\weapons\smg',
+             FX + r'\gravity_hammer_port', 'impact material effects'),
+            (FX + r'\gravity_hammer_port_impact.effect', 'jpt!', r'objects\characters\brute\damage_effects\tartarus_hammer_explosion',
+             GH + r'\damage_effects\gravity_hammer_port_explosion', "the blast (the effect carries it, Halo 3's way)"),
+            (GH + r'\gravity_hammer_port.weapon', 'jpt!', r'objects\weapons\rifle\sniper_rifle\damage_effects\sniper_rifle_trigger',
+             GH + r'\damage_effects\gravity_hammer_port_trigger', 'firing damage (the wielder shove)'),
+            # the player melee: 1st hit = smash_melee in the beam rifle; Halo 3's jab = its own clone
+            (GH + r'\gravity_hammer_port.weapon', 'jpt!', r'objects\weapons\damage_effects\smash_melee',
+             GH + r'\damage_effects\gravity_hammer_port_melee', 'the jab (3rd hit: smash_melee in the beam rifle)', {'every': True}),
+            # the beam rifle's 1st / 2nd hit are strike_melee: Halo 3's hammer hits all three with smash
+            (GH + r'\gravity_hammer_port.weapon', 'jpt!', r'objects\weapons\damage_effects\strike_melee',
+             GH + r'\damage_effects\gravity_hammer_port_melee', 'the jab (1st hit)', {'nth': 0}),
+            # twice (every=True refuses: other records share the path's length)
+            (GH + r'\gravity_hammer_port.weapon', 'jpt!', r'objects\weapons\damage_effects\strike_melee',
+             GH + r'\damage_effects\gravity_hammer_port_melee', 'the jab (2nd hit)', {'nth': 0}),
+            # the beam rifle has no lunge damage: the melee-button lunge = Halo 3's crush (the slam)
+            (GH + r'\gravity_hammer_port.weapon', 'jpt!', '', GH + r'\damage_effects\gravity_hammer_port_slam',
+             'the melee lunge = the slam', {'field': 'lunge melee damage'}),
+            (GH + r'\gravity_hammer_port.weapon', 'jpt!', '', r'objects\weapons\damage_effects\dash_melee_response',
+             "the lunge response (the sword's, Bungie's 0-damage)", {'field': 'lunge melee response'}),
+            # the strike bursts into the IMPACT effect (which carries the blast) on a hit, and in the
+            # air when its timer runs out: both detonation effects
+            (GH + r'\projectiles\gravity_hammer_port_strike.projectile', 'effe', '', FX + r'\gravity_hammer_port_impact',
+             'detonation effect (airborne) = the impact + blast', {'field': 'detonation effect (airborne)'}),
+            (GH + r'\projectiles\gravity_hammer_port_strike.projectile', 'effe', '', FX + r'\gravity_hammer_port_impact',
+             'detonation effect (ground) = the impact + blast', {'field': 'detonation effect (ground)'}),
+            (GH + r'\gravity_hammer_port.weapon', 'effe', r'effects\objects\weapons\rifle\beam_rifle\beam_rifle_fire',
+             FX + r'\gravity_hammer_port_fire', 'firing effect (the swing)'),
+            (GH + r'\gravity_hammer_port.weapon', 'foot', r'effects\materials\objects\weapons\beam_rifle',
+             FX + r'\gravity_hammer_port', 'material effects (the weapon)'),
+            (GH + r'\gravity_hammer_port.weapon', 'nhdt', r'ui\hud\beam_rifle', r'ui\hud\gravity_hammer', 'its own HUD (step 7, plasma_sword clone)'),
+        ],
+        'shared': [(r'objects\weapons\damage_effects\*_melee_response', "Bungie's 0-damage responses"),
+                   (r'the particles inside gravity_hammer_port_impact', "Tartarus's (Halo 2's hammer look; Halo 3 particles do not port)"),
+                   (r'objects\characters\brute\*, tartarus_hammer_*', 'TARTARUS: never written (the 08b boss)')],
+    },
+    # step 4 -- h2_port_numbers.py: Halo 3's OWN values (= Balanced here: step 4a's lunge ratio x1.0)
+    'numbers': {
+        'numbers': [
+            # flags'': the beam rifle's 2080 minus 'aim assists only when zoomed' (32) = 'cannot fire
+            # at maximum age' alone (the hammer's energy)
+            (GH + r'\gravity_hammer_port.weapon', 'flags', '', 0, 2, 2048),
+            (GH + r'\gravity_hammer_port.weapon', 'magnification levels', '', 0, 0, 0),
+            (GH + r'\gravity_hammer_port.weapon', 'magnification range', '', 0, 0, [0.0, 0.0]),
+            # no heat: the hammer has energy only
+            (GH + r'\gravity_hammer_port.weapon', 'heat recovery threshold', '', 0, 0, 0.0),
+            (GH + r'\gravity_hammer_port.weapon', 'overheated threshold', '', 0, 0, 0.0),
+            (GH + r'\gravity_hammer_port.weapon', 'heat loss per second', '', 0, 0, 0.0),
+            (GH + r'\gravity_hammer_port.weapon', 'heat generated per round', 'barrels', 0, 0, 0.0),
+            # ENERGY: Halo 3's campaign external aging 0.05 a swing (20), on the barrel (step 4a)
+            (GH + r'\gravity_hammer_port.weapon', 'age generated per round', 'barrels', 0, 0, 0.05),
+            # one slam per Halo 3 RT cycle: melee_lunge_unaimed, 46 frames = 1.533 s (Halo 1's A9)
+            (GH + r'\gravity_hammer_port.weapon', 'fire recovery time', 'barrels', 0, 0, 1.533333),
+            (GH + r'\gravity_hammer_port.weapon', 'error angle', 'barrels', 0, 1, [0.0, 0.0]),
+            # aim (step 4a, the sword's aim ratio onto Halo 3's hammer 10 / 1.75, 10 / 6)
+            (GH + r'\gravity_hammer_port.weapon', 'autoaim angle', '', 0, 0, 6.0),
+            (GH + r'\gravity_hammer_port.weapon', 'autoaim range', '', 0, 0, 4.2),
+            (GH + r'\gravity_hammer_port.weapon', 'magnetism angle', '', 0, 1, 12.0),
+            (GH + r'\gravity_hammer_port.weapon', 'magnetism range', '', 0, 1, 8.0),
+            # THE STRIKE: an invisible shell that bursts 0.2 s out (the slam's head-down moment, Halo
+            # 1's A9) at 6 wu/s = 1.2 wu, or on whatever it touches first -- every material detonates
+            # (the SMG bullet's overpenetrate / fizzle / bounce responses all made 'impact (detonate)')
+            (GH + r'\projectiles\gravity_hammer_port_strike.projectile', 'timer', '', 0, 0, [0.2, 0.2]),
+            (GH + r'\projectiles\gravity_hammer_port_strike.projectile', 'initial velocity', '', 0, 0, 6.0),
+            (GH + r'\projectiles\gravity_hammer_port_strike.projectile', 'final velocity', '', 0, 0, 6.0),
+            # the AI judges reach by the maximum range (Halo 1's A9 trap 3); the timer still bursts it
+            (GH + r'\projectiles\gravity_hammer_port_strike.projectile', 'maximum range', '', 0, 0, 5.0),
+            (GH + r'\projectiles\gravity_hammer_port_strike.projectile', 'air gravity scale', '', 0, 0, 0.0),
+        ] + [(GH + r'\projectiles\gravity_hammer_port_strike.projectile', 'response', 'material responses', k, n, 0)
+             for k in range(1, 10) for n in (0, 1)] + [
+            # THE SLAM (impact damage + melee lunge): Halo 3's crush_melee 150, accel 1.5, radius 0
+            (GH + r'\damage_effects\gravity_hammer_port_slam.damage_effect', 'radius', '', 0, 0, [0.0, 0.0]),
+            (GH + r'\damage_effects\gravity_hammer_port_slam.damage_effect', 'damage lower bound', '', 0, 0, 150.0),
+            (GH + r'\damage_effects\gravity_hammer_port_slam.damage_effect', 'damage upper bound', '', 0, 0, [150.0, 150.0]),
+            (GH + r'\damage_effects\gravity_hammer_port_slam.damage_effect', 'instantaneous acceleration', '', 0, 0, 1.5),
+            # THE BLAST: Halo 3's gravity_hammer_explosion -- 50..160 over 0.75 -> 1.5 wu, core 0.75,
+            # accel 3.5, AI stun 4.5, category melee, flags 'does not hurt owner' (Halo 3's 2049 =
+            # does not hurt owner + transfer dmg always uses min; Halo 2's bit 0 is 'does not hurt owner')
+            (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'radius', '', 0, 0, [0.75, 1.5]),
+            (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'AOE core radius', '', 0, 0, 0.75),
+            (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'damage lower bound', '', 0, 0, 50.0),
+            (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'damage upper bound', '', 0, 0, [160.0, 160.0]),
+            (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'instantaneous acceleration', '', 0, 0, 3.5),
+            (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'AI stun radius', '', 0, 0, 4.5),
+            (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'category', '', 0, 0, 6),
+            (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'flags', '', 0, 1, 1),
+            # THE JAB (melee button): Halo 3's smash_melee 80, accel 1
+            (GH + r'\damage_effects\gravity_hammer_port_melee.damage_effect', 'damage lower bound', '', 0, 0, 80.0),
+            (GH + r'\damage_effects\gravity_hammer_port_melee.damage_effect', 'damage upper bound', '', 0, 0, [80.0, 80.0]),
+        ],
+        'skipped': [
+            ('damage pyramid', "Halo 3's hammer has 0 / 0 (the globals' default); the beam rifle's "
+                               "20 x 10 / 0.6 kept -- 4b decides"),
+            ('wielder shove', "Halo 1's +5 was tuned live by the user; the firing damage is the "
+                              "sniper trigger's clone until boot 1"),
+        ],
+    },
+    # 3P (step 4a, user): class 'melee' = the Brute graph's own hammer class (Armed Brutes hold it
+    # natively); the player graphs had only 'sword' -> h2_graph_teach cloned it as 'melee'
+    # (2026-10-28, under the H2 kit lock): masterchief 5 modes (combat, crouch, spectre_p_l / _r,
+    # warthog_p; +2853 bytes, 130 rows), dervish 2 (combat, crouch; +1053 bytes, 44 rows), every
+    # original row unchanged; stock kept in E:\HaloBackups\h2_graph_teach. SHARED Bungie tags
+    'graph_teach': [(r'objects\characters\masterchief\masterchief.model_animation_graph', 'sword=melee', {}),
+                    (r'objects\characters\dervish\dervish.model_animation_graph', 'sword=melee', {})],
+    'backup': {'extra': [H2EK + r'\tags\objects\characters\masterchief\masterchief.model_animation_graph',
+                         H2EK + r'\tags\objects\characters\dervish\dervish.model_animation_graph',
+                         r'E:\HaloBackups\h2_graph_teach\masterchief.model_animation_graph',
+                         r'E:\HaloBackups\h2_graph_teach\dervish.model_animation_graph']},
     'firing_profile': {'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\melee\\gravity_hammer\\gravity_hammer', 'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
     'test': {'level': '07a_highcharity', 'dervish_level': '08b_deltacontrol'},   # parallel step 2
     'residency': {'levels': 'all', 'placements': False},
