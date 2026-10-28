@@ -6184,6 +6184,22 @@ class MagnitudeEditorDialog(QDialog):
             return op
         return self._hp.stack_op(txt, n, vanilla, t.get('from_zero'), steps=steps)
 
+    def _share_op(self, eff, t, txt):
+        """A share row's pick-stacked op, parsed: (op, share) or None. Map Presence
+        and Armed rows hold a FRACTION of the level's placements per pick (+0.1 =
+        10%), stacked linearly by pick count, and past 1.0 in total the shares are
+        WEIGHTS (halo_patch._weigh_rates, h1_enemy_weapons.cards), as the cards'
+        debug_desc promises. An old-style PERCENTAGE typed per pick (a value above
+        1: '=25' meant 25%) is turned into its fraction BEFORE stacking, so a stacked
+        total above 1 is never mistaken for one: reading the stacked value as a
+        percentage made ten picks of +0.1 all the placements and the eleventh 1.1%
+        (review U1, 2026-10-28)."""
+        parsed = self._hp.hm.parse_operator(txt) if txt else None
+        if parsed and parsed[0] != 'mul' and parsed[1] > 1:
+            txt = ({'add': '+', 'sub': '-'}.get(parsed[0], '')
+                   + self._hp._fmt_num(parsed[1] / 100.0))
+        return self._hp.hm.parse_operator(self._stacked_op(eff, t, txt) or '')
+
     def _choice_options(self, eff, t):
         """{lowercased option name: value} of a choice target's enum in this game."""
         _cls = self._hp.hm.split_tag(target_tag(eff, t))[0]
@@ -9354,9 +9370,10 @@ class MagnitudeEditorDialog(QDialog):
                     self.presets.pop(_k, None)
                 else:
                     self.presets[_k] = txt
-                parsed = self._hp.hm.parse_operator(self._stacked_op(eff, t, txt) or '')
+                # the share as a fraction, >1 in total = weights (_share_op)
+                parsed = self._share_op(eff, t, txt)
                 if parsed and parsed[0] != 'sub' and parsed[1] > 0:
-                    share = parsed[1] / 100.0 if parsed[1] > 1 else parsed[1]
+                    share = parsed[1]
                     by = armed_picks.setdefault(t.get('enemy_type'), {})
                     by[t['enemy_weapon']] = by.get(t['enemy_weapon'], 0.0) + share
                 continue
@@ -9369,12 +9386,13 @@ class MagnitudeEditorDialog(QDialog):
             else:
                 self.presets[_k] = txt
             # card-stacking: the step is a SHARE of the level's placements per pick
-            # (+0.1 = 10%), stacked by pick count. A value above 1 is an old-style
-            # percentage (=25 meant 25%) and still reads that way.
-            parsed = self._hp.hm.parse_operator(self._stacked_op(eff, t, txt) or '')
+            # (+0.1 = 10%), stacked by pick count; an old-style percentage typed per
+            # pick (=25 meant 25%) is normalised before stacking (_share_op), so the
+            # stacked total is a fraction and above 1 a weight.
+            parsed = self._share_op(eff, t, txt)
             if not parsed or parsed[0] == 'sub':
                 continue
-            share = parsed[1] / 100.0 if parsed[1] > 1 else parsed[1]
+            share = parsed[1]
             if share > 0:
                 bucket = equip_swaps if t.get('map_equip') else card_swaps
                 # NOT capped at 100%: above it the rates are weights (_weigh_rates)
