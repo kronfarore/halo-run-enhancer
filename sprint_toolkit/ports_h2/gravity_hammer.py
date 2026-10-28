@@ -9,7 +9,7 @@ PORT = {
     'wave': 'A5',
     'name': 'Gravity Hammer',
     'source': 'Halo 3',
-    'status': 'reserved',
+    'status': 'in progress',
     'source_tag': 'objects\\weapons\\melee\\gravity_hammer\\gravity_hammer',
     'reservations': {
         'message_prefix': 'gh2',
