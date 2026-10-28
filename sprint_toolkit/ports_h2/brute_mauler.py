@@ -234,11 +234,277 @@ PORT = {
             # the BLADE (user, 4a): own melee, Halo 3's cut_melee 72 flat (strike_melee 70 / H2 20-60)
             (MA + r'\damage_effects\excavator_melee.damage_effect', 'damage lower bound', '', 0, 0, 72.0),
             (MA + r'\damage_effects\excavator_melee.damage_effect', 'damage upper bound', '', 0, 0, [72.0, 72.0]),
+        ] + [
+            # step 4b (port_field_audit.py --port h2:brute_mauler, list 2: the ratio H3 Mauler / H3
+            # Shotgun x the H2 Shotgun; list 4: both Halo 3 weapons agree -> the H2 Shotgun's)
+            (MA + r'\excavator.weapon', 'bounding radius', '', 0, 0, 0.177778),            # 0.2 / 0.225 x 0.2
+            (MA + r'\excavator.weapon', 'illumination recovery time', 'barrels', 0, 0, 0.1),   # both 0.1
+        ] + [
+            # THE DUAL READY's ARM FLAGS (after step 9: a re-import keeps them, a --reseed resets them).
+            # Halo 3's dual ready cues a LEFT and a RIGHT sound; Halo 2 plays a dual animation once per
+            # arm and filters each sound reference by its flags. The plasma pistol seed has three left
+            # / three right slots (all taken: dual reload + two dual posings) -- the dual ready pair sits
+            # on two unflagged single slots (4 overheat_exit, 14 dual_ready), so each gets its arm.
+            # Elements are 20 bytes; anchored on a neighbour's non-zero flags (pin anchor_index)
+            (r'objects\characters\%s\fp\weapons\pistol\fp_excavator\fp_excavator.model_animation_graph' % sp,
+             'flags', 'sound references', slot, 0, arm, {'anchor': ('flags', delta, neighbour)})
+            for sp in ('masterchief', 'dervish')
+            for slot, arm, delta, neighbour in ((4, 2, -20, 5), (14, 4, 20, 13))
         ],
         'skipped': [
             ('reload time', "the magazine's reload time does not drive the player's reload (the SAW, user): "
                             "the Mauler's own Halo 3 animation does"),
         ],
+    },
+    # step 5 -- h2_port_collision.py: the BATTLE RIFLE's authored hull (the world .model's donor)
+    # scaled per axis to the Mauler's render mesh; the hull's nodes (gun, magazine, OpHandle,
+    # safety) are not the Mauler's (gun alone): the hull takes the render's
+    'collision': {
+        'donor': r'objects\weapons\rifle\battle_rifle\battle_rifle',
+        'port': MA + r'\excavator',
+        'src': r'battle_rifle\collision\battle_rifle_collision.jms',     # under data\!extracted
+        'out': MA + r'\collision\excavator.jms',                         # under data
+        'port_render_jms': MA + r'\render\excavator.jms',
+        'donor_render_jms': r'battle_rifle\render\battle_rifle_L5.jms',
+        'max_growth': 1.25,
+        'nodes_from_render': True,
+    },
+
+    # step 7 -- the HUD: a clone of the MAGNUM's (DUAL-WIELD shaped: the plate named x4, the meter
+    # x2; it also carries the magnum's headshot / weak-spot crosshair widgets -- switched off in step
+    # 4, the Flamethrower's rule), Halo 3's own five pips (chud excavator: ballistic_meters #13, a
+    # 36 x 58 tab at a 65 px pitch -- Halo 1's A6) on the magnum meter's 198 x 28 canvas, 16 x 26 so
+    # the tabs fit its height; 5 = Halo 3's DEFAULT magazine (balanced 10: a pip per 2 rounds, Halo
+    # 1's A6 step), the plate's every image repainted, Halo 3's crosshair (hud_reticles #12)
+    'meter': {
+        'donor_meter': NEW_HUD + r'\meters\magnum_meter',
+        'rel': NEW_HUD + r'\meters',
+        'name': 'brute_mauler_meter',
+        'donor_hud': r'ui\hud\magnum',
+        'port_hud': r'ui\hud\brute_mauler',
+        'weapon': MA + r'\excavator.weapon',
+        'rounds': 5, 'rows': 1,
+        'canvas': (198, 28), 'tick_w': 16,
+        'tick_art': {'h3': ('ballistic_meters', 13), 'h': 26},
+        'backpack': NEW_HUD + r'\backpack_weapons',
+        'backpack_port': NEW_HUD + r'\brute_mauler_backpack',
+        'backpack_size': (62, 30),
+        'model_3p': H3_RM_XML,
+        'preview': 'brute_mauler_meter_preview.png',
+    },
+    'hud_plate': {
+        'rel': NEW_HUD + r'\backgrounds',
+        'donor': NEW_HUD + r'\backgrounds\magnum_bkd',
+        'other': NEW_HUD + r'\backgrounds\smg_bkd',        # the other dual plate: same 8 shapes
+        'name': 'brute_mauler_bkd',
+        'hud': r'ui\hud\brute_mauler',
+        'model_3p': H3_RM_XML,
+        'fallback_box': (105, 191, 5, 34),
+        'stretch': 1.4,
+        'all_images': {'dim': {4: 0, 5: 1, 6: 2, 7: 3}},
+    },
+    'reticle': {
+        'rel': NEW_HUD + r'\crosshairs',
+        'donor': NEW_HUD + r'\crosshairs\hud_reticles',
+        'donor_sequence': 8,                 # the magnum's fullscreen crosshair (half / quarter 30)
+        'name': 'brute_mauler_reticle',
+        'hud': r'ui\hud\brute_mauler',
+        'footprint': 1.0,
+        # Halo 3's ON-SCREEN size (the AR's rule, user boot 2): the AR's sprite #0 (ink 110) drew
+        # 72 px at 1080p = target_ink 64; the Mauler's #12 (ink 160) -> 64 x 160 / 110 = 93
+        'h3_art': {'sheet': 'hud_reticles', 'sequence': 12, 'yardstick': 3, 'target_ink': 93},
+        'preview': 'brute_mauler_reticle_preview.png',
+    },
+
+    # step 8 -- the pickup icon at U+E141 by the H2 ICON RULE (untinted: white lines over a grey
+    # body, Bungie's 160 x 62), and the messages (the magnum's mp_* -> mau2_*: a longer prefix, the
+    # dual lines included; 'a Magnum' -> 'a Mauler')
+    'glyph': {
+        'box': (160, 62),
+        'model_3p': H3_RM_XML,
+        'tif': 'mauler_h2_glyph.tif',
+        'colour': (255, 255, 255),
+        'style': {'line': (255, 255, 255), 'body': (153, 153, 153)},
+    },
+    'messages': {
+        'donor_prefix': 'mp', 'donor_icon': '&magnum',
+        'donor_name': 'Magnum', 'port_name': 'Mauler',
+        'names': [('a Magnum', 'a Mauler'), ('Magnum', 'Mauler')],
+        'weapon': MA + r'\excavator.weapon',
+    },
+
+    # step 10 -- h2_port_sounds.py: Halo 3's OWN sounds from MCC's halo3 sfx.fsb (render_h3_bank,
+    # 48 kHz at their native level), classic Opus. Halo 3's Mauler: a one-shot fire (3 permutations)
+    # + its far layer; single AND DUAL (left / right) ready, reload, posing; melee. Its pickup, dry
+    # fire and drops are Halo 3's MAGNUM's (the Mauler names them) -- rendered as the port's own; its
+    # pellets fly by on Halo 3's bullet_flyby_long. The graph (plasma pistol seed) cues 15 slots
+    'sounds': {
+        'weapon': MA + r'\excavator.weapon',
+        'fire_fx': FX + r'\excavator_fire.effect',
+        'audio': _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), 'out',
+                               'h2_sounds', 'brute_mauler'),
+        'audio_key': 'Mauler',
+        'h3_bank': {'mau_fire': [H3SND + r'\excavator\excavator_fire'],
+                    'mau_fire_lod': [H3SND + r'\excavator\excavator_lod_far'],
+                    'mau_dryfire': [H3SND + r'\magnum\magnum_dryfire'],
+                    'mau_ammo': [H3SND + r'\magnum\magnum_ammo'],
+                    'mau_reload': [H3SND + r'\excavator\excavator_fp\excavator_reload'],
+                    'mau_ready': [H3SND + r'\excavator\excavator_fp\excavator_ready'],
+                    'mau_melee': [H3SND + r'\excavator\excavator_fp\excavator_melee'],
+                    'mau_pose': [H3SND + r'\excavator\excavator_fp\excavator_pose'],
+                    'mau_dual_ready_l': [H3SND + r'\excavator\excavator_fp\excavator_dual_ready_left'],
+                    'mau_dual_ready_r': [H3SND + r'\excavator\excavator_fp\excavator_dual_ready_right'],
+                    'mau_dual_reload_l': [H3SND + r'\excavator\excavator_fp\excavator_dual_reload_left'],
+                    'mau_dual_reload_r': [H3SND + r'\excavator\excavator_fp\excavator_dual_reload_right'],
+                    'mau_dual_pose_1_l': [H3SND + r'\excavator\excavator_fp\excavator_dual_pose_left_var1'],
+                    'mau_dual_pose_1_r': [H3SND + r'\excavator\excavator_fp\excavator_dual_pose_right_var1'],
+                    'mau_dual_pose_2_l': [H3SND + r'\excavator\excavator_fp\excavator_dual_pose_left_var2'],
+                    'mau_dual_pose_2_r': [H3SND + r'\excavator\excavator_fp\excavator_dual_pose_right_var2'],
+                    'mau_flyby': [H3SND + r'\impacts_riccs\bullet_flyby_long'],
+                    'mau_drop': [H3SND + r'\magnum\magnum_drop'],
+                    'mau_drop_soft': [H3SND + r'\magnum\magnum_drop_soft']},
+        'sounds': {'mau_fire': ('mau_fire', 'weapon_fire'), 'mau_fire_lod': ('mau_fire_lod', 'weapon_fire'),
+                   'mau_dryfire': ('mau_dryfire', 'weapon_empty'),
+                   'mau_ammo': ('mau_ammo', 'weapon_reload'),
+                   'mau_reload': ('mau_reload', 'weapon_reload'), 'mau_ready': ('mau_ready', 'weapon_ready'),
+                   'mau_melee': ('mau_melee', 'weapon_melee'), 'mau_pose': ('mau_pose', 'weapon_ready'),
+                   'mau_dual_ready_l': ('mau_dual_ready_l', 'weapon_ready'),
+                   'mau_dual_ready_r': ('mau_dual_ready_r', 'weapon_ready'),
+                   'mau_dual_reload_l': ('mau_dual_reload_l', 'weapon_reload'),
+                   'mau_dual_reload_r': ('mau_dual_reload_r', 'weapon_reload'),
+                   'mau_dual_pose_1_l': ('mau_dual_pose_1_l', 'weapon_ready'),
+                   'mau_dual_pose_1_r': ('mau_dual_pose_1_r', 'weapon_ready'),
+                   'mau_dual_pose_2_l': ('mau_dual_pose_2_l', 'weapon_ready'),
+                   'mau_dual_pose_2_r': ('mau_dual_pose_2_r', 'weapon_ready'),
+                   'mau_flyby': ('mau_flyby', 'projectile_flyby'),
+                   'mau_drop': ('mau_drop', 'object_impacts'),
+                   'mau_drop_soft': ('mau_drop_soft', 'object_impacts')},
+        'repoint_tags': [(FX + r'\excavator.material_effects', r'sound\weapons\magnum\magnum_drop', 'mau_drop'),
+                         (FX + r'\excavator.material_effects', r'sound\weapons\magnum\magnum_drop_soft', 'mau_drop_soft'),
+                         (MA + r'\projectiles\excavator_shard.projectile',
+                          r'sound\weapons\impacts_riccs\bullet_flyby_long', 'mau_flyby')],
+        # the shotgun blast's remastered LFE layer: Halo 3 has none -- the far layer takes its slot
+        # (one slot of the cloned effect, no block delete)
+        'repoint_fx': [(r'sound\weapons\shotgun\fire', 'mau_fire'),
+                       (r'sound_remastered\weapons\shotgun\fire_lod', 'mau_fire_lod'),
+                       (r'sound_remastered\weapons\shotgun\shotgun_lfe', 'mau_fire_lod')],
+        'repoint_weapon': [(r'sound\weapons\magnum\magnum_dryfire', 'mau_dryfire'),
+                           (r'sound\weapons\magnum\magnum_ammo', 'mau_ammo')],
+        # the plasma pistol seed's 15 slots onto Halo 3's 12 sounds (each a distinct slot at least once)
+        'graph_sounds': (('plaspistol_melee_one', 'mau_melee'), ('plaspistol_melee_toidle', 'mau_melee'),
+                         ('plaspistol_melee_two', 'mau_melee'), ('plaspistol_overheat', 'mau_reload'),
+                         ('plaspistol_overheat_exit', 'mau_dual_ready_l'),
+                         ('plaspistol_posing_one', 'mau_pose'), ('plaspistol_posing_zero', 'mau_pose'),
+                         ('plaspistol_ready', 'mau_ready'),
+                         ('plaspistol_dual_overheat_exit_l', 'mau_dual_reload_l'),
+                         ('plaspistol_dual_overheat_exit_r', 'mau_dual_reload_r'),
+                         ('plaspistol_dual_overheat_l', 'mau_dual_pose_2_l'),
+                         ('plaspistol_dual_overheat_r', 'mau_dual_pose_2_r'),
+                         ('plaspistol_dual_posing_l', 'mau_dual_pose_1_l'),
+                         ('plaspistol_dual_posing_r', 'mau_dual_pose_1_r'),
+                         ('plaspistol_dual_ready', 'mau_dual_ready_r')),
+        'graph_sound_dir': r'sound\weapons\plasma_pistol' + '\\',
+        'gain': {},
+        'boost': {},
+        'backup': r'E:\HaloBackups\H2EK_brute_mauler_before_sounds',
+        'graph_backup': r'E:\HaloBackups\H2EK_brute_mauler_graphs_before_sounds',
+    },
+
+    # step 9 -- h2_port_fp_anims.py: Halo 3's OWN FP animations, both species, single AND DUAL,
+    # through `tool fp-model-animations`. Seeded from Bungie's H2 PLASMA PISTOL graphs: one-handed,
+    # dual blend screens, NO single-wield IK entry (drop_ik not needed -- the Spiker's SMG seed had
+    # one), and 15 sound-reference SLOTS in BOTH species -- Halo 3 cues 12 sounds; the magnum's graphs
+    # (first seed, 2026-10-28) have 10 (Chief) / 7 (Dervish): the Arbiter's posing would be mute
+    'fp_anims': {
+        'species': {
+            'masterchief': {
+                'graph': r'objects\characters\masterchief\fp\weapons\pistol\fp_excavator\fp_excavator.model_animation_graph',
+                'arms_rm': r'objects\characters\masterchief\fp\fp.render_model',
+                'arms': H2EK + r'\data\!extracted\fp_arms_masterchief\fp_arms.jms',
+                'source': r'objects\characters\masterchief\fp\weapons\pistol\fp_excavator',
+                'seed': r'objects\characters\masterchief\fp\weapons\pistol\fp_plasma_pistol\fp_plasma_pistol'},
+            'dervish': {
+                'graph': r'objects\characters\dervish\fp\weapons\pistol\fp_excavator\fp_excavator.model_animation_graph',
+                'arms_rm': r'objects\characters\dervish\fp\fp.render_model',
+                'arms': H2EK + r'\data\!extracted\fp_arms_dervish\dervish_fp_arms.jms',
+                'source': r'objects\characters\dervish\fp\weapons\pistol\fp_excavator',
+                'seed': r'objects\characters\dervish\fp\weapons\pistol\fp_plasma_pistol\fp_plasma_pistol'},
+        },
+        'weapon_dir': MA + r'\fp_excavator',
+        'weapon_rm': MA + r'\fp_excavator\fp_excavator.render_model',
+        'weapon_nodes': ['gun', 'barrel', 'drum', 'piston'],
+        # Halo 2 has no equipment (throw_equipment is Halo 3's deployable)
+        'skip': ['first_person:throw_equipment'],
+        # Halo 3 names its single-wield idle in three variants (var1 99 / var2 124 / var3 74 frames);
+        # the magnum seed (and every Halo 2 single-wield graph) has a plain `first_person:idle` --
+        # var1 becomes it (the overlays' reference pose), var2 / var3 stay variants
+        'rename': {'first_person:idle:var1': 'first_person:idle'},
+        'looping': ['first_person:idle', 'first_person:idle:var2', 'first_person:idle:var3',
+                    'first_person:posing:var1',
+                    'first_person:dual:idle:var1', 'first_person:dual:idle:var2', 'first_person:dual:idle:var3',
+                    'first_person:dual:posing:var1', 'first_person:dual:posing:var2'],
+        'overlay_reference': 'first_person:idle:var1',
+        # Halo 3's OWN frame + sound events per animation (the Spiker's rule): its 12 sounds onto the
+        # graph's own slots (step 10 repointed the seed's 15)
+        'source_events': {'sounds': {
+            'excavator_melee': 'mau_melee', 'excavator_ready': 'mau_ready', 'excavator_reload': 'mau_reload',
+            'excavator_pose': 'mau_pose',
+            'excavator_dual_ready_left': 'mau_dual_ready_l', 'excavator_dual_ready_right': 'mau_dual_ready_r',
+            'excavator_dual_reload_left': 'mau_dual_reload_l', 'excavator_dual_reload_right': 'mau_dual_reload_r',
+            'excavator_dual_pose_left_var1': 'mau_dual_pose_1_l', 'excavator_dual_pose_right_var1': 'mau_dual_pose_1_r',
+            'excavator_dual_pose_left_var2': 'mau_dual_pose_2_l', 'excavator_dual_pose_right_var2': 'mau_dual_pose_2_r'}},
+        # THE SPIKER'S CHECKS (dual-wield port #2, 2026-10-28): drop_ik n/a (the magnum seed has no
+        # IK block); rest_left_arm n/a -- Halo 3's Mauler animator keeps the left hand LOW in every
+        # single-wield animation of BOTH species (3.8, 9.2, -26 cm, the Arbiter-like rest the Spiker had
+        # to build), raising it only in the reloads (25, 8, -8 at mid-reload); root_identity n/a
+        # (fp_excavator's root binds at identity, see geometry)
+    },
+
+    # step 4b -- port_field_audit.py --port h2:brute_mauler: every field NO card covers where the
+    # Halo 3 Mauler differs from the Halo 3 Shotgun (the yardstick) -- list 2 must say 0 to port
+    'field_audit': {
+        'source_kit': 'H3EK',
+        'source': {'weapon': (MA + r'\excavator.weapon', r'objects\weapons\rifle\shotgun\shotgun.weapon'),
+                   'projectile': (MA + r'\projectiles\excavator_shard.projectile',
+                                  r'objects\weapons\rifle\shotgun\projectiles\shotgun_bullet.projectile'),
+                   'damage_effect': (MA + r'\damage_effects\excavator_shard.damage_effect',
+                                     r'objects\weapons\rifle\shotgun\damage_effects\shotgun_bullet.damage_effect')},
+        'target': {'weapon': (MA + r'\excavator.weapon', SG + r'\shotgun.weapon'),
+                   'projectile': (MA + r'\projectiles\excavator_shard.projectile',
+                                  SG + r'\projectiles\shotgun_bullet.projectile'),
+                   'damage_effect': (MA + r'\damage_effects\excavator_shard.damage_effect',
+                                     SG + r'\damage_effects\shotgun_bullet.damage_effect')},
+        # 2026-10-28, first run: list 2 = the card-covered rows (aim assist, magazines, range, falloff,
+        # damage, rider: the catalog's balanced rows; 'port already' = Halo 3's own DEFAULT) + bounding
+        # radius (written by the ratio). Every other row decided:
+        'decisions': {
+            'magnetism angle / range (nth 0) + throttle magnitude / minimum distance / maximum adjustment':
+                "Halo 2's MELEE aim assist (the lunge): the shotgun 40 / 1.0 / 0.9 / 0.1 / 20, the magnum 0. "
+                "The audit pairs Halo 3's WEAPON magnetism (16) with it by name; Halo 3 has no per-weapon melee "
+                "magnetism (a global for every weapon) -> the one-handed magnum's 0 kept (the shotgun's lunge "
+                "is the H2 shotgun's own); the weapon magnetism is nth 1 (Halo 3's 16 / 7)",
+            'active camo ding': "the magnum's 0 (Halo 3 both 1, the H2 shotgun 1; the Spiker kept 0): a zero "
+                "between zeros and tag references -- no anchor to pin it by; firing does not cost camo",
+            'barrels projectiles per shot (list 4)': "Halo 3 keeps the pellets on the PROJECTILE (conical spread "
+                "3 x 5): Halo 3's 15 (DEFAULT), the balanced 10 = the H2 shotgun's (user 4a)",
+            'barrels minimum error / error angle (lists 5)': "the pellet cone: Halo 3's 7.5 = its shotgun's -> "
+                "the H2 shotgun's 4 / 10-12, on the single (nth 1) AND the dual error (nth 0)",
+            'barrels illumination recovery time': 'both Halo 3 weapons 0.1 = the H2 shotgun 0.1: written',
+            'dual wield damage scale': "Halo 3's 0.7 (DEFAULT); the balanced 0.583 is user 4a's (0.7 x the "
+                "SMG's 0.833)",
+            'initial / final velocity (list 4)': "Halo 3's 480 (DEFAULT); balanced 120 (the card)",
+            'first person weapon offset': "the AR's -0.01, 0, -0.03 (A1 observation 4) -- checked in game",
+            'old message index / sort order / on-ground scales / predicted bitmaps / flags\'\'': "the magnum's "
+                "(the donor's item fields; 'can be dual wielded' kept)",
+            'weapon type / magazine flags': "Halo 3 'undefined' / 0 = the magnum's: none of the shotgun's "
+                "shell baggage (Halo 1's A6 finding)",
+            'damage reporting type': "the magnum's (kill feed / medals only; Halo 2 has no mauler entry)",
+            'weapon attachments (Halo 3 2) / projectile attachments (Halo 3 1)': "the look: check 10 / step 3 "
+                "(Halo 3's lens flare and the pellet's tracer effect)",
+            'barrels deceleration time\' (shotgun 0.25)': "Halo 3's Mauler 0 = the port's 0",
+            'font icons / ground scales / falloff ranges / fp offset override': 'no Halo 2 counterpart '
+                '(the icon is step 8)',
+        },
     },
     'firing_profile': {'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\pistol\\excavator\\excavator', 'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
     'test': {'level': '05b_deltatowers', 'dervish_level': '08a_deltacliffs'},   # parallel step 2
