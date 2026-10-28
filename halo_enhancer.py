@@ -3973,7 +3973,18 @@ class ModifierDatabase:
             out |= {p.get('weapon') for p in _enabled_ports(game)}
         except Exception:
             pass
-        return {self.resolve_weapon(w) for w in out} | out
+        out |= {self.resolve_weapon(w) for w in out}
+        # An UPGRADE weapon is never on a level list: it is reached only through
+        # unlocked_offer_items once its base is owned (weapon_upgrades, gated by
+        # upgrade_allowed_here). It is fielded wherever its base is, or with
+        # upgrade_inherits_base off a player who took the Sentinel Eliminator Beam
+        # (Halo 2) lost every one of its cards on every offer path (review U1,
+        # 2026-10-28). A held weapon is NOT fielded by being held: the gate exists
+        # to drop a Plasma Rifle carried from Reach into Halo 4.
+        for up, base in weapon_upgrades().items():
+            if upgrade_allowed_here(game, up) and (base in out or self.resolve_weapon(base) in out):
+                out.add(up)
+        return out
 
     def _weapon_fielded(self, mod, game, fielded=None):
         """False for a weapon card whose weapon the game does not field at all. A run
