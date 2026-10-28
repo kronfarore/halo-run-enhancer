@@ -26,7 +26,25 @@ PORT = {
     'donor': {'weapon': 'objects\\weapons\\rifle\\beam_rifle\\beam_rifle', 'message_prefix': 'be',
               'why': 'battery + heat, instant beam, two-handed, 0 mags; trigger latch -> Charge 2.5 s, zoom levels 2 -> 1. Alt: plasma_pistol (pp: 2 barrels + charge, one-hand)'},
     'yardstick': {
-        'pick': None, 'reason': None,          # step 4a, WITH the user
+        # step 4a (user, 2026-10-28): reports/h2_spartan_laser_4a.md. Halo 3's laser: spew-charge
+        # 2.5 s, 5 beam rounds of detonation 20 + AOE spike bump 94 = 570 a shot, group laser (=
+        # explosion_large, Hunter armour x0.5), battery 5, heat 1 a shot, vent 2.25 s, 2.5x, range
+        # 120, autoaim 1 / 25, magnetism 5 / 25, smash melee. Rocket ratio legs: direct hit H2 350
+        # (impact 150 + blast 200) / H3 440 (240 + bump 200: the A8 rule, bumps on both sides)
+        'pick': 'Rocket Launcher',
+        'reason': "user, step 4a 2026-10-28: Halo 1's pick and reason hold -- Halo 3's laser group IS "
+                  "the rocket's explosion_large and Halo 2 has the group; every ratio leg is a real "
+                  "value in both games (the Beam Rifle / Sniper ratios shrink the range 500 -> 120 to "
+                  "29 wu and break the heat; the Sentinel Beam has no charge / zoom leg). Charge x1 "
+                  "(the rocket tags agree: recovery 0.8, reload 5.0; not the 112/116 animation ratio). "
+                  "Hunter armour: 'Default keeps the original number, Balanced uses the balanced "
+                  "formula' -> x0.5 both (H3 laser 0.5 x H2 rocket 1 / H3 rocket 1; Halo 1's port is "
+                  "the same formula: H1 rocket hunter_armor 1.0 -> 0.5, no change)",
+        'balanced': {'damage': 453.4,          # 570 x 350 / 440
+                     'charge_s': 2.5, 'vent_s': 2.25, 'battery_shots': 5, 'range': 120.0,
+                     'zoom': 2.5, 'aim': (1.0, 45.0, 5.0, 25.0),   # autoaim range 25 x 45 / 25
+                     'hunter_armor': 0.5, 'melee': 'smash_melee (shared, x1)',
+                     'ready_frames': 28.6},    # 31 x H2 RL 24 / H3 RL 26
         'candidates': {
             'provisional': 'Rocket Launcher',
             'alternatives': ['Beam Rifle', 'Sniper Rifle', 'Sentinel Beam'],
