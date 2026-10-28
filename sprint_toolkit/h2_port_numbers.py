@@ -26,7 +26,7 @@ TAGS = os.path.join(tf.H2EK, 'tags')
 
 
 def show(n):
-    for tag, name, block, index, nth, want in n['numbers']:
+    for tag, name, block, index, nth, want in (r[:6] for r in n['numbers']):
         rows = tf.read_all(tf.export(os.path.join(TAGS, tag)), indices=True)
         row = tf.pick(rows, name, block, index, nth)
         now = row[4].splitlines()[0]
@@ -36,12 +36,14 @@ def show(n):
                  now, ','.join('%g' % v for v in wants)))
 
 
-def pin(tag_path, name, block, index, nth, anchor, delta):
+def pin(tag_path, name, block, index, nth, anchor, delta, anchor_index=None):
     """A field still reading ZERO cannot be found by its value (it reads like the padding around
     it): place it at `delta` bytes from a non-zero neighbour of the same struct (`anchor`, found
     as usual), PROVE it the way h2_tagfield does -- a probe written there into a copy must move
     that field and nothing else in tool's export -- and remember it for this tag, so set_field
-    uses it (the Flamethrower, S1: the projectile's timer / radii, the damage flags)."""
+    uses it (the Flamethrower, S1: the projectile's timer / radii, the damage flags). `anchor_index`
+    takes the anchor from ANOTHER element of the same block (the Mauler, A4: a graph's sound-reference
+    flags reading 0 beside an element whose flags do not; default: the field's own element)."""
     import struct
     key = ('%s[%d].%s' % (block, index, name) if block else name) + ('#%d' % nth if nth else '')
     # (a cached offset is NOT trusted for a zero: a longer path written earlier in the file -- a
@@ -50,7 +52,8 @@ def pin(tag_path, name, block, index, nth, anchor, delta):
     row = tf.pick(rows, name, block, index, nth)
     if any(tf._numbers(row[4])):
         return                  # non-zero now: h2_tagfield finds it by its value
-    at = tf.offset_of(tag_path, anchor, block, index, 0, verbose=False) + delta
+    at = tf.offset_of(tag_path, anchor, block, index if anchor_index is None else anchor_index, 0,
+                      verbose=False) + delta
     original = open(tag_path, 'rb').read()
     code = tf.SCALARS[row[3]][0]
     edited = bytearray(original)
