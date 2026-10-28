@@ -9,7 +9,7 @@ PORT = {
     'wave': 'A4',
     'name': 'Mauler',
     'source': 'Halo 3',
-    'status': 'reserved',
+    'status': 'in progress',
     'source_tag': 'objects\\weapons\\pistol\\excavator\\excavator',
     'reservations': {
         'message_prefix': 'mau2',
