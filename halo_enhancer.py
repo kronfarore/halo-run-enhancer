@@ -3360,17 +3360,19 @@ class ModifierDatabase:
             return True
         src = self._pool_src(game, mission_id)
         for kind in kinds:
+            dk = '%s|%s|%s' % (game, mission_id, kind)
             if game == 'Halo Reach':
                 if (mission_id, kind) in self._reach_pool_cache:
                     continue
             elif game == 'Halo 4':
-                if (mission_id, kind) in self._h4_pool_cache:
+                mk, dk = self._h4_pool_keys(mission_id, kind)   # the keys h4_map_pool uses
+                if mk in self._h4_pool_cache:
                     continue
             elif mission_id in self._odst_pool_cache:
                 continue
             if src is None:
                 return False
-            if pool_cache_get('%s|%s|%s' % (game, mission_id, kind), src) is None:
+            if pool_cache_get(dk, src) is None:
                 return False
         return True
 
@@ -3401,15 +3403,18 @@ class ModifierDatabase:
             return True
         src = None
         for kind in kinds:
+            dk = '%s|%s|%s' % (game, mission_id, kind)
             if game == 'Halo Reach' and (mission_id, kind) in self._reach_pool_cache:
                 continue
-            if game == 'Halo 4' and (mission_id, kind) in self._h4_pool_cache:
-                continue
+            if game == 'Halo 4':
+                mk, dk = self._h4_pool_keys(mission_id, kind)   # the keys h4_map_pool uses
+                if mk in self._h4_pool_cache:
+                    continue
             if game == 'Halo 3: ODST' and mission_id in self._odst_pool_cache:
                 continue
             src = src or self._pool_src(game, mission_id)
             stamp = pool_stamp_known(src) if src else None
-            ent = _pool_disk().get('%s|%s|%s' % (game, mission_id, kind))
+            ent = _pool_disk().get(dk)
             if stamp is None or not isinstance(ent, dict) or ent.get('stamp') != stamp:
                 return False
         return True
@@ -3602,6 +3607,22 @@ class ModifierDatabase:
         self._reach_pool_cache[key] = names
         return names
 
+    def _h4_pool_keys(self, mission_id, kind):
+        """(memory key, disk key) of a Halo 4 pool -- ONE function for the writer
+        (h4_map_pool) and the readiness checks (map_pools_ready,
+        map_pools_quick_ready). With the flight skip on, Midnight starts in its
+        "crash" zone set, so that is where dz_enhancer must be live: the start zone
+        set is part of both keys, since toggling the option has to re-read the map
+        while the baseline stamp does not change. The checks used to test
+        (mission, kind) against this 3-tuple and the unsuffixed disk key, so Midnight
+        read as 'not ready' forever and the 'Reading the map' dialog ran before every
+        draw (review U1, 2026-10-28)."""
+        import halo_patch
+        start = (halo_patch.H4_SKIP_START_ZONE_SET.get(mission_id)
+                 if CONFIG.get('h4_skip_flight') else None)
+        return ((mission_id, kind, start),
+                'Halo 4|%s|%s' % (mission_id, kind) + ('|%s' % start if start else ''))
+
     def h4_map_pool(self, mission_id, kind='weapons'):
         """What the level's dz_enhancer designer zone offers -- the Halo 4 pool.
 
@@ -3619,12 +3640,8 @@ class ModifierDatabase:
         changes the stamp and is read afresh.
         """
         import halo_patch
-        # With the flight skip on, Midnight starts in its "crash" zone set, so that is
-        # where dz_enhancer must be live. Part of every cache key: toggling the option
-        # has to re-read the map, since the baseline stamp does not change.
-        start = (halo_patch.H4_SKIP_START_ZONE_SET.get(mission_id)
-                 if CONFIG.get('h4_skip_flight') else None)
-        key = (mission_id, kind, start)
+        key, ck = self._h4_pool_keys(mission_id, kind)
+        start = key[2]
         if key in self._h4_pool_cache:
             return self._h4_pool_cache[key]
         declared = list((self.mission_weapons if kind == 'weapons'
@@ -3632,7 +3649,6 @@ class ModifierDatabase:
         names = []
         try:
             src = self._pool_src('Halo 4', mission_id)
-            ck = 'Halo 4|%s|%s' % (mission_id, kind) + ('|%s' % start if start else '')
             remembered = pool_cache_get(ck, src)
             if remembered is not None:
                 self._h4_pool_cache[key] = remembered
