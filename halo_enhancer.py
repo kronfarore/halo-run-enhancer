@@ -3870,8 +3870,17 @@ class ModifierDatabase:
         return not (CONFIG.get('remove_single_game_mods') and self._is_single_game_mod(mod))
 
     def get_mod_label(self, mod, source=None):
+        """The blacklist label of a card -- ONE spelling for both sides: the card
+        widgets store it with the slot's source (add_to_blacklist) and
+        filter_blacklisted compares it without one. The General enemy cards are
+        NAMED 'General <card>', and display_name drops the repeat on BOTH routes:
+        with source='General' the stored label used to be 'General: General Vision'
+        while the compared one was 'General: Vision', so blacklisting a General enemy
+        card never stuck until a save + reload (review U1, 2026-10-28). Labels saved
+        in the old spelling are normalised in RunState.from_dict."""
         if source:
-            return f"{source}{CONFIG['blacklist_label_separator']}{mod['name']}"
+            name = display_name(mod['name'], 'General') if source == 'General' else mod['name']
+            return f"{source}{CONFIG['blacklist_label_separator']}{name}"
         elif mod.get('weapon'):
             return f"{mod['weapon']}{CONFIG['blacklist_label_separator']}{mod['name']}"
         elif mod.get('enemy'):
