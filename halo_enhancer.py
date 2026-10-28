@@ -16695,6 +16695,16 @@ class HaloGUI(QMainWindow):
                 self.run_state.special_counters[name] = \
                     self.run_state.special_counters.get(name, 1) + 1
 
+    def _new_offer_is_equipment(self, pair):
+        """Was this pair's new-item offer dealt by the EQUIPMENT roll? generate_pairs
+        records the roll's kind ('new_kind'); a pair saved before that key existed is
+        judged by the item itself, the way PairCard picks its heading."""
+        kind = pair.get('new_kind')
+        if kind:
+            return kind == 'equipment'
+        nw = pair.get('new_weapon')
+        return bool(self.db.is_equipment(nw)) or bool(ability_of_item(nw))
+
     def on_reroll_modifier(self, pair_id, mod_type):
         pair = next((p for p in self.run_state.pairs if p['id'] == pair_id), None)
         if not pair:
@@ -16710,8 +16720,13 @@ class HaloGUI(QMainWindow):
                 # to rebuild a pool from the raw level list, so a reroll could hand out
                 # what the roll itself never would: the Brute Plasma Rifle on the nine
                 # Halo 2 levels that stock it, with upgrades off, or player 2's own gun.
-                # The recurring two-offer-paths bug, in a third path.
-                pool = self.enhancer._new_weapon_pool(mod_type)
+                # The recurring two-offer-paths bug, in a third path. A NEW EQUIPMENT
+                # offer rides the same pair key and rerolls from the pool that dealt
+                # it, RunEnhancer._new_equipment_pool: drawn from the weapon pool it
+                # came back as a gun (review U1, 2026-10-28).
+                pool = (self.enhancer._new_equipment_pool(mod_type)
+                        if self._new_offer_is_equipment(pair)
+                        else self.enhancer._new_weapon_pool(mod_type))
                 used = {p['new_weapon'] for p in self.run_state.pairs
                         if p is not pair and p.get('new_weapon')}
                 pool = [w for w in pool if w not in used] or pool
@@ -17908,7 +17923,7 @@ class RunEnhancer:
         for i in range(3):
             enemy_choice = choose_enemy_card(enemy_mods)
             self._note_armed_offered(enemy_choice)
-            new_weapon = None
+            new_weapon = new_kind = None
             p1_choice = p2_choice = None
             wildcard = exhaust = skull = hero = boss_mod = None
             # The Boss slot is the guaranteed card on a level with a named STORY
@@ -17923,6 +17938,8 @@ class RunEnhancer:
                     boss_mod = make_boss_mod(random.choice(_bp), _bn)
             if flags[i] and wi < len(offered):
                 new_weapon = offered[wi]
+                # which roll dealt it: the reroll / Blacklist draws from the same pool
+                new_kind = 'equipment' if eflags[i] else 'weapon'
                 wi += 1
             else:
                 choice = self._weighted_pick(pmods, for_player)
@@ -17960,6 +17977,10 @@ class RunEnhancer:
                 'skull_mod': skull,
                 'exhaust_mod': exhaust,
                 'new_weapon': new_weapon,
+                # 'weapon' | 'equipment': the roll that dealt new_weapon, so a reroll
+                # or Blacklist on the card draws from the same pool (an equipment
+                # offer used to come back as a gun). Absent in older saved runs.
+                'new_kind': new_kind,
                 'no_negative': False,
                 'selected_by': None
             })
