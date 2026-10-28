@@ -3931,19 +3931,19 @@ class ModifierDatabase:
         no effect unless the user enables it in Options."""
         return not (CONFIG.get('remove_single_game_mods') and self._is_single_game_mod(mod))
 
-    def get_mod_label(self, mod, source=None):
-        """The blacklist label of a card -- ONE spelling for both sides: the card
-        widgets store it with the slot's source (add_to_blacklist) and
-        filter_blacklisted compares it without one. The General enemy cards are
-        NAMED 'General <card>', and display_name drops the repeat on BOTH routes:
-        with source='General' the stored label used to be 'General: General Vision'
-        while the compared one was 'General: Vision', so blacklisting a General enemy
-        card never stuck until a save + reload (review U1, 2026-10-28). Labels saved
-        in the old spelling are normalised in RunState.from_dict."""
-        if source:
-            name = display_name(mod['name'], 'General') if source == 'General' else mod['name']
-            return f"{source}{CONFIG['blacklist_label_separator']}{name}"
-        elif mod.get('weapon'):
+    def get_mod_label(self, mod):
+        """The blacklist label of a card: ONE route for both sides. Every writer
+        (the cards' Blacklist buttons through HaloGUI.add_to_blacklist, the Bane and
+        saturation blacklisting in the patcher, exclusive siblings) stores this and
+        filter_blacklisted compares it, so a stored label always matches. The
+        Blacklist button used to store the SLOT's source instead ('Ally: Eyepatch'
+        for a skull, 'Ally: Magnetism' for an identity half, 'Exhaust: ...',
+        'Unknown Weapon: ...' for an equipment card), which no pool compares, so
+        those cards came straight back (review U1 follow-up, 2026-10-28). The
+        General enemy cards are NAMED 'General <card>'; display_name drops the
+        repeat, and labels saved in the old 'General: General X' spelling are
+        normalised in RunState.from_dict."""
+        if mod.get('weapon'):
             return f"{mod['weapon']}{CONFIG['blacklist_label_separator']}{mod['name']}"
         elif mod.get('enemy'):
             return f"{mod['enemy']}{CONFIG['blacklist_label_separator']}{mod['name']}"
@@ -5154,7 +5154,7 @@ class WeaponSelectionCard(QGroupBox):
         blacklist_btn = QPushButton("🚫 Blacklist")
         blacklist_btn.setMaximumWidth(100)
         blacklist_btn.setToolTip("Add this modifier to blacklist")
-        blacklist_btn.clicked.connect(lambda: self.on_blacklist(mod_data, source=source))
+        blacklist_btn.clicked.connect(lambda: self.on_blacklist(mod_data))
         layout.addWidget(blacklist_btn)
         return widget
 
@@ -5192,9 +5192,9 @@ class WeaponSelectionCard(QGroupBox):
         else:
             self.parent_widget.blacklist_weapon_choice(weapon, self.pair_data['id'], player)
 
-    def on_blacklist(self, mod_data, source=None):
+    def on_blacklist(self, mod_data):
         if self.parent_widget:
-            self.parent_widget.add_to_blacklist(mod_data, source)
+            self.parent_widget.add_to_blacklist(mod_data)
 
 # Debug mode: the Level dropdown shows each map's id (03a, m10, sc130...) in a deeper green
 # ahead of its name -- in the list and in the closed box (user, 2026-10-05).
@@ -5583,21 +5583,12 @@ class PairCard(QGroupBox):
         blacklist_btn = QPushButton("🚫 Blacklist")
         blacklist_btn.setMaximumWidth(100)
         blacklist_btn.setToolTip("Add this modifier to blacklist")
-        if mod_type == 'player1' or mod_type == 'player2':
-            if mod_data.get('source') == 'General':
-                bl_source = 'General'
-            else:
-                bl_source = mod_data.get('weapon', 'Unknown Weapon')
-        elif mod_type == 'enemy':
-            bl_source = mod_data.get('enemy', 'General')
-        elif mod_type == 'boss':
-            # Boss effects come from the enemy/negative pool; blacklist by their real source.
-            bl_source = mod_data.get('enemy', 'General')
-        elif mod_type == 'exhaust':
-            bl_source = 'Exhaust'
-        else:
-            bl_source = 'Ally'
-        blacklist_btn.clicked.connect(lambda: self.on_blacklist(mod_data, bl_source, self.pair['id'], mod_type))
+        # The label is the card's own (ModifierDatabase.get_mod_label), never the
+        # slot's: a per-slot source ('Ally', 'Exhaust', 'Unknown Weapon') matched no
+        # pool, so the Blacklist button on an identity half, a hero, a skull, the
+        # Ally, an exhaust or an equipment card rerolled it once and then offered
+        # it again.
+        blacklist_btn.clicked.connect(lambda: self.on_blacklist(mod_data, self.pair['id'], mod_type))
         button_layout.addWidget(blacklist_btn)
 
         layout.addLayout(button_layout)
@@ -5621,9 +5612,9 @@ class PairCard(QGroupBox):
         if self.parent_widget:
             self.parent_widget.on_reroll_modifier(self.pair['id'], mod_type)
             
-    def on_blacklist(self, mod_data, source, pair_id=None, mod_type=None):
+    def on_blacklist(self, mod_data, pair_id=None, mod_type=None):
         if self.parent_widget:
-            self.parent_widget.add_to_blacklist(mod_data, source, pair_id, mod_type)
+            self.parent_widget.add_to_blacklist(mod_data, pair_id, mod_type)
 
 class StartDialog(QDialog):
     def __init__(self, parent=None):
@@ -17823,8 +17814,10 @@ class HaloGUI(QMainWindow):
             QApplication.restoreOverrideCursor()
         dlg.exec()
 
-    def add_to_blacklist(self, mod_data, source, pair_id=None, mod_type=None):
-        label = self.db.get_mod_label(mod_data, source)
+    def add_to_blacklist(self, mod_data, pair_id=None, mod_type=None):
+        """A card's Blacklist button: store the label every pool compares (the
+        card's own, never the slot's) and reroll that slot."""
+        label = self.db.get_mod_label(mod_data)
         if label in self.run_state.blacklist:
             return
         self.run_state.blacklist.add(label)
