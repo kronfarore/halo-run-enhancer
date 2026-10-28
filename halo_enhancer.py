@@ -16754,9 +16754,19 @@ class HaloGUI(QMainWindow):
                 return
             ident[part] = copy.deepcopy(random.choice(cands))
         elif mod_type == 'enemy':
-            mods = self.db.get_enemy_modifiers_filtered(self.run_state.mission_id, bl, game,
-                                                        betrayal=self._betrayal_active(), vanished=self._vanished(), added=self._swapped_in())
-            pair['enemy_mod'] = random.choice(mods) if mods else None
+            # The SAME pool the roll drew from (RunEnhancer.enemy_pool: the level's
+            # enemy cards plus the held weapons' Armed cards), drawn the same way,
+            # and a Bane stays a Bane -- the pair's Other slot was spent on it. The
+            # old plain draw could never offer an Armed card and silently dropped
+            # the x3 flag (review U1, 2026-10-28).
+            mods = self.enhancer.enemy_pool(self.run_state.mission_id, game, bl)
+            old = pair.get('enemy_mod')
+            new = choose_enemy_card(mods) if mods else None
+            if new is not None and isinstance(old, dict) and old.get('bane'):
+                new = copy.deepcopy(new)
+                new['bane'] = True
+            self.enhancer._note_armed_offered(new)
+            pair['enemy_mod'] = new
         elif mod_type == 'wildcard':
             pair['wildcard_mod'] = self.db.get_wildcard_modifier_filtered(bl, game)
         elif mod_type == 'exhaust':
@@ -17720,6 +17730,21 @@ class RunEnhancer:
         rs = self.run_state
         return list(dict.fromkeys((rs.player1_weapons or []) + (rs.player2_weapons or [])))
 
+    def enemy_pool(self, mid, game, bl):
+        """The Enemy slot's pool on this level: the enemy cards the level fields plus
+        the Armed cards of the weapons either player holds. ONE builder for every
+        draw -- a normal round, a Weapon Identity round, the Bane draw and the
+        enemy-card reroll (HaloGUI.on_reroll_modifier) -- so no path can offer less
+        than another (the reroll used to rebuild the slot without the Armed cards)."""
+        mods = self.db.get_enemy_modifiers_filtered(
+            mid, bl, game, betrayal=self._betrayal_active(), vanished=self._vanished(),
+            added=self._swapped_in())
+        mods += self.db.filter_blacklisted(
+            self.db.armed_cards(mid, self._run_weapons(), game,
+                                vanished=self._vanished(), added=self._swapped_in(),
+                                offered=self._armed_offered()), bl, game)
+        return mods
+
     def _draw_other(self, mid, game, bl, active_neg, enemy_mods=None):
         """The Other slot: one card from Hero / Exhaust / Skull / Ally, or None.
 
@@ -17843,12 +17868,7 @@ class RunEnhancer:
         # a Weapon Identity pair's cards only ever appear as that pair
         pmods = self.db.get_player_modifiers_filtered(
             self.run_state.weapons_for(for_player), list(bl) + self.identity_locked_labels(), game)
-        enemy_mods = self.db.get_enemy_modifiers_filtered(mid, bl, game,
-                                                          betrayal=self._betrayal_active(), vanished=self._vanished(), added=self._swapped_in())
-        enemy_mods += self.db.filter_blacklisted(
-            self.db.armed_cards(mid, self._run_weapons(), game,
-                                vanished=self._vanished(), added=self._swapped_in(),
-                                offered=self._armed_offered()), bl, game)
+        enemy_mods = self.enemy_pool(mid, game, bl)
         wpool = self._new_weapon_pool(for_player)
 
         # A level with a named STORY fight gets a guaranteed Boss card on every pair.
@@ -18143,12 +18163,7 @@ class RunEnhancer:
         if not slots:
             return []
 
-        enemy_mods = self.db.get_enemy_modifiers_filtered(mid, bl, game,
-                                                          betrayal=self._betrayal_active(), vanished=self._vanished(), added=self._swapped_in())
-        enemy_mods += self.db.filter_blacklisted(
-            self.db.armed_cards(mid, self._run_weapons(), game,
-                                vanished=self._vanished(), added=self._swapped_in(),
-                                offered=self._armed_offered()), bl, game)
+        enemy_mods = self.enemy_pool(mid, game, bl)
         enemies = sample_distinct(enemy_mods, len(slots), armed_capped_weights(enemy_mods))
         for c in enemies:
             self._note_armed_offered(c)
