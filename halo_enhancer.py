@@ -767,6 +767,22 @@ def load_settings():
             CONFIG[k] = data[k]
 
 
+def patch_logs_for(folder, stem):
+    """Every patch log of ONE map in `folder`, oldest first by mtime: the names the
+    patcher writes are patch_<map stem>_<YYYY-MM-DD_HH-MM-SS>.json, and the timestamp's
+    fixed shape is what tells patch_m70_... from patch_m70_bonus_... and Reach's m10
+    from Halo 4's m10_crash. The prefix glob 'patch_<stem>_*.json' matched those too,
+    so NEXT LEVEL could append a level's result to another level's (even another
+    game's) log (review U1, 2026-10-28)."""
+    import re
+    pat = re.compile(r'^patch_%s_\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.json$' % re.escape(str(stem)))
+    try:
+        found = [p for p in Path(folder).glob('patch_%s_*.json' % stem) if pat.match(p.name)]
+    except OSError:
+        return []
+    return sorted(found, key=lambda p: p.stat().st_mtime)
+
+
 def write_json_atomic(path, data):
     """Write JSON so that no reader ever sees half a file and no crash leaves one.
 
@@ -10169,9 +10185,8 @@ class MagnitudeEditorDialog(QDialog):
         mission = Path(self.map_edit.text().strip() or '').stem
         if not mission:
             return None
-        found = sorted(self._patch_dir().glob(f"patch_{mission}_*.json"),
-                       key=lambda p: p.stat().st_mtime, reverse=True)
-        return found[0] if found else None
+        found = patch_logs_for(self._patch_dir(), mission)     # this map's logs only
+        return found[-1] if found else None
 
     def _open_patch_file(self):
         """#13: open the patch log for this run so its effects can be checked by hand."""
@@ -15415,8 +15430,7 @@ class HaloGUI(QMainWindow):
             stem = Path(halo_patch.default_map_path(mcc_root(), folder, mission_id)).stem
         except Exception:
             stem = mission_id
-        files = sorted((app_data_dir() / "patches").glob('patch_%s_*.json' % stem),
-                       key=lambda p: p.stat().st_mtime)
+        files = patch_logs_for(app_data_dir() / "patches", stem)   # this map's logs only
         return files[-1] if files else None
 
     def on_next_level(self):
