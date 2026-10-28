@@ -50,7 +50,8 @@ B = chr(92)
 PORT_SOUNDS = {'SAW': B.join(['sound', 'weapons', 'saw_port']),
                'Assault Rifle': B.join(['sound', 'weapons', 'assault_rifle_port']),   # Halo 2's port
                'Spike Rifle': B.join(['sound', 'weapons', 'brute_spiker_port']),     # Halo 2's port (A3)
-               'Flamethrower': B.join(['sound', 'weapons', 'flamethrower_port'])}    # Halo 2's port (S1)
+               'Flamethrower': B.join(['sound', 'weapons', 'flamethrower_port']),    # Halo 2's port (S1)
+               'Mauler': B.join(['sound', 'weapons', 'brute_mauler_port'])}         # Halo 2's port (A4)
 #: the build-time marker: each port's sounds sit this far below their as-built gain. One
 #: value PER PORT, so two ports in one map can never pool with each other.
 MARKER_DB = {'SAW': 0.01,
@@ -59,7 +60,9 @@ MARKER_DB = {'SAW': 0.01,
              # Halo 2's Spike Rifle (A3, 2026-10-21; parallel with the Flamethrower, which takes another)
              'Spike Rifle': 0.03,
              # Halo 2's Flamethrower (S1, 2026-10-21; Halo 1's sounds, parallel with the Spike Rifle)
-             'Flamethrower': 0.04}
+             'Flamethrower': 0.04,
+             # Halo 2's Mauler (A4, 2026-10-28; parallel step 2 -- by wave order A2 0.05, A4 0.06, A5 0.07)
+             'Mauler': 0.06}
 #: game -> (snd! playback index offset, ugh! Playbacks block offset, element size,
 #:          Gain Base offset) -- Assembly's MCC plugins
 LAYOUT = {'Halo 3': (0x0C, 0x10, 0x44, 0x1C),
