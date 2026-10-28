@@ -1,0 +1,1193 @@
+{
+ "ported": "Mauler",
+ "source": "Halo 3",
+ "target": "Halo 2",
+ "donor": "Shotgun",
+ "hops": [
+  [
+   "Shotgun",
+   "Shotgun",
+   "Halo 3",
+   "Halo 2"
+  ]
+ ],
+ "rows": [
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Angle",
+   "dst_field": "Magnetism Angle",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 1,
+   "dst_index": 0,
+   "ported_src": 15.999999876058132,
+   "donor_dst": 15.999999876058132,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Magnetism Angle",
+     "value_from": 15.999999876058132,
+     "field_to": "Magnetism Angle",
+     "value_to": 15.999999876058132
+    }
+   ],
+   "donor_src": 15.999999876058132,
+   "original": 15.999999876058132,
+   "ratio": 1.0,
+   "balanced": 15.999999876058132
+  },
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Range",
+   "dst_field": "Magnetism Range",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 1,
+   "dst_index": 0,
+   "ported_src": 7.0,
+   "donor_dst": 6.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Magnetism Range",
+     "value_from": 5.5,
+     "field_to": "Magnetism Range",
+     "value_to": 6.0
+    }
+   ],
+   "donor_src": 5.5,
+   "original": 7.0,
+   "ratio": 1.0909090909090908,
+   "balanced": 7.636363636363636
+  },
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Falloff Range",
+   "note": "Shotgun card has no target in Halo 2"
+  },
+  {
+   "card": "Autoaim",
+   "field": "Autoaim Angle",
+   "dst_field": "Autoaim Angle",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 7.999999938029066,
+   "donor_dst": 7.999999938029066,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Autoaim Angle",
+     "value_from": 7.999999938029066,
+     "field_to": "Autoaim Angle",
+     "value_to": 7.999999938029066
+    }
+   ],
+   "donor_src": 7.999999938029066,
+   "original": 7.999999938029066,
+   "ratio": 1.0,
+   "balanced": 7.999999938029066
+  },
+  {
+   "card": "Autoaim",
+   "field": "Autoaim Range",
+   "dst_field": "Autoaim Range",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 7.0,
+   "donor_dst": 6.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Autoaim Range",
+     "value_from": 5.5,
+     "field_to": "Autoaim Range",
+     "value_to": 6.0
+    }
+   ],
+   "donor_src": 5.5,
+   "original": 7.0,
+   "ratio": 1.0909090909090908,
+   "balanced": 7.636363636363636
+  },
+  {
+   "card": "Autoaim",
+   "field": "Autoaim Falloff Range",
+   "note": "Shotgun card has no target in Halo 2"
+  },
+  {
+   "card": "Rider Damage",
+   "field": "Rider Direct Damage Scale",
+   "dst_field": "Rider Direct Damage Scale",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\damage_effects\\shotgun_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 1.0,
+   "donor_dst": 1.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Rider Direct Damage Scale",
+     "value_from": 1.0,
+     "field_to": "Rider Direct Damage Scale",
+     "value_to": 1.0
+    }
+   ],
+   "donor_src": 1.0,
+   "original": 1.0,
+   "ratio": 1.0,
+   "balanced": 1.0
+  },
+  {
+   "card": "Rider Damage",
+   "field": "Rider Maximum Transfer Damage Scale",
+   "dst_field": "Rider Maximum Transfer Damage Scale",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\damage_effects\\shotgun_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.75,
+   "donor_dst": 0.75,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Rider Maximum Transfer Damage Scale",
+     "value_from": 1.0,
+     "field_to": "Rider Maximum Transfer Damage Scale",
+     "value_to": 0.75
+    }
+   ],
+   "donor_src": 1.0,
+   "original": 0.75,
+   "ratio": 0.75,
+   "balanced": 0.5625
+  },
+  {
+   "card": "Rider Damage",
+   "field": "Rider Minimum Transfer Damage Scale",
+   "dst_field": "Rider Minimum Transfer Damage Scale",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\damage_effects\\shotgun_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Rider Minimum Transfer Damage Scale",
+     "value_from": 0.0,
+     "field_to": "Rider Minimum Transfer Damage Scale",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Weapon Swap Speed",
+   "field": "Ready / Put Away Animation",
+   "dst_field": "Ready / Put Away Animation",
+   "dst_block": null,
+   "dst_class": "jmad",
+   "dst_tag": "*fp_shotgun*",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": null,
+   "donor_dst": null,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Ready / Put Away Animation",
+     "value_from": null,
+     "field_to": "Ready / Put Away Animation",
+     "value_to": null
+    }
+   ],
+   "donor_src": null
+  },
+  {
+   "card": "Distribution Function",
+   "field": "Distribution Function",
+   "dst_field": "Distribution Function",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": "all",
+   "ported_src": 0,
+   "donor_dst": 0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Distribution Function",
+     "value_from": 0,
+     "field_to": "Distribution Function",
+     "value_to": 0
+    }
+   ],
+   "donor_src": 0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Distribution Function",
+   "field": "Distribution Angle",
+   "dst_field": "Distribution Angle",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": "all",
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Distribution Angle",
+     "value_from": 0.0,
+     "field_to": "Distribution Angle",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Firing Noise",
+   "field": "Firing Noise",
+   "dst_field": "Firing Noise",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": "all",
+   "ported_src": 2,
+   "donor_dst": 2,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Firing Noise",
+     "value_from": 2,
+     "field_to": "Firing Noise",
+     "value_to": 2
+    }
+   ],
+   "donor_src": 2,
+   "original": 2.0,
+   "ratio": 1.0,
+   "balanced": 2.0
+  },
+  {
+   "card": "Firing Noise",
+   "field": "Impact Noise",
+   "dst_field": "Impact Noise",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": null,
+   "donor_dst": null,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Impact Noise",
+     "value_from": null,
+     "field_to": "Impact Noise",
+     "value_to": null
+    }
+   ],
+   "donor_src": null
+  },
+  {
+   "card": "Firing Noise",
+   "field": "Detonation Noise",
+   "dst_field": "Detonation Noise",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": null,
+   "donor_dst": null,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Detonation Noise",
+     "value_from": null,
+     "field_to": "Detonation Noise",
+     "value_to": null
+    }
+   ],
+   "donor_src": null
+  },
+  {
+   "card": "Melee Damage",
+   "field": "Damage Lower Bound",
+   "dst_field": "Damage Lower Bound",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\damage_effects\\strike_melee",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 72.0,
+   "donor_dst": 20.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Damage Lower Bound",
+     "value_from": 70.0,
+     "field_to": "Damage Lower Bound",
+     "value_to": 20.0
+    }
+   ],
+   "donor_src": 70.0,
+   "original": 72.0,
+   "ratio": 0.2857142857142857,
+   "balanced": 20.57142857142857
+  },
+  {
+   "card": "Melee Damage",
+   "field": "Damage Upper Bound",
+   "dst_field": "Damage Upper Bound",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\damage_effects\\strike_melee",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 72.0,
+   "donor_dst": 60.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Damage Upper Bound",
+     "value_from": 70.0,
+     "field_to": "Damage Upper Bound",
+     "value_to": 60.0
+    }
+   ],
+   "donor_src": 70.0,
+   "original": 72.0,
+   "ratio": 0.8571428571428571,
+   "balanced": 61.71428571428571
+  },
+  {
+   "card": "Melee Damage",
+   "field": "Damage Upper Bound Max",
+   "dst_field": "Damage Upper Bound Max",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\damage_effects\\strike_melee",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 72.0,
+   "donor_dst": 60.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Damage Upper Bound Max",
+     "value_from": 70.0,
+     "field_to": "Damage Upper Bound Max",
+     "value_to": 60.0
+    }
+   ],
+   "donor_src": 70.0,
+   "original": 72.0,
+   "ratio": 0.8571428571428571,
+   "balanced": 61.71428571428571
+  },
+  {
+   "card": "Salvo Shooting",
+   "field": "Rounds Per Second",
+   "dst_field": "Rounds Per Second",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 30.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Rounds Per Second",
+     "value_from": 30.0,
+     "field_to": "Rounds Per Second",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 30.0,
+   "original": 30.0,
+   "ratio": 0.0,
+   "balanced": 0.0
+  },
+  {
+   "card": "Salvo Shooting",
+   "field": "Rounds Per Second Max",
+   "dst_field": "Rounds Per Second Max",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 30.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Rounds Per Second Max",
+     "value_from": 30.0,
+     "field_to": "Rounds Per Second Max",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 30.0,
+   "original": 30.0,
+   "ratio": 0.0,
+   "balanced": 0.0
+  },
+  {
+   "card": "Salvo Shooting",
+   "field": "Shots Per Fire",
+   "dst_field": "Shots Per Fire",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 1,
+   "donor_dst": 1,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Shots Per Fire",
+     "value_from": 1,
+     "field_to": "Shots Per Fire",
+     "value_to": 1
+    }
+   ],
+   "donor_src": 1,
+   "original": 1.0,
+   "ratio": 1.0,
+   "balanced": 1.0
+  },
+  {
+   "card": "Salvo Shooting",
+   "field": "Shots Per Fire Max",
+   "dst_field": "Shots Per Fire Max",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 1,
+   "donor_dst": 1,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Shots Per Fire Max",
+     "value_from": 1,
+     "field_to": "Shots Per Fire Max",
+     "value_to": 1
+    }
+   ],
+   "donor_src": 1,
+   "original": 1.0,
+   "ratio": 1.0,
+   "balanced": 1.0
+  },
+  {
+   "card": "Fire Recovery Time",
+   "field": "Fire Recovery Time",
+   "dst_field": "Fire Recovery Time",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.75,
+   "donor_dst": 1.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Fire Recovery Time",
+     "value_from": 1.0,
+     "field_to": "Fire Recovery Time",
+     "value_to": 1.0
+    }
+   ],
+   "donor_src": 1.0,
+   "original": 0.75,
+   "ratio": 1.0,
+   "balanced": 0.75
+  },
+  {
+   "card": "Projectiles Per Shot",
+   "field": "Projectiles Per Shot",
+   "dst_field": "Projectiles Per Shot",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 1,
+   "donor_dst": 10,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Projectiles Per Shot",
+     "value_from": 1,
+     "field_to": "Projectiles Per Shot",
+     "value_to": 10
+    }
+   ],
+   "donor_src": 1,
+   "original": 1.0,
+   "ratio": 10.0,
+   "balanced": 10.0
+  },
+  {
+   "card": "Projectiles Per Shot",
+   "field": "Rounds Per Shot",
+   "dst_field": "Rounds Per Shot",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 1,
+   "donor_dst": 1,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Rounds Per Shot",
+     "value_from": 1,
+     "field_to": "Rounds Per Shot",
+     "value_to": 1
+    }
+   ],
+   "donor_src": 1,
+   "original": 1.0,
+   "ratio": 1.0,
+   "balanced": 1.0
+  },
+  {
+   "card": "Projectile Range",
+   "field": "Maximum Range",
+   "dst_field": "Maximum Range",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 8.0,
+   "donor_dst": 8.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Maximum Range",
+     "value_from": 6.0,
+     "field_to": "Maximum Range",
+     "value_to": 8.0
+    }
+   ],
+   "donor_src": 6.0,
+   "original": 8.0,
+   "ratio": 1.3333333333333333,
+   "balanced": 10.666666666666666
+  },
+  {
+   "card": "Projectile Range",
+   "field": "Air Damage Range",
+   "dst_field": "Air Damage Range",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 2.5,
+   "donor_dst": 5.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Air Damage Range",
+     "value_from": 2.0,
+     "field_to": "Air Damage Range",
+     "value_to": 5.0
+    }
+   ],
+   "donor_src": 2.0,
+   "original": 2.5,
+   "ratio": 2.5,
+   "balanced": 6.25
+  },
+  {
+   "card": "Projectile Range",
+   "field": "Air Damage Range Max",
+   "dst_field": "Air Damage Range Max",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 5.0,
+   "donor_dst": 8.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Air Damage Range Max",
+     "value_from": 4.0,
+     "field_to": "Air Damage Range Max",
+     "value_to": 8.0
+    }
+   ],
+   "donor_src": 4.0,
+   "original": 5.0,
+   "ratio": 2.0,
+   "balanced": 10.0
+  },
+  {
+   "card": "Projectile Range",
+   "field": "Water Damage Range",
+   "dst_field": "Water Damage Range",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Water Damage Range",
+     "value_from": 0.0,
+     "field_to": "Water Damage Range",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Projectile Range",
+   "field": "Water Damage Range Max",
+   "dst_field": "Water Damage Range Max",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 1.0,
+   "donor_dst": 1.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Water Damage Range Max",
+     "value_from": 1.0,
+     "field_to": "Water Damage Range Max",
+     "value_to": 1.0
+    }
+   ],
+   "donor_src": 1.0,
+   "original": 1.0,
+   "ratio": 1.0,
+   "balanced": 1.0
+  },
+  {
+   "card": "Projectile Velocity",
+   "field": "Initial Velocity",
+   "dst_field": "Initial Velocity",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 480.0,
+   "donor_dst": 120.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Initial Velocity",
+     "value_from": 480.0,
+     "field_to": "Initial Velocity",
+     "value_to": 120.0
+    }
+   ],
+   "donor_src": 480.0,
+   "original": 480.0,
+   "ratio": 0.25,
+   "balanced": 120.0
+  },
+  {
+   "card": "Projectile Velocity",
+   "field": "Final Velocity",
+   "dst_field": "Final Velocity",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 480.0,
+   "donor_dst": 120.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Final Velocity",
+     "value_from": 480.0,
+     "field_to": "Final Velocity",
+     "value_to": 120.0
+    }
+   ],
+   "donor_src": 480.0,
+   "original": 480.0,
+   "ratio": 0.25,
+   "balanced": 120.0
+  },
+  {
+   "card": "Projectile Velocity",
+   "field": "Minimum Velocity",
+   "dst_field": "Minimum Velocity",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Minimum Velocity",
+     "value_from": 0.0,
+     "field_to": "Minimum Velocity",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Projectile Lead Time",
+   "field": "Autoaim Leading Maximum Lead Time",
+   "note": "Shotgun card has no target in Halo 2"
+  },
+  {
+   "card": "Bullet Damage",
+   "field": "Damage Lower Bound",
+   "dst_field": "Damage Lower Bound",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\damage_effects\\shotgun_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 1.5,
+   "donor_dst": 5.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Damage Lower Bound",
+     "value_from": 3.0,
+     "field_to": "Damage Lower Bound",
+     "value_to": 5.0
+    }
+   ],
+   "donor_src": 3.0,
+   "original": 1.5,
+   "ratio": 1.6666666666666667,
+   "balanced": 2.5
+  },
+  {
+   "card": "Bullet Damage",
+   "field": "Damage Upper Bound",
+   "dst_field": "Damage Upper Bound",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\damage_effects\\shotgun_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 7.0,
+   "donor_dst": 16.5,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Damage Upper Bound",
+     "value_from": 10.0,
+     "field_to": "Damage Upper Bound",
+     "value_to": 16.5
+    }
+   ],
+   "donor_src": 10.0,
+   "original": 7.0,
+   "ratio": 1.65,
+   "balanced": 11.549999999999999
+  },
+  {
+   "card": "Bullet Damage",
+   "field": "Damage Upper Bound Max",
+   "dst_field": "Damage Upper Bound Max",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\damage_effects\\shotgun_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 7.0,
+   "donor_dst": 16.5,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Damage Upper Bound Max",
+     "value_from": 10.0,
+     "field_to": "Damage Upper Bound Max",
+     "value_to": 16.5
+    }
+   ],
+   "donor_src": 10.0,
+   "original": 7.0,
+   "ratio": 1.65,
+   "balanced": 11.549999999999999
+  },
+  {
+   "card": "Pellet Count",
+   "field": "Yaw Count",
+   "note": "Shotgun card has no target in Halo 2"
+  },
+  {
+   "card": "Pellet Count",
+   "field": "Pitch Count",
+   "note": "Shotgun card has no target in Halo 2"
+  },
+  {
+   "card": "Pellet Spread",
+   "field": "Spread",
+   "note": "Shotgun card has no target in Halo 2"
+  },
+  {
+   "card": "Pellet Spread",
+   "field": "Distribution Exponent",
+   "note": "Shotgun card has no target in Halo 2"
+  },
+  {
+   "card": "Ammo Inventory",
+   "field": "Rounds Total Initial",
+   "dst_field": "Rounds Total Initial",
+   "dst_block": "Magazines",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 10,
+   "donor_dst": 36,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Rounds Total Initial",
+     "value_from": 18,
+     "field_to": "Rounds Total Initial",
+     "value_to": 36
+    }
+   ],
+   "donor_src": 18,
+   "original": 10.0,
+   "ratio": 2.0,
+   "balanced": 20.0
+  },
+  {
+   "card": "Ammo Inventory",
+   "field": "Rounds Inventory Maximum",
+   "dst_field": "Rounds Inventory Maximum",
+   "dst_block": "Magazines",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 20,
+   "donor_dst": 36,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Rounds Inventory Maximum",
+     "value_from": 30,
+     "field_to": "Rounds Inventory Maximum",
+     "value_to": 36
+    }
+   ],
+   "donor_src": 30,
+   "original": 20.0,
+   "ratio": 1.2,
+   "balanced": 24.0
+  },
+  {
+   "card": "Ammo Inventory",
+   "field": "Rounds Total Maximum",
+   "note": "Shotgun has no Rounds Total Maximum target in Halo 3"
+  },
+  {
+   "card": "Ammo Loaded",
+   "field": "Rounds Loaded Maximum",
+   "dst_field": "Rounds Loaded Maximum",
+   "dst_block": "Magazines",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 5,
+   "donor_dst": 12,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Rounds Loaded Maximum",
+     "value_from": 6,
+     "field_to": "Rounds Loaded Maximum",
+     "value_to": 12
+    }
+   ],
+   "donor_src": 6,
+   "original": 5.0,
+   "ratio": 2.0,
+   "balanced": 10.0
+  },
+  {
+   "card": "Ammo Loaded",
+   "field": "Rounds Reloaded",
+   "dst_field": "Rounds Reloaded",
+   "dst_block": "Magazines",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 5,
+   "donor_dst": 1,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Rounds Reloaded",
+     "value_from": 1,
+     "field_to": "Rounds Reloaded",
+     "value_to": 1
+    }
+   ],
+   "donor_src": 1,
+   "original": 5.0,
+   "ratio": 1.0,
+   "balanced": 5.0
+  },
+  {
+   "card": "Ammo Loaded",
+   "field": "Rounds Total Maximum",
+   "note": "Shotgun has no Rounds Total Maximum target in Halo 3"
+  },
+  {
+   "card": "Dual Weapon Damage",
+   "field": "Dual Wield Damage Scale",
+   "note": "Shotgun has no Dual Wield Damage Scale target in Halo 3"
+  },
+  {
+   "card": "Reload Time",
+   "field": "Reload Animation",
+   "dst_field": "Reload Animation",
+   "dst_block": null,
+   "dst_class": "jmad",
+   "dst_tag": "*fp_shotgun*",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": null,
+   "donor_dst": null,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Reload Animation",
+     "value_from": null,
+     "field_to": "Reload Animation",
+     "value_to": null
+    }
+   ],
+   "donor_src": null
+  },
+  {
+   "card": "Zoom",
+   "field": "Magnification Levels",
+   "dst_field": "Magnification Levels",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0,
+   "donor_dst": 0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Magnification Levels",
+     "value_from": 0,
+     "field_to": "Magnification Levels",
+     "value_to": 0
+    }
+   ],
+   "donor_src": 0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Zoom",
+   "field": "Magnification Range",
+   "dst_field": "Magnification Range",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Magnification Range",
+     "value_from": 0.0,
+     "field_to": "Magnification Range",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Zoom",
+   "field": "Magnification Range Max",
+   "dst_field": "Magnification Range Max",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Shotgun",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Magnification Range Max",
+     "value_from": 0.0,
+     "field_to": "Magnification Range Max",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Zoom Time",
+   "field": "Weapon Zoom Time",
+   "note": "Shotgun card has no target in Halo 2"
+  }
+ ]
+}
