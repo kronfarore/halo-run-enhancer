@@ -24,9 +24,37 @@ PORT = {
     # PROPOSED (h2_phase0/h2_phase0_yardsticks.md): same block shape as the port (magazines,
     # barrels) -- the expensive byte edit is a block insert; fields are cheap
     'donor': {'weapon': 'objects\\weapons\\melee\\energy_blade\\energy_blade', 'message_prefix': 'ps',
-              'why': "melee-only, ages, 0/0/0, sword HUD; plus H2's own gravity_hammer model"},
+              'why': "melee-only, ages, 0/0/0, sword HUD; plus H2's own gravity_hammer model",
+              # step 4a chose the TRIGGER route: the sword's 0/0/0 shape has no trigger / barrel to
+              # carry 'age generated per round' (a block insert). Candidate shape 0/1/1 with battery
+              # age per round = the BEAM RIFLE (0.0556 / round) + the sword's melee / HUD fields --
+              # to be decided by the block shape before step 3 (recorded here when chosen)
+              'open': 'donor block shape for the trigger route'},
     'yardstick': {
-        'pick': None, 'reason': None,          # step 4a, WITH the user
+        # STEP 4a (user, 2026-10-28) -- measured on the H3EK / H2EK exports:
+        #   H3 hammer: jab (melee button, 1st hit) smash_melee 80; RT slam = lunge crush_melee 150 +
+        #     gravity_hammer_explosion 50..160 r 0.75->1.5 accel 3.5 stun 4.5 (an ANIMATION EFFECT,
+        #     every swing); campaign external aging 0.05 a swing (20); autoaim 10/1.75, magnetism 10/6.
+        #   H3 sword dash_melee 150 (strike + lunge), aim 10/2.5 10/6; H2 Energy Blade slice_melee 70,
+        #     lunge dash_melee 150, aim 6/6 12/8, ages per KILL only (H2 has no per-swing aging field).
+        #   Tartarus (shown, not picked): tartarus_hammer_melee 150..500 r 1.0 accel 4,
+        #     tartarus_hammer_explosion 100..200 plasma r 0.4->0.8 accel 2.
+        'pick': 'Energy Blade', 'ratio': 'lunge x1.0',
+        'reason': "user: the sword's LUNGE ratio (150 -> 150) -- Balanced = Halo 3's own numbers: slam "
+                  "crush 150 + blast 50..160 r 0.75-1.5, jab 80; aim by the sword's aim ratio "
+                  "(autoaim 6 / 4.2, magnetism 12 / 8)",
+        'decisions': {   # user, 2026-10-28 (step 4a)
+            'energy': "TRIGGER ROUTE (Halo 1's recipe): RT fires an invisible strike that bursts into "
+                      "the blast; the barrel's native 'age generated per round' 0.05 (20 swings, misses "
+                      "count); the melee button = the pommel jab. Not chosen: melee-only + energy per "
+                      "kill; a halo2.dll per-swing patch",
+            'model': "Halo 3's hammer (world, 3P, FP) -- Bungie's H2 hammer (Tartarus's) untouched",
+            '3p_class': "'melee' (the Brute graph's own hammer class); h2_graph_teach clones 'sword' as "
+                        "'melee' in the masterchief and dervish graphs",
+            'enhancer': "one card family 'Gravity Hammer' (enhancer session 2026-10-28): catalog weap = "
+                        "the port's tag; it retargets the Halo 2 rows + derives the rest at hand-off "
+                        "(tell it the slam / blast / jab jpt tags)",
+        },
         'candidates': {
             'provisional': 'Energy Blade',
             'alternatives': ["H2's own Gravity Hammer (Tartarus: a boss's numbers -- show, do not default)", 'Rocket / Fuel Rod melee'],
