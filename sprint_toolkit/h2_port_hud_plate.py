@@ -281,7 +281,10 @@ def all_images(donor, sheets, boxes, cfg):
     plate, _size = color_plate(os.path.join(TAGS, DONOR + '.bitmap'))
     out = plate.copy()
     dim = {int(k): v for k, v in (cfg.get('dim') or {}).items()}
+    skip = set(cfg.get('skip') or ())
     for idx, img in enumerate(donor):
+        if idx in skip:
+            continue                 # Bungie's own pixels stay in the plate untouched
         x, y = find_in_plate(plate, img)
         if idx in dim:
             twin = dim[idx]
@@ -314,7 +317,14 @@ def main(argv=None):
     print('%d image(s) in the donor plate' % len(donor))
 
     sheets, boxes = [], []
+    skip = set((every or {}).get('skip') or ())
     for idx, img in enumerate(donor):
+        if idx in skip:
+            # all_images 'skip' (the Spartan Laser, A2: the beam rifle plate's zoom-arc images, no
+            # weapon symbol, another size): written back exactly as the donor's
+            sheets.append(Image.fromarray(np.clip(img, 0, 255).astype('uint8'), 'RGBA'))
+            boxes.append(None)
+            continue
         box = (weapon_box(img, other[idx])
                if idx < len(other) and other[idx].shape == img.shape else None)
         # images past the first pair are the half and quarter screen variants, whose
