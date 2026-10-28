@@ -9,7 +9,7 @@ PORT = {
     'wave': 'A2',
     'name': 'Spartan Laser',
     'source': 'Halo 3',
-    'status': 'reserved',
+    'status': 'in progress',
     'source_tag': 'objects\\weapons\\support_high\\spartan_laser\\spartan_laser',
     'reservations': {
         'message_prefix': 'spl2',
