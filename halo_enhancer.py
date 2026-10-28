@@ -15719,6 +15719,7 @@ class HaloGUI(QMainWindow):
         self._manual_queue = ['player1', 'player2']
         self._manual_results = {}
         self._manual_empty = {}
+        self._ensure_port_levels()     # ports in the pool need the level check first
         self._next_manual_weapon()
 
     def on_new_equipment_button(self):
@@ -15730,6 +15731,7 @@ class HaloGUI(QMainWindow):
         self._manual_queue = ['player1', 'player2']
         self._manual_results = {}
         self._manual_empty = {}
+        self._ensure_port_levels()     # free when nothing is pending; every offer path
         self._next_manual_weapon()
 
     def _grant_weapon(self, player, weapon):
@@ -15748,6 +15750,12 @@ class HaloGUI(QMainWindow):
         self._manual_queue = ['player1', 'player2']
         self._manual_results = {}
         self._manual_empty = {}
+        # The port-level prewarm ran only before the opening picks, Generate and
+        # Options OK; after a load this button (or NEW ANYTHING / NEW EQUIPMENT /
+        # Change pick) can be the FIRST offer, and ports_on_level without a scan
+        # answers 'none' for an unchecked level, so the ported weapons were silently
+        # missing from it (review U1, 2026-10-28). Same run_busy prewarm here.
+        self._ensure_port_levels()
         self._next_manual_weapon()
 
     def _next_manual_weapon(self):
@@ -16429,6 +16437,7 @@ class HaloGUI(QMainWindow):
         """
         rs = self.run_state
         current = list(rs.weapons_for(player))
+        self._ensure_port_levels()     # both pools below may carry ported weapons
         if not current:
             # Nothing drafted yet: this is the opening pick, where "replace the lot"
             # and "replace the only one" are the same thing.
