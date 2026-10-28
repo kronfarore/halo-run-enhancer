@@ -9822,6 +9822,386 @@
    "anims": {
     "reload": 0.851562
    }
+  },
+  {
+   "weapon": "Mauler",
+   "source": "Halo 3",
+   "donor": "Shotgun",
+   "default_on": true,
+   "desc": "Mauler carried from Halo 3 into Halo 2 with its own model, textures, sounds, blade melee and its own Halo 3 first-person animations for both species -- dual wield included -- balanced through the Shotgun.",
+   "balance": [
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 16.0,
+     "card": "Magnetism",
+     "original": 15.999999876058132,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 7.636364,
+     "card": "Magnetism",
+     "original": 7.0,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 8.0,
+     "card": "Autoaim",
+     "original": 7.999999938029066
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 7.636364,
+     "card": "Autoaim",
+     "original": 7.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_shard",
+     "field": "Rider Direct Damage Scale",
+     "block": null,
+     "value": 1.0,
+     "card": "Rider Damage",
+     "original": 1.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_shard",
+     "field": "Rider Maximum Transfer Damage Scale",
+     "block": null,
+     "value": 0.5625,
+     "card": "Rider Damage",
+     "original": 0.75
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_shard",
+     "field": "Rider Minimum Transfer Damage Scale",
+     "block": null,
+     "value": 0,
+     "card": "Rider Damage",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Distribution Function",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Distribution Function",
+     "original": 0.0,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Distribution Angle",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Distribution Function",
+     "original": 0.0,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Firing Noise",
+     "block": "Barrels",
+     "value": 2.0,
+     "card": "Firing Noise",
+     "original": 2.0,
+     "index": "all"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_melee",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 20.571429,
+     "card": "Melee Damage",
+     "original": 72.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_melee",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 61.714286,
+     "card": "Melee Damage",
+     "original": 72.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_melee",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 61.714286,
+     "card": "Melee Damage",
+     "original": 72.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Rounds Per Second",
+     "block": "Barrels",
+     "value": 0.0,
+     "card": "Salvo Shooting",
+     "original": 30.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Rounds Per Second Max",
+     "block": "Barrels",
+     "value": 0.0,
+     "card": "Salvo Shooting",
+     "original": 30.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Shots Per Fire",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Salvo Shooting",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Shots Per Fire Max",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Salvo Shooting",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Fire Recovery Time",
+     "block": "Barrels",
+     "value": 0.75,
+     "card": "Fire Recovery Time",
+     "original": 0.75
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Projectiles Per Shot",
+     "block": "Barrels",
+     "value": 10,
+     "card": "Projectiles Per Shot",
+     "original": 1.0,
+     "note": "user 4a 2026-10-28: the H2 shotgun's 10 x 15/15 (Halo 3 keeps 15 pellets on the projectile)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Rounds Per Shot",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Projectiles Per Shot",
+     "original": 1.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\pistol\\excavator\\projectiles\\excavator_shard",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 10.666667,
+     "card": "Projectile Range",
+     "original": 8.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\pistol\\excavator\\projectiles\\excavator_shard",
+     "field": "Air Damage Range",
+     "block": null,
+     "value": 6.25,
+     "card": "Projectile Range",
+     "original": 2.5
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\pistol\\excavator\\projectiles\\excavator_shard",
+     "field": "Air Damage Range Max",
+     "block": null,
+     "value": 10.0,
+     "card": "Projectile Range",
+     "original": 5.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\pistol\\excavator\\projectiles\\excavator_shard",
+     "field": "Water Damage Range",
+     "block": null,
+     "value": 0,
+     "card": "Projectile Range",
+     "original": 0.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\pistol\\excavator\\projectiles\\excavator_shard",
+     "field": "Water Damage Range Max",
+     "block": null,
+     "value": 1.0,
+     "card": "Projectile Range",
+     "original": 1.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\pistol\\excavator\\projectiles\\excavator_shard",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 120.0,
+     "card": "Projectile Velocity",
+     "original": 480.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\pistol\\excavator\\projectiles\\excavator_shard",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 120.0,
+     "card": "Projectile Velocity",
+     "original": 480.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\pistol\\excavator\\projectiles\\excavator_shard",
+     "field": "Minimum Velocity",
+     "block": null,
+     "value": 0,
+     "card": "Projectile Velocity",
+     "original": 0.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_shard",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 2.5,
+     "card": "Bullet Damage",
+     "original": 1.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_shard",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 11.55,
+     "card": "Bullet Damage",
+     "original": 7.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_shard",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 11.55,
+     "card": "Bullet Damage",
+     "original": 7.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 20.0,
+     "card": "Ammo Inventory",
+     "original": 10.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Rounds Inventory Maximum",
+     "block": "Magazines",
+     "value": 40,
+     "card": "Ammo Inventory",
+     "original": 20.0,
+     "note": "user 4a 2026-10-28: the dual-wield carry rule x1.5 (the Shotgun yardstick cannot be dual wielded) -> 40 + 10 loaded = 50"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 10.0,
+     "card": "Ammo Loaded",
+     "original": 5.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Rounds Reloaded",
+     "block": "Magazines",
+     "value": 10,
+     "card": "Ammo Loaded",
+     "original": 5.0,
+     "note": "Halo 3's whole-magazine reload (rounds reloaded = loaded; the shotgun's 1 a shell does not apply)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Magnification Levels",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Magnification Range",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Magnification Range Max",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Dual Wield Damage Scale",
+     "block": "Barrels",
+     "value": 0.583333,
+     "card": "Dual Weapon Damage",
+     "original": 0.7,
+     "note": "user 4a 2026-10-28: Halo 3's 0.7 x the SMG's H3 -> H2 0.833 (the Spiker's route; the shotgun has no dual row)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\pistol\\excavator\\excavator",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 50.0,
+     "card": "Magazine",
+     "original": null,
+     "note": "derived from Rounds Inventory Maximum + Rounds Loaded Maximum"
+    }
+   ],
+   "fp_animations": "objects\\characters\\*\\fp\\weapons\\pistol\\fp_excavator\\fp_excavator"
   }
  ],
  "Halo 3: ODST": [
