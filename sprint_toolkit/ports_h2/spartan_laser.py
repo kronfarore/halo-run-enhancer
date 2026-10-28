@@ -9,6 +9,14 @@ BR = r'objects\weapons\rifle\beam_rifle'                # the donor (H2EK)
 FX = r'effects\objects\weapons\support_high\spartan_laser'   # the reserved effects folder
 BRFX = r'effects\objects\weapons\rifle\beam_rifle'
 RL = r'objects\weapons\support_high\rocket_launcher'   # the yardstick; its shaders seed the look
+H2EK = r'F:\SteamLibrary\steamapps\common\H2EK'
+H3SND = r'data\sound\weapons'           # source folders in MCC's halo3 sfx.fsb (.info)
+import os as _os
+NEW_HUD = r'ui\hud\bitmaps\new_hud'
+# the Halo 3 world render model's export (h1_fp_retarget.export_xml's cache; regenerable): the
+# silhouette the HUD plate, backpack icon and pickup glyph are drawn from
+H3_RM_XML = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), 'out', 'h3_export',
+                          'objects~weapons~support_high~spartan_laser~spartan_laser.render_model.xml')
 
 PORT = {
     'order': 2,
@@ -140,6 +148,9 @@ PORT = {
     'weapon': {
         'weapon': SL + r'\spartan_laser.weapon',
         'clones': [(BR + r'\beam_rifle.weapon', SL + r'\spartan_laser.weapon'),
+                   # the world .model: the BATTLE RIFLE's (the AR's proof: variants `base` / `gun`, human
+                   # metal; the beam rifle's names Covenant materials)
+                   (r'objects\weapons\rifle\battle_rifle\battle_rifle.model', SL + r'\spartan_laser.model'),
                    (BR + r'\projectiles\beam_rifle_beam.projectile', SL + r'\projectiles\spartan_laser_beam.projectile'),
                    (BR + r'\damage_effects\beam_rifle_impact.damage_effect', SL + r'\damage_effects\spartan_laser_beam.damage_effect'),
                    (r'objects\weapons\rifle\sniper_rifle\damage_effects\sniper_rifle_trigger.damage_effect',
@@ -150,8 +161,27 @@ PORT = {
                    (BRFX + r'\beam_rifle_inner.contrail', FX + r'\spartan_laser_inner.contrail'),
                    (BRFX + r'\beam_rifle_outer.contrail', FX + r'\spartan_laser_outer.contrail'),
                    (BRFX + r'\overheated.effect', FX + r'\overheated.effect'),
-                   (r'effects\materials\objects\weapons\beam_rifle.material_effects', FX + r'\spartan_laser.material_effects')],
+                   (r'effects\materials\objects\weapons\beam_rifle.material_effects', FX + r'\spartan_laser.material_effects'),
+                   # the CHARGE cue: Halo 2's only charge-trigger effect, the Scarab main gun's (a 3 s event
+                   # at primary_trigger: a charge flare + plasma particles, then a release flare)
+                   (r'effects\scenarios\objects\covenant\military\scarab\scarab_beam_charging.effect',
+                    FX + r'\spartan_laser_charging.effect'),
+                   # step 7: the beam rifle's HUD (battery text, heat meter, zoomed meters, scope widgets)
+                   (r'ui\hud\beam_rifle.new_hud_definition', r'ui\hud\spartan_laser.new_hud_definition')],
         'wiring': [
+            (SL + r'\spartan_laser.weapon', 'hlmt', BR + r'\beam_rifle', SL + r'\spartan_laser', 'world model'),
+            (SL + r'\spartan_laser.model', 'mode', r'objects\weapons\rifle\battle_rifle\battle_rifle',
+             SL + r'\spartan_laser', 'the world render model (it and the collision pool ONE path)', {'nth': 0}),
+            (SL + r'\spartan_laser.weapon', 'mode', BR + r'\fp_beam_rifle\fp_beam_rifle',
+             SL + r'\fp_spartan_laser\fp_spartan_laser', 'first person model, Master Chief', {'nth': 0}),
+            (SL + r'\spartan_laser.weapon', 'mode', BR + r'\fp_beam_rifle\fp_beam_rifle',
+             SL + r'\fp_spartan_laser\fp_spartan_laser', 'first person model, Dervish (one Halo 3 FP model)', {'nth': 0}),
+            (SL + r'\spartan_laser.weapon', 'jmad', r'objects\characters\masterchief\fp\weapons\rifle\fp_beam_rifle\fp_beam_rifle',
+             r'objects\characters\masterchief\fp\weapons\support_high\fp_spartan_laser\fp_spartan_laser',
+             "Master Chief FP graph: the laser's own Halo 3 animations"),
+            (SL + r'\spartan_laser.weapon', 'jmad', r'objects\characters\dervish\fp\weapons\rifle\fp_beam_rifle\fp_beam_rifle',
+             r'objects\characters\dervish\fp\weapons\support_high\fp_spartan_laser\fp_spartan_laser',
+             "Dervish FP graph: the laser's own Halo 3 animations"),
             (SL + r'\spartan_laser.weapon', 'proj', BR + r'\projectiles\beam_rifle_beam',
              SL + r'\projectiles\spartan_laser_beam', 'projectile'),
             (SL + r'\projectiles\spartan_laser_beam.projectile', 'jpt!', BR + r'\damage_effects\beam_rifle_impact',
@@ -170,7 +200,25 @@ PORT = {
              FX + r'\spartan_laser', 'material effects (the weapon)'),
             (SL + r'\projectiles\spartan_laser_beam.projectile', 'foot', r'effects\materials\objects\weapons\beam_rifle',
              FX + r'\spartan_laser', 'impact material effects'),
+            (SL + r'\spartan_laser.weapon', 'nhdt', r'ui\hud\beam_rifle', r'ui\hud\spartan_laser', 'its own HUD (step 7)'),
+            # the trigger's EMPTY `charging effect` (class-less record at `behavior` +42: input, behavior,
+            # 2 barrels, prediction + pad, autofire x2, actions x2, charging / charged time, overcharged +
+            # pad, charged illumination, spew time) -- the open search tried hours of spots (2026-10-28)
+            (SL + r'\spartan_laser.weapon', 'effe', '', FX + r'\spartan_laser_charging',
+             "the trigger's charging effect (empty on the beam rifle)",
+             {'field': 'charging effect', 'record_from': ('behavior', 'new triggers', 0, 42)}),
+            # the charge flare part -> Halo 3's charging sound (the particles stay the glow)
+            (FX + r'\spartan_laser_charging.effect', 'lens', r'effects\scenarios\objects\covenant\military\scarab\scarab_beam_charge',
+             r'effects\scenarios\objects\covenant\military\scarab\scarab_beam_charge', "event 0's part: made a sound",
+             {'class': 'snd!'}),
+            (FX + r'\spartan_laser_charging.effect', 'snd!', r'effects\scenarios\objects\covenant\military\scarab\scarab_beam_charge',
+             r'sound\weapons\spartan_laser_port\sl_charge', "event 0's part: Halo 3's charge sound (step 10)"),
         ],
+        # the 3P label: the ROCKET LAUNCHER's (`missile` / `rl`, Halo 1's A8: `sl` taught from `rl`) -- a
+        # heavy two-handed carry every Halo 2 character graph holds (Grunts included); the beam rifle's
+        # `rifle` / `csr` is the Covenant sniper's
+        'string_ids': {'rifle': 'missile', 'csr': 'rl'},
+        'string_ids_done': ('weapon name', 'rl'),
         'shared': [(r'objects\weapons\damage_effects\*_melee', 'shared by every Halo 2 weapon'),
                    (r'the particles inside spartan_laser_fire', "the beam rifle's (Halo 3 particles do not port)")],
     },
@@ -182,12 +230,17 @@ PORT = {
     # actions `charge`, overcharged action DISCHARGE (fires barrel 0 when full), charged illumination 1.
     # Halo 3's 5 beam rounds a burst = ONE projectile carrying 570 (Halo 1's A8: an overpenetrated unit
     # takes the impact only)
+    # BOOT 1 (03b, 2026-10-28, still in the beam rifle's look; user): 'Works' -- charges, fires by itself
+    # when full, an early release fires nothing, 5-shot battery: HALO 2's CHARGE TRIGGER WORKS ON A PLAYER
+    # WEAPON (an observation of one port). 'The charge time might be higher than 2.5' -- measure charge
+    # and vent later
     'numbers': {
         'numbers': [
             (SL + r'\spartan_laser.weapon', 'behavior', 'new triggers', 0, 0, 3),          # latch -> charge
             # block indices (h2_tagfield read_all(indices=True), A2): the secondary (-1, findable by
             # value) first; the primary (0 = padding-like) pinned 2 bytes before it
-            (SL + r'\spartan_laser.weapon', 'secondary barrel', 'new triggers', 0, 0, 0),
+            (SL + r'\spartan_laser.weapon', 'secondary barrel', 'new triggers', 0, 0, 0,
+             {'anchor': ('behavior', 4)}),      # once 0 (a re-run), placed after behavior + primary
             (SL + r'\spartan_laser.weapon', 'primary barrel', 'new triggers', 0, 0, -1,
              {'anchor': ('secondary barrel', -2)}),
             # the zero fields placed from the secondary barrel (the trigger element, read off the
@@ -210,13 +263,240 @@ PORT = {
             (SL + r'\spartan_laser.weapon', 'heat loss per second', '', 0, 0, 1.0),
             # battery: 5 shots (Halo 3 age 0.04 a round x 5 rounds)
             (SL + r'\spartan_laser.weapon', 'age generated per round', 'barrels', 0, 0, 0.2),
+            # Halo 3's aim assist (the beam rifle's 1 / 10, 4 / 14) and ONE zoom level at 2.5x (its 2:
+            # 3.5-9.5); the scope widgets stay
+            (SL + r'\spartan_laser.weapon', 'autoaim angle', '', 0, 0, 1.0),
+            (SL + r'\spartan_laser.weapon', 'autoaim range', '', 0, 0, 25.0),
+            (SL + r'\spartan_laser.weapon', 'magnetism angle', '', 0, 1, 5.0),
+            (SL + r'\spartan_laser.weapon', 'magnetism range', '', 0, 1, 25.0),
+            (SL + r'\spartan_laser.weapon', 'magnification levels', '', 0, 0, 1),
+            (SL + r'\spartan_laser.weapon', 'magnification range', '', 0, 0, [2.5, 2.5]),
+            # THE BEAM (look, first pass): the beam rifle's two contrails (inner core, outer glow, both
+            # additive) recoloured from its purple to Halo 3's laser red (Halo 1's A8: RED 1, 0.15, 0.1;
+            # a white-hot core), the outer glow wider (Halo 3's beam is thick)
+            (FX + r'\spartan_laser_inner.contrail', 'color lower bound', 'point states', 0, 0, [1.0, 1.0, 0.8, 0.7]),
+            (FX + r'\spartan_laser_inner.contrail', 'color upper bound', 'point states', 0, 0, [1.0, 1.0, 0.3, 0.2]),
+            (FX + r'\spartan_laser_outer.contrail', 'color lower bound', 'point states', 0, 0, [0.6, 1.0, 0.1, 0.05]),
+            (FX + r'\spartan_laser_outer.contrail', 'color upper bound', 'point states', 0, 0, [0.6, 1.0, 0.2, 0.1]),
+            (FX + r'\spartan_laser_outer.contrail', 'width', 'point states', 0, 0, 0.25),
             (SL + r'\damage_effects\spartan_laser_beam.damage_effect', 'damage lower bound', '', 0, 0, 570.0),
             (SL + r'\damage_effects\spartan_laser_beam.damage_effect', 'damage upper bound', '', 0, 0, [570.0, 570.0]),
         ],
         'skipped': [],
     },
 
-    'firing_profile': {'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\support_high\\spartan_laser\\spartan_laser', 'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
+    # step 7 -- the HUD: a clone of the BEAM RIFLE's (the donor's: the battery percentage text, the heat
+    # meter, the zoomed battery + heat meters and the scope widgets -- Halo 3's laser HUD is a battery
+    # readout + a charge cue, no ammo ticks), its plate painted from the laser's mesh, Halo 3's crosshair
+    # (chud hud_reticles #11, H1 A8's) at Halo 3's on-screen size (~170 px at 1080p, A8's measurement /
+    # 1.117 screen px a bitmap px, the AR's) -- the scope widgets STAY (one zoom level, 2.5x)
+    # no ammo meter (a battery): h2_port_meter `backpack_only` draws just the stowed icon
+    'meter': {
+        'backpack_only': True,
+        'port_hud': r'ui\hud\spartan_laser',
+        'backpack': NEW_HUD + r'\backpack_weapons',
+        'backpack_port': NEW_HUD + r'\spartan_laser_backpack',
+        'backpack_size': (62, 30),
+        'model_3p': H3_RM_XML,
+    },
+    'hud_plate': {
+        'rel': NEW_HUD + r'\backgrounds',
+        'donor': NEW_HUD + r'\backgrounds\beam_rifle_bkd',
+        'other': NEW_HUD + r'\backgrounds\sniper_rifle_bkd',
+        'name': 'spartan_laser_bkd',
+        'hud': r'ui\hud\spartan_laser',
+        'model_3p': H3_RM_XML,
+        # the beam rifle plate: 12 images -- 0-3 the bright plates (206x64 x2 with the battery row,
+        # 206x38 x2), 4-7 the ZOOM ARCS (100x120 ...: no symbol, kept as Bungie's), 8-11 their dim twins.
+        # The symbol box measured on image 0 (the sniper 'other' is another shape: no diff)
+        'fallback_box': (78, 200, 3, 34),
+        'stretch': 1.4,
+        'all_images': {'dim': {8: 0, 9: 1, 10: 2, 11: 3}, 'skip': [4, 5, 6, 7]},
+    },
+    'reticle': {
+        'rel': NEW_HUD + r'\crosshairs',
+        'donor': NEW_HUD + r'\crosshairs\hud_reticles',
+        'donor_sequence': 19,                # the beam rifle's (the cloned HUD's crosshair)
+        'name': 'spartan_laser_reticle',
+        'hud': r'ui\hud\spartan_laser',
+        'footprint': 1.0,
+        'h3_art': {'sheet': 'hud_reticles', 'sequence': 11, 'yardstick': 11, 'target_ink': 152},
+        'preview': 'spartan_laser_reticle_preview.png',
+    },
+    # step 8 -- the pickup icon at U+E13F (the H2 ICON RULE: untinted, white lines, grey body, 160x62)
+    # and the messages (be_* -> spl2_*)
+    'glyph': {
+        'box': (160, 62),
+        'model_3p': H3_RM_XML,
+        'tif': 'spartan_laser_h2_glyph.tif',
+        'colour': (255, 255, 255),
+        'style': {'line': (255, 255, 255), 'body': (153, 153, 153)},
+    },
+    'messages': {
+        'donor_prefix': 'be', 'donor_icon': '&beam_rifle',
+        'donor_name': 'Beam Rifle', 'port_name': 'Spartan Laser',
+        'weapon': SL + r'\spartan_laser.weapon',
+    },
+
+    # step 10 -- h2_port_sounds.py: Halo 3's OWN sounds from MCC's halo3 sfx.fsb (render_h3_bank), classic
+    # Opus. The Beam Rifle clone names: firing effect fire / fire_lod / lfe, the weapon's misfire, overheat
+    # attachment, zoom in / out, pickup (the sniper's ammo), the beam's flyby; the seeded graphs the
+    # beam rifle's first-person fire, melee x2, posing x2, ready. Halo 1's A8 source list
+    'sounds': {
+        'weapon': SL + r'\spartan_laser.weapon',
+        'fire_fx': FX + r'\spartan_laser_fire.effect',
+        'audio': _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), 'out',
+                               'h2_sounds', 'spartan_laser'),
+        'audio_key': 'Spartan Laser',
+        'h3_bank': {'sl_fire': [H3SND + r'\spartan_laser\fire'],
+                    'sl_fire_lod': [H3SND + r'\spartan_laser\spartan_laser_lod_far'],
+                    'sl_overheat': [H3SND + r'\spartan_laser\spartan_laser_overheat'],
+                    'sl_zoom_in': [H3SND + r'\spartan_laser\spartan_laser_zoom_in'],
+                    'sl_zoom_out': [H3SND + r'\spartan_laser\spartan_laser_zoom_out'],
+                    'sl_flyby': [H3SND + r'\spartan_laser\beam_flyby'],
+                    'sl_ready': [H3SND + r'\spartan_laser\fp_spartan_laser\fp_spartan_laser_ready'],
+                    'sl_melee': [H3SND + r'\spartan_laser\fp_spartan_laser\fp_spartan_laser_melee'],
+                    'sl_pose1': [H3SND + r'\spartan_laser\fp_spartan_laser\fp_spartan_laser_posing_var1'],
+                    'sl_pose2': [H3SND + r'\spartan_laser\fp_spartan_laser\fp_spartan_laser_posing_var2'],
+                    'sl_ammo': [H3SND + r'\rocket_launcher\rocket_ammo'],
+                    'sl_dryfire': [H3SND + r'\battle_rifle\dryfire'],
+                    # the charge: Halo 3's charging `in` (its sound_looping's start; loop / out need an lsnd)
+                    'sl_charge': [H3SND + r'\spartan_laser\charging\charging\in']},
+        'sounds': {'sl_fire': ('sl_fire', 'weapon_fire'), 'sl_fire_lod': ('sl_fire_lod', 'weapon_fire'),
+                   'sl_overheat': ('sl_overheat', 'weapon_overheat'),
+                   'sl_zoom_in': ('sl_zoom_in', 'weapon_ready'), 'sl_zoom_out': ('sl_zoom_out', 'weapon_ready'),
+                   'sl_flyby': ('sl_flyby', 'projectile_flyby'), 'sl_ready': ('sl_ready', 'weapon_ready'),
+                   'sl_melee': ('sl_melee', 'weapon_melee'), 'sl_pose1': ('sl_pose1', 'weapon_ready'),
+                   'sl_pose2': ('sl_pose2', 'weapon_ready'), 'sl_ammo': ('sl_ammo', 'weapon_reload'),
+                   'sl_dryfire': ('sl_dryfire', 'weapon_empty'), 'sl_charge': ('sl_charge', 'weapon_fire')},
+        'repoint_fx': [(r'sound\weapons\beam_rifle\beam_rifle_fire', 'sl_fire'),
+                       (r'sound_remastered\weapons\beam_rifle\beam_rifle_fire_lod', 'sl_fire_lod'),
+                       (r'sound_remastered\weapons\beam_rifle\beamrifle_lfe', 'sl_fire_lod')],
+        'repoint_weapon': [(r'sound\weapons\beam_rifle\beam_rifle_misfire', 'sl_dryfire'),
+                           # (the beam rifle's overheat attachment is a LOOPING sound (lsnd) on the
+                           # `overheated` function -- not a snd! slot; Halo 3 cues its one-shot overheat
+                           # in the overheat animation: OPEN, a BORROW until then)
+                           (r'sound\weapons\beam_rifle\beam_rifle_zoom_in', 'sl_zoom_in'),
+                           (r'sound\weapons\beam_rifle\beam_rifle_zoom_out', 'sl_zoom_out'),
+                           (r'sound\weapons\sniper_rifle\sniper_ammo', 'sl_ammo')],
+        'repoint_tags': [(SL + r'\projectiles\spartan_laser_beam.projectile',
+                          r'sound\weapons\beam_rifle\beam_rifle_flyby', 'sl_flyby')],
+        'graph_sounds': (('beam_rifle_first_person_fire', 'sl_fire'), ('beam_rifle_melee_var1', 'sl_melee'),
+                         ('beam_rifle_melee_var2', 'sl_melee'), ('beam_rifle_posing_var1', 'sl_pose1'),
+                         ('beam_rifle_posing_var2', 'sl_pose2'), ('beam_rifle_ready', 'sl_ready')),
+        'graph_sound_dir': r'sound\weapons\beam_rifle' + '\\',
+        'gain': {},
+        'boost': {},
+        'backup': r'E:\HaloBackups\H2EK_spartan_laser_before_sounds',
+        'graph_backup': r'E:\HaloBackups\H2EK_spartan_laser_graphs_before_sounds',
+    },
+
+    # step 5 -- h2_port_collision.py: the BATTLE RIFLE's authored hull (the world .model's donor, as the
+    # AR's) scaled per axis to the laser's render mesh
+    'collision': {
+        'donor': r'objects\weapons\rifle\battle_rifle\battle_rifle',
+        'port': SL + r'\spartan_laser',
+        'src': r'battle_rifle\collision\battle_rifle_collision.jms',     # under data\!extracted
+        'out': SL + r'\collision\spartan_laser.jms',                     # under data
+        'port_render_jms': SL + r'\render\spartan_laser.jms',
+        'donor_render_jms': r'battle_rifle\render\battle_rifle_L5.jms',
+        'max_growth': 3.0,              # the laser is 2.9x the BR's width: the hull fits the mesh
+        'nodes_from_render': True,      # the laser's own skeleton (the Spiker's case)
+    },
+
+    # step 9 -- h2_port_fp_anims.py: Halo 3's OWN FP animations, both species (the AR's route), the
+    # graphs SEEDED from the Beam Rifle's (the donor: its overheating / o_h_exit / throw_overheated
+    # events and sounds survive the import for the same names). Halo 3 -> Halo 2 names:
+    #   fire_2 (the CHARGED shot, 28 fr) -> fire_1:var1 -- the beam is the trigger's barrel 0;
+    #     Halo 3's fire_1 (the 2-frame TAP: its harmless tracer) has no Halo 2 shot -> dropped
+    #   overheated (59 fr, Halo 3's one overheat) -> overheating (Halo 2's one, the S1 finding)
+    #   idle:var1 -> idle (Halo 2 has one idle; var2 / var3 dropped -- the posing fidgets stay)
+    #   the Dervish's `o_h:exit` (Halo 3's own typo) -> o_h_exit
+    # Dropped: button_press / throw_equipment (Halo 3's equipment)
+    'fp_anims': {
+        'species': {
+            'masterchief': {
+                'graph': r'objects\characters\masterchief\fp\weapons\support_high\fp_spartan_laser\fp_spartan_laser.model_animation_graph',
+                'arms_rm': r'objects\characters\masterchief\fp\fp.render_model',
+                'arms': H2EK + r'\data\!extracted\fp_arms_masterchief\fp_arms.jms',
+                'source': r'objects\characters\masterchief\fp\weapons\support_high\fp_spartan_laser',
+                'seed': r'objects\characters\masterchief\fp\weapons\rifle\fp_beam_rifle\fp_beam_rifle'},
+            'dervish': {
+                'graph': r'objects\characters\dervish\fp\weapons\support_high\fp_spartan_laser\fp_spartan_laser.model_animation_graph',
+                'arms_rm': r'objects\characters\dervish\fp\fp.render_model',
+                'arms': H2EK + r'\data\!extracted\fp_arms_dervish\dervish_fp_arms.jms',
+                'source': r'objects\characters\dervish\fp\weapons\support_high\fp_spartan_laser',
+                'seed': r'objects\characters\dervish\fp\weapons\rifle\fp_beam_rifle\fp_beam_rifle'},
+        },
+        'weapon_dir': SL + r'\fp_spartan_laser',
+        'weapon_rm': SL + r'\fp_spartan_laser\fp_spartan_laser.render_model',
+        'weapon_nodes': ['gun', 'cover', 'handle', 'laser', 'shield', 'telescope', 'lens_1', 'lens_2'],
+        'skip': ['first_person:fire_1', 'first_person:button_press', 'first_person:throw_equipment',
+                 'first_person:idle:var2', 'first_person:idle:var3'],
+        'rename': {'first_person:fire_2': 'first_person:fire_1:var1',
+                   'first_person:overheated': 'first_person:overheating',
+                   'first_person:idle:var1': 'first_person:idle',
+                   'first_person:o_h:exit': 'first_person:o_h_exit'},
+        'looping': ['first_person:idle:var1', 'first_person:posing:var1', 'first_person:posing:var2',
+                    'first_person:posing:var3'],
+        'overlay_reference': 'first_person:idle:var1',
+        # the import flags changed animations 'verify sound events' (S1 boot 2: 'no sound') -- cleared
+        'clear_verify': True,
+        # the import gives a name new to the seed 0.0001 (the SAW rework's finding): the three fidgets even
+        'weights': {'first_person:posing:var1': 0.33, 'first_person:posing:var2': 0.33,
+                    'first_person:posing:var3': 0.33},
+    },
+
+    # step 4b -- port_field_audit.py --port h2:spartan_laser: every field NO card covers where Halo 3's
+    # laser differs from Halo 3's rocket launcher (the yardstick) -- list 2 must say 0 to port. The laser's
+    # shot = its BEAM projectile (barrel 1 in Halo 3; Halo 3's damage is the beam's detonation)
+    'field_audit': {
+        'source_kit': 'H3EK',
+        'source': {'weapon': (SL + r'\spartan_laser.weapon', RL + r'\rocket_launcher.weapon'),
+                   'projectile': (SL + r'\projectiles\spartan_laser_beam.projectile', RL + r'\projectiles\rocket.projectile'),
+                   'damage_effect': (SL + r'\damage_effects\spartan_laser_beam.damage_effect',
+                                     RL + r'\damage_effects\rocket_launcher_explosion.damage_effect')},
+        'target': {'weapon': (SL + r'\spartan_laser.weapon', RL + r'\rocket_launcher.weapon'),
+                   'projectile': (SL + r'\projectiles\spartan_laser_beam.projectile', RL + r'\projectiles\rocket.projectile'),
+                   'damage_effect': (SL + r'\damage_effects\spartan_laser_beam.damage_effect',
+                                     RL + r'\damage_effects\rocket_launcher_explosion.damage_effect')},
+    },
+
+    # make_port_catalog_h2.py spartan_laser: BALANCED = step 4a's rocket ratio. balance_port.py's card
+    # table (balance_Spartan_Laser_Halo3_to_Halo2.json, kept for the record) has no leg for the laser's
+    # beam damage / battery / heat (the rocket has no such cards) and would carry Halo 3's 5-round salvo
+    # onto the one-projectile shot -- so no table row is mapped (port_tags empty) and the entry is step
+    # 4a's rows as extra_rows. Every other leg is x1 (charge 2.5, vent 2.25, battery 5, range 120, zoom
+    # 2.5, autoaim / magnetism angle, magnetism range): the default IS balanced there
+    'catalog': {
+        'table': 'balance_Spartan_Laser_Halo3_to_Halo2.json',
+        'weapon_tag': SL + r'\spartan_laser',
+        'port_tags': [],
+        'shared': [('jpt!', r'objects\weapons\damage_effects\smash_melee')],
+        'extra_rows': [
+            {'class': 'jpt!', 'tag': SL + r'\damage_effects\spartan_laser_beam', 'field': f, 'block': None,
+             'value': 453.4, 'card': 'Beam Damage', 'original': 570.0,
+             'note': 'step 4a (user 2026-10-28): the rocket ratio, direct hits with the AOE bumps counted -- '
+                     'H2 rocket 150 + 200 / H3 rocket 240 + 200 = 0.795; 570 x 0.795'}
+            for f in ('Damage Lower Bound', 'Damage Upper Bound', 'Damage Upper Bound Max')] + [
+            {'class': 'weap', 'tag': SL + r'\spartan_laser', 'field': 'Autoaim Range', 'block': None,
+             'value': 45.0, 'card': 'Autoaim', 'original': 25.0,
+             'note': "step 4a: Halo 3's 25 x the rockets' 45 / 25"}],
+        'fp_animations': r'objects\characters\*\fp\weapons\support_high\fp_spartan_laser\fp_spartan_laser',
+        'reload_mult': None,
+        'desc': ("Halo 3's Spartan Laser carried into Halo 2 with its own model, textures, sounds and "
+                 "first-person animations for both species: hold the trigger 2.5 s and it fires one "
+                 "devastating beam by itself, overheating; five shots a battery, 2.5x zoom. Balanced "
+                 "through the Rocket Launcher: 453 damage a beam, a longer autoaim reach."),
+    },
+
+    # step 11 -- `python ai_firing_profile.py --h2-port spartan_laser`: Halo 3's ai\generic laser entry
+    # (010_jungle) name-for-name into H2EK ai\generic, over the H2 ROCKET LAUNCHER's (the yardstick).
+    # Halo 1's A8 lesson to check in the Armed test: a charged weapon needs the AI to HOLD the trigger
+    # longer than the charge (Halo 3's profile bursts 2.6 s for its 2.5 s)
+    'firing_profile': {'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\support_high\\spartan_laser\\spartan_laser',
+                       'donor_weapon': r'objects\weapons\support_high\rocket_launcher\rocket_launcher',
+                       'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
     'test': {'level': '03b_newmombasa', 'dervish_level': '06a_sentinelwalls'},   # parallel step 2
     'residency': {'levels': 'all', 'placements': False},
 }
