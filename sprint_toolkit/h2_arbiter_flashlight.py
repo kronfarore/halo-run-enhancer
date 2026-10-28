@@ -70,8 +70,11 @@ FLASH_MARKER = (11, (0.102945, 0.082244, 0.0), (0.657372, 0.260507, 0.260506, 0.
 #: hangs the lights on the FIRST-PERSON model's marker when it has one: the Chief's fp arms
 #: carry `flashlight` on node 0 `base` (camera-fixed), the Arbiter's fp arms had none, so his
 #: light fell through to the 3P bone. Copied from masterchief\fp\fp.render_model; node 0 is
-#: `base` in both fp skeletons.
-FP_MARKER = (0, (-0.03, 0.06, 0.09), (0.0, 0.0, 0.0, -1.0))
+#: `base` in both fp skeletons. The kit wrote the Chief's spot (-0.03, 0.06, 0.09): steady,
+#: but the spot sat left of and above the crosshair and a beam streak showed on the left (user
+#: screenshot 2026-10-28). apply() writes FP_MARKER into the cache every patch, so it is tuned
+#: here without a rebuild: on the view axis, just behind the camera.
+FP_MARKER = (0, (-0.03, 0.0, 0.0), (0.0, 0.0, 0.0, -1.0))
 SCALE = 'integrated_light_power'
 
 ATTACH, ATTACH_SZ = 0x94, 0x18          # bipd Attachments (cache)
@@ -269,6 +272,25 @@ def _sid(m, name):
     return None
 
 
+def _set_fp_marker(m):
+    """Write FP_MARKER (node, translation, rotation) over the `flashlight` marker of his fp
+    arms in the cache (group element: sid, markers count, ptr; marker 36 bytes: region,
+    permutation, node, pad, translation, rotation, scale). False when the map has none."""
+    t = _find(m, 'mode', DERVISH_FP)
+    if not t or t['base'] is None:
+        return False
+    n, g = m.i32(t['base'] + 0x58), m.p2o(m.u32(t['base'] + 0x5C))
+    for k in range(max(0, min(n, 64))):
+        e = g + k * 12
+        if m.resolve_stringid(m.u32(e)) == MARKER and m.i32(e + 4) == 1:
+            node, tr, q = FP_MARKER
+            mk = m.p2o(m.u32(e + 8))
+            m.data[mk + 2] = node
+            struct.pack_into('<3f4f', m.data, mk + 4, *tr, *q)
+            return True
+    return False
+
+
 def apply(m, on):
     """Switch the Arbiter's flashlight on/off in an open Halo2Map. Returns a report line,
     or None when the map has nothing to switch (no Arbiter, or built before the kit edit)."""
@@ -294,6 +316,8 @@ def apply(m, on):
         for i in lights:
             struct.pack_into('<I', m.data, arr + i * ATTACH_SZ + 8, sid)
         marker = ', marker %s' % name
+        if _set_fp_marker(m):
+            marker += ', fp marker at %s' % (FP_MARKER[1],)
     return 'Arbiter flashlight %s (attachments %d -> %d, toggle effect %s%s)' % (
         'ON' if on else 'OFF', s['count'], want, 'set' if on else 'cleared', marker)
 
