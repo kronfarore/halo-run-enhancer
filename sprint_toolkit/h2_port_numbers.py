@@ -27,7 +27,7 @@ TAGS = os.path.join(tf.H2EK, 'tags')
 
 def show(n):
     for tag, name, block, index, nth, want in n['numbers']:
-        rows = tf.read_all(tf.export(os.path.join(TAGS, tag)))
+        rows = tf.read_all(tf.export(os.path.join(TAGS, tag)), indices=True)
         row = tf.pick(rows, name, block, index, nth)
         now = row[4].splitlines()[0]
         wants = want if isinstance(want, list) else [want]
@@ -46,7 +46,7 @@ def pin(tag_path, name, block, index, nth, anchor, delta):
     key = ('%s[%d].%s' % (block, index, name) if block else name) + ('#%d' % nth if nth else '')
     # (a cached offset is NOT trusted for a zero: a longer path written earlier in the file -- a
     # re-wiring -- shifts every later byte, and zero cannot be re-validated by its value)
-    rows = tf.read_all(tf.export(tag_path))
+    rows = tf.read_all(tf.export(tag_path), indices=True)
     row = tf.pick(rows, name, block, index, nth)
     if any(tf._numbers(row[4])):
         return                  # non-zero now: h2_tagfield finds it by its value
@@ -54,11 +54,13 @@ def pin(tag_path, name, block, index, nth, anchor, delta):
     original = open(tag_path, 'rb').read()
     code = tf.SCALARS[row[3]][0]
     edited = bytearray(original)
-    struct.pack_into(code, edited, at, 0.5 if code == '<f' else 3)
+    # an ENUM probes with 1 (valid in any enum: 3 is out of range in a 3-value one and tool prints
+    # it unchanged -- the Spartan Laser's overcharged action, A2)
+    struct.pack_into(code, edited, at, 0.5 if code == '<f' else 1 if row[3] in ('enum', 'char enum') else 3)
     probe = '%s._pin_%d%s' % (os.path.splitext(tag_path)[0], os.getpid(), os.path.splitext(tag_path)[1])
     try:
         open(probe, 'wb').write(bytes(edited))
-        after = tf.read_all(tf.export(probe) or '')
+        after = tf.read_all(tf.export(probe) or '', indices=True)
     finally:
         if os.path.exists(probe):
             os.remove(probe)

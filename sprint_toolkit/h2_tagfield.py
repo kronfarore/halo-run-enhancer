@@ -78,6 +78,8 @@ SCALARS = {
     'real argb color': ('<f', 4, 4), 'real rgb color': ('<f', 4, 3),
     # a HUD widget's screen offsets (two shorts) -- the Flamethrower's heat meter, S1
     'point 2d': ('<h', 2, 2),
+    # a block index (read_all(indices=True)): -1 = NONE
+    'short block index': ('<h', 2, 1),
 }
 
 
@@ -95,10 +97,16 @@ def export(tag_path):
     return open(out, encoding='utf-8', errors='replace').read()
 
 
-def read_all(xml):
-    """[(block, element index, field name, type, text)] in the order tool prints them."""
+def read_all(xml, indices=False):
+    """[(block, element index, field name, type, text)] in the order tool prints them.
+
+    indices=True also reads BLOCK INDEX rows (tool prints `<block_index name="short block
+    index" type="primary barrel" index="0">primary</block_index>`: the type and name attributes
+    swapped) as (block, i, 'primary barrel', 'short block index', '0') -- the Spartan Laser's
+    trigger barrels, A2 2026-10-28. Opt-in: this module's own get / offset_of / set_field (and
+    h2_port_numbers) read them; every other caller sees the rows it always did."""
     out, stack = [], []
-    token = re.compile(r'<(/?)(block|element|field)\b([^>]*)>([^<]*)', re.S)
+    token = re.compile(r'<(/?)(block_index|block|element|field)\b([^>]*)>([^<]*)', re.S)
     for m in token.finditer(xml):
         closing, kind, attrs, text = m.group(1), m.group(2), m.group(3), m.group(4)
         if kind == 'block':
@@ -111,6 +119,13 @@ def read_all(xml):
         elif kind == 'element' and not closing and stack:
             idx = re.search(r'index="(\d+)"', attrs)
             stack[-1][1] = int(idx.group(1)) if idx else 0
+        elif kind == 'block_index':
+            if indices and not closing:
+                name = re.search(r'type="([^"]*)"', attrs)
+                idx = re.search(r'index="(-?\d+)"', attrs)
+                if name and idx:
+                    block, index = (stack[-1][0], stack[-1][1]) if stack else ('', 0)
+                    out.append((block, index, name.group(1), 'short block index', idx.group(1)))
         elif kind == 'field' and not closing:
             name = re.search(r'name="([^"]*)"', attrs)
             ftype = re.search(r'type="([^"]*)"', attrs)
@@ -274,7 +289,7 @@ def offset_of(tag_path, name, block='', index=0, nth=0, verbose=True):
     xml = export(tag_path)
     if xml is None:
         raise RuntimeError('tool.exe cannot even read %s' % tag_path)
-    rows = read_all(xml)
+    rows = read_all(xml, indices=True)
     row = pick(rows, name, block, index, nth)
     ftype, values = row[3], _numbers(row[4])
     if ftype not in SCALARS or not values:
@@ -319,7 +334,7 @@ def offset_of(tag_path, name, block='', index=0, nth=0, verbose=True):
             xml = export(probe_path)
             if xml is None:
                 continue
-            after = read_all(xml)
+            after = read_all(xml, indices=True)
             if len(after) != len(rows):
                 continue
             moved = [i for i, (a, b) in enumerate(zip(rows, after)) if a[4] != b[4]]
@@ -338,7 +353,7 @@ def offset_of(tag_path, name, block='', index=0, nth=0, verbose=True):
 
 
 def get(tag_path, name, block='', index=0):
-    rows = read_all(export(tag_path))
+    rows = read_all(export(tag_path), indices=True)
     return _numbers(pick(rows, name, block, index)[4])
 
 
@@ -346,7 +361,7 @@ def set_field(tag_path, name, value, block='', index=0, nth=0):
     """Write one field, then make tool.exe confirm only it changed."""
     at = offset_of(tag_path, name, block, index, nth)
     original = open(tag_path, 'rb').read()
-    rows = read_all(export(tag_path))
+    rows = read_all(export(tag_path), indices=True)
     row = pick(rows, name, block, index, nth)
     code, size, n = SCALARS[row[3]]
     vals = value if isinstance(value, (list, tuple)) else [value]
@@ -368,7 +383,7 @@ def set_field(tag_path, name, value, block='', index=0, nth=0):
     open(tag_path, 'wb').write(bytes(edited))
 
     xml = export(tag_path)
-    after = read_all(xml) if xml else []
+    after = read_all(xml, indices=True) if xml else []
     moved = [i for i, (a, b) in enumerate(zip(rows, after)) if a[4] != b[4]] if after else []
     if len(moved) != 1 or rows[moved[0]] is not row:
         open(tag_path, 'wb').write(original)
