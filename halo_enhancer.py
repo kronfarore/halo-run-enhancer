@@ -15918,6 +15918,11 @@ class HaloGUI(QMainWindow):
             self.update_status("Run loaded from %s — press Generate when you're ready "
                                "to draw this round's cards." % where)
             self.generate_btn.setEnabled(True)
+            # The NEXT LEVEL box (and Save) follow the loaded phase like the 'complete'
+            # branch below: a run saved right after NEXT LEVEL parks in player1_turn
+            # with no pairs, and the box built hidden in setup_ui stayed hidden until a
+            # whole round was drafted (review U1, 2026-10-28).
+            self._sync_save_button()
         elif self.run_state.phase == 'complete':
             self.run_state.weapon_selection_made = True
             self.update_history()
