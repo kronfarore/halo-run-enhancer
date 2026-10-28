@@ -23,13 +23,17 @@ PORT = {
     },
     # PROPOSED (h2_phase0/h2_phase0_yardsticks.md): same block shape as the port (magazines,
     # barrels) -- the expensive byte edit is a block insert; fields are cheap
-    'donor': {'weapon': 'objects\\weapons\\melee\\energy_blade\\energy_blade', 'message_prefix': 'ps',
-              'why': "melee-only, ages, 0/0/0, sword HUD; plus H2's own gravity_hammer model",
-              # step 4a chose the TRIGGER route: the sword's 0/0/0 shape has no trigger / barrel to
-              # carry 'age generated per round' (a block insert). Candidate shape 0/1/1 with battery
-              # age per round = the BEAM RIFLE (0.0556 / round) + the sword's melee / HUD fields --
-              # to be decided by the block shape before step 3 (recorded here when chosen)
-              'open': 'donor block shape for the trigger route'},
+    # step 4a chose the TRIGGER route (energy per swing), so the donor needs a trigger + barrel with
+    # battery aging: the sword's 0/0/0 has neither (a block insert). The H2 BEAM RIFLE is that shape
+    # exactly: 0 magazines, one latch trigger, battery 'age generated per round' (0.0556), two-handed
+    # -- its zoom and heat are plain fields (zeroed). Not the donor: the energy blade (0/0/0), the
+    # plasma rifle (1 magazine, 3 barrels, one-handed). The HUD = the Energy Blade's plasma_sword
+    # (battery meter only), the melee fields = the sword's (lunge dash_melee); the phase-0 proposal
+    # was the blade (melee-only route)
+    'donor': {'weapon': 'objects\weapons\rifle\beam_rifle\beam_rifle', 'message_prefix': 'be',
+              'hud': 'ui\hud\plasma_sword', 'melee_from': 'objects\weapons\melee\energy_blade\energy_blade',
+              'why': "trigger route (step 4a): 0 magazines / 1 latch trigger / battery age per round, "
+                     "two-handed; HUD plasma_sword; melee fields the sword's"},
     'yardstick': {
         # STEP 4a (user, 2026-10-28) -- measured on the H3EK / H2EK exports:
         #   H3 hammer: jab (melee button, 1st hit) smash_melee 80; RT slam = lunge crush_melee 150 +
