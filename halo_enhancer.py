@@ -15043,22 +15043,9 @@ class HaloGUI(QMainWindow):
         """Enemy types an active Thunderstorm / Downpour took out of the run."""
         return self.db.vanished_enemies(active_skull_names(self.run_state))
 
-    def _armed_offered(self):
-        rs = getattr(self, 'run_state', None)
-        if rs is not None and not isinstance(getattr(rs, 'armed_offered', None), dict):
-            rs.armed_offered = {}
-        return rs.armed_offered if rs is not None else {}
-
-    def _note_armed_offered(self, card):
-        """A held weapon's Armed card was offered: its draw weight drops by one next time."""
-        if not isinstance(card, dict) or not str(card.get('name') or '').startswith('Armed: '):
-            return
-        t = (card.get('targets') or [{}])[0]
-        w, e = t.get('enemy_weapon'), t.get('enemy_type')
-        if w and e and w in (self._run_weapons() or []):
-            d = self._armed_offered()
-            k = '%s||%s' % (e, w)
-            d[k] = int(d.get(k) or 0) + 1
+    # The Armed-card offer counter (_armed_offered / _note_armed_offered) lives on
+    # RunEnhancer, which owns _run_weapons; a copy here called a _run_weapons this
+    # class never had (review U1 follow-up, 2026-10-28).
 
     def _swapped_in(self):
         """Enemy types a Halo 1 Incursion card brought into the run."""
