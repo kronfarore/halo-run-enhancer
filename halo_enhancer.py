@@ -10640,7 +10640,11 @@ class OptionsDialog(QDialog):
         self.restore_stock_btn.setToolTip(
             "Undo everything this tool changes OUTSIDE the map files:\n\n"
             "  • halo2.dll and halo3odst.dll — every applied byte patch\n"
-            "  • Data\\UI\\scoredb.xml — back to its pristine .bak\n"
+            "  • halo1.dll — the Halo 1 engine options (overheat drops the zoom, melee "
+            "blocks fire, supercombine count, charge needs a release, Grunt birthday "
+            "party); an option still ticked goes back in at the next patch\n"
+            "  • Data\\UI\\scoredb.xml and data\\careerdb\\careerdb.xml — back to their "
+            "pristine .bak\n"
             "  • the running MCC — the death penalty and the betrayal sign guard\n\n"
             "Maps are NOT touched: use ‘Restore all .bak’ or ‘Restore from "
             "archive’ above for those. Between the two you get back to a stock game "
@@ -13918,8 +13922,10 @@ class OptionsDialog(QDialog):
     def _restore_stock_engine(self):
         r"""Undo everything this tool changes outside the map files.
 
-        The map folders are only half of it. Two game dlls get byte patches, a shared
-        MCC data file gets rewritten, and two more edits are written straight into the
+        The map folders are only half of it. Three game dlls get byte patches
+        (halo2.dll, halo3odst.dll, and halo1.dll for the Halo 1 engine options synced
+        on every patch), two shared MCC data files get rewritten (scoredb.xml,
+        careerdb.xml), and two more edits are written straight into the
         running process. Until now the only way back from those was a Steam "verify
         integrity", which re-downloads tens of GB and DELETES modded maps on the way --
         the thing that wiped the campaign twice. This is the targeted alternative.
@@ -13950,7 +13956,7 @@ class OptionsDialog(QDialog):
             mcc_open = bool(_dp.find_pid())
         except Exception:
             pass
-        note = ("MCC is RUNNING, so the two dlls will be skipped \u2014 a loaded dll "
+        note = ("MCC is RUNNING, so the dlls will be skipped \u2014 a loaded dll "
                 "cannot be written. Close MCC and press this again to finish them."
                 if mcc_open else
                 "The dll changes need MCC fully restarted to take effect.")
@@ -13958,7 +13964,11 @@ class OptionsDialog(QDialog):
                 self, "Revert engine patches",
                 "Undo everything outside the map files?\n\n"
                 "  \u2022 halo2.dll and halo3odst.dll \u2014 every applied byte patch\n"
-                "  \u2022 Data\\UI\\scoredb.xml \u2014 restored from its .bak\n"
+                "  \u2022 halo1.dll \u2014 the Halo 1 engine options (overheat drops the "
+                "zoom, melee blocks fire, supercombine count, charge needs a release, "
+                "Grunt birthday party); any still ticked goes back in at the next patch\n"
+                "  \u2022 Data\\UI\\scoredb.xml and data\\careerdb\\careerdb.xml \u2014 "
+                "restored from their .bak\n"
                 "  \u2022 the running MCC \u2014 death penalty and betrayal sign guard\n\n"
                 "Maps are NOT affected. " + note,
                 QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes:
@@ -13968,8 +13978,8 @@ class OptionsDialog(QDialog):
         QApplication.setOverrideCursor(Qt.WaitCursor)
         try:
             if mcc_open:
-                lines.append("halo2.dll / halo3odst.dll: SKIPPED — MCC is running "
-                             "and a loaded dll cannot be written.")
+                lines.append("halo1.dll / halo2.dll / halo3odst.dll: SKIPPED — MCC is "
+                             "running and a loaded dll cannot be written.")
                 lines.append("  Close MCC and press this again to revert those.")
             # ---- the two game dlls ----------------------------------------------
             for label, mod_name, lister in ([] if mcc_open else (
@@ -14020,6 +14030,53 @@ class OptionsDialog(QDialog):
                 lines.append("%s: %s" % (label, ", ".join(undone) if undone
                                          else "already stock"))
 
+            # ---- halo1.dll: the Halo 1 engine options ----------------------------
+            # Synced from Options on every patch of ANY game (_apply_h1_*), each
+            # keeping halo1.dll.prepatch.bak; this revert left them in place while it
+            # reported "already stock" (review U1, 2026-10-28). Each goes back through
+            # its own tool's sync (byte-checked: bytes matching neither form are
+            # refused, not written), skipped while MCC runs like the other dlls. The
+            # Options stay as they are: any still ticked goes back in at the next patch.
+            if not mcc_open:
+                os.environ['HALO_MCC_ROOT'] = mcc_root()     # where halo1.dll is
+                for label, mod_name, revert in (
+                        ("overheat drops the zoom", 'h1_overheat_unzoom',
+                         lambda m: m.sync(False, False, quiet=False)),
+                        ("melee blocks fire", 'h1_melee_blocks_fire',
+                         lambda m: m.sync(False, quiet=False)),
+                        ("supercombine count", 'h1_supercombine_count',
+                         lambda m: (m.sync(False, quiet=False)
+                                    + m.sync_players(False, quiet=False))),
+                        ("charge needs a release", 'h1_charge_latch',
+                         lambda m: m.sync(False, quiet=False)),
+                        ("Grunt birthday party", 'h1_birthday_party',
+                         lambda m: m.sync(False, quiet=False))):
+                    try:
+                        mod = __import__(mod_name)
+                    except Exception as e:
+                        lines.append("halo1.dll %s: tool unavailable (%s)" % (label, e))
+                        failed += 1
+                        continue
+                    if not os.path.exists(getattr(mod, 'DLL', '') or ''):
+                        lines.append("halo1.dll: not installed here")
+                        break
+                    try:
+                        rows = [r for r in revert(mod)
+                                if 'file' in str(r.get('field') or '')]
+                    except (Exception, SystemExit) as e:
+                        lines.append("halo1.dll %s: failed (%s)" % (label, e))
+                        failed += 1
+                        continue
+                    for r in rows:
+                        eff = r.get('effect') or label
+                        if not r.get('ok'):
+                            lines.append("halo1.dll %s: FAILED (%s)" % (eff, r.get('reason')))
+                            failed += 1
+                        elif str(r.get('note') or '').startswith('already'):
+                            lines.append("halo1.dll %s: already stock" % eff)
+                        else:
+                            lines.append("halo1.dll %s: reverted (was %s)" % (eff, r.get('old')))
+
             # ---- the shared MCC score file ---------------------------------------
             try:
                 import scoredb_patch
@@ -14039,6 +14096,32 @@ class OptionsDialog(QDialog):
                                  "(it was never patched)")
             except Exception as e:
                 lines.append("scoredb.xml: failed (%s)" % e)
+                failed += 1
+
+            # ---- the shared MCC career file (par times) --------------------------
+            # Rewritten by every patch with a par_time_scale (careerdb_patch.apply,
+            # keeping a .bak); it was not part of this revert (review U1, 2026-10-28).
+            try:
+                import careerdb_patch
+                path = os.path.join(mcc_root(), careerdb_patch.CAREERDB_REL)
+                if not os.path.exists(path):
+                    lines.append("careerdb.xml: not found under the MCC root")
+                elif careerdb_patch.restore(path):
+                    lines.append("careerdb.xml: restored from .bak")
+                    try:
+                        import careerdb_live
+                        r = careerdb_live.push_from_xml(path)
+                    except Exception as e:
+                        r = {'ok': False, 'reason': str(e)}
+                    if r.get('ok') or r.get('reason') != 'MCC is not running':
+                        lines.append("  live push: %s"
+                                     % ("%s chapter(s)" % r.get('chapters') if r.get('ok')
+                                        else r.get('reason')))
+                else:
+                    lines.append("careerdb.xml: no .bak to restore from "
+                                 "(it was never patched)")
+            except Exception as e:
+                lines.append("careerdb.xml: failed (%s)" % e)
                 failed += 1
 
             # ---- the running process ---------------------------------------------
