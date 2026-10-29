@@ -82,9 +82,15 @@ def source_tick(m, sprite, tick_w):
     lit = np.asarray(sprite)
     ink = lit[lit[:, :, 3] > 128]
     rgb = ink[:, :3].max(0) if len(ink) else np.array([0, 254, 254])
+    # Halo 2's lit mask is the COLOUR (the magnum meter: green = the shape, alpha = the shape at the
+    # donor's dim level, 136): colour and alpha both carry the pip's shape -- a flat colour lit the
+    # whole tick rectangle (the Mauler, boot 2: 'the loaded pips are full rectangles')
+    shape = alpha.astype(np.float32) / 255.0
+    dim = int(lit[:, :, 3].max()) or 255
     out = np.zeros((h, tick_w, 4), np.uint8)
-    out[:, :, 0], out[:, :, 1], out[:, :, 2] = rgb[0], rgb[1], rgb[2]
-    out[:, :, 3] = alpha
+    for k in range(3):
+        out[:, :, k] = np.round(rgb[k] * shape).astype(np.uint8)
+    out[:, :, 3] = np.round(dim * shape).astype(np.uint8)
     print('   tick art: %s #%d pip %dx%d -> %dx%d' % (sheet, seq, x1 - x0 + 1, y1 - y0 + 1, tick_w, h))
     return out
 
