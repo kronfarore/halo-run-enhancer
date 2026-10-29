@@ -10467,10 +10467,10 @@
      "tag": "objects\\weapons\\melee\\gravity_hammer_port\\gravity_hammer_port",
      "field": "Age Generated Per Round",
      "block": "Barrels",
-     "value": 0.05,
+     "value": 0.04999999329447746,
      "card": "Energy Use",
-     "original": 0.05,
-     "note": "Halo 3's campaign external aging a swing, on the barrel (step 4a: the trigger route)"
+     "original": 0.04999999329447746,
+     "note": "Halo 3's campaign external aging a swing, on the barrel (step 4a: the trigger route); 0.05 two float32 steps down, so the readout steps 5 exactly (boot 1)"
     }
    ],
    "fp_animations": "objects\\characters\\*\\fp\\weapons\\melee\\fp_gravity_hammer_port\\fp_gravity_hammer_port"
