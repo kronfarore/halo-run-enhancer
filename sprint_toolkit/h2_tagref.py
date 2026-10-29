@@ -198,7 +198,7 @@ def retarget_one(data, cls, old_path, new_path, which, rec):
     return bytes(out)
 
 
-def fill_reference(tag_path, cls, new_path, tries=400, field=None):
+def fill_reference(tag_path, cls, new_path, tries=400, field=None, record=None):
     """Fill an EMPTY `cls` reference (length 0: nothing pooled) with `new_path` -- the Spike
     Rifle's projectile, cloned from the SMG bullet whose object `model` is empty (boot 1: 'the
     spike is not visible'). The record gets the length; the path + null is INSERTED where tool
@@ -220,6 +220,11 @@ def fill_reference(tag_path, cls, new_path, tries=400, field=None):
                 _ptr, n, datum = struct.unpack_from('<III', original, i + 4)
                 if n == 0 and datum == NULL:
                     recs.append((i, end))
+    if record is not None:
+        # `record`: THE record to fill, placed by the caller (the Spartan Laser's trigger `charging
+        # effect`, A2: a beam rifle clone holds dozens of empty class-less references, and trying 400
+        # spots for each took hours) -- only that one is tried
+        recs = [r for r in recs if r[0] == record]
     if not recs:
         raise ValueError('no empty %s reference in %s' % (cls, tag_path))
     recs.sort(key=lambda r: original[r[0]:r[0] + 4] == want)    # class-less ones first

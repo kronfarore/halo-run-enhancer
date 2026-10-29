@@ -216,7 +216,14 @@ def wire(w):
             # the clone's reference is EMPTY (the Spike Rifle's projectile model): filled,
             # tool-verified (h2_tagref.fill_reference)
             # {'field': name}: WHICH empty reference (the Flamethrower's `overheated` effect)
-            h2_tagref.fill_reference(path, cls, new, field=opt.get('field'))
+            # {'record_from': (field, block, index, delta)}: the record placed from a field found by
+            # value (the Spartan Laser's trigger charging effect: `behavior` +42), only it tried
+            rec = None
+            if opt.get('record_from'):
+                import h2_tagfield as tf
+                f, b, i, delta = opt['record_from']
+                rec = tf.offset_of(path, f, b, i, 0, verbose=False) + delta
+            h2_tagref.fill_reference(path, cls, new, field=opt.get('field'), record=rec)
             print('      (%s)' % why)
             continue
         h2_tagref.set_reference(path, cls, old, new, every=opt.get('every', False),

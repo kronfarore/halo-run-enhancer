@@ -99,6 +99,15 @@ def rename(tag_path, renames, write=False, verbose=True):
             raise SystemExit('%s: run %s not found (length fields %d, pooled %d)'
                              % (os.path.basename(tag_path), old, len(at), len(pat)))
         if len(at) != 1 or len(pat) != 1:
+            if len(runs) > 1 and write:
+                # SEVERAL runs, this one ambiguous (the Spartan Laser's be_* -> spl2_*, A2: its
+                # `picked up msg` stands alone and 12-long fields occur twice): run by run, each a
+                # one-run rename (tool-verified; an ambiguous one by trial) -- this case used to refuse
+                done = []
+                for r in runs:
+                    done.append(rename(tag_path, {v: renames[v] for _i, _n, v in r}, write=True,
+                                       verbose=verbose))
+                return '; '.join(done)
             if len(runs) != 1 or not write:
                 raise SystemExit('%s: ambiguous run %s (length fields %d, pooled %d)'
                                  % (os.path.basename(tag_path), old, len(at), len(pat)))
