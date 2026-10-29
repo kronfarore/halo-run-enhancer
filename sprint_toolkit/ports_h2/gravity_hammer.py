@@ -243,6 +243,11 @@ PORT = {
         # graph holds a 'gh' type: every class falls back to its 'any' set)
         'string_ids': {'rifle': 'melee', 'csr': 'gh'},
         'string_ids_done': ('weapon name', 'gh'),
+        # boot 1 (07a, user 2026-10-29): no blast, no sound -- Tartarus's impact is placed at the
+        # BRUTE's `melee_effect` marker (his graph's event plays it on him); a projectile's
+        # detonation has only the engine's point markers (every stock detonation effect: up /
+        # forward / normal / backward), so every part was skipped. `up` = the plasma grenade's.
+        'string_id_renames': [(FX + r'\gravity_hammer_port_impact.effect', {'melee_effect': 'up'})],
         'shared': [(r'objects\weapons\damage_effects\*_melee_response', "Bungie's 0-damage responses"),
                    (r'the particles inside gravity_hammer_port_impact', "Tartarus's (Halo 2's hammer look; Halo 3 particles do not port)"),
                    (r'objects\characters\brute\*, tartarus_hammer_*', 'TARTARUS: never written (the 08b boss)')],
@@ -260,8 +265,15 @@ PORT = {
             (GH + r'\gravity_hammer_port.weapon', 'overheated threshold', '', 0, 0, 0.0),
             (GH + r'\gravity_hammer_port.weapon', 'heat loss per second', '', 0, 0, 0.0),
             (GH + r'\gravity_hammer_port.weapon', 'heat generated per round', 'barrels', 0, 0, 0.0),
-            # ENERGY: Halo 3's campaign external aging 0.05 a swing (20), on the barrel (step 4a)
-            (GH + r'\gravity_hammer_port.weapon', 'age generated per round', 'barrels', 0, 0, 0.05),
+            # ENERGY: Halo 3's campaign external aging 0.05 a swing (20), on the barrel (step 4a). Boot 1
+            # (user: 'drains 5 per slam, but jumps to 49'): float32 0.05 is 0.0500000007, so the summed
+            # age passes n x 0.05 and the floored readout drops a point (65 -> 59, 54, 49 ...). Two
+            # float32 steps BELOW 0.05 (0.04999999329) reads 100, 95 ... 5, 0 exactly and the float32
+            # sum still reaches 1.0 on swing 20 (simulated; one step lower needs a 21st swing)
+            (GH + r'\gravity_hammer_port.weapon', 'age generated per round', 'barrels', 0, 0, 0.04999999329447746),
+            # first-person placement: the beam rifle's 0.02, 0, 0; boot 1 on 07a (user): '1 unit down
+            # and right' (1 unit = 0.01 wu; +y is left)
+            (GH + r'\gravity_hammer_port.weapon', 'first person weapon offset', '', 0, 0, [0.02, -0.01, -0.01]),
             # one slam per Halo 3 RT cycle: melee_lunge_unaimed, 46 frames = 1.533 s (Halo 1's A9)
             (GH + r'\gravity_hammer_port.weapon', 'fire recovery time', 'barrels', 0, 0, 1.533333),
             (GH + r'\gravity_hammer_port.weapon', 'error angle', 'barrels', 0, 1, [0.0, 0.0]),
@@ -368,7 +380,16 @@ PORT = {
         # the sword plate's SIX images: 0 / 1 bright single (64 tall), 2 / 3 the short 'multi'
         # plate (38 tall) whose sword sits 36 px further left (measured: x 69..145 vs 105..181),
         # 4 / 5 the dim twins of 0 / 1
-        'all_images': {'dim': {4: 0, 5: 1}, 'boxes': {2: (69, 155, 5, 34), 3: (69, 155, 5, 34)}},
+        # BOOT 1 (user, 07a: 'the HUD symbol is not clean'): the boxes came from the diff against the
+        # BR plate (105..191 x 5..34), which missed the sword's hilt curve -- its cyan arc (top left)
+        # and blue under-blade stood beside the hammer. Measured on Bungie's plate (blue over green
+        # + 40): the sword spans x 98..190 y 4..33 (0 / 1) and x 62..152 (2 / 3) -- the boxes cover it.
+        # Each box's right sample column must be plate, not border: the ROUNDED images (1 / 3) reach
+        # their corner line at 193 from row 2 down, its antialiased edge at 192 on row 3 (first tries smeared
+        # it across the top)
+        'all_images': {'dim': {4: 0, 5: 1},
+                       'boxes': {0: (96, 193, 3, 34), 1: (96, 192, 4, 34),
+                                 2: (60, 157, 3, 34), 3: (60, 157, 3, 34)}},
     },
     'reticle': {
         'rel': NEW_HUD + r'\crosshairs',
@@ -546,8 +567,10 @@ PORT = {
                            'original': value, 'note': "Halo 3's own (step 4a)"}
                           for field, value in (('Radius', 0.75), ('Radius Max', 1.5))]
                        + [{'class': 'weap', 'tag': GH + r'\gravity_hammer_port', 'field': 'Age Generated Per Round',
-                           'block': 'Barrels', 'value': 0.05, 'card': 'Energy Use', 'original': 0.05,
-                           'note': "Halo 3's campaign external aging a swing, on the barrel (step 4a: the trigger route)"}]),
+                           'block': 'Barrels', 'value': 0.04999999329447746, 'card': 'Energy Use',
+                           'original': 0.04999999329447746,
+                           'note': "Halo 3's campaign external aging a swing, on the barrel (step 4a: the trigger "
+                                   "route); 0.05 two float32 steps down, so the readout steps 5 exactly (boot 1)"}]),
         'fp_animations': r'objects\characters\*\fp\weapons\melee\fp_gravity_hammer_port\fp_gravity_hammer_port',
         'reload_mult': None,
         'desc': ("Halo 3's Gravity Hammer carried into Halo 2 as a player weapon with its own model, textures, "
@@ -597,5 +620,62 @@ def write_side_jms():
     print('wrote %s (%d verts)' % (SIDE_JMS, len(m.verts)))
 
 
+# Boot 1 (07a, 2026-10-29), BLANKED references (length 0, path removed: h2_tagref's empty reference;
+# identical pooled strings, so only which record is zeroed matters -- tool's reference list and every
+# field row decide). Run after the sounds + fp_anims steps:  python ports_h2\gravity_hammer.py --blank
+#   - Tartarus's impact LAYERS four sounds (tartarus_hits + three remastered layers); the sounds step
+#     repoints all four onto gh_hit, which played Halo 3's ONE hammer_hit four times at once (Halo 3's
+#     gravity_hammer_impact.effect has one sound part): the three later parts blanked;
+#   - the Chief's FP graph (seeded from the Energy Blade's) kept the sword's blade_activate EFFECT on
+#     `ready` (frame 1): Halo 3's hammer ready plays hammer_ready only (no effect event) -- blanked.
+BLANKS = [(FX + r'\gravity_hammer_port_impact.effect', 'snd!', r'sound\weapons\gravity_hammer_port\gh_hit', 1),
+          (r'objects\characters\masterchief\fp\weapons\melee\fp_gravity_hammer_port'
+           r'\fp_gravity_hammer_port.model_animation_graph', 'effe',
+           r'effects\objects\weapons\melee\energy_blade\blade_activate', 0)]
+
+
+def blank(rel, cls, path, keep):
+    """Every `cls` reference to `path` in `rel` but `keep` of them made empty."""
+    import struct
+    import sys
+    sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    import h2_tagref as R
+    import h2_tagfield as tf
+    tag = _os.path.join(H2EK, 'tags', rel)
+    before = R.references(tag)
+    if before.count((cls, path)) <= keep:
+        print('%s: %s x%d already' % (_os.path.basename(tag), _os.path.basename(path), keep))
+        return
+    original = open(tag, 'rb').read()
+    rows = [r[4] for r in tf.read_all(tf.export(tag))]
+    want = [r for r in before if r != (cls, path)]
+    if keep:
+        want.insert(before.index((cls, path)), (cls, path))
+    recs = R.records(original, len(path), cls)
+    raw = path.encode('latin-1') + b'\0'
+    for kept in (range(len(recs)) if keep else [None]):
+        out = bytearray(original)
+        for i, rec in enumerate(recs):
+            if i != kept:
+                struct.pack_into('<I', out, rec + 8, 0)
+        for _n in range(len(recs) - keep):
+            at = R.pooled(bytes(out), path)[-1]
+            del out[at:at + len(raw)]
+        open(tag, 'wb').write(bytes(out))
+        x = tf.export(tag)
+        now = [r[4] for r in tf.read_all(x)] if x else None
+        if R.references(tag) == want and now == rows:
+            print('%s: %s x%d -> x%d (%d references, every field as before)'
+                  % (_os.path.basename(tag), _os.path.basename(path), len(recs), keep, len(want)))
+            return
+    open(tag, 'wb').write(original)
+    raise ValueError('no blanking of %s worked; %s restored' % (path, _os.path.basename(tag)))
+
+
 if __name__ == '__main__':
-    write_side_jms()
+    import sys as _sys
+    if '--blank' in _sys.argv:
+        for _row in BLANKS:
+            blank(*_row)
+    else:
+        write_side_jms()
