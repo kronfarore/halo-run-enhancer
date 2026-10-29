@@ -371,6 +371,35 @@ PORT = {
         'donor_name': 'Beam Rifle', 'port_name': 'Gravity Hammer',
         'weapon': GH + r'\gravity_hammer_port.weapon',
     },
+    # step 9 -- h2_port_fp_anims.py: Halo 3's OWN FP hammer animations, both species, through `tool
+    # fp-model-animations`. SEEDED from Bungie's H2 ENERGY BLADE graphs: their names are Halo 3's
+    # hammer set (idle, melee_lunge / _airborne, melee_strike_1 / _2, moving, overlays, pitch_and_turn,
+    # posing:var1, put_away, ready, throw_grenade) -- blend screen + same-name events survive. The one
+    # rename: Halo 3's RT SLAM `melee_lunge_unaimed` (46 fr, head down at frame 5 -- Halo 1's A9) is
+    # Halo 2's `fire_1` (the trigger route); the jab = melee_strike_1 / _2 (the melee button)
+    'fp_anims': {
+        'species': {
+            'masterchief': {
+                'graph': r'objects\characters\masterchief\fp\weapons\melee\fp_gravity_hammer\fp_gravity_hammer.model_animation_graph',
+                'arms_rm': r'objects\characters\masterchief\fp\fp.render_model',
+                'arms': H2EK + r'\data\!extracted\fp_arms_masterchief\fp_arms.jms',
+                'source': r'objects\characters\masterchief\fp\weapons\melee\fp_gravity_hammer_port',
+                'seed': r'objects\characters\masterchief\fp\weapons\melee\fp_energy_blade\fp_energy_blade'},
+            'dervish': {
+                'graph': r'objects\characters\dervish\fp\weapons\melee\fp_gravity_hammer\fp_gravity_hammer.model_animation_graph',
+                'arms_rm': r'objects\characters\dervish\fp\fp.render_model',
+                'arms': H2EK + r'\data\!extracted\fp_arms_dervish\dervish_fp_arms.jms',
+                'source': r'objects\characters\dervish\fp\weapons\melee\fp_gravity_hammer_port',
+                'seed': r'objects\characters\dervish\fp\weapons\melee\fp_energy_blade\fp_energy_blade'},
+        },
+        'weapon_dir': GH + r'\fp_gravity_hammer_port',
+        'weapon_rm': H3GH + r'\fp_gravity_hammer\fp_gravity_hammer.render_model',
+        'weapon_nodes': ['hammer', 'shaft'],
+        'skip': ['first_person:throw_equipment'],      # Halo 2 has no equipment
+        'looping': ['first_person:idle', 'first_person:posing:var1'],
+        'overlay_reference': 'first_person:idle',
+        'rename': {'first_person:melee_lunge_unaimed': 'first_person:fire_1'},
+    },
     # 3P (step 4a, user): class 'melee' = the Brute graph's own hammer class (Armed Brutes hold it
     # natively); the player graphs had only 'sword' -> h2_graph_teach cloned it as 'melee'
     # (2026-10-28, under the H2 kit lock): masterchief 5 modes (combat, crouch, spectre_p_l / _r,
