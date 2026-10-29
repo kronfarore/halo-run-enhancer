@@ -175,6 +175,11 @@ PORT = {
                    (r'effects\generic_lights\overcharge.light', FX + r'\sl_charge.light'),
                    (r'effects\generic_lights\overcharge_fp.light', FX + r'\sl_charge_fp.light'),
                    (r'effects\lens_flares\plasma_pistol.lens_flare', FX + r'\sl_charge.lens_flare'),
+                   # BOOT 3 (user): 'a very small impact effect -- scale to original size and colour': the
+                   # beam rifle's plasma impact (material effects) stays; Halo 3's laser impact is a burst,
+                   # gas, smoke, sparks and a scorch -> the BRUTE SHOT grenade's detonation (fiery burst,
+                   # flare, smoke, scorch; about that size) as the beam's detonation effect
+                   (r'effects\impact\explosion_small\brute_shot\detonation.effect', FX + r'\sl_impact.effect'),
                    # step 7: the beam rifle's HUD (battery text, heat meter, zoomed meters, scope widgets)
                    (r'ui\hud\beam_rifle.new_hud_definition', r'ui\hud\spartan_laser.new_hud_definition')],
         'wiring': [
@@ -219,6 +224,15 @@ PORT = {
              r'sound\weapons\spartan_laser_port\sl_charge_loop', "the charge loop: Halo 3's charging loop"),
             (FX + r'\sl_charging.sound_looping', 'lsnd', r'sound_remastered\weapons\plasma_pistol\charging',
              FX + r'\sl_charging', "its remastered twin: itself (no plasma pistol sound left)"),
+            # the beam's impact burst: its EMPTY detonation effects, placed from `maximum range` (120):
+            # detonation noise + super-det count (+4), then 16-byte references -- detonation started +8,
+            # airborne +24, ground +40 (an instant beam 'impact (detonate)'s on most materials)
+            (SL + r'\projectiles\spartan_laser_beam.projectile', 'effe', '', FX + r'\sl_impact',
+             'detonation effect (airborne)', {'field': 'detonation effect (airborne)',
+                                              'record_from': ('maximum range', '', 0, 24)}),
+            (SL + r'\projectiles\spartan_laser_beam.projectile', 'effe', '', FX + r'\sl_impact',
+             'detonation effect (ground)', {'field': 'detonation effect (ground)',
+                                            'record_from': ('maximum range', '', 0, 40)}),
         ],
         # (tag, class, path, marker, like class, scale function): the plasma pistol's charge cue
         'append_attachments': [
@@ -227,6 +241,26 @@ PORT = {
             (SL + r'\spartan_laser.weapon', 'ligh', FX + r'\sl_charge_fp', 'primary_trigger', 'lsnd', 'primary_charged'),
             (SL + r'\spartan_laser.weapon', 'lens', FX + r'\sl_charge', 'primary_trigger', 'lsnd', 'primary_charged'),
         ],
+        # BOOT 3 (user): 'muzzle flash looks good, just needs the colour changes'. Each emitter's colour
+        # function (flags 0x20) holds BGR in bytes 4-6: the beam rifle's purple / lavender / light blue on the
+        # flash (event 0), magenta + cyan on the steam (events 2-6) -> Halo 3's laser red with a pale
+        # pink-white core, and white-grey steam (whole 8-byte function heads: tool-verified, every copy)
+        'byte_edits': [(FX + r'\spartan_laser_fire.effect', '01200000e4618b00', '012000004a5aff00'),
+                       (FX + r'\spartan_laser_fire.effect', '01200000f299bf00', '012000008296ff00'),
+                       (FX + r'\spartan_laser_fire.effect', '01200000f7c89d00', '01200000bec8ff00'),
+                       (FX + r'\spartan_laser_fire.effect', '01210000f7c89d00', '01210000bec8ff00'),
+                       (FX + r'\spartan_laser_fire.effect', '01200000f0717700', '012000003c46ff00'),
+                       (FX + r'\spartan_laser_fire.effect', '01200000e888a300', '012000006e78ff00'),
+                       (FX + r'\spartan_laser_fire.effect', '04210404e84dbd00', '04210404465aff00'),
+                       (FX + r'\spartan_laser_fire.effect', '07210404ff5be200', '07210404dcdcdc00'),
+                       (FX + r'\spartan_laser_fire.effect', '07200404ffff0000', '07200404f0f0f000'),
+                       # the impact burst (the Brute Shot's fire: cream / yellow) -> laser reds; its dark
+                       # smoke kept
+                       (FX + r'\sl_impact.effect', '01210000d3f0fa00', '01210000647aff00'),
+                       (FX + r'\sl_impact.effect', '042000007ce7fa00', '042000003c50ff00'),
+                       (FX + r'\sl_impact.effect', '01200000d5f8fd00', '0120000096aaff00'),
+                       # the vent smoke: the beam rifle's lavender -> Halo 3's white-grey steam
+                       (FX + r'\overheated.effect', '01210000f38fba00', '01210000e1dcdc00')],
         # the 3P label: the ROCKET LAUNCHER's (`missile` / `rl`, Halo 1's A8: `sl` taught from `rl`) -- a
         # heavy two-handed carry every Halo 2 character graph holds (Grunts included); the beam rifle's
         # `rifle` / `csr` is the Covenant sniper's
@@ -237,7 +271,13 @@ PORT = {
         # armour). Halo 3's Hunter armour x0.5 has NO Halo 2 group (none pairs Hunter 0.5 with
         # explosion_large's other rows) -- OPEN with the user: a new group in globals, or Hunter x1
         'string_id_renames': [(SL + r'\damage_effects\spartan_laser_beam.damage_effect',
-                               {'plasma_fast': 'explosion_large', 'sniper': 'all'})],
+                               {'plasma_fast': 'explosion_large', 'sniper': 'all'}),
+                              # BOOT 3 (user): 'no steam vents at all -- the gun should have them': the vent
+                              # (overheated) effect and the firing steam sit on `vent01`, which only the
+                              # WORLD model has (Halo 3's fx_vent); the FP model carries `vent02` (its
+                              # fx_side_vent, where Halo 3's first-person steam comes out) -> vent02
+                              (FX + r'\overheated.effect', {'vent01': 'vent02'}),
+                              (FX + r'\spartan_laser_fire.effect', {'vent01': 'vent02'})],
         'shared': [(r'objects\weapons\damage_effects\*_melee', 'shared by every Halo 2 weapon'),
                    (r'the particles inside spartan_laser_fire', "the beam rifle's (Halo 3 particles do not port)")],
     },
@@ -304,13 +344,14 @@ PORT = {
             (SL + r'\spartan_laser.weapon', 'illumination recovery time', 'barrels', 0, 0, 0.2),
             # BOOT 2 (user, 2026-10-29): 'move 0.5 units to the right, 1 unit down' (1 unit = 0.01 wu,
             # y = left): (0, 0, -0.005) -> (0, -0.005, -0.015)
-            (SL + r'\spartan_laser.weapon', 'first person weapon offset', '', 0, 0, [0.0, -0.005, -0.015]),
+            # BOOT 3: 'move 1 more unit down' -> (0, -0.005, -0.025)
+            (SL + r'\spartan_laser.weapon', 'first person weapon offset', '', 0, 0, [0.0, -0.005, -0.025]),
             # (the beam's collision radius: 4b's 0.15 reverted to 0 after boot 2 -- the row below)
             # BOOT 2: 'the laser doesn't fire from the muzzle' -- the beam rifle's barrel first-person
             # offset is 0 (the camera). Halo 1's A8 measured the laser's FP muzzle at (0.215, -0.053,
             # -0.007) of the view; + boot 2's move -> (0.215, -0.058, -0.022) (Halo 3's own 0, -0.05, 0
             # leans on its 1p beam system, which Halo 2 lacks)
-            (SL + r'\spartan_laser.weapon', 'first person offset', 'barrels', 0, 0, [0.215, -0.058, -0.022],
+            (SL + r'\spartan_laser.weapon', 'first person offset', 'barrels', 0, 0, [0.238, -0.063, -0.03],   # boot 3: computed muzzle
              {'anchor': ('fire recovery time', 92)}),   # the rocket's 0, -0.1, 0 sits at fire recovery +92
             # BOOT 2: 'battery 39 after 3 shots' (Halo 1's A8 again): 0.2 x 3 in float32 = 0.6000000238
             # -> 39 %. The float just under 0.2 shows 80 / 60 / 40 / 20 but leaves 0.99999994 after five
@@ -321,28 +362,52 @@ PORT = {
              {'anchor': ('ai scariness', 52)}),
             (SL + r'\spartan_laser.weapon', 'age misfire chance', '', 0, 0, 1.0,
              {'anchor': ('ai scariness', 56)}),
-            # BOOT 2 (user): 'on the zoom HUD the right bar should show the remaining charge and the left
-            # the heat -- flip those': the beam rifle's zoomed meters swapped by input (widget 8 heat ->
-            # battery fraction, widget 10 battery fraction -> heat; their art and places stay)
-            (r'ui\hud\spartan_laser.new_hud_definition', 'input 1', 'bitmap widgets', 8, 0, 56),
-            (r'ui\hud\spartan_laser.new_hud_definition', 'input 1', 'bitmap widgets', 10, 0, 49),
-            # ...and both bar groups 301 units IN (the beam rifle's sit at +-357..457 from the crosshair,
-            # ~400 px at 1080p; Halo 3's hug it at ~75-140 px): right 7 / 8 / 9, left 10 / 11 / 12, their
-            # halfscreen twins by the same share (/ 4.04)
+            # THE ZOOMED BARS. Boot 2 (user): 'the right bar should show the remaining charge, the left the
+            # heat'; boot 3: swapped by INPUT, 'the right bar still draws with the heat colours' -- each
+            # meter's art / colour belongs to its widget. So the inputs stay the beam rifle's (8 heat, 10
+            # battery) and the two GROUPS swap places instead: heat 7 / 8 / 9 to the left, battery 10 / 11 /
+            # 12 to the right, each taking the other's offsets and flip-horizontal bit (flags bit 1; the
+            # right side's art is the left's flipped), pairs background 7<->12, meter 8<->10, border 9<->11.
+            # Both groups 301 units IN from the beam rifle's +-357..457 (Halo 3's hug the crosshair at
+            # ~75-140 px; boot 2); halfscreen twins by the same share (/ 4.04)
+            (r'ui\hud\spartan_laser.new_hud_definition', 'input 1', 'bitmap widgets', 8, 0, 49),
+            (r'ui\hud\spartan_laser.new_hud_definition', 'input 1', 'bitmap widgets', 10, 0, 56),
             ] + [(r'ui\hud\spartan_laser.new_hud_definition', f, 'bitmap widgets', i, 0, v) for i, f, v in (
-                (7, 'fullscreen offset', [67, -114]), (8, 'fullscreen offset', [67, -114]),
-                (9, 'fullscreen offset', [56, -120]), (10, 'fullscreen offset', [-152, -114]),
-                (11, 'fullscreen offset', [-156, -120]), (12, 'fullscreen offset', [-151, -114]),
-                (7, 'halfscreen offset', [17, -28]), (8, 'halfscreen offset', [17, -28]),
-                (9, 'halfscreen offset', [13, -30]), (10, 'halfscreen offset', [-38, -28]),
-                (11, 'halfscreen offset', [-39, -30]), (12, 'halfscreen offset', [-38, -28]))] + [
+                (7, 'fullscreen offset', [-151, -114]), (8, 'fullscreen offset', [-152, -114]),
+                (9, 'fullscreen offset', [-156, -120]), (10, 'fullscreen offset', [67, -114]),
+                (11, 'fullscreen offset', [56, -120]), (12, 'fullscreen offset', [67, -114]),
+                (7, 'halfscreen offset', [-38, -28]), (8, 'halfscreen offset', [-38, -28]),
+                (9, 'halfscreen offset', [-39, -30]), (10, 'halfscreen offset', [17, -28]),
+                (11, 'halfscreen offset', [13, -30]), (12, 'halfscreen offset', [17, -28]))] + [
+            # the flip bits: 7 9 -> 8, 8 1 -> 0, 9 9 -> 8 (left); 10 0 -> 1, 11 8 -> 9, 12 8 -> 9 (right).
+            # A zero flags field is placed from its widget's `anchor` (enum 4, the field before it)
+            (r'ui\hud\spartan_laser.new_hud_definition', 'flags', 'bitmap widgets', 7, 0, 8),
+            (r'ui\hud\spartan_laser.new_hud_definition', 'flags', 'bitmap widgets', 8, 0, 0,
+             {'anchor': ('anchor', 2)}),
+            (r'ui\hud\spartan_laser.new_hud_definition', 'flags', 'bitmap widgets', 9, 0, 8),
+            (r'ui\hud\spartan_laser.new_hud_definition', 'flags', 'bitmap widgets', 10, 0, 1,
+             {'anchor': ('anchor', 2)}),
+            (r'ui\hud\spartan_laser.new_hud_definition', 'flags', 'bitmap widgets', 11, 0, 9),
+            (r'ui\hud\spartan_laser.new_hud_definition', 'flags', 'bitmap widgets', 12, 0, 9),
             # the charge cue recoloured from the plasma pistol's green to Halo 3's laser red (A8: 1, 0.15, 0.1);
             # the flare a little bigger than the pistol's (a support weapon's muzzle)
             (FX + r'\sl_charge.light', 'specular upper bound', '', 0, 0, [1.0, 0.15, 0.1]),
             (FX + r'\sl_charge.light', 'diffuse upper bound', '', 0, 0, [1.0, 0.15, 0.1]),
             (FX + r'\sl_charge_fp.light', 'diffuse upper bound', '', 0, 0, [1.0, 0.15, 0.1]),
+            # boot 3: 'the light is white' -- the FP light's SPECULAR upper bound is white (1, 1, 1)
+            (FX + r'\sl_charge_fp.light', 'specular upper bound', '', 0, 0, [1.0, 0.15, 0.1]),
             (FX + r'\sl_charge.lens_flare', 'color', 'reflections', 0, 0, [1.0, 0.2, 0.15]),
             (FX + r'\sl_charge.lens_flare', 'radius', 'reflections', 0, 0, [0.08, 0.1]),
+            # BOOT 3 (user): 'the glow strips are green -- they should be white, and don't look very
+            # glowing': the luminous shader is the SHOTGUN SIGHT's (tex_bump_illum) and carries its green:
+            # self_illum_color (0.44, 0.74, 0.12) AND its colour function's first colour (data 4-6 =
+            # 7 / 48 / 14; the second, 16-18, is already white) -> white; its green specular -> neutral
+            (SL + r'\shaders\spartan_laser_luminous.shader', 'const color', 'parameters', 2, 0, [1.0, 1.0, 1.0]),
+            (SL + r'\shaders\spartan_laser_luminous.shader', 'Value', 'data', 4, 0, -1),
+            (SL + r'\shaders\spartan_laser_luminous.shader', 'Value', 'data', 5, 0, -1),
+            (SL + r'\shaders\spartan_laser_luminous.shader', 'Value', 'data', 6, 0, -1),
+            (SL + r'\shaders\spartan_laser_luminous.shader', 'const color', 'parameters', 3, 0, [0.35, 0.35, 0.4]),
+            (SL + r'\shaders\spartan_laser_luminous.shader', 'const color', 'parameters', 4, 0, [0.18, 0.18, 0.2]),
             # BOOT 2 (user): 'the muzzle effect is not correct' -- it is the beam rifle's: flares, ring and
             # soft burst at the muzzle (kept: Halo 3's first-person flash is a bright flash + flare there),
             # plus ELECTRIC ARCS and a purple ENERGY BOLT TRAIL (event 0's systems 3 / 6) and steam at
@@ -363,9 +428,18 @@ PORT = {
             # a white-hot core), the outer glow wider (Halo 3's beam is thick)
             (FX + r'\spartan_laser_inner.contrail', 'color lower bound', 'point states', 0, 0, [1.0, 1.0, 0.8, 0.7]),
             (FX + r'\spartan_laser_inner.contrail', 'color upper bound', 'point states', 0, 0, [1.0, 1.0, 0.3, 0.2]),
-            (FX + r'\spartan_laser_outer.contrail', 'color lower bound', 'point states', 0, 0, [0.6, 1.0, 0.1, 0.05]),
-            (FX + r'\spartan_laser_outer.contrail', 'color upper bound', 'point states', 0, 0, [0.6, 1.0, 0.2, 0.1]),
-            (FX + r'\spartan_laser_outer.contrail', 'width', 'point states', 0, 0, 0.25),
+            (FX + r'\spartan_laser_outer.contrail', 'color lower bound', 'point states', 0, 0, [1.0, 1.0, 0.1, 0.05]),
+            (FX + r'\spartan_laser_outer.contrail', 'color upper bound', 'point states', 0, 0, [1.0, 1.0, 0.2, 0.1]),
+            (FX + r'\spartan_laser_outer.contrail', 'width', 'point states', 0, 0, 0.6),
+            # BOOT 3 (user): 'I see it when I move, relatively faint and thin' -- the beam starts AT the
+            # muzzle (computed: gun node in the idle pose + the marker = 0.238 / -0.058 / -0.005 of the
+            # view, + the placement) but runs almost straight away from the eye (Halo 3 adds a separate
+            # first-person beam system Halo 2 has none of). Thicker and brighter: core 0.15 -> 0.3, glow
+            # 0.25 -> 0.6 at full opacity (0.6 -> 1), both fading slower (core 0.65 -> 1.0 s, glow
+            # 0.15-0.5 -> 0.5-0.8 s)
+            (FX + r'\spartan_laser_inner.contrail', 'width', 'point states', 0, 0, 0.3),
+            (FX + r'\spartan_laser_inner.contrail', 'transition duration', 'point states', 0, 0, [1.0, 1.0]),
+            (FX + r'\spartan_laser_outer.contrail', 'transition duration', 'point states', 0, 0, [0.5, 0.8]),
             (SL + r'\damage_effects\spartan_laser_beam.damage_effect', 'damage lower bound', '', 0, 0, 570.0),
             (SL + r'\damage_effects\spartan_laser_beam.damage_effect', 'damage upper bound', '', 0, 0, [570.0, 570.0]),
         ],
@@ -399,7 +473,14 @@ PORT = {
         # boot 2 (user, screenshot 3: 'a little messed up compared to original icons'): rows 3-5 of the box
         # held the plate's own border pixels (blue 156), read as the symbol's top colour -> a flat dark
         # blue drawing over the whole box. Bungie's symbol spans rows 11-31 (green 196 -> 9 over blue ~225)
-        'fallback_box': (86, 198, 9, 33),
+        'fallback_box': (80, 202, 7, 33),     # boot 3: the whole beam rifle symbol, right of the plate's divider
+        # boot 3 (user's screenshot: 'the HUD icon still has issues' -- the mesh silhouette at 24 px reads
+        # as a soft blob): Halo 3's OWN HUD icon of the laser (chud weapon_scematics sprite 14, Bungie's
+        # drawing) as the shape, mirrored to face right like Halo 2's symbols
+        'icon_art': {'sheet': r'ui\chud\bitmaps\weapon_scematics.bitmap', 'sprite': 14, 'flip': True},
+        # the symbol's ramp as measured on Bungie's beam rifle symbol (rows 11 -> 31): the widened box
+        # also covers plate border pixels symbol_ramp would read as ink (a dull, dark drawing)
+        'ramp': ((0, 196, 223), (0, 9, 209)),
         'stretch': 1.4,
         'all_images': {'dim': {8: 0, 9: 1, 10: 2, 11: 3}, 'skip': [4, 5, 6, 7]},
     },
@@ -428,8 +509,13 @@ PORT = {
         'name': 'spartan_laser_scope_mask',
         'hud': r'ui\hud\spartan_laser.new_hud_definition',
         'widgets': ('scope_mask',),
-        'size': (160, 160),
-        'disc': {'radius': 150, 'alpha': 0.35, 'rim': 0.6, 'rim_width': 3},
+        # BOOT 3 (user): 'not darkened outside of the scope' -- inverted: CLEAR inside, the world dimmed
+        # outside (Halo 3's zoomed screenshot), a darker rim. The widget's flags are (scope) mirror H + V
+        # + STRETCH: the quarter is stretched to the screen quarter, so the image takes the donor's
+        # 474 x 246 and the disc is an ellipse in it -- round on a 1920 x 1080 screen (x2.03 / x2.20):
+        # Halo 3's ~148 px radius -> 73 x 67 image px
+        'size': (474, 246),
+        'disc': {'radius': 73, 'ry': 67, 'alpha': 0.0, 'outside': 0.5, 'rim': 0.85, 'rim_width': 1.5},
     },
     # step 8 -- the pickup icon at U+E13F (the H2 ICON RULE: untinted, white lines, grey body, 160x62)
     # and the messages (be_* -> spl2_*)
