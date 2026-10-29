@@ -15,7 +15,9 @@ The config's `hud_plate` section:
                          bitmap and the widgets' sequence indices stay as Bungie made them. A
                          dim ('_out') image = its bright twin's repaint x the donor pair's
                          per-channel ratio, inside the weapon box only (the dim plate has no
-                         divider line). Default: image 0 only (the single-wield plates)
+                         divider line). Default: image 0 only (the single-wield plates).
+                         'boxes' {image: (x0, x1, y0, y1)}: an image whose symbol Bungie drew
+                         elsewhere (the Energy Blade plate's 'multi' images, the Gravity Hammer)
 
     python h2_port_hud_plate.py <key> [--write]
 """
@@ -334,6 +336,10 @@ def main(argv=None):
             box = FALLBACK_BOX
         if every and boxes:
             box = boxes[0]       # Bungie draws the symbol in the same place on every image
+        # all_images 'boxes' {image: (x0, x1, y0, y1)} -- except where it does not (the Gravity
+        # Hammer, 2026-10-29: the Energy Blade plate's short 'multi' images 2 / 3 carry the sword
+        # 36 px further left; image 0's box left its tip standing beside the port's symbol)
+        box = tuple((every or {}).get('boxes', {}).get(idx, box))
         mask = port_mask(box[1] - box[0], box[3] - box[2])
         sheets.append(Image.fromarray(
             np.clip(repaint(img, box, mask), 0, 255).astype('uint8'), 'RGBA'))

@@ -10,6 +10,12 @@ FX = r'effects\objects\weapons\melee\gravity_hammer_port'
 BEAM = r'objects\weapons\rifle\beam_rifle'            # the donor (H2EK)
 BLADE = r'objects\weapons\melee\energy_blade'         # the yardstick + melee fields (H2EK)
 H2EK = r'F:\SteamLibrary\steamapps\common\H2EK'
+NEW_HUD = r'ui\hud\bitmaps\new_hud'
+import os as _os
+# the Halo 3 world render model's export (h1_fp_retarget.export_xml's cache; regenerable): the
+# silhouette the HUD plate, backpack icon and pickup glyph are drawn from
+H3_RM_XML = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), 'out', 'h3_export',
+                          'objects~weapons~melee~gravity_hammer~gravity_hammer.render_model.xml')
 
 PORT = {
     'order': 5,
@@ -163,7 +169,10 @@ PORT = {
                    (r'effects\objects\weapons\rifle\beam_rifle\beam_rifle_fire.effect',
                     FX + r'\gravity_hammer_port_fire.effect'),
                    (r'effects\materials\objects\weapons\beam_rifle.material_effects',
-                    FX + r'\gravity_hammer_port.material_effects')],
+                    FX + r'\gravity_hammer_port.material_effects'),
+                   # the HUD (step 7): the ENERGY BLADE's (a battery bar + battery number, no ammo
+                   # ticks, no scope) -- Halo 3's hammer HUD is an energy readout too
+                   (r'ui\hud\plasma_sword.new_hud_definition', r'ui\hud\gravity_hammer.new_hud_definition')],
         'wiring': [
             (GH + r'\gravity_hammer_port.weapon', 'hlmt', BEAM + r'\beam_rifle', GH + r'\gravity_hammer_port', 'world model'),
             (GH + r'\gravity_hammer_port.model', 'mode', BEAM + r'\beam_rifle', GH + r'\gravity_hammer_port',
@@ -307,6 +316,58 @@ PORT = {
         # Bungie's H2 hammer is BIGGER (render ratio 0.70 / 0.48 / 0.76) and its origin is at the
         # shaft's foot (centre z 39.1 vs Halo 3's 4.6): fitted -- shrunk per axis + re-centred
         'fit': True,
+    },
+    # step 7 -- the HUD: the Energy Blade's clone (step 3). Its battery bar (disintegrator_meter) and
+    # number stay Bungie's (h2_port_meter `backpack_only`: just the stowed icon); the plate painted
+    # from Halo 3's mesh (the sword plate's 3 images: single, multi, single_out = the dim twin of 0);
+    # Halo 3's crosshair (chud `hammer`: hud_reticles #20 at widget scale 0.59 -- the AR's #0's
+    # scale) at Halo 3's ON-SCREEN size: the AR's measured 64 ink px x (ink #20 167 / ink #0 110) = 97
+    'meter': {
+        'backpack_only': True,
+        'port_hud': r'ui\hud\gravity_hammer',
+        'backpack': NEW_HUD + r'\backpack_weapons',
+        'backpack_port': NEW_HUD + r'\gravity_hammer_backpack',
+        'backpack_size': (62, 30),
+        'model_3p': H3_RM_XML,
+    },
+    'hud_plate': {
+        'rel': NEW_HUD + r'\backgrounds',
+        'donor': NEW_HUD + r'\backgrounds\plasma_sword_bkd',
+        'other': NEW_HUD + r'\backgrounds\battle_rifle_bkd',
+        'name': 'gravity_hammer_bkd',
+        'hud': r'ui\hud\gravity_hammer',
+        'model_3p': H3_RM_XML,
+        'fallback_box': (105, 191, 5, 34),
+        'stretch': 1.4,
+        # the sword plate's SIX images: 0 / 1 bright single (64 tall), 2 / 3 the short 'multi'
+        # plate (38 tall) whose sword sits 36 px further left (measured: x 69..145 vs 105..181),
+        # 4 / 5 the dim twins of 0 / 1
+        'all_images': {'dim': {4: 0, 5: 1}, 'boxes': {2: (69, 155, 5, 34), 3: (69, 155, 5, 34)}},
+    },
+    'reticle': {
+        'rel': NEW_HUD + r'\crosshairs',
+        'donor': NEW_HUD + r'\crosshairs\hud_reticles',
+        'donor_sequence': 20,                # the Energy Blade's fullscreen crosshair
+        'name': 'gravity_hammer_reticle',
+        'hud': r'ui\hud\gravity_hammer',
+        'footprint': 1.0,
+        'h3_art': {'sheet': 'hud_reticles', 'sequence': 20, 'yardstick': 20, 'target_ink': 97},
+        'preview': 'gravity_hammer_reticle_preview.png',
+    },
+    # step 8 -- the pickup icon at the reserved U+E142 by the H2 ICON RULE (untinted: white lines, grey
+    # body, 160x62), drawn from Halo 3's mesh; the messages be_* -> gh2_* (the beam rifle's lines, the
+    # Spartan Laser's donor too: each port renames only its OWN weapon's string ids)
+    'glyph': {
+        'box': (160, 62),
+        'model_3p': H3_RM_XML,
+        'tif': 'gravity_hammer_h2_glyph.tif',
+        'colour': (255, 255, 255),
+        'style': {'line': (255, 255, 255), 'body': (153, 153, 153)},
+    },
+    'messages': {
+        'donor_prefix': 'be', 'donor_icon': '&beam_rifle',
+        'donor_name': 'Beam Rifle', 'port_name': 'Gravity Hammer',
+        'weapon': GH + r'\gravity_hammer_port.weapon',
     },
     # 3P (step 4a, user): class 'melee' = the Brute graph's own hammer class (Armed Brutes hold it
     # natively); the player graphs had only 'sword' -> h2_graph_teach cloned it as 'melee'
