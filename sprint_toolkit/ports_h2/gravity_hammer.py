@@ -303,6 +303,18 @@ PORT = {
             # already) were written to 0 = 'impact (detonate)' ONCE (2026-10-29) and verified in tool's
             # export (all 20 detonate). Not re-run rows: a 0 cannot be found again by value and the
             # step-10 repoint moved the tag's offsets -- a re-clone of the strike must write them again
+            # THE WIELDER SHOVE (boot 1, 07a, user: 'the small player pushback is missing'): Halo 1's
+            # recipe (ports_h1 gravity_hammer, user-tuned live): the FIRING damage on the wielder, a
+            # token 0.01 (0 damage pushed nothing) and +5 acceleration (positive = backwards). All
+            # three read 0: pinned from `active camouflage damage` (0.75; the explosion clone's
+            # measured layout: lower bound -20, upper bounds -16; acceleration +20, probed: a pad word
+            # follows stun time)
+            (GH + r'\damage_effects\gravity_hammer_port_trigger.damage_effect', 'damage lower bound', '', 0, 0, 0.01,
+             {'anchor': ('active camouflage damage', -20)}),
+            (GH + r'\damage_effects\gravity_hammer_port_trigger.damage_effect', 'damage upper bound', '', 0, 0, [0.01, 0.01],
+             {'anchor': ('active camouflage damage', -16)}),
+            (GH + r'\damage_effects\gravity_hammer_port_trigger.damage_effect', 'instantaneous acceleration', '', 0, 0, 5.0,
+             {'anchor': ('active camouflage damage', 20)}),
             # THE SLAM (impact damage + melee lunge): Halo 3's crush_melee 150, accel 1.5, radius 0
             (GH + r'\damage_effects\gravity_hammer_port_slam.damage_effect', 'radius', '', 0, 0, [0.0, 0.0]),
             (GH + r'\damage_effects\gravity_hammer_port_slam.damage_effect', 'damage lower bound', '', 0, 0, 150.0),
@@ -334,10 +346,7 @@ PORT = {
             (GH + r'\damage_effects\gravity_hammer_port_melee.damage_effect', 'damage lower bound', '', 0, 0, 80.0),
             (GH + r'\damage_effects\gravity_hammer_port_melee.damage_effect', 'damage upper bound', '', 0, 0, [80.0, 80.0]),
         ],
-        'skipped': [
-            ('wielder shove', "Halo 1's +5 was tuned live by the user; the firing damage is the "
-                              "sniper trigger's clone until boot 1"),
-        ],
+        'skipped': [],
     },
     # step 5 -- h2_port_collision.py: Bungie's own HALO 2 HAMMER hull (Tartarus's: the same weapon's
     # shape; extract-collision-data only READS his tag), scaled per axis to Halo 3's mesh, on the
