@@ -169,7 +169,14 @@ PORT = {
                     GH + r'\damage_effects\gravity_hammer_port_trigger.damage_effect'),
                    (r'effects\objects\characters\brute\tartarus_hammer_impact.effect',
                     FX + r'\gravity_hammer_port_impact.effect'),
-                   (r'effects\objects\weapons\rifle\beam_rifle\beam_rifle_fire.effect',
+                   # the SWING (the barrel's firing effect): check 10 (before boot 1) -- Halo 3's hammer
+                   # has no muzzle flash, its flash is at the head when it lands (= the strike's
+                   # detonation here, Tartarus's blast look); the beam rifle's fire effect drew flares,
+                   # a bolt trail, arcs and vent smoke at every swing. So the swing = Bungie's ONE-SOUND
+                   # battle_rifle\empty.effect clone, its sound the hammer's whoosh (step 10). The wiring
+                   # row below still names beam_rifle_fire: that is the weapon's own reference, moved
+                   # onto this tag's path; the tag's CONTENT is this clone (re-cloned 2026-10-29)
+                   (r'effects\objects\weapons\rifle\battle_rifle\empty.effect',
                     FX + r'\gravity_hammer_port_fire.effect'),
                    (r'effects\materials\objects\weapons\beam_rifle.material_effects',
                     FX + r'\gravity_hammer_port.material_effects'),
@@ -460,9 +467,7 @@ PORT = {
                              r'sound_remastered\weapons\energy_sword\%s' % old, 'gh_melee')
                             for sp in ('masterchief', 'dervish')
                             for old in ('energy_melee_swtnr', 'energy_melee_swtnr_elec')]),
-        'repoint_fx': [(r'sound\weapons\beam_rifle\beam_rifle_fire', 'gh_melee'),
-                       (r'sound_remastered\weapons\beam_rifle\beam_rifle_fire_lod', 'gh_melee'),
-                       (r'sound_remastered\weapons\beam_rifle\beamrifle_lfe', 'gh_melee')],
+        'repoint_fx': [(r'sound\weapons\battle_rifle\dryfire', 'gh_melee')],   # the swing (check 10)
         'repoint_weapon': [(r'sound\weapons\beam_rifle\beam_rifle_misfire', 'gh_melee'),
                            (r'sound\weapons\beam_rifle\beam_rifle_zoom_in', 'gh_ready'),
                            (r'sound\weapons\beam_rifle\beam_rifle_zoom_out', 'gh_ready'),
