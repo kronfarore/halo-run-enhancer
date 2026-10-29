@@ -446,6 +446,16 @@ def build(key, species, only=None, write=True):
         if cfg.get('root_identity'):
             fr = reroot(nodes, fr, cfg['root_identity'])
         path = os.path.join(src, file_name(h3name, rename) + ext)
+        if cfg.get('quat_continuity'):
+            # `quat_continuity` (the Spartan Laser, A2 boot 2: 'after a grenade throw the Chief's
+            # wrist twists slightly'): composed model-space quaternions can FLIP SIGN between frames
+            # (the throws' left hand + fingers at frame 6) -- the same rotation, but Halo 2 then
+            # interpolates the long way round. Each node's frames made sign-continuous
+            fr = [list(f) for f in fr]
+            for k in range(1, len(fr)):
+                for i, (q, t) in enumerate(fr[k]):
+                    if sum(a * b for a, b in zip(fr[k - 1][i][0], q)) < 0:
+                        fr[k][i] = (tuple(-c for c in q), t)
         if write:
             write_jma(path, nodes, names, fr)
         out.append((h3name, typ, len(frames), len(fr), os.path.basename(path)))

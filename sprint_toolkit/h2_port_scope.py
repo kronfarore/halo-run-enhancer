@@ -9,6 +9,7 @@ The config's `scope` section:
     hud                the port's HUD (kit-relative, with extension)
     widgets            the bitmap widget names to blank
     size               the blank bitmap's size
+    disc               (opt-in) a ZOOMING port's mask instead of a blank: one quarter of a dark disc
 
     python h2_port_scope.py <key> [--write]
 """
@@ -35,15 +36,17 @@ TEMP = os.environ.get('TEMP', '.')
 REL = DONOR = NAME = PORT = HUD = None
 SCOPE = ()
 SIZE = None
+DISC = None
 
 
 def setup(key):
-    global REL, DONOR, NAME, PORT, HUD, SCOPE, SIZE
+    global REL, DONOR, NAME, PORT, HUD, SCOPE, SIZE, DISC
     c = ports_h2.get(key, 'scope')
     REL, DONOR, NAME = c['rel'], c['donor'], c['name']
     PORT = B.join([REL, NAME])
     HUD = os.path.join(TAGS, c['hud'])
     SCOPE, SIZE = tuple(c['widgets']), tuple(c['size'])
+    DISC = c.get('disc')
 
 
 def widgets(tag):
@@ -74,7 +77,25 @@ def blank():
     data = os.path.join(H2EK, 'data', REL)
     os.makedirs(data, exist_ok=True)
     tif = os.path.join(data, NAME + '.tif')
-    Image.new('RGBA', SIZE, (0, 0, 0, 0)).save(tif, compression=None)
+    img = Image.new('RGBA', SIZE, (0, 0, 0, 0))
+    if DISC:
+        # `disc` {'radius', 'alpha', 'rim', 'rim_width'} (the Spartan Laser, A2 -- a ZOOMING port
+        # with Halo 3's scope look: a translucent dark disc round the crosshair, a darker rim, the
+        # world clear outside): ONE QUARTER, its centre the image's bottom-right corner -- the
+        # beam rifle's mask widget registers at (1, 1) and mirrors it both ways
+        import numpy as np
+        w, h = SIZE
+        yy, xx = np.mgrid[0:h, 0:w]
+        r = np.hypot(w - 0.5 - xx, h - 0.5 - yy)
+        R, rw = float(DISC['radius']), float(DISC.get('rim_width', 3))
+        a = np.where(r <= R - rw, DISC['alpha'], 0.0)
+        a = np.where((r > R - rw) & (r <= R), DISC.get('rim', DISC['alpha']), a)
+        edge = (r > R) & (r <= R + 1)                 # a one-pixel antialiased outer edge
+        a = np.where(edge, DISC.get('rim', DISC['alpha']) * (R + 1 - r), a)
+        px = np.zeros((h, w, 4), np.uint8)
+        px[:, :, 3] = np.clip(a * 255.0, 0, 255).astype(np.uint8)
+        img = Image.fromarray(px, 'RGBA')
+    img.save(tif, compression=None)
     dest = os.path.join(TAGS, PORT + '.bitmap')
     if not os.path.exists(dest):
         shutil.copy(os.path.join(TAGS, DONOR + '.bitmap'), dest)
@@ -106,7 +127,13 @@ def main(argv=None):
     blank()
     have = h2_tagref.references(HUD)
     if ('bitm', DONOR) in have:
-        h2_tagref.set_reference(HUD, 'bitm', DONOR, PORT, every=True)
+        try:
+            h2_tagref.set_reference(HUD, 'bitm', DONOR, PORT, every=True)
+        except ValueError:
+            # every=True refuses when other records have the path's length (the beam rifle HUD's
+            # mask, the Spartan Laser A2 -- as h2_port_hud_plate's plate): one copy at a time
+            for _k in range(have.count(('bitm', DONOR))):
+                h2_tagref.set_reference(HUD, 'bitm', DONOR, PORT, nth=0)
     else:
         print('   the HUD already names no donor scope mask')
 

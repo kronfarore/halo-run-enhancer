@@ -250,14 +250,18 @@ def main(argv=None):
             continue
         h2_tagref.add_attachment(path, os.path.join(TAGS, donor), cls, element,
                                  **(row[4] if len(row) > 4 else {}))
-    for tag, cls, new, marker, like in w.get('append_attachments', ()):
+    for row in w.get('append_attachments', ()):
         # an attachment APPENDED beside the clone's own (the Flamethrower's pilot flame);
-        # h2_tagref.append_attachment, tool-verified
+        # h2_tagref.append_attachment, tool-verified. An optional 6th value names the function
+        # that scales it (the Spartan Laser's charge cue, A2: `primary_charged`, as the plasma
+        # pistol's charging sound and overcharge lights)
+        tag, cls, new, marker, like = row[:5]
         path = os.path.join(TAGS, tag)
         if (cls, new) in h2_tagref.references(path):
             print('   %-34s already has %s' % (os.path.basename(tag), new.split('\\')[-1]))
             continue
-        h2_tagref.append_attachment(path, cls, new, marker, like)
+        h2_tagref.append_attachment(path, cls, new, marker, like,
+                                    primary_scale=row[5] if len(row) > 5 else None)
     if w.get('byte_edits'):
         print('byte edits in the clones:')
         byte_edits(w)

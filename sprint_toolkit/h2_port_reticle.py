@@ -161,12 +161,26 @@ def h3_compose(donor):
         k = H3_ART['target_ink'] / float(_ink(art))
     w, h = max(1, int(round(art.width * k))), max(1, int(round(art.height * k)))
     art = art.resize((w, h), Image.LANCZOS)
-    side = max(w, h, donor.width, donor.height)
+    # `layers` [(H3EK bitmap tag, widget scale / the main sprite's widget scale)]: further crosshair
+    # WIDGETS Halo 3 draws centred on the same point (the Spartan Laser, A2 boot 2: #11 at 0.59 plus
+    # the inner double ring `spartan_outerring` at 0.95 -- Halo 1's A8 reading), each a whole bitmap
+    layers = []
+    for path, ratio in H3_ART.get('layers', ()):
+        img, _ = h3_hud_art.decode(path)
+        lw, lh = max(1, int(round(img.width * k * ratio))), max(1, int(round(img.height * k * ratio)))
+        layers.append(img.resize((lw, lh), Image.LANCZOS))
+    side = max([w, h, donor.width, donor.height] + [max(i.size) for i in layers])
     side += side % 2
     out = Image.new('RGBA', (side, side), (0, 0, 0, 0))
-    px = np.asarray(art).astype(float)
-    px[:, :, 0], px[:, :, 1], px[:, :, 2] = colour[0], colour[1], colour[2]
-    piece = Image.fromarray(px.astype('uint8'), 'RGBA')
+
+    def tinted(img):
+        px = np.asarray(img.convert('RGBA')).astype(float)
+        px[:, :, 0], px[:, :, 1], px[:, :, 2] = colour[0], colour[1], colour[2]
+        return Image.fromarray(px.astype('uint8'), 'RGBA')
+    for img in layers:
+        out.alpha_composite(tinted(img), (int(round((side - img.width) / 2.0)),
+                                          int(round((side - img.height) / 2.0))))
+    piece = tinted(art)
     out.alpha_composite(piece, (int(round(side / 2.0 - reg[0] * k)),
                                 int(round(side / 2.0 - reg[1] * k))))
     print('   source sprite %s #%d x %.3f (donor ink %d / yardstick #%d ink %d) -> %dx%d on %dx%d'

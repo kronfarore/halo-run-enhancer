@@ -306,6 +306,10 @@ def offset_of(tag_path, name, block='', index=0, nth=0, verbose=True):
                                                      (known, known + _size * n)):
             return known
     probe = stored(ftype, values[0]) + 0.5 if code == '<f' else int(values[0]) + 3
+    if ftype in ('enum', 'char enum'):
+        # an ENUM probes with a small valid value: value + 3 is out of range in a short enum and
+        # tool prints it unchanged (the Spartan Laser's particle `camera mode` = 3, A2)
+        probe = 1 if int(values[0]) != 1 else 2
 
     cands = candidates(bytearray(original), ftype, values,
                        scope(bytearray(original), xml, block, index))
