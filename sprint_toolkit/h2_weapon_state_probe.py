@@ -8,10 +8,12 @@ resolves the player's unit (halo2.dll+18B7398 entries of 12 bytes, offset at +8,
     find   after ONE shot, every object holding the float `--value` (default 0.1999995: the laser's
            battery age per round, a value no stock object carries) -- prints the candidates
     log    polls that object's first `--size` bytes every ~2 ms and writes every 4-byte word that
-           changed (time, offset, old, new as float) to reports/h2_weapon_state_probe.jsonl, with the
-           `--note`; Ctrl-C ends it
+           changed WITHIN 0..1 (a fraction: charge, heat, age -- the moving object's positions are
+           noise) as (time, offset, old, new) to out/h2_weapon_state_probe.raw.jsonl (large, git-ignored),
+           with the `--note`; `--seconds` or Ctrl-C ends it
     times  from the last log run: per word, each RAMP 0 -> 1 (a charge) and each DECAY from >= 0.99
-           down to `--floor` (the heat recovery threshold, default 0.1: the vent) with their durations
+           down to `--floor` (the heat recovery threshold, default 0.1: the vent) with their durations,
+           appended to reports/h2_weapon_state_probe.jsonl (the measured values)
 
     python sprint_toolkit\h2_weapon_state_probe.py find
     python sprint_toolkit\h2_weapon_state_probe.py log --object 0x1A2B3C4D --note "laser: 3 charged shots"
@@ -28,7 +30,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import h2_memscan as M  # noqa: E402
 
-LOG = os.path.join(HERE, 'reports', 'h2_weapon_state_probe.jsonl')
+LOG = os.path.join(HERE, 'out', 'h2_weapon_state_probe.raw.jsonl')         # every change (large, git-ignored)
+TIMES = os.path.join(HERE, 'reports', 'h2_weapon_state_probe.jsonl')     # the measured times
 
 
 def attach():
@@ -78,11 +81,25 @@ def find(value, size):
     M.k32.CloseHandle(h)
 
 
-def log(addr, size, note):
+def log(addr, size, note, seconds=None, noise=0.0):
     h, _base = attach()
     prev = M.read(h, addr, size)
     if not prev:
         raise SystemExit('cannot read 0x%X' % addr)
+    # --noise N (the laser's charge, A2 boot 3: it is no 0..1 fraction): first N seconds standing
+    # still -- every word that moves then is noise (positions, timers) and is skipped; the rest is
+    # logged WITHOUT the 0..1 filter
+    skip = set()
+    if noise:
+        print('learning noise for %.0f s -- stand still, do not fire' % noise)
+        t1 = time.perf_counter()
+        while time.perf_counter() - t1 < noise:
+            cur = M.read(h, addr, size)
+            if cur:
+                skip |= {k for k in range(0, size - 3, 4) if cur[k:k + 4] != prev[k:k + 4]}
+                prev = cur
+            time.sleep(0.002)
+        print('%d noisy words skipped -- now charge and fire' % len(skip))
     run = int(time.time())
     os.makedirs(os.path.dirname(LOG), exist_ok=True)
     print('logging 0x%X (+0..0x%X) -- charge, fire, let it vent; Ctrl-C to stop' % (addr, size))
@@ -92,7 +109,7 @@ def log(addr, size, note):
         fh.write(json.dumps({'run': run, 'start': time.strftime('%Y-%m-%d %H:%M:%S'), 'object': '0x%X' % addr,
                              'note': note, 'condition': 'Halo 2 MCC, live object words (h2_weapon_state_probe)'}) + '\n')
         try:
-            while True:
+            while seconds is None or time.perf_counter() - t0 < seconds:
                 cur = M.read(h, addr, size)
                 if cur and cur != prev:
                     t = time.perf_counter() - t0
@@ -100,8 +117,14 @@ def log(addr, size, note):
                         if cur[k:k + 4] != prev[k:k + 4]:
                             a, = struct.unpack_from('<f', prev, k)
                             b, = struct.unpack_from('<f', cur, k)
-                            fh.write(json.dumps({'run': run, 't': round(t, 4), 'off': k, 'old': a, 'new': b}) + '\n')
+                            if k in skip or (not noise and not (-0.01 <= a <= 1.01 and -0.01 <= b <= 1.01)):
+                                continue        # fractions only (charge, heat, age): positions etc. skipped
+                            ia, = struct.unpack_from('<i', prev, k)
+                            ib, = struct.unpack_from('<i', cur, k)
+                            fh.write(json.dumps({'run': run, 't': round(t, 4), 'off': k, 'old': a, 'new': b,
+                                                 'old_i': ia, 'new_i': ib}) + '\n')
                             n += 1
+                    fh.flush()
                     prev = cur
                 time.sleep(0.002)
         except KeyboardInterrupt:
@@ -142,6 +165,11 @@ def times(floor):
                 top = None
         if ramps or decays:
             print('   +0x%03X  ramps 0 -> 1: %s   decays 1 -> %.2f: %s' % (off, ramps or '-', floor, decays or '-'))
+            os.makedirs(os.path.dirname(TIMES), exist_ok=True)
+            with open(TIMES, 'a', encoding='utf-8') as fh:
+                fh.write(json.dumps({'run': run, 'note': head['note'], 'object': head['object'], 'off': off,
+                                     'ramps_0_to_1_s': ramps, 'decays_1_to_floor_s': decays, 'floor': floor,
+                                     'condition': head['condition']}) + '\n')
 
 
 def main(argv=None):
@@ -152,13 +180,32 @@ def main(argv=None):
     ap.add_argument('--size', type=lambda s: int(s, 0), default=0x400)
     ap.add_argument('--note', default='')
     ap.add_argument('--floor', type=float, default=0.1)
+    ap.add_argument('--seconds', type=float, help='log: stop after this long (else Ctrl-C)')
+    ap.add_argument('--noise', type=float, default=0.0, help='log: learn noisy words for N s, then log the rest unfiltered')
     a = ap.parse_args(argv)
     if a.mode == 'find':
         find(a.value, a.size)
     elif a.mode == 'log':
         if not a.object:
-            raise SystemExit('--object 0x... (from `find`)')
-        log(int(a.object, 0), a.size, a.note)
+            raise SystemExit('--object 0x... (from `find`), or --object auto')
+        if a.object == 'auto':
+            # wait for the first shot (a level restart moves the object): the one object holding --value
+            h, base = attach()
+            want = struct.pack('<f', a.value)
+            print('waiting for one shot (an object holding %g) ...' % a.value)
+            addr = None
+            while addr is None:
+                for _i, adr in objects(h, base):
+                    d = M.read(h, adr, a.size) or b''
+                    if any(d[k:k + 4] == want for k in range(0, len(d) - 3, 4)):
+                        addr = adr
+                        break
+                time.sleep(0.2)
+            M.k32.CloseHandle(h)
+            print('found 0x%X' % addr)
+            log(addr, a.size, a.note, a.seconds, a.noise)
+        else:
+            log(int(a.object, 0), a.size, a.note, a.seconds, a.noise)
     else:
         times(a.floor)
 
