@@ -561,7 +561,13 @@ PORT = {
                          H2EK + r'\tags\objects\characters\dervish\dervish.model_animation_graph',
                          r'E:\HaloBackups\h2_graph_teach\masterchief.model_animation_graph',
                          r'E:\HaloBackups\h2_graph_teach\dervish.model_animation_graph']},
-    'firing_profile': {'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\melee\\gravity_hammer\\gravity_hammer', 'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
+    # step 11 -- `python ai_firing_profile.py --h2-port gravity_hammer`: Halo 3's ai\generic hammer
+    # entry (010_jungle) name-for-name over the H2 ENERGY BLADE's (the yardstick; Halo 2's only
+    # player melee weapon with an ai\generic entry -- Tartarus's hammer data lives in his own
+    # character, never touched)
+    'firing_profile': {'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\melee\\gravity_hammer\\gravity_hammer',
+                       'donor_weapon': BLADE + r'\energy_blade',
+                       'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
     'test': {'level': '07a_highcharity', 'dervish_level': '08b_deltacontrol'},   # parallel step 2
     'residency': {'levels': 'all', 'placements': False},
 }
