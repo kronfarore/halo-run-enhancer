@@ -219,6 +219,12 @@ PORT = {
         # `rifle` / `csr` is the Covenant sniper's
         'string_ids': {'rifle': 'missile', 'csr': 'rl'},
         'string_ids_done': ('weapon name', 'rl'),
+        # THE DAMAGE GROUPS (step 4a: Halo 3's `laser` = the rocket's explosion_large): the beam rifle's
+        # plasma_fast / sniper (Hunters IMMUNE, Elite shields x2) -> explosion_large / `all` (x1 on every
+        # armour). Halo 3's Hunter armour x0.5 has NO Halo 2 group (none pairs Hunter 0.5 with
+        # explosion_large's other rows) -- OPEN with the user: a new group in globals, or Hunter x1
+        'string_id_renames': [(SL + r'\damage_effects\spartan_laser_beam.damage_effect',
+                               {'plasma_fast': 'explosion_large', 'sniper': 'all'})],
         'shared': [(r'objects\weapons\damage_effects\*_melee', 'shared by every Halo 2 weapon'),
                    (r'the particles inside spartan_laser_fire', "the beam rifle's (Halo 3 particles do not port)")],
     },
@@ -271,6 +277,20 @@ PORT = {
             (SL + r'\spartan_laser.weapon', 'magnetism range', '', 0, 1, 25.0),
             (SL + r'\spartan_laser.weapon', 'magnification levels', '', 0, 0, 1),
             (SL + r'\spartan_laser.weapon', 'magnification range', '', 0, 0, [2.5, 2.5]),
+            # step 4b (port_field_audit --port h2:spartan_laser, 2026-10-28, out/sl_4b_1.txt) -- list 2 / 4:
+            # Halo 3's laser is exact (error 0; the beam rifle's 0.5 unzoomed cone + 'use error when
+            # unzoomed' made it miss from the hip), its bounding radius by the ratio, camo ding, AI
+            # scariness / acceleration scale / illumination recovery = the source pair's agreed value,
+            # the FP offset by the ratio (0, 0, -0.005), the beam's collision radius by the ratio
+            (SL + r'\spartan_laser.weapon', 'error angle', 'barrels', 0, 1, [0.0, 0.0]),
+            (SL + r'\spartan_laser.weapon', 'bounding radius', '', 0, 0, 0.24725),
+            (SL + r'\spartan_laser.weapon', 'active camo ding', '', 0, 0, 0.12),
+            (SL + r'\spartan_laser.weapon', 'ai scariness', '', 0, 0, 12.0),
+            (SL + r'\spartan_laser.weapon', 'acceleration scale', '', 0, 0, 0.8),
+            (SL + r'\spartan_laser.weapon', 'illumination recovery time', 'barrels', 0, 0, 0.2),
+            (SL + r'\spartan_laser.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, -0.005]),
+            (SL + r'\projectiles\spartan_laser_beam.projectile', 'collision radius', '', 0, 0, 0.15,
+             {'anchor': ('maximum range', -24)}),   # collision, arming, danger, timer x2, min velocity
             # THE BEAM (look, first pass): the beam rifle's two contrails (inner core, outer glow, both
             # additive) recoloured from its purple to Halo 3's laser red (Halo 1's A8: RED 1, 0.15, 0.1;
             # a white-hot core), the outer glow wider (Halo 3's beam is thick)
@@ -473,15 +493,17 @@ PORT = {
         'weapon_tag': SL + r'\spartan_laser',
         'port_tags': [],
         'shared': [('jpt!', r'objects\weapons\damage_effects\smash_melee')],
+        # the WEAPON row FIRST: weapon_ports.weap_path reads the entry's weapon tag off its first row
+        # (boot 2's build found 'no catalog entry' with the damage rows first)
         'extra_rows': [
+            {'class': 'weap', 'tag': SL + r'\spartan_laser', 'field': 'Autoaim Range', 'block': None,
+             'value': 45.0, 'card': 'Autoaim', 'original': 25.0,
+             'note': "step 4a: Halo 3's 25 x the rockets' 45 / 25"}] + [
             {'class': 'jpt!', 'tag': SL + r'\damage_effects\spartan_laser_beam', 'field': f, 'block': None,
              'value': 453.4, 'card': 'Beam Damage', 'original': 570.0,
              'note': 'step 4a (user 2026-10-28): the rocket ratio, direct hits with the AOE bumps counted -- '
                      'H2 rocket 150 + 200 / H3 rocket 240 + 200 = 0.795; 570 x 0.795'}
-            for f in ('Damage Lower Bound', 'Damage Upper Bound', 'Damage Upper Bound Max')] + [
-            {'class': 'weap', 'tag': SL + r'\spartan_laser', 'field': 'Autoaim Range', 'block': None,
-             'value': 45.0, 'card': 'Autoaim', 'original': 25.0,
-             'note': "step 4a: Halo 3's 25 x the rockets' 45 / 25"}],
+            for f in ('Damage Lower Bound', 'Damage Upper Bound', 'Damage Upper Bound Max')],
         'fp_animations': r'objects\characters\*\fp\weapons\support_high\fp_spartan_laser\fp_spartan_laser',
         'reload_mult': None,
         'desc': ("Halo 3's Spartan Laser carried into Halo 2 with its own model, textures, sounds and "
