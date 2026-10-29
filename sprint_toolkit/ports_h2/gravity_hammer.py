@@ -11,6 +11,7 @@ BEAM = r'objects\weapons\rifle\beam_rifle'            # the donor (H2EK)
 BLADE = r'objects\weapons\melee\energy_blade'         # the yardstick + melee fields (H2EK)
 H2EK = r'F:\SteamLibrary\steamapps\common\H2EK'
 NEW_HUD = r'ui\hud\bitmaps\new_hud'
+H3SND = r'data\sound\weapons'           # source folders in MCC's halo3 sfx.fsb (.info)
 import os as _os
 # the Halo 3 world render model's export (h1_fp_retarget.export_xml's cache; regenerable): the
 # silhouette the HUD plate, backpack icon and pickup glyph are drawn from
@@ -399,6 +400,64 @@ PORT = {
         'looping': ['first_person:idle', 'first_person:posing:var1'],
         'overlay_reference': 'first_person:idle',
         'rename': {'first_person:melee_lunge_unaimed': 'first_person:fire_1'},
+        # every animation's frame + sound events = Halo 3's own (the Spike Rifle's rule), onto the
+        # graph's own sounds (step 10 repointed the seed's sword refs: gh_melee / gh_ready / gh_posing)
+        'source_events': {'sounds': {'hammer_melee': 'gh_melee', 'hammer_ready': 'gh_ready',
+                                     'hammer_posing': 'gh_posing'}},
+    },
+    # step 10 -- h2_port_sounds.py: Halo 3's OWN five hammer sounds from MCC's halo3 sfx.fsb (classic
+    # Opus): hammer_melee (the swings), hammer_ready, hammer_posing, hammer_hit (the BLAST: the impact
+    # effect's Tartarus hits + its remastered layers), hammer_drops (the head on a surface AND the
+    # dropped weapon -- distinct from the blast: Halo 1's A9 rule, a hit and the blast must sound
+    # different). The beam rifle's never-played refs (zoom, misfire, ammo pickup) -> own sounds too
+    'sounds': {
+        'weapon': GH + r'\gravity_hammer_port.weapon',
+        'fire_fx': FX + r'\gravity_hammer_port_fire.effect',
+        'audio': _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), 'out',
+                               'h2_sounds', 'gravity_hammer'),
+        'audio_key': 'Gravity Hammer',
+        'h3_bank': {'gh_melee': [H3SND + r'\gravity_hammer\fp_hammer\hammer_melee'],
+                    'gh_ready': [H3SND + r'\gravity_hammer\fp_hammer\hammer_ready'],
+                    'gh_posing': [H3SND + r'\gravity_hammer\fp_hammer\hammer_posing'],
+                    'gh_hit': [H3SND + r'\gravity_hammer\hammer_hit'],
+                    'gh_drop': [H3SND + r'\gravity_hammer\hammer_drops']},
+        'sounds': {'gh_melee': ('gh_melee', 'weapon_melee'), 'gh_ready': ('gh_ready', 'weapon_ready'),
+                   'gh_posing': ('gh_posing', 'weapon_ready'),
+                   'gh_hit': ('gh_hit', 'projectile_detonation'),
+                   'gh_drop': ('gh_drop', 'object_impacts')},
+        'repoint_tags': ([(FX + r'\gravity_hammer_port.material_effects', r'sound\weapons\impacts_riccs\%s' % old, 'gh_drop')
+                          for old in ('bullet_impact_dirt', 'bullet_impact_energy', 'bullet_impact_flesh_dry',
+                                      'bullet_impact_glass', 'bullet_impact_metal_thick', 'bullet_impact_metal_thick_r',
+                                      'bullet_impact_metal_thin', 'bullet_impact_stone', 'bullet_impact_stone_r',
+                                      'bullet_impact_vehicle', 'bullet_impact_vest', 'bullet_impact_water',
+                                      'bullet_impact_wood')]
+                         + [(FX + r'\gravity_hammer_port.material_effects', r'sound\weapons\beam_rifle\%s' % old, 'gh_drop')
+                            for old in ('beam_rifle_drop', 'beam_rifle_drop_soft')]
+                         + [(FX + r'\gravity_hammer_port_impact.effect', old, 'gh_hit')
+                            for old in (r'sound\characters\brute\tartarus_hits',
+                                        r'sound_remastered\characters\brute\tatarus_hammer_hits\hits_stereo',
+                                        r'sound_remastered\characters\brute\tatarus_hammer_hits\hits_swtnr',
+                                        r'sound_remastered\ambience\device_machines\scarab\scarab_steps_lfe')]
+                         + [(GH + r'\projectiles\gravity_hammer_port_strike.projectile',
+                             r'sound\weapons\impacts_riccs\bullet_flyby_short', 'gh_melee')]
+                         + [(r'objects\characters\%s\fp\weapons\melee\fp_gravity_hammer_port\fp_gravity_hammer_port.model_animation_graph' % sp,
+                             r'sound_remastered\weapons\energy_sword\%s' % old, 'gh_melee')
+                            for sp in ('masterchief', 'dervish')
+                            for old in ('energy_melee_swtnr', 'energy_melee_swtnr_elec')]),
+        'repoint_fx': [(r'sound\weapons\beam_rifle\beam_rifle_fire', 'gh_melee'),
+                       (r'sound_remastered\weapons\beam_rifle\beam_rifle_fire_lod', 'gh_melee'),
+                       (r'sound_remastered\weapons\beam_rifle\beamrifle_lfe', 'gh_melee')],
+        'repoint_weapon': [(r'sound\weapons\beam_rifle\beam_rifle_misfire', 'gh_melee'),
+                           (r'sound\weapons\beam_rifle\beam_rifle_zoom_in', 'gh_ready'),
+                           (r'sound\weapons\beam_rifle\beam_rifle_zoom_out', 'gh_ready'),
+                           (r'sound\weapons\sniper_rifle\sniper_ammo', 'gh_ready')],
+        'graph_sounds': (('energy_melee_1', 'gh_melee'), ('energy_melee_2', 'gh_melee'),
+                         ('energy_sword_pose', 'gh_posing'), ('sword_ready', 'gh_ready')),
+        'graph_sound_dir': r'sound\weapons\energy_sword' + '\\',
+        'gain': {},
+        'boost': {},
+        'backup': r'E:\HaloBackups\H2EK_gravity_hammer_before_sounds',
+        'graph_backup': r'E:\HaloBackups\H2EK_gravity_hammer_graphs_before_sounds',
     },
     # 3P (step 4a, user): class 'melee' = the Brute graph's own hammer class (Armed Brutes hold it
     # natively); the player graphs had only 'sword' -> h2_graph_teach cloned it as 'melee'
