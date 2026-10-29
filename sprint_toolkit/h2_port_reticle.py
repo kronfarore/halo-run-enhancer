@@ -237,7 +237,14 @@ def main(argv=None):
     if ('bitm', PORT) in have:
         print('   the HUD already points at the port reticle')
     else:
-        h2_tagref.set_reference(hud, 'bitm', DONOR, PORT, every=True)
+        try:
+            h2_tagref.set_reference(hud, 'bitm', DONOR, PORT, every=True)
+        except ValueError:
+            # every=True refuses when another record has the path's length (the Energy Blade's HUD:
+            # crosshair + crosshair_friendly, and a third 47-character bitmap -- the Gravity Hammer,
+            # 2026-10-29): one copy at a time, as h2_port_hud_plate does
+            for _k in range(have.count(('bitm', DONOR))):
+                h2_tagref.set_reference(hud, 'bitm', DONOR, PORT, nth=0)
     import h2_port_scope
     import h2_tagfield
     for idx, _name, ref, seq in h2_port_scope.widgets(hud):

@@ -16,6 +16,8 @@ import os as _os
 # silhouette the HUD plate, backpack icon and pickup glyph are drawn from
 H3_RM_XML = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), 'out', 'h3_export',
                           'objects~weapons~melee~gravity_hammer~gravity_hammer.render_model.xml')
+# ... turned on its side for those three (write_side_jms at the end of this file)
+SIDE_JMS = _os.path.join(H2EK, 'data', GH, 'glyph', 'gravity_hammer_port_side.jms')
 
 PORT = {
     'order': 5,
@@ -328,7 +330,7 @@ PORT = {
         'backpack': NEW_HUD + r'\backpack_weapons',
         'backpack_port': NEW_HUD + r'\gravity_hammer_backpack',
         'backpack_size': (62, 30),
-        'model_3p': H3_RM_XML,
+        'model_3p': SIDE_JMS,
     },
     'hud_plate': {
         'rel': NEW_HUD + r'\backgrounds',
@@ -336,7 +338,7 @@ PORT = {
         'other': NEW_HUD + r'\backgrounds\battle_rifle_bkd',
         'name': 'gravity_hammer_bkd',
         'hud': r'ui\hud\gravity_hammer',
-        'model_3p': H3_RM_XML,
+        'model_3p': SIDE_JMS,
         'fallback_box': (105, 191, 5, 34),
         'stretch': 1.4,
         # the sword plate's SIX images: 0 / 1 bright single (64 tall), 2 / 3 the short 'multi'
@@ -359,7 +361,7 @@ PORT = {
     # Spartan Laser's donor too: each port renames only its OWN weapon's string ids)
     'glyph': {
         'box': (160, 62),
-        'model_3p': H3_RM_XML,
+        'model_3p': SIDE_JMS,
         'tif': 'gravity_hammer_h2_glyph.tif',
         'colour': (255, 255, 255),
         'style': {'line': (255, 255, 255), 'body': (153, 153, 153)},
@@ -384,3 +386,26 @@ PORT = {
     'test': {'level': '07a_highcharity', 'dervish_level': '08b_deltacontrol'},   # parallel step 2
     'residency': {'levels': 'all', 'placements': False},
 }
+
+
+# The pickup glyph, HUD plate and backpack icon are SIDE VIEWS (h3_weapon_glyph: x across, z up) --
+# right for a gun, but the hammer's shaft runs along z, so Halo 3's mesh drew it standing on end
+# (a sliver; the plate stretched it). SIDE_JMS = the port's own world JMS turned -90 deg about y
+# (x, y, z) -> (z, y, -x): the shaft across, the head on the RIGHT. Regenerate with
+#     python ports_h2\gravity_hammer.py
+def write_side_jms():
+    import sys
+    sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    import h2_jms
+    m = h2_jms.read(_os.path.join(H2EK, 'data', GH, 'render', 'gravity_hammer_port.jms'))
+    for v in m.verts:
+        x, y, z = v.pos
+        v.pos = (z, y, -x)
+    m.markers = []
+    _os.makedirs(_os.path.dirname(SIDE_JMS), exist_ok=True)
+    h2_jms.write(SIDE_JMS, m)
+    print('wrote %s (%d verts)' % (SIDE_JMS, len(m.verts)))
+
+
+if __name__ == '__main__':
+    write_side_jms()
