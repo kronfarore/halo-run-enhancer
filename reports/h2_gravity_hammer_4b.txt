@@ -1,0 +1,171 @@
+PORT FIELD AUDIT -- Halo 2 (source Halo 3 Gravity Hammer vs Energy Blade; columns: source port, source yardstick | target donor)
+
+== weapon: 147 same in the source pair (kept), 39 reference/name differences (steps 3/8/10), 0 already ported by the balance table
+-- 2. WEAPON differences to port (4; 4 already written: bounding offset, turn on time, ready time, autoaim range)
+   bounding radius                                            source 0                yardstick 0.25             | target 0.250000         -> 0  [by name]   (port already 0.412500)
+   acceleration scale                                         source 0                yardstick 1                | target 1.000000         -> 0  [by name]   (port already 0.900000)
+   damage pyramid angles                                      source 0,0              yardstick 25,15            | target 25.000000,15.000 -> 0,0  [by name]   (port already 20.000000,10.000000)
+   damage pyramid depth                                       source 0                yardstick 0.9              | target 0.900000         -> 0  [by name]   (port already 0.600000)
+-- 4. source pair AGREES, but the port holds another value than the target donor -- its clone donor's, or a deliberate setting (4)
+   overheated heat loss per second                            source both 0            | the target donor 0.000000         port 0.300000
+   ai scariness                                               source both 16           | the target donor 16.000000        port 6.000000
+   active camo ding                                           source both 0            | the target donor 0.000000         port 1.000000
+   first person weapon offset                                 source both 0,0,0        | the target donor 0.050000,0.00000 port 0.020000,0.000000,0.0000
+-- 5. no source counterpart, and the port differs from the target donor (42)
+   apply collision damage scale                               the target donor 0.000000                 port 8.000000
+   old message index                                          the target donor 8                        port 28
+   predicted bitmaps/#count                                   the target donor 5                        port 7
+   flags''                                                    the target donor 83888128 cannot fire at  port 2048 cannot fire at maxi
+   functions/[0]/data/#count                                  the target donor 36                       port (missing)
+   functions/[0]/data/[0]/value                               the target donor 2                        port (missing)
+   functions/[0]/data/[1]/value                               the target donor 0                        port (missing)
+   functions/[0]/data/[2]/value                               the target donor 4                        port (missing)
+   functions/[0]/data/[3]/value                               the target donor 0                        port (missing)
+   functions/[0]/data/[4]/value                               the target donor 0                        port (missing)
+   functions/[0]/data/[5]/value                               the target donor 0                        port (missing)
+   functions/[0]/data/[6]/value                               the target donor 0                        port (missing)
+   functions/[0]/data/[7]/value                               the target donor 0                        port (missing)
+   functions/[0]/data/[8]/value                               the target donor 0                        port (missing)
+   functions/[0]/data/[9]/value                               the target donor 0                        port (missing)
+   functions/[0]/data/[10]/value                              the target donor -128                     port (missing)
+   functions/[0]/data/[11]/value                              the target donor 63                       port (missing)
+   functions/[0]/data/[12]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[13]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[14]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[15]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[16]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[17]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[18]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[19]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[20]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[21]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[22]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[23]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[24]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[25]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[26]/value                              the target donor -128                     port (missing)
+   functions/[0]/data/[27]/value                              the target donor 63                       port (missing)
+   functions/[0]/data/[28]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[29]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[30]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[31]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[32]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[33]/value                              the target donor 0                        port (missing)
+   functions/[0]/data/[34]/value                              the target donor -128                     port (missing)
+   functions/[0]/data/[35]/value                              the target donor 63                       port (missing)
+   attachments/[1]/change color                               the target donor none                     port (missing)
+-- 3. decide by hand (10)
+   functions/#count                                           source 3                yardstick 9                | target 1                 block size differs
+   attachments/#count                                         source 1                yardstick 5                | target 2                 block size differs
+   item/private use font icon                                 source 57632            yardstick 57625            | target -                 no such field in Halo 2
+   flags                                                      source 4472896          yardstick 5521472          | target 0                 long flags (not a number to scale)
+   melee damage reporting type                                source gravity hammer   yardstick energy sword     | target energy sword      char enum (not a number to scale)
+   weapon aim assist/autoaim falloff range                    source 1.75             yardstick 2.5              | target -                 no such field in Halo 2
+   weapon type                                                source undefined        yardstick energy blade     | target undefined         short enum (not a number to scale)
+   tracking type                                              source human tracking   yardstick no tracking      | target no tracking       short enum (not a number to scale)
+   external aging amount                                      source 0.0835           yardstick 0                | target -                 no such field in Halo 2
+   campaign external aging amount                             source 0.05             yardstick 0                | target -                 no such field in Halo 2
+
+== damage_effect: 19 same in the source pair (kept), 3 reference/name differences (steps 3/8/10), 0 already ported by the balance table
+-- 2. WEAPON differences to port (1; 9 already written: radius, damage lower bound, damage upper bound, active camouflage damage, rotation, pushback, forward velocity, forward radius, forward exponent)
+   instantaneous acceleration                                 source 3.5              yardstick 1.5              | target 1.000000         -> 2.33333   (port already 3.500000)
+-- 5. no source counterpart, and the port differs from the target donor (60)
+   flags'                                                     the target donor 16517 causes flaming dea port 1 does not hurt owner
+   player responses/[0]/duration                              the target donor 1.250000                 port 1.000000
+   player responses/[0]/fade function                         the target donor late                     port linear
+   player responses/[0]/color                                 the target donor 0.750000,0.000000,0.5000 port 0.250000,0.000000,0.5000
+   player responses/[0]/duration'                             the target donor 0.240000                 port 1.000000
+   player responses/[0]/data/[2]/value                        the target donor 1                        port 2
+   player responses/[0]/data/[4]/value                        the target donor -51                      port 0
+   player responses/[0]/data/[5]/value                        the target donor -52                      port 0
+   player responses/[0]/data/[6]/value                        the target donor 76                       port 0
+   player responses/[0]/data/[7]/value                        the target donor 63                       port 0
+   player responses/[0]/data/[8]/value                        the target donor -51                      port 0
+   player responses/[0]/data/[9]/value                        the target donor -52                      port 0
+   player responses/[0]/data/[10]/value                       the target donor 76                       port 0
+   player responses/[0]/data/[11]/value                       the target donor 63                       port 0
+   player responses/[0]/data/[20]/value                       the target donor 0                        port 102
+   player responses/[0]/data/[21]/value                       the target donor 0                        port 102
+   player responses/[0]/data/[22]/value                       the target donor -128                     port 102
+   player responses/[0]/data/[24]/value                       the target donor -102                     port -51
+   player responses/[0]/data/[25]/value                       the target donor -103                     port -52
+   player responses/[0]/data/[26]/value                       the target donor 25                       port 76
+   player responses/[0]/data/[27]/value                       the target donor 63                       port 61
+   player responses/[0]/duration''                            the target donor 0.180000                 port 0.140000
+   player responses/[0]/data/[4]/value'                       the target donor -51                      port 0
+   player responses/[0]/data/[5]/value'                       the target donor -52                      port 0
+   player responses/[0]/data/[6]/value'                       the target donor 76                       port 0
+   player responses/[0]/data/[7]/value'                       the target donor 63                       port 0
+   player responses/[0]/data/[8]/value'                       the target donor -51                      port 0
+   player responses/[0]/data/[9]/value'                       the target donor -52                      port 0
+   player responses/[0]/data/[10]/value'                      the target donor 76                       port 0
+   player responses/[0]/data/[11]/value'                      the target donor 63                       port 0
+   player responses/[1]/fade function                         the target donor late                     port linear
+   player responses/[1]/color                                 the target donor 0.750000,0.250000,0.0000 port 0.250000,0.250000,0.0000
+   player responses/[1]/duration'                             the target donor 0.240000                 port 1.000000
+   player responses/[1]/data/[2]/value                        the target donor 1                        port 2
+   player responses/[1]/data/[4]/value                        the target donor -51                      port 0
+   player responses/[1]/data/[5]/value                        the target donor -52                      port 0
+   player responses/[1]/data/[6]/value                        the target donor 76                       port 0
+   player responses/[1]/data/[7]/value                        the target donor 63                       port 0
+   player responses/[1]/data/[8]/value                        the target donor -51                      port 0
+   player responses/[1]/data/[9]/value                        the target donor -52                      port 0
+   player responses/[1]/data/[10]/value                       the target donor 76                       port 0
+   player responses/[1]/data/[11]/value                       the target donor 63                       port 0
+   player responses/[1]/data/[20]/value                       the target donor 0                        port 102
+   player responses/[1]/data/[21]/value                       the target donor 0                        port 102
+   player responses/[1]/data/[22]/value                       the target donor -128                     port 102
+   player responses/[1]/data/[24]/value                       the target donor -102                     port -51
+   player responses/[1]/data/[25]/value                       the target donor -103                     port -52
+   player responses/[1]/data/[26]/value                       the target donor 25                       port 76
+   player responses/[1]/data/[27]/value                       the target donor 63                       port 61
+   player responses/[1]/duration''                            the target donor 0.180000                 port 0.240000
+   player responses/[1]/data/[4]/value'                       the target donor -51                      port 0
+   player responses/[1]/data/[5]/value'                       the target donor -52                      port 0
+   player responses/[1]/data/[6]/value'                       the target donor 76                       port 0
+   player responses/[1]/data/[7]/value'                       the target donor 63                       port 0
+   player responses/[1]/data/[8]/value'                       the target donor -51                      port 0
+   player responses/[1]/data/[9]/value'                       the target donor -52                      port 0
+   player responses/[1]/data/[10]/value'                      the target donor 76                       port 0
+   player responses/[1]/data/[11]/value'                      the target donor 63                       port 0
+   duration                                                   the target donor 0.600000                 port 0.500000
+   duration'                                                  the target donor 0.000000                 port 0.800000
+-- 3. decide by hand (17)
+   side effect                                                source none             yardstick lethal to the un | target lethal to the un  short enum (not a number to scale)
+   flags                                                      source 2049             yardstick 16517            | target 0                 long flags (not a number to scale)
+   aoe core radius                                            source 0.75             yardstick 0                | target 0.000000          a zero on one side: no ratio, suggested = the source value
+   rider direct damage scale                                  source 0                yardstick 1                | target 0.000000          a zero on one side: no ratio, suggested = the source value
+   rider maximum transfer damage scale                        source 0                yardstick 1                | target 0.000000          a zero on one side: no ratio, suggested = the source value
+   rider minimum transfer damage scale                        source 2                yardstick 0                | target 0.000000          a zero on one side: no ratio, suggested = the source value
+   ai stun radius                                             source 4.5              yardstick 0                | target 0.000000          a zero on one side: no ratio, suggested = the source value
+   ai stun bounds                                             source 1,0.5            yardstick 0,0              | target 0.000000,0.00000  a zero on one side: no ratio, suggested = the source value
+   shake radius                                               source 10               yardstick 0                | target 0.000000          a zero on one side: no ratio, suggested = the source value
+   player responses/#count                                    source 0                yardstick 2                | target 2                 block size differs
+   impulse duration                                           source 0.5              yardstick 0.6              | target -                 no such field in Halo 2
+   shake duration                                             source 1                yardstick 0                | target -                 no such field in Halo 2
+   falloff function                                           source early            yardstick linear           | target linear            short enum (not a number to scale)
+   random translation                                         source 0.05             yardstick 0                | target 0.000000          a zero on one side: no ratio, suggested = the source value
+   wobble function                                            source jitter           yardstick one              | target one               short enum (not a number to scale)
+   outward velocity                                           source 15               yardstick 0                | target 0.000000          a zero on one side: no ratio, suggested = the source value
+   outward radius                                             source 1                yardstick 0                | target 0.000000          a zero on one side: no ratio, suggested = the source value
+
+== melee: 59 same in the source pair (kept), 1 reference/name differences (steps 3/8/10), 0 already ported by the balance table
+-- 2. WEAPON differences to port (5; 0 already written: -)
+   damage lower bound                                         source 80               yardstick 150              | target 70.000000        -> 37.3333   (port already 80.000000)
+   damage upper bound                                         source 80,80            yardstick 150,150          | target 70.000000,70.000 -> 37.3333,37.3333   (port already 80.000000,80.000000)
+   instantaneous acceleration                                 source 1                yardstick 1.5              | target 1.000000         -> 0.666667
+   rotation                                                   source 1.2              yardstick 2                | target 1.200000         -> 0.72
+   pushback                                                   source 0.25             yardstick 0.5              | target 0.250000         -> 0.125
+-- 3. decide by hand (6)
+   radius                                                     source 0,0              yardstick 0.5,0.5          | target 0.000000,0.00000  a zero on one side: no ratio, suggested = the source value
+   effect flags                                               source 1                yardstick 0                | target -                 no such field in Halo 2
+   flags                                                      source 16389            yardstick 16517            | target 1 don't scale da  long flags (not a number to scale)
+   player responses/[0]/screen flash/duration                 source 1                yardstick 1.25             | target -                 no such field in Halo 2
+   player responses/[1]/screen flash/duration                 source 1.25             yardstick 1.5              | target -                 no such field in Halo 2
+   impulse duration                                           source 0.4              yardstick 0.6              | target -                 no such field in Halo 2
+
+== impact: 69 same in the source pair (kept), 1 reference/name differences (steps 3/8/10), 0 already ported by the balance table
+-- 2. WEAPON differences to port (0; 1 already written: radius)
+-- 4. source pair AGREES, but the port holds another value than the target donor -- its clone donor's, or a deliberate setting (1)
+   instantaneous acceleration                                 source both 1.5          | the target donor 1.000000         port 1.500000
+-- 3. decide by hand (0)

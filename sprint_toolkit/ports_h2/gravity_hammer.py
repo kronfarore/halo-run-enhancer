@@ -275,8 +275,10 @@ PORT = {
             # cannot be found by value: its per-tag cache entry was SEEDED from `maximum range`
             # (0x1F8 - minimum velocity 4 - the bounds 8 = 0x1EC) and proven by a test write that
             # moved only the timer row (2026-10-29)
-        ] + [(GH + r'\projectiles\gravity_hammer_port_strike.projectile', 'response', 'material responses', k, n, 0)
-             for k, n in [(k, 0) for k in range(1, 10)] + [(3, 1), (4, 1), (6, 1)]] + [   # the other second responses already detonate
+            # the MATERIAL RESPONSES (elements 1-9, both `response` rows of 3 / 4 / 6; the others read 0
+            # already) were written to 0 = 'impact (detonate)' ONCE (2026-10-29) and verified in tool's
+            # export (all 20 detonate). Not re-run rows: a 0 cannot be found again by value and the
+            # step-10 repoint moved the tag's offsets -- a re-clone of the strike must write them again
             # THE SLAM (impact damage + melee lunge): Halo 3's crush_melee 150, accel 1.5, radius 0
             (GH + r'\damage_effects\gravity_hammer_port_slam.damage_effect', 'radius', '', 0, 0, [0.0, 0.0]),
             (GH + r'\damage_effects\gravity_hammer_port_slam.damage_effect', 'damage lower bound', '', 0, 0, 150.0),
@@ -293,6 +295,17 @@ PORT = {
             (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'AI stun radius', '', 0, 0, 4.5),
             (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'category', '', 0, 0, 6),
             (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'flags', '', 0, 1, 1),
+            # step 4b (2026-10-29): the blast's camera shake + outward push are Halo 3's own (zero in
+            # Tartarus's clone: no ratio from a zero)
+            (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'shake radius', '', 0, 0, 10.0),
+            (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'outward velocity', '', 0, 0, 15.0),
+            (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'outward radius', '', 0, 0, 1.0),
+            # step 4b list 4 / 5: the beam rifle's leftovers -> the yardstick sword's (no heat, no
+            # camo ding, no thrown-weapon collision damage, the sword's AI scariness 16)
+            (GH + r'\gravity_hammer_port.weapon', 'overheated heat loss per second', '', 0, 0, 0.0),
+            (GH + r'\gravity_hammer_port.weapon', 'active camo ding', '', 0, 0, 0.0),
+            (GH + r'\gravity_hammer_port.weapon', 'Apply collision damage scale', '', 0, 0, 0.0),
+            (GH + r'\gravity_hammer_port.weapon', 'AI scariness', '', 0, 0, 16.0),
             # THE JAB (melee button): Halo 3's smash_melee 80, accel 1
             (GH + r'\damage_effects\gravity_hammer_port_melee.damage_effect', 'damage lower bound', '', 0, 0, 80.0),
             (GH + r'\damage_effects\gravity_hammer_port_melee.damage_effect', 'damage upper bound', '', 0, 0, [80.0, 80.0]),
@@ -459,6 +472,47 @@ PORT = {
         'backup': r'E:\HaloBackups\H2EK_gravity_hammer_before_sounds',
         'graph_backup': r'E:\HaloBackups\H2EK_gravity_hammer_graphs_before_sounds',
     },
+    # step 4b -- port_field_audit.py --port gravity_hammer: every field NO card covers where Halo 3's
+    # hammer differs from Halo 3's sword (the yardstick) -- Halo 1's A9 pairs: the weapon, the BLAST
+    # (as damage_effect, against the sword's dash), the JAB (melee), the SLAM (impact: crush vs dash)
+    'field_audit': {
+        'source_kit': 'H3EK',
+        'source': {'weapon': (H3GH + r'\gravity_hammer.weapon', r'objects\weapons\melee\energy_blade\energy_blade.weapon'),
+                   'damage_effect': (H3GH + r'\damage_effects\gravity_hammer_explosion.damage_effect',
+                                     r'objects\weapons\damage_effects\dash_melee.damage_effect'),
+                   'melee': (r'objects\weapons\damage_effects\smash_melee.damage_effect',
+                             r'objects\weapons\damage_effects\dash_melee.damage_effect'),
+                   'impact': (r'objects\weapons\damage_effects\crush_melee.damage_effect',
+                              r'objects\weapons\damage_effects\dash_melee.damage_effect')},
+        'target': {'weapon': (GH + r'\gravity_hammer_port.weapon', BLADE + r'\energy_blade.weapon'),
+                   'damage_effect': (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect',
+                                     r'objects\weapons\damage_effects\dash_melee.damage_effect'),
+                   'melee': (GH + r'\damage_effects\gravity_hammer_port_melee.damage_effect',
+                             r'objects\weapons\damage_effects\slice_melee.damage_effect'),
+                   'impact': (GH + r'\damage_effects\gravity_hammer_port_slam.damage_effect',
+                              r'objects\weapons\damage_effects\dash_melee.damage_effect')},
+        # the run of 2026-10-29 (report: reports/h2_gravity_hammer_4b.txt), decided:
+        'decisions': {
+            'jab (melee) list 2: damage 37.3 / accel 0.67 / rotation 0.72 / pushback 0.125':
+                "the sword's STRIKE ratio -- step 4a chose the LUNGE ratio x1.0 (user): Halo 3's own 80 / 1 / 1.2 / 0.25",
+            'blast list 2: instantaneous acceleration 2.33': "the same: Halo 3's own 3.5 (step 4a)",
+            'weapon list 2: bounding radius / acceleration scale / damage pyramid = 0':
+                "Halo 3's hammer leaves them 0 (the engine's defaults); no ratio from a zero -- the beam "
+                "rifle's 0.4125 / 1 / 20 x 10 at 0.6 kept (the pyramid only shapes the melee-button jab)",
+            'weapon list 4 / 5: overheated heat loss 0.3, camo ding 1, collision damage scale 8, AI scariness 6':
+                "the beam rifle's -> the sword's 0 / 0 / 0 / 16 (numbers)",
+            'first person weapon offset': "the beam rifle's 0.02, 0, 0 until boot 1",
+            'blast list 3: shake radius 10, outward velocity 15, outward radius 1': "Halo 3's own (numbers)",
+            'blast list 3: rider scales, random translation, wobble, falloff early, impulse / shake duration':
+                "Tartarus's clone's kept (riders: Rider Damage is not carded from Halo 2 on this weapon; the "
+                "rest have no Halo 2 field or are feel, decided in game)",
+            "blast flags (Halo 3 2049)": "Halo 2 bit 0 'does not hurt owner' (numbers); 'transfer dmg always uses min' has no H2 bit",
+            'functions / attachments': "the beam rifle's one attachment = its overheat loop, scaled by "
+                                       "'overheated' -- never plays (no heat); Halo 3's hammer_on arcs not ported "
+                                       "(no free attachment slot without a block insert; check 10)",
+            'external / campaign external aging': "no Halo 2 field: the barrel's age per round 0.05 (step 4a)",
+            'weapon type / tracking type / melee damage reporting type': "Halo 2's enums kept (kill feed only)",
+        }},
     # 3P (step 4a, user): class 'melee' = the Brute graph's own hammer class (Armed Brutes hold it
     # natively); the player graphs had only 'sword' -> h2_graph_teach cloned it as 'melee'
     # (2026-10-28, under the H2 kit lock): masterchief 5 modes (combat, crouch, spectre_p_l / _r,
