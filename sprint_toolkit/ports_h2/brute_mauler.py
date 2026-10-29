@@ -571,7 +571,9 @@ PORT = {
     'firing_profile': {'from_game': 'Halo 3', 'from_map': r'halo3\maps\010_jungle.map',
                        'from_weapon': r'objects\weapons\pistol\excavator\excavator',
                        'donor_weapon': SG + r'\shotgun'},
-    # 05b (Chief, Brutes) + 08a (Arbiter, Brutes): parallel step 2; rounds = Halo 3's 5 / 10
-    'test': {'level': '05b_deltatowers', 'dervish_level': '08a_deltacliffs', 'rounds': (5, 10)},
+    # 05b (Chief, Brutes) + 08a (Arbiter, Brutes): parallel step 2; rounds = a FULL carry so a whole
+    # reload can be tested (boot 2, user: 'only has 10 total'): Balanced 10 loaded + 40 (the default
+    # build); an --original boot passes --rounds 5,20 (Halo 3's 5 loaded + 20 = its 25)
+    'test': {'level': '05b_deltatowers', 'dervish_level': '08a_deltacliffs', 'rounds': (10, 40)},
     'residency': {'levels': 'all', 'placements': False},
 }
