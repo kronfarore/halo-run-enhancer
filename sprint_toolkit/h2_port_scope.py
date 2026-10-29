@@ -86,12 +86,17 @@ def blank():
         import numpy as np
         w, h = SIZE
         yy, xx = np.mgrid[0:h, 0:w]
-        r = np.hypot(w - 0.5 - xx, h - 0.5 - yy)
         R, rw = float(DISC['radius']), float(DISC.get('rim_width', 3))
-        a = np.where(r <= R - rw, DISC['alpha'], 0.0)
+        # 'ry' (boot 3): the widget's `(scope) stretch` flag stretches the quarter to the SCREEN
+        # quarter, so a disc round on screen is an ellipse in the image (radius in x, ry in y)
+        ky = R / float(DISC.get('ry', R))
+        r = np.hypot(w - 0.5 - xx, (h - 0.5 - yy) * ky)
+        out = DISC.get('outside', 0.0)           # 'outside' (boot 3: 'not darkened outside the scope')
+        a = np.where(r <= R - rw, DISC['alpha'], out)
         a = np.where((r > R - rw) & (r <= R), DISC.get('rim', DISC['alpha']), a)
         edge = (r > R) & (r <= R + 1)                 # a one-pixel antialiased outer edge
-        a = np.where(edge, DISC.get('rim', DISC['alpha']) * (R + 1 - r), a)
+        rim = DISC.get('rim', DISC['alpha'])
+        a = np.where(edge, rim + (out - rim) * (r - R), a)
         px = np.zeros((h, w, 4), np.uint8)
         px[:, :, 3] = np.clip(a * 255.0, 0, 255).astype(np.uint8)
         img = Image.fromarray(px, 'RGBA')

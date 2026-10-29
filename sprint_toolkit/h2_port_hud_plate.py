@@ -44,15 +44,19 @@ TEMP = os.environ.get('TEMP', '.')
 REL = DONOR = OTHER = PORT = HUD = MODEL = NAME = None
 FALLBACK_BOX = None
 STRETCH = None
+ICON = None
+RAMP = None
 
 
 def setup(key):
-    global REL, DONOR, OTHER, PORT, HUD, MODEL, NAME, FALLBACK_BOX, STRETCH
+    global REL, DONOR, OTHER, PORT, HUD, MODEL, NAME, FALLBACK_BOX, STRETCH, ICON, RAMP
     h = ports_h2.get(key, 'hud_plate')
     REL, DONOR, OTHER, HUD, MODEL = h['rel'], h['donor'], h['other'], h['hud'], h['model_3p']
     NAME = h['name']
     PORT = B.join([REL, NAME])
     FALLBACK_BOX, STRETCH = tuple(h['fallback_box']), h['stretch']
+    ICON = h.get('icon_art')
+    RAMP = h.get('ramp')
 
 
 def export(tag, prefix):
@@ -96,6 +100,44 @@ def solidify(cov):
     return out
 
 
+def icon_mask(w, h):
+    """`icon_art` {'sheet': H3 chud bitmap, 'sprite': k, 'flip': bool} (the Spartan Laser, A2 boot 3:
+    'the HUD icon still has issues' -- a bulky gun rasterised 24 px tall reads as a soft blob): the
+    SOURCE game's own drawn HUD icon (Halo 3's weapon_scematics sprite) as the coverage, mirrored to
+    face right like Halo 2's symbols, fitted into the box keeping its aspect, centred; painted with the
+    plate's own ramp like any symbol."""
+    import h3_hud_art
+    img, sprites = h3_hud_art.decode(ICON['sheet'])
+    l, r, t, b = sprites[ICON['sprite']][:4]
+    W, H = img.size
+    art = img.crop((int(l * W), int(t * H), int(r * W), int(b * H)))
+    a = np.asarray(art)[:, :, 3]
+    ys, xs = np.nonzero(a > 8)
+    art = art.crop((xs.min(), ys.min(), xs.max() + 1, ys.max() + 1))
+    if ICON.get('flip', True):
+        art = art.transpose(Image.FLIP_LEFT_RIGHT)
+    # Halo 3's icon is an OUTLINE over a translucent body: filled solid (everything the outline
+    # encloses), as Bungie's Halo 2 symbols are solid shapes
+    from PIL import ImageDraw
+    m = Image.fromarray(((np.asarray(art)[:, :, 3] > 8) * 255).astype(np.uint8), 'L')
+    pad = Image.new('L', (m.width + 2, m.height + 2), 0)
+    pad.paste(m, (1, 1))
+    ImageDraw.floodfill(pad, (0, 0), 128)                  # the outside
+    solid = Image.fromarray(((np.asarray(pad) != 128) * 255).astype(np.uint8), 'L').crop(
+        (1, 1, m.width + 1, m.height + 1))
+    # the box's WIDTH, as every shipped symbol spans it; the height fitted into the box (a long icon
+    # is squashed a little rather than shrunk to a stub)
+    kx = w / float(art.width)
+    ky = min(h / float(art.height), kx)
+    aw, ah = max(1, int(round(art.width * kx))), max(1, int(round(art.height * ky)))
+    small = np.asarray(solid.resize((aw, ah), Image.LANCZOS)).astype(float) / 255.0
+    small = (small >= 0.5).astype(float)         # hard edges, as Bungie's symbols
+    cov = np.zeros((h, w))
+    ox, oy = (w - aw) // 2, (h - ah) // 2
+    cov[oy:oy + ah, ox:ox + aw] = small
+    return cov, cov
+
+
 def port_mask(w, h, ss=4):
     """The port drawn side on as coverage and shading, the way the shipped plates are.
 
@@ -111,6 +153,8 @@ def port_mask(w, h, ss=4):
 
     Returns (coverage 0..1, shade 0..1), both h x w.
     """
+    if ICON:
+        return icon_mask(w, h)
     import h3_weapon_glyph as wg
     verts, idx = wg.mesh(MODEL)
     W, H = w * ss, h * ss
@@ -224,7 +268,11 @@ def repaint(donor, box, mask):
             t = (x - x0 + 1) / (span + 1)
             out[y, x] = (left * (1 - t) + right * t).astype(np.int16)
 
-    top, bottom = symbol_ramp(donor, box)
+    # `ramp` ((top rgb), (bottom rgb)) in the config (the Spartan Laser, A2 boot 3): the symbol's ramp
+    # as measured on the donor's own symbol, where the box must also cover plate border pixels that
+    # symbol_ramp would take for ink
+    top, bottom = ((np.array(tuple(RAMP[0]) + (255,), float), np.array(tuple(RAMP[1]) + (255,), float)) if RAMP
+                   else symbol_ramp(donor, box))
     drawn = [y for y in range(y1 - y0) if cov[y].max() > 0]
     first, last = (drawn[0], drawn[-1]) if drawn else (0, y1 - y0 - 1)
     span = max(last - first, 1)
