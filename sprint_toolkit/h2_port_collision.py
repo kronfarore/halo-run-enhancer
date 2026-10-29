@@ -14,6 +14,11 @@ hull's own centre. The config's `collision` section:
     max_growth
     nodes_from_render  True: the hull takes the port's RENDER skeleton (influences remapped by
                       name, else node 0) -- the Spiker, whose own nodes are not the BR donor's
+    fit               True: the hull is FITTED to the port's render mesh -- each axis takes the raw
+                      render ratio (no [1.0, max_growth] clamp: it may shrink) and the hull's
+                      centre moves onto the port mesh's centre (the Gravity Hammer, 2026-10-29:
+                      Halo 3's hammer is 0.48-0.76x Bungie's H2 hammer per axis, whose origin
+                      sits at the shaft's foot, 34.5 units below Halo 3's grip origin)
 
     python h2_port_collision.py <key> [--factor 1.1] [--write]
 """
@@ -59,13 +64,17 @@ def measure(c):
     print('   half extents  port %s' % [round(x, 2) for x in a])
     print('                donor %s   ratio %s'
           % ([round(x, 2) for x in b], [round(x, 2) for x in ratio]))
+    if c.get('fit'):
+        return ratio
     return [max(1.0, min(c['max_growth'], r)) for r in ratio]
 
 
-def grow(model, factor, skeleton=None):
+def grow(model, factor, skeleton=None, centre=None):
     """skeleton: a render JMS whose nodes the hull takes instead of the donor's (influences
-    remapped by name, a node the render model lacks -> node 0) -- `nodes_from_render`."""
+    remapped by name, a node the render model lacks -> node 0) -- `nodes_from_render`.
+    centre: where the hull's centre goes (`fit`); None = it stays where it is."""
     _half, mid = extents(model)
+    dest = centre or mid
     out = h2_jms.Model()
     out.nodes = list(skeleton.nodes if skeleton else model.nodes)
     names = [n.name.lower() for n in out.nodes]
@@ -75,7 +84,7 @@ def grow(model, factor, skeleton=None):
     out.tris = list(model.tris)
     out.markers = list(model.markers)
     for v in model.verts:
-        pos = tuple(mid[k] + (v.pos[k] - mid[k]) * factor[k] for k in range(3))
+        pos = tuple(dest[k] + (v.pos[k] - mid[k]) * factor[k] for k in range(3))
         out.verts.append(h2_jms.Vertex(pos, v.normal, [(remap[n], w) for n, w in v.influences], v.uvs))
     return out
 
@@ -97,7 +106,9 @@ def main(argv=None):
     factor = [a.factor] * 3 if a.factor is not None else measure(c)
     skeleton = (h2_jms.read(os.path.join(DATA, c['port_render_jms'])) if c.get('nodes_from_render')
                 else None)
-    grown = grow(hull, factor, skeleton)
+    centre = (extents(h2_jms.read(os.path.join(DATA, c['port_render_jms'])))[1] if c.get('fit')
+              else None)
+    grown = grow(hull, factor, skeleton, centre)
     if skeleton:
         print('   nodes: the render model\'s %s (the donor\'s %s)'
               % ([n.name for n in grown.nodes], [n.name for n in hull.nodes]))

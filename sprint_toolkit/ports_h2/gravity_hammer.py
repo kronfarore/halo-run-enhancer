@@ -168,6 +168,10 @@ PORT = {
             (GH + r'\gravity_hammer_port.weapon', 'hlmt', BEAM + r'\beam_rifle', GH + r'\gravity_hammer_port', 'world model'),
             (GH + r'\gravity_hammer_port.model', 'mode', BEAM + r'\beam_rifle', GH + r'\gravity_hammer_port',
              'the world render model (it and the collision pool ONE path)', {'nth': 0}),
+            # the hull: step 5 builds the port's own from Bungie's H2 hammer (h2_port_collision
+            # repoints from ITS donor's path, but this .model is the beam rifle's -- so here)
+            (GH + r'\gravity_hammer_port.model', 'coll', BEAM + r'\beam_rifle', GH + r'\gravity_hammer_port',
+             'the collision model (step 5)'),
             (GH + r'\gravity_hammer_port.weapon', 'mode', BEAM + r'\fp_beam_rifle\fp_beam_rifle',
              GH + r'\fp_gravity_hammer_port\fp_gravity_hammer_port', 'first person model, Master Chief', {'nth': 0}),
             # the same path again (every=True refuses: a third record has that path's length -- the AR's)
@@ -287,6 +291,22 @@ PORT = {
             ('wielder shove', "Halo 1's +5 was tuned live by the user; the firing damage is the "
                               "sniper trigger's clone until boot 1"),
         ],
+    },
+    # step 5 -- h2_port_collision.py: Bungie's own HALO 2 HAMMER hull (Tartarus's: the same weapon's
+    # shape; extract-collision-data only READS his tag), scaled per axis to Halo 3's mesh, on the
+    # port's render skeleton (hammer, shaft)
+    'collision': {
+        'donor': r'objects\weapons\melee\gravity_hammer\gravity_hammer',
+        'port': GH + r'\gravity_hammer_port',
+        'src': r'gravity_hammer\collision\collision.jms',                # under data\!extracted
+        'out': GH + r'\collision\gravity_hammer_port.jms',               # under data
+        'port_render_jms': GH + r'\render\gravity_hammer_port.jms',
+        'donor_render_jms': r'gravity_hammer\render\L5 gravity_hammer.jms',
+        'max_growth': 1.25,
+        'nodes_from_render': True,
+        # Bungie's H2 hammer is BIGGER (render ratio 0.70 / 0.48 / 0.76) and its origin is at the
+        # shaft's foot (centre z 39.1 vs Halo 3's 4.6): fitted -- shrunk per axis + re-centred
+        'fit': True,
     },
     # 3P (step 4a, user): class 'melee' = the Brute graph's own hammer class (Armed Brutes hold it
     # natively); the player graphs had only 'sword' -> h2_graph_teach cloned it as 'melee'
