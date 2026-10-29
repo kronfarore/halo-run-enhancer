@@ -150,6 +150,18 @@ PORT = {
                    (r'effects\objects\weapons\rifle\shotgun\muzzle_flash.light', FX + r'\excavator_muzzle_flash.light'),
                    (r'effects\materials\objects\weapons\magnum.material_effects', FX + r'\excavator.material_effects'),
                    (r'effects\materials\objects\weapons\shotgun.material_effects', FX + r'\excavator_shard.material_effects')],
+        # BOOT 1 (user, 05b: 'the glowing lights slowly come online ... and then fade back out'): the
+        # seed (Tartarus's hammer shader) animates self_illum_color as a COSINE over 8 s through four
+        # colours (BGRA 77 3c 00 dark blue, black, black, ff c1 84 light blue) -- from dark. Halo 3's
+        # Mauler: self_illum_intensity periodic WANDER between 4 and 8 over 8 s (always lit, 50-100 %),
+        # its colour constant. Halo 2's function (type 3 periodic, byte 2 = the periodic shape, 10 =
+        # wander, as Halo 3's) -> wander, colour 0 half grey, 1-3 white: whichever pair it blends, the
+        # (already orange-tinted) mask reads 50-100 %. In the three lit shaders; the textures step
+        # RESEEDS them -- run this step after it
+        'byte_edits': [(MA + r'\shaders\%s.shader' % s,
+                        '03200200773c00000000000000000000ffc18400',
+                        '03200a0080808000ffffff00ffffff00ffffff00')
+                       for s in ('mauler', 'mauler_metal', 'mauler_shiny')],
         'wiring': [
             (MA + r'\excavator.weapon', 'hlmt', MAG + r'\magnum', MA + r'\excavator', 'world model'),
             (MA + r'\excavator.model', 'mode', r'objects\weapons\rifle\battle_rifle\battle_rifle',
@@ -220,9 +232,9 @@ PORT = {
             (MA + r'\excavator.weapon', 'minimum error', 'barrels', 0, 0, 4.0, {'anchor': ('projectiles per shot', -18)}),
             (MA + r'\excavator.weapon', 'error angle', 'barrels', 0, 0, [10.0, 12.0], {'anchor': ('projectiles per shot', -14)}),
             (MA + r'\excavator.weapon', 'dual wield damage scale', 'barrels', 0, 0, 0.7, {'anchor': ('projectiles per shot', -6)}),
-            # first-person placement: the AR's (Halo 3's own animations still need Halo 2's offset,
-            # A1 observation 4) -- check in game
-            (MA + r'\excavator.weapon', 'first person weapon offset', '', 0, 0, [-0.01, 0.0, -0.03]),
+            # first-person placement: the AR's -0.01, 0, -0.03 (A1 observation 4); boot 1 on 05b (user):
+            # '2 units down, 0.5 units to the right' (1 unit = 0.01 wu; +y is left)
+            (MA + r'\excavator.weapon', 'first person weapon offset', '', 0, 0, [-0.01, -0.005, -0.05]),
             # the pellet: 480 wu/s, range 8, falloff 2.5 -> 5 (to the lower bound)
             (MA + r'\projectiles\excavator_shard.projectile', 'initial velocity', '', 0, 0, 480.0),
             (MA + r'\projectiles\excavator_shard.projectile', 'final velocity', '', 0, 0, 480.0),
@@ -282,8 +294,9 @@ PORT = {
     # x2; it also carries the magnum's headshot / weak-spot crosshair widgets -- switched off in step
     # 4, the Flamethrower's rule), Halo 3's own five pips (chud excavator: ballistic_meters #13, a
     # 36 x 58 tab at a 65 px pitch -- Halo 1's A6) on the magnum meter's 198 x 28 canvas, 16 x 26 so
-    # the tabs fit its height; 5 = Halo 3's DEFAULT magazine (balanced 10: a pip per 2 rounds, Halo
-    # 1's A6 step), the plate's every image repainted, Halo 3's crosshair (hud_reticles #12)
+    # the tabs fit its height; TEN pips (boot 1, user: 'why 5 and not 10?' -- 5 was Halo 3's DEFAULT
+    # magazine; Balanced holds 10, a pip a round; Original's 5 rounds = 2 pips a round), the plate's
+    # every image repainted, Halo 3's crosshair (hud_reticles #12)
     'meter': {
         'donor_meter': NEW_HUD + r'\meters\magnum_meter',
         'rel': NEW_HUD + r'\meters',
@@ -291,7 +304,7 @@ PORT = {
         'donor_hud': r'ui\hud\magnum',
         'port_hud': r'ui\hud\brute_mauler',
         'weapon': MA + r'\excavator.weapon',
-        'rounds': 5, 'rows': 1,
+        'rounds': 10, 'rows': 1,
         'canvas': (198, 28), 'tick_w': 16,
         'tick_art': {'h3': ('ballistic_meters', 13), 'h': 26},
         'backpack': NEW_HUD + r'\backpack_weapons',
@@ -328,7 +341,9 @@ PORT = {
     # body, Bungie's 160 x 62), and the messages (the magnum's mp_* -> mau2_*: a longer prefix, the
     # dual lines included; 'a Magnum' -> 'a Mauler')
     'glyph': {
-        'box': (160, 62),
+        # boot 1 (user: 'a lot of free space in the icon from the text'): the Mauler is short and tall,
+        # so at Bungie's 62 px height its ink spans 76 of the 160 px advance -- the box hugs it
+        'box': (84, 62),
         'model_3p': H3_RM_XML,
         'tif': 'mauler_h2_glyph.tif',
         'colour': (255, 255, 255),
