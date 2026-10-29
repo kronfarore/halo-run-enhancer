@@ -10252,6 +10252,228 @@
     }
    ],
    "fp_animations": "objects\\characters\\*\\fp\\weapons\\support_high\\fp_spartan_laser\\fp_spartan_laser"
+  },
+  {
+   "weapon": "Gravity Hammer",
+   "source": "Halo 3",
+   "donor": "Energy Blade",
+   "default_on": true,
+   "desc": "Halo 3's Gravity Hammer carried into Halo 2 as a player weapon with its own model, textures, sounds and its own Halo 3 first-person animations for both species: fire slams the head down (150) into a blast (up to 160 over 1.5 wu), 20 slams a charge; melee jabs with the pommel (80). Tartarus's own hammer is untouched.",
+   "balance": [
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\gravity_hammer_port",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 12.0,
+     "card": "Magnetism",
+     "original": 9.99999970909292,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\gravity_hammer_port",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 8.0,
+     "card": "Magnetism",
+     "original": 6.0,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\gravity_hammer_port",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 6.0,
+     "card": "Autoaim",
+     "original": 9.99999970909292
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\gravity_hammer_port",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 4.2,
+     "card": "Autoaim",
+     "original": 1.75
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\gravity_hammer_port",
+     "field": "Damage Pyramid Angles y",
+     "block": null,
+     "value": 11.459156,
+     "card": "Melee Seeking Angles",
+     "original": 11.459156073371194
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\gravity_hammer_port",
+     "field": "Damage Pyramid Angles p",
+     "block": null,
+     "value": 11.459156,
+     "card": "Melee Seeking Angles",
+     "original": 11.459156073371194
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\gravity_hammer_port",
+     "field": "Damage Pyramid Depth",
+     "block": null,
+     "value": 0.8,
+     "card": "Melee Seeking Depth",
+     "original": 0.800000011920929
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\gravity_hammer_port",
+     "field": "Magnification Levels",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\gravity_hammer_port",
+     "field": "Magnification Range",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\gravity_hammer_port",
+     "field": "Magnification Range Max",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_slam",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 150.0,
+     "card": "Hammer Damage",
+     "original": 150.0,
+     "note": "Halo 3's own (step 4a, user: the sword's lunge ratio x1.0)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_slam",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 150.0,
+     "card": "Hammer Damage",
+     "original": 150.0,
+     "note": "Halo 3's own (step 4a, user: the sword's lunge ratio x1.0)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_slam",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 150.0,
+     "card": "Hammer Damage",
+     "original": 150.0,
+     "note": "Halo 3's own (step 4a, user: the sword's lunge ratio x1.0)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_explosion",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 50.0,
+     "card": "Hammer Damage",
+     "original": 50.0,
+     "note": "Halo 3's own (step 4a, user: the sword's lunge ratio x1.0)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_explosion",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 160.0,
+     "card": "Hammer Damage",
+     "original": 160.0,
+     "note": "Halo 3's own (step 4a, user: the sword's lunge ratio x1.0)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_explosion",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 160.0,
+     "card": "Hammer Damage",
+     "original": 160.0,
+     "note": "Halo 3's own (step 4a, user: the sword's lunge ratio x1.0)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_melee",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 80.0,
+     "card": "Melee Damage",
+     "original": 80.0,
+     "note": "Halo 3's own (step 4a, user: the sword's lunge ratio x1.0)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_melee",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 80.0,
+     "card": "Melee Damage",
+     "original": 80.0,
+     "note": "Halo 3's own (step 4a, user: the sword's lunge ratio x1.0)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_melee",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 80.0,
+     "card": "Melee Damage",
+     "original": 80.0,
+     "note": "Halo 3's own (step 4a, user: the sword's lunge ratio x1.0)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_explosion",
+     "field": "Radius",
+     "block": null,
+     "value": 0.75,
+     "card": "Hammer Radius",
+     "original": 0.75,
+     "note": "Halo 3's own (step 4a)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_explosion",
+     "field": "Radius Max",
+     "block": null,
+     "value": 1.5,
+     "card": "Hammer Radius",
+     "original": 1.5,
+     "note": "Halo 3's own (step 4a)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\melee\\gravity_hammer_port\\gravity_hammer_port",
+     "field": "Age Generated Per Round",
+     "block": "Barrels",
+     "value": 0.05,
+     "card": "Energy Use",
+     "original": 0.05,
+     "note": "Halo 3's campaign external aging a swing, on the barrel (step 4a: the trigger route)"
+    }
+   ],
+   "fp_animations": "objects\\characters\\*\\fp\\weapons\\melee\\fp_gravity_hammer_port\\fp_gravity_hammer_port"
   }
  ],
  "Halo 3: ODST": [

@@ -1,0 +1,396 @@
+{
+ "ported": "Gravity Hammer",
+ "source": "Halo 3",
+ "target": "Halo 2",
+ "donor": "Energy Blade",
+ "hops": [
+  [
+   "Energy Blade",
+   "Energy Blade",
+   "Halo 3",
+   "Halo 2"
+  ]
+ ],
+ "rows": [
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Angle",
+   "dst_field": "Magnetism Angle",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\melee\\energy_blade\\energy_blade",
+   "dst_nth": 1,
+   "dst_index": 0,
+   "ported_src": 9.99999970909292,
+   "donor_dst": 12.000000333930423,
+   "legs": [
+    {
+     "donor": "Energy Blade",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Magnetism Angle",
+     "value_from": 9.99999970909292,
+     "field_to": "Magnetism Angle",
+     "value_to": 12.000000333930423
+    }
+   ],
+   "donor_src": 9.99999970909292,
+   "original": 9.99999970909292,
+   "ratio": 1.2000000683018939,
+   "balanced": 12.000000333930423
+  },
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Range",
+   "dst_field": "Magnetism Range",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\melee\\energy_blade\\energy_blade",
+   "dst_nth": 1,
+   "dst_index": 0,
+   "ported_src": 6.0,
+   "donor_dst": 8.0,
+   "legs": [
+    {
+     "donor": "Energy Blade",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Magnetism Range",
+     "value_from": 6.0,
+     "field_to": "Magnetism Range",
+     "value_to": 8.0
+    }
+   ],
+   "donor_src": 6.0,
+   "original": 6.0,
+   "ratio": 1.3333333333333333,
+   "balanced": 8.0
+  },
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Falloff Range",
+   "note": "Energy Blade card has no target in Halo 2"
+  },
+  {
+   "card": "Autoaim",
+   "field": "Autoaim Angle",
+   "dst_field": "Autoaim Angle",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\melee\\energy_blade\\energy_blade",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 9.99999970909292,
+   "donor_dst": 6.000000166965211,
+   "legs": [
+    {
+     "donor": "Energy Blade",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Autoaim Angle",
+     "value_from": 9.99999970909292,
+     "field_to": "Autoaim Angle",
+     "value_to": 6.000000166965211
+    }
+   ],
+   "donor_src": 9.99999970909292,
+   "original": 9.99999970909292,
+   "ratio": 0.6000000341509469,
+   "balanced": 6.000000166965211
+  },
+  {
+   "card": "Autoaim",
+   "field": "Autoaim Range",
+   "dst_field": "Autoaim Range",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\melee\\energy_blade\\energy_blade",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 1.75,
+   "donor_dst": 6.0,
+   "legs": [
+    {
+     "donor": "Energy Blade",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Autoaim Range",
+     "value_from": 2.5,
+     "field_to": "Autoaim Range",
+     "value_to": 6.0
+    }
+   ],
+   "donor_src": 2.5,
+   "original": 1.75,
+   "ratio": 2.4,
+   "balanced": 4.2
+  },
+  {
+   "card": "Autoaim",
+   "field": "Autoaim Falloff Range",
+   "note": "Energy Blade card has no target in Halo 2"
+  },
+  {
+   "card": "Weapon Swap Speed",
+   "field": "Ready / Put Away Animation",
+   "dst_field": "Ready / Put Away Animation",
+   "dst_block": null,
+   "dst_class": "jmad",
+   "dst_tag": "*fp_energy_blade*",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": null,
+   "donor_dst": null,
+   "legs": [
+    {
+     "donor": "Energy Blade",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Ready / Put Away Animation",
+     "value_from": null,
+     "field_to": "Ready / Put Away Animation",
+     "value_to": null
+    }
+   ],
+   "donor_src": null
+  },
+  {
+   "card": "Melee Seeking Angles",
+   "field": "Damage Pyramid Angles y",
+   "dst_field": "Damage Pyramid Angles y",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\melee\\energy_blade\\energy_blade",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 11.459156073371194,
+   "donor_dst": 24.04571512397574,
+   "legs": [
+    {
+     "donor": "Energy Blade",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Damage Pyramid Angles y",
+     "value_from": 24.04571512397574,
+     "field_to": "Damage Pyramid Angles y",
+     "value_to": 24.04571512397574
+    }
+   ],
+   "donor_src": 24.04571512397574,
+   "original": 11.459156073371194,
+   "ratio": 1.0,
+   "balanced": 11.459156073371194
+  },
+  {
+   "card": "Melee Seeking Angles",
+   "field": "Damage Pyramid Angles p",
+   "dst_field": "Damage Pyramid Angles p",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\melee\\energy_blade\\energy_blade",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 11.459156073371194,
+   "donor_dst": 13.817121789967185,
+   "legs": [
+    {
+     "donor": "Energy Blade",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Damage Pyramid Angles p",
+     "value_from": 13.817121789967185,
+     "field_to": "Damage Pyramid Angles p",
+     "value_to": 13.817121789967185
+    }
+   ],
+   "donor_src": 13.817121789967185,
+   "original": 11.459156073371194,
+   "ratio": 1.0,
+   "balanced": 11.459156073371194
+  },
+  {
+   "card": "Melee Seeking Depth",
+   "field": "Damage Pyramid Depth",
+   "dst_field": "Damage Pyramid Depth",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\melee\\energy_blade\\energy_blade",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.800000011920929,
+   "donor_dst": 0.8999999761581421,
+   "legs": [
+    {
+     "donor": "Energy Blade",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Damage Pyramid Depth",
+     "value_from": 0.8999999761581421,
+     "field_to": "Damage Pyramid Depth",
+     "value_to": 0.8999999761581421
+    }
+   ],
+   "donor_src": 0.8999999761581421,
+   "original": 0.800000011920929,
+   "ratio": 1.0,
+   "balanced": 0.800000011920929
+  },
+  {
+   "card": "Zoom",
+   "field": "Magnification Levels",
+   "dst_field": "Magnification Levels",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\melee\\energy_blade\\energy_blade",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0,
+   "donor_dst": 0,
+   "legs": [
+    {
+     "donor": "Energy Blade",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Magnification Levels",
+     "value_from": 0,
+     "field_to": "Magnification Levels",
+     "value_to": 0
+    }
+   ],
+   "donor_src": 0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Zoom",
+   "field": "Magnification Range",
+   "dst_field": "Magnification Range",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\melee\\energy_blade\\energy_blade",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Energy Blade",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Magnification Range",
+     "value_from": 0.0,
+     "field_to": "Magnification Range",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Zoom",
+   "field": "Magnification Range Max",
+   "dst_field": "Magnification Range Max",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\melee\\energy_blade\\energy_blade",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Energy Blade",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Magnification Range Max",
+     "value_from": 0.0,
+     "field_to": "Magnification Range Max",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Zoom Time",
+   "field": "Weapon Zoom Time",
+   "note": "Energy Blade card has no target in Halo 2"
+  },
+  {
+   "card": "Hammer Damage",
+   "field": "Damage Lower Bound",
+   "note": "Energy Blade has no Damage Lower Bound target in Halo 3"
+  },
+  {
+   "card": "Hammer Damage",
+   "field": "Damage Upper Bound",
+   "note": "Energy Blade has no Damage Upper Bound target in Halo 3"
+  },
+  {
+   "card": "Hammer Damage",
+   "field": "Damage Upper Bound Max",
+   "note": "Energy Blade has no Damage Upper Bound Max target in Halo 3"
+  },
+  {
+   "card": "Melee Damage",
+   "field": "Damage Lower Bound",
+   "note": "Energy Blade has no Damage Lower Bound target in Halo 3"
+  },
+  {
+   "card": "Melee Damage",
+   "field": "Damage Upper Bound",
+   "note": "Energy Blade has no Damage Upper Bound target in Halo 3"
+  },
+  {
+   "card": "Melee Damage",
+   "field": "Damage Upper Bound Max",
+   "note": "Energy Blade has no Damage Upper Bound Max target in Halo 3"
+  },
+  {
+   "card": "Hammer Radius",
+   "field": "Radius",
+   "note": "Energy Blade has no Radius target in Halo 3"
+  },
+  {
+   "card": "Hammer Radius",
+   "field": "Radius Max",
+   "note": "Energy Blade has no Radius Max target in Halo 3"
+  },
+  {
+   "card": "Energy Use",
+   "field": "Campaign External Aging Amount",
+   "note": "Energy Blade has no Campaign External Aging Amount target in Halo 3"
+  },
+  {
+   "card": "Energy Use",
+   "field": "External Aging Amount",
+   "dst_field": "Energy Per Kill (live)",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\melee\\energy_blade\\energy_blade",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.08349999785423279,
+   "donor_dst": null,
+   "legs": [
+    {
+     "donor": "Energy Blade",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Energy Per Kill (live)",
+     "value_from": null,
+     "field_to": "Energy Per Kill (live)",
+     "value_to": null
+    }
+   ],
+   "donor_src": null,
+   "original": 0.08349999785423279,
+   "ratio": null
+  }
+ ]
+}

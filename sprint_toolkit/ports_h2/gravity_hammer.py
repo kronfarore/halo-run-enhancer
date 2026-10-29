@@ -263,6 +263,11 @@ PORT = {
             (GH + r'\gravity_hammer_port.weapon', 'autoaim range', '', 0, 0, 4.2),
             (GH + r'\gravity_hammer_port.weapon', 'magnetism angle', '', 0, 1, 12.0),
             (GH + r'\gravity_hammer_port.weapon', 'magnetism range', '', 0, 1, 8.0),
+            # the melee pyramid: Halo 3's own, as the Melee Seeking cards read it (balance_port: 0.2 rad
+            # = 11.46 deg both ways, depth 0.8; the export prints the weapon's top-level 0 / 0). The
+            # ANGLES are a 'real euler angles 2d' h2_tagfield does not write: the Balanced catalog row
+            # sets them; the unbalanced build keeps the beam rifle's 20 x 10
+            (GH + r'\gravity_hammer_port.weapon', 'damage pyramid depth', '', 0, 0, 0.8),
             # THE STRIKE: an invisible shell that bursts 0.2 s out (the slam's head-down moment, Halo
             # 1's A9) at 6 wu/s = 1.2 wu, or on whatever it touches first -- every material detonates
             # (the SMG bullet's overpenetrate / fizzle / bounce responses all made 'impact (detonate)')
@@ -311,8 +316,6 @@ PORT = {
             (GH + r'\damage_effects\gravity_hammer_port_melee.damage_effect', 'damage upper bound', '', 0, 0, [80.0, 80.0]),
         ],
         'skipped': [
-            ('damage pyramid', "Halo 3's hammer has 0 / 0 (the globals' default); the beam rifle's "
-                               "20 x 10 / 0.6 kept -- 4b decides"),
             ('wielder shove', "Halo 1's +5 was tuned live by the user; the firing damage is the "
                               "sniper trigger's clone until boot 1"),
         ],
@@ -497,8 +500,9 @@ PORT = {
                 "the sword's STRIKE ratio -- step 4a chose the LUNGE ratio x1.0 (user): Halo 3's own 80 / 1 / 1.2 / 0.25",
             'blast list 2: instantaneous acceleration 2.33': "the same: Halo 3's own 3.5 (step 4a)",
             'weapon list 2: bounding radius / acceleration scale / damage pyramid = 0':
-                "Halo 3's hammer leaves them 0 (the engine's defaults); no ratio from a zero -- the beam "
-                "rifle's 0.4125 / 1 / 20 x 10 at 0.6 kept (the pyramid only shapes the melee-button jab)",
+                "Halo 3's hammer leaves the TOP-LEVEL fields 0; no ratio from a zero -- the beam rifle's "
+                "bounding radius 0.4125 / acceleration scale 1 kept; the pyramid = Halo 3's own from its melee "
+                "parameters (11.46 x 11.46 at 0.8, read by the Melee Seeking cards; numbers + catalog)",
             'weapon list 4 / 5: overheated heat loss 0.3, camo ding 1, collision damage scale 8, AI scariness 6':
                 "the beam rifle's -> the sword's 0 / 0 / 0 / 16 (numbers)",
             'first person weapon offset': "the beam rifle's 0.02, 0, 0 until boot 1",
@@ -513,6 +517,39 @@ PORT = {
             'external / campaign external aging': "no Halo 2 field: the barrel's age per round 0.05 (step 4a)",
             'weapon type / tracking type / melee damage reporting type': "Halo 2's enums kept (kill feed only)",
         }},
+    # make_port_catalog_h2.py gravity_hammer: balance_port.py "Gravity Hammer" "Energy Blade" "Halo 3"
+    # "Halo 2" gives the AIM rows (the sword's ratio: magnetism 12 / 8, autoaim 6 / 4.2) and the melee
+    # pyramid (Halo 3's 11.46 x 11.46 at 0.8, x1) on the sword's tag -> redirected onto the port's.
+    # The sword has no damage / radius / energy cards to measure through: those rows are Halo 3's own
+    # (step 4a, user: the LUNGE ratio x1.0 -- slam 150, jab 80, blast 50..160 over 0.75-1.5, 0.05 a
+    # swing), given whole (extra_rows)
+    'catalog': {
+        'table': 'balance_Gravity_Hammer_Halo3_to_Halo2.json',
+        'weapon_tag': GH + r'\gravity_hammer_port',
+        'port_tags': [(('weap', BLADE + r'\energy_blade'), GH + r'\gravity_hammer_port')],
+        'shared': [],
+        'extra_rows': ([{'class': 'jpt!', 'tag': GH + r'\damage_effects\gravity_hammer_port_%s' % tag,
+                         'field': field, 'block': None, 'value': value, 'card': card, 'original': value,
+                         'note': "Halo 3's own (step 4a, user: the sword's lunge ratio x1.0)"}
+                        for tag, card, lo, hi in (('slam', 'Hammer Damage', 150.0, 150.0),
+                                                  ('explosion', 'Hammer Damage', 50.0, 160.0),
+                                                  ('melee', 'Melee Damage', 80.0, 80.0))
+                        for field, value in (('Damage Lower Bound', lo), ('Damage Upper Bound', hi),
+                                             ('Damage Upper Bound Max', hi))]
+                       + [{'class': 'jpt!', 'tag': GH + r'\damage_effects\gravity_hammer_port_explosion',
+                           'field': field, 'block': None, 'value': value, 'card': 'Hammer Radius',
+                           'original': value, 'note': "Halo 3's own (step 4a)"}
+                          for field, value in (('Radius', 0.75), ('Radius Max', 1.5))]
+                       + [{'class': 'weap', 'tag': GH + r'\gravity_hammer_port', 'field': 'Age Generated Per Round',
+                           'block': 'Barrels', 'value': 0.05, 'card': 'Energy Use', 'original': 0.05,
+                           'note': "Halo 3's campaign external aging a swing, on the barrel (step 4a: the trigger route)"}]),
+        'fp_animations': r'objects\characters\*\fp\weapons\melee\fp_gravity_hammer_port\fp_gravity_hammer_port',
+        'reload_mult': None,
+        'desc': ("Halo 3's Gravity Hammer carried into Halo 2 as a player weapon with its own model, textures, "
+                 "sounds and its own Halo 3 first-person animations for both species: fire slams the head down "
+                 "(150) into a blast (up to 160 over 1.5 wu), 20 slams a charge; melee jabs with the pommel (80). "
+                 "Tartarus's own hammer is untouched."),
+    },
     # 3P (step 4a, user): class 'melee' = the Brute graph's own hammer class (Armed Brutes hold it
     # natively); the player graphs had only 'sword' -> h2_graph_teach cloned it as 'melee'
     # (2026-10-28, under the H2 kit lock): masterchief 5 modes (combat, crouch, spectre_p_l / _r,
