@@ -215,6 +215,11 @@ PORT = {
              FX + r'\gravity_hammer_port', 'material effects (the weapon)'),
             (GH + r'\gravity_hammer_port.weapon', 'nhdt', r'ui\hud\beam_rifle', r'ui\hud\gravity_hammer', 'its own HUD (step 7, plasma_sword clone)'),
         ],
+        # the 3P label (step 4a): class 'melee' (the Brute graph's hammer class, taught to the
+        # masterchief / dervish graphs), type 'gh' = Bungie's Halo 2 hammer's own weapon name (no
+        # graph holds a 'gh' type: every class falls back to its 'any' set)
+        'string_ids': {'rifle': 'melee', 'csr': 'gh'},
+        'string_ids_done': ('weapon name', 'gh'),
         'shared': [(r'objects\weapons\damage_effects\*_melee_response', "Bungie's 0-damage responses"),
                    (r'the particles inside gravity_hammer_port_impact', "Tartarus's (Halo 2's hammer look; Halo 3 particles do not port)"),
                    (r'objects\characters\brute\*, tartarus_hammer_*', 'TARTARUS: never written (the 08b boss)')],
@@ -250,9 +255,12 @@ PORT = {
             (GH + r'\projectiles\gravity_hammer_port_strike.projectile', 'final velocity', '', 0, 0, 6.0),
             # the AI judges reach by the maximum range (Halo 1's A9 trap 3); the timer still bursts it
             (GH + r'\projectiles\gravity_hammer_port_strike.projectile', 'maximum range', '', 0, 0, 5.0),
-            (GH + r'\projectiles\gravity_hammer_port_strike.projectile', 'air gravity scale', '', 0, 0, 0.0),
+            # (air gravity scale: the SMG bullet's is 0 already.) The TIMER read 0,0 -- a zero field
+            # cannot be found by value: its per-tag cache entry was SEEDED from `maximum range`
+            # (0x1F8 - minimum velocity 4 - the bounds 8 = 0x1EC) and proven by a test write that
+            # moved only the timer row (2026-10-29)
         ] + [(GH + r'\projectiles\gravity_hammer_port_strike.projectile', 'response', 'material responses', k, n, 0)
-             for k in range(1, 10) for n in (0, 1)] + [
+             for k, n in [(k, 0) for k in range(1, 10)] + [(3, 1), (4, 1), (6, 1)]] + [   # the other second responses already detonate
             # THE SLAM (impact damage + melee lunge): Halo 3's crush_melee 150, accel 1.5, radius 0
             (GH + r'\damage_effects\gravity_hammer_port_slam.damage_effect', 'radius', '', 0, 0, [0.0, 0.0]),
             (GH + r'\damage_effects\gravity_hammer_port_slam.damage_effect', 'damage lower bound', '', 0, 0, 150.0),
