@@ -156,6 +156,8 @@ def render_h3_bank(c):
             if not subs:
                 raise SystemExit('%s: no %s in Halo 3\'s bank' % (name, f))
             sets.append([tone.resample(*P.decode(s), 48000) for s in subs])
+        if not folders:
+            sets = [[np.zeros(int(0.05 * 48000))]]    # no folder: a short silence (the Spartan Laser's vent loop)
         d = os.path.join(AUDIO, name)
         shutil.rmtree(d, ignore_errors=True)
         os.makedirs(d)

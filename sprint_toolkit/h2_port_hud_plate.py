@@ -107,6 +107,8 @@ def icon_mask(w, h):
     face right like Halo 2's symbols, fitted into the box keeping its aspect, centred; painted with the
     plate's own ramp like any symbol."""
     import h3_hud_art
+    top = ICON.get('top', 0)       # rows of the box left free above the drawing
+    h -= top
     img, sprites = h3_hud_art.decode(ICON['sheet'])
     l, r, t, b = sprites[ICON['sprite']][:4]
     W, H = img.size
@@ -132,8 +134,8 @@ def icon_mask(w, h):
     aw, ah = max(1, int(round(art.width * kx))), max(1, int(round(art.height * ky)))
     small = np.asarray(solid.resize((aw, ah), Image.LANCZOS)).astype(float) / 255.0
     small = (small >= 0.5).astype(float)         # hard edges, as Bungie's symbols
-    cov = np.zeros((h, w))
-    ox, oy = (w - aw) // 2, (h - ah) // 2
+    cov = np.zeros((h + top, w))
+    ox, oy = (w - aw) // 2, top + (h - ah) // 2
     cov[oy:oy + ah, ox:ox + aw] = small
     return cov, cov
 
