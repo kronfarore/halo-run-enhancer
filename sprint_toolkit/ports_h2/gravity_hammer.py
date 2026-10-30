@@ -769,6 +769,12 @@ def _anim_block(d, names):
             end = d.find(names[i + 1].encode('latin-1'), blob_end)
             if end < 0 or end - blob_end > 1 << 20:
                 raise ValueError('%s: next name not found' % name)
+        elif first is None:
+            # the last element, no events (the Flood's): the blob's 'sdpa' descriptor, then the next
+            # root field (not necessarily a chunk)
+            if d[blob_end:blob_end + 4] != b'sdpa':
+                raise ValueError('%s: no descriptor after the blob' % name)
+            end = blob_end + 16
         else:
             end = _chunks(d, e, first, blob_end)['end']
         out.append((name, e, p, end, first))
