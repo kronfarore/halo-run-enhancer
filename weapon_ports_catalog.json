@@ -10467,7 +10467,11 @@
      "note": "derived from Rounds Inventory Maximum + Rounds Loaded Maximum"
     }
    ],
-   "fp_animations": "objects\\characters\\*\\fp\\weapons\\pistol\\fp_excavator\\fp_excavator"
+   "fp_animations": "objects\\characters\\*\\fp\\weapons\\pistol\\fp_excavator\\fp_excavator",
+   "tag_map": {
+    "jpt! objects\\weapons\\damage_effects\\strike_melee": "jpt! objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_melee",
+    "jpt! objects\\weapons\\damage_effects\\smash_melee": "jpt! objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_melee"
+   }
   },
   {
    "weapon": "Spartan Laser",
