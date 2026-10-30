@@ -174,6 +174,13 @@ PORT = {
                    (r'effects\generic_lights\overcharge.light', FX + r'\sl_charge.light'),
                    (r'effects\generic_lights\overcharge_fp.light', FX + r'\sl_charge_fp.light'),
                    (r'effects\lens_flares\plasma_pistol.lens_flare', FX + r'\sl_charge.lens_flare'),
+                   # the vent's sound: Halo 3's overheat is a 3-6 s ONE-SHOT, longer than the 2.25 s vent ->
+                   # a part of the vent effect (see wiring); the beam rifle's looping attachment -> an own, silent loop
+                   (r'sound\weapons\beam_rifle\beam_rifle_overheat\beam_rifle_overheat.sound_looping', FX + r'\sl_vent_loop.sound_looping'),
+                   # boot 5 (user: 'the charge light is still white'): each overcharge LIGHT names its own lens
+                   # flare (the plasma pistol's overcharge / overcharge_fp, colour white): own red clones
+                   (r'effects\objects\weapons\pistol\plasma_pistol\overcharge.lens_flare', FX + r'\sl_light_flare.lens_flare'),
+                   (r'effects\objects\weapons\pistol\plasma_pistol\overcharge_fp.lens_flare', FX + r'\sl_light_flare_fp.lens_flare'),
                    # BOOT 3 (user): 'a very small impact effect -- scale to original size and colour': the
                    # beam rifle's plasma impact (material effects) stays; Halo 3's laser impact is a burst,
                    # gas, smoke, sparks and a scorch -> the BRUTE SHOT grenade's detonation (fiery burst,
@@ -229,6 +236,16 @@ PORT = {
             # (boot 2's trigger `charging effect` -- the Scarab's, filled at `behavior` +42 with
             # record_from -- is gone: a one-shot effect plays whole however short the press)
             # the charge loop's tracks: Halo 3's charging in + loop (step 10); its remastered twin -> itself
+            (SL + r'\spartan_laser.weapon', 'lsnd', r'sound\weapons\beam_rifle\beam_rifle_overheat\beam_rifle_overheat', FX + r'\sl_vent_loop', 'the vent loop attachment'),
+            (FX + r'\sl_vent_loop.sound_looping', 'snd!', r'sound\weapons\beam_rifle\beam_rifle_overheat\beam_rifle_overheat\in', r'sound\weapons\spartan_laser_port\sl_silence', 'vent loop: silent'),
+            (FX + r'\sl_vent_loop.sound_looping', 'snd!', r'sound\weapons\beam_rifle\beam_rifle_overheat\beam_rifle_overheat\loop', r'sound\weapons\spartan_laser_port\sl_silence', 'vent loop: silent'),
+            (FX + r'\sl_vent_loop.sound_looping', 'snd!', r'sound\weapons\beam_rifle\beam_rifle_overheat\beam_rifle_overheat\out', r'sound\weapons\spartan_laser_port\sl_silence', 'vent loop: silent'),
+            (FX + r'\sl_vent_loop.sound_looping', 'lsnd', r'sound_remastered\weapons\beam_rifle\beam_rifle_overheat\beam_rifle_overheat', FX + r'\sl_vent_loop', 'its remastered twin: itself'),
+            # the vent effect's purple flare part -> Halo 3's overheat sound
+            (FX + r'\overheated.effect', 'lens', r'effects\objects\weapons\rifle\beam_rifle\vent', r'effects\objects\weapons\rifle\beam_rifle\vent', 'the vent part: made a sound', {'class': 'snd!'}),
+            (FX + r'\overheated.effect', 'snd!', r'effects\objects\weapons\rifle\beam_rifle\vent', r'sound\weapons\spartan_laser_port\sl_overheat', "Halo 3's overheat, one-shot"),
+            (FX + r'\sl_charge.light', 'lens', r'effects\objects\weapons\pistol\plasma_pistol\overcharge', FX + r'\sl_light_flare', "the light's own flare"),
+            (FX + r'\sl_charge_fp.light', 'lens', r'effects\objects\weapons\pistol\plasma_pistol\overcharge_fp', FX + r'\sl_light_flare_fp', "the FP light's own flare"),
             (FX + r'\sl_charging.sound_looping', 'snd!', r'sound\weapons\plasma_pistol\startcharge',
              r'sound\weapons\spartan_laser_port\sl_charge', "the charge loop's start: Halo 3's charging in"),
             (FX + r'\sl_charging.sound_looping', 'snd!', r'sound\weapons\plasma_pistol\charge',
@@ -449,6 +466,11 @@ PORT = {
             # BOOT 4 (user): 'the charge light is still white' -- both lights are red; the white is the muzzle
             # LENS FLARE: a reflection without 'ignore light color' (bit 4) takes no colour of its own
             (FX + r'\sl_charge.lens_flare', 'flags', 'reflections', 0, 0, 16, {'anchor': ('bitmap index', -4)}),
+            # boot 5: the lights' own flares (colour 1, 1, 1), red, 'ignore light color' added (flags 4 / 12)
+            (FX + r'\sl_light_flare.lens_flare', 'color', 'reflections', 0, 0, [1.0, 0.15, 0.1]),
+            (FX + r'\sl_light_flare.lens_flare', 'flags', 'reflections', 0, 0, 20),
+            (FX + r'\sl_light_flare_fp.lens_flare', 'color', 'reflections', 0, 0, [1.0, 0.15, 0.1]),
+            (FX + r'\sl_light_flare_fp.lens_flare', 'flags', 'reflections', 0, 0, 28),
             # the scorch (boot 4; Halo 3: glow 0.115 for 2.25 s, scorch 0.125-0.2 for 15-20 s; 'too small'
             # with the beam rifle's 0.2 -> larger): a laser-red glow, then a black blast scorch
             (FX + r'\sl_glow.decal', 'radius', '', 0, 0, [0.25, 0.25]),
@@ -539,11 +561,14 @@ PORT = {
         # blue drawing over the whole box. Bungie's symbol spans rows 11-31 (green 196 -> 9 over blue ~225)
         # boot 4 (user's screenshot: 'there is a line that shouldn't be there'): x1 202 sampled the plate's
         # chamfered corner border (rows 7-9) as the background and smeared it across the row: x1 196
-        'fallback_box': (80, 196, 7, 33),     # the whole beam rifle symbol, right of the plate's divider
+        # boot 5 (user's screenshot: 'still a small line'): the beam rifle symbol's fin at rows 2-6, above
+        # the box: the box from row 2 (the ramp is pinned, so its border pixels no longer matter)...
+        'fallback_box': (80, 196, 2, 33),
         # boot 3 (user's screenshot: 'the HUD icon still has issues' -- the mesh silhouette at 24 px reads
         # as a soft blob): Halo 3's OWN HUD icon of the laser (chud weapon_scematics sprite 14, Bungie's
         # drawing) as the shape, mirrored to face right like Halo 2's symbols
-        'icon_art': {'sheet': r'ui\chud\bitmaps\weapon_scematics.bitmap', 'sprite': 14, 'flip': True},
+        'icon_art': {'sheet': r'ui\chud\bitmaps\weapon_scematics.bitmap', 'sprite': 14, 'flip': True,
+                     'top': 6},    # ...the drawing kept 6 rows lower, where it sat (rows 8-33)
         # the symbol's ramp as measured on Bungie's beam rifle symbol (rows 11 -> 31): the widened box
         # also covers plate border pixels symbol_ramp would read as ink (a dull, dark drawing)
         'ramp': ((0, 196, 223), (0, 9, 209)),
@@ -623,7 +648,9 @@ PORT = {
                     # the charge: Halo 3's charging sound_looping, `in` + `loop` -> the tracks of the laser's
                     # own charge loop (FX sl_charging, cloned from the plasma pistol's; 'fade out at stop')
                     'sl_charge': [H3SND + r'\spartan_laser\charging\charging\in'],
-                    'sl_charge_loop': [H3SND + r'\spartan_laser\charging\charging\loop']},
+                    'sl_charge_loop': [H3SND + r'\spartan_laser\charging\charging\loop'],
+                    'sl_impact': [H3SND + r'\spartan_laser\spartan_laser_impacts'],
+                    'sl_silence': []},        # 50 ms: the emptied vent loop's tracks
         'sounds': {'sl_fire': ('sl_fire', 'weapon_fire'), 'sl_fire_lod': ('sl_fire_lod', 'weapon_fire'),
                    'sl_overheat': ('sl_overheat', 'weapon_overheat'),
                    'sl_zoom_in': ('sl_zoom_in', 'weapon_ready'), 'sl_zoom_out': ('sl_zoom_out', 'weapon_ready'),
@@ -631,18 +658,18 @@ PORT = {
                    'sl_melee': ('sl_melee', 'weapon_melee'), 'sl_pose1': ('sl_pose1', 'weapon_ready'),
                    'sl_pose2': ('sl_pose2', 'weapon_ready'), 'sl_ammo': ('sl_ammo', 'weapon_reload'),
                    'sl_dryfire': ('sl_dryfire', 'weapon_empty'), 'sl_charge': ('sl_charge', 'weapon_fire'),
-                   'sl_charge_loop': ('sl_charge_loop', 'weapon_fire')},
+                   'sl_charge_loop': ('sl_charge_loop', 'weapon_fire'),
+                   'sl_impact': ('sl_impact', 'projectile_impact'), 'sl_silence': ('sl_silence', 'weapon_ready')},
         'repoint_fx': [(r'sound\weapons\beam_rifle\beam_rifle_fire', 'sl_fire'),
                        (r'sound_remastered\weapons\beam_rifle\beam_rifle_fire_lod', 'sl_fire_lod'),
                        (r'sound_remastered\weapons\beam_rifle\beamrifle_lfe', 'sl_fire_lod')],
         'repoint_weapon': [(r'sound\weapons\beam_rifle\beam_rifle_misfire', 'sl_dryfire'),
-                           # (the beam rifle's overheat attachment is a LOOPING sound (lsnd) on the
-                           # `overheated` function -- not a snd! slot; Halo 3 cues its one-shot overheat
-                           # in the overheat animation: OPEN, a BORROW until then)
+                           # (the beam rifle's overheat attachment, a LOOPING sound: see the weapon section)
                            (r'sound\weapons\beam_rifle\beam_rifle_zoom_in', 'sl_zoom_in'),
                            (r'sound\weapons\beam_rifle\beam_rifle_zoom_out', 'sl_zoom_out'),
                            (r'sound\weapons\sniper_rifle\sniper_ammo', 'sl_ammo')],
-        'repoint_tags': [(SL + r'\projectiles\spartan_laser_beam.projectile',
+        'repoint_tags': [(FX + r'\sl_hit.effect', r'sound_remastered\weapons\covenant_carbine\covy_plasma_hit', 'sl_impact'),
+                         (SL + r'\projectiles\spartan_laser_beam.projectile',
                           r'sound\weapons\beam_rifle\beam_rifle_flyby', 'sl_flyby')],
         'graph_sounds': (('beam_rifle_first_person_fire', 'sl_fire'), ('beam_rifle_melee_var1', 'sl_melee'),
                          ('beam_rifle_melee_var2', 'sl_melee'), ('beam_rifle_posing_var1', 'sl_pose1'),
