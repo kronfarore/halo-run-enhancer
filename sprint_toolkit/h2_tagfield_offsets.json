@@ -34,9 +34,27 @@
   "point states[1].width": 502
  },
  "damage_effect": {
+  "AI stun bounds": 172,
+  "AI stun radius": 168,
+  "AOE core radius": 104,
+  "active camouflage damage": 128,
+  "category": 98,
   "damage lower bound": 108,
   "damage upper bound": 112,
-  "instantaneous acceleration": 148
+  "flags#1": 100,
+  "forward exponent": 276,
+  "forward radius": 272,
+  "forward velocity": 268,
+  "instantaneous acceleration": 148,
+  "outward exponent": 288,
+  "outward radius": 284,
+  "outward velocity": 280,
+  "pushback": 212,
+  "radius": 80,
+  "random translation": 232,
+  "rider minimum transfer damage scale": 156,
+  "rotation": 208,
+  "shake radius": 180
  },
  "damage_effect@objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_shard": {
   "instantaneous acceleration": 144
@@ -51,6 +69,10 @@
   "radius": 80
  },
  "decal": {
+  "color lower bounds": 132,
+  "color upper bounds": 144,
+  "decay time": 148,
+  "lifetime": 200,
   "radius": 104
  },
  "decal@effects\\objects\\weapons\\support_low\\flamethrower\\flame_char": {
@@ -62,7 +84,9 @@
   "particle systems[1].flags": 363,
   "particle systems[2].camera mode": 675,
   "particle systems[2].flags": 433,
-  "particle systems[3].flags": 501
+  "particle systems[3].camera mode": 1461,
+  "particle systems[3].flags": 501,
+  "particle systems[6].coordinate system": 1659
  },
  "effect@effects\\objects\\weapons\\rifle\\saw\\saw_fire": {
   "particle systems[1].camera mode": 589,
@@ -82,6 +106,7 @@
   "particle systems[3].flags": 499
  },
  "model_animation_graph": {
+  "animations[0].production flags": 2799,
   "animations[10].production flags": 4624,
   "animations[10].weight": 3778,
   "animations[11].production flags": 3800,
@@ -90,6 +115,7 @@
   "animations[13].production flags": 4996,
   "animations[14].production flags": 4172,
   "animations[1].production flags": 3508,
+  "animations[2].production flags": 3047,
   "animations[3].production flags": 2808,
   "animations[4].production flags": 3880,
   "animations[5].production flags": 4004,
@@ -192,17 +218,36 @@
  "new_hud_definition": {
   "bitmap widgets[0].halfscreen sequence index": 221,
   "bitmap widgets[0].quarterscreen sequence index": 222,
+  "bitmap widgets[10].anchor": 1384,
+  "bitmap widgets[10].fullscreen offset": 1424,
+  "bitmap widgets[10].halfscreen offset": 1428,
+  "bitmap widgets[10].input 1": 1360,
+  "bitmap widgets[11].flags": 1506,
+  "bitmap widgets[11].fullscreen offset": 1544,
   "bitmap widgets[11].fullscreen sequence index": 1540,
+  "bitmap widgets[11].halfscreen offset": 1548,
   "bitmap widgets[11].halfscreen sequence index": 1541,
   "bitmap widgets[11].quarterscreen sequence index": 1542,
   "bitmap widgets[12].[Y] extra flags": 1606,
+  "bitmap widgets[12].flags": 1626,
+  "bitmap widgets[12].fullscreen offset": 1664,
   "bitmap widgets[12].fullscreen sequence index": 1660,
+  "bitmap widgets[12].halfscreen offset": 1668,
   "bitmap widgets[12].halfscreen sequence index": 1661,
   "bitmap widgets[12].quarterscreen sequence index": 1662,
   "bitmap widgets[13].[N] extra flags": 1734,
+  "bitmap widgets[13].fullscreen sequence index": 1780,
+  "bitmap widgets[13].halfscreen sequence index": 1781,
+  "bitmap widgets[13].quarterscreen sequence index": 1782,
   "bitmap widgets[14].fullscreen sequence index": 1900,
   "bitmap widgets[14].halfscreen sequence index": 1901,
   "bitmap widgets[14].quarterscreen sequence index": 1902,
+  "bitmap widgets[1].fullscreen sequence index": 340,
+  "bitmap widgets[1].halfscreen sequence index": 341,
+  "bitmap widgets[1].quarterscreen sequence index": 342,
+  "bitmap widgets[2].fullscreen sequence index": 460,
+  "bitmap widgets[2].halfscreen sequence index": 461,
+  "bitmap widgets[2].quarterscreen sequence index": 462,
   "bitmap widgets[3].fullscreen sequence index": 580,
   "bitmap widgets[3].halfscreen sequence index": 581,
   "bitmap widgets[3].quarterscreen sequence index": 582,
@@ -215,23 +260,31 @@
   "bitmap widgets[6].fullscreen sequence index": 940,
   "bitmap widgets[6].halfscreen sequence index": 941,
   "bitmap widgets[6].quarterscreen sequence index": 942,
+  "bitmap widgets[7].[Y] extra flags": 1006,
+  "bitmap widgets[7].flags": 1026,
+  "bitmap widgets[7].fullscreen offset": 1064,
   "bitmap widgets[7].fullscreen sequence index": 1060,
+  "bitmap widgets[7].halfscreen offset": 1068,
   "bitmap widgets[7].halfscreen sequence index": 1061,
   "bitmap widgets[7].quarterscreen sequence index": 1062,
+  "bitmap widgets[8].[N] extra flags": 1134,
   "bitmap widgets[8].[N] unit flags": 1132,
   "bitmap widgets[8].[N] weapon flags": 1136,
   "bitmap widgets[8].[Y] unit flags": 1124,
   "bitmap widgets[8].anchor": 1144,
+  "bitmap widgets[8].flags": 1146,
   "bitmap widgets[8].fullscreen offset": 1184,
   "bitmap widgets[8].fullscreen sequence index": 1180,
   "bitmap widgets[8].halfscreen offset": 1188,
   "bitmap widgets[8].halfscreen sequence index": 1181,
+  "bitmap widgets[8].input 1": 1120,
   "bitmap widgets[8].quarterscreen offset": 1192,
   "bitmap widgets[8].quarterscreen sequence index": 1182,
   "bitmap widgets[9].[N] unit flags": 1252,
   "bitmap widgets[9].[N] weapon flags": 1256,
   "bitmap widgets[9].[Y] unit flags": 1244,
   "bitmap widgets[9].anchor": 1264,
+  "bitmap widgets[9].flags": 1266,
   "bitmap widgets[9].fullscreen offset": 1304,
   "bitmap widgets[9].fullscreen sequence index": 1300,
   "bitmap widgets[9].halfscreen offset": 1308,
@@ -286,6 +339,8 @@
   "material responses[0].perpendicular friction": 1368,
   "material responses[0].response": 1329,
   "material responses[0].response#1": 1248,
+  "material responses[1].response": 1495,
+  "material responses[2].response": 1655,
   "material responses[3].and": 1744,
   "material responses[3].angular noise": 1788,
   "material responses[3].between": 1736,
@@ -300,6 +355,7 @@
   "material responses[4].chance fraction": 1834,
   "material responses[4].parallel friction": 2004,
   "material responses[4].perpendicular friction": 2008,
+  "material responses[4].response": 1975,
   "material responses[4].response#1": 1830,
   "material responses[5].response": 2129,
   "material responses[6].and": 2224,
@@ -323,6 +379,7 @@
   "material responses[8].between": 2536,
   "material responses[8].parallel friction": 2644,
   "material responses[8].perpendicular friction": 2648,
+  "material responses[8].response": 2615,
   "material responses[8].response#1": 2528,
   "material responses[9].maximum distance": 2752,
   "material responses[9].response": 2769,
@@ -462,6 +519,9 @@
  "shader": {
   "animation properties[0].time period": 904,
   "animation properties[0].type": 726,
+  "data[4].Value": 783,
+  "data[5].Value": 784,
+  "data[6].Value": 785,
   "parameters[2].const color": 395,
   "parameters[3].const color": 447,
   "parameters[4].const color": 499
@@ -476,13 +536,17 @@
   "parameters[4].const color": 499
  },
  "weapon": {
+  "AI scariness": 888,
+  "Apply collision damage scale": 236,
   "acceleration scale": 100,
+  "active camo ding": 996,
   "ai scariness": 1268,
   "autoaim angle": 840,
   "autoaim range": 844,
   "barrels[0].acceleration time": 3415,
   "barrels[0].acceleration time#1": 3459,
   "barrels[0].acceleration time#2": 3130,
+  "barrels[0].age generated per round": 3211,
   "barrels[0].angle change per shot": 3595,
   "barrels[0].deceleration time": 3419,
   "barrels[0].deceleration time#1": 3463,
@@ -491,6 +555,9 @@
   "barrels[0].ejection port recovery time": 3575,
   "barrels[0].error angle": 3172,
   "barrels[0].error angle#1": 3548,
+  "barrels[0].fire recovery time": 3039,
+  "barrels[0].firing noise": 3660,
+  "barrels[0].first person offset": 3735,
   "barrels[0].heat generated per round": 3297,
   "barrels[0].illumination recovery time": 3579,
   "barrels[0].minimum error": 3168,
@@ -501,8 +568,11 @@
   "barrels[0].rounds per shot": 3127,
   "bounding offset": 88,
   "bounding radius": 84,
+  "damage pyramid depth": 696,
   "first person weapon offset": 1188,
   "flags#2": 492,
+  "heat loss per second": 560,
+  "heat recovery threshold": 544,
   "magazines[0].reload time": 2690,
   "magazines[0].rounds loaded maximum": 3126,
   "magazines[0].rounds reloaded": 3140,
@@ -510,6 +580,18 @@
   "magazines[0].rounds total maximum": 3124,
   "magnetism angle#1": 848,
   "magnetism range#1": 852,
+  "magnification levels": 830,
+  "magnification range": 832,
+  "new triggers[0].behavior": 2905,
+  "new triggers[0].charged illumination": 3015,
+  "new triggers[0].charging time": 3003,
+  "new triggers[0].overcharged action": 3011,
+  "new triggers[0].primary action": 3001,
+  "new triggers[0].primary barrel": 2983,
+  "new triggers[0].secondary action": 2999,
+  "new triggers[0].secondary barrel": 2909,
+  "overheated heat loss per second": 568,
+  "overheated threshold": 548,
   "ready time": 508
  },
  "weapon@objects\\weapons\\pistol\\excavator\\excavator": {
@@ -609,5 +691,153 @@
   "magazines[0].rounds total maximum": 2896,
   "overheated heat loss per second": 568,
   "overheated threshold": 548
+ },
+ "contrail@effects\\objects\\weapons\\support_high\\spartan_laser\\spartan_laser_inner": {
+  "point states[0].color lower bound": 537,
+  "point states[0].color upper bound": 553,
+  "point states[0].transition duration": 477,
+  "point states[0].width": 533
+ },
+ "contrail@effects\\objects\\weapons\\support_high\\spartan_laser\\spartan_laser_outer": {
+  "point states[0].color lower bound": 531,
+  "point states[0].color upper bound": 547,
+  "point states[0].transition duration": 471,
+  "point states[0].width": 527
+ },
+ "damage_effect@objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_splash": {
+  "AI stun bounds": 172,
+  "damage lower bound": 108,
+  "forward exponent": 276,
+  "forward radius": 272,
+  "forward velocity": 268,
+  "instantaneous acceleration": 144,
+  "outward exponent": 288,
+  "pushback": 212,
+  "random translation": 232,
+  "rider minimum transfer damage scale": 156,
+  "rotation": 208
+ },
+ "decal@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_glow": {
+  "color lower bounds": 132,
+  "color upper bounds": 144,
+  "lifetime": 200
+ },
+ "decal@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_scorch": {
+  "decay time": 148,
+  "lifetime": 140
+ },
+ "effect@effects\\objects\\weapons\\support_high\\spartan_laser\\spartan_laser_fire": {
+  "particle systems[3].camera mode": 1461,
+  "particle systems[6].camera mode": 1665,
+  "particle systems[6].coordinate system": 1659
+ },
+ "lens_flare": {
+  "flags": 128,
+  "reflections[0].bitmap index": 268,
+  "reflections[0].color": 300,
+  "reflections[0].flags": 388,
+  "reflections[0].modulation factor": 296,
+  "reflections[0].radius": 280
+ },
+ "lens_flare@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_charge": {
+  "reflections[0].bitmap index": 268,
+  "reflections[0].color": 300,
+  "reflections[0].flags": 264,
+  "reflections[0].modulation factor": 296,
+  "reflections[0].radius": 280
+ },
+ "lens_flare@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_light_flare": {
+  "reflections[0].color": 456,
+  "reflections[0].flags": 388,
+  "reflections[0].modulation factor": 452
+ },
+ "lens_flare@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_light_flare_fp": {
+  "reflections[0].color": 456,
+  "reflections[0].modulation factor": 452
+ },
+ "light": {
+  "diffuse upper bound": 180,
+  "specular upper bound": 156
+ },
+ "light@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_charge": {
+  "diffuse upper bound": 180,
+  "specular upper bound": 156
+ },
+ "light@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_charge_fp": {
+  "diffuse upper bound": 260,
+  "specular upper bound": 232
+ },
+ "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\support_high\\fp_spartan_laser\\fp_spartan_laser": {
+  "animations[0].production flags": 2535,
+  "animations[12].production flags": 4023,
+  "animations[14].production flags": 4271,
+  "animations[2].production flags": 2783,
+  "animations[8].production flags": 3527,
+  "animations[9].production flags": 3651
+ },
+ "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\support_high\\fp_spartan_laser\\fp_spartan_laser": {
+  "animations[0].production flags": 2799,
+  "animations[12].production flags": 4287,
+  "animations[14].production flags": 4500,
+  "animations[2].production flags": 3047,
+  "animations[8].production flags": 3791,
+  "animations[9].production flags": 3915
+ },
+ "new_hud_definition@ui\\hud\\spartan_laser": {
+  "bitmap widgets[10].anchor": 1384,
+  "bitmap widgets[10].flags": 1386,
+  "bitmap widgets[10].fullscreen offset": 1424,
+  "bitmap widgets[10].halfscreen offset": 1428,
+  "bitmap widgets[10].input 1": 1360,
+  "bitmap widgets[11].flags": 1506,
+  "bitmap widgets[11].fullscreen offset": 1544,
+  "bitmap widgets[11].halfscreen offset": 1548,
+  "bitmap widgets[12].flags": 1626,
+  "bitmap widgets[12].fullscreen offset": 1664,
+  "bitmap widgets[12].halfscreen offset": 1668,
+  "bitmap widgets[13].fullscreen sequence index": 1780,
+  "bitmap widgets[13].halfscreen sequence index": 1781,
+  "bitmap widgets[13].quarterscreen sequence index": 1782,
+  "bitmap widgets[7].flags": 1026,
+  "bitmap widgets[7].fullscreen offset": 1064,
+  "bitmap widgets[7].halfscreen offset": 1068,
+  "bitmap widgets[8].flags": 1146,
+  "bitmap widgets[8].input 1": 1120,
+  "bitmap widgets[9].flags": 1266
+ },
+ "projectile@objects\\weapons\\support_high\\spartan_laser\\projectiles\\spartan_laser_beam": {
+  "collision radius": 480
+ },
+ "shader@objects\\weapons\\support_high\\spartan_laser\\shaders\\spartan_laser_luminous": {
+  "data[4].Value": 783,
+  "data[5].Value": 784,
+  "data[6].Value": 785
+ },
+ "weapon@objects\\weapons\\support_high\\spartan_laser\\spartan_laser": {
+  "active camo ding": 996,
+  "age misfire chance": 944,
+  "age misfire start": 940,
+  "ai scariness": 888,
+  "barrels[0].age generated per round": 3790,
+  "barrels[0].error angle#1": 3715,
+  "barrels[0].fire recovery time": 3631,
+  "barrels[0].firing noise": 3660,
+  "barrels[0].first person offset": 3730,
+  "barrels[0].heat generated per round": 3786,
+  "barrels[0].illumination recovery time": 3782,
+  "heat illumination": 564,
+  "heat loss per second": 560,
+  "magnification levels": 830,
+  "magnification range": 832,
+  "new triggers[0].behavior": 3484,
+  "new triggers[0].charged illumination": 3518,
+  "new triggers[0].charging time": 3506,
+  "new triggers[0].overcharged action": 3514,
+  "new triggers[0].prediction": 3490,
+  "new triggers[0].primary action": 3504,
+  "new triggers[0].primary barrel": 3486,
+  "new triggers[0].secondary action": 3502,
+  "new triggers[0].secondary barrel": 3488,
+  "overheated heat loss per second": 568
  }
 }
