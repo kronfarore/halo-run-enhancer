@@ -625,9 +625,15 @@ step 4b included (`port_field_audit.py --port h2:<key>`); the pickup icon by the
 reserved E1xx, untinted: white lines, grey body, 160x62); both species in game (CLASSIC); residency in
 all 13 levels; the Armed side (`ai_firing_profile.py --h2-port`, H3's ai\generic entry on 010_jungle)
 and `--armed all` on your level; the closing checks on a built level (port_refs_audit, port_sound_refs
-0 BORROW or recorded keeps, port_volume, check 10 the FP flash, port_glyphs --capture --game halo2);
+0 BORROW or recorded keeps, port_volume, check 10 the FP flash, THE WORLD MODEL CHECK, port_glyphs
+--capture --game halo2);
 catalog; the enhancer hand-off; PORTING + memory + "<#>: what <weapon> taught"; port_backup --game h2.
 No 13-level rebuild until the user says so. Do NOT write the next weapon's prompt.
+
+**THE WORLD MODEL CHECK** (user, 2026-10-30: Halo 1 had it, Halo 2 lost it; closing check, in game, every
+port): the world model has its own check item on the user's list -- the gun lying on the ground from both
+sides (own mesh and textures, not sunk, resting on its `ground point`; Halo 3 / Reach models can be authored
+tilted), and held in third person by an enemy (the beam / bolt leaves the WORLD model's `primary_trigger`).
 
 ### The Spartan Laser (A2), filled in -- PARALLEL with A4 and A5
 
