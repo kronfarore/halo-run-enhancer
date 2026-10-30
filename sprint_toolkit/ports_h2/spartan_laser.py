@@ -272,6 +272,11 @@ PORT = {
              'chained: the black scorch'),
             (FX + r'\spartan_laser.material_effects', 'effe', r'effects\impact\plasma_fast\beam_rifle\impact',
              FX + r'\sl_hit', "the beam's own hit", {'every': True}),
+            # the closing check (port_refs_audit): the beam rifle's first two hits are strike_melee; Halo 3's
+            # laser and the yardstick rocket swing smash_melee on every hit (same-length paths: one by one)
+            ] + [(SL + r'\spartan_laser.weapon', 'jpt!', r'objects\weapons\damage_effects\strike_melee' + sfx,
+                  r'objects\weapons\damage_effects\smash_melee' + sfx, 'melee hit: smash' + sfx, {'nth': 0})
+                 for sfx in ('', '', '_response', '_response')] + [
         ],
         # (tag, class, path, marker, like class, scale function): the plasma pistol's charge cue
         'append_attachments': [
@@ -299,7 +304,20 @@ PORT = {
                        (FX + r'\sl_impact.effect', '042000007ce7fa00', '042000003c50ff00'),
                        (FX + r'\sl_impact.effect', '01200000d5f8fd00', '0120000096aaff00'),
                        # the vent smoke: the beam rifle's lavender -> Halo 3's white-grey steam
-                       (FX + r'\overheated.effect', '01210000f38fba00', '01210000e1dcdc00')],
+                       (FX + r'\overheated.effect', '01210000f38fba00', '01210000e1dcdc00'),
+                       # BOOT 6 (user: 'the vent was never purple, but blue, which it still is'): a head of 0x21 is
+                       # a RANGE -- its second colour (byte 16) is drawn too, and the beam rifle's are blue: the
+                       # vent (111, 140, 244), the firing flash + steam; the Brute Shot's yellow in the impact
+                       (FX + r'\overheated.effect', 'e1dcdc000000803f00000000f48c6f00', 'e1dcdc000000803f00000000dcdcdc00'),
+                       (FX + r'\spartan_laser_fire.effect', 'bec8ff000000803f00000000ef913a00', 'bec8ff000000803f000000008296ff00'),
+                       (FX + r'\spartan_laser_fire.effect', '465aff000000803f00000000e9651600', '465aff000000803f000000003c46ff00'),
+                       (FX + r'\spartan_laser_fire.effect', 'dcdcdc000000803f00000000ffd20000', 'dcdcdc000000803f00000000f0f0f000'),
+                       (FX + r'\spartan_laser_fire.effect', 'f0f0f0000000803f00000000ffd20000', 'f0f0f0000000803f00000000f0f0f000'),
+                       (FX + r'\sl_impact.effect', '647aff000000803f000000004dc8f000', '647aff000000803f000000003c50ff00'),
+                       # BOOT 6 (user: 'the charge light is still white'): the lights' flares carry a colour
+                       # ANIMATION too (the pistol's dark green -> green, 2 stops): dark red -> laser red
+                       (FX + r'\sl_light_flare.lens_flare', '0320090036481c00000000000000000000ff0000', '032009000a0a500000000000000000001e28ff00'),
+                       (FX + r'\sl_light_flare_fp.lens_flare', '0320090036481c00000000000000000000ff0000', '032009000a0a500000000000000000001e28ff00')],
         # the 3P label: the ROCKET LAUNCHER's (`missile` / `rl`, Halo 1's A8: `sl` taught from `rl`) -- a
         # heavy two-handed carry every Halo 2 character graph holds (Grunts included); the beam rifle's
         # `rifle` / `csr` is the Covenant sniper's
@@ -471,6 +489,13 @@ PORT = {
             (FX + r'\sl_light_flare.lens_flare', 'flags', 'reflections', 0, 0, 20),
             (FX + r'\sl_light_flare_fp.lens_flare', 'color', 'reflections', 0, 0, [1.0, 0.15, 0.1]),
             (FX + r'\sl_light_flare_fp.lens_flare', 'flags', 'reflections', 0, 0, 28),
+            # BOOT 6 (still white): `modulation factor` is how much of `color` is applied at all -- 0 on the
+            # lights' flares (0.2 on the muzzle's), so red never reached the bitmap's white
+            (FX + r'\sl_charge.lens_flare', 'modulation factor', 'reflections', 0, 0, 1.0),
+            (FX + r'\sl_light_flare.lens_flare', 'modulation factor', 'reflections', 0, 0, 1.0,
+             {'anchor': ('color', -4)}),
+            (FX + r'\sl_light_flare_fp.lens_flare', 'modulation factor', 'reflections', 0, 0, 1.0,
+             {'anchor': ('color', -4)}),
             # the scorch (boot 4; Halo 3: glow 0.115 for 2.25 s, scorch 0.125-0.2 for 15-20 s; 'too small'
             # with the beam rifle's 0.2 -> larger): a laser-red glow, then a black blast scorch
             (FX + r'\sl_glow.decal', 'radius', '', 0, 0, [0.25, 0.25]),
@@ -572,6 +597,9 @@ PORT = {
         # the symbol's ramp as measured on Bungie's beam rifle symbol (rows 11 -> 31): the widened box
         # also covers plate border pixels symbol_ramp would read as ink (a dull, dark drawing)
         'ramp': ((0, 196, 223), (0, 9, 209)),
+        # boot 6 (user's screenshot: the top rim doubled): the box's right sample on rows 2-5 is the plate's
+        # chamfered border, smeared across those rows -- the erase stops short of the rim
+        'rim_safe': True,
         'stretch': 1.4,
         'all_images': {'dim': {8: 0, 9: 1, 10: 2, 11: 3}, 'skip': [4, 5, 6, 7]},
     },
@@ -650,6 +678,9 @@ PORT = {
                     'sl_charge': [H3SND + r'\spartan_laser\charging\charging\in'],
                     'sl_charge_loop': [H3SND + r'\spartan_laser\charging\charging\loop'],
                     'sl_impact': [H3SND + r'\spartan_laser\spartan_laser_impacts'],
+                    # the closing check: Halo 3's laser drops with the rocket launcher's material effects
+                    'sl_drop': [H3SND + r'\rocket_launcher\rocket_launcher_drop'],
+                    'sl_drop_soft': [H3SND + r'\rocket_launcher\rocket_launcher_drop_soft'],
                     'sl_silence': []},        # 50 ms: the emptied vent loop's tracks
         'sounds': {'sl_fire': ('sl_fire', 'weapon_fire'), 'sl_fire_lod': ('sl_fire_lod', 'weapon_fire'),
                    'sl_overheat': ('sl_overheat', 'weapon_overheat'),
@@ -659,7 +690,8 @@ PORT = {
                    'sl_pose2': ('sl_pose2', 'weapon_ready'), 'sl_ammo': ('sl_ammo', 'weapon_reload'),
                    'sl_dryfire': ('sl_dryfire', 'weapon_empty'), 'sl_charge': ('sl_charge', 'weapon_fire'),
                    'sl_charge_loop': ('sl_charge_loop', 'weapon_fire'),
-                   'sl_impact': ('sl_impact', 'projectile_impact'), 'sl_silence': ('sl_silence', 'weapon_ready')},
+                   'sl_impact': ('sl_impact', 'projectile_impact'), 'sl_silence': ('sl_silence', 'weapon_ready'),
+                   'sl_drop': ('sl_drop', 'object_impacts'), 'sl_drop_soft': ('sl_drop_soft', 'object_impacts')},
         'repoint_fx': [(r'sound\weapons\beam_rifle\beam_rifle_fire', 'sl_fire'),
                        (r'sound_remastered\weapons\beam_rifle\beam_rifle_fire_lod', 'sl_fire_lod'),
                        (r'sound_remastered\weapons\beam_rifle\beamrifle_lfe', 'sl_fire_lod')],
@@ -668,7 +700,9 @@ PORT = {
                            (r'sound\weapons\beam_rifle\beam_rifle_zoom_in', 'sl_zoom_in'),
                            (r'sound\weapons\beam_rifle\beam_rifle_zoom_out', 'sl_zoom_out'),
                            (r'sound\weapons\sniper_rifle\sniper_ammo', 'sl_ammo')],
-        'repoint_tags': [(FX + r'\sl_hit.effect', r'sound_remastered\weapons\covenant_carbine\covy_plasma_hit', 'sl_impact'),
+        'repoint_tags': [(FX + r'\spartan_laser.material_effects', r'sound\weapons\beam_rifle\beam_rifle_drop', 'sl_drop'),
+                         (FX + r'\spartan_laser.material_effects', r'sound\weapons\beam_rifle\beam_rifle_drop_soft', 'sl_drop_soft'),
+                         (FX + r'\sl_hit.effect', r'sound_remastered\weapons\covenant_carbine\covy_plasma_hit', 'sl_impact'),
                          (SL + r'\projectiles\spartan_laser_beam.projectile',
                           r'sound\weapons\beam_rifle\beam_rifle_flyby', 'sl_flyby')],
         'graph_sounds': (('beam_rifle_first_person_fire', 'sl_fire'), ('beam_rifle_melee_var1', 'sl_melee'),
@@ -680,6 +714,11 @@ PORT = {
         'backup': r'E:\HaloBackups\H2EK_spartan_laser_before_sounds',
         'graph_backup': r'E:\HaloBackups\H2EK_spartan_laser_graphs_before_sounds',
     },
+
+    # port_sound_refs: both loops are the port's own tags, in the effects folder beside their attachments
+    # (their tracks are Halo 3's / silent, under the sound folder)
+    'sound_keeps': {FX + r'\sl_vent_loop': "the laser's own (emptied) vent loop",
+                    FX + r'\sl_charging': "the laser's own charge loop, Halo 3's tracks"},
 
     # step 5 -- h2_port_collision.py: the BATTLE RIFLE's authored hull (the world .model's donor, as the
     # AR's) scaled per axis to the laser's render mesh

@@ -45,17 +45,19 @@ REL = DONOR = OTHER = PORT = HUD = MODEL = NAME = None
 FALLBACK_BOX = None
 STRETCH = None
 ICON = None
+RIM_SAFE = False
 RAMP = None
 
 
 def setup(key):
-    global REL, DONOR, OTHER, PORT, HUD, MODEL, NAME, FALLBACK_BOX, STRETCH, ICON, RAMP
+    global REL, DONOR, OTHER, PORT, HUD, MODEL, NAME, FALLBACK_BOX, STRETCH, ICON, RAMP, RIM_SAFE
     h = ports_h2.get(key, 'hud_plate')
     REL, DONOR, OTHER, HUD, MODEL = h['rel'], h['donor'], h['other'], h['hud'], h['model_3p']
     NAME = h['name']
     PORT = B.join([REL, NAME])
     FALLBACK_BOX, STRETCH = tuple(h['fallback_box']), h['stretch']
     ICON = h.get('icon_art')
+    RIM_SAFE = h.get('rim_safe', False)
     RAMP = h.get('ramp')
 
 
@@ -246,7 +248,7 @@ def symbol_ramp(donor, box):
     return rows[lit[0]], rows[lit[-1]]
 
 
-def repaint(donor, box, mask):
+def repaint(donor, box, mask, tint=None):
     """The donor plate with its weapon erased and the port's drawn in its place.
 
     The plate behind the weapon is a smooth gradient, so it is rebuilt by interpolating
@@ -264,9 +266,16 @@ def repaint(donor, box, mask):
     out = donor.copy()
     for y in range(y0, y1):
         left = donor[y, max(x0 - 1, 0)].astype(float)
-        right = donor[y, min(x1, donor.shape[1] - 1)].astype(float)
-        span = max(x1 - x0, 1)
-        for x in range(x0, x1):
+        end = x1
+        # `rim_safe` (the Spartan Laser, A2 boot 6: a box from row 2 meets the plate's chamfered border,
+        # blue or already outside the plate at x1 on the top rows, smeared across them as a second rim):
+        # the row's right sample is the last pixel still matching the plate's row, and the rim stays
+        # Bungie's. Only ever walks where x1 itself is off the plate: the symbol ends well left of it
+        while RIM_SAFE and end > x0 and (donor[y, end, 2] > 4 or abs(int(donor[y, end, 1]) - int(left[1])) > 12):
+            end -= 1
+        right = donor[y, min(end, donor.shape[1] - 1)].astype(float)
+        span = max(end - x0, 1)
+        for x in range(x0, end):
             t = (x - x0 + 1) / (span + 1)
             out[y, x] = (left * (1 - t) + right * t).astype(np.int16)
 
@@ -275,6 +284,8 @@ def repaint(donor, box, mask):
     # symbol_ramp would take for ink
     top, bottom = ((np.array(tuple(RAMP[0]) + (255,), float), np.array(tuple(RAMP[1]) + (255,), float)) if RAMP
                    else symbol_ramp(donor, box))
+    if tint is not None:
+        top, bottom = np.minimum(top * tint, 255), np.minimum(bottom * tint, 255)
     drawn = [y for y in range(y1 - y0) if cov[y].max() > 0]
     first, last = (drawn[0], drawn[-1]) if drawn else (0, y1 - y0 - 1)
     span = max(last - first, 1)
@@ -338,7 +349,17 @@ def all_images(donor, sheets, boxes, cfg):
         if idx in skip:
             continue                 # Bungie's own pixels stay in the plate untouched
         x, y = find_in_plate(plate, img)
-        if idx in dim:
+        if idx in dim and RIM_SAFE:
+            # (the Spartan Laser, A2 boot 6: the box-wide ratio below is the symbol's, so it lifted the
+            # plate inside the box -- a visible rectangle) the dim image's OWN plate, erased, and the same
+            # drawing at the ratio of the two symbols' ink alone
+            twin = dim[idx]
+            x0, x1, y0, y1 = boxes[twin]
+            ink = donor[twin][y0:y1, x0:x1][:, :, 2] > 150
+            ratio = (donor[idx][y0:y1, x0:x1][ink].mean(0) + 1.0) / (donor[twin][y0:y1, x0:x1][ink].mean(0) + 1.0)
+            sheet = np.clip(repaint(donor[idx], boxes[twin], port_mask(x1 - x0, y1 - y0), ratio), 0, 255).astype(float)
+            print('   image %d: the drawing x %s over its own plate (dim)' % (idx, np.round(ratio, 3)))
+        elif idx in dim:
             twin = dim[idx]
             x0, x1, y0, y1 = boxes[twin]
             src = np.asarray(sheets[twin]).astype(float)
