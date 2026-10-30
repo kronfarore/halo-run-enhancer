@@ -161,7 +161,14 @@ PORT = {
         'byte_edits': [(MA + r'\shaders\%s.shader' % s,
                         '03200200773c00000000000000000000ffc18400',
                         '03200a0080808000ffffff00ffffff00ffffff00')
-                       for s in ('mauler', 'mauler_metal', 'mauler_shiny')],
+                       for s in ('mauler', 'mauler_metal', 'mauler_shiny')] + [
+            # CHECK 10: the shotgun firing effect's event 2 throws a shell from primary_ejection --
+            # Halo 3's Mauler ejects nothing and its model has no such marker: the event's skip
+            # fraction 1. Halo 3's flash is first-person glow / round / long flash, sparks and smoke,
+            # the same roles as the shotgun's remaining systems (kept: user boots 1-3, 'the shot is fine')
+            (FX + r'\excavator_fire.effect',
+             '01000000f0b3f005d8520f01' + '00000000' * 2,
+             '01000000f0b3f005d8520f01' + '00000000' + '0000803f', ('skip fraction',))],
         'wiring': [
             (MA + r'\excavator.weapon', 'hlmt', MAG + r'\magnum', MA + r'\excavator', 'world model'),
             (MA + r'\excavator.model', 'mode', r'objects\weapons\rifle\battle_rifle\battle_rifle',
