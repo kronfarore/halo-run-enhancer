@@ -315,6 +315,14 @@ PORT = {
              {'anchor': ('active camouflage damage', -16)}),
             (GH + r'\damage_effects\gravity_hammer_port_trigger.damage_effect', 'instantaneous acceleration', '', 0, 0, 5.0,
              {'anchor': ('active camouflage damage', 20)}),
+            # Armed test 1 (user: Elites 'get turned around when they swing'): the shove hit the AI
+            # wielder too. jpt flags bit 1 'Area Damage Players Only' + bit 0 'Don't Scale By Distance'
+            # with a radius of 1.5: the shove becomes AREA damage, which AI units ignore. Layout as the
+            # explosion clone's (radius camo -48, flags -36)
+            (GH + r'\damage_effects\gravity_hammer_port_trigger.damage_effect', 'radius', '', 0, 0, [1.5, 1.5],
+             {'anchor': ('active camouflage damage', -48)}),
+            (GH + r'\damage_effects\gravity_hammer_port_trigger.damage_effect', 'flags', '', 0, 0, 3,
+             {'anchor': ('active camouflage damage', -36)}),
             # THE SLAM (impact damage + melee lunge): Halo 3's crush_melee 150, accel 1.5, radius 0
             (GH + r'\damage_effects\gravity_hammer_port_slam.damage_effect', 'radius', '', 0, 0, [0.0, 0.0]),
             (GH + r'\damage_effects\gravity_hammer_port_slam.damage_effect', 'damage lower bound', '', 0, 0, 150.0),
@@ -598,13 +606,27 @@ PORT = {
                     # refused the hammer on the Arbiter -- dervish's sword class holds 4 actions (land,
                     # turn), the idle / moves come from its PARENT graph's combat > sword, and the
                     # Elite graph had no `melee`. A class must exist in the parent too
-                    (r'objects\characters\elite\elite.model_animation_graph', 'sword=melee', {})],
+                    (r'objects\characters\elite\elite.model_animation_graph', 'sword=melee', {}),
+                    # Armed test 1 (Gravemind): `melee` in the TAG with a `gh` row that CARRIES fire_1
+                    # (h2_graph_teach --clone <class>=melee --type <row>=gh): the patch-time teach then
+                    # has nothing to do, and its `gh` copy of the `any` row has no fire_1 at all (their
+                    # fire overlays sit on the type rows). Plus the Flood, which refused the hammer
+                    # (no TEACH entry in h2_enemy_weapons, no melee class). Brute + Elite: --fire-rows
+                    (r'objects\characters\grunt\grunt.model_animation_graph', 'missile=melee', {'rl': 'gh'}),
+                    (r'objects\characters\jackal\jackal.model_animation_graph', 'pistol=melee', {'pr': 'gh'}),
+                    (r'objects\characters\bugger\bugger.model_animation_graph', 'pistol=melee', {'pp': 'gh'}),
+                    (r'objects\characters\floodcombat_human\floodcombat_human.model_animation_graph', 'rifle=melee', {'br': 'gh'}),
+                    (r'objects\characters\floodcombat_elite\floodcombat_elite.model_animation_graph', 'rifle=melee', {'br': 'gh'})],
     'backup': {'extra': [H2EK + r'\tags\objects\characters\masterchief\masterchief.model_animation_graph',
                          H2EK + r'\tags\objects\characters\dervish\dervish.model_animation_graph',
                          r'E:\HaloBackups\h2_graph_teach\masterchief.model_animation_graph',
                          H2EK + r'\tags\objects\characters\elite\elite.model_animation_graph',
                          r'E:\HaloBackups\h2_graph_teach\dervish.model_animation_graph',
-                         r'E:\HaloBackups\h2_graph_teach\elite.model_animation_graph']},
+                         r'E:\HaloBackups\h2_graph_teach\elite.model_animation_graph']
+                        + [H2EK + r'\tags\objects\characters\%s\%s.model_animation_graph' % (_sp, _sp)
+                           for _sp in ('brute', 'grunt', 'jackal', 'bugger', 'floodcombat_human', 'floodcombat_elite')]
+                        + [r'E:\HaloBackups\h2_graph_teach\%s.model_animation_graph' % _sp
+                           for _sp in ('jackal', 'bugger', 'floodcombat_human', 'floodcombat_elite')]},
     # step 11 -- `python ai_firing_profile.py --h2-port gravity_hammer`: Halo 3's ai\generic hammer
     # entry (010_jungle) name-for-name over the H2 ENERGY BLADE's (the yardstick; Halo 2's only
     # player melee weapon with an ai\generic entry -- Tartarus's hammer data lives in his own
@@ -688,10 +710,210 @@ def blank(rel, cls, path, keep):
     raise ValueError('no blanking of %s worked; %s restored' % (path, _os.path.basename(tag)))
 
 
+# Armed test 1 (Gravemind, 2026-10-30, user: 'Brutes hold it awkwardly and have no attack animation';
+# 'do Grunts have an animation when attacking?'). A unit's FIRE animation is the `fire_1` OVERLAY of
+# its class + type row, and the classes the hammer lands in have none:
+#   - the Brute's own hammer class (melee / any: the real hold) has none, and h2_enemy_weapons'
+#     type teach copied support / any over it as `gh` (the Brute Shot hold): a `gh` row in the TAG
+#     stops that teach (it skips a type the class holds) and carries fire_1 = Tartarus's own overlay
+#     swing berserk:melee:leap_melee (replacement, 24 fr) -- DUPLICATED without its events (its
+#     effect event is Tartarus's blast, which would go off on top of the port's), Tartarus's stays;
+#   - the Elite's melee (sword clone) has none: fire_1 = its rifle's, an approximation.
+# LOOSE ANIMATION ELEMENT (136 bytes, read on brute.model_animation_graph): +0 name sid, +0x34 the
+# blob's size, block counts +0x58 frame / +0x64 sound / +0x70 effect / +0x7C object-space parents
+# (12 bytes each). Its data: the name, the blob (animation data is INLINE, nothing is shared; 16
+# more bytes may follow it), then the chunks of those blocks; a sound event's marker sid (+4) pools
+# its string after its chunk, an object-space element's 'SSoq' descriptor after the chunk's array.
+#     python ports_h2\gravity_hammer.py --fire-rows      (under the H2 kit lock)
+SIG = b'dfbt'
+ANIM_ES = 136
+ANIM_BLOCKS = (0x58, 0x64, 0x70, 0x7C)
+FIRE_ROWS = [(r'objects\characters\brute\brute.model_animation_graph', 'combat', 'melee',
+              ('clone', 'berserk:melee:leap_melee', 'combat:melee:gh:fire_1')),
+             (r'objects\characters\elite\elite.model_animation_graph', 'combat', 'melee',
+              ('overlay', 'combat', 'rifle', 'any'))]
+
+
+def _anim_block(d, names):
+    """(chunk, count, [(name, struct, data start, data end, first chunk or None)]) -- `names` =
+    tool's animation names in order (an element's size is not fully stored: a blob may be followed
+    by a 16-byte descriptor, so the next element is found by its name)."""
+    import struct
+    at, n = -1, len(names)
+    i = d.find(SIG, 0x40)
+    while i >= 0:
+        if struct.unpack_from('<II', d, i + 8) == (n, ANIM_ES):
+            at = i
+            break
+        i = d.find(SIG, i + 4)
+    if at < 0:
+        raise ValueError('no block of %d animations' % n)
+    out, p = [], at + 16 + n * ANIM_ES
+    for i, name in enumerate(names):
+        e = at + 16 + i * ANIM_ES
+        raw = name.encode('latin-1')
+        if d[p:p + len(raw)] != raw or d[e + 3] != len(raw):
+            raise ValueError('%s is not at 0x%X' % (name, p))
+        blob_end = p + len(raw) + struct.unpack_from('<I', d, e + 0x34)[0]
+        if any(struct.unpack_from('<I', d, e + o)[0] for o in ANIM_BLOCKS):
+            first = d.find(SIG, blob_end)
+            if not 0 <= first - blob_end <= 32:
+                raise ValueError('%s: no chunk after its blob (0x%X)' % (name, blob_end))
+        else:
+            first = None
+        if i + 1 < n:
+            end = d.find(names[i + 1].encode('latin-1'), blob_end)
+            if end < 0 or end - blob_end > 1 << 20:
+                raise ValueError('%s: next name not found' % name)
+        else:
+            end = _chunks(d, e, first, blob_end)['end']
+        out.append((name, e, p, end, first))
+        p = end
+    return at, n, out
+
+
+def _chunks(d, e, first, blob_end):
+    """Where each event block's chunk lies. Object-space parents: 28-byte elements + a 'SSoq'
+    descriptor each after the array."""
+    import struct
+    out, p = {}, first if first is not None else blob_end
+    for off in ANIM_BLOCKS:
+        if not struct.unpack_from('<I', d, e + off)[0]:
+            continue
+        if d[p:p + 4] != SIG:
+            raise ValueError('no chunk at 0x%X' % p)
+        cn, csz = struct.unpack_from('<II', d, p + 8)
+        q = p + 16 + cn * csz
+        if off == 0x64:                     # the sound events' marker strings
+            q += sum(d[p + 16 + k * csz + 7] for k in range(cn))
+        if off == 0x7C:
+            q += 16 * cn
+        out[off] = (p, q)
+        p = q
+    out['end'] = p
+    return out
+
+
+def clone_animation(d, src, new, names):
+    """`d` with animation `src` duplicated as `new`, no frame / sound / effect events; its index."""
+    import struct
+    if new in names:
+        return d, names.index(new)
+    at, n, rows = _anim_block(bytes(d), names)
+    name, e, start, end, first = rows[names.index(src)]
+    elem = bytearray(d[e:e + ANIM_ES])
+    struct.pack_into('<I', elem, 0, len(new) << 24)
+    for off in ANIM_BLOCKS[:3]:
+        struct.pack_into('<II', elem, off, 0, 0)
+    blob_end = start + len(name) + struct.unpack_from('<I', d, e + 0x34)[0]
+    spans = _chunks(d, e, first, blob_end)
+    keep = bytes(d[spans[0x7C][0]:spans[0x7C][1]])
+    data = new.encode('latin-1') + bytes(d[start + len(name):first]) + keep
+    tail = rows[-1][3]
+    d[tail:tail] = data
+    d[at + 16 + n * ANIM_ES:at + 16 + n * ANIM_ES] = elem
+    struct.pack_into('<I', d, at + 8, n + 1)
+    # the count's second copy: the root struct's block field
+    hits = [i for i in range(0x40, at, 4) if struct.unpack_from('<I', d, i)[0] == n]
+    if len(hits) != 1:
+        raise ValueError('%d root copies of the animation count' % len(hits))
+    struct.pack_into('<I', d, hits[0], n + 1)
+    return d, n
+
+
+def add_fire_row(d, mode, cls, index):
+    """`d` with a `gh` weapon type on mode > class holding one overlay, fire_1 -> animation `index`
+    (the row's bytes copied from a one-overlay row of the same graph)."""
+    import struct
+    import h2_graph_teach as G
+    at, end, elems, chunks = G.modes_chunk(bytes(d))
+    donor = next(e for e in elems if e[0] == 'type' and
+                 [struct.unpack_from('<I', d, e[3] + o)[0] for o in (4, 16, 28, 40, 52, 64)] == [0, 1, 0, 0, 0, 0])
+    m = next(e for e in elems if e[0] == 'mode' and e[1] == at and G.label(d, e) == mode)
+    c = next(e for e in elems if e[0] == 'class' and m[4] <= e[3] < m[5] and G.label(d, e) == cls)
+    tc = next(k for k, v in chunks.items() if v[0] == 'type' and c[4] <= k < c[5])
+    rows = [e for e in elems if e[0] == 'type' and e[1] == tc]
+    if 'gh' in [G.label(d, e) for e in rows]:
+        return d, False
+    _so, ds, de = donor[3], donor[4], donor[5]
+    old = G.label(d, donor)
+    raw = bytes(d[ds:de])
+    chunk = raw[len(old):]                       # dfbt header, the overlay struct, its string + IINA
+    ov_at = 16
+    old_ov = chunk[ov_at + 3]
+    ov = bytearray(chunk[ov_at:ov_at + 8])
+    pair = bytes(ov[4:8])
+    struct.pack_into('<I', ov, 0, 6 << 24)
+    new_pair = struct.pack('<hh', -1, index)
+    ov[4:8] = new_pair
+    rest = chunk[ov_at + 8 + old_ov:]
+    if rest.count(pair) > 1:
+        raise ValueError('the donor overlay index is ambiguous')
+    data = b'gh' + chunk[:ov_at] + bytes(ov) + b'fire_1' + rest.replace(pair, new_pair)
+    st = bytearray(d[donor[3]:donor[3] + 76])
+    struct.pack_into('<I', st, 0, 2 << 24)
+    _k, n, sz, cend = chunks[tc]
+    d[cend:cend] = data
+    d[tc + 16 + n * sz:tc + 16 + n * sz] = st
+    struct.pack_into('<I', d, tc + 8, n + 1)
+    struct.pack_into('<I', d, c[3] + 4, n + 1)
+    return d, True
+
+
+def fire_rows():
+    import os
+    import sys
+    sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    import h2_graph_teach as G
+    import h2_stringid
+    import h2_tagfield as tf
+    import re
+    import struct
+    dry = '--dry' in sys.argv
+    for rel, mode, cls, how in FIRE_ROWS:
+        path = _os.path.join(H2EK, 'tags', rel)
+        original = open(path, 'rb').read()
+        keep = _os.path.join(G.BACKUP, _os.path.basename(path))
+        if not _os.path.exists(keep):
+            raise SystemExit('no stock copy of %s on E:' % path)
+        d = bytearray(original)
+        if how[0] == 'clone':
+            x = tf.export(path)
+            pool = x[x.find('<block name="animations"'):x.find('<block name="modes">')]
+            names = re.findall(r'<element index="\d+">\s*<field name="name" type="string id">([^<]*)<', pool)
+            d, index = clone_animation(d, how[1], how[2], names)
+        else:
+            at, end, elems, chunks = G.modes_chunk(bytes(d))
+            m = next(e for e in elems if e[0] == 'mode' and e[1] == at and G.label(d, e) == how[1])
+            c = next(e for e in elems if e[0] == 'class' and m[4] <= e[3] < m[5] and G.label(d, e) == how[2])
+            t = next(e for e in elems if e[0] == 'type' and c[4] <= e[3] < c[5] and G.label(d, e) == how[3])
+            o = next(e for e in elems if e[0] == 'action' and t[4] <= e[3] < t[5] and G.label(d, e) == 'fire_1')
+            index = struct.unpack_from('<h', d, o[3] + 6)[0]
+        d, added = add_fire_row(d, mode, cls, index)
+        if bytes(d) == original:
+            print('%s: fire row already there' % _os.path.basename(path))
+            continue
+        G.modes_chunk(bytes(d))
+        if dry:
+            print('%s: dry, +%d bytes, fire_1 -> animation %d' % (_os.path.basename(path), len(d) - len(original), index))
+            continue
+        before = h2_stringid.export(path)
+        open(path, 'wb').write(bytes(d))
+        after = h2_stringid.export(path)
+        lost = [r for r in before if r not in after]
+        if lost or not any(r[2] == 'gh' for r in after):
+            open(path, 'wb').write(original)
+            raise SystemExit('%s refused, restored: %d rows lost %s' % (path, len(lost), lost[:3]))
+        print('%s: gh row + fire_1 -> animation %d, +%d bytes, %d more rows, every original row '
+              'unchanged' % (_os.path.basename(path), index, len(d) - len(original), len(after) - len(before)))
+
+
 if __name__ == '__main__':
     import sys as _sys
     if '--blank' in _sys.argv:
         for _row in BLANKS:
             blank(*_row)
+    elif '--fire-rows' in _sys.argv:
+        fire_rows()
     else:
         write_side_jms()

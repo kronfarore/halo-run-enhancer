@@ -4542,7 +4542,16 @@
      "Weapon Damage Modifier": 0.84
     }
    ],
-   "balanced_rule": "WDM x 0.84 (BALANCED_BASELINE Halo 2 damage)"
+   "balanced_rule": "WDM x 0.84 (BALANCED_BASELINE Halo 2 damage)",
+   "balanced_props": {
+    "Maximum Firing Range": 1.5,
+    "Normal Combat Range": 0.5,
+    "Normal Combat Range Max": 1.2,
+    "Timid Combat Range": 0.5,
+    "Timid Combat Range Max": 1.2,
+    "Aggressive Combat Range": 0.5,
+    "Aggressive Combat Range Max": 1.2
+   }
   }
  }
 }
