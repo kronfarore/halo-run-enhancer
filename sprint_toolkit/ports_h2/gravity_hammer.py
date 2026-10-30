@@ -593,11 +593,18 @@ PORT = {
     # warthog_p; +2853 bytes, 130 rows), dervish 2 (combat, crouch; +1053 bytes, 44 rows), every
     # original row unchanged; stock kept in E:\HaloBackups\h2_graph_teach. SHARED Bungie tags
     'graph_teach': [(r'objects\characters\masterchief\masterchief.model_animation_graph', 'sword=melee', {}),
-                    (r'objects\characters\dervish\dervish.model_animation_graph', 'sword=melee', {})],
+                    (r'objects\characters\dervish\dervish.model_animation_graph', 'sword=melee', {}),
+                    # boot on Sacred Icon + The Great Journey (user: 'Plasma Pistol only'): the game
+                    # refused the hammer on the Arbiter -- dervish's sword class holds 4 actions (land,
+                    # turn), the idle / moves come from its PARENT graph's combat > sword, and the
+                    # Elite graph had no `melee`. A class must exist in the parent too
+                    (r'objects\characters\elite\elite.model_animation_graph', 'sword=melee', {})],
     'backup': {'extra': [H2EK + r'\tags\objects\characters\masterchief\masterchief.model_animation_graph',
                          H2EK + r'\tags\objects\characters\dervish\dervish.model_animation_graph',
                          r'E:\HaloBackups\h2_graph_teach\masterchief.model_animation_graph',
-                         r'E:\HaloBackups\h2_graph_teach\dervish.model_animation_graph']},
+                         H2EK + r'\tags\objects\characters\elite\elite.model_animation_graph',
+                         r'E:\HaloBackups\h2_graph_teach\dervish.model_animation_graph',
+                         r'E:\HaloBackups\h2_graph_teach\elite.model_animation_graph']},
     # step 11 -- `python ai_firing_profile.py --h2-port gravity_hammer`: Halo 3's ai\generic hammer
     # entry (010_jungle) name-for-name over the H2 ENERGY BLADE's (the yardstick; Halo 2's only
     # player melee weapon with an ai\generic entry -- Tartarus's hammer data lives in his own
