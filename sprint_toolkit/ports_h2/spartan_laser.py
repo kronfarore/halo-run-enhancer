@@ -479,6 +479,14 @@ PORT = {
             (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'forward exponent', '', 0, 0, 0.0,
              {'anchor': ('forward radius', 4)}),
             (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'outward velocity', '', 0, 0, 15.0),
+            # 4b, second run (2026-10-30): the beam's air damage range (Halo 3's 0-500: no falloff inside its
+            # 120 wu; the beam rifle's 0-120 faded it out) and speed; the splash's pushback + outward exponent
+            (SL + r'\projectiles\spartan_laser_beam.projectile', 'air damage range', '', 0, 0, [0.0, 500.0]),
+            (SL + r'\projectiles\spartan_laser_beam.projectile', 'initial velocity', '', 0, 0, 4000.0),
+            (SL + r'\projectiles\spartan_laser_beam.projectile', 'final velocity', '', 0, 0, 4000.0),
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'pushback', '', 0, 0, 0.3),
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'outward exponent', '', 0, 0, 0.0,
+             {'anchor': ('outward radius', 4)}),
             # THE BEAM (look, first pass): the beam rifle's two contrails (inner core, outer glow, both
             # additive) recoloured from its purple to Halo 3's laser red (Halo 1's A8: RED 1, 0.15, 0.1;
             # a white-hot core), the outer glow wider (Halo 3's beam is thick)
@@ -717,7 +725,7 @@ PORT = {
                                      RL + r'\damage_effects\rocket_launcher_explosion.damage_effect')},
         'target': {'weapon': (SL + r'\spartan_laser.weapon', RL + r'\rocket_launcher.weapon'),
                    'projectile': (SL + r'\projectiles\spartan_laser_beam.projectile', RL + r'\projectiles\rocket.projectile'),
-                   'damage_effect': (SL + r'\damage_effects\spartan_laser_beam.damage_effect',
+                   'damage_effect': (SL + r'\damage_effects\spartan_laser_splash.damage_effect',
                                      RL + r'\damage_effects\rocket_launcher_explosion.damage_effect')},
     },
 
@@ -748,6 +756,7 @@ PORT = {
              'value': 79.5, 'card': 'Beam Damage', 'original': 100.0,
              'note': "Halo 3's detonation 20 x 5 rounds, the rocket ratio"}
             for f in ('Damage Upper Bound', 'Damage Upper Bound Max')],
+        # (4b's AOE core radius 0.3 has no plugin field: Balanced keeps the 0.15)
         'fp_animations': r'objects\characters\*\fp\weapons\support_high\fp_spartan_laser\fp_spartan_laser',
         'reload_mult': None,
         'desc': ("Halo 3's Spartan Laser carried into Halo 2 with its own model, textures, sounds and "
@@ -763,6 +772,6 @@ PORT = {
     'firing_profile': {'from_game': 'Halo 3', 'from_map': 'halo3\\maps\\010_jungle.map', 'from_weapon': 'objects\\weapons\\support_high\\spartan_laser\\spartan_laser',
                        'donor_weapon': r'objects\weapons\support_high\rocket_launcher\rocket_launcher',
                        'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
-    'test': {'level': '03b_newmombasa', 'dervish_level': '06a_sentinelwalls'},   # parallel step 2
+    'test': {'level': '03b_newmombasa', 'dervish_level': '04a_gasgiant'},   # parallel step 2
     'residency': {'levels': 'all', 'placements': False},
 }
