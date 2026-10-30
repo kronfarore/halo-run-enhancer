@@ -51,13 +51,12 @@ PORT = {
                   "value in both games (the Beam Rifle / Sniper ratios shrink the range 500 -> 120 to "
                   "29 wu and break the heat; the Sentinel Beam has no charge / zoom leg). Charge x1 "
                   "(the rocket tags agree: recovery 0.8, reload 5.0; not the 112/116 animation ratio). "
-                  "Hunter armour: 'Default keeps the original number, Balanced uses the balanced "
-                  "formula' -> x0.5 both (H3 laser 0.5 x H2 rocket 1 / H3 rocket 1; Halo 1's port is "
-                  "the same formula: H1 rocket hunter_armor 1.0 -> 0.5, no change)",
+                  "Hunter armour: the formula gave x0.5, but Halo 2 has no damage group for it (only a new "
+                  "group in the shared globals): boot 2, user: 'accept the x1 on Hunter' (one beam kills)",
         'balanced': {'damage': 453.4,          # 570 x 350 / 440
                      'charge_s': 2.5, 'vent_s': 2.25, 'battery_shots': 5, 'range': 120.0,
                      'zoom': 2.5, 'aim': (1.0, 45.0, 5.0, 25.0),   # autoaim range 25 x 45 / 25
-                     'hunter_armor': 0.5, 'melee': 'smash_melee (shared, x1)',
+                     'hunter_armor': 1.0, 'melee': 'smash_melee (shared, x1)',
                      'ready_frames': 28.6},    # 31 x H2 RL 24 / H3 RL 26
         'candidates': {
             'provisional': 'Rocket Launcher',
@@ -180,6 +179,18 @@ PORT = {
                    # gas, smoke, sparks and a scorch -> the BRUTE SHOT grenade's detonation (fiery burst,
                    # flare, smoke, scorch; about that size) as the beam's detonation effect
                    (r'effects\impact\explosion_small\brute_shot\detonation.effect', FX + r'\sl_impact.effect'),
+                   # BOOT 4 (user): 'the surface scorching is too small and purple rather than red or
+                   # black': the scorch is the beam rifle's own decal, played through the material effects.
+                   # Halo 3's impact decals: a black scorch (0.125-0.2, 15-20 s) + a laser-red glow (0.115,
+                   # 2.25 s) -> the beam's own HIT effect with a red glow decal chained to Bungie's blast scorch
+                   (r'effects\impact\plasma_fast\beam_rifle\impact.effect', FX + r'\sl_hit.effect'),
+                   (r'effects\decals\bullet_holes\beam_rifle_inner_glow.decal', FX + r'\sl_glow.decal'),
+                   (r'effects\decals\blast_scorches\default_blast.decal', FX + r'\sl_scorch.decal'),
+                   # BOOT 4 (user): 'the hitbox isn't like the original': Halo 3's beam is no thin line --
+                   # collision radius 0.15 and a DETONATION of 20 x 5 rounds over 0..0.6 wu (near misses burn).
+                   # The splash = the rocket explosion's clone (explosion_large, its breaking effect), step 4
+                   (RL + r'\damage_effects\rocket_launcher_explosion.damage_effect',
+                    SL + r'\damage_effects\spartan_laser_splash.damage_effect'),
                    # step 7: the beam rifle's HUD (battery text, heat meter, zoomed meters, scope widgets)
                    (r'ui\hud\beam_rifle.new_hud_definition', r'ui\hud\spartan_laser.new_hud_definition')],
         'wiring': [
@@ -233,6 +244,17 @@ PORT = {
             (SL + r'\projectiles\spartan_laser_beam.projectile', 'effe', '', FX + r'\sl_impact',
              'detonation effect (ground)', {'field': 'detonation effect (ground)',
                                             'record_from': ('maximum range', '', 0, 40)}),
+            # the splash (boot 4): its EMPTY detonation damage, 16 bytes on
+            (SL + r'\projectiles\spartan_laser_beam.projectile', 'jpt!', '', SL + r'\damage_effects\spartan_laser_splash',
+             'detonation damage', {'field': 'detonation damage', 'record_from': ('maximum range', '', 0, 56)}),
+            # the scorch (boot 4): hit effect -> red glow -> black blast scorch; the material effects' 56
+            # beam-rifle impacts -> the laser's hit
+            (FX + r'\sl_hit.effect', 'deca', r'effects\decals\bullet_holes\beam_rifle_inner_glow', FX + r'\sl_glow',
+             'the red glow decal'),
+            (FX + r'\sl_glow.decal', 'deca', r'effects\decals\bullet_holes\beam_rifle_outer_glow', FX + r'\sl_scorch',
+             'chained: the black scorch'),
+            (FX + r'\spartan_laser.material_effects', 'effe', r'effects\impact\plasma_fast\beam_rifle\impact',
+             FX + r'\sl_hit', "the beam's own hit", {'every': True}),
         ],
         # (tag, class, path, marker, like class, scale function): the plasma pistol's charge cue
         'append_attachments': [
@@ -345,13 +367,13 @@ PORT = {
             # BOOT 2 (user, 2026-10-29): 'move 0.5 units to the right, 1 unit down' (1 unit = 0.01 wu,
             # y = left): (0, 0, -0.005) -> (0, -0.005, -0.015)
             # BOOT 3: 'move 1 more unit down' -> (0, -0.005, -0.025)
-            (SL + r'\spartan_laser.weapon', 'first person weapon offset', '', 0, 0, [0.0, -0.005, -0.025]),
+            (SL + r'\spartan_laser.weapon', 'first person weapon offset', '', 0, 0, [0.0, -0.005, -0.015]),   # boot 4: 'back up 1 unit, then it's good'
             # (the beam's collision radius: 4b's 0.15 reverted to 0 after boot 2 -- the row below)
             # BOOT 2: 'the laser doesn't fire from the muzzle' -- the beam rifle's barrel first-person
             # offset is 0 (the camera). Halo 1's A8 measured the laser's FP muzzle at (0.215, -0.053,
             # -0.007) of the view; + boot 2's move -> (0.215, -0.058, -0.022) (Halo 3's own 0, -0.05, 0
             # leans on its 1p beam system, which Halo 2 lacks)
-            (SL + r'\spartan_laser.weapon', 'first person offset', 'barrels', 0, 0, [0.238, -0.063, -0.03],   # boot 3: computed muzzle
+            (SL + r'\spartan_laser.weapon', 'first person offset', 'barrels', 0, 0, [0.238, -0.063, -0.02],   # the computed muzzle + the placement
              {'anchor': ('fire recovery time', 92)}),   # the rocket's 0, -0.1, 0 sits at fire recovery +92
             # BOOT 2: 'battery 39 after 3 shots' (Halo 1's A8 again): 0.2 x 3 in float32 = 0.6000000238
             # -> 39 %. The float just under 0.2 shows 80 / 60 / 40 / 20 but leaves 0.99999994 after five
@@ -419,10 +441,44 @@ PORT = {
             # a search to a block's FIRST occurrence. They name vent03-05, which the laser lacks: left)
             (FX + r'\spartan_laser_fire.effect', 'camera mode', 'particle systems', 6, 0, 2,
              {'anchor': ('coordinate system', 6)}),
-            # BOOT 2: 'no impact effect visible' -- 4b had given the INSTANT beam Halo 3's collision
-            # radius 0.15 (by the ratio); Bungie's instant beams (beam rifle, sniper) all use 0: back to 0
-            (SL + r'\projectiles\spartan_laser_beam.projectile', 'collision radius', '', 0, 0, 0.0,
+            # the beam's collision radius, Halo 3's 0.15: boot 2 had it with 'no impact effect', boot 3 went
+            # to Bungie's 0 and showed only a very small one; boot 4 (user): 'the hitbox isn't like the
+            # original' -> back to 0.15, the impact now carried by detonation + material effects
+            (SL + r'\projectiles\spartan_laser_beam.projectile', 'collision radius', '', 0, 0, 0.15,
              {'anchor': ('maximum range', -24)}),   # collision, arming, danger, timer x2, min velocity
+            # BOOT 4 (user): 'the charge light is still white' -- both lights are red; the white is the muzzle
+            # LENS FLARE: a reflection without 'ignore light color' (bit 4) takes no colour of its own
+            (FX + r'\sl_charge.lens_flare', 'flags', 'reflections', 0, 0, 16, {'anchor': ('bitmap index', -4)}),
+            # the scorch (boot 4; Halo 3: glow 0.115 for 2.25 s, scorch 0.125-0.2 for 15-20 s; 'too small'
+            # with the beam rifle's 0.2 -> larger): a laser-red glow, then a black blast scorch
+            (FX + r'\sl_glow.decal', 'radius', '', 0, 0, [0.25, 0.25]),
+            (FX + r'\sl_glow.decal', 'color lower bounds', '', 0, 0, [1.0, 0.2, 0.1]),
+            (FX + r'\sl_glow.decal', 'color upper bounds', '', 0, 0, [1.0, 0.2, 0.1]),
+            (FX + r'\sl_glow.decal', 'lifetime', '', 0, 0, [2.25, 2.25]),
+            (FX + r'\sl_scorch.decal', 'radius', '', 0, 0, [0.45, 0.45]),
+            (FX + r'\sl_scorch.decal', 'lifetime', '', 0, 0, [18.0, 18.0]),
+            (FX + r'\sl_scorch.decal', 'decay time', '', 0, 0, [5.0, 5.0]),
+            # THE SPLASH (boot 4, 'the hitbox'; Halo 3: 20 x 5 rounds over 0..0.6 wu, AOE core 0.15; the rest
+            # step 4b's rows, source vs rocket onto the Halo 2 rocket's). A direct hit: the impact's 570 (+ this,
+            # where the beam stops on a unit; Halo 1's A8 the same)
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'radius', '', 0, 0, [0.0, 0.6]),
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'AOE core radius', '', 0, 0, 0.15),
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'damage lower bound', '', 0, 0, 0.0,
+             {'anchor': ('AOE core radius', 4)}),
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'damage upper bound', '', 0, 0, [100.0, 100.0]),
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'instantaneous acceleration', '', 0, 0, 0.183333),
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'active camouflage damage', '', 0, 0, 0.033333),
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'rider minimum transfer damage scale', '', 0, 0, 0.375),
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'AI stun radius', '', 0, 0, 3.5),
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'AI stun bounds', '', 0, 0, [0.85, 0.5]),
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'shake radius', '', 0, 0, 3.6),
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'rotation', '', 0, 0, 0.7),
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'random translation', '', 0, 0, 0.04),
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'forward velocity', '', 0, 0, 30.0),
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'forward radius', '', 0, 0, 2.0),
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'forward exponent', '', 0, 0, 0.0,
+             {'anchor': ('forward radius', 4)}),
+            (SL + r'\damage_effects\spartan_laser_splash.damage_effect', 'outward velocity', '', 0, 0, 15.0),
             # THE BEAM (look, first pass): the beam rifle's two contrails (inner core, outer glow, both
             # additive) recoloured from its purple to Halo 3's laser red (Halo 1's A8: RED 1, 0.15, 0.1;
             # a white-hot core), the outer glow wider (Halo 3's beam is thick)
@@ -473,7 +529,9 @@ PORT = {
         # boot 2 (user, screenshot 3: 'a little messed up compared to original icons'): rows 3-5 of the box
         # held the plate's own border pixels (blue 156), read as the symbol's top colour -> a flat dark
         # blue drawing over the whole box. Bungie's symbol spans rows 11-31 (green 196 -> 9 over blue ~225)
-        'fallback_box': (80, 202, 7, 33),     # boot 3: the whole beam rifle symbol, right of the plate's divider
+        # boot 4 (user's screenshot: 'there is a line that shouldn't be there'): x1 202 sampled the plate's
+        # chamfered corner border (rows 7-9) as the background and smeared it across the row: x1 196
+        'fallback_box': (80, 196, 7, 33),     # the whole beam rifle symbol, right of the plate's divider
         # boot 3 (user's screenshot: 'the HUD icon still has issues' -- the mesh silhouette at 24 px reads
         # as a soft blob): Halo 3's OWN HUD icon of the laser (chud weapon_scematics sprite 14, Bungie's
         # drawing) as the shape, mirrored to face right like Halo 2's symbols
@@ -684,7 +742,12 @@ PORT = {
              'value': 453.4, 'card': 'Beam Damage', 'original': 570.0,
              'note': 'step 4a (user 2026-10-28): the rocket ratio, direct hits with the AOE bumps counted -- '
                      'H2 rocket 150 + 200 / H3 rocket 240 + 200 = 0.795; 570 x 0.795'}
-            for f in ('Damage Lower Bound', 'Damage Upper Bound', 'Damage Upper Bound Max')],
+            for f in ('Damage Lower Bound', 'Damage Upper Bound', 'Damage Upper Bound Max')] + [
+            # the splash (boot 4), the same ratio: 100 x 0.795
+            {'class': 'jpt!', 'tag': SL + r'\damage_effects\spartan_laser_splash', 'field': f, 'block': None,
+             'value': 79.5, 'card': 'Beam Damage', 'original': 100.0,
+             'note': "Halo 3's detonation 20 x 5 rounds, the rocket ratio"}
+            for f in ('Damage Upper Bound', 'Damage Upper Bound Max')],
         'fp_animations': r'objects\characters\*\fp\weapons\support_high\fp_spartan_laser\fp_spartan_laser',
         'reload_mult': None,
         'desc': ("Halo 3's Spartan Laser carried into Halo 2 with its own model, textures, sounds and "
