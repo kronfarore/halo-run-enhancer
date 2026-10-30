@@ -305,6 +305,11 @@ PORT = {
         'port_hud': r'ui\hud\brute_mauler',
         'weapon': MA + r'\excavator.weapon',
         'rounds': 10, 'rows': 1,
+        # boot 2 (user: Original should show 5 pips, Balanced 10): the meter is a FRACTION reveal,
+        # so one art per magazine -- seq 0 Original's 5 (Halo 3's tab proportions, 36 x 46 -> 20 x
+        # 26), seq 1 Balanced's 10; the catalog's Balanced rows set ammo_meter_right / _left
+        # (widgets 2 / 3) to sequence 1
+        'sequences': [{'rounds': 5, 'tick_w': 20}, {'rounds': 10}],
         'canvas': (198, 28), 'tick_w': 16,
         'tick_art': {'h3': ('ballistic_meters', 13), 'h': 26},
         'backpack': NEW_HUD + r'\backpack_weapons',
@@ -554,7 +559,13 @@ PORT = {
         'extra_rows': [{'class': 'weap', 'tag': MA + r'\excavator', 'field': 'Dual Wield Damage Scale',
                         'block': 'Barrels', 'value': 0.583333, 'card': 'Dual Weapon Damage', 'original': 0.7,
                         'note': "user 4a 2026-10-28: Halo 3's 0.7 x the SMG's H3 -> H2 0.833 (the Spiker's "
-                                "route; the shotgun has no dual row)"}],
+                                "route; the shotgun has no dual row)"}] + [
+            # the meter's 10-pip art (sequence 1, h2_port_meter `sequences`) for Balanced's 10-round
+            # magazine; Original keeps sequence 0's 5 pips (boot 2, user). Quarterscreen stays -1.
+            {'class': 'nhdt', 'tag': r'ui\hud\brute_mauler', 'field': '%s Sequence Index' % scr,
+             'block': 'Bitmap Widgets', 'index': w, 'value': 1, 'card': None, 'original': 0,
+             'note': 'ammo meter %s: the 10-pip art for the 10-round Balanced magazine' % side}
+            for w, side in ((2, 'right'), (3, 'left')) for scr in ('Fullscreen', 'Halfscreen')],
         'fp_animations': r'objects\characters\*\fp\weapons\pistol\fp_excavator\fp_excavator',
         'reload_mult': None,
         'desc': ('%s carried from %s into Halo 2 with its own model, textures, sounds, blade melee and '

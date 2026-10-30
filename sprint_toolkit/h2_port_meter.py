@@ -10,6 +10,8 @@ the threshold field is laid over every pixel first, then the tick art without to
     donor_meter, rel, name        the donor's meter tag, the meters folder, the port's bitmap name
     donor_hud, port_hud, weapon   the HUD cloned donor -> port, the weapon repointed at it
     rounds, rows, canvas, tick_w  the art (keep the donor's canvas so the widget does not move)
+    sequences                     [{'rounds', 'tick_w'?}, ...] one meter a magazine size on one
+                                  multi-sequence plate (seq 0 = Original; Balanced rows pick another)
     backpack, backpack_port, backpack_size, model_3p   the stowed icon drawn from the port's mesh
     preview                       a --show preview file name in %TEMP%
 
@@ -134,6 +136,27 @@ def build(m, rounds, rows):
     return Image.fromarray(sheet, 'RGBA')
 
 
+def plate(sheets):
+    """Several meters as ONE multi-sequence bitmap (the Mauler, boot 3: Original 5 rounds,
+    Balanced 10 -- the meter is a FRACTION reveal, so each magazine needs its own art): Bungie's
+    colour-plate layout (the dual plates, h2_port_hud_plate) -- pixel (0,0) the BLUE background
+    key, (1,0) the MAGENTA sequence divider, a full magenta row opening each sequence, one image a
+    sequence ringed by background. Key and divider carry alpha 0 like Bungie's; the art's own
+    background is (0, 0, threshold <= 254, 0), never the key."""
+    w = max(s.size[0] for s in sheets) + 2
+    h = sum(s.size[1] + 3 for s in sheets) + 1
+    out = np.zeros((h, w, 4), np.uint8)
+    out[:, :, 2] = 255                                   # blue key, alpha 0
+    out[0, 1] = (255, 0, 255, 0)
+    y = 1
+    for s in sheets:
+        out[y, :] = (255, 0, 255, 0)                     # the sequence's divider row
+        a = np.asarray(s)
+        out[y + 2:y + 2 + a.shape[0], 1:1 + a.shape[1]] = a
+        y += a.shape[0] + 3
+    return Image.fromarray(out, 'RGBA')
+
+
 def point(tag, cls, old, new):
     have = h2_tagref.references(tag)
     if (cls, new) in have and (cls, old) not in have:
@@ -204,7 +227,15 @@ def main(argv=None):
     rounds = m['rounds']
     if '--rounds' in argv:
         rounds = int(argv[argv.index('--rounds') + 1])
-    art = build(m, rounds, m.get('rows', 3))
+    if m.get('sequences') and '--rounds' not in argv:
+        # `sequences` [{'rounds', 'tick_w'?, 'rows'?}, ...]: one meter a magazine size, sequence
+        # 0 = the tags' own (Original) magazine; the catalog's Balanced rows pick another by the
+        # meter widgets' sequence index
+        art = plate([build(dict(m, tick_w=s.get('tick_w', m['tick_w'])), s['rounds'],
+                           s.get('rows', m.get('rows', 3))) for s in m['sequences']])
+        print('   %d sequences on one %dx%d plate' % (len(m['sequences']), art.size[0], art.size[1]))
+    else:
+        art = build(m, rounds, m.get('rows', 3))
     data = os.path.join(H2EK, 'data', m['rel'])
     os.makedirs(data, exist_ok=True)
     tif = os.path.join(data, m['name'] + '.tif')
