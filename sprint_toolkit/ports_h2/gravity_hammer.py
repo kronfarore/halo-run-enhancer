@@ -319,7 +319,7 @@ PORT = {
             # wielder too. jpt flags bit 1 'Area Damage Players Only' + bit 0 'Don't Scale By Distance'
             # with a radius of 1.5: the shove becomes AREA damage, which AI units ignore. Layout as the
             # explosion clone's (radius camo -48, flags -36)
-            (GH + r'\damage_effects\gravity_hammer_port_trigger.damage_effect', 'radius', '', 0, 0, [1.5, 1.5],
+            (GH + r'\damage_effects\gravity_hammer_port_trigger.damage_effect', 'radius', '', 0, 0, [2.5, 2.5],
              {'anchor': ('active camouflage damage', -48)}),
             (GH + r'\damage_effects\gravity_hammer_port_trigger.damage_effect', 'flags', '', 0, 0, 3,
              {'anchor': ('active camouflage damage', -36)}),
@@ -669,7 +669,9 @@ def write_side_jms():
 BLANKS = [(FX + r'\gravity_hammer_port_impact.effect', 'snd!', r'sound\weapons\gravity_hammer_port\gh_hit', 1),
           (r'objects\characters\masterchief\fp\weapons\melee\fp_gravity_hammer_port'
            r'\fp_gravity_hammer_port.model_animation_graph', 'effe',
-           r'effects\objects\weapons\melee\energy_blade\blade_activate', 0)]
+           r'effects\objects\weapons\melee\energy_blade\blade_activate', 0),
+          # Armed test 2: the firing damage (the wielder shove) off -- it moved into the blast, below
+          (GH + r'\gravity_hammer_port.weapon', 'jpt!', GH + r'\damage_effects\gravity_hammer_port_trigger', 0)]
 
 
 def blank(rel, cls, path, keep):
@@ -909,9 +911,67 @@ def fire_rows():
               'unchanged' % (_os.path.basename(path), index, len(d) - len(original), len(after) - len(before)))
 
 
+# Armed test 2 (Gravemind, user: 'even weirder grip'): Bungie's hammer has a third hand marker,
+# right_hand_brute (the Brute's right hand; Halo 3's mesh has none, so Brutes took the Chief's). Their
+# hold spreads the hands 37 units along a bent shaft (R 5.67, 1.28, 19.36; L -1.04, 0.54, 55.77 on
+# Bungie's mesh), the port's is straight: the marker puts the port's shaft through BOTH hand points,
+# the left hand just under the head (z 19), so the right one is 37.03 lower, and turns it by the
+# hands' tilt. Node 0, JMS units. A geometry re-run drops it: run after it.
+#     python ports_h2\gravity_hammer.py --brute-grip     (under the H2 kit lock)
+def brute_grip():
+    import math
+    import sys
+    sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    import h2_jms
+    import h2_port_geometry
+    r = (5.67, 1.28, 19.36)
+    l = (-1.04, 0.54, 55.77)
+    q = (-0.009396, 0.190417, -0.144801, -0.970920)      # Bungie's right_hand_brute (x, y, z, w)
+    d = [b - a for a, b in zip(r, l)]
+    span = math.sqrt(sum(c * c for c in d))
+    half = math.atan2(d[0], d[2]) / 2.0
+    rx, ry, rz, rw = 0.0, -math.sin(half), 0.0, math.cos(half)      # the tilt, inverted
+    x, y, z, w = q
+    rot = (rw * x + rx * w + ry * z - rz * y, rw * y - rx * z + ry * w + rz * x,
+           rw * z + rx * y - ry * x + rz * w, rw * w - rx * x - ry * y - rz * z)
+    path = _os.path.join(H2EK, 'data', GH, 'render', 'gravity_hammer_port.jms')
+    m = h2_jms.read(path)
+    m.markers = [k for k in m.markers if k.name != 'right_hand_brute']
+    m.markers.append(h2_jms.Marker('right_hand_brute', 0, rot, (0.0, 0.0, 19.0 - span), -1.0))
+    h2_jms.write(path, m)
+    print('right_hand_brute at z %.2f, rot %s' % (19.0 - span, ['%.4f' % c for c in rot]))
+    g = PORT['geometry']
+    h2_port_geometry.tool_render(g, g.get('render') or [])
+
+
+# Armed test 2 (user: 'they still get affected by their own pushback'): a FIRING damage hits its
+# wielder directly, whoever that is, and 'Area Damage Players Only' cannot apply to it (and a hurt AI
+# turns round to look for the attacker). The shove moves into the BLAST: the impact effect's free
+# (blanked) part carries the same jpt as AREA damage, players only, radius 2.5 from the burst (1.2 wu
+# out) -- no AI wielder feels it, and a player in reach is thrown back from the head. Halo 1's user
+# rule: 'the shockwave should push the player slightly backwards'.
+#     python ports_h2\gravity_hammer.py --blast-shove    (--blank first)
+def blast_shove():
+    import sys
+    sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    import h2_tagref as R
+    tag = _os.path.join(H2EK, 'tags', FX + r'\gravity_hammer_port_impact.effect')
+    jpt = GH + r'\damage_effects\gravity_hammer_port_trigger'
+    if ('jpt!', jpt) in R.references(tag):
+        print('the blast already carries the shove')
+        return
+    R.fill_reference(tag, 'snd!', jpt)
+    R.set_class(tag, 'snd!', jpt, 'jpt!')
+    print(R.references(tag))
+
+
 if __name__ == '__main__':
     import sys as _sys
-    if '--blank' in _sys.argv:
+    if '--brute-grip' in _sys.argv:
+        brute_grip()
+    elif '--blast-shove' in _sys.argv:
+        blast_shove()
+    elif '--blank' in _sys.argv:
         for _row in BLANKS:
             blank(*_row)
     elif '--fire-rows' in _sys.argv:
