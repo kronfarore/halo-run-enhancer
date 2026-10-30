@@ -116,6 +116,10 @@ def overlay(w, ex, entry):
             if r.get('nth') == 1:
                 err[r['field']] = r['value']
             continue
+        # the shot's OWN damage effect: another jpt! row (the Spartan Laser's splash, a melee) would
+        # overwrite the same field
+        if r['class'] == 'jpt!' and r.get('tag', '').lower() != w['impact damage'].lower():
+            continue
         rows[(r['class'], r['field'])] = r['value']
     g = rows.get
     if ('jpt!', 'Damage Upper Bound') in rows:
@@ -173,6 +177,14 @@ def read(label, path, fp, entry, balanced, log):
         # a weapon paced by its fire recovery alone (Halo 2's shotgun: rate 0, recovery 1.0 s)
         w['rps'] = [1.0 / w['fire recovery']] * 2
         w['fire recovery'] = 0.0
+    if 'charge' in w['trigger behavior'] and 'charge' in tag.s('new triggers/[0]/primary action'):
+        # a charge-to-fire weapon (the Spartan Laser: a release fires nothing): one shot a charge, and
+        # a shot that overheats adds the vent. ttk() puts the first charge in front of the first shot
+        vent = ((w['overheated threshold'] - w['heat recovery threshold']) / w['overheated heat loss']
+                if w['heat per round'] >= w['overheated threshold'] > 0 else 0.0)
+        w['charge'] = tag.f('new triggers/[0]/charging time')
+        w['rps'] = [1.0 / (w['charge'] + vent)] * 2
+        w['heat per round'] = w['accel'] = w['fire recovery'] = 0.0
     per = tag.f('magazines/[0]/rounds reloaded') if mags else 0
     if per and w['mag'] and per < w['mag']:
         w['reload'] *= w['mag'] / per         # shell by shell: the tag's time is per shell
@@ -208,7 +220,7 @@ def ttk(g, targets, w):
         msh = g.multiplier(groups, shm)[0] if esh > 0 else 0
         n, _ = tc.shots_to_kill(esh, ebo, per * msh, per * g.multiplier(groups, bom)[0])
         t, _ = t2.sim_player(n, w)
-        out.append((label, n, t))
+        out.append((label, n, t + w.get('charge', 0.0)))
     return out
 
 

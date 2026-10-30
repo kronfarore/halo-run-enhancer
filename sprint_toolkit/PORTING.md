@@ -3941,8 +3941,12 @@ autoaim range 45; charge, vent, battery, range, zoom x1. Hunter x1, accepted by 
 * **Left open (user: only if cheap):** AI re-press the trigger during the vent and the cue starts, nothing
   fires. Firing separation 4-6 s already exceeds the vent, so the data does not explain it. A fix = an
   object function (primary_charged scaled by NOT overheated), not attempted.
-* **`h2_role_compare` reads the laser wrong:** it takes the splash row and 4/s (`reports/h2_spartan_laser_5b.txt`
-  head note): a charge weapon is out of its model.
+* **`h2_role_compare` on a charge weapon:** only the shot's own impact damage rows count (the splash row
+  overwrote the beam's), and a charge-to-fire trigger paces at charge + vent, the first charge in the TTK.
+* **Step 4b's flags are list 3, by hand:** the beam rifle's 'aim assists only when zoomed' survived list 2
+  = done. Read the flag NAMES of weapon, trigger, barrel and projectile against the source. Also from that
+  pass: prediction charge, heat illumination, firing noise. Decided, kept: tracking type none (no guided
+  projectile), weapon type undefined, damage reporting type, final velocity 4000, AOE core 0.15.
 * Sound keeps: `sl_vent_loop`, `sl_charging` are the port's own lsnds beside their attachments.
 * Drop sounds: Halo 3's laser uses the rocket launcher's material effects; `sl_drop`, `sl_drop_soft`.
 

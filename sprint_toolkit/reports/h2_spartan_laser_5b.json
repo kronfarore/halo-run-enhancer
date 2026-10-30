@@ -35,13 +35,13 @@
   {
    "label": "Spartan Laser (port)",
    "tag": "objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
-   "damage": 79.5,
+   "damage": 453.4,
    "projectiles": 1.0,
    "rate": [
-    4.0,
-    4.0
+    0.21052631578947367,
+    0.21052631578947367
    ],
-   "dps": 318.0,
+   "dps": 95.45263157894736,
    "mag": 0,
    "reload": 0.0,
    "carry": 0,
@@ -60,27 +60,27 @@
     25.0
    ],
    "dual": false,
-   "heat": 1.0,
+   "heat": 0.0,
    "ttk": [
     [
      "Elite minor",
-     4,
-     7.25
+     1,
+     2.5
     ],
     [
      "Brute minor",
-     4,
-     7.25
+     1,
+     2.5
     ],
     [
      "Grunt minor",
      1,
-     0.0
+     2.5
     ],
     [
      "Jackal minor",
      1,
-     0.0
+     2.5
     ]
    ]
   },

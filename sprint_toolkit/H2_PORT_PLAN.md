@@ -1086,6 +1086,10 @@ colour; lens flare `modulation factor`; `rim_safe`; CLASS_DONORS; quat_continuit
 popup killer for H2 tool runs, level names in game names, checklists in text, THE WORLD MODEL CHECK back on
 the closing list (it had dropped out since Halo 1).
 
+**Step 4b, final pass (2026-10-30):** list 2's 5 leftovers are all decided (Halo 3's barrel 0 shot count is its
+tap's; FP offset the user's; velocity 4000; AOE core 0.15 no plugin row). List 3 by hand found 4 rows: the
+aim-assist flag, prediction, heat illumination, firing noise. Written; verified by export; NOT booted.
+
 **Open:** enemies re-pressing during the vent start the cue without firing (cosmetic; not cheap). The
 Flamethrower's shipped plate / backpack do not regenerate from its config (memory h2-flamethrower-port).
 Enhancer hand-off: shared notes a2_spartan_laser_progress.md.

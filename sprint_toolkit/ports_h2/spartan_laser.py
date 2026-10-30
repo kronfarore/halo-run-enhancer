@@ -446,6 +446,16 @@ PORT = {
              {'anchor': ('anchor', 2)}),
             (r'ui\hud\spartan_laser.new_hud_definition', 'flags', 'bitmap widgets', 11, 0, 9),
             (r'ui\hud\spartan_laser.new_hud_definition', 'flags', 'bitmap widgets', 12, 0, 9),
+            # the final 4b pass, list 3 by hand (2026-10-30): Halo 3's weapon has autoaim unzoomed ('magnitizes
+            # only when zoomed' is its one zoom gate, Halo 2 has none) -- the beam rifle's 'aim assists only
+            # when zoomed' off, 'cannot fire at maximum age' kept; prediction `charge` (Halo 3's, the plasma
+            # pistol's: what a co-op client predicts), heat illumination 1, firing noise loud
+            (SL + r'\spartan_laser.weapon', 'flags', '', 0, 2, 2048),
+            (SL + r'\spartan_laser.weapon', 'prediction', 'new triggers', 0, 0, 2,
+             {'anchor': ('secondary barrel', 2)}),
+            (SL + r'\spartan_laser.weapon', 'heat illumination', '', 0, 0, 1.0,
+             {'anchor': ('heat loss per second', 4)}),
+            (SL + r'\spartan_laser.weapon', 'firing noise', 'barrels', 0, 0, 2),
             # the charge cue recoloured from the plasma pistol's green to Halo 3's laser red (A8: 1, 0.15, 0.1);
             # the flare a little bigger than the pistol's (a support weapon's muzzle)
             (FX + r'\sl_charge.light', 'specular upper bound', '', 0, 0, [1.0, 0.15, 0.1]),
