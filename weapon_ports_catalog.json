@@ -10541,7 +10541,31 @@
      "note": "Halo 3's detonation 20 x 5 rounds, the rocket ratio"
     }
    ],
-   "fp_animations": "objects\\characters\\*\\fp\\weapons\\support_high\\fp_spartan_laser\\fp_spartan_laser"
+   "fp_animations": "objects\\characters\\*\\fp\\weapons\\support_high\\fp_spartan_laser\\fp_spartan_laser",
+   "tag_map": {
+    "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion": "jpt! objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_beam & objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_splash",
+    "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_impact": "jpt! objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_beam & objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_splash"
+   },
+   "card_map": {
+    "Explosion Damage": "Beam Damage",
+    "Radius": "Impact Radius"
+   },
+   "skip_cards": [
+    "Ammo Inventory",
+    "Ammo Loaded",
+    "Reload Time",
+    "Projectile Range",
+    "Projectile Velocity"
+   ],
+   "card_donors": {
+    "Plasma Pistol": [
+     "Heat Threshold",
+     "Heat Loss",
+     "Heat Per Round",
+     "Age Per Round",
+     "Charging Time"
+    ]
+   }
   }
  ],
  "Halo 3: ODST": [
