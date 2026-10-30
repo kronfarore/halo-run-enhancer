@@ -965,9 +965,197 @@ def blast_shove():
     print(R.references(tag))
 
 
+# Armed test 3 (Gravemind; user's choices 2026-10-30: 'melee swing = blast', 'try a grenade throw').
+# Bungie's sword and hammer are MELEE ONLY (no trigger, no barrel): their AI charges and its attack is
+# the melee animation, Tartarus's blast an EFFECT EVENT in it. The port needs a trigger (the player's
+# 5 energy a slam), so its AI charged, then meleed with no blast. So:
+#   - Brute + Elite: the `gh` row's `melee` action = a DUPLICATE of their melee swing whose effect
+#     event (at the hit frame) plays gravity_hammer_port_impact_ai: the impact effect at the UNIT's
+#     `melee_effect` / `melee` marker (`up` only exists for a projectile's detonation);
+#   - Grunts + Jackals have no melee at all: fire_1 = a duplicate of throw_grenade (Grunt) / shakefist
+#     (Jackal, it has no throw) played as a REPLACEMENT overlay, an experiment.
+#     python ports_h2\gravity_hammer.py --ai-swings      (under the H2 kit lock)
+AI_IMPACT = FX + r'\gravity_hammer_port_impact_ai'
+AI_SWINGS = [(r'objects\characters\brute\brute.model_animation_graph', 'melee', 'combat:melee:melee:var1', 'combat:melee:gh:melee', 'melee_effect'),
+             (r'objects\characters\elite\elite.model_animation_graph', 'melee', 'combat:sword:melee:var0', 'combat:melee:gh:melee', 'melee')]
+AI_OVERLAYS = [(r'objects\characters\grunt\grunt.model_animation_graph', 'combat:pistol:throw_grenade', 'combat:melee:gh:fire_1'),
+               (r'objects\characters\jackal\jackal.model_animation_graph', 'combat:pistol:shakefist', 'combat:melee:gh:fire_1')]
+
+
+def _names(path):
+    import re
+    import h2_tagfield as tf
+    x = tf.export(path)
+    pool = x[x.find('<block name="animations"'):x.find('<block name="modes">')]
+    return re.findall(r'<element index="\d+">\s*<field name="name" type="string id">([^<]*)<', pool)
+
+
+def add_effect_reference(d, path):
+    """`d` with `path` appended to the effect references block; its index."""
+    import struct
+    p = path.encode('latin-1')
+    at = None
+    k = d.find(SIG, 0x40)
+    while k >= 0 and at is None:
+        v, n, sz = struct.unpack_from('<III', d, k + 4)
+        if sz == 20 and d[k + 16:k + 20] == b'effe'[::-1]:
+            at = (k, n)
+        k = d.find(SIG, k + 4)
+    if at is None:
+        raise ValueError('no effect references block')
+    k, n = at
+    q = k + 16 + n * 20
+    paths = []
+    for e in range(n):
+        ln = struct.unpack_from('<I', d, k + 16 + e * 20 + 8)[0]
+        paths.append(bytes(d[q:q + ln]))
+        q += ln + 1
+    if p in paths:
+        return d, paths.index(p)
+    elem = bytearray(d[k + 16 + (n - 1) * 20:k + 16 + n * 20])
+    struct.pack_into('<I', elem, 8, len(p))
+    d[q:q] = p + b'\0'
+    d[k + 16 + n * 20:k + 16 + n * 20] = elem
+    struct.pack_into('<I', d, k + 8, n + 1)
+    if struct.unpack_from('<I', d, 0x7C)[0] != n:
+        raise ValueError('the root effect count is not at 0x7C')
+    struct.pack_into('<I', d, 0x7C, n + 1)
+    return d, n
+
+
+def clone_event_animation(d, src, new, names, effect=None, replacement=False):
+    """Duplicate `src` as `new`. effect: its one effect event = that reference, at the hit frame
+    (the frame event's), frame + sound events kept; else no events, `replacement` = overlay type."""
+    import struct
+    if new in names:
+        return d, names.index(new)
+    at, n, rows = _anim_block(bytes(d), names)
+    name, e, start, end, first = rows[names.index(src)]
+    elem = bytearray(d[e:e + ANIM_ES])
+    struct.pack_into('<I', elem, 0, len(new) << 24)
+    blob_end = start + len(name) + struct.unpack_from('<I', d, e + 0x34)[0]
+    spans = _chunks(d, e, first, blob_end)
+    def part(off):
+        return bytes(d[spans[off][0]:spans[off][1]]) if off in spans else b''
+    if effect is None:
+        for off in ANIM_BLOCKS[:3]:
+            struct.pack_into('<II', elem, off, 0, 0)
+        tail = part(0x7C)
+        if replacement:
+            elem[0x10] = 2
+    else:
+        frames = part(0x58)
+        hit = struct.unpack_from('<h', frames, 18)[0]      # the first frame event's frame
+        event = SIG + struct.pack('<III', 1, 1, 4) + struct.pack('<hh', effect, hit)
+        struct.pack_into('<I', elem, 0x70, 1)
+        tail = frames + part(0x64) + event + part(0x7C)
+    data = new.encode('latin-1') + bytes(d[start + len(name):first if first is not None else end]) + tail
+    last = rows[-1][3]
+    d[last:last] = data
+    d[at + 16 + n * ANIM_ES:at + 16 + n * ANIM_ES] = elem
+    struct.pack_into('<I', d, at + 8, n + 1)
+    if struct.unpack_from('<I', d, 0x94)[0] != n:
+        raise ValueError('the root animation count is not at 0x94')
+    struct.pack_into('<I', d, 0x94, n + 1)
+    return d, n
+
+
+def _row(d, mode, cls, typ):
+    import h2_graph_teach as G
+    at, end, elems, chunks = G.modes_chunk(bytes(d))
+    m = next(e for e in elems if e[0] == 'mode' and e[1] == at and G.label(d, e) == mode)
+    c = next(e for e in elems if e[0] == 'class' and m[4] <= e[3] < m[5] and G.label(d, e) == cls)
+    t = next(e for e in elems if e[0] == 'type' and c[4] <= e[3] < c[5] and G.label(d, e) == typ)
+    return t, elems
+
+
+def add_action(d, mode, cls, label, index):
+    """The `gh` row (actions empty, one overlay) gets action `label` -> animation `index`: an
+    actions chunk built from its overlay chunk."""
+    import struct
+    t, _e = _row(d, mode, cls, 'gh')
+    if struct.unpack_from('<I', d, t[3] + 4)[0]:
+        return d
+    o = t[4] + 2                                  # after the label 'gh': the overlays chunk
+    head = bytes(d[o:o + 16])
+    st = bytearray(d[o + 16:o + 24])
+    ln = st[3]
+    rest = bytes(d[o + 24 + ln:t[5]])
+    pair = bytes(st[4:8])
+    new_pair = struct.pack('<hh', -1, index)
+    struct.pack_into('<I', st, 0, len(label) << 24)
+    st[4:8] = new_pair
+    if rest[:4] != b'IINA':
+        raise ValueError('no IINA descriptor after the overlay')
+    data = head + bytes(st) + label.encode('latin-1') + rest[:16]      # the index lives in the struct
+    d[o:o] = data
+    struct.pack_into('<I', d, t[3] + 4, 1)
+    return d
+
+
+def set_overlay(d, mode, cls, typ, label, index):
+    """Overlay `label` of a row -> animation `index` (the index lives in the overlay's struct)."""
+    import struct
+    import h2_graph_teach as G
+    t, elems = _row(d, mode, cls, typ)
+    o = next(e for e in elems if e[0] == 'action' and t[4] <= e[3] < t[5] and G.label(d, e) == label)
+    new = struct.pack('<hh', -1, index)
+    d[o[3] + 4:o[3] + 8] = new
+    return d
+
+
+def ai_swings():
+    import shutil
+    import sys
+    sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    import h2_graph_teach as G
+    import h2_stringid
+    TAGS = _os.path.join(H2EK, 'tags')
+    dry = '--dry' in sys.argv
+    plain = _os.path.join(TAGS, FX + r'\gravity_hammer_port_impact.effect')
+    for marker in sorted({r[4] for r in AI_SWINGS}):
+        dest = _os.path.join(TAGS, AI_IMPACT + ('' if marker == 'melee_effect' else '_' + marker) + '.effect')
+        if not dry and not _os.path.exists(dest):
+            shutil.copy(plain, dest)
+            print('   ' + h2_stringid.rename(dest, {'up': marker}, write=True))
+    jobs = [(rel, None, src, new, _m) for rel, _c, src, new, _m in AI_SWINGS] + [(rel, 'o', src, new, None) for rel, src, new in AI_OVERLAYS]
+    for rel, kind, src, new, marker in jobs:
+        path = _os.path.join(TAGS, rel)
+        original = open(path, 'rb').read()
+        names = _names(path)
+        d = bytearray(original)
+        if kind is None:
+            ref = AI_IMPACT + ('' if marker == 'melee_effect' else '_' + marker)
+            d, eff = add_effect_reference(d, ref)
+            d, index = clone_event_animation(d, src, new, names, effect=eff)
+            d = add_action(d, 'combat', 'melee', 'melee', index)
+        else:
+            d, index = clone_event_animation(d, src, new, names, replacement=True)
+            d = set_overlay(d, 'combat', 'melee', 'gh', 'fire_1', index)
+        G.modes_chunk(bytes(d))
+        if dry:
+            print('%s: dry, +%d bytes, %s = animation %d' % (_os.path.basename(path), len(d) - len(original), new, index))
+            continue
+        if bytes(d) == original:
+            print('%s: already' % _os.path.basename(path))
+            continue
+        before = h2_stringid.export(path)
+        open(path, 'wb').write(bytes(d))
+        after = h2_stringid.export(path)
+        lost = [r for r in before if r not in after]
+        # the row's own overlay index moves in set_overlay: that one row may change
+        if len(lost) > (0 if kind is None else 1) or not any(r[2] == new for r in after):
+            open(path, 'wb').write(original)
+            raise SystemExit('%s refused, restored: %d rows lost %s' % (path, len(lost), lost[:3]))
+        print('%s: %s = animation %d, +%d bytes, %d more rows, %d original rows changed'
+              % (_os.path.basename(path), new, index, len(d) - len(original), len(after) - len(before), len(lost)))
+
+
 if __name__ == '__main__':
     import sys as _sys
-    if '--brute-grip' in _sys.argv:
+    if '--ai-swings' in _sys.argv:
+        ai_swings()
+    elif '--brute-grip' in _sys.argv:
         brute_grip()
     elif '--blast-shove' in _sys.argv:
         blast_shove()
