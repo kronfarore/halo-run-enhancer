@@ -3862,6 +3862,48 @@ sibling ratio (0 / 0.375-3.44). Read a chained row's legs before trusting it.
 
 ---
 
+### Halo 2: the Mauler, wave A4 (2026-10-28/30) -- pellets, dual wield again, two meters
+
+`ports_h2/brute_mauler.py` (prefix `mau2`, U+E141, Halo 3 `objects\weapons\pistol\excavator`). The AR's
+route, step for step; what was new:
+
+* **Donor and seed are separate choices.** Weapon donor the H2 Magnum (latch, whole-magazine reload,
+  dual). FP graph seed the PLASMA PISTOL: one-handed, dual, no left-hand IK, 15 sound slots in both
+  species; the magnum's graphs carry only 10 / 7 slots. With that seed the Spike Rifle's fixes are
+  CHECKS that came back clean: FP root already binds at identity (no `fp_root_identity`), no IK to drop,
+  Halo 3 keeps the left hand low in both species (3.8, 9.2, -26 cm; no `rest_left_arm`).
+* **Dual-ready sound slots need their arm flags** (graph Sound References: 2 left, 4 right, 8 FP only;
+  a dual animation plays once per arm): pinned per slot with `h2_port_numbers` `anchor_index`.
+* **Pellets:** Halo 3 keeps them on the PROJECTILE (conical spread 3 x 5), Halo 2 on the barrel
+  (`projectiles per shot`, spread by the barrel error). So the table reads 1: `value_overrides`.
+* **The barrel's two error sets:** nth 0 = DUAL, nth 1 = single wield; both pinned on an anchor
+  (`projectiles per shot`), since a zero field cannot be found by value. First magnetism angle / range
+  pair (nth 0) + throttle = the MELEE aim assist, nth 1 the weapon's.
+* **Lit shaders seeded from the gravity hammer pulse from dark** (its cosine, colours from dark blue):
+  Halo 3's Mauler wanders 50-100 %. `byte_edits` on the function: type 3, shape 10 (wander), colours
+  half grey + white. The textures step reseeds the shaders: the weapon step runs after it.
+* **Hud meter, three findings.**
+  1. Halo 2's meter lights by the COLOUR (magnum meter: G = the shape, alpha = shape x 136, B = threshold).
+     `tick_art` wrote flat colour, so lit pips were solid rectangles; fixed in the tool. Observed on
+     the 16 px Mauler pip; the 6 px Spike Rifle pip has the same bug, not yet re-run.
+  2. `h2_port_meter --show` RETURNS BEFORE `tool bitmaps`: it previews, it does not import.
+  3. **The meter is a fraction reveal: one art fits one magazine size.** Original 5 on a 10-pip art
+     spends 2 pips a shot. `sequences` [{'rounds', 'tick_w'}, ...] puts one meter per magazine on one
+     bitmap in Bungie's plate layout ((0,0) blue key, (1,0) magenta divider, a full magenta row per
+     sequence, images ringed by key; the art's background B <= 254, alpha 0, never equals the key).
+     Sequence 0 = the tags' Original magazine; Balanced `extra_rows`, class `nhdt`, block `Bitmap
+     Widgets`, index = each `ammo_meter_*` widget, Fullscreen + Halfscreen Sequence Index 1, `card`
+     None (Quarterscreen stays -1). The Halo 1 SAW's route. Only needed when the magazines differ.
+* **Glyph:** untinted U+E141, box 84 x 62: the box follows the art's width, or the pickup line
+  shows whitespace (160 was the Spike Rifle's).
+* **Test rounds = a full carry** (Balanced 10 + 40 in config; Original boots `--rounds 5,20`).
+* **Check 10:** a clone of the shotgun's firing effect throws a shell at `primary_ejection`; Halo 3's
+  Mauler has no ejection, no marker. Event 2 skip fraction 1 (`byte_edits`, field-verified). Tag-verified,
+  not booted (first person only, ships with the rebuild).
+* **Armed on a scripted level:** the script's `ai_place <squad> n` spawns only n of a squad's locations,
+  so with `--armed all` species dealt to other slots never appear (Regret: Brutes, Sentinels). Follow up
+  with `--armed brute,sentinel`: the nearest locations hold only the missing species.
+
 ## Halo Reach
 
 **COMPLETE 2026-09-30 -- all nine steps built and confirmed in game** on m20: world model

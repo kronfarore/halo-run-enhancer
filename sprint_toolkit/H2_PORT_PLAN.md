@@ -1059,3 +1059,29 @@ offset skipped), port_field_audit (`hops`), port_sound_refs (Halo 2 sound_keeps)
 Final checks (built 03a): refs OWN (melee shared by design), every sound OWN + 1 KEEP, one own
 volume entry (headroom 3.01), 4b list 2 = 0, check 10, resident in all 13, port_glyphs U+E13D
 captured (0 problems), validate_halo_json 0, 5b reports/h2_saw_5b.txt (Elite 1.05 s balanced).
+
+## A4: what the Mauler taught (2026-10-28/30, parallel step 2, DONE)
+
+The Halo 3 Mauler is a complete Halo 2 port: `ports_h2/brute_mauler.py`. Tested in game, CLASSIC:
+Regret (Chief) on Original, Uprising (Arbiter) on Balanced, Armed `--armed all` then
+`--armed brute,sentinel` on Regret. Every item confirmed by the user. Residency: palette entry in all
+13 levels; ships with the batched rebuild. PORTING "Halo 2: the Mauler, wave A4" is the recipe.
+
+**Step 4a (user):** yardstick the Shotgun, 10 pellets x 11.55, recovery 0.75, magazine 10 / carry 50
+(the x1.5 dual carry rule), dual damage scale 0.583, own blade melee x72/70, donor the Magnum. Elite 2
+shots 0.75 s, Brute 5 shots 3.0 s.
+
+**The AR's route held** again. Spike Rifle fixes as checks: all clean thanks to the plasma pistol seed
+(FP root, IK, left hand), so dual wield worked on boot 1. An OBSERVATION of two ports: the seed graph
+decides those fixes; pick a one-handed, IK-free seed with enough sound slots.
+
+**New:**
+1. `h2_port_meter`: `tick_art` colour carries the shape; `sequences` (one meter per magazine, Balanced
+   rows pick one). A port needs `sequences` only if Original and Balanced magazines differ.
+2. `h2_port_numbers`: `anchor_index` (pin a field by an anchor in another element of the block).
+3. Test process (user 2026-10-29): Original -> Balanced (the Arbiter boot) -> Armed.
+
+**Open follow-ups:** the Spike Rifle re-runs `h2_port_meter brute_spiker` (pip shape; 40 rounds on both
+number sets, so no `sequences`), then a boot. The casing removal (check 10) is tag-verified, not booted.
+Whether the Spike Rifle's lit parts also fade from dark (same hammer seed) was raised, not checked.
+Enhancer hand-off: the shared notes (a4_mauler.md).

@@ -26,7 +26,7 @@ PORT = {
     'wave': 'A4',
     'name': 'Mauler',
     'source': 'Halo 3',
-    'status': 'in progress',
+    'status': 'done',
     'source_tag': 'objects\\weapons\\pistol\\excavator\\excavator',
     'reservations': {
         'message_prefix': 'mau2',
@@ -581,7 +581,7 @@ PORT = {
     },
 
     # port_backup.py --game h2: the owned folders are derived; these are the Mauler's other edits
-    'backup': {'extra': [H2EK + r'\data\!extracted\magnum', H2EK + r'\data\!extracted\fp_magnum']},
+    'backup': {'extra': [H2EK + r'\data\!extracted\magnum\render\L1_magnum.jms', H2EK + r'\data\!extracted\magnum\render\L3_magnum.jms', H2EK + r'\data\!extracted\magnum\render\L5_magnum.jms', H2EK + r'\data\!extracted\fp_magnum\render\fp_magnum.jms']},
 
     # step 11 -- `python ai_firing_profile.py --h2-port brute_mauler`: Halo 3's ai\generic Mauler
     # entry (010_jungle) name-for-name into H2EK ai\generic, over the H2 SHOTGUN's (the yardstick:
