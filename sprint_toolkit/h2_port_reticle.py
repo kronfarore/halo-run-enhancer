@@ -224,7 +224,8 @@ def main(argv=None):
           % (donor.width, donor.height, int((d[:, :, 3] > 0).sum()),
              int((n[:, :, 3] > 0).sum())))
 
-    data = os.path.join(H2EK, 'data', REL)
+    # a dry run leaves the kit's source image alone: its picture goes to TEMP
+    data = os.path.join(H2EK, 'data', REL) if a.write else TEMP
     os.makedirs(data, exist_ok=True)
     tif = os.path.join(data, NAME + '.tif')
     art.save(tif, compression=None)

@@ -425,7 +425,8 @@ def main(argv=None):
     # size anyway, so the other three were never drawn. A dual-wield plate (all_images)
     # is written into the donor's own colour plate instead, separators and all
     sheet = all_images(donor, sheets, boxes, every) if every else sheets[0]
-    data = os.path.join(H2EK, 'data', REL)
+    # a dry run leaves the kit's source image alone: its picture goes to TEMP
+    data = os.path.join(H2EK, 'data', REL) if a.write else TEMP
     os.makedirs(data, exist_ok=True)
     tif = os.path.join(data, NAME + '.tif')
     sheet.save(tif, compression=None)

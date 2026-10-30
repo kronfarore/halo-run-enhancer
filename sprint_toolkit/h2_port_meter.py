@@ -237,7 +237,8 @@ def main(argv=None):
         print('   %d sequences on one %dx%d plate' % (len(m['sequences']), art.size[0], art.size[1]))
     else:
         art = build(m, rounds, m.get('rows', 3))
-    data = os.path.join(H2EK, 'data', m['rel'])
+    # --show leaves the kit's source image alone: its picture goes to TEMP
+    data = os.environ.get('TEMP', '.') if '--show' in argv else os.path.join(H2EK, 'data', m['rel'])
     os.makedirs(data, exist_ok=True)
     tif = os.path.join(data, m['name'] + '.tif')
     art.save(tif, compression=None)
