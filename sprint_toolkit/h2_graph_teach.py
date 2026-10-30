@@ -82,6 +82,9 @@ def walk(d, at, kind, elems, chunks):
                     raise ValueError('no %s descriptor at 0x%X (%s)' % (f[1], p, kind))
                 p += 16
             elif struct.unpack_from('<I', d, e + f[1])[0]:
+                # the Jackal + Drone graphs: a stale precache count with no chunk behind it
+                if f[2] == 'precache' and d[p:p + 4] != SIG:
+                    continue
                 p = walk(d, p, f[2], elems, chunks)
         elems.append((kind, at, i, e, start, p))
     chunks[at] = (kind, n, sz, p)
