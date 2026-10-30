@@ -514,7 +514,7 @@ H2_TREES += [t for t in _h2t if t[0].lower() not in _seen2]
 H2_SHARED += [x for x in _h2s if x[0].lower() not in _seen2]
 H2_SCRIPTS += tuple(s for s in (
     'H2_PORT_PLAN.md', 'kit_lock.py', 'h2_size_test_map.py', 'h2_stringid.py', 'h2_port_snapshot.py',
-    'h2_port_tool_proof.py', 'h2_tool_noise_check.py', 'h2_port_residency.py', 'h2_port_test_map.py', 'h2_rebuild_all.py',
+    'h2_weapon_state_probe.py', 'h2_port_tool_proof.py', 'h2_tool_noise_check.py', 'h2_port_residency.py', 'h2_port_test_map.py', 'h2_rebuild_all.py',
     'h2_port_geometry.py', 'h2_port_textures.py', 'h2_port_weapon.py', 'h2_port_numbers.py',
     'h2_port_collision.py', 'h2_port_meter.py', 'h2_port_hud_plate.py', 'h2_port_reticle.py',
     'h2_port_scope.py', 'h2_port_glyph.py', 'h2_port_messages.py', 'h2_port_animations.py',
