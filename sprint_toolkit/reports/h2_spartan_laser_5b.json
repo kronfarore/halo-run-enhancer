@@ -1,0 +1,296 @@
+{
+ "port": "Spartan Laser",
+ "balanced": true,
+ "targets": [
+  [
+   "Elite minor",
+   105.0,
+   45.0,
+   "energy_shield_thin_cov_elite",
+   "hard_metal_thin_cov_elite"
+  ],
+  [
+   "Brute minor",
+   0.0,
+   250.0,
+   "",
+   "tough_organic_flesh_brute"
+  ],
+  [
+   "Grunt minor",
+   0.0,
+   40.0,
+   "",
+   "soft_organic_flesh_grunt"
+  ],
+  [
+   "Jackal minor",
+   0.0,
+   60.0,
+   "energy_shield_thick_cov_jackal",
+   "soft_organic_flesh_jackal"
+  ]
+ ],
+ "rows": [
+  {
+   "label": "Spartan Laser (port)",
+   "tag": "objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+   "damage": 79.5,
+   "projectiles": 1.0,
+   "rate": [
+    4.0,
+    4.0
+   ],
+   "dps": 318.0,
+   "mag": 0,
+   "reload": 0.0,
+   "carry": 0,
+   "initial": 0,
+   "vel": [
+    4000.0,
+    4000.0
+   ],
+   "range": 120.0,
+   "error": [
+    0.0,
+    0.0
+   ],
+   "autoaim": [
+    1.0,
+    25.0
+   ],
+   "dual": false,
+   "heat": 1.0,
+   "ttk": [
+    [
+     "Elite minor",
+     4,
+     7.25
+    ],
+    [
+     "Brute minor",
+     4,
+     7.25
+    ],
+    [
+     "Grunt minor",
+     1,
+     0.0
+    ],
+    [
+     "Jackal minor",
+     1,
+     0.0
+    ]
+   ]
+  },
+  {
+   "label": "Rocket Launcher",
+   "tag": "objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+   "damage": 150.0,
+   "projectiles": 1.0,
+   "rate": [
+    1.25,
+    1.25
+   ],
+   "dps": 187.5,
+   "mag": 2,
+   "reload": 5.0,
+   "carry": 8.0,
+   "initial": 4.0,
+   "vel": [
+    8.0,
+    20.0
+   ],
+   "range": 175.0,
+   "error": [
+    0.0,
+    0.0
+   ],
+   "autoaim": [
+    5.0,
+    45.0
+   ],
+   "dual": false,
+   "heat": 0.0,
+   "ttk": [
+    [
+     "Elite minor",
+     2,
+     0.8
+    ],
+    [
+     "Brute minor",
+     2,
+     0.8
+    ],
+    [
+     "Grunt minor",
+     1,
+     0.0
+    ],
+    [
+     "Jackal minor",
+     1,
+     0.0
+    ]
+   ]
+  },
+  {
+   "label": "Beam Rifle",
+   "tag": "objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
+   "damage": 45.0,
+   "projectiles": 1.0,
+   "rate": [
+    4.0,
+    4.0
+   ],
+   "dps": 180.0,
+   "mag": 0,
+   "reload": 0.0,
+   "carry": 0,
+   "initial": 0,
+   "vel": [
+    1200.0,
+    1200.0
+   ],
+   "range": 120.0,
+   "error": [
+    0.5,
+    0.5
+   ],
+   "autoaim": [
+    1.0,
+    10.0
+   ],
+   "dual": false,
+   "heat": 0.65,
+   "ttk": [
+    [
+     "Elite minor",
+     3,
+     3.770833333333333
+    ],
+    [
+     "Brute minor",
+     6,
+     8.125
+    ],
+    [
+     "Grunt minor",
+     1,
+     0.0
+    ],
+    [
+     "Jackal minor",
+     2,
+     0.25
+    ]
+   ]
+  },
+  {
+   "label": "Sniper Rifle",
+   "tag": "objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+   "damage": 45.0,
+   "projectiles": 1.0,
+   "rate": [
+    2.0,
+    2.0
+   ],
+   "dps": 90.0,
+   "mag": 4,
+   "reload": 2.4,
+   "carry": 24.0,
+   "initial": 12.0,
+   "vel": [
+    1200.0,
+    1200.0
+   ],
+   "range": 120.0,
+   "error": [
+    0.5,
+    0.5
+   ],
+   "autoaim": [
+    1.0,
+    10.0
+   ],
+   "dual": false,
+   "heat": 0.0,
+   "ttk": [
+    [
+     "Elite minor",
+     3,
+     1.0
+    ],
+    [
+     "Brute minor",
+     6,
+     4.4
+    ],
+    [
+     "Grunt minor",
+     1,
+     0.0
+    ],
+    [
+     "Jackal minor",
+     2,
+     0.5
+    ]
+   ]
+  },
+  {
+   "label": "Sentinel Beam",
+   "tag": "objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
+   "damage": 2.0,
+   "projectiles": 1.0,
+   "rate": [
+    30.0,
+    30.0
+   ],
+   "dps": 60.0,
+   "mag": 0,
+   "reload": 0.0,
+   "carry": 0,
+   "initial": 0,
+   "vel": [
+    1200.0,
+    1200.0
+   ],
+   "range": 30.0,
+   "error": [
+    0.0,
+    0.0
+   ],
+   "autoaim": [
+    1.0,
+    12.0
+   ],
+   "dual": false,
+   "heat": 0.04,
+   "ttk": [
+    [
+     "Elite minor",
+     75,
+     2.4666666666666677
+    ],
+    [
+     "Brute minor",
+     125,
+     6.4107142857142865
+    ],
+    [
+     "Grunt minor",
+     20,
+     0.6333333333333333
+    ],
+    [
+     "Jackal minor",
+     30,
+     0.9666666666666666
+    ]
+   ]
+  }
+ ]
+}

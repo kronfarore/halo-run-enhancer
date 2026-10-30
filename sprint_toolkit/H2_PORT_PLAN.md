@@ -1066,6 +1066,28 @@ Final checks (built 03a): refs OWN (melee shared by design), every sound OWN + 1
 volume entry (headroom 3.01), 4b list 2 = 0, check 10, resident in all 13, port_glyphs U+E13D
 captured (0 problems), validate_halo_json 0, 5b reports/h2_saw_5b.txt (Elite 1.05 s balanced).
 
+## A2: what the Spartan Laser taught (2026-10-28/30, parallel step 2, DONE)
+
+The Halo 3 Spartan Laser is a complete Halo 2 port: `ports_h2/spartan_laser.py`. Tested in game, CLASSIC,
+8 boots: Metropolis (Chief) on Original, The Arbiter on Balanced, Armed on The Arbiter and Quarantine Zone.
+Every item confirmed by the user, world model included. Residency: palette entry in all 13 levels; ships
+with the batched rebuild. PORTING "Halo 2: the Spartan Laser, wave A2" is the recipe.
+
+**Step 4a (user):** yardstick the Rocket Launcher, 453.4 a beam, Hunter x1 (no Halo 2 group for Halo 3's x0.5),
+charge / vent / battery / range x1, autoaim range 45. Arbiter one-handed: Halo 3's data, kept.
+
+**New to the kit (each an observation of one port):** Halo 2's charge trigger works on a player weapon;
+the charge cue = `primary_charged` attachments; `h2_weapon_state_probe.py`; effect functions' 0x21 second
+colour; lens flare `modulation factor`; `rim_safe`; CLASS_DONORS; quat_continuity; hud `layers`, scope `disc`.
+
+**Process, from the user this port:** original numbers first (now the rule for every port), the assertion
+popup killer for H2 tool runs, level names in game names, checklists in text, THE WORLD MODEL CHECK back on
+the closing list (it had dropped out since Halo 1).
+
+**Open:** enemies re-pressing during the vent start the cue without firing (cosmetic; not cheap). The
+Flamethrower's shipped plate / backpack do not regenerate from its config (memory h2-flamethrower-port).
+Enhancer hand-off: shared notes a2_spartan_laser_progress.md.
+
 ## A4: what the Mauler taught (2026-10-28/30, parallel step 2, DONE)
 
 The Halo 3 Mauler is a complete Halo 2 port: `ports_h2/brute_mauler.py`. Tested in game, CLASSIC:

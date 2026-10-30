@@ -1,4 +1,4 @@
-r"""Spartan Laser into Halo 2 (H2_PORT_PLAN.md wave A (Halo 3), #A2) -- a phase-0 STUB (2026-10-20):
+r"""Spartan Laser into Halo 2 (H2_PORT_PLAN.md wave A (Halo 3), #A2) -- DONE 2026-10-30; a phase-0 STUB (2026-10-20):
 reservations, yardstick candidates, the proposed donor and the AI source. The port session fills
 the pipeline sections (ports_h2/__init__.py; ports_h2/saw.py is the complete example) and sets
 'status' to 'in progress' at its start, 'done' at its end.
@@ -23,7 +23,7 @@ PORT = {
     'wave': 'A2',
     'name': 'Spartan Laser',
     'source': 'Halo 3',
-    'status': 'in progress',
+    'status': 'done',
     'source_tag': 'objects\\weapons\\support_high\\spartan_laser\\spartan_laser',
     'reservations': {
         'message_prefix': 'spl2',

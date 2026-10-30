@@ -1,0 +1,19 @@
+NOTE (A2): this table is out of model for a charge weapon: dmg 79.5 is the SPLASH row, 4/s is a fallback.
+The real Balanced shot: 453.4 + splash, ~2.5 s charge, ~2.25 s vent, 5 shots a battery: one beam kills every minor here.
+
+Spartan Laser -- BALANCED (catalog rows on the ports), legendary, body shots (ttk_halo2); not a Halo 2 weapon here: Flak Cannon
+weapon                      dmg    rate/s    dps  mag reload init/max         vel range       error   autoaim dual
+Spartan Laser (port)       79.5       4-4  318.0    -   0.00      0/0   4000/4000   120         0-0      1/25     
+Rocket Launcher             150 1.25-1.25  187.5    2   5.00      4/8        8/20   175         0-0      5/45     
+Beam Rifle                   45       4-4  180.0    -   0.00      0/0   1200/1200   120     0.5-0.5      1/10     
+Sniper Rifle                 45       2-2   90.0    4   2.40    12/24   1200/1200   120     0.5-0.5      1/10     
+Sentinel Beam                 2     30-30   60.0    -   0.00      0/0   1200/1200    30         0-0      1/12     
+
+time to kill (shots / seconds):
+                              Elite minor      Brute minor      Grunt minor     Jackal minor
+Spartan Laser (port)           4 / 7.25 s       4 / 7.25 s       1 / 0.00 s       1 / 0.00 s
+Rocket Launcher                2 / 0.80 s       2 / 0.80 s       1 / 0.00 s       1 / 0.00 s
+Beam Rifle                     3 / 3.77 s       6 / 8.12 s       1 / 0.00 s       2 / 0.25 s
+Sniper Rifle                   3 / 1.00 s       6 / 4.40 s       1 / 0.00 s       2 / 0.50 s
+Sentinel Beam                 75 / 2.47 s     125 / 6.41 s      20 / 0.63 s      30 / 0.97 s
+wrote reports/h2_spartan_laser_5b.json

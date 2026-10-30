@@ -3904,6 +3904,48 @@ route, step for step; what was new:
   so with `--armed all` species dealt to other slots never appear (Regret: Brutes, Sentinels). Follow up
   with `--armed brute,sentinel`: the nearest locations hold only the missing species.
 
+### Halo 2: the Spartan Laser, wave A2 (2026-10-28/30) -- a CHARGE trigger on a player weapon
+
+Halo 3's laser (`ports_h2/spartan_laser.py`) on the Beam Rifle's weapon (battery + heat, instant beam,
+0 magazines), Halo 3's models, textures, sounds and FP animations, the AR's route. Yardstick the Rocket
+Launcher (Halo 3's laser group IS explosion_large). Balanced 453.4 a beam (570 x 350 / 440), splash 79.5,
+autoaim range 45; charge, vent, battery, range, zoom x1. Hunter x1, accepted by the user (no Halo 2 group).
+
+* **THE CHARGE (Scarab main gun's shape):** behavior 3 charge, primary barrel -1, secondary barrel 0,
+  both actions 1 charge, overcharged action 2 discharge, charged illumination 1. Works on a player
+  weapon; a release fires nothing. Measured with `h2_weapon_state_probe.py`: 2.52 s press to beam, vent
+  2.24 s. Field offsets from the secondary barrel: `numbers` rows, comments.
+* **THE CHARGE CUE is attachments, not the trigger's `charging effect`:** that effect is a one-shot, it
+  plays whole however short the press. The plasma pistol's way: lsnd / two lights / lens flare, each
+  primary scale `primary_charged`. (A file's `string_ids` + `append_attachments` 6th value.)
+* **Lens flare colour needs FOUR things** (four boots of 'still white'): the light tag names its OWN
+  flare; reflection `color`; `flags` bit 16 'ignore light color'; **`modulation factor` 1** (0 = none of
+  `color` applied); plus the flare's colour ANIMATION block (a colour function) recoloured. Modulation was
+  the last change before the user saw red; it is untested alone.
+* **Effect colour functions:** byte 1 0x20 = colour, **0x21 = a RANGE with a second colour at byte 16**.
+  Recolouring the first leaves the donor's second in the effect (the 'still blue' vent). Edit 16-byte runs.
+* **HUD plate:** `icon_art` (Halo 3's own weapon_scematics sprite, the mesh reads as a blob at 24 px),
+  `ramp`, `top`. A box from row 2 needs `rim_safe`: the erase's right sample stops before the chamfer on
+  the top rows, and dim images are the drawing over their OWN plate (no box-wide ratio).
+* **Zoomed bars:** swap the widget GROUPS' positions and flip bits, not the inputs -- art and colour
+  belong to the widget. No charge input exists in HUD widgets: Halo 3's moving triangle is impossible.
+* **The beam:** collision radius 0.15 + detonation splash 0..0.6 wu (near misses burn); detonation effects
+  for air / ground, placed from `maximum range` (record_from). The scorch = the material effects' hit
+  effect -> red glow decal -> chained black scorch.
+* **FP:** Halo 3's Arbiter FP animations hold it one-handed; user: keep. `quat_continuity` fixes a wrist
+  twist from quaternion sign flips in throw animations. Barrel `first person offset` puts the beam at the
+  muzzle (+92 from fire recovery).
+* **ARMED, class `missile`:** `h2_enemy_weapons.CLASS_DONORS` -- Jackals take `rifle` (their two-handed
+  stance; a pistol copy held it one-handed), Brutes `support` (they had no `missile`: refused the weapon,
+  stock Rocket Launcher and Fuel Rod included). All species fire it; the AI holds through the charge.
+* **Left open (user: only if cheap):** AI re-press the trigger during the vent and the cue starts, nothing
+  fires. Firing separation 4-6 s already exceeds the vent, so the data does not explain it. A fix = an
+  object function (primary_charged scaled by NOT overheated), not attempted.
+* **`h2_role_compare` reads the laser wrong:** it takes the splash row and 4/s (`reports/h2_spartan_laser_5b.txt`
+  head note): a charge weapon is out of its model.
+* Sound keeps: `sl_vent_loop`, `sl_charging` are the port's own lsnds beside their attachments.
+* Drop sounds: Halo 3's laser uses the rocket launcher's material effects; `sl_drop`, `sl_drop_soft`.
+
 ## Halo Reach
 
 **COMPLETE 2026-09-30 -- all nine steps built and confirmed in game** on m20: world model
