@@ -576,12 +576,14 @@ PORT = {
                          'note': "Halo 3's own (step 4a, user: the sword's lunge ratio x1.0)"}
                         for tag, card, lo, hi in (('slam', 'Hammer Damage', 150.0, 150.0),
                                                   ('explosion', 'Hammer Damage', 50.0, 160.0),
+                                                  ('explosion_ai', 'Hammer Damage', 50.0, 160.0),
                                                   ('melee', 'Melee Damage', 80.0, 80.0))
                         for field, value in (('Damage Lower Bound', lo), ('Damage Upper Bound', hi),
                                              ('Damage Upper Bound Max', hi))]
-                       + [{'class': 'jpt!', 'tag': GH + r'\damage_effects\gravity_hammer_port_explosion',
+                       + [{'class': 'jpt!', 'tag': GH + r'\damage_effects\gravity_hammer_port_%s' % tag,
                            'field': field, 'block': None, 'value': value, 'card': 'Hammer Radius',
                            'original': value, 'note': "Halo 3's own (step 4a)"}
+                          for tag in ('explosion', 'explosion_ai')
                           for field, value in (('Radius', 0.75), ('Radius Max', 1.5))]
                        + [{'class': 'weap', 'tag': GH + r'\gravity_hammer_port', 'field': 'Age Generated Per Round',
                            'block': 'Barrels', 'value': 0.04999999329447746, 'card': 'Energy Use',
@@ -1151,9 +1153,38 @@ def ai_swings():
               % (_os.path.basename(path), new, index, len(d) - len(original), len(after) - len(before), len(lost)))
 
 
+# Armed test 4 (user: 'Elites hit themselves with the blast'): an animation event's effect has no
+# damage owner, so 'Does Not Hurt Owner' is no help, and the Elite's `melee` marker is on its chest
+# (Tartarus's own blast reaches 0.8 wu from the hammer's head). The AI's blast = its own clone of the
+# explosion, flags 'Does Not Hurt Owner' + 'Does Not Hurt Friends' (9). The enhancer's Hammer cards
+# must reach it too (catalog: explosion_ai).
+#     python ports_h2\gravity_hammer.py --ai-blast       (--ai-swings first)
+AI_BLAST = GH + r'\damage_effects\gravity_hammer_port_explosion_ai'
+
+
+def ai_blast():
+    import shutil
+    import sys
+    sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    import h2_tagfield as tf
+    import h2_tagref as R
+    TAGS = _os.path.join(H2EK, 'tags')
+    plain = GH + r'\damage_effects\gravity_hammer_port_explosion'
+    dest = _os.path.join(TAGS, AI_BLAST + '.damage_effect')
+    if not _os.path.exists(dest):
+        shutil.copy(_os.path.join(TAGS, plain + '.damage_effect'), dest)
+    tf.set_field(dest, 'flags', 9, '', 0, 1)
+    for tail in ('', '_melee'):
+        fx = _os.path.join(TAGS, AI_IMPACT + tail + '.effect')
+        if ('jpt!', AI_BLAST) not in R.references(fx):
+            R.set_reference(fx, 'jpt!', plain, AI_BLAST)
+
+
 if __name__ == '__main__':
     import sys as _sys
-    if '--ai-swings' in _sys.argv:
+    if '--ai-blast' in _sys.argv:
+        ai_blast()
+    elif '--ai-swings' in _sys.argv:
         ai_swings()
     elif '--brute-grip' in _sys.argv:
         brute_grip()
