@@ -462,6 +462,8 @@ All of PORTING.md's steps 1-11 (the Halo 2 section's pipeline), plus:
   `--check` on the built maps;
 - **tested in game, CLASSIC**: the dry test map first (`h2_port_test_map.py --stage`), then enemy
   behaviour when the Armed side exists (0.5);
+- **the ally trade, in game** (user, 2026-10-30): a Chief level with Marines (Outskirts, `--armed marine
+  --share 0.5 --no-replace`): trade the port to a Marine and take one from a Marine, prompt + icon included;
 - **records**: the catalog entry (`make_port_catalog_h2.py <key> --write`), the enhancer hand-off
   (cards, Armed), PORTING notes, memory, `port_backup.py --game h2`, the config `status` 'done',
   and what the weapon taught written into this plan.

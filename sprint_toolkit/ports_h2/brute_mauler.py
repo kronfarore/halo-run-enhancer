@@ -159,16 +159,11 @@ PORT = {
         # wander, as Halo 3's) -> wander, colour 0 half grey, 1-3 white: whichever pair it blends, the
         # (already orange-tinted) mask reads 50-100 %. In the three lit shaders; the textures step
         # RESEEDS them -- run this step after it
-        # DARK WHEN EMPTY (re-check 2026-10-30, user; the Halo 1 Mauler's rule): `input name`
-        # primary_ammunition (the digits' input) on the glow's colour function: Bungie's plasma rifle
-        # gauge's form, a TRANSITION (type 2, 36 bytes) from colour 0 black to colour 3 white, shape 2
-        # very early, so it holds near full down to the last round. Costs Halo 3's wander: tried and
-        # lit at empty (2 boots): a time wave with `range name` (`has_ammo` object function, then
-        # `turned_on`, which does not follow ammo). The flare scales by primary_ammunition too
+        # Halo 3's muzzle lens flare scales by primary_ammunition (its own turns off with it). The
+        # glow stays Halo 3's wander, lit at empty (user, 2026-10-30; a Halo 1 style dark-at-empty was
+        # tried: `range name` on the time wave stayed lit, `input name` works but loses the wander)
         'append_attachments': [(MA + r'\excavator.weapon', 'lens', FX + r'\excavator_flare', 'primary_trigger',
                                 'ligh', 'primary_ammunition')],
-        'string_id_fills': [(MA + r'\shaders\%s.shader' % s, 'input name', 'animation properties', 0, 1, 'primary_ammunition')
-                            for s in ('mauler', 'mauler_metal', 'mauler_shiny')],
         'byte_edits': [(MA + r'\shaders\%s.shader' % s,
                         '03200200773c00000000000000000000ffc18400',
                         '03200a0080808000ffffff00ffffff00ffffff00')
@@ -180,12 +175,6 @@ PORT = {
             (FX + r'\excavator_fire.effect',
              '01000000f0b3f005d8520f01' + '00000000' * 2,
              '01000000f0b3f005d8520f01' + '00000000' + '0000803f', ('skip fraction',))],
-        'function_edits': [(MA + r'\shaders\%s.shader' % s,
-                            '03200a0080808000ffffff00ffffff00ffffff00'
-                            '0000803f00000000000000000000803f' '0000803f00000000000000000000803f',
-                            '02200200000000000000000000000000ffffff00'
-                            '000000000000803f000000000000803f')
-                           for s in ('mauler', 'mauler_metal', 'mauler_shiny')],
         'wiring': [
             (MA + r'\excavator.weapon', 'hlmt', MAG + r'\magnum', MA + r'\excavator', 'world model'),
             (MA + r'\excavator.model', 'mode', r'objects\weapons\rifle\battle_rifle\battle_rifle',
