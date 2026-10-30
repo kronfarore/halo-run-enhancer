@@ -534,8 +534,10 @@ PORT = {
             'weapon type / magazine flags': "Halo 3 'undefined' / 0 = the magnum's: none of the shotgun's "
                 "shell baggage (Halo 1's A6 finding)",
             'damage reporting type': "the magnum's (kill feed / medals only; Halo 2 has no mauler entry)",
-            'weapon attachments (Halo 3 2) / projectile attachments (Halo 3 1)': "the look: check 10 / step 3 "
-                "(Halo 3's lens flare and the pellet's tracer effect)",
+            'weapon attachments (Halo 3 2) / projectile attachments (Halo 3 1)': "the pellet's effect is EMPTY in "
+                "Halo 3 (no parts, no particles): nothing to port; the muzzle light is attachment 0; attachment 1, "
+                "an orange lens flare at primary_trigger (radius 0.125, on while ready, off at 0 ammo), is NOT "
+                "ported (re-check 2026-10-30: open, the user decides)",
             'barrels deceleration time\' (shotgun 0.25)': "Halo 3's Mauler 0 = the port's 0",
             'font icons / ground scales / falloff ranges / fp offset override': 'no Halo 2 counterpart '
                 '(the icon is step 8)',

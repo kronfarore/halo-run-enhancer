@@ -1084,4 +1084,6 @@ decides those fixes; pick a one-handed, IK-free seed with enough sound slots.
 **Open follow-ups:** the Spike Rifle re-runs `h2_port_meter brute_spiker` (pip shape; 40 rounds on both
 number sets, so no `sequences`), then a boot. The casing removal (check 10) is tag-verified, not booted.
 Whether the Spike Rifle's lit parts also fade from dark (same hammer seed) was raised, not checked.
-Enhancer hand-off: the shared notes (a4_mauler.md).
+Re-check 2026-10-30 (user): the pellet materials agree BY NAME (Halo 3 Mauler = Halo 3 Shotgun, the port the
+H2 shotgun's); NOT ported: Halo 3's muzzle lens flare (on while ready, off at 0 ammo), left open.
+Enhancer hand-off: the shared notes (a4_mauler.md), sent to the session 2026-10-30; Halo 2 cards not written yet.
