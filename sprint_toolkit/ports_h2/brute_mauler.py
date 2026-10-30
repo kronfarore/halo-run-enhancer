@@ -26,7 +26,7 @@ PORT = {
     'wave': 'A4',
     'name': 'Mauler',
     'source': 'Halo 3',
-    'status': 'done',
+    'status': 'in progress',
     'source_tag': 'objects\\weapons\\pistol\\excavator\\excavator',
     'reservations': {
         'message_prefix': 'mau2',
@@ -148,6 +148,7 @@ PORT = {
                    (r'objects\weapons\damage_effects\strike_melee.damage_effect', MA + r'\damage_effects\excavator_melee.damage_effect'),
                    (r'effects\objects\weapons\rifle\shotgun\shotgun_firing.effect', FX + r'\excavator_fire.effect'),
                    (r'effects\objects\weapons\rifle\shotgun\muzzle_flash.light', FX + r'\excavator_muzzle_flash.light'),
+                   (r'effects\lens_flares\plasma_pistol.lens_flare', FX + r'\excavator_flare.lens_flare'),
                    (r'effects\materials\objects\weapons\magnum.material_effects', FX + r'\excavator.material_effects'),
                    (r'effects\materials\objects\weapons\shotgun.material_effects', FX + r'\excavator_shard.material_effects')],
         # BOOT 1 (user, 05b: 'the glowing lights slowly come online ... and then fade back out'): the
@@ -158,10 +159,26 @@ PORT = {
         # wander, as Halo 3's) -> wander, colour 0 half grey, 1-3 white: whichever pair it blends, the
         # (already orange-tinted) mask reads 50-100 %. In the three lit shaders; the textures step
         # RESEEDS them -- run this step after it
+        # HAS_AMMO (re-check 2026-10-30, user): `has_ammo` = primary_ammunition x 50, clamped: any round
+        # = 1, empty = 0. It scales Halo 3's muzzle lens flare (radius 0.125, orange, its own turned off
+        # by primary_ammunition) and, the Halo 1 Mauler's rule, the glow: `range name` + the ranged bit
+        # (function byte 1 0x21), range 0 = f 0 = black, range 1 = Halo 3's wander 50-100 %
+        'functions': [(MA + r'\excavator.weapon', r'objects\weapons\pistol\needler\needler.weapon',
+                       'has_ammo', 50.0, 'hgil')],
+        'append_attachments': [(MA + r'\excavator.weapon', 'lens', FX + r'\excavator_flare', 'primary_trigger',
+                                'ligh', 'has_ammo')],
+        'string_id_fills': [(MA + r'\shaders\%s.shader' % s, 'range name', 'animation properties', 0, 1, 'has_ammo')
+                            for s in ('mauler', 'mauler_metal', 'mauler_shiny')],
         'byte_edits': [(MA + r'\shaders\%s.shader' % s,
                         '03200200773c00000000000000000000ffc18400',
                         '03200a0080808000ffffff00ffffff00ffffff00')
                        for s in ('mauler', 'mauler_metal', 'mauler_shiny')] + [
+            (MA + r'\shaders\%s.shader' % s,
+             '03200a0080808000ffffff00ffffff00ffffff00'
+             '0000803f00000000000000000000803f' '0000803f00000000000000000000803f',
+             '03210a0000000000ffffff00ffffff00ffffff00'
+             '0000803f000000000000000000000000' '0000803f000000000000003f0000803f')
+            for s in ('mauler', 'mauler_metal', 'mauler_shiny')] + [
             # CHECK 10: the shotgun firing effect's event 2 throws a shell from primary_ejection --
             # Halo 3's Mauler ejects nothing and its model has no such marker: the event's skip
             # fraction 1. Halo 3's flash is first-person glow / round / long flash, sparks and smoke,
@@ -257,6 +274,11 @@ PORT = {
             # step 4b (port_field_audit.py --port h2:brute_mauler, list 2: the ratio H3 Mauler / H3
             # Shotgun x the H2 Shotgun; list 4: both Halo 3 weapons agree -> the H2 Shotgun's)
             (MA + r'\excavator.weapon', 'bounding radius', '', 0, 0, 0.177778),            # 0.2 / 0.225 x 0.2
+            # Halo 3's muzzle lens flare (fx\active): radius 0.125, orange; the plasma pistol clone is
+            # third-person only (Halo 3's shows in both)
+            (FX + r'\excavator_flare.lens_flare', 'radius', 'reflections', 0, 0, [0.125, 0.125]),
+            (FX + r'\excavator_flare.lens_flare', 'color', 'reflections', 0, 0, [0.964706, 0.384314, 0.0862745]),
+            (FX + r'\excavator_flare.lens_flare', 'flags', '', 0, 0, 0),
             (MA + r'\excavator.weapon', 'illumination recovery time', 'barrels', 0, 0, 0.1),   # both 0.1
         ] + [
             # THE DUAL READY's ARM FLAGS (after step 9: a re-import keeps them, a --reseed resets them).
