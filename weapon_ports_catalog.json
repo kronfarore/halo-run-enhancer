@@ -9824,56 +9824,6 @@
    }
   },
   {
-   "weapon": "Spartan Laser",
-   "source": "Halo 3",
-   "donor": "Rocket Launcher",
-   "default_on": true,
-   "desc": "Halo 3's Spartan Laser carried into Halo 2 with its own model, textures, sounds and first-person animations for both species: hold the trigger 2.5 s and it fires one devastating beam by itself, overheating; five shots a battery, 2.5x zoom. Balanced through the Rocket Launcher: 453 damage a beam, a longer autoaim reach.",
-   "balance": [
-    {
-     "class": "weap",
-     "tag": "objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
-     "field": "Autoaim Range",
-     "block": null,
-     "value": 45.0,
-     "card": "Autoaim",
-     "original": 25.0,
-     "note": "step 4a: Halo 3's 25 x the rockets' 45 / 25"
-    },
-    {
-     "class": "jpt!",
-     "tag": "objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_beam",
-     "field": "Damage Lower Bound",
-     "block": null,
-     "value": 453.4,
-     "card": "Beam Damage",
-     "original": 570.0,
-     "note": "step 4a (user 2026-10-28): the rocket ratio, direct hits with the AOE bumps counted -- H2 rocket 150 + 200 / H3 rocket 240 + 200 = 0.795; 570 x 0.795"
-    },
-    {
-     "class": "jpt!",
-     "tag": "objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_beam",
-     "field": "Damage Upper Bound",
-     "block": null,
-     "value": 453.4,
-     "card": "Beam Damage",
-     "original": 570.0,
-     "note": "step 4a (user 2026-10-28): the rocket ratio, direct hits with the AOE bumps counted -- H2 rocket 150 + 200 / H3 rocket 240 + 200 = 0.795; 570 x 0.795"
-    },
-    {
-     "class": "jpt!",
-     "tag": "objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_beam",
-     "field": "Damage Upper Bound Max",
-     "block": null,
-     "value": 453.4,
-     "card": "Beam Damage",
-     "original": 570.0,
-     "note": "step 4a (user 2026-10-28): the rocket ratio, direct hits with the AOE bumps counted -- H2 rocket 150 + 200 / H3 rocket 240 + 200 = 0.795; 570 x 0.795"
-    }
-   ],
-   "fp_animations": "objects\\characters\\*\\fp\\weapons\\support_high\\fp_spartan_laser\\fp_spartan_laser"
-  },
-  {
    "weapon": "Gravity Hammer",
    "source": "Halo 3",
    "donor": "Energy Blade",
@@ -10518,6 +10468,76 @@
     }
    ],
    "fp_animations": "objects\\characters\\*\\fp\\weapons\\pistol\\fp_excavator\\fp_excavator"
+  },
+  {
+   "weapon": "Spartan Laser",
+   "source": "Halo 3",
+   "donor": "Rocket Launcher",
+   "default_on": true,
+   "desc": "Halo 3's Spartan Laser carried into Halo 2 with its own model, textures, sounds and first-person animations for both species: hold the trigger 2.5 s and it fires one devastating beam by itself, overheating; five shots a battery, 2.5x zoom. Balanced through the Rocket Launcher: 453 damage a beam, a longer autoaim reach.",
+   "balance": [
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 45.0,
+     "card": "Autoaim",
+     "original": 25.0,
+     "note": "step 4a: Halo 3's 25 x the rockets' 45 / 25"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_beam",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 453.4,
+     "card": "Beam Damage",
+     "original": 570.0,
+     "note": "step 4a (user 2026-10-28): the rocket ratio, direct hits with the AOE bumps counted -- H2 rocket 150 + 200 / H3 rocket 240 + 200 = 0.795; 570 x 0.795"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_beam",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 453.4,
+     "card": "Beam Damage",
+     "original": 570.0,
+     "note": "step 4a (user 2026-10-28): the rocket ratio, direct hits with the AOE bumps counted -- H2 rocket 150 + 200 / H3 rocket 240 + 200 = 0.795; 570 x 0.795"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_beam",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 453.4,
+     "card": "Beam Damage",
+     "original": 570.0,
+     "note": "step 4a (user 2026-10-28): the rocket ratio, direct hits with the AOE bumps counted -- H2 rocket 150 + 200 / H3 rocket 240 + 200 = 0.795; 570 x 0.795"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_splash",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 79.5,
+     "card": "Beam Damage",
+     "original": 100.0,
+     "note": "Halo 3's detonation 20 x 5 rounds, the rocket ratio"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_splash",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 79.5,
+     "card": "Beam Damage",
+     "original": 100.0,
+     "note": "Halo 3's detonation 20 x 5 rounds, the rocket ratio"
+    }
+   ],
+   "fp_animations": "objects\\characters\\*\\fp\\weapons\\support_high\\fp_spartan_laser\\fp_spartan_laser"
   }
  ],
  "Halo 3: ODST": [
