@@ -82,11 +82,18 @@ WEAP_FLAGS, DUAL_BITS, WEAP_CLASS, WEAP_BARRELS, WEAP_BARREL_ES = 0x12C, 3 << 22
 JMAD_MODES, JMAD_MODE_ES, MODE_CLASSES, CLASS_ES, CLASS_TYPES, TYPE_ES = 0x34, 0x14, 0x4, 0x14, 0x4, 0x34
 JMAD_WEAPON_LIST, WL_ES = 0x54, 0x8
 #: THE TEACH: per enemy type, its graph and the classes a missing class is copied from, in order
-#: (heretic Grunts use the Grunt graph). Elites and Brutes have every class an Armed weapon needs.
+#: (heretic Grunts use the Grunt graph). Elites have every class an Armed weapon needs.
 _G = 'objects' + chr(92) + 'characters' + chr(92)
 TEACH = {'Grunt': (_G + 'grunt' + chr(92) + 'grunt', ('missile', 'pistol')),
          'Jackal': (_G + 'jackal' + chr(92) + 'jackal', ('pistol',)),
-         'Bugger': (_G + 'bugger' + chr(92) + 'bugger', ('pistol',))}
+         'Bugger': (_G + 'bugger' + chr(92) + 'bugger', ('pistol',)),
+         'Brute': (_G + 'brute' + chr(92) + 'brute', ())}
+#: A class with its OWN donors, over TEACH's (the Spartan Laser's Armed test, 2026-10-30, class
+#: `missile`; user: 'the Jackal holds it in a single hand', 'the Brute doesn't hold the weapon at
+#: all'): the Jackal's `rifle` is its two-handed stance, the Brute graph has no `missile` -- it takes
+#: the Brute Shot's set. Modes without the donor (the Jackal's flee) fall to the next one.
+CLASS_DONORS = {('Jackal', 'missile'): ('rifle', 'pistol'), ('Jackal', 'support'): ('rifle', 'pistol'),
+                ('Brute', 'missile'): ('support', 'rifle')}
 #: THE TYPE TEACH (user, 2026-10-21): a BRUTE holds a two-handed weapon like the Brute Shot. The
 #: Brute graph has the classes (rifle: any / pr / sg; support: any / bs) but its rifle 'any' set
 #: is the one-handed carry, so every mode holding both gets, in the weapon's class, a weapon TYPE
@@ -366,14 +373,14 @@ def teach(m, hp, enemy, weapons, entry=None):
             cls = m.follow_all(md, [MODE_CLASSES], [CLASS_ES], 'all')
             labels = [m.u32(c) for c in cls]
             by = {m.resolve_stringid(m.u32(c)): c for c in cls}
-            donor = next((by[d] for d in donors if d in by), None)
-            if donor is None:
-                continue
-            types = [m.u32(x) for x in m.follow_all(donor, [CLASS_TYPES], [TYPE_ES], 'all')]
             new = []
             for sid in want:
                 if sid in labels:
                     continue
+                donor = next((by[d] for d in CLASS_DONORS.get((enemy, want[sid]), donors) if d in by), None)
+                if donor is None:
+                    continue
+                types = [m.u32(x) for x in m.follow_all(donor, [CLASS_TYPES], [TYPE_ES], 'all')]
                 e = bytearray(m.data[donor:donor + CLASS_ES])
                 struct.pack_into('<I', e, 0, sid)
                 new.append(bytes(e))
@@ -396,7 +403,8 @@ def teach(m, hp, enemy, weapons, entry=None):
                           else (lambda b: struct.unpack_from('<I', b, 0)[0]))
         rows.append({'tag': 'jmad ' + gname, 'field': '%s teach: %s' % (enemy, '/'.join(sorted(want.values()))),
                      'ok': True, 'reason': '%d modes got the class (copy of %s), weapon list +%d'
-                     % (len([j for j in jobs if j[1] == MODE_CLASSES]), ' / '.join(donors), len(wl_add))})
+                     % (len([j for j in jobs if j[1] == MODE_CLASSES]),
+                        ' / '.join(CLASS_DONORS.get((enemy, sorted(want.values())[0]), donors)), len(wl_add))})
     return rows
 
 
