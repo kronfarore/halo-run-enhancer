@@ -728,9 +728,9 @@ def blank(rel, cls, path, keep):
 SIG = b'dfbt'
 ANIM_ES = 136
 ANIM_BLOCKS = (0x58, 0x64, 0x70, 0x7C)
-FIRE_ROWS = [(r'objects\characters\brute\brute.model_animation_graph', 'combat', 'melee',
+FIRE_ROWS = [(r'objects\characters\brute\brute.model_animation_graph', ('combat', 'berserk', 'patrol', 'hoist', 'vault'), 'melee',
               ('clone', 'berserk:melee:leap_melee', 'combat:melee:gh:fire_1')),
-             (r'objects\characters\elite\elite.model_animation_graph', 'combat', 'melee',
+             (r'objects\characters\elite\elite.model_animation_graph', ('combat',), 'melee',
               ('overlay', 'combat', 'rifle', 'any'))]
 
 
@@ -889,7 +889,8 @@ def fire_rows():
             t = next(e for e in elems if e[0] == 'type' and c[4] <= e[3] < c[5] and G.label(d, e) == how[3])
             o = next(e for e in elems if e[0] == 'action' and t[4] <= e[3] < t[5] and G.label(d, e) == 'fire_1')
             index = struct.unpack_from('<h', d, o[3] + 6)[0]
-        d, added = add_fire_row(d, mode, cls, index)
+        for one in mode:                 # every mode of the class: the type teach fills any left out
+            d, _added = add_fire_row(d, one, cls, index)
         if bytes(d) == original:
             print('%s: fire row already there' % _os.path.basename(path))
             continue
