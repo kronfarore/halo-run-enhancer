@@ -26,7 +26,7 @@ PORT = {
     'wave': 'A4',
     'name': 'Mauler',
     'source': 'Halo 3',
-    'status': 'in progress',
+    'status': 'done',
     'source_tag': 'objects\\weapons\\pistol\\excavator\\excavator',
     'reservations': {
         'message_prefix': 'mau2',
@@ -547,8 +547,8 @@ PORT = {
             'damage reporting type': "the magnum's (kill feed / medals only; Halo 2 has no mauler entry)",
             'weapon attachments (Halo 3 2) / projectile attachments (Halo 3 1)': "the pellet's effect is EMPTY in "
                 "Halo 3 (no parts, no particles): nothing to port; the muzzle light is attachment 0; attachment 1, "
-                "an orange lens flare at primary_trigger (radius 0.125, on while ready, off at 0 ammo), is NOT "
-                "ported (re-check 2026-10-30: open, the user decides)",
+                "an orange lens flare at primary_trigger, ported: third person only, the plasma pistol's "
+                "size, scaled by primary_ammunition (a boot: Halo 2 draws it at the world marker in first person)",
             'barrels deceleration time\' (shotgun 0.25)': "Halo 3's Mauler 0 = the port's 0",
             'font icons / ground scales / falloff ranges / fp offset override': 'no Halo 2 counterpart '
                 '(the icon is step 8)',

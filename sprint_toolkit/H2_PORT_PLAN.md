@@ -1099,7 +1099,8 @@ Enhancer hand-off: shared notes a2_spartan_laser_progress.md.
 The Halo 3 Mauler is a complete Halo 2 port: `ports_h2/brute_mauler.py`. Tested in game, CLASSIC:
 Regret (Chief) on Original, Uprising (Arbiter) on Balanced, Armed `--armed all` then
 `--armed brute,sentinel` on Regret. Every item confirmed by the user. Residency: palette entry in all
-13 levels; ships with the batched rebuild. PORTING "Halo 2: the Mauler, wave A4" is the recipe.
+13 levels; ships with the batched rebuild. Ally trade passed on Outskirts. PORTING "Halo 2: the Mauler,
+wave A4" is the recipe.
 
 **Step 4a (user):** yardstick the Shotgun, 10 pellets x 11.55, recovery 0.75, magazine 10 / carry 50
 (the x1.5 dual carry rule), dual damage scale 0.583, own blade melee x72/70, donor the Magnum. Elite 2
@@ -1116,8 +1117,8 @@ decides those fixes; pick a one-handed, IK-free seed with enough sound slots.
 3. Test process (user 2026-10-29): Original -> Balanced (the Arbiter boot) -> Armed.
 
 **Open follow-ups:** the Spike Rifle re-runs `h2_port_meter brute_spiker` (pip shape; 40 rounds on both
-number sets, so no `sequences`), then a boot. The casing removal (check 10) is tag-verified, not booted.
+number sets, so no `sequences`), then a boot. Earlier ports never had the ally trade test.
 Whether the Spike Rifle's lit parts also fade from dark (same hammer seed) was raised, not checked.
 Re-check 2026-10-30 (user): the pellet materials agree BY NAME (Halo 3 Mauler = Halo 3 Shotgun, the port the
-H2 shotgun's); NOT ported: Halo 3's muzzle lens flare (on while ready, off at 0 ammo), left open.
+H2 shotgun's); Halo 3's muzzle lens flare ported (third person only); glow lit at empty, the user's pick.
 Enhancer hand-off: the shared notes (a4_mauler.md), sent to the session 2026-10-30; its 18 Halo 2 cards are in (05c66d4 + the next commit).

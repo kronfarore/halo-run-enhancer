@@ -3896,10 +3896,20 @@ route, step for step; what was new:
      None (Quarterscreen stays -1). The Halo 1 SAW's route. Only needed when the magazines differ.
 * **Glyph:** untinted U+E141, box 84 x 62: the box follows the art's width, or the pickup line
   shows whitespace (160 was the Spike Rifle's).
-* **Test rounds = a full carry** (Balanced 10 + 40 in config; Original boots `--rounds 5,20`).
+* **Test rounds = a full carry.** The profile's second number is the TOTAL, loaded included: Balanced
+  `(10, 50)` in config, Original boots `--rounds 5,25`.
 * **Check 10:** a clone of the shotgun's firing effect throws a shell at `primary_ejection`; Halo 3's
-  Mauler has no ejection, no marker. Event 2 skip fraction 1 (`byte_edits`, field-verified). Tag-verified,
-  not booted (first person only, ships with the rebuild).
+  Mauler has no ejection, no marker. Event 2 skip fraction 1 (`byte_edits`, field-verified), confirmed in game.
+* **Weapon lens flare (a list 3 row deferred, then forgotten):** Halo 3's second attachment. Appended with
+  `append_attachments` class `lens`, scale `primary_ammunition`, a clone of the plasma pistol flare in Halo 3's
+  orange. Keep its THIRD-PERSON ONLY flag and size: Halo 2 places a weapon's attachments at the WORLD
+  model's marker even in first person (at Halo 3's 0.125 in both views: a ball off the muzzle, swimming on turns).
+* **Glow vs ammo, measured in game:** a time wave with `range name` stayed lit at empty, through an object
+  function and through `turned_on` (which does not follow ammo). `input name` primary_ammunition + a colour
+  transition (type 2, 36 bytes, Bungie's plasma rifle gauge) does go dark, without the wander. User's pick:
+  the wander, lit at empty. Function header: byte 1 bit 0 ranged, bytes 2 / 3 the two curves' shapes;
+  colours 0 and 3 are the ends.
+* **Ally trade passed** (Outskirts, `--armed marine --share 0.5 --no-replace`): now a definition-of-done check.
 * **Armed on a scripted level:** the script's `ai_place <squad> n` spawns only n of a squad's locations,
   so with `--armed all` species dealt to other slots never appear (Regret: Brutes, Sentinels). Follow up
   with `--armed brute,sentinel`: the nearest locations hold only the missing species.
