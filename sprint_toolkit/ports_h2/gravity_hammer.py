@@ -979,9 +979,12 @@ def blast_shove():
 #     python ports_h2\gravity_hammer.py --ai-swings      (under the H2 kit lock)
 AI_IMPACT = FX + r'\gravity_hammer_port_impact_ai'
 AI_SWINGS = [(r'objects\characters\brute\brute.model_animation_graph', 'melee', 'combat:melee:melee:var1', 'combat:melee:gh:melee', 'melee_effect'),
-             (r'objects\characters\elite\elite.model_animation_graph', 'melee', 'combat:sword:melee:var0', 'combat:melee:gh:melee', 'melee')]
+             (r'objects\characters\elite\elite.model_animation_graph', 'melee', 'combat:sword:melee:var0', 'combat:melee:gh:melee', 'melee'),
+             (r'objects\characters\floodcombat_human\floodcombat_human.model_animation_graph', 'melee', 'combat:rifle:melee:var0', 'combat:melee:gh:melee', 'melee'),
+             (r'objects\characters\floodcombat_elite\floodcombat_elite.model_animation_graph', 'melee', 'combat:rifle:melee:var1', 'combat:melee:gh:melee', 'melee')]
 AI_OVERLAYS = [(r'objects\characters\grunt\grunt.model_animation_graph', 'combat:pistol:throw_grenade', 'combat:melee:gh:fire_1'),
-               (r'objects\characters\jackal\jackal.model_animation_graph', 'combat:pistol:shakefist', 'combat:melee:gh:fire_1')]
+               (r'objects\characters\jackal\jackal.model_animation_graph', 'combat:pistol:shakefist', 'combat:melee:gh:fire_1'),
+               (r'objects\characters\bugger\bugger.model_animation_graph', 'combat:pistol:ready:var0', 'combat:melee:gh:fire_1')]
 
 
 def _names(path):
@@ -1004,7 +1007,20 @@ def add_effect_reference(d, path):
             at = (k, n)
         k = d.find(SIG, k + 4)
     if at is None:
-        raise ValueError('no effect references block')
+        # the Flood graphs: an empty block has no chunk -- created after the sound references
+        k = d.find(SIG, 0x40)
+        while k >= 0 and not (struct.unpack_from('<I', d, k + 12)[0] == 20 and d[k + 16:k + 20] == b'!dns'):
+            k = d.find(SIG, k + 4)
+        if k < 0 or struct.unpack_from('<I', d, 0x7C)[0] != 0:
+            raise ValueError('no sound references to follow')
+        n = struct.unpack_from('<I', d, k + 8)[0]
+        q = k + 16 + n * 20
+        for e in range(n):
+            q += struct.unpack_from('<I', d, k + 16 + e * 20 + 8)[0] + 1
+        chunk = SIG + struct.pack('<III', 0, 1, 20) + b'effe' + struct.pack('<IIiI', 0, len(p), -1, 0) + p + b'\0'
+        d[q:q] = chunk
+        struct.pack_into('<I', d, 0x7C, 1)
+        return d, 0
     k, n = at
     q = k + 16 + n * 20
     paths = []
@@ -1174,6 +1190,14 @@ def ai_blast():
     if not _os.path.exists(dest):
         shutil.copy(_os.path.join(TAGS, plain + '.damage_effect'), dest)
     tf.set_field(dest, 'flags', 9, '', 0, 1)
+    # Sacred Icon (user: 'Elites still harm themselves'): no owner, so no friends either. 'Area Damage
+    # Players Only' (flags 0, bit 1; explosion layout 0x5C, reads zero): no AI is hurt by an AI's blast
+    import struct
+    data = bytearray(open(dest, 'rb').read())
+    struct.pack_into('<I', data, 0x5C, 2)
+    open(dest, 'wb').write(bytes(data))
+    if 'area damage players only' not in tf.export(dest):
+        raise SystemExit('flags 0 not at 0x5C')
     for tail in ('', '_melee'):
         fx = _os.path.join(TAGS, AI_IMPACT + tail + '.effect')
         if ('jpt!', AI_BLAST) not in R.references(fx):
