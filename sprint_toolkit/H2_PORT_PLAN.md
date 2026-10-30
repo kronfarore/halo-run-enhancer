@@ -1086,4 +1086,4 @@ number sets, so no `sequences`), then a boot. The casing removal (check 10) is t
 Whether the Spike Rifle's lit parts also fade from dark (same hammer seed) was raised, not checked.
 Re-check 2026-10-30 (user): the pellet materials agree BY NAME (Halo 3 Mauler = Halo 3 Shotgun, the port the
 H2 shotgun's); NOT ported: Halo 3's muzzle lens flare (on while ready, off at 0 ammo), left open.
-Enhancer hand-off: the shared notes (a4_mauler.md), sent to the session 2026-10-30; Halo 2 cards not written yet.
+Enhancer hand-off: the shared notes (a4_mauler.md), sent to the session 2026-10-30; its 18 Halo 2 cards are in (05c66d4 + the next commit).
