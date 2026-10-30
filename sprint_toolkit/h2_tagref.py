@@ -432,52 +432,6 @@ def add_attachment(tag_path, donor_path, cls, element=0, tries=400, count_at=Non
                      % os.path.basename(tag_path))
 
 
-def add_function(tag_path, donor_path, export, maximum, before):
-    """Give a weapon with NO object functions the DONOR's first one, renamed (the Mauler's lit
-    state, 2026-10-30: the needler's `ammo`, primary_ammunition -> a 0-1 function, as `has_ammo`
-    with its range 0 -> `maximum`: any round loaded reads full, empty reads 0). An empty block emits
-    no chunk: the donor's chunk (element, pooled names, mapping function) goes in before the
-    `before` pooled text's chunk, the root's count (root+0x90, same-sized root structs) set to 1.
-    Kept only when tool.exe reads the new export name and every old field as before."""
-    import h2_tagfield as tf
-    donor = open(donor_path, 'rb').read()
-    original = open(tag_path, 'rb').read()
-    a, b = _arrays(donor)[0]
-    if _arrays(original)[0] != (a, b):
-        raise ValueError('root structs differ: %s' % os.path.basename(donor_path))
-    if struct.unpack_from('<I', donor, a + 0x90)[0] != 1 or struct.unpack_from('<I', original, a + 0x90)[0]:
-        raise ValueError('function count field: donor must read 1, the target 0')
-    at = donor.find(SIG, b)
-    _v, n, sz = struct.unpack_from('<III', donor, at + 4)
-    if (n, sz) != (1, 0x24):
-        raise ValueError('%s: the first chunk is not one function' % os.path.basename(donor_path))
-    elem = at + CHUNK
-    imp, exp = (struct.unpack_from('<I', donor, elem + o)[0] >> 24 for o in (4, 8))
-    pool = elem + sz
-    data = donor.find(SIG, pool + imp + exp) + CHUNK    # the function data's own chunk
-    end = data + 20
-    new = bytearray(donor[at:pool + imp])
-    new[CHUNK + 11] = len(export)
-    tail = bytearray(donor[pool + imp + exp:end])
-    struct.pack_into('<f', tail, len(tail) - 12, maximum)
-    new += export.encode('latin-1') + tail
-    k = original.find(SIG, _arrays(original)[0][1])
-    if original.find(before.encode('latin-1'), k) < 0:
-        raise ValueError('no %r after the root' % before)
-    rows_before = tf.read_all(tf.export(tag_path))
-    out = bytearray(original)
-    struct.pack_into('<I', out, a + 0x90, 1)
-    out[k:k] = new
-    open(tag_path, 'wb').write(bytes(out))
-    rows = tf.read_all(tf.export(tag_path))
-    old = [r[4] for r in rows if r[0] not in ('functions', 'data')]
-    if old != [r[4] for r in rows_before if r[0] != 'data'] or             not any(r[2] == 'export name' and r[4] == export for r in rows):
-        open(tag_path, 'wb').write(original)
-        raise ValueError('add_function: tool did not read it back; %s restored' % os.path.basename(tag_path))
-    print('%s: + function %s (0 -> %g, from %s; every old field as before)'
-          % (os.path.basename(tag_path), export, maximum, os.path.basename(donor_path)))
-
-
 def set_class(tag_path, cls, path, new_cls, nth=0):
     """Change the CLASS of the `nth` `cls` reference to `path` (the path stays): a field that takes
     several classes -- an object attachment's `type` (light, light volume, contrail, effect, ...).

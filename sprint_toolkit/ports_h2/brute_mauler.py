@@ -159,26 +159,20 @@ PORT = {
         # wander, as Halo 3's) -> wander, colour 0 half grey, 1-3 white: whichever pair it blends, the
         # (already orange-tinted) mask reads 50-100 %. In the three lit shaders; the textures step
         # RESEEDS them -- run this step after it
-        # HAS_AMMO (re-check 2026-10-30, user): `has_ammo` = primary_ammunition x 50, clamped: any round
-        # = 1, empty = 0. It scales Halo 3's muzzle lens flare (radius 0.125, orange, its own turned off
-        # by primary_ammunition) and, the Halo 1 Mauler's rule, the glow: `range name` + the ranged bit
-        # (function byte 1 0x21), range 0 = f 0 = black, range 1 = Halo 3's wander 50-100 %
-        'functions': [(MA + r'\excavator.weapon', r'objects\weapons\pistol\needler\needler.weapon',
-                       'has_ammo', 50.0, 'hgil')],
+        # DARK WHEN EMPTY (re-check 2026-10-30, user; the Halo 1 Mauler's rule): `input name`
+        # primary_ammunition (the digits' input) on the glow's colour function: Bungie's plasma rifle
+        # gauge's form, a TRANSITION (type 2, 36 bytes) from colour 0 black to colour 3 white, shape 2
+        # very early, so it holds near full down to the last round. Costs Halo 3's wander: tried and
+        # lit at empty (2 boots): a time wave with `range name` (`has_ammo` object function, then
+        # `turned_on`, which does not follow ammo). The flare scales by primary_ammunition too
         'append_attachments': [(MA + r'\excavator.weapon', 'lens', FX + r'\excavator_flare', 'primary_trigger',
-                                'ligh', 'has_ammo')],
-        'string_id_fills': [(MA + r'\shaders\%s.shader' % s, 'range name', 'animation properties', 0, 1, 'has_ammo')
+                                'ligh', 'primary_ammunition')],
+        'string_id_fills': [(MA + r'\shaders\%s.shader' % s, 'input name', 'animation properties', 0, 1, 'primary_ammunition')
                             for s in ('mauler', 'mauler_metal', 'mauler_shiny')],
         'byte_edits': [(MA + r'\shaders\%s.shader' % s,
                         '03200200773c00000000000000000000ffc18400',
                         '03200a0080808000ffffff00ffffff00ffffff00')
                        for s in ('mauler', 'mauler_metal', 'mauler_shiny')] + [
-            (MA + r'\shaders\%s.shader' % s,
-             '03200a0080808000ffffff00ffffff00ffffff00'
-             '0000803f00000000000000000000803f' '0000803f00000000000000000000803f',
-             '03210a0000000000ffffff00ffffff00ffffff00'
-             '0000803f000000000000000000000000' '0000803f000000000000003f0000803f')
-            for s in ('mauler', 'mauler_metal', 'mauler_shiny')] + [
             # CHECK 10: the shotgun firing effect's event 2 throws a shell from primary_ejection --
             # Halo 3's Mauler ejects nothing and its model has no such marker: the event's skip
             # fraction 1. Halo 3's flash is first-person glow / round / long flash, sparks and smoke,
@@ -186,6 +180,12 @@ PORT = {
             (FX + r'\excavator_fire.effect',
              '01000000f0b3f005d8520f01' + '00000000' * 2,
              '01000000f0b3f005d8520f01' + '00000000' + '0000803f', ('skip fraction',))],
+        'function_edits': [(MA + r'\shaders\%s.shader' % s,
+                            '03200a0080808000ffffff00ffffff00ffffff00'
+                            '0000803f00000000000000000000803f' '0000803f00000000000000000000803f',
+                            '02200200000000000000000000000000ffffff00'
+                            '000000000000803f000000000000803f')
+                           for s in ('mauler', 'mauler_metal', 'mauler_shiny')],
         'wiring': [
             (MA + r'\excavator.weapon', 'hlmt', MAG + r'\magnum', MA + r'\excavator', 'world model'),
             (MA + r'\excavator.model', 'mode', r'objects\weapons\rifle\battle_rifle\battle_rifle',
@@ -274,11 +274,11 @@ PORT = {
             # step 4b (port_field_audit.py --port h2:brute_mauler, list 2: the ratio H3 Mauler / H3
             # Shotgun x the H2 Shotgun; list 4: both Halo 3 weapons agree -> the H2 Shotgun's)
             (MA + r'\excavator.weapon', 'bounding radius', '', 0, 0, 0.177778),            # 0.2 / 0.225 x 0.2
-            # Halo 3's muzzle lens flare (fx\active): radius 0.125, orange; the plasma pistol clone is
-            # third-person only (Halo 3's shows in both)
-            (FX + r'\excavator_flare.lens_flare', 'radius', 'reflections', 0, 0, [0.125, 0.125]),
+            # Halo 3's muzzle lens flare (fx\active): its orange on the plasma pistol flare, whose size
+            # (0.05-0.06) and THIRD-PERSON ONLY flag stay: Halo 2 places a weapon's attachments at the
+            # WORLD model's marker in first person too -- boot, at Halo 3's 0.125 in both views: a
+            # big ball hanging off the muzzle, swimming when the camera turned (user)
             (FX + r'\excavator_flare.lens_flare', 'color', 'reflections', 0, 0, [0.964706, 0.384314, 0.0862745]),
-            (FX + r'\excavator_flare.lens_flare', 'flags', '', 0, 0, 0),
             (MA + r'\excavator.weapon', 'illumination recovery time', 'barrels', 0, 0, 0.1),   # both 0.1
         ] + [
             # THE DUAL READY's ARM FLAGS (after step 9: a re-import keeps them, a --reseed resets them).
@@ -614,8 +614,9 @@ PORT = {
                        'from_weapon': r'objects\weapons\pistol\excavator\excavator',
                        'donor_weapon': SG + r'\shotgun'},
     # 05b (Chief, Brutes) + 08a (Arbiter, Brutes): parallel step 2; rounds = a FULL carry so a whole
-    # reload can be tested (boot 2, user: 'only has 10 total'): Balanced 10 loaded + 40 (the default
-    # build); an --original boot passes --rounds 5,20 (Halo 3's 5 loaded + 20 = its 25)
-    'test': {'level': '05b_deltatowers', 'dervish_level': '08a_deltacliffs', 'rounds': (10, 40)},
+    # reload can be tested (boot 2, user: 'only has 10 total'). The profile's second number is the
+    # TOTAL, loaded included (--rounds 5,5 = no spares, user): Balanced 10 of 50 (the default build);
+    # an --original boot passes --rounds 5,25
+    'test': {'level': '05b_deltatowers', 'dervish_level': '08a_deltacliffs', 'rounds': (10, 50)},
     'residency': {'levels': 'all', 'placements': False},
 }

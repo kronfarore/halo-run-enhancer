@@ -240,13 +240,6 @@ def main(argv=None):
     own = ports_h2.load(key)['reservations']['weapon_dir']
     print('cloning the tags the port would otherwise share:')
     clone(w, '--force' in argv)
-    for tag, donor, export, maximum, before in w.get('functions', ()):
-        # an object function the clone lacks (the Mauler's `has_ammo`), tool-verified
-        path = os.path.join(TAGS, tag)
-        if export.encode('latin-1') in open(path, 'rb').read():
-            print('   %-34s already has %s' % (os.path.basename(tag), export))
-            continue
-        h2_tagref.add_function(path, os.path.join(TAGS, donor), export, maximum, before)
     for row in w.get('attachments', ()):
         # an object attachment the clone lacks (the Spike Rifle's light volume), tool-verified;
         # row: (tag, donor tag, class, donor element[, {'count_at', 'after'} hints])
