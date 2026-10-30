@@ -3802,6 +3802,15 @@ magazine-less PR) is the source's raw; a user-recalibrated row carries its note 
 config (`value_overrides` / `extra_rows`), so `make_port_catalog_h2 --write` reproduces it. AI ranges
 = the weapon's effective reach (here 3.6 wu/s x 1.3 s = 4.7 wu).
 
+**The HUD art reproducible (2026-10-30).** `flamethrower_bkd`, `flamethrower_backpack` and the U+E153 glyph no longer
+matched a regeneration: they were drawn before `digit_spread` (boot 7) stood the counter digits 1 cm above the
+gun, and every vertex counts for the drawing's bounds -- a stick on the symbol, everything rescaled (469 / 293 /
+1895 pixels). Config `model_skip` (hud_plate, meter, glyph; `h3_weapon_glyph.mesh(path, skip)`, JMS only, opt-in):
+those materials and their vertices left out -> 0 pixels against the shipped art. Proof ftm1 (meter, hud_plate,
+glyph): pre vs new changes no source image but the Spiker's meter (its pip-shape re-run, closed by the user); kit
+restored. OLD runs of ports reading `out\h3_export` fail in a proof (the cache is untracked). A hud_plate 'dry run'
+still overwrites the kit's .tif: regenerate into a scratch folder to compare.
+
 ### Halo 2: the SAW rework (2026-10-23) -- a HALO 4 source on the AR's route
 
 The whole weapon is `ports_h2/saw.py`; what it taught is H2_PORT_PLAN.md "SAW rework". The first

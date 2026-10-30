@@ -1,6 +1,6 @@
 Flamethrower -- BALANCED (catalog rows on the ports), legendary, body shots (ttk_halo2); not a Halo 2 weapon here: Energy Blade (no projectile: melee)
 weapon                      dmg    rate/s    dps  mag reload init/max         vel range       error   autoaim dual
-Flamethrower (port)      10.7x2 10.3-10.8  230.8  100   3.40  300/600       3.6/0    16       2-2.4  1.8/7.68     
+Flamethrower (port)      18.4x2 10.3-10.8  396.9  100   3.40  300/600       3.6/0    16       2-2.4  1.8/7.68     
 Plasma Rifle                 10       6-9   90.0    -   0.00      0/0       14/14    40   0.25-0.75      6/12     
 Shotgun                  16.5x10       1-1  165.0   12   4.80    36/48     120/120     8        8-10       8/6     
 Sentinel Beam                 2     30-30   60.0    -   0.00      0/0   1200/1200    30         0-0      1/12     
@@ -8,7 +8,7 @@ SMG                        4.75     15-15   71.2   60   2.00  180/240     400/40
 
 time to kill (shots / seconds):
                               Elite minor      Brute minor      Grunt minor     Jackal minor
-Flamethrower (port)           11 / 2.48 s       6 / 0.46 s       1 / 0.00 s       2 / 0.09 s
+Flamethrower (port)            7 / 0.56 s       4 / 0.28 s       1 / 0.00 s       1 / 0.00 s
 Plasma Rifle                  20 / 4.76 s     50 / 10.87 s       4 / 0.46 s       6 / 0.71 s
 Shotgun                        1 / 0.00 s       4 / 3.00 s       1 / 0.00 s       1 / 0.00 s
 Sentinel Beam                 75 / 2.47 s     125 / 6.41 s      20 / 0.63 s      30 / 0.97 s
@@ -28,3 +28,10 @@ Plasma Rifle                  20 / 4.76 s     50 / 10.87 s       4 / 0.46 s     
 Shotgun                        1 / 0.00 s       4 / 3.00 s       1 / 0.00 s       1 / 0.00 s
 Sentinel Beam                 75 / 2.47 s     125 / 6.41 s      20 / 0.63 s      30 / 0.97 s
 SMG                           32 / 2.07 s     106 / 8.93 s       9 / 0.53 s      13 / 0.80 s
+
+Re-run 2026-10-30 after h2_role_compare 2041b06 (only the shot's own impact damage rows). The 2026-10-23
+Balanced block was wrong: the flame_burn rows overwrote the shot's (10.7 x2, 230.8 dps, Elite minor 11 / 2.48 s
+-> 18.4 x2, 396.9 dps, 7 / 0.56 s). Default unchanged. Direct hits only: the burn's damage over time is NOT in
+these figures. The tags and catalog never had the wrong numbers, only this report.
+Conclusions unchanged: Balanced = Default x1.111 as the user set it (the old block had it BELOW Default);
+the rows, the AI ranges (4.7 wu) and the flat WDM x0.84 do not depend on these dps figures.

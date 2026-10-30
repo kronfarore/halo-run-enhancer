@@ -7,6 +7,7 @@ The config's `hud_plate` section:
     rel, donor, other    the backgrounds folder, the donor plate, a second plate to diff against
     name, hud            the port's plate bitmap name, the HUD that is repointed at it
     model_3p             the port's mesh (an H4 render dump, h3_weapon_glyph.mesh)
+    model_skip           a JMS mesh's materials left out of the drawing (h3_weapon_glyph.mesh)
     fallback_box, stretch
     all_images           (the Spike Rifle, 2026-10-21: a DUAL-WIELD plate) {'dim': {dim image:
                          its bright twin}} -- EVERY image repainted and written back into the
@@ -50,7 +51,7 @@ RAMP = None
 
 
 def setup(key):
-    global REL, DONOR, OTHER, PORT, HUD, MODEL, NAME, FALLBACK_BOX, STRETCH, ICON, RAMP, RIM_SAFE
+    global REL, DONOR, OTHER, PORT, HUD, MODEL, NAME, FALLBACK_BOX, STRETCH, ICON, RAMP, RIM_SAFE, SKIP
     h = ports_h2.get(key, 'hud_plate')
     REL, DONOR, OTHER, HUD, MODEL = h['rel'], h['donor'], h['other'], h['hud'], h['model_3p']
     NAME = h['name']
@@ -59,6 +60,7 @@ def setup(key):
     ICON = h.get('icon_art')
     RIM_SAFE = h.get('rim_safe', False)
     RAMP = h.get('ramp')
+    SKIP = h.get('model_skip', ())
 
 
 def export(tag, prefix):
@@ -160,7 +162,7 @@ def port_mask(w, h, ss=4):
     if ICON:
         return icon_mask(w, h)
     import h3_weapon_glyph as wg
-    verts, idx = wg.mesh(MODEL)
+    verts, idx = wg.mesh(MODEL, SKIP)
     W, H = w * ss, h * ss
     xs = [v[0] for v in verts]
     zs = [v[2] for v in verts]

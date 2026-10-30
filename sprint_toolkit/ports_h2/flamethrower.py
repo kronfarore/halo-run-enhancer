@@ -27,6 +27,9 @@ EMPTY_FX = r'effects\objects\weapons\support_high\rocket_launcher\rocket_overpen
 # the port's own world mesh (step 1's JMS): the silhouette the HUD plate, backpack icon and pickup
 # glyph are drawn from (h3_weapon_glyph.mesh reads a .jms) -- Halo 1 has no Halo 3 render model
 WORLD_JMS = H2EK + r'\data' + '\\' + FT + r'\render\flamethrower.jms'
+# ...the GUN alone: the digit cards stand 1 cm above it (digit_spread, boot 7), so they would set the
+# drawing's bounds -- a stick on the symbol, everything rescaled; the in-game art was drawn before that
+HUD_SKIP = ('_tens', '_ones', 'flamethrower_pilot')
 
 PORT = {
     'order': 22,
@@ -747,6 +750,7 @@ PORT = {
         'backpack_port': NEW_HUD + r'\flamethrower_backpack',
         'backpack_size': (62, 30),
         'model_3p': WORLD_JMS,
+        'model_skip': HUD_SKIP,
         'preview': 'flamethrower_meter_preview.png',
     },
     'hud_plate': {
@@ -756,6 +760,7 @@ PORT = {
         'name': 'flamethrower_bkd',
         'hud': r'ui\hud\flamethrower',
         'model_3p': WORLD_JMS,
+        'model_skip': HUD_SKIP,
         'fallback_box': (105, 191, 5, 34),
         'stretch': 1.4,
     },
@@ -810,6 +815,7 @@ PORT = {
     'glyph': {
         'box': (160, 62),          # Bungie's size at E153 (halo2.dll draws the E000-E3FF band x0.72)
         'model_3p': WORLD_JMS,
+        'model_skip': HUD_SKIP,
         'tif': 'flamethrower_h2_glyph.tif',
         # UNTINTED (user, 2026-10-22, the H2 icon rule): halo2.dll forces the band white; white
         # lines over a grey body, as the SAW's first icon / the AR / the Spiker

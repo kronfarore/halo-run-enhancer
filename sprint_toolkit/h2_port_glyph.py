@@ -8,6 +8,7 @@ The codepoint is the config's `reservations['glyph']` (0xE13D the SAW, 0xE13E.. 
 H2_PORT_PLAN 0.3). The config's `glyph` section:
     box        the glyph's size (= its on-screen size; Bungie's widest is 160x62)
     model_3p   the port's mesh (an H4 render dump, h3_weapon_glyph.mesh)
+    model_skip a JMS mesh's materials left out of the drawing (h3_weapon_glyph.mesh)
     tif        the drawn glyph's file name in %TEMP%
     colour     optional RGB the glyph is drawn in (default white, Halo 3's look; the AR: Halo
                2's HUD blue, sampled from a classic screenshot)
@@ -41,15 +42,17 @@ BOX = CP = MODEL = TIF = None
 
 COLOUR = None
 STYLE = None
+SKIP = ()
 import numpy as np  # noqa: E402
 
 
 def setup(key):
-    global BOX, CP, MODEL, TIF, COLOUR, STYLE
+    global BOX, CP, MODEL, TIF, COLOUR, STYLE, SKIP
     g = ports_h2.get(key, 'glyph')
     COLOUR = tuple(g['colour']) if g.get('colour') else None
     STYLE = g.get('style')
     BOX, MODEL = tuple(g['box']), g['model_3p']
+    SKIP = g.get('model_skip', ())
     CP = ports_h2.load(key)['reservations']['glyph']
     TIF = g.get('tif', key + '_h2_glyph.tif')
 
@@ -59,7 +62,7 @@ def art(path, box=None):
     import h3_weapon_glyph as wg
     from PIL import Image
     box = BOX if box is None else box
-    verts, idx = wg.mesh(MODEL)
+    verts, idx = wg.mesh(MODEL, SKIP)
     cov = wg.close_gaps(wg.silhouette(verts, idx, box[0], box[1], margin=0), 5)
     if STYLE:
         im = h2_style(verts, idx, cov, box)

@@ -13,6 +13,7 @@ the threshold field is laid over every pixel first, then the tick art without to
     sequences                     [{'rounds', 'tick_w'?}, ...] one meter a magazine size on one
                                   multi-sequence plate (seq 0 = Original; Balanced rows pick another)
     backpack, backpack_port, backpack_size, model_3p   the stowed icon drawn from the port's mesh
+    model_skip                    a JMS mesh's materials left out of it (h3_weapon_glyph.mesh)
     preview                       a --show preview file name in %TEMP%
 
     python h2_port_meter.py <key> [--rounds 72] [--show]
@@ -179,7 +180,7 @@ def run_lines(p):
 
 def backpack(m):
     import h3_weapon_glyph as wg
-    verts, idx = wg.mesh(m['model_3p'])
+    verts, idx = wg.mesh(m['model_3p'], m.get('model_skip', ()))
     w, h = m['backpack_size']
     cov = wg.close_gaps(wg.silhouette(verts, idx, w, h, margin=0), 3)
     px = wg.stylise(cov)

@@ -124,19 +124,26 @@ EXCLUDE = ((0.077, 0.216, 0.0028, 0.0132, None),
            (0.089, 0.218, 0.0100, 0.0210, 0.009))
 
 
-def mesh(path):
+def mesh(path, skip=()):
     """(vertices in world units, index strip) from a render_model XML -- or from a Halo 2 JMS (the
     port's own world mesh, a `.jms` path: the Flamethrower, S1, has no Halo 3 render model), its
-    triangle list joined into one strip by degenerate triangles."""
+    triangle list joined into one strip by degenerate triangles. `skip` (JMS only, a config's
+    `model_skip`): materials containing one of these strings are left out, their vertices too, as
+    those count for the drawing's bounds (the Flamethrower's digit cards stand above the gun)."""
     if path.lower().endswith('.jms'):
         import h2_jms
         m = h2_jms.read(path)
+        names = [x.name for x in m.materials]
+        tris = [t for t in m.tris if not any(k in names[t[0]] for k in skip)]
+        used = sorted({i for _mat, t in tris for i in t}) if skip else range(len(m.verts))
+        new = {o: n for n, o in enumerate(used)}
         strip = []
-        for _mat, (a, b, c) in m.tris:
+        for _mat, t in tris:
+            a, b, c = (new[i] for i in t)
             if strip:
                 strip += [strip[-1], a]
             strip += [a, b, c]
-        return [tuple(c / 100.0 for c in v.pos) for v in m.verts], strip
+        return [tuple(c / 100.0 for c in m.verts[o].pos) for o in used], strip
     lo = hi = None
     pos, idx, mode = [], [], None
     rp = re.compile(r'name="position" value="([-\d.e,]+)"')

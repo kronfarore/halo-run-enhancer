@@ -1015,6 +1015,8 @@ readers in geometry / textures / fp_anims / reticle. Observations, each a tool o
    catalog write); catalog entries with user rows stay reproducible (value_overrides / extra_rows).
 Final checks: refs OWN (melee shared by design), every sound OWN / 0 BORROW, resident in all 13,
 5b in reports/h2_flamethrower_5b.txt, check 10 (FP flash = the rocket's flame sprite).
+Later (2026-10-30): 5b re-run after h2_role_compare 2041b06 (Balanced 18.4 x2, 397 dps, Elite minor 7 / 0.56 s; the
+old block had the burn rows over the shot's; conclusions unchanged); the HUD art reproducible (`model_skip`, PORTING).
 
 ## SAW rework: what it taught (2026-10-23/26, DONE)
 
