@@ -56,6 +56,11 @@ PROPS, PROPS_ES, PROPS_W = 0xCC, 0xCC, 0x8          # datum of the weapon tagref
 FPP, FPP_ES, FPP_W, FPP_PAT, PAT_ES = 0xD4, 0x10, 0x4, 0x8, 0x40
 LOC_WEAP, SQUAD_WEAP, SQUAD_TEAM = 0x22, 0x3C, 0x24
 ALLY_TYPES = ('Marine',)          # the Ally card's types: they arm the player's side
+# Weapons only the player's enemies and the Ally card's types may carry: the hammer's AI blast is
+# an ownerless players-only effect, so in an allied Elite's or Grunt's hands it hits the player and
+# no enemy (user, 2026-10-31). By the squad's side on THIS level, read after the faction skulls.
+NOT_FOR_ALLIES = ('objects' + chr(92) + 'weapons' + chr(92) + 'melee' + chr(92) + 'gravity_hammer_port'
+                  + chr(92) + 'gravity_hammer_port',)
 
 
 def side_of(m, hp, cpal, lay):
@@ -302,7 +307,11 @@ def arm(m, hp, cards, salt=None):
         if a0 in seen:
             continue
         seen.add(a0)
-        w = _pick(usable[enemy], _draw(salt, a0))
+        shares = usable[enemy]
+        if team in friends and enemy not in ALLY_TYPES:
+            shares = {x: s for x, s in shares.items()
+                      if x not in {n.lower() for n in NOT_FOR_ALLIES}}
+        w = _pick(shares, _draw(salt, a0))
         if u['kind'] == 'squad':
             squad_pick = w
         if w is None:
