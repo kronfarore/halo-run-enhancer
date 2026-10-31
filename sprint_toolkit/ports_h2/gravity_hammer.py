@@ -983,14 +983,35 @@ def blast_shove():
 #   - Grunts + Jackals have no melee at all: fire_1 = a duplicate of throw_grenade (Grunt) / shakefist
 #     (Jackal, it has no throw) played as a REPLACEMENT overlay, an experiment.
 #     python ports_h2\gravity_hammer.py --ai-swings      (under the H2 kit lock)
+# Armed test 6 (Sacred Icon, user: 'Elites work perfectly, test that on the others'):
+#   - the Brute's `melee` AND `melee_effect` markers sit on region 8 (sh_armor), permutations tartarus
+#     and skull only: an ordinary Brute has neither, so no event effect plays (its stock swing's
+#     Tartarus blast neither). Its blast = `right_hand`;
+#   - a clone keeps the source's VARIANT LINKS (element +0x30 previous, +0x32 next): the Elite's swing
+#     led on to its stock var1, the Brute's to var2 / var3. Cleared: every swing is the blast;
+#   - Berserk has its own row, and melee_back / melee_tackle fall through to `any`: all carry the blast;
+#   - Grunts, Jackals and Drones get the Elites' recipe, a `melee` action with a primary keyframe (a
+#     `hit` frame where the source has none): the swing, not the weapon's fire, is their strike, in
+#     step with its blast; fire_1 goes back to their small recoil (Drones: the ready motion stays).
 AI_IMPACT = FX + r'\gravity_hammer_port_impact_ai'
-AI_SWINGS = [(r'objects\characters\brute\brute.model_animation_graph', 'melee', 'combat:melee:melee:var1', 'combat:melee:gh:melee', 'melee_effect'),
-             (r'objects\characters\elite\elite.model_animation_graph', 'melee', 'combat:sword:melee:var0', 'combat:melee:gh:melee', 'melee'),
-             (r'objects\characters\floodcombat_human\floodcombat_human.model_animation_graph', 'melee', 'combat:rifle:melee:var0', 'combat:melee:gh:melee', 'melee'),
-             (r'objects\characters\floodcombat_elite\floodcombat_elite.model_animation_graph', 'melee', 'combat:rifle:melee:var1', 'combat:melee:gh:melee', 'melee')]
-AI_OVERLAYS = [(r'objects\characters\grunt\grunt.model_animation_graph', 'combat:pistol:throw_grenade', 'combat:melee:gh:fire_1'),
-               (r'objects\characters\jackal\jackal.model_animation_graph', 'combat:pistol:shakefist', 'combat:melee:gh:fire_1'),
-               (r'objects\characters\bugger\bugger.model_animation_graph', 'combat:pistol:ready:var0', 'combat:melee:gh:fire_1')]
+_BRUTE, _ELITE = r'objects\characters\brute\brute.model_animation_graph', r'objects\characters\elite\elite.model_animation_graph'
+_GRUNT, _JACKAL = r'objects\characters\grunt\grunt.model_animation_graph', r'objects\characters\jackal\jackal.model_animation_graph'
+_BUGGER = r'objects\characters\bugger\bugger.model_animation_graph'
+# graph, [(mode, action)], source, clone, marker, hit frame (None: the source's first frame event)
+AI_SWINGS = [(_BRUTE, [('combat', 'melee'), ('berserk', 'melee')], 'combat:melee:melee:var1', 'combat:melee:gh:melee', 'right_hand', None),
+             (_BRUTE, [('combat', 'melee_back')], 'combat:melee:melee_back:var1', 'combat:melee:gh:melee_back', 'right_hand', None),
+             (_BRUTE, [('berserk', 'melee_back')], 'berserk:melee:melee_back:var1', 'berserk:melee:gh:melee_back', 'right_hand', None),
+             (_BRUTE, [('berserk', 'melee_tackle')], 'berserk:melee:melee_tackle:var1', 'berserk:melee:gh:melee_tackle', 'right_hand', None),
+             (_ELITE, [('combat', 'melee')], 'combat:sword:melee:var0', 'combat:melee:gh:melee', 'melee', None),
+             (r'objects\characters\floodcombat_human\floodcombat_human.model_animation_graph', [('combat', 'melee')], 'combat:rifle:melee:var0', 'combat:melee:gh:melee', 'melee', None),
+             (r'objects\characters\floodcombat_elite\floodcombat_elite.model_animation_graph', [('combat', 'melee')], 'combat:rifle:melee:var1', 'combat:melee:gh:melee', 'melee', None),
+             (_GRUNT, [('combat', 'melee')], 'combat:pistol:throw_grenade', 'combat:melee:gh:melee', 'right_hand', None),
+             (_JACKAL, [('combat', 'melee')], 'combat:pistol:shakefist', 'combat:melee:gh:melee', 'right_hand_jackal', 20),
+             (_BUGGER, [('combat', 'melee'), ('flight', 'melee')], 'combat:pistol:ready:var0', 'combat:melee:gh:melee', 'right_hand', 16)]
+# graph, source, clone, [modes]: fire_1 as a replacement overlay
+AI_OVERLAYS = [(_BUGGER, 'combat:pistol:ready:var0', 'combat:melee:gh:fire_1', ('combat', 'flight'))]
+# graph, recoil: fire_1 back to it
+AI_RECOILS = [(_GRUNT, 'combat:missile:rl:fire_1'), (_JACKAL, 'combat:pistol:pr:fire_1:var0')]
 
 
 def _names(path):
@@ -1047,16 +1068,20 @@ def add_effect_reference(d, path):
     return d, n
 
 
-def clone_event_animation(d, src, new, names, effect=None, replacement=False):
+def clone_event_animation(d, src, new, names, effect=None, replacement=False, hit=None):
     """Duplicate `src` as `new`. effect: its one effect event = that reference, at the hit frame
-    (the frame event's), frame + sound events kept; else no events, `replacement` = overlay type."""
+    (the frame event's, or `hit`: a primary keyframe where the source has none), frame + sound events
+    kept; else no events, `replacement` = overlay type. No variant links: a clone stands alone."""
     import struct
     if new in names:
+        e = _anim_block(bytes(d), names)[2][names.index(new)][1]
+        struct.pack_into('<hh', d, e + 0x30, -1, -1)
         return d, names.index(new)
     at, n, rows = _anim_block(bytes(d), names)
     name, e, start, end, first = rows[names.index(src)]
     elem = bytearray(d[e:e + ANIM_ES])
     struct.pack_into('<I', elem, 0, len(new) << 24)
+    struct.pack_into('<hh', elem, 0x30, -1, -1)
     blob_end = start + len(name) + struct.unpack_from('<I', d, e + 0x34)[0]
     spans = _chunks(d, e, first, blob_end)
     def part(off):
@@ -1069,6 +1094,9 @@ def clone_event_animation(d, src, new, names, effect=None, replacement=False):
             elem[0x10] = 2
     else:
         frames = part(0x58)
+        if hit is not None:
+            frames = SIG + struct.pack('<III', 0, 1, 4) + struct.pack('<hh', 0, hit)
+            struct.pack_into('<I', elem, 0x58, 1)
         hit = struct.unpack_from('<h', frames, 18)[0]      # the first frame event's frame
         event = SIG + struct.pack('<III', 1, 1, 4) + struct.pack('<hh', effect, hit)
         struct.pack_into('<I', elem, 0x70, 1)
@@ -1094,17 +1122,29 @@ def _row(d, mode, cls, typ):
 
 
 def add_action(d, mode, cls, label, index):
-    """The `gh` row (actions empty, one overlay) gets action `label` -> animation `index`: an
-    actions chunk built from its overlay chunk."""
+    """The `gh` row gets action `label` -> animation `index`: an actions chunk built from its first
+    overlay chunk, or one more element in the chunk it has."""
     import struct
     t, _e = _row(d, mode, cls, 'gh')
-    if struct.unpack_from('<I', d, t[3] + 4)[0]:
+    count = struct.unpack_from('<I', d, t[3] + 4)[0]
+    if count:
+        o = t[4] + 2
+        elems, q = o + 16 + count * 8, o + 16 + count * 8
+        for k in range(count):
+            ln = d[o + 16 + k * 8 + 3]
+            if bytes(d[q:q + ln]).decode('latin-1') == label:
+                return d
+            q += ln + 16
+        d[q:q] = label.encode('latin-1') + d[q - 16:q]
+        d[elems:elems] = struct.pack('<Ihh', len(label) << 24, -1, index)
+        struct.pack_into('<I', d, o + 8, count + 1)
+        struct.pack_into('<I', d, t[3] + 4, count + 1)
         return d
     o = t[4] + 2                                  # after the label 'gh': the overlays chunk
-    head = bytes(d[o:o + 16])
+    head = bytes(d[o:o + 8]) + struct.pack('<I', 1) + bytes(d[o + 12:o + 16])
     st = bytearray(d[o + 16:o + 24])
     ln = st[3]
-    rest = bytes(d[o + 24 + ln:t[5]])
+    rest = bytes(d[o + 16 + struct.unpack_from('<I', d, o + 8)[0] * 8 + ln:t[5]])      # after the overlays' array
     pair = bytes(st[4:8])
     new_pair = struct.pack('<hh', -1, index)
     struct.pack_into('<I', st, 0, len(label) << 24)
@@ -1138,37 +1178,44 @@ def ai_swings():
     dry = '--dry' in sys.argv
     plain = _os.path.join(TAGS, FX + r'\gravity_hammer_port_impact.effect')
     for marker in sorted({r[4] for r in AI_SWINGS}):
-        dest = _os.path.join(TAGS, AI_IMPACT + ('' if marker == 'melee_effect' else '_' + marker) + '.effect')
+        dest = _os.path.join(TAGS, AI_IMPACT + '_' + marker + '.effect')
         if not dry and not _os.path.exists(dest):
             shutil.copy(plain, dest)
             print('   ' + h2_stringid.rename(dest, {'up': marker}, write=True))
-    jobs = [(rel, None, src, new, _m) for rel, _c, src, new, _m in AI_SWINGS] + [(rel, 'o', src, new, None) for rel, src, new in AI_OVERLAYS]
-    for rel, kind, src, new, marker in jobs:
+    jobs = [(r[0], 's', r) for r in AI_SWINGS]
+    jobs += [(r[0], 'o', r) for r in AI_OVERLAYS] + [(r[0], 'r', r) for r in AI_RECOILS]
+    for rel, kind, job in jobs:
         path = _os.path.join(TAGS, rel)
         original = open(path, 'rb').read()
         names = _names(path)
         d = bytearray(original)
-        if kind is None:
-            ref = AI_IMPACT + ('' if marker == 'melee_effect' else '_' + marker)
-            d, eff = add_effect_reference(d, ref)
-            d, index = clone_event_animation(d, src, new, names, effect=eff)
-            d = add_action(d, 'combat', 'melee', 'melee', index)
-        else:
+        if kind == 's':
+            actions, src, new, marker, hit = job[1:]
+            d, eff = add_effect_reference(d, AI_IMPACT + '_' + marker)
+            d, index = clone_event_animation(d, src, new, names, effect=eff, hit=hit)
+            for mode, label in actions:
+                d = add_action(d, mode, 'melee', label, index)
+        elif kind == 'o':
+            _rel, src, new, modes = job
             d, index = clone_event_animation(d, src, new, names, replacement=True)
+            for mode in modes:
+                d = set_overlay(d, mode, 'melee', 'gh', 'fire_1', index)
+        else:
+            new, index = job[1], names.index(job[1])
             d = set_overlay(d, 'combat', 'melee', 'gh', 'fire_1', index)
         G.modes_chunk(bytes(d))
         if dry:
             print('%s: dry, +%d bytes, %s = animation %d' % (_os.path.basename(path), len(d) - len(original), new, index))
             continue
         if bytes(d) == original:
-            print('%s: already' % _os.path.basename(path))
+            print('%s: %s already' % (_os.path.basename(path), new))
             continue
         before = h2_stringid.export(path)
         open(path, 'wb').write(bytes(d))
         after = h2_stringid.export(path)
         lost = [r for r in before if r not in after]
-        # the row's own overlay index moves in set_overlay: that one row may change
-        if len(lost) > (0 if kind is None else 1) or not any(r[2] == new for r in after):
+        # the row's own overlay index moves: those rows may change
+        if len(lost) > (0 if kind == 's' else 2) or not any(r[2] == new for r in after):
             open(path, 'wb').write(original)
             raise SystemExit('%s refused, restored: %d rows lost %s' % (path, len(lost), lost[:3]))
         print('%s: %s = animation %d, +%d bytes, %d more rows, %d original rows changed'
@@ -1204,8 +1251,8 @@ def ai_blast():
     open(dest, 'wb').write(bytes(data))
     if 'area damage players only' not in tf.export(dest):
         raise SystemExit('flags 0 not at 0x5C')
-    for tail in ('', '_melee'):
-        fx = _os.path.join(TAGS, AI_IMPACT + tail + '.effect')
+    for marker in sorted({r[4] for r in AI_SWINGS}):
+        fx = _os.path.join(TAGS, AI_IMPACT + '_' + marker + '.effect')
         if ('jpt!', AI_BLAST) not in R.references(fx):
             R.set_reference(fx, 'jpt!', plain, AI_BLAST)
 
