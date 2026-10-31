@@ -708,6 +708,70 @@ def species_skill(m, hp, done):
 
 
 
+# Melee weapons need their wielders to close in: without this hammer AI stands off and swings
+# at air. Species-wide fields, so a species only takes them on a level where this patch handed
+# it the weapon (2026-10-31; values from the Gravity Hammer's Armed tests, the Marine's user-tuned).
+CLOSE_IN = ('objects' + chr(92) + 'weapons' + chr(92) + 'melee' + chr(92) + 'gravity_hammer_port'
+            + chr(92) + 'gravity_hammer_port',)
+CHARGE = (0x7C, 0x40)                                  # character Charge Properties
+CHARGE_FIELDS = (('Consider', 0x4), ('Chance', 0x8), ('Attack', 0xC), ('Abort', 0x10),
+                 ('Timeout', 0x14), ('Delay', 0x18))
+CHARGE_VALUES = {'Consider': 8.0, 'Chance': 1.0, 'Attack': 1.5, 'Abort': 12.0, 'Timeout': 8.0}
+MARINE_CHARGE = {'Consider': 15.0, 'Chance': 1.0, 'Attack': 1.5, 'Abort': 20.0, 'Timeout': 15.0,
+                 'Delay': 0.5}
+STYLE_ATTITUDE, STYLE_ENGAGE, MELEE_CHARGE = 0x24, 0x28, (0x38, 16)
+MELEE_CHARGE_STYLES = {'Grunt': 'grunt', 'Jackal': 'jackal', 'Bugger': 'bugger', 'Marine': 'marine'}
+GENERIC = 'ai' + chr(92) + 'generic'
+
+
+def close_in(m, hp, done):
+    """Give every species handed a CLOSE_IN weapon the charge rule. A species whose characters own
+    no Charge Properties (Grunts, Jackals, Drones) reads ai\\generic's, so that goes too, and with
+    it every other character without its own -- never brute_tartarus, who is left out of NEVER's
+    types by enemy_of, and whose own rows stay his."""
+    rows = []
+    armed = sorted(e for e, w in done.items()
+                   if {x.lower() for x in w} & {c.lower() for c in CLOSE_IN})
+    if not armed:
+        return rows
+    chars = list(m.tags_of_class('char'))
+    written, generic = set(), False
+    for enemy in armed:
+        values = MARINE_CHARGE if enemy == 'Marine' else CHARGE_VALUES
+        for t in chars:
+            if enemy_of(t['name']) != enemy:
+                continue
+            own = m.follow_all(t['base'], [CHARGE[0]], [CHARGE[1]], 'all')
+            generic = generic or not own
+            for e in own:
+                for field, off in CHARGE_FIELDS:
+                    if field in values:
+                        struct.pack_into('<f', m.data, e + off, values[field])
+            if own:
+                written.add(t['name'].rsplit(chr(92), 1)[-1])
+    if generic:
+        for t in chars:
+            if t['name'] == GENERIC:
+                for e in m.follow_all(t['base'], [CHARGE[0]], [CHARGE[1]], 'all'):
+                    for field, off in CHARGE_FIELDS:
+                        if field in CHARGE_VALUES:
+                            struct.pack_into('<f', m.data, e + off, CHARGE_VALUES[field])
+                written.add('ai' + chr(92) + 'generic')
+    styles = [MELEE_CHARGE_STYLES[e] for e in armed if e in MELEE_CHARGE_STYLES]
+    off, bit = MELEE_CHARGE
+    for t in m.tags_of_class('styl'):
+        name = t['name'] or ''
+        if any(s in name for s in styles):
+            v = struct.unpack_from('<I', m.data, t['base'] + off)[0]
+            struct.pack_into('<I', m.data, t['base'] + off, v | (1 << bit))
+        if 'Marine' in armed and 'marine' in name:
+            struct.pack_into('<H', m.data, t['base'] + STYLE_ATTITUDE, 2)
+            m.data[t['base'] + STYLE_ENGAGE] = 3                    # an enum8
+    rows.append({'field': 'melee charge', 'ok': True, 'old': ', '.join(armed),
+                 'new': 'charge rule on ' + ', '.join(sorted(written))})
+    return rows
+
+
 def apply(m, hp, spec, registry=None, salt=None):
     """The patch pass: Armed cards (Jackals shieldless with two-handed weapons), the Grunt teach
     and half rate for what Grunts were handed, the species skill (Grunt / Jackal own entries),
@@ -725,6 +789,7 @@ def apply(m, hp, spec, registry=None, salt=None):
     if done.get('Grunt'):
         rows += grunt_rates(m, hp, sorted(done['Grunt']))
     rows += species_skill(m, hp, done)
+    rows += close_in(m, hp, done)
     if (spec or {}).get('allies'):
         rows += ally_teach(m, hp)
     for r in rows:              # the patch log's results view names every row by its effect
