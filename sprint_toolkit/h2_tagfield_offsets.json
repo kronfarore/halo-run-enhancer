@@ -839,5 +839,62 @@
   "new triggers[0].secondary action": 3502,
   "new triggers[0].secondary barrel": 3488,
   "overheated heat loss per second": 568
+ },
+ "damage_effect@objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_explosion": {
+  "AI stun radius": 168,
+  "AOE core radius": 104,
+  "category": 98,
+  "flags#1": 100,
+  "instantaneous acceleration": 144,
+  "outward radius": 284,
+  "outward velocity": 280,
+  "shake radius": 180
+ },
+ "damage_effect@objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_slam": {
+  "instantaneous acceleration": 144,
+  "radius": 80
+ },
+ "damage_effect@objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_trigger": {
+  "active camouflage damage": 128,
+  "damage lower bound": 108,
+  "damage upper bound": 112,
+  "flags": 92,
+  "instantaneous acceleration": 148,
+  "radius": 80
+ },
+ "new_hud_definition@ui\\hud\\gravity_hammer": {
+  "bitmap widgets[1].fullscreen sequence index": 340,
+  "bitmap widgets[1].halfscreen sequence index": 341,
+  "bitmap widgets[1].quarterscreen sequence index": 342,
+  "bitmap widgets[2].fullscreen sequence index": 460,
+  "bitmap widgets[2].halfscreen sequence index": 461,
+  "bitmap widgets[2].quarterscreen sequence index": 462
+ },
+ "projectile@objects\\weapons\\melee\\gravity_hammer_port\\projectiles\\gravity_hammer_port_strike": {
+  "material responses[1].response": 1495,
+  "material responses[2].response": 1655,
+  "material responses[3].response": 1815,
+  "material responses[3].response#1": 1849,
+  "material responses[4].response": 1975,
+  "material responses[4].response#1": 2009,
+  "material responses[5].response": 2135,
+  "material responses[6].response": 2295,
+  "material responses[6].response#1": 2329,
+  "material responses[7].response": 2455,
+  "material responses[8].response": 2615,
+  "material responses[9].response": 2775,
+  "timer": 492
+ },
+ "weapon@objects\\weapons\\melee\\gravity_hammer_port\\gravity_hammer_port": {
+  "AI scariness": 888,
+  "Apply collision damage scale": 236,
+  "barrels[0].age generated per round": 3509,
+  "barrels[0].error angle#1": 3501,
+  "barrels[0].fire recovery time": 3357,
+  "barrels[0].firing noise": 3379,
+  "barrels[0].heat generated per round": 3565,
+  "damage pyramid depth": 696,
+  "heat recovery threshold": 544,
+  "overheated threshold": 548
  }
 }

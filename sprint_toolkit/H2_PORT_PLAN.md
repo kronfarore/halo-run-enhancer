@@ -1143,6 +1143,13 @@ h2_port_hud_plate `boxes`.
 **Process, from the user this port:** Armed Marines are real: the cards hand them weapons, not only the trade. The
 best-behaved species is the template for the others.
 
+**Step 4b, final pass (2026-10-31, user: 'every step, especially 4b'):** list 2 = recorded decisions only (Halo 3's
+own values by step 4a, zero fields no ratio). List 3 by hand, read by name: weapon flags clean (the Beam Rifle's aim flag
+was already off), three rows written: AI stun bounds 1 / 0.5 (both blasts), acceleration scale 1, firing noise silent.
+Verified by export, NOT booted: check them with the first rebuilt level. The 5b report had never been run; it is in
+reports/h2_gravity_hammer_5b.txt: slam 150, 97.8 dps, Elite 1, Brute 2 / 1.53 s (Shotgun 4 / 3.0 s).
+New tools: h2_armed_charge_test.py (the test-map charge, the confirmed values), h2_anchored_fill.py.
+
 **Open:** the charge rule is the enhancer's (shared notes a5_gravity_hammer_progress.md); until it ships, hammer AI
 stands off. Allied Elites and Grunts: their swing blast would hit the player and no enemy. The Marine's blast leads
 its swing (user: keep). `h2_armed_test` does not run the `allies` pass. The old throw and fist-shake fire_1 clones stay in

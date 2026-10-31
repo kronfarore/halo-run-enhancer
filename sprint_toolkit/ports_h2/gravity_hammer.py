@@ -321,8 +321,7 @@ PORT = {
             # explosion clone's (radius camo -48, flags -36)
             (GH + r'\damage_effects\gravity_hammer_port_trigger.damage_effect', 'radius', '', 0, 0, [2.5, 2.5],
              {'anchor': ('active camouflage damage', -48)}),
-            (GH + r'\damage_effects\gravity_hammer_port_trigger.damage_effect', 'flags', '', 0, 0, 3,
-             {'anchor': ('active camouflage damage', -36)}),
+            # flags 3 (reads back unprovable on a re-run: the probe moves nothing): written in blast_shove
             # THE SLAM (impact damage + melee lunge): Halo 3's crush_melee 150, accel 1.5, radius 0
             (GH + r'\damage_effects\gravity_hammer_port_slam.damage_effect', 'radius', '', 0, 0, [0.0, 0.0]),
             (GH + r'\damage_effects\gravity_hammer_port_slam.damage_effect', 'damage lower bound', '', 0, 0, 150.0),
@@ -337,6 +336,13 @@ PORT = {
             (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'damage upper bound', '', 0, 0, [160.0, 160.0]),
             (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'instantaneous acceleration', '', 0, 0, 3.5),
             (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'AI stun radius', '', 0, 0, 4.5),
+            # step 4b close-out (user: 'every step, especially 4b'): Halo 3's stun bounds over Tartarus's 0.85;
+            # the Beam Rifle's acceleration scale; its 'shout' (Halo 3's hammer has no barrel, the sword no
+            # firing noise, so a swing is silent: the blast is heard as an explosion)
+            (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'AI stun bounds', '', 0, 0, [1.0, 0.5]),
+            (GH + r'\damage_effects\gravity_hammer_port_explosion_ai.damage_effect', 'AI stun bounds', '', 0, 0, [1.0, 0.5]),
+            (GH + r'\gravity_hammer_port.weapon', 'acceleration scale', '', 0, 0, 1.0),
+            (GH + r'\gravity_hammer_port.weapon', 'firing noise', 'barrels', 0, 0, 0),
             (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'category', '', 0, 0, 6),
             (GH + r'\damage_effects\gravity_hammer_port_explosion.damage_effect', 'flags', '', 0, 1, 1),
             # step 4b (2026-10-29): the blast's camera shake + outward push are Halo 3's own (zero in
@@ -537,14 +543,14 @@ PORT = {
                              r'objects\weapons\damage_effects\slice_melee.damage_effect'),
                    'impact': (GH + r'\damage_effects\gravity_hammer_port_slam.damage_effect',
                               r'objects\weapons\damage_effects\dash_melee.damage_effect')},
-        # the run of 2026-10-29 (report: reports/h2_gravity_hammer_4b.txt), decided:
+        # the runs of 2026-10-29 and 2026-10-31 (report: reports/h2_gravity_hammer_4b.txt), decided:
         'decisions': {
             'jab (melee) list 2: damage 37.3 / accel 0.67 / rotation 0.72 / pushback 0.125':
                 "the sword's STRIKE ratio -- step 4a chose the LUNGE ratio x1.0 (user): Halo 3's own 80 / 1 / 1.2 / 0.25",
             'blast list 2: instantaneous acceleration 2.33': "the same: Halo 3's own 3.5 (step 4a)",
             'weapon list 2: bounding radius / acceleration scale / damage pyramid = 0':
                 "Halo 3's hammer leaves the TOP-LEVEL fields 0; no ratio from a zero -- the beam rifle's "
-                "bounding radius 0.4125 / acceleration scale 1 kept; the pyramid = Halo 3's own from its melee "
+                "bounding radius 0.4125 kept, acceleration scale the sword's 1; the pyramid = Halo 3's own from its melee "
                 "parameters (11.46 x 11.46 at 0.8, read by the Melee Seeking cards; numbers + catalog)",
             'weapon list 4 / 5: overheated heat loss 0.3, camo ding 1, collision damage scale 8, AI scariness 6':
                 "the beam rifle's -> the sword's 0 / 0 / 0 / 16 (numbers)",
@@ -559,6 +565,13 @@ PORT = {
                                        "(no free attachment slot without a block insert; check 10)",
             'external / campaign external aging': "no Halo 2 field: the barrel's age per round 0.05 (step 4a)",
             'weapon type / tracking type / melee damage reporting type': "Halo 2's enums kept (kill feed only)",
+            'weapon flags (Halo 3 4472896, sword 83888128)': "by name: 'cannot fire at maximum age' kept; 'melee only' and "
+                                                             "'weapon ages with each kill' left off (the trigger route, step 4a); the Beam "
+                                                             "Rifle's 'aim assists only when zoomed' cleared",
+            'object flags: 4 unused': "the Beam Rifle's, no effect",
+            'item / font icon, autoaim falloff range, aging amounts, impulse + shake durations': 'no Halo 2 field',
+            'blast list 3: AOE core 0.75, AI stun radius 4.5, stun bounds 1 / 0.5': "Halo 3's own (numbers)",
+            'firing noise': "silent: no barrel in Halo 3, none on the sword",
         }},
     # make_port_catalog_h2.py gravity_hammer: balance_port.py "Gravity Hammer" "Energy Blade" "Halo 3"
     # "Halo 2" gives the AIM rows (the sword's ratio: magnetism 12 / 8, autoaim 6 / 4.2) and the melee
@@ -967,9 +980,17 @@ def brute_grip():
 def blast_shove():
     import sys
     sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    import struct
+    import h2_tagfield as tf
     import h2_tagref as R
     tag = _os.path.join(H2EK, 'tags', FX + r'\gravity_hammer_port_impact.effect')
     jpt = GH + r'\damage_effects\gravity_hammer_port_trigger'
+    shove = _os.path.join(H2EK, 'tags', jpt + '.damage_effect')
+    data = bytearray(open(shove, 'rb').read())
+    struct.pack_into('<I', data, tf.offset_of(shove, 'active camouflage damage') - 36, 3)
+    open(shove, 'wb').write(bytes(data))
+    if 'area damage players only' not in tf.export(shove):
+        raise SystemExit('the shove flags did not land')
     if ('jpt!', jpt) in R.references(tag):
         print('the blast already carries the shove')
         return

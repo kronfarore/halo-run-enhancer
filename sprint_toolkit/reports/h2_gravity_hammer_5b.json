@@ -1,0 +1,140 @@
+{
+ "port": "Gravity Hammer",
+ "balanced": true,
+ "targets": [
+  [
+   "Elite minor",
+   105.0,
+   45.0,
+   "energy_shield_thin_cov_elite",
+   "hard_metal_thin_cov_elite"
+  ],
+  [
+   "Brute minor",
+   0.0,
+   250.0,
+   "",
+   "tough_organic_flesh_brute"
+  ],
+  [
+   "Grunt minor",
+   0.0,
+   40.0,
+   "",
+   "soft_organic_flesh_grunt"
+  ],
+  [
+   "Jackal minor",
+   0.0,
+   60.0,
+   "energy_shield_thick_cov_jackal",
+   "soft_organic_flesh_jackal"
+  ]
+ ],
+ "rows": [
+  {
+   "label": "Gravity Hammer (port)",
+   "tag": "objects\\weapons\\melee\\gravity_hammer_port\\gravity_hammer_port",
+   "damage": 150.0,
+   "projectiles": 1.0,
+   "rate": [
+    0.6521740548204467,
+    0.6521740548204467
+   ],
+   "dps": 97.826108223067,
+   "mag": 0,
+   "reload": 0.0,
+   "carry": 0,
+   "initial": 0,
+   "vel": [
+    6.0,
+    6.0
+   ],
+   "range": 5.0,
+   "error": [
+    0.0,
+    0.0
+   ],
+   "autoaim": [
+    6.0,
+    4.2
+   ],
+   "dual": false,
+   "heat": 0.0,
+   "ttk": [
+    [
+     "Elite minor",
+     1,
+     0.0
+    ],
+    [
+     "Brute minor",
+     2,
+     1.533333
+    ],
+    [
+     "Grunt minor",
+     1,
+     0.0
+    ],
+    [
+     "Jackal minor",
+     1,
+     0.0
+    ]
+   ]
+  },
+  {
+   "label": "Shotgun",
+   "tag": "objects\\weapons\\rifle\\shotgun\\shotgun",
+   "damage": 16.5,
+   "projectiles": 10.0,
+   "rate": [
+    1.0,
+    1.0
+   ],
+   "dps": 165.0,
+   "mag": 12,
+   "reload": 4.800000000000001,
+   "carry": 48.0,
+   "initial": 36.0,
+   "vel": [
+    120.0,
+    120.0
+   ],
+   "range": 8.0,
+   "error": [
+    8.0,
+    10.0
+   ],
+   "autoaim": [
+    8.0,
+    6.0
+   ],
+   "dual": false,
+   "heat": 0.0,
+   "ttk": [
+    [
+     "Elite minor",
+     1,
+     0.0
+    ],
+    [
+     "Brute minor",
+     4,
+     3.0
+    ],
+    [
+     "Grunt minor",
+     1,
+     0.0
+    ],
+    [
+     "Jackal minor",
+     1,
+     0.0
+    ]
+   ]
+  }
+ ]
+}

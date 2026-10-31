@@ -1,0 +1,10 @@
+Gravity Hammer -- BALANCED (catalog rows on the ports), legendary, body shots (ttk_halo2); not a Halo 2 weapon here: H2's own Gravity Hammer (Tartarus: a boss's numbers -- show, do not default), Rocket / Fuel Rod melee, Energy Blade (no projectile: melee)
+weapon                      dmg    rate/s    dps  mag reload init/max         vel range       error   autoaim dual
+Gravity Hammer (port)       150 0.652-0.652   97.8    -   0.00      0/0         6/6     5         0-0     6/4.2     
+Shotgun                  16.5x10       1-1  165.0   12   4.80    36/48     120/120     8        8-10       8/6     
+
+time to kill (shots / seconds):
+                              Elite minor      Brute minor      Grunt minor     Jackal minor
+Gravity Hammer (port)          1 / 0.00 s       2 / 1.53 s       1 / 0.00 s       1 / 0.00 s
+Shotgun                        1 / 0.00 s       4 / 3.00 s       1 / 0.00 s       1 / 0.00 s
+wrote reports/h2_gravity_hammer_5b.json

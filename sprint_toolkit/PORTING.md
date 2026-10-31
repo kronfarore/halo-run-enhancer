@@ -3999,6 +3999,8 @@ Journey (Arbiter, Balanced), Armed on Gravemind and Sacred Icon (7 tests), Marin
 * The AI's closing in is a CHARGE RULE, not a tag: the enhancer's. Consider 8, Chance 1, Attack 1.5, Abort 12,
   Timeout 8, melee_charge on; Marines Consider 15, Abort 20, Timeout 15, Delay 0.5, style Aggressive.
 * Harness: `--armed marine` needs the enhancer's `allies` pass for a class Marines lack. Test maps do not run it.
+* Test-map charge: `python h2_armed_charge_test.py <staged map> [--allies] [--marines] [--tough]`, on a staged map only.
+* 4b, list 3 by name: a melee port needs its firing noise and acceleration scale read too, the donor's survive a trigger.
 * Scripts walking loose jmads: dry-run with faulthandler first; a search loop held the kit lock for an hour.
 
 ## Halo Reach
