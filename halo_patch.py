@@ -727,9 +727,11 @@ def apply_difficulty_baseline(m, registry, target_difficulty, spec):
     value equal to what is already there) leaves the field alone.
 
     SCALING DIFFICULTY (opt-in, user 2026-10-25): spec['scale'] = {key: percent per level}
-    and spec['steps'] = levels completed in the run. A dial then gets its value (the
-    baseline's, or the game's own where the baseline leaves it vanilla) x (1 + pct/100 x
-    steps) -- linear, and from the .bak every patch, so it never compounds.
+    and spec['steps'] = levels completed in the run. A dial starts from its value (the
+    baseline's, or the game's own where the baseline leaves it vanilla) and gets either
+    start + pct/100 x steps (spec['additive'], user 2026-10-31: the default, the same
+    step on every game's dial) or start x (1 + pct/100 x steps). Linear both ways, and
+    from the .bak every patch, so it never compounds.
 
     These are SET, not scaled, and they run first on purpose: every enemy effect in a
     run then multiplies up from the chosen baseline rather than from Bungie's. Because
@@ -745,6 +747,7 @@ def apply_difficulty_baseline(m, registry, target_difficulty, spec):
         return [{**base, 'field': 'baseline', 'ok': False, 'reason': 'no matg plugin'}]
     scale = spec.get('scale') or {}
     steps = int(spec.get('steps') or 0)
+    additive = bool(spec.get('additive'))
     shipped = (read_difficulty_baseline(m, registry, target_difficulty)
                if steps and any(scale.values()) else {})
     for key, field in DIFFICULTY_BASELINE_FIELDS.items():
@@ -753,12 +756,18 @@ def apply_difficulty_baseline(m, registry, target_difficulty, spec):
         if pct and steps:
             start = want if want is not None else shipped.get(key)
             if start is not None:
-                want = float(start) * (1.0 + pct / 100.0 * steps)
+                if additive:
+                    want = float(start) + pct / 100.0 * steps
+                    note = '+%g after %d level(s) (+%g each)' % (
+                        round(pct / 100.0 * steps, 4), steps, round(pct / 100.0, 4))
+                else:
+                    want = float(start) * (1.0 + pct / 100.0 * steps)
+                    note = '+%g%% after %d level(s) (%g%% each)' % (
+                        round(pct * steps, 2), steps, pct)
                 # an information row; the dial's own row below carries old -> new
                 rows.append({'effect': 'Difficulty scaling', 'tag': base['tag'],
                              'field': field, 'ok': True, 'old': round(float(start), 4),
-                             'new': '+%g%% after %d level(s) (%g%% each)'
-                                    % (round(pct * steps, 2), steps, pct)})
+                             'new': note})
         if want is None:
             continue
         name = '%s %s' % (target_difficulty, field)

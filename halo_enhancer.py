@@ -448,7 +448,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'death_penalty_base',
                'difficulty_baseline', 'difficulty_baseline_balanced',
                'difficulty_baseline_use_balanced', 'difficulty_scaling',
-               'difficulty_scaling_pct',
+               'difficulty_scaling_pct', 'difficulty_scaling_additive',
                'odst_red_plasma_as_brute', 'odst_variants_as_base',
                'odst_downgrade_unupgraded', 'odst_shield_into_health',
                'odst_patch_hub', 'odst_pools_from_map',
@@ -1232,9 +1232,11 @@ CONFIG = {
     "difficulty_baseline_balanced": {g: dict(v) for g, v in BALANCED_BASELINE.items()},
     "difficulty_baseline_use_balanced": False,
     # Scaling difficulty (opt-in): each dial above grows by this percent per level
-    # completed (run_state.levels), per game; applied on top of the baseline every patch
+    # completed (run_state.levels); applied on top of the baseline every patch. Additive
+    # (default): +1 % is +0.01 on the dial. Off: a percent of the dial's own value.
     "difficulty_scaling": False,
     "difficulty_scaling_pct": {},
+    "difficulty_scaling_additive": True,
     # ODST's obtainable plasma rifle is the RED tag, which Halo 2 shipped as the
     # separate Brute Plasma Rifle. With this on it is offered under that name and
     # retuned on patch to match Halo 2's version. Normal Plasma Rifle effects reach
@@ -7410,6 +7412,7 @@ class MagnitudeEditorDialog(QDialog):
             if steps and scale:
                 spec['scale'] = scale
                 spec['steps'] = steps
+                spec['additive'] = bool(CONFIG.get('difficulty_scaling_additive', True))
         return spec or None
 
     def _apply_par_time(self):
@@ -10825,12 +10828,26 @@ class OptionsDialog(QDialog):
         self.scaling_cb = QCheckBox("Scaling difficulty: raise the dials per level completed")
         self.scaling_cb.setChecked(bool(CONFIG.get('difficulty_scaling')))
         self.scaling_cb.setToolTip(
-            "On: every patch adds these percentages to the dials above once per level "
-            "completed in this run (Next level), linear -- +2 % a level is +10 % after "
-            "five levels. The same percentages in every game. A dial left on vanilla "
-            "scales from the game's own value. Read from the run, so both co-op machines "
-            "patch the same numbers.")
+            "On: every patch raises the dials above once per level completed in this run "
+            "(Next level), linear. The same percentages in every game. A dial left on "
+            "vanilla scales from the game's own value. Read from the run, so both co-op "
+            "machines patch the same numbers.")
         bgrid.addWidget(self.scaling_cb, srow, 0, 1, 5)
+        self.scaling_mode = QComboBox()
+        self.scaling_mode.addItem("Additive", True)
+        self.scaling_mode.addItem("Multiplying", False)
+        self.scaling_mode.setCurrentIndex(
+            0 if CONFIG.get('difficulty_scaling_additive', True) else 1)
+        self.scaling_mode.setToolTip(
+            "Additive: +1 % adds 0.01 to the dial, whatever its value -- a dial at 1.40 "
+            "with +2 % a level is 1.50 after five levels, and so is +0.10 on any other "
+            "dial.\n"
+            "Multiplying: the percent is of the dial's own value -- 1.40 with +2 % a level "
+            "is 1.54 after five levels (+10 %).")
+        self.scaling_mode.setEnabled(self.scaling_cb.isChecked())
+        self.scaling_cb.toggled.connect(self.scaling_mode.setEnabled)
+        bgrid.addWidget(QLabel("Scaling mode"), srow + 2, 0)
+        bgrid.addWidget(self.scaling_mode, srow + 2, 1, 1, 2)
         self.scaling_spins = {}
         vals = difficulty_scaling_pct()
         bgrid.addWidget(QLabel("All games"), srow + 1, 0)
@@ -13882,6 +13899,7 @@ class OptionsDialog(QDialog):
             'difficulty_scaling': self.scaling_cb.isChecked(),
             'difficulty_scaling_pct': {k: round(self.scaling_spins[k].value(), 1)
                                        for k, _t in BASELINE_COLS},
+            'difficulty_scaling_additive': bool(self.scaling_mode.currentData()),
             'auto_new_equipment_abilities': self.auto_nw_abilities_cb.isChecked(),
             'auto_new_weapon_duals': self.auto_nw_duals_cb.isChecked(),
             'auto_new_weapon_upgrades': self.auto_nw_upgrades_cb.isChecked(),
