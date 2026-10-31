@@ -1819,7 +1819,8 @@ def _apply_starting_equipment(m, game, registry, starting):
         # them set would hand the player the same weapon twice, once in hand and once
         # on the floor, and the floor copy would look like it had failed to work.
         prim = sec = None
-        starting = dict(starting, null_empty_slots=True)
+        # (Halo 3 co-op's second weapons travel in their own keys)
+        starting = dict(starting, null_empty_slots=True, primary2=None, secondary2=None)
     if game == 'Halo 3' and starting.get('h3_coop'):
         roles = {}
         for i in range(count):

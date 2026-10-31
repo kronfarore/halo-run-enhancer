@@ -1020,8 +1020,8 @@ CONFIG = {
     # on in zone set 0), and with this on that zone IS the level's pool. A map without it
     # keeps its own halo.json list.
     "h4_pools_from_map": False,
-    "reach_spawn_starting_weapons": False,
-    "reach_spawn_all_weapons": False,
+    "reach_spawn_starting_weapons": True,
+    "reach_spawn_all_weapons": True,
     "reach_placement_radius": 0.25,
     # A dying player drops the armour ability they carry. Vanilla campaign ships the
     # player trait Disabled, so it never happens there. One switch per game.
@@ -1050,14 +1050,14 @@ CONFIG = {
     # careerdb.xml times (read at MCC start) and, from Halo 3 on, the map's own
     # Time Bonuses thresholds.
     "par_time_scale": 1.0,
-    "h4_spawn_starting_weapons": False,
-    "h4_spawn_all_weapons": False,
+    "h4_spawn_starting_weapons": True,
+    "h4_spawn_all_weapons": True,
     # Halo 3's counterpart, placing at the player spawn (no markers needed). The
     # profile cannot give every weapon -- a turret written into it never arrives.
-    "h3_spawn_starting_weapons": False,
-    "h1_spawn_starting_weapons": False,
-    "h2_spawn_starting_weapons": False,
-    "h2_spawn_all_weapons": False,
+    "h3_spawn_starting_weapons": True,
+    "h1_spawn_starting_weapons": True,
+    "h2_spawn_starting_weapons": True,
+    "h2_spawn_all_weapons": True,
     # Halo 1 enemy weapons (h1_enemy_weapons.py): replace every enemy variant carrying a
     # player's STARTING weapon; per-enemy switch and fallback weapon (None = Auto).
     "h1_replace_first_weapons": False,
@@ -1144,8 +1144,8 @@ CONFIG = {
     # Write the knobs into saved / shared run files, so a co-op partner loading the run
     # plays the ports at the same volume (desynced port sounds may crash the session).
     "weapon_port_volume_sync": False,
-    "h1_spawn_all_weapons": False,
-    "h3_spawn_all_weapons": False,
+    "h1_spawn_all_weapons": True,
+    "h3_spawn_all_weapons": True,
     "ignore_elite_in_h3": True,   # H3 Elites are allies — don't patch Elite enemy effects there
     # Debug-only switch, but it stays in force whether or not debug mode is on: the
     # Flood are gone from ODST onward while their tags are not, so their cards would
@@ -4836,6 +4836,7 @@ class RunState:
             **out_extra,
             "tool_version": VERSION,
             "options": {k: CONFIG.get(k) for k in OPTION_KEYS},
+            "spawn_options_v2": True,
             # The patcher's scope source per game. It changes what is written to the map,
             # so a partner loading this run must patch with the SAME donor -- a local
             # default differing here desynced a co-op session.
@@ -4883,6 +4884,11 @@ class RunState:
         # so the loaded run behaves as saved). Only known option keys are honored.
         opts = data.get('options') or {}
         state.options = {k: opts[k] for k in OPTION_KEYS if k in opts}
+        # Placing the starting weapons became the default in every game (user,
+        # 2026-10-31); a file saved before that never chose 'off', it just had the old one
+        if not data.get('spawn_options_v2'):
+            state.options = {k: v for k, v in state.options.items()
+                             if not k.endswith(('_spawn_starting_weapons', '_spawn_all_weapons'))}
         for k, v in state.options.items():
             CONFIG[k] = v
         # A partner who syncs their port volume knobs: this machine takes them OVER,
@@ -12235,15 +12241,16 @@ class OptionsDialog(QDialog):
         self.h3_spawn_weapons_cb.setToolTip(
             "The starting profile cannot hand out every weapon: a turret written into it "
             "never reaches your hands. With this on, each player's starting weapon is "
-            "PLACED at their spawn (or the level's start anchor) to be picked up, and the "
-            "profile's weapon slots are emptied so you do not get it twice. Needs "
-            "'Set starting weapons'.")
+            "PLACED at their enhancer marker (else their spawn, or the level's start "
+            "anchor) to be picked up, and the profile's weapon slots are emptied so you do "
+            "not get it twice. Needs 'Set starting weapons'.")
         form.addRow("Starting weapons:", self.h3_spawn_weapons_cb)
         self.h3_spawn_all_cb = QCheckBox("↳ place every selected weapon, not just the first")
         self.h3_spawn_all_cb.setChecked(bool(CONFIG.get('h3_spawn_all_weapons')))
         self.h3_spawn_all_cb.setToolTip(
             "Off: only each player's first weapon is placed, as a profile would give it. "
-            "On: every weapon that player holds is placed, ringed round their spawn.")
+            "On: every weapon that player holds is placed, ringed round their marker or "
+            "spawn.")
 
         def _sync_h3_spawn(on=None):
             on = self.h3_spawn_weapons_cb.isChecked()
@@ -17673,6 +17680,10 @@ class HaloGUI(QMainWindow):
                     for g, lst in tg.items():
                         merged.setdefault(g, []).extend(copy.deepcopy(lst or []))
             mod['targets'] = merged
+        # The tag as well: a card drafted in Halo 1 holds that game's plain tag, so the
+        # rebuilt pick missed every later game ('not present in this map')
+        if all(c.get('tag') == parts[0].get('tag') for c in parts):
+            mod['tag'] = copy.deepcopy(parts[0].get('tag'))
         mod['_split_into'] = [c.get('name') for c in parts]
         return True
 
