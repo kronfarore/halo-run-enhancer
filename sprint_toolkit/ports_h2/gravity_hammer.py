@@ -555,7 +555,7 @@ PORT = {
                 "rest have no Halo 2 field or are feel, decided in game)",
             "blast flags (Halo 3 2049)": "Halo 2 bit 0 'does not hurt owner' (numbers); 'transfer dmg always uses min' has no H2 bit",
             'functions / attachments': "the beam rifle's one attachment = its overheat loop, scaled by "
-                                       "'overheated' -- never plays (no heat); Halo 3's hammer_on arcs not ported "
+                                       "'overheated' -- never plays (no heat), blanked at the closing check; Halo 3's hammer_on arcs not ported "
                                        "(no free attachment slot without a block insert; check 10)",
             'external / campaign external aging': "no Halo 2 field: the barrel's age per round 0.05 (step 4a)",
             'weapon type / tracking type / melee damage reporting type': "Halo 2's enums kept (kill feed only)",
@@ -673,7 +673,9 @@ BLANKS = [(FX + r'\gravity_hammer_port_impact.effect', 'snd!', r'sound\weapons\g
            r'\fp_gravity_hammer_port.model_animation_graph', 'effe',
            r'effects\objects\weapons\melee\energy_blade\blade_activate', 0),
           # Armed test 2: the firing damage (the wielder shove) off -- it moved into the blast, below
-          (GH + r'\gravity_hammer_port.weapon', 'jpt!', GH + r'\damage_effects\gravity_hammer_port_trigger', 0)]
+          (GH + r'\gravity_hammer_port.weapon', 'jpt!', GH + r'\damage_effects\gravity_hammer_port_trigger', 0),
+          # closing check (port_sound_refs): the beam rifle's overheat loop, the one BORROW; the hammer has no heat
+          (GH + r'\gravity_hammer_port.weapon', 'lsnd', r'sound\weapons\beam_rifle\beam_rifle_overheat\beam_rifle_overheat', 0)]
 
 
 def blank(rel, cls, path, keep):
