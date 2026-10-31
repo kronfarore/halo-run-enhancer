@@ -4080,6 +4080,11 @@ _PLACE_NOT_AUTO, _PLACE_NEVER = 1 << 0, 1 << 3
 # reach -- which reads exactly like a spawn that never happened. Anything this file
 # appends should carry it.
 _PLACE_AT_REST = 1 << 8
+_H3_PLACE_AT_REST = 1 << 5      # Halo 3's own bit (its bit 8 is Startup)
+# scnr Weapons block maximum. A Halo 3 map takes placements past it and loads, but on
+# Cortana (142, two orders) only Sentinel Beam, Assault Rifle, Plasma Cannon and Missile
+# Pod appeared, wherever they sat. Unknown why; the block stays within the limit.
+_H3_MAX_WEAPON_PLACEMENTS = 128
 
 # REACH MOVES THESE, and using Halo 3's offsets on a Reach element is why starting
 # equipment placed nothing in game on nine of the ten Reach maps while every result
@@ -5320,9 +5325,13 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
     never reached the player's hands. A placed weapon works for anything the level can
     load, so this is Reach's marker mode with Halo 3's own drop points: the curated
     start anchor where the level has one, else each player's Player Starting Location
-    and its BSP (player 2 falls back to the last one). A weapon the level's palette
-    lacks gets a palette entry, exactly as starting equipment does; a tag the map does
-    not ship at all is reported, not guessed.
+    and its BSP (player 2 falls back to the last one). A level's `enhancer_marker<i>`
+    wins over both. A weapon the level's palette lacks gets a palette entry, exactly as
+    starting equipment does; a tag the map does not ship at all is reported, not guessed.
+
+    A level with no room left in the block (Cortana) has the rest REUSE the enhancer's
+    own hidden placements -- Not Automatically, unnamed, no editor folder, added for
+    residency -- moved to the drop point (user, 2026-10-31).
     """
     out = []
     lay = _MAP_WEAPONS.get(game)
@@ -5336,6 +5345,15 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
                  'reason': 'no player starting locations'}]
     anchor = _H3_LOADOUT_ANCHOR.get(str(getattr(m, 'internal_name', '') or ''))
     anchor_mask = _h3_mask_at(m, anchor, game) if anchor else None
+    markers = {}
+    named = reach_named_markers(m, game)
+    if named:
+        qoff, qes = _MAP_EQUIPMENT[game]['items']
+        qbase = _block_base(m, scnr + qoff)
+        for mi in (1, 2):
+            pi = named.get('%s%d' % (REACH_MARKER_PREFIX, mi))
+            if pi is not None:
+                markers[mi - 1] = struct.unpack_from('<fff', m.data, qbase + pi * qes + _EQ_POS)
     woff, wes = lay['weapons']
     poff, pes = lay['palette']
     N = max(0, m.i32(scnr + woff))
@@ -5359,7 +5377,12 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
     weap_plug = registry.get('weap') if registry is not None else None
     new_pal, new_idx, plan, ring = [], {}, [], {}
     for gi, g in enumerate(groups):
-        if anchor:
+        point = markers.get(gi) or markers.get(0)
+        if point:
+            ax, ay, az = point
+            mask = _h3_mask_at(m, point, game)
+            where = 'enhancer marker'
+        elif anchor:
             (ax, ay, az), mask, where = anchor, anchor_mask, 'start anchor'
         else:
             si = min(gi, len(spawns) - 1)
@@ -5422,14 +5445,26 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
     if tmpl is None:
         return out + [{'effect': 'spawned weapons', 'ok': False,
                        'reason': 'no weapon placement to use as a template'}]
-    sizes = [(N + len(plan)) * wes] + ([(pc + len(new_pal)) * pes] if new_pal else [])
-    got = _h3_reserve(m, sizes)
+    room = max(0, _H3_MAX_WEAPON_PLACEMENTS - N)
+    extra, over = plan[:room], plan[room:]
+    if over:
+        spare = [i for i in range(N)
+                 if struct.unpack_from('<I', m.data, base + i * wes + _EQ_FLAGS)[0] & _PLACE_NOT_AUTO
+                 and struct.unpack_from('<h', m.data, base + i * wes + 0x2)[0] == -1
+                 and struct.unpack_from('<h', m.data, base + i * wes + eqo['folder'])[0] == -1]
+        for it in over[len(spare):]:
+            out.append({'effect': 'spawned weapons', 'field': it[3], 'ok': False,
+                        'reason': 'weapon block full and no enhancer placement left to reuse'})
+        over = list(zip(spare, over))
+    sizes = (([(N + len(extra)) * wes] if extra else [])
+             + ([(pc + len(new_pal)) * pes] if new_pal else []))
+    got = _h3_reserve(m, sizes) if sizes else []
     if got is None:
         return out + [{'effect': 'spawned weapons', 'ok': False,
                        'reason': 'no free space to grow the weapon blocks'}]
-    dest = got[0]
+    dest = got[0] if extra else base
     if new_pal:                          # palette first: placements reference it
-        pdest = got[1]
+        pdest = got[-1]
         m.data[pdest:pdest + pc * pes] = m.data[pbase:pbase + pc * pes]
         for j, datum in enumerate(new_pal):
             pe = pdest + (pc + j) * pes
@@ -5437,22 +5472,25 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
             struct.pack_into('<I', m.data, pe + lay['pal_id_at'], datum)
         struct.pack_into('<i', m.data, scnr + poff, pc + len(new_pal))
         struct.pack_into('<I', m.data, scnr + poff + 4, m.off2data(pdest))
-    m.data[dest:dest + N * wes] = m.data[base:base + N * wes]
+    if extra:
+        m.data[dest:dest + N * wes] = m.data[base:base + N * wes]
     uids = [m.u32(base + i * wes + eqo['uid']) for i in range(N)]
     salt = (uids[tmpl] >> 16) if uids else 0
     nxt = (max(u & 0xFFFF for u in uids) + 1) if uids else 1
-    for k, (pi, pos, mask, short, where, added, loaded, total) in enumerate(plan):
-        e = dest + (N + k) * wes
-        m.data[e:e + wes] = m.data[base + tmpl * wes: base + (tmpl + 1) * wes]
+    slots = [(dest + (N + k) * wes, it, False) for k, it in enumerate(extra)]
+    slots += [(dest + i * wes, it, True) for i, it in over]
+    for k, (e, (pi, pos, mask, short, where, added, loaded, total), reused) in enumerate(slots):
+        if not reused:
+            m.data[e:e + wes] = m.data[base + tmpl * wes: base + (tmpl + 1) * wes]
+            struct.pack_into('<I', m.data, e + eqo['uid'],
+                             ((salt << 16) | (nxt + k)) & 0xFFFFFFFF)
         struct.pack_into('<h', m.data, e, pi)
         struct.pack_into('<h', m.data, e + 0x2, -1)          # unnamed
-        struct.pack_into('<I', m.data, e + _EQ_FLAGS, _PLACE_AT_REST)
+        struct.pack_into('<I', m.data, e + _EQ_FLAGS, _H3_PLACE_AT_REST)
         struct.pack_into('<fff', m.data, e + _EQ_POS, *pos)
         _mask_put(m, e, game, mask)
         _scrub_appended(m, e, game)
         struct.pack_into('<h', m.data, e + eqo['folder'], -1)   # immune to folder deletes
-        struct.pack_into('<I', m.data, e + eqo['uid'],
-                         ((salt << 16) | (nxt + k)) & 0xFFFFFFFF)
         if eqo.get('gameflags') is not None:
             struct.pack_into('<H', m.data, e + eqo['gameflags'], 0)   # campaign
         struct.pack_into('<h', m.data, e + lay['rounds_left'],
@@ -5463,8 +5501,9 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
                     'old': where,
                     'new': 'placed at (%.1f, %.1f, %.1f), %d/%d rounds%s'
                            % (pos + (loaded, total, ' (+palette)' if added else ''))})
-    struct.pack_into('<i', m.data, scnr + woff, N + len(plan))
-    struct.pack_into('<I', m.data, scnr + woff + 4, m.off2data(dest))
+    if extra:
+        struct.pack_into('<i', m.data, scnr + woff, N + len(extra))
+        struct.pack_into('<I', m.data, scnr + woff + 4, m.off2data(dest))
     return out
 
 
