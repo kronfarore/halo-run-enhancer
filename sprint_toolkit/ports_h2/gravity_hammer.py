@@ -618,7 +618,10 @@ PORT = {
                     (r'objects\characters\jackal\jackal.model_animation_graph', 'pistol=melee', {'pr': 'gh'}),
                     (r'objects\characters\bugger\bugger.model_animation_graph', 'pistol=melee', {'pp': 'gh'}),
                     (r'objects\characters\floodcombat_human\floodcombat_human.model_animation_graph', 'rifle=melee', {'br': 'gh'}),
-                    (r'objects\characters\floodcombat_elite\floodcombat_elite.model_animation_graph', 'rifle=melee', {'br': 'gh'})],
+                    (r'objects\characters\floodcombat_elite\floodcombat_elite.model_animation_graph', 'rifle=melee', {'br': 'gh'}),
+                    # ally trade (Outskirts, user: 'no swing animation'): the patch-time ally teach gives
+                    # a `gh` copy of the `any` row, whose fire_1 is the rifle's: the tag's row carries it
+                    (r'objects\characters\marine\marine.model_animation_graph', 'rifle=melee', {'pr': 'gh'})],
     'backup': {'extra': [H2EK + r'\tags\objects\characters\masterchief\masterchief.model_animation_graph',
                          H2EK + r'\tags\objects\characters\dervish\dervish.model_animation_graph',
                          r'E:\HaloBackups\h2_graph_teach\masterchief.model_animation_graph',
@@ -626,9 +629,9 @@ PORT = {
                          r'E:\HaloBackups\h2_graph_teach\dervish.model_animation_graph',
                          r'E:\HaloBackups\h2_graph_teach\elite.model_animation_graph']
                         + [H2EK + r'\tags\objects\characters\%s\%s.model_animation_graph' % (_sp, _sp)
-                           for _sp in ('brute', 'grunt', 'jackal', 'bugger', 'floodcombat_human', 'floodcombat_elite')]
+                           for _sp in ('brute', 'grunt', 'jackal', 'bugger', 'floodcombat_human', 'floodcombat_elite', 'marine')]
                         + [r'E:\HaloBackups\h2_graph_teach\%s.model_animation_graph' % _sp
-                           for _sp in ('jackal', 'bugger', 'floodcombat_human', 'floodcombat_elite')]},
+                           for _sp in ('jackal', 'bugger', 'floodcombat_human', 'floodcombat_elite', 'marine')]},
     # step 11 -- `python ai_firing_profile.py --h2-port gravity_hammer`: Halo 3's ai\generic hammer
     # entry (010_jungle) name-for-name over the H2 ENERGY BLADE's (the yardstick; Halo 2's only
     # player melee weapon with an ai\generic entry -- Tartarus's hammer data lives in his own
@@ -1010,8 +1013,11 @@ AI_SWINGS = [(_BRUTE, [('combat', 'melee'), ('berserk', 'melee')], 'combat:melee
              (_GRUNT, [('combat', 'melee')], 'combat:pistol:throw_grenade', 'combat:melee:gh:melee', 'right_hand', None),
              (_JACKAL, [('combat', 'melee')], 'combat:pistol:shakefist', 'combat:melee:gh:melee', 'right_hand_jackal', 20),
              (_BUGGER, [('combat', 'melee'), ('flight', 'melee')], 'combat:pistol:ready:var0', 'combat:melee:gh:melee', 'right_hand', 16)]
-# graph, source, clone, [modes]: fire_1 as a replacement overlay
-AI_OVERLAYS = [(_BUGGER, 'combat:pistol:ready:var0', 'combat:melee:gh:fire_1', ('combat', 'flight'))]
+# graph, source, clone, [modes]: fire_1 as a replacement overlay. A Marine's swing IS its fire: an event
+# effect has no owner, so a melee blast would pass the enemies and hit the player; the weapon's own
+# blast has an owner. Its melee overlay strikes on frame 3, in step with the fire
+AI_OVERLAYS = [(_BUGGER, 'combat:pistol:ready:var0', 'combat:melee:gh:fire_1', ('combat', 'flight')),
+               (r'objects\characters\marine\marine.model_animation_graph', 'combat:rifle:melee', 'combat:melee:gh:fire_1', ('combat',))]
 # graph, recoil: fire_1 back to it
 AI_RECOILS = [(_GRUNT, 'combat:missile:rl:fire_1'), (_JACKAL, 'combat:pistol:pr:fire_1:var0')]
 
