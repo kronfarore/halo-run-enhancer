@@ -1017,7 +1017,8 @@ AI_SWINGS = [(_BRUTE, [('combat', 'melee'), ('berserk', 'melee')], 'combat:melee
 # effect has no owner, so a melee blast would pass the enemies and hit the player; the weapon's own
 # blast has an owner. Its melee overlay strikes on frame 3, in step with the fire
 AI_OVERLAYS = [(_BUGGER, 'combat:pistol:ready:var0', 'combat:melee:gh:fire_1', ('combat', 'flight')),
-               (r'objects\characters\marine\marine.model_animation_graph', 'combat:rifle:melee', 'combat:melee:gh:fire_1', ('combat',))]
+               (r'objects\characters\marine\marine.model_animation_graph', 'combat:rifle:melee', 'combat:melee:gh:fire_1',
+                ('combat', 'corner_open_left', 'corner_open_right', 'crouch'))]   # every stance it fires from (user: 'no animation': crouch and corners kept the rifle's)
 # graph, recoil: fire_1 back to it
 AI_RECOILS = [(_GRUNT, 'combat:missile:rl:fire_1'), (_JACKAL, 'combat:pistol:pr:fire_1:var0')]
 
