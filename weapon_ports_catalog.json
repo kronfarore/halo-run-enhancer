@@ -10615,7 +10615,28 @@
      "note": "Halo 3's campaign external aging a swing, on the barrel (step 4a: the trigger route); 0.05 two float32 steps down, so the readout steps 5 exactly (boot 1)"
     }
    ],
-   "fp_animations": "objects\\characters\\*\\fp\\weapons\\melee\\fp_gravity_hammer_port\\fp_gravity_hammer_port"
+   "fp_animations": "objects\\characters\\*\\fp\\weapons\\melee\\fp_gravity_hammer_port\\fp_gravity_hammer_port",
+   "tag_map": {
+    "jpt! objects\\weapons\\damage_effects\\dash_melee": "jpt! objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_slam & objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_explosion & objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_explosion_ai",
+    "jpt! objects\\weapons\\damage_effects\\strike_melee": "jpt! objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_melee",
+    "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion": "jpt! objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_explosion & objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_explosion_ai"
+   },
+   "card_map": {
+    "Dash Damage": "Hammer Damage",
+    "Strike Damage": "Melee Damage",
+    "Radius": "Hammer Radius"
+   },
+   "skip_cards": [
+    "Lunge Range",
+    "Lunge Reach",
+    "Slice Damage",
+    "Zoom"
+   ],
+   "card_donors": {
+    "Rocket Launcher": [
+     "Radius"
+    ]
+   }
   }
  ],
  "Halo 3: ODST": [
