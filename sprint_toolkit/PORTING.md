@@ -3969,6 +3969,38 @@ autoaim range 45; charge, vent, battery, range, zoom x1. Hunter x1, accepted by 
 * Sound keeps: `sl_vent_loop`, `sl_charging` are the port's own lsnds beside their attachments.
 * Drop sounds: Halo 3's laser uses the rocket launcher's material effects; `sl_drop`, `sl_drop_soft`.
 
+### Halo 2: the Gravity Hammer, wave A5 (2026-10-28/31) -- a player melee weapon, an AI that swings
+
+Halo 3's hammer (`ports_h2/gravity_hammer.py`) beside Tartarus's, who is never touched. Donor the BEAM RIFLE
+(0 magazines, latch, battery), HUD the Energy Blade's, Halo 3's models, sounds and FP animations. Yardstick the
+Energy Blade, lunge ratio x1.0. 20 swings x 5 energy. Tested: Gravemind (Original), Sacred Icon + The Great
+Journey (Arbiter, Balanced), Armed on Gravemind and Sacred Icon (7 tests), Marines on Outskirts.
+
+* Energy per swing = the TRIGGER route: Halo 2 has no per-swing aging on a melee-only weapon. Barrel age a round
+  0.04999999329: float32 0.05 sums past n x 0.05 and the readout floors (65 -> 59); written raw, tool tolerance
+  calls it 'already 0.05'.
+* Blast: an impact effect cloned from a character's effect keeps its unit marker; a projectile detonation only
+  has the engine's points, every part skips in silence. `string_id_renames` to `up`.
+* Wielder shove: the blast's free part -> jpt `_trigger` ('area damage players only', 2.5 wu), not firing damage.
+* A NEW 3P class must also exist in the PARENT graph: dervish inherits elite; the game refused the hammer.
+* AI, THE RECIPE: the class row `gh` carries a `melee` ACTION, a clone of the species' swing with one effect
+  event at its primary keyframe. Effect clones per unit marker (`melee` Elite / Flood, `right_hand` Brute / Grunt /
+  Drone, `right_hand_jackal`), damage `explosion_ai`. `--fire-rows`, `--ai-swings`, `--ai-blast`, under the kit lock.
+  - Grunts, Jackals, Drones have no melee in stock. A `melee` row plus a primary keyframe (`hit` where the source
+    has none) is enough: they stop at range and strike, where before they ran into the player.
+  - The Brute's `melee` + `melee_effect` markers sit only on sh_armor tartarus / skull: ordinary Brutes play no
+    event effect there, Tartarus's own blast neither.
+  - A clone keeps the source's VARIANT LINKS (element +0x30 previous, +0x32 next): clear them.
+  - Berserk has its own row; melee_back and melee_tackle fall through to `any`.
+  - An event effect has NO OWNER: 'does not hurt owner / friends' do nothing. `explosion_ai` = area, players only.
+    So an allied swing would hit the player and no enemy.
+* MARINES fire instead (their blast has an owner, hurts enemies, spares friends): the tag row's fire_1 = their
+  melee overlay, on every stance they fire from (crouch and corners too). The blast leads the swing slightly.
+* The AI's closing in is a CHARGE RULE, not a tag: the enhancer's. Consider 8, Chance 1, Attack 1.5, Abort 12,
+  Timeout 8, melee_charge on; Marines Consider 15, Abort 20, Timeout 15, Delay 0.5, style Aggressive.
+* Harness: `--armed marine` needs the enhancer's `allies` pass for a class Marines lack. Test maps do not run it.
+* Scripts walking loose jmads: dry-run with faulthandler first; a search loop held the kit lock for an hour.
+
 ## Halo Reach
 
 **COMPLETE 2026-09-30 -- all nine steps built and confirmed in game** on m20: world model

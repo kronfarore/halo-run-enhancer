@@ -1124,3 +1124,27 @@ Whether the Spike Rifle's lit parts also fade from dark (same hammer seed) was r
 Re-check 2026-10-30 (user): the pellet materials agree BY NAME (Halo 3 Mauler = Halo 3 Shotgun, the port the
 H2 shotgun's); Halo 3's muzzle lens flare ported (third person only); glow lit at empty, the user's pick.
 Enhancer hand-off: the shared notes (a4_mauler.md), sent to the session 2026-10-30; its 18 Halo 2 cards are in (05c66d4 + the next commit).
+
+## A5: what the Gravity Hammer taught (2026-10-28/31, parallel step 2, DONE)
+
+The Halo 3 Gravity Hammer is a complete Halo 2 port: `ports_h2/gravity_hammer.py`, Tartarus untouched. Tested in
+game, CLASSIC: Gravemind (Chief) on Original, Sacred Icon and The Great Journey (Arbiter, Balanced), Armed in 7
+tests, Outskirts for Marines. Every item confirmed by the user: ally trade both ways, world model on the ground and
+held. Residency: palette entry in all 13 levels; ships with the batched rebuild. PORTING "Halo 2: the Gravity Hammer,
+wave A5" is the recipe.
+
+**Step 4a (user):** yardstick the Energy Blade, lunge x1.0, Halo 3's model, energy by the trigger route.
+
+**New to the kit (each an observation of one port):** an AI melee weapon that swings for every species: the
+`melee` action with an effect event; species without melee take one; event effects have no owner; markers can live on
+armour permutations; clones keep variant links; a new class must exist in the parent graph; h2_port_collision `fit`,
+h2_port_hud_plate `boxes`.
+
+**Process, from the user this port:** Armed Marines are real: the cards hand them weapons, not only the trade. The
+best-behaved species is the template for the others.
+
+**Open:** the charge rule is the enhancer's (shared notes a5_gravity_hammer_progress.md); until it ships, hammer AI
+stands off. Allied Elites and Grunts: their swing blast would hit the player and no enemy. The Marine's blast leads
+its swing (user: keep). `h2_armed_test` does not run the `allies` pass. The old throw and fist-shake fire_1 clones stay in
+the Grunt and Jackal graphs as unused animations.
+Enhancer hand-off: the shared notes, sent to the session 2026-10-31.
