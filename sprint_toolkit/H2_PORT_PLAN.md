@@ -729,6 +729,99 @@ tilted), and held in third person by an enemy (the beam / bolt leaves the WORLD 
 > never touches Tartarus.
 > Then the COMMON DONE of "Parallel step 2", "A5: what the Gravity Hammer taught" last.
 
+### Parallel step 3: B1 DMR + B2 Needle Rifle -- wave B starts (prepared 2026-11-01)
+
+User, 2026-11-01: "Continue with wave B, 2 ports only." Wave A is done (A1-A5, S1, the SAW rework: 7 ports,
+all `done`, all in the 13 residency lists). The 13-level rebuild has NOT run: `--check` on the live maps
+2026-11-01 finds the Laser and Mauler in six levels only and the Hammer in none. Do not read a missing done
+port on a live level as a fault, and do not rebuild. TWO sessions, not three: this is Halo 2's FIRST Reach
+source, and the DMR is the wave's pilot run beside a second port rather than alone (coordinator's call,
+inside the user's "2 ports"). So:
+
+**The DMR session OWNS the Reach route** (`reach:` sources through the h2_port_* tools, kind 'reach' in
+h2_port_geometry / h2_port_animations, the copy-by-name arms). The Needle Rifle session starts on what needs
+no new route code (step 4a, reading the source, its own config) and takes the route from the DMR's commits. If
+it needs a route change the DMR has not made, it asks the DMR session through the shared notes folder
+(`b1_reach_route.md`, the DMR keeps it current: what works, what is committed), and does not write a second
+version. Its own needle work stays its own.
+
+| session | weapon | test levels (`--level` on EVERY h2_port_test_map run) |
+|---|---|---|
+| 1 | B1 DMR | 03a_oldmombasa, Outskirts (Chief, Marines) + 04a_gasgiant, The Arbiter |
+| 2 | B2 Needle Rifle | 05a_deltaapproach, Delta Halo (Chief, Marines) + 04b_floodlab, Oracle (Arbiter) |
+
+The PARALLEL PREFACE of pair 1 and the three additions of step 2 apply (the other weapon = the other of this
+step), with what the user has ruled since:
+- **Original numbers first**: boot 1 is `--original` on the Chief level; the Arbiter boot IS the Balanced boot
+  (memory port-test-original-first). Say which is staged when asking for a boot.
+- **Name levels as the game does**: Outskirts, never 03a_oldmombasa (memory h2-level-display-names).
+- **Armed tests** take memory h2-armed-test-rules as it stands; Marines are real wielders, the ally trade is on
+  the done list.
+- **The tool.exe assertion killer runs from the session's start**, not when a popup appears.
+
+COMMON READING for both: H2_PORT_PLAN.md ("Phase 0" with 0.4's Reach row; the "<#>: what <weapon> taught"
+sections A1, A3, S1, SAW rework, A2, A4, A5; "Running ports in parallel"; this step), PORTING.md "## Halo 2" and
+its port sections, H1_PORT_PLAN "B1: what the DMR taught" (THE REACH RECIPE: `reach:` names, reach_tags.py,
+Reach's one render model for world AND first person, the bank layout) and "B2: what the Needle Rifle taught",
+PORTING "Halo 1: the DMR, the Reach pilot" and "Halo 1: the Needle Rifle, wave B2", h2_phase0/*.md, and memory
+h2-port-phase0, h2-ar-pilot, h2-spike-rifle-port, h2-mauler-port, h2-spartan-laser-port,
+h2-gravity-hammer-port, h2-saw-rework, h2-armed-cards, h2-armed-test-rules, h2-tool-assertion-popup,
+halo-mcc-only-blocks-dlls, port-findings-are-observations, port-test-original-first, port-world-model-check,
+shared-worktree-commits, h2-level-display-names. Reach sources: HREK
+(`F:\SteamLibrary\steamapps\common\HREK\tags`). COMMON DONE: as "Parallel step 2", with the Armed side read
+from `firing_profile` (Reach's ai\generic entry on m10), and your own "<#>: what <weapon> taught" last.
+FP graphs go under `objects\characters\<species>\fp\` as for every done port (the config's `fp_graph` is the
+part below that). No 13-level rebuild until the user says so. Do NOT write the next weapon's prompt.
+
+### The DMR (B1), filled in -- PARALLEL with B2, the wave's pilot
+
+> [PARALLEL PREFACE (pair 1's + step 2's additions + step 3's rulings): the other weapon = the Needle Rifle, in
+> its own session right now; your levels = Outskirts (03a_oldmombasa, Chief) and The Arbiter (04a_gasgiant)]
+> Port the DMR into Halo 2 (H2_PORT_PLAN.md wave B, #B1, "Parallel step 3"). Source: Halo Reach,
+> `objects\weapons\rifle\dmr\dmr` (HREK). You OWN the Reach route for this wave: keep `b1_reach_route.md` in the
+> shared notes folder current so the Needle Rifle session can follow, and commit route changes to shared tools
+> as soon as they are proved.
+> Your config: ports_h2/dmr.py (a stub). Reserved: prefix `dmr2`, glyph U+E143 (DECIMAL 57667),
+> `objects\weapons\rifle\dmr`, effects `effects\objects\weapons\rifle\dmr`, FP graph `weapons\rifle\fp_dmr\fp_dmr`,
+> HUD `ui\hud\dmr` + `dmr_*`, sounds `sound\weapons\dmr_port`, catalog name `DMR`.
+> STEP 4a WITH ME first: candidates in the config (provisional the Sniper Rifle, alternatives the Battle Rifle via
+> Halo 4 and the Pistol; peers Battle Rifle, Magnum, Sniper Rifle, Covenant Carbine). Halo 1's own decision is in
+> "B1"; say what Halo 2's Battle Rifle changes about it: Halo 2 has a mid-range precision rifle, Halo 1 did not.
+> NEW for this port: (1) THE REACH ROUTE in Halo 2: a Reach render model is world AND first person, so the source
+> splits; `b_gun` nodes against H2's `gun`; the 90-degree model frame; the 10 helper nodes dropped;
+> (2) THE ARMS BY NAME, both species (0.4: Reach's 37 + helpers onto masterchief, right-hand fingers 0.08-0.30
+> off; `elite\fp\fp` onto dervish): proves or breaks the route the next five inherit; the SAW's donor route stays
+> the fallback, and a fallback is reported, never quiet; (3) donor the Battle Rifle: latch-zoom, one zoom, BURST TO
+> SINGLE SHOT; (4) Reach's scope and reticle on H2's HUD (`h2_port_scope`, Halo 1's arc + slider as a static
+> picture); (5) the Reach sound bank into Halo 2 (`sounds` route: AR's H3 FMOD reader against Reach's bank).
+> Then the COMMON DONE of "Parallel step 3", "B1: what the DMR taught" last, written for the five after it.
+
+### The Needle Rifle (B2), filled in -- PARALLEL with B1
+
+> [PARALLEL PREFACE (pair 1's + step 2's additions + step 3's rulings): the other weapon = the DMR, in its own
+> session right now and the OWNER of the Reach route; your levels = Delta Halo (05a_deltaapproach, Chief) and
+> Oracle (04b_floodlab, Arbiter)]
+> Port the NEEDLE RIFLE into Halo 2 (H2_PORT_PLAN.md wave B, #B2, "Parallel step 3"). Source: Halo Reach,
+> `objects\weapons\rifle\needle_rifle\needle_rifle` (HREK). Take the Reach route from the DMR session's commits and
+> `b1_reach_route.md` in the shared notes folder; do not write a second version of it. Until it stands: step 4a,
+> the needle research below, your config.
+> Your config: ports_h2/needle_rifle.py (a stub). Reserved: prefix `nr2`, glyph U+E144 (DECIMAL 57668),
+> `objects\weapons\rifle\needle_rifle`, effects `effects\objects\weapons\rifle\needle_rifle`, FP graph
+> `weapons\rifle\fp_needle_rifle\fp_needle_rifle`, HUD `ui\hud\needle_rifle` + `needle_rifle_*`, sounds
+> `sound\weapons\needle_rifle_port`, catalog name `Needle Rifle`.
+> STEP 4a WITH ME first: candidates in the config (provisional the Needler, alternatives the Pistol and Sniper
+> Rifle; peers Covenant Carbine, Needler, Battle Rifle). Halo 2's Carbine is the rifle's role twin: say what that
+> changes about Halo 1's pick.
+> NEW for this port: (1) THE SUPERCOMBINE: Halo 1 needed a halo1.dll patch for its count per projectile. Read
+> Halo 2's needle first: what the projectile tag sets and what is hard-coded, then the Reach side (the needle's
+> detonation effects, `needle_rifle_shard_impact`, `..._super_detonation`, `..._attached_super_detonation`, and
+> its count). Exhaust the data before proposing a dll patch; a dll patch is a question for me;
+> (2) the STUCK NEEDLE and its pink glow (the Spike Rifle's and the Mauler's glow lessons); (3) donor the Covenant
+> Carbine, projectile from the needler: a fast straight needle against the needler's slow homing one;
+> (4) Reach's 2x scope with coloured glyphs (memory h1-coloured-scope-glyphs, for Halo 2's own HUD: an observation
+> of Halo 1, not a rule); (5) the Covenant HUD: H2 ICON RULE and meter as for the Spike Rifle.
+> Then the COMMON DONE of "Parallel step 3", "B2: what the Needle Rifle taught" last.
+
 ## Hand-off prompt for a weapon session
 
 > Port the <WEAPON> into Halo 2 (H2_PORT_PLAN.md, wave <X>, #<n>). Source: <game>, `<tag>`.

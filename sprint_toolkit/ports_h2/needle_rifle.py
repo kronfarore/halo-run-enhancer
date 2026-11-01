@@ -36,6 +36,6 @@ PORT = {
         },
     },
     'firing_profile': {'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map', 'from_weapon': 'objects\\weapons\\rifle\\needle_rifle\\needle_rifle', 'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
-    'test': {'level': '03a_oldmombasa', 'dervish_level': '04a_gasgiant'},
+    'test': {'level': '05a_deltaapproach', 'dervish_level': '04b_floodlab'},
     'residency': {'levels': 'all', 'placements': False},
 }
