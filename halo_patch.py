@@ -2978,8 +2978,15 @@ def _apply_ladder(m, game, registry, up, down):
         ok = [bool(n) and not ec._is_human(n) and not _is_human_tag(n) and not ec._is_boss(n)
               and not _is_loyal_tag(n) and (char_team[k] not in friends)
               for k, n in enumerate(names)]
+        try:
+            allowed = _ts_resident_gate(m, game, names)
+        except (Exception, SystemExit) as e:    # reach_pools exits on a map with no zone tag
+            # Moved without the gate, enemies can become a species only some zone sets
+            # hold and nothing spawns (the m20 test), so the level keeps its own.
+            return [{**ref, 'ok': False, 'reason': 'zone sets unreadable, no enemy moved '
+                                                   '(%s: %s)' % (type(e).__name__, e)}]
         moves = _ts_moves(game, [(n, ec.species(n), o) for n, o in zip(names, ok)], up, down,
-                          allowed=_ts_resident_gate(m, game, names))
+                          allowed=allowed)
         units = _ts_units(m, game, scnr_base, lay, ts, moves, names)
         weapon_for = _ts_weapon_table(units, names).bind(m)    # from the shipped arrays
         if 'cells' in ts and moves:
@@ -3246,7 +3253,8 @@ class _TsWeapons:
 def _ts_resident_gate(m, game, names):
     """Reach: allowed(src, dst) -- the target's character and biped tags are
     resident in every Scenario zone set the source's are (Global covers all). Halo 3 and
-    ODST pool bits cannot be read reliably, Halo 1/2 load the whole palette: no gate."""
+    ODST pool bits cannot be read reliably, Halo 1/2 load the whole palette: no gate.
+    A Reach map whose zone sets cannot be read raises, and _apply_ladder moves no one."""
     # Reach only. Halo 4 keeps residency per DESIGNER zone (Grunts in zones whose pools
     # hold no Jackal tag), so a whole-map check vetoes every move -- yet Grunt -> Jackal
     # spawned fine there in game (user, 2026-10-05). Reach's m20 test is the opposite:
@@ -3257,22 +3265,12 @@ def _ts_resident_gate(m, game, names):
     _tk = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sprint_toolkit')
     if _tk not in _sys.path:
         _sys.path.insert(0, _tk)
-    try:
-        if game == 'Halo Reach':
-            import reach_pools as rp
-            rp.bind(m, game)
-            sets = rp.zone_sets(m, rp.zone_base(m))
+    import reach_pools as rp
+    rp.bind(m, game)
+    sets = rp.zone_sets(m, rp.zone_base(m))
 
-            def where(ti):
-                return set(rp.resident_in(m, sets, ti))
-        else:
-            import h4_pools as hp4
-            sets = hp4.zone_sets(m, hp4.zone_base(m))
-
-            def where(ti):
-                return {lab for lab, _o in hp4.tag_sets(m, sets, ti)}
-    except BaseException:
-        return None
+    def where(ti):
+        return set(rp.resident_in(m, sets, ti))
     index = {(t.get('class'), t.get('name')): t.get('index') for t in m.tags
              if isinstance(t, dict)}
     memo = {}
