@@ -3313,7 +3313,10 @@ def _ts_resident_gate(m, game, names):
 # both ranges are halved on EVERY char tag, not just ai\generic: Grunts, Jackals and the
 # Flood define their own block and would be missed (the Dropped Ammo card's gap). Halo 3
 # and ODST ship Ammo 0 = "weapon default", which stays 0 -- there only the magazine
-# moves. Allies' drops are halved too, as the real skull does.
+# moves. Allies' drops are halved too, as the real skull does. Two tags can resolve to one
+# Weapons Properties element (Grunt + Grunt Major on Halo 3 / ODST, three pairs on Halo 4's
+# m020), so a leaf is halved once however many tags reach it. A whole number of rounds
+# stops at 1: from Halo 3 on a 0 there means "weapon default", the opposite of the skull.
 _FAMINE_FACTOR = 0.5
 _FAMINE_FIELDS = ('Drop Weapon Loaded', 'Drop Weapon Loaded Max',
                   'Drop Weapon Ammo', 'Drop Weapon Ammo Max')
@@ -3328,19 +3331,22 @@ def _apply_famine(m, game, registry):
     flds = [f for f in (plugin.find(n) for n in _FAMINE_FIELDS) if f]
     if len(flds) != len(_FAMINE_FIELDS):
         return [{**ref, 'ok': False, 'reason': 'drop fields not in the %s plugin' % cls}]
-    writes, touched = 0, 0
+    writes, touched, seen = 0, 0, set()     # seen: byte offsets; tags can share a block
     for _name, base in m.find_tags(cls, '*'):
         hit = False
         for f in flds:
             fmt, _ = hm.TYPE_FMT[f['type']]
             for el in m.follow_all(base, f['block_offsets'], f['block_sizes'], 'all'):
                 off = el + f['offset']
+                if off in seen:
+                    continue
+                seen.add(off)
                 v = struct.unpack_from(fmt, m.data, off)[0]
                 if not v:
                     continue
                 nv = v * _FAMINE_FACTOR
                 if isinstance(v, int):
-                    nv = int(round(nv))
+                    nv = int(round(nv)) or (1 if v > 0 else -1)
                 struct.pack_into(fmt, m.data, off, nv)
                 writes += 1
                 hit = True
