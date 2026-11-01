@@ -70,7 +70,8 @@ straight needles. Sniper and Pistol have no needle rows at all (Pistol: rate 0, 
 | Needles only, Original 6 | 34 / 10.7 s | 84 / 28.2 s | 7 / 1.5 s | 20 / 4.75 s |
 | peer: stock Needler, no combine | 10.0 s | 25.1 s | 1.6 s | 5.75 s |
 | peer: stock Needler, 7 needles combined | 0.75 s | 0.75 s | 0.75 s | 0.75 s |
-| peer: Carbine | 2.57 s | 6.53 s | 0.48 s | 0.90 s |
+| peer: Carbine, its LIVE barrel 1 (recovery 0.14 s; corrected after the pick) | 14 / 1.82 s | 23 / about 5.4 s | 4 / 0.42 s | 6 / 0.70 s |
+| peer: Carbine as h2_role_compare prints it (barrel 0, idle: the user saw these at the pick) | 2.57 s | 6.53 s | 0.48 s | 0.90 s |
 | peer: Battle Rifle | 3.15 s | 6.92 s | 0.79 s | 1.18 s |
 
 Halo 2's needle group is `plasma_slow` (shields x1.5, Elite armour x0.35, Brute x0.5): Reach's `needle` group has no
