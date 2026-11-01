@@ -7,7 +7,7 @@ key of that section:
     kind            'h4_dump' (an H4 render-model XML dump onto the donor's skeleton, h4_rm.load)
                     or 'h3' (a Halo 3 render model on its OWN skeleton -- h3_convert; the AR
                     pilot, 2026-10-20) or 'h1' (a Halo 1 gbxmodel on its OWN skeleton -- h1_convert;
-                    the Flamethrower, S1). A Reach reader is wave B's pilot's to add
+                    the Flamethrower, S1). Reach = kind 'h3' with `reach:` paths (the DMR)
     dump            the source dump
     data_dir        data\<data_dir>\render\<world>.jms, \<fp>\render\<fp>.jms
     world, fp       the world / first-person model names
@@ -166,7 +166,9 @@ def h3_convert(g, rel, world):
     import h4_rm
     import h1_fp_retarget
     import h3_rm_to_jms as H3
-    rm = h4_rm.load(h1_fp_retarget.export_xml(rel))
+    # a `reach:` render model (HREK's flat export) reads into the same dict (the DMR, wave B1)
+    load = h1_fp_retarget.reach_tags.load_render_model if h1_fp_retarget.reach_tags.is_reach(rel) else h4_rm.load
+    rm = load(h1_fp_retarget.export_xml(rel))
     names = g.get('node_names', {})
     out = h2_jms.Model()
     # fp_root_identity (the Spike Rifle, boot 1, 2026-10-21): Halo 2 MIRRORS the left-hand dual

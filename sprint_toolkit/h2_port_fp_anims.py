@@ -24,6 +24,13 @@ animations, e.g. `first-person reload-empty.JMM`, version 16394):
   * the extension is the type: .jmm base (no movement), .jmo overlay, .jmr replacement; the file
     name is the animation name with ':' -> ' ' and '_' -> '-' (`first-person reload-empty`).
 
+KIND 'reach' (the DMR, wave B1, 2026-11-01): the build below with reach_tags as the reader. Reach's FP
+skeleton hangs `base` on `pedestal`: the bind reads 90 deg about z off Halo 2's, but every animation's
+pedestal track composed with `base`'s bind is IDENTITY, so model space IS Halo 2's. Frames are composed on
+the WHOLE Reach skeleton, then `drop_nodes` (pedestal, aim_pitch / aim_yaw, humerus / radius / handguard
+helpers) are filtered out; `node_names` {b_gun: gun, ...}; `aliases` {look: [overlays, pitch_and_turn]}
+(Halo 4's rule: one 3x3 aim screen into both of Halo 2's).
+
 OVERLAYS (moving, overlays, pitch_and_turn): Halo 3 stores an overlay's DELTAS in its animated
 tracks only (h1_fp_retarget.overlay_frames). Halo 2's .jmo is absolute frames whose difference to
 the FIRST (reference) frame is the overlay. So the reference = a base pose (the idle's frame 0)
@@ -170,6 +177,20 @@ def reroot(nodes, frames, name):
     return out
 
 
+def keep_nodes(nodes, drop):
+    """(indices kept, [(name, parent in the kept list)]) -- `drop_nodes` left out, a kept node hung on
+    its nearest kept ancestor (none: a root). Nothing dropped: the list as it stands."""
+    kept = [i for i, (n, _p) in enumerate(nodes) if n not in drop]
+    where = {i: k for k, i in enumerate(kept)}
+    out = []
+    for i in kept:
+        p = nodes[i][1]
+        while p >= 0 and p not in where:
+            p = nodes[p][1]
+        out.append((nodes[i][0], where[p] if p >= 0 else -1))
+    return kept, out
+
+
 def write_jma(path, nodes, names, frames):
     lines = ['16394', '0', str(len(frames)), '30.0000000000', '1', 'unnamedActor', str(len(nodes))]
     for (n, p), nm in zip(nodes, names):
@@ -267,6 +288,8 @@ def source_events(cfg, species):
                        x[x.find('<block name="animations"'):])
     if cfg.get('kind') == 'h4':
         want = h4_events(cfg, refs)
+    elif cfg.get('kind') == 'reach':
+        want = reach_events(cfg, sp, refs)
     else:
         want = h3_events(cfg, sp, refs)
     write_events(path, x, names, want)
@@ -310,6 +333,31 @@ def h4_events(cfg, refs):
                 raise SystemExit('%s: no sound reference %s (graph: %s)' % (h2name, snd, refs))
             se.append((refs.index(hit[0]), f))
         want[h2name] = (events.get(h4name, []), se)
+    return want
+
+
+def reach_events(cfg, sp, refs):
+    """kind 'reach' `source_events` {'cues': {Halo 2 animation: [(sound, frame)]}} (the DMR, wave B1):
+    FRAME events from the Reach graph's own `frame events` (reach_tags.load_graph), SOUND events the
+    config's (h4_events' rule: a cue names the graph's sound reference, the port's own or the seed's
+    that `sounds` `graph_sounds` repoints to it)."""
+    types = {'primary keyframe': 0, 'secondary keyframe': 1, 'left foot': 2, 'right foot': 3,
+             'allow interruption': 4}
+    _nodes, _anims, events = h1_fp_retarget.reach_tags.load_graph(sp['graph'])
+    alias = {}
+    for donor, own in ports_h2.get(cfg['_key'], 'sounds').get('graph_sounds', ()):
+        alias.setdefault(own, []).append(donor)
+    rename = cfg.get('rename', {})
+    want = {}
+    for name, evs in events.items():
+        name = rename.get(name, name)
+        se = []
+        for snd, f in cfg['source_events'].get('cues', {}).get(name, ()):
+            hit = [n for n in [snd] + alias.get(snd, []) if n in refs]
+            if not hit:
+                raise SystemExit('%s: no sound reference %s (graph: %s)' % (name, snd, refs))
+            se.append((refs.index(hit[0]), f))
+        want[name] = ([(types[t], f) for t, f in evs if t in types], se)
     return want
 
 
@@ -418,13 +466,27 @@ def write_events(path, x, names, want):
 def build(key, species, only=None, write=True):
     cfg = ports_h2.get(key, 'fp_anims')
     sp = cfg['species'][species]
-    xml = h1_fp_retarget.export_xml(sp['graph'])
-    nodes, anims = h3_fp_pose.load(os.path.join(H3EK, 'tags', sp['graph']), xml)
+    if cfg.get('kind') == 'reach':
+        nodes, anims, _events = h1_fp_retarget.reach_tags.load_graph(sp['graph'])
+    else:
+        xml = h1_fp_retarget.export_xml(sp['graph'])
+        nodes, anims = h3_fp_pose.load(os.path.join(H3EK, 'tags', sp['graph']), xml)
     DEFAULTS.clear()
     DEFAULTS.update(h1_fp_retarget.rm_defaults(sp['arms_rm']))
     DEFAULTS.update(h1_fp_retarget.rm_defaults(cfg['weapon_rm']))
+    # kind 'reach': Halo 2's names for the source's weapon nodes (b_gun -> gun), one animation
+    # into several Halo 2 slots (`aliases`), the composed frames filtered to `kept` (module docstring)
+    rn = cfg.get('node_names', {})
+    nodes = [(rn.get(n, n), p) for n, p in nodes]
+    for old, new in rn.items():
+        if old in DEFAULTS:
+            DEFAULTS[new] = DEFAULTS.pop(old)
+    for src_name, targets in cfg.get('aliases', {}).items():
+        for t in targets:
+            anims[t] = anims[src_name]
+    kept, kept_nodes = keep_nodes(nodes, cfg.get('drop_nodes', ()))
     weapon_nodes = set(cfg['weapon_nodes'])
-    names = [jma_name(n, weapon_nodes) for n, _p in nodes]
+    names = [jma_name(n, weapon_nodes) for n, _p in kept_nodes]
     src = os.path.join(H2EK, 'data', sp['source'], 'animations')
     if write and not only and os.path.isdir(src):
         shutil.rmtree(src)
@@ -443,8 +505,10 @@ def build(key, species, only=None, write=True):
             fr, ext = base_frames(nodes, frames, h3name in cfg.get('looping', ())), '.jmr'
         else:
             fr, ext = base_frames(nodes, frames, h3name in cfg.get('looping', ())), '.jmm'
+        if len(kept) != len(nodes):
+            fr = [[f[i] for i in kept] for f in fr]
         if cfg.get('root_identity'):
-            fr = reroot(nodes, fr, cfg['root_identity'])
+            fr = reroot(kept_nodes, fr, cfg['root_identity'])
         path = os.path.join(src, file_name(h3name, rename) + ext)
         if cfg.get('quat_continuity'):
             # `quat_continuity` (the Spartan Laser, A2 boot 2: 'after a grenade throw the Chief's
@@ -457,9 +521,9 @@ def build(key, species, only=None, write=True):
                     if sum(a * b for a, b in zip(fr[k - 1][i][0], q)) < 0:
                         fr[k][i] = (tuple(-c for c in q), t)
         if write:
-            write_jma(path, nodes, names, fr)
+            write_jma(path, kept_nodes, names, fr)
         out.append((h3name, typ, len(frames), len(fr), os.path.basename(path)))
-    return nodes, out
+    return kept_nodes, out
 
 
 def h1_key(name):
