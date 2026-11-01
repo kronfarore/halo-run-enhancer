@@ -9843,6 +9843,7 @@ class MagnitudeEditorDialog(QDialog):
                 fix_h2_fuel_rod=bool(CONFIG.get('bugfix_h2_fuel_rod')),
                 player_armour=bool(CONFIG.get('player_armour_rows')),
                 no_immunities=bool(CONFIG.get('no_immunities')),
+                hunter_drop=bool(CONFIG.get('hunter_drop')),
                     enemy_colors=self._enemy_colors_for_patch(),
                 weapon_ports=self._weapon_ports_for_patch(),
                 port_volume=self._port_volume_for_patch(),
