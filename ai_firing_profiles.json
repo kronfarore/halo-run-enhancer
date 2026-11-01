@@ -4663,6 +4663,117 @@
     }
    ],
    "balanced_rule": "WDM x 0.84 (BALANCED_BASELINE Halo 2 damage)"
+  },
+  "objects\\weapons\\rifle\\needle_rifle\\needle_rifle": {
+   "source": "Halo Reach ai\\generic objects\\weapons\\rifle\\needle_rifle\\needle_rifle (weapons properties #12, firing pattern #12, 4 patterns) over Halo 2 objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
+   "donor_weapon": "objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
+   "weapon": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+   "props": {
+    "Maximum Firing Range": 20.0,
+    "Minimum Firing Range": 0.5,
+    "Normal Combat Range": 8.0,
+    "Normal Combat Range Max": 10.0,
+    "Bombardment Range": 0.0,
+    "Maximum Special Target Distance": 0.0,
+    "Super-Ballistic Range": 0.0,
+    "Ballistic Firing Bounds": 0.0,
+    "Ballistic Firing Bounds Max": 0.0,
+    "Ballistic Fraction Bounds": 0.0,
+    "Ballistic Fraction Bounds Max": 0.0,
+    "First Burst Delay Time": 0.75,
+    "First Burst Delay Time Max": 1.0,
+    "Surprise Delay Time": 1.0,
+    "Surprise Fire-Wildly Time": 0.0,
+    "Death Fire-Wildly Chance": 0.20000000298023224,
+    "Death Fire-Wildly Time": 0.5,
+    "Custom Stand Gun Offset i": 0.0,
+    "Custom Stand Gun Offset j": 0.0,
+    "Custom Stand Gun Offset k": 0.0,
+    "Custom Crouch Gun Offset i": 0.0,
+    "Custom Crouch Gun Offset j": 0.0,
+    "Custom Crouch Gun Offset k": 0.0,
+    "Special-Fire Chance": 0.0,
+    "Special-Fire Delay": 0.0,
+    "Special Damage Modifier": 0.0,
+    "Special Projectile Error": 0.0,
+    "Drop Weapon Loaded": 0.20000000298023224,
+    "Drop Weapon Loaded Max": 0.4000000059604645,
+    "Drop Weapon Ammo": 9,
+    "Drop Weapon Ammo Max": 12,
+    "Normal Accuracy Bounds": 0.0,
+    "Normal Accuracy Bounds Max": 0.20000000298023224,
+    "Normal Accuracy Time": 6.0,
+    "Heroic Accuracy Bounds": 0.30000001192092896,
+    "Heroic Accuracy Bounds Max": 0.6000000238418579,
+    "Heroic Accuracy Time": 4.5,
+    "Legendary Accuracy Bounds": 0.30000001192092896,
+    "Legendary Accuracy Bounds Max": 1.0,
+    "Legendary Accuracy Time": 3.0,
+    "Timid Combat Range": 11.199999809265137,
+    "Timid Combat Range Max": 12.0,
+    "Aggressive Combat Range": 4.800000190734863,
+    "Aggressive Combat Range Max": 8.0
+   },
+   "patterns": [
+    {
+     "Rate Of Fire": 1.5,
+     "Target Tracking": 0.8999999761581421,
+     "Target Leading": 0.5,
+     "Burst Origin Radius": 0.30000001192092896,
+     "Burst Origin Angle": 0.0,
+     "Burst Return Length": 0.3499999940395355,
+     "Burst Return Length Max": 0.6000000238418579,
+     "Burst Return Angle": 0.0,
+     "Burst Duration": 0.6600000262260437,
+     "Burst Duration Max": 0.8999999761581421,
+     "Burst Separation": 1.25,
+     "Burst Separation Max": 2.25,
+     "Weapon Damage Modifier": 1.75,
+     "Projectile Error": 0.01308996882289648,
+     "Burst Angular Velocity": 0.0,
+     "Maximum Error Angle": 0.1745329201221466
+    },
+    {
+     "Rate Of Fire": 4.0,
+     "Target Tracking": 1.0,
+     "Target Leading": 0.8999999761581421,
+     "Burst Origin Radius": 0.20000000298023224,
+     "Burst Origin Angle": 0.0,
+     "Burst Return Length": 0.25,
+     "Burst Return Length Max": 0.4000000059604645,
+     "Burst Return Angle": 0.0,
+     "Burst Duration": 1.2000000476837158,
+     "Burst Duration Max": 1.399999976158142,
+     "Burst Separation": 0.75,
+     "Burst Separation Max": 2.25,
+     "Weapon Damage Modifier": 1.75,
+     "Projectile Error": 0.004363323096185923,
+     "Burst Angular Velocity": 0.0,
+     "Maximum Error Angle": 0.1745329201221466
+    }
+   ],
+   "set": [],
+   "donor_only": [],
+   "not_copied": [
+    "Weapons Flags",
+    "Special-Fire Mode",
+    "Special-Fire Situation"
+   ],
+   "scaled_by_normal_range": [
+    "Timid Combat Range",
+    "Timid Combat Range Max",
+    "Aggressive Combat Range",
+    "Aggressive Combat Range Max"
+   ],
+   "balanced_patterns": [
+    {
+     "Weapon Damage Modifier": 1.47
+    },
+    {
+     "Weapon Damage Modifier": 1.47
+    }
+   ],
+   "balanced_rule": "WDM x 0.84 (BALANCED_BASELINE Halo 2 damage)"
   }
  }
 }
