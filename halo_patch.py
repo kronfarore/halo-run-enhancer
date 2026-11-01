@@ -5508,8 +5508,10 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
         _mask_put(m, e, game, mask)
         _scrub_appended(m, e, game)
         struct.pack_into('<h', m.data, e + eqo['folder'], -1)   # immune to folder deletes
-        if eqo.get('gameflags') is not None:
-            struct.pack_into('<H', m.data, e + eqo['gameflags'], 0)   # campaign
+        # Game Engine Flags (+0x78 here) stay the template's. eqo['gameflags'] is the
+        # EQUIPMENT element's offset: on this one +0x5C is Primary Color. The bits are
+        # multiplayer game types, nothing a campaign level reads: stock weapons placed
+        # automatically carry 0 and 0x3FF side by side on 020, 030, 040, 070 and 110.
         struct.pack_into('<h', m.data, e + lay['rounds_left'],
                          max(-32768, min(32767, total)))
         struct.pack_into('<h', m.data, e + lay['rounds_loaded'],
