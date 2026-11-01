@@ -147,7 +147,7 @@ def render_h3_bank(c):
     import numpy as np
     import h1_port_sounds as P
     import h1_saw_tone as tone
-    P.use_bank({})
+    P.use_bank({'bank': c.get('bank')})     # `bank`: another MCC game's sfx.fsb (haloreach, the DMR)
     idx = P.h3_index()
     for name, folders in c['h3_bank'].items():
         sets = []

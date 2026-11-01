@@ -10637,6 +10637,361 @@
      "Radius"
     ]
    }
+  },
+  {
+   "weapon": "DMR",
+   "source": "Halo Reach",
+   "donor": "Sniper Rifle",
+   "default_on": true,
+   "desc": "DMR carried from Halo Reach into Halo 2 with its own model, textures, sounds, scope and its own Reach first-person animations for both species, balanced through the Sniper Rifle.",
+   "balance": [
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 12.5,
+     "card": "Magnetism",
+     "original": 4.99999985454646,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 14.0,
+     "card": "Magnetism",
+     "original": 20.0,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 2.8125,
+     "card": "Autoaim",
+     "original": 2.2500000626119543
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 10.0,
+     "card": "Autoaim",
+     "original": 20.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Distribution Function",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Distribution Function",
+     "original": 0.0,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Distribution Angle",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Distribution Function",
+     "original": 0.0,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Firing Noise",
+     "block": "Barrels",
+     "value": 3.0,
+     "card": "Firing Noise",
+     "original": 4.0,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Magnification Levels",
+     "block": null,
+     "value": 1.0,
+     "card": "Zoom",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Magnification Range",
+     "block": null,
+     "value": 3.0,
+     "card": "Zoom",
+     "original": 3.0,
+     "note": "Reach's 3x (Halo 1's ruling)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Magnification Range Max",
+     "block": null,
+     "value": 3.0,
+     "card": "Zoom",
+     "original": 3.0,
+     "note": "Reach's 3x (Halo 1's ruling)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 45.0,
+     "card": "Ammo Inventory",
+     "original": 45.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Rounds Inventory Maximum",
+     "block": "Magazines",
+     "value": 60,
+     "card": "Ammo Inventory",
+     "original": 60.0,
+     "note": "Reach's 60 + 15 loaded = 75 total"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 15.0,
+     "card": "Ammo Loaded",
+     "original": 15.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Rounds Reloaded",
+     "block": "Magazines",
+     "value": 15.0,
+     "card": "Ammo Loaded",
+     "original": 15.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Projectiles Per Shot",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Projectiles Per Shot",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Rounds Per Shot",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Projectiles Per Shot",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Minimum Error",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Error Angle",
+     "original": 0.0,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Error Angle",
+     "block": "Barrels",
+     "value": 0.019,
+     "card": "Error Angle",
+     "original": 0.149999998838045,
+     "note": "the SIBLING rule (Halo 1's ruling): 0.25 x 0.15 / 2; the ratio inverts",
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Error Angle Max",
+     "block": "Barrels",
+     "value": 0.25,
+     "card": "Error Angle",
+     "original": 1.9999999845072665,
+     "note": "the sniper ratio: 0.5 x 2 / 4",
+     "nth": 1
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 40.0,
+     "card": "Projectile Range",
+     "original": 250.0,
+     "note": "user 4a 2026-11-01: the BR via Halo 4 chain's 40, not the sniper ratio's 60"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet",
+     "field": "Air Damage Range",
+     "block": null,
+     "value": 0,
+     "card": "Projectile Range",
+     "original": 0.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet",
+     "field": "Air Damage Range Max",
+     "block": null,
+     "value": 40.0,
+     "card": "Projectile Range",
+     "original": 40.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet",
+     "field": "Water Damage Range",
+     "block": null,
+     "value": 0,
+     "card": "Projectile Range",
+     "original": 0.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet",
+     "field": "Water Damage Range Max",
+     "block": null,
+     "value": 10.0,
+     "card": "Projectile Range",
+     "original": 10.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 400.0,
+     "card": "Projectile Velocity",
+     "original": 3000.0,
+     "note": "user 4a 2026-11-01: the BR via Halo 4 chain's 400, not the sniper ratio's 600"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 400.0,
+     "card": "Projectile Velocity",
+     "original": 3000.0,
+     "note": "user 4a 2026-11-01: the BR via Halo 4 chain's 400, not the sniper ratio's 600"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet",
+     "field": "Minimum Velocity",
+     "block": null,
+     "value": 0,
+     "card": "Projectile Velocity",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Rounds Per Second",
+     "block": "Barrels",
+     "value": 0.0,
+     "card": "Salvo Shooting",
+     "original": 3.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Rounds Per Second Max",
+     "block": "Barrels",
+     "value": 0.0,
+     "card": "Salvo Shooting",
+     "original": 3.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Shots Per Fire",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Salvo Shooting",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Shots Per Fire Max",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Salvo Shooting",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Fire Recovery Time",
+     "block": "Barrels",
+     "value": 0.22,
+     "card": "Fire Recovery Time",
+     "original": 0.33000001311302185
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\dmr\\damage_effects\\dmr_bullet",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 9.84375,
+     "card": "Bullet Damage",
+     "original": 17.5,
+     "note": "the upper bound: the ratio has no leg (Reach sniper lower 0)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\dmr\\damage_effects\\dmr_bullet",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 9.84375,
+     "card": "Bullet Damage",
+     "original": 17.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\dmr\\damage_effects\\dmr_bullet",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 9.84375,
+     "card": "Bullet Damage",
+     "original": 17.5
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\dmr\\dmr",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 75.0,
+     "card": "Magazine",
+     "original": null,
+     "note": "derived from Rounds Inventory Maximum + Rounds Loaded Maximum"
+    }
+   ],
+   "fp_animations": "objects\\characters\\*\\fp\\weapons\\rifle\\fp_dmr\\fp_dmr",
+   "anims": {
+    "reload": 0.838
+   }
   }
  ],
  "Halo 3: ODST": [

@@ -8,12 +8,16 @@ DMR = r'objects\weapons\rifle\dmr'                 # the source's folder (HREK) 
 BR = r'objects\weapons\rifle\battle_rifle'          # the donor (H2EK)
 FX = r'effects\objects\weapons\rifle\dmr'           # the reserved effects folder
 BRFX = r'effects\objects\weapons\rifle\battle_rifle'
+SN = r'objects\weapons\rifle\sniper_rifle'          # the yardstick (H2EK)
 SMG = r'objects\weapons\rifle\smg'                  # Bungie's bare-metal env shader
 RL = r'objects\weapons\support_high\rocket_launcher'   # Bungie's alpha decal shader
 R = 'reach:'                                         # an HREK path (reach_tags)
 RM = R + DMR + r'\dmr.render_model'
 H2EK = r'F:\SteamLibrary\steamapps\common\H2EK'
 NEW_HUD = r'ui\hud\bitmaps\new_hud'
+DMR_JMS = H2EK + r'\data' + '\\' + DMR + r'\render\dmr.jms'       # the mesh the HUD art is drawn from
+RS = r'data\sound\weapons'                           # source folders in MCC's haloreach sfx.fsb (.info)
+import os as _os
 
 PORT = {
     'order': 6,
@@ -189,8 +193,12 @@ PORT = {
             (DMR + r'\projectiles\dmr_bullet.projectile', 'initial velocity', '', 0, 0, 3000.0),
             (DMR + r'\projectiles\dmr_bullet.projectile', 'final velocity', '', 0, 0, 3000.0),
             (DMR + r'\projectiles\dmr_bullet.projectile', 'maximum range', '', 0, 0, 250.0),
+            (DMR + r'\damage_effects\dmr_bullet.damage_effect', 'damage lower bound', '', 0, 0, 17.5),
             (DMR + r'\damage_effects\dmr_bullet.damage_effect', 'damage upper bound', '', 0, 0, [17.5, 17.5]),
             (DMR + r'\damage_effects\dmr_bullet.damage_effect', 'instantaneous acceleration', '', 0, 0, 0.4),
+            # the scope picture (h2_port_scope `art`) centred on the crosshair: its registration
+            # point stays the widget's 0, 0 (a zero field), so the offset is half the 1024 picture
+            (r'ui\hud\dmr.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 9, 0, [-512, -512]),
         ],
         'skipped': [('melee', 'Reach shares strike_melee, as Halo 2 does: no row'),
                     ('reload time', "the animation's 68 / 59 frames drive it (reload time 0, the BR's)")],
@@ -207,6 +215,82 @@ PORT = {
         'max_growth': 1.25,
     },
 
+    # step 7 -- the HUD: the BR's clone (single, two-handed, zoom gates). 15 Reach pills in one row (one
+    # magazine in Original and Balanced, so no `sequences`); plate + backpack + glyph from the port's own mesh
+    'meter': {
+        'donor_meter': NEW_HUD + r'\meters\battle_rifle_meter',
+        'rel': NEW_HUD + r'\meters',
+        'name': 'dmr_meter',
+        'donor_hud': r'ui\hud\battle_rifle',
+        'port_hud': r'ui\hud\dmr',
+        'weapon': DMR + r'\dmr.weapon',
+        'rounds': 15, 'rows': 1,
+        'canvas': (197, 34), 'tick_w': 10,
+        'tick_art': {'h3': (R + r'ui\chud\bitmaps\ballistic_meters', 0), 'h': 30},
+        'backpack': NEW_HUD + r'\backpack_weapons',
+        'backpack_port': NEW_HUD + r'\dmr_backpack',
+        'backpack_size': (62, 30),
+        'model_3p': DMR_JMS,
+        'preview': 'dmr_meter_preview.png',
+    },
+    'hud_plate': {
+        'rel': NEW_HUD + r'\backgrounds',
+        'donor': NEW_HUD + r'\backgrounds\battle_rifle_bkd',
+        'other': NEW_HUD + r'\backgrounds\smg_bkd',
+        'name': 'dmr_bkd',
+        'hud': r'ui\hud\dmr',
+        'model_3p': DMR_JMS,
+        'fallback_box': (105, 191, 5, 34),
+        'stretch': 1.4,
+    },
+    # Reach's circle (hud_reticles #14, chud scale 0.9). target_ink = Reach's on-screen size: 1 chud
+    # unit = 1080 / 711 px at 1080p (the 1152 x 640 canvas = the 90% safe area, Halo 1's B1), and
+    # 1.117 screen px a bitmap px (the AR)
+    'reticle': {
+        'rel': NEW_HUD + r'\crosshairs',
+        'donor': NEW_HUD + r'\crosshairs\hud_reticles',
+        'donor_sequence': 17,
+        'name': 'dmr_reticle',
+        'hud': r'ui\hud\dmr',
+        'footprint': 1.0,
+        'h3_art': {'sheet': R + r'ui\chud\bitmaps\hud_reticles', 'sequence': 14, 'yardstick': 14, 'target_ink': 40},
+        'preview': 'dmr_reticle_preview.png',
+    },
+    # Reach's scope: h2_port_scope `art`. The ring on `scope_mask` (Reach's own quarter ring, mirrored
+    # both ways; Halo 2's widget has the same shape), everything else (rulers, gauge, the '10's, Halo 1's
+    # static arc + slider at the DMR's one zoom) as one picture on `distance_meter`, centred by its
+    # offset in the numbers; the BR's other scope widgets blank. Span 711 = Reach's canvas / 0.9
+    'scope': {
+        'rel': NEW_HUD + r'\scope_masks',
+        'donor': NEW_HUD + r'\scope_masks\battle_rifle_scope_mask',
+        'name': 'dmr_scope_blank',
+        'hud': r'ui\hud\dmr.new_hud_definition',
+        'widgets': ('scope_mask', 'left_crosshair', 'right_crosshair', 'bottom_crosshair', 'top_crosshair',
+                    '2x', 'distance_meter'),
+        'size': (8, 8),
+        'art': {'chud': R + r'ui\chud\dmr',
+                'ring': ('scope', 'scope_mask', 'dmr_scope_mask'), 'ring_size': 512,
+                'span': 640.0 / 0.9, 'aspect': 16.0 / 9.0,
+                'picture': ('distance_meter', 'dmr_scope_art'), 'picture_size': 1024,
+                'px_per_unit': 1080.0 / (640.0 / 0.9) / 1.117,
+                'per_widget': {'scope_distance_meter': {'scale': (1.0, 1.0)},
+                               'distance_slider': {'origin': (0.0, 0.0), 'offset': (141.0, -186.0)}}},
+    },
+
+    # step 8 -- the pickup icon at the reserved U+E143, untinted (the H2 ICON RULE); br_* -> dmr2_*
+    'glyph': {
+        'box': (160, 62),
+        'model_3p': DMR_JMS,
+        'tif': 'dmr_h2_glyph.tif',
+        'colour': (255, 255, 255),
+        'style': {'line': (255, 255, 255), 'body': (153, 153, 153)},
+    },
+    'messages': {
+        'donor_prefix': 'br', 'donor_icon': '&battle_rifle',
+        'donor_name': 'Battle Rifle', 'port_name': 'DMR',
+        'weapon': DMR + r'\dmr.weapon',
+    },
+
     # step 9 -- h2_port_fp_anims.py kind 'reach' (module docstring): Reach's OWN FP animations for BOTH
     # species (Spartan -> masterchief, Elite -> dervish), by name, helpers dropped
     'fp_anims': {
@@ -217,13 +301,14 @@ PORT = {
                 'arms_rm': R + r'objects\characters\spartans\fp\fp.render_model',
                 'arms': H2EK + r'\data\!extracted\fp_arms_masterchief\fp_arms.jms',
                 'source': r'objects\characters\masterchief\fp\weapons\rifle\fp_dmr',
-                'seed': r'objects\characters\masterchief\fp\weapons\rifle\fp_battle_rifle\fp_battle_rifle'},
+                # the SMG for its 17 sound slots: Reach cues seven sounds, the BR seed has 4 (the SAW's reason)
+                'seed': r'objects\characters\masterchief\fp\weapons\rifle\fp_smg\fp_smg'},
             'dervish': {
                 'graph': R + r'objects\characters\elite\fp\weapons\rifle\fp_dmr\fp_dmr.model_animation_graph',
                 'arms_rm': R + r'objects\characters\elite\fp\fp.render_model',
                 'arms': H2EK + r'\data\!extracted\fp_arms_dervish\dervish_fp_arms.jms',
                 'source': r'objects\characters\dervish\fp\weapons\rifle\fp_dmr',
-                'seed': r'objects\characters\dervish\fp\weapons\rifle\fp_battle_rifle\fp_battle_rifle'},
+                'seed': r'objects\characters\dervish\fp\weapons\rifle\fp_smg\fp_smg'},
         },
         'weapon_dir': DMR + r'\fp_dmr',
         'weapon_rm': RM,
@@ -240,9 +325,118 @@ PORT = {
         'looping': ['first_person:idle', 'first_person:posing:var1', 'first_person:posing:var2'],
         'overlay_reference': 'first_person:idle',
         'weights': {'first_person:posing:var1': 0.5, 'first_person:posing:var2': 0.5},
+        # the SMG seed's left-hand IK and dual-wield sound flags (the SAW's two fixes)
+        'drop_ik': ['masterchief'],
+        'clear_sound_ref_flags': True,
+        'clear_verify': True,
+        # Reach's graph: one sound event an animation, at frame 0
+        'source_events': {'cues': {'first_person:melee_strike_1': [('dmr_melee1', 0)],
+                                   'first_person:melee_strike_2': [('dmr_melee2', 0)],
+                                   'first_person:posing:var1': [('dmr_pose1', 0)],
+                                   'first_person:posing:var2': [('dmr_pose2', 0)],
+                                   'first_person:ready': [('dmr_ready', 0)],
+                                   'first_person:reload_empty': [('dmr_reload_empty', 0)],
+                                   'first_person:reload_full': [('dmr_reload_full', 0)]}},
     },
 
-    'firing_profile': {'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map', 'from_weapon': 'objects\\weapons\\rifle\\dmr\\dmr', 'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
-    'test': {'level': '03a_oldmombasa', 'dervish_level': '04a_gasgiant'},
+    # step 10 -- h2_port_sounds.py: Reach's OWN sounds from MCC's haloreach sfx.fsb (the Halo 3 reader,
+    # `bank`). Reach's firing effect plays the shot, an exterior tail and a far layer: shot + tail mixed
+    # (Halo 1's B1), the far layer in the BR's fire_lod slot. One Spartan set for both species: Reach's
+    # Elite FP sounds (dmr_elite_fp) are not used (graph_sounds names one sound per slot in both graphs)
+    'sounds': {
+        'weapon': DMR + r'\dmr.weapon',
+        'fire_fx': FX + r'\dmr_fire.effect',
+        'bank': 'haloreach',
+        'audio': _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), 'out', 'h2_sounds', 'dmr'),
+        'audio_key': 'DMR',
+        'h3_bank': {'dmr_fire': [RS + r'\marksman_rifle\marksman_rifle_fire', RS + r'\marksman_rifle\marksman_tail_ext'],
+                    'dmr_fire_lod': [RS + r'\marksman_rifle\marksman_lod_far'],
+                    'dmr_dryfire': [RS + r'\battle_rifle\dryfire'],
+                    'dmr_reload_empty': [RS + r'\dmr\dmr_reload_empty'],
+                    'dmr_reload_full': [RS + r'\dmr\dmr_reload_full'],
+                    'dmr_ready': [RS + r'\dmr\dmr_ready'],
+                    'dmr_melee1': [RS + r'\dmr\dmr_melee_1'],
+                    'dmr_melee2': [RS + r'\dmr\dmr_melee_2'],
+                    'dmr_pose1': [RS + r'\dmr\dmr_pose_1'],
+                    'dmr_pose2': [RS + r'\dmr\dmr_pose_2'],
+                    'dmr_zoom_in': [RS + r'\battle_rifle\battle_rifle_zoom_in'],
+                    'dmr_zoom_out': [RS + r'\battle_rifle\battle_rifle_zoom_out'],
+                    'dmr_ammo': [RS + r'\battle_rifle\battle_rifle_ammo']},
+        'sounds': {'dmr_fire': ('dmr_fire', 'weapon_fire'), 'dmr_fire_lod': ('dmr_fire_lod', 'weapon_fire'),
+                   'dmr_dryfire': ('dmr_dryfire', 'weapon_empty'), 'dmr_reload_empty': ('dmr_reload_empty', 'weapon_reload'),
+                   'dmr_reload_full': ('dmr_reload_full', 'weapon_reload'), 'dmr_ready': ('dmr_ready', 'weapon_ready'),
+                   'dmr_melee1': ('dmr_melee1', 'weapon_melee'), 'dmr_melee2': ('dmr_melee2', 'weapon_melee'),
+                   'dmr_pose1': ('dmr_pose1', 'weapon_animation'), 'dmr_pose2': ('dmr_pose2', 'weapon_animation'),
+                   'dmr_zoom_in': ('dmr_zoom_in', 'weapon_ready'), 'dmr_zoom_out': ('dmr_zoom_out', 'weapon_ready'),
+                   'dmr_ammo': ('dmr_ammo', 'weapon_reload')},
+        'repoint_fx': [(r'sound\weapons\battle_rifle\fire_burst', 'dmr_fire'),
+                       (r'sound_remastered\weapons\battle_rifle\fire_lod', 'dmr_fire_lod')],
+        'repoint_weapon': [(r'sound\weapons\battle_rifle\zoom_in', 'dmr_zoom_in'),
+                           (r'sound\weapons\battle_rifle\zoom_out', 'dmr_zoom_out'),
+                           (r'sound\weapons\battle_rifle\battle_rifle_ammo', 'dmr_ammo')],
+        'repoint_tags': [(FX + r'\dmr_empty.effect', r'sound\weapons\battle_rifle\dryfire', 'dmr_dryfire')],
+        # the SMG seed's 17 references, all repointed; unused dual slots point at the ready
+        'graph_sounds': (('smg_melee1', 'dmr_melee1'), ('smg_ready', 'dmr_ready'), ('smg_reload', 'dmr_reload_empty'),
+                         ('smg_reload_full', 'dmr_reload_full'), ('smg_dual_ready', 'dmr_melee2'),
+                         ('smg_posing_var0', 'dmr_pose1'), ('smg_posing_var1', 'dmr_pose2'),
+                         ('smg_dual_reload_left', 'dmr_ready'), ('smg_dual_reload_right', 'dmr_ready'),
+                         ('smg_dual_posing_0_l', 'dmr_ready'), ('smg_dual_posing_0_r', 'dmr_ready'),
+                         ('smg_dual_posing_1_l', 'dmr_ready'), ('smg_dual_posing_1_r', 'dmr_ready'),
+                         ('smg_dual_posing_2_l', 'dmr_ready'), ('smg_dual_posing_2_r', 'dmr_ready'),
+                         ('smg_dual_posing_3_l', 'dmr_ready'), ('smg_dual_posing_3_r', 'dmr_ready')),
+        'graph_sound_dir': r'sound\weapons\smg' + '\\',
+        'gain': {},
+        'boost': {},
+        'backup': r'E:\HaloBackups\H2EK_dmr_before_sounds',
+        'graph_backup': r'E:\HaloBackups\H2EK_dmr_graphs_before_sounds',
+    },
+
+    # step 11 -- `python ai_firing_profile.py --h2-port dmr`: Reach's ai\generic DMR entry (m10) name for
+    # name, over the H2 BR's (the donor)
+    'firing_profile': {'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map', 'from_weapon': 'objects\\weapons\\rifle\\dmr\\dmr',
+                       'donor_weapon': BR + r'\battle_rifle'},
+
+    # step 4b -- port_field_audit.py --port h2:dmr: the source pair (Reach's DMR vs Reach's sniper, the
+    # yardstick) against the target pair (the port vs the H2 sniper)
+    'field_audit': {
+        'source_kit': 'HREK',
+        'source': {'weapon': (DMR + r'\dmr.weapon', r'objects\weapons\rifle\sniper_rifle\sniper_rifle.weapon'),
+                   'projectile': (DMR + r'\projectiles\dmr_bullet.projectile',
+                                  r'objects\weapons\rifle\sniper_rifle\projectiles\sniper_rifle_bullet.projectile'),
+                   'damage_effect': (DMR + r'\projectiles\dmr_bullet.damage_effect',
+                                     r'objects\weapons\rifle\sniper_rifle\projectiles\sniper_rifle_bullet.damage_effect')},
+        'target': {'weapon': (DMR + r'\dmr.weapon', SN + r'\sniper_rifle.weapon'),
+                   'projectile': (DMR + r'\projectiles\dmr_bullet.projectile', SN + r'\projectiles\sniper_bullet.projectile'),
+                   'damage_effect': (DMR + r'\damage_effects\dmr_bullet.damage_effect', SN + r'\damage_effects\sniper_rifle_bullet.damage_effect')},
+    },
+
+    # make_port_catalog_h2.py dmr: the sniper table's rows onto the port's own tags. Step 4a's decisions
+    # as overrides. Reload: 72 fr (H2 sniper) x 68 / 86 (Reach DMR / sniper) = 56.9 over the built 68
+    'catalog': {
+        'table': 'balance_DMR_HaloReach_to_Halo2.json',
+        'weapon_tag': DMR + r'\dmr',
+        'port_tags': [(('weap', SN + r'\sniper_rifle'), DMR + r'\dmr'),
+                      (('proj', SN + r'\projectiles\sniper_bullet'), DMR + r'\projectiles\dmr_bullet'),
+                      (('jpt!', SN + r'\damage_effects\sniper_rifle_bullet'), DMR + r'\damage_effects\dmr_bullet')],
+        'shared': [('jpt!', r'objects\weapons\damage_effects\strike_melee')],
+        'value_overrides': {
+            'Damage Lower Bound': {'value': 9.84375, 'note': 'the upper bound: the ratio has no leg (Reach sniper lower 0)'},
+            'Rounds Inventory Maximum': {'value': 60, 'note': "Reach's 60 + 15 loaded = 75 total"},
+            'Error Angle': {'value': 0.019, 'note': "the SIBLING rule (Halo 1's ruling): 0.25 x 0.15 / 2; the ratio inverts"},
+            'Error Angle Max': {'value': 0.25, 'note': 'the sniper ratio: 0.5 x 2 / 4'},
+            'Magnification Range': {'value': 3.0, 'note': "Reach's 3x (Halo 1's ruling)"},
+            'Magnification Range Max': {'value': 3.0, 'note': "Reach's 3x (Halo 1's ruling)"},
+            'Maximum Range': {'value': 40.0, 'note': "user 4a 2026-11-01: the BR via Halo 4 chain's 40, not the sniper ratio's 60"},
+            'Initial Velocity': {'value': 400.0, 'note': "user 4a 2026-11-01: the BR via Halo 4 chain's 400, not the sniper ratio's 600"},
+            'Final Velocity': {'value': 400.0, 'note': "user 4a 2026-11-01: the BR via Halo 4 chain's 400, not the sniper ratio's 600"}},
+        'fp_animations': r'objects\characters\*\fp\weapons\rifle\fp_dmr\fp_dmr',
+        'reload_mult': 0.838,
+        'desc': ('%s carried from %s into Halo 2 with its own model, textures, sounds, scope and its own Reach '
+                 'first-person animations for both species, balanced through the Sniper Rifle.'),
+    },
+
+    'sound_keeps': {},
+    # rounds = a full carry (Mauler: the profile's second number is the TOTAL, loaded included)
+    'test': {'level': '03a_oldmombasa', 'dervish_level': '04a_gasgiant', 'rounds': (15, 75)},
     'residency': {'levels': 'all', 'placements': False},
 }

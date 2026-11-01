@@ -10,6 +10,14 @@ The config's `scope` section:
     widgets            the bitmap widget names to blank
     size               the blank bitmap's size
     disc               (opt-in) a ZOOMING port's mask instead of a blank: one quarter of a dark disc
+    art                (opt-in) a ZOOMING port with its SOURCE scope (the DMR, wave B1): Reach's / Halo 3's
+                       chud baked by h1_h3_scope into two images, the listed `widgets` otherwise blank.
+                       {'chud', 'ring': (chud widget, H2 widget, bitmap name) -- a quarter ring, top-left
+                       of the bake, centre at its bottom-right corner, for a widget registered there,
+                       mirrored and STRETCHED to the screen quarter; 'span' chud units tall on screen,
+                       'aspect' the screen's, 'ring_size' its px --, 'picture': (H2 widget, bitmap name) --
+                       every other zoom widget as ONE centred picture, `per_widget` as in h1_h3_scope,
+                       'picture_size' px at 'px_per_unit' a chud unit}
 
     python h2_port_scope.py <key> [--write]
 """
@@ -37,16 +45,18 @@ REL = DONOR = NAME = PORT = HUD = None
 SCOPE = ()
 SIZE = None
 DISC = None
+ART = None
 
 
 def setup(key):
-    global REL, DONOR, NAME, PORT, HUD, SCOPE, SIZE, DISC
+    global REL, DONOR, NAME, PORT, HUD, SCOPE, SIZE, DISC, ART
     c = ports_h2.get(key, 'scope')
     REL, DONOR, NAME = c['rel'], c['donor'], c['name']
     PORT = B.join([REL, NAME])
     HUD = os.path.join(TAGS, c['hud'])
     SCOPE, SIZE = tuple(c['widgets']), tuple(c['size'])
     DISC = c.get('disc')
+    ART = c.get('art')
 
 
 def widgets(tag):
@@ -113,6 +123,35 @@ def blank():
     return os.path.exists(dest)
 
 
+def art_images():
+    """`art`: the two tifs + their seeded tags; {H2 widget: bitmap path}."""
+    import numpy as np
+    import h1_h3_scope
+    a = ART
+    data = os.path.join(H2EK, 'data', REL)
+    os.makedirs(data, exist_ok=True)
+    ring_w, ring_h2, ring_name = a['ring']
+    pic_h2, pic_name = a['picture']
+    names = [n for n, _w in h1_h3_scope.widgets(a['chud'])]
+    q = a['ring_size']
+    dark, used = h1_h3_scope.bake(a['chud'], q * 2, a['span'], a['aspect'],
+                                  {n: {'drop': True} for n in names if n != ring_w})
+    ring = dark[:q, :q]
+    per = dict(a.get('per_widget', {}), **{ring_w: {'drop': True}})
+    s = a['picture_size']
+    pic, used2 = h1_h3_scope.bake(a['chud'], s, s / float(a['px_per_unit']), 1.0, per)
+    for name, img in ((ring_name, ring), (pic_name, pic)):
+        px = np.zeros(img.shape + (4,), np.uint8)
+        px[:, :, 3] = np.clip(img * 255.0, 0, 255).astype(np.uint8)
+        Image.fromarray(px, 'RGBA').save(os.path.join(data, name + '.tif'), compression=None)
+        dest = os.path.join(TAGS, REL, name + '.bitmap')
+        if not os.path.exists(dest):
+            shutil.copy(os.path.join(TAGS, DONOR + '.bitmap'), dest)
+    print('   ring:', [u for u in used if 'DROPPED' not in u])
+    print('   picture:', [u for u in used2 if 'DROPPED' not in u])
+    return {ring_h2: B.join([REL, ring_name]), pic_h2: B.join([REL, pic_name])}
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('key')
@@ -129,6 +168,7 @@ def main(argv=None):
         print('(dry run -- pass --write)')
         return
 
+    own = art_images() if ART else {}
     blank()
     have = h2_tagref.references(HUD)
     if ('bitm', DONOR) in have:
@@ -141,6 +181,16 @@ def main(argv=None):
                 h2_tagref.set_reference(HUD, 'bitm', DONOR, PORT, nth=0)
     else:
         print('   the HUD already names no donor scope mask')
+
+    # `art`: the two widgets off the blank, the k-th copy of its path in widget order
+    k = 0
+    for idx, name, ref, _sq in widgets(HUD):
+        if ref != PORT:
+            continue
+        if name in own:
+            h2_tagref.set_reference(HUD, 'bitm', PORT, own[name], nth=k)
+        else:
+            k += 1
 
     for idx, name, _ref, _sq in targets:
         for field in ('fullscreen', 'halfscreen', 'quarterscreen'):
