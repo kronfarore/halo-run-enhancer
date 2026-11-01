@@ -8615,8 +8615,9 @@ class MagnitudeEditorDialog(QDialog):
         self._populate()
 
     def _build_weapon_swap_group(self):
-        """Sliders (one per unique arsenal weapon) for scattering picked weapons into
-        the map's weapon placements; sum capped at 100%. None if no arsenal/parent."""
+        """Sliders (one per unique arsenal weapon this game fields) for scattering picked
+        weapons into the map's weapon placements; sum capped at 100%. None if no
+        arsenal/parent."""
         self._swap_sliders = {}
         self._swap_total_lbl = None
         # #7: with map-replacement offered as per-weapon cards, the sliders are the
@@ -8627,12 +8628,27 @@ class MagnitudeEditorDialog(QDialog):
         if rs is None:
             return None
         db = getattr(self.parent_gui, 'db', None)
+        # A run carries its weapons from game to game, and a plain-string tag resolves in
+        # every game, so a weapon this game never fields got a slider that could only
+        # come back as "not in this map's palette" on every level, while it still took
+        # its share of the 100%. The same rule as the cards (_weapon_fielded); a weapon
+        # the game has but this LEVEL lacks keeps its slider and still reports.
+        fielded = db._fielded_weapons(self.game) if db else None
+
+        def placeable(w):
+            if db is None:
+                return True
+            if db.is_equipment(w):
+                return bool(db.eqip_tag_for(w, self.game))
+            return db._weapon_fielded({'weapon': w}, self.game, fielded)
+
         arsenal = []
         for pl in ('player1', 'player2'):
             try:
                 for w in rs.weapons_for(pl):
-                    if w and w not in arsenal and not (db and db.is_grenade(w)):
-                        arsenal.append(w)   # grenades are equipment, not swappable weapons
+                    # grenades are equipment, not swappable weapons
+                    if w and w not in arsenal and not (db and db.is_grenade(w)) and placeable(w):
+                        arsenal.append(w)
             except Exception:
                 pass
         if not arsenal:
@@ -8740,7 +8756,11 @@ class MagnitudeEditorDialog(QDialog):
         if rs is not None and rates:
             opts = getattr(rs, 'options', None)
             if isinstance(opts, dict):
-                opts['weapon_swap_rates'] = rates
+                # a held weapon with no slider in this game keeps its rate for the next
+                # game that fields it (_build_weapon_swap_group)
+                kept = {k: v for k, v in (opts.get('weapon_swap_rates') or {}).items()
+                        if k not in self._swap_sliders}
+                opts['weapon_swap_rates'] = {**kept, **rates}
         return swaps, eswaps
 
     def _swap_family(self, name):
