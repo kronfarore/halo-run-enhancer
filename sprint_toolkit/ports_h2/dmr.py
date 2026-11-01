@@ -196,6 +196,17 @@ PORT = {
             (DMR + r'\damage_effects\dmr_bullet.damage_effect', 'damage lower bound', '', 0, 0, 17.5),
             (DMR + r'\damage_effects\dmr_bullet.damage_effect', 'damage upper bound', '', 0, 0, [17.5, 17.5]),
             (DMR + r'\damage_effects\dmr_bullet.damage_effect', 'instantaneous acceleration', '', 0, 0, 0.4),
+            # step 4b (port_field_audit --port h2:dmr, before boot 1). List 4: Reach's DMR and sniper are
+            # both plain latch, as the H2 sniper: the BR's latch-zoom goes. List 2 by the sniper ratio:
+            # ai scariness, illumination recovery, camo damage. The ammo item's `rounds` stays the BR's 72:
+            # h2_tagfield cannot reach the nested magazines block, and the item is unused in campaign
+            (DMR + r'\dmr.weapon', 'behavior', 'new triggers', 0, 0, 1),
+            (DMR + r'\dmr.weapon', 'ai scariness', '', 0, 0, 2.0),
+            (DMR + r'\dmr.weapon', 'illumination recovery time', 'barrels', 0, 0, 0.06),
+            (DMR + r'\damage_effects\dmr_bullet.damage_effect', 'active camouflage damage', '', 0, 0, 0.225),
+            # first-person placement: the BR's 0.02 minus Halo 1's 0.025 forward for Reach's arms (a Halo 1
+            # observation, to check on boot 1)
+            (DMR + r'\dmr.weapon', 'first person weapon offset', '', 0, 0, [-0.005, 0.0, -0.004]),
             # the scope picture (h2_port_scope `art`) centred on the crosshair: its registration
             # point stays the widget's 0, 0 (a zero field), so the offset is half the 1024 picture
             (r'ui\hud\dmr.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 9, 0, [-512, -512]),
