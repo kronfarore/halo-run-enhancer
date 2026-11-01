@@ -16,7 +16,8 @@ The config's `reticle` section:
                                  same chud widget scale)} -- sized by the ratio rule: the port's
                                  sprite x (donor ink / yardstick sprite ink) (h3_compose);
                                  'kind': 'h1' reads a HALO 1 sheet instead (HCEEK, h1_sprite: the
-                                 Flamethrower, S1)
+                                 Flamethrower, S1); 'ring': N composes one arc into four, N chud
+                                 units off the centre (Reach's Needle Rifle)
 A Reach source: wave B's pilot adds its art reader. Every crosshair widget naming the port's
 bitmap gets its three sequence indices set to 0 (a one-image bitmap; the SAW's were already 0).
 
@@ -154,6 +155,19 @@ def h3_compose(donor):
     colour = a[:, :, :3][ink].mean(0) if ink.any() else np.array([0, 0, 202.0])
     sprite = h1_sprite if H3_ART.get('kind') == 'h1' else h3_hud_art.sprite
     art, reg = sprite(H3_ART['sheet'], H3_ART['sequence'])
+    if H3_ART.get('ring'):
+        # `ring` N (the Needle Rifle): ONE arc on four chud widgets, N chud units off the centre -- the
+        # sprite at the sheet's own density, mirrored and turned into one image
+        arc = h3_hud_art.sprite(H3_ART['sheet'], H3_ART['sequence'], native=True)[0]
+        off = int(round(H3_ART['ring'] * h3_hud_art.density(H3_ART['sheet'])))
+        art = Image.new('RGBA', (2 * (off + max(arc.size)),) * 2, (0, 0, 0, 0))
+        c = art.width // 2
+        art.alpha_composite(arc, (c - off - arc.width, c - arc.height // 2))
+        art.alpha_composite(arc.transpose(Image.FLIP_LEFT_RIGHT), (c + off, c - arc.height // 2))
+        top = arc.transpose(Image.ROTATE_270)
+        art.alpha_composite(top, (c - top.width // 2, c - off - top.height))
+        art.alpha_composite(top.transpose(Image.FLIP_TOP_BOTTOM), (c - top.width // 2, c + off))
+        reg = (c, c)
     yard, _ = sprite(H3_ART['sheet'], H3_ART['yardstick'])
     k = _ink(donor) / float(_ink(yard))
     if H3_ART.get('target_ink'):

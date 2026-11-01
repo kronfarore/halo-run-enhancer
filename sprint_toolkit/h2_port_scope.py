@@ -17,7 +17,8 @@ The config's `scope` section:
                        mirrored and STRETCHED to the screen quarter; 'span' chud units tall on screen,
                        'aspect' the screen's, 'ring_size' its px --, 'picture': (H2 widget, bitmap name) --
                        every other zoom widget as ONE centred picture, `per_widget` as in h1_h3_scope,
-                       'picture_size' px at 'px_per_unit' a chud unit}
+                       'picture_size' px at 'px_per_unit' a chud unit; 'glyphs', 'shaders': a sprite on
+                       its own widget in its own colour (the Needle Rifle)}
 
     python h2_port_scope.py <key> [--write]
 """
@@ -149,7 +150,39 @@ def art_images():
             shutil.copy(os.path.join(TAGS, DONOR + '.bitmap'), dest)
     print('   ring:', [u for u in used if 'DROPPED' not in u])
     print('   picture:', [u for u in used2 if 'DROPPED' not in u])
-    return {ring_h2: B.join([REL, ring_name]), pic_h2: B.join([REL, pic_name])}
+    own = {ring_h2: B.join([REL, ring_name]), pic_h2: B.join([REL, pic_name])}
+    # `glyphs` [(H2 widget, bitmap name, (sheet, sequence), (w, h), alpha, gamma)] (the Needle Rifle): a
+    # source sprite on its own widget, the shape alone: its colour is the widget's shader (`shaders`)
+    for widget, name, (sheet, seq), size, alpha, gamma in a.get('glyphs', ()):
+        import h3_hud_art
+        g = h3_hud_art.sprite(sheet, seq, native=True)[0].convert('RGBA').resize(size, Image.LANCZOS)
+        v = np.asarray(g).astype(float)[:, :, 3] / 255.0
+        px = np.zeros(v.shape + (4,), np.uint8)
+        px[:, :, 3] = np.clip((v / max(v.max(), 1e-6)) ** gamma * alpha * 255.0, 0, 255).astype(np.uint8)
+        Image.fromarray(px, 'RGBA').save(os.path.join(data, name + '.tif'), compression=None)
+        dest = os.path.join(TAGS, REL, name + '.bitmap')
+        if not os.path.exists(dest):
+            shutil.copy(os.path.join(TAGS, DONOR + '.bitmap'), dest)
+        own[widget] = B.join([REL, name])
+    return own
+
+
+def widget_shaders():
+    """`shaders` {H2 widget: shader tag} (the Needle Rifle's coloured glyphs): the widget's shader
+    repointed, the copies counted in widget order."""
+    x = h2_tagfield.export(HUD)
+    seg = x[x.index('<block name="bitmap widgets"'):]
+    seg = seg[:seg.index('<block name="text widgets"')] if '<block name="text widgets"' in seg else seg
+    rows = re.findall(r'<field name="name" type="string id">([^<]+)<.*?<tag_reference name="shader" type="shad">'
+                      r'([^<]*)<', seg, re.S)
+    moved = 0
+    for k, (name, shader) in enumerate(rows):
+        new = ART['shaders'].get(name)
+        if new and new != shader:
+            nth = sum(1 for n, s in rows[:k] if s == shader and ART['shaders'].get(n) in (None, s))
+            h2_tagref.set_reference(HUD, 'shad', shader, new, nth=nth)
+            moved += 1
+    return moved
 
 
 def main(argv=None):
@@ -199,6 +232,8 @@ def main(argv=None):
             if now and int(now[0]) == 0:
                 continue
             h2_tagfield.set_field(HUD, key, 0, 'bitmap widgets', idx)
+    if ART and ART.get('shaders'):
+        print('   widget shaders repointed: %d' % widget_shaders())
 
     print('after:')
     for idx, name, ref, sq in widgets(HUD):

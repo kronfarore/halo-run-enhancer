@@ -54,6 +54,7 @@ Section `fp_anims` of ports_h2/<key>.py:
                 left arm held out of view in single-wield animations (rest_left_arm; the Spiker)
     root_identity  the weapon root node whose bind h2_port_geometry `fp_root_identity` made
                 identity -- its frames re-expressed (reroot; the Spike Rifle's dual left gun)
+    node_scale  [source animation names] whose node scale is written (default 1 for every node)
 
     species.seed  a Bungie Halo 2 graph the port's is seeded from (tool_import: its blend screen,
                   sound references and same-name animations' events survive the import)
@@ -191,17 +192,17 @@ def keep_nodes(nodes, drop):
     return kept, out
 
 
-def write_jma(path, nodes, names, frames):
+def write_jma(path, nodes, names, frames, scales=None):
     lines = ['16394', '0', str(len(frames)), '30.0000000000', '1', 'unnamedActor', str(len(nodes))]
     for (n, p), nm in zip(nodes, names):
         lines += [nm, str(p)]
     f = lambda v: '%.10f' % v  # noqa: E731
-    for fr in frames:
-        for q, t in fr:
+    for k, fr in enumerate(frames):
+        for i, (q, t) in enumerate(fr):
             w, x, y, z = q
             lines.append('\t'.join(f(c * UNITS) for c in t))
             lines.append('\t'.join(f(c) for c in (x, y, z, w)))
-            lines.append(f(1.0))
+            lines.append(f(scales[k][i] if scales else 1.0))
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, 'w', encoding='latin-1', newline='') as fh:
         fh.write('\r\n'.join(lines) + '\r\n')
@@ -520,8 +521,14 @@ def build(key, species, only=None, write=True):
                 for i, (q, t) in enumerate(fr[k]):
                     if sum(a * b for a, b in zip(fr[k - 1][i][0], q)) < 0:
                         fr[k][i] = (tuple(-c for c in q), t)
+        # `node_scale` [names] (the Needle Rifle's draining needles): the source's node scale kept, the
+        # animation's extra last frame (base_frames) repeating the frame before; every other: 1
+        scales = None
+        if h3name in cfg.get('node_scale', ()):
+            scales = [[1.0 if p[i][2] is None else p[i][2] for i in kept] for p in frames]
+            scales += scales[-1:]
         if write:
-            write_jma(path, kept_nodes, names, fr)
+            write_jma(path, kept_nodes, names, fr, scales)
         out.append((h3name, typ, len(frames), len(fr), os.path.basename(path)))
     return kept_nodes, out
 
