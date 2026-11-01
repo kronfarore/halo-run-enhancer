@@ -10051,10 +10051,14 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # line-of-fire flags on the Grunt / Jackal / Elite actor tags
         import h1_enemy_weapons as _ew
         results.extend(_ew.covenant_avoid_friendly_fire(m))
-    # Options -> Weapon 'Hunters drop a Fuel Rod' (opt-in; hunter_drop.py, per game). Halo
-    # 1's rebuilt maps carry the drop and off blanks it, so this runs either way
-    import hunter_drop as _hd
-    results.extend(_hd.apply(m, game, bool(hunter_drop)))
+    # Options -> Weapon 'Hunters drop a Fuel Rod' (opt-in; hunter_drop.py, per game). The
+    # rebuilt Halo 1 and Halo 2 maps carry the drop and off blanks it, so this runs either
+    # way -- on a map rebuilt from the baseline. A from_baseline=False patch leaves the live
+    # map's drop alone: off would unhook it, and on would run over a map that already has
+    # it, which on Reach blanks the very effect the first run moved.
+    if from_baseline:
+        import hunter_drop as _hd
+        results.extend(_hd.apply(m, game, bool(hunter_drop)))
     if weapon_ports and str(game).strip() == 'Halo 1':
         # A port's actv balance rows (the fuel rod's AI Rate Of Fire) belong to EVERY
         # variant that carries the port's weapon, not only the stock ones the rows name:

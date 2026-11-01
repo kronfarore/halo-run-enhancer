@@ -24,7 +24,9 @@ magazine (measured on the E: baselines, 2026-10-19). Per game:
               stock precedent: the Crawler's modelless head weapons toss a real sniper
               rifle through it -- CONFIRMED (m70 spire 3, 2026-10-20)
 
-The cache-map routes start from the baseline every patch, so off writes nothing.
+The cache-map routes start from the baseline every patch, so off writes nothing. They do not
+survive a second run on one map (Reach blanks the effect it moved, Halo 3 / ODST report a
+failure), which is why halo_patch.apply_run skips this pass on a live map.
 """
 import os
 import struct

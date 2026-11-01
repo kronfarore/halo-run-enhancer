@@ -14706,6 +14706,7 @@ class OptionsDialog(QDialog):
                 try:
                     results, _ = halo_patch.apply_run(mp, [], registry, difficulty,
                                                       game='Halo 1', sprint=cfg,
+                                                      hunter_drop=bool(CONFIG.get('hunter_drop')),
                                                       **baseline_args('Halo 1'))
                 except Exception as e:
                     skipped.append(f"{mid}: error — {e}")
