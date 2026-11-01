@@ -168,6 +168,8 @@ PORT = {
             (DM + r'\needle_rifle_shard_impact.damage_effect', 'damage lower bound', '', 0, 0, 6.0),
             (DM + r'\needle_rifle_shard_impact.damage_effect', 'damage upper bound', '', 0, 0, [6.0, 6.0]),
             (DM + r'\needle_rifle_shard_impact.damage_effect', 'instantaneous acceleration', '', 0, 0, 0.2),
+            # flags 8194, the Carbine slug's: can cause headshots + ignore seat scale (Reach's needle has both)
+            (DM + r'\needle_rifle_shard_impact.damage_effect', 'flags', '', 0, 1, 8194, {'anchor': ('category', 2)}),
             (DM + r'\needle_rifle_shard_detonation.damage_effect', 'damage lower bound', '', 0, 0, 0.0),
             (DM + r'\needle_rifle_shard_detonation.damage_effect', 'damage upper bound', '', 0, 0, [0.0, 0.0]),
             (DM + r'\needle_rifle_shard_detonation.damage_effect', 'instantaneous acceleration', '', 0, 0, 0.0),
