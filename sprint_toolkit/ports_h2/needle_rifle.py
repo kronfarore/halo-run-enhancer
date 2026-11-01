@@ -9,7 +9,7 @@ PORT = {
     'wave': 'B2',
     'name': 'Needle Rifle',
     'source': 'Halo Reach',
-    'status': 'reserved',
+    'status': 'in progress',
     'source_tag': 'objects\\weapons\\rifle\\needle_rifle\\needle_rifle',
     'reservations': {
         'message_prefix': 'nr2',
