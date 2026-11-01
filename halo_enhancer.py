@@ -141,8 +141,10 @@ POOL_CACHE_FILE = 'map_pool_cache.json'
 # Bumped when the stamp changes meaning; a file from an older scheme is discarded
 # rather than reinterpreted, because a stale stamp that happens to match would hand
 # back names for a different map. Also bumped when the NAME MATCHING changes (4:
-# eqip_tag_for picks the majority tag, so Regeneration Field now matches its pool entry).
-POOL_CACHE_VERSION = 4
+# eqip_tag_for picks the majority tag, so Regeneration Field now matches its pool entry;
+# 5: weap_tag_for keeps the class word on Halo 4's `_pve` pick, so the Plasma Pistol
+# matches again and returns to the eight Halo 4 pools).
+POOL_CACHE_VERSION = 5
 _POOL_DISK = None
 #: Digests of map files this machine has already hashed, so the hash is paid once per
 #: file rather than once per question. Keyed by path, size and mtime -- mtime is used
@@ -3210,10 +3212,11 @@ class ModifierDatabase:
             # first of a multi-tag effect; they are variants of one weapon. Halo 4
             # prefers the campaign `_pve` variant (user, 2026-09-15) -- Midnight
             # stocks only storm_plasma_pistol_pve, and the plain tag is not on it.
-            parts = [p.strip() for p in tag.split(' & ') if p.strip()]
+            parts = [p.strip() for p in tag[5:].split(' & ') if p.strip()]
             one = parts[0]
             if str(game).strip() == 'Halo 4':
                 one = next((p for p in parts if p.endswith('_pve')), one)
+            one = 'weap ' + one     # the class word heads the joined string only
             if isinstance(raw, dict) and any(g in raw for g in lineage):
                 return one
             if fallback is None:
