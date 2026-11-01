@@ -9,7 +9,7 @@ PORT = {
     'wave': 'B1',
     'name': 'DMR',
     'source': 'Halo Reach',
-    'status': 'reserved',
+    'status': 'in progress',
     'source_tag': 'objects\\weapons\\rifle\\dmr\\dmr',
     'reservations': {
         'message_prefix': 'dmr2',
