@@ -3715,9 +3715,10 @@ def _apply_equipment_swaps(m, game, swaps):
 
     # Pieces the level never stocks: ODST places NO Halo 3 equipment at all, so
     # without this every ODST swap would report "not in this level's palette" and do
-    # nothing — even though the tags are all there and placing one works.
+    # nothing — even though the tags are all there and placing one works. H3-derived
+    # maps only (see _apply_weapon_swaps): Halo 1 and Halo 2 fall to the SAFETY NET row.
     want = {}
-    for tag, rate in (swaps or {}).items():
+    for tag, rate in ((swaps or {}).items() if hasattr(m, 'off2data') else ()):
         if not rate or rate <= 0:
             continue
         _, name = hm.split_tag(tag)
@@ -3727,7 +3728,7 @@ def _apply_equipment_swaps(m, game, swaps):
         datum = _h3_tag_datum(m, 'eqip', name)
         if datum is not None:
             want.setdefault(datum, name)
-    if want and hasattr(m, 'off2data'):      # H3-derived maps only
+    if want:
         added = _append_equipment_palette(m, lay, scnr_base, list(want))
         if added is None:
             out.append({'effect': 'map equipment', 'ok': False,
@@ -7190,8 +7191,10 @@ def _apply_weapon_swaps(m, game, registry, swaps):
     # turret on all nine Halo 3 maps that field the turret (it is placed as a VEHICLE)
     # -- is added to the Weapon Palette first, the same way _apply_equipment_swaps
     # does it for ODST's equipment. The palette layouts match, so its helper is reused.
+    # H3-derived maps only, the lookup as much as the append: Halo 1 and Halo 2 have no
+    # tag table to read a datum from, so their pick falls to the SAFETY NET row below.
     want = {}
-    for tag, rate in swaps.items():
+    for tag, rate in (swaps.items() if hasattr(m, 'off2data') else ()):
         if not rate or rate <= 0:
             continue
         _, name = hm.split_tag(tag)
@@ -7201,7 +7204,7 @@ def _apply_weapon_swaps(m, game, registry, swaps):
         datum = _h3_tag_datum(m, 'weap', name)
         if datum is not None:
             want.setdefault(datum, name)
-    if want and hasattr(m, 'off2data'):      # H3-derived maps only
+    if want:
         added = _append_equipment_palette(m, lay, scnr_base, list(want))
         if added is None:
             out.append({'effect': 'map weapons', 'ok': False,
