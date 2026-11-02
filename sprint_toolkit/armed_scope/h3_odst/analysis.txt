@@ -1,0 +1,251 @@
+
+######## Halo 3
+
+== 010_jungle 526 MB  pal 32 char pal 17
+  Brute            entries 118  protected 86   actors 45   {'kind_fireteam': 43, 'kind_loc': 75}
+  Dervish          entries 17   protected 8    actors 9    {'kind_fireteam': 9, 'kind_loc': 8}
+  Grunt            entries 445  protected 392  actors 256  {'kind_fireteam': 84, 'kind_loc': 361}
+  Jackal           entries 156  protected 99   actors 79   {'kind_fireteam': 59, 'kind_loc': 97}
+  Marine           entries 129  protected 82   actors 77   {'kind_fireteam': 51, 'kind_loc': 78}
+  other:?          entries 2    protected 2    actors 0    {'kind_fireteam': 1, 'kind_loc': 1}
+   {'weap>=0': 221, 'weap-1': 26} {'inh_weap-1': 535, 'inh_weap>=0': 84, 'own_weap>=0': 1} variants {'marine_sgt|None': 2, 'marine|None': 2, 'grunt|None': 6}
+  pool 17+3: tag absent [] | tag present not in palette []
+  ai\generic: props 44 fpp 43 missing ['SAW[--]']
+
+== 020_base 565 MB  pal 33 char pal 21
+  Brute            entries 155  protected 110  actors 81   {'kind_fireteam': 59, 'kind_loc': 96}
+  Bugger           entries 72   protected 50   actors 57   {'kind_fireteam': 22, 'kind_loc': 50}
+  Dervish          entries 6    protected 3    actors 3    {'kind_fireteam': 3, 'kind_loc': 3}
+  Grunt            entries 236  protected 209  actors 123  {'kind_fireteam': 38, 'kind_loc': 198}
+  Jackal           entries 83   protected 69   actors 37   {'kind_fireteam': 17, 'kind_loc': 66}
+  Marine           entries 218  protected 151  actors 143  {'kind_fireteam': 67, 'kind_loc': 151}
+  other:?          entries 8    protected 8    actors 0    {'kind_fireteam': 3, 'kind_loc': 5}
+  other:truth      entries 2    protected 1    actors 1    {'kind_fireteam': 1, 'kind_loc': 1}
+   {'weap>=0': 187, 'weap-1': 23} {'inh_weap-1': 537, 'inh_weap>=0': 29, 'own_weap-1': 4} variants {'marine|None': 8, 'marine_sgt|None': 1, 'miranda|default': 1, 'marine_female|None': 1}
+  pool 15+3: tag absent [] | tag present not in palette []
+  ai\generic: props 44 fpp 43 missing ['SAW[--]']
+
+== 030_outskirts 580 MB  pal 31 char pal 15
+  Brute            entries 267  protected 230  actors 125  {'kind_fireteam': 70, 'kind_loc': 197}
+  Bugger           entries 15   protected 12   actors 12   {'kind_fireteam': 3, 'kind_loc': 12}
+  Grunt            entries 160  protected 137  actors 68   {'kind_fireteam': 30, 'kind_loc': 130}
+  Jackal           entries 44   protected 35   actors 17   {'kind_fireteam': 9, 'kind_loc': 35}
+  Marine           entries 201  protected 168  actors 122  {'kind_fireteam': 75, 'kind_loc': 126}
+   {'weap>=0': 181, 'weap-1': 6} {'inh_weap-1': 438, 'own_weap>=0': 6, 'inh_weap>=0': 55, 'own_weap-1': 1} variants {'marine|None': 8}
+  pool 13+3: tag absent [] | tag present not in palette []
+  ai\generic: props 44 fpp 43 missing ['SAW[--]']
+
+== 040_voi 622 MB  pal 33 char pal 22
+  Brute            entries 182  protected 148  actors 111  {'kind_fireteam': 59, 'kind_loc': 123}
+  Bugger           entries 20   protected 16   actors 26   {'kind_fireteam': 4, 'kind_loc': 16}
+  Dervish          entries 6    protected 4    actors 3    {'kind_fireteam': 3, 'kind_loc': 3}
+  Grunt            entries 225  protected 170  actors 136  {'kind_fireteam': 47, 'kind_loc': 178}
+  Hunter           entries 6    protected 4    actors 4    {'kind_fireteam': 2, 'kind_loc': 4}
+  Jackal           entries 99   protected 71   actors 55   {'kind_fireteam': 26, 'kind_loc': 73}
+  Marine           entries 220  protected 170  actors 145  {'kind_fireteam': 55, 'kind_loc': 165}
+  other:?          entries 14   protected 14   actors 0    {'kind_fireteam': 5, 'kind_loc': 9}
+  other:scarab     entries 2    protected 1    actors 1    {'kind_fireteam': 1, 'kind_loc': 1}
+   {'weap>=0': 170, 'weap-1': 32} {'inh_weap-1': 456, 'inh_weap>=0': 81, 'own_weap-1': 26, 'own_weap>=0': 9} variants {'marine|None': 2, 'worker|dead': 5}
+  pool 16+4: tag absent [] | tag present not in palette []
+  ai\generic: props 44 fpp 43 missing ['SAW[--]']
+
+== 050_floodvoi 613 MB  pal 32 char pal 19
+  Dervish          entries 10   protected 5    actors 5    {'kind_fireteam': 5, 'kind_loc': 5}
+  Elite            entries 33   protected 30   actors 27   {'kind_fireteam': 9, 'kind_loc': 24}
+  Flood Carrier    entries 12   protected 8    actors 5    {'kind_fireteam': 4, 'kind_loc': 8}
+  Flood Combat     entries 462  protected 375  actors 175  {'kind_fireteam': 75, 'kind_loc': 387}
+  Flood Infection  entries 67   protected 55   actors 44   {'kind_fireteam': 12, 'kind_loc': 55}
+  Flood Pure       entries 96   protected 85   actors 31   {'kind_fireteam': 11, 'kind_loc': 85}
+  Marine           entries 39   protected 25   actors 17   {'kind_fireteam': 14, 'kind_loc': 25}
+   {'weap>=0': 50, 'weap-1': 80} {'inh_weap-1': 487, 'own_weap-1': 4, 'inh_weap>=0': 90, 'own_weap>=0': 8} variants {}
+  pool 16+3: tag absent [] | tag present not in palette []
+  ai\generic: props 44 fpp 43 missing ['SAW[--]']
+
+== 070_waste 682 MB  pal 33 char pal 26
+  Brute            entries 335  protected 250  actors 197  {'kind_fireteam': 138, 'kind_loc': 197}
+  Dervish          entries 10   protected 6    actors 5    {'kind_fireteam': 5, 'kind_loc': 5}
+  Grunt            entries 336  protected 288  actors 212  {'kind_fireteam': 93, 'kind_loc': 243}
+  Hunter           entries 7    protected 6    actors 4    {'kind_fireteam': 3, 'kind_loc': 4}
+  Jackal           entries 105  protected 68   actors 65   {'kind_fireteam': 37, 'kind_loc': 68}
+  Marine           entries 231  protected 197  actors 147  {'kind_fireteam': 84, 'kind_loc': 147}
+  Sentinel         entries 77   protected 49   actors 40   {'kind_fireteam': 28, 'kind_loc': 49}
+  other:scarab     entries 2    protected 1    actors 1    {'kind_fireteam': 1, 'kind_loc': 1}
+   {'weap>=0': 343, 'weap-1': 46} {'inh_weap-1': 687, 'inh_weap>=0': 16, 'own_weap-1': 7, 'own_weap>=0': 4} variants {'marine_odst|None': 2, 'marine|None': 3}
+  pool 16+3: tag absent [] | tag present not in palette []
+  ai\generic: props 44 fpp 43 missing ['SAW[--]']
+
+== 100_citadel 746 MB  pal 32 char pal 33
+  Brute            entries 285  protected 229  actors 170  {'kind_fireteam': 93, 'kind_loc': 192}
+  Bugger           entries 28   protected 25   actors 18   {'kind_fireteam': 3, 'kind_loc': 25}
+  Dervish          entries 12   protected 8    actors 6    {'kind_fireteam': 6, 'kind_loc': 6}
+  Elite            entries 34   protected 32   actors 20   {'kind_fireteam': 9, 'kind_loc': 25}
+  Flood Carrier    entries 42   protected 31   actors 16   {'kind_fireteam': 11, 'kind_loc': 31}
+  Flood Combat     entries 113  protected 84   actors 56   {'kind_fireteam': 25, 'kind_loc': 88}
+  Flood Infection  entries 73   protected 54   actors 39   {'kind_fireteam': 19, 'kind_loc': 54}
+  Flood Pure       entries 4    protected 2    actors 2    {'kind_fireteam': 2, 'kind_loc': 2}
+  Grunt            entries 183  protected 148  actors 114  {'kind_loc': 138, 'kind_fireteam': 45}
+  Hunter           entries 3    protected 2    actors 2    {'kind_fireteam': 1, 'kind_loc': 2}
+  Jackal           entries 73   protected 54   actors 41   {'kind_fireteam': 20, 'kind_loc': 53}
+  Marine           entries 193  protected 158  actors 124  {'kind_fireteam': 59, 'kind_loc': 134}
+  Sentinel         entries 22   protected 16   actors 14   {'kind_fireteam': 6, 'kind_loc': 16}
+  other:?          entries 2    protected 2    actors 0    {'kind_fireteam': 1, 'kind_loc': 1}
+  other:scarab     entries 4    protected 2    actors 2    {'kind_fireteam': 2, 'kind_loc': 2}
+   {'weap>=0': 209, 'weap-1': 93} {'inh_weap>=0': 76, 'inh_weap-1': 667, 'own_weap>=0': 9, 'own_weap-1': 17} variants {'marine_odst_sgt|None': 1}
+  pool 18+3: tag absent [] | tag present not in palette []
+  ai\generic: props 44 fpp 43 missing ['SAW[--]']
+
+== 110_hc 433 MB  pal 32 char pal 10
+  Dervish          entries 2    protected 1    actors 1    {'kind_fireteam': 1, 'kind_loc': 1}
+  Flood Carrier    entries 62   protected 43   actors 36   {'kind_fireteam': 19, 'kind_loc': 43}
+  Flood Combat     entries 512  protected 437  actors 392  {'kind_fireteam': 75, 'kind_loc': 437}
+  Flood Infection  entries 72   protected 51   actors 142  {'kind_fireteam': 21, 'kind_loc': 51}
+  Flood Pure       entries 305  protected 240  actors 133  {'kind_fireteam': 59, 'kind_loc': 246}
+   {'weap-1': 168, 'weap>=0': 7} {'inh_weap-1': 502, 'inh_weap>=0': 270, 'own_weap-1': 6} variants {}
+  pool 18+2: tag absent [] | tag present not in palette []
+  ai\generic: props 44 fpp 43 missing ['SAW[--]']
+
+== 120_halo 597 MB  pal 32 char pal 15
+  Dervish          entries 5    protected 3    actors 2    {'kind_fireteam': 2, 'kind_loc': 3}
+  Flood Carrier    entries 50   protected 44   actors 18   {'kind_fireteam': 6, 'kind_loc': 44}
+  Flood Combat     entries 588  protected 444  actors 224  {'kind_fireteam': 138, 'kind_loc': 450}
+  Flood Infection  entries 164  protected 118  actors 106  {'kind_fireteam': 46, 'kind_loc': 118}
+  Flood Pure       entries 79   protected 50   actors 42   {'kind_fireteam': 29, 'kind_loc': 50}
+  Marine           entries 4    protected 2    actors 2    {'kind_fireteam': 2, 'kind_loc': 2}
+  Sentinel         entries 220  protected 190  actors 142  {'kind_fireteam': 30, 'kind_loc': 190}
+  other:?          entries 29   protected 29   actors 0    {'kind_fireteam': 14, 'kind_loc': 15}
+   {'weap>=0': 71, 'weap-1': 196} {'inh_weap-1': 683, 'inh_weap>=0': 183, 'own_weap>=0': 6} variants {'marine_johnson_halo|None': 1}
+  pool 17+2: tag absent [] | tag present not in palette []
+  ai\generic: props 44 fpp 43 missing ['SAW[--]']
+
+families {'Dervish': {'levels': 8}, 'Marine': {'levels': 37}, 'other:?': {'levels': 5}, 'Grunt': {'levels': 11}, 'Brute': {'levels': 40}, 'Jackal': {'levels': 12}, 'Bugger': {'levels': 4}, 'other:truth': {'levels': 1}, 'Hunter': {'levels': 3}, 'other:scarab': {'levels': 3}, 'Flood Combat': {'levels': 13}, 'Flood Infection': {'levels': 4}, 'Elite': {'levels': 4}, 'Flood Pure': {'levels': 7}, 'Flood Carrier': {'levels': 4}, 'Sentinel': {'levels': 8}}
+
+######## Halo 3: ODST
+
+== h100 698 MB  pal 29 char pal 58
+  Brute            entries 612  protected 180  actors 63   {'kind_cell': 604, 'kind_spawn': 8}
+  Bugger           entries 384  protected 0    actors 23   {'kind_cell': 384}
+  Elite            entries 14   protected 0    actors 13   {'kind_cell': 14}
+  Engineer         entries 46   protected 0    actors 6    {'kind_cell': 46}
+  Grunt            entries 626  protected 180  actors 62   {'kind_cell': 626}
+  Hunter           entries 34   protected 0    actors 5    {'kind_cell': 34}
+  Jackal           entries 314  protected 159  actors 24   {'kind_cell': 313, 'kind_spawn': 1}
+  other:?          entries 415  protected 341  actors 13   {'kind_spawn': 341, 'kind_cell': 74}
+  cells: elements 77 refs 1187 share {"char": {"blocks": 33, "shared_blocks": 16, "mixed_species": 2, "max_users": 8, "cells_on_shared": 60}, "w1": {"blocks": 32, "shared_blocks": 16, "mixed_species": 4, "max_users": 10, "cells_on_shared": 50}, "w2": {"blocks": 0, "shared_blocks": 0, "mixed_species": 0, "max_users": 0, "cells_on_shared": 0}}
+  spawn weap {'weap-1': 335, 'weap>=0': 15} cells without weapon array {'engineer_slaveform': 46, 'grunt': 12, 'grunt_heavy': 2, 'hunter_classic': 18, 'hunter': 16} multi w1 cells 832 spawn variants {}
+  pool 18+1: tag absent ['SAW'] | tag present not in palette ['Machine Gun']
+  ai\generic: props 47 fpp 46 missing []
+
+== sc100 497 MB  pal 32 char pal 60
+  Brute            entries 430  protected 28   actors 42   {'kind_cell': 422, 'kind_spawn': 8}
+  Bugger           entries 339  protected 0    actors 37   {'kind_cell': 339}
+  Flood Combat     entries 4    protected 0    actors 5    {'kind_cell': 4}
+  Grunt            entries 438  protected 50   actors 46   {'kind_cell': 438}
+  Hunter           entries 28   protected 0    actors 4    {'kind_cell': 28}
+  Jackal           entries 226  protected 0    actors 15   {'kind_cell': 226}
+  Marine           entries 4    protected 0    actors 6    {'kind_cell': 4}
+  other:?          entries 39   protected 35   actors 4    {'kind_spawn': 35, 'kind_cell': 4}
+  cells: elements 51 refs 705 share {"char": {"blocks": 31, "shared_blocks": 10, "mixed_species": 0, "max_users": 6, "cells_on_shared": 30}, "w1": {"blocks": 30, "shared_blocks": 10, "mixed_species": 1, "max_users": 7, "cells_on_shared": 26}, "w2": {"blocks": 2, "shared_blocks": 0, "mixed_species": 0, "max_users": 1, "cells_on_shared": 0}}
+  spawn weap {'weap-1': 34, 'weap>=0': 9} cells without weapon array {'hunter_classic': 14, 'hunter': 14, 'grunt': 4, 'grunt_heavy': 4} multi w1 cells 496 spawn variants {'cellchar|None': 1}
+  pool 17+2: tag absent ['SAW'] | tag present not in palette []
+  ai\generic: props 47 fpp 46 missing []
+
+== sc110 524 MB  pal 29 char pal 57
+  Brute            entries 457  protected 57   actors 73   {'kind_cell': 448, 'kind_spawn': 9}
+  Bugger           entries 336  protected 0    actors 19   {'kind_cell': 336}
+  Flood Combat     entries 6    protected 6    actors 6    {'kind_cell': 6}
+  Grunt            entries 442  protected 42   actors 70   {'kind_cell': 442}
+  Hunter           entries 24   protected 0    actors 2    {'kind_cell': 24}
+  Jackal           entries 178  protected 9    actors 15   {'kind_cell': 178}
+  Marine           entries 28   protected 11   actors 21   {'kind_cell': 28}
+  other:?          entries 166  protected 166  actors 5    {'kind_spawn': 159, 'kind_cell': 7}
+  cells: elements 91 refs 697 share {"char": {"blocks": 27, "shared_blocks": 12, "mixed_species": 1, "max_users": 24, "cells_on_shared": 76}, "w1": {"blocks": 31, "shared_blocks": 16, "mixed_species": 6, "max_users": 10, "cells_on_shared": 70}, "w2": {"blocks": 0, "shared_blocks": 0, "mixed_species": 0, "max_users": 0, "cells_on_shared": 0}}
+  spawn weap {'weap-1': 156, 'weap>=0': 12} cells without weapon array {'grunt': 6, 'marine': 2, 'hunter_classic': 12, 'hunter': 12, 'grunt_heavy': 10} multi w1 cells 491 spawn variants {'cellchar|None': 3}
+  pool 19+1: tag absent ['SAW'] | tag present not in palette ['Machine Gun']
+  ai\generic: props 47 fpp 46 missing []
+
+== sc120 472 MB  pal 30 char pal 57
+  Brute            entries 451  protected 53   actors 55   {'kind_cell': 443, 'kind_spawn': 8}
+  Bugger           entries 336  protected 0    actors 19   {'kind_cell': 336}
+  Flood Combat     entries 4    protected 0    actors 5    {'kind_cell': 4}
+  Grunt            entries 451  protected 51   actors 60   {'kind_cell': 451}
+  Hunter           entries 24   protected 0    actors 2    {'kind_cell': 24}
+  Jackal           entries 191  protected 79   actors 15   {'kind_cell': 191}
+  Marine           entries 19   protected 13   actors 23   {'kind_cell': 18, 'kind_spawn': 1}
+  other:?          entries 236  protected 232  actors 4    {'kind_spawn': 232, 'kind_cell': 4}
+  cells: elements 68 refs 705 share {"char": {"blocks": 29, "shared_blocks": 11, "mixed_species": 0, "max_users": 14, "cells_on_shared": 50}, "w1": {"blocks": 29, "shared_blocks": 13, "mixed_species": 2, "max_users": 13, "cells_on_shared": 50}, "w2": {"blocks": 0, "shared_blocks": 0, "mixed_species": 0, "max_users": 0, "cells_on_shared": 0}}
+  spawn weap {'weap-1': 232, 'weap>=0': 9} cells without weapon array {'hunter_classic': 12, 'hunter': 12, 'grunt_heavy': 2} multi w1 cells 495 spawn variants {}
+  pool 18+1: tag absent ['SAW'] | tag present not in palette ['Machine Gun']
+  ai\generic: props 47 fpp 46 missing []
+
+== sc130 490 MB  pal 30 char pal 59
+  Brute            entries 886  protected 102  actors 67   {'kind_cell': 870, 'kind_spawn': 16}
+  Bugger           entries 676  protected 0    actors 31   {'kind_cell': 676}
+  Flood Combat     entries 6    protected 2    actors 7    {'kind_cell': 6}
+  Grunt            entries 871  protected 89   actors 62   {'kind_cell': 871}
+  Hunter           entries 50   protected 2    actors 3    {'kind_cell': 50}
+  Jackal           entries 358  protected 12   actors 17   {'kind_cell': 358}
+  Marine           entries 29   protected 9    actors 23   {'kind_cell': 29}
+  other:?          entries 149  protected 145  actors 5    {'kind_spawn': 143, 'kind_cell': 6}
+  cells: elements 84 refs 1336 share {"char": {"blocks": 35, "shared_blocks": 13, "mixed_species": 1, "max_users": 14, "cells_on_shared": 62}, "w1": {"blocks": 40, "shared_blocks": 22, "mixed_species": 4, "max_users": 6, "cells_on_shared": 57}, "w2": {"blocks": 0, "shared_blocks": 0, "mixed_species": 0, "max_users": 0, "cells_on_shared": 0}}
+  spawn weap {'weap-1': 143, 'weap>=0': 16} cells without weapon array {'brute': 10, 'grunt': 11, 'hunter_classic': 26, 'civilian_police': 1, 'grunt_heavy': 12, 'hunter': 24} multi w1 cells 976 spawn variants {'cellchar|None': 15}
+  pool 19+1: tag absent ['SAW'] | tag present not in palette ['Machine Gun']
+  ai\generic: props 47 fpp 46 missing []
+
+== sc140 469 MB  pal 32 char pal 62
+  Brute            entries 458  protected 60   actors 53   {'kind_cell': 450, 'kind_spawn': 8}
+  Bugger           entries 356  protected 0    actors 35   {'kind_cell': 356}
+  Flood Combat     entries 8    protected 0    actors 5    {'kind_cell': 8}
+  Flood Pure       entries 4    protected 0    actors 4    {'kind_cell': 4}
+  Grunt            entries 480  protected 80   actors 49   {'kind_cell': 480}
+  Hunter           entries 24   protected 0    actors 2    {'kind_cell': 24}
+  Jackal           entries 195  protected 10   actors 22   {'kind_cell': 195}
+  Marine           entries 6    protected 1    actors 6    {'kind_cell': 6}
+  other:?          entries 134  protected 122  actors 9    {'kind_spawn': 119, 'kind_cell': 15}
+  cells: elements 68 refs 768 share {"char": {"blocks": 39, "shared_blocks": 11, "mixed_species": 1, "max_users": 6, "cells_on_shared": 38}, "w1": {"blocks": 35, "shared_blocks": 17, "mixed_species": 1, "max_users": 9, "cells_on_shared": 44}, "w2": {"blocks": 1, "shared_blocks": 0, "mixed_species": 0, "max_users": 1, "cells_on_shared": 0}}
+  spawn weap {'weap-1': 119, 'weap>=0': 8} cells without weapon array {'civilian_police': 1, 'grunt_heavy': 4, 'hunter_classic': 12, 'hunter': 12, 'flood_pureform_stalker': 2, 'flood_pureform_tank': 2, '?': 2} multi w1 cells 526 spawn variants {}
+  pool 20+3: tag absent ['SAW'] | tag present not in palette []
+  ai\generic: props 47 fpp 46 missing []
+
+== sc150 415 MB  pal 30 char pal 19
+  Brute            entries 69   protected 65   actors 22   {'kind_spawn': 2, 'kind_cell': 67}
+  Engineer         entries 43   protected 43   actors 7    {'kind_cell': 43}
+  Grunt            entries 86   protected 86   actors 22   {'kind_cell': 86}
+  Jackal           entries 16   protected 8    actors 4    {'kind_cell': 16}
+  Marine           entries 21   protected 10   actors 7    {'kind_cell': 11, 'kind_spawn': 10}
+  other:?          entries 140  protected 140  actors 3    {'kind_spawn': 132, 'kind_cell': 8}
+  other:scarab     entries 2    protected 0    actors 1    {'kind_spawn': 1, 'kind_cell': 1}
+  cells: elements 37 refs 228 share {"char": {"blocks": 17, "shared_blocks": 9, "mixed_species": 1, "max_users": 6, "cells_on_shared": 29}, "w1": {"blocks": 14, "shared_blocks": 6, "mixed_species": 3, "max_users": 5, "cells_on_shared": 19}, "w2": {"blocks": 0, "shared_blocks": 0, "mixed_species": 0, "max_users": 0, "cells_on_shared": 0}}
+  spawn weap {'weap-1': 145} cells without weapon array {'engineer_slaveform': 43, '?': 8, 'marine_pilot': 1, 'marine_odst_mickey': 3, 'scarab': 1} multi w1 cells 76 spawn variants {'cellchar|None': 2, 'marine_odst_romeo|None': 3}
+  pool 15+1: tag absent [] | tag present not in palette []
+  ai\generic: props 47 fpp 46 missing ['SAW[--]']
+
+== l200 679 MB  pal 32 char pal 61
+  Brute            entries 107  protected 64   actors 40   {'kind_cell': 107}
+  Bugger           entries 239  protected 0    actors 47   {'kind_cell': 239}
+  Engineer         entries 18   protected 0    actors 2    {'kind_cell': 18}
+  Grunt            entries 92   protected 44   actors 30   {'kind_cell': 92}
+  Jackal           entries 40   protected 24   actors 21   {'kind_cell': 40}
+  Marine           entries 11   protected 0    actors 3    {'kind_cell': 11}
+  other:?          entries 87   protected 87   actors 0    {'kind_spawn': 87}
+  cells: elements 44 refs 317 share {"char": {"blocks": 28, "shared_blocks": 6, "mixed_species": 1, "max_users": 7, "cells_on_shared": 22}, "w1": {"blocks": 24, "shared_blocks": 8, "mixed_species": 3, "max_users": 9, "cells_on_shared": 27}, "w2": {"blocks": 0, "shared_blocks": 0, "mixed_species": 0, "max_users": 0, "cells_on_shared": 0}}
+  spawn weap {'weap-1': 87} cells without weapon array {'engineer_slaveform': 16} multi w1 cells 246 spawn variants {'cellchar|None': 3}
+  pool 17+3: tag absent ['SAW'] | tag present not in palette []
+  ai\generic: props 47 fpp 46 missing []
+
+== l300 603 MB  pal 34 char pal 67
+  Brute            entries 536  protected 154  actors 76   {'kind_cell': 528, 'kind_spawn': 8}
+  Bugger           entries 388  protected 0    actors 31   {'kind_cell': 388}
+  Engineer         entries 1    protected 0    actors 1    {'kind_cell': 1}
+  Flood Combat     entries 12   protected 12   actors 2    {'kind_cell': 12}
+  Grunt            entries 549  protected 165  actors 56   {'kind_cell': 549}
+  Hunter           entries 28   protected 4    actors 3    {'kind_cell': 28}
+  Jackal           entries 190  protected 78   actors 22   {'kind_cell': 190}
+  Marine           entries 5    protected 2    actors 8    {'kind_cell': 5}
+  other:?          entries 222  protected 222  actors 4    {'kind_spawn': 207, 'kind_cell': 15}
+  other:scarab_cheap entries 1    protected 0    actors 1    {'kind_cell': 1}
+  cells: elements 73 refs 880 share {"char": {"blocks": 36, "shared_blocks": 12, "mixed_species": 3, "max_users": 8, "cells_on_shared": 45}, "w1": {"blocks": 31, "shared_blocks": 13, "mixed_species": 7, "max_users": 9, "cells_on_shared": 42}, "w2": {"blocks": 0, "shared_blocks": 0, "mixed_species": 0, "max_users": 0, "cells_on_shared": 0}}
+  spawn weap {'weap-1': 206, 'weap>=0': 9} cells without weapon array {'hunter': 16, '?': 3, 'engineer_freeform': 1, 'grunt': 23, 'scarab_cheap': 1, 'hunter_classic': 12, 'grunt_heavy': 8} multi w1 cells 609 spawn variants {}
+  pool 17+1: tag absent ['SAW'] | tag present not in palette ['Machine Gun']
+  ai\generic: props 47 fpp 46 missing []
+
+families {'other:?': {'levels': 9}, 'Grunt': {'levels': 34}, 'Brute': {'levels': 105}, 'Engineer': {'levels': 5}, 'Jackal': {'levels': 27}, 'Bugger': {'levels': 44}, 'Hunter': {'levels': 14}, 'Elite': {'levels': 3}, 'Marine': {'levels': 33}, 'Flood Combat': {'levels': 21}, 'Flood Pure': {'levels': 2}, 'other:scarab': {'levels': 1}, 'other:scarab_cheap': {'levels': 1}}

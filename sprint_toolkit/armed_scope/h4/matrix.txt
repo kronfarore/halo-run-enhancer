@@ -1,0 +1,57 @@
+graph shape per level identical? {'storm_cortana': 1, 'storm_elite_ai': 1, 'storm_grunt': 1, 'storm_jackal': 1, 'storm_hunter': 1, 'storm_sentinel': 1, 'null': 1, 'storm_bishop': 1, 'storm_knight': 1, 'storm_pawn': 1, 'storm_marine_m60': 1, 'storm_spartans_ai': 1, 'storm_lasky': 1, 'storm_marine': 1, 'storm_civilian_female': 1, 'storm_civilian_male': 1, 'storm_didact': 1}
+bipeds ['null', 'storm_bishop', 'storm_civilian_female', 'storm_civilian_male', 'storm_cortana', 'storm_didact', 'storm_elite_ai', 'storm_grunt', 'storm_hunter', 'storm_jackal', 'storm_knight', 'storm_lasky', 'storm_marine', 'storm_marine_m60', 'storm_pawn', 'storm_sentinel', 'storm_spartans_ai']
+weapon               class    name grunt      jackal     elite_ai   knight     pawn       bishop     marine     hunter    
+Assault Rifle        rifle    ar   type       any        any        any        NOTYPE     NOCLS      any        NOCLS     
+Battle Rifle         rifle    br   type       any        type       any        NOTYPE     NOCLS      any        NOCLS     
+Beam Rifle           rifle    csr  type       type       type       any        NOTYPE     NOCLS      any        NOCLS     
+Binary Rifle         rifle    ab   NOTYPE     any        any        type       type       NOCLS      any        NOCLS     
+Boltshot             pistol   fbp  any        any        any        any        any        NOCLS      any        NOCLS     
+Concussion Rifle     rifle    con  NOTYPE     any        type       any        NOTYPE     NOCLS      any        NOCLS     
+Covenant Carbine     rifle    cb   type       type       type       any        NOTYPE     NOCLS      any        NOCLS     
+DMR                  rifle    dmr  NOTYPE     any        any        any        NOTYPE     NOCLS      any        NOCLS     
+Energy Blade         sword    eb   NOCLS      NOCLS      type       NOCLS      NOCLS      NOCLS      NOCLS      NOCLS     
+Flak Cannon          missile  fr   any        NOCLS      type       NOCLS      NOCLS      NOCLS      type       NOCLS     
+Gravity Hammer       hammer   gh   NOCLS      NOCLS      any        NOCLS      NOCLS      NOCLS      NOCLS      NOCLS     
+Incineration Cannon  missile  fri  any        NOCLS      any        NOCLS      NOCLS      NOCLS      type       NOCLS     
+Incineration Cannon  missile  rl   type       NOCLS      any        wl?rifle   NOCLS      NOCLS      type       NOCLS     
+LightRifle           rifle    frr  NOTYPE     any        any        type       NOTYPE     NOCLS      any        NOCLS     
+Magnum               pistol   hp   any        any        any        any        any        NOCLS      any        NOCLS     
+Needler              pistol   ne   type       any        type       any        any        NOCLS      type       NOCLS     
+Plasma Pistol        pistol   pp   type       any        type       any        any        NOCLS      type       NOCLS     
+Railgun              rifle    rg   NOTYPE     any        any        any        NOTYPE     NOCLS      type       NOCLS     
+Rocket Launcher      missile  rl   type       NOCLS      any        wl?rifle   NOCLS      NOCLS      type       NOCLS     
+SAW                  rifle    lmg  NOTYPE     any        any        any        NOTYPE     NOCLS      any        NOCLS     
+Scattershot          rifle    spd  NOTYPE     any        any        type       NOTYPE     NOCLS      any        NOCLS     
+Sentinel Beam        pistol   bb   any        any        any        any        any        NOCLS      any        NOCLS     
+Shotgun              rifle    sg   type       any        type       any        NOTYPE     NOCLS      type       NOCLS     
+Sniper Rifle         rifle    sr   type       any        type       any        NOTYPE     NOCLS      type       NOCLS     
+Spartan Laser        missile  sl   any        NOCLS      any        NOCLS      NOCLS      NOCLS      type       NOCLS     
+Sticky Detonator     pistol   sd   any        any        any        any        any        NOCLS      any        NOCLS     
+Storm Rifle          rifle    ac   NOTYPE     any        type       any        NOTYPE     NOCLS      any        NOCLS     
+Suppressor           rifle    smg  type       any        any        type       type       NOCLS      type       NOCLS     
+
+storm_grunt from m10_crash modes 103 bipdW ['storm_plasma_pistol']
+   modes with class beyond any: {'berserk': ['pistol'], 'flaming': ['pistol'], 'asleep': ['any', 'pistol'], 'patrol': ['unarmed', 'any'], 'combat': ['any', 'missile', 'support', 'rifle', 'pistol'], 'crouch': ['unarmed', 'missile', 'pistol'], 'flee': ['any', 'pistol'], 'any': ['any', 'pistol'], 'vault': ['missile', 'pistol'], 'hoist_stand': ['any', 'missile'], 'vin': ['any', 'global', 'lich', 'm20', 'm60'], 'm10': ['sync'], 'global_investigate': ['pistol']}
+storm_jackal from m10_crash modes 77 bipdW ['storm_plasma_pistol']
+   modes with class beyond any: {'patrol': ['unarmed'], 'combat': ['unarmed', 'any', 'dual', 'rifle', 'pistol'], 'crouch': ['unarmed', 'dual', 'rifle', 'pistol'], 'flee': ['dual', 'pistol'], 'shield': ['pistol'], 'any': ['h_kill', 'any'], 'vin': ['global', 'lich', 'm60'], 'global': ['pacing'], 'shield_crouch': ['pistol'], 'murm': ['pistol'], 'melee_continuous': ['rifle']}
+storm_elite_ai from m10_crash modes 138 bipdW ['storm_energy_sword']
+   modes with class beyond any: {'berserk': ['sword'], 'patrol': ['unarmed'], 'combat': ['unarmed', 'any', 'missile', 'rifle', 'pistol', 'sword', 'turret', 'hammer'], 'crouch': ['any', 'missile', 'rifle', 'pistol', 'sword', 'hammer'], 'vault': ['rifle', 'pistol', 'sword'], 'hoist': ['rifle', 'pistol', 'sword'], 'bunker': ['missile', 'rifle', 'pistol'], 'm30_ghost': ['escape'], 'vin': ['m30', 'global', 'lich', 'm10_elite_unarmed_spot_player', 'm20', 'm60'], 'm10': ['sword', 'sync'], 'global': ['unarmed'], 'global_alert': ['rifle', 'pistol'], 'global_investigate': ['unarmed', 'rifle', 'pistol', 'sword'], 'melee_continuous': ['missile', 'rifle', 'pistol']}
+storm_knight from m30_cryptum modes 6 bipdW ['storm_forerunner_rifle']
+   modes with class beyond any: {'combat': ['any', 'rifle', 'pistol'], 'suppress': ['rifle'], 'vin': ['m30', 'm60']}
+storm_pawn from m30_cryptum modes 4 bipdW ['storm_stasis_pistol_pawnhead']
+   modes with class beyond any: {'combat': ['any', 'rifle', 'pistol']}
+storm_bishop from m30_cryptum modes 9 bipdW ['storm_stasis_pistol_pawnhead']
+   modes with class beyond any: {'activator': ['h_ping', 'any'], 'protector': ['s_ping', 'h_ping', 'any']}
+storm_marine from m40_invasion modes 63 bipdW [None]
+   modes with class beyond any: {'posing': ['rifle'], 'patrol': ['unarmed'], 'combat': ['unarmed', 'any', 'missile', 'rifle', 'pistol', 'turret'], 'crouch': ['unarmed', 'missile', 'rifle', 'pistol'], 'any': ['any', 'rifle', 'pistol'], 'vault': ['missile', 'rifle', 'pistol'], 'hoist': ['missile', 'rifle', 'pistol'], 'hoist_stand': ['any', 'missile', 'pistol'], 'bunker': ['unarmed', 'missile', 'rifle', 'pistol'], 'pelican_d': ['unarmed', 'any'], 'pelican_p_l05': ['unarmed', 'any', 'missile', 'rifle', 'pistol'], 'pelican_p_l01': ['unarmed', 'any', 'missile', 'rifle', 'pistol'], 'pelican_p_l02': ['unarmed', 'any', 'missile', 'rifle', 'pistol'], 'pelican_p_l03': ['unarmed', 'any', 'missile', 'rifle', 'pistol'], 'pelican_p_l04': ['unarmed', 'any', 'missile', 'rifle', 'pistol'], 'pelican_p_r01': ['unarmed', 'any', 'missile', 'rifle', 'pistol'], 'pelican_p_r02': ['unarmed', 'any', 'missile', 'rifle', 'pistol'], 'pelican_p_r03': ['unarmed', 'any', 'missile', 'rifle', 'pistol'], 'pelican_p_r04': ['unarmed', 'any', 'missile', 'rifle', 'pistol'], 'pelican_p_r05': ['unarmed', 'any', 'missile', 'rifle', 'pistol'], 'vin': ['m60'], 'warthog_p': ['any', 'missile', 'rifle', 'pistol'], 'warthog_g': ['any', 'fixed'], 'falcon_p_l1': ['any', 'rifle'], 'falcon_p_r1': ['any', 'rifle'], 'global_alert': ['rifle'], 'm52': ['any', 'rifle'], 'mongoose_p': ['any', 'missile', 'rifle', 'pistol'], 'pelican_g': ['unarmed', 'any'], 'scorpion_p_lb': ['unarmed', 'any', 'missile', 'rifle', 'pistol'], 'scorpion_p_lf': ['unarmed', 'any', 'missile', 'rifle', 'pistol'], 'scorpion_p_rb': ['unarmed', 'any', 'missile', 'rifle', 'pistol'], 'scorpion_p_rf': ['unarmed', 'any', 'missile', 'rifle', 'pistol'], 'warthog_p_b': ['any', 'missile', 'rifle', 'pistol'], 'warthog_p_l': ['any', 'missile', 'rifle', 'pistol'], 'warthog_p_r': ['any', 'missile', 'rifle', 'pistol'], 'melee_continuous': ['rifle', 'pistol']}
+storm_hunter from m020 modes 61 bipdW ['storm_storm_hunter_fuel_rod']
+   modes with class beyond any: {'hoist': ['unarmed']}
+
+m10_crash {'grunt': '133+48', 'jackal': '45+4', 'elite': '38+26', 'inherit': 47} tsunits armable 293 prot(veh/script) 56 both-cell squads 8 / 135 array users {'0xc': 16, '0x18': 15, '0x24': 1, '0x30': 0} dz 14 / 14 slack KB 8111 gaps 0 badres 0
+m020 {'grunt': '98+65', 'jackal': '37+22', 'elite': '42+5', 'inherit': 14} tsunits armable 309 prot(veh/script) 140 both-cell squads 53 / 139 array users {'0xc': 68, '0x18': 32, '0x24': 0, '0x30': 0} dz 17 / 17 slack KB 9066 gaps 0 badres 0
+m30_cryptum {'grunt': '93+0', 'jackal': '18+0', 'elite': '39+0', 'knight': '54+0', 'pawn': '127+4', 'bishop': '27+5', 'inherit': 27} tsunits armable 213 prot(veh/script) 19 both-cell squads 13 / 210 array users {'0xc': 7, '0x18': 5, '0x24': 0, '0x30': 2} dz 24 / 24 slack KB 9049 gaps 0 badres 0
+m60_rescue {'grunt': '149+0', 'jackal': '58+1', 'elite': '60+0', 'knight': '51+0', 'pawn': '151+0', 'bishop': '16+0', 'marine': '7+0', 'spartans_ai': '25+0', 'inherit': 1} tsunits armable 352 prot(veh/script) 64 both-cell squads 2 / 256 array users {'0xc': 1, '0x18': 1, '0x24': 0, '0x30': 1} dz 29 / 29 slack KB 9937 gaps 0 badres 0
+m40_invasion {'grunt': '151+6', 'jackal': '61+10', 'elite': '109+0', 'knight': '5+2', 'pawn': '17+16', 'marine': '49+0', 'spartans_ai': '14+0', 'inherit': 52} tsunits armable 411 prot(veh/script) 150 both-cell squads 16 / 254 array users {'0xc': 15, '0x18': 6, '0x24': 0, '0x30': 0} dz 26 / 26 slack KB 8710 gaps 0 badres 0
+m70_liftoff {'grunt': '71+0', 'jackal': '30+0', 'elite': '42+4', 'knight': '46+0', 'pawn': '76+0', 'bishop': '27+0', 'marine': '22+0', 'spartans_ai': '17+0', 'inherit': 48} tsunits armable 232 prot(veh/script) 50 both-cell squads 0 / 230 array users {'0xc': 2, '0x18': 0, '0x24': 0, '0x30': 0} dz 17 / 17 slack KB 8718 gaps 0 badres 0
+m80_delta {'grunt': '99+43', 'jackal': '55+30', 'elite': '107+35', 'marine': '43+11', 'inherit': 55} tsunits armable 447 prot(veh/script) 102 both-cell squads 47 / 225 array users {'0xc': 32, '0x18': 17, '0x24': 0, '0x30': 3} dz 30 / 30 slack KB 8745 gaps 0 badres 0
+m90_sacrifice {'knight': '9+41', 'pawn': '1+90', 'bishop': '0+15', 'inherit': 264} tsunits armable 48 prot(veh/script) 0 both-cell squads 15 / 149 array users {'0xc': 46, '0x18': 25, '0x24': 0, '0x30': 13} dz 22 / 22 slack KB 8756 gaps 0 badres 0

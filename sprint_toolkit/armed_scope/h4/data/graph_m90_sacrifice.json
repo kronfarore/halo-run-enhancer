@@ -1,0 +1,2821 @@
+{
+"title": "Midnight",
+"weapons": {
+"objects\\characters\\storm_pawn\\weapons\\storm_pawn_head": {
+"class": "",
+"name": "",
+"card": null,
+"in_pal": false
+},
+"objects\\characters\\storm_pawn\\weapons\\storm_pawnsniper_head": {
+"class": "rifle",
+"name": "ab",
+"card": null,
+"in_pal": true
+},
+"objects\\equipment\\storm_auto_turret\\weapon\\weapon": {
+"class": "fixed",
+"name": "cg",
+"card": null,
+"in_pal": false
+},
+"objects\\equipment\\storm_auto_turret\\weapon\\weapon_knight": {
+"class": "fixed",
+"name": "cg",
+"card": null,
+"in_pal": false
+},
+"objects\\equipment\\storm_auto_turret\\weapon\\weapon_pve": {
+"class": "fixed",
+"name": "cg",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_detached\\storm_plasma_turret": {
+"class": "turret",
+"name": "pgt",
+"card": null,
+"in_pal": true
+},
+"objects\\vehicles\\forerunner\\turrets\\storm_anti_infantry_turret\\weapons2\\storm_anti_infantry_beam": {
+"class": "pistol",
+"name": "bb",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\forerunner\\turrets\\storm_anti_infantry_turret\\weapons2\\storm_anti_infantry_beam_m90": {
+"class": "pistol",
+"name": "bb",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\forerunner\\turrets\\storm_anti_vehicle_turret\\weapons\\storm_anti_vehicle_turret\\weapon\\storm_anti_vehicle_turret_plasma_cannon": {
+"class": "fixed",
+"name": "gun",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\forerunner\\turrets\\storm_tracer_turret\\weapon\\storm_tracer_turret": {
+"class": "fixed",
+"name": "gun",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\human\\storm_broadsword\\weapon\\sabre_gatling_gun\\storm_broadsword_gatling_gun": {
+"class": "fixed",
+"name": "gun",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\human\\storm_broadsword\\weapon\\sabre_missile\\storm_broadsword_missile": {
+"class": "missile",
+"name": "rl",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\human\\storm_infinity\\turrets\\storm_infinity_turret\\weapon\\storm_infinity_turret": {
+"class": "fixed",
+"name": "gun",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\human\\storm_pelican\\weapons\\storm_pelican_cannon\\weapon\\storm_pelican_cannon": {
+"class": "fixed",
+"name": "cannon",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\human\\storm_pelican\\weapons\\storm_pelican_side_turret\\weapons\\storm_pelican_side_turret": {
+"class": "fixed",
+"name": "cg",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\human\\storm_pelican\\weapons\\storm_pelican_side_turret_mirror\\weapons\\storm_pelican_side_turret_mirror": {
+"class": "fixed",
+"name": "cg",
+"card": null,
+"in_pal": false
+},
+"objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword": {
+"class": "sword",
+"name": "eb",
+"card": "Energy Blade",
+"in_pal": true
+},
+"objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer": {
+"class": "hammer",
+"name": "gh",
+"card": "Gravity Hammer",
+"in_pal": true
+},
+"objects\\weapons\\melee\\storm_knife\\storm_knife": {
+"class": "unarmed",
+"name": "",
+"card": null,
+"in_pal": false
+},
+"objects\\weapons\\melee\\unarmed\\unarmed": {
+"class": "unarmed",
+"name": "ua",
+"card": null,
+"in_pal": false
+},
+"objects\\weapons\\pistol\\storm_magnum\\storm_magnum": {
+"class": "pistol",
+"name": "hp",
+"card": "Magnum",
+"in_pal": true
+},
+"objects\\weapons\\pistol\\storm_needler\\storm_needler": {
+"class": "pistol",
+"name": "ne",
+"card": "Needler",
+"in_pal": true
+},
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve": {
+"class": "pistol",
+"name": "pp",
+"card": "Plasma Pistol",
+"in_pal": true
+},
+"objects\\weapons\\pistol\\storm_sentinel_beam\\storm_sentinel_beam": {
+"class": "pistol",
+"name": "bb",
+"card": "Sentinel Beam",
+"in_pal": false
+},
+"objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol": {
+"class": "pistol",
+"name": "fbp",
+"card": "Boltshot",
+"in_pal": true
+},
+"objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead": {
+"class": "pistol",
+"name": "pp",
+"card": "Boltshot",
+"in_pal": false
+},
+"objects\\weapons\\pistol\\storm_sticky_detonator\\storm_sticky_detonator_pve": {
+"class": "pistol",
+"name": "sd",
+"card": "Sticky Detonator",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine": {
+"class": "rifle",
+"name": "ac",
+"card": "Storm Rifle",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle": {
+"class": "rifle",
+"name": "ar",
+"card": "Assault Rifle",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle": {
+"class": "rifle",
+"name": "csr",
+"card": "Beam Rifle",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_br\\storm_br": {
+"class": "rifle",
+"name": "br",
+"card": "Battle Rifle",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle": {
+"class": "rifle",
+"name": "con",
+"card": "Concussion Rifle",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine": {
+"class": "rifle",
+"name": "cb",
+"card": "Covenant Carbine",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_dmr\\storm_dmr": {
+"class": "rifle",
+"name": "dmr",
+"card": "DMR",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle": {
+"class": "rifle",
+"name": "frr",
+"card": "LightRifle",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg": {
+"class": "rifle",
+"name": "smg",
+"card": "Suppressor",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc": {
+"class": "rifle",
+"name": "smg",
+"card": "Suppressor",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_pawnhead": {
+"class": "rifle",
+"name": "smg",
+"card": "Suppressor",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle": {
+"class": "rifle",
+"name": "ab",
+"card": "Binary Rifle",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle_npc": {
+"class": "rifle",
+"name": "ab",
+"card": "Binary Rifle",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_lmg\\storm_lmg": {
+"class": "rifle",
+"name": "lmg",
+"card": "SAW",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_rail_gun\\storm_rail_gun_pve": {
+"class": "rifle",
+"name": "rg",
+"card": "Railgun",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun": {
+"class": "rifle",
+"name": "sg",
+"card": "Shotgun",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle": {
+"class": "rifle",
+"name": "sr",
+"card": "Sniper Rifle",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun": {
+"class": "rifle",
+"name": "spd",
+"card": "Scattershot",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun_npc": {
+"class": "rifle",
+"name": "spd",
+"card": "Scattershot",
+"in_pal": true
+},
+"objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher": {
+"class": "missile",
+"name": "fri",
+"card": "Incineration Cannon",
+"in_pal": true
+},
+"objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher_knight": {
+"class": "missile",
+"name": "rl",
+"card": "Incineration Cannon",
+"in_pal": true
+},
+"objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon": {
+"class": "missile",
+"name": "fr",
+"card": "Flak Cannon",
+"in_pal": true
+},
+"objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher": {
+"class": "missile",
+"name": "rl",
+"card": "Rocket Launcher",
+"in_pal": true
+},
+"objects\\weapons\\support_high\\storm_spartan_laser\\storm_spartan_laser": {
+"class": "missile",
+"name": "sl",
+"card": "Spartan Laser",
+"in_pal": true
+},
+"objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret": {
+"class": "turret",
+"name": "mgt",
+"card": null,
+"in_pal": true
+}
+},
+"all_chars": 37,
+"char_unit": {
+"objects\\characters\\null\\ai\\null_human_flying_space": "objects\\characters\\null\\null",
+"objects\\characters\\null\\ai\\null_cov_flying_space": "objects\\characters\\null\\null",
+"objects\\characters\\null\\ai\\null_cov_default": "objects\\characters\\null\\null",
+"objects\\characters\\null\\ai\\null_fore_turret": "objects\\characters\\null\\null",
+"objects\\characters\\null\\ai\\null_human_default": "objects\\characters\\null\\null",
+"objects\\characters\\null\\ai\\null_human_turret": "objects\\characters\\null\\null",
+"objects\\characters\\storm_pawn\\ai\\storm_pawn": "objects\\characters\\storm_pawn\\storm_pawn",
+"objects\\characters\\storm_pawn\\ai\\storm_pawn_prime": "objects\\characters\\storm_pawn\\storm_pawn",
+"objects\\characters\\storm_pawn\\ai\\storm_pawn_sniper": "objects\\characters\\storm_pawn\\storm_pawn",
+"objects\\characters\\storm_knight\\ai\\storm_knight": "objects\\characters\\storm_knight\\storm_knight",
+"objects\\characters\\storm_bishop\\ai\\storm_bishop": "objects\\characters\\storm_bishop\\storm_bishop",
+"objects\\characters\\storm_knight\\ai\\storm_knight_ranger": "objects\\characters\\storm_knight\\storm_knight",
+"objects\\characters\\storm_knight\\ai\\storm_knight_battlewagon": "objects\\characters\\storm_knight\\storm_knight",
+"objects\\characters\\storm_knight\\ai\\storm_knight_commander": "objects\\characters\\storm_knight\\storm_knight",
+"objects\\characters\\storm_didact\\storm_didact": "objects\\characters\\storm_didact\\storm_didact",
+"objects\\characters\\null\\ai\\null_fore_infantry_turret": "objects\\characters\\null\\null",
+"objects\\characters\\storm_sentinel\\ai\\storm_sentinel": "objects\\characters\\storm_sentinel\\storm_sentinel",
+"objects\\characters\\storm_knight\\ai\\stimuli\\storm_knight_aggressive": null,
+"objects\\characters\\storm_knight\\ai\\stimuli\\storm_knight_bw_aggressive": null,
+"objects\\characters\\storm_knight\\ai\\stimuli\\storm_knight_commander_aggressive": null,
+"objects\\characters\\storm_knight\\ai\\stimuli\\storm_knight_m60_e3_no_rank": null,
+"objects\\characters\\storm_knight\\ai\\stimuli\\storm_knight_ranger_aggressive": null,
+"objects\\characters\\storm_pawn\\ai\\stimuli\\storm_pawn_aggressive": null,
+"objects\\characters\\storm_pawn\\ai\\stimuli\\storm_pawn_defensive": null,
+"objects\\characters\\storm_pawn\\ai\\stimuli\\storm_pawn_kamikaze": null
+},
+"graphs": {
+"objects\\characters\\null\\null": {
+"hlmt": "objects\\characters\\null\\null",
+"jmad": "objects\\characters\\null\\null",
+"bipd_weapons": [],
+"parent": null,
+"n_modes": 14,
+"modes_ptr": "0x5fc73b2c",
+"weapon_list": 0,
+"anims": 1,
+"inherit_new": 0,
+"inherit_old": 0,
+"graph": {
+"patrol": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"combat": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"any": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"pelican_d": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"turret_g": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"warthog_d": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"sabre_d": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"warthog_g": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"banshee_d": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"close_turret_doors": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"fork_d": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"pelican_g": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"phantom_d": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"seraph_d": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+}
+}
+},
+"objects\\characters\\storm_bishop\\storm_bishop": {
+"hlmt": "objects\\characters\\storm_bishop\\storm_bishop",
+"jmad": "objects\\characters\\storm_bishop\\storm_bishop",
+"bipd_weapons": [
+"objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead"
+],
+"parent": null,
+"n_modes": 9,
+"modes_ptr": "0x5fcb09b9",
+"weapon_list": 0,
+"anims": 69,
+"inherit_new": 0,
+"inherit_old": 0,
+"graph": {
+"activator": {
+"h_ping": {
+"any": {
+"any": [],
+"any2": [
+"protector"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"idle",
+"locomote",
+"spawn_pawn",
+"locomote_run_back",
+"locomote_run_front",
+"locomote_run_left",
+"locomote_run_right"
+]
+}
+}
+},
+"combat": {
+"any": {
+"any": {
+"any": [
+"idle",
+"locomote",
+"locomote_run_back",
+"locomote_run_front",
+"locomote_run_left",
+"locomote_run_right"
+]
+}
+}
+},
+"crouch": {
+"any": {
+"any": {
+"any": [
+"idle",
+"locomote",
+"spawn_pawn",
+"locomote_run_back",
+"locomote_run_front",
+"locomote_run_left",
+"locomote_run_right"
+]
+}
+}
+},
+"flee": {
+"any": {
+"any": {
+"any": [
+"idle",
+"locomote_run_front"
+]
+}
+}
+},
+"any": {
+"any": {
+"any": {
+"any": [
+"idle"
+],
+"sync_actions": [
+"svb_airborne_smackdown_victim"
+]
+}
+}
+},
+"flight": {
+"any": {
+"any": {
+"any": [
+"idle",
+"locomote",
+"locomote_run_back",
+"locomote_run_front",
+"locomote_run_left",
+"locomote_run_right"
+]
+}
+}
+},
+"flight_crouch": {
+"any": {
+"any": {
+"any": [
+"idle",
+"locomote",
+"spawn_pawn",
+"locomote_run_back",
+"locomote_run_front",
+"locomote_run_left",
+"locomote_run_right"
+]
+}
+}
+},
+"knight_p": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"protector": {
+"s_ping": {
+"front": {
+"any": []
+},
+"back": {
+"any": []
+}
+},
+"h_ping": {
+"front": {
+"any": [
+"left_arm",
+"right_arm"
+]
+},
+"back": {
+"any": [
+"left_arm",
+"right_arm"
+]
+},
+"any": {
+"any": []
+}
+},
+"any": {
+"any": {
+"any": [
+"idle",
+"locomote",
+"locomote_run_back",
+"locomote_run_front",
+"locomote_run_left",
+"locomote_run_right"
+]
+}
+}
+}
+}
+},
+"objects\\characters\\storm_didact\\storm_didact": {
+"hlmt": "objects\\characters\\storm_didact\\storm_didact",
+"jmad": "objects\\characters\\storm_didact\\storm_didact",
+"bipd_weapons": [
+"objects\\weapons\\melee\\unarmed\\unarmed"
+],
+"parent": null,
+"n_modes": 2,
+"modes_ptr": "0x5f90e79d",
+"weapon_list": 0,
+"anims": 2,
+"inherit_new": 0,
+"inherit_old": 0,
+"graph": {
+"any": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"vin": {
+"m90": {
+"any": {
+"any": [
+"composer"
+]
+}
+}
+}
+}
+},
+"objects\\characters\\storm_knight\\storm_knight": {
+"hlmt": "objects\\characters\\storm_knight\\storm_knight",
+"jmad": "objects\\characters\\storm_knight\\storm_knight",
+"bipd_weapons": [
+"objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle"
+],
+"parent": null,
+"n_modes": 6,
+"modes_ptr": "0x5fc8417e",
+"weapon_list": 3,
+"anims": 157,
+"inherit_new": 0,
+"inherit_old": 0,
+"graph": {
+"commander_jump": {
+"any": {
+"airborne": {
+"any": []
+},
+"any": {
+"any": []
+}
+}
+},
+"combat": {
+"any": {
+"any": {
+"any": [
+"melee",
+"melee_ranger",
+"idle",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"sword_flick",
+"sword_flick_ranger",
+"commander_jump_tell",
+"commander_jump_enter",
+"go_berserk",
+"smash_left",
+"smash_right",
+"melee_back",
+"melee_left",
+"melee_right",
+"emitting",
+"taunt",
+"go_berserk_left",
+"go_berserk_mid",
+"go_berserk_right",
+"throw_grenade_left",
+"throw_grenade_left_up",
+"throw_grenade_mid",
+"throw_grenade_mid_up",
+"throw_grenade_right",
+"throw_grenade_right_up"
+]
+}
+},
+"rifle": {
+"any": {
+"any": [
+"turn_left_composite",
+"turn_right_composite",
+"dive_left",
+"dive_right",
+"locomote",
+"evade_left",
+"evade_right",
+"leap_start",
+"leap_airborne",
+"jump",
+"turn_left_180",
+"turn_left_90",
+"turn_right_180",
+"turn_right_90",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_inplace",
+"locomote_walk_left",
+"locomote_walk_right",
+"turn_left_0",
+"turn_right_0",
+"jump_down_long",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"bishop_death",
+"jump_down_forward",
+"jump_short",
+"jump_up_forward",
+"locomote_charge_front",
+"locomote_run_backfast",
+"locomote_run_backleftfast",
+"locomote_run_backrightfast",
+"locomote_run_frontfast",
+"locomote_run_frontleftfast",
+"locomote_run_frontrightfast",
+"locomote_run_leftfast",
+"locomote_run_rightfast"
+]
+},
+"smg": {
+"any": []
+},
+"ab": {
+"any": []
+},
+"rl": {
+"any": []
+},
+"frr": {
+"any": []
+},
+"spd": {
+"any": []
+}
+},
+"pistol": {
+"any": {
+"any": [
+"melee",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"melee_back",
+"melee_left",
+"melee_right",
+"throw_grenade_left",
+"throw_grenade_left_up",
+"throw_grenade_mid",
+"throw_grenade_mid_up",
+"throw_grenade_right",
+"throw_grenade_right_up"
+]
+},
+"summon": {
+"any": []
+}
+}
+},
+"crouch": {
+"any": {
+"any": {}
+}
+},
+"suppress": {
+"rifle": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"any": {
+"any": {
+"any": {
+"any": [
+"phase_into_ground",
+"phase_from_ground",
+"resurrect_from_ground",
+"airborne_dead",
+"landing_dead",
+"melee_tackle"
+],
+"sync_actions": [
+"svk_ground_on_his_own_sword_victim",
+"svk_ground_spin_block_neck_stab_victim",
+"svk_pounce_tornado_stab_victim"
+]
+}
+}
+},
+"vin": {
+"m30": {
+"sync": {
+"any": []
+}
+},
+"m60": {
+"sync": {
+"any": []
+}
+}
+}
+}
+},
+"objects\\characters\\storm_pawn\\storm_pawn": {
+"hlmt": "objects\\characters\\storm_pawn\\storm_pawn",
+"jmad": "objects\\characters\\storm_pawn\\storm_pawn",
+"bipd_weapons": [
+"objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead"
+],
+"parent": null,
+"n_modes": 4,
+"modes_ptr": "0x5fa44280",
+"weapon_list": 0,
+"anims": 164,
+"inherit_new": 0,
+"inherit_old": 0,
+"graph": {
+"combat": {
+"any": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"locomote",
+"go_berserk",
+"evade_left",
+"evade_right",
+"airborne_dead",
+"landing_dead",
+"posing",
+"jump",
+"taunt",
+"brace",
+"fallback",
+"turn_left_180",
+"turn_left_90",
+"turn_right_180",
+"turn_right_90",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_runslow_back",
+"locomote_runslow_backleft",
+"locomote_runslow_backright",
+"locomote_runslow_front",
+"locomote_runslow_frontleft",
+"locomote_runslow_frontright",
+"locomote_runslow_left",
+"locomote_runslow_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_inplace",
+"locomote_walk_left",
+"locomote_walk_right",
+"turn_left_0",
+"turn_right_0",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short"
+]
+}
+},
+"rifle": {
+"smg": {
+"any": []
+},
+"ab": {
+"any": []
+}
+},
+"pistol": {
+"any": {
+"any": []
+}
+}
+},
+"flee": {
+"any": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"turn_left_composite",
+"turn_right_composite",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"enter",
+"walk_back",
+"walk_left",
+"walk_right",
+"turn_left_180",
+"turn_left_90",
+"turn_right_180",
+"turn_right_90",
+"turn_left_0",
+"turn_right_0"
+]
+}
+}
+},
+"climb": {
+"any": {
+"any": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"locomote",
+"evade_left",
+"evade_right",
+"airborne_open",
+"airborne_closed",
+"anticipate",
+"recover",
+"turn_left_180",
+"turn_left_90",
+"turn_right_180",
+"turn_right_90",
+"attach_up",
+"detach_up",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_runslow_back",
+"locomote_runslow_backleft",
+"locomote_runslow_backright",
+"locomote_runslow_front",
+"locomote_runslow_frontleft",
+"locomote_runslow_frontright",
+"locomote_runslow_left",
+"locomote_runslow_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_inplace",
+"locomote_walk_left",
+"locomote_walk_right",
+"turn_left_0",
+"turn_right_0"
+]
+}
+}
+},
+"any": {
+"any": {
+"any": {
+"any": [],
+"sync_actions": [
+"svc_ground_phonebooth_stab_victim",
+"svc_ground_tackle_jawsnap_victim",
+"svc_pounce_tackle_stab_victim"
+]
+}
+}
+}
+}
+},
+"objects\\characters\\storm_sentinel\\storm_sentinel": {
+"hlmt": "objects\\characters\\storm_sentinel\\storm_sentinel",
+"jmad": "objects\\characters\\storm_sentinel\\storm_sentinel",
+"bipd_weapons": [
+"objects\\weapons\\pistol\\storm_sentinel_beam\\storm_sentinel_beam"
+],
+"parent": null,
+"n_modes": 2,
+"modes_ptr": "0x5fcc482b",
+"weapon_list": 0,
+"anims": 24,
+"inherit_new": 0,
+"inherit_old": 0,
+"graph": {
+"combat": {
+"any": {
+"any": {
+"any": [
+"idle",
+"locomote",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right"
+]
+}
+}
+},
+"any": {
+"any": {
+"any": {
+"any": []
+}
+}
+}
+}
+}
+},
+"graph_siblings": {
+"environments\\solo\\m30_cryptum\\device_control\\m30_bridge_button\\m30_bridge_button3": {
+"parent": "environments\\solo\\m30_cryptum\\device_control\\m30_bridge_button\\m30_bridge_button",
+"n_modes": 1,
+"modes_ptr": "0x5fff2d27",
+"anims": 0,
+"anims_ptr": "0x0"
+},
+"environments\\solo\\m90_sacrifice\\device_machines\\dm_m90_cannon01\\dm_m90_cannon010": {
+"parent": "environments\\solo\\m90_sacrifice\\device_machines\\dm_m90_cannon01\\dm_m90_cannon01",
+"n_modes": 0,
+"modes_ptr": "0x0",
+"anims": 0,
+"anims_ptr": "0x0"
+},
+"environments\\solo\\m90_sacrifice\\device_machines\\dm_m90_mega_cannon_doors\\dm_m90_mega_cannon_doors1": {
+"parent": "environments\\solo\\m90_sacrifice\\device_machines\\dm_m90_mega_cannon_doors\\dm_m90_mega_cannon_doors",
+"n_modes": 0,
+"modes_ptr": "0x0",
+"anims": 0,
+"anims_ptr": "0x0"
+},
+"objects\\characters\\storm_cortana\\storm_cortana13": {
+"parent": "objects\\characters\\storm_cortana\\storm_cortana",
+"n_modes": 3,
+"modes_ptr": "0x5fff6e71",
+"anims": 1,
+"anims_ptr": "0x5fffb4e3"
+},
+"objects\\characters\\storm_cortana\\storm_cortana14": {
+"parent": "objects\\characters\\storm_cortana\\storm_cortana",
+"n_modes": 3,
+"modes_ptr": "0x5fffba57",
+"anims": 15,
+"anims_ptr": "0x5fffb930"
+},
+"objects\\characters\\storm_cortana\\storm_cortana7": {
+"parent": "objects\\characters\\storm_cortana\\storm_cortana",
+"n_modes": 3,
+"modes_ptr": "0x5fff6e71",
+"anims": 9,
+"anims_ptr": "0x5fff6da7"
+},
+"objects\\characters\\storm_knight\\storm_knight10": {
+"parent": "objects\\characters\\storm_knight\\storm_knight",
+"n_modes": 6,
+"modes_ptr": "0x5fff8f31",
+"anims": 0,
+"anims_ptr": "0x0"
+},
+"objects\\characters\\storm_knight\\storm_knight8": {
+"parent": "objects\\characters\\storm_knight\\storm_knight",
+"n_modes": 6,
+"modes_ptr": "0x5fff8b4c",
+"anims": 0,
+"anims_ptr": "0x0"
+},
+"objects\\characters\\storm_knight\\storm_knight9": {
+"parent": "objects\\characters\\storm_knight\\storm_knight",
+"n_modes": 6,
+"modes_ptr": "0x5fff8d0f",
+"anims": 0,
+"anims_ptr": "0x0"
+},
+"objects\\characters\\storm_masterchief\\storm_masterchief12": {
+"parent": "objects\\characters\\storm_masterchief\\storm_masterchief",
+"n_modes": 78,
+"modes_ptr": "0x5fff28c3",
+"anims": 1,
+"anims_ptr": "0x5fffb404"
+},
+"objects\\characters\\storm_masterchief\\storm_masterchief2": {
+"parent": "objects\\characters\\storm_masterchief\\storm_masterchief",
+"n_modes": 78,
+"modes_ptr": "0x5fff28c3",
+"anims": 27,
+"anims_ptr": "0x5ffee727"
+},
+"objects\\characters\\storm_masterchief\\storm_masterchief5": {
+"parent": "objects\\characters\\storm_masterchief\\storm_masterchief",
+"n_modes": 78,
+"modes_ptr": "0x5fff28c3",
+"anims": 1,
+"anims_ptr": "0x5fff445f"
+},
+"objects\\characters\\storm_masterchief\\storm_masterchief6": {
+"parent": "objects\\characters\\storm_masterchief\\storm_masterchief",
+"n_modes": 78,
+"modes_ptr": "0x5fff28c3",
+"anims": 1,
+"anims_ptr": "0x5fff57ec"
+},
+"objects\\characters\\storm_pawn\\storm_pawn11": {
+"parent": "objects\\characters\\storm_pawn\\storm_pawn",
+"n_modes": 4,
+"modes_ptr": "0x5fff9e06",
+"anims": 0,
+"anims_ptr": "0x0"
+},
+"objects\\temp\\ivobe\\octopus\\octopus15": {
+"parent": "objects\\temp\\ivobe\\octopus\\octopus",
+"n_modes": 3,
+"modes_ptr": "0x5fff2e6c",
+"anims": 6,
+"anims_ptr": "0x5fffbcbc"
+},
+"objects\\temp\\ivobe\\octopus\\octopus4": {
+"parent": "objects\\temp\\ivobe\\octopus\\octopus",
+"n_modes": 3,
+"modes_ptr": "0x5fff2e6c",
+"anims": 1,
+"anims_ptr": "0x5fff2dfb"
+}
+},
+"fire": {
+"ai\\generic": {
+"parent": null,
+"unit": null,
+"wp": [
+"objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle",
+"objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle",
+"objects\\weapons\\rifle\\storm_br\\storm_br",
+"objects\\weapons\\rifle\\storm_dmr\\storm_dmr",
+"objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword",
+"objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon",
+null,
+"objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer",
+"objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret",
+"objects\\weapons\\pistol\\storm_magnum\\storm_magnum",
+"objects\\weapons\\pistol\\storm_needler\\storm_needler",
+null,
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve",
+"objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine",
+"objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle",
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
+"objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle",
+null,
+"objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun",
+"objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun_npc",
+"objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
+"objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol",
+"objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg",
+"objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc",
+"objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_pawnhead",
+"objects\\characters\\storm_pawn\\weapons\\storm_pawnsniper_head",
+"objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle",
+"objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle_npc",
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_detached\\storm_plasma_turret",
+"objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher",
+"objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher",
+"objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher_knight",
+"objects\\weapons\\pistol\\storm_sentinel_beam\\storm_sentinel_beam",
+"objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun",
+"objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
+"objects\\weapons\\support_high\\storm_spartan_laser\\storm_spartan_laser",
+null,
+"objects\\weapons\\rifle\\storm_rail_gun\\storm_rail_gun_pve",
+null,
+null,
+"objects\\weapons\\rifle\\storm_lmg\\storm_lmg",
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+"objects\\vehicles\\forerunner\\turrets\\storm_anti_vehicle_turret\\weapons\\storm_anti_vehicle_turret\\weapon\\storm_anti_vehicle_turret_plasma_cannon",
+"objects\\vehicles\\forerunner\\turrets\\storm_tracer_turret\\weapon\\storm_tracer_turret",
+"objects\\vehicles\\forerunner\\turrets\\storm_anti_infantry_turret\\weapons2\\storm_anti_infantry_beam",
+null,
+null,
+null,
+null,
+"objects\\vehicles\\human\\storm_infinity\\turrets\\storm_infinity_turret\\weapon\\storm_infinity_turret",
+null,
+null,
+null,
+null,
+null,
+null,
+"objects\\vehicles\\forerunner\\turrets\\storm_anti_infantry_turret\\weapons2\\storm_anti_infantry_beam_m90",
+null
+],
+"fp": [
+[
+"objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle",
+4
+],
+[
+"objects\\weapons\\rifle\\storm_br\\storm_br",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_dmr\\storm_dmr",
+2
+],
+[
+"objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword",
+1
+],
+[
+"objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon",
+4
+],
+[
+"objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle",
+2
+],
+[
+"objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer",
+1
+],
+[
+null,
+4
+],
+[
+"objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret",
+2
+],
+[
+"objects\\weapons\\pistol\\storm_magnum\\storm_magnum",
+2
+],
+[
+"objects\\weapons\\pistol\\storm_needler\\storm_needler",
+4
+],
+[
+null,
+4
+],
+[
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve",
+4
+],
+[
+"objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine",
+4
+],
+[
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
+4
+],
+[
+"objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle",
+2
+],
+[
+null,
+2
+],
+[
+"objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun_npc",
+2
+],
+[
+"objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
+2
+],
+[
+"objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_pawnhead",
+2
+],
+[
+"objects\\characters\\storm_pawn\\weapons\\storm_pawnsniper_head",
+4
+],
+[
+"objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle",
+4
+],
+[
+"objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle_npc",
+4
+],
+[
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_detached\\storm_plasma_turret",
+4
+],
+[
+"objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher",
+2
+],
+[
+"objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher",
+2
+],
+[
+"objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher_knight",
+2
+],
+[
+"objects\\weapons\\pistol\\storm_sentinel_beam\\storm_sentinel_beam",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
+2
+],
+[
+"objects\\weapons\\support_high\\storm_spartan_laser\\storm_spartan_laser",
+2
+],
+[
+null,
+2
+],
+[
+"objects\\weapons\\rifle\\storm_rail_gun\\storm_rail_gun_pve",
+2
+],
+[
+null,
+1
+],
+[
+"objects\\weapons\\rifle\\storm_lmg\\storm_lmg",
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+"objects\\vehicles\\forerunner\\turrets\\storm_anti_vehicle_turret\\weapons\\storm_anti_vehicle_turret\\weapon\\storm_anti_vehicle_turret_plasma_cannon",
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+"objects\\vehicles\\forerunner\\turrets\\storm_tracer_turret\\weapon\\storm_tracer_turret",
+1
+],
+[
+"objects\\vehicles\\forerunner\\turrets\\storm_anti_infantry_turret\\weapons2\\storm_anti_infantry_beam",
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+"objects\\vehicles\\human\\storm_infinity\\turrets\\storm_infinity_turret\\weapon\\storm_infinity_turret",
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+"objects\\vehicles\\forerunner\\turrets\\storm_anti_infantry_turret\\weapons2\\storm_anti_infantry_beam_m90",
+1
+],
+[
+null,
+1
+]
+],
+"xp": [
+null,
+"objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_pawnhead",
+"objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead"
+],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x5fc6f28c",
+"backup": [
+null
+],
+"zerk": [
+null
+]
+},
+"ai\\stimuli\\generic_combat_cue_low": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_long_vision": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_long_vision_m20": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_m20_flak": {
+"parent": null,
+"unit": null,
+"wp": [
+"objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon"
+],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x5fc731d1",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_m35_railride": {
+"parent": null,
+"unit": null,
+"wp": [
+"objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon",
+"objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine",
+"objects\\weapons\\pistol\\storm_needler\\storm_needler",
+null,
+null,
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
+null,
+null,
+null
+],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x5fc73408",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_m45_rocket": {
+"parent": null,
+"unit": null,
+"wp": [
+"objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle",
+"objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher"
+],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x5fc732d3",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_night_vision": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_playfight": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [
+[
+"objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_dmr\\storm_dmr",
+2
+],
+[
+"objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword",
+1
+],
+[
+"objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle",
+2
+],
+[
+"objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer",
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+"objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret",
+2
+],
+[
+null,
+2
+],
+[
+"objects\\weapons\\pistol\\storm_magnum\\storm_magnum",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine",
+2
+],
+[
+"objects\\weapons\\pistol\\storm_needler\\storm_needler",
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
+2
+],
+[
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_detached\\storm_plasma_turret",
+2
+],
+[
+"objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
+2
+],
+[
+"objects\\weapons\\support_high\\storm_spartan_laser\\storm_spartan_laser",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle",
+2
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+"objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret",
+2
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+]
+],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_shooting_dangerous": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [
+[
+null,
+2
+]
+],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_space_vision": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_turret_short_vision": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\null\\ai\\null_cov_default": {
+"parent": "ai\\generic",
+"unit": "objects\\characters\\null\\null",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\null\\ai\\null_cov_flying_space": {
+"parent": "ai\\generic",
+"unit": "objects\\characters\\null\\null",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\null\\ai\\null_fore_infantry_turret": {
+"parent": "ai\\generic",
+"unit": "objects\\characters\\null\\null",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\null\\ai\\null_fore_turret": {
+"parent": "ai\\generic",
+"unit": "objects\\characters\\null\\null",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\null\\ai\\null_human_default": {
+"parent": "ai\\generic",
+"unit": "objects\\characters\\null\\null",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\null\\ai\\null_human_flying_space": {
+"parent": "ai\\generic",
+"unit": "objects\\characters\\null\\null",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\null\\ai\\null_human_turret": {
+"parent": "ai\\generic",
+"unit": "objects\\characters\\null\\null",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_bishop\\ai\\storm_bishop": {
+"parent": "ai\\generic",
+"unit": "objects\\characters\\storm_bishop\\storm_bishop",
+"wp": [
+"objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead"
+],
+"fp": [
+[
+"objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
+2
+]
+],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x5fcac455",
+"backup": [
+null
+],
+"zerk": []
+},
+"objects\\characters\\storm_didact\\storm_didact": {
+"parent": null,
+"unit": "objects\\characters\\storm_didact\\storm_didact",
+"wp": [
+"objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle",
+"objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle",
+"objects\\weapons\\rifle\\storm_dmr\\storm_dmr",
+"objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword",
+"objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon",
+null,
+null,
+null,
+null,
+"objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret",
+null,
+"objects\\weapons\\pistol\\storm_magnum\\storm_magnum",
+"objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine",
+null,
+null,
+null,
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
+null,
+null,
+"objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher",
+"objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun",
+"objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
+"objects\\weapons\\support_high\\storm_spartan_laser\\storm_spartan_laser",
+"objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle",
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null
+],
+"fp": [
+[
+"objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle",
+4
+],
+[
+"objects\\weapons\\rifle\\storm_dmr\\storm_dmr",
+2
+],
+[
+"objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword",
+1
+],
+[
+"objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon",
+4
+],
+[
+null,
+4
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+4
+],
+[
+"objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret",
+2
+],
+[
+null,
+2
+],
+[
+"objects\\weapons\\pistol\\storm_magnum\\storm_magnum",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine",
+4
+],
+[
+null,
+4
+],
+[
+null,
+4
+],
+[
+null,
+4
+],
+[
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
+4
+],
+[
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
+4
+],
+[
+null,
+4
+],
+[
+null,
+4
+],
+[
+"objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
+2
+],
+[
+"objects\\weapons\\support_high\\storm_spartan_laser\\storm_spartan_laser",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle",
+4
+],
+[
+null,
+1
+],
+[
+null,
+0
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+"objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret",
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+0
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+3
+]
+],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x5fcc171a",
+"backup": [
+null
+],
+"zerk": [
+null
+]
+},
+"objects\\characters\\storm_knight\\ai\\stimuli\\storm_knight_aggressive": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_knight\\ai\\stimuli\\storm_knight_bw_aggressive": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_knight\\ai\\stimuli\\storm_knight_commander_aggressive": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_knight\\ai\\stimuli\\storm_knight_m60_e3_no_rank": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+"objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher"
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_knight\\ai\\stimuli\\storm_knight_ranger_aggressive": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_knight\\ai\\storm_knight": {
+"parent": "ai\\generic",
+"unit": "objects\\characters\\storm_knight\\storm_knight",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+"objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc"
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": [
+null
+]
+},
+"objects\\characters\\storm_knight\\ai\\storm_knight_battlewagon": {
+"parent": "objects\\characters\\storm_knight\\ai\\storm_knight",
+"unit": "objects\\characters\\storm_knight\\storm_knight",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+"objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun_npc"
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": [
+null
+]
+},
+"objects\\characters\\storm_knight\\ai\\storm_knight_commander": {
+"parent": "objects\\characters\\storm_knight\\ai\\storm_knight",
+"unit": "objects\\characters\\storm_knight\\storm_knight",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+"objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher_knight"
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_knight\\ai\\storm_knight_ranger": {
+"parent": "objects\\characters\\storm_knight\\ai\\storm_knight",
+"unit": "objects\\characters\\storm_knight\\storm_knight",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+"objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle_npc"
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_pawn\\ai\\stimuli\\storm_pawn_aggressive": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_pawn\\ai\\stimuli\\storm_pawn_defensive": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_pawn\\ai\\stimuli\\storm_pawn_kamikaze": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": [
+null
+]
+},
+"objects\\characters\\storm_pawn\\ai\\storm_pawn": {
+"parent": "ai\\generic",
+"unit": "objects\\characters\\storm_pawn\\storm_pawn",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+"objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead"
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [
+"objects\\characters\\storm_pawn\\weapons\\storm_pawn_head"
+],
+"zerk": [
+null
+]
+},
+"objects\\characters\\storm_pawn\\ai\\storm_pawn_prime": {
+"parent": "objects\\characters\\storm_pawn\\ai\\storm_pawn",
+"unit": "objects\\characters\\storm_pawn\\storm_pawn",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+"objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_pawnhead"
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": [
+null
+]
+},
+"objects\\characters\\storm_pawn\\ai\\storm_pawn_sniper": {
+"parent": "objects\\characters\\storm_pawn\\ai\\storm_pawn",
+"unit": "objects\\characters\\storm_pawn\\storm_pawn",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+"objects\\characters\\storm_pawn\\weapons\\storm_pawnsniper_head"
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_sentinel\\ai\\storm_sentinel": {
+"parent": "ai\\generic",
+"unit": "objects\\characters\\storm_sentinel\\storm_sentinel",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+"objects\\weapons\\pistol\\storm_sentinel_beam\\storm_sentinel_beam"
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+}
+}
+}

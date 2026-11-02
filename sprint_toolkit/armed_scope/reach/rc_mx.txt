@@ -1,0 +1,270 @@
+graphs ['brute', 'bugger', 'civilian_female', 'civilian_male', 'elite_ai', 'engineer', 'grunt', 'hunter', 'jackal', 'marine', 'mule', 'null', 'reach_moa', 'spartan_jorge', 'spartans_ai', 'spartans_female_ai']
+weapons {'assault_rifle': ('rifle', 'ar'), 'plasma_pistol': ('pistol', 'pp'), 'needle_rifle': ('rifle', 'cb'), 'needler': ('pistol', 'ne'), 'magnum': ('pistol', 'hp'), 'energy_sword': ('sword', 'eb'), 'dmr': ('rifle', 'br'), 'machinegun_turret_jorge': ('turret', 'mgt'), 'sniper_rifle': ('rifle', 'sr'), 'concussion_rifle': ('rifle', 'cr'), 'plasma_repeater': ('rifle', 'prp'), 'shotgun': ('rifle', 'sg'), 'plasma_rifle': ('pistol', 'pr'), 'flak_cannon': ('missile', 'fc'), 'focus_rifle': ('rifle', 'csr'), 'gravity_hammer': ('hammer', 'gh'), 'grenade_launcher': ('rifle', 'gl'), 'plasma_launcher': ('missile', 'pl'), 'spartan_laser': ('missile', 'sl'), 'spike_rifle': ('rifle', 'spr'), 'target_laser': ('pistol', 'sl'), 'rocket_launcher': ('missile', 'rl'), 'plasma_turret': ('turret', 'pgt'), 'machinegun_turret': ('turret', 'mgt'), 'saw': ('rifle', 'ar'), 'sniper_rifle_june': ('rifle', 'sr')}
+{'elite_ai': None, 'grunt': None, 'jackal': None, 'spartans_ai': None, 'spartan_jorge': None, 'spartans_female_ai': None, 'marine': None, 'civilian_male': None, 'civilian_female': None, 'reach_moa': None, 'null': None, 'hunter': None, 'mule': None, 'engineer': None, 'bugger': None, 'brute': None}
+
+ grunt modes 98 weapon_list [] variants []
+ classes: {'any': 92, 'missile': 5, 'pistol': 11, 'rifle': 1, 'support': 1, 'unarmed': 4}
+  combat               {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'rl', 'fc'], 'support': ['mgt', 'bs', 'ft', 'pgt', 'pgts', 'pmt', 'pmts', 'sb'], 'rifle': ['smg', 'br', 'ar', 'sr', 'sg', 'cb', 'csr', 'pr'], 'pistol': ['any', 'ne', 'pp', 'pr']}
+  crouch               {'unarmed': ['any'], 'missile': ['any', 'rl'], 'pistol': ['any', 'ne', 'pp', 'pr']}
+  flee                 {'any': ['any'], 'pistol': ['any']}
+  patrol               {'unarmed': ['any'], 'any': ['any'], 'missile': ['any'], 'pistol': ['any']}
+  panic                {'unarmed': ['any']}
+  stunned              {'any': ['any'], 'pistol': ['pp']}
+  berserk              {'pistol': ['any']}
+  flaming              {'pistol': ['any']}
+  weapon        class/type   combat   crouch   flee     patrol   panic    stunned  berserk  flaming 
+  magnum         pistol   hp   a        a        a        a        .        x        a        a       
+  plasma_pistol  pistol   pp   T        T        a        a        .        T        a        a       
+  needler        pistol   ne   T        T        a        a        .        x        a        a       
+  plasma_rifle   pistol   pr   T        T        a        a        .        x        a        a       
+  target_laser   pistol   sl   a        a        a        a        .        x        a        a       
+  assault_rifle  rifle    ar   T        .        -        -        .        -        .        .       
+  dmr            rifle    br   T        .        -        -        .        -        .        .       
+  sniper_rifle   rifle    sr   T        .        -        -        .        -        .        .       
+  shotgun        rifle    sg   T        .        -        -        .        -        .        .       
+  grenade_launcher rifle    gl   x        .        -        -        .        -        .        .       
+  needle_rifle   rifle    cb   T        .        -        -        .        -        .        .       
+  focus_rifle    rifle    csr  T        .        -        -        .        -        .        .       
+  plasma_repeater rifle    prp  x        .        -        -        .        -        .        .       
+  concussion_rifle rifle    cr   x        .        -        -        .        -        .        .       
+  spike_rifle    rifle    spr  x        .        -        -        .        -        .        .       
+  rocket_launcher missile  rl   T        T        -        a        .        -        .        .       
+  flak_cannon    missile  fc   T        a        -        a        .        -        .        .       
+  plasma_launcher missile  pl   a        a        -        a        .        -        .        .       
+  spartan_laser  missile  sl   a        a        -        a        .        -        .        .       
+  energy_sword   sword    eb   -        .        -        -        .        -        .        .       
+  gravity_hammer hammer   gh   -        .        -        -        .        -        .        .       
+  machinegun_turret turret   mgt  -        .        -        -        .        -        .        .       
+  plasma_turret  turret   pgt  -        .        -        -        .        -        .        .       
+  saw            rifle    ar   T        .        -        -        .        -        .        .       
+
+ jackal modes 69 weapon_list [] variants [['jackal_minor', [['combat', 'shield'], ['crouch', 'shield_crouch']]], ['jackal_major', [['combat', 'shield'], ['crouch', 'shield_crouch']]], ['skirmisher_murmillo', [['combat', 'murm']]]]
+ classes: {'any': 62, 'call': 1, 'dual': 3, 'h_kill': 1, 'low_perch': 1, 'pacing': 1, 'pistol': 6, 'rifle': 3, 'unarmed': 2}
+  combat               {'unarmed': ['any'], 'any': ['any'], 'dual': ['js'], 'rifle': ['any', 'cb', 'csr'], 'pistol': ['any']}
+  crouch               {'dual': ['js'], 'rifle': ['any', 'cb'], 'pistol': ['any']}
+  flee                 {'dual': ['js'], 'pistol': ['any']}
+  patrol               {'unarmed': ['any']}
+  shield               {'pistol': ['any']}
+  shield_crouch        {'pistol': ['any']}
+  murm                 {'pistol': ['any']}
+  overcharged_jitter   {'rifle': ['any']}
+  weapon        class/type   combat   crouch   flee     patrol   shield   shield_c murm     overchar
+  magnum         pistol   hp   a        a        a        .        a        a        a        .       
+  plasma_pistol  pistol   pp   a        a        a        .        a        a        a        .       
+  needler        pistol   ne   a        a        a        .        a        a        a        .       
+  plasma_rifle   pistol   pr   a        a        a        .        a        a        a        .       
+  target_laser   pistol   sl   a        a        a        .        a        a        a        .       
+  assault_rifle  rifle    ar   a        a        .        .        .        .        .        a       
+  dmr            rifle    br   a        a        .        .        .        .        .        a       
+  sniper_rifle   rifle    sr   a        a        .        .        .        .        .        a       
+  shotgun        rifle    sg   a        a        .        .        .        .        .        a       
+  grenade_launcher rifle    gl   a        a        .        .        .        .        .        a       
+  needle_rifle   rifle    cb   T        T        .        .        .        .        .        a       
+  focus_rifle    rifle    csr  T        a        .        .        .        .        .        a       
+  plasma_repeater rifle    prp  a        a        .        .        .        .        .        a       
+  concussion_rifle rifle    cr   a        a        .        .        .        .        .        a       
+  spike_rifle    rifle    spr  a        a        .        .        .        .        .        a       
+  rocket_launcher missile  rl   -        .        .        .        .        .        .        .       
+  flak_cannon    missile  fc   -        .        .        .        .        .        .        .       
+  plasma_launcher missile  pl   -        .        .        .        .        .        .        .       
+  spartan_laser  missile  sl   -        .        .        .        .        .        .        .       
+  energy_sword   sword    eb   -        .        .        .        .        .        .        .       
+  gravity_hammer hammer   gh   -        .        .        .        .        .        .        .       
+  machinegun_turret turret   mgt  -        .        .        .        .        .        .        .       
+  plasma_turret  turret   pgt  -        .        .        .        .        .        .        .       
+  saw            rifle    ar   a        a        .        .        .        .        .        a       
+
+ elite_ai modes 116 weapon_list [['pr', 'pistol'], ['spr', 'pistol']] variants [['space', []], ['spec_ops', []], ['ultra', []], ['bob', []], ['jetpack', []]]
+ classes: {'any': 104, 'ball': 4, 'dual': 3, 'fixed': 1, 'hammer': 5, 'missile': 9, 'pistol': 12, 'rifle': 12, 'sword': 13, 'turret': 2, 'unarmed': 4}
+  combat               {'unarmed': ['any'], 'any': ['any'], 'dual': ['any', 'pr'], 'missile': ['any', 'fc', 'ml', 'pl'], 'rifle': ['any', 'br', 'ar', 'sr', 'sg', 'prp', 'cb', 'cr', 'csr', 'gl'], 'pistol': ['any', 'hp', 'ne', 'pp', 'pr', 'spr'], 'sword': ['any', 'eb'], 'ball': ['any'], 'turret': ['any'], 'hammer': ['any']}
+  crouch               {'dual': ['any'], 'missile': ['any', 'fc', 'pl'], 'rifle': ['any', 'br', 'ar', 'sr', 'sg', 'prp', 'cb', 'cr', 'csr', 'gl'], 'pistol': ['any', 'hp', 'ne', 'pp', 'pr', 'spr'], 'sword': ['any'], 'hammer': ['any']}
+  patrol               {'unarmed': ['any']}
+  sprint               {'missile': ['any'], 'rifle': ['any'], 'pistol': ['any'], 'sword': ['any'], 'ball': ['any'], 'hammer': ['any']}
+  flight               {'any': ['any'], 'dual': ['any'], 'missile': ['any', 'fc', 'ml', 'pl'], 'rifle': ['any', 'br', 'ar', 'sr', 'sg', 'prp', 'cb', 'cr', 'csr', 'gl'], 'pistol': ['any', 'hp', 'ne', 'pp', 'pr', 'spr'], 'sword': ['any', 'eb'], 'turret': ['any']}
+  overcharged_jitter   {'missile': ['fc', 'pl'], 'rifle': ['br', 'ar', 'sr', 'sg', 'prp', 'cb', 'cr', 'csr', 'gl'], 'pistol': ['hp', 'ne', 'pp', 'spr']}
+  weapon        class/type   combat   crouch   patrol   sprint   flight   overchar
+  magnum         pistol   hp   T        T        .        a        T        T       
+  plasma_pistol  pistol   pp   T        T        .        a        T        T       
+  needler        pistol   ne   T        T        .        a        T        T       
+  plasma_rifle   pistol   pr   T        T        .        a        T        x       
+  target_laser   pistol   sl   a        a        .        a        a        x       
+  assault_rifle  rifle    ar   T        T        .        a        T        T       
+  dmr            rifle    br   T        T        .        a        T        T       
+  sniper_rifle   rifle    sr   T        T        .        a        T        T       
+  shotgun        rifle    sg   T        T        .        a        T        T       
+  grenade_launcher rifle    gl   T        T        .        a        T        T       
+  needle_rifle   rifle    cb   T        T        .        a        T        T       
+  focus_rifle    rifle    csr  T        T        .        a        T        T       
+  plasma_repeater rifle    prp  T        T        .        a        T        T       
+  concussion_rifle rifle    cr   T        T        .        a        T        T       
+  spike_rifle    pistol   spr  T        T        .        a        T        T       
+  rocket_launcher missile  rl   a        a        .        a        a        x       
+  flak_cannon    missile  fc   T        T        .        a        T        T       
+  plasma_launcher missile  pl   T        T        .        a        T        T       
+  spartan_laser  missile  sl   a        a        .        a        a        x       
+  energy_sword   sword    eb   T        a        .        a        T        .       
+  gravity_hammer hammer   gh   a        a        .        a        -        .       
+  machinegun_turret turret   mgt  a        .        .        .        a        .       
+  plasma_turret  turret   pgt  a        .        .        .        a        .       
+  saw            rifle    ar   T        T        .        a        T        T       
+
+ brute modes 89 weapon_list [] variants []
+ classes: {'any': 85, 'combat': 1, 'hammer': 3, 'missile': 1, 'pistol': 3, 'rifle': 5, 'support': 3, 'turret': 1, 'unarmed': 5}
+  combat               {'unarmed': ['any'], 'any': ['any'], 'missile': ['any'], 'support': ['any', 'sb'], 'rifle': ['any', 'sg', 'fc', 'prp', 'cb', 'cr', 'csr', 'spr', 'pgt', 'pl', 'frg'], 'hammer': ['any'], 'turret': ['any']}
+  patrol               {'unarmed': ['any'], 'any': ['any']}
+  panic                {'unarmed': ['any']}
+  weapon        class/type   combat   patrol   panic   
+  magnum         pistol   hp   -        -        .       
+  plasma_pistol  pistol   pp   -        -        .       
+  needler        pistol   ne   -        -        .       
+  plasma_rifle   pistol   pr   -        -        .       
+  target_laser   pistol   sl   -        -        .       
+  assault_rifle  rifle    ar   a        -        .       
+  dmr            rifle    br   a        -        .       
+  sniper_rifle   rifle    sr   a        -        .       
+  shotgun        rifle    sg   T        -        .       
+  grenade_launcher rifle    gl   a        -        .       
+  needle_rifle   rifle    cb   T        -        .       
+  focus_rifle    rifle    csr  T        -        .       
+  plasma_repeater rifle    prp  T        -        .       
+  concussion_rifle rifle    cr   T        -        .       
+  spike_rifle    rifle    spr  T        -        .       
+  rocket_launcher missile  rl   a        -        .       
+  flak_cannon    missile  fc   a        -        .       
+  plasma_launcher missile  pl   a        -        .       
+  spartan_laser  missile  sl   a        -        .       
+  energy_sword   sword    eb   -        -        .       
+  gravity_hammer hammer   gh   a        -        .       
+  machinegun_turret turret   mgt  a        -        .       
+  plasma_turret  turret   pgt  a        -        .       
+  saw            rifle    ar   a        -        .       
+
+ bugger modes 71 weapon_list [] variants []
+ classes: {'any': 67, 'pistol': 7, 'unarmed': 1}
+  combat               {'any': ['any'], 'pistol': ['any', 'pp']}
+  crouch               {'pistol': ['any', 'aim_move']}
+  patrol               {'unarmed': ['any']}
+  panic                {'pistol': ['any']}
+  flight               {'pistol': ['any', 'pp']}
+  weapon        class/type   combat   crouch   patrol   panic    flight  
+  magnum         pistol   hp   a        a        .        a        a       
+  plasma_pistol  pistol   pp   T        a        .        a        T       
+  needler        pistol   ne   a        a        .        a        a       
+  plasma_rifle   pistol   pr   a        a        .        a        a       
+  target_laser   pistol   sl   a        a        .        a        a       
+  assault_rifle  rifle    ar   -        .        .        .        .       
+  dmr            rifle    br   -        .        .        .        .       
+  sniper_rifle   rifle    sr   -        .        .        .        .       
+  shotgun        rifle    sg   -        .        .        .        .       
+  grenade_launcher rifle    gl   -        .        .        .        .       
+  needle_rifle   rifle    cb   -        .        .        .        .       
+  focus_rifle    rifle    csr  -        .        .        .        .       
+  plasma_repeater rifle    prp  -        .        .        .        .       
+  concussion_rifle rifle    cr   -        .        .        .        .       
+  spike_rifle    rifle    spr  -        .        .        .        .       
+  rocket_launcher missile  rl   -        .        .        .        .       
+  flak_cannon    missile  fc   -        .        .        .        .       
+  plasma_launcher missile  pl   -        .        .        .        .       
+  spartan_laser  missile  sl   -        .        .        .        .       
+  energy_sword   sword    eb   -        .        .        .        .       
+  gravity_hammer hammer   gh   -        .        .        .        .       
+  machinegun_turret turret   mgt  -        .        .        .        .       
+  plasma_turret  turret   pgt  -        .        .        .        .       
+  saw            rifle    ar   -        .        .        .        .       
+
+ engineer modes 10 weapon_list [] variants []
+ classes: {'any': 10, 'idle': 1}
+  flee                 {'any': ['any']}
+  berserk              {'any': ['any']}
+  flight               {'idle': ['any'], 'any': ['any']}
+  weapon        class/type   flee     berserk  flight  
+  magnum         pistol   hp   -        -        -       
+  plasma_pistol  pistol   pp   -        -        -       
+  needler        pistol   ne   -        -        -       
+  plasma_rifle   pistol   pr   -        -        -       
+  target_laser   pistol   sl   -        -        -       
+  assault_rifle  rifle    ar   -        -        -       
+  dmr            rifle    br   -        -        -       
+  sniper_rifle   rifle    sr   -        -        -       
+  shotgun        rifle    sg   -        -        -       
+  grenade_launcher rifle    gl   -        -        -       
+  needle_rifle   rifle    cb   -        -        -       
+  focus_rifle    rifle    csr  -        -        -       
+  plasma_repeater rifle    prp  -        -        -       
+  concussion_rifle rifle    cr   -        -        -       
+  spike_rifle    rifle    spr  -        -        -       
+  rocket_launcher missile  rl   -        -        -       
+  flak_cannon    missile  fc   -        -        -       
+  plasma_launcher missile  pl   -        -        -       
+  spartan_laser  missile  sl   -        -        -       
+  energy_sword   sword    eb   -        -        -       
+  gravity_hammer hammer   gh   -        -        -       
+  machinegun_turret turret   mgt  -        -        -       
+  plasma_turret  turret   pgt  -        -        -       
+  saw            rifle    ar   -        -        -       
+
+ marine modes 70 weapon_list [] variants []
+ classes: {'any': 61, 'fixed': 1, 'missile': 26, 'pistol': 26, 'rifle': 30, 'turret': 1, 'unarmed': 23}
+  combat               {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'rl', 'fc', 'ml', 'prp', 'sl'], 'rifle': ['any', 'smg', 'br', 'ar', 'sr', 'sg', 'prp', 'ne', 'cb', 'cr', 'csr', 'gl', 'pr', 'spr'], 'pistol': ['any', 'hp', 'ne', 'pp'], 'turret': ['ftt']}
+  crouch               {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'rl', 'fc', 'ml', 'sl'], 'rifle': ['any', 'smg', 'br', 'sr', 'sg', 'pr'], 'pistol': ['any', 'hp', 'ne', 'pp']}
+  flee                 {'any': ['any']}
+  patrol               {'unarmed': ['any']}
+  panic                {'any': ['any']}
+  overcharged_jitter   {'rifle': ['any'], 'pistol': ['any']}
+  weapon        class/type   combat   crouch   flee     patrol   panic    overchar
+  magnum         pistol   hp   T        T        -        .        -        a       
+  plasma_pistol  pistol   pp   T        T        -        .        -        a       
+  needler        pistol   ne   T        T        -        .        -        a       
+  plasma_rifle   pistol   pr   a        a        -        .        -        a       
+  target_laser   pistol   sl   a        a        -        .        -        a       
+  assault_rifle  rifle    ar   T        a        -        .        -        a       
+  dmr            rifle    br   T        T        -        .        -        a       
+  sniper_rifle   rifle    sr   T        T        -        .        -        a       
+  shotgun        rifle    sg   T        T        -        .        -        a       
+  grenade_launcher rifle    gl   T        a        -        .        -        a       
+  needle_rifle   rifle    cb   T        a        -        .        -        a       
+  focus_rifle    rifle    csr  T        a        -        .        -        a       
+  plasma_repeater rifle    prp  T        a        -        .        -        a       
+  concussion_rifle rifle    cr   T        a        -        .        -        a       
+  spike_rifle    rifle    spr  T        a        -        .        -        a       
+  rocket_launcher missile  rl   T        T        -        .        -        .       
+  flak_cannon    missile  fc   T        T        -        .        -        .       
+  plasma_launcher missile  pl   a        a        -        .        -        .       
+  spartan_laser  missile  sl   T        T        -        .        -        .       
+  energy_sword   sword    eb   -        -        -        .        -        .       
+  gravity_hammer hammer   gh   -        -        -        .        -        .       
+  machinegun_turret turret   mgt  x        -        -        .        -        .       
+  plasma_turret  turret   pgt  x        -        -        .        -        .       
+  saw            rifle    ar   T        a        -        .        -        a       
+
+ hunter modes 29 weapon_list [] variants []
+ classes: {'any': 28, 'unarmed': 1}
+  crouch               {'any': ['any', 'hfr']}
+  patrol               {'any': ['any']}
+  weapon        class/type   crouch   patrol  
+  magnum         pistol   hp   -        -       
+  plasma_pistol  pistol   pp   -        -       
+  needler        pistol   ne   -        -       
+  plasma_rifle   pistol   pr   -        -       
+  target_laser   pistol   sl   -        -       
+  assault_rifle  rifle    ar   -        -       
+  dmr            rifle    br   -        -       
+  sniper_rifle   rifle    sr   -        -       
+  shotgun        rifle    sg   -        -       
+  grenade_launcher rifle    gl   -        -       
+  needle_rifle   rifle    cb   -        -       
+  focus_rifle    rifle    csr  -        -       
+  plasma_repeater rifle    prp  -        -       
+  concussion_rifle rifle    cr   -        -       
+  spike_rifle    rifle    spr  -        -       
+  rocket_launcher missile  rl   -        -       
+  flak_cannon    missile  fc   -        -       
+  plasma_launcher missile  pl   -        -       
+  spartan_laser  missile  sl   -        -       
+  energy_sword   sword    eb   -        -       
+  gravity_hammer hammer   gh   -        -       
+  machinegun_turret turret   mgt  -        -       
+  plasma_turret  turret   pgt  -        -       
+  saw            rifle    ar   -        -       
+
+legend: T own type; a class+any; x class but no matching type and no any; - no class, mode has class any; . nothing

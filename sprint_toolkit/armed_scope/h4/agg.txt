@@ -1,0 +1,57 @@
+pool cards ['Assault Rifle', 'Battle Rifle', 'Beam Rifle', 'Binary Rifle', 'Boltshot', 'Concussion Rifle', 'Covenant Carbine', 'DMR', 'Energy Blade', 'Flak Cannon', 'Gravity Hammer', 'Incineration Cannon', 'LightRifle', 'Magnum', 'Needler', 'Plasma Pistol', 'Railgun', 'Rocket Launcher', 'SAW', 'Scattershot', 'Shotgun', 'Sniper Rifle', 'Spartan Laser', 'Sticky Detonator', 'Storm Rifle', 'Suppressor']
+== m10_crash Dawn halo.json 10 pal 40 cards in pal 27
+  in halo.json not in palette: []
+  palette cards not in halo.json list: ['Binary Rifle', 'Boltshot', 'DMR', 'Flak Cannon', 'Gravity Hammer', 'Incineration Cannon', 'LightRifle', 'Railgun', 'Rocket Launcher', 'SAW', 'Scattershot', 'Sentinel Beam', 'Shotgun', 'Sniper Rifle', 'Spartan Laser', 'Sticky Detonator', 'Suppressor']
+  cards w/o a full ai\generic entry: {'Sticky Detonator': [('storm_sticky_detonator_pve', False, False)]}
+  variants {'Plasma Pistol': ['storm_plasma_pistol_pve', 'storm_plasma_pistol'], 'Energy Blade': ['storm_energy_sword', 'storm_energy_sword_elevator']}
+  focus rifle pal False weap in map []
+  gen null 53 of 89
+== m020 Requiem halo.json 15 pal 32 cards in pal 27
+  in halo.json not in palette: []
+  palette cards not in halo.json list: ['Binary Rifle', 'Boltshot', 'DMR', 'Gravity Hammer', 'Incineration Cannon', 'LightRifle', 'Railgun', 'Scattershot', 'Sentinel Beam', 'Spartan Laser', 'Sticky Detonator', 'Suppressor']
+  cards w/o a full ai\generic entry: {'Sticky Detonator': [('storm_sticky_detonator_pve', False, False)]}
+  variants {'Plasma Pistol': ['storm_plasma_pistol_pve', 'storm_plasma_pistol']}
+  focus rifle pal False weap in map []
+  gen null 49 of 89
+== m30_cryptum Forerunner halo.json 11 pal 38 cards in pal 26
+  in halo.json not in palette: []
+  palette cards not in halo.json list: ['Battle Rifle', 'Beam Rifle', 'Binary Rifle', 'Concussion Rifle', 'DMR', 'Energy Blade', 'Gravity Hammer', 'Railgun', 'Rocket Launcher', 'SAW', 'Scattershot', 'Shotgun', 'Sniper Rifle', 'Spartan Laser', 'Sticky Detonator']
+  cards w/o a full ai\generic entry: {'Sticky Detonator': [('storm_sticky_detonator_pve', False, False)]}
+  variants {'Suppressor': ['storm_forerunner_smg', 'storm_forerunner_smg_pawnhead', 'storm_forerunner_smg_npc'], 'Boltshot': ['storm_stasis_pistol', 'storm_stasis_pistol_pawnhead'], 'LightRifle': ['storm_forerunner_rifle', 'storm_forerunner_rifle_npc'], 'Binary Rifle': ['storm_forerunner_sniper_rifle', 'storm_forerunner_sniper_rifle_npc'], 'Plasma Pistol': ['storm_plasma_pistol_pve', 'storm_plasma_pistol'], 'Scattershot': ['storm_spread_gun', 'storm_spread_gun_npc']}
+  focus rifle pal True weap in map ['objects\\weapons\\rifle\\focus_rifle\\focus_rifle']
+  gen null 45 of 89
+== m60_rescue Infinity halo.json 15 pal 35 cards in pal 26
+  in halo.json not in palette: []
+  palette cards not in halo.json list: ['Battle Rifle', 'Beam Rifle', 'Binary Rifle', 'Concussion Rifle', 'Energy Blade', 'Gravity Hammer', 'Incineration Cannon', 'SAW', 'Sniper Rifle', 'Spartan Laser', 'Sticky Detonator']
+  cards w/o a full ai\generic entry: {'Sticky Detonator': [('storm_sticky_detonator_pve', False, False)]}
+  variants {'Suppressor': ['storm_forerunner_smg', 'storm_forerunner_smg_pawnhead'], 'Plasma Pistol': ['storm_plasma_pistol_pve', 'storm_plasma_pistol'], 'Boltshot': ['storm_stasis_pistol', 'storm_stasis_pistol_pawnhead']}
+  focus rifle pal False weap in map []
+  gen null 34 of 89
+== m40_invasion Reclaimer halo.json 14 pal 39 cards in pal 26
+  in halo.json not in palette: []
+  palette cards not in halo.json list: ['Binary Rifle', 'Concussion Rifle', 'Energy Blade', 'Gravity Hammer', 'Incineration Cannon', 'Railgun', 'SAW', 'Scattershot', 'Shotgun', 'Spartan Laser', 'Sticky Detonator', 'Suppressor']
+  cards w/o a full ai\generic entry: {'Sticky Detonator': [('storm_sticky_detonator_pve', False, False)]}
+  variants {'Incineration Cannon': ['storm_forerunner_incineration_launcher', 'storm_forerunner_incineration_launcher_knight'], 'Plasma Pistol': ['storm_plasma_pistol_pve', 'storm_plasma_pistol']}
+  focus rifle pal False weap in map []
+  gen null 33 of 89
+== m70_liftoff Shutdown halo.json 16 pal 37 cards in pal 26
+  in halo.json not in palette: []
+  palette cards not in halo.json list: ['Battle Rifle', 'Binary Rifle', 'Boltshot', 'Energy Blade', 'Incineration Cannon', 'Magnum', 'Rocket Launcher', 'Sniper Rifle', 'Spartan Laser', 'Sticky Detonator']
+  cards w/o a full ai\generic entry: {'Sticky Detonator': [('storm_sticky_detonator_pve', False, False)]}
+  variants {'LightRifle': ['storm_forerunner_rifle', 'storm_forerunner_rifle_npc'], 'Suppressor': ['storm_forerunner_smg', 'storm_forerunner_smg_npc'], 'Binary Rifle': ['storm_forerunner_sniper_rifle', 'storm_forerunner_sniper_rifle_npc'], 'Plasma Pistol': ['storm_plasma_pistol_pve', 'storm_plasma_pistol'], 'Scattershot': ['storm_spread_gun', 'storm_spread_gun_npc']}
+  focus rifle pal False weap in map []
+  gen null 41 of 89
+== m80_delta Composer halo.json 14 pal 31 cards in pal 26
+  in halo.json not in palette: []
+  palette cards not in halo.json list: ['Battle Rifle', 'Binary Rifle', 'Boltshot', 'Gravity Hammer', 'Incineration Cannon', 'LightRifle', 'Railgun', 'Rocket Launcher', 'SAW', 'Scattershot', 'Sniper Rifle', 'Suppressor']
+  cards w/o a full ai\generic entry: {'Sticky Detonator': [('storm_sticky_detonator_pve', False, False)]}
+  variants {'Plasma Pistol': ['storm_plasma_pistol_pve', 'storm_plasma_pistol']}
+  focus rifle pal False weap in map []
+  gen null 47 of 89
+== m90_sacrifice Midnight halo.json 9 pal 34 cards in pal 26
+  in halo.json not in palette: []
+  palette cards not in halo.json list: ['Assault Rifle', 'Beam Rifle', 'Concussion Rifle', 'DMR', 'Energy Blade', 'Flak Cannon', 'Magnum', 'Needler', 'Plasma Pistol', 'Railgun', 'Rocket Launcher', 'SAW', 'Shotgun', 'Sniper Rifle', 'Spartan Laser', 'Sticky Detonator', 'Storm Rifle']
+  cards w/o a full ai\generic entry: {'Sticky Detonator': [('storm_sticky_detonator_pve', False, False)]}
+  variants {'Incineration Cannon': ['storm_forerunner_incineration_launcher', 'storm_forerunner_incineration_launcher_knight'], 'Suppressor': ['storm_forerunner_smg', 'storm_forerunner_smg_npc', 'storm_forerunner_smg_pawnhead'], 'Binary Rifle': ['storm_forerunner_sniper_rifle', 'storm_forerunner_sniper_rifle_npc'], 'Scattershot': ['storm_spread_gun', 'storm_spread_gun_npc']}
+  focus rifle pal False weap in map []
+  gen null 49 of 89

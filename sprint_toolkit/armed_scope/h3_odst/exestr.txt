@@ -1,0 +1,1694 @@
+== H3EK sapien.exe 24677936
+anim_event->type==_playback_v1_primary_weapon_index_set
+weapon_index_set
+firing_point
+Firing positions
+c:\mcc\release\h3\source\sapien\firing_point_game_view_message_handler.cpp
+Remove firing positions...
+Generate firing points...
+render_firing_points
+Ffiring_position_flags
+c:\mcc\release\h3\source\ai\firing_position_definitions.cpp
+firing_position_posture_flags
+firing_positions_block
+sizeof(struct firing_position_definition)
+Ctrl-N: Creates a new area and assigns it to the current selection of firing points.
+VALID_COUNT(ai_globals->mounted_weapon_unit_count, NUMBEROF(ai_globals->mounted_weapon_unit_indices))
+ai_debug.firing_position_evaluation_preference_range>0.f
+ai_debug.firing_position_evaluation_avoidance_range<0.f
+debug_firing_position->rejected_evaluation_identifier>=0 && debug_firing_position->rejected_evaluation_identifier<k_evaluator_count
+firing position
+firing disabled
+firing wildly
+firing point obstacles: %d
+firing positions
+initial weapon
+initial secondary weapon
+ai: Failed to pick a firing position for squad %s fire team %i
+ai: %s: ai_set_weapon_up %s %s
+attack_weaponrange
+favor_former_firing_position
+c:\mcc\release\h3\source\ai\actor_firing_position.cpp
+AI ERROR: Attractor must be enabled when running uncover firing position selection
+AI ERROR: Attractor must be specified when choosing firing positions in hide mode!
+ai: Invalid cluster reference reconstructed from firing_position %i %i
+ai: Invalid BSP reference reconstructed from firing_position %i %i
+firing_position->valid == valid
+(index1 >= 0) && (index1 < global_temporary_sort_firing_position_count)
+(index2 >= 0) && (index2 < global_temporary_sort_firing_position_count)
+num_firing_positions > 0
+!firing_position->valid
+ai: Selected firing positions TWICE in one game tick (tell naimad or maxd)
+ai-random-firingpoint
+FIRING_POSITION_REF_DYNAMIC(firing_position->original_index)
+!fp_ref_equals(firing_position_index, FP_REF_CURRENT)
+actor->firing_positions.current_discarded_firing_positions_entry >= 0
+!fp_ref_equals(actor->firing_positions.current_position_index, FP_REF_CURRENT)
+fp_ref_equals(prev_owner->firing_positions.current_position_index, fpindex)
+fp_ref_equals(actor->firing_positions.current_position_index, fp_ref)
+!global_current_firing_position_definition_valid
+global_current_firing_position_definition_valid
+FIRING_POSITION_REF_STATIC(ref)
+design: ZONE %s: firing point %d (%f %f %f, frame #%d) has invalid area reference
+ai: ERROR: Hide your women and check your firing points, especially if this was a device machine or giant with static pathfinding
+actor firing-position owners
+ai: Unable to add weapon to inventory of spawned actor
+ai: Unable to add secondary weapon to inventory of spawned actor
+ai: Firing position in zone %s area %s exists outside BSP %s at position (%.2f, %.2f, %.2f)
+ai: Firing position found with invalid area index at position (%.2f, %.2f, %.2f)
+ai: Firing position found with area index NONE at position (%.2f, %.2f, %.2f)
+dynamic_firing_set_data
+c:\mcc\release\h3\source\ai\actor_dynamic_firing_position.cpp
+dynamic firing points
+VALID_INDEX(firing_set->position_count,NUMBEROF(firing_set->firing_positions))
+actor->firing_positions.dynamic_firing_set_index == NONE
+FIRING_POSITION_REF_DYNAMIC(ref)
+firing_set
+weapon_switched
+overheated_weapon_retreat
+enforcer weapon control
+!fp_ref_equals(actor->firing_positions.current_position_index, FP_REF_NONE)
+(!actor->meta.pathfinding_timeslice && flee_data->find_new_flee_position) || !fp_ref_equals(flee_data->flee_firing_position_index, FP_REF_NONE) || flee_data->unable_to_flee || flee_data->done_fleeing
+weapon_index != NONE
+firing_decision == NONE
+weapon_vector
+ai: empty firing pattern block for weapon %s for character %s
+ai: No firing pattern found for weapon %s for character %s
+weapon_trade_better
+weapon_trade_worse
+weapon_trade_equal
+collisions %d|tlineofsight %d|tlineoffire %d|tfiringpoint %d
+don't trade weapon
+don't stow weapon
+absolute max leader dist#never select firing positions outside this range from the leader (if 0 then defaults to 8wu)
+resurrect weapon#If I'm being automatically resurrected then I pull out a ...
+maximum aiming deviation:degrees#how far we can turn our weapon
+Reposition bounds:s#How long should I remain at a firing position before moving? (0 values will use the default values of 6 and 7 seconds)
+Fight danger move threshold#When danger goes above given level, this actor switches firing positions
+Search distance#Maximum distance away from our firing positions that we are happy to search (0 value will default to 3wu). Does not affect vehicle search distance (see maxd if you want that value too).
+backup weapon#If I want to flee and I don't have flee animations with my current weapon, throw it away and try a ...
+berserk weapon#when I berserk, I pull out a ...
+Perimeter Range#How far we will melee charge outside our firing points before starting perimeter (defaults to 5wu)
+Perimeter Range Close#How far we will melee charge outside our firing points before starting perimeter when the target is close to me (within 3wu) (defaults to 9wu)
+weapon_flags
+character_firing_pattern_block
+sizeof(struct character_firing_pattern)
+weapon damage modifier#what fraction of its normal damage our weapon inflicts (zero = no modifier)
+character_weapons_block
+sizeof(struct character_weapon_properties)
+weapons flags
+maximum firing range:world units#we can only fire our weapon at targets within this distance
+minimum firing range#weapon will not be fired at target closer than given distance
+bombardment range#we offset our burst targets randomly by this range when firing at non-visible enemies (zero = never)
+Ballistic Firing
+Ballistic firing bounds:world units#At the min range, the min ballistic fraction is used, at the max, the max ballistic fraction is used
+special-case firing properties
+special-fire mode#the type of special weapon fire that we can use
+special-fire situation#when we will decide to use our special weapon fire mode
+special-fire chance:[0,1]#how likely we are to use our special weapon fire mode
+special-fire delay:seconds#how long we must wait between uses of our special weapon fire mode
+special damage modifier:[0,1]#damage modifier for special weapon fire (applied in addition to the normal damage modifier. zero = no change)
+special projectile error:degrees#projectile error angle for special weapon fire (applied in addition to the normal error)
+Weapon drop when killed
+drop weapon loaded#amount of ammo loaded into the weapon that we drop (in fractions of a clip, e.g. 0.3 to 0.5)
+drop weapon ammo#total number of rounds in the weapon that we drop (ignored for energy weapons)
+firing-pattern block is used. At 1, the parameters in the second block is used. In
+firing patterns
+weapon melee damage
+character_firing_pattern_properties_block
+sizeof(struct character_firing_pattern_properties)
+ranged weapon
+tank weapon
+stealth weapon
+distance damage outer radius#Considered damaging-outside-range when you START firing from outside this distance
+distance damage inner radius#Considered damaging-outside-range when you CONTINUE firing from outside this distance
+stalk range hard max#We will never be able to pick a firing position more than this far from our target
+weapons properties
+firing pattern properties
+FIRING_POSITION_REF_STATIC(firing_position_index)
+m_weapon_range_valid
+mounted_weapon
+mounted weapon
+weapon->weapon.tracked_model_target_index != NONE
+networking:simulation:action: weapon fire hit object %s with gamestate 0x%08X but no entity is attached?
+networking:simulation:action: weapon fire event with a lock on object (%s) that has no simulation entity!
+networking:simulation:weapon: weapon-fire generate %s %s 0x%08X player 0x%08X p-autoaim %.2f s-autoaim %.2f at entity 0x%08X
+VALID_INDEX(effect_type, k_simulation_weapon_effect_type_count)
+networking:simulation:weapon: attempting to create weapon-effect event with a weapon that has no entity backing 0x%08X (%s)
+networking:simulation:weapon: attempting to create weapon-effect event with a weapon that is not a flag/bomb 0x%08X (%s)
+networking:simulation:action:weapon: failed to get unit index for weapon %s
+networking:simulation:action:weapon: failed to get unit inventory index for weapon %s unit 0x%08X
+weapon_set_index>=0 && weapon_set_index<k_unit_weapon_set_count
+unit->unit.current_weapon_set.weapon_indices[weapon_set_index]>=0 && unit->unit.current_weapon_set.weapon_indices[weapon_set_index]<k_maximum_weapons_per_unit
+weapon-set-identifier
+primary-weapon-index
+secondary-weapon-index
+weapon-set-id
+weapon-set-indices
+desired_weapon
+first_weapon_type
+second_weapon_type
+third_weapon_type
+fourth_weapon_type
+first_weapon_state
+second_weapon_state
+third_weapon_state
+fourth_weapon_state
+multiplayer_weapon_identifier
+weapon_traits
+weapon-traits-exist
+flag-weapon-flags
+flag-weapon-flag-exists
+flag-weapon-flag
+bomb-weapon-flags
+bomb-weapon-flag-exists
+bomb-weapon-flag
+weapon_tier->weapon_definition_indices[weapon_slot_index] != NONE
+weapon-tiers-exist
+weapon-tier-count
+weapon-exists
+weapon-definition
+current-weapon-tier-index
+player-weapon-upgrade-seconds
+gun_game_state_data->runtime_weapon_tiers.count() == weapon_tier_count
+highest-available-weapon-tier-exists
+simulation_weapon_identifier>=0 && simulation_weapon_identifier<(1<<k_unit_update_weapon_simulation_weapon_identifier_bits)
+networking:simulation:game:units: unit [0x%08X] weapon [%d] definition index [0x%08X] is invalid
+desired-weapon-set-exists
+desired-weapon-set-identifier
+desired-primary-weapon
+desired-secondary-weapon
+weapon-type-exists
+weapon-definition-index
+multiplayer-weapon-identifier
+simulation-weapon-identifier
+weapon-state-exists
+networking:simulation:units: failed to decode, duplicate weapon index!
+networking:simulation:units: failed to decode, bad weapon definition index
+networking:simulation:units: failed to decode, bad multiplayer_weapon_identifier
+vehicle->unit.weapon_control_unit_index == NONE
+weapon_fire
+weapon_reload
+weapon_pickup
+weapon_put_away
+weapon_drop
+weapon_effect
+weapon_empty_click
+creation_data_size==sizeof(struct s_simulation_weapon_creation_data)
+c:\mcc\release\h3\source\simulation\game_interface\simulation_game_weapons.cpp
+baseline_state_data_size==sizeof(struct s_simulation_weapon_state_data)
+(update_mask & ~MASK(k_simulation_weapon_update_flag_count))==0
+state_data_size==sizeof(struct s_simulation_weapon_state_data)
+state_data_size == c_simulation_weapon_entity_definition::state_data_size()
+initial_state_data_size==sizeof(struct s_simulation_weapon_state_data)
+networking:simulation:weapons: weapon definition index 0x%08X is invalid
+weapon->weapon.multiplayer_weapon_identifier==NONE
+networking:simulation:objects: weapon gamestate [0x%08x] object [0x%08x] receiving multiplayer update and failed to set weapon identifier properly, expected [%d] instead it is set to [%d]
+networking:simulation:objects: weapon gamestate [0x%08x] object [0x%08x] receiving multiplayer updates but it is not a multiplayer weapon
+networking:simulation:objects: weapon gamestate [0x%08x] object [0x%08x '%s'], attempting to set rounds loaded/inventroy over maximum
+weapon creation: relevance=%5.3f
+weapon-create
+weapon update:%srelevance=%5.3f:period=%d
+weapon-update
+multiplayer-weapon-identifier-exists
+weapon-ammo-exists
+VALID_COUNT(simulation_weapon_fire_event_data->predicted_projectile_fire_data_count, NUMBEROF(simulation_weapon_fire_event_data->predicted_projectile_fire_data))
+weapon fire : relevance=%5.3f
+payload_size==sizeof(struct s_simulation_weapon_fire_event_data)
+VALID_COUNT(weapon_fire_data->predicted_impact_target_count, NUMBEROF(weapon_fire_data->predicted_impact_targets))
+VALID_COUNT(weapon_fire_data->predicted_projectile_fire_data_count, NUMBEROF(weapon_fire_data->predicted_projectile_fire_data))
+VALID_INDEX(current_data->target_index, NUMBEROF(weapon_fire_data->predicted_impact_targets))
+payload_size==c_simulation_weapon_fire_event_definition::payload_size()
+networking:simulation:weapon: failed to get tracked gamestate index for entity 0x%08X
+networking:simulation:weapon: impact data has no entity index? (index %d)
+networking:simulation:weapon: failed to get impact gamestate index for entity 0x%08X
+unit->unit.weapon_object_indices[weapon_fire_data->unit_inventory_index]!=NONE
+VALID_INDEX(fire_index, NUMBEROF(weapon_fire_data->predicted_projectile_fire_data))
+VALID_INDEX(current_weapon_fire_event_data->target_index, NUMBEROF(weapon_fire_data->predicted_impact_targets))
+networking:simulation:event: weapon-fire event referred to entity 0x%08X unit 0x%08X that is currently dead
+networking:simulation:event: weapon-fire entity 0x%08X unit 0x%08X inventory index %d is not ready (current %d/%d desired %d/%d)
+networking:simulation:event: weapon-fire event referred to entity [0x%08X] unit [0x%08X] with invalid inventory index [%d]
+networking:simulation:event: weapon-fire event referred to entity [0x%08X] with object [0x%08X] type %d (not a unit or weapon)
+networking:simulation:weapons: weapon fire event referred to entity [0x%08X] that has no object index
+networking:simulation:weapons: weapon-fire event received with invalid model target data (%s)
+networking:simulation:weapons: weapon-fire event received with tracking data for a non-tracking weapon (%s)
+networking:simulation:weapon: ran out of room for predicted weapon fire data (total %d)
+networking:simulation:weapon: out of range projectile creation id 0x%08X
+networking:simulation:weapon: weapon fire data proj 0x%08X/%d not valid
+networking:simulation:weapons: weapon fire event has an invalid target index [%d/%d]
+networking:simulation:weapons: weapon fire event has a predicted impact with an invalid gamestate index
+networking:simulation:weapon: weapon fire w/impact gamestate index 0x%08X should be valid but is not
+networking:simulation:weapon: out of range node index for object 0x%08X node index 0x%08X
+networking:simulation:weapon: weapon-fire apply %s %s 0x%08X gunner 0x%08X player 0x%08X predicted: paim %.2f saim %.2f at entity 0x%08X actual: paim %.2f saim %.2f at object 0x%08X
+networking:simulation:weapon: weapon-fire apply %s %s 0x%08X unowned weapon
+networking:simulation:event: weapon-fire entity 0x%08X unit 0x%08X weapon 0x%08X (%s) barrel #%d cannot fire (count %d recovery-remaining %d/%d firing-idle %d/%d)
+networking:simulation:event: weapon-fire no such barrel on weapon [0x%08X] definition [0x%08X] %s ([%d] barrels, specified invalid barrel [%d])
+networking:simulation:event: weapon-fire weapon 0x%08X definition 0x%08X %s didn't match specified definition 0x%08X
+networking:simulation:event: weapon-fire event referred to entity 0x%08X without an object
+weapon-reload: relevance=%5.3f
+payload_size==c_simulation_weapon_reload_event_definition::payload_size()
+networking:simulation:event: weapon-reload event referred to entity [0x%08X] with object [0x%08X] type %d (not a unit)
+networking:simulation:event: weapon-reload event referred to entity 0x%08X without an object
+weapon-drop : relevance=%5.3f
+payload_size==sizeof(struct s_simulation_weapon_drop_event_data)
+unit-weapon-set-index
+weapon_drop_data->unit_weapon_set_index>=0 && weapon_drop_data->unit_weapon_set_index<k_unit_weapon_set_count
+weapon_drop_data->unit_inventory_index>=0 && weapon_drop_data->unit_inventory_index<k_maximum_weapons_per_unit
+networking:simulation:event: weapon-drop event for dead unit 0x%08X inventory index %d
+networking:simulation:event: weapon-drop unit 0x%08X with incorrect %s weapon type in inventory index %d (0x%08X != 0x%08X)
+networking:simulation:event: weapon-drop unit 0x%08X without a weapon in inventory index %d
+networking:simulation:event: weapon-drop event referred to entity [0x%08X] with object [0x%08X] type %d (not a unit)
+networking:simulation:event: weapon-drop event referred to entity 0x%08X without an object
+weapon-put-away : relevance=%5.3f
+payload_size==sizeof(struct s_simulation_weapon_put_away_event_data)
+weapon_put_away_data->unit_weapon_set_index>=0 && weapon_put_away_data->unit_weapon_set_index<k_unit_weapon_set_count
+weapon_put_away_data->unit_inventory_index>=0 && weapon_put_away_data->unit_inventory_index<k_maximum_weapons_per_unit
+networking:simulation:event: weapon-put-away event for dead unit 0x%08X inventory index %d
+networking:simulation:event: weapon-put-away unit 0x%08X with incorrect %s weapon type in inventory index %d (0x%08X != 0x%08X)
+networking:simulation:event: weapon-put-away unit 0x%08X without a weapon in inventory index %d
+networking:simulation:event: weapon-put-away unit 0x%08X with invalid %s inventory index %d (current %d)
+networking:simulation:event: weapon-put-away event referred to entity [0x%08X] with object [0x%08X] type %d (not a unit)
+networking:simulation:event: weapon-put-away event referred to entity 0x%08X without an object
+weapon-pickup : relevance=%5.3f
+payload_size==sizeof(struct s_simulation_weapon_pickup_event_data)
+weapon_set->weapon_indices[_unit_weapon_set_primary]==NONE || (weapon_set->weapon_indices[_unit_weapon_set_primary]>=0 && weapon_set->weapon_indices[_unit_weapon_set_primary]<k_maximum_weapons_per_unit)
+weapon_set->weapon_indices[_unit_weapon_set_secondary]==NONE || (weapon_set->weapon_indices[_unit_weapon_set_secondary]>=0 && weapon_set->weapon_indices[_unit_weapon_set_secondary]<k_maximum_weapons_per_unit)
+weapon_pickup_data->unit_add_weapon_mode>=0 && weapon_pickup_data->unit_add_weapon_mode<k_unit_add_weapon_modes_count
+add-weapon-type
+networking:simulation:event: weapon-pickup unit 0x%08X weapon 0x%08X dropping current must-be-readied weapon 0x%08X
+networking:simulation:event: weapon-pickup unit [0x%08X] weapon [0x%08X] failed to add weapon to inventory (mode %d)
+networking:simulation:event: weapon-pickup unit 0x%08X weapon 0x%08X failed distance sanity check
+networking:simulation:event: weapon-pickup unit 0x%08X weapon 0x%08X failed - no animations available
+networking:simulation:event: weapon-pickup unit 0x%08X weapon 0x%08X failed due to motor_task_allow() with mode %d resource-mask 0x%04X
+networking:simulation:event: weapon-pickup unit 0x%08X weapon 0x%08X pickup rejected (add-weapon mode %d)
+networking:simulation:event: weapon-pickup unit 0x%08X weapon 0x%08X unit_can_pickup_weapon failed (unknown reason)
+networking:simulation:event: weapon-pickup unit 0x%08X weapon 0x%08X inventories differ (#%d %d/%d != #%d %d/%d)
+networking:simulation:event: weapon-pickup unit 0x%08X weapon 0x%08X is already owned by unit 0x%08X
+networking:simulation:event: weapon-pickup unit 0x%08X weapon 0x%08X but unit is already dead
+networking:simulation:event: weapon-pickup event referred to entities [0x%08X]/[0x%08X] with objects [0x%08x]/[0x%08X] types %d/%d (not a unit and a weapon)
+networking:simulation:event: weapon-pickup event referred to entities 0x%08X/0x%08X without objects (0x%08x/0x%08X)
+weapon-effect : relevance=%5.3f
+payload_size==sizeof(struct s_simulation_weapon_effect_event_data)
+weapon-effect-type
+networking:simulation:event: weapon-effect event referred to entities 0x%08X without an object (0x%08x)
+networking:simulation:event: weapon-effect event weapon index is not correct type 0x%08X
+networking:simulation:event: weapon-effect event had an invalid effect type (0x%08x)
+payload_size==sizeof(s_simulation_weapon_empty_click_event_data)
+networking:simulation:weapons: empty-click-event failed to get unit index for gamestate 0x%08X
+networking:simulation:weapons: empty-click-event object index for gamestate 0x%08X is not a unit
+networking:simulation:event: empty-click-event entity 0x%08X unit 0x%08X inventory index %d has no weapon
+networking:simulation:event: empty-click-event entity 0x%08X unit 0x%08X inventory index %d weapon definition mismatch
+objects\weapons
+scenario_weapon_datum_flags
+scenario_weapon_palette_block
+scenario_weapon_datum_struct
+sizeof(s_scenario_weapon_datum)
+weapon data
+scenario_weapon_fields_v1
+scenario_weapon_fields_v2
+scenario_weapon_block
+MAXIMUM_WEAPON_DATUMS_PER_SCENARIO
+map_variant_weapon_palette_block
+weapon_stow_anchor
+look_weapon_down
+primary_firing
+secondary_firing
+primary_barrel_firing
+secondary_barrel_firing
+primary_barrel_firing_single
+primary_barrel_firing_dual_left
+primary_barrel_firing_dual_right
+weapon_illumination
+weapon_battery_empty
+use_right_weapon
+use_left_weapon
+swap_weapon
+swap_left_weapon
+reload_right_weapon
+killbreakdown_weapon
+category_weapons
+weapon_name
+primary weapon
+secondary weapon
+characters use previous mission weapons
+weapon palette
+mv weapon palette
+weapon spawn influencers
+### weapon spawn influencer '%s' not available in this scenario
+player_handle_swap_weapons 0x%08X couldn't add weapon %s to inventory
+scenario_weapons_resource_struct_definition
+scenario_weapons_resource
+scenario_weapons_resource_block
+weapon references
+weapon resource*
+weapon_block_index_flags_block
+weapon_block_index_flags_block_struct
+_scenario_designer_zone_weapon
+model animation graph
+couldn't find a weapon to clone!
+model animation graph not found
+cheat_weapons_block
+easy projectile error#enemy projectile error scale, as a fraction of their base firing error. on easy difficulty
+normal projectile error#enemy projectile error scale, as a fraction of their base firing error. on normal difficulty
+hard projectile error#enemy projectile error scale, as a fraction of their base firing error. on hard difficulty
+imposs. projectile error#enemy projectile error scale, as a fraction of their base firing error. on impossible difficulty
+AI infantry-on-AI weapon damage scale:[0,1]#Global scale on weapon damage made by AI on other AI
+AI vehicle-on-AI weapon damage scale:[0,1]#Global scale on weapon damage made by AI in a vehicle on other AI
+AI player vehicle-on-AI weapon damage scale:[0,1]#Global scale on weapon damage made by AI in a vehicle with the player on other AI
+scary weapon threhold#A weapon of this scariness is offically considered scary (by combat dialogue, etc.)
+weapon_ready
+weapon_empty
+weapon_charge
+weapon_overheat
+weapon_idle
+weapon_melee
+weapon_animation
+weapon_fire_lod
+non-animation graph tag index passed to c_animation_manager::reset_graph
+first_person_weapon_validate_user_mask_for_weapon_index(effect->first_person_weapon_user_mask, creation_data->object_index)
+first_person_weapon_validate_weapon_index(user_index, object_index)
+(effect->first_person_weapon_user_mask & ~MASK(k_number_of_users))== 0
+first_person_weapon_validate_user_mask_for_weapon_index(effect->first_person_weapon_user_mask, effect->object_index)
+first_person_weapon_user_mask== 0 || !first_person_weapon_validate_user_mask_for_weapon_index(first_person_weapon_user_mask, effect->object_index)
+!NODE_DESIGNATOR_IS_FIRST_PERSON_WEAPON(location->node_designator) || part_definition->runtime_tag_reference_base_class_tag== c_beam_system_definition::k_tag_type
+effect->first_person_weapon_user_index!= NONE
+weapon->item.inventory_unit_index!=NONE
+TEST_FLAG(weapon->weapon.flags, _weapon_multiplayer_tracking_bit)
+weapon->weapon.multiplayer_weapon_identifier>=0 && weapon->weapon.multiplayer_weapon_identifier<k_multiplayer_maximum_weapon_identifiers
+!TEST_FLAG(weapon->weapon.flags, _weapon_multiplayer_inventory_flag)
+weapon->item.inventory_unit_index==NONE
+weapon->object.parent_object_index==NONE
+tracker->multiplayer_weapon_identifier==weapon->weapon.multiplayer_weapon_identifier
+tracker->weapon_index!=NONE
+TEST_FLAG(weapon->weapon.flags, _weapon_multiplayer_inventory_flag)
+weapon_count<NUMBEROF(weapon_indices)
+tracker->weapon_index==iterator.get_index()
+tracker->owner_unit_index==weapon->item.inventory_unit_index
+game_engine_globals->multiplayer_weapons[tracker_index].weapon_index!=NONE
+0<=mode && mode<k_unit_add_weapon_modes_count
+VALID_INDEX(weapon_set, NUMBEROF(starting_profile->starting_weapons))
+random weapon selection
+game_engine:candy_monitor: unknown weapon set in use, weapon remapping failed
+object_type==_object_type_weapon || object_type==_object_type_vehicle
+multiplayer_weapon_identifier>=0 && multiplayer_weapon_identifier<k_multiplayer_maximum_weapon_identifiers
+!TEST_FLAG(weapon->weapon.flags, _weapon_multiplayer_tracking_bit)
+game_engine_multiplayer_weapon_register: unable to register %s #%d, overflowed max count (%d)
+tracker_index>=0 && tracker_index<game_engine_globals->multiplayer_weapon_count && tracker_index<NUMBEROF(game_engine_globals->multiplayer_weapons)
+weapon->item.inventory_state!=_item_inventory_state_free
+weapon->item.inventory_unit_index==unit_index
+weapon_get(weapon_index)->item.inventory_state==_item_inventory_state_free
+weapon_get(weapon_index)->item.inventory_unit_index==NONE
+tracker->owner_unit_index==weapon_get(weapon_index)->item.inventory_unit_index
+player-trait-initial-primary-weapon
+player-trait-initial-secondary-weapon
+player-traits-weapon-pickup-allowed
+game_engine:player_trait:weapons: invalid damage modifier value '%ld'!
+game_engine:player_trait:weapons: ignoring initial primary weapon '%d'
+game_engine:player_trait:weapons: invalid initial primary weapon '%d'
+game_engine:player_trait:weapons: ignoring initial secondary weapon '%d'
+game_engine:player_trait:weapons: invalid initial secondary weapon '%d'
+game_engine:player_trait:weapons: invalid initial grenade count '%d'
+game_engine:player_trait:weapons: invalid recharging grenade setting '%d'
+game_engine:player_trait:weapons: invalid infinite ammo setting '%d'
+game_engine:player_trait:weapons: invalid weapon pickup setting '%d'
+unit->unit.desired_weapon_set.set_identifier==unit->unit.current_weapon_set.set_identifier
+campaign-weapon
+objects: model '%s' animation graph '%s' %s (will not animate)
+ignores weapons
+The location of the last detonated projectile, in case the parent object is a weapon (beams only)
+age creator's weapon
+weapon_selections_block
+sizeof(s_multiplayer_weapon_selection)
+k_maximum_number_of_multiplayer_weapon_selections
+random weapon set weight:used only for random weapon set
+weapon tag
+random weight#only evaluates to zero and not-zero currently (like random weapon set weight)
+((k_maximum_number_of_multiplayer_weapon_selections)>(((k_maximum_number_of_multiplayer_grenade_selections)>(k_maximum_number_of_multiplayer_vehicle_selections)?(k_maximum_number_of_multiplayer_grenade_selections):(k_maximum_number_of_multiplayer_vehicle_selections)))?(k_maximum_number_of_multiplaye
+r_weapon_selections):(((k_maximum_number_of_multiplayer_grenade_selections)>(k_maximum_number_of_multiplayer_vehicle_selections)?(k_maximum_number_of_multiplayer_grenade_selections):(k_maximum_number_of_multiplayer_vehicle_selections))))
+multiplayer_weapon_set_block
+sizeof(s_multiplayer_weapon_set)
+k_maximum_number_of_multiplayer_weapon_sets
+Weapon Selections
+Define the weapons you want to be available in multiplayer games here (does not include mp objects like ball or flag)
+weapon selections
+Weapon Sets
+Define the weapon sets you want to be available in multiplayer games here
+weapon sets
+weapon_spawn_influence_block
+sizeof(s_weapon_spawn_influence)
+k_weapon_spawn_influencer_maximum_count
+WEAPON INFLUENCERS
+These influencers are induced by weapons either wielded or carried in the player's backpack
+weapon influencers
+couldn't create a fake weapon for mainmenu???
+@placeholder_weapon_for_mainmenu
+### weapon selection '%s' not available in mp universal globals for this scenario
+### weapon spawn influencer '%s' not available in mp runtime globals constants for this scenario
+weapon_set!=NULL
+player_trait_weapon_pickup
+player_trait_weapons_block
+sizeof(s_player_trait_weapons)
+weapon pickup
+initial primary weapon
+weapon traits
+weapon set name
+allow tier skipping#allows the player to earn more than points per weapon from a single kill
+game_engine_gun_game_weapon_tier_block
+sizeof(s_game_engine_gun_game_weapon_tier_definition)
+k_gun_game_maximum_weapon_tiers
+primary weapon^
+secondary weapon^#this is the dual-wielded secondary weapon. only valid if both weapons are dual-wieldable
+backpack weapon
+points per weapon
+weapon upgrade seconds#seconds after which the player (or shared tier), is upgraded to the next tier. -1 for never
+weapon tier properties
+weapon class|AABBCC
+parent animation graph
+weapon_class_lookup_block
+sizeof(struct s_weapon_class_listing)
+weapon name^
+weapon class
+weapon list*|BBAAAA
+fp no aged weapons
+disable weapon ik
+disable weapon aim/1st person
+force weapon ik on
+attach to marker#the marker name object (weapon, vehicle, etc.) the above marker is being attached to
+weapon_type_block__from_graph_v0
+sizeof(c_weapon_type__from_graph_v0)
+k_max_weapon_types
+weapon_type_block
+sizeof(c_weapon_type)
+weapon_class_block__from_graph_v0
+sizeof(c_weapon_class)
+k_max_weapon_classes
+weapon type|AABBCC
+weapon ik|AABBCC
+weapon_class_block
+weapon_root_index != NONE
+animation: Animation graph %s inherits %s, but they share no common nodes
+animation: Animation graph [%s] contained a circular list of parent graphs
+animation: Animation graph [%s] required recompression during post-process. Please re-import the graph.
+animation: Animation graph [%s] had %i animations recompressed. Re-import the graph to avoid this operation.
+slot >= 0 && slot < k_first_person_max_weapons
+objects\weapons\rifle\assault_rifle\assault_rifle
+objects\weapons\rifle\battle_rifle\battle_rifle
+objects\weapons\rifle\shotgun\shotgun
+objects\weapons\rifle\sniper_rifle\sniper_rifle
+objects\weapons\rifle\smg\smg
+objects\weapons\rifle\spike_rifle\spike_rifle
+objects\weapons\pistol\magnum\magnum
+objects\weapons\pistol\plasma_pistol\plasma_pistol
+objects\weapons\rifle\plasma_rifle\plasma_rifle
+objects\weapons\pistol\needler\needler
+objects\weapons\rifle\beam_rifle\beam_rifle
+objects\weapons\support_low\brute_shot\brute_shot
+objects\weapons\support_high\rocket_launcher\rocket_launcher
+objects\weapons\support_high\spartan_laser\spartan_laser
+objects\weapons\melee\energy_blade\energy_blade
+objects\weapons\turret\machinegun_turret\machinegun_turret
+objects\weapons\melee\gravity_hammer\gravity_hammer
+objects\weapons\turret\missile_pod\missile_pod
+objects\weapons\pistol\excavator\excavator
+objects\weapons\turret\flamethrower\flamethrower
+objects\weapons\grenade\frag_grenade\frag_grenade
+objects\weapons\grenade\plasma_grenade\plasma_grenade
+objects\weapons\grenade\claymore_grenade\claymore_grenade
+objects\weapons\grenade\firebomb_grenade\firebomb_grenade
+objects\weapons\rifle\covenant_carbine\covenant_carbine
+objects\weapons\turret\plasma_cannon\plasma_cannon
+objects\weapons\support_high\flak_cannon\flak_cannon
+objects\weapons\support_low\sentinel_gun\sentinel_gun
+objects\weapons\turret\missile_pod\missile_pod_integrated
+objects\weapons\support_high\missile_launcher\missile_launcher
+objects\gear\human\residential\h_locker_closed_mp\h_locker_closed_mp
+objects\gear\human\residential\office_table\office_table
+objects\gear\human\residential\telephone_wall_box\telephone_wall_box
+objects\gear\human\residential\office_keyboard\office_keyboard
+objects\gear\human\residential\office_monitor\office_monitor
+objects\gear\human\residential\office_file_tall\office_file_tall
+objects\gear\human\residential\office_file_short\office_file_short
+objects\gear\human\residential\office_chair\office_chair
+objects\gear\human\residential\office_stand\office_stand
+chud_show_weapon_stats
+hides/shows the weapon huds
+cs_lower_weapon
+Actor keeps weapon lowered
+vs_lower_weapon
+Actor stows its current weapon
+Actor draws its current weapon
+cinematic_clone_players_weapon
+clone the first player's most reasonable weapon and attach it to the specified object's marker
+player_disable_weapon_pickup
+mp_weapon_belongs_to_team
+enable/disable all players' ability to pick up weapons
+causes specified weapon to belong to the given team, so that only that team can pick it up
+player_action_test_rotate_weapons
+returns true if any player has hit the rotate-weapon button since the last call to (player_action_test_reset).
+unit_has_weapon
+returns TRUE if the <unit> has <object> as a weapon, FALSE otherwise
+unit_has_weapon_readied
+returns TRUE if the <unit> has <object> as the primary weapon, FALSE otherwise
+unit_lower_weapon
+lower the units weapon over x ticks
+unit_raise_weapon
+raises the units weapon over x ticks
+unit_drop_support_weapon
+forces the given unit to drop its support weapon, if it is holding one
+Force the give unit to reload his weapon
+prevents any of the given units from dropping weapons or grenades when they die
+adds/resets the unit's health, shield, and inventory (weapons and grenades) to the named profile. resets if third parameter is true, adds if false. weapons will be marked as garbage if fourth parameter is true (for respawning equipment).
+weapon_hold_trigger
+turns the trigger for a weapon  on/off
+weapon_enable_warthog_chaingun_light
+starts a custom animation playing on a unit (puts away weapon if last parameter is TRUE)
+cheat_all_weapons
+drops all weapons near player
+unit_get_primary_weapon
+return the primary weapon of the specified unit
+Get a non resolving reference to a model animation graph budget reference
+ai_set_weapon_up
+force actor to hold their weapon up, instead of lowering it when idle. this does NOT cause them to draw their weapon if stowed
+reconnects all AI information to the current structure bsp (use this after you create encounters or command lists in sapien, or place new firing points or command list points)
+rotates ai points and normals (e.g. firing points, starting locations) around the given axis (x,y,z) by the given rotation angle (degrees)
+debug_spawning_weapon_influences
+debugs enemy weapon danger influences
+Drop an ai with the given weapon at the current camera position
+debug_weapons
+debug_weapons_triggers
+debug_weapons_barrels
+debug_weapons_magazines
+debug_weapons_primary
+debug_weapons_secondary
+debug_sound_mute_weapons
+debug_disable_weapon_channel
+debug_objects_unit_firing
+collision_debug_flag_objects_weapons
+debug_first_person_weapons
+ai_render_firing_positions
+ai_render_firing_position_statistics
+ai_render_firing_position_obstacles
+ai_render_dynamic_firing_positions
+ai_render_discarded_firing_positions
+ai_render_firing_positions_all
+ai_render_firing_position_info
+ai_evaluator_attack_weaponrange
+ai_evaluator_favor_former_firing_position
+giant_weapon_wait_time
+giant_weapon_trigger_time
+Weapon Debug
+A Player had his initial primary weapon set to %d in his initial traits, but that weapon is not referenced in this map.
+A Player had his initial secondary weapon set to %d in his initial traits, but that weapon is not referenced in this map.
+game_engine:spawning: unable to add all enemy weapon influencers!
+weapon_swap_hold
+fire_both_weapons
+game_engine:map_option:weapon_set: invalid weapon set '%d'!
+map-override-weapon-set
+weapon_down
+weapon_ik
+weapon_up
+header->event_type==_playback_primary_weapon_index_set
+header->event_type==_playback_secondary_weapon_index_set
+anim_event_v1->type==_playback_v1_primary_weapon_index_set
+anim_event_v1->type==_playback_v1_secondary_weapon_index_set
+weapon_get_multiplayer_type(object_tracker->weapon_index)==_weapon_multiplayer_type_ctf_flag
+points-per-weapon
+weapon-upgrade-seconds
+weapon-tier-properties
+absolute-weapon-index
+VALID_INDEX(weapon_slot_index, NUMBEROF(m_absolute_weapon_indices))
+game_engine:gun_game: invalid weapon_upgrade_seconds setting '%d' outside range '[%d, %d]'!
+$halo_game_settings_gun_game_weapon_tier_0_properties
+$halo_game_settings_gun_game_weapon_tier_properties_desc
+$halo_game_settings_gun_game_weapon_tier_1_properties
+$halo_game_settings_gun_game_weapon_tier_2_properties
+$halo_game_settings_gun_game_weapon_tier_3_properties
+$halo_game_settings_gun_game_weapon_tier_4_properties
+$halo_game_settings_gun_game_weapon_tier_5_properties
+$halo_game_settings_gun_game_weapon_tier_6_properties
+$halo_game_settings_gun_game_weapon_tier_7_properties
+$halo_game_settings_gun_game_weapon_tier_8_properties
+$halo_game_settings_gun_game_weapon_tier_9_properties
+$halo_game_settings_gun_game_weapon_tier_10_properties
+$halo_game_settings_gun_game_weapon_tier_11_properties
+$halo_game_settings_gun_game_weapon_tier_12_properties
+$halo_game_settings_gun_game_weapon_tier_13_properties
+$halo_game_settings_gun_game_weapon_tier_14_properties
+$halo_game_settings_gun_game_weapon_tier_15_properties
+$halo_game_settings_gun_game_weapon_tier_16_properties
+$halo_game_settings_gun_game_weapon_tier_17_properties
+$halo_game_settings_gun_game_weapon_tier_18_properties
+$halo_game_settings_gun_game_weapon_tier_19_properties
+$halo_game_settings_gun_game_weapon_tier_20_properties
+$halo_game_settings_gun_game_weapon_tier_21_properties
+$halo_game_settings_gun_game_weapon_tier_22_properties
+$halo_game_settings_gun_game_weapon_tier_23_properties
+$halo_game_settings_gun_game_weapon_tier_24_properties
+$halo_game_settings_gun_game_weapon_tier_25_properties
+$halo_game_settings_gun_game_weapon_tier_26_properties
+$halo_game_settings_gun_game_weapon_tier_27_properties
+$halo_game_settings_gun_game_weapon_tier_28_properties
+$halo_game_settings_gun_game_weapon_tier_29_properties
+$halo_game_settings_gun_game_weapon_tier_30_properties
+$halo_game_settings_gun_game_weapon_tier_31_properties
+$halo_game_settings_gun_game_weapon_upgrade_timer
+$halo_game_settings_gun_game_weapon_upgrade_timer_desc
+$halo_game_settings_traits_weapons_assault_rifle
+$halo_game_settings_traits_weapons_battle_rifle
+$halo_game_settings_traits_weapons_brute_shot
+$halo_game_settings_traits_weapons_gravity_hammer
+$halo_game_settings_traits_weapons_magnum
+$halo_game_settings_traits_weapons_needler
+$halo_game_settings_traits_weapons_plasma_pistol
+$halo_game_settings_traits_weapons_rocket_launcher
+$halo_game_settings_traits_weapons_shotgun
+$halo_game_settings_traits_weapons_smg
+$halo_game_settings_traits_weapons_sniper_rifle
+$halo_game_settings_traits_weapons_laser
+$halo_game_settings_traits_weapons_sword
+$halo_game_settings_weapon_covenant_carbine
+$halo_game_settings_weapon_beam_rifle
+$halo_game_settings_weapon_plasma_rifle
+$halo_game_settings_traits_weapons_spiker
+$halo_game_settings_traits_weapons_excavator
+$halo_game_settings_weapon_sentinel_beam
+$halo_game_settings_traits_weapons_smg_silenced
+$halo_game_settings_traits_weapons_automag
+$halo_game_settings_weapon_brute_plasma
+$halo_game_settings_traits_weapons_golf_club
+$halo_game_settings_traits_weapons_random
+$halo_game_settings_traits_weapons_missile_pod
+$halo_game_settings_traits_weapons_machine_gun_turret
+$halo_game_settings_traits_weapons_plasma_turret
+$halo_game_settings_traits_weapons_damage_modifier_none_desc
+$halo_game_settings_traits_weapons_damage_modifier_less_desc
+$halo_game_settings_traits_weapons_damage_modifier_normal_desc
+$halo_game_settings_traits_weapons_damage_modifier_more_desc
+$halo_game_settings_traits_weapons_damage_modifier_fatal
+$halo_game_settings_traits_weapons_damage_modifier_fatal_desc
+$halo_game_settings_traits_weapons_damage_modifier
+$halo_game_settings_traits_weapons_damage_modifier_desc
+$halo_game_settings_traits_weapons_initial_primary
+$halo_game_settings_traits_weapons_initial_primary_desc
+$halo_game_settings_traits_weapons_initial_secondary
+$halo_game_settings_traits_weapons_initial_secondary_desc
+$halo_game_settings_traits_weapons_grenade_count
+$halo_game_settings_traits_weapons_grenade_count_desc
+$halo_game_settings_traits_weapons_grenade_regeneration_disabled_desc
+$halo_game_settings_traits_weapons_grenade_regeneration_enabled_h3_desc
+$halo_game_settings_traits_weapons_grenade_regeneration_enabled_h3_including_firebombs
+$halo_game_settings_traits_weapons_grenade_regeneration_enabled_h3_including_firebombs_desc
+$halo_game_settings_traits_weapons_grenade_regeneration
+$halo_game_settings_traits_weapons_grenade_regeneration_desc
+$halo_game_settings_traits_weapons_infinite_ammo_disabled_desc
+$halo_game_settings_traits_weapons_infinite_ammo_enabled
+$halo_game_settings_traits_weapons_infinite_ammo_enabled_desc
+$halo_game_settings_traits_weapons_infinite_ammo_bottomless
+$halo_game_settings_traits_weapons_infinite_ammo_bottomless_desc
+$halo_game_settings_traits_weapons_infinite_ammo
+$halo_game_settings_traits_weapons_infinite_ammo_desc
+$halo_game_settings_traits_weapons_weapon_pickup
+$halo_game_settings_traits_weapons_weapon_pickup_desc
+$halo_game_settings_traits_weapons
+$halo_game_settings_traits_weapons_desc
+$halo_game_settings_map_overrides_weapon_set_default_desc
+$halo_game_settings_map_overrides_weapon_set_assault_rifles
+$halo_game_settings_map_overrides_weapon_set_value_desc
+$halo_game_settings_map_overrides_weapon_set_duals
+$halo_game_settings_map_overrides_weapon_set_duals_desc
+$halo_game_settings_map_overrides_weapon_set_hammers
+$halo_game_settings_map_overrides_weapon_set_lasers
+$halo_game_settings_map_overrides_weapon_set_rockets
+$halo_game_settings_map_overrides_weapon_set_shotguns
+$halo_game_settings_map_overrides_weapon_set_sniper_rifles
+$halo_game_settings_map_overrides_weapon_set_swords
+$halo_game_settings_map_overrides_weapon_set_odst
+$halo_game_settings_map_overrides_weapon_set_random
+$halo_game_settings_map_overrides_weapon_set_random_desc
+$halo_game_settings_map_overrides_weapon_set_no_power_weapons
+$halo_game_settings_map_overrides_weapon_set_no_power_weapons_desc
+$halo_game_settings_map_overrides_weapon_set_no_snipers
+$halo_game_settings_map_overrides_weapon_set_no_snipers_desc
+$halo_game_settings_map_overrides_weapon_set_none
+$halo_game_settings_map_overrides_weapon_set_none_desc
+$halo_game_settings_map_overrides_weapon_set
+$halo_game_settings_map_overrides_weapon_set_desc
+$halo_game_settings_alternate_traits_weapons
+$halo_game_settings_gun_game_weapon_tier_primary_weapon
+$halo_game_settings_gun_game_weapon_tier_primary_weapon_desc
+$halo_game_settings_gun_game_weapon_tier_secondary_weapon
+$halo_game_settings_gun_game_weapon_tier_secondary_weapon_desc
+$halo_game_settings_gun_game_weapon_tier_backpack_weapon
+$halo_game_settings_gun_game_weapon_tier_backpack_weapon_desc
+$halo_game_settings_gun_game_weapon_tier_equipment
+$halo_game_settings_gun_game_weapon_tier_equipment_desc
+$halo_game_settings_gun_game_weapon_tier_grenade_count_fragmentation
+$halo_game_settings_gun_game_weapon_tier_grenade_count_fragmentation_desc
+$halo_game_settings_gun_game_weapon_tier_grenade_count_plasma
+$halo_game_settings_gun_game_weapon_tier_grenade_count_plasma_desc
+$halo_game_settings_gun_game_weapon_tier_grenade_count_claymore
+$halo_game_settings_gun_game_weapon_tier_grenade_count_claymore_desc
+$halo_game_settings_gun_game_weapon_tier_grenade_count_firebomb
+$halo_game_settings_gun_game_weapon_tier_grenade_count_firebomb_desc
+$halo_game_settings_gun_game_weapon_tier_properties
+weapon set absolute index= %d
+initial primary weapon absolute index= %d
+initial secondary weapon absolute index= %d
+weapon pickup= %s
+inhibits weapon attack
+forces drop weapon
+kills weapon primary trigger
+kills weapon secondary trigger
+damages weapon primary trigger
+damages weapon secondary trigger
+* forces drop weapon: from halo 1 - makes the unit drop its current weapon
+* kills weapon <x> trigger: destroys the <x> trigger on the unit's current weapon
+result_weapon_class
+result_weapon_type
+bipeds: %d   vehicles: %d   weapons: %d   other: %d
+sizeof(_weapon_definition)
+sizeof(struct weapon_interface_definition_new)
+sizeof(struct weapon_hud_interface_definition)
+weapon->weapon.multiplayer_weapon_identifier>=0 && weapon->weapon.multiplayer_weapon_identifier<k_ctf_flag_count
+weapon_to_delete_count<NUMBEROF(weapons_to_delete)
+weapon_definition_index
+game_engine:oddball: oddball spawn location '%s' does not contain a valid spawned oddball weapon
+weapon_get_multiplayer_type(ball_tracker->weapon_index)==_weapon_multiplayer_type_oddball_ball
+!gun_game_globals->networked.runtime_weapon_tiers.full()
+game_engine:gun_game: active variant contains no valid weapon tiers.
+gun_game_globals->networked.runtime_weapon_tiers.valid()
+IN_RANGE_INCLUSIVE(gun_game_globals->networked.shared_tier_seconds, NONE, k_maximum_gun_game_weapon_upgrade_seconds)
+IN_RANGE_INCLUSIVE(player_data->networked.weapon_upgrade_seconds, NONE, k_maximum_gun_game_weapon_upgrade_seconds)
+weapon upgrade timer= %d seconds
+weapon tier %d primary weapon= %s
+weapon tier %d secondary weapon= %s
+weapon tier %d backpack weapon= %s
+weapon tier %d equipment= %s
+weapon tier %d frag grenade count= %d
+weapon tier %d plasma grenade count= %d
+weapon tier %d claymore grenade count= %d
+weapon tier %d firebomb grenade count= %d
+next_weapon_tier->weapon_definition_indices[_gun_game_weapon_slot_primary] != NONE
+required_encoding_bits_for_count(game_seconds_integer_to_ticks(weapon_upgrade_seconds)) <= k_short_bits
+IN_RANGE_INCLUSIVE(current_tier_index, 0, gun_game_get_highest_available_weapon_tier_index())
+current_weapon_tier
+current_secondary_weapon_index != NONE
+current_weapon_tier->weapon_definition_indices[_gun_game_weapon_slot_secondary] == NONE
+IN_RANGE_INCLUSIVE(next_tier_index, 0, gun_game_get_highest_available_weapon_tier_index())
+weapon_modifier
+* DEFAULT: Use for mask bitmaps that are mirrored and offset through the texcoords supplied to the screen effect (e.g. through the weapon HUD interface). The shader system must handle scaling.
+* VIEWPORT NORMALIZED: Use when copying from texaccum or some other buffer or when applying a texture that is not an interface mask (e.g. another kind of mask, a noise map, etc. which is not mirrored or offset through the weapon HUD interface). Texture coordinates will range from [0,1][0,1] within t
+objects\weapons\melee\energy_blade\fx\particles\electric_bolts
+objects\weapons\melee\energy_blade\fx\particles\electric_bolts_green
+objects\weapons\melee\energy_blade\fx\particles\electric_bolts_orange
+objects\weapons\melee\energy_blade\fx\particles\electric_bolts_pink
+objects\weapons\melee\energy_blade\fx\particles\electric_bolts_purple
+objects\weapons\melee\energy_blade\fx\particles\electric_bolts_red
+objects\weapons\melee\energy_blade\fx\particles\electric_bolts_white
+objects\weapons\melee\energy_blade\fx\particles\electric_bolts_yellow
+objects\weapons\melee\energy_blade\fx\particles\energy_blade_activate
+objects\weapons\melee\energy_blade\fx\particles\energy_blade_activate_green
+objects\weapons\melee\energy_blade\fx\particles\energy_blade_activate_orange
+objects\weapons\melee\energy_blade\fx\particles\energy_blade_activate_pink
+objects\weapons\melee\energy_blade\fx\particles\energy_blade_activate_purple
+objects\weapons\melee\energy_blade\fx\particles\energy_blade_activate_red
+objects\weapons\melee\energy_blade\fx\particles\energy_blade_activate_white
+objects\weapons\melee\energy_blade\fx\particles\energy_blade_activate_yellow
+objects\weapons\melee\energy_blade\fx\particles\energy_pulse
+objects\weapons\melee\energy_blade\fx\particles\energy_pulse_green
+objects\weapons\melee\energy_blade\fx\particles\energy_pulse_orange
+objects\weapons\melee\energy_blade\fx\particles\energy_pulse_pink
+objects\weapons\melee\energy_blade\fx\particles\energy_pulse_purple
+objects\weapons\melee\energy_blade\fx\particles\energy_pulse_red
+objects\weapons\melee\energy_blade\fx\particles\energy_pulse_white
+objects\weapons\melee\energy_blade\fx\particles\energy_pulse_yellow
+objects\weapons\melee\energy_blade\fx\particles\plasma_wispy
+objects\weapons\melee\energy_blade\fx\particles\plasma_wispy_green
+objects\weapons\melee\energy_blade\fx\particles\plasma_wispy_orange
+objects\weapons\melee\energy_blade\fx\particles\plasma_wispy_pink
+objects\weapons\melee\energy_blade\fx\particles\plasma_wispy_purple
+objects\weapons\melee\energy_blade\fx\particles\plasma_wispy_red
+objects\weapons\melee\energy_blade\fx\particles\plasma_wispy_white
+objects\weapons\melee\energy_blade\fx\particles\plasma_wispy_yellow
+!"skin id out of bounds for weapons"
+NONE==get_active_chud_definition_index(chud_definition_index, weapon_index)
+weapon ammo loaded
+weapon ammo reserve
+weapon heat
+weapon battery
+weapon charge
+player navpoint (firing)
+weapon stats
+weapon swap hack
+support weapon
+chud_weapon_impulse_state_enum
+chud_weapon_armed_state_enum
+chud_weapon_crosshair_state_enum
+chud_weapon_misc_state_enum
+chud_flash_non_weapon_state_enum
+chud_flash_weapon_state_enum
+backpack weapon unavailable
+weapon impulse state
+weapon armed state
+weapon crosshair state
+weapon misc state
+non weapon flash
+weapon flash
+weapon target
+Dual Wield - Offset used when wielding more than one weapon.
+None - Offset used when NOT dual wielding and grenades are NOT available (carrying support weapons, in a vehicle, etc).
+template initial primary weapon
+template initial secondary weapon
+template weapon pickup
+_base_player_traits_weapons
+_respawn_traits_weapons
+_red_powerup_traits_weapons
+_blue_powerup_traits_weapons
+_yellow_powerup_traits_weapons
+_slayer_leader_traits_weapons
+_oddball_carrier_traits_weapons
+_assault_carrier_traits_weapons
+_ctf_carrier_traits_weapons
+_juggernaut_traits_weapons
+_king_hill_traits_weapons
+_zombie_traits_weapons
+_first_zombie_traits_weapons
+_safe_haven_traits_weapons
+_infection_last_human_traits_weapons
+_target_dummy_traits_weapons
+_territory_defender_traits_weapons
+_territory_attacker_traits_weapons
+_vip_team_traits_weapons
+_vip_influence_traits_weapons
+_vip_traits_weapons
+_sandbox_editor_traits_weapons
+_player_template_traits_weapons
+_player_alternate_template_traits_weapons
+_gun_game_weapon_tier_0_category_options
+_gun_game_weapon_tier_1_category_options
+_gun_game_weapon_tier_2_category_options
+_gun_game_weapon_tier_3_category_options
+_gun_game_weapon_tier_4_category_options
+_gun_game_weapon_tier_5_category_options
+_gun_game_weapon_tier_6_category_options
+_gun_game_weapon_tier_7_category_options
+_gun_game_weapon_tier_8_category_options
+_gun_game_weapon_tier_9_category_options
+_gun_game_weapon_tier_10_category_options
+_gun_game_weapon_tier_11_category_options
+_gun_game_weapon_tier_12_category_options
+_gun_game_weapon_tier_13_category_options
+_gun_game_weapon_tier_14_category_options
+_gun_game_weapon_tier_15_category_options
+_gun_game_weapon_tier_16_category_options
+_gun_game_weapon_tier_17_category_options
+_gun_game_weapon_tier_18_category_options
+_gun_game_weapon_tier_19_category_options
+_gun_game_weapon_tier_20_category_options
+_gun_game_weapon_tier_21_category_options
+_gun_game_weapon_tier_22_category_options
+_gun_game_weapon_tier_23_category_options
+_gun_game_weapon_tier_24_category_options
+_gun_game_weapon_tier_25_category_options
+_gun_game_weapon_tier_26_category_options
+_gun_game_weapon_tier_27_category_options
+_gun_game_weapon_tier_28_category_options
+_gun_game_weapon_tier_29_category_options
+_gun_game_weapon_tier_30_category_options
+_gun_game_weapon_tier_31_category_options
+_gun_game_final_tier_traits_weapons
+_gun_game_leader_traits_weapons
+_gun_game_one_kill_in_a_row_traits_weapons
+_gun_game_two_kills_in_a_row_traits_weapons
+_gun_game_three_kills_in_a_row_traits_weapons
+_gun_game_four_kills_in_a_row_traits_weapons
+_gun_game_five_kills_in_a_row_traits_weapons
+_respawn_initial_primary_weapon
+_respawn_initial_secondary_weapon
+_respawn_weapon_pickup
+_player_initial_primary_weapon
+_player_initial_secondary_weapon
+_player_weapon_pickup
+_game_variant_map_override_weapon_set
+_red_powerup_initial_primary_weapon
+_red_powerup_initial_secondary_weapon
+_red_powerup_weapon_pickup
+_blue_powerup_initial_primary_weapon
+_blue_powerup_initial_secondary_weapon
+_blue_powerup_weapon_pickup
+_yellow_powerup_initial_primary_weapon
+_yellow_powerup_initial_secondary_weapon
+_yellow_powerup_weapon_pickup
+_slayer_leader_initial_primary_weapon
+_slayer_leader_initial_secondary_weapon
+_slayer_leader_weapon_pickup
+_ball_carrier_initial_primary_weapon
+_ball_carrier_initial_secondary_weapon
+_ball_carrier_weapon_pickup
+_flag_carrier_initial_primary_weapon
+_flag_carrier_initial_secondary_weapon
+_flag_carrier_weapon_pickup
+_zombie_initial_primary_weapon
+_zombie_initial_secondary_weapon
+_zombie_weapon_pickup
+_first_zombie_initial_primary_weapon
+_first_zombie_initial_secondary_weapon
+_first_zombie_weapon_pickup
+_haven_defender_initial_primary_weapon
+_haven_defender_initial_secondary_weapon
+_haven_defender_weapon_pickup
+_last_human_initial_primary_weapon
+_last_human_initial_secondary_weapon
+_last_human_weapon_pickup
+_on_hill_initial_primary_weapon
+_on_hill_initial_secondary_weapon
+_on_hill_weapon_pickup
+_territory_defender_initial_primary_weapon
+_territory_defender_initial_secondary_weapon
+_territory_defender_weapon_pickup
+_territory_attacker_initial_primary_weapon
+_territory_attacker_initial_secondary_weapon
+_territory_attacker_weapon_pickup
+_vip_team_initial_primary_weapon
+_vip_team_initial_secondary_weapon
+_vip_team_weapon_pickup
+_vip_influence_initial_primary_weapon
+_vip_influence_initial_secondary_weapon
+_vip_influence_weapon_pickup
+_vip_initial_primary_weapon
+_vip_initial_secondary_weapon
+_vip_weapon_pickup
+_juggernaut_initial_primary_weapon
+_juggernaut_initial_secondary_weapon
+_juggernaut_weapon_pickup
+_assault_arming_initial_primary_weapon
+_assault_arming_initial_secondary_weapon
+_assault_arming_weapon_pickup
+_assault_carrier_initial_primary_weapon
+_assault_carrier_initial_secondary_weapon
+_assault_carrier_weapon_pickup
+_sandbox_editor_initial_primary_weapon
+_sandbox_editor_initial_secondary_weapon
+_sandbox_editor_weapon_pickup
+_template_initial_primary_weapon
+_template_initial_secondary_weapon
+_template_weapon_pickup
+_gun_game_weapon_upgrade_seconds
+_gun_game_weapon_tier_0_primary_weapon
+_gun_game_weapon_tier_0_secondary_weapon
+_gun_game_weapon_tier_0_backpack_weapon
+_gun_game_weapon_tier_0_equipment
+_gun_game_weapon_tier_0_grenade_count_fragmentation
+_gun_game_weapon_tier_0_grenade_count_plasma
+_gun_game_weapon_tier_0_grenade_count_claymore
+_gun_game_weapon_tier_0_grenade_count_firebomb
+_gun_game_weapon_tier_1_primary_weapon
+_gun_game_weapon_tier_1_secondary_weapon
+_gun_game_weapon_tier_1_backpack_weapon
+_gun_game_weapon_tier_1_equipment
+_gun_game_weapon_tier_1_grenade_count_fragmentation
+_gun_game_weapon_tier_1_grenade_count_plasma
+_gun_game_weapon_tier_1_grenade_count_claymore
+_gun_game_weapon_tier_1_grenade_count_firebomb
+_gun_game_weapon_tier_2_primary_weapon
+_gun_game_weapon_tier_2_secondary_weapon
+_gun_game_weapon_tier_2_backpack_weapon
+_gun_game_weapon_tier_2_equipment
+_gun_game_weapon_tier_2_grenade_count_fragmentation
+_gun_game_weapon_tier_2_grenade_count_plasma
+_gun_game_weapon_tier_2_grenade_count_claymore
+_gun_game_weapon_tier_2_grenade_count_firebomb
+_gun_game_weapon_tier_3_primary_weapon
+_gun_game_weapon_tier_3_secondary_weapon
+_gun_game_weapon_tier_3_backpack_weapon
+_gun_game_weapon_tier_3_equipment
+_gun_game_weapon_tier_3_grenade_count_fragmentation
+_gun_game_weapon_tier_3_grenade_count_plasma
+_gun_game_weapon_tier_3_grenade_count_claymore
+_gun_game_weapon_tier_3_grenade_count_firebomb
+_gun_game_weapon_tier_4_primary_weapon
+_gun_game_weapon_tier_4_secondary_weapon
+_gun_game_weapon_tier_4_backpack_weapon
+_gun_game_weapon_tier_4_equipment
+_gun_game_weapon_tier_4_grenade_count_fragmentation
+_gun_game_weapon_tier_4_grenade_count_plasma
+_gun_game_weapon_tier_4_grenade_count_claymore
+_gun_game_weapon_tier_4_grenade_count_firebomb
+_gun_game_weapon_tier_5_primary_weapon
+_gun_game_weapon_tier_5_secondary_weapon
+_gun_game_weapon_tier_5_backpack_weapon
+_gun_game_weapon_tier_5_equipment
+_gun_game_weapon_tier_5_grenade_count_fragmentation
+_gun_game_weapon_tier_5_grenade_count_plasma
+_gun_game_weapon_tier_5_grenade_count_claymore
+_gun_game_weapon_tier_5_grenade_count_firebomb
+_gun_game_weapon_tier_6_primary_weapon
+_gun_game_weapon_tier_6_secondary_weapon
+_gun_game_weapon_tier_6_backpack_weapon
+_gun_game_weapon_tier_6_equipment
+_gun_game_weapon_tier_6_grenade_count_fragmentation
+_gun_game_weapon_tier_6_grenade_count_plasma
+_gun_game_weapon_tier_6_grenade_count_claymore
+_gun_game_weapon_tier_6_grenade_count_firebomb
+_gun_game_weapon_tier_7_primary_weapon
+_gun_game_weapon_tier_7_secondary_weapon
+_gun_game_weapon_tier_7_backpack_weapon
+_gun_game_weapon_tier_7_equipment
+_gun_game_weapon_tier_7_grenade_count_fragmentation
+_gun_game_weapon_tier_7_grenade_count_plasma
+_gun_game_weapon_tier_7_grenade_count_claymore
+_gun_game_weapon_tier_7_grenade_count_firebomb
+_gun_game_weapon_tier_8_primary_weapon
+_gun_game_weapon_tier_8_secondary_weapon
+_gun_game_weapon_tier_8_backpack_weapon
+_gun_game_weapon_tier_8_equipment
+_gun_game_weapon_tier_8_grenade_count_fragmentation
+_gun_game_weapon_tier_8_grenade_count_plasma
+_gun_game_weapon_tier_8_grenade_count_claymore
+_gun_game_weapon_tier_8_grenade_count_firebomb
+_gun_game_weapon_tier_9_primary_weapon
+_gun_game_weapon_tier_9_secondary_weapon
+_gun_game_weapon_tier_9_backpack_weapon
+_gun_game_weapon_tier_9_equipment
+_gun_game_weapon_tier_9_grenade_count_fragmentation
+_gun_game_weapon_tier_9_grenade_count_plasma
+_gun_game_weapon_tier_9_grenade_count_claymore
+_gun_game_weapon_tier_9_grenade_count_firebomb
+_gun_game_weapon_tier_10_primary_weapon
+_gun_game_weapon_tier_10_secondary_weapon
+_gun_game_weapon_tier_10_backpack_weapon
+_gun_game_weapon_tier_10_equipment
+_gun_game_weapon_tier_10_grenade_count_fragmentation
+_gun_game_weapon_tier_10_grenade_count_plasma
+_gun_game_weapon_tier_10_grenade_count_claymore
+_gun_game_weapon_tier_10_grenade_count_firebomb
+_gun_game_weapon_tier_11_primary_weapon
+_gun_game_weapon_tier_11_secondary_weapon
+_gun_game_weapon_tier_11_backpack_weapon
+_gun_game_weapon_tier_11_equipment
+_gun_game_weapon_tier_11_grenade_count_fragmentation
+_gun_game_weapon_tier_11_grenade_count_plasma
+_gun_game_weapon_tier_11_grenade_count_claymore
+_gun_game_weapon_tier_11_grenade_count_firebomb
+_gun_game_weapon_tier_12_primary_weapon
+_gun_game_weapon_tier_12_secondary_weapon
+_gun_game_weapon_tier_12_backpack_weapon
+_gun_game_weapon_tier_12_equipment
+_gun_game_weapon_tier_12_grenade_count_fragmentation
+_gun_game_weapon_tier_12_grenade_count_plasma
+_gun_game_weapon_tier_12_grenade_count_claymore
+_gun_game_weapon_tier_12_grenade_count_firebomb
+_gun_game_weapon_tier_13_primary_weapon
+_gun_game_weapon_tier_13_secondary_weapon
+_gun_game_weapon_tier_13_backpack_weapon
+_gun_game_weapon_tier_13_equipment
+_gun_game_weapon_tier_13_grenade_count_fragmentation
+_gun_game_weapon_tier_13_grenade_count_plasma
+_gun_game_weapon_tier_13_grenade_count_claymore
+_gun_game_weapon_tier_13_grenade_count_firebomb
+_gun_game_weapon_tier_14_primary_weapon
+_gun_game_weapon_tier_14_secondary_weapon
+_gun_game_weapon_tier_14_backpack_weapon
+_gun_game_weapon_tier_14_equipment
+_gun_game_weapon_tier_14_grenade_count_fragmentation
+_gun_game_weapon_tier_14_grenade_count_plasma
+_gun_game_weapon_tier_14_grenade_count_claymore
+_gun_game_weapon_tier_14_grenade_count_firebomb
+_gun_game_weapon_tier_15_primary_weapon
+_gun_game_weapon_tier_15_secondary_weapon
+_gun_game_weapon_tier_15_backpack_weapon
+_gun_game_weapon_tier_15_equipment
+_gun_game_weapon_tier_15_grenade_count_fragmentation
+_gun_game_weapon_tier_15_grenade_count_plasma
+_gun_game_weapon_tier_15_grenade_count_claymore
+_gun_game_weapon_tier_15_grenade_count_firebomb
+_gun_game_weapon_tier_16_primary_weapon
+_gun_game_weapon_tier_16_secondary_weapon
+_gun_game_weapon_tier_16_backpack_weapon
+_gun_game_weapon_tier_16_equipment
+_gun_game_weapon_tier_16_grenade_count_fragmentation
+_gun_game_weapon_tier_16_grenade_count_plasma
+_gun_game_weapon_tier_16_grenade_count_claymore
+_gun_game_weapon_tier_16_grenade_count_firebomb
+_gun_game_weapon_tier_17_primary_weapon
+_gun_game_weapon_tier_17_secondary_weapon
+_gun_game_weapon_tier_17_backpack_weapon
+_gun_game_weapon_tier_17_equipment
+_gun_game_weapon_tier_17_grenade_count_fragmentation
+_gun_game_weapon_tier_17_grenade_count_plasma
+_gun_game_weapon_tier_17_grenade_count_claymore
+_gun_game_weapon_tier_17_grenade_count_firebomb
+_gun_game_weapon_tier_18_primary_weapon
+_gun_game_weapon_tier_18_secondary_weapon
+_gun_game_weapon_tier_18_backpack_weapon
+_gun_game_weapon_tier_18_equipment
+_gun_game_weapon_tier_18_grenade_count_fragmentation
+_gun_game_weapon_tier_18_grenade_count_plasma
+_gun_game_weapon_tier_18_grenade_count_claymore
+_gun_game_weapon_tier_18_grenade_count_firebomb
+_gun_game_weapon_tier_19_primary_weapon
+_gun_game_weapon_tier_19_secondary_weapon
+_gun_game_weapon_tier_19_backpack_weapon
+_gun_game_weapon_tier_19_equipment
+_gun_game_weapon_tier_19_grenade_count_fragmentation
+_gun_game_weapon_tier_19_grenade_count_plasma
+_gun_game_weapon_tier_19_grenade_count_claymore
+_gun_game_weapon_tier_19_grenade_count_firebomb
+_gun_game_weapon_tier_20_primary_weapon
+_gun_game_weapon_tier_20_secondary_weapon
+_gun_game_weapon_tier_20_backpack_weapon
+_gun_game_weapon_tier_20_equipment
+_gun_game_weapon_tier_20_grenade_count_fragmentation
+_gun_game_weapon_tier_20_grenade_count_plasma
+_gun_game_weapon_tier_20_grenade_count_claymore
+_gun_game_weapon_tier_20_grenade_count_firebomb
+_gun_game_weapon_tier_21_primary_weapon
+_gun_game_weapon_tier_21_secondary_weapon
+_gun_game_weapon_tier_21_backpack_weapon
+_gun_game_weapon_tier_21_equipment
+_gun_game_weapon_tier_21_grenade_count_fragmentation
+_gun_game_weapon_tier_21_grenade_count_plasma
+_gun_game_weapon_tier_21_grenade_count_claymore
+_gun_game_weapon_tier_21_grenade_count_firebomb
+_gun_game_weapon_tier_22_primary_weapon
+_gun_game_weapon_tier_22_secondary_weapon
+_gun_game_weapon_tier_22_backpack_weapon
+_gun_game_weapon_tier_22_equipment
+_gun_game_weapon_tier_22_grenade_count_fragmentation
+_gun_game_weapon_tier_22_grenade_count_plasma
+_gun_game_weapon_tier_22_grenade_count_claymore
+_gun_game_weapon_tier_22_grenade_count_firebomb
+_gun_game_weapon_tier_23_primary_weapon
+_gun_game_weapon_tier_23_secondary_weapon
+_gun_game_weapon_tier_23_backpack_weapon
+_gun_game_weapon_tier_23_equipment
+_gun_game_weapon_tier_23_grenade_count_fragmentation
+_gun_game_weapon_tier_23_grenade_count_plasma
+_gun_game_weapon_tier_23_grenade_count_claymore
+_gun_game_weapon_tier_23_grenade_count_firebomb
+_gun_game_weapon_tier_24_primary_weapon
+_gun_game_weapon_tier_24_secondary_weapon
+_gun_game_weapon_tier_24_backpack_weapon
+_gun_game_weapon_tier_24_equipment
+_gun_game_weapon_tier_24_grenade_count_fragmentation
+_gun_game_weapon_tier_24_grenade_count_plasma
+_gun_game_weapon_tier_24_grenade_count_claymore
+_gun_game_weapon_tier_24_grenade_count_firebomb
+_gun_game_weapon_tier_25_primary_weapon
+_gun_game_weapon_tier_25_secondary_weapon
+_gun_game_weapon_tier_25_backpack_weapon
+_gun_game_weapon_tier_25_equipment
+_gun_game_weapon_tier_25_grenade_count_fragmentation
+_gun_game_weapon_tier_25_grenade_count_plasma
+_gun_game_weapon_tier_25_grenade_count_claymore
+_gun_game_weapon_tier_25_grenade_count_firebomb
+_gun_game_weapon_tier_26_primary_weapon
+_gun_game_weapon_tier_26_secondary_weapon
+_gun_game_weapon_tier_26_backpack_weapon
+_gun_game_weapon_tier_26_equipment
+_gun_game_weapon_tier_26_grenade_count_fragmentation
+_gun_game_weapon_tier_26_grenade_count_plasma
+_gun_game_weapon_tier_26_grenade_count_claymore
+_gun_game_weapon_tier_26_grenade_count_firebomb
+_gun_game_weapon_tier_27_primary_weapon
+_gun_game_weapon_tier_27_secondary_weapon
+_gun_game_weapon_tier_27_backpack_weapon
+_gun_game_weapon_tier_27_equipment
+_gun_game_weapon_tier_27_grenade_count_fragmentation
+_gun_game_weapon_tier_27_grenade_count_plasma
+_gun_game_weapon_tier_27_grenade_count_claymore
+_gun_game_weapon_tier_27_grenade_count_firebomb
+_gun_game_weapon_tier_28_primary_weapon
+_gun_game_weapon_tier_28_secondary_weapon
+_gun_game_weapon_tier_28_backpack_weapon
+_gun_game_weapon_tier_28_equipment
+_gun_game_weapon_tier_28_grenade_count_fragmentation
+_gun_game_weapon_tier_28_grenade_count_plasma
+_gun_game_weapon_tier_28_grenade_count_claymore
+_gun_game_weapon_tier_28_grenade_count_firebomb
+_gun_game_weapon_tier_29_primary_weapon
+_gun_game_weapon_tier_29_secondary_weapon
+_gun_game_weapon_tier_29_backpack_weapon
+_gun_game_weapon_tier_29_equipment
+_gun_game_weapon_tier_29_grenade_count_fragmentation
+_gun_game_weapon_tier_29_grenade_count_plasma
+_gun_game_weapon_tier_29_grenade_count_claymore
+_gun_game_weapon_tier_29_grenade_count_firebomb
+_gun_game_weapon_tier_30_primary_weapon
+_gun_game_weapon_tier_30_secondary_weapon
+_gun_game_weapon_tier_30_backpack_weapon
+_gun_game_weapon_tier_30_equipment
+_gun_game_weapon_tier_30_grenade_count_fragmentation
+_gun_game_weapon_tier_30_grenade_count_plasma
+_gun_game_weapon_tier_30_grenade_count_claymore
+_gun_game_weapon_tier_30_grenade_count_firebomb
+_gun_game_weapon_tier_31_primary_weapon
+_gun_game_weapon_tier_31_secondary_weapon
+_gun_game_weapon_tier_31_backpack_weapon
+_gun_game_weapon_tier_31_equipment
+_gun_game_weapon_tier_31_grenade_count_fragmentation
+_gun_game_weapon_tier_31_grenade_count_plasma
+_gun_game_weapon_tier_31_grenade_count_claymore
+_gun_game_weapon_tier_31_grenade_count_firebomb
+_gun_game_final_tier_initial_primary_weapon
+_gun_game_final_tier_initial_secondary_weapon
+_gun_game_final_tier_weapon_pickup
+_gun_game_leader_initial_primary_weapon
+_gun_game_leader_initial_secondary_weapon
+_gun_game_leader_weapon_pickup
+_gun_game_one_kill_in_a_row_initial_primary_weapon
+_gun_game_one_kill_in_a_row_initial_secondary_weapon
+_gun_game_one_kill_in_a_row_weapon_pickup
+_gun_game_two_kills_in_a_row_initial_primary_weapon
+_gun_game_two_kills_in_a_row_initial_secondary_weapon
+_gun_game_two_kills_in_a_row_weapon_pickup
+_gun_game_three_kills_in_a_row_initial_primary_weapon
+_gun_game_three_kills_in_a_row_initial_secondary_weapon
+_gun_game_three_kills_in_a_row_weapon_pickup
+_gun_game_four_kills_in_a_row_initial_primary_weapon
+_gun_game_four_kills_in_a_row_initial_secondary_weapon
+_gun_game_four_kills_in_a_row_weapon_pickup
+_gun_game_five_kills_in_a_row_initial_primary_weapon
+_gun_game_five_kills_in_a_row_initial_secondary_weapon
+_gun_game_five_kills_in_a_row_weapon_pickup
+base player traits weapons
+respawntraits traits weapons
+red powerup traits weapons
+blue powerup traits weapons
+yellow powerup traits weapons
+slayer leader traits weapons
+oddball carrier traits weapons
+assult carrier traits weapons
+ctf carrier traits weapons
+juggernaut traits weapons
+king hill traits weapons
+zombie traits weapons
+1st zombie traits weapons
+safe haven traits weapons
+last human traits weapons
+target dummy traits weapons
+territory defender traits weapons
+territory attacker traits weapons
+vip team traits weapons
+vip influence traits weapons
+vip traits weapons
+sandbox editor traits weapons
+player template traits weapons
+player_alternate template traits weapons
+respawn initial primary weapon
+respawn initial secondary weapon
+respawn weapon pickup
+player initial primary weapon
+player initial secondary weapon
+player weapon pickup
+game map weapon set
+red powerup initial primary weapon
+red powerup initial secondary weapon
+red powerup weapon pickup
+blue powerup initial primary weapon
+blue powerup initial secondary weapon
+blue powerup weapon pickup
+yellow powerup initial primary weapon
+yellow powerup initial secondary weapon
+yellow powerup weapon pickup
+slayer leader initial primary weapon
+slayer leader initial secondary weapon
+slayer leader weapon pickup
+oddball carrier initial primary weapon
+oddball carrier initial secondary weapon
+oddball carrier weapon pickup
+ctf carrier initial primary weapon
+ctf carrier initial secondary weapon
+ctf carrier weapon pickup
+zombie initial primary weapon
+zombie initial secondary weapon
+zombie weapon pickup
+1st zombie initial primary weapon
+1st zombie initial secondary weapon
+1st zombie weapon pickup
+haven defender initial primary weapon
+haven defender initial secondary weapon
+haven defender weapon pickup
+last human initial primary weapon
+last human initial secondary weapon
+last human weapon pickup
+in hill initial primary weapon
+in hill initial secondary weapon
+in hill weapon pickup
+territory defender initial primary weapon
+territory defender initial secondary weapon
+territory defender weapon pickup
+territory attacker initial primary weapon
+territory attacker initial secondary weapon
+territory attacker weapon pickup
+vip team initial primary weapon
+vip team initial secondary weapon
+vip team weapon pickup
+vip influence initial primary weapon
+vip influence initial secondary weapon
+vip influence weapon pickup
+vip initial primary weapon
+vip initial secondary weapon
+vip weapon pickup
+juggernaut initial primary weapon
+juggernaut initial secondary weapon
+juggernaut weapon pickup
+assault_arming initial primary weapon
+assault_arming initial secondary weapon
+assault_arming weapon pickup
+assault_carrier initial primary weapon
+assault_carrier initial secondary weapon
+assault_carrier weapon pickup
+sandbox_editor initial primary weapon
+sandbox_editor initial secondary weapon
+sandbox_editor weapon pickup
+c:\mcc\release\h3\source\interface\first_person_weapons.cpp
+weapon_slot>=0 && weapon_slot<k_first_person_max_weapons
+first_person_weapons
+fp weapons
+node_matrices_count == weapon_data->node_matrices_count
+weapon_ik= %.02f
+first_person_validate_weapon_lowering_flags(user_index)
+weapon_data->weapon_node_remapping_table_count==weapon_data->attachment.weapon_node_count
+weapon_data->weapon_node_remapping_table_count==weapon_model->nodes.count
+weapon_data->hands_node_remapping_table_count==weapon_data->attachment.hands_node_count
+weapon_data->hands_node_remapping_table_count==hands_model->nodes.count
+VALID_COUNT(weapon_data->node_orientations_count, NUMBEROF(weapon_orientations->node_orientations))
+VALID_COUNT(weapon_model->nodes.count, NUMBEROF(weapon_data->weapon_node_remapping_table))
+animation_graph_node_index>=0 && animation_graph_node_index<weapon_data->node_orientations_count
+VALID_COUNT(hands_model->nodes.count, NUMBEROF(weapon_data->hands_node_remapping_table))
+weapon_data->node_orientations_count==animation_manager->get_node_count()
+VALID_INDEX(weapon_data->camera_control_node, NUMBEROF(weapon_data->node_matrices))
+weapon_data->hands_node_remapping_table_count==attachment->hands_node_count
+VALID_COUNT(weapon_data->hands_node_remapping_table_count, NUMBEROF(weapon_data->hands_node_remapping_table))
+weapon_data->weapon_node_remapping_table_count==attachment->weapon_node_count
+TEST_BIT(weapon_data->flags, _weapon_attached_bit)
+weapon_data->attachment.unit_index!=NONE
+weapon_data->attachment.weapon_index!=NONE
+fp_weapon is lowering and raising at the same time
+fp_weapon is lowered and lowering
+objects: unit '%s' has no animation graph and cannot be created
+current_weapon_num>=0 && current_weapon_num<k_maximum_weapons_per_unit
+control_data->weapon_set.weapon_indices[_unit_weapon_set_primary]==NONE || (control_data->weapon_set.weapon_indices[_unit_weapon_set_primary]>=0 && control_data->weapon_set.weapon_indices[_unit_weapon_set_primary]<k_maximum_weapons_per_unit)
+control_data->weapon_set.weapon_indices[_unit_weapon_set_secondary]==NONE || (control_data->weapon_set.weapon_indices[_unit_weapon_set_secondary]>=0 && control_data->weapon_set.weapon_indices[_unit_weapon_set_secondary]<k_maximum_weapons_per_unit)
+control_data->weapon_set.weapon_indices[_unit_weapon_set_primary]==NONE || (control_data->weapon_set.weapon_indices[_unit_weapon_set_primary]!=control_data->weapon_set.weapon_indices[_unit_weapon_set_secondary])
+weapon-user-busy
+weapon-fire
+unit_add_equipment: could not attach starting weapon to unit
+unit_add_equipment: could not create starting weapon
+unit->unit.current_weapon_set.weapon_indices[_unit_weapon_set_primary]==NONE
+unit->unit.current_weapon_set.weapon_indices[_unit_weapon_set_secondary]==NONE
+unit_get_current_secondary_weapon(unit_index)==NONE
+VALID_COUNT(new_weapon_definition->weapon.magazines.count, NUMBEROF(new_weapon->weapon.magazines))
+current_index>=0 && current_index<k_maximum_weapons_per_unit
+inventory_index>=0 && inventory_index<k_maximum_weapons_per_unit
+weapon_get(weapon_index)->item.inventory_unit_index==unit_index
+unit->unit.weapon_object_indices[inventory_index]==NONE
+drop_type!=_unit_drop_type_delete || TEST_BIT(object_header_get(weapon_index)->flags, _object_header_being_deleted_bit)
+inventory_index!=unit->unit.current_weapon_set.weapon_indices[_unit_weapon_set_primary]
+inventory_index!=unit->unit.current_weapon_set.weapon_indices[_unit_weapon_set_secondary]
+weapon_index!=NONE
+unit->unit.current_weapon_set.set_identifier==unit->unit.desired_weapon_set.set_identifier
+weapon_inventory_index>=0 && weapon_inventory_index<k_maximum_weapons_per_unit
+unit->unit.weapon_object_indices[weapon_inventory_index]!=NONE
+unit->unit.desired_weapon_set.weapon_indices[weapon_set_index]>=0 && unit->unit.desired_weapon_set.weapon_indices[weapon_set_index]<k_maximum_weapons_per_unit
+weapon->item.inventory_state==_item_inventory_state_readied
+weapon->item.inventory_state==_item_inventory_state_hidden || weapon->item.inventory_state==_item_inventory_state_stowed
+weapon_set
+weapon_set->weapon_indices[_unit_weapon_set_primary]==NONE || (weapon_set->weapon_indices[_unit_weapon_set_primary]!=weapon_set->weapon_indices[_unit_weapon_set_secondary])
+!TEST_FLAG(weapon->object.flags, _object_in_limbo_bit)
+networking:simulation:weapons: gamestate 0x%08X unit 0x%08X pickup %s/%d
+### unit_set_weapon unable to create weapon (out of objects)
+primary_weapon_index != NONE
+secondary_weapon_index != NONE
+killer weapon
+_action_weapon_pickup
+_action_weapon_trade
+_action_primary_weapon_drop
+_action_secondary_weapon_drop
+_action_primary_weapon_switch
+_action_secondary_weapon_switch
+_action_primary_weapon_primary_reload
+_action_primary_weapon_secondary_reload
+_action_secondary_weapon_primary_reload
+_action_secondary_weapon_secondary_reload
+_action_primary_weapon_primary_recoil
+_action_primary_weapon_secondary_recoil
+_action_primary_weapon_primary_chamber
+_action_primary_weapon_secondary_chamber
+_action_primary_weapon_primary_charged
+_action_primary_weapon_secondary_charged
+_action_secondary_weapon_primary_recoil
+_action_secondary_weapon_secondary_recoil
+_action_secondary_weapon_primary_chamber
+_action_secondary_weapon_secondary_chamber
+_action_secondary_weapon_primary_charged
+_action_secondary_weapon_secondary_charged
+_action_primary_weapon_overheat_enter
+_action_primary_weapon_overheat_loop
+_action_primary_weapon_overheat_exit
+_action_secondary_weapon_overheat_enter
+_action_secondary_weapon_overheat_loop
+_action_secondary_weapon_overheat_exit
+objects: creature '%s' has no animation graph and cannot be created
+unit_get_current_primary_weapon(unit_index)==NONE
+c:\mcc\release\h3\source\items\weapons.cpp
+!weapon_disabled
+weapon_index!= NONE
+weapon->weapon.primary_trigger
+weapon 0x%08X '%s' tried to take %d rounds from magazine %d inventory but only %d are available
+VALID_COUNT(weapon_definition->weapon.triggers.count, NUMBEROF(weapon->weapon.triggers))
+VALID_COUNT(weapon_definition->weapon.magazines.count, NUMBEROF(weapon->weapon.magazines))
+weapon_set_initial_rounds called on magazineless weapon!
+(barrel_index >= 0) && (barrel_index < k_weapon_barrel_count)
+weapon_definition_index!=NONE
+barrel_index>=0 && barrel_index<weapon_definition->weapon.barrels.count
+trigger_index>=0 && trigger_index<weapon_definition->weapon.triggers.count
+magazine_index>=0 && magazine_index<weapon_definition->weapon.magazines.count
+weapon-firing-effect
+weapon-fire-shots
+weapon-misfire
+weapon-overheated-detonate
+trigger_index>=0 && trigger_index<k_triggers_per_weapon_datum
+AI firing tracked rocket
+weapon-random-error
+networking:weapons: ran out of fire results [weapon '%s' projectile %d]
+weapon(3P) state: %s timer: %d
+allows weapons
+ai firing disabled by max acceleration
+prevents weapon stowing
+unit_weapon_block
+sizeof(struct unit_initial_weapon)
+MAXIMUM_INITIAL_WEAPONS_PER_UNIT
+doesn't show readied weapon
+flashlight power doesnt transfer to weapon
+parent's primary weapon
+right_hand_node#where the primary weapon is attached
+left_hand_node#where the secondary weapon is attached (for dual-pistol modes)
+exit and detach weapon
+objects: unit '%s' does not have both a render model and an animation graph
+ai weapon cannot rotate
+weapon_ammunition_object_fields_v1
+weapon_ammunition_object_fields_v2
+c:\mcc\release\h3\source\items\weapon_definitions.cpp
+reload time:seconds#the length of time it takes to load a single magazine into the weapon
+weapon_magazine_fields_v1
+weapon_magazine_fields_v2
+MAXIMUM_NUMBER_OF_MAGAZINES_PER_WEAPON
+VALID_INDEX(element_index, k_first_person_weapon_offset_type_count)
+weapon_barrel_first_person_offset_block
+k_first_person_weapon_offset_type_count
+shot count lower bound#the minimum number of times this firing effect will be used, once it has been chosen
+shot count upper bound#the maximum number of times this firing effect will be used, once it has been chosen
+firing effect^#this effect is used when the weapon is loaded and fired normally
+misfire effect#this effect is used when the weapon is loaded but fired while overheated
+empty effect#this effect is used when the weapon is not loaded
+firing damage#this effect is used when the weapon is loaded and fired normally
+misfire damage#this effect is used when the weapon is loaded but fired while overheated
+empty damage#this effect is used when the weapon is not loaded
+optional secondary firing effect#this effect is used when the weapon is not loaded
+optional secondary firing damage#this effect is used when the weapon is loaded and fired normally
+firing rider damage#this effect is used when the weapon is loaded and fired normally
+misfire rider damage#this effect is used when the weapon is loaded but fired while overheated
+empty rider damage#this effect is used when the weapon is not loaded
+optional secondary firing rider damage#this effect is used when the weapon is loaded and fired normally
+barrel_firing_effect_fields_v1
+barrel_firing_effect_fields_v2
+barrel_firing_effect_block
+k_weapon_barrel_effect_count
+weapon_barrel_flags
+random firing effects#rather than being chosen sequentially, firing effects are picked randomly
+can fire with partial ammo#allows a weapon to be fired as long as there is a non-zero amount of ammunition loaded
+projectiles use weapon origin#instead of coming out of the magic first person camera origin, the projectiles for this weapon actually come out of the gun
+projectile vector cannot be adjusted#projectiles fired by this weapon cannot have their direction adjusted by the AI to hit the target
+cant fire when others firing
+use 1 firing effect per burst
+weapon_barrel_distribution_functions
+weapon_barrel_damage_effect_fields_v1
+weapon_barrel_damage_effect_fields_v2
+weapon_barrel_damage_effect_struct
+rounds per second#the number of firing effects created per second
+acceleration time:seconds#the continuous firing time it takes for the weapon to achieve its final rounds per second
+deceleration time:seconds#the continuous idle time it takes for the weapon to return from its final rounds per second to its initial
+blurred rate of fire#a percentage between 0 and 1 which controls how soon in its firing animation the weapon blurs
+shots per fire#allows designer caps to the shots you can fire from one firing action
+rounds per shot#the number of rounds expended to create a single firing effect
+minimum rounds loaded#the minimum number of rounds necessary to fire the weapon
+firing noise#how loud this weapon appears to the AI
+acceleration time:seconds#the continuous firing time it takes for the weapon to achieve its final error
+deceleration time:seconds#the continuous idle time it takes for the weapon to return to its initial error
+damage error#the range of angles (in degrees) that a damaged weapon will skew fire
+age generated per round:[0,1]#the amount the weapon ages each time the trigger is fired
+angle change per shot#angle change per shot of the weapon during firing
+acceleration time:seconds#the continuous firing time it takes for the weapon to achieve its final angle change per shot
+deceleration time:seconds#the continuous idle time it takes for the weapon to return to its initial angle change per shot
+firing effects#firing effects determine what happens when this trigger is fired
+dual weapon error
+weapon_barrel_firing_parameters_struct
+weapon_barrel_firing_error_struct
+weapon_barrel_dual_weapon_error_struct
+firing error
+CAMPAIGN age generated per round:[0,1]#the amount the weapon ages each time the trigger is fired
+weapon_barrel_definition_fields_v1
+weapon_barrel_definition_fields_v2
+weapon_barrel_definition_fields
+weapon_barrels
+k_weapon_barrel_count
+weapon_trigger_inputs
+weapon_trigger_overcharged_actions
+weapon_trigger_behaviors
+weapon_trigger_autofire_actions
+weapon_trigger_definition_flags
+weapon_trigger_autofire_struct
+sizeof(struct weapon_trigger_definition::s_autofire_fields)
+weapon_trigger_charging_struct
+sizeof(struct weapon_trigger_definition::s_charging_fields)
+charged illumination:[0,1]#the amount of illumination given off when the weapon is fully charged
+spew time:seconds#length of time the weapon will spew (fire continuously) while discharging
+weapon_triggers
+sizeof(struct weapon_trigger_definition)
+k_weapon_trigger_count
+weapon_definition_flags
+AIs use weapon melee damage
+loop fp firing animation
+weapon ages with each kill
+weapon uses old dual fire error code
+hold fp firing animation
+weapon_definition_secondary_flags
+global_weapon_function_string_list
+weapon_types
+weapon_tracking_types
+multiplayer_weapon_types
+weapon_tracking_fields_v1
+weapon_tracking_fields_v2
+weapon_tracking_struct
+weapon_first_person_interface_block
+sizeof(struct weapon_first_person_interface_definition)
+weapon_shared_interface_struct
+weapon_interface_struct
+heat recovery threshold:[0,1]#the heat value a weapon must return to before leaving the overheated state, once it has become overheated in the first place
+overheated threshold:[0,1]#the heat value over which a weapon first becomes overheated (should be greater than the heat recovery threshold)
+heat detonation threshold:[0,1]#the heat value above which the weapon has a chance of exploding each time it is fired
+heat detonation fraction:[0,1]#the percent chance (between 0.0 and 1.0) the weapon will explode when fired over the heat detonation threshold
+heat loss per second:[0,1]#the amount of heat lost each second when the weapon is not being fired
+heat illumination:[0,1]#the amount of illumination given off when the weapon is overheated
+overheated heat loss per second:[0,1]#the amount of heat lost each second when the weapon is not being fired
+actor firing parameters
+magnification levels#the number of magnification levels this weapon allows
+weapon aim assist
+forward movement penalty#percent slowdown to forward movement for units carrying this weapon
+sideways movement penalty#percent slowdown to sideways and backward movement for units carrying this weapon
+age heat recovery penalty#how much the weapon's heat recovery is penalized as it ages
+age rate of fire penalty#how much the weapon's rate of fire is penalized as it ages
+age misfire start:[0,1]#the age threshold when the weapon begins to misfire
+weapon name
+multiplayer weapon type
+weapon type
+$$$ WEAPON $$$
+All weapons should have 'primary trigger' and 'secondary trigger' markers as appropriate.
+weapon power-on time:seconds
+weapon power-off time:seconds
+weapon power-on effect
+weapon power-off effect
+weapon labels
+turn on time#how long after being readied it takes this weapon to switch its 'turned_on' attachment to 1.0
+clang effect#effect that is played in the air between two players that clang with this weapon
+runtime weapon power on velocity!
+runtime weapon power off velocity!
+tossed weapon
+first person weapon offset
+first person weapon offset override#for centered crosshair
+weapon zoom time#seconds
+weapon ready-for-use time#seconds
+weapon_fields_v1
+weapon_fields_v2
+weapon_fields_v3
+weapon_fields_v4
+weapon_group
+weapon_block
+trigger_index>=0 && trigger_index<k_weapon_trigger_count
+barrel_index>=0 && barrel_index<k_weapon_barrel_count
+magazine_index>=0 && magazine_index<MAXIMUM_NUMBER_OF_MAGAZINES_PER_WEAPON
+objects: stripped chief animations out '%s.weapon'
+objects: stripped dervish animations out '%s.weapon'
+weapon_definition_index != NONE
+hs:unit raising weapon
+hs:unit lowering weapon
+!TEST_FLAG(item->object.flags, _object_hidden_bit) || unit_does_not_show_readied_weapon(item->item.inventory_unit_index)
+c:\mcc\release\h3\source\motor\weapon_actions.cpp
+unit->unit.current_weapon_set.weapon_indices[weapon_set_index]==NONE
+unit->unit.desired_weapon_set.weapon_indices[weapon_set_index]!=current_inventory_index
+unit->unit.weapon_object_indices[current_inventory_index]==NONE
+weapon->item.inventory_unit_index == player_unit_index
+desired_inventory_index>=0 && desired_inventory_index<k_maximum_weapons_per_unit
+recursive weapon switch. Reopen 26968 for gregsn.
+animation: unit %s weapon-class %s:%s:%s failed (cannot use '%s' from %s:%s:%s:%s)
+!primary_weapon || unit_get_current_primary_weapon(unit_index)==NONE
+primary_weapon || unit_get_current_secondary_weapon(unit_index)==NONE
+weapon-drop-delay
+vehicle->unit.weapon_control_unit_index==NONE
+weapon_stow
+weapon_draw
+unit->unit.current_weapon_set.weapon_indices[_unit_weapon_set_primary]>=0 && unit->unit.current_weapon_set.weapon_indices[_unit_weapon_set_primary]<k_maximum_weapons_per_unit
+unit->unit.current_weapon_set.weapon_indices[_unit_weapon_set_secondary]>=0 && unit->unit.current_weapon_set.weapon_indices[_unit_weapon_set_secondary]<k_maximum_weapons_per_unit
+ {WeaponLatched %s}
+.?AVfiring_point_offset_dialog@@
+.?AV?$CWinDataExchange@Vfiring_point_offset_dialog@@@WTL@@
+.?AV?$custom_factory@Vfiring_point_offset_dialog@@$0EOCO@@@
+.?AVc_firing_position_render_game_view_message_handler@@
+.?AVc_firing_position_field_extractor@@
+.?AVc_firing_position_field_extractor_factory@@
+.?AVc_remove_firing_positions_dialog@c_ai_zone_hierarchy_view_message_handler@@
+.?AV?$CDialogImpl@Vc_remove_firing_positions_dialog@c_ai_zone_hierarchy_view_message_handler@@VCWindow@ATL@@@ATL@@
+.?AV?$CWinDataExchange@Vc_remove_firing_positions_dialog@c_ai_zone_hierarchy_view_message_handler@@@WTL@@
+.?AVc_firing_point_folder_hierarchy_view_message_handler@@
+.?AV?$game_object_generic_helper@Ufiring_position_definition@@U?$member_from_offset_getter@Ufiring_position_definition@@@@U2@P6AKPEAVtag_block_interface@@PEBU1@@Z@@
+.?AV?$game_object_position_helper@Ufiring_position_definition@@U?$member_from_offset_getter@Ufiring_position_definition@@@@@@
+.?AV?$game_object_orientation_helper@Ufiring_position_definition@@U?$member_from_offset_getter@Ufiring_position_definition@@@@@@
+.?AV?$game_object_movement_flags_helper@Ufiring_position_definition@@P6AKPEAVtag_block_interface@@PEBU1@@Z@@
+.?AU?$s_game_object_is_valid_helper@Ufiring_position_definition@@@@
+.?AVfiring_point_alt_override_object_collection@?BC@??game_view_left_button_down@c_ai_objectives_dialog@@QEAAXAEBUgame_view_message@@@Z@
+.?AV?$t_restricted_allocation_manager@$00$0A@$0A@$1?actor_firing_position_hash_set_address@@YAXPEAX@Z@@
+.?AV?$t_restricted_allocation_manager@$00$0A@$0A@$1?__tls_set_g_dynamic_firing_set_allocator@@YAXPEAX@Z@@
+.?AVc_simulation_weapon_entity_definition@@
+.?AVc_simulation_weapon_fire_event_definition@@
+.?AVc_simulation_weapon_reload_event_definition@@
+.?AVc_simulation_weapon_pickup_event_definition@@
+.?AVc_simulation_weapon_put_away_event_definition@@
+.?AVc_simulation_weapon_drop_event_definition@@
+.?AVc_simulation_weapon_effect_event_definition@@
+.?AVc_simulation_weapon_empty_click_event_definition@@
+.?AV?$c_game_state_consumer_datum_array@Udynamic_firing_set_datum@@@@
+.?AV?$t_restricted_allocation_manager@$02$0A@$0A@$1?__tls_set_g_first_person_weapons_allocator@@YAXPEAX@Z@@
+.?AV?$t_restricted_allocation_manager@$02$0A@$0A@$1?__tls_set_g_first_person_weapon_orientations_allocator@@YAXPEAX@Z@@
+button_switch_weapon
+button_action_weapon_primary
+button_action_weapon_secondary
+Render Firing Points
+firing point height offset
+== H3EK guerilla.exe 22885840
+Directory containing the '\render' directory of the matching weapon
+pick an animation graph to reset compression levels
+weapon directory
+compression-missmatch|multilingual|non-multilingual|ambient|cinematic|music|vehicle|weapons|mono|stereo|quad|5_dot_1
+firing_position_flags

@@ -1,0 +1,48 @@
+# Armed cards in every game (Halo 3, ODST, Reach, Halo 4)
+
+Armed cards ("Armed: <weapon>": each pick moves 10% more of an enemy type onto a weapon) exist
+for Halo 1 (`h1_enemy_weapons.py`) and Halo 2 (`h2_enemy_weapons.py`, `H2_ARMED_HANDOFF.md`).
+The user wants them in every game (2026-11-02). This note is the plan and the record; the
+measured scoping lives in `armed_scope/` (one folder per engine family, with the scripts that
+produced it).
+
+## User decisions (2026-11-02)
+
+1. **Game order**: Halo 3 -> ODST -> Reach -> Halo 4. Start ONLY on Halo 3.
+2. **Assume every weapon is always loaded and every species exists on every map.** No
+   residency gate in the Armed pass.
+3. **Species residency** comes from the Halo 1 trick: a character that names the next one, so
+   one entry makes every species resident (`sprint_toolkit/h1_all_enemies.py`, the slot chain;
+   `VARIANT_RECIPE.md`). Hopefully it works in every game; it is its own work item per game.
+
+## Per game: what the scoping measured (read-only, 2026-11-02)
+
+| | units | weapons | AI firing data | animation gaps | test |
+|---|---|---|---|---|---|
+| Halo 3 | fire-team +0xA / location +0x2A; no shared arrays | all pool weapons in every palette | all but the SAW | Grunt: sword, hammer, flamethrower, missile pod; Jackal / Drone: missile, support, sword, hammer, turret classes; Marine: Brute Shot, sword, hammer, Sentinel Beam, plasma cannon, missile pod, machine gun | 010 |
+| ODST | cells share weapon arrays (121 of 266), 135 empty arrays | Machine Gun absent from 5 palettes | all but the SAW | as Halo 3 | sc100 |
+| Reach | 87% of cells share their array; spawn points with character -1 carry their own weapon (+0x34), missed by `_ts_units` | all in every palette | all 23 stock; SAW none | Grunt: rifle without an `any` type, rifle only in combat; Jackal / Skirmisher: no missile; Bugger: pistol only | m52, then m10 |
+| Halo 4 | spawn point weapon +0x30; cell arrays shared (up to 68 users); designer / templated twins disagree -- write both | all in every palette | all but Sticky Detonator and Focus Rifle (repoint a nulled row) | Grunt: no type for Storm Rifle / DMR / SAW / ...; Jackal / Knight: no missile class | staged Composer |
+
+Common to all: sword is Elite-only (hammer Elite / Brute); Hunters, Engineers, Crawlers,
+Watchers, Flood infection forms / carriers are not armable; fleeing Grunts and Jackals only
+have pistol animations (Halo 2's flee-drop risk); Jackals need a no-shield variant for
+two-handed weapons, which cells cannot carry.
+
+Notes: `armed_scope/h3_odst/NOTES_armed_h3_odst.txt`, `armed_scope/reach/NOTES.md`,
+`armed_scope/h4/H4_ARMED_SCOPING.md`.
+
+## Halo 3 route (in progress)
+
+`h3_enemy_weapons.py` (tool root) on the shape of `h2_enemy_weapons.py`: deterministic per
+unit, every unit of a carded type (allied ones too), the Ally card = friendly Marines; only
+species x weapon pairs the animation gate allows; run in `apply_run` after the skulls. Enhancer
+wiring as for Halo 2 (`ARMED_ENEMIES`, `ARMED_OPTIONS`, spec builder). Teaching missing classes
+waits for the first boot.
+
+## Open questions only the game answers (first boot per game)
+
+- a refused weapon: unarmed, or the character's default?
+- a weapon with no firing data (SAW, Sticky): held but silent?
+- Halo 4: which twin cell is read?
+- shielded Jackal holding a rifle; Grunts / Jackals fleeing with a rifle.

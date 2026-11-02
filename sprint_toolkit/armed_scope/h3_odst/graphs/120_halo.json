@@ -1,0 +1,7705 @@
+{
+"objects\\characters\\cortana\\cortana": {
+"modes": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": "objects\\characters\\cortana\\lipsync\\lipsync",
+"sizes": {
+"modes_at": 1931621750,
+"wl_at": 1930424281,
+"wl_n": 1
+}
+},
+"objects\\characters\\dervish\\dervish": {
+"modes": {
+"flaming": {
+"0x312": {
+"any": [
+"move_front"
+]
+},
+"0x313": {
+"any": [
+"move_front"
+]
+}
+},
+"patrol": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"berserk",
+"posing",
+"0x319",
+"kick"
+]
+},
+"any": {
+"any": []
+},
+"dual": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"kick"
+]
+},
+"0x310": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"berserk",
+"kick"
+]
+},
+"0x311": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"berserk",
+"posing",
+"kick"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"berserk",
+"posing",
+"kick"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"berserk",
+"posing",
+"kick"
+]
+},
+"0x314": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"berserk",
+"posing",
+"walk_front",
+"kick"
+]
+}
+},
+"combat": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x32A",
+"0x3E0",
+"0x3E1",
+"0x3EE",
+"mortal_wound"
+]
+},
+"any": {
+"any": [
+"airborne_dead",
+"landing_dead"
+]
+},
+"dual": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"melee_airborne",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x319",
+"0x32A",
+"0x3EE"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"hp": [],
+"pr": [],
+"spr": []
+},
+"0x310": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x32A",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"fc": [],
+"rl": [],
+"sl": [
+"idle"
+]
+},
+"0x311": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_attack",
+"warn",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"bs": [],
+"sb": []
+},
+"0x312": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x32A",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"0x410": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x32A",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"sg": [],
+"sr": [],
+"ar": [],
+"br": [],
+"pr": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x32A",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"csr": [],
+"cb": []
+},
+"0x313": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x32A",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"hp": [],
+"pr": [],
+"spr": []
+},
+"0x314": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x319",
+"0x32A",
+"0x3EE",
+"draw"
+]
+},
+"0x429": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"turret": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"land_soft",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"ftt": [
+"idle",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"mgt": [],
+"pgt": [
+"idle"
+],
+"mp": [
+"idle"
+]
+},
+"hammer": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+}
+},
+"crouch": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"throw_grenade",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"any": {
+"any": []
+},
+"dual": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"0x410": [],
+"pp": [],
+"ex": [],
+"hp": [],
+"spr": []
+},
+"0x310": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"0x311": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"bs": []
+},
+"0x312": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"sg": [],
+"sr": [],
+"ar": [],
+"br": [],
+"csr": [],
+"cb": []
+},
+"0x313": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"hp": [],
+"pr": [],
+"spr": []
+},
+"0x314": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"0x429": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"hammer": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+}
+},
+"climb": {
+"unarmed": {
+"any": [
+"idle",
+"climb_up",
+"climb_down",
+"attach",
+"detach"
+]
+},
+"any": {
+"any": []
+},
+"0x310": {
+"any": []
+},
+"0x311": {
+"any": [
+"idle",
+"climb_up",
+"climb_down",
+"attach",
+"detach"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"climb_up",
+"climb_down",
+"attach",
+"detach"
+],
+"sg": [],
+"sr": [],
+"br": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle",
+"climb_up",
+"climb_down",
+"attach",
+"detach"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"hp": [],
+"pr": []
+}
+},
+"any": {
+"any": {
+"any": [
+"airborne",
+"land_soft",
+"land_hard",
+"resurrect_front",
+"resurrect_back",
+"thrash_front",
+"thrash_back",
+"infection_wrestle",
+"0x368"
+]
+}
+},
+"corner_cover_left": {
+"0x310": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x314": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_cover_right": {
+"0x310": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x314": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_open_left": {
+"0x310": {
+"any": [
+"idle",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"sg": [],
+"sr": [],
+"br": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"hp": [],
+"pr": []
+},
+"0x314": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"corner_open_right": {
+"0x310": {
+"any": [
+"idle",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"sg": [],
+"sr": [],
+"br": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"hp": [],
+"pr": []
+},
+"0x314": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"vault": {
+"0x310": {
+"any": [
+"enter"
+]
+},
+"0x311": {
+"any": [
+"enter"
+]
+},
+"0x312": {
+"any": [
+"enter"
+]
+},
+"0x313": {
+"any": [
+"enter"
+]
+},
+"0x314": {
+"any": [
+"enter"
+]
+}
+},
+"hoist": {
+"0x312": {
+"any": [
+"enter"
+]
+},
+"0x313": {
+"any": [
+"enter"
+]
+},
+"0x314": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_crouch": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_stand": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"flight": {
+"any": {
+"any": []
+},
+"dual": {
+"any": [
+"idle",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"posing",
+"takeoff",
+"land"
+],
+"0x410": [],
+"pp": [],
+"hp": []
+},
+"0x313": {
+"any": [
+"idle",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"posing",
+"takeoff",
+"land"
+],
+"pp": [],
+"pr": []
+},
+"0x314": {
+"any": [
+"idle",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"posing",
+"takeoff",
+"land"
+]
+}
+},
+"bunker_cover": {
+"any": {
+"any": []
+},
+"0x310": {
+"any": [
+"idle",
+"enter"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"enter"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"enter"
+]
+},
+"0x314": {
+"any": [
+"idle",
+"enter"
+]
+}
+},
+"bunker_open": {
+"any": {
+"any": []
+},
+"0x310": {
+"any": [
+"idle",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"exit"
+],
+"sg": [],
+"sr": [],
+"br": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle",
+"exit"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"hp": [],
+"pr": []
+},
+"0x314": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"scorpion_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_g": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"fixed": {
+"any": [
+"idle",
+"celebrate",
+"panic"
+]
+}
+},
+"warthog_p": {
+"unarmed": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection",
+"ejected"
+]
+},
+"0x310": {
+"any": [
+"idle"
+],
+"sl": []
+},
+"0x311": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle"
+],
+"sg": [],
+"sr": [],
+"br": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"hp": [],
+"pr": [],
+"spr": []
+},
+"0x314": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x429": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"hammer": {
+"any": [
+"idle"
+]
+}
+},
+"turret_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"0x488"
+],
+"pgt": [
+"0x488"
+],
+"mp": [
+"0x488"
+]
+}
+},
+"warthog_d": {
+"unarmed": {
+"any": [
+"idle"
+]
+},
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection",
+"ejected"
+]
+}
+},
+"chopper_d": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+}
+},
+"ghost_d": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection",
+"enter_a"
+]
+}
+},
+"mongoose_d": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection",
+"enter_a"
+]
+}
+},
+"mongoose_p": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"0x310": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"fc": [],
+"sl": []
+},
+"0x311": {
+"any": [
+"idle"
+]
+},
+"0x312": {
+"any": [],
+"sg": [],
+"sr": [],
+"cb": []
+},
+"0x313": {
+"any": [],
+"0x410": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"hp": [],
+"spr": []
+},
+"0x314": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x429": {
+"any": [
+"idle"
+]
+},
+"hammer": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_l01": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_l02": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_l03": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_l04": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_l05": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_r01": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_r02": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_r03": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_r04": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_r05": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_b_d": {
+"any": {
+"any": [
+"idle",
+"enter",
+"board"
+]
+}
+},
+"warthog_b_p": {
+"any": {
+"any": [
+"idle",
+"enter",
+"board"
+]
+}
+},
+"warthog_b_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"board"
+]
+}
+},
+"ghost_b_l": {
+"any": {
+"any": [
+"idle",
+"enter",
+"board"
+]
+}
+},
+"ghost_b_b": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"board"
+]
+}
+},
+"chopper_b_f": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+},
+"chopper_b_b": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+],
+[
+"0x410",
+"0x313"
+],
+[
+"ne",
+"0x313"
+],
+[
+"pp",
+"0x313"
+],
+[
+"sg",
+"0x312"
+],
+[
+"sr",
+"0x312"
+],
+[
+"fc",
+"0x310"
+],
+[
+"rl",
+"0x310"
+],
+[
+"sl",
+"0x310"
+],
+[
+"ex",
+"0x313"
+],
+[
+"hp",
+"0x313"
+],
+[
+"ar",
+"0x312"
+],
+[
+"br",
+"0x312"
+],
+[
+"pr",
+"0x313"
+],
+[
+"spr",
+"0x313"
+],
+[
+"ftt",
+"turret"
+],
+[
+"csr",
+"0x312"
+],
+[
+"cb",
+"0x312"
+],
+[
+"bs",
+"0x311"
+],
+[
+"mgt",
+"turret"
+],
+[
+"pgt",
+"turret"
+],
+[
+"sb",
+"0x311"
+],
+[
+"mp",
+"turret"
+]
+],
+"parent": "objects\\characters\\elite\\elite",
+"sizes": {
+"modes_at": 1941354770,
+"wl_at": 1941355224,
+"wl_n": 23
+}
+},
+"objects\\characters\\elite\\elite": {
+"modes": {
+"flaming": {
+"0x312": {
+"any": [
+"move_front"
+]
+},
+"0x313": {
+"any": [
+"move_front"
+]
+}
+},
+"patrol": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"berserk",
+"posing",
+"0x319",
+"kick"
+]
+},
+"any": {
+"any": []
+},
+"dual": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"kick"
+]
+},
+"0x310": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"berserk",
+"kick"
+]
+},
+"0x311": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"berserk",
+"posing",
+"kick"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"berserk",
+"posing",
+"kick"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"berserk",
+"posing",
+"kick"
+]
+},
+"0x314": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"berserk",
+"posing",
+"walk_front",
+"kick"
+]
+}
+},
+"combat": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x32A",
+"0x3E0",
+"0x3E1",
+"0x3EE",
+"mortal_wound"
+]
+},
+"any": {
+"any": [
+"airborne_dead",
+"landing_dead"
+]
+},
+"dual": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"melee_airborne",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x319",
+"0x32A",
+"0x3EE"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"hp": [],
+"pr": [],
+"spr": []
+},
+"0x310": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x32A",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"fc": [],
+"rl": [],
+"sl": [
+"idle"
+]
+},
+"0x311": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_attack",
+"warn",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"bs": [],
+"sb": []
+},
+"0x312": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x32A",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"0x410": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x32A",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"sg": [],
+"sr": [],
+"ar": [],
+"br": [],
+"pr": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x32A",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"csr": [],
+"cb": []
+},
+"0x313": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x32A",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"hp": [],
+"pr": [],
+"spr": []
+},
+"0x314": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x319",
+"0x32A",
+"0x3EE",
+"draw"
+]
+},
+"0x429": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"turret": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"land_soft",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"ftt": [
+"idle",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"mgt": [],
+"pgt": [
+"idle"
+],
+"mp": [
+"idle"
+]
+},
+"hammer": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+}
+},
+"crouch": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"throw_grenade",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"any": {
+"any": []
+},
+"dual": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"0x410": [],
+"pp": [],
+"ex": [],
+"hp": [],
+"spr": []
+},
+"0x310": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"0x311": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"bs": []
+},
+"0x312": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"sg": [],
+"sr": [],
+"ar": [],
+"br": [],
+"csr": [],
+"cb": []
+},
+"0x313": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"hp": [],
+"pr": [],
+"spr": []
+},
+"0x314": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"0x429": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"hammer": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+}
+},
+"climb": {
+"unarmed": {
+"any": [
+"idle",
+"climb_up",
+"climb_down",
+"attach",
+"detach"
+]
+},
+"any": {
+"any": []
+},
+"0x310": {
+"any": []
+},
+"0x311": {
+"any": [
+"idle",
+"climb_up",
+"climb_down",
+"attach",
+"detach"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"climb_up",
+"climb_down",
+"attach",
+"detach"
+],
+"sg": [],
+"sr": [],
+"br": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle",
+"climb_up",
+"climb_down",
+"attach",
+"detach"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"hp": [],
+"pr": []
+}
+},
+"any": {
+"any": {
+"any": [
+"airborne",
+"land_soft",
+"land_hard",
+"resurrect_front",
+"resurrect_back",
+"thrash_front",
+"thrash_back",
+"infection_wrestle",
+"0x368"
+]
+}
+},
+"corner_cover_left": {
+"0x310": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x314": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_cover_right": {
+"0x310": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x314": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_open_left": {
+"0x310": {
+"any": [
+"idle",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"sg": [],
+"sr": [],
+"br": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"hp": [],
+"pr": []
+},
+"0x314": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"corner_open_right": {
+"0x310": {
+"any": [
+"idle",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"sg": [],
+"sr": [],
+"br": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"hp": [],
+"pr": []
+},
+"0x314": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"vault": {
+"0x310": {
+"any": [
+"enter"
+]
+},
+"0x311": {
+"any": [
+"enter"
+]
+},
+"0x312": {
+"any": [
+"enter"
+]
+},
+"0x313": {
+"any": [
+"enter"
+]
+},
+"0x314": {
+"any": [
+"enter"
+]
+}
+},
+"hoist": {
+"0x312": {
+"any": [
+"enter"
+]
+},
+"0x313": {
+"any": [
+"enter"
+]
+},
+"0x314": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_crouch": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_stand": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"flight": {
+"any": {
+"any": []
+},
+"dual": {
+"any": [
+"idle",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"posing",
+"takeoff",
+"land"
+],
+"0x410": [],
+"pp": [],
+"hp": []
+},
+"0x313": {
+"any": [
+"idle",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"posing",
+"takeoff",
+"land"
+],
+"pp": [],
+"pr": []
+},
+"0x314": {
+"any": [
+"idle",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"posing",
+"takeoff",
+"land"
+]
+}
+},
+"bunker_cover": {
+"any": {
+"any": []
+},
+"0x310": {
+"any": [
+"idle",
+"enter"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"enter"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"enter"
+]
+},
+"0x314": {
+"any": [
+"idle",
+"enter"
+]
+}
+},
+"bunker_open": {
+"any": {
+"any": []
+},
+"0x310": {
+"any": [
+"idle",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"exit"
+],
+"sg": [],
+"sr": [],
+"br": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle",
+"exit"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"hp": [],
+"pr": []
+},
+"0x314": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"scorpion_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_g": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"fixed": {
+"any": [
+"idle",
+"celebrate",
+"panic"
+]
+}
+},
+"warthog_p": {
+"unarmed": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection",
+"ejected"
+]
+},
+"0x310": {
+"any": [
+"idle"
+],
+"sl": []
+},
+"0x311": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle"
+],
+"sg": [],
+"sr": [],
+"br": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"hp": [],
+"pr": [],
+"spr": []
+},
+"0x314": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x429": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"hammer": {
+"any": [
+"idle"
+]
+}
+},
+"turret_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"0x488"
+],
+"pgt": [
+"0x488"
+],
+"mp": [
+"0x488"
+]
+}
+},
+"warthog_d": {
+"unarmed": {
+"any": [
+"idle"
+]
+},
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection",
+"ejected"
+]
+}
+},
+"chopper_d": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+}
+},
+"ghost_d": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection",
+"enter_a"
+]
+}
+},
+"mongoose_d": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection",
+"enter_a"
+]
+}
+},
+"mongoose_p": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"0x310": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"fc": [],
+"sl": []
+},
+"0x311": {
+"any": [
+"idle"
+]
+},
+"0x312": {
+"any": [],
+"sg": [],
+"sr": [],
+"cb": []
+},
+"0x313": {
+"any": [],
+"0x410": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"hp": [],
+"spr": []
+},
+"0x314": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x429": {
+"any": [
+"idle"
+]
+},
+"hammer": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_l01": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_l02": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_l03": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_l04": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_l05": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_r01": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_r02": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_r03": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_r04": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_r05": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_b_d": {
+"any": {
+"any": [
+"idle",
+"enter",
+"board"
+]
+}
+},
+"warthog_b_p": {
+"any": {
+"any": [
+"idle",
+"enter",
+"board"
+]
+}
+},
+"warthog_b_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"board"
+]
+}
+},
+"ghost_b_l": {
+"any": {
+"any": [
+"idle",
+"enter",
+"board"
+]
+}
+},
+"ghost_b_b": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"board"
+]
+}
+},
+"chopper_b_f": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+},
+"chopper_b_b": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+],
+[
+"0x410",
+"0x313"
+],
+[
+"ne",
+"0x313"
+],
+[
+"pp",
+"0x313"
+],
+[
+"sg",
+"0x312"
+],
+[
+"sr",
+"0x312"
+],
+[
+"fc",
+"0x310"
+],
+[
+"rl",
+"0x310"
+],
+[
+"sl",
+"0x310"
+],
+[
+"ex",
+"0x313"
+],
+[
+"hp",
+"0x313"
+],
+[
+"ar",
+"0x312"
+],
+[
+"br",
+"0x312"
+],
+[
+"pr",
+"0x313"
+],
+[
+"spr",
+"0x313"
+],
+[
+"ftt",
+"turret"
+],
+[
+"csr",
+"0x312"
+],
+[
+"cb",
+"0x312"
+],
+[
+"bs",
+"0x311"
+],
+[
+"mgt",
+"turret"
+],
+[
+"pgt",
+"turret"
+],
+[
+"sb",
+"0x311"
+],
+[
+"mp",
+"turret"
+]
+],
+"parent": "objects\\characters\\elite\\lipsync\\lipsync",
+"sizes": {
+"modes_at": 1941408318,
+"wl_at": 1941355224,
+"wl_n": 23
+}
+},
+"objects\\characters\\flood_infection\\flood_infection": {
+"modes": {
+"combat": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"melee_continuous",
+"feeding",
+"leap_airborne",
+"infect",
+"0x80606"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"infection_wrestle",
+"infection_morph_brute",
+"infection_wrestle_brute",
+"infection_wrestle_elite"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1943086027,
+"wl_at": 1930424281,
+"wl_n": 1
+}
+},
+"objects\\characters\\flood_ranged\\flood_ranged": {
+"modes": {
+"combat": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"airborne_dead",
+"landing_dead",
+"0x362",
+"0x363",
+"0x366",
+"0x367"
+]
+}
+},
+"crouch": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"climb": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"0x362",
+"0x363"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1943284820,
+"wl_at": 1930424281,
+"wl_n": 1
+}
+},
+"objects\\characters\\flood_stalker\\flood_stalker": {
+"modes": {
+"combat": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_hard",
+"evade_left",
+"evade_right",
+"leap_start",
+"leap_airborne",
+"airborne_dead",
+"landing_dead",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_tackle",
+"0x364",
+"0x365",
+"0x366",
+"0x367"
+]
+}
+},
+"climb": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"evade_left",
+"evade_right",
+"evade_front",
+"evade_back",
+"0x364",
+"0x365",
+"0x377",
+"0x378",
+"0x379",
+"0x37A",
+"attach_up",
+"detach_up"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1943264855,
+"wl_at": 1930424281,
+"wl_n": 1
+}
+},
+"objects\\characters\\flood_tank\\flood_tank": {
+"modes": {
+"combat": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"melee_left",
+"melee_right",
+"infection_spew",
+"melee_tackle",
+"0x362",
+"0x363",
+"0x364",
+"0x365"
+]
+}
+},
+"protected": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+]
+}
+},
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1943239958,
+"wl_at": 1930424281,
+"wl_n": 1
+}
+},
+"objects\\characters\\floodcarrier\\floodcarrier": {
+"modes": {
+"patrol": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard"
+]
+},
+"any": {
+"any": []
+}
+},
+"combat": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"melee_suicide"
+]
+},
+"any": {
+"any": [
+"airborne_dead",
+"landing_dead"
+]
+}
+},
+"crouch": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"airborne",
+"land_soft",
+"land_hard"
+]
+}
+},
+"flee": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard"
+]
+},
+"any": {
+"any": []
+}
+},
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1943098575,
+"wl_at": 1930424281,
+"wl_n": 1
+}
+},
+"objects\\characters\\floodcombat_brute\\floodcombat_brute": {
+"modes": {
+"combat": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"melee_tackle",
+"0x318"
+]
+},
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"airborne_dead",
+"landing_dead",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"melee_tackle",
+"0x318"
+]
+},
+"0x311": {
+"bs": []
+},
+"0x314": {
+"any": [
+"melee",
+"melee_back",
+"melee_tackle"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"resurrect_front",
+"leap_start",
+"leap_airborne",
+"thrash_front",
+"thrash_back",
+"0x369"
+]
+}
+},
+"warthog_b_h": {
+"any": {
+"any": [
+"melee",
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_b_g": {
+"any": {
+"any": [
+"melee",
+"idle",
+"enter",
+"exit"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+],
+[
+"bs",
+"0x311"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1943607580,
+"wl_at": 1943607620,
+"wl_n": 2
+}
+},
+"objects\\characters\\floodcombat_elite\\floodcombat_elite": {
+"modes": {
+"combat": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"leap_start",
+"leap_airborne",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"melee_tackle"
+]
+},
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"resurrect_front",
+"leap_start",
+"leap_airborne",
+"airborne_dead",
+"landing_dead",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"thrash_front",
+"thrash_back",
+"melee_back",
+"melee_tackle",
+"0x318"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"0x369"
+]
+}
+},
+"warthog_b_h": {
+"any": {
+"any": [
+"melee",
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_b_g": {
+"any": {
+"any": [
+"melee",
+"idle",
+"enter",
+"exit"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1943211833,
+"wl_at": 1930424281,
+"wl_n": 1
+}
+},
+"objects\\characters\\floodcombat_human\\floodcombat_human": {
+"modes": {
+"combat": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"melee_tackle",
+"0x318"
+]
+},
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"melee_airborne",
+"airborne_dead",
+"landing_dead",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"melee_tackle",
+"0x318"
+]
+},
+"0x313": {
+"0x410": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right"
+],
+"pp": [],
+"fc": [],
+"ex": [],
+"hp": [],
+"ar": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right"
+],
+"br": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right"
+],
+"pr": [],
+"spr": [],
+"cb": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right"
+],
+"bs": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right"
+]
+},
+"0x314": {
+"any": [
+"melee",
+"melee_airborne",
+"melee_back",
+"melee_tackle"
+]
+},
+"hammer": {
+"any": [
+"melee",
+"melee_airborne",
+"melee_back",
+"melee_tackle"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"resurrect_front",
+"leap_start",
+"leap_airborne",
+"thrash_front",
+"thrash_back",
+"0x369"
+]
+}
+},
+"warthog_b_h": {
+"any": {
+"any": [
+"melee",
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_b_g": {
+"any": {
+"any": [
+"melee",
+"idle",
+"enter",
+"exit"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+],
+[
+"0x410",
+"0x313"
+],
+[
+"pp",
+"0x313"
+],
+[
+"fc",
+"0x313"
+],
+[
+"ex",
+"0x313"
+],
+[
+"hp",
+"0x313"
+],
+[
+"ar",
+"0x313"
+],
+[
+"br",
+"0x313"
+],
+[
+"pr",
+"0x313"
+],
+[
+"spr",
+"0x313"
+],
+[
+"cb",
+"0x313"
+],
+[
+"bs",
+"0x313"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1943135566,
+"wl_at": 1943135606,
+"wl_n": 12
+}
+},
+"objects\\characters\\grunt\\grunt": {
+"modes": {
+"flaming": {
+"0x313": {
+"any": [
+"idle",
+"move_front"
+]
+}
+},
+"asleep": {
+"any": {
+"any": [
+"idle"
+]
+},
+"0x313": {
+"any": [
+"idle"
+]
+}
+},
+"patrol": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back"
+]
+},
+"any": {
+"any": []
+},
+"0x310": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"posing"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"posing"
+]
+}
+},
+"combat": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x318"
+]
+},
+"any": {
+"any": []
+},
+"0x310": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"deploy"
+],
+"fc": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"deploy"
+],
+"rl": []
+},
+"0x311": {
+"bs": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x316",
+"0x317",
+"0x318",
+"0x3E0",
+"0x3E1"
+],
+"mgt": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"deploy"
+],
+"pgt": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"deploy"
+],
+"sb": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x316",
+"0x317",
+"0x318",
+"0x3E0",
+"0x3E1"
+]
+},
+"0x312": {
+"0x410": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x316",
+"0x317",
+"0x318",
+"0x3E0",
+"0x3E1"
+],
+"sg": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x316",
+"0x317",
+"0x318",
+"0x3E0",
+"0x3E1"
+],
+"sr": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x316",
+"0x317",
+"0x318",
+"0x3E0",
+"0x3E1"
+],
+"ar": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x316",
+"0x317",
+"0x318",
+"0x3E0",
+"0x3E1"
+],
+"br": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x316",
+"0x317",
+"0x318",
+"0x3E0",
+"0x3E1"
+],
+"pr": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x316",
+"0x317",
+"0x318",
+"0x3E0",
+"0x3E1"
+],
+"csr": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x316",
+"0x317",
+"0x318",
+"0x3E0",
+"0x3E1"
+],
+"cb": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x316",
+"0x317",
+"0x318",
+"0x3E0",
+"0x3E1"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x316",
+"0x317",
+"0x318",
+"0x3E0",
+"0x3E1"
+],
+"ne": [],
+"pp": [],
+"pr": []
+}
+},
+"crouch": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_left",
+"move_right"
+]
+},
+"0x310": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"ready",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"deploy"
+],
+"rl": []
+},
+"0x313": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right"
+],
+"ne": [],
+"pp": [],
+"pr": []
+}
+},
+"flee": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"airborne",
+"land_soft",
+"land_hard"
+]
+}
+},
+"stunned": {
+"any": {
+"any": [
+"airborne_dead",
+"landing_dead"
+]
+},
+"0x310": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"posing"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"posing"
+],
+"pp": []
+}
+},
+"any": {
+"any": {
+"any": [
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_equipment",
+"go_kamikaze",
+"airborne_dead",
+"landing_dead"
+]
+},
+"0x313": {
+"any": [
+"idle"
+]
+}
+},
+"vault": {
+"0x310": {
+"any": [
+"enter"
+]
+},
+"0x313": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_crouch": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_stand": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"0x3A2": {
+"any": {
+"any": [
+"idle",
+"enter"
+]
+}
+},
+"0x3C0": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"exit_patrol"
+]
+}
+},
+"0x3C5": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"exit_patrol"
+]
+}
+},
+"turret_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"ghost_d": {
+"unarmed": {
+"any": [
+"idle"
+]
+},
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection",
+"enter_a"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+],
+[
+"0x410",
+"0x312"
+],
+[
+"ne",
+"0x313"
+],
+[
+"pp",
+"0x313"
+],
+[
+"sg",
+"0x312"
+],
+[
+"sr",
+"0x312"
+],
+[
+"fc",
+"0x310"
+],
+[
+"rl",
+"0x310"
+],
+[
+"ar",
+"0x312"
+],
+[
+"br",
+"0x312"
+],
+[
+"pr",
+"0x313"
+],
+[
+"csr",
+"0x312"
+],
+[
+"cb",
+"0x312"
+],
+[
+"bs",
+"0x311"
+],
+[
+"mgt",
+"0x311"
+],
+[
+"pgt",
+"0x311"
+],
+[
+"sb",
+"0x311"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1935467939,
+"wl_at": 1935468099,
+"wl_n": 17
+}
+},
+"objects\\characters\\marine\\marine": {
+"modes": {
+"patrol": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"posing",
+"0x319"
+]
+},
+"any": {
+"any": []
+},
+"0x312": {
+"any": [
+"turn180_johnson"
+]
+}
+},
+"combat": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x319",
+"0x31B",
+"0x31C",
+"0x32A",
+"wave_nav",
+"lookout"
+]
+},
+"any": {
+"any": [
+"airborne_dead",
+"landing_dead"
+]
+},
+"0x310": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"deploy",
+"0x316",
+"0x317",
+"0x318",
+"0x319",
+"0x31B",
+"0x31C",
+"0x31D",
+"0x32A",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"0x312": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"celebrate",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x319",
+"0x31B",
+"0x31C",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav",
+"base_button",
+"shuffle_front"
+],
+"0x410": [],
+"ne": [],
+"sg": [],
+"sr": [],
+"ar": [],
+"br": [],
+"pr": [],
+"spr": []
+},
+"0x313": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x319",
+"0x31A",
+"0x31C",
+"0x32A",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav",
+"lookout"
+],
+"ne": [],
+"pp": [],
+"ex": [],
+"hp": [
+"idle"
+]
+},
+"turret": {
+"ftt": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"celebrate",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"0x316",
+"0x317",
+"0x318",
+"0x319",
+"0x31B",
+"0x31C",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav",
+"base_button",
+"shuffle_front"
+]
+}
+},
+"crouch": {
+"unarmed": {
+"any": [
+"throw_grenade"
+]
+},
+"any": {
+"any": []
+},
+"0x310": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"0x312": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"signal_attack",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"0x410": [],
+"ne": [],
+"sg": [],
+"sr": [],
+"ar": [],
+"br": [],
+"pr": [],
+"spr": []
+},
+"0x313": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"ne": [],
+"pp": [],
+"ex": [],
+"hp": []
+}
+},
+"flee": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"airborne_dead",
+"landing_dead",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+]
+},
+"0x312": {
+"any": [
+"turn_left",
+"turn_right",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right"
+]
+}
+},
+"stunned": {
+"0x310": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"airborne",
+"land_soft",
+"land_hard",
+"resurrect_front",
+"resurrect_back",
+"thrash_front",
+"thrash_back",
+"infection_wrestle",
+"0x368"
+]
+}
+},
+"corner_cover_left": {
+"0x310": {
+"any": []
+},
+"0x312": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_cover_right": {
+"0x310": {
+"any": []
+},
+"0x312": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_open_left": {
+"0x310": {
+"any": []
+},
+"0x312": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"pr": []
+},
+"0x313": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"ne": [],
+"pp": []
+}
+},
+"corner_open_right": {
+"0x310": {
+"any": []
+},
+"0x312": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"pr": []
+},
+"0x313": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+]
+}
+},
+"vault": {
+"0x310": {
+"any": [
+"enter"
+]
+},
+"0x312": {
+"any": [
+"enter"
+]
+},
+"0x313": {
+"any": [
+"enter"
+]
+}
+},
+"hoist": {
+"0x310": {
+"any": [
+"enter"
+]
+},
+"0x312": {
+"any": [
+"enter"
+]
+},
+"0x313": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_crouch": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_stand": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"bunker_cover": {
+"any": {
+"any": []
+},
+"0x310": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"bunker_open": {
+"any": {
+"any": []
+},
+"0x310": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"sg": [],
+"sr": []
+},
+"0x313": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"ne": [],
+"pp": []
+}
+},
+"0x39C": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x39D": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x3A3": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit_patrol"
+]
+}
+},
+"0x3A8": {
+"any": {
+"any": [
+"idle",
+"0x318"
+]
+}
+},
+"0x3A9": {
+"any": {
+"any": [
+"idle",
+"exit",
+"0x318"
+]
+}
+},
+"0x3AA": {
+"any": {
+"any": [
+"idle",
+"exit",
+"0x318"
+]
+}
+},
+"0x3AB": {
+"any": {
+"any": [
+"idle",
+"exit",
+"0x318"
+]
+}
+},
+"0x3AD": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"0x3AE": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"0x3AF": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3B0": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3B1": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3B2": {
+"any": {
+"any": [
+"idle",
+"exit",
+"suicide"
+]
+}
+},
+"0x3C8": {
+"any": {
+"any": [
+"idle",
+"exit",
+"0x318"
+]
+}
+},
+"0x3C9": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3CA": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x490": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x491": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x492": {
+"any": {
+"any": [
+"idle",
+"fire"
+]
+}
+},
+"0x493": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x494": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x495": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x496": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"scorpion_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_g": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"fixed": {
+"any": [
+"idle",
+"celebrate",
+"panic"
+]
+}
+},
+"warthog_p": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"0x310": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"ejection"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"pr": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle"
+],
+"ne": [],
+"pp": []
+}
+},
+"turret_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_p_b": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"0x310": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_d": {
+"unarmed": {
+"any": []
+},
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+}
+},
+"chopper_d": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection",
+"enter_a"
+]
+}
+},
+"ghost_d": {
+"unarmed": {
+"any": []
+},
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection",
+"enter_a"
+]
+}
+},
+"mongoose_d": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection",
+"enter_a"
+]
+}
+},
+"mongoose_p": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection",
+"enter_a"
+]
+},
+"0x310": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_d": {
+"unarmed": {
+"any": [
+"idle"
+]
+},
+"any": {
+"any": [
+"enter",
+"exit"
+]
+}
+},
+"pelican_e": {
+"any": {
+"any": [
+"idle",
+"enter"
+]
+}
+},
+"pelican_g": {
+"unarmed": {
+"any": [
+"idle"
+]
+},
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_g_pod": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"pelican_p_l01": {
+"unarmed": {
+"any": [
+"idle"
+]
+},
+"any": {
+"any": [
+"enter",
+"exit"
+]
+},
+"0x310": {
+"any": [
+"idle"
+]
+},
+"0x312": {
+"any": [
+"idle"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"br": [],
+"pr": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle"
+],
+"ne": [],
+"pp": [],
+"hp": []
+}
+},
+"pelican_p_l02": {
+"unarmed": {
+"any": [
+"idle"
+]
+},
+"any": {
+"any": [
+"enter",
+"exit"
+]
+},
+"0x310": {
+"any": [
+"idle"
+]
+},
+"0x312": {
+"any": [
+"idle"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"br": [],
+"pr": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle"
+],
+"ne": [],
+"pp": [],
+"hp": []
+}
+},
+"pelican_p_l03": {
+"unarmed": {
+"any": [
+"idle"
+]
+},
+"any": {
+"any": [
+"enter",
+"exit"
+]
+},
+"0x310": {
+"any": [
+"idle"
+]
+},
+"0x312": {
+"any": [
+"idle"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"br": [],
+"pr": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle"
+],
+"ne": [],
+"pp": [],
+"hp": []
+}
+},
+"pelican_p_l04": {
+"unarmed": {
+"any": [
+"idle"
+]
+},
+"any": {
+"any": [
+"enter",
+"exit"
+]
+},
+"0x310": {
+"any": [
+"idle"
+]
+},
+"0x312": {
+"any": [
+"idle"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"br": [],
+"pr": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle"
+],
+"ne": [],
+"pp": [],
+"hp": []
+}
+},
+"pelican_p_l05": {
+"unarmed": {
+"any": [
+"idle"
+]
+},
+"any": {
+"any": [
+"enter",
+"exit"
+]
+},
+"0x310": {
+"any": [
+"idle"
+]
+},
+"0x312": {
+"any": [
+"idle"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"br": [],
+"pr": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle"
+],
+"ne": [],
+"pp": [],
+"hp": []
+}
+},
+"pelican_p_r01": {
+"unarmed": {
+"any": [
+"idle"
+]
+},
+"any": {
+"any": [
+"enter",
+"exit"
+]
+},
+"0x310": {
+"any": [
+"idle"
+]
+},
+"0x312": {
+"any": [
+"idle"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"br": [],
+"pr": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle"
+],
+"ne": [],
+"pp": [],
+"hp": []
+}
+},
+"pelican_p_r02": {
+"unarmed": {
+"any": [
+"idle"
+]
+},
+"any": {
+"any": [
+"enter",
+"exit"
+]
+},
+"0x310": {
+"any": [
+"idle"
+]
+},
+"0x312": {
+"any": [
+"idle"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"br": [],
+"pr": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle"
+],
+"ne": [],
+"pp": [],
+"hp": []
+}
+},
+"pelican_p_r03": {
+"unarmed": {
+"any": [
+"idle"
+]
+},
+"any": {
+"any": [
+"enter",
+"exit"
+]
+},
+"0x310": {
+"any": [
+"idle"
+]
+},
+"0x312": {
+"any": [
+"idle"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"br": [],
+"pr": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle"
+],
+"ne": [],
+"pp": [],
+"hp": []
+}
+},
+"pelican_p_r04": {
+"unarmed": {
+"any": [
+"idle"
+]
+},
+"any": {
+"any": [
+"enter",
+"exit"
+]
+},
+"0x310": {
+"any": [
+"idle"
+]
+},
+"0x312": {
+"any": [
+"idle"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"br": [],
+"pr": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle"
+],
+"ne": [],
+"pp": [],
+"hp": []
+}
+},
+"pelican_p_r05": {
+"unarmed": {
+"any": [
+"idle"
+]
+},
+"any": {
+"any": [
+"enter",
+"exit"
+]
+},
+"0x310": {
+"any": [
+"idle"
+]
+},
+"0x312": {
+"any": [
+"idle"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"br": [],
+"pr": [],
+"csr": []
+},
+"0x313": {
+"any": [
+"idle"
+],
+"ne": [],
+"pp": [],
+"hp": []
+}
+},
+"warthog_p_l": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"0x310": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_p_r": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"0x310": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"0x313": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+],
+[
+"0x410",
+"0x312"
+],
+[
+"ne",
+"0x313"
+],
+[
+"pp",
+"0x313"
+],
+[
+"sg",
+"0x312"
+],
+[
+"sr",
+"0x312"
+],
+[
+"fc",
+"0x310"
+],
+[
+"rl",
+"0x310"
+],
+[
+"sl",
+"0x310"
+],
+[
+"ex",
+"0x313"
+],
+[
+"hp",
+"0x313"
+],
+[
+"ar",
+"0x312"
+],
+[
+"br",
+"0x312"
+],
+[
+"pr",
+"0x312"
+],
+[
+"spr",
+"0x312"
+],
+[
+"ftt",
+"turret"
+],
+[
+"csr",
+"0x312"
+]
+],
+"parent": "objects\\characters\\marine\\lipsync\\lipsync",
+"sizes": {
+"modes_at": 1933956062,
+"wl_at": 1933956724,
+"wl_n": 17
+}
+},
+"objects\\characters\\masterchief\\masterchief": {
+"modes": {
+"combat": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"any": {
+"any": [
+"airborne_dead",
+"landing_dead"
+]
+},
+"dual": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"melee_airborne",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"sg": [],
+"ex": [],
+"hp": [],
+"pr": [],
+"spr": []
+},
+"0x310": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"melee_airborne",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"0x311": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"bs": []
+},
+"0x312": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"ar": [],
+"br": [],
+"pr": [
+"idle"
+],
+"csr": [],
+"cb": []
+},
+"0x313": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"ne": [],
+"pp": [],
+"ex": [],
+"hp": [],
+"spr": []
+},
+"0x314": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"0x429": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"melee_airborne",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"turret": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"ftt": [],
+"pgt": [],
+"mp": []
+},
+"hammer": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+}
+},
+"crouch": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"any": {
+"any": []
+},
+"dual": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"0x410": [],
+"ne": [],
+"pp": [],
+"sg": [],
+"ex": [],
+"hp": [],
+"pr": [],
+"spr": []
+},
+"0x310": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"0x311": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"bs": [],
+"sb": []
+},
+"0x312": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"ar": [],
+"br": [],
+"pr": [
+"idle"
+],
+"csr": [],
+"cb": []
+},
+"0x313": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"ne": [],
+"pp": [],
+"ex": [],
+"hp": [],
+"spr": []
+},
+"0x314": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"0x429": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"hammer": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+}
+},
+"any": {
+"any": {
+"any": []
+}
+},
+"scorpion_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+}
+},
+"warthog_p": {
+"unarmed": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"dual": {
+"any": []
+},
+"0x310": {
+"any": [
+"idle"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"0x311": {
+"any": [],
+"bs": [
+"idle"
+],
+"sb": [
+"idle"
+]
+},
+"0x312": {
+"any": [
+"idle"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"br": [],
+"pr": [
+"idle"
+],
+"csr": [],
+"cb": []
+},
+"0x313": {
+"any": [
+"idle"
+],
+"ne": [],
+"pp": [],
+"ex": [],
+"hp": [],
+"spr": []
+},
+"0x314": {
+"any": [
+"idle"
+]
+},
+"0x429": {
+"any": [
+"idle"
+]
+},
+"hammer": {
+"any": [
+"idle"
+]
+}
+},
+"turret_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"detach",
+"0x488"
+],
+"pgt": [
+"0x488"
+],
+"mp": [
+"0x488"
+]
+}
+},
+"warthog_d": {
+"unarmed": {
+"any": []
+},
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+}
+},
+"chopper_d": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+}
+},
+"ghost_d": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection",
+"enter_a"
+]
+}
+},
+"mongoose_d": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection",
+"enter_a"
+]
+}
+},
+"mongoose_p": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"dual": {
+"any": []
+},
+"0x310": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+],
+"fc": [],
+"rl": [],
+"sl": [
+"idle"
+]
+},
+"0x311": {
+"any": [],
+"bs": [
+"idle"
+]
+},
+"0x312": {
+"any": [
+"idle"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"ar": [],
+"br": [],
+"pr": [],
+"csr": [],
+"cb": []
+},
+"0x313": {
+"any": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"hp": [],
+"spr": []
+},
+"0x314": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"0x429": {
+"any": [
+"idle"
+]
+},
+"hammer": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_p_l05": {
+"any": {
+"any": [
+"enter",
+"exit"
+]
+},
+"0x312": {
+"any": [
+"idle"
+]
+}
+},
+"pelican_p_r05": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_b_d": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+},
+"warthog_b_p": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+},
+"warthog_b_g": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+},
+"ghost_b_l": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+},
+"ghost_b_b": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+},
+"chopper_b_f": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+},
+"chopper_b_b": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+],
+[
+"0x410",
+"0x312"
+],
+[
+"ne",
+"0x313"
+],
+[
+"pp",
+"0x313"
+],
+[
+"sg",
+"0x312"
+],
+[
+"sr",
+"0x312"
+],
+[
+"fc",
+"0x310"
+],
+[
+"rl",
+"0x310"
+],
+[
+"sl",
+"0x310"
+],
+[
+"ex",
+"0x313"
+],
+[
+"hp",
+"0x313"
+],
+[
+"ar",
+"0x312"
+],
+[
+"br",
+"0x312"
+],
+[
+"pr",
+"0x312"
+],
+[
+"spr",
+"0x313"
+],
+[
+"ftt",
+"turret"
+],
+[
+"csr",
+"0x312"
+],
+[
+"cb",
+"0x312"
+],
+[
+"bs",
+"0x311"
+],
+[
+"pgt",
+"turret"
+],
+[
+"sb",
+"0x311"
+],
+[
+"mp",
+"turret"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1941912056,
+"wl_at": 1941912266,
+"wl_n": 22
+}
+},
+"objects\\characters\\monitor\\monitor": {
+"modes": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1934534204,
+"wl_at": 1930424281,
+"wl_n": 1
+}
+},
+"objects\\characters\\monitor\\monitor_boss_device\\monitor_boss_device": {
+"modes": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1930424271,
+"wl_at": 1930424281,
+"wl_n": 1
+}
+},
+"objects\\characters\\monitor\\monitor_boss_idle_device\\monitor_boss_idle_device": {
+"modes": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1930424271,
+"wl_at": 1930424281,
+"wl_n": 1
+}
+},
+"objects\\characters\\sentinel_aggressor\\sentinel_aggressor": {
+"modes": {
+"patrol": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"combat": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"crouch": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1943317789,
+"wl_at": 1930424281,
+"wl_n": 1
+}
+},
+"__weap__": {
+"objects\\characters\\flood_ranged\\weapon\\flood_ranged_weapon": [
+"unarmed",
+"cb",
+0
+],
+"objects\\characters\\monitor\\weapons\\monitor_beam\\monitor_beam": [
+"0x0",
+"0x0",
+8388608
+],
+"objects\\equipment\\autoturret\\autoturret_beam": [
+"0x0",
+"0x0",
+0
+],
+"objects\\vehicles\\brute_chopper\\weapon\\chopper_gun": [
+"fixed",
+"gun",
+8192
+],
+"objects\\vehicles\\ghost\\weapon\\ghost_gun": [
+"fixed",
+"gun",
+8192
+],
+"objects\\vehicles\\mongoose\\weapon\\mongoose_horn": [
+"fixed",
+"gun",
+1152
+],
+"objects\\vehicles\\pelican\\pelican_rocket_pod\\weapon\\pelican_rocket_pod": [
+"fixed",
+"cg",
+0
+],
+"objects\\vehicles\\scorpion\\turrets\\anti_infantry\\weapon\\anti_infantry_turret": [
+"fixed",
+"cg",
+0
+],
+"objects\\vehicles\\scorpion\\turrets\\cannon\\weapon\\cannon_turret": [
+"fixed",
+"cannon",
+33554560
+],
+"objects\\vehicles\\warthog\\turrets\\chaingun\\weapon\\chaingun_turret": [
+"fixed",
+"cg",
+0
+],
+"objects\\vehicles\\warthog\\turrets\\gauss\\weapon\\gauss_turret": [
+"fixed",
+"gr",
+33554432
+],
+"objects\\vehicles\\warthog\\weapon\\warthog_horn": [
+"fixed",
+"gun",
+1152
+],
+"objects\\weapons\\melee\\energy_blade\\energy_blade": [
+"0x314",
+"eb",
+5521472
+],
+"objects\\weapons\\melee\\gravity_hammer\\gravity_hammer": [
+"hammer",
+"gh",
+4472896
+],
+"objects\\weapons\\multiplayer\\ball\\primary_skull": [
+"0x429",
+"b",
+11
+],
+"objects\\weapons\\pistol\\automag\\automag": [
+"0x313",
+"hp",
+0
+],
+"objects\\weapons\\pistol\\excavator\\excavator": [
+"0x313",
+"ex",
+2162688
+],
+"objects\\weapons\\pistol\\magnum\\magnum": [
+"0x313",
+"hp",
+2162688
+],
+"objects\\weapons\\pistol\\needler\\needler": [
+"0x313",
+"ne",
+0
+],
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol": [
+"0x313",
+"pp",
+65600
+],
+"objects\\weapons\\rifle\\assault_rifle\\assault_rifle": [
+"0x312",
+"ar",
+0
+],
+"objects\\weapons\\rifle\\battle_rifle\\battle_rifle": [
+"0x312",
+"br",
+0
+],
+"objects\\weapons\\rifle\\beam_rifle\\beam_rifle": [
+"0x312",
+"csr",
+33554496
+],
+"objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine": [
+"0x312",
+"cb",
+0
+],
+"objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle": [
+"0x312",
+"pr",
+2164800
+],
+"objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red": [
+"0x312",
+"pr",
+2164800
+],
+"objects\\weapons\\rifle\\saw\\saw": [
+"0x312",
+"ar",
+0
+],
+"objects\\weapons\\rifle\\shotgun\\shotgun": [
+"0x312",
+"sg",
+0
+],
+"objects\\weapons\\rifle\\smg\\smg": [
+"0x312",
+"0x410",
+2164736
+],
+"objects\\weapons\\rifle\\smg_silenced\\smg_silenced": [
+"0x312",
+"0x410",
+2048
+],
+"objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle": [
+"0x312",
+"sr",
+33554432
+],
+"objects\\weapons\\rifle\\spike_rifle\\spike_rifle": [
+"0x313",
+"spr",
+2164736
+],
+"objects\\weapons\\support_high\\flak_cannon\\flak_cannon": [
+"0x310",
+"fc",
+0
+],
+"objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher": [
+"0x310",
+"rl",
+33554432
+],
+"objects\\weapons\\support_high\\spartan_laser\\spartan_laser": [
+"0x310",
+"sl",
+33554496
+],
+"objects\\weapons\\support_high\\spartan_laser\\spartan_laser_overloaded": [
+"0x310",
+"sl",
+33554432
+],
+"objects\\weapons\\support_low\\brute_shot\\brute_shot": [
+"0x311",
+"bs",
+0
+],
+"objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun": [
+"0x311",
+"sb",
+2112
+],
+"objects\\weapons\\turret\\flamethrower\\flamethrower": [
+"turret",
+"ftt",
+33591616
+],
+"objects\\weapons\\turret\\machinegun_turret\\machinegun_turret": [
+"turret",
+"mgt",
+37120
+],
+"objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated": [
+"turret",
+"mgt",
+0
+],
+"objects\\weapons\\turret\\missile_pod\\missile_pod": [
+"turret",
+"mp",
+37120
+],
+"objects\\weapons\\turret\\plasma_cannon\\plasma_cannon": [
+"turret",
+"pgt",
+37120
+]
+}
+}

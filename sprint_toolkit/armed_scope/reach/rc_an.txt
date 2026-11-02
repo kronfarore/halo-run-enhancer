@@ -1,0 +1,738 @@
+maps ['m10', 'm20', 'm30', 'm35', 'm45', 'm50', 'm52', 'm60', 'm70', 'm70_bonus']
+
+== T1 units per species (entries/spawn/cell, cell actors, protected, shared CT, shared weap)
+m10 scen sets 10 {'cells_multi_weapon': 10, 'cells_no_weapon_block': 4, 'cells': 59, 'distinct_ct_blocks': 23, 'distinct_weapon_blocks': 18} slack [None, (1, 63302, 63302), (1, 16388, 16388), (1, 50476, 50476), None, (3, 60493, 50146)] scnr part 5
+   none               ent  127 spawn 127 cell    0 prot 127 | cells   0 actors   0 shCT   0 shW   0
+   grunt              ent  108 spawn   6 cell  102 prot 107 | cells  12 actors  27 shCT  10 shW  11
+   elite              ent   46 spawn   4 cell   42 prot  38 | cells  17 actors  22 shCT  15 shW  15
+   jackal             ent   40 spawn   0 cell   40 prot  40 | cells  12 actors  27 shCT  12 shW  11
+   spartans_ai        ent   22 spawn   0 cell   22 prot   0 | cells   4 actors   4 shCT   0 shW   2
+   null               ent    8 spawn   1 cell    7 prot   7 | cells   4 actors   5 shCT   3 shW   4
+   marine             ent    7 spawn   0 cell    7 prot   7 | cells   3 actors   5 shCT   3 shW   3
+   spartans_female_ai ent    6 spawn   0 cell    6 prot   0 | cells   1 actors   1 shCT   0 shW   1
+   ambient_life       ent    5 spawn   0 cell    5 prot   0 | cells   3 actors  10 shCT   3 shW   3
+   civilian_male      ent    4 spawn   0 cell    4 prot   0 | cells   3 actors   7 shCT   3 shW   3
+   civilian_female    ent    4 spawn   4 cell    0 prot   0 | cells   0 actors   0 shCT   0 shW   0
+m20 scen sets 8 {'cells_multi_weapon': 24, 'cells_no_weapon_block': 8, 'cells': 94, 'distinct_ct_blocks': 35, 'distinct_weapon_blocks': 23} slack [None, (2, 43632, 39362), (1, 46876, 46876), (1, 18216, 18216), None, (1, 28600, 28600)] scnr part 5
+   none               ent  176 spawn 176 cell    0 prot 176 | cells   0 actors   0 shCT   0 shW   0
+   elite              ent   89 spawn   0 cell   89 prot  74 | cells  35 actors  39 shCT  24 shW  28
+   grunt              ent   80 spawn   0 cell   80 prot  74 | cells  30 actors  59 shCT  26 shW  27
+   marine             ent   49 spawn   0 cell   49 prot  49 | cells   9 actors  19 shCT   9 shW   9
+   jackal             ent   35 spawn   0 cell   35 prot   9 | cells  11 actors  25 shCT   9 shW  11
+   null               ent   19 spawn   0 cell   19 prot  19 | cells   6 actors   6 shCT   3 shW   6
+   hunter             ent    4 spawn   0 cell    4 prot   0 | cells   1 actors   1 shCT   0 shW   1
+   spartans_ai        ent    4 spawn   0 cell    4 prot   0 | cells   3 actors   3 shCT   0 shW   0
+   marine_female      ent    2 spawn   0 cell    2 prot   0 | cells   2 actors   3 shCT   2 shW   1
+   spartans_female_ai ent    2 spawn   0 cell    2 prot   0 | cells   1 actors   1 shCT   0 shW   1
+m30 scen sets 8 {'cells_multi_weapon': 29, 'cells_no_weapon_block': 7, 'cells': 86, 'distinct_ct_blocks': 22, 'distinct_weapon_blocks': 22} slack [None, (1, 55942, 55942), (1, 25876, 25876), (1, 17060, 17060), None, (3, 66191, 51188)] scnr part 5
+   none               ent  215 spawn 212 cell    3 prot 214 | cells   0 actors   0 shCT   0 shW   0
+   grunt              ent  176 spawn   1 cell  175 prot 175 | cells  22 actors  55 shCT  20 shW  22
+   elite              ent  116 spawn   0 cell  116 prot  95 | cells  32 actors  45 shCT  29 shW  25
+   jackal             ent   92 spawn   0 cell   92 prot  83 | cells  22 actors  46 shCT  22 shW  21
+   civilian_male      ent    4 spawn   0 cell    4 prot   0 | cells   2 actors   8 shCT   2 shW   2
+   spartans_ai        ent    2 spawn   0 cell    2 prot   0 | cells   1 actors   1 shCT   0 shW   0
+   hunter             ent    2 spawn   0 cell    2 prot   2 | cells   1 actors   1 shCT   0 shW   1
+   ambient_life       ent    2 spawn   0 cell    2 prot   0 | cells   2 actors   9 shCT   2 shW   2
+   mule               ent    1 spawn   0 cell    1 prot   0 | cells   1 actors   2 shCT   0 shW   1
+   null               ent    1 spawn   0 cell    1 prot   1 | cells   1 actors   1 shCT   0 shW   1
+m35 scen sets 11 {'cells_no_weapon_block': 11, 'cells_multi_weapon': 12, 'cells': 93, 'distinct_ct_blocks': 29, 'distinct_weapon_blocks': 19} slack [None, (1, 54302, 54302), (0, 0, 0), (1, 33820, 33820), None, (1, 54422, 54422)] scnr part 5
+   none               ent  150 spawn 150 cell    0 prot 150 | cells   0 actors   0 shCT   0 shW   0
+   grunt              ent   98 spawn  12 cell   86 prot  83 | cells  25 actors  51 shCT  23 shW  24
+   elite              ent   76 spawn   7 cell   69 prot  49 | cells  26 actors  35 shCT  22 shW  23
+   jackal             ent   66 spawn   1 cell   65 prot  59 | cells  17 actors  36 shCT  16 shW  15
+   null               ent   39 spawn  11 cell   28 prot  25 | cells  11 actors  15 shCT  10 shW  11
+   marine             ent   37 spawn   0 cell   37 prot  37 | cells   7 actors  15 shCT   7 shW   7
+   bugger             ent    8 spawn   0 cell    8 prot   0 | cells   1 actors   4 shCT   0 shW   1
+   spartans_ai        ent    6 spawn   0 cell    6 prot   0 | cells   3 actors   3 shCT   0 shW   2
+   hunter             ent    2 spawn   0 cell    2 prot   0 | cells   1 actors   2 shCT   0 shW   1
+   engineer           ent    2 spawn   0 cell    2 prot   0 | cells   1 actors   1 shCT   0 shW   1
+   spartans_female_ai ent    1 spawn   0 cell    1 prot   0 | cells   1 actors   1 shCT   0 shW   1
+m45 scen sets 18 {'cells_no_weapon_block': 31, 'cells_multi_weapon': 46, 'cells': 137, 'distinct_ct_blocks': 32, 'distinct_weapon_blocks': 39} slack [None, (1, 10570, 10570), (1, 30972, 30972), (1, 39272, 39272), None, (5, 81489, 40126)] scnr part 5
+   none               ent  365 spawn 357 cell    8 prot 365 | cells   0 actors   0 shCT   0 shW   0
+   elite              ent   80 spawn   4 cell   76 prot  40 | cells  46 actors  51 shCT  42 shW  32
+   null               ent   79 spawn  32 cell   47 prot  47 | cells  27 actors 112 shCT  27 shW  27
+   grunt              ent   64 spawn   2 cell   62 prot  50 | cells  27 actors  60 shCT  25 shW  25
+   marine             ent   38 spawn   0 cell   38 prot  34 | cells  13 actors  30 shCT  10 shW   8
+   jackal             ent   35 spawn   0 cell   35 prot  35 | cells  12 actors  26 shCT  12 shW  12
+   spartans_ai        ent    4 spawn   0 cell    4 prot   0 | cells   2 actors   2 shCT   0 shW   0
+   marine_female      ent    2 spawn   0 cell    2 prot   1 | cells   2 actors   3 shCT   0 shW   0
+   engineer           ent    2 spawn   0 cell    2 prot   0 | cells   1 actors   1 shCT   0 shW   1
+   spartans_female_ai ent    1 spawn   0 cell    1 prot   0 | cells   1 actors   1 shCT   0 shW   1
+m50 scen sets 7 {'cells_multi_weapon': 17, 'cells_no_weapon_block': 16, 'cells': 95, 'distinct_ct_blocks': 21, 'distinct_weapon_blocks': 21} slack [None, (1, 28082, 28082), (1, 43812, 43812), (1, 20504, 20504), None, (3, 53719, 30029)] scnr part 5
+   none               ent  288 spawn 286 cell    2 prot 288 | cells   0 actors   0 shCT   0 shW   0
+   grunt              ent  132 spawn  10 cell  122 prot 123 | cells  17 actors  30 shCT  16 shW  17
+   marine             ent  114 spawn  16 cell   98 prot  91 | cells  18 actors  32 shCT  16 shW  16
+   brute              ent  111 spawn  25 cell   86 prot  88 | cells  29 actors  36 shCT  28 shW  25
+   null               ent   94 spawn  57 cell   37 prot  74 | cells   6 actors   8 shCT   6 shW   6
+   jackal             ent   39 spawn   1 cell   38 prot  35 | cells  15 actors  35 shCT  15 shW  14
+   civilian_male      ent   27 spawn   4 cell   23 prot   0 | cells   9 actors  25 shCT   7 shW   9
+   civilian_female    ent   23 spawn   3 cell   20 prot   0 | cells   8 actors  24 shCT   7 shW   8
+   marine_female      ent    1 spawn   1 cell    0 prot   0 | cells   0 actors   0 shCT   0 shW   0
+m52 scen sets 7 {'cells_no_weapon_block': 10, 'cells_multi_weapon': 8, 'cells': 49, 'distinct_ct_blocks': 21, 'distinct_weapon_blocks': 16} slack [None, (2, 53027, 48662), (1, 51172, 51172), (1, 65200, 65200), None, (3, 37312, 25874)] scnr part 5
+   none               ent  328 spawn 328 cell    0 prot 328 | cells   0 actors   0 shCT   0 shW   0
+   null               ent  100 spawn   0 cell  100 prot 100 | cells   5 actors   8 shCT   3 shW   5
+   marine             ent   87 spawn   8 cell   79 prot  81 | cells  11 actors  21 shCT  10 shW  10
+   grunt              ent   78 spawn   0 cell   78 prot  76 | cells   9 actors  20 shCT   8 shW   8
+   brute              ent   38 spawn   0 cell   38 prot  38 | cells   7 actors  13 shCT   7 shW   7
+   jackal             ent   30 spawn   0 cell   30 prot  22 | cells   7 actors  16 shCT   6 shW   6
+   bugger             ent   28 spawn   0 cell   28 prot   0 | cells   1 actors   1 shCT   0 shW   1
+   elite              ent   17 spawn   1 cell   16 prot   9 | cells   6 actors  11 shCT   4 shW   4
+   engineer           ent   12 spawn   0 cell   12 prot   0 | cells   1 actors   1 shCT   0 shW   1
+   hunter             ent   12 spawn   0 cell   12 prot   0 | cells   2 actors   3 shCT   2 shW   2
+   marine_female      ent    6 spawn   6 cell    0 prot   0 | cells   0 actors   0 shCT   0 shW   0
+m60 scen sets 13 {'cells_no_weapon_block': 9, 'cells_multi_weapon': 21, 'cells': 68, 'distinct_ct_blocks': 27, 'distinct_weapon_blocks': 24} slack [None, (1, 51158, 51158), (1, 32296, 32296), (1, 43024, 43024), None, (5, 114800, 61098)] scnr part 5
+   grunt              ent  193 spawn   0 cell  193 prot 193 | cells  19 actors  29 shCT  18 shW  18
+   elite              ent  189 spawn   2 cell  187 prot 104 | cells  21 actors  28 shCT  18 shW  16
+   none               ent  176 spawn 174 cell    2 prot 176 | cells   0 actors   0 shCT   0 shW   0
+   jackal             ent  102 spawn   0 cell  102 prot   0 | cells  13 actors  32 shCT  12 shW  13
+   brute              ent   54 spawn   0 cell   54 prot   0 | cells   3 actors   5 shCT   3 shW   3
+   null               ent   43 spawn   0 cell   43 prot  41 | cells   5 actors   7 shCT   3 shW   5
+   marine             ent   32 spawn   0 cell   32 prot  30 | cells   4 actors  10 shCT   3 shW   2
+   spartans_ai        ent   12 spawn   0 cell   12 prot   0 | cells   3 actors   3 shCT   0 shW   2
+   hunter             ent   12 spawn   0 cell   12 prot  12 | cells   1 actors   1 shCT   0 shW   1
+   engineer           ent    4 spawn   0 cell    4 prot   0 | cells   1 actors   1 shCT   0 shW   1
+m70 scen sets 13 {'cells_multi_weapon': 21, 'cells_no_weapon_block': 19, 'cells': 127, 'distinct_ct_blocks': 44, 'distinct_weapon_blocks': 25} slack [None, (1, 28430, 28430), (1, 16300, 16300), (1, 36612, 36612), None, (5, 121708, 41388)] scnr part 5
+   none               ent  207 spawn 200 cell    7 prot 207 | cells   0 actors   0 shCT   0 shW   0
+   grunt              ent   80 spawn   0 cell   80 prot  69 | cells  42 actors  78 shCT  38 shW  41
+   null               ent   55 spawn   0 cell   55 prot  53 | cells  18 actors  23 shCT  17 shW  18
+   elite              ent   32 spawn   0 cell   32 prot   8 | cells  20 actors  20 shCT  13 shW  13
+   jackal             ent   30 spawn   0 cell   30 prot  17 | cells  15 actors  40 shCT  13 shW  14
+   marine             ent   27 spawn   0 cell   27 prot  20 | cells   8 actors  12 shCT   7 shW   8
+   brute              ent   18 spawn   0 cell   18 prot  16 | cells  15 actors  27 shCT  14 shW  12
+   bugger             ent    4 spawn   0 cell    4 prot   0 | cells   3 actors  10 shCT   0 shW   3
+   spartans_ai        ent    2 spawn   0 cell    2 prot   0 | cells   2 actors   2 shCT   2 shW   1
+   marine_female      ent    2 spawn   0 cell    2 prot   0 | cells   2 actors   2 shCT   2 shW   2
+   hunter             ent    2 spawn   0 cell    2 prot   0 | cells   1 actors   1 shCT   0 shW   1
+   engineer           ent    1 spawn   0 cell    1 prot   0 | cells   1 actors   1 shCT   0 shW   1
+m70_bonus scen sets 2 {'cells_no_weapon_block': 6, 'cells_multi_weapon': 3, 'cells': 18, 'distinct_ct_blocks': 10, 'distinct_weapon_blocks': 9} slack [None, (1, 64026, 64026), (1, 26908, 26908), (1, 30752, 30752), None, (2, 43423, 30748)] scnr part 5
+   elite              ent  163 spawn 105 cell   58 prot  34 | cells   8 actors  20 shCT   4 shW   4
+   grunt              ent   40 spawn  24 cell   16 prot   4 | cells   3 actors   7 shCT   2 shW   1
+   none               ent   36 spawn  36 cell    0 prot  36 | cells   0 actors   0 shCT   0 shW   0
+   null               ent   10 spawn   0 cell   10 prot  10 | cells   5 actors   6 shCT   5 shW   5
+   hunter             ent    6 spawn   0 cell    6 prot   0 | cells   1 actors   2 shCT   0 shW   1
+   jackal             ent    4 spawn   0 cell    4 prot   0 | cells   1 actors   3 shCT   0 shW   1
+   brute              ent    2 spawn   0 cell    2 prot   0 | cells   1 actors   3 shCT   0 shW   0
+
+== T1b chars
+None | None | None | [] | 2
+reach_moa | reach_moa | reach_moa | ['generic'] | 2
+brute | brute | brute | ['generic'] | 5
+brute_captain | brute | brute | ['brute', 'generic'] | 5
+brute_chieftain_armor | brute_chieftain | brute | ['brute', 'generic'] | 3
+brute_chieftain_weapon | brute_chieftain | brute | ['brute', 'generic'] | 3
+bugger | bugger | bugger | ['generic'] | 4
+bugger_captain | bugger | bugger | ['bugger', 'generic'] | 1
+bugger_captain_major | bugger | bugger | ['bugger_captain', 'bugger', 'generic'] | 1
+bugger_major | bugger | bugger | ['bugger', 'generic'] | 1
+bugger_ultra | bugger | bugger | ['bugger', 'generic'] | 1
+civilian_female_m50 | civilian_female | civilian_female | ['civilian_male_m50', 'generic'] | 1
+civilian_female | civilian_female | civilian_female | ['generic'] | 1
+civilian_male_m30 | civilian_male | civilian_male | ['trooper', 'generic'] | 1
+civilian_male_m50 | civilian_male | civilian_male | ['generic'] | 1
+civilian_male | civilian_male | civilian_male | ['generic'] | 1
+elite | elite_ai | elite_ai | ['generic'] | 9
+elite_general | elite_ai | elite_ai | ['elite_ultra', 'elite', 'generic'] | 8
+elite_jetpack | elite_ai | elite_ai | ['elite', 'generic'] | 7
+elite_officer | elite_ai | elite_ai | ['elite', 'generic'] | 9
+elite_pilot | elite_ai | elite_ai | ['elite', 'generic'] | 4
+elite_specops | elite_ai | elite_ai | ['elite', 'generic'] | 7
+elite_story | elite_ai | elite_ai | ['elite_ultra', 'elite', 'generic'] | 3
+elite_story_unique | elite_ai | elite_ai | ['elite_ultra', 'elite', 'generic'] | 1
+elite_ultra | elite_ai | elite_ai | ['elite', 'generic'] | 9
+elite_bob | elite_ai | elite_ai | ['elite_ultra', 'elite', 'generic'] | 8
+engineer | engineer | engineer | ['generic'] | 8
+grunt | grunt | grunt | ['generic'] | 10
+grunt_heavy | grunt | grunt | ['grunt_ultra', 'grunt', 'generic'] | 10
+grunt_major | grunt | grunt | ['grunt', 'generic'] | 4
+grunt_specops | grunt | grunt | ['grunt_ultra', 'grunt', 'generic'] | 4
+grunt_ultra | grunt | grunt | ['grunt', 'generic'] | 4
+hunter | hunter | hunter | ['generic'] | 7
+jackal | jackal | jackal | ['generic'] | 10
+jackal_major | jackal | jackal | ['jackal', 'generic'] | 3
+jackal_sniper | jackal | jackal | ['jackal', 'generic'] | 9
+skirmisher | jackal | jackal | ['generic'] | 9
+skirmisher_champion | jackal | jackal | ['skirmisher_commando', 'skirmisher', 'generic'] | 3
+skirmisher_commando | jackal | jackal | ['skirmisher', 'generic'] | 6
+skirmisher_major | jackal | jackal | ['skirmisher', 'generic'] | 2
+skirmisher_murmillone | jackal | jackal | ['skirmisher_major', 'skirmisher', 'generic'] | 2
+trooper | marine | marine | ['generic'] | 8
+trooper_odst | marine | marine | ['trooper', 'generic'] | 3
+trooper_odst_buck | marine | marine | ['trooper', 'generic'] | 1
+trooper_odst_jetpack | marine | marine | ['trooper_odst', 'trooper', 'generic'] | 1
+trooper_pilot | marine | marine | ['trooper', 'generic'] | 2
+trooper_pilot_flying | marine | marine | ['trooper', 'generic'] | 1
+trooper_sgt | marine | marine | ['trooper', 'generic'] | 5
+trooper_space | marine | marine | ['trooper', 'generic'] | 1
+trooper_female | marine_female | civilian_female | ['trooper', 'generic'] | 5
+mule | mule | mule | ['generic'] | 2
+null_cov_default | null | null | ['generic'] | 8
+null_cov_flying | null | null | ['generic'] | 10
+null_cov_flying_space | null | null | ['generic'] | 1
+null_human_default | null | null | ['generic'] | 6
+null_human_flying | null | null | ['generic'] | 8
+null_human_flying_space | null | null | ['generic'] | 1
+spartan_carter | spartans_ai | spartans_ai | ['spartan_generic', 'generic'] | 5
+spartan_emile | spartans_ai | spartans_ai | ['spartan_generic', 'generic'] | 5
+spartan_jorge | spartan_jorge | spartan_jorge | ['spartan_generic', 'generic'] | 4
+spartan_jun | spartans_ai | spartans_ai | ['spartan_generic', 'generic'] | 4
+spartan_kat | spartans_female_ai | spartans_female_ai | ['spartan_generic', 'generic'] | 4
+
+== T2 weapon palette per map: name, class, wname, sets/total, closure sets, status
+m10
+   assault_rifle                    c3ac=rifle n3b0=ar c3e0=ff_park_kill_chall_progress n3e4= sets=10 glob=True closure=all st=ok late=0
+   plasma_pistol                    c3ac=pistol n3b0=pp c3e0=ff_park_kill_chall_progress n3e4= sets=10 glob=True closure=all st=ok late=0
+   needle_rifle                     c3ac=rifle n3b0=cb c3e0=ff_park_kill_chall_progress n3e4= sets=10 glob=True closure=all st=ok late=0
+   needler                          c3ac=pistol n3b0=ne c3e0=ff_park_kill_chall_progress n3e4= sets=10 glob=True closure=all st=ok late=0
+   magnum                           c3ac=pistol n3b0=hp c3e0=ff_park_kill_chall_progress n3e4= sets=10 glob=True closure=all st=ok late=0
+   energy_sword                     c3ac=sword n3b0=eb c3e0=ff_park_kill_chall_progress n3e4= sets=10 glob=True closure=all st=ok late=0
+   dmr                              c3ac=rifle n3b0=br c3e0=ff_park_kill_chall_progress n3e4= sets=10 glob=True closure=all st=ok late=0
+   machinegun_turret_jorge          c3ac=turret n3b0=mgt c3e0=ff_park_kill_chall_progress n3e4= sets=10 glob=False closure=10 st=ok late=0
+   sniper_rifle                     c3ac=rifle n3b0=sr c3e0=ff_park_kill_chall_progress n3e4= sets=10 glob=False closure=10 st=ok late=0
+   concussion_rifle                 c3ac=rifle n3b0=cr c3e0=ff_park_kill_chall_progress n3e4= sets=10 glob=True closure=all st=ok late=0
+   plasma_repeater                  c3ac=rifle n3b0=prp c3e0=ff_park_kill_chall_progress n3e4= sets=10 glob=True closure=all st=ok late=0
+   shotgun                          c3ac=rifle n3b0=sg c3e0=ff_park_kill_chall_progress n3e4= sets=9 glob=False closure=9 st=ok late=0
+   plasma_rifle                     c3ac=pistol n3b0=pr c3e0=ff_park_kill_chall_progress n3e4= sets=10 glob=True closure=all st=ok late=0
+   flak_cannon                      c3ac=missile n3b0=fc c3e0=ff_park_kill_chall_progress n3e4= sets=4 glob=False closure=4 st=ok late=0
+   focus_rifle                      c3ac=rifle n3b0=csr c3e0=ff_park_kill_chall_progress n3e4= sets=4 glob=False closure=4 st=ok late=0
+   gravity_hammer                   c3ac=hammer n3b0=gh c3e0=ff_park_kill_chall_progress n3e4= sets=4 glob=False closure=4 st=ok late=0
+   grenade_launcher                 c3ac=rifle n3b0=gl c3e0=ff_park_kill_chall_progress n3e4= sets=4 glob=False closure=4 st=ok late=0
+   plasma_launcher                  c3ac=missile n3b0=pl c3e0=ff_park_kill_chall_progress n3e4= sets=4 glob=False closure=4 st=ok late=0
+   spartan_laser                    c3ac=missile n3b0=sl c3e0=ff_park_kill_chall_progress n3e4= sets=4 glob=False closure=4 st=ok late=0
+   spike_rifle                      c3ac=rifle n3b0=spr c3e0=ff_park_kill_chall_progress n3e4= sets=4 glob=False closure=4 st=ok late=0
+   target_laser                     c3ac=pistol n3b0=sl c3e0=ff_park_kill_chall_progress n3e4= sets=10 glob=True closure=all st=ok late=0
+   rocket_launcher                  c3ac=missile n3b0=rl c3e0=ff_park_kill_chall_progress n3e4= sets=4 glob=False closure=4 st=ok late=0
+   plasma_turret                    c3ac=turret n3b0=pgt c3e0=ff_park_kill_chall_progress n3e4= sets=4 glob=False closure=4 st=ok late=0
+   machinegun_turret                c3ac=turret n3b0=mgt c3e0=ff_park_kill_chall_progress n3e4= sets=10 glob=False closure=10 st=ok late=0
+m20
+   dmr                              c3ac=rifle n3b0=br c3e0=None n3e4= sets=8 glob=True closure=all st=ok late=0
+   assault_rifle                    c3ac=rifle n3b0=ar c3e0=None n3e4= sets=8 glob=True closure=all st=ok late=0
+   plasma_pistol                    c3ac=pistol n3b0=pp c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   energy_sword                     c3ac=sword n3b0=eb c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   needler                          c3ac=pistol n3b0=ne c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   sniper_rifle                     c3ac=rifle n3b0=sr c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   needle_rifle                     c3ac=rifle n3b0=cb c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   magnum                           c3ac=pistol n3b0=hp c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   plasma_rifle                     c3ac=pistol n3b0=pr c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   assault_rifle                    c3ac=rifle n3b0=ar c3e0=None n3e4= sets=8 glob=True closure=all st=ok late=0
+   concussion_rifle                 c3ac=rifle n3b0=cr c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   flak_cannon                      c3ac=missile n3b0=fc c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   machinegun_turret_jorge          c3ac=turret n3b0=mgt c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   target_laser                     c3ac=pistol n3b0=sl c3e0=None n3e4= sets=8 glob=True closure=all st=ok late=0
+   rocket_launcher                  c3ac=missile n3b0=rl c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   spartan_laser                    c3ac=missile n3b0=sl c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   shotgun                          c3ac=rifle n3b0=sg c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   plasma_launcher                  c3ac=missile n3b0=pl c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   focus_rifle                      c3ac=rifle n3b0=csr c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   gravity_hammer                   c3ac=hammer n3b0=gh c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   grenade_launcher                 c3ac=rifle n3b0=gl c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   plasma_repeater                  c3ac=rifle n3b0=prp c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   spike_rifle                      c3ac=rifle n3b0=spr c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   machinegun_turret                c3ac=turret n3b0=mgt c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   plasma_turret                    c3ac=turret n3b0=pgt c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   saw                              c3ac=rifle n3b0=ar c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+m30
+   assault_rifle                    c3ac=rifle n3b0=ar c3e0=None n3e4= sets=8 glob=True closure=all st=ok late=0
+   sniper_rifle                     c3ac=rifle n3b0=sr c3e0=None n3e4= sets=8 glob=True closure=all st=ok late=0
+   plasma_pistol                    c3ac=pistol n3b0=pp c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   magnum                           c3ac=pistol n3b0=hp c3e0=None n3e4= sets=8 glob=True closure=all st=ok late=0
+   needle_rifle                     c3ac=rifle n3b0=cb c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   shotgun                          c3ac=rifle n3b0=sg c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   plasma_rifle                     c3ac=pistol n3b0=pr c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   needler                          c3ac=pistol n3b0=ne c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   focus_rifle                      c3ac=rifle n3b0=csr c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   flak_cannon                      c3ac=missile n3b0=fc c3e0=None n3e4= sets=2 glob=False closure=2 st=ok late=0
+   energy_sword                     c3ac=sword n3b0=eb c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   dmr                              c3ac=rifle n3b0=br c3e0=None n3e4= sets=8 glob=True closure=all st=ok late=0
+   concussion_rifle                 c3ac=rifle n3b0=cr c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   rocket_launcher                  c3ac=missile n3b0=rl c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   plasma_repeater                  c3ac=rifle n3b0=prp c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   plasma_turret                    c3ac=turret n3b0=pgt c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   plasma_launcher                  c3ac=missile n3b0=pl c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   gravity_hammer                   c3ac=hammer n3b0=gh c3e0=None n3e4= sets=2 glob=False closure=2 st=ok late=0
+   grenade_launcher                 c3ac=rifle n3b0=gl c3e0=None n3e4= sets=2 glob=False closure=2 st=ok late=0
+   machinegun_turret_jorge          c3ac=turret n3b0=mgt c3e0=None n3e4= sets=2 glob=False closure=2 st=ok late=0
+   machinegun_turret                c3ac=turret n3b0=mgt c3e0=None n3e4= sets=2 glob=False closure=2 st=ok late=0
+   plasma_turret                    c3ac=turret n3b0=pgt c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   spartan_laser                    c3ac=missile n3b0=sl c3e0=None n3e4= sets=2 glob=False closure=2 st=ok late=0
+   target_laser                     c3ac=pistol n3b0=sl c3e0=None n3e4= sets=8 glob=True closure=all st=ok late=0
+   spike_rifle                      c3ac=rifle n3b0=spr c3e0=None n3e4= sets=2 glob=False closure=2 st=ok late=0
+   concussion_rifle                 c3ac=rifle n3b0=cr c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   energy_sword                     c3ac=sword n3b0=eb c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   flak_cannon                      c3ac=missile n3b0=fc c3e0=None n3e4= sets=2 glob=False closure=2 st=ok late=0
+   focus_rifle                      c3ac=rifle n3b0=csr c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   needler                          c3ac=pistol n3b0=ne c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   plasma_launcher                  c3ac=missile n3b0=pl c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   plasma_pistol                    c3ac=pistol n3b0=pp c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   plasma_repeater                  c3ac=rifle n3b0=prp c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   plasma_rifle                     c3ac=pistol n3b0=pr c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   needle_rifle                     c3ac=rifle n3b0=cb c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   rocket_launcher                  c3ac=missile n3b0=rl c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   sniper_rifle                     c3ac=rifle n3b0=sr c3e0=None n3e4= sets=8 glob=True closure=all st=ok late=0
+   assault_rifle                    c3ac=rifle n3b0=ar c3e0=None n3e4= sets=8 glob=True closure=all st=ok late=0
+   dmr                              c3ac=rifle n3b0=br c3e0=None n3e4= sets=8 glob=True closure=all st=ok late=0
+   magnum                           c3ac=pistol n3b0=hp c3e0=None n3e4= sets=8 glob=True closure=all st=ok late=0
+   shotgun                          c3ac=rifle n3b0=sg c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+m35
+   plasma_pistol                    c3ac=pistol n3b0=pp c3e0=None n3e4= sets=11 glob=False closure=11 st=ok late=0
+   needler                          c3ac=pistol n3b0=ne c3e0=None n3e4= sets=11 glob=False closure=11 st=ok late=0
+   assault_rifle                    c3ac=rifle n3b0=ar c3e0=None n3e4= sets=11 glob=True closure=all st=ok late=0
+   plasma_rifle                     c3ac=pistol n3b0=pr c3e0=None n3e4= sets=11 glob=False closure=11 st=ok late=0
+   flak_cannon                      c3ac=missile n3b0=fc c3e0=None n3e4= sets=11 glob=False closure=11 st=ok late=0
+   needle_rifle                     c3ac=rifle n3b0=cb c3e0=None n3e4= sets=11 glob=False closure=11 st=ok late=0
+   dmr                              c3ac=rifle n3b0=br c3e0=None n3e4= sets=11 glob=True closure=all st=ok late=0
+   concussion_rifle                 c3ac=rifle n3b0=cr c3e0=None n3e4= sets=9 glob=False closure=9 st=ok late=0
+   machinegun_turret_jorge          c3ac=turret n3b0=mgt c3e0=None n3e4= sets=11 glob=False closure=11 st=ok late=0
+   grenade_launcher                 c3ac=rifle n3b0=gl c3e0=None n3e4= sets=11 glob=True closure=all st=ok late=0
+   energy_sword                     c3ac=sword n3b0=eb c3e0=None n3e4= sets=11 glob=True closure=all st=ok late=0
+   focus_rifle                      c3ac=rifle n3b0=csr c3e0=None n3e4= sets=11 glob=True closure=all st=ok late=0
+   plasma_launcher                  c3ac=missile n3b0=pl c3e0=None n3e4= sets=11 glob=True closure=all st=ok late=0
+   gravity_hammer                   c3ac=hammer n3b0=gh c3e0=None n3e4= sets=3 glob=False closure=3 st=ok late=0
+   plasma_repeater                  c3ac=rifle n3b0=prp c3e0=None n3e4= sets=11 glob=False closure=11 st=ok late=0
+   spartan_laser                    c3ac=missile n3b0=sl c3e0=None n3e4= sets=3 glob=False closure=3 st=ok late=0
+   target_laser                     c3ac=pistol n3b0=sl c3e0=None n3e4= sets=11 glob=True closure=all st=ok late=0
+   plasma_turret                    c3ac=turret n3b0=pgt c3e0=None n3e4= sets=9 glob=False closure=9 st=ok late=0
+   machinegun_turret                c3ac=turret n3b0=mgt c3e0=None n3e4= sets=8 glob=False closure=8 st=ok late=0
+   magnum                           c3ac=pistol n3b0=hp c3e0=None n3e4= sets=11 glob=False closure=11 st=ok late=0
+   rocket_launcher                  c3ac=missile n3b0=rl c3e0=None n3e4= sets=3 glob=False closure=3 st=ok late=0
+   shotgun                          c3ac=rifle n3b0=sg c3e0=None n3e4= sets=3 glob=False closure=3 st=ok late=0
+   sniper_rifle                     c3ac=rifle n3b0=sr c3e0=None n3e4= sets=3 glob=False closure=3 st=ok late=0
+   spike_rifle                      c3ac=rifle n3b0=spr c3e0=None n3e4= sets=3 glob=False closure=3 st=ok late=0
+m45
+   plasma_rifle                     c3ac=pistol n3b0=pr c3e0=None n3e4= sets=18 glob=False closure=18 st=ok late=0
+   assault_rifle                    c3ac=rifle n3b0=ar c3e0=None n3e4= sets=18 glob=True closure=all st=ok late=0
+   plasma_pistol                    c3ac=pistol n3b0=pp c3e0=None n3e4= sets=18 glob=False closure=18 st=ok late=0
+   needler                          c3ac=pistol n3b0=ne c3e0=None n3e4= sets=18 glob=False closure=18 st=ok late=0
+   magnum                           c3ac=pistol n3b0=hp c3e0=None n3e4= sets=18 glob=True closure=all st=ok late=0
+   needle_rifle                     c3ac=rifle n3b0=cb c3e0=None n3e4= sets=18 glob=False closure=18 st=ok late=0
+   dmr                              c3ac=rifle n3b0=br c3e0=None n3e4= sets=18 glob=True closure=all st=ok late=0
+   concussion_rifle                 c3ac=rifle n3b0=cr c3e0=None n3e4= sets=18 glob=False closure=18 st=ok late=0
+   plasma_repeater                  c3ac=rifle n3b0=prp c3e0=None n3e4= sets=18 glob=False closure=18 st=ok late=0
+   rocket_launcher                  c3ac=missile n3b0=rl c3e0=None n3e4= sets=18 glob=False closure=18 st=ok late=0
+   energy_sword                     c3ac=sword n3b0=eb c3e0=None n3e4= sets=18 glob=False closure=18 st=ok late=0
+   plasma_turret                    c3ac=turret n3b0=pgt c3e0=None n3e4= sets=16 glob=False closure=16 st=ok late=0
+   machinegun_turret_jorge          c3ac=turret n3b0=mgt c3e0=None n3e4= sets=18 glob=False closure=18 st=ok late=0
+   plasma_launcher                  c3ac=missile n3b0=pl c3e0=None n3e4= sets=18 glob=False closure=18 st=ok late=0
+   sniper_rifle                     c3ac=rifle n3b0=sr c3e0=None n3e4= sets=18 glob=False closure=18 st=ok late=0
+   flak_cannon                      c3ac=missile n3b0=fc c3e0=None n3e4= sets=18 glob=False closure=18 st=ok late=0
+   sniper_rifle                     c3ac=rifle n3b0=sr c3e0=None n3e4= sets=18 glob=False closure=18 st=ok late=0
+   focus_rifle                      c3ac=rifle n3b0=csr c3e0=None n3e4= sets=18 glob=False closure=18 st=ok late=0
+   shotgun                          c3ac=rifle n3b0=sg c3e0=None n3e4= sets=18 glob=False closure=18 st=ok late=0
+   gravity_hammer                   c3ac=hammer n3b0=gh c3e0=None n3e4= sets=16 glob=False closure=16 st=ok late=0
+   grenade_launcher                 c3ac=rifle n3b0=gl c3e0=None n3e4= sets=16 glob=False closure=16 st=ok late=0
+   spartan_laser                    c3ac=missile n3b0=sl c3e0=None n3e4= sets=16 glob=False closure=16 st=ok late=0
+   spike_rifle                      c3ac=rifle n3b0=spr c3e0=None n3e4= sets=16 glob=False closure=16 st=ok late=0
+   target_laser                     c3ac=pistol n3b0=sl c3e0=None n3e4= sets=18 glob=True closure=all st=ok late=0
+   machinegun_turret                c3ac=turret n3b0=mgt c3e0=None n3e4= sets=16 glob=False closure=16 st=ok late=0
+m50
+   magnum                           c3ac=pistol n3b0=hp c3e0=gen_kill_sneak_cause_player n3e4= sets=7 glob=True closure=all st=ok late=0
+   needle_rifle                     c3ac=rifle n3b0=cb c3e0=gen_kill_sneak_cause_player n3e4= sets=7 glob=False closure=7 st=ok late=0
+   focus_rifle                      c3ac=rifle n3b0=csr c3e0=gen_kill_sneak_cause_player n3e4= sets=7 glob=False closure=7 st=ok late=0
+   spike_rifle                      c3ac=rifle n3b0=spr c3e0=gen_kill_sneak_cause_player n3e4= sets=7 glob=False closure=7 st=ok late=0
+   plasma_pistol                    c3ac=pistol n3b0=pp c3e0=gen_kill_sneak_cause_player n3e4= sets=7 glob=False closure=7 st=ok late=0
+   needler                          c3ac=pistol n3b0=ne c3e0=gen_kill_sneak_cause_player n3e4= sets=7 glob=False closure=7 st=ok late=0
+   assault_rifle                    c3ac=rifle n3b0=ar c3e0=gen_kill_sneak_cause_player n3e4= sets=7 glob=True closure=all st=ok late=0
+   gravity_hammer                   c3ac=hammer n3b0=gh c3e0=gen_kill_sneak_cause_player n3e4= sets=7 glob=False closure=7 st=ok late=0
+   flak_cannon                      c3ac=missile n3b0=fc c3e0=gen_kill_sneak_cause_player n3e4= sets=7 glob=False closure=7 st=ok late=0
+   dmr                              c3ac=rifle n3b0=br c3e0=gen_kill_sneak_cause_player n3e4= sets=7 glob=True closure=all st=ok late=0
+   rocket_launcher                  c3ac=missile n3b0=rl c3e0=gen_kill_sneak_cause_player n3e4= sets=5 glob=False closure=5 st=ok late=0
+   sniper_rifle                     c3ac=rifle n3b0=sr c3e0=gen_kill_sneak_cause_player n3e4= sets=7 glob=False closure=7 st=ok late=0
+   concussion_rifle                 c3ac=rifle n3b0=cr c3e0=gen_kill_sneak_cause_player n3e4= sets=7 glob=False closure=7 st=ok late=0
+   spartan_laser                    c3ac=missile n3b0=sl c3e0=gen_kill_sneak_cause_player n3e4= sets=7 glob=True closure=all st=ok late=0
+   shotgun                          c3ac=rifle n3b0=sg c3e0=gen_kill_sneak_cause_player n3e4= sets=7 glob=False closure=7 st=ok late=0
+   plasma_repeater                  c3ac=rifle n3b0=prp c3e0=gen_kill_sneak_cause_player n3e4= sets=7 glob=False closure=7 st=ok late=0
+   plasma_launcher                  c3ac=missile n3b0=pl c3e0=gen_kill_sneak_cause_player n3e4= sets=7 glob=True closure=all st=ok late=0
+   machinegun_turret                c3ac=turret n3b0=mgt c3e0=gen_kill_sneak_cause_player n3e4= sets=5 glob=False closure=5 st=ok late=0
+   plasma_turret                    c3ac=turret n3b0=pgt c3e0=gen_kill_sneak_cause_player n3e4= sets=4 glob=False closure=4 st=ok late=0
+   machinegun_turret_jorge          c3ac=turret n3b0=mgt c3e0=gen_kill_sneak_cause_player n3e4= sets=2 glob=False closure=2 st=ok late=0
+   target_laser                     c3ac=pistol n3b0=sl c3e0=gen_kill_sneak_cause_player n3e4= sets=7 glob=True closure=all st=ok late=0
+   energy_sword                     c3ac=sword n3b0=eb c3e0=gen_kill_sneak_cause_player n3e4= sets=2 glob=False closure=2 st=ok late=0
+   grenade_launcher                 c3ac=rifle n3b0=gl c3e0=gen_kill_sneak_cause_player n3e4= sets=2 glob=False closure=2 st=ok late=0
+   plasma_rifle                     c3ac=pistol n3b0=pr c3e0=gen_kill_sneak_cause_player n3e4= sets=2 glob=False closure=2 st=ok late=0
+m52
+   rocket_launcher                  c3ac=missile n3b0=rl c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   flak_cannon                      c3ac=missile n3b0=fc c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   plasma_pistol                    c3ac=pistol n3b0=pp c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   needler                          c3ac=pistol n3b0=ne c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   assault_rifle                    c3ac=rifle n3b0=ar c3e0=None n3e4= sets=7 glob=True closure=all st=ok late=0
+   plasma_rifle                     c3ac=pistol n3b0=pr c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   spike_rifle                      c3ac=rifle n3b0=spr c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   plasma_repeater                  c3ac=rifle n3b0=prp c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   shotgun                          c3ac=rifle n3b0=sg c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   needle_rifle                     c3ac=rifle n3b0=cb c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   focus_rifle                      c3ac=rifle n3b0=csr c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   magnum                           c3ac=pistol n3b0=hp c3e0=None n3e4= sets=7 glob=True closure=all st=ok late=0
+   dmr                              c3ac=rifle n3b0=br c3e0=None n3e4= sets=7 glob=True closure=all st=ok late=0
+   concussion_rifle                 c3ac=rifle n3b0=cr c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   gravity_hammer                   c3ac=hammer n3b0=gh c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   grenade_launcher                 c3ac=rifle n3b0=gl c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   machinegun_turret                c3ac=turret n3b0=mgt c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   plasma_turret                    c3ac=turret n3b0=pgt c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   machinegun_turret_jorge          c3ac=turret n3b0=mgt c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   plasma_launcher                  c3ac=missile n3b0=pl c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   sniper_rifle                     c3ac=rifle n3b0=sr c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   spartan_laser                    c3ac=missile n3b0=sl c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+   target_laser                     c3ac=pistol n3b0=sl c3e0=None n3e4= sets=7 glob=True closure=all st=ok late=0
+   energy_sword                     c3ac=sword n3b0=eb c3e0=None n3e4= sets=7 glob=False closure=7 st=ok late=0
+m60
+   flak_cannon                      c3ac=missile n3b0=fc c3e0=display_dreamcatcher_half n3e4= sets=13 glob=False closure=13 st=ok late=0
+   plasma_pistol                    c3ac=pistol n3b0=pp c3e0=display_dreamcatcher_half n3e4= sets=13 glob=False closure=13 st=ok late=0
+   needler                          c3ac=pistol n3b0=ne c3e0=display_dreamcatcher_half n3e4= sets=13 glob=False closure=13 st=ok late=0
+   assault_rifle                    c3ac=rifle n3b0=easy_description c3e0=display_dreamcatcher_half n3e4= sets=13 glob=True closure=all st=ok late=0
+   plasma_rifle                     c3ac=pistol n3b0=pr c3e0=display_dreamcatcher_half n3e4= sets=13 glob=False closure=13 st=ok late=0
+   sniper_rifle                     c3ac=rifle n3b0=sr c3e0=display_dreamcatcher_half n3e4= sets=13 glob=False closure=13 st=ok late=0
+   spike_rifle                      c3ac=rifle n3b0=spr c3e0=display_dreamcatcher_half n3e4= sets=13 glob=False closure=13 st=ok late=0
+   plasma_repeater                  c3ac=rifle n3b0=prp c3e0=display_dreamcatcher_half n3e4= sets=13 glob=False closure=13 st=ok late=0
+   energy_sword                     c3ac=sword n3b0=eb c3e0=display_dreamcatcher_half n3e4= sets=13 glob=False closure=13 st=ok late=0
+   shotgun                          c3ac=rifle n3b0=sg c3e0=display_dreamcatcher_half n3e4= sets=13 glob=False closure=13 st=ok late=0
+   needle_rifle                     c3ac=rifle n3b0=cb c3e0=display_dreamcatcher_half n3e4= sets=13 glob=False closure=13 st=ok late=0
+   focus_rifle                      c3ac=rifle n3b0=csr c3e0=display_dreamcatcher_half n3e4= sets=13 glob=False closure=13 st=ok late=0
+   sniper_rifle_june                c3ac=rifle n3b0=sr c3e0=display_dreamcatcher_half n3e4= sets=13 glob=False closure=13 st=ok late=0
+   dmr                              c3ac=rifle n3b0=team_change_lying_time c3e0=display_dreamcatcher_half n3e4= sets=13 glob=True closure=all st=ok late=0
+   grenade_launcher                 c3ac=rifle n3b0=gl c3e0=display_dreamcatcher_half n3e4= sets=13 glob=False closure=13 st=ok late=0
+   spartan_laser                    c3ac=missile n3b0=sl c3e0=display_dreamcatcher_half n3e4= sets=13 glob=False closure=13 st=ok late=0
+   rocket_launcher                  c3ac=missile n3b0=rl c3e0=display_dreamcatcher_half n3e4= sets=13 glob=False closure=13 st=ok late=0
+   concussion_rifle                 c3ac=rifle n3b0=cr c3e0=display_dreamcatcher_half n3e4= sets=13 glob=False closure=13 st=ok late=0
+   gravity_hammer                   c3ac=hammer n3b0=gh c3e0=display_dreamcatcher_half n3e4= sets=3 glob=False closure=3 st=ok late=0
+   machinegun_turret                c3ac=turret n3b0=mgt c3e0=display_dreamcatcher_half n3e4= sets=9 glob=False closure=9 st=ok late=0
+   plasma_turret                    c3ac=turret n3b0=pgt c3e0=display_dreamcatcher_half n3e4= sets=11 glob=False closure=11 st=ok late=0
+   machinegun_turret_jorge          c3ac=turret n3b0=mgt c3e0=display_dreamcatcher_half n3e4= sets=3 glob=False closure=3 st=ok late=0
+   plasma_launcher                  c3ac=missile n3b0=pl c3e0=display_dreamcatcher_half n3e4= sets=3 glob=False closure=3 st=ok late=0
+   target_laser                     c3ac=pistol n3b0=sl c3e0=display_dreamcatcher_half n3e4= sets=13 glob=True closure=all st=ok late=0
+   magnum                           c3ac=pistol n3b0=hp c3e0=display_dreamcatcher_half n3e4= sets=11 glob=False closure=11 st=ok late=0
+m70
+   assault_rifle                    c3ac=rifle n3b0=ar c3e0=inf_new_zombie_cp n3e4= sets=13 glob=True closure=all st=ok late=0
+   plasma_rifle                     c3ac=pistol n3b0=pr c3e0=inf_new_zombie_cp n3e4= sets=13 glob=False closure=13 st=ok late=0
+   plasma_pistol                    c3ac=pistol n3b0=pp c3e0=inf_new_zombie_cp n3e4= sets=13 glob=False closure=13 st=ok late=0
+   needler                          c3ac=pistol n3b0=ne c3e0=inf_new_zombie_cp n3e4= sets=13 glob=False closure=13 st=ok late=0
+   rocket_launcher                  c3ac=missile n3b0=rl c3e0=inf_new_zombie_cp n3e4= sets=13 glob=False closure=13 st=ok late=0
+   sniper_rifle                     c3ac=rifle n3b0=sr c3e0=inf_new_zombie_cp n3e4= sets=9 glob=False closure=9 st=ok late=0
+   shotgun                          c3ac=rifle n3b0=sg c3e0=inf_new_zombie_cp n3e4= sets=13 glob=False closure=13 st=ok late=0
+   needle_rifle                     c3ac=rifle n3b0=cb c3e0=inf_new_zombie_cp n3e4= sets=13 glob=False closure=13 st=ok late=0
+   spike_rifle                      c3ac=rifle n3b0=spr c3e0=inf_new_zombie_cp n3e4= sets=13 glob=False closure=13 st=ok late=0
+   energy_sword                     c3ac=sword n3b0=eb c3e0=inf_new_zombie_cp n3e4= sets=13 glob=False closure=13 st=ok late=0
+   magnum                           c3ac=pistol n3b0=hp c3e0=inf_new_zombie_cp n3e4= sets=13 glob=True closure=all st=ok late=0
+   dmr                              c3ac=rifle n3b0=br c3e0=inf_new_zombie_cp n3e4= sets=13 glob=True closure=all st=ok late=0
+   gravity_hammer                   c3ac=hammer n3b0=gh c3e0=inf_new_zombie_cp n3e4= sets=13 glob=True closure=all st=ok late=0
+   flak_cannon                      c3ac=missile n3b0=fc c3e0=inf_new_zombie_cp n3e4= sets=13 glob=True closure=all st=ok late=0
+   plasma_launcher                  c3ac=missile n3b0=pl c3e0=inf_new_zombie_cp n3e4= sets=13 glob=True closure=all st=ok late=0
+   grenade_launcher                 c3ac=rifle n3b0=gl c3e0=inf_new_zombie_cp n3e4= sets=13 glob=True closure=all st=ok late=0
+   spartan_laser                    c3ac=missile n3b0=sl c3e0=inf_new_zombie_cp n3e4= sets=13 glob=True closure=all st=ok late=0
+   plasma_repeater                  c3ac=rifle n3b0=prp c3e0=inf_new_zombie_cp n3e4= sets=13 glob=False closure=13 st=ok late=0
+   concussion_rifle                 c3ac=rifle n3b0=cr c3e0=inf_new_zombie_cp n3e4= sets=13 glob=False closure=13 st=ok late=0
+   focus_rifle                      c3ac=rifle n3b0=csr c3e0=inf_new_zombie_cp n3e4= sets=2 glob=False closure=2 st=ok late=0
+   machinegun_turret_jorge          c3ac=turret n3b0=mgt c3e0=inf_new_zombie_cp n3e4= sets=2 glob=False closure=2 st=ok late=0
+   machinegun_turret                c3ac=turret n3b0=mgt c3e0=inf_new_zombie_cp n3e4= sets=2 glob=False closure=2 st=ok late=0
+   plasma_turret                    c3ac=turret n3b0=pgt c3e0=inf_new_zombie_cp n3e4= sets=11 glob=False closure=11 st=ok late=0
+   target_laser                     c3ac=pistol n3b0=sl c3e0=inf_new_zombie_cp n3e4= sets=13 glob=True closure=all st=ok late=0
+m70_bonus
+   energy_sword                     c3ac=sword n3b0=eb c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   gravity_hammer                   c3ac=hammer n3b0=gh c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   magnum                           c3ac=pistol n3b0=hp c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   needler                          c3ac=pistol n3b0=ne c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   plasma_pistol                    c3ac=pistol n3b0=pp c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   target_laser                     c3ac=pistol n3b0=sl c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   assault_rifle                    c3ac=rifle n3b0=ar c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   concussion_rifle                 c3ac=rifle n3b0=cr c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   dmr                              c3ac=rifle n3b0=br c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   focus_rifle                      c3ac=rifle n3b0=csr c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   grenade_launcher                 c3ac=rifle n3b0=gl c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   needle_rifle                     c3ac=rifle n3b0=cb c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   plasma_repeater                  c3ac=rifle n3b0=prp c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   plasma_rifle                     c3ac=pistol n3b0=map_variant_options c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   shotgun                          c3ac=rifle n3b0=sg c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   sniper_rifle                     c3ac=rifle n3b0=sr c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   spike_rifle                      c3ac=rifle n3b0=spr c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   flak_cannon                      c3ac=missile n3b0=fc c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   rocket_launcher                  c3ac=missile n3b0=rl c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   spartan_laser                    c3ac=missile n3b0=sl c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   plasma_launcher                  c3ac=missile n3b0=pl c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   machinegun_turret_jorge          c3ac=turret n3b0=mgt c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   machinegun_turret                c3ac=turret n3b0=mgt c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+   plasma_turret                    c3ac=turret n3b0=pgt c3e0=None n3e4= sets=2 glob=True closure=all st=ok late=0
+
+== T2b species residency vs weapon residency: for each map+species, sets where species resident; for each palette weapon, sets of species missing closure
+m10
+  ambient_life     sets  4: full 15 of 24; short: flak_cannon 2/4, focus_rifle 2/4, gravity_hammer 2/4, grenade_launcher 2/4, plasma_launcher 2/4, spartan_laser 2/4, spike_rifle 2/4, rocket_launcher 2/4, plasma_turret 2/4
+  civilian_female  sets  3: full 15 of 24; short: flak_cannon 2/3, focus_rifle 2/3, gravity_hammer 2/3, grenade_launcher 2/3, plasma_launcher 2/3, spartan_laser 2/3, spike_rifle 2/3, rocket_launcher 2/3, plasma_turret 2/3
+  civilian_male    sets  3: full 15 of 24; short: flak_cannon 2/3, focus_rifle 2/3, gravity_hammer 2/3, grenade_launcher 2/3, plasma_launcher 2/3, spartan_laser 2/3, spike_rifle 2/3, rocket_launcher 2/3, plasma_turret 2/3
+  elite            sets  7: full 15 of 24; short: flak_cannon 2/7, focus_rifle 2/7, gravity_hammer 2/7, grenade_launcher 2/7, plasma_launcher 2/7, spartan_laser 2/7, spike_rifle 2/7, rocket_launcher 2/7, plasma_turret 2/7
+  grunt            sets  6: full 15 of 24; short: flak_cannon 1/6, focus_rifle 1/6, gravity_hammer 1/6, grenade_launcher 1/6, plasma_launcher 1/6, spartan_laser 1/6, spike_rifle 1/6, rocket_launcher 1/6, plasma_turret 1/6
+  jackal           sets  6: full 15 of 24; short: flak_cannon 1/6, focus_rifle 1/6, gravity_hammer 1/6, grenade_launcher 1/6, plasma_launcher 1/6, spartan_laser 1/6, spike_rifle 1/6, rocket_launcher 1/6, plasma_turret 1/6
+  marine           sets  7: full 15 of 24; short: flak_cannon 2/7, focus_rifle 2/7, gravity_hammer 2/7, grenade_launcher 2/7, plasma_launcher 2/7, spartan_laser 2/7, spike_rifle 2/7, rocket_launcher 2/7, plasma_turret 2/7
+  null             sets 10: full 14 of 24; short: shotgun 9/10, flak_cannon 4/10, focus_rifle 4/10, gravity_hammer 4/10, grenade_launcher 4/10, plasma_launcher 4/10, spartan_laser 4/10, spike_rifle 4/10, rocket_launcher 4/10, plasma_turret 4/10
+  spartans_ai      sets  9: full 15 of 24; short: flak_cannon 4/9, focus_rifle 4/9, gravity_hammer 4/9, grenade_launcher 4/9, plasma_launcher 4/9, spartan_laser 4/9, spike_rifle 4/9, rocket_launcher 4/9, plasma_turret 4/9
+  spartans_female_ai sets  7: full 15 of 24; short: flak_cannon 4/7, focus_rifle 4/7, gravity_hammer 4/7, grenade_launcher 4/7, plasma_launcher 4/7, spartan_laser 4/7, spike_rifle 4/7, rocket_launcher 4/7, plasma_turret 4/7
+m20
+  elite            sets  8: full 26 of 26; short: 
+  grunt            sets  8: full 26 of 26; short: 
+  hunter           sets  2: full 26 of 26; short: 
+  jackal           sets  8: full 26 of 26; short: 
+  marine           sets  8: full 26 of 26; short: 
+  marine_female    sets  8: full 26 of 26; short: 
+  null             sets  8: full 26 of 26; short: 
+  spartans_ai      sets  7: full 26 of 26; short: 
+  spartans_female_ai sets  7: full 26 of 26; short: 
+m30
+  ambient_life     sets  3: full 33 of 41; short: flak_cannon 0/3, gravity_hammer 0/3, grenade_launcher 0/3, machinegun_turret_jorge 0/3, machinegun_turret 0/3, spartan_laser 0/3, spike_rifle 0/3, flak_cannon 0/3
+  civilian_male    sets  8: full 33 of 41; short: flak_cannon 2/8, gravity_hammer 2/8, grenade_launcher 2/8, machinegun_turret_jorge 2/8, machinegun_turret 2/8, spartan_laser 2/8, spike_rifle 2/8, flak_cannon 2/8
+  elite            sets  8: full 33 of 41; short: flak_cannon 2/8, gravity_hammer 2/8, grenade_launcher 2/8, machinegun_turret_jorge 2/8, machinegun_turret 2/8, spartan_laser 2/8, spike_rifle 2/8, flak_cannon 2/8
+  grunt            sets  8: full 33 of 41; short: flak_cannon 2/8, gravity_hammer 2/8, grenade_launcher 2/8, machinegun_turret_jorge 2/8, machinegun_turret 2/8, spartan_laser 2/8, spike_rifle 2/8, flak_cannon 2/8
+  hunter           sets  4: full 33 of 41; short: flak_cannon 0/4, gravity_hammer 0/4, grenade_launcher 0/4, machinegun_turret_jorge 0/4, machinegun_turret 0/4, spartan_laser 0/4, spike_rifle 0/4, flak_cannon 0/4
+  jackal           sets  8: full 33 of 41; short: flak_cannon 2/8, gravity_hammer 2/8, grenade_launcher 2/8, machinegun_turret_jorge 2/8, machinegun_turret 2/8, spartan_laser 2/8, spike_rifle 2/8, flak_cannon 2/8
+  mule             sets  4: full 33 of 41; short: flak_cannon 2/4, gravity_hammer 2/4, grenade_launcher 2/4, machinegun_turret_jorge 2/4, machinegun_turret 2/4, spartan_laser 2/4, spike_rifle 2/4, flak_cannon 2/4
+  null             sets  8: full 33 of 41; short: flak_cannon 2/8, gravity_hammer 2/8, grenade_launcher 2/8, machinegun_turret_jorge 2/8, machinegun_turret 2/8, spartan_laser 2/8, spike_rifle 2/8, flak_cannon 2/8
+  spartans_ai      sets  8: full 33 of 41; short: flak_cannon 2/8, gravity_hammer 2/8, grenade_launcher 2/8, machinegun_turret_jorge 2/8, machinegun_turret 2/8, spartan_laser 2/8, spike_rifle 2/8, flak_cannon 2/8
+m35
+  bugger           sets  2: full 18 of 24; short: gravity_hammer 0/2, spartan_laser 0/2, rocket_launcher 0/2, shotgun 0/2, sniper_rifle 0/2, spike_rifle 0/2
+  elite            sets 11: full 15 of 24; short: concussion_rifle 9/11, gravity_hammer 3/11, spartan_laser 3/11, plasma_turret 9/11, machinegun_turret 8/11, rocket_launcher 3/11, shotgun 3/11, sniper_rifle 3/11, spike_rifle 3/11
+  engineer         sets  1: full 18 of 24; short: gravity_hammer 0/1, spartan_laser 0/1, rocket_launcher 0/1, shotgun 0/1, sniper_rifle 0/1, spike_rifle 0/1
+  grunt            sets 11: full 15 of 24; short: concussion_rifle 9/11, gravity_hammer 3/11, spartan_laser 3/11, plasma_turret 9/11, machinegun_turret 8/11, rocket_launcher 3/11, shotgun 3/11, sniper_rifle 3/11, spike_rifle 3/11
+  hunter           sets  2: full 18 of 24; short: gravity_hammer 0/2, spartan_laser 0/2, rocket_launcher 0/2, shotgun 0/2, sniper_rifle 0/2, spike_rifle 0/2
+  jackal           sets 11: full 15 of 24; short: concussion_rifle 9/11, gravity_hammer 3/11, spartan_laser 3/11, plasma_turret 9/11, machinegun_turret 8/11, rocket_launcher 3/11, shotgun 3/11, sniper_rifle 3/11, spike_rifle 3/11
+  marine           sets  8: full 17 of 24; short: gravity_hammer 3/8, spartan_laser 3/8, machinegun_turret 7/8, rocket_launcher 3/8, shotgun 3/8, sniper_rifle 3/8, spike_rifle 3/8
+  null             sets 11: full 15 of 24; short: concussion_rifle 9/11, gravity_hammer 3/11, spartan_laser 3/11, plasma_turret 9/11, machinegun_turret 8/11, rocket_launcher 3/11, shotgun 3/11, sniper_rifle 3/11, spike_rifle 3/11
+  spartans_ai      sets  9: full 17 of 24; short: gravity_hammer 3/9, spartan_laser 3/9, machinegun_turret 8/9, rocket_launcher 3/9, shotgun 3/9, sniper_rifle 3/9, spike_rifle 3/9
+  spartans_female_ai sets  7: full 17 of 24; short: gravity_hammer 3/7, spartan_laser 3/7, machinegun_turret 6/7, rocket_launcher 3/7, shotgun 3/7, sniper_rifle 3/7, spike_rifle 3/7
+m45
+  elite            sets  8: full 19 of 25; short: plasma_turret 7/8, gravity_hammer 7/8, grenade_launcher 7/8, spartan_laser 7/8, spike_rifle 7/8, machinegun_turret 7/8
+  engineer         sets  4: full 25 of 25; short: 
+  grunt            sets  7: full 25 of 25; short: 
+  jackal           sets  7: full 25 of 25; short: 
+  marine           sets  8: full 19 of 25; short: plasma_turret 6/8, gravity_hammer 6/8, grenade_launcher 6/8, spartan_laser 6/8, spike_rifle 6/8, machinegun_turret 6/8
+  marine_female    sets  3: full 19 of 25; short: plasma_turret 1/3, gravity_hammer 1/3, grenade_launcher 1/3, spartan_laser 1/3, spike_rifle 1/3, machinegun_turret 1/3
+  null             sets 18: full 19 of 25; short: plasma_turret 16/18, gravity_hammer 16/18, grenade_launcher 16/18, spartan_laser 16/18, spike_rifle 16/18, machinegun_turret 16/18
+  spartans_ai      sets  6: full 19 of 25; short: plasma_turret 4/6, gravity_hammer 4/6, grenade_launcher 4/6, spartan_laser 4/6, spike_rifle 4/6, machinegun_turret 4/6
+  spartans_female_ai sets  4: full 19 of 25; short: plasma_turret 2/4, gravity_hammer 2/4, grenade_launcher 2/4, spartan_laser 2/4, spike_rifle 2/4, machinegun_turret 2/4
+m50
+  brute            sets  4: full 17 of 24; short: rocket_launcher 2/4, machinegun_turret 3/4, plasma_turret 2/4, machinegun_turret_jorge 0/4, energy_sword 0/4, grenade_launcher 0/4, plasma_rifle 0/4
+  civilian_female  sets  6: full 17 of 24; short: rocket_launcher 4/6, machinegun_turret 5/6, plasma_turret 4/6, machinegun_turret_jorge 2/6, energy_sword 2/6, grenade_launcher 2/6, plasma_rifle 2/6
+  civilian_male    sets  6: full 17 of 24; short: rocket_launcher 4/6, machinegun_turret 5/6, plasma_turret 4/6, machinegun_turret_jorge 2/6, energy_sword 2/6, grenade_launcher 2/6, plasma_rifle 2/6
+  grunt            sets  6: full 17 of 24; short: rocket_launcher 4/6, machinegun_turret 5/6, plasma_turret 4/6, machinegun_turret_jorge 2/6, energy_sword 2/6, grenade_launcher 2/6, plasma_rifle 2/6
+  jackal           sets  6: full 17 of 24; short: rocket_launcher 4/6, machinegun_turret 5/6, plasma_turret 4/6, machinegun_turret_jorge 2/6, energy_sword 2/6, grenade_launcher 2/6, plasma_rifle 2/6
+  marine           sets  6: full 17 of 24; short: rocket_launcher 4/6, machinegun_turret 5/6, plasma_turret 4/6, machinegun_turret_jorge 2/6, energy_sword 2/6, grenade_launcher 2/6, plasma_rifle 2/6
+  marine_female    sets  2: full 17 of 24; short: rocket_launcher 0/2, machinegun_turret 1/2, plasma_turret 1/2, machinegun_turret_jorge 0/2, energy_sword 0/2, grenade_launcher 0/2, plasma_rifle 0/2
+  null             sets  7: full 17 of 24; short: rocket_launcher 5/7, machinegun_turret 5/7, plasma_turret 4/7, machinegun_turret_jorge 2/7, energy_sword 2/7, grenade_launcher 2/7, plasma_rifle 2/7
+m52
+  brute            sets  5: full 24 of 24; short: 
+  bugger           sets  1: full 24 of 24; short: 
+  elite            sets  5: full 24 of 24; short: 
+  engineer         sets  2: full 24 of 24; short: 
+  grunt            sets  5: full 24 of 24; short: 
+  hunter           sets  2: full 24 of 24; short: 
+  jackal           sets  5: full 24 of 24; short: 
+  marine           sets  7: full 24 of 24; short: 
+  marine_female    sets  7: full 24 of 24; short: 
+  null             sets  7: full 24 of 24; short: 
+m60
+  brute            sets  4: full 21 of 25; short: gravity_hammer 0/4, machinegun_turret 3/4, machinegun_turret_jorge 0/4, plasma_launcher 0/4
+  elite            sets  9: full 19 of 25; short: gravity_hammer 2/9, machinegun_turret 6/9, plasma_turret 8/9, machinegun_turret_jorge 2/9, plasma_launcher 2/9, magnum 8/9
+  engineer         sets  3: full 21 of 25; short: gravity_hammer 0/3, machinegun_turret 2/3, machinegun_turret_jorge 0/3, plasma_launcher 0/3
+  grunt            sets  9: full 19 of 25; short: gravity_hammer 2/9, machinegun_turret 6/9, plasma_turret 8/9, machinegun_turret_jorge 2/9, plasma_launcher 2/9, magnum 8/9
+  hunter           sets  1: full 22 of 25; short: gravity_hammer 0/1, machinegun_turret_jorge 0/1, plasma_launcher 0/1
+  jackal           sets  9: full 19 of 25; short: gravity_hammer 2/9, machinegun_turret 6/9, plasma_turret 8/9, machinegun_turret_jorge 2/9, plasma_launcher 2/9, magnum 8/9
+  marine           sets 13: full 19 of 25; short: gravity_hammer 3/13, machinegun_turret 9/13, plasma_turret 11/13, machinegun_turret_jorge 3/13, plasma_launcher 3/13, magnum 11/13
+  null             sets 13: full 19 of 25; short: gravity_hammer 3/13, machinegun_turret 9/13, plasma_turret 11/13, machinegun_turret_jorge 3/13, plasma_launcher 3/13, magnum 11/13
+  spartans_ai      sets 13: full 19 of 25; short: gravity_hammer 3/13, machinegun_turret 9/13, plasma_turret 11/13, machinegun_turret_jorge 3/13, plasma_launcher 3/13, magnum 11/13
+m70
+  brute            sets  4: full 20 of 24; short: sniper_rifle 2/4, focus_rifle 0/4, machinegun_turret_jorge 0/4, machinegun_turret 0/4
+  bugger           sets  2: full 19 of 24; short: sniper_rifle 1/2, focus_rifle 0/2, machinegun_turret_jorge 0/2, machinegun_turret 0/2, plasma_turret 1/2
+  elite            sets  7: full 19 of 24; short: sniper_rifle 5/7, focus_rifle 1/7, machinegun_turret_jorge 1/7, machinegun_turret 1/7, plasma_turret 5/7
+  engineer         sets  1: full 21 of 24; short: focus_rifle 0/1, machinegun_turret_jorge 0/1, machinegun_turret 0/1
+  grunt            sets 13: full 19 of 24; short: sniper_rifle 9/13, focus_rifle 2/13, machinegun_turret_jorge 2/13, machinegun_turret 2/13, plasma_turret 11/13
+  hunter           sets  2: full 20 of 24; short: sniper_rifle 0/2, focus_rifle 0/2, machinegun_turret_jorge 0/2, machinegun_turret 0/2
+  jackal           sets 11: full 19 of 24; short: sniper_rifle 7/11, focus_rifle 1/11, machinegun_turret_jorge 1/11, machinegun_turret 1/11, plasma_turret 9/11
+  marine           sets 13: full 19 of 24; short: sniper_rifle 9/13, focus_rifle 2/13, machinegun_turret_jorge 2/13, machinegun_turret 2/13, plasma_turret 11/13
+  marine_female    sets 13: full 19 of 24; short: sniper_rifle 9/13, focus_rifle 2/13, machinegun_turret_jorge 2/13, machinegun_turret 2/13, plasma_turret 11/13
+  null             sets 13: full 19 of 24; short: sniper_rifle 9/13, focus_rifle 2/13, machinegun_turret_jorge 2/13, machinegun_turret 2/13, plasma_turret 11/13
+  spartans_ai      sets 13: full 19 of 24; short: sniper_rifle 9/13, focus_rifle 2/13, machinegun_turret_jorge 2/13, machinegun_turret 2/13, plasma_turret 11/13
+m70_bonus
+  brute            sets  2: full 24 of 24; short: 
+  elite            sets  2: full 24 of 24; short: 
+  grunt            sets  2: full 24 of 24; short: 
+  hunter           sets  2: full 24 of 24; short: 
+  jackal           sets  2: full 24 of 24; short: 
+  null             sets  2: full 24 of 24; short: 
+
+== T3 firing
+m10 generic wp 63 fp 64 noWP ['saw'] noFP ['saw'] unresolved ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff']
+m20 generic wp 63 fp 64 noWP ['saw'] noFP ['saw'] unresolved ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff']
+m30 generic wp 63 fp 64 noWP ['saw'] noFP ['saw'] unresolved ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff']
+m35 generic wp 63 fp 64 noWP ['saw'] noFP ['saw'] unresolved ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff']
+m45 generic wp 63 fp 64 noWP ['saw'] noFP ['saw'] unresolved ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff']
+m50 generic wp 63 fp 64 noWP ['saw'] noFP ['saw'] unresolved ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff']
+m52 generic wp 63 fp 64 noWP ['saw'] noFP ['saw'] unresolved ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff']
+m60 generic wp 63 fp 64 noWP ['saw'] noFP ['saw'] unresolved ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff']
+m70 generic wp 63 fp 64 noWP ['saw'] noFP ['saw'] unresolved ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff']
+m70_bonus generic wp 63 fp 64 noWP ['saw'] noFP ['saw'] unresolved ['0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff', '0xffffffff']
+own entries, m70_bonus / union:
+   ai\stimuli\generic_firefight_phantom ['0xffffffff(fp)', 'plasma_turret_mounted(fp)']
+   ai\stimuli\generic_m20_flak ['flak_cannon(wp)']
+   ai\stimuli\generic_m20_rocket ['rocket_launcher']
+   ai\stimuli\generic_m35_railride ['0xffffffff', '0xffffffff(wp)', 'concussion_rifle(wp)', 'flak_cannon(wp)', 'needle_rifle(wp)', 'needler', 'plasma_launcher(wp)', 'plasma_pistol', 'plasma_rifle', 'shade_anti_air_cannon(fp)', 'shade_plasma_cannon(wp)', 'wraith_anti_infantry(wp)']
+   ai\stimuli\generic_m45_rocket ['assault_rifle(wp)', 'rocket_launcher(wp)']
+   ai\stimuli\generic_m52_long_shoot ['concussion_rifle(wp)', 'flak_cannon(wp)', 'needle_rifle(wp)']
+   ai\stimuli\generic_m70_lower_ammo ['flak_cannon(wp)', 'gravity_hammer(wp)']
+   ai\stimuli\generic_m70_phantom ['phantom_chin_gun']
+   ai\stimuli\generic_playfight ['0xffffffff(fp)', 'assault_rifle(fp)', 'banshee_dual_cannon(fp)', 'concussion_rifle(fp)', 'dmr(fp)', 'falcon_chin_gun(fp)', 'falcon_grenade_launcher(fp)', 'falcon_machinegun(fp)', 'flak_cannon(fp)', 'focus_rifle(fp)', 'ghost_dual_cannon(fp)', 'grenade_launcher(fp)', 'hunter_fuel_rod(fp)', 'machinegun_turret(fp)', 'machinegun_turret_jorge(fp)', 'magnum(fp)', 'needle_rifle(fp)', 'needler(fp)', 'pelican_chin_gun(fp)', 'phantom_chin_gun(fp)', 'plasma_launcher(fp)', 'plasma_pistol(fp)', 'plasma_repeater(fp)', 'plasma_rifle(fp)', 'plasma_turret(fp)', 'plasma_turret_mounted(fp)', 'revenant_plasma_turret(fp)', 'rocket_launcher(fp)', 'sabre_gatling_gun(fp)', 'sabre_missile(fp)', 'scorpion_anti_infantry(fp)', 'scorpion_cannon(fp)', 'seraph_quad_cannon(fp)', 'shade_anti_air_cannon(fp)', 'shade_flak_cannon(fp)', 'shade_plasma_cannon(fp)', 'shotgun(fp)', 'sniper_rifle(fp)', 'space_banshee_dual_cannon(fp)', 'space_phantom_turret(fp)', 'spartan_laser(fp)', 'spike_rifle(fp)', 'target_laser(fp)', 'warthog_chaingun(fp)', 'warthog_gauss(fp)', 'warthog_rocket_pod(fp)', 'wraith_anti_infantry(fp)', 'wraith_mortar(fp)']
+   ai\stimuli\generic_shooting_dangerous ['0xffffffff(fp)', 'banshee_dual_cannon(fp)']
+   objects\characters\elite\ai\elite ['assault_rifle(fp)', 'dmr(fp)', 'grenade_launcher', 'magnum(fp)', 'rocket_launcher', 'sniper_rifle(fp)', 'spartan_laser(fp)']
+   objects\characters\grunt\ai\grunt ['flak_cannon(fp)']
+   objects\characters\grunt\ai\grunt_ultra ['plasma_pistol(wp)']
+   objects\characters\jackal\ai\jackal ['focus_rifle(wp)', 'needle_rifle(wp)', 'needler', 'plasma_pistol']
+   objects\characters\mule\ai\mule ['0xffffffff']
+   objects\characters\spartans_ai\ai\spartan_generic ['assault_rifle(fp)', 'grenade_launcher(fp)', 'machinegun_turret_jorge(fp)', 'magnum(fp)', 'sniper_rifle(fp)']
+   objects\characters\spartans_ai\ai\stimuli\spartan_playfight ['assault_rifle(fp)', 'grenade_launcher(fp)', 'machinegun_turret_jorge(fp)', 'magnum(fp)', 'sniper_rifle(fp)']
+
+== T4 graphs (m70_bonus first seen) modes/classes
+objects\characters\ambient_life\reach_moa\reach_moa map m10 chain ['reach_moa'] flags 0
+   graph reach_moa modes 5 wlist 0 []
+    variants []
+    any          panic[any] any[any] passive[any] interact[any]
+    unarmed      combat[any]
+objects\characters\brute\brute map m50 chain ['brute'] flags 0
+   graph brute modes 89 wlist 0 []
+    variants []
+    any          patrol[any] combat[any] any[any] vault[any] hoist_crouch[any] hoist_stand[any] community[any] shade_d[any] turret_g[any] banshee_d[any] m52[any] wraith_d[any] wraith_g[any] phantom_pc_1[any] phantom_pc_2[any] phantom_pc_3[any] phantom_pc_4[any] phantom_p_lf_main[any] phantom_p_lf_small_3[any] phantom_p_lf_small_1[any] phantom_p_lf_small_2[any] phantom_p_rf_main[any] phantom_p_rf_small_3[any] phantom_p_rf_small_1[any] phantom_p_rf_small_2[any] phantom_p_lb_main[any] phantom_p_lb_small_3[any] phantom_p_lb_small_1[any] phantom_p_lb_small_2[any] phantom_p_rb_main[any] phantom_p_rb_small_3[any] phantom_p_rb_small_1[any] phantom_p_rb_small_2[any] phantom_p_ml_f_main[any] phantom_p_ml_f_small_1[any] phantom_p_ml_f_small_2[any] phantom_p_ml_f_small_3[any] phantom_p_ml_b_main[any] phantom_p_ml_b_small_1[any] phantom_p_ml_b_small_2[any] phantom_p_ml_b_small_3[any] phantom_p_mr_f_main[any] phantom_p_mr_f_small_1[any] phantom_p_mr_f_small_2[any] phantom_p_mr_f_small_3[any] phantom_p_mr_b_main[any] phantom_p_mr_b_small_1[any] phantom_p_mr_b_small_2[any] phantom_p_mr_b_small_3[any] wraith_b_l[any] wraith_b_r[any] wraith_b_b[any] fork_p_l1[any] fork_p_l2[any] fork_p_l3[any] fork_p_l4[any] fork_p_l5[any] fork_p_l6[any] fork_p_l7[any] fork_p_l8[any] fork_p_r1[any] fork_p_r2[any] fork_p_r3[any] fork_p_r4[any] fork_p_r5[any] fork_p_r6[any] fork_p_r7[any] fork_p_r8[any] m50_tuning_fork_l4[any] m50_tuning_fork_l6[any] m50_tuning_fork_l3[any] warthog_b_d[any] warthog_b_p[any] warthog_b_g[any] cov_p1[any] cov_p2[any] cov_p3[any] cov_p4[any] vehicle_death[any] lounge[any] m52_brute_bar[any] m52_brute_dj[any] m52_vig_brute01[any] m52_vig_brute02[any] warthog_b_hood[any]
+    combat       warthog_b_hood[any]
+    hammer       combat[any] vault[any] hoist[any]
+    missile      combat[any]
+    pistol       vault[any] hoist[any] community[any]
+    rifle        combat[any,sg,fc,prp,cb,cr,csr,spr,pgt,pl,frg] vault[any] hoist[any] bunker[any] global[any]
+    support      combat[any,sb] vault[any] hoist[any]
+    turret       combat[any]
+    unarmed      panic[any] patrol[any] combat[any] banshee_d[any] lounge[any]
+objects\characters\bugger\bugger map m35 chain ['bugger'] flags 0
+   graph bugger modes 71 wlist 0 []
+    variants []
+    any          vent[any] combat[any] any[any] perch_wall_left[any] perch_wall_right[any] act_asleep_1[any] act_bugger_lunch[any] fork_p_l1[any] fork_p_l2[any] fork_p_l3[any] fork_p_l4[any] fork_p_l5[any] fork_p_l6[any] fork_p_l7[any] fork_p_l8[any] fork_p_r1[any] fork_p_r2[any] fork_p_r3[any] fork_p_r4[any] fork_p_r5[any] fork_p_r6[any] fork_p_r7[any] fork_p_r8[any] phantom_p_lb_main[any] phantom_p_lb_small_1[any] phantom_p_lb_small_2[any] phantom_p_lb_small_3[any] phantom_p_lf_main[any] phantom_p_lf_small_1[any] phantom_p_lf_small_2[any] phantom_p_lf_small_3[any] phantom_p_ml_b_main[any] phantom_p_ml_b_small_1[any] phantom_p_ml_b_small_2[any] phantom_p_ml_b_small_3[any] phantom_p_ml_f_main[any] phantom_p_ml_f_small_1[any] phantom_p_ml_f_small_2[any] phantom_p_ml_f_small_3[any] phantom_p_mr_b_main[any] phantom_p_mr_b_small_1[any] phantom_p_mr_b_small_2[any] phantom_p_mr_b_small_3[any] phantom_p_mr_f_main[any] phantom_p_mr_f_small_1[any] phantom_p_mr_f_small_2[any] phantom_p_mr_f_small_3[any] phantom_p_rb_main[any] phantom_p_rb_small_1[any] phantom_p_rb_small_2[any] phantom_p_rb_small_3[any] phantom_p_rf_main[any] phantom_p_rf_small_1[any] phantom_p_rf_small_2[any] phantom_p_rf_small_3[any] phantom_pc_1[any] phantom_pc_2[any] phantom_pc_3[any] phantom_pc_4[any] warthog_b_d[any] warthog_b_p[any] warthog_b_h[any] warthog_b_b[any] ghost_b_b[any] phantom_pc[any] ghost_b_h[any] perch_ceiling[any]
+    pistol       panic[any] combat[any,pp] crouch[any,aim_move] flight[any,pp] perch_wall_left[any,pp] perch_wall_right[any,pp] perch_ceiling[any,pp]
+    unarmed      patrol[any]
+objects\characters\civilian_female\civilian_female map m10 chain ['civilian_female'] flags 0
+   graph civilian_female modes 72 wlist 0 []
+    variants []
+    any          panic[any] combat[any] crouch[any] flee[any] any[any] hoist_crouch[any] hoist_stand[any] community[any] global_alert[any] falcon_d[any] falcon_p_l1[any] falcon_p_r1[any] falcon_p_l2[any] falcon_p_r2[any] falcon_g_l[any] turret_g[any] falcon_g_r[any] warthog_d[any] warthog_p[any] warthog_g[any] warthog_p_l[any] warthog_p_r[any] warthog_p_b[any] pelican_e[any] pelican_p_l01[any] pelican_p_l02[any] pelican_p_l03[any] pelican_p_l04[any] pelican_p_l05[any] pelican_p_r01[any] pelican_p_r02[any] pelican_p_r03[any] pelican_p_r04[any] scorpion_d[any] sync_marine_desecration[any] banshee_d[any] death_pose[any] death_pose_2[any] ghost_d[any] m52[any] m52_captive[any] mongoose_d[any] mongoose_p[any] pelican_d[any] pelican_g[any] pelican_g_pod[any] pelican_g_rear[any] pelican_p_copilot[any] pelican_p_r05[any] revenant_d[any] revenant_p[any] scorpion_g[any] scorpion_p_lb[any] scorpion_p_lf[any] scorpion_p_rb[any] scorpion_p_rf[any] wraith_d[any] wraith_g[any] e3[any]
+    fixed        warthog_g[any]
+    missile      combat[any,rl,fc,ml,prp,sl] crouch[any,rl,fc,ml,sl] vault[any] hoist[any] hoist_stand[any] bunker[any] warthog_p[any,sl] warthog_p_l[any] warthog_p_r[any] warthog_p_b[any] pelican_p_l01[any] pelican_p_l02[any] pelican_p_l03[any] pelican_p_l04[any] pelican_p_l05[any] pelican_p_r01[any] pelican_p_r02[any] pelican_p_r03[any] pelican_p_r04[any] mongoose_p[any] pelican_p_r05[any] revenant_p[any] scorpion_p_lb[any] scorpion_p_lf[any] scorpion_p_rb[any] scorpion_p_rf[any]
+    pistol       combat[any,hp,ne,pp] crouch[any,hp,ne,pp] vault[any] hoist[any] hoist_stand[any] bunker[any] corner_cover_left[any] corner_cover_right[any] warthog_p[any,ne,pp] warthog_p_l[any] warthog_p_r[any] warthog_p_b[any] pelican_p_l01[any,hp,ne,pp] pelican_p_l02[any,hp,ne,pp] pelican_p_l03[any,hp,ne,pp] pelican_p_l04[any,hp,ne,pp] pelican_p_l05[any,hp,ne,pp] pelican_p_r01[any,hp,ne,pp] pelican_p_r02[any,hp,ne,pp] pelican_p_r03[any,hp,ne,pp] pelican_p_r04[any,hp,ne,pp] pelican_p_r05[any,hp,ne,pp] revenant_p[any] scorpion_p_lb[any,ne,pp] scorpion_p_lf[any,ne,pp] scorpion_p_rb[any,ne,pp] scorpion_p_rf[any,ne,pp] overcharged_jitter[any]
+    rifle        posing[any] combat[any,smg,br,ar,sr,sg,prp,ne,cb,cr,csr,gl,pr,spr] crouch[any,smg,br,ar,sr,sg,pr] flee[any] vault[any] hoist[any] bunker[any] corner_cover_left[any] global_alert[any] falcon_p_l1[any] falcon_p_r1[any] warthog_p[any,smg,sr,sg,csr,pr] warthog_p_l[any] warthog_p_r[any] warthog_p_b[any] pelican_p_l01[any,smg,br,sr,sg,csr,pr] pelican_p_l02[any,smg,br,sr,sg,csr,pr] pelican_p_l03[any,smg,br,sr,sg,csr,pr] pelican_p_l04[any,smg,br,sr,sg,csr,pr] pelican_p_l05[any,smg,br,sr,sg,csr,pr] pelican_p_r01[any,smg,br,sr,sg,csr,pr] pelican_p_r02[any,smg,br,sr,sg,csr,pr] pelican_p_r03[any,smg,br,sr,sg,csr,pr] pelican_p_r04[any,smg,br,sr,sg,csr,pr] pelican_p_r05[any,smg,br,sr,sg,csr,pr] revenant_p[any,sr,sg] scorpion_p_lb[any,smg,br,sr,sg,csr,pr] scorpion_p_lf[any,smg,br,sr,sg,csr,pr] scorpion_p_rb[any,smg,br,sr,sg,csr,pr] scorpion_p_rf[any,smg,br,sr,sg,csr,pr] overcharged_jitter[any]
+    turret       combat[ftt]
+    unarmed      panic[any] patrol[any] combat[any] crouch[any] bunker[any] pelican_p_l01[any] pelican_p_l02[any] pelican_p_l03[any] pelican_p_l04[any] pelican_p_l05[any] pelican_p_r01[any] pelican_p_r02[any] pelican_p_r03[any] pelican_p_r04[any] global_crouched_scanning[any] global_injured[any] global_scanning[any] pelican_d[any] pelican_g[any] pelican_p_r05[any] scorpion_p_lb[any] scorpion_p_lf[any] scorpion_p_rb[any] scorpion_p_rf[any] patrol_var1[any] patrol_var2[any]
+objects\characters\civilian_male\civilian_male map m10 chain ['civilian_male'] flags 0
+   graph civilian_male modes 73 wlist 0 []
+    variants []
+    any          panic[any] combat[any] crouch[any] flee[any] any[any] hoist_crouch[any] hoist_stand[any] community[any] global_alert[any] raised_hands[any] m10_male01_hands_down[any] falcon_d[any] falcon_p_l1[any] falcon_p_r1[any] falcon_p_l2[any] falcon_p_r2[any] falcon_g_l[any] turret_g[any] falcon_g_r[any] warthog_d[any] warthog_p[any] warthog_g[any] warthog_p_l[any] warthog_p_r[any] warthog_p_b[any] pelican_e[any] pelican_p_l01[any] pelican_p_l02[any] pelican_p_l03[any] pelican_p_l04[any] pelican_p_l05[any] pelican_p_r01[any] pelican_p_r02[any] pelican_p_r03[any] pelican_p_r04[any] scorpion_d[any] sync_marine_desecration[any] banshee_d[any] death_pose[any] death_pose_2[any] ghost_d[any] m10_male02_door_peek[any] m50[any] m52[any] m52_captive[any] mongoose_d[any] mongoose_p[any] pelican_d[any] pelican_g[any] pelican_g_pod[any] pelican_g_rear[any] pelican_p_copilot[any] pelican_p_r05[any] revenant_d[any] revenant_p[any] scorpion_g[any] scorpion_p_lb[any] scorpion_p_lf[any] scorpion_p_rb[any] scorpion_p_rf[any] wraith_d[any] wraith_g[any]
+    fixed        warthog_g[any]
+    missile      combat[any,rl,fc,ml,prp,sl] crouch[any,rl,fc,ml,sl] vault[any] hoist[any] bunker[any] warthog_p[any,sl] warthog_p_l[any] warthog_p_r[any] warthog_p_b[any] pelican_p_l01[any] pelican_p_l02[any] pelican_p_l03[any] pelican_p_l04[any] pelican_p_l05[any] pelican_p_r01[any] pelican_p_r02[any] pelican_p_r03[any] pelican_p_r04[any] mongoose_p[any] pelican_p_r05[any] revenant_p[any] scorpion_p_lb[any] scorpion_p_lf[any] scorpion_p_rb[any] scorpion_p_rf[any]
+    pistol       combat[any,hp,ne,pp] crouch[any,hp,ne,pp] vault[any] hoist[any] bunker[any] corner_cover_left[any] corner_cover_right[any] warthog_p[any,ne,pp] warthog_p_l[any] warthog_p_r[any] warthog_p_b[any] pelican_p_l01[any,hp,ne,pp] pelican_p_l02[any,hp,ne,pp] pelican_p_l03[any,hp,ne,pp] pelican_p_l04[any,hp,ne,pp] pelican_p_l05[any,hp,ne,pp] pelican_p_r01[any,hp,ne,pp] pelican_p_r02[any,hp,ne,pp] pelican_p_r03[any,hp,ne,pp] pelican_p_r04[any,hp,ne,pp] pelican_p_r05[any,hp,ne,pp] revenant_p[any] scorpion_p_lb[any,ne,pp] scorpion_p_lf[any,ne,pp] scorpion_p_rb[any,ne,pp] scorpion_p_rf[any,ne,pp] overcharged_jitter[any]
+    rifle        posing[any] combat[any,smg,br,ar,sr,sg,prp,ne,cb,cr,csr,gl,pr,spr] crouch[any,smg,br,ar,sr,sg,pr] flee[any] vault[any] hoist[any] bunker[any] corner_cover_left[any] global_alert[any] falcon_p_l1[any] falcon_p_r1[any] warthog_p[any,smg,sr,sg,csr,pr] warthog_p_l[any] warthog_p_r[any] warthog_p_b[any] pelican_p_l01[any,smg,br,sr,sg,csr,pr] pelican_p_l02[any,smg,br,sr,sg,csr,pr] pelican_p_l03[any,smg,br,sr,sg,csr,pr] pelican_p_l04[any,smg,br,sr,sg,csr,pr] pelican_p_l05[any,smg,br,sr,sg,csr,pr] pelican_p_r01[any,smg,br,sr,sg,csr,pr] pelican_p_r02[any,smg,br,sr,sg,csr,pr] pelican_p_r03[any,smg,br,sr,sg,csr,pr] pelican_p_r04[any,smg,br,sr,sg,csr,pr] pelican_p_r05[any,smg,br,sr,sg,csr,pr] revenant_p[any,sr,sg] scorpion_p_lb[any,smg,br,sr,sg,csr,pr] scorpion_p_lf[any,smg,br,sr,sg,csr,pr] scorpion_p_rb[any,smg,br,sr,sg,csr,pr] scorpion_p_rf[any,smg,br,sr,sg,csr,pr] overcharged_jitter[any]
+    turret       combat[ftt]
+    unarmed      patrol[any] combat[any] crouch[any] bunker[any] pelican_p_l01[any] pelican_p_l02[any] pelican_p_l03[any] pelican_p_l04[any] pelican_p_l05[any] pelican_p_r01[any] pelican_p_r02[any] pelican_p_r03[any] pelican_p_r04[any] global_crouched_scanning[any] global_injured[any] global_scanning[any] pelican_d[any] pelican_g[any] pelican_p_r05[any] scorpion_p_lb[any] scorpion_p_lf[any] scorpion_p_rb[any] scorpion_p_rf[any]
+objects\characters\elite_ai\elite_ai map m10 chain ['elite_ai'] flags 0
+   graph elite_ai modes 116 wlist 2 [['pr', 'pistol'], ['spr', 'pistol']]
+    variants [['space', []], ['spec_ops', []], ['ultra', []], ['bob', []], ['jetpack', []]]
+    any          combat[any] any[any] hoist_crouch[any] hoist_stand[any] flight[any] falcon_b_d_l[any] falcon_b_d_r[any] turret_g[any] falcon_b_g_l[any] falcon_b_g_r[any] warthog_p[any] warthog_b_d[any] warthog_b_p[any] warthog_g[any] warthog_b_g[any] banshee_d[any] ghost_d[any] revenant_d[any] revenant_p[any] wraith_d[any] wraith_g[any] e3[any] cov_p1[any] cov_p2[any] cov_p3[any] cov_p4[any] fork_p_l1[any] fork_p_l2[any] fork_p_l3[any] fork_p_l4[any] fork_p_l5[any] fork_p_l6[any] fork_p_l7[any] fork_p_l8[any] fork_p_r1[any] fork_p_r2[any] fork_p_r3[any] fork_p_r4[any] fork_p_r5[any] fork_p_r6[any] fork_p_r7[any] fork_p_r8[any] phantom_p_lb_main[any] phantom_p_lb_small_1[any] phantom_p_lb_small_2[any] phantom_p_lb_small_3[any] phantom_p_lf_main[any] phantom_p_lf_small_1[any] phantom_p_lf_small_2[any] phantom_p_lf_small_3[any] phantom_p_ml_b_main[any] phantom_p_ml_b_small_1[any] phantom_p_ml_b_small_2[any] phantom_p_ml_b_small_3[any] phantom_p_ml_f_main[any] phantom_p_ml_f_small_1[any] phantom_p_ml_f_small_2[any] phantom_p_ml_f_small_3[any] phantom_p_mr_b_main[any] phantom_p_mr_b_small_1[any] phantom_p_mr_b_small_2[any] phantom_p_mr_b_small_3[any] phantom_p_mr_f_main[any] phantom_p_mr_f_small_1[any] phantom_p_mr_f_small_2[any] phantom_p_mr_f_small_3[any] phantom_p_rb_main[any] phantom_p_rb_small_1[any] phantom_p_rb_small_2[any] phantom_p_rb_small_3[any] phantom_p_rf_main[any] phantom_p_rf_small_1[any] phantom_p_rf_small_2[any] phantom_p_rf_small_3[any] phantom_pc_1[any] phantom_pc_2[any] phantom_pc_3[any] phantom_pc_4[any] phantom_pc_5[any] phantom_pc_6[any] shade_d[any] banshee_b_d_r[any] banshee_b_d_l[any] ghost_b_b[any] scorpion_b_b[any] scorpion_b_d_r[any] wraith_b_b[any] wraith_b_l[any] wraith_b_r[any] close_turret_doors[any] drop_pod[any] ghost_b_d_b[any] ghost_b_d_l[any] ghost_b_d_r[any] ghost_d_b[any] global_act[any] m30[any] m45[any] m70[any] pod_p_l[any] pod_p_r[any] revenant_b_d[any] revenant_b_p[any] scorpion_b_d_l[any]
+    ball         combat[any] sprint[any] warthog_p[any] revenant_p[any]
+    dual         combat[any,pr] crouch[any] flight[any]
+    fixed        warthog_g[any]
+    hammer       combat[any] crouch[any] sprint[any] warthog_p[any] revenant_p[any]
+    missile      combat[any,fc,ml,pl] crouch[any,fc,pl] sprint[any] flight[any,fc,ml,pl] flight_crouch[any,fc,ml,pl] warthog_p[any] mongoose_p[any] revenant_p[any] overcharged_jitter[fc,pl]
+    pistol       combat[any,hp,ne,pp,pr,spr] crouch[any,hp,ne,pp,pr,spr] sprint[any] vault[any] hoist[any] flight[any,hp,ne,pp,pr,spr] flight_crouch[any,hp,ne,pp,pr,spr] global_alert[any] warthog_p[any,hp] revenant_p[any,hp] global_investigate[any] overcharged_jitter[hp,ne,pp,spr]
+    rifle        combat[any,br,ar,sr,sg,prp,cb,cr,csr,gl] crouch[any,br,ar,sr,sg,prp,cb,cr,csr,gl] sprint[any] vault[any] hoist[any] flight[any,br,ar,sr,sg,prp,cb,cr,csr,gl] flight_crouch[any,br,ar,sr,sg,prp,cb,cr,csr,gl] global_alert[any] warthog_p[any,sr,sg,cb] revenant_p[any,sr,sg,cb] global_investigate[any] overcharged_jitter[br,ar,sr,sg,prp,cb,cr,csr,gl]
+    sword        combat[any,eb] crouch[any] sprint[any] any[any] vault[any] hoist[any] flight[any,eb] flight_crouch[any,eb] community[any] warthog_p[any] mongoose_p[any] revenant_p[any] global_investigate[any]
+    turret       combat[any] flight[any]
+    unarmed      patrol[any] combat[any] global[any] global_investigate[any]
+objects\characters\engineer\engineer map m30 chain ['engineer'] flags 0
+   graph engineer modes 10 wlist 0 []
+    variants []
+    any          berserk[any] armored[any] flee[any] flight[any] phantom_pc_1[any] phantom_pc_2[any] phantom_pc_3[any] phantom_pc_4[any] phantom_pc_5[any] phantom_pc_6[any]
+    idle         flight[any]
+objects\characters\grunt\grunt map m10 chain ['grunt'] flags 0
+   graph grunt modes 98 wlist 0 []
+    variants []
+    any          asleep[any] patrol[any] combat[any] flee[any] stunned[any] any[any] hoist_crouch[any] hoist_stand[any] act_asleep_1[any] act_examine_1[any] act_gaze_1[any] turret_g[any] ghost_d[any] wraith_g[any] bind_pose[any] c_turret_ap[any] cov_p1[any] cov_p2[any] cov_p3[any] cov_p4[any] fork_p_l1[any] fork_p_l2[any] fork_p_l3[any] fork_p_l4[any] fork_p_l5[any] fork_p_l6[any] fork_p_l7[any] fork_p_l8[any] fork_p_r1[any] fork_p_r2[any] fork_p_r3[any] fork_p_r4[any] fork_p_r5[any] fork_p_r6[any] fork_p_r7[any] fork_p_r8[any] global[any] global_act_look_out[any] global_sitting[any] global_tank_refill[any] global_warmfire[any] phantom_g[any] phantom_g_l[any] phantom_g_r[any] phantom_p[any] phantom_p_lb_main[any] phantom_p_lb_small_1[any] phantom_p_lb_small_2[any] phantom_p_lb_small_3[any] phantom_p_lf_main[any] phantom_p_lf_small_1[any] phantom_p_lf_small_2[any] phantom_p_lf_small_3[any] phantom_p_main[any] phantom_p_ml_b_main[any] phantom_p_ml_b_small1[any] phantom_p_ml_b_small2[any] phantom_p_ml_b_small3[any] phantom_p_ml_b_small_1[any] phantom_p_ml_b_small_2[any] phantom_p_ml_b_small_3[any] phantom_p_ml_f_main[any] phantom_p_ml_f_small_1[any] phantom_p_ml_f_small_2[any] phantom_p_ml_f_small_3[any] phantom_p_mr_b_main[any] phantom_p_mr_b_small_1[any] phantom_p_mr_b_small_2[any] phantom_p_mr_b_small_3[any] phantom_p_mr_f_main[any] phantom_p_mr_f_small_1[any] phantom_p_mr_f_small_2[any] phantom_p_mr_f_small_3[any] phantom_p_rb_main[any] phantom_p_rb_small_1[any] phantom_p_rb_small_2[any] phantom_p_rb_small_3[any] phantom_p_rf_main[any] phantom_p_rf_small_1[any] phantom_p_rf_small_2[any] phantom_p_rf_small_3[any] phantom_p_small1[any] phantom_p_small2[any] phantom_p_small3[any] phantom_pc_1[any] phantom_pc_2[any] phantom_pc_3[any] phantom_pc_4[any] phantom_pc_5[any] phantom_pc_6[any] shade_d[any] vehicle_death[any]
+    missile      patrol[any] combat[any,rl,fc] crouch[any,rl] vault[any] hoist_stand[fc]
+    pistol       berserk[any] flaming[any] asleep[any] patrol[any] combat[any,ne,pp,pr] crouch[any,ne,pp,pr] flee[any] stunned[pp] any[any] vault[any] global_investigate[any]
+    rifle        combat[smg,br,ar,sr,sg,cb,csr,pr]
+    support      combat[mgt,bs,ft,pgt,pgts,pmt,pmts,sb]
+    unarmed      panic[any] patrol[any] combat[any] crouch[any]
+objects\characters\hunter\hunter map m20 chain ['hunter'] flags 0
+   graph hunter modes 29 wlist 0 []
+    variants []
+    any          patrol[any] crouch[any,hfr] any[any,hfr] phantom_pc_1[any] phantom_pc_2[any] phantom_pc_3[any] phantom_pc_4[any] phantom_p_lf_main[any] phantom_p_rf_main[any] phantom_p_lb_main[any] phantom_p_rb_main[any] phantom_p_ml_f_main[any] phantom_p_ml_b_main[any] phantom_p_mr_f_main[any] phantom_p_mr_b_main[any] phantom_pc_5[any] phantom_pc_6[any] fork_p_l1[any] fork_p_l5[any] fork_p_r1[any] fork_p_r5[any] fork_p_cargo02_l1[any] fork_p_cargo02_l2[any] fork_p_cargo02_r1[any] fork_p_cargo02_r2[any] boarded[any] phantom_p_a02[any] phantom_pc[any]
+    unarmed      hoist[any]
+objects\characters\jackal\jackal map m10 chain ['jackal'] flags 0
+   graph jackal modes 69 wlist 0 []
+    variants [['jackal_minor', [['combat', 'shield'], ['crouch', 'shield_crouch']]], ['jackal_major', [['combat', 'shield'], ['crouch', 'shield_crouch']]], ['skirmisher_murmillo', [['combat', 'murm']]]]
+    any          combat[any] any[any] hoist_crouch[any] hoist_stand[any] community[any] fork_p_l1[any] fork_p_l2[any] fork_p_l3[any] fork_p_l4[any] fork_p_l5[any] fork_p_l6[any] fork_p_l7[any] fork_p_l8[any] fork_p_r1[any] fork_p_r2[any] fork_p_r3[any] fork_p_r4[any] fork_p_r5[any] fork_p_r6[any] fork_p_r7[any] fork_p_r8[any] global[any] phantom_p_lb_main[any] phantom_p_lb_small_1[any] phantom_p_lb_small_2[any] phantom_p_lb_small_3[any] phantom_p_lf_main[any] phantom_p_lf_small_1[any] phantom_p_lf_small_2[any] phantom_p_lf_small_3[any] phantom_p_ml_b_main[any] phantom_p_ml_b_small_1[any] phantom_p_ml_b_small_2[any] phantom_p_ml_b_small_3[any] phantom_p_ml_f_main[any] phantom_p_ml_f_small_1[any] phantom_p_ml_f_small_2[any] phantom_p_ml_f_small_3[any] phantom_p_mr_b_main[any] phantom_p_mr_b_small_1[any] phantom_p_mr_b_small_2[any] phantom_p_mr_b_small_3[any] phantom_p_mr_f_main[any] phantom_p_mr_f_small_1[any] phantom_p_mr_f_small_2[any] phantom_p_mr_f_small_3[any] phantom_p_rb_main[any] phantom_p_rb_small_1[any] phantom_p_rb_small_2[any] phantom_p_rb_small_3[any] phantom_p_rf_main[any] phantom_p_rf_small_1[any] phantom_p_rf_small_2[any] phantom_p_rf_small_3[any] phantom_pc_1[any] phantom_pc_2[any] phantom_pc_3[any] phantom_pc_4[any] phantom_pc_5[any] phantom_pc_6[any] vehicle_death[any] hard_death[any]
+    call         global[any]
+    dual         combat[js] crouch[js] flee[js]
+    h_kill       any[front]
+    low_perch    global[any]
+    pacing       global[any]
+    pistol       combat[any] crouch[any] flee[any] shield[any] shield_crouch[any] murm[any]
+    rifle        combat[any,cb,csr] crouch[any,cb] overcharged_jitter[any]
+    unarmed      patrol[any] combat[any]
+objects\characters\marine\marine map m10 chain ['marine'] flags 0
+   graph marine modes 70 wlist 0 []
+    variants []
+    any          panic[any] combat[any] crouch[any] flee[any] any[any] hoist_crouch[any] hoist_stand[any] global_alert[any] falcon_d[any] falcon_p_l1[any] falcon_p_r1[any] falcon_p_l2[any] falcon_p_r2[any] falcon_g_l[any] turret_g[any] falcon_g_r[any] warthog_d[any] warthog_p[any] warthog_g[any] warthog_p_l[any] warthog_p_r[any] warthog_p_b[any] pelican_e[any] pelican_p_l01[any] pelican_p_l02[any] pelican_p_l03[any] pelican_p_l04[any] pelican_p_l05[any] pelican_p_r01[any] pelican_p_r02[any] pelican_p_r03[any] pelican_p_r04[any] scorpion_d[any] sync_marine_desecration[any] banshee_d[any] death_pose[any] death_pose_2[any] ghost_d[any] m50[any] m52[any] m52_captive[any] mongoose_d[any] mongoose_p[any] pelican_d[any] pelican_g[any] pelican_g_pod[any] pelican_g_rear[any] pelican_p_copilot[any] pelican_p_r05[any] revenant_d[any] revenant_p[any] scorpion_g[any] scorpion_p_lb[any] scorpion_p_lf[any] scorpion_p_rb[any] scorpion_p_rf[any] wraith_d[any] wraith_g[any] global_typing[any] m52_vig_marine01[any] m52_vig_marine02[any]
+    fixed        warthog_g[any]
+    missile      combat[any,rl,fc,ml,prp,sl] crouch[any,rl,fc,ml,sl] vault[any] hoist[any] hoist_stand[any] bunker[any] warthog_p[any,sl] warthog_p_l[any] warthog_p_r[any] warthog_p_b[any] pelican_p_l01[any] pelican_p_l02[any] pelican_p_l03[any] pelican_p_l04[any] pelican_p_l05[any] pelican_p_r01[any] pelican_p_r02[any] pelican_p_r03[any] pelican_p_r04[any] mongoose_p[any] pelican_p_r05[any] revenant_p[any] scorpion_p_lb[any] scorpion_p_lf[any] scorpion_p_rb[any] scorpion_p_rf[any]
+    pistol       combat[any,hp,ne,pp] crouch[any,hp,ne,pp] vault[any] hoist[any] hoist_stand[any] bunker[any] warthog_p[any,ne,pp] warthog_p_l[any] warthog_p_r[any] warthog_p_b[any] pelican_p_l01[any,hp,ne,pp] pelican_p_l02[any,hp,ne,pp] pelican_p_l03[any,hp,ne,pp] pelican_p_l04[any,hp,ne,pp] pelican_p_l05[any,hp,ne,pp] pelican_p_r01[any,hp,ne,pp] pelican_p_r02[any,hp,ne,pp] pelican_p_r03[any,hp,ne,pp] pelican_p_r04[any,hp,ne,pp] pelican_p_r05[any,hp,ne,pp] revenant_p[any] scorpion_p_lb[any,ne,pp] scorpion_p_lf[any,ne,pp] scorpion_p_rb[any,ne,pp] scorpion_p_rf[any,ne,pp] overcharged_jitter[any]
+    rifle        posing[any] combat[any,smg,br,ar,sr,sg,prp,ne,cb,cr,csr,gl,pr,spr] crouch[any,smg,br,sr,sg,pr] vault[any] hoist[any] bunker[any] global_alert[any] falcon_p_l1[any] falcon_p_r1[any] warthog_p[any,smg,sr,sg,csr,pr] warthog_p_l[any] warthog_p_r[any] warthog_p_b[any] pelican_p_l01[any,smg,br,sr,sg,csr,pr] pelican_p_l02[any,smg,br,sr,sg,csr,pr] pelican_p_l03[any,smg,br,sr,sg,csr,pr] pelican_p_l04[any,smg,br,sr,sg,csr,pr] pelican_p_l05[any,smg,br,sr,sg,csr,pr] pelican_p_r01[any,smg,br,sr,sg,csr,pr] pelican_p_r02[any,smg,br,sr,sg,csr,pr] pelican_p_r03[any,smg,br,sr,sg,csr,pr] pelican_p_r04[any,smg,br,sr,sg,csr,pr] m52[sr] pelican_p_r05[any,smg,br,sr,sg,csr,pr] revenant_p[any,sr,sg] scorpion_p_lb[any,smg,br,sr,sg,csr,pr] scorpion_p_lf[any,smg,br,sr,sg,csr,pr] scorpion_p_rb[any,smg,br,sr,sg,csr,pr] scorpion_p_rf[any,smg,br,sr,sg,csr,pr] overcharged_jitter[any]
+    turret       combat[ftt]
+    unarmed      patrol[any] combat[any] crouch[any] bunker[any] pelican_p_l01[any] pelican_p_l02[any] pelican_p_l03[any] pelican_p_l04[any] pelican_p_l05[any] pelican_p_r01[any] pelican_p_r02[any] pelican_p_r03[any] pelican_p_r04[any] global_crouched_scanning[any] global_injured[any] global_scanning[any] pelican_d[any] pelican_g[any] pelican_p_r05[any] scorpion_p_lb[any] scorpion_p_lf[any] scorpion_p_rb[any] scorpion_p_rf[any]
+objects\characters\mule\mule map m30 chain ['mule'] flags 0
+   graph mule modes 4 wlist 0 []
+    variants []
+    any          combat[any] any[any] roar[any] curious[any]
+objects\characters\null\null map m10 chain ['null'] flags 0
+   graph null modes 14 wlist 0 []
+    variants []
+    any          patrol[any] combat[any] any[any] turret_g[any] warthog_d[any] warthog_g[any] banshee_d[any] pelican_d[any] pelican_g[any] fork_d[any] close_turret_doors[any] phantom_d[any] sabre_d[any] seraph_d[any]
+objects\characters\spartan_jorge\spartan_jorge map m10 chain ['spartan_jorge'] flags 0
+   graph spartan_jorge modes 12 wlist 0 []
+    variants []
+    any          community[any] falcon_p_l1[any] falcon_p_r1[any] falcon_p_l1_wpn[any] falcon_p_r1_wpn[any]
+    turret       combat[any] sprint[any] bunker[any] pickup_g[any] m10_drop[any] m10gaspump[any] overcharged_jitter[any]
+    unarmed      combat[any]
+objects\characters\spartans_ai\spartans_ai map m10 chain ['spartans_ai'] flags 0
+   graph spartans_ai modes 77 wlist 0 []
+    variants [['jun', [['overcharged_jitter', 'jun_alert'], ['combat', 'jun'], ['crouch', 'jun_crouch']]], ['emile', [['combat', 'emile']]]]
+    any          combat[any] any[any] community[any] falcon_d[any] falcon_p_l1[any] falcon_p_r1[any] falcon_p_l2[any] falcon_p_r2[any] falcon_p_bench[any] falcon_b_d_l[any] falcon_b_d_r[any] falcon_g_l[any] turret_g[pgt] falcon_b_g_l[any] falcon_g_r[any] falcon_b_g_r[any] warthog_d[any] warthog_p[any] warthog_b_d[any] warthog_b_p[any] warthog_g[any] warthog_b_g[any] pelican_p_l04[any] pelican_p_l05[any] pelican_p_r04[any] scorpion_d[any] ghost_d[any] mongoose_d[any] mongoose_p[any] pelican_p_r05[any] revenant_d[any] revenant_p[any] scorpion_g[any] wraith_d[any] wraith_g[any] bind_pose[any] banshee_b_d_r[any] banshee_b_d_l[any] truck_d[any] truck_p[any] scorpion_b_b[any] scorpion_b_d_r[any] wraith_b_b[any] wraith_b_l[any] wraith_b_r[any] ghost_b_d_b[any] ghost_b_d_l[any] ghost_b_d_r[any] m30[any] m70[any] revenant_b_d[any] revenant_b_p[any] scorpion_b_d_l[any] m10_drop[any] m10gaspump[any] m20_spartan[any] mac_d[any] mongoose_b_d_l[any] mongoose_b_d_r[any]
+    hammer       warthog_p[any]
+    missile      combat[any,rl,fc,sl,pl] crouch[any,rl,fc,sl,pl] sprint[any] flight[rl,fc,sl,pl] flight_crouch[rl,fc,sl,pl] warthog_p[any,rl,fc,sl,pl] mongoose_p[any,rl,fc,sl,pl] revenant_p[any,rl,fc,sl,pl] overcharged_jitter[rl,fc,sl,pl]
+    pistol       combat[any,hp,ne,pp,pr] crouch[any,hp,ne,pp,pr] sprint[any] flight[hp,ne,pp,pr] flight_crouch[hp,ne,pp,pr] warthog_p[any,hp,ne,pp,pr] mongoose_p[any,hp,ne,pp,pr] revenant_p[any,hp,ne,pp,pr] overcharged_jitter[any,hp,ne,pp,pr]
+    rifle        combat[h_ping,any,br,ar,sr,sg,prp,cb,cr,csr,gl,spr] crouch[any,br,ar,sr,sg,prp,cb,cr,csr,gl,spr] sprint[any] flight[br,ar,sr,sg,prp,cb,cr,csr,gl,spr] flight_crouch[br,ar,sr,sg,prp,cb,cr,csr,gl,spr] bunker[any] emile[any] global_alert[any] falcon_p_l1[any] falcon_p_r1[any] falcon_p_bench[any] falcon_p_bench_wpn[any] falcon_p_l1_wpn[any] falcon_p_r1_wpn[any] warthog_p[any,br,ar,sr,sg,prp,cb,cr,csr,gl,spr] pelican_p_l05[any] mongoose_p[any,br,ar,sr,sg,prp,cb,cr,csr,gl,spr] revenant_p[any,br,ar,sr,sg,prp,cb,cr,csr,gl,spr] jun_crouch[any] downed[any] global_combat[any] global_spartan[any] m70_alert[any] performance_general[any] overcharged_jitter[any,br,ar,sr,sg,prp,cb,cr,csr,gl,spr]
+    unarmed      patrol[any] combat[any]
+objects\characters\spartans_female_ai\spartans_female_ai map m10 chain ['spartans_female_ai'] flags 0
+   graph spartans_female_ai modes 71 wlist 0 []
+    variants []
+    any          combat[any] any[any] rifle[any] community[any] falcon_d[any] falcon_p_l1[any] falcon_p_r1[any] falcon_p_l2[any] falcon_p_r2[any] falcon_p_bench[any] falcon_b_d_l[any] falcon_b_d_r[any] falcon_g_l[any] turret_g[pgt] falcon_b_g_l[any] falcon_g_r[any] falcon_b_g_r[any] warthog_d[any] warthog_p[any] warthog_b_d[any] warthog_b_p[any] warthog_g[any] warthog_b_g[any] pelican_p_l04[any] pelican_p_l05[any] pelican_p_r04[any] scorpion_d[any] ghost_d[any] mongoose_d[any] mongoose_p[any] pelican_p_r05[any] revenant_d[any] revenant_p[any] scorpion_g[any] wraith_d[any] wraith_g[any] bind_pose[any] banshee_b_d_r[any] banshee_b_d_l[any] truck_d[any] truck_p[any] scorpion_b_b[any] scorpion_b_d_r[any] wraith_b_b[any] wraith_b_l[any] wraith_b_r[any] ghost_b_d_b[any] ghost_b_d_l[any] ghost_b_d_r[any] revenant_b_d[any] revenant_b_p[any] scorpion_b_d_l[any] m20_spartan[any] mongoose_b_d_l[any] mongoose_b_d_r[any] m20[any]
+    hammer       warthog_p[any]
+    missile      combat[any,rl,fc,sl,pl] crouch[any,rl,fc,sl,pl] sprint[any] flight[rl,fc,sl,pl] flight_crouch[rl,fc,sl,pl] warthog_p[any,rl,fc,sl,pl] mongoose_p[any,rl,fc,sl,pl] revenant_p[any,rl,fc,sl,pl] overcharged_jitter[rl,fc,sl,pl]
+    pistol       combat[any,hp,ne,pp,pr] crouch[any,hp,ne,pp,pr] sprint[any] flight[hp,ne,pp,pr] flight_crouch[hp,ne,pp,pr] global_alert[any] falcon_p_bench[any] falcon_p_bench_wpn[any] warthog_p[any,hp,ne,pp,pr] mongoose_p[any,hp,ne,pp,pr] revenant_p[any,hp,ne,pp,pr] global_combat[any] m10_drop[any] m10_warthog[any] overcharged_jitter[any,hp,ne,pp,pr]
+    rifle        combat[h_ping,any,br,ar,sr,sg,prp,cb,cr,csr,gl,spr] stance[any] crouch[any,br,ar,sr,sg,prp,cb,cr,csr,gl,spr] sprint[any] flight[br,ar,sr,sg,prp,cb,cr,csr,gl,spr] flight_crouch[br,ar,sr,sg,prp,cb,cr,csr,gl,spr] bunker[any] global_alert[any] falcon_p_l1[any] falcon_p_r1[any] falcon_p_bench[any] warthog_p[any,br,ar,sr,sg,prp,cb,cr,csr,gl,spr] pelican_p_l05[any] mongoose_p[any,br,ar,sr,sg,prp,cb,cr,csr,gl,spr] revenant_p[any,br,ar,sr,sg,prp,cb,cr,csr,gl,spr] downed[any] global_spartan[any] overcharged_jitter[any,br,ar,sr,sg,prp,cb,cr,csr,gl,spr]
+    unarmed      patrol[any] combat[any]
+
+== weapon_dist
+m10 {'jackal': {'plasma_pistol': 6, 'needler': 7, 'needle_rifle': 3}, 'elite': {'energy_sword': 2, 'plasma_rifle': 7, 'plasma_repeater': 4, 'concussion_rifle': 4, 'needler': 1}, 'civilian_male': {'-1': 2}, 'grunt': {'plasma_pistol': 11, 'needler': 6}, 'spartans_ai': {'assault_rifle': 2, 'machinegun_turret_jorge': 1, 'sniper_rifle': 1}, 'null': {'assault_rifle': 1, 'magnum': 1, '-1': 2}, 'marine': {'assault_rifle': 1, 'magnum': 2}, 'spartans_female_ai': {'assault_rifle': 1}}
+   spawn {'none': {'-1': 78, 'plasma_repeater': 18, 'dmr': 7, 'magnum': 4, 'shotgun': 5, 'needle_rifle': 4, 'plasma_pistol': 3, 'energy_sword': 1, 'concussion_rifle': 7}, 'null': {'-1': 1}, 'elite': {'needle_rifle': 2, 'plasma_repeater': 2}, 'grunt': {'-1': 6}, 'civilian_female': {'-1': 4}}
+m20 {'grunt': {'plasma_pistol': 25, 'needler': 14, 'plasma_rifle': 5}, 'marine': {'assault_rifle': 9}, 'spartans_ai': {'sniper_rifle': 1, 'rocket_launcher': 1, 'machinegun_turret_jorge': 1}, 'jackal': {'plasma_pistol': 7, 'needler': 3, 'needle_rifle': 4}, 'elite': {'plasma_rifle': 28, 'needle_rifle': 1, 'concussion_rifle': 7, 'flak_cannon': 1, 'needler': 3, 'plasma_pistol': 4, 'plasma_launcher': 1}, 'marine_female': {'assault_rifle': 1, 'dmr': 1}, 'spartans_female_ai': {'assault_rifle': 1}}
+   spawn {'none': {'-1': 166, 'shotgun': 3, 'assault_rifle': 2, 'needle_rifle': 2, 'dmr': 2, 'machinegun_turret_jorge': 1}}
+m30 {'jackal': {'plasma_pistol': 17, 'needler': 11, 'focus_rifle': 1, 'needle_rifle': 4}, 'grunt': {'plasma_pistol': 18, 'needler': 15}, 'elite': {'plasma_rifle': 20, 'needler': 1, 'plasma_repeater': 3, 'needle_rifle': 4, 'focus_rifle': 5, 'concussion_rifle': 5, 'plasma_launcher': 1}, 'civilian_male': {'assault_rifle': 2}, 'spartans_ai': {'sniper_rifle': 1}, '': {'plasma_rifle': 1}}
+   spawn {'none': {'-1': 202, 'magnum': 5, 'shotgun': 3, 'sniper_rifle': 1, 'plasma_repeater': 1}, 'grunt': {'-1': 1}}
+m35 {'grunt': {'plasma_pistol': 20, 'needler': 9, 'flak_cannon': 2}, 'jackal': {'needler': 5, 'needle_rifle': 5, 'plasma_pistol': 9, 'focus_rifle': 1}, 'elite': {'plasma_rifle': 18, 'needler': 2, 'concussion_rifle': 4, 'needle_rifle': 1, 'flak_cannon': 1, 'plasma_repeater': 1, '-1': 1}, 'spartans_ai': {'assault_rifle': 2, 'machinegun_turret_jorge': 1}, 'marine': {'assault_rifle': 5, 'magnum': 2}, 'null': {'-1': 3}, 'bugger': {'plasma_pistol': 1}, 'spartans_female_ai': {'assault_rifle': 1}}
+   spawn {'jackal': {'needle_rifle': 1}, 'none': {'-1': 129, 'assault_rifle': 5, 'concussion_rifle': 5, 'plasma_rifle': 1, 'needler': 1, 'flak_cannon': 6, 'energy_sword': 1, 'grenade_launcher': 1, 'dmr': 1}, 'null': {'-1': 11}, 'grunt': {'needler': 2, 'plasma_pistol': 2, '-1': 8}, 'elite': {'concussion_rifle': 4, 'needler': 1, 'plasma_rifle': 1, '-1': 1}}
+m45 {'elite': {'plasma_rifle': 30, 'needle_rifle': 8, 'concussion_rifle': 8, 'plasma_launcher': 3, 'focus_rifle': 2, 'plasma_repeater': 8, 'needler': 1, 'energy_sword': 2}, 'jackal': {'plasma_pistol': 9, 'needle_rifle': 3, 'needler': 6}, 'grunt': {'plasma_pistol': 23, 'needler': 21, 'plasma_rifle': 1, 'flak_cannon': 2}, 'marine': {'assault_rifle': 11, 'dmr': 7, 'rocket_launcher': 4, 'sniper_rifle': 1, 'shotgun': 3, 'magnum': 3}, 'spartans_ai': {'machinegun_turret_jorge': 1, 'dmr': 1}, 'marine_female': {'dmr': 2, 'assault_rifle': 2, 'magnum': 1, 'sniper_rifle': 1, 'shotgun': 1}, 'null': {'plasma_pistol': 1, 'plasma_rifle': 3}, 'spartans_female_ai': {'magnum': 1}}
+   spawn {'none': {'-1': 336, 'plasma_rifle': 3, 'energy_sword': 1, 'plasma_repeater': 8, 'sniper_rifle': 1, 'rocket_launcher': 2, 'assault_rifle': 2, 'needle_rifle': 2, 'plasma_launcher': 2}, 'null': {'-1': 32}, 'elite': {'plasma_repeater': 1, '-1': 3}, 'grunt': {'plasma_pistol': 2}}
+m50 {'grunt': {'plasma_pistol': 15, 'needler': 10, 'flak_cannon': 1}, 'jackal': {'focus_rifle': 1, 'plasma_pistol': 12, 'needler': 6, 'needle_rifle': 2}, 'marine': {'assault_rifle': 11, 'magnum': 5, 'dmr': 1, 'shotgun': 1}, 'brute': {'spike_rifle': 14, 'concussion_rifle': 5, 'flak_cannon': 2, 'gravity_hammer': 2, 'plasma_repeater': 3, 'plasma_launcher': 1}, 'null': {'magnum': 1, '-1': 1}, 'civilian_female': {'-1': 1}, 'civilian_male': {'-1': 1}}
+   spawn {'jackal': {'needle_rifle': 1}, 'grunt': {'flak_cannon': 1, '-1': 9}, 'null': {'-1': 57}, 'none': {'-1': 279, 'spartan_laser': 1, 'spike_rifle': 4, 'plasma_repeater': 2}, 'brute': {'plasma_repeater': 5, 'spike_rifle': 8, 'gravity_hammer': 6, 'concussion_rifle': 4, 'plasma_launcher': 1, 'flak_cannon': 1}, 'marine': {'-1': 14, 'rocket_launcher': 1, 'magnum': 1}, 'marine_female': {'-1': 1}, 'civilian_male': {'-1': 4}, 'civilian_female': {'-1': 3}}
+m52 {'jackal': {'plasma_pistol': 3, 'needler': 3, 'needle_rifle': 3, 'focus_rifle': 1}, 'elite': {'plasma_rifle': 3, 'plasma_repeater': 2, 'needler': 1, 'concussion_rifle': 1}, 'marine': {'magnum': 4, 'assault_rifle': 5, '-1': 1}, 'brute': {'spike_rifle': 7}, 'grunt': {'flak_cannon': 2, 'plasma_pistol': 6, 'needler': 4}, 'bugger': {'plasma_pistol': 1}}
+   spawn {'none': {'-1': 296, 'needle_rifle': 9, 'plasma_repeater': 3, 'concussion_rifle': 7, 'needler': 6, 'flak_cannon': 3, 'magnum': 4}, 'marine_female': {'-1': 5, 'magnum': 1}, 'marine': {'-1': 8}, 'elite': {'flak_cannon': 1}}
+m60 {'grunt': {'needler': 8, 'plasma_pistol': 14, 'plasma_rifle': 3, 'flak_cannon': 2}, 'jackal': {'plasma_pistol': 9, 'needler': 5, 'needle_rifle': 2, 'focus_rifle': 2}, 'elite': {'plasma_rifle': 17, 'plasma_repeater': 4, 'plasma_turret': 1, 'energy_sword': 2, 'plasma_pistol': 3, '-1': 1, 'needler': 2, 'concussion_rifle': 1}, 'marine': {'-1': 1, 'magnum': 1, 'assault_rifle': 2}, 'spartans_ai': {'sniper_rifle': 1, 'assault_rifle': 2}, 'brute': {'spike_rifle': 3}}
+   spawn {'none': {'-1': 161, 'needle_rifle': 2, 'shotgun': 3, 'concussion_rifle': 1, 'energy_sword': 7}, 'elite': {'-1': 2}}
+m70 {'grunt': {'plasma_pistol': 37, 'needler': 14, 'flak_cannon': 2, 'plasma_rifle': 1}, 'elite': {'plasma_rifle': 9, 'plasma_repeater': 7, 'concussion_rifle': 4, 'plasma_pistol': 1, 'flak_cannon': 2, 'needler': 1, 'energy_sword': 1}, 'jackal': {'plasma_pistol': 11, 'needler': 3, 'plasma_rifle': 1, 'needle_rifle': 4}, 'brute': {'spike_rifle': 9, 'gravity_hammer': 1, 'plasma_repeater': 3, 'flak_cannon': 1, 'plasma_launcher': 1}, 'marine_female': {'assault_rifle': 2}, 'marine': {'assault_rifle': 8}, 'bugger': {'plasma_pistol': 3}, 'null': {'plasma_rifle': 1, 'plasma_pistol': 2}, 'spartans_ai': {'shotgun': 1}}
+   spawn {'none': {'-1': 200}}
+m70_bonus {'brute': {'spike_rifle': 1}, 'elite': {'plasma_pistol': 1, 'plasma_rifle': 5, 'energy_sword': 1, 'focus_rifle': 1, 'concussion_rifle': 1}, 'grunt': {'plasma_pistol': 3, 'plasma_rifle': 1, 'needler': 1}, 'jackal': {'plasma_pistol': 1, 'needler': 1}}
+   spawn {'none': {'-1': 33, 'plasma_launcher': 3}, 'grunt': {'plasma_pistol': 24}, 'elite': {'plasma_rifle': 48, 'focus_rifle': 7, 'plasma_repeater': 16, 'concussion_rifle': 25, 'energy_sword': 9}}

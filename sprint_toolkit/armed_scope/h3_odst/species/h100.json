@@ -1,0 +1,3088 @@
+{
+"chars": {
+"ai\\generic": {
+"retreat": [
+null,
+null
+],
+"charge": [
+null,
+null,
+null
+],
+"flags": [
+0
+],
+"unit": null
+},
+"ai\\generic_turret": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": null
+},
+"objects\\characters\\brute\\ai\\brute": {
+"retreat": [],
+"charge": [
+null,
+null,
+null
+],
+"flags": [
+0
+],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\brute\\ai\\brute_bodyguard": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\brute\\ai\\brute_captain": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\brute\\ai\\brute_captain_major": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\brute\\ai\\brute_captain_ultra": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\brute\\ai\\brute_chieftain_armor": {
+"retreat": [],
+"charge": [
+null,
+null,
+null
+],
+"flags": [
+0
+],
+"unit": "objects\\characters\\brute\\brute_chieftain"
+},
+"objects\\characters\\brute\\ai\\brute_chieftain_weapon": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\brute\\brute_chieftain"
+},
+"objects\\characters\\brute\\ai\\brute_jumppack": {
+"retreat": [],
+"charge": [
+null,
+null,
+null
+],
+"flags": [
+0
+],
+"unit": "objects\\characters\\brute\\brute_jumppack"
+},
+"objects\\characters\\brute\\ai\\brute_jumppack_major": {
+"retreat": [],
+"charge": [
+null,
+null,
+null
+],
+"flags": [
+0
+],
+"unit": "objects\\characters\\brute\\brute_jumppack"
+},
+"objects\\characters\\brute\\ai\\brute_jumppack_ultra": {
+"retreat": [],
+"charge": [
+null,
+null,
+null
+],
+"flags": [
+0
+],
+"unit": "objects\\characters\\brute\\brute_jumppack"
+},
+"objects\\characters\\brute\\ai\\brute_major": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\brute\\ai\\brute_phantom": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\brute\\ai\\brute_stalker": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\brute\\ai\\brute_tracker": {
+"retreat": [],
+"charge": [],
+"flags": [
+256
+],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\brute\\ai\\brute_ultra": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\bugger\\ai\\bugger": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\bugger\\bugger"
+},
+"objects\\characters\\bugger\\ai\\bugger_captain": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\bugger\\bugger"
+},
+"objects\\characters\\bugger\\ai\\bugger_captain_major": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\bugger\\bugger"
+},
+"objects\\characters\\bugger\\ai\\bugger_major": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\bugger\\bugger"
+},
+"objects\\characters\\bugger\\ai\\bugger_pupa": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\bugger\\bugger"
+},
+"objects\\characters\\bugger\\ai\\bugger_ultra": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\bugger\\bugger"
+},
+"objects\\characters\\civilians\\civilian_police\\ai\\civilain_police_sarge_survival": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\civilians\\civilian_police\\civilian_police"
+},
+"objects\\characters\\civilians\\civilian_police\\ai\\civilian_police": {
+"retreat": [
+"objects\\weapons\\pistol\\automag\\automag",
+"objects\\weapons\\pistol\\automag\\automag",
+"objects\\weapons\\pistol\\automag\\automag"
+],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\civilians\\civilian_police\\civilian_police"
+},
+"objects\\characters\\civilians\\civilian_police\\ai\\civilian_police_sarge": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\civilians\\civilian_police\\civilian_police"
+},
+"objects\\characters\\civilians\\civilian_police\\ai\\civilian_police_survival": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\civilians\\civilian_police\\civilian_police"
+},
+"objects\\characters\\elite\\ai\\elite": {
+"retreat": [],
+"charge": [
+"objects\\weapons\\melee\\energy_blade\\energy_blade",
+"objects\\weapons\\melee\\energy_blade\\energy_blade",
+"objects\\weapons\\melee\\energy_blade\\energy_blade"
+],
+"flags": [
+4
+],
+"unit": "objects\\characters\\elite\\elite"
+},
+"objects\\characters\\elite\\ai\\elite_major": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\elite\\elite"
+},
+"objects\\characters\\elite\\ai\\elite_specops": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\elite\\elite"
+},
+"objects\\characters\\elite\\ai\\elite_specops_commander": {
+"retreat": [],
+"charge": [],
+"flags": [
+4
+],
+"unit": "objects\\characters\\elite\\elite"
+},
+"objects\\characters\\engineer\\ai\\engineer": {
+"retreat": [
+null
+],
+"charge": [],
+"flags": [
+96
+],
+"unit": "objects\\characters\\engineer\\engineer"
+},
+"objects\\characters\\engineer\\ai\\engineer_freeform": {
+"retreat": [],
+"charge": [],
+"flags": [
+224
+],
+"unit": "objects\\characters\\engineer\\engineer_freeform"
+},
+"objects\\characters\\engineer\\ai\\engineer_slaveform": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\engineer\\engineer"
+},
+"objects\\characters\\flood_infection\\ai\\flood_infection": {
+"retreat": [],
+"charge": [],
+"flags": [
+1
+],
+"unit": null
+},
+"objects\\characters\\flood_pureforms\\ai\\flood_pureform": {
+"retreat": [],
+"charge": [
+null
+],
+"flags": [
+0
+],
+"unit": null
+},
+"objects\\characters\\flood_ranged\\ai\\flood_pureform_ranged": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\flood_ranged\\flood_ranged"
+},
+"objects\\characters\\flood_stalker\\ai\\flood_pureform_stalker": {
+"retreat": [],
+"charge": [
+null
+],
+"flags": [
+0
+],
+"unit": "objects\\characters\\flood_stalker\\flood_stalker"
+},
+"objects\\characters\\flood_tank\\ai\\flood_pureform_tank": {
+"retreat": [],
+"charge": [
+null,
+null,
+null
+],
+"flags": [
+0
+],
+"unit": "objects\\characters\\flood_tank\\flood_tank"
+},
+"objects\\characters\\floodcarrier\\ai\\flood_carrier": {
+"retreat": [],
+"charge": [
+null
+],
+"flags": [
+0
+],
+"unit": "objects\\characters\\floodcarrier\\floodcarrier"
+},
+"objects\\characters\\floodcombat_base\\ai\\floodcombat_base": {
+"retreat": [],
+"charge": [
+null,
+null,
+null
+],
+"flags": [
+88
+],
+"unit": null
+},
+"objects\\characters\\floodcombat_brute\\ai\\floodcombat_brute": {
+"retreat": [],
+"charge": [
+null,
+null
+],
+"flags": [
+88
+],
+"unit": "objects\\characters\\floodcombat_brute\\floodcombat_brute"
+},
+"objects\\characters\\floodcombat_brute\\ai\\floodcombat_brute_heavy": {
+"retreat": [],
+"charge": [],
+"flags": [
+88
+],
+"unit": "objects\\characters\\floodcombat_brute\\floodcombat_brute"
+},
+"objects\\characters\\floodcombat_brute\\ai\\floodcombat_brute_stealth": {
+"retreat": [],
+"charge": [],
+"flags": [
+88
+],
+"unit": "objects\\characters\\floodcombat_brute\\floodcombat_brute"
+},
+"objects\\characters\\floodcombat_civilian\\ai\\flood_combat_civilian": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\floodcombat_civilian\\floodcombat_civilian"
+},
+"objects\\characters\\floodcombat_elite\\ai\\floodcombat_elite": {
+"retreat": [],
+"charge": [],
+"flags": [
+88
+],
+"unit": "objects\\characters\\floodcombat_elite\\floodcombat_elite"
+},
+"objects\\characters\\floodcombat_elite\\ai\\floodcombat_elite_shielded": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\floodcombat_elite\\floodcombat_elite"
+},
+"objects\\characters\\floodcombat_human\\ai\\flood_combat_human": {
+"retreat": [],
+"charge": [],
+"flags": [
+88
+],
+"unit": "objects\\characters\\floodcombat_human\\floodcombat_human"
+},
+"objects\\characters\\floodcombat_human\\ai\\flood_combat_odst": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\floodcombat_human\\floodcombat_odst"
+},
+"objects\\characters\\grunt\\ai\\grunt": {
+"retreat": [
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+],
+"charge": [
+null,
+null,
+null
+],
+"flags": [
+0
+],
+"unit": "objects\\characters\\grunt\\grunt"
+},
+"objects\\characters\\grunt\\ai\\grunt_heavy": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\grunt\\grunt"
+},
+"objects\\characters\\grunt\\ai\\grunt_major": {
+"retreat": [
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\grunt\\grunt"
+},
+"objects\\characters\\grunt\\ai\\grunt_specops": {
+"retreat": [
+"objects\\weapons\\pistol\\needler\\needler",
+"objects\\weapons\\pistol\\needler\\needler",
+"objects\\weapons\\pistol\\needler\\needler"
+],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\grunt\\grunt"
+},
+"objects\\characters\\grunt\\ai\\grunt_ultra": {
+"retreat": [
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\grunt\\grunt"
+},
+"objects\\characters\\hunter\\ai\\hunter": {
+"retreat": [],
+"charge": [
+null,
+null,
+null
+],
+"flags": [
+0
+],
+"unit": "objects\\characters\\hunter\\hunter"
+},
+"objects\\characters\\hunter\\ai\\hunter_classic": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\hunter\\hunter_flak"
+},
+"objects\\characters\\hunter\\ai\\hunter_shielded": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\hunter\\hunter"
+},
+"objects\\characters\\jackal\\ai\\jackal": {
+"retreat": [
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\jackal\\jackal"
+},
+"objects\\characters\\jackal\\ai\\jackal_major": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\jackal\\jackal"
+},
+"objects\\characters\\jackal\\ai\\jackal_sniper": {
+"retreat": [
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\jackal\\jackal"
+},
+"objects\\characters\\marine\\ai\\marine": {
+"retreat": [],
+"charge": [
+null,
+null,
+null
+],
+"flags": [
+0
+],
+"unit": "objects\\characters\\marine\\marine"
+},
+"objects\\characters\\marine\\ai\\marine_female": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\marine\\marine_female\\marine_female"
+},
+"objects\\characters\\marine\\ai\\marine_sgt": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\marine\\marine"
+},
+"objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor": {
+"retreat": [],
+"charge": [],
+"flags": [
+32
+],
+"unit": "objects\\characters\\sentinel_aggressor\\sentinel_aggressor"
+},
+"objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor_major": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\sentinel_aggressor\\sentinel_aggressor"
+},
+"objects\\equipment\\autoturret\\autoturret": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\equipment\\autoturret\\autoturret"
+}
+},
+"models": {
+"objects\\characters\\brute\\brute": {
+"model": "objects\\characters\\brute\\brute",
+"default_variant": "minor",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "minor",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+null,
+[
+"major"
+]
+],
+[
+"armor",
+[
+"major"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "jumppack",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+null,
+[
+"stalker"
+]
+],
+[
+"armor",
+[
+"stalker"
+]
+],
+[
+"body",
+[
+"chiefstalker"
+]
+]
+]
+},
+{
+"name": "chieftain_armor",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+null,
+[
+"chief_sc140"
+]
+],
+[
+"armor",
+[
+"chief_sc140"
+]
+],
+[
+"body",
+[
+"chiefstalker"
+]
+]
+]
+},
+{
+"name": "chieftain_weapon",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+null,
+[
+"minor"
+]
+],
+[
+"armor",
+[
+"minor"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "major",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+null,
+[
+"minor"
+]
+],
+[
+"armor",
+[
+"minor"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+}
+]
+},
+"objects\\characters\\brute\\brute_chieftain": {
+"model": "objects\\characters\\brute\\brute_chieftain",
+"default_variant": "minor",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "minor",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+null,
+[
+"major"
+]
+],
+[
+"armor",
+[
+"major"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "jumppack",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+null,
+[
+"stalker"
+]
+],
+[
+"armor",
+[
+"stalker"
+]
+],
+[
+"body",
+[
+"chiefstalker"
+]
+]
+]
+},
+{
+"name": "chieftain_armor",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+null,
+[
+"chiefweapon"
+]
+],
+[
+"armor",
+[
+"chiefweapon"
+]
+],
+[
+"body",
+[
+"chiefstalker"
+]
+]
+]
+},
+{
+"name": "tracker",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+null,
+[
+"minor"
+]
+],
+[
+"armor",
+[
+"minor"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+}
+]
+},
+"objects\\characters\\brute\\brute_jumppack": {
+"model": "objects\\characters\\brute\\brute_jumppack",
+"default_variant": "jumppack",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "minor",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+null,
+[
+"major"
+]
+],
+[
+"armor",
+[
+"major"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "jumppack",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+null,
+[
+"stalker"
+]
+],
+[
+"armor",
+[
+"stalker"
+]
+],
+[
+"body",
+[
+"chiefstalker"
+]
+]
+]
+},
+{
+"name": "chieftain_armor",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+null,
+[
+"chiefweapon"
+]
+],
+[
+"armor",
+[
+"chiefweapon"
+]
+],
+[
+"body",
+[
+"chiefstalker"
+]
+]
+]
+},
+{
+"name": "tracker",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+null,
+[
+"minor"
+]
+],
+[
+"armor",
+[
+"minor"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+}
+]
+},
+"objects\\characters\\bugger\\bugger": {
+"model": "objects\\characters\\bugger\\bugger",
+"default_variant": "pupa",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "minor",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"body",
+[
+"base"
+]
+],
+[
+"glow",
+[
+"base"
+]
+]
+]
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"body",
+[
+"pupa"
+]
+],
+[
+"glow",
+[
+"pupa"
+]
+]
+]
+}
+]
+},
+"objects\\characters\\civilians\\civilian_police\\civilian_police": {
+"model": "objects\\characters\\civilians\\civilian_police\\civilian_police",
+"default_variant": "default",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "default",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"body",
+[
+"standard"
+]
+],
+[
+"head",
+[
+"visor"
+]
+],
+[
+"face",
+[
+"visor"
+]
+]
+]
+},
+{
+"name": "hat_white",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+}
+]
+},
+"objects\\characters\\elite\\elite": {
+"model": "objects\\characters\\elite\\elite",
+"default_variant": "minor_scl",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "minor_scl",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"body",
+[
+"base"
+]
+],
+[
+"lights",
+[
+"base"
+]
+],
+[
+"head",
+[
+"base"
+]
+],
+[
+"d_torso",
+[
+"base"
+]
+],
+[
+null,
+[
+"base"
+]
+],
+[
+null,
+[
+"base"
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"eyelids",
+[
+"base"
+]
+]
+]
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"body",
+[
+"base"
+]
+],
+[
+"lights",
+[
+"base"
+]
+],
+[
+"head",
+[
+"base"
+]
+],
+[
+"d_torso",
+[
+"base"
+]
+],
+[
+null,
+[
+"base"
+]
+],
+[
+null,
+[
+"base"
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"eyelids",
+[
+"base"
+]
+]
+]
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"body",
+[
+"base"
+]
+],
+[
+"lights",
+[
+"base"
+]
+],
+[
+"head",
+[
+"base",
+"spec_ops"
+]
+],
+[
+"d_torso",
+[
+"base"
+]
+],
+[
+null,
+[
+"spec_ops",
+"base"
+]
+],
+[
+null,
+[
+"spec_ops",
+"base"
+]
+],
+[
+"chest",
+[
+"spec_ops"
+]
+],
+[
+null,
+[
+null
+]
+],
+[
+"eyelids",
+[
+"base"
+]
+]
+]
+},
+{
+"name": "stealth_scl",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"body",
+[
+"base"
+]
+],
+[
+"lights",
+[
+"base"
+]
+],
+[
+"head",
+[
+"base"
+]
+],
+[
+"d_torso",
+[
+"base"
+]
+],
+[
+null,
+[
+"base",
+null
+]
+],
+[
+null,
+[
+"base",
+null
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"eyelids",
+[
+"base"
+]
+]
+]
+}
+]
+},
+"objects\\characters\\engineer\\engineer": {
+"model": "objects\\characters\\engineer\\engineer",
+"default_variant": null,
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "slaveform",
+"objects": [],
+"regions": []
+}
+]
+},
+"objects\\characters\\engineer\\engineer_freeform": {
+"model": "objects\\characters\\engineer\\engineer_freeform",
+"default_variant": "freeform",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "freeform",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+}
+]
+},
+"objects\\characters\\flood_ranged\\flood_ranged": {
+"model": "objects\\characters\\flood_ranged\\flood_ranged",
+"default_variant": null,
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": []
+},
+"objects\\characters\\flood_stalker\\flood_stalker": {
+"model": "objects\\characters\\flood_stalker\\flood_stalker",
+"default_variant": null,
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": []
+},
+"objects\\characters\\flood_tank\\flood_tank": {
+"model": "objects\\characters\\flood_tank\\flood_tank",
+"default_variant": null,
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "default",
+"objects": [],
+"regions": []
+}
+]
+},
+"objects\\characters\\floodcarrier\\floodcarrier": {
+"model": "objects\\characters\\floodcarrier\\floodcarrier",
+"default_variant": null,
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "default",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+}
+]
+},
+"objects\\characters\\floodcombat_brute\\floodcombat_brute": {
+"model": "objects\\characters\\floodcombat_brute\\floodcombat_brute",
+"default_variant": "default",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "default",
+"objects": [],
+"regions": []
+}
+]
+},
+"objects\\characters\\floodcombat_civilian\\floodcombat_civilian": {
+"model": "objects\\characters\\floodcombat_civilian\\floodcombat_civilian",
+"default_variant": "default",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "default",
+"objects": [],
+"regions": []
+}
+]
+},
+"objects\\characters\\floodcombat_elite\\floodcombat_elite": {
+"model": "objects\\characters\\floodcombat_elite\\floodcombat_elite",
+"default_variant": null,
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "standard_fce",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+}
+]
+},
+"objects\\characters\\floodcombat_human\\floodcombat_human": {
+"model": "objects\\characters\\floodcombat_human\\floodcombat_human",
+"default_variant": null,
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "standard_fch",
+"objects": [],
+"regions": []
+}
+]
+},
+"objects\\characters\\floodcombat_human\\floodcombat_odst": {
+"model": "objects\\characters\\floodcombat_human\\floodcombat_odst",
+"default_variant": null,
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "standard_fch",
+"objects": [],
+"regions": []
+}
+]
+},
+"objects\\characters\\grunt\\grunt": {
+"model": "objects\\characters\\grunt\\grunt",
+"default_variant": "minor",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "minor",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+null,
+[
+"standard"
+]
+],
+[
+"backpack",
+[
+"armored"
+]
+]
+]
+},
+{
+"name": "ultra",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+}
+]
+},
+"objects\\characters\\hunter\\hunter": {
+"model": "objects\\characters\\hunter\\hunter",
+"default_variant": "minor",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "minor",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+}
+]
+},
+"objects\\characters\\hunter\\hunter_flak": {
+"model": "objects\\characters\\hunter\\hunter",
+"default_variant": "flak",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "minor",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+}
+]
+},
+"objects\\characters\\jackal\\jackal": {
+"model": "objects\\characters\\jackal\\jackal",
+"default_variant": "minor",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "minor",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"shield",
+[
+null
+]
+],
+[
+null,
+[
+null
+]
+],
+[
+null,
+[
+null
+]
+]
+]
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+}
+]
+},
+"objects\\characters\\marine\\marine": {
+"model": "objects\\characters\\marine\\marine",
+"default_variant": "default",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "johnson",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"head",
+[
+"morgan",
+"fones",
+"wu"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"blind",
+"eye",
+"wrap"
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+"wounded",
+null
+]
+],
+[
+"r_arm",
+[
+"wounded",
+null
+]
+],
+[
+"chest",
+[
+null
+]
+]
+]
+},
+{
+"name": "pilot",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"head",
+[
+"lehto"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null,
+"johnson"
+]
+],
+[
+"packs_thigh",
+[
+null,
+null
+]
+],
+[
+"packs_chest",
+[
+null,
+null
+]
+],
+[
+"packs_abdomin",
+[
+null,
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+null,
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+]
+]
+},
+{
+"name": "johnson_combat",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"head",
+[
+"johnson"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null,
+"johnson"
+]
+],
+[
+"packs_thigh",
+[
+null,
+null
+]
+],
+[
+"packs_chest",
+[
+null,
+null
+]
+],
+[
+"packs_abdomin",
+[
+null,
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+]
+]
+},
+{
+"name": "default",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"head",
+[
+"fones",
+"wu"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null,
+"nogoggles",
+"johnson"
+]
+],
+[
+"packs_thigh",
+[
+null,
+null
+]
+],
+[
+"packs_chest",
+[
+null,
+null
+]
+],
+[
+"packs_abdomin",
+[
+null,
+null
+]
+],
+[
+"comm_pack",
+[
+null,
+null
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "ma6",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"head",
+[
+"walter"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"blind",
+"eye",
+"wrap"
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+"wounded",
+null
+]
+],
+[
+"r_arm",
+[
+"wounded",
+null
+]
+],
+[
+"chest",
+[
+null
+]
+]
+]
+},
+{
+"name": "ma2",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"head",
+[
+"lehto"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null,
+"nogoggles",
+"lehto"
+]
+],
+[
+"packs_thigh",
+[
+null,
+null
+]
+],
+[
+"packs_chest",
+[
+null,
+null
+]
+],
+[
+"packs_abdomin",
+[
+null,
+null
+]
+],
+[
+"comm_pack",
+[
+null,
+null
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+]
+]
+},
+{
+"name": "ma5",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"head",
+[
+"morgan"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null,
+"nogoggles",
+"johnson"
+]
+],
+[
+"packs_thigh",
+[
+null,
+null
+]
+],
+[
+"packs_chest",
+[
+null,
+null
+]
+],
+[
+"packs_abdomin",
+[
+null,
+null
+]
+],
+[
+"comm_pack",
+[
+null,
+null
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "ma1",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"head",
+[
+"morgan",
+"fones",
+"wu"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"blind",
+"eye",
+"wrap"
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+"wounded",
+null
+]
+],
+[
+"r_arm",
+[
+"wounded",
+null
+]
+],
+[
+"chest",
+[
+"standard",
+"johnson"
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+]
+]
+},
+{
+"name": "sg2",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"head",
+[
+"walter"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem2",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"head",
+[
+"gough"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem4",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"head",
+[
+"gough"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"nogoggles"
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem6",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"head",
+[
+"morgan"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"blind"
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+}
+]
+},
+"objects\\characters\\marine\\marine_female\\marine_female": {
+"model": "objects\\characters\\marine\\marine_female\\marine_female",
+"default_variant": "default",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "fem1",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"head",
+[
+"hartmann"
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null,
+"nogoggles"
+]
+],
+[
+"packs_thigh",
+[
+null,
+null
+]
+],
+[
+"packs_chest",
+[
+null,
+null
+]
+],
+[
+"packs_abdomin",
+[
+null,
+null
+]
+],
+[
+"comm_pack",
+[
+null,
+null
+]
+]
+]
+},
+{
+"name": "fem2",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+null,
+[
+null,
+"nogoggles"
+]
+]
+]
+},
+{
+"name": "anete",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"arms",
+[
+"barehalf"
+]
+],
+[
+"body",
+[]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"head",
+[
+"chan"
+]
+],
+[
+null,
+[
+null,
+"nogoggles"
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+]
+]
+},
+{
+"name": "hartmann",
+"objects": [],
+"regions": []
+},
+{
+"name": null,
+"objects": [],
+"regions": []
+}
+]
+},
+"objects\\characters\\sentinel_aggressor\\sentinel_aggressor": {
+"model": "objects\\characters\\sentinel_aggressor\\sentinel_aggressor",
+"default_variant": "minor",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "default",
+"objects": [],
+"regions": []
+}
+]
+}
+},
+"slack": {
+"n": 62,
+"top": [
+62964,
+55044,
+30648,
+26773,
+22527,
+20124
+],
+"total": 540261,
+"n8k": 10,
+"total8k": 282325
+}
+}

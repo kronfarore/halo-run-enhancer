@@ -1,0 +1,10 @@
+import json
+S=chr(92)
+r=json.load(open('out/010_jungle.json'))
+print(r['zone']['designer_zones'], r['zone'].get('n_dzm'), r['zone'].get('n_global'))
+print(r['zone']['zone_sets'][:6], len(r['zone']['zone_sets']))
+print(r['weapon_palette'])
+for k,v in list(r['units'].items())[:30]: print(k,v, r['unit_weapons'].get(k))
+print(r['h3']['loc_weap'], r['h3']['ft_weapon'], r['h3']['loc_variants'], r['h3']['loc_own'])
+print([ (k,v) for k,v in r['chars'].items() if 'generic' in k])
+print(list(r['graphs'].keys()))

@@ -1,0 +1,44 @@
+== m10_crash
+secondaries [(('storm_elite_ranger', 'storm_assault_carbine', 'storm_plasma_pistol'), 2), (('storm_jackal_ranger_shield', 'storm_plasma_pistol', 'storm_plasma_pistol'), 2), (('storm_elite_general', 'storm_covenant_carbine', 'storm_energy_sword'), 1), (('cell0x54', ('storm_elite_general',), 'storm_energy_sword'), 1), (('storm_elite_ranger', 'storm_covenant_carbine', 'storm_plasma_pistol'), 1)]
+variants [(('storm_jackal', '', 'storm_plasma_pistol'), 10), (('storm_jackal', '', 'storm_needler'), 10), (('storm_jackal_ranger_shield', '', 'storm_plasma_pistol'), 6), (('storm_jackal_ranger', '', 'storm_needler'), 4), (('storm_jackal_ranger_shield', '', 'storm_needler'), 4), (('storm_jackal_ranger', '', None), 3), (('storm_jackal_ranger', '', 'storm_covenant_carbine'), 3), (('storm_jackal_ranger', '', 'storm_plasma_pistol'), 2), (('storm_jackal', '', None), 2), (('storm_elite', 'minor', 'storm_energy_sword_elevator'), 1), (('storm_jackal_ranger', '', 'storm_beam_rifle'), 1)]
+storm_jackal char variants ['minor', 'minor_0', 'minor_01', 'minor_02', 'minor_03']
+storm_jackal_major char variants ['major', 'major_0', 'major_01', 'major_02', 'major_03']
+storm_jackal_ranger char variants ['ranger', 'ranger_0', 'ranger_01', 'ranger_02', 'ranger_03']
+storm_jackal_ranger_shield char variants ['ranger_shield']
+storm_jackal_sniper char variants ['sniper', 'sniper_0', 'sniper_01', 'sniper_02', 'sniper_03']
+storm_jackal hlmt storm_jackal bipd weapons [('storm_plasma_pistol', 0)]
+   hlmt ref Variants/Objects/Child Object weap jackal_shield
+   hlmt ref Variants/Objects/Child Object weap jackal_shield_major
+   hlmt ref Variants/Objects/Child Object weap jackal_shield
+   hlmt ref Variants/Objects/Child Object weap jackal_shield
+   hlmt ref Variants/Objects/Child Object weap jackal_shield
+   hlmt ref Variants/Objects/Child Object weap jackal_shield
+   hlmt ref Variants/Objects/Child Object weap jackal_shield
+   hlmt ref Variants/Objects/Child Object weap jackal_shield_major
+   hlmt ref Variants/Objects/Child Object weap jackal_shield_major
+   hlmt ref Variants/Objects/Child Object weap jackal_shield_major
+   hlmt ref Variants/Objects/Child Object weap jackal_shield_major
+   hlmt ref Damage Sections/Recharging Effect effe charge
+   hlmt ref Damage Sections/Rendering/3rd Person Impact Parameters shit engineer_overshield
+== m80_delta
+secondaries [(('storm_elite_zealot', 'storm_assault_carbine', 'storm_energy_sword'), 2), (('storm_scientist_male', None, 'storm_assault_rifle'), 1), ((None, 'storm_covenant_carbine', 'storm_energy_sword'), 1), ((None, 'storm_sticky_detonator_pve', 'storm_magnum'), 1), (('storm_elite_ranger', 'storm_assault_carbine', 'storm_energy_sword'), 1)]
+variants [(('storm_elite', 'ranger', None), 35), (('storm_grunt', 'space', None), 29), (('storm_elite', 'ranger', 'storm_assault_carbine'), 28), (('storm_grunt', 'space', 'storm_plasma_pistol'), 15), (('storm_grunt', 'space', 'storm_needler'), 15), (('storm_scientist_male', 'scientist', None), 10), (('storm_jackal', '', 'storm_plasma_pistol'), 9), (('storm_marine_oni', 'oni_02', None), 8), (('storm_jackal_sniper', '', 'storm_covenant_carbine'), 7), (('storm_jackal', '', 'storm_needler'), 7), (('storm_scientist_female', 'scientist', None), 7), (('storm_elite', 'ranger', 'storm_fuel_rod_cannon'), 6), (('storm_jackal', 'ranger_shield', None), 5), (('storm_jackal_ranger_shield', '', 'storm_plasma_pistol'), 5), (('storm_scientist_male_armed', 'scientist', 'storm_magnum'), 4), (('storm_marine_oni', 'oni_01_08', 'storm_assault_rifle'), 4), (('storm_jackal_ranger_shield', '', None), 3), (('storm_marine_oni', 'oni_01_05', 'storm_magnum'), 2), (('storm_jackal_sniper', '', 'storm_beam_rifle'), 2), (('storm_scientist_male', 'scientist', 'storm_magnum'), 2), (('storm_scientist_female_armed', 'scientist', 'storm_magnum'), 2), (('storm_marine_oni', 'oni_03_05', 'storm_assault_rifle'), 2), (('storm_marine_oni', 'oni_04_08', 'storm_dmr'), 2), (('storm_elite', 'ranger', 'storm_needler'), 2), (('storm_jackal', 'ranger', 'storm_covenant_carbine'), 2), (('storm_jackal', 'ranger', 'storm_needler'), 2), (('storm_jackal', 'ranger', None), 2), (('storm_jackal_major', '', None), 2), (('storm_elite', 'officer', 'storm_assault_carbine'), 1), (('storm_marine_oni', 'oni_01_09', 'storm_assault_rifle'), 1)]
+storm_jackal char variants ['minor', 'minor_0', 'minor_01', 'minor_02', 'minor_03']
+storm_jackal_major char variants ['major', 'major_0', 'major_01', 'major_02', 'major_03']
+storm_jackal_ranger char variants ['ranger', 'ranger_0', 'ranger_01', 'ranger_02', 'ranger_03']
+storm_jackal_ranger_shield char variants ['ranger_shield']
+storm_jackal_sniper char variants ['sniper', 'sniper_0', 'sniper_01', 'sniper_02', 'sniper_03']
+storm_jackal hlmt storm_jackal bipd weapons [('storm_plasma_pistol', 0)]
+   hlmt ref Variants/Objects/Child Object weap jackal_shield
+   hlmt ref Variants/Objects/Child Object weap jackal_shield_major
+   hlmt ref Variants/Objects/Child Object weap jackal_shield
+   hlmt ref Variants/Objects/Child Object weap jackal_shield
+   hlmt ref Variants/Objects/Child Object weap jackal_shield
+   hlmt ref Variants/Objects/Child Object weap jackal_shield
+   hlmt ref Variants/Objects/Child Object weap jackal_shield
+   hlmt ref Variants/Objects/Child Object weap jackal_shield_major
+   hlmt ref Variants/Objects/Child Object weap jackal_shield_major
+   hlmt ref Variants/Objects/Child Object weap jackal_shield_major
+   hlmt ref Variants/Objects/Child Object weap jackal_shield_major
+   hlmt ref Damage Sections/Recharging Effect effe charge
+   hlmt ref Damage Sections/Rendering/3rd Person Impact Parameters shit engineer_overshield

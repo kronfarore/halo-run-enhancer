@@ -1,0 +1,101 @@
+===== m10_crash Dawn chars 45
+ pool weapons class/name: [('storm_assault_carbine', 'rifle', 'ac', 'Storm Rifle'), ('storm_assault_rifle', 'rifle', 'ar', 'Assault Rifle'), ('storm_beam_rifle', 'rifle', 'csr', 'Beam Rifle'), ('storm_br', 'rifle', 'br', 'Battle Rifle'), ('storm_concussion_rifle', 'rifle', 'con', 'Concussion Rifle'), ('storm_covenant_carbine', 'rifle', 'cb', 'Covenant Carbine'), ('storm_dmr', 'rifle', 'dmr', 'DMR'), ('storm_energy_sword', 'sword', 'eb', 'Energy Blade'), ('storm_energy_sword_elevator', 'sword', 'eb', 'Energy Blade'), ('storm_forerunner_incineration_launcher', 'missile', 'fri', 'Incineration Cannon'), ('storm_forerunner_rifle', 'rifle', 'frr', 'LightRifle'), ('storm_forerunner_smg', 'rifle', 'smg', 'Suppressor'), ('storm_forerunner_sniper_rifle', 'rifle', 'ab', 'Binary Rifle'), ('storm_fuel_rod_cannon', 'missile', 'fr', 'Flak Cannon'), ('storm_gravity_hammer', 'hammer', 'gh', 'Gravity Hammer'), ('storm_lmg', 'rifle', 'lmg', 'SAW'), ('storm_magnum', 'pistol', 'hp', 'Magnum'), ('storm_needler', 'pistol', 'ne', 'Needler'), ('storm_plasma_pistol', 'pistol', 'pp', 'Plasma Pistol'), ('storm_plasma_pistol_pve', 'pistol', 'pp', 'Plasma Pistol'), ('storm_rail_gun_pve', 'rifle', 'rg', 'Railgun'), ('storm_rocket_launcher', 'missile', 'rl', 'Rocket Launcher'), ('storm_sentinel_beam', 'pistol', 'bb', 'Sentinel Beam'), ('storm_shotgun', 'rifle', 'sg', 'Shotgun'), ('storm_sniper_rifle', 'rifle', 'sr', 'Sniper Rifle'), ('storm_spartan_laser', 'missile', 'sl', 'Spartan Laser'), ('storm_spread_gun', 'rifle', 'spd', 'Scattershot'), ('storm_stasis_pistol', 'pistol', 'fbp', 'Boltshot'), ('storm_sticky_detonator_pve', 'pistol', 'sd', 'Sticky Detonator')]
+ sibs [('cinematics\\cin_m010_opening\\objects\\console\\console3', {'parent': 'cinematics\\cin_m010_opening\\objects\\console\\console', 'n_modes': 0, 'modes_ptr': '0x0', 'anims': 0, 'anims_ptr': '0x0'}), ('environments\\shared\\crates\\unsc\\m10_observatory_computer_terminal\\m10_observatory_computer_terminal20', {'parent': 'environments\\shared\\crates\\unsc\\m10_observatory_computer_terminal\\m10_observatory_computer_terminal', 'n_modes': 1, 'modes_ptr': '0x5ffef092', 'anims': 0, 'anims_ptr': '0x0'}), ('environments\\solo\\m10_crash\\device_machines\\m10_archer_missle\\m10_archer_missle44', {'parent': 'environments\\solo\\m10_crash\\device_machines\\m10_archer_missle\\m10_archer_missle', 'n_modes': 2, 'modes_ptr': '0x5fffa0e2', 'anims': 2, 'anims_ptr': '0x5fffa097'})] 51
+ -- storm_cortana jmad storm_cortana parent None modes 3 wl 0 anims 18 inh 0 0 bipdW ['unarmed']
+    classes (modes): {'any': 3}
+ -- storm_elite_ai jmad storm_elite_ai parent None modes 138 wl 2 anims 714 inh 0 0 bipdW ['storm_energy_sword']
+    classes (modes): {'sword': 7, 'unarmed': 4, 'any': 126, 'missile': 4, 'rifle': 8, 'pistol': 8, 'turret': 1, 'hammer': 2, 'escape': 1, 'm30': 1, 'global': 1, 'lich': 1, 'm10_elite_unarmed_spot_player': 1, 'm20': 1, 'm60': 1, 'sync': 1}
+    combat   {'unarmed': {'any': 2}, 'any': {'any': 1}, 'missile': {'any': 1, 'fr': 1, 'pl': 1, 'ml': 1}, 'rifle': {'any': 2, 'sg': 1, 'sr': 1, 'con': 1, 'csr': 1, 'br': 1, 'ac': 1, 'cb': 1, 'gl': 1, 'prp': 1}, 'pistol': {'any': 1, 'ne': 1, 'pp': 1, 'spr': 1, 'pr': 1}, 'sword': {'any': 1, 'eb': 1}, 'turret': {'any': 1}, 'hammer': {'any': 1}}
+    crouch   {'any': {'any': 1}, 'missile': {'any': 1, 'fr': 1, 'pl': 1}, 'rifle': {'any': 1, 'sg': 1, 'sr': 1, 'csr': 1, 'br': 1, 'cb': 1, 'gl': 1, 'prp': 1}, 'pistol': {'any': 1, 'ne': 1, 'pp': 1, 'spr': 1, 'pr': 1}, 'sword': {'any': 1}, 'hammer': {'any': 1}}
+    patrol   {'unarmed': {'any': 2}}
+    berserk  {'sword': {'any': 1}}
+ -- storm_grunt jmad storm_grunt parent None modes 103 wl 0 anims 343 inh 0 0 bipdW ['storm_plasma_pistol']
+    classes (modes): {'pistol': 9, 'any': 97, 'unarmed': 2, 'missile': 4, 'support': 1, 'rifle': 1, 'global': 1, 'lich': 1, 'm20': 1, 'm60': 1, 'sync': 1}
+    combat   {'any': {'any': 1}, 'missile': {'any': 1, 'rl': 1}, 'support': {'pgt': 1, 'mgt': 1, 'bs': 1, 'ft': 1, 'pgts': 1, 'pmt': 1, 'pmts': 1, 'sb': 1}, 'rifle': {'smg': 1, 'ar': 1, 'sg': 1, 'sr': 1, 'csr': 1, 'br': 1, 'cb': 1, 'pr': 1}, 'pistol': {'any': 1, 'ne': 1, 'pp': 1, 'pr': 1}}
+    crouch   {'unarmed': {'any': 1}, 'missile': {'any': 1, 'rl': 1}, 'pistol': {'any': 1, 'ne': 1, 'pp': 1, 'pr': 1}}
+    flee     {'any': {'any': 1}, 'pistol': {'any': 1}}
+    patrol   {'unarmed': {'any': 1, 'walk_front': 0}, 'any': {'any': 1}}
+    asleep   {'any': {'any': 1}, 'pistol': {'any': 1}}
+    berserk  {'pistol': {'any': 1}}
+ -- storm_jackal jmad storm_jackal parent None modes 77 wl 0 anims 362 inh 0 0 bipdW ['storm_plasma_pistol']
+    classes (modes): {'unarmed': 3, 'any': 68, 'dual': 3, 'rifle': 3, 'pistol': 6, 'h_kill': 1, 'global': 1, 'lich': 1, 'm60': 1, 'pacing': 1}
+    combat   {'unarmed': {'any': 1}, 'any': {'any': 1}, 'dual': {'js': 1}, 'rifle': {'any': 1, 'csr': 1, 'cb': 1}, 'pistol': {'any': 1}}
+    crouch   {'unarmed': {'any': 1}, 'dual': {'js': 1}, 'rifle': {'any': 1}, 'pistol': {'any': 1}}
+    flee     {'dual': {'js': 1}, 'pistol': {'any': 1}}
+    patrol   {'unarmed': {'any': 1}}
+===== m020 Requiem chars 40
+ pool weapons class/name: [('storm_assault_carbine', 'rifle', 'ac', 'Storm Rifle'), ('storm_assault_rifle', 'rifle', 'ar', 'Assault Rifle'), ('storm_beam_rifle', 'rifle', 'csr', 'Beam Rifle'), ('storm_br', 'rifle', 'br', 'Battle Rifle'), ('storm_concussion_rifle', 'rifle', 'con', 'Concussion Rifle'), ('storm_covenant_carbine', 'rifle', 'cb', 'Covenant Carbine'), ('storm_dmr', 'rifle', 'dmr', 'DMR'), ('storm_energy_sword', 'sword', 'eb', 'Energy Blade'), ('storm_forerunner_incineration_launcher', 'missile', 'fri', 'Incineration Cannon'), ('storm_forerunner_rifle', 'rifle', 'frr', 'LightRifle'), ('storm_forerunner_smg', 'rifle', 'smg', 'Suppressor'), ('storm_forerunner_sniper_rifle', 'rifle', 'ab', 'Binary Rifle'), ('storm_fuel_rod_cannon', 'missile', 'fr', 'Flak Cannon'), ('storm_gravity_hammer', 'hammer', 'gh', 'Gravity Hammer'), ('storm_lmg', 'rifle', 'lmg', 'SAW'), ('storm_magnum', 'pistol', 'hp', 'Magnum'), ('storm_needler', 'pistol', 'ne', 'Needler'), ('storm_plasma_pistol', 'pistol', 'pp', 'Plasma Pistol'), ('storm_plasma_pistol_pve', 'pistol', 'pp', 'Plasma Pistol'), ('storm_rail_gun_pve', 'rifle', 'rg', 'Railgun'), ('storm_rocket_launcher', 'missile', 'rl', 'Rocket Launcher'), ('storm_sentinel_beam', 'pistol', 'bb', 'Sentinel Beam'), ('storm_shotgun', 'rifle', 'sg', 'Shotgun'), ('storm_sniper_rifle', 'rifle', 'sr', 'Sniper Rifle'), ('storm_spartan_laser', 'missile', 'sl', 'Spartan Laser'), ('storm_spread_gun', 'rifle', 'spd', 'Scattershot'), ('storm_stasis_pistol', 'pistol', 'fbp', 'Boltshot'), ('storm_sticky_detonator_pve', 'pistol', 'sd', 'Sticky Detonator')]
+ sibs [('cinematics\\cin_m0205_cathedral\\objects\\diadact_hologram\\diadact_hologram5', {'parent': 'cinematics\\cin_m0205_cathedral\\objects\\diadact_hologram\\diadact_hologram', 'n_modes': 1, 'modes_ptr': '0x5fff21bb', 'anims': 1, 'anims_ptr': '0x5fff236d'}), ('cinematics\\cin_m0205_cathedral\\objects\\hologram_requiem\\hologram_requiem4', {'parent': 'cinematics\\cin_m0205_cathedral\\objects\\hologram_requiem\\hologram_requiem', 'n_modes': 1, 'modes_ptr': '0x5fff21bb', 'anims': 1, 'anims_ptr': '0x5fff2292'}), ('cinematics\\cin_m0205_cathedral\\objects\\signal_locator\\signal_locator3', {'parent': 'cinematics\\cin_m0205_cathedral\\objects\\signal_locator\\signal_locator', 'n_modes': 1, 'modes_ptr': '0x5fff21bb', 'anims': 1, 'anims_ptr': '0x5fff2183'})] 14
+ -- storm_elite_ai jmad storm_elite_ai parent None modes 138 wl 2 anims 722 inh 0 0 bipdW ['storm_energy_sword']
+    classes (modes): {'sword': 7, 'unarmed': 4, 'any': 126, 'missile': 4, 'rifle': 8, 'pistol': 8, 'turret': 1, 'hammer': 2, 'escape': 1, 'm30': 1, 'global': 1, 'lich': 1, 'm10_elite_unarmed_spot_player': 1, 'm20': 1, 'm60': 1, 'sync': 1}
+    combat   {'unarmed': {'any': 2}, 'any': {'any': 1}, 'missile': {'any': 1, 'fr': 1, 'pl': 1, 'ml': 1}, 'rifle': {'any': 2, 'ac': 1, 'csr': 1, 'br': 1, 'con': 1, 'cb': 1, 'sg': 1, 'sr': 1, 'gl': 1, 'prp': 1}, 'pistol': {'any': 1, 'ne': 1, 'pp': 1, 'spr': 1, 'pr': 1}, 'sword': {'any': 1, 'eb': 1}, 'turret': {'any': 1}, 'hammer': {'any': 1}}
+    crouch   {'any': {'any': 1}, 'missile': {'any': 1, 'fr': 1, 'pl': 1}, 'rifle': {'any': 1, 'csr': 1, 'br': 1, 'cb': 1, 'sg': 1, 'sr': 1, 'gl': 1, 'prp': 1}, 'pistol': {'any': 1, 'ne': 1, 'pp': 1, 'spr': 1, 'pr': 1}, 'sword': {'any': 1}, 'hammer': {'any': 1}}
+    patrol   {'unarmed': {'any': 2}}
+    berserk  {'sword': {'any': 1}}
+ -- storm_grunt jmad storm_grunt parent None modes 103 wl 0 anims 342 inh 0 0 bipdW ['storm_plasma_pistol']
+    classes (modes): {'pistol': 9, 'any': 97, 'unarmed': 2, 'missile': 4, 'support': 1, 'rifle': 1, 'global': 1, 'lich': 1, 'm20': 1, 'm60': 1, 'sync': 1}
+    combat   {'any': {'any': 1}, 'missile': {'any': 1, 'rl': 1}, 'support': {'pgt': 1, 'mgt': 1, 'bs': 1, 'ft': 1, 'pgts': 1, 'pmt': 1, 'pmts': 1, 'sb': 1}, 'rifle': {'smg': 1, 'ar': 1, 'csr': 1, 'br': 1, 'cb': 1, 'sg': 1, 'sr': 1, 'pr': 1}, 'pistol': {'any': 1, 'ne': 1, 'pp': 1, 'pr': 1}}
+    crouch   {'unarmed': {'any': 1}, 'missile': {'any': 1, 'rl': 1}, 'pistol': {'any': 1, 'ne': 1, 'pp': 1, 'pr': 1}}
+    flee     {'any': {'any': 1}, 'pistol': {'any': 1}}
+    patrol   {'unarmed': {'any': 1, 'walk_front': 0}, 'any': {'any': 1}}
+    asleep   {'any': {'any': 1}, 'pistol': {'any': 1}}
+    berserk  {'pistol': {'any': 1}}
+ -- storm_hunter jmad storm_hunter parent None modes 61 wl 0 anims 176 inh 0 0 bipdW ['storm_storm_hunter_fuel_rod']
+    classes (modes): {'any': 60, 'unarmed': 1}
+    combat   {'any': {'any': 1}}
+    crouch   {'any': {'any': 1, 'hfr': 1}}
+    patrol   {'any': {'any': 1}}
+ -- storm_jackal jmad storm_jackal parent None modes 77 wl 0 anims 361 inh 0 0 bipdW ['storm_plasma_pistol']
+    classes (modes): {'unarmed': 3, 'any': 68, 'dual': 3, 'rifle': 3, 'pistol': 6, 'h_kill': 1, 'global': 1, 'lich': 1, 'm60': 1, 'pacing': 1}
+    combat   {'unarmed': {'any': 1}, 'any': {'any': 1}, 'dual': {'js': 1}, 'rifle': {'any': 1, 'csr': 1, 'cb': 1}, 'pistol': {'any': 1}}
+    crouch   {'unarmed': {'any': 1}, 'dual': {'js': 1}, 'rifle': {'any': 1}, 'pistol': {'any': 1}}
+    flee     {'dual': {'js': 1}, 'pistol': {'any': 1}}
+    patrol   {'unarmed': {'any': 1}}
+ -- storm_sentinel jmad storm_sentinel parent None modes 2 wl 0 anims 24 inh 0 0 bipdW ['storm_sentinel_beam']
+    classes (modes): {'any': 2}
+    combat   {'any': {'any': 1}}
+===== m30_cryptum Forerunner chars 56
+ pool weapons class/name: [('storm_assault_carbine', 'rifle', 'ac', 'Storm Rifle'), ('storm_assault_rifle', 'rifle', 'ar', 'Assault Rifle'), ('storm_beam_rifle', 'rifle', 'csr', 'Beam Rifle'), ('storm_br', 'rifle', 'br', 'Battle Rifle'), ('storm_concussion_rifle', 'rifle', 'con', 'Concussion Rifle'), ('storm_covenant_carbine', 'rifle', 'cb', 'Covenant Carbine'), ('storm_dmr', 'rifle', 'dmr', 'DMR'), ('storm_energy_sword', 'sword', 'eb', 'Energy Blade'), ('storm_forerunner_incineration_launcher', 'missile', 'fri', 'Incineration Cannon'), ('storm_forerunner_rifle', 'rifle', 'frr', 'LightRifle'), ('storm_forerunner_rifle_npc', 'rifle', 'frr', 'LightRifle'), ('storm_forerunner_smg', 'rifle', 'smg', 'Suppressor'), ('storm_forerunner_smg_npc', 'rifle', 'smg', 'Suppressor'), ('storm_forerunner_smg_pawnhead', 'rifle', 'smg', 'Suppressor'), ('storm_forerunner_sniper_rifle', 'rifle', 'ab', 'Binary Rifle'), ('storm_forerunner_sniper_rifle_npc', 'rifle', 'ab', 'Binary Rifle'), ('storm_fuel_rod_cannon', 'missile', 'fr', 'Flak Cannon'), ('storm_gravity_hammer', 'hammer', 'gh', 'Gravity Hammer'), ('storm_lmg', 'rifle', 'lmg', 'SAW'), ('storm_magnum', 'pistol', 'hp', 'Magnum'), ('storm_needler', 'pistol', 'ne', 'Needler'), ('storm_plasma_pistol', 'pistol', 'pp', 'Plasma Pistol'), ('storm_plasma_pistol_pve', 'pistol', 'pp', 'Plasma Pistol'), ('storm_rail_gun_pve', 'rifle', 'rg', 'Railgun'), ('storm_rocket_launcher', 'missile', 'rl', 'Rocket Launcher'), ('storm_shotgun', 'rifle', 'sg', 'Shotgun'), ('storm_sniper_rifle', 'rifle', 'sr', 'Sniper Rifle'), ('storm_spartan_laser', 'missile', 'sl', 'Spartan Laser'), ('storm_spread_gun', 'rifle', 'spd', 'Scattershot'), ('storm_spread_gun_npc', 'rifle', 'spd', 'Scattershot'), ('storm_stasis_pistol', 'pistol', 'fbp', 'Boltshot'), ('storm_stasis_pistol_pawnhead', 'pistol', 'pp', 'Boltshot'), ('storm_sticky_detonator_pve', 'pistol', 'sd', 'Sticky Detonator')]
+ sibs [('environments\\solo\\m30_cryptum\\device_control\\m30_bridge_button\\m30_bridge_button3', {'parent': 'environments\\solo\\m30_cryptum\\device_control\\m30_bridge_button\\m30_bridge_button', 'n_modes': 1, 'modes_ptr': '0x5fff0a27', 'anims': 0, 'anims_ptr': '0x0'}), ('environments\\solo\\m30_cryptum\\device_control\\m30_door_button\\m30_door_button35', {'parent': 'environments\\solo\\m30_cryptum\\device_control\\m30_door_button\\m30_door_button', 'n_modes': 1, 'modes_ptr': '0x5fff0a27', 'anims': 0, 'anims_ptr': '0x0'}), ('environments\\solo\\m30_cryptum\\device_control\\m30_elevator_button\\m30_elevator_button13', {'parent': 'environments\\solo\\m30_cryptum\\device_control\\m30_elevator_button\\m30_elevator_button', 'n_modes': 1, 'modes_ptr': '0x5fff0a27', 'anims': 0, 'anims_ptr': '0x0'})] 37
+ -- null jmad null parent None modes 14 wl 0 anims 1 inh 0 0 bipdW []
+    classes (modes): {'any': 14}
+    combat   {'any': {'any': 1}}
+    patrol   {'any': {'any': 1}}
+ -- storm_bishop jmad storm_bishop parent None modes 9 wl 0 anims 69 inh 0 0 bipdW ['storm_stasis_pistol_pawnhead']
+    classes (modes): {'h_ping': 2, 'any': 9, 's_ping': 1}
+    combat   {'any': {'any': 1}}
+    crouch   {'any': {'any': 1}}
+    flee     {'any': {'any': 1}}
+ -- storm_elite_ai jmad storm_elite_ai parent None modes 138 wl 2 anims 717 inh 0 0 bipdW ['storm_energy_sword']
+    classes (modes): {'sword': 7, 'unarmed': 4, 'any': 126, 'missile': 4, 'rifle': 8, 'pistol': 8, 'turret': 1, 'hammer': 2, 'escape': 1, 'm30': 1, 'global': 1, 'lich': 1, 'm20': 1, 'm60': 1, 'm10_elite_unarmed_spot_player': 1, 'sync': 1}
+    combat   {'unarmed': {'any': 2}, 'any': {'any': 1}, 'missile': {'any': 1, 'fr': 1, 'pl': 1, 'ml': 1}, 'rifle': {'any': 2, 'br': 1, 'cb': 1, 'csr': 1, 'sg': 1, 'sr': 1, 'ac': 1, 'con': 1, 'gl': 1, 'prp': 1}, 'pistol': {'any': 1, 'ne': 1, 'pp': 1, 'pr': 1, 'spr': 1}, 'sword': {'any': 1, 'eb': 1}, 'turret': {'any': 1}, 'hammer': {'any': 1}}
+    crouch   {'any': {'any': 1}, 'missile': {'any': 1, 'fr': 1, 'pl': 1}, 'rifle': {'any': 1, 'br': 1, 'cb': 1, 'csr': 1, 'sg': 1, 'sr': 1, 'gl': 1, 'prp': 1}, 'pistol': {'any': 1, 'ne': 1, 'pp': 1, 'pr': 1, 'spr': 1}, 'sword': {'any': 1}, 'hammer': {'any': 1}}
+    patrol   {'unarmed': {'any': 2}}
+    berserk  {'sword': {'any': 1}}
+ -- storm_grunt jmad storm_grunt parent None modes 103 wl 0 anims 345 inh 0 0 bipdW ['storm_plasma_pistol']
+    classes (modes): {'pistol': 9, 'any': 97, 'unarmed': 2, 'missile': 4, 'support': 1, 'rifle': 1, 'global': 1, 'lich': 1, 'm20': 1, 'm60': 1, 'sync': 1}
+    combat   {'any': {'any': 1}, 'missile': {'any': 1, 'rl': 1}, 'support': {'pgt': 1, 'bs': 1, 'ft': 1, 'mgt': 1, 'pgts': 1, 'pmt': 1, 'pmts': 1, 'sb': 1}, 'rifle': {'smg': 1, 'pr': 1, 'ar': 1, 'br': 1, 'cb': 1, 'csr': 1, 'sg': 1, 'sr': 1}, 'pistol': {'any': 1, 'ne': 1, 'pp': 1, 'pr': 1}}
+    crouch   {'unarmed': {'any': 1}, 'missile': {'any': 1, 'rl': 1}, 'pistol': {'any': 1, 'ne': 1, 'pp': 1, 'pr': 1}}
+    flee     {'any': {'any': 1}, 'pistol': {'any': 1}}
+    patrol   {'unarmed': {'any': 1, 'walk_front': 0}, 'any': {'any': 1}}
+    asleep   {'any': {'any': 1}, 'pistol': {'any': 1}}
+    berserk  {'pistol': {'any': 1}}
+ -- storm_hunter jmad storm_hunter parent None modes 61 wl 0 anims 176 inh 0 0 bipdW ['storm_storm_hunter_fuel_rod']
+    classes (modes): {'any': 60, 'unarmed': 1}
+    combat   {'any': {'any': 1}}
+    crouch   {'any': {'any': 1, 'hfr': 1}}
+    patrol   {'any': {'any': 1}}
+ -- storm_jackal jmad storm_jackal parent None modes 77 wl 0 anims 363 inh 0 0 bipdW ['storm_plasma_pistol']
+    classes (modes): {'unarmed': 3, 'any': 68, 'dual': 3, 'rifle': 3, 'pistol': 6, 'h_kill': 1, 'global': 1, 'lich': 1, 'm60': 1, 'pacing': 1}
+    combat   {'unarmed': {'any': 1}, 'any': {'any': 1}, 'dual': {'js': 1}, 'rifle': {'any': 1, 'cb': 1, 'csr': 1}, 'pistol': {'any': 1}}
+    crouch   {'unarmed': {'any': 1}, 'dual': {'js': 1}, 'rifle': {'any': 1}, 'pistol': {'any': 1}}
+    flee     {'dual': {'js': 1}, 'pistol': {'any': 1}}
+    patrol   {'unarmed': {'any': 1}}
+ -- storm_knight jmad storm_knight parent None modes 6 wl 3 anims 157 inh 0 0 bipdW ['storm_forerunner_rifle']
+    classes (modes): {'any': 4, 'rifle': 2, 'pistol': 1, 'm30': 1, 'm60': 1}
+    combat   {'any': {'any': 1}, 'rifle': {'any': 1, 'smg': 1, 'rl': 1, 'frr': 1, 'ab': 1, 'spd': 1}, 'pistol': {'any': 1, 'summon': 1}}
+    crouch   {'any': {'any': 0}}
+ -- storm_pawn jmad storm_pawn parent None modes 4 wl 0 anims 164 inh 0 0 bipdW ['storm_stasis_pistol_pawnhead']
+    classes (modes): {'any': 4, 'rifle': 1, 'pistol': 1}
+    combat   {'any': {'any': 1}, 'rifle': {'smg': 1, 'ab': 1}, 'pistol': {'any': 1}}
+    flee     {'any': {'any': 1}}

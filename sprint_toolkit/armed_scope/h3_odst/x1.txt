@@ -1,0 +1,105 @@
+string b'ai: Unable to add weapon to inventory of spawned actor' 0xd7afd8
+--- xref 0x18059e
+18045e: add      byte ptr [rax + rax*8 - 0x47cf18c], al
+180465: add      eax, 0x3e80975
+18046a: movabs   eax, dword ptr [0x2cb9f8580ff30033]
+180473: add      byte ptr [rax], al
+180475: add      al, ch
+180477: cmc      
+180478: insd     dword ptr [rdi], dx
+180479: sub      al, byte ptr [rax]
+18047b: test     al, al
+18047d: je       0x1804ac
+18047f: cmp      ebx, 8
+180482: jne      0x1804ac
+180484: mov      edx, 0x1003
+180489: mov      ecx, r14d
+18048c: call     0x94bc10
+180491: cmp      byte ptr [rax + 0x20f], 0
+180498: je       0x1804ac
+18049a: call     0x4ba570
+18049f: addss    xmm7, xmm0
+1804a3: call     0x4ba570
+1804a8: addss    xmm6, xmm0
+1804ac: movss    xmm0, dword ptr [rbp + 0x448]
+1804b4: mulss    xmm6, dword ptr [rbp + 0x440]
+1804bc: mulss    xmm0, xmm7
+1804c0: movaps   xmm7, xmmword ptr [rsp + 0x4e0]
+1804c8: movss    dword ptr [rbp + 0x440], xmm6
+1804d0: comiss   xmm0, xmm8
+1804d4: movss    dword ptr [rbp + 0x448], xmm0
+1804dc: ja       0x1804e4
+1804de: comiss   xmm6, xmm8
+1804e2: jbe      0x1804fa
+1804e4: lea      r8, [rbp + 0x440]
+1804eb: mov      ecx, r14d
+1804ee: lea      rdx, [rbp + 0x448]
+1804f5: call     0x99be10
+1804fa: movaps   xmm6, xmmword ptr [rsp + 0x4f0]
+180502: movaps   xmm8, xmmword ptr [rsp + 0x4d0]
+18050b: xor      r12d, r12d
+18050e: cmp      esi, -1
+180511: je       0x1805c5
+180517: mov      ecx, r14d
+18051a: mov      word ptr [rbp + 0xa0], r12w
+180522: mov      byte ptr [rbp + 0xa7], r12b
+180529: call     0x973c20
+18052e: xor      r9d, r9d
+180531: lea      rcx, [rsp + 0x50]
+180536: mov      r8d, r14d
+180539: mov      edx, esi
+18053b: call     0x950f00
+180540: lea      rcx, [rsp + 0x50]
+180545: call     0x94f080
+18054a: mov      ebx, eax
+18054c: cmp      eax, -1
+18054f: je       0x1805c5
+180551: lea      r8d, [r12 + 1]
+180556: mov      edx, eax
+180558: mov      ecx, r14d
+18055b: call     0x96bc70
+180560: test     al, al
+180562: je       0x18056f
+180564: mov      edx, ebx
+180566: mov      ecx, edi
+180568: call     0x1807b0
+18056d: jmp      0x1805c5
+18056f: mov      ecx, ebx
+180571: call     0x94a5e0
+180576: mov      ebx, dword ptr [rip + 0x11710c4]   ; rva 12f1640
+18057c: lea      rcx, [rsp + 0x30]
+180581: xor      r9d, r9d
+180584: mov      r8d, ebx
+180587: lea      edx, [r9 + 3]
+18058b: call     0x389aa0
+180590: lea      rcx, [rsp + 0x30]
+180595: call     0x38cda0
+18059a: test     al, al
+18059c: je       0x1805c5
+18059e: lea      rdx, [rip + 0xbfaa33]   ; "ai: Unable to add weapon to inventory of spawned actor"
+1805a5: lea      rcx, [rsp + 0x30]
+1805aa: call     0x38ca80
+1805af: cmp      ebx, -1
+1805b2: jne      0x1805c5
+1805b4: mov      r8d, ebx
+1805b7: lea      rcx, [rip + 0x1171082]   ; rva 12f1640
+1805be: mov      edx, eax
+1805c0: call     0x38af90
+1805c5: cmp      r15d, -1
+1805c9: je       0x18069f
+1805cf: xor      r9d, r9d
+1805d2: mov      word ptr [rbp + 0x220], r12w
+1805da: mov      r8d, r14d
+1805dd: mov      byte ptr [rbp + 0x227], r12b
+1805e4: mov      edx, r15d
+1805e7: lea      rcx, [rbp + 0xd0]
+1805ee: call     0x950f00
+1805f3: lea      rcx, [rbp + 0xd0]
+1805fa: call     0x94f080
+1805ff: mov      ebx, eax
+180601: cmp      eax, -1
+180604: je       0x18069f
+18060a: mov      ecx, edi
+18060c: call     0x1e4900
+180611: test     byte ptr [rax], 4
+180614: je       0x18062a

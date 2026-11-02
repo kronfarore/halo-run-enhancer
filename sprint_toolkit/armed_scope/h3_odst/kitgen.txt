@@ -1,0 +1,182 @@
+H3EK 3827
+weapons properties/[0]/weapon objects\weapons\pistol\plasma_pistol\plasma_pistol,weap
+weapons properties/[1]/weapon objects\weapons\pistol\needler\needler,weap
+weapons properties/[2]/weapon objects\weapons\rifle\spike_rifle\spike_rifle,weap
+weapons properties/[3]/weapon objects\weapons\rifle\plasma_rifle\plasma_rifle,weap
+weapons properties/[4]/weapon objects\weapons\rifle\covenant_carbine\covenant_carbine,weap
+weapons properties/[5]/weapon objects\weapons\support_low\brute_shot\brute_shot,weap
+weapons properties/[6]/weapon objects\weapons\rifle\beam_rifle\beam_rifle,weap
+weapons properties/[7]/weapon objects\weapons\rifle\sniper_rifle\sniper_rifle,weap
+weapons properties/[8]/weapon objects\weapons\rifle\assault_rifle\assault_rifle,weap
+weapons properties/[9]/weapon objects\weapons\rifle\battle_rifle\battle_rifle,weap
+weapons properties/[10]/weapon objects\weapons\rifle\smg\smg,weap
+weapons properties/[11]/weapon objects\weapons\rifle\shotgun\shotgun,weap
+weapons properties/[12]/weapon objects\weapons\turret\plasma_cannon\plasma_cannon,weap
+weapons properties/[13]/weapon objects\weapons\turret\plasma_cannon\plasma_cannon_integrated,weap
+weapons properties/[14]/weapon objects\weapons\support_high\spartan_laser\spartan_laser,weap
+weapons properties/[15]/weapon objects\weapons\support_high\flak_cannon\flak_cannon,weap
+weapons properties/[16]/weapon objects\weapons\support_high\rocket_launcher\rocket_launcher,weap
+weapons properties/[17]/weapon objects\weapons\pistol\excavator\excavator,weap
+weapons properties/[18]/weapon objects\weapons\melee\energy_blade\energy_blade,weap
+weapons properties/[19]/weapon objects\weapons\melee\gravity_hammer\gravity_hammer,weap
+weapons properties/[20]/weapon objects\weapons\pistol\magnum\magnum,weap
+weapons properties/[21]/weapon objects\vehicles\pelican\pelican_rocket_pod\weapon\pelican_rocket_pod,weap
+weapons properties/[22]/weapon objects\vehicles\warthog\turrets\chaingun\weapon\chaingun_turret,weap
+weapons properties/[23]/weapon objects\weapons\turret\machinegun_turret\machinegun_turret,weap
+weapons properties/[24]/weapon objects\weapons\turret\machinegun_turret\machinegun_turret_integrated,weap
+weapons properties/[25]/weapon objects\vehicles\scorpion\turrets\anti_infantry\weapon\anti_infantry_turret,weap
+weapons properties/[26]/weapon objects\vehicles\wraith\turrets\anti_infantry\weapon\wraith_anti_infantry_turret,weap
+weapons properties/[27]/weapon objects\vehicles\shade\weapon\shade_turret,weap
+weapons properties/[28]/weapon objects\vehicles\mauler\anti_infantry\weapon\anti_infantry,weap
+weapons properties/[29]/weapon objects\vehicles\warthog\turrets\gauss\weapon\gauss_turret,weap
+weapons properties/[30]/weapon objects\vehicles\ghost\weapon\ghost_gun,weap
+weapons properties/[31]/weapon objects\vehicles\banshee\weapon\banshee_gun,weap
+weapons properties/[32]/weapon objects\vehicles\wraith\turrets\mortar\mortar_turret,weap
+weapons properties/[33]/weapon objects\vehicles\wraith\turrets\anti_air\anti_air_turret,weap
+weapons properties/[34]/weapon objects\vehicles\scorpion\turrets\cannon\weapon\cannon_turret,weap
+weapons properties/[35]/weapon objects\characters\sentinel_aggressor\weapons\beam\sentinel_aggressor_beam,weap
+weapons properties/[36]/weapon objects\characters\sentinel_aggressor\weapons\welder\sentinel_aggressor_welder,weap
+weapons properties/[37]/weapon objects\characters\sentinel_aggressor\weapons\beam_elim\sent_agg_beam_elim,weap
+weapons properties/[38]/weapon objects\vehicles\brute_chopper\weapon\chopper_gun,weap
+weapons properties/[39]/weapon objects\weapons\turret\missile_pod\missile_pod,weap
+weapons properties/[40]/weapon objects\weapons\turret\flamethrower\flamethrower,weap
+weapons properties/[41]/weapon objects\weapons\support_low\sentinel_gun\sentinel_gun,weap
+weapons properties/[42]/weapon objects\weapons\turret\missile_pod\missile_pod_integrated,weap
+weapons properties/[43]/weapon objects\vehicles\hornet\weapon\hornet_missile,weap
+firing pattern properties/[0]/weapon objects\weapons\pistol\plasma_pistol\plasma_pistol,weap
+firing pattern properties/[1]/weapon objects\weapons\pistol\needler\needler,weap
+firing pattern properties/[2]/weapon objects\weapons\rifle\spike_rifle\spike_rifle,weap
+firing pattern properties/[3]/weapon objects\weapons\rifle\plasma_rifle\plasma_rifle,weap
+firing pattern properties/[4]/weapon objects\weapons\rifle\covenant_carbine\covenant_carbine,weap
+firing pattern properties/[5]/weapon objects\weapons\support_low\brute_shot\brute_shot,weap
+firing pattern properties/[6]/weapon objects\weapons\rifle\beam_rifle\beam_rifle,weap
+firing pattern properties/[7]/weapon objects\weapons\rifle\sniper_rifle\sniper_rifle,weap
+firing pattern properties/[8]/weapon objects\weapons\rifle\assault_rifle\assault_rifle,weap
+firing pattern properties/[9]/weapon objects\weapons\rifle\battle_rifle\battle_rifle,weap
+firing pattern properties/[10]/weapon objects\weapons\rifle\smg\smg,weap
+firing pattern properties/[11]/weapon objects\weapons\rifle\shotgun\shotgun,weap
+firing pattern properties/[12]/weapon objects\weapons\pistol\excavator\excavator,weap
+firing pattern properties/[13]/weapon objects\weapons\turret\plasma_cannon\plasma_cannon_integrated,weap
+firing pattern properties/[14]/weapon objects\weapons\support_high\spartan_laser\spartan_laser,weap
+firing pattern properties/[15]/weapon objects\weapons\support_high\flak_cannon\flak_cannon,weap
+firing pattern properties/[16]/weapon objects\weapons\support_high\rocket_launcher\rocket_launcher,weap
+firing pattern properties/[17]/weapon objects\weapons\melee\energy_blade\energy_blade,weap
+firing pattern properties/[18]/weapon objects\weapons\melee\gravity_hammer\gravity_hammer,weap
+firing pattern properties/[19]/weapon objects\weapons\pistol\magnum\magnum,weap
+firing pattern properties/[20]/weapon objects\vehicles\pelican\pelican_rocket_pod\weapon\pelican_rocket_pod,weap
+firing pattern properties/[21]/weapon objects\vehicles\warthog\turrets\chaingun\weapon\chaingun_turret,weap
+firing pattern properties/[22]/weapon objects\weapons\turret\machinegun_turret\machinegun_turret_integrated,weap
+firing pattern properties/[23]/weapon objects\weapons\turret\machinegun_turret\machinegun_turret,weap
+firing pattern properties/[24]/weapon objects\weapons\turret\plasma_cannon\plasma_cannon,weap
+firing pattern properties/[25]/weapon objects\vehicles\scorpion\turrets\anti_infantry\weapon\anti_infantry_turret,weap
+firing pattern properties/[26]/weapon objects\vehicles\wraith\turrets\anti_infantry\weapon\wraith_anti_infantry_turret,weap
+firing pattern properties/[27]/weapon objects\vehicles\shade\weapon\shade_turret,weap
+firing pattern properties/[28]/weapon objects\vehicles\mauler\anti_infantry\weapon\anti_infantry,weap
+firing pattern properties/[29]/weapon objects\vehicles\warthog\turrets\gauss\weapon\gauss_turret,weap
+firing pattern properties/[30]/weapon objects\vehicles\ghost\weapon\ghost_gun,weap
+firing pattern properties/[31]/weapon objects\vehicles\banshee\weapon\banshee_gun,weap
+firing pattern properties/[32]/weapon objects\vehicles\wraith\turrets\mortar\mortar_turret,weap
+firing pattern properties/[33]/weapon objects\vehicles\wraith\turrets\anti_air\anti_air_turret,weap
+firing pattern properties/[34]/weapon objects\vehicles\scorpion\turrets\cannon\weapon\cannon_turret,weap
+firing pattern properties/[35]/weapon objects\characters\sentinel_aggressor\weapons\beam\sentinel_aggressor_beam,weap
+firing pattern properties/[36]/weapon objects\characters\sentinel_aggressor\weapons\beam_elim\sent_agg_beam_elim,weap
+firing pattern properties/[37]/weapon objects\vehicles\brute_chopper\weapon\chopper_gun,weap
+firing pattern properties/[38]/weapon objects\weapons\turret\missile_pod\missile_pod,weap
+firing pattern properties/[39]/weapon objects\weapons\turret\flamethrower\flamethrower,weap
+firing pattern properties/[40]/weapon objects\weapons\support_low\sentinel_gun\sentinel_gun,weap
+firing pattern properties/[41]/weapon objects\weapons\turret\missile_pod\missile_pod_integrated,weap
+firing pattern properties/[42]/weapon objects\vehicles\hornet\weapon\hornet_missile,weap
+H3ODSTEK 4226
+weapons properties/[0]/weapon objects\weapons\pistol\plasma_pistol\plasma_pistol,weap
+weapons properties/[1]/weapon objects\weapons\pistol\needler\needler,weap
+weapons properties/[2]/weapon objects\weapons\rifle\spike_rifle\spike_rifle,weap
+weapons properties/[3]/weapon objects\weapons\rifle\plasma_rifle\plasma_rifle,weap
+weapons properties/[4]/weapon objects\weapons\rifle\covenant_carbine\covenant_carbine,weap
+weapons properties/[5]/weapon objects\weapons\support_low\brute_shot\brute_shot,weap
+weapons properties/[6]/weapon objects\weapons\rifle\beam_rifle\beam_rifle,weap
+weapons properties/[7]/weapon objects\weapons\rifle\sniper_rifle\sniper_rifle,weap
+weapons properties/[8]/weapon objects\weapons\rifle\assault_rifle\assault_rifle,weap
+weapons properties/[9]/weapon objects\weapons\rifle\battle_rifle\battle_rifle,weap
+weapons properties/[10]/weapon objects\weapons\rifle\smg\smg,weap
+weapons properties/[11]/weapon objects\weapons\rifle\shotgun\shotgun,weap
+weapons properties/[12]/weapon objects\weapons\turret\plasma_cannon\plasma_cannon,weap
+weapons properties/[13]/weapon objects\weapons\turret\plasma_cannon\plasma_cannon_integrated,weap
+weapons properties/[14]/weapon objects\weapons\support_high\spartan_laser\spartan_laser,weap
+weapons properties/[15]/weapon objects\weapons\support_high\flak_cannon\flak_cannon,weap
+weapons properties/[16]/weapon objects\weapons\support_high\rocket_launcher\rocket_launcher,weap
+weapons properties/[17]/weapon objects\weapons\pistol\excavator\excavator,weap
+weapons properties/[18]/weapon objects\weapons\melee\energy_blade\energy_blade,weap
+weapons properties/[19]/weapon objects\weapons\melee\gravity_hammer\gravity_hammer,weap
+weapons properties/[20]/weapon objects\weapons\pistol\magnum\magnum,weap
+weapons properties/[21]/weapon objects\vehicles\pelican\pelican_rocket_pod\weapon\pelican_rocket_pod,weap
+weapons properties/[22]/weapon objects\vehicles\warthog\turrets\chaingun\weapon\chaingun_turret,weap
+weapons properties/[23]/weapon objects\weapons\turret\machinegun_turret\machinegun_turret,weap
+weapons properties/[24]/weapon objects\weapons\turret\machinegun_turret\machinegun_turret_integrated,weap
+weapons properties/[25]/weapon objects\vehicles\scorpion\turrets\anti_infantry\weapon\anti_infantry_turret,weap
+weapons properties/[26]/weapon objects\vehicles\wraith\turrets\anti_infantry\weapon\wraith_anti_infantry_turret,weap
+weapons properties/[27]/weapon objects\vehicles\shade\weapon\shade_turret,weap
+weapons properties/[28]/weapon objects\vehicles\mauler\anti_infantry\weapon\anti_infantry,weap
+weapons properties/[29]/weapon objects\vehicles\warthog\turrets\gauss\weapon\gauss_turret,weap
+weapons properties/[30]/weapon objects\vehicles\ghost\weapon\ghost_gun,weap
+weapons properties/[31]/weapon objects\vehicles\banshee\weapon\banshee_gun,weap
+weapons properties/[32]/weapon objects\vehicles\wraith\turrets\mortar\mortar_turret,weap
+weapons properties/[33]/weapon objects\vehicles\wraith\turrets\anti_air\anti_air_turret,weap
+weapons properties/[34]/weapon objects\vehicles\scorpion\turrets\cannon\weapon\cannon_turret,weap
+weapons properties/[35]/weapon objects\characters\sentinel_aggressor\weapons\beam\sentinel_aggressor_beam,weap
+weapons properties/[36]/weapon objects\characters\sentinel_aggressor\weapons\welder\sentinel_aggressor_welder,weap
+weapons properties/[37]/weapon objects\characters\sentinel_aggressor\weapons\beam_elim\sent_agg_beam_elim,weap
+weapons properties/[38]/weapon objects\vehicles\brute_chopper\weapon\chopper_gun,weap
+weapons properties/[39]/weapon objects\weapons\turret\missile_pod\missile_pod,weap
+weapons properties/[40]/weapon objects\weapons\turret\flamethrower\flamethrower,weap
+weapons properties/[41]/weapon objects\weapons\support_low\sentinel_gun\sentinel_gun,weap
+weapons properties/[42]/weapon objects\weapons\turret\missile_pod\missile_pod_integrated,weap
+weapons properties/[43]/weapon objects\vehicles\hornet\weapon\hornet_missile,weap
+weapons properties/[44]/weapon objects\weapons\rifle\smg_silenced\smg_silenced,weap
+weapons properties/[45]/weapon objects\weapons\pistol\automag\automag,weap
+weapons properties/[46]/weapon objects\weapons\rifle\plasma_rifle_red\plasma_rifle_red,weap
+firing pattern properties/[0]/weapon objects\weapons\pistol\plasma_pistol\plasma_pistol,weap
+firing pattern properties/[1]/weapon objects\weapons\pistol\needler\needler,weap
+firing pattern properties/[2]/weapon objects\weapons\rifle\spike_rifle\spike_rifle,weap
+firing pattern properties/[3]/weapon objects\weapons\rifle\plasma_rifle\plasma_rifle,weap
+firing pattern properties/[4]/weapon objects\weapons\rifle\covenant_carbine\covenant_carbine,weap
+firing pattern properties/[5]/weapon objects\weapons\support_low\brute_shot\brute_shot,weap
+firing pattern properties/[6]/weapon objects\weapons\rifle\beam_rifle\beam_rifle,weap
+firing pattern properties/[7]/weapon objects\weapons\rifle\sniper_rifle\sniper_rifle,weap
+firing pattern properties/[8]/weapon objects\weapons\rifle\assault_rifle\assault_rifle,weap
+firing pattern properties/[9]/weapon objects\weapons\rifle\battle_rifle\battle_rifle,weap
+firing pattern properties/[10]/weapon objects\weapons\rifle\smg\smg,weap
+firing pattern properties/[11]/weapon objects\weapons\rifle\shotgun\shotgun,weap
+firing pattern properties/[12]/weapon objects\weapons\pistol\excavator\excavator,weap
+firing pattern properties/[13]/weapon objects\weapons\turret\plasma_cannon\plasma_cannon_integrated,weap
+firing pattern properties/[14]/weapon objects\weapons\support_high\spartan_laser\spartan_laser,weap
+firing pattern properties/[15]/weapon objects\weapons\support_high\flak_cannon\flak_cannon,weap
+firing pattern properties/[16]/weapon objects\weapons\support_high\rocket_launcher\rocket_launcher,weap
+firing pattern properties/[17]/weapon objects\weapons\melee\energy_blade\energy_blade,weap
+firing pattern properties/[18]/weapon objects\weapons\melee\gravity_hammer\gravity_hammer,weap
+firing pattern properties/[19]/weapon objects\weapons\pistol\magnum\magnum,weap
+firing pattern properties/[20]/weapon objects\vehicles\pelican\pelican_rocket_pod\weapon\pelican_rocket_pod,weap
+firing pattern properties/[21]/weapon objects\vehicles\warthog\turrets\chaingun\weapon\chaingun_turret,weap
+firing pattern properties/[22]/weapon objects\weapons\turret\machinegun_turret\machinegun_turret_integrated,weap
+firing pattern properties/[23]/weapon objects\weapons\turret\machinegun_turret\machinegun_turret,weap
+firing pattern properties/[24]/weapon objects\weapons\turret\plasma_cannon\plasma_cannon,weap
+firing pattern properties/[25]/weapon objects\vehicles\scorpion\turrets\anti_infantry\weapon\anti_infantry_turret,weap
+firing pattern properties/[26]/weapon objects\vehicles\wraith\turrets\anti_infantry\weapon\wraith_anti_infantry_turret,weap
+firing pattern properties/[27]/weapon objects\vehicles\shade\weapon\shade_turret,weap
+firing pattern properties/[28]/weapon objects\vehicles\mauler\anti_infantry\weapon\anti_infantry,weap
+firing pattern properties/[29]/weapon objects\vehicles\warthog\turrets\gauss\weapon\gauss_turret,weap
+firing pattern properties/[30]/weapon objects\vehicles\ghost\weapon\ghost_gun,weap
+firing pattern properties/[31]/weapon objects\vehicles\banshee\weapon\banshee_gun,weap
+firing pattern properties/[32]/weapon objects\vehicles\wraith\turrets\mortar\mortar_turret,weap
+firing pattern properties/[33]/weapon objects\vehicles\wraith\turrets\anti_air\anti_air_turret,weap
+firing pattern properties/[34]/weapon objects\vehicles\scorpion\turrets\cannon\weapon\cannon_turret,weap
+firing pattern properties/[35]/weapon objects\characters\sentinel_aggressor\weapons\beam\sentinel_aggressor_beam,weap
+firing pattern properties/[36]/weapon objects\characters\sentinel_aggressor\weapons\beam_elim\sent_agg_beam_elim,weap
+firing pattern properties/[37]/weapon objects\vehicles\brute_chopper\weapon\chopper_gun,weap
+firing pattern properties/[38]/weapon objects\weapons\turret\missile_pod\missile_pod,weap
+firing pattern properties/[39]/weapon objects\weapons\turret\flamethrower\flamethrower,weap
+firing pattern properties/[40]/weapon objects\weapons\support_low\sentinel_gun\sentinel_gun,weap
+firing pattern properties/[41]/weapon objects\weapons\turret\missile_pod\missile_pod_integrated,weap
+firing pattern properties/[42]/weapon objects\vehicles\hornet\weapon\hornet_missile,weap
+firing pattern properties/[43]/weapon objects\weapons\rifle\smg_silenced\smg_silenced,weap
+firing pattern properties/[44]/weapon objects\weapons\pistol\automag\automag,weap
+firing pattern properties/[45]/weapon objects\weapons\rifle\plasma_rifle_red\plasma_rifle_red,weap

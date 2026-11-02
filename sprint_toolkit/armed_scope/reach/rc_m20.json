@@ -1,0 +1,11755 @@
+{
+"map": "m20",
+"nscenario_sets": 8,
+"chars": [
+{
+"i": 0,
+"name": "objects\\characters\\elite\\ai\\elite",
+"species": "elite",
+"parents": [
+"objects\\characters\\elite\\ai\\elite",
+"ai\\generic"
+],
+"unit": "objects\\characters\\elite_ai\\elite_ai",
+"model": "objects\\characters\\elite_ai\\elite_ai",
+"jmad": "objects\\characters\\elite_ai\\elite_ai",
+"jmad_id": 2314412359,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 1,
+"name": "objects\\characters\\grunt\\ai\\grunt",
+"species": "grunt",
+"parents": [
+"objects\\characters\\grunt\\ai\\grunt",
+"ai\\generic"
+],
+"unit": "objects\\characters\\grunt\\grunt",
+"model": "objects\\characters\\grunt\\grunt",
+"jmad": "objects\\characters\\grunt\\grunt",
+"jmad_id": 2352227168,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 2,
+"name": "objects\\characters\\jackal\\ai\\jackal",
+"species": "jackal",
+"parents": [
+"objects\\characters\\jackal\\ai\\jackal",
+"ai\\generic"
+],
+"unit": "objects\\characters\\jackal\\jackal",
+"model": "objects\\characters\\jackal\\jackal",
+"jmad": "objects\\characters\\jackal\\jackal",
+"jmad_id": 2377393356,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 3,
+"name": "objects\\characters\\jackal\\ai\\jackal_sniper",
+"species": "jackal",
+"parents": [
+"objects\\characters\\jackal\\ai\\jackal_sniper",
+"objects\\characters\\jackal\\ai\\jackal",
+"ai\\generic"
+],
+"unit": "objects\\characters\\jackal\\jackal",
+"model": "objects\\characters\\jackal\\jackal",
+"jmad": "objects\\characters\\jackal\\jackal",
+"jmad_id": 2377393356,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 4,
+"name": "objects\\characters\\grunt\\ai\\grunt_heavy",
+"species": "grunt",
+"parents": [
+"objects\\characters\\grunt\\ai\\grunt_heavy",
+"objects\\characters\\grunt\\ai\\grunt_ultra",
+"objects\\characters\\grunt\\ai\\grunt",
+"ai\\generic"
+],
+"unit": "objects\\characters\\grunt\\grunt",
+"model": "objects\\characters\\grunt\\grunt",
+"jmad": "objects\\characters\\grunt\\grunt",
+"jmad_id": 2352227168,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 5,
+"name": "objects\\characters\\hunter\\ai\\hunter",
+"species": "hunter",
+"parents": [
+"objects\\characters\\hunter\\ai\\hunter",
+"ai\\generic"
+],
+"unit": "objects\\characters\\hunter\\hunter",
+"model": "objects\\characters\\hunter\\hunter",
+"jmad": "objects\\characters\\hunter\\hunter",
+"jmad_id": 2389517671,
+"sets": [
+"Scenario[3]",
+"Scenario[6]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[3]",
+"Scenario[6]"
+],
+"bipd_global": false
+},
+{
+"i": 6,
+"name": "objects\\characters\\spartans_ai\\ai\\spartan_carter",
+"species": "spartans_ai",
+"parents": [
+"objects\\characters\\spartans_ai\\ai\\spartan_carter",
+"objects\\characters\\spartans_ai\\ai\\spartan_generic",
+"ai\\generic"
+],
+"unit": "objects\\characters\\spartans_ai\\spartans_ai",
+"model": "objects\\characters\\spartans_ai\\spartans_ai",
+"jmad": "objects\\characters\\spartans_ai\\spartans_ai",
+"jmad_id": 2458658940,
+"sets": [],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 7,
+"name": "objects\\characters\\spartans_ai\\ai\\spartan_emile",
+"species": "spartans_ai",
+"parents": [
+"objects\\characters\\spartans_ai\\ai\\spartan_emile",
+"objects\\characters\\spartans_ai\\ai\\spartan_generic",
+"ai\\generic"
+],
+"unit": "objects\\characters\\spartans_ai\\spartans_ai",
+"model": "objects\\characters\\spartans_ai\\spartans_ai",
+"jmad": "objects\\characters\\spartans_ai\\spartans_ai",
+"jmad_id": 2458658940,
+"sets": [
+"Scenario[4]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 8,
+"name": "objects\\characters\\spartans_ai\\ai\\spartan_jorge",
+"species": "spartans_ai",
+"parents": [
+"objects\\characters\\spartans_ai\\ai\\spartan_jorge",
+"objects\\characters\\spartans_ai\\ai\\spartan_generic",
+"ai\\generic"
+],
+"unit": "objects\\characters\\spartan_jorge\\spartan_jorge",
+"model": "objects\\characters\\spartan_jorge\\spartan_jorge",
+"jmad": "objects\\characters\\spartan_jorge\\spartan_jorge",
+"jmad_id": 2486643227,
+"sets": [
+"Scenario[4]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[4]"
+],
+"bipd_global": false
+},
+{
+"i": 9,
+"name": "objects\\characters\\spartans_female_ai\\ai\\spartan_kat",
+"species": "spartans_female_ai",
+"parents": [
+"objects\\characters\\spartans_female_ai\\ai\\spartan_kat",
+"objects\\characters\\spartans_ai\\ai\\spartan_generic",
+"ai\\generic"
+],
+"unit": "objects\\characters\\spartans_female_ai\\spartans_female_ai",
+"model": "objects\\characters\\spartans_female_ai\\spartans_female_ai",
+"jmad": "objects\\characters\\spartans_female_ai\\spartans_female_ai",
+"jmad_id": 2498570955,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 10,
+"name": "objects\\characters\\jackal\\ai\\skirmisher",
+"species": "jackal",
+"parents": [
+"objects\\characters\\jackal\\ai\\skirmisher",
+"ai\\generic"
+],
+"unit": "objects\\characters\\jackal\\jackal",
+"model": "objects\\characters\\jackal\\jackal",
+"jmad": "objects\\characters\\jackal\\jackal",
+"jmad_id": 2377393356,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 11,
+"name": "objects\\characters\\spartans_ai\\ai\\spartan_jun",
+"species": "spartans_ai",
+"parents": [
+"objects\\characters\\spartans_ai\\ai\\spartan_jun",
+"objects\\characters\\spartans_ai\\ai\\spartan_generic",
+"ai\\generic"
+],
+"unit": "objects\\characters\\spartans_ai\\spartans_ai",
+"model": "objects\\characters\\spartans_ai\\spartans_ai",
+"jmad": "objects\\characters\\spartans_ai\\spartans_ai",
+"jmad_id": 2458658940,
+"sets": [
+"Scenario[4]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 12,
+"name": "objects\\characters\\marine\\ai\\trooper",
+"species": "marine",
+"parents": [
+"objects\\characters\\marine\\ai\\trooper",
+"ai\\generic"
+],
+"unit": "objects\\characters\\marine\\marine",
+"model": "objects\\characters\\marine\\marine",
+"jmad": "objects\\characters\\marine\\marine",
+"jmad_id": 4011395875,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 13,
+"name": "objects\\characters\\elite\\ai\\elite_specops",
+"species": "elite",
+"parents": [
+"objects\\characters\\elite\\ai\\elite_specops",
+"objects\\characters\\elite\\ai\\elite",
+"ai\\generic"
+],
+"unit": "objects\\characters\\elite_ai\\elite_ai",
+"model": "objects\\characters\\elite_ai\\elite_ai",
+"jmad": "objects\\characters\\elite_ai\\elite_ai",
+"jmad_id": 2314412359,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 14,
+"name": "objects\\characters\\elite\\ai\\elite_general",
+"species": "elite",
+"parents": [
+"objects\\characters\\elite\\ai\\elite_general",
+"objects\\characters\\elite\\ai\\elite_ultra",
+"objects\\characters\\elite\\ai\\elite",
+"ai\\generic"
+],
+"unit": "objects\\characters\\elite_ai\\elite_ai",
+"model": "objects\\characters\\elite_ai\\elite_ai",
+"jmad": "objects\\characters\\elite_ai\\elite_ai",
+"jmad_id": 2314412359,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 15,
+"name": "objects\\characters\\elite\\ai\\elite_ultra",
+"species": "elite",
+"parents": [
+"objects\\characters\\elite\\ai\\elite_ultra",
+"objects\\characters\\elite\\ai\\elite",
+"ai\\generic"
+],
+"unit": "objects\\characters\\elite_ai\\elite_ai",
+"model": "objects\\characters\\elite_ai\\elite_ai",
+"jmad": "objects\\characters\\elite_ai\\elite_ai",
+"jmad_id": 2314412359,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 16,
+"name": "objects\\characters\\null\\ai\\null_human_flying",
+"species": "null",
+"parents": [
+"objects\\characters\\null\\ai\\null_human_flying",
+"ai\\generic"
+],
+"unit": "objects\\characters\\null\\null",
+"model": "objects\\characters\\null\\null",
+"jmad": "objects\\characters\\null\\null",
+"jmad_id": 2576297837,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 17,
+"name": "objects\\characters\\null\\ai\\null_human_default",
+"species": "null",
+"parents": [
+"objects\\characters\\null\\ai\\null_human_default",
+"ai\\generic"
+],
+"unit": "objects\\characters\\null\\null",
+"model": "objects\\characters\\null\\null",
+"jmad": "objects\\characters\\null\\null",
+"jmad_id": 2576297837,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 18,
+"name": "objects\\characters\\null\\ai\\null_cov_flying",
+"species": "null",
+"parents": [
+"objects\\characters\\null\\ai\\null_cov_flying",
+"ai\\generic"
+],
+"unit": "objects\\characters\\null\\null",
+"model": "objects\\characters\\null\\null",
+"jmad": "objects\\characters\\null\\null",
+"jmad_id": 2576297837,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 19,
+"name": "objects\\characters\\null\\ai\\null_cov_default",
+"species": "null",
+"parents": [
+"objects\\characters\\null\\ai\\null_cov_default",
+"ai\\generic"
+],
+"unit": "objects\\characters\\null\\null",
+"model": "objects\\characters\\null\\null",
+"jmad": "objects\\characters\\null\\null",
+"jmad_id": 2576297837,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 20,
+"name": "objects\\characters\\elite\\ai\\elite_jetpack",
+"species": "elite",
+"parents": [
+"objects\\characters\\elite\\ai\\elite_jetpack",
+"objects\\characters\\elite\\ai\\elite",
+"ai\\generic"
+],
+"unit": "objects\\characters\\elite_ai\\elite_ai",
+"model": "objects\\characters\\elite_ai\\elite_ai",
+"jmad": "objects\\characters\\elite_ai\\elite_ai",
+"jmad_id": 2314412359,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 21,
+"name": "objects\\characters\\elite\\ai\\elite_officer",
+"species": "elite",
+"parents": [
+"objects\\characters\\elite\\ai\\elite_officer",
+"objects\\characters\\elite\\ai\\elite",
+"ai\\generic"
+],
+"unit": "objects\\characters\\elite_ai\\elite_ai",
+"model": "objects\\characters\\elite_ai\\elite_ai",
+"jmad": "objects\\characters\\elite_ai\\elite_ai",
+"jmad_id": 2314412359,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 22,
+"name": "objects\\characters\\jackal\\ai\\skirmisher_major",
+"species": "jackal",
+"parents": [
+"objects\\characters\\jackal\\ai\\skirmisher_major",
+"objects\\characters\\jackal\\ai\\skirmisher",
+"ai\\generic"
+],
+"unit": "objects\\characters\\jackal\\jackal",
+"model": "objects\\characters\\jackal\\jackal",
+"jmad": "objects\\characters\\jackal\\jackal",
+"jmad_id": 2377393356,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 23,
+"name": "objects\\characters\\elite\\ai\\elite_pilot",
+"species": "elite",
+"parents": [
+"objects\\characters\\elite\\ai\\elite_pilot",
+"objects\\characters\\elite\\ai\\elite",
+"ai\\generic"
+],
+"unit": "objects\\characters\\elite_ai\\elite_ai",
+"model": "objects\\characters\\elite_ai\\elite_ai",
+"jmad": "objects\\characters\\elite_ai\\elite_ai",
+"jmad_id": 2314412359,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 24,
+"name": "objects\\characters\\marine_female\\ai\\trooper_female",
+"species": "marine_female",
+"parents": [
+"objects\\characters\\marine_female\\ai\\trooper_female",
+"objects\\characters\\marine\\ai\\trooper",
+"ai\\generic"
+],
+"unit": "objects\\characters\\marine_female\\marine_female",
+"model": "objects\\characters\\marine_female\\marine_female",
+"jmad": "objects\\characters\\civilian_female\\civilian_female",
+"jmad_id": 2578526094,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 25,
+"name": "objects\\characters\\jackal\\ai\\jackal_major",
+"species": "jackal",
+"parents": [
+"objects\\characters\\jackal\\ai\\jackal_major",
+"objects\\characters\\jackal\\ai\\jackal",
+"ai\\generic"
+],
+"unit": "objects\\characters\\jackal\\jackal",
+"model": "objects\\characters\\jackal\\jackal",
+"jmad": "objects\\characters\\jackal\\jackal",
+"jmad_id": 2377393356,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 26,
+"name": "objects\\characters\\elite\\ai\\elite_pilot",
+"species": "elite",
+"parents": [
+"objects\\characters\\elite\\ai\\elite_pilot",
+"objects\\characters\\elite\\ai\\elite",
+"ai\\generic"
+],
+"unit": "objects\\characters\\elite_ai\\elite_ai",
+"model": "objects\\characters\\elite_ai\\elite_ai",
+"jmad": "objects\\characters\\elite_ai\\elite_ai",
+"jmad_id": 2314412359,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+},
+{
+"i": 27,
+"name": "objects\\characters\\elite\\ai\\named\\elite_bob",
+"species": "elite",
+"parents": [
+"objects\\characters\\elite\\ai\\named\\elite_bob",
+"objects\\characters\\elite\\ai\\elite_ultra",
+"objects\\characters\\elite\\ai\\elite",
+"ai\\generic"
+],
+"unit": "objects\\characters\\elite_ai\\elite_ai",
+"model": "objects\\characters\\elite_ai\\elite_ai",
+"jmad": "objects\\characters\\elite_ai\\elite_ai",
+"jmad_id": 2314412359,
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"bipd_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"bipd_global": false
+}
+],
+"units": {
+"marine": {
+"entries": 49,
+"cell": 49,
+"protected": 49
+},
+"none": {
+"entries": 176,
+"spawn": 176,
+"protected": 176
+},
+"marine_female": {
+"entries": 2,
+"cell": 2
+},
+"null": {
+"entries": 19,
+"cell": 19,
+"protected": 19
+},
+"grunt": {
+"entries": 80,
+"cell": 80,
+"protected": 74
+},
+"elite": {
+"entries": 89,
+"cell": 89,
+"protected": 74
+},
+"jackal": {
+"entries": 35,
+"cell": 35,
+"protected": 9
+},
+"hunter": {
+"entries": 4,
+"cell": 4
+},
+"spartans_female_ai": {
+"entries": 2,
+"cell": 2
+},
+"spartans_ai": {
+"entries": 4,
+"cell": 4
+}
+},
+"cells_by_species": {
+"grunt": 30,
+"marine": 9,
+"spartans_ai": 3,
+"jackal": 11,
+"null": 6,
+"elite": 35,
+"marine_female": 2,
+"hunter": 1,
+"spartans_female_ai": 1
+},
+"actors_by_species": {
+"grunt": 59,
+"marine": 19,
+"spartans_ai": 3,
+"jackal": 25,
+"null": 6,
+"elite": 39,
+"marine_female": 3,
+"hunter": 1,
+"spartans_female_ai": 1
+},
+"cells_shared_ct": {
+"grunt": 26,
+"marine": 9,
+"null": 3,
+"elite": 24,
+"jackal": 9,
+"marine_female": 2
+},
+"cells_shared_weapon": {
+"grunt": 27,
+"marine": 9,
+"jackal": 11,
+"null": 6,
+"elite": 28,
+"marine_female": 1,
+"hunter": 1,
+"spartans_female_ai": 1
+},
+"multi": {
+"cells_multi_weapon": 24,
+"cells_no_weapon_block": 8,
+"cells": 94,
+"distinct_ct_blocks": 35,
+"distinct_weapon_blocks": 23
+},
+"weapon_palette": [
+{
+"i": 0,
+"name": "objects\\weapons\\rifle\\dmr\\dmr",
+"cls_3ac": "rifle",
+"name_3b0": "br",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": true,
+"status": "ok",
+"late_n": 0,
+"closure_sets": "all",
+"closure_n": 27
+},
+{
+"i": 1,
+"name": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+"cls_3ac": "rifle",
+"name_3b0": "ar",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": true,
+"status": "ok",
+"late_n": 0,
+"closure_sets": "all",
+"closure_n": 27
+},
+{
+"i": 2,
+"name": "objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+"cls_3ac": "pistol",
+"name_3b0": "pp",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 36
+},
+{
+"i": 3,
+"name": "objects\\weapons\\melee\\energy_sword\\energy_sword",
+"cls_3ac": "sword",
+"name_3b0": "eb",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 20
+},
+{
+"i": 4,
+"name": "objects\\weapons\\pistol\\needler\\needler",
+"cls_3ac": "pistol",
+"name_3b0": "ne",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 27
+},
+{
+"i": 5,
+"name": "objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+"cls_3ac": "rifle",
+"name_3b0": "sr",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 27
+},
+{
+"i": 6,
+"name": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+"cls_3ac": "rifle",
+"name_3b0": "cb",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 27
+},
+{
+"i": 7,
+"name": "objects\\weapons\\pistol\\magnum\\magnum",
+"cls_3ac": "pistol",
+"name_3b0": "hp",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 25
+},
+{
+"i": 8,
+"name": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+"cls_3ac": "pistol",
+"name_3b0": "pr",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 24
+},
+{
+"i": 9,
+"name": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+"cls_3ac": "rifle",
+"name_3b0": "ar",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": true,
+"status": "ok",
+"late_n": 0,
+"closure_sets": "all",
+"closure_n": 27
+},
+{
+"i": 10,
+"name": "objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+"cls_3ac": "rifle",
+"name_3b0": "cr",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 28
+},
+{
+"i": 11,
+"name": "objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+"cls_3ac": "missile",
+"name_3b0": "fc",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 27
+},
+{
+"i": 12,
+"name": "objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge",
+"cls_3ac": "turret",
+"name_3b0": "mgt",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 14
+},
+{
+"i": 13,
+"name": "objects\\weapons\\pistol\\target_laser\\target_laser",
+"cls_3ac": "pistol",
+"name_3b0": "sl",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": true,
+"status": "ok",
+"late_n": 0,
+"closure_sets": "all",
+"closure_n": 24
+},
+{
+"i": 14,
+"name": "objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+"cls_3ac": "missile",
+"name_3b0": "rl",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 36
+},
+{
+"i": 15,
+"name": "objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+"cls_3ac": "missile",
+"name_3b0": "sl",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 28
+},
+{
+"i": 16,
+"name": "objects\\weapons\\rifle\\shotgun\\shotgun",
+"cls_3ac": "rifle",
+"name_3b0": "sg",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 27
+},
+{
+"i": 17,
+"name": "objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+"cls_3ac": "missile",
+"name_3b0": "pl",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 33
+},
+{
+"i": 18,
+"name": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+"cls_3ac": "rifle",
+"name_3b0": "csr",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 23
+},
+{
+"i": 19,
+"name": "objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
+"cls_3ac": "hammer",
+"name_3b0": "gh",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 19
+},
+{
+"i": 20,
+"name": "objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+"cls_3ac": "rifle",
+"name_3b0": "gl",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 36
+},
+{
+"i": 21,
+"name": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+"cls_3ac": "rifle",
+"name_3b0": "prp",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 28
+},
+{
+"i": 22,
+"name": "objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+"cls_3ac": "rifle",
+"name_3b0": "spr",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 23
+},
+{
+"i": 23,
+"name": "objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret",
+"cls_3ac": "turret",
+"name_3b0": "mgt",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 13
+},
+{
+"i": 24,
+"name": "objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret",
+"cls_3ac": "turret",
+"name_3b0": "pgt",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 15
+},
+{
+"i": 25,
+"name": "objects\\weapons\\rifle\\saw\\saw",
+"cls_3ac": "rifle",
+"name_3b0": "ar",
+"cls_3e0": null,
+"name_3e4": "",
+"sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"global": false,
+"status": "ok",
+"late_n": 0,
+"closure_sets": [
+"Scenario[0]",
+"Scenario[1]",
+"Scenario[2]",
+"Scenario[3]",
+"Scenario[4]",
+"Scenario[5]",
+"Scenario[6]",
+"Scenario[7]"
+],
+"closure_n": 27
+}
+],
+"weapon_dist": {
+"grunt": {
+"plasma_pistol": 25,
+"needler": 14,
+"plasma_rifle": 5
+},
+"marine": {
+"assault_rifle": 9
+},
+"spartans_ai": {
+"sniper_rifle": 1,
+"rocket_launcher": 1,
+"machinegun_turret_jorge": 1
+},
+"jackal": {
+"plasma_pistol": 7,
+"needler": 3,
+"needle_rifle": 4
+},
+"elite": {
+"plasma_rifle": 28,
+"needle_rifle": 1,
+"concussion_rifle": 7,
+"flak_cannon": 1,
+"needler": 3,
+"plasma_pistol": 4,
+"plasma_launcher": 1
+},
+"marine_female": {
+"assault_rifle": 1,
+"dmr": 1
+},
+"spartans_female_ai": {
+"assault_rifle": 1
+}
+},
+"spawn_weapon": {
+"none": {
+"-1": 166,
+"shotgun": 3,
+"assault_rifle": 2,
+"needle_rifle": 2,
+"dmr": 2,
+"machinegun_turret_jorge": 1
+}
+},
+"graphs": {
+"objects\\characters\\elite_ai\\elite_ai": {
+"name": "objects\\characters\\elite_ai\\elite_ai",
+"modes": {
+"patrol": {
+"unarmed": {
+"any": {
+"any": 12
+}
+}
+},
+"combat": {
+"unarmed": {
+"any": {
+"any": 12
+}
+},
+"any": {
+"any": {
+"any": 8
+}
+},
+"dual": {
+"any": {
+"any": 42
+},
+"pr": {
+"any": 0
+}
+},
+"missile": {
+"any": {
+"any": 38
+},
+"fc": {
+"any": 0
+},
+"ml": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 49,
+"sync_actions": 1
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 50
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"sword": {
+"any": {
+"any": 47
+},
+"eb": {
+"any": 0
+}
+},
+"ball": {
+"any": {
+"any": 0
+}
+},
+"turret": {
+"any": {
+"any": 9
+}
+},
+"hammer": {
+"any": {
+"any": 1
+}
+}
+},
+"crouch": {
+"dual": {
+"any": {
+"any": 15
+}
+},
+"missile": {
+"any": {
+"any": 14
+},
+"fc": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 15
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 15
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"sword": {
+"any": {
+"any": 14
+}
+},
+"hammer": {
+"any": {
+"any": 0
+}
+}
+},
+"sprint": {
+"missile": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 1
+}
+},
+"sword": {
+"any": {
+"any": 0
+}
+},
+"ball": {
+"any": {
+"any": 0
+}
+},
+"hammer": {
+"any": {
+"any": 0
+}
+}
+},
+"any": {
+"any": {
+"any": {
+"any": 2,
+"sync_actions": 11
+}
+},
+"sword": {
+"any": {
+"sync_actions": 3
+}
+}
+},
+"vault": {
+"rifle": {
+"any": {
+"any": 1
+}
+},
+"pistol": {
+"any": {
+"any": 1
+}
+},
+"sword": {
+"any": {
+"any": 1
+}
+}
+},
+"hoist": {
+"rifle": {
+"any": {
+"any": 1
+}
+},
+"pistol": {
+"any": {
+"any": 1
+}
+},
+"sword": {
+"any": {
+"any": 1
+}
+}
+},
+"hoist_crouch": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"hoist_stand": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"flight": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"dual": {
+"any": {
+"any": 4
+}
+},
+"missile": {
+"any": {
+"any": 1
+},
+"fc": {
+"any": 0
+},
+"ml": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 5
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"sword": {
+"any": {
+"any": 5
+},
+"eb": {
+"any": 0
+}
+},
+"turret": {
+"any": {
+"any": 0
+}
+}
+},
+"flight_crouch": {
+"missile": {
+"any": {
+"any": 1
+},
+"fc": {
+"any": 0
+},
+"ml": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 1
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"sword": {
+"any": {
+"any": 1
+},
+"eb": {
+"any": 0
+}
+}
+},
+"warthog_g": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"fixed": {
+"any": {
+"any": 2
+}
+}
+},
+"turret_g": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"banshee_d": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"ghost_d": {
+"any": {
+"any": {
+"any": 6
+}
+}
+},
+"global_alert": {
+"rifle": {
+"any": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+}
+}
+},
+"mongoose_p": {
+"missile": {
+"any": {
+"any": 0
+}
+},
+"sword": {
+"any": {
+"any": 0
+}
+}
+},
+"revenant_d": {
+"any": {
+"any": {
+"any": 5
+}
+}
+},
+"revenant_p": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 3
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"cb": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 1
+},
+"hp": {
+"any": 0
+}
+},
+"sword": {
+"any": {
+"any": 3
+}
+},
+"ball": {
+"any": {
+"any": 3
+}
+},
+"hammer": {
+"any": {
+"any": 3
+}
+}
+},
+"warthog_p": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 3
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"cb": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"hp": {
+"any": 0
+}
+},
+"sword": {
+"any": {
+"any": 3
+}
+},
+"ball": {
+"any": {
+"any": 3
+}
+},
+"hammer": {
+"any": {
+"any": 3
+}
+}
+},
+"wraith_d": {
+"any": {
+"any": {
+"any": 6
+}
+}
+},
+"wraith_g": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"warthog_b_d": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"warthog_b_p": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"warthog_b_g": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"close_turret_doors": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_4": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lf_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lf_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lf_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lf_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rf_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rf_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rf_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rf_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lb_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lb_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lb_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lb_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rb_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rb_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rb_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rb_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_f_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_f_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_f_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_f_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_b_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_b_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_b_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_b_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_f_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_f_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_f_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_f_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_b_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_b_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_b_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_b_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_5": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_6": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l4": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l5": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l6": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l7": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l8": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r4": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r5": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r6": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r7": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r8": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"wraith_b_l": {
+"any": {
+"any": {
+"any": 5
+}
+}
+},
+"wraith_b_r": {
+"any": {
+"any": {
+"any": 5
+}
+}
+},
+"wraith_b_b": {
+"any": {
+"any": {
+"any": 5
+}
+}
+},
+"ghost_b_d_b": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"ghost_b_d_r": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"ghost_b_d_l": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"banshee_b_d_r": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"banshee_b_d_l": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"revenant_b_d": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"revenant_b_p": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"shade_d": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"ghost_b_b": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"scorpion_b_b": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"scorpion_b_d_r": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"e3": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"cov_p1": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"cov_p2": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"cov_p3": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"cov_p4": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"drop_pod": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_b_d_l": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_b_d_r": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_b_g_l": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"falcon_b_g_r": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"ghost_d_b": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"global": {
+"unarmed": {
+"any": {
+"any": 0
+}
+}
+},
+"global_act": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"global_investigate": {
+"unarmed": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+}
+},
+"sword": {
+"any": {
+"any": 0
+}
+}
+},
+"m10": {
+"sword": {
+"any": {
+"any": 0
+}
+}
+},
+"m30": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"m45": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"m70": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"pod_p_l": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"pod_p_r": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"scorpion_b_d_l": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"overcharged_jitter": {
+"missile": {
+"fc": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+}
+},
+"pistol": {
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+}
+}
+},
+"flags": 0,
+"mode_sids": [
+"0xad",
+"0xae",
+"0xb2",
+"0xfa",
+"0xff",
+"0x153",
+"0x192",
+"0x193",
+"0x194",
+"0x1a2",
+"0x1a3",
+"0x3fa6",
+"0x3fa7",
+"0x51c9",
+"0x5211",
+"0x5212",
+"0x523d",
+"0x5244",
+"0x5245",
+"0x524c",
+"0x5250",
+"0x5251",
+"0x5b65",
+"0x5b66",
+"0x5cae",
+"0x5e0a",
+"0x5e1e",
+"0x5e1f",
+"0x5e20",
+"0x5e21",
+"0x5e24",
+"0x5e25",
+"0x5e27",
+"0x5e28",
+"0x5e29",
+"0x5e2a",
+"0x5e2c",
+"0x5e2d",
+"0x5e2e",
+"0x5e2f",
+"0x5e31",
+"0x5e32",
+"0x5e33",
+"0x5e34",
+"0x5e36",
+"0x5e37",
+"0x5e38",
+"0x5e3a",
+"0x5e3b",
+"0x5e3c",
+"0x5e3d",
+"0x5e3f",
+"0x5e40",
+"0x5e41",
+"0x5e42",
+"0x5e44",
+"0x5e45",
+"0x5e46",
+"0x5e47",
+"0x5e49",
+"0x5e4a",
+"0x5e4b",
+"0x5e8d",
+"0x5e8e",
+"0x5fad",
+"0x5fb2",
+"0x5fb5",
+"0x5fb8",
+"0x5fbb",
+"0x5fbe",
+"0x5fc1",
+"0x5fc4",
+"0x5fc7",
+"0x5fca",
+"0x5fcd",
+"0x5fd0",
+"0x5fd3",
+"0x5fd6",
+"0x5fd9",
+"0x5fdc",
+"0x6036",
+"0x603c",
+"0x603f",
+"0x61fa",
+"0x61fd",
+"0x61ff",
+"0x627a",
+"0x627d",
+"0x632a",
+"0x632d",
+"0x6a7a",
+"0x7021",
+"0x713c",
+"0x715d",
+"0x725d",
+"0x726b",
+"0x726c",
+"0x726d",
+"0x726e",
+"0x726f",
+"0x7273",
+"0x7274",
+"0x7275",
+"0x7276",
+"0x7279",
+"0x727a",
+"0x727c",
+"0x7283",
+"0x7284",
+"0x7287",
+"0x728a",
+"0x728e",
+"0x7291",
+"0x7292",
+"0x7294",
+"0x80072"
+],
+"weapon_list": [
+[
+"pr",
+"pistol"
+],
+[
+"spr",
+"pistol"
+]
+],
+"variants": [
+[
+"space",
+[]
+],
+[
+"spec_ops",
+[]
+],
+[
+"ultra",
+[]
+],
+[
+"bob",
+[]
+],
+[
+"jetpack",
+[]
+]
+],
+"parent": null
+},
+"objects\\characters\\grunt\\grunt": {
+"name": "objects\\characters\\grunt\\grunt",
+"modes": {
+"berserk": {
+"pistol": {
+"any": {
+"any": 10
+}
+}
+},
+"panic": {
+"unarmed": {
+"any": {
+"any": 0
+}
+}
+},
+"flaming": {
+"pistol": {
+"any": {
+"any": 1
+}
+}
+},
+"asleep": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+}
+}
+},
+"patrol": {
+"unarmed": {
+"any": {
+"any": 11
+}
+},
+"any": {
+"any": {
+"any": 0
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+}
+}
+},
+"combat": {
+"unarmed": {
+"any": {
+"any": 25
+}
+},
+"any": {
+"any": {
+"any": 0
+}
+},
+"missile": {
+"any": {
+"any": 29
+},
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 29
+}
+},
+"support": {
+"pgt": {
+"any": 29
+},
+"mgt": {
+"any": 29
+},
+"bs": {
+"any": 36
+},
+"ft": {
+"any": 29
+},
+"pgts": {
+"any": 29
+},
+"pmt": {
+"any": 29
+},
+"pmts": {
+"any": 29
+},
+"sb": {
+"any": 36
+}
+},
+"rifle": {
+"smg": {
+"any": 36
+},
+"ar": {
+"any": 36
+},
+"br": {
+"any": 36
+},
+"sr": {
+"any": 36
+},
+"sg": {
+"any": 36
+},
+"cb": {
+"any": 36
+},
+"csr": {
+"any": 36
+},
+"pr": {
+"any": 36
+}
+},
+"pistol": {
+"any": {
+"any": 36
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+}
+},
+"crouch": {
+"unarmed": {
+"any": {
+"any": 6
+}
+},
+"missile": {
+"any": {
+"any": 23
+},
+"rl": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 7
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+}
+},
+"flee": {
+"any": {
+"any": {
+"any": 4
+}
+},
+"pistol": {
+"any": {
+"any": 8
+}
+}
+},
+"stunned": {
+"any": {
+"any": {
+"any": 2
+}
+},
+"pistol": {
+"pp": {
+"any": 0
+}
+}
+},
+"any": {
+"any": {
+"any": {
+"any": 9,
+"sync_actions": 4
+}
+},
+"pistol": {
+"any": {
+"any": 1
+}
+}
+},
+"vault": {
+"missile": {
+"any": {
+"any": 1
+}
+},
+"pistol": {
+"any": {
+"any": 1
+}
+}
+},
+"hoist_crouch": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"hoist_stand": {
+"any": {
+"any": {
+"any": 1
+}
+},
+"missile": {
+"fc": {
+"any": 1
+}
+}
+},
+"act_asleep_1": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"act_examine_1": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"act_gaze_1": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"turret_g": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"ghost_d": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"wraith_g": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_4": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lf_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lf_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lf_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lf_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rf_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rf_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rf_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rf_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lb_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lb_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lb_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lb_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rb_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rb_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rb_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rb_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_f_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_f_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_f_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_f_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_b_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_b_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_b_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_b_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_f_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_f_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_f_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_f_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_b_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_b_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_b_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_b_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_5": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_6": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l4": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l5": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l6": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l7": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l8": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r4": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r5": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r6": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r7": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r8": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"shade_d": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"cov_p1": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"cov_p2": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"cov_p3": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"cov_p4": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"global": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"global_investigate": {
+"pistol": {
+"any": {
+"any": 0
+}
+}
+},
+"bind_pose": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"c_turret_ap": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"global_act_look_out": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"global_sitting": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"global_tank_refill": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"global_warmfire": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"phantom_g": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"phantom_g_l": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"phantom_g_r": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"phantom_p": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"phantom_p_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_b_small1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_b_small2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_b_small3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_small1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_small2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_small3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"vehicle_death": {
+"any": {
+"any": {
+"any": 0
+}
+}
+}
+},
+"flags": 0,
+"mode_sids": [
+"0x35",
+"0x47",
+"0x4a",
+"0xac",
+"0xad",
+"0xae",
+"0xb2",
+"0xb6",
+"0xec",
+"0xff",
+"0x153",
+"0x193",
+"0x194",
+"0x3a1",
+"0x3bf",
+"0x3c4",
+"0x3fa7",
+"0x5211",
+"0x5251",
+"0x5e1e",
+"0x5e1f",
+"0x5e20",
+"0x5e21",
+"0x5e24",
+"0x5e25",
+"0x5e27",
+"0x5e28",
+"0x5e29",
+"0x5e2a",
+"0x5e2c",
+"0x5e2d",
+"0x5e2e",
+"0x5e2f",
+"0x5e31",
+"0x5e32",
+"0x5e33",
+"0x5e34",
+"0x5e36",
+"0x5e37",
+"0x5e38",
+"0x5e3a",
+"0x5e3b",
+"0x5e3c",
+"0x5e3d",
+"0x5e3f",
+"0x5e40",
+"0x5e41",
+"0x5e42",
+"0x5e44",
+"0x5e45",
+"0x5e46",
+"0x5e47",
+"0x5e49",
+"0x5e4a",
+"0x5e4b",
+"0x5e8d",
+"0x5e8e",
+"0x5fad",
+"0x5fb2",
+"0x5fb5",
+"0x5fb8",
+"0x5fbb",
+"0x5fbe",
+"0x5fc1",
+"0x5fc4",
+"0x5fc7",
+"0x5fca",
+"0x5fcd",
+"0x5fd0",
+"0x5fd3",
+"0x5fd6",
+"0x5fd9",
+"0x5fdc",
+"0x6a7a",
+"0x726b",
+"0x726c",
+"0x726d",
+"0x726e",
+"0x727a",
+"0x7283",
+"0x7d8c",
+"0x7d8d",
+"0x7d95",
+"0x7d96",
+"0x7d97",
+"0x7d9c",
+"0x7d9d",
+"0x7d9e",
+"0x7d9f",
+"0x7da0",
+"0x7da1",
+"0x7da2",
+"0x7da3",
+"0x7da4",
+"0x7da5",
+"0x7da6",
+"0x7da7",
+"0x7da8"
+],
+"weapon_list": [],
+"variants": [],
+"parent": null
+},
+"objects\\characters\\jackal\\jackal": {
+"name": "objects\\characters\\jackal\\jackal",
+"modes": {
+"patrol": {
+"unarmed": {
+"any": {
+"any": 15
+}
+}
+},
+"combat": {
+"unarmed": {
+"any": {
+"any": 4
+}
+},
+"any": {
+"any": {
+"any": 2
+}
+},
+"dual": {
+"js": {
+"any": 47
+}
+},
+"rifle": {
+"any": {
+"any": 52
+},
+"cb": {
+"any": 0
+},
+"csr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 47
+}
+}
+},
+"crouch": {
+"dual": {
+"js": {
+"any": 19
+}
+},
+"rifle": {
+"any": {
+"any": 14
+},
+"cb": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 19
+}
+}
+},
+"flee": {
+"dual": {
+"js": {
+"any": 36
+}
+},
+"pistol": {
+"any": {
+"any": 42
+}
+}
+},
+"shield": {
+"pistol": {
+"any": {
+"any": 47
+}
+}
+},
+"any": {
+"h_kill": {
+"front": {
+"any": 0
+}
+},
+"any": {
+"any": {
+"any": 2,
+"sync_actions": 2
+}
+}
+},
+"hoist_crouch": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"hoist_stand": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"phantom_pc_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_4": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lf_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lf_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lf_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lf_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rf_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rf_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rf_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rf_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lb_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lb_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lb_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lb_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rb_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rb_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rb_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_rb_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_f_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_f_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_f_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_f_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_b_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_b_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_b_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_ml_b_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_f_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_f_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_f_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_f_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_b_main": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_b_small_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_b_small_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_mr_b_small_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_5": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_6": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l4": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l5": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l6": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l7": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l8": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r4": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r5": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r6": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r7": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r8": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"global": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"call": {
+"any": {
+"any": 0
+}
+},
+"low_perch": {
+"any": {
+"any": 0
+}
+},
+"pacing": {
+"any": {
+"any": 0
+}
+}
+},
+"m10": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"vehicle_death": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"shield_crouch": {
+"pistol": {
+"any": {
+"any": 21
+}
+}
+},
+"murm": {
+"pistol": {
+"any": {
+"any": 47
+}
+}
+},
+"hard_death": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"overcharged_jitter": {
+"rifle": {
+"any": {
+"any": 5
+}
+}
+}
+},
+"flags": 0,
+"mode_sids": [
+"0xad",
+"0xae",
+"0xb2",
+"0xb6",
+"0xe3",
+"0xff",
+"0x193",
+"0x194",
+"0x5e1e",
+"0x5e1f",
+"0x5e20",
+"0x5e21",
+"0x5e24",
+"0x5e25",
+"0x5e27",
+"0x5e28",
+"0x5e29",
+"0x5e2a",
+"0x5e2c",
+"0x5e2d",
+"0x5e2e",
+"0x5e2f",
+"0x5e31",
+"0x5e32",
+"0x5e33",
+"0x5e34",
+"0x5e36",
+"0x5e37",
+"0x5e38",
+"0x5e3a",
+"0x5e3b",
+"0x5e3c",
+"0x5e3d",
+"0x5e3f",
+"0x5e40",
+"0x5e41",
+"0x5e42",
+"0x5e44",
+"0x5e45",
+"0x5e46",
+"0x5e47",
+"0x5e49",
+"0x5e4a",
+"0x5e4b",
+"0x5e8d",
+"0x5e8e",
+"0x5fad",
+"0x5fb2",
+"0x5fb5",
+"0x5fb8",
+"0x5fbb",
+"0x5fbe",
+"0x5fc1",
+"0x5fc4",
+"0x5fc7",
+"0x5fca",
+"0x5fcd",
+"0x5fd0",
+"0x5fd3",
+"0x5fd6",
+"0x5fd9",
+"0x5fdc",
+"0x727a",
+"0x7284",
+"0x7da8",
+"0x81d0",
+"0x81d1",
+"0x8344",
+"0x80072"
+],
+"weapon_list": [],
+"variants": [
+[
+"jackal_minor",
+[
+[
+"combat",
+"shield"
+],
+[
+"crouch",
+"shield_crouch"
+]
+]
+],
+[
+"jackal_major",
+[
+[
+"combat",
+"shield"
+],
+[
+"crouch",
+"shield_crouch"
+]
+]
+],
+[
+"skirmisher_murmillo",
+[
+[
+"combat",
+"murm"
+]
+]
+]
+],
+"parent": null
+},
+"objects\\characters\\hunter\\hunter": {
+"name": "objects\\characters\\hunter\\hunter",
+"modes": {
+"patrol": {
+"any": {
+"any": {
+"any": 11
+}
+}
+},
+"crouch": {
+"any": {
+"any": {
+"any": 15
+},
+"hfr": {
+"any": 0
+}
+}
+},
+"any": {
+"any": {
+"any": {
+"any": 33
+},
+"hfr": {
+"any": 0
+}
+}
+},
+"hoist": {
+"unarmed": {
+"any": {
+"any": 1
+}
+}
+},
+"phantom_pc_1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_3": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_4": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_p_lf_main": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"phantom_p_rf_main": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"phantom_p_lb_main": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"phantom_p_rb_main": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"phantom_p_ml_f_main": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"phantom_p_ml_b_main": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"phantom_p_mr_f_main": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"phantom_p_mr_b_main": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"phantom_pc_5": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"phantom_pc_6": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_l5": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_r5": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_cargo02_l1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_cargo02_l2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_cargo02_r1": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"fork_p_cargo02_r2": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"boarded": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"phantom_p_a02": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"phantom_pc": {
+"any": {
+"any": {
+"any": 2
+}
+}
+}
+},
+"flags": 0,
+"mode_sids": [
+"0xad",
+"0xb2",
+"0xff",
+"0x192",
+"0x5e1e",
+"0x5e1f",
+"0x5e20",
+"0x5e21",
+"0x5e24",
+"0x5e29",
+"0x5e2e",
+"0x5e33",
+"0x5e38",
+"0x5e3d",
+"0x5e42",
+"0x5e47",
+"0x5e8d",
+"0x5e8e",
+"0x5fad",
+"0x5fbb",
+"0x5fc7",
+"0x5fd3",
+"0x5fea",
+"0x5fec",
+"0x5fee",
+"0x5ff0",
+"0x861d",
+"0x861e",
+"0x861f"
+],
+"weapon_list": [],
+"variants": [],
+"parent": null
+},
+"objects\\characters\\spartans_ai\\spartans_ai": {
+"name": "objects\\characters\\spartans_ai\\spartans_ai",
+"modes": {
+"patrol": {
+"unarmed": {
+"any": {
+"any": 9
+}
+}
+},
+"combat": {
+"unarmed": {
+"any": {
+"any": 9
+}
+},
+"any": {
+"any": {
+"any": 6
+}
+},
+"missile": {
+"any": {
+"any": 16
+},
+"rl": {
+"any": 1
+},
+"fc": {
+"any": 0
+},
+"sl": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"h_ping": {
+"front": 0,
+"left": 0,
+"right": 0,
+"back": 0
+},
+"any": {
+"any": 39
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 39
+},
+"sr": {
+"any": 2
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 34
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+}
+},
+"crouch": {
+"missile": {
+"any": {
+"any": 14
+},
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"sl": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 13
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 13
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 15
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+}
+},
+"sprint": {
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+}
+},
+"pistol": {
+"any": {
+"any": 1
+}
+}
+},
+"any": {
+"any": {
+"any": {
+"any": 0,
+"sync_actions": 1
+}
+}
+},
+"flight": {
+"missile": {
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"sl": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+}
+},
+"flight_crouch": {
+"missile": {
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"sl": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+}
+},
+"bunker": {
+"rifle": {
+"any": {
+"left_stand_open": 5,
+"left_stand_closed": 6,
+"right_stand_open": 5,
+"right_stand_closed": 6,
+"center_crouch_open": 4,
+"center_crouch_closed": 5
+}
+}
+},
+"emile": {
+"rifle": {
+"any": {
+"any": 1
+}
+}
+},
+"warthog_g": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"turret_g": {
+"any": {
+"pgt": {
+"any": 4
+}
+}
+},
+"pelican_p_l04": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"pelican_p_l05": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"rifle": {
+"any": {
+"any": 1
+}
+}
+},
+"pelican_p_r04": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"scorpion_d": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_d": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_g_l": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"falcon_g_r": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"falcon_p_l1": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_l2": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_r1": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_r2": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"ghost_d": {
+"any": {
+"any": {
+"any": 6
+}
+}
+},
+"global_alert": {
+"rifle": {
+"any": {
+"any": 0,
+"door_hack": 0
+}
+}
+},
+"mongoose_d": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"mongoose_p": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"missile": {
+"any": {
+"any": 0
+},
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"sl": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+}
+},
+"pelican_p_r05": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"revenant_d": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"revenant_p": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 3
+},
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"sl": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 3
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+}
+},
+"scorpion_g": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"warthog_d": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"warthog_p": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 2
+},
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"sl": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 3
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"hammer": {
+"any": {
+"any": 1
+}
+}
+},
+"wraith_d": {
+"any": {
+"any": {
+"any": 6
+}
+}
+},
+"wraith_g": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"warthog_b_d": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"warthog_b_p": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"warthog_b_g": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"wraith_b_l": {
+"any": {
+"any": {
+"any": 5
+}
+}
+},
+"wraith_b_r": {
+"any": {
+"any": {
+"any": 5
+}
+}
+},
+"wraith_b_b": {
+"any": {
+"any": {
+"any": 5
+}
+}
+},
+"ghost_b_d_b": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"ghost_b_d_r": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"ghost_b_d_l": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"banshee_b_d_r": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"banshee_b_d_l": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"revenant_b_d": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"revenant_b_p": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"scorpion_b_b": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"scorpion_b_d_r": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"falcon_b_d_l": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_b_d_r": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_b_g_l": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"falcon_b_g_r": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"m10": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"m30": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"m70": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"scorpion_b_d_l": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"bind_pose": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"jun_crouch": {
+"rifle": {
+"any": {
+"any": 7
+}
+}
+},
+"downed": {
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_bench": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_bench_wpn": {
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_l1_wpn": {
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_r1_wpn": {
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"global_combat": {
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"global_spartan": {
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"m10_drop": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"m10gaspump": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"m20_spartan": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"m70_alert": {
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"mac_d": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"mongoose_b_d_l": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"mongoose_b_d_r": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"performance_general": {
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"truck_d": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"truck_p": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"overcharged_jitter": {
+"missile": {
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"sl": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 9
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+}
+}
+},
+"flags": 0,
+"mode_sids": [
+"0xad",
+"0xae",
+"0xb2",
+"0xfa",
+"0xff",
+"0x1a2",
+"0x1a3",
+"0x381",
+"0x90b",
+"0x3fa6",
+"0x3fa7",
+"0x4eda",
+"0x4ee1",
+"0x4efd",
+"0x4f80",
+"0x5202",
+"0x5203",
+"0x5204",
+"0x5205",
+"0x5206",
+"0x5207",
+"0x5208",
+"0x5211",
+"0x5212",
+"0x523c",
+"0x523d",
+"0x5243",
+"0x5244",
+"0x5245",
+"0x5246",
+"0x524b",
+"0x524c",
+"0x5250",
+"0x5251",
+"0x5b65",
+"0x5b66",
+"0x5cae",
+"0x6036",
+"0x603c",
+"0x603f",
+"0x61fa",
+"0x61fd",
+"0x61ff",
+"0x627a",
+"0x627d",
+"0x632a",
+"0x632d",
+"0x713c",
+"0x715d",
+"0x7273",
+"0x7274",
+"0x7275",
+"0x7276",
+"0x7284",
+"0x7287",
+"0x728e",
+"0x7294",
+"0x7d8c",
+"0x8822",
+"0x8d6a",
+"0x8d72",
+"0x8d74",
+"0x8d75",
+"0x8d76",
+"0x8d8e",
+"0x8d90",
+"0x8daa",
+"0x8dad",
+"0x8db4",
+"0x8dc2",
+"0x8dc3",
+"0x8dc4",
+"0x8dc5",
+"0x8dc6",
+"0x8dca",
+"0x8dcb",
+"0x80072"
+],
+"weapon_list": [],
+"variants": [
+[
+"jun",
+[
+[
+"overcharged_jitter",
+"jun_alert"
+],
+[
+"combat",
+"jun"
+],
+[
+"crouch",
+"jun_crouch"
+]
+]
+],
+[
+"emile",
+[
+[
+"combat",
+"emile"
+]
+]
+]
+],
+"parent": null
+},
+"objects\\characters\\spartan_jorge\\spartan_jorge": {
+"name": "objects\\characters\\spartan_jorge\\spartan_jorge",
+"modes": {
+"combat": {
+"unarmed": {
+"any": {
+"any": 33
+}
+},
+"turret": {
+"any": {
+"any": 33
+}
+}
+},
+"sprint": {
+"turret": {
+"any": {
+"any": 1
+}
+}
+},
+"bunker": {
+"turret": {
+"any": {
+"left_stand_open": 4,
+"left_stand_closed": 5
+}
+}
+},
+"falcon_p_l1": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_r1": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"m10": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_l1_wpn": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_r1_wpn": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"m10_drop": {
+"turret": {
+"any": {
+"any": 0
+}
+}
+},
+"m10gaspump": {
+"turret": {
+"any": {
+"any": 0
+}
+}
+},
+"pickup_g": {
+"turret": {
+"any": {
+"any": 0
+}
+}
+},
+"overcharged_jitter": {
+"turret": {
+"any": {
+"any": 11
+}
+}
+}
+},
+"flags": 0,
+"mode_sids": [
+"0xae",
+"0xfa",
+"0x381",
+"0x5205",
+"0x5207",
+"0x7284",
+"0x8d75",
+"0x8d76",
+"0x8daa",
+"0x8dad",
+"0x927f",
+"0x80072"
+],
+"weapon_list": [],
+"variants": [],
+"parent": null
+},
+"objects\\characters\\spartans_female_ai\\spartans_female_ai": {
+"name": "objects\\characters\\spartans_female_ai\\spartans_female_ai",
+"modes": {
+"patrol": {
+"unarmed": {
+"any": {
+"any": 9
+}
+}
+},
+"combat": {
+"unarmed": {
+"any": {
+"any": 9
+}
+},
+"any": {
+"any": {
+"any": 6
+}
+},
+"missile": {
+"any": {
+"any": 17
+},
+"rl": {
+"any": 1
+},
+"fc": {
+"any": 0
+},
+"sl": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"h_ping": {
+"front": 0,
+"left": 0,
+"right": 0,
+"back": 0
+},
+"any": {
+"any": 37
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 37
+},
+"sr": {
+"any": 2
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 35
+},
+"hp": {
+"any": 1
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+}
+},
+"stance": {
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"crouch": {
+"missile": {
+"any": {
+"any": 14
+},
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"sl": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 13
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 13
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 15
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+}
+},
+"sprint": {
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+}
+},
+"pistol": {
+"any": {
+"any": 1
+}
+}
+},
+"any": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"flight": {
+"missile": {
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"sl": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+}
+},
+"flight_crouch": {
+"missile": {
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"sl": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+}
+},
+"rifle": {
+"any": {
+"any": {
+"alert_pistol_scan_area": 0
+}
+}
+},
+"bunker": {
+"rifle": {
+"any": {
+"left_stand_open": 5,
+"left_stand_closed": 6,
+"right_stand_open": 5,
+"right_stand_closed": 6,
+"center_crouch_open": 4,
+"center_crouch_closed": 5
+}
+}
+},
+"community": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"warthog_g": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"turret_g": {
+"any": {
+"pgt": {
+"any": 4
+}
+}
+},
+"pelican_p_l04": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"pelican_p_l05": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"rifle": {
+"any": {
+"any": 1
+}
+}
+},
+"pelican_p_r04": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"scorpion_d": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_d": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_g_l": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"falcon_g_r": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"falcon_p_l1": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_l2": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_r1": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_r2": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"ghost_d": {
+"any": {
+"any": {
+"any": 6
+}
+}
+},
+"global_alert": {
+"rifle": {
+"any": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+}
+}
+},
+"mongoose_d": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"mongoose_p": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"missile": {
+"any": {
+"any": 0
+},
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"sl": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+}
+},
+"pelican_p_r05": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"revenant_d": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"revenant_p": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 3
+},
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"sl": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 3
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+}
+},
+"scorpion_g": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"warthog_d": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"warthog_p": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 2
+},
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"sl": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 3
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"hammer": {
+"any": {
+"any": 1
+}
+}
+},
+"wraith_d": {
+"any": {
+"any": {
+"any": 6
+}
+}
+},
+"wraith_g": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"warthog_b_d": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"warthog_b_p": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"warthog_b_g": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"wraith_b_l": {
+"any": {
+"any": {
+"any": 5
+}
+}
+},
+"wraith_b_r": {
+"any": {
+"any": {
+"any": 5
+}
+}
+},
+"wraith_b_b": {
+"any": {
+"any": {
+"any": 5
+}
+}
+},
+"ghost_b_d_b": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"ghost_b_d_r": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"ghost_b_d_l": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"banshee_b_d_r": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"banshee_b_d_l": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"revenant_b_d": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"revenant_b_p": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"scorpion_b_b": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"scorpion_b_d_r": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"falcon_b_d_l": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_b_d_r": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_b_g_l": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"falcon_b_g_r": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"m10": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"scorpion_b_d_l": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"bind_pose": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"downed": {
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_bench": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_bench_wpn": {
+"pistol": {
+"any": {
+"any": 0
+}
+}
+},
+"global_combat": {
+"pistol": {
+"any": {
+"any": 0
+}
+}
+},
+"global_spartan": {
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"m10_drop": {
+"pistol": {
+"any": {
+"any": 0
+}
+}
+},
+"m20_spartan": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"mongoose_b_d_l": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"mongoose_b_d_r": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"truck_d": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"truck_p": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"m10_warthog": {
+"pistol": {
+"any": {
+"any": 0
+}
+}
+},
+"overcharged_jitter": {
+"missile": {
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"sl": {
+"any": 0
+},
+"pl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 9
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 8
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+}
+}
+},
+"flags": 0,
+"mode_sids": [
+"0xad",
+"0xae",
+"0xaf",
+"0xb2",
+"0xfa",
+"0xff",
+"0x1a2",
+"0x1a3",
+"0x30b",
+"0x381",
+"0x69f",
+"0x3fa6",
+"0x3fa7",
+"0x4eda",
+"0x4ee1",
+"0x4efd",
+"0x4f80",
+"0x5202",
+"0x5203",
+"0x5204",
+"0x5205",
+"0x5206",
+"0x5207",
+"0x5208",
+"0x5211",
+"0x5212",
+"0x523c",
+"0x523d",
+"0x5243",
+"0x5244",
+"0x5245",
+"0x5246",
+"0x524b",
+"0x524c",
+"0x5250",
+"0x5251",
+"0x5b65",
+"0x5b66",
+"0x5cae",
+"0x6036",
+"0x603c",
+"0x603f",
+"0x61fa",
+"0x61fd",
+"0x61ff",
+"0x627a",
+"0x627d",
+"0x632a",
+"0x632d",
+"0x713c",
+"0x715d",
+"0x7273",
+"0x7274",
+"0x7275",
+"0x7276",
+"0x7284",
+"0x7294",
+"0x7d8c",
+"0x8d6a",
+"0x8d72",
+"0x8d74",
+"0x8d8e",
+"0x8d90",
+"0x8daa",
+"0x8db4",
+"0x8dc4",
+"0x8dc5",
+"0x8dca",
+"0x8dcb",
+"0x9516",
+"0x80072"
+],
+"weapon_list": [],
+"variants": [],
+"parent": null
+},
+"objects\\characters\\marine\\marine": {
+"name": "objects\\characters\\marine\\marine",
+"modes": {
+"panic": {
+"any": {
+"any": {
+"any": 17
+}
+}
+},
+"posing": {
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"patrol": {
+"unarmed": {
+"any": {
+"any": 12
+}
+}
+},
+"combat": {
+"unarmed": {
+"any": {
+"any": 13
+}
+},
+"any": {
+"any": {
+"any": 2
+}
+},
+"missile": {
+"any": {
+"any": 31
+},
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"ml": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"sl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 42
+},
+"smg": {
+"any": 0
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"pr": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 36
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+},
+"turret": {
+"ftt": {
+"any": 42
+}
+}
+},
+"crouch": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 0
+}
+},
+"missile": {
+"any": {
+"any": 15
+},
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"ml": {
+"any": 0
+},
+"sl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 15
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 15
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"flee": {
+"any": {
+"any": {
+"any": 21
+}
+}
+},
+"any": {
+"any": {
+"any": {
+"any": 7,
+"sync_actions": 2
+}
+}
+},
+"vault": {
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+}
+},
+"pistol": {
+"any": {
+"any": 1
+}
+}
+},
+"hoist": {
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+}
+},
+"pistol": {
+"any": {
+"any": 1
+}
+}
+},
+"hoist_crouch": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"hoist_stand": {
+"any": {
+"any": {
+"any": 1
+}
+},
+"missile": {
+"any": {
+"any": 1
+}
+},
+"pistol": {
+"any": {
+"any": 1
+}
+}
+},
+"bunker": {
+"unarmed": {
+"any": {
+"center_crouch_closed": 4
+}
+},
+"missile": {
+"any": {
+"center_crouch_open": 4,
+"center_crouch_closed": 5
+}
+},
+"rifle": {
+"any": {
+"left_crouch_open": 4,
+"left_crouch_closed": 7,
+"left_stand_open": 4,
+"left_stand_closed": 7,
+"right_crouch_open": 4,
+"right_crouch_closed": 7,
+"right_stand_open": 3,
+"right_stand_closed": 6,
+"center_crouch_open": 4,
+"center_crouch_closed": 7
+}
+},
+"pistol": {
+"any": {
+"center_crouch_open": 4,
+"center_crouch_closed": 5
+}
+}
+},
+"warthog_g": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"fixed": {
+"any": {
+"any": 3
+}
+}
+},
+"turret_g": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"pelican_e": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"pelican_p_l01": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 1
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"pelican_p_l02": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 1
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"pelican_p_l03": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 1
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"pelican_p_l04": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"pelican_p_l05": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"pelican_p_r01": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 1
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"pelican_p_r02": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 1
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"pelican_p_r03": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 1
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"pelican_p_r04": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"scorpion_d": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"sync_marine_desecration": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"banshee_d": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"death_pose": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"death_pose_2": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_d": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_g_l": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"falcon_g_r": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"falcon_p_l1": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_l2": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_r1": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_r2": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"ghost_d": {
+"any": {
+"any": {
+"any": 5
+}
+}
+},
+"global_alert": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"global_crouched_scanning": {
+"unarmed": {
+"any": {
+"any": 0
+}
+}
+},
+"global_injured": {
+"unarmed": {
+"any": {
+"any": 0
+}
+}
+},
+"global_scanning": {
+"unarmed": {
+"any": {
+"any": 0
+}
+}
+},
+"global_typing": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"m50": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"m52": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"sr": {
+"any": 0
+}
+}
+},
+"m52_captive": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"m52_vig_marine01": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"m52_vig_marine02": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"mongoose_d": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"mongoose_p": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+}
+},
+"pelican_d": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"pelican_g": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"pelican_g_pod": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"pelican_g_rear": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"pelican_p_copilot": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"pelican_p_r05": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"revenant_d": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"revenant_p": {
+"any": {
+"any": {
+"any": 4
+}
+},
+"missile": {
+"any": {
+"any": 3
+}
+},
+"rifle": {
+"any": {
+"any": 4
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 3
+}
+}
+},
+"scorpion_g": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"scorpion_p_lb": {
+"unarmed": {
+"any": {
+"any": 0
+}
+},
+"any": {
+"any": {
+"any": 0
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"scorpion_p_lf": {
+"unarmed": {
+"any": {
+"any": 0
+}
+},
+"any": {
+"any": {
+"any": 0
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"scorpion_p_rb": {
+"unarmed": {
+"any": {
+"any": 0
+}
+},
+"any": {
+"any": {
+"any": 0
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"scorpion_p_rf": {
+"unarmed": {
+"any": {
+"any": 0
+}
+},
+"any": {
+"any": {
+"any": 0
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"warthog_d": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"warthog_p": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 3
+},
+"sl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 4
+},
+"smg": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 3
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"warthog_p_b": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 3
+}
+},
+"rifle": {
+"any": {
+"any": 4
+}
+},
+"pistol": {
+"any": {
+"any": 4
+}
+}
+},
+"warthog_p_l": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 4
+}
+},
+"rifle": {
+"any": {
+"any": 5
+}
+},
+"pistol": {
+"any": {
+"any": 4
+}
+}
+},
+"warthog_p_r": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 3
+}
+},
+"rifle": {
+"any": {
+"any": 4
+}
+},
+"pistol": {
+"any": {
+"any": 4
+}
+}
+},
+"wraith_d": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"wraith_g": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"overcharged_jitter": {
+"rifle": {
+"any": {
+"any": 20
+}
+},
+"pistol": {
+"any": {
+"any": 15
+}
+}
+}
+},
+"flags": 0,
+"mode_sids": [
+"0x47",
+"0x68",
+"0xad",
+"0xae",
+"0xb2",
+"0xb6",
+"0xff",
+"0x153",
+"0x192",
+"0x193",
+"0x194",
+"0x381",
+"0x3fa6",
+"0x3fa7",
+"0x4eb2",
+"0x4ec5",
+"0x4ecc",
+"0x4ed3",
+"0x4eda",
+"0x4ee1",
+"0x4ee8",
+"0x4eef",
+"0x4ef6",
+"0x4efd",
+"0x4f80",
+"0x51b4",
+"0x51c9",
+"0x5200",
+"0x5201",
+"0x5202",
+"0x5203",
+"0x5204",
+"0x5205",
+"0x5206",
+"0x5207",
+"0x5208",
+"0x5211",
+"0x5212",
+"0x521d",
+"0x521e",
+"0x5223",
+"0x5224",
+"0x5225",
+"0x5226",
+"0x5235",
+"0x523a",
+"0x523b",
+"0x523c",
+"0x523d",
+"0x523e",
+"0x523f",
+"0x5240",
+"0x5241",
+"0x5242",
+"0x5243",
+"0x5244",
+"0x5245",
+"0x5246",
+"0x5247",
+"0x5248",
+"0x5249",
+"0x524a",
+"0x524b",
+"0x524c",
+"0x524d",
+"0x524e",
+"0x524f",
+"0x5250",
+"0x5251",
+"0x80072"
+],
+"weapon_list": [],
+"variants": [],
+"parent": null
+},
+"objects\\characters\\null\\null": {
+"name": "objects\\characters\\null\\null",
+"modes": {
+"patrol": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"combat": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"any": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"warthog_g": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"turret_g": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"banshee_d": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"pelican_d": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"pelican_g": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"warthog_d": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"close_turret_doors": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"phantom_d": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"fork_d": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"sabre_d": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"seraph_d": {
+"any": {
+"any": {
+"any": 1
+}
+}
+}
+},
+"flags": 0,
+"mode_sids": [
+"0xad",
+"0xae",
+"0xff",
+"0x3fa6",
+"0x3fa7",
+"0x51c9",
+"0x523e",
+"0x523f",
+"0x524b",
+"0x5e0a",
+"0x5e16",
+"0x5faa",
+"0x9a45",
+"0x9a46"
+],
+"weapon_list": [],
+"variants": [],
+"parent": null
+},
+"objects\\characters\\civilian_female\\civilian_female": {
+"name": "objects\\characters\\civilian_female\\civilian_female",
+"modes": {
+"panic": {
+"unarmed": {
+"any": {
+"any": 0
+}
+},
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"posing": {
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"patrol": {
+"unarmed": {
+"any": {
+"any": 8
+}
+}
+},
+"combat": {
+"unarmed": {
+"any": {
+"any": 9
+}
+},
+"any": {
+"any": {
+"any": 2
+}
+},
+"missile": {
+"any": {
+"any": 31
+},
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"ml": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"sl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 42
+},
+"smg": {
+"any": 0
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"prp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"cb": {
+"any": 0
+},
+"cr": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"gl": {
+"any": 0
+},
+"pr": {
+"any": 0
+},
+"spr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 38
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+},
+"turret": {
+"ftt": {
+"any": 42
+}
+}
+},
+"crouch": {
+"unarmed": {
+"any": {
+"any": 2
+}
+},
+"any": {
+"any": {
+"any": 0
+}
+},
+"missile": {
+"any": {
+"any": 15
+},
+"rl": {
+"any": 0
+},
+"fc": {
+"any": 0
+},
+"ml": {
+"any": 0
+},
+"sl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 15
+},
+"smg": {
+"any": 0
+},
+"ar": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 15
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"flee": {
+"any": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 2
+}
+}
+},
+"any": {
+"any": {
+"any": {
+"any": 6,
+"sync_actions": 1
+}
+}
+},
+"vault": {
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+}
+},
+"pistol": {
+"any": {
+"any": 1
+}
+}
+},
+"hoist": {
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+}
+},
+"pistol": {
+"any": {
+"any": 1
+}
+}
+},
+"hoist_crouch": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"hoist_stand": {
+"any": {
+"any": {
+"any": 1
+}
+},
+"missile": {
+"any": {
+"any": 1
+}
+},
+"pistol": {
+"any": {
+"any": 1
+}
+}
+},
+"bunker": {
+"unarmed": {
+"any": {
+"center_crouch_closed": 4
+}
+},
+"missile": {
+"any": {
+"center_crouch_open": 3,
+"center_crouch_closed": 4
+}
+},
+"rifle": {
+"any": {
+"left_crouch_open": 4,
+"left_crouch_closed": 7,
+"left_stand_open": 4,
+"left_stand_closed": 7,
+"right_crouch_open": 4,
+"right_crouch_closed": 7,
+"right_stand_open": 3,
+"right_stand_closed": 6,
+"center_crouch_open": 4,
+"center_crouch_closed": 7
+}
+},
+"pistol": {
+"any": {
+"center_crouch_open": 3,
+"center_crouch_closed": 4
+}
+}
+},
+"corner_cover_left": {
+"rifle": {
+"any": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+}
+}
+},
+"corner_cover_right": {
+"pistol": {
+"any": {
+"any": 0
+}
+}
+},
+"warthog_g": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"fixed": {
+"any": {
+"any": 3
+}
+}
+},
+"turret_g": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"pelican_e": {
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"pelican_p_l01": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 1
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"pelican_p_l02": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 1
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"pelican_p_l03": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 1
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"pelican_p_l04": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"pelican_p_l05": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"pelican_p_r01": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 1
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"pelican_p_r02": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 1
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"pelican_p_r03": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 1
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 1
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"pelican_p_r04": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"scorpion_d": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"sync_marine_desecration": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"banshee_d": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"death_pose": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"death_pose_2": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_d": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_g_l": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"falcon_g_r": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"falcon_p_l1": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_l2": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_r1": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"falcon_p_r2": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"ghost_d": {
+"any": {
+"any": {
+"any": 5
+}
+}
+},
+"global_alert": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+}
+}
+},
+"global_crouched_scanning": {
+"unarmed": {
+"any": {
+"any": 0
+}
+}
+},
+"global_injured": {
+"unarmed": {
+"any": {
+"any": 0
+}
+}
+},
+"global_scanning": {
+"unarmed": {
+"any": {
+"any": 0
+}
+}
+},
+"m52": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"m52_captive": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"mongoose_d": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"mongoose_p": {
+"any": {
+"any": {
+"any": 0
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+}
+},
+"pelican_d": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"pelican_g": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 2
+}
+}
+},
+"pelican_g_pod": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"pelican_g_rear": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"pelican_p_copilot": {
+"any": {
+"any": {
+"any": 1
+}
+}
+},
+"pelican_p_r05": {
+"unarmed": {
+"any": {
+"any": 1
+}
+},
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 1
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"hp": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"revenant_d": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"revenant_p": {
+"any": {
+"any": {
+"any": 4
+}
+},
+"missile": {
+"any": {
+"any": 3
+}
+},
+"rifle": {
+"any": {
+"any": 4
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 3
+}
+}
+},
+"scorpion_g": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"scorpion_p_lb": {
+"unarmed": {
+"any": {
+"any": 0
+}
+},
+"any": {
+"any": {
+"any": 0
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"scorpion_p_lf": {
+"unarmed": {
+"any": {
+"any": 0
+}
+},
+"any": {
+"any": {
+"any": 0
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"scorpion_p_rb": {
+"unarmed": {
+"any": {
+"any": 0
+}
+},
+"any": {
+"any": {
+"any": 0
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"scorpion_p_rf": {
+"unarmed": {
+"any": {
+"any": 0
+}
+},
+"any": {
+"any": {
+"any": 0
+}
+},
+"missile": {
+"any": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 0
+},
+"smg": {
+"any": 0
+},
+"br": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 0
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"warthog_d": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"warthog_p": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 3
+},
+"sl": {
+"any": 0
+}
+},
+"rifle": {
+"any": {
+"any": 4
+},
+"smg": {
+"any": 0
+},
+"sr": {
+"any": 0
+},
+"sg": {
+"any": 0
+},
+"csr": {
+"any": 0
+},
+"pr": {
+"any": 0
+}
+},
+"pistol": {
+"any": {
+"any": 3
+},
+"ne": {
+"any": 0
+},
+"pp": {
+"any": 0
+}
+}
+},
+"warthog_p_b": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 3
+}
+},
+"rifle": {
+"any": {
+"any": 4
+}
+},
+"pistol": {
+"any": {
+"any": 4
+}
+}
+},
+"warthog_p_l": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 4
+}
+},
+"rifle": {
+"any": {
+"any": 5
+}
+},
+"pistol": {
+"any": {
+"any": 4
+}
+}
+},
+"warthog_p_r": {
+"any": {
+"any": {
+"any": 3
+}
+},
+"missile": {
+"any": {
+"any": 3
+}
+},
+"rifle": {
+"any": {
+"any": 4
+}
+},
+"pistol": {
+"any": {
+"any": 4
+}
+}
+},
+"wraith_d": {
+"any": {
+"any": {
+"any": 4
+}
+}
+},
+"wraith_g": {
+"any": {
+"any": {
+"any": 3
+}
+}
+},
+"e3": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"m10": {
+"any": {
+"any": {
+"any": 0
+}
+}
+},
+"patrol_var1": {
+"unarmed": {
+"any": {
+"any": 0
+}
+}
+},
+"patrol_var2": {
+"unarmed": {
+"any": {
+"any": 0
+}
+}
+},
+"overcharged_jitter": {
+"rifle": {
+"any": {
+"any": 20
+}
+},
+"pistol": {
+"any": {
+"any": 15
+}
+}
+}
+},
+"flags": 0,
+"mode_sids": [
+"0x47",
+"0x68",
+"0xad",
+"0xae",
+"0xb2",
+"0xb6",
+"0xff",
+"0x153",
+"0x192",
+"0x193",
+"0x194",
+"0x381",
+"0x386",
+"0x387",
+"0x3fa6",
+"0x3fa7",
+"0x4eb2",
+"0x4ec5",
+"0x4ecc",
+"0x4ed3",
+"0x4eda",
+"0x4ee1",
+"0x4ee8",
+"0x4eef",
+"0x4ef6",
+"0x4efd",
+"0x4f80",
+"0x51b4",
+"0x51c9",
+"0x5200",
+"0x5201",
+"0x5202",
+"0x5203",
+"0x5204",
+"0x5205",
+"0x5206",
+"0x5207",
+"0x5208",
+"0x5211",
+"0x5212",
+"0x521d",
+"0x521e",
+"0x5223",
+"0x5226",
+"0x5235",
+"0x523c",
+"0x523d",
+"0x523e",
+"0x523f",
+"0x5240",
+"0x5241",
+"0x5242",
+"0x5243",
+"0x5244",
+"0x5245",
+"0x5246",
+"0x5247",
+"0x5248",
+"0x5249",
+"0x524a",
+"0x524b",
+"0x524c",
+"0x524d",
+"0x524e",
+"0x524f",
+"0x5250",
+"0x5251",
+"0x725d",
+"0x7284",
+"0x9a9d",
+"0x9a9e",
+"0x80072"
+],
+"weapon_list": [],
+"variants": [],
+"parent": null
+}
+},
+"firing": {
+"ai\\generic_turret": {
+"wp": [],
+"fp": [],
+"parent": "ai\\generic"
+},
+"ai\\generic": {
+"wp": [
+"objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+"objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+"objects\\weapons\\rifle\\dmr\\dmr",
+"objects\\weapons\\melee\\energy_sword\\energy_sword",
+"objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+"objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+"objects\\characters\\hunter\\hunter_fuel_rod\\hunter_fuel_rod",
+"objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
+"objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+"objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret",
+"objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge",
+"objects\\weapons\\pistol\\magnum\\magnum",
+"objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+"objects\\weapons\\pistol\\needler\\needler",
+"objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+"objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+"objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret",
+"objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+"objects\\weapons\\rifle\\shotgun\\shotgun",
+"objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+"objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+"objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+"objects\\weapons\\pistol\\target_laser\\target_laser",
+"0xffffffff",
+"objects\\vehicles\\covenant\\banshee\\weapons\\banshee_dual_cannon\\banshee_dual_cannon",
+"objects\\vehicles\\human\\falcon\\turrets\\falcon_chin_gun\\weapons\\falcon_chin_gun",
+"objects\\vehicles\\human\\falcon\\turrets\\falcon_side_gun_left\\weapons\\falcon_grenade_launcher",
+"objects\\vehicles\\human\\falcon\\turrets\\falcon_side_gun_left\\weapons\\falcon_machinegun",
+"objects\\vehicles\\covenant\\ghost\\weapons\\ghost_dual_cannon\\ghost_dual_cannon",
+"0xffffffff",
+"objects\\vehicles\\human\\pelican\\attachments\\pelican_chin_gun\\weapons\\pelican_chin_gun",
+"objects\\vehicles\\covenant\\phantom\\turrets\\phantom_chin_gun\\weapons\\phantom_chin_gun",
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted",
+"objects\\vehicles\\covenant\\revenant\\turrets\\revenant_plasma_turret\\weapon\\revenant_plasma_turret",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\warthog_chaingun",
+"objects\\vehicles\\human\\warthog\\weapons\\warthog_gauss\\weapon\\warthog_gauss",
+"objects\\vehicles\\human\\warthog\\weapons\\warthog_rocket\\weapon\\warthog_rocket_pod",
+"objects\\vehicles\\covenant\\wraith\\turrets\\wraith_anti_infantry\\weapon\\wraith_anti_infantry",
+"objects\\vehicles\\covenant\\wraith\\turrets\\wraith_mortar\\weapon\\wraith_mortar",
+"0xffffffff",
+"objects\\vehicles\\human\\turrets\\anti_air_cannon\\weapon\\anti_air_cannon",
+"0xffffffff",
+"0xffffffff",
+"objects\\vehicles\\covenant\\covenant_fleet\\corvette\\turrets\\corvette_ball_turret\\weapon\\corvette_ball_turret",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff"
+],
+"fp": [
+"objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+"objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+"objects\\weapons\\rifle\\dmr\\dmr",
+"objects\\weapons\\melee\\energy_sword\\energy_sword",
+"objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+"objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+"objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
+"objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+"objects\\characters\\hunter\\hunter_fuel_rod\\hunter_fuel_rod",
+"objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret",
+"objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge",
+"objects\\weapons\\pistol\\magnum\\magnum",
+"objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+"objects\\weapons\\pistol\\needler\\needler",
+"objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+"objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+"objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret",
+"objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+"objects\\weapons\\rifle\\shotgun\\shotgun",
+"objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+"objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+"objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+"objects\\weapons\\pistol\\target_laser\\target_laser",
+"0xffffffff",
+"objects\\vehicles\\covenant\\banshee\\weapons\\banshee_dual_cannon\\banshee_dual_cannon",
+"objects\\vehicles\\human\\falcon\\turrets\\falcon_chin_gun\\weapons\\falcon_chin_gun",
+"objects\\vehicles\\human\\falcon\\turrets\\falcon_side_gun_left\\weapons\\falcon_grenade_launcher",
+"objects\\vehicles\\human\\falcon\\turrets\\falcon_side_gun_left\\weapons\\falcon_machinegun",
+"objects\\vehicles\\covenant\\ghost\\weapons\\ghost_dual_cannon\\ghost_dual_cannon",
+"objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret",
+"objects\\vehicles\\human\\pelican\\attachments\\pelican_chin_gun\\weapons\\pelican_chin_gun",
+"objects\\vehicles\\covenant\\phantom\\turrets\\phantom_chin_gun\\weapons\\phantom_chin_gun",
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted",
+"objects\\vehicles\\covenant\\revenant\\turrets\\revenant_plasma_turret\\weapon\\revenant_plasma_turret",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\warthog_chaingun",
+"objects\\vehicles\\human\\warthog\\weapons\\warthog_gauss\\weapon\\warthog_gauss",
+"objects\\vehicles\\human\\warthog\\weapons\\warthog_rocket\\weapon\\warthog_rocket_pod",
+"objects\\vehicles\\covenant\\wraith\\turrets\\wraith_anti_infantry\\weapon\\wraith_anti_infantry",
+"objects\\vehicles\\covenant\\wraith\\turrets\\wraith_mortar\\weapon\\wraith_mortar",
+"0xffffffff",
+"objects\\vehicles\\human\\turrets\\anti_air_cannon\\weapon\\anti_air_cannon",
+"0xffffffff",
+"0xffffffff",
+"objects\\vehicles\\covenant\\covenant_fleet\\corvette\\turrets\\corvette_ball_turret\\weapon\\corvette_ball_turret",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff"
+],
+"parent": null
+},
+"ai\\stimuli\\generic_night_vision": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"ai\\stimuli\\generic_long_vision": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"ai\\stimuli\\generic_long_vision_m20": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"ai\\stimuli\\generic_turret_short_vision": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"ai\\stimuli\\generic_space_vision": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"ai\\stimuli\\generic_shooting_dangerous": {
+"wp": [],
+"fp": [
+"objects\\vehicles\\covenant\\banshee\\weapons\\banshee_dual_cannon\\banshee_dual_cannon"
+],
+"parent": null
+},
+"ai\\stimuli\\generic_combat_cue_low": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"ai\\stimuli\\generic_playfight": {
+"wp": [],
+"fp": [
+"objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+"objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+"objects\\weapons\\rifle\\dmr\\dmr",
+"objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+"objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+"objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+"objects\\characters\\hunter\\hunter_fuel_rod\\hunter_fuel_rod",
+"objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret",
+"objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge",
+"objects\\weapons\\pistol\\magnum\\magnum",
+"objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+"objects\\weapons\\pistol\\needler\\needler",
+"objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+"objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+"objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret",
+"objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+"objects\\weapons\\rifle\\shotgun\\shotgun",
+"objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+"objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+"objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+"objects\\weapons\\pistol\\target_laser\\target_laser",
+"0xffffffff",
+"objects\\vehicles\\covenant\\banshee\\weapons\\banshee_dual_cannon\\banshee_dual_cannon",
+"objects\\vehicles\\human\\falcon\\turrets\\falcon_chin_gun\\weapons\\falcon_chin_gun",
+"objects\\vehicles\\human\\falcon\\turrets\\falcon_side_gun_left\\weapons\\falcon_grenade_launcher",
+"objects\\vehicles\\human\\falcon\\turrets\\falcon_side_gun_left\\weapons\\falcon_machinegun",
+"objects\\vehicles\\covenant\\ghost\\weapons\\ghost_dual_cannon\\ghost_dual_cannon",
+"objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret",
+"objects\\vehicles\\human\\pelican\\attachments\\pelican_chin_gun\\weapons\\pelican_chin_gun",
+"objects\\vehicles\\covenant\\phantom\\turrets\\phantom_chin_gun\\weapons\\phantom_chin_gun",
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted",
+"objects\\vehicles\\covenant\\revenant\\turrets\\revenant_plasma_turret\\weapon\\revenant_plasma_turret",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"0xffffffff",
+"objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\warthog_chaingun",
+"objects\\vehicles\\human\\warthog\\weapons\\warthog_gauss\\weapon\\warthog_gauss",
+"objects\\vehicles\\human\\warthog\\weapons\\warthog_rocket\\weapon\\warthog_rocket_pod",
+"objects\\vehicles\\covenant\\wraith\\turrets\\wraith_anti_infantry\\weapon\\wraith_anti_infantry",
+"objects\\vehicles\\covenant\\wraith\\turrets\\wraith_mortar\\weapon\\wraith_mortar"
+],
+"parent": null
+},
+"ai\\stimuli\\generic_m20_flak": {
+"wp": [
+"objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+],
+"fp": [],
+"parent": null
+},
+"ai\\stimuli\\generic_m45_rocket": {
+"wp": [
+"objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+"objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+],
+"fp": [],
+"parent": null
+},
+"ai\\stimuli\\generic_m35_railride": {
+"wp": [
+"objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+"objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+"objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+"objects\\weapons\\pistol\\needler\\needler",
+"objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+"objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+"0xffffffff",
+"0xffffffff",
+"objects\\vehicles\\covenant\\wraith\\turrets\\wraith_anti_infantry\\weapon\\wraith_anti_infantry"
+],
+"fp": [
+"objects\\weapons\\pistol\\needler\\needler",
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+"objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+"0xffffffff"
+],
+"parent": null
+},
+"ai\\stimuli\\generic_m52_long_shoot": {
+"wp": [
+"objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+"objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+"objects\\weapons\\rifle\\needle_rifle\\needle_rifle"
+],
+"fp": [],
+"parent": null
+},
+"ai\\stimuli\\generic_m70_lower_ammo": {
+"wp": [
+"objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
+"objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+],
+"fp": [],
+"parent": null
+},
+"ai\\stimuli\\generic_m70_phantom": {
+"wp": [
+"objects\\vehicles\\covenant\\phantom\\turrets\\phantom_chin_gun\\weapons\\phantom_chin_gun"
+],
+"fp": [
+"objects\\vehicles\\covenant\\phantom\\turrets\\phantom_chin_gun\\weapons\\phantom_chin_gun"
+],
+"parent": null
+},
+"ai\\stimuli\\generic_m20_rocket": {
+"wp": [
+"objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+],
+"fp": [
+"objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+],
+"parent": null
+},
+"ai\\stimuli\\generic_firefight_phantom": {
+"wp": [],
+"fp": [
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"
+],
+"parent": null
+},
+"objects\\characters\\elite\\ai\\elite": {
+"wp": [
+"objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+"objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+],
+"fp": [
+"objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+"objects\\weapons\\rifle\\dmr\\dmr",
+"objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+"objects\\weapons\\pistol\\magnum\\magnum",
+"objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+"objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+"objects\\weapons\\support_high\\spartan_laser\\spartan_laser"
+],
+"parent": "ai\\generic"
+},
+"objects\\characters\\elite\\ai\\elite_officer": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\elite\\ai\\elite"
+},
+"objects\\characters\\elite\\ai\\elite_ultra": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\elite\\ai\\elite"
+},
+"objects\\characters\\elite\\ai\\stimuli\\elite_aggressive": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\elite\\ai\\stimuli\\elite_defensive": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\elite\\ai\\stimuli\\elite_berserk": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\elite\\ai\\stimuli\\elite_m30_assassination": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\grunt\\ai\\grunt": {
+"wp": [],
+"fp": [
+"objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+],
+"parent": "ai\\generic"
+},
+"objects\\characters\\grunt\\ai\\grunt_major": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\grunt\\ai\\grunt"
+},
+"objects\\characters\\grunt\\ai\\grunt_ultra": {
+"wp": [
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+],
+"fp": [],
+"parent": "objects\\characters\\grunt\\ai\\grunt"
+},
+"objects\\characters\\grunt\\ai\\stimuli\\grunt_aggressive": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\grunt\\ai\\stimuli\\grunt_defensive": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\grunt\\ai\\stimuli\\grunt_kamikaze": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\jackal\\ai\\jackal": {
+"wp": [
+"objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+"objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+"objects\\weapons\\pistol\\needler\\needler",
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+],
+"fp": [
+"objects\\weapons\\pistol\\needler\\needler",
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+],
+"parent": "ai\\generic"
+},
+"objects\\characters\\jackal\\ai\\jackal_major": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\jackal\\ai\\jackal"
+},
+"objects\\characters\\jackal\\ai\\stimuli\\jackal_aggressive": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\jackal\\ai\\stimuli\\jackal_defensive": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\jackal\\ai\\jackal_sniper": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\jackal\\ai\\jackal"
+},
+"objects\\characters\\grunt\\ai\\grunt_heavy": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\grunt\\ai\\grunt_ultra"
+},
+"objects\\characters\\hunter\\ai\\hunter": {
+"wp": [],
+"fp": [],
+"parent": "ai\\generic"
+},
+"objects\\characters\\spartans_ai\\ai\\spartan_carter": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\spartans_ai\\ai\\spartan_generic"
+},
+"objects\\characters\\spartans_ai\\ai\\spartan_generic": {
+"wp": [],
+"fp": [
+"objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+"objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+"objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge",
+"objects\\weapons\\pistol\\magnum\\magnum",
+"objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+],
+"parent": "ai\\generic"
+},
+"objects\\characters\\spartans_ai\\ai\\stimuli\\spartan_aggressive": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\spartans_ai\\ai\\stimuli\\spartan_defensive": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\spartans_ai\\ai\\stimuli\\spartan_m10_start": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\spartans_ai\\ai\\stimuli\\spartan_no_armorlock": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\spartans_ai\\ai\\stimuli\\spartan_playfight": {
+"wp": [],
+"fp": [
+"objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+"objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+"objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge",
+"objects\\weapons\\pistol\\magnum\\magnum",
+"objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+],
+"parent": null
+},
+"objects\\characters\\spartans_ai\\ai\\stimuli\\spartan_stealthy": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\spartans_ai\\ai\\stimuli\\spartan_speed_5": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\spartans_ai\\ai\\stimuli\\spartan_speed_7": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\spartans_ai\\ai\\stimuli\\spartan_speed_8": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\spartans_ai\\ai\\stimuli\\spartan_speed_9": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\spartans_ai\\ai\\stimuli\\spartan_sprint": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\spartans_ai\\ai\\spartan_emile": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\spartans_ai\\ai\\spartan_generic"
+},
+"objects\\characters\\spartans_ai\\ai\\spartan_jorge": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\spartans_ai\\ai\\spartan_generic"
+},
+"objects\\characters\\spartans_female_ai\\ai\\spartan_kat": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\spartans_ai\\ai\\spartan_generic"
+},
+"objects\\characters\\jackal\\ai\\skirmisher": {
+"wp": [],
+"fp": [],
+"parent": "ai\\generic"
+},
+"objects\\characters\\jackal\\ai\\skirmisher_major": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\jackal\\ai\\skirmisher"
+},
+"objects\\characters\\jackal\\ai\\stimuli\\skirmisher_aggressive": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\jackal\\ai\\stimuli\\skirmisher_defensive": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\spartans_ai\\ai\\spartan_jun": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\spartans_ai\\ai\\spartan_generic"
+},
+"objects\\characters\\marine\\ai\\trooper": {
+"wp": [],
+"fp": [],
+"parent": "ai\\generic"
+},
+"objects\\characters\\marine\\ai\\stimuli\\marine_fireteam_regroup": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\marine\\ai\\stimuli\\trooper_aggressive": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\marine\\ai\\stimuli\\trooper_defensive": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\marine\\ai\\stimuli\\trooper_stealthy": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\marine\\ai\\stimuli\\m60_no_crouch": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\elite\\ai\\elite_specops": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\elite\\ai\\elite"
+},
+"objects\\characters\\elite\\ai\\elite_general": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\elite\\ai\\elite_ultra"
+},
+"objects\\characters\\null\\ai\\null_human_flying": {
+"wp": [],
+"fp": [],
+"parent": "ai\\generic"
+},
+"objects\\characters\\null\\ai\\null_human_default": {
+"wp": [],
+"fp": [],
+"parent": "ai\\generic"
+},
+"objects\\characters\\null\\ai\\null_cov_flying": {
+"wp": [],
+"fp": [],
+"parent": "ai\\generic"
+},
+"objects\\characters\\null\\ai\\null_cov_default": {
+"wp": [],
+"fp": [],
+"parent": "ai\\generic"
+},
+"objects\\characters\\elite\\ai\\elite_jetpack": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\elite\\ai\\elite"
+},
+"objects\\characters\\elite\\ai\\stimuli\\elite_jetpack_nojump": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\elite\\ai\\elite"
+},
+"objects\\characters\\elite\\ai\\stimuli\\elite_jetpack_jump": {
+"wp": [],
+"fp": [],
+"parent": null
+},
+"objects\\characters\\elite\\ai\\elite_pilot": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\elite\\ai\\elite"
+},
+"objects\\characters\\marine_female\\ai\\trooper_female": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\marine\\ai\\trooper"
+},
+"objects\\characters\\elite\\ai\\named\\elite_bob": {
+"wp": [],
+"fp": [],
+"parent": "objects\\characters\\elite\\ai\\elite_ultra"
+}
+},
+"all_weap": [
+"objects\\vehicles\\human\\turrets\\anti_air_cannon\\weapon\\anti_air_cannon",
+"objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+"objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+"objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+"objects\\weapons\\rifle\\dmr\\dmr",
+"objects\\weapons\\rifle\\shotgun\\shotgun",
+"objects\\weapons\\pistol\\magnum\\magnum",
+"objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\warthog_chaingun",
+"objects\\vehicles\\human\\warthog\\weapons\\warthog_gauss\\weapon\\warthog_gauss",
+"objects\\vehicles\\human\\warthog\\weapons\\warthog_rocket\\weapon\\warthog_rocket_pod",
+"objects\\vehicles\\human\\warthog\\weapons\\warthog_horn\\warthog_horn",
+"objects\\vehicles\\covenant\\phantom\\turrets\\phantom_chin_gun\\weapons\\phantom_chin_gun",
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret",
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted",
+"objects\\vehicles\\covenant\\wraith\\turrets\\wraith_mortar\\weapon\\wraith_mortar",
+"objects\\vehicles\\covenant\\wraith\\turrets\\wraith_anti_infantry\\weapon\\wraith_anti_infantry",
+"objects\\vehicles\\human\\pelican\\attachments\\pelican_chin_gun\\weapons\\pelican_chin_gun",
+"objects\\vehicles\\covenant\\ghost\\weapons\\ghost_dual_cannon\\ghost_dual_cannon",
+"objects\\vehicles\\covenant\\banshee\\weapons\\banshee_dual_cannon\\banshee_dual_cannon",
+"objects\\vehicles\\covenant\\banshee\\weapons\\banshee_bomb_launcher\\banshee_bomb_launcher",
+"objects\\vehicles\\covenant\\revenant\\turrets\\revenant_plasma_turret\\weapon\\revenant_plasma_turret",
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+"objects\\weapons\\melee\\energy_sword\\energy_sword",
+"objects\\weapons\\pistol\\needler\\needler",
+"objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+"objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+"objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+"objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+"objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge",
+"objects\\weapons\\pistol\\target_laser\\target_laser",
+"objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+"objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+"objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+"objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
+"objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+"objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+"objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+"objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret",
+"objects\\weapons\\rifle\\saw\\saw",
+"objects\\vehicles\\covenant\\covenant_fleet\\corvette\\turrets\\corvette_ball_turret\\weapon\\corvette_ball_turret",
+"objects\\weapons\\multiplayer\\skull\\skull",
+"objects\\weapons\\melee\\jackal_shield\\jackal_shield",
+"objects\\weapons\\melee\\skirmisher_bracers\\skirmisher_bracers",
+"objects\\weapons\\melee\\jackal_shield\\jackal_shield_major",
+"objects\\characters\\hunter\\hunter_fuel_rod\\hunter_fuel_rod",
+"objects\\props\\human\\unsc\\spartan_knife\\spartan_knife",
+"objects\\props\\human\\unsc\\spartan_knife_sheath\\spartan_knife_sheath",
+"objects\\vehicles\\human\\falcon\\turrets\\falcon_chin_gun\\weapons\\falcon_chin_gun",
+"objects\\vehicles\\human\\falcon\\turrets\\falcon_side_gun_left\\weapons\\falcon_machinegun",
+"objects\\vehicles\\human\\falcon\\turrets\\falcon_side_gun_left\\weapons\\falcon_grenade_launcher",
+"objects\\vehicles\\human\\falcon\\turrets\\falcon_sensor\\falcon_sensor",
+"objects\\weapons\\melee\\unarmed\\unarmed"
+],
+"slack": [
+null,
+{
+"size": 6356992,
+"n4k": 2,
+"total": 43632,
+"max": 39362
+},
+{
+"size": 8716288,
+"n4k": 1,
+"total": 46876,
+"max": 46876
+},
+{
+"size": 2621440,
+"n4k": 1,
+"total": 18216,
+"max": 18216
+},
+null,
+{
+"size": 111673344,
+"n4k": 1,
+"total": 28600,
+"max": 28600
+}
+],
+"scnr_partition": 5
+}

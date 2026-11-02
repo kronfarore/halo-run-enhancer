@@ -1,0 +1,832 @@
+
+===== 020_base.json
+
+# objects\characters\brute\brute parent objects\characters\brute\lipsync\lipsync modes 72 WL 13
+  WL [('any', 'any'), ('0x410', 'rifle'), ('0x5CE', 'rifle'), ('sg', 'rifle'), ('ex', 'pistol'), ('pr', 'rifle'), ('spr', 'pistol'), ('csr', 'rifle'), ('cb', 'rifle'), ('bs', 'support?'), ('sb', 'support?'), ('b', 'ball'), ('eb', 'sword')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any'], 'support?': ['any', 'sb'], 'rifle': ['0x410', '0x5CE', 'any', 'cb', 'csr', 'pr', 'sg'], 'pistol': ['any', 'spr'], 'sword': ['any', 'eb'], 'ball': ['any', 'b'], 'turret': ['any'], 'hammer': ['any']}
+  patrol   {'unarmed': ['any'], 'any': ['any']}
+  berserk  {'unarmed': ['any'], 'any': ['any'], 'support?': ['any'], 'rifle': ['any'], 'pistol': ['any']}
+  armored  {'unarmed': ['any'], 'any': ['any'], 'missile': ['any'], 'support?': ['any', 'bs', 'sb'], 'rifle': ['0x410', '0x5CE', 'any', 'cb', 'csr', 'pr', 'sg'], 'pistol': ['any', 'ex', 'spr'], 'sword': ['any', 'eb'], 'ball': ['any', 'b'], 'turret': ['any']}
+  combat | assault_rifle:A automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:A excavator:c flak_cannon:c flamethrower:c gravity_hammer:c machinegun_tur:c machinegun_tur:c magnum:c missile_pod:c needler:c plasma_cannon:c plasma_cannon_:c plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:c saw:A sentinel_gun:A shotgun:A smg:A smg_silenced:A sniper_rifle:c spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_cannon_:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+
+# objects\characters\bugger\bugger parent None modes 17 WL 4
+  WL [('any', 'any'), ('ne', 'pistol'), ('pp', 'pistol'), ('pr', 'pistol')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'rifle': ['any', 'ne', 'pp'], 'pistol': ['any', 'ne', 'pp', 'pr']}
+  patrol   {'unarmed': ['any'], 'pistol': ['any', 'pr']}
+  crouch   {'any': ['any'], 'rifle': ['any', 'ne', 'pp'], 'pistol': ['any', 'ne', 'pp', 'pr']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:- saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:- spike_rifle:c
+  patrol | assault_rifle:- automag:c battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:c
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:- saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:- spike_rifle:c
+
+# objects\characters\dervish\dervish parent objects\characters\elite\elite modes 40 WL 23
+  WL [('any', 'any'), ('0x410', 'pistol'), ('0x5CE', 'rifle'), ('0x5D2', 'rifle'), ('mgt', 'turret'), ('sg', 'rifle'), ('hp', 'pistol'), ('ne', 'pistol'), ('pp', 'pistol'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('pr', 'pistol'), ('spr', 'pistol'), ('ftt', 'turret'), ('csr', 'rifle'), ('cb', 'rifle'), ('bs', 'support?'), ('pgt', 'turret'), ('sb', 'support?'), ('mp', 'turret')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], '0x1F4': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support?': ['any', 'bs', 'sb'], 'rifle': ['0x410', '0x5CE', '0x5D2', 'any', 'cb', 'csr', 'pr', 'sg', 'sr'], 'pistol': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'sword': ['any'], 'ball': ['any'], 'turret': ['any', 'ftt', 'mgt', 'mp', 'pgt'], 'hammer': ['any']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], '0x1F4': ['any'], 'missile': ['any'], 'support?': ['any'], 'rifle': ['any'], 'pistol': ['any'], 'sword': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], '0x1F4': ['0x410', 'any', 'ex', 'hp', 'pp', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support?': ['any', 'bs'], 'rifle': ['0x5CE', '0x5D2', 'any', 'cb', 'csr', 'sg', 'sr'], 'pistol': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'sword': ['any'], 'ball': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:A gravity_hammer:c machinegun_tur:c machinegun_tur:c magnum:c missile_pod:A needler:c plasma_cannon:A plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:A spike_rifle:c
+  patrol | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:c magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:c machinegun_tur:- machinegun_tur:c magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+
+# objects\characters\elite\elite parent objects\characters\elite\lipsync\lipsync modes 40 WL 23
+  WL [('any', 'any'), ('0x410', 'pistol'), ('0x5CE', 'rifle'), ('0x5D2', 'rifle'), ('mgt', 'turret'), ('sg', 'rifle'), ('hp', 'pistol'), ('ne', 'pistol'), ('pp', 'pistol'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('pr', 'pistol'), ('spr', 'pistol'), ('ftt', 'turret'), ('csr', 'rifle'), ('cb', 'rifle'), ('bs', 'support?'), ('pgt', 'turret'), ('sb', 'support?'), ('mp', 'turret')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], '0x1F4': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support?': ['any', 'bs', 'sb'], 'rifle': ['0x410', '0x5CE', '0x5D2', 'any', 'cb', 'csr', 'pr', 'sg', 'sr'], 'pistol': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'sword': ['any'], 'ball': ['any'], 'turret': ['any', 'ftt', 'mgt', 'mp', 'pgt'], 'hammer': ['any']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], '0x1F4': ['any'], 'missile': ['any'], 'support?': ['any'], 'rifle': ['any'], 'pistol': ['any'], 'sword': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], '0x1F4': ['0x410', 'any', 'ex', 'hp', 'pp', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support?': ['any', 'bs'], 'rifle': ['0x5CE', '0x5D2', 'any', 'cb', 'csr', 'sg', 'sr'], 'pistol': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'sword': ['any'], 'ball': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:A gravity_hammer:c machinegun_tur:c machinegun_tur:c magnum:c missile_pod:A needler:c plasma_cannon:A plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:A spike_rifle:c
+  patrol | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:c magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:c machinegun_tur:- machinegun_tur:c magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+
+# objects\characters\grunt\grunt parent None modes 51 WL 18
+  WL [('any', 'any'), ('0x410', 'rifle'), ('0x5CE', 'rifle'), ('0x5D2', 'rifle'), ('mgt', 'support?'), ('sg', 'rifle'), ('ne', 'pistol'), ('pp', 'pistol'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('pr', 'pistol'), ('csr', 'rifle'), ('cb', 'rifle'), ('bs', 'support?'), ('pgt', 'support?'), ('pgts', 'support?'), ('sb', 'support?')]
+  any      {'any': ['any'], 'pistol': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl'], 'support?': ['bs', 'mgt', 'pgt', 'pgts', 'sb'], 'rifle': ['0x410', '0x5CE', '0x5D2', 'cb', 'csr', 'pr', 'sg', 'sr'], 'pistol': ['any', 'ne', 'pp', 'pr']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any'], 'pistol': ['any']}
+  crouch   {'unarmed': ['any'], 'missile': ['any', 'rl'], 'pistol': ['any', 'ne', 'pp', 'pr']}
+  flee     {'any': ['any'], 'pistol': ['any']}
+  combat | assault_rifle:A automag:c battle_rifle:A beam_rifle:A brute_shot:A covenant_carbi:A energy_blade:- excavator:c flak_cannon:A flamethrower:- gravity_hammer:- machinegun_tur:A machinegun_tur:c magnum:c missile_pod:- needler:c plasma_cannon:A plasma_cannon_:A plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:A sentinel_gun:A shotgun:A smg:A smg_silenced:A sniper_rifle:A spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:c battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:c magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:c spike_rifle:c
+  crouch | assault_rifle:- automag:c battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:c magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:c spike_rifle:c
+  flee | assault_rifle:f automag:c battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:c flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f machinegun_tur:f magnum:c missile_pod:f needler:c plasma_cannon:f plasma_cannon_:f plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:c
+
+# objects\characters\hunter\hunter parent None modes 9 WL 2
+  WL [('any', 'any'), ('hfr', 'any')]
+  any      {'any': ['any', 'hfr']}
+  patrol   {'any': ['any']}
+  crouch   {'any': ['any', 'hfr']}
+  patrol | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+  crouch | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\jackal\jackal parent None modes 36 WL 6
+  WL [('any', 'any'), ('0x410', 'rifle'), ('ne', 'pistol'), ('pp', 'pistol'), ('pr', 'pistol'), ('csr', 'rifle')]
+  any      {'any': ['any'], 'rifle': ['any'], 'pistol': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'rifle': ['0x410', 'any', 'pr'], 'pistol': ['any', 'ne', 'pp', 'pr']}
+  patrol   {'unarmed': ['any'], 'rifle': ['any'], 'pistol': ['any']}
+  crouch   {'unarmed': ['any'], 'rifle': ['any', 'csr'], 'pistol': ['any', 'ne', 'pp', 'pr']}
+  flee     {'unarmed': ['any'], 'rifle': ['any'], 'pistol': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:- saw:c sentinel_gun:- shotgun:c smg:A smg_silenced:A sniper_rifle:c spartan_laser:- spike_rifle:c
+  patrol | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:- saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:- spike_rifle:c
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:- saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:- spike_rifle:c
+  flee | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:- saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:- spike_rifle:c
+
+# objects\characters\lord_hood\lord_hood parent objects\characters\lord_hood\lipsync\lipsync modes 59 WL 17
+  WL [('any', 'any'), ('0x410', 'rifle'), ('0x5CE', 'rifle'), ('0x5D2', 'rifle'), ('sg', 'rifle'), ('hp', 'pistol'), ('ne', 'rifle'), ('pp', 'pistol'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('pr', 'rifle'), ('spr', 'rifle'), ('ftt', 'turret'), ('csr', 'rifle')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', '0x5CE', '0x5D2', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp'], 'turret': ['ftt']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'rifle': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', '0x5CE', '0x5D2', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp']}
+  flee     {'any': ['any'], 'rifle': ['any']}
+  combat | assault_rifle:c automag:A battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:A gravity_hammer:- machinegun_tur:- machinegun_tur:c magnum:A missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_cannon_:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:c magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  flee | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\marine\marine parent objects\characters\marine\lipsync\lipsync modes 59 WL 17
+  WL [('any', 'any'), ('0x410', 'rifle'), ('0x5CE', 'rifle'), ('0x5D2', 'rifle'), ('sg', 'rifle'), ('hp', 'pistol'), ('ne', 'pistol'), ('pp', 'pistol'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('pr', 'rifle'), ('spr', 'rifle'), ('ftt', 'turret'), ('csr', 'rifle')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', '0x5CE', '0x5D2', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp'], 'turret': ['ftt']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'rifle': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', '0x5CE', '0x5D2', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp']}
+  flee     {'any': ['any'], 'rifle': ['any']}
+  combat | assault_rifle:c automag:A battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:A gravity_hammer:- machinegun_tur:- machinegun_tur:c magnum:A missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_cannon_:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:c magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  flee | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\marine\marine_female\marine_female parent objects\characters\marine\marine_female\lipsync\lipsync modes 59 WL 17
+  WL [('any', 'any'), ('0x410', 'rifle'), ('0x5CE', 'rifle'), ('0x5D2', 'rifle'), ('sg', 'rifle'), ('hp', 'pistol'), ('ne', 'rifle'), ('pp', 'pistol'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('pr', 'rifle'), ('spr', 'rifle'), ('ftt', 'turret'), ('csr', 'rifle')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', '0x5CE', '0x5D2', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp'], 'turret': ['ftt']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'rifle': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', '0x5CE', '0x5D2', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp']}
+  flee     {'any': ['any'], 'rifle': ['any']}
+  combat | assault_rifle:c automag:A battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:A gravity_hammer:- machinegun_tur:- machinegun_tur:c magnum:A missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_cannon_:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:c magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  flee | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\masterchief\masterchief parent None modes 13 WL 22
+  WL [('any', 'any'), ('0x410', 'rifle'), ('0x5CE', 'rifle'), ('0x5D2', 'rifle'), ('sg', 'rifle'), ('hp', 'pistol'), ('ne', 'pistol'), ('pp', 'pistol'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('pr', 'rifle'), ('spr', 'pistol'), ('ftt', 'turret'), ('csr', 'rifle'), ('cb', 'rifle'), ('bs', 'support?'), ('pgt', 'turret'), ('sb', 'support?'), ('mp', 'turret')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], '0x1F4': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'sg', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support?': ['any', 'bs'], 'rifle': ['0x410', '0x5CE', '0x5D2', 'any', 'cb', 'csr', 'pr', 'sg', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp', 'spr'], 'sword': ['any'], 'ball': ['any'], 'turret': ['any', 'ftt', 'mp', 'pgt'], 'hammer': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], '0x1F4': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'sg', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support?': ['any', 'bs', 'sb'], 'rifle': ['0x410', '0x5CE', '0x5D2', 'any', 'cb', 'csr', 'pr', 'sg', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp', 'spr'], 'sword': ['any'], 'ball': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:c gravity_hammer:c machinegun_tur:c machinegun_tur:c magnum:c missile_pod:c needler:c plasma_cannon:c plasma_cannon_:c plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:c machinegun_tur:- machinegun_tur:c magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+
+# objects\characters\miranda\miranda parent objects\characters\miranda\lipsync\lipsync modes 59 WL 17
+  WL [('any', 'any'), ('0x410', 'rifle'), ('0x5CE', 'rifle'), ('0x5D2', 'rifle'), ('sg', 'rifle'), ('hp', 'pistol'), ('ne', 'rifle'), ('pp', 'pistol'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('pr', 'rifle'), ('spr', 'rifle'), ('ftt', 'turret'), ('csr', 'rifle')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', '0x5CE', '0x5D2', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp'], 'turret': ['ftt']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'rifle': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', '0x5CE', '0x5D2', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp']}
+  flee     {'any': ['any'], 'rifle': ['any']}
+  combat | assault_rifle:c automag:A battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:A gravity_hammer:- machinegun_tur:- machinegun_tur:c magnum:A missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_cannon_:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- machinegun_tur:c magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  flee | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\truth\truth parent objects\characters\truth\lipsync\lipsync modes 1 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+
+===== 050_floodvoi.json
+
+# objects\characters\brute\brute parent objects\characters\brute\lipsync\lipsync modes 69 WL 13
+  WL [('any', 'any'), ('0x410', 'rifle'), ('ar', 'rifle'), ('sg', 'rifle'), ('ex', 'pistol'), ('pr', 'rifle'), ('spr', 'pistol'), ('csr', 'rifle'), ('b', 'ball'), ('cb', 'rifle'), ('bs', 'support'), ('sb', 'support'), ('eb', 'sword')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any'], 'support': ['any', 'sb'], 'rifle': ['0x410', 'any', 'ar', 'cb', 'csr', 'pr', 'sg'], 'pistol': ['any', 'spr'], 'sword': ['any', 'eb'], 'ball': ['any', 'b'], 'turret': ['any'], 'hammer': ['any']}
+  patrol   {'unarmed': ['any'], 'any': ['any']}
+  berserk  {'unarmed': ['any'], 'any': ['any'], 'support': ['any'], 'rifle': ['any'], 'pistol': ['any']}
+  armored  {'unarmed': ['any'], 'any': ['any'], 'missile': ['any'], 'support': ['any', 'bs', 'sb'], 'rifle': ['0x410', 'any', 'ar', 'cb', 'csr', 'pr', 'sg'], 'pistol': ['any', 'ex', 'spr'], 'sword': ['any', 'eb'], 'ball': ['any', 'b'], 'turret': ['any']}
+  combat | assault_rifle:A automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:A excavator:c flak_cannon:c flamethrower:c gravity_hammer:c machinegun_tur:c magnum:c missile_pod:c needler:c plasma_cannon:c plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:c saw:A sentinel_gun:A shotgun:A smg:A smg_silenced:A sniper_rifle:c spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+
+# objects\characters\dervish\dervish parent objects\characters\elite\elite modes 26 WL 23
+  WL [('any', 'any'), ('0x410', 'pistol'), ('ar', 'rifle'), ('br', 'rifle'), ('sg', 'rifle'), ('hp', 'pistol'), ('ne', 'pistol'), ('pp', 'pistol'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('pr', 'pistol'), ('spr', 'pistol'), ('ftt', 'turret'), ('csr', 'rifle'), ('cb', 'rifle'), ('bs', 'support'), ('sb', 'support'), ('mgt', 'turret'), ('mp', 'turret'), ('pgt', 'turret')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'dual': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support': ['any', 'bs', 'sb'], 'rifle': ['0x410', 'any', 'ar', 'br', 'cb', 'csr', 'pr', 'sg', 'sr'], 'pistol': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'sword': ['any'], 'ball': ['any'], 'turret': ['any', 'ftt', 'mgt', 'mp', 'pgt'], 'hammer': ['any']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'dual': ['any'], 'missile': ['any'], 'support': ['any'], 'rifle': ['any'], 'pistol': ['any'], 'sword': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'dual': ['0x410', 'any', 'ex', 'hp', 'pp', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support': ['any', 'bs'], 'rifle': ['any', 'ar', 'br', 'cb', 'csr', 'sg', 'sr'], 'pistol': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'sword': ['any'], 'ball': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:A gravity_hammer:c machinegun_tur:c magnum:c missile_pod:A needler:c plasma_cannon:A plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:A spike_rifle:c
+  patrol | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:c machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+
+# objects\characters\elite\elite parent objects\characters\elite\lipsync\lipsync modes 26 WL 23
+  WL [('any', 'any'), ('0x410', 'pistol'), ('ar', 'rifle'), ('br', 'rifle'), ('sg', 'rifle'), ('hp', 'pistol'), ('ne', 'pistol'), ('pp', 'pistol'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('pr', 'pistol'), ('spr', 'pistol'), ('ftt', 'turret'), ('csr', 'rifle'), ('cb', 'rifle'), ('bs', 'support'), ('sb', 'support'), ('mgt', 'turret'), ('mp', 'turret'), ('pgt', 'turret')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'dual': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support': ['any', 'bs', 'sb'], 'rifle': ['0x410', 'any', 'ar', 'br', 'cb', 'csr', 'pr', 'sg', 'sr'], 'pistol': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'sword': ['any'], 'ball': ['any'], 'turret': ['any', 'ftt', 'mgt', 'mp', 'pgt'], 'hammer': ['any']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'dual': ['any'], 'missile': ['any'], 'support': ['any'], 'rifle': ['any'], 'pistol': ['any'], 'sword': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'dual': ['0x410', 'any', 'ex', 'hp', 'pp', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support': ['any', 'bs'], 'rifle': ['any', 'ar', 'br', 'cb', 'csr', 'sg', 'sr'], 'pistol': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'sword': ['any'], 'ball': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:A gravity_hammer:c machinegun_tur:c magnum:c missile_pod:A needler:c plasma_cannon:A plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:A spike_rifle:c
+  patrol | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:c machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+
+# objects\characters\flood_infection\flood_infection parent None modes 2 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any']}
+  combat | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+
+# objects\characters\flood_ranged\flood_ranged parent None modes 4 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'any': ['any']}
+  crouch   {'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+  crouch | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\flood_stalker\flood_stalker parent None modes 3 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\flood_tank\flood_tank parent None modes 3 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\floodcarrier\floodcarrier parent None modes 5 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any']}
+  patrol   {'unarmed': ['any'], 'any': ['any']}
+  crouch   {'unarmed': ['any']}
+  flee     {'unarmed': ['any'], 'any': ['any']}
+  combat | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  crouch | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  flee | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+
+# objects\characters\floodcombat_brute\floodcombat_brute parent None modes 3 WL 2
+  WL [('any', 'any'), ('bs', 'support')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'support': ['bs'], 'sword': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\floodcombat_elite\floodcombat_elite parent None modes 3 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\floodcombat_human\floodcombat_human parent None modes 3 WL 12
+  WL [('any', 'any'), ('0x410', 'pistol'), ('ar', 'pistol'), ('br', 'pistol'), ('hp', 'pistol'), ('pp', 'pistol'), ('fc', 'pistol'), ('ex', 'pistol'), ('pr', 'pistol'), ('spr', 'pistol'), ('cb', 'pistol'), ('bs', 'pistol')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'pistol': ['0x410', 'ar', 'br', 'bs', 'cb', 'ex', 'fc', 'hp', 'pp', 'pr', 'spr'], 'sword': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:A automag:f battle_rifle:A beam_rifle:f brute_shot:A covenant_carbi:A energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:A sentinel_gun:f shotgun:f smg:A smg_silenced:A sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\lord_hood\lord_hood parent objects\characters\lord_hood\lipsync\lipsync modes 45 WL 16
+  WL [('any', 'any'), ('0x410', 'rifle'), ('ar', 'rifle'), ('br', 'rifle'), ('sg', 'rifle'), ('hp', 'pistol'), ('ne', 'rifle'), ('pp', 'pistol'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('pr', 'rifle'), ('spr', 'rifle'), ('ftt', 'turret')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', 'any', 'ar', 'br', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp'], 'turret': ['ftt']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'rifle': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', 'any', 'ar', 'br', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp']}
+  flee     {'any': ['any'], 'rifle': ['any']}
+  combat | assault_rifle:c automag:A battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:A gravity_hammer:- machinegun_tur:- magnum:A missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  flee | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\marine\marine parent objects\characters\marine\lipsync\lipsync modes 45 WL 16
+  WL [('any', 'any'), ('0x410', 'rifle'), ('ar', 'rifle'), ('br', 'rifle'), ('sg', 'rifle'), ('hp', 'pistol'), ('ne', 'pistol'), ('pp', 'pistol'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('pr', 'rifle'), ('spr', 'rifle'), ('ftt', 'turret')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', 'any', 'ar', 'br', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp'], 'turret': ['ftt']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'rifle': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', 'any', 'ar', 'br', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp']}
+  flee     {'any': ['any'], 'rifle': ['any']}
+  combat | assault_rifle:c automag:A battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:A gravity_hammer:- machinegun_tur:- magnum:A missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  flee | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\marine\marine_female\marine_female parent objects\characters\marine\marine_female\lipsync\lipsync modes 45 WL 16
+  WL [('any', 'any'), ('0x410', 'rifle'), ('ar', 'rifle'), ('br', 'rifle'), ('sg', 'rifle'), ('hp', 'pistol'), ('ne', 'rifle'), ('pp', 'pistol'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('pr', 'rifle'), ('spr', 'rifle'), ('ftt', 'turret')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', 'any', 'ar', 'br', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp'], 'turret': ['ftt']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'rifle': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', 'any', 'ar', 'br', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp']}
+  flee     {'any': ['any'], 'rifle': ['any']}
+  combat | assault_rifle:c automag:A battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:A gravity_hammer:- machinegun_tur:- magnum:A missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  flee | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\masterchief\masterchief parent None modes 6 WL 22
+  WL [('any', 'any'), ('0x410', 'rifle'), ('ar', 'rifle'), ('br', 'rifle'), ('sg', 'rifle'), ('hp', 'pistol'), ('ne', 'pistol'), ('pp', 'pistol'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('pr', 'rifle'), ('spr', 'pistol'), ('ftt', 'turret'), ('csr', 'rifle'), ('cb', 'rifle'), ('bs', 'support'), ('sb', 'support'), ('mp', 'turret'), ('pgt', 'turret')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'dual': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'sg', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support': ['any', 'bs'], 'rifle': ['0x410', 'any', 'ar', 'br', 'cb', 'csr', 'pr', 'sg', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp', 'spr'], 'sword': ['any'], 'ball': ['any'], 'turret': ['any', 'ftt', 'mp', 'pgt'], 'hammer': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'dual': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'sg', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support': ['any', 'bs', 'sb'], 'rifle': ['0x410', 'any', 'ar', 'br', 'cb', 'csr', 'pr', 'sg', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp', 'spr'], 'sword': ['any'], 'ball': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:c gravity_hammer:c machinegun_tur:c magnum:c missile_pod:c needler:c plasma_cannon:c plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:c machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+
+# objects\characters\miranda\miranda parent objects\characters\miranda\lipsync\lipsync modes 45 WL 16
+  WL [('any', 'any'), ('0x410', 'rifle'), ('ar', 'rifle'), ('br', 'rifle'), ('sg', 'rifle'), ('hp', 'pistol'), ('ne', 'rifle'), ('pp', 'pistol'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('pr', 'rifle'), ('spr', 'rifle'), ('ftt', 'turret')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', 'any', 'ar', 'br', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp'], 'turret': ['ftt']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'rifle': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', 'any', 'ar', 'br', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp']}
+  flee     {'any': ['any'], 'rifle': ['any']}
+  combat | assault_rifle:c automag:A battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:A gravity_hammer:- machinegun_tur:- magnum:A missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  flee | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\monitor\monitor parent None modes 1 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+
+# objects\characters\sentinel_aggressor\sentinel_aggressor parent None modes 4 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'any': ['any']}
+  patrol   {'any': ['any']}
+  crouch   {'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+  patrol | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+  crouch | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+===== 120_halo.json
+
+# objects\characters\dervish\dervish parent objects\characters\elite\elite modes 43 WL 23
+  WL [('any', 'any'), ('0x410', 'pistol'), ('ne', 'pistol'), ('pp', 'pistol'), ('sg', 'rifle'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('hp', 'pistol'), ('ar', 'rifle'), ('br', 'rifle'), ('pr', 'pistol'), ('spr', 'pistol'), ('ftt', 'turret'), ('csr', 'rifle'), ('cb', 'rifle'), ('bs', 'support?'), ('mgt', 'turret'), ('pgt', 'turret'), ('sb', 'support?'), ('mp', 'turret')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'dual': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support?': ['any', 'bs', 'sb'], 'rifle': ['0x410', 'any', 'ar', 'br', 'cb', 'csr', 'pr', 'sg', 'sr'], 'pistol': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'sword': ['any'], 'ball': ['any'], 'turret': ['any', 'ftt', 'mgt', 'mp', 'pgt'], 'hammer': ['any']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'dual': ['any'], 'missile': ['any'], 'support?': ['any'], 'rifle': ['any'], 'pistol': ['any'], 'sword': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'dual': ['0x410', 'any', 'ex', 'hp', 'pp', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support?': ['any', 'bs'], 'rifle': ['any', 'ar', 'br', 'cb', 'csr', 'sg', 'sr'], 'pistol': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'sword': ['any'], 'ball': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:A gravity_hammer:c machinegun_tur:c magnum:c missile_pod:A needler:c plasma_cannon:A plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:A spartan_laser_:A spike_rifle:c
+  patrol | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spartan_laser_:c spike_rifle:c
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:c machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spartan_laser_:c spike_rifle:c
+
+# objects\characters\elite\elite parent objects\characters\elite\lipsync\lipsync modes 43 WL 23
+  WL [('any', 'any'), ('0x410', 'pistol'), ('ne', 'pistol'), ('pp', 'pistol'), ('sg', 'rifle'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('hp', 'pistol'), ('ar', 'rifle'), ('br', 'rifle'), ('pr', 'pistol'), ('spr', 'pistol'), ('ftt', 'turret'), ('csr', 'rifle'), ('cb', 'rifle'), ('bs', 'support?'), ('mgt', 'turret'), ('pgt', 'turret'), ('sb', 'support?'), ('mp', 'turret')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'dual': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support?': ['any', 'bs', 'sb'], 'rifle': ['0x410', 'any', 'ar', 'br', 'cb', 'csr', 'pr', 'sg', 'sr'], 'pistol': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'sword': ['any'], 'ball': ['any'], 'turret': ['any', 'ftt', 'mgt', 'mp', 'pgt'], 'hammer': ['any']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'dual': ['any'], 'missile': ['any'], 'support?': ['any'], 'rifle': ['any'], 'pistol': ['any'], 'sword': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'dual': ['0x410', 'any', 'ex', 'hp', 'pp', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support?': ['any', 'bs'], 'rifle': ['any', 'ar', 'br', 'cb', 'csr', 'sg', 'sr'], 'pistol': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'sword': ['any'], 'ball': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:A gravity_hammer:c machinegun_tur:c magnum:c missile_pod:A needler:c plasma_cannon:A plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:A spartan_laser_:A spike_rifle:c
+  patrol | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spartan_laser_:c spike_rifle:c
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:c machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spartan_laser_:c spike_rifle:c
+
+# objects\characters\flood_infection\flood_infection parent None modes 2 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any']}
+  combat | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spartan_laser_:- spike_rifle:-
+
+# objects\characters\flood_ranged\flood_ranged parent None modes 4 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'any': ['any']}
+  crouch   {'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spartan_laser_:f spike_rifle:f
+  crouch | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spartan_laser_:f spike_rifle:f
+
+# objects\characters\flood_stalker\flood_stalker parent None modes 3 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spartan_laser_:f spike_rifle:f
+
+# objects\characters\flood_tank\flood_tank parent None modes 3 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spartan_laser_:f spike_rifle:f
+
+# objects\characters\floodcarrier\floodcarrier parent None modes 5 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any']}
+  patrol   {'unarmed': ['any'], 'any': ['any']}
+  crouch   {'unarmed': ['any']}
+  flee     {'unarmed': ['any'], 'any': ['any']}
+  combat | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spartan_laser_:- spike_rifle:-
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spartan_laser_:- spike_rifle:-
+  crouch | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spartan_laser_:- spike_rifle:-
+  flee | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spartan_laser_:- spike_rifle:-
+
+# objects\characters\floodcombat_brute\floodcombat_brute parent None modes 4 WL 2
+  WL [('any', 'any'), ('bs', 'support?')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'support?': ['bs'], 'sword': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spartan_laser_:f spike_rifle:f
+
+# objects\characters\floodcombat_elite\floodcombat_elite parent None modes 4 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spartan_laser_:f spike_rifle:f
+
+# objects\characters\floodcombat_human\floodcombat_human parent None modes 4 WL 12
+  WL [('any', 'any'), ('0x410', 'pistol'), ('pp', 'pistol'), ('fc', 'pistol'), ('ex', 'pistol'), ('hp', 'pistol'), ('ar', 'pistol'), ('br', 'pistol'), ('pr', 'pistol'), ('spr', 'pistol'), ('cb', 'pistol'), ('bs', 'pistol')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'pistol': ['0x410', 'ar', 'br', 'bs', 'cb', 'ex', 'fc', 'hp', 'pp', 'pr', 'spr'], 'sword': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:A automag:f battle_rifle:A beam_rifle:f brute_shot:A covenant_carbi:A energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:A sentinel_gun:f shotgun:f smg:A smg_silenced:A sniper_rifle:f spartan_laser:f spartan_laser_:f spike_rifle:f
+
+# objects\characters\grunt\grunt parent None modes 16 WL 17
+  WL [('any', 'any'), ('0x410', 'rifle'), ('ne', 'pistol'), ('pp', 'pistol'), ('sg', 'rifle'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('ar', 'rifle'), ('br', 'rifle'), ('pr', 'pistol'), ('csr', 'rifle'), ('cb', 'rifle'), ('bs', 'support?'), ('mgt', 'support?'), ('pgt', 'support?'), ('sb', 'support?')]
+  any      {'any': ['any'], 'pistol': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl'], 'support?': ['bs', 'mgt', 'pgt', 'sb'], 'rifle': ['0x410', 'ar', 'br', 'cb', 'csr', 'pr', 'sg', 'sr'], 'pistol': ['any', 'ne', 'pp', 'pr']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any'], 'pistol': ['any']}
+  crouch   {'unarmed': ['any'], 'missile': ['any', 'rl'], 'pistol': ['any', 'ne', 'pp', 'pr']}
+  flee     {'any': ['any'], 'pistol': ['any']}
+  combat | assault_rifle:A automag:c battle_rifle:A beam_rifle:A brute_shot:A covenant_carbi:A energy_blade:- excavator:c flak_cannon:A flamethrower:- gravity_hammer:- machinegun_tur:A magnum:c missile_pod:- needler:c plasma_cannon:A plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:A sentinel_gun:A shotgun:A smg:A smg_silenced:A sniper_rifle:A spartan_laser:c spartan_laser_:c spike_rifle:c
+  patrol | assault_rifle:- automag:c battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:c spartan_laser_:c spike_rifle:c
+  crouch | assault_rifle:- automag:c battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:c spartan_laser_:c spike_rifle:c
+  flee | assault_rifle:f automag:c battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:c flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:c missile_pod:f needler:c plasma_cannon:f plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spartan_laser_:f spike_rifle:c
+
+# objects\characters\marine\marine parent objects\characters\marine\lipsync\lipsync modes 65 WL 17
+  WL [('any', 'any'), ('0x410', 'rifle'), ('ne', 'pistol'), ('pp', 'pistol'), ('sg', 'rifle'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('hp', 'pistol'), ('ar', 'rifle'), ('br', 'rifle'), ('pr', 'rifle'), ('spr', 'rifle'), ('ftt', 'turret'), ('csr', 'rifle')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', 'any', 'ar', 'br', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp'], 'turret': ['ftt']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'rifle': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x410', 'any', 'ar', 'br', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp']}
+  flee     {'any': ['any'], 'rifle': ['any']}
+  combat | assault_rifle:c automag:A battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:A gravity_hammer:- machinegun_tur:- magnum:A missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spartan_laser_:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- saw:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spartan_laser_:- spike_rifle:-
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c saw:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spartan_laser_:c spike_rifle:c
+  flee | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spartan_laser_:f spike_rifle:f
+
+# objects\characters\masterchief\masterchief parent None modes 21 WL 22
+  WL [('any', 'any'), ('0x410', 'rifle'), ('ne', 'pistol'), ('pp', 'pistol'), ('sg', 'rifle'), ('sr', 'rifle'), ('fc', 'missile'), ('rl', 'missile'), ('sl', 'missile'), ('ex', 'pistol'), ('hp', 'pistol'), ('ar', 'rifle'), ('br', 'rifle'), ('pr', 'rifle'), ('spr', 'pistol'), ('ftt', 'turret'), ('csr', 'rifle'), ('cb', 'rifle'), ('bs', 'support?'), ('pgt', 'turret'), ('sb', 'support?'), ('mp', 'turret')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'dual': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'sg', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support?': ['any', 'bs'], 'rifle': ['0x410', 'any', 'ar', 'br', 'cb', 'csr', 'pr', 'sg', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp', 'spr'], 'sword': ['any'], 'ball': ['any'], 'turret': ['any', 'ftt', 'mp', 'pgt'], 'hammer': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'dual': ['0x410', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'sg', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support?': ['any', 'bs', 'sb'], 'rifle': ['0x410', 'any', 'ar', 'br', 'cb', 'csr', 'pr', 'sg', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp', 'spr'], 'sword': ['any'], 'ball': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:c gravity_hammer:c machinegun_tur:c magnum:c missile_pod:c needler:c plasma_cannon:c plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spartan_laser_:c spike_rifle:c
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:c machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:c saw:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spartan_laser_:c spike_rifle:c
+
+# objects\characters\monitor\monitor parent None modes 1 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+
+# objects\characters\monitor\monitor_boss_device\monitor_boss_device parent None modes 1 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+
+# objects\characters\monitor\monitor_boss_idle_device\monitor_boss_idle_device parent None modes 1 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+
+# objects\characters\sentinel_aggressor\sentinel_aggressor parent None modes 4 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'any': ['any']}
+  patrol   {'any': ['any']}
+  crouch   {'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spartan_laser_:f spike_rifle:f
+  patrol | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spartan_laser_:f spike_rifle:f
+  crouch | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f saw:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spartan_laser_:f spike_rifle:f
+
+===== l200.json
+
+# objects\characters\brute\brute parent objects\characters\brute\lipsync\lipsync modes 102 WL 15
+  WL [('any', 'any'), ('0x415', 'rifle'), ('0x42C', '0x42E'), ('0x66E', 'rifle'), ('0x79C', '0x42E'), ('0x7A0', '0x42B'), ('sg', 'rifle'), ('pr', 'rifle'), ('csr', 'rifle'), ('cb', 'rifle'), ('bs', 'support'), ('sb', 'support'), ('ex', 'pistol'), ('spr', 'pistol'), ('eb', 'sword')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any'], 'support': ['any', 'sb'], 'rifle': ['0x415', '0x66E', 'any', 'cb', 'csr', 'pr', 'sg'], 'pistol': ['any', 'spr'], 'sword': ['any', 'eb'], '0x42B': ['0x7A0', 'any'], '0x42E': ['0x42C', '0x79C', 'any'], 'turret': ['any'], 'hammer': ['any']}
+  patrol   {'unarmed': ['any'], 'any': ['any']}
+  berserk  {'unarmed': ['any'], 'any': ['any'], 'support': ['any'], 'rifle': ['any'], 'pistol': ['any']}
+  armored  {'unarmed': ['any'], 'any': ['any'], 'missile': ['any'], 'support': ['any', 'bs', 'sb'], 'rifle': ['0x415', '0x66E', 'any', 'cb', 'csr', 'pr', 'sg'], 'pistol': ['any', 'ex', 'spr'], 'sword': ['any', 'eb'], '0x42B': ['0x7A0', 'any'], '0x42E': ['0x42C', '0x79C', 'any'], 'turret': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:A automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:A excavator:c flak_cannon:c flamethrower:c gravity_hammer:c machinegun_tur:c magnum:c missile_pod:c needler:c plasma_cannon:c plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:c sentinel_gun:A shotgun:A smg:A smg_silenced:A sniper_rifle:c spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+
+# objects\characters\bugger\bugger parent None modes 73 WL 4
+  WL [('any', 'any'), ('ne', 'pistol'), ('pp', 'pistol'), ('pr', 'pistol')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'rifle': ['any', 'ne', 'pp'], 'pistol': ['any', 'ne', 'pp', 'pr']}
+  patrol   {'unarmed': ['any'], 'pistol': ['any', 'pr']}
+  crouch   {'any': ['any'], 'rifle': ['any', 'ne', 'pp'], 'pistol': ['any', 'ne', 'pp', 'pr']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:- sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:- spike_rifle:c
+  patrol | assault_rifle:- automag:c battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:c
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:- sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:- spike_rifle:c
+
+# objects\characters\elite\elite parent objects\characters\elite\lipsync\lipsync modes 111 WL 24
+  WL [('any', 'any'), ('0x415', 'pistol'), ('0x42C', '0x42E'), ('0x66E', 'rifle'), ('0x66F', 'rifle'), ('hp', 'pistol'), ('rl', 'missile'), ('sr', 'rifle'), ('sl', 'missile'), ('sg', 'rifle'), ('ftt', 'turret'), ('ne', 'pistol'), ('pp', 'pistol'), ('pr', 'pistol'), ('csr', 'rifle'), ('fc', 'missile'), ('cb', 'rifle'), ('bs', 'support'), ('mgt', 'turret'), ('pgt', 'turret'), ('sb', 'support'), ('ex', 'pistol'), ('spr', 'pistol'), ('mp', 'turret')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'dual': ['0x415', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support': ['any', 'bs', 'sb'], 'rifle': ['0x415', '0x66E', '0x66F', 'any', 'cb', 'csr', 'pr', 'sg', 'sr'], 'pistol': ['0x415', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'sword': ['any'], '0x42B': ['any'], '0x42E': ['0x42C', 'any'], 'turret': ['any', 'ftt', 'mgt', 'mp', 'pgt'], 'hammer': ['any']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'dual': ['any'], 'missile': ['any'], 'support': ['any'], 'rifle': ['any'], 'pistol': ['any'], 'sword': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'dual': ['0x415', 'any', 'ex', 'hp', 'pp', 'spr'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support': ['any', 'bs'], 'rifle': ['0x66E', '0x66F', 'any', 'cb', 'csr', 'sg', 'sr'], 'pistol': ['0x415', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], 'sword': ['any'], '0x42B': ['any'], '0x42E': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:A gravity_hammer:c machinegun_tur:c magnum:c missile_pod:A needler:c plasma_cannon:A plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:A spike_rifle:c
+  patrol | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:c machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+
+# objects\characters\engineer\engineer parent None modes 5 WL 1
+  WL [('any', 'any')]
+  flee     {'any': ['any']}
+  berserk  {'any': ['any']}
+  armored  {'any': ['any']}
+  flee | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\flood_infection\flood_infection parent None modes 2 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any']}
+  combat | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+
+# objects\characters\flood_ranged\flood_ranged parent None modes 4 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'any': ['any']}
+  crouch   {'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+  crouch | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\flood_stalker\flood_stalker parent None modes 3 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\flood_tank\flood_tank parent None modes 3 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\floodcarrier\floodcarrier parent None modes 5 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any']}
+  patrol   {'unarmed': ['any'], 'any': ['any']}
+  crouch   {'unarmed': ['any']}
+  flee     {'unarmed': ['any'], 'any': ['any']}
+  combat | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  crouch | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  flee | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+
+# objects\characters\floodcombat_brute\floodcombat_brute parent None modes 5 WL 2
+  WL [('any', 'any'), ('bs', 'support')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'support': ['bs'], 'sword': ['any'], 'turret': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:c gravity_hammer:f machinegun_tur:c magnum:f missile_pod:c needler:f plasma_cannon:c plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\floodcombat_elite\floodcombat_elite parent None modes 8 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'turret': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:c gravity_hammer:f machinegun_tur:c magnum:f missile_pod:c needler:f plasma_cannon:c plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\floodcombat_human\floodcombat_human parent None modes 14 WL 14
+  WL [('any', 'any'), ('0x415', 'pistol'), ('0x66E', 'pistol'), ('0x66F', 'pistol'), ('hp', 'pistol'), ('ftt', 'turret'), ('pp', 'pistol'), ('pr', 'pistol'), ('fc', 'pistol'), ('cb', 'pistol'), ('bs', 'pistol'), ('mgt', 'turret'), ('ex', 'pistol'), ('spr', 'pistol')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'pistol': ['0x415', '0x66E', '0x66F', 'bs', 'cb', 'ex', 'fc', 'hp', 'pp', 'pr', 'spr'], 'sword': ['any'], 'turret': ['any', 'ftt', 'mgt'], 'hammer': ['any']}
+  combat | assault_rifle:A automag:f battle_rifle:A beam_rifle:f brute_shot:A covenant_carbi:A energy_blade:f excavator:f flak_cannon:f flamethrower:c gravity_hammer:f machinegun_tur:c magnum:f missile_pod:c needler:f plasma_cannon:c plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:A smg_silenced:A sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\grunt\grunt parent None modes 64 WL 17
+  WL [('any', 'any'), ('0x415', 'rifle'), ('0x66E', 'rifle'), ('0x66F', 'rifle'), ('rl', 'missile'), ('sr', 'rifle'), ('sg', 'rifle'), ('ne', 'pistol'), ('pp', 'pistol'), ('pr', 'pistol'), ('csr', 'rifle'), ('fc', 'missile'), ('cb', 'rifle'), ('bs', 'support'), ('mgt', 'support'), ('pgt', 'support'), ('sb', 'support')]
+  any      {'any': ['any'], 'pistol': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl'], 'support': ['bs', 'mgt', 'pgt', 'sb'], 'rifle': ['0x415', '0x66E', '0x66F', 'cb', 'csr', 'pr', 'sg', 'sr'], 'pistol': ['any', 'ne', 'pp', 'pr']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any'], 'pistol': ['any']}
+  crouch   {'unarmed': ['any'], 'missile': ['any', 'rl'], 'pistol': ['any', 'ne', 'pp', 'pr']}
+  flee     {'any': ['any'], 'pistol': ['any']}
+  combat | assault_rifle:A automag:c battle_rifle:A beam_rifle:A brute_shot:A covenant_carbi:A energy_blade:- excavator:c flak_cannon:A flamethrower:- gravity_hammer:- machinegun_tur:A magnum:c missile_pod:- needler:c plasma_cannon:A plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:A shotgun:A smg:A smg_silenced:A sniper_rifle:A spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:c battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:c spike_rifle:c
+  crouch | assault_rifle:- automag:c battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:c spike_rifle:c
+  flee | assault_rifle:f automag:c battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:c flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:c missile_pod:f needler:c plasma_cannon:f plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:c
+
+# objects\characters\hunter\hunter parent None modes 29 WL 2
+  WL [('any', 'any'), ('hfr', 'any')]
+  any      {'any': ['any', 'hfr']}
+  patrol   {'any': ['any']}
+  crouch   {'any': ['any', 'hfr']}
+  patrol | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+  crouch | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\jackal\jackal parent None modes 58 WL 6
+  WL [('any', 'any'), ('0x415', 'rifle'), ('ne', 'pistol'), ('pp', 'pistol'), ('pr', 'pistol'), ('csr', 'rifle')]
+  any      {'any': ['any'], 'rifle': ['any'], 'pistol': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'rifle': ['0x415', 'any', 'csr', 'pr'], 'pistol': ['any', 'ne', 'pp', 'pr']}
+  patrol   {'unarmed': ['any'], 'rifle': ['any'], 'pistol': ['any']}
+  crouch   {'unarmed': ['any'], 'rifle': ['any', 'csr'], 'pistol': ['any', 'ne', 'pp', 'pr']}
+  flee     {'unarmed': ['any'], 'rifle': ['any'], 'pistol': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:- sentinel_gun:- shotgun:c smg:A smg_silenced:A sniper_rifle:c spartan_laser:- spike_rifle:c
+  patrol | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:- sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:- spike_rifle:c
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:- sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:- spike_rifle:c
+  flee | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:- sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:- spike_rifle:c
+
+# objects\characters\marine\marine parent objects\characters\marine\lipsync\lipsync modes 68 WL 18
+  WL [('any', 'any'), ('0x415', 'rifle'), ('0x66E', 'rifle'), ('0x66F', 'rifle'), ('hp', 'pistol'), ('rl', 'missile'), ('sr', 'rifle'), ('sl', 'missile'), ('sg', 'rifle'), ('ftt', 'turret'), ('ne', 'pistol'), ('pp', 'pistol'), ('pr', 'rifle'), ('csr', 'rifle'), ('fc', 'missile'), ('mgt', 'turret'), ('ex', 'pistol'), ('spr', 'rifle')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x415', '0x66E', '0x66F', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp'], 'turret': ['ftt']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'rifle': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x415', '0x66E', '0x66F', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp']}
+  flee     {'any': ['any'], 'rifle': ['any']}
+  combat | assault_rifle:c automag:A battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:A gravity_hammer:- machinegun_tur:- magnum:A missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  flee | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\marine\marine_female\marine_female parent objects\characters\marine\marine_female\lipsync\lipsync modes 68 WL 18
+  WL [('any', 'any'), ('0x415', 'rifle'), ('0x66E', 'rifle'), ('0x66F', 'rifle'), ('hp', 'pistol'), ('rl', 'missile'), ('sr', 'rifle'), ('sl', 'missile'), ('sg', 'rifle'), ('ftt', 'turret'), ('ne', 'pistol'), ('pp', 'pistol'), ('pr', 'rifle'), ('csr', 'rifle'), ('fc', 'missile'), ('mgt', 'turret'), ('ex', 'pistol'), ('spr', 'rifle')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x415', '0x66E', '0x66F', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp'], 'turret': ['ftt']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'rifle': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x415', '0x66E', '0x66F', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp']}
+  flee     {'any': ['any'], 'rifle': ['any']}
+  combat | assault_rifle:c automag:A battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:A gravity_hammer:- machinegun_tur:- magnum:A missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  flee | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\monitor\monitor parent None modes 1 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+
+# objects\characters\odst_oni_op\odst_oni_op parent objects\characters\odst_oni_op\lipsync\lipsync modes 68 WL 18
+  WL [('any', 'any'), ('0x415', 'rifle'), ('0x66E', 'rifle'), ('0x66F', 'rifle'), ('hp', 'pistol'), ('rl', 'missile'), ('sr', 'rifle'), ('sl', 'missile'), ('sg', 'rifle'), ('ftt', 'turret'), ('ne', 'pistol'), ('pp', 'pistol'), ('pr', 'rifle'), ('csr', 'rifle'), ('fc', 'missile'), ('mgt', 'turret'), ('ex', 'pistol'), ('spr', 'rifle')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x415', '0x66E', '0x66F', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp'], 'turret': ['ftt']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], 'rifle': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'rifle': ['0x415', '0x66E', '0x66F', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'hp', 'ne', 'pp']}
+  flee     {'any': ['any'], 'rifle': ['any']}
+  combat | assault_rifle:c automag:A battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:A gravity_hammer:- machinegun_tur:- magnum:A missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  flee | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\odst_oni_op\odst_oni_op_player parent objects\characters\odst_recon\odst_recon modes 38 WL 22
+  WL [('any', 'any'), ('0x415', 'rifle'), ('0x66E', 'rifle'), ('0x66F', 'rifle'), ('rl', 'missile'), ('sr', 'rifle'), ('sl', 'missile'), ('sg', 'rifle'), ('ftt', 'turret'), ('ne', 'pistol'), ('pp', 'pistol'), ('pr', 'rifle'), ('csr', 'rifle'), ('fc', 'missile'), ('cb', 'rifle'), ('bs', 'support'), ('mgt', 'turret'), ('pgt', 'turret'), ('sb', 'support'), ('ex', 'pistol'), ('spr', 'rifle'), ('mp', 'turret')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support': ['any', 'bs', 'sb'], 'rifle': ['0x415', '0x66E', '0x66F', 'any', 'cb', 'csr', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'ne', 'pp'], 'sword': ['any'], '0x42E': ['any'], 'turret': ['any', 'ftt', 'mp', 'pgt'], 'hammer': ['any']}
+  crouch   {'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support': ['any', 'bs', 'sb'], 'rifle': ['0x415', '0x66E', '0x66F', 'any', 'cb', 'csr', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'ne', 'pp'], 'sword': ['any'], '0x42E': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:c gravity_hammer:c machinegun_tur:c magnum:c missile_pod:c needler:c plasma_cannon:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:A
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:f gravity_hammer:c machinegun_tur:f magnum:c missile_pod:f needler:c plasma_cannon:f plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+
+# objects\characters\odst_recon\odst_recon parent objects\characters\marine\lipsync\lipsync modes 38 WL 22
+  WL [('any', 'any'), ('0x415', 'rifle'), ('0x66E', 'rifle'), ('0x66F', 'rifle'), ('rl', 'missile'), ('sr', 'rifle'), ('sl', 'missile'), ('sg', 'rifle'), ('ftt', 'turret'), ('ne', 'pistol'), ('pp', 'pistol'), ('pr', 'rifle'), ('csr', 'rifle'), ('fc', 'missile'), ('cb', 'rifle'), ('bs', 'support'), ('mgt', 'turret'), ('pgt', 'turret'), ('sb', 'support'), ('ex', 'pistol'), ('spr', 'rifle'), ('mp', 'turret')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support': ['any', 'bs', 'sb'], 'rifle': ['0x415', '0x66E', '0x66F', 'any', 'cb', 'csr', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'ne', 'pp'], 'sword': ['any'], '0x42E': ['any'], 'turret': ['any', 'ftt', 'mp', 'pgt'], 'hammer': ['any']}
+  crouch   {'any': ['any'], 'missile': ['any', 'fc', 'rl', 'sl'], 'support': ['any', 'bs', 'sb'], 'rifle': ['0x415', '0x66E', '0x66F', 'any', 'cb', 'csr', 'ne', 'pr', 'sg', 'spr', 'sr'], 'pistol': ['any', 'ex', 'ne', 'pp'], 'sword': ['any'], '0x42E': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:c gravity_hammer:c machinegun_tur:c magnum:c missile_pod:c needler:c plasma_cannon:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:A
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:c machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+
+# objects\characters\sentinel_aggressor\sentinel_aggressor parent None modes 4 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'any': ['any']}
+  patrol   {'any': ['any']}
+  crouch   {'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+  patrol | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+  crouch | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+===== sc100.json
+
+# objects\characters\brute\brute parent objects\characters\brute\lipsync\lipsync modes 102 WL 15
+  WL [('any', 'any'), ('0x415', '0x317'), ('0x42C', '0x42E'), ('0x66A', '0x317'), ('0x6F4', '0x42E'), ('0x6F8', '0x42B'), ('sg', '0x317'), ('ex', '0x318'), ('spr', '0x318'), ('cb', '0x317'), ('csr', '0x317'), ('pr', '0x317'), ('bs', '0x316'), ('sb', '0x316'), ('eb', '0x319')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], '0x315': ['any'], '0x316': ['any', 'sb'], '0x317': ['0x415', '0x66A', 'any', 'cb', 'csr', 'pr', 'sg'], '0x318': ['any', 'spr'], '0x319': ['any', 'eb'], '0x42B': ['0x6F8', 'any'], '0x42E': ['0x42C', '0x6F4', 'any'], '0x6EC': ['any'], 'hammer': ['any']}
+  patrol   {'unarmed': ['any'], 'any': ['any']}
+  berserk  {'unarmed': ['any'], 'any': ['any'], '0x316': ['any'], '0x317': ['any'], '0x318': ['any']}
+  armored  {'unarmed': ['any'], 'any': ['any'], '0x315': ['any'], '0x316': ['any', 'bs', 'sb'], '0x317': ['0x415', '0x66A', 'any', 'cb', 'csr', 'pr', 'sg'], '0x318': ['any', 'ex', 'spr'], '0x319': ['any', 'eb'], '0x42B': ['0x6F8', 'any'], '0x42E': ['0x42C', '0x6F4', 'any'], '0x6EC': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:A automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:A excavator:c flak_cannon:c flamethrower:c gravity_hammer:c machinegun_tur:c magnum:c missile_pod:c needler:c plasma_cannon:c plasma_cannon_:c plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:c sentinel_gun:A shotgun:A smg:A smg_silenced:A sniper_rifle:c spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_cannon_:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+
+# objects\characters\bugger\bugger parent None modes 73 WL 4
+  WL [('any', 'any'), ('pr', '0x318'), ('ne', '0x318'), ('pp', '0x318')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], '0x317': ['any', 'ne', 'pp'], '0x318': ['any', 'ne', 'pp', 'pr']}
+  patrol   {'unarmed': ['any'], '0x318': ['any', 'pr']}
+  crouch   {'any': ['any'], '0x317': ['any', 'ne', 'pp'], '0x318': ['any', 'ne', 'pp', 'pr']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:- sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:- spike_rifle:c
+  patrol | assault_rifle:- automag:c battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:c
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:A plasma_rifle_r:A rocket_launche:- sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:- spike_rifle:c
+
+# objects\characters\elite\elite parent objects\characters\elite\lipsync\lipsync modes 111 WL 24
+  WL [('any', 'any'), ('0x415', '0x318'), ('0x42C', '0x42E'), ('0x66A', '0x317'), ('0x66B', '0x317'), ('hp', '0x318'), ('sg', '0x317'), ('sr', '0x317'), ('rl', '0x315'), ('sl', '0x315'), ('ftt', '0x6EC'), ('ex', '0x318'), ('spr', '0x318'), ('cb', '0x317'), ('csr', '0x317'), ('pr', '0x318'), ('bs', '0x316'), ('sb', '0x316'), ('fc', '0x315'), ('ne', '0x318'), ('pp', '0x318'), ('mgt', '0x6EC'), ('pgt', '0x6EC'), ('mp', '0x6EC')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], '0x1F6': ['0x415', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], '0x315': ['any', 'fc', 'rl', 'sl'], '0x316': ['any', 'bs', 'sb'], '0x317': ['0x415', '0x66A', '0x66B', 'any', 'cb', 'csr', 'pr', 'sg', 'sr'], '0x318': ['0x415', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], '0x319': ['any'], '0x42B': ['any'], '0x42E': ['0x42C', 'any'], '0x6EC': ['any', 'ftt', 'mgt', 'mp', 'pgt'], 'hammer': ['any']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], '0x1F6': ['any'], '0x315': ['any'], '0x316': ['any'], '0x317': ['any'], '0x318': ['any'], '0x319': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], '0x1F6': ['0x415', 'any', 'ex', 'hp', 'pp', 'spr'], '0x315': ['any', 'fc', 'rl', 'sl'], '0x316': ['any', 'bs'], '0x317': ['0x66A', '0x66B', 'any', 'cb', 'csr', 'sg', 'sr'], '0x318': ['0x415', 'any', 'ex', 'hp', 'ne', 'pp', 'pr', 'spr'], '0x319': ['any'], '0x42B': ['any'], '0x42E': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:A gravity_hammer:c machinegun_tur:c magnum:c missile_pod:A needler:c plasma_cannon:A plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:A spike_rifle:c
+  patrol | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:c machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+
+# objects\characters\engineer\engineer parent None modes 5 WL 1
+  WL [('any', 'any')]
+  flee     {'any': ['any']}
+  berserk  {'any': ['any']}
+  armored  {'any': ['any']}
+  flee | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\flood_infection\flood_infection parent None modes 2 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any']}
+  combat | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_cannon_:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+
+# objects\characters\flood_ranged\flood_ranged parent None modes 4 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'any': ['any']}
+  crouch   {'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+  crouch | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\flood_stalker\flood_stalker parent None modes 3 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\flood_tank\flood_tank parent None modes 3 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\floodcarrier\floodcarrier parent None modes 5 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any']}
+  patrol   {'unarmed': ['any'], 'any': ['any']}
+  crouch   {'unarmed': ['any']}
+  flee     {'unarmed': ['any'], 'any': ['any']}
+  combat | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_cannon_:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_cannon_:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  crouch | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_cannon_:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  flee | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_cannon_:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+
+# objects\characters\floodcombat_brute\floodcombat_brute parent None modes 5 WL 2
+  WL [('any', 'any'), ('bs', '0x316')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], '0x316': ['bs'], '0x319': ['any'], '0x6EC': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:c gravity_hammer:f machinegun_tur:c magnum:f missile_pod:c needler:f plasma_cannon:c plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\floodcombat_elite\floodcombat_elite parent None modes 8 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], '0x6EC': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:c gravity_hammer:f machinegun_tur:c magnum:f missile_pod:c needler:f plasma_cannon:c plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\floodcombat_human\floodcombat_human parent None modes 14 WL 14
+  WL [('any', 'any'), ('0x415', '0x318'), ('0x66A', '0x318'), ('0x66B', '0x318'), ('hp', '0x318'), ('ftt', '0x6EC'), ('ex', '0x318'), ('spr', '0x318'), ('cb', '0x318'), ('pr', '0x318'), ('bs', '0x318'), ('fc', '0x318'), ('pp', '0x318'), ('mgt', '0x6EC')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], '0x318': ['0x415', '0x66A', '0x66B', 'bs', 'cb', 'ex', 'fc', 'hp', 'pp', 'pr', 'spr'], '0x319': ['any'], '0x6EC': ['any', 'ftt', 'mgt'], 'hammer': ['any']}
+  combat | assault_rifle:A automag:f battle_rifle:A beam_rifle:f brute_shot:A covenant_carbi:A energy_blade:f excavator:f flak_cannon:f flamethrower:c gravity_hammer:f machinegun_tur:c magnum:f missile_pod:c needler:f plasma_cannon:c plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:A smg_silenced:A sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\grunt\grunt parent None modes 64 WL 18
+  WL [('any', 'any'), ('0x415', '0x317'), ('0x66A', '0x317'), ('0x66B', '0x317'), ('sg', '0x317'), ('sr', '0x317'), ('rl', '0x315'), ('cb', '0x317'), ('csr', '0x317'), ('pr', '0x318'), ('bs', '0x316'), ('sb', '0x316'), ('fc', '0x315'), ('ne', '0x318'), ('pp', '0x318'), ('mgt', '0x316'), ('pgt', '0x316'), ('pgts', '0x316')]
+  any      {'any': ['any'], '0x318': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], '0x315': ['any', 'fc', 'rl'], '0x316': ['bs', 'mgt', 'pgt', 'pgts', 'sb'], '0x317': ['0x415', '0x66A', '0x66B', 'cb', 'csr', 'pr', 'sg', 'sr'], '0x318': ['any', 'ne', 'pp', 'pr']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], '0x315': ['any'], '0x318': ['any']}
+  crouch   {'unarmed': ['any'], '0x315': ['any', 'rl'], '0x318': ['any', 'ne', 'pp', 'pr']}
+  flee     {'any': ['any'], '0x318': ['any']}
+  combat | assault_rifle:A automag:c battle_rifle:A beam_rifle:A brute_shot:A covenant_carbi:A energy_blade:- excavator:c flak_cannon:A flamethrower:- gravity_hammer:- machinegun_tur:A magnum:c missile_pod:- needler:c plasma_cannon:A plasma_cannon_:A plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:A shotgun:A smg:A smg_silenced:A sniper_rifle:A spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:c battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:c spike_rifle:c
+  crouch | assault_rifle:- automag:c battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:c spike_rifle:c
+  flee | assault_rifle:f automag:c battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:c flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:c missile_pod:f needler:c plasma_cannon:f plasma_cannon_:f plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:c
+
+# objects\characters\hunter\hunter parent None modes 29 WL 2
+  WL [('any', 'any'), ('hfr', 'any')]
+  any      {'any': ['any', 'hfr']}
+  patrol   {'any': ['any']}
+  crouch   {'any': ['any', 'hfr']}
+  patrol | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+  crouch | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\jackal\jackal parent None modes 58 WL 6
+  WL [('any', 'any'), ('0x415', '0x317'), ('csr', '0x317'), ('pr', '0x318'), ('ne', '0x318'), ('pp', '0x318')]
+  any      {'any': ['any'], '0x317': ['any'], '0x318': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], '0x317': ['0x415', 'any', 'csr', 'pr'], '0x318': ['any', 'ne', 'pp', 'pr']}
+  patrol   {'unarmed': ['any'], '0x317': ['any'], '0x318': ['any']}
+  crouch   {'unarmed': ['any'], '0x317': ['any', 'csr'], '0x318': ['any', 'ne', 'pp', 'pr']}
+  flee     {'unarmed': ['any'], '0x317': ['any'], '0x318': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:- sentinel_gun:- shotgun:c smg:A smg_silenced:A sniper_rifle:c spartan_laser:- spike_rifle:c
+  patrol | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:- sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:- spike_rifle:c
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:- sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:- spike_rifle:c
+  flee | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:- plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:- sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:- spike_rifle:c
+
+# objects\characters\marine\marine parent objects\characters\marine\lipsync\lipsync modes 68 WL 18
+  WL [('any', 'any'), ('0x415', '0x317'), ('0x66A', '0x317'), ('0x66B', '0x317'), ('hp', '0x318'), ('sg', '0x317'), ('sr', '0x317'), ('rl', '0x315'), ('sl', '0x315'), ('ftt', '0x6EC'), ('ex', '0x318'), ('spr', '0x317'), ('csr', '0x317'), ('pr', '0x317'), ('fc', '0x315'), ('ne', '0x318'), ('pp', '0x318'), ('mgt', '0x6EC')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], '0x315': ['any', 'fc', 'rl', 'sl'], '0x317': ['0x415', '0x66A', '0x66B', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], '0x318': ['any', 'ex', 'hp', 'ne', 'pp'], '0x6EC': ['ftt']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], '0x317': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], '0x315': ['any', 'fc', 'rl', 'sl'], '0x317': ['0x415', '0x66A', '0x66B', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], '0x318': ['any', 'ex', 'hp', 'ne', 'pp']}
+  flee     {'any': ['any'], '0x317': ['any']}
+  combat | assault_rifle:c automag:A battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:A gravity_hammer:- machinegun_tur:- magnum:A missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_cannon_:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  flee | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\marine\marine_female\marine_female parent objects\characters\marine\marine_female\lipsync\lipsync modes 68 WL 18
+  WL [('any', 'any'), ('0x415', '0x317'), ('0x66A', '0x317'), ('0x66B', '0x317'), ('hp', '0x318'), ('sg', '0x317'), ('sr', '0x317'), ('rl', '0x315'), ('sl', '0x315'), ('ftt', '0x6EC'), ('ex', '0x318'), ('spr', '0x317'), ('csr', '0x317'), ('pr', '0x317'), ('fc', '0x315'), ('ne', '0x318'), ('pp', '0x318'), ('mgt', '0x6EC')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], '0x315': ['any', 'fc', 'rl', 'sl'], '0x317': ['0x415', '0x66A', '0x66B', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], '0x318': ['any', 'ex', 'hp', 'ne', 'pp'], '0x6EC': ['ftt']}
+  patrol   {'unarmed': ['any'], 'any': ['any'], '0x317': ['any']}
+  crouch   {'unarmed': ['any'], 'any': ['any'], '0x315': ['any', 'fc', 'rl', 'sl'], '0x317': ['0x415', '0x66A', '0x66B', 'any', 'ne', 'pr', 'sg', 'spr', 'sr'], '0x318': ['any', 'ex', 'hp', 'ne', 'pp']}
+  flee     {'any': ['any'], '0x317': ['any']}
+  combat | assault_rifle:c automag:A battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:A gravity_hammer:- machinegun_tur:- magnum:A missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  patrol | assault_rifle:- automag:- battle_rifle:- beam_rifle:- brute_shot:- covenant_carbi:- energy_blade:- excavator:- flak_cannon:- flamethrower:- gravity_hammer:- machinegun_tur:- magnum:- missile_pod:- needler:- plasma_cannon:- plasma_cannon_:- plasma_pistol:- plasma_rifle:- plasma_rifle_r:- rocket_launche:- sentinel_gun:- shotgun:- smg:- smg_silenced:- sniper_rifle:- spartan_laser:- spike_rifle:-
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:- covenant_carbi:c energy_blade:- excavator:c flak_cannon:c flamethrower:- gravity_hammer:- machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:- shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+  flee | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+# objects\characters\monitor\monitor parent None modes 1 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+
+# objects\characters\odst_cine\odst_cine parent objects\characters\marine\lipsync\lipsync modes 1 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+
+# objects\characters\odst_oni_op\odst_oni_op_player parent objects\characters\odst_recon\odst_recon modes 38 WL 22
+  WL [('any', 'any'), ('0x415', '0x317'), ('0x66A', '0x317'), ('0x66B', '0x317'), ('sg', '0x317'), ('sr', '0x317'), ('rl', '0x315'), ('sl', '0x315'), ('ftt', '0x6EC'), ('ex', '0x318'), ('spr', '0x317'), ('cb', '0x317'), ('csr', '0x317'), ('pr', '0x317'), ('bs', '0x316'), ('sb', '0x316'), ('fc', '0x315'), ('ne', '0x318'), ('pp', '0x318'), ('mgt', '0x6EC'), ('pgt', '0x6EC'), ('mp', '0x6EC')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], '0x315': ['any', 'fc', 'rl', 'sl'], '0x316': ['any', 'bs', 'sb'], '0x317': ['0x415', '0x66A', '0x66B', 'any', 'cb', 'csr', 'ne', 'pr', 'sg', 'spr', 'sr'], '0x318': ['any', 'ex', 'ne', 'pp'], '0x319': ['any'], '0x42E': ['any'], '0x6EC': ['any', 'ftt', 'mp', 'pgt'], 'hammer': ['any']}
+  crouch   {'any': ['any'], '0x315': ['any', 'fc', 'rl', 'sl'], '0x316': ['any', 'bs', 'sb'], '0x317': ['0x415', '0x66A', '0x66B', 'any', 'cb', 'csr', 'ne', 'pr', 'sg', 'spr', 'sr'], '0x318': ['any', 'ex', 'ne', 'pp'], '0x319': ['any'], '0x42E': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:c gravity_hammer:c machinegun_tur:c magnum:c missile_pod:c needler:c plasma_cannon:c plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:A
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:f gravity_hammer:c machinegun_tur:f magnum:c missile_pod:f needler:c plasma_cannon:f plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+
+# objects\characters\odst_recon\odst_recon parent objects\characters\marine\lipsync\lipsync modes 38 WL 22
+  WL [('any', 'any'), ('0x415', '0x317'), ('0x66A', '0x317'), ('0x66B', '0x317'), ('sg', '0x317'), ('sr', '0x317'), ('rl', '0x315'), ('sl', '0x315'), ('ftt', '0x6EC'), ('ex', '0x318'), ('spr', '0x317'), ('cb', '0x317'), ('csr', '0x317'), ('pr', '0x317'), ('bs', '0x316'), ('sb', '0x316'), ('fc', '0x315'), ('ne', '0x318'), ('pp', '0x318'), ('mgt', '0x6EC'), ('pgt', '0x6EC'), ('mp', '0x6EC')]
+  any      {'any': ['any']}
+  combat   {'unarmed': ['any'], 'any': ['any'], '0x315': ['any', 'fc', 'rl', 'sl'], '0x316': ['any', 'bs', 'sb'], '0x317': ['0x415', '0x66A', '0x66B', 'any', 'cb', 'csr', 'ne', 'pr', 'sg', 'spr', 'sr'], '0x318': ['any', 'ex', 'ne', 'pp'], '0x319': ['any'], '0x42E': ['any'], '0x6EC': ['any', 'ftt', 'mp', 'pgt'], 'hammer': ['any']}
+  crouch   {'any': ['any'], '0x315': ['any', 'fc', 'rl', 'sl'], '0x316': ['any', 'bs', 'sb'], '0x317': ['0x415', '0x66A', '0x66B', 'any', 'cb', 'csr', 'ne', 'pr', 'sg', 'spr', 'sr'], '0x318': ['any', 'ex', 'ne', 'pp'], '0x319': ['any'], '0x42E': ['any'], 'hammer': ['any']}
+  combat | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:c gravity_hammer:c machinegun_tur:c magnum:c missile_pod:c needler:c plasma_cannon:c plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:A
+  crouch | assault_rifle:c automag:c battle_rifle:c beam_rifle:c brute_shot:c covenant_carbi:c energy_blade:c excavator:c flak_cannon:c flamethrower:- gravity_hammer:c machinegun_tur:- magnum:c missile_pod:- needler:c plasma_cannon:- plasma_cannon_:c plasma_pistol:c plasma_rifle:c plasma_rifle_r:c rocket_launche:c sentinel_gun:c shotgun:c smg:c smg_silenced:c sniper_rifle:c spartan_laser:c spike_rifle:c
+
+# objects\characters\sentinel_aggressor\sentinel_aggressor parent None modes 4 WL 1
+  WL [('any', 'any')]
+  any      {'any': ['any']}
+  combat   {'any': ['any']}
+  patrol   {'any': ['any']}
+  crouch   {'any': ['any']}
+  combat | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+  patrol | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+  crouch | assault_rifle:f automag:f battle_rifle:f beam_rifle:f brute_shot:f covenant_carbi:f energy_blade:f excavator:f flak_cannon:f flamethrower:f gravity_hammer:f machinegun_tur:f magnum:f missile_pod:f needler:f plasma_cannon:f plasma_cannon_:f plasma_pistol:f plasma_rifle:f plasma_rifle_r:f rocket_launche:f sentinel_gun:f shotgun:f smg:f smg_silenced:f sniper_rifle:f spartan_laser:f spike_rifle:f
+
+weapons
+  assault_rifle 0x317 0x66A 0x0  
+  automag 0x318 hp 0x0  
+  battle_rifle 0x317 0x66B 0x0  
+  beam_rifle 0x317 csr 0x2000040  
+  brute_shot 0x316 bs 0x0  
+  covenant_carbine 0x317 cb 0x0  
+  energy_blade 0x319 eb 0x544040  
+  excavator 0x318 ex 0x200000  
+  flak_cannon 0x315 fc 0x0  
+  flamethrower 0x6EC ftt 0x2009140  
+  gravity_hammer hammer gh 0x444040  
+  machinegun_turret 0x6EC mgt 0x9500  
+  magnum 0x318 hp 0x200000  
+  missile_pod 0x6EC mp 0x9500  
+  needler 0x318 ne 0x0  
+  plasma_cannon 0x6EC pgt 0x9500  
+  plasma_cannon_undeployed 0x315 pgts 0x800000  
+  plasma_pistol 0x318 pp 0x40  
+  plasma_rifle 0x317 pr 0x200840  
+  plasma_rifle_red 0x317 pr 0x200840  
+  rocket_launcher 0x315 rl 0x2000000  
+  sentinel_gun 0x316 sb 0x840  
+  shotgun 0x317 sg 0x0  
+  smg 0x317 0x415 0x200800  
+  smg_silenced 0x317 0x415 0x800  
+  sniper_rifle 0x317 sr 0x2000000  
+  spartan_laser 0x315 sl 0x2000040  
+  spike_rifle 0x318 spr 0x200800  

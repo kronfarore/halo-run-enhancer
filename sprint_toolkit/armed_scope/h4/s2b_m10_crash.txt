@@ -1,0 +1,178 @@
+## weapons: class name flags sec barrels
+storm_phantom_chin_gun                         fixed    gt     pal=0 
+storm_warthogchaingun                          fixed    cg     pal=0 
+storm_warthoggauss                             fixed    gr     pal=0 
+storm_warthogrocket_pod                        fixed    gr     pal=0 
+energy_sword                                   sword    eb     pal=1 meleeOnly
+jackal_shield                                  shield   js     pal=1 dual,noPlayer
+jackal_shield_major                            shield   js     pal=1 dual,noPlayer
+storm_energy_sword                             sword    eb     pal=1 meleeOnly
+storm_energy_sword_elevator                    sword    eb     pal=1 meleeOnly
+storm_gravity_hammer                           hammer   gh     pal=1 meleeOnly
+storm_knife                                    unarmed         pal=0 
+unarmed                                        unarmed  ua     pal=0 
+storm_bishop_beam                              pistol   bb     pal=1 
+storm_burst_pistol                             pistol   bg     pal=1 dual
+storm_magnum                                   pistol   hp     pal=1 
+storm_needler                                  pistol   ne     pal=1 
+storm_plasma_pistol                            pistol   pp     pal=1 
+storm_plasma_pistol_pve                        pistol   pp     pal=1 
+storm_sentinel_beam                            pistol   bb     pal=1 
+storm_stasis_pistol                            pistol   fbp    pal=1 
+storm_sticky_detonator_pve                     pistol   sd     pal=1 
+storm_target_laser_droppod                     pistol   sl     pal=0 support
+target_laser                                   pistol   sl     pal=1 
+storm_assault_carbine                          rifle    ac     pal=1 
+storm_assault_rifle                            rifle    ar     pal=1 
+storm_attach_beam                              rifle    ab     pal=1 
+storm_beam_rifle                               rifle    csr    pal=1 
+storm_br                                       rifle    br     pal=1 
+storm_concussion_rifle                         rifle    con    pal=1 
+storm_covenant_carbine                         rifle    cb     pal=1 
+storm_dmr                                      rifle    dmr    pal=1 
+storm_forerunner_rifle                         rifle    frr    pal=1 
+storm_forerunner_smg                           rifle    smg    pal=1 
+storm_forerunner_sniper_rifle                  rifle    ab     pal=1 
+storm_lmg                                      rifle    lmg    pal=1 
+storm_rail_gun_pve                             rifle    rg     pal=1 
+storm_shotgun                                  rifle    sg     pal=1 
+storm_sniper_rifle                             rifle    sr     pal=1 
+storm_spread_gun                               rifle    spd    pal=1 
+storm_stasis_rifle                             pistol   st     pal=1 aiMeleeDmg
+storm_forerunner_incineration_launcher         missile  fri    pal=1 
+storm_fuel_rod_cannon                          missile  fr     pal=1 
+storm_rocket_launcher                          missile  rl     pal=1 
+storm_spartan_laser                            missile  sl     pal=1 
+hunter_lmg                                     turret   mgt    pal=1 support,prevCrouch
+storm_machinegun_turret                        turret   mgt    pal=1 support,prevCrouch
+## cells naming a char + weapon
+sq_hallways_grunts_01 D 0 count 2 chars [('storm_grunt', 0.0), ('storm_grunt_imperial', 0.0)] w [('storm_plasma_pistol', 0.0, '0xf'), ('storm_needler', 0.0, '0xc')] wptr 0x5ed6a16c
+sq_hallways_elite_01 D 0 count 1 chars [('storm_elite', 0.0), ('storm_elite_officer', 0.0)] w [('storm_assault_carbine', 0.0, '0x0')] wptr 0x5ed6a174
+sq_lookout_grunts_01 D 0 count 3 chars [('storm_grunt', 0.0), ('storm_grunt_imperial', 0.0)] w [('storm_plasma_pistol', 0.0, '0x0')] wptr 0x5ed6a17a
+sq_lookout_elite_01 D 0 count 1 chars [('storm_elite', 0.0), ('storm_elite_officer', 0.0)] w [('storm_assault_carbine', 0.0, '0x0')] wptr 0x5ed6a174
+sq_cafe_grunts_02 D 0 count 4 chars [('storm_grunt', 0.0), ('storm_grunt_imperial', 0.0)] w [('storm_plasma_pistol', 0.0, '0x7')] wptr 0x5ed6a184
+sq_cafe_elite_02 D 0 count 1 chars [('storm_elite', 0.0), ('storm_elite_officer', 0.0), ('storm_elite_officer', 0.0)] w [('storm_assault_carbine', 0.0, '0x0')] wptr 0x5ed6a174
+hallways_2_elite_02 D 0 count 1 chars [('storm_elite', 0.0), ('storm_elite_officer', 0.0)] w [('storm_assault_carbine', 0.0, '0x0')] wptr 0x5ed6a174
+hallways_2_grunts_01 D 0 count 2 chars [('storm_grunt', 0.0), ('storm_grunt_imperial', 0.0)] w [('storm_plasma_pistol', 0.0, '0x0')] wptr 0x5ed6a17a
+hallways_2_grunts_02 D 0 count 2 chars [('storm_grunt', 0.0), ('storm_grunt_imperial', 0.0)] w [('storm_plasma_pistol', 0.0, '0x0')] wptr 0x5ed6a17a
+sq_flank_grunts_center_left D 0 count 2 chars [('storm_grunt', 0.0), ('storm_grunt_imperial', 0.0)] w [('storm_plasma_pistol', 0.0, '0x0')] wptr 0x5ed6a17a
+sq_flank_grunts_center_right D 0 count 2 chars [('storm_grunt', 0.0), ('storm_grunt_imperial', 0.0)] w [('storm_plasma_pistol', 0.0, '0x0')] wptr 0x5ed6a17a
+sq_flank_grunts_back_right D 0 count 2 chars [('storm_grunt', 0.0), ('storm_grunt_imperial', 0.0)] w [('storm_plasma_pistol', 0.0, '0x0')] wptr 0x5ed6a17a
+sq_flank_grunts_back_left D 0 count 2 chars [('storm_grunt', 0.0), ('storm_grunt_imperial', 0.0)] w [('storm_plasma_pistol', 0.0, '0x0')] wptr 0x5ed6a17a
+sq_flank_elite_back_1 D 0 count 1 chars [('storm_elite', 0.0), ('storm_elite_officer', 0.0)] w [('storm_assault_carbine', 0.0, '0x0')] wptr 0x5ed6a174
+sq_flank_elite_back_2 D 0 count 1 chars [('storm_elite', 0.0), ('storm_elite_officer', 0.0)] w [('storm_assault_carbine', 0.0, '0x0')] wptr 0x5ed6a174
+sq_mh_explosionalley_grunt01 D 0 count 1 chars [('storm_grunt', 0.0)] w [('storm_needler', 0.0, '0x0'), ('storm_plasma_pistol', 0.0, '0x0')] wptr 0x5ed6a19e
+sq_mh_explosionalley_grunt02 D 0 count 1 chars [('storm_grunt', 0.0)] w [('storm_needler', 0.0, '0x0'), ('storm_plasma_pistol', 0.0, '0x0')] wptr 0x5ed6a19e
+sq_mh_explosionalley_grunt03 D 0 count 1 chars [('storm_grunt', 0.0)] w [('storm_needler', 0.0, '0x0'), ('storm_plasma_pistol', 0.0, '0x0')] wptr 0x5ed6a19e
+sq_broken_start_grunt01 D 0 count 1 chars [('storm_grunt', 0.0)] w [('storm_needler', 0.0, '0x0'), ('storm_plasma_pistol', 0.0, '0x0')] wptr 0x5ed6a1a2
+sq_broken_start_grunt02 D 0 count 1 chars [('storm_grunt', 0.0)] w [('storm_needler', 0.0, '0x0'), ('storm_plasma_pistol', 0.0, '0x0')] wptr 0x5ed6a1a2
+sq_broken_start_grunt03 D 0 count 1 chars [('storm_grunt', 0.0)] w [('storm_needler', 0.0, '0x0'), ('storm_plasma_pistol', 0.0, '0x0')] wptr 0x5ed6a1a2
+sq_broken_start_grunt04 D 0 count 1 chars [('storm_grunt', 0.0)] w [('storm_needler', 0.0, '0x0'), ('storm_plasma_pistol', 0.0, '0x0')] wptr 0x5ed6a1a2
+sq_debris_event02_phantom01 D 0 count 3 chars [('storm_elite_ranger', 0.0), ('storm_grunt', 0.0)] w [('storm_plasma_pistol', 0.0, '0x0')] wptr 0x5ed6a17a
+sq_maintenance_upper_grunt_01 D 0 count 1 chars [('storm_grunt', 0.0), ('storm_grunt_imperial', 0.0)] w [('storm_plasma_pistol', 0.0, '0x0'), ('storm_needler', 0.0, '0x0')] wptr 0x5ed6a1b2
+sq_maintenance_upper_grunt_02 D 0 count 1 chars [('storm_grunt', 0.0), ('storm_grunt_imperial', 0.0)] w [('storm_plasma_pistol', 0.0, '0x0'), ('storm_needler', 0.0, '0x0')] wptr 0x5ed6a1b2
+sq_maintenance_upper_grunt_03 D 0 count 1 chars [('storm_grunt', 0.0), ('storm_grunt_imperial', 0.0)] w [('storm_plasma_pistol', 0.0, '0x0'), ('storm_needler', 0.0, '0x0')] wptr 0x5ed6a1b2
+sq_maintenance_upper_grunt_04 D 0 count 1 chars [('storm_grunt', 0.0), ('storm_grunt_imperial', 0.0)] w [('storm_plasma_pistol', 0.0, '0x0'), ('storm_needler', 0.0, '0x0')] wptr 0x5ed6a1b2
+sq_mh_explo_alley_elite1 D 0 count 1 chars [('storm_grunt', 0.0)] w [('storm_needler', 0.0, '0x0'), ('storm_plasma_pistol', 0.0, '0x0')] wptr 0x5ed6a19e
+## graphs
+-- storm_elite_ai modes 138 wl [('spr', 'pistol'), ('pr', 'pistol')] modes_ptr 0x5fc3cbea
+  berserk sword    any   any   a=17  o=8   ['aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up', 'aim_locomote_walk_right_up'] ik=[]
+  patrol  unarmed  any   any   a=66  o=29  ['reload_1', 'fire_1', 'aim_still_up', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  patrol  unarmed  any   sync_actions a=0   o=0   [] ik=[]
+  combat  unarmed  any   any   a=65  o=29  ['reload_1', 'fire_1', 'aim_still_up', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  combat  unarmed  any   sync_actions a=0   o=0   [] ik=[]
+  combat  any      any   any   a=10  o=2   ['aim_still_up'] ik=[]
+  combat  missile  any   any   a=57  o=19  ['fire_1', 'aim_still_up', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up', 'aim_locomote_walk_right_up'] ik=[]
+  combat  missile  fr    any   a=1   o=2   ['fire_1', 'reload_1'] ik=[]
+  combat  missile  pl    any   a=0   o=0   [] ik=[]
+  combat  missile  ml    any   a=0   o=0   [] ik=[]
+  combat  rifle    any   any   a=65  o=29  ['reload_1', 'fire_1', 'aim_still_up', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  combat  rifle    any   sync_actions a=0   o=0   [] ik=[]
+  combat  rifle    sg    any   a=0   o=1   [] ik=[]
+  combat  rifle    sr    any   a=0   o=1   [] ik=[]
+  combat  rifle    con   any   a=0   o=1   [] ik=[]
+  combat  rifle    csr   any   a=0   o=1   [] ik=[]
+  combat  rifle    br    any   a=0   o=1   [] ik=[]
+  combat  rifle    ac    any   a=0   o=1   [] ik=[]
+  combat  rifle    cb    any   a=0   o=1   [] ik=[]
+  combat  rifle    gl    any   a=0   o=0   [] ik=[]
+  combat  rifle    prp   any   a=0   o=0   [] ik=[]
+  combat  pistol   any   any   a=67  o=20  ['aim_still_up', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up', 'aim_locomote_walk_right_up', 'aim_land_hard_up'] ik=[]
+  combat  pistol   ne    any   a=0   o=2   ['fire_1'] ik=[]
+  combat  pistol   pp    any   a=0   o=2   ['fire_1'] ik=[]
+  combat  pistol   spr   any   a=0   o=0   [] ik=[]
+  combat  pistol   pr    any   a=0   o=1   ['fire_1'] ik=[]
+  combat  sword    any   any   a=67  o=19  ['aim_still_up', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up', 'aim_locomote_walk_right_up', 'aim_locomote_up'] ik=[]
+  combat  sword    eb    any   a=0   o=1   [] ik=[]
+  combat  turret   any   any   a=9   o=10  ['aim_still_up', 'aim_move_up', 'aim_move_back_up', 'aim_move_front_up', 'aim_move_left_up', 'aim_move_right_up'] ik=[]
+  combat  hammer   any   any   a=1   o=4   [] ik=[]
+  crouch  any      any   any   a=1   o=0   [] ik=[]
+  crouch  missile  any   any   a=1   o=6   ['aim_still_up'] ik=[]
+  crouch  missile  fr    any   a=0   o=1   [] ik=[]
+  crouch  missile  pl    any   a=0   o=0   [] ik=[]
+  crouch  rifle    any   any   a=2   o=6   ['aim_still_up'] ik=[]
+  crouch  rifle    sg    any   a=0   o=1   [] ik=[]
+  crouch  rifle    sr    any   a=0   o=1   [] ik=[]
+  crouch  rifle    csr   any   a=0   o=1   [] ik=[]
+  crouch  rifle    br    any   a=0   o=1   [] ik=[]
+  crouch  rifle    cb    any   a=0   o=1   [] ik=[]
+  crouch  rifle    gl    any   a=0   o=0   [] ik=[]
+  crouch  rifle    prp   any   a=0   o=0   [] ik=[]
+  crouch  pistol   any   any   a=1   o=4   ['aim_still_up'] ik=[]
+  crouch  pistol   ne    any   a=0   o=2   ['fire_1'] ik=[]
+  crouch  pistol   pp    any   a=0   o=1   [] ik=[]
+  crouch  pistol   spr   any   a=0   o=0   [] ik=[]
+  crouch  pistol   pr    any   a=0   o=1   ['fire_1'] ik=[]
+  crouch  sword    any   any   a=1   o=6   ['aim_still_up'] ik=[]
+  crouch  hammer   any   any   a=0   o=3   [] ik=[]
+-- storm_grunt modes 103 wl [] modes_ptr 0x5fc79332
+  berserk pistol   any   any   a=10  o=2   ['aim_still_up', 'aim_move_up'] ik=[]
+  patrol  unarmed  any   any   a=0   o=1   [] ik=[]
+  patrol  any      any   any   a=0   o=1   [] ik=[]
+  combat  any      any   any   a=0   o=1   [] ik=[]
+  combat  missile  any   any   a=52  o=15  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_move_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up'] ik=[]
+  combat  missile  rl    any   a=0   o=1   ['fire_1'] ik=[]
+  combat  support  pgt   any   a=52  o=15  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_move_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up'] ik=[]
+  combat  support  mgt   any   a=52  o=15  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_move_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up'] ik=[]
+  combat  support  bs    any   a=61  o=25  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  combat  support  ft    any   a=52  o=15  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_move_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up'] ik=[]
+  combat  support  pgts  any   a=52  o=15  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_move_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up'] ik=[]
+  combat  support  pmt   any   a=52  o=15  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_move_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up'] ik=[]
+  combat  support  pmts  any   a=52  o=15  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_move_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up'] ik=[]
+  combat  support  sb    any   a=61  o=25  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  combat  rifle    smg   any   a=61  o=25  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  combat  rifle    ar    any   a=61  o=25  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  combat  rifle    sg    any   a=61  o=25  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  combat  rifle    sr    any   a=61  o=25  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  combat  rifle    csr   any   a=61  o=25  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  combat  rifle    br    any   a=61  o=25  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  combat  rifle    cb    any   a=61  o=25  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  combat  rifle    pr    any   a=61  o=25  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  combat  pistol   any   any   a=61  o=25  ['fire_1', 'aim_still_up', 'aim_still_down', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  combat  pistol   ne    any   a=0   o=2   ['reload_1', 'fire_1'] ik=[]
+  combat  pistol   pp    any   a=0   o=5   ['reload_1', 'fire_1'] ik=[]
+  combat  pistol   pr    any   a=0   o=1   ['reload_1'] ik=[]
+  crouch  unarmed  any   any   a=1   o=1   ['aim_still_up'] ik=[]
+  crouch  missile  any   any   a=17  o=2   ['aim_still_up', 'aim_move_down'] ik=[]
+  crouch  missile  rl    any   a=0   o=1   ['fire_1'] ik=[]
+  crouch  pistol   any   any   a=4   o=4   ['aim_still_up', 'aim_still_down', 'aim_move_down', 'aim_move_front_up'] ik=[]
+  crouch  pistol   ne    any   a=0   o=2   ['reload_1', 'fire_1'] ik=[]
+  crouch  pistol   pp    any   a=0   o=5   ['reload_1', 'fire_1'] ik=[]
+  crouch  pistol   pr    any   a=0   o=1   ['reload_1'] ik=[]
+  flee    any      any   any   a=22  o=5   ['aim_still_up', 'aim_move_up', 'aim_turn_left_up', 'aim_turn_right_up'] ik=[]
+  flee    pistol   any   any   a=22  o=4   ['aim_still_up', 'aim_move_up', 'aim_turn_left_up', 'aim_turn_right_up'] ik=[]
+-- storm_jackal modes 77 wl [] modes_ptr 0x5fc96ab6
+  patrol  unarmed  any   any   a=0   o=0   [] ik=[]
+  combat  unarmed  any   any   a=56  o=14  ['fire_1', 'fire_2', 'aim_still_up', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  combat  any      any   any   a=2   o=0   [] ik=[]
+  combat  dual     js    any   a=56  o=14  ['fire_1', 'fire_2', 'aim_still_up', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  combat  rifle    any   any   a=54  o=14  ['fire_1', 'aim_still_up', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up', 'aim_locomote_walk_right_up'] ik=[]
+  combat  rifle    csr   any   a=0   o=1   [] ik=[]
+  combat  rifle    cb    any   a=0   o=1   [] ik=[]
+  combat  pistol   any   any   a=56  o=14  ['fire_1', 'fire_2', 'aim_still_up', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  crouch  unarmed  any   any   a=29  o=14  ['fire_1', 'fire_2', 'aim_still_up', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  crouch  dual     js    any   a=29  o=14  ['fire_1', 'fire_2', 'aim_still_up', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  crouch  rifle    any   any   a=30  o=14  ['fire_1', 'aim_still_up', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up', 'aim_locomote_walk_right_up'] ik=[]
+  crouch  pistol   any   any   a=29  o=14  ['fire_1', 'fire_2', 'aim_still_up', 'aim_locomote_run_back_up', 'aim_locomote_run_front_up', 'aim_locomote_run_left_up', 'aim_locomote_run_right_up', 'aim_locomote_walk_back_up', 'aim_locomote_walk_front_up', 'aim_locomote_walk_left_up'] ik=[]
+  flee    dual     js    any   a=35  o=4   ['fire_1', 'fire_2', 'aim_still_up', 'aim_airborne_up'] ik=[]
+  flee    pistol   any   any   a=19  o=4   ['fire_1', 'fire_2', 'aim_still_up', 'aim_airborne_up'] ik=[]

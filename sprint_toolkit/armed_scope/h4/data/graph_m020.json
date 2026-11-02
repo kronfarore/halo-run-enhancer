@@ -1,0 +1,7915 @@
+{
+"title": "Requiem",
+"weapons": {
+"objects\\characters\\storm_hunter\\hunter_fuel_rod\\storm_storm_hunter_fuel_rod": {
+"class": "unarmed",
+"name": "hfr",
+"card": null,
+"in_pal": false
+},
+"objects\\equipment\\storm_auto_turret\\weapon\\weapon_pve": {
+"class": "fixed",
+"name": "cg",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\covenant\\storm_banshee\\weapons\\banshee_bomb_launcher\\storm_banshee_bomb_launcher": {
+"class": "fixed",
+"name": "gun",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\covenant\\storm_banshee\\weapons\\banshee_dual_cannon\\storm_banshee_dual_cannon": {
+"class": "fixed",
+"name": "gun",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\covenant\\storm_ghost\\weapons\\ghost_dual_cannon\\storm_ghost_dual_cannon": {
+"class": "fixed",
+"name": "gun",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\covenant\\storm_phantom\\turrets\\phantom_chin_gun\\weapons\\storm_phantom_chin_gun": {
+"class": "fixed",
+"name": "gt",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\covenant\\storm_phantom\\turrets\\phantom_chin_gun_dogfight\\storm_phantom_chin_gun_dogfight": {
+"class": "fixed",
+"name": "gt",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_detached\\storm_plasma_turret": {
+"class": "turret",
+"name": "pgt",
+"card": null,
+"in_pal": true
+},
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted": {
+"class": "turret",
+"name": "pgt",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\covenant\\turrets\\storm_shade\\weapons\\storm_shade_plasma_cannon\\weapon\\storm_shade_plasma_cannon": {
+"class": "fixed",
+"name": "gun",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\human\\_old_vehicles\\warthog\\weapons\\warthog_horn\\warthog_horn": {
+"class": "fixed",
+"name": "gun",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\storm_warthogchaingun": {
+"class": "fixed",
+"name": "cg",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthoggauss\\weapon\\storm_warthoggauss": {
+"class": "fixed",
+"name": "gr",
+"card": null,
+"in_pal": false
+},
+"objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogrocket\\weapon\\storm_warthogrocket_pod": {
+"class": "fixed",
+"name": "gr",
+"card": null,
+"in_pal": false
+},
+"objects\\weapons\\melee\\jackal_shield\\jackal_shield": {
+"class": "shield",
+"name": "js",
+"card": null,
+"in_pal": true
+},
+"objects\\weapons\\melee\\jackal_shield\\jackal_shield_major": {
+"class": "shield",
+"name": "js",
+"card": null,
+"in_pal": true
+},
+"objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword": {
+"class": "sword",
+"name": "eb",
+"card": "Energy Blade",
+"in_pal": true
+},
+"objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer": {
+"class": "hammer",
+"name": "gh",
+"card": "Gravity Hammer",
+"in_pal": true
+},
+"objects\\weapons\\melee\\storm_knife\\storm_knife": {
+"class": "unarmed",
+"name": "",
+"card": null,
+"in_pal": false
+},
+"objects\\weapons\\melee\\unarmed\\unarmed": {
+"class": "unarmed",
+"name": "ua",
+"card": null,
+"in_pal": false
+},
+"objects\\weapons\\pistol\\storm_magnum\\storm_magnum": {
+"class": "pistol",
+"name": "hp",
+"card": "Magnum",
+"in_pal": true
+},
+"objects\\weapons\\pistol\\storm_needler\\storm_needler": {
+"class": "pistol",
+"name": "ne",
+"card": "Needler",
+"in_pal": true
+},
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol": {
+"class": "pistol",
+"name": "pp",
+"card": "Plasma Pistol",
+"in_pal": true
+},
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve": {
+"class": "pistol",
+"name": "pp",
+"card": "Plasma Pistol",
+"in_pal": true
+},
+"objects\\weapons\\pistol\\storm_sentinel_beam\\storm_sentinel_beam": {
+"class": "pistol",
+"name": "bb",
+"card": "Sentinel Beam",
+"in_pal": true
+},
+"objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol": {
+"class": "pistol",
+"name": "fbp",
+"card": "Boltshot",
+"in_pal": true
+},
+"objects\\weapons\\pistol\\storm_sticky_detonator\\storm_sticky_detonator_pve": {
+"class": "pistol",
+"name": "sd",
+"card": "Sticky Detonator",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine": {
+"class": "rifle",
+"name": "ac",
+"card": "Storm Rifle",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle": {
+"class": "rifle",
+"name": "ar",
+"card": "Assault Rifle",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle": {
+"class": "rifle",
+"name": "csr",
+"card": "Beam Rifle",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_br\\storm_br": {
+"class": "rifle",
+"name": "br",
+"card": "Battle Rifle",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle": {
+"class": "rifle",
+"name": "con",
+"card": "Concussion Rifle",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine": {
+"class": "rifle",
+"name": "cb",
+"card": "Covenant Carbine",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_dmr\\storm_dmr": {
+"class": "rifle",
+"name": "dmr",
+"card": "DMR",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle": {
+"class": "rifle",
+"name": "frr",
+"card": "LightRifle",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg": {
+"class": "rifle",
+"name": "smg",
+"card": "Suppressor",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle": {
+"class": "rifle",
+"name": "ab",
+"card": "Binary Rifle",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_lmg\\storm_lmg": {
+"class": "rifle",
+"name": "lmg",
+"card": "SAW",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_rail_gun\\storm_rail_gun_pve": {
+"class": "rifle",
+"name": "rg",
+"card": "Railgun",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun": {
+"class": "rifle",
+"name": "sg",
+"card": "Shotgun",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle": {
+"class": "rifle",
+"name": "sr",
+"card": "Sniper Rifle",
+"in_pal": true
+},
+"objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun": {
+"class": "rifle",
+"name": "spd",
+"card": "Scattershot",
+"in_pal": true
+},
+"objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher": {
+"class": "missile",
+"name": "fri",
+"card": "Incineration Cannon",
+"in_pal": true
+},
+"objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon": {
+"class": "missile",
+"name": "fr",
+"card": "Flak Cannon",
+"in_pal": true
+},
+"objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher": {
+"class": "missile",
+"name": "rl",
+"card": "Rocket Launcher",
+"in_pal": true
+},
+"objects\\weapons\\support_high\\storm_spartan_laser\\storm_spartan_laser": {
+"class": "missile",
+"name": "sl",
+"card": "Spartan Laser",
+"in_pal": true
+},
+"objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret": {
+"class": "turret",
+"name": "mgt",
+"card": null,
+"in_pal": true
+}
+},
+"all_chars": 40,
+"char_unit": {
+"objects\\characters\\storm_elite\\ai\\storm_elite": "objects\\characters\\storm_elite_ai\\storm_elite_ai",
+"objects\\characters\\storm_grunt\\ai\\storm_grunt": "objects\\characters\\storm_grunt\\storm_grunt",
+"objects\\characters\\storm_grunt\\ai\\storm_grunt_ultra": "objects\\characters\\storm_grunt\\storm_grunt",
+"objects\\characters\\storm_jackal\\ai\\storm_jackal": "objects\\characters\\storm_jackal\\storm_jackal",
+"objects\\characters\\storm_elite\\ai\\storm_elite_zealot": "objects\\characters\\storm_elite_ai\\storm_elite_ai",
+"objects\\characters\\storm_elite\\ai\\storm_elite_zealot_m20": "objects\\characters\\storm_elite_ai\\storm_elite_ai",
+"objects\\characters\\storm_jackal\\ai\\storm_jackal_sniper": "objects\\characters\\storm_jackal\\storm_jackal",
+"objects\\characters\\storm_elite\\ai\\storm_elite_general": "objects\\characters\\storm_elite_ai\\storm_elite_ai",
+"objects\\characters\\storm_sentinel\\ai\\storm_sentinel": "objects\\characters\\storm_sentinel\\storm_sentinel",
+"objects\\characters\\storm_hunter\\ai\\storm_hunter": "objects\\characters\\storm_hunter\\storm_hunter"
+},
+"graphs": {
+"objects\\characters\\storm_elite_ai\\storm_elite_ai": {
+"hlmt": "objects\\characters\\storm_elite_ai\\storm_elite_ai",
+"jmad": "objects\\characters\\storm_elite_ai\\storm_elite_ai",
+"bipd_weapons": [
+"objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword"
+],
+"parent": null,
+"n_modes": 138,
+"modes_ptr": "0x5fb9c422",
+"weapon_list": 2,
+"anims": 722,
+"inherit_new": 0,
+"inherit_old": 0,
+"graph": {
+"berserk": {
+"sword": {
+"any": {
+"any": [
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walkslow_front"
+]
+}
+}
+},
+"patrol": {
+"unarmed": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_back",
+"dive_left",
+"dive_right",
+"airborne",
+"land_hard",
+"throw_grenade",
+"locomote",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"warn",
+"smash_left",
+"smash_right",
+"jump",
+"brace",
+"point",
+"shakefist",
+"juke_anticipation_left",
+"juke_anticipation_right",
+"juke_anticipation_front",
+"juke_left",
+"juke_right",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walkslow_front",
+"jump_down",
+"jump_down_forward",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_short",
+"jump_up",
+"jump_up_forward",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"aim_locomote_up",
+"takecover_front"
+],
+"sync_actions": []
+}
+}
+},
+"combat": {
+"unarmed": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_back",
+"dive_left",
+"dive_right",
+"airborne",
+"land_hard",
+"throw_grenade",
+"locomote",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"warn",
+"smash_left",
+"smash_right",
+"jump",
+"brace",
+"point",
+"shakefist",
+"juke_anticipation_left",
+"juke_anticipation_right",
+"juke_anticipation_front",
+"juke_left",
+"juke_right",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walkslow_front",
+"jump_down",
+"jump_down_forward",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_short",
+"jump_up",
+"jump_up_forward",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"takecover_front"
+],
+"sync_actions": []
+}
+},
+"any": {
+"any": {
+"any": [
+"dive_front",
+"dive_back",
+"dive_right",
+"airborne",
+"throw_grenade",
+"airborne_dead",
+"landing_dead",
+"drop_shield_enter",
+"drop_shield_exit",
+"drop_shield_idle"
+]
+}
+},
+"missile": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_back",
+"dive_left",
+"airborne",
+"land_hard",
+"throw_grenade",
+"locomote",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"smash_left",
+"smash_right",
+"jump",
+"melee_back",
+"brace",
+"point",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walkslow_front",
+"jump_down",
+"jump_down_forward",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_short",
+"jump_up",
+"jump_up_forward",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90"
+]
+},
+"fr": {
+"any": [
+"reload_1"
+]
+},
+"pl": {
+"any": []
+},
+"ml": {
+"any": []
+}
+},
+"rifle": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_back",
+"dive_left",
+"dive_right",
+"airborne",
+"land_hard",
+"throw_grenade",
+"locomote",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"warn",
+"smash_left",
+"smash_right",
+"jump",
+"brace",
+"point",
+"shakefist",
+"juke_anticipation_left",
+"juke_anticipation_right",
+"juke_anticipation_front",
+"juke_left",
+"juke_right",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walkslow_front",
+"jump_down",
+"jump_down_forward",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_short",
+"jump_up",
+"jump_up_forward",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"takecover_front"
+],
+"sync_actions": []
+},
+"ac": {
+"any": []
+},
+"csr": {
+"any": []
+},
+"br": {
+"any": []
+},
+"con": {
+"any": []
+},
+"cb": {
+"any": []
+},
+"sg": {
+"any": []
+},
+"sr": {
+"any": []
+},
+"gl": {
+"any": []
+},
+"prp": {
+"any": []
+}
+},
+"pistol": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_hard",
+"throw_grenade",
+"locomote",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"warn",
+"smash_left",
+"smash_right",
+"jump",
+"melee_back",
+"taunt",
+"brace",
+"point",
+"shakefist",
+"juke_anticipation_left",
+"juke_anticipation_right",
+"juke_anticipation_front",
+"juke_left",
+"juke_right",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walkslow_front",
+"jump_down",
+"jump_down_forward",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_short",
+"jump_up",
+"jump_up_forward",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"armor_lock_exit",
+"h_ping_front_gut"
+]
+},
+"ne": {
+"any": []
+},
+"pp": {
+"any": []
+},
+"spr": {
+"any": []
+},
+"pr": {
+"any": []
+}
+},
+"sword": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_hard",
+"throw_grenade",
+"locomote",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"warn",
+"smash_left",
+"smash_right",
+"jump",
+"melee_back",
+"taunt",
+"brace",
+"point",
+"shakefist",
+"smash_forward",
+"juke_anticipation_left",
+"juke_anticipation_right",
+"juke_anticipation_front",
+"juke_left",
+"juke_right",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walkslow_front",
+"jump_down",
+"jump_down_forward",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_short",
+"jump_up",
+"jump_up_forward",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"armor_lock_exit"
+]
+},
+"eb": {
+"any": []
+}
+},
+"turret": {
+"any": {
+"any": [
+"idle",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+]
+}
+},
+"hammer": {
+"any": {
+"any": [
+"land_hard"
+]
+}
+}
+},
+"crouch": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"missile": {
+"any": {
+"any": [
+"idle"
+]
+},
+"fr": {
+"any": []
+},
+"pl": {
+"any": []
+}
+},
+"rifle": {
+"any": {
+"any": [
+"idle",
+"airborne"
+]
+},
+"csr": {
+"any": []
+},
+"br": {
+"any": []
+},
+"cb": {
+"any": []
+},
+"sg": {
+"any": []
+},
+"sr": {
+"any": []
+},
+"gl": {
+"any": []
+},
+"prp": {
+"any": []
+}
+},
+"pistol": {
+"any": {
+"any": [
+"idle"
+]
+},
+"ne": {
+"any": []
+},
+"pp": {
+"any": []
+},
+"spr": {
+"any": []
+},
+"pr": {
+"any": []
+}
+},
+"sword": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"hammer": {
+"any": {
+"any": []
+}
+}
+},
+"any": {
+"any": {
+"any": {
+"any": [
+"go_berserk"
+],
+"sync_actions": [
+"sve_airborne_smackdown_victim",
+"sve_ground_climb_and_kill_n19_victim",
+"sve_ground_phonebooth_kidney_punch_neck_stab_p0_victim",
+"sve_ground_struggle_necksnap_victim",
+"sve_ground_tackle_and_stab_p19_victim",
+"sve_pounce_climb_and_kill_n0_victim"
+]
+}
+}
+},
+"vault": {
+"rifle": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"pistol": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"sword": {
+"any": {
+"any": [
+"enter"
+]
+}
+}
+},
+"hoist": {
+"rifle": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"pistol": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"sword": {
+"any": {
+"any": [
+"enter"
+]
+}
+}
+},
+"hoist_crouch": {
+"any": {
+"any": {
+"any": [
+"enter"
+]
+}
+}
+},
+"hoist_stand": {
+"any": {
+"any": {
+"any": [
+"enter"
+]
+}
+}
+},
+"bunker": {
+"missile": {
+"any": {
+"any": [
+"center_crouch_enter"
+],
+"left_stand_open": [
+"fire_1",
+"idle",
+"aim_still_up",
+"exit",
+"close"
+],
+"left_stand_closed": [
+"idle",
+"peek",
+"enter"
+],
+"right_stand_open": [
+"fire_1",
+"idle",
+"aim_still_up",
+"exit",
+"close"
+],
+"right_stand_closed": [
+"idle",
+"peek",
+"enter"
+],
+"center_crouch_open": [
+"fire_1",
+"idle",
+"aim_still_up",
+"exit",
+"close"
+],
+"center_crouch_closed": [
+"idle",
+"enter",
+"exit",
+"open"
+]
+}
+},
+"rifle": {
+"any": {
+"left_stand_open": [
+"idle",
+"enter",
+"exit",
+"close"
+],
+"left_stand_closed": [
+"idle",
+"peek",
+"enter",
+"exit",
+"open"
+],
+"right_stand_open": [
+"idle",
+"enter",
+"exit",
+"close"
+],
+"right_stand_closed": [
+"idle",
+"peek",
+"enter",
+"exit",
+"open"
+],
+"center_crouch_open": [
+"idle",
+"enter",
+"exit",
+"close"
+],
+"center_crouch_closed": [
+"idle",
+"peek",
+"enter",
+"exit",
+"open"
+]
+}
+},
+"pistol": {
+"any": {
+"left_stand_open": [
+"idle",
+"enter",
+"exit",
+"close"
+],
+"left_stand_closed": [
+"idle",
+"peek",
+"enter",
+"exit",
+"open"
+],
+"right_stand_open": [
+"idle",
+"enter",
+"exit",
+"close"
+],
+"right_stand_closed": [
+"idle",
+"peek",
+"enter",
+"exit",
+"open"
+],
+"center_crouch_open": [
+"idle",
+"enter",
+"exit",
+"close"
+],
+"center_crouch_closed": [
+"idle",
+"peek",
+"enter",
+"exit",
+"open"
+]
+}
+}
+},
+"drop_pod": {
+"any": {
+"any": {
+"any": [
+"exit"
+]
+}
+}
+},
+"m30_ghost": {
+"escape": {
+"any": {
+"any": []
+}
+}
+},
+"vin": {
+"m30": {
+"sync": {
+"any": []
+}
+},
+"global": {
+"solo": {
+"any": []
+}
+},
+"lich": {
+"solo": {
+"any": []
+}
+},
+"m10_elite_unarmed_spot_player": {
+"any": {
+"any": []
+}
+},
+"m20": {
+"solo": {
+"any": []
+}
+},
+"m60": {
+"any": {
+"any": []
+}
+}
+},
+"m10": {
+"sword": {
+"any": {
+"any": []
+}
+},
+"sync": {
+"any": {
+"any": []
+}
+}
+},
+"m30": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"warthog_b_d": {
+"any": {
+"any": {
+"any": [
+"idle",
+"enter",
+"board"
+]
+}
+}
+},
+"warthog_b_p": {
+"any": {
+"any": {
+"any": [
+"idle",
+"enter",
+"board"
+]
+}
+}
+},
+"warthog_b_g": {
+"any": {
+"any": {
+"any": [
+"idle",
+"enter",
+"board"
+]
+}
+}
+},
+"close_turret_doors": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_4": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lf_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lf_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lf_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lf_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rf_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rf_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rf_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rf_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lb_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lb_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lb_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lb_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rb_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rb_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rb_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rb_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_f_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_f_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_f_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_f_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_b_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_b_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_b_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_b_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_f_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_f_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_f_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_f_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_b_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_b_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_b_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_b_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_5": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_6": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"turret_g": {
+"any": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"exit_and_detach"
+]
+},
+"mgt": {
+"any": [
+"exit_and_detach"
+]
+}
+}
+},
+"phantom_g": {
+"any": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"exit_and_detach"
+]
+},
+"mgt": {
+"any": [
+"exit_and_detach"
+]
+}
+}
+},
+"ghost_d": {
+"any": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection",
+"enter_a",
+"exit_a"
+]
+}
+}
+},
+"ghost_b_d_b": {
+"any": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+}
+},
+"ghost_b_d_r": {
+"any": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+}
+},
+"ghost_b_d_l": {
+"any": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+}
+},
+"banshee_d": {
+"any": {
+"any": {
+"any": [
+"idle",
+"airborne_dead",
+"landing_dead",
+"enter",
+"exit",
+"ejection"
+]
+}
+}
+},
+"banshee_b_d_r": {
+"any": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+}
+},
+"banshee_b_d_l": {
+"any": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+}
+},
+"shade_d": {
+"any": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+}
+}
+},
+"e3": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"cov_p1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"cov_p2": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"cov_p3": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"cov_p4": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_1_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_1_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_2_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_2_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_3_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_3_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_1_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_1_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_2_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_2_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_3_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_3_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_1_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_1_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_2_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_2_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_3_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_3_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_med_p_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_med_p_2": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_med_p_3": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_med_p_4": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"falcon_b_d_l": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"falcon_b_d_r": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"falcon_b_g_l": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"falcon_b_g_r": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"fork_p_l1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"fork_p_l2": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"fork_p_l3": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"fork_p_l4": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"fork_p_l5": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"fork_p_l6": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"fork_p_l7": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"fork_p_l8": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"fork_p_r1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"fork_p_r2": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"fork_p_r3": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"fork_p_r4": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"fork_p_r5": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"fork_p_r6": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"fork_p_r7": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"fork_p_r8": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"ghost_b_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"ghost_d_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"global": {
+"unarmed": {
+"any": {
+"any": []
+}
+}
+},
+"global_act": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"global_alert": {
+"rifle": {
+"any": {
+"any": []
+}
+},
+"pistol": {
+"any": {
+"any": []
+}
+}
+},
+"global_investigate": {
+"unarmed": {
+"any": {
+"any": []
+}
+},
+"rifle": {
+"any": {
+"any": []
+}
+},
+"pistol": {
+"any": {
+"any": []
+}
+},
+"sword": {
+"any": {
+"any": []
+}
+}
+},
+"m45": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"m70": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"moving_death": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"obs_elite1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"obs_elite2": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"pod_p_l": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"pod_p_r": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"shade_d_a": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"shotgun_death": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"sniper_death": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"vehicle_death": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"vin_global_solo_cov_p4": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"wraith_d": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"wraith_g": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"melee_continuous": {
+"missile": {
+"fr": {
+"any": []
+},
+"pl": {
+"any": []
+}
+},
+"rifle": {
+"csr": {
+"any": []
+},
+"br": {
+"any": []
+},
+"cb": {
+"any": []
+},
+"sg": {
+"any": []
+},
+"sr": {
+"any": []
+},
+"gl": {
+"any": []
+},
+"prp": {
+"any": []
+}
+},
+"pistol": {
+"ne": {
+"any": []
+},
+"pp": {
+"any": []
+},
+"spr": {
+"any": []
+}
+}
+}
+}
+},
+"objects\\characters\\storm_grunt\\storm_grunt": {
+"hlmt": "objects\\characters\\storm_grunt\\storm_grunt",
+"jmad": "objects\\characters\\storm_grunt\\storm_grunt",
+"bipd_weapons": [
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol"
+],
+"parent": null,
+"n_modes": 103,
+"modes_ptr": "0x5fbdaf76",
+"weapon_list": 0,
+"anims": 342,
+"inherit_new": 0,
+"inherit_old": 0,
+"graph": {
+"berserk": {
+"pistol": {
+"any": {
+"any": [
+"melee",
+"idle",
+"move_left",
+"move_right",
+"throw_grenade",
+"evade_left",
+"evade_right",
+"taunt",
+"charge_back",
+"charge_front"
+]
+}
+}
+},
+"flaming": {
+"pistol": {
+"any": {
+"any": [
+"move_front",
+"walk_front"
+]
+}
+}
+},
+"asleep": {
+"any": {
+"any": {
+"any": []
+}
+},
+"pistol": {
+"any": {
+"any": []
+}
+}
+},
+"patrol": {
+"unarmed": {
+"any": {
+"any": []
+},
+"walk_front": {}
+},
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"combat": {
+"any": {
+"any": {
+"any": []
+}
+},
+"missile": {
+"any": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"deploy",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90"
+]
+},
+"rl": {
+"any": []
+}
+},
+"support": {
+"pgt": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"deploy",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90"
+]
+},
+"mgt": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"deploy",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90"
+]
+},
+"bs": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"cheer",
+"taunt",
+"brace",
+"draw_wpn_fast",
+"draw_wpn_slow",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"jump_backward_long",
+"jump_backward_short",
+"walk_front_near_fire"
+]
+},
+"ft": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"deploy",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90"
+]
+},
+"pgts": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"deploy",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90"
+]
+},
+"pmt": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"deploy",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90"
+]
+},
+"pmts": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"deploy",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90"
+]
+},
+"sb": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"cheer",
+"taunt",
+"brace",
+"draw_wpn_fast",
+"draw_wpn_slow",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"jump_backward_long",
+"jump_backward_short",
+"walk_front_near_fire"
+]
+}
+},
+"rifle": {
+"smg": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"cheer",
+"taunt",
+"brace",
+"draw_wpn_fast",
+"draw_wpn_slow",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"jump_backward_long",
+"jump_backward_short",
+"walk_front_near_fire"
+]
+},
+"ar": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"cheer",
+"taunt",
+"brace",
+"draw_wpn_fast",
+"draw_wpn_slow",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"jump_backward_long",
+"jump_backward_short",
+"walk_front_near_fire"
+]
+},
+"csr": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"cheer",
+"taunt",
+"brace",
+"draw_wpn_fast",
+"draw_wpn_slow",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"jump_backward_long",
+"jump_backward_short",
+"walk_front_near_fire"
+]
+},
+"br": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"cheer",
+"taunt",
+"brace",
+"draw_wpn_fast",
+"draw_wpn_slow",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"jump_backward_long",
+"jump_backward_short",
+"walk_front_near_fire"
+]
+},
+"cb": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"cheer",
+"taunt",
+"brace",
+"draw_wpn_fast",
+"draw_wpn_slow",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"jump_backward_long",
+"jump_backward_short",
+"walk_front_near_fire"
+]
+},
+"sg": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"cheer",
+"taunt",
+"brace",
+"draw_wpn_fast",
+"draw_wpn_slow",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"jump_backward_long",
+"jump_backward_short",
+"walk_front_near_fire"
+]
+},
+"sr": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"cheer",
+"taunt",
+"brace",
+"draw_wpn_fast",
+"draw_wpn_slow",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"jump_backward_long",
+"jump_backward_short",
+"walk_front_near_fire"
+]
+},
+"pr": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"cheer",
+"taunt",
+"brace",
+"draw_wpn_fast",
+"draw_wpn_slow",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"jump_backward_long",
+"jump_backward_short",
+"walk_front_near_fire"
+]
+}
+},
+"pistol": {
+"any": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"locomote",
+"ready",
+"surprise_front",
+"surprise_back",
+"go_kamikaze",
+"evade_left",
+"evade_right",
+"warn",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"jump",
+"cheer",
+"taunt",
+"brace",
+"draw_wpn_fast",
+"draw_wpn_slow",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"jump_backward_long",
+"jump_backward_short",
+"walk_front_near_fire"
+]
+},
+"ne": {
+"any": []
+},
+"pp": {
+"any": []
+},
+"pr": {
+"any": []
+}
+}
+},
+"crouch": {
+"unarmed": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"missile": {
+"any": {
+"any": [
+"idle",
+"dive_front",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"ready",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"deploy"
+]
+},
+"rl": {
+"any": []
+}
+},
+"pistol": {
+"any": {
+"any": [
+"idle",
+"move_front",
+"move_left",
+"move_right"
+]
+},
+"ne": {
+"any": []
+},
+"pp": {
+"any": []
+},
+"pr": {
+"any": []
+}
+}
+},
+"flee": {
+"any": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"turn_left_composite",
+"turn_right_composite",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90"
+]
+}
+},
+"pistol": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"turn_left_composite",
+"turn_right_composite",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90"
+]
+}
+}
+},
+"any": {
+"any": {
+"any": {
+"any": [
+"airborne",
+"land_soft",
+"land_hard",
+"throw_equipment",
+"go_kamikaze",
+"airborne_dead",
+"landing_dead"
+],
+"sync_actions": [
+"svg_ground_head_stab_victim",
+"svg_ground_phonebooth_neck_snap_victim",
+"svg_pounce_neck_stab_victim"
+]
+}
+},
+"pistol": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"vault": {
+"missile": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"pistol": {
+"any": {
+"any": [
+"enter"
+]
+}
+}
+},
+"hoist_crouch": {
+"any": {
+"any": {
+"any": [
+"enter"
+]
+}
+}
+},
+"hoist_stand": {
+"any": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"missile": {
+"any": {
+"any": [
+"enter"
+]
+}
+}
+},
+"act_asleep_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"act_examine_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"act_gaze_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"vin": {
+"any": {
+"any": {
+"any": []
+}
+},
+"global": {
+"solo": {
+"any": []
+}
+},
+"lich": {
+"solo": {
+"any": []
+}
+},
+"m20": {
+"solo": {
+"any": []
+}
+},
+"m60": {
+"any": {
+"any": []
+}
+}
+},
+"m10": {
+"sync": {
+"any": {
+"any": []
+}
+}
+},
+"phantom_pc_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_4": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lf_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lf_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lf_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lf_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rf_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rf_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rf_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rf_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lb_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lb_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lb_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lb_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rb_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rb_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rb_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rb_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_f_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_f_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_f_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_f_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_b_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_b_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_b_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_b_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_f_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_f_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_f_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_f_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_b_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_b_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_b_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_b_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_5": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_6": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"turret_g": {
+"any": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+}
+},
+"phantom_g": {
+"any": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+}
+},
+"ghost_d": {
+"any": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection",
+"enter_a"
+]
+}
+}
+},
+"shade_d": {
+"any": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+}
+}
+},
+"drop_pod_large_c_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_1_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_1_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_2_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_2_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_3_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_3_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_1_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_1_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_2_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_2_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_3_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_3_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_1_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_1_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_2_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_2_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_3_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_3_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_med_p_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_med_p_2": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_med_p_3": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_med_p_4": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"global_investigate": {
+"pistol": {
+"any": {
+"any": []
+}
+}
+},
+"shade_d_a": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"vehicle_death": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"bind_pose": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"c_turret_ap": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"m10_spacesuck_part": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"obs_grunt1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"obs_grunt2": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"obs_grunt2a": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"obs_grunt2b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"phantom_g_l": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"phantom_g_r": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"phantom_p": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"phantom_p_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_b_small1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_b_small2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_b_small3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_small1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_small2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_small3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+}
+}
+},
+"objects\\characters\\storm_hunter\\storm_hunter": {
+"hlmt": "objects\\characters\\storm_hunter\\storm_hunter",
+"jmad": "objects\\characters\\storm_hunter\\storm_hunter",
+"bipd_weapons": [
+"objects\\characters\\storm_hunter\\hunter_fuel_rod\\storm_storm_hunter_fuel_rod"
+],
+"parent": null,
+"n_modes": 61,
+"modes_ptr": "0x5fc1d182",
+"weapon_list": 0,
+"anims": 176,
+"inherit_new": 0,
+"inherit_old": 0,
+"graph": {
+"patrol": {
+"any": {
+"any": {
+"any": [
+"airborne"
+]
+}
+}
+},
+"combat": {
+"any": {
+"any": {
+"any": [
+"turn_left_composite",
+"turn_right_composite",
+"locomote",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90"
+]
+}
+}
+},
+"crouch": {
+"any": {
+"any": {
+"any": [
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"locomote",
+"surprise_front",
+"surprise_back",
+"smash_left",
+"smash_right",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90"
+]
+},
+"hfr": {
+"any": []
+}
+}
+},
+"any": {
+"any": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"airborne_dead",
+"landing_dead",
+"posing",
+"smash_left",
+"smash_right",
+"melee_back",
+"melee_left",
+"melee_right",
+"melee_tackle",
+"taunt",
+"brace",
+"shakefist",
+"armor_lock_exit",
+"armor_lock_enter",
+"armor_lock_idle"
+]
+},
+"hfr": {
+"any": []
+}
+}
+},
+"hoist": {
+"unarmed": {
+"any": {
+"any": [
+"enter"
+]
+}
+}
+},
+"phantom_pc_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_4": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lf_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lf_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lf_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lf_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rf_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rf_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rf_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rf_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lb_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rb_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rb_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rb_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rb_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_f_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_f_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_f_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_f_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_b_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_f_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_f_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_f_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_f_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_b_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_b_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_b_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_b_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_5": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_6": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"drop_pod_large_c_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_1_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_1_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_2_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_2_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_3_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_3_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_1_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_1_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_2_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_2_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_3_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_3_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_1_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_1_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_2_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_2_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_3_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_3_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"boarded": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"phantom_p_a02": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"phantom_pc": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+}
+}
+},
+"objects\\characters\\storm_jackal\\storm_jackal": {
+"hlmt": "objects\\characters\\storm_jackal\\storm_jackal",
+"jmad": "objects\\characters\\storm_jackal\\storm_jackal",
+"bipd_weapons": [
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol"
+],
+"parent": null,
+"n_modes": 77,
+"modes_ptr": "0x5fbf9c31",
+"weapon_list": 0,
+"anims": 361,
+"inherit_new": 0,
+"inherit_old": 0,
+"graph": {
+"patrol": {
+"unarmed": {
+"any": {
+"any": []
+}
+}
+},
+"combat": {
+"unarmed": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"turn_left_composite",
+"turn_right_composite",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"locomote",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"jump",
+"shake_fist",
+"taunt",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walkslow_front",
+"jump_down_forward",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_short",
+"jump_up_forward",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"locomote_walkslow_frontleft",
+"warn_long"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"airborne_dead",
+"landing_dead"
+]
+}
+},
+"dual": {
+"js": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"turn_left_composite",
+"turn_right_composite",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"locomote",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"jump",
+"shake_fist",
+"taunt",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walkslow_front",
+"jump_down_forward",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_short",
+"jump_up_forward",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"locomote_walkslow_frontleft",
+"warn_long"
+]
+}
+},
+"rifle": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"turn_left_composite",
+"turn_right_composite",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"locomote",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"warn",
+"jump",
+"shake_fist",
+"taunt",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walkslow_front",
+"jump_down_forward",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_short",
+"jump_up_forward",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"locomote_walkslow_frontleft",
+"warn_long"
+]
+},
+"csr": {
+"any": []
+},
+"cb": {
+"any": []
+}
+},
+"pistol": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"turn_left_composite",
+"turn_right_composite",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"locomote",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"jump",
+"shake_fist",
+"taunt",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walkslow_front",
+"jump_down_forward",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_short",
+"jump_up_forward",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"locomote_walkslow_frontleft",
+"warn_long"
+]
+}
+}
+},
+"crouch": {
+"unarmed": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"airborne",
+"locomote",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90"
+]
+}
+},
+"dual": {
+"js": {
+"any": [
+"melee",
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"airborne",
+"locomote",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90"
+]
+}
+},
+"rifle": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"turn_left_composite",
+"turn_right_composite",
+"airborne",
+"locomote",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90"
+]
+}
+},
+"pistol": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"airborne",
+"locomote",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90"
+]
+}
+}
+},
+"flee": {
+"dual": {
+"js": {
+"any": [
+"idle",
+"dive_left",
+"dive_right",
+"airborne",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"posing",
+"taunt",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"jump_down_forward",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_forward",
+"jump_up_long",
+"jump_up_short"
+]
+}
+},
+"pistol": {
+"any": {
+"any": [
+"idle",
+"dive_left",
+"dive_right",
+"airborne",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"posing",
+"taunt",
+"jump_down_forward",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_up_forward",
+"jump_up_long",
+"jump_up_short"
+]
+}
+}
+},
+"shield": {
+"pistol": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"turn_left_composite",
+"turn_right_composite",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"locomote",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"jump",
+"shake_fist",
+"taunt",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walkslow_front",
+"jump_down_forward",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_short",
+"jump_up_forward",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"locomote_walkslow_frontleft",
+"warn_long"
+]
+}
+}
+},
+"any": {
+"h_kill": {
+"front": {
+"any": []
+}
+},
+"any": {
+"any": {
+"any": [
+"vin10_plinth_a_exit",
+"vin10_plinth_a_idle"
+],
+"sync_actions": [
+"svj_ground_knee_n_stab_p0_victim",
+"svj_ground_phonebooth_swipe_n_stab_p0_victim",
+"svj_pounce_roll_n_stab_p0_victim"
+]
+},
+"ne": {
+"any": []
+}
+}
+},
+"vin": {
+"global": {
+"solo": {
+"any": []
+}
+},
+"lich": {
+"solo": {
+"any": []
+}
+},
+"m60": {
+"any": {
+"any": []
+}
+}
+},
+"m10": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"phantom_pc_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_4": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lf_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lf_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lf_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lf_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rf_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rf_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rf_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rf_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lb_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lb_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lb_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_lb_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rb_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rb_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rb_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_rb_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_f_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_f_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_f_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_f_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_b_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_b_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_b_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_ml_b_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_f_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_f_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_f_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_f_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_b_main": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_b_small_1": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_b_small_2": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_p_mr_b_small_3": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_5": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"phantom_pc_6": {
+"any": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"drop_pod_large_c_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_1_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_1_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_2_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_2_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_3_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_c_3_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_1_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_1_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_2_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_2_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_3_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_h_3_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_1_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_1_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_2_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_2_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_3_b": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_large_p_3_t": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_med_p_1": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_med_p_2": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_med_p_3": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"drop_pod_med_p_4": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"global": {
+"pacing": {
+"any": {
+"any": []
+}
+}
+},
+"vehicle_death": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"shield_crouch": {
+"pistol": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left_composite",
+"turn_right_composite",
+"dive_left",
+"dive_right",
+"airborne",
+"locomote",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90"
+]
+}
+}
+},
+"murm": {
+"pistol": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"turn_left_composite",
+"turn_right_composite",
+"dive_left",
+"dive_right",
+"airborne",
+"land_soft",
+"land_hard",
+"locomote",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"warn",
+"posing",
+"jump",
+"shake_fist",
+"taunt",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right",
+"locomote_walkslow_front",
+"jump_down_forward",
+"jump_down_long",
+"jump_down_short",
+"jump_forward_long",
+"jump_forward_short",
+"jump_short",
+"jump_up_forward",
+"jump_up_long",
+"jump_up_short",
+"locomote_walk_inplace",
+"turn_left_0",
+"turn_left_180",
+"turn_left_90",
+"turn_right_0",
+"turn_right_180",
+"turn_right_90",
+"locomote_walkslow_frontleft",
+"warn_long"
+]
+}
+}
+},
+"hard_death": {
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"melee_continuous": {
+"rifle": {
+"any": {
+"any": []
+}
+}
+}
+}
+},
+"objects\\characters\\storm_sentinel\\storm_sentinel": {
+"hlmt": "objects\\characters\\storm_sentinel\\storm_sentinel",
+"jmad": "objects\\characters\\storm_sentinel\\storm_sentinel",
+"bipd_weapons": [
+"objects\\weapons\\pistol\\storm_sentinel_beam\\storm_sentinel_beam"
+],
+"parent": null,
+"n_modes": 2,
+"modes_ptr": "0x5fc094b7",
+"weapon_list": 0,
+"anims": 24,
+"inherit_new": 0,
+"inherit_old": 0,
+"graph": {
+"combat": {
+"any": {
+"any": {
+"any": [
+"idle",
+"locomote",
+"locomote_run_back",
+"locomote_run_backleft",
+"locomote_run_backright",
+"locomote_run_front",
+"locomote_run_frontleft",
+"locomote_run_frontright",
+"locomote_run_left",
+"locomote_run_right",
+"locomote_walk_back",
+"locomote_walk_backleft",
+"locomote_walk_backright",
+"locomote_walk_front",
+"locomote_walk_frontleft",
+"locomote_walk_frontright",
+"locomote_walk_left",
+"locomote_walk_right"
+]
+}
+}
+},
+"any": {
+"any": {
+"any": {
+"any": []
+}
+}
+}
+}
+}
+},
+"graph_siblings": {
+"cinematics\\cin_m0205_cathedral\\objects\\diadact_hologram\\diadact_hologram5": {
+"parent": "cinematics\\cin_m0205_cathedral\\objects\\diadact_hologram\\diadact_hologram",
+"n_modes": 1,
+"modes_ptr": "0x5fff21bb",
+"anims": 1,
+"anims_ptr": "0x5fff236d"
+},
+"cinematics\\cin_m0205_cathedral\\objects\\hologram_requiem\\hologram_requiem4": {
+"parent": "cinematics\\cin_m0205_cathedral\\objects\\hologram_requiem\\hologram_requiem",
+"n_modes": 1,
+"modes_ptr": "0x5fff21bb",
+"anims": 1,
+"anims_ptr": "0x5fff2292"
+},
+"cinematics\\cin_m0205_cathedral\\objects\\signal_locator\\signal_locator3": {
+"parent": "cinematics\\cin_m0205_cathedral\\objects\\signal_locator\\signal_locator",
+"n_modes": 1,
+"modes_ptr": "0x5fff21bb",
+"anims": 1,
+"anims_ptr": "0x5fff2183"
+},
+"environments\\solo\\m020\\device_controls\\m20_bridge_button\\m20_bridge_button12": {
+"parent": "environments\\solo\\m020\\device_controls\\m20_bridge_button\\m20_bridge_button",
+"n_modes": 1,
+"modes_ptr": "0x5e9cb6b3",
+"anims": 0,
+"anims_ptr": "0x0"
+},
+"environments\\solo\\m020\\device_machines\\dm_m20_tower01\\dm_m20_tower010": {
+"parent": "environments\\solo\\m020\\device_machines\\dm_m20_tower01\\dm_m20_tower01",
+"n_modes": 1,
+"modes_ptr": "0x5e9cb6b3",
+"anims": 0,
+"anims_ptr": "0x0"
+},
+"environments\\solo\\m30_cryptum\\device_control\\m30_bridge_button\\m30_bridge_button13": {
+"parent": "environments\\solo\\m30_cryptum\\device_control\\m30_bridge_button\\m30_bridge_button",
+"n_modes": 1,
+"modes_ptr": "0x5e9cb6b3",
+"anims": 0,
+"anims_ptr": "0x0"
+},
+"objects\\characters\\storm_elite_ai\\storm_elite_ai10": {
+"parent": "objects\\characters\\storm_elite_ai\\storm_elite_ai",
+"n_modes": 138,
+"modes_ptr": "0x5fffaf21",
+"anims": 2,
+"anims_ptr": "0x5fffa875"
+},
+"objects\\characters\\storm_elite_ai\\storm_elite_ai8": {
+"parent": "objects\\characters\\storm_elite_ai\\storm_elite_ai",
+"n_modes": 138,
+"modes_ptr": "0x5fff7620",
+"anims": 1,
+"anims_ptr": "0x5fff5b20"
+},
+"objects\\characters\\storm_grunt\\storm_grunt9": {
+"parent": "objects\\characters\\storm_grunt\\storm_grunt",
+"n_modes": 103,
+"modes_ptr": "0x5fffa29f",
+"anims": 2,
+"anims_ptr": "0x5fff88f8"
+},
+"objects\\characters\\storm_masterchief\\storm_masterchief1": {
+"parent": "objects\\characters\\storm_masterchief\\storm_masterchief",
+"n_modes": 78,
+"modes_ptr": "0x5fff1bb0",
+"anims": 3,
+"anims_ptr": "0x5ffed99c"
+},
+"objects\\characters\\storm_masterchief\\storm_masterchief11": {
+"parent": "objects\\characters\\storm_masterchief\\storm_masterchief",
+"n_modes": 78,
+"modes_ptr": "0x5fff1bb0",
+"anims": 1,
+"anims_ptr": "0x5fffb658"
+},
+"objects\\characters\\storm_masterchief\\storm_masterchief6": {
+"parent": "objects\\characters\\storm_masterchief\\storm_masterchief",
+"n_modes": 78,
+"modes_ptr": "0x5fff4c7a",
+"anims": 1,
+"anims_ptr": "0x5fff394e"
+},
+"objects\\characters\\storm_masterchief\\storm_masterchief7": {
+"parent": "objects\\characters\\storm_masterchief\\storm_masterchief",
+"n_modes": 78,
+"modes_ptr": "0x5fff1bb0",
+"anims": 1,
+"anims_ptr": "0x5fff50e5"
+},
+"objects\\temp\\ivobe\\octopus\\octopus2": {
+"parent": "objects\\temp\\ivobe\\octopus\\octopus",
+"n_modes": 3,
+"modes_ptr": "0x5fff2094",
+"anims": 1,
+"anims_ptr": "0x5fff2023"
+}
+},
+"fire": {
+"ai\\generic": {
+"parent": null,
+"unit": null,
+"wp": [
+"objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle",
+"objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle",
+"objects\\weapons\\rifle\\storm_br\\storm_br",
+"objects\\weapons\\rifle\\storm_dmr\\storm_dmr",
+"objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword",
+"objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon",
+"objects\\characters\\storm_hunter\\hunter_fuel_rod\\storm_storm_hunter_fuel_rod",
+"objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer",
+"objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret",
+"objects\\weapons\\pistol\\storm_magnum\\storm_magnum",
+"objects\\weapons\\pistol\\storm_needler\\storm_needler",
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve",
+"objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine",
+"objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle",
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
+"objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle",
+null,
+"objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun",
+null,
+null,
+"objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol",
+"objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg",
+null,
+null,
+null,
+"objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle",
+null,
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_detached\\storm_plasma_turret",
+"objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher",
+"objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher",
+null,
+"objects\\weapons\\pistol\\storm_sentinel_beam\\storm_sentinel_beam",
+"objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun",
+"objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
+"objects\\weapons\\support_high\\storm_spartan_laser\\storm_spartan_laser",
+null,
+"objects\\weapons\\rifle\\storm_rail_gun\\storm_rail_gun_pve",
+null,
+null,
+"objects\\weapons\\rifle\\storm_lmg\\storm_lmg",
+"objects\\vehicles\\covenant\\storm_ghost\\weapons\\ghost_dual_cannon\\storm_ghost_dual_cannon",
+null,
+null,
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted",
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+"objects\\vehicles\\covenant\\turrets\\storm_shade\\weapons\\storm_shade_plasma_cannon\\weapon\\storm_shade_plasma_cannon",
+null,
+"objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthoggauss\\weapon\\storm_warthoggauss",
+null,
+"objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogrocket\\weapon\\storm_warthogrocket_pod",
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+"objects\\vehicles\\covenant\\storm_banshee\\weapons\\banshee_dual_cannon\\storm_banshee_dual_cannon",
+"objects\\vehicles\\covenant\\storm_phantom\\turrets\\phantom_chin_gun\\weapons\\storm_phantom_chin_gun",
+"objects\\vehicles\\covenant\\storm_phantom\\turrets\\phantom_chin_gun_dogfight\\storm_phantom_chin_gun_dogfight",
+"objects\\vehicles\\covenant\\storm_banshee\\weapons\\banshee_bomb_launcher\\storm_banshee_bomb_launcher",
+null,
+null,
+null,
+null,
+null,
+"objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\storm_warthogchaingun",
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null,
+null
+],
+"fp": [
+[
+"objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle",
+4
+],
+[
+"objects\\weapons\\rifle\\storm_br\\storm_br",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_dmr\\storm_dmr",
+2
+],
+[
+"objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword",
+1
+],
+[
+"objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon",
+4
+],
+[
+"objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle",
+2
+],
+[
+"objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer",
+1
+],
+[
+"objects\\characters\\storm_hunter\\hunter_fuel_rod\\storm_storm_hunter_fuel_rod",
+4
+],
+[
+"objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret",
+2
+],
+[
+"objects\\weapons\\pistol\\storm_magnum\\storm_magnum",
+2
+],
+[
+"objects\\weapons\\pistol\\storm_needler\\storm_needler",
+4
+],
+[
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+4
+],
+[
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve",
+4
+],
+[
+"objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine",
+4
+],
+[
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
+4
+],
+[
+"objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle",
+2
+],
+[
+null,
+2
+],
+[
+"objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun",
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+"objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg",
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+4
+],
+[
+"objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle",
+4
+],
+[
+null,
+4
+],
+[
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_detached\\storm_plasma_turret",
+4
+],
+[
+"objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher",
+2
+],
+[
+"objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher",
+2
+],
+[
+null,
+2
+],
+[
+"objects\\weapons\\pistol\\storm_sentinel_beam\\storm_sentinel_beam",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
+2
+],
+[
+"objects\\weapons\\support_high\\storm_spartan_laser\\storm_spartan_laser",
+2
+],
+[
+null,
+2
+],
+[
+"objects\\weapons\\rifle\\storm_rail_gun\\storm_rail_gun_pve",
+2
+],
+[
+null,
+1
+],
+[
+"objects\\weapons\\rifle\\storm_lmg\\storm_lmg",
+2
+],
+[
+"objects\\vehicles\\covenant\\storm_banshee\\weapons\\banshee_dual_cannon\\storm_banshee_dual_cannon",
+2
+],
+[
+"objects\\vehicles\\covenant\\storm_ghost\\weapons\\ghost_dual_cannon\\storm_ghost_dual_cannon",
+2
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted",
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+"objects\\vehicles\\covenant\\turrets\\storm_shade\\weapons\\storm_shade_plasma_cannon\\weapon\\storm_shade_plasma_cannon",
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+"objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthoggauss\\weapon\\storm_warthoggauss",
+1
+],
+[
+null,
+1
+],
+[
+"objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogrocket\\weapon\\storm_warthogrocket_pod",
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+"objects\\vehicles\\covenant\\storm_phantom\\turrets\\phantom_chin_gun\\weapons\\storm_phantom_chin_gun",
+2
+],
+[
+"objects\\vehicles\\covenant\\storm_phantom\\turrets\\phantom_chin_gun_dogfight\\storm_phantom_chin_gun_dogfight",
+2
+],
+[
+"objects\\vehicles\\covenant\\storm_banshee\\weapons\\banshee_bomb_launcher\\storm_banshee_bomb_launcher",
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+"objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\storm_warthogchaingun",
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+]
+],
+"xp": [
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+null,
+null
+],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x5f78472a",
+"backup": [
+null
+],
+"zerk": [
+null
+]
+},
+"ai\\generic_turret": {
+"parent": "ai\\generic",
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"ai\\generic_turret_m70": {
+"parent": "ai\\generic_turret",
+"unit": null,
+"wp": [
+"objects\\vehicles\\covenant\\storm_phantom\\turrets\\phantom_chin_gun_dogfight\\storm_phantom_chin_gun_dogfight"
+],
+"fp": [
+[
+"objects\\vehicles\\covenant\\storm_phantom\\turrets\\phantom_chin_gun_dogfight\\storm_phantom_chin_gun_dogfight",
+2
+]
+],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x5f7a3cae",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_combat_cue_low": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_long_vision": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_long_vision_m20": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_m20_flak": {
+"parent": null,
+"unit": null,
+"wp": [
+"objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon"
+],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x5f788696",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_m35_railride": {
+"parent": null,
+"unit": null,
+"wp": [
+"objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon",
+"objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine",
+"objects\\weapons\\pistol\\storm_needler\\storm_needler",
+null,
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
+null,
+null,
+null
+],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x5f7888cd",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_m45_rocket": {
+"parent": null,
+"unit": null,
+"wp": [
+"objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle",
+"objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher"
+],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x5f788798",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_night_vision": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_playfight": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [
+[
+"objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_dmr\\storm_dmr",
+2
+],
+[
+"objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword",
+1
+],
+[
+"objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle",
+2
+],
+[
+"objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer",
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+"objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret",
+2
+],
+[
+null,
+2
+],
+[
+"objects\\weapons\\pistol\\storm_magnum\\storm_magnum",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine",
+2
+],
+[
+"objects\\weapons\\pistol\\storm_needler\\storm_needler",
+2
+],
+[
+null,
+2
+],
+[
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
+2
+],
+[
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_detached\\storm_plasma_turret",
+2
+],
+[
+"objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
+2
+],
+[
+"objects\\weapons\\support_high\\storm_spartan_laser\\storm_spartan_laser",
+2
+],
+[
+"objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle",
+2
+],
+[
+"objects\\vehicles\\covenant\\storm_banshee\\weapons\\banshee_dual_cannon\\storm_banshee_dual_cannon",
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+"objects\\vehicles\\covenant\\storm_ghost\\weapons\\ghost_dual_cannon\\storm_ghost_dual_cannon",
+2
+],
+[
+null,
+2
+],
+[
+"objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret",
+2
+],
+[
+"objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted",
+1
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+1
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+],
+[
+null,
+2
+]
+],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_shooting_dangerous": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [
+[
+"objects\\vehicles\\covenant\\storm_banshee\\weapons\\banshee_dual_cannon\\storm_banshee_dual_cannon",
+2
+]
+],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_space_vision": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"ai\\stimuli\\generic_turret_short_vision": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_elite\\ai\\stimuli\\storm_elite_aggressive": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": [
+"objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword"
+]
+},
+"objects\\characters\\storm_elite\\ai\\stimuli\\storm_elite_berserk": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": [
+null
+]
+},
+"objects\\characters\\storm_elite\\ai\\stimuli\\storm_elite_defensive": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_elite\\ai\\stimuli\\storm_elite_pilot": {
+"parent": "objects\\characters\\storm_elite\\ai\\storm_elite",
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine"
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_elite\\ai\\stimuli\\storm_elite_specops": {
+"parent": "objects\\characters\\storm_elite\\ai\\storm_elite_zealot",
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_elite\\ai\\storm_elite": {
+"parent": "ai\\generic",
+"unit": "objects\\characters\\storm_elite_ai\\storm_elite_ai",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+"objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine"
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": [
+"objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword"
+]
+},
+"objects\\characters\\storm_elite\\ai\\storm_elite_general": {
+"parent": "objects\\characters\\storm_elite\\ai\\storm_elite",
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+"objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon"
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": [
+"objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword"
+]
+},
+"objects\\characters\\storm_elite\\ai\\storm_elite_officer": {
+"parent": "objects\\characters\\storm_elite\\ai\\storm_elite",
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_elite\\ai\\storm_elite_zealot": {
+"parent": "objects\\characters\\storm_elite\\ai\\storm_elite_general",
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_elite\\ai\\storm_elite_zealot_m20": {
+"parent": "objects\\characters\\storm_elite\\ai\\storm_elite_general",
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": [
+"objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword"
+]
+},
+"objects\\characters\\storm_grunt\\ai\\stimuli\\storm_grunt_aggressive": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_grunt\\ai\\stimuli\\storm_grunt_defensive": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_grunt\\ai\\stimuli\\storm_grunt_kamikaze": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_grunt\\ai\\stimuli\\storm_grunt_m10": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol"
+],
+"zerk": []
+},
+"objects\\characters\\storm_grunt\\ai\\stimuli\\storm_grunt_m40": {
+"parent": null,
+"unit": null,
+"wp": [
+"objects\\weapons\\pistol\\storm_needler\\storm_needler",
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol"
+],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x5fbec0d7",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_grunt\\ai\\storm_grunt": {
+"parent": "ai\\generic",
+"unit": "objects\\characters\\storm_grunt\\storm_grunt",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol"
+],
+"zerk": [
+null
+]
+},
+"objects\\characters\\storm_grunt\\ai\\storm_grunt_imperial": {
+"parent": "objects\\characters\\storm_grunt\\ai\\storm_grunt",
+"unit": null,
+"wp": [
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol"
+],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x5fbe82c2",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_grunt\\ai\\storm_grunt_ultra": {
+"parent": "objects\\characters\\storm_grunt\\ai\\storm_grunt",
+"unit": null,
+"wp": [
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol"
+],
+"fp": [],
+"xp": [],
+"init": [
+"objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon"
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x5fbe82c2",
+"backup": [
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol"
+],
+"zerk": []
+},
+"objects\\characters\\storm_hunter\\ai\\storm_hunter": {
+"parent": "ai\\generic",
+"unit": "objects\\characters\\storm_hunter\\storm_hunter",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": [
+null
+]
+},
+"objects\\characters\\storm_jackal\\ai\\stimuli\\storm_jackal_aggressive": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_jackal\\ai\\stimuli\\storm_jackal_defensive": {
+"parent": null,
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_jackal\\ai\\stimuli\\storm_jackal_m40": {
+"parent": null,
+"unit": null,
+"wp": [
+"objects\\weapons\\pistol\\storm_needler\\storm_needler",
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol"
+],
+"fp": [],
+"xp": [],
+"init": [],
+"init2": [],
+"wpn_ptr": "0x5fbec0d7",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_jackal\\ai\\storm_jackal": {
+"parent": "ai\\generic",
+"unit": "objects\\characters\\storm_jackal\\storm_jackal",
+"wp": [
+"objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle",
+"objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine",
+"objects\\weapons\\pistol\\storm_needler\\storm_needler",
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol"
+],
+"fp": [
+[
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+2
+]
+],
+"xp": [],
+"init": [
+null
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x5fbec3a8",
+"backup": [
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol"
+],
+"zerk": []
+},
+"objects\\characters\\storm_jackal\\ai\\storm_jackal_major": {
+"parent": "objects\\characters\\storm_jackal\\ai\\storm_jackal",
+"unit": null,
+"wp": [
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol"
+],
+"fp": [],
+"xp": [],
+"init": [
+"objects\\weapons\\pistol\\storm_needler\\storm_needler"
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x5fc076c0",
+"backup": [],
+"zerk": []
+},
+"objects\\characters\\storm_jackal\\ai\\storm_jackal_sniper": {
+"parent": "objects\\characters\\storm_jackal\\ai\\storm_jackal",
+"unit": null,
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+"objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [
+"objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol"
+],
+"zerk": []
+},
+"objects\\characters\\storm_sentinel\\ai\\storm_sentinel": {
+"parent": "ai\\generic",
+"unit": "objects\\characters\\storm_sentinel\\storm_sentinel",
+"wp": [],
+"fp": [],
+"xp": [],
+"init": [
+"objects\\weapons\\pistol\\storm_sentinel_beam\\storm_sentinel_beam"
+],
+"init2": [
+null
+],
+"wpn_ptr": "0x0",
+"backup": [],
+"zerk": []
+}
+}
+}

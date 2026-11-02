@@ -1,0 +1,59 @@
+cell primary {'jackal': {'plasma_pistol': 10, 'needler': 10}, 'brute_captain': {'spike_rifle': 16}, 'brute': {'spike_rifle': 22}, 'skirmisher': {'needle_rifle': 12}, 'jackal_sniper': {'focus_rifle': 8}, 'bugger': {'plasma_pistol': 28}}
+cell secondary {}
+spawn (char, w1, w2, actor variant) count
+   ('jackal(cell)', '-1', '-1', None) 8
+   ('jackal_sniper(cell)', '-1', '-1', None) 7
+   ('skirmisher(cell)', '-1', '-1', None) 6
+weap tags in map not in palette: ['falcon_chin_gun', 'falcon_machinegun', 'falcon_grenade_launcher', 'falcon_sensor', 'banshee_dual_cannon', 'banshee_bomb_launcher', 'phantom_chin_gun', 'plasma_turret_mounted', 'pelican_chin_gun', 'shade_plasma_cannon', 'shade_flak_cannon', 'shade_anti_air_cannon', 'jackal_shield', 'skirmisher_bracers', 'jackal_shield_major', 'hunter_fuel_rod', 'spartan_knife', 'spartan_knife_sheath']
+char grunt variants [('minor', 0)] unit grunt
+char grunt_major variants [('major', 1)] unit None
+char grunt_ultra variants [('ultra', 2)] unit None
+char jackal variants [('jackal_minor', 0)] unit jackal
+char jackal_major variants [('jackal_major', 7)] unit None
+char jackal_aggressive variants [] unit None
+char jackal_defensive variants [] unit None
+char brute variants [('minor', 0)] unit brute
+char bugger variants [('minor', 0)] unit bugger
+char bugger_major variants [('major', 1)] unit None
+char bugger_ultra variants [('officer', 2)] unit None
+char jackal_sniper variants [('jackal_sniper', 6)] unit None
+char grunt_heavy variants [('heavy', 4)] unit None
+char brute_captain variants [('major', 1)] unit None
+char skirmisher variants [('skirmisher_minor', 1)] unit jackal
+char skirmisher_major variants [('skirmisher_major', 5)] unit None
+char skirmisher_aggressive variants [] unit None
+char skirmisher_defensive variants [] unit None
+char engineer variants [] unit engineer
+char trooper variants [('trooper_light', 0), ('trooper_light', 0), ('trooper_light', 0), ('trooper_light', 0), ('trooper_heavy', 4), ('trooper_heavy', 4), ('trooper_medic', 3), ('trooper_radio', 5)] unit marine
+char marine_fireteam_regroup variants [] unit None
+char trooper_aggressive variants [] unit None
+char trooper_defensive variants [] unit None
+char trooper_stealthy variants [] unit None
+char m60_no_crouch variants [] unit None
+char trooper_odst variants [('odst_light', 1)] unit None
+char trooper_pilot_flying variants [('pilot', 11)] unit None
+char skirmisher_commando variants [('skirmisher_commando', 3)] unit None
+char trooper_female variants [('trooper_light', 0), ('trooper_light', 0), ('trooper_light', 0), ('trooper_light', 0), ('trooper_heavy', -1), ('trooper_heavy', -1), ('trooper_medic', -1), ('trooper_radio', -1)] unit marine_female
+char trooper_sgt variants [('trooper_light', 0), ('trooper_light', 0), ('trooper_light', 0), ('trooper_light', 0), ('trooper_heavy', 4), ('trooper_heavy', 4), ('trooper_medic', 3), ('trooper_radio', 5)] unit marine
+char trooper_odst_buck variants [('odst_light', 1)] unit None
+hlmt grunt ['minor', 'major', 'ultra', 'spec_ops', 'heavy']
+hlmt breather ['minor', 'major', 'ultra', 'spec_ops', 'heavy']
+hlmt backpack ['minor', 'major', 'ultra', 'spec_ops', 'heavy']
+hlmt helmet ['minor', 'major', 'ultra', 'spec_ops', 'heavy']
+hlmt jackal ['jackal_minor', 'skirmisher_minor', 'skirmisher_murmillo', 'skirmisher_commando', 'skirmisher_champion', 'skirmisher_major', 'jackal_sniper', 'jackal_major']
+hlmt jackal_shield ['default']
+hlmt skirmisher_bracers ['default']
+hlmt jackal_shield_major ['default']
+hlmt hologram_jackal ['jackal_minor', 'skirmisher_minor', 'skirmisher_murmillo', 'skirmisher_commando', 'skirmisher_champion', 'skirmisher_major', 'jackal_sniper', 'jackal_major']
+hlmt brute ['minor', 'major']
+hlmt brute_helmet ['minor', 'major', 'chieftain']
+hlmt bugger ['minor', 'major', 'officer']
+hlmt bugger_abdomen ['minor', 'major', 'officer']
+hlmt bugger_thorax ['minor', 'major', 'officer']
+hlmt bugger_arm ['minor', 'major', 'officer']
+hlmt bugger_leg ['minor', 'major', 'officer']
+hlmt bugger_wing_large ['minor', 'major', 'officer']
+hlmt bugger_wing_small ['minor', 'major', 'officer']
+hlmt engineer ['slaveform']
+hlmt backpack_bomb []
+hlmt engineer_helmet ['default']

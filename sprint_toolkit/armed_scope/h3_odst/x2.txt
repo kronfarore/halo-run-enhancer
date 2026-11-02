@@ -1,0 +1,102 @@
+string b'ai: No firing pattern found for weapon %s for character %s' 0xd845e0
+--- xref 0x1cce88
+1ccd84: add      eax, ebp
+1ccd86: cmp      eax, 0x4ba0029
+1ccd8c: add      byte ptr [rax], al
+1ccd8e: add      byte ptr [rbx - 0x2774b731], cl
+1ccd94: call     0x94bc10
+1ccd99: mov      edi, dword ptr [rip + 0x112b2e1]   ; rva 12f8080
+1ccd9f: lea      rcx, [rsp + 0x20]
+1ccda4: xor      r9d, r9d
+1ccda7: mov      r8d, edi
+1ccdaa: mov      esi, dword ptr [rax]
+1ccdac: lea      edx, [r9 + 3]
+1ccdb0: call     0x389aa0
+1ccdb5: lea      rcx, [rsp + 0x20]
+1ccdba: call     0x38cda0
+1ccdbf: test     al, al
+1ccdc1: je       0x1cceb5
+1ccdc7: mov      ecx, dword ptr [rbx + 0x5c]
+1ccdca: call     0x399300
+1ccdcf: mov      ecx, esi
+1ccdd1: mov      rbx, rax
+1ccdd4: call     0x399300
+1ccdd9: mov      r9, rbx
+1ccddc: lea      rdx, [rip + 0xbb77bd]   ; "ai: empty firing pattern block for weapon %s for charact
+1ccde3: mov      r8, rax
+1ccde6: lea      rcx, [rsp + 0x20]
+1ccdeb: call     0x38ca80
+1ccdf0: cmp      edi, -1
+1ccdf3: jne      0x1cceb5
+1ccdf9: lea      rcx, [rip + 0x112b280]   ; rva 12f8080
+1cce00: jmp      0x1ccea8
+1cce05: mov      ecx, ebx
+1cce07: call     0x182340
+1cce0c: mov      edi, eax
+1cce0e: cmp      eax, -1
+1cce11: je       0x1cceb5
+1cce17: mov      edx, dword ptr [rip + 0x46d331b]   ; rva 48a0138
+1cce1d: mov      rcx, qword ptr gs:[0x58]
+1cce26: mov      eax, 0x48
+1cce2b: mov      rcx, qword ptr [rcx + rdx*8]
+1cce2f: mov      edx, ebx
+1cce31: mov      rcx, qword ptr [rcx + rax]
+1cce35: call     0x460ac0
+1cce3a: mov      edx, 4
+1cce3f: mov      ecx, edi
+1cce41: mov      rbx, rax
+1cce44: call     0x94bc10
+1cce49: mov      edi, dword ptr [rip + 0x112b251]   ; rva 12f80a0
+1cce4f: lea      rcx, [rsp + 0x30]
+1cce54: xor      r9d, r9d
+1cce57: mov      r8d, edi
+1cce5a: mov      esi, dword ptr [rax]
+1cce5c: lea      edx, [r9 + 3]
+1cce60: call     0x389aa0
+1cce65: lea      rcx, [rsp + 0x30]
+1cce6a: call     0x38cda0
+1cce6f: test     al, al
+1cce71: je       0x1cceb5
+1cce73: mov      ecx, dword ptr [rbx + 0x5c]
+1cce76: call     0x399300
+1cce7b: mov      ecx, esi
+1cce7d: mov      rbx, rax
+1cce80: call     0x399300
+1cce85: mov      r9, rbx
+1cce88: lea      rdx, [rip + 0xbb7751]   ; "ai: No firing pattern found for weapon %s for character 
+1cce8f: mov      r8, rax
+1cce92: lea      rcx, [rsp + 0x30]
+1cce97: call     0x38ca80
+1cce9c: cmp      edi, -1
+1cce9f: jne      0x1cceb5
+1ccea1: lea      rcx, [rip + 0x112b1f8]   ; rva 12f80a0
+1ccea8: mov      r8d, 0xffffffff
+1cceae: mov      edx, eax
+1cceb0: call     0x38af90
+1cceb5: mov      rbx, qword ptr [rsp + 0x60]
+1cceba: movzx    eax, bpl
+1ccebe: mov      rbp, qword ptr [rsp + 0x68]
+1ccec3: mov      rsi, qword ptr [rsp + 0x70]
+1ccec8: movaps   xmm6, xmmword ptr [rsp + 0x40]
+1ccecd: add      rsp, 0x50
+1cced1: pop      rdi
+1cced2: ret      
+1cced3: int3     
+1cced4: int3     
+1cced5: int3     
+1cced6: int3     
+1cced7: int3     
+1cced8: int3     
+1cced9: int3     
+1cceda: int3     
+1ccedb: int3     
+1ccedc: int3     
+1ccedd: int3     
+1ccede: int3     
+1ccedf: int3     
+1ccee0: mov      qword ptr [rsp + 8], rbx
+1ccee5: push     rdi
+1ccee6: sub      rsp, 0x40
+1cceea: mov      rdi, rdx
+1cceed: mov      rbx, rcx
+1ccef0: call     0x119460

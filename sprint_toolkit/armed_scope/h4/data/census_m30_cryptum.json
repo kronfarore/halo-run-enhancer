@@ -1,0 +1,924 @@
+{
+ "title": "Forerunner",
+ "chars": [
+  "storm_elite",
+  "storm_jackal",
+  "storm_grunt",
+  "storm_knight",
+  "storm_bishop",
+  "storm_pawn",
+  "null_fore_turret",
+  "storm_knight_battlewagon",
+  "storm_jackal_sniper",
+  "storm_hunter",
+  "storm_elite_space_pilot",
+  "storm_elite_pilot",
+  "storm_pawn_sniper",
+  "storm_knight_ranger",
+  "null_human_default"
+ ],
+ "weapons": [
+  "storm_assault_rifle",
+  "storm_magnum",
+  "storm_forerunner_smg",
+  "storm_stasis_pistol",
+  "storm_stasis_pistol_pawnhead",
+  "storm_forerunner_smg_pawnhead",
+  "storm_forerunner_rifle",
+  "jackal_shield_major",
+  "storm_assault_carbine",
+  "storm_beam_rifle",
+  "storm_br",
+  "storm_concussion_rifle",
+  "storm_covenant_carbine",
+  "storm_dmr",
+  "storm_energy_sword",
+  "storm_forerunner_incineration_launcher",
+  "storm_forerunner_rifle",
+  "storm_forerunner_sniper_rifle",
+  "storm_fuel_rod_cannon",
+  "storm_gravity_hammer",
+  "storm_lmg",
+  "storm_machinegun_turret",
+  "storm_needler",
+  "storm_plasma_pistol_pve",
+  "storm_plasma_turret",
+  "storm_rail_gun_pve",
+  "storm_rocket_launcher",
+  "storm_shotgun",
+  "storm_sniper_rifle",
+  "storm_spartan_laser",
+  "storm_spread_gun",
+  "storm_sticky_detonator_pve",
+  "focus_rifle",
+  "storm_plasma_pistol",
+  "storm_forerunner_rifle_npc",
+  "storm_forerunner_smg_npc",
+  "storm_spread_gun_npc",
+  "jackal_shield",
+  "storm_forerunner_sniper_rifle_npc"
+ ],
+ "weap_paths": [
+  "objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle",
+  "objects\\weapons\\pistol\\storm_magnum\\storm_magnum",
+  "objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg",
+  "objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol",
+  "objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
+  "objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_pawnhead",
+  "objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle",
+  "objects\\weapons\\melee\\jackal_shield\\jackal_shield_major",
+  "objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
+  "objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle",
+  "objects\\weapons\\rifle\\storm_br\\storm_br",
+  "objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle",
+  "objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine",
+  "objects\\weapons\\rifle\\storm_dmr\\storm_dmr",
+  "objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword",
+  "objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher",
+  "objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle",
+  "objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle",
+  "objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon",
+  "objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer",
+  "objects\\weapons\\rifle\\storm_lmg\\storm_lmg",
+  "objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret",
+  "objects\\weapons\\pistol\\storm_needler\\storm_needler",
+  "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve",
+  "objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_detached\\storm_plasma_turret",
+  "objects\\weapons\\rifle\\storm_rail_gun\\storm_rail_gun_pve",
+  "objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher",
+  "objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun",
+  "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
+  "objects\\weapons\\support_high\\storm_spartan_laser\\storm_spartan_laser",
+  "objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun",
+  "objects\\weapons\\pistol\\storm_sticky_detonator\\storm_sticky_detonator_pve",
+  "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+  "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+  "objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle_npc",
+  "objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc",
+  "objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun_npc",
+  "objects\\weapons\\melee\\jackal_shield\\jackal_shield",
+  "objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle_npc"
+ ],
+ "ts_units": {
+  "grunt": {
+   "cell": 4,
+   "spawn": 79,
+   "spawn_prot": 14
+  },
+  "pawn": {
+   "cell": 6,
+   "spawn": 127
+  },
+  "jackal": {
+   "cell": 4,
+   "spawn": 17,
+   "spawn_prot": 1
+  },
+  "bishop": {
+   "cell": 5,
+   "spawn": 27
+  },
+  "none": {
+   "cell": 8,
+   "spawn_prot": 27
+  },
+  "elite": {
+   "spawn": 35,
+   "spawn_prot": 4
+  },
+  "knight": {
+   "cell": 1,
+   "spawn": 54
+  },
+  "null": {
+   "spawn": 2,
+   "spawn_prot": 13
+  }
+ },
+ "squads": 210,
+ "both_cells": 13,
+ "twin_ptr_same": 0,
+ "twin_bytes_same": 0,
+ "array_ptrs": {
+  "0xc shared": 5,
+  "0x18 shared": 7,
+  "0x18 own": 3,
+  "0x30 shared": 2,
+  "0xc own": 2
+ },
+ "array_max_users": {
+  "0xc": 7,
+  "0x18": 5,
+  "0x24": 0,
+  "0x30": 2
+ },
+ "per": {
+  "pawn": {
+   "cell": 4,
+   "cell_count": 4,
+   "cell_w": 8,
+   "spawn": 127,
+   "spawn_w-1": 117
+  },
+  "bishop": {
+   "cell": 3,
+   "cell_count": 5,
+   "cell_w": 6,
+   "spawn": 27,
+   "spawn_w-1": 27
+  },
+  "nochar": {
+   "cell": 205,
+   "cell_count": 370,
+   "cell_w-1": 5,
+   "cell_noW1": 201,
+   "cell_noW1_count": 366
+  },
+  "elite": {
+   "spawn": 39,
+   "spawn_veh": 4,
+   "spawn_w-1": 2
+  },
+  "inherit": {
+   "spawn": 27,
+   "spawn_w-1": 27
+  },
+  "knight": {
+   "spawn": 54,
+   "spawn_w-1": 40
+  },
+  "null": {
+   "spawn": 15,
+   "spawn_w-1": 15,
+   "spawn_veh": 13
+  },
+  "jackal": {
+   "spawn": 18
+  },
+  "grunt": {
+   "spawn": 93,
+   "spawn_veh": 11,
+   "spawn_w-1": 45
+  }
+ },
+ "wuse": {
+  "pawn": [
+   [
+    "storm_forerunner_smg_pawnhead",
+    10
+   ],
+   [
+    "storm_stasis_pistol_pawnhead",
+    4
+   ],
+   [
+    "storm_stasis_pistol",
+    4
+   ]
+  ],
+  "bishop": [
+   [
+    "storm_stasis_pistol_pawnhead",
+    5
+   ],
+   [
+    "storm_stasis_pistol",
+    5
+   ]
+  ],
+  "elite": [
+   [
+    "storm_assault_carbine",
+    18
+   ],
+   [
+    "storm_covenant_carbine",
+    13
+   ],
+   [
+    "storm_fuel_rod_cannon",
+    5
+   ],
+   [
+    "storm_plasma_pistol",
+    1
+   ]
+  ],
+  "knight": [
+   [
+    "storm_forerunner_rifle_npc",
+    11
+   ],
+   [
+    "storm_forerunner_smg_npc",
+    3
+   ]
+  ],
+  "jackal": [
+   [
+    "storm_needler",
+    8
+   ],
+   [
+    "storm_plasma_pistol",
+    7
+   ],
+   [
+    "storm_covenant_carbine",
+    3
+   ]
+  ],
+  "grunt": [
+   [
+    "storm_plasma_pistol",
+    32
+   ],
+   [
+    "storm_needler",
+    16
+   ]
+  ]
+ },
+ "sqtm": 132,
+ "sqtm_cells": null,
+ "placed": [
+  "focus_rifle",
+  "storm_active_camo",
+  "storm_active_shield_pve",
+  "storm_assault_carbine",
+  "storm_assault_rifle",
+  "storm_auto_turret_pve",
+  "storm_beam_rifle",
+  "storm_br",
+  "storm_concussion_rifle",
+  "storm_covenant_carbine",
+  "storm_dmr",
+  "storm_energy_sword",
+  "storm_forerunner_incineration_launcher",
+  "storm_forerunner_rifle",
+  "storm_forerunner_smg",
+  "storm_forerunner_sniper_rifle",
+  "storm_forerunner_vision_pve",
+  "storm_fuel_rod_cannon",
+  "storm_gravity_hammer",
+  "storm_hologram",
+  "storm_jet_pack_pve",
+  "storm_lmg",
+  "storm_machinegun_turret",
+  "storm_magnum",
+  "storm_needler",
+  "storm_plasma_pistol",
+  "storm_plasma_pistol_pve",
+  "storm_plasma_turret",
+  "storm_rail_gun_pve",
+  "storm_regen_field",
+  "storm_rocket_launcher",
+  "storm_shotgun",
+  "storm_sniper_rifle",
+  "storm_spartan_laser",
+  "storm_spread_gun",
+  "storm_stasis_pistol",
+  "storm_sticky_detonator_pve",
+  "storm_thruster_pack_pve"
+ ],
+ "dz_items": [
+  "focus_rifle",
+  "jackal_shield",
+  "jackal_shield_major",
+  "storm_assault_carbine",
+  "storm_assault_rifle",
+  "storm_beam_rifle",
+  "storm_br",
+  "storm_concussion_rifle",
+  "storm_covenant_carbine",
+  "storm_dmr",
+  "storm_energy_sword",
+  "storm_forerunner_incineration_launcher",
+  "storm_forerunner_rifle",
+  "storm_forerunner_rifle_npc",
+  "storm_forerunner_smg",
+  "storm_forerunner_smg_npc",
+  "storm_forerunner_smg_pawnhead",
+  "storm_forerunner_sniper_rifle",
+  "storm_forerunner_sniper_rifle_npc",
+  "storm_fuel_rod_cannon",
+  "storm_gravity_hammer",
+  "storm_lmg",
+  "storm_machinegun_turret",
+  "storm_magnum",
+  "storm_needler",
+  "storm_plasma_pistol",
+  "storm_plasma_pistol_pve",
+  "storm_plasma_turret",
+  "storm_rail_gun_pve",
+  "storm_rocket_launcher",
+  "storm_shotgun",
+  "storm_sniper_rifle",
+  "storm_spartan_laser",
+  "storm_spread_gun",
+  "storm_spread_gun_npc",
+  "storm_stasis_pistol",
+  "storm_stasis_pistol_pawnhead",
+  "storm_sticky_detonator_pve"
+ ],
+ "dz_why": "",
+ "dz_index": 11,
+ "zone_sets": 24,
+ "dz_zone_sets_on": 24,
+ "zone_names": [
+  [
+   "1_start",
+   true
+  ],
+  [
+   "1_caves",
+   true
+  ],
+  [
+   "1_canyon",
+   true
+  ],
+  [
+   "1_forts",
+   true
+  ],
+  [
+   "1_elevator",
+   true
+  ],
+  [
+   "1_pylon",
+   true
+  ],
+  [
+   "2_start",
+   true
+  ],
+  [
+   "2_canyon",
+   true
+  ],
+  [
+   "2_forts",
+   true
+  ],
+  [
+   "2_elevator",
+   true
+  ],
+  [
+   "2_pylon",
+   true
+  ],
+  [
+   "3_donut",
+   true
+  ],
+  [
+   "3_activate",
+   true
+  ],
+  [
+   "3_cryptum",
+   true
+  ],
+  [
+   "4_escape",
+   true
+  ],
+  [
+   "cin_m31",
+   true
+  ],
+  [
+   "cin_m032_end",
+   true
+  ],
+  [
+   "cin_m30_relay",
+   true
+  ],
+  [
+   "1_pylon_to_2_start",
+   true
+  ],
+  [
+   "2_start_to_2_canyon",
+   true
+  ],
+  [
+   "donut",
+   true
+  ],
+  [
+   "cin_m31_trans",
+   true
+  ],
+  [
+   "cin_m31_trans2",
+   true
+  ],
+  [
+   "cin_m31_trans3",
+   true
+  ]
+ ],
+ "weap_res": {
+  "storm_assault_rifle": {
+   "card": "Assault Rifle",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 812,
+   "tracked": 790,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_magnum": {
+   "card": "Magnum",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 822,
+   "tracked": 800,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_forerunner_smg": {
+   "card": "Suppressor",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 793,
+   "tracked": 771,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_stasis_pistol": {
+   "card": "Boltshot",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 914,
+   "tracked": 892,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_stasis_pistol_pawnhead": {
+   "card": "Boltshot",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 928,
+   "tracked": 906,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_forerunner_smg_pawnhead": {
+   "card": "Suppressor",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 798,
+   "tracked": 776,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_forerunner_rifle": {
+   "card": "LightRifle",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 1080,
+   "tracked": 1058,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "jackal_shield_major": {
+   "card": null,
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 544,
+   "tracked": 522,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_assault_carbine": {
+   "card": "Storm Rifle",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 912,
+   "tracked": 890,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_beam_rifle": {
+   "card": "Beam Rifle",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 1013,
+   "tracked": 991,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_br": {
+   "card": "Battle Rifle",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 841,
+   "tracked": 819,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_concussion_rifle": {
+   "card": "Concussion Rifle",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 784,
+   "tracked": 762,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_covenant_carbine": {
+   "card": "Covenant Carbine",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 921,
+   "tracked": 899,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_dmr": {
+   "card": "DMR",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 841,
+   "tracked": 819,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_energy_sword": {
+   "card": "Energy Blade",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 869,
+   "tracked": 847,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_forerunner_incineration_launcher": {
+   "card": "Incineration Cannon",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 968,
+   "tracked": 946,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_forerunner_sniper_rifle": {
+   "card": "Binary Rifle",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 1018,
+   "tracked": 996,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_fuel_rod_cannon": {
+   "card": "Flak Cannon",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 890,
+   "tracked": 868,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_gravity_hammer": {
+   "card": "Gravity Hammer",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 569,
+   "tracked": 547,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_lmg": {
+   "card": "SAW",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 866,
+   "tracked": 844,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_machinegun_turret": {
+   "card": null,
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 866,
+   "tracked": 844,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_needler": {
+   "card": "Needler",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 887,
+   "tracked": 865,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_plasma_pistol_pve": {
+   "card": "Plasma Pistol",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 1037,
+   "tracked": 1015,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_plasma_turret": {
+   "card": null,
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 632,
+   "tracked": 610,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_rail_gun_pve": {
+   "card": "Railgun",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 913,
+   "tracked": 891,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_rocket_launcher": {
+   "card": "Rocket Launcher",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 956,
+   "tracked": 934,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_shotgun": {
+   "card": "Shotgun",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 737,
+   "tracked": 715,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_sniper_rifle": {
+   "card": "Sniper Rifle",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 886,
+   "tracked": 864,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_spartan_laser": {
+   "card": "Spartan Laser",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 834,
+   "tracked": 812,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_spread_gun": {
+   "card": "Scattershot",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 864,
+   "tracked": 842,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_sticky_detonator_pve": {
+   "card": "Sticky Detonator",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 1047,
+   "tracked": 1025,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "focus_rifle": {
+   "card": null,
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 656,
+   "tracked": 634,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_plasma_pistol": {
+   "card": "Plasma Pistol",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 1038,
+   "tracked": 1016,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_forerunner_rifle_npc": {
+   "card": "LightRifle",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 1082,
+   "tracked": 1060,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_forerunner_smg_npc": {
+   "card": "Suppressor",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 797,
+   "tracked": 775,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_spread_gun_npc": {
+   "card": "Scattershot",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 867,
+   "tracked": 845,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "jackal_shield": {
+   "card": null,
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 544,
+   "tracked": 522,
+   "late_at_0": 0,
+   "weap_at0": true
+  },
+  "storm_forerunner_sniper_rifle_npc": {
+   "card": "Binary Rifle",
+   "weap_sets": 24,
+   "full_sets": 24,
+   "closure": 1030,
+   "tracked": 1008,
+   "late_at_0": 0,
+   "weap_at0": true
+  }
+ },
+ "char_res": {
+  "storm_elite": {
+   "char_sets": 13,
+   "bipd_sets": 13,
+   "unit": "storm_elite_ai",
+   "parent": "generic"
+  },
+  "storm_jackal": {
+   "char_sets": 13,
+   "bipd_sets": 13,
+   "unit": "storm_jackal",
+   "parent": "generic"
+  },
+  "storm_grunt": {
+   "char_sets": 17,
+   "bipd_sets": 17,
+   "unit": "storm_grunt",
+   "parent": "generic"
+  },
+  "storm_knight": {
+   "char_sets": 17,
+   "bipd_sets": 24,
+   "unit": "storm_knight",
+   "parent": "generic"
+  },
+  "storm_bishop": {
+   "char_sets": 17,
+   "bipd_sets": 17,
+   "unit": "storm_bishop",
+   "parent": "generic"
+  },
+  "storm_pawn": {
+   "char_sets": 17,
+   "bipd_sets": 17,
+   "unit": "storm_pawn",
+   "parent": "generic"
+  },
+  "null_fore_turret": {
+   "char_sets": 8,
+   "bipd_sets": 16,
+   "unit": "null",
+   "parent": "generic"
+  },
+  "storm_knight_battlewagon": {
+   "char_sets": 8,
+   "bipd_sets": 24,
+   "unit": "storm_knight",
+   "parent": "storm_knight"
+  },
+  "storm_jackal_sniper": {
+   "char_sets": 13,
+   "bipd_sets": 0,
+   "unit": null,
+   "parent": "storm_jackal"
+  },
+  "storm_hunter": {
+   "char_sets": 0,
+   "bipd_sets": 6,
+   "unit": "storm_hunter",
+   "parent": "generic"
+  },
+  "storm_elite_space_pilot": {
+   "char_sets": 0,
+   "bipd_sets": 0,
+   "unit": null,
+   "parent": "storm_elite_ranger"
+  },
+  "storm_elite_pilot": {
+   "char_sets": 13,
+   "bipd_sets": 0,
+   "unit": null,
+   "parent": "storm_elite"
+  },
+  "storm_pawn_sniper": {
+   "char_sets": 0,
+   "bipd_sets": 17,
+   "unit": "storm_pawn",
+   "parent": "storm_pawn"
+  },
+  "storm_knight_ranger": {
+   "char_sets": 0,
+   "bipd_sets": 24,
+   "unit": "storm_knight",
+   "parent": "storm_knight"
+  },
+  "null_human_default": {
+   "char_sets": 13,
+   "bipd_sets": 16,
+   "unit": "null",
+   "parent": "generic"
+  }
+ },
+ "gaps": {},
+ "char_sets_n": {
+  "storm_elite": 13,
+  "storm_jackal": 13,
+  "storm_grunt": 17,
+  "storm_knight": 24,
+  "storm_bishop": 17,
+  "storm_pawn": 17,
+  "null_fore_turret": 16,
+  "storm_knight_battlewagon": 24,
+  "storm_jackal_sniper": 13,
+  "storm_hunter": 6,
+  "storm_elite_space_pilot": 0,
+  "storm_elite_pilot": 13,
+  "storm_pawn_sniper": 17,
+  "storm_knight_ranger": 24,
+  "null_human_default": 16
+ },
+ "slack_runs": 2149,
+ "slack_total": 9266900,
+ "slack_max": 56992,
+ "secs": 44.023231744766235
+}

@@ -1,0 +1,5542 @@
+{
+"chars": {
+"ai\\generic": {
+"retreat": [
+null,
+null
+],
+"charge": [
+null,
+null,
+null
+],
+"flags": [
+0
+],
+"unit": null
+},
+"ai\\generic_turret": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": null
+},
+"objects\\characters\\brute\\ai\\brute": {
+"retreat": [],
+"charge": [
+null,
+null,
+null
+],
+"flags": [
+0
+],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\brute\\ai\\brute_bodyguard": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\brute\\ai\\brute_captain": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\brute\\ai\\brute_captain_major": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\brute\\ai\\brute_captain_ultra": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\brute\\ai\\brute_chieftain_armor": {
+"retreat": [],
+"charge": [
+null,
+null,
+null
+],
+"flags": [
+0
+],
+"unit": "objects\\characters\\brute\\brute_chieftain"
+},
+"objects\\characters\\brute\\ai\\brute_chieftain_weapon": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\brute\\brute_chieftain"
+},
+"objects\\characters\\brute\\ai\\brute_major": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\brute\\ai\\brute_phantom": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\brute\\ai\\brute_ultra": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\brute\\brute"
+},
+"objects\\characters\\bugger\\ai\\bugger": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\bugger\\bugger"
+},
+"objects\\characters\\bugger\\ai\\bugger_major": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\bugger\\bugger"
+},
+"objects\\characters\\civilians\\worker\\ai\\worker": {
+"retreat": [
+"objects\\weapons\\pistol\\magnum\\magnum",
+"objects\\weapons\\pistol\\magnum\\magnum",
+"objects\\weapons\\pistol\\magnum\\magnum"
+],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\civilians\\worker\\worker"
+},
+"objects\\characters\\civilians\\worker\\ai\\worker_wounded": {
+"retreat": [
+"objects\\weapons\\pistol\\magnum\\magnum",
+"objects\\weapons\\pistol\\magnum\\magnum",
+"objects\\weapons\\pistol\\magnum\\magnum"
+],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\civilians\\worker\\worker"
+},
+"objects\\characters\\dervish\\ai\\dervish": {
+"retreat": [],
+"charge": [
+"objects\\weapons\\melee\\energy_blade\\energy_blade",
+"objects\\weapons\\melee\\energy_blade\\energy_blade",
+"objects\\weapons\\melee\\energy_blade\\energy_blade"
+],
+"flags": [
+676
+],
+"unit": "objects\\characters\\dervish\\dervish_ai"
+},
+"objects\\characters\\elite\\ai\\elite": {
+"retreat": [],
+"charge": [
+"objects\\weapons\\melee\\energy_blade\\energy_blade",
+"objects\\weapons\\melee\\energy_blade\\energy_blade",
+"objects\\weapons\\melee\\energy_blade\\energy_blade"
+],
+"flags": [
+4
+],
+"unit": "objects\\characters\\elite\\elite"
+},
+"objects\\characters\\elite\\ai\\elite_major": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\elite\\elite"
+},
+"objects\\characters\\grunt\\ai\\grunt": {
+"retreat": [
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+],
+"charge": [
+null,
+null,
+null
+],
+"flags": [
+0
+],
+"unit": "objects\\characters\\grunt\\grunt"
+},
+"objects\\characters\\grunt\\ai\\grunt_heavy": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\grunt\\grunt"
+},
+"objects\\characters\\grunt\\ai\\grunt_major": {
+"retreat": [
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\grunt\\grunt"
+},
+"objects\\characters\\grunt\\ai\\grunt_ultra": {
+"retreat": [
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\grunt\\grunt"
+},
+"objects\\characters\\hunter\\ai\\hunter": {
+"retreat": [],
+"charge": [
+null,
+null,
+null
+],
+"flags": [
+0
+],
+"unit": "objects\\characters\\hunter\\hunter"
+},
+"objects\\characters\\jackal\\ai\\jackal": {
+"retreat": [
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\jackal\\jackal"
+},
+"objects\\characters\\jackal\\ai\\jackal_major": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\jackal\\jackal"
+},
+"objects\\characters\\jackal\\ai\\jackal_sniper": {
+"retreat": [
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\jackal\\jackal"
+},
+"objects\\characters\\marine\\ai\\marine": {
+"retreat": [],
+"charge": [
+null,
+null,
+null
+],
+"flags": [
+0
+],
+"unit": "objects\\characters\\marine\\marine"
+},
+"objects\\characters\\marine\\ai\\marine_female": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\marine\\marine_female\\marine_female"
+},
+"objects\\characters\\marine\\ai\\marine_sgt": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\characters\\marine\\marine"
+},
+"objects\\characters\\marine\\ai\\marine_wounded": {
+"retreat": [],
+"charge": [],
+"flags": [],
+"unit": "objects\\characters\\marine\\marine"
+},
+"objects\\equipment\\autoturret\\autoturret": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\equipment\\autoturret\\autoturret"
+},
+"objects\\giants\\scarab\\ai\\scarab": {
+"retreat": [],
+"charge": [],
+"flags": [
+0
+],
+"unit": "objects\\giants\\scarab\\scarab"
+}
+},
+"models": {
+"objects\\characters\\brute\\brute": {
+"model": "objects\\characters\\brute\\brute",
+"default_variant": "minor",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "minor",
+"objects": [],
+"regions": [
+[
+null,
+[
+"minor"
+]
+],
+[
+"armor",
+[
+"minor"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "captain",
+"objects": [],
+"regions": [
+[
+null,
+[
+"major"
+]
+],
+[
+"armor",
+[
+"major"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "jumppack",
+"objects": [],
+"regions": [
+[
+null,
+[
+"jumppack"
+]
+],
+[
+"armor",
+[
+"jumppack"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "stalker",
+"objects": [],
+"regions": [
+[
+null,
+[
+"stalker"
+]
+],
+[
+"armor",
+[
+"stalker"
+]
+],
+[
+"body",
+[
+"chiefstalker"
+]
+]
+]
+},
+{
+"name": "chieftain_armor",
+"objects": [],
+"regions": [
+[
+null,
+[
+"chieftain"
+]
+],
+[
+"armor",
+[
+"chieftain"
+]
+],
+[
+"body",
+[
+"chiefstalker"
+]
+]
+]
+},
+{
+"name": "chieftain_weapon",
+"objects": [],
+"regions": [
+[
+null,
+[
+"chiefweapon"
+]
+],
+[
+"armor",
+[
+"chiefweapon"
+]
+],
+[
+"body",
+[
+"chiefstalker"
+]
+]
+]
+},
+{
+"name": "tracker",
+"objects": [],
+"regions": [
+[
+null,
+[
+"minor"
+]
+],
+[
+"armor",
+[
+"minor"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "major",
+"objects": [],
+"regions": [
+[
+null,
+[
+"minor"
+]
+],
+[
+"armor",
+[
+"minor"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "ultra",
+"objects": [],
+"regions": [
+[
+null,
+[
+"minor"
+]
+],
+[
+"armor",
+[
+"minor"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "captain_ultra",
+"objects": [],
+"regions": [
+[
+null,
+[
+"major"
+]
+],
+[
+"armor",
+[
+"major"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "bodyguard",
+"objects": [],
+"regions": [
+[
+null,
+[
+"major"
+]
+],
+[
+"armor",
+[
+"major"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "captain_major",
+"objects": [],
+"regions": [
+[
+null,
+[
+"major"
+]
+],
+[
+"armor",
+[
+"major"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+}
+]
+},
+"objects\\characters\\brute\\brute_chieftain": {
+"model": "objects\\characters\\brute\\brute_chieftain",
+"default_variant": "minor",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "minor",
+"objects": [],
+"regions": [
+[
+null,
+[
+"minor"
+]
+],
+[
+"armor",
+[
+"minor"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "captain",
+"objects": [],
+"regions": [
+[
+null,
+[
+"major"
+]
+],
+[
+"armor",
+[
+"major"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "jumppack",
+"objects": [],
+"regions": [
+[
+null,
+[
+"jumppack"
+]
+],
+[
+"armor",
+[
+"jumppack"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "stalker",
+"objects": [],
+"regions": [
+[
+null,
+[
+"stalker"
+]
+],
+[
+"armor",
+[
+"stalker"
+]
+],
+[
+"body",
+[
+"chiefstalker"
+]
+]
+]
+},
+{
+"name": "chieftain_armor",
+"objects": [],
+"regions": [
+[
+null,
+[
+"chieftain"
+]
+],
+[
+"armor",
+[
+"chieftain"
+]
+],
+[
+"body",
+[
+"chiefstalker"
+]
+]
+]
+},
+{
+"name": "chieftain_weapon",
+"objects": [],
+"regions": [
+[
+null,
+[
+"chiefweapon"
+]
+],
+[
+"armor",
+[
+"chiefweapon"
+]
+],
+[
+"body",
+[
+"chiefstalker"
+]
+]
+]
+},
+{
+"name": "tracker",
+"objects": [],
+"regions": [
+[
+null,
+[
+"minor"
+]
+],
+[
+"armor",
+[
+"minor"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "major",
+"objects": [],
+"regions": [
+[
+null,
+[
+"minor"
+]
+],
+[
+"armor",
+[
+"minor"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "ultra",
+"objects": [],
+"regions": [
+[
+null,
+[
+"minor"
+]
+],
+[
+"armor",
+[
+"minor"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "captain_ultra",
+"objects": [],
+"regions": [
+[
+null,
+[
+"major"
+]
+],
+[
+"armor",
+[
+"major"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "bodyguard",
+"objects": [],
+"regions": [
+[
+null,
+[
+"major"
+]
+],
+[
+"armor",
+[
+"major"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+},
+{
+"name": "captain_major",
+"objects": [],
+"regions": [
+[
+null,
+[
+"major"
+]
+],
+[
+"armor",
+[
+"major"
+]
+],
+[
+"body",
+[
+"default"
+]
+]
+]
+}
+]
+},
+"objects\\characters\\bugger\\bugger": {
+"model": "objects\\characters\\bugger\\bugger",
+"default_variant": "minor",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "minor",
+"objects": [],
+"regions": []
+}
+]
+},
+"objects\\characters\\civilians\\worker\\worker": {
+"model": "objects\\characters\\civilians\\worker\\worker",
+"default_variant": "default",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "cv1",
+"objects": [],
+"regions": [
+[
+null,
+[
+"on",
+null
+]
+],
+[
+"head",
+[
+"butkus",
+"isla",
+"gough"
+]
+],
+[
+"arms",
+[
+"standard",
+"bare"
+]
+]
+]
+},
+{
+"name": "cv2",
+"objects": [],
+"regions": [
+[
+null,
+[
+"on",
+null
+]
+],
+[
+"head",
+[
+"butkus",
+"isla",
+"gough"
+]
+],
+[
+"arms",
+[
+"standard",
+"bare"
+]
+]
+]
+},
+{
+"name": "dead",
+"objects": [],
+"regions": [
+[
+null,
+[
+"on",
+null
+]
+],
+[
+"head",
+[
+"butkus",
+"isla",
+"gough"
+]
+],
+[
+"arms",
+[
+"standard",
+"bare"
+]
+]
+]
+},
+{
+"name": "default",
+"objects": [],
+"regions": [
+[
+null,
+[
+"on",
+null
+]
+],
+[
+"head",
+[
+"butkus",
+"isla",
+"gough"
+]
+],
+[
+"arms",
+[
+"standard",
+"bare"
+]
+]
+]
+}
+]
+},
+"objects\\characters\\dervish\\dervish_ai": {
+"model": "objects\\characters\\dervish\\dervish_ai",
+"default_variant": "default_arb",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "default_arb",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"base"
+]
+],
+[
+"body",
+[
+"base"
+]
+]
+]
+},
+{
+"name": "nude",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"nude"
+]
+],
+[
+"body",
+[
+"nude"
+]
+]
+]
+},
+{
+"name": "nude_branded",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"nude"
+]
+],
+[
+"body",
+[
+"nude"
+]
+]
+]
+}
+]
+},
+"objects\\characters\\elite\\elite": {
+"model": "objects\\characters\\elite\\elite",
+"default_variant": "minor_scl",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "minor_scl",
+"objects": [],
+"regions": [
+[
+"body",
+[
+"base"
+]
+],
+[
+"lights",
+[
+"base"
+]
+],
+[
+"head",
+[
+"base"
+]
+],
+[
+"d_torso",
+[
+"base"
+]
+],
+[
+null,
+[
+"base"
+]
+],
+[
+null,
+[
+"base"
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"eyelids",
+[
+"base"
+]
+]
+]
+},
+{
+"name": "minor_dog",
+"objects": [],
+"regions": [
+[
+"body",
+[
+"base"
+]
+],
+[
+"lights",
+[
+"base"
+]
+],
+[
+"head",
+[
+"base"
+]
+],
+[
+"d_torso",
+[
+"base"
+]
+],
+[
+null,
+[
+"base"
+]
+],
+[
+null,
+[
+"base"
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"eyelids",
+[
+"base"
+]
+]
+]
+},
+{
+"name": "major_scl",
+"objects": [],
+"regions": [
+[
+"body",
+[
+"base"
+]
+],
+[
+"lights",
+[
+"base"
+]
+],
+[
+"head",
+[
+"base"
+]
+],
+[
+"d_torso",
+[
+"base"
+]
+],
+[
+null,
+[
+"base"
+]
+],
+[
+null,
+[
+"base"
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"eyelids",
+[
+"base"
+]
+]
+]
+},
+{
+"name": "major_dog",
+"objects": [],
+"regions": [
+[
+"body",
+[
+"base"
+]
+],
+[
+"lights",
+[
+"base"
+]
+],
+[
+"head",
+[
+"base"
+]
+],
+[
+"d_torso",
+[
+"base"
+]
+],
+[
+null,
+[
+"base"
+]
+],
+[
+null,
+[
+"base"
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"eyelids",
+[
+"base"
+]
+]
+]
+},
+{
+"name": "spec_ops_scl",
+"objects": [],
+"regions": [
+[
+"body",
+[
+"base"
+]
+],
+[
+"lights",
+[
+"base"
+]
+],
+[
+"head",
+[
+"spec_ops",
+"base"
+]
+],
+[
+"d_torso",
+[
+"base"
+]
+],
+[
+null,
+[
+"spec_ops",
+"base"
+]
+],
+[
+null,
+[
+"spec_ops",
+"base"
+]
+],
+[
+"chest",
+[
+"spec_ops"
+]
+],
+[
+null,
+[
+null
+]
+],
+[
+"eyelids",
+[
+"base"
+]
+]
+]
+},
+{
+"name": "spec_ops_dog",
+"objects": [],
+"regions": [
+[
+"body",
+[
+"base"
+]
+],
+[
+"lights",
+[
+"base"
+]
+],
+[
+"head",
+[
+"base",
+"spec_ops"
+]
+],
+[
+"d_torso",
+[
+"base"
+]
+],
+[
+null,
+[
+"spec_ops",
+"base"
+]
+],
+[
+null,
+[
+"spec_ops",
+"base"
+]
+],
+[
+"chest",
+[
+"spec_ops"
+]
+],
+[
+null,
+[
+null
+]
+],
+[
+"eyelids",
+[
+"base"
+]
+]
+]
+},
+{
+"name": "stealth_scl",
+"objects": [],
+"regions": [
+[
+"body",
+[
+"base"
+]
+],
+[
+"lights",
+[
+"base"
+]
+],
+[
+"head",
+[
+"base"
+]
+],
+[
+"d_torso",
+[
+"base"
+]
+],
+[
+null,
+[
+null,
+"base"
+]
+],
+[
+null,
+[
+null,
+"base"
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"eyelids",
+[
+"base"
+]
+]
+]
+},
+{
+"name": "stealth_dog",
+"objects": [],
+"regions": [
+[
+"body",
+[
+"base"
+]
+],
+[
+"lights",
+[
+"base"
+]
+],
+[
+"head",
+[
+"base"
+]
+],
+[
+"d_torso",
+[
+"base"
+]
+],
+[
+null,
+[
+"base",
+null
+]
+],
+[
+null,
+[
+"base",
+null
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"eyelids",
+[
+"base"
+]
+]
+]
+},
+{
+"name": "stealth_major_scl",
+"objects": [],
+"regions": [
+[
+"body",
+[
+"base"
+]
+],
+[
+"lights",
+[
+"base"
+]
+],
+[
+"head",
+[
+"base"
+]
+],
+[
+"d_torso",
+[
+"base"
+]
+],
+[
+null,
+[
+null,
+"base"
+]
+],
+[
+null,
+[
+null,
+"base"
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"eyelids",
+[
+"base"
+]
+]
+]
+},
+{
+"name": "stealth_major_dog",
+"objects": [],
+"regions": [
+[
+"body",
+[
+"base"
+]
+],
+[
+"lights",
+[
+"base"
+]
+],
+[
+"head",
+[
+"base"
+]
+],
+[
+"d_torso",
+[
+"base"
+]
+],
+[
+null,
+[
+"base",
+null
+]
+],
+[
+null,
+[
+"base",
+null
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"eyelids",
+[
+"base"
+]
+]
+]
+},
+{
+"name": "soc_cinematic",
+"objects": [],
+"regions": [
+[
+"body",
+[
+"base"
+]
+],
+[
+"lights",
+[
+"base"
+]
+],
+[
+"head",
+[
+"soc",
+"base"
+]
+],
+[
+"d_torso",
+[
+"base"
+]
+],
+[
+null,
+[
+"base",
+null,
+"spec_ops"
+]
+],
+[
+null,
+[
+"base",
+null,
+"spec_ops"
+]
+],
+[
+"chest",
+[
+"spec_ops"
+]
+],
+[
+null,
+[
+"base"
+]
+],
+[
+"eyelids",
+[
+"soccine"
+]
+]
+]
+},
+{
+"name": "soc",
+"objects": [],
+"regions": [
+[
+"body",
+[
+"base"
+]
+],
+[
+"lights",
+[
+"base"
+]
+],
+[
+"head",
+[
+"soc",
+"base"
+]
+],
+[
+"d_torso",
+[
+"base"
+]
+],
+[
+null,
+[
+"base",
+null,
+"spec_ops"
+]
+],
+[
+null,
+[
+"base",
+null,
+"spec_ops"
+]
+],
+[
+"chest",
+[
+"spec_ops"
+]
+],
+[
+null,
+[
+"base"
+]
+],
+[
+"eyelids",
+[
+"soc"
+]
+]
+]
+}
+]
+},
+"objects\\characters\\grunt\\grunt": {
+"model": "objects\\characters\\grunt\\grunt",
+"default_variant": "minor",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "minor",
+"objects": [],
+"regions": [
+[
+null,
+[
+"standard"
+]
+],
+[
+"backpack",
+[
+"armored"
+]
+]
+]
+},
+{
+"name": "major",
+"objects": [],
+"regions": [
+[
+null,
+[
+"standard"
+]
+],
+[
+"backpack",
+[
+"armored"
+]
+]
+]
+},
+{
+"name": "ultra",
+"objects": [],
+"regions": [
+[
+null,
+[
+"standard"
+]
+],
+[
+"backpack",
+[
+"armored"
+]
+]
+]
+},
+{
+"name": "spec_ops",
+"objects": [],
+"regions": [
+[
+null,
+[
+"standard"
+]
+],
+[
+"backpack",
+[
+"armored"
+]
+]
+]
+},
+{
+"name": "heavy",
+"objects": [],
+"regions": [
+[
+null,
+[
+"standard"
+]
+],
+[
+"backpack",
+[
+"armored"
+]
+]
+]
+}
+]
+},
+"objects\\characters\\hunter\\hunter": {
+"model": "objects\\characters\\hunter\\hunter",
+"default_variant": "minor",
+"unit_weapons": {
+"0x24c": [
+"objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon"
+],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "minor",
+"objects": [],
+"regions": [
+[
+"torso",
+[
+"base"
+]
+],
+[
+"hunter",
+[
+"base"
+]
+],
+[
+"limbs",
+[
+"base"
+]
+]
+]
+}
+]
+},
+"objects\\characters\\jackal\\jackal": {
+"model": "objects\\characters\\jackal\\jackal",
+"default_variant": "minor",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "minor",
+"objects": [],
+"regions": [
+[
+"shield",
+[
+"active"
+]
+],
+[
+null,
+[
+null
+]
+]
+]
+},
+{
+"name": "shieldless",
+"objects": [],
+"regions": [
+[
+"shield",
+[
+null
+]
+],
+[
+null,
+[
+null
+]
+]
+]
+},
+{
+"name": "sniper",
+"objects": [],
+"regions": [
+[
+"shield",
+[
+null
+]
+],
+[
+null,
+[
+"sniper"
+]
+]
+]
+},
+{
+"name": "major",
+"objects": [],
+"regions": [
+[
+"shield",
+[
+"major"
+]
+],
+[
+null,
+[
+null
+]
+]
+]
+}
+]
+},
+"objects\\characters\\marine\\marine": {
+"model": "objects\\characters\\marine\\marine",
+"default_variant": "default",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "johnson",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"johnson"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"johnson",
+"eye",
+"wrap"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf",
+"cinematic"
+]
+],
+[
+"armorpads",
+[
+"on"
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+]
+]
+},
+{
+"name": "wounded",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"morgan",
+"fones",
+"wu"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"blind",
+"eye",
+"wrap"
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+"wounded",
+null
+]
+],
+[
+"r_arm",
+[
+"wounded",
+null
+]
+],
+[
+"chest",
+[
+null
+]
+]
+]
+},
+{
+"name": "pilot",
+"objects": [
+[
+"head",
+null,
+"objects\\characters\\marine\\helmet_pilot\\helmet_pilot"
+],
+[
+"body",
+null,
+"objects\\characters\\marine\\chestplate_pilot\\chestplate_pilot"
+]
+],
+"regions": [
+[
+"head",
+[
+"smith",
+"fones",
+"morgan"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on",
+"johnson"
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+]
+]
+},
+{
+"name": "sarge_lehto",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"lehto"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null,
+"johnson"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+"on",
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+]
+]
+},
+{
+"name": "johnson_combat",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"johnson"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf",
+"cinematic"
+]
+],
+[
+null,
+[
+null,
+"eye",
+"wrap"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+"on"
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+"wounded",
+null
+]
+],
+[
+"chest",
+[
+null
+]
+]
+]
+},
+{
+"name": "johnson_dress",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"johnson"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null,
+"johnson"
+]
+],
+[
+"packs_thigh",
+[
+null,
+null
+]
+],
+[
+"packs_chest",
+[
+null,
+null
+]
+],
+[
+"packs_abdomin",
+[
+null,
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+]
+]
+},
+{
+"name": "default",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"fones",
+"morgan",
+"wu"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on",
+"nogoggles",
+"johnson"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null,
+"on"
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+]
+]
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"head",
+[
+"fones",
+"wu"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on",
+"nogoggles",
+"johnson"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null,
+"on"
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+],
+[
+"armorpads",
+[
+"on"
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "ma6",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"walter",
+"smith"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on",
+"nogoggles",
+"johnson"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null,
+"on"
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+],
+[
+"armorpads",
+[
+"on"
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "blind",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"smith",
+"walter"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"blind",
+"eye",
+"wrap"
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+"wounded",
+null
+]
+],
+[
+"r_arm",
+[
+"wounded",
+null
+]
+],
+[
+"chest",
+[
+null
+]
+]
+]
+},
+{
+"name": "ma2",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"isla"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on",
+"nogoggles",
+"johnson"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null,
+"on"
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+],
+[
+"armorpads",
+[
+"on"
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "sg1",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"lehto"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on",
+"nogoggles",
+"lehto"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null,
+"on"
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+],
+[
+"armorpads",
+[
+"on"
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+]
+]
+},
+{
+"name": null,
+"objects": [],
+"regions": [
+[
+"head",
+[
+"arroyo"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on",
+"nogoggles",
+"johnson"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+],
+[
+"armorpads",
+[
+"on"
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "ma3",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"butkus"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on",
+"nogoggles",
+"johnson"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null,
+"on"
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+],
+[
+"armorpads",
+[
+"on"
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "ma1",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"gough"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on",
+"nogoggles",
+"johnson"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+],
+[
+"armorpads",
+[
+"on"
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "dead",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"morgan",
+"fones",
+"wu"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"blind",
+"eye",
+"wrap"
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+"wounded",
+null
+]
+],
+[
+"r_arm",
+[
+"wounded",
+null
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+]
+]
+},
+{
+"name": "sg2",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"morgan"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on",
+"morgan"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+"on",
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+]
+]
+},
+{
+"name": "cinem1",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"smith"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on"
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem2",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"walter"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"nogoggles"
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem3",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"arroyo"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on"
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem4",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"isla"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on"
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem5",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"gough"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"nogoggles"
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem6",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"fones"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on"
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem7",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"butkus"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"blind"
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem8a",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"lehto"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem8b",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"butkus"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem8c",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"isla"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem8d",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"butkus"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem8e",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"fones"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem8f",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"smith"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem8g",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"wu"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem8h",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"gough"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem8i",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"arroyo"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "cinem8j",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"morgan"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+null
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"armorpads",
+[
+null
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard"
+]
+]
+]
+},
+{
+"name": "johnson_beatup",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"johnson"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"johnson",
+"eye",
+"wrap"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf",
+"cinematic"
+]
+],
+[
+"armorpads",
+[
+"on"
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+null
+]
+]
+]
+},
+{
+"name": "johnson_dead",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"johnson"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"johnson",
+"eye",
+"wrap"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf",
+"cinematic"
+]
+],
+[
+"armorpads",
+[
+"on"
+]
+],
+[
+"l_arm",
+[
+null
+]
+],
+[
+"r_arm",
+[
+null
+]
+],
+[
+"chest",
+[
+"deadjohn"
+]
+]
+]
+}
+]
+},
+"objects\\characters\\marine\\marine_female\\marine_female": {
+"model": "objects\\characters\\marine\\marine_female\\marine_female",
+"default_variant": "default",
+"unit_weapons": {
+"0x24c": [],
+"0x25c": [],
+"0x268": [],
+"0x274": []
+},
+"variants": [
+{
+"name": "fem1",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"anete",
+"chan"
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on",
+"nogoggles"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null,
+"on"
+]
+]
+]
+},
+{
+"name": "fem3",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"hartmann"
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on",
+"nogoggles"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null,
+"on"
+]
+]
+]
+},
+{
+"name": "fem2",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"michelle"
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on",
+"nogoggles"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+null,
+"on"
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null,
+"on"
+]
+]
+]
+},
+{
+"name": "no_helmet",
+"objects": [],
+"regions": [
+[
+null,
+[
+"on",
+"nogoggles"
+]
+]
+]
+},
+{
+"name": "anete",
+"objects": [],
+"regions": [
+[
+"arms",
+[
+"barehalf"
+]
+],
+[
+"body",
+[]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"head",
+[
+"anete"
+]
+],
+[
+null,
+[
+"on",
+"nogoggles"
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+]
+]
+},
+{
+"name": "chan",
+"objects": [],
+"regions": [
+[
+"arms",
+[
+"barehalf"
+]
+],
+[
+"body",
+[]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"head",
+[
+"chan"
+]
+],
+[
+null,
+[
+"on",
+"nogoggles"
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+]
+]
+},
+{
+"name": "hartmann",
+"objects": [],
+"regions": [
+[
+"arms",
+[
+"barehalf"
+]
+],
+[
+"body",
+[]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"head",
+[
+"hartmann"
+]
+],
+[
+null,
+[
+"on",
+"nogoggles"
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+]
+]
+},
+{
+"name": "michelle",
+"objects": [],
+"regions": [
+[
+"arms",
+[
+"barehalf"
+]
+],
+[
+"body",
+[]
+],
+[
+"comm_pack",
+[
+null
+]
+],
+[
+"head",
+[
+"michelle"
+]
+],
+[
+null,
+[
+"on",
+"nogoggles"
+]
+],
+[
+"packs_abdomin",
+[
+null
+]
+],
+[
+"packs_chest",
+[
+null
+]
+],
+[
+"packs_thigh",
+[
+null
+]
+]
+]
+},
+{
+"name": "cinef1",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"hartmann"
+]
+],
+[
+"arms",
+[
+"standard"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+]
+]
+},
+{
+"name": "cinef2",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"chan"
+]
+],
+[
+"arms",
+[
+"standard"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on",
+"nogoggles"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null
+]
+]
+]
+},
+{
+"name": "default",
+"objects": [],
+"regions": [
+[
+"head",
+[
+"chan",
+"hartmann",
+"michelle"
+]
+],
+[
+"arms",
+[
+"standard",
+"barehalf"
+]
+],
+[
+"body",
+[
+"standard"
+]
+],
+[
+null,
+[
+"on",
+"nogoggles"
+]
+],
+[
+"packs_thigh",
+[
+"on",
+null
+]
+],
+[
+"packs_chest",
+[
+"on",
+null
+]
+],
+[
+"packs_abdomin",
+[
+"on",
+null
+]
+],
+[
+"comm_pack",
+[
+null,
+"on"
+]
+]
+]
+}
+]
+}
+},
+"slack": {
+"n": 22,
+"top": [
+48980,
+47999,
+15484,
+14116,
+8056,
+5291
+],
+"total": 214979,
+"n8k": 4,
+"total8k": 126579
+}
+}

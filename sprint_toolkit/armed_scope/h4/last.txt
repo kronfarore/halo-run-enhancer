@@ -1,0 +1,18 @@
+storm_grunt siblings []
+storm_jackal siblings [('storm_jackal18', 77, 1)]
+storm_elite_ai siblings [('storm_elite_ai13', 138, 1)]
+storm_knight siblings [('storm_knight17', 6, 1)]
+storm_marine siblings [('storm_marine0', 63, 7), ('storm_marine14', 63, 0), ('storm_marine3', 63, 1)]
+H4 ports ['Focus Rifle']
+m30_cryptum {'storm_forerunner_incineration_launcher': ('missile', 'fri'), 'storm_rocket_launcher': ('missile', 'rl')}
+m60_rescue {'storm_forerunner_incineration_launcher': ('missile', 'fri'), 'storm_rocket_launcher': ('missile', 'rl')}
+spartans_ai combat {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fr', 'fri', 'ml', 'prp', 'rl', 'sl'], 'rifle': ['any', 'cr', 'gl', 'ne', 'pr', 'prp', 'rg', 'sg', 'smg', 'spr', 'sr'], 'pistol': ['any', 'ne', 'pp'], 'turret': ['ftt']} flee ['any'] bipdW ['objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle']
+m70_liftoff {'storm_forerunner_incineration_launcher': ('missile', 'fri'), 'storm_forerunner_incineration_launcher_knight': ('missile', 'rl'), 'storm_rocket_launcher': ('missile', 'rl')}
+spartans_ai combat {'unarmed': ['any'], 'any': ['any'], 'missile': ['any', 'fr', 'fri', 'ml', 'prp', 'rl', 'sl'], 'rifle': ['any', 'cr', 'gl', 'ne', 'pr', 'prp', 'rg', 'sg', 'smg', 'spr', 'sr'], 'pistol': ['any', 'ne', 'pp'], 'turret': ['ftt']} flee ['any'] bipdW ['objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle']
+jackal carbine b'front_jackal_sq' variant 
+jackal carbine b'grav_lift_sq' variant 
+null rows 33 first [6, 17, 19, 36, 38, 42]
+null row max range/min (15.0, 2.5, 7.0, 8.0) class ref fields 0x77656170 0xffffffff
+null pattern 44 patterns 4 0x5f8ba119
+generic wp index live [(0, 'storm_assault_rifle'), (1, 'storm_concussion_rifle'), (2, 'storm_br'), (3, 'storm_dmr'), (4, 'storm_energy_sword'), (5, 'storm_fuel_rod_cannon'), (7, 'storm_gravity_hammer'), (8, 'storm_machinegun_turret'), (9, 'storm_magnum'), (10, 'storm_needler'), (11, 'storm_plasma_pistol'), (12, 'storm_plasma_pistol_pve')]
+squad +? template refs 132

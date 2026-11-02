@@ -1,0 +1,111 @@
+ARMED CARDS IN HALO 3 AND ODST: SCOPING NOTES (read-only, 2026-11-02)
+Sources: E:\HaloBaselines maps (all 18 levels), H3EK / H3ODSTEK tags via ttk_common.flatten,
+H3EK sapien.exe (strings + disassembly). Nothing written to a kit or map. No MCC run.
+Raw data in this folder: out\*.json (census), graphs\*.json (graphs with action labels), species\*.json,
+analysis.txt, gate.txt, refused.txt, exestr.txt, kitw.txt, kitgen.txt. Scripts: census.py, graphs.py, species.py,
+analyse.py, gate.py, refused.py, zcov.py, zsum.py, totals.py, xref.py, sdis.py.
+
+== 1. UNITS (_ts_units entries; "script/veh" = protected with moves=None, i.e. script-loaded or in a vehicle)
+Halo 3 (9 levels)      levels entries script/veh actors(fire-team counts, all difficulty rows)
+ Flood Combat            4     1675   1340    847
+ Grunt                   6     1585   1344    909
+ Brute                   6     1342   1053    729
+ Marine (ally)           8     1235    953    777
+ Jackal                  6      560    396    294
+ Bugger                  4      135    103    113
+ Elite (ally)            2       67     62     47
+ Dervish (story)         8       68     38     34
+ Hunter                  3       16     12     10   built in gun, no combat row
+ODST (9 levels; entries = cell Character Type elements, counted per squad reference)
+ Grunt 9 / 4035 / 787 / 457   Brute 9 / 4006 / 763 / 491   Bugger 8 / 3054 / 0 / 242   Jackal 9 / 1708 / 379 / 155
+ Marine 8 / 123 / 46 / 97     Engineer 4 / 108 / 43 / 16   Hunter 7 / 212 / 6 / 21
+ Flood Combat 6 / 40 / 20 / 30  Elite 1 / 14 / 0 / 13
+Halo 3 write fields: fire-team +0xA/+0xC, location +0x2A/+0x2C. Fire-team weapon >=0 on most Covenant teams;
+weapon -1 fire-teams = 26..196 per level, mostly Flood + forms with no weapon. Location weapon -1 in the large majority
+(inherits the fire-team). Location override >=0 on 16-270 locations per level.
+H3 shares no squad arrays (memory halo-enemy-count-squads, 2026-10-04; not re-measured here).
+ODST: 593 distinct cell elements, 6823 squad references. Initial Weapon arrays: 266 blocks, 121 shared by several cells,
+31 shared across species, 385 cells sit on a shared block. Cells with an EMPTY weapon array (excluding Hunters, Engineers): 135
+refs, mostly Grunts. Spawn points: 1535, of which 78 set a weapon. Array elements carry Chance (+0xE) and Difficulty flags:
+a cell rolls per actor (the rolling itself not read).
+ODST cells have NO variant field; spawn points have Actor Variant Name +0x44. H3 fire-teams have none; locations +0x38.
+
+== 2. WEAPONS
+Rebuilt H3 maps (2026-10-31): palette 31-33 entries. Every pool weapon + turret of halo.json for that mission is in the palette
+on all nine levels, SAW included (0 missing).
+ODST: palette 29-34. Machine Gun: tag present but NOT in palette on h100, sc110, sc120, sc130, l300. SAW tag only on sc150.
+Weapon model raw chunks (zone tag Resources owner -> Designer Zone Manifest R/D bits or Global R), per zone set:
+ All palette models in all zone sets: 010, 030, 040, 050, 070, 100, 110, 120; h100, sc100-sc140, l200, l300.
+ 020_base: 18 of 32. dz_enhancer exists (zone 20) but required by 0 of 12 zone sets, not forbidden either.
+    0 sets: gravity_hammer automag plasma_rifle_red saw smg_silenced spike_rifle brute_shot mgt_undeployed pgt_undeployed.
+    4-7 of 12: energy_blade 5, beam_rifle 5, flak 4, machinegun 7, plasma_cannon 5.
+ sc150: 14 of 29. shotgun, rocket_launcher, spartan_laser 0 of 7 zone sets; 12 more 4 of 7.
+Model chunk only: weapon jmad, FP, sounds not walked. Tag pool bits NOT used (h3_zone_pools: unsound); raw chunks are exact.
+Weapon not in palette: no index to write. _apply_spawn_weapons_h3 already appends palette entries, so the same relocation exists.
+Spawn code (sapien 0x180517..): object_placement + object_new with the weapon; object_new returning -1 = silently no weapon
+(no log); else unit_add_weapon (0x96bc70, mode 1); failure = object deleted + log "ai: Unable to add weapon to inventory of
+spawned actor", actor continues unarmed. Same for secondary.
+dz_enhancer route: proven on 110 for profile + placements with no placement needed. It is residency, so it should cover the AI weapon
+(same object_new) but no AI unit was tested. SETTLE IN GAME.
+
+== 3. FIRING DATA
+H3 ai\generic map: Weapons Properties 44, Firing Pattern Properties 43. Every pool weapon has both on all levels EXCEPT SAW (no
+entry in map or H3EK kit). ODST: 47 / 46, every pool weapon has both; SAW on sc150 has neither.
+Species tags inherit (memory). 16 of the 44 entries on 010 resolve to no tag in that map (dead slots: rewriting one needs no growth,
+UNTESTED; assumes lookup is a linear scan on the weapon datum).
+No entry: sapien log "ai: No firing pattern found for weapon %s for character %s" and the function returns false (0x1cce88).
+Empty block: "ai: empty firing pattern block ...". Kit help text says nothing else; firing data fields have only their tooltips.
+Likely = holds but does not fire (H2 record says nothing on this). SETTLE IN GAME.
+LATENT BUG: sprint_toolkit\ai_firing_profile.py SOURCES['Halo 3: ODST'] = SOURCES['Halo 3'], but ODST's char blocks are
++0x198 / +0x1A4 (plugin), not +0x174 / +0x180.
+
+== 4. ANIMATION: THE ENGINE RULE (H3EK sapien.exe; MCC halo3.dll and ODST not disassembled)
+unit_can_use_weapon 0x96e170 calls 0x9a9e00(unit, mode, weap Class +0x3DC, weap Name +0x3E0): looks up action 'idle'.
+ mode = 'current' (or seat mode); unset falls to 'combat' (0x4be2f2); if the flag is set, retry in 'combat'.
+ 0x4be240: class replaced by graph WEAPON LIST (jmad +0x8C, bsearch, 8 bytes) entry for the weapon NAME, unless class = dual.
+ 0x5d0db0 / 0x7442c0: tries all 8 combinations of mode|any, class|any, type|any, then action.
+ So a weapon is REFUSED only if no combination holds 'idle'. Refused = no weapon on spawn.
+gate.py replays this on the dumped graphs (combat row). Stock proof that the class-any fallback works: floodcombat_brute (graph has no
+rifle class) carries spike_rifle, BR, shotgun, AR on Bungie's 050 locations.
+Stock proof mode rows do not gate: Brute patrol has no idle row for any weapon class, yet stock Brutes patrol armed.
+Combat row, weapons refused (H3; ODST same on sc100 and l200):
+ Brute: none (own rows: AR SMG PR SG CB CSR sword; others class any)
+ Elite: none
+ Marine / ODST: brute_shot, sword, hammer, sentinel_gun, plasma_cannon, missile_pod, machinegun (machinegun passes on 020 only, undeployed tag)
+ Grunt: sword, hammer, flamethrower, missile_pod. Grunt HAS full rifle types (AR BR SMG SG SR PR CSR CB, 35 actions) + bs/mgt/pgt/sb, combat only;
+        crouch/patrol lack them (refused rows there: 17 of 29).
+ Jackal: every missile, support, sword, hammer, turret weapon (12 of 29). rifle 'any' 28 actions; flee has rifle + pistol.
+ Bugger: same 12. rifle 'any' 18, pistol 25.
+ Flood Combat: none, nearly all via class any (human has pistol types ar br smg cb bs, sword, hammer). Fire pose quality unknown.
+ Flood Infection / Carrier: all refused. Hunter, Engineer: no combat mode, not armable. Sentinels not checked.
+Class labels (kit): rifle AR BR SMG SAW SG SR, pistol hp ex spr (Spike Rifle = pistol), missile RL FC SL, support BS SB, turret ftt mgt pgt mp.
+SAW Name is 'ar', so it takes every AR animation row. H3 raw sids: missile 0x310, support 0x311, rifle 0x312, pistol 0x313, sword 0x314; ODST +5.
+Flee: Grunt class any idle, Jackal rifle any: no H2-style flee drop expected. Retreat Backup Weapon = plasma pistol on jackal, help text:
+"If I want to flee and I don't have flee animations with my current weapon, throw it away and try a ...". Grunt / Marine carry flee rows too.
+TEACH OPTIONS
+ A. Weapon List entry only: (name -> donor class), e.g. Jackal 'rl' -> rifle. 8 bytes per pair, one sorted block per graph, relocated with
+    _h3_reserve. Maps every lookup to the donor class in all modes, no tree copy. Read from code, UNTESTED. Sort = raw sid.
+ B. H2 style class copy: per mode +0x1C element, sorted, children shared; 35-70 modes, ~4 KB per class per graph.
+ Slack (zero runs >=8 KB with a valid pointer): H3 50-209 KB per level; top run 26 KB on 010, 47-64 KB on others. ODST h100 282 KB, sc100 166 KB.
+ No kit rebuild needed for either. A is far smaller.
+
+== 5. SPECIALS
+Jackal shield: hlmt variant 'shieldless' exists, region shield = none (same as H2). H3: location +0x38 (string id). But a fire-team has no variant
+and spawns past its locations (memory), so those extras would keep the shield (inference). ODST cells: no field, 1700 cell entries keep the shield.
+Sword / hammer: entries in ai\generic. Refused on Grunt, Jackal, Bugger, Marine without a teach. Brute has eb row + hammer any, Elite class any.
+Melee AI behaviour for non-melee species unknown. H2 hammer note: AI blast ownerless in allied hands (H2 only).
+
+== 6. ROUTE
+h3_enemy_weapons.py on the H2 module's shape, after the skulls. H3: write fire-team + locations, deterministic draw, no growth.
+ODST: spawn points + cell arrays. Extend _ts_unshare_cells (it only copies for char moves), arrays need growth for empty ones; or append one element
+per array with Chance = share (per-actor share, tiny, Chance semantics unknown).
+Eligibility = gate matrix per species, residency skip on 020 / sc150, palette append for Machine Gun.
+Teach A only after the test. SAW: reuse a dead ai\generic slot, or kit entry + rebuild.
+
+== UNKNOWNS, ALL FOR THE GAME
+U1 MCC dll matches sapien gate?  U2 ODST same gate?  U3 AI weapon resident via dz_enhancer / Global?  U4 020 dz_enhancer not required by any zone set:
+does it load?  U5 no firing data: fires or not?  U6 Grunt rifle rows look right, what happens crouched?  U7 class-any fire pose?  U8 Weapon List teach works?
+U9 Chance semantics, cell rolls per actor?  U10 shielded Jackal with two-handed weapon; fire-team extras' variant.  U11 sword/hammer AI behaviour.
+U12 script-loaded squads in Phantoms with new weapon (H2 armed them all; H3 holds them for species only).  U13 co-op: deterministic draw is fine for scenario edits; cell Chance roll is runtime.
+
+SCRATCH NOTE: sibling sessions share armed_scope\. census.py was written there first; a sibling then ran it by mistake (census.log). Moved to h3_odst\.

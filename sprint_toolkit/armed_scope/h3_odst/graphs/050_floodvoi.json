@@ -1,0 +1,10627 @@
+{
+"objects\\characters\\brute\\brute": {
+"modes": {
+"berserk": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"airborne",
+"land_soft",
+"land_hard",
+"evade_left",
+"evade_right",
+"melee_airborne",
+"airborne_dead",
+"landing_dead",
+"smash_left",
+"smash_right",
+"melee_back",
+"melee_tackle"
+]
+},
+"any": {
+"any": [
+"leap_start",
+"leap_airborne"
+]
+},
+"support": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"airborne",
+"land_soft",
+"land_hard",
+"evade_left",
+"evade_right",
+"melee_airborne",
+"airborne_dead",
+"landing_dead",
+"smash_left",
+"smash_right",
+"melee_back",
+"melee_tackle"
+]
+},
+"rifle": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"airborne",
+"land_soft",
+"land_hard",
+"evade_left",
+"evade_right",
+"melee_airborne",
+"airborne_dead",
+"landing_dead",
+"smash_left",
+"smash_right",
+"melee_back",
+"melee_tackle"
+]
+},
+"pistol": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"airborne",
+"land_soft",
+"land_hard",
+"evade_left",
+"evade_right",
+"melee_airborne",
+"airborne_dead",
+"landing_dead",
+"smash_left",
+"smash_right",
+"melee_back",
+"melee_tackle"
+]
+}
+},
+"patrol": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"airborne_dead",
+"landing_dead",
+"posing",
+"point"
+]
+},
+"any": {
+"any": []
+}
+},
+"combat": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"hold",
+"wave",
+"advance",
+"fallback",
+"draw"
+]
+},
+"any": {
+"any": [
+"throw_equipment",
+"airborne_dead",
+"landing_dead",
+"brace"
+]
+},
+"missile": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"draw"
+]
+},
+"support": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist"
+],
+"sb": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"draw"
+]
+},
+"rifle": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"draw"
+],
+"0x410": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"hold",
+"wave",
+"advance",
+"fallback",
+"draw"
+],
+"ar": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"hold",
+"wave",
+"advance",
+"fallback",
+"draw"
+],
+"sg": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist"
+],
+"pr": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"hold",
+"wave",
+"advance",
+"fallback",
+"draw"
+],
+"csr": [],
+"cb": []
+},
+"pistol": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"hold",
+"wave",
+"advance",
+"fallback",
+"draw"
+],
+"spr": []
+},
+"sword": {
+"any": [
+"throw_equipment"
+],
+"eb": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"hold",
+"wave",
+"advance",
+"fallback",
+"draw"
+]
+},
+"0x429": {
+"any": [
+"throw_equipment"
+],
+"b": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"hold",
+"wave",
+"advance",
+"fallback",
+"draw"
+]
+},
+"turret": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"draw"
+]
+},
+"hammer": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"leap_start",
+"leap_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"melee_tackle",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1"
+]
+}
+},
+"armored": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1"
+]
+},
+"any": {
+"any": [
+"throw_equipment",
+"airborne_dead",
+"landing_dead",
+"brace"
+]
+},
+"missile": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"takeoff",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1"
+]
+},
+"support": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1"
+],
+"bs": [],
+"sb": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"takeoff",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1"
+]
+},
+"rifle": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"takeoff",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1"
+],
+"0x410": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1"
+],
+"ar": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1"
+],
+"sg": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1"
+],
+"pr": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1"
+],
+"csr": [],
+"cb": []
+},
+"pistol": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1"
+],
+"ex": [],
+"spr": []
+},
+"sword": {
+"any": [
+"throw_equipment"
+],
+"eb": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1"
+]
+},
+"0x429": {
+"any": [
+"throw_equipment"
+],
+"b": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1"
+]
+},
+"turret": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"throw_equipment",
+"surprise_front",
+"surprise_back",
+"go_berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"takeoff",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"sniff",
+"track",
+"airborne_dead",
+"landing_dead",
+"takeoff",
+"thrash_front",
+"thrash_back",
+"infection_wrestle",
+"0x368"
+]
+}
+},
+"corner_cover_left": {
+"support": {
+"any": [
+"idle",
+"throw_grenade",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_cover_right": {
+"support": {
+"any": [
+"idle",
+"throw_grenade",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_open_left": {
+"support": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_open_right": {
+"support": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"vault": {
+"any": {
+"any": [
+"enter"
+]
+},
+"support": {
+"any": [
+"enter"
+]
+},
+"rifle": {
+"any": [
+"enter"
+]
+},
+"pistol": {
+"any": [
+"enter"
+]
+},
+"hammer": {
+"any": [
+"enter"
+]
+}
+},
+"hoist": {
+"support": {
+"any": [
+"enter"
+]
+},
+"rifle": {
+"any": [
+"enter"
+]
+},
+"pistol": {
+"any": [
+"enter"
+]
+},
+"hammer": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_crouch": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_stand": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"bunker_cover": {
+"support": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"bunker_open": {
+"support": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"0x39C": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"exit_patrol"
+]
+}
+},
+"0x39D": {
+"any": {
+"any": [
+"idle",
+"exit",
+"exit_patrol"
+]
+}
+},
+"0x39E": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x39F": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3A4": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"pick"
+]
+}
+},
+"0x3A5": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3B7": {
+"any": {
+"any": [
+"idle",
+"exit",
+"exit_patrol"
+]
+}
+},
+"0x3BC": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"exit_patrol"
+]
+}
+},
+"0x3BE": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"0x3BF": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"exit_patrol"
+]
+}
+},
+"0x3C0": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"exit_patrol"
+]
+}
+},
+"0x3C2": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit_patrol"
+]
+}
+},
+"0x3C3": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit_patrol"
+]
+}
+},
+"0x3C5": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"exit_patrol"
+]
+}
+},
+"turret_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"phantom_p_lb_main": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_lb_small_1": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_lb_small_2": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_lb_small_3": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_lf_main": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_lf_small_1": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_lf_small_2": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_lf_small_3": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_ml_b_main": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_ml_b_small_1": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_ml_b_small_2": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_ml_b_small_3": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_ml_f_main": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_ml_f_small_1": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_ml_f_small_2": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_ml_f_small_3": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_mr_b_main": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_mr_b_small_1": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_mr_b_small_2": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_mr_b_small_3": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_mr_f_main": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_mr_f_small_1": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_mr_f_small_2": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_mr_f_small_3": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_rb_main": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_rb_small_1": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_rb_small_2": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_rb_small_3": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_rf_main": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_rf_small_1": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_rf_small_2": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_p_rf_small_3": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_pc_1": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_pc_2": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_pc_3": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_pc_4": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_pr_lf": {
+"any": {
+"any": [
+"idle"
+]
+},
+"rifle": {
+"any": [
+"exit"
+]
+},
+"pistol": {
+"any": [
+"exit"
+]
+}
+},
+"phantom_pr_rf": {
+"any": {
+"any": [
+"idle"
+]
+},
+"rifle": {
+"any": [
+"exit"
+]
+},
+"pistol": {
+"any": [
+"exit"
+]
+}
+},
+"warthog_b_g": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+],
+[
+"0x410",
+"rifle"
+],
+[
+"ar",
+"rifle"
+],
+[
+"sg",
+"rifle"
+],
+[
+"ex",
+"pistol"
+],
+[
+"pr",
+"rifle"
+],
+[
+"spr",
+"pistol"
+],
+[
+"csr",
+"rifle"
+],
+[
+"b",
+"0x429"
+],
+[
+"cb",
+"rifle"
+],
+[
+"bs",
+"support"
+],
+[
+"sb",
+"support"
+],
+[
+"eb",
+"sword"
+]
+],
+"parent": "objects\\characters\\brute\\lipsync\\lipsync",
+"sizes": {
+"modes_at": 1933609539,
+"wl_at": 1933610241,
+"wl_n": 13
+}
+},
+"objects\\characters\\cortana\\cortana": {
+"modes": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": "objects\\characters\\cortana\\lipsync\\lipsync",
+"sizes": {
+"modes_at": 1928592578,
+"wl_at": 1927966334,
+"wl_n": 1
+}
+},
+"objects\\characters\\dervish\\dervish": {
+"modes": {
+"flaming": {
+"rifle": {
+"any": [
+"move_front"
+]
+},
+"pistol": {
+"any": [
+"move_front"
+]
+}
+},
+"patrol": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"berserk",
+"posing",
+"point",
+"kick"
+]
+},
+"any": {
+"any": []
+},
+"dual": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"kick"
+]
+},
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"berserk",
+"kick"
+]
+},
+"support": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"berserk",
+"posing",
+"kick"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"berserk",
+"posing",
+"kick"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"berserk",
+"posing",
+"kick"
+]
+},
+"sword": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"berserk",
+"posing",
+"walk_front",
+"kick"
+]
+}
+},
+"combat": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"0x3EE",
+"mortal_wound"
+]
+},
+"any": {
+"any": [
+"airborne_dead",
+"landing_dead"
+]
+},
+"dual": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"melee_airborne",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"shakefist",
+"0x3EE"
+],
+"0x410": [],
+"hp": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"pr": [],
+"spr": []
+},
+"missile": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"fc": [],
+"rl": [],
+"sl": [
+"idle"
+]
+},
+"support": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_attack",
+"warn",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"bs": [],
+"sb": []
+},
+"rifle": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"0x410": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"ar": [],
+"br": [],
+"sg": [],
+"sr": [],
+"pr": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"csr": [],
+"cb": []
+},
+"pistol": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"0x410": [],
+"hp": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"pr": [],
+"spr": []
+},
+"sword": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"shakefist",
+"0x3EE",
+"draw"
+]
+},
+"0x429": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"turret": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"land_soft",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"ftt": [
+"idle",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"mgt": [],
+"mp": [
+"idle"
+],
+"pgt": [
+"idle"
+]
+},
+"hammer": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+}
+},
+"crouch": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"throw_grenade",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"any": {
+"any": []
+},
+"dual": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"0x410": [],
+"hp": [],
+"pp": [],
+"ex": [],
+"spr": []
+},
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"support": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"bs": []
+},
+"rifle": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"ar": [],
+"br": [],
+"sg": [],
+"sr": [],
+"csr": [],
+"cb": []
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"0x410": [],
+"hp": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"pr": [],
+"spr": []
+},
+"sword": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"0x429": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"hammer": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+}
+},
+"climb": {
+"unarmed": {
+"any": [
+"idle",
+"climb_up",
+"climb_down",
+"attach",
+"detach"
+]
+},
+"any": {
+"any": []
+},
+"missile": {
+"any": []
+},
+"support": {
+"any": [
+"idle",
+"climb_up",
+"climb_down",
+"attach",
+"detach"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"climb_up",
+"climb_down",
+"attach",
+"detach"
+],
+"br": [],
+"sg": [],
+"sr": [],
+"csr": []
+},
+"pistol": {
+"any": [
+"idle",
+"climb_up",
+"climb_down",
+"attach",
+"detach"
+],
+"0x410": [],
+"hp": [],
+"ne": [],
+"pp": [],
+"pr": []
+}
+},
+"any": {
+"any": {
+"any": [
+"airborne",
+"land_soft",
+"land_hard",
+"resurrect_front",
+"resurrect_back",
+"thrash_front",
+"thrash_back",
+"infection_wrestle",
+"0x368"
+]
+}
+},
+"corner_cover_left": {
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"sword": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_cover_right": {
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"sword": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_open_left": {
+"missile": {
+"any": [
+"idle",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"br": [],
+"sg": [],
+"sr": [],
+"csr": []
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"hp": [],
+"ne": [],
+"pp": [],
+"pr": []
+},
+"sword": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"corner_open_right": {
+"missile": {
+"any": [
+"idle",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"br": [],
+"sg": [],
+"sr": [],
+"csr": []
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"hp": [],
+"ne": [],
+"pp": [],
+"pr": []
+},
+"sword": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"vault": {
+"missile": {
+"any": [
+"enter"
+]
+},
+"support": {
+"any": [
+"enter"
+]
+},
+"rifle": {
+"any": [
+"enter"
+]
+},
+"pistol": {
+"any": [
+"enter"
+]
+},
+"sword": {
+"any": [
+"enter"
+]
+}
+},
+"hoist": {
+"rifle": {
+"any": [
+"enter"
+]
+},
+"pistol": {
+"any": [
+"enter"
+]
+},
+"sword": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_crouch": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_stand": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"flight": {
+"any": {
+"any": []
+},
+"dual": {
+"any": [
+"idle",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"posing",
+"takeoff",
+"land"
+],
+"0x410": [],
+"hp": [],
+"pp": []
+},
+"pistol": {
+"any": [
+"idle",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"posing",
+"takeoff",
+"land"
+],
+"pp": [],
+"pr": []
+},
+"sword": {
+"any": [
+"idle",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"posing",
+"takeoff",
+"land"
+]
+}
+},
+"bunker_cover": {
+"any": {
+"any": []
+},
+"missile": {
+"any": [
+"idle",
+"enter"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter"
+]
+},
+"sword": {
+"any": [
+"idle",
+"enter"
+]
+}
+},
+"bunker_open": {
+"any": {
+"any": []
+},
+"missile": {
+"any": [
+"idle",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"exit"
+],
+"br": [],
+"sg": [],
+"sr": [],
+"csr": []
+},
+"pistol": {
+"any": [
+"idle",
+"exit"
+],
+"0x410": [],
+"hp": [],
+"ne": [],
+"pp": [],
+"pr": []
+},
+"sword": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"warthog_g": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"fixed": {
+"any": [
+"idle",
+"celebrate",
+"panic"
+]
+}
+},
+"turret_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"0x488"
+],
+"mp": [
+"0x488"
+],
+"pgt": [
+"0x488"
+]
+}
+},
+"phantom_p_lf_main": {
+"any": {
+"any": [
+"idle",
+"enter"
+]
+}
+},
+"phantom_pc_1": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_pc_2": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_pc_3": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_pc_4": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"warthog_b_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"board"
+]
+}
+},
+"insertion_pod_d": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+],
+[
+"0x410",
+"pistol"
+],
+[
+"ar",
+"rifle"
+],
+[
+"br",
+"rifle"
+],
+[
+"sg",
+"rifle"
+],
+[
+"hp",
+"pistol"
+],
+[
+"ne",
+"pistol"
+],
+[
+"pp",
+"pistol"
+],
+[
+"sr",
+"rifle"
+],
+[
+"fc",
+"missile"
+],
+[
+"rl",
+"missile"
+],
+[
+"sl",
+"missile"
+],
+[
+"ex",
+"pistol"
+],
+[
+"pr",
+"pistol"
+],
+[
+"spr",
+"pistol"
+],
+[
+"ftt",
+"turret"
+],
+[
+"csr",
+"rifle"
+],
+[
+"cb",
+"rifle"
+],
+[
+"bs",
+"support"
+],
+[
+"sb",
+"support"
+],
+[
+"mgt",
+"turret"
+],
+[
+"mp",
+"turret"
+],
+[
+"pgt",
+"turret"
+]
+],
+"parent": "objects\\characters\\elite\\elite",
+"sizes": {
+"modes_at": 1940157425,
+"wl_at": 1933899674,
+"wl_n": 23
+}
+},
+"objects\\characters\\elite\\elite": {
+"modes": {
+"flaming": {
+"rifle": {
+"any": [
+"move_front"
+]
+},
+"pistol": {
+"any": [
+"move_front"
+]
+}
+},
+"patrol": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"berserk",
+"posing",
+"point",
+"kick"
+]
+},
+"any": {
+"any": []
+},
+"dual": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"kick"
+]
+},
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"berserk",
+"kick"
+]
+},
+"support": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"berserk",
+"posing",
+"kick"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"berserk",
+"posing",
+"kick"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"berserk",
+"posing",
+"kick"
+]
+},
+"sword": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"berserk",
+"posing",
+"walk_front",
+"kick"
+]
+}
+},
+"combat": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"0x3EE",
+"mortal_wound"
+]
+},
+"any": {
+"any": [
+"airborne_dead",
+"landing_dead"
+]
+},
+"dual": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"melee_airborne",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"shakefist",
+"0x3EE"
+],
+"0x410": [],
+"hp": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"pr": [],
+"spr": []
+},
+"missile": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"fc": [],
+"rl": [],
+"sl": [
+"idle"
+]
+},
+"support": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_attack",
+"warn",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"bs": [],
+"sb": []
+},
+"rifle": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"0x410": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"ar": [],
+"br": [],
+"sg": [],
+"sr": [],
+"pr": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"csr": [],
+"cb": []
+},
+"pistol": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"0x3EE"
+],
+"0x410": [],
+"hp": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"pr": [],
+"spr": []
+},
+"sword": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"melee_airborne",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"shakefist",
+"0x3EE",
+"draw"
+]
+},
+"0x429": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"turret": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"land_soft",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"ftt": [
+"idle",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"mgt": [],
+"mp": [
+"idle"
+],
+"pgt": [
+"idle"
+]
+},
+"hammer": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+}
+},
+"crouch": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"throw_grenade",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"any": {
+"any": []
+},
+"dual": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"0x410": [],
+"hp": [],
+"pp": [],
+"ex": [],
+"spr": []
+},
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"support": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"bs": []
+},
+"rifle": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"ar": [],
+"br": [],
+"sg": [],
+"sr": [],
+"csr": [],
+"cb": []
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"0x410": [],
+"hp": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"pr": [],
+"spr": []
+},
+"sword": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"0x429": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"hammer": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+}
+},
+"climb": {
+"unarmed": {
+"any": [
+"idle",
+"climb_up",
+"climb_down",
+"attach",
+"detach"
+]
+},
+"any": {
+"any": []
+},
+"missile": {
+"any": []
+},
+"support": {
+"any": [
+"idle",
+"climb_up",
+"climb_down",
+"attach",
+"detach"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"climb_up",
+"climb_down",
+"attach",
+"detach"
+],
+"br": [],
+"sg": [],
+"sr": [],
+"csr": []
+},
+"pistol": {
+"any": [
+"idle",
+"climb_up",
+"climb_down",
+"attach",
+"detach"
+],
+"0x410": [],
+"hp": [],
+"ne": [],
+"pp": [],
+"pr": []
+}
+},
+"any": {
+"any": {
+"any": [
+"airborne",
+"land_soft",
+"land_hard",
+"resurrect_front",
+"resurrect_back",
+"thrash_front",
+"thrash_back",
+"infection_wrestle",
+"0x368"
+]
+}
+},
+"corner_cover_left": {
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"sword": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_cover_right": {
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"sword": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_open_left": {
+"missile": {
+"any": [
+"idle",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"br": [],
+"sg": [],
+"sr": [],
+"csr": []
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"hp": [],
+"ne": [],
+"pp": [],
+"pr": []
+},
+"sword": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"corner_open_right": {
+"missile": {
+"any": [
+"idle",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"br": [],
+"sg": [],
+"sr": [],
+"csr": []
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"hp": [],
+"ne": [],
+"pp": [],
+"pr": []
+},
+"sword": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"vault": {
+"missile": {
+"any": [
+"enter"
+]
+},
+"support": {
+"any": [
+"enter"
+]
+},
+"rifle": {
+"any": [
+"enter"
+]
+},
+"pistol": {
+"any": [
+"enter"
+]
+},
+"sword": {
+"any": [
+"enter"
+]
+}
+},
+"hoist": {
+"rifle": {
+"any": [
+"enter"
+]
+},
+"pistol": {
+"any": [
+"enter"
+]
+},
+"sword": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_crouch": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_stand": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"flight": {
+"any": {
+"any": []
+},
+"dual": {
+"any": [
+"idle",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"posing",
+"takeoff",
+"land"
+],
+"0x410": [],
+"hp": [],
+"pp": []
+},
+"pistol": {
+"any": [
+"idle",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"posing",
+"takeoff",
+"land"
+],
+"pp": [],
+"pr": []
+},
+"sword": {
+"any": [
+"idle",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"posing",
+"takeoff",
+"land"
+]
+}
+},
+"bunker_cover": {
+"any": {
+"any": []
+},
+"missile": {
+"any": [
+"idle",
+"enter"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter"
+]
+},
+"sword": {
+"any": [
+"idle",
+"enter"
+]
+}
+},
+"bunker_open": {
+"any": {
+"any": []
+},
+"missile": {
+"any": [
+"idle",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"exit"
+],
+"br": [],
+"sg": [],
+"sr": [],
+"csr": []
+},
+"pistol": {
+"any": [
+"idle",
+"exit"
+],
+"0x410": [],
+"hp": [],
+"ne": [],
+"pp": [],
+"pr": []
+},
+"sword": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"warthog_g": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"fixed": {
+"any": [
+"idle",
+"celebrate",
+"panic"
+]
+}
+},
+"turret_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"0x488"
+],
+"mp": [
+"0x488"
+],
+"pgt": [
+"0x488"
+]
+}
+},
+"phantom_p_lf_main": {
+"any": {
+"any": [
+"idle",
+"enter"
+]
+}
+},
+"phantom_pc_1": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_pc_2": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_pc_3": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"phantom_pc_4": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"warthog_b_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"board"
+]
+}
+},
+"insertion_pod_d": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+],
+[
+"0x410",
+"pistol"
+],
+[
+"ar",
+"rifle"
+],
+[
+"br",
+"rifle"
+],
+[
+"sg",
+"rifle"
+],
+[
+"hp",
+"pistol"
+],
+[
+"ne",
+"pistol"
+],
+[
+"pp",
+"pistol"
+],
+[
+"sr",
+"rifle"
+],
+[
+"fc",
+"missile"
+],
+[
+"rl",
+"missile"
+],
+[
+"sl",
+"missile"
+],
+[
+"ex",
+"pistol"
+],
+[
+"pr",
+"pistol"
+],
+[
+"spr",
+"pistol"
+],
+[
+"ftt",
+"turret"
+],
+[
+"csr",
+"rifle"
+],
+[
+"cb",
+"rifle"
+],
+[
+"bs",
+"support"
+],
+[
+"sb",
+"support"
+],
+[
+"mgt",
+"turret"
+],
+[
+"mp",
+"turret"
+],
+[
+"pgt",
+"turret"
+]
+],
+"parent": "objects\\characters\\elite\\lipsync\\lipsync",
+"sizes": {
+"modes_at": 1933899402,
+"wl_at": 1933899674,
+"wl_n": 23
+}
+},
+"objects\\characters\\flood_infection\\flood_infection": {
+"modes": {
+"combat": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"melee_continuous",
+"feeding",
+"leap_airborne",
+"infect",
+"0x80606"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"infection_wrestle",
+"infection_morph_brute",
+"infection_wrestle_brute",
+"infection_wrestle_elite"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1929505214,
+"wl_at": 1927966334,
+"wl_n": 1
+}
+},
+"objects\\characters\\flood_ranged\\flood_ranged": {
+"modes": {
+"combat": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"airborne_dead",
+"landing_dead",
+"0x362",
+"0x363",
+"0x366",
+"0x367"
+]
+}
+},
+"crouch": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"climb": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"0x362",
+"0x363"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1937965724,
+"wl_at": 1927966334,
+"wl_n": 1
+}
+},
+"objects\\characters\\flood_stalker\\flood_stalker": {
+"modes": {
+"combat": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_hard",
+"evade_left",
+"evade_right",
+"leap_start",
+"leap_airborne",
+"airborne_dead",
+"landing_dead",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_tackle",
+"0x364",
+"0x365",
+"0x366",
+"0x367"
+]
+}
+},
+"climb": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"evade_left",
+"evade_right",
+"evade_front",
+"evade_back",
+"0x364",
+"0x365",
+"0x377",
+"0x378",
+"0x379",
+"0x37A",
+"attach_up",
+"detach_up"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1937945721,
+"wl_at": 1927966334,
+"wl_n": 1
+}
+},
+"objects\\characters\\flood_tank\\flood_tank": {
+"modes": {
+"combat": {
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"melee_left",
+"melee_right",
+"infection_spew",
+"melee_tackle",
+"0x362",
+"0x363",
+"0x364",
+"0x365"
+]
+}
+},
+"protected": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+]
+}
+},
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1937920727,
+"wl_at": 1927966334,
+"wl_n": 1
+}
+},
+"objects\\characters\\floodcarrier\\floodcarrier": {
+"modes": {
+"patrol": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard"
+]
+},
+"any": {
+"any": []
+}
+},
+"combat": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"melee_suicide"
+]
+},
+"any": {
+"any": [
+"airborne_dead",
+"landing_dead"
+]
+}
+},
+"crouch": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"airborne",
+"land_soft",
+"land_hard"
+]
+}
+},
+"flee": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard"
+]
+},
+"any": {
+"any": []
+}
+},
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1937716419,
+"wl_at": 1927966334,
+"wl_n": 1
+}
+},
+"objects\\characters\\floodcombat_brute\\floodcombat_brute": {
+"modes": {
+"combat": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"melee_tackle",
+"brace"
+]
+},
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"airborne_dead",
+"landing_dead",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"melee_tackle",
+"brace"
+]
+},
+"support": {
+"bs": []
+},
+"sword": {
+"any": [
+"melee",
+"melee_back",
+"melee_tackle"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"resurrect_front",
+"leap_start",
+"leap_airborne",
+"thrash_front",
+"thrash_back",
+"0x369"
+]
+}
+},
+"warthog_b_g": {
+"any": {
+"any": [
+"melee",
+"idle",
+"enter",
+"exit"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+],
+[
+"bs",
+"support"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1937984315,
+"wl_at": 1937984345,
+"wl_n": 2
+}
+},
+"objects\\characters\\floodcombat_elite\\floodcombat_elite": {
+"modes": {
+"combat": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"leap_start",
+"leap_airborne",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"melee_tackle"
+]
+},
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"resurrect_front",
+"leap_start",
+"leap_airborne",
+"airborne_dead",
+"landing_dead",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"thrash_front",
+"thrash_back",
+"melee_back",
+"melee_tackle",
+"brace"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"0x369"
+]
+}
+},
+"warthog_b_g": {
+"any": {
+"any": [
+"melee",
+"idle",
+"enter",
+"exit"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1937824299,
+"wl_at": 1927966334,
+"wl_n": 1
+}
+},
+"objects\\characters\\floodcombat_human\\floodcombat_human": {
+"modes": {
+"combat": {
+"unarmed": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"melee_tackle",
+"brace"
+]
+},
+"any": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"melee_airborne",
+"airborne_dead",
+"landing_dead",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"melee_tackle",
+"brace"
+]
+},
+"pistol": {
+"0x410": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right"
+],
+"ar": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right"
+],
+"br": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right"
+],
+"hp": [],
+"pp": [],
+"fc": [],
+"ex": [],
+"pr": [],
+"spr": [],
+"cb": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right"
+],
+"bs": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right"
+]
+},
+"sword": {
+"any": [
+"melee",
+"melee_airborne",
+"melee_back",
+"melee_tackle"
+]
+},
+"hammer": {
+"any": [
+"melee",
+"melee_airborne",
+"melee_back",
+"melee_tackle"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"resurrect_front",
+"leap_start",
+"leap_airborne",
+"thrash_front",
+"thrash_back",
+"0x369"
+]
+}
+},
+"warthog_b_g": {
+"any": {
+"any": [
+"melee",
+"idle",
+"enter",
+"exit"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+],
+[
+"0x410",
+"pistol"
+],
+[
+"ar",
+"pistol"
+],
+[
+"br",
+"pistol"
+],
+[
+"hp",
+"pistol"
+],
+[
+"pp",
+"pistol"
+],
+[
+"fc",
+"pistol"
+],
+[
+"ex",
+"pistol"
+],
+[
+"pr",
+"pistol"
+],
+[
+"spr",
+"pistol"
+],
+[
+"cb",
+"pistol"
+],
+[
+"bs",
+"pistol"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1937751031,
+"wl_at": 1937751061,
+"wl_n": 12
+}
+},
+"objects\\characters\\lord_hood\\lord_hood": {
+"modes": {
+"patrol": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"posing",
+"point"
+]
+},
+"any": {
+"any": []
+},
+"rifle": {
+"any": [
+"turn180_johnson"
+]
+}
+},
+"combat": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"wave",
+"advance",
+"shakefist",
+"wave_nav",
+"lookout"
+]
+},
+"any": {
+"any": [
+"airborne_dead",
+"landing_dead"
+]
+},
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"deploy",
+"cheer",
+"taunt",
+"brace",
+"point",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"rifle": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"celebrate",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"wave",
+"advance",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav",
+"base_button",
+"shuffle_front"
+],
+"0x410": [],
+"ar": [],
+"br": [],
+"sg": [],
+"ne": [],
+"sr": [],
+"pr": [],
+"spr": []
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"advance",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav",
+"lookout"
+],
+"hp": [
+"idle"
+],
+"ne": [],
+"pp": [],
+"ex": []
+},
+"turret": {
+"ftt": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"celebrate",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"wave",
+"advance",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav",
+"base_button",
+"shuffle_front"
+]
+}
+},
+"crouch": {
+"unarmed": {
+"any": [
+"throw_grenade"
+]
+},
+"any": {
+"any": []
+},
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"rifle": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"signal_attack",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"0x410": [],
+"ar": [],
+"br": [],
+"sg": [],
+"ne": [],
+"sr": [],
+"pr": [],
+"spr": []
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"hp": [],
+"ne": [],
+"pp": [],
+"ex": []
+}
+},
+"flee": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"airborne_dead",
+"landing_dead",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+]
+},
+"rifle": {
+"any": [
+"turn_left",
+"turn_right",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right"
+]
+}
+},
+"stunned": {
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"airborne",
+"land_soft",
+"land_hard",
+"resurrect_front",
+"resurrect_back",
+"thrash_front",
+"thrash_back",
+"infection_wrestle",
+"0x368"
+]
+}
+},
+"corner_cover_left": {
+"missile": {
+"any": []
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_cover_right": {
+"missile": {
+"any": []
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_open_left": {
+"missile": {
+"any": []
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"pr": []
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"ne": [],
+"pp": []
+}
+},
+"corner_open_right": {
+"missile": {
+"any": []
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"pr": []
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+]
+}
+},
+"vault": {
+"missile": {
+"any": [
+"enter"
+]
+},
+"rifle": {
+"any": [
+"enter"
+]
+},
+"pistol": {
+"any": [
+"enter"
+]
+}
+},
+"hoist": {
+"missile": {
+"any": [
+"enter"
+]
+},
+"rifle": {
+"any": [
+"enter"
+]
+},
+"pistol": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_crouch": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_stand": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"bunker_cover": {
+"any": {
+"any": []
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"bunker_open": {
+"any": {
+"any": []
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"sg": [],
+"sr": []
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"ne": [],
+"pp": []
+}
+},
+"0x39C": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x39D": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x3A3": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit_patrol"
+]
+}
+},
+"0x3A8": {
+"any": {
+"any": [
+"idle",
+"brace"
+]
+}
+},
+"0x3A9": {
+"any": {
+"any": [
+"idle",
+"exit",
+"brace"
+]
+}
+},
+"0x3AA": {
+"any": {
+"any": [
+"idle",
+"exit",
+"brace"
+]
+}
+},
+"0x3AB": {
+"any": {
+"any": [
+"idle",
+"exit",
+"brace"
+]
+}
+},
+"0x3AD": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"0x3AE": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"0x3AF": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3B0": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3B1": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3B2": {
+"any": {
+"any": [
+"idle",
+"exit",
+"suicide"
+]
+}
+},
+"0x3C8": {
+"any": {
+"any": [
+"idle",
+"exit",
+"brace"
+]
+}
+},
+"0x3C9": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3CA": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x490": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x491": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x492": {
+"any": {
+"any": [
+"idle",
+"fire"
+]
+}
+},
+"0x493": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x494": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x495": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x496": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"warthog_g": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"fixed": {
+"any": [
+"idle",
+"celebrate",
+"panic"
+]
+}
+},
+"turret_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_p_b": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_g_pod": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"warthog_p_l": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_p_r": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+],
+[
+"0x410",
+"rifle"
+],
+[
+"ar",
+"rifle"
+],
+[
+"br",
+"rifle"
+],
+[
+"sg",
+"rifle"
+],
+[
+"hp",
+"pistol"
+],
+[
+"ne",
+"rifle"
+],
+[
+"pp",
+"pistol"
+],
+[
+"sr",
+"rifle"
+],
+[
+"fc",
+"missile"
+],
+[
+"rl",
+"missile"
+],
+[
+"sl",
+"missile"
+],
+[
+"ex",
+"pistol"
+],
+[
+"pr",
+"rifle"
+],
+[
+"spr",
+"rifle"
+],
+[
+"ftt",
+"turret"
+]
+],
+"parent": "objects\\characters\\lord_hood\\lipsync\\lipsync",
+"sizes": {
+"modes_at": 1934068244,
+"wl_at": 1934068730,
+"wl_n": 16
+}
+},
+"objects\\characters\\marine\\marine": {
+"modes": {
+"patrol": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"posing",
+"point"
+]
+},
+"any": {
+"any": []
+},
+"rifle": {
+"any": [
+"turn180_johnson"
+]
+}
+},
+"combat": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"wave",
+"advance",
+"shakefist",
+"wave_nav",
+"lookout"
+]
+},
+"any": {
+"any": [
+"airborne_dead",
+"landing_dead"
+]
+},
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"deploy",
+"cheer",
+"taunt",
+"brace",
+"point",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"rifle": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"celebrate",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"wave",
+"advance",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav",
+"base_button",
+"shuffle_front"
+],
+"0x410": [],
+"ar": [],
+"br": [],
+"sg": [],
+"ne": [],
+"sr": [],
+"pr": [],
+"spr": []
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"advance",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav",
+"lookout"
+],
+"hp": [
+"idle"
+],
+"ne": [],
+"pp": [],
+"ex": []
+},
+"turret": {
+"ftt": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"celebrate",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"wave",
+"advance",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav",
+"base_button",
+"shuffle_front"
+]
+}
+},
+"crouch": {
+"unarmed": {
+"any": [
+"throw_grenade"
+]
+},
+"any": {
+"any": []
+},
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"rifle": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"signal_attack",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"0x410": [],
+"ar": [],
+"br": [],
+"sg": [],
+"ne": [],
+"sr": [],
+"pr": [],
+"spr": []
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"hp": [],
+"ne": [],
+"pp": [],
+"ex": []
+}
+},
+"flee": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"airborne_dead",
+"landing_dead",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+]
+},
+"rifle": {
+"any": [
+"turn_left",
+"turn_right",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right"
+]
+}
+},
+"stunned": {
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"airborne",
+"land_soft",
+"land_hard",
+"resurrect_front",
+"resurrect_back",
+"thrash_front",
+"thrash_back",
+"infection_wrestle",
+"0x368"
+]
+}
+},
+"corner_cover_left": {
+"missile": {
+"any": []
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_cover_right": {
+"missile": {
+"any": []
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_open_left": {
+"missile": {
+"any": []
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"pr": []
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"ne": [],
+"pp": []
+}
+},
+"corner_open_right": {
+"missile": {
+"any": []
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"pr": []
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+]
+}
+},
+"vault": {
+"missile": {
+"any": [
+"enter"
+]
+},
+"rifle": {
+"any": [
+"enter"
+]
+},
+"pistol": {
+"any": [
+"enter"
+]
+}
+},
+"hoist": {
+"missile": {
+"any": [
+"enter"
+]
+},
+"rifle": {
+"any": [
+"enter"
+]
+},
+"pistol": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_crouch": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_stand": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"bunker_cover": {
+"any": {
+"any": []
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"bunker_open": {
+"any": {
+"any": []
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"sg": [],
+"sr": []
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"ne": [],
+"pp": []
+}
+},
+"0x39C": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x39D": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x3A3": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit_patrol"
+]
+}
+},
+"0x3A8": {
+"any": {
+"any": [
+"idle",
+"brace"
+]
+}
+},
+"0x3A9": {
+"any": {
+"any": [
+"idle",
+"exit",
+"brace"
+]
+}
+},
+"0x3AA": {
+"any": {
+"any": [
+"idle",
+"exit",
+"brace"
+]
+}
+},
+"0x3AB": {
+"any": {
+"any": [
+"idle",
+"exit",
+"brace"
+]
+}
+},
+"0x3AD": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"0x3AE": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"0x3AF": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3B0": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3B1": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3B2": {
+"any": {
+"any": [
+"idle",
+"exit",
+"suicide"
+]
+}
+},
+"0x3C8": {
+"any": {
+"any": [
+"idle",
+"exit",
+"brace"
+]
+}
+},
+"0x3C9": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3CA": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x490": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x491": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x492": {
+"any": {
+"any": [
+"idle",
+"fire"
+]
+}
+},
+"0x493": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x494": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x495": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x496": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"warthog_g": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"fixed": {
+"any": [
+"idle",
+"celebrate",
+"panic"
+]
+}
+},
+"turret_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_p_b": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_g_pod": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"warthog_p_l": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_p_r": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+],
+[
+"0x410",
+"rifle"
+],
+[
+"ar",
+"rifle"
+],
+[
+"br",
+"rifle"
+],
+[
+"sg",
+"rifle"
+],
+[
+"hp",
+"pistol"
+],
+[
+"ne",
+"pistol"
+],
+[
+"pp",
+"pistol"
+],
+[
+"sr",
+"rifle"
+],
+[
+"fc",
+"missile"
+],
+[
+"rl",
+"missile"
+],
+[
+"sl",
+"missile"
+],
+[
+"ex",
+"pistol"
+],
+[
+"pr",
+"rifle"
+],
+[
+"spr",
+"rifle"
+],
+[
+"ftt",
+"turret"
+]
+],
+"parent": "objects\\characters\\marine\\lipsync\\lipsync",
+"sizes": {
+"modes_at": 1932765588,
+"wl_at": 1932766050,
+"wl_n": 16
+}
+},
+"objects\\characters\\marine\\marine_female\\marine_female": {
+"modes": {
+"patrol": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"posing",
+"point"
+]
+},
+"any": {
+"any": []
+},
+"rifle": {
+"any": [
+"turn180_johnson"
+]
+}
+},
+"combat": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"wave",
+"advance",
+"shakefist",
+"wave_nav",
+"lookout"
+]
+},
+"any": {
+"any": [
+"airborne_dead",
+"landing_dead"
+]
+},
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"deploy",
+"cheer",
+"taunt",
+"brace",
+"point",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"rifle": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"celebrate",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"wave",
+"advance",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav",
+"base_button",
+"shuffle_front"
+],
+"0x410": [],
+"ar": [],
+"br": [],
+"sg": [],
+"ne": [],
+"sr": [],
+"pr": [],
+"spr": []
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"advance",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav",
+"lookout"
+],
+"hp": [
+"idle"
+],
+"ne": [],
+"pp": [],
+"ex": []
+},
+"turret": {
+"ftt": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"celebrate",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"wave",
+"advance",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav",
+"base_button",
+"shuffle_front"
+]
+}
+},
+"crouch": {
+"unarmed": {
+"any": [
+"throw_grenade"
+]
+},
+"any": {
+"any": []
+},
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"rifle": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"signal_attack",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"0x410": [],
+"ar": [],
+"br": [],
+"sg": [],
+"ne": [],
+"sr": [],
+"pr": [],
+"spr": []
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"hp": [],
+"ne": [],
+"pp": [],
+"ex": []
+}
+},
+"flee": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"airborne_dead",
+"landing_dead",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+]
+},
+"rifle": {
+"any": [
+"turn_left",
+"turn_right",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right"
+]
+}
+},
+"stunned": {
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"airborne",
+"land_soft",
+"land_hard",
+"resurrect_front",
+"resurrect_back",
+"thrash_front",
+"thrash_back",
+"infection_wrestle",
+"0x368"
+]
+}
+},
+"corner_cover_left": {
+"missile": {
+"any": []
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_cover_right": {
+"missile": {
+"any": []
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_open_left": {
+"missile": {
+"any": []
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"pr": []
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"ne": [],
+"pp": []
+}
+},
+"corner_open_right": {
+"missile": {
+"any": []
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"pr": []
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+]
+}
+},
+"vault": {
+"missile": {
+"any": [
+"enter"
+]
+},
+"rifle": {
+"any": [
+"enter"
+]
+},
+"pistol": {
+"any": [
+"enter"
+]
+}
+},
+"hoist": {
+"missile": {
+"any": [
+"enter"
+]
+},
+"rifle": {
+"any": [
+"enter"
+]
+},
+"pistol": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_crouch": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_stand": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"bunker_cover": {
+"any": {
+"any": []
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"bunker_open": {
+"any": {
+"any": []
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"sg": [],
+"sr": []
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"ne": [],
+"pp": []
+}
+},
+"0x39C": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x39D": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x3A3": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit_patrol"
+]
+}
+},
+"0x3A8": {
+"any": {
+"any": [
+"idle",
+"brace"
+]
+}
+},
+"0x3A9": {
+"any": {
+"any": [
+"idle",
+"exit",
+"brace"
+]
+}
+},
+"0x3AA": {
+"any": {
+"any": [
+"idle",
+"exit",
+"brace"
+]
+}
+},
+"0x3AB": {
+"any": {
+"any": [
+"idle",
+"exit",
+"brace"
+]
+}
+},
+"0x3AD": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"0x3AE": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"0x3AF": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3B0": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3B1": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3B2": {
+"any": {
+"any": [
+"idle",
+"exit",
+"suicide"
+]
+}
+},
+"0x3C8": {
+"any": {
+"any": [
+"idle",
+"exit",
+"brace"
+]
+}
+},
+"0x3C9": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3CA": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x490": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x491": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x492": {
+"any": {
+"any": [
+"idle",
+"fire"
+]
+}
+},
+"0x493": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x494": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x495": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x496": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"warthog_g": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"fixed": {
+"any": [
+"idle",
+"celebrate",
+"panic"
+]
+}
+},
+"turret_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_p_b": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_g_pod": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"warthog_p_l": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_p_r": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+],
+[
+"0x410",
+"rifle"
+],
+[
+"ar",
+"rifle"
+],
+[
+"br",
+"rifle"
+],
+[
+"sg",
+"rifle"
+],
+[
+"hp",
+"pistol"
+],
+[
+"ne",
+"rifle"
+],
+[
+"pp",
+"pistol"
+],
+[
+"sr",
+"rifle"
+],
+[
+"fc",
+"missile"
+],
+[
+"rl",
+"missile"
+],
+[
+"sl",
+"missile"
+],
+[
+"ex",
+"pistol"
+],
+[
+"pr",
+"rifle"
+],
+[
+"spr",
+"rifle"
+],
+[
+"ftt",
+"turret"
+]
+],
+"parent": "objects\\characters\\marine\\marine_female\\lipsync\\lipsync",
+"sizes": {
+"modes_at": 1934068244,
+"wl_at": 1934068730,
+"wl_n": 16
+}
+},
+"objects\\characters\\masterchief\\masterchief": {
+"modes": {
+"combat": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"any": {
+"any": [
+"airborne_dead",
+"landing_dead"
+]
+},
+"dual": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"melee_airborne",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"0x410": [],
+"sg": [],
+"hp": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"pr": [],
+"spr": []
+},
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"melee_airborne",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"support": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"bs": []
+},
+"rifle": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"0x410": [],
+"ar": [],
+"br": [],
+"sg": [],
+"sr": [],
+"pr": [
+"idle"
+],
+"csr": [],
+"cb": []
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"hp": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"spr": []
+},
+"sword": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"0x429": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"melee_airborne",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"turret": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"ftt": [],
+"mp": [],
+"pgt": []
+},
+"hammer": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+}
+},
+"crouch": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"any": {
+"any": []
+},
+"dual": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"0x410": [],
+"sg": [],
+"hp": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"pr": [],
+"spr": []
+},
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"support": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"bs": [],
+"sb": []
+},
+"rifle": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"0x410": [],
+"ar": [],
+"br": [],
+"sg": [],
+"sr": [],
+"pr": [
+"idle"
+],
+"csr": [],
+"cb": []
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+],
+"hp": [],
+"ne": [],
+"pp": [],
+"ex": [],
+"spr": []
+},
+"sword": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"0x429": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+},
+"hammer": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"0x3EE"
+]
+}
+},
+"any": {
+"any": {
+"any": []
+}
+},
+"warthog_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+}
+},
+"turret_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit",
+"detach",
+"0x488"
+],
+"mp": [
+"0x488"
+],
+"pgt": [
+"0x488"
+]
+}
+},
+"warthog_b_g": {
+"any": {
+"any": [
+"enter",
+"board"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+],
+[
+"0x410",
+"rifle"
+],
+[
+"ar",
+"rifle"
+],
+[
+"br",
+"rifle"
+],
+[
+"sg",
+"rifle"
+],
+[
+"hp",
+"pistol"
+],
+[
+"ne",
+"pistol"
+],
+[
+"pp",
+"pistol"
+],
+[
+"sr",
+"rifle"
+],
+[
+"fc",
+"missile"
+],
+[
+"rl",
+"missile"
+],
+[
+"sl",
+"missile"
+],
+[
+"ex",
+"pistol"
+],
+[
+"pr",
+"rifle"
+],
+[
+"spr",
+"pistol"
+],
+[
+"ftt",
+"turret"
+],
+[
+"csr",
+"rifle"
+],
+[
+"cb",
+"rifle"
+],
+[
+"bs",
+"support"
+],
+[
+"sb",
+"support"
+],
+[
+"mp",
+"turret"
+],
+[
+"pgt",
+"turret"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1939873763,
+"wl_at": 1939873823,
+"wl_n": 22
+}
+},
+"objects\\characters\\miranda\\miranda": {
+"modes": {
+"patrol": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"airborne",
+"land_soft",
+"land_hard",
+"aim_move_down",
+"surprise_front",
+"surprise_back",
+"posing",
+"point"
+]
+},
+"any": {
+"any": []
+},
+"rifle": {
+"any": [
+"turn180_johnson"
+]
+}
+},
+"combat": {
+"unarmed": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"aim_move_down",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"wave",
+"advance",
+"shakefist",
+"wave_nav",
+"lookout"
+]
+},
+"any": {
+"any": [
+"airborne_dead",
+"landing_dead"
+]
+},
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"deploy",
+"cheer",
+"taunt",
+"brace",
+"point",
+"wave",
+"advance",
+"fallback",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"rifle": {
+"any": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"celebrate",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"wave",
+"advance",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav",
+"base_button",
+"shuffle_front"
+],
+"0x410": [],
+"ar": [],
+"br": [],
+"sg": [],
+"ne": [],
+"sr": [],
+"pr": [],
+"spr": []
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"hold",
+"advance",
+"shakefist",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav",
+"lookout"
+],
+"hp": [
+"idle"
+],
+"ne": [],
+"pp": [],
+"ex": []
+},
+"turret": {
+"ftt": [
+"melee",
+"idle",
+"turn_left",
+"turn_right",
+"dive_front",
+"dive_left",
+"dive_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"surprise_front",
+"surprise_back",
+"berserk",
+"evade_left",
+"evade_right",
+"signal_move",
+"signal_attack",
+"warn",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"celebrate",
+"posing",
+"smash_left",
+"smash_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right",
+"melee_back",
+"cheer",
+"taunt",
+"brace",
+"point",
+"wave",
+"advance",
+"0x3E0",
+"0x3E1",
+"smash_front",
+"wave_nav",
+"base_button",
+"shuffle_front"
+]
+}
+},
+"crouch": {
+"unarmed": {
+"any": [
+"throw_grenade"
+]
+},
+"any": {
+"any": []
+},
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"fc": [],
+"rl": [],
+"sl": []
+},
+"rifle": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"signal_attack",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"0x410": [],
+"ar": [],
+"br": [],
+"sg": [],
+"ne": [],
+"sr": [],
+"pr": [],
+"spr": []
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"throw_grenade",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+],
+"hp": [],
+"ne": [],
+"pp": [],
+"ex": []
+}
+},
+"flee": {
+"any": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front",
+"move_back",
+"move_left",
+"move_right",
+"airborne",
+"land_soft",
+"land_hard",
+"surprise_front",
+"surprise_back",
+"airborne_dead",
+"landing_dead",
+"walk_front",
+"walk_back",
+"walk_left",
+"walk_right"
+]
+},
+"rifle": {
+"any": [
+"turn_left",
+"turn_right",
+"stunned_front",
+"stunned_back",
+"stunned_left",
+"stunned_right"
+]
+}
+},
+"stunned": {
+"missile": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"turn_left",
+"turn_right",
+"move_front"
+]
+}
+},
+"any": {
+"any": {
+"any": [
+"airborne",
+"land_soft",
+"land_hard",
+"resurrect_front",
+"resurrect_back",
+"thrash_front",
+"thrash_back",
+"infection_wrestle",
+"0x368"
+]
+}
+},
+"corner_cover_left": {
+"missile": {
+"any": []
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_cover_right": {
+"missile": {
+"any": []
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"corner_open_left": {
+"missile": {
+"any": []
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"pr": []
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"ne": [],
+"pp": []
+}
+},
+"corner_open_right": {
+"missile": {
+"any": []
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+],
+"0x410": [],
+"sg": [],
+"sr": [],
+"pr": []
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit",
+"idle_down"
+]
+}
+},
+"vault": {
+"missile": {
+"any": [
+"enter"
+]
+},
+"rifle": {
+"any": [
+"enter"
+]
+},
+"pistol": {
+"any": [
+"enter"
+]
+}
+},
+"hoist": {
+"missile": {
+"any": [
+"enter"
+]
+},
+"rifle": {
+"any": [
+"enter"
+]
+},
+"pistol": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_crouch": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"hoist_stand": {
+"any": {
+"any": [
+"enter"
+]
+}
+},
+"bunker_cover": {
+"any": {
+"any": []
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"bunker_open": {
+"any": {
+"any": []
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"sg": [],
+"sr": []
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+],
+"ne": [],
+"pp": []
+}
+},
+"0x39C": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x39D": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x3A3": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit_patrol"
+]
+}
+},
+"0x3A8": {
+"any": {
+"any": [
+"idle",
+"brace"
+]
+}
+},
+"0x3A9": {
+"any": {
+"any": [
+"idle",
+"exit",
+"brace"
+]
+}
+},
+"0x3AA": {
+"any": {
+"any": [
+"idle",
+"exit",
+"brace"
+]
+}
+},
+"0x3AB": {
+"any": {
+"any": [
+"idle",
+"exit",
+"brace"
+]
+}
+},
+"0x3AD": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"0x3AE": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"0x3AF": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3B0": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3B1": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3B2": {
+"any": {
+"any": [
+"idle",
+"exit",
+"suicide"
+]
+}
+},
+"0x3C8": {
+"any": {
+"any": [
+"idle",
+"exit",
+"brace"
+]
+}
+},
+"0x3C9": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x3CA": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x490": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x491": {
+"any": {
+"any": [
+"idle",
+"exit"
+]
+}
+},
+"0x492": {
+"any": {
+"any": [
+"idle",
+"fire"
+]
+}
+},
+"0x493": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x494": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x495": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"0x496": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"warthog_g": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"fixed": {
+"any": [
+"idle",
+"celebrate",
+"panic"
+]
+}
+},
+"turret_g": {
+"any": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_p_b": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"pelican_g_pod": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"warthog_p_l": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+},
+"warthog_p_r": {
+"any": {
+"any": [
+"enter",
+"exit",
+"ejection"
+]
+},
+"missile": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+},
+"rifle": {
+"any": [
+"idle",
+"enter",
+"exit",
+"ejection"
+]
+},
+"pistol": {
+"any": [
+"idle",
+"enter",
+"exit"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+],
+[
+"0x410",
+"rifle"
+],
+[
+"ar",
+"rifle"
+],
+[
+"br",
+"rifle"
+],
+[
+"sg",
+"rifle"
+],
+[
+"hp",
+"pistol"
+],
+[
+"ne",
+"rifle"
+],
+[
+"pp",
+"pistol"
+],
+[
+"sr",
+"rifle"
+],
+[
+"fc",
+"missile"
+],
+[
+"rl",
+"missile"
+],
+[
+"sl",
+"missile"
+],
+[
+"ex",
+"pistol"
+],
+[
+"pr",
+"rifle"
+],
+[
+"spr",
+"rifle"
+],
+[
+"ftt",
+"turret"
+]
+],
+"parent": "objects\\characters\\miranda\\lipsync\\lipsync",
+"sizes": {
+"modes_at": 1940550829,
+"wl_at": 1934068730,
+"wl_n": 16
+}
+},
+"objects\\characters\\monitor\\monitor": {
+"modes": {
+"any": {
+"any": {
+"any": [
+"idle"
+]
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1940091519,
+"wl_at": 1927966334,
+"wl_n": 1
+}
+},
+"objects\\characters\\sentinel_aggressor\\sentinel_aggressor": {
+"modes": {
+"patrol": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"combat": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"crouch": {
+"any": {
+"any": [
+"idle"
+]
+}
+},
+"any": {
+"any": {
+"any": []
+}
+}
+},
+"weapon_list": [
+[
+"any",
+"any"
+]
+],
+"parent": null,
+"sizes": {
+"modes_at": 1932323430,
+"wl_at": 1927966334,
+"wl_n": 1
+}
+},
+"__weap__": {
+"objects\\characters\\flood_ranged\\weapon\\flood_ranged_weapon": [
+"unarmed",
+"cb",
+0
+],
+"objects\\characters\\monitor\\weapons\\monitor_beam\\monitor_beam": [
+"0x0",
+"0x0",
+8388608
+],
+"objects\\equipment\\autoturret\\autoturret_beam": [
+"0x0",
+"0x0",
+0
+],
+"objects\\vehicles\\pelican\\pelican_rocket_pod\\weapon\\pelican_rocket_pod": [
+"fixed",
+"cg",
+0
+],
+"objects\\vehicles\\phantom\\plasma_turret\\weapons\\phantom_turret": [
+"fixed",
+"gt",
+0
+],
+"objects\\vehicles\\warthog\\turrets\\chaingun\\weapon\\chaingun_turret": [
+"fixed",
+"cg",
+0
+],
+"objects\\vehicles\\warthog\\turrets\\gauss\\weapon\\gauss_turret": [
+"fixed",
+"gr",
+33554432
+],
+"objects\\weapons\\melee\\energy_blade\\energy_blade": [
+"sword",
+"eb",
+5521472
+],
+"objects\\weapons\\melee\\gravity_hammer\\gravity_hammer": [
+"hammer",
+"gh",
+4472896
+],
+"objects\\weapons\\multiplayer\\ball\\primary_skull": [
+"0x429",
+"b",
+11
+],
+"objects\\weapons\\multiplayer\\ball\\secondary_skull": [
+"0x429",
+"b",
+11
+],
+"objects\\weapons\\pistol\\automag\\automag": [
+"pistol",
+"hp",
+0
+],
+"objects\\weapons\\pistol\\excavator\\excavator": [
+"pistol",
+"ex",
+2162688
+],
+"objects\\weapons\\pistol\\magnum\\magnum": [
+"pistol",
+"hp",
+2162688
+],
+"objects\\weapons\\pistol\\needler\\needler": [
+"pistol",
+"ne",
+0
+],
+"objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol": [
+"pistol",
+"pp",
+65600
+],
+"objects\\weapons\\rifle\\assault_rifle\\assault_rifle": [
+"rifle",
+"ar",
+0
+],
+"objects\\weapons\\rifle\\battle_rifle\\battle_rifle": [
+"rifle",
+"br",
+0
+],
+"objects\\weapons\\rifle\\beam_rifle\\beam_rifle": [
+"rifle",
+"csr",
+33554496
+],
+"objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine": [
+"rifle",
+"cb",
+0
+],
+"objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle": [
+"rifle",
+"pr",
+2164800
+],
+"objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red": [
+"rifle",
+"pr",
+2164800
+],
+"objects\\weapons\\rifle\\saw\\saw": [
+"rifle",
+"ar",
+0
+],
+"objects\\weapons\\rifle\\shotgun\\shotgun": [
+"rifle",
+"sg",
+0
+],
+"objects\\weapons\\rifle\\smg\\smg": [
+"rifle",
+"0x410",
+2164736
+],
+"objects\\weapons\\rifle\\smg_silenced\\smg_silenced": [
+"rifle",
+"0x410",
+2048
+],
+"objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle": [
+"rifle",
+"sr",
+33554432
+],
+"objects\\weapons\\rifle\\spike_rifle\\spike_rifle": [
+"pistol",
+"spr",
+2164736
+],
+"objects\\weapons\\support_high\\flak_cannon\\flak_cannon": [
+"missile",
+"fc",
+0
+],
+"objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher": [
+"missile",
+"rl",
+33554432
+],
+"objects\\weapons\\support_high\\spartan_laser\\spartan_laser": [
+"missile",
+"sl",
+33554496
+],
+"objects\\weapons\\support_low\\brute_shot\\brute_shot": [
+"support",
+"bs",
+0
+],
+"objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun": [
+"support",
+"sb",
+2112
+],
+"objects\\weapons\\turret\\flamethrower\\flamethrower": [
+"turret",
+"ftt",
+33591616
+],
+"objects\\weapons\\turret\\machinegun_turret\\machinegun_turret": [
+"turret",
+"mgt",
+37120
+],
+"objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated": [
+"turret",
+"mgt",
+0
+],
+"objects\\weapons\\turret\\missile_pod\\missile_pod": [
+"turret",
+"mp",
+37120
+],
+"objects\\weapons\\turret\\plasma_cannon\\plasma_cannon": [
+"turret",
+"pgt",
+37120
+],
+"objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated": [
+"turret",
+"pgt",
+0
+]
+}
+}

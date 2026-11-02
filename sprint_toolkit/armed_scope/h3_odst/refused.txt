@@ -1,0 +1,138 @@
+
+ 020_base.json
+  brute\brute                                          combat  refused  0/29  
+  brute\brute                                          patrol  refused 29/29 (most) 
+  bugger\bugger                                        combat  refused 12/29 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon plasma_cannon_ rocket_launche sentinel_gun spartan_laser 
+  bugger\bugger                                        patrol  refused 21/29 (most) 
+  bugger\bugger                                        crouch  refused 12/29 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon plasma_cannon_ rocket_launche sentinel_gun spartan_laser 
+  elite\elite                                          combat  refused  0/29  
+  elite\elite                                          patrol  refused  4/29 flamethrower gravity_hammer missile_pod plasma_cannon 
+  elite\elite                                          crouch  refused  3/29 flamethrower missile_pod plasma_cannon 
+  grunt\grunt                                          combat  refused  4/29 energy_blade flamethrower gravity_hammer missile_pod 
+  grunt\grunt                                          patrol  refused 17/29 (most) 
+  grunt\grunt                                          crouch  refused 17/29 (most) 
+  grunt\grunt                                          flee    refused  0/29  anyclass:21
+  hunter\hunter                                        patrol  refused  0/29  anyclass:29
+  hunter\hunter                                        crouch  refused  0/29  anyclass:29
+  jackal\jackal                                        combat  refused 12/29 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon plasma_cannon_ rocket_launche sentinel_gun spartan_laser 
+  jackal\jackal                                        patrol  refused 12/29 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon plasma_cannon_ rocket_launche sentinel_gun spartan_laser 
+  jackal\jackal                                        crouch  refused 12/29 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon plasma_cannon_ rocket_launche sentinel_gun spartan_laser 
+  jackal\jackal                                        flee    refused 12/29 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon plasma_cannon_ rocket_launche sentinel_gun spartan_laser 
+  marine\marine                                        combat  refused  6/29 brute_shot energy_blade gravity_hammer missile_pod plasma_cannon sentinel_gun 
+  marine\marine                                        patrol  refused 29/29 (most) 
+  marine\marine                                        crouch  refused  7/29 brute_shot energy_blade flamethrower gravity_hammer missile_pod plasma_cannon sentinel_gun 
+  marine\marine                                        flee    refused  0/29  anyclass:29
+  marine\marine_female\marine_female                   combat  refused  6/29 brute_shot energy_blade gravity_hammer missile_pod plasma_cannon sentinel_gun 
+  marine\marine_female\marine_female                   patrol  refused 29/29 (most) 
+  marine\marine_female\marine_female                   crouch  refused  7/29 brute_shot energy_blade flamethrower gravity_hammer missile_pod plasma_cannon sentinel_gun 
+  marine\marine_female\marine_female                   flee    refused  0/29  anyclass:29
+
+ 050_floodvoi.json
+  brute\brute                                          combat  refused  0/28  
+  brute\brute                                          patrol  refused 28/28 (most) 
+  elite\elite                                          combat  refused  0/28  
+  elite\elite                                          patrol  refused  5/28 flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon 
+  elite\elite                                          crouch  refused  4/28 flamethrower machinegun_tur missile_pod plasma_cannon 
+  floodcombat_brute\floodcombat_brute                  combat  refused  0/28  anyclass:28
+  floodcombat_elite\floodcombat_elite                  combat  refused  0/28  anyclass:28
+  floodcombat_human\floodcombat_human                  combat  refused  0/28  anyclass:21
+  marine\marine                                        combat  refused  7/28 brute_shot energy_blade gravity_hammer machinegun_tur missile_pod plasma_cannon sentinel_gun 
+  marine\marine                                        patrol  refused 28/28 (most) 
+  marine\marine                                        crouch  refused  8/28 brute_shot energy_blade flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon sentinel_gun 
+  marine\marine                                        flee    refused  0/28  anyclass:28
+  marine\marine_female\marine_female                   combat  refused  7/28 brute_shot energy_blade gravity_hammer machinegun_tur missile_pod plasma_cannon sentinel_gun 
+  marine\marine_female\marine_female                   patrol  refused 28/28 (most) 
+  marine\marine_female\marine_female                   crouch  refused  8/28 brute_shot energy_blade flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon sentinel_gun 
+  marine\marine_female\marine_female                   flee    refused  0/28  anyclass:28
+
+ 120_halo.json
+  elite\elite                                          combat  refused  0/29  
+  elite\elite                                          patrol  refused  5/29 flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon 
+  elite\elite                                          crouch  refused  4/29 flamethrower machinegun_tur missile_pod plasma_cannon 
+  floodcombat_brute\floodcombat_brute                  combat  refused  0/29  anyclass:29
+  floodcombat_elite\floodcombat_elite                  combat  refused  0/29  anyclass:29
+  floodcombat_human\floodcombat_human                  combat  refused  0/29  anyclass:22
+  grunt\grunt                                          combat  refused  4/29 energy_blade flamethrower gravity_hammer missile_pod 
+  grunt\grunt                                          patrol  refused 17/29 (most) 
+  grunt\grunt                                          crouch  refused 17/29 (most) 
+  grunt\grunt                                          flee    refused  0/29  anyclass:21
+  marine\marine                                        combat  refused  7/29 brute_shot energy_blade gravity_hammer machinegun_tur missile_pod plasma_cannon sentinel_gun 
+  marine\marine                                        patrol  refused 29/29 (most) 
+  marine\marine                                        crouch  refused  8/29 brute_shot energy_blade flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon sentinel_gun 
+  marine\marine                                        flee    refused  0/29  anyclass:29
+
+ l200.json
+  brute\brute                                          combat  refused  0/27  
+  brute\brute                                          patrol  refused 27/27 (most) 
+  bugger\bugger                                        combat  refused 11/27 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon rocket_launche sentinel_gun spartan_laser 
+  bugger\bugger                                        patrol  refused 19/27 (most) 
+  bugger\bugger                                        crouch  refused 11/27 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon rocket_launche sentinel_gun spartan_laser 
+  elite\elite                                          combat  refused  0/27  
+  elite\elite                                          patrol  refused  5/27 flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon 
+  elite\elite                                          crouch  refused  4/27 flamethrower machinegun_tur missile_pod plasma_cannon 
+  engineer\engineer                                    flee    refused  0/27  anyclass:27
+  floodcombat_brute\floodcombat_brute                  combat  refused  0/27  anyclass:23
+  floodcombat_elite\floodcombat_elite                  combat  refused  0/27  anyclass:23
+  floodcombat_human\floodcombat_human                  combat  refused  0/27  anyclass:17
+  grunt\grunt                                          combat  refused  4/27 energy_blade flamethrower gravity_hammer missile_pod 
+  grunt\grunt                                          patrol  refused 16/27 (most) 
+  grunt\grunt                                          crouch  refused 16/27 (most) 
+  grunt\grunt                                          flee    refused  0/27  anyclass:19
+  hunter\hunter                                        patrol  refused  0/27  anyclass:27
+  hunter\hunter                                        crouch  refused  0/27  anyclass:27
+  jackal\jackal                                        combat  refused 11/27 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon rocket_launche sentinel_gun spartan_laser 
+  jackal\jackal                                        patrol  refused 11/27 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon rocket_launche sentinel_gun spartan_laser 
+  jackal\jackal                                        crouch  refused 11/27 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon rocket_launche sentinel_gun spartan_laser 
+  jackal\jackal                                        flee    refused 11/27 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon rocket_launche sentinel_gun spartan_laser 
+  marine\marine                                        combat  refused  7/27 brute_shot energy_blade gravity_hammer machinegun_tur missile_pod plasma_cannon sentinel_gun 
+  marine\marine                                        patrol  refused 27/27 (most) 
+  marine\marine                                        crouch  refused  8/27 brute_shot energy_blade flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon sentinel_gun 
+  marine\marine                                        flee    refused  0/27  anyclass:27
+  marine\marine_female\marine_female                   combat  refused  7/27 brute_shot energy_blade gravity_hammer machinegun_tur missile_pod plasma_cannon sentinel_gun 
+  marine\marine_female\marine_female                   patrol  refused 27/27 (most) 
+  marine\marine_female\marine_female                   crouch  refused  8/27 brute_shot energy_blade flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon sentinel_gun 
+  marine\marine_female\marine_female                   flee    refused  0/27  anyclass:27
+  odst_oni_op\odst_oni_op                              combat  refused  7/27 brute_shot energy_blade gravity_hammer machinegun_tur missile_pod plasma_cannon sentinel_gun 
+  odst_oni_op\odst_oni_op                              patrol  refused 27/27 (most) 
+  odst_oni_op\odst_oni_op                              crouch  refused  8/27 brute_shot energy_blade flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon sentinel_gun 
+  odst_oni_op\odst_oni_op                              flee    refused  0/27  anyclass:27
+  odst_oni_op\odst_oni_op_player                       combat  refused  0/27  
+  odst_oni_op\odst_oni_op_player                       crouch  refused  0/27  anyclass:4
+  odst_recon\odst_recon                                combat  refused  0/27  
+  odst_recon\odst_recon                                crouch  refused  4/27 flamethrower machinegun_tur missile_pod plasma_cannon 
+
+ sc100.json
+  brute\brute                                          combat  refused  0/28  
+  brute\brute                                          patrol  refused 28/28 (most) 
+  bugger\bugger                                        combat  refused 12/28 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon plasma_cannon_ rocket_launche sentinel_gun spartan_laser 
+  bugger\bugger                                        patrol  refused 20/28 (most) 
+  bugger\bugger                                        crouch  refused 12/28 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon plasma_cannon_ rocket_launche sentinel_gun spartan_laser 
+  elite\elite                                          combat  refused  0/28  
+  elite\elite                                          patrol  refused  5/28 flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon 
+  elite\elite                                          crouch  refused  4/28 flamethrower machinegun_tur missile_pod plasma_cannon 
+  engineer\engineer                                    flee    refused  0/28  anyclass:28
+  floodcombat_brute\floodcombat_brute                  combat  refused  0/28  anyclass:24
+  floodcombat_elite\floodcombat_elite                  combat  refused  0/28  anyclass:24
+  floodcombat_human\floodcombat_human                  combat  refused  0/28  anyclass:18
+  grunt\grunt                                          combat  refused  4/28 energy_blade flamethrower gravity_hammer missile_pod 
+  grunt\grunt                                          patrol  refused 17/28 (most) 
+  grunt\grunt                                          crouch  refused 17/28 (most) 
+  grunt\grunt                                          flee    refused  0/28  anyclass:20
+  hunter\hunter                                        patrol  refused  0/28  anyclass:28
+  hunter\hunter                                        crouch  refused  0/28  anyclass:28
+  jackal\jackal                                        combat  refused 12/28 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon plasma_cannon_ rocket_launche sentinel_gun spartan_laser 
+  jackal\jackal                                        patrol  refused 12/28 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon plasma_cannon_ rocket_launche sentinel_gun spartan_laser 
+  jackal\jackal                                        crouch  refused 12/28 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon plasma_cannon_ rocket_launche sentinel_gun spartan_laser 
+  jackal\jackal                                        flee    refused 12/28 brute_shot energy_blade flak_cannon flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon plasma_cannon_ rocket_launche sentinel_gun spartan_laser 
+  marine\marine                                        combat  refused  7/28 brute_shot energy_blade gravity_hammer machinegun_tur missile_pod plasma_cannon sentinel_gun 
+  marine\marine                                        patrol  refused 28/28 (most) 
+  marine\marine                                        crouch  refused  8/28 brute_shot energy_blade flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon sentinel_gun 
+  marine\marine                                        flee    refused  0/28  anyclass:28
+  marine\marine_female\marine_female                   combat  refused  7/28 brute_shot energy_blade gravity_hammer machinegun_tur missile_pod plasma_cannon sentinel_gun 
+  marine\marine_female\marine_female                   patrol  refused 28/28 (most) 
+  marine\marine_female\marine_female                   crouch  refused  8/28 brute_shot energy_blade flamethrower gravity_hammer machinegun_tur missile_pod plasma_cannon sentinel_gun 
+  marine\marine_female\marine_female                   flee    refused  0/28  anyclass:28
+  odst_oni_op\odst_oni_op_player                       combat  refused  0/28  
+  odst_oni_op\odst_oni_op_player                       crouch  refused  0/28  anyclass:4
+  odst_recon\odst_recon                                combat  refused  0/28  
+  odst_recon\odst_recon                                crouch  refused  4/28 flamethrower machinegun_tur missile_pod plasma_cannon 
