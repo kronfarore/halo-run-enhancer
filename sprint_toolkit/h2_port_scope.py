@@ -18,7 +18,9 @@ The config's `scope` section:
                        'aspect' the screen's, 'ring_size' its px --, 'picture': (H2 widget, bitmap name) --
                        every other zoom widget as ONE centred picture, `per_widget` as in h1_h3_scope,
                        'picture_size' px at 'px_per_unit' a chud unit; 'glyphs', 'shaders': a sprite on
-                       its own widget in its own colour (the Needle Rifle)}
+                       its own widget in its own colour (the Needle Rifle); 'ring_quarter' (w, h): the
+                       ring at the picture's scale instead of stretched; 'rgb': the picture's and
+                       glyphs' flat colour (for widget_simple_flash shaders)}
 
     python h2_port_scope.py <key> [--write]
 """
@@ -134,15 +136,29 @@ def art_images():
     ring_w, ring_h2, ring_name = a['ring']
     pic_h2, pic_name = a['picture']
     names = [n for n, _w in h1_h3_scope.widgets(a['chud'])]
-    q = a['ring_size']
-    dark, used = h1_h3_scope.bake(a['chud'], q * 2, a['span'], a['aspect'],
-                                  {n: {'drop': True} for n in names if n != ring_w})
-    ring = dark[:q, :q]
+    only_ring = {n: {'drop': True} for n in names if n != ring_w}
+    if a.get('ring_quarter'):
+        # `ring_quarter` (w, h) px (the Needle Rifle, boot 1: the stretch flag left a 512 square at the
+        # picture's 1.117 screen px a bitmap px -- the ring tall and narrow): the quarter at the picture's
+        # scale, as big as the screen quarter
+        w, h = a['ring_quarter']
+        n = 2 * max(w, h)
+        dark, used = h1_h3_scope.bake(a['chud'], n, n / float(a['px_per_unit']), 1.0, only_ring)
+        ring = dark[n // 2 - h:n // 2, n // 2 - w:n // 2]
+    else:
+        q = a['ring_size']
+        dark, used = h1_h3_scope.bake(a['chud'], q * 2, a['span'], a['aspect'], only_ring)
+        ring = dark[:q, :q]
+    # `rgb` (the Needle Rifle): the picture's and the glyphs' flat colour -- a widget_simple_flash shader
+    # tints the shape in the alpha (Halo 2's reticle convention: flat blue); the ring stays black
+    rgb = a.get('rgb')
     per = dict(a.get('per_widget', {}), **{ring_w: {'drop': True}})
     s = a['picture_size']
     pic, used2 = h1_h3_scope.bake(a['chud'], s, s / float(a['px_per_unit']), 1.0, per)
     for name, img in ((ring_name, ring), (pic_name, pic)):
         px = np.zeros(img.shape + (4,), np.uint8)
+        if rgb and name == pic_name:
+            px[:, :, :3] = rgb
         px[:, :, 3] = np.clip(img * 255.0, 0, 255).astype(np.uint8)
         Image.fromarray(px, 'RGBA').save(os.path.join(data, name + '.tif'), compression=None)
         dest = os.path.join(TAGS, REL, name + '.bitmap')
@@ -158,6 +174,8 @@ def art_images():
         g = h3_hud_art.sprite(sheet, seq, native=True)[0].convert('RGBA').resize(size, Image.LANCZOS)
         v = np.asarray(g).astype(float)[:, :, 3] / 255.0
         px = np.zeros(v.shape + (4,), np.uint8)
+        if rgb:
+            px[:, :, :3] = rgb
         px[:, :, 3] = np.clip((v / max(v.max(), 1e-6)) ** gamma * alpha * 255.0, 0, 255).astype(np.uint8)
         Image.fromarray(px, 'RGBA').save(os.path.join(data, name + '.tif'), compression=None)
         dest = os.path.join(TAGS, REL, name + '.bitmap')

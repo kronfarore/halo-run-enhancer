@@ -21,8 +21,9 @@ H2EK = r'F:\SteamLibrary\steamapps\common\H2EK'
 NEW_HUD = r'ui\hud\bitmaps\new_hud'
 NR_JMS = H2EK + r'\data' + '\\' + NR + r'\render\needle_rifle.jms'   # the mesh the HUD art is drawn from
 NR_GLYPHS = R + r'ui\chud\bitmaps\scopes\nr_glyphs'
-# scope_masks' meter_empty_color (black, a constant): the colour of its black texels, BGRA bytes
-EMPTY = '012000%s0000000000000000804000000000803f0000803f'
+# widget_simple_flash_red's normal_color (the HUD blue: Chief 117, 186, 255 / Elite 237, 166, 255 by hud_elite),
+# BGR bytes each. Boot 1: scope_masks' meter_empty_color is NOT what its black texels draw (they stayed black)
+NORMAL = '00200000%s000000000000000000%s00'
 RS = r'data\sound\weapons'                           # source folders in MCC's haloreach sfx.fsb (.info)
 import os as _os
 HOLO = r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap'
@@ -163,15 +164,25 @@ PORT = {
                    (XP + r'\super_detonation.effect', FX + r'\super_detonation.effect'),
                    (MAT + r'\covenant_carbine.material_effects', FX + r'\needle_rifle.material_effects'),
                    (MAT + r'\needler.material_effects', FX + r'\needle_rifle_shard.material_effects'),
-                   (r'ui\hud\shaders\scope_masks.shader', r'ui\hud\needle_rifle_glyph_red.shader'),
-                   (r'ui\hud\shaders\scope_masks.shader', r'ui\hud\needle_rifle_glyph_teal.shader'),
-                   (r'ui\hud\shaders\scope_masks.shader', r'ui\hud\needle_rifle_scope_art.shader')],
+                   # boot 1: clones of the reticle's widget_simple_flash_red (colour from the shader, shape from the
+                   # alpha) -- the scope_masks clones drew black
+                   (r'ui\hud\shaders\widget_simple_flash_red.shader', r'ui\hud\needle_rifle_glyph_red.shader'),
+                   (r'ui\hud\shaders\widget_simple_flash_red.shader', r'ui\hud\needle_rifle_glyph_teal.shader'),
+                   (r'ui\hud\shaders\widget_simple_flash_red.shader', r'ui\hud\needle_rifle_scope_art.shader')],
+        # boot 1: 'a single press fires two needles' -- the Carbine's barrel flag `don't clear fire bit after
+        # recovering` (2048; Halo 2 sets it on its LATCH triggers) re-fires the spew trigger once after the recovery:
+        # 3584 -> 1536, barrel 0 found by its flags + 4/s (h2_port_numbers cannot write a CDATA-printed flags field)
+        'byte_edits': [(WP, '000e00000000804000008040', '000600000000804000008040', ('flags',)),
+                       # step 4b's melee pyramid 20 x 10 -> Reach's 15 x 15 deg (radians; h2_port_numbers cannot
+                       # write a `real euler angles 2d`: the numbers row printed FAILED until boot 1)
+                       (WP, 'c2b8b23ec2b8323e', '920a863e920a863e', ('damage pyramid angles',))],
         # the needler's smoke marker: Reach's rifle has none, its flash sits on primary_trigger
         'string_id_renames': [(FX + r'\needle_rifle_fire.effect', {'smoke': 'primary_trigger'})],
-        # the three colours (the `scope` section): red and teal Halo 1's, the art Reach's chud slate 76, 84, 102
-        'function_edits': [(r'ui\hud\needle_rifle_glyph_red.shader', EMPTY % '00000000ff', EMPTY % '002d2ddcff'),
-                           (r'ui\hud\needle_rifle_glyph_teal.shader', EMPTY % '00000000ff', EMPTY % '00c8c83cff'),
-                           (r'ui\hud\needle_rifle_scope_art.shader', EMPTY % '00000000ff', EMPTY % '0066544cff')],
+        # the three colours (the `scope` section), both species: red 220, 45, 45 and teal 60, 200, 200 Halo 1's, the
+        # art a light slate 170, 180, 195 (Reach's ticks read ~160 grey over its tinted lens)
+        'function_edits': [(r'ui\hud\needle_rifle_glyph_red.shader', NORMAL % ('ffba75', 'ffa6ed'), NORMAL % ('2d2ddc', '2d2ddc')),
+                           (r'ui\hud\needle_rifle_glyph_teal.shader', NORMAL % ('ffba75', 'ffa6ed'), NORMAL % ('c8c83c', 'c8c83c')),
+                           (r'ui\hud\needle_rifle_scope_art.shader', NORMAL % ('ffba75', 'ffa6ed'), NORMAL % ('c3b4aa', 'c3b4aa'))],
         'wiring': [
             (WP, 'hlmt', CC + r'\covenant_carbine', NR + r'\needle_rifle', 'world model'),
             (NR + r'\needle_rifle.model', 'mode', CC + r'\covenant_carbine', NR + r'\needle_rifle', 'the world render model', {'nth': 0}),
@@ -288,7 +299,7 @@ PORT = {
             (DM + r'\needle_rifle_shard_attached_super_detonation.damage_effect', 'AOE core radius', '', 0, 0, 0.3,
              {'anchor': ('damage lower bound', -4)}),
             # step 4b: list 2 by the Needler's ratio; the forward exponent's ratio degenerates (Halo 1's B2: Reach's 8)
-            (WP, 'damage pyramid angles', '', 0, 0, [15.0, 15.0]),
+            # (the melee pyramid 15 x 15: a `byte_edits` row in `weapon`)
             (PR, 'targeted leading fraction', '', 0, 0, 0.0),
             (DM + r'\needle_rifle_shard_impact.damage_effect', 'active camouflage damage', '', 0, 0, 0.165),
             (DM + r'\needle_rifle_shard_impact.damage_effect', 'forward exponent', '', 0, 0, 8.0),
@@ -305,9 +316,9 @@ PORT = {
             (TRAIL, 'width', 'point states', 1, 0, 0.01, {'anchor': ('color lower bound', -4)}),
             (TRAIL, 'color lower bound', 'point states', 1, 0, [0.0, 0.478, 0.169, 0.957]),
             (TRAIL, 'color upper bound', 'point states', 1, 0, [0.0, 0.478, 0.169, 0.957]),
-            # first-person placement: the DMR's rule on the Carbine's own 0.02 (Halo 1's 0.025 forward for
-            # Reach's arms), to check on boot 1
-            (WP, 'first person weapon offset', '', 0, 0, [-0.005, 0.0, -0.004]),
+            # first-person placement: the DMR's -0.005, 0, -0.004 to start; boot 1: 'the rifle needs to go much
+            # further down' (its scope sat ~500 px high at 1080p: ~0.035 wu at the scope's distance)
+            (WP, 'first person weapon offset', '', 0, 0, [-0.005, 0.0, -0.04]),
             # the scope's widgets (h2_port_scope `art`): the picture centred, a glyph's centre +-345 units (385 px)
             (r'ui\hud\needle_rifle.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 7, 0, [-512, -512]),
             (r'ui\hud\needle_rifle.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 4, 0, [-384, -27]),
@@ -372,14 +383,18 @@ PORT = {
         'name': 'needle_rifle_reticle',
         'hud': r'ui\hud\needle_rifle',
         'footprint': 1.0,
-        'h3_art': {'sheet': R + r'ui\chud\bitmaps\hud_reticles', 'sequence': 4, 'yardstick': 4, 'ring': 14, 'target_ink': 52},
+        # boot 1: 'missing the inner small circle' -- Reach's zoomed screenshot: an ~11 px ring inside the ~50 px
+        # one (radii 5 / 24), a rounded square: the arc at 0.45, 1.5 units out (offline radii 4-8 / 22-30)
+        'h3_art': {'sheet': R + r'ui\chud\bitmaps\hud_reticles', 'sequence': 4, 'yardstick': 4, 'ring': 14, 'target_ink': 52,
+                   'inner': (1.5, 0.45)},
         'preview': 'needle_rifle_reticle_preview.png',
     },
     # Reach's scope (carbine_scope ring at 1.4 x 1, needle_rifle_focus hatches, the two word strips): h2_port_scope
     # `art`, the DMR's shape with Halo 1's lens (a Reach screenshot: 865 x 590 px at 1080p, span 933.4; the DMR's
-    # 711 was 1.27x too big there). THE COLOURED GLYPHS (h1-coloured-scope-glyphs, an observation of Halo 1): a Halo
-    # 2 scope widget is a legacy meter whose black texels draw its meter_empty_color, so a clone of Bungie's
-    # scope_masks per colour (function_edits in `weapon`) tints it. Halo 1's approved colours, alpha 0.55, gamma 1.6,
+    # 711 was 1.27x too big there). THE COLOURED GLYPHS (h1-coloured-scope-glyphs, an observation of Halo 1): boot 1
+    # showed scope_masks clones with a new meter_empty_color still drawing black, so each colour is a clone of the
+    # reticle's widget_simple_flash_red, its normal_color edited (function_edits in `weapon`), on flat-blue art
+    # (`rgb`, the reticle's convention). Halo 1's approved colours, alpha 0.55, gamma 1.6,
     # 88 x 60 px at 1080p each, centres +-385 px (numbers: their offsets). Picture and glyphs centred by the offsets
     'scope': {
         'rel': NEW_HUD + r'\scope_masks',
@@ -391,6 +406,11 @@ PORT = {
         'art': {'chud': R + r'ui\chud\needle_rifle',
                 'ring': ('scope', 'scope_mask', 'needle_rifle_scope_mask'), 'ring_size': 512,
                 'span': 933.4, 'aspect': 16.0 / 9.0,
+                # boot 1: the 512 quarter showed unstretched (480 x 610 px, Reach's 865 x 590): baked at the
+                # picture's scale, the screen quarter's size (960 x 540 / 1.117); the lens is clear, Halo 2's
+                # scope_masks only darkens (the 'white' was the sky)
+                'ring_quarter': (860, 484),
+                'rgb': (0, 0, 199),
                 'picture': ('covenant_2xa', 'needle_rifle_scope_art'), 'picture_size': 1024,
                 'px_per_unit': 1080.0 / 933.4 / 1.117,
                 'per_widget': {'blip1': {'drop': True}, 'blip2': {'drop': True}},

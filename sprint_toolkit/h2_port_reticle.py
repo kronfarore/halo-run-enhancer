@@ -17,7 +17,8 @@ The config's `reticle` section:
                                  sprite x (donor ink / yardstick sprite ink) (h3_compose);
                                  'kind': 'h1' reads a HALO 1 sheet instead (HCEEK, h1_sprite: the
                                  Flamethrower, S1); 'ring': N composes one arc into four, N chud
-                                 units off the centre (Reach's Needle Rifle)
+                                 units off the centre (Reach's Needle Rifle); 'inner': (N, s) a
+                                 second ring of that arc at scale s, N units off (its centre circle)
 A Reach source: wave B's pilot adds its art reader. Every crosshair widget naming the port's
 bitmap gets its three sequence indices set to 0 (a one-image bitmap; the SAW's were already 0).
 
@@ -162,11 +163,19 @@ def h3_compose(donor):
         off = int(round(H3_ART['ring'] * h3_hud_art.density(H3_ART['sheet'])))
         art = Image.new('RGBA', (2 * (off + max(arc.size)),) * 2, (0, 0, 0, 0))
         c = art.width // 2
-        art.alpha_composite(arc, (c - off - arc.width, c - arc.height // 2))
-        art.alpha_composite(arc.transpose(Image.FLIP_LEFT_RIGHT), (c + off, c - arc.height // 2))
-        top = arc.transpose(Image.ROTATE_270)
-        art.alpha_composite(top, (c - top.width // 2, c - off - top.height))
-        art.alpha_composite(top.transpose(Image.FLIP_TOP_BOTTOM), (c - top.width // 2, c + off))
+        # `inner` (N, s) (the Needle Rifle, boot 1: 'missing the inner small circle' -- Reach's four
+        # corner widgets draw the same arc small): a second ring of the arc at scale s, N chud units out
+        rings = [(arc, off)]
+        if H3_ART.get('inner'):
+            n, s = H3_ART['inner']
+            small = arc.resize((max(1, int(round(arc.width * s))), max(1, int(round(arc.height * s)))), Image.LANCZOS)
+            rings.append((small, int(round(n * h3_hud_art.density(H3_ART['sheet'])))))
+        for a, o in rings:
+            art.alpha_composite(a, (c - o - a.width, c - a.height // 2))
+            art.alpha_composite(a.transpose(Image.FLIP_LEFT_RIGHT), (c + o, c - a.height // 2))
+            top = a.transpose(Image.ROTATE_270)
+            art.alpha_composite(top, (c - top.width // 2, c - o - top.height))
+            art.alpha_composite(top.transpose(Image.FLIP_TOP_BOTTOM), (c - top.width // 2, c + o))
         reg = (c, c)
     yard, _ = sprite(H3_ART['sheet'], H3_ART['yardstick'])
     k = _ink(donor) / float(_ink(yard))
