@@ -33,8 +33,11 @@ spawns without its arm shield: Actor Variant Name (+0x38, string id) = 'shieldle
 model's own variant; one handed a one-handed weapon gets the shield back (variant cleared). A
 fire-team has no variant field: its extras past the locations keep the shield (reported).
 
-NOT YET (first boot decides): teaching missing classes (Weapon List rows), Grunt half rate,
-firing data for weapons without an ai\generic entry (the SAW: reported, still handed out).
+FIRING DATA (user 2026-11-02): the ODST Magnum, the Silenced SMG and the Brute Plasma Rifle have
+no ai\generic rows; they borrow the Magnum's, the SMG's and the Plasma Rifle's (FIRING_DONORS,
+borrow_firing). The SAW is kept out (EXCLUDED) until Halo 3's weapon ports.
+
+NOT YET (first boot decides): teaching missing classes (Weapon List rows), Grunt half rate.
 """
 import hashlib
 import struct
@@ -69,6 +72,13 @@ DUAL_CLASS = 0x1F4                 # the 'dual' class id: the Weapon List never 
 PISTOL_NAMES = ('pistol',)
 # ai\generic: Weapons Properties / Firing Pattern Properties (ai_firing_profile SOURCES['Halo 3'])
 GEN_PROPS, GEN_FPP = 0x174, 0x180
+#: (block, element size, weapon datum offset) of a character's two firing blocks
+FIRING_BLOCKS = ((GEN_PROPS, 0xE0, 0x10), (GEN_FPP, 0x1C, 0xC))
+#: never handed out (tag basenames): the SAW has no ai\generic data and waits for Halo 3's
+#: weapon ports (user 2026-11-02)
+EXCLUDED = ('saw',)
+#: weapons without ai\generic rows borrow a donor's rows (user 2026-11-02), tag basenames
+FIRING_DONORS = {'automag': 'magnum', 'smg_silenced': 'smg', 'plasma_rifle_red': 'plasma_rifle'}
 
 
 def enemy_of(char_path):
@@ -222,6 +232,63 @@ def has_firing(m, hp, weapon):
     return any_entry(GEN_PROPS, 0xE0, 0x10) and any_entry(GEN_FPP, 0x1C, 0xC)
 
 
+def borrow_firing(m, hp, weapons):
+    """Give each of `weapons` (tag paths) without firing data its FIRING_DONORS donor's rows:
+    every character whose Weapons Properties / Firing Pattern Properties lists the donor and
+    not the weapon gets a copy of the donor's row naming the weapon (sub-blocks shared, the
+    block relocated into partition slack as hunter_drop grows blocks). Returns result rows."""
+    rows, want = [], {}
+    for w in weapons:
+        base = w.lower().rsplit(BS, 1)[-1]
+        donor = FIRING_DONORS.get(base)
+        if not donor or has_firing(m, hp, w) is not False:
+            continue
+        # the donor's own path: the weapon whose basename is the donor's, from the tag list
+        dtag = next((p for p, _b in m.find_tags('weap', '*') if p.lower().rsplit(BS, 1)[-1] == donor),
+                    None)
+        datum = hp._h3_tag_datum(m, 'weap', w)
+        if dtag is None or datum is None:
+            rows.append({'tag': 'char ai' + BS + 'generic', 'field': 'firing data: ' + base,
+                         'ok': False, 'reason': 'donor %s or the weapon not in this map' % donor})
+            continue
+        want[base] = (dtag.lower(), datum, donor)
+    if not want:
+        return rows
+    for p, b in m.find_tags('char', '*'):
+        for off, es, at in FIRING_BLOCKS:
+            elems = m.follow_all(b, [off], [es], 'all')
+            if not elems:
+                continue
+            names = [(hp._tag_name_by_id(m, m.u32(e + at)) or '').lower() for e in elems]
+            extra = bytearray()
+            added = []
+            for base, (dtag, datum, donor) in sorted(want.items()):
+                if dtag not in names or any(n.rsplit(BS, 1)[-1] == base for n in names):
+                    continue
+                e = elems[names.index(dtag)]
+                row = bytearray(m.data[e:e + es])
+                struct.pack_into('<I', row, at, datum)
+                extra += row
+                added.append('%s <- %s' % (base, donor))
+            if not extra:
+                continue
+            blk = b + off
+            n = max(0, m.i32(blk))
+            got = hp._h3_reserve(m, [n * es + len(extra)])
+            if not got:
+                rows.append({'tag': 'char ' + p, 'field': 'firing data', 'ok': False,
+                             'reason': 'no partition slack to grow the block'})
+                continue
+            dst, old = got[0], hp._block_base(m, blk)
+            m.data[dst:dst + n * es] = m.data[old:old + n * es]
+            m.data[dst + n * es:dst + n * es + len(extra)] = extra
+            struct.pack_into('<i', m.data, blk, n + len(extra) // es)
+            struct.pack_into('<I', m.data, blk + 4, m.off2data(dst))
+            rows.append({'tag': 'char ' + p, 'field': 'firing data (+0x%X)' % off, 'ok': True,
+                         'new': ', '.join(added)})
+    return rows
+
+
 def find_variant(m, hp, text):
     """The raw string id of `text` as used by a location's Actor Variant Name in THIS map (Halo 3
     string ids are read through resolve_stringid only), or None."""
@@ -253,7 +320,7 @@ def arm(m, hp, cards, salt=None):
     friends = set(friends)
     salt = salt or hp.level_salt(m)
     graphs = Graphs(m, hp)
-    rows, missing, refused, nofire = [], set(), {}, set()
+    rows, missing, refused, excluded = [], set(), {}, set()
     info = {}
     usable = {}                                  # enemy -> {weapon: share} it can hold
     for enemy, ws in (cards or {}).items():
@@ -261,6 +328,9 @@ def arm(m, hp, cards, salt=None):
         for w, s in ws.items():
             lw = (w or '').lower()
             if not lw or s <= 0:
+                continue
+            if lw.rsplit(BS, 1)[-1] in EXCLUDED:
+                excluded.add(w)
                 continue
             if lw not in widx:
                 missing.add(w)
@@ -271,11 +341,12 @@ def arm(m, hp, cards, salt=None):
             if wi is None or not graphs.allows(enemy, wi['class'], wi['name']):
                 refused.setdefault(enemy, set()).add(w)
                 continue
-            if has_firing(m, hp, wnames[widx[lw]]) is False:
-                nofire.add(w)
             ok[lw] = s
         if ok:
             usable[enemy] = ok
+    handed = sorted(set(wnames[widx[w]] for ok in usable.values() for w in ok))
+    rows += borrow_firing(m, hp, handed)
+    nofire = set(w for w in handed if has_firing(m, hp, w) is False)
     sid = find_variant(m, hp, 'shieldless')
     stats = {'shieldless': 0, 'reshielded': 0, 'no_variant': 0, 'kept_original': 0,
              'ft_jackals': 0}
@@ -367,6 +438,9 @@ def arm(m, hp, cards, salt=None):
         rows.append({'tag': tag.rstrip(BS), 'field': 'Armed: ' + w.split(BS)[-1], 'ok': True,
                      'reason': 'handed out, but ai\\generic has no firing data for it: the AI '
                      'may hold it without firing (first boot decides)'})
+    for w in sorted(excluded):
+        rows.append({'tag': tag.rstrip(BS), 'field': 'Armed: ' + w.split(BS)[-1], 'ok': True,
+                     'skip': True, 'reason': 'kept out of Halo 3 Armed cards until its weapon port'})
     for w in sorted(missing):
         rows.append({'tag': tag.rstrip(BS), 'field': 'Armed: ' + w.split(BS)[-1], 'ok': True,
                      'skip': True, 'reason': "not in this level's weapon palette"})

@@ -4482,10 +4482,19 @@ class ModifierDatabase:
         # is loaded)
         used = self.h1_used_weapons() if game == 'Halo 1' else \
             self.h2_armed_weapons() if game == 'Halo 2' else None
+        # ...except the weapons h3_enemy_weapons.EXCLUDED keeps out (the SAW, until Halo 3's
+        # weapon ports: user 2026-11-02)
+        if game == 'Halo 3':
+            import h3_enemy_weapons as _ew3
+            excluded = _ew3.EXCLUDED
+        else:
+            excluded = ()
         names = []
 
         def ok(w):
             path = self.armed_weapon_path(w, game) if w else None
+            if path and path.lower().rsplit('\\', 1)[-1] in excluded:
+                return False
             if w and self._is_port(w, game) and not (
                     CONFIG.get('weapon_ports_in_pools') and w in self.ports_on_level(mission_id)):
                 return False       # a port is only an Armed card while ports are offered here

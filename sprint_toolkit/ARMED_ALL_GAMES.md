@@ -47,6 +47,19 @@ Halo 3 map-patching box, `_h3_enemy_weapons_spec`, `apply_run(h3_enemy_weapons=)
 pass. Dry runs: 010 / 030 / 050 / 100 gate verdicts match the scoping; 010 at 100% puts every
 Grunt (BR), Jackal (AR, 97 locations shieldless) and Brute (shotgun) location on its card weapon.
 
+Firing data (user 2026-11-02): the ODST Magnum, Silenced SMG and Brute Plasma Rifle borrow the
+Magnum's, SMG's and Plasma Rifle's ai\generic rows (`FIRING_DONORS`, `borrow_firing`: the rows
+copied with the weapon renamed, the blocks relocated into partition slack). The SAW stays OUT
+of Halo 3 Armed cards (`EXCLUDED`, enhancer and pass) until Halo 3's weapon ports.
+
+First boot: `sprint_toolkit/h3_armed_test.py` builds `010_jungle_armed_test.map` from the
+baseline (`h3_armed_test.cmd deploy | restore`): the first hostile squads (sq_jw_u_cov_01,
+sq_jw_u_grunts_01, ~50-65 wu from the start) carry Grunt + BR / ODST Magnum / Rocket / Hammer
+(refused, forced), Jackal + AR (shieldless) / BR (shield kept) / Rocket (refused, forced),
+Brute + Brute Plasma Rifle / Silenced SMG; the start Marines (sq_training, sq_johnson_marines)
+Silenced SMG / Brute Shot (refused, forced); god shield, carbine x1000 as every profile's
+secondary, run x2.
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?
