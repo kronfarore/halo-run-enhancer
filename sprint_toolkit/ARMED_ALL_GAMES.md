@@ -32,13 +32,20 @@ two-handed weapons, which cells cannot carry.
 Notes: `armed_scope/h3_odst/NOTES_armed_h3_odst.txt`, `armed_scope/reach/NOTES.md`,
 `armed_scope/h4/H4_ARMED_SCOPING.md`.
 
-## Halo 3 route (in progress)
+## Halo 3 route (BUILT 2026-11-02, offline-verified, not booted)
 
 `h3_enemy_weapons.py` (tool root) on the shape of `h2_enemy_weapons.py`: deterministic per
 unit, every unit of a carded type (allied ones too), the Ally card = friendly Marines; only
 species x weapon pairs the animation gate allows; run in `apply_run` after the skulls. Enhancer
 wiring as for Halo 2 (`ARMED_ENEMIES`, `ARMED_OPTIONS`, spec builder). Teaching missing classes
 waits for the first boot.
+
+Built: `h3_enemy_weapons.py` (the gate replays sapien's `unit_can_use_weapon` on the map's own
+graphs, raw string ids; `shieldless` found by index when no location uses it), enhancer
+`H3_ARMED_ENEMIES` / options `h3_enemy_weapon_cards` (on) + `h3_armed_all_weapons` (off) in the
+Halo 3 map-patching box, `_h3_enemy_weapons_spec`, `apply_run(h3_enemy_weapons=)` after the Halo 2
+pass. Dry runs: 010 / 030 / 050 / 100 gate verdicts match the scoping; 010 at 100% puts every
+Grunt (BR), Jackal (AR, 97 locations shieldless) and Brute (shotgun) location on its card weapon.
 
 ## Open questions only the game answers (first boot per game)
 

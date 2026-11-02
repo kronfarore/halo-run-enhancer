@@ -425,6 +425,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h1_replace_first_weapons', 'h1_enemy_weapon_enabled',
                'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards', 'h1_armed_all_weapons',
                'h2_enemy_weapon_cards', 'h2_armed_all_weapons', 'h2_allies_any_weapon',
+               'h3_enemy_weapon_cards', 'h3_armed_all_weapons',
                'h2_arbiter_flashlight',
                'h1_overheat_unzoom', 'h1_overheat_no_rezoom', 'h1_covenant_avoid_ff',
                'hunter_drop',
@@ -1074,6 +1075,9 @@ CONFIG = {
     # every-weapon draw off, as Halo 1
     "h2_enemy_weapon_cards": True,
     "h2_armed_all_weapons": False,
+    # Halo 3's twins (h3_enemy_weapons.py, sprint_toolkit/ARMED_ALL_GAMES.md)
+    "h3_enemy_weapon_cards": True,
+    "h3_armed_all_weapons": False,
     # Allies (Marines, allied Grunts and Elites) can hold every weapon of the level, so the
     # players can trade any of them (user, 2026-10-25) -- a patch-time graph teach
     "h2_allies_any_weapon": True,
@@ -4136,10 +4140,15 @@ class ModifierDatabase:
     # Sentinel: the aggressor biped (user, 2026-10-21, as Halo 1); not the enforcer vehicle
     H2_ARMED_ENEMIES = ('Grunt', 'Jackal', 'Elite', 'Brute', 'Bugger', 'Flood Combat Form',
                         'Sentinel')
-    ARMED_ENEMIES = {'Halo 1': H1_ARMED_ENEMIES, 'Halo 2': H2_ARMED_ENEMIES}
+    # Halo 3 (h3_enemy_weapons.ENEMY_CHARS, 2026-11-02): who holds hand weapons there; the
+    # patch pass only hands a species weapons its animation graphs can hold
+    H3_ARMED_ENEMIES = ('Grunt', 'Jackal', 'Elite', 'Brute', 'Bugger', 'Flood Combat Form')
+    ARMED_ENEMIES = {'Halo 1': H1_ARMED_ENEMIES, 'Halo 2': H2_ARMED_ENEMIES,
+                     'Halo 3': H3_ARMED_ENEMIES}
     #: game -> (cards option, every-weapon option)
     ARMED_OPTIONS = {'Halo 1': ('h1_enemy_weapon_cards', 'h1_armed_all_weapons'),
-                     'Halo 2': ('h2_enemy_weapon_cards', 'h2_armed_all_weapons')}
+                     'Halo 2': ('h2_enemy_weapon_cards', 'h2_armed_all_weapons'),
+                     'Halo 3': ('h3_enemy_weapon_cards', 'h3_armed_all_weapons')}
     ARMED_STEP = '+0.1'
 
     def h1_level_maps(self):
@@ -4387,6 +4396,16 @@ class ModifierDatabase:
                 self._h1_used = False
         return self._h1_used or None
 
+    def armed_weapon_path(self, weapon_name, game):
+        """The weap tag path an Armed card hands out in `game` (Halo 1 / 2 / 3), or None."""
+        if game == 'Halo 1':
+            return self.h1_weapon_path(weapon_name)
+        if game == 'Halo 2':
+            return self.h2_weapon_path(weapon_name)
+        tag = self.weap_tag_for(weapon_name, game) if weapon_name else None
+        tag = tag.split(' & ')[0] if tag else None
+        return tag[5:] if tag and tag.startswith('weap ') else None
+
     def h2_weapon_path(self, weapon_name):
         """A weapon's Halo 2 weap tag path (a port: its port tag), or None."""
         tag = self.weap_tag_for(weapon_name, 'Halo 2') if weapon_name else None
@@ -4416,7 +4435,10 @@ class ModifierDatabase:
                'carries it)' % weapon_name) if game == 'Halo 1' else (
                'the %s: their squads\' units are handed it (every unit of the type, '
                'dropship and vehicle squads too), their animation graphs taught its class, '
-               'firing from ai\\generic' % weapon_name)
+               'firing from ai\\generic' % weapon_name) if game == 'Halo 2' else (
+               'the %s: their fire-teams and starting locations are handed it (every unit of '
+               'the type, dropship and vehicle squads too) -- only species whose animations '
+               'can hold it; firing from ai\\generic' % weapon_name)
         return {
             'name': 'Armed: %s' % weapon_name,
             'desc': '%s carry the %s more often.' % (who, weapon_name),
@@ -4455,12 +4477,15 @@ class ModifierDatabase:
         cards_key, all_key = self.ARMED_OPTIONS[game]
         if not CONFIG.get(cards_key, True):
             return []
-        used = self.h1_used_weapons() if game == 'Halo 1' else self.h2_armed_weapons()
+        # Halo 3: no file-side filter -- the patch pass checks each species' animation graphs
+        # and reports a weapon without AI firing data (user 2026-11-02: assume every weapon
+        # is loaded)
+        used = self.h1_used_weapons() if game == 'Halo 1' else \
+            self.h2_armed_weapons() if game == 'Halo 2' else None
         names = []
 
         def ok(w):
-            path = (self.h1_weapon_path(w) if game == 'Halo 1' else self.h2_weapon_path(w)) \
-                if w else None
+            path = self.armed_weapon_path(w, game) if w else None
             if w and self._is_port(w, game) and not (
                     CONFIG.get('weapon_ports_in_pools') and w in self.ports_on_level(mission_id)):
                 return False       # a port is only an Armed card while ports are offered here
@@ -6001,6 +6026,19 @@ class MagnitudeEditorDialog(QDialog):
         # Balanced ports: their ai\generic entry takes the profile's balanced rows
         return {'cards': cards, 'balanced': self._balanced_port_weapons() if cards else None,
                 'allies': allies}
+
+    def _h3_enemy_weapons_spec(self, armed_picks):
+        """Halo 3 only: this patch's Armed cards as h3_enemy_weapons.apply wants them, or None."""
+        if self.game != 'Halo 3' or not armed_picks:
+            return None
+        db = getattr(self.parent_gui, 'db', None)
+        if db is None:
+            return None
+        cards = {e: {db.armed_weapon_path(w, 'Halo 3'): sh for w, sh in ws.items()
+                     if db.armed_weapon_path(w, 'Halo 3')}
+                 for e, ws in armed_picks.items()}
+        cards = {e: ws for e, ws in cards.items() if ws}
+        return {'cards': cards} if cards else None
 
     def _balanced_port_weapons(self):
         """Weapon tag paths of this game's switched-on ports that play Balanced."""
@@ -9805,6 +9843,7 @@ class MagnitudeEditorDialog(QDialog):
                 h4_ability_visibility=CONFIG.get('h4_ability_visibility') or None,
                 h1_enemy_weapons=self._h1_enemy_weapons_spec(armed_picks),
                 h2_enemy_weapons=self._h2_enemy_weapons_spec(armed_picks),
+                h3_enemy_weapons=self._h3_enemy_weapons_spec(armed_picks),
                 h2_arbiter_flashlight=(bool(CONFIG.get('h2_arbiter_flashlight'))
                                        if self.game == 'Halo 2' else None),
                 h1_covenant_avoid_ff=bool(CONFIG.get('h1_covenant_avoid_ff')),
@@ -11958,6 +11997,26 @@ class OptionsDialog(QDialog):
         allform.setLabelAlignment(Qt.AlignRight)
         form = QFormLayout(patchg)
         form.setLabelAlignment(Qt.AlignRight)
+        self.h3_armed_cards_cb = QCheckBox("Offer 'Armed: <weapon>' enemy cards")
+        self.h3_armed_cards_cb.setChecked(bool(CONFIG.get('h3_enemy_weapon_cards', True)))
+        self.h3_armed_cards_cb.setToolTip(
+            "For every weapon the players hold, each armed enemy on the level (Grunts, "
+            "Jackals, Elites, Brutes, Drones, Flood combat forms) gets a card that hands "
+            "10% more of them that weapon per pick; Marines get the same cards through the "
+            "Ally slot. Only species whose animations can hold the weapon get it (Grunts "
+            "and Jackals never get a sword or hammer, Jackals no rockets). A Jackal with a "
+            "two-handed weapon loses its arm shield.\n\nApplied to the map when you patch; "
+            "nothing to rebuild.")
+        form.addRow("Enemy weapons:", self.h3_armed_cards_cb)
+        self.h3_armed_all_cb = QCheckBox("    ...for every weapon, not only the ones you hold")
+        self.h3_armed_all_cb.setChecked(bool(CONFIG.get('h3_armed_all_weapons')))
+        self.h3_armed_all_cb.setToolTip(
+            "On: Armed cards are also offered for every other Halo 3 weapon, as ordinary "
+            "cards; a weapon you or your partner HOLD always counts more, as in Halo 1 and 2."
+            "\nOff (default): only the weapons the players hold.")
+        self.h3_armed_cards_cb.toggled.connect(self.h3_armed_all_cb.setEnabled)
+        self.h3_armed_all_cb.setEnabled(self.h3_armed_cards_cb.isChecked())
+        form.addRow("", self.h3_armed_all_cb)
 
         self.cutscenes_cb = QCheckBox("Remove Cortana / Gravemind cutscenes (Halo 3)")
         self.cutscenes_cb.setChecked(bool(CONFIG.get('remove_h3_cutscenes', True)))
@@ -13823,6 +13882,8 @@ class OptionsDialog(QDialog):
             'h2_spawn_starting_weapons': self.h2_spawn_weapons_cb.isChecked(),
             'h2_spawn_all_weapons': self.h2_spawn_all_cb.isChecked(),
             'h2_enemy_weapon_cards': self.h2_armed_cards_cb.isChecked(),
+            'h3_enemy_weapon_cards': self.h3_armed_cards_cb.isChecked(),
+            'h3_armed_all_weapons': self.h3_armed_all_cb.isChecked(),
             'h2_armed_all_weapons': self.h2_armed_all_cb.isChecked(),
             'h2_allies_any_weapon': self.h2_allies_any_cb.isChecked(),
             'h2_arbiter_flashlight': self.h2_arbiter_flash_cb.isChecked(),
