@@ -60,6 +60,12 @@ Brute + Brute Plasma Rifle / Silenced SMG; the start Marines (sq_training, sq_jo
 Silenced SMG / Brute Shot (refused, forced); god shield, carbine x1000 as every profile's
 secondary, run x2.
 
+Boot 1 (2026-11-03): Grunts held + fired BR / ODST Magnum / Rocket; Brutes the Brute Plasma
+Rifle / Silenced SMG; Marines the Silenced SMG. REFUSED = UNARMED (the Hammer Grunt, the Brute
+Shot Marine): the gate's "never hand out a refused pair" is right. The first Jackals met had their
+vanilla weapons and shields (unclear which squad) -> v2 deals the three Jackal cases to EVERY
+Jackal in 010 (`all_jackals`). No Grunt / Jackal weapon drop seen yet.
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?

@@ -169,6 +169,42 @@ def layout(m, report):
         report.append('  NOTE: no shieldless variant id in this map -- Jackals keep the shield')
 
 
+def all_jackals(m, report):
+    """v2 (user's first boot 2026-11-03: the first Jackals met had their vanilla weapons and
+    shields): EVERY Jackal location / fire-team in the level is dealt the three Jackal cases
+    round robin, so whichever Jackal shows up first is a test case."""
+    base = hp._scnr_base(m)
+    wnames = [(hp._tag_name_by_id(m, m.u32(e + ew.WPAL_ID)) or '').lower()
+              for e in m.follow_all(base, [ew.WPAL], [ew.WPAL_ES], 'all')]
+    cnames = [(hp._tag_name_by_id(m, m.u32(e + ew.CPAL_ID)) or '').lower()
+              for e in m.follow_all(base, [ew.CPAL], [ew.CPAL_ES], 'all')]
+    sid = ew.find_variant(m, hp, 'shieldless')
+    cases = [(lb, wnames.index(wp.lower())) for lb, ch, wp, _f in ENEMY_CASES
+             if 'jackal' in ch and wp.lower() in wnames]
+    if not cases:
+        return
+    jack = [i for i, n in enumerate(cnames) if ew.enemy_of(n) == 'Jackal']
+    k, by = 0, {}
+    for sq in m.follow_all(base, [ew.SQUADS], [ew.SQ_ES], 'all'):
+        for ft in m.follow_all(sq, [ew.FT], [ew.FT_ES], 'all'):
+            fc = _i16(m, ft + ew.FT_CHAR)
+            if fc in jack:
+                struct.pack_into('<hh', m.data, ft + ew.FT_WEAP, cases[0][1], -1)
+            for l in m.follow_all(ft, [ew.LOCS], [ew.LOC_ES], 'all'):
+                lc = _i16(m, l + ew.LOC_CHAR)
+                if (lc if lc >= 0 else fc) not in jack:
+                    continue
+                label, wi = cases[k % len(cases)]
+                k += 1
+                struct.pack_into('<hh', m.data, l + ew.LOC_WEAP, wi, -1)
+                two = ew.two_handed(m, hp, ew.weapon_info(m, wnames[wi]))
+                struct.pack_into('<I', m.data, l + ew.LOC_VARIANT,
+                                 sid if sid is not None and two and label not in KEEP_SHIELD else 0)
+                by[label] = by.get(label, 0) + 1
+    report.append('every Jackal in the level: ' + ', '.join('%s x%d' % kv for kv in sorted(by.items()))
+                  + ' (Jackal fire-teams: %s, their extras keep the shield)' % cases[0][0])
+
+
 def god_and_cheat(m, report):
     for _n, t in m.find_tags('hlmt', C + 'masterchief' + BS + 'masterchief'):
         for e in m.follow_all(t, [HLMT_DAMAGE], [HLMT_DAMAGE_ES], 'all')[:1]:
@@ -210,6 +246,7 @@ def build(level='010_jungle'):
         m = hp.open_map(src, GAME)
     report = ['%s from %s' % (os.path.basename(out), src)]
     layout(m, report)
+    all_jackals(m, report)
     handed = sorted(set(wp for cases in (ENEMY_CASES, MARINE_CASES) for _l, _c2, wp, _f in cases))
     for r in ew.borrow_firing(m, hp, handed):
         report.append('firing data: %s %s %s' % (r['tag'], r['field'], r.get('new') or r.get('reason')))
