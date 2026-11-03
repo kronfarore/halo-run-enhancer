@@ -826,6 +826,169 @@ def save_settings():
         return False
 
 
+# ---- Import from an older install (StartDialog -> "Import from older version") ----
+# Each release is unpacked into a fresh folder, and settings.json / magnitude_presets.json
+# live beside the tool, so a new version starts with every setting at its default and no
+# remembered magnitudes. These pull them in from the old folder and apply them live.
+
+# Settings that name a folder on this machine. They are imported like everything else
+# (normally the same per machine); the confirmation lists any that do not exist here.
+SETTINGS_FOLDER_KEYS = ('mcc_root', 'baseline_root', 'assembly_plugins_dir',
+                        'shared_session_dir', 'vault_dir')
+
+
+def _read_json_object(path):
+    """(data, None) for a readable JSON object, (None, None) for a missing file, or
+    (None, reason) for an unreadable one. Never writes anything -- not even a
+    .unreadable copy, since `path` may be in another install's folder."""
+    if not os.path.isfile(path):
+        return None, None
+    try:
+        with open(path, encoding='utf-8') as f:
+            data = json.load(f)
+        if not isinstance(data, dict):
+            raise ValueError('the top level is a %s, not an object' % type(data).__name__)
+        return data, None
+    except Exception as e:
+        return None, '%s: %s' % (type(e).__name__, e)
+
+
+def inspect_old_install(folder):
+    """What an older install folder (or a settings.json / magnitude_presets.json picked
+    inside one) has to import. Reads only. Returns a dict:
+      folder, error (why nothing can be imported, or None),
+      settings_path, settings (raw dict or None), settings_error,
+      presets_path, presets (migrated dict or None), presets_error,
+      missing_folders [(key, path)] -- folder settings that do not exist on this machine,
+      presets_new / presets_changed -- keys the import adds / overwrites here.
+    """
+    import halo_patch          # imported lazily, as everywhere else in this module
+    folder = str(folder or '')
+    if os.path.isfile(folder):
+        folder = os.path.dirname(folder)
+    info = {'folder': folder, 'error': None,
+            'settings_path': os.path.join(folder, SETTINGS_FILE), 'settings': None,
+            'settings_error': None,
+            'presets_path': os.path.join(folder, 'magnitude_presets.json'), 'presets': None,
+            'presets_error': None, 'missing_folders': [], 'presets_new': 0,
+            'presets_changed': 0}
+    if not folder or not os.path.isdir(folder):
+        info['error'] = 'That folder does not exist.'
+        return info
+    try:
+        same = os.path.samefile(folder, str(app_data_dir()))
+    except OSError:
+        same = False
+    if same:
+        info['error'] = ("That is THIS version's own folder. Pick the folder of the older "
+                         "version (the one you unpacked before).")
+        return info
+    info['settings'], info['settings_error'] = _read_json_object(info['settings_path'])
+    raw, info['presets_error'] = _read_json_object(info['presets_path'])
+    if raw is not None:
+        # the same key migration load_presets runs on this machine's own file
+        info['presets'] = halo_patch._migrate_general_keys(raw)
+        local, _err = _read_json_object(str(presets_path()))
+        local = halo_patch._migrate_general_keys(local) if local else {}
+        info['presets_new'] = sum(1 for k in info['presets'] if k not in local)
+        info['presets_changed'] = sum(1 for k, v in info['presets'].items()
+                                      if k in local and local[k] != v)
+    s = info['settings']
+    if s is not None:
+        for k in SETTINGS_FOLDER_KEYS:
+            v = s.get(k)
+            if isinstance(v, str) and v.strip() and not os.path.isdir(v.strip()):
+                info['missing_folders'].append((k, v))
+    if s is None and info['presets'] is None and not (info['settings_error']
+                                                      or info['presets_error']):
+        info['error'] = ("Neither settings.json nor magnitude_presets.json is in that "
+                         "folder. Pick the folder the older version's halo_enhancer "
+                         "(.py or .exe) runs from.")
+    return info
+
+
+def _backup_before_import(path):
+    """Copy `path` to <path>.before_import (or a timestamped name if that exists, so a
+    second import never overwrites the first backup). Returns the backup path, None
+    when there was nothing to back up. Raises if the copy fails -- the caller must then
+    leave the file alone."""
+    path = str(path)
+    if not os.path.exists(path):
+        return None
+    dest = path + '.before_import'
+    if os.path.exists(dest):
+        dest = path + '.before_import_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    shutil.copy2(path, dest)
+    return dest
+
+
+def import_old_install(info, do_settings=True, do_presets=True):
+    """Copy what inspect_old_install found into this version and load it live.
+
+    Merge rule: an imported value wins; a setting the older file lacks (one this version
+    added) keeps its current value here, and keys the older file has that this version
+    no longer persists are dropped exactly as save_settings would. Magnitudes are merged
+    the same way: imported entries win, local entries the old file lacks are kept.
+    Each current file is backed up first (see _backup_before_import); if that fails the
+    file is not touched. Returns a report dict.
+    """
+    import halo_patch
+    rep = {'settings_imported': None, 'settings_kept': [], 'settings_ignored': [],
+           'settings_spawn_default': [],
+           'settings_backup': None, 'settings_error': None,
+           'presets_written': None, 'presets_backup': None, 'presets_error': None,
+           'presets_local_unreadable': None}
+    if do_settings and info.get('settings') is not None:
+        old = info['settings']
+        target = app_data_dir() / SETTINGS_FILE
+        try:
+            rep['settings_backup'] = _backup_before_import(target)
+        except Exception as e:
+            rep['settings_error'] = 'could not back up the current file (%s)' % e
+        if rep['settings_error'] is None:
+            merged = {k: CONFIG.get(k) for k in SETTINGS_KEYS}
+            imported = [k for k in SETTINGS_KEYS if k in old]
+            # Placing the starting weapons became the default in every game (2026-10-31);
+            # settings.json carries no version, so an 'off' from an older file is most
+            # likely the old default, not a choice -- the same rule RunState.from_dict
+            # applies to run files saved before spawn_options_v2. Kept at this version's.
+            rep['settings_spawn_default'] = [
+                k for k in imported
+                if k.endswith(('_spawn_starting_weapons', '_spawn_all_weapons')) and old[k] is False]
+            imported = [k for k in imported if k not in rep['settings_spawn_default']]
+            for k in imported:
+                merged[k] = copy.deepcopy(old[k])
+            try:
+                write_json_atomic(target, merged)
+            except Exception as e:
+                rep['settings_error'] = 'could not write settings.json (%s)' % e
+            else:
+                # live, the way load_settings applies the file at startup
+                for k in imported:
+                    CONFIG[k] = merged[k]
+                rep['settings_imported'] = imported
+                rep['settings_kept'] = [k for k in SETTINGS_KEYS if k not in old]
+                rep['settings_ignored'] = sorted(k for k in old if k not in SETTINGS_KEYS)
+    if do_presets and info.get('presets') is not None:
+        target = presets_path()
+        local, err = _read_json_object(str(target))
+        if err:
+            rep['presets_local_unreadable'] = err
+        try:
+            rep['presets_backup'] = _backup_before_import(target)
+        except Exception as e:
+            rep['presets_error'] = 'could not back up the current file (%s)' % e
+        if rep['presets_error'] is None:
+            merged = halo_patch._migrate_general_keys(local) if local else {}
+            merged.update(info['presets'])
+            try:
+                halo_patch.save_presets(target, merged)
+                rep['presets_written'] = len(info['presets'])
+            except Exception as e:
+                rep['presets_error'] = 'could not write magnitude_presets.json (%s)' % e
+    return rep
+
+
 # Configuration
 #: Options -> Run rules -> Difficulty baseline -> "Balanced": the dials that bring every
 #: game's LEGENDARY time-to-kill closest together (sprint_toolkit/ttk_calibrate.py,
@@ -5726,25 +5889,30 @@ class StartDialog(QDialog):
         load_btn.clicked.connect(self.load_saved_run)
         layout.addWidget(load_btn)
         # Co-op shortcut: grab whatever the other machine shared most recently.
-        if (CONFIG.get('shared_session_dir') or '').strip():
-            shared_btn = QPushButton("🤝 Load Latest Shared Session")
-            shared_btn.setToolTip("Open the newest run in the shared session folder, "
-                                  "magnitudes included.")
-            shared_btn.setStyleSheet("""
-                QPushButton {
-                    background-color: #2a4a5a;
-                    color: white;
-                    font-weight: bold;
-                    padding: 15px;
-                    border-radius: 5px;
-                    font-size: 14px;
-                }
-                QPushButton:hover {
-                    background-color: #3a6a7a;
-                }
-            """)
-            shared_btn.clicked.connect(self.load_latest_shared)
-            layout.addWidget(shared_btn)
+        self._layout = layout
+        self._shared_btn = None
+        self._add_shared_button()
+        # A release unpacked into a fresh folder starts from defaults: pull the older
+        # version's settings and magnitudes in, live.
+        self.import_btn = QPushButton("📥 Import settings from an older version…")
+        self.import_btn.setToolTip(
+            "Each release is unpacked into a new folder, so it starts with default "
+            "settings and no remembered magnitudes. Pick the OLDER version's folder to "
+            "copy its settings.json and magnitude_presets.json in (the current files are "
+            "backed up first) and load them right away -- no restart.")
+        self.import_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #3a3a2a;
+                color: white;
+                padding: 10px;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #5a5a3a;
+            }
+        """)
+        self.import_btn.clicked.connect(self.import_older_version)
+        layout.addWidget(self.import_btn)
         cancel_btn = QPushButton("Cancel")
         cancel_btn.clicked.connect(self.reject)
         cancel_btn.setStyleSheet("""
@@ -5759,7 +5927,155 @@ class StartDialog(QDialog):
             }
         """)
         layout.addWidget(cancel_btn)
-    
+
+    def _add_shared_button(self):
+        """The 'Load Latest Shared Session' button, when a shared folder is set and the
+        button is not there yet. Placed right after Load Saved Run (index 5: title,
+        subtitle, spacing, New Run, Load Saved Run) -- also after an import set the
+        folder, without reopening this menu."""
+        if self._shared_btn is not None or not (CONFIG.get('shared_session_dir') or '').strip():
+            return
+        shared_btn = QPushButton("🤝 Load Latest Shared Session")
+        shared_btn.setToolTip("Open the newest run in the shared session folder, "
+                              "magnitudes included.")
+        shared_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #2a4a5a;
+                color: white;
+                font-weight: bold;
+                padding: 15px;
+                border-radius: 5px;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background-color: #3a6a7a;
+            }
+        """)
+        shared_btn.clicked.connect(self.load_latest_shared)
+        self._layout.insertWidget(min(5, self._layout.count()), shared_btn)
+        self._shared_btn = shared_btn
+
+    def import_older_version(self):
+        """Pick an older install's folder, show what it holds, back up this version's
+        files, copy them in and apply them live (import_old_install). No restart."""
+        start = str(app_data_dir().parent)
+        folder = QFileDialog.getExistingDirectory(
+            self, "Folder of the OLDER version (where its settings.json is)", start)
+        if not folder:
+            return
+        info = inspect_old_install(folder)
+        if info['error']:
+            QMessageBox.warning(self, "Nothing to import", "%s\n\n%s" % (folder, info['error']))
+            return
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle("Import from an older version")
+        dlg.setMinimumWidth(560)
+        v = QVBoxLayout(dlg)
+        head = QLabel("Copy from:\n%s\n\ninto this version (%s, %s)." % (
+            info['folder'], VERSION, app_data_dir()))
+        head.setWordWrap(True)
+        v.addWidget(head)
+
+        s_cb = QCheckBox()
+        s = info['settings']
+        if s is not None:
+            n = sum(1 for k in SETTINGS_KEYS if k in s)
+            s_cb.setText("settings.json — %d setting(s); any setting this version added "
+                         "keeps its current value" % n)
+            s_cb.setChecked(True)
+        else:
+            s_cb.setText("settings.json — " + (
+                "could not be read (%s), not imported" % info['settings_error']
+                if info['settings_error'] else "not in that folder"))
+            s_cb.setEnabled(False)
+        v.addWidget(s_cb)
+
+        p_cb = QCheckBox()
+        if info['presets'] is not None:
+            p_cb.setText("magnitude_presets.json — %d magnitude(s): %d new here, %d "
+                         "replacing a different value here; the rest of yours are kept"
+                         % (len(info['presets']), info['presets_new'],
+                            info['presets_changed']))
+            p_cb.setChecked(True)
+        else:
+            p_cb.setText("magnitude_presets.json — " + (
+                "could not be read (%s), not imported" % info['presets_error']
+                if info['presets_error'] else "not in that folder"))
+            p_cb.setEnabled(False)
+        v.addWidget(p_cb)
+
+        notes = ["Your current files are backed up first as settings.json.before_import "
+                 "and magnitude_presets.json.before_import."]
+        if info['missing_folders']:
+            notes.append("These folder settings point to folders that do not exist on "
+                         "this machine (imported anyway; fix them in Options):\n"
+                         + "\n".join("   • %s: %s" % kv for kv in info['missing_folders']))
+        note = QLabel("\n\n".join(notes))
+        note.setWordWrap(True)
+        note.setStyleSheet("color: #d0b060;" if info['missing_folders'] else "color: #aaa;")
+        v.addWidget(note)
+        bb = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        bb.button(QDialogButtonBox.Ok).setText("Import and load")
+        bb.accepted.connect(dlg.accept)
+        bb.rejected.connect(dlg.reject)
+        v.addWidget(bb)
+        if dlg.exec() != QDialog.Accepted:
+            return
+        do_s = s_cb.isEnabled() and s_cb.isChecked()
+        do_p = p_cb.isEnabled() and p_cb.isChecked()
+        if not (do_s or do_p):
+            return
+
+        old_root = (CONFIG.get('baseline_root') or '').strip()
+        rep = import_old_install(info, do_settings=do_s, do_presets=do_p)
+        lines = []
+        if do_s:
+            if rep['settings_error']:
+                lines.append("settings.json NOT imported: %s. Nothing was changed."
+                             % rep['settings_error'])
+            else:
+                lines.append("settings.json: %d setting(s) imported and loaded."
+                             % len(rep['settings_imported']))
+                if rep['settings_kept']:
+                    lines.append("   %d setting(s) the older file did not have keep this "
+                                 "version's value." % len(rep['settings_kept']))
+                if rep.get('settings_spawn_default'):
+                    lines.append("   Starting-weapon placement was off in the older file (the old "
+                                 "default); it stays on here. Switch it off in Options if you "
+                                 "want it off.")
+                if rep['settings_ignored']:
+                    lines.append("   Not used by this version, dropped: "
+                                 + ", ".join(rep['settings_ignored']))
+                if rep['settings_backup']:
+                    lines.append("   Previous file: " + rep['settings_backup'])
+                parent = self.parent()
+                if parent is not None and hasattr(parent, '_after_settings_import'):
+                    parent._after_settings_import()
+                self._add_shared_button()
+                new_root = (CONFIG.get('baseline_root') or '').strip()
+                problem = baseline_root_problem(new_root) if new_root != old_root else None
+                if problem:
+                    lines.append("\nBaselines folder %s %s" % (new_root, problem))
+        if do_p:
+            if rep['presets_error']:
+                lines.append("magnitude_presets.json NOT imported: %s. Nothing was "
+                             "changed." % rep['presets_error'])
+            else:
+                lines.append("magnitude_presets.json: %d magnitude(s) imported; the patcher "
+                             "uses them the next time it opens." % rep['presets_written'])
+                if rep['presets_local_unreadable']:
+                    lines.append("   This version's own file could not be read (%s); it "
+                                 "is kept in the backup." % rep['presets_local_unreadable'])
+                if rep['presets_backup']:
+                    lines.append("   Previous file: " + rep['presets_backup'])
+        if info['missing_folders'] and do_s and not rep['settings_error']:
+            lines.append("\nStill pointing to folders that do not exist here:\n"
+                         + "\n".join("   • %s: %s" % kv for kv in info['missing_folders']))
+        failed = (do_s and rep['settings_error']) or (do_p and rep['presets_error'])
+        (QMessageBox.warning if failed else QMessageBox.information)(
+            self, "Import from an older version", "\n".join(lines))
+
     def accept_choice(self, choice):
         self.choice = choice
         self.accept()
@@ -17468,6 +17784,31 @@ class HaloGUI(QMainWindow):
             elif getattr(self, '_last_display', None) and self.pair_cards:
                 self.display_pairs(*self._last_display)
             self.update_status("Options updated.")
+
+    def _after_settings_import(self):
+        """Settings were imported from an older version (StartDialog) and are already in
+        CONFIG: refresh what on_options refreshes after an accept, so they take effect
+        without a restart. Each step is guarded -- at startup no run screen exists yet."""
+        self.run_state.options = {k: CONFIG.get(k) for k in OPTION_KEYS}
+        for step in (self.db.forget_port_levels, self._ensure_port_levels):
+            try:
+                step()
+            except Exception as e:
+                print('!! after settings import: %s' % e)
+        if hasattr(self, 'add_mod_btn'):
+            self.add_mod_btn.setVisible(bool(CONFIG.get('debug_mode')))
+        try:
+            if hasattr(self, 'mission_combo'):
+                self._fill_mission_combo(self.game_combo.currentData(),
+                                         select_mid=self.run_state.mission_id)
+                self.mission_combo.update()
+            if getattr(self, '_last_weapon_display', None) and self.pair_cards:
+                self.display_weapon_selection(*self._last_weapon_display)
+            elif getattr(self, '_last_display', None) and self.pair_cards:
+                self.display_pairs(*self._last_display)
+        except Exception as e:
+            print('!! after settings import: %s' % e)
+        self.update_status("Settings imported from an older version.")
 
     def _run_bundle(self):
         """A run file that is SELF-CONTAINED: the draft plus the magnitudes typed for
