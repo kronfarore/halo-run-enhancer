@@ -405,6 +405,46 @@ def stack_op(text, count, vanilla=None, from_zero=None, steps=None):
     return hm.normalize_op_text(text)            # set: the same however often
 
 
+ZOOM_STAGE_FIELDS = ('Magnification Range', 'Magnification Range Max')
+
+
+def zoom_stage_op(field, count, levels, step_text='', first_stage=None):
+    """The op a Zoom card's magnification row applies for `count` picks (user, 2026-11-03).
+
+    A weapon zooms through up to two stages: `Magnification Range` is the first,
+    `Magnification Range Max` the second. The card first BUILDS the missing stages, then
+    grows both:
+      * no zoom (levels 0): pick 1 gives one stage at 2x, pick 2 a second at 4x;
+      * one stage (levels 1): pick 1 adds the second at twice the first, and the first
+        stays as it is;
+      * two stages: nothing to build.
+    Every pick past the building ones multiplies BOTH stages by the step (*1.5 in
+    halo.json), stacked linearly like every card: two extra picks are x2.
+    `first_stage` is the vanilla first-stage value, needed to place the second stage of a
+    one-stage weapon; without it the second stage is set from its own value (on a
+    one-stage weapon the two are equal). Returns the op text ('' for no edit), or None
+    when this rule does not apply (not a magnification row, levels unknown).
+    """
+    if field not in ZOOM_STAGE_FIELDS or levels is None:
+        return None
+    n = max(1, int(count or 1))
+    lv = max(0, int(round(float(levels))))
+    build = 2 if lv == 0 else (1 if lv == 1 else 0)
+    extra = max(0, n - build)
+    parsed = hm.parse_operator(step_text) if step_text else None
+    grow = parsed[1] if parsed and parsed[0] == 'mul' else 1.5
+    m = max(0.0, 1.0 + (grow - 1.0) * extra)
+    second = field == 'Magnification Range Max'
+    if lv == 0:
+        base = 4.0 if (second and n >= 2) else 2.0
+        return '=' + _fmt_num(base * m)
+    if lv == 1 and second:
+        if first_stage is not None:
+            return '=' + _fmt_num(2.0 * float(first_stage) * m)
+        return '*' + _fmt_num(2.0 * m)
+    return '' if extra == 0 else '*' + _fmt_num(m)
+
+
 def invert_step(text):
     """The same per-pick step pointed the OTHER way (user, 2026-10-01), mirrored the
     way stack_op stacks: *1.1 <-> *0.9, *0.5 <-> *1.5, +n <-> -n. A set (=n) has no

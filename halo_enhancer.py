@@ -6587,6 +6587,18 @@ class MagnitudeEditorDialog(QDialog):
         norm = lambda x: halo_map.normalize_op_text(str(x))
         return norm(txt) == norm(scaled_step(str(step)))
 
+    def _zoom_stage_op(self, eff, t, txt, n, levels):
+        """A Zoom card's magnification row (halo_patch.zoom_stage_op): build the missing
+        stages, then grow both. None when the row is not one, or its levels are unread."""
+        if t.get('zero_field') != 'Magnification Levels' or levels is None:
+            return None
+        first = None
+        if t.get('field') == 'Magnification Range Max' and int(round(float(levels))) == 1:
+            first = self._vanilla_num(target_tag(eff, t), 'Magnification Range', t.get('block'),
+                                      t.get('nth', 0) or 0)
+        return self._hp.zoom_stage_op(t.get('field'), n, levels, txt or t.get('step') or '',
+                                      first)
+
     def _stacked_op(self, eff, t, txt):
         """The op this row applies for the card's pick count (halo_patch.stack_op).
         The zoom ladder needs the field's vanilla value, read only when it has one."""
@@ -6619,6 +6631,10 @@ class MagnitudeEditorDialog(QDialog):
             return ''
         inverted = self._step_inverted(eff) != (n < 0)
         n = abs(n)
+        if not inverted:
+            zop = self._zoom_stage_op(eff, t, txt, n, vanilla)
+            if zop is not None:
+                return zop
         if inverted:
             # A card's own `inverse_steps` ladder wins while the row shows its default
             # (Magazine: *0.75, *0.5, *0.25, then *0.1 at cap); otherwise the step is
@@ -10495,6 +10511,10 @@ class MagnitudeEditorDialog(QDialog):
                     by_step = bool(rows_le) and row_value(rows_le[0]).strip() == LADDER_BY_STEP
                     if by_step and self._ladder_level(eff, t)[1]:
                         continue
+                    ok = False
+                    break
+                if t.get('zero_field') == 'Magnification Levels' and not self._step_inverted(eff):
+                    # a Zoom stage grows by every pick once both stages exist: never saturated
                     ok = False
                     break
                 n = max(1, int(eff.get('count') or 1))
