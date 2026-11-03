@@ -70,7 +70,7 @@ PORT = {
         'data_dir': DMR,
         'world': 'dmr', 'fp': 'fp_dmr',
         'materials': {'dmr_metal': 'dmr_metal', 'dmr_metal_shiny': 'dmr_shiny', 'dmr_composite': 'dmr_composite',
-                      'dmr_rubber': 'dmr_rubber', 'dmr_lens': 'dmr_lens', 'dmr_lens_glass': 'dmr_lens',
+                      'dmr_rubber': 'dmr_rubber', 'dmr_lens': 'dmr_lens', 'dmr_lens_glass': 'dmr_glass',
                       'unsc_decals_fp': 'dmr_decals', 'ones_dmr': 'dmr_ones=?', 'tens_dmr': 'dmr_tens=?'},
         'world_permutation': 'base', 'world_region': 'gun',          # the BR .model's variants
         'node_names': {'b_gun': 'frame gun', 'b_magazine': 'frame magazine', 'b_safety': 'frame safety',
@@ -80,6 +80,9 @@ PORT = {
         'muzzle_drop': 0.0,
         'ground_point': {'rot': (0.7071068883, -1.8e-09, -7.42e-08, -0.7071067095)},   # the SMG's (the AR's)
         'render': ['dmr', r'dmr\fp_dmr'],
+        # boot 1 ('the glass on the scope is missing, the display looks wrong'): tool's render weld (1/512 of the
+        # model) dropped 16,286 -> 5,717 triangles; h2_tool_fineweld keeps 16,290. The glass its own material
+        'fine_weld': True,
     },
 
     # step 2 -- kind 'h3' with `reach:` bitmaps (h3_hud_art.decode reads them): 1024 dxt5 + dxn -> 512
@@ -115,6 +118,11 @@ PORT = {
             ('dmr_lens', BR + r'\shaders\battle_rifle_lens',
              {BR + r'\bitmaps\battle_rifle': DMR + r'\bitmaps\dmr',
               BR + r'\bitmaps\battle_rifle_bump': DMR + r'\bitmaps\dmr_bump'}),
+            # Reach's dmr_lens_glass (env glass over grey 50%, green-tinted in game) = the BR's opaque lens look
+            # (scope cubemap, green / blue tints) on a flat grey: the glass UVs point nowhere on the DMR diffuse
+            ('dmr_glass', BR + r'\shaders\battle_rifle_lens',
+             {BR + r'\bitmaps\battle_rifle': r'shaders\default_bitmaps\bitmaps\gray_50_percent',
+              BR + r'\bitmaps\battle_rifle_bump': r'shaders\default_bitmaps\bitmaps\default_vector'}),
             ('dmr_decals', RL + r'\shaders\rocket_launcher_decal',
              {RL + r'\bitmaps\rocket_launcher_decal': DMR + r'\bitmaps\dmr_decals'}),
             ('dmr_tens', BR + r'\shaders\tens', {}),
@@ -206,7 +214,9 @@ PORT = {
             (DMR + r'\damage_effects\dmr_bullet.damage_effect', 'active camouflage damage', '', 0, 0, 0.225),
             # first-person placement: the BR's 0.02 minus Halo 1's 0.025 forward for Reach's arms (a Halo 1
             # observation, to check on boot 1)
-            (DMR + r'\dmr.weapon', 'first person weapon offset', '', 0, 0, [-0.005, 0.0, -0.004]),
+            # boot 1 ('start by going down', the user's Reach screenshot beside ours): the counter 235 px too high
+            # and 20 px left at 1080p; at its depth (0.12 wu, f ~1500 px) = 0.019 down, 0.002 right
+            (DMR + r'\dmr.weapon', 'first person weapon offset', '', 0, 0, [-0.005, -0.002, -0.023]),
             # the scope picture (h2_port_scope `art`) centred on the crosshair: its registration
             # point stays the widget's 0, 0 (a zero field), so the offset is half the 1024 picture
             (r'ui\hud\dmr.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 9, 0, [-512, -512]),
@@ -264,7 +274,10 @@ PORT = {
         'name': 'dmr_reticle',
         'hud': r'ui\hud\dmr',
         'footprint': 1.0,
-        'h3_art': {'sheet': R + r'ui\chud\bitmaps\hud_reticles', 'sequence': 14, 'yardstick': 14, 'target_ink': 40},
+        # boot 1: 'missing the inner smaller section' -- Reach's error_reticule_small (#36, chud scale 1.0)
+        # inside the circle (#14 at 0.9): a layer at 1 / 0.9
+        'h3_art': {'sheet': R + r'ui\chud\bitmaps\hud_reticles', 'sequence': 14, 'yardstick': 14, 'target_ink': 40,
+                   'layers': [((R + r'ui\chud\bitmaps\hud_reticles', 36), 1.0 / 0.9)]},
         'preview': 'dmr_reticle_preview.png',
     },
     # Reach's scope: h2_port_scope `art`. The ring on `scope_mask` (Reach's own quarter ring, mirrored
@@ -281,9 +294,13 @@ PORT = {
         'size': (8, 8),
         'art': {'chud': R + r'ui\chud\dmr',
                 'ring': ('scope', 'scope_mask', 'dmr_scope_mask'), 'ring_size': 512,
-                'span': 640.0 / 0.9, 'aspect': 16.0 / 9.0,
+                # boot 1: an oval (~440 x 800 px; the stretched 512 quarter, the Needle Rifle's finding) and
+                # the gauges ~1.2x Reach's -> `ring_quarter` + the span from the user's Reach screenshot: lens
+                # opening 595 x 573 px at 1080p = the ring's 489 chud units at 1.19 px a unit -> span 900
+                'span': 900.0, 'aspect': 16.0 / 9.0,
+                'ring_quarter': (860, 484),
                 'picture': ('distance_meter', 'dmr_scope_art'), 'picture_size': 1024,
-                'px_per_unit': 1080.0 / (640.0 / 0.9) / 1.117,
+                'px_per_unit': 1080.0 / 900.0 / 1.117,
                 'per_widget': {'scope_distance_meter': {'scale': (1.0, 1.0)},
                                'distance_slider': {'origin': (0.0, 0.0), 'offset': (141.0, -186.0)}}},
     },
@@ -294,7 +311,8 @@ PORT = {
         'model_3p': DMR_JMS,
         'tif': 'dmr_h2_glyph.tif',
         'colour': (255, 255, 255),
-        'style': {'line': (255, 255, 255), 'body': (153, 153, 153)},
+        # boot 1: 'lines within the texture' -- Reach's dense mesh creased into specks: pieces under 14 px dropped
+        'style': {'line': (255, 255, 255), 'body': (153, 153, 153), 'min_line': 14},
     },
     'messages': {
         'donor_prefix': 'br', 'donor_icon': '&battle_rifle',

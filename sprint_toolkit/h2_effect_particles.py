@@ -161,6 +161,10 @@ def main():
                         show('SOURCE %s' % src, 'HCEEK', f.firing_effect.filepath, a.all)
         elif src in KITS and stag:
             for fx in weapon_effects(KITS[src], stag):
+                if KITS[src] == 'HREK':
+                    # Reach's export names a tag by its BASENAME (the DMR's 'firing'): the nearest one
+                    import reach_tags
+                    fx = reach_tags.find_tag(fx, 'effect', stag) or fx
                 show('SOURCE %s' % src, KITS[src], fx + '.effect', a.all)
         else:
             print('(no source effect: source %r, source_tag %r)' % (src, stag))

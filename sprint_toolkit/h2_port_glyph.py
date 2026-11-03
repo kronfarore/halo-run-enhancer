@@ -150,6 +150,31 @@ def feature_lines(V, idx, W, H, ss=4, crease=35.0, margin=0):
     return edge.reshape(H, ss, W, ss).any(axis=(1, 3))
 
 
+def _drop_specks(mask, n):
+    """`mask` without its 8-connected pieces of fewer than `n` pixels."""
+    H, W = mask.shape
+    seen = np.zeros_like(mask)
+    out = mask.copy()
+    for y0, x0 in zip(*np.nonzero(mask)):
+        if seen[y0, x0]:
+            continue
+        piece, todo = [], [(y0, x0)]
+        seen[y0, x0] = True
+        while todo:
+            y, x = todo.pop()
+            piece.append((y, x))
+            for dy in (-1, 0, 1):
+                for dx in (-1, 0, 1):
+                    yy, xx = y + dy, x + dx
+                    if 0 <= yy < H and 0 <= xx < W and mask[yy, xx] and not seen[yy, xx]:
+                        seen[yy, xx] = True
+                        todo.append((yy, xx))
+        if len(piece) < n:
+            for y, x in piece:
+                out[y, x] = False
+    return out
+
+
 def h2_style(V, idx, cov, box):
     """STYLE 'h2' (the AR, boot 2, user: 'it's missing the fine lines every vanilla weapon has',
     Bungie's BR icon beside it): Halo 2's look -- a TRANSLUCENT body, a bright 1 px outline and
@@ -163,7 +188,11 @@ def h2_style(V, idx, cov, box):
     inner[1:-1, 1:-1] = (solid[1:-1, 1:-1] & solid[:-2, 1:-1] & solid[2:, 1:-1]
                          & solid[1:-1, :-2] & solid[1:-1, 2:])
     outline = solid & ~inner
-    lines = feature_lines(V, idx, W, H) & inner
+    lines = feature_lines(V, idx, W, H, crease=STYLE.get('crease', 35.0)) & inner
+    if STYLE.get('min_line'):
+        # `min_line` N px (the DMR, B1 boot 1: 'some lines within the texture' -- Reach's dense mesh creases
+        # into dozens of specks): line pieces (8-connected) under N pixels dropped, the panel lines kept
+        lines = _drop_specks(lines, STYLE['min_line'])
     line_c, body_c = STYLE['line'], STYLE['body']
     out = np.zeros((H, W, 4), np.uint8)
     yy, xx = np.mgrid[0:H, 0:W]

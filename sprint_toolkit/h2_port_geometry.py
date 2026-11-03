@@ -16,6 +16,7 @@ key of that section:
     scale, part_material, node_map, lift, fp_nudge, muzzle_drop, marker_from, min_tris
     fp_species      {species: {'sub': model name, 'nudge': (x, y, z)}} -- a second FP model
     render          [folders under the weapon's parent dir] for `tool render` (--render)
+    fine_weld       (opt-in) `tool render` with h2_tool_fineweld.exe: no 1/512-of-the-model weld (the DMR)
 
     python h2_port_geometry.py <key> [--only world,fp,<sub>] [--render] [--dump <xml>] [scale]
 """
@@ -541,9 +542,15 @@ def jobs(g):
 
 def tool_render(g, what):
     parent = os.path.dirname(g['data_dir'])
+    exe = os.path.join(H2EK, 'tool.exe')
+    if g.get('fine_weld'):
+        # `fine_weld` (the DMR, B1 boot 1): tool's 1/512-of-the-model weld dropped Reach's small triangles
+        # (the lens glass) -- h2_tool_fineweld.py
+        import h2_tool_fineweld
+        exe = h2_tool_fineweld.build()
     for sub in what:
         rel = os.path.join(parent, sub)
-        p = subprocess.run([os.path.join(H2EK, 'tool.exe'), 'render', rel], cwd=H2EK,
+        p = subprocess.run([exe, 'render', rel], cwd=H2EK,
                            capture_output=True, text=True, errors='replace')
         text = ((p.stdout or '') + (p.stderr or '')).replace('\r', '\n')
         tri = [ln.strip() for ln in text.split('\n') if 'triangle' in ln.lower() or 'error' in ln.lower()]

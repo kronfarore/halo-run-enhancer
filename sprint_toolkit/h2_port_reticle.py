@@ -18,7 +18,9 @@ The config's `reticle` section:
                                  'kind': 'h1' reads a HALO 1 sheet instead (HCEEK, h1_sprite: the
                                  Flamethrower, S1); 'ring': N composes one arc into four, N chud
                                  units off the centre (Reach's Needle Rifle); 'inner': (N, s) a
-                                 second ring of that arc at scale s, N units off (its centre circle)
+                                 second ring of that arc at scale s, N units off (its centre circle);
+                                 'layers': [(bitmap tag or (sheet, sequence), ratio)] further
+                                 widgets centred on the same point (a sequence = a sprite: the DMR)
 A Reach source: wave B's pilot adds its art reader. Every crosshair widget naming the port's
 bitmap gets its three sequence indices set to 0 (a one-image bitmap; the SAW's were already 0).
 
@@ -187,11 +189,19 @@ def h3_compose(donor):
     # `layers` [(H3EK bitmap tag, widget scale / the main sprite's widget scale)]: further crosshair
     # WIDGETS Halo 3 draws centred on the same point (the Spartan Laser, A2 boot 2: #11 at 0.59 plus
     # the inner double ring `spartan_outerring` at 0.95 -- Halo 1's A8 reading), each a whole bitmap
+    # A layer's path may be (sheet, sequence) instead: a SPRITE of a chud sheet (the DMR, B1 boot 1:
+    # Reach's error_reticule_small #36 at 1.0 inside the #14 circle at 0.9 -- ratio 1 / 0.9)
     layers = []
     for path, ratio in H3_ART.get('layers', ()):
-        img, _ = h3_hud_art.decode(path)
+        img = sprite(*path)[0] if isinstance(path, tuple) else h3_hud_art.decode(path)[0]
         lw, lh = max(1, int(round(img.width * k * ratio))), max(1, int(round(img.height * k * ratio)))
-        layers.append(img.resize((lw, lh), Image.LANCZOS))
+        img = img.convert('RGBA').resize((lw, lh), Image.LANCZOS)
+        if isinstance(path, tuple):
+            # a thin sprite shrunk this far fades: its alpha stretched to full at its densest texel
+            px = np.asarray(img).astype(float)
+            px[:, :, 3] = np.clip(px[:, :, 3] * 255.0 / max(px[:, :, 3].max(), 1.0), 0, 255)
+            img = Image.fromarray(px.astype('uint8'), 'RGBA')
+        layers.append(img)
     side = max([w, h, donor.width, donor.height] + [max(i.size) for i in layers])
     side += side % 2
     out = Image.new('RGBA', (side, side), (0, 0, 0, 0))
