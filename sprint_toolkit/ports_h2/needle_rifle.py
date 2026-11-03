@@ -100,6 +100,8 @@ PORT = {
         'muzzle_drop': 0.0,
         'ground_point': {'rot': (0.7071068883, -1.8e-09, -7.42e-08, -0.7071067095)},   # the SMG's (the AR's)
         'render': ['needle_rifle', r'needle_rifle\fp_needle_rifle'],
+        # the DMR's boot 1 (2f302b6): tool's 1/512-of-the-model weld dropped small triangles (6,811 -> 5,741)
+        'fine_weld': True,
     },
 
     # step 2 -- kind 'h3' with `reach:` bitmaps: 1024 -> 512 (the DMR's). Shaders reseeded from the Carbine (its
