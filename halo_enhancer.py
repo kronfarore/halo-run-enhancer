@@ -4437,8 +4437,8 @@ class ModifierDatabase:
                'dropship and vehicle squads too), their animation graphs taught its class, '
                'firing from ai\\generic' % weapon_name) if game == 'Halo 2' else (
                'the %s: their fire-teams and starting locations are handed it (every unit of '
-               'the type, dropship and vehicle squads too) -- only species whose animations '
-               'can hold it; firing from ai\\generic' % weapon_name)
+               'the type, dropship and vehicle squads too); a species without animations for '
+               'it is taught to hold it like a weapon it has; firing from ai\\generic' % weapon_name)
         return {
             'name': 'Armed: %s' % weapon_name,
             'desc': '%s carry the %s more often.' % (who, weapon_name),
@@ -4486,9 +4486,15 @@ class ModifierDatabase:
         # weapon ports: user 2026-11-02)
         if game == 'Halo 3':
             import h3_enemy_weapons as _ew3
-            excluded = _ew3.EXCLUDED
+            excluded, melee = _ew3.EXCLUDED, _ew3.NOT_TAUGHT
         else:
-            excluded = ()
+            excluded, melee = (), ()
+
+        def dead(e, w):
+            # Halo 3 teaches every species every weapon except the two melee weapons (user
+            # 2026-11-03): only the types that already swing them get those cards
+            path = self.armed_weapon_path(w, game) or ''
+            return path.lower().rsplit(chr(92), 1)[-1] in melee and e not in ('Elite', 'Brute')
         names = []
 
         def ok(w):
@@ -4519,6 +4525,8 @@ class ModifierDatabase:
         if ally:
             cards = []
             for w in names:
+                if dead('Marine', w):
+                    continue
                 c = self.armed_card('Marine', w, ally=True, game=game)
                 cards += [c] * self.armed_weight('Marine', w, held, offered, game)
             return cards
@@ -4528,6 +4536,8 @@ class ModifierDatabase:
         for e in self.ARMED_ENEMIES[game]:
             if (e in here and e not in set(vanished or ())) or e in set(added or ()):
                 for w in names:
+                    if dead(e, w):
+                        continue
                     c = self.armed_card(e, w, game=game)
                     cards += [c] * self.armed_weight(e, w, held, offered, game)
         return cards
@@ -12012,8 +12022,9 @@ class OptionsDialog(QDialog):
             "For every weapon the players hold, each armed enemy on the level (Grunts, "
             "Jackals, Elites, Brutes, Drones, Flood combat forms) gets a card that hands "
             "10% more of them that weapon per pick; Marines get the same cards through the "
-            "Ally slot. Only species whose animations can hold the weapon get it (Grunts "
-            "and Jackals never get a sword or hammer, Jackals no rockets). A Jackal with a "
+            "Ally slot. A species without animations for a weapon is taught to hold it "
+            "like one it has (a Jackal holds a Rocket Launcher like its rifle); only the "
+            "Energy Sword and Gravity Hammer stay with Elites and Brutes. A Jackal with a "
             "two-handed weapon loses its arm shield.\n\nApplied to the map when you patch; "
             "nothing to rebuild.")
         form.addRow("Enemy weapons:", self.h3_armed_cards_cb)

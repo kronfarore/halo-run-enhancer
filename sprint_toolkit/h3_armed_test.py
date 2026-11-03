@@ -50,24 +50,25 @@ def _c(s):
 
 
 #: (label, character, weapon, forced): forced = the gate refuses it, written anyway
+#: v3 (2026-11-03): boots 1-2 confirmed the stock pairs, refused = unarmed, Jackal shields; v3 tests
+#: the TAUGHT weapons (h3_enemy_weapons.teach: Weapon List re-class to a donor's class)
 ENEMY_CASES = (
-    ('Grunt + Battle Rifle', _c('grunt'), _w('rifle/battle_rifle/battle_rifle'), False),
-    ('Grunt + ODST Magnum (Magnum firing data)', _c('grunt'), _w('pistol/automag/automag'), False),
-    ('Grunt + Rocket Launcher', _c('grunt'), _w('support_high/rocket_launcher/rocket_launcher'), False),
-    ('Grunt + Gravity Hammer (REFUSED)', _c('grunt'), _w('melee/gravity_hammer/gravity_hammer'), True),
-    ('Jackal + Assault Rifle (shieldless)', _c('jackal'), _w('rifle/assault_rifle/assault_rifle'), False),
-    ('Jackal + Battle Rifle (SHIELD kept)', _c('jackal'), _w('rifle/battle_rifle/battle_rifle'), False),
-    ('Jackal + Rocket Launcher (REFUSED)', _c('jackal'), _w('support_high/rocket_launcher/rocket_launcher'), True),
-    ('Brute + Brute Plasma Rifle (Plasma Rifle firing data)', _c('brute'), _w('rifle/plasma_rifle_red/plasma_rifle_red'), False),
-    ('Brute + Silenced SMG (SMG firing data)', _c('brute'), _w('rifle/smg_silenced/smg_silenced'), False),
+    ('Grunt + Flamethrower (taught)', _c('grunt'), _w('turret/flamethrower/flamethrower'), True),
+    ('Grunt + Missile Pod (taught)', _c('grunt'), _w('turret/missile_pod/missile_pod'), True),
+    ('Jackal + Rocket Launcher (taught)', _c('jackal'), _w('support_high/rocket_launcher/rocket_launcher'), True),
+    ('Jackal + Brute Shot (taught)', _c('jackal'), _w('support_low/brute_shot/brute_shot'), True),
+    ('Jackal + Machine Gun Turret (taught)', _c('jackal'), _w('turret/machinegun_turret/machinegun_turret'), True),
+    ('Jackal + Spartan Laser (taught)', _c('jackal'), _w('support_high/spartan_laser/spartan_laser'), True),
 )
 MARINE_CASES = (
-    ('Marine + Silenced SMG (SMG firing data)', _c('marine'), _w('rifle/smg_silenced/smg_silenced'), False),
-    ('Marine + Brute Shot (REFUSED)', _c('marine'), _w('support_low/brute_shot/brute_shot'), True),
+    ('Marine + Brute Shot (taught)', _c('marine'), _w('support_low/brute_shot/brute_shot'), True),
+    ('Marine + Machine Gun Turret (taught)', _c('marine'), _w('turret/machinegun_turret/machinegun_turret'), True),
+    ('Marine + Plasma Cannon (taught)', _c('marine'), _w('turret/plasma_cannon/plasma_cannon'), True),
+    ('Marine + Sentinel Beam (taught)', _c('marine'), _w('support_low/sentinel_gun/sentinel_gun'), True),
 )
 PER_CASE = 2
 #: the shield case keeps its shield on purpose (the open question: a shielded Jackal with a rifle)
-KEEP_SHIELD = ('Jackal + Battle Rifle (SHIELD kept)',)
+KEEP_SHIELD = ()
 
 PSTART, PSTART_ES = 0x24C, 0x18
 PROFILES, PROFILE_ES = 0x240, 0x58
@@ -247,6 +248,14 @@ def build(level='010_jungle'):
     report = ['%s from %s' % (os.path.basename(out), src)]
     layout(m, report)
     all_jackals(m, report)
+    # teach the cases' weapons exactly as the Armed pass does
+    want = {}
+    for cases in (ENEMY_CASES, MARINE_CASES):
+        for _l, ch, wp, _f in cases:
+            want.setdefault(ew.enemy_of(ch), set()).add(wp)
+    taught, trows = ew.teach(m, hp, ew.Graphs(m, hp), {e: sorted(w) for e, w in want.items()})
+    for r in trows:
+        report.append('teach: %s %s %s' % (r['tag'], r['field'], r.get('new') or r.get('reason')))
     handed = sorted(set(wp for cases in (ENEMY_CASES, MARINE_CASES) for _l, _c2, wp, _f in cases))
     for r in ew.borrow_firing(m, hp, handed):
         report.append('firing data: %s %s %s' % (r['tag'], r['field'], r.get('new') or r.get('reason')))

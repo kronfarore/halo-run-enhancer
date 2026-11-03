@@ -78,6 +78,17 @@ FIRING_BLOCKS = ((GEN_PROPS, 0xE0, 0x10), (GEN_FPP, 0x1C, 0xC))
 #: weapon ports (user 2026-11-02)
 EXCLUDED = ('saw',)
 #: weapons without ai\generic rows borrow a donor's rows (user 2026-11-02), tag basenames
+#: never TAUGHT (user 2026-11-03: every enemy wields every weapon, the two melee weapons excepted
+#: for now): a species that already holds them keeps getting them
+NOT_TAUGHT = ('energy_blade', 'gravity_hammer')
+#: donor weapons whose class a refused weapon borrows, by the refused weapon's kind (tag basenames)
+TEACH_DONORS = {
+    'heavy': ('rocket_launcher', 'flak_cannon', 'spartan_laser', 'brute_shot', 'battle_rifle',
+              'assault_rifle', 'covenant_carbine', 'plasma_rifle'),
+    'rifle': ('assault_rifle', 'battle_rifle', 'covenant_carbine', 'plasma_rifle', 'smg',
+              'rocket_launcher'),
+    'pistol': ('plasma_pistol', 'magnum', 'needler', 'assault_rifle', 'plasma_rifle'),
+}
 FIRING_DONORS = {'automag': 'magnum', 'smg_silenced': 'smg', 'plasma_rifle_red': 'plasma_rifle'}
 
 
@@ -159,7 +170,7 @@ class Graphs:
                             self._learn(a)
                     tys[tl] = acts
         wl = {m.u32(e): m.u32(e + 4) for e in m.follow_all(b, [JM_WL], [JM_WL_ES], 'all')}
-        return {'modes': modes, 'wl': wl}
+        return {'modes': modes, 'wl': wl, 'base': b}
 
     def _learn(self, sid):
         if None not in (self.any, self.combat, self.idle):
@@ -289,6 +300,83 @@ def borrow_firing(m, hp, weapons):
     return rows
 
 
+def _kind(m, hp, info):
+    """'pistol' (Plasma Pistol's class), 'rifle' (Assault Rifle's) or 'heavy' (anything else:
+    missile, support, turret classes)."""
+    def cls(base):
+        t = next((p for p, _b in m.find_tags('weap', '*') if p.lower().rsplit(BS, 1)[-1] == base), None)
+        wi = weapon_info(m, t) if t else None
+        return wi['class'] if wi else None
+    c = info['class']
+    if c == cls('plasma_pistol'):
+        return 'pistol'
+    if c == cls('assault_rifle'):
+        return 'rifle'
+    return 'heavy'
+
+
+def teach(m, hp, graphs, wanted):
+    """TEACHING (user 2026-11-03): `wanted` = {enemy: [weapon path]} the gate refused. Each weapon
+    gets a Weapon List row (its NAME -> a donor weapon's class, TEACH_DONORS by kind) in every
+    graph of the species, where that class has an 'any' type with an 'idle' action -- the same
+    lookup the gate replays, so the unit holds it with the donor's animations. NOT_TAUGHT are
+    never taught. Rows go in once per graph (block relocated into partition slack). Returns
+    (taught {enemy: set(weapon)}, rows)."""
+    adds, taught, rows = {}, {}, []
+    tags = {p.lower(): p for p, _b in m.find_tags('weap', '*')}
+    by_base = {p.rsplit(BS, 1)[-1]: p for p in tags}
+    for enemy, ws in wanted.items():
+        gs = [g for f in ENEMY_CHARS.get(enemy, ()) for _p, g in graphs.by_folder.get(f, ())]
+        if not gs:
+            continue
+        for w in ws:
+            base = w.lower().rsplit(BS, 1)[-1]
+            info = weapon_info(m, tags.get(w.lower(), w))
+            if base in NOT_TAUGHT or not info:
+                continue
+            for d in TEACH_DONORS[_kind(m, hp, info)]:
+                dp = by_base.get(d)
+                if dp in {t.lower() for t in taught.get(enemy, ())}:
+                    continue                 # a donor taught here itself: name its own donor
+                di = weapon_info(m, tags[dp]) if dp else None
+                if not di or not all(graphs.holds(g, di['class'], di['name']) for g in gs):
+                    continue
+                plan = []
+                for g in gs:
+                    ov = g['wl'].get(di['name'])
+                    cl = ov if ov is not None and ov != graphs.any and di['class'] != DUAL_CLASS                         else di['class']
+                    trial = dict(g, wl=dict(g['wl']))
+                    trial['wl'][info['name']] = cl
+                    if not graphs.holds(trial, info['class'], info['name']):
+                        break
+                    plan.append((g, cl))
+                else:
+                    for g, cl in plan:
+                        g['wl'][info['name']] = cl
+                        adds.setdefault(id(g), (g, {}))[1][info['name']] = cl
+                    taught.setdefault(enemy, set()).add(w)
+                    rows.append({'tag': 'jmad ' + enemy, 'field': 'taught: ' + base, 'ok': True,
+                                 'new': 'held as the %s (%d graphs)' % (d, len(gs))})
+                    break
+    for g, new in adds.values():
+        blk = g['base'] + JM_WL
+        n = max(0, m.i32(blk))
+        extra = b''.join(struct.pack('<II', a, c) for a, c in new.items())
+        got = hp._h3_reserve(m, [n * JM_WL_ES + len(extra)])
+        if not got:
+            rows.append({'tag': 'jmad', 'field': 'Weapon List', 'ok': False,
+                         'reason': 'no partition slack to grow the block'})
+            continue
+        dst = got[0]
+        if n:
+            old = hp._block_base(m, blk)
+            m.data[dst:dst + n * JM_WL_ES] = m.data[old:old + n * JM_WL_ES]
+        m.data[dst + n * JM_WL_ES:dst + n * JM_WL_ES + len(extra)] = extra
+        struct.pack_into('<i', m.data, blk, n + len(new))
+        struct.pack_into('<I', m.data, blk + 4, m.off2data(dst))
+    return taught, rows
+
+
 def find_variant(m, hp, text):
     """The raw string id of `text` as used by a location's Actor Variant Name in THIS map (Halo 3
     string ids are read through resolve_stringid only), or None."""
@@ -340,10 +428,20 @@ def arm(m, hp, cards, salt=None):
             wi = info[lw]
             if wi is None or not graphs.allows(enemy, wi['class'], wi['name']):
                 refused.setdefault(enemy, set()).add(w)
-                continue
             ok[lw] = s
         if ok:
             usable[enemy] = ok
+    # TEACH what the gate refused (not the melee weapons), then drop what is still refused
+    taught, trows = teach(m, hp, graphs, {e: sorted(ws) for e, ws in refused.items()})
+    rows += trows
+    for enemy in list(refused):
+        refused[enemy] -= taught.get(enemy, set())
+        for w in refused[enemy]:
+            usable.get(enemy, {}).pop(w.lower(), None)
+        if not refused[enemy]:
+            del refused[enemy]
+        if enemy in usable and not usable[enemy]:
+            del usable[enemy]
     handed = sorted(set(wnames[widx[w]] for ok in usable.values() for w in ok))
     rows += borrow_firing(m, hp, handed)
     nofire = set(w for w in handed if has_firing(m, hp, w) is False)
@@ -432,8 +530,10 @@ def arm(m, hp, cards, salt=None):
     for enemy, ws in sorted(refused.items()):
         for w in sorted(ws):
             rows.append({'tag': tag + enemy, 'field': 'Armed: ' + w.split(BS)[-1], 'ok': True,
-                         'skip': True, 'reason': 'its animation graph cannot hold this weapon '
-                         '(it would spawn unarmed); not handed out'})
+                         'skip': True, 'reason': ('melee weapons are not taught'
+                                                  if w.lower().rsplit(BS, 1)[-1] in NOT_TAUGHT
+                                                  else 'no donor class fits its graphs')
+                         + ' (it would spawn unarmed); not handed out'})
     for w in sorted(nofire):
         rows.append({'tag': tag.rstrip(BS), 'field': 'Armed: ' + w.split(BS)[-1], 'ok': True,
                      'reason': 'handed out, but ai\\generic has no firing data for it: the AI '

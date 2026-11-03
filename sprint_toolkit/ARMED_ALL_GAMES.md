@@ -66,6 +66,23 @@ Shot Marine): the gate's "never hand out a refused pair" is right. The first Jac
 vanilla weapons and shields (unclear which squad) -> v2 deals the three Jackal cases to EVERY
 Jackal in 010 (`all_jackals`). No Grunt / Jackal weapon drop seen yet.
 
+Boot 2 (2026-11-03): every Jackal case right -- AR Jackals shieldless, a shielded Jackal holds
+the Battle Rifle, Rocket Jackals (refused) unarmed.
+
+TEACHING (user 2026-11-03: "teach enemies to wield every weapon, the only exception is the two
+melee weapons for now"): `h3_enemy_weapons.teach` runs inside the Armed pass for every pair the
+gate refuses: a Weapon List row (the weapon's NAME -> a donor weapon's class, `TEACH_DONORS` by
+kind: heavy -> Rocket Launcher's class, rifle -> Assault Rifle's, pistol -> Plasma Pistol's, falling
+back down the list) in every graph of the species, only where that class has an `any` type with
+`idle`. `NOT_TAUGHT` = Energy Sword, Gravity Hammer; the enhancer offers those cards only for
+Elites and Brutes. Dry runs 010 / 030 / 050 / 100: every species present on the level holds every
+weapon but the two melee weapons (Jackal / Drone heavies and turrets via the rifle class, Grunt
+flamethrower / missile pod and Marine Brute Shot / Sentinel Beam / turrets via the missile class).
+What is still refused is species ABSENT from the level (no graphs) -- the residency work item.
+Test v3 deployed: the taught weapons (Grunt flamethrower / missile pod, Jackal rocket / Brute Shot /
+machine gun turret / Spartan Laser on every Jackal, Marine Brute Shot / machine gun turret / plasma
+cannon / Sentinel Beam).
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?
