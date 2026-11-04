@@ -1739,10 +1739,10 @@ def _null_starting_weapon(m, poff, slot, game):
     struct.pack_into('<h', m.data, poff + s['total'], 0)
 
 
-def _profile_is_empty(m, poff, game):
-    """True if this profile's Primary weapon slot is a null tagRef."""
+def _profile_is_empty(m, poff, game, slot='primary'):
+    """True if this profile's weapon slot (Primary unless named) is a null tagRef."""
     lay = _STARTING_SLOTS[game]
-    ro = poff + lay['primary']['ref'] + lay['id_at']
+    ro = poff + lay[slot]['ref'] + lay['id_at']
     return struct.unpack_from('<I', m.data, ro)[0] == 0xFFFFFFFF
 
 
@@ -2033,7 +2033,12 @@ def _apply_starting_equipment(m, game, registry, starting):
                 n = 0
                 for i in profiles:
                     poff = m.follow(scnr_base, [boff], [esize], i)
-                    if poff is None or (guard_empty and _profile_is_empty(m, poff, game)):
+                    # Emptying asks whether THIS slot is already empty: a guarded
+                    # profile with a null Primary but a weapon in its Secondary used
+                    # to be skipped whole and kept that weapon (user, 2026-11-04:
+                    # 010's Battle Rifle with the empty-profile option on). Emptying
+                    # never arms a scripted weaponless profile, so it needs no guard.
+                    if poff is None or (guard_empty and _profile_is_empty(m, poff, game, slot)):
                         continue
                     _null_starting_weapon(m, poff, slot, game)
                     n += 1
