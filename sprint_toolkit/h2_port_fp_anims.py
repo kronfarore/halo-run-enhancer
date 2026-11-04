@@ -508,6 +508,23 @@ def build(key, species, only=None, write=True):
             fr, ext = base_frames(nodes, frames, h3name in cfg.get('looping', ())), '.jmm'
         if len(kept) != len(nodes):
             fr = [[f[i] for i in kept] for f in fr]
+        offs = (cfg.get('left_arm_offset') or {}).get(species)
+        if offs and typ != 'overlay':
+            # `left_arm_offset` {species: {'*' | animation: (x, y, z) wu}} (the DMR, B1 boot 2: 'the left hand
+            # clips into the gun', idle too): Halo 2's Chief hand mesh sits on its bones lower-back than Reach's,
+            # so on Reach's motion it cuts the grip (8.5% of its edges against Reach's 4.7%). The whole left arm
+            # moves by the offset IN THE GUN'S FRAME (it follows the grip through fidgets and melees); the
+            # shoulder is off screen. Overlays are deltas: untouched
+            o = offs.get(h3name, offs.get('*'))
+            gi = [n for n, _p in kept_nodes].index('gun')
+            left = [i for i, (n, _p) in enumerate(kept_nodes) if n.startswith('l_')]
+            if o:
+                fr = [list(f) for f in fr]
+                for f in fr:
+                    d = qrot(f[gi][0], o)
+                    for i in left:
+                        q, t = f[i]
+                        f[i] = (q, (t[0] + d[0], t[1] + d[1], t[2] + d[2]))
         if cfg.get('root_identity'):
             fr = reroot(kept_nodes, fr, cfg['root_identity'])
         path = os.path.join(src, file_name(h3name, rename) + ext)

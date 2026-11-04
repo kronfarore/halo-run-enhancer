@@ -216,7 +216,8 @@ PORT = {
             # observation, to check on boot 1)
             # boot 1 ('start by going down', the user's Reach screenshot beside ours): the counter 235 px too high
             # and 20 px left at 1080p; at its depth (0.12 wu, f ~1500 px) = 0.019 down, 0.002 right
-            (DMR + r'\dmr.weapon', 'first person weapon offset', '', 0, 0, [-0.005, -0.002, -0.023]),
+            # boot 2: 'move 2 more units down' (1 unit = 0.01, the SAW's reading)
+            (DMR + r'\dmr.weapon', 'first person weapon offset', '', 0, 0, [-0.005, -0.002, -0.043]),
             # the scope picture (h2_port_scope `art`) centred on the crosshair: its registration
             # point stays the widget's 0, 0 (a zero field), so the offset is half the 1024 picture
             (r'ui\hud\dmr.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 9, 0, [-512, -512]),
@@ -302,7 +303,10 @@ PORT = {
                 'picture': ('distance_meter', 'dmr_scope_art'), 'picture_size': 1024,
                 'px_per_unit': 1080.0 / 900.0 / 1.117,
                 'per_widget': {'scope_distance_meter': {'scale': (1.0, 1.0)},
-                               'distance_slider': {'origin': (0.0, 0.0), 'offset': (141.0, -186.0)}}},
+                               # boot 2: 'incorrectly orientated' -- Reach TURNS the slider about the crosshair
+                               # along the arc; at the same spot (141, -186): radius 233.4 on the right, turned
+                               # 52.8 deg counter-clockwise
+                               'distance_slider': {'origin': (0.0, 0.0), 'offset': (233.4, 0.0), 'rotate': 52.84}}},
     },
 
     # step 8 -- the pickup icon at the reserved U+E143, untinted (the H2 ICON RULE); br_* -> dmr2_*
@@ -346,6 +350,12 @@ PORT = {
         'drop_nodes': ('pedestal', 'aim_pitch', 'aim_yaw', 'l_humerus', 'r_humerus', 'l_radius', 'r_radius',
                        'l_handguard', 'r_handguard'),
         'aliases': {'first_person:look': ['first_person:overlays', 'first_person:pitch_and_turn']},
+        # boot 2: 'the left hand clips, idle too; the fidget; the melee with the right arm further out' (melee 2).
+        # Hand edges cutting the gun a frame (scratch cut.py): idle 102 -> 24, fidget 1 102 -> 24, fidget 2 95 -> 18,
+        # melee 1 129 -> 47, melee 2 108 -> 64 (y -0.3 there: 71 without), reload 38 -> 16. Reach's own arms: 4.7% of
+        # their edges in idle, ours 8.5% -> 2.0%. Gun frame, wu (0.75 JMS units down). Chief only: the Arbiter unjudged
+        'left_arm_offset': {'masterchief': {'*': (0.0, 0.0, -0.0075),
+                                            'first_person:melee_strike_2': (0.0, -0.003, -0.0075)}},
         # no Halo 2 slot for Reach's sprint / jump / land / fall / ready_initial (the SAW's list)
         'skip': ['first_person:look', 'first_person:acceleration_screens', 'first_person:fall', 'first_person:jump',
                  'first_person:land_hard', 'first_person:land_soft', 'first_person:ready_initial',
