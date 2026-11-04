@@ -1110,6 +1110,14 @@ Final checks: refs OWN (melee shared by design), every sound OWN / 0 BORROW, res
 5b in reports/h2_flamethrower_5b.txt, check 10 (FP flash = the rocket's flame sprite).
 Later (2026-10-30): 5b re-run after h2_role_compare 2041b06 (Balanced 18.4 x2, 397 dps, Elite minor 7 / 0.56 s; the
 old block had the burn rows over the shot's; conclusions unchanged); the HUD art reproducible (`model_skip`, PORTING).
+REWORK 2026-11-04 (user: 'flashlight anchor on Flamethrower is weird'; status 'rework' until the boot): in first person
+the light hangs on the arms' `flashlight` marker on `base`, and Halo 1's animations hold `base` ~35 deg turned and
+~24 cm back / 18 cm down (melee +18 cm, aim sway 5 cm) -- Bungie's own graphs keep it at the bind. fp_anims opt-in
+`pin_base` writes `base` at its bind every frame (every other node is model space: unchanged, checked); Halo 1's own
+gun `flashlight` marker dropped from the FP model (the world model left byte-identical). Proof: the in-memory FP
+regeneration of all 9 ports x 2 species old vs new identical (342 files; DMR's then-uncommitted hunk aside); both
+graphs re-imported over themselves, XML equal but animation data / checksums / bounds. Test maps 06b (Arbiter) +
+03b (Chief), sprint on. Kit backup E:\HaloBackups\H2EK_flamethrower_before_pin_base_2026-11-04.
 
 ## SAW rework: what it taught (2026-10-23/26, DONE)
 

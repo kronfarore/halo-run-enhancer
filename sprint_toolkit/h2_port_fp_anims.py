@@ -745,6 +745,15 @@ def build_h1(key, species, only=None, write=True, cfg_override=None):
         ELITE_W.update(jms_world(sp['arms']))
     weapon_nodes = list(cfg['weapon_nodes'])
     names_h2 = order + weapon_nodes + ['camera_control']
+    # `pin_base` (the Flamethrower, 2026-11-04, user: 'flashlight anchor on Flamethrower is weird'):
+    # Halo 1's FP root is turned ~35 deg and set ~24 cm back / 18 cm down (melee and aim move it on),
+    # and the arms' FP model hangs the flashlight on `base` -- so the light pointed off to the side.
+    # Bungie's own H2 graphs keep `base` at its bind; every other node is model space, so pinning it
+    # moves nothing else
+    pin = None
+    if cfg.get('pin_base'):
+        pq, pt = elite['base'][1]
+        pin = ((pq if pq[0] >= 0 else tuple(-c for c in pq)), pt)
     parents = {}
     src = os.path.join(H2EK, 'data', sp['source'], 'animations')
     if write and not only and os.path.isdir(src):
@@ -778,6 +787,8 @@ def build_h1(key, species, only=None, write=True, cfg_override=None):
             for nm in names_h2:
                 if nm == 'camera_control':
                     fr.append(((1.0, 0.0, 0.0, 0.0), (0.0, 0.0, 0.0)))
+                elif pin and nm == 'base':
+                    fr.append(pin)
                 elif nm in world and (species == 'masterchief' or not sp.get('repose')
                                       or not _is_finger(nm)):
                     fr.append(world[nm])

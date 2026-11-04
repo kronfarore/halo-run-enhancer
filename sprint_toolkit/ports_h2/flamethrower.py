@@ -36,7 +36,7 @@ PORT = {
     'wave': 'S1',
     'name': 'Flamethrower',
     'source': 'Halo 1',
-    'status': 'done',
+    'status': 'rework',
     'source_tag': r'weapons\flamethrower\flamethrower',      # HCEEK (Halo 1)
     'reservations': {
         'message_prefix': 'ft2',
@@ -125,7 +125,10 @@ PORT = {
         'markers': {'primary trigger': 'primary_trigger', 'left hand': 'left_hand',
                     'defoliant spawn': 'muzzle_flash',
                     # first person: Halo 1 spawns the flame at `spawn fire`, its pilot light at `pilot`
-                    'spawn fire': 'primary_trigger', 'pilot': 'pilot', 'flashlight': 'flashlight',
+                    # `flashlight` dropped (2026-11-04, user: 'flashlight anchor on Flamethrower is
+                    # weird'): Halo 1's own marker rode the gun; the light hangs on the arms' `base`
+                    # (fp_anims `pin_base`), the same spot for every weapon
+                    'spawn fire': 'primary_trigger', 'pilot': 'pilot',
                     # `vent`: the PR overheat effect's marker (boot 3: the overheat effect)
                     'steam vent01': 'vent', 'steam vent02': 'vent'},
         # boot 4 (user: 'move the digits a bit apart'): the two counter quads touch (Halo 1 drew three
@@ -898,6 +901,9 @@ PORT = {
         'antr': H1FT + r'\fp\fp',
         'chief_arms': H2EK + r'\data\!extracted\fp_arms_masterchief\fp_arms.jms',
         'weapon_nodes': ['gun', 'ammo', 'cover'],
+        # 2026-11-04 (user: 'flashlight anchor on Flamethrower is weird'): Halo 1's `base` sat turned
+        # ~35 deg and ~24 cm back / 18 cm down, and the FP light hangs on it -> held at its bind
+        'pin_base': True,
         # boot 2 ('no sound' on the overheat): the import flags changed animations 'verify sound
         # events' -- cleared, as Bungie's graphs ship (h2_port_fp_anims.clear_verify)
         'clear_verify': True,
