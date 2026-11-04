@@ -2817,6 +2817,11 @@ def mod_game_scope(mod_data):
     if len(games) == 1:
         authored = list(games)
     elif not games and isinstance(mod_data.get('tag'), dict):
+        if 'default' in mod_data['tag']:
+            # {default: X, "Halo 4": Y} -- X serves every game without its own key, so
+            # the per-game keys are overrides, not a restriction (and 'default' is no
+            # game: the Plasma Grenade's Maximum Count read '◆ default/H4 only')
+            return None
         authored = list(mod_data['tag'])
     elif games:
         authored = list(games)
