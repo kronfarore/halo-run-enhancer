@@ -83,6 +83,12 @@ Test v3 deployed: the taught weapons (Grunt flamethrower / missile pod, Jackal r
 machine gun turret / Spartan Laser on every Jackal, Marine Brute Shot / machine gun turret / plasma
 cannon / Sentinel Beam).
 
+Boot 3 (2026-11-04): Marines held the taught Brute Shot / Sentinel Beam, everything else came
+out unarmed (Grunt flamethrower / missile pod, Jackal rocket / laser / turret; Jackal Brute Shot
+worked). CAUSE: every stock Weapon List is SORTED by the weapon-name string id and the game
+binary-searches it; the taught rows were appended, and a binary search over the test map's lists
+predicts exactly the rows that worked. `teach` now rewrites the whole list sorted. v3b deployed.
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?

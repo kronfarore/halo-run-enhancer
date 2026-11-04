@@ -358,21 +358,25 @@ def teach(m, hp, graphs, wanted):
                     rows.append({'tag': 'jmad ' + enemy, 'field': 'taught: ' + base, 'ok': True,
                                  'new': 'held as the %s (%d graphs)' % (d, len(gs))})
                     break
+    # SORTED (boot 3, 2026-11-04): every stock Weapon List is sorted by the weapon-name string
+    # id and the game binary-searches it -- rows appended at the end were found only where the
+    # search happened to land on them (Brute Shot yes, Rocket Launcher / turrets no). The whole
+    # list is rewritten sorted.
     for g, new in adds.values():
         blk = g['base'] + JM_WL
         n = max(0, m.i32(blk))
-        extra = b''.join(struct.pack('<II', a, c) for a, c in new.items())
-        got = hp._h3_reserve(m, [n * JM_WL_ES + len(extra)])
+        old = hp._block_base(m, blk) if n else None
+        allrows = {m.u32(old + i * JM_WL_ES): m.u32(old + i * JM_WL_ES + 4) for i in range(n)}
+        allrows.update(new)
+        data = b''.join(struct.pack('<II', k, c) for k, c in sorted(allrows.items()))
+        got = hp._h3_reserve(m, [len(data)])
         if not got:
             rows.append({'tag': 'jmad', 'field': 'Weapon List', 'ok': False,
                          'reason': 'no partition slack to grow the block'})
             continue
         dst = got[0]
-        if n:
-            old = hp._block_base(m, blk)
-            m.data[dst:dst + n * JM_WL_ES] = m.data[old:old + n * JM_WL_ES]
-        m.data[dst + n * JM_WL_ES:dst + n * JM_WL_ES + len(extra)] = extra
-        struct.pack_into('<i', m.data, blk, n + len(new))
+        m.data[dst:dst + len(data)] = data
+        struct.pack_into('<i', m.data, blk, len(allrows))
         struct.pack_into('<I', m.data, blk + 4, m.off2data(dst))
     return taught, rows
 
