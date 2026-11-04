@@ -152,7 +152,7 @@ class Graphs:
 
     def _read(self, b):
         m = self.m
-        modes = {}
+        modes, where = {}, {}
         for md in m.follow_all(b, [JM_MODES], [JM_MODE_ES], 'all'):
             ml = m.u32(md)
             self._learn(ml)
@@ -161,8 +161,10 @@ class Graphs:
                 cl = m.u32(c)
                 self._learn(cl)
                 tys = cls.setdefault(cl, {})
+                where[(ml, cl)] = c
                 for t in m.follow_all(c, [JM_SUB], [JM_TYPE_ES], 'all'):
                     tl = m.u32(t)
+                    where[(ml, cl, tl)] = t
                     self._learn(tl)
                     acts = set(m.u32(a) for a in m.follow_all(t, [JM_SUB], [JM_ACT_ES], 'all'))
                     if self.idle is None:
@@ -170,7 +172,7 @@ class Graphs:
                             self._learn(a)
                     tys[tl] = acts
         wl = {m.u32(e): m.u32(e + 4) for e in m.follow_all(b, [JM_WL], [JM_WL_ES], 'all')}
-        return {'modes': modes, 'wl': wl, 'base': b}
+        return {'modes': modes, 'wl': wl, 'base': b, 'where': where}
 
     def _learn(self, sid):
         if None not in (self.any, self.combat, self.idle):
@@ -315,6 +317,55 @@ def _kind(m, hp, info):
     return 'heavy'
 
 
+def _eff_class(graphs, g, info):
+    ov = g['wl'].get(info['name'])
+    return ov if ov is not None and ov != graphs.any and info['class'] != DUAL_CLASS else info['class']
+
+
+def _pose_plan(m, graphs, gs, info, donors):
+    """THE POSE (boot 4, 2026-11-04: turrets and the Brute Shot held through the Rocket Launcher's
+    class pointed at the sky -- a weapon's grip is built for its OWN class's pose). A donor of the
+    weapon's own native class that every graph holds lends its pose: per graph the weapon is
+    re-classed to the donor's class (Weapon List, if it differs) and, where that class has no
+    'any' type, gets a TYPE of its own: a copy of the donor's type entry (label = the weapon's
+    name; the game's own Grunt Plasma Cannon / Machine Gun Turret entries share their animation
+    pointers the same way). Returns (donor info, [(graph, class, [(mode, donor type addr)])]) or
+    None."""
+    for dname, di in donors:
+        if di['class'] != info['class'] or di['name'] == info['name']:
+            continue
+        if not all(graphs.holds(g, di['class'], di['name']) for g in gs):
+            continue
+        plan = []
+        for g in gs:
+            cl = _eff_class(graphs, g, di)
+            copies = []
+            for mo in (graphs.combat, graphs.any):
+                C = g['modes'].get(mo, {}).get(cl)
+                if C and graphs.any not in C and di['name'] in C and info['name'] not in C:
+                    copies.append((mo, g['where'][(mo, cl, di['name'])]))
+            plan.append((g, cl, copies))
+        return dname, plan
+    return None
+
+
+def _grow_sorted(m, hp, blk, es, new):
+    """Rewrite the block at `blk` with `new` {label: element bytes} merged in, sorted by the
+    leading u32 label (the game binary-searches these blocks). Returns False without slack."""
+    n = max(0, m.i32(blk))
+    old = hp._block_base(m, blk) if n else None
+    els = {m.u32(old + i * es): bytes(m.data[old + i * es:old + (i + 1) * es]) for i in range(n)}
+    els.update(new)
+    data = b''.join(v for _k, v in sorted(els.items()))
+    got = hp._h3_reserve(m, [len(data)])
+    if not got:
+        return False
+    m.data[got[0]:got[0] + len(data)] = data
+    struct.pack_into('<i', m.data, blk, len(els))
+    struct.pack_into('<I', m.data, blk + 4, m.off2data(got[0]))
+    return True
+
+
 def teach(m, hp, graphs, wanted):
     """TEACHING (user 2026-11-03): `wanted` = {enemy: [weapon path]} the gate refused. Each weapon
     gets a Weapon List row (its NAME -> a donor weapon's class, TEACH_DONORS by kind) in every
@@ -322,18 +373,42 @@ def teach(m, hp, graphs, wanted):
     lookup the gate replays, so the unit holds it with the donor's animations. NOT_TAUGHT are
     never taught. Rows go in once per graph (block relocated into partition slack). Returns
     (taught {enemy: set(weapon)}, rows)."""
-    adds, taught, rows = {}, {}, []
+    adds, taught, rows, types = {}, {}, [], {}
     tags = {p.lower(): p for p, _b in m.find_tags('weap', '*')}
     by_base = {p.rsplit(BS, 1)[-1]: p for p in tags}
     for enemy, ws in wanted.items():
         gs = [g for f in ENEMY_CHARS.get(enemy, ()) for _p, g in graphs.by_folder.get(f, ())]
         if not gs:
             continue
+        mine = {t.lower() for t in ws}
+        donors = [(p.rsplit(BS, 1)[-1], weapon_info(m, tags[p])) for p in sorted(tags)
+                  if p not in mine and p.rsplit(BS, 1)[-1] not in NOT_TAUGHT
+                  and p.startswith('objects' + BS + 'weapons' + BS)
+                  # a mounted turret's weapon is held in a SEATED gunner pose, no carry pose
+                  and not any(x in p.rsplit(BS, 1)[-1] for x in ('integrated', 'undeployed'))]
+        donors = [(d, i) for d, i in donors if i]
         for w in ws:
             base = w.lower().rsplit(BS, 1)[-1]
             info = weapon_info(m, tags.get(w.lower(), w))
             if base in NOT_TAUGHT or not info:
                 continue
+            pose = _pose_plan(m, graphs, gs, info, donors)
+            if pose:
+                dname, plan = pose
+                for g, cl, copies in plan:
+                    if cl != info['class']:
+                        g['wl'][info['name']] = cl
+                        adds.setdefault(id(g), (g, {}))[1][info['name']] = cl
+                    for mo, src in copies:
+                        el = bytearray(m.data[src:src + JM_TYPE_ES])
+                        struct.pack_into('<I', el, 0, info['name'])
+                        types.setdefault(g['where'][(mo, cl)], {})[info['name']] = bytes(el)
+                        g['modes'][mo][cl][info['name']] = set(g['modes'][mo][cl][m.u32(src)])
+                if all(graphs.holds(g, info['class'], info['name']) for g, _c, _x in plan):
+                    taught.setdefault(enemy, set()).add(w)
+                    rows.append({'tag': 'jmad ' + enemy, 'field': 'taught: ' + base, 'ok': True,
+                                 'new': 'in the %s pose (%d graphs)' % (dname, len(gs))})
+                    continue
             for d in TEACH_DONORS[_kind(m, hp, info)]:
                 dp = by_base.get(d)
                 if dp in {t.lower() for t in taught.get(enemy, ())}:
@@ -344,7 +419,7 @@ def teach(m, hp, graphs, wanted):
                 plan = []
                 for g in gs:
                     ov = g['wl'].get(di['name'])
-                    cl = ov if ov is not None and ov != graphs.any and di['class'] != DUAL_CLASS                         else di['class']
+                    cl = ov if ov is not None and ov != graphs.any and di['class'] != DUAL_CLASS else di['class']
                     trial = dict(g, wl=dict(g['wl']))
                     trial['wl'][info['name']] = cl
                     if not graphs.holds(trial, info['class'], info['name']):
@@ -362,6 +437,10 @@ def teach(m, hp, graphs, wanted):
     # id and the game binary-searches it -- rows appended at the end were found only where the
     # search happened to land on them (Brute Shot yes, Rocket Launcher / turrets no). The whole
     # list is rewritten sorted.
+    for cls_el, new in types.items():
+        if not _grow_sorted(m, hp, cls_el + JM_SUB, JM_TYPE_ES, new):
+            rows.append({'tag': 'jmad', 'field': 'animation types', 'ok': False,
+                         'reason': 'no partition slack to grow the block'})
     for g, new in adds.values():
         blk = g['base'] + JM_WL
         n = max(0, m.i32(blk))

@@ -89,6 +89,19 @@ worked). CAUSE: every stock Weapon List is SORTED by the weapon-name string id a
 binary-searches it; the taught rows were appended, and a binary search over the test map's lists
 predicts exactly the rows that worked. `teach` now rewrites the whole list sorted. v3b deployed.
 
+Boot 4 (2026-11-04): every taught weapon held (Marines, Grunts, Jackals), Jackal Spartan Laser
+/ Rocket Launcher look right, but turrets and the Brute Shot pointed at the sky: a weapon's grip
+is built for its OWN class's pose, and they were held through the Rocket Launcher's. Fix: THE
+POSE step (`_pose_plan`) -- a donor of the weapon's own native class that the species holds
+lends its pose: Weapon List row to the donor's class plus, where that class has no `any` type, a
+copy of the donor's TYPE entry under the weapon's name (shared animation pointers, as the game's
+own Grunt Plasma Cannon / Machine Gun Turret entries). Types are sorted + binary-searched too
+(every mode / class / type / action block in 010 is sorted), so `_grow_sorted` inserts in order.
+Mounted (`_integrated`) / undeployed turret weapons are no donors (seated gunner pose). Result:
+Grunt Flamethrower / Missile Pod in its Machine Gun Turret pose, Marine turrets in its Flamethrower
+pose. NO matching pose exists for: the Brute Shot / Sentinel Beam on Marines (still the Rocket
+Launcher's), turrets and the Brute Shot on Jackals / Drones (still the rifle's). v3c deployed.
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?
