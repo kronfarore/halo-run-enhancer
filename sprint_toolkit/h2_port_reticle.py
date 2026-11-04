@@ -178,6 +178,12 @@ def h3_compose(donor):
             top = a.transpose(Image.ROTATE_270)
             art.alpha_composite(top, (c - top.width // 2, c - o - top.height))
             art.alpha_composite(top.transpose(Image.FLIP_TOP_BOTTOM), (c - top.width // 2, c + o))
+        if H3_ART.get('inner'):
+            # boot 2: 'the inner or the outer part is not centred' -- the halved odd sprite sizes put the outer
+            # ring 0.2 px off the inner one: the rings are mirror-symmetric, so averaged with their mirrors
+            px = np.asarray(art).astype(float)
+            px = (px + px[:, ::-1] + px[::-1] + px[::-1, ::-1]) / 4.0
+            art = Image.fromarray(np.clip(np.round(px), 0, 255).astype('uint8'), 'RGBA')
         reg = (c, c)
     yard, _ = sprite(H3_ART['sheet'], H3_ART['yardstick'])
     k = _ink(donor) / float(_ink(yard))

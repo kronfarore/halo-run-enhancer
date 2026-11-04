@@ -266,7 +266,9 @@ PORT = {
             # Reach: 0-4 s + `detonation max time if attached`. Halo 2 has no such flag; only a stuck needle
             # rests, so one timer at Reach's maximum says the same
             (PR, 'timer', '', 0, 0, [4.0, 4.0]),
-            (PR, 'super det. projectile count', '', 0, 0, 3),
+            # boot 2: 3 combined on the 4th needle (one needle a press): Halo 2 detonates when MORE than the count
+            # are stuck, so the field holds Reach's count - 1 (an observation on this port; boot 3 checks 2 -> 3)
+            (PR, 'super det. projectile count', '', 0, 0, 2),
             # THE RESPONSES BY NAME. A Halo 2 element holds two responses (Reach has a list): default_material
             # stays ATTACH (Reach's bipeds) + bounce 0-30 at chance 1, never against units
             (PR, 'chance fraction', 'material responses', 0, 0, 1.0),
@@ -319,12 +321,15 @@ PORT = {
             (TRAIL, 'color lower bound', 'point states', 1, 0, [0.0, 0.478, 0.169, 0.957]),
             (TRAIL, 'color upper bound', 'point states', 1, 0, [0.0, 0.478, 0.169, 0.957]),
             # first-person placement: the DMR's -0.005, 0, -0.004 to start; boot 1: 'the rifle needs to go much
-            # further down' (its scope sat ~500 px high at 1080p: ~0.035 wu at the scope's distance)
-            (WP, 'first person weapon offset', '', 0, 0, [-0.005, 0.0, -0.04]),
+            # further down' (its scope sat ~500 px high at 1080p: ~0.035 wu at the scope's distance) -> -0.04;
+            # boot 2: 'one more unit down'
+            (WP, 'first person weapon offset', '', 0, 0, [-0.005, 0.0, -0.05]),
             # the scope's widgets (h2_port_scope `art`): the picture centred, a glyph's centre +-345 units (385 px)
             (r'ui\hud\needle_rifle.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 7, 0, [-512, -512]),
-            (r'ui\hud\needle_rifle.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 4, 0, [-384, -27]),
-            (r'ui\hud\needle_rifle.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 5, 0, [306, -27]),
+            # boot 2 (screenshot): the glyphs' centres at -390 / +384 px, the side cutouts' at +-354 px: moved
+            # 36 / 30 px in (/ 1.117 px a unit)
+            (r'ui\hud\needle_rifle.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 4, 0, [-352, -27]),
+            (r'ui\hud\needle_rifle.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 5, 0, [279, -27]),
         ],
         'skipped': [
             ('reload time', "the magazine's reload time does not drive the player's reload: Reach's own animation does"),
@@ -467,10 +472,11 @@ PORT = {
         'drop_nodes': ('pedestal', 'aim_pitch', 'aim_yaw', 'l_humerus', 'r_humerus', 'l_radius', 'r_radius',
                        'l_handguard', 'r_handguard'),
         'aliases': {'first_person:look': ['first_person:overlays', 'first_person:pitch_and_turn']},
-        'rename': {'first_person:ammunition_needles': 'first_person:ammunition'},
-        'node_scale': ['first_person:ammunition_needles'],
+        # boot 2: Reach's `ammunition_needles` (renamed first_person:ammunition, node_scale) put the 12 needles
+        # OFFSCREEN except in reload / melee, and the user called the world model's DIMMING needles (the needler
+        # shader's ammo function, no animation) the more correct look: dropped, the FP needles dim the same way
         # no Halo 2 slot for Reach's sprint / jump / land / fall / ready_initial / equipment (the SAW's list)
-        'skip': ['first_person:look', 'first_person:acceleration_screens', 'first_person:fall', 'first_person:jump',
+        'skip': ['first_person:ammunition_needles', 'first_person:look', 'first_person:acceleration_screens', 'first_person:fall', 'first_person:jump',
                  'first_person:land_hard', 'first_person:land_soft', 'first_person:ready_initial',
                  'first_person:sprint_enter', 'first_person:sprint_exit', 'first_person:sprint_loop',
                  'first_person:sprint_loop_airborne', 'first_person:throw_equipment'],
