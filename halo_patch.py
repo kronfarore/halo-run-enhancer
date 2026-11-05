@@ -9891,7 +9891,8 @@ _DAMAGE_ROW_GAMES = ('Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4')
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
               turret_first_person=None, keep_reticle=False,
-              equipment_drop=False, par_time_scale=None, from_baseline=True, remove_cutscenes=False, skulls=(),
+              equipment_drop=False, par_time_scale=None, from_baseline=True, remove_cutscenes=False,
+              no_level_prepare=False, skulls=(),
               equipment_swaps=None, spawn_equipment=None, spawn_weapons=None,
               sprint=None, h4_sprint=None,
               difficulty_baseline=None, weapon_ports=None, port_volume=None, ammo_display=True,
@@ -10686,6 +10687,15 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         else:
             r.update(ok=False, reason=rep.get('reason', 'cutscene removal failed'))
         results.append(r)
+
+    if no_level_prepare and str(game).strip() in THIRD_GEN_GAMES:
+        # Options 'Stop preloading the next level': drop the level script's
+        # `game_level_prepare` (h3_level_prepare.py), so MCC does not open the next map
+        # before this level ends and a patch made then still takes. ODST calls it in
+        # every level; Halo 3 never does (Skipped). Fresh from the baseline each patch.
+        import h3_level_prepare
+        results.append(h3_level_prepare.result_row(
+            h3_level_prepare.remove_level_prepare(m, game)))
 
     if sprint:
         # Sprint tuning (speed + duration/cooldown/enable). Whole-map, value-only,

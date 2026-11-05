@@ -30,6 +30,10 @@ SCRIPTS = 0x42C, 0x34
 GLOBALS = 0x438, 0x28
 EXPRS = 0x4DC, 0x18
 STRINGS = 0x418
+# The offsets above are ODST's. Halo 3's scnr has the same blocks 0x40 lower
+# (Expressions 0x49C, Strings 0x3D8, Scripts 0x3EC; measured 2026-11-05) -- read at
+# ODST's offsets a Halo 3 level shows no scripts at all.
+GAME_SHIFT = {'Halo 3: ODST': 0, 'Halo 3': -0x40}
 
 SCRIPT_TYPE = ['startup', 'dormant', 'continuous', 'static', 'command_script', 'stub']
 # Value types we can print as a literal. Everything else falls back to the raw u32.
@@ -57,9 +61,9 @@ class Blob:
 
 
 class Scripts:
-    def __init__(self, m):
+    def __init__(self, m, game='Halo 3: ODST'):
         self.m = m
-        self.scnr = HP._scnr_base(m)
+        self.scnr = HP._scnr_base(m) + GAME_SHIFT.get(game, 0)
         so, ss = _dataref(m, self.scnr + STRINGS)
         self.strings = Blob(m, so, ss)
         self.n_expr = max(0, m.i32(self.scnr + EXPRS[0]))
@@ -154,7 +158,7 @@ def main(argv=None):
 
     path = os.path.join(MAPS[a.game], a.map + '.map')
     m = HP.open_map(path, a.game)
-    s = Scripts(m)
+    s = Scripts(m, a.game)
     print('%s: %d expressions, %d bytes of script strings'
           % (a.map, s.n_expr, len(s.strings.raw)))
 

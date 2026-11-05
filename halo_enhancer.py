@@ -409,7 +409,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'zoom_ui_on_scopeless', 'turret_zoom_first_person', 'vehicle_turret_zoom',
                'keep_reticle_zoomed',
                'turrets_are_weapons',
-               'combine_heretic_hologram', 'remove_h3_cutscenes',
+               'combine_heretic_hologram', 'remove_h3_cutscenes', 'no_level_preload',
                'keep_title_hud', 'clear_profile_equipment', 'clear_profile_grenades',
                'spawn_starting_grenades', 'step_strength',
                'reach_pools_from_map', 'h4_pools_from_map',
@@ -1162,6 +1162,11 @@ CONFIG = {
     # applied fresh from the pristine baseline each patch, so toggling it off and
     # re-patching restores the cutscenes. Reproduces "Halo 3 Cortana Begone".
     "remove_h3_cutscenes": True,   # #4: on by default — skip the vision cutscenes
+    # Halo 3 / ODST: drop the level script's `game_level_prepare`, so MCC does not open
+    # the next map before the level ends and a patch made then still takes
+    # (h3_level_prepare.py). ODST only in practice: no Halo 3 level calls it. Off
+    # until it has been seen in game.
+    "no_level_preload": False,
     # On by default (the user's call, 2026-09-14): the HUD stays up through chapter
     # titles; the titles themselves still appear.
     "keep_title_hud": True,
@@ -10207,6 +10212,8 @@ class MagnitudeEditorDialog(QDialog):
                            else None),
                 hostile_sentinels=bool(CONFIG.get('h4_hostile_sentinels')),
                 remove_cutscenes=remove_cutscenes,
+                no_level_prepare=(bool(CONFIG.get('no_level_preload'))
+                                  and self.game in ('Halo 3', 'Halo 3: ODST')),
                 keep_title_hud=bool(CONFIG.get('keep_title_hud')),
                 skulls=skulls,
                 camo_after_ladder=bool(CONFIG.get('skull_camo_after_ladder')),
@@ -10267,6 +10274,7 @@ class MagnitudeEditorDialog(QDialog):
                     red_plasma=(CONFIG.get('odst_brute_plasma_tuning')
                                 if CONFIG.get('odst_red_plasma_as_brute') else None),
                     odst_downgrade=self._odst_downgrade_keep(),
+                    no_level_prepare=bool(CONFIG.get('no_level_preload')),
                 equipment_ai_drops=bool(CONFIG.get('odst_ai_equipment_drops'))
                 and self.game == 'Halo 3: ODST'))
                 ok = sum(1 for r in hub_results if r.get('ok') and not r.get('skip'))
@@ -12384,6 +12392,15 @@ class OptionsDialog(QDialog):
                                      "and re-patch to restore.")
         form.addRow("Halo 3 cutscenes:", self.cutscenes_cb)
 
+        self.no_preload_cb = QCheckBox("Stop preloading the next level (Halo 3 / ODST)")
+        self.no_preload_cb.setChecked(bool(CONFIG.get('no_level_preload')))
+        self.no_preload_cb.setToolTip(
+            "Halo 3 starts loading the next level before the current one ends, so a "
+            "patch made then doesn't take. This stops that.\n\nIn practice this is "
+            "ODST: every ODST level (and Mombasa Streets) asks for the next one early. "
+            "No Halo 3 level does, so the option changes nothing there.")
+        form.addRow("Next level:", self.no_preload_cb)
+
         self.keep_title_hud_cb = QCheckBox("Keep the HUD up through chapter titles")
         self.keep_title_hud_cb.setChecked(bool(CONFIG.get('keep_title_hud')))
         self.keep_title_hud_cb.setToolTip(
@@ -14220,6 +14237,7 @@ class OptionsDialog(QDialog):
             'remove_boss_mods': not self._user_boss_cards,  # inverted UI ("Add Boss card"); boss_mods_removed() ORs in single-game at runtime
             'combine_heretic_hologram': self.combine_holo_cb.isChecked(),
             'remove_h3_cutscenes': self.cutscenes_cb.isChecked(),
+            'no_level_preload': self.no_preload_cb.isChecked(),
             'keep_title_hud': self.keep_title_hud_cb.isChecked(),
             'clear_profile_equipment': self.clear_profile_equipment_cb.isChecked(),
             'clear_profile_grenades': self.clear_profile_grenades_cb.isChecked(),
