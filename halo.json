@@ -6893,7 +6893,8 @@
 								"field": "Flags",
 								"block": "New Damage Info",
 								"flag": "Cannot Die From Damage",
-								"flag_on": true
+								"flag_on": true,
+								"unshare": true
 							}
 						],
 						"Halo 3": [
@@ -6901,7 +6902,8 @@
 								"field": "Flags",
 								"block": "New Damage Info",
 								"flag": "Cannot Die From Damage",
-								"flag_on": true
+								"flag_on": true,
+								"unshare": true
 							}
 						],
 						"Halo 3: ODST": [
@@ -6909,7 +6911,8 @@
 								"field": "Flags",
 								"block": "New Damage Info",
 								"flag": "Cannot Die From Damage",
-								"flag_on": true
+								"flag_on": true,
+								"unshare": true
 							}
 						],
 						"Halo Reach": [
@@ -6917,7 +6920,8 @@
 								"field": "Flags",
 								"block": "Old Damage Info",
 								"flag": "Cannot Die From Damage",
-								"flag_on": true
+								"flag_on": true,
+								"unshare": true
 							},
 							{
 								"field": "Flags",
@@ -6931,7 +6935,8 @@
 								"field": "Flags",
 								"block": "Old Damage Info",
 								"flag": "Cannot Die From Damage",
-								"flag_on": true
+								"flag_on": true,
+								"unshare": true
 							},
 							{
 								"field": "Flags",
@@ -7001,7 +7006,7 @@
 				"Stable Grenades": {
 					"desc": "Grenades lying on the ground can't be set off by other explosions.",
 					"desc_inverted": "Grenades lying on the ground go off when an explosion hits them.",
-					"debug_desc": "WHAT SETS A GROUND GRENADE OFF, per game (read off every campaign map, 2026-11-05):\n\n- Halo 1: the pickup (`eqip`) has NO collision model; the route is the item flag `Flags` (item block, bit 1) `Destroyed By Explosions`, which ships ON on both pickups (item Flags = 2), with a Detonation Effect filled in (plasma also a Detonating Effect).\n- Halo 2: BOTH routes. The same item flag ships ON (item Flags = 2), AND the pickup is a destructible model: its `hlmt` has Maximum Vitality 5, whose death detonates the item through the eqip's Detonation Damage Effect / Detonation Effect (filled in).\n- Halo 3, ODST, Reach, Halo 4: no item flag any more. The official H3/ODST kits name bit 1 `Crate Style Collision Filter`, and Reach/Halo 4 have no such bit (the old Assembly plugins that call it `Destroyed by Explosions` are mislabelled; item Flags ship 0). The pickup's `hlmt` has Maximum Vitality 15 and its damage section's instant response `Causes SP Detonation` (bit 26).\n\nSo stock, explosions (and, from Halo 2 on, anything else that does that much damage) set a ground grenade off in EVERY game.\n\nWHAT THE CARD WRITES (by flag NAME, other bits left alone): Halo 1 CLEARS `Destroyed By Explosions`; Halo 2 clears it and switches `Cannot Die From Damage` ON in `New Damage Info`; Halo 3/ODST switch `Cannot Die From Damage` ON in `New Damage Info`; Reach/Halo 4 in both `Old Damage Info` and the root `Flags` (they carry the same 15 vitality twice). From Halo 2 on that stops EVERY kind of damage from killing the pickup, not only explosions.\n\nINVERTED: sets `Destroyed By Explosions` (Halo 1/2) and clears `Cannot Die From Damage`. That is the stock state in every game, so it writes nothing (Skipped rows), and the card is never the inverted half of a Weapon Identity pair (`invertible: false`); it only matters to undo a positive pick. A tag already in the wanted state is a Skipped row.\n\nThrown grenades (`proj`) are not this card.\n\nHalo 2: the plasma grenade's pickup and its thrown projectile share ONE model (`objects\\weapons\\grenade\\plasma_grenade\\plasma_grenade`), so in Halo 2 the positive card also stops a THROWN plasma grenade from being killed by damage.\n\nSHARED BLOCK, Halo 3 and ODST: the plasma and firebomb pickup models (`plasma_grenade_equipment`, `firebomb_grenade_equipment`) point at ONE `New Damage Info` block, so this card makes BOTH pickups stable there (the second write reads as Skipped).",
+					"debug_desc": "WHAT SETS A GROUND GRENADE OFF, per game (read off every campaign map, 2026-11-05):\n\n- Halo 1: the pickup (`eqip`) has NO collision model; the route is the item flag `Flags` (item block, bit 1) `Destroyed By Explosions`, which ships ON on both pickups (item Flags = 2), with a Detonation Effect filled in (plasma also a Detonating Effect).\n- Halo 2: BOTH routes. The same item flag ships ON (item Flags = 2), AND the pickup is a destructible model: its `hlmt` has Maximum Vitality 5, whose death detonates the item through the eqip's Detonation Damage Effect / Detonation Effect (filled in).\n- Halo 3, ODST, Reach, Halo 4: no item flag any more. The official H3/ODST kits name bit 1 `Crate Style Collision Filter`, and Reach/Halo 4 have no such bit (the old Assembly plugins that call it `Destroyed by Explosions` are mislabelled; item Flags ship 0). The pickup's `hlmt` has Maximum Vitality 15 and its damage section's instant response `Causes SP Detonation` (bit 26).\n\nSo stock, explosions (and, from Halo 2 on, anything else that does that much damage) set a ground grenade off in EVERY game.\n\nWHAT THE CARD WRITES (by flag NAME, other bits left alone): Halo 1 CLEARS `Destroyed By Explosions`; Halo 2 clears it and switches `Cannot Die From Damage` ON in `New Damage Info`; Halo 3/ODST switch `Cannot Die From Damage` ON in `New Damage Info`; Reach/Halo 4 in both `Old Damage Info` and the root `Flags` (they carry the same 15 vitality twice). From Halo 2 on that stops EVERY kind of damage from killing the pickup, not only explosions.\n\nINVERTED: sets `Destroyed By Explosions` (Halo 1/2) and clears `Cannot Die From Damage`. That is the stock state in every game, so it writes nothing (Skipped rows), and the card is never the inverted half of a Weapon Identity pair (`invertible: false`); it only matters to undo a positive pick. A tag already in the wanted state is a Skipped row.\n\nThrown grenades (`proj`) are not this card.\n\nHalo 2: the plasma grenade's pickup and its thrown projectile share ONE model (`objects\\weapons\\grenade\\plasma_grenade\\plasma_grenade`), so in Halo 2 the positive card also stops a THROWN plasma grenade from being killed by damage.\n\nSHARED BLOCK, Halo 3 and ODST: the plasma and firebomb pickup models (`plasma_grenade_equipment`, `firebomb_grenade_equipment`) point at ONE `New Damage Info` block in the shipped maps. The target carries `unshare`, so the patch first gives this pickup a PRIVATE copy of that block (slack, like the HUD reticle edit) and the flag reaches this grenade only (the row says 'own copy of New Damage Info').",
 					"game": [
 						"Halo 1",
 						"Halo 2",
@@ -7040,7 +7045,8 @@
 								"field": "Flags",
 								"block": "New Damage Info",
 								"flag": "Cannot Die From Damage",
-								"flag_on": true
+								"flag_on": true,
+								"unshare": true
 							}
 						],
 						"Halo 3": [
@@ -7048,7 +7054,8 @@
 								"field": "Flags",
 								"block": "New Damage Info",
 								"flag": "Cannot Die From Damage",
-								"flag_on": true
+								"flag_on": true,
+								"unshare": true
 							}
 						],
 						"Halo 3: ODST": [
@@ -7056,7 +7063,8 @@
 								"field": "Flags",
 								"block": "New Damage Info",
 								"flag": "Cannot Die From Damage",
-								"flag_on": true
+								"flag_on": true,
+								"unshare": true
 							}
 						],
 						"Halo Reach": [
@@ -7064,7 +7072,8 @@
 								"field": "Flags",
 								"block": "Old Damage Info",
 								"flag": "Cannot Die From Damage",
-								"flag_on": true
+								"flag_on": true,
+								"unshare": true
 							},
 							{
 								"field": "Flags",
@@ -7078,7 +7087,8 @@
 								"field": "Flags",
 								"block": "Old Damage Info",
 								"flag": "Cannot Die From Damage",
-								"flag_on": true
+								"flag_on": true,
+								"unshare": true
 							},
 							{
 								"field": "Flags",
@@ -9599,7 +9609,8 @@
 								"field": "Flags",
 								"block": "New Damage Info",
 								"flag": "Cannot Die From Damage",
-								"flag_on": true
+								"flag_on": true,
+								"unshare": true
 							}
 						],
 						"Halo 3: ODST": [
@@ -9607,7 +9618,8 @@
 								"field": "Flags",
 								"block": "New Damage Info",
 								"flag": "Cannot Die From Damage",
-								"flag_on": true
+								"flag_on": true,
+								"unshare": true
 							}
 						]
 					}
@@ -10270,7 +10282,7 @@
 				"Stable Grenades": {
 					"desc": "Grenades lying on the ground can't be set off by other explosions.",
 					"desc_inverted": "Grenades lying on the ground go off when an explosion hits them.",
-					"debug_desc": "WHAT SETS A GROUND GRENADE OFF, per game (read off every campaign map, 2026-11-05):\n\n- Halo 1: the pickup (`eqip`) has NO collision model; the route is the item flag `Flags` (item block, bit 1) `Destroyed By Explosions`, which ships ON on both pickups (item Flags = 2), with a Detonation Effect filled in (plasma also a Detonating Effect).\n- Halo 2: BOTH routes. The same item flag ships ON (item Flags = 2), AND the pickup is a destructible model: its `hlmt` has Maximum Vitality 5, whose death detonates the item through the eqip's Detonation Damage Effect / Detonation Effect (filled in).\n- Halo 3, ODST, Reach, Halo 4: no item flag any more. The official H3/ODST kits name bit 1 `Crate Style Collision Filter`, and Reach/Halo 4 have no such bit (the old Assembly plugins that call it `Destroyed by Explosions` are mislabelled; item Flags ship 0). The pickup's `hlmt` has Maximum Vitality 15 and its damage section's instant response `Causes SP Detonation` (bit 26).\n\nSo stock, explosions (and, from Halo 2 on, anything else that does that much damage) set a ground grenade off in EVERY game.\n\nWHAT THE CARD WRITES (by flag NAME, other bits left alone): Halo 1 CLEARS `Destroyed By Explosions`; Halo 2 clears it and switches `Cannot Die From Damage` ON in `New Damage Info`; Halo 3/ODST switch `Cannot Die From Damage` ON in `New Damage Info`; Reach/Halo 4 in both `Old Damage Info` and the root `Flags` (they carry the same 15 vitality twice). From Halo 2 on that stops EVERY kind of damage from killing the pickup, not only explosions.\n\nINVERTED: sets `Destroyed By Explosions` (Halo 1/2) and clears `Cannot Die From Damage`. That is the stock state in every game, so it writes nothing (Skipped rows), and the card is never the inverted half of a Weapon Identity pair (`invertible: false`); it only matters to undo a positive pick. A tag already in the wanted state is a Skipped row.\n\nThrown grenades (`proj`) are not this card.\n\nSHARED BLOCK, Halo 3 and ODST: the plasma and firebomb pickup models (`plasma_grenade_equipment`, `firebomb_grenade_equipment`) point at ONE `New Damage Info` block, so this card makes BOTH pickups stable there (the second write reads as Skipped).",
+					"debug_desc": "WHAT SETS A GROUND GRENADE OFF, per game (read off every campaign map, 2026-11-05):\n\n- Halo 1: the pickup (`eqip`) has NO collision model; the route is the item flag `Flags` (item block, bit 1) `Destroyed By Explosions`, which ships ON on both pickups (item Flags = 2), with a Detonation Effect filled in (plasma also a Detonating Effect).\n- Halo 2: BOTH routes. The same item flag ships ON (item Flags = 2), AND the pickup is a destructible model: its `hlmt` has Maximum Vitality 5, whose death detonates the item through the eqip's Detonation Damage Effect / Detonation Effect (filled in).\n- Halo 3, ODST, Reach, Halo 4: no item flag any more. The official H3/ODST kits name bit 1 `Crate Style Collision Filter`, and Reach/Halo 4 have no such bit (the old Assembly plugins that call it `Destroyed by Explosions` are mislabelled; item Flags ship 0). The pickup's `hlmt` has Maximum Vitality 15 and its damage section's instant response `Causes SP Detonation` (bit 26).\n\nSo stock, explosions (and, from Halo 2 on, anything else that does that much damage) set a ground grenade off in EVERY game.\n\nWHAT THE CARD WRITES (by flag NAME, other bits left alone): Halo 1 CLEARS `Destroyed By Explosions`; Halo 2 clears it and switches `Cannot Die From Damage` ON in `New Damage Info`; Halo 3/ODST switch `Cannot Die From Damage` ON in `New Damage Info`; Reach/Halo 4 in both `Old Damage Info` and the root `Flags` (they carry the same 15 vitality twice). From Halo 2 on that stops EVERY kind of damage from killing the pickup, not only explosions.\n\nINVERTED: sets `Destroyed By Explosions` (Halo 1/2) and clears `Cannot Die From Damage`. That is the stock state in every game, so it writes nothing (Skipped rows), and the card is never the inverted half of a Weapon Identity pair (`invertible: false`); it only matters to undo a positive pick. A tag already in the wanted state is a Skipped row.\n\nThrown grenades (`proj`) are not this card.\n\nSHARED BLOCK, Halo 3 and ODST: the plasma and firebomb pickup models (`plasma_grenade_equipment`, `firebomb_grenade_equipment`) point at ONE `New Damage Info` block in the shipped maps. The target carries `unshare`, so the patch first gives this pickup a PRIVATE copy of that block (slack, like the HUD reticle edit) and the flag reaches this grenade only (the row says 'own copy of New Damage Info').",
 					"game": [
 						"Halo 3",
 						"Halo 3: ODST"
@@ -10286,7 +10298,8 @@
 								"field": "Flags",
 								"block": "New Damage Info",
 								"flag": "Cannot Die From Damage",
-								"flag_on": true
+								"flag_on": true,
+								"unshare": true
 							}
 						],
 						"Halo 3: ODST": [
@@ -10294,7 +10307,8 @@
 								"field": "Flags",
 								"block": "New Damage Info",
 								"flag": "Cannot Die From Damage",
-								"flag_on": true
+								"flag_on": true,
+								"unshare": true
 							}
 						]
 					}
@@ -15709,7 +15723,7 @@
 				"Stable Grenades": {
 					"desc": "Grenades lying on the ground can't be set off by other explosions.",
 					"desc_inverted": "Grenades lying on the ground go off when an explosion hits them.",
-					"debug_desc": "WHAT SETS A GROUND GRENADE OFF, per game (read off every campaign map, 2026-11-05):\n\n- Halo 1: the pickup (`eqip`) has NO collision model; the route is the item flag `Flags` (item block, bit 1) `Destroyed By Explosions`, which ships ON on both pickups (item Flags = 2), with a Detonation Effect filled in (plasma also a Detonating Effect).\n- Halo 2: BOTH routes. The same item flag ships ON (item Flags = 2), AND the pickup is a destructible model: its `hlmt` has Maximum Vitality 5, whose death detonates the item through the eqip's Detonation Damage Effect / Detonation Effect (filled in).\n- Halo 3, ODST, Reach, Halo 4: no item flag any more. The official H3/ODST kits name bit 1 `Crate Style Collision Filter`, and Reach/Halo 4 have no such bit (the old Assembly plugins that call it `Destroyed by Explosions` are mislabelled; item Flags ship 0). The pickup's `hlmt` has Maximum Vitality 15 and its damage section's instant response `Causes SP Detonation` (bit 26).\n\nSo stock, explosions (and, from Halo 2 on, anything else that does that much damage) set a ground grenade off in EVERY game.\n\nWHAT THE CARD WRITES (by flag NAME, other bits left alone): Halo 1 CLEARS `Destroyed By Explosions`; Halo 2 clears it and switches `Cannot Die From Damage` ON in `New Damage Info`; Halo 3/ODST switch `Cannot Die From Damage` ON in `New Damage Info`; Reach/Halo 4 in both `Old Damage Info` and the root `Flags` (they carry the same 15 vitality twice). From Halo 2 on that stops EVERY kind of damage from killing the pickup, not only explosions.\n\nINVERTED: sets `Destroyed By Explosions` (Halo 1/2) and clears `Cannot Die From Damage`. That is the stock state in every game, so it writes nothing (Skipped rows), and the card is never the inverted half of a Weapon Identity pair (`invertible: false`); it only matters to undo a positive pick. A tag already in the wanted state is a Skipped row.\n\nThrown grenades (`proj`) are not this card.\n\nHalo 4: the pulse grenade's pickup and its thrown projectile share ONE model (`storm_energy_drain_grenade`), so the positive card also stops a THROWN pulse grenade from being killed by damage. Its instant response is `Destroys Object` + `Causes Detonation` (131200), not Causes SP Detonation.\n\nSHARED BLOCK: that model's `Old Damage Info` block is also the THROWN frag grenade's (`storm_frag_grenade`) and the unused disruption grenade's, so those become unkillable by damage too.",
+					"debug_desc": "WHAT SETS A GROUND GRENADE OFF, per game (read off every campaign map, 2026-11-05):\n\n- Halo 1: the pickup (`eqip`) has NO collision model; the route is the item flag `Flags` (item block, bit 1) `Destroyed By Explosions`, which ships ON on both pickups (item Flags = 2), with a Detonation Effect filled in (plasma also a Detonating Effect).\n- Halo 2: BOTH routes. The same item flag ships ON (item Flags = 2), AND the pickup is a destructible model: its `hlmt` has Maximum Vitality 5, whose death detonates the item through the eqip's Detonation Damage Effect / Detonation Effect (filled in).\n- Halo 3, ODST, Reach, Halo 4: no item flag any more. The official H3/ODST kits name bit 1 `Crate Style Collision Filter`, and Reach/Halo 4 have no such bit (the old Assembly plugins that call it `Destroyed by Explosions` are mislabelled; item Flags ship 0). The pickup's `hlmt` has Maximum Vitality 15 and its damage section's instant response `Causes SP Detonation` (bit 26).\n\nSo stock, explosions (and, from Halo 2 on, anything else that does that much damage) set a ground grenade off in EVERY game.\n\nWHAT THE CARD WRITES (by flag NAME, other bits left alone): Halo 1 CLEARS `Destroyed By Explosions`; Halo 2 clears it and switches `Cannot Die From Damage` ON in `New Damage Info`; Halo 3/ODST switch `Cannot Die From Damage` ON in `New Damage Info`; Reach/Halo 4 in both `Old Damage Info` and the root `Flags` (they carry the same 15 vitality twice). From Halo 2 on that stops EVERY kind of damage from killing the pickup, not only explosions.\n\nINVERTED: sets `Destroyed By Explosions` (Halo 1/2) and clears `Cannot Die From Damage`. That is the stock state in every game, so it writes nothing (Skipped rows), and the card is never the inverted half of a Weapon Identity pair (`invertible: false`); it only matters to undo a positive pick. A tag already in the wanted state is a Skipped row.\n\nThrown grenades (`proj`) are not this card.\n\nHalo 4: the pulse grenade's pickup and its thrown projectile share ONE model (`storm_energy_drain_grenade`), so the positive card also stops a THROWN pulse grenade from being killed by damage. Its instant response is `Destroys Object` + `Causes Detonation` (131200), not Causes SP Detonation.\n\nSHARED BLOCK: that model's `Old Damage Info` block is also the THROWN frag grenade's (`storm_frag_grenade`) and the unused disruption grenade's; `unshare` gives the pulse model a private copy first, so those are left alone. The pulse pickup and the THROWN pulse grenade stay one model TAG, which no block copy can split.",
 					"game": [
 						"Halo 4"
 					],
@@ -15723,7 +15737,8 @@
 								"field": "Flags",
 								"block": "Old Damage Info",
 								"flag": "Cannot Die From Damage",
-								"flag_on": true
+								"flag_on": true,
+								"unshare": true
 							},
 							{
 								"field": "Flags",

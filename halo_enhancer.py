@@ -10175,6 +10175,7 @@ class MagnitudeEditorDialog(QDialog):
                                          'index': t.get('index', 0),
                                          'nth': t.get('nth', 0) or 0,
                                          'tag': t.get('tag'), **_diff_flavor(t),
+                                         'unshare': bool(t.get('unshare')),
                                          ('set_bit' if want else 'clear_bit'): t['flag']})
 
         # Fixed-set fields (e.g. Special-Fire Mode -> Overcharge) tag along whenever

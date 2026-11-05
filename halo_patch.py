@@ -9924,6 +9924,40 @@ def apply_weapon_ports(m, game, registry, ports):
 _DAMAGE_ROW_GAMES = ('Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4')
 
 
+def _unshare_top_block(m, cls, tbase, fld):
+    """Give the tag at `tbase` a PRIVATE copy of the top-level block `fld` lives in when
+    another tag of the same class points at the very same element array, so a write
+    reaches this tag alone (Stable Grenades: Halo 3/ODST's plasma and firebomb pickup
+    models share one New Damage Info block; Halo 4's pulse model shares its Old Damage
+    Info with the thrown frag grenade's).
+
+    Only the top-level elements are copied: their child blocks keep pointing at the
+    shared data, which is fine for a field that sits in the top level itself (it
+    refuses anything deeper). Third-gen parsers only (slack via _h3_reserve); Halo 1/2
+    answer 'n/a'. Returns 'private' (nothing shared), 'copied', 'n/a', or None when the
+    map has no slack for the copy. Patching rebuilds from the baseline, so the copy is
+    made afresh -- in the same place -- on every patch."""
+    if not hasattr(m, 'partitions') or not hasattr(m, 'tags'):
+        return 'n/a'
+    offs, sizes = fld.get('block_offsets') or [], fld.get('block_sizes') or []
+    if len(offs) != 1 or not sizes:
+        return 'n/a'
+    refl, esz = offs[0], sizes[0]
+    count, ptr = m.i32(tbase + refl), m.u32(tbase + refl + 4)
+    if count <= 0 or not ptr:
+        return 'private'
+    if not any(t['class'] == cls and t.get('base') is not None and t['base'] != tbase
+               and m.u32(t['base'] + refl + 4) == ptr for t in m.tags):
+        return 'private'
+    got = _h3_reserve(m, [count * esz])
+    if got is None:
+        return None
+    src = m.data2off(ptr)
+    m.data[got[0]:got[0] + count * esz] = m.data[src:src + count * esz]
+    struct.pack_into('<I', m.data, tbase + refl + 4, m.off2data(got[0]))
+    return 'copied'
+
+
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
               turret_first_person=None, keep_reticle=False,
@@ -10429,6 +10463,17 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                                         'old': cur, 'new': 'already %s' % state,
                                         'reason': 'already %s' % state})
                         continue
+                    if op.get('unshare'):
+                        # the flag must reach THIS tag only, not one sharing its block
+                        u = _unshare_top_block(m, cls, tbase, fld)
+                        if u is None:
+                            results.append({**base, 'tag': f"{cls} {tpath}", 'field': field,
+                                            'ok': False, 'reason': 'its block is shared with '
+                                            'another tag and the map has no slack for a '
+                                            'private copy'})
+                            continue
+                        if u == 'copied':
+                            state += ', own copy of %s' % (fld['block_chain'][0])
                     m.write_tag_field(tbase, field, new, plugin, op.get('block'),
                                       op.get('index', 0) or 0,
                                       op.get('nth', 0) or 0)
