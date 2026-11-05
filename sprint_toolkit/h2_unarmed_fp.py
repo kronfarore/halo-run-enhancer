@@ -23,6 +23,9 @@ WHAT. Three new tags and one edit, all in the kit:
     python h2_unarmed_fp.py --check
     python h2_unarmed_fp.py --write          (H2 kit lock; backups <tag>.prefp)
 
+CONFIRMED in game 2026-11-05 (06b Arbiter, 03b Chief): the light holds still while sprinting,
+nothing shows, sprint timing and melee unchanged, partner view fine.
+
 The levels carry it after a rebuild (unarmed is in every level: h2_rebuild_all / test maps).
 """
 import argparse
