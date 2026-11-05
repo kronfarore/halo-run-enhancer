@@ -9897,7 +9897,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               sprint=None, h4_sprint=None,
               difficulty_baseline=None, weapon_ports=None, port_volume=None, ammo_display=True,
               red_plasma=None, odst_downgrade=None, equipment_ai_drops=False,
-              add_respawn_profile=False, extra_squads=None,
+              add_respawn_profile=False, extra_squads=None, tartarus=None,
               keep_title_hud=False, keep_loadout=False, skip_space=False,
               skip_flight=False, hostile_sentinels=False, enemy_colors=None,
               h4_keep_loadout=False, clear_profile_equipment=False,
@@ -10494,6 +10494,17 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # passes happen together. {squad name: extra actors}.
         for _sq, _n in sorted(extra_squads.items()):
             results.append(_h2_duplicate_squad(m, registry, _sq, int(_n or 0)))
+
+    if tartarus and str(game).strip() == 'Halo 2':
+        # 08b's boss script sets Tartarus's health outright every phase, so his health
+        # and the cannot-die pin are edited in the compiled script (tartarus.py). Other
+        # levels have no tartarus_boss_fight script and are left alone silently.
+        import tartarus as _tartarus
+        for _r in _tartarus.apply(m, _scnr_base(m), _block_base,
+                                  hp_mult=tartarus.get('hp_mult', 1.0),
+                                  killable=bool(tartarus.get('killable'))):
+            if not _r.get('skip'):
+                results.append(_r)
 
     if add_respawn_profile and str(game).strip() in SECOND_GEN_GAMES:
         # Before the starting-weapon write below, so a profile added here is armed by

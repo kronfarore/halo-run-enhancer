@@ -465,7 +465,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'skull_disabled', 'skull_camo_after_ladder',
                'bugfix_h2_fuel_rod', 'player_armour_rows', 'no_immunities', 'vehicle_cards',
                'set_starting_equipment', 'equipment_all_selected',
-               'h2_add_respawn_profile', 'h2_extra_squads', 'swap_player_loadouts',
+               'h2_add_respawn_profile', 'h2_extra_squads', 'h2_tartarus', 'swap_player_loadouts',
                'h3_all_chief_profiles',
                'starting_vitality_cards',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
@@ -1088,6 +1088,11 @@ CONFIG = {
     # Tartarus on 08b, where the speedrun tech is to duplicate Johnson so his
     # Sentinel Beam strips the shield faster. 0 = vanilla.
     "h2_extra_squads": {"08b": {"boss_johnson": 0}},
+    # Tartarus on 08b (tartarus.py): hp_mult scales the health his boss script sets
+    # (it sets it outright every phase, so vitality cards never reach him); killable
+    # lets him die for real -- one health bar, no phases. Killable needs the kit's
+    # fight-end branch (sprint_toolkit/h2_tartarus_kit.py) in the built 08b.
+    "h2_tartarus": {"hp_mult": 1.0, "killable": False},
     # Halo 3 only. H3's Player Starting Profile has no equipment field (Reach added
     # one), so the run's picked equipment is granted by APPENDING a placement onto the
     # player's starting location — the item is walked into as the level loads. Vanilla
@@ -10296,6 +10301,7 @@ class MagnitudeEditorDialog(QDialog):
                 odst_downgrade=self._odst_downgrade_keep(),
                 add_respawn_profile=bool(CONFIG.get('h2_add_respawn_profile', True)),
                 extra_squads=(CONFIG.get('h2_extra_squads') or {}).get(self.mission_id),
+                tartarus=(CONFIG.get('h2_tartarus') if self.mission_id == '08b' else None),
                 equipment_ai_drops=bool(CONFIG.get('odst_ai_equipment_drops'))
                 and self.game == 'Halo 3: ODST'))
         except Exception as e:
@@ -11883,6 +11889,33 @@ class OptionsDialog(QDialog):
             "level alone. This restructures the map (the squad’s starting-location "
             "block is grown), and only affects 08b.")
         cform.addRow("Extra Johnsons (08b):", self.h2_johnson_spin)
+
+        # Tartarus himself (tartarus.py). His boss script sets his health outright at
+        # the start of every phase, so these edit the script, not his character.
+        _tt = CONFIG.get('h2_tartarus') or {}
+        self.h2_tartarus_hp_spin = QDoubleSpinBox()
+        self.h2_tartarus_hp_spin.setRange(0.1, 20.0)
+        self.h2_tartarus_hp_spin.setSingleStep(0.25)
+        self.h2_tartarus_hp_spin.setDecimals(2)
+        self.h2_tartarus_hp_spin.setSuffix(" ×")
+        self.h2_tartarus_hp_spin.setValue(float(_tt.get('hp_mult', 1.0) or 1.0))
+        self.h2_tartarus_hp_spin.setToolTip(
+            "Tartarus's health in the fight on The Great Journey (08b). The level's own "
+            "script sets his health at the start of every round of the fight, which is "
+            "why health cards never reach him; this multiplies those numbers. 1 leaves "
+            "him as he ships. Only affects 08b.")
+        cform.addRow("Tartarus HP (08b):", self.h2_tartarus_hp_spin)
+        self.h2_tartarus_kill_cb = QCheckBox("Tartarus can be killed")
+        self.h2_tartarus_kill_cb.setChecked(bool(_tt.get('killable')))
+        self.h2_tartarus_kill_cb.setToolTip(
+            "Stock, Tartarus can't die until the fight's last round: each time his "
+            "health runs out he shrugs it off and the next round starts (2 rounds on "
+            "Normal, 3 on Heroic, 4 on Legendary). With this on he dies for real the "
+            "first time his health runs out, and the fight ends there. His starting "
+            "health is small, so raise Tartarus HP to keep the fight long. Needs a "
+            "one-time rebuild of 08b; until then the patch report says so and Tartarus "
+            "is left as he ships.")
+        cform.addRow("Tartarus killable (08b):", self.h2_tartarus_kill_cb)
 
         # #6: the respawn options only mean anything when starting weapons are being
         # set at all — grey them out otherwise.
@@ -14488,6 +14521,8 @@ class OptionsDialog(QDialog):
             'swap_player_loadouts': self.swap_players_cb.isChecked(),
             'starting_vitality_cards': self.no_vit_cards_cb.isChecked(),
             'h2_extra_squads': {'08b': {'boss_johnson': self.h2_johnson_spin.value()}},
+            'h2_tartarus': {'hp_mult': self.h2_tartarus_hp_spin.value(),
+                            'killable': self.h2_tartarus_kill_cb.isChecked()},
             'zoom_ui_on_scopeless': self.zoom_ui_cb.isChecked(),
             'turret_zoom_first_person': self.turret_zoom_cb.isChecked(),
             'vehicle_turret_zoom': self.vehicle_zoom_cb.isChecked(),
