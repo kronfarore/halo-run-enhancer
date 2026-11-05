@@ -164,12 +164,88 @@ def decode(mask):
         ['generic:0x%X' % (mask & 0xF0000000)] if mask & 0xF0000000 else [])
 
 
+CLUSTER = 0x400            # a map's handles this close together = one record
+
+
+def scan_memory(pid, row):
+    """Where MCC keeps this map's handles and its name (READ-ONLY).
+
+    The handle values are searched as u32 and u64 in every committed read/write
+    region; a place where two or more of the map's handles sit within CLUSTER bytes is
+    the engine's record of the open map. Addresses inside halo3.dll are given as
+    module offsets -- a static slot there leads straight to the code that fills it.
+    The map's base name is searched too (ASCII and UTF-16)."""
+    import numpy as np
+    sys.path.insert(0, HERE)
+    import h2_memscan as M
+    mods = {}
+    for dll in ('halo3.dll', 'halo3odst.dll', 'MCC-Win64-Shipping.exe'):
+        b, s = M.module_base(pid, dll)
+        if b:
+            mods[dll] = (b, s)
+
+    def where(addr):
+        for dll, (b, s) in mods.items():
+            if b <= addr < b + s:
+                return '%s+0x%X' % (dll, addr - b)
+        return 'heap'
+
+    h = M.k32.OpenProcess(M.PROCESS_QUERY_INFORMATION | M.PROCESS_VM_READ, False, pid)
+    if not h:
+        return {'error': 'cannot open MCC for reading: %d' % ctypes.get_last_error()}
+    values = [int(x['value'], 16) for x in row['handles']]
+    name = os.path.splitext(os.path.basename(row['path']))[0].lower().encode()
+    needles = [name, name.decode().encode('utf-16-le')]
+    regions = list(M.all_regions(h, cap=(1 << 36)))
+    for dll, (b, s) in mods.items():     # module data is not always plain RW: add it
+        regions.append((b, s))
+    clusters, names = [], []
+    try:
+        for addr, size in regions:
+            buf = M.read(h, addr, size)
+            if not buf:
+                continue
+            a4 = np.frombuffer(buf[:len(buf) & ~3], dtype='<u4')
+            hits = []
+            for v in values:
+                for i in np.nonzero(a4 == v)[0]:
+                    hits.append((int(i) * 4, v))
+            hits.sort()
+            for k, (o, v) in enumerate(hits):
+                near = {vv for oo, vv in hits if 0 <= oo - o < CLUSTER}
+                if len(near) >= 2 and (not clusters or clusters[-1][0] < addr + o - CLUSTER):
+                    at = addr + o
+                    clusters.append((at, where(at), sorted('0x%X' % x for x in near)))
+            low = buf.lower()
+            for nd in needles:
+                i = low.find(nd)
+                while i >= 0 and len(names) < 200:
+                    at = addr + i
+                    s = buf[max(0, i - 64):i + 64]
+                    names.append(('0x%X' % at, where(at), s.replace(b'\0', b'.').decode('latin-1')))
+                    i = low.find(nd, i + 1)
+    finally:
+        M.k32.CloseHandle(h)
+    out = {'clusters': [('0x%X' % a, w, v) for a, w, v in clusters[:100]],
+           'names': names}
+    print('    memory: %d handle record(s), %d name hit(s) for %s'
+          % (len(clusters), len(names), row['path']))
+    for a, w, v in out['clusters'][:20]:
+        print('      record %s  %s  %s' % (a, w, ' '.join(v)))
+    for a, w, s in [n for n in names if n[1] != 'heap'][:20]:
+        print('      name   %s  %s' % (a, w))
+    return out
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--note', default='', help='the condition, e.g. "H3 summary after 010"')
     ap.add_argument('--all', action='store_true', help='every file, not only .map files')
     ap.add_argument('--no-log', action='store_true')
+    ap.add_argument('--scan', action='store_true',
+                    help="also find, in MCC's memory (read only), where each map's handles "
+                         "and name are stored -- the engine's record of that map")
     a = ap.parse_args(argv)
 
     pids = mcc_pids()
@@ -222,6 +298,10 @@ def main(argv=None):
                      ','.join(h['mode'] or ['?'])))
         print('      we can: read=%s write=%s rename=%s'
               % (r['we_can_read'], r['we_can_write'], r['we_can_rename']))
+    if a.scan and out:
+        for pid in pids:
+            for r in out:
+                r['memory'] = scan_memory(pid, r)
     if not a.no_log and out:
         os.makedirs(os.path.dirname(LOG), exist_ok=True)
         with open(LOG, 'a', encoding='utf-8') as f:

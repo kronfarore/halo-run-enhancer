@@ -10,5 +10,5 @@ setlocal
 set "HERE=%~dp0"
 set "PY=%LOCALAPPDATA%\Microsoft\WindowsApps\python.exe"
 if not exist "%PY%" set "PY=python"
-"%PY%" -u "%HERE%mcc_map_locks.py" --note "%~1"
+"%PY%" -u "%HERE%mcc_map_locks.py" --scan --note "%~1"
 pause
