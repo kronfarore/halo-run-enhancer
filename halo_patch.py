@@ -2209,6 +2209,42 @@ def _is_human_tag(name):
     return any(w in low.rsplit(chr(92), 1)[-1] for w in _HUMAN_WORDS)
 
 
+def h2_level_has_human_allies(map_path):
+    """True when any Halo 2 squad on this (patched) map holds a human on the player's
+    side -- Marines, Johnson, Miranda, an ally card's Marines. A squad's side is its own
+    Team, or its character's biped team at Default, checked against the teams the level
+    allies with the player (`_player_friends`, as Schism reads it), and only the player's
+    or the human team counts: Quarantine Zone's Marine squads fight the Arbiter. Read from the map file, so it sees what
+    the patch put there. The Halo 2 vehicle-score bugfix keys on it: with no human ally
+    on the level, only an enemy can be driving a human vehicle."""
+    import contextlib
+    import io
+    import enemy_count as ec
+    lay = _BETRAYAL['Halo 2']
+    with contextlib.redirect_stdout(io.StringIO()):
+        m = open_map(map_path, 'Halo 2')
+    scnr_base = _scnr_base(m)
+    if scnr_base is None:
+        raise ValueError('scenario tag unavailable')
+    poff, pel = lay['palette']
+    pal = m.follow_all(scnr_base, [poff], [pel], 'all')
+    ids = [struct.unpack_from('<I', m.data, el + lay['pal_id_at'])[0] for el in pal]
+    names = [_tag_name_by_id(m, i) if i != 0xFFFFFFFF else None for i in ids]
+    friends, char_team = _player_friends(m, 'Halo 2', names, ids)
+    soff, sel = lay['squads']
+    for sq in m.follow_all(scnr_base, [soff], [sel], 'all'):
+        i = struct.unpack_from('<h', m.data, sq + lay['char_idx'])[0]
+        if not (0 <= i < len(names) and _is_human_tag(names[i])):
+            continue
+        team = struct.unpack_from('<h', m.data, sq + lay['team'])[0] or char_team[i]
+        # the player's or the human team only: Quarantine Zone puts one Marine squad
+        # (qz_ext_b_fact_scorpion) on the Covenant team, which the level allies with
+        # the Arbiter, yet no Marine fights beside him there
+        if team in friends and team in (ec.TEAM_PLAYER, ec.TEAM_HUMAN):
+            return True
+    return False
+
+
 def _apply_betrayal(m, game, registry):
     """Flip every human squad/encounter onto a hostile third faction (see
     _BETRAYAL_TEAM): Flood in Halo 1, Heretic in Halo 2 and 3."""

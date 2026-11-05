@@ -478,6 +478,27 @@ def set_marine_sign(scoredb, positive):
 
     Returns the number of rows changed (0 when they were already the wanted sign).
     """
+    return _set_sign(scoredb, MARINE_ROW, positive)
+
+
+# The human vehicles: negative rows in the shipped file. MCC scores a destroyed vehicle
+# by its TYPE, never by who drives it, so a Flood-driven Warthog costs the row like a
+# Marine-driven one (measured on Quarantine Zone, Legendary: -400 = -100 x4,
+# reports/score_vehicle_test.jsonl). An empty vehicle scores nothing either way.
+HUMAN_VEHICLES = ('mongoose', 'warthog', 'scorpion', 'hornet', 'pelican', 'sabre',
+                  'falcon')
+VEHICLE_ROW = re.compile(r'(type="_campaign_metagame_bucket_type_(?:%s)"[^/]*?)'
+                         r'score="(-?[\d.]+)"' % '|'.join(HUMAN_VEHICLES))
+
+
+def set_vehicle_sign(scoredb, positive):
+    """The human vehicle rows positive or negative, magnitude untouched -- the same
+    sign-only, idempotent contract as `set_marine_sign`. A vehicle kill takes the plain
+    table path, so a positive row pays out without the betrayal sign guard."""
+    return _set_sign(scoredb, VEHICLE_ROW, positive)
+
+
+def _set_sign(scoredb, row, positive):
     with open(scoredb, encoding='utf-8') as f:
         text = f.read()
     n = [0]
@@ -489,7 +510,7 @@ def set_marine_sign(scoredb, positive):
             n[0] += 1
         return '%sscore="%g"' % (m.group(1), want)
 
-    out = MARINE_ROW.sub(sub, text)
+    out = row.sub(sub, text)
     if n[0]:
         with open(scoredb, 'w', encoding='utf-8', newline='') as f:
             f.write(out)

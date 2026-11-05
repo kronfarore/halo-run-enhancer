@@ -463,7 +463,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'other_bane_enabled', 'identity_other_card',
                'skull_duration_value', 'skull_duration_multiply',
                'skull_disabled', 'skull_camo_after_ladder',
-               'bugfix_h2_fuel_rod', 'player_armour_rows', 'no_immunities', 'vehicle_cards',
+               'bugfix_h2_fuel_rod', 'bugfix_h2_vehicle_score', 'player_armour_rows', 'no_immunities', 'vehicle_cards',
                'set_starting_equipment', 'equipment_all_selected',
                'h2_add_respawn_profile', 'h2_extra_squads', 'h2_tartarus', 'swap_player_loadouts',
                'h3_all_chief_profiles',
@@ -1537,6 +1537,8 @@ CONFIG = {
     "skull_camo_after_ladder": False,   # Thunderstorm / Downpour before Assassins
     # Options -> Patching -> Bugfixes: fixes to Bungie's own data. Off = vanilla.
     "bugfix_h2_fuel_rod": False,
+    # Halo 2: human vehicle rows award points on levels with no human ally
+    "bugfix_h2_vehicle_score": False,
     # Options -> Patching: always give the player its own damage-table armour rows
     # (player_armour.py). Effective / Hardened cards build them whatever this says.
     "player_armour_rows": False,
@@ -8212,6 +8214,66 @@ class MagnitudeEditorDialog(QDialog):
                      'reason': None if ok else e})
         return rows
 
+    def _apply_vehicle_scoring(self, skulls, map_path):
+        r"""The human vehicle rows in scoredb.xml (Mongoose, Warthog, Scorpion, Hornet,
+        Pelican, Sabre, Falcon): inverted to award points, or back to costing them.
+
+        MCC scores a destroyed vehicle by its type, never by its driver, so a
+        Flood-driven Warthog costs the row like a Marine-driven one (Quarantine Zone,
+        Legendary: -400 = -100 x4). Positive when EITHER holds, so neither switch can
+        undo the other:
+
+          * the Betrayal skull is active (with Betrayal scoring on), every game -- the
+            Marines driving them are enemies then;
+          * Options -> Bugfixes `bugfix_h2_vehicle_score`, Halo 2 only, on a level with
+            no human ally (halo_patch.h2_level_has_human_allies, read from the patched
+            map, so an ally card's Marines count): only an enemy can be driving one.
+
+        A vehicle kill takes the plain table path, so a positive row pays out without
+        the betrayal sign guard; an empty vehicle scores nothing either way. Runs every
+        patch, AFTER the score rescale (which regenerates the file from the pristine
+        baseline) -- sign-only and idempotent, so a patch with neither reason puts the
+        rows back. Pushed live only when a row changed."""
+        import scoredb_patch
+        path = os.path.join(mcc_root(), scoredb_patch.SCOREDB_REL)
+        if not os.path.exists(path):
+            return []
+        why = []
+        if CONFIG.get('betrayal_marines_score') and self._betrayal_drawn(skulls):
+            why.append('Betrayal')
+        elif CONFIG.get('bugfix_h2_vehicle_score') and self.game == 'Halo 2':
+            try:
+                if not self._hp.h2_level_has_human_allies(map_path):
+                    why.append('no human ally on this level')
+            except Exception as e:
+                return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Vehicle scoring',
+                         'field': 'human vehicle rows', 'ok': False,
+                         'reason': "could not read the level's squads: %s" % e}]
+        on = bool(why)
+        try:
+            changed = scoredb_patch.set_vehicle_sign(path, positive=on)
+        except Exception as e:
+            return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Vehicle scoring',
+                     'field': 'human vehicle rows', 'ok': False, 'reason': str(e)}]
+        if not changed and not on:
+            return []
+        tail = ''
+        if changed and CONFIG.get('score_live_push', True):
+            try:
+                sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+                import score_live
+                pushed = score_live.push_from_xml(path)
+                tail = (' — pushed live (%d records)' % pushed['written']
+                        if pushed.get('ok') else ' — live push failed: %s'
+                        % pushed.get('reason'))
+            except Exception as e:
+                tail = ' — live push failed: %s' % e
+        return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Vehicle scoring',
+                 'field': 'human vehicle rows', 'ok': True,
+                 'old': 'cost points' if on else 'award points',
+                 'new': ('award points (%s)%s' % (', '.join(why), tail)) if on
+                        else ('cost points%s' % tail)}]
+
     def _apply_sword_drain_live(self):
         """The live-only path for the Energy Use sword row: read the typed value,
         apply it to the stock 0.1 and push it -- or restore when the row is blank.
@@ -10414,6 +10476,11 @@ class MagnitudeEditorDialog(QDialog):
                     title="Betrayal scoring",
                     label=("Setting how Marines score" if drawn
                            else "Putting Marine scoring back")))
+        # The human vehicle rows, every patch: Betrayal or the Halo 2 bugfix inverts
+        # them, neither puts them back (and the revert needs no flag to find it)
+        results.extend(self._run_busy(
+            lambda: self._apply_vehicle_scoring(skulls, map_path),
+            title="Vehicle scoring", label="Setting how human vehicles score"))
 
         # Same footing: a live write to another process, never fatal to the map patch.
         results.extend(self._apply_iron(skulls))
@@ -13299,6 +13366,22 @@ class OptionsDialog(QDialog):
         self.bugfix_fuel_rod_cb.setToolTip(_impact + "\n\nShared with a co-op partner through "
                                            "the run (it changes the patch).")
         bugfix_form.addRow("", self.bugfix_fuel_rod_cb)
+        self.bugfix_vehicle_score_cb = QCheckBox(
+            "Halo 2: destroying a human vehicle an enemy drives awards points")
+        self.bugfix_vehicle_score_cb.setChecked(bool(CONFIG.get('bugfix_h2_vehicle_score')))
+        self.bugfix_vehicle_score_cb.setToolTip(
+            "MCC scores a destroyed vehicle by its type, never by its driver: a Warthog, "
+            "Scorpion or Mongoose costs points even with the Flood at the wheel -- 400 "
+            "on Legendary on Quarantine Zone. An empty vehicle scores nothing either "
+            "way.\n\n"
+            "On: on a Halo 2 level with no human ally -- the Arbiter's levels and High "
+            "Charity, unless an ally card brings Marines -- those rows are inverted, so "
+            "they pay out what they cost. Levels with Marines on your side keep the "
+            "penalty. Under the Betrayal skull the rows are inverted in every game "
+            "anyway (Betrayal scoring); this switch never undoes that.\n\n"
+            "Writes scoredb.xml and pushes it into a running MCC, like the score "
+            "rescale.")
+        bugfix_form.addRow("", self.bugfix_vehicle_score_cb)
         self._opt_page("Bugfixes").addWidget(bugfix_g)
         self._opt_page("Patching").addWidget(patch_h1_g, 50)
         self._opt_page("Patching").addWidget(patchg, 60)
@@ -14419,6 +14502,7 @@ class OptionsDialog(QDialog):
             'skull_duration_multiply': self.skull_duration_mult_cb.isChecked(),
             'skull_camo_after_ladder': self.skull_camo_order_cb.isChecked(),
             'bugfix_h2_fuel_rod': self.bugfix_fuel_rod_cb.isChecked(),
+            'bugfix_h2_vehicle_score': self.bugfix_vehicle_score_cb.isChecked(),
             'player_armour_rows': self.player_armour_cb.isChecked(),
             'no_immunities': self.no_immunities_cb.isChecked(),
             'vehicle_cards': self.vehicle_cards_cb.isChecked(),
