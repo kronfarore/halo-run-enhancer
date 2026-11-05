@@ -12457,13 +12457,16 @@ class OptionsDialog(QDialog):
                                      "and re-patch to restore.")
         form.addRow("Halo 3 cutscenes:", self.cutscenes_cb)
 
-        self.no_preload_cb = QCheckBox("Stop preloading the next level (Halo 3 / ODST)")
+        self.no_preload_cb = QCheckBox("Stop preloading the next level (Halo 3 / ODST) "
+                                       "-- experimental")
         self.no_preload_cb.setChecked(bool(CONFIG.get('no_level_preload')))
         self.no_preload_cb.setToolTip(
             "Halo 3 starts loading the next level before the current one ends, so a "
             "patch made then doesn't take. This stops that.\n\nIn practice this is "
             "ODST: every ODST level (and Mombasa Streets) asks for the next one early. "
-            "No Halo 3 level does, so the option changes nothing there.")
+            "No Halo 3 level does, so the option changes nothing there.\n\n"
+            "Experimental: checked on the map files only, not yet played in game. Off "
+            "by default.")
         form.addRow("Next level:", self.no_preload_cb)
 
         self.keep_title_hud_cb = QCheckBox("Keep the HUD up through chapter titles")

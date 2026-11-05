@@ -182,7 +182,7 @@ def live_calls(m, game):
 
 def result_row(rep):
     """The patch-log row for a report from remove_level_prepare."""
-    row = {'tag': 'scnr', 'field': 'level script', 'effect': 'No next-level preload'}
+    row = {'tag': 'scnr', 'field': 'level script', 'effect': 'No next-level preload (experimental)'}
     if not rep.get('ok'):
         row.update(ok=False, reason=rep.get('reason', 'script edit failed'))
     elif rep['calls'] == 0:
