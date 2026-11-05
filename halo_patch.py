@@ -10160,7 +10160,13 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             # Seed enemies that lack a field/block by default (e.g. Elite grenades)
             # BEFORE the normal ops, so those scale the freshly-set baseline.
             results.extend(_apply_init_defaults(m, item['init_defaults'], registry))
+        item_cls, item_path, item_plugin = cls, path, plugin
         for op in item.get('ops', []):
+            # A target with its own `tag` redirects only ITSELF: before this reset the
+            # redirect below stuck for every later op of the item, so a Halo 2 Stable
+            # Grenades card (eqip flag first, then the hlmt flag) wrote its hlmt op
+            # through the eqip plugin ("no flag ... on Flags").
+            cls, path, plugin = item_cls, item_path, item_plugin
             base = {'effect': item['name'], 'tag': item['tag'], 'field': op['field']}
             if op.get('species_swap'):
                 continue        # done before Betrayal / Schism (h1_species_swap), logged there
@@ -10351,15 +10357,20 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 # edits to the sources are already in the in-memory image.
                 results.extend(_apply_derived(m, cls, path, item['name'], op, plugin))
                 continue
-            if op.get('set_bit'):
-                # Switch ONE named flag on and leave the field's other bits alone
-                # (Auto Turret "Turret Follows Player" rides with Orbit / Chase Speed).
+            if op.get('set_bit') or op.get('clear_bit'):
+                # Switch ONE named flag on (set_bit) or off (clear_bit) and leave the
+                # field's other bits alone (Auto Turret "Turret Follows Player" rides
+                # with Orbit / Chase Speed; Stable Grenades clears or sets "Destroyed
+                # By Explosions" on the grenade pickups). A tag already in the wanted
+                # state is a Skipped row, so a second patch writes nothing new.
                 field = op['field']
+                on = bool(op.get('set_bit'))
+                flag = op['set_bit'] if on else op['clear_bit']
                 fld = plugin.find(field, op.get('block'), op.get('nth', 0) or 0)
-                bit = ((fld or {}).get('bits') or {}).get(str(op['set_bit']).strip().lower())
+                bit = ((fld or {}).get('bits') or {}).get(str(flag).strip().lower())
                 if bit is None:
                     results.append({**base, 'ok': False,
-                                    'reason': 'no flag %r on %s' % (op['set_bit'], field)})
+                                    'reason': 'no flag %r on %s' % (flag, field)})
                     continue
                 tags = m.find_tags(cls, path)
                 if not tags:
@@ -10367,17 +10378,27 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                     continue
                 for tpath, tbase in tags:
                     cur = m.read_tag_field(tbase, field, plugin, op.get('block'),
-                                           op.get('index', 0) or 0)
+                                           op.get('index', 0) or 0,
+                                           op.get('nth', 0) or 0)
                     if cur is None:
                         results.append({**base, 'tag': f"{cls} {tpath}", 'field': field,
                                         'ok': False, 'reason': 'flags unreadable'})
                         continue
-                    new = int(cur) | (1 << bit)
+                    cur = int(cur)
+                    new = (cur | (1 << bit)) if on else (cur & ~(1 << bit))
+                    state = '%s %s' % (flag, 'on' if on else 'off')
+                    if new == cur:
+                        results.append({**base, 'tag': f"{cls} {tpath}", 'field': field,
+                                        'effect': item['name'], 'ok': True, 'skip': True,
+                                        'old': cur, 'new': 'already %s' % state,
+                                        'reason': 'already %s' % state})
+                        continue
                     m.write_tag_field(tbase, field, new, plugin, op.get('block'),
-                                      op.get('index', 0) or 0)
+                                      op.get('index', 0) or 0,
+                                      op.get('nth', 0) or 0)
                     results.append({**base, 'tag': f"{cls} {tpath}", 'field': field,
                                     'effect': item['name'], 'ok': True,
-                                    'old': int(cur), 'new': '%d (%s on)' % (new, op['set_bit'])})
+                                    'old': cur, 'new': '%d (%s)' % (new, state)})
                 continue
             if op.get('set') is not None:
                 # Fixed set: force the field to a constant regardless of magnitude

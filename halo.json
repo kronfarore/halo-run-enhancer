@@ -6851,6 +6851,97 @@
 				}
 			},
 			"Frag Grenade": {
+				"Stable Grenades": {
+					"desc": "Grenades lying on the ground can't be set off by other explosions.",
+					"desc_inverted": "Grenades lying on the ground go off when an explosion hits them.",
+					"debug_desc": "WHAT SETS A GROUND GRENADE OFF, per game (read off every campaign map, 2026-11-05):\n\n- Halo 1: the pickup (`eqip`) has NO collision model; the route is the item flag `Flags` (item block, bit 1) `Destroyed By Explosions`, which ships ON on both pickups (item Flags = 2), with a Detonation Effect filled in (plasma also a Detonating Effect).\n- Halo 2: BOTH routes. The same item flag ships ON (item Flags = 2), AND the pickup is a destructible model: its `hlmt` has Maximum Vitality 5, whose death detonates the item through the eqip's Detonation Damage Effect / Detonation Effect (filled in).\n- Halo 3, ODST, Reach, Halo 4: no item flag any more. The official H3/ODST kits name bit 1 `Crate Style Collision Filter`, and Reach/Halo 4 have no such bit (the old Assembly plugins that call it `Destroyed by Explosions` are mislabelled; item Flags ship 0). The pickup's `hlmt` has Maximum Vitality 15 and its damage section's instant response `Causes SP Detonation` (bit 26).\n\nSo stock, explosions (and, from Halo 2 on, anything else that does that much damage) set a ground grenade off in EVERY game.\n\nWHAT THE CARD WRITES (by flag NAME, other bits left alone): Halo 1 CLEARS `Destroyed By Explosions`; Halo 2 clears it and switches `Cannot Die From Damage` ON in `New Damage Info`; Halo 3/ODST switch `Cannot Die From Damage` ON in `New Damage Info`; Reach/Halo 4 in both `Old Damage Info` and the root `Flags` (they carry the same 15 vitality twice). From Halo 2 on that stops EVERY kind of damage from killing the pickup, not only explosions.\n\nINVERTED: sets `Destroyed By Explosions` (Halo 1/2) and clears `Cannot Die From Damage`. That is the stock state in every game, so it writes nothing (Skipped rows), and the card is never the inverted half of a Weapon Identity pair (`invertible: false`); it only matters to undo a positive pick. A tag already in the wanted state is a Skipped row.\n\nThrown grenades (`proj`) are not this card.",
+					"game": [
+						"Halo 1",
+						"Halo 2",
+						"Halo 3",
+						"Halo 3: ODST",
+						"Halo Reach",
+						"Halo 4"
+					],
+					"invertible": false,
+					"tag": {
+						"Halo 1": "eqip weapons\\frag grenade\\frag grenade",
+						"Halo 2": "hlmt objects\\weapons\\grenade\\frag_grenade\\frag_grenade",
+						"Halo 3": "hlmt objects\\weapons\\grenade\\frag_grenade\\frag_grenade_equipment",
+						"Halo 3: ODST": "hlmt objects\\weapons\\grenade\\frag_grenade\\frag_grenade_equipment",
+						"Halo Reach": "hlmt objects\\weapons\\grenade\\frag_grenade\\frag_grenade_equipment",
+						"Halo 4": "hlmt objects\\weapons\\grenade\\storm_frag_grenade\\storm_frag_grenade_equipment"
+					},
+					"targets": {
+						"Halo 1": [
+							{
+								"field": "Flags",
+								"nth": 2,
+								"flag": "Destroyed By Explosions",
+								"flag_on": false
+							}
+						],
+						"Halo 2": [
+							{
+								"tag": "eqip objects\\weapons\\grenade\\frag_grenade\\frag_grenade",
+								"field": "Flags",
+								"nth": 3,
+								"flag": "Destroyed By Explosions",
+								"flag_on": false
+							},
+							{
+								"field": "Flags",
+								"block": "New Damage Info",
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							}
+						],
+						"Halo 3": [
+							{
+								"field": "Flags",
+								"block": "New Damage Info",
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							}
+						],
+						"Halo 3: ODST": [
+							{
+								"field": "Flags",
+								"block": "New Damage Info",
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							}
+						],
+						"Halo Reach": [
+							{
+								"field": "Flags",
+								"block": "Old Damage Info",
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							},
+							{
+								"field": "Flags",
+								"nth": 4,
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							}
+						],
+						"Halo 4": [
+							{
+								"field": "Flags",
+								"block": "Old Damage Info",
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							},
+							{
+								"field": "Flags",
+								"nth": 5,
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							}
+						]
+					}
+				},
 				"Fuse Timer": {
 					"desc": "How long before it goes off, and how long before it can.",
 					"debug_desc": "Timer 0.5 in Halo 1 and 2, 1.0 in ODST, 0.6-0.65 in Reach and Halo 4; Arming Time 1.5 falling to 1.3 in Halo 3, back to 1.6 in ODST and 1.4 from Reach.\n\nTHE FUSE IS THREE FIELDS, not one. `Timer` / `Timer Max` is the countdown once the round is live -- what people call the fuse. `Arming Time` is the delay BEFORE that, during which the round cannot go off at all. `Minimum Velocity` is the speed it has to drop below before it will detonate on its own, so raising it makes a rolling grenade give up and blow earlier. They are grouped together here because tuning one without the others rarely does what you expect.",
@@ -6907,6 +6998,97 @@
 				}
 			},
 			"Plasma Grenade": {
+				"Stable Grenades": {
+					"desc": "Grenades lying on the ground can't be set off by other explosions.",
+					"desc_inverted": "Grenades lying on the ground go off when an explosion hits them.",
+					"debug_desc": "WHAT SETS A GROUND GRENADE OFF, per game (read off every campaign map, 2026-11-05):\n\n- Halo 1: the pickup (`eqip`) has NO collision model; the route is the item flag `Flags` (item block, bit 1) `Destroyed By Explosions`, which ships ON on both pickups (item Flags = 2), with a Detonation Effect filled in (plasma also a Detonating Effect).\n- Halo 2: BOTH routes. The same item flag ships ON (item Flags = 2), AND the pickup is a destructible model: its `hlmt` has Maximum Vitality 5, whose death detonates the item through the eqip's Detonation Damage Effect / Detonation Effect (filled in).\n- Halo 3, ODST, Reach, Halo 4: no item flag any more. The official H3/ODST kits name bit 1 `Crate Style Collision Filter`, and Reach/Halo 4 have no such bit (the old Assembly plugins that call it `Destroyed by Explosions` are mislabelled; item Flags ship 0). The pickup's `hlmt` has Maximum Vitality 15 and its damage section's instant response `Causes SP Detonation` (bit 26).\n\nSo stock, explosions (and, from Halo 2 on, anything else that does that much damage) set a ground grenade off in EVERY game.\n\nWHAT THE CARD WRITES (by flag NAME, other bits left alone): Halo 1 CLEARS `Destroyed By Explosions`; Halo 2 clears it and switches `Cannot Die From Damage` ON in `New Damage Info`; Halo 3/ODST switch `Cannot Die From Damage` ON in `New Damage Info`; Reach/Halo 4 in both `Old Damage Info` and the root `Flags` (they carry the same 15 vitality twice). From Halo 2 on that stops EVERY kind of damage from killing the pickup, not only explosions.\n\nINVERTED: sets `Destroyed By Explosions` (Halo 1/2) and clears `Cannot Die From Damage`. That is the stock state in every game, so it writes nothing (Skipped rows), and the card is never the inverted half of a Weapon Identity pair (`invertible: false`); it only matters to undo a positive pick. A tag already in the wanted state is a Skipped row.\n\nThrown grenades (`proj`) are not this card.\n\nHalo 2: the plasma grenade's pickup and its thrown projectile share ONE model (`objects\\weapons\\grenade\\plasma_grenade\\plasma_grenade`), so in Halo 2 the positive card also stops a THROWN plasma grenade from being killed by damage.\n\nSHARED BLOCK, Halo 3 and ODST: the plasma and firebomb pickup models (`plasma_grenade_equipment`, `firebomb_grenade_equipment`) point at ONE `New Damage Info` block, so this card makes BOTH pickups stable there (the second write reads as Skipped).",
+					"game": [
+						"Halo 1",
+						"Halo 2",
+						"Halo 3",
+						"Halo 3: ODST",
+						"Halo Reach",
+						"Halo 4"
+					],
+					"invertible": false,
+					"tag": {
+						"Halo 1": "eqip weapons\\plasma grenade\\plasma grenade",
+						"Halo 2": "hlmt objects\\weapons\\grenade\\plasma_grenade\\plasma_grenade",
+						"Halo 3": "hlmt objects\\weapons\\grenade\\plasma_grenade\\plasma_grenade_equipment",
+						"Halo 3: ODST": "hlmt objects\\weapons\\grenade\\plasma_grenade\\plasma_grenade_equipment",
+						"Halo Reach": "hlmt objects\\weapons\\grenade\\plasma_grenade\\plasma_grenade_equipment",
+						"Halo 4": "hlmt objects\\weapons\\grenade\\storm_plasma_grenade\\storm_plasma_grenade_equipment"
+					},
+					"targets": {
+						"Halo 1": [
+							{
+								"field": "Flags",
+								"nth": 2,
+								"flag": "Destroyed By Explosions",
+								"flag_on": false
+							}
+						],
+						"Halo 2": [
+							{
+								"tag": "eqip objects\\weapons\\grenade\\plasma_grenade\\plasma_grenade",
+								"field": "Flags",
+								"nth": 3,
+								"flag": "Destroyed By Explosions",
+								"flag_on": false
+							},
+							{
+								"field": "Flags",
+								"block": "New Damage Info",
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							}
+						],
+						"Halo 3": [
+							{
+								"field": "Flags",
+								"block": "New Damage Info",
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							}
+						],
+						"Halo 3: ODST": [
+							{
+								"field": "Flags",
+								"block": "New Damage Info",
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							}
+						],
+						"Halo Reach": [
+							{
+								"field": "Flags",
+								"block": "Old Damage Info",
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							},
+							{
+								"field": "Flags",
+								"nth": 4,
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							}
+						],
+						"Halo 4": [
+							{
+								"field": "Flags",
+								"block": "Old Damage Info",
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							},
+							{
+								"field": "Flags",
+								"nth": 5,
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							}
+						]
+					}
+				},
 				"Fuse Timer": {
 					"desc": "How long before it goes off, and how long before it can.",
 					"debug_desc": "Timer 2.0 in Halo 1, 1.5 in Halo 2 and ODST, 0.9-0.95 from Halo 3 on; Arming Time 1.5 / 1.3 / 1.6 / 1.4 across the series. Halo 1 sets no Arming Time at all.\n\nTHE FUSE IS THREE FIELDS, not one. `Timer` / `Timer Max` is the countdown once the round is live -- what people call the fuse. `Arming Time` is the delay BEFORE that, during which the round cannot go off at all. `Minimum Velocity` is the speed it has to drop below before it will detonate on its own, so raising it makes a rolling grenade give up and blow earlier. They are grouped together here because tuning one without the others rarely does what you expect.",
@@ -9398,6 +9580,38 @@
 				}
 			},
 			"Claymore Grenade": {
+				"Stable Grenades": {
+					"desc": "Grenades lying on the ground can't be set off by other explosions.",
+					"desc_inverted": "Grenades lying on the ground go off when an explosion hits them.",
+					"debug_desc": "WHAT SETS A GROUND GRENADE OFF, per game (read off every campaign map, 2026-11-05):\n\n- Halo 1: the pickup (`eqip`) has NO collision model; the route is the item flag `Flags` (item block, bit 1) `Destroyed By Explosions`, which ships ON on both pickups (item Flags = 2), with a Detonation Effect filled in (plasma also a Detonating Effect).\n- Halo 2: BOTH routes. The same item flag ships ON (item Flags = 2), AND the pickup is a destructible model: its `hlmt` has Maximum Vitality 5, whose death detonates the item through the eqip's Detonation Damage Effect / Detonation Effect (filled in).\n- Halo 3, ODST, Reach, Halo 4: no item flag any more. The official H3/ODST kits name bit 1 `Crate Style Collision Filter`, and Reach/Halo 4 have no such bit (the old Assembly plugins that call it `Destroyed by Explosions` are mislabelled; item Flags ship 0). The pickup's `hlmt` has Maximum Vitality 15 and its damage section's instant response `Causes SP Detonation` (bit 26).\n\nSo stock, explosions (and, from Halo 2 on, anything else that does that much damage) set a ground grenade off in EVERY game.\n\nWHAT THE CARD WRITES (by flag NAME, other bits left alone): Halo 1 CLEARS `Destroyed By Explosions`; Halo 2 clears it and switches `Cannot Die From Damage` ON in `New Damage Info`; Halo 3/ODST switch `Cannot Die From Damage` ON in `New Damage Info`; Reach/Halo 4 in both `Old Damage Info` and the root `Flags` (they carry the same 15 vitality twice). From Halo 2 on that stops EVERY kind of damage from killing the pickup, not only explosions.\n\nINVERTED: sets `Destroyed By Explosions` (Halo 1/2) and clears `Cannot Die From Damage`. That is the stock state in every game, so it writes nothing (Skipped rows), and the card is never the inverted half of a Weapon Identity pair (`invertible: false`); it only matters to undo a positive pick. A tag already in the wanted state is a Skipped row.\n\nThrown grenades (`proj`) are not this card.\n\nThe spike grenade's instant response adds `Force Unattached Effects` (68157440 = bits 20 + 26).",
+					"game": [
+						"Halo 3",
+						"Halo 3: ODST"
+					],
+					"invertible": false,
+					"tag": {
+						"Halo 3": "hlmt objects\\weapons\\grenade\\claymore_grenade\\claymore_grenade_equipment",
+						"Halo 3: ODST": "hlmt objects\\weapons\\grenade\\claymore_grenade\\claymore_grenade_equipment"
+					},
+					"targets": {
+						"Halo 3": [
+							{
+								"field": "Flags",
+								"block": "New Damage Info",
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							}
+						],
+						"Halo 3: ODST": [
+							{
+								"field": "Flags",
+								"block": "New Damage Info",
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							}
+						]
+					}
+				},
 				"Fuse Timer": {
 					"desc": "How long before it goes off, and how long before it can.",
 					"debug_desc": "Timer 0.65 in Halo 3 and 1.0 in ODST, Arming Time 1.3 and 1.6. The fragments it throws carry their own 1.0 timer and a Minimum Velocity of 8.\n\nTHE FUSE IS THREE FIELDS, not one. `Timer` / `Timer Max` is the countdown once the round is live -- what people call the fuse. `Arming Time` is the delay BEFORE that, during which the round cannot go off at all. `Minimum Velocity` is the speed it has to drop below before it will detonate on its own, so raising it makes a rolling grenade give up and blow earlier. They are grouped together here because tuning one without the others rarely does what you expect.",
@@ -10053,6 +10267,38 @@
 				}
 			},
 			"Firebomb Grenade": {
+				"Stable Grenades": {
+					"desc": "Grenades lying on the ground can't be set off by other explosions.",
+					"desc_inverted": "Grenades lying on the ground go off when an explosion hits them.",
+					"debug_desc": "WHAT SETS A GROUND GRENADE OFF, per game (read off every campaign map, 2026-11-05):\n\n- Halo 1: the pickup (`eqip`) has NO collision model; the route is the item flag `Flags` (item block, bit 1) `Destroyed By Explosions`, which ships ON on both pickups (item Flags = 2), with a Detonation Effect filled in (plasma also a Detonating Effect).\n- Halo 2: BOTH routes. The same item flag ships ON (item Flags = 2), AND the pickup is a destructible model: its `hlmt` has Maximum Vitality 5, whose death detonates the item through the eqip's Detonation Damage Effect / Detonation Effect (filled in).\n- Halo 3, ODST, Reach, Halo 4: no item flag any more. The official H3/ODST kits name bit 1 `Crate Style Collision Filter`, and Reach/Halo 4 have no such bit (the old Assembly plugins that call it `Destroyed by Explosions` are mislabelled; item Flags ship 0). The pickup's `hlmt` has Maximum Vitality 15 and its damage section's instant response `Causes SP Detonation` (bit 26).\n\nSo stock, explosions (and, from Halo 2 on, anything else that does that much damage) set a ground grenade off in EVERY game.\n\nWHAT THE CARD WRITES (by flag NAME, other bits left alone): Halo 1 CLEARS `Destroyed By Explosions`; Halo 2 clears it and switches `Cannot Die From Damage` ON in `New Damage Info`; Halo 3/ODST switch `Cannot Die From Damage` ON in `New Damage Info`; Reach/Halo 4 in both `Old Damage Info` and the root `Flags` (they carry the same 15 vitality twice). From Halo 2 on that stops EVERY kind of damage from killing the pickup, not only explosions.\n\nINVERTED: sets `Destroyed By Explosions` (Halo 1/2) and clears `Cannot Die From Damage`. That is the stock state in every game, so it writes nothing (Skipped rows), and the card is never the inverted half of a Weapon Identity pair (`invertible: false`); it only matters to undo a positive pick. A tag already in the wanted state is a Skipped row.\n\nThrown grenades (`proj`) are not this card.\n\nSHARED BLOCK, Halo 3 and ODST: the plasma and firebomb pickup models (`plasma_grenade_equipment`, `firebomb_grenade_equipment`) point at ONE `New Damage Info` block, so this card makes BOTH pickups stable there (the second write reads as Skipped).",
+					"game": [
+						"Halo 3",
+						"Halo 3: ODST"
+					],
+					"invertible": false,
+					"tag": {
+						"Halo 3": "hlmt objects\\weapons\\grenade\\firebomb_grenade\\firebomb_grenade_equipment",
+						"Halo 3: ODST": "hlmt objects\\weapons\\grenade\\firebomb_grenade\\firebomb_grenade_equipment"
+					},
+					"targets": {
+						"Halo 3": [
+							{
+								"field": "Flags",
+								"block": "New Damage Info",
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							}
+						],
+						"Halo 3: ODST": [
+							{
+								"field": "Flags",
+								"block": "New Damage Info",
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							}
+						]
+					}
+				},
 				"Fuse Timer": {
 					"desc": "How long before it goes off, and how long before it can.",
 					"debug_desc": "Timer 0.05 -- it bursts on impact -- and a Minimum Velocity of 100, the highest in any game, which is what stops it rolling. The fire it leaves is three impact projectiles on 3.25-4.0 second timers.\n\nTHE FUSE IS THREE FIELDS, not one. `Timer` / `Timer Max` is the countdown once the round is live -- what people call the fuse. `Arming Time` is the delay BEFORE that, during which the round cannot go off at all. `Minimum Velocity` is the speed it has to drop below before it will detonate on its own, so raising it makes a rolling grenade give up and blow earlier. They are grouped together here because tuning one without the others rarely does what you expect.",
@@ -15460,6 +15706,34 @@
 				}
 			},
 			"Pulse Grenade": {
+				"Stable Grenades": {
+					"desc": "Grenades lying on the ground can't be set off by other explosions.",
+					"desc_inverted": "Grenades lying on the ground go off when an explosion hits them.",
+					"debug_desc": "WHAT SETS A GROUND GRENADE OFF, per game (read off every campaign map, 2026-11-05):\n\n- Halo 1: the pickup (`eqip`) has NO collision model; the route is the item flag `Flags` (item block, bit 1) `Destroyed By Explosions`, which ships ON on both pickups (item Flags = 2), with a Detonation Effect filled in (plasma also a Detonating Effect).\n- Halo 2: BOTH routes. The same item flag ships ON (item Flags = 2), AND the pickup is a destructible model: its `hlmt` has Maximum Vitality 5, whose death detonates the item through the eqip's Detonation Damage Effect / Detonation Effect (filled in).\n- Halo 3, ODST, Reach, Halo 4: no item flag any more. The official H3/ODST kits name bit 1 `Crate Style Collision Filter`, and Reach/Halo 4 have no such bit (the old Assembly plugins that call it `Destroyed by Explosions` are mislabelled; item Flags ship 0). The pickup's `hlmt` has Maximum Vitality 15 and its damage section's instant response `Causes SP Detonation` (bit 26).\n\nSo stock, explosions (and, from Halo 2 on, anything else that does that much damage) set a ground grenade off in EVERY game.\n\nWHAT THE CARD WRITES (by flag NAME, other bits left alone): Halo 1 CLEARS `Destroyed By Explosions`; Halo 2 clears it and switches `Cannot Die From Damage` ON in `New Damage Info`; Halo 3/ODST switch `Cannot Die From Damage` ON in `New Damage Info`; Reach/Halo 4 in both `Old Damage Info` and the root `Flags` (they carry the same 15 vitality twice). From Halo 2 on that stops EVERY kind of damage from killing the pickup, not only explosions.\n\nINVERTED: sets `Destroyed By Explosions` (Halo 1/2) and clears `Cannot Die From Damage`. That is the stock state in every game, so it writes nothing (Skipped rows), and the card is never the inverted half of a Weapon Identity pair (`invertible: false`); it only matters to undo a positive pick. A tag already in the wanted state is a Skipped row.\n\nThrown grenades (`proj`) are not this card.\n\nHalo 4: the pulse grenade's pickup and its thrown projectile share ONE model (`storm_energy_drain_grenade`), so the positive card also stops a THROWN pulse grenade from being killed by damage. Its instant response is `Destroys Object` + `Causes Detonation` (131200), not Causes SP Detonation.\n\nSHARED BLOCK: that model's `Old Damage Info` block is also the THROWN frag grenade's (`storm_frag_grenade`) and the unused disruption grenade's, so those become unkillable by damage too.",
+					"game": [
+						"Halo 4"
+					],
+					"invertible": false,
+					"tag": {
+						"Halo 4": "hlmt objects\\weapons\\grenade\\storm_energy_drain_grenade\\storm_energy_drain_grenade"
+					},
+					"targets": {
+						"Halo 4": [
+							{
+								"field": "Flags",
+								"block": "Old Damage Info",
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							},
+							{
+								"field": "Flags",
+								"nth": 5,
+								"flag": "Cannot Die From Damage",
+								"flag_on": true
+							}
+						]
+					}
+				},
 				"Fuse Timer": {
 					"desc": "How long before it goes off, and how long before it can.",
 					"debug_desc": "Timer 0.2 -- it pops almost on contact, and the lingering field is the emitter that follows, a separate projectile with its own 7.5 timer and a 6.0 Arming Time.\n\nTHE FUSE IS THREE FIELDS, not one. `Timer` / `Timer Max` is the countdown once the round is live -- what people call the fuse. `Arming Time` is the delay BEFORE that, during which the round cannot go off at all. `Minimum Velocity` is the speed it has to drop below before it will detonate on its own, so raising it makes a rolling grenade give up and blow earlier. They are grouped together here because tuning one without the others rarely does what you expect.",

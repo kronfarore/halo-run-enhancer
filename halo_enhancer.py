@@ -2696,12 +2696,19 @@ def target_applies(target, game):
     return not target.get('games') or game in target['games']
 
 
-def effect_desc(mod, game=None, games=None):
+def effect_desc(mod, game=None, games=None, inverted=False):
     """#7: the description to show for `mod` in `game` — its 'desc_overrides' entry
     for this game if one resolves, else the plain 'desc'. Kept as a SEPARATE key
     rather than turning 'desc' itself into a per-game dict, so every existing
     flat-string desc in halo.json needs no migration; only mods that actually
-    need a different wording per game gain the extra key."""
+    need a different wording per game gain the extra key.
+    `inverted`: the card's step points the other way (the Weapon Identity inverted
+    half, the Invert override). A card whose inverse is not simply "less of it"
+    says so with `desc_inverted` (a string or per-game dict, Stable Grenades)."""
+    if inverted and mod.get('desc_inverted'):
+        r = resolve_gamed(mod['desc_inverted'], game, games)
+        if r:
+            return r
     ov = mod.get('desc_overrides')
     resolved = resolve_gamed(ov, game, games) if ov else None
     return resolved if resolved else mod.get('desc', '')
@@ -2977,6 +2984,7 @@ class ModifierDatabase:
             'name': mod_name,
             'desc': mod_data.get('desc', ''),
             'desc_overrides': mod_data.get('desc_overrides'),  # #7: per-game desc overrides
+            'desc_inverted': mod_data.get('desc_inverted'),    # the inverted card's text
             'ignore': mod_data.get('ignore'),                  # held out of the pools
             'debug_desc': mod_data.get('debug_desc'),          # mechanism, shown as a tooltip
             'tag': mod_data.get('tag', ''),
@@ -3053,7 +3061,7 @@ class ModifierDatabase:
     # enemy / equipment / source) are what the lookup matches on and are NOT overlaid;
     # run-time marks (bane, count, _skull_mission, _skull_duration) are not here either.
     REFRESHED_MOD_KEYS = (
-        'name', 'desc', 'desc_overrides', 'ignore', 'debug_desc', 'tag', 'games',
+        'name', 'desc', 'desc_overrides', 'desc_inverted', 'ignore', 'debug_desc', 'tag', 'games',
         'skip_games', 'wildcard', 'skull', 'skull_enemy', 'score_points',
         'affected_by_skull', 'swap_enemy', 'duration', 'special', 'dual_only',
         'harder_when', 'easier_when', 'init_defaults', 'invert_step', 'inverse_floor',
@@ -5781,7 +5789,7 @@ class PairCard(QGroupBox):
             warn.setStyleSheet(f"color: #{MOD_COLORS['skull']['border']}; "
                                f"font-size: {CONFIG['font_size_small']}px; font-weight: bold;")
             layout.addWidget(warn)
-        desc = QLabel(effect_desc(mod_data, game, games))
+        desc = QLabel(effect_desc(mod_data, game, games, inverted=(mod_type == 'identity_down')))
         desc.setWordWrap(True)
         desc.setStyleSheet(f"color: #aaa; font-size: {CONFIG['font_size_desc']}px;")
         _dbg = effect_debug_desc(mod_data, game, games)
@@ -6748,6 +6756,24 @@ class MagnitudeEditorDialog(QDialog):
         over = self._card_key(eff) in (getattr(rs, 'inverted_steps', None) or [])
         return bool(eff.get('invert_step')) != over
 
+    def _flag_wanted(self, eff, t):
+        """A `flag` target's wanted state for this card's picks: True = switch the
+        named bit on, False = off, None = no edit (a net Weapon Identity count of 0).
+        `flag_on` is what the POSITIVE card wants; a negative Weapon Identity count
+        or the Invert override flips it (Stable Grenades: the positive clears
+        "Destroyed By Explosions", the inverted card sets it). More picks change
+        nothing -- a bit is either on or off."""
+        n = eff.get('count')
+        n = 1 if n is None else int(n)
+        if n == 0:
+            return None
+        inverted = self._step_inverted(eff) != (n < 0)
+        return bool(t.get('flag_on')) != inverted
+
+    def _flag_row_text(self, eff, t):
+        w = self._flag_wanted(eff, t)
+        return '(no edit)' if w is None else '= %s %s' % (t['flag'], 'on' if w else 'off')
+
     def _toggle_inverted(self, eff, on):
         rs = getattr(self.parent_gui, 'run_state', None)
         if rs is None:
@@ -6760,6 +6786,9 @@ class MagnitudeEditorDialog(QDialog):
             lst.remove(k)
         rs.inverted_steps = lst
         for e, t, le in self.rows:              # refresh the "picked Nx ->" hints
+            if e is eff and t.get('flag') and hasattr(le, 'setText'):
+                le.setText(self._flag_row_text(e, t))
+                continue
             if e is eff and hasattr(le, 'textChanged'):
                 le.textChanged.emit(le.text())
 
@@ -7579,7 +7608,7 @@ class MagnitudeEditorDialog(QDialog):
                     self.presets[key] = chosen
                     written += 1
                 continue
-            if not is_operator_box(le) or t.get('set') is not None:
+            if not is_operator_box(le) or t.get('set') is not None or t.get('flag'):
                 continue                      # derived/fixed rows carry no user value
             key = self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)
             txt = row_value(le).strip()
@@ -8579,7 +8608,9 @@ class MagnitudeEditorDialog(QDialog):
             sw.setStyleSheet(f"color: #{MOD_COLORS['skull']['border']}; font-size: 12px; font-weight: bold;")
             v.addWidget(sw)
         _games = self.parent_gui.db.get_games() if self.parent_gui else None
-        _desc = effect_desc(eff, self.game, _games)
+        _n = eff.get('count')
+        _desc = effect_desc(eff, self.game, _games,
+                            inverted=self._step_inverted(eff) != (_n is not None and int(_n) < 0))
         if _desc:
             d = QLabel(_desc)
             d.setWordWrap(True)
@@ -8739,6 +8770,17 @@ class MagnitudeEditorDialog(QDialog):
                                  "inverted; saturated at either end."
                                  % (LADDER_BY_STEP, ' -> '.join(t['ladder']))
                                  if t.get('ladder') else ""))
+            elif t.get('flag'):
+                # One named bit, on or off by the card's direction: display-only.
+                le.setReadOnly(True)
+                le.setText(self._flag_row_text(eff, t))
+                le.setToolTip("Switches the flag %r %s when this card is patched (the "
+                              "inverted card does the opposite). Other bits of the "
+                              "field are left alone; a tag already in that state is "
+                              "reported as Skipped."
+                              % (t['flag'], 'on' if t.get('flag_on') else 'off'))
+                le.setStyleSheet("background-color: #101010; color: #d0a24a; "
+                                 "border: 1px dashed #3a3a3a; padding: 4px; border-radius: 3px;")
             elif t.get('set') is not None:
                 # Fixed set (enum enabler): display-only, always applied with the effect.
                 le.setReadOnly(True)
@@ -8816,7 +8858,7 @@ class MagnitudeEditorDialog(QDialog):
                     lambda ed=le: ed.setText(self._hp.hm.normalize_op_text(ed.text())))
             inrow.addWidget(le)
             if (hasattr(le, 'textChanged') and not derived and t.get('set') is None
-                    and not t.get('choice')):
+                    and not t.get('choice') and not t.get('flag')):
                 # card-stacking: what the patch will actually apply for this many picks
                 picks = QLabel()
                 picks.setStyleSheet("color: #9a9a9a; font-size: 11px;")
@@ -8830,7 +8872,7 @@ class MagnitudeEditorDialog(QDialog):
             eh = le.sizeHint().height()   # keep row-adornment buttons the input's height
             # #1: debug-only per-field patch — write just this one field to the map.
             if (CONFIG.get('debug_mode') and not derived
-                    and t.get('set') is None and not t.get('choice')):
+                    and t.get('set') is None and not t.get('choice') and not t.get('flag')):
                 one = QPushButton("⤓ field")
                 one.setMaximumWidth(72)
                 one.setFixedHeight(eh)   # don't inflate the row (misaligns the value column)
@@ -9932,7 +9974,7 @@ class MagnitudeEditorDialog(QDialog):
 
         plan_map = {}
         for eff, t, le in self.rows:
-            if (t.get('derived') or t.get('set') is not None or t.get('choice')
+            if (t.get('derived') or t.get('set') is not None or t.get('choice') or t.get('flag')
                     or t.get('map_swap') or t.get('map_equip') or t.get('sprint')
                     or t.get('enemy_weapon')):
                 continue          # display-only / fixed-set / choice / swap / sprint / armed
@@ -10046,6 +10088,27 @@ class MagnitudeEditorDialog(QDialog):
                                              'nth': f.get('nth', 0) or 0,
                                              'tag': f.get('tag'),
                                              **_diff_flavor(f), 'set': chosen})
+
+        # Flag rows also CREATE their plan entry (a Stable Grenades card has no other
+        # target). The direction is the card's: set_bit for the wanted-on state,
+        # clear_bit for off; halo_patch reports a tag already there as Skipped.
+        for eff, t, le in self.rows:
+            if not t.get('flag'):
+                continue
+            want = self._flag_wanted(eff, t)
+            if want is None:
+                continue
+            key = (eff['tag'], eff['name'])
+            plan_map.setdefault(key, {'tag': eff['tag'], 'name': eff['name'], 'ops': [],
+                                      'init_defaults': eff.get('init_defaults'),
+                                      'constraints': eff.get('constraints'),
+                                      'weapon': eff.get('weapon'),
+                                      'missing_in_db': bool(eff.get('_missing_in_db'))})
+            plan_map[key]['ops'].append({'field': t['field'], 'block': t.get('block'),
+                                         'index': t.get('index', 0),
+                                         'nth': t.get('nth', 0) or 0,
+                                         'tag': t.get('tag'), **_diff_flavor(t),
+                                         ('set_bit' if want else 'clear_bit'): t['flag']})
 
         # Fixed-set fields (e.g. Special-Fire Mode -> Overcharge) tag along whenever
         # their effect is being patched at all, so the enabler is applied with it.
@@ -10515,6 +10578,8 @@ class MagnitudeEditorDialog(QDialog):
                 continue
             ok = True
             for t in fields:
+                if t.get('flag'):
+                    continue                     # a bit: one pick says it all
                 if t.get('ladder'):
                     # tier ladder: saturated once the picks reach the far tier; a name
                     # picked by hand never saturates
