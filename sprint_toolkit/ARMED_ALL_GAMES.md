@@ -118,6 +118,15 @@ Node. Marines keep the turret pose step (POSE_OK). v4 deployed: Grunt Flamethrow
 (rifle pose + grip), Marine Brute Shot (rocket pose + grip) and Machine Gun Turret (confirmed pose).
 If the grips come out mirrored / rotated the quaternion convention is the suspect (inverse it).
 
+Boot 6 (2026-11-05): Marine Brute Shot RIGHT with the off-hand grip. Grunt turrets diagonal, Jackal
+weapons sideways at face height (muzzle left). Cause: the GRIP_FIX weapons' ROOT nodes are rotated
+against the object origin (Machine Gun Turret / Flamethrower pitched ~50 deg, Plasma Cannon ~95,
+Brute Shot / Missile Pod on two axes, their 'body' child rolled 90 -- exactly Bungie's
+right_hand_brute rotation), every rifle's root is unrotated; the off-hand comparison also mixes
+conventions (Jackals hold the gun in the other hand; the Rocket Launcher has no plain left_hand for
+Grunts). `GRIP_STYLE`: Marines keep 'offhand'; Grunts / Jackals / Drones get the BODY FRAME grip
+(`_body_frame`: node 0's frame, or its 'body' child's) = held like a rifle. v5 deployed.
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?

@@ -455,6 +455,26 @@ def _marker(m, hp, mode, names):
     return tr, e
 
 
+#: (boot 6, 2026-11-05) how a species' grip is computed: 'offhand' = the weapon's off-hand marker
+#: where the donor's sits (Marines: confirmed); the rest 'body' -- Grunts came out diagonal and
+#: Jackals sideways with 'offhand' (Jackals hold the gun in the other hand, the Rocket Launcher
+#: has no plain left_hand marker for Grunts)
+GRIP_STYLE = {'Marine': 'offhand'}
+
+
+def _body_frame(m, hp, mode):
+    """The frame a rifle-like hold needs, in node-0 space: these weapons' ROOT nodes are rotated
+    against the object origin (turrets pitched ~50 deg, Plasma Cannon ~95, Brute Shot / Missile Pod
+    on two axes) while every rifle's root is unrotated. The hand takes node 0's frame, or the
+    'body' child's when there is one (the Brute Shot / Missile Pod body is rolled 90 deg: Bungie's
+    right_hand_brute markers are exactly that rotation)."""
+    nodes = m.follow_all(mode, [MODE_NODES], [MODE_NODE_ES], 'all')
+    for nd in nodes[1:]:
+        if struct.unpack_from('<h', m.data, nd + 4)[0] == 0 and _name(m, hp, m.u32(nd)) == 'body':
+            return ((0.0, 0.0, 0.0), _norm(struct.unpack_from('<4f', m.data, nd + 0x18)))
+    return ((0.0, 0.0, 0.0), (0.0, 0.0, 0.0, 1.0))
+
+
 def find_sid(m, hp, text):
     for i in range(1, 0x10000):
         if _name(m, hp, i) == text:
@@ -476,7 +496,11 @@ def grip(m, hp, enemy, weapon, donor):
     lt, ld = _marker(m, hp, mt, OFFHAND[enemy]), _marker(m, hp, md, OFFHAND[enemy])
     if lt is None or ld is None:
         return dict(row, reason='no off-hand marker on the weapon or the donor')
-    t, q = _compose(lt[0], _inverse(ld[0]))
+    if GRIP_STYLE.get(enemy) == 'offhand':
+        t, q = _compose(lt[0], _inverse(ld[0]))
+        how = 'aligned to the %s off-hand' % donor.rsplit(BS, 1)[-1]
+    else:
+        (t, q), how = _body_frame(m, hp, mt), 'on the body frame (held like a rifle)'
     mk = bytearray(m.data[lt[1]:lt[1] + MARKER_ES])
     mk[2] = 0
     struct.pack_into('<3f', mk, 4, *t)
@@ -493,7 +517,7 @@ def grip(m, hp, enemy, weapon, donor):
     for p, b in m.find_tags('bipd', '*'):
         if p.lower().rsplit(BS, 1)[-1] in GRIP_BIPEDS.get(enemy, ()):
             struct.pack_into('<I', m.data, b + BIPD_PREFERRED, sid)
-    return dict(row, ok=True, new='%s aligned to the %s off-hand' % (name, donor.rsplit(BS, 1)[-1]))
+    return dict(row, ok=True, new='%s %s' % (name, how))
 
 
 def teach(m, hp, graphs, wanted):
