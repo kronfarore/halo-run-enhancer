@@ -366,6 +366,136 @@ def _grow_sorted(m, hp, blk, es, new):
     return True
 
 
+# ----------------------------------------------------------------------------- grips
+#: (boot 5, 2026-11-05) weapons whose model is NOT built for the borrowed pose: held at their origin
+#: they point skyward / roll (Marine Brute Shot, Grunt turrets, Jackal turrets + Brute Shot). They
+#: get a GRIP MARKER for the species instead (GRIP_NAME, the name the species' biped looks for).
+GRIP_FIX = ('brute_shot', 'missile_pod', 'machinegun_turret', 'plasma_cannon', 'flamethrower')
+#: the species whose own turret pose holds GRIP_FIX weapons fine (boot 5: Marine turrets in the
+#: Marine flamethrower pose): they keep the pose step
+POSE_OK = ('Marine',)
+GRIP_NAME = {'Grunt': 'right_hand_grunt', 'Jackal': 'left_hand_jackal', 'Marine': 'right_hand_marine',
+             'Bugger': 'right_hand_jackal'}
+#: the biped(s) per species whose Preferred Gun Node (+0x1A4) must name GRIP_NAME
+GRIP_BIPEDS = {'Grunt': ('grunt',), 'Jackal': ('jackal',), 'Marine': ('marine', 'marine_female'),
+               'Bugger': ('bugger',)}
+BIPD_PREFERRED = 0x1A4
+#: the off-hand (IK) markers compared, most specific first (then any 'left_hand*')
+OFFHAND = {'Marine': ('left_hand_marine', 'left_hand'), 'Grunt': ('left_hand',),
+           'Jackal': ('left_hand',), 'Bugger': ('left_hand',)}
+MODE_NODES, MODE_NODE_ES, MODE_GROUPS, MODE_GROUP_ES, MARKER_ES = 0x30, 0x60, 0x3C, 0x10, 0x24
+
+
+def _qmul(a, b):
+    ax, ay, az, aw = a
+    bx, by, bz, bw = b
+    return (aw * bx + ax * bw + ay * bz - az * by, aw * by - ax * bz + ay * bw + az * bx,
+            aw * bz + ax * by - ay * bx + az * bw, aw * bw - ax * bx - ay * by - az * bz)
+
+
+def _qconj(q):
+    return (-q[0], -q[1], -q[2], q[3])
+
+
+def _qrot(q, v):
+    x, y, z, _w = _qmul(_qmul(q, (v[0], v[1], v[2], 0.0)), _qconj(q))
+    return (x, y, z)
+
+
+def _compose(a, b):
+    """a after b as rigid transforms (t, q): point_parent = a(b(point))."""
+    (ta, qa), (tb, qb) = a, b
+    r = _qrot(qa, tb)
+    return ((ta[0] + r[0], ta[1] + r[1], ta[2] + r[2]), _qmul(qa, qb))
+
+
+def _inverse(a):
+    t, q = a
+    qi = _qconj(q)
+    r = _qrot(qi, t)
+    return ((-r[0], -r[1], -r[2]), qi)
+
+
+def _norm(q):
+    n = sum(x * x for x in q) ** 0.5 or 1.0
+    return tuple(x / n for x in q)
+
+
+def _render_model(m, hp, weapon):
+    w = dict(m.find_tags('weap', weapon)).get(weapon)
+    if w is None:
+        return None
+    hl = hp._tag_name_by_id(m, m.u32(w + 0x34 + 0xC))
+    h = dict(m.find_tags('hlmt', hl)).get(hl) if hl else None
+    mn = hp._tag_name_by_id(m, m.u32(h + 0xC)) if h is not None else None
+    return dict(m.find_tags('mode', mn)).get(mn) if mn else None
+
+
+def _marker(m, hp, mode, names):
+    """(transform in node-0 space, marker element) of the first marker group in `names` (then
+    any 'left_hand*'), or None."""
+    groups = {_name(m, hp, m.u32(g)): g
+              for g in m.follow_all(mode, [MODE_GROUPS], [MODE_GROUP_ES], 'all')}
+    pick = next((groups[n] for n in names if n in groups), None)
+    if pick is None:
+        pick = next((g for n, g in sorted(groups.items()) if n.startswith('left_hand')), None)
+    mk = m.follow_all(pick, [4], [MARKER_ES], 'all') if pick is not None else []
+    if not mk:
+        return None
+    e = mk[0]
+    tr = (struct.unpack_from('<3f', m.data, e + 4), _norm(struct.unpack_from('<4f', m.data, e + 0x10)))
+    nodes = m.follow_all(mode, [MODE_NODES], [MODE_NODE_ES], 'all')
+    ni, hops = m.data[e + 2], 0
+    while 0 < ni < len(nodes) and hops < 32:          # up the parent chain to node 0
+        nd = nodes[ni]
+        tr = _compose((struct.unpack_from('<3f', m.data, nd + 0xC),
+                       _norm(struct.unpack_from('<4f', m.data, nd + 0x18))), tr)
+        ni = struct.unpack_from('<h', m.data, nd + 4)[0]
+        hops += 1
+    return tr, e
+
+
+def find_sid(m, hp, text):
+    for i in range(1, 0x10000):
+        if _name(m, hp, i) == text:
+            return i
+    return None
+
+
+def grip(m, hp, enemy, weapon, donor):
+    """The grip marker GRIP_NAME[enemy] on `weapon`'s render model, placed so the weapon's
+    off-hand marker lands where the `donor`'s does in the hand (the donor is held at its origin):
+    M = L_weapon * inverse(L_donor). The species' biped is pointed at that marker name (only
+    weapons carrying it are affected). Returns a result row."""
+    name = GRIP_NAME.get(enemy)
+    row = {'tag': 'mode ' + enemy, 'field': 'grip: ' + weapon.rsplit(BS, 1)[-1], 'ok': False}
+    sid = find_sid(m, hp, name) if name else None
+    mt, md = _render_model(m, hp, weapon), _render_model(m, hp, donor)
+    if sid is None or mt is None or md is None:
+        return dict(row, reason='no %s id / render model in this map' % name)
+    lt, ld = _marker(m, hp, mt, OFFHAND[enemy]), _marker(m, hp, md, OFFHAND[enemy])
+    if lt is None or ld is None:
+        return dict(row, reason='no off-hand marker on the weapon or the donor')
+    t, q = _compose(lt[0], _inverse(ld[0]))
+    mk = bytearray(m.data[lt[1]:lt[1] + MARKER_ES])
+    mk[2] = 0
+    struct.pack_into('<3f', mk, 4, *t)
+    struct.pack_into('<4f', mk, 0x10, *_norm(q))
+    struct.pack_into('<f', mk, 0x20, 1.0)
+    got = hp._h3_reserve(m, [MARKER_ES])
+    if not got:
+        return dict(row, reason='no partition slack')
+    m.data[got[0]:got[0] + MARKER_ES] = mk
+    grp = bytearray(MODE_GROUP_ES)
+    struct.pack_into('<IiI', grp, 0, sid, 1, m.off2data(got[0]))
+    if not _grow_sorted(m, hp, mt + MODE_GROUPS, MODE_GROUP_ES, {sid: bytes(grp)}):
+        return dict(row, reason='no partition slack')
+    for p, b in m.find_tags('bipd', '*'):
+        if p.lower().rsplit(BS, 1)[-1] in GRIP_BIPEDS.get(enemy, ()):
+            struct.pack_into('<I', m.data, b + BIPD_PREFERRED, sid)
+    return dict(row, ok=True, new='%s aligned to the %s off-hand' % (name, donor.rsplit(BS, 1)[-1]))
+
+
 def teach(m, hp, graphs, wanted):
     """TEACHING (user 2026-11-03): `wanted` = {enemy: [weapon path]} the gate refused. Each weapon
     gets a Weapon List row (its NAME -> a donor weapon's class, TEACH_DONORS by kind) in every
@@ -373,7 +503,7 @@ def teach(m, hp, graphs, wanted):
     lookup the gate replays, so the unit holds it with the donor's animations. NOT_TAUGHT are
     never taught. Rows go in once per graph (block relocated into partition slack). Returns
     (taught {enemy: set(weapon)}, rows)."""
-    adds, taught, rows, types = {}, {}, [], {}
+    adds, taught, rows, types, grips = {}, {}, [], {}, []
     tags = {p.lower(): p for p, _b in m.find_tags('weap', '*')}
     by_base = {p.rsplit(BS, 1)[-1]: p for p in tags}
     for enemy, ws in wanted.items():
@@ -392,7 +522,8 @@ def teach(m, hp, graphs, wanted):
             info = weapon_info(m, tags.get(w.lower(), w))
             if base in NOT_TAUGHT or not info:
                 continue
-            pose = _pose_plan(m, graphs, gs, info, donors)
+            pose = None if base in GRIP_FIX and enemy not in POSE_OK else \
+                _pose_plan(m, graphs, gs, info, donors)
             if pose:
                 dname, plan = pose
                 for g, cl, copies in plan:
@@ -432,11 +563,15 @@ def teach(m, hp, graphs, wanted):
                     taught.setdefault(enemy, set()).add(w)
                     rows.append({'tag': 'jmad ' + enemy, 'field': 'taught: ' + base, 'ok': True,
                                  'new': 'held as the %s (%d graphs)' % (d, len(gs))})
+                    if base in GRIP_FIX:
+                        grips.append((enemy, tags.get(w.lower(), w), dp))
                     break
     # SORTED (boot 3, 2026-11-04): every stock Weapon List is sorted by the weapon-name string
     # id and the game binary-searches it -- rows appended at the end were found only where the
     # search happened to land on them (Brute Shot yes, Rocket Launcher / turrets no). The whole
     # list is rewritten sorted.
+    for enemy, w, dp in grips:
+        rows.append(grip(m, hp, enemy, w, tags[dp]))
     for cls_el, new in types.items():
         if not _grow_sorted(m, hp, cls_el + JM_SUB, JM_TYPE_ES, new):
             rows.append({'tag': 'jmad', 'field': 'animation types', 'ok': False,

@@ -102,6 +102,22 @@ Grunt Flamethrower / Missile Pod in its Machine Gun Turret pose, Marine turrets 
 pose. NO matching pose exists for: the Brute Shot / Sentinel Beam on Marines (still the Rocket
 Launcher's), turrets and the Brute Shot on Jackals / Drones (still the rifle's). v3c deployed.
 
+Boot 5 (2026-11-05): Marine turrets right in the copied Flamethrower pose; still wrong: Marine Brute
+Shot, Grunt turrets (Flamethrower / Missile Pod in the Grunt turret pose), Jackal turrets + Brute Shot.
+The Sentinel Beam looks fine on Marines in the same borrowed pose -> the WEAPON MODEL decides. A unit
+attaches a weapon at the marker its biped's Preferred Gun Node names (Brute right_hand_brute, Marine
+right_hand_marine, Jackal left_hand_jackal, Grunt none) and at the weapon's ORIGIN without one; the
+Brute Shot / Missile Pod carry a right_hand_brute marker rolled 90 deg, the turrets are built for the
+turret pose. No weapon in any Halo 3 level has Grunt / Jackal / Marine grips (only vehicles), so
+`grip()` COMPUTES one: for GRIP_FIX weapons (Brute Shot, Missile Pod, Machine Gun Turret, Plasma
+Cannon, Flamethrower) taught across classes, a marker named GRIP_NAME[species] placed so the weapon's
+off-hand marker lands where the donor's does in the hand (M = L_weapon * inverse(L_donor), node chain
+to node 0), marker groups grown sorted; Grunt / Drone / female Marine bipeds get that Preferred Gun
+Node. Marines keep the turret pose step (POSE_OK). v4 deployed: Grunt Flamethrower / Missile Pod
+(rocket pose + grip), Grunt Machine Gun Turret NATIVE (control), every Jackal Brute Shot / turrets
+(rifle pose + grip), Marine Brute Shot (rocket pose + grip) and Machine Gun Turret (confirmed pose).
+If the grips come out mirrored / rotated the quaternion convention is the suspect (inverse it).
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?
