@@ -1117,7 +1117,7 @@ the light hangs on the arms' `flashlight` marker on `base`, and Halo 1's animati
 gun `flashlight` marker dropped from the FP model (the world model left byte-identical). Proof: the in-memory FP
 regeneration of all 9 ports x 2 species old vs new identical (342 files; DMR's then-uncommitted hunk aside); both
 graphs re-imported over themselves, XML equal but animation data / checksums / bounds. Test maps 06b (Arbiter) +
-03b (Chief), sprint on. Kit backup E:\HaloBackups\H2EK_flamethrower_before_pin_base_2026-11-04.
+03b (Chief), sprint on. Kit backup E:\HaloBackups\H2EK_flamethrower_before_pin_base_2026-11-04. CONFIRMED in game 2026-11-05 (user: every check passes on both maps) -> 'done'.
 
 ## SAW rework: what it taught (2026-10-23/26, DONE)
 
