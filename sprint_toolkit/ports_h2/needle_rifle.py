@@ -330,6 +330,9 @@ PORT = {
             # 36 / 30 px in (/ 1.117 px a unit)
             (r'ui\hud\needle_rifle.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 4, 0, [-352, -27]),
             (r'ui\hud\needle_rifle.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 5, 0, [279, -27]),
+            # boot 3: 'the teal glyph is mirrored' -- the Carbine's right_crosshair flips its (shared) sprite
+            # horizontally; the port's has its own
+            (r'ui\hud\needle_rifle.new_hud_definition', 'flags', 'bitmap widgets', 5, 0, 0),
         ],
         'skipped': [
             ('reload time', "the magazine's reload time does not drive the player's reload: Reach's own animation does"),
