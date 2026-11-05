@@ -8297,15 +8297,14 @@
 					]
 				},
 				"Movement Penalty Type": {
-					"desc": "When this turret slows you down. The first pick makes it slow you only while you are zoomed in; every further pick also lowers how much it slows you.",
+					"desc": "How much this turret slows you down: every pick lowers the slowdown by a quarter of its stock value, gone after four picks.",
 					"invertible": false,
-					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty, plus the two penalties themselves. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nPick 1 sets When Zoomed. When Zoomed Or Reloading is NOT used: in game it still slows you all the time on a turret (user, 2026-11-04), presumably because a turret counts as reloading while it is out. Pick 2 on lowers Forward and Sideways Movement Penalty together, x0.8 a pick linearly (the `steps` ladder: x1 on pick 1, then x0.8, x0.6, x0.4, x0.2, 0), the same step the Movement Penalties card takes, so the two cards stack.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state When Zoomed waits for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.",
+					"debug_desc": "Forward and Sideways Movement Penalty, moved together: x0.75 a pick, linear (x0.75, x0.5, x0.25, then 0). The faster sibling of the Movement Penalties card (x0.8 a pick); the two stack.\n\n`Movement Penalized` (when the penalty applies) is left at the turrets' stock Always. Setting it was the old first step, dropped (user, 2026-11-05): When Zoomed effectively switches the penalty off at once on a turret, and When Zoomed Or Reloading still slows you all the time.\n\nOffered only where Movement Penalties exists (the four detached turrets).",
 					"game": ["Halo 3"],
 					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
 					"targets": [
-						{ "field": "Movement Penalized", "choice": true, "options": ["Always", "When Zoomed"], "ladder": ["When Zoomed", "Always"] },
-						{ "step": "*0.8", "steps": ["*1", "*0.8", "*0.6", "*0.4", "*0.2", "=0"], "field": "Forward Movement Penalty", "group": "Movement Penalties", "min": 0, "max": 1, "easier_when": "decreased" },
-						{ "step": "*0.8", "steps": ["*1", "*0.8", "*0.6", "*0.4", "*0.2", "=0"], "field": "Sideways Movement Penalty", "group": "Movement Penalties", "min": 0, "max": 1, "easier_when": "decreased" }
+						{ "step": "*0.75", "field": "Forward Movement Penalty", "group": "Movement Penalties", "min": 0, "max": 1, "easier_when": "decreased" },
+						{ "step": "*0.75", "field": "Sideways Movement Penalty", "group": "Movement Penalties", "min": 0, "max": 1, "easier_when": "decreased" }
 					]
 				},
 				"Movement Penalties": {
@@ -8732,9 +8731,9 @@
 					]
 				},
 				"Movement Penalty Type": {
-					"desc": "When this turret slows you down. The first pick makes it slow you only while you are zoomed in; every further pick also lowers how much it slows you.",
+					"desc": "How much this turret slows you down: every pick lowers the slowdown by a quarter of its stock value, gone after four picks.",
 					"invertible": false,
-					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty, plus the two penalties themselves. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nPick 1 sets When Zoomed. When Zoomed Or Reloading is NOT used: in game it still slows you all the time on a turret (user, 2026-11-04), presumably because a turret counts as reloading while it is out. Pick 2 on lowers Forward and Sideways Movement Penalty together, x0.8 a pick linearly (the `steps` ladder: x1 on pick 1, then x0.8, x0.6, x0.4, x0.2, 0), the same step the Movement Penalties card takes, so the two cards stack.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state When Zoomed waits for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.",
+					"debug_desc": "Forward and Sideways Movement Penalty, moved together: x0.75 a pick, linear (x0.75, x0.5, x0.25, then 0). The faster sibling of the Movement Penalties card (x0.8 a pick); the two stack.\n\n`Movement Penalized` (when the penalty applies) is left at the turrets' stock Always. Setting it was the old first step, dropped (user, 2026-11-05): When Zoomed effectively switches the penalty off at once on a turret, and When Zoomed Or Reloading still slows you all the time.\n\nOffered only where Movement Penalties exists (the four detached turrets).",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
@@ -8742,9 +8741,8 @@
 						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
 					},
 					"targets": [
-						{ "field": "Movement Penalized", "choice": true, "options": ["Always", "When Zoomed"], "ladder": ["When Zoomed", "Always"] },
-						{ "step": "*0.8", "steps": ["*1", "*0.8", "*0.6", "*0.4", "*0.2", "=0"], "field": "Forward Movement Penalty", "group": "Movement Penalties", "min": 0, "max": 1, "easier_when": "decreased" },
-						{ "step": "*0.8", "steps": ["*1", "*0.8", "*0.6", "*0.4", "*0.2", "=0"], "field": "Sideways Movement Penalty", "group": "Movement Penalties", "min": 0, "max": 1, "easier_when": "decreased" }
+						{ "step": "*0.75", "field": "Forward Movement Penalty", "group": "Movement Penalties", "min": 0, "max": 1, "easier_when": "decreased" },
+						{ "step": "*0.75", "field": "Sideways Movement Penalty", "group": "Movement Penalties", "min": 0, "max": 1, "easier_when": "decreased" }
 					]
 				},
 				"Movement Penalties": {
@@ -9000,9 +8998,9 @@
 					]
 				},
 				"Movement Penalty Type": {
-					"desc": "When this turret slows you down. The first pick makes it slow you only while you are zoomed in; every further pick also lowers how much it slows you.",
+					"desc": "How much this turret slows you down: every pick lowers the slowdown by a quarter of its stock value, gone after four picks.",
 					"invertible": false,
-					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty, plus the two penalties themselves. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nPick 1 sets When Zoomed. When Zoomed Or Reloading is NOT used: in game it still slows you all the time on a turret (user, 2026-11-04), presumably because a turret counts as reloading while it is out. Pick 2 on lowers Forward and Sideways Movement Penalty together, x0.8 a pick linearly (the `steps` ladder: x1 on pick 1, then x0.8, x0.6, x0.4, x0.2, 0), the same step the Movement Penalties card takes, so the two cards stack.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state When Zoomed waits for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.",
+					"debug_desc": "Forward and Sideways Movement Penalty, moved together: x0.75 a pick, linear (x0.75, x0.5, x0.25, then 0). The faster sibling of the Movement Penalties card (x0.8 a pick); the two stack.\n\n`Movement Penalized` (when the penalty applies) is left at the turrets' stock Always. Setting it was the old first step, dropped (user, 2026-11-05): When Zoomed effectively switches the penalty off at once on a turret, and When Zoomed Or Reloading still slows you all the time.\n\nOffered only where Movement Penalties exists (the four detached turrets).",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
@@ -9010,9 +9008,8 @@
 						"Halo 4": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_detached\\storm_plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"
 					},
 					"targets": [
-						{ "field": "Movement Penalized", "choice": true, "options": ["Always", "When Zoomed"], "ladder": ["When Zoomed", "Always"] },
-						{ "step": "*0.8", "steps": ["*1", "*0.8", "*0.6", "*0.4", "*0.2", "=0"], "field": "Forward Movement Penalty", "group": "Movement Penalties", "min": 0, "max": 1, "easier_when": "decreased" },
-						{ "step": "*0.8", "steps": ["*1", "*0.8", "*0.6", "*0.4", "*0.2", "=0"], "field": "Sideways Movement Penalty", "group": "Movement Penalties", "min": 0, "max": 1, "easier_when": "decreased" }
+						{ "step": "*0.75", "field": "Forward Movement Penalty", "group": "Movement Penalties", "min": 0, "max": 1, "easier_when": "decreased" },
+						{ "step": "*0.75", "field": "Sideways Movement Penalty", "group": "Movement Penalties", "min": 0, "max": 1, "easier_when": "decreased" }
 					]
 				},
 				"Movement Penalties": {
@@ -9249,15 +9246,14 @@
 					]
 				},
 				"Movement Penalty Type": {
-					"desc": "When this turret slows you down. The first pick makes it slow you only while you are zoomed in; every further pick also lowers how much it slows you.",
+					"desc": "How much this turret slows you down: every pick lowers the slowdown by a quarter of its stock value, gone after four picks.",
 					"invertible": false,
-					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty, plus the two penalties themselves. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nPick 1 sets When Zoomed. When Zoomed Or Reloading is NOT used: in game it still slows you all the time on a turret (user, 2026-11-04), presumably because a turret counts as reloading while it is out. Pick 2 on lowers Forward and Sideways Movement Penalty together, x0.8 a pick linearly (the `steps` ladder: x1 on pick 1, then x0.8, x0.6, x0.4, x0.2, 0), the same step the Movement Penalties card takes, so the two cards stack.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state When Zoomed waits for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.",
+					"debug_desc": "Forward and Sideways Movement Penalty, moved together: x0.75 a pick, linear (x0.75, x0.5, x0.25, then 0). The faster sibling of the Movement Penalties card (x0.8 a pick); the two stack.\n\n`Movement Penalized` (when the penalty applies) is left at the turrets' stock Always. Setting it was the old first step, dropped (user, 2026-11-05): When Zoomed effectively switches the penalty off at once on a turret, and When Zoomed Or Reloading still slows you all the time.\n\nOffered only where Movement Penalties exists (the four detached turrets).",
 					"game": ["Halo 3"],
 					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod & objects\\weapons\\turret\\missile_pod\\missile_pod_integrated",
 					"targets": [
-						{ "field": "Movement Penalized", "choice": true, "options": ["Always", "When Zoomed"], "ladder": ["When Zoomed", "Always"] },
-						{ "step": "*0.8", "steps": ["*1", "*0.8", "*0.6", "*0.4", "*0.2", "=0"], "field": "Forward Movement Penalty", "group": "Movement Penalties", "min": 0, "max": 1, "easier_when": "decreased" },
-						{ "step": "*0.8", "steps": ["*1", "*0.8", "*0.6", "*0.4", "*0.2", "=0"], "field": "Sideways Movement Penalty", "group": "Movement Penalties", "min": 0, "max": 1, "easier_when": "decreased" }
+						{ "step": "*0.75", "field": "Forward Movement Penalty", "group": "Movement Penalties", "min": 0, "max": 1, "easier_when": "decreased" },
+						{ "step": "*0.75", "field": "Sideways Movement Penalty", "group": "Movement Penalties", "min": 0, "max": 1, "easier_when": "decreased" }
 					]
 				},
 				"Movement Penalties": {

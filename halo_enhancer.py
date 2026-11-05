@@ -6186,9 +6186,7 @@ def choice_option_names(opts, allowed=None):
 
     `allowed` narrows the list to the options a card actually wants to offer. The
     plugin knows every value the FIELD can hold; whether all of them are worth
-    offering is a design question the card answers -- Movement Penalty Type offers
-    Always and When Zoomed Or Reloading but deliberately not When Zoomed, because
-    turrets cannot be reloaded yet and the two would behave identically today.
+    offering is a design question the card answers (a card's `options` list).
     Matched case-insensitively so halo.json can write them readably."""
     canon = CHOICE_DISPLAY_ORDER.get(frozenset(opts))
     names = list(canon) if canon else [n for _v, n in sorted((v, n) for n, v in opts.items())]
