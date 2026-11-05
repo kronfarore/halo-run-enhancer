@@ -5,7 +5,7 @@ original bytes and refuses to write unless it finds them, so a game update or a
 different install is rejected rather than corrupted. --revert restores. MCC must be
 fully CLOSED to patch (it maps the dll) and RESTARTED afterwards.
 
-THE SUMMARY-SCREEN LOCK -- `no-next-map-prefetch` (EXPERIMENTAL, unbooted)
+THE SUMMARY-SCREEN LOCK -- `no-next-map-prefetch` (EXPERIMENTAL; v3 unbooted)
 
 Halo 1 and 2 maps can be patched on the post-game summary screen; Halo 3's next map
 cannot (user, 2026-11-05) -- it stays locked until it has been started and quit.
@@ -45,7 +45,7 @@ every map goes through it, including the level being STARTED:
                 priority 0: THE NEXT LEVEL -- 020 while 010 plays
               ([rsi] = byte at the pointer in .data 0xA46A08)
 
-V2 (`no-next-map-prefetch`) skips only that last branch:
+V2 (now `v2-state2-only`, revert-only) skipped only that last branch:
 
     0x10F34C  45 84 F6           test r14b, r14b
     0x10F34F  0F 84 98000000     je   0x10F3ED     ; not in game -> no request
@@ -53,6 +53,25 @@ V2 (`no-next-map-prefetch`) skips only that last branch:
 
 r14b is set at 0x10F2AC and read only there. Everything else keeps working: shared,
 campaign, the [rsi] == 0 branch and the explicit level load.
+
+V2 booted 2026-11-05: 010 loaded fine, but 020 was STILL in slot 16 mid-mission, and the
+game state byte read 0, not 2. In the campaign the chooser takes the [rsi] == 0 branch:
+0x10F038 asks MCC's host interface (vtable +0x80 on the object at .data 0xA3CAB8) for the
+map that comes next and resolves it to a name (0xD9D7C) -- that is 020 too. So v2 (kept
+as revert-only) closed the wrong one of the two branches.
+
+V3 (`no-next-map-prefetch`) skips BOTH: the shared/campaign requests come first and
+return on their own; from there everything else is a next-map guess.
+
+    0x10F33C  45 84 FF           test r15b, r15b    ; [rsi] == 0
+    0x10F33F  74 0B              je   0x10F34C      ; -> the [rsi] == 2 test (v2's site)
+              E9 AC 00 00 00     jmp  0x10F3ED      ; PATCHED: no next-map request
+
+Only the jne at 0x10F316 lands on 0x10F33C; no branch anywhere in .text lands inside the
+five bytes. The request buffer at [rsp+0x30] was emptied at 0x10F2C4, so the chooser
+returns false and 0x10F470 files nothing. The explicit level load 0x10F52C does not need
+the chooser: it files its OWN request at 0x10F5E3 and re-files it in its wait loop
+(0x10F6A1), which is why v2 still loaded 010.
 
 The v1 patch, for the record -- the first instruction of the worker's slot search:
 
@@ -87,16 +106,28 @@ DLL = (r'C:\Program Files (x86)\Steam\steamapps\common'
 
 PATCHES = {
     'no-next-map-prefetch': {
-        # v2. RVA 0x10F34F, in the automatic precache chooser 0x10F20C (see V2 below):
-        # `je 0x10F3ED` after `test r14b, r14b` (r14b = game state byte == 2, in game,
-        # read nowhere else) -> always jump, so the chooser never files the NEXT
-        # level. The explicit level load and the shared/campaign requests are untouched.
-        'offset': 0x0010E74F,
+        # v3. RVA 0x10F33C, in the automatic precache chooser 0x10F20C (see V3 above):
+        # `test r15b, r15b ; je 0x10F34C` -> `jmp 0x10F3ED`, so the chooser files no
+        # next-level request in ANY game state (campaign = [rsi] 0, 0x10F038; the
+        # [rsi] 2 branch behind it too). shared/campaign requests and the explicit
+        # level load are untouched.
+        'offset': 0x0010E73C,
+        'original': bytes.fromhex('4584ff740b'),     # test r15b, r15b ; je 0x10F34C
+        'patched': bytes.fromhex('e9ac000000'),      # jmp 0x10F3ED
+        'context': (0x0010E737, bytes.fromhex('e9ad000000')),   # jmp 0x10F3E9
+        'note': 'EXPERIMENTAL v3: Halo 3 stops opening the next level while you play, '
+                'so it can be patched on the summary screen',
+    },
+    'v2-state2-only': {
+        # v2, booted 2026-11-05: levels load, but 020 was still opened during 010 --
+        # it closed only the [rsi] == 2 branch; the campaign runs with [rsi] == 0.
+        # Kept only so --revert can undo it (v3 jumps over this site anyway).
+        'offset': 0x0010E74F,          # RVA 0x10F34F
         'original': bytes.fromhex('0f8498000000'),   # je  0x10F3ED
         'patched': bytes.fromhex('e99900000090'),    # jmp 0x10F3ED ; nop
         'context': (0x0010E74C, bytes.fromhex('4584f6')),   # test r14b, r14b
-        'note': 'EXPERIMENTAL v2: Halo 3 stops opening the next level while you play, '
-                'so it can be patched on the summary screen',
+        'note': 'v2 (not enough: the campaign still opened the next level) -- revert it',
+        'revert_only': True,
     },
     'v1-worker-skip-BROKEN': {
         # v1, booted 2026-11-05 and FAILED: starting 010 from the menu showed
