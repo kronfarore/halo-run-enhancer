@@ -31,7 +31,30 @@ of the nine), so the engine opens it on its own. Traced in halo3.dll (RVAs, imag
                                the NEXT map into it (0xDB762). That is 020 in slot 16.
                                (MCC's port of the Xbox 360 copy-to-HDD read-ahead.)
 
-The patch is the FIRST instruction of the prefetch block (the slot search):
+V1 (below, the precache WORKER) WAS WRONG -- booted 2026-11-05: starting 010 from the
+menu showed "Validating" and fell back to the main menu. The worker serves ONE pending
+request (name 0x2127004, priority 0x2127104, filed by request_precache 0xDB364), and
+every map goes through it, including the level being STARTED:
+
+    0x10F52C  explicit level load: files a request for the level to start, then
+              loops until it is in a slot (the "Validating" wait) -- v1 starved it
+    0x10F470  automatic precache, every frame, via the chooser 0x10F20C:
+                shared (priority 4) if not in a slot, else campaign (3), else
+                [rsi] == 0 -> 0x10F038, else
+                [rsi] == 2 (r14b, IN GAME) -> ids from 0xA5544, name from 0x2C0950,
+                priority 0: THE NEXT LEVEL -- 020 while 010 plays
+              ([rsi] = byte at the pointer in .data 0xA46A08)
+
+V2 (`no-next-map-prefetch`) skips only that last branch:
+
+    0x10F34C  45 84 F6           test r14b, r14b
+    0x10F34F  0F 84 98000000     je   0x10F3ED     ; not in game -> no request
+              E9 99000000 90     jmp  0x10F3ED     ; PATCHED: never in game either
+
+r14b is set at 0x10F2AC and read only there. Everything else keeps working: shared,
+campaign, the [rsi] == 0 branch and the explicit level load.
+
+The v1 patch, for the record -- the first instruction of the worker's slot search:
 
     0xDB6E8  74 25          je  0xDB70F      ; nothing prefetched yet -> straight in
     0xDB70B  3B C3          cmp eax, ebx
@@ -64,14 +87,28 @@ DLL = (r'C:\Program Files (x86)\Steam\steamapps\common'
 
 PATCHES = {
     'no-next-map-prefetch': {
-        'offset': 0x000DAB0F,          # RVA 0xDB70F, in the prefetch routine 0xDB2A4
+        # v2. RVA 0x10F34F, in the automatic precache chooser 0x10F20C (see V2 below):
+        # `je 0x10F3ED` after `test r14b, r14b` (r14b = game state byte == 2, in game,
+        # read nowhere else) -> always jump, so the chooser never files the NEXT
+        # level. The explicit level load and the shared/campaign requests are untouched.
+        'offset': 0x0010E74F,
+        'original': bytes.fromhex('0f8498000000'),   # je  0x10F3ED
+        'patched': bytes.fromhex('e99900000090'),    # jmp 0x10F3ED ; nop
+        'context': (0x0010E74C, bytes.fromhex('4584f6')),   # test r14b, r14b
+        'note': 'EXPERIMENTAL v2: Halo 3 stops opening the next level while you play, '
+                'so it can be patched on the summary screen',
+    },
+    'v1-worker-skip-BROKEN': {
+        # v1, booted 2026-11-05 and FAILED: starting 010 from the menu showed
+        # "Validating" and fell back to the main menu. Kept only so --revert can undo it.
+        'offset': 0x000DAB0F,          # RVA 0xDB70F, in the precache WORKER
         'original': bytes.fromhex('bf0f000000'),   # mov edi, 0xF
         'patched': bytes.fromhex('e96d000000'),    # jmp 0xDB781
         # the bytes in front of it (cmp eax, ebx; jne 0xDB781), checked too, so a
         # shifted build is refused even if the five bytes happened to match
         'context': (0x000DAB0B, bytes.fromhex('3bc37572')),
-        'note': 'EXPERIMENTAL: Halo 3 stops opening the next level early, so it can '
-                'be patched on the summary screen',
+        'note': 'BROKEN v1 (levels fail to load) -- revert it',
+        'revert_only': True,
     },
 }
 
@@ -99,6 +136,9 @@ def state(name, dll=DLL):
 
 def apply(name, revert=False, dll=DLL):
     p = PATCHES[name]
+    if p.get('revert_only') and not revert:
+        print('  %s: refusing to apply -- it is kept only to be reverted' % name)
+        return False
     want = p['patched'] if revert else p['original']
     give = p['original'] if revert else p['patched']
     with open(dll, 'rb') as f:
