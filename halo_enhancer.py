@@ -2424,6 +2424,8 @@ EFFECT_RENAMES = {
     'Sneak Speed': 'Speed and Acceleration',
     # the same setting, renamed after Halo 1 -- merged into one card (2026-09-27)
     'Encounter Grenade Timeout': 'Grenade Throw Delay',
+    # the Marines-on-your-side Incursion card, one day under its first name (2026-10-06/07)
+    'Friend Marines': 'Human Incursion',
 }
 
 

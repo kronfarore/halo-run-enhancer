@@ -493,6 +493,8 @@ def keep_unreadable(path):
 # (halo_enhancer.effect_rename) and remembered magnitudes (load_presets). The two
 # "AI Base Accuracy ..." halves were MERGED into the Halo 2/3 cards of the same name.
 GENERAL_RENAMES = {
+    # the Marines-on-your-side Incursion card, one day under its first name (2026-10-06/07)
+    'Friend Marines': 'Human Incursion',
     'AI Base I am not scared': 'General I am not scared',
     'AI Base Target Tracking': 'General Tracking & Leading',
     'AI Base Firing Range': 'General Firing Range',
@@ -9959,6 +9961,31 @@ def _unshare_top_block(m, cls, tbase, fld):
     return 'copied'
 
 
+def _incursion_cards(plan, results):
+    """The Halo 1 species-replacement (Incursion) cards of `plan`, as h1_species_swap.apply
+    wants them: [{'name', 'species', 'share'}]. The per-item gates every other op gets
+    (review U3 B8): a card no longer in halo.json (missing_in_db) is left out -- the plan
+    loop reports it as skipped, and its stale snapshot must not patch -- and a blank or
+    unparseable operator gets its own ok=False row instead of silently doing nothing."""
+    out = []
+    for item in plan:
+        if item.get('missing_in_db'):
+            continue
+        for op in item.get('ops') or ():
+            if not op.get('species_swap'):
+                continue
+            parsed = hm.parse_operator(op.get('op_str'))
+            if parsed:
+                out.append({'name': item['name'], 'species': op['species_swap'],
+                            'share': hm.OP_FUNCS[parsed[0]](0.0, parsed[1])})
+            else:
+                results.append({'effect': item['name'],
+                                'tag': item.get('tag') or 'actv characters' + chr(92) + '*',
+                                'field': 'Incursion', 'ok': False,
+                                'reason': 'blank/invalid operator'})
+    return out
+
+
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
               turret_first_person=None, keep_reticle=False,
@@ -10099,14 +10126,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                                         if f in _sw.FACTION_SKULLS], h1_levels))
     if ladder_up or ladder_down:
         results.extend(_apply_ladder(m, str(game).strip(), registry, ladder_up, ladder_down))
-    swap_cards = []
-    for item in plan:
-        for op in item.get('ops') or ():
-            if op.get('species_swap'):
-                parsed = hm.parse_operator(op.get('op_str'))
-                if parsed:
-                    swap_cards.append({'name': item['name'], 'species': op['species_swap'],
-                                       'share': hm.OP_FUNCS[parsed[0]](0.0, parsed[1])})
+    swap_cards = _incursion_cards(plan, results)
     if swap_cards and str(game).strip() == 'Halo 1':
         # Halo 1 species replacement cards (h1_species_swap.py): whole encounters turn
         # into the card's species. After the ladder, before Betrayal / Schism and the
