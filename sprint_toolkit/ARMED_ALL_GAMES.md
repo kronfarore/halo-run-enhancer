@@ -134,6 +134,13 @@ Grunt turret pose holds it up) and the Jackal Plasma Cannon (backwards: its muzz
 turns toward the primary_trigger direction with the smallest rotation (no change for the others; the
 Plasma Cannon turns ~150 deg about Y). v6 deployed.
 
+Boot 8 (2026-11-06): Grunt Machine Gun Turret and Jackal Plasma Cannon right. **HALO 3 ARMED CONFIRMED:**
+every species on the level holds every weapon but the two melee weapons, pointed right. Live 010 restored.
+Carry into ODST / Reach / Halo 4: refused weapon = unarmed; animation blocks + Weapon Lists + marker groups
+are sorted and binary-searched; teach via a same-class pose donor where the species has one, else a
+cross-class donor + a computed grip marker (Preferred Gun Node; off-hand alignment for Marines, body
+frame turned to the muzzle for the rest); Jackals go shieldless with two-handed weapons.
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?
