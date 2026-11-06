@@ -582,7 +582,7 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
                 if not shared:
                     continue
                 el = shared[0]
-            _, new_fc = _scale_frame(m, el + L['fc_off'], mult, FRAME_LIMIT)
+            old_fc, new_fc = _scale_frame(m, el + L['fc_off'], mult, FRAME_LIMIT)
             if built is not None and built != new_fc:
                 # the rebuilt frames stopped short (a byte-keyframe codec ends at 256)
                 new_fc = built
@@ -595,6 +595,11 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
             anims_scaled += 1
             edits += 1
             cap = new_fc - 1
+            # the events follow the frames the animation REALLY has: when the rebuild or
+            # FRAME_LIMIT stopped short of fc x mult, scaling them by `mult` put every
+            # sound and the magazine refill later than the motion and bunched the late
+            # ones on the last frame (review U3 F2)
+            ev_mult = new_fc / float(old_fc) if old_fc > 0 else mult
             for ev in L['events']:
                 blk_off, elem_sz = ev[0], ev[1]
                 efo = ev[2] if len(ev) > 2 else fo      # Halo 4 Script Events: +0x4
@@ -603,7 +608,7 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
                     if key in seen_events:
                         continue
                     seen_events.add(key)
-                    _scale_frame(m, e + efo, mult, cap)
+                    _scale_frame(m, e + efo, ev_mult, cap)
                     edits += 1
     moved = lg.finish() if grow else []
     if anims_scaled == 0:
