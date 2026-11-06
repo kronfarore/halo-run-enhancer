@@ -633,7 +633,7 @@ PORT = {
             {'class': 'jpt!', 'tag': DM + r'\needle_rifle_shard_attached_super_detonation', 'field': f, 'block': None,
              'value': 0.0, 'card': 'Projectile Damage', 'original': o,
              'note': "the Needler's attached blast has no radius: 400 to the stuck target alone"}
-            for f, o in (('Radius', 0.375), ('Radius Max', 1.25), ('AOE Core Radius', 0.3))] + [
+            for f, o in (('Radius', 0.375), ('Radius Max', 1.25), ('Area Of Effect Core Radius', 0.3))] + [
             # the meter's 26-pip art (sequence 1) for the 26-round Balanced magazine; Original keeps sequence 0's 21
             {'class': 'nhdt', 'tag': r'ui\hud\needle_rifle', 'field': '%s Sequence Index' % scr, 'block': 'Bitmap Widgets',
              'index': 2, 'value': 1, 'card': None, 'original': 0,

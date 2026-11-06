@@ -11486,7 +11486,7 @@
     {
      "class": "jpt!",
      "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_attached_super_detonation",
-     "field": "AOE Core Radius",
+     "field": "Area Of Effect Core Radius",
      "block": null,
      "value": 0.0,
      "card": "Projectile Damage",
