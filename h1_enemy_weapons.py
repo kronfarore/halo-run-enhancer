@@ -1156,12 +1156,22 @@ def cards(lv, index, picks):
                     notes.append(note)
                     continue
                 notes.append(note)
-                step = len(pool) / float(want)
-                for k in range(min(want, len(pool))):
+                take = min(want, len(pool))
+                if want > len(pool):
+                    # the share counts EVERY spawn of the biped, the pool only those not
+                    # yet carrying the weapon: past that point the whole pool moves (a
+                    # step below 1 repeated indices and left part of the pool behind)
+                    notes.append('asked %d, pool %d' % (want, len(pool)))
+                step = len(pool) / float(take)         # >= 1, so every index is distinct
+                taken = set()
+                for k in range(take):
                     sp = pool[int(k * step)]
+                    if sp[0] in taken:
+                        continue
+                    taken.add(sp[0])
                     lv.move(sp, target)
                     lv.moved.add(sp[0])
-                    moved += 1
+                    moved += 1                         # distinct spawns, not iterations
             total_e = sum(len(s) for s in units.values())
             out.append(_row('enemy weapons', '%s +%s' % (enemy, weapon.rsplit(BS, 1)[-1]),
                             ok=bool(moved) or not notes, skip=not moved,
