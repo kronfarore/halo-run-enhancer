@@ -202,11 +202,13 @@ def tier_of(name):
 
 
 def _load_plan():
+    """The all-enemies plan (h1_all_enemies.py), or None when the file is missing or
+    unreadable -- the Swapper reports that instead of acting on an empty plan."""
     try:
         with open(PLAN_FILE, encoding='utf-8') as f:
             return json.load(f)
     except Exception:
-        return {}
+        return None
 
 
 def anchor_copy(path):
@@ -295,6 +297,13 @@ class Swapper:
     def __init__(self, m, lv, index_fn):
         self.m, self.lv, self.index_fn = m, lv, index_fn
         self.plan = _load_plan()
+        # a missing plan cannot name a chain copy's real major: the copies spawned
+        # without one are nulled (no promotion into the chain's next tag) and REPORTED
+        # (plan_rows), where this used to pass silently (review U3 D1)
+        self.plan_error = None if self.plan is not None else (
+            'plan file missing or unreadable: %s' % PLAN_FILE)
+        self.plan = self.plan or {}
+        self.unplanned = []            # chain copies resolved without the plan
         self.cache = {}                # entry key -> palette index (or None)
         self.claimed = set()           # palette entries this pass gave a variant
         self.notes = []
@@ -311,10 +320,23 @@ class Swapper:
             if real:
                 stock = real.replace(BS + 'anchor', '', 1)
                 real = self.resolve(stock)     # the stock major, else its copy (fixed)
+            elif self.plan_error and copy not in self.unplanned:
+                self.unplanned.append(copy)    # no major known: nulled, and reported
             b = self.lv.tags[copy]
             self.m.data[b + hv.REF_MAJOR:b + hv.REF_MAJOR + 16] = _ref_to(self.m, real)
             return copy
         return None
+
+    def plan_rows(self, effect):
+        """A failure row when chain copies were spawned without the plan file."""
+        if not (self.plan_error and self.unplanned):
+            return []
+        return [{'effect': effect, 'tag': 'scnr', 'field': 'all-enemies plan', 'ok': False,
+                 'reason': '%s -- %d Marine chain cop%s spawn with no Major Variant (no '
+                           'promotion): %s' % (
+                               self.plan_error, len(self.unplanned),
+                               'y' if len(self.unplanned) == 1 else 'ies',
+                               ', '.join(c.rsplit(BS, 1)[-1] for c in self.unplanned))}]
 
     def entry(self, name):
         """Palette index for resident variant `name` (module docstring order)."""
@@ -481,6 +503,7 @@ def apply(m, hp, cards, levels=None):
     for n in sw.notes:
         rows.append({'effect': 'species swap', 'tag': 'scnr', 'field': 'variant',
                      'ok': True, 'new': n})
+    rows.extend(sw.plan_rows('species swap'))
     lv.rescan()
     m.actv_alias = dict(lv.alias)
     return rows
@@ -741,6 +764,7 @@ def apply_factions(m, hp, factions, levels=None):
     for n in sw.notes:
         rows.append({'effect': 'faction skulls', 'tag': 'scnr', 'field': 'variant',
                      'ok': True, 'new': n})
+    rows.extend(sw.plan_rows('faction skulls'))
     lv.rescan()
     m.actv_alias = dict(lv.alias)
     return rows
