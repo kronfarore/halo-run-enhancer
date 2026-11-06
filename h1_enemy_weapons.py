@@ -447,6 +447,15 @@ class Level:
     def weapon_of_index(self, i):
         return self.ref(self.pal_names[i], hv.REF_WEAPON)
 
+    def actor_of_index(self, i):
+        """The actor tag behind palette index `i` (a slot through its alias): the KIND of
+        actor. Stealth Elites, spec-ops and Commanders share one biped but not an actor."""
+        n = self.pal_names[i] if 0 <= i < len(self.pal_names) else None
+        if n and n.lower().startswith('characters' + BS + 'enhancer' + BS):
+            src = self.alias.get(n)
+            n = src.split(hv.CLONE_SEP)[0] if src else None
+        return self.ref(n, hv.REF_ACTOR) if n else None
+
     # --- teaching
     def ensure_label(self, unit, weapon):
         """Make sure the unit's antr has the weapon's label in its STAND stance.
@@ -1190,7 +1199,9 @@ def fix_promotions(lv, index, first, enabled):
 
 def cards(lv, index, picks):
     """picks = {enemy: {weapon: share}}. Each enemy's spawns, per biped, move to a
-    variant carrying the weapon by its share (weights above 100%), spread evenly."""
+    variant carrying the weapon by its share (weights above 100%), spread evenly -- onto
+    one clone per KIND of actor (REF_ACTOR) inside the biped, so a stealth Elite lands on
+    a stealth clone and keeps its camouflage (review U3 B6)."""
     out = []
     for enemy, shares in picks.items():
         shares = {w: float(s) for w, s in shares.items() if s and float(s) > 0}
@@ -1237,38 +1248,64 @@ def cards(lv, index, picks):
                 continue
             moved = 0
             notes = []
+            from collections import Counter
             for _unit, sps in units.items():
                 want = wants[_unit][weapon]
                 pool = [sp for sp in sps if sp[0] not in lv.moved and lv.weapon_of_index(sp[1]) != weapon]
                 if not want or not pool:
                     continue
-                # clone from the variant most of this biped's spawns use
-                from collections import Counter
-                src_idx = Counter(sp[1] for sp in pool).most_common(1)[0][0]
-                src = lv.pal_names[src_idx]
-                if src.lower().startswith('characters' + BS + 'enhancer' + BS):
-                    src = lv.alias[src].split(hv.CLONE_SEP)[0]
-                target, note = lv.clone(src, weapon, index)
-                if target is None:
-                    notes.append(note)
-                    continue
-                notes.append(note)
-                take = min(want, len(pool))
                 if want > len(pool):
                     # the share counts EVERY spawn of the biped, the pool only those not
                     # yet carrying the weapon: past that point the whole pool moves (a
                     # step below 1 repeated indices and left part of the pool behind)
                     notes.append('asked %d, pool %d' % (want, len(pool)))
-                step = len(pool) / float(take)         # >= 1, so every index is distinct
-                taken = set()
-                for k in range(take):
-                    sp = pool[int(k * step)]
-                    if sp[0] in taken:
+                    want = len(pool)
+                # one clone per KIND of actor, not per biped (option1's rule): the stealth
+                # Elites share the Elite biped with the sword Commanders, and all of them
+                # moved onto a clone of the pool's majority -- stealth lost its camouflage
+                # on c40 / a50 / b40, Commanders gained it on b30. The picks are split
+                # over the kinds by size (largest remainder); a kind whose clone has no
+                # slot left falls back onto a sibling kind's clone, and the row says so.
+                groups = {}
+                for sp in pool:
+                    groups.setdefault(lv.actor_of_index(sp[1]), []).append(sp)
+                graw = {a: want * len(g) / float(len(pool)) for a, g in groups.items()}
+                gshare = {a: int(math.floor(v)) for a, v in graw.items()}
+                for a in sorted(graw, key=lambda a: graw[a] - gshare[a], reverse=True):
+                    if sum(gshare.values()) >= want:
+                        break
+                    gshare[a] += 1
+                fallback = None
+                for actor, gpool in groups.items():
+                    gw = gshare[actor]
+                    if not gw:
                         continue
-                    taken.add(sp[0])
-                    lv.move(sp, target)
-                    lv.moved.add(sp[0])
-                    moved += 1                         # distinct spawns, not iterations
+                    # clone from the variant most of this kind's spawns use
+                    src_idx = Counter(sp[1] for sp in gpool).most_common(1)[0][0]
+                    src = lv.pal_names[src_idx]
+                    if src.lower().startswith('characters' + BS + 'enhancer' + BS):
+                        src = lv.alias[src].split(hv.CLONE_SEP)[0]
+                    target, note = lv.clone(src, weapon, index)
+                    if target is None and fallback is not None and note.startswith('no free variant slot'):
+                        target, note = fallback, '%s: %s -- onto %s' % (
+                            src.rsplit(BS, 1)[-1], note, lv.alias.get(lv.pal_names[fallback],
+                                                                      lv.pal_names[fallback]).rsplit(BS, 1)[-1])
+                    if target is None:
+                        notes.append(note)
+                        continue
+                    notes.append(note)
+                    if fallback is None:
+                        fallback = target
+                    step = len(gpool) / float(gw)      # >= 1, so every index is distinct
+                    taken = set()
+                    for k in range(gw):
+                        sp = gpool[int(k * step)]
+                        if sp[0] in taken:
+                            continue
+                        taken.add(sp[0])
+                        lv.move(sp, target)
+                        lv.moved.add(sp[0])
+                        moved += 1                     # distinct spawns, not iterations
             total_e = sum(len(s) for s in units.values())
             out.append(_row('enemy weapons', '%s +%s' % (enemy, weapon.rsplit(BS, 1)[-1]),
                             ok=bool(moved) or not notes, skip=not moved,
