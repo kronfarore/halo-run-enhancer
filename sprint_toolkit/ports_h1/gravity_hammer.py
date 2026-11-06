@@ -191,10 +191,13 @@ PORT = reserved(
                     # (Bungie's melee-only Elites; the stealth major's 0x70 too) rode along, so no
                     # carrier ever pulled the trigger: every 'slam' in tests 1-6 was their MELEE
                     # (its hit sound is gh_hit; its 0.5 wu radius killed the allies beside you).
-                    # Flags cleared (the commander has no other flag). And the rate: 0.65/s x a
+                    # The Flags row clears THAT bit only: h1_enemy_weapons.write_profile applies
+                    # a row at 0x0 to 'Cannot Use Ranged Weapons' alone, so the SOURCE variant's
+                    # camouflage / stay-with-friends flags survive (review U3 B7; a raw 0 wiped
+                    # the stealth Elites' and the Assassins skull's camo). And the rate: 0.65/s x a
                     # 1.6 s burst is ~1 pull for an Elite, 0.52 for a Grunt (the two-handed rule
                     # halves it) -> 2/s, burst 2 s: the TRIGGER (0.65/s) still caps it at one slam
-                    'set': ['0x0=I0:Flags',
+                    'set': ['0x0=I0:Flags (Cannot Use Ranged Weapons only)',
                             # ARMED TEST 8 (user): sounds + Armed CONFIRMED -- 'revert the firing rate
                             # for one last test': 0.65/s (one pull a slam cycle), burst 2 s kept
                             '0x78=0.65:Rate Of Fire',

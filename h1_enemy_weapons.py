@@ -304,8 +304,19 @@ def short_donor(d):
 
 
 def write_profile(m, base, fields):
+    """Store a firing profile's rows on the slot at `base`. A row at 0x0 -- the actv Flags
+    word -- switches ONLY 'Cannot Use Ranged Weapons' (hv.NO_RANGED): the slot copies its
+    SOURCE variant's flags (Active Camouflage bit 4 of the stealth Elites and the Assassins
+    skull, stay-with-friends...), and the Gravity Hammer's raw `0x0 = 0` row stored over
+    them cleared every one (review U3 B7). The row still does what it was for: clearing the
+    bit its sword-commander donor carries, so the carriers pull the trigger."""
     for off, (fmt, value, _name) in (fields or {}).items():
-        struct.pack_into(fmt, m.data, base + int(off, 16), value)
+        o = int(off, 16)
+        if o == hv.FLAGS:
+            cur = struct.unpack_from('<I', m.data, base + o)[0]
+            value = (cur & ~hv.NO_RANGED) | (int(value) & hv.NO_RANGED)
+            fmt = '<I'
+        struct.pack_into(fmt, m.data, base + o, value)
 
 
 # actv Drop Weapon Loaded / Loaded Max (f32) and Ammo / Ammo Max (i16): what the Famine
