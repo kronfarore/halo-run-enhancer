@@ -10365,7 +10365,10 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                                  'fire-teams' if str(game).strip() == 'Halo 3' else
                                  'squads' if str(game).strip() in SECOND_GEN_GAMES
                                  or str(game).strip() == 'Halo 1' else 'cells',
-                                 '%d new locations' % rep['locations']
+                                 ('%d new locations' % rep['locations']
+                                  + (', %d squad(s) held at %d locations (the engine'
+                                     ' seats no more)' % (rep['held'], rep['cap'])
+                                     if rep.get('held') else ''))
                                  if str(game).strip() in SECOND_GEN_GAMES
                                  or str(game).strip() == 'Halo 1'
                                  else 'counts only (the engine seats them)'))

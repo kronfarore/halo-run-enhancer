@@ -143,6 +143,15 @@ ALLY_SPECIES = ('ambient_life',)
 HUMAN_SPECIES = ('marine', 'masterchief', 'dervish', 'miranda', 'johnson', 'cortana',
                  'odst', 'civilian', 'crewman', 'captain', 'keyes', 'pilot', 'spartan')
 SPREAD = 0.6       # world units between a copied location and its source
+#: Starting locations one squad may hold -- the editors' block maximum, read off the
+#: tag_block_definition of actor_starting_locations_block (max 0x20, named
+#: MAXIMUM_STARTING_LOCATIONS_PER_SQUAD) in HCEEK guerilla.exe and H2EK guerilla.exe
+#: alike. Halo 1's AI runtime keeps a squad's location bookkeeping in two 32-bit
+#: vectors (halo_tag_test.exe 0x4cf7a0 indexes them by location >> 5), so a 33rd
+#: location reads and clears the bits of its neighbours: growth stops at the cap.
+#: The COUNTS may still exceed it (stock c40 e59_b/inf ships 32 / 15): the engine
+#: places min(count, locations) and the extra count stays unused.
+LOCATION_CAP = {'Halo 1': 32, 'Halo 2': 32}
 GAMES = ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4')
 
 
@@ -925,11 +934,13 @@ def _copies(m, foot, loc_sz, pos_at, need, spread):
     return out
 
 
-def grow_all(m, game, plan, spread=SPREAD):
+def grow_all(m, game, plan, spread=SPREAD, report=None):
     """Apply [(squad, new normal, new insane)] and return the number of locations added.
 
     Halo 1 / Halo 2: write the counts and copy on-foot locations up to the new count
-    (the grown block is appended at the end of the tag data).
+    (the grown block is appended at the end of the tag data) -- never past
+    LOCATION_CAP; `report` (a dict, optional) gets 'held' = squads stopped at the cap
+    and 'cap'.
 
     Halo 3: the COUNT alone. Its engine spawns a fire-team's whole count even past its
     starting locations and the extras line up next to each other -- confirmed in game on
@@ -947,9 +958,13 @@ def grow_all(m, game, plan, spread=SPREAD):
     h1 = g == 'Halo 1'
     locs_off, loc_sz, cnt_off = ((H1_LOCS, H1_LOC_SZ, H1_NORMAL) if h1 else
                                  (H2_LOCS, H2_LOC_SZ, H2_NORMAL))
-    added, jobs = 0, []
+    cap = LOCATION_CAP.get(g)
+    added, held, jobs = 0, 0, []
     for sq, normal, insane in plan:
         need = max(normal, insane) - sq['locs']
+        if cap is not None and need > 0 and sq['locs'] + need > cap:
+            need = max(0, cap - sq['locs'])      # the count still rises; the engine
+            held += 1                            # seats min(count, locations) of it
         if need > 0 and sq['foot'] > 0:
             foot = [loc for loc in m.follow_all(sq['off'], [locs_off], [loc_sz], 'all')
                     if h1 or _i16(m, loc + H2_LOC_VEH) < 0]
@@ -964,6 +979,8 @@ def grow_all(m, game, plan, spread=SPREAD):
             m.grow_block(*job)          # Halo 1 appends 4-aligned: no pad to save
     else:
         m.grow_blocks(jobs)             # Halo 2: one region, one 4 KB pad for them all
+    if report is not None:
+        report['held'], report['cap'] = held, cap
     return added
 
 
@@ -1021,8 +1038,10 @@ def scale_enemy_count(m, game, pattern, pct, seed, side='enemy', include_boss=Fa
         if dn or di:
             work.append((sq, sq['normal'] + dn if sq['normal'] > 0 else 0,
                          sq['insane'] + di if sq['insane'] > 0 else 0))
-    locs = grow_all(m, game, work)
+    grown = {}
+    locs = grow_all(m, game, work, report=grown)
     changed = len(work)
     return {'ok': True, 'skip': False, 'base': plan['normal'][0], 'script': script,
             'extra': plan['normal'][1], 'extra_insane': plan['insane'][1],
-            'squads': changed, 'of': len(takers), 'locations': locs}
+            'squads': changed, 'of': len(takers), 'locations': locs,
+            'held': grown.get('held', 0), 'cap': grown.get('cap')}
