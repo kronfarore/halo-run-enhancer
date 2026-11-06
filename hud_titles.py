@@ -105,12 +105,27 @@ HIDERS = {
 H4_BLOCKS = (0x48, 0x54)
 LAYOUTS = {
     'gen3': {'size': EXPR_SIZE, 'next': F_NEXT, 'str': F_STR, 'value': F_VALUE,
-             'vtype': (0x4, '<H')},
+             'vtype': (0x4, '<H'), 'flags': 0x6},
     'h2':   {'size': 0x14, 'next': F_NEXT, 'str': F_STR, 'value': F_VALUE,
-             'vtype': (0x4, '<H')},
+             'vtype': (0x4, '<H'), 'flags': 0x6},
     'h4':   {'size': 0x1C, 'next': 0x4, 'str': 0xC, 'value': 0x8,
-             'vtype': (0x10, '<I')},
+             'vtype': (0x10, '<I'), 'flags': 0x14},
 }
+F_PRIMITIVE = 1          # expression flags bit 0: the record is a constant, not a call group
+
+
+def is_group(t, p, i):
+    """Is record `p` the statement group of the call whose name is record `i`? Its value
+    must be i's whole datum -- index AND salt -- and it must not be a literal. A bare
+    low-word match took a short / long / real constant whose low 16 bits happened to equal
+    the name's index for the statement, and _skip then cut that constant out of an
+    unrelated call while the real hide stayed (review U3 D3)."""
+    r, n = t.at(p), t.at(i)
+    if r is None or n is None or p == i:
+        return False
+    if (r['value'] & 0xFFFF) != i or (r['value'] >> 16) != n['salt']:
+        return False
+    return not t.primitive(p)
 
 
 class Tree:
@@ -214,6 +229,14 @@ class Tree:
             return float(struct.unpack('<i', struct.pack('<I', v))[0])
         return None
 
+    def primitive(self, i):
+        """Expression flags bit 0 'Primitive': the record holds a constant."""
+        fo = self.lay.get('flags')
+        if fo is None or not self.base or not (0 <= i < self.n):
+            return False
+        return bool(struct.unpack_from('<H', self.m.data, self.base + i * self.size + fo)[0]
+                    & F_PRIMITIVE)
+
     def set_next(self, i, datum):
         struct.pack_into('<I', self.m.data, self.base + i * self.size + self.lay['next'],
                          datum)
@@ -241,7 +264,7 @@ def _lift_if(t, group, pred, child_of):
     h = t.at(head)
     if h['vtype'] != T_FUNCNAME or h['string'] != 'if' or t.at(group)['next'] != TERMINATOR:
         return group
-    owners = [p for p in child_of.get(head, []) if p != head and t.at(p)['child'] == head]
+    owners = [p for p in child_of.get(head, []) if is_group(t, p, head)]
     return owners[0] if owners else group
 
 
@@ -267,7 +290,7 @@ def _title_chains(t, pred, child_of):
         r = t.at(i)
         if r['vtype'] != T_FUNCNAME or r['string'] != 'cinematic_set_title':
             continue
-        groups = [p for p in child_of.get(i, []) if p != i and t.at(p)['child'] == i]
+        groups = [p for p in child_of.get(i, []) if is_group(t, p, i)]
         if groups:
             heads.add(_chain_head(groups[0], pred))
     return heads
@@ -324,7 +347,7 @@ def survey(t):
         if r['vtype'] != T_FUNCNAME or (r['string'] not in hiders
                                         and r['string'] not in HIDE_STRINGS):
             continue
-        parents = [p for p in child_of.get(i, []) if p != i and t.at(p)['child'] == i]
+        parents = [p for p in child_of.get(i, []) if is_group(t, p, i)]
         group = parents[0] if parents else None
         a = t.at(r['next'] & 0xFFFF) if r['next'] != TERMINATOR else None
         if r['string'] in HIDE_STRINGS:
@@ -363,7 +386,8 @@ def _skip(t, group):
     # first statement of its block: the PARENT's child pointer moves on instead
     for i in range(t.n):
         r = t.at(i)
-        if r['child'] == group and i != group and r['vtype'] != T_FUNCNAME:
+        if (r['child'] == group and i != group and r['vtype'] != T_FUNCNAME
+                and (r['value'] >> 16) == g['salt'] and not t.primitive(i)):
             if g['next'] == TERMINATOR:
                 return None          # the only statement in the block; leave it
             t.set_value(i, (r['value'] & 0xFFFF0000) | (g['next'] & 0xFFFF))

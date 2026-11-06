@@ -60,7 +60,7 @@ def _calls(t, verb, parent):
         r = t.at(i)
         if r['vtype'] != ht.T_FUNCNAME or r['string'] != verb:
             continue
-        groups = [p for p in parent.get(i, []) if p != i and t.at(p)['child'] == i]
+        groups = [p for p in parent.get(i, []) if ht.is_group(t, p, i)]
         if not groups:
             continue
         args, nx = [], r['next']

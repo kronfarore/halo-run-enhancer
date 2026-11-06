@@ -59,7 +59,7 @@ def _call_groups(tr, verb, parent):
     for i in range(tr.n):
         r = tr.at(i)
         if r['vtype'] == ht.T_FUNCNAME and r['string'] == verb:
-            out += [p for p in parent.get(i, []) if p != i and tr.at(p)['child'] == i]
+            out += [p for p in parent.get(i, []) if ht.is_group(tr, p, i)]
     return out
 
 
