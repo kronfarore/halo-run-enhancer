@@ -4682,6 +4682,11 @@ class ModifierDatabase:
             # Halo 3 teaches every species every weapon except the two melee weapons (user
             # 2026-11-03): only the types that already swing them get those cards
             path = self.armed_weapon_path(w, game) or ''
+            if game == 'Halo 1':
+                # a biped with no melee animation to copy (the Sentinel) cannot swing a
+                # melee-only weapon; the patch would refuse the pair (U3 B4)
+                import h1_enemy_weapons as _ew1
+                return e in _ew1.NO_MELEE_ENEMIES and _ew1.melee_only(path)
             return path.lower().rsplit(chr(92), 1)[-1] in melee and e not in ('Elite', 'Brute')
         names = []
 

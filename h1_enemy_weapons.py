@@ -85,6 +85,16 @@ TYPE_ANIMS, TYPE_FIRE, TYPE_MELEE = 0x30, (4, 5), 8
 # signal-attack is a pointing gesture -- its weapon hand travels 0.12 / 0.13 / 0.07 wu (x / y / z;
 # fp_render.anim_pose) and, sped up to 28 frames, reads as no swing. Warn: 0.29 / 0.15 / 0.27
 STAND_IN_SLOTS = (20, 34, 33)
+#: Enemies whose biped graph has NO melee animation in any class and no stand-in to copy
+#: one from (every STAND_IN_SLOTS entry -1): the Sentinel (kit
+#: characters\sentinel\sentinel.model_animations, 48 slots, 20/33/34/39 all -1 in stand,
+#: crouch and alert). A melee-only weapon would leave them unable to attack at all, so
+#: the Armed offers skip the pair (halo_enhancer.armed_cards) and the patch refuses it
+#: (Level.melee_blocked) -- review U3 B4.
+NO_MELEE_ENEMIES = ('Sentinel',)
+#: Weapons whose AI carriers may only melee: the energy sword (weap +0x308 bit 15 'AIs
+#: Use Weapon Melee Damage') and the ports that swing on the trigger (fire_anim 'melee').
+STOCK_MELEE_ONLY = (BS.join(('weapons', 'energy sword', 'energy sword')),)
 MELEE_FRAMES = 28                          # the Elite's sword melee is 28-35 frames
 
 
@@ -486,6 +496,26 @@ class Level:
         done.add((antr, label))
         return 'fire = melee swing in %d class(es)' % n if n else None
 
+    def melee_blocked(self, unit, weapon):
+        """Why `unit` cannot carry the melee-only `weapon`, or None. ensure_melee gives a
+        biped a swing by copying a stand-in animation (STAND_IN_SLOTS) into the class's
+        melee slot; a graph with neither a melee nor a stand-in in ANY class (the
+        Sentinel's) gets nothing, and its carriers -- 'Cannot Use Ranged Weapons' from the
+        donor -- could not attack at all (review U3 B4). Decided BEFORE a slot is spent."""
+        wb = dict(self.m.find_tags('weap', weapon)).get(weapon)
+        if wb is None or not self.m.u32(wb + WEAP_FLAGS) & AI_WEAPON_MELEE:
+            return None
+        bipd = dict(self.m.find_tags('bipd', unit or '-')).get(unit)
+        antr = hv._ref_name(self.m, bipd, 0x38) if bipd is not None else None
+        for _p, base in self.m.find_tags('antr', antr or '-'):
+            for _ul, _u, _cn, w, _labs in tw.walk(self.m, base):
+                slots = tw._elems(self.m, w + CLASS_ANIMS, 2)
+                for k in (SLOT_MELEE,) + STAND_IN_SLOTS:
+                    if len(slots) > k and _i16(self.m, slots[k]) >= 0:
+                        return None
+        return 'no melee animation for %s: it could not attack with the %s' % (
+            (unit or '?').rsplit(BS, 1)[-1], weapon.rsplit(BS, 1)[-1])
+
     def ensure_melee(self, unit, weapon):
         """Give `unit` a melee for a melee-only `weapon` (see MELEE_FRAMES). A note, or
         None when nothing was needed."""
@@ -554,6 +584,10 @@ class Level:
             return None, 'the level has no %s' % weapon.rsplit(BS, 1)[-1]
         major = self.ref(source, hv.REF_MAJOR)
         need = 2 if major in self.tags else 1
+        blocked = self.melee_blocked(unit, weapon) or (
+            self.melee_blocked(self.ref(major, hv.REF_UNIT), weapon) if need == 2 else None)
+        if blocked:
+            return None, blocked
         if len(self.free_slots) < need:
             return None, 'no free variant slot (%d left)' % len(self.free_slots)
         donor = donor_for(self.m, index, weapon, unit,
@@ -635,6 +669,12 @@ def hands(weapon):
     except Exception:
         port = None
     return (port or {}).get('hands') or 'one'
+
+
+def melee_only(weapon):
+    """File-side (no map): do `weapon`'s AI carriers only melee? The energy sword and the
+    ports whose trigger is a swing (fire_anim 'melee', the Gravity Hammer)."""
+    return weapon in STOCK_MELEE_ONLY or fire_anim(weapon) == 'melee'
 
 
 def fire_anim(weapon):
