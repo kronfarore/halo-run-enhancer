@@ -518,10 +518,20 @@ def build(key, species, only=None, write=True):
             o = offs.get(h3name, offs.get('*'))
             gi = [n for n, _p in kept_nodes].index('gun')
             left = [i for i, (n, _p) in enumerate(kept_nodes) if n.startswith('l_')]
+            # an entry may be {'offset': (x, y, z), 'upright': (lo, hi)} (boot 3, the long fidget: 'the gun
+            # doesn't sit on the left hand' -- its palm CARRIES the rolled gun there): the offset scaled by how
+            # upright the gun stands (its z axis . model up), 0 at lo, full at hi -- Reach's own motion mid-roll
+            fade = None
+            if isinstance(o, dict):
+                o, fade = o['offset'], o.get('upright')
             if o:
                 fr = [list(f) for f in fr]
                 for f in fr:
                     d = qrot(f[gi][0], o)
+                    if fade:
+                        up = qrot(f[gi][0], (0.0, 0.0, 1.0))[2]
+                        k = min(1.0, max(0.0, (up - fade[0]) / (fade[1] - fade[0])))
+                        d = (d[0] * k, d[1] * k, d[2] * k)
                     for i in left:
                         q, t = f[i]
                         f[i] = (q, (t[0] + d[0], t[1] + d[1], t[2] + d[2]))

@@ -304,12 +304,12 @@ PORT = {
                 'picture': ('distance_meter', 'dmr_scope_art'), 'picture_size': 1024,
                 'px_per_unit': 1080.0 / 900.0 / 1.117,
                 # boot 3: 'the zoom ladder is too close to the outer circle, the pointer touches it' -- arc and
-                # pointer 12 units left (the pointer's turned spot (141, -186) -> (129, -186))
+                # its labels 12 units left; boot 4: 'the pointer alone back to the outer circle' -> at its boot-2 spot
                 'per_widget': {'scope_distance_meter': {'scale': (1.0, 1.0), 'offset': (-12.0, 0.0)},
                                # boot 2: 'incorrectly orientated' -- Reach TURNS the slider about the crosshair
                                # along the arc; at the same spot (141, -186): radius 233.4 on the right, turned
                                # 52.8 deg counter-clockwise
-                               'distance_slider': {'origin': (0.0, 0.0), 'offset': (226.4, 0.0), 'rotate': 55.26}}},
+                               'distance_slider': {'origin': (0.0, 0.0), 'offset': (233.4, 0.0), 'rotate': 52.84}}},
     },
 
     # step 8 -- the pickup icon at the reserved U+E143, untinted (the H2 ICON RULE); br_* -> dmr2_*
@@ -361,7 +361,10 @@ PORT = {
         'left_arm_offset': {'masterchief': {'*': (0.0, 0.0, -0.0075),
                                             'first_person:idle': (0.0, 0.0, -0.005),
                                             'first_person:posing:var1': (0.0, 0.0, -0.005),
-                                            'first_person:posing:var2': (0.0, 0.0, -0.0025),
+                                            # boot 4 (video): mid-fidget the rolled gun lies on the open left palm;
+                                            # the shift fades out as the gun rolls (up 0.95 -> 0.85; frames 18-72)
+                                            'first_person:posing:var2': {'offset': (0.0, 0.0, -0.0025),
+                                                                         'upright': (0.85, 0.95)},
                                             'first_person:melee_strike_2': (0.0, -0.003, -0.0075)}},
         # no Halo 2 slot for Reach's sprint / jump / land / fall / ready_initial (the SAW's list)
         'skip': ['first_person:look', 'first_person:acceleration_screens', 'first_person:fall', 'first_person:jump',
