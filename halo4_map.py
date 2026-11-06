@@ -62,6 +62,10 @@ class Halo4Map(ReachMap):
     differs from ReachMap; every other behaviour is inherited unchanged."""
 
     SID_DYNAMIC_OFFSET = 6841   # Reach 4747 -- see ReachMap.resolve_stringid
+    # set 0's `min` in Assembly's H4MCC set table (Formats/Halo4MCC/H4MCC_StringIDs.xml;
+    # the U3 build's table says 0x632): the m10_crash damage tables bracket it the same
+    # way (0x592 'energy' straight, 0x633 'material' with the offset). Was 0x800.
+    SID_DYNAMIC_FROM = 0x631
     HEADER_SIZE = 0x1E000       # 'foot' at 0x1DFFC; Reach 0xA000, Halo 3 0x4000
     CHECKSUM_OFF = 0x358        # Reach and Halo 3 both use 0x360
 

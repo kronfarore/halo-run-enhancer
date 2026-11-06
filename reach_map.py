@@ -248,16 +248,26 @@ class ReachMap(Halo3Map):
     # a fixed distance further into the table than their index says: +4747 in Reach,
     # +6841 in Halo 4, the same on every map. Measured 2026-09-18 by matching each
     # action's label to the tail of the name of the animation it drives (98-99% on
-    # m10/m50/m70/m70_a/m70_bonus and m10_crash/m70_liftoff/m90_sacrifice). Static
-    # labels sit below 0x800 (the highest proven is 0x5A8) and keep the straight lookup.
-    # Before this every model-variant name read as garbage ("error7",
+    # m10/m50/m70/m70_a/m70_bonus and m10_crash/m70_liftoff/m90_sacrifice). Before this
+    # every model-variant name read as garbage ("error7",
     # "forge_object_edit_coords_roll_description").
+    #
+    # WHERE the dynamic ids begin is the engine's string-ID SET table: set 0 (the second
+    # byte of the id) holds the engine's own strings up to `min` and the map's dynamic
+    # strings from there, placed at `startIndex` in the cache's table -- so a dynamic id
+    # resolves at index - min + startIndex, i.e. index + SID_DYNAMIC_OFFSET. Assembly's
+    # ReachMCC set table (Formats/ReachMCC/ReachMCC_StringIDs.xml, every MCC build) puts
+    # set 0's min at 0x4C9; a read-only probe of the m10 damage tables brackets the same
+    # boundary (0x4B2 'energy' resolves straight, 0x4CA 'material' with the offset).
+    # The former 0x800 made every set-0 id in [0x4C9, 0x800) read a UI string (review
+    # U3 F3, 2026-11-06: 39 of m10's 42 damage-table names).
     SID_DYNAMIC_OFFSET = 4747
-    SID_DYNAMIC_FROM = 0x800
+    SID_DYNAMIC_FROM = 0x4C9
 
     def resolve_stringid(self, sid):
         """Reach keeps the whole stringID set: static ids are a straight index lookup,
-        dynamic ones (>= SID_DYNAMIC_FROM) sit SID_DYNAMIC_OFFSET further on."""
+        dynamic ones (>= SID_DYNAMIC_FROM, set 0's `min`) sit SID_DYNAMIC_OFFSET further
+        on. Set 0 only (the damage tables, armour rows, squads, variants, labels)."""
         if not self._locate_stringids():
             return None
         index = sid & 0xFFFF

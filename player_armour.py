@@ -158,8 +158,9 @@ def _row(field, ok, old=None, new=None, reason=None):
 # --- names (reporting only) -----------------------------------------------------------
 def sid_name(m, game, v):
     """Best-effort stringid -> text for reports. H3/ODST: dynamic ids sit at
-    idx + STATIC_TOTAL - (count - strip); Reach/H4: +4747 / +6841 (damage_categories
-    reports). Falls back to hex."""
+    idx + STATIC_TOTAL - (count - strip); Reach/H4: the parser's own resolver (set 0's
+    static/dynamic boundary and offset live there, one place -- review U3 F3). Falls
+    back to hex."""
     if not v:
         return '-'
     s = None
@@ -172,12 +173,6 @@ def sid_name(m, game, v):
                 s = m._string_at(idx + (2671 if game == 'Halo 3: ODST' else 2187) - tail)
             else:
                 s = m._string_at(m._sid_strip + idx - 1)
-        elif game in ('Halo Reach', 'Halo 4'):
-            m._locate_stringids()
-            if (v >> 17) == 0 and (v & 0x1FFFF) >= 1000:
-                s = m._string_at((v & 0x1FFFF) + (4747 if game == 'Halo Reach' else 6841))
-            else:
-                s = m.resolve_stringid(v)
         else:
             s = m.resolve_stringid(v)
     except Exception:
