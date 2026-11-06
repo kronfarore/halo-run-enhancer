@@ -90,6 +90,14 @@ def keep_loadout(m, mission, block_base, scnr_base):
                 if len(a) >= 2 and a[0]['string'] in PLAYERS and a[1]['string'] in profiles]
 
     found = resets()
+    if not found:
+        # no anchor at all (a rebuilt or edited script, a renamed profile): the reset
+        # would still strip the weapons in game, so this is a failure, not '0 of 0
+        # removed' -- as skip_space and h4_scripts.keep_loadout report it (review U3 D4)
+        return {'ok': False, 'reason': 'no reset call found for %s' % ', '.join(profiles)}
+    if not any(t.entered(g) for g in found):
+        return {'ok': True, 'found': len(found), 'removed': 0, 'profiles': profiles,
+                'reason': 'already applied: %d reset call(s) orphaned' % len(found)}
     # To a fixed point: the calls are adjacent siblings, and skipping one can leave its
     # orphan still pointing at the next, which _skip may rewire instead (hud_titles).
     for _pass in range(8):
