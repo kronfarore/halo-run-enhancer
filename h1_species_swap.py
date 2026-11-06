@@ -480,20 +480,35 @@ def apply(m, hp, cards, levels=None):
                          'reason': 'nothing to convert (%d enemies on Insane, %d eligible '
                                    'encounters)' % (enemy_total, len(eligible))})
             continue
-        moved = 0
+        # convert FIRST, then give the encounter its team: an encounter where no squad
+        # converted (no resident variant, slots used up) keeps its own team -- team 2 is
+        # the player's side, 5 the Sentinels' -- and the row says what really moved
+        # (review U3 D2; `moved` used to be counted and never read)
+        moved, kept = [], []
         for e in picked:
-            taken.add(e['off'])
-            struct.pack_into('<h', m.data, e['off'] + ENC_TEAM, TEAM[faction])
+            n = 0
             for s in e['squads']:
-                moved += _convert_squad(
+                n += _convert_squad(
                     m, lv, sw, rng, s,
                     lambda src: None if _of_species(src, folders) else tiers.get(tier_of(src)))
-        names = ', '.join(e['name'] for e in picked)
-        rows.append({**base, 'ok': True,
-                     'old': '%d enemies on Insane (%d eligible encounters)' % (
-                         enemy_total, len(eligible)),
-                     'new': '%d -> %s in %d encounter(s), team %s: %s' % (
-                         got, key, len(picked), faction, names)})
+            if n:
+                taken.add(e['off'])
+                struct.pack_into('<h', m.data, e['off'] + ENC_TEAM, TEAM[faction])
+                moved.append(e)
+            else:
+                kept.append(e)
+        old = '%d enemies on Insane (%d eligible encounters)' % (enemy_total, len(eligible))
+        if not moved:
+            rows.append({**base, 'ok': False, 'old': old,
+                         'reason': 'no squad converted in the %d picked encounter(s) (%s): '
+                                   'no resident variant to convert onto -- teams unchanged'
+                                   % (len(kept), ', '.join(e['name'] for e in kept))})
+            continue
+        rows.append({**base, 'ok': True, 'old': old,
+                     'new': '%d -> %s in %d encounter(s), team %s: %s%s' % (
+                         got, key, len(moved), faction, ', '.join(e['name'] for e in moved),
+                         '; %d picked encounter(s) kept, nothing converted: %s' % (
+                             len(kept), ', '.join(e['name'] for e in kept)) if kept else '')})
     if sw.recycled or sw.appended or sw.slotted:
         rows.append({'effect': 'species swap', 'tag': 'scnr', 'field': 'Actor Palette',
                      'ok': True, 'old': '%d entries' % len(lv.pal_names),
@@ -739,18 +754,29 @@ def apply_factions(m, hp, factions, levels=None):
             if not got[f]:
                 continue
             team = _hostile_team(f, factions) if side == 'enemy' else ALLY_TEAM
-            changed = 0
+            changed, flipped = 0, 0
             for e in got[f]:
-                struct.pack_into('<h', m.data, e['off'] + ENC_TEAM, team)
+                n = 0
                 for s in e['squads']:
-                    changed += _convert_squad(m, lv, sw, rng, s,
-                                              lambda src, f=f: faction_entries(f, src))
+                    n += _convert_squad(m, lv, sw, rng, s,
+                                        lambda src, f=f: faction_entries(f, src))
+                if n:           # the team follows a conversion (U3 D2, as in apply)
+                    struct.pack_into('<h', m.data, e['off'] + ENC_TEAM, team)
+                    flipped += 1
+                changed += n
+            old = '%d %s encounter(s), %d on Insane' % (
+                len(got[f]), 'enemy' if side == 'enemy' else 'allied', load[f])
+            if not changed:
+                rows.append({'effect': FACTION_NAMES[f], 'tag': 'scnr', 'field': 'Faction',
+                             'ok': False, 'old': old,
+                             'reason': 'no squad converted to %s: no resident variant to '
+                                       'convert onto -- teams unchanged' % f})
+                continue
             rows.append({'effect': FACTION_NAMES[f], 'tag': 'scnr', 'field': 'Faction',
-                         'ok': True, 'old': '%d %s encounter(s), %d on Insane' % (
-                             len(got[f]), 'enemy' if side == 'enemy' else 'allied',
-                             load[f]),
-                         'new': '-> %s, team %d (%d squads changed)%s' % (
-                             f, team, changed, '' if side == 'enemy' else ', still allied')})
+                         'ok': True, 'old': old,
+                         'new': '-> %s, team %d in %d of %d encounter(s) (%d squads changed)%s' % (
+                             f, team, flipped, len(got[f]), changed,
+                             '' if side == 'enemy' else ', still allied')})
     if any(left.values()):
         rows.append({'effect': 'faction skulls', 'tag': 'scnr', 'field': 'left alone',
                      'ok': True,
