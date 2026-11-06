@@ -8,9 +8,10 @@ counts plus -- where the new count outruns them -- copies of its ON-FOOT locatio
   scnr Squads  +0x160 elem 0x74   Team enum16 +0x24 (0 = the character's), Normal / Insane
                                   Difficulty Count +0x2C / +0x2E, Vehicle Type Index +0x34,
                                   Character Type Index +0x36
-    Starting Locations +0x48 elem 0x64   xyz +0x0, Character Type Index +0x20 (-1 = the
-                                         squad's), Vehicle Type Index +0x28 (a location
-                                         that mans a turret/vehicle is never copied)
+    Starting Locations +0x48 elem 0x64   Name stringId +0x0, xyz +0x4, Character Type
+                                         Index +0x20 (-1 = the squad's), Vehicle Type
+                                         Index +0x28 (a location that mans a
+                                         turret/vehicle is never copied)
   Character Palette +0x178 elem 0x8 (ident +0x4); char Unit tagRef +0xC (Parent +0x4);
   bipd Default Team +0xC0
 
@@ -62,6 +63,7 @@ import struct
 H2_SQUADS, H2_SQ_SZ = 0x160, 0x74
 H2_TEAM, H2_NORMAL, H2_INSANE, H2_VEH, H2_CHAR = 0x24, 0x2C, 0x2E, 0x34, 0x36
 H2_LOCS, H2_LOC_SZ, H2_LOC_CHAR, H2_LOC_VEH = 0x48, 0x64, 0x20, 0x28
+H2_LOC_POS = 0x4             # a location's position; +0x0 is its Name string id
 H2_PALETTE, H2_PAL_SZ, H2_PAL_ID = 0x178, 0x8, 0x4
 H2_CHAR_UNIT, H2_CHAR_PARENT, H2_BIPD_TEAM = 0xC, 0x4, 0xC0
 H2_OP_PLACE_N, H2_OP_PLACE_IN_VEHICLE = 0x124, 0x125
@@ -951,7 +953,10 @@ def grow_all(m, game, plan, spread=SPREAD):
         if need > 0 and sq['foot'] > 0:
             foot = [loc for loc in m.follow_all(sq['off'], [locs_off], [loc_sz], 'all')
                     if h1 or _i16(m, loc + H2_LOC_VEH) < 0]
-            jobs.append((sq['off'], locs_off, loc_sz, _copies(m, foot, loc_sz, 0, need, spread)))
+            # Halo 1 locations start with the position; a Halo 2 location starts with its
+            # Name string id and holds the position at +0x4 (a copy keeps the Name)
+            jobs.append((sq['off'], locs_off, loc_sz,
+                         _copies(m, foot, loc_sz, 0 if h1 else H2_LOC_POS, need, spread)))
             added += need
         struct.pack_into('<hh', m.data, sq['off'] + cnt_off, normal, insane)
     if h1:

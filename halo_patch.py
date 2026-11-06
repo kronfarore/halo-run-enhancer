@@ -1636,12 +1636,13 @@ def _h2_duplicate_squad(m, registry, squad_name, extra, spread=0.6):
                 'reason': 'starting locations unreadable'}
     es = _H2_SQUAD_STARTLOC_SIZE
     proto = bytes(m.data[lbase:lbase + es])
-    px, py, pz = struct.unpack_from('<fff', proto, 0)
+    # a Halo 2 location starts with its Name string id; the position is at +0x4
+    px, py, pz = struct.unpack_from('<fff', proto, 4)
     copies = []
     for k in range(extra):
         e = bytearray(proto)
         ang = 2.0 * math.pi * (k + 1) / (extra + 1)
-        struct.pack_into('<fff', e, 0,
+        struct.pack_into('<fff', e, 4,
                          px + spread * math.cos(ang), py + spread * math.sin(ang), pz)
         copies.append(bytes(e))
     try:

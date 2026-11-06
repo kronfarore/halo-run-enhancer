@@ -7,7 +7,8 @@ and, where the new count outruns the locations, adding locations:
   scnr Squads  +0x160 elem 0x74   name ascii +0x0, Vehicle Type Index +0x34,
                                   Character Type Index +0x36,
                                   Normal / Insane Difficulty Count i16 +0x2C / +0x2E
-    Starting Locations +0x48 elem 0x64   position xyz +0x0, Character Type Index +0x20
+    Starting Locations +0x48 elem 0x64   Name stringId +0x0, position xyz +0x4,
+                                         Character Type Index +0x20
                                          (-1 = the squad's), Vehicle Type Index +0x28
   Character Palette +0x178 elem 0x8, tagRef ident +0x4
 
@@ -41,7 +42,7 @@ import halo2_map as h2  # noqa: E402
 
 SQUADS, SQ_SZ = 0x160, 0x74
 NORMAL, INSANE, VEH, CHAR = 0x2C, 0x2E, 0x34, 0x36
-LOCS, LOC_SZ, LOC_CHAR, LOC_VEH = 0x48, 0x64, 0x20, 0x28
+LOCS, LOC_SZ, LOC_POS, LOC_CHAR, LOC_VEH = 0x48, 0x64, 0x4, 0x20, 0x28
 PALETTE, PAL_SZ, PAL_ID = 0x178, 0x8, 0x4
 
 HUMAN_SPECIES = ('marine', 'masterchief', 'dervish', 'miranda', 'johnson', 'cortana', 'monitor',
@@ -115,10 +116,10 @@ def grow(m, sq, mult, spread):
         for k in range(need):
             src = locs[k % len(locs)]
             e = bytearray(m.data[src:src + LOC_SZ])
-            x, y, z = struct.unpack_from('<fff', e, 0)
+            x, y, z = struct.unpack_from('<fff', e, LOC_POS)
             ring = k // len(locs) + 1
             ang = 2.0 * math.pi * (k % len(locs)) / len(locs) + ring
-            struct.pack_into('<fff', e, 0, x + spread * ring * math.cos(ang),
+            struct.pack_into('<fff', e, LOC_POS, x + spread * ring * math.cos(ang),
                              y + spread * ring * math.sin(ang), z)
             copies.append(bytes(e))
         m.grow_block(off, LOCS, LOC_SZ, copies)
