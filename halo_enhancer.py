@@ -426,6 +426,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards', 'h1_armed_all_weapons',
                'h2_enemy_weapon_cards', 'h2_armed_all_weapons', 'h2_allies_any_weapon',
                'h3_enemy_weapon_cards', 'h3_armed_all_weapons',
+               'odst_enemy_weapon_cards', 'odst_armed_all_weapons',
                'h2_arbiter_flashlight',
                'h1_overheat_unzoom', 'h1_overheat_no_rezoom', 'h1_covenant_avoid_ff',
                'hunter_drop',
@@ -1251,6 +1252,9 @@ CONFIG = {
     # Halo 3's twins (h3_enemy_weapons.py, sprint_toolkit/ARMED_ALL_GAMES.md)
     "h3_enemy_weapon_cards": True,
     "h3_armed_all_weapons": False,
+    # ODST's (the same pass on cells, 2026-11-06)
+    "odst_enemy_weapon_cards": True,
+    "odst_armed_all_weapons": False,
     # Allies (Marines, allied Grunts and Elites) can hold every weapon of the level, so the
     # players can trade any of them (user, 2026-10-25) -- a patch-time graph teach
     "h2_allies_any_weapon": True,
@@ -4334,11 +4338,12 @@ class ModifierDatabase:
     # patch pass only hands a species weapons its animation graphs can hold
     H3_ARMED_ENEMIES = ('Grunt', 'Jackal', 'Elite', 'Brute', 'Bugger', 'Flood Combat Form')
     ARMED_ENEMIES = {'Halo 1': H1_ARMED_ENEMIES, 'Halo 2': H2_ARMED_ENEMIES,
-                     'Halo 3': H3_ARMED_ENEMIES}
+                     'Halo 3': H3_ARMED_ENEMIES, 'Halo 3: ODST': H3_ARMED_ENEMIES}
     #: game -> (cards option, every-weapon option)
     ARMED_OPTIONS = {'Halo 1': ('h1_enemy_weapon_cards', 'h1_armed_all_weapons'),
                      'Halo 2': ('h2_enemy_weapon_cards', 'h2_armed_all_weapons'),
-                     'Halo 3': ('h3_enemy_weapon_cards', 'h3_armed_all_weapons')}
+                     'Halo 3': ('h3_enemy_weapon_cards', 'h3_armed_all_weapons'),
+                     'Halo 3: ODST': ('odst_enemy_weapon_cards', 'odst_armed_all_weapons')}
     ARMED_STEP = '+0.1'
 
     def h1_level_maps(self):
@@ -4630,9 +4635,11 @@ class ModifierDatabase:
                'the %s: their squads\' units are handed it (every unit of the type, '
                'dropship and vehicle squads too), their animation graphs taught its class, '
                'firing from ai\\generic' % weapon_name) if game == 'Halo 2' else (
-               'the %s: their fire-teams and starting locations are handed it (every unit of '
+               'the %s: their %s are handed it (every unit of '
                'the type, dropship and vehicle squads too); a species without animations for '
-               'it is taught to hold it like a weapon it has; firing from ai\\generic' % weapon_name)
+               'it is taught to hold it like a weapon it has; firing from ai\\generic'
+               % (weapon_name, 'cells and spawn points' if game == 'Halo 3: ODST'
+                  else 'fire-teams and starting locations'))
         return {
             'name': 'Armed: %s' % weapon_name,
             'desc': '%s carry the %s more often.' % (who, weapon_name),
@@ -4678,7 +4685,7 @@ class ModifierDatabase:
             self.h2_armed_weapons() if game == 'Halo 2' else None
         # ...except the weapons h3_enemy_weapons.EXCLUDED keeps out (the SAW, until Halo 3's
         # weapon ports: user 2026-11-02)
-        if game == 'Halo 3':
+        if game in ('Halo 3', 'Halo 3: ODST'):
             import h3_enemy_weapons as _ew3
             excluded, melee = _ew3.EXCLUDED, _ew3.NOT_TAUGHT
         else:
@@ -6397,14 +6404,14 @@ class MagnitudeEditorDialog(QDialog):
                 'allies': allies}
 
     def _h3_enemy_weapons_spec(self, armed_picks):
-        """Halo 3 only: this patch's Armed cards as h3_enemy_weapons.apply wants them, or None."""
-        if self.game != 'Halo 3' or not armed_picks:
+        """Halo 3 / ODST: this patch's Armed cards as h3_enemy_weapons.apply wants them, or None."""
+        if self.game not in ('Halo 3', 'Halo 3: ODST') or not armed_picks:
             return None
         db = getattr(self.parent_gui, 'db', None)
         if db is None:
             return None
-        cards = {e: {db.armed_weapon_path(w, 'Halo 3'): sh for w, sh in ws.items()
-                     if db.armed_weapon_path(w, 'Halo 3')}
+        cards = {e: {db.armed_weapon_path(w, self.game): sh for w, sh in ws.items()
+                     if db.armed_weapon_path(w, self.game)}
                  for e, ws in armed_picks.items()}
         cards = {e: ws for e, ws in cards.items() if ws}
         return {'cards': cards} if cards else None
@@ -12859,6 +12866,26 @@ class OptionsDialog(QDialog):
             "card spends itself on Starting Health in ODST, so drafting one is not a "
             "wasted pick. Other games are unaffected.")
         odform.addRow("ODST shields:", self.odst_shield_health_cb)
+        self.odst_armed_cards_cb = QCheckBox("Offer 'Armed: <weapon>' enemy cards")
+        self.odst_armed_cards_cb.setChecked(bool(CONFIG.get('odst_enemy_weapon_cards', True)))
+        self.odst_armed_cards_cb.setToolTip(
+            "As in Halo 3: for every weapon the players hold, each armed enemy on the level "
+            "(Grunts, Jackals, Brutes, Drones, Elites, Flood combat forms) gets a card that "
+            "hands 10% more of them that weapon per pick; Marines get the same cards through "
+            "the Ally slot. A species without animations for a weapon is taught to hold it like "
+            "one it has; only the Energy Sword and Gravity Hammer stay with Elites and Brutes. "
+            "A Jackal with a two-handed weapon loses its arm shield where it has a spawn point "
+            "of its own.\n\nApplied to the map when you patch; nothing to rebuild.")
+        odform.addRow("Enemy weapons:", self.odst_armed_cards_cb)
+        self.odst_armed_all_cb = QCheckBox("    ...for every weapon, not only the ones you hold")
+        self.odst_armed_all_cb.setChecked(bool(CONFIG.get('odst_armed_all_weapons')))
+        self.odst_armed_all_cb.setToolTip(
+            "On: Armed cards are also offered for every other ODST weapon, as ordinary "
+            "cards; a weapon you or your partner HOLD always counts more.\nOff (default): only "
+            "the weapons the players hold.")
+        self.odst_armed_cards_cb.toggled.connect(self.odst_armed_all_cb.setEnabled)
+        self.odst_armed_all_cb.setEnabled(self.odst_armed_cards_cb.isChecked())
+        odform.addRow("", self.odst_armed_all_cb)
 
         self.odst_hub_cb = QCheckBox("ODST: patch Mombasa Streets alongside the mission")
         self.odst_hub_cb.setChecked(bool(CONFIG.get('odst_patch_hub', True)))
@@ -14457,6 +14484,8 @@ class OptionsDialog(QDialog):
             'h2_enemy_weapon_cards': self.h2_armed_cards_cb.isChecked(),
             'h3_enemy_weapon_cards': self.h3_armed_cards_cb.isChecked(),
             'h3_armed_all_weapons': self.h3_armed_all_cb.isChecked(),
+            'odst_enemy_weapon_cards': self.odst_armed_cards_cb.isChecked(),
+            'odst_armed_all_weapons': self.odst_armed_all_cb.isChecked(),
             'h2_armed_all_weapons': self.h2_armed_all_cb.isChecked(),
             'h2_allies_any_weapon': self.h2_allies_any_cb.isChecked(),
             'h2_arbiter_flashlight': self.h2_arbiter_flash_cb.isChecked(),

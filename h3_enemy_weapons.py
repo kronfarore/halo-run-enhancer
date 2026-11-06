@@ -37,7 +37,16 @@ FIRING DATA (user 2026-11-02): the ODST Magnum, the Silenced SMG and the Brute P
 no ai\generic rows; they borrow the Magnum's, the SMG's and the Plasma Rifle's (FIRING_DONORS,
 borrow_firing). The SAW is kept out (EXCLUDED) until Halo 3's weapon ports.
 
-NOT YET (first boot decides): teaching missing classes (Weapon List rows), Grunt half rate.
+HALO 3: ODST (2026-11-06) runs the same pass after bind('Halo 3: ODST'): its tags sit at other
+offsets (LAYOUTS) and its squads are CELLS: a squad's Single Locations (spawn points +0x3C/0x90:
+cell +0x10, character +0x32, weapon +0x34, Actor Variant Name +0x44) spawn the units its Designer /
+Templated Cells (+0x54 / +0x60, 0x84) describe -- a Character Type and an Initial Weapon array per
+cell (0x10 elements: index +0xC, Chance +0xE), the weapon arrays often SHARED between cells (Grunts
+and Jackals on one Needler / Plasma Pistol array) or EMPTY. A cell of a carded type draws once
+(deterministic by its address); a shared array is copied first, an empty one gets one element,
+then every element names the drawn weapon. A spawn point with its own weapon draws for itself.
+Jackal spawn points whose cell is all Jackals take 'shieldless' with a two-handed weapon; a cell's
+units past its spawn points keep the shield.
 """
 import hashlib
 import struct
@@ -90,6 +99,31 @@ TEACH_DONORS = {
     'pistol': ('plasma_pistol', 'magnum', 'needler', 'assault_rifle', 'plasma_rifle'),
 }
 FIRING_DONORS = {'automag': 'magnum', 'smg_silenced': 'smg', 'plasma_rifle_red': 'plasma_rifle'}
+# ODST squads (scnr +0x3B8 / 0x6C): spawn points and cells (see the module text)
+SP, SP_ES, SP_CELL, SP_CHAR, SP_WEAP, SP_VARIANT = 0x3C, 0x90, 0x10, 0x32, 0x34, 0x44
+CELL_BLOCKS, CELL_ES, CELL_COUNT = (0x54, 0x60), 0x84, 0x10
+CELL_CHARS, CELL_WEAPS, CELL_ARR_ES, CELL_IDX, CELL_CHANCE = 0x14, 0x20, 0x10, 0xC, 0xE
+#: per game: what bind() sets (Halo 3 is the module default)
+LAYOUTS = {
+    'Halo 3': dict(SQUADS=0x384, SQ_ES=0x40, CPAL=0x3A8, WPAL=0x120, WEAP_CLASS=0x3DC,
+                   WEAP_NAME=0x3E0, WEAP_FLAGS=0x18C, GEN_PROPS=0x174, GEN_FPP=0x180,
+                   BIPD_PREFERRED=0x1A4),
+    'Halo 3: ODST': dict(SQUADS=0x3B8, SQ_ES=0x6C, CPAL=0x3E8, WPAL=0x13C, WEAP_CLASS=0x3EC,
+                         WEAP_NAME=0x3F0, WEAP_FLAGS=0x19C, GEN_PROPS=0x198, GEN_FPP=0x1A4,
+                         BIPD_PREFERRED=0x1B4),
+}
+#: ODST's own story characters (squad mates, Dare, the Superintendent's avatars) are never armed
+NEVER_WORDS = {'Halo 3: ODST': ('odst', 'dare', 'vergil', 'buck', 'dutch', 'mickey', 'romeo')}
+
+
+def bind(game, m=None, hp=None):
+    """Point the module at `game`'s layout (Halo 3 or ODST). With the map: the 'dual' class id."""
+    global GAME, FIRING_BLOCKS, DUAL_CLASS
+    GAME = game
+    globals().update(LAYOUTS[game])
+    FIRING_BLOCKS = ((GEN_PROPS, 0xE0, 0x10), (GEN_FPP, 0x1C, 0xC))
+    if m is not None:
+        DUAL_CLASS = find_sid(m, hp, 'dual') or (0x1F4 if game == 'Halo 3' else DUAL_CLASS)
 
 
 def enemy_of(char_path):
@@ -97,7 +131,8 @@ def enemy_of(char_path):
     if not char_path:
         return None
     parts = char_path.lower().split(BS)
-    if len(parts) < 3 or parts[-1] in NEVER:
+    if len(parts) < 3 or parts[-1] in NEVER \
+            or any(w in parts[-1] for w in NEVER_WORDS.get(GAME, ())):
         return None
     return next((e for e, fs in ENEMY_CHARS.items() if parts[2] in fs), None)
 
@@ -647,11 +682,15 @@ def find_variant(m, hp, text):
     string ids are read through resolve_stringid only), or None."""
     base = hp._scnr_base(m)
     for sq in m.follow_all(base, [SQUADS], [SQ_ES], 'all'):
-        for ft in m.follow_all(sq, [FT], [FT_ES], 'all'):
-            for loc in m.follow_all(ft, [LOCS], [LOC_ES], 'all'):
-                v = m.u32(loc + LOC_VARIANT)
-                if v and v != 0xFFFFFFFF and _name(m, hp, v) == text:
-                    return v
+        if GAME == 'Halo 3: ODST':
+            places = [(sp, SP_VARIANT) for sp in m.follow_all(sq, [SP], [SP_ES], 'all')]
+        else:
+            places = [(loc, LOC_VARIANT) for ft in m.follow_all(sq, [FT], [FT_ES], 'all')
+                      for loc in m.follow_all(ft, [LOCS], [LOC_ES], 'all')]
+        for loc, at in places:
+            v = m.u32(loc + at)
+            if v and v != 0xFFFFFFFF and _name(m, hp, v) == text:
+                return v
     # no location uses it yet (010): Halo 3 string ids are plain indices (namespace 0), so
     # the first index that resolves to the text is its id
     for i in range(1, 0x10000):
@@ -719,15 +758,15 @@ def arm(m, hp, cards, salt=None):
              'ft_jackals': 0}
     done = {}
 
-    def jackal_shield(loc, w):
+    def jackal_shield(loc, w, at=LOC_VARIANT):
         if two_handed(m, hp, info.get(w)):
             if sid is None:
                 stats['no_variant'] += 1
-            elif m.u32(loc + LOC_VARIANT) != sid:
-                struct.pack_into('<I', m.data, loc + LOC_VARIANT, sid)
+            elif m.u32(loc + at) != sid:
+                struct.pack_into('<I', m.data, loc + at, sid)
                 stats['shieldless'] += 1
-        elif sid is not None and m.u32(loc + LOC_VARIANT) == sid:
-            struct.pack_into('<I', m.data, loc + LOC_VARIANT, 0)
+        elif sid is not None and m.u32(loc + at) == sid:
+            struct.pack_into('<I', m.data, loc + at, 0)
             stats['reshielded'] += 1
 
     def type_of(c):
@@ -740,11 +779,14 @@ def arm(m, hp, cards, salt=None):
             return None
         return _pick(usable[enemy], _draw(salt, addr))
 
-    def count(enemy, w):
+    def count(enemy, w, n=1):
         by = done.setdefault(enemy, {})
-        by[w] = by.get(w, 0) + 1
+        by[w] = by.get(w, 0) + n
 
-    for sq in m.follow_all(base, [SQUADS], [SQ_ES], 'all'):
+    if GAME == 'Halo 3: ODST':
+        _arm_cells(m, hp, base, widx, info, graphs, type_of, draw, count, jackal_shield, char_team,
+                   stats)
+    for sq in m.follow_all(base, [SQUADS], [SQ_ES], 'all') if GAME == 'Halo 3' else ():
         squad_team = _i16(m, sq + SQ_TEAM)
         for ft in m.follow_all(sq, [FT], [FT_ES], 'all'):
             fc = _i16(m, ft + FT_CHAR)
@@ -813,6 +855,10 @@ def arm(m, hp, cards, salt=None):
     for w in sorted(missing):
         rows.append({'tag': tag.rstrip(BS), 'field': 'Armed: ' + w.split(BS)[-1], 'ok': True,
                      'skip': True, 'reason': "not in this level's weapon palette"})
+    if stats.get('cells'):
+        rows.append({'tag': tag.rstrip(BS), 'field': 'cells', 'ok': True,
+                     'new': '%d cells armed: %d shared weapon arrays copied, %d empty ones given '
+                     'an element' % (stats['cells'], stats['unshared'], stats['filled'])})
     if stats['shieldless'] or stats['reshielded'] or stats['no_variant'] or stats['ft_jackals']:
         rows.append({'tag': tag + 'Jackal', 'field': 'Jackal shields', 'ok': not stats['no_variant'],
                      'new': '%d locations shieldless (two-handed), %d given the shield back; %d '
@@ -827,7 +873,102 @@ def arm(m, hp, cards, salt=None):
     return rows, done
 
 
-def apply(m, hp, spec, registry=None, salt=None):
+def _arm_cells(m, hp, base, widx, info, graphs, type_of, draw, count, jackal_shield, char_team,
+               stats):
+    """ODST: arm the cells (and spawn points with their own weapon) of every squad."""
+    stats.update(cells=0, unshared=0, filled=0)
+    squads = m.follow_all(base, [SQUADS], [SQ_ES], 'all')
+    refs = {}
+    for sq in squads:
+        for off in CELL_BLOCKS:
+            for cell in m.follow_all(sq, [off], [CELL_ES], 'all'):
+                if m.i32(cell + CELL_WEAPS) > 0:
+                    p = m.u32(cell + CELL_WEAPS + 4)
+                    refs[p] = refs.get(p, 0) + 1
+
+    def holdable(types, w):
+        wi = info.get(w)
+        return wi is not None and all(graphs.allows(t, wi['class'], wi['name']) for t in types)
+
+    def write_cell(cell, w):
+        blk = cell + CELL_WEAPS
+        n, p = m.i32(blk), m.u32(blk + 4)
+        if n <= 0:
+            got = hp._h3_reserve(m, [CELL_ARR_ES])
+            if not got:
+                return False
+            el = bytearray(CELL_ARR_ES)
+            struct.pack_into('<h', el, CELL_CHANCE, 1)
+            m.data[got[0]:got[0] + CELL_ARR_ES] = el
+            struct.pack_into('<iI', m.data, blk, 1, m.off2data(got[0]))
+            n = 1
+            stats['filled'] += 1
+        elif refs.get(p, 0) > 1:
+            got = hp._h3_reserve(m, [n * CELL_ARR_ES])
+            if not got:
+                return False
+            src = hp._block_base(m, blk)
+            m.data[got[0]:got[0] + n * CELL_ARR_ES] = m.data[src:src + n * CELL_ARR_ES]
+            struct.pack_into('<I', m.data, blk + 4, m.off2data(got[0]))
+            refs[p] -= 1
+            stats['unshared'] += 1
+        el0 = hp._block_base(m, blk)
+        for i in range(n):
+            struct.pack_into('<h', m.data, el0 + i * CELL_ARR_ES + CELL_IDX, widx[w])
+        return True
+
+    for sq in squads:
+        squad_team = _i16(m, sq + SQ_TEAM)
+        designer = m.follow_all(sq, [CELL_BLOCKS[0]], [CELL_ES], 'all')
+        armed, kinds = {}, {}
+        for off in CELL_BLOCKS:
+            for cell in m.follow_all(sq, [off], [CELL_ES], 'all'):
+                chars = [_i16(m, e + CELL_IDX)
+                         for e in m.follow_all(cell, [CELL_CHARS], [CELL_ARR_ES], 'all')]
+                types = set(type_of(c) for c in chars)
+                kinds[cell] = types
+                if not chars or None in types:
+                    continue
+                enemy = type_of(chars[0])
+                c0 = chars[0]
+                team = squad_team if squad_team > 0 else (char_team[c0] if 0 <= c0 < len(char_team) else None)
+                w = draw(enemy, team, cell + CELL_WEAPS)
+                if w is None or (len(types) > 1 and not holdable(types, w)):
+                    continue
+                if write_cell(cell, w):
+                    armed[cell] = w
+                    stats['cells'] += 1
+                    count(enemy, w, max(1, _i16(m, cell + CELL_COUNT)))
+        placed = {}
+        for sp in m.follow_all(sq, [SP], [SP_ES], 'all'):
+            ci = _i16(m, sp + SP_CELL)
+            cell = designer[ci] if 0 <= ci < len(designer) else None
+            if cell is not None:
+                placed[cell] = placed.get(cell, 0) + 1
+            own_c, own_w = _i16(m, sp + SP_CHAR), _i16(m, sp + SP_WEAP)
+            types = {type_of(own_c)} if own_c >= 0 else kinds.get(cell, {None})
+            w = armed.get(cell)
+            if own_w >= 0 and None not in types:
+                enemy = next(iter(types))
+                c0 = own_c if own_c >= 0 else -1
+                team = squad_team if squad_team > 0 else (char_team[c0] if 0 <= c0 < len(char_team) else None)
+                w2 = draw(enemy, team, sp + SP_WEAP)
+                if w2 is not None and holdable(types, w2):
+                    struct.pack_into('<hh', m.data, sp + SP_WEAP, widx[w2], -1)
+                    count(enemy, w2)
+                    w = w2
+                else:
+                    w = None                 # keeps its own weapon
+            if w is not None and types == {'Jackal'}:
+                jackal_shield(sp, w, SP_VARIANT)
+        for cell, w in armed.items():
+            if kinds.get(cell) == {'Jackal'} and two_handed(m, hp, info.get(w)) \
+                    and _i16(m, cell + CELL_COUNT) > placed.get(cell, 0):
+                stats['ft_jackals'] += 1
+
+
+def apply(m, hp, spec, registry=None, salt=None, game='Halo 3'):
+    bind(game if game in LAYOUTS else 'Halo 3', m, hp)
     rows, _done = arm(m, hp, (spec or {}).get('cards') or {}, salt=salt)
     for r in rows:
         r.setdefault('effect', 'enemy weapons')

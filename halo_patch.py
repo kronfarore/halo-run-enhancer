@@ -10170,13 +10170,14 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         import sys as _sys
         import h2_enemy_weapons as _ew2
         results.extend(_ew2.apply(m, _sys.modules[__name__], h2_enemy_weapons, registry))
-    if h3_enemy_weapons and str(game).strip() == 'Halo 3':
-        # Halo 3's 'Armed: <weapon>' cards (h3_enemy_weapons.py, ARMED_ALL_GAMES.md):
-        # fire-teams / locations handed the weapon where the species' animations can hold
-        # it, shieldless Jackals. AFTER the skulls, as Halo 1 and 2.
+    if h3_enemy_weapons and str(game).strip() in ('Halo 3', 'Halo 3: ODST'):
+        # Halo 3's and ODST's 'Armed: <weapon>' cards (h3_enemy_weapons.py, ARMED_ALL_GAMES.md):
+        # fire-teams / locations (ODST: cells / spawn points) handed the weapon, species taught
+        # to hold it, shieldless Jackals. AFTER the skulls, as Halo 1 and 2.
         import sys as _sys
         import h3_enemy_weapons as _ew3
-        results.extend(_ew3.apply(m, _sys.modules[__name__], h3_enemy_weapons, registry))
+        results.extend(_ew3.apply(m, _sys.modules[__name__], h3_enemy_weapons, registry,
+                                  game=str(game).strip()))
     if h2_arbiter_flashlight is not None and str(game).strip() == 'Halo 2':
         # Options -> Halo 2 'Arbiter flashlight': rebuilt Arbiter levels carry the Chief's
         # light + toggle on dervish.biped, built ON; OFF lowers the attachment count and

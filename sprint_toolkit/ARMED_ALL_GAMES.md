@@ -141,6 +141,26 @@ are sorted and binary-searched; teach via a same-class pose donor where the spec
 cross-class donor + a computed grip marker (Preferred Gun Node; off-hand alignment for Marines, body
 frame turned to the muzzle for the rest); Jackals go shieldless with two-handed weapons.
 
+## ODST route (BUILT 2026-11-06, offline-verified, first boot staged)
+
+The Halo 3 module serves ODST: `h3_enemy_weapons.bind('Halo 3: ODST')` switches its tag offsets
+(LAYOUTS: squads +0x3B8/0x6C, palettes +0x3E8 / +0x13C, weap class / name +0x3EC / +0x3F0, flags
++0x19C, ai\generic +0x198 / +0x1A4, biped Preferred Gun Node +0x1B4; jmad and render models as Halo 3)
+and `_arm_cells` writes CELLS: a cell of a carded type draws once, its Initial Weapon array is copied
+when shared / given an element when empty, every element names the weapon; a spawn point with its
+own weapon draws for itself; Jackal spawn points of an all-Jackal cell take 'shieldless' (a cell's
+units past its spawn points keep the shield). ODST story characters never armed (NEVER_WORDS).
+Teaching, grips, REPOSE and borrowed firing data as Halo 3. Enhancer: ARMED_ENEMIES / ARMED_OPTIONS
+'Halo 3: ODST' (odst_enemy_weapon_cards on, odst_armed_all_weapons off, in the ODST box),
+_h3_enemy_weapons_spec for both games; apply_run passes game=. Dry run sc120 (all weapons, every
+species): 673 cells armed (56 shared arrays copied, 1 empty filled), only the two melee weapons
+refused, every pool weapon has firing data. Offers: every ODST mission. Halo 3 unchanged (010).
+First boot: Kizingo Boulevard (sc120; Mombasa Streets h100 is the hub, user 2026-11-06), staged by
+`sprint_toolkit/odst_armed_test.py` (+ `.cmd`): 18 enemy cells (6-61 wu) carry Grunt AR /
+Flamethrower / Plasma Cannon, Jackal Rocket (shieldless) / Brute Shot / Plasma Cannon, Brute Silenced
+SMG, Drone Rocket / Brute Shot; 6 Marine cells Brute Shot / Plasma Cannon / Silenced SMG; god shield,
+Carbine x1000, run x2.
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?
