@@ -57,7 +57,7 @@ def _c(s):
 ENEMY_CASES = (
     ('Grunt + Flamethrower (grip)', _c('grunt'), _w('turret/flamethrower/flamethrower'), True),
     ('Grunt + Missile Pod (grip)', _c('grunt'), _w('turret/missile_pod/missile_pod'), True),
-    ('Grunt + Machine Gun Turret (native, control)', _c('grunt'), _w('turret/machinegun_turret/machinegun_turret'), False),
+    ('Grunt + Machine Gun Turret (repose + grip)', _c('grunt'), _w('turret/machinegun_turret/machinegun_turret'), False),
     ('Jackal + Brute Shot (grip)', _c('jackal'), _w('support_low/brute_shot/brute_shot'), True),
     ('Jackal + Machine Gun Turret (grip)', _c('jackal'), _w('turret/machinegun_turret/machinegun_turret'), True),
     ('Jackal + Plasma Cannon (grip)', _c('jackal'), _w('turret/plasma_cannon/plasma_cannon'), True),
@@ -255,7 +255,8 @@ def build(level='010_jungle'):
     for cases in (ENEMY_CASES, MARINE_CASES):
         for _l, ch, wp, _f in cases:
             wi = ew.weapon_info(m, wp)
-            if wi and not graphs.allows(ew.enemy_of(ch), wi['class'], wi['name']):
+            if wi and (not graphs.allows(ew.enemy_of(ch), wi['class'], wi['name'])
+                       or wp.lower().rsplit(chr(92), 1)[-1] in ew.REPOSE.get(ew.enemy_of(ch), ())):
                 want.setdefault(ew.enemy_of(ch), set()).add(wp)
     taught, trows = ew.teach(m, hp, graphs, {e: sorted(w) for e, w in want.items()})
     for r in trows:

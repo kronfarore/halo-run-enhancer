@@ -374,6 +374,9 @@ GRIP_FIX = ('brute_shot', 'missile_pod', 'machinegun_turret', 'plasma_cannon', '
 #: the species whose own turret pose holds GRIP_FIX weapons fine (boot 5: Marine turrets in the
 #: Marine flamethrower pose): they keep the pose step
 POSE_OK = ('Marine',)
+#: NATIVE pairs taught anyway (boot 7: the Grunt's own turret pose holds the Machine Gun Turret
+#: pointing up): rocket pose + body-frame grip like the taught turrets
+REPOSE = {'Grunt': ('machinegun_turret', 'plasma_cannon')}
 GRIP_NAME = {'Grunt': 'right_hand_grunt', 'Jackal': 'left_hand_jackal', 'Marine': 'right_hand_marine',
              'Bugger': 'right_hand_jackal'}
 #: the biped(s) per species whose Preferred Gun Node (+0x1A4) must name GRIP_NAME
@@ -431,13 +434,13 @@ def _render_model(m, hp, weapon):
     return dict(m.find_tags('mode', mn)).get(mn) if mn else None
 
 
-def _marker(m, hp, mode, names):
+def _marker(m, hp, mode, names, fallback=True):
     """(transform in node-0 space, marker element) of the first marker group in `names` (then
     any 'left_hand*'), or None."""
     groups = {_name(m, hp, m.u32(g)): g
               for g in m.follow_all(mode, [MODE_GROUPS], [MODE_GROUP_ES], 'all')}
     pick = next((groups[n] for n in names if n in groups), None)
-    if pick is None:
+    if pick is None and fallback:
         pick = next((g for n, g in sorted(groups.items()) if n.startswith('left_hand')), None)
     mk = m.follow_all(pick, [4], [MARKER_ES], 'all') if pick is not None else []
     if not mk:
@@ -469,10 +472,30 @@ def _body_frame(m, hp, mode):
     'body' child's when there is one (the Brute Shot / Missile Pod body is rolled 90 deg: Bungie's
     right_hand_brute markers are exactly that rotation)."""
     nodes = m.follow_all(mode, [MODE_NODES], [MODE_NODE_ES], 'all')
+    qb = (0.0, 0.0, 0.0, 1.0)
     for nd in nodes[1:]:
         if struct.unpack_from('<h', m.data, nd + 4)[0] == 0 and _name(m, hp, m.u32(nd)) == 'body':
-            return ((0.0, 0.0, 0.0), _norm(struct.unpack_from('<4f', m.data, nd + 0x18)))
-    return ((0.0, 0.0, 0.0), (0.0, 0.0, 0.0, 1.0))
+            qb = _norm(struct.unpack_from('<4f', m.data, nd + 0x18))
+            break
+    # (boot 7) then turned toward the MUZZLE with the smallest rotation: the Plasma Cannon's
+    # primary_trigger sits at -X, so its body frame alone held it backwards
+    trig = _marker(m, hp, mode, ('primary_trigger',), fallback=False)
+    if trig is not None:
+        d = _qrot(_qconj(qb), _qrot(trig[0][1], (1.0, 0.0, 0.0)))
+        qb = _qmul(qb, _turn_x_to(d))
+    return ((0.0, 0.0, 0.0), _norm(qb))
+
+
+def _turn_x_to(d):
+    """The smallest rotation taking +X to the direction d (180 deg about Z when d is -X)."""
+    n = sum(x * x for x in d) ** 0.5 or 1.0
+    d = tuple(x / n for x in d)
+    if d[0] > 0.9999:
+        return (0.0, 0.0, 0.0, 1.0)
+    if d[0] < -0.9999:
+        return (0.0, 0.0, 1.0, 0.0)
+    ax = (0.0, -d[2], d[1])                       # (1,0,0) x d
+    return _norm((ax[0], ax[1], ax[2], 1.0 + d[0]))
 
 
 def find_sid(m, hp, text):
@@ -674,7 +697,11 @@ def arm(m, hp, cards, salt=None):
         if ok:
             usable[enemy] = ok
     # TEACH what the gate refused (not the melee weapons), then drop what is still refused
-    taught, trows = teach(m, hp, graphs, {e: sorted(ws) for e, ws in refused.items()})
+    forced = {e: set(wnames[widx[w]] for w in ws if w.rsplit(BS, 1)[-1] in REPOSE.get(e, ()))
+              for e, ws in usable.items()}
+    taught, trows = teach(m, hp, graphs, {e: sorted(refused.get(e, set()) | forced.get(e, set()))
+                                          for e in set(refused) | set(forced)
+                                          if refused.get(e) or forced.get(e)})
     rows += trows
     for enemy in list(refused):
         refused[enemy] -= taught.get(enemy, set())

@@ -127,6 +127,13 @@ conventions (Jackals hold the gun in the other hand; the Rocket Launcher has no 
 Grunts). `GRIP_STYLE`: Marines keep 'offhand'; Grunts / Jackals / Drones get the BODY FRAME grip
 (`_body_frame`: node 0's frame, or its 'body' child's) = held like a rifle. v5 deployed.
 
+Boot 7 (2026-11-06): body-frame grips right for Grunt Flamethrower / Missile Pod and Jackal Brute
+Shot / Machine Gun Turret / Flamethrower. Still wrong: the NATIVE Grunt Machine Gun Turret (Halo 3's own
+Grunt turret pose holds it up) and the Jackal Plasma Cannon (backwards: its muzzle sits at -X). Fixes:
+`REPOSE` (Grunt Machine Gun Turret / Plasma Cannon taught anyway: rocket pose + grip) and `_body_frame`
+turns toward the primary_trigger direction with the smallest rotation (no change for the others; the
+Plasma Cannon turns ~150 deg about Y). v6 deployed.
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?
