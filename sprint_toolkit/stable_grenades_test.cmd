@@ -3,6 +3,8 @@ rem Stable Grenades in-game test: swap the staged test levels into MCC and back.
 rem
 rem   stable_grenades_test.cmd vanilla [game]   the level as a normal patch leaves it, no card
 rem   stable_grenades_test.cmd stable  [game]   the same level with Stable Grenades on every grenade
+rem   stable_grenades_test.cmd itemonly halo2   Halo 2 only: the card's item-flag write alone
+rem                                             (does the eqip flag by itself stop the chain?)
 rem   stable_grenades_test.cmd restore [game]   put back the map that was live before the test
 rem
 rem [game] = halo1 / halo2 / halo3 / halo3odst / haloreach / halo4 (default: all six).
@@ -10,20 +12,20 @@ rem Built by stable_grenades_stage.py into E:\HaloBackups\stable_grenades_test.
 rem The first vanilla/stable call saves each live map to ...\live_before (once).
 rem MCC can stay open; only the level being swapped must not be running (quit to the menu).
 rem
-rem   Halo 1  c40 Two Betrayals      Halo 2  01b Cairo Station    Halo 3  100 The Covenant
+rem   Halo 1  a30 Halo               Halo 2  01b Cairo Station    Halo 3  100 The Covenant
 rem   ODST    h100 Mombasa Streets   Reach   m60 The Package      Halo 4  m40_invasion Infinity
 setlocal EnableDelayedExpansion
 set "MCC=C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection"
 set "ST=E:\HaloBackups\stable_grenades_test"
 set "MODE=%~1"
 set "ONLY=%~2"
-if /i not "%MODE%"=="vanilla" if /i not "%MODE%"=="stable" if /i not "%MODE%"=="restore" (
-    echo usage: %~nx0 vanilla^|stable^|restore [halo1^|halo2^|halo3^|halo3odst^|haloreach^|halo4]
+if /i not "%MODE%"=="vanilla" if /i not "%MODE%"=="stable" if /i not "%MODE%"=="itemonly" if /i not "%MODE%"=="restore" (
+    echo usage: %~nx0 vanilla^|stable^|itemonly^|restore [halo1^|halo2^|halo3^|halo3odst^|haloreach^|halo4]
     exit /b 1
 )
 set FAILED=0
 for %%M in (
-    "halo1\maps\c40.map"
+    "halo1\maps\a30.map"
     "halo2\h2_maps_win64_dx11\01b_spacestation.map"
     "halo3\maps\100_citadel.map"
     "halo3odst\maps\h100.map"
@@ -47,6 +49,10 @@ if /i "%MODE%"=="restore" (
     )
     copy /y "%ST%\live_before\%REL%" "%LIVE%" >nul || (set /a FAILED+=1 & echo   FAILED %REL% & exit /b 0)
     echo   %REL%: restored
+    exit /b 0
+)
+if /i "%MODE%"=="itemonly" if not exist "%ST%\%MODE%\%REL%" (
+    echo   %REL%: no itemonly copy for this game, left as it is
     exit /b 0
 )
 if not exist "%ST%\%MODE%\%REL%" (
