@@ -5,6 +5,9 @@ rem   stable_grenades_test.cmd vanilla [game]   the level as a normal patch leav
 rem   stable_grenades_test.cmd stable  [game]   the same level with Stable Grenades on every grenade
 rem   stable_grenades_test.cmd itemonly halo2   Halo 2 only: the card's item-flag write alone
 rem                                             (does the eqip flag by itself stop the chain?)
+rem   stable_grenades_test.cmd accel halo1      Halo 1 only: vanilla + "does accelerate" on the
+rem                                             placed grenades (is that flag the placed gate?)
+rem Halo 1 copies have the grenade kinds swapped: placed pickups plasma, drops frag.
 rem   stable_grenades_test.cmd restore [game]   put back the map that was live before the test
 rem
 rem [game] = halo1 / halo2 / halo3 / halo3odst / haloreach / halo4 (default: all six).
@@ -19,8 +22,8 @@ set "MCC=C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Col
 set "ST=E:\HaloBackups\stable_grenades_test"
 set "MODE=%~1"
 set "ONLY=%~2"
-if /i not "%MODE%"=="vanilla" if /i not "%MODE%"=="stable" if /i not "%MODE%"=="itemonly" if /i not "%MODE%"=="restore" (
-    echo usage: %~nx0 vanilla^|stable^|itemonly^|restore [halo1^|halo2^|halo3^|halo3odst^|haloreach^|halo4]
+if /i not "%MODE%"=="vanilla" if /i not "%MODE%"=="stable" if /i not "%MODE%"=="itemonly" if /i not "%MODE%"=="accel" if /i not "%MODE%"=="restore" (
+    echo usage: %~nx0 vanilla^|stable^|itemonly^|accel^|restore [halo1^|halo2^|halo3^|halo3odst^|haloreach^|halo4]
     exit /b 1
 )
 set FAILED=0
@@ -51,8 +54,11 @@ if /i "%MODE%"=="restore" (
     echo   %REL%: restored
     exit /b 0
 )
-if /i "%MODE%"=="itemonly" if not exist "%ST%\%MODE%\%REL%" (
-    echo   %REL%: no itemonly copy for this game, left as it is
+set "ONEGAME="
+if /i "%MODE%"=="itemonly" set ONEGAME=1
+if /i "%MODE%"=="accel" set ONEGAME=1
+if defined ONEGAME if not exist "%ST%\%MODE%\%REL%" (
+    echo   %REL%: no %MODE% copy for this game, left as it is
     exit /b 0
 )
 if not exist "%ST%\%MODE%\%REL%" (

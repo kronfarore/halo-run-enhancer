@@ -108,6 +108,31 @@ def h1_swap_grenades(path):
     return out
 
 
+def h1_accelerate_placed(path):
+    """`accel` set: turn ON the placement Misc Flags bit 2 "does accelerate (moves due to
+    explosions)" on every placed grenade pickup. Stock a30 has Misc Flags 0 on all 17, and
+    the vanilla test showed placed grenades don't chain while dropped ones (no placement)
+    do -- this tells whether that flag is the gate."""
+    m = hp.open_map(path, 'Halo 1')
+    E = hp._MAP_EQUIPMENT['Halo 1']
+    sb = hp._scnr_base(m)
+    po, pe = E['palette']
+    pb = hp._block_base(m, sb + po)
+    gren = {i for i in range(m.i32(sb + po))
+            if 'grenade' in (hp._tag_name_by_id(m, m.u32(pb + i * pe + E['pal_id_at'])) or '')}
+    io, ie = E['items']
+    ib = hp._block_base(m, sb + io)
+    n = 0
+    for i in range(m.i32(sb + io)):
+        e = ib + i * ie
+        if struct.unpack_from('<h', m.data, e)[0] in gren:
+            f = struct.unpack_from('<H', m.data, e + 34)[0]
+            struct.pack_into('<H', m.data, e + 34, f | 4)
+            n += 1
+    m.save(path)
+    return '%d placed grenades: does accelerate on' % n
+
+
 def flag_rows(path, game, reg):
     """(tag, flags) of the grenade pickups' item flags and models' damage flags."""
     m = hp.open_map(path, game)
@@ -138,14 +163,15 @@ def main(check_only=False, only=()):
         name = os.path.basename(live)
         print('##', g, name, '<-', src, flush=True)
         staged = {}
-        for kind in ('vanilla', 'stable') + (('itemonly',) if g == 'Halo 2' else ()):
+        extra = {'Halo 1': ('accel',), 'Halo 2': ('itemonly',)}.get(g, ())
+        for kind in ('vanilla', 'stable') + extra:
             dst = os.path.join(OUT, kind, sub.replace('/', os.sep), name)
             staged[kind] = dst
             if check_only:
                 continue
             os.makedirs(os.path.dirname(dst), exist_ok=True)
             shutil.copyfile(src, dst)
-            plan = plan_for(g, kind == 'itemonly') if kind != 'vanilla' else []
+            plan = plan_for(g, kind == 'itemonly') if kind in ('stable', 'itemonly') else []
             res, _ = hp.apply_run(dst, plan, reg, 'Normal', backup=False, game=g,
                                   from_baseline=False)
             mine = [r for r in res if r.get('effect') == 'Stable Grenades']
@@ -160,6 +186,8 @@ def main(check_only=False, only=()):
                     print('     FAIL', r.get('effect'), r.get('tag'), r.get('reason'))
             if g == 'Halo 1':
                 print('     swap:', '; '.join(h1_swap_grenades(dst)), flush=True)
+            if kind == 'accel':
+                print('     accel:', h1_accelerate_placed(dst), flush=True)
         rows = {k: dict(flag_rows(v, g, reg)) for k, v in staged.items()}
         a = rows['vanilla']
         for k in sorted(set().union(*rows.values())):
