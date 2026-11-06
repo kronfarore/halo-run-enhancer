@@ -329,7 +329,7 @@ PORT = {
             # boot 2 (screenshot): the glyphs' centres at -390 / +384 px, the side cutouts' at +-354 px: moved
             # 36 / 30 px in (/ 1.117 px a unit)
             (r'ui\hud\needle_rifle.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 4, 0, [-352, -27]),
-            (r'ui\hud\needle_rifle.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 5, 0, [279, -27]),
+            (r'ui\hud\needle_rifle.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 5, 0, [271, -27]),   # boot 3: 9 px left
             # boot 3: 'the teal glyph is mirrored' -- the Carbine's right_crosshair flips its (shared) sprite
             # horizontally; the port's has its own
             (r'ui\hud\needle_rifle.new_hud_definition', 'flags', 'bitmap widgets', 5, 0, 0),
@@ -583,6 +583,67 @@ PORT = {
         'target': {'weapon': (WP, ND + r'\needler.weapon'),
                    'projectile': (PR, ND + r'\projectiles\needler_shard\needler_shard.projectile'),
                    'damage_effect': (DM + r'\needle_rifle_shard_impact.damage_effect', ND + r'\damage_effects\needler_shard_impact.damage_effect')},
+    },
+
+    # BALANCED (step 4a, user 2026-11-01: reports/h2_needle_rifle_4a.md). The table reads the NEEDLER's tags: each
+    # redirected onto the port's own; the needle's damage row (the Needler's detonation) lands on the port's IMPACT
+    # (Reach's needle is one impact hit). Melee rows dropped (strike_melee is everyone's); the FP anim rows have no
+    # port tag (Reach's own 82-frame reload kept, reload_mult None)
+    'catalog': {
+        'table': 'balance_Needle_Rifle_HaloReach_to_Halo2.json',
+        'weapon_tag': WP[:-len('.weapon')],
+        'port_tags': [(('weap', ND + r'\needler'), NR + r'\needle_rifle'),
+                      (('proj', ND + r'\projectiles\needler_shard\needler_shard'), NR + r'\projectiles\needle_rifle_shard'),
+                      (('jpt!', ND + r'\damage_effects\needler_shard_attached_super_detonation'),
+                       DM + r'\needle_rifle_shard_attached_super_detonation'),
+                      (('jpt!', ND + r'\damage_effects\needler_shard_super_detonation'), DM + r'\needle_rifle_shard_super_detonation')],
+        # the needle's damage (the table's needler_shard_detonation rows, 2) is NOT redirected: an override by field
+        # name would hit the attached blast's Damage rows too -- its 3 is three extra rows on the port's impact
+        'shared': [('jpt!', r'objects\weapons\damage_effects\strike_melee')],
+        'value_overrides': dict([
+            ('Super Detonation Projectile Count', {'value': 2, 'note': "user 4a: 3 needles; Halo 2 combines ABOVE the count "
+                                                                         "(boot 3: 2 -> 3 needles)"}),
+            ('Timer', {'value': 1.5, 'note': 'user 4a: the stock 0.5 x 6/2 shot gaps -- the third needle lands inside it'}),
+            ('Timer Max', {'value': 2.1, 'note': 'user 4a: the stock 0.7 x 6/2 shot gaps'}),
+            ('Minimum Error', {'value': 0.0, 'note': "user 4a: the Carbine answers accuracy -- Reach's min 0"}),
+            ('Error Angle', {'value': 0.3, 'note': "user 4a: the Carbine's 0.3"}),
+            ('Error Angle Max', {'value': 1.0, 'note': 'user 4a: 0.3-1.0'}),
+            ('Magnification Levels', {'value': 1, 'note': "Reach's 2x (the Needler has no zoom: its ratio reads 0)"}),
+            ('Magnification Range', {'value': 2.0, 'note': "Reach's 2x"}),
+            ('Magnification Range Max', {'value': 2.0, 'note': "Reach's 2x"}),
+            ('Rounds Total Initial', {'value': 78, 'note': 'user 4a: 26 / 78 / 105'}),
+            ('Rounds Inventory Maximum', {'value': 79, 'note': 'user 4a: 105 total - 26 loaded'}),
+            ('Rounds Loaded Maximum', {'value': 26, 'note': 'user 4a: 26'}),
+            ('Rounds Reloaded', {'value': 26, 'note': 'user 4a: 26'}),
+            ('Rounds Per Second Max', {'value': 4.0, 'note': 'user 4a: 4/s (the max row inverts to 2.67)'}),
+            ('Shots Per Fire', {'value': 1, 'note': "Reach's 1 (the Needler's 0 = no recovery)"}),
+            ('Shots Per Fire Max', {'value': 1, 'note': "Reach's 1"}),
+            ('Fire Recovery Time', {'value': 0.25, 'note': 'user 4a: 4/s + recovery 0.25'})]),
+        'extra_rows': [
+            {'class': 'jpt!', 'tag': DM + r'\needle_rifle_shard_impact', 'field': f, 'block': None, 'value': 3.0,
+             'card': 'Projectile Damage', 'original': 6.0,
+             'note': "user 4a: Halo 2's real needle 1 + 2 = 3, on impact (the tool read the detonation alone)"}
+            for f in ('Damage Lower Bound', 'Damage Upper Bound', 'Damage Upper Bound Max')] + [
+            # the area blast: the Needler's own 30-50 (user 4a: 'attached 400 + area 50, the Needler's')
+            {'class': 'jpt!', 'tag': DM + r'\needle_rifle_shard_super_detonation', 'field': f, 'block': None, 'value': v,
+             'card': 'Projectile Damage', 'original': o, 'note': "user 4a: the Needler's area blast"}
+            for f, v, o in (('Damage Lower Bound', 30.0, 10.0), ('Damage Upper Bound', 50.0, 40.0),
+                            ('Damage Upper Bound Max', 50.0, 40.0))] + [
+            # the attached blast as the Needler's: the stuck target alone (no radius; Reach's 0.375-1.25 is Original's)
+            {'class': 'jpt!', 'tag': DM + r'\needle_rifle_shard_attached_super_detonation', 'field': f, 'block': None,
+             'value': 0.0, 'card': 'Projectile Damage', 'original': o,
+             'note': "the Needler's attached blast has no radius: 400 to the stuck target alone"}
+            for f, o in (('Radius', 0.375), ('Radius Max', 1.25), ('AOE Core Radius', 0.3))] + [
+            # the meter's 26-pip art (sequence 1) for the 26-round Balanced magazine; Original keeps sequence 0's 21
+            {'class': 'nhdt', 'tag': r'ui\hud\needle_rifle', 'field': '%s Sequence Index' % scr, 'block': 'Bitmap Widgets',
+             'index': 2, 'value': 1, 'card': None, 'original': 0,
+             'note': 'ammo meter: the 26-pip art for the 26-round Balanced magazine'}
+            for scr in ('Fullscreen', 'Halfscreen')],
+        'fp_animations': r'objects\characters\*\fp\weapons\rifle\fp_needle_rifle\fp_needle_rifle',
+        'reload_mult': None,
+        'desc': ('%s carried from %s into Halo 2 with its own model, textures, sounds, scope and its own Reach '
+                 'first-person animations for both species; its needles supercombine at three. Balanced through '
+                 'the Needler, its accuracy through the Covenant Carbine.'),
     },
 
     'test': {'level': '05a_deltaapproach', 'dervish_level': '04b_floodlab', 'rounds': (21, 105)},

@@ -10992,6 +10992,541 @@
    "anims": {
     "reload": 0.838
    }
+  },
+  {
+   "weapon": "Needle Rifle",
+   "source": "Halo Reach",
+   "donor": "Needler",
+   "default_on": true,
+   "desc": "Needle Rifle carried from Halo Reach into Halo 2 with its own model, textures, sounds, scope and its own Reach first-person animations for both species; its needles supercombine at three. Balanced through the Needler, its accuracy through the Covenant Carbine.",
+   "balance": [
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 2.8125,
+     "card": "Magnetism",
+     "original": 4.99999985454646,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 19.230769,
+     "card": "Magnetism",
+     "original": 25.0,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 1.96875,
+     "card": "Autoaim",
+     "original": 2.2500000626119543
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 19.230769,
+     "card": "Autoaim",
+     "original": 25.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_attached_super_detonation",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 400.0,
+     "card": "Explosion Damage",
+     "original": 35.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_attached_super_detonation",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 400.0,
+     "card": "Explosion Damage",
+     "original": 350.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_attached_super_detonation",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 400.0,
+     "card": "Explosion Damage",
+     "original": 350.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_super_detonation",
+     "field": "Radius",
+     "block": null,
+     "value": 0.2,
+     "card": "Explosion Radius",
+     "original": 0.375
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_super_detonation",
+     "field": "Radius Max",
+     "block": null,
+     "value": 0.5,
+     "card": "Explosion Radius",
+     "original": 1.25
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard",
+     "field": "Timer",
+     "block": null,
+     "value": 1.5,
+     "card": "Needle Timer",
+     "original": 0.0,
+     "note": "user 4a: the stock 0.5 x 6/2 shot gaps -- the third needle lands inside it"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard",
+     "field": "Timer Max",
+     "block": null,
+     "value": 2.1,
+     "card": "Needle Timer",
+     "original": 4.0,
+     "note": "user 4a: the stock 0.7 x 6/2 shot gaps"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard",
+     "field": "Super Detonation Projectile Count",
+     "block": null,
+     "value": 2,
+     "card": "Supercombine Needle Count",
+     "original": 3.0,
+     "note": "user 4a: 3 needles; Halo 2 combines ABOVE the count (boot 3: 2 -> 3 needles)"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard",
+     "field": "Arming Time",
+     "block": null,
+     "value": 0,
+     "card": "Needle Fuse",
+     "original": 0.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard",
+     "field": "Minimum Velocity",
+     "block": null,
+     "value": 3.0,
+     "card": "Needle Fuse",
+     "original": 9.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Distribution Function",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Distribution Function",
+     "original": 0.0,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Distribution Angle",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Distribution Function",
+     "original": 0.0,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Firing Noise",
+     "block": "Barrels",
+     "value": 2.0,
+     "card": "Firing Noise",
+     "original": 4.0,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Magnification Levels",
+     "block": null,
+     "value": 1,
+     "card": "Zoom",
+     "original": 1.0,
+     "note": "Reach's 2x (the Needler has no zoom: its ratio reads 0)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Magnification Range",
+     "block": null,
+     "value": 2.0,
+     "card": "Zoom",
+     "original": 2.0,
+     "note": "Reach's 2x"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Magnification Range Max",
+     "block": null,
+     "value": 2.0,
+     "card": "Zoom",
+     "original": 2.0,
+     "note": "Reach's 2x"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 78,
+     "card": "Ammo Inventory",
+     "original": 63.0,
+     "note": "user 4a: 26 / 78 / 105"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Rounds Inventory Maximum",
+     "block": "Magazines",
+     "value": 79,
+     "card": "Ammo Inventory",
+     "original": 84.0,
+     "note": "user 4a: 105 total - 26 loaded"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 26,
+     "card": "Ammo Loaded",
+     "original": 21.0,
+     "note": "user 4a: 26"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Rounds Reloaded",
+     "block": "Magazines",
+     "value": 26,
+     "card": "Ammo Loaded",
+     "original": 21.0,
+     "note": "user 4a: 26"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Projectiles Per Shot",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Projectiles Per Shot",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Rounds Per Shot",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Projectiles Per Shot",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Minimum Error",
+     "block": "Barrels",
+     "value": 0.0,
+     "card": "Error Angle",
+     "original": 0.0,
+     "note": "user 4a: the Carbine answers accuracy -- Reach's min 0",
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Error Angle",
+     "block": "Barrels",
+     "value": 0.3,
+     "card": "Error Angle",
+     "original": 0.149999998838045,
+     "note": "user 4a: the Carbine's 0.3",
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Error Angle Max",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Error Angle",
+     "original": 1.9999999845072665,
+     "note": "user 4a: 0.3-1.0",
+     "nth": 1
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 230.769231,
+     "card": "Projectile Range",
+     "original": 250.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard",
+     "field": "Air Damage Range",
+     "block": null,
+     "value": 0,
+     "card": "Projectile Range",
+     "original": 0.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard",
+     "field": "Air Damage Range Max",
+     "block": null,
+     "value": 40.0,
+     "card": "Projectile Range",
+     "original": 40.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard",
+     "field": "Water Damage Range",
+     "block": null,
+     "value": 0,
+     "card": "Projectile Range",
+     "original": 0.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard",
+     "field": "Water Damage Range Max",
+     "block": null,
+     "value": 10.0,
+     "card": "Projectile Range",
+     "original": 10.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 818.181818,
+     "card": "Projectile Velocity",
+     "original": 1500.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 818.181818,
+     "card": "Projectile Velocity",
+     "original": 1500.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard",
+     "field": "Minimum Velocity",
+     "block": null,
+     "value": 3.0,
+     "card": "Projectile Velocity",
+     "original": 9.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Rounds Per Second",
+     "block": "Barrels",
+     "value": 4.0,
+     "card": "Salvo Shooting",
+     "original": 4.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Rounds Per Second Max",
+     "block": "Barrels",
+     "value": 4.0,
+     "card": "Salvo Shooting",
+     "original": 4.0,
+     "note": "user 4a: 4/s (the max row inverts to 2.67)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Shots Per Fire",
+     "block": "Barrels",
+     "value": 1,
+     "card": "Salvo Shooting",
+     "original": 1.0,
+     "note": "Reach's 1 (the Needler's 0 = no recovery)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Shots Per Fire Max",
+     "block": "Barrels",
+     "value": 1,
+     "card": "Salvo Shooting",
+     "original": 1.0,
+     "note": "Reach's 1"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Fire Recovery Time",
+     "block": "Barrels",
+     "value": 0.25,
+     "card": "Fire Recovery Time",
+     "original": 0.25,
+     "note": "user 4a: 4/s + recovery 0.25"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_impact",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 3.0,
+     "card": "Projectile Damage",
+     "original": 6.0,
+     "note": "user 4a: Halo 2's real needle 1 + 2 = 3, on impact (the tool read the detonation alone)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_impact",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 3.0,
+     "card": "Projectile Damage",
+     "original": 6.0,
+     "note": "user 4a: Halo 2's real needle 1 + 2 = 3, on impact (the tool read the detonation alone)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_impact",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 3.0,
+     "card": "Projectile Damage",
+     "original": 6.0,
+     "note": "user 4a: Halo 2's real needle 1 + 2 = 3, on impact (the tool read the detonation alone)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_super_detonation",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 30.0,
+     "card": "Projectile Damage",
+     "original": 10.0,
+     "note": "user 4a: the Needler's area blast"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_super_detonation",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 50.0,
+     "card": "Projectile Damage",
+     "original": 40.0,
+     "note": "user 4a: the Needler's area blast"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_super_detonation",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 50.0,
+     "card": "Projectile Damage",
+     "original": 40.0,
+     "note": "user 4a: the Needler's area blast"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_attached_super_detonation",
+     "field": "Radius",
+     "block": null,
+     "value": 0.0,
+     "card": "Projectile Damage",
+     "original": 0.375,
+     "note": "the Needler's attached blast has no radius: 400 to the stuck target alone"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_attached_super_detonation",
+     "field": "Radius Max",
+     "block": null,
+     "value": 0.0,
+     "card": "Projectile Damage",
+     "original": 1.25,
+     "note": "the Needler's attached blast has no radius: 400 to the stuck target alone"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_attached_super_detonation",
+     "field": "AOE Core Radius",
+     "block": null,
+     "value": 0.0,
+     "card": "Projectile Damage",
+     "original": 0.3,
+     "note": "the Needler's attached blast has no radius: 400 to the stuck target alone"
+    },
+    {
+     "class": "nhdt",
+     "tag": "ui\\hud\\needle_rifle",
+     "field": "Fullscreen Sequence Index",
+     "block": "Bitmap Widgets",
+     "index": 2,
+     "value": 1,
+     "card": null,
+     "original": 0,
+     "note": "ammo meter: the 26-pip art for the 26-round Balanced magazine"
+    },
+    {
+     "class": "nhdt",
+     "tag": "ui\\hud\\needle_rifle",
+     "field": "Halfscreen Sequence Index",
+     "block": "Bitmap Widgets",
+     "index": 2,
+     "value": 1,
+     "card": null,
+     "original": 0,
+     "note": "ammo meter: the 26-pip art for the 26-round Balanced magazine"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 105.0,
+     "card": "Magazine",
+     "original": null,
+     "note": "derived from Rounds Inventory Maximum + Rounds Loaded Maximum"
+    }
+   ],
+   "fp_animations": "objects\\characters\\*\\fp\\weapons\\rifle\\fp_needle_rifle\\fp_needle_rifle"
   }
  ],
  "Halo 3: ODST": [
