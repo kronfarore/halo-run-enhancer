@@ -13,6 +13,13 @@ Two sets under E:\HaloBackups\stable_grenades_test\, each laid out like the MCC 
 Both go through the same apply_run with the same options, so the ONLY difference between
 the two is this card. stable_grenades_test.cmd swaps them into the game (and back).
 
+Halo 1 SWAP (both sets, 2026-11-06): the vanilla a30 test showed placed frag pickups do
+not chain while dropped plasma pickups do. To tell "placed vs dropped" apart from "frag vs
+plasma", every Halo 1 copy is staged with the grenade kinds swapped:
+  placed  -> plasma: scnr equipment palette entries naming the frag eqip name the plasma one
+  dropped -> frag:   matg Grenades[*].equipment (what a dying unit drops) = the frag eqip
+Thrown grenades, carried counts and the pickups' own grenade type are untouched.
+
 Levels (placed grenade pickups, scnr Equipment block, 2026-11-05):
   Halo 1  a30 Halo                  17 frag (plasma only from Covenant drops)
   Halo 2  01b Cairo Station         13 frag, 26 plasma
@@ -24,6 +31,7 @@ Levels (placed grenade pickups, scnr Equipment block, 2026-11-05):
 import json
 import os
 import shutil
+import struct
 import sys
 
 TOOL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -61,6 +69,43 @@ def plan_for(game, item_only=False):
         plan.append({'tag': he.resolve_gamed(eff['tag'], game, GAMES),
                      'name': 'Stable Grenades', 'ops': ops, 'weapon': w})
     return plan
+
+
+def _h1_eqip_ref(m, path):
+    """(name pointer, tag id) of a Halo 1 eqip tag, read from the tag index."""
+    for row in range(m.tag_count):
+        b = m.tag_array_off + row * 32
+        if m.data[b:b + 4] == b'piqe' and hp._tag_name_by_id(m, m.u32(b + 0xC)) == path:
+            return m.u32(b + 0x10), m.u32(b + 0xC)
+    raise KeyError(path)
+
+
+def h1_swap_grenades(path):
+    """Placed grenade pickups -> plasma, dropped grenades -> frag (see the header)."""
+    m = hp.open_map(path, 'Halo 1')
+    frag, plasma = 'weapons\\frag grenade\\frag grenade', 'weapons\\plasma grenade\\plasma grenade'
+    fr, pr = _h1_eqip_ref(m, frag), _h1_eqip_ref(m, plasma)
+    out = []
+    sb = hp._scnr_base(m)
+    po, pe = hp._MAP_EQUIPMENT['Halo 1']['palette']
+    pb = hp._block_base(m, sb + po)
+    for i in range(m.i32(sb + po)):
+        e = pb + i * pe
+        if hp._tag_name_by_id(m, m.u32(e + 0xC)) == frag:
+            struct.pack_into('<II', m.data, e + 4, pr[0], 0)
+            struct.pack_into('<I', m.data, e + 0xC, pr[1])
+            out.append('placed palette %d: frag -> plasma' % i)
+    gb = m.find_tags('matg', 'globals' + chr(92) + 'globals')[0][1]
+    base = hp._block_base(m, gb + 296)                # Grenades, 68-byte entries
+    for i in range(m.i32(gb + 296)):
+        e = base + i * 68 + 36                        # equipment tag reference
+        was = hp._tag_name_by_id(m, m.u32(e + 0xC))
+        if was != frag:
+            struct.pack_into('<II', m.data, e + 4, fr[0], 0)
+            struct.pack_into('<I', m.data, e + 0xC, fr[1])
+            out.append('dropped type %d: %s -> frag' % (i, was.split(chr(92))[-1]))
+    m.save(path)
+    return out
 
 
 def flag_rows(path, game, reg):
@@ -113,6 +158,8 @@ def main(check_only=False, only=()):
             for r in res:
                 if not r.get('ok') and not r.get('skip'):
                     print('     FAIL', r.get('effect'), r.get('tag'), r.get('reason'))
+            if g == 'Halo 1':
+                print('     swap:', '; '.join(h1_swap_grenades(dst)), flush=True)
         rows = {k: dict(flag_rows(v, g, reg)) for k, v in staged.items()}
         a = rows['vanilla']
         for k in sorted(set().union(*rows.values())):
