@@ -456,27 +456,61 @@ class Resource:
         struct.pack_into('<I', self.m.data, self.pages.entry(self.pi) + 0x10, len(out))
 
 
+SLOT_ALIGN = 0x1000                      # pages (and the slots below) are 4 KB aligned
+
+#: Map attributes that are FILE offsets of data living outside the page area: the tag
+#: buffer (every game) and the string / name tables where the parser has recovered them
+#: (Halo 3 / ODST: _locate_stringids; Reach / Halo 4: the bias-corrected four).
+_LIVE_OFFSETS = ('tag_buffer_offset', '_sid_idx', '_sid_blob',
+                 'name_idx_off', 'name_blob_off', 'sid_idx_off', 'sid_blob_off')
+#: ...and the raw header fields, file offsets on Halo 3 / ODST only (Reach and Halo 4
+#: store them biased by table_bias, which the four above already correct for).
+_LIVE_HEADER = ('str_idx_offset', 'str_tbl_offset', 'file_tbl_offset', 'file_idx_offset')
+
+
+def _live_floor(m, off, nxt):
+    """The lowest file offset in (off, nxt) where live data outside the page area
+    begins -- the tag buffer, the string-ID / string / file tables -- or `nxt`."""
+    try:
+        m._locate_stringids()
+    except Exception:
+        pass
+    names = _LIVE_OFFSETS + (() if getattr(m, 'table_bias', None) is not None else _LIVE_HEADER)
+    for a in names:
+        v = getattr(m, a, None)
+        if isinstance(v, int) and off < v < nxt:
+            nxt = v
+    return nxt
+
+
 def _slot(pages, pi, off):
-    """Bytes free from `off` up to the next page that lives in this file, or to EOF --
-    read off the CURRENT page table, so pages moved earlier in the same pass count.
+    """Bytes a recompressed page may occupy from `off`: up to the next page that lives in
+    this file, never more than its own compressed size rounded up to SLOT_ALIGN, and never
+    into the string tables or the tag buffer that follow the page area (_live_floor).
+    Read off the CURRENT page table, so pages moved earlier in the same pass count.
     Records with offset 0xFFFFFFFF are not pages (2026-10-06: counting one gave the last
-    page a 3.5 GB slot, and its rewrite ran over the page moved in behind it)."""
+    page a 3.5 GB slot, and its rewrite ran over the page moved in behind it). Until
+    2026-11-06 (review U3 F1) the page with the highest file offset was bounded by EOF
+    alone -- but in every Halo 3 / ODST / Reach / Halo 4 cache the string-ID index, the
+    string and file tables and the tag buffer FOLLOW the page area, so a last page that
+    compressed larger than before was written in place over live data."""
     m = pages.m
     pb, pc = pages.tabs['page']
-    nxt = len(m.data)
+    _o, comp = struct.unpack_from('<II', m.data, pages.entry(pi) + 8)
+    nxt = min(len(m.data), off + ((comp + SLOT_ALIGN - 1) & ~(SLOT_ALIGN - 1)))
     for i in range(pc):
         if i == pi or not pages.local(i):
             continue
         o, c = struct.unpack_from('<II', m.data, pages.entry(i) + 8)
         if off < o < nxt and o != 0xFFFFFFFF and c:
             nxt = o
-    return nxt - off
+    return _live_floor(m, off, nxt) - off
 
 
 def write_back(pages):
-    """Recompress every edited page: into its own slot when it fits, else at the END OF
-    THE FILE (4 KB aligned, like the slots; header file size +0x8 grows). Checksums
-    refreshed either way."""
+    """Recompress every edited page: into its own slot when it fits (_slot), else at the
+    END OF THE FILE (4 KB aligned, like the slots; header file size +0x8 grows).
+    Checksums refreshed either way."""
     import hashlib
     import zlib
     m = pages.m
