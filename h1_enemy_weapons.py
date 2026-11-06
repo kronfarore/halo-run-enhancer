@@ -298,6 +298,31 @@ def write_profile(m, base, fields):
         struct.pack_into(fmt, m.data, base + int(off, 16), value)
 
 
+# actv Drop Weapon Loaded / Loaded Max (f32) and Ammo / Ammo Max (i16): what the Famine
+# skull halves (halo_patch._apply_famine). They sit inside the FIRING span apply_donor
+# copies from the PRISTINE donor index, and a profile's rows are absolute too, so a
+# filled slot would drop full ammo under Famine -- the factor is applied again here.
+DROP_FIELDS = ((0x1D8, '<f'), (0x1DC, '<f'), (0x1E0, '<h'), (0x1E2, '<h'))
+
+
+def famine_fields(m, bases, factor):
+    """Scale the drop fields of the filled slots at `bases` by Famine's `factor`
+    (halo_patch._apply_famine's rule: zeros stay, an int rounds but never reaches 0).
+    Returns a note, or None when Famine is off."""
+    if not factor:
+        return None
+    for b in bases:
+        for off, fmt in DROP_FIELDS:
+            v = struct.unpack_from(fmt, m.data, b + off)[0]
+            if not v:
+                continue
+            nv = v * factor
+            if isinstance(v, int):
+                nv = int(round(nv)) or (1 if v > 0 else -1)
+            struct.pack_into(fmt, m.data, b + off, nv)
+    return 'Famine drops x%g' % factor
+
+
 def index_fingerprint(index):
     """A short, order-free code for the donor index: two machines whose codes match
     built their clones from the same donors (co-op patch codes)."""
@@ -354,6 +379,7 @@ class Level:
         self.log = []                          # (slot, alias, donor) per filled slot
         self.forced = {}                       # 'source||weapon' -> saved donor name
         self.chosen = {}                       # ...and what this patch used
+        self.famine = None                     # Famine's drop factor while the skull is on
 
     def rescan(self):
         """Re-read every spawn's variant -- after another pass (h1_species_swap) moved
@@ -550,9 +576,11 @@ class Level:
         sl = self.free_slots.pop(0)
         bases.append(vs.fill_slot(self.m, sl, self.tags[source], weref, dmin, major_ref))
         write_profile(self.m, bases[-1], prof)
+        famine = famine_fields(self.m, bases, self.famine)
         skill = species_skill_rule(self.m, ([(bases[0], major, dmaj)] if need == 2 else [])
                                    + [(bases[-1], source, dmin)], weapon, index)
-        rule = '; '.join(x for x in (skill, grunt_rate_rule(self.m, bases, unit, weapon)) if x) or None
+        rule = '; '.join(x for x in (skill, grunt_rate_rule(self.m, bases, unit, weapon), famine)
+                         if x) or None
         units = ([self.ref(major, hv.REF_UNIT)] if need == 2 else []) + [unit]
         swap, shield_note = jackal_shield_rule(self.m, bases, units, weapon)
         flags_note = actor_flag_rule(self.m, bases, weapon)
@@ -1078,8 +1106,9 @@ def fix_promotions(lv, index, first, enabled):
             if d:
                 lv.chosen[major + '||' + weapon] = d[2].split(' + ')[0]
             sl = lv.free_slots.pop(0)
-            write_profile(lv.m, vs.fill_slot(lv.m, sl, lv.tags[major], weref,
-                                             (d[1] or d[0]) if d else None), d[3] if d else None)
+            pb = vs.fill_slot(lv.m, sl, lv.tags[major], weref, (d[1] or d[0]) if d else None)
+            write_profile(lv.m, pb, d[3] if d else None)
+            famine_fields(lv.m, [pb], lv.famine)
             lv.alias[vs.slot_path(sl)] = major + hv.CLONE_SEP + weapon.rsplit(BS, 1)[-1]
             lv.log.append((sl, lv.alias[vs.slot_path(sl)], d[2] if d else 'itself (no donor)'))
             fixed[key] = vs.slot_ref(lv.m, sl)
@@ -1186,7 +1215,8 @@ def cards(lv, index, picks):
 def apply(m, hp, spec):
     """The whole pass. `spec` = {'levels': [level .map paths for the donor index],
     'first_weapons': [...], 'option1': bool, 'enabled': {enemy: bool},
-    'fallback': {enemy: weapon path}, 'cards': {enemy: {weapon path: share}}}."""
+    'fallback': {enemy: weapon path}, 'cards': {enemy: {weapon path: share}},
+    'famine': the Famine skull's drop factor while it is active (else None)}."""
     # h1_species_swap runs first and leaves its Level here: same slots, same aliases
     lv = getattr(m, '_h1_level', None)
     if lv is None:
@@ -1194,6 +1224,7 @@ def apply(m, hp, spec):
     else:
         lv.rescan()
     lv.forced = dict(spec.get('donors') or {})
+    lv.famine = spec.get('famine') or None    # halo_patch passes Famine's factor
     BALANCED.clear()
     BALANCED.update(spec.get('balanced') or ())
     if not lv.free_slots and (spec.get('option1') or spec.get('cards')):

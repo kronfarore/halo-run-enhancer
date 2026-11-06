@@ -10054,6 +10054,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     # A skull is a name ('tilt'), or a dict for a per-enemy one: {'skull', 'enemy', 'tag',
     # 'name'} (Assassins / Thunderstorm / Downpour name the enemy type they act on).
     ladder_up, ladder_down, camo_specs, sides, factions = set(), set(), [], [], []
+    famine_on = False
     for skull in (skulls or ()):
         spec = skull if isinstance(skull, dict) else {'skull': skull}
         s = str(spec.get('skull')).strip().lower()
@@ -10070,6 +10071,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         elif s == 'fog':
             results.extend(_apply_fog(m, g, registry))
         elif s == 'famine':
+            famine_on = True
             results.extend(_apply_famine(m, g, registry))
         elif s == 'assassins' and spec.get('tag'):
             if camo_after_ladder:
@@ -10131,12 +10133,16 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # replacement and the 'Armed: <weapon>' cards. AFTER the skulls (user,
         # 2026-10-05): Thunderstorm / Downpour decide who is what first, so Armed: Jackal
         # arms exactly its share of the Jackals the level fields, promoted ones included.
-        # A slot copies its source variant whole, so a skull's actv edits (Assassins'
-        # camo flag, Famine's drops) carry over. Still BEFORE the effect ops, which reach
-        # the filled slots through the map's actv aliases.
+        # A slot copies its source variant whole, so a skull's actv edits carry over
+        # (Assassins' camo flag) -- except the firing block, which the DONOR supplies
+        # from the pristine index: Famine's halved drop fields are re-applied on every
+        # filled slot from the factor passed here. Still BEFORE the effect ops, which
+        # reach the filled slots through the map's actv aliases.
         import sys as _sys
         import h1_enemy_weapons as _ew
-        results.extend(_ew.apply(m, _sys.modules[__name__], h1_enemy_weapons))
+        results.extend(_ew.apply(m, _sys.modules[__name__],
+                                 {**h1_enemy_weapons,
+                                  'famine': _FAMINE_FACTOR if famine_on else None}))
     if h2_enemy_weapons and str(game).strip() == 'Halo 2':
         # Halo 2's 'Armed: <weapon>' cards (h2_enemy_weapons.py, H2_ARMED_HANDOFF.md):
         # squad units handed the weapon, shieldless Jackals, graph teaches, Grunt half
