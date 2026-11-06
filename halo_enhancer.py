@@ -4620,7 +4620,11 @@ class ModifierDatabase:
         who = 'Marines' if ally else enemy + 's'
         how = ('a variant carrying the %s: an existing one, or an enhancer variant slot '
                'taught it (firing copied from the most similar enemy in the game that '
-               'carries it)' % weapon_name) if game == 'Halo 1' else (
+               'carries it). Grunts fire a two-handed weapon at half the donor\'s Rate Of '
+               'Fire; a donor rate of 0 is read through halo.json\'s zero_is per game -- '
+               'none in Halo 1 (0 = trigger held: Sniper Rifle, Sentinel Beam keep it, the '
+               'rule does not apply), 1.0 in Reach / Halo 4 (0 = the default -> 0.5)'
+               % weapon_name) if game == 'Halo 1' else (
                'the %s: their squads\' units are handed it (every unit of the type, '
                'dropship and vehicle squads too), their animation graphs taught its class, '
                'firing from ai\\generic' % weapon_name) if game == 'Halo 2' else (

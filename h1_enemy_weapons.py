@@ -815,14 +815,31 @@ def species_skill_rule(m, slots, weapon, index):
     return ('species skill (' + '; '.join(notes) + ')') if notes else None
 
 
-def grunt_rate_rule(m, bases, unit, weapon):
-    """Halve the filled slots' Rate Of Fire for a Grunt with a two-handed weapon."""
+def grunt_rate_rule(m, bases, unit, weapon, game=GAME):
+    """Halve the filled slots' Rate Of Fire for a Grunt with a two-handed weapon.
+
+    A stored 0 is NOT multiplied: it means what halo.json's `zero_is` says for the game
+    (halo_map.zero_is_for). Where the field has one (Reach / Halo 4: 1.0, the engine
+    default the 0 stands in for) the rule writes zero_is x 0.5, a finite rate; where it
+    has none (Halo 1: 'zero = continuously held down', the actv tooltip -- the Sniper
+    Rifle and Sentinel Beam donors) the 0 is literal, the rule does not apply and the
+    note says so. User decision 2026-11-06 (review U3 B5)."""
     if enemy_of_unit(unit) != 'Grunt' or hands(weapon) != 'two':
         return None
+    import halo_map as hm
+    default = hm.zero_is_for(game, 'Rate Of Fire')
+    notes = []
     for b in bases:
-        struct.pack_into('<f', m.data, b + RATE_OF_FIRE,
-                         struct.unpack_from('<f', m.data, b + RATE_OF_FIRE)[0] * GRUNT_TWO_HANDED_RATE)
-    return 'two-handed: Grunt rate x%g' % GRUNT_TWO_HANDED_RATE
+        v = struct.unpack_from('<f', m.data, b + RATE_OF_FIRE)[0]
+        if v:
+            struct.pack_into('<f', m.data, b + RATE_OF_FIRE, v * GRUNT_TWO_HANDED_RATE)
+            notes.append('two-handed: Grunt rate x%g' % GRUNT_TWO_HANDED_RATE)
+        elif default:
+            struct.pack_into('<f', m.data, b + RATE_OF_FIRE, default * GRUNT_TWO_HANDED_RATE)
+            notes.append('two-handed: Grunt rate default %g x%g' % (default, GRUNT_TWO_HANDED_RATE))
+        else:
+            notes.append('continuous fire (rate 0): Grunt rate rule n/a')
+    return '; '.join(sorted(set(notes)))
 
 
 # ----------------------------------------------------------------------------- shieldless

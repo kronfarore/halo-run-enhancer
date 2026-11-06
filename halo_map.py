@@ -13,6 +13,51 @@ import struct
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
+_GAME_NAMES = ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4')
+_ZERO_IS = {}
+
+
+def zero_is_for(game, field, cls=None):
+    """What a stored 0 in `field` stands for in `game`, by halo.json: a target's `zero_is`
+    (the engine default the 0 is a placeholder for -- Reach / Halo 4 tags define Rate Of
+    Fire as 0 and the 0 overrides what ai\\generic would supply, so the cards carry
+    zero_is 1.0 there), or None where no target of that field in that game carries one,
+    i.e. the 0 is literal (Halo 1's actv Rate Of Fire: 'zero = continuously held down').
+    Hand-written rules consult this instead of multiplying a 0 (review U3 B5). `cls`
+    narrows to targets on that tag class. Read once per process."""
+    key = (str(game).strip(), field, cls)
+    if key in _ZERO_IS:
+        return _ZERO_IS[key]
+    import json
+    import os
+    found = []
+    try:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'halo.json'),
+                  encoding='utf-8') as f:
+            db = json.load(f)
+    except Exception:
+        db = {}
+
+    def walk(o, hint):
+        if isinstance(o, dict):
+            games = o.get('game') or o.get('games')
+            if isinstance(games, str):
+                games = [games]
+            here = hint if not (isinstance(games, list) and len(games) == 1) else games[0]
+            if o.get('field') == field and 'zero_is' in o and (
+                    key[0] in (games or ()) if isinstance(games, list) else here == key[0]):
+                tag = str(o.get('tag') or '')
+                if cls is None or tag.split(' ', 1)[0] == cls:
+                    found.append(o['zero_is'])
+            for k, v in o.items():
+                walk(v, k if k in _GAME_NAMES else here)
+        elif isinstance(o, list):
+            for v in o:
+                walk(v, hint)
+    walk(db, None)
+    _ZERO_IS[key] = found[0] if found else None
+    return _ZERO_IS[key]
+
 # Assembly plugin field type -> (struct format, size in bytes)
 TYPE_FMT = {
     'float32': ('<f', 4), 'float': ('<f', 4), 'real': ('<f', 4),
