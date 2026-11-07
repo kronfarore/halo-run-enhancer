@@ -113,9 +113,14 @@ CATEGORY_WEIGHTS = {
     'equipment': 1,
 }
 
-# Effect name -> category. Every one of halo.json's 103 enemy-effect names is here
-# exactly once; `test_scoredb` fails if halo.json grows a name this map lacks, so a
-# new effect cannot silently score zero.
+# Effect name -> category. Every offered enemy-effect name of halo.json's four enemy
+# groups (General, Specific Enemy, Boss, Hero) is here exactly once -- 'General <x>'
+# scores as <x>, 'Armed: <weapon>' as equipment, 'Hardened: ...' as durability --
+# and validate_halo_json.check_scores fails when halo.json grows a name this table
+# lacks. Until 2026-11-07 the table stopped at the 103 names of 2026-08-10 while the
+# groups grew to 319, so 185 names scored zero in silence and the test this comment
+# promised never existed (review U4 B8); a card without a category is now also noted
+# at patch time (multipliers_for `notes`). The per-name table: reports/score_categories.md.
 CATEGORIES = {
     'durability': [
         'Body Vitality', 'Shield Vitality', 'Shield Recharge', 'Body Recharge',
@@ -124,6 +129,14 @@ CATEGORIES = {
         # ODST Engineer: shields every ally around it, so it is durability -- and
         # for the whole squad, not just itself.
         'Shield Boost',
+        # review U4 B8 (2026-11-07): names that scored zero, placed by the fix plan's keyword
+        # rules -- the table and the choices are in reports/score_categories.md
+        'Armor Lock Chance', 'Armor Lock Duration', 'Body Recharge Amount',
+        'Body Recharge Delay', 'Body Recharge Time', 'Detonation Body Vitality',
+        'Protect Damage Amount', 'Protect Time', 'Recharge Delay', 'Resurrection',
+        'Shield Boost Period', 'Shield Boost Radius', 'Shield Boost Strength',
+        'Shield Recharge Delay', 'Shield Recharge Time', 'Turret Vitality', 'Turtle Distance',
+        'Turtle Threshold', 'Turtle Time',
     ],
     'damage': [
         'Weapon Damage Modifier', 'Melee Damage', 'Beam Damage', 'Enemy damage',
@@ -135,11 +148,21 @@ CATEGORIES = {
         # ODST Engineer: its corpse rises and detonates, so this is what killing
         # one does TO you rather than a durability trait.
         'Death',
+        # review U4 B8 (2026-11-07): names that scored zero, placed by the fix plan's keyword
+        # rules -- the table and the choices are in reports/score_categories.md
+        'Berserk Damage', 'Death Detonation Time', 'Death Height', 'Ground Smash Damage',
+        'Grunt Damage', 'Head Gun Damage', 'Morph Damage', 'Roar Damage', 'Special Damage',
+        'Turret Damage',
     ],
     'accuracy': [
         'Accuracy', 'Target Tracking & Leading', 'Projectile Error', 'Burst Error',
         'Guidance Vs Player', 'Hologram Accuracy',
         'Hologram Target Tracking & Leading', 'AI Projectile Speed',
+        # review U4 B8 (2026-11-07): names that scored zero, placed by the fix plan's keyword
+        # rules -- the table and the choices are in reports/score_categories.md
+        'Accuracy Bounds', 'Accuracy Time', 'Distribution Function', 'Head Gun Accuracy',
+        'Hologram Target Leading', 'Hologram Target Tracking', 'Target Leading',
+        'Target Tracking', 'Tracking & Leading',
     ],
     'rate_of_fire': [
         'Rate of Fire', 'Firing Patterns', 'Burst Seperation', 'Special Fire Delay',
@@ -147,40 +170,107 @@ CATEGORIES = {
         'Hologram Rate of Fire', 'Beam Rate of Fire',
         'Hunter Fuel Rod Rounds per Second', 'Hunter Fuel Rod Charging Time',
         'Hunter Fuel Rod Projectiles Per Shot',
+        # review U4 B8 (2026-11-07): names that scored zero, placed by the fix plan's keyword
+        # rules -- the table and the choices are in reports/score_categories.md
+        'Beam Projectiles Per Shot', 'Beam Salvo', 'Bursting', 'Distance Damage Time',
+        'Fight Circle Firing Time', 'Gravity Cannon Projectiles Per Shot',
+        'Gravity Cannon Salvo', 'Head Gun Rate of Fire', 'Needler Projectiles Per Shot',
+        'Needler Salvo', 'Projectiles Per Shot', 'Rocket Projectiles Per Shot', 'Rocket Salvo',
+        'Run Time', 'Special-Fire Chance', 'Special-Fire Delay', 'Spew Chance',
+        'Spew Frequency', 'Turret Rate of Fire',
     ],
     'senses': [
         'Vision', 'Hearing Distance', 'Perception', 'Suicide Sensing Distance',
+        # review U4 B8 (2026-11-07): names that scored zero, placed by the fix plan's keyword
+        # rules -- the table and the choices are in reports/score_categories.md
+        'Peripheral Vision', 'Search',
     ],
     'range': [
         'Maximum Firing Distance', 'Maximum Firing Distance Hunter Fuel Rod',
         'Projectile Range Hunter Fuel Rod', 'Pop Radius', 'Explosion Radius',
         'Beam Range', 'Chieftain Hammer Radius', 'Gravity Hammer Radius',
+        # review U4 B8 (2026-11-07): names that scored zero, placed by the fix plan's keyword
+        # rules -- the table and the choices are in reports/score_categories.md
+        'Advance Range', 'Beam Projectile Range', 'Beam Projectile Velocity', 'Beam Velocity',
+        'Distance Damage Radius', 'Firing Range', 'Fuel Rod Gravity', 'Fuel Rod Range',
+        'Fuel Rod Velocity', 'Gravity Cannon Projectile Range',
+        'Gravity Cannon Projectile Velocity', 'Grunt Radius', 'Hunter Radius',
+        'Needler Projectile Range', 'Needler Projectile Velocity', 'Rocket Projectile Range',
+        'Rocket Projectile Velocity', 'Rocket Radius', 'Sentinel Beam Gravity',
+        'Sentinel Beam Range',
     ],
     'aggression': [
         'Melee Behavior', 'Melee Leap', 'Melee Delay Scale', 'Berserk',
         'Elite Berserk', 'Hunter Berserk', 'Combatform Berserk',
         'Shield down Berserk', 'More Berserking', 'Kamikaze', 'Leader Charge',
         'Gravity Throne', 'Grapple Melee',
+        # review U4 B8 (2026-11-07): names that scored zero, placed by the fix plan's keyword
+        # rules -- the table and the choices are in reports/score_categories.md
+        'Berserk Animation', 'Berserk Chance', 'Berserk Cooldown', 'Berserk Count',
+        'Berserk Distance', 'Berserk Grenade', 'Berserk Perimeter Range',
+        'Berserk Special Chances', 'Cower Time', 'Flee Time', 'Flee Timeout', 'Hamstring',
+        'Hamstring Angle', 'Hamstring Distance', 'Hamstring Time', 'I am not scared',
+        'Leader Charge Chance', 'Leader Charge Range', 'Melee Chance', 'Melee Delay',
+        'Melee Leap Chance', 'Melee Leap Range', 'Melee Leap Velocity', 'Melee Radius',
+        'Melee Reach', 'Melee Timing', 'Panic Chance', 'Player Preference', 'Retreat Chance',
+        'Shield-Down Berserk Chance', 'Shield-Down Berserk Range', 'Suppress',
+        'Surprise Behavior', 'Vengeful Berserk', 'Wildfire',
     ],
     'positioning': [
         'Cover Properties', 'Cover Chance', 'Firing Positions',
         'Dive From Grenade Chance', 'Retreat', 'Leader Leash',
         'Placement Properties', 'Movement Switching', 'Panic', 'Stun Behavior',
         'Player Stun Time', 'Player Vehicle Ram Chance',
+        # review U4 B8 (2026-11-07): names that scored zero, placed by the fix plan's keyword
+        # rules -- the table and the choices are in reports/score_categories.md
+        'Advance', 'Boarding', 'Combat Position Time', 'Cover Threshold', 'Crouch Chance',
+        'Defensive Cover', 'Enforcer Chassis Acceleration', 'Enforcer Chassis Speed',
+        'Enforcer Chassis Turn', 'Evasion', 'Evasion Properties', 'Fight Circle Angles',
+        'Fight Circle Strafe Time', 'Fight Flank Chance', 'Flanking', 'Flight Acceleration',
+        'Flight Speed', 'Gravity Jump Cooldown', 'Gravity Jump Descend Gravity',
+        'Gravity Jump Float Time', 'Gravity Jump Height', 'Gravity Jump Retreat Radius',
+        'Gravity Jump Target Attractor', 'Gravity Jump Trigger Distance',
+        'Gravity Throne Acceleration', 'Gravity Throne Speed', 'Gravity Throne Turn',
+        'Guard Position Time', 'Hide Behind Cover', 'Hologram Cooldown', 'Hologram Wait Time',
+        'Hopping', 'Leap', 'Movement Speed', 'Position Avoid Distance', 'Search: Destroy Cover',
+        'Search: Guard', 'Search: Investigate', 'Search: Leap On Cover',
+        'Search: Suppressing Fire', 'Search: Uncover', 'Teleport', 'Thrust',
     ],
     'grenades': [
         'Grenades', 'Grenades Chance', 'Grenade Scales', 'Grenade Properties',
+        # review U4 B8 (2026-11-07): names that scored zero, placed by the fix plan's keyword
+        # rules -- the table and the choices are in reports/score_categories.md
+        'Anti-Vehicle Grenade Chance', 'Encounter Grenade Timeout',
+        'Grenade Catch Attack Speed', 'Grenade Catch Chance', 'Grenade Catch Cooldown',
+        'Grenade Catch Range', 'Grenade Catch Strength', 'Grenade Chance',
+        'Grenade Chance Scale', 'Grenade Check Time', 'Grenade Collateral', 'Grenade Range',
+        'Grenade Throw Delay', 'Grenade Timer Scale', 'Grenade Velocity', 'Kamikaze Chance',
+        'Kamikaze Count',
     ],
     'ranks': [
         'Upgrade Chance', 'Major Upgrades (Normal)', 'Major Upgrades (Few)',
         'Major Upgrades (Many)',
+        # review U4 B8 (2026-11-07): names that scored zero, placed by the fix plan's keyword
+        # rules -- the table and the choices are in reports/score_categories.md
+        'Elite Incursion', 'Few Upgrade Chance', 'Flood Combat Incursion',
+        'Flood Infection Incursion', 'Grunt Incursion', 'Hunter Incursion',
+        'Infection Conversion', 'Jackal Incursion', 'Many Upgrade Chance',
+        'Normal Upgrade Chance', 'Sentinel Incursion', 'Shard Spawning', 'Spawn Count',
+        'Transformation Time',
     ],
     'equipment': [
         'Deployable Shield Use', 'Equipment Use Chance',
+        # review U4 B8 (2026-11-07): names that scored zero, placed by the fix plan's keyword
+        # rules -- the table and the choices are in reports/score_categories.md
+        'Arm Shield', 'Shield Projection', 'Shield Projector Duration',
+        'Shield Projector Recharge', 'Shield Use Recent Damage', 'Shield Use Vitality',
     ],
     'flood_forms': [
         'Infection Forms', 'Infestation Speed', 'Stealth Morphs', 'Tank Form',
         'Stalker Form', 'Ranged Form', 'Group Morph',
+        # review U4 B8 (2026-11-07): names that scored zero, placed by the fix plan's keyword
+        # rules -- the table and the choices are in reports/score_categories.md
+        'Morph Distance', 'Ranged Distance', 'Stalk Charge', 'Stalk Range', 'Throttle Distance',
     ],
 }
 
@@ -428,6 +518,9 @@ def multipliers_for(effects, specific_group, weights=None, step=0.05,
             continue
         w = weight_of(eff.get('name'), weights)
         if not w:
+            if notes is not None:
+                notes.append('%s: not scored (no score category -- see validate_halo_json)'
+                             % eff.get('name'))
             continue
         w *= max(1, int(eff.get('count') or 1))
         if eff.get('cat') == 5:

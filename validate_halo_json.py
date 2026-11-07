@@ -641,12 +641,42 @@ def check_glyphs():
         report('SOUNDS: ' + pr)
 
 
+def check_scores():
+    """SCORES -- the metagame score rescale (scoredb_patch): every offered enemy-effect name
+    of the four enemy groups must fall in a score category (weight > 0), and every Boss /
+    Hero group must have a scoredb bucket. A name this misses scores ZERO in silence at
+    patch time -- 185 did until 2026-11-07 (review U4 B8), under a comment promising this
+    very test. The per-name table is reports/score_categories.md."""
+    try:
+        import scoredb_patch
+    except Exception as e:
+        report(f'SCORES: scoredb_patch could not be loaded ({e})')
+        return
+    em = DB.get('Enemy modifiers') or {}
+    for grp in ('General modifiers', 'Specific Enemy modifier', 'Boss enemy modifier',
+                'Hero enemy modifier'):
+        g = em.get(grp) or {}
+        items = ([(n, x, None) for n, x in g.items()] if grp == 'General modifiers'
+                 else [(n, x, e) for e, effs in g.items() for n, x in (effs or {}).items()])
+        for n, x, e in items:
+            if isinstance(x, dict) and not x.get('ignore') and not scoredb_patch.weight_of(n):
+                report(f'SCORES: {grp}{" / " + e if e else ""}: {n!r} has no score category '
+                       f'(scoredb_patch.CATEGORIES) -- it scores zero')
+    for grp in ('Boss enemy modifier', 'Hero enemy modifier'):
+        for who in (em.get(grp) or {}):
+            if who not in scoredb_patch.BOSS_TO_BUCKET:
+                report(f'SCORES: {grp}: {who!r} has no scoredb bucket (scoredb_patch.BOSS_TO_BUCKET)')
+
+
 if __name__ == '__main__':
     check_structure()
     n_struct = len(problems)
     print(f'structure checks: {n_struct} problem(s)')
     check_glyphs()
     print(f'port glyph/sound checks: {len(problems) - n_struct} problem(s)')
+    n_before = len(problems)
+    check_scores()
+    print(f'score category checks: {len(problems) - n_before} problem(s)')
     skipped = not os.path.isdir(PLUGINS)
     if not skipped:
         check_resolution()
