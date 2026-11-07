@@ -75,6 +75,9 @@ for _p in (os.path.join(HERE, 'sprint_toolkit'), getattr(sys, '_MEIPASS', '')):
 import h3_font_repack as fr                                       # noqa: E402
 
 DATA = 'port_glyphs.json'
+#: every row's tag: a write into THIS machine's MCC files, not into the map -- the patch
+#: signature leaves such rows out of the co-op code (halo_patch.is_machine_row, review U4 F3)
+MACHINE_TAG = 'MCC files'
 #: per game: block size, glyph record header size, packages
 GAMES = {
     'halo3': (0xC000, 16, ('font_package_icon.bin', 'font_package_icon_x2.bin',
@@ -195,7 +198,7 @@ def _h2_ensure(mcc_root, write=True, backup_dir=None, data=None):
         want = spec.get(name) or []
         if not want:
             continue
-        row = {'effect': 'port glyph', 'field': 'halo2 %s' % name}
+        row = {'effect': 'port glyph', 'field': 'halo2 %s' % name, 'tag': MACHINE_TAG}
         path = os.path.join(mcc_root, 'halo2', 'h2_fonts', name)
         if not os.path.exists(path):
             rows.append(dict(row, ok=True, skip=True, reason='font not installed'))
@@ -360,7 +363,7 @@ def ensure(game, mcc_root, write=True, backup_dir=None, data=None):
     spec = data['games'][game]
     rows = []
     for name in names:
-        row = {'effect': 'port glyph', 'field': '%s %s' % (game, name)}
+        row = {'effect': 'port glyph', 'field': '%s %s' % (game, name), 'tag': MACHINE_TAG}
         want = [dict(g, rec=base64.b64decode(g['record'])) for g in spec.get(name, [])]
         if not want:
             continue
@@ -502,7 +505,7 @@ def restore(game, mcc_root, write=True, data=None):
             want = {g['cp'] for g in (spec.get(name) or [])}
             if not want:
                 continue
-            row = {'effect': 'port glyph', 'field': 'halo2 %s' % name}
+            row = {'effect': 'port glyph', 'field': 'halo2 %s' % name, 'tag': MACHINE_TAG}
             path = os.path.join(mcc_root, 'halo2', 'h2_fonts', name)
             if not os.path.exists(path):
                 rows.append(dict(row, ok=True, skip=True, reason='font not installed'))
@@ -523,7 +526,7 @@ def restore(game, mcc_root, write=True, data=None):
         want = {(g['cp'], g['font']) for g in spec.get(name, [])}
         if not want:
             continue
-        row = {'effect': 'port glyph', 'field': '%s %s' % (game, name)}
+        row = {'effect': 'port glyph', 'field': '%s %s' % (game, name), 'tag': MACHINE_TAG}
         path = os.path.join(mcc_root, game, 'maps', 'fonts', name)
         if not os.path.exists(path):
             rows.append(dict(row, ok=True, skip=True, reason='package not installed'))

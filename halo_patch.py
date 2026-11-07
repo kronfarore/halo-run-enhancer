@@ -260,14 +260,25 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None, levels_done=None
 SIGNATURE_VERSION = 3
 
 
+# the tag of a row about this machine's MCC FILES outside the maps: the ports' glyphs in
+# the live icon font packages and their banks in the live sound packages (port_glyphs,
+# port_sounds). Written once per install, so an 'added' row appears only on the machine
+# whose files lacked the data -- a fresh partner install, a bank-volume knob change --
+# while the MAP is the same; in the patch code it told two players they were out of sync
+# over byte-identical maps (review U4 F3). Machine rows: shown, not hashed.
+MCC_FILES_TAG = 'MCC files'
+
+
 def is_machine_row(r):
     """A row for THIS machine's game state, not for the map: a live MCC write ('MCC
-    process') or a halo1.dll / halo2.dll option sync. The dll syncs report only what
-    CHANGED, so the first patch after an option change carried rows a repeat patch did
-    not -- a different code and a different Applied count for the same map (user,
-    2026-10-27: a10 and 04b patched twice)."""
+    process'), a halo1.dll / halo2.dll option sync, or a port glyph / sound bank put into
+    this install's files (MCC_FILES_TAG). The dll syncs report only what CHANGED, so the
+    first patch after an option change carried rows a repeat patch did not -- a different
+    code and a different Applied count for the same map (user, 2026-10-27: a10 and 04b
+    patched twice); the port rows the same way, on the one machine whose files lacked
+    them."""
     tag = str(r.get('tag') or '')
-    return tag == 'MCC process' or tag.lower().endswith('.dll')
+    return tag in ('MCC process', MCC_FILES_TAG) or tag.lower().endswith('.dll')
 
 
 def is_dll_state_row(r):

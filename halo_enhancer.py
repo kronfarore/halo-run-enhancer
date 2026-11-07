@@ -8405,7 +8405,7 @@ class MagnitudeEditorDialog(QDialog):
             import port_glyphs
             return port_glyphs.ensure(folder, mcc_root())
         except Exception as e:
-            return [{'effect': 'port glyph', 'field': folder, 'ok': False,
+            return [{'effect': 'port glyph', 'field': folder, 'ok': False, 'tag': 'MCC files',
                      'reason': 'port glyphs not checked: %s' % e}]
 
     def _ensure_port_sounds(self):
@@ -8442,7 +8442,7 @@ class MagnitudeEditorDialog(QDialog):
             hint = (' -- run "pip install numpy" (or pip install -r requirements.txt); '
                     'until then the ported weapons may play without their own sounds'
                     if isinstance(e, ImportError) else '')
-            return [{'effect': 'port sound bank', 'field': folder, 'ok': False,
+            return [{'effect': 'port sound bank', 'field': folder, 'ok': False, 'tag': 'MCC files',
                      'reason': 'port sound banks not checked: %s%s' % (e, hint)}]
 
     def _restore_sword_drain(self, plan):

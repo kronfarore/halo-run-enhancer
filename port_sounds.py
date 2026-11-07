@@ -61,6 +61,9 @@ DATA = 'port_sounds'
 PACKAGES = {'halo4': os.path.join('halo4', 'sound', 'pc', 'sfxbank.pck'),
             'halo1': os.path.join('halo1', 'sound', 'pc', 'sounds_adpcm.fsb')}
 CHUNK = 1 << 24
+#: every row's tag: a write into THIS machine's MCC files, not into the map -- the patch
+#: signature leaves such rows out of the co-op code (halo_patch.is_machine_row, review U4 F3)
+MACHINE_TAG = 'MCC files'
 
 
 def _data_dir():
@@ -286,7 +289,7 @@ def restore(game, mcc_root, write=True):
         pc = os.path.join(mcc_root, game, 'fmod', 'pc')
         for fsb in sorted(glob.glob(os.path.join(_data_dir(), game, 'sfx.*.fsb'))):
             name = os.path.basename(fsb)
-            row = {'effect': 'port sound bank', 'field': '%s %s' % (game, name)}
+            row = {'effect': 'port sound bank', 'field': '%s %s' % (game, name), 'tag': MACHINE_TAG}
             targets = [p for p in (os.path.join(pc, name), os.path.join(pc, name + '.info'))
                        if os.path.exists(p)]
             if not targets:
@@ -308,7 +311,7 @@ def restore(game, mcc_root, write=True):
         return rows
     if game not in PACKAGES:
         return []
-    row = {'effect': 'port sound bank', 'field': '%s sfxbank.pck' % game}
+    row = {'effect': 'port sound bank', 'field': '%s sfxbank.pck' % game, 'tag': MACHINE_TAG}
     path = os.path.join(mcc_root, PACKAGES[game])
     if not os.path.exists(path):
         return [dict(row, ok=True, skip=True, reason='package not installed')]
@@ -350,11 +353,11 @@ def ensure(game, mcc_root, write=True, backup_dir=None, volume=None):
         want = banks(game, volume)
     except ValueError as e:
         return [{'effect': 'port sound bank', 'field': '%s volume' % game, 'ok': False,
-                 'reason': str(e)}]
+                 'reason': str(e), 'tag': MACHINE_TAG}]
     if game not in PACKAGES or not want:
         return []
     path = os.path.join(mcc_root, PACKAGES[game])
-    row = {'effect': 'port sound bank', 'field': '%s sfxbank.pck' % game}
+    row = {'effect': 'port sound bank', 'field': '%s sfxbank.pck' % game, 'tag': MACHINE_TAG}
     if not os.path.exists(path):
         return [dict(row, ok=True, skip=True, reason='package not installed')]
     try:
@@ -417,7 +420,7 @@ def fmod_ensure(game, mcc_root, write=True):
     pc = os.path.join(mcc_root, game, 'fmod', 'pc')
     for fsb in sorted(glob.glob(os.path.join(_data_dir(), game, 'sfx.*.fsb'))):
         name = os.path.basename(fsb)
-        row = {'effect': 'port sound bank', 'field': '%s %s' % (game, name)}
+        row = {'effect': 'port sound bank', 'field': '%s %s' % (game, name), 'tag': MACHINE_TAG}
         if not os.path.exists(fsb + '.info'):
             rows.append(dict(row, ok=False, reason='%s.info missing from port_sounds' % name))
             continue
@@ -512,7 +515,7 @@ def h1_wanted(volume=None):
 
 def h1_ensure(mcc_root, write=True, backup_dir=None, volume=None):
     import h1_fsb
-    row = {'effect': 'port sound bank', 'field': 'halo1 sounds_adpcm.fsb'}
+    row = {'effect': 'port sound bank', 'field': 'halo1 sounds_adpcm.fsb', 'tag': MACHINE_TAG}
     fsb, lst = os.path.join(mcc_root, H1_FSB), os.path.join(mcc_root, H1_LST)
     dlst = os.path.join(mcc_root, H1_DEBUG_LST)
     if not (os.path.exists(fsb) and os.path.exists(lst) and os.path.exists(dlst)):
@@ -609,7 +612,7 @@ def h1_restore(mcc_root, write=True):
     """Drop the port_ tail from sounds_adpcm.fsb and the port entries from both indexes
     (review U4 F1) -- what h1_ensure does before it re-appends, without the re-append."""
     import h1_fsb
-    row = {'effect': 'port sound bank', 'field': 'halo1 sounds_adpcm.fsb'}
+    row = {'effect': 'port sound bank', 'field': 'halo1 sounds_adpcm.fsb', 'tag': MACHINE_TAG}
     fsb, lst = os.path.join(mcc_root, H1_FSB), os.path.join(mcc_root, H1_LST)
     dlst = os.path.join(mcc_root, H1_DEBUG_LST)
     if not (os.path.exists(fsb) and os.path.exists(lst) and os.path.exists(dlst)):
