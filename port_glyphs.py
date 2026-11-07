@@ -45,8 +45,19 @@ COMMAND LINE (cmd.exe):
     python port_glyphs.py --write              add the missing glyphs
     python port_glyphs.py --game halo4 --write
     python port_glyphs.py --check              validator: missing glyphs / capture not run
+    python port_glyphs.py --restore [--check]  put the STOCK packages back (restore(); --check
+                                               = the inventory only). 'Revert engine patches'
+                                               runs the same verb.
     python port_glyphs.py --capture            DEV: re-read the glyphs from this machine's
                                                live packages against the stock backups on E:
+
+RESTORE (review U4 F1): a package holding a port glyph goes back to its stock copy --
+`<name>.port_glyphs_stock` beside it (or the dev backup on E:) -- only when that copy checks
+as STOCK (its index passes, it holds no glyph at a port code point) and the live package is
+that copy plus our glyphs (every other glyph identical): a copy that no longer matches the
+live package is stale (the package was replaced since -- an MCC update) and is left alone,
+as is a package with no copy at all (a Steam verify puts the stock file back); a package
+without a port glyph is already stock and, when it has no copy yet, becomes its own.
 """
 import argparse
 import base64
@@ -367,6 +378,132 @@ def ensure(game, mcc_root, write=True, backup_dir=None, data=None):
     return rows
 
 
+def _stock_copy_for(path, game, name):
+    """The stock copy to restore from: beside the live file, else the dev backup."""
+    keep = path + '.port_glyphs_stock'
+    if os.path.exists(keep):
+        return keep
+    dev = os.path.join((H2_STOCK if game == 'halo2' else STOCK.get(game, '')) or '', name)
+    return dev if dev and os.path.exists(dev) else None
+
+
+def _put_back(path, stock):
+    """The stock bytes into the live file's place (temp + fsync + replace, no copy taken)."""
+    tmp = path + '.port_glyphs_tmp'
+    try:
+        with open(tmp, 'wb') as f:
+            f.write(stock)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            os.remove(tmp)
+        except OSError:
+            pass
+        raise
+
+
+def _restore_one(path, game, name, ours_live, live_glyphs, stock_glyphs_fn, index_ok_fn, want, write, row):
+    """One package / font: `ours_live` = our code points present in it, `live_glyphs` = {key:
+    record} of the live file, `stock_glyphs_fn(bytes)` the same for a candidate stock copy,
+    `index_ok_fn(bytes)` its structural check, `want` our keys. A row like ensure()'s."""
+    src = _stock_copy_for(path, game, name)
+    if not ours_live:
+        if src is None and write:
+            # already stock and no copy yet: it becomes its own stock copy for a later restore
+            shutil.copyfile(path, path + '.port_glyphs_stock')
+        return dict(row, ok=True, skip=True, reason='already stock (no port glyph)')
+    if src is None:
+        return dict(row, ok=False, reason='no stock copy beside the file -- a Steam verify puts '
+                                          'the stock file back')
+    try:
+        stock = open(src, 'rb').read()
+        sg = stock_glyphs_fn(stock)
+        if not index_ok_fn(stock):
+            raise ValueError('fails the index check')
+    except (SystemExit, Exception) as e:
+        return dict(row, ok=False, reason='the stock copy %s is not readable as a stock file (%s); '
+                                          'left alone' % (os.path.basename(src), e))
+    if any(k in sg for k in want):
+        return dict(row, ok=False, reason='the stock copy %s holds a port glyph itself; left alone'
+                                          % os.path.basename(src))
+    rest = {k: v for k, v in live_glyphs.items() if k not in ours_live}
+    unknown = sorted(set(rest) - set(sg))
+    if unknown:
+        # glyphs neither the stock copy nor port_glyphs.json knows: a port glyph the dev tools
+        # put in before --capture ran (problems() names them); restoring would lose it
+        return dict(row, ok=False, reason='the live file holds %d glyph(s) port_glyphs.json does not '
+                                          'know (U+%s): run `port_glyphs.py --capture` first; left alone'
+                                          % (len(unknown), ', U+'.join('%04X' % (k[0] if isinstance(k, tuple) else k)
+                                                                         for k in unknown[:6])))
+    if rest != sg:
+        return dict(row, ok=False, reason='the stock copy %s is stale: the live file is not that copy '
+                                          'plus our glyphs (replaced since -- an MCC update?); left alone'
+                                          % os.path.basename(src))
+    labels = ', '.join('U+%04X' % (k[0] if isinstance(k, tuple) else k) for k in sorted(ours_live))
+    if write:
+        try:
+            _put_back(path, stock)
+        except PermissionError:
+            return dict(row, ok=False, reason=_held(name, game))
+        except Exception as e:
+            return dict(row, ok=False, reason='could not write: %s' % e)
+        if open(path, 'rb').read() != stock:
+            return dict(row, ok=False, reason='written, but the file does not read back as the stock copy')
+    return dict(row, ok=True, old='with %s' % labels,
+                new='stock%s' % ('' if write else ' (dry run)'))
+
+
+def restore(game, mcc_root, write=True, data=None):
+    """Put `game`'s STOCK icon font packages (Halo 2: fonts) back, undoing ensure(): rows
+    like ensure()'s; `write=False` is the inventory. See RESTORE in the module docstring
+    (review U4 F1). Never raises for a bad file -- it reports it and leaves it alone."""
+    data = data or load()
+    rows = []
+    if game == 'halo2':
+        spec = data.get('games', {}).get('halo2') or {}
+        for name in H2_FONTS:
+            want = {g['cp'] for g in (spec.get(name) or [])}
+            if not want:
+                continue
+            row = {'effect': 'port glyph', 'field': 'halo2 %s' % name}
+            path = os.path.join(mcc_root, 'halo2', 'h2_fonts', name)
+            if not os.path.exists(path):
+                rows.append(dict(row, ok=True, skip=True, reason='font not installed'))
+                continue
+            try:
+                have = _h2_glyphs(open(path, 'rb').read())
+            except Exception as e:
+                rows.append(dict(row, ok=False, reason='unreadable font: %s' % e))
+                continue
+            rows.append(_restore_one(path, 'halo2', name, want & set(have), have, _h2_glyphs,
+                                     lambda d: len(d) > _H2_GLYPHS, want, write, row))
+        return rows
+    if game not in GAMES or game not in data.get('games', {}):
+        return []
+    block, _hdr, names = GAMES[game]
+    spec = data['games'][game]
+    for name in names:
+        want = {(g['cp'], g['font']) for g in spec.get(name, [])}
+        if not want:
+            continue
+        row = {'effect': 'port glyph', 'field': '%s %s' % (game, name)}
+        path = os.path.join(mcc_root, game, 'maps', 'fonts', name)
+        if not os.path.exists(path):
+            rows.append(dict(row, ok=True, skip=True, reason='package not installed'))
+            continue
+        try:
+            have = _present(open(path, 'rb').read(), block)
+        except (SystemExit, Exception) as e:
+            rows.append(dict(row, ok=False, reason='unreadable package: %s' % e))
+            continue
+        rows.append(_restore_one(path, game, name, want & set(have), have,
+                                 lambda d: _present(d, block),
+                                 lambda d: _with_block(block, fr.check_index, d)[0], want, write, row))
+    return rows
+
+
 def problems(mcc_root, data=None):
     """Validator: what is wrong with the port glyphs on this machine, as messages.
       * every machine: a live package lacks a glyph port_glyphs.json carries (a Steam
@@ -486,10 +623,21 @@ def main():
     ap.add_argument('--write', action='store_true')
     ap.add_argument('--backup-dir')
     ap.add_argument('--capture', action='store_true')
-    ap.add_argument('--check', action='store_true', help='validator: list problems, exit 1 if any')
+    ap.add_argument('--check', action='store_true', help='validator: list problems, exit 1 if any '
+                                                        '(with --restore: the inventory only)')
+    ap.add_argument('--restore', action='store_true', help='put the STOCK packages back (see RESTORE)')
     a = ap.parse_args()
     if a.capture:
         capture(a.mcc, [a.game] if a.game else None)
+        return
+    if a.restore:
+        for game in ([a.game] if a.game else sorted(GAMES) + ['halo2']):
+            for r in restore(game, a.mcc, write=not a.check):
+                state = 'skip' if r.get('skip') else ('ok' if r['ok'] else 'FAIL')
+                print('%-5s %-36s %s' % (state, r['field'], r.get('reason') or
+                                         '%s -> %s' % (r.get('old'), r.get('new'))))
+        if a.check:
+            print('(inventory only -- drop --check to restore)')
         return
     if a.check:
         found = problems(a.mcc)

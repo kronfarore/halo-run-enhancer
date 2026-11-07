@@ -39,6 +39,8 @@ COMMAND LINE (cmd.exe):
     python port_sounds.py --write      install missing banks
     python port_sounds.py --check      validator: exit 1 if a bank is missing
     python port_sounds.py --backup-dir D:\keep   (with --write) copy each STOCK bank there first
+    python port_sounds.py --restore [--check]  take the ports' data OUT of the live banks (restore();
+                                       --check = the inventory only). 'Revert engine patches' runs it.
 All three read the per-port volume knob from settings.json (weapon_port_volume, as the
 enhancer passes it: volume_knobs), so a bank turned on purpose is not 'stale' and --write
 does not put the as-built bank back (review U4 B2). --backup-dir is a hand tool: the copy is
@@ -214,6 +216,126 @@ def install(path, add):
             o.flush()
             os.fsync(o.fileno())           # the replace below must find the bytes on disk
     os.replace(tmp, path)
+
+
+def remove(path, ids):
+    """Rewrite the package WITHOUT the banks `ids` -- install() backwards (review U4 F1). The
+    banks a port install appended sit at the file's tail, so the common case is a cut: the
+    header shrinks by 20 bytes per dropped entry, every kept offset moves back by that much
+    and the file ends where the first dropped bank began -- on a package install() made from
+    stock, that is the stock bytes again. A dropped bank that is NOT at the tail (a volume
+    change replaced it and its old bytes were left unreferenced mid-file) takes the general
+    route: the kept banks are copied in file order, contiguously, behind the new header.
+    Returns the number of entries dropped (0 = nothing to do, nothing written)."""
+    with open(path, 'rb') as f:
+        head, (hsz, ver, lsz, bsz, ssz, xsz), table = read_header(f)
+        size = os.fstat(f.fileno()).st_size
+        old_end = len(head)
+        drop = [e for e in table if e[0] in ids]
+        if not drop:
+            return 0
+        keep = [e for e in table if e[0] not in ids]
+        delta = -20 * len(drop)
+        cut = min(e[3] * e[1] for e in drop)
+        tail_cut = all(e[3] * e[1] + e[2] <= cut for e in keep)
+        if tail_cut:
+            rows = [(e[0], e[1], e[2], e[3] * e[1] + delta, e[4]) for e in keep]
+        else:
+            rows, pos = [], old_end + delta
+            for e in sorted(keep, key=lambda e: e[3] * e[1]):
+                rows.append((e[0], 1, e[2], pos, e[4]))
+                pos += e[2]
+        rows.sort()
+        lut = struct.pack('<I', len(rows)) + b''.join(struct.pack('<IIIII', *r) for r in rows)
+        lang = head[0x1C:0x1C + lsz]
+        after = head[0x1C + lsz + bsz:]
+        new_head = struct.pack('<4sIIIIII', b'AKPK', hsz + delta, ver, lsz, len(lut), ssz,
+                               xsz) + lang + lut + after
+        if len(new_head) != old_end + delta:
+            raise ValueError('header arithmetic is off')
+        tmp = path + '.port_sounds_tmp'
+        with open(tmp, 'wb') as o:
+            o.write(new_head)
+            if tail_cut:
+                f.seek(old_end)
+                left = cut - old_end
+                while left > 0:
+                    c = f.read(min(CHUNK, left))
+                    o.write(c)
+                    left -= len(c)
+            else:
+                for e in sorted(keep, key=lambda e: e[3] * e[1]):
+                    o.write(_bank_at(f, e))
+            o.flush()
+            os.fsync(o.fileno())
+    os.replace(tmp, path)
+    return len(drop)
+
+
+def restore(game, mcc_root, write=True):
+    """Take the ports' sound data OUT of `game`'s live files, undoing ensure() (review U4 F1):
+    Halo 3 / ODST / Reach -- the added sfx.<port>.fsb (+ .info) beside the stock banks are
+    deleted (pure additions); Halo 4 -- the package is rewritten without the port banks
+    (remove()); Halo 1 -- the port_ tail is dropped from the bank and both indexes lose the
+    port entries (h1_restore). Rows like ensure()'s; `write=False` is the inventory. The
+    next patch puts everything back. Never raises for a bad file."""
+    if game == 'halo1':
+        return h1_restore(mcc_root, write=write)
+    if game in FMOD_GAMES:
+        rows = []
+        pc = os.path.join(mcc_root, game, 'fmod', 'pc')
+        for fsb in sorted(glob.glob(os.path.join(_data_dir(), game, 'sfx.*.fsb'))):
+            name = os.path.basename(fsb)
+            row = {'effect': 'port sound bank', 'field': '%s %s' % (game, name)}
+            targets = [p for p in (os.path.join(pc, name), os.path.join(pc, name + '.info'))
+                       if os.path.exists(p)]
+            if not targets:
+                rows.append(dict(row, ok=True, skip=True, reason='already stock (bank absent)'))
+                continue
+            if write:
+                try:
+                    for p in targets:
+                        os.remove(p)
+                except PermissionError:
+                    rows.append(dict(row, ok=False, reason='%s is in use -- MCC holds it while a %s '
+                                     'map is loaded; leave the map and press again' % (name, game)))
+                    continue
+                except Exception as e:
+                    rows.append(dict(row, ok=False, reason='could not remove: %s' % e))
+                    continue
+            rows.append(dict(row, ok=True, old='with %s' % name,
+                             new='stock (%d file(s) removed)%s' % (len(targets), '' if write else ' (dry run)')))
+        return rows
+    if game not in PACKAGES:
+        return []
+    row = {'effect': 'port sound bank', 'field': '%s sfxbank.pck' % game}
+    path = os.path.join(mcc_root, PACKAGES[game])
+    if not os.path.exists(path):
+        return [dict(row, ok=True, skip=True, reason='package not installed')]
+    try:
+        ids = {struct.unpack_from('<I', open(p, 'rb').read(16), 12)[0]
+               for p in glob.glob(os.path.join(_data_dir(), game, '*.bnk'))}
+        with open(path, 'rb') as f:
+            _h, _f, table = read_header(f)
+    except Exception as e:
+        return [dict(row, ok=False, reason='unreadable package: %s' % e)]
+    present = [e for e in table if e[0] in ids]
+    if not present:
+        return [dict(row, ok=True, skip=True, reason='already stock (no port bank)')]
+    if not write:
+        return [dict(row, ok=True, old='with %d port bank(s)' % len(present), new='stock (dry run)')]
+    try:
+        n = remove(path, ids)
+        with open(path, 'rb') as f:
+            _h, _f, table = read_header(f)
+        if any(e[0] in ids for e in table):
+            return [dict(row, ok=False, reason='written, but a port bank still reads back')]
+    except PermissionError:
+        return [dict(row, ok=False, reason='sfxbank.pck is in use -- MCC holds it while a Halo 4 map '
+                                           'is loaded; leave the map and press again')]
+    except Exception as e:
+        return [dict(row, ok=False, reason='could not write: %s' % e)]
+    return [dict(row, ok=True, old='with %d port bank(s)' % n, new='stock (%d entries)' % len(table))]
 
 
 def ensure(game, mcc_root, write=True, backup_dir=None, volume=None):
@@ -470,6 +592,64 @@ def h1_ensure(mcc_root, write=True, backup_dir=None, volume=None):
                          new='%s added (%d subsongs from %d)' % (what, len(samples), first))]
 
 
+def h1_port_paths():
+    """(index paths, Anniversary tag paths) the manifests give the ports -- no WAV is read."""
+    import json
+    aliases, tags = set(), set()
+    for man in sorted(glob.glob(os.path.join(_data_dir(), 'halo1', '*.json'))):
+        m = json.load(open(man, encoding='utf-8'))
+        for snd in m['sounds']:
+            aliases.update(a.lower() for a in snd['aliases'])
+            if snd.get('remastered_from'):
+                tags.add(snd['tag'].lower())
+    return aliases, tags
+
+
+def h1_restore(mcc_root, write=True):
+    """Drop the port_ tail from sounds_adpcm.fsb and the port entries from both indexes
+    (review U4 F1) -- what h1_ensure does before it re-appends, without the re-append."""
+    import h1_fsb
+    row = {'effect': 'port sound bank', 'field': 'halo1 sounds_adpcm.fsb'}
+    fsb, lst = os.path.join(mcc_root, H1_FSB), os.path.join(mcc_root, H1_LST)
+    dlst = os.path.join(mcc_root, H1_DEBUG_LST)
+    if not (os.path.exists(fsb) and os.path.exists(lst) and os.path.exists(dlst)):
+        return [dict(row, ok=True, skip=True, reason='bank not installed')]
+    try:
+        aliases, tags = h1_port_paths()
+        info, sh, names, data_at = h1_fsb.read_fsb(fsb)
+        ver, entries = h1_fsb.read_lst(lst)
+        dver, dentries = h1_fsb.read_lst(dlst)
+    except Exception as e:
+        return [dict(row, ok=False, reason='unreadable: %s' % e)]
+    p0 = next((i for i, n in enumerate(names) if n.startswith(H1_PREFIX)), info['n'])
+    if any(not n.startswith(H1_PREFIX) for n in names[p0:]):
+        return [dict(row, ok=False, reason='port subsongs are not the bank tail -- left alone')]
+    ours = [e for e in entries if e[1] >= p0 or e[0].lower() in aliases]
+    dours = [e for e in dentries if e[0].lower() in tags]
+    if p0 == info['n'] and not ours and not dours:
+        return [dict(row, ok=True, skip=True, reason='already stock (no port subsong, no port entry)')]
+    what = '%d subsongs, %d + %d index entries' % (info['n'] - p0, len(ours), len(dours))
+    if not write:
+        return [dict(row, ok=True, old='with %s' % what, new='stock (dry run)')]
+    try:
+        if p0 < info['n']:
+            h1_fsb.append_fsb(fsb, fsb, [], keep=p0)
+        h1_fsb.write_lst(lst, ver, [e for e in entries if e not in ours])
+        h1_fsb.write_lst(dlst, dver, [e for e in dentries if e not in dours])
+        info, sh, names, data_at = h1_fsb.read_fsb(fsb)
+        ver, entries = h1_fsb.read_lst(lst)
+        dver, dentries = h1_fsb.read_lst(dlst)
+        if (any(n.startswith(H1_PREFIX) for n in names) or any(e[1] >= info['n'] or e[0].lower() in aliases for e in entries)
+                or any(e[0].lower() in tags for e in dentries)):
+            return [dict(row, ok=False, reason='written, but port data still reads back')]
+    except PermissionError:
+        return [dict(row, ok=False, reason='the bank is in use -- MCC holds it while a Halo 1 map '
+                                           'is loaded; leave the map and press again')]
+    except Exception as e:
+        return [dict(row, ok=False, reason='could not write: %s' % e)]
+    return [dict(row, ok=True, old='with %s' % what, new='stock (%d subsongs)' % info['n'])]
+
+
 # --- Halo 1: an animation sound that follows the balance retime ---
 # A Halo 1 animation plays ONE sound (index into its antr's Sound References, cued at its
 # sound frame). The patcher's balance retimes the SAW's first-person reload x1.28125 in the
@@ -554,7 +734,18 @@ def main():
     ap.add_argument('--check', action='store_true')
     ap.add_argument('--backup-dir', help='with --write: copy each STOCK bank here before its '
                                          'first install (a copy to put back by hand)')
+    ap.add_argument('--restore', action='store_true', help="take the ports' data out of the live "
+                                                           "banks (with --check: the inventory only)")
     a = ap.parse_args()
+    if a.restore:
+        for game in ALL_GAMES:
+            for r in restore(game, a.mcc, write=not a.check):
+                state = 'skip' if r.get('skip') else ('ok' if r['ok'] else 'FAIL')
+                print('%-5s %-34s %s' % (state, r['field'], r.get('reason') or
+                                         '%s -> %s' % (r.get('old'), r.get('new'))))
+        if a.check:
+            print('(inventory only -- drop --check to restore)')
+        return
     knobs = volume_knobs()          # the enhancer's per-port volume, per game (settings.json)
     if knobs:
         print('volume knobs: %s' % ', '.join('%s %s %+g dB' % (g, w, v) for g in sorted(knobs)

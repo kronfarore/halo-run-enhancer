@@ -11403,12 +11403,12 @@ class OptionsDialog(QDialog):
             "  • Data\\UI\\scoredb.xml and data\\careerdb\\careerdb.xml — back to their "
             "pristine .bak\n"
             "  • the running MCC — the death penalty and the betrayal sign guard\n\n"
-            "NOT undone: the ported weapons' pickup glyphs in the live icon font packages "
-            "(Halo 3 / ODST / Reach / Halo 4 maps\\fonts, the eight Halo 2 HUD fonts) and "
-            "their sound banks (Halo 4's sfxbank.pck, Halo 1's sounds_adpcm.fsb + .lst.bin, "
-            "the sfx.saw.fsb files of Halo 3 / ODST / Reach) -- every patch puts them back "
-            "anyway, they are inert without a port in the map, and only a Steam verify "
-            "removes them.\n\n"
+            "  • the ported weapons' pickup glyphs in the live icon font packages (Halo 3 / "
+            "ODST / Reach / Halo 4 maps\\fonts, the eight Halo 2 HUD fonts — back to the stock "
+            "copy taken on the first write) and their sound banks (Halo 4's sfxbank.pck rebuilt "
+            "without the port banks, Halo 1's sounds_adpcm.fsb + .lst.bin without the port "
+            "tail, the sfx.saw.fsb files of Halo 3 / ODST / Reach removed); the next patch "
+            "puts them back\n\n"
             "Maps are NOT touched: use ‘Restore all .bak’ or ‘Restore from "
             "archive’ above for those. Between the two you get back to a stock game "
             "without a Steam verify, which re-downloads tens of GB and deletes modded "
@@ -14817,13 +14817,16 @@ class OptionsDialog(QDialog):
         above, they are the expensive part, and folding them in would make this one
         click able to undo a whole evening's rebuilds.
 
-        Not undone either, and the dialog says so (review U4 F1): what every patch
-        writes through _ensure_port_glyphs / _ensure_port_sounds -- the ports' glyphs in
-        the live icon font packages (Halo 3 / ODST / Reach / Halo 4, the eight Halo 2
-        fonts) and their sound banks (Halo 4's sfxbank.pck, Halo 1's sounds_adpcm.fsb and
-        both .lst.bin indexes, the sfx.saw.fsb files beside Halo 3 / ODST / Reach's stock
-        banks). They are inert in a stock game (private-use code points, bank ids and
-        port_ paths nothing references) and the next patch puts them back regardless.
+        The fourth step (review U4 F1) undoes what every patch writes through
+        _ensure_port_glyphs / _ensure_port_sounds: the ports' glyphs in the live icon font
+        packages (Halo 3 / ODST / Reach / Halo 4, the eight Halo 2 fonts -- back to the
+        `.port_glyphs_stock` copy beside each, only when that copy checks as stock and the
+        live file is that copy plus our glyphs) and their sound banks (Halo 4's sfxbank.pck
+        rebuilt without the port banks, Halo 1's sounds_adpcm.fsb and both .lst.bin indexes
+        without the port tail, the sfx.saw.fsb files beside Halo 3 / ODST / Reach's stock
+        banks removed): port_glyphs.restore / port_sounds.restore, one line per game. A
+        file MCC holds (a level of that game loaded) is reported and left. They are inert
+        in a stock game anyway, and the next patch puts them back.
 
         Every step is independent and none of them can raise out of here: a dll that is
         already stock, a missing .bak and a closed MCC are all ordinary outcomes, and
@@ -14862,9 +14865,10 @@ class OptionsDialog(QDialog):
                 "restored from their .bak (the stock copy taken on the first patch; a file an "
                 "MCC update replaced since is kept as the new stock copy)\n"
                 "  \u2022 the running MCC \u2014 death penalty and betrayal sign guard\n\n"
-                "NOT undone: the ported weapons' glyphs in the icon font packages and their "
-                "sound banks (every patch puts them back; inert without a port in the map; "
-                "a Steam verify removes them).\n\n"
+                "  \u2022 the ported weapons' glyphs in the icon font packages (back to their "
+                "stock copy) and their sound banks (Halo 4's package and Halo 1's bank "
+                "rebuilt without them, the Halo 3 / ODST / Reach port banks removed); the "
+                "next patch puts them back\n\n"
                 "Maps are NOT affected. " + note,
                 QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes:
             return
@@ -15025,6 +15029,33 @@ class OptionsDialog(QDialog):
                                  "(it was never patched)")
             except Exception as e:
                 lines.append("careerdb.xml: failed (%s)" % e)
+                failed += 1
+
+            # ---- the ports' glyphs and sound banks (review U4 F1) ------------------
+            try:
+                import port_glyphs
+                import port_sounds
+                for folder in ('halo2', 'halo3', 'halo3odst', 'haloreach', 'halo4', 'halo1'):
+                    rows = []
+                    if folder != 'halo1':
+                        rows += port_glyphs.restore(folder, mcc_root())
+                    if folder in port_sounds.ALL_GAMES:
+                        rows += port_sounds.restore(folder, mcc_root())
+                    for kind, label in (('port glyph', 'fonts'), ('port sound bank', 'sound banks')):
+                        mine = [r for r in rows if r.get('effect') == kind]
+                        if not mine:
+                            continue
+                        done = [r for r in mine if r.get('ok') and not r.get('skip')]
+                        bad = [r for r in mine if not r.get('ok')]
+                        if bad:
+                            failed += len(bad)
+                            lines.append("%s %s: %d FAILED (%s)" % (folder, label, len(bad), bad[0].get('reason')))
+                        if done:
+                            lines.append("%s %s: %d restored to stock" % (folder, label, len(done)))
+                        if not done and not bad:
+                            lines.append("%s %s: already stock" % (folder, label))
+            except Exception as e:
+                lines.append("port glyphs / sound banks: failed (%s)" % e)
                 failed += 1
 
             # ---- the running process ---------------------------------------------
