@@ -7930,7 +7930,13 @@ class MagnitudeEditorDialog(QDialog):
         Returns result rows rather than raising: this writes a different file than the
         map patch, and a map patch that actually succeeded must not be reported as
         failed because a side file could not be written (missing MCC root, the file
-        read-only after a Steam verify, and so on)."""
+        read-only after a Steam verify, and so on).
+
+        Runs with the option OFF too, once a .bak exists (the gate in _apply): the file is
+        then regenerated from the pristine .bak with no multipliers, so switching the
+        option off -- or a run with nothing to score -- really puts the stock values back
+        instead of leaving the previous run's scaled file in place (review U4 B1; the
+        careerdb half has always worked this way)."""
         import scoredb_patch
         rows = []
         path = os.path.join(mcc_root(), scoredb_patch.SCOREDB_REL)
@@ -7944,15 +7950,29 @@ class MagnitudeEditorDialog(QDialog):
         if not spec:
             return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
                      'ok': False, 'field': 'scores', 'reason':'halo.json enemy data unavailable'}]
+        on = bool(CONFIG.get('score_scaling'))
         try:
             cap = float(CONFIG.get('score_cap_mult') or 0) or None
             mults = scoredb_patch.multipliers_for(
                 self.effects, spec,
-                step=float(CONFIG.get('score_step', 0.05)), cap_mult=cap)
+                step=float(CONFIG.get('score_step', 0.05)), cap_mult=cap) if on else {}
             if not mults:
-                return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
-                         'ok': True, 'skip': True,
-                         'reason': 'no enemy effects in this run to score'}]
+                # Nothing to scale by: regenerate the file from the .bak all the same, so
+                # an earlier run's multipliers come back out of it (the only other thing
+                # that does this is 'Revert engine patches').
+                scoredb_patch.apply(path, {}, cap=None)
+                why = ('score scaling is off' if not on
+                       else 'no enemy effects in this run to score')
+                rows.append({'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
+                             'ok': True, 'skip': True,
+                             'reason': '%s -- scores put back to stock' % why})
+                pushed = self._push_scores_live(path) if CONFIG.get('score_live_push') else None
+                if pushed and not pushed.get('ok'):
+                    closed = pushed.get('reason') == 'MCC is not running'
+                    rows.append({'tag': 'MCC process', 'effect': 'Metagame scores',
+                                 'field': 'live push', 'ok': closed, 'skip': closed,
+                                 'reason': pushed.get('reason')})
+                return rows
             changed, _ = scoredb_patch.apply(path, mults, cap=None)
         except Exception as e:
             return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
@@ -10463,7 +10483,12 @@ class MagnitudeEditorDialog(QDialog):
         # Metagame scores last, and never fatally: it writes a different file than the
         # map patch, so a failure here must not make a SUCCESSFUL map patch look failed.
         # Reported as a normal result row so the summary and the patch log both record it.
-        if CONFIG.get('score_scaling'):
+        # Also with the option OFF once a .bak exists -- the step then puts the stock
+        # values back, as the careerdb gate below does for par times; before this,
+        # switching scaling off left the previous run's scaled file in place (U4 B1).
+        import scoredb_patch
+        _sdb = os.path.join(mcc_root(), scoredb_patch.SCOREDB_REL)
+        if CONFIG.get('score_scaling') or os.path.exists(scoredb_patch.backup_path(_sdb)):
             # Its own busy dialog. This runs AFTER the patch dialog has closed, and with
             # the live push on it scans MCC's whole address space for the score table --
             # tens of seconds during which the window sat there with no bar and looked
