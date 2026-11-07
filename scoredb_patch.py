@@ -78,7 +78,7 @@ BOSS_TO_BUCKET = {
     '343 Guilty Spark': None,
 }
 
-GENERIC_TAG_HINT = 'generic'
+GENERIC_TAG_HINT = 'generic'      # the last path component of `char ai\generic` (see _is_generic_tag)
 
 # One weight per category instead of 245 per-effect lines. Set by the user
 # 2026-08-10 after reviewing the category overview; the scale is RELATIVE (it only
@@ -190,15 +190,40 @@ def weight_of(effect_name, weights=None):
     return (weights or CATEGORY_WEIGHTS).get(cat, 0)
 
 
-def _fields(target_list):
-    """Field names in a targets list; a `field` may be a per-game dict of names."""
+def _resolve(value, game, games=None):
+    """The GUI's resolve_gamed rule, without the GUI: a per-game dict gives this game's
+    entry, else its 'default', else the nearest EARLIER game's in `games` order (ODST takes
+    Halo 3's), else None; anything else is returned as it is. With no `game` the dict is
+    returned whole (the callers then take every game's value, as before 2026-11-07)."""
+    if not isinstance(value, dict) or game is None:
+        return value
+    if game in value:
+        return value[game]
+    if 'default' in value:
+        return value['default']
+    if games and game in games:
+        for g in reversed(games[:games.index(game)]):
+            if g in value:
+                return value[g]
+    return None
+
+
+def _fields(target_list, game=None, games=None):
+    """Field names in a targets list, as `game` sees them: a per-game `targets` dict and a
+    per-game `field` dict resolve for the game (every game's value when `game` is None);
+    a target carrying a `games` allow-list that leaves the game out is a field this tag
+    does not have there. `skip_games` and `ignore` rows are kept: the field exists on the
+    tag whether or not the card is offered."""
     out = set()
-    groups = target_list.values() if isinstance(target_list, dict) else [target_list]
+    targets = _resolve(target_list, game, games)
+    groups = targets.values() if isinstance(targets, dict) else [targets]
     for grp in groups:
         for t in (grp or []):
             if not isinstance(t, dict):
                 continue
-            fld = t.get('field')
+            if game is not None and t.get('games') and game not in t['games']:
+                continue
+            fld = _resolve(t.get('field'), game, games)
             if isinstance(fld, dict):
                 out.update(v for v in fld.values() if isinstance(v, str) and v)
             elif isinstance(fld, str) and fld:
@@ -206,55 +231,76 @@ def _fields(target_list):
     return out
 
 
-def _tag_text(data):
-    tag = data.get('tag')
+def _tag_values(data, game=None, games=None):
+    tag = _resolve(data.get('tag'), game, games)
     if isinstance(tag, dict):
-        return ' '.join(str(v) for v in tag.values())
-    return str(tag or '')
+        return [str(v) for v in tag.values()]
+    return [str(tag or '')]
 
 
-def is_generic_effect(data):
-    return GENERIC_TAG_HINT in _tag_text(data)
+def _is_generic_tag(tag):
+    """`char ai\\generic` (or Halo 4's / Reach's `char ai\\generic*`), also as a member of a
+    '&'-joined list: the LAST path component is `generic`. Reach's
+    objects\\characters\\spartans_ai\\ai\\spartan_generic merely CONTAINS the word -- the old
+    substring test took every card naming it for a generic one, in every game."""
+    for one in str(tag).split('&'):
+        one = one.strip()
+        if ' ' in one:
+            one = one.split(' ', 1)[1]                     # the class word
+        last = one.replace('/', '\\').rstrip('\\*').rsplit('\\', 1)[-1].strip().lower()
+        if last == GENERIC_TAG_HINT:
+            return True
+    return False
 
 
-def own_tag_fields(specific_group):
-    """Per enemy, the fields it defines on its OWN (non-generic) character tag.
+def is_generic_effect(data, game=None, games=None):
+    """Does this effect edit the shared `char ai\\generic` tag -- in `game`, when given
+    (a per-game tag dict resolves for it); with no game, in any game it names."""
+    return any(_is_generic_tag(t) for t in _tag_values(data, game, games))
+
+
+def own_tag_fields(specific_group, game=None, games=None):
+    """Per enemy, the fields it defines on its OWN (non-generic) character tag -- in `game`.
 
     That is exactly the set of fields for which the enemy overrides the generic
-    fallback, so it is what decides who a generic effect misses.
+    fallback, so it is what decides who a generic effect misses. Per game, because the
+    same card can sit on the enemy's own tag in one game and on ai\\generic in the next
+    (Flood Carrier's Accuracy: Halo 1 own, Halo 2 generic), and a field one game has
+    (a Halo 1-only Elite Vision card) must not exclude the Elite from another game's
+    generic card (review U4 B5).
     """
     own = {}
     for enemy, effects in specific_group.items():
         acc = set()
         for data in effects.values():
-            if isinstance(data, dict) and not is_generic_effect(data):
-                acc |= _fields(data.get('targets'))
+            if isinstance(data, dict) and not is_generic_effect(data, game, games):
+                acc |= _fields(data.get('targets'), game, games)
         own[enemy] = acc
     return own
 
 
-def generic_targets(effect_data, specific_group):
+def generic_targets(effect_data, specific_group, game=None, games=None):
     """Which enemies a generic-tag effect actually reaches.
 
     An enemy that defines ANY of the effect's fields on its own tag has overridden
     the generic value and is excluded. An effect with no identifiable fields is
     treated as reaching everyone, since we cannot prove an override.
     """
-    fields = _fields(effect_data.get('targets'))
-    own = own_tag_fields(specific_group)
+    fields = _fields(effect_data.get('targets'), game, games)
+    own = own_tag_fields(specific_group, game, games)
     if not fields:
         return sorted(own)
     return sorted(e for e, f in own.items() if not (fields & f))
 
 
-def effect_targets(effect_data, enemy, specific_group):
+def effect_targets(effect_data, enemy, specific_group, game=None, games=None):
     """The enemies one effect should raise the score of.
 
     `enemy` is the halo.json group it was drafted from, or None for a General
     modifier. Returns a sorted list of halo.json enemy names.
     """
-    if is_generic_effect(effect_data):
-        return generic_targets(effect_data, specific_group)
+    if is_generic_effect(effect_data, game, games):
+        return generic_targets(effect_data, specific_group, game, games)
     if enemy is None:
         return sorted(specific_group)          # matg globals: difficulty-wide
     return [enemy]
@@ -318,7 +364,7 @@ def _skull_buckets(eff):
 
 
 def multipliers_for(effects, specific_group, weights=None, step=0.05,
-                    cap_mult=None):
+                    cap_mult=None, game=None, games=None):
     """Turn a run's applied effects into a per-bucket score multiplier.
 
     `effects` is halo_patch.collect_effects output. Each enemy effect adds its
@@ -326,6 +372,12 @@ def multipliers_for(effects, specific_group, weights=None, step=0.05,
     effect means only the enemies that have NOT overridden its fields. The summed
     weight becomes `1 + step * total`, so a run that stacks nasty effects on Elites
     pays more for Elites specifically.
+
+    `specific_group` is halo.json's Specific Enemy group AS THIS GAME SEES IT (the
+    enhancer drops the effects -- and the enemies -- the game does not field), and
+    `game` / `games` (the game and the ordered game list) resolve its per-game tags and
+    fields, so generic targets are decided for one game (review U4 B5). Without them
+    every game's values are taken together, as before.
     """
     totals = {}
     general = 0     # skull points every enemy row takes ('*', '*'; see scale_xml)
@@ -370,7 +422,7 @@ def multipliers_for(effects, specific_group, weights=None, step=0.05,
         if eff.get('cat') == 2 and not eff.get('_generic_target'):
             names = [eff.get('enemy')]
         else:
-            names = effect_targets(eff, eff.get('enemy'), specific_group)
+            names = effect_targets(eff, eff.get('enemy'), specific_group, game, games)
         for nm in names:
             b = ENEMY_TO_BUCKET.get(nm)
             if not b:

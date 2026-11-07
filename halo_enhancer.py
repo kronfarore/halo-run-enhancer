@@ -7952,13 +7952,16 @@ class MagnitudeEditorDialog(QDialog):
         if not spec:
             return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
                      'ok': False, 'field': 'scores', 'reason':'halo.json enemy data unavailable'}]
+        spec = self._score_spec_for_game(spec, db)
+        games = db.get_games() if hasattr(db, 'get_games') else None
         on = bool(CONFIG.get('score_scaling'))
         notes = []          # the stock copy refreshed underneath (review U4 C1)
         try:
             cap = float(CONFIG.get('score_cap_mult') or 0) or None
             mults = scoredb_patch.multipliers_for(
                 self.effects, spec,
-                step=float(CONFIG.get('score_step', 0.05)), cap_mult=cap) if on else {}
+                step=float(CONFIG.get('score_step', 0.05)), cap_mult=cap,
+                game=self.game, games=games) if on else {}
             if not mults:
                 # Nothing to scale by: regenerate the file from the .bak all the same, so
                 # an earlier run's multipliers come back out of it (the only other thing
@@ -8013,6 +8016,31 @@ class MagnitudeEditorDialog(QDialog):
                          'field': 'live push', 'ok': closed, 'skip': closed,
                          'reason': pushed.get('reason')})
         return rows
+
+    def _score_spec_for_game(self, spec, db):
+        """halo.json's Specific Enemy group as THIS game sees it, for the score rescale: per
+        enemy, only the effects whose game / skip_games admit the game (the database's own
+        gate, ODST's inheritance of Halo 3 included); an enemy with no effect left is not
+        fielded here and is dropped, so a Halo 2 run names no Knight bucket. scoredb_patch
+        then resolves each tag and field for the game -- 'generic' means `char ai\\generic`
+        in THIS game, and a field only Halo 1 has cannot exclude an enemy from Halo 2's
+        generic card (review U4 B5). `ignore`d cards stay: the field exists on the tag
+        whether or not the card is offered."""
+        parse = getattr(db, '_parse_games', None) or (
+            lambda v: [v] if isinstance(v, str) else list(v or []))
+        gate = getattr(db, '_game_ok', None)
+        out = {}
+        for enemy, effs in spec.items():
+            kept = {}
+            for name, d in (effs or {}).items():
+                if not isinstance(d, dict):
+                    continue
+                probe = {'games': parse(d.get('game')), 'skip_games': parse(d.get('skip_games'))}
+                if gate is None or gate(probe, self.game):
+                    kept[name] = d
+            if kept:
+                out[enemy] = kept
+        return out
 
     def _skull_specs(self):
         """The skulls of this patch, for apply_run: a name, or for a per-enemy skull a
