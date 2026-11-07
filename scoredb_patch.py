@@ -344,7 +344,12 @@ def multipliers_for(effects, specific_group, weights=None, step=0.05,
             if rows is None:
                 general += pts
                 if str(eff.get('skull')).lower() == 'betrayal':
-                    totals[('*', 'marine')] = totals.get(('*', 'marine'), 0) + pts
+                    # Only CREATE the bucket: the general loop below gives it `general`
+                    # (Betrayal's own points included) exactly once, like every other
+                    # '*' row. It has to exist because scale_xml's ('*', '*') fallback
+                    # skips negative rows on purpose. Adding pts here as well paid
+                    # Betrayal twice on the Marines (x1.4 against everyone's x1.2).
+                    totals.setdefault(('*', 'marine'), 0)
             else:
                 for b in rows:
                     totals[b] = totals.get(b, 0) + pts
