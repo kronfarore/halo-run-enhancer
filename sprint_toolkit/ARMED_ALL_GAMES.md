@@ -161,6 +161,16 @@ Flamethrower / Plasma Cannon, Jackal Rocket (shieldless) / Brute Shot / Plasma C
 SMG, Drone Rocket / Brute Shot; 6 Marine cells Brute Shot / Plasma Cannon / Silenced SMG; god shield,
 Carbine x1000, run x2.
 
+ODST boot 1 (2026-11-07): Brute Silenced SMG right, Drone Rocket Launcher good enough; Marine Brute
+Shot FLOATED in front of the hands (the Halo 3 'offhand' grip: ODST's Rocket Launcher puts its Marine
+off-hand elsewhere) and the Marine Plasma Cannon pointed up (the flamethrower pose with no grip: its
+root ~95 deg against the flamethrower's ~50 -- never covered by the Halo 3 boots, whose Marine turret
+check was the Machine Gun Turret). No Grunt / Jackal met early, no Marine SMG seen, nothing unarmed.
+Fix: the 'body' grip is now M = B_weapon * inverse(F_donor), F = the donor's root + body frame when its
+root is rotated (identity for rifles and the Rocket Launcher: the confirmed grips unchanged); a
+same-class pose gets that grip too when the roots differ > POSE_GRIP_DEG; GRIP_STYLE per game (ODST
+Marines 'body'). Test v2 deals the cases to EVERY hostile / friendly cell of sc120.
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?

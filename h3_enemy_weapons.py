@@ -497,7 +497,13 @@ def _marker(m, hp, mode, names, fallback=True):
 #: where the donor's sits (Marines: confirmed); the rest 'body' -- Grunts came out diagonal and
 #: Jackals sideways with 'offhand' (Jackals hold the gun in the other hand, the Rocket Launcher
 #: has no plain left_hand marker for Grunts)
-GRIP_STYLE = {'Marine': 'offhand'}
+#: (ODST boot 1, 2026-11-07) per GAME: ODST Marines floated the Brute Shot in front of their hands
+#: with 'offhand' (ODST's Rocket Launcher puts its Marine off-hand elsewhere) -> 'body' there
+GRIP_STYLE = {'Halo 3': {'Marine': 'offhand'}}
+#: the root-rotation difference (degrees) above which a weapon taught through a SAME-CLASS pose
+#: still gets a grip (ODST boot 1: the Plasma Cannon pointed up in the Marine flamethrower pose,
+#: its root is rotated ~95 deg where the flamethrower's is ~50; the Machine Gun Turret matches it)
+POSE_GRIP_DEG = 10.0
 
 
 def _body_frame(m, hp, mode):
@@ -533,6 +539,32 @@ def _turn_x_to(d):
     return _norm((ax[0], ax[1], ax[2], 1.0 + d[0]))
 
 
+def _root(m, mode):
+    """Node 0's default transform (t, q): where the model's root sits against the object origin."""
+    nodes = m.follow_all(mode, [MODE_NODES], [MODE_NODE_ES], 'all')
+    if not nodes:
+        return ((0.0, 0.0, 0.0), (0.0, 0.0, 0.0, 1.0))
+    return (struct.unpack_from('<3f', m.data, nodes[0] + 0xC),
+            _norm(struct.unpack_from('<4f', m.data, nodes[0] + 0x18)))
+
+
+def _angle(qa, qb):
+    import math
+    d = abs(sum(a * b for a, b in zip(_norm(qa), _norm(qb))))
+    return math.degrees(2 * math.acos(min(1.0, d)))
+
+
+def _donor_frame(m, hp, md):
+    """Where the DONOR's rifle-like frame sits in the hand (the donor is held at its origin): its
+    root then its body frame -- identity for every rifle and the Rocket Launcher's rotation, so
+    for those the grip is the weapon's body frame alone (the confirmed Grunt / Jackal grips);
+    a turret donor (the Marine flamethrower pose) adds its ~50 deg pitch and offset."""
+    root = _root(m, md)
+    if _angle(root[1], (0.0, 0.0, 0.0, 1.0)) < 1.0:
+        return ((0.0, 0.0, 0.0), (0.0, 0.0, 0.0, 1.0))
+    return _compose(root, _body_frame(m, hp, md))
+
+
 def find_sid(m, hp, text):
     for i in range(1, 0x10000):
         if _name(m, hp, i) == text:
@@ -540,7 +572,7 @@ def find_sid(m, hp, text):
     return None
 
 
-def grip(m, hp, enemy, weapon, donor):
+def grip(m, hp, enemy, weapon, donor, style=None):
     """The grip marker GRIP_NAME[enemy] on `weapon`'s render model, placed so the weapon's
     off-hand marker lands where the `donor`'s does in the hand (the donor is held at its origin):
     M = L_weapon * inverse(L_donor). The species' biped is pointed at that marker name (only
@@ -554,11 +586,14 @@ def grip(m, hp, enemy, weapon, donor):
     lt, ld = _marker(m, hp, mt, OFFHAND[enemy]), _marker(m, hp, md, OFFHAND[enemy])
     if lt is None or ld is None:
         return dict(row, reason='no off-hand marker on the weapon or the donor')
-    if GRIP_STYLE.get(enemy) == 'offhand':
+    style = style or GRIP_STYLE.get(GAME, {}).get(enemy, 'body')
+    if style == 'offhand':
         t, q = _compose(lt[0], _inverse(ld[0]))
         how = 'aligned to the %s off-hand' % donor.rsplit(BS, 1)[-1]
     else:
-        (t, q), how = _body_frame(m, hp, mt), 'on the body frame (held like a rifle)'
+        # the weapon's body frame where the donor's sits in the hand: M = B_w * inverse(F_donor)
+        t, q = _compose(_body_frame(m, hp, mt), _inverse(_donor_frame(m, hp, md)))
+        how = 'on the body frame, as the %s sits' % donor.rsplit(BS, 1)[-1]
     mk = bytearray(m.data[lt[1]:lt[1] + MARKER_ES])
     mk[2] = 0
     struct.pack_into('<3f', mk, 4, *t)
@@ -621,6 +656,12 @@ def teach(m, hp, graphs, wanted):
                     taught.setdefault(enemy, set()).add(w)
                     rows.append({'tag': 'jmad ' + enemy, 'field': 'taught: ' + base, 'ok': True,
                                  'new': 'in the %s pose (%d graphs)' % (dname, len(gs))})
+                    dp = by_base.get(dname)
+                    mt = _render_model(m, hp, tags.get(w.lower(), w))
+                    md = _render_model(m, hp, tags[dp]) if dp else None
+                    if base in GRIP_FIX and mt is not None and md is not None and _angle(
+                            _root(m, mt)[1], _root(m, md)[1]) > POSE_GRIP_DEG:
+                        grips.append((enemy, tags.get(w.lower(), w), dp, 'body'))
                     continue
             for d in TEACH_DONORS[_kind(m, hp, info)]:
                 dp = by_base.get(d)
@@ -646,14 +687,14 @@ def teach(m, hp, graphs, wanted):
                     rows.append({'tag': 'jmad ' + enemy, 'field': 'taught: ' + base, 'ok': True,
                                  'new': 'held as the %s (%d graphs)' % (d, len(gs))})
                     if base in GRIP_FIX:
-                        grips.append((enemy, tags.get(w.lower(), w), dp))
+                        grips.append((enemy, tags.get(w.lower(), w), dp, None))
                     break
     # SORTED (boot 3, 2026-11-04): every stock Weapon List is sorted by the weapon-name string
     # id and the game binary-searches it -- rows appended at the end were found only where the
     # search happened to land on them (Brute Shot yes, Rocket Launcher / turrets no). The whole
     # list is rewritten sorted.
-    for enemy, w, dp in grips:
-        rows.append(grip(m, hp, enemy, w, tags[dp]))
+    for enemy, w, dp, style in grips:
+        rows.append(grip(m, hp, enemy, w, tags[dp], style))
     for cls_el, new in types.items():
         if not _grow_sorted(m, hp, cls_el + JM_SUB, JM_TYPE_ES, new):
             rows.append({'tag': 'jmad', 'field': 'animation types', 'ok': False,

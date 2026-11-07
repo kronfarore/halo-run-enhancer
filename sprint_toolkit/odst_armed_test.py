@@ -64,7 +64,9 @@ MARINE_CASES = (
     ('Marine + Plasma Cannon (pose)', _c('marine'), _w('turret/plasma_cannon/plasma_cannon')),
     ('Marine + Silenced SMG', _c('marine'), _w('rifle/smg_silenced/smg_silenced')),
 )
-PER_CASE = 2
+#: cells per case; None = EVERY cell of the level (v2, ODST boot 1: the nearest Grunt / Jackal
+#: cells were not the first ones met)
+PER_CASE = None
 
 PSTART, PSTART_ES = 0x280, 0x1C
 PROFILES, PROFILE_ES = 0x274, 0x58
@@ -143,7 +145,8 @@ def layout(m, report):
                               % (label, 'character' if ci is None else 'weapon'))
                 continue
             usable.append((label, ch, ci, wp, wi))
-        k, need = 0, PER_CASE * len(usable)
+        k, dealt = 0, {}
+        need = len(cands) if PER_CASE is None else PER_CASE * len(usable)
         for d, name, cell, sps in sorted(cands, key=lambda x: x[0]):
             if k >= need:
                 break
@@ -157,8 +160,11 @@ def layout(m, report):
                 struct.pack_into('<hhh', m.data, sp + ew.SP_CHAR, -1, -1, -1)
                 v = sid if ('jackal' in ch and two and sid is not None) else 0
                 struct.pack_into('<I', m.data, sp + ew.SP_VARIANT, v)
-            report.append('  %-28s %5.0f wu  %s (%d spawn points, %d units)'
-                          % (name, d, label, len(sps), _i16(m, cell + ew.CELL_COUNT)))
+            dealt[label] = dealt.get(label, 0) + _i16(m, cell + ew.CELL_COUNT)
+            if k <= 12:
+                report.append('  %-28s %5.0f wu  %s (%d spawn points, %d units)'
+                              % (name, d, label, len(sps), _i16(m, cell + ew.CELL_COUNT)))
+        report.append('  units per case: ' + ', '.join('%s %d' % kv for kv in sorted(dealt.items())))
         if k < need:
             report.append('  SHORT: %d of %d cells' % (k, need))
 
