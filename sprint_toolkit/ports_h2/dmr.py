@@ -361,10 +361,9 @@ PORT = {
         'left_arm_offset': {'masterchief': {'*': (0.0, 0.0, -0.0075),
                                             'first_person:idle': (0.0, 0.0, -0.005),
                                             'first_person:posing:var1': (0.0, 0.0, -0.005),
-                                            # boot 4 (video): mid-fidget the rolled gun lies on the open left palm;
-                                            # the shift fades out as the gun rolls (up 0.95 -> 0.85; frames 18-72)
-                                            'first_person:posing:var2': {'offset': (0.0, 0.0, -0.0025),
-                                                                         'upright': (0.85, 0.95)},
+                                            # boot 5: 'the gun slides into the left wrist' mid-fidget (frames 36-66:
+                                            # 50 hand-edge cuts a frame unshifted) -> idle's shift, 14 there = idle's
+                                            'first_person:posing:var2': (0.0, 0.0, -0.005),
                                             'first_person:melee_strike_2': (0.0, -0.003, -0.0075)}},
         # no Halo 2 slot for Reach's sprint / jump / land / fall / ready_initial (the SAW's list)
         'skip': ['first_person:look', 'first_person:acceleration_screens', 'first_person:fall', 'first_person:jump',
