@@ -7961,7 +7961,7 @@ class MagnitudeEditorDialog(QDialog):
             mults = scoredb_patch.multipliers_for(
                 self.effects, spec,
                 step=float(CONFIG.get('score_step', 0.05)), cap_mult=cap,
-                game=self.game, games=games) if on else {}
+                game=self.game, games=games, notes=notes) if on else {}
             if not mults:
                 # Nothing to scale by: regenerate the file from the .bak all the same, so
                 # an earlier run's multipliers come back out of it (the only other thing

@@ -67,15 +67,29 @@ ENEMY_TO_BUCKET = {
 }
 
 # Bosses need class+type precision: Tartarus is not "every brute", he is the
-# hero/brute entry. `None` means the boss has no scoredb entry at all.
+# hero/brute entry. `None` means the boss has no scoredb entry at all. Every key of
+# halo.json's Boss and Hero groups must be here (validate_halo_json checks); a group
+# that is missing is reported by multipliers_for as 'unscored boss' rather than
+# dropped in silence (review U4 B7: nine of fifteen groups were missing).
 BOSS_TO_BUCKET = {
-    'Prophet Regret': ('leader', 'elite'),
+    'Prophet Regret': ('leader', 'elite'),        # the 'Prophet' row (150) shares the Zealot's bucket
     'Heretic Leader': ('leader', 'elite'),
     'Brute Chieftain': ('hero', 'brute'),
     'Tartarus': ('hero', 'brute'),
     'Sentinel Enforcer': ('*', 'sentinel'),
     # 343 Guilty Spark is not a scored kill in scoredb.xml.
     '343 Guilty Spark': None,
+    # the stock scoredb.xml.bak has a row for each of these five (2026-11-07)
+    'Mule': ('infantry', 'mule'),                 # Mule 200
+    'Elite Honor Guard': ('hero', 'elite'),       # Elite Honor Guard 150
+    'Elite Zealot': ('leader', 'elite'),          # Elite Zealot 75
+    'Knight Commander': ('leader', 'knight'),     # Knight Commander 150
+    'Jackal Sniper': ('specialist', 'jackel'),    # Jackal Sniper 20
+    # no row of their own: the tier row their card describes
+    'Elite Specops Commander': ('leader', 'elite'),
+    'Elite General': ('leader', 'elite'),
+    'Jackal Ranger': ('specialist', 'jackel'),    # the Sniper's row
+    'Grunt Ultra': ('specialist', 'grunt'),       # Grunt Ranger 15 (the Hero row is 'Grunt Hero' 25)
 }
 
 GENERIC_TAG_HINT = 'generic'      # the last path component of `char ai\generic` (see _is_generic_tag)
@@ -364,7 +378,7 @@ def _skull_buckets(eff):
 
 
 def multipliers_for(effects, specific_group, weights=None, step=0.05,
-                    cap_mult=None, game=None, games=None):
+                    cap_mult=None, game=None, games=None, notes=None):
     """Turn a run's applied effects into a per-bucket score multiplier.
 
     `effects` is halo_patch.collect_effects output. Each enemy effect adds its
@@ -377,7 +391,9 @@ def multipliers_for(effects, specific_group, weights=None, step=0.05,
     enhancer drops the effects -- and the enemies -- the game does not field), and
     `game` / `games` (the game and the ordered game list) resolve its per-game tags and
     fields, so generic targets are decided for one game (review U4 B5). Without them
-    every game's values are taken together, as before.
+    every game's values are taken together, as before. `notes` (a list) receives one
+    line per card that could not score -- a boss group with no bucket -- so the caller
+    can show it instead of a silent zero.
     """
     totals = {}
     general = 0     # skull points every enemy row takes ('*', '*'; see scale_xml)
@@ -415,9 +431,14 @@ def multipliers_for(effects, specific_group, weights=None, step=0.05,
             continue
         w *= max(1, int(eff.get('count') or 1))
         if eff.get('cat') == 5:
-            bucket = BOSS_TO_BUCKET.get(eff.get('enemy') or eff.get('boss'))
+            who = eff.get('enemy') or eff.get('boss')
+            bucket = BOSS_TO_BUCKET.get(who)
             if bucket:
                 totals[bucket] = totals.get(bucket, 0) + w
+            elif who not in BOSS_TO_BUCKET and notes is not None:
+                # None = known to be unscored (343 Guilty Spark); a missing KEY is a gap
+                notes.append('unscored boss: %s has no scoredb bucket (%s not scored)'
+                             % (who, eff.get('name')))
             continue
         if eff.get('cat') == 2 and not eff.get('_generic_target'):
             names = [eff.get('enemy')]
