@@ -12,11 +12,15 @@ change takes effect at the next MCC start.
 
 The same baseline model as scoredb_patch: the pristine file is kept as <file>.bak and
 every apply scales FROM it, so re-patching never compounds and a scale of 1 puts the
-shipped values back.
+shipped values back -- byte for byte: the file is read with its line endings kept and
+written atomically (mcc_textfile; MCC reads it once at startup, so a half-written file
+would be the par times of a whole session).
 """
 import os
 import re
 import shutil
+
+import mcc_textfile          # atomic writes, line endings kept (review U4 B9 / N7)
 
 CAREERDB_REL = os.path.join('data', 'careerdb', 'careerdb.xml')
 TIME_ATTRS = ('par_time', 'average_time', 'max_time')
@@ -33,8 +37,7 @@ def read_baseline(path):
     bak = backup_path(path)
     if not os.path.exists(bak):
         shutil.copy2(path, bak)
-    with open(bak, encoding='utf-8') as f:
-        return f.read()
+    return mcc_textfile.read_text(bak)
 
 
 def history_path(path):
@@ -65,8 +68,7 @@ def _remember(path, title, times):
     rows = hist.setdefault(title, [])
     if list(times) not in rows:
         rows.append(list(times))
-        with open(hp, 'w', encoding='utf-8') as f:
-            json.dump(hist, f)
+        mcc_textfile.write_text_atomic(hp, json.dumps(hist))
 
 
 def known_triplets(path):
@@ -133,8 +135,7 @@ def apply(path, game, mission_name, factor, dry_run=False):
     span = chapter_span(base, game, mission_name)
     if span is None:
         if not dry_run:
-            with open(path, 'w', encoding='utf-8', newline='') as f:
-                f.write(base)                     # any earlier mission's edit goes away
+            mcc_textfile.write_text_atomic(path, base)   # any earlier mission's edit goes away
         return None
     chunk = base[span[0]:span[1]]
     old, new = {}, {}
@@ -146,8 +147,7 @@ def apply(path, game, mission_name, factor, dry_run=False):
         return '%s="%d"' % (m.group(1), new[m.group(1)])
     chunk = re.sub(r'\b(%s)="(\d+(?:\.\d+)?)"' % '|'.join(TIME_ATTRS), scale, chunk)
     if not dry_run:
-        with open(path, 'w', encoding='utf-8', newline='') as f:
-            f.write(base[:span[0]] + chunk + base[span[1]:])
+        mcc_textfile.write_text_atomic(path, base[:span[0]] + chunk + base[span[1]:])
         title = re.search(r'\btitle="([^"]+)"', chunk)
         if title and all(k in new for k in TIME_ATTRS):
             _remember(path, title.group(1), tuple(float(new[k]) for k in TIME_ATTRS))
@@ -157,6 +157,6 @@ def apply(path, game, mission_name, factor, dry_run=False):
 def restore(path):
     bak = backup_path(path)
     if os.path.exists(bak):
-        shutil.copy2(bak, path)
+        mcc_textfile.copy_atomic(bak, path)
         return True
     return False

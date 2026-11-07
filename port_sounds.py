@@ -154,6 +154,8 @@ def install(path, add):
                 left -= len(c)
             for _bid, b, _n in add:
                 o.write(b)
+            o.flush()
+            os.fsync(o.fileno())           # the replace below must find the bytes on disk
     os.replace(tmp, path)
 
 

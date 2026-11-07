@@ -167,6 +167,8 @@ def append_fsb(src, dst, new, keep=None):
             o.write(c)
             left -= len(c)
         o.write(blobs)
+        o.flush()
+        os.fsync(o.fileno())               # the replace below must find the bytes on disk
     os.replace(tmp, dst)
     return info['n']
 
@@ -191,5 +193,8 @@ def write_lst(path, ver, entries):
         b = name.encode('latin-1') + b'\0'
         out += struct.pack('<I', len(b)) + b + struct.pack('<II', first, count)
     tmp = path + '.h1_fsb_tmp'
-    open(tmp, 'wb').write(out)
+    with open(tmp, 'wb') as o:
+        o.write(out)
+        o.flush()
+        os.fsync(o.fileno())
     os.replace(tmp, path)

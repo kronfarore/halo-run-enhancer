@@ -28,6 +28,8 @@ import os
 import re
 import shutil
 
+import mcc_textfile          # atomic writes, line endings kept (review U4 B9 / N7)
+
 SCOREDB_REL = os.path.join('Data', 'UI', 'scoredb.xml')
 
 # halo.json enemy name -> scoredb `type` bucket. NOTE `jackel`: that spelling is
@@ -484,8 +486,7 @@ def ensure_baseline(scoredb):
     bak = backup_path(scoredb)
     if os.path.exists(bak):
         return bak
-    with open(scoredb, encoding='utf-8') as f:
-        text = f.read()
+    text = mcc_textfile.read_text(scoredb)
     if not is_pristine(text):
         raise BaselineError('scoredb.xml is already modified and no .bak exists -- '
                             'Steam verify, then patch again')
@@ -499,23 +500,24 @@ def read_baseline(scoredb):
     compound and toggling the option off restores the original values. The .bak is
     taken by ensure_baseline(), which refuses a live file that is not stock."""
     bak = ensure_baseline(scoredb)
-    with open(bak, encoding='utf-8') as f:
-        return f.read()
+    return mcc_textfile.read_text(bak)
 
 
 def apply(scoredb, multipliers, cap=None, dry_run=False):
+    """The live file = the .bak scaled by `multipliers` ({} puts the shipped bytes back).
+    Written atomically (mcc_textfile): MCC reads this file once at startup, and a file
+    truncated by a crash mid-write would be what it scores with all session."""
     base = read_baseline(scoredb)
     patched, changed = scale_xml(base, multipliers, cap)
     if not dry_run:
-        with open(scoredb, 'w', encoding='utf-8', newline='') as f:
-            f.write(patched)
+        mcc_textfile.write_text_atomic(scoredb, patched)
     return changed, patched
 
 
 def restore(scoredb):
     bak = backup_path(scoredb)
     if os.path.exists(bak):
-        shutil.copy2(bak, scoredb)
+        mcc_textfile.copy_atomic(bak, scoredb)
         return True
     return False
 
@@ -565,8 +567,7 @@ def _set_sign(scoredb, row, positive):
             raise          # a non-stock sign over a file with no baseline: refused, reported
         # Towards stock (a flipped file an earlier patch left, no .bak yet): the write goes
         # ahead, and the next writer seeds the .bak from the result once its signs are stock.
-    with open(scoredb, encoding='utf-8') as f:
-        text = f.read()
+    text = mcc_textfile.read_text(scoredb)
     n = [0]
 
     def sub(m):
@@ -578,6 +579,5 @@ def _set_sign(scoredb, row, positive):
 
     out = row.sub(sub, text)
     if n[0]:
-        with open(scoredb, 'w', encoding='utf-8', newline='') as f:
-            f.write(out)
+        mcc_textfile.write_text_atomic(scoredb, out)
     return n[0]
