@@ -41,7 +41,10 @@ COMMAND LINE (cmd.exe):
     python port_sounds.py --backup-dir D:\keep   (with --write) copy each STOCK bank there first
 All three read the per-port volume knob from settings.json (weapon_port_volume, as the
 enhancer passes it: volume_knobs), so a bank turned on purpose is not 'stale' and --write
-does not put the as-built bank back (review U4 B2).
+does not put the as-built bank back (review U4 B2). --backup-dir is a hand tool: the copy is
+taken only while the live bank is STOCK (no port bank in it yet -- a bank that already
+carries ports is reported and not copied, review U4 C2), nothing restores from it by itself,
+and a Steam verify remains the supported way back to stock; the enhancer never passes it.
 """
 import argparse
 import glob
@@ -160,6 +163,15 @@ def plan(path, want):
     return add, present
 
 
+def _pck_is_stock(path, want):
+    """No port bank id in the package's table at all (a replaced bank at other bytes is a
+    port bank too): what --backup-dir may call a stock copy (review U4 C2)."""
+    ids = {bid for bid, _b, _n in want}
+    with open(path, 'rb') as f:
+        _h, _f, table = read_header(f)
+    return not any(e[0] in ids for e in table)
+
+
 def install(path, add):
     """Rewrite the package with `add` banks in it (new or replaced)."""
     with open(path, 'rb') as f:
@@ -237,7 +249,12 @@ def ensure(game, mcc_root, write=True, backup_dir=None, volume=None):
     try:
         if backup_dir:
             keep = os.path.join(backup_dir, game, 'sfxbank.pck')
-            if not os.path.exists(keep):
+            if os.path.exists(keep):
+                pass
+            elif not _pck_is_stock(path, want):
+                rows.append(dict(row, ok=True, skip=True, field='%s backup' % game,
+                                 reason='live bank already carries ports, no stock copy taken'))
+            else:
                 os.makedirs(os.path.dirname(keep), exist_ok=True)
                 shutil.copyfile(path, keep)
         install(path, add)
@@ -418,13 +435,18 @@ def h1_ensure(mcc_root, write=True, backup_dir=None, volume=None):
     what = ', '.join(sorted({s[0].rsplit('_', 1)[0] for s in samples}))
     if not write:
         return [dict(row, ok=True, old='without %s' % what, new='%s added (dry run)' % what)]
+    extra = []
     try:
         if backup_dir:
-            for p, rel in ((fsb, H1_FSB), (lst, H1_LST), (dlst, H1_DEBUG_LST)):
-                keep = os.path.join(backup_dir, rel)
-                if not os.path.exists(keep):
-                    os.makedirs(os.path.dirname(keep), exist_ok=True)
-                    shutil.copyfile(p, keep)
+            if p0 < info['n']:                    # a port_ tail: not a stock bank any more
+                extra.append(dict(row, ok=True, skip=True, field='halo1 backup',
+                                  reason='live bank already carries ports, no stock copy taken'))
+            else:
+                for p, rel in ((fsb, H1_FSB), (lst, H1_LST), (dlst, H1_DEBUG_LST)):
+                    keep = os.path.join(backup_dir, rel)
+                    if not os.path.exists(keep):
+                        os.makedirs(os.path.dirname(keep), exist_ok=True)
+                        shutil.copyfile(p, keep)
         first = h1_fsb.append_fsb(fsb, fsb, samples, keep=p0)
         ours = {a for a, _i, _c in index}
         kept = [e for e in entries if e[1] < p0 and e[0] not in ours]
@@ -441,11 +463,11 @@ def h1_ensure(mcc_root, write=True, backup_dir=None, volume=None):
         ver, entries = h1_fsb.read_lst(lst)
         dver, dentries = h1_fsb.read_lst(dlst)
         if not present():
-            return [dict(row, ok=False, reason='written, but the port sounds do not read back')]
+            return extra + [dict(row, ok=False, reason='written, but the port sounds do not read back')]
     except Exception as e:
-        return [dict(row, ok=False, reason='could not write: %s' % e)]
-    return [dict(row, ok=True, old='without %s' % what,
-                 new='%s added (%d subsongs from %d)' % (what, len(samples), first))]
+        return extra + [dict(row, ok=False, reason='could not write: %s' % e)]
+    return extra + [dict(row, ok=True, old='without %s' % what,
+                         new='%s added (%d subsongs from %d)' % (what, len(samples), first))]
 
 
 # --- Halo 1: an animation sound that follows the balance retime ---
