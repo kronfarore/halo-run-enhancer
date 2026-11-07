@@ -625,19 +625,9 @@ def check_glyphs():
         report(f'SOUNDS: port_sounds could not be loaded ({e})')
         return
     # the volume knob (settings.json weapon_port_volume): a bank turned on purpose is
-    # not stale
-    volume = None
-    try:
-        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'settings.json'),
-                  encoding='utf-8') as f:
-            knobs = json.load(f).get('weapon_port_volume') or {}
-            # the bank-route games: Halo 4 (Wwise) and Halo 1 (FMOD); their port
-            # weapons do not overlap
-            volume = {w: float(v) for g in ('Halo 1', 'Halo 4')
-                      for w, v in (knobs.get(g) or {}).items() if v} or None
-    except Exception:
-        pass
-    for pr in port_sounds.problems(MCC, volume=volume):
+    # not stale. Per game -- the Focus Rifle is a port in Halo 1 AND Halo 4, so the
+    # flat merge this used to do let one game's knob shadow the other's (review U4 B2)
+    for pr in port_sounds.problems(MCC, volume=port_sounds.volume_knobs()):
         report('SOUNDS: ' + pr)
 
 

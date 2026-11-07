@@ -38,9 +38,14 @@ COMMAND LINE (cmd.exe):
     python port_sounds.py              report
     python port_sounds.py --write      install missing banks
     python port_sounds.py --check      validator: exit 1 if a bank is missing
+    python port_sounds.py --backup-dir D:\keep   (with --write) copy each STOCK bank there first
+All three read the per-port volume knob from settings.json (weapon_port_volume, as the
+enhancer passes it: volume_knobs), so a bank turned on purpose is not 'stale' and --write
+does not put the as-built bank back (review U4 B2).
 """
 import argparse
 import glob
+import json
 import os
 import shutil
 import struct
@@ -59,6 +64,46 @@ def _data_dir():
         if d and os.path.isdir(p):
             return p
     return os.path.join(HERE, DATA)
+
+
+KNOB_GAMES = (('Halo 1', 'halo1'), ('Halo 4', 'halo4'))     # the bank-route games
+
+
+def volume_knobs(settings_path=None):
+    """{game folder: {port weapon: dB}} from settings.json's weapon_port_volume for the
+    bank-route games -- the knob the enhancer passes to ensure() per game (0 and missing
+    values left out). Per GAME: the Focus Rifle is a port in Halo 1 and in Halo 4, so one
+    flat dict would let one game's knob shadow the other's. {} when there is no settings
+    file or no knob."""
+    path = settings_path or os.path.join(HERE, 'settings.json')
+    try:
+        with open(path, encoding='utf-8') as f:
+            knobs = json.load(f).get('weapon_port_volume') or {}
+    except Exception:
+        return {}
+    out = {}
+    for game, folder in KNOB_GAMES:
+        v = {}
+        for w, x in (knobs.get(game) or {}).items():
+            try:
+                if float(x):
+                    v[w] = float(x)
+            except (TypeError, ValueError):
+                pass
+        if v:
+            out[folder] = v
+    return out
+
+
+def _game_volume(volume, game):
+    """`volume` as ensure() wants it for `game`: a per-game dict {folder: {weapon: dB}}
+    (volume_knobs) gives that game's knobs; a flat {weapon: dB} is one game's, as the
+    enhancer passes it."""
+    if not volume:
+        return None
+    if all(k in ALL_GAMES for k in volume):
+        return volume.get(game) or None
+    return volume
 
 
 def banks(game, volume=None):
@@ -467,10 +512,11 @@ ALL_GAMES = tuple(PACKAGES) + FMOD_GAMES
 
 def problems(mcc_root, volume=None):
     """Validator: a port bank missing from (or stale in) a live package. Pass the same
-    `volume` the patch used, or a turned bank reads as stale."""
+    `volume` the patch used -- volume_knobs(), per game -- or a turned bank reads as
+    stale."""
     out = []
     for game in ALL_GAMES:
-        for r in ensure(game, mcc_root, write=False, volume=volume):
+        for r in ensure(game, mcc_root, write=False, volume=_game_volume(volume, game)):
             if not r.get('ok'):
                 out.append('sound %s: %s' % (r['field'], r.get('reason')))
             elif not r.get('skip'):
@@ -484,16 +530,22 @@ def main():
     ap.add_argument('--mcc', default=os.path.dirname(HERE))
     ap.add_argument('--write', action='store_true')
     ap.add_argument('--check', action='store_true')
-    ap.add_argument('--backup-dir')
+    ap.add_argument('--backup-dir', help='with --write: copy each STOCK bank here before its '
+                                         'first install (a copy to put back by hand)')
     a = ap.parse_args()
+    knobs = volume_knobs()          # the enhancer's per-port volume, per game (settings.json)
+    if knobs:
+        print('volume knobs: %s' % ', '.join('%s %s %+g dB' % (g, w, v) for g in sorted(knobs)
+                                              for w, v in sorted(knobs[g].items())))
     if a.check:
-        found = problems(a.mcc)
+        found = problems(a.mcc, volume=knobs)
         for p in found:
             print(' ', p)
         print('%d sound problem(s)' % len(found))
         sys.exit(1 if found else 0)
     for game in ALL_GAMES:
-        for r in ensure(game, a.mcc, write=a.write, backup_dir=a.backup_dir):
+        for r in ensure(game, a.mcc, write=a.write, backup_dir=a.backup_dir,
+                        volume=_game_volume(knobs, game)):
             state = 'skip' if r.get('skip') else ('ok' if r['ok'] else 'FAIL')
             print('%-5s %-34s %s' % (state, r['field'], r.get('reason') or
                                      '%s -> %s' % (r.get('old'), r.get('new'))))
