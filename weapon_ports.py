@@ -73,8 +73,17 @@ def weap_path(port):
 
 
 def port_for(game, weapon, catalog=None):
-    """The catalog entry porting `weapon` into `game`, or None."""
+    """The catalog entry porting `weapon` into `game`, or None -- whether or not the run has
+    the port switched on. A caller deciding what a held weapon IS in this game wants
+    active_port(): with ports off the catalog entry is just a tag the map may carry
+    unbalanced (review U4 B10)."""
     return next((p for p in ports_for(game, catalog) if p.get('weapon') == weapon), None)
+
+
+def active_port(game, weapon, config, catalog=None):
+    """port_for(), but only when the run has the port switched ON (the master switch and
+    the port's own flag, as active_ports decides); None otherwise."""
+    return next((p for p in active_ports(game, config, catalog) if p.get('weapon') == weapon), None)
 
 
 NO_AMMO = '(none)'

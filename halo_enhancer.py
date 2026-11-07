@@ -3342,7 +3342,11 @@ class ModifierDatabase:
         A PORTED weapon answers with its port's tag in that game first: halo.json files
         the SAW's cards under Halo 4 only, so its plain-string tag resolved Halo 1 to
         Halo 4's storm_lmg -- the wrong weapon for a starting pick or a Map Presence
-        swap the moment ports are offered (user, 2026-10-02).
+        swap the moment ports are offered (user, 2026-10-02). Only an ACTIVE port, though
+        (weapon_ports.active_port: the master switch and the port's own flag): with ports
+        off the port clone in the map is unbalanced -- an Assault Rifle wearing the SAW's
+        model -- and the spawn placer drops such a weapon; the Starting Profile used to
+        get it anyway (review U4 B10).
 
         Returns exactly ONE tag. An effect may name several with ' & ' so it patches
         them together — ODST's Plasma Rifle covers both the dead plasma_rifle and the
@@ -3355,7 +3359,7 @@ class ModifierDatabase:
         even ship in every level."""
         try:
             import weapon_ports
-            _port = weapon_ports.port_for(game, weapon_name)
+            _port = weapon_ports.active_port(game, weapon_name, CONFIG)
             _path = weapon_ports.weap_path(_port) if _port else None
             if _path:
                 return 'weap ' + _path
@@ -9371,10 +9375,32 @@ class MagnitudeEditorDialog(QDialog):
         return (('player2', 'player1') if CONFIG.get('swap_player_loadouts')
                 else ('player1', 'player2'))
 
+    def _port_only_off(self, weapon, db):
+        """True when `weapon` exists in this game ONLY as a port and that port is switched
+        off: the catalog ports it here, no active port does, and no level of the game
+        fields a weapon of that name. Such a weapon is not startable: weap_tag_for would
+        fall through to a tag the map lacks (a fail row) or, worse, another game's plain
+        tag (review U4 B10)."""
+        try:
+            import weapon_ports
+            if weapon_ports.port_for(self.game, weapon) is None:
+                return False
+            if weapon_ports.active_port(self.game, weapon, CONFIG) is not None:
+                return False
+            fielded = db._fielded_weapons(self.game)
+            base = weapon[5:] if str(weapon).startswith('Dual ') else weapon
+            return base not in fielded and db.resolve_weapon(base) not in fielded
+        except Exception:
+            return False
+
     def _starting_weapons_spec(self):
         """Starting-weapons spec from the run's picks (Primary = P1's first weapon,
         Secondary = P2's). Coop is profile index 1: #1 can exclude it from the picked
-        weapons, #2 can empty it entirely. Returns None if nothing to do."""
+        weapons, #2 can empty it entirely. Returns None if nothing to do.
+
+        A held weapon that exists here only as a switched-off port is skipped, like the
+        spawn placer skips it, and reported in `_starting_skips` (rows _apply appends)."""
+        self._starting_skips = []
         if not self.parent_gui:
             return None
         rs = getattr(self.parent_gui, 'run_state', None)
@@ -9393,8 +9419,16 @@ class MagnitudeEditorDialog(QDialog):
             # (weap_tag_for would already return None for either — this just documents
             # why, and skips the lookup)
             def _startable(w):
-                return (bool(w) and not is_sprint_item(w)
-                        and not db.is_grenade(w) and not db.is_equipment(w))
+                if not (bool(w) and not is_sprint_item(w)
+                        and not db.is_grenade(w) and not db.is_equipment(w)):
+                    return False
+                if self._port_only_off(w, db):
+                    self._starting_skips.append({
+                        'effect': 'starting weapons', 'field': w, 'ok': True, 'skip': True,
+                        'reason': '%s: a ported weapon, and its port is off (Options -> '
+                                  'Weapon ports) -- the map\'s vanilla loadout stays' % w})
+                    return False
+                return True
 
             def _upgraded(weapon, player):
                 """Start with the UPGRADE of this weapon once the player has drafted it.
@@ -10521,6 +10555,9 @@ class MagnitudeEditorDialog(QDialog):
                 continue          # Map Presence reports through its 'map weapons' rows
             results.append({'tag': eff.get('tag'), 'effect': eff.get('name'),
                             'ok': True, 'skip': True, 'reason': 'no value changed'})
+
+        # a held weapon the Starting Profile left alone because its port is off (U4 B10)
+        results.extend(getattr(self, '_starting_skips', None) or [])
 
         # Metagame scores last, and never fatally: it writes a different file than the
         # map patch, so a failure here must not make a SUCCESSFUL map patch look failed.
