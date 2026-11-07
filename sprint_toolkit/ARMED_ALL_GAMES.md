@@ -183,6 +183,13 @@ model variant 1), and every two-handed Jackal cell's Character Type points at th
 squads SHARE cell blocks (sc120: ~62 distinct hostile cells behind 673 references) -- one draw per
 cell now. v3 deployed (every distinct cell dealt, 2-7 units per case).
 
+ODST boot 3 (2026-11-07): Marine Silenced SMG normal; Marine Plasma Cannon now IN the hands but aiming up;
+Jackal Plasma Cannon / Rocket Launcher held right -- some still shielded. Bungie's Sniper Jackals have no
+spawn-point variant and the same biped, so the CHARACTER's variant does pick the look; the shielded ones
+are the cell's MAJOR UPGRADE (char Major Character +0x44: jackal -> jackal_major). The clone's Major
+Character now names the major's own shieldless clone (none when that cannot be made). The turret-pose
+donor's root rotation enters inverted (the pitch as stored aimed up). v4 deployed.
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?

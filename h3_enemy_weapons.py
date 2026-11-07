@@ -562,7 +562,9 @@ def _donor_frame(m, hp, md):
     root = _root(m, md)
     if _angle(root[1], (0.0, 0.0, 0.0, 1.0)) < 1.0:
         return ((0.0, 0.0, 0.0), (0.0, 0.0, 0.0, 1.0))
-    return _compose(root, _body_frame(m, hp, md))
+    # (ODST boot 3) the root's pitch taken as stored aimed the Marine Plasma Cannon at the sky:
+    # the turret root enters INVERTED (only here -- markers and child nodes stay as stored)
+    return _compose((root[0], _qconj(root[1])), _body_frame(m, hp, md))
 
 
 def find_sid(m, hp, text):
@@ -923,7 +925,7 @@ def arm(m, hp, cards, salt=None):
 
 
 #: ODST char root size; the Variants block (+0x54, 0x14: variant name, model variant index)
-CHAR_ROOT, CHAR_VARIANTS, CHAR_VARIANT_ES = 0x1F8, 0x54, 0x14
+CHAR_ROOT, CHAR_VARIANTS, CHAR_VARIANT_ES, CHAR_MAJOR = 0x1F8, 0x54, 0x14, 0x44
 #: a spare palette character (no squad uses it, no character names it as parent / major) taken
 #: for a shieldless Jackal clone -- these first, then any other spare (Firefight's survival
 #: characters and the unused Flood leftovers sit in every ODST campaign palette)
@@ -987,9 +989,19 @@ class _Shieldless:
         m.data[got[0]:got[0] + CHAR_VARIANT_ES] = el
         struct.pack_into('<iI', m.data, dst + CHAR_VARIANTS, 1, m.off2data(got[0]))
         self.made[ci] = si
+        # (ODST boot 3) the cell's Major Upgrade turns some units into the character's MAJOR
+        # CHARACTER (jackal -> jackal_major, shielded): the clone's major is the major's clone,
+        # or none when that cannot be made (the upgrade is lost, the shield stays off)
+        major = hp._tag_name_by_id(m, m.u32(dst + CHAR_MAJOR + 0xC))
+        if major and major.lower() != self.cnames[ci].lower():
+            mi = next((i for i, n in enumerate(self.cnames) if (n or '').lower() == major.lower()), None)
+            mc = self.of(mi) if mi is not None else None
+            datum = hp._h3_tag_datum(m, 'char', self.cnames[mc]) if mc is not None else None
+            struct.pack_into('<I', m.data, dst + CHAR_MAJOR + 0xC,
+                             datum if datum is not None else 0xFFFFFFFF)
         self.rows.append({'tag': 'char ' + self.cnames[si], 'field': 'shieldless Jackal', 'ok': True,
-                          'new': 'a clone of %s naming the shieldless variant'
-                          % self.cnames[ci].rsplit(BS, 1)[-1]})
+                          'new': 'a clone of %s naming the shieldless variant (major: %s)'
+                          % (self.cnames[ci].rsplit(BS, 1)[-1], (major or 'none').rsplit(BS, 1)[-1])})
         return si
 
 
