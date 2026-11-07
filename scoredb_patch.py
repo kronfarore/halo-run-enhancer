@@ -56,7 +56,11 @@ ENEMY_TO_BUCKET = {
     'Knight': 'knight',
     'Crawler': 'pawn',
     'Watcher': 'bishop',
-    # the Human family is only drawn under Betrayal, when Marines score as enemies
+    # the Human family is only drawn under Betrayal, when Marines score as enemies.
+    # Outside Betrayal the Marine rows are a PENALTY (negative), so this bucket is
+    # reached by a card only while the run holds the Betrayal skull, and only by a card
+    # drafted from the Human family -- never by an enemy-general card (review U4 A1:
+    # 'General Enemy Vitality' alone had scaled the penalty -50 -> -62).
     'Human': 'marine',
 }
 
@@ -323,6 +327,10 @@ def multipliers_for(effects, specific_group, weights=None, step=0.05,
     """
     totals = {}
     general = 0     # skull points every enemy row takes ('*', '*'; see scale_xml)
+    # The marine bucket exists only under Betrayal: a saved run may still carry a Human
+    # card after the skull expired, and every General card lists 'Human' among its
+    # targets (matg: the whole group; ai\generic: every family that does not override).
+    betrayal = any(str(e.get('skull') or '').lower() == 'betrayal' for e in effects or [])
     for eff in effects or []:
         if eff.get('skull'):
             # Skull cards: their halo.json `score_points` -- the real skull's MCC
@@ -360,6 +368,8 @@ def multipliers_for(effects, specific_group, weights=None, step=0.05,
             b = ENEMY_TO_BUCKET.get(nm)
             if not b:
                 continue                          # e.g. Flood Infection Form
+            if b == 'marine' and not (betrayal and eff.get('enemy') == 'Human'):
+                continue                          # the betrayal penalty is not a card's to scale
             totals[('*', b)] = totals.get(('*', b), 0) + w
 
     # A boss bucket is a SUBSET of its type, not an alternative to it: effects that
@@ -396,6 +406,16 @@ def scale_xml(xml_text, multipliers, cap=None):
     changed = 0
     for (start, end), attrs in entries:
         mult = _lookup(multipliers, bucket_of(attrs))
+        if mult is not None and bucket_of(attrs)[1] != 'marine':
+            # A negative row is a PENALTY (Marines, Spartans, the human vehicles): no bucket
+            # a card reaches may scale it. Only the Marine rows take one, from their own
+            # key, which multipliers_for hands out under Betrayal alone -- and the
+            # Betrayal step then flips them positive.
+            try:
+                if float(attrs.get('score', 0)) < 0:
+                    mult = None
+            except ValueError:
+                pass
         if mult is None and ('*', '*') in multipliers:
             # a general skull's points reach every ENEMY row (positive score) the run's
             # cards did not name -- never a betrayal row (negative) or a 0

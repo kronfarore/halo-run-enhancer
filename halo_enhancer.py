@@ -7961,7 +7961,9 @@ class MagnitudeEditorDialog(QDialog):
         # this has to speak that shape or it prints "None -> None". Old/new carry the
         # actual story: which enemies went up and by how much.
         top = sorted(mults.items(), key=lambda kv: -kv[1])[:4]
-        detail = ', '.join('%s x%.2f' % (b[1], m) for b, m in top)
+        # the marine bucket exists only under Betrayal (scoredb_patch, review U4 A1)
+        detail = ', '.join('%s x%.2f' % ('marine (Betrayal)' if b[1] == 'marine' else b[1], m)
+                           for b, m in top)
         more = '' if len(mults) <= len(top) else ', +%d more' % (len(mults) - len(top))
         pushed = self._push_scores_live(path) if CONFIG.get('score_live_push') else None
         # Only claim the restart is needed when it actually is. Saying "RESTART MCC"
