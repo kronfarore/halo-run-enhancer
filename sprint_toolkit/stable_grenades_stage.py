@@ -108,13 +108,22 @@ def h1_swap_grenades(path):
     return out
 
 
-def h1_accelerate_placed(path):
-    """`accel` set: turn ON the placement Misc Flags bit 2 "does accelerate (moves due to
-    explosions)" on every placed grenade pickup. Stock a30 has Misc Flags 0 on all 17, and
-    the vanilla test showed placed grenades don't chain while dropped ones (no placement)
-    do -- this tells whether that flag is the gate."""
-    m = hp.open_map(path, 'Halo 1')
-    E = hp._MAP_EQUIPMENT['Halo 1']
+# scnr Equipment placement: offset of the Equipment (H1: Misc) Flags inside one entry;
+# bit 2 = "does accelerate (moves due to explosions)". OFF on every placed grenade of
+# every campaign map in all six games (survey 2026-11-06).
+EQUIP_FLAGS_AT = {'Halo 1': 34, 'Halo 2': 52, 'Halo 3': 84, 'Halo 3: ODST': 84,
+                  'Halo Reach': 88, 'Halo 4': 156}
+
+
+def accelerate_placed(path, game):
+    """`accel` set: turn ON "does accelerate (moves due to explosions)" on every placed
+    grenade pickup. CONFIRMED the gate in Halo 1 (a30, 2026-11-06): off, placed grenades
+    don't chain while dropped ones (no placement) do; on, placed ones chain too. Halo 2
+    on: same field, unproven -- this set tests it."""
+    m = hp.open_map(path, game)
+    E = hp._MAP_EQUIPMENT[game]
+    at = EQUIP_FLAGS_AT[game]
+    fmt = '<H' if game == 'Halo 1' else '<I'
     sb = hp._scnr_base(m)
     po, pe = E['palette']
     pb = hp._block_base(m, sb + po)
@@ -126,8 +135,8 @@ def h1_accelerate_placed(path):
     for i in range(m.i32(sb + io)):
         e = ib + i * ie
         if struct.unpack_from('<h', m.data, e)[0] in gren:
-            f = struct.unpack_from('<H', m.data, e + 34)[0]
-            struct.pack_into('<H', m.data, e + 34, f | 4)
+            f = struct.unpack_from(fmt, m.data, e + at)[0]
+            struct.pack_into(fmt, m.data, e + at, f | 4)
             n += 1
     m.save(path)
     return '%d placed grenades: does accelerate on' % n
@@ -163,7 +172,7 @@ def main(check_only=False, only=()):
         name = os.path.basename(live)
         print('##', g, name, '<-', src, flush=True)
         staged = {}
-        extra = {'Halo 1': ('accel',), 'Halo 2': ('itemonly',)}.get(g, ())
+        extra = {'Halo 1': ('accel',), 'Halo 2': ('itemonly', 'accel')}.get(g, ())
         for kind in ('vanilla', 'stable') + extra:
             dst = os.path.join(OUT, kind, sub.replace('/', os.sep), name)
             staged[kind] = dst
@@ -187,7 +196,7 @@ def main(check_only=False, only=()):
             if g == 'Halo 1':
                 print('     swap:', '; '.join(h1_swap_grenades(dst)), flush=True)
             if kind == 'accel':
-                print('     accel:', h1_accelerate_placed(dst), flush=True)
+                print('     accel:', accelerate_placed(dst, g), flush=True)
         rows = {k: dict(flag_rows(v, g, reg)) for k, v in staged.items()}
         a = rows['vanilla']
         for k in sorted(set().union(*rows.values())):

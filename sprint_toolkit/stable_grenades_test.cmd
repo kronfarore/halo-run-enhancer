@@ -5,7 +5,7 @@ rem   stable_grenades_test.cmd vanilla [game]   the level as a normal patch leav
 rem   stable_grenades_test.cmd stable  [game]   the same level with Stable Grenades on every grenade
 rem   stable_grenades_test.cmd itemonly halo2   Halo 2 only: the card's item-flag write alone
 rem                                             (does the eqip flag by itself stop the chain?)
-rem   stable_grenades_test.cmd accel halo1      Halo 1 only: vanilla + "does accelerate" on the
+rem   stable_grenades_test.cmd accel [game]     Halo 1 / Halo 2: vanilla + "does accelerate" on the
 rem                                             placed grenades (is that flag the placed gate?)
 rem Halo 1 copies have the grenade kinds swapped: placed pickups plasma, drops frag.
 rem   stable_grenades_test.cmd restore [game]   put back the map that was live before the test
