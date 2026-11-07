@@ -26,8 +26,9 @@ added glyphs and rewrites its block index.
 SAFETY: a package is only written when every glyph is missing or identical; a different
 glyph at a port's code point is reported and left alone. Every rebuilt package must pass
 the index check and read back with the added records before it replaces the live file
-(written to a temp file, then swapped in). The original is copied first (backup_dir, or
-`<name>.port_glyphs_stock` beside it).
+(written to a temp file, flushed to disk, then swapped in; a file MCC holds -- a level of
+that game loaded -- is reported as a row and left alone, temp removed). The original is
+copied first (backup_dir, or `<name>.port_glyphs_stock` beside it).
 
 Measured 2026-10-03: from the stock packages, adding the stored records reproduces the
 live Halo 4 packages BYTE FOR BYTE; for Halo 3 / ODST / Reach (whose glyphs were placed
@@ -154,6 +155,38 @@ def _h2_add(d, cp, rec12, pay):
     return bytes(out)
 
 
+def _swap_in(path, out, keep):
+    """The rebuilt file into place: the stock copy first (once, `keep`), then a temp file
+    beside the live one, flushed + fsynced, swapped in by os.replace. On ANY failure the
+    temp file is removed and the live file is untouched; the error is the caller's to
+    report. (Review U4 N3: the write sat outside the try, so a PermissionError -- MCC
+    holds a game's fonts while one of its levels is loaded -- escaped the row loop,
+    aborted the game's remaining packages, left <name>.port_glyphs_tmp beside the live
+    file and made the enhancer report 'port glyphs not checked' over a check that ran.)"""
+    if not os.path.exists(keep):
+        os.makedirs(os.path.dirname(keep), exist_ok=True)
+        shutil.copyfile(path, keep)
+    tmp = path + '.port_glyphs_tmp'
+    try:
+        with open(tmp, 'wb') as f:
+            f.write(out)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            os.remove(tmp)
+        except OSError:
+            pass
+        raise
+
+
+def _held(name, game):
+    return ('could not write: MCC holds %s while a %s level is loaded -- leave the level '
+            'and patch again' % (name, {'halo2': 'Halo 2', 'halo3': 'Halo 3', 'halo3odst': 'ODST',
+                                        'haloreach': 'Reach', 'halo4': 'Halo 4'}.get(game, game)))
+
+
 def _h2_ensure(mcc_root, write=True, backup_dir=None, data=None):
     data = data or load()
     spec = data.get('games', {}).get('halo2') or {}
@@ -210,13 +243,14 @@ def _h2_ensure(mcc_root, write=True, backup_dir=None, data=None):
         if write:
             keep = (os.path.join(backup_dir, 'halo2', name) if backup_dir
                     else path + '.port_glyphs_stock')
-            if not os.path.exists(keep):
-                os.makedirs(os.path.dirname(keep), exist_ok=True)
-                shutil.copyfile(path, keep)
-            tmp = path + '.port_glyphs_tmp'
-            with open(tmp, 'wb') as f:
-                f.write(out)
-            os.replace(tmp, path)
+            try:
+                _swap_in(path, out, keep)
+            except PermissionError:
+                rows.append(dict(row, ok=False, reason=_held(name, 'halo2')))
+                continue
+            except Exception as e:
+                rows.append(dict(row, ok=False, reason='could not write: %s' % e))
+                continue
         rows.append(dict(row, ok=True, old='without %s' % labels,
                          new='%s added%s' % (labels, '' if write else ' (dry run)')))
     return rows
@@ -366,13 +400,14 @@ def ensure(game, mcc_root, write=True, backup_dir=None, data=None):
         if write:
             keep = (os.path.join(backup_dir, game, name) if backup_dir
                     else path + '.port_glyphs_stock')
-            if not os.path.exists(keep):
-                os.makedirs(os.path.dirname(keep), exist_ok=True)
-                shutil.copyfile(path, keep)
-            tmp = path + '.port_glyphs_tmp'
-            with open(tmp, 'wb') as f:
-                f.write(out)
-            os.replace(tmp, path)
+            try:
+                _swap_in(path, out, keep)
+            except PermissionError:
+                rows.append(dict(row, ok=False, reason=_held(name, game)))
+                continue
+            except Exception as e:
+                rows.append(dict(row, ok=False, reason='could not write: %s' % e))
+                continue
         rows.append(dict(row, ok=True, old='without %s' % labels,
                          new='%s added%s' % (labels, '' if write else ' (dry run)')))
     return rows
