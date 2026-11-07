@@ -11396,7 +11396,8 @@ class OptionsDialog(QDialog):
         self.restore_stock_btn = QPushButton("Revert engine patches…")
         self.restore_stock_btn.setToolTip(
             "Undo everything this tool changes OUTSIDE the map files:\n\n"
-            "  • halo2.dll and halo3odst.dll — every applied byte patch\n"
+            "  • halo2.dll and halo3odst.dll — every applied byte patch, and the "
+            "dropped-item / flashlight values (halo1.dll too)\n"
             "  • halo1.dll — the Halo 1 engine options (overheat drops the zoom, melee "
             "blocks fire, supercombine count, charge needs a release, Grunt birthday "
             "party); an option still ticked goes back in at the next patch\n"
@@ -14807,9 +14808,10 @@ class OptionsDialog(QDialog):
 
         The map folders are only half of it. Three game dlls get byte patches
         (halo2.dll, halo3odst.dll, and halo1.dll for the Halo 1 engine options synced
-        on every patch), two shared MCC data files get rewritten (scoredb.xml,
-        careerdb.xml), and two more edits are written straight into the
-        running process. Until now the only way back from those was a Steam "verify
+        on every patch -- plus the dropped-item / flashlight VALUES both halo1.dll and
+        halo2.dll take on every patch, dll_tunables), two shared MCC data files get
+        rewritten (scoredb.xml, careerdb.xml), and two more edits are written straight
+        into the running process. Until now the only way back from those was a Steam "verify
         integrity", which re-downloads tens of GB and DELETES modded maps on the way --
         the thing that wiped the campaign twice. This is the targeted alternative.
 
@@ -14857,7 +14859,8 @@ class OptionsDialog(QDialog):
         if QMessageBox.question(
                 self, "Revert engine patches",
                 "Undo everything outside the map files?\n\n"
-                "  \u2022 halo2.dll and halo3odst.dll \u2014 every applied byte patch\n"
+                "  \u2022 halo2.dll and halo3odst.dll \u2014 every applied byte patch, and the "
+                "dropped-item / flashlight values (halo1.dll too)\n"
                 "  \u2022 halo1.dll \u2014 the Halo 1 engine options (overheat drops the "
                 "zoom, melee blocks fire, supercombine count, charge needs a release, "
                 "Grunt birthday party); any still ticked goes back in at the next patch\n"
@@ -14926,8 +14929,8 @@ class OptionsDialog(QDialog):
                     except (Exception, SystemExit) as e:
                         lines.append("%s: %s failed (%s)" % (label, name, e))
                         failed += 1
-                lines.append("%s: %s" % (label, ", ".join(undone) if undone
-                                         else "already stock"))
+                lines.append("%s patches: %s" % (label, ", ".join(undone) if undone
+                                                 else "already stock"))
 
             # ---- halo1.dll: the Halo 1 engine options ----------------------------
             # Synced from Options on every patch of ANY game (_apply_h1_*), each
@@ -14975,6 +14978,42 @@ class OptionsDialog(QDialog):
                             lines.append("halo1.dll %s: already stock" % eff)
                         else:
                             lines.append("halo1.dll %s: reverted (was %s)" % (eff, r.get('old')))
+
+            # ---- the VALUE patches of both dlls (dll_tunables) ---------------------
+            # Dropped-item limit / grace, flashlight seconds, the Arbiter's key: written
+            # into halo1.dll AND halo2.dll on every patch (_apply_drops_flashlight), in
+            # neither loop above, so they survived the revert while it said 'already
+            # stock' (review U4 F2). sync() with every value None writes each site's
+            # stock bytes (verify-before-write, a foreign dll refused); the file half
+            # only -- MCC is closed here, and a running MCC skips this whole half.
+            if not mcc_open:
+                os.environ['HALO_MCC_ROOT'] = mcc_root()
+                for label, mod_name in (("halo1.dll", 'h1_drops_flashlight'),
+                                        ("halo2.dll", 'h2_drops_flashlight')):
+                    try:
+                        mod = __import__(mod_name)
+                    except Exception as e:
+                        lines.append("%s values: tool unavailable (%s)" % (label, e))
+                        failed += 1
+                        continue
+                    if not os.path.exists(getattr(mod, 'DLL', '') or ''):
+                        continue                  # 'not installed here' is said above
+                    try:
+                        rows = [r for r in mod.sync(quiet=False)
+                                if 'file' in str(r.get('field') or '')]
+                    except (Exception, SystemExit) as e:
+                        lines.append("%s values: failed (%s)" % (label, e))
+                        failed += 1
+                        continue
+                    for r in rows:
+                        eff = r.get('effect') or label
+                        if not r.get('ok'):
+                            lines.append("%s %s: FAILED (%s)" % (label, eff, r.get('reason')))
+                            failed += 1
+                        elif str(r.get('note') or '').startswith('already'):
+                            lines.append("%s %s: already stock" % (label, eff))
+                        else:
+                            lines.append("%s %s: reverted (was %s)" % (label, eff, r.get('old')))
 
             # ---- the shared MCC score file ---------------------------------------
             try:
