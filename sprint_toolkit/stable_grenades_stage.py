@@ -36,6 +36,7 @@ import sys
 
 TOOL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, TOOL)
+sys.path.insert(0, os.path.join(TOOL, "sprint_toolkit"))
 os.chdir(TOOL)
 import halo_enhancer as he    # noqa: E402
 import halo_patch as hp       # noqa: E402
@@ -142,6 +143,40 @@ def accelerate_placed(path, game):
     return '%d placed grenades: does accelerate on' % n
 
 
+H2_CHEAT_ROUNDS = (36, 360)
+
+
+def h2_test_buffs(path):
+    """Test aids on every Halo 2 copy (user 2026-11-07: faster run, more shield and
+    vitality, a stronger player-only weapon) -- the Halo 2 Armed-test helpers:
+    h2_armed_test.god_shield (player body + shield 1e6, no stun) and cheat_map (Covenant
+    Carbine slug damage x1000, matg run / sneak x2), plus the Carbine as the SECONDARY of
+    the two player starting profiles. No 01b squad carries the Carbine, so only the player
+    holds the x1000 slug. The grenade data the test is about is not touched."""
+    import h2_armed_test as T
+    m = hp.open_map(path, 'Halo 2')
+    out = ['god shield: ' + (', '.join(T.god_shield(m)) or 'NO player model')]
+    out += T.cheat_map(m)
+    sb = hp._scnr_base(m)
+    pb = hp._block_base(m, sb + 0x98)               # weapon palette, 0x28 entries
+    ids = {hp._tag_name_by_id(m, m.u32(pb + i * 0x28 + 4)): m.u32(pb + i * 0x28 + 4)
+           for i in range(m.i32(sb + 0x98))}
+    cid = ids.get('objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine')
+    if cid is None:
+        out.append('Carbine NOT in the weapon palette -- no cheat weapon')
+    else:
+        reg = hp.PluginRegistry(C['assembly_plugins_dir'], C['plugin_subdirs_by_game']['Halo 2'])
+        bf = reg.get('scnr').find('Starting Health Damage', 'Player Starting Profile') or \
+            reg.get('scnr').find('Starting Health Modifier', 'Player Starting Profile')
+        boff, es = bf['block_offsets'][-1], bf['block_sizes'][-1]
+        for i in range(min(2, m.i32(sb + boff))):     # 0 spawn, 1 respawn
+            poff = m.follow(sb, [boff], [es], i)
+            hp._write_starting_weapon(m, poff, 'secondary', cid, *H2_CHEAT_ROUNDS, 'Halo 2')
+            out.append('profile %d secondary = Carbine %d/%d' % ((i,) + H2_CHEAT_ROUNDS))
+    m.save(path)
+    return out
+
+
 def flag_rows(path, game, reg):
     """(tag, flags) of the grenade pickups' item flags and models' damage flags."""
     m = hp.open_map(path, game)
@@ -197,6 +232,8 @@ def main(check_only=False, only=()):
                 print('     swap:', '; '.join(h1_swap_grenades(dst)), flush=True)
             if kind == 'accel':
                 print('     accel:', accelerate_placed(dst, g), flush=True)
+            if g == 'Halo 2':
+                print('     buffs:', '; '.join(h2_test_buffs(dst)), flush=True)
         rows = {k: dict(flag_rows(v, g, reg)) for k, v in staged.items()}
         a = rows['vanilla']
         for k in sorted(set().union(*rows.values())):
