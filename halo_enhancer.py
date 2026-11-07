@@ -11403,6 +11403,12 @@ class OptionsDialog(QDialog):
             "  • Data\\UI\\scoredb.xml and data\\careerdb\\careerdb.xml — back to their "
             "pristine .bak\n"
             "  • the running MCC — the death penalty and the betrayal sign guard\n\n"
+            "NOT undone: the ported weapons' pickup glyphs in the live icon font packages "
+            "(Halo 3 / ODST / Reach / Halo 4 maps\\fonts, the eight Halo 2 HUD fonts) and "
+            "their sound banks (Halo 4's sfxbank.pck, Halo 1's sounds_adpcm.fsb + .lst.bin, "
+            "the sfx.saw.fsb files of Halo 3 / ODST / Reach) -- every patch puts them back "
+            "anyway, they are inert without a port in the map, and only a Steam verify "
+            "removes them.\n\n"
             "Maps are NOT touched: use ‘Restore all .bak’ or ‘Restore from "
             "archive’ above for those. Between the two you get back to a stock game "
             "without a Steam verify, which re-downloads tens of GB and deletes modded "
@@ -14811,6 +14817,14 @@ class OptionsDialog(QDialog):
         above, they are the expensive part, and folding them in would make this one
         click able to undo a whole evening's rebuilds.
 
+        Not undone either, and the dialog says so (review U4 F1): what every patch
+        writes through _ensure_port_glyphs / _ensure_port_sounds -- the ports' glyphs in
+        the live icon font packages (Halo 3 / ODST / Reach / Halo 4, the eight Halo 2
+        fonts) and their sound banks (Halo 4's sfxbank.pck, Halo 1's sounds_adpcm.fsb and
+        both .lst.bin indexes, the sfx.saw.fsb files beside Halo 3 / ODST / Reach's stock
+        banks). They are inert in a stock game (private-use code points, bank ids and
+        port_ paths nothing references) and the next patch puts them back regardless.
+
         Every step is independent and none of them can raise out of here: a dll that is
         already stock, a missing .bak and a closed MCC are all ordinary outcomes, and
         one failing must not stop the others from being undone.
@@ -14848,6 +14862,9 @@ class OptionsDialog(QDialog):
                 "restored from their .bak (the stock copy taken on the first patch; a file an "
                 "MCC update replaced since is kept as the new stock copy)\n"
                 "  \u2022 the running MCC \u2014 death penalty and betrayal sign guard\n\n"
+                "NOT undone: the ported weapons' glyphs in the icon font packages and their "
+                "sound banks (every patch puts them back; inert without a port in the map; "
+                "a Steam verify removes them).\n\n"
                 "Maps are NOT affected. " + note,
                 QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes:
             return
