@@ -7885,8 +7885,9 @@ class MagnitudeEditorDialog(QDialog):
         data = getattr(getattr(self.parent_gui, 'db', None), 'data', None) or {}
         name = (((data.get('Missions') or {}).get(self.game) or {})
                 .get(self.mission_id) or {}).get('name')
+        notes = []          # the stock copy refreshed underneath (review U4 C1)
         try:
-            rep = careerdb_patch.apply(path, self.game, name, factor)
+            rep = careerdb_patch.apply(path, self.game, name, factor, notes=notes)
         except Exception as e:
             return [{'tag': tag, 'effect': 'Par time', 'ok': False, 'field': 'par time',
                      'reason': str(e)}]
@@ -7894,7 +7895,8 @@ class MagnitudeEditorDialog(QDialog):
         # baseline, so an earlier mission's scaled time has to come back out of memory
         # too, even when this mission has no par time of its own.
         pushed = self._push_par_time_live(path)
-        rows = []
+        rows = [{'tag': tag, 'effect': 'Par time', 'ok': True, 'skip': True, 'reason': n}
+                for n in notes]
         if rep is None:
             rows.append({'tag': tag, 'effect': 'Par time', 'ok': True, 'skip': True,
                          'reason': '%s has no par time in careerdb'
@@ -7951,6 +7953,7 @@ class MagnitudeEditorDialog(QDialog):
             return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
                      'ok': False, 'field': 'scores', 'reason':'halo.json enemy data unavailable'}]
         on = bool(CONFIG.get('score_scaling'))
+        notes = []          # the stock copy refreshed underneath (review U4 C1)
         try:
             cap = float(CONFIG.get('score_cap_mult') or 0) or None
             mults = scoredb_patch.multipliers_for(
@@ -7960,9 +7963,11 @@ class MagnitudeEditorDialog(QDialog):
                 # Nothing to scale by: regenerate the file from the .bak all the same, so
                 # an earlier run's multipliers come back out of it (the only other thing
                 # that does this is 'Revert engine patches').
-                scoredb_patch.apply(path, {}, cap=None)
+                scoredb_patch.apply(path, {}, cap=None, notes=notes)
                 why = ('score scaling is off' if not on
                        else 'no enemy effects in this run to score')
+                rows += [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
+                          'ok': True, 'skip': True, 'reason': n} for n in notes]
                 rows.append({'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
                              'ok': True, 'skip': True,
                              'reason': '%s -- scores put back to stock' % why})
@@ -7973,10 +7978,12 @@ class MagnitudeEditorDialog(QDialog):
                                  'field': 'live push', 'ok': closed, 'skip': closed,
                                  'reason': pushed.get('reason')})
                 return rows
-            changed, _ = scoredb_patch.apply(path, mults, cap=None)
+            changed, _ = scoredb_patch.apply(path, mults, cap=None, notes=notes)
         except Exception as e:
             return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
                      'ok': False, 'field': 'scores', 'reason':str(e)}]
+        rows += [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
+                  'ok': True, 'skip': True, 'reason': n} for n in notes]
         # The summary renders applied rows as "<effect>: <field>  <old> -> <new>", so
         # this has to speak that shape or it prints "None -> None". Old/new carry the
         # actual story: which enemies went up and by how much.
@@ -8214,11 +8221,14 @@ class MagnitudeEditorDialog(QDialog):
                      'reason': 'scoredb.xml not found under the MCC folder -- set the '
                                'MCC root in Options'}]
         rows = []
+        notes = []          # the stock copy refreshed underneath (review U4 C1)
         try:
-            changed = scoredb_patch.set_marine_sign(path, positive=on)
+            changed = scoredb_patch.set_marine_sign(path, positive=on, notes=notes)
         except Exception as e:
             return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Betrayal scoring',
                      'field': 'Marine rows', 'ok': False, 'reason': str(e)}]
+        rows += [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Betrayal scoring',
+                  'field': 'Marine rows', 'ok': True, 'skip': True, 'reason': n} for n in notes]
         try:
             import death_penalty, score_live
         except Exception as e:
@@ -8290,13 +8300,17 @@ class MagnitudeEditorDialog(QDialog):
                          'field': 'human vehicle rows', 'ok': False,
                          'reason': "could not read the level's squads: %s" % e}]
         on = bool(why)
+        notes = []          # the stock copy refreshed underneath (review U4 C1)
         try:
-            changed = scoredb_patch.set_vehicle_sign(path, positive=on)
+            changed = scoredb_patch.set_vehicle_sign(path, positive=on, notes=notes)
         except Exception as e:
             return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Vehicle scoring',
                      'field': 'human vehicle rows', 'ok': False, 'reason': str(e)}]
+        noted = [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Vehicle scoring',
+                  'field': 'human vehicle rows', 'ok': True, 'skip': True, 'reason': n}
+                 for n in notes]
         if not changed and not on:
-            return []
+            return noted
         tail = ''
         if changed and CONFIG.get('score_live_push', True):
             try:
@@ -8308,11 +8322,11 @@ class MagnitudeEditorDialog(QDialog):
                         % pushed.get('reason'))
             except Exception as e:
                 tail = ' — live push failed: %s' % e
-        return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Vehicle scoring',
-                 'field': 'human vehicle rows', 'ok': True,
-                 'old': 'cost points' if on else 'award points',
-                 'new': ('award points (%s)%s' % (', '.join(why), tail)) if on
-                        else ('cost points%s' % tail)}]
+        return noted + [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Vehicle scoring',
+                         'field': 'human vehicle rows', 'ok': True,
+                         'old': 'cost points' if on else 'award points',
+                         'new': ('award points (%s)%s' % (', '.join(why), tail)) if on
+                                else ('cost points%s' % tail)}]
 
     def _apply_sword_drain_live(self):
         """The live-only path for the Energy Use sword row: read the typed value,
@@ -14766,7 +14780,8 @@ class OptionsDialog(QDialog):
                 "zoom, melee blocks fire, supercombine count, charge needs a release, "
                 "Grunt birthday party); any still ticked goes back in at the next patch\n"
                 "  \u2022 Data\\UI\\scoredb.xml and data\\careerdb\\careerdb.xml \u2014 "
-                "restored from their .bak\n"
+                "restored from their .bak (the stock copy taken on the first patch; a file an "
+                "MCC update replaced since is kept as the new stock copy)\n"
                 "  \u2022 the running MCC \u2014 death penalty and betrayal sign guard\n\n"
                 "Maps are NOT affected. " + note,
                 QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes:
@@ -14881,7 +14896,12 @@ class OptionsDialog(QDialog):
                 path = os.path.join(mcc_root(), scoredb_patch.SCOREDB_REL)
                 if not os.path.exists(path):
                     lines.append("scoredb.xml: not found under the MCC root")
-                elif scoredb_patch.restore(path):
+                elif (done := scoredb_patch.restore(path)) == 'refreshed':
+                    # the live file was replaced underneath the stock copy (an MCC
+                    # update): it IS the stock file now, the old copy is gone (U4 C1)
+                    lines.append("scoredb.xml: a newer stock file than the .bak (an MCC "
+                                 "update?) -- kept as the new stock copy, nothing to restore")
+                elif done:
                     lines.append("scoredb.xml: restored from .bak")
                     if CONFIG.get('score_live_push', True):
                         import score_live
@@ -14904,7 +14924,10 @@ class OptionsDialog(QDialog):
                 path = os.path.join(mcc_root(), careerdb_patch.CAREERDB_REL)
                 if not os.path.exists(path):
                     lines.append("careerdb.xml: not found under the MCC root")
-                elif careerdb_patch.restore(path):
+                elif (done := careerdb_patch.restore(path)) == 'refreshed':
+                    lines.append("careerdb.xml: a newer stock file than the .bak (an MCC "
+                                 "update?) -- kept as the new stock copy, nothing to restore")
+                elif done:
                     lines.append("careerdb.xml: restored from .bak")
                     try:
                         import careerdb_live

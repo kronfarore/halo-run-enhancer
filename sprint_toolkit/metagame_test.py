@@ -128,7 +128,7 @@ def arm():
     p = scoredb()
     try:
         n = set_marines(p, MARINE_TEST)
-    except scoredb_patch.BaselineError as e:
+    except scoredb_patch.StockError as e:          # BaselineError, or a replaced live file
         print('  %s (run --restore first, or Steam verify)' % e)
         return 1
     print('  scoredb.xml: %d Marine row(s) set to +%g' % (n, MARINE_TEST))

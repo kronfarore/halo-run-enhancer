@@ -463,8 +463,21 @@ def backup_path(scoredb):
     return scoredb + '.bak'
 
 
-class BaselineError(RuntimeError):
+StockError = mcc_textfile.StockError      # a replaced live file that is not stock either
+
+
+class BaselineError(StockError):
     """No usable pristine copy: the live file is already modified and no .bak exists."""
+
+
+_SCORE_VAL = re.compile(r'(\bscore(?:_skull)?\s*=\s*")[^"]*(")')
+
+
+def _skeleton(text):
+    """The file with every score value blanked and whitespace folded: what this tool's own
+    writes never change. A live file with another skeleton than the .bak was replaced from
+    outside (mcc_textfile.guard)."""
+    return re.sub(r'\s+', ' ', _SCORE_VAL.sub(r'\1\2', text)).strip()
 
 
 def is_pristine(text):
@@ -477,49 +490,64 @@ def is_pristine(text):
     return bool(marines) and all(v < 0 for v in marines + vehicles)
 
 
-def ensure_baseline(scoredb):
+def ensure_baseline(scoredb, notes=None):
     """The .bak path, creating the .bak from the live file when there is none -- and only
     when the live file passes is_pristine(). Every writer calls this BEFORE it writes,
     so a .bak is never seeded from a file an earlier sign flip (Betrayal scoring, the
     Halo 2 vehicle fix, the metagame test) had already changed and then regenerated as
-    'restored from .bak' forever after (review U4 B3). Raises BaselineError otherwise."""
+    'restored from .bak' forever after (review U4 B3). Raises BaselineError otherwise.
+
+    With a .bak present, mcc_textfile.guard() checks that the live file is still the stock
+    copy or this tool's own write: a file replaced underneath (an MCC update) that passes
+    is_pristine() becomes the new stock copy, with a line in `notes`; one that does not
+    raises StockError and nothing is written (review U4 C1)."""
     bak = backup_path(scoredb)
     if os.path.exists(bak):
+        mcc_textfile.guard(scoredb, bak, _skeleton, is_pristine, 'scoredb.xml', notes)
         return bak
     text = mcc_textfile.read_text(scoredb)
     if not is_pristine(text):
         raise BaselineError('scoredb.xml is already modified and no .bak exists -- '
                             'Steam verify, then patch again')
     shutil.copy2(scoredb, bak)
+    mcc_textfile.record_bak(bak)
     return bak
 
 
-def read_baseline(scoredb):
+def read_baseline(scoredb, notes=None):
     """Always scale from the PRISTINE file, never from an already-patched one --
     the same .bak baseline model the map patcher uses, so repatching does not
     compound and toggling the option off restores the original values. The .bak is
     taken by ensure_baseline(), which refuses a live file that is not stock."""
-    bak = ensure_baseline(scoredb)
+    bak = ensure_baseline(scoredb, notes)
     return mcc_textfile.read_text(bak)
 
 
-def apply(scoredb, multipliers, cap=None, dry_run=False):
+def apply(scoredb, multipliers, cap=None, dry_run=False, notes=None):
     """The live file = the .bak scaled by `multipliers` ({} puts the shipped bytes back).
     Written atomically (mcc_textfile): MCC reads this file once at startup, and a file
-    truncated by a crash mid-write would be what it scores with all session."""
-    base = read_baseline(scoredb)
+    truncated by a crash mid-write would be what it scores with all session. `notes`
+    (a list) receives a line when the stock copy had to be refreshed first."""
+    base = read_baseline(scoredb, notes)
     patched, changed = scale_xml(base, multipliers, cap)
     if not dry_run:
         mcc_textfile.write_text_atomic(scoredb, patched)
+        mcc_textfile.record_write(scoredb, backup_path(scoredb))
     return changed, patched
 
 
 def restore(scoredb):
+    """The stock copy back into place: 'restored', or 'refreshed' when the live file turned
+    out to be a NEWER stock file (it then IS the stock copy; nothing to put back), or False
+    with no .bak. StockError for a replaced file that is not stock either."""
     bak = backup_path(scoredb)
-    if os.path.exists(bak):
-        mcc_textfile.copy_atomic(bak, scoredb)
-        return True
-    return False
+    if not os.path.exists(bak):
+        return False
+    if mcc_textfile.guard(scoredb, bak, _skeleton, is_pristine, 'scoredb.xml') == 'refreshed':
+        return 'refreshed'
+    mcc_textfile.copy_atomic(bak, scoredb)
+    mcc_textfile.record_write(scoredb, bak)
+    return 'restored'
 
 
 # Marines are the one bucket whose sign is a GAMEPLAY question rather than a constant.
@@ -529,7 +557,7 @@ MARINE_ROW = re.compile(r'(type="_campaign_metagame_bucket_type_marine"[^/]*?)'
                         r'score="(-?[\d.]+)"')
 
 
-def set_marine_sign(scoredb, positive):
+def set_marine_sign(scoredb, positive, notes=None):
     """Force every Marine row's score positive or negative, magnitude untouched.
 
     Sign-only and idempotent on purpose, so it composes with `apply()` rather than
@@ -539,7 +567,7 @@ def set_marine_sign(scoredb, positive):
 
     Returns the number of rows changed (0 when they were already the wanted sign).
     """
-    return _set_sign(scoredb, MARINE_ROW, positive)
+    return _set_sign(scoredb, MARINE_ROW, positive, notes)
 
 
 # The human vehicles: negative rows in the shipped file. MCC scores a destroyed vehicle
@@ -552,16 +580,16 @@ VEHICLE_ROW = re.compile(r'(type="_campaign_metagame_bucket_type_(?:%s)"[^/]*?)'
                          r'score="(-?[\d.]+)"' % '|'.join(HUMAN_VEHICLES))
 
 
-def set_vehicle_sign(scoredb, positive):
+def set_vehicle_sign(scoredb, positive, notes=None):
     """The human vehicle rows positive or negative, magnitude untouched -- the same
     sign-only, idempotent contract as `set_marine_sign`. A vehicle kill takes the plain
     table path, so a positive row pays out without the betrayal sign guard."""
-    return _set_sign(scoredb, VEHICLE_ROW, positive)
+    return _set_sign(scoredb, VEHICLE_ROW, positive, notes)
 
 
-def _set_sign(scoredb, row, positive):
+def _set_sign(scoredb, row, positive, notes=None):
     try:
-        ensure_baseline(scoredb)            # the pristine copy BEFORE the first flip
+        ensure_baseline(scoredb, notes)     # the pristine copy BEFORE the first flip
     except BaselineError:
         if positive:
             raise          # a non-stock sign over a file with no baseline: refused, reported
@@ -580,4 +608,6 @@ def _set_sign(scoredb, row, positive):
     out = row.sub(sub, text)
     if n[0]:
         mcc_textfile.write_text_atomic(scoredb, out)
+        if os.path.exists(backup_path(scoredb)):
+            mcc_textfile.record_write(scoredb, backup_path(scoredb))
     return n[0]

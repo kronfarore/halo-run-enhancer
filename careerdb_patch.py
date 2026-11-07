@@ -15,6 +15,13 @@ every apply scales FROM it, so re-patching never compounds and a scale of 1 puts
 shipped values back -- byte for byte: the file is read with its line endings kept and
 written atomically (mcc_textfile; MCC reads it once at startup, so a half-written file
 would be the par times of a whole session).
+
+The stock copy is not trusted forever (review U4 C1): mcc_textfile.guard() compares the live
+file with the .bak and with this tool's last write (<file>.bak.meta); a file that is neither
+-- an MCC update shipped a new careerdb.xml, a Steam verify put one back -- is taken as the
+new stock copy (the .bak is refreshed from it, the caller's row says so) instead of being
+rewritten from the old one on every patch. There is no pristine test for this file: its
+structure (every attribute but the three times) is the test.
 """
 import os
 import re
@@ -33,10 +40,22 @@ def backup_path(path):
     return path + '.bak'
 
 
-def read_baseline(path):
+_TIME_VAL = re.compile(r'(\b(?:par_time|average_time|max_time)\s*=\s*")[^"]*(")')
+
+
+def _skeleton(text):
+    """The file with the three times blanked and whitespace folded: what this tool's own
+    writes never change (mcc_textfile.guard)."""
+    return re.sub(r'\s+', ' ', _TIME_VAL.sub(r'\1\2', text)).strip()
+
+
+def read_baseline(path, notes=None):
     bak = backup_path(path)
     if not os.path.exists(bak):
         shutil.copy2(path, bak)
+        mcc_textfile.record_bak(bak)
+    else:
+        mcc_textfile.guard(path, bak, _skeleton, None, 'careerdb.xml', notes)
     return mcc_textfile.read_text(bak)
 
 
@@ -126,16 +145,18 @@ def chapter_span(text, game, mission_name):
     return hits[0] if len(hits) == 1 else None
 
 
-def apply(path, game, mission_name, factor, dry_run=False):
+def apply(path, game, mission_name, factor, dry_run=False, notes=None):
     """Scale one mission's three times by `factor`, from the pristine baseline.
 
     Returns {'old': {...}, 'new': {...}} or None when the mission has no par time (the
-    ODST hub, Halo 4's Spartan Ops entries)."""
-    base = read_baseline(path)
+    ODST hub, Halo 4's Spartan Ops entries). `notes` (a list) receives a line when the
+    stock copy had to be refreshed first."""
+    base = read_baseline(path, notes)
     span = chapter_span(base, game, mission_name)
     if span is None:
         if not dry_run:
             mcc_textfile.write_text_atomic(path, base)   # any earlier mission's edit goes away
+            mcc_textfile.record_write(path, backup_path(path))
         return None
     chunk = base[span[0]:span[1]]
     old, new = {}, {}
@@ -148,6 +169,7 @@ def apply(path, game, mission_name, factor, dry_run=False):
     chunk = re.sub(r'\b(%s)="(\d+(?:\.\d+)?)"' % '|'.join(TIME_ATTRS), scale, chunk)
     if not dry_run:
         mcc_textfile.write_text_atomic(path, base[:span[0]] + chunk + base[span[1]:])
+        mcc_textfile.record_write(path, backup_path(path))
         title = re.search(r'\btitle="([^"]+)"', chunk)
         if title and all(k in new for k in TIME_ATTRS):
             _remember(path, title.group(1), tuple(float(new[k]) for k in TIME_ATTRS))
@@ -155,8 +177,14 @@ def apply(path, game, mission_name, factor, dry_run=False):
 
 
 def restore(path):
+    """The stock copy back into place: 'restored', or 'refreshed' when the live file turned
+    out to be a NEWER stock file (it then IS the stock copy; nothing to put back), or False
+    with no .bak."""
     bak = backup_path(path)
-    if os.path.exists(bak):
-        mcc_textfile.copy_atomic(bak, path)
-        return True
-    return False
+    if not os.path.exists(bak):
+        return False
+    if mcc_textfile.guard(path, bak, _skeleton, None, 'careerdb.xml') == 'refreshed':
+        return 'refreshed'
+    mcc_textfile.copy_atomic(bak, path)
+    mcc_textfile.record_write(path, bak)
+    return 'restored'
