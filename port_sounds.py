@@ -49,6 +49,7 @@ carries ports is reported and not copied, review U4 C2), nothing restores from i
 and a Steam verify remains the supported way back to stock; the enhancer never passes it.
 """
 import argparse
+import contextlib
 import glob
 import json
 import os
@@ -185,6 +186,11 @@ def install(path, add):
         old_end = len(head)
         ids = {b for b, _x, _n in add}
         keep = [e for e in table if e[0] not in ids]
+        if any(e[1] != 1 for e in table):
+            # kept offsets are rewritten as start * blk + delta with blk 1 assumed (the shipped
+            # package has 1 throughout); another block size would corrupt every stock offset (N18)
+            raise ValueError('a bank table entry has block size %d, not 1 -- unknown package layout'
+                             % next(e[1] for e in table if e[1] != 1))
         # a replaced bank whose bytes are the tail of the file is cut off
         tail = size
         for e in table:
@@ -206,19 +212,29 @@ def install(path, add):
         if len(new_head) != old_end + delta:
             raise ValueError('header arithmetic is off')
         tmp = path + '.port_sounds_tmp'
-        with open(tmp, 'wb') as o:
-            o.write(new_head)
-            f.seek(old_end)
-            left = tail - old_end
-            while left > 0:
-                c = f.read(min(CHUNK, left))
-                o.write(c)
-                left -= len(c)
-            for _bid, b, _n in add:
-                o.write(b)
-            o.flush()
-            os.fsync(o.fileno())           # the replace below must find the bytes on disk
-    os.replace(tmp, path)
+        try:
+            with open(tmp, 'wb') as o:
+                o.write(new_head)
+                f.seek(old_end)
+                left = tail - old_end
+                while left > 0:
+                    c = f.read(min(CHUNK, left))
+                    o.write(c)
+                    left -= len(c)
+                for _bid, b, _n in add:
+                    o.write(b)
+                o.flush()
+                os.fsync(o.fileno())       # the replace below must find the bytes on disk
+        except BaseException:
+            with contextlib.suppress(OSError):
+                os.remove(tmp)             # a failed install leaves no 400 MB temp behind (N10)
+            raise
+    try:
+        os.replace(tmp, path)              # once the source handle is closed: Windows refuses otherwise
+    except BaseException:
+        with contextlib.suppress(OSError):
+            os.remove(tmp)
+        raise
 
 
 def remove(path, ids):
@@ -387,6 +403,9 @@ def ensure(game, mcc_root, write=True, backup_dir=None, volume=None):
         if still:
             return rows + [dict(row, ok=False, reason='written, but %s do not read back'
                                 % ', '.join(n for _b, _x, n in still))]
+    except PermissionError:
+        return rows + [dict(row, ok=False, reason='sfxbank.pck is in use -- MCC holds it while a '
+                            'Halo 4 map is loaded; leave the map and patch again')]
     except Exception as e:
         return rows + [dict(row, ok=False, reason='could not write: %s' % e)]
     return rows + [dict(row, ok=True, old='without %s' % names, new='%s added' % names)]
@@ -486,11 +505,10 @@ def h1_wanted(volume=None):
     for man in sorted(glob.glob(os.path.join(_data_dir(), 'halo1', '*.json'))):
         m = json.load(open(man, encoding='utf-8'))
         db = min((volume or {}).get(m.get('weapon'), 0.0) or 0.0, H1_MAX_UP_DB)
-        # THE CLASSIC INDEX IS SORTED (lower-case path order; only a few stock Warthog
-        # engine entries break it) and the game evidently searches it: appended entries in
-        # manifest order (fire, dryfire, reload, ...) made the SAW fire silent and the AR
-        # misbehave (2026-10-04). So the port's entries -- and their subsongs, keeping the
-        # first-subsong column ascending like stock -- go in path order.
+        # Path order, for a stable layout. (The 2026-10-04 theory that the classic index
+        # must stay SORTED was disproven the same day -- halo1.dll sorts the entries itself;
+        # the silent SAW fire was the FSB5 sample-header layout, see h1_fsb.py -- and the
+        # live install's appended tail is unsorted across manifests and plays. Review U4 N1.)
         for snd in sorted(m['sounds'], key=lambda s: s['aliases'][0].lower()):
             i0 = len(samples)
             base = snd.get('name') or snd['tag'].replace('\\', '/').rsplit('/', 1)[-1]
@@ -576,9 +594,7 @@ def h1_ensure(mcc_root, write=True, backup_dir=None, volume=None):
         ours = {a for a, _i, _c in index}
         kept = [e for e in entries if e[1] < p0 and e[0] not in ours]
         new = [(a, first + i, c) for a, i, c in index]
-        if kept and new and min(a.lower() for a, _i, _c in new) <= max(e[0].lower() for e in kept):
-            raise ValueError('a port path sorts before a stock path -- appending would break '
-                             'the sorted classic index')
+        # (no sort-order guard: the engine sorts the index itself, see h1_wanted; review U4 N1)
         h1_fsb.write_lst(lst, ver, kept + new)
         # the Anniversary index: drop our old entries, insert ours in its sort order
         dours = {t.lower() for t, _f, _c in want_debug}
@@ -589,6 +605,9 @@ def h1_ensure(mcc_root, write=True, backup_dir=None, volume=None):
         dver, dentries = h1_fsb.read_lst(dlst)
         if not present():
             return extra + [dict(row, ok=False, reason='written, but the port sounds do not read back')]
+    except PermissionError:
+        return extra + [dict(row, ok=False, reason='the bank is in use -- MCC holds it while a Halo 1 '
+                             'map is loaded; leave the map and patch again')]
     except Exception as e:
         return extra + [dict(row, ok=False, reason='could not write: %s' % e)]
     return extra + [dict(row, ok=True, old='without %s' % what,

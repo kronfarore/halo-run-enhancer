@@ -156,20 +156,27 @@ def append_fsb(src, dst, new, keep=None):
     head = bytearray(info['head'])
     struct.pack_into('<IIII', head, 8, n, 8 * n, len(nt), info['ds'] + len(blobs))
     tmp = dst + '.h1_fsb_tmp'
-    with open(src, 'rb') as f, open(tmp, 'wb') as o:
-        o.write(head)
-        o.write(struct.pack('<%dQ' % n, *sh))
-        o.write(nt)
-        f.seek(data_at)
-        left = info['ds']
-        while left:
-            c = f.read(min(1 << 24, left))
-            o.write(c)
-            left -= len(c)
-        o.write(blobs)
-        o.flush()
-        os.fsync(o.fileno())               # the replace below must find the bytes on disk
-    os.replace(tmp, dst)
+    try:
+        with open(src, 'rb') as f, open(tmp, 'wb') as o:
+            o.write(head)
+            o.write(struct.pack('<%dQ' % n, *sh))
+            o.write(nt)
+            f.seek(data_at)
+            left = info['ds']
+            while left:
+                c = f.read(min(1 << 24, left))
+                o.write(c)
+                left -= len(c)
+            o.write(blobs)
+            o.flush()
+            os.fsync(o.fileno())           # the replace below must find the bytes on disk
+        os.replace(tmp, dst)
+    except BaseException:
+        try:
+            os.remove(tmp)                 # no 100 MB temp left behind (review U4 N10)
+        except OSError:
+            pass
+        raise
     return info['n']
 
 
@@ -193,8 +200,15 @@ def write_lst(path, ver, entries):
         b = name.encode('latin-1') + b'\0'
         out += struct.pack('<I', len(b)) + b + struct.pack('<II', first, count)
     tmp = path + '.h1_fsb_tmp'
-    with open(tmp, 'wb') as o:
-        o.write(out)
-        o.flush()
-        os.fsync(o.fileno())
-    os.replace(tmp, path)
+    try:
+        with open(tmp, 'wb') as o:
+            o.write(out)
+            o.flush()
+            os.fsync(o.fileno())
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            os.remove(tmp)
+        except OSError:
+            pass
+        raise

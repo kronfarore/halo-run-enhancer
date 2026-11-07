@@ -501,6 +501,11 @@ def multipliers_for(effects, specific_group, weights=None, step=0.05,
             if not pts:
                 continue
             rows = _skull_buckets(eff)
+            if rows is not None and not rows and notes is not None:
+                # a per-enemy skull on an enemy with no scoredb bucket (Flood Infection Form):
+                # its points cannot move any row (review U4 N9)
+                notes.append('%s: %s has no scoredb bucket (%d skull points not scored)'
+                             % (eff.get('name'), eff.get('skull_enemy'), pts))
             if rows is None:
                 general += pts
                 if str(eff.get('skull')).lower() == 'betrayal':
@@ -694,7 +699,10 @@ def apply(scoredb, multipliers, cap=None, dry_run=False, notes=None):
     Written atomically (mcc_textfile): MCC reads this file once at startup, and a file
     truncated by a crash mid-write would be what it scores with all session. `notes`
     (a list) receives a line when the stock copy had to be refreshed first."""
-    base = read_baseline(scoredb, notes)
+    if dry_run and not os.path.exists(backup_path(scoredb)):
+        base = mcc_textfile.read_text(scoredb)         # a dry run seeds nothing (review U4 N6)
+    else:
+        base = read_baseline(scoredb, notes)
     patched, changed = scale_xml(base, multipliers, cap)
     if not dry_run:
         mcc_textfile.write_text_atomic(scoredb, patched)

@@ -25,15 +25,19 @@ CATALOG_PATH = os.path.join(HERE, 'weapon_ports_catalog.json')
 
 
 _CACHE = {}
+_WARNED = set()
 
 
 def load_catalog(path=CATALOG_PATH):
     """The catalog, read once and kept until the file changes. Card filtering asks
     for it hundreds of times per card draw; reading and parsing it each time made
-    Generate lag (2026-10-03)."""
+    Generate lag (2026-10-03). A missing or corrupt catalog is {} -- every port
+    vanishes and weap_tag_for falls back to the plain-string tags -- so it is said
+    once on stderr instead of in silence (review U4 N5)."""
     try:
         stamp = os.path.getmtime(path)
-    except OSError:
+    except OSError as e:
+        _warn_once(path, 'not found (%s)' % e)
         return {}
     hit = _CACHE.get(path)
     if hit and hit[0] == stamp:
@@ -41,10 +45,18 @@ def load_catalog(path=CATALOG_PATH):
     try:
         with open(path, encoding='utf-8') as f:
             data = json.load(f)
-    except (OSError, ValueError):
+    except (OSError, ValueError) as e:
+        _warn_once(path, 'unreadable: %s' % e)
         return {}
     _CACHE[path] = (stamp, data)
     return data
+
+
+def _warn_once(path, why):
+    if path not in _WARNED:
+        _WARNED.add(path)
+        import sys
+        print('weapon_ports: %s %s -- no weapon port is available' % (path, why), file=sys.stderr)
 
 
 def ports_for(game, catalog=None):

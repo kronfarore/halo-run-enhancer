@@ -54,10 +54,23 @@ KITS = {'h1': (LOCK, ENV, 'ports_h1'),
         'h2': (os.path.join(H2EK, '.port_kit.lock'), ENV + '_H2', 'ports_h2')}
 
 
+_LOCAL_TOLD = set()
+
+
 def _kit(kit):
     if kit not in KITS:
         raise SystemExit('kit_lock: unknown kit %r (have %s)' % (kit, ', '.join(sorted(KITS))))
-    return KITS[kit]
+    lock, env, cfg = KITS[kit]
+    if not os.path.isdir(os.path.dirname(lock)):
+        # no kit on this machine (a co-op partner running `port_sounds.py --write`): a lock
+        # beside this file instead of a FileNotFoundError (review U4 N11)
+        local = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.port_kit_%s.lock' % kit)
+        if kit not in _LOCAL_TOLD:
+            _LOCAL_TOLD.add(kit)
+            print('kit lock: %s is not on this machine -- locking %s instead'
+                  % (os.path.dirname(lock), local), flush=True)
+        return local, env, cfg
+    return lock, env, cfg
 
 
 def _alive(pid):

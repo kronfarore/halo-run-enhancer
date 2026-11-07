@@ -151,7 +151,10 @@ def apply(path, game, mission_name, factor, dry_run=False, notes=None):
     Returns {'old': {...}, 'new': {...}} or None when the mission has no par time (the
     ODST hub, Halo 4's Spartan Ops entries). `notes` (a list) receives a line when the
     stock copy had to be refreshed first."""
-    base = read_baseline(path, notes)
+    if dry_run and not os.path.exists(backup_path(path)):
+        base = mcc_textfile.read_text(path)            # a dry run seeds nothing (review U4 N6)
+    else:
+        base = read_baseline(path, notes)
     span = chapter_span(base, game, mission_name)
     if span is None:
         if not dry_run:

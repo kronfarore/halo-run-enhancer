@@ -605,7 +605,9 @@ SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor', 'zoom_donor_by_weapon', '
                  'shared_session_dir', 'shared_session_autosave',
                  'vault_dir', 'baseline_root',
                  # per-port volume: a listening preference, NOT gameplay -- each co-op
-                 # partner sets their own, and it stays out of the run and patch code
+                 # partner sets their own. It stays out of the RUN file; it IS written into
+                 # Halo 2 / 3 / ODST / Reach maps (halo_patch.apply_port_volume) and so into
+                 # their patch code unless 'Sync to partner' carries it (the tooltip says so)
                  'weapon_port_volume', 'weapon_port_volume_sync') + OPTION_KEYS
 
 
@@ -7995,8 +7997,10 @@ class MagnitudeEditorDialog(QDialog):
         # this has to speak that shape or it prints "None -> None". Old/new carry the
         # actual story: which enemies went up and by how much.
         top = sorted(mults.items(), key=lambda kv: -kv[1])[:4]
-        # the marine bucket exists only under Betrayal (scoredb_patch, review U4 A1)
-        detail = ', '.join('%s x%.2f' % ('marine (Betrayal)' if b[1] == 'marine' else b[1], m)
+        # the marine bucket exists only under Betrayal (scoredb_patch, review U4 A1); the
+        # ('*', '*') bucket is the general skull points every other enemy row takes (N12)
+        detail = ', '.join('%s x%.2f' % ('marine (Betrayal)' if b[1] == 'marine'
+                                          else 'every other enemy' if b == ('*', '*') else b[1], m)
                            for b, m in top)
         more = '' if len(mults) <= len(top) else ', +%d more' % (len(mults) - len(top))
         pushed = self._push_scores_live(path) if CONFIG.get('score_live_push') else None
@@ -8319,7 +8323,13 @@ class MagnitudeEditorDialog(QDialog):
         import scoredb_patch
         path = os.path.join(mcc_root(), scoredb_patch.SCOREDB_REL)
         if not os.path.exists(path):
-            return []
+            # a failure only when there was something to invert (Betrayal scoring says the
+            # same); with nothing to do there is nothing to revert either (review U4 N8)
+            on = bool(CONFIG.get('betrayal_marines_score') and self._betrayal_drawn(skulls))
+            return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Vehicle scoring',
+                     'field': 'human vehicle rows', 'ok': not on, 'skip': not on,
+                     'reason': 'scoredb.xml not found under the MCC folder -- set the '
+                               'MCC root in Options'}] if on else []
         why = []
         if CONFIG.get('betrayal_marines_score') and self._betrayal_drawn(skulls):
             why.append('Betrayal')
@@ -14867,7 +14877,9 @@ class OptionsDialog(QDialog):
                 "  \u2022 Data\\UI\\scoredb.xml and data\\careerdb\\careerdb.xml \u2014 "
                 "restored from their .bak (the stock copy taken on the first patch; a file an "
                 "MCC update replaced since is kept as the new stock copy)\n"
-                "  \u2022 the running MCC \u2014 death penalty and betrayal sign guard\n\n"
+                "  \u2022 the running MCC \u2014 death penalty and betrayal sign guard (the "
+                "Iron skull and sword-drain live writes are not undone here; they vanish at "
+                "the next MCC restart)\n\n"
                 "  \u2022 the ported weapons' glyphs in the icon font packages (back to their "
                 "stock copy) and their sound banks (Halo 4's package and Halo 1's bank "
                 "rebuilt without them, the Halo 3 / ODST / Reach port banks removed); the "
@@ -15029,8 +15041,13 @@ class OptionsDialog(QDialog):
                 elif done:
                     lines.append("scoredb.xml: restored from .bak")
                     if CONFIG.get('score_live_push', True):
-                        import score_live
-                        r = score_live.push_from_xml(path)
+                        # its own try: the file IS restored by now, a push that raises is
+                        # a push failure, not a restore failure (review U4 N14)
+                        try:
+                            import score_live
+                            r = score_live.push_from_xml(path)
+                        except Exception as e:
+                            r = {'ok': False, 'reason': str(e)}
                         lines.append("  live push: %s"
                                      % ("%d record(s)" % r['written'] if r.get('ok')
                                         else r.get('reason')))
