@@ -592,7 +592,13 @@ def grip(m, hp, enemy, weapon, donor, style=None):
         how = 'aligned to the %s off-hand' % donor.rsplit(BS, 1)[-1]
     else:
         # the weapon's body frame where the donor's sits in the hand: M = B_w * inverse(F_donor)
-        t, q = _compose(_body_frame(m, hp, mt), _inverse(_donor_frame(m, hp, md)))
+        fd = _donor_frame(m, hp, md)
+        if fd[1] != (0.0, 0.0, 0.0, 1.0):
+            # a turret-pose donor (ODST boot 2: the Plasma Cannon floated ~30 cm in front with the
+            # flamethrower's root position): its ROTATION, the weapon's own root POSITION -- where
+            # an origin hold puts it
+            fd = (_root(m, mt)[0], fd[1])
+        t, q = _compose(_body_frame(m, hp, mt), _inverse(fd))
         how = 'on the body frame, as the %s sits' % donor.rsplit(BS, 1)[-1]
     mk = bytearray(m.data[lt[1]:lt[1] + MARKER_ES])
     mk[2] = 0
@@ -899,11 +905,13 @@ def arm(m, hp, cards, salt=None):
     if stats.get('cells'):
         rows.append({'tag': tag.rstrip(BS), 'field': 'cells', 'ok': True,
                      'new': '%d cells armed: %d shared weapon arrays copied, %d empty ones given '
-                     'an element' % (stats['cells'], stats['unshared'], stats['filled'])})
+                     'an element; %d two-handed Jackal cells on shieldless clones'
+                     % (stats['cells'], stats['unshared'], stats['filled'], stats.get('cloned', 0))})
+        rows.extend(stats.get('clone_rows') or [])
     if stats['shieldless'] or stats['reshielded'] or stats['no_variant'] or stats['ft_jackals']:
         rows.append({'tag': tag + 'Jackal', 'field': 'Jackal shields', 'ok': not stats['no_variant'],
                      'new': '%d locations shieldless (two-handed), %d given the shield back; %d '
-                     'fire-teams armed (their extras keep the shield)%s' % (
+                     'fire-teams / cells armed whose extras keep the shield%s' % (
                          stats['shieldless'], stats['reshielded'], stats['ft_jackals'],
                          '; %d KEPT the shield: no shieldless variant id in this map'
                          % stats['no_variant'] if stats['no_variant'] else '')})
@@ -914,10 +922,85 @@ def arm(m, hp, cards, salt=None):
     return rows, done
 
 
+#: ODST char root size; the Variants block (+0x54, 0x14: variant name, model variant index)
+CHAR_ROOT, CHAR_VARIANTS, CHAR_VARIANT_ES = 0x1F8, 0x54, 0x14
+#: a spare palette character (no squad uses it, no character names it as parent / major) taken
+#: for a shieldless Jackal clone -- these first, then any other spare (Firefight's survival
+#: characters and the unused Flood leftovers sit in every ODST campaign palette)
+SPARE_PREFER = ('civilian_police_survival', 'civilain_police_sarge_survival', 'flood_combat_civilian',
+                'flood_combat_odst', 'floodcombat_brute_stealth', 'brute_phantom', 'brute_tracker')
+
+
+class _Shieldless:
+    """(ODST boot 2, 2026-11-07) Jackals spawned in formations or past a cell's spawn points kept
+    their shields: only spawn points carry a variant. The CHARACTER decides the model variant too
+    (jackal 'minor', jackal_major 'major', jackal_sniper 'sniper': the sniper has no shield), so a
+    two-handed Jackal cell is pointed at a CLONE of its character -- the root copied over a spare
+    palette character, its Variants block one element naming 'shieldless' (the jackal model's own
+    variant, looked up by name)."""
+
+    def __init__(self, m, hp, base, cnames, used):
+        self.m, self.hp, self.made, self.rows = m, hp, {}, []
+        pal = m.follow_all(base, [CPAL], [CPAL_ES], 'all')
+        refd = set()
+        for p, b in m.find_tags('char', '*'):
+            for off in (0x4, 0x44):
+                refd.add((hp._tag_name_by_id(m, m.u32(b + off + 0xC)) or '').lower())
+        spares = [i for i, n in enumerate(cnames) if n and i not in used and n.lower() not in refd
+                  and i < len(pal)]
+        leaf = lambda i: cnames[i].lower().rsplit(BS, 1)[-1]
+        self.spares = sorted(spares, key=lambda i: (SPARE_PREFER.index(leaf(i))
+                                                    if leaf(i) in SPARE_PREFER else 99, i))
+        self.cnames = cnames
+        self.sid = find_sid(m, hp, 'shieldless')
+        self.vidx = None
+        for p, b in m.find_tags('hlmt', '*'):
+            if p.lower().endswith(BS + 'jackal'):
+                for k, e in enumerate(m.follow_all(b, [0x64], [0x48], 'all')):
+                    if _name(m, hp, m.u32(e)) == 'shieldless':
+                        self.vidx = k
+
+    def of(self, ci):
+        """The palette index of the shieldless clone of palette character `ci`, or None."""
+        if ci in self.made:
+            return self.made[ci]
+        if ci in self.made.values():
+            return ci                                   # already a clone (a shared array)
+        m, hp = self.m, self.hp
+        self.made[ci] = None
+        if self.sid is None or self.vidx is None or not self.spares:
+            return None
+        src = dict(m.find_tags('char', self.cnames[ci])).get(self.cnames[ci])
+        si = self.spares.pop(0)
+        dst = dict(m.find_tags('char', self.cnames[si])).get(self.cnames[si])
+        if src is None or dst is None:
+            return None
+        got = hp._h3_reserve(m, [CHAR_VARIANT_ES])
+        if not got:
+            return None
+        m.data[dst:dst + CHAR_ROOT] = m.data[src:src + CHAR_ROOT]
+        el = bytearray(CHAR_VARIANT_ES)
+        v = m.follow_all(src, [CHAR_VARIANTS], [CHAR_VARIANT_ES], 'all')
+        if v:
+            el[:] = m.data[v[0]:v[0] + CHAR_VARIANT_ES]          # keeps its voices
+        struct.pack_into('<Ih', el, 0, self.sid, self.vidx)
+        m.data[got[0]:got[0] + CHAR_VARIANT_ES] = el
+        struct.pack_into('<iI', m.data, dst + CHAR_VARIANTS, 1, m.off2data(got[0]))
+        self.made[ci] = si
+        self.rows.append({'tag': 'char ' + self.cnames[si], 'field': 'shieldless Jackal', 'ok': True,
+                          'new': 'a clone of %s naming the shieldless variant'
+                          % self.cnames[ci].rsplit(BS, 1)[-1]})
+        return si
+
+
 def _arm_cells(m, hp, base, widx, info, graphs, type_of, draw, count, jackal_shield, char_team,
                stats):
     """ODST: arm the cells (and spawn points with their own weapon) of every squad."""
-    stats.update(cells=0, unshared=0, filled=0)
+
+    def shield_names():
+        return [hp._tag_name_by_id(m, m.u32(e + CPAL_ID))
+                for e in m.follow_all(base, [CPAL], [CPAL_ES], 'all')]
+    stats.update(cells=0, unshared=0, filled=0, cloned=0)
     squads = m.follow_all(base, [SQUADS], [SQ_ES], 'all')
     refs = {}
     for sq in squads:
@@ -958,16 +1041,25 @@ def _arm_cells(m, hp, base, widx, info, graphs, type_of, draw, count, jackal_shi
             struct.pack_into('<h', m.data, el0 + i * CELL_ARR_ES + CELL_IDX, widx[w])
         return True
 
+    jackal_cells, seen = [], {}
     for sq in squads:
         squad_team = _i16(m, sq + SQ_TEAM)
         designer = m.follow_all(sq, [CELL_BLOCKS[0]], [CELL_ES], 'all')
         armed, kinds = {}, {}
         for off in CELL_BLOCKS:
             for cell in m.follow_all(sq, [off], [CELL_ES], 'all'):
+                if cell in seen:
+                    # squads can share a cell block: one draw per cell, not one per squad
+                    kinds[cell], armed_w = seen[cell]
+                    if armed_w is not None:
+                        armed[cell] = armed_w
+                    continue
+                seen[cell] = (set(), None)
                 chars = [_i16(m, e + CELL_IDX)
                          for e in m.follow_all(cell, [CELL_CHARS], [CELL_ARR_ES], 'all')]
                 types = set(type_of(c) for c in chars)
                 kinds[cell] = types
+                seen[cell] = (types, None)
                 if not chars or None in types:
                     continue
                 enemy = type_of(chars[0])
@@ -978,6 +1070,7 @@ def _arm_cells(m, hp, base, widx, info, graphs, type_of, draw, count, jackal_shi
                     continue
                 if write_cell(cell, w):
                     armed[cell] = w
+                    seen[cell] = (types, w)
                     stats['cells'] += 1
                     count(enemy, w, max(1, _i16(m, cell + CELL_COUNT)))
         placed = {}
@@ -1003,9 +1096,48 @@ def _arm_cells(m, hp, base, widx, info, graphs, type_of, draw, count, jackal_shi
             if w is not None and types == {'Jackal'}:
                 jackal_shield(sp, w, SP_VARIANT)
         for cell, w in armed.items():
-            if kinds.get(cell) == {'Jackal'} and two_handed(m, hp, info.get(w)) \
-                    and _i16(m, cell + CELL_COUNT) > placed.get(cell, 0):
+            if kinds.get(cell) == {'Jackal'} and two_handed(m, hp, info.get(w)):
+                jackal_cells.append(cell)
+    # every two-handed Jackal cell onto a shieldless clone of its character (its own array)
+    if jackal_cells:
+        used = set()
+        for sq in squads:
+            for sp in m.follow_all(sq, [SP], [SP_ES], 'all'):
+                used.add(_i16(m, sp + SP_CHAR))
+            for off in CELL_BLOCKS:
+                for cell in m.follow_all(sq, [off], [CELL_ES], 'all'):
+                    for e in m.follow_all(cell, [CELL_CHARS], [CELL_ARR_ES], 'all'):
+                        used.add(_i16(m, e + CELL_IDX))
+        cnames = shield_names()
+        sl = _Shieldless(m, hp, base, cnames, used)
+        crefs = {}
+        for sq in squads:
+            for off in CELL_BLOCKS:
+                for cell in m.follow_all(sq, [off], [CELL_ES], 'all'):
+                    p = m.u32(cell + CELL_CHARS + 4)
+                    crefs[p] = crefs.get(p, 0) + 1
+        for cell in dict.fromkeys(jackal_cells):
+            blk = cell + CELL_CHARS
+            n, p = m.i32(blk), m.u32(blk + 4)
+            els = m.follow_all(cell, [CELL_CHARS], [CELL_ARR_ES], 'all')
+            new = [sl.of(_i16(m, e + CELL_IDX)) for e in els]
+            if not els or None in new:
                 stats['ft_jackals'] += 1
+                continue
+            if crefs.get(p, 0) > 1:
+                got = hp._h3_reserve(m, [n * CELL_ARR_ES])
+                if not got:
+                    stats['ft_jackals'] += 1
+                    continue
+                src = hp._block_base(m, blk)
+                m.data[got[0]:got[0] + n * CELL_ARR_ES] = m.data[src:src + n * CELL_ARR_ES]
+                struct.pack_into('<I', m.data, blk + 4, m.off2data(got[0]))
+                crefs[p] -= 1
+            el0 = hp._block_base(m, blk)
+            for i, ci in enumerate(new):
+                struct.pack_into('<h', m.data, el0 + i * CELL_ARR_ES + CELL_IDX, ci)
+            stats['cloned'] += 1
+        stats['clone_rows'] = sl.rows
 
 
 def apply(m, hp, spec, registry=None, salt=None, game='Halo 3'):

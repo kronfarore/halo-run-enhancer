@@ -150,12 +150,17 @@ def layout(m, report):
         for d, name, cell, sps in sorted(cands, key=lambda x: x[0]):
             if k >= need:
                 break
+            if cell in done_cells:
+                continue                   # a cell block shared by two squads: dealt once
+            done_cells.add(cell)
             label, ch, ci, wp, wi = usable[k % len(usable)]
             k += 1
             _one(m, cell + ew.CELL_CHARS, ci)
             _one(m, cell + ew.CELL_WEAPS, wi)
             struct.pack_into('<i', m.data, cell + ew.CELL_WEAPS + 0xC, 0)    # no secondary
             two = ew.two_handed(m, hp, ew.weapon_info(m, wnames[wi]))
+            if 'jackal' in ch and two:
+                jackal_cells.append(cell)
             for sp in sps:
                 struct.pack_into('<hhh', m.data, sp + ew.SP_CHAR, -1, -1, -1)
                 v = sid if ('jackal' in ch and two and sid is not None) else 0
@@ -168,10 +173,30 @@ def layout(m, report):
         if k < need:
             report.append('  SHORT: %d of %d cells' % (k, need))
 
+    jackal_cells, done_cells = [], set()
     report.append('enemy cells (nearest the start first):')
     deal(hostile, ENEMY_CASES)
     report.append('friendly Marine cells:')
     deal(friendly, MARINE_CASES)
+    # v3 (ODST boot 2): two-handed Jackal cells onto the pass's shieldless clone (formation /
+    # extra Jackals never touch a spawn point's variant)
+    used = set()
+    for sq in m.follow_all(base, [ew.SQUADS], [ew.SQ_ES], 'all'):
+        for sp in m.follow_all(sq, [ew.SP], [ew.SP_ES], 'all'):
+            used.add(_i16(m, sp + ew.SP_CHAR))
+        for off in ew.CELL_BLOCKS:
+            for cell in m.follow_all(sq, [off], [ew.CELL_ES], 'all'):
+                for e in m.follow_all(cell, [ew.CELL_CHARS], [ew.CELL_ARR_ES], 'all'):
+                    used.add(_i16(m, e + ew.CELL_IDX))
+    sl = ew._Shieldless(m, hp, base, cnames, used)
+    for cell in dict.fromkeys(jackal_cells):
+        e = hp._block_base(m, cell + ew.CELL_CHARS)       # the private one-element array
+        ci = sl.of(_i16(m, e + ew.CELL_IDX))
+        if ci is not None:
+            struct.pack_into('<h', m.data, e + ew.CELL_IDX, ci)
+    for r in sl.rows:
+        report.append('  %s: %s' % (r['tag'], r['new']))
+    report.append('  %d two-handed Jackal cells on the shieldless clone' % len(set(jackal_cells)))
     if sid is None:
         report.append('  NOTE: no shieldless variant id in this map -- Jackals keep the shield')
 

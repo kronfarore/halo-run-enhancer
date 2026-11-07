@@ -171,6 +171,18 @@ root is rotated (identity for rifles and the Rocket Launcher: the confirmed grip
 same-class pose gets that grip too when the roots differ > POSE_GRIP_DEG; GRIP_STYLE per game (ODST
 Marines 'body'). Test v2 deals the cases to EVERY hostile / friendly cell of sc120.
 
+ODST boot 2 (2026-11-07): right -- Marine Brute Shot, Jackal Brute Shot WHERE shieldless, Grunt AR /
+Flamethrower / Plasma Cannon, Drone Brute Shot / Rocket Launcher; nothing unarmed. Wrong: Marine Plasma
+Cannon floated in front (direction right: the grip took the flamethrower's root POSITION -> now the
+donor's rotation, the weapon's own root position); plenty of Jackals kept the shield (formation /
+extra Jackals never read a spawn point's variant). The CHARACTER picks the model variant (char
+Variants +0x54: jackal 'minor', major 'major', sniper 'sniper'): `_Shieldless` copies the Jackal
+character's root over a SPARE palette character (unused by every squad, no character's parent /
+major; Firefight survival characters first) with one Variants element naming 'shieldless' (jackal
+model variant 1), and every two-handed Jackal cell's Character Type points at that clone. Also:
+squads SHARE cell blocks (sc120: ~62 distinct hostile cells behind 673 references) -- one draw per
+cell now. v3 deployed (every distinct cell dealt, 2-7 units per case).
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?
