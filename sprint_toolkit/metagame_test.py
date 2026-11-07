@@ -65,6 +65,10 @@ def set_marines(path, score):
     Edited from the CURRENT file, not the baseline, so a run's existing score scaling
     survives the experiment. Setting an absolute value cannot compound, so there is no
     reason to reach for the baseline here."""
+    # the score scaler's pristine .bak first, so this experiment can never become the
+    # baseline the next patch regenerates from (scoredb_patch.ensure_baseline, review U4 B3;
+    # BaselineError when the file is already modified and has no .bak -- restore first)
+    scoredb_patch.ensure_baseline(path)
     snap = path + SNAPSHOT_SUFFIX
     if not os.path.exists(snap):
         import shutil
@@ -122,7 +126,11 @@ def status():
 
 def arm():
     p = scoredb()
-    n = set_marines(p, MARINE_TEST)
+    try:
+        n = set_marines(p, MARINE_TEST)
+    except scoredb_patch.BaselineError as e:
+        print('  %s (run --restore first, or Steam verify)' % e)
+        return 1
     print('  scoredb.xml: %d Marine row(s) set to +%g' % (n, MARINE_TEST))
     pushed = score_live.push_from_xml(p)
     print('  live push: %s' % ('%d record(s)' % pushed['written'] if pushed.get('ok')

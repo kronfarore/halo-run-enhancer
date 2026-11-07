@@ -461,13 +461,44 @@ def backup_path(scoredb):
     return scoredb + '.bak'
 
 
+class BaselineError(RuntimeError):
+    """No usable pristine copy: the live file is already modified and no .bak exists."""
+
+
+def is_pristine(text):
+    """The shipped file's SIGNS: every Marine row and every human-vehicle row negative, and
+    at least one Marine row present. Magnitudes are not checked -- the only writer that
+    touches the file without a baseline is a sign flip, so signs are what a .bak seeded
+    from a modified file could carry (a scaled file is always written from a .bak)."""
+    marines = [float(m.group(2)) for m in MARINE_ROW.finditer(text)]
+    vehicles = [float(m.group(2)) for m in VEHICLE_ROW.finditer(text)]
+    return bool(marines) and all(v < 0 for v in marines + vehicles)
+
+
+def ensure_baseline(scoredb):
+    """The .bak path, creating the .bak from the live file when there is none -- and only
+    when the live file passes is_pristine(). Every writer calls this BEFORE it writes,
+    so a .bak is never seeded from a file an earlier sign flip (Betrayal scoring, the
+    Halo 2 vehicle fix, the metagame test) had already changed and then regenerated as
+    'restored from .bak' forever after (review U4 B3). Raises BaselineError otherwise."""
+    bak = backup_path(scoredb)
+    if os.path.exists(bak):
+        return bak
+    with open(scoredb, encoding='utf-8') as f:
+        text = f.read()
+    if not is_pristine(text):
+        raise BaselineError('scoredb.xml is already modified and no .bak exists -- '
+                            'Steam verify, then patch again')
+    shutil.copy2(scoredb, bak)
+    return bak
+
+
 def read_baseline(scoredb):
     """Always scale from the PRISTINE file, never from an already-patched one --
     the same .bak baseline model the map patcher uses, so repatching does not
-    compound and toggling the option off restores the original values."""
-    bak = backup_path(scoredb)
-    if not os.path.exists(bak):
-        shutil.copy2(scoredb, bak)
+    compound and toggling the option off restores the original values. The .bak is
+    taken by ensure_baseline(), which refuses a live file that is not stock."""
+    bak = ensure_baseline(scoredb)
     with open(bak, encoding='utf-8') as f:
         return f.read()
 
@@ -527,6 +558,13 @@ def set_vehicle_sign(scoredb, positive):
 
 
 def _set_sign(scoredb, row, positive):
+    try:
+        ensure_baseline(scoredb)            # the pristine copy BEFORE the first flip
+    except BaselineError:
+        if positive:
+            raise          # a non-stock sign over a file with no baseline: refused, reported
+        # Towards stock (a flipped file an earlier patch left, no .bak yet): the write goes
+        # ahead, and the next writer seeds the .bak from the result once its signs are stock.
     with open(scoredb, encoding='utf-8') as f:
         text = f.read()
     n = [0]
