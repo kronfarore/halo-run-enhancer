@@ -402,11 +402,21 @@ class Halo3Map:
         # and below on every map, dynamic names at 0x894 and above, so 0x800 separates
         # them. Before this, everything past the rebuilt tail resolved to None.
         static_total = self._sid_static_total()
+        dynamic = (lambda: self._string_at(
+            index + static_total - (self.str_tbl_count - self._sid_strip)))
         if static_total and index >= self._SID_DYNAMIC_FROM:
-            return self._string_at(index + static_total - (self.str_tbl_count - self._sid_strip))
-        return self._string_at(self._sid_strip + index - 1)
+            return dynamic()
+        s = self._string_at(self._sid_strip + index - 1)
+        # 050_floodvoi's designer zones are dynamic ids BELOW 0x800 (0x7C0..0x7C6,
+        # dz_pureforms .. dz_enhancer, 2026-11-07): the tail rule has nothing there and
+        # returned None. Only an id past the static range that the tail rule cannot
+        # name falls back, so nothing that resolved before changes.
+        if s is None and static_total and index > self._SID_STATIC_LAST:
+            return dynamic()
+        return s
 
     _SID_DYNAMIC_FROM = 0x800
+    _SID_STATIC_LAST = 0x489
 
     def _sid_static_total(self):
         """The engine's static stringID count (see resolve_stringid), or None where it

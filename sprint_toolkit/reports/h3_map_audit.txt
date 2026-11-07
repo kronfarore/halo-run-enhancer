@@ -1,0 +1,47 @@
+010_jungle  ALL OK
+   enhancer_marker1   placement 70 at (-17.88, 166.3, 4.82), flags 0x21, BSP mask 0x0
+   enhancer_marker2   placement 71 at (-18.35, 168.04, 4.9), flags 0x21, BSP mask 0x0
+   dz_enhancer        zone 2, loaded by 13/13 zone sets
+   from the start     weapons 20/20, turrets 4/4, equipments 11/11, grenades 4/4
+020_base  ALL OK
+   enhancer_marker1   placement 65 at (-29.65, 42.08, -4.9), flags 0x21, BSP mask 0x0
+   enhancer_marker2   placement 66 at (-29.61, 44.82, -4.9), flags 0x21, BSP mask 0x0
+   dz_enhancer        zone 20, loaded by 12/12 zone sets
+   from the start     weapons 20/20, turrets 4/4, equipments 11/11, grenades 4/4
+030_outskirts  ALL OK
+   enhancer_marker1   placement 74 at (227.66, -168.29, -12.9), flags 0x21, BSP mask 0x0
+   enhancer_marker2   placement 75 at (227.6, -165.39, -12.9), flags 0x21, BSP mask 0x0
+   dz_enhancer        zone 10, loaded by 7/7 zone sets
+   from the start     weapons 20/20, turrets 4/4, equipments 11/11, grenades 4/4
+040_voi  ALL OK
+   enhancer_marker1   placement 70 at (-12.99, -109.23, -1.4), flags 0x21, BSP mask 0x0
+   enhancer_marker2   placement 71 at (-9.82, -109.11, -1.4), flags 0x21, BSP mask 0x0
+   dz_enhancer        zone 15, loaded by 18/18 zone sets
+   from the start     weapons 20/20, turrets 4/4, equipments 11/11, grenades 4/4
+050_floodvoi  ALL OK
+   enhancer_marker1   placement 71 at (-115.33, 37.77, -1.43), flags 0x21, BSP mask 0x0
+   enhancer_marker2   placement 72 at (-117.78, 36.11, -1.38), flags 0x21, BSP mask 0x0
+   dz_enhancer        zone 6, loaded by 9/9 zone sets
+   from the start     weapons 20/20, turrets 4/4, equipments 11/11, grenades 4/4
+070_waste  ALL OK
+   enhancer_marker1   placement 48 at (120.09, 355.84, 17.34), flags 0x21, BSP mask 0x0
+   enhancer_marker2   placement 49 at (120.07, 357.61, 17.28), flags 0x21, BSP mask 0x0
+   dz_enhancer        zone 31, loaded by 13/13 zone sets
+   from the start     weapons 20/20, turrets 4/4, equipments 11/11, grenades 4/4
+100_citadel  ALL OK
+   enhancer_marker1   placement 70 at (-253.79, 220.33, -11.45), flags 0x21, BSP mask 0x0
+   enhancer_marker2   placement 71 at (-256.7, 217.88, -11.05), flags 0x21, BSP mask 0x0
+   dz_enhancer        zone 30, loaded by 19/19 zone sets
+   from the start     weapons 20/20, turrets 4/4, equipments 11/11, grenades 4/4
+110_hc  ALL OK
+   enhancer_marker1   placement 85 at (-81.4, -57.86, 9.25), flags 0x21, BSP mask 0x0
+   enhancer_marker2   placement 86 at (-79.1, -59.56, 8.89), flags 0x21, BSP mask 0x0
+   dz_enhancer        zone 1, loaded by 7/7 zone sets
+   from the start     weapons 20/20, turrets 4/4, equipments 11/11, grenades 4/4
+120_halo  ALL OK
+   enhancer_marker1   placement 3 at (-268.43, -422.0, -10.12), flags 0x21, BSP mask 0x0
+   enhancer_marker2   placement 4 at (-268.7, -424.94, -10.12), flags 0x21, BSP mask 0x0
+   dz_enhancer        zone 9, loaded by 8/8 zone sets
+   from the start     weapons 20/20, turrets 4/4, equipments 11/11, grenades 4/4
+
+9/9 maps ALL OK (C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection\halo3\maps)
