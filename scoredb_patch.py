@@ -381,13 +381,16 @@ def multipliers_for(effects, specific_group, weights=None, step=0.05,
     # buffed every Brute also buffed Tartarus, so his (hero, brute) weight has to
     # include the type-wide total. Without this the exact key shadows the wider one
     # in _lookup and a boss can end up worth LESS than a rank-and-file enemy.
+    # The type total is added as it stands (before the skull points), and the general
+    # skull points then go to EVERY bucket, boss ones included -- `+= type or general`
+    # used to drop the skull points whenever a type total existed (Iron + a Brute card
+    # + a Tartarus card: hero/brute 6 -> x1.30 against every Brute's x1.55).
     for (cls, typ) in list(totals):
         if cls != '*':
-            totals[(cls, typ)] += totals.get(('*', typ), 0) or general
+            totals[(cls, typ)] += totals.get(('*', typ), 0)
     if general:
         for b in list(totals):
-            if b[0] == '*':
-                totals[b] += general
+            totals[b] += general
         totals[('*', '*')] = general        # every other enemy row (scale_xml)
 
     out = {}
