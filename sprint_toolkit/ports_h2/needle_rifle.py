@@ -329,7 +329,7 @@ PORT = {
             # boot 2 (screenshot): the glyphs' centres at -390 / +384 px, the side cutouts' at +-354 px: moved
             # 36 / 30 px in (/ 1.117 px a unit)
             (r'ui\hud\needle_rifle.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 4, 0, [-352, -27]),
-            (r'ui\hud\needle_rifle.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 5, 0, [271, -27]),   # boot 3: 9 px left
+            (r'ui\hud\needle_rifle.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 5, 0, [274, -27]),   # boot 3: 9 px left; Oracle boot: 4 px right (centre of the cutout lobes)
             # boot 3: 'the teal glyph is mirrored' -- the Carbine's right_crosshair flips its (shared) sprite
             # horizontally; the port's has its own
             (r'ui\hud\needle_rifle.new_hud_definition', 'flags', 'bitmap widgets', 5, 0, 0),
