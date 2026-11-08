@@ -263,4 +263,12 @@ def build(level='sc120'):
 
 
 if __name__ == '__main__':
-    build(sys.argv[1] if len(sys.argv) > 1 else 'sc120')
+    # --marines <word>: every Marine cell takes only the Marine cases whose label holds the word
+    # (v5, ODST boot 4: the one Plasma Cannon Marine came late and died unseen)
+    args = sys.argv[1:]
+    if '--marines' in args:
+        i = args.index('--marines')
+        word = args[i + 1].lower()
+        MARINE_CASES = tuple(c for c in MARINE_CASES if word in c[0].lower())
+        del args[i:i + 2]
+    build(args[0] if args else 'sc120')
