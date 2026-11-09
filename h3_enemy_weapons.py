@@ -554,17 +554,10 @@ def _angle(qa, qb):
     return math.degrees(2 * math.acos(min(1.0, d)))
 
 
-def _donor_frame(m, hp, md):
-    """Where the DONOR's rifle-like frame sits in the hand (the donor is held at its origin): its
-    root then its body frame -- identity for every rifle and the Rocket Launcher's rotation, so
-    for those the grip is the weapon's body frame alone (the confirmed Grunt / Jackal grips);
-    a turret donor (the Marine flamethrower pose) adds its ~50 deg pitch and offset."""
-    root = _root(m, md)
-    if _angle(root[1], (0.0, 0.0, 0.0, 1.0)) < 1.0:
-        return ((0.0, 0.0, 0.0), (0.0, 0.0, 0.0, 1.0))
-    # (ODST boot 3) the root's pitch taken as stored aimed the Marine Plasma Cannon at the sky:
-    # the turret root enters INVERTED (only here -- markers and child nodes stay as stored)
-    return _compose((root[0], _qconj(root[1])), _body_frame(m, hp, md))
+def _turret_donor(m, md):
+    """True when the donor's root is rotated against its origin (a turret: the Marine flamethrower
+    pose), False for every rifle and the Rocket Launcher (unrotated roots)."""
+    return _angle(_root(m, md)[1], (0.0, 0.0, 0.0, 1.0)) >= 1.0
 
 
 def find_sid(m, hp, text):
@@ -594,12 +587,13 @@ def grip(m, hp, enemy, weapon, donor, style=None):
         how = 'aligned to the %s off-hand' % donor.rsplit(BS, 1)[-1]
     else:
         # the weapon's body frame where the donor's sits in the hand: M = B_w * inverse(F_donor)
-        fd = _donor_frame(m, hp, md)
-        if fd[1] != (0.0, 0.0, 0.0, 1.0):
-            # a turret-pose donor (ODST boot 2: the Plasma Cannon floated ~30 cm in front with the
-            # flamethrower's root position): its ROTATION, the weapon's own root POSITION -- where
-            # an origin hold puts it
-            fd = (_root(m, mt)[0], fd[1])
+        fd = ((0.0, 0.0, 0.0), (0.0, 0.0, 0.0, 1.0))
+        if _turret_donor(m, md):
+            # a turret-pose donor (the Marine flamethrower pose, ODST boots 2-4): the body frame
+            # UNPITCHED -- the flamethrower's ~50 deg root pitch aimed the Plasma Cannon at the
+            # sky, inverted at the ground; the hand of that pose is already level for a turret --
+            # at the weapon's OWN root position (the flamethrower's floated it ~30 cm forward)
+            fd = (_root(m, mt)[0], (0.0, 0.0, 0.0, 1.0))
         t, q = _compose(_body_frame(m, hp, mt), _inverse(fd))
         how = 'on the body frame, as the %s sits' % donor.rsplit(BS, 1)[-1]
     mk = bytearray(m.data[lt[1]:lt[1] + MARKER_ES])
