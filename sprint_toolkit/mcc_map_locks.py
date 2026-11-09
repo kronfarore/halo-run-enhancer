@@ -196,7 +196,7 @@ def engine_state(pid, dll='halo3.dll'):
         name = (M.read(h, base + e['req_name'], 0x100) or b'').split(b'\0')[0]
         prio = M.read(h, base + e['req_prio'], 4)
         slots = {}
-        for i in range(15, 19):
+        for i in range(15, 25):     # ODST summary after sc120: h100 sat in 19
             b = M.read(h, base + e['slots'] + i * SLOT, 0x2E8)
             if b and struct.unpack_from('<q', b, 0)[0] not in (-1, 0):
                 slots[i] = b[0x1E8:0x2E8].split(b'\0')[0].decode('latin-1')
