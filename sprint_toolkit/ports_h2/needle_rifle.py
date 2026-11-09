@@ -204,6 +204,10 @@ PORT = {
             (WP, 'effe', r'effects\objects\weapons\rifle\covenant_carbine\reloading', FX + r'\needle_rifle_reloading', 'reloading effect'),
             (WP, 'effe', '', FX + r'\needle_rifle_empty', "the dry fire (the Carbine names none)",
              {'field': 'empty effect', 'record_from': ('shot count lower bound', 'firing effects', 0, 36)}),
+            # Armed boot: the live barrel 0 had no firing damage (the shot's rumble and screen kick; only the Carbine's
+            # idle barrel 1 named one) -- the next reference of the same element (+16)
+            (WP, 'jpt!', '', DM + r'\needle_rifle_trigger', "barrel 0's firing damage (the Carbine names it on barrel 1 only)",
+             {'field': 'firing damage', 'record_from': ('shot count lower bound', 'firing effects', 0, 52)}),
             (WP, 'foot', MAT + r'\covenant_carbine', FX + r'\needle_rifle', 'material effects (the weapon)'),
             (PR, 'jpt!', ND + r'\damage_effects\needler_shard_impact', DM + r'\needle_rifle_shard_impact', 'impact damage'),
             (PR, 'jpt!', ND + r'\damage_effects\needler_shard_detonation', DM + r'\needle_rifle_shard_detonation',
