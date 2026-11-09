@@ -197,6 +197,29 @@ sc120 restored. Carry into Reach / Halo 4 on top of the Halo 3 rules: squads sha
 per cell); the character picks the model variant, Major Upgrades swap to the Major Character; spare
 palette characters can be cloned at patch time.
 
+## Reach route (BUILT 2026-11-09, offline-verified, first boot staged)
+
+Same module: `bind('Halo Reach')` -- squads +0x398, palettes +0x3EC / +0x168, weap class / name
++0x3AC / +0x3B0, flags +0x204, weap / biped Model +0x64, ai\generic +0x1EC (0xC4) / +0x1F8, biped
+Preferred Gun Node +0x348, cells 0x6C, spawn points 0x7C, char root 0x270 (Variants elements 0x18),
+the graph walk Modes +0x104/0x30 > class +0xC/0x38 > type +0x8/0x14 > SETS +0x8/0x48 > actions
++0xC/0xC (Reach / ReachBeta plugins), Weapon List +0x140. Skirmishers: own type by name
+(NAME_TYPES), Jackal graph; AI Elites animate through objects\characters\elite_ai (GRAPH_FOLDERS).
+Grip names now come from each biped's own Preferred Gun Node (Reach Grunts: right_hand) and a
+marker Bungie already put on the weapon is kept. JACKAL SHIELD in Reach is a CHILD OBJECT of the
+jackal_minor / jackal_major model variants, and a graph-level variant alias sends those into the
+pistol-only 'shield' mode: `_Shieldless.variant` appends a copy of the variant WITHOUT the object
+under a name no variant / alias uses (shield_depleted, recent_shield_damage: global strings), the
+clone character names it; Reach palettes have no spare characters, so a loose character tag made
+for another mission (generic_m20_flak on m35) joins the palette; a major not in the palette joins
+it to be cloned too; jackal_sniper / Skirmishers carry no shield ('bare', no clone). Reach melee =
+energy_sword (NOT_TAUGHT), Jorge's chaingun EXCLUDED, no REPOSE. Dry run m35 (every weapon, every
+species): 75 cells, only the two melee weapons refused, all pool weapons have firing data.
+Residency: Reach levels carry only their own species and load them per zone set; no level has all at
+its start. First boot: Tip of the Spear (m35: Grunts, Jackals, Skirmishers, Elites, Marines resident
+from the first set), `reach_armed_test.py` (+ `.cmd`): every hostile cell dealt (formation-spawned
+cells too), 5-12 units per case; Brutes / Drones need a second level.
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?
