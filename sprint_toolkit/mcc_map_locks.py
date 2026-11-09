@@ -172,16 +172,24 @@ CLUSTER = 0x400            # a map's handles this close together = one record
 # same slot table layout (0x4018 a slot, name at +0x1E8), same request record.
 ENGINES = {
     'halo3.dll': dict(label='Halo 3', state_ptr=0xA46A08, req_name=0x2127004,
-                      req_prio=0x2127104, slots=0x20BA420),
+                      req_prio=0x2127104, slots=0x20BA420, count=0x1B, stride=0x4018,
+                      name_at=0x1E8),
     'halo3odst.dll': dict(label='ODST', state_ptr=0xA9C9B8, req_name=0x2164FE4,
-                          req_prio=0x21650E4, slots=0x2100430),
+                          req_prio=0x21650E4, slots=0x2100430, count=0x19, stride=0x4018,
+                          name_at=0x1E8),
+    # Reach 2026-11-09: slot lookup 0x41588 walks 0x1C slots of 0xA040 from 0x263F5F0,
+    # comparing the name at +0x1E0. Its chooser (0xAA090) hands the request to a call
+    # instead of a global record, so there is no pending-request read yet.
+    'haloreach.dll': dict(label='Reach', state_ptr=0xC1A230, req_name=None, req_prio=None,
+                          slots=0x263F5F0, count=0x1C, stride=0xA040, name_at=0x1E0),
 }
-SLOT = 0x4018              # cache-file slots: 1 shared, 2 campaign, 15+ = levels
+SLOT = 0x4018              # Halo 3 / ODST slot size (Reach: ENGINES stride)
 H3_STATE_PTR = ENGINES['halo3.dll']['state_ptr']   # game state byte: 2 = in game
 
 
 def engine_state(pid, dll='halo3.dll'):
-    """The precache state, read-only: game state, pending request, level slots."""
+    """The precache state, read-only: game state, pending request, every named slot
+    (1 shared and 2 campaign on Halo 3 / ODST; the levels sit higher up)."""
     sys.path.insert(0, HERE)
     import h2_memscan as M
     e = ENGINES[dll]
@@ -193,17 +201,20 @@ def engine_state(pid, dll='halo3.dll'):
         raw = M.read(h, base + e['state_ptr'], 8)
         ptr = struct.unpack('<Q', raw)[0] if raw else 0
         sb = M.read(h, ptr, 1) if ptr else None
-        name = (M.read(h, base + e['req_name'], 0x100) or b'').split(b'\0')[0]
-        prio = M.read(h, base + e['req_prio'], 4)
+        name = prio = None
+        if e['req_name']:
+            name = (M.read(h, base + e['req_name'], 0x100) or b'').split(bytes(1))[0]
+            name = name.decode('latin-1')
+            pr = M.read(h, base + e['req_prio'], 4)
+            prio = struct.unpack('<i', pr)[0] if pr else None
         slots = {}
-        for i in range(15, 25):     # ODST summary after sc120: h100 sat in 19
-            b = M.read(h, base + e['slots'] + i * SLOT, 0x2E8)
-            if b and struct.unpack_from('<q', b, 0)[0] not in (-1, 0):
-                slots[i] = b[0x1E8:0x2E8].split(b'\0')[0].decode('latin-1')
+        for i in range(e['count']):
+            b = M.read(h, base + e['slots'] + i * e['stride'] + e['name_at'], 0x100)
+            nm = (b or b'').split(bytes(1))[0]
+            if nm and all(32 <= c < 127 for c in nm):
+                slots[i] = nm.decode('latin-1')
         return {'engine': e['label'], 'game_state': sb[0] if sb else None,
-                'request': name.decode('latin-1'),
-                'request_prio': struct.unpack('<i', prio)[0] if prio else None,
-                'level_slots': slots}
+                'request': name, 'request_prio': prio, 'level_slots': slots}
     finally:
         M.k32.CloseHandle(h)
 
@@ -353,7 +364,7 @@ def main(argv=None):
               % (st['engine'], st['game_state'], st['request'], st['request_prio'],
                  st['level_slots']))
         for r in out:
-            r['h3' if dll == 'halo3.dll' else 'odst'] = st
+            r[{'halo3.dll': 'h3', 'halo3odst.dll': 'odst'}.get(dll, 'reach')] = st
     if a.scan and out:
         for pid in pids:
             for r in out:
