@@ -220,6 +220,17 @@ its start. First boot: Tip of the Spear (m35: Grunts, Jackals, Skirmishers, Elit
 from the first set), `reach_armed_test.py` (+ `.cmd`): every hostile cell dealt (formation-spawned
 cells too), 5-12 units per case; Brutes / Drones need a second level.
 
+Reach boot 1 (m35, 2026-11-09): right -- Grunt DMR / Spike Rifle / Plasma Launcher, Elite AR / Rocket,
+Marine Plasma Launcher, the shielded Plasma Pistol Jackal. Wrong: Jackal DMR / Rocket Launcher with the
+off-hand twisted behind the body (those weapons lack right_hand_jackal / left_hand_jackal, which the
+Jackal's native Focus / Needle Rifles carry) -> `species_markers` copies both onto every TWO-HANDED weapon
+a Jackal / Skirmisher is handed, the offset measured on a weapon with Bungie's own pair (same class
+first). Unarmed Grunts and a Jackal: the Plasma / Machine Gun Turret cases (resident in every set) --
+they are Reach's only weapons with the Support Weapon flag (weap +0x204 bit 8): the v2 test clears it
+(EXPERIMENT, test map only). The rig took jackal_sniper / spartan_carter as spares; Reach now takes
+spares only from another mission's loose characters (level id from level_salt). Test v2 = ONI Sword Base
+(m20): every species resident from the first set, first squads 33-38 wu out.
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?

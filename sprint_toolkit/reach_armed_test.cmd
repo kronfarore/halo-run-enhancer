@@ -2,11 +2,11 @@
 rem Reach Armed-card test map (reach_armed_test.py: the test cases at the start, god shield, carbine cheat, run x2).
 rem   h3_armed_test.cmd deploy  [level]   put <level>_armed_test.map in place
 rem   h3_armed_test.cmd restore [level]   put the live map back
-rem Level defaults to m35 (Tip of the Spear). The live map is kept aside as <level>.map.pre_armed.
+rem Level defaults to m20 (ONI Sword Base). The live map is kept aside as <level>.map.pre_armed.
 rem No parenthesised blocks: the path contains "(x86)", whose ")" would end one.
 setlocal
 set "LVL=%~2"
-if "%LVL%"=="" set "LVL=m35"
+if "%LVL%"=="" set "LVL=m20"
 set "MAPS=%~dp0..\..\haloreach\maps"
 if /i "%~1"=="deploy" goto deploy
 if /i "%~1"=="restore" goto restore

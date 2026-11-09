@@ -106,8 +106,21 @@ def _one(m, blk, idx):
     struct.pack_into('<iI', m.data, blk, 1, m.off2data(got[0]))
 
 
+def _used_chars(m, base):
+    used = set()
+    for sq in m.follow_all(base, [ew.SQUADS], [ew.SQ_ES], 'all'):
+        for sp in m.follow_all(sq, [ew.SP], [ew.SP_ES], 'all'):
+            used.add(_i16(m, sp + ew.SP_CHAR))
+        for off in ew.CELL_BLOCKS:
+            for cell in m.follow_all(sq, [off], [ew.CELL_ES], 'all'):
+                for e in m.follow_all(cell, [ew.CELL_CHARS], [ew.CELL_ARR_ES], 'all'):
+                    used.add(_i16(m, e + ew.CELL_IDX))
+    return used
+
+
 def layout(m, report):
     base = hp._scnr_base(m)
+    shipped_used = _used_chars(m, base)       # v2: spares from the map as shipped
     p0 = struct.unpack_from('<fff', m.data, m.follow_all(base, [PSTART], [PSTART_ES], 'all')[0])
     wnames = [(hp._tag_name_by_id(m, m.u32(e + ew.WPAL_ID)) or '').lower()
               for e in m.follow_all(base, [ew.WPAL], [ew.WPAL_ES], 'all')]
@@ -193,14 +206,7 @@ def layout(m, report):
     deal(friendly, MARINE_CASES)
     # v3 (ODST boot 2): two-handed Jackal cells onto the pass's shieldless clone (formation /
     # extra Jackals never touch a spawn point's variant)
-    used = set()
-    for sq in m.follow_all(base, [ew.SQUADS], [ew.SQ_ES], 'all'):
-        for sp in m.follow_all(sq, [ew.SP], [ew.SP_ES], 'all'):
-            used.add(_i16(m, sp + ew.SP_CHAR))
-        for off in ew.CELL_BLOCKS:
-            for cell in m.follow_all(sq, [off], [ew.CELL_ES], 'all'):
-                for e in m.follow_all(cell, [ew.CELL_CHARS], [ew.CELL_ARR_ES], 'all'):
-                    used.add(_i16(m, e + ew.CELL_IDX))
+    used = _used_chars(m, base) | shipped_used
     sl = ew._Shieldless(m, hp, base, cnames, used)
     for cell in dict.fromkeys(jackal_cells):
         e = hp._block_base(m, cell + ew.CELL_CHARS)       # the private one-element array
@@ -248,7 +254,7 @@ def god_and_cheat(m, report):
                           % struct.unpack_from('<f', m.data, e + 4)[0])
 
 
-def build(level='m35'):
+def build(level='m20'):
     src = os.path.join(BASELINE, level + '.map')
     out = os.path.join(MAPS, level + '_armed_test.map')
     with contextlib.redirect_stdout(io.StringIO()):
@@ -270,6 +276,21 @@ def build(level='m35'):
     handed = sorted(set(wp for cases in (ENEMY_CASES, MARINE_CASES) for _l, _c2, wp in cases))
     for r in ew.borrow_firing(m, hp, handed):
         report.append('firing data: %s %s %s' % (r['tag'], r['field'], r.get('new') or r.get('reason')))
+    for _l, ch, wp in ENEMY_CASES:
+        e = ew.enemy_of(ch)
+        if e in ew.MARKER_SPECIES.get(GAME, ()):
+            full = next((p for p, _b in m.find_tags('weap', '*')
+                         if p.lower().rsplit(BS, 1)[-1] == wp.lower().rsplit(BS, 1)[-1]), None)
+            for r in ew.species_markers(m, hp, e, full) if full else ():
+                report.append('markers: %s %s' % (r['field'], r['new']))
+    # 3. the EXPERIMENT (v2, Reach boot 1: Plasma Turret Grunts / Machine Gun Turret Jackals came
+    # out unarmed): the turrets' Support Weapon flag (weap +0x204 bit 8) cleared on this map only
+    for p, b in m.find_tags('weap', '*'):
+        if p.lower().rsplit(BS, 1)[-1] in ('plasma_turret', 'machinegun_turret'):
+            f = m.u32(b + 0x204)
+            if f & 0x100:
+                struct.pack_into('<I', m.data, b + 0x204, f & ~0x100)
+                report.append('EXPERIMENT: %s Support Weapon flag cleared' % p.rsplit(BS, 1)[-1])
     god_and_cheat(m, report)
     m.save(out)
     print('\n'.join(report))
@@ -285,4 +306,4 @@ if __name__ == '__main__':
         word = args[i + 1].lower()
         MARINE_CASES = tuple(c for c in MARINE_CASES if word in c[0].lower())
         del args[i:i + 2]
-    build(args[0] if args else 'm35')
+    build(args[0] if args else 'm20')

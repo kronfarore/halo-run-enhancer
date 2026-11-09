@@ -611,6 +611,78 @@ def _turret_donor(m, md):
     return _angle(_root(m, md)[1], (0.0, 0.0, 0.0, 1.0)) >= 1.0
 
 
+#: (Reach boot 1, 2026-11-09) species whose weapons need their own hand markers: a Jackal
+#: handed a DMR / Rocket Launcher twisted its off-hand behind its body -- its native rifles
+#: (Focus Rifle, Needle Rifle) carry right_hand_jackal + left_hand_jackal, the rest neither
+MARKER_SPECIES = {'Halo Reach': ('Jackal', 'Skirmisher')}
+
+
+def species_markers(m, hp, enemy, weapon):
+    """Copy the species' own hand markers (its biped's Preferred Gun Node and its left twin) onto
+    `weapon` where it lacks them: on a reference weapon carrying both the generic marker
+    (right_hand / left_hand) and the species' one, the offset between the two (in node-0 space)
+    is measured and put on the weapon's own generic marker. Returns result rows."""
+    rows = []
+    folders = GRIP_BIPEDS.get(enemy) or GRIP_BIPEDS.get('Jackal')
+    pref = None
+    for p, b in m.find_tags('bipd', '*'):
+        if p.lower().rsplit(BS, 1)[-1] in folders:
+            pref = _name(m, hp, m.u32(b + BIPD_PREFERRED)) or pref
+    if not pref or not pref.startswith('right_hand_'):
+        return rows
+    mt = _render_model(m, hp, weapon)
+    info = weapon_info(m, weapon)
+    if mt is None or not two_handed(m, hp, info):
+        return rows                         # pistols: the stock one-handed holds are fine
+    refs = getattr(m, '_species_marker_refs', None)
+    if refs is None:
+        # Bungie's own pairs, read BEFORE this pass adds any (an added pair is no reference)
+        refs = []
+        for rp_, _rb in m.find_tags('weap', '*'):
+            rm = _render_model(m, hp, rp_)
+            if rm is not None:
+                names = {_name(m, hp, m.u32(g)) for g in m.follow_all(rm, [MODE_GROUPS], [MODE_GROUP_ES], 'all')}
+                refs.append((rp_, rm, names, (weapon_info(m, rp_) or {}).get('class')))
+        try:
+            m._species_marker_refs = refs
+        except AttributeError:
+            pass
+    have = {_name(m, hp, m.u32(g)) for g in m.follow_all(mt, [MODE_GROUPS], [MODE_GROUP_ES], 'all')}
+    for name, generic in ((pref, 'right_hand'), (pref.replace('right_hand', 'left_hand', 1), 'left_hand')):
+        if name in have or generic not in have:
+            continue
+        sid = find_sid(m, hp, name)
+        gen_t = _marker(m, hp, mt, (generic,), fallback=False)
+        ref = None
+        cands = [r for r in refs if r[1] != mt and name in r[2] and generic in r[2]]
+        cands.sort(key=lambda r: r[3] != (info or {}).get('class'))      # same class first
+        for rp_, rm, _n, _c in cands:
+            a = _marker(m, hp, rm, (generic,), fallback=False)
+            b2 = _marker(m, hp, rm, (name,), fallback=False)
+            if a is not None and b2 is not None:
+                ref = (a[0], b2[0], rp_)
+                break
+        if sid is None or gen_t is None or ref is None:
+            continue
+        t, q = _compose(gen_t[0], _compose(_inverse(ref[0]), ref[1]))
+        mk = bytearray(m.data[gen_t[1]:gen_t[1] + MARKER_ES])
+        mk[2] = 0
+        struct.pack_into('<3f', mk, 4, *t)
+        struct.pack_into('<4f', mk, 0x10, *_norm(q))
+        got = hp._h3_reserve(m, [MARKER_ES])
+        if not got:
+            continue
+        m.data[got[0]:got[0] + MARKER_ES] = mk
+        grp = bytearray(MODE_GROUP_ES)
+        struct.pack_into('<IiI', grp, 0, sid, 1, m.off2data(got[0]))
+        if _grow_sorted(m, hp, mt + MODE_GROUPS, MODE_GROUP_ES, {sid: bytes(grp)}):
+            have.add(name)
+            rows.append({'tag': 'mode ' + enemy, 'field': '%s: %s' % (weapon.rsplit(BS, 1)[-1], name),
+                         'ok': True, 'new': 'from its %s, offset as on the %s'
+                         % (generic, ref[2].rsplit(BS, 1)[-1])})
+    return rows
+
+
 def find_sid(m, hp, text):
     for i in range(1, 0x10000):
         if _name(m, hp, i) == text:
@@ -875,6 +947,9 @@ def arm(m, hp, cards, salt=None):
             del usable[enemy]
     handed = sorted(set(wnames[widx[w]] for ok in usable.values() for w in ok))
     rows += borrow_firing(m, hp, handed)
+    for enemy in MARKER_SPECIES.get(GAME, ()):
+        for w in sorted(usable.get(enemy, {})):
+            rows += species_markers(m, hp, enemy, wnames[widx[w]])
     nofire = set(w for w in handed if has_firing(m, hp, w) is False)
     sid = find_variant(m, hp, 'shieldless')
     stats = {'shieldless': 0, 'reshielded': 0, 'no_variant': 0, 'kept_original': 0,
@@ -1036,6 +1111,10 @@ class _Shieldless:
         spares = [i for i, n in enumerate(cnames) if n and i not in used and n.lower() not in refd
                   and i < len(pal)]
         leaf = lambda i: cnames[i].lower().rsplit(BS, 1)[-1]
+        if GAME == 'Halo Reach':
+            # (Reach boot 2 rig) an unused palette character can still be placed by a script
+            # (spartan_carter, elite_pilot on m20): Reach takes only another mission's characters
+            spares = []
         self.spares = sorted(spares, key=lambda i: (SPARE_PREFER.index(leaf(i))
                                                     if leaf(i) in SPARE_PREFER else 99, i))
         self.cnames = list(cnames)
@@ -1043,7 +1122,8 @@ class _Shieldless:
         # Reach (m35, 2026-11-09): every palette character is in use -- then a character tag the
         # palette does not hold and nothing names, one made for ANOTHER mission first
         # (generic_m20_flak on m35), joins the palette as a new entry
-        scnr = (m.find_tags('scnr', '*') or [('', 0)])[0][0].lower().rsplit(BS, 1)[-1]
+        # the level's own id ('m20'): find_tags names a Reach scnr '*'; level_salt reads it
+        scnr = str(hp.level_salt(m) or '').lower()
         import re
         pal_names = set((n or '').lower() for n in cnames)
         loose = [p for p, _b in m.find_tags('char', '*') if p.lower() not in pal_names
