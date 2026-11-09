@@ -182,7 +182,15 @@ ENGINES = {
     # instead of a global record, so there is no pending-request read yet.
     'haloreach.dll': dict(label='Reach', state_ptr=0xC1A230, req_name=None, req_prio=None,
                           slots=0x263F5F0, count=0x1C, stride=0xA040, name_at=0x1E0),
+    # Halo 4 2026-11-09 (static only): slot lookup 0x7AAA4 walks 9 slots of 0x1E040 from
+    # 0x2940188, comparing the name at +0. Its chooser (0x11E66C) tests the WORD at
+    # [0x4967A30]+0xC (0 = the next-level branch may run), so that is the state shown.
+    'halo4.dll': dict(label='Halo 4', state_ptr=0x4967A30, state_at=0xC, state_size=2,
+                      req_name=None, req_prio=None,
+                      slots=0x2940188, count=9, stride=0x1E040, name_at=0),
 }
+ENGINE_KEYS = {'halo3.dll': 'h3', 'halo3odst.dll': 'odst', 'haloreach.dll': 'reach',
+               'halo4.dll': 'h4'}
 SLOT = 0x4018              # Halo 3 / ODST slot size (Reach: ENGINES stride)
 H3_STATE_PTR = ENGINES['halo3.dll']['state_ptr']   # game state byte: 2 = in game
 
@@ -200,7 +208,8 @@ def engine_state(pid, dll='halo3.dll'):
     try:
         raw = M.read(h, base + e['state_ptr'], 8)
         ptr = struct.unpack('<Q', raw)[0] if raw else 0
-        sb = M.read(h, ptr, 1) if ptr else None
+        n = e.get('state_size', 1)
+        sb = M.read(h, ptr + e.get('state_at', 0), n) if ptr else None
         name = prio = None
         if e['req_name']:
             name = (M.read(h, base + e['req_name'], 0x100) or b'').split(bytes(1))[0]
@@ -213,7 +222,8 @@ def engine_state(pid, dll='halo3.dll'):
             nm = (b or b'').split(bytes(1))[0]
             if nm and all(32 <= c < 127 for c in nm):
                 slots[i] = nm.decode('latin-1')
-        return {'engine': e['label'], 'game_state': sb[0] if sb else None,
+        return {'engine': e['label'],
+                'game_state': int.from_bytes(sb, 'little') if sb else None,
                 'request': name, 'request_prio': prio, 'level_slots': slots}
     finally:
         M.k32.CloseHandle(h)
@@ -364,7 +374,7 @@ def main(argv=None):
               % (st['engine'], st['game_state'], st['request'], st['request_prio'],
                  st['level_slots']))
         for r in out:
-            r[{'halo3.dll': 'h3', 'halo3odst.dll': 'odst'}.get(dll, 'reach')] = st
+            r[ENGINE_KEYS[dll]] = st
     if a.scan and out:
         for pid in pids:
             for r in out:
