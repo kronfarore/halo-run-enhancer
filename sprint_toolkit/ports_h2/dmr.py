@@ -365,6 +365,12 @@ PORT = {
                                             # 50 hand-edge cuts a frame unshifted) -> idle's shift, 14 there = idle's
                                             'first_person:posing:var2': (0.0, 0.0, -0.005),
                                             'first_person:melee_strike_2': (0.0, -0.003, -0.0075)}},
+        # boot 6: the long fidget STILL 'slides into the left wrist' -- seen from down the barrel, Halo 2's hand mesh
+        # sits ~15 deg turned on its bone against Reach's (palm normal / finger axis, measured), so the palm Reach
+        # levels under the rolled gun tips and the wrist rises to it. +15 deg about the hand's z levels it (barrel
+        # view = Reach's cradle); in idle it would drop the fingers off the grip -> faded in with the gun's roll
+        # (up 0.97 -> 0.88: frames ~20-75 of 90)
+        'left_hand_turn': {'masterchief': {'first_person:posing:var2': {'deg': 15.0, 'axis': 'z', 'roll': (0.97, 0.88)}}},
         # no Halo 2 slot for Reach's sprint / jump / land / fall / ready_initial (the SAW's list)
         'skip': ['first_person:look', 'first_person:acceleration_screens', 'first_person:fall', 'first_person:jump',
                  'first_person:land_hard', 'first_person:land_soft', 'first_person:ready_initial',

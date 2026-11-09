@@ -525,6 +525,34 @@ def build(key, species, only=None, write=True):
                     for i in left:
                         q, t = f[i]
                         f[i] = (q, (t[0] + d[0], t[1] + d[1], t[2] + d[2]))
+        turn = ((cfg.get('left_hand_turn') or {}).get(species) or {}).get(h3name)
+        if turn and typ != 'overlay':
+            # `left_hand_turn` {species: {animation: {'deg', 'axis': 'x'|'y'|'z', 'roll': (upright, rolled)}}} (the
+            # DMR, B1 boots 4-6: the long fidget's 'gun slides into the left wrist'): Halo 2's Chief left-hand MESH
+            # sits ~15 deg turned on its bone against Reach's, so the palm Reach levels under the rolled gun tips
+            # and the wrist meets the gun. The hand + fingers turn about the hand's origin, in its own frame, by
+            # deg x a weight from the gun's roll (its z . model up): 0 at `upright`, full at `rolled` -- the grip
+            # (gun upright) keeps Reach's hand, the palm-up support gets the turn
+            names = [n for n, _p in kept_nodes]
+            gi, hi = names.index('gun'), names.index('l_hand')
+            hand = [i for i, n in enumerate(names) if n == 'l_hand' or (n.startswith('l_') and any(
+                k in n for k in ('thumb', 'index', 'middle', 'ring', 'pinky')))]
+            axis = {'x': (1.0, 0.0, 0.0), 'y': (0.0, 1.0, 0.0), 'z': (0.0, 0.0, 1.0)}[turn.get('axis', 'z')]
+            up0, up1 = turn['roll']
+            fr = [list(f) for f in fr]
+            for f in fr:
+                up = qrot(f[gi][0], (0.0, 0.0, 1.0))[2]
+                k = min(1.0, max(0.0, (up0 - up) / (up0 - up1)))
+                if not k:
+                    continue
+                h = math.radians(turn['deg'] * k) / 2.0
+                hq, ht = f[hi]
+                local = (math.cos(h), axis[0] * math.sin(h), axis[1] * math.sin(h), axis[2] * math.sin(h))
+                w = qmul(qmul(hq, local), (hq[0], -hq[1], -hq[2], -hq[3]))          # the turn in model space
+                for i in hand:
+                    q, t = f[i]
+                    d = qrot(w, (t[0] - ht[0], t[1] - ht[1], t[2] - ht[2]))
+                    f[i] = (qnorm(qmul(w, q)), (ht[0] + d[0], ht[1] + d[1], ht[2] + d[2]))
         if cfg.get('root_identity'):
             fr = reroot(kept_nodes, fr, cfg['root_identity'])
         path = os.path.join(src, file_name(h3name, rename) + ext)
