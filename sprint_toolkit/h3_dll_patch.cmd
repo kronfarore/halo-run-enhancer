@@ -9,12 +9,14 @@ rem   h3_dll_patch.cmd off             revert all of them
 rem
 rem no-next-map-prefetch: Halo 3 stops opening the next level while you play the
 rem current one, so the next map can be patched on the summary screen.
+rem outro-skip (applied with it): the level's ending cutscene stays skippable -- without
+rem it the engine waits for the next map's precache, which no longer happens.
 
 setlocal
 set "HERE=%~dp0"
 set "PY=%LOCALAPPDATA%\Microsoft\WindowsApps\python.exe"
 if not exist "%PY%" set "PY=python"
-if /i "%~1"=="on"  "%PY%" "%HERE%h3_dll_patch.py" --revert v1-worker-skip-BROKEN --revert v2-state2-only --apply no-next-map-prefetch
-if /i "%~1"=="off" "%PY%" "%HERE%h3_dll_patch.py" --revert v1-worker-skip-BROKEN --revert v2-state2-only --revert no-next-map-prefetch
+if /i "%~1"=="on"  "%PY%" "%HERE%h3_dll_patch.py" --revert v1-worker-skip-BROKEN --revert v2-state2-only --apply no-next-map-prefetch --apply outro-skip
+if /i "%~1"=="off" "%PY%" "%HERE%h3_dll_patch.py" --revert v1-worker-skip-BROKEN --revert v2-state2-only --revert no-next-map-prefetch --revert outro-skip
 "%PY%" "%HERE%h3_dll_patch.py" --list
 pause

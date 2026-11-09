@@ -118,6 +118,21 @@ PATCHES = {
         'note': 'EXPERIMENTAL v3: Halo 3 stops opening the next level while you play, '
                 'so it can be patched on the summary screen',
     },
+    'outro-skip': {
+        # Found 2026-11-09 (Reach m10's ending cutscene could not be skipped with its
+        # prefetch patch on). 0x189030 answers "may the player skip this cinematic?":
+        # a level's ENDING cinematic (cinematic globals +0x2E) only once the next map
+        # the MCC host names (0x10F038) is precached (0x10F748 state 2/3). With
+        # no-next-map-prefetch that map is never requested, so the outro is never
+        # skippable. `je 0x1890B7` -> `jmp`: endings are skippable like any other
+        # cinematic. Belongs with no-next-map-prefetch (next_map_prefetch.py docstring).
+        'offset': 0x0018846D,          # RVA 0x18906D
+        'original': bytes.fromhex('7448'),           # je  0x1890B7
+        'patched': bytes.fromhex('eb48'),            # jmp 0x1890B7
+        'context': (0x00188464, bytes.fromhex('80792e00bb01000000')),  # cmp [rcx+0x2E],0 ; mov ebx,1
+        'note': 'EXPERIMENTAL: ending cutscenes skippable without the next map precached '
+                '(goes with no-next-map-prefetch)',
+    },
     'v2-state2-only': {
         # v2, booted 2026-11-05: levels load, but 020 was still opened during 010 --
         # it closed only the [rsi] == 2 branch; the campaign runs with [rsi] == 0.
