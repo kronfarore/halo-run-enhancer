@@ -10,7 +10,9 @@ Two sets under E:\HaloBackups\stable_grenades_test\, each laid out like the MCC 
   itemonly\ Halo 2 only: the card's item-flag write alone (no hlmt write). Tells whether
             the eqip flag by itself stops a pickup chaining -- the H2 plasma pickup shares
             its hlmt TAG with the thrown plasma grenade, so the hlmt write reaches both.
-Both go through the same apply_run with the same options, so the ONLY difference between
+  accel\    Halo 1 / 2 / 3: vanilla + "does accelerate" on every placed grenade (the gate?)
+Halo 2 and Halo 3 copies carry test buffs (god shield, run x2, a player-only x1000 weapon).
+All go through the same apply_run with the same options, so the ONLY difference between
 the two is this card. stable_grenades_test.cmd swaps them into the game (and back).
 
 Halo 1 SWAP (both sets, 2026-11-06): the vanilla a30 test showed placed frag pickups do
@@ -120,7 +122,7 @@ def accelerate_placed(path, game):
     """`accel` set: turn ON "does accelerate (moves due to explosions)" on every placed
     grenade pickup. CONFIRMED the gate in Halo 1 (a30, 2026-11-06): off, placed grenades
     don't chain while dropped ones (no placement) do; on, placed ones chain too. Halo 2
-    on: same field, unproven -- this set tests it."""
+    CONFIRMED too (01b, 2026-11-08). Halo 3: same flag at +84, unproven -- its set tests it."""
     m = hp.open_map(path, game)
     E = hp._MAP_EQUIPMENT[game]
     at = EQUIP_FLAGS_AT[game]
@@ -177,6 +179,32 @@ def h2_test_buffs(path):
     return out
 
 
+#: Halo 3 cheat weapon: NOT the Carbine -- on 100 eleven squad entries hand it to Brutes and
+#: Jackals. The SMG is in 100's palette (the rebuild's dz_enhancer) but no squad carries it;
+#: its damage effect is shared only with the Silenced SMG, which no squad carries either.
+H3_CHEAT = ('objects\\weapons\\rifle\\smg\\smg',
+            'objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet')
+
+
+def h3_test_buffs(path):
+    """Test aids on every Halo 3 copy (the user's 2026-11-07 rule for these tests) -- the
+    Halo 3 Armed-test helper h3_armed_test.god_and_cheat with the SMG as the cheat weapon:
+    masterchief body + shield 1e6 (no stun, 0.1 s recharge), smg_bullet damage x1000, the
+    SMG as every chief profile's secondary, matg run / sneak x2."""
+    import contextlib
+    import io
+    import h3_armed_test as T
+    T.CHEAT_WEAPON, T.CHEAT_DAMAGE = H3_CHEAT
+    with contextlib.redirect_stdout(io.StringIO()):
+        m = hp.open_map(path, 'Halo 3')
+    out = []
+    T.god_and_cheat(m, out)
+    m.save(path)
+    # god_and_cheat's report text names the Carbine whatever CHEAT_* hold
+    return [s.replace('carbine_slug', 'smg_bullet').replace('covenant_carbine', 'smg')
+            for s in out]
+
+
 def flag_rows(path, game, reg):
     """(tag, flags) of the grenade pickups' item flags and models' damage flags."""
     m = hp.open_map(path, game)
@@ -207,7 +235,8 @@ def main(check_only=False, only=()):
         name = os.path.basename(live)
         print('##', g, name, '<-', src, flush=True)
         staged = {}
-        extra = {'Halo 1': ('accel',), 'Halo 2': ('itemonly', 'accel')}.get(g, ())
+        extra = {'Halo 1': ('accel',), 'Halo 2': ('itemonly', 'accel'),
+                 'Halo 3': ('accel',)}.get(g, ())
         for kind in ('vanilla', 'stable') + extra:
             dst = os.path.join(OUT, kind, sub.replace('/', os.sep), name)
             staged[kind] = dst
@@ -234,6 +263,8 @@ def main(check_only=False, only=()):
                 print('     accel:', accelerate_placed(dst, g), flush=True)
             if g == 'Halo 2':
                 print('     buffs:', '; '.join(h2_test_buffs(dst)), flush=True)
+            if g == 'Halo 3':
+                print('     buffs:', '; '.join(h3_test_buffs(dst)), flush=True)
         rows = {k: dict(flag_rows(v, g, reg)) for k, v in staged.items()}
         a = rows['vanilla']
         for k in sorted(set().union(*rows.values())):
