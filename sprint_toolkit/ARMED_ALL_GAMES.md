@@ -190,6 +190,13 @@ are the cell's MAJOR UPGRADE (char Major Character +0x44: jackal -> jackal_major
 Character now names the major's own shieldless clone (none when that cannot be made). The turret-pose
 donor's root rotation enters inverted (the pitch as stored aimed up). v4 deployed.
 
+ODST boots 4-6 (2026-11-08/09): every Jackal shieldless (clone + major clone); the Marine Plasma Cannon
+pointed up with the flamethrower root pitch as stored, down inverted, FORWARD with no pitch at all (a
+turret-pose donor adds none; the weapon's own root position). **ODST ARMED CONFIRMED (6 boots).** Live
+sc120 restored. Carry into Reach / Halo 4 on top of the Halo 3 rules: squads share cell blocks (one draw
+per cell); the character picks the model variant, Major Upgrades swap to the Major Character; spare
+palette characters can be cloned at patch time.
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?
