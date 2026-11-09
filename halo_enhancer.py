@@ -427,6 +427,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h2_enemy_weapon_cards', 'h2_armed_all_weapons', 'h2_allies_any_weapon',
                'h3_enemy_weapon_cards', 'h3_armed_all_weapons',
                'odst_enemy_weapon_cards', 'odst_armed_all_weapons',
+               'reach_enemy_weapon_cards', 'reach_armed_all_weapons',
                'h2_arbiter_flashlight',
                'h1_overheat_unzoom', 'h1_overheat_no_rezoom', 'h1_covenant_avoid_ff',
                'hunter_drop',
@@ -1257,6 +1258,9 @@ CONFIG = {
     # ODST's (the same pass on cells, 2026-11-06)
     "odst_enemy_weapon_cards": True,
     "odst_armed_all_weapons": False,
+    # Reach's (the same pass, Reach layout, 2026-11-09)
+    "reach_enemy_weapon_cards": True,
+    "reach_armed_all_weapons": False,
     # Allies (Marines, allied Grunts and Elites) can hold every weapon of the level, so the
     # players can trade any of them (user, 2026-10-25) -- a patch-time graph teach
     "h2_allies_any_weapon": True,
@@ -4344,12 +4348,15 @@ class ModifierDatabase:
     # patch pass only hands a species weapons its animation graphs can hold
     H3_ARMED_ENEMIES = ('Grunt', 'Jackal', 'Elite', 'Brute', 'Bugger', 'Flood Combat Form')
     ARMED_ENEMIES = {'Halo 1': H1_ARMED_ENEMIES, 'Halo 2': H2_ARMED_ENEMIES,
-                     'Halo 3': H3_ARMED_ENEMIES, 'Halo 3: ODST': H3_ARMED_ENEMIES}
+                     'Halo 3': H3_ARMED_ENEMIES, 'Halo 3: ODST': H3_ARMED_ENEMIES,
+                     # Reach (2026-11-09): Skirmishers are their own type in halo.json
+                     'Halo Reach': ('Grunt', 'Jackal', 'Skirmisher', 'Elite', 'Brute', 'Bugger')}
     #: game -> (cards option, every-weapon option)
     ARMED_OPTIONS = {'Halo 1': ('h1_enemy_weapon_cards', 'h1_armed_all_weapons'),
                      'Halo 2': ('h2_enemy_weapon_cards', 'h2_armed_all_weapons'),
                      'Halo 3': ('h3_enemy_weapon_cards', 'h3_armed_all_weapons'),
-                     'Halo 3: ODST': ('odst_enemy_weapon_cards', 'odst_armed_all_weapons')}
+                     'Halo 3: ODST': ('odst_enemy_weapon_cards', 'odst_armed_all_weapons'),
+                     'Halo Reach': ('reach_enemy_weapon_cards', 'reach_armed_all_weapons')}
     ARMED_STEP = '+0.1'
 
     def h1_level_maps(self):
@@ -4644,7 +4651,7 @@ class ModifierDatabase:
                'the %s: their %s are handed it (every unit of '
                'the type, dropship and vehicle squads too); a species without animations for '
                'it is taught to hold it like a weapon it has; firing from ai\\generic'
-               % (weapon_name, 'cells and spawn points' if game == 'Halo 3: ODST'
+               % (weapon_name, 'cells and spawn points' if game in ('Halo 3: ODST', 'Halo Reach')
                   else 'fire-teams and starting locations'))
         return {
             'name': 'Armed: %s' % weapon_name,
@@ -4691,7 +4698,7 @@ class ModifierDatabase:
             self.h2_armed_weapons() if game == 'Halo 2' else None
         # ...except the weapons h3_enemy_weapons.EXCLUDED keeps out (the SAW, until Halo 3's
         # weapon ports: user 2026-11-02)
-        if game in ('Halo 3', 'Halo 3: ODST'):
+        if game in ('Halo 3', 'Halo 3: ODST', 'Halo Reach'):
             import h3_enemy_weapons as _ew3
             excluded, melee = _ew3.EXCLUDED, _ew3.NOT_TAUGHT
         else:
@@ -6411,7 +6418,7 @@ class MagnitudeEditorDialog(QDialog):
 
     def _h3_enemy_weapons_spec(self, armed_picks):
         """Halo 3 / ODST: this patch's Armed cards as h3_enemy_weapons.apply wants them, or None."""
-        if self.game not in ('Halo 3', 'Halo 3: ODST') or not armed_picks:
+        if self.game not in ('Halo 3', 'Halo 3: ODST', 'Halo Reach') or not armed_picks:
             return None
         db = getattr(self.parent_gui, 'db', None)
         if db is None:
@@ -13380,6 +13387,26 @@ class OptionsDialog(QDialog):
             "point does, just at the moment you would have launched, so you keep your "
             "weapons. EXPERIMENTAL: not yet seen in game.")
         rcform.addRow("Space section:", self.reach_skip_space_cb)
+        self.reach_armed_cards_cb = QCheckBox("Offer 'Armed: <weapon>' enemy cards")
+        self.reach_armed_cards_cb.setChecked(bool(CONFIG.get('reach_enemy_weapon_cards', True)))
+        self.reach_armed_cards_cb.setToolTip(
+            "As in Halo 3: for every weapon the players hold, each armed enemy on the level "
+            "(Grunts, Jackals, Skirmishers, Elites, Brutes, Drones) gets a card that hands 10% "
+            "more of them that weapon per pick; Marines get the same cards through the Ally "
+            "slot. A species without animations for a weapon is taught to hold it like one it "
+            "has; only the Energy Sword and Gravity Hammer stay with Elites and Brutes. A Jackal "
+            "with a two-handed weapon loses its arm shield.\n\nApplied to the map when you "
+            "patch; nothing to rebuild.")
+        rcform.addRow("Enemy weapons:", self.reach_armed_cards_cb)
+        self.reach_armed_all_cb = QCheckBox("    ...for every weapon, not only the ones you hold")
+        self.reach_armed_all_cb.setChecked(bool(CONFIG.get('reach_armed_all_weapons')))
+        self.reach_armed_all_cb.setToolTip(
+            "On: Armed cards are also offered for every other Reach weapon, as ordinary cards; "
+            "a weapon you or your partner HOLD always counts more.\nOff (default): only the "
+            "weapons the players hold.")
+        self.reach_armed_cards_cb.toggled.connect(self.reach_armed_all_cb.setEnabled)
+        self.reach_armed_all_cb.setEnabled(self.reach_armed_cards_cb.isChecked())
+        rcform.addRow("", self.reach_armed_all_cb)
 
         # ---- Halo 4 ----
         # Halo 4 is the one game that already sprints. It is innate -- matg's Default
@@ -14609,6 +14636,8 @@ class OptionsDialog(QDialog):
             'h3_armed_all_weapons': self.h3_armed_all_cb.isChecked(),
             'odst_enemy_weapon_cards': self.odst_armed_cards_cb.isChecked(),
             'odst_armed_all_weapons': self.odst_armed_all_cb.isChecked(),
+            'reach_enemy_weapon_cards': self.reach_armed_cards_cb.isChecked(),
+            'reach_armed_all_weapons': self.reach_armed_all_cb.isChecked(),
             'h2_armed_all_weapons': self.h2_armed_all_cb.isChecked(),
             'h2_allies_any_weapon': self.h2_allies_any_cb.isChecked(),
             'h2_arbiter_flashlight': self.h2_arbiter_flash_cb.isChecked(),

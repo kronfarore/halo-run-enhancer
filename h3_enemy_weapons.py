@@ -60,6 +60,7 @@ ENEMY_CHARS = {
     'Brute': ('brute',),
     'Bugger': ('bugger',),
     'Flood Combat Form': ('floodcombat_elite', 'floodcombat_human', 'floodcombat_brute'),
+    'Skirmisher': (),                               # Reach: NAME_TYPES / GRAPH_FOLDERS
     'Marine': ('marine', 'marine_female'),          # the Ally (Friend) twin
 }
 #: story characters / bosses never armed (their scripts and weapons are their own)
@@ -76,25 +77,31 @@ WEAP_CLASS, WEAP_NAME, WEAP_FLAGS, DUAL_BITS = 0x3DC, 0x3E0, 0x18C, 3 << 16
 # jmad: Modes +0x5C (0x28) > Classes +0x4 (0x1C) > Types +0x4 (0x34) > Actions +0x4 (0x8);
 # Weapon List +0x8C (0x8: weapon name, class)
 JM_MODES, JM_MODE_ES, JM_SUB, JM_CLASS_ES, JM_TYPE_ES, JM_ACT_ES = 0x5C, 0x28, 0x4, 0x1C, 0x34, 0x8
+# the sub-block offsets per level (Halo 3 / ODST: all +0x4); Reach puts its actions in SETS
+JM_CLASS_SUB, JM_TYPE_SUB, JM_SET_SUB, JM_SET_ES, JM_ACT_SUB = 0x4, 0x4, None, 0, 0x4
+#: weap -> its hlmt (Model tagRef), hlmt -> render model; hlmt model Variants (name +0, Objects +0x20)
+WEAP_MODEL, HLMT_VARIANTS, HLMT_VARIANT_ES, HLMT_VARIANT_OBJECTS = 0x34, 0x64, 0x48, None
+#: firing block element sizes (Weapons Properties, Firing Pattern Properties)
+GEN_PROPS_ES = 0xE0
 JM_WL, JM_WL_ES = 0x8C, 0x8
 DUAL_CLASS = 0x1F4                 # the 'dual' class id: the Weapon List never re-classes it
 PISTOL_NAMES = ('pistol',)
 # ai\generic: Weapons Properties / Firing Pattern Properties (ai_firing_profile SOURCES['Halo 3'])
 GEN_PROPS, GEN_FPP = 0x174, 0x180
 #: (block, element size, weapon datum offset) of a character's two firing blocks
-FIRING_BLOCKS = ((GEN_PROPS, 0xE0, 0x10), (GEN_FPP, 0x1C, 0xC))
+FIRING_BLOCKS = ((GEN_PROPS, GEN_PROPS_ES, 0x10), (GEN_FPP, 0x1C, 0xC))
 #: never handed out (tag basenames): the SAW has no ai\generic data and waits for Halo 3's
 #: weapon ports (user 2026-11-02)
-EXCLUDED = ('saw',)
+EXCLUDED = ('saw', 'machinegun_turret_jorge')    # Reach: Jorge's own chaingun, a story weapon
 #: weapons without ai\generic rows borrow a donor's rows (user 2026-11-02), tag basenames
 #: never TAUGHT (user 2026-11-03: every enemy wields every weapon, the two melee weapons excepted
 #: for now): a species that already holds them keeps getting them
-NOT_TAUGHT = ('energy_blade', 'gravity_hammer')
+NOT_TAUGHT = ('energy_blade', 'energy_sword', 'gravity_hammer')      # Reach's sword: energy_sword
 #: donor weapons whose class a refused weapon borrows, by the refused weapon's kind (tag basenames)
 TEACH_DONORS = {
-    'heavy': ('rocket_launcher', 'flak_cannon', 'spartan_laser', 'brute_shot', 'battle_rifle',
+    'heavy': ('rocket_launcher', 'flak_cannon', 'spartan_laser', 'brute_shot', 'battle_rifle', 'dmr',
               'assault_rifle', 'covenant_carbine', 'plasma_rifle'),
-    'rifle': ('assault_rifle', 'battle_rifle', 'covenant_carbine', 'plasma_rifle', 'smg',
+    'rifle': ('assault_rifle', 'battle_rifle', 'dmr', 'covenant_carbine', 'needle_rifle', 'plasma_rifle', 'smg',
               'rocket_launcher'),
     'pistol': ('plasma_pistol', 'magnum', 'needler', 'assault_rifle', 'plasma_rifle'),
 }
@@ -111,17 +118,48 @@ LAYOUTS = {
     'Halo 3: ODST': dict(SQUADS=0x3B8, SQ_ES=0x6C, CPAL=0x3E8, WPAL=0x13C, WEAP_CLASS=0x3EC,
                          WEAP_NAME=0x3F0, WEAP_FLAGS=0x19C, GEN_PROPS=0x198, GEN_FPP=0x1A4,
                          BIPD_PREFERRED=0x1B4),
+    # Reach (2026-11-09; scoping armed_scope/reach/NOTES.md + the Reach / ReachMCC plugins): the
+    # graph walk Modes +0x104/0x30 > class +0xC/0x38 > type +0x8/0x14 > sets +0x8/0x48 > actions
+    # +0xC/0xC, Weapon List +0x140; cells 0x6C, spawn points 0x7C; char root 0x270, Variants
+    # elements 0x18; weap / biped Model +0x64; hlmt Variants +0x84/0x38 (Objects +0x20: the
+    # Jackal shield is a CHILD OBJECT of the jackal_minor / jackal_major variants)
+    'Halo Reach': dict(SQUADS=0x398, SQ_ES=0x6C, CPAL=0x3EC, WPAL=0x168, WEAP_CLASS=0x3AC,
+                       WEAP_NAME=0x3B0, WEAP_FLAGS=0x204, GEN_PROPS=0x1EC, GEN_PROPS_ES=0xC4,
+                       GEN_FPP=0x1F8, BIPD_PREFERRED=0x348, WEAP_MODEL=0x64,
+                       JM_MODES=0x104, JM_MODE_ES=0x30, JM_CLASS_SUB=0xC, JM_CLASS_ES=0x38,
+                       JM_TYPE_SUB=0x8, JM_TYPE_ES=0x14, JM_SET_SUB=0x8, JM_SET_ES=0x48,
+                       JM_ACT_SUB=0xC, JM_ACT_ES=0xC, JM_WL=0x140, SP_ES=0x7C, CELL_ES=0x6C,
+                       CHAR_ROOT=0x270, CHAR_VARIANT_ES=0x18, HLMT_VARIANTS=0x84,
+                       HLMT_VARIANT_ES=0x38, HLMT_VARIANT_OBJECTS=0x20),
 }
+# what bind() resets when it switches back to a game whose LAYOUTS entry leaves a key out
+_DEFAULTS = dict(WEAP_MODEL=0x34, GEN_PROPS_ES=0xE0, JM_MODES=0x5C, JM_MODE_ES=0x28,
+                 JM_CLASS_SUB=0x4, JM_CLASS_ES=0x1C, JM_TYPE_SUB=0x4, JM_TYPE_ES=0x34,
+                 JM_SET_SUB=None, JM_SET_ES=0, JM_ACT_SUB=0x4, JM_ACT_ES=0x8, JM_WL=0x8C,
+                 SP_ES=0x90, CELL_ES=0x84, CHAR_ROOT=0x1F8, CHAR_VARIANT_ES=0x14,
+                 HLMT_VARIANTS=0x64, HLMT_VARIANT_ES=0x48, HLMT_VARIANT_OBJECTS=None)
+#: games whose squads are cells (_arm_cells)
+CELL_GAMES = ('Halo 3: ODST', 'Halo Reach')
 #: ODST's own story characters (squad mates, Dare, the Superintendent's avatars) are never armed
-NEVER_WORDS = {'Halo 3: ODST': ('odst', 'dare', 'vergil', 'buck', 'dutch', 'mickey', 'romeo')}
+NEVER_WORDS = {'Halo 3: ODST': ('odst', 'dare', 'vergil', 'buck', 'dutch', 'mickey', 'romeo'),
+               # Noble Team, Halsey, Keyes and the scripted heroes keep their own weapons
+               'Halo Reach': ('spartan', 'noble', 'jorge', 'kat', 'carter', 'emile', 'jun',
+                              'halsey', 'keyes', 'holland', 'hero', 'story', 'bob')}
+#: Reach's Skirmishers are Jackals by folder and graph but their own enemy type in halo.json
+NAME_TYPES = {'Halo Reach': (('skirmisher', 'Skirmisher'),)}
+#: graph folders per species where they differ from ENEMY_CHARS (Reach's AI Elites animate
+#: through objects/characters/elite_ai, the 'elite' graph is the players')
+GRAPH_FOLDERS = {'Halo Reach': {'Elite': ('elite_ai',), 'Skirmisher': ('jackal',)}}
 
 
 def bind(game, m=None, hp=None):
     """Point the module at `game`'s layout (Halo 3 or ODST). With the map: the 'dual' class id."""
     global GAME, FIRING_BLOCKS, DUAL_CLASS
     GAME = game
+    globals().update(_DEFAULTS)
     globals().update(LAYOUTS[game])
-    FIRING_BLOCKS = ((GEN_PROPS, 0xE0, 0x10), (GEN_FPP, 0x1C, 0xC))
+    globals()['REPOSE'] = REPOSE_BY_GAME.get(game, {})
+    FIRING_BLOCKS = ((GEN_PROPS, GEN_PROPS_ES, 0x10), (GEN_FPP, 0x1C, 0xC))
     if m is not None:
         DUAL_CLASS = find_sid(m, hp, 'dual') or (0x1F4 if game == 'Halo 3' else DUAL_CLASS)
 
@@ -134,7 +172,14 @@ def enemy_of(char_path):
     if len(parts) < 3 or parts[-1] in NEVER \
             or any(w in parts[-1] for w in NEVER_WORDS.get(GAME, ())):
         return None
+    for word, kind in NAME_TYPES.get(GAME, ()):
+        if parts[-1].startswith(word):
+            return kind
     return next((e for e, fs in ENEMY_CHARS.items() if parts[2] in fs), None)
+
+
+def graph_folders(enemy):
+    return GRAPH_FOLDERS.get(GAME, {}).get(enemy) or ENEMY_CHARS.get(enemy, ())
 
 
 def _draw(salt, addr):
@@ -192,16 +237,19 @@ class Graphs:
             ml = m.u32(md)
             self._learn(ml)
             cls = modes.setdefault(ml, {})
-            for c in m.follow_all(md, [JM_SUB], [JM_CLASS_ES], 'all'):
+            for c in m.follow_all(md, [JM_CLASS_SUB], [JM_CLASS_ES], 'all'):
                 cl = m.u32(c)
                 self._learn(cl)
                 tys = cls.setdefault(cl, {})
                 where[(ml, cl)] = c
-                for t in m.follow_all(c, [JM_SUB], [JM_TYPE_ES], 'all'):
+                for t in m.follow_all(c, [JM_TYPE_SUB], [JM_TYPE_ES], 'all'):
                     tl = m.u32(t)
                     where[(ml, cl, tl)] = t
                     self._learn(tl)
-                    acts = set(m.u32(a) for a in m.follow_all(t, [JM_SUB], [JM_ACT_ES], 'all'))
+                    holders = [t] if JM_SET_SUB is None else \
+                        m.follow_all(t, [JM_SET_SUB], [JM_SET_ES], 'all')    # Reach: every set
+                    acts = set(m.u32(a) for h in holders
+                               for a in m.follow_all(h, [JM_ACT_SUB], [JM_ACT_ES], 'all'))
                     if self.idle is None:
                         for a in acts:
                             self._learn(a)
@@ -244,7 +292,7 @@ class Graphs:
     def allows(self, enemy, wclass, wname):
         """Every graph of the enemy type's folders holds the weapon (no graph = refuse)."""
         found = False
-        for folder in ENEMY_CHARS.get(enemy, ()):
+        for folder in graph_folders(enemy):
             for _p, g in self.by_folder.get(folder, ()):
                 found = True
                 if not self.holds(g, wclass, wname):
@@ -277,7 +325,7 @@ def has_firing(m, hp, weapon):
                 return True
         return False
     # element sizes / weapon datum offsets as ai_firing_profile reads them (Halo 3)
-    return any_entry(GEN_PROPS, 0xE0, 0x10) and any_entry(GEN_FPP, 0x1C, 0xC)
+    return any_entry(GEN_PROPS, GEN_PROPS_ES, 0x10) and any_entry(GEN_FPP, 0x1C, 0xC)
 
 
 def borrow_firing(m, hp, weapons):
@@ -405,13 +453,16 @@ def _grow_sorted(m, hp, blk, es, new):
 #: (boot 5, 2026-11-05) weapons whose model is NOT built for the borrowed pose: held at their origin
 #: they point skyward / roll (Marine Brute Shot, Grunt turrets, Jackal turrets + Brute Shot). They
 #: get a GRIP MARKER for the species instead (GRIP_NAME, the name the species' biped looks for).
-GRIP_FIX = ('brute_shot', 'missile_pod', 'machinegun_turret', 'plasma_cannon', 'flamethrower')
+GRIP_FIX = ('brute_shot', 'missile_pod', 'machinegun_turret', 'plasma_cannon', 'flamethrower',
+            'plasma_turret')                         # Reach's plasma cannon
 #: the species whose own turret pose holds GRIP_FIX weapons fine (boot 5: Marine turrets in the
 #: Marine flamethrower pose): they keep the pose step
 POSE_OK = ('Marine',)
 #: NATIVE pairs taught anyway (boot 7: the Grunt's own turret pose holds the Machine Gun Turret
 #: pointing up): rocket pose + body-frame grip like the taught turrets
-REPOSE = {'Grunt': ('machinegun_turret', 'plasma_cannon')}
+REPOSE_BY_GAME = {'Halo 3': {'Grunt': ('machinegun_turret', 'plasma_cannon')},
+                  'Halo 3: ODST': {'Grunt': ('machinegun_turret', 'plasma_cannon')}}
+REPOSE = REPOSE_BY_GAME['Halo 3']                   # bind() points it at the game's
 GRIP_NAME = {'Grunt': 'right_hand_grunt', 'Jackal': 'left_hand_jackal', 'Marine': 'right_hand_marine',
              'Bugger': 'right_hand_jackal'}
 #: the biped(s) per species whose Preferred Gun Node (+0x1A4) must name GRIP_NAME
@@ -463,7 +514,7 @@ def _render_model(m, hp, weapon):
     w = dict(m.find_tags('weap', weapon)).get(weapon)
     if w is None:
         return None
-    hl = hp._tag_name_by_id(m, m.u32(w + 0x34 + 0xC))
+    hl = hp._tag_name_by_id(m, m.u32(w + WEAP_MODEL + 0xC))
     h = dict(m.find_tags('hlmt', hl)).get(hl) if hl else None
     mn = hp._tag_name_by_id(m, m.u32(h + 0xC)) if h is not None else None
     return dict(m.find_tags('mode', mn)).get(mn) if mn else None
@@ -567,17 +618,46 @@ def find_sid(m, hp, text):
     return None
 
 
+#: (Reach 2026-11-09) grip names to try where the species' biped names none, per game; a name
+#: another species' biped already looks for is skipped (Reach Jackals use right_hand_jackal)
+GRIP_NAMES_BY_GAME = {'Halo Reach': {'Bugger': ('right_hand_bugger', 'right_hand_grunt',
+                                                'right_hand_engineer', 'right_hand_skirmisher')}}
+
+
+def grip_name(m, hp, enemy):
+    """The grip marker name for `enemy`: its biped's own Preferred Gun Node when it names one
+    (Reach Grunts: right_hand, a marker Bungie put on weapons), else GRIP_NAME / the per-game
+    candidates, never a name another species' biped looks for."""
+    taken, own = set(), None
+    for p, b in m.find_tags('bipd', '*'):
+        v = m.u32(b + BIPD_PREFERRED)
+        n = _name(m, hp, v) if v else ''
+        if p.lower().rsplit(BS, 1)[-1] in GRIP_BIPEDS.get(enemy, ()):
+            own = own or n
+        elif n:
+            taken.add(n)
+    if own:
+        return own
+    for n in GRIP_NAMES_BY_GAME.get(GAME, {}).get(enemy, ()) + (GRIP_NAME.get(enemy),):
+        if n and n not in taken and find_sid(m, hp, n) is not None:
+            return n
+    return None
+
+
 def grip(m, hp, enemy, weapon, donor, style=None):
     """The grip marker GRIP_NAME[enemy] on `weapon`'s render model, placed so the weapon's
     off-hand marker lands where the `donor`'s does in the hand (the donor is held at its origin):
     M = L_weapon * inverse(L_donor). The species' biped is pointed at that marker name (only
     weapons carrying it are affected). Returns a result row."""
-    name = GRIP_NAME.get(enemy)
+    name = grip_name(m, hp, enemy)
     row = {'tag': 'mode ' + enemy, 'field': 'grip: ' + weapon.rsplit(BS, 1)[-1], 'ok': False}
     sid = find_sid(m, hp, name) if name else None
     mt, md = _render_model(m, hp, weapon), _render_model(m, hp, donor)
     if sid is None or mt is None or md is None:
         return dict(row, reason='no %s id / render model in this map' % name)
+    if any(m.u32(g) == sid for g in m.follow_all(mt, [MODE_GROUPS], [MODE_GROUP_ES], 'all')):
+        # Bungie's own grip for this species (Reach): keep it
+        return dict(row, ok=True, new='keeps its own %s marker' % name)
     lt, ld = _marker(m, hp, mt, OFFHAND[enemy]), _marker(m, hp, md, OFFHAND[enemy])
     if lt is None or ld is None:
         return dict(row, reason='no off-hand marker on the weapon or the donor')
@@ -626,7 +706,7 @@ def teach(m, hp, graphs, wanted):
     tags = {p.lower(): p for p, _b in m.find_tags('weap', '*')}
     by_base = {p.rsplit(BS, 1)[-1]: p for p in tags}
     for enemy, ws in wanted.items():
-        gs = [g for f in ENEMY_CHARS.get(enemy, ()) for _p, g in graphs.by_folder.get(f, ())]
+        gs = [g for f in graph_folders(enemy) for _p, g in graphs.by_folder.get(f, ())]
         if not gs:
             continue
         mine = {t.lower() for t in ws}
@@ -667,7 +747,7 @@ def teach(m, hp, graphs, wanted):
                     continue
             for d in TEACH_DONORS[_kind(m, hp, info)]:
                 dp = by_base.get(d)
-                if dp in {t.lower() for t in taught.get(enemy, ())}:
+                if dp == w.lower() or dp in {t.lower() for t in taught.get(enemy, ())}:
                     continue                 # a donor taught here itself: name its own donor
                 di = weapon_info(m, tags[dp]) if dp else None
                 if not di or not all(graphs.holds(g, di['class'], di['name']) for g in gs):
@@ -698,7 +778,7 @@ def teach(m, hp, graphs, wanted):
     for enemy, w, dp, style in grips:
         rows.append(grip(m, hp, enemy, w, tags[dp], style))
     for cls_el, new in types.items():
-        if not _grow_sorted(m, hp, cls_el + JM_SUB, JM_TYPE_ES, new):
+        if not _grow_sorted(m, hp, cls_el + JM_TYPE_SUB, JM_TYPE_ES, new):
             rows.append({'tag': 'jmad', 'field': 'animation types', 'ok': False,
                          'reason': 'no partition slack to grow the block'})
     for g, new in adds.values():
@@ -725,7 +805,7 @@ def find_variant(m, hp, text):
     string ids are read through resolve_stringid only), or None."""
     base = hp._scnr_base(m)
     for sq in m.follow_all(base, [SQUADS], [SQ_ES], 'all'):
-        if GAME == 'Halo 3: ODST':
+        if GAME in CELL_GAMES:
             places = [(sp, SP_VARIANT) for sp in m.follow_all(sq, [SP], [SP_ES], 'all')]
         else:
             places = [(loc, LOC_VARIANT) for ft in m.follow_all(sq, [FT], [FT_ES], 'all')
@@ -803,7 +883,13 @@ def arm(m, hp, cards, salt=None):
 
     def jackal_shield(loc, w, at=LOC_VARIANT):
         if two_handed(m, hp, info.get(w)):
-            if sid is None:
+            if sid is None and GAME == 'Halo Reach':
+                # Reach has no 'shieldless' variant: the spawn point names none, so the cell's
+                # (cloned, shieldless) character's own variant applies
+                if m.u32(loc + at):
+                    struct.pack_into('<I', m.data, loc + at, 0)
+                    stats['shieldless'] += 1
+            elif sid is None:
                 stats['no_variant'] += 1
             elif m.u32(loc + at) != sid:
                 struct.pack_into('<I', m.data, loc + at, sid)
@@ -826,7 +912,7 @@ def arm(m, hp, cards, salt=None):
         by = done.setdefault(enemy, {})
         by[w] = by.get(w, 0) + n
 
-    if GAME == 'Halo 3: ODST':
+    if GAME in CELL_GAMES:
         _arm_cells(m, hp, base, widx, info, graphs, type_of, draw, count, jackal_shield, char_team,
                    stats)
     for sq in m.follow_all(base, [SQUADS], [SQ_ES], 'all') if GAME == 'Halo 3' else ():
@@ -923,6 +1009,11 @@ CHAR_ROOT, CHAR_VARIANTS, CHAR_VARIANT_ES, CHAR_MAJOR = 0x1F8, 0x54, 0x14, 0x44
 #: a spare palette character (no squad uses it, no character names it as parent / major) taken
 #: for a shieldless Jackal clone -- these first, then any other spare (Firefight's survival
 #: characters and the unused Flood leftovers sit in every ODST campaign palette)
+#: names a Reach shieldless Jackal variant may take (must exist as a string id in the map)
+SHIELDLESS_NAMES = ('shieldless', 'no_shield', 'unshielded', 'jackal_shieldless', 'jackal_noshield',
+                    # Reach has none of those: global object-function strings in every map, named
+                    # by no model variant and no graph alias (the name only has to be unique)
+                    'shield_depleted', 'recent_shield_damage', 'current_shield_damage')
 SPARE_PREFER = ('civilian_police_survival', 'civilain_police_sarge_survival', 'flood_combat_civilian',
                 'flood_combat_odst', 'floodcombat_brute_stealth', 'brute_phantom', 'brute_tracker')
 
@@ -947,14 +1038,96 @@ class _Shieldless:
         leaf = lambda i: cnames[i].lower().rsplit(BS, 1)[-1]
         self.spares = sorted(spares, key=lambda i: (SPARE_PREFER.index(leaf(i))
                                                     if leaf(i) in SPARE_PREFER else 99, i))
-        self.cnames = cnames
+        self.cnames = list(cnames)
+        self.base = base
+        # Reach (m35, 2026-11-09): every palette character is in use -- then a character tag the
+        # palette does not hold and nothing names, one made for ANOTHER mission first
+        # (generic_m20_flak on m35), joins the palette as a new entry
+        scnr = (m.find_tags('scnr', '*') or [('', 0)])[0][0].lower().rsplit(BS, 1)[-1]
+        import re
+        pal_names = set((n or '').lower() for n in cnames)
+        loose = [p for p, _b in m.find_tags('char', '*') if p.lower() not in pal_names
+                 and p.lower() not in refd]
+
+        def other_mission(p):
+            ids = re.findall(r'm\d\d', p.lower().rsplit(BS, 1)[-1])
+            return bool(ids) and not any(i in scnr for i in ids)
+        self.loose = [p for p in loose if other_mission(p)] +             [p for p in loose if 'firefight' in p.lower() and not other_mission(p)]
         self.sid = find_sid(m, hp, 'shieldless')
         self.vidx = None
+        self.hlmt = None
+        self.twins = {}
         for p, b in m.find_tags('hlmt', '*'):
             if p.lower().endswith(BS + 'jackal'):
-                for k, e in enumerate(m.follow_all(b, [0x64], [0x48], 'all')):
+                self.hlmt = b
+                for k, e in enumerate(m.follow_all(b, [HLMT_VARIANTS], [HLMT_VARIANT_ES], 'all')):
                     if _name(m, hp, m.u32(e)) == 'shieldless':
                         self.vidx = k
+
+    def _palette_add(self, path, spare=True):
+        """Append `path` to the Character Palette; it becomes a spare (or just an entry)."""
+        m, hp = self.m, self.hp
+        blk = self.base + CPAL
+        n = max(0, m.i32(blk))
+        datum = hp._h3_tag_datum(m, 'char', path)
+        got = hp._h3_reserve(m, [(n + 1) * CPAL_ES]) if datum is not None and n else None
+        if not got:
+            return
+        old = hp._block_base(m, blk)
+        m.data[got[0]:got[0] + n * CPAL_ES] = m.data[old:old + n * CPAL_ES]
+        e = got[0] + n * CPAL_ES
+        m.data[e:e + CPAL_ES] = m.data[old:old + CPAL_ES]           # the tagRef's group word
+        struct.pack_into('<I', m.data, e + CPAL_ID, datum)
+        struct.pack_into('<iI', m.data, blk, n + 1, m.off2data(got[0]))
+        self.cnames.append(path)
+        if spare:
+            self.spares.append(n)
+        self.rows.append({'tag': 'scnr character palette', 'field': 'spare', 'ok': True,
+                          'new': '%s appended (no squad and no character uses it)'
+                          % path.rsplit(BS, 1)[-1]})
+
+    def variant(self, src_char):
+        """(name id, model variant index) a shieldless clone of `src_char` names. Halo 3 / ODST:
+        the jackal model's own 'shieldless'. Reach has none -- the shield is a CHILD OBJECT of the
+        jackal_minor / jackal_major variants, and a graph variant alias puts those into the
+        pistol-only 'shield' mode -- so the source's variant is copied with no child objects
+        under a name no variant and no graph alias uses (appended: characters name model
+        variants by index). Falls back to jackal_sniper (no shield, no alias)."""
+        m, hp = self.m, self.hp
+        if HLMT_VARIANT_OBJECTS is None:
+            return (self.sid, self.vidx) if self.sid is not None and self.vidx is not None else None
+        v = m.follow_all(src_char, [CHAR_VARIANTS], [CHAR_VARIANT_ES], 'all')
+        want = m.u32(v[0]) if v else None
+        if want in self.twins:
+            return self.twins[want]
+        if self.hlmt is None:
+            return None
+        blk = self.hlmt + HLMT_VARIANTS
+        els = m.follow_all(self.hlmt, [HLMT_VARIANTS], [HLMT_VARIANT_ES], 'all')
+        names = [m.u32(e) for e in els]
+        src = next((e for e in els if m.u32(e) == want), None)
+        if src is not None and m.i32(src + HLMT_VARIANT_OBJECTS) <= 0:
+            return 'bare'                       # jackal_sniper, the Skirmishers: no shield object
+        free = [n for n in SHIELDLESS_NAMES if find_sid(m, hp, n) is not None
+                and find_sid(m, hp, n) not in names and find_sid(m, hp, n) not in self.twins.values()]
+        got = hp._h3_reserve(m, [(len(els) + 1) * HLMT_VARIANT_ES]) if src is not None and free else None
+        if got:
+            sid = find_sid(m, hp, free[0])
+            old = hp._block_base(m, blk)
+            m.data[got[0]:got[0] + len(els) * HLMT_VARIANT_ES] = m.data[old:old + len(els) * HLMT_VARIANT_ES]
+            new = got[0] + len(els) * HLMT_VARIANT_ES
+            m.data[new:new + HLMT_VARIANT_ES] = m.data[src:src + HLMT_VARIANT_ES]
+            struct.pack_into('<I', m.data, new, sid)
+            struct.pack_into('<i', m.data, new + HLMT_VARIANT_OBJECTS, 0)          # no shield
+            struct.pack_into('<iI', m.data, blk, len(els) + 1, m.off2data(got[0]))
+            self.twins[want] = (sid, len(els))
+            self.rows.append({'tag': 'hlmt jackal', 'field': 'shieldless variant', 'ok': True,
+                              'new': '%s: a copy of %s without its shield object'
+                              % (free[0], _name(m, hp, want))})
+        else:
+            snip = next((k for k, n in enumerate(names) if _name(m, hp, n) == 'jackal_sniper'), None)
+            self.twins[want] = (names[snip], snip) if snip is not None else None
+        return self.twins[want]
 
     def of(self, ci):
         """The palette index of the shieldless clone of palette character `ci`, or None."""
@@ -964,9 +1137,17 @@ class _Shieldless:
             return ci                                   # already a clone (a shared array)
         m, hp = self.m, self.hp
         self.made[ci] = None
-        if self.sid is None or self.vidx is None or not self.spares:
-            return None
         src = dict(m.find_tags('char', self.cnames[ci])).get(self.cnames[ci])
+        var = self.variant(src) if src is not None else None
+        if var == 'bare':
+            self.made[ci] = ci                  # its model variant carries no shield already
+            return ci
+        if var is None:
+            return None
+        if not self.spares and self.loose:
+            self._palette_add(self.loose.pop(0))
+        if not self.spares:
+            return None
         si = self.spares.pop(0)
         dst = dict(m.find_tags('char', self.cnames[si])).get(self.cnames[si])
         if src is None or dst is None:
@@ -979,7 +1160,7 @@ class _Shieldless:
         v = m.follow_all(src, [CHAR_VARIANTS], [CHAR_VARIANT_ES], 'all')
         if v:
             el[:] = m.data[v[0]:v[0] + CHAR_VARIANT_ES]          # keeps its voices
-        struct.pack_into('<Ih', el, 0, self.sid, self.vidx)
+        struct.pack_into('<Ih', el, 0, var[0], var[1])
         m.data[got[0]:got[0] + CHAR_VARIANT_ES] = el
         struct.pack_into('<iI', m.data, dst + CHAR_VARIANTS, 1, m.off2data(got[0]))
         self.made[ci] = si
@@ -989,6 +1170,11 @@ class _Shieldless:
         major = hp._tag_name_by_id(m, m.u32(dst + CHAR_MAJOR + 0xC))
         if major and major.lower() != self.cnames[ci].lower():
             mi = next((i for i, n in enumerate(self.cnames) if (n or '').lower() == major.lower()), None)
+            if mi is None:
+                # (Reach m35) the major is not in the palette: it joins it, so it can be cloned
+                n0 = len(self.cnames)
+                self._palette_add(major, spare=False)
+                mi = n0 if len(self.cnames) > n0 else None
             mc = self.of(mi) if mi is not None else None
             datum = hp._h3_tag_datum(m, 'char', self.cnames[mc]) if mc is not None else None
             struct.pack_into('<I', m.data, dst + CHAR_MAJOR + 0xC,
@@ -1047,7 +1233,7 @@ def _arm_cells(m, hp, base, widx, info, graphs, type_of, draw, count, jackal_shi
             struct.pack_into('<h', m.data, el0 + i * CELL_ARR_ES + CELL_IDX, widx[w])
         return True
 
-    jackal_cells, seen = [], {}
+    jackal_cells, seen, jackal_sps = [], {}, []
     for sq in squads:
         squad_team = _i16(m, sq + SQ_TEAM)
         designer = m.follow_all(sq, [CELL_BLOCKS[0]], [CELL_ES], 'all')
@@ -1101,11 +1287,13 @@ def _arm_cells(m, hp, base, widx, info, graphs, type_of, draw, count, jackal_shi
                     w = None                 # keeps its own weapon
             if w is not None and types == {'Jackal'}:
                 jackal_shield(sp, w, SP_VARIANT)
+                if own_c >= 0 and two_handed(m, hp, info.get(w)):
+                    jackal_sps.append(sp)
         for cell, w in armed.items():
             if kinds.get(cell) == {'Jackal'} and two_handed(m, hp, info.get(w)):
                 jackal_cells.append(cell)
     # every two-handed Jackal cell onto a shieldless clone of its character (its own array)
-    if jackal_cells:
+    if jackal_cells or jackal_sps:
         used = set()
         for sq in squads:
             for sp in m.follow_all(sq, [SP], [SP_ES], 'all'):
@@ -1143,6 +1331,10 @@ def _arm_cells(m, hp, base, widx, info, graphs, type_of, draw, count, jackal_shi
             for i, ci in enumerate(new):
                 struct.pack_into('<h', m.data, el0 + i * CELL_ARR_ES + CELL_IDX, ci)
             stats['cloned'] += 1
+        for sp in jackal_sps:                   # a spawn point naming its own Jackal character
+            ci = sl.of(_i16(m, sp + SP_CHAR))
+            if ci is not None:
+                struct.pack_into('<h', m.data, sp + SP_CHAR, ci)
         stats['clone_rows'] = sl.rows
 
 

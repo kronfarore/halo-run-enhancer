@@ -10181,7 +10181,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         import sys as _sys
         import h2_enemy_weapons as _ew2
         results.extend(_ew2.apply(m, _sys.modules[__name__], h2_enemy_weapons, registry))
-    if h3_enemy_weapons and str(game).strip() in ('Halo 3', 'Halo 3: ODST'):
+    if h3_enemy_weapons and str(game).strip() in ('Halo 3', 'Halo 3: ODST', 'Halo Reach'):
         # Halo 3's and ODST's 'Armed: <weapon>' cards (h3_enemy_weapons.py, ARMED_ALL_GAMES.md):
         # fire-teams / locations (ODST: cells / spawn points) handed the weapon, species taught
         # to hold it, shieldless Jackals. AFTER the skulls, as Halo 1 and 2.
