@@ -35,6 +35,9 @@ next map itself. Halo 3's outro-skip site is h3_dll_patch.py `outro-skip`.
 
 Measured: ODST (2026-11-07/09) and Reach (2026-11-09) do NOT open the next map
 mid-level; both open it when the level ends, so it is locked on the summary screen.
+Halo 4 UNPATCHED (2026-11-10, m10_crash -> m020): m020 is never opened, neither mid-level
+nor on the summary, and an exclusive read/write open of m020 succeeds there -- Halo 4
+needs NO patch; its sites stay here unapplied.
 ODST's and Reach's cache slots are read by mcc_map_locks.py (ENGINES).
 ODST note: its levels ALSO preload by script, `(game_level_prepare ...)` in
 f_end_scene -- the enhancer's `no_level_preload` option removes that (h3_level_prepare.py).
