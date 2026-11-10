@@ -111,6 +111,7 @@ PATCHES = {
         # next-level request in ANY game state (campaign = [rsi] 0, 0x10F038; the
         # [rsi] 2 branch behind it too). shared/campaign requests and the explicit
         # level load are untouched.
+        'rva': 0x10F33C,
         'offset': 0x0010E73C,
         'original': bytes.fromhex('4584ff740b'),     # test r15b, r15b ; je 0x10F34C
         'patched': bytes.fromhex('e9ac000000'),      # jmp 0x10F3ED
@@ -126,7 +127,8 @@ PATCHES = {
         # no-next-map-prefetch that map is never requested, so the outro is never
         # skippable. `je 0x1890B7` -> `jmp`: endings are skippable like any other
         # cinematic. Belongs with no-next-map-prefetch (next_map_prefetch.py docstring).
-        'offset': 0x0018846D,          # RVA 0x18906D
+        'rva': 0x18906D,
+        'offset': 0x0018846D,
         'original': bytes.fromhex('7448'),           # je  0x1890B7
         'patched': bytes.fromhex('eb48'),            # jmp 0x1890B7
         'context': (0x00188464, bytes.fromhex('80792e00bb01000000')),  # cmp [rcx+0x2E],0 ; mov ebx,1

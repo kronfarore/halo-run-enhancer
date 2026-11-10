@@ -10853,7 +10853,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         results.append(r)
 
     if no_level_prepare and str(game).strip() in THIRD_GEN_GAMES:
-        # Options 'Stop preloading the next level': drop the level script's
+        # Options 'Disable Pre-Loading' (its dll half: next_map_prefetch.sync): drop the level script's
         # `game_level_prepare` (h3_level_prepare.py), so MCC does not open the next map
         # before this level ends and a patch made then still takes. ODST calls it in
         # every level; Halo 3 never does (Skipped). Fresh from the baseline each patch.

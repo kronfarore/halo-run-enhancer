@@ -8199,6 +8199,22 @@ class MagnitudeEditorDialog(QDialog):
                      'field': 'halo1.dll', 'ok': False, 'reason': str(e)}]
 
     @staticmethod
+    def _apply_disable_preloading():
+        """Options 'Disable Pre-Loading' (no_level_preload): the halo3.dll / halo3odst.dll /
+        haloreach.dll patches that stop the engine opening the NEXT level early (and keep
+        the level's ending cutscene skippable), synced on every patch (any game, so
+        unticking always puts the dlls back), live in a running MCC and in the files
+        (swapped by rename while MCC holds one). next_map_prefetch.sync; its rows carry
+        sig=False, so the option stays out of the patch code."""
+        sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        try:
+            import next_map_prefetch
+            return next_map_prefetch.sync(bool(CONFIG.get('no_level_preload')), quiet=False)
+        except Exception as e:
+            return [{'tag': 'halo3.dll', 'effect': 'Disable Pre-Loading', 'sig': False,
+                     'field': 'dll files', 'ok': False, 'reason': str(e)}]
+
+    @staticmethod
     def _betrayal_drawn(skulls):
         return any(MagnitudeEditorDialog._skull_name(s) == 'betrayal' for s in (skulls or ()))
 
@@ -10635,6 +10651,7 @@ class MagnitudeEditorDialog(QDialog):
         results.extend(self._apply_h1_birthday_party())
         results.extend(self._apply_h1_charge_latch())
         results.extend(self._apply_drops_flashlight())
+        results.extend(self._apply_disable_preloading())
         if CONFIG.get('death_penalty_scaling'):
             results.extend(self._apply_death_penalty())
         results.extend(self._restore_sword_drain(plan))
@@ -12709,16 +12726,17 @@ class OptionsDialog(QDialog):
                                      "and re-patch to restore.")
         form.addRow("Halo 3 cutscenes:", self.cutscenes_cb)
 
-        self.no_preload_cb = QCheckBox("Stop preloading the next level (Halo 3 / ODST) "
-                                       "-- experimental")
+        self.no_preload_cb = QCheckBox("Disable Pre-Loading")
         self.no_preload_cb.setChecked(bool(CONFIG.get('no_level_preload')))
         self.no_preload_cb.setToolTip(
-            "Halo 3 starts loading the next level before the current one ends, so a "
-            "patch made then doesn't take. This stops that.\n\nIn practice this is "
-            "ODST: every ODST level (and Mombasa Streets) asks for the next one early. "
-            "No Halo 3 level does, so the option changes nothing there.\n\n"
-            "Experimental: checked on the map files only, not yet played in game. Off "
-            "by default.")
+            "Allows patching while the last level is loaded and on their summary screen."
+            "\n\nHalo 3, ODST and Reach start loading the next level before the current "
+            "one ends, so MCC holds the next map open and it cannot be patched on the "
+            "summary screen. This stops that (Halo 4 never does it). The level's ending "
+            "cutscene stays skippable.\n\nA change to halo3.dll, halo3odst.dll and "
+            "haloreach.dll, made on every patch: at once in a running MCC, and in the "
+            "files for the next start. Untick and patch to put the dlls back. It does "
+            "not change the patch code. Off by default.")
         form.addRow("Next level:", self.no_preload_cb)
 
         self.keep_title_hud_cb = QCheckBox("Keep the HUD up through chapter titles")

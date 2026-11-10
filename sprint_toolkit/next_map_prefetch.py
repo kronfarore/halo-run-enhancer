@@ -50,6 +50,8 @@ MCC must be CLOSED to patch (the dll is mapped) and restarted afterwards.
     python next_map_prefetch.py --check            # disassemble each site, before/after
     python next_map_prefetch.py --apply odst       # odst | reach | h4 (several allowed)
     python next_map_prefetch.py --revert odst
+    python next_map_prefetch.py --sync on          # the enhancer option: H3 + ODST + Reach,
+                                                   # running MCC and dll files (swap by rename)
 """
 import argparse
 import os
@@ -223,15 +225,217 @@ def check():
                 print('   %-8s %s' % (label, ' | '.join(ins)))
 
 
+# --------------------------------------------------------------------------------------
+# THE ENHANCER OPTION "Disable Pre-Loading" (config key no_level_preload, 2026-11-10).
+# sync(on) puts every game's sites on (or back to stock) in the running MCC AND in each
+# dll on disk, like h1_melee_blocks_fire.sync: a dll MCC holds is swapped by rename and
+# takes effect at MCC's next start; the live write takes effect at once. Halo 3's sites
+# come from h3_dll_patch.py (no-next-map-prefetch + outro-skip). Halo 4 is left out: it
+# never opens the next map (measured 2026-11-10), so it has nothing to switch.
+OPTION_NAME = 'Disable Pre-Loading'
+OPTION_GAMES = ('h3', 'odst', 'reach')
+
+
+def _h3_patch():
+    import h3_dll_patch as H3
+    sites = []
+    for key in ('no-next-map-prefetch', 'outro-skip'):
+        p = H3.PATCHES[key]
+        sites.append({'label': key, 'rva': p['rva'], 'offset': p['offset'],
+                      'original': p['original'], 'patched': p['patched'],
+                      'context': p['context']})
+    return {'dll': H3.DLL, 'note': 'Halo 3 (h3_dll_patch.py)', 'sites': sites}
+
+
+def option_patch(name):
+    return _h3_patch() if name == 'h3' else PATCHES[name]
+
+
+def _classify(read, sites, live_delta=None):
+    """'on' / 'off' / 'partial' / 'unknown' through read(position, n). live_delta None:
+    positions are file offsets; else rva = offset + delta per site (read by rva)."""
+    states = set()
+    for s in sites:
+        co, cb = s['context']
+        shift = 0 if live_delta is None else s['rva'] - s['offset']
+        if read(co + shift, len(cb)) != cb:
+            return 'unknown'
+        f = read(s['offset'] + shift, len(s['original']))
+        states.add('on' if f == s['patched'] else 'off' if f == s['original'] else '?')
+    if '?' in states:
+        return 'unknown'
+    return states.pop() if len(states) == 1 else 'partial'
+
+
+def _file_reader(path):
+    data = open(path, 'rb').read()
+    return lambda o, n: bytes(data[o:o + n])
+
+
+def file_state(name, path=None):
+    p = option_patch(name)
+    path = path or p['dll']
+    return _classify(_file_reader(path), p['sites']) if os.path.exists(path) else 'missing'
+
+
+def _writes(p, state, want):
+    if want and state in ('off', 'partial'):
+        return [(s, s['patched']) for s in p['sites']]
+    if not want and state in ('on', 'partial'):
+        return [(s, s['original']) for s in p['sites']]
+    return []
+
+
+def _write_at_offsets(path, writes):
+    with open(path, 'r+b') as f:
+        for s, blob in writes:
+            f.seek(s['offset'])
+            f.write(blob)
+
+
+def _cleanup_inuse(path):
+    import glob
+    for old in glob.glob(glob.escape(path) + '.inuse-*'):
+        try:
+            os.remove(old)
+        except OSError:
+            pass                                # still mapped by MCC: next time
+
+
+def file_set(name, want, path=None):
+    """(ok, message). In place, or swapped by rename while MCC holds the dll."""
+    import time
+    p = option_patch(name)
+    path = path or p['dll']
+    dll = os.path.basename(path)
+    _cleanup_inuse(path)
+    state = file_state(name, path)
+    if state == 'missing':
+        return False, '%s not found' % path
+    if state == 'unknown':
+        return False, ('%s does not hold the expected bytes -- this MCC build differs, '
+                       'refusing to write' % dll)
+    writes = _writes(p, state, want)
+    if not writes:
+        return True, 'already as wanted'
+    bak = path + '.bak'
+    if not os.path.exists(bak):
+        shutil.copy2(path, bak)
+    try:
+        _write_at_offsets(path, writes)
+        return True, 'written in place'
+    except PermissionError:
+        pass                                    # loaded by MCC: swap instead
+    new = path + '.new'
+    shutil.copyfile(path, new)
+    _write_at_offsets(new, writes)
+    if file_state(name, new) != ('on' if want else 'off'):
+        os.remove(new)
+        return False, 'the patched copy did not verify'
+    held = '%s.inuse-%d' % (path, int(time.time()))
+    try:
+        os.rename(path, held)
+    except OSError as e:
+        os.remove(new)
+        return False, 'MCC holds %s and it could not be renamed: %s' % (dll, e)
+    try:
+        os.rename(new, path)
+    except OSError as e:
+        os.rename(held, path)
+        return False, 'could not put the patched %s in place: %s' % (dll, e)
+    return True, 'swapped in while MCC runs (applies at its next start)'
+
+
+def _live(name, fn):
+    """fn(h, base, p) on the running MCC; None when MCC or this game's dll is not there."""
+    import death_penalty as dp
+    p = option_patch(name)
+    pid = dp.find_pid()
+    if not pid:
+        return None
+    h = dp.k32.OpenProcess(dp.ACCESS, False, pid)
+    if not h:
+        return (False, 'OpenProcess failed -- run elevated')
+    try:
+        base = dp.module_base(pid, os.path.basename(p['dll']).encode())
+        return fn(h, base, p) if base else None
+    finally:
+        dp.k32.CloseHandle(h)
+
+
+def live_state(h, base, p):
+    import death_penalty as dp
+    return _classify(lambda rva, n: dp.read(h, base + rva, n), p['sites'], live_delta=True)
+
+
+def live_set(h, base, p, want):
+    import death_penalty as dp
+    state = live_state(h, base, p)
+    if state == 'unknown':
+        return False, ('the running %s does not hold the expected bytes -- this MCC build '
+                       'differs, refusing to write' % os.path.basename(p['dll']))
+    for s, blob in _writes(p, state, want):
+        ok, err = dp.write(h, base + s['rva'], blob)
+        if not ok:
+            return False, '+0x%X: %s' % (s['rva'], err)
+    return True, None
+
+
+def sync(on, quiet=True, games=OPTION_GAMES):
+    """One call for the enhancer: every game's sites on (or back to stock) in the running
+    MCC and in its dll file. Result rows (tag = the dll); never raises. sig=False keeps
+    them out of the patch code: the option changes when maps load, not the gameplay."""
+    target = 'on' if on else 'off'
+    out = []
+    for name in games:
+        p = option_patch(name)
+        dll = os.path.basename(p['dll'])
+        row = {'tag': dll, 'effect': OPTION_NAME, 'sig': False}
+
+        def add(field, ok, old, msg):
+            if quiet and ok and old == target:
+                return
+            out.append({**row, 'field': field, 'ok': ok, 'old': old,
+                        'new': target if ok else None,
+                        'reason': None if ok else msg, **({'note': msg} if ok and msg else {})})
+
+        def live(h, base, p):
+            old = live_state(h, base, p)
+            ok, err = live_set(h, base, p, on)
+            add('running MCC', ok, old, err)
+        try:
+            r = _live(name, live)
+            if isinstance(r, tuple):
+                add('running MCC', False, None, r[1])
+        except Exception as e:                  # never fatal to a map patch
+            add('running MCC', False, None, str(e))
+        if not os.path.exists(p['dll']):
+            continue                            # that game is not installed
+        try:
+            old = file_state(name)
+            ok, msg = file_set(name, on)
+            add('%s file' % dll, ok, old, msg)
+        except Exception as e:
+            add('%s file' % dll, False, None, str(e))
+    return out
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--apply', nargs='+', default=[], choices=sorted(PATCHES))
     ap.add_argument('--revert', nargs='+', default=[], choices=sorted(PATCHES))
     ap.add_argument('--check', action='store_true')
+    ap.add_argument('--sync', choices=('on', 'off'),
+                    help='what the enhancer option does: Halo 3 + ODST + Reach, live and file')
     a = ap.parse_args(argv)
     if a.check:
         check()
+        return 0
+    if a.sync:
+        for r in sync(a.sync == 'on', quiet=False):
+            print('  %-16s %-18s %s %s' % (r['tag'], r['field'], 'OK  ' if r['ok'] else 'FAIL',
+                                           r.get('note') or r.get('reason') or r.get('new')))
         return 0
     ok = True
     for n in a.apply:
