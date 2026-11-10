@@ -3,7 +3,7 @@ r"""Stage the Stable Grenades in-game test: one level per game, built from the E
     python sprint_toolkit\stable_grenades_stage.py            # build both sets
     python sprint_toolkit\stable_grenades_stage.py --check    # only re-read the staged maps
     python sprint_toolkit\stable_grenades_stage.py "Halo 1"   # only the named game(s)
-
+    ... --stable-only                                        # rebuild only the stable set
 Two sets under E:\HaloBackups\stable_grenades_test\, each laid out like the MCC folder:
   vanilla\  the baseline through halo_patch.apply_run with an EMPTY plan
   stable\   the same, plus the Stable Grenades card of every grenade of that game
@@ -66,7 +66,8 @@ def plan_for(game, item_only=False):
         ops = [{'field': t['field'], 'block': t.get('block'), 'index': 0,
                 'nth': t.get('nth', 0) or 0, 'tag': t.get('tag'),
                 'unshare': bool(t.get('unshare')),
-                ('set_bit' if t.get('flag_on') else 'clear_bit'): t['flag']}
+                **({'set': t['set']} if t.get('set') is not None else
+                   {('set_bit' if t.get('flag_on') else 'clear_bit'): t['flag']})}
                for t in he.resolve_gamed(eff['targets'], game, GAMES)
                if not item_only or (t.get('tag') or '').startswith('eqip ')]
         plan.append({'tag': he.resolve_gamed(eff['tag'], game, GAMES),
@@ -240,8 +241,8 @@ def main(check_only=False, only=()):
         for kind in ('vanilla', 'stable') + extra:
             dst = os.path.join(OUT, kind, sub.replace('/', os.sep), name)
             staged[kind] = dst
-            if check_only:
-                continue
+            if check_only or ('--stable-only' in sys.argv and kind != 'stable'):
+                continue          # re-read only
             os.makedirs(os.path.dirname(dst), exist_ok=True)
             shutil.copyfile(src, dst)
             plan = plan_for(g, kind == 'itemonly') if kind in ('stable', 'itemonly') else []

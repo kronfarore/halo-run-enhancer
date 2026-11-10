@@ -10536,6 +10536,15 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                     results.append({**base, 'ok': False,
                                     'reason': f"unknown set value {op['set']!r}"})
                     continue
+                if op.get('unshare') and fld:
+                    # as the flag ops do: the value must reach THIS tag only (Stable
+                    # Grenades' vitality on H3/ODST's shared plasma/firebomb pickup block)
+                    if any(_unshare_top_block(m, cls, tb, fld) is None
+                           for _tp, tb in m.find_tags(cls, path)):
+                        results.append({**base, 'ok': False, 'field': field,
+                                        'reason': 'its block is shared with another tag and '
+                                        'the map has no slack for a private copy'})
+                        continue
                 for r in name_enum_results(
                         m.apply_field(cls, path, field, 'set', float(sval), plugin,
                                       block=op.get('block'), index=op.get('index', 0) or 0,

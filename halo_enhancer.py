@@ -10316,10 +10316,13 @@ class MagnitudeEditorDialog(QDialog):
         for eff, t, le in self.rows:
             if t.get('set') is None:
                 continue
+            if t.get('positive_only') and self._flag_wanted(eff, {'flag_on': True}) is not True:
+                continue     # Stable Grenades' vitality raise: the positive card's half only
             key = (eff['tag'], eff['name'])
             if key in plan_map:
                 plan_map[key]['ops'].append({'field': t['field'], 'block': t.get('block'),
                                              'index': t.get('index', 0), 'nth': t.get('nth', 0) or 0,
+                                             'tag': t.get('tag'), 'unshare': bool(t.get('unshare')),
                                              **_diff_flavor(t), 'set': t['set'],
                                              'set_bit': t.get('set_bit')})
         plan = list(plan_map.values())
