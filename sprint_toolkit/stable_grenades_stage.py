@@ -195,11 +195,19 @@ def h3_test_buffs(path):
     import contextlib
     import io
     import h3_armed_test as T
-    T.CHEAT_WEAPON, T.CHEAT_DAMAGE = H3_CHEAT
+    # The profile secondary does NOT reach the player on 100 (user, 2026-11-10: no SMG at
+    # the start), so god_and_cheat gets a weapon name the map lacks -- it then writes no
+    # profile -- and the SMG is PLACED at enhancer_marker1, as the enhancer's own
+    # spawn-weapon mode does.
+    T.CHEAT_WEAPON, T.CHEAT_DAMAGE = 'no profile weapon', H3_CHEAT[1]
     with contextlib.redirect_stdout(io.StringIO()):
         m = hp.open_map(path, 'Halo 3')
     out = []
     T.god_and_cheat(m, out)
+    reg = hp.PluginRegistry(C['assembly_plugins_dir'], C['plugin_subdirs_by_game']['Halo 3'])
+    for r in hp._apply_spawn_weapons_h3(m, 'Halo 3', {'groups': [[H3_CHEAT[0]]]}, reg):
+        out.append('SMG placement: %s%s' % ('ok ' if r.get('ok') else 'FAIL ',
+                                            r.get('new') or r.get('reason') or r.get('field')))
     m.save(path)
     # god_and_cheat's report text names the Carbine whatever CHEAT_* hold
     return [s.replace('carbine_slug', 'smg_bullet').replace('covenant_carbine', 'smg')
