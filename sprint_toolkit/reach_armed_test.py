@@ -53,25 +53,28 @@ def _c(s):
 
 
 #: (label, character, weapon): the Halo 3 findings carried over, every species at once
+#: v3 (Reach boot 2, 2026-11-10): the confirmed pairs are out (Elite AR / Rocket, Skirmisher AR, Rocket on
+#: the Jackal graph, Grunt Spike Rifle / Plasma Launcher / DMR, Marine Needle Rifle / Plasma Launcher,
+#: the shielded Plasma Pistol control); the TURRETS come first so they take the nearest cells (the
+#: unarmed Grunts / Jackal); the DMR Jackal stays (it held the gun but hardly attacked)
 ENEMY_CASES = (
-    ('Grunt + DMR', _c('grunt'), _w('rifle/dmr/dmr')),
-    ('Grunt + Spike Rifle (taught)', _c('grunt'), _w('rifle/spike_rifle/spike_rifle')),
-    ('Grunt + Plasma Launcher', _c('grunt'), _w('support_high/plasma_launcher/plasma_launcher')),
-    ('Jackal + DMR (shieldless)', _c('jackal'), _w('rifle/dmr/dmr')),
-    ('Jackal + Rocket Launcher (taught, shieldless)', _c('jackal'), _w('support_high/rocket_launcher/rocket_launcher')),
-    ('Jackal + Plasma Pistol (shield kept)', _c('jackal'), _w('pistol/plasma_pistol/plasma_pistol')),
-    ('Skirmisher + Rocket Launcher (taught)', C + 'jackal' + BS + 'ai' + BS + 'skirmisher', _w('support_high/rocket_launcher/rocket_launcher')),
-    ('Skirmisher + Assault Rifle', C + 'jackal' + BS + 'ai' + BS + 'skirmisher', _w('rifle/assault_rifle/assault_rifle')),
-    ('Elite + Rocket Launcher', _c('elite'), _w('support_high/rocket_launcher/rocket_launcher')),
-    ('Elite + Assault Rifle', _c('elite'), _w('rifle/assault_rifle/assault_rifle')),
-    ('Jackal + Machine Gun Turret (grip, shieldless)', _c('jackal'), _w('turret/machinegun_turret/machinegun_turret')),
     ('Grunt + Plasma Turret', _c('grunt'), _w('turret/plasma_turret/plasma_turret')),
+    ('Jackal + Machine Gun Turret (shieldless)', _c('jackal'), _w('turret/machinegun_turret/machinegun_turret')),
+    ('Jackal + DMR (shieldless, own firing rows)', _c('jackal'), _w('rifle/dmr/dmr')),
+    ('Jackal + Shotgun (shieldless)', _c('jackal'), _w('rifle/shotgun/shotgun')),
+    ('Jackal + Concussion Rifle (shieldless)', _c('jackal'), _w('rifle/concussion_rifle/concussion_rifle')),
+    ('Skirmisher + DMR', C + 'jackal' + BS + 'ai' + BS + 'skirmisher', _w('rifle/dmr/dmr')),
+    ('Skirmisher + Plasma Launcher', C + 'jackal' + BS + 'ai' + BS + 'skirmisher', _w('support_high/plasma_launcher/plasma_launcher')),
+    ('Grunt + Shotgun', _c('grunt'), _w('rifle/shotgun/shotgun')),
+    ('Grunt + Grenade Launcher (taught)', _c('grunt'), _w('rifle/grenade_launcher/grenade_launcher')),
+    ('Elite + Sniper Rifle', _c('elite'), _w('rifle/sniper_rifle/sniper_rifle')),
+    ('Elite + Shotgun', _c('elite'), _w('rifle/shotgun/shotgun')),
 )
 MARINE_CASES = (
-    ('Marine + Needle Rifle', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('rifle/needle_rifle/needle_rifle')),
-    ('Marine + Plasma Launcher', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('support_high/plasma_launcher/plasma_launcher')),
-    ('Marine + Concussion Rifle', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('rifle/concussion_rifle/concussion_rifle')),
     ('Marine + Plasma Turret', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('turret/plasma_turret/plasma_turret')),
+    ('Marine + Concussion Rifle', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('rifle/concussion_rifle/concussion_rifle')),
+    ('Marine + Focus Rifle', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('rifle/focus_rifle/focus_rifle')),
+    ('Marine + Plasma Repeater', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('rifle/plasma_repeater/plasma_repeater')),
 )
 #: cells per case; None = EVERY cell of the level (v2, ODST boot 1: the nearest Grunt / Jackal
 #: cells were not the first ones met)
@@ -261,6 +264,11 @@ def build(level='m20'):
         m = hp.open_map(src, GAME)
     ew.bind(GAME, m, hp)
     report = ['%s from %s' % (os.path.basename(out), src)]
+    # the Jackal graph species' own firing rows BEFORE the clones copy their roots
+    for r in ew.species_firing(m, hp, [(ew.enemy_of(ch), next((p for p, _b in m.find_tags('weap', '*')
+                                        if p.lower().rsplit(BS, 1)[-1] == wp.lower().rsplit(BS, 1)[-1]), wp))
+                                       for _l, ch, wp in ENEMY_CASES]):
+        report.append('firing: %s %s %s' % (r['tag'], r['field'], r['new']))
     layout(m, report)
     # teach the cases' weapons exactly as the Armed pass does (refused + REPOSE pairs)
     want, graphs = {}, ew.Graphs(m, hp)
@@ -283,14 +291,8 @@ def build(level='m20'):
                          if p.lower().rsplit(BS, 1)[-1] == wp.lower().rsplit(BS, 1)[-1]), None)
             for r in ew.species_markers(m, hp, e, full) if full else ():
                 report.append('markers: %s %s' % (r['field'], r['new']))
-    # 3. the EXPERIMENT (v2, Reach boot 1: Plasma Turret Grunts / Machine Gun Turret Jackals came
-    # out unarmed): the turrets' Support Weapon flag (weap +0x204 bit 8) cleared on this map only
-    for p, b in m.find_tags('weap', '*'):
-        if p.lower().rsplit(BS, 1)[-1] in ('plasma_turret', 'machinegun_turret'):
-            f = m.u32(b + 0x204)
-            if f & 0x100:
-                struct.pack_into('<I', m.data, b + 0x204, f & ~0x100)
-                report.append('EXPERIMENT: %s Support Weapon flag cleared' % p.rsplit(BS, 1)[-1])
+    # (v2's EXPERIMENT -- the turrets' Support Weapon flag cleared -- left Grunts unarmed all the same:
+    # dropped in v3, the turrets go out as the patch hands them)
     god_and_cheat(m, report)
     m.save(out)
     print('\n'.join(report))

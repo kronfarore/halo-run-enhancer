@@ -328,6 +328,65 @@ def has_firing(m, hp, weapon):
     return any_entry(GEN_PROPS, GEN_PROPS_ES, 0x10) and any_entry(GEN_FPP, 0x1C, 0xC)
 
 
+#: games where a species character with its OWN firing rows gets ai/generic's row for a handed
+#: weapon its list lacks (Reach boot 2: Jackals -- the only species with own Weapons Properties,
+#: Focus / Needle Rifle, Needler, Plasma Pistol -- held the DMR and did not attack; Grunts /
+#: Troopers with no own rows fire everything)
+#: Elites (own rows: grenade / rocket launcher) fire an Assault Rifle fine, so a per-weapon fallback
+#: works -- an experiment, limited to the Jackal graph's species
+SPECIES_FIRING = {'Halo Reach': ('Jackal', 'Skirmisher')}
+
+
+def species_firing(m, hp, pairs):
+    """`pairs` = [(enemy, weapon path)]: every palette character of the species whose Weapons
+    Properties / Firing Pattern Properties are non-empty and lack the weapon gets ai/generic's
+    row for it (blocks relocated sorted-free: appended, as borrow_firing does). Result rows."""
+    rows = []
+    pairs = [(e, w) for e, w in pairs if e in SPECIES_FIRING.get(GAME, ())]
+    if not pairs:
+        return rows
+    gen = dict(m.find_tags('char', 'ai' + BS + 'generic')).get('ai' + BS + 'generic')
+    if gen is None:
+        return rows
+    base = hp._scnr_base(m)
+    pal = [hp._tag_name_by_id(m, m.u32(e + CPAL_ID)) for e in m.follow_all(base, [CPAL], [CPAL_ES], 'all')]
+    want = {}
+    for enemy, w in pairs:
+        for c in pal:
+            if c and enemy_of(c) == enemy:
+                want.setdefault(c, set()).add(w.lower())
+    for c, ws in sorted(want.items()):
+        cb = dict(m.find_tags('char', c)).get(c)
+        if cb is None:
+            continue
+        for off, es, at in FIRING_BLOCKS:
+            els = m.follow_all(cb, [off], [es], 'all')
+            if not els:
+                continue                     # an empty block inherits the parent's rows whole
+            have = {(hp._tag_name_by_id(m, m.u32(e + at)) or '').lower() for e in els}
+            extra, added = bytearray(), []
+            for g in m.follow_all(gen, [off], [es], 'all'):
+                gn = (hp._tag_name_by_id(m, m.u32(g + at)) or '').lower()
+                if gn in ws and gn not in have:
+                    extra += m.data[g:g + es]
+                    added.append(gn.rsplit(BS, 1)[-1])
+                    have.add(gn)
+            if not extra:
+                continue
+            blk = cb + off
+            n = max(0, m.i32(blk))
+            got = hp._h3_reserve(m, [n * es + len(extra)])
+            if not got:
+                continue
+            old = hp._block_base(m, blk)
+            m.data[got[0]:got[0] + n * es] = m.data[old:old + n * es]
+            m.data[got[0] + n * es:got[0] + n * es + len(extra)] = extra
+            struct.pack_into('<iI', m.data, blk, n + len(extra) // es, m.off2data(got[0]))
+            rows.append({'tag': 'char ' + c.rsplit(BS, 1)[-1], 'field': 'firing rows (+0x%X)' % off,
+                         'ok': True, 'new': "ai/generic's " + ', '.join(added)})
+    return rows
+
+
 def borrow_firing(m, hp, weapons):
     """Give each of `weapons` (tag paths) without firing data its FIRING_DONORS donor's rows:
     every character whose Weapons Properties / Firing Pattern Properties lists the donor and
@@ -947,6 +1006,7 @@ def arm(m, hp, cards, salt=None):
             del usable[enemy]
     handed = sorted(set(wnames[widx[w]] for ok in usable.values() for w in ok))
     rows += borrow_firing(m, hp, handed)
+    rows += species_firing(m, hp, [(e, wnames[widx[w]]) for e, ws in usable.items() for w in ws])
     for enemy in MARKER_SPECIES.get(GAME, ()):
         for w in sorted(usable.get(enemy, {})):
             rows += species_markers(m, hp, enemy, wnames[widx[w]])
