@@ -190,6 +190,57 @@ def originals(game, path, baseline_root=None):
     return sorted(out, key=lambda t: order.get(t[1].split('/')[-1], 9))
 
 
+def bak_maps(game, root=None, folder=None):
+    """Every backup MAP in a game's map folder, for the enhancer's 'Delete .bak maps'.
+
+    A backup map is a file named `<anything>.map<...>.bak` -- `x.map.bak`,
+    `x.map.vanilla.bak`, `x.map.presprint.bak` -- in the game's own map folder or, for
+    Halo 2, its parallel `<folder>_bak`. `.shipped` / `.og` copies and the Baselines
+    folder are not .bak maps and are never listed.
+
+    Returns [(path, size, only_baseline)], sorted by path. only_baseline is True when
+    that file is what the patcher would READ as the map's pristine copy
+    (halo_patch.existing_baseline): no copy in the Baselines folder `root`, so deleting
+    it makes the next patch take the LIVE map -- perhaps already patched -- as pristine.
+    `folder` overrides the game's map folder (tests).
+    """
+    d = folder or map_dir(game)
+    dirs = [d] + ([d + '_bak'] if game == 'Halo 2' else [])
+    out = []
+    for dd in dirs:
+        if not os.path.isdir(dd):
+            continue
+        for fn in sorted(os.listdir(dd)):
+            low = fn.lower()
+            p = os.path.join(dd, fn)
+            if not (low.endswith('.bak') and '.map' in low) or not os.path.isfile(p):
+                continue
+            only = False
+            if dd == d and low.endswith('.map.bak'):
+                live = p[:-len('.bak')]
+                try:
+                    cur = HP.existing_baseline(live, root or None,
+                                               MAP_FOLDER.get(game) if folder is None else None)
+                except OSError:
+                    cur = p          # Baselines drive missing: this IS the only copy now
+                only = (cur is not None and os.path.normcase(os.path.abspath(cur))
+                        == os.path.normcase(os.path.abspath(p)))
+            out.append((p, os.path.getsize(p), only))
+    return out
+
+
+def delete_bak_maps(paths):
+    """Delete the given files (from bak_maps). Returns (deleted, [(path, error)])."""
+    done, failed = 0, []
+    for p in paths:
+        try:
+            os.remove(p)
+            done += 1
+        except OSError as e:
+            failed.append((p, str(e)))
+    return done, failed
+
+
 def sha256(path, cap=None):
     h = hashlib.sha256()
     with open(path, 'rb') as f:

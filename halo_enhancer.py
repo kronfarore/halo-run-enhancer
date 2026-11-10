@@ -409,7 +409,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'zoom_ui_on_scopeless', 'turret_zoom_first_person', 'vehicle_turret_zoom',
                'keep_reticle_zoomed',
                'turrets_are_weapons',
-               'combine_heretic_hologram', 'remove_h3_cutscenes', 'no_level_preload',
+               'combine_heretic_hologram', 'remove_h3_cutscenes',
+               'no_level_preload_h3', 'no_level_preload_odst', 'no_level_preload_reach',
                'keep_title_hud', 'clear_profile_equipment', 'clear_profile_grenades',
                'spawn_starting_grenades', 'step_strength',
                'reach_pools_from_map', 'h4_pools_from_map',
@@ -738,6 +739,11 @@ def baseline_phrase(plural=False):
 SETTINGS_LOAD_ERROR = None
 
 
+# 'Disable Pre-Loading': next_map_prefetch game name -> its per-game CONFIG key.
+PRELOAD_KEYS = {'h3': 'no_level_preload_h3', 'odst': 'no_level_preload_odst',
+                'reach': 'no_level_preload_reach'}
+
+
 def load_settings():
     """Merge settings.json into CONFIG.
 
@@ -772,6 +778,11 @@ def load_settings():
     for k in SETTINGS_KEYS:
         if k in data:
             CONFIG[k] = data[k]
+    # The one 'no_level_preload' key became one per game (2026-11-10): an old True
+    # turns all three on, as it did before.
+    if data.get('no_level_preload') and not any(k in data for k in PRELOAD_KEYS.values()):
+        for k in PRELOAD_KEYS.values():
+            CONFIG[k] = True
 
 
 def patch_logs_for(folder, stem):
@@ -1171,11 +1182,14 @@ CONFIG = {
     # applied fresh from the pristine baseline each patch, so toggling it off and
     # re-patching restores the cutscenes. Reproduces "Halo 3 Cortana Begone".
     "remove_h3_cutscenes": True,   # #4: on by default — skip the vision cutscenes
-    # Halo 3 / ODST: drop the level script's `game_level_prepare`, so MCC does not open
-    # the next map before the level ends and a patch made then still takes
-    # (h3_level_prepare.py). ODST only in practice: no Halo 3 level calls it. Off
-    # until it has been seen in game.
-    "no_level_preload": False,
+    # 'Disable Pre-Loading', one per game (user, 2026-11-10; was one key
+    # 'no_level_preload' for all three): the halo3.dll / halo3odst.dll / haloreach.dll
+    # patches that stop the engine opening the next level early, so it can be patched on
+    # the summary screen (next_map_prefetch.sync). ODST's also drops the level script's
+    # `game_level_prepare` (h3_level_prepare.py; no Halo 3 level calls it). Opt-in.
+    "no_level_preload_h3": False,
+    "no_level_preload_odst": False,
+    "no_level_preload_reach": False,
     # On by default (the user's call, 2026-09-14): the HUD stays up through chapter
     # titles; the titles themselves still appear.
     "keep_title_hud": True,
@@ -8200,19 +8214,23 @@ class MagnitudeEditorDialog(QDialog):
 
     @staticmethod
     def _apply_disable_preloading():
-        """Options 'Disable Pre-Loading' (no_level_preload): the halo3.dll / halo3odst.dll /
-        haloreach.dll patches that stop the engine opening the NEXT level early (and keep
-        the level's ending cutscene skippable), synced on every patch (any game, so
-        unticking always puts the dlls back), live in a running MCC and in the files
-        (swapped by rename while MCC holds one). next_map_prefetch.sync; its rows carry
-        sig=False, so the option stays out of the patch code."""
+        """Options 'Disable Pre-Loading', one per game (PRELOAD_KEYS): the halo3.dll /
+        halo3odst.dll / haloreach.dll patches that stop the engine opening the NEXT level
+        early (and keep the level's ending cutscene skippable), synced on every patch (any
+        game, so unticking always puts that dll back), live in a running MCC and in the
+        files (swapped by rename while MCC holds one). next_map_prefetch.sync; its rows
+        carry sig=False, so the option stays out of the patch code."""
         sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
-        try:
-            import next_map_prefetch
-            return next_map_prefetch.sync(bool(CONFIG.get('no_level_preload')), quiet=False)
-        except Exception as e:
-            return [{'tag': 'halo3.dll', 'effect': 'Disable Pre-Loading', 'sig': False,
-                     'field': 'dll files', 'ok': False, 'reason': str(e)}]
+        out = []
+        for game, key in PRELOAD_KEYS.items():
+            try:
+                import next_map_prefetch
+                out += next_map_prefetch.sync(bool(CONFIG.get(key)), quiet=False,
+                                              games=(game,))
+            except Exception as e:
+                out.append({'tag': game, 'effect': 'Disable Pre-Loading', 'sig': False,
+                            'field': 'dll file', 'ok': False, 'reason': str(e)})
+        return out
 
     @staticmethod
     def _betrayal_drawn(skulls):
@@ -10495,8 +10513,9 @@ class MagnitudeEditorDialog(QDialog):
                            else None),
                 hostile_sentinels=bool(CONFIG.get('h4_hostile_sentinels')),
                 remove_cutscenes=remove_cutscenes,
-                no_level_prepare=(bool(CONFIG.get('no_level_preload'))
-                                  and self.game in ('Halo 3', 'Halo 3: ODST')),
+                no_level_prepare=bool(CONFIG.get(
+                    {'Halo 3': PRELOAD_KEYS['h3'],
+                     'Halo 3: ODST': PRELOAD_KEYS['odst']}.get(self.game, ''))),
                 keep_title_hud=bool(CONFIG.get('keep_title_hud')),
                 skulls=skulls,
                 camo_after_ladder=bool(CONFIG.get('skull_camo_after_ladder')),
@@ -10558,7 +10577,7 @@ class MagnitudeEditorDialog(QDialog):
                     red_plasma=(CONFIG.get('odst_brute_plasma_tuning')
                                 if CONFIG.get('odst_red_plasma_as_brute') else None),
                     odst_downgrade=self._odst_downgrade_keep(),
-                    no_level_prepare=bool(CONFIG.get('no_level_preload')),
+                    no_level_prepare=bool(CONFIG.get(PRELOAD_KEYS['odst'])),
                 equipment_ai_drops=bool(CONFIG.get('odst_ai_equipment_drops'))
                 and self.game == 'Halo 3: ODST'))
                 ok = sum(1 for r in hub_results if r.get('ok') and not r.get('skip'))
@@ -11332,7 +11351,7 @@ class OptionsDialog(QDialog):
         # Pre-create the pages so the nav order is the designed one rather than
         # whichever group happens to be built first.
         for _name in ['Run rules', 'Skulls', 'Loadout', 'Co-op', 'Abilities', 'Patching',
-                      'Bugfixes', 'Interface']:
+                      'Bugfixes', 'Interface', 'Housekeeping']:
             self._opt_page(_name)
 
         # ---- Map archive: first, because it is about protecting what everything
@@ -11438,6 +11457,9 @@ class OptionsDialog(QDialog):
             "  • halo1.dll — the Halo 1 engine options (overheat drops the zoom, melee "
             "blocks fire, supercombine count, charge needs a release, Grunt birthday "
             "party); an option still ticked goes back in at the next patch\n"
+            "  • halo3.dll, halo3odst.dll and haloreach.dll — Disable Pre-Loading, "
+            "even with MCC running (live, and the file swapped by rename); a game still "
+            "ticked goes back in at the next patch\n"
             "  • Data\\UI\\scoredb.xml and data\\careerdb\\careerdb.xml — back to their "
             "pristine .bak\n"
             "  • the running MCC — the death penalty and the betrayal sign guard\n\n"
@@ -11453,7 +11475,30 @@ class OptionsDialog(QDialog):
             "maps on the way.")
         self.restore_stock_btn.clicked.connect(self._restore_stock_engine)
         vform.addRow("Revert engine:", self.restore_stock_btn)
-        self._opt_page("Patching").addWidget(vault_g, 20)
+        # Housekeeping (user, 2026-11-10): the archive / restore / revert buttons and the
+        # .bak clean-up below are upkeep, not patch settings, so they have their own page.
+        self._opt_page("Housekeeping").addWidget(vault_g, 10)
+
+        # ---- Delete .bak maps, one button per game ----
+        bak_g = QGroupBox("Delete .bak maps")
+        bform = QFormLayout(bak_g)
+        bform.setLabelAlignment(Qt.AlignRight)
+        self.delete_bak_btns = {}
+        for _game in ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4'):
+            b = QPushButton("Delete .bak maps…")
+            b.setToolTip(
+                "Permanently delete every backup map (<map>.map.bak, .vanilla.bak, "
+                ".presprint.bak ...) in %s's map folder%s, to free the space. You see the "
+                "list and its size first. .shipped / .og copies, the live maps and the "
+                "Baselines folder are not touched.\n\nA .bak that is still the ONLY "
+                "pristine copy of its map (no copy in the Baselines folder) is kept "
+                "unless you say otherwise: without it the next patch would take the "
+                "live, already patched map as the original."
+                % (_game, " (and its _bak folder)" if _game == 'Halo 2' else ""))
+            b.clicked.connect(lambda _=False, g=_game: self._delete_bak_maps(g))
+            self.delete_bak_btns[_game] = b
+            bform.addRow(_game + ":", b)
+        self._opt_page("Housekeeping").addWidget(bak_g, 20)
 
         # ---- Run rules ----
         func = QGroupBox("Run rules")
@@ -12726,18 +12771,26 @@ class OptionsDialog(QDialog):
                                      "and re-patch to restore.")
         form.addRow("Halo 3 cutscenes:", self.cutscenes_cb)
 
-        self.no_preload_cb = QCheckBox("Disable Pre-Loading")
-        self.no_preload_cb.setChecked(bool(CONFIG.get('no_level_preload')))
-        self.no_preload_cb.setToolTip(
-            "Allows patching while the last level is loaded and on their summary screen."
-            "\n\nHalo 3, ODST and Reach start loading the next level before the current "
-            "one ends, so MCC holds the next map open and it cannot be patched on the "
-            "summary screen. This stops that (Halo 4 never does it). The level's ending "
-            "cutscene stays skippable.\n\nA change to halo3.dll, halo3odst.dll and "
-            "haloreach.dll, made on every patch: at once in a running MCC, and in the "
-            "files for the next start. Untick and patch to put the dlls back. It does "
-            "not change the patch code. Off by default.")
-        form.addRow("Next level:", self.no_preload_cb)
+        def _preload_cb(game, dll, extra=''):
+            cb = QCheckBox("Disable Pre-Loading")
+            cb.setChecked(bool(CONFIG.get(PRELOAD_KEYS[game])))
+            cb.setToolTip(
+                "Allows patching while the last level is loaded and on their summary "
+                "screen.\n\nThis game starts loading the next level before the current "
+                "one ends, so MCC holds the next map open and it cannot be patched on the "
+                "summary screen. This stops that; the level's ending cutscene stays "
+                "skippable." + extra + "\n\nA change to %s, made on every patch (of any "
+                "game): at once in a running MCC, and in the file for the next start. "
+                "Untick and patch to put the dll back ('Revert engine patches' in "
+                "Housekeeping does it too). It does not change the patch code. Off by "
+                "default." % dll)
+            return cb
+        self.no_preload_h3_cb = _preload_cb('h3', 'halo3.dll')
+        form.addRow("Next level:", self.no_preload_h3_cb)
+        self.no_preload_odst_cb = _preload_cb(
+            'odst', 'halo3odst.dll',
+            " The level script's own 'prepare the next level' call is removed too.")
+        self.no_preload_reach_cb = _preload_cb('reach', 'haloreach.dll')
 
         self.keep_title_hud_cb = QCheckBox("Keep the HUD up through chapter titles")
         self.keep_title_hud_cb.setChecked(bool(CONFIG.get('keep_title_hud')))
@@ -13053,6 +13106,7 @@ class OptionsDialog(QDialog):
             "the hub with the game closed. The patcher checks and tells you when it is "
             "locked rather than reporting a failure you cannot act on.")
         odform.addRow("ODST hub:", self.odst_hub_cb)
+        odform.addRow("Next level:", self.no_preload_odst_cb)
 
         self.ignore_elite_h3_cb.setChecked(bool(CONFIG.get('ignore_elite_in_h3', True)))
         self.ignore_elite_h3_cb.setToolTip("On by default. In Halo 3 the Elites fight alongside you, "
@@ -13428,6 +13482,7 @@ class OptionsDialog(QDialog):
         self.reach_armed_cards_cb.toggled.connect(self.reach_armed_all_cb.setEnabled)
         self.reach_armed_all_cb.setEnabled(self.reach_armed_cards_cb.isChecked())
         rcform.addRow("", self.reach_armed_all_cb)
+        rcform.addRow("Next level:", self.no_preload_reach_cb)
 
         # ---- Halo 4 ----
         # Halo 4 is the one game that already sprints. It is innate -- matg's Default
@@ -14631,7 +14686,9 @@ class OptionsDialog(QDialog):
             'remove_boss_mods': not self._user_boss_cards,  # inverted UI ("Add Boss card"); boss_mods_removed() ORs in single-game at runtime
             'combine_heretic_hologram': self.combine_holo_cb.isChecked(),
             'remove_h3_cutscenes': self.cutscenes_cb.isChecked(),
-            'no_level_preload': self.no_preload_cb.isChecked(),
+            PRELOAD_KEYS['h3']: self.no_preload_h3_cb.isChecked(),
+            PRELOAD_KEYS['odst']: self.no_preload_odst_cb.isChecked(),
+            PRELOAD_KEYS['reach']: self.no_preload_reach_cb.isChecked(),
             'keep_title_hud': self.keep_title_hud_cb.isChecked(),
             'clear_profile_equipment': self.clear_profile_equipment_cb.isChecked(),
             'clear_profile_grenades': self.clear_profile_grenades_cb.isChecked(),
@@ -14924,6 +14981,10 @@ class OptionsDialog(QDialog):
                 "  \u2022 halo1.dll \u2014 the Halo 1 engine options (overheat drops the "
                 "zoom, melee blocks fire, supercombine count, charge needs a release, "
                 "Grunt birthday party); any still ticked goes back in at the next patch\n"
+                "  \u2022 halo3.dll, halo3odst.dll and haloreach.dll \u2014 Disable "
+                "Pre-Loading (done with MCC running too: in the running game, and the file "
+                "swapped in for the next start); a game still ticked goes back in at the "
+                "next patch\n"
                 "  \u2022 Data\\UI\\scoredb.xml and data\\careerdb\\careerdb.xml \u2014 "
                 "restored from their .bak (the stock copy taken on the first patch; a file an "
                 "MCC update replaced since is kept as the new stock copy)\n"
@@ -15077,6 +15138,30 @@ class OptionsDialog(QDialog):
                         else:
                             lines.append("%s %s: reverted (was %s)" % (label, eff, r.get('old')))
 
+            # ---- Disable Pre-Loading: halo3.dll / halo3odst.dll / haloreach.dll ----
+            # Synced on every patch (_apply_disable_preloading) and missing here until the
+            # user asked for it (2026-11-10). Unlike the dll loops above it runs with MCC
+            # open too: next_map_prefetch writes the running game and swaps a held file
+            # by rename (byte-checked: a dll matching neither form is refused).
+            try:
+                import next_map_prefetch
+                os.environ['HALO_MCC_ROOT'] = mcc_root()
+                for r in next_map_prefetch.sync(False, quiet=False):
+                    where = "%s (%s)" % (r.get('tag'), r.get('field'))
+                    if not r.get('ok'):
+                        lines.append("%s Disable Pre-Loading: FAILED (%s)"
+                                     % (where, r.get('reason')))
+                        failed += 1
+                    elif r.get('old') == 'off':
+                        lines.append("%s Disable Pre-Loading: already stock" % where)
+                    else:
+                        lines.append("%s Disable Pre-Loading: reverted (was %s)%s"
+                                     % (where, r.get('old'),
+                                        " -- " + r['note'] if r.get('note') else ""))
+            except Exception as e:
+                lines.append("Disable Pre-Loading: failed (%s)" % e)
+                failed += 1
+
             # ---- the shared MCC score file ---------------------------------------
             try:
                 import scoredb_patch
@@ -15206,6 +15291,79 @@ class OptionsDialog(QDialog):
         except Exception as e:
             QMessageBox.warning(self, title, "Could not load the vault tool:\n%s" % e)
             return None
+
+    def _delete_bak_maps(self, game):
+        """Delete one game's backup maps (map_vault.bak_maps), after showing the list.
+
+        The sibling .bak WAS the patcher's pristine copy until the Baselines folder took
+        that job; where a map has no copy there yet, the .bak still is the only one
+        (halo_patch.existing_baseline reads it), and deleting it would make the next
+        patch seed the baseline from the live -- patched -- map. Those are listed apart
+        and kept by default; deleting them too is a separate, explicit choice.
+        """
+        title = "Delete .bak maps — %s" % game
+        map_vault = self._vault_module(title)
+        if map_vault is None:
+            return
+        try:
+            found = map_vault.bak_maps(game, CONFIG.get('baseline_root') or None)
+        except Exception as e:
+            QMessageBox.warning(self, title, "Could not list the backup maps:\n%s" % e)
+            return
+        if not found:
+            QMessageBox.information(self, title, "%s has no .bak maps in %s."
+                                    % (game, map_vault.map_dir(game)))
+            return
+
+        def mb(n):
+            return "%.1f GB" % (n / 1e9) if n >= 1e9 else "%d MB" % round(n / 1e6)
+
+        spare = [(pth, n) for pth, n, only in found if not only]
+        only = [(pth, n) for pth, n, o in found if o]
+
+        def listing(rows):
+            names = ["    %s  (%s)" % (os.path.basename(pth), mb(n)) for pth, n in rows[:25]]
+            if len(rows) > 25:
+                names.append("    ... and %d more" % (len(rows) - 25))
+            return "\n".join(names)
+
+        text = "In %s:\n\n" % map_vault.map_dir(game)
+        if spare:
+            text += "%d backup map(s), %s:\n%s\n\n" % (
+                len(spare), mb(sum(n for _p, n in spare)), listing(spare))
+        if only:
+            text += ("%d .bak map(s) still the ONLY pristine copy of their map (no copy in "
+                     "the Baselines folder), %s:\n%s\nWithout one, the next patch takes the "
+                     "live, already patched map as the original. Kept unless you choose "
+                     "'Delete all'.\n\n" % (len(only), mb(sum(n for _p, n in only)),
+                                               listing(only)))
+        text += "Deleting cannot be undone (the files do not go to the Recycle Bin)."
+        box = QMessageBox(QMessageBox.Warning, title, text, parent=self)
+        del_spare = (box.addButton("Delete %d" % len(spare), QMessageBox.AcceptRole)
+                     if spare else None)
+        del_all = (box.addButton("Delete all %d" % len(found), QMessageBox.DestructiveRole)
+                   if only else None)
+        cancel = box.addButton(QMessageBox.Cancel)
+        box.setDefaultButton(cancel)
+        box.exec()
+        hit = box.clickedButton()
+        if hit is None or hit is cancel:
+            return
+        paths = [pth for pth, _n in (spare + only if hit is del_all else spare)]
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        try:
+            done, failed = map_vault.delete_bak_maps(paths)
+        finally:
+            QApplication.restoreOverrideCursor()
+        freed = sum(n for pth, n, _o in found if pth in paths and not os.path.exists(pth))
+        msg = "Deleted %d backup map(s), %s freed." % (done, mb(freed))
+        if failed:
+            msg += ("\n\nNot deleted:\n%s"
+                    % ("\n".join("    %s: %s" % (os.path.basename(pth), e)
+                                        for pth, e in failed[:10])))
+            QMessageBox.warning(self, title, msg)
+        else:
+            QMessageBox.information(self, title, msg)
 
     def _restore_all_bak(self):
         """Put each map's preserved copy back over the live map, for every game.
