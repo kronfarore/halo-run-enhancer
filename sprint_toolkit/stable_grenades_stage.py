@@ -11,7 +11,7 @@ Two sets under E:\HaloBackups\stable_grenades_test\, each laid out like the MCC 
             the eqip flag by itself stops a pickup chaining -- the H2 plasma pickup shares
             its hlmt TAG with the thrown plasma grenade, so the hlmt write reaches both.
   accel\    Halo 1 / 2 / 3: vanilla + "does accelerate" on every placed grenade (the gate?)
-Halo 2 and Halo 3 copies carry test buffs (god shield, run x2, a player-only x1000 weapon).
+Halo 2, Halo 3 and ODST copies carry test buffs (god shield, run x2, a player-only x1000 weapon).
 All go through the same apply_run with the same options, so the ONLY difference between
 the two is this card. stable_grenades_test.cmd swaps them into the game (and back).
 
@@ -214,6 +214,30 @@ def h3_test_buffs(path):
             for s in out]
 
 
+#: ODST cheat: the player's OWN Silenced SMG -- every h100 profile starts with it and it
+#: shares smg\damage_effects\smg_bullet with the SMG; no h100 squad carries either
+#: (survey 2026-11-11: cells hand out 12 other weapons, never an SMG), so x1000 on that
+#: one damage effect is player-only with no profile or placement write at all.
+ODST_CHEAT_DAMAGE = 'objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet'
+
+
+def odst_test_buffs(path):
+    """Test aids on every ODST copy: odst_armed_test.god_and_cheat (odst / odst_recon / ONI
+    hlmt body + shield 1e6, no stun; matg run / sneak x2) with smg_bullet x1000 as the
+    cheat and NO profile write (it gets a weapon name the map lacks)."""
+    import contextlib
+    import io
+    import odst_armed_test as T
+    T.CHEAT_WEAPON, T.CHEAT_DAMAGE = 'no profile weapon', ODST_CHEAT_DAMAGE
+    with contextlib.redirect_stdout(io.StringIO()):
+        m = hp.open_map(path, 'Halo 3: ODST')
+    out = []
+    T.god_and_cheat(m, out)
+    m.save(path)
+    return [s.replace('carbine_slug', 'smg_bullet (Silenced SMG + SMG)') for s in out
+            if 'covenant_carbine as the secondary' not in s]
+
+
 def flag_rows(path, game, reg):
     """(tag, flags) of the grenade pickups' item flags and models' damage flags."""
     m = hp.open_map(path, game)
@@ -274,6 +298,8 @@ def main(check_only=False, only=()):
                 print('     buffs:', '; '.join(h2_test_buffs(dst)), flush=True)
             if g == 'Halo 3':
                 print('     buffs:', '; '.join(h3_test_buffs(dst)), flush=True)
+            if g == 'Halo 3: ODST':
+                print('     buffs:', '; '.join(odst_test_buffs(dst)), flush=True)
         rows = {k: dict(flag_rows(v, g, reg)) for k, v in staged.items()}
         a = rows['vanilla']
         for k in sorted(set().union(*rows.values())):
