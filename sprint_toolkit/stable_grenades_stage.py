@@ -11,7 +11,7 @@ Two sets under E:\HaloBackups\stable_grenades_test\, each laid out like the MCC 
             the eqip flag by itself stops a pickup chaining -- the H2 plasma pickup shares
             its hlmt TAG with the thrown plasma grenade, so the hlmt write reaches both.
   accel\    Halo 1 / 2 / 3: vanilla + "does accelerate" on every placed grenade (the gate?)
-Halo 2, Halo 3 and ODST copies carry test buffs (god shield, run x2, a player-only x1000 weapon).
+Halo 2, Halo 3, ODST and Reach copies carry test buffs (god shield, run x2, a player-only x1000 weapon).
 All go through the same apply_run with the same options, so the ONLY difference between
 the two is this card. stable_grenades_test.cmd swaps them into the game (and back).
 
@@ -238,6 +238,26 @@ def odst_test_buffs(path):
             if 'covenant_carbine as the secondary' not in s]
 
 
+def reach_test_buffs(path):
+    """Test aids on every Reach copy: reach_armed_test.god_and_cheat (spartans hlmt body +
+    shield 1e6 in Old Damage Info AND root vitality 1e6, no stun; matg run / sneak x2) with
+    dmr_bullet x1000 as the cheat and NO profile write: every m60 player profile already
+    starts with the DMR, and no m60 cell or spawn point carries one (survey 2026-11-11;
+    Jun's rifle is sniper_rifle_june), so the player's own DMR is the player-only weapon."""
+    import contextlib
+    import io
+    import reach_armed_test as T
+    dmg = T.CHEAT_DAMAGE
+    T.CHEAT_WEAPON = 'no profile weapon'
+    with contextlib.redirect_stdout(io.StringIO()):
+        m = hp.open_map(path, 'Halo Reach')
+    out = []
+    T.god_and_cheat(m, out)
+    m.save(path)
+    assert dmg.endswith('dmr_bullet')
+    return [x for x in out if 'as the secondary of' not in x]
+
+
 def flag_rows(path, game, reg):
     """(tag, flags) of the grenade pickups' item flags and models' damage flags."""
     m = hp.open_map(path, game)
@@ -300,6 +320,8 @@ def main(check_only=False, only=()):
                 print('     buffs:', '; '.join(h3_test_buffs(dst)), flush=True)
             if g == 'Halo 3: ODST':
                 print('     buffs:', '; '.join(odst_test_buffs(dst)), flush=True)
+            if g == 'Halo Reach':
+                print('     buffs:', '; '.join(reach_test_buffs(dst)), flush=True)
         rows = {k: dict(flag_rows(v, g, reg)) for k, v in staged.items()}
         a = rows['vanilla']
         for k in sorted(set().union(*rows.values())):
