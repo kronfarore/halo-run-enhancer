@@ -251,6 +251,14 @@ Style tag, Engage / Evasion / Cover thresholds (Jackal 99 = hold position), vita
 Jackal-data clone with only that threshold 0 (`RETREAT_FIX`); if it fights, it replaces ROOT_SOURCE (keeps
 the Jackal's own health, movement, voice).
 
+Reach boots 5-6 (m20, 2026-11-11): the Jackal-data clone with retreat threshold 0 still never fired (it
+behaves a little differently); the bisect -- clone A actor Type 14, clone B the Skirmisher's STYLE tag (char
++0x34), both with the retreat fix -- had SOME Shotgun / Plasma Launcher (style) Jackals firing, no DMR /
+Concussion (type) ones. So the Jackal STYLE (its allowed behaviours) is the main switch, the rest of the
+Jackal data (engage / cover thresholds of 99 = hold position) keeps the remainder from fighting. Kept as
+shipped: the full Skirmisher-data clone (ROOT_SOURCE, boot 4: they all fire); RETREAT_FIX stays off.
+Halo 3 / ODST shieldless Jackals keep their own data and fire (confirmed there).
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?
