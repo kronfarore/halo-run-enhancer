@@ -53,6 +53,7 @@ def _c(s):
 
 
 #: (label, character, weapon): the Halo 3 findings carried over, every species at once
+#: v6 (Reach boot 5): the retreat fix alone did not make them fire -> bisect actor type vs style (layout())
 #: v5 (Reach boot 4, 2026-11-11): every Reach pair confirmed; the question left is WHY a shieldless
 #: Jackal on the Jackal's own character data holds a rifle and never fires. Suspect: Retreat Shield
 #: Threshold 0.001 (retreat whenever the shield is below it). v5 = Jackal-only cells on the JACKAL-data
@@ -181,6 +182,7 @@ def layout(m, report):
             two = ew.two_handed(m, hp, ew.weapon_info(m, wnames[wi]))
             if 'jackal' in ch and two:
                 jackal_cells.append(cell)
+                cell_label[cell] = label
             for sp in sps:
                 struct.pack_into('<hhh', m.data, sp + ew.SP_CHAR, -1, -1, -1)
                 v = sid if ('jackal' in ch and two and sid is not None) else 0
@@ -193,7 +195,7 @@ def layout(m, report):
         if k < need:
             report.append('  SHORT: %d of %d cells' % (k, need))
 
-    jackal_cells, done_cells = [], set()
+    jackal_cells, done_cells, cell_label = [], set(), {}
     report.append('enemy cells (nearest the start first):')
     deal(hostile, ENEMY_CASES)
     report.append('friendly Marine cells:')
@@ -207,6 +209,37 @@ def layout(m, report):
         ci = sl.of(_i16(m, e + ew.CELL_IDX))
         if ci is not None:
             struct.pack_into('<h', m.data, e + ew.CELL_IDX, ci)
+    # v6 BISECT (Reach boot 5: the Jackal-data clone with retreat threshold 0 still never fired):
+    # clone A = Jackal data + actor TYPE 14 (Skirmisher's), clone B = Jackal data + the Skirmisher's
+    # STYLE; A carries the DMR / Concussion Rifle cells, B the Shotgun / Plasma Launcher ones
+    jack = next(i for i, n in enumerate(sl.cnames) if (n or '').lower().endswith(BS + 'jackal'))
+    a_idx = sl.of(jack)
+    skirm = next((b for p, b in m.find_tags('char', '*') if p.lower().endswith(BS + 'skirmisher')), None)
+    if a_idx is not None and skirm is not None and sl.loose:
+        a_tag = dict(m.find_tags('char', sl.cnames[a_idx]))[sl.cnames[a_idx]]
+        n0 = len(sl.cnames)
+        sl._palette_add(sl.loose.pop(0))
+        b_idx = n0
+        b_tag = dict(m.find_tags('char', sl.cnames[b_idx]))[sl.cnames[b_idx]]
+        m.data[b_tag:b_tag + ew.CHAR_ROOT] = m.data[a_tag:a_tag + ew.CHAR_ROOT]
+        m.data[b_tag + 0x34:b_tag + 0x44] = m.data[skirm + 0x34:skirm + 0x44]       # Style
+        blk = a_tag + 0x6C                                # General Properties (0x2C), Type +0x4
+        n = m.i32(blk)
+        got = hp._h3_reserve(m, [n * 0x2C])
+        old = hp._block_base(m, blk)
+        m.data[got[0]:got[0] + n * 0x2C] = m.data[old:old + n * 0x2C]
+        for i in range(n):
+            struct.pack_into('<h', m.data, got[0] + i * 0x2C + 0x4, 14)
+        struct.pack_into('<I', m.data, blk + 4, m.off2data(got[0]))
+        moved = 0
+        for cell, label in cell_label.items():
+            if 'Shotgun' in label or 'Plasma Launcher' in label:
+                e = hp._block_base(m, cell + ew.CELL_CHARS)
+                struct.pack_into('<h', m.data, e + ew.CELL_IDX, b_idx)
+                moved += 1
+        report.append('  BISECT: clone A %s = Jackal data + actor type 14 (DMR, Concussion Rifle); clone B '
+                      '%s = Jackal data + the Skirmisher style (Shotgun, Plasma Launcher: %d cells)'
+                      % (sl.cnames[a_idx].rsplit(BS, 1)[-1], sl.cnames[b_idx].rsplit(BS, 1)[-1], moved))
     for r in sl.rows:
         report.append('  %s: %s' % (r['tag'], r['new']))
     report.append('  %d two-handed Jackal cells on the shieldless clone' % len(set(jackal_cells)))
