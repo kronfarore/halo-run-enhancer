@@ -241,6 +241,16 @@ animates the weapon by name), Jackals / Skirmishers / Marines through a donor + 
 Jackal clone takes the SKIRMISHER's character data (`ROOT_SOURCE`; Skirmishers fire those rifles), the
 Jackal look stays. v4: only open / unseen pairs, turrets in the nearest cells.
 
+Reach boot 4 (m20, 2026-11-11): EVERY open Reach pair right -- the turrets (Grunt own anims, Jackal /
+Skirmisher / Marine / Elite), Grunt Grenade Launcher, Marine Plasma Repeater, Elite Focus Rifle, Skirmisher
+Spartan Laser, and the Skirmisher-data Jackal clone FIRES (DMR, Concussion Rifle). Why the Jackal-data clone
+did not (char diff jackal vs skirmisher, Reach plugin char.xml): Retreat Properties (+0x150) Shield
+Threshold 0.001 vs 0 ("when shield vitality drops below given amount, retreat is triggered by
+low_shield_retreat_impulse") -- a shieldless Jackal retreats for good. Also differing: actor Type (6 / 14),
+Style tag, Engage / Evasion / Cover thresholds (Jackal 99 = hold position), vitality, leaping. v5 tests the
+Jackal-data clone with only that threshold 0 (`RETREAT_FIX`); if it fights, it replaces ROOT_SOURCE (keeps
+the Jackal's own health, movement, voice).
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?

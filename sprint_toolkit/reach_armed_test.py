@@ -53,29 +53,19 @@ def _c(s):
 
 
 #: (label, character, weapon): the Halo 3 findings carried over, every species at once
-#: v4 (Reach boot 3, 2026-11-11): only open / unseen pairs. Reach ignores the graph's class 'any'
-#: (turrets came out unarmed); Jackals' shieldless clone now takes the SKIRMISHER's character data
-#: (Jackals with DMR / Concussion Rifle never fired). Turrets first: the nearest cells.
+#: v5 (Reach boot 4, 2026-11-11): every Reach pair confirmed; the question left is WHY a shieldless
+#: Jackal on the Jackal's own character data holds a rifle and never fires. Suspect: Retreat Shield
+#: Threshold 0.001 (retreat whenever the shield is below it). v5 = Jackal-only cells on the JACKAL-data
+#: clone with that threshold 0 (ew.RETREAT_FIX), the shielded Plasma Pistol Jackal as the control.
 ENEMY_CASES = (
-    ('Grunt + Plasma Turret (own pgt anims)', _c('grunt'), _w('turret/plasma_turret/plasma_turret')),
-    ('Jackal + Machine Gun Turret (taught + grip)', _c('jackal'), _w('turret/machinegun_turret/machinegun_turret')),
-    ('Grunt + Machine Gun Turret (own mgt anims)', _c('grunt'), _w('turret/machinegun_turret/machinegun_turret')),
-    ('Jackal + Plasma Turret (taught + grip)', _c('jackal'), _w('turret/plasma_turret/plasma_turret')),
-    ('Skirmisher + Plasma Turret (taught + grip)', C + 'jackal' + BS + 'ai' + BS + 'skirmisher', _w('turret/plasma_turret/plasma_turret')),
-    ('Elite + Plasma Turret', _c('elite'), _w('turret/plasma_turret/plasma_turret')),
-    ('Jackal + DMR (Skirmisher-based clone)', _c('jackal'), _w('rifle/dmr/dmr')),
-    ('Jackal + Concussion Rifle (Skirmisher-based clone)', _c('jackal'), _w('rifle/concussion_rifle/concussion_rifle')),
-    ('Jackal + Shotgun (Skirmisher-based clone)', _c('jackal'), _w('rifle/shotgun/shotgun')),
-    ('Grunt + Grenade Launcher (taught)', _c('grunt'), _w('rifle/grenade_launcher/grenade_launcher')),
-    ('Grunt + Concussion Rifle (taught)', _c('grunt'), _w('rifle/concussion_rifle/concussion_rifle')),
-    ('Grunt + Plasma Repeater (taught)', _c('grunt'), _w('rifle/plasma_repeater/plasma_repeater')),
-    ('Skirmisher + Spartan Laser (taught)', C + 'jackal' + BS + 'ai' + BS + 'skirmisher', _w('support_high/spartan_laser/spartan_laser')),
-    ('Elite + Focus Rifle', _c('elite'), _w('rifle/focus_rifle/focus_rifle')),
+    ('Jackal + DMR (Jackal data, retreat threshold 0)', _c('jackal'), _w('rifle/dmr/dmr')),
+    ('Jackal + Concussion Rifle (Jackal data, retreat threshold 0)', _c('jackal'), _w('rifle/concussion_rifle/concussion_rifle')),
+    ('Jackal + Shotgun (Jackal data, retreat threshold 0)', _c('jackal'), _w('rifle/shotgun/shotgun')),
+    ('Jackal + Plasma Launcher (Jackal data, retreat threshold 0)', _c('jackal'), _w('support_high/plasma_launcher/plasma_launcher')),
+    ('Jackal + Plasma Pistol (shield, control)', _c('jackal'), _w('pistol/plasma_pistol/plasma_pistol')),
 )
 MARINE_CASES = (
-    ('Marine + Plasma Turret (taught + grip)', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('turret/plasma_turret/plasma_turret')),
-    ('Marine + Machine Gun Turret (taught + grip)', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('turret/machinegun_turret/machinegun_turret')),
-    ('Marine + Plasma Repeater', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('rifle/plasma_repeater/plasma_repeater')),
+    ('Marine + DMR', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('rifle/dmr/dmr')),
 )
 #: cells per case; None = EVERY cell of the level (v2, ODST boot 1: the nearest Grunt / Jackal
 #: cells were not the first ones met)
@@ -264,6 +254,7 @@ def build(level='m20'):
     with contextlib.redirect_stdout(io.StringIO()):
         m = hp.open_map(src, GAME)
     ew.bind(GAME, m, hp)
+    ew.RETREAT_FIX = {GAME: True}                 # v5: the Jackal-data clone, retreat threshold 0
     report = ['%s from %s' % (os.path.basename(out), src)]
     # the Jackal graph species' own firing rows BEFORE the clones copy their roots
     for r in ew.species_firing(m, hp, [(ew.enemy_of(ch), next((p for p, _b in m.find_tags('weap', '*')

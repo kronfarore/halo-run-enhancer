@@ -1177,6 +1177,12 @@ CLASS_ANY = True
 #: (Reach) whose character data a shieldless Jackal clone takes (by basename): the Skirmishers fire
 #: rifles where Jackals with no shield did not
 ROOT_SOURCE = {'Halo Reach': {'jackal': 'skirmisher', 'jackal_major': 'skirmisher_major'}}
+#: (Reach, 2026-11-11) the likelier cause, under test: Retreat Properties (char +0x150, 0x58) Shield
+#: Threshold (+0x4, Jackal 0.001, Skirmisher 0) -- "when shield vitality drops below given amount,
+#: retreat is triggered": a shieldless Jackal sits in retreat for good. RETREAT_FIX: the clone keeps the
+#: JACKAL's data with that threshold 0 (ROOT_SOURCE then unused)
+RETREAT_FIX = {}
+CHAR_RETREAT, CHAR_RETREAT_ES = 0x150, 0x58
 #: names a Reach shieldless Jackal variant may take (must exist as a string id in the map)
 SHIELDLESS_NAMES = ('shieldless', 'no_shield', 'unshielded', 'jackal_shieldless', 'jackal_noshield',
                     # Reach has none of those: global object-function strings in every map, named
@@ -1329,7 +1335,8 @@ class _Shieldless:
         if not got:
             return None
         root = src
-        alt = ROOT_SOURCE.get(GAME, {}).get(self.cnames[ci].lower().rsplit(BS, 1)[-1])
+        leaf = self.cnames[ci].lower().rsplit(BS, 1)[-1]
+        alt = None if RETREAT_FIX.get(GAME) else ROOT_SOURCE.get(GAME, {}).get(leaf)
         if alt:
             # (Reach boot 3) shieldless Jackals held DMR / Concussion Rifle and never fired, while
             # Skirmishers -- same biped, same graph -- fire them: the clone takes the SKIRMISHER's
@@ -1338,6 +1345,16 @@ class _Shieldless:
                         if p.lower().rsplit(BS, 1)[-1] == alt), None)
             root = hit if hit is not None else src
         m.data[dst:dst + CHAR_ROOT] = m.data[root:root + CHAR_ROOT]
+        if RETREAT_FIX.get(GAME):
+            blk = dst + CHAR_RETREAT
+            n = max(0, m.i32(blk))
+            rg = hp._h3_reserve(m, [n * CHAR_RETREAT_ES]) if n else None
+            if rg:
+                old = hp._block_base(m, blk)
+                m.data[rg[0]:rg[0] + n * CHAR_RETREAT_ES] = m.data[old:old + n * CHAR_RETREAT_ES]
+                for i in range(n):
+                    struct.pack_into('<f', m.data, rg[0] + i * CHAR_RETREAT_ES + 0x4, 0.0)
+                struct.pack_into('<I', m.data, blk + 4, m.off2data(rg[0]))
         el = bytearray(CHAR_VARIANT_ES)
         v = m.follow_all(src, [CHAR_VARIANTS], [CHAR_VARIANT_ES], 'all')
         if v:
