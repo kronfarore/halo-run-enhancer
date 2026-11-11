@@ -218,7 +218,9 @@ PORT = {
             # and 20 px left at 1080p; at its depth (0.12 wu, f ~1500 px) = 0.019 down, 0.002 right
             # boot 2: 'move 2 more units down' (1 unit = 0.01, the SAW's reading)
             # boot 3: 'back up 1 unit'
-            (DMR + r'\dmr.weapon', 'first person weapon offset', '', 0, 0, [-0.005, -0.002, -0.033]),
+            # boot 7: the position moved into the animation (fp_anims `model_offset`, the same -0.005, -0.002,
+            # -0.033): the long-fidget video drew the hand beside the gun the way a GUN-ONLY shift does
+            (DMR + r'\dmr.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, 0.0]),
             # the scope picture (h2_port_scope `art`) centred on the crosshair: its registration
             # point stays the widget's 0, 0 (a zero field), so the offset is half the 1024 picture
             (r'ui\hud\dmr.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 9, 0, [-512, -512]),
@@ -358,6 +360,8 @@ PORT = {
         # melee 1 129 -> 47, melee 2 108 -> 64 (y -0.3 there: 71 without), reload 38 -> 16. Reach's own arms: 4.7% of
         # their edges in idle, ours 8.5% -> 2.0%. Gun frame, wu (0.75 JMS units down). Chief only: the Arbiter unjudged
         # boot 3: 'slightly up in idle and fidget'; the LONG fidget (var2): 'the gun doesn't sit on the left hand'
+        # boot 7: the first-person position, arms and gun together (was the weapon tag's offset)
+        'model_offset': (-0.005, -0.002, -0.033),
         'left_arm_offset': {'masterchief': {'*': (0.0, 0.0, -0.0075),
                                             'first_person:idle': (0.0, 0.0, -0.005),
                                             'first_person:posing:var1': (0.0, 0.0, -0.005),

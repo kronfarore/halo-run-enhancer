@@ -525,6 +525,14 @@ def build(key, species, only=None, write=True):
                     for i in left:
                         q, t = f[i]
                         f[i] = (q, (t[0] + d[0], t[1] + d[1], t[2] + d[2]))
+        mo = cfg.get('model_offset')
+        if mo and typ != 'overlay':
+            # `model_offset` (x, y, z) wu (the DMR, B1 boot 7): the first-person POSITION baked into the
+            # animation -- every node but camera_control moves, arms and gun together. The weapon tag's 'first
+            # person weapon offset' is not proven to move the arms with the gun (the user's long-fidget video:
+            # the hand sat beside the gun the way a gun-only shift draws it), so the port keeps that field 0
+            fr = [[(q, (t[0] + mo[0], t[1] + mo[1], t[2] + mo[2])) if n != 'camera_control' else (q, t)
+                   for (q, t), (n, _p) in zip(f, kept_nodes)] for f in fr]
         turn = ((cfg.get('left_hand_turn') or {}).get(species) or {}).get(h3name)
         if turn and typ != 'overlay':
             # `left_hand_turn` {species: {animation: {'deg', 'axis': 'x'|'y'|'z', 'roll': (upright, rolled)}}} (the
