@@ -327,7 +327,9 @@ PORT = {
             # first-person placement: the DMR's -0.005, 0, -0.004 to start; boot 1: 'the rifle needs to go much
             # further down' (its scope sat ~500 px high at 1080p: ~0.035 wu at the scope's distance) -> -0.04;
             # boot 2: 'one more unit down'
-            (WP, 'first person weapon offset', '', 0, 0, [-0.005, 0.0, -0.05]),
+            # -> the DMR's boot 7 (h2-fp-weapon-offset-gun-only): this field moves the GUN alone, off the hands; the
+            # position lives in fp_anims `model_offset` now, the field 0 (the screen position the same)
+            (WP, 'first person weapon offset', '', 0, 0, [0.0, 0.0, 0.0]),
             # the scope's widgets (h2_port_scope `art`): the picture centred, a glyph's centre +-345 units (385 px)
             (r'ui\hud\needle_rifle.new_hud_definition', 'fullscreen offset', 'bitmap widgets', 7, 0, [-512, -512]),
             # boot 2 (screenshot): the glyphs' centres at -390 / +384 px, the side cutouts' at +-354 px: moved
@@ -483,6 +485,8 @@ PORT = {
         # OFFSCREEN except in reload / melee, and the user called the world model's DIMMING needles (the needler
         # shader's ammo function, no animation) the more correct look: dropped, the FP needles dim the same way
         # no Halo 2 slot for Reach's sprint / jump / land / fall / ready_initial / equipment (the SAW's list)
+        # the FP position (boots 1-3: -0.005, 0, -0.05 in the weapon field, which moved the gun alone): every node
+        'model_offset': (-0.005, 0.0, -0.05),
         'skip': ['first_person:ammunition_needles', 'first_person:look', 'first_person:acceleration_screens', 'first_person:fall', 'first_person:jump',
                  'first_person:land_hard', 'first_person:land_soft', 'first_person:ready_initial',
                  'first_person:sprint_enter', 'first_person:sprint_exit', 'first_person:sprint_loop',
