@@ -159,6 +159,7 @@ def bind(game, m=None, hp=None):
     globals().update(_DEFAULTS)
     globals().update(LAYOUTS[game])
     globals()['REPOSE'] = REPOSE_BY_GAME.get(game, {})
+    globals()['CLASS_ANY'] = game != 'Halo Reach'
     FIRING_BLOCKS = ((GEN_PROPS, GEN_PROPS_ES, 0x10), (GEN_FPP, 0x1C, 0xC))
     if m is not None:
         DUAL_CLASS = find_sid(m, hp, 'dual') or (0x1F4 if game == 'Halo 3' else DUAL_CLASS)
@@ -279,7 +280,7 @@ class Graphs:
             M = g['modes'].get(mo)
             if not M:
                 continue
-            for c in (cl, self.any):
+            for c in (cl, self.any) if CLASS_ANY else (cl,):
                 C = M.get(c)
                 if not C:
                     continue
@@ -464,6 +465,20 @@ def _eff_class(graphs, g, info):
     return ov if ov is not None and ov != graphs.any and info['class'] != DUAL_CLASS else info['class']
 
 
+def _named_type_class(graphs, gs, info):
+    """[(graph, class)] when EVERY graph animates the weapon under its own NAME (a type labelled
+    with the weapon's name, an 'idle' among its actions) in the combat mode of some class --
+    Bungie's own animations reached by a Weapon List row alone -- else None."""
+    out = []
+    for g in gs:
+        M = g['modes'].get(graphs.combat) or {}
+        cl = next((c for c, tys in M.items() if graphs.idle in tys.get(info['name'], ())), None)
+        if cl is None:
+            return None
+        out.append((g, cl))
+    return out
+
+
 def _pose_plan(m, graphs, gs, info, donors):
     """THE POSE (boot 4, 2026-11-04: turrets and the Brute Shot held through the Rocket Launcher's
     class pointed at the sky -- a weapon's grip is built for its OWN class's pose). A donor of the
@@ -526,11 +541,11 @@ GRIP_NAME = {'Grunt': 'right_hand_grunt', 'Jackal': 'left_hand_jackal', 'Marine'
              'Bugger': 'right_hand_jackal'}
 #: the biped(s) per species whose Preferred Gun Node (+0x1A4) must name GRIP_NAME
 GRIP_BIPEDS = {'Grunt': ('grunt',), 'Jackal': ('jackal',), 'Marine': ('marine', 'marine_female'),
-               'Bugger': ('bugger',)}
+               'Bugger': ('bugger',), 'Skirmisher': ('jackal',)}      # Reach: the Jackal biped
 BIPD_PREFERRED = 0x1A4
 #: the off-hand (IK) markers compared, most specific first (then any 'left_hand*')
 OFFHAND = {'Marine': ('left_hand_marine', 'left_hand'), 'Grunt': ('left_hand',),
-           'Jackal': ('left_hand',), 'Bugger': ('left_hand',)}
+           'Jackal': ('left_hand',), 'Bugger': ('left_hand',), 'Skirmisher': ('left_hand',)}
 MODE_NODES, MODE_NODE_ES, MODE_GROUPS, MODE_GROUP_ES, MARKER_ES = 0x30, 0x60, 0x3C, 0x10, 0x24
 
 
@@ -852,6 +867,17 @@ def teach(m, hp, graphs, wanted):
             info = weapon_info(m, tags.get(w.lower(), w))
             if base in NOT_TAUGHT or not info:
                 continue
+            named = _named_type_class(graphs, gs, info)
+            if named:
+                for g, cl in named:
+                    g['wl'][info['name']] = cl
+                    adds.setdefault(id(g), (g, {}))[1][info['name']] = cl
+                if all(graphs.holds(g, info['class'], info['name']) for g, _c in named):
+                    taught.setdefault(enemy, set()).add(w)
+                    rows.append({'tag': 'jmad ' + enemy, 'field': 'taught: ' + base, 'ok': True,
+                                 'new': "through the graph's own '%s' animations (%d graphs)"
+                                 % (base, len(gs))})
+                    continue
             pose = None if base in GRIP_FIX and enemy not in POSE_OK else \
                 _pose_plan(m, graphs, gs, info, donors)
             if pose:
@@ -1144,6 +1170,13 @@ CHAR_ROOT, CHAR_VARIANTS, CHAR_VARIANT_ES, CHAR_MAJOR = 0x1F8, 0x54, 0x14, 0x44
 #: a spare palette character (no squad uses it, no character names it as parent / major) taken
 #: for a shieldless Jackal clone -- these first, then any other spare (Firefight's survival
 #: characters and the unused Flood leftovers sit in every ODST campaign palette)
+#: (Reach boot 3) Reach does not hold a weapon through the graph's class 'any' (Halo 3 / ODST do:
+#: Flood Brutes carry rifles that way): Grunts with the Plasma Turret and Jackals with the Machine
+#: Gun Turret -- no turret class in their graphs -- came out unarmed. bind() sets it per game.
+CLASS_ANY = True
+#: (Reach) whose character data a shieldless Jackal clone takes (by basename): the Skirmishers fire
+#: rifles where Jackals with no shield did not
+ROOT_SOURCE = {'Halo Reach': {'jackal': 'skirmisher', 'jackal_major': 'skirmisher_major'}}
 #: names a Reach shieldless Jackal variant may take (must exist as a string id in the map)
 SHIELDLESS_NAMES = ('shieldless', 'no_shield', 'unshielded', 'jackal_shieldless', 'jackal_noshield',
                     # Reach has none of those: global object-function strings in every map, named
@@ -1295,7 +1328,16 @@ class _Shieldless:
         got = hp._h3_reserve(m, [CHAR_VARIANT_ES])
         if not got:
             return None
-        m.data[dst:dst + CHAR_ROOT] = m.data[src:src + CHAR_ROOT]
+        root = src
+        alt = ROOT_SOURCE.get(GAME, {}).get(self.cnames[ci].lower().rsplit(BS, 1)[-1])
+        if alt:
+            # (Reach boot 3) shieldless Jackals held DMR / Concussion Rifle and never fired, while
+            # Skirmishers -- same biped, same graph -- fire them: the clone takes the SKIRMISHER's
+            # character data, the Jackal's look (the shieldless variant below)
+            hit = next((b for p, b in m.find_tags('char', '*')
+                        if p.lower().rsplit(BS, 1)[-1] == alt), None)
+            root = hit if hit is not None else src
+        m.data[dst:dst + CHAR_ROOT] = m.data[root:root + CHAR_ROOT]
         el = bytearray(CHAR_VARIANT_ES)
         v = m.follow_all(src, [CHAR_VARIANTS], [CHAR_VARIANT_ES], 'all')
         if v:
@@ -1307,7 +1349,8 @@ class _Shieldless:
         # (ODST boot 3) the cell's Major Upgrade turns some units into the character's MAJOR
         # CHARACTER (jackal -> jackal_major, shielded): the clone's major is the major's clone,
         # or none when that cannot be made (the upgrade is lost, the shield stays off)
-        major = hp._tag_name_by_id(m, m.u32(dst + CHAR_MAJOR + 0xC))
+        # the SOURCE's major (jackal -> jackal_major), whatever the copied root names
+        major = hp._tag_name_by_id(m, m.u32(src + CHAR_MAJOR + 0xC))
         if major and major.lower() != self.cnames[ci].lower():
             mi = next((i for i, n in enumerate(self.cnames) if (n or '').lower() == major.lower()), None)
             if mi is None:

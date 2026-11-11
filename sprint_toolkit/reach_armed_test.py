@@ -53,27 +53,28 @@ def _c(s):
 
 
 #: (label, character, weapon): the Halo 3 findings carried over, every species at once
-#: v3 (Reach boot 2, 2026-11-10): the confirmed pairs are out (Elite AR / Rocket, Skirmisher AR, Rocket on
-#: the Jackal graph, Grunt Spike Rifle / Plasma Launcher / DMR, Marine Needle Rifle / Plasma Launcher,
-#: the shielded Plasma Pistol control); the TURRETS come first so they take the nearest cells (the
-#: unarmed Grunts / Jackal); the DMR Jackal stays (it held the gun but hardly attacked)
+#: v4 (Reach boot 3, 2026-11-11): only open / unseen pairs. Reach ignores the graph's class 'any'
+#: (turrets came out unarmed); Jackals' shieldless clone now takes the SKIRMISHER's character data
+#: (Jackals with DMR / Concussion Rifle never fired). Turrets first: the nearest cells.
 ENEMY_CASES = (
-    ('Grunt + Plasma Turret', _c('grunt'), _w('turret/plasma_turret/plasma_turret')),
-    ('Jackal + Machine Gun Turret (shieldless)', _c('jackal'), _w('turret/machinegun_turret/machinegun_turret')),
-    ('Jackal + DMR (shieldless, own firing rows)', _c('jackal'), _w('rifle/dmr/dmr')),
-    ('Jackal + Shotgun (shieldless)', _c('jackal'), _w('rifle/shotgun/shotgun')),
-    ('Jackal + Concussion Rifle (shieldless)', _c('jackal'), _w('rifle/concussion_rifle/concussion_rifle')),
-    ('Skirmisher + DMR', C + 'jackal' + BS + 'ai' + BS + 'skirmisher', _w('rifle/dmr/dmr')),
-    ('Skirmisher + Plasma Launcher', C + 'jackal' + BS + 'ai' + BS + 'skirmisher', _w('support_high/plasma_launcher/plasma_launcher')),
-    ('Grunt + Shotgun', _c('grunt'), _w('rifle/shotgun/shotgun')),
+    ('Grunt + Plasma Turret (own pgt anims)', _c('grunt'), _w('turret/plasma_turret/plasma_turret')),
+    ('Jackal + Machine Gun Turret (taught + grip)', _c('jackal'), _w('turret/machinegun_turret/machinegun_turret')),
+    ('Grunt + Machine Gun Turret (own mgt anims)', _c('grunt'), _w('turret/machinegun_turret/machinegun_turret')),
+    ('Jackal + Plasma Turret (taught + grip)', _c('jackal'), _w('turret/plasma_turret/plasma_turret')),
+    ('Skirmisher + Plasma Turret (taught + grip)', C + 'jackal' + BS + 'ai' + BS + 'skirmisher', _w('turret/plasma_turret/plasma_turret')),
+    ('Elite + Plasma Turret', _c('elite'), _w('turret/plasma_turret/plasma_turret')),
+    ('Jackal + DMR (Skirmisher-based clone)', _c('jackal'), _w('rifle/dmr/dmr')),
+    ('Jackal + Concussion Rifle (Skirmisher-based clone)', _c('jackal'), _w('rifle/concussion_rifle/concussion_rifle')),
+    ('Jackal + Shotgun (Skirmisher-based clone)', _c('jackal'), _w('rifle/shotgun/shotgun')),
     ('Grunt + Grenade Launcher (taught)', _c('grunt'), _w('rifle/grenade_launcher/grenade_launcher')),
-    ('Elite + Sniper Rifle', _c('elite'), _w('rifle/sniper_rifle/sniper_rifle')),
-    ('Elite + Shotgun', _c('elite'), _w('rifle/shotgun/shotgun')),
+    ('Grunt + Concussion Rifle (taught)', _c('grunt'), _w('rifle/concussion_rifle/concussion_rifle')),
+    ('Grunt + Plasma Repeater (taught)', _c('grunt'), _w('rifle/plasma_repeater/plasma_repeater')),
+    ('Skirmisher + Spartan Laser (taught)', C + 'jackal' + BS + 'ai' + BS + 'skirmisher', _w('support_high/spartan_laser/spartan_laser')),
+    ('Elite + Focus Rifle', _c('elite'), _w('rifle/focus_rifle/focus_rifle')),
 )
 MARINE_CASES = (
-    ('Marine + Plasma Turret', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('turret/plasma_turret/plasma_turret')),
-    ('Marine + Concussion Rifle', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('rifle/concussion_rifle/concussion_rifle')),
-    ('Marine + Focus Rifle', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('rifle/focus_rifle/focus_rifle')),
+    ('Marine + Plasma Turret (taught + grip)', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('turret/plasma_turret/plasma_turret')),
+    ('Marine + Machine Gun Turret (taught + grip)', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('turret/machinegun_turret/machinegun_turret')),
     ('Marine + Plasma Repeater', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('rifle/plasma_repeater/plasma_repeater')),
 )
 #: cells per case; None = EVERY cell of the level (v2, ODST boot 1: the nearest Grunt / Jackal
@@ -274,6 +275,9 @@ def build(level='m20'):
     want, graphs = {}, ew.Graphs(m, hp)
     for cases in (ENEMY_CASES, MARINE_CASES):
         for _l, ch, wp in cases:
+            # by NAME: Reach keeps its turrets under objects\vehicles
+            wp = next((p for p, _b in m.find_tags('weap', '*')
+                       if p.lower().rsplit(BS, 1)[-1] == wp.lower().rsplit(BS, 1)[-1]), wp)
             e, wi = ew.enemy_of(ch), ew.weapon_info(m, wp)
             if wi and (not graphs.allows(e, wi['class'], wi['name'])
                        or wp.lower().rsplit(BS, 1)[-1] in ew.REPOSE.get(e, ())):

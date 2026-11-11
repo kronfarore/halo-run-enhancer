@@ -231,6 +231,16 @@ they are Reach's only weapons with the Support Weapon flag (weap +0x204 bit 8): 
 spares only from another mission's loose characters (level id from level_salt). Test v2 = ONI Sword Base
 (m20): every species resident from the first set, first squads 33-38 wu out.
 
+Reach boots 2-3 (m20, 2026-11-10/11): confirmed Elite Sniper / Shotgun, Grunt Shotgun, Marine Focus /
+Concussion Rifle, Skirmisher Plasma Launcher / DMR (plus boot 2's list). Open: unarmed Grunts / Jackals,
+Jackals with DMR / Concussion Rifle holding but never firing (also with their own firing rows). Fixes:
+(1) Reach does NOT hold a weapon through the graph's class 'any' (CLASS_ANY False for Reach): the turrets
+(no turret class in the Grunt / Jackal / Marine graphs) are taught now -- Grunts through their graph's own
+'plasma_turret' / 'machinegun_turret' types (`_named_type_class`: a Weapon List row to the class that
+animates the weapon by name), Jackals / Skirmishers / Marines through a donor + grip; (2) the shieldless
+Jackal clone takes the SKIRMISHER's character data (`ROOT_SOURCE`; Skirmishers fire those rifles), the
+Jackal look stays. v4: only open / unseen pairs, turrets in the nearest cells.
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?
