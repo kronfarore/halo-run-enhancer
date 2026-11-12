@@ -53,16 +53,24 @@ def _c(s):
 
 
 #: (label, character, weapon): the Halo 3 findings carried over, every species at once
-#: v6 (Reach boot 5): the retreat fix alone did not make them fire -> bisect actor type vs style (layout())
-#: v5 (Reach boot 4, 2026-11-11): every Reach pair confirmed; the question left is WHY a shieldless
-#: Jackal on the Jackal's own character data holds a rifle and never fires. Suspect: Retreat Shield
-#: Threshold 0.001 (retreat whenever the shield is below it). v5 = Jackal-only cells on the JACKAL-data
-#: clone with that threshold 0 (ew.RETREAT_FIX), the shielded Plasma Pistol Jackal as the control.
-ENEMY_CASES = (
-    ('Jackal + DMR (Jackal data, retreat threshold 0)', _c('jackal'), _w('rifle/dmr/dmr')),
-    ('Jackal + Concussion Rifle (Jackal data, retreat threshold 0)', _c('jackal'), _w('rifle/concussion_rifle/concussion_rifle')),
-    ('Jackal + Shotgun (Jackal data, retreat threshold 0)', _c('jackal'), _w('rifle/shotgun/shotgun')),
-    ('Jackal + Plasma Launcher (Jackal data, retreat threshold 0)', _c('jackal'), _w('support_high/plasma_launcher/plasma_launcher')),
+#: v7 (Reach boot 6, 2026-11-12): one weapon per Jackal clone; each clone = the base + one Skirmisher block
+BISECT = (
+    ('DMR', (0x120,)), ('Concussion Rifle', (0x138,)), ('Shotgun', (0x144,)),
+    ('Plasma Launcher', (0x84,)), ('Rocket Launcher', (0x108,)), ('Spike Rifle', (0xCC, 0xD8)),
+    ('Grenade Launcher', (0x6C,)), ('Plasma Repeater', (0x90,)), ('Assault Rifle', (0x168,)),
+    ('Sniper Rifle', (0x1EC, 0x1F8)), ('Needle Rifle', (0x240,)), ('Focus Rifle', ()),
+)
+BLOCK_NAMES = {(0x120,): 'Engage', (0x138,): 'Evasion', (0x144,): 'Cover', (0x84,): 'Emotion (danger)',
+               (0x108,): 'Firing Point Evaluator', (0xCC, 0xD8): 'Movement + Throttle Styles',
+               (0x6C,): 'General Properties', (0x90,): 'Vitality', (0x168,): 'Pre-Search',
+               (0x1EC, 0x1F8): 'Weapons + Firing Pattern Properties', (0x240,): 'Stimuli Responses'}
+_WP = {'DMR': 'rifle/dmr/dmr', 'Concussion Rifle': 'rifle/concussion_rifle/concussion_rifle',
+       'Shotgun': 'rifle/shotgun/shotgun', 'Plasma Launcher': 'support_high/plasma_launcher/plasma_launcher',
+       'Rocket Launcher': 'support_high/rocket_launcher/rocket_launcher', 'Spike Rifle': 'rifle/spike_rifle/spike_rifle',
+       'Grenade Launcher': 'rifle/grenade_launcher/grenade_launcher', 'Plasma Repeater': 'rifle/plasma_repeater/plasma_repeater',
+       'Assault Rifle': 'rifle/assault_rifle/assault_rifle', 'Sniper Rifle': 'rifle/sniper_rifle/sniper_rifle',
+       'Needle Rifle': 'rifle/needle_rifle/needle_rifle', 'Focus Rifle': 'rifle/focus_rifle/focus_rifle'}
+ENEMY_CASES = tuple(('Jackal + %s (bisect)' % w, _c('jackal'), _w(_WP[w])) for w, _b in BISECT) + (
     ('Jackal + Plasma Pistol (shield, control)', _c('jackal'), _w('pistol/plasma_pistol/plasma_pistol')),
 )
 MARINE_CASES = (
@@ -209,37 +217,55 @@ def layout(m, report):
         ci = sl.of(_i16(m, e + ew.CELL_IDX))
         if ci is not None:
             struct.pack_into('<h', m.data, e + ew.CELL_IDX, ci)
-    # v6 BISECT (Reach boot 5: the Jackal-data clone with retreat threshold 0 still never fired):
-    # clone A = Jackal data + actor TYPE 14 (Skirmisher's), clone B = Jackal data + the Skirmisher's
-    # STYLE; A carries the DMR / Concussion Rifle cells, B the Shotgun / Plasma Launcher ones
+    # v7 BISECT (Reach boot 6: the Skirmisher STYLE made SOME Jackals fire, the actor type none): every
+    # weapon group gets its own clone = BASE (Jackal data + the Skirmisher's Style + retreat threshold
+    # 0) + ONE more Skirmisher block (its 12-byte block field copied: the Skirmisher's elements shared)
     jack = next(i for i, n in enumerate(sl.cnames) if (n or '').lower().endswith(BS + 'jackal'))
-    a_idx = sl.of(jack)
+    base_idx = sl.of(jack)
     skirm = next((b for p, b in m.find_tags('char', '*') if p.lower().endswith(BS + 'skirmisher')), None)
-    if a_idx is not None and skirm is not None and sl.loose:
-        a_tag = dict(m.find_tags('char', sl.cnames[a_idx]))[sl.cnames[a_idx]]
-        n0 = len(sl.cnames)
-        sl._palette_add(sl.loose.pop(0))
-        b_idx = n0
-        b_tag = dict(m.find_tags('char', sl.cnames[b_idx]))[sl.cnames[b_idx]]
-        m.data[b_tag:b_tag + ew.CHAR_ROOT] = m.data[a_tag:a_tag + ew.CHAR_ROOT]
-        m.data[b_tag + 0x34:b_tag + 0x44] = m.data[skirm + 0x34:skirm + 0x44]       # Style
-        blk = a_tag + 0x6C                                # General Properties (0x2C), Type +0x4
-        n = m.i32(blk)
-        got = hp._h3_reserve(m, [n * 0x2C])
-        old = hp._block_base(m, blk)
-        m.data[got[0]:got[0] + n * 0x2C] = m.data[old:old + n * 0x2C]
-        for i in range(n):
-            struct.pack_into('<h', m.data, got[0] + i * 0x2C + 0x4, 14)
-        struct.pack_into('<I', m.data, blk + 4, m.off2data(got[0]))
-        moved = 0
+    if base_idx is not None and skirm is not None:
+        base_tag = dict(m.find_tags('char', sl.cnames[base_idx]))[sl.cnames[base_idx]]
+        m.data[base_tag + 0x34:base_tag + 0x44] = m.data[skirm + 0x34:skirm + 0x44]      # Style
+        # TEST ONLY: the layout rewrote every hostile cell to a Jackal case, so palette characters no
+        # cell / spawn point uses any more (and no character names as parent / major) take clones too
+        now_used = _used_chars(m, base)
+        refd = set()
+        for _p, cb in m.find_tags('char', '*'):
+            for off in (0x4, 0x44):
+                refd.add((hp._tag_name_by_id(m, m.u32(cb + off + 0xC)) or '').lower())
+        for ci, n in enumerate(sl.cnames):
+            leaf = (n or '').lower().rsplit(BS, 1)[-1]
+            if n and ci not in now_used and n.lower() not in refd and ci not in sl.spares                     and ci not in sl.made.values() and 'jackal' not in leaf and 'skirm' not in leaf                     and not any(w in leaf for w in ew.NEVER_WORDS.get(GAME, ())):
+                sl.spares.append(ci)
+        made = {}
+        for word, blocks in BISECT:
+            if not blocks:
+                made[word] = base_idx
+                continue
+            if sl.spares:
+                ci = sl.spares.pop(0)
+            elif sl.loose:
+                n0 = len(sl.cnames)
+                sl._palette_add(sl.loose.pop(0))
+                ci = n0
+            else:
+                report.append('  BISECT: out of spare characters at %s' % word)
+                continue
+            tag = dict(m.find_tags('char', sl.cnames[ci]))[sl.cnames[ci]]
+            m.data[tag:tag + ew.CHAR_ROOT] = m.data[base_tag:base_tag + ew.CHAR_ROOT]
+            for off in blocks:
+                m.data[tag + off:tag + off + 12] = m.data[skirm + off:skirm + off + 12]
+            made[word] = ci
+        moved = {}
         for cell, label in cell_label.items():
-            if 'Shotgun' in label or 'Plasma Launcher' in label:
+            word = next((w for w, _b in BISECT if (' + %s ' % w) in label + ' '), None)
+            if word in made:
                 e = hp._block_base(m, cell + ew.CELL_CHARS)
-                struct.pack_into('<h', m.data, e + ew.CELL_IDX, b_idx)
-                moved += 1
-        report.append('  BISECT: clone A %s = Jackal data + actor type 14 (DMR, Concussion Rifle); clone B '
-                      '%s = Jackal data + the Skirmisher style (Shotgun, Plasma Launcher: %d cells)'
-                      % (sl.cnames[a_idx].rsplit(BS, 1)[-1], sl.cnames[b_idx].rsplit(BS, 1)[-1], moved))
+                struct.pack_into('<h', m.data, e + ew.CELL_IDX, made[word])
+                moved[word] = moved.get(word, 0) + 1
+        for word, blocks in BISECT:
+            report.append('  BISECT %-17s base + %-40s %d cells' % (word, BLOCK_NAMES.get(tuple(blocks), 'nothing'),
+                                                              moved.get(word, 0)))
     for r in sl.rows:
         report.append('  %s: %s' % (r['tag'], r['new']))
     report.append('  %d two-handed Jackal cells on the shieldless clone' % len(set(jackal_cells)))
