@@ -28,7 +28,7 @@ Levels (placed grenade pickups, scnr Equipment block, 2026-11-05):
   Halo 3  100 The Covenant          18 frag, 22 plasma, 26 spike, 1 firebomb
   ODST    h100 Mombasa Streets      28 frag, 13 plasma, 7 spike, 17 firebomb
   Reach   m60 The Package           18 frag, 12 plasma
-  Halo 4  m40_invasion Infinity     8 frag, 61 plasma, 4 pulse
+  Halo 4  m40_invasion Reclaimer    8 frag, 61 plasma, 4 pulse
 """
 import json
 import os
