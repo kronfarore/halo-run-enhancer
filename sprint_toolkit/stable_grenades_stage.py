@@ -11,7 +11,7 @@ Two sets under E:\HaloBackups\stable_grenades_test\, each laid out like the MCC 
             the eqip flag by itself stops a pickup chaining -- the H2 plasma pickup shares
             its hlmt TAG with the thrown plasma grenade, so the hlmt write reaches both.
   accel\    Halo 1 / 2 / 3: vanilla + "does accelerate" on every placed grenade (the gate?)
-Halo 2, Halo 3, ODST and Reach copies carry test buffs (god shield, run x2, a player-only x1000 weapon).
+Halo 2, Halo 3, ODST, Reach and Halo 4 copies carry test buffs (god shield, run x2, a player-only x1000 weapon).
 All go through the same apply_run with the same options, so the ONLY difference between
 the two is this card. stable_grenades_test.cmd swaps them into the game (and back).
 
@@ -258,6 +258,57 @@ def reach_test_buffs(path):
     return [x for x in out if 'as the secondary of' not in x]
 
 
+H4_CHIEF = 'objects\\characters\\storm_masterchief\\storm_masterchief'
+H4_CHEAT = ('objects\\weapons\\rifle\\storm_dmr\\storm_dmr',
+            'objects\\weapons\\rifle\\storm_dmr\\projectiles\\storm_dmr_bullet')
+
+
+def h4_test_buffs(path):
+    """Test aids on every Halo 4 copy (there is no h4_armed_test, so written here, with the
+    Reach recipe and offsets read off the Halo 4 plugin, 2026-11-12):
+      god shield: storm_masterchief hlmt Old Damage Info (+0xF4, 184 B) body +0x14 and
+        shield +0x28 -> 1e6, shield stun +0x34 -> 0, recharge time +0x38 -> 0.1, and the
+        root Maximum Vitality +0x104 -> 1e6
+      run / sneak x2: matg Player Information (+0x5EC, 220 B) +0x4..+0x20
+      cheat: storm_dmr_bullet x1000, and the DMR as the PRIMARY of every profile (the
+        level starts you with BR + AR, which Marines / Spartans / Lasky carry too; no
+        m40 squad carries the DMR, it is only placed, and h4_pools shows every m40
+        palette weapon resident at mission start). Halo 4 profiles do hand weapons out."""
+    import contextlib
+    import io
+    G = 'Halo 4'
+    with contextlib.redirect_stdout(io.StringIO()):
+        m = hp.open_map(path, G)
+    f32 = lambda o: struct.unpack_from('<f', m.data, o)[0]
+    out = []
+    for _n, t in m.find_tags('hlmt', H4_CHIEF):
+        for e in m.follow_all(t, [0xF4], [184], 'all')[:1]:
+            for off, v in ((0x14, 1e6), (0x28, 1e6), (0x34, 0.0), (0x38, 0.1)):
+                struct.pack_into('<f', m.data, e + off, v)
+        struct.pack_into('<f', m.data, t + 0x104, 1e6)
+        out.append('god shield: storm_masterchief body + shield + root 1e6')
+    for _n, t in m.find_tags('jpt!', H4_CHEAT[1]):
+        for o, f in ((0x38, 'Damage Lower Bound'), (0x3C, 'Damage Upper Bound'),
+                     (0x40, 'Damage Upper Bound Max')):
+            v = f32(t + o)
+            struct.pack_into('<f', m.data, t + o, v * 1000.0)
+            out.append('cheat: storm_dmr_bullet %s %.3g -> %.4g' % (f, v, v * 1000.0))
+    ref = hp._h3_tag_datum(m, 'weap', H4_CHEAT[0])
+    n = 0
+    for pr in m.follow_all(hp._scnr_base(m), [0x310], [0x7C], 'all'):
+        if ref is not None and not hp._profile_is_empty(m, pr, G):
+            hp._write_starting_weapon(m, pr, 'primary', ref, 15, 135, G)
+            n += 1
+    out.append('cheat: DMR as the primary of %d profiles' % n)
+    for _n, t in m.find_tags('matg', 'globals\\globals'):
+        for e in m.follow_all(t, [0x5EC], [220], 'all'):
+            for off in range(0x4, 0x24, 4):
+                struct.pack_into('<f', m.data, e + off, f32(e + off) * 2.0)
+            out.append('player run / sneak x2 (run forward now %.3g)' % f32(e + 4))
+    m.save(path)
+    return out
+
+
 def flag_rows(path, game, reg):
     """(tag, flags) of the grenade pickups' item flags and models' damage flags."""
     m = hp.open_map(path, game)
@@ -322,6 +373,8 @@ def main(check_only=False, only=()):
                 print('     buffs:', '; '.join(odst_test_buffs(dst)), flush=True)
             if g == 'Halo Reach':
                 print('     buffs:', '; '.join(reach_test_buffs(dst)), flush=True)
+            if g == 'Halo 4':
+                print('     buffs:', '; '.join(h4_test_buffs(dst)), flush=True)
         rows = {k: dict(flag_rows(v, g, reg)) for k, v in staged.items()}
         a = rows['vanilla']
         for k in sorted(set().union(*rows.values())):
