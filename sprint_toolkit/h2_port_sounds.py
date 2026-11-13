@@ -15,6 +15,8 @@ The config's `sounds` section:
     graph_sounds, graph_sound_dir   ((donor sound, own sound), ...) on both FP graphs
     h3_bank                  {audio folder: [Halo 3 bank source folders]} -- rendered into
                              <audio> first (render_h3_bank; a Halo 3 source, the AR)
+    split                    {piece folder: (source folder, start s, end s | None)} -- every take cut into
+                             the same pieces (render_split; the DMR's reloads, cued per piece)
     h1_bank                  {audio folder: (Halo 1 classic bank path | None, opt)} -- the same for
                              a HALO 1 source (render_h1_bank: loop slices, silence; the Flamethrower)
     repoint_tags             [(tag, the sound named now, own sound)] -- any other tag
@@ -177,6 +179,40 @@ def render_h3_bank(c):
                                                     ', '.join(f.split('\\')[-1] for f in folders)))
 
 
+def render_split(c):
+    """`split` {piece folder under AUDIO: (source folder, start s, end s | None)} (the DMR, B1 Arbiter boot:
+    'reload sound not in sync' on Balanced): Reach's reload is ONE recording cued at frame 0, so a reload
+    retimed shorter (reload_mult) runs ahead of its sound. Each take of the source is cut into pieces in its
+    quiet gaps -- every take, the same cut times -- for the graph to cue each at its own frame, which then
+    moves with the retimed animation (the SAW's 'foley:LIST#a-b' finding, for a source with no cue list)."""
+    import wave
+    import numpy as np
+    for name, (src, t0, t1) in c['split'].items():
+        d = os.path.join(AUDIO, name)
+        shutil.rmtree(d, ignore_errors=True)
+        os.makedirs(d)
+        takes = sorted(glob.glob(os.path.join(AUDIO, src, '*.wav')))
+        if not takes:
+            raise SystemExit('%s: no takes in %s' % (name, src))
+        for k, w in enumerate(takes):
+            with wave.open(w) as f:
+                rate = f.getframerate()
+                x = np.frombuffer(f.readframes(f.getnframes()), np.int16).astype(np.float64)
+            a, b = int(t0 * rate), (len(x) if t1 is None else min(len(x), int(t1 * rate)))
+            y = x[a:b].copy()
+            n = int(0.005 * rate)                 # 5 ms fades: no click at a cut
+            if a > 0:
+                y[:n] *= np.linspace(0.0, 1.0, n)
+            if b < len(x):
+                y[-n:] *= np.linspace(1.0, 0.0, n)
+            with wave.open(os.path.join(d, '%s_%d.wav' % (name, k + 1)), 'wb') as o:
+                o.setnchannels(1)
+                o.setsampwidth(2)
+                o.setframerate(rate)
+                o.writeframes(np.clip(np.round(y), -32768, 32767).astype(np.int16).tobytes())
+        print('   %-14s %d takes of %s, %.2f-%s s' % (name, len(takes), src, t0, '%.2f' % t1 if t1 else 'end'))
+
+
 def render_h1_bank(c):
     """`h1_bank` {audio folder: (Halo 1 bank path | None, opt)} (the Flamethrower, S1, 2026-10-21):
     every permutation of a HALO 1 sound decoded from MCC's CLASSIC bank (halo1\\sound\\pc\\
@@ -316,6 +352,9 @@ def main(argv=None):
     if c.get('h3_bank') and a.write:
         print('the Halo 3 sounds, from MCC\'s halo3 bank:')
         render_h3_bank(c)
+    if c.get('split') and a.write:
+        print('the split pieces:')
+        render_split(c)
     if c.get('h1_bank') and a.write:
         print('the Halo 1 sounds, from MCC\'s classic halo1 bank:')
         render_h1_bank(c)

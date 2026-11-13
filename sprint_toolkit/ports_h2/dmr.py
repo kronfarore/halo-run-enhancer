@@ -393,8 +393,12 @@ PORT = {
                                    'first_person:posing:var1': [('dmr_pose1', 0)],
                                    'first_person:posing:var2': [('dmr_pose2', 0)],
                                    'first_person:ready': [('dmr_ready', 0)],
-                                   'first_person:reload_empty': [('dmr_reload_empty', 0)],
-                                   'first_person:reload_full': [('dmr_reload_full', 0)]}},
+                                   # Arbiter boot (Balanced): 'reload sound not in sync' -- one recording at frame
+                                   # 0 runs ahead of a reload retimed x0.838; four pieces cued at their own frames
+                                   'first_person:reload_empty': [('dmr_rl_e1', 0), ('dmr_rl_e2', 24), ('dmr_rl_e3', 42),
+                                                                 ('dmr_rl_e4', 57)],
+                                   'first_person:reload_full': [('dmr_rl_f1', 0), ('dmr_rl_f2', 24), ('dmr_rl_f3', 39),
+                                                                ('dmr_rl_f4', 50)]}},
     },
 
     # step 10 -- h2_port_sounds.py: Reach's OWN sounds from MCC's haloreach sfx.fsb (the Halo 3 reader,
@@ -420,9 +424,17 @@ PORT = {
                     'dmr_zoom_in': [RS + r'\battle_rifle\battle_rifle_zoom_in'],
                     'dmr_zoom_out': [RS + r'\battle_rifle\battle_rifle_zoom_out'],
                     'dmr_ammo': [RS + r'\battle_rifle\battle_rifle_ammo']},
+        # Reach's reloads cut in the quiet gaps all three takes share (onsets: empty 0.34-0.61 | 0.95-1.24 |
+        # 1.52-1.70 | 2.07-2.18 s; full 0.34-0.61 | 0.95-1.20 | 1.39-1.58 | 1.76-1.82 s): frames x30 = the cues
+        'split': {'dmr_rl_e1': ('dmr_reload_empty', 0.0, 0.8), 'dmr_rl_e2': ('dmr_reload_empty', 0.8, 1.4),
+                  'dmr_rl_e3': ('dmr_reload_empty', 1.4, 1.9), 'dmr_rl_e4': ('dmr_reload_empty', 1.9, None),
+                  'dmr_rl_f1': ('dmr_reload_full', 0.0, 0.8), 'dmr_rl_f2': ('dmr_reload_full', 0.8, 1.3),
+                  'dmr_rl_f3': ('dmr_reload_full', 1.3, 1.65), 'dmr_rl_f4': ('dmr_reload_full', 1.65, None)},
         'sounds': {'dmr_fire': ('dmr_fire', 'weapon_fire'), 'dmr_fire_lod': ('dmr_fire_lod', 'weapon_fire'),
-                   'dmr_dryfire': ('dmr_dryfire', 'weapon_empty'), 'dmr_reload_empty': ('dmr_reload_empty', 'weapon_reload'),
-                   'dmr_reload_full': ('dmr_reload_full', 'weapon_reload'), 'dmr_ready': ('dmr_ready', 'weapon_ready'),
+                   'dmr_dryfire': ('dmr_dryfire', 'weapon_empty'),
+                   **{n: (n, 'weapon_reload') for n in ('dmr_rl_e1', 'dmr_rl_e2', 'dmr_rl_e3', 'dmr_rl_e4',
+                                                        'dmr_rl_f1', 'dmr_rl_f2', 'dmr_rl_f3', 'dmr_rl_f4')},
+                   'dmr_ready': ('dmr_ready', 'weapon_ready'),
                    'dmr_melee1': ('dmr_melee1', 'weapon_melee'), 'dmr_melee2': ('dmr_melee2', 'weapon_melee'),
                    'dmr_pose1': ('dmr_pose1', 'weapon_animation'), 'dmr_pose2': ('dmr_pose2', 'weapon_animation'),
                    'dmr_zoom_in': ('dmr_zoom_in', 'weapon_ready'), 'dmr_zoom_out': ('dmr_zoom_out', 'weapon_ready'),
@@ -434,12 +446,13 @@ PORT = {
                            (r'sound\weapons\battle_rifle\battle_rifle_ammo', 'dmr_ammo')],
         'repoint_tags': [(FX + r'\dmr_empty.effect', r'sound\weapons\battle_rifle\dryfire', 'dmr_dryfire')],
         # the SMG seed's 17 references, all repointed; unused dual slots point at the ready
-        'graph_sounds': (('smg_melee1', 'dmr_melee1'), ('smg_ready', 'dmr_ready'), ('smg_reload', 'dmr_reload_empty'),
-                         ('smg_reload_full', 'dmr_reload_full'), ('smg_dual_ready', 'dmr_melee2'),
+        # the eight reload pieces take the two reload slots + six unused dual slots
+        'graph_sounds': (('smg_melee1', 'dmr_melee1'), ('smg_ready', 'dmr_ready'), ('smg_reload', 'dmr_rl_e1'),
+                         ('smg_reload_full', 'dmr_rl_f1'), ('smg_dual_ready', 'dmr_melee2'),
                          ('smg_posing_var0', 'dmr_pose1'), ('smg_posing_var1', 'dmr_pose2'),
-                         ('smg_dual_reload_left', 'dmr_ready'), ('smg_dual_reload_right', 'dmr_ready'),
-                         ('smg_dual_posing_0_l', 'dmr_ready'), ('smg_dual_posing_0_r', 'dmr_ready'),
-                         ('smg_dual_posing_1_l', 'dmr_ready'), ('smg_dual_posing_1_r', 'dmr_ready'),
+                         ('smg_dual_reload_left', 'dmr_rl_e2'), ('smg_dual_reload_right', 'dmr_rl_e3'),
+                         ('smg_dual_posing_0_l', 'dmr_rl_e4'), ('smg_dual_posing_0_r', 'dmr_rl_f2'),
+                         ('smg_dual_posing_1_l', 'dmr_rl_f3'), ('smg_dual_posing_1_r', 'dmr_rl_f4'),
                          ('smg_dual_posing_2_l', 'dmr_ready'), ('smg_dual_posing_2_r', 'dmr_ready'),
                          ('smg_dual_posing_3_l', 'dmr_ready'), ('smg_dual_posing_3_r', 'dmr_ready')),
         'graph_sound_dir': r'sound\weapons\smg' + '\\',
