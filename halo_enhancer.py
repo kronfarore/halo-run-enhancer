@@ -466,7 +466,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'other_bane_enabled', 'identity_other_card',
                'skull_duration_value', 'skull_duration_multiply',
                'skull_disabled', 'skull_camo_after_ladder',
-               'bugfix_h2_fuel_rod', 'bugfix_h2_vehicle_score', 'player_armour_rows', 'no_immunities', 'vehicle_cards',
+               'bugfix_h2_fuel_rod', 'bugfix_h2_vehicle_score', 'bugfix_h4_dead_grenades',
+               'player_armour_rows', 'no_immunities', 'vehicle_cards',
                'set_starting_equipment', 'equipment_all_selected',
                'h2_add_respawn_profile', 'h2_extra_squads', 'h2_tartarus', 'swap_player_loadouts',
                'h3_all_chief_profiles',
@@ -1563,6 +1564,8 @@ CONFIG = {
     "bugfix_h2_fuel_rod": False,
     # Halo 2: human vehicle rows award points on levels with no human ally
     "bugfix_h2_vehicle_score": False,
+    # Halo 4: Reclaimer's two unpickable needle-grenade pickups become Pulse Grenades
+    "bugfix_h4_dead_grenades": False,
     # Options -> Patching: always give the player its own damage-table armour rows
     # (player_armour.py). Effective / Hardened cards build them whatever this says.
     "player_armour_rows": False,
@@ -10520,6 +10523,8 @@ class MagnitudeEditorDialog(QDialog):
                 skulls=skulls,
                 camo_after_ladder=bool(CONFIG.get('skull_camo_after_ladder')),
                 fix_h2_fuel_rod=bool(CONFIG.get('bugfix_h2_fuel_rod')),
+                fix_h4_dead_grenades=(bool(CONFIG.get('bugfix_h4_dead_grenades'))
+                                      and self.game == 'Halo 4'),
                 player_armour=bool(CONFIG.get('player_armour_rows')),
                 no_immunities=bool(CONFIG.get('no_immunities')),
                 equipment_swaps=equip_swaps or None,
@@ -13647,6 +13652,19 @@ class OptionsDialog(QDialog):
             "Writes scoredb.xml and pushes it into a running MCC, like the score "
             "rescale.")
         bugfix_form.addRow("", self.bugfix_vehicle_score_cb)
+        self.bugfix_dead_grenades_cb = QCheckBox(
+            "Halo 4: Reclaimer's dead needle grenades become Pulse Grenades")
+        self.bugfix_dead_grenades_cb.setChecked(bool(CONFIG.get('bugfix_h4_dead_grenades')))
+        self.bugfix_dead_grenades_cb.setToolTip(
+            "Reclaimer places two grenade pickups by the Forerunner weapon racks that "
+            "are a cut 'needle grenade'. Halo 4's grenade list has no entry for them, so "
+            "they can never be picked up or thrown, and an explosion makes them vanish. "
+            "No other campaign mission places them.\n\n"
+            "On: both become Pulse Grenades (already on the level), which you can pick up "
+            "and throw. Map Presence cards then treat them like any other placed Pulse "
+            "Grenade.\n\n"
+            "Shared with a co-op partner through the run (it changes the patch).")
+        bugfix_form.addRow("", self.bugfix_dead_grenades_cb)
         self._opt_page("Bugfixes").addWidget(bugfix_g)
         self._opt_page("Patching").addWidget(patch_h1_g, 50)
         self._opt_page("Patching").addWidget(patchg, 60)
@@ -14774,6 +14792,7 @@ class OptionsDialog(QDialog):
             'skull_camo_after_ladder': self.skull_camo_order_cb.isChecked(),
             'bugfix_h2_fuel_rod': self.bugfix_fuel_rod_cb.isChecked(),
             'bugfix_h2_vehicle_score': self.bugfix_vehicle_score_cb.isChecked(),
+            'bugfix_h4_dead_grenades': self.bugfix_dead_grenades_cb.isChecked(),
             'player_armour_rows': self.player_armour_cb.isChecked(),
             'no_immunities': self.no_immunities_cb.isChecked(),
             'vehicle_cards': self.vehicle_cards_cb.isChecked(),

@@ -3661,6 +3661,58 @@ def _fix_h2_fuel_rod_group(m, game):
 
 
 
+# Bugfix: Halo 4 Reclaimer's dead needle grenades (Options -> Patching -> Bugfixes).
+# m40_invasion places two `storm_needle_grenade` pickups (equipment #62 / #63, by the
+# Forerunner weapon racks) whose eqip is NOT in globals\grenade_list -- the list the player
+# picks grenades up by -- so they can never be picked up (in game 2026-11-16: re-pointed at
+# the frag entry they turned into ordinary pickable frags). Of the eight campaign maps,
+# only Reclaimer places them. The fix re-points every placement of a grenade-named pickup
+# the grenade list lacks at the Pulse Grenade entry of the same Equipment Palette.
+_H4_PULSE_EQIP = ('objects' + chr(92) + 'weapons' + chr(92) + 'grenade' + chr(92) +
+                  'storm_energy_drain_grenade' + chr(92) + 'storm_energy_drain_grenade')
+
+
+def _fix_h4_dead_grenades(m, game):
+    ref = {'effect': 'Bugfix: dead needle grenades', 'field': 'Equipment palette index'}
+    if str(game).strip() != 'Halo 4':
+        return []
+    listed = set()
+    for _n, t in m.find_tags('gggl', 'globals' + chr(92) + 'grenade_list'):
+        for e in m.follow_all(t, [0x0], [120], 'all'):        # Grenades (MP / PvE eqip)
+            for off in _GRENADE_EQUIPMENT_REF['Halo 4']:
+                nm = _tag_name_by_id(m, m.u32(e + off + 0xC))
+                if isinstance(nm, str):
+                    listed.add(nm.lower())
+    E = _MAP_EQUIPMENT['Halo 4']
+    sb = _scnr_base(m)
+    po, pe = E['palette']
+    pb = _block_base(m, sb + po)
+    names = [(_tag_name_by_id(m, m.u32(pb + i * pe + E['pal_id_at'])) or '')
+             for i in range(max(0, m.i32(sb + po)))] if pb else []
+    dead = {i for i, n in enumerate(names)
+            if n and 'grenade' in n.lower().rsplit(chr(92), 1)[-1] and n.lower() not in listed}
+    if not dead:
+        return [{**ref, 'ok': True, 'skip': True, 'reason': 'no dead grenade pickups on this map'}]
+    pulse = next((i for i, n in enumerate(names) if n.lower() == _H4_PULSE_EQIP), None)
+    if pulse is None or _H4_PULSE_EQIP not in listed:
+        return [{**ref, 'ok': False,
+                 'reason': 'dead grenade pickups placed, but no Pulse Grenade in the palette'}]
+    io_, ie = E['items']
+    ib = _block_base(m, sb + io_)
+    fixed = []
+    for i in range(max(0, m.i32(sb + io_))):
+        e = ib + i * ie
+        t = struct.unpack_from('<h', m.data, e + E['palette_index'])[0]
+        if t in dead:
+            struct.pack_into('<h', m.data, e + E['palette_index'], pulse)
+            fixed.append((i, names[t].rsplit(chr(92), 1)[-1]))
+    if not fixed:
+        return [{**ref, 'ok': True, 'skip': True, 'reason': 'no dead grenade pickups on this map'}]
+    return [{**ref, 'ok': True, 'tag': 'scnr',
+             'old': ', '.join('#%d %s' % f for f in fixed) + ' (not in the grenade list)',
+             'new': 'Pulse Grenade (%d placement%s)' % (len(fixed), '' if len(fixed) == 1 else 's')}]
+
+
 # The Halo 2 SAW port's bullet (saw_bullet, built from the cut gpmg's h_turret_ap_bullet)
 # kept the turret's General Damage group 'bullet_vehicle'. Every other SAW (the Halo 3,
 # ODST, Reach and Halo 4 ones) fires 'bullet_slow', the Assault Rifle's group -- so the
@@ -10015,7 +10067,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               h3_enemy_weapons=None,
               h2_arbiter_flashlight=None,
               h1_covenant_avoid_ff=False, hunter_drop=False,
-              camo_after_ladder=False, fix_h2_fuel_rod=False,
+              camo_after_ladder=False, fix_h2_fuel_rod=False, fix_h4_dead_grenades=False,
               player_armour=False, no_immunities=False, h1_levels=None,
               baseline_root=None, map_subdir=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
@@ -10082,6 +10134,11 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # at the same rates (after the swap above, which may have added a pick to the
         # Weapon Palette -- the crate pass copies its reference from there).
         results.extend(_apply_crate_weapon_swaps(m, game, weapon_swaps))
+    if fix_h4_dead_grenades:
+        # Options -> Patching -> Bugfixes: Reclaimer's unpickable needle grenades become
+        # Pulse Grenades. BEFORE the equipment swaps, so a Map Presence card sees them as
+        # the pulse pickups they now are.
+        results.extend(_fix_h4_dead_grenades(m, game))
     if equipment_swaps:
         # Same placement-scatter idea, on the equipment block.
         results.extend(_apply_equipment_swaps(m, str(game).strip(), equipment_swaps))
