@@ -13,7 +13,7 @@ Two sets under E:\HaloBackups\stable_grenades_test\, each laid out like the MCC 
             its hlmt TAG with the thrown plasma grenade, so the hlmt write reaches both.
   accel\    Halo 1 / 2 / 3: vanilla + "does accelerate" on every placed grenade (the gate?)
   needlefrag\ Halo 4 only: vanilla + the 2 placed needle-grenade pickups turned into frags
-Halo 2, Halo 3, ODST, Reach and Halo 4 copies carry test buffs (god shield, run x2, a player-only x1000 weapon).
+Every copy carries test buffs (god shield, run x2, a player-only x1000 weapon).
 All go through the same apply_run with the same options, so the ONLY difference between
 the two is this card. stable_grenades_test.cmd swaps them into the game (and back).
 
@@ -47,6 +47,11 @@ import halo_patch as hp       # noqa: E402
 
 C = dict(he.CONFIG)
 C.update(json.load(open(os.path.join(TOOL, 'settings.json'), encoding='utf-8')))
+#: the same Assembly build's copy on E:, for when the F: drive (the configured plugins) is out
+PLUGINS_FALLBACK = r'E:\Assembly-1-2023-11-29-1702446457\Plugins'
+if not os.path.isdir(C['assembly_plugins_dir']) and os.path.isdir(PLUGINS_FALLBACK):
+    C['assembly_plugins_dir'] = PLUGINS_FALLBACK
+    he.CONFIG['assembly_plugins_dir'] = PLUGINS_FALLBACK   # helpers that read CONFIG (h2_armed_test)
 OUT = r'E:\HaloBackups\stable_grenades_test'
 LEVELS = {'Halo 1': 'a30', 'Halo 2': '01b', 'Halo 3': '100', 'Halo 3: ODST': 'h100',
           'Halo Reach': 'm60', 'Halo 4': 'm40_invasion'}
@@ -173,6 +178,56 @@ def h4_needle_to_frag(path):
             done.append(i)
     m.save(path)
     return 'needle placements %s -> frag (palette %d -> %d)' % (done, needle, frag)
+
+
+B = chr(92)
+H1_COLL = B.join(('characters', 'cyborg', 'cyborg'))
+#: Assembly Halo1 coll.xml: body / shield vitality, shield leak, stun, recharge time
+H1_GOD = ((0x8, 1e6), (0xCC, 1e6), (0xF4, 0.0), (0x10C, 0.0), (0x110, 0.1))
+H1_CHEAT_DAMAGE = B.join(('weapons', 'pistol', 'bullet'))
+H1_SPEED_FIELDS = ('Run Forward', 'Run Backward', 'Run Sideways', 'Run Acceleration',
+                   'Sneak Forward', 'Sneak Backward', 'Sneak Sideways', 'Sneak Acceleration')
+
+
+def h1_test_buffs(path):
+    """Test aids on every Halo 1 copy (added 2026-11-16 for the stable test; the user's
+    2026-11-07 ask -- faster run, more shield + vitality, a stronger player-only weapon):
+      god shield: the cyborg collision model (h1_enemy_test_map's fields) body + shield 1e6,
+        no leak, no stun, recharge 0.1
+      run / sneak x2: matg Player Information
+      cheat: weapons/pistol/bullet x1000 -- the player's own SECONDARY on a30 (profile 0
+        AR + pistol). No enemy squad carries the pistol (a30: Covenant plasma pistols /
+        rifles; 3 squads of allied crewmen hold it, the only others)"""
+    reg = hp.PluginRegistry(C['assembly_plugins_dir'], C['plugin_subdirs_by_game']['Halo 1'])
+    m = hp.open_map(path, 'Halo 1')
+    f32 = lambda o: struct.unpack_from('<f', m.data, o)[0]
+    out = []
+    for _n, t in m.find_tags('coll', H1_COLL):
+        for off, v in H1_GOD:
+            struct.pack_into('<f', m.data, t + off, v)
+        out.append('god shield: cyborg body + shield 1e6, no leak / stun')
+    jpt = reg.get('jpt!')
+    for _n, t in m.find_tags('jpt!', H1_CHEAT_DAMAGE):
+        for f in ('Damage Lower Bound', 'Damage Upper Bound', 'Damage Upper Bound Max'):
+            fld = jpt.find(f, None, 0)
+            if fld and not fld['block_offsets']:
+                v = f32(t + fld['offset'])
+                struct.pack_into('<f', m.data, t + fld['offset'], v * 1000.0)
+                out.append('cheat: pistol bullet %s %.3g -> %.4g' % (f, v, v * 1000.0))
+    mg = reg.get('matg')
+    for _n, t in m.find_tags('matg', 'globals' + B + 'globals'):
+        for f in H1_SPEED_FIELDS:
+            fld = mg.find(f, None, 0)
+            if not fld:
+                continue
+            for e in m.follow_all(t, fld['block_offsets'], fld['block_sizes'], 'all'):
+                o = e + fld['offset']
+                struct.pack_into('<f', m.data, o, f32(o) * 2.0)
+        fld = mg.find('Run Forward', None, 0)
+        for e in m.follow_all(t, fld['block_offsets'], fld['block_sizes'], 'all'):
+            out.append('player run / sneak x2 (run forward now %.3g)' % f32(e + fld['offset']))
+    m.save(path)
+    return out
 
 
 H2_CHEAT_ROUNDS = (36, 360)
@@ -394,6 +449,7 @@ def main(check_only=False, only=()):
                     print('     FAIL', r.get('effect'), r.get('tag'), r.get('reason'))
             if g == 'Halo 1':
                 print('     swap:', '; '.join(h1_swap_grenades(dst)), flush=True)
+                print('     buffs:', '; '.join(h1_test_buffs(dst)), flush=True)
             if kind == 'accel':
                 print('     accel:', accelerate_placed(dst, g), flush=True)
             if kind == 'needlefrag':
