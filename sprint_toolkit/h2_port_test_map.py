@@ -202,7 +202,7 @@ def add_characters_ai(r, species):
 
 
 def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.0, god=True,
-          replace=True, balanced=True, secondary=None):
+          replace=True, balanced=True, secondary=None, species_weapons=None):
     p = ports_h2.load(key)
     weapon = R.weapon_path(p)
     scn, res = scenario(level), R.resource(level)
@@ -261,7 +261,7 @@ def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.
                 import h2_armed_test
                 h2_armed_test.test_map(os.path.join(TEST_DIR, level + '.map'), weapon, armed,
                                        share, balanced=balanced, god=god, replace=replace,
-                                       cheat=bool(armed),
+                                       cheat=bool(armed), species_weapons=species_weapons,
                                        also=[R.weapon_path(ports_h2.load(secondary))] if secondary else ())
                 if armed:
                     print('   (Armed = %s AI rows; shieldless Jackals, Grunt teach + half '
@@ -330,6 +330,9 @@ def main():
                          'test is BALANCED by default')
     ap.add_argument('--secondary', help="another DONE port's key as the profiles' secondary weapon "
                                          "(Balanced too), instead of the Armed cheat Carbine")
+    ap.add_argument('--with', dest='with_', default='',
+                    help='--armed: SPECIES=WEAPON[,...] -- that species carries another palette weapon '
+                         'instead of the port (e.g. grunt=needler)')
     ap.add_argument('--mortal', action='store_true',
                     help='NO god shield (every other port test has one: the Halo 1 rule)')
     a = ap.parse_args()
@@ -354,7 +357,8 @@ def main():
     if armed == ['all']:
         armed = list(ALL_ENEMIES)
     built = build(a.key, level, profiles, rounds, a.keep_kit_map, armed, a.share, god=not a.mortal,
-                  replace=not a.no_replace, balanced=not a.original, secondary=a.secondary)
+                  replace=not a.no_replace, balanced=not a.original, secondary=a.secondary,
+                  species_weapons=dict(x.strip().split('=', 1) for x in a.with_.split(',') if '=' in x))
     print('test map: %s' % built)
     if a.stage:
         with kit_lock.held('h2_port_test_map %s --stage %s' % (a.key, level), owner=a.key, kit='h2'):

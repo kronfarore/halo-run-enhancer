@@ -194,7 +194,7 @@ def port_balance(m, weapon, balanced=True):
 
 
 def test_map(map_path, weapon=None, species=(), share=1.0, balanced=True, god=True, replace=True,
-             cheat=False, also=()):
+             cheat=False, also=(), species_weapons=None):
     """One open + save of a built test map: the port's Balanced (or Original) numbers, the Armed
     pass (if species; the nearest squads first replaced by the tested types unless
     replace=False) and the god shield."""
@@ -214,8 +214,8 @@ def test_map(map_path, weapon=None, species=(), share=1.0, balanced=True, god=Tr
         for r in port_balance(m, w, balanced) or ():
             print('   %s %s: %s %s -> %s' % (w.rsplit(chr(92), 1)[-1], 'BALANCED' if balanced else 'ORIGINAL',
                                          r.get('field'), r.get('old'), r.get('new')))
-    res = arm(map_path, weapon, species, share, balanced=balanced, m=m, replace=replace) \
-        if species else None
+    res = arm(map_path, weapon, species, share, balanced=balanced, m=m, replace=replace,
+              species_weapons=species_weapons) if species else None
     if god:
         print('   god shield (player body + shield 1e6, no stun): %s' % (', '.join(god_shield(m)) or 'NO player model found'))
     if cheat:
@@ -225,10 +225,14 @@ def test_map(map_path, weapon=None, species=(), share=1.0, balanced=True, god=Tr
         report(*res)
 
 
-def arm(map_path, weapon, species, share=1.0, out=None, balanced=True, m=None, replace=False):
+def arm(map_path, weapon, species, share=1.0, out=None, balanced=True, m=None, replace=False,
+        species_weapons=None):
     """The enhancer's own pass (h2_enemy_weapons.apply: arming, shieldless Jackals, the Grunt
     teach + half rate, Balanced AI rows) with one card per species at `share`. Balanced by
-    default: an Armed test runs the balanced numbers (memory h1-armed-test-balanced-god)."""
+    default: an Armed test runs the balanced numbers (memory h1-armed-test-balanced-god).
+    species_weapons {species: weapon}: that species carries ANOTHER palette weapon instead of the
+    port (a tag path, or the last path part, e.g. grunt -> needler: the Needle Rifle's player
+    supercombine test, 2026-11-16 -- Needler Grunts beside Needle Rifle Elites)."""
     import halo_patch as hp
     import h2_enemy_weapons as E
     own = m is None
@@ -238,13 +242,20 @@ def arm(map_path, weapon, species, share=1.0, out=None, balanced=True, m=None, r
             raise SystemExit('%s is compressed -- Halo2Map.save cannot write it' % map_path)
     names = {s.lower(): e for e in E.ENEMY_CHARS for s in (e, e.split()[0])}
     names.update({'drone': 'Bugger', 'drones': 'Bugger', 'flood': 'Flood Combat Form'})
+    wnames = E.palette(m, hp, hp._scnr_base(m))
+    other = {}
+    for s, w in (species_weapons or {}).items():
+        hit = [n for n in wnames if n and (n.lower() == w.lower() or
+                                           n.lower().rsplit(chr(92), 1)[-1] == w.lower())]
+        if not hit:
+            raise SystemExit('%s is not in the weapon palette of %s' % (w, map_path))
+        other[s.strip().lower()] = hit[0]
     cards = {}
     for s in species:
         e = names.get(s.strip().lower())
         if not e:
             raise SystemExit('unknown species %r (have %s)' % (s, ', '.join(E.ENEMY_CHARS)))
-        cards[e] = {weapon: share}
-    wnames = E.palette(m, hp, hp._scnr_base(m))
+        cards[e] = {other.get(s.strip().lower(), weapon): share}
     idx = next((i for i, n in enumerate(wnames) if (n or '').lower() == weapon.lower()), None)
     if idx is None:
         raise SystemExit('%s is not in the weapon palette of %s' % (weapon, map_path))
