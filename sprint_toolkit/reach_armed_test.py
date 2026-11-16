@@ -63,18 +63,27 @@ BLOCKS = {'Style': ((0x34, 16),), 'General Properties': ((0x6C, 12),), 'Emotion'
           'Firing Point Evaluator': ((0x108, 12),), 'Engage': ((0x120, 12),), 'Evasion': ((0x138, 12),),
           'Cover': ((0x144, 12),), 'Retreat': ((0x150, 12),), 'Pre-Search': ((0x168, 12),),
           'Weapons + Firing Pattern': ((0x1EC, 12), (0x1F8, 12)), 'Stimuli Responses': ((0x240, 12),)}
-#: v10 (Reach boot 9, 2026-11-16): v9 FIRED with the Jackal's Style / General / Emotion / Engage /
-#: Cover / Retreat / Stimuli put back, the 'rest' group and the shipped clone; the shield-kept Jackal on
-#: Jackal data fired the DMR 5/5 (=> only a SHIELDLESS Jackal on Jackal data fails). Unseen: the six
-#: below -> only those, each on a weapon v9 proved firing (a silent group = that block)
+#: v10 (Reach boot 9): the six left fired too -> NO single Jackal block stops a shieldless Jackal.
+#: v11 (Reach boot 10, 2026-11-16): blocks in COMBINATION. ALL = every listed block put back (the v8
+#: state, must stay silent); then 4 partitions by the bits of each block's index (0..12): group "bit i
+#: on" puts back the blocks whose index has bit i set, "bit i off" the others. A group goes silent only
+#: when it holds every culprit block -> the silent groups' pattern names them.
+_ORDER = tuple(BLOCKS)
+
+
+def _bits(i, on):
+    return tuple(n for k, n in enumerate(_ORDER) if bool(k >> i & 1) == on)
+
+
 BISECT = (
-    ('Needle Rifle', 'Vitality'),
-    ('Assault Rifle', 'Movement + Throttle'),
-    ('Spartan Laser', 'Firing Point Evaluator'),
-    ('Focus Rifle', 'Evasion'),
-    ('DMR', 'Pre-Search'),
-    ('Spike Rifle', 'Weapons + Firing Pattern'),
+    ('Machine Gun Turret', _ORDER),
+    ('Assault Rifle', _bits(0, True)), ('Needle Rifle', _bits(0, False)),
+    ('Spartan Laser', _bits(1, True)), ('Focus Rifle', _bits(1, False)),
+    ('DMR', _bits(2, True)), ('Spike Rifle', _bits(2, False)),
+    ('Plasma Turret', _bits(3, True)), ('Sniper Rifle', _bits(3, False)),
 )
+#: (v11, user 2026-11-16) the garage / sword rooms are near the start but come at the END of the mission
+LATE_SQUADS = ('sword', 'garage', 'roof', 'return')
 SHIELD_WEAPON = 'DMR'
 _WP = {'DMR': 'rifle/dmr/dmr', 'Concussion Rifle': 'rifle/concussion_rifle/concussion_rifle',
        'Shotgun': 'rifle/shotgun/shotgun', 'Plasma Launcher': 'support_high/plasma_launcher/plasma_launcher',
@@ -173,7 +182,7 @@ def layout(m, report):
             if team in friends:
                 if types == {'Marine'}:
                     friendly.append(entry)
-            elif 'Marine' not in types:
+            elif 'Marine' not in types and not any(w in name.lower() for w in LATE_SQUADS):
                 hostile.append(entry)
 
     def deal(cands, cases):
@@ -272,8 +281,9 @@ def layout(m, report):
                 for off, size in keep:
                     m.data[tag + off:tag + off + size] = m.data[base_tag + off:base_tag + off + size]
             else:
-                for off, size in BLOCKS[revert]:
-                    m.data[tag + off:tag + off + size] = m.data[jack + off:jack + off + size]
+                for name in (revert if isinstance(revert, tuple) else (revert,)):
+                    for off, size in BLOCKS[name]:
+                        m.data[tag + off:tag + off + size] = m.data[jack + off:jack + off + size]
             made[word] = ci
         moved = {}
         for cell, label in cell_label.items():
@@ -285,8 +295,8 @@ def layout(m, report):
         for word, revert in BISECT:
             what = 'the clone as shipped (Skirmisher data)' if revert is None else \
                 'Jackal data + only the listed blocks from the clone' if revert == 'rest' else \
-                'clone with the Jackal %s' % revert
-            report.append('  BISECT %-19s %-52s %d cells' % (word, what, moved.get(word, 0)))
+                'clone with the Jackal %s' % (' / '.join(revert) if isinstance(revert, tuple) else revert)
+            report.append('  BISECT %-19s %d cells: %s' % (word, moved.get(word, 0), what))
     for r in sl.rows:
         report.append('  %s: %s' % (r['tag'], r['new']))
     report.append('  %d two-handed Jackal cells on the shieldless clone' % len(set(jackal_cells)))
