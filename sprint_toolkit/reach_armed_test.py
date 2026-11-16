@@ -90,8 +90,21 @@ UNLISTED = {
     'Voice / Interact / Placement / Movement Sets / Flocking / Swarm':
         ((0x60, 0x6C), (0x78, 0x84), (0x9C, 0xA8), (0xE4, 0x108)),
 }
-BISECT = tuple(zip(('DMR', 'Assault Rifle', 'Needle Rifle', 'Spartan Laser', 'Focus Rifle', 'Spike Rifle',
-                    'Sniper Rifle', 'Shotgun'), (('jackal', k) for k in UNLISTED)))
+BISECT_V12 = tuple(zip(('DMR', 'Assault Rifle', 'Needle Rifle', 'Spartan Laser', 'Focus Rifle', 'Spike Rifle',
+                        'Sniper Rifle', 'Shotgun'), (('jackal', k) for k in UNLISTED)))
+#: v12 RESULT: all fired, the whole-Jackal-data DMR group 10/10; the v8 RERUN (built from 5e23804)
+#: was silent again (1/19 bisect Jackals fired, control 3/3) -> real. The one structural v8 / v12
+#: difference: the MAJOR. v8's clone major = the Jackal Major's data, v9-v12's = the Skirmisher Major's.
+#: v13: ('major', minor data, major) -- minor 'jackal' (whole root) / 'skirm' (the shipped clone);
+#: major 'skirm' (the shipped major clone), 'jackal' (a Jackal Major data clone, shieldless) or 'none'
+BISECT = (
+    ('Assault Rifle', ('major', 'jackal', 'skirm')),      # = v12's DMR group: should fire
+    ('DMR', ('major', 'jackal', 'jackal')),               # = v8: should stay silent
+    ('Needle Rifle', ('major', 'jackal', 'none')),
+    ('Shotgun', ('major', 'skirm', 'jackal')),
+    ('Spike Rifle', ('major', 'skirm', 'none')),
+)
+_MAJOR = {'skirm': 'Skirmisher Major data', 'jackal': 'Jackal Major data', 'none': 'no major (no upgrade)'}
 #: (v11, user 2026-11-16) the garage / sword rooms are near the start but come at the END of the mission
 LATE_SQUADS = ('sword', 'garage', 'roof', 'return', 'corvette')     # (v12) + the scripted AA bombard
 SHIELD_WEAPON = 'DMR'
@@ -269,6 +282,30 @@ def layout(m, report):
     made = {}
     if base_idx is not None:
         base_tag = dict(m.find_tags('char', sl.cnames[base_idx]))[sl.cnames[base_idx]]
+        # (v13) a shieldless clone of the JACKAL MAJOR's data, the shipped major clone's variants
+        jmaj_datum = None
+        jmaj_name = hp._tag_name_by_id(m, m.u32(jack + ew.CHAR_MAJOR + 0xC))
+        smaj_name = hp._tag_name_by_id(m, m.u32(base_tag + ew.CHAR_MAJOR + 0xC))
+        if any(isinstance(r, tuple) and r[0] == 'major' and r[2] == 'jackal' for _w2, r in BISECT) \
+                and jmaj_name and smaj_name:
+            ci = sl.spares.pop(0) if sl.spares else None
+            if ci is None and sl.loose:
+                n0 = len(sl.cnames)
+                sl._palette_add(sl.loose.pop(0))
+                ci = n0 if len(sl.cnames) > n0 else None
+                if ci is not None and ci in sl.spares:
+                    sl.spares.remove(ci)
+            if ci is not None:
+                t = dict(m.find_tags('char', sl.cnames[ci]))[sl.cnames[ci]]
+                jm = dict(m.find_tags('char', jmaj_name))[jmaj_name]
+                sm = dict(m.find_tags('char', smaj_name))[smaj_name]
+                m.data[t:t + ew.CHAR_ROOT] = m.data[jm:jm + ew.CHAR_ROOT]
+                m.data[t + ew.CHAR_VARIANTS:t + ew.CHAR_VARIANTS + 12] = \
+                    m.data[sm + ew.CHAR_VARIANTS:sm + ew.CHAR_VARIANTS + 12]
+                struct.pack_into('<I', m.data, t + ew.CHAR_MAJOR + 0xC, 0xFFFFFFFF)   # as the shipped major clone
+                jmaj_datum = hp._h3_tag_datum(m, 'char', sl.cnames[ci])
+                report.append('  BISECT Jackal Major data clone: %s (from %s, variants of %s)'
+                              % (sl.cnames[ci], jmaj_name, smaj_name))
         for word, revert in BISECT:
             if revert is None:
                 made[word] = base_idx
@@ -284,7 +321,20 @@ def layout(m, report):
                 continue
             tag = dict(m.find_tags('char', sl.cnames[ci]))[sl.cnames[ci]]
             m.data[tag:tag + ew.CHAR_ROOT] = m.data[base_tag:base_tag + ew.CHAR_ROOT]
-            if isinstance(revert, tuple) and revert and revert[0] == 'jackal':
+            if isinstance(revert, tuple) and revert and revert[0] == 'major':
+                _k, minor, major = revert
+                if minor == 'jackal':
+                    m.data[tag:tag + ew.CHAR_ROOT] = m.data[jack:jack + ew.CHAR_ROOT]
+                    for off, size in ((ew.CHAR_VARIANTS, 12), (ew.CHAR_MAJOR, 16)):
+                        m.data[tag + off:tag + off + size] = m.data[base_tag + off:base_tag + off + size]
+                if major == 'jackal':
+                    if jmaj_datum is None:
+                        report.append('  BISECT %s: no Jackal Major clone' % word)
+                        continue
+                    struct.pack_into('<I', m.data, tag + ew.CHAR_MAJOR + 0xC, jmaj_datum)
+                elif major == 'none':
+                    struct.pack_into('<I', m.data, tag + ew.CHAR_MAJOR + 0xC, 0xFFFFFFFF)
+            elif isinstance(revert, tuple) and revert and revert[0] == 'jackal':
                 # (v12) the WHOLE Jackal root, the clone's look (variants, major) + the given ranges back
                 m.data[tag:tag + ew.CHAR_ROOT] = m.data[jack:jack + ew.CHAR_ROOT]
                 keep = [(a, b - a) for a, b in UNLISTED[revert[1]]] + [(ew.CHAR_VARIANTS, 12), (ew.CHAR_MAJOR, 16)]
@@ -309,7 +359,9 @@ def layout(m, report):
                 struct.pack_into('<h', m.data, e + ew.CELL_IDX, made[word])
                 moved[word] = moved.get(word, 0) + 1
         for word, revert in BISECT:
-            what = 'the whole Jackal data + Skirmisher %s' % revert[1] if isinstance(revert, tuple) \
+            what = '%s minor, %s' % ('Jackal data' if revert[1] == 'jackal' else 'Skirmisher data (shipped)',
+                                     _MAJOR[revert[2]]) if isinstance(revert, tuple) and revert[0] == 'major' else \
+                'the whole Jackal data + Skirmisher %s' % revert[1] if isinstance(revert, tuple) \
                 and revert and revert[0] == 'jackal' else \
                 'the clone as shipped (Skirmisher data)' if revert is None else \
                 'Jackal data + only the listed blocks from the clone' if revert == 'rest' else \
