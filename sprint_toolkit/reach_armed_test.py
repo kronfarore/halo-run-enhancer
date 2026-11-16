@@ -63,22 +63,17 @@ BLOCKS = {'Style': ((0x34, 16),), 'General Properties': ((0x6C, 12),), 'Emotion'
           'Firing Point Evaluator': ((0x108, 12),), 'Engage': ((0x120, 12),), 'Evasion': ((0x138, 12),),
           'Cover': ((0x144, 12),), 'Retreat': ((0x150, 12),), 'Pre-Search': ((0x168, 12),),
           'Weapons + Firing Pattern': ((0x1EC, 12), (0x1F8, 12)), 'Stimuli Responses': ((0x240, 12),)}
+#: v10 (Reach boot 9, 2026-11-16): v9 FIRED with the Jackal's Style / General / Emotion / Engage /
+#: Cover / Retreat / Stimuli put back, the 'rest' group and the shipped clone; the shield-kept Jackal on
+#: Jackal data fired the DMR 5/5 (=> only a SHIELDLESS Jackal on Jackal data fails). Unseen: the six
+#: below -> only those, each on a weapon v9 proved firing (a silent group = that block)
 BISECT = (
-    ('Machine Gun Turret', None),
-    ('Assault Rifle', 'Style'),
-    ('Sniper Rifle', 'General Properties'),
-    ('Needle Rifle', 'Emotion'),
-    ('Concussion Rifle', 'Vitality'),
-    ('Fuel Rod', 'Movement + Throttle'),
-    ('Rocket Launcher', 'Firing Point Evaluator'),
-    ('Spartan Laser', 'Engage'),
-    ('Shotgun', 'Evasion'),
-    ('Plasma Launcher', 'Cover'),
-    ('Focus Rifle', 'Retreat'),
-    ('Grenade Launcher', 'Pre-Search'),
-    ('Plasma Repeater', 'Weapons + Firing Pattern'),
-    ('Spike Rifle', 'Stimuli Responses'),
-    ('Plasma Turret', 'rest'),
+    ('Needle Rifle', 'Vitality'),
+    ('Assault Rifle', 'Movement + Throttle'),
+    ('Spartan Laser', 'Firing Point Evaluator'),
+    ('Focus Rifle', 'Evasion'),
+    ('DMR', 'Pre-Search'),
+    ('Spike Rifle', 'Weapons + Firing Pattern'),
 )
 SHIELD_WEAPON = 'DMR'
 _WP = {'DMR': 'rifle/dmr/dmr', 'Concussion Rifle': 'rifle/concussion_rifle/concussion_rifle',
@@ -91,10 +86,7 @@ _WP = {'DMR': 'rifle/dmr/dmr', 'Concussion Rifle': 'rifle/concussion_rifle/concu
        'Plasma Repeater': 'rifle/plasma_repeater/plasma_repeater',
        'Machine Gun Turret': 'turret/machinegun_turret/machinegun_turret',
        'Plasma Turret': 'turret/plasma_turret/plasma_turret'}
-ENEMY_CASES = tuple(('Jackal + %s (bisect)' % w, _c('jackal'), _w(_WP[w])) for w, _r in BISECT) + (
-    ('Jackal + %s (shield kept, Jackal data)' % SHIELD_WEAPON, _c('jackal'), _w(_WP[SHIELD_WEAPON])),
-    ('Jackal + Plasma Pistol (shield, control)', _c('jackal'), _w('pistol/plasma_pistol/plasma_pistol')),
-)
+ENEMY_CASES = tuple(('Jackal + %s (bisect)' % w, _c('jackal'), _w(_WP[w])) for w, _r in BISECT)
 MARINE_CASES = (
     ('Marine + DMR', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('rifle/dmr/dmr')),
 )
