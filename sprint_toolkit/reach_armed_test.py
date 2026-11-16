@@ -75,15 +75,25 @@ def _bits(i, on):
     return tuple(n for k, n in enumerate(_ORDER) if bool(k >> i & 1) == on)
 
 
-BISECT = (
-    ('Machine Gun Turret', _ORDER),
-    ('Assault Rifle', _bits(0, True)), ('Needle Rifle', _bits(0, False)),
-    ('Spartan Laser', _bits(1, True)), ('Focus Rifle', _bits(1, False)),
-    ('DMR', _bits(2, True)), ('Spike Rifle', _bits(2, False)),
-    ('Plasma Turret', _bits(3, True)), ('Sniper Rifle', _bits(3, False)),
-)
+#: v11 RESULT (Reach boot 10): ALL 13 listed blocks back = 5/7 fired, every partition fired; the
+#: silent ones were at the start (corvette AA bombard: scripted). v8 (the WHOLE Jackal root) was 0 in
+#: 7 groups -> v12: every group = the WHOLE Jackal root (+ the clone's shieldless variant and major),
+#: with ONE set of the never-listed blocks laid back from the Skirmisher clone. ('jackal', ranges)
+UNLISTED = {
+    'nothing (the v8 state)': (),
+    'Flags / Parent / Unit / Creature': ((0x0, 0x34),),
+    'Perception / Target / Look': ((0xA8, 0xCC),),
+    'Ready / Charge': ((0x114, 0x120), (0x12C, 0x138)),
+    'Search / Idle / Vocalization / Boarding': ((0x15C, 0x168), (0x174, 0x198)),
+    'Kungfu .. Scarab': ((0x198, 0x1EC),),
+    'Grenades .. Pain (not Stimuli)': ((0x204, 0x240), (0x24C, 0x270)),
+    'Voice / Interact / Placement / Movement Sets / Flocking / Swarm':
+        ((0x60, 0x6C), (0x78, 0x84), (0x9C, 0xA8), (0xE4, 0x108)),
+}
+BISECT = tuple(zip(('DMR', 'Assault Rifle', 'Needle Rifle', 'Spartan Laser', 'Focus Rifle', 'Spike Rifle',
+                    'Sniper Rifle', 'Shotgun'), (('jackal', k) for k in UNLISTED)))
 #: (v11, user 2026-11-16) the garage / sword rooms are near the start but come at the END of the mission
-LATE_SQUADS = ('sword', 'garage', 'roof', 'return')
+LATE_SQUADS = ('sword', 'garage', 'roof', 'return', 'corvette')     # (v12) + the scripted AA bombard
 SHIELD_WEAPON = 'DMR'
 _WP = {'DMR': 'rifle/dmr/dmr', 'Concussion Rifle': 'rifle/concussion_rifle/concussion_rifle',
        'Shotgun': 'rifle/shotgun/shotgun', 'Plasma Launcher': 'support_high/plasma_launcher/plasma_launcher',
@@ -219,7 +229,7 @@ def layout(m, report):
                 v = sid if ('jackal' in ch and two and sid is not None) else 0
                 struct.pack_into('<I', m.data, sp + ew.SP_VARIANT, v)
             dealt[label] = dealt.get(label, 0) + _i16(m, cell + ew.CELL_COUNT)
-            if k <= 12:
+            if True:                       # (v12) every cell: the user maps silent ones to squads
                 report.append('  %-28s %5.0f wu  %s (%d spawn points, %d units)'
                               % (name, d, label, len(sps), _i16(m, cell + ew.CELL_COUNT)))
         report.append('  units per case: ' + ', '.join('%s %d' % kv for kv in sorted(dealt.items())))
@@ -274,7 +284,13 @@ def layout(m, report):
                 continue
             tag = dict(m.find_tags('char', sl.cnames[ci]))[sl.cnames[ci]]
             m.data[tag:tag + ew.CHAR_ROOT] = m.data[base_tag:base_tag + ew.CHAR_ROOT]
-            if revert == 'rest':
+            if isinstance(revert, tuple) and revert and revert[0] == 'jackal':
+                # (v12) the WHOLE Jackal root, the clone's look (variants, major) + the given ranges back
+                m.data[tag:tag + ew.CHAR_ROOT] = m.data[jack:jack + ew.CHAR_ROOT]
+                keep = [(a, b - a) for a, b in UNLISTED[revert[1]]] + [(ew.CHAR_VARIANTS, 12), (ew.CHAR_MAJOR, 16)]
+                for off, size in keep:
+                    m.data[tag + off:tag + off + size] = m.data[base_tag + off:base_tag + off + size]
+            elif revert == 'rest':
                 # the Jackal's root, then the listed blocks + the clone's look (variants, major) back
                 m.data[tag:tag + ew.CHAR_ROOT] = m.data[jack:jack + ew.CHAR_ROOT]
                 keep = [r for rr in BLOCKS.values() for r in rr] + [(ew.CHAR_VARIANTS, 12), (ew.CHAR_MAJOR, 16)]
@@ -293,7 +309,9 @@ def layout(m, report):
                 struct.pack_into('<h', m.data, e + ew.CELL_IDX, made[word])
                 moved[word] = moved.get(word, 0) + 1
         for word, revert in BISECT:
-            what = 'the clone as shipped (Skirmisher data)' if revert is None else \
+            what = 'the whole Jackal data + Skirmisher %s' % revert[1] if isinstance(revert, tuple) \
+                and revert and revert[0] == 'jackal' else \
+                'the clone as shipped (Skirmisher data)' if revert is None else \
                 'Jackal data + only the listed blocks from the clone' if revert == 'rest' else \
                 'clone with the Jackal %s' % (' / '.join(revert) if isinstance(revert, tuple) else revert)
             report.append('  BISECT %-19s %d cells: %s' % (word, moved.get(word, 0), what))
