@@ -1256,3 +1256,29 @@ stands off. Allied Elites and Grunts: their swing blast would hit the player and
 its swing (user: keep). `h2_armed_test` does not run the `allies` pass. The old throw and fist-shake fire_1 clones stay in
 the Grunt and Jackal graphs as unused animations.
 Enhancer hand-off: the shared notes, sent to the session 2026-10-31.
+
+## B2: what the Needle Rifle taught (2026-11-01/16, parallel step 3, DONE)
+
+Reach's Needle Rifle is a complete Halo 2 port on the DMR's Reach route: `ports_h2/needle_rifle.py`. Tested in game,
+CLASSIC: Delta Halo (Chief, Original, 3 boots), Oracle (Arbiter, Balanced), Armed on Delta Halo, Gravemind, Regret
+and Quarantine Zone (all seven species), Marines in trade. Every item confirmed by the user. Residency: palette entry in
+all 13 levels; ships with the batched rebuild. PORTING "Halo 2: the Needle Rifle, wave B2" is the recipe.
+
+**Step 4a (user):** yardstick the Needler, accuracy by the Carbine (Halo 2's role twin, but no Reach Carbine and no
+chain): needle 3 on impact, 26 / 78 / 105, error 0.3-1.0, velocity 818, timer 1.5-2.1 s, 3 needles, attached 400 on
+the stuck target alone, area 30-50.
+
+**The supercombine:** no dll for the count. The projectile tag carries it, and the engine combines ABOVE it (field =
+wanted - 1). It never combines on the player in campaign, stock Needler included: the halo2.dll patch is this
+session's next job (user 2026-11-16).
+
+**New to the kit (each an observation of one port):** h2_port_scope `ring_quarter` + `rgb`; h2_port_reticle `inner`;
+coloured scope glyphs on widget_simple_flash clones (not scope_masks); `byte_edits` for flags and euler fields; fill a
+barrel's firing damage by record; the Reach route's run order (render after shaders) and its two DMR fixes
+(fine_weld, model_offset), both applied here.
+
+**Process, from the user this port:** an Armed level must have the species NEAR the start. Check the printed distances,
+and use a level that carries Flood and Sentinels itself.
+
+**Open:** the 5b report and port_backup wait for the F: drive (unmounted 2026-11-16). The Needler's two sideways
+flash sprites stay (user: the flash is good). Barrel 1 still carries the Carbine's flags (unused).

@@ -4003,6 +4003,38 @@ Journey (Arbiter, Balanced), Armed on Gravemind and Sacred Icon (7 tests), Marin
 * 4b, list 3 by name: a melee port needs its firing noise and acceleration scale read too, the donor's survive a trigger.
 * Scripts walking loose jmads: dry-run with faulthandler first; a search loop held the kit lock for an hour.
 
+### Halo 2: the Needle Rifle, wave B2 (2026-11-01/16) -- the Reach route, a supercombining needle
+
+Reach's rifle (`ports_h2/needle_rifle.py`) on the DMR's Reach route. Donor the COVENANT CARBINE (its weapon, model,
+HUD), the needle the NEEDLER's (projectile, attach, light volume, contrail, super-detonation tags), Reach's model,
+textures, Elite + Spartan FP animations, sounds, scope and reticle. Yardstick the Needler, accuracy by the Carbine.
+Tested: Delta Halo (Original, 3 boots), Oracle (Arbiter, Balanced), Armed on Delta Halo, Gravemind, Regret, Quarantine Zone.
+
+* RUN ORDER: `tool render` AFTER the textures step. Rendered before the shaders exist, every material is
+  `shaders\invalid` (H2's rainbow placeholder). `fine_weld: True` (the DMR's) keeps all 6,811 triangles.
+* THE SUPERCOMBINE needs no dll for its count: the projectile holds `super det. projectile count`, and the engine
+  detonates when MORE needles than it are stuck. Reach's 3 = field 2. In campaign it never fires on the PLAYER
+  (stock Needler too): an engine gate like Halo 1's.
+* A spew trigger on the Carbine's barrel fired TWO needles a press: its barrel flag `don't clear fire bit after
+  recovering` (2048, Halo 2 sets it on latch triggers). 3584 -> 1536. The Carbine's trigger names barrel 1;
+  pointed at barrel 0, so cards and catalog land on the live one. Fill barrel 0's `firing damage` (rumble) too.
+* h2_port_numbers cannot write a flags field printed in CDATA (a flag name with an apostrophe) or a `real euler
+  angles 2d` (the melee pyramid): weapon `byte_edits` with a field name, tool-verified. Read every numbers run for FAILED.
+* FP POSITION: the weapon's `first person weapon offset` moves the gun alone (the DMR's boot 7). Use fp_anims
+  `model_offset` (-0.005, 0, -0.05 here), the field 0.
+* Reach's `ammunition_needles` as Halo 2's `first_person:ammunition` put the needles OFFSCREEN outside reload and
+  melee: dropped. The needler shader's own ammo function dims them, as on the ground (the user's preferred look).
+* SCOPE: the `(scope) stretch` flag did NOT stretch a 512 quarter: it drew at 1.117 screen px a bitmap px.
+  h2_port_scope `ring_quarter` (860, 484) bakes the quarter at that scale. scope_masks is a legacy meter: alpha 0
+  clear, 0.4-0.8 dark, black lines; its meter_empty_color does NOT colour black texels. Coloured glyphs: clones of
+  widget_simple_flash_red with `normal_color` edited (both hud_elite colours), art flat blue (`rgb`). The Carbine's
+  right_crosshair carries `flip horizontally`: clear it for an own sprite.
+* RETICLE: h3_art `inner` (N, s) = Reach's small centre ring (the arc at 0.45, 1.5 units); the two rings averaged
+  with their mirrors so neither sits a sub-pixel off.
+* Catalog: value_overrides apply BY FIELD NAME to every row, so a damage row shared by several effects goes in as
+  extra_rows. Halo 2's plugin calls the core radius `Area Of Effect Core Radius`.
+* Armed: `--armed all` on Delta Halo replaced squads 320 wu away. Flood and Sentinels: Quarantine Zone, which has its own.
+
 ## Halo Reach
 
 **COMPLETE 2026-09-30 -- all nine steps built and confirmed in game** on m20: world model

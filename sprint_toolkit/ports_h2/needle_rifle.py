@@ -40,7 +40,7 @@ PORT = {
     'wave': 'B2',
     'name': 'Needle Rifle',
     'source': 'Halo Reach',
-    'status': 'in progress',
+    'status': 'done',
     'source_tag': 'objects\\weapons\\rifle\\needle_rifle\\needle_rifle',
     'reservations': {
         'message_prefix': 'nr2',
@@ -654,6 +654,7 @@ PORT = {
                  'the Needler, its accuracy through the Covenant Carbine.'),
     },
 
+    'sound_keeps': {},
     'test': {'level': '05a_deltaapproach', 'dervish_level': '04b_floodlab', 'rounds': (21, 105)},
     'residency': {'levels': 'all', 'placements': False},
 }
