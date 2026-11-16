@@ -53,25 +53,46 @@ def _c(s):
 
 
 #: (label, character, weapon): the Halo 3 findings carried over, every species at once
-#: v8 (Reach boot 7, 2026-11-15): the Engage block (DMR 2/2) is the lead -> split it, and test whether
-#: the style / retreat fix still matter. Each entry: (weapon, style, retreat fix, engage) with engage
-#: None = the Jackal's, 'full' = the Skirmisher's, or a list of (start, end) byte ranges of the
-#: Skirmisher's element laid over the Jackal's; 'flags0' = the Jackal's with Fight Stable cleared
+#: v9 (Reach boot 8, 2026-11-16): v8 = nothing on Jackal data fired (the v7 hits were noise); the
+#: full Skirmisher-data clone always fires -> REVERSE bisect: every group starts from that clone and
+#: puts back ONE block of the Jackal's (its block field copied from the Jackal: the Jackal's elements).
+#: 'rest' = the Jackal's root with ONLY the listed blocks from the clone (= everything unlisted back).
+#: SHIELD (user 2026-11-16): a plain Jackal -- its own data, its shield kept -- with a two-handed weapon
+BLOCKS = {'Style': ((0x34, 16),), 'General Properties': ((0x6C, 12),), 'Emotion': ((0x84, 12),),
+          'Vitality': ((0x90, 12),), 'Movement + Throttle': ((0xCC, 12), (0xD8, 12)),
+          'Firing Point Evaluator': ((0x108, 12),), 'Engage': ((0x120, 12),), 'Evasion': ((0x138, 12),),
+          'Cover': ((0x144, 12),), 'Retreat': ((0x150, 12),), 'Pre-Search': ((0x168, 12),),
+          'Weapons + Firing Pattern': ((0x1EC, 12), (0x1F8, 12)), 'Stimuli Responses': ((0x240, 12),)}
 BISECT = (
-    ('DMR', 'skirm', True, 'full'),
-    ('Concussion Rifle', 'skirm', True, 'flags0'),
-    ('Shotgun', 'skirm', True, [(0xC, 0x1C)]),
-    ('Plasma Launcher', 'skirm', True, [(0x50, 0x60)]),
-    ('Rocket Launcher', 'jackal', True, 'full'),
-    ('Spike Rifle', 'jackal', False, 'full'),
-    ('Focus Rifle', 'skirm', True, None),
+    ('Machine Gun Turret', None),
+    ('Assault Rifle', 'Style'),
+    ('Sniper Rifle', 'General Properties'),
+    ('Needle Rifle', 'Emotion'),
+    ('Concussion Rifle', 'Vitality'),
+    ('Fuel Rod', 'Movement + Throttle'),
+    ('Rocket Launcher', 'Firing Point Evaluator'),
+    ('Spartan Laser', 'Engage'),
+    ('Shotgun', 'Evasion'),
+    ('Plasma Launcher', 'Cover'),
+    ('Focus Rifle', 'Retreat'),
+    ('Grenade Launcher', 'Pre-Search'),
+    ('Plasma Repeater', 'Weapons + Firing Pattern'),
+    ('Spike Rifle', 'Stimuli Responses'),
+    ('Plasma Turret', 'rest'),
 )
-_ENGAGE = {'full': 'the Skirmisher Engage', 'flags0': 'Jackal Engage, Fight Stable off', None: 'the Jackal Engage'}
+SHIELD_WEAPON = 'DMR'
 _WP = {'DMR': 'rifle/dmr/dmr', 'Concussion Rifle': 'rifle/concussion_rifle/concussion_rifle',
        'Shotgun': 'rifle/shotgun/shotgun', 'Plasma Launcher': 'support_high/plasma_launcher/plasma_launcher',
        'Rocket Launcher': 'support_high/rocket_launcher/rocket_launcher', 'Spike Rifle': 'rifle/spike_rifle/spike_rifle',
-       'Focus Rifle': 'rifle/focus_rifle/focus_rifle'}
-ENEMY_CASES = tuple(('Jackal + %s (bisect)' % w, _c('jackal'), _w(_WP[w])) for w, *_r in BISECT) + (
+       'Focus Rifle': 'rifle/focus_rifle/focus_rifle', 'Assault Rifle': 'rifle/assault_rifle/assault_rifle',
+       'Sniper Rifle': 'rifle/sniper_rifle/sniper_rifle', 'Needle Rifle': 'rifle/needle_rifle/needle_rifle',
+       'Fuel Rod': 'support_high/flak_cannon/flak_cannon', 'Spartan Laser': 'support_high/spartan_laser/spartan_laser',
+       'Grenade Launcher': 'rifle/grenade_launcher/grenade_launcher',
+       'Plasma Repeater': 'rifle/plasma_repeater/plasma_repeater',
+       'Machine Gun Turret': 'turret/machinegun_turret/machinegun_turret',
+       'Plasma Turret': 'turret/plasma_turret/plasma_turret'}
+ENEMY_CASES = tuple(('Jackal + %s (bisect)' % w, _c('jackal'), _w(_WP[w])) for w, _r in BISECT) + (
+    ('Jackal + %s (shield kept, Jackal data)' % SHIELD_WEAPON, _c('jackal'), _w(_WP[SHIELD_WEAPON])),
     ('Jackal + Plasma Pistol (shield, control)', _c('jackal'), _w('pistol/plasma_pistol/plasma_pistol')),
 )
 MARINE_CASES = (
@@ -188,7 +209,7 @@ def layout(m, report):
             _one(m, cell + ew.CELL_CHARS, ci)
             _one(m, cell + ew.CELL_WEAPS, wi)
             struct.pack_into('<i', m.data, cell + ew.CELL_WEAPS + 0xC, 0)    # no secondary
-            two = ew.two_handed(m, hp, ew.weapon_info(m, wnames[wi]))
+            two = ew.two_handed(m, hp, ew.weapon_info(m, wnames[wi])) and 'shield kept' not in label
             if 'jackal' in ch and two:
                 jackal_cells.append(cell)
                 cell_label[cell] = label
@@ -218,13 +239,11 @@ def layout(m, report):
         ci = sl.of(_i16(m, e + ew.CELL_IDX))
         if ci is not None:
             struct.pack_into('<h', m.data, e + ew.CELL_IDX, ci)
-    # v8 BISECT: base = Jackal data (+ the shieldless variant); per entry the style, the retreat fix
-    # (threshold 0) and the Engage element are set as BISECT says
-    ew.RETREAT_FIX = {}
+    # v9 BISECT (reverse): base = the shipped clone (Skirmisher root + the Jackal's shieldless
+    # variant + the major's clone); each group = a copy of the base with ONE Jackal block put back
     jack_i = next(i for i, n in enumerate(sl.cnames) if (n or '').lower().endswith(BS + 'jackal'))
-    base_idx = sl.of(jack_i)                       # Jackal data, no retreat fix (RETREAT_FIX off)
+    base_idx = sl.of(jack_i)
     jack = dict(m.find_tags('char', sl.cnames[jack_i]))[sl.cnames[jack_i]]
-    skirm = next((b for p, b in m.find_tags('char', '*') if p.lower().endswith(BS + 'skirmisher')), None)
     now_used = _used_chars(m, base)
     refd = set()
     for _p, cb in m.find_tags('char', '*'):
@@ -236,19 +255,13 @@ def layout(m, report):
                 and ci not in sl.made.values() and 'jackal' not in leaf and 'skirm' not in leaf \
                 and not any(w in leaf for w in ew.NEVER_WORDS.get(GAME, ())):
             sl.spares.append(ci)
-
-    def private(tag, off, es):
-        n = max(0, m.i32(tag + off))
-        got = hp._h3_reserve(m, [n * es])
-        old = hp._block_base(m, tag + off)
-        m.data[got[0]:got[0] + n * es] = m.data[old:old + n * es]
-        struct.pack_into('<I', m.data, tag + off + 4, m.off2data(got[0]))
-        return got[0], n
     made = {}
-    if base_idx is not None and skirm is not None:
+    if base_idx is not None:
         base_tag = dict(m.find_tags('char', sl.cnames[base_idx]))[sl.cnames[base_idx]]
-        se = hp._block_base(m, skirm + 0x120)                 # the Skirmisher's Engage element
-        for word, style, retreat, engage in BISECT:
+        for word, revert in BISECT:
+            if revert is None:
+                made[word] = base_idx
+                continue
             if sl.spares:
                 ci = sl.spares.pop(0)
             elif sl.loose:
@@ -260,36 +273,28 @@ def layout(m, report):
                 continue
             tag = dict(m.find_tags('char', sl.cnames[ci]))[sl.cnames[ci]]
             m.data[tag:tag + ew.CHAR_ROOT] = m.data[base_tag:base_tag + ew.CHAR_ROOT]
-            if style == 'skirm':
-                m.data[tag + 0x34:tag + 0x44] = m.data[skirm + 0x34:skirm + 0x44]
-            if retreat:
-                e0, n = private(tag, 0x150, 0x58)
-                for k in range(n):
-                    struct.pack_into('<f', m.data, e0 + k * 0x58 + 0x4, 0.0)
-            if engage == 'full':
-                m.data[tag + 0x120:tag + 0x12C] = m.data[skirm + 0x120:skirm + 0x12C]
-            elif engage is not None:
-                e0, n = private(tag, 0x120, 0x60)
-                for k in range(n):
-                    el = e0 + k * 0x60
-                    if engage == 'flags0':
-                        struct.pack_into('<I', m.data, el, m.u32(el) & ~(1 << 5))     # Fight Stable
-                    else:
-                        for a, b in engage:
-                            m.data[el + a:el + b] = m.data[se + a:se + b]
+            if revert == 'rest':
+                # the Jackal's root, then the listed blocks + the clone's look (variants, major) back
+                m.data[tag:tag + ew.CHAR_ROOT] = m.data[jack:jack + ew.CHAR_ROOT]
+                keep = [r for rr in BLOCKS.values() for r in rr] + [(ew.CHAR_VARIANTS, 12), (ew.CHAR_MAJOR, 16)]
+                for off, size in keep:
+                    m.data[tag + off:tag + off + size] = m.data[base_tag + off:base_tag + off + size]
+            else:
+                for off, size in BLOCKS[revert]:
+                    m.data[tag + off:tag + off + size] = m.data[jack + off:jack + off + size]
             made[word] = ci
         moved = {}
         for cell, label in cell_label.items():
-            word = next((w for w, *_r in BISECT if (' + %s ' % w) in label + ' '), None)
+            word = next((w for w, _r in BISECT if (' + %s ' % w) in label + ' '), None)
             if word in made:
                 e = hp._block_base(m, cell + ew.CELL_CHARS)
                 struct.pack_into('<h', m.data, e + ew.CELL_IDX, made[word])
                 moved[word] = moved.get(word, 0) + 1
-        for word, style, retreat, engage in BISECT:
-            eg = _ENGAGE.get(engage) if not isinstance(engage, list) else \
-                'Jackal Engage + Skirmisher ' + ('danger thresholds' if engage[0][0] == 0xC else 'default ranges')
-            report.append('  BISECT %-17s %s style, retreat fix %-3s, %-40s %d cells'
-                          % (word, style, 'on' if retreat else 'off', eg, moved.get(word, 0)))
+        for word, revert in BISECT:
+            what = 'the clone as shipped (Skirmisher data)' if revert is None else \
+                'Jackal data + only the listed blocks from the clone' if revert == 'rest' else \
+                'clone with the Jackal %s' % revert
+            report.append('  BISECT %-19s %-52s %d cells' % (word, what, moved.get(word, 0)))
     for r in sl.rows:
         report.append('  %s: %s' % (r['tag'], r['new']))
     report.append('  %d two-handed Jackal cells on the shieldless clone' % len(set(jackal_cells)))
@@ -299,13 +304,18 @@ def layout(m, report):
 
 def disarm_allies(m, report, words=('spartan_kat',)):
     """(v8, user 2026-11-15) Kat killed the test Jackals before they could be watched: her cells and
-    spawn points get the Target Locator (no damage) instead of their weapons."""
+    spawn points get another weapon. (v9) The Target Locator called airstrikes: a Magnum whose bullet
+    does no damage on the test map (no test enemy holds the Magnum)."""
     base = hp._scnr_base(m)
     wnames = [(hp._tag_name_by_id(m, m.u32(e + ew.WPAL_ID)) or '').lower()
               for e in m.follow_all(base, [ew.WPAL], [ew.WPAL_ES], 'all')]
     cnames = [(hp._tag_name_by_id(m, m.u32(e + ew.CPAL_ID)) or '').lower()
               for e in m.follow_all(base, [ew.CPAL], [ew.CPAL_ES], 'all')]
-    tl = next((i for i, n in enumerate(wnames) if n.endswith(BS + 'target_laser')), None)
+    tl = next((i for i, n in enumerate(wnames) if n.endswith(BS + 'magnum')), None)
+    for _n, t in m.find_tags('jpt!', W + 'pistol' + BS + 'magnum' + BS + 'projectiles' + BS + 'magnum_bullet'):
+        for off in (0x20, 0x24, 0x28):         # damage lower / upper / upper max (the Reach jpt! plugin)
+            struct.pack_into('<f', m.data, t + off, 0.0)
+        report.append('Kat: magnum_bullet damage 0')
     who = {i for i, n in enumerate(cnames) if any(w in n.rsplit(BS, 1)[-1] for w in words)}
     if tl is None or not who:
         return
@@ -322,7 +332,7 @@ def disarm_allies(m, report, words=('spartan_kat',)):
             if _i16(m, sp + ew.SP_CHAR) in who:
                 struct.pack_into('<hh', m.data, sp + ew.SP_WEAP, tl, -1)
                 n += 1
-    report.append('Kat: %d cells / spawn points on the Target Locator' % n)
+    report.append('Kat: %d cells / spawn points on the Magnum' % n)
 
 
 def god_and_cheat(m, report):
@@ -377,9 +387,8 @@ def build(level='m20'):
     with contextlib.redirect_stdout(io.StringIO()):
         m = hp.open_map(src, GAME)
     ew.bind(GAME, m, hp)
-    # v8: the clones start from the JACKAL's data; the bisect sets style / retreat / engage per entry
+    # v9: the clones start from the shipped Skirmisher-data clone; the bisect puts Jackal blocks back
     ew.RETREAT_FIX = {}
-    ew.ROOT_SOURCE = {}
     report = ['%s from %s' % (os.path.basename(out), src)]
     # the Jackal graph species' own firing rows BEFORE the clones copy their roots
     for r in ew.species_firing(m, hp, [(ew.enemy_of(ch), next((p for p, _b in m.find_tags('weap', '*')
