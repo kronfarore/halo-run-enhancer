@@ -375,7 +375,8 @@ PORT = {
                             # boot 2 of the Arbiter: 'still pretty far under the barrel in idle and the long fidget' --
                             # his palm top sat 0.88 units BELOW the gun's underside; the Chief's (accepted) reaches 0.70
                             # into it -> 1.58 up (scratch vgap.py, gun frame)
-                            'dervish': {'*': (0.0, 0.01, 0.0108)}},
+                            # boot 3: 'slightly back down and to the right' -> 0.4 down, 0.4 right (-y = the player's right)
+                            'dervish': {'*': (0.0, 0.006, 0.0068)}},
         # boot 6: the long fidget STILL 'slides into the left wrist' -- seen from down the barrel, Halo 2's hand mesh
         # sits ~15 deg turned on its bone against Reach's (palm normal / finger axis, measured), so the palm Reach
         # levels under the rolled gun tips and the wrist rises to it. +15 deg about the hand's z levels it (barrel
