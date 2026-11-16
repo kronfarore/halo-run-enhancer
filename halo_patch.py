@@ -3713,6 +3713,56 @@ def _fix_h4_dead_grenades(m, game):
              'new': 'Pulse Grenade (%d placement%s)' % (len(fixed), '' if len(fixed) == 1 else 's')}]
 
 
+# Inverted Stable Grenades (Halo 1 / 2): a `placed` flag op writes the scnr Equipment
+# PLACEMENTS of one pickup, not a tag field. Measured in game: stock, placed grenade
+# pickups never chain and dropped ones do; with the placement's "does accelerate (moves
+# due to explosions)" bit on, placed ones chain too (Halo 1 a30 2026-11-06, Halo 2 01b
+# 2026-11-08). Every shipped placement has it off. Halo 3 on has no placed/dropped split
+# (everything chains stock), so there is nothing for the op to do there.
+#: (offset of the placement's Equipment/Misc Flags, struct format, {flag name: bit})
+_PLACED_EQUIP_FLAGS = {
+    'Halo 1': (34, '<H', {'does accelerate': 2}),
+    'Halo 2': (52, '<I', {'does accelerate': 2}),
+}
+
+
+def _apply_placed_flag(m, game, path, flag, on, base):
+    g = str(game).strip()
+    spec, E = _PLACED_EQUIP_FLAGS.get(g), _MAP_EQUIPMENT.get(g)
+    bit = spec[2].get(str(flag).strip().lower()) if spec else None
+    if spec is None or E is None or bit is None:
+        return [{**base, 'ok': True, 'skip': True,
+                 'reason': 'no placement flag %r in %s' % (flag, g)}]
+    at, fmt = spec[0], spec[1]
+    sb = _scnr_base(m)
+    po, pe = E['palette']
+    pb = _block_base(m, sb + po)
+    want = str(path).lower()
+    pal = {i for i in range(max(0, m.i32(sb + po)))
+           if (_tag_name_by_id(m, m.u32(pb + i * pe + E['pal_id_at'])) or '').lower() == want}
+    io_, ie = E['items']
+    ib = _block_base(m, sb + io_)
+    hit = changed = 0
+    for i in range(max(0, m.i32(sb + io_)) if pal else 0):
+        e = ib + i * ie
+        if struct.unpack_from('<h', m.data, e + E['palette_index'])[0] not in pal:
+            continue
+        hit += 1
+        cur = struct.unpack_from(fmt, m.data, e + at)[0]
+        new = (cur | (1 << bit)) if on else (cur & ~(1 << bit))
+        if new != cur:
+            struct.pack_into(fmt, m.data, e + at, new)
+            changed += 1
+    state = '%s %s' % (flag, 'on' if on else 'off')
+    row = {**base, 'field': 'placement flags', 'tag': 'scnr placements of ' + str(path)}
+    if not hit:
+        return [{**row, 'ok': True, 'skip': True, 'reason': 'not placed on this map'}]
+    if not changed:
+        return [{**row, 'ok': True, 'skip': True, 'reason': 'already %s (%d placements)' % (state, hit)}]
+    return [{**row, 'ok': True, 'old': '%d placed' % hit,
+             'new': '%s (%d placements)' % (state, changed)}]
+
+
 # The Halo 2 SAW port's bullet (saw_bullet, built from the cut gpmg's h_turret_ap_bullet)
 # kept the turret's General Damage group 'bullet_vehicle'. Every other SAW (the Halo 3,
 # ODST, Reach and Halo 4 ones) fires 'bullet_slow', the Assault Rifle's group -- so the
@@ -10517,6 +10567,14 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 cls, path = hm.split_tag(op['tag'])
                 plugin = registry.get(cls)
                 base = {**base, 'tag': op['tag']}
+            if op.get('placed') and (op.get('set_bit') or op.get('clear_bit')):
+                # The inverted Stable Grenades card (Halo 1 / 2): a bit on the scnr
+                # Equipment PLACEMENTS of this pickup, not on the tag itself.
+                on = bool(op.get('set_bit'))
+                results.extend(_apply_placed_flag(
+                    m, game, path, op['set_bit'] if on else op['clear_bit'], on,
+                    {**base, 'effect': item['name']}))
+                continue
             if plugin is None:
                 results.append({**base, 'ok': False, 'reason': f'no plugin for {cls}'})
                 continue

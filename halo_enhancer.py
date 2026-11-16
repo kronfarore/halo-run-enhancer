@@ -3112,8 +3112,14 @@ class ModifierDatabase:
           * a Zoom ladder (`from_zero`) without a hand-made `inverse_steps`: a weapon
             without vanilla zoom has nothing to take away, and one with zoom needs its
             inverse written for its own zoom stages;
-          * a card whose every target SETS a value (=n): a set has no direction."""
-        if mod.get('invertible') is False or mod.get('synth'):
+          * a card whose every target SETS a value (=n): a set has no direction.
+        `invertible` may be a per-game dict (resolve_gamed): Stable Grenades inverts only
+        in Halo 1 / 2, where stock placed grenades do not chain."""
+        inv = mod.get('invertible')
+        if isinstance(inv, dict):
+            inv = (resolve_gamed(inv, game, self.games) if game
+                   else any(v is not False for v in inv.values()))
+        if inv is False or mod.get('synth'):
             return False
         ts = [t for t in (mod.get('targets') or []) if isinstance(t, dict)
               and (game is None or target_applies(t, game))]   # only THIS game's targets
@@ -10346,6 +10352,9 @@ class MagnitudeEditorDialog(QDialog):
                                          'nth': t.get('nth', 0) or 0,
                                          'tag': t.get('tag'), **_diff_flavor(t),
                                          'unshare': bool(t.get('unshare')),
+                                         # a bit on the pickup's scnr PLACEMENTS (the
+                                         # inverted Stable Grenades, Halo 1 / 2)
+                                         'placed': bool(t.get('placed')),
                                          ('set_bit' if want else 'clear_bit'): t['flag']})
 
         # Fixed-set fields (e.g. Special-Fire Mode -> Overcharge) tag along whenever

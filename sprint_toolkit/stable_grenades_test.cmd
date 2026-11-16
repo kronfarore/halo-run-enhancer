@@ -7,6 +7,7 @@ rem   stable_grenades_test.cmd itemonly halo2   Halo 2 only: the card's item-fla
 rem                                             (does the eqip flag by itself stop the chain?)
 rem   stable_grenades_test.cmd accel [game]     Halo 1/2/3: vanilla + "does accelerate" on the
 rem                                             placed grenades (is that flag the placed gate?)
+rem   stable_grenades_test.cmd inverted [game]  Halo 1/2: the INVERTED card (placed grenades chain too)
 rem   stable_grenades_test.cmd needlefrag halo4 Halo 4 only: vanilla + the 2 placed needle-grenade
 rem                                             pickups as frags (which placed ones can't be picked up?)
 rem Halo 1 copies have the grenade kinds swapped: placed pickups plasma, drops frag.
@@ -24,8 +25,8 @@ set "MCC=C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Col
 set "ST=E:\HaloBackups\stable_grenades_test"
 set "MODE=%~1"
 set "ONLY=%~2"
-if /i not "%MODE%"=="vanilla" if /i not "%MODE%"=="stable" if /i not "%MODE%"=="itemonly" if /i not "%MODE%"=="accel" if /i not "%MODE%"=="needlefrag" if /i not "%MODE%"=="restore" (
-    echo usage: %~nx0 vanilla^|stable^|itemonly^|accel^|needlefrag^|restore [halo1^|halo2^|halo3^|halo3odst^|haloreach^|halo4]
+if /i not "%MODE%"=="vanilla" if /i not "%MODE%"=="stable" if /i not "%MODE%"=="itemonly" if /i not "%MODE%"=="accel" if /i not "%MODE%"=="needlefrag" if /i not "%MODE%"=="inverted" if /i not "%MODE%"=="restore" (
+    echo usage: %~nx0 vanilla^|stable^|itemonly^|accel^|inverted^|needlefrag^|restore [halo1^|halo2^|halo3^|halo3odst^|haloreach^|halo4]
     exit /b 1
 )
 set FAILED=0
@@ -60,6 +61,7 @@ set "ONEGAME="
 if /i "%MODE%"=="itemonly" set ONEGAME=1
 if /i "%MODE%"=="accel" set ONEGAME=1
 if /i "%MODE%"=="needlefrag" set ONEGAME=1
+if /i "%MODE%"=="inverted" set ONEGAME=1
 if defined ONEGAME if not exist "%ST%\%MODE%\%REL%" (
     echo   %REL%: no %MODE% copy for this game, left as it is
     exit /b 0

@@ -12,6 +12,7 @@ Two sets under E:\HaloBackups\stable_grenades_test\, each laid out like the MCC 
             the eqip flag by itself stops a pickup chaining -- the H2 plasma pickup shares
             its hlmt TAG with the thrown plasma grenade, so the hlmt write reaches both.
   accel\    Halo 1 / 2 / 3: vanilla + "does accelerate" on every placed grenade (the gate?)
+  inverted\ Halo 1 / 2: the INVERTED card (placed grenades get "does accelerate" -> chain)
   needlefrag\ Halo 4 only: vanilla + the 2 placed needle-grenade pickups turned into frags
 Every copy carries test buffs (god shield, run x2, a player-only x1000 weapon).
 All go through the same apply_run with the same options, so the ONLY difference between
@@ -62,9 +63,10 @@ GAMES = list(DB['Missions'])
 SW = DB['Player Modifiers']['Specific Weapon Modifier']
 
 
-def plan_for(game, item_only=False):
+def plan_for(game, item_only=False, inverted=False):
     """The plan PatchDialog builds for one positive pick of each grenade's card
-    (item_only: keep only the eqip item-flag ops)."""
+    (item_only: keep only the eqip item-flag ops; inverted: the INVERTED card -- every
+    flag the other way, positive_only sets dropped, as PatchDialog does)."""
     plan = []
     for w in GRENADES:
         eff = SW[w].get('Stable Grenades')
@@ -72,11 +74,13 @@ def plan_for(game, item_only=False):
             continue
         ops = [{'field': t['field'], 'block': t.get('block'), 'index': 0,
                 'nth': t.get('nth', 0) or 0, 'tag': t.get('tag'),
-                'unshare': bool(t.get('unshare')),
+                'unshare': bool(t.get('unshare')), 'placed': bool(t.get('placed')),
                 **({'set': t['set']} if t.get('set') is not None else
-                   {('set_bit' if t.get('flag_on') else 'clear_bit'): t['flag']})}
+                   {('set_bit' if bool(t.get('flag_on')) != inverted else 'clear_bit'):
+                    t['flag']})}
                for t in he.resolve_gamed(eff['targets'], game, GAMES)
-               if not item_only or (t.get('tag') or '').startswith('eqip ')]
+               if (not item_only or (t.get('tag') or '').startswith('eqip '))
+               and not (inverted and t.get('positive_only'))]
         plan.append({'tag': he.resolve_gamed(eff['tag'], game, GAMES),
                      'name': 'Stable Grenades', 'ops': ops, 'weapon': w})
     return plan
@@ -423,7 +427,7 @@ def main(check_only=False, only=()):
         name = os.path.basename(live)
         print('##', g, name, '<-', src, flush=True)
         staged = {}
-        extra = {'Halo 1': ('accel',), 'Halo 2': ('itemonly', 'accel'),
+        extra = {'Halo 1': ('accel', 'inverted'), 'Halo 2': ('itemonly', 'accel', 'inverted'),
                  'Halo 3': ('accel',), 'Halo 4': ('needlefrag',)}.get(g, ())
         only_kind = 'stable' if '--stable-only' in sys.argv else next(
             (a[7:] for a in sys.argv if a.startswith('--kind=')), None)
@@ -434,10 +438,14 @@ def main(check_only=False, only=()):
                 continue          # re-read only
             os.makedirs(os.path.dirname(dst), exist_ok=True)
             shutil.copyfile(src, dst)
-            plan = plan_for(g, kind == 'itemonly') if kind in ('stable', 'itemonly') else []
+            plan = (plan_for(g, kind == 'itemonly', kind == 'inverted')
+                    if kind in ('stable', 'itemonly', 'inverted') else [])
             res, _ = hp.apply_run(dst, plan, reg, 'Normal', backup=False, game=g,
                                   from_baseline=False)
             mine = [r for r in res if r.get('effect') == 'Stable Grenades']
+            if kind == 'inverted':
+                for r in mine:
+                    print('     inv:', r.get('tag'), r.get('field'), r.get('new') or r.get('reason'))
             print('  %-8s %d rows (%d card: %d applied, %d skipped, %d failed)  sig %s' % (
                 kind, len(res), len(mine),
                 sum(1 for r in mine if r.get('ok') and not r.get('skip')),
