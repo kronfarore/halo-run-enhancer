@@ -74,7 +74,7 @@ class Checker:
     """Does a tag exist where the port lives in `game`?"""
 
     def __init__(self, db, game, weapon, wpath=None):
-        self.game, self.map = game, None
+        self.game, self.map, self.weapon = game, None, weapon
         # Halo 1: the kit can hold port tags nothing USES -- weapons\saw\melee exists,
         # but the SAW keeps the Assault Rifle's melee (user's call). A bullet / damage
         # tag counts only if the port's weapon or one of its projectiles names it.
@@ -116,7 +116,9 @@ class Checker:
             return None
         if self.game in KIT_TAGS:
             if self.game != 'Halo 1':
-                return None          # no loose-tag reader for its weapon layout: donor ladder
+                # no loose-tag reader for its weapon layout: the catalog's own balance
+                # rows (their 'original' is the kit's value), else the donor ladder
+                return self.catalog_zoom()
             f = os.path.join(KIT_TAGS[self.game], wpath + '.weapon')
             if not os.path.exists(f):
                 return None
@@ -139,6 +141,21 @@ class Checker:
         if levels is None or rng is None:
             return None
         return int(levels), float(rng[0] if isinstance(rng, (tuple, list)) else rng)
+
+    def catalog_zoom(self):
+        """(levels, range from) from the port's catalog balance rows 'Magnification
+        Levels' / 'Magnification Range' -- their 'original', the value the port was
+        built with -- or None when the catalog has neither (Halo 2 DMR: 1 from 3)."""
+        import weapon_ports
+        port = next((p for p in weapon_ports.load_catalog().get(self.game) or ()
+                     if p.get('weapon') == self.weapon), None)
+        rows = {r.get('field'): r for r in (port or {}).get('balance') or ()
+                if r.get('block') is None}
+        lv, rg = rows.get('Magnification Levels'), rows.get('Magnification Range')
+        if not lv or not rg:
+            return None
+        pick = lambda r: r.get('original') if r.get('original') is not None else r.get('value')
+        return int(round(float(pick(lv)))), float(pick(rg))
 
 
 def zoom_ladders(levels, frm):
