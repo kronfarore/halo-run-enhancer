@@ -368,7 +368,11 @@ PORT = {
                                             # boot 5: 'the gun slides into the left wrist' mid-fidget (frames 36-66:
                                             # 50 hand-edge cuts a frame unshifted) -> idle's shift, 14 there = idle's
                                             'first_person:posing:var2': (0.0, 0.0, -0.005),
-                                            'first_person:melee_strike_2': (0.0, -0.003, -0.0075)}},
+                                            'first_person:melee_strike_2': (0.0, -0.003, -0.0075)},
+                            # Arbiter boot (Balanced): 'in idle the left hand is not close enough to the weapon, it
+                            # doesn't look like he supports it' -- down the barrel his palm sat 1.7 units left of the
+                            # gun's centre (Reach's Elite 0.7): 1 unit in under the gun, 0.5 down = Reach's cradle
+                            'dervish': {'*': (0.0, 0.01, -0.005)}},
         # boot 6: the long fidget STILL 'slides into the left wrist' -- seen from down the barrel, Halo 2's hand mesh
         # sits ~15 deg turned on its bone against Reach's (palm normal / finger axis, measured), so the palm Reach
         # levels under the rolled gun tips and the wrist rises to it. +15 deg about the hand's z levels it (barrel
