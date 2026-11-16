@@ -268,7 +268,7 @@ def tag_key(tag_path):
     return '%s@%s' % (group_of(tag_path), os.path.splitext(rel)[0].lower())
 
 
-def offset_of(tag_path, name, block='', index=0, nth=0, verbose=True):
+def offset_of(tag_path, name, block='', index=0, nth=0, verbose=True, fresh=False):
     """Where this field lives in the file, searched for once and then remembered.
 
     The cache holds ABSOLUTE file offsets, which are only right for tags laid out like the one
@@ -284,6 +284,8 @@ def offset_of(tag_path, name, block='', index=0, nth=0, verbose=True):
     group = group_of(tag_path)
     cache = _cache()
     tried = [cache.get(tag_key(tag_path), {}).get(key), cache.get(group, {}).get(key)]
+    if fresh:
+        tried = []          # set_field's retry: a cached offset wrote the wrong row
 
     original = open(tag_path, 'rb').read()
     xml = export(tag_path)
@@ -361,9 +363,9 @@ def get(tag_path, name, block='', index=0):
     return _numbers(pick(rows, name, block, index)[4])
 
 
-def set_field(tag_path, name, value, block='', index=0, nth=0):
+def set_field(tag_path, name, value, block='', index=0, nth=0, _fresh=False):
     """Write one field, then make tool.exe confirm only it changed."""
-    at = offset_of(tag_path, name, block, index, nth)
+    at = offset_of(tag_path, name, block, index, nth, fresh=_fresh)
     original = open(tag_path, 'rb').read()
     rows = read_all(export(tag_path), indices=True)
     row = pick(rows, name, block, index, nth)
@@ -391,6 +393,11 @@ def set_field(tag_path, name, value, block='', index=0, nth=0):
     moved = [i for i, (a, b) in enumerate(zip(rows, after)) if a[4] != b[4]] if after else []
     if len(moved) != 1 or rows[moved[0]] is not row:
         open(tag_path, 'wb').write(original)
+        if not _fresh:
+            # a CACHED offset can hold the same value as the field and still be another row's (the DMR,
+            # 2026-11-16: the group's 'animations[N].production flags' = 2 landed on another animation of a
+            # re-imported graph): search this tag afresh once -- the search remembers the right offset
+            return set_field(tag_path, name, value, block, index, nth, _fresh=True)
         raise ValueError('%s: writing %s changed %d fields, not one; restored'
                          % (os.path.basename(tag_path), name, len(moved)))
     print('   %-46s %s -> %s'
