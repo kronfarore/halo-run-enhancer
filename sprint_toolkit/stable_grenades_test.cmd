@@ -7,6 +7,8 @@ rem   stable_grenades_test.cmd itemonly halo2   Halo 2 only: the card's item-fla
 rem                                             (does the eqip flag by itself stop the chain?)
 rem   stable_grenades_test.cmd accel [game]     Halo 1/2/3: vanilla + "does accelerate" on the
 rem                                             placed grenades (is that flag the placed gate?)
+rem   stable_grenades_test.cmd needlefrag halo4 Halo 4 only: vanilla + the 2 placed needle-grenade
+rem                                             pickups as frags (which placed ones can't be picked up?)
 rem Halo 1 copies have the grenade kinds swapped: placed pickups plasma, drops frag.
 rem   stable_grenades_test.cmd restore [game]   put back the map that was live before the test
 rem
@@ -16,14 +18,14 @@ rem The first vanilla/stable call saves each live map to ...\live_before (once).
 rem MCC can stay open; only the level being swapped must not be running (quit to the menu).
 rem
 rem   Halo 1  a30 Halo               Halo 2  01b Cairo Station    Halo 3  100 The Covenant
-rem   ODST    h100 Mombasa Streets   Reach   m60 The Package      Halo 4  m40_invasion Infinity
+rem   ODST    h100 Mombasa Streets   Reach   m60 The Package      Halo 4  m40_invasion Reclaimer
 setlocal EnableDelayedExpansion
 set "MCC=C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection"
 set "ST=E:\HaloBackups\stable_grenades_test"
 set "MODE=%~1"
 set "ONLY=%~2"
-if /i not "%MODE%"=="vanilla" if /i not "%MODE%"=="stable" if /i not "%MODE%"=="itemonly" if /i not "%MODE%"=="accel" if /i not "%MODE%"=="restore" (
-    echo usage: %~nx0 vanilla^|stable^|itemonly^|accel^|restore [halo1^|halo2^|halo3^|halo3odst^|haloreach^|halo4]
+if /i not "%MODE%"=="vanilla" if /i not "%MODE%"=="stable" if /i not "%MODE%"=="itemonly" if /i not "%MODE%"=="accel" if /i not "%MODE%"=="needlefrag" if /i not "%MODE%"=="restore" (
+    echo usage: %~nx0 vanilla^|stable^|itemonly^|accel^|needlefrag^|restore [halo1^|halo2^|halo3^|halo3odst^|haloreach^|halo4]
     exit /b 1
 )
 set FAILED=0
@@ -57,6 +59,7 @@ if /i "%MODE%"=="restore" (
 set "ONEGAME="
 if /i "%MODE%"=="itemonly" set ONEGAME=1
 if /i "%MODE%"=="accel" set ONEGAME=1
+if /i "%MODE%"=="needlefrag" set ONEGAME=1
 if defined ONEGAME if not exist "%ST%\%MODE%\%REL%" (
     echo   %REL%: no %MODE% copy for this game, left as it is
     exit /b 0

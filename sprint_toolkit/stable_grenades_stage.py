@@ -4,6 +4,7 @@ r"""Stage the Stable Grenades in-game test: one level per game, built from the E
     python sprint_toolkit\stable_grenades_stage.py --check    # only re-read the staged maps
     python sprint_toolkit\stable_grenades_stage.py "Halo 1"   # only the named game(s)
     ... --stable-only                                        # rebuild only the stable set
+    ... --kind=needlefrag                                    # rebuild only that set
 Two sets under E:\HaloBackups\stable_grenades_test\, each laid out like the MCC folder:
   vanilla\  the baseline through halo_patch.apply_run with an EMPTY plan
   stable\   the same, plus the Stable Grenades card of every grenade of that game
@@ -11,6 +12,7 @@ Two sets under E:\HaloBackups\stable_grenades_test\, each laid out like the MCC 
             the eqip flag by itself stops a pickup chaining -- the H2 plasma pickup shares
             its hlmt TAG with the thrown plasma grenade, so the hlmt write reaches both.
   accel\    Halo 1 / 2 / 3: vanilla + "does accelerate" on every placed grenade (the gate?)
+  needlefrag\ Halo 4 only: vanilla + the 2 placed needle-grenade pickups turned into frags
 Halo 2, Halo 3, ODST, Reach and Halo 4 copies carry test buffs (god shield, run x2, a player-only x1000 weapon).
 All go through the same apply_run with the same options, so the ONLY difference between
 the two is this card. stable_grenades_test.cmd swaps them into the game (and back).
@@ -144,6 +146,33 @@ def accelerate_placed(path, game):
             n += 1
     m.save(path)
     return '%d placed grenades: does accelerate on' % n
+
+
+def h4_needle_to_frag(path):
+    """`needlefrag` set (Halo 4, Reclaimer, 2026-11-16): vanilla + the placed
+    `storm_needle_grenade` pickups (#62/#63; hlmt storm_disruption_grenade_equipment, NOT in
+    the gggl grenade list, so never pickable) re-pointed at the frag palette entry. Vanilla
+    boot: placed "pulse" grenades could not be picked up while dropped pulse could, and the
+    4 real placed pulse grenades look ordinary in the data -- so if the unpickable ones were
+    these two, they now turn up as frags and every pulse-looking pickup left is a real one."""
+    m = hp.open_map(path, 'Halo 4')
+    E = hp._MAP_EQUIPMENT['Halo 4']
+    sb = hp._scnr_base(m)
+    po, pe = E['palette']
+    pb = hp._block_base(m, sb + po)
+    names = [(hp._tag_name_by_id(m, m.u32(pb + i * pe + E['pal_id_at'])) or '').rsplit(chr(92), 1)[-1]
+             for i in range(m.i32(sb + po))]
+    needle, frag = names.index('storm_needle_grenade'), names.index('storm_frag_grenade')
+    io, ie = E['items']
+    ib = hp._block_base(m, sb + io)
+    done = []
+    for i in range(m.i32(sb + io)):
+        e = ib + i * ie
+        if struct.unpack_from('<h', m.data, e)[0] == needle:
+            struct.pack_into('<h', m.data, e, frag)
+            done.append(i)
+    m.save(path)
+    return 'needle placements %s -> frag (palette %d -> %d)' % (done, needle, frag)
 
 
 H2_CHEAT_ROUNDS = (36, 360)
@@ -340,11 +369,13 @@ def main(check_only=False, only=()):
         print('##', g, name, '<-', src, flush=True)
         staged = {}
         extra = {'Halo 1': ('accel',), 'Halo 2': ('itemonly', 'accel'),
-                 'Halo 3': ('accel',)}.get(g, ())
+                 'Halo 3': ('accel',), 'Halo 4': ('needlefrag',)}.get(g, ())
+        only_kind = 'stable' if '--stable-only' in sys.argv else next(
+            (a[7:] for a in sys.argv if a.startswith('--kind=')), None)
         for kind in ('vanilla', 'stable') + extra:
             dst = os.path.join(OUT, kind, sub.replace('/', os.sep), name)
             staged[kind] = dst
-            if check_only or ('--stable-only' in sys.argv and kind != 'stable'):
+            if check_only or (only_kind and kind != only_kind):
                 continue          # re-read only
             os.makedirs(os.path.dirname(dst), exist_ok=True)
             shutil.copyfile(src, dst)
@@ -365,6 +396,8 @@ def main(check_only=False, only=()):
                 print('     swap:', '; '.join(h1_swap_grenades(dst)), flush=True)
             if kind == 'accel':
                 print('     accel:', accelerate_placed(dst, g), flush=True)
+            if kind == 'needlefrag':
+                print('     needlefrag:', h4_needle_to_frag(dst), flush=True)
             if g == 'Halo 2':
                 print('     buffs:', '; '.join(h2_test_buffs(dst)), flush=True)
             if g == 'Halo 3':
