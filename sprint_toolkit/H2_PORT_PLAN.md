@@ -1257,6 +1257,33 @@ its swing (user: keep). `h2_armed_test` does not run the `allies` pass. The old 
 the Grunt and Jackal graphs as unused animations.
 Enhancer hand-off: the shared notes, sent to the session 2026-10-31.
 
+## B1: what the DMR taught (2026-11-01/16, parallel step 3, DONE) -- for the Reach ports after it
+
+Reach's DMR is a complete Halo 2 port and the Reach route's pilot: `ports_h2/dmr.py`. Tested in game, CLASSIC:
+Outskirts (Chief, Original, 7 boots), The Arbiter (Balanced, 4 boots), Armed on Outskirts and Quarantine Zone (all
+seven species), Marines in trade, world model, pickup. Every item confirmed by the user. Residency: palette entry in
+all 13 levels; ships with the batched rebuild. PORTING "Halo 2: the DMR, wave B1" is the recipe; the shared notes'
+b1_reach_route.md the step-by-step.
+
+**Step 4a (user):** the Sniper Rifle ratio (as Halo 1), BR bullet materials, range 40 / velocity 400 (the BR via
+Halo 4 chain's), spread by the sibling rule 0.019-0.25, Reach's 3x. Balanced 9.84 x 4.5/s, 15 / 45 / 75.
+
+**For every Reach port after it (each an observation of one port, but each cost boots here):**
+1. `fine_weld: True` before the first boot. Read the compiled render_model's triangle count against the JMS.
+2. The FP position in fp_anims `model_offset`; the weapon's 'first person weapon offset' 0.
+3. Left hand: compare the PALM TOP against the gun's underside in the gun's frame, and the barrel-down view
+   against Reach's own arms (h3_convert of the Reach fp.render_model); species differ.
+4. Scope size from a Reach screenshot (`ring_quarter`); a turned widget via `rotate`; the reticle's extra widgets
+   as sprite `layers`.
+5. Reload sounds: if Reach gives one recording per reload, `split` it before the Balanced boot.
+6. When an animation looks wrong and the measures disagree with the user, ask for the source clip beside ours.
+
+**Two follow-ups for the EARLIER H2 ports (the user's call; memory h2-tool-render-weld, h2-fp-weapon-offset-gun-only):**
+the weld (SAW 13,836 -> 8,361 triangles, Laser, AR) and the gun-only weapon offset (AR / SAW / Spiker 3 units,
+Mauler 5).
+
+**Open:** none for the DMR. The Elite FP sounds Reach ships (dmr_elite_fp) are unused (one Spartan set for both).
+
 ## B2: what the Needle Rifle taught (2026-11-01/16, parallel step 3, DONE)
 
 Reach's Needle Rifle is a complete Halo 2 port on the DMR's Reach route: `ports_h2/needle_rifle.py`. Tested in game,

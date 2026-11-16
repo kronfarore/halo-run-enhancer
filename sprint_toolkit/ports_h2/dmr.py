@@ -24,7 +24,7 @@ PORT = {
     'wave': 'B1',
     'name': 'DMR',
     'source': 'Halo Reach',
-    'status': 'in progress',
+    'status': 'done',
     'source_tag': 'objects\\weapons\\rifle\\dmr\\dmr',
     'reservations': {
         'message_prefix': 'dmr2',
@@ -487,6 +487,20 @@ PORT = {
         'target': {'weapon': (DMR + r'\dmr.weapon', SN + r'\sniper_rifle.weapon'),
                    'projectile': (DMR + r'\projectiles\dmr_bullet.projectile', SN + r'\projectiles\sniper_bullet.projectile'),
                    'damage_effect': (DMR + r'\damage_effects\dmr_bullet.damage_effect', SN + r'\damage_effects\sniper_rifle_bullet.damage_effect')},
+        # the closing run (2026-11-16, after every in-game item passed): list 2 and list 3, decided
+        'decisions': {
+            'active camo ding 0.75': "not written -- a zero field in the clone (the BR's 0); h2_tagfield cannot pin a zero; camo is a campaign trifle",
+            'magazines[0]/magazines[0]/rounds 0': 'kept 72 -- the nested ammo item cannot be pinned; campaign never spawns it (the pickup is the weapon)',
+            'deviation angle 2.25': 'not written -- a zero field (BR 0); aim deviation of the AI only, the Armed boots passed without it',
+            'barrels deceleration time 0.7': 'not written -- a zero field; spin-down, meaningless for a semi-auto',
+            'barrel flags / damage reporting type': "the BR clone's (Halo 2 enums; Reach's marksman reporting type has no Halo 2 slot)",
+            'first person weapon offset': '0 -- the position lives in fp_anims model_offset (Halo 2 moves the gun alone with this field)',
+            'item / aim-assist falloff / accuracy penalties / screen effects / secondary flags': 'no such field in Halo 2',
+            'projectile material responses, noises, flyby': "the Battle Rifle's material effects (step 4a, user); Halo 2 has no per-material block on the projectile",
+            'damage rider transfer 0.5': '0 -- the rule: no Rider Damage from Reach on (halo-card-rules-rider-and-melee)',
+            'damage outward velocity / radius / exponent 3 / 0.5 / 0.2': "BR's 0 -- a ragdoll push; the user's damage check passed",
+            'damage stun 5': 'no such field in Halo 2',
+        },
     },
 
     # make_port_catalog_h2.py dmr: the sniper table's rows onto the port's own tags. Step 4a's decisions

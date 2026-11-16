@@ -4003,6 +4003,43 @@ Journey (Arbiter, Balanced), Armed on Gravemind and Sacred Icon (7 tests), Marin
 * 4b, list 3 by name: a melee port needs its firing noise and acceleration scale read too, the donor's survive a trigger.
 * Scripts walking loose jmads: dry-run with faulthandler first; a search loop held the kit lock for an hour.
 
+### Halo 2: the DMR, wave B1 (2026-11-01/16) -- the Reach route's pilot
+
+Reach's DMR (`ports_h2/dmr.py`), the first Halo 2 port from Reach. Donor the BATTLE RIFLE (weapon, model, HUD,
+effects, its bullet materials by the user's 4a), Reach's one render model for world and FP, its textures, Spartan +
+Elite FP animations (kind 'reach'), sounds from MCC's haloreach bank, chud scope + reticle. Yardstick the Sniper Rifle.
+Tested: Outskirts (Chief, Original, 7 boots), The Arbiter (Balanced, 4 boots), Armed all seven species on Outskirts +
+Quarantine Zone, Marines in trade.
+
+* THE REACH ROUTE: `reach:` paths read through reach_tags.py into the Halo 3 shapes. h2_port_geometry kind 'h3'
+  (world_rm = fp_rm), h2_port_textures kind 'h3', h2_port_fp_anims kind 'reach' (frames composed on Reach's WHOLE
+  skeleton -- the 90 deg pedestal turn is bind-only -- helpers dropped; `look` -> overlays + pitch_and_turn),
+  h2_port_sounds `bank: 'haloreach'`. The shared notes' b1_reach_route.md is the step-by-step.
+* `tool render` WELDS points within clamp(model size / 512, 6.1e-5, 0.000977) wu and drops collapsed triangles
+  (tool.exe 0x462421). Reach's dense mesh lost 16,286 -> 5,717 triangles: the scope glass and counter display went
+  missing. `fine_weld: True` (h2_tool_fineweld.py builds tool_fineweld.exe; tool.exe untouched) keeps all of them.
+  Read the compiled render_model's 'total triangle count' on every port.
+* THE FIRST-PERSON POSITION: the weapon's `first person weapon offset` moves the GUN alone, not the arms. Put the
+  position in fp_anims `model_offset` (every node but camera_control) and the field to 0. Four boots of left-hand
+  fixes on the long fidget were chasing this (the user's side-by-side clips, ours vs Reach, found it).
+* LEFT HAND: Halo 2's hand meshes sit on their bones differently from Reach's (the Chief ~15 deg turned, the
+  Arbiter's palm lower). fp_anims `left_arm_offset` {species: {'*'|anim: (x,y,z) wu}} moves the whole left arm IN THE
+  GUN'S FRAME; `left_hand_turn` {species: {anim: {deg, axis, roll}}} turns hand + fingers, weighted by the gun's roll
+  (the long fidget's palm-up support only). Judge contact by the palm top against the gun's underside in the gun frame
+  (accepted: 0.70 into it for the Chief, 0.30 for the Arbiter), and the barrel-down orthographic view against Reach's
+  own arms -- edge-cut counts misled three times.
+* Glass: Reach's *_lens_glass as its own material on the BR lens look (scope cubemap) over flat grey.
+* SCOPE: `ring_quarter` + span from a SOURCE screenshot (lens 595 x 573 px -> span 900). The distance slider Reach
+  TURNS about the crosshair: per_widget `rotate` at a radius, not an upright offset. RETICLE: h3_art `layers` take a
+  (sheet, sequence) sprite (Reach's #36 inner ring at 1 / 0.9), centred on the main sprite's ink sub-pixel.
+* GLYPH: Reach's dense mesh creases into speck lines; style `min_line` 14 drops pieces under 14 px.
+* BALANCED RELOAD SOUND: one recording cued at frame 0 runs ahead of a retimed reload. h2_port_sounds `split` cuts
+  every take in the quiet gaps all takes share; each piece cued at its frame (the patcher scales event frames).
+* Check 10: h2_effect_particles resolves Reach's basename firing effect. Reach's DMR has 4 muzzle_flash markers.
+* Offsets cache: a class-wide cached offset can hold the right VALUE on the wrong row; h2_tagfield.set_field retries
+  with a fresh search when the verify catches it.
+* A first-boot "fatal error" was the machine out of commit memory (halo2.dll+c8697 = allocation failed), not the map.
+
 ### Halo 2: the Needle Rifle, wave B2 (2026-11-01/16) -- the Reach route, a supercombining needle
 
 Reach's rifle (`ports_h2/needle_rifle.py`) on the DMR's Reach route. Donor the COVENANT CARBINE (its weapon, model,

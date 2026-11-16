@@ -1,0 +1,15 @@
+DMR -- BALANCED (catalog rows on the ports), legendary, body shots (ttk_halo2); not a Halo 2 weapon here: Battle Rifle via Halo 4 (--hop "DMR:Halo Reach>Halo 4" --hop "Battle Rifle:Halo 4>Halo 2"; carries H4's scale -- the user's call)
+weapon                      dmg    rate/s    dps  mag reload init/max         vel range       error   autoaim dual
+DMR (port)                 9.84 4.55-4.55   44.7   15   1.90    45/75     400/400    40  0.019-0.25   2.81/10     
+Sniper Rifle                 45       2-2   90.0    4   2.40    12/24   1200/1200   120     0.5-0.5      1/10     
+Pistol                        8     10-10   80.0   12   1.57    36/60     400/400    40    0.25-1.5      3/12     
+Battle Rifle                  6     15-15   90.0   36   1.93  108/144     400/400    40     0.3-0.6      3/17     
+Covenant Carbine             11     15-15  165.0   18   2.30    36/90     400/400    40     0.3-0.6      3/17     
+
+time to kill (shots / seconds):
+                              Elite minor      Brute minor      Grunt minor     Jackal minor
+DMR (port)                    16 / 4.98 s      26 / 7.18 s       5 / 0.88 s       7 / 1.32 s
+Sniper Rifle                   3 / 1.00 s       6 / 4.40 s       1 / 0.00 s       2 / 0.50 s
+Pistol                        19 / 3.27 s     63 / 13.53 s       5 / 0.40 s       8 / 0.70 s
+Battle Rifle                  25 / 3.15 s      42 / 6.92 s       7 / 0.79 s      10 / 1.18 s
+Covenant Carbine              14 / 2.57 s      23 / 6.53 s       4 / 0.48 s       6 / 0.90 s
