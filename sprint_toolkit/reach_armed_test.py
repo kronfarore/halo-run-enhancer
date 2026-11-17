@@ -130,10 +130,49 @@ BISECT_V14 = tuple((_WEAPONS10[2 * i + (0 if on else 1)], ('rev', _code_bits(i, 
 #: v15: leave-one-out -- ALL8 (control, should stay silent) + eight groups each missing ONE set:
 #: a group that FIRES again names a set the failure needs.
 EIGHT = tuple(ITEMS[k][0] for k in range(0, 16, 2))
-BISECT = (('Machine Gun Turret', ('rev', EIGHT)),) + tuple(
+BISECT_V15 = (('Machine Gun Turret', ('rev', EIGHT)),) + tuple(
     (w, ('rev', tuple(n for n in EIGHT if n != x)))
     for w, x in zip(('Shotgun', 'Sniper Rifle', 'Plasma Turret', 'Spike Rifle', 'DMR', 'Focus Rifle',
                      'Spartan Laser', 'Assault Rifle'), EIGHT))
+#: v15 RESULT (Reach boot 15, 2026-11-17): only "all eight but Style" fired (Shotgun 6/7); every other
+#: leave-one-out silent (1/63) -> STYLE is needed, together with a partner that more than one set can
+#: be. With v14 the fits: Perception / Target / Look alone, or the pairs Engage + Cover,
+#: Emotion + Stimuli, Movement + Pre-Search. v16: Style alone, Style + each one of the seven, Style + each pair.
+_P = 'Perception / Target / Look'
+
+
+def _lsr():
+    import re
+    for d in (r'F:\Assembly\Plugins\Reach', r'E:\Assembly-1-2023-11-29-1702446457\Plugins\Reach'):
+        try:
+            x = open(os.path.join(d, 'styl.xml'), encoding='utf-8', errors='replace').read()
+        except OSError:
+            continue
+        for mt in re.finditer(r'<flags32 name="Behaviors\d" offset="(0x[0-9A-Fa-f]+)"[^>]*>(.*?)</flags32>', x, re.S):
+            b = re.search(r'<bit name="low_shield_retreat" index="(\d+)"', mt.group(2))
+            if b:
+                return int(mt.group(1), 16), int(b.group(1))
+    return 0x30, 21                              # Behaviors3 bit 21 (read 2026-11-17)
+
+
+LSR = _lsr()
+BISECT = (
+    # the style diff (jackal vs skirmisher styl): Jackal only = low_shield_retreat (+ movement_plan_cover_
+    # impulse, melee sync attack, berserk_wander_impulse, engineer_*); a shieldless Jackal is ALWAYS low
+    ('Concussion Rifle', ('style', 'jackal', False, EIGHT)),      # v14's silent set, the behaviour OFF
+    ('Rocket Launcher', ('style', 'skirmisher', True, ())),       # pure Skirmisher, the behaviour ON
+    ('Machine Gun Turret', ('rev', ('Style',))),
+    ('Assault Rifle', ('rev', ('Style', _P))),
+    ('Spartan Laser', ('rev', ('Style', 'Engage'))),
+    ('DMR', ('rev', ('Style', 'Cover'))),
+    ('Sniper Rifle', ('rev', ('Style', 'Emotion'))),
+    ('Plasma Turret', ('rev', ('Style', 'Movement + Throttle'))),
+    ('Spike Rifle', ('rev', ('Style', 'Pre-Search'))),
+    ('Focus Rifle', ('rev', ('Style', 'Stimuli Responses'))),
+)
+#: spare styl tags (no character in m20 names them) overwritten with the edited style copies
+STYLE_SPARES = ('space_banshee', 'space_phantom')
+STYLE_HEAD = 0x60                               # Name .. Behavior List (the Reach styl plugin)
 #: (v11, user 2026-11-16) the garage / sword rooms are near the start but come at the END of the mission
 LATE_SQUADS = ('sword', 'garage', 'roof', 'return', 'corvette')     # (v12) + the scripted AA bombard
 SHIELD_WEAPON = 'DMR'
@@ -147,7 +186,8 @@ _WP = {'DMR': 'rifle/dmr/dmr', 'Concussion Rifle': 'rifle/concussion_rifle/concu
        'Plasma Repeater': 'rifle/plasma_repeater/plasma_repeater',
        'Machine Gun Turret': 'turret/machinegun_turret/machinegun_turret',
        'Plasma Turret': 'turret/plasma_turret/plasma_turret'}
-ENEMY_CASES = tuple(('Jackal + %s (bisect)' % w, _c('jackal'), _w(_WP[w])) for w, _r in BISECT)
+ENEMY_CASES = tuple(('Jackal + %s (bisect)' % w, _c('jackal'), _w(_WP[w])) for w, _r in BISECT) + tuple(('Jackal + %s (bisect)' % w, _c('jackal'), _w(_WP[w]))
+                                                                     for w, r in BISECT if r[0] == 'style')
 MARINE_CASES = (
     ('Marine + DMR', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('rifle/dmr/dmr')),
 )
@@ -335,6 +375,21 @@ def layout(m, report):
                 jmaj_datum = hp._h3_tag_datum(m, 'char', sl.cnames[ci])
                 report.append('  BISECT Jackal Major data clone: %s (from %s, variants of %s)'
                               % (sl.cnames[ci], jmaj_name, smaj_name))
+        # (v16) edited style copies: (source styl, low_shield_retreat on?) -> datum of the copy
+        styls = {p.lower().rsplit(BS, 1)[-1]: (p, b) for p, b in m.find_tags('styl', '*')}
+        style_copy, spare_i = {}, 0
+        for _w2, r in BISECT:
+            if isinstance(r, tuple) and r[0] == 'style' and (r[1], r[2]) not in style_copy:
+                sp_path, sp = styls[STYLE_SPARES[spare_i]]
+                spare_i += 1
+                src = styls[r[1]][1]
+                m.data[sp:sp + STYLE_HEAD] = m.data[src:src + STYLE_HEAD]
+                w = m.u32(sp + LSR[0])
+                w = (w | 1 << LSR[1]) if r[2] else (w & ~(1 << LSR[1]))
+                struct.pack_into('<I', m.data, sp + LSR[0], w)
+                style_copy[(r[1], r[2])] = hp._h3_tag_datum(m, 'styl', sp_path)
+                report.append('  BISECT style copy %s = %s, low_shield_retreat %s'
+                              % (sp_path, r[1], 'ON' if r[2] else 'off'))
         for word, revert in BISECT:
             if revert is None:
                 made[word] = base_idx
@@ -350,7 +405,14 @@ def layout(m, report):
                 continue
             tag = dict(m.find_tags('char', sl.cnames[ci]))[sl.cnames[ci]]
             m.data[tag:tag + ew.CHAR_ROOT] = m.data[base_tag:base_tag + ew.CHAR_ROOT]
-            if isinstance(revert, tuple) and revert and revert[0] == 'rev':
+            if isinstance(revert, tuple) and revert and revert[0] == 'style':
+                ranges = dict(ITEMS)
+                for name in revert[3]:
+                    for a, b in ranges[name]:
+                        m.data[tag + a:tag + b] = m.data[jack + a:jack + b]
+                struct.pack_into('<I', m.data, tag + 0x34 + 0xC, style_copy[(revert[1], revert[2])])
+                struct.pack_into('<I', m.data, tag + ew.CHAR_MAJOR + 0xC, 0xFFFFFFFF)
+            elif isinstance(revert, tuple) and revert and revert[0] == 'rev':
                 # (v14) the Skirmisher clone + the given Jackal sets; NO major
                 ranges = dict(ITEMS)
                 for name in revert[1]:
@@ -395,7 +457,10 @@ def layout(m, report):
                 struct.pack_into('<h', m.data, e + ew.CELL_IDX, made[word])
                 moved[word] = moved.get(word, 0) + 1
         for word, revert in BISECT:
-            what = 'Skirmisher data, no major, Jackal: ' + ' / '.join(revert[1]) \
+            what = 'Skirmisher data, no major, Jackal: %s; style = %s, low_shield_retreat %s' % (
+                ' / '.join(revert[3]) or 'none', revert[1], 'ON' if revert[2] else 'off') \
+                if isinstance(revert, tuple) and revert[0] == 'style' else \
+                'Skirmisher data, no major, Jackal: ' + ' / '.join(revert[1]) \
                 if isinstance(revert, tuple) and revert[0] == 'rev' else \
                 '%s minor, %s' % ('Jackal data' if revert[1] == 'jackal' else 'Skirmisher data (shipped)',
                                      _MAJOR[revert[2]]) if isinstance(revert, tuple) and revert[0] == 'major' else \
