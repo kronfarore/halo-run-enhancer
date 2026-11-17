@@ -174,6 +174,11 @@ PORT = {
         'shared': [(r'objects\weapons\damage_effects\*_melee', 'shared by every Halo 2 weapon'),
                    (r'the particles inside dmr_fire', "the BR's (Reach particles do not port)"),
                    (r'objects\powerups\battle_rifle_ammo\br_ammo', "the BR's ammo pickup item (unused in campaign)")],
+        # step 4b list 2 (the closing re-check, 2026-11-17): Reach's active camo ding 0.75 -- a ZERO field in the BR
+        # clone, which h2_port_numbers cannot pin. Found by probe at 0x3e4 (three sound references sit between
+        # 'age misfire chance' and it): the field + regrowth + handle node (0) + the 'rifle' / 'br' string ids is unique
+        'byte_edits': [(DMR + r'\dmr.weapon', '000000000000000000000000' + '1e0700058f090002',
+                        '0000403f0000000000000000' + '1e0700058f090002', ('active camo ding',))],
     },
 
     # step 4 -- h2_port_numbers.py: REACH's OWN values (Original); Balanced = the catalog's rows.
@@ -489,7 +494,7 @@ PORT = {
                    'damage_effect': (DMR + r'\damage_effects\dmr_bullet.damage_effect', SN + r'\damage_effects\sniper_rifle_bullet.damage_effect')},
         # the closing run (2026-11-16, after every in-game item passed): list 2 and list 3, decided
         'decisions': {
-            'active camo ding 0.75': "not written -- a zero field in the clone (the BR's 0); h2_tagfield cannot pin a zero; camo is a campaign trifle",
+            'active camo ding 0.75': "WRITTEN 2026-11-17 by a weapon `byte_edits` row (a zero field in the BR clone, found at 0x3e4 by probe)",
             'magazines[0]/magazines[0]/rounds 0': 'kept 72 -- the nested ammo item cannot be pinned; campaign never spawns it (the pickup is the weapon)',
             'deviation angle 2.25': 'not written -- a zero field (BR 0); aim deviation of the AI only, the Armed boots passed without it',
             'barrels deceleration time 0.7': 'not written -- a zero field; spin-down, meaningless for a semi-auto',

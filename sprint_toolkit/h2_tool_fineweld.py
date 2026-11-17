@@ -12,6 +12,9 @@ tool_fineweld.exe = tool.exe with the multiply at 0x462478 (mulss xmm1, [0xce89d
 A config's geometry `fine_weld: True` makes h2_port_geometry --render use it.
 
     python h2_tool_fineweld.py          build (or check) F:\...\H2EK\tool_fineweld.exe
+    python h2_tool_fineweld.py --count <render dir> [...]   the source JMS's triangles against the compiled
+                                        render_model's 'total triangle count' (kit-relative folders that hold
+                                        render\*.jms, e.g. objects\weapons\rifle\dmr objects\weapons\rifle\dmr\fp_dmr)
 """
 import os
 import struct
@@ -50,5 +53,29 @@ def build():
     return EXE
 
 
+def count(rel):
+    """(JMS triangles, compiled triangles) of one render folder -- the weld's loss, read off the tag."""
+    import glob
+    import re
+    import h2_jms
+    import h2_tagfield
+    jms = glob.glob(os.path.join(H2EK, 'data', rel, 'render', '*.jms'))
+    tag = glob.glob(os.path.join(H2EK, 'tags', rel, '*.render_model'))
+    if len(jms) != 1 or len(tag) != 1:
+        return None, None
+    src = len(h2_jms.read(jms[0]).tris)
+    x = h2_tagfield.export(tag[0]) or ''
+    got = sum(int(v) for v in re.findall(r'name="total triangle count" type="[^"]+">(\d+)', x))
+    return src, got
+
+
 if __name__ == '__main__':
-    build()
+    if len(sys.argv) > 1 and sys.argv[1] == '--count':
+        for rel in sys.argv[2:]:
+            src, got = count(rel)
+            if src is None:
+                print('%-50s no single render\\*.jms + .render_model' % rel)
+                continue
+            print('%-50s JMS %6d  compiled %6d  (%.0f%% kept)' % (rel, src, got, 100.0 * got / max(src, 1)))
+    else:
+        build()

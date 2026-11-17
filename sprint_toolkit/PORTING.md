@@ -4018,7 +4018,7 @@ Quarantine Zone, Marines in trade.
 * `tool render` WELDS points within clamp(model size / 512, 6.1e-5, 0.000977) wu and drops collapsed triangles
   (tool.exe 0x462421). Reach's dense mesh lost 16,286 -> 5,717 triangles: the scope glass and counter display went
   missing. `fine_weld: True` (h2_tool_fineweld.py builds tool_fineweld.exe; tool.exe untouched) keeps all of them.
-  Read the compiled render_model's 'total triangle count' on every port.
+  Read the compiled count on every port: `h2_tool_fineweld.py --count <render folder>`.
 * THE FIRST-PERSON POSITION: the weapon's `first person weapon offset` moves the GUN alone, not the arms. Put the
   position in fp_anims `model_offset` (every node but camera_control) and the field to 0. Four boots of left-hand
   fixes on the long fidget were chasing this (the user's side-by-side clips, ours vs Reach, found it).
@@ -4026,8 +4026,8 @@ Quarantine Zone, Marines in trade.
   Arbiter's palm lower). fp_anims `left_arm_offset` {species: {'*'|anim: (x,y,z) wu}} moves the whole left arm IN THE
   GUN'S FRAME; `left_hand_turn` {species: {anim: {deg, axis, roll}}} turns hand + fingers, weighted by the gun's roll
   (the long fidget's palm-up support only). Judge contact by the palm top against the gun's underside in the gun frame
-  (accepted: 0.70 into it for the Chief, 0.30 for the Arbiter), and the barrel-down orthographic view against Reach's
-  own arms -- edge-cut counts misled three times.
+  (accepted: 0.70 into it for the Chief, 0.30 for the Arbiter; `h2_fp_hand_check.py palm`), and the barrel-down
+  orthographic view against Reach's own arms (`h2_fp_hand_check.py ortho`) -- edge-cut counts misled three times.
 * Glass: Reach's *_lens_glass as its own material on the BR lens look (scope cubemap) over flat grey.
 * SCOPE: `ring_quarter` + span from a SOURCE screenshot (lens 595 x 573 px -> span 900). The distance slider Reach
   TURNS about the crosshair: per_widget `rotate` at a radius, not an upright offset. RETICLE: h3_art `layers` take a

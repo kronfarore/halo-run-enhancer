@@ -1269,10 +1269,10 @@ b1_reach_route.md the step-by-step.
 Halo 4 chain's), spread by the sibling rule 0.019-0.25, Reach's 3x. Balanced 9.84 x 4.5/s, 15 / 45 / 75.
 
 **For every Reach port after it (each an observation of one port, but each cost boots here):**
-1. `fine_weld: True` before the first boot. Read the compiled render_model's triangle count against the JMS.
+1. `fine_weld: True` before the first boot; `h2_tool_fineweld.py --count` (compiled vs JMS triangles).
 2. The FP position in fp_anims `model_offset`; the weapon's 'first person weapon offset' 0.
-3. Left hand: compare the PALM TOP against the gun's underside in the gun's frame, and the barrel-down view
-   against Reach's own arms (h3_convert of the Reach fp.render_model); species differ.
+3. Left hand: `h2_fp_hand_check.py palm` (the palm top against the gun's underside, gun frame) and `ortho`
+   (barrel-down / side views against Reach's own arms); species differ.
 4. Scope size from a Reach screenshot (`ring_quarter`); a turned widget via `rotate`; the reticle's extra widgets
    as sprite `layers`.
 5. Reload sounds: if Reach gives one recording per reload, `split` it before the Balanced boot.
