@@ -475,6 +475,35 @@ def _targets_of(eff, game, cls, tpath):
     return out
 
 
+def _check_placed(label, game, field, t, quiet):
+    """A `placed` target (the inverted Stable Grenades, Halo 1 / 2) is a bit on the
+    pickup's scnr Equipment PLACEMENTS, written by halo_patch._apply_placed_flag from
+    its own offset table -- not a field of the target's eqip tag. So it is looked up in
+    the scnr plugin's Equipment block, and the plugin's offset, element and bit must
+    agree with the patcher's table (_PLACED_EQUIP_FLAGS / _MAP_EQUIPMENT)."""
+    spec, E = hp._PLACED_EQUIP_FLAGS.get(game), hp._MAP_EQUIPMENT.get(game)
+    if spec is None or E is None:
+        report(f'{label} [{game}]: placed target, but the patcher has no placement '
+               f'flags for {game}', quiet)
+        return
+    sp = plugin(game, 'scnr')
+    fld = sp.find(field, 'Equipment', 0) if sp else None
+    if not fld:
+        report(f'{label} [{game}]: FIELD not in scnr plugin: {field!r} '
+               f'(block Equipment)', quiet)
+        return
+    want = str(t.get('flag') or '').strip().lower()
+    pbit = next((b for nm, b in (fld.get('bits') or {}).items()
+                 if nm == want or nm.startswith(want + ' (')), None)
+    if (fld['offset'] != spec[0] or fld.get('block_offsets') != [E['items'][0]]
+            or fld.get('block_sizes') != [E['items'][1]]
+            or pbit is None or pbit != spec[2].get(want)):
+        report(f'{label} [{game}]: placed {field!r} / {t.get("flag")!r}: plugin '
+               f'@{fld["offset"]} bit {pbit} in block {fld.get("block_offsets")} x '
+               f'{fld.get("block_sizes")}, patcher @{spec[0]} bit {spec[2].get(want)} '
+               f'in {E["items"]}', quiet)
+
+
 def check_resolution():
     """Per game: build the work list, then walk the maps ONE AT A TIME.
 
@@ -521,6 +550,9 @@ def check_resolution():
                 continue
             keep = []
             for field, block, nth, ucls, upath, t in targets:
+                if t.get('placed'):
+                    _check_placed(label, game, field, t, quiet)
+                    continue
                 tp = plugin(game, ucls)
                 if tp is None:
                     report(f'{label} [{game}]: no {ucls} plugin', quiet)

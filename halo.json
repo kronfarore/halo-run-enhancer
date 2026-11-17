@@ -6886,7 +6886,7 @@
 							},
 							{
 								"tag": "eqip weapons\\frag grenade\\frag grenade",
-								"field": "Placement Flags",
+								"field": "Misc Flags",
 								"placed": true,
 								"flag": "Does Accelerate",
 								"flag_on": false
@@ -6909,7 +6909,7 @@
 							},
 							{
 								"tag": "eqip objects\\weapons\\grenade\\frag_grenade\\frag_grenade",
-								"field": "Placement Flags",
+								"field": "Equipment Flags",
 								"placed": true,
 								"flag": "Does Accelerate",
 								"flag_on": false
@@ -7096,7 +7096,7 @@
 							},
 							{
 								"tag": "eqip weapons\\plasma grenade\\plasma grenade",
-								"field": "Placement Flags",
+								"field": "Misc Flags",
 								"placed": true,
 								"flag": "Does Accelerate",
 								"flag_on": false
@@ -7119,7 +7119,7 @@
 							},
 							{
 								"tag": "eqip objects\\weapons\\grenade\\plasma_grenade\\plasma_grenade",
-								"field": "Placement Flags",
+								"field": "Equipment Flags",
 								"placed": true,
 								"flag": "Does Accelerate",
 								"flag_on": false
