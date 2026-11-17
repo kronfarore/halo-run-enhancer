@@ -122,8 +122,18 @@ def _code_bits(i, on):
 
 _WEAPONS10 = ('Assault Rifle', 'Needle Rifle', 'Spartan Laser', 'Focus Rifle', 'DMR', 'Spike Rifle',
               'Sniper Rifle', 'Shotgun', 'Plasma Turret', 'Machine Gun Turret')
-BISECT = tuple((_WEAPONS10[2 * i + (0 if on else 1)], ('rev', _code_bits(i, on)))
-               for i in range(5) for on in (True, False))
+BISECT_V14 = tuple((_WEAPONS10[2 * i + (0 if on else 1)], ('rev', _code_bits(i, on)))
+                   for i in range(5) for on in (True, False))
+#: v14 RESULT (Reach boot 14, 2026-11-17): silent only "bit 4 off" (MG Turret 0/5) and "bit 0 off"
+#: (Needle 1/4); the other eight 59/59 -> not one block but a COMBINATION, all inside the eight sets
+#: with even codes 0..14 (in both silent groups) and spanning both values of bits 1-3.
+#: v15: leave-one-out -- ALL8 (control, should stay silent) + eight groups each missing ONE set:
+#: a group that FIRES again names a set the failure needs.
+EIGHT = tuple(ITEMS[k][0] for k in range(0, 16, 2))
+BISECT = (('Machine Gun Turret', ('rev', EIGHT)),) + tuple(
+    (w, ('rev', tuple(n for n in EIGHT if n != x)))
+    for w, x in zip(('Shotgun', 'Sniper Rifle', 'Plasma Turret', 'Spike Rifle', 'DMR', 'Focus Rifle',
+                     'Spartan Laser', 'Assault Rifle'), EIGHT))
 #: (v11, user 2026-11-16) the garage / sword rooms are near the start but come at the END of the mission
 LATE_SQUADS = ('sword', 'garage', 'roof', 'return', 'corvette')     # (v12) + the scripted AA bombard
 SHIELD_WEAPON = 'DMR'
