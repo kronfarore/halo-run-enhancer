@@ -13,6 +13,14 @@ combine on the player either):
         jne  +0x9054B6      ; -> the count is skipped: a player's needles never combine
     The needles still stick (that happens before); only the count is skipped. +0x884DC0 has 20 other
     callers, so the gate is lifted at THIS call site only: the jne becomes two NOPs.
+  * SITE 2 -- the one that actually stops the blast (2026-11-17, h2_stuck_needle_probe.py: with site 1
+    alone the player's 8th Needler / 3rd Needle Rifle needle WAS marked, exactly as on an Elite, and
+    nothing exploded). The detonation routine +0x905AD0 counts the parent's uncounted needles of the
+    same tag; above `super det. projectile count` it would go super -- unless
+        cmp dword ptr [parent + 0x140], -1   ; the unit's PLAYER datum (set on the player biped only)
+        call +0x6A6310                       ; game options +8 == 1: campaign
+        jne  +0x905F57                       ; -> plain detonation, no supercombine
+    at +0x905D02..+0x905D12. The 6-byte jne becomes NOPs.
 
     python h2_supercombine_players.py show
     python h2_supercombine_players.py on|off       the running MCC (if halo2.dll is loaded) AND the file
@@ -34,7 +42,9 @@ DLL = (r'C:\Program Files (x86)\Steam\steamapps\common'
 BACKUP_DIR = os.path.join('E:' + os.sep, 'HaloBackups', 'dll')
 NAME = 'Needles supercombine on the player in campaign (Halo 2)'
 # (rva, bytes before, stock, patched, bytes after) -- the context must match or nothing is written
-SITES = [(0x905484, bytes.fromhex('84c0'), bytes.fromhex('7530'), bytes.fromhex('9090'), bytes.fromhex('833e04'))]
+SITES = [(0x905484, bytes.fromhex('84c0'), bytes.fromhex('7530'), bytes.fromhex('9090'), bytes.fromhex('833e04')),
+         (0x905D12, bytes.fromhex('84c0'), bytes.fromhex('0f853f020000'), bytes.fromhex('909090909090'),
+          bytes.fromhex('488b05'))]
 
 
 def _sections(data):
