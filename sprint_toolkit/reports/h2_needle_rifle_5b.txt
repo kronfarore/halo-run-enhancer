@@ -1,0 +1,17 @@
+Needle Rifle -- BALANCED (catalog rows on the ports), legendary, body shots (ttk_halo2)
+weapon                      dmg    rate/s    dps  mag reload init/max         vel range       error   autoaim dual
+Needle Rifle (port)           3       4-4   12.0   26   3.38   78/105 818.2/818.2   231       0.3-1 1.97/19.2     
+Needler                       1       8-8    8.0   30   1.00   90/120         6/6    24     0.5-1.5      7/20     
+Pistol                        8     10-10   80.0   12   1.57    36/60     400/400    40    0.25-1.5      3/12     
+Sniper Rifle                 45       2-2   90.0    4   2.40    12/24   1200/1200   120     0.5-0.5      1/10     
+Covenant Carbine             11     15-15  165.0   18   2.30    36/90     400/400    40     0.3-0.6      3/17     
+Battle Rifle                  6     15-15   90.0   36   1.93  108/144     400/400    40     0.3-0.6      3/17     
+
+time to kill (shots / seconds):
+                              Elite minor      Brute minor      Grunt minor     Jackal minor
+Needle Rifle (port)          67 / 22.77 s    167 / 60.30 s      14 / 3.25 s      20 / 4.75 s
+Needler                     199 / 30.00 s    500 / 76.38 s      40 / 5.75 s      60 / 8.25 s
+Pistol                        19 / 3.27 s     63 / 13.53 s       5 / 0.40 s       8 / 0.70 s
+Sniper Rifle                   3 / 1.00 s       6 / 4.40 s       1 / 0.00 s       2 / 0.50 s
+Covenant Carbine              14 / 2.57 s      23 / 6.53 s       4 / 0.48 s       6 / 0.90 s
+Battle Rifle                  25 / 3.15 s      42 / 6.92 s       7 / 0.79 s      10 / 1.18 s
