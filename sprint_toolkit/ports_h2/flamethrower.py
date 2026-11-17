@@ -105,6 +105,9 @@ PORT = {
     # fp_arms.jms to 3e-6). Halo 1's world root carries a ~55 deg bind rotation over model-space
     # vertices: dropped (root_identity), as Halo 2's world weapons sit on an identity `frame gun`
     'geometry': {
+        # the DMR's finding (2026-11-17 follow-up): tool render's 1/512 weld dropped small triangles
+        # (h2_tool_fineweld.py --count); h2_tool_fineweld keeps them all
+        'fine_weld': True,
         'kind': 'h1',
         'world_gbx': r'weapons\flamethrower\flamethrower',
         'fp_gbx': r'weapons\flamethrower\fp\fp',
@@ -712,7 +715,7 @@ PORT = {
             (FT + r'\shaders\flamethrower_screen.shader', 'const color', 'parameters', 3, 0, [0.15, 0.15, 0.15]),
             (FT + r'\shaders\flamethrower_screen.shader', 'const color', 'parameters', 4, 0, [0.07, 0.07, 0.07]),
             # boot 1 (user): '1 unit forward and down' (1 unit = 0.01 wu, the AR's convention)
-            (FT + r'\flamethrower.weapon', 'first person weapon offset', '', 0, 0, [0.01, 0.0, -0.01]),
+            (FT + r'\flamethrower.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, 0.0]),
         ],
         'skipped': [
             ('melee damage', 'Halo 2 weapons share strike_melee / smash_melee: a row would move every weapon'),
@@ -897,6 +900,9 @@ PORT = {
     # graphs SEEDED from the Plasma Rifle's (its blend screen, its overheat events / sounds). The
     # Dervish RE-POSED (user, step 0): the Chief's arm chain, the Elite's fingers with the Chief's curl
     'fp_anims': {
+        # the DMR's finding (2026-11-17 follow-up): Halo 2's 'first person weapon offset' moves the GUN alone, off
+        # the hands -- the FP position moved here, arms and gun together; the weapon field 0
+        'model_offset': (0.01, 0.0, -0.01),
         'kind': 'h1',
         'antr': H1FT + r'\fp\fp',
         'chief_arms': H2EK + r'\data\!extracted\fp_arms_masterchief\fp_arms.jms',

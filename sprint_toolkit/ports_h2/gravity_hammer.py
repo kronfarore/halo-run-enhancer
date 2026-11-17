@@ -90,6 +90,9 @@ PORT = {
     # strike's origin = primary_trigger (Halo 1's Armed lesson: the AI fires from it); the hands
     # and the two effect markers (hammer_on's arcs + vent) keep their names
     'geometry': {
+        # the DMR's finding (2026-11-17 follow-up): tool render's 1/512 weld dropped small triangles
+        # (h2_tool_fineweld.py --count); h2_tool_fineweld keeps them all
+        'fine_weld': True,
         'kind': 'h3',
         'world_rm': H3GH + r'\gravity_hammer.render_model',
         'fp_rm': H3GH + r'\fp_gravity_hammer\fp_gravity_hammer.render_model',
@@ -273,7 +276,7 @@ PORT = {
             (GH + r'\gravity_hammer_port.weapon', 'age generated per round', 'barrels', 0, 0, 0.04999999329447746),
             # first-person placement: the beam rifle's 0.02, 0, 0; boot 1 on 07a (user): '1 unit down
             # and right' (1 unit = 0.01 wu; +y is left)
-            (GH + r'\gravity_hammer_port.weapon', 'first person weapon offset', '', 0, 0, [0.02, -0.01, -0.01]),
+            (GH + r'\gravity_hammer_port.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, 0.0]),
             # one slam per Halo 3 RT cycle: melee_lunge_unaimed, 46 frames = 1.533 s (Halo 1's A9)
             (GH + r'\gravity_hammer_port.weapon', 'fire recovery time', 'barrels', 0, 0, 1.533333),
             (GH + r'\gravity_hammer_port.weapon', 'error angle', 'barrels', 0, 1, [0.0, 0.0]),
@@ -446,6 +449,9 @@ PORT = {
     # rename: Halo 3's RT SLAM `melee_lunge_unaimed` (46 fr, head down at frame 5 -- Halo 1's A9) is
     # Halo 2's `fire_1` (the trigger route); the jab = melee_strike_1 / _2 (the melee button)
     'fp_anims': {
+        # the DMR's finding (2026-11-17 follow-up): Halo 2's 'first person weapon offset' moves the GUN alone, off
+        # the hands -- the FP position moved here, arms and gun together; the weapon field 0
+        'model_offset': (0.02, -0.01, -0.01),
         'species': {
             'masterchief': {
                 'graph': r'objects\characters\masterchief\fp\weapons\melee\fp_gravity_hammer\fp_gravity_hammer.model_animation_graph',

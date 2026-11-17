@@ -875,6 +875,12 @@ def build_h1(key, species, only=None, write=True, cfg_override=None):
             rows = hold_fingers(rows, names_h2, elite, hold, cfg, species)
         if cfg.get('kind') == 'h4':
             rows = _continuous(rows)
+        mo = cfg.get('model_offset')
+        if mo and typ != 'overlay':
+            # `model_offset` (x, y, z) wu: the FP position in the animation, arms and gun together (build()'s,
+            # the DMR's finding: the weapon's 'first person weapon offset' moves the gun alone)
+            rows = [[(q, (t[0] + mo[0], t[1] + mo[1], t[2] + mo[2])) if nm != 'camera_control' else (q, t)
+                     for (q, t), nm in zip(r, names_h2)] for r in rows]
         for nm in names_h2:
             if nm == 'camera_control':
                 parents[nm] = 0

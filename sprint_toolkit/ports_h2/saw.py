@@ -82,6 +82,9 @@ PORT = {
     # h4_tags exports Halo 3-shaped XML): Halo 4's ONE render model (world AND first person) on its
     # OWN skeleton (b_gun at the grip, b_magazine) -- Halo 4's own FP animations drive them
     'geometry': {
+        # the DMR's finding (2026-11-17 follow-up): tool render's 1/512 weld dropped small triangles
+        # (h2_tool_fineweld.py --count); h2_tool_fineweld keeps them all
+        'fine_weld': True,
         'kind': 'h3',
         'world_rm': H4 + H4SAW + r'\storm_lmg.render_model',
         'fp_rm': H4 + H4SAW + r'\storm_lmg.render_model',
@@ -219,7 +222,7 @@ PORT = {
             # first-person placement: Halo 4's animations come through Halo 1's FP space (camera =
             # origin, the Flamethrower's), so start with none (the SMG's 0.02, 0, 0 is its own graph's)
             # boot 1 on 03a (user): 'move it down 3 units for starters' (1 unit = 0.01 wu)
-            (SAW + r'\saw.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, -0.03]),
+            (SAW + r'\saw.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, 0.0]),
             # the HUD (the BR's clone) draws the BR's WEAK-SPOT / HEADSHOT indicators inside the
             # crosshair (the Flamethrower's Armed test): the SAW (the SMG's bullet) has neither -- each
             # widget's [N] condition = its own [Y] one (never shown). After the HUD steps (7)
@@ -380,6 +383,9 @@ PORT = {
     # masterchief (h1_fp_retarget), the Dervish re-posed from the Chief's frames (the Flamethrower's
     # repose); graphs SEEDED from the H2 BR's (blend screen, sound references, events)
     'fp_anims': {
+        # the DMR's finding (2026-11-17 follow-up): Halo 2's 'first person weapon offset' moves the GUN alone, off
+        # the hands -- the FP position moved here, arms and gun together; the weapon field 0
+        'model_offset': (0.0, 0.0, -0.03),
         'kind': 'h4',
         'retarget': {
             'graph': H4 + H4FP + '.model_animation_graph',

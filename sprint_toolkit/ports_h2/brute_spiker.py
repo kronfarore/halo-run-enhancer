@@ -317,7 +317,7 @@ PORT = {
             (SR + r'\damage_effects\spike_rifle_melee.damage_effect', 'damage upper bound', '', 0, 0, [72.0, 72.0]),
             # first-person placement: the AR's (Halo 3's own animations still need Halo 2's offset,
             # A1 observation 4) -- check in game
-            (SR + r'\spike_rifle.weapon', 'first person weapon offset', '', 0, 0, [-0.01, 0.0, -0.03]),
+            (SR + r'\spike_rifle.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, 0.0]),
             # check 10 (the muzzle flash): the sparks (system 1) and the SMG's smoke (system 2) drawn
             # in first person too, as Halo 3's are (camera mode 3 = both first and third)
             (FX + r'\spike_rifle_fire.effect', 'camera mode', 'particle systems', 1, 0, 3),
@@ -579,6 +579,9 @@ PORT = {
     # `tool fp-model-animations`. Seeded from Bungie's H2 SMG graphs (dual blend screens, the
     # SMG's sound refs / events for same-name animations)
     'fp_anims': {
+        # the DMR's finding (2026-11-17 follow-up): Halo 2's 'first person weapon offset' moves the GUN alone, off
+        # the hands -- the FP position moved here, arms and gun together; the weapon field 0
+        'model_offset': (-0.01, 0.0, -0.03),
         'species': {
             'masterchief': {
                 'graph': r'objects\characters\masterchief\fp\weapons\rifle\fp_spike_rifle\fp_spike_rifle.model_animation_graph',

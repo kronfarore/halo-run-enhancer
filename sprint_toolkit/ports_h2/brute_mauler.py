@@ -247,7 +247,7 @@ PORT = {
             (MA + r'\excavator.weapon', 'dual wield damage scale', 'barrels', 0, 0, 0.7, {'anchor': ('projectiles per shot', -6)}),
             # first-person placement: the AR's -0.01, 0, -0.03 (A1 observation 4); boot 1 on 05b (user):
             # '2 units down, 0.5 units to the right' (1 unit = 0.01 wu; +y is left)
-            (MA + r'\excavator.weapon', 'first person weapon offset', '', 0, 0, [-0.01, -0.005, -0.05]),
+            (MA + r'\excavator.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, 0.0]),
             # the pellet: 480 wu/s, range 8, falloff 2.5 -> 5 (to the lower bound)
             (MA + r'\projectiles\excavator_shard.projectile', 'initial velocity', '', 0, 0, 480.0),
             (MA + r'\projectiles\excavator_shard.projectile', 'final velocity', '', 0, 0, 480.0),
@@ -462,6 +462,9 @@ PORT = {
     # one), and 15 sound-reference SLOTS in BOTH species -- Halo 3 cues 12 sounds; the magnum's graphs
     # (first seed, 2026-10-28) have 10 (Chief) / 7 (Dervish): the Arbiter's posing would be mute
     'fp_anims': {
+        # the DMR's finding (2026-11-17 follow-up): Halo 2's 'first person weapon offset' moves the GUN alone, off
+        # the hands -- the FP position moved here, arms and gun together; the weapon field 0
+        'model_offset': (-0.01, -0.005, -0.05),
         'species': {
             'masterchief': {
                 'graph': r'objects\characters\masterchief\fp\weapons\pistol\fp_excavator\fp_excavator.model_animation_graph',

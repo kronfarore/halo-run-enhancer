@@ -62,6 +62,9 @@ PORT = {
     # (gun, magazine, ophandle, safety [, switch in first person]) -- the AR's own FP animations
     # drive them (H2_PORT_PLAN 0.4: Halo 3's FP arms ARE Halo 2's)
     'geometry': {
+        # the DMR's finding (2026-11-17 follow-up): tool render's 1/512 weld dropped small triangles
+        # (h2_tool_fineweld.py --count); h2_tool_fineweld keeps them all
+        'fine_weld': True,
         'kind': 'h3',
         'world_rm': AR + r'\assault_rifle.render_model',
         'fp_rm': AR + r'\fp_assault_rifle\fp_assault_rifle.render_model',
@@ -243,7 +246,7 @@ PORT = {
             # first-person placement (user, boot 1 on 03b: 'move it back and down 3 units', 1 unit =
             # 0.01 wu): the SMG's 0.02, 0, 0 -> -0.01, 0, -0.03
             # boot 2: 'one forward and 2 down' (0, 0, -0.05) -- boot 3: 'revert to the last boot'
-            (AR + r'\assault_rifle.weapon', 'first person weapon offset', '', 0, 0, [-0.01, 0.0, -0.03]),
+            (AR + r'\assault_rifle.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, 0.0]),
         ],
         'skipped': [
             ('melee damage 70', 'Halo 2 weapons share strike_melee / smash_melee: a row would move every weapon'),
@@ -389,6 +392,9 @@ PORT = {
     # `tool fp-model-animations` (the arms JMS = Bungie's, tool extract-render-data; the dervish's
     # is version 8209)
     'fp_anims': {
+        # the DMR's finding (2026-11-17 follow-up): Halo 2's 'first person weapon offset' moves the GUN alone, off
+        # the hands -- the FP position moved here, arms and gun together; the weapon field 0
+        'model_offset': (-0.01, 0.0, -0.03),
         'species': {
             'masterchief': {
                 'graph': r'objects\characters\masterchief\fp\weapons\rifle\fp_assault_rifle\fp_assault_rifle.model_animation_graph',

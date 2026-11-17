@@ -70,6 +70,9 @@ PORT = {
     # gun / body / foregrip / tubes / push_bar; FP: gun / cover / handle / laser / shield /
     # telescope / lens_1 / lens_2) -- the laser's own Halo 3 FP animations drive them (the AR's route)
     'geometry': {
+        # the DMR's finding (2026-11-17 follow-up): tool render's 1/512 weld dropped small triangles
+        # (h2_tool_fineweld.py --count); h2_tool_fineweld keeps them all
+        'fine_weld': True,
         'kind': 'h3',
         'world_rm': SL + r'\spartan_laser.render_model',
         'fp_rm': SL + r'\fp_spartan_laser\fp_spartan_laser.render_model',
@@ -402,7 +405,7 @@ PORT = {
             # BOOT 2 (user, 2026-10-29): 'move 0.5 units to the right, 1 unit down' (1 unit = 0.01 wu,
             # y = left): (0, 0, -0.005) -> (0, -0.005, -0.015)
             # BOOT 3: 'move 1 more unit down' -> (0, -0.005, -0.025)
-            (SL + r'\spartan_laser.weapon', 'first person weapon offset', '', 0, 0, [0.0, -0.005, -0.015]),   # boot 4: 'back up 1 unit, then it's good'
+            (SL + r'\spartan_laser.weapon', 'first person weapon offset', '', 0, 0, [0.0, 0.0, 0.0]),   # boot 4: 'back up 1 unit, then it's good'
             # (the beam's collision radius: 4b's 0.15 reverted to 0 after boot 2 -- the row below)
             # BOOT 2: 'the laser doesn't fire from the muzzle' -- the beam rifle's barrel first-person
             # offset is 0 (the camera). Halo 1's A8 measured the laser's FP muzzle at (0.215, -0.053,
@@ -753,6 +756,9 @@ PORT = {
     #   the Dervish's `o_h:exit` (Halo 3's own typo) -> o_h_exit
     # Dropped: button_press / throw_equipment (Halo 3's equipment)
     'fp_anims': {
+        # the DMR's finding (2026-11-17 follow-up): Halo 2's 'first person weapon offset' moves the GUN alone, off
+        # the hands -- the FP position moved here, arms and gun together; the weapon field 0
+        'model_offset': (0.0, -0.005, -0.015),
         'species': {
             'masterchief': {
                 'graph': r'objects\characters\masterchief\fp\weapons\support_high\fp_spartan_laser\fp_spartan_laser.model_animation_graph',
