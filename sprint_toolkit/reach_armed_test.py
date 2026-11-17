@@ -105,6 +105,25 @@ BISECT = (
     ('Spike Rifle', ('major', 'skirm', 'none')),
 )
 _MAJOR = {'skirm': 'Skirmisher Major data', 'jackal': 'Jackal Major data', 'none': 'no major (no upgrade)'}
+BISECT_V13 = BISECT
+#: v13 RESULT (Reach boot 13, 2026-11-17): Skirmisher minor / no major 6/6; Jackal minor + Skirmisher
+#: major 5/6; Skirmisher minor + Jackal major 5/8; Jackal minor / no major 5/16; Jackal + Jackal major
+#: 0/4 -> a shieldless Jackal fires reliably on SKIRMISHER data, rank for rank; most units met were
+#: MAJORS, so v9-v12 measured the Skirmisher major. v14: NO major (every unit = its group's data);
+#: base = the Skirmisher clone; the 20 block sets get codes 0..19, group "bit i on" puts back the Jackal's
+#: sets whose code has bit i set, "bit i off" the others. A single culprit silences exactly its five.
+ITEMS = tuple([(n, tuple((o, o + z) for o, z in r)) for n, r in BLOCKS.items()] +
+              [(n, r) for n, r in UNLISTED.items() if r])
+
+
+def _code_bits(i, on):
+    return tuple(n for k, (n, _r) in enumerate(ITEMS) if bool(k >> i & 1) == on)
+
+
+_WEAPONS10 = ('Assault Rifle', 'Needle Rifle', 'Spartan Laser', 'Focus Rifle', 'DMR', 'Spike Rifle',
+              'Sniper Rifle', 'Shotgun', 'Plasma Turret', 'Machine Gun Turret')
+BISECT = tuple((_WEAPONS10[2 * i + (0 if on else 1)], ('rev', _code_bits(i, on)))
+               for i in range(5) for on in (True, False))
 #: (v11, user 2026-11-16) the garage / sword rooms are near the start but come at the END of the mission
 LATE_SQUADS = ('sword', 'garage', 'roof', 'return', 'corvette')     # (v12) + the scripted AA bombard
 SHIELD_WEAPON = 'DMR'
@@ -321,7 +340,14 @@ def layout(m, report):
                 continue
             tag = dict(m.find_tags('char', sl.cnames[ci]))[sl.cnames[ci]]
             m.data[tag:tag + ew.CHAR_ROOT] = m.data[base_tag:base_tag + ew.CHAR_ROOT]
-            if isinstance(revert, tuple) and revert and revert[0] == 'major':
+            if isinstance(revert, tuple) and revert and revert[0] == 'rev':
+                # (v14) the Skirmisher clone + the given Jackal sets; NO major
+                ranges = dict(ITEMS)
+                for name in revert[1]:
+                    for a, b in ranges[name]:
+                        m.data[tag + a:tag + b] = m.data[jack + a:jack + b]
+                struct.pack_into('<I', m.data, tag + ew.CHAR_MAJOR + 0xC, 0xFFFFFFFF)
+            elif isinstance(revert, tuple) and revert and revert[0] == 'major':
                 _k, minor, major = revert
                 if minor == 'jackal':
                     m.data[tag:tag + ew.CHAR_ROOT] = m.data[jack:jack + ew.CHAR_ROOT]
@@ -359,7 +385,9 @@ def layout(m, report):
                 struct.pack_into('<h', m.data, e + ew.CELL_IDX, made[word])
                 moved[word] = moved.get(word, 0) + 1
         for word, revert in BISECT:
-            what = '%s minor, %s' % ('Jackal data' if revert[1] == 'jackal' else 'Skirmisher data (shipped)',
+            what = 'Skirmisher data, no major, Jackal: ' + ' / '.join(revert[1]) \
+                if isinstance(revert, tuple) and revert[0] == 'rev' else \
+                '%s minor, %s' % ('Jackal data' if revert[1] == 'jackal' else 'Skirmisher data (shipped)',
                                      _MAJOR[revert[2]]) if isinstance(revert, tuple) and revert[0] == 'major' else \
                 'the whole Jackal data + Skirmisher %s' % revert[1] if isinstance(revert, tuple) \
                 and revert and revert[0] == 'jackal' else \
