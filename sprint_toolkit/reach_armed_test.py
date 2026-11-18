@@ -170,6 +170,17 @@ BISECT = (
     ('Spike Rifle', ('rev', ('Style', 'Pre-Search'))),
     ('Focus Rifle', ('rev', ('Style', 'Stimuli Responses'))),
 )
+BISECT_V16 = BISECT
+#: v16 RESULT (Reach boot 16, 2026-11-18): Jackal style minus low_shield_retreat on v14's silent set
+#: 7/7; Skirmisher style PLUS low_shield_retreat 0/6; Jackal style + any partner 0/54 -> the
+#: low_shield_retreat behaviour IS the switch. Jackal Retreat Shield Threshold 0.001, Skirmisher 0
+#: (and 0 did not help: likely <=). v17, pure Jackal data, no major: threshold -1 / threshold 0 /
+#: the Jackal style with the behaviour off -- the fixes that keep the Jackal's own behaviour.
+BISECT = (
+    ('DMR', ('jk', -1.0, False)),
+    ('Assault Rifle', ('jk', 0.0, False)),
+    ('Needle Rifle', ('jk', None, True)),
+)
 #: spare styl tags (no character in m20 names them) overwritten with the edited style copies
 STYLE_SPARES = ('space_banshee', 'space_phantom')
 STYLE_HEAD = 0x60                               # Name .. Behavior List (the Reach styl plugin)
@@ -187,7 +198,7 @@ _WP = {'DMR': 'rifle/dmr/dmr', 'Concussion Rifle': 'rifle/concussion_rifle/concu
        'Machine Gun Turret': 'turret/machinegun_turret/machinegun_turret',
        'Plasma Turret': 'turret/plasma_turret/plasma_turret'}
 ENEMY_CASES = tuple(('Jackal + %s (bisect)' % w, _c('jackal'), _w(_WP[w])) for w, _r in BISECT) + tuple(('Jackal + %s (bisect)' % w, _c('jackal'), _w(_WP[w]))
-                                                                     for w, r in BISECT if r[0] == 'style')
+                                                                     for w, r in BISECT if r[0] in ('style', 'jk'))
 MARINE_CASES = (
     ('Marine + DMR', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('rifle/dmr/dmr')),
 )
@@ -379,6 +390,8 @@ def layout(m, report):
         styls = {p.lower().rsplit(BS, 1)[-1]: (p, b) for p, b in m.find_tags('styl', '*')}
         style_copy, spare_i = {}, 0
         for _w2, r in BISECT:
+            if isinstance(r, tuple) and r[0] == 'jk' and r[2]:
+                r = ('style', 'jackal', False)
             if isinstance(r, tuple) and r[0] == 'style' and (r[1], r[2]) not in style_copy:
                 sp_path, sp = styls[STYLE_SPARES[spare_i]]
                 spare_i += 1
@@ -405,7 +418,23 @@ def layout(m, report):
                 continue
             tag = dict(m.find_tags('char', sl.cnames[ci]))[sl.cnames[ci]]
             m.data[tag:tag + ew.CHAR_ROOT] = m.data[base_tag:base_tag + ew.CHAR_ROOT]
-            if isinstance(revert, tuple) and revert and revert[0] == 'style':
+            if isinstance(revert, tuple) and revert and revert[0] == 'jk':
+                # (v17) the WHOLE Jackal root (the clone's shieldless variants), no major
+                m.data[tag:tag + ew.CHAR_ROOT] = m.data[jack:jack + ew.CHAR_ROOT]
+                m.data[tag + ew.CHAR_VARIANTS:tag + ew.CHAR_VARIANTS + 12] = \
+                    m.data[base_tag + ew.CHAR_VARIANTS:base_tag + ew.CHAR_VARIANTS + 12]
+                struct.pack_into('<I', m.data, tag + ew.CHAR_MAJOR + 0xC, 0xFFFFFFFF)
+                if revert[1] is not None:
+                    n = max(0, m.i32(tag + 0x150))
+                    got = hp._h3_reserve(m, [n * 0x58])
+                    old = hp._block_base(m, tag + 0x150)
+                    m.data[got[0]:got[0] + n * 0x58] = m.data[old:old + n * 0x58]
+                    for k in range(n):
+                        struct.pack_into('<f', m.data, got[0] + k * 0x58 + 0x4, revert[1])
+                    struct.pack_into('<I', m.data, tag + 0x150 + 4, m.off2data(got[0]))
+                if revert[2]:
+                    struct.pack_into('<I', m.data, tag + 0x34 + 0xC, style_copy[('jackal', False)])
+            elif isinstance(revert, tuple) and revert and revert[0] == 'style':
                 ranges = dict(ITEMS)
                 for name in revert[3]:
                     for a, b in ranges[name]:
@@ -457,7 +486,10 @@ def layout(m, report):
                 struct.pack_into('<h', m.data, e + ew.CELL_IDX, made[word])
                 moved[word] = moved.get(word, 0) + 1
         for word, revert in BISECT:
-            what = 'Skirmisher data, no major, Jackal: %s; style = %s, low_shield_retreat %s' % (
+            what = 'Jackal data, no major, ' + ('Retreat Shield Threshold %g' % revert[1] if revert[1] is not None
+                                                else 'the Jackal style with low_shield_retreat off') \
+                if isinstance(revert, tuple) and revert[0] == 'jk' else \
+                'Skirmisher data, no major, Jackal: %s; style = %s, low_shield_retreat %s' % (
                 ' / '.join(revert[3]) or 'none', revert[1], 'ON' if revert[2] else 'off') \
                 if isinstance(revert, tuple) and revert[0] == 'style' else \
                 'Skirmisher data, no major, Jackal: ' + ' / '.join(revert[1]) \
