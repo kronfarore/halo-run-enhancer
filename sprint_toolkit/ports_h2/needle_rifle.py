@@ -591,6 +591,29 @@ PORT = {
         'target': {'weapon': (WP, ND + r'\needler.weapon'),
                    'projectile': (PR, ND + r'\projectiles\needler_shard\needler_shard.projectile'),
                    'damage_effect': (DM + r'\needle_rifle_shard_impact.damage_effect', ND + r'\damage_effects\needler_shard_impact.damage_effect')},
+        # the close-out re-run (2026-11-18): list 2 holds four rows, each DECIDED (none left to port by the ratio)
+        'decisions': {
+            'ai scariness 5 (ratio 15)': "kept Reach's 5 -- the ratio (H2 needler 6 x 5/2) beats the Rocket Launcher and "
+                                         "Brute Shot (12); stock H2 runs Carbine 4 .. Needler 6 .. Sniper 8",
+            'barrels deceleration time (nth 1) 0.9 (ratio 0.18)': "kept -- Reach's bloom decay read as Halo 2's error ramp "
+                                                                  "(Halo 1's B2 reading); the Needler's 0.5 is a spew ramp",
+            'barrels illumination recovery time 0.1 (ratio 0.5)': "kept Reach's 0.1 -- the muzzle light (user: the flash is good)",
+            'super det. projectile count 2 (ratio 3.5)': 'user 4a: 3 needles; Halo 2 combines ABOVE the count',
+            'bounding radius 0.23 / offset 0.0625': "the Carbine clone's (the world model's size)",
+            'acceleration scale / on-ground scales / old message index': "the Carbine clone's (no Reach counterpart)",
+            'can be dual wielded 0, dual error ramp + dual wield damage scale 0': 'two-handed: no dual wield',
+            'magazines reload time 0 / nested rounds': "Reach's own reload animation drives the reload; the Carbine has no "
+                                                       'nested ammo item',
+            'projectile material responses': "Reach's attach / bounce by name (the numbers rows); not the Needler's",
+            'damage flags 8194': "the Carbine slug's: can cause headshots + ignore seat scale (Reach's needle has both)",
+            'damage rider maximum transfer 0.75': "the Needler impact clone's (Halo 2's own yardstick value; Reach's 0.5 "
+                                                  'has no card from Reach on)',
+            'deviation angle 2.25 / active camo ding 0.75': 'written (numbers rows)',
+            'first person weapon offset': '0 -- the position lives in fp_anims model_offset',
+            'enums / long flags (prediction, damage reporting, barrel flags)': "the Carbine clone's Halo 2 values; the "
+                                                                               "barrel's double-fire flag fixed by byte_edits",
+            'item / aim-assist falloff / accuracy penalties / zoom time / stun / custom labels': 'no such field in Halo 2',
+        },
     },
 
     # BALANCED (step 4a, user 2026-11-01: reports/h2_needle_rifle_4a.md). The table reads the NEEDLER's tags: each

@@ -1296,8 +1296,7 @@ chain): needle 3 on impact, 26 / 78 / 105, error 0.3-1.0, velocity 818, timer 1.
 the stuck target alone, area 30-50.
 
 **The supercombine:** no dll for the count. The projectile tag carries it, and the engine combines ABOVE it (field =
-wanted - 1). It never combines on the player in campaign, stock Needler included: the halo2.dll patch is this
-session's next job (user 2026-11-16).
+wanted - 1). Stock Halo 2 never combines on the player in campaign, Needler included -- patched, below.
 
 **New to the kit (each an observation of one port):** h2_port_scope `ring_quarter` + `rgb`; h2_port_reticle `inner`;
 coloured scope glyphs on widget_simple_flash clones (not scope_masks); `byte_edits` for flags and euler fields; fill a
@@ -1307,5 +1306,15 @@ barrel's firing damage by record; the Reach route's run order (render after shad
 **Process, from the user this port:** an Armed level must have the species NEAR the start. Check the printed distances,
 and use a level that carries Flood and Sentinels itself.
 
-**Open:** the 5b report and port_backup wait for the F: drive (unmounted 2026-11-16). The Needler's two sideways
-flash sprites stay (user: the flash is good). Barrel 1 still carries the Carbine's flags (unused).
+**Step 4b, the close-out re-run (2026-11-18):** list 2 held four rows, all DECIDED in the config's
+`field_audit.decisions`, none ported by the ratio: AI scariness stays Reach's 5 (the ratio's 15 would out-scare the
+Rocket Launcher's 12), the bloom decay 0.9 and the light recovery 0.1 stay Reach's (tested), the count is the user's 2.
+Lists 4/5 are the Carbine clone's values or numbers rows.
+
+**The player supercombine (2026-11-17, CONFIRMED by the user):** two halo2.dll gates, both "campaign AND a player's
+unit" -- +0x905484 skips the attach count, +0x905D12 cancels the blast in the detonation routine (+0x905AD0, the
+parent's player datum at +0x140). `h2_supercombine_players.py`; found with `h2_stuck_needle_probe.py` (live, read-only)
+and `h2_dll_dis.py` (static). The enhancer option is handed off.
+
+**Closed:** 5b report (reports/h2_needle_rifle_5b.txt) and port_backup (F:\HaloPortBackups6-11-17_needle-rifle-h2).
+The Needler's two sideways flash sprites stay (user: the flash is good). Barrel 1 still carries the Carbine's flags (unused).
