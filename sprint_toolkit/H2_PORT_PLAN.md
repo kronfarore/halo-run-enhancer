@@ -1316,5 +1316,5 @@ unit" -- +0x905484 skips the attach count, +0x905D12 cancels the blast in the de
 parent's player datum at +0x140). `h2_supercombine_players.py`; found with `h2_stuck_needle_probe.py` (live, read-only)
 and `h2_dll_dis.py` (static). The enhancer option is handed off.
 
-**Closed:** 5b report (reports/h2_needle_rifle_5b.txt) and port_backup (F:\HaloPortBackups6-11-17_needle-rifle-h2).
+**Closed:** 5b report (reports/h2_needle_rifle_5b.txt) and port_backup (F:\HaloPortBackups\2026-11-17_needle-rifle-h2).
 The Needler's two sideways flash sprites stay (user: the flash is good). Barrel 1 still carries the Carbine's flags (unused).
