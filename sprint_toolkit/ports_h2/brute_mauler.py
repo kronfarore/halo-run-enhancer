@@ -493,6 +493,11 @@ PORT = {
                     'first_person:dual:idle:var1', 'first_person:dual:idle:var2', 'first_person:dual:idle:var3',
                     'first_person:dual:posing:var1', 'first_person:dual:posing:var2'],
         'overlay_reference': 'first_person:idle:var1',
+        # 2026-11-19 (04a, user: a dual fidget took the LEFT gun out of view): Halo 3's dual posings are overlays;
+        # Bungie's Halo 2 dual posing (and the Spiker's, which works) is a BASE animation -> rebuilt on the dual
+        # idle and written as base animations (h2_port_fp_anims `overlay_as_base`)
+        'overlay_as_base': {'first_person:dual:posing:var1': 'first_person:dual:idle:var1',
+                            'first_person:dual:posing:var2': 'first_person:dual:idle:var1'},
         # Halo 3's OWN frame + sound events per animation (the Spiker's rule): its 12 sounds onto the
         # graph's own slots (step 10 repointed the seed's 15)
         'source_events': {'sounds': {

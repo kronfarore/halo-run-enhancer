@@ -500,7 +500,18 @@ def build(key, species, only=None, write=True):
     for h3name, (typ, frames, animated) in sorted(anims.items()):
         if h3name in cfg.get('skip', ()) or (only and h3name not in only):
             continue
-        if typ == 'overlay':
+        as_base = (cfg.get('overlay_as_base') or {}).get(h3name)
+        if typ == 'overlay' and as_base:
+            # `overlay_as_base` {h3 animation: h3 reference animation} (the Mauler, 2026-11-19, 04a, user: 'one of
+            # the fidget animations on Mauler has the gun move out of the first person view completely. Only
+            # observed this on the left held gun'): Halo 3 ships the Mauler's DUAL posings as OVERLAYS (over the
+            # dual idle); Bungie's Halo 2 dual posing (fp_plasma_pistol `dual:posing:var0`) is a BASE animation,
+            # and so is every dual posing of the ports that work (the Spiker's). The overlay is applied onto the
+            # reference's frame 0 (the pose Halo 3 plays it over) and written as a base animation
+            fr = overlay_frames(nodes, frames, animated, anims[as_base][1][0])[1:]
+            fr = fr + [fr[0] if h3name in cfg.get('looping', ()) else fr[-1]]
+            ext, typ = '.jmm', 'base'
+        elif typ == 'overlay':
             fr, ext = overlay_frames(nodes, frames, animated, ref_pose), '.jmo'
         elif typ == 'replacement':
             fr, ext = base_frames(nodes, frames, h3name in cfg.get('looping', ())), '.jmr'
@@ -774,7 +785,8 @@ def build_h1(key, species, only=None, write=True, cfg_override=None):
     CHIEF_W.clear()
     ELITE_W.clear()
     ELITE_AXIS.clear()
-    if sp.get('repose') in ('direction', 'points'):
+    if sp.get('repose') in ('direction', 'points') or any(
+            w.get('mode') in ('direction', 'points') for w in (sp.get('repose_window') or {}).values()):
         ELITE_AXIS.update(bone_axes(elite))
     if sp.get('repose') == 'world':
         CHIEF_W.update(jms_world(cfg['chief_arms']))
@@ -817,7 +829,8 @@ def build_h1(key, species, only=None, write=True, cfg_override=None):
         keys = [h1_key(n) for n, _p in nodes]
         h1_nodes = [(n, p) for n, p in nodes]
         rows = []
-        for f in frames:
+        win = (sp.get('repose_window') or {}).get(h2name)
+        for fi, f in enumerate(frames):
             world = dict(zip(keys, compose(h1_nodes, f)))
             fr = []
             for nm in names_h2:
@@ -829,45 +842,17 @@ def build_h1(key, species, only=None, write=True, cfg_override=None):
                                       or not _is_finger(nm)):
                     fr.append(world[nm])
                 else:
-                    # an Elite finger: the Chief's curl on the Elite's bind, under its parent's frame
-                    par, (eq, et) = elite[nm]
-                    cpar, (cq, _ct) = chief[nm]
-                    pq, pt = dict(zip(names_h2, fr))[par]
-                    d = qrot(pq, et)
-                    if sp.get('repose') == 'points' and _seg_next(nm) and _seg_next(nm) in world:
-                        # `repose` 'points' (04a boot 3, user: 'the fingers phase into the weapon'): the
-                        # Elite's fingers are LONGER than the Chief's, so the Chief's directions push the
-                        # tips through the grip -- each segment aims at the Chief's NEXT JOINT instead
-                        # (a longer finger reaching the same points curls tighter, along the Chief's
-                        # path round the grip); a tip keeps the direction rule
-                        q0 = qnorm(qmul(pq, eq))
-                        here = (pt[0] + d[0], pt[1] + d[1], pt[2] + d[2])
-                        aim = tuple(b - a for a, b in zip(here, world[_seg_next(nm)][1]))
-                        fr.append((qnorm(qmul(_rot_between(qrot(q0, ELITE_AXIS[nm]), aim), q0)), here))
-                        continue
-                    if sp.get('repose') in ('direction', 'points'):
-                        # `repose` 'direction' (the SAW rework, 04a boot 2: the idle's LEFT fingers stood
-                        # up off the fore-grip with 'world'): the Elite segment starts RIGID on its solved
-                        # parent (its own bind) and turns by the smallest rotation that points it along
-                        # the Chief's segment in model space (this joint -> the next; a tip along the
-                        # Chief tip's direction from its parent) -- h1_fp_retarget's fingers by direction
-                        q0 = qnorm(qmul(pq, eq))
-                        fr.append((qnorm(qmul(_rot_between(qrot(q0, ELITE_AXIS[nm]), chief_dir(world, nm)), q0)),
-                                   (pt[0] + d[0], pt[1] + d[1], pt[2] + d[2])))
-                        continue
-                    if sp.get('repose') == 'world':
-                        # `repose` 'world' (the SAW rework, boot on 04a: 'strangely large fingers' --
-                        # Halo 4's re-solved finger turns are far from the bind, and the two hands'
-                        # bind frames differ, so a LOCAL curl lands elsewhere on the Elite): the
-                        # Chief finger's turn from its own bind IN MODEL SPACE, on the Elite's bind
-                        cw, cb, eb = world[nm][0], CHIEF_W[nm], ELITE_W[nm]
-                        fr.append((qnorm(qmul(qmul(cw, (cb[0], -cb[1], -cb[2], -cb[3])), eb)),
-                                   (pt[0] + d[0], pt[1] + d[1], pt[2] + d[2])))
-                        continue
-                    li = dict(zip(keys, f))[nm][0]
-                    delta = qmul((cq[0], -cq[1], -cq[2], -cq[3]), li)
-                    q = qnorm(qmul(eq, delta))
-                    fr.append((qnorm(qmul(pq, q)), (pt[0] + d[0], pt[1] + d[1], pt[2] + d[2])))
+                    # an Elite finger: the species' `repose` mode (_elite_finger), blended toward
+                    # `repose_window`'s mode inside its frames
+                    pq, pt = dict(zip(names_h2, fr))[elite[nm][0]]
+                    got = _elite_finger(sp.get('repose'), nm, pq, pt, world, elite, chief, keys, f)
+                    w = _window_weight(win, nm, fi)
+                    if w > 0.0:
+                        alt = _elite_finger(win['mode'], nm, pq, pt, world, elite, chief, keys, f)
+                        got = (qnorm(slerp(got[0], alt[0], w)), tuple(x + (y - x) * w for x, y in zip(got[1], alt[1])))
+                    fr.append(got)
+            if win and win.get('reach'):
+                fr = _window_reach(win, fi, fr, names_h2, world, cfg['chief_arms'], sp['arms'])
             rows.append(fr)
         _LAST_ROWS[h2name] = rows
         hold = sp.get('hold_fingers')
@@ -896,6 +881,110 @@ def build_h1(key, species, only=None, write=True, cfg_override=None):
             write_jma(path, jnodes, [jma_name(nm, set(weapon_nodes)) for nm in names_h2], rows)
         out.append((h1name + ' -> ' + h2name, typ, len(frames) - 1, len(rows), os.path.basename(path)))
     return [(n, parents.get(n, -1)) for n in names_h2], out
+
+
+def _elite_finger(mode, nm, pq, pt, world, elite, chief, keys, f):
+    """One Elite finger node's model-space (q, t) under its solved parent (pq, pt), by `repose` mode."""
+    _par, (eq, et) = elite[nm]
+    d = qrot(pq, et)
+    here = (pt[0] + d[0], pt[1] + d[1], pt[2] + d[2])
+    if mode == 'points' and _seg_next(nm) and _seg_next(nm) in world:
+        # `repose` 'points' (04a boot 3, user: 'the fingers phase into the weapon'): the
+        # Elite's fingers are LONGER than the Chief's, so the Chief's directions push the
+        # tips through the grip -- each segment aims at the Chief's NEXT JOINT instead
+        # (a longer finger reaching the same points curls tighter, along the Chief's
+        # path round the grip); a tip keeps the direction rule
+        q0 = qnorm(qmul(pq, eq))
+        aim = tuple(b - a for a, b in zip(here, world[_seg_next(nm)][1]))
+        return qnorm(qmul(_rot_between(qrot(q0, ELITE_AXIS[nm]), aim), q0)), here
+    if mode in ('direction', 'points'):
+        # `repose` 'direction' (the SAW rework, 04a boot 2: the idle's LEFT fingers stood
+        # up off the fore-grip with 'world'): the Elite segment starts RIGID on its solved
+        # parent (its own bind) and turns by the smallest rotation that points it along
+        # the Chief's segment in model space (this joint -> the next; a tip along the
+        # Chief tip's direction from its parent) -- h1_fp_retarget's fingers by direction
+        q0 = qnorm(qmul(pq, eq))
+        return qnorm(qmul(_rot_between(qrot(q0, ELITE_AXIS[nm]), chief_dir(world, nm)), q0)), here
+    if mode == 'world':
+        # `repose` 'world' (the SAW rework, boot on 04a: 'strangely large fingers' --
+        # Halo 4's re-solved finger turns are far from the bind, and the two hands'
+        # bind frames differ, so a LOCAL curl lands elsewhere on the Elite): the
+        # Chief finger's turn from its own bind IN MODEL SPACE, on the Elite's bind
+        cw, cb, eb = world[nm][0], CHIEF_W[nm], ELITE_W[nm]
+        return qnorm(qmul(qmul(cw, (cb[0], -cb[1], -cb[2], -cb[3])), eb)), here
+    # True: the Chief finger's LOCAL curl (its turn from the Chief's bind) on the Elite's bind
+    _cpar, (cq, _ct) = chief[nm]
+    li = dict(zip(keys, f))[nm][0]
+    delta = qmul((cq[0], -cq[1], -cq[2], -cq[3]), li)
+    return qnorm(qmul(pq, qnorm(qmul(eq, delta)))), here
+
+
+def _window_weight(win, nm, fi):
+    """`repose_window` {h2 animation: {'mode', 'side': 'l'|'r', 'frames': (first, last), 'ease': n}} (the
+    Flamethrower's Arbiter, 2026-11-19, user: 'the Flamethrower fidget should have the Arbiter tap the display,
+    but it's nowhere close to it'): Halo 1's posing taps the screen with the right index; under the local curl
+    (repose True) the Elite's LONGER finger reaches straight across above the screen. Inside the frames that
+    side's fingers take `mode` ('points': each segment aims at the Chief's next joint, so the tip lands where the
+    Chief's does), smoothstep-eased over `ease` frames at both ends -- the grip outside stays the approved one."""
+    if not win or not _is_finger(nm) or not nm.startswith(win.get('side', '') + '_'):
+        return 0.0
+    a, b = win['frames']
+    if fi <= a or fi >= b:
+        return 0.0
+    e = max(1, win.get('ease', 1))
+    w = min(1.0, (fi - a) / float(e), (b - fi) / float(e))
+    return w * w * (3 - 2 * w)
+
+
+_TIP_END = {}
+
+
+def _tip_end_local(jms_path, tip, mid):
+    """A fingertip's END in its tip node's bind-local frame (wu): the tip node's mesh vertex farthest along
+    mid joint -> tip joint (the JMS's model-space binds)."""
+    k = (jms_path, tip)
+    if k not in _TIP_END:
+        import h2_jms
+        m = h2_jms.read(jms_path)
+        names = [h1_key(n.name) for n in m.nodes]
+        ti, mi = names.index(tip), names.index(mid)
+        tq = (m.nodes[ti].rot[3],) + tuple(m.nodes[ti].rot[:3])
+        tp, mp = m.nodes[ti].pos, m.nodes[mi].pos
+        ax = tuple(a - b for a, b in zip(tp, mp))
+        n = math.sqrt(sum(c * c for c in ax)) or 1.0
+        best = None
+        for v in m.verts:
+            if v.influences and max(v.influences, key=lambda t: t[1])[0] == ti:
+                along = sum((a - b) * c / n for a, b, c in zip(v.pos, tp, ax))
+                if best is None or along > best[0]:
+                    best = (along, v.pos)
+        d = qrot((tq[0], -tq[1], -tq[2], -tq[3]), tuple(a - b for a, b in zip(best[1], tp)))
+        _TIP_END[k] = tuple(c / UNITS for c in d)
+    return _TIP_END[k]
+
+
+def _window_reach(win, fi, fr, names, world, chief_jms, elite_jms):
+    """`repose_window` 'reach': '<finger>' (the Flamethrower's Arbiter tap, 2026-11-19): the Elite's finger
+    segments are ~1.5-2x the Chief's, so even aimed at the Chief's joints its tip overshoots past the screen.
+    Inside the window (same weight as the fingers) every node of that side's ARM (upper arm to fingertips) moves
+    by w x (the Chief's fingertip END - the Elite's), so the Elite's tip lands where the Chief's does; the shoulder
+    is off screen and the hand has left the grip in the tap, so nothing else needs to follow."""
+    side, finger = win.get('side', 'r'), win['reach']
+    tip, mid = '%s_%s_tip' % (side, finger), '%s_%s_mid' % (side, finger)
+    w = _window_weight(win, tip, fi)
+    if w <= 0.0 or tip not in world:
+        return fr
+    pose = dict(zip(names, fr))
+
+    def end(q_t, loc):
+        q, t = q_t
+        d = qrot(q, loc)
+        return tuple(a + b for a, b in zip(t, d))
+    c = end(world[tip], _tip_end_local(chief_jms, tip, mid))
+    e = end(pose[tip], _tip_end_local(elite_jms, tip, mid))
+    dl = tuple(w * (a - b) for a, b in zip(c, e))
+    return [((q, tuple(a + b for a, b in zip(t, dl))) if nm.startswith(side + '_') else (q, t))
+            for (q, t), nm in zip(fr, names)]
 
 
 def hold_fingers(rows, names, binds, hold, cfg, species):

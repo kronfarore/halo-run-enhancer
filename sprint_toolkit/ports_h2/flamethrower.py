@@ -942,7 +942,15 @@ PORT = {
                 'arms': H2EK + r'\data\!extracted\fp_arms_dervish\dervish_fp_arms.jms',
                 'source': r'objects\characters\dervish\fp\weapons\support_low\fp_flamethrower',
                 'seed': r'objects\characters\dervish\fp\weapons\rifle\fp_plasma_rifle\fp_plasma_rifle',
-                'repose': True},
+                'repose': True,
+                # 2026-11-19 (04a, user: 'the Flamethrower fidget should have the Arbiter tap the display, but
+                # it's nowhere close to it'): Halo 1's posing taps the screen with the right index (frames
+                # ~30-80, closest f53); the Elite's index segments are ~1.5-2x the Chief's, so under the local
+                # curl the finger sailed straight across ABOVE the screen. In the tap window the right fingers
+                # aim at the Chief's joints ('points') and the right arm follows so the index END lands on the
+                # Chief's (offline: 0.24 from the screen at f53, the Chief 0.22; before: the finger over the top)
+                'repose_window': {'first_person:posing:var1': {
+                    'mode': 'points', 'side': 'r', 'frames': (22, 92), 'ease': 12, 'reach': 'index'}}},
         },
         'weapon_dir': FT + r'\fp_flamethrower',
     },
