@@ -204,11 +204,21 @@ _WP = {'DMR': 'rifle/dmr/dmr', 'Concussion Rifle': 'rifle/concussion_rifle/concu
        'Plasma Repeater': 'rifle/plasma_repeater/plasma_repeater',
        'Machine Gun Turret': 'turret/machinegun_turret/machinegun_turret',
        'Plasma Turret': 'turret/plasma_turret/plasma_turret'}
-ENEMY_CASES = tuple(('Jackal + %s (shipped)' % w, _c('jackal'), _w(_WP[w])) for w in V18_WEAPONS) + (
-    ('Jackal + Plasma Pistol (shield, control)', _c('jackal'), _w('pistol/plasma_pistol/plasma_pistol')),
-)
+#: v18 RESULT (Reach boot 18, 2026-11-19): the shipped path (Jackal data + Retreat Shield Threshold -1,
+#: majors on) -- everyone fires, up to the all-Jackal section. Reach Jackals DONE.
+#: v19 (2026-11-19): the Brute / Bugger test on Exodus (m52: both resident); every hostile cell of the
+#: level dealt (nearest the start first), Bugger + Needler the native control
+BRUTE_WEAPONS = ('Assault Rifle', 'DMR', 'Rocket Launcher', 'Sniper Rifle', 'Shotgun', 'Plasma Launcher',
+                 'Machine Gun Turret', 'Focus Rifle')
+BUGGER_WEAPONS = ('Plasma Rifle', 'Assault Rifle', 'DMR', 'Spike Rifle', 'Plasma Repeater', 'Rocket Launcher',
+                  'Needle Rifle')
+_WP.update({'Plasma Rifle': 'rifle/plasma_rifle/plasma_rifle', 'Needler': 'rifle/needler/needler'})
+ENEMY_CASES = tuple(('Brute + %s' % w, _c('brute'), _w(_WP[w])) for w in BRUTE_WEAPONS) +     tuple(('Bugger + %s' % w, _c('bugger'), _w(_WP[w])) for w in BUGGER_WEAPONS) + (
+        ('Bugger + Needler (native, control)', _c('bugger'), _w(_WP['Needler'])),)
 MARINE_CASES = (
-    ('Marine + DMR', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('rifle/dmr/dmr')),
+    ('Marine + Spike Rifle', C + 'marine' + BS + 'ai' + BS + 'trooper', _w(_WP['Spike Rifle'])),
+    ('Marine + Needler', C + 'marine' + BS + 'ai' + BS + 'trooper', _w(_WP['Needler'])),
+    ('Marine + Plasma Rifle', C + 'marine' + BS + 'ai' + BS + 'trooper', _w(_WP['Plasma Rifle'])),
 )
 #: cells per case; None = EVERY cell of the level (v2, ODST boot 1: the nearest Grunt / Jackal
 #: cells were not the first ones met)
