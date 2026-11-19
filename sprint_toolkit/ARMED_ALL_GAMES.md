@@ -273,6 +273,13 @@ clone keeps the Jackal's own data with threshold -1; the major clone too (jackal
 empty: it gets the parent chain's block, set). ROOT_SOURCE is unused for Reach now. v18 boots the shipped
 path with majors on. (A test map's corvette AA bombard squad is scripted: never a case cell.)
 
+Reach boots 18-19 (2026-11-19): v18 on m20 (the shipped path, majors on) -- everyone fires, up to the
+all-Jackal section. v19 on The Pillar of Autumn (m70; New Alexandria m52 is a bad test map, long flying
+sections; Exodus m50 has no Buggers): Brutes with eight weapons, Buggers with seven (taught as the
+plasma rifle) + the native Needler, Marines Spike Rifle / Needler / Plasma Rifle -- all work.
+REACH CONFIRMED 2026-11-19. Halo 3 / ODST Jackal styles carry low_shield_retreat too, with Retreat Shield
+Threshold 0 -- their shieldless Jackals fire (confirmed), so no fix there.
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?
