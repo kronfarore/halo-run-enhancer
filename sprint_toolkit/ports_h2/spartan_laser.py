@@ -73,6 +73,9 @@ PORT = {
         # the DMR's finding (2026-11-17 follow-up): tool render's 1/512 weld dropped small triangles
         # (h2_tool_fineweld.py --count); h2_tool_fineweld keeps them all
         'fine_weld': True,
+        # 2026-11-19 (user, after the fine weld: 'the two decals at the middle section flicker'): the FP model's
+        # decal quads sit 0.000-0.004 units on the body (Halo 3 depth-biases them) -> lifted along their normals
+        'decal_lift': {'spartan_laser_decal': 0.05, 'spartan_laser_lattice': 0.05},
         'kind': 'h3',
         'world_rm': SL + r'\spartan_laser.render_model',
         'fp_rm': SL + r'\fp_spartan_laser\fp_spartan_laser.render_model',

@@ -17,9 +17,11 @@ key of that section:
     fp_species      {species: {'sub': model name, 'nudge': (x, y, z)}} -- a second FP model
     render          [folders under the weapon's parent dir] for `tool render` (--render)
     fine_weld       (opt-in) `tool render` with h2_tool_fineweld.exe: no 1/512-of-the-model weld (the DMR)
+    decal_lift      (opt-in) {material: JMS units} model decals moved out along their normals (no z-fight)
 
     python h2_port_geometry.py <key> [--only world,fp,<sub>] [--render] [--dump <xml>] [scale]
 """
+import math
 import os
 import subprocess
 import sys
@@ -496,6 +498,31 @@ def h3_jobs(g):
             ('fp', g['fp_rm'], os.path.join(base, g['fp'], 'render', g['fp'] + '.jms'), False)]
 
 
+def decal_lift(jm, lifts):
+    """`decal_lift` {material: JMS units} (the Spartan Laser, 2026-11-19, user: 'the two decals at the middle
+    section flicker'): a source's model decals sit ON the body (Halo 3 draws them with a depth bias; the
+    Laser's FP quads 0.000-0.004 units above it), Halo 2 z-fights them once the fine weld keeps them. Every
+    vertex of the listed materials moves out along its own normal. Vertices a lifted material shares with
+    another material would tear the body, so such a material is refused. Returns {material: vertices}."""
+    if not lifts:
+        return {}
+    name = lambda mi: getattr(jm.materials[mi], 'name', jm.materials[mi])
+    out = {}
+    for mat, dist in lifts.items():
+        mine = {i for mi, t in jm.tris if name(mi) == mat for i in t}
+        others = {i for mi, t in jm.tris if name(mi) != mat for i in t}
+        if mine & others:
+            raise SystemExit('decal_lift %s: %d vertices shared with other materials' % (mat, len(mine & others)))
+        for i in mine:
+            v = jm.verts[i]
+            n = v.normal
+            ln = math.sqrt(sum(c * c for c in n)) or 1.0
+            v.pos = tuple(p + dist * c / ln for p, c in zip(v.pos, n))
+        if mine:
+            out[mat] = len(mine)
+    return out
+
+
 def h3_main(key, g, rest):
     opts = dict((a[2:].split('=', 1) + [''])[:2] for a in rest if a.startswith('--'))
     only = set(filter(None, opts.get('only', '').split(',')))
@@ -513,6 +540,9 @@ def h3_main(key, g, rest):
         if only and label not in only:
             continue
         jm = (h1_convert if h1 else h3_convert)(g, rel, world)
+        lifted = decal_lift(jm, g.get('decal_lift') or {})
+        if lifted:
+            print('   decal_lift: %s' % lifted)
         h2_jms.write(out_path, jm)
         xs = [v.pos[0] for v in jm.verts]
         zs = [v.pos[2] for v in jm.verts]
