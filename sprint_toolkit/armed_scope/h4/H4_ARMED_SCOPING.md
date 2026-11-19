@@ -112,3 +112,17 @@ Smallest test: ONE map (Composer, has designer twins + all three Covenant specie
 hand-staged copy: Grunts -> DMR in combat spawn points, Grunt designer twin -> SAW / templated
 twin -> Storm Rifle (U1), Jackals spawn points -> Rocket (U2) and DMR + minor_no_shield (U6),
 Elites -> Sticky Detonator (U3), one Elite -> hammer (U9); watch fire, hold, flee.
+
+## Engine test results (Composer, h4_armed_test.py, boot 1, 2026-11-19)
+- U1 the DESIGNER cell (+0x54) is read: designer Fuel Rod Grunts / Elites fired; no templated Rocket seen.
+  Write the designer twin; the templated one can be left (or written too, harmless).
+- U2 NO fallback: Grunts with DMR (spawn) / SAW (cells) and Jackals with Rocket came out UNARMED -> every
+  type-less / class-less weapon must be taught (as Reach: no class-'any' rescue).
+- U3 a weapon with no firing row is HELD but never fires (Elite + Sticky Detonator) -> repoint a null row.
+- U5 fleeing Grunts keep their weapon.
+- U6 Jackal + BR with the shield: holds and fires. Spawn-point Jackal + DMR with 'minor_no_shield': holds,
+  does NOT fire -- the Reach trap: storm_jackal style has low_shield_retreat (styl Behaviors3 +0x30 bit 27)
+  and Retreat Properties (char +0x168) Shield Threshold 0.001; storm_jackal_major inherits (empty block).
+  Rangers / snipers: no LSR. Fix as Reach: shieldless clone (+ major clone) with threshold -1.
+- U9 not separated: the unarmed Elites were most likely the hammer cells (open).
+- Marines + Scattershot: hold and fire.
