@@ -259,6 +259,20 @@ Jackal data (engage / cover thresholds of 99 = hold position) keeps the remainde
 shipped: the full Skirmisher-data clone (ROOT_SOURCE, boot 4: they all fire); RETREAT_FIX stays off.
 Halo 3 / ODST shieldless Jackals keep their own data and fire (confirmed there).
 
+Reach boots 7-17 (m20, 2026-11-15..19, reach_armed_test v8-v17) -- SOLVED. The cause is the Jackal
+STYLE tag's `low_shield_retreat` behaviour (styl Behaviors3 +0x30 bit 21; the Skirmisher style lacks it)
+together with the Retreat Shield Threshold (Jackal 0.001): a shieldless Jackal is always "low" and keeps
+retreating. Traps on the way: (1) v7's partial hits on Jackal data were noise -- the v8 rerun from its own
+commit was silent again (1/19, control 3/3); (2) MOST units met are MAJORS (cell Major Upgrade): v9-v12
+put Jackal blocks on the minor while the major clone ran Skirmisher-major data, so every group fired and
+measured the major (v13: Jackal minor + Jackal major 0/4, Skirmisher both 6/6). With no major (v14-v16):
+the Jackal Style is needed; the Jackal style minus the behaviour on the otherwise-silent data fired 7/7,
+the Skirmisher style PLUS it 0/6. v17, pure Jackal data: threshold -1 9/9, threshold 0 0/10 (the test is
+<=), the style without the behaviour 7/7. SHIPPED 2026-11-19: `RETREAT_FIX = {'Halo Reach': -1.0}` -- the
+clone keeps the Jackal's own data with threshold -1; the major clone too (jackal_major's Retreat block is
+empty: it gets the parent chain's block, set). ROOT_SOURCE is unused for Reach now. v18 boots the shipped
+path with majors on. (A test map's corvette AA bombard squad is scripted: never a case cell.)
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?

@@ -181,6 +181,13 @@ BISECT = (
     ('Assault Rifle', ('jk', 0.0, False)),
     ('Needle Rifle', ('jk', None, True)),
 )
+BISECT_V17 = BISECT
+#: v17 RESULT (Reach boot 17, 2026-11-19): threshold -1 9/9, threshold 0 0/10, style without the
+#: behaviour 7/7 -> SHIPPED: ew.RETREAT_FIX = -1 (Jackal data, majors too). v18: the shipped path
+#: as is (majors on), the weapons v8 found silent -- no bisect
+BISECT = ()
+V18_WEAPONS = ('DMR', 'Concussion Rifle', 'Shotgun', 'Plasma Launcher', 'Rocket Launcher', 'Spike Rifle',
+               'Focus Rifle', 'Sniper Rifle')
 #: spare styl tags (no character in m20 names them) overwritten with the edited style copies
 STYLE_SPARES = ('space_banshee', 'space_phantom')
 STYLE_HEAD = 0x60                               # Name .. Behavior List (the Reach styl plugin)
@@ -197,8 +204,9 @@ _WP = {'DMR': 'rifle/dmr/dmr', 'Concussion Rifle': 'rifle/concussion_rifle/concu
        'Plasma Repeater': 'rifle/plasma_repeater/plasma_repeater',
        'Machine Gun Turret': 'turret/machinegun_turret/machinegun_turret',
        'Plasma Turret': 'turret/plasma_turret/plasma_turret'}
-ENEMY_CASES = tuple(('Jackal + %s (bisect)' % w, _c('jackal'), _w(_WP[w])) for w, _r in BISECT) + tuple(('Jackal + %s (bisect)' % w, _c('jackal'), _w(_WP[w]))
-                                                                     for w, r in BISECT if r[0] in ('style', 'jk'))
+ENEMY_CASES = tuple(('Jackal + %s (shipped)' % w, _c('jackal'), _w(_WP[w])) for w in V18_WEAPONS) + (
+    ('Jackal + Plasma Pistol (shield, control)', _c('jackal'), _w('pistol/plasma_pistol/plasma_pistol')),
+)
 MARINE_CASES = (
     ('Marine + DMR', C + 'marine' + BS + 'ai' + BS + 'trooper', _w('rifle/dmr/dmr')),
 )
@@ -595,7 +603,7 @@ def build(level='m20'):
         m = hp.open_map(src, GAME)
     ew.bind(GAME, m, hp)
     # v9: the clones start from the shipped Skirmisher-data clone; the bisect puts Jackal blocks back
-    ew.RETREAT_FIX = {}
+    # v18: the SHIPPED clone (ew.RETREAT_FIX / ROOT_SOURCE as the module ships them)
     report = ['%s from %s' % (os.path.basename(out), src)]
     # the Jackal graph species' own firing rows BEFORE the clones copy their roots
     for r in ew.species_firing(m, hp, [(ew.enemy_of(ch), next((p for p, _b in m.find_tags('weap', '*')
