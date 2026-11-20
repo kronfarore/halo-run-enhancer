@@ -14,7 +14,8 @@ weapons are written straight into the squads, so each question gets a clean answ
 U5 (flee drop) is watched on the Grunts. Species stay as shipped; only weapons change.
 Test rules: god shield, DMR cheat (secondary of every profile, dmr bullet x1000), run x2.
 
-  python h4_armed_test.py [level]      -> <level>_armed_test.map  (h4_armed_test.cmd deploy)
+  python h4_armed_test.py engine [level] -> boot 1's engine test (Composer)
+  python h4_armed_test.py [level]        -> boot 2: the SHIPPED pass (Forerunner)   (h4_armed_test.cmd deploy)
 """
 import contextlib
 import io
@@ -194,5 +195,39 @@ def build(level='m80_delta'):
     return out
 
 
+#: (boot 2, 2026-11-20) the SHIPPED pass: h3_enemy_weapons.apply exactly as a patch runs it, one
+#: weapon per species at 100% so every group is told apart at a glance -- each exercises a new piece:
+#: Grunt DMR (taught: a type copied in the AR pose), Jackal Rocket Launcher (taught as the BR +
+#: the shieldless clone / major with threshold -1), Elite Sticky Detonator (borrowed Concussion Rifle
+#: firing rows), Knight Fuel Rod (taught in the Rocket Launcher pose; the class-'any' actions rule)
+SHIPPED = {'Grunt': 'storm_dmr', 'Jackal': 'storm_rocket_launcher', 'Elite': 'storm_sticky_detonator_pve',
+           'Knight': 'storm_fuel_rod_cannon'}
+
+
+def build_shipped(level='m30_cryptum'):
+    import h3_enemy_weapons as ew
+    src = os.path.join(BASELINE, level + '.map')
+    out = os.path.join(MAPS, level + '_armed_test.map')
+    with contextlib.redirect_stdout(io.StringIO()):
+        m = hp.open_map(src, GAME)
+    report = ['%s from %s (the shipped Armed pass)' % (os.path.basename(out), src)]
+    tags = {p.lower().rsplit(BS, 1)[-1]: p for p, _b in m.find_tags('weap', '*')}
+    cards = {e: {tags[w]: 1.0} for e, w in SHIPPED.items() if w in tags}
+    for e, w in SHIPPED.items():
+        report.append('  %-7s -> %s%s' % (e, w, '' if w in tags else '  (NOT IN THIS MAP)'))
+    for r in ew.apply(m, hp, {'cards': cards}, game=GAME):
+        report.append('%s%s | %s | %s' % ('' if r.get('ok') else 'FAILED ', r.get('tag'), r.get('field'),
+                                         r.get('new') or r.get('reason')))
+    god_and_cheat(m, report)
+    m.save(out)
+    print('\n'.join(report))
+    return out
+
+
 if __name__ == '__main__':
-    build(sys.argv[1] if len(sys.argv) > 1 else 'm80_delta')
+    # h4_armed_test.py              -> the shipped pass on Forerunner (boot 2)
+    # h4_armed_test.py engine [lvl] -> boot 1's engine test (Composer)
+    if len(sys.argv) > 1 and sys.argv[1] == 'engine':
+        build(sys.argv[2] if len(sys.argv) > 2 else 'm80_delta')
+    else:
+        build_shipped(sys.argv[1] if len(sys.argv) > 1 else 'm30_cryptum')
