@@ -947,10 +947,13 @@ PORT = {
                 # it's nowhere close to it'): Halo 1's posing taps the screen with the right index (frames
                 # ~30-80, closest f53); the Elite's index segments are ~1.5-2x the Chief's, so under the local
                 # curl the finger sailed straight across ABOVE the screen. In the tap window the right fingers
-                # aim at the Chief's joints ('points') and the right arm follows so the index END lands on the
-                # Chief's (offline: 0.24 from the screen at f53, the Chief 0.22; before: the finger over the top)
+                # lie ALONG the Chief's segments ('direction': the Chief's finger shape, longer) and the right arm
+                # follows so the index END lands on the Chief's (offline: 0.4 from the screen at f44-53, before
+                # the finger over the top). 2026-11-20, user (the 'points' boot): 'the finger tapping it is
+                # malformed' -- aimed at the Chief's joints from the Elite's further-back knuckles, 'points' bent
+                # the index 104/116/77 deg (idle 92/58/61) and the long finger folded flat; 'direction': 90/50/9
                 'repose_window': {'first_person:posing:var1': {
-                    'mode': 'points', 'side': 'r', 'frames': (22, 92), 'ease': 12, 'reach': 'index'}}},
+                    'mode': 'direction', 'side': 'r', 'frames': (22, 92), 'ease': 12, 'reach': 'index'}}},
         },
         'weapon_dir': FT + r'\fp_flamethrower',
     },
