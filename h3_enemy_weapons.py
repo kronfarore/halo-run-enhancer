@@ -92,24 +92,32 @@ GEN_PROPS, GEN_FPP = 0x174, 0x180
 FIRING_BLOCKS = ((GEN_PROPS, GEN_PROPS_ES, 0x10), (GEN_FPP, 0x1C, 0xC))
 #: never handed out (tag basenames): the SAW has no ai\generic data and waits for Halo 3's
 #: weapon ports (user 2026-11-02)
-EXCLUDED = ('saw', 'machinegun_turret_jorge')    # Reach: Jorge's own chaingun, a story weapon
+EXCLUDED = ('saw', 'machinegun_turret_jorge',     # Reach: Jorge's own chaingun, a story weapon
+            # Halo 4 (engine test 2026-11-19): Elites handed the hammer most likely came out unarmed
+            # (its 'any' set is a stub) -- out until a hammer test; the Jackal shields are palette
+            # rows, never a card
+            'jackal_shield', 'jackal_shield_major')
 #: weapons without ai\generic rows borrow a donor's rows (user 2026-11-02), tag basenames
 #: never TAUGHT (user 2026-11-03: every enemy wields every weapon, the two melee weapons excepted
 #: for now): a species that already holds them keeps getting them
-NOT_TAUGHT = ('energy_blade', 'energy_sword', 'gravity_hammer')      # Reach's sword: energy_sword
+NOT_TAUGHT = ('energy_blade', 'energy_sword', 'gravity_hammer')      # Reach / Halo 4: energy_sword
 #: donor weapons whose class a refused weapon borrows, by the refused weapon's kind (tag basenames)
 TEACH_DONORS = {
-    'heavy': ('rocket_launcher', 'flak_cannon', 'spartan_laser', 'brute_shot', 'battle_rifle', 'dmr',
-              'assault_rifle', 'covenant_carbine', 'plasma_rifle'),
-    'rifle': ('assault_rifle', 'battle_rifle', 'dmr', 'covenant_carbine', 'needle_rifle', 'plasma_rifle', 'smg',
-              'rocket_launcher'),
+    'heavy': ('rocket_launcher', 'flak_cannon', 'fuel_rod_cannon', 'spartan_laser', 'brute_shot',
+              'battle_rifle', 'br', 'dmr', 'assault_rifle', 'covenant_carbine', 'plasma_rifle'),
+    'rifle': ('assault_rifle', 'battle_rifle', 'br', 'dmr', 'covenant_carbine', 'needle_rifle', 'plasma_rifle',
+              'smg', 'assault_carbine', 'rocket_launcher'),
     'pistol': ('plasma_pistol', 'magnum', 'needler', 'assault_rifle', 'plasma_rifle'),
 }
-FIRING_DONORS = {'automag': 'magnum', 'smg_silenced': 'smg', 'plasma_rifle_red': 'plasma_rifle'}
+FIRING_DONORS = {'automag': 'magnum', 'smg_silenced': 'smg', 'plasma_rifle_red': 'plasma_rifle',
+                 # Halo 4 (engine test 2026-11-19: held, never fired): no row in the kit or any map
+                 'sticky_detonator_pve': 'concussion_rifle'}
 # ODST squads (scnr +0x3B8 / 0x6C): spawn points and cells (see the module text)
 SP, SP_ES, SP_CELL, SP_CHAR, SP_WEAP, SP_VARIANT = 0x3C, 0x90, 0x10, 0x32, 0x34, 0x44
 CELL_BLOCKS, CELL_ES, CELL_COUNT = (0x54, 0x60), 0x84, 0x10
 CELL_CHARS, CELL_WEAPS, CELL_ARR_ES, CELL_IDX, CELL_CHANCE = 0x14, 0x20, 0x10, 0xC, 0xE
+#: per game: weapons kept out besides EXCLUDED (by _leaf)
+EXCLUDED_BY_GAME = {'Halo 4': ('gravity_hammer',)}
 #: per game: what bind() sets (Halo 3 is the module default)
 LAYOUTS = {
     'Halo 3': dict(SQUADS=0x384, SQ_ES=0x40, CPAL=0x3A8, WPAL=0x120, WEAP_CLASS=0x3DC,
@@ -130,36 +138,79 @@ LAYOUTS = {
                        JM_TYPE_SUB=0x8, JM_TYPE_ES=0x14, JM_SET_SUB=0x8, JM_SET_ES=0x48,
                        JM_ACT_SUB=0xC, JM_ACT_ES=0xC, JM_WL=0x140, SP_ES=0x7C, CELL_ES=0x6C,
                        CHAR_ROOT=0x270, CHAR_VARIANT_ES=0x18, HLMT_VARIANTS=0x84,
-                       HLMT_VARIANT_ES=0x38, HLMT_VARIANT_OBJECTS=0x20),
+                       HLMT_VARIANT_ES=0x38, HLMT_VARIANT_OBJECTS=0x20, CHAR_RETREAT=0x150),
+    # Halo 4 (2026-11-20; armed_scope/h4 + the Halo4MCC plugins for scnr / weap / bipd / hlmt / mode,
+    # the Halo4 set for char / jmad / styl -- read back right on m80): squads 0x6C with spawn points
+    # 0x7C and designer (read: engine test U1) / templated cells 0x64 (unit arrays 0x8: index +0x4,
+    # chance +0x6, count +0x8); graphs as Reach (Modes +0x13C, Weapon List +0x178); no dual wield;
+    # render model Nodes 0x70 / Markers 0x30; Jackal shield = a hlmt variant child object (+0x30)
+    'Halo 4': dict(SQUADS=0x3F0, SQ_ES=0x6C, CPAL=0x444, WPAL=0x1BC, WEAP_CLASS=0x4B4,
+                   WEAP_NAME=0x4B8, WEAP_FLAGS=0x1D4, DUAL_BITS=0, GEN_PROPS=0x204, GEN_PROPS_ES=0xCC,
+                   GEN_FPP=0x210, BIPD_PREFERRED=0x3D4, WEAP_MODEL=0x64,
+                   JM_MODES=0x13C, JM_MODE_ES=0x30, JM_CLASS_SUB=0xC, JM_CLASS_ES=0x38,
+                   JM_TYPE_SUB=0x8, JM_TYPE_ES=0x14, JM_SET_SUB=0x8, JM_SET_ES=0x48,
+                   JM_ACT_SUB=0xC, JM_ACT_ES=0xC, JM_WL=0x178,
+                   SP_ES=0x7C, SP_CELL=0x8, SP_CHAR=0x2E, SP_WEAP=0x30, SP_VARIANT=0x40,
+                   CELL_ES=0x64, CELL_COUNT=0x8, CELL_CHARS=0xC, CELL_WEAPS=0x18, CELL_ARR_ES=0x8,
+                   CELL_IDX=0x4, CELL_CHANCE=0x6,
+                   CHAR_ROOT=0x33C, CHAR_VARIANT_ES=0x18, CHAR_RETREAT=0x168, HLMT_VARIANTS=0xC4,
+                   HLMT_VARIANT_ES=0x6C, HLMT_VARIANT_OBJECTS=0x30, MODE_NODE_ES=0x70, MARKER_ES=0x30),
 }
 # what bind() resets when it switches back to a game whose LAYOUTS entry leaves a key out
 _DEFAULTS = dict(WEAP_MODEL=0x34, GEN_PROPS_ES=0xE0, JM_MODES=0x5C, JM_MODE_ES=0x28,
                  JM_CLASS_SUB=0x4, JM_CLASS_ES=0x1C, JM_TYPE_SUB=0x4, JM_TYPE_ES=0x34,
                  JM_SET_SUB=None, JM_SET_ES=0, JM_ACT_SUB=0x4, JM_ACT_ES=0x8, JM_WL=0x8C,
                  SP_ES=0x90, CELL_ES=0x84, CHAR_ROOT=0x1F8, CHAR_VARIANT_ES=0x14,
-                 HLMT_VARIANTS=0x64, HLMT_VARIANT_ES=0x48, HLMT_VARIANT_OBJECTS=None)
+                 HLMT_VARIANTS=0x64, HLMT_VARIANT_ES=0x48, HLMT_VARIANT_OBJECTS=None,
+                 SP_CELL=0x10, SP_CHAR=0x32, SP_WEAP=0x34, SP_VARIANT=0x44,
+                 CELL_COUNT=0x10, CELL_CHARS=0x14, CELL_WEAPS=0x20, CELL_ARR_ES=0x10, CELL_IDX=0xC,
+                 CELL_CHANCE=0xE, DUAL_BITS=3 << 16, CHAR_RETREAT=0x150, MODE_NODE_ES=0x60, MARKER_ES=0x24)
 #: games whose squads are cells (_arm_cells)
-CELL_GAMES = ('Halo 3: ODST', 'Halo Reach')
+CELL_GAMES = ('Halo 3: ODST', 'Halo Reach', 'Halo 4')
+#: games that take shieldless clones only from other missions' characters, never an unused palette
+#: one (a script may still place it), and whose Jackal spawn points name no shieldless variant
+SPARE_LOOSE_GAMES = ('Halo Reach', 'Halo 4')
+#: games whose gate reads only the graphs some model names (hlmt Animation tagRef offset)
+MODEL_GRAPHS_ONLY = ('Halo 4',)
+#: games where a weapon type without an idle takes its actions from the mode's class 'any'
+ACTION_ANY_GAMES = ('Halo 4',)
+HLMT_ANIMATION = 0x20
 #: ODST's own story characters (squad mates, Dare, the Superintendent's avatars) are never armed
 NEVER_WORDS = {'Halo 3: ODST': ('odst', 'dare', 'vergil', 'buck', 'dutch', 'mickey', 'romeo'),
                # Noble Team, Halsey, Keyes and the scripted heroes keep their own weapons
                'Halo Reach': ('spartan', 'noble', 'jorge', 'kat', 'carter', 'emile', 'jun',
-                              'halsey', 'keyes', 'holland', 'hero', 'story', 'bob')}
+                              'halsey', 'keyes', 'holland', 'hero', 'story', 'bob'),
+               # Halo 4: Cortana, the scientists / civilians, the named crew, the Spartans and the
+               # Composer's scripted sticky-detonator Marine keep their own weapons
+               'Halo 4': ('cortana', 'scientist', 'civilian', 'tillson', 'lasky', 'palmer', 'del_rio',
+                          'didact', 'librarian', 'spartan', 'masterchief', 'sticky', 'cinematic')}
 #: Reach's Skirmishers are Jackals by folder and graph but their own enemy type in halo.json
 NAME_TYPES = {'Halo Reach': (('skirmisher', 'Skirmisher'),)}
 #: graph folders per species where they differ from ENEMY_CHARS (Reach's AI Elites animate
 #: through objects/characters/elite_ai, the 'elite' graph is the players')
-GRAPH_FOLDERS = {'Halo Reach': {'Elite': ('elite_ai',), 'Skirmisher': ('jackal',)}}
+GRAPH_FOLDERS = {'Halo Reach': {'Elite': ('elite_ai',), 'Skirmisher': ('jackal',)},
+                 'Halo 4': {'Elite': ('storm_elite_ai',)}}
+#: per game: the character folders of each enemy type where they differ from ENEMY_CHARS (Halo 4:
+#: storm_*; Crawlers / Watchers / Hunters hold no hand weapon)
+ENEMY_CHARS_BY_GAME = {'Halo 4': {'Grunt': ('storm_grunt',), 'Jackal': ('storm_jackal',),
+                                  'Elite': ('storm_elite',), 'Knight': ('storm_knight',),
+                                  'Marine': ('storm_marine',)}}
+_ENEMY_CHARS_BASE = None
 
 
 def bind(game, m=None, hp=None):
     """Point the module at `game`'s layout (Halo 3 or ODST). With the map: the 'dual' class id."""
-    global GAME, FIRING_BLOCKS, DUAL_CLASS
+    global GAME, FIRING_BLOCKS, DUAL_CLASS, ENEMY_CHARS, GRIP_BIPEDS, _ENEMY_CHARS_BASE
     GAME = game
     globals().update(_DEFAULTS)
     globals().update(LAYOUTS[game])
     globals()['REPOSE'] = REPOSE_BY_GAME.get(game, {})
-    globals()['CLASS_ANY'] = game != 'Halo Reach'
+    # no class-'any' rescue in Reach or Halo 4 (Halo 4 engine test: type-less weapons came out unarmed)
+    globals()['CLASS_ANY'] = game not in ('Halo Reach', 'Halo 4')
+    if _ENEMY_CHARS_BASE is None:
+        _ENEMY_CHARS_BASE = (dict(ENEMY_CHARS), dict(GRIP_BIPEDS))
+    ENEMY_CHARS = dict(_ENEMY_CHARS_BASE[0], **ENEMY_CHARS_BY_GAME.get(game, {}))
+    GRIP_BIPEDS = dict(_ENEMY_CHARS_BASE[1], **GRIP_BIPEDS_BY_GAME.get(game, {}))
     FIRING_BLOCKS = ((GEN_PROPS, GEN_PROPS_ES, 0x10), (GEN_FPP, 0x1C, 0xC))
     if m is not None:
         DUAL_CLASS = find_sid(m, hp, 'dual') or (0x1F4 if game == 'Halo 3' else DUAL_CLASS)
@@ -204,6 +255,13 @@ def _i16(m, o):
     return struct.unpack_from('<h', m.data, o)[0]
 
 
+def _leaf(path):
+    """A tag's basename as the name tables use it: Halo 4's 'storm_' prefix dropped (no earlier
+    game names a tag storm_*), so EXCLUDED / NOT_TAUGHT / TEACH_DONORS / GRIP_FIX ... serve all."""
+    b = (path or '').lower().rsplit(BS, 1)[-1]
+    return b[6:] if b.startswith('storm_') else b
+
+
 def _name(m, hp, sid):
     try:
         return (m.resolve_stringid(sid) or '').lower()
@@ -220,12 +278,21 @@ class Graphs:
         self.m, self.hp = m, hp
         self.by_folder = {}
         self.any = self.combat = self.idle = None
+        used = None
+        if GAME in MODEL_GRAPHS_ONLY:
+            # (Halo 4, 2026-11-20) each species has numbered sibling graphs (storm_jackal1 / 25 / ...,
+            # full Modes copies with 0-7 animations) that no model names: only the graphs a model's
+            # Animation field (hlmt +0x20) points at are the species' own
+            used = {(hp._tag_name_by_id(m, m.u32(hb + HLMT_ANIMATION + 0xC)) or '').lower()
+                    for _hp, hb in m.find_tags('hlmt', '*')}
         for p, b in m.find_tags('jmad', '*'):
             lo = p.lower()
             parts = lo.split(BS)
             if len(parts) < 3 or parts[0] != 'objects' or parts[1] != 'characters':
                 continue
             if any(x in lo for x in ('cinematics', 'lipsync', BS + 'fp')):
+                continue
+            if used is not None and lo not in used:
                 continue
             g = self._read(b)
             if g['modes']:
@@ -288,6 +355,13 @@ class Graphs:
                     T = C.get(t)
                     if T and self.idle in T:
                         return True
+                    if T is not None and GAME in ACTION_ANY_GAMES:
+                        # (Halo 4) Knights hold their rifles through TYPES (frr, smg, rl ...) with no
+                        # idle of their own: the actions come from the mode's class 'any' -- a TYPE
+                        # must exist (Grunt + DMR: none -> unarmed, engine test 2026-11-19)
+                        A = (M.get(self.any) or {}).get(self.any)
+                        if A and self.idle in A:
+                            return True
         return False
 
     def allows(self, enemy, wclass, wname):
@@ -335,7 +409,9 @@ def has_firing(m, hp, weapon):
 #: Troopers with no own rows fire everything)
 #: Elites (own rows: grenade / rocket launcher) fire an Assault Rifle fine, so a per-weapon fallback
 #: works -- an experiment, limited to the Jackal graph's species
-SPECIES_FIRING = {'Halo Reach': ('Jackal', 'Skirmisher')}
+SPECIES_FIRING = {'Halo Reach': ('Jackal', 'Skirmisher'),
+                  # Halo 4: storm_jackal lists its own rows (beam rifle, carbine, needler, plasma pistol)
+                  'Halo 4': ('Jackal',)}
 
 
 def species_firing(m, hp, pairs):
@@ -395,13 +471,12 @@ def borrow_firing(m, hp, weapons):
     block relocated into partition slack as hunter_drop grows blocks). Returns result rows."""
     rows, want = [], {}
     for w in weapons:
-        base = w.lower().rsplit(BS, 1)[-1]
+        base = _leaf(w)
         donor = FIRING_DONORS.get(base)
         if not donor or has_firing(m, hp, w) is not False:
             continue
         # the donor's own path: the weapon whose basename is the donor's, from the tag list
-        dtag = next((p for p, _b in m.find_tags('weap', '*') if p.lower().rsplit(BS, 1)[-1] == donor),
-                    None)
+        dtag = next((p for p, _b in m.find_tags('weap', '*') if _leaf(p) == donor), None)
         datum = hp._h3_tag_datum(m, 'weap', w)
         if dtag is None or datum is None:
             rows.append({'tag': 'char ai' + BS + 'generic', 'field': 'firing data: ' + base,
@@ -419,7 +494,7 @@ def borrow_firing(m, hp, weapons):
             extra = bytearray()
             added = []
             for base, (dtag, datum, donor) in sorted(want.items()):
-                if dtag not in names or any(n.rsplit(BS, 1)[-1] == base for n in names):
+                if dtag not in names or any(_leaf(n) == base for n in names):
                     continue
                 e = elems[names.index(dtag)]
                 row = bytearray(m.data[e:e + es])
@@ -449,7 +524,7 @@ def _kind(m, hp, info):
     """'pistol' (Plasma Pistol's class), 'rifle' (Assault Rifle's) or 'heavy' (anything else:
     missile, support, turret classes)."""
     def cls(base):
-        t = next((p for p, _b in m.find_tags('weap', '*') if p.lower().rsplit(BS, 1)[-1] == base), None)
+        t = next((p for p, _b in m.find_tags('weap', '*') if _leaf(p) == base), None)
         wi = weapon_info(m, t) if t else None
         return wi['class'] if wi else None
     c = info['class']
@@ -543,6 +618,10 @@ GRIP_NAME = {'Grunt': 'right_hand_grunt', 'Jackal': 'left_hand_jackal', 'Marine'
 GRIP_BIPEDS = {'Grunt': ('grunt',), 'Jackal': ('jackal',), 'Marine': ('marine', 'marine_female'),
                'Bugger': ('bugger',), 'Skirmisher': ('jackal',)}      # Reach: the Jackal biped
 BIPD_PREFERRED = 0x1A4
+#: per game: the biped names per species (Halo 4: storm_*)
+GRIP_BIPEDS_BY_GAME = {'Halo 4': {'Grunt': ('storm_grunt',), 'Jackal': ('storm_jackal',),
+                                  'Marine': ('storm_marine', 'storm_marine_female'),
+                                  'Elite': ('storm_elite',), 'Knight': ('storm_knight',)}}
 #: the off-hand (IK) markers compared, most specific first (then any 'left_hand*')
 OFFHAND = {'Marine': ('left_hand_marine', 'left_hand'), 'Grunt': ('left_hand',),
            'Jackal': ('left_hand',), 'Bugger': ('left_hand',), 'Skirmisher': ('left_hand',)}
@@ -804,7 +883,8 @@ def grip(m, hp, enemy, weapon, donor, style=None):
     if any(m.u32(g) == sid for g in m.follow_all(mt, [MODE_GROUPS], [MODE_GROUP_ES], 'all')):
         # Bungie's own grip for this species (Reach): keep it
         return dict(row, ok=True, new='keeps its own %s marker' % name)
-    lt, ld = _marker(m, hp, mt, OFFHAND[enemy]), _marker(m, hp, md, OFFHAND[enemy])
+    off = OFFHAND.get(enemy, ('left_hand',))
+    lt, ld = _marker(m, hp, mt, off), _marker(m, hp, md, off)
     if lt is None or ld is None:
         return dict(row, reason='no off-hand marker on the weapon or the donor')
     style = style or GRIP_STYLE.get(GAME, {}).get(enemy, 'body')
@@ -850,20 +930,22 @@ def teach(m, hp, graphs, wanted):
     (taught {enemy: set(weapon)}, rows)."""
     adds, taught, rows, types, grips = {}, {}, [], {}, []
     tags = {p.lower(): p for p, _b in m.find_tags('weap', '*')}
-    by_base = {p.rsplit(BS, 1)[-1]: p for p in tags}
+    by_base = {}
+    for p in sorted(tags):
+        by_base.setdefault(_leaf(p), p)
     for enemy, ws in wanted.items():
         gs = [g for f in graph_folders(enemy) for _p, g in graphs.by_folder.get(f, ())]
         if not gs:
             continue
         mine = {t.lower() for t in ws}
-        donors = [(p.rsplit(BS, 1)[-1], weapon_info(m, tags[p])) for p in sorted(tags)
-                  if p not in mine and p.rsplit(BS, 1)[-1] not in NOT_TAUGHT
+        donors = [(_leaf(p), weapon_info(m, tags[p])) for p in sorted(tags)
+                  if p not in mine and _leaf(p) not in NOT_TAUGHT
                   and p.startswith('objects' + BS + 'weapons' + BS)
                   # a mounted turret's weapon is held in a SEATED gunner pose, no carry pose
                   and not any(x in p.rsplit(BS, 1)[-1] for x in ('integrated', 'undeployed'))]
         donors = [(d, i) for d, i in donors if i]
         for w in ws:
-            base = w.lower().rsplit(BS, 1)[-1]
+            base = _leaf(w)
             info = weapon_info(m, tags.get(w.lower(), w))
             if base in NOT_TAUGHT or not info:
                 continue
@@ -1001,7 +1083,7 @@ def arm(m, hp, cards, salt=None):
             lw = (w or '').lower()
             if not lw or s <= 0:
                 continue
-            if lw.rsplit(BS, 1)[-1] in EXCLUDED:
+            if _leaf(lw) in EXCLUDED or _leaf(lw) in EXCLUDED_BY_GAME.get(GAME, ()):
                 excluded.add(w)
                 continue
             if lw not in widx:
@@ -1016,7 +1098,7 @@ def arm(m, hp, cards, salt=None):
         if ok:
             usable[enemy] = ok
     # TEACH what the gate refused (not the melee weapons), then drop what is still refused
-    forced = {e: set(wnames[widx[w]] for w in ws if w.rsplit(BS, 1)[-1] in REPOSE.get(e, ()))
+    forced = {e: set(wnames[widx[w]] for w in ws if _leaf(w) in REPOSE.get(e, ()))
               for e, ws in usable.items()}
     taught, trows = teach(m, hp, graphs, {e: sorted(refused.get(e, set()) | forced.get(e, set()))
                                           for e in set(refused) | set(forced)
@@ -1044,7 +1126,7 @@ def arm(m, hp, cards, salt=None):
 
     def jackal_shield(loc, w, at=LOC_VARIANT):
         if two_handed(m, hp, info.get(w)):
-            if sid is None and GAME == 'Halo Reach':
+            if sid is None and GAME in SPARE_LOOSE_GAMES:
                 # Reach has no 'shieldless' variant: the spawn point names none, so the cell's
                 # (cloned, shieldless) character's own variant applies
                 if m.u32(loc + at):
@@ -1132,7 +1214,7 @@ def arm(m, hp, cards, salt=None):
         for w in sorted(ws):
             rows.append({'tag': tag + enemy, 'field': 'Armed: ' + w.split(BS)[-1], 'ok': True,
                          'skip': True, 'reason': ('melee weapons are not taught'
-                                                  if w.lower().rsplit(BS, 1)[-1] in NOT_TAUGHT
+                                                  if _leaf(w) in NOT_TAUGHT
                                                   else 'no donor class fits its graphs')
                          + ' (it would spawn unarmed); not handed out'})
     for w in sorted(nofire):
@@ -1141,7 +1223,7 @@ def arm(m, hp, cards, salt=None):
                      'may hold it without firing (first boot decides)'})
     for w in sorted(excluded):
         rows.append({'tag': tag.rstrip(BS), 'field': 'Armed: ' + w.split(BS)[-1], 'ok': True,
-                     'skip': True, 'reason': 'kept out of Halo 3 Armed cards until its weapon port'})
+                     'skip': True, 'reason': 'kept out of this game\'s Armed cards (EXCLUDED)'})
     for w in sorted(missing):
         rows.append({'tag': tag.rstrip(BS), 'field': 'Armed: ' + w.split(BS)[-1], 'ok': True,
                      'skip': True, 'reason': "not in this level's weapon palette"})
@@ -1185,8 +1267,12 @@ ROOT_SOURCE = {'Halo Reach': {'jackal': 'skirmisher', 'jackal_major': 'skirmishe
 #: it 0/6. Most units met are MAJORS (v13): the major's clone needs it too. RETREAT_FIX: the clone
 #: keeps the JACKAL's own data with this threshold (an empty Retreat block -- jackal_major -- gets the
 #: parent chain's, set) and ROOT_SOURCE goes unused
-RETREAT_FIX = {'Halo Reach': -1.0}
-CHAR_RETREAT, CHAR_RETREAT_ES = 0x150, 0x58
+RETREAT_FIX = {'Halo Reach': -1.0,
+               # Halo 4 (engine test 2026-11-19): storm_jackal has the same low_shield_retreat style
+               # bit (Behaviors3 bit 27) and threshold 0.001 (char +0x168); a DMR Jackal without its
+               # shield held it and never fired
+               'Halo 4': -1.0}
+CHAR_RETREAT, CHAR_RETREAT_ES = 0x150, 0x58         # bind() sets CHAR_RETREAT (Halo 4: 0x168)
 #: names a Reach shieldless Jackal variant may take (must exist as a string id in the map)
 SHIELDLESS_NAMES = ('shieldless', 'no_shield', 'unshielded', 'jackal_shieldless', 'jackal_noshield',
                     # Reach has none of those: global object-function strings in every map, named
@@ -1214,7 +1300,7 @@ class _Shieldless:
         spares = [i for i, n in enumerate(cnames) if n and i not in used and n.lower() not in refd
                   and i < len(pal)]
         leaf = lambda i: cnames[i].lower().rsplit(BS, 1)[-1]
-        if GAME == 'Halo Reach':
+        if GAME in SPARE_LOOSE_GAMES:
             # (Reach boot 2 rig) an unused palette character can still be placed by a script
             # (spartan_carter, elite_pilot on m20): Reach takes only another mission's characters
             spares = []
@@ -1241,7 +1327,7 @@ class _Shieldless:
         self.hlmt = None
         self.twins = {}
         for p, b in m.find_tags('hlmt', '*'):
-            if p.lower().endswith(BS + 'jackal'):
+            if _leaf(p) == 'jackal':
                 self.hlmt = b
                 for k, e in enumerate(m.follow_all(b, [HLMT_VARIANTS], [HLMT_VARIANT_ES], 'all')):
                     if _name(m, hp, m.u32(e)) == 'shieldless':

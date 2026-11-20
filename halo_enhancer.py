@@ -429,6 +429,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h3_enemy_weapon_cards', 'h3_armed_all_weapons',
                'odst_enemy_weapon_cards', 'odst_armed_all_weapons',
                'reach_enemy_weapon_cards', 'reach_armed_all_weapons',
+               'h4_enemy_weapon_cards', 'h4_armed_all_weapons',
                'h2_arbiter_flashlight',
                'h1_overheat_unzoom', 'h1_overheat_no_rezoom', 'h1_covenant_avoid_ff',
                'hunter_drop',
@@ -1276,6 +1277,9 @@ CONFIG = {
     # Reach's (the same pass, Reach layout, 2026-11-09)
     "reach_enemy_weapon_cards": True,
     "reach_armed_all_weapons": False,
+    # Halo 4's (the same pass, Halo 4 layout, 2026-11-20)
+    "h4_enemy_weapon_cards": True,
+    "h4_armed_all_weapons": False,
     # Allies (Marines, allied Grunts and Elites) can hold every weapon of the level, so the
     # players can trade any of them (user, 2026-10-25) -- a patch-time graph teach
     "h2_allies_any_weapon": True,
@@ -4373,13 +4377,16 @@ class ModifierDatabase:
     ARMED_ENEMIES = {'Halo 1': H1_ARMED_ENEMIES, 'Halo 2': H2_ARMED_ENEMIES,
                      'Halo 3': H3_ARMED_ENEMIES, 'Halo 3: ODST': H3_ARMED_ENEMIES,
                      # Reach (2026-11-09): Skirmishers are their own type in halo.json
-                     'Halo Reach': ('Grunt', 'Jackal', 'Skirmisher', 'Elite', 'Brute', 'Bugger')}
+                     'Halo Reach': ('Grunt', 'Jackal', 'Skirmisher', 'Elite', 'Brute', 'Bugger'),
+                     # Halo 4 (2026-11-20): Crawlers / Watchers / Hunters hold no hand weapon
+                     'Halo 4': ('Grunt', 'Jackal', 'Elite', 'Knight')}
     #: game -> (cards option, every-weapon option)
     ARMED_OPTIONS = {'Halo 1': ('h1_enemy_weapon_cards', 'h1_armed_all_weapons'),
                      'Halo 2': ('h2_enemy_weapon_cards', 'h2_armed_all_weapons'),
                      'Halo 3': ('h3_enemy_weapon_cards', 'h3_armed_all_weapons'),
                      'Halo 3: ODST': ('odst_enemy_weapon_cards', 'odst_armed_all_weapons'),
-                     'Halo Reach': ('reach_enemy_weapon_cards', 'reach_armed_all_weapons')}
+                     'Halo Reach': ('reach_enemy_weapon_cards', 'reach_armed_all_weapons'),
+                     'Halo 4': ('h4_enemy_weapon_cards', 'h4_armed_all_weapons')}
     ARMED_STEP = '+0.1'
 
     def h1_level_maps(self):
@@ -4721,11 +4728,15 @@ class ModifierDatabase:
             self.h2_armed_weapons() if game == 'Halo 2' else None
         # ...except the weapons h3_enemy_weapons.EXCLUDED keeps out (the SAW, until Halo 3's
         # weapon ports: user 2026-11-02)
-        if game in ('Halo 3', 'Halo 3: ODST', 'Halo Reach'):
+        if game in ('Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4'):
             import h3_enemy_weapons as _ew3
-            excluded, melee = _ew3.EXCLUDED, _ew3.NOT_TAUGHT
+            excluded = tuple(_ew3.EXCLUDED) + tuple(_ew3.EXCLUDED_BY_GAME.get(game, ()))
+            melee, leaf = _ew3.NOT_TAUGHT, _ew3._leaf
         else:
             excluded, melee = (), ()
+
+            def leaf(p):
+                return (p or '').lower().rsplit(chr(92), 1)[-1]
 
         def dead(e, w):
             # Halo 3 teaches every species every weapon except the two melee weapons (user
@@ -4736,12 +4747,13 @@ class ModifierDatabase:
                 # melee-only weapon; the patch would refuse the pair (U3 B4)
                 import h1_enemy_weapons as _ew1
                 return e in _ew1.NO_MELEE_ENEMIES and _ew1.melee_only(path)
-            return path.lower().rsplit(chr(92), 1)[-1] in melee and e not in ('Elite', 'Brute')
+            # (Halo 4: the 'storm_' prefix dropped -- h3_enemy_weapons._leaf)
+            return leaf(path) in melee and e not in ('Elite', 'Brute')
         names = []
 
         def ok(w):
             path = self.armed_weapon_path(w, game) if w else None
-            if path and path.lower().rsplit('\\', 1)[-1] in excluded:
+            if path and leaf(path) in excluded:
                 return False
             if w and self._is_port(w, game) and not (
                     CONFIG.get('weapon_ports_in_pools') and w in self.ports_on_level(mission_id)):
@@ -6440,8 +6452,9 @@ class MagnitudeEditorDialog(QDialog):
                 'allies': allies}
 
     def _h3_enemy_weapons_spec(self, armed_picks):
-        """Halo 3 / ODST: this patch's Armed cards as h3_enemy_weapons.apply wants them, or None."""
-        if self.game not in ('Halo 3', 'Halo 3: ODST', 'Halo Reach') or not armed_picks:
+        """Halo 3 / ODST / Reach / Halo 4: this patch's Armed cards as h3_enemy_weapons.apply
+        wants them, or None."""
+        if self.game not in ('Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4') or not armed_picks:
             return None
         db = getattr(self.parent_gui, 'db', None)
         if db is None:
@@ -13621,6 +13634,26 @@ class OptionsDialog(QDialog):
             "Starting the level at an insertion point still gives that insertion's "
             "loadout.")
         h4form.addRow("Travel sections:", self.h4_keep_loadout_cb)
+        self.h4_armed_cards_cb = QCheckBox("Offer 'Armed: <weapon>' enemy cards")
+        self.h4_armed_cards_cb.setChecked(bool(CONFIG.get('h4_enemy_weapon_cards', True)))
+        self.h4_armed_cards_cb.setToolTip(
+            "As in Halo 3 and Reach: for every weapon the players hold, each armed enemy on the "
+            "level (Grunts, Jackals, Elites, Knights) gets a card that hands 10% more of them that "
+            "weapon per pick; Marines get the same cards through the Ally slot. A species without "
+            "animations for a weapon is taught to hold it like one it has; the Energy Sword stays "
+            "with Elites and the Gravity Hammer is not handed out yet. A Jackal with a two-handed "
+            "weapon loses its arm shield.\n\nApplied to the map when you patch; nothing to "
+            "rebuild.")
+        h4form.addRow("Enemy weapons:", self.h4_armed_cards_cb)
+        self.h4_armed_all_cb = QCheckBox("    ...for every weapon, not only the ones you hold")
+        self.h4_armed_all_cb.setChecked(bool(CONFIG.get('h4_armed_all_weapons')))
+        self.h4_armed_all_cb.setToolTip(
+            "On: Armed cards are also offered for every other Halo 4 weapon, as ordinary cards; "
+            "a weapon you or your partner HOLD always counts more.\nOff (default): only the "
+            "weapons the players hold.")
+        self.h4_armed_cards_cb.toggled.connect(self.h4_armed_all_cb.setEnabled)
+        self.h4_armed_all_cb.setEnabled(self.h4_armed_cards_cb.isChecked())
+        h4form.addRow("", self.h4_armed_all_cb)
 
         # Halo 4 draws no attachment on equipment on the ground (hologram, ground glow:
         # both tested, no change); lighting the case's own material is what worked.
@@ -14743,6 +14776,8 @@ class OptionsDialog(QDialog):
             'odst_armed_all_weapons': self.odst_armed_all_cb.isChecked(),
             'reach_enemy_weapon_cards': self.reach_armed_cards_cb.isChecked(),
             'reach_armed_all_weapons': self.reach_armed_all_cb.isChecked(),
+            'h4_enemy_weapon_cards': self.h4_armed_cards_cb.isChecked(),
+            'h4_armed_all_weapons': self.h4_armed_all_cb.isChecked(),
             'h2_armed_all_weapons': self.h2_armed_all_cb.isChecked(),
             'h2_allies_any_weapon': self.h2_allies_any_cb.isChecked(),
             'h2_arbiter_flashlight': self.h2_arbiter_flash_cb.isChecked(),

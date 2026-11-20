@@ -280,6 +280,28 @@ plasma rifle) + the native Needler, Marines Spike Rifle / Needler / Plasma Rifle
 REACH CONFIRMED 2026-11-19. Halo 3 / ODST Jackal styles carry low_shield_retreat too, with Retreat Shield
 Threshold 0 -- their shieldless Jackals fire (confirmed), so no fix there.
 
+## Halo 4 route (WIRED 2026-11-20, offline-verified, not booted)
+
+Engine test first (h4_armed_test.py on Composer, armed_scope/h4/H4_ARMED_SCOPING.md "Engine test
+results"): the DESIGNER cell twin is read; a weapon with no type for the species = unarmed (no
+fallback, as Reach); no firing row = held, silent; a shieldless Jackal = Reach's low_shield_retreat
+trap (storm_jackal threshold 0.001). Then the shared pass took Halo 4 (`LAYOUTS['Halo 4']`):
+squads 0x3F0/0x6C, spawn points 0x7C, cells 0x64 with 8-byte unit arrays; weap class / name
++0x4B4 / +0x4B8, no dual wield; graphs as Reach (Modes +0x13C, Weapon List +0x178); render model
+Nodes 0x70 / Markers 0x30; char root 0x33C, Retreat +0x168 (RETREAT_FIX -1, majors too); Jackal
+shield = hlmt variant child (+0x30, the Reach copy-without-objects route). Halo 4 differences
+handled in the code: `_leaf()` drops the 'storm_' prefix for every name table; the gate reads only
+graphs a model names (MODEL_GRAPHS_ONLY: the numbered sibling graphs storm_jackal1 / 25 ... vetoed
+everything); a TYPE without an idle takes the mode's class-'any' actions (ACTION_ANY_GAMES: the
+Knight rifle types frr / smg / rl have no idle of their own); Sticky Detonator firing rows from the
+Concussion Rifle (FIRING_DONORS); the Gravity Hammer kept out (EXCLUDED_BY_GAME) until a hammer test;
+spares only from other missions' characters (SPARE_LOOSE_GAMES). Species: Grunt, Jackal, Elite,
+Knight (+ Marine allies); Crawlers / Watchers / Hunters / Spartans not armed. Dry runs: Composer --
+121 cells, Grunts taught rifles in the AR pose, Jackals launchers / turrets as the BR, shieldless
+Jackal / Major / Ranger-shield clones; Forerunner -- Knights hold their own rifles, launchers in the
+rocket pose, turrets + grip. Halo 3 / ODST / Reach dry runs unchanged. Enhancer: ARMED_ENEMIES /
+ARMED_OPTIONS 'Halo 4', h4_enemy_weapon_cards / h4_armed_all_weapons in the Halo 4 box.
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?
