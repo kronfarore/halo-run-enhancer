@@ -822,6 +822,49 @@ part below that). No 13-level rebuild until the user says so. Do NOT write the n
 > of Halo 1, not a rule); (5) the Covenant HUD: H2 ICON RULE and meter as for the Spike Rifle.
 > Then the COMMON DONE of "Parallel step 3", "B2: what the Needle Rifle taught" last.
 
+### Step 4: B3 Plasma Repeater ALONE (prepared 2026-11-21)
+
+User, 2026-11-21: "DMR and Needle Rifle are done. Only stage one port next." So this is ONE session, with nothing else
+porting on the H2 kit: the preface of "Running ports in parallel" still applies, because the kit lock and the shared
+records do not change, but no other weapon session is running. The DMR session's follow-ups are finished (all seven
+wave-A ports: model_offset, fine weld, checked on both species 2026-11-20). The 13-level rebuild has still NOT run.
+
+| session | weapon | test levels (`--level` on EVERY h2_port_test_map run) |
+|---|---|---|
+| 1 | B3 Plasma Repeater | 03a_oldmombasa, Outskirts (Chief, Marines) + 04a_gasgiant, The Arbiter |
+
+COMMON READING: as "Parallel step 3", plus "B1: what the DMR taught" (its six points apply from the start: fine_weld,
+model_offset, the hand check, scope size, split reload sounds, ask for the source clip) and "B2: what the Needle Rifle
+taught" (the Armed-level rule: species NEAR the start, Flood and Sentinels from a level that has them), H1_PORT_PLAN "B3:
+what the Plasma Repeater taught" and PORTING "Halo 1: the Plasma Repeater", memory h2-dmr-port, h2-needle-rifle-port,
+h2-fp-weapon-offset-gun-only, h2-tool-render-weld. COMMON DONE: as "Parallel step 3", "B3: what the Plasma Repeater
+taught" last.
+
+### The Plasma Repeater (B3), filled in -- ALONE
+
+> [PREFACE: the "Running ports in parallel" rules (kit lock, shared records, one test level at a time), with no other
+> port session running; your levels = Outskirts (03a_oldmombasa, Chief) and The Arbiter (04a_gasgiant)]
+> Port the PLASMA REPEATER into Halo 2 (H2_PORT_PLAN.md wave B, #B3, "Step 4"). Source: Halo Reach,
+> `objects\weapons\rifle\plasma_repeater\plasma_repeater` (HREK), on the DMR's Reach route (`b1_reach_route.md` in the
+> shared notes folder, PORTING "Halo 2: the DMR, wave B1").
+> Your config: ports_h2/plasma_repeater.py (a stub). Reserved: prefix `rp2`, glyph U+E145 (DECIMAL 57669),
+> `objects\weapons\rifle\plasma_repeater`, effects `effects\objects\weapons\rifle\plasma_repeater`, FP graph
+> `weapons\rifle\fp_plasma_repeater\fp_plasma_repeater`, HUD `ui\hud\plasma_repeater` + `plasma_repeater_*`, sounds
+> `sound\weapons\plasma_repeater_port`, catalog name `Plasma Repeater`.
+> STEP 4a WITH ME first: candidates in the config (provisional the Plasma Rifle, which the Elite carries in both games;
+> alternative the Plasma Pistol; peers Plasma Rifle, Brute Plasma Rifle, SMG, Needler). Halo 1's decision is in its
+> "B3".
+> NEW for this port: (1) THE HEAT: the rate FALLS with heat (15 -> 3 a second), and Reach's heat per round reads 0, so
+> find where the heat lives (a barrel heat function, heat generated per second) before the ratio table. Halo 2's
+> trigger ramps over held time (the Plasma Rifle's 6 -> 9): approximate the fall, never skip it, and record what is
+> lost; (2) the MANUAL VENT: Reach's reload-key vent has no Halo 2 twin (the Beam Rifle's and the Spartan Laser's
+> heat lessons), so approximate it or say why it cannot be done, a question for me; (3) BATTERY + HEAT, no magazine:
+> the donor is the Plasma Rifle (spew, heat, battery, dual-wield flag cleared, two-handed); its heat/battery meter
+> (the Flamethrower's and the Laser's meter traps); (4) the heat GLOW of the FP model (memory
+> h1-glow-follows-weapon-state, an observation of Halo 1); (5) Armed: the Elites' weapon, so the Elite rows read
+> directly.
+> Then the COMMON DONE of "Step 4", "B3: what the Plasma Repeater taught" last.
+
 ## Hand-off prompt for a weapon session
 
 > Port the <WEAPON> into Halo 2 (H2_PORT_PLAN.md, wave <X>, #<n>). Source: <game>, `<tag>`.
