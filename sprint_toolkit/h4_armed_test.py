@@ -200,8 +200,16 @@ def build(level='m80_delta'):
 #: Grunt DMR (taught: a type copied in the AR pose), Jackal Rocket Launcher (taught as the BR +
 #: the shieldless clone / major with threshold -1), Elite Sticky Detonator (borrowed Concussion Rifle
 #: firing rows), Knight Fuel Rod (taught in the Rocket Launcher pose; the class-'any' actions rule)
-SHIPPED = {'Grunt': 'storm_dmr', 'Jackal': 'storm_rocket_launcher', 'Elite': 'storm_sticky_detonator_pve',
-           'Knight': 'storm_fuel_rod_cannon'}
+SHIPPED_V2 = {'Grunt': 'storm_dmr', 'Jackal': 'storm_rocket_launcher', 'Elite': 'storm_sticky_detonator_pve',
+              'Knight': 'storm_fuel_rod_cannon'}
+#: boot 2 RESULT (2026-11-21): all four hold and fire (Knight Fuel Rod, Grunt DMR, Elite Sticky Detonator,
+#: shieldless Jackal Rocket) -> the shipped Halo 4 pass works. Boot 3: the pairs not yet seen -- the
+#: turrets (taught + grip marker), the SAW, the Railgun. (U9 answered offline: the gate itself refuses
+#: the hammer for Elites -- their 'any' hammer set has no idle -- matching boot 1's unarmed Elites; it
+#: stays EXCLUDED.)
+SHIPPED = {'Grunt': 'storm_lmg', 'Jackal': 'storm_machinegun_turret', 'Elite': 'storm_rail_gun_pve',
+           'Knight': 'storm_plasma_turret'}
+HAMMER_TEST = False
 
 
 def build_shipped(level='m30_cryptum'):
@@ -215,6 +223,8 @@ def build_shipped(level='m30_cryptum'):
     cards = {e: {tags[w]: 1.0} for e, w in SHIPPED.items() if w in tags}
     for e, w in SHIPPED.items():
         report.append('  %-7s -> %s%s' % (e, w, '' if w in tags else '  (NOT IN THIS MAP)'))
+    if HAMMER_TEST:
+        ew.EXCLUDED_BY_GAME = dict(ew.EXCLUDED_BY_GAME, **{GAME: ()})       # test only: the hammer goes out
     for r in ew.apply(m, hp, {'cards': cards}, game=GAME):
         report.append('%s%s | %s | %s' % ('' if r.get('ok') else 'FAILED ', r.get('tag'), r.get('field'),
                                          r.get('new') or r.get('reason')))
