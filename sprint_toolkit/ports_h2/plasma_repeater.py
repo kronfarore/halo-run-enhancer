@@ -9,7 +9,7 @@ PORT = {
     'wave': 'B3',
     'name': 'Plasma Repeater',
     'source': 'Halo Reach',
-    'status': 'reserved',
+    'status': 'in progress',
     'source_tag': 'objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater',
     'reservations': {
         'message_prefix': 'rp2',
