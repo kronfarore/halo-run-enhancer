@@ -108,10 +108,15 @@ def main():
         if r['field'] in OVERRIDES:
             # a value, or {'value': v, 'note': why} (the Flamethrower's user-recalibrated rows)
             ov = OVERRIDES[r['field']]
+            orig = r.get('original')
             if isinstance(ov, dict):
                 note = ov.get('note')
+                # 'original' (opt-in, the Plasma Repeater B3): the Original box writes each row's `original`
+                # (weapon_ports.active_ports) -- a table original read off a source FIELD its functions
+                # override (Reach's heat) or an enum numbered differently in the source game must be set here
+                orig = ov.get('original', orig)
                 ov = ov['value']
-            r = dict(r, balanced=ov)
+            r = dict(r, balanced=ov, original=orig)
         row = {'class': key[0], 'tag': PORT_TAGS[key], 'field': r['dst_field'],
                'block': r.get('dst_block'),
                'value': round(float(r['balanced']), 6) if isinstance(r['balanced'], float)

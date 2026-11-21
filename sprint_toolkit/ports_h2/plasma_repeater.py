@@ -557,11 +557,14 @@ PORT = {
                       (('proj', PRW + r'\projectiles\plasma_rifle_bolt'), RP + r'\projectiles\plasma_repeater_bolt'),
                       (('jpt!', PRW + r'\damage_effects\plasma_rifle_bolt'), DM + r'\plasma_repeater_bolt')],
         'shared': [('jpt!', r'objects\weapons\damage_effects\strike_melee')],
+        # 'original' too: the Original box writes each row's original (the table's are Reach's overridden fields)
         'value_overrides': {
-            'Heat Recovery Threshold': {'value': 0.1, 'note': "approximation A (user 4a): Reach's 0 never leaves an overheat"},
-            'Heat Loss Per Second': {'value': 0.25, 'note': "approximation A: Reach's cold loss (its function; the 0.0333 field is overridden)"},
-            'Overheated Heat Loss Per Second': {'value': 0.36, 'note': "approximation A: the overheat = Reach's 2.5 s vent (0.9 / 0.36)"},
-            'Heat Generated Per Round': {'value': 0.0915, 'note': 'approximation A: overheats on round 15 at 1.48 s (Reach full on 14-15)'},
+            'Heat Recovery Threshold': {'value': 0.1, 'original': 0.1, 'note': "approximation A (user 4a): Reach's 0 never leaves an overheat"},
+            'Heat Loss Per Second': {'value': 0.25, 'original': 0.25, 'note': "approximation A: Reach's cold loss (its function; the 0.0333 field is overridden)"},
+            'Overheated Heat Loss Per Second': {'value': 0.36, 'original': 0.36, 'note': "approximation A: the overheat = Reach's 2.5 s vent (0.9 / 0.36)"},
+            'Heat Generated Per Round': {'value': 0.0915, 'original': 0.0915, 'note': 'approximation A: overheats on round 15 at 1.48 s (Reach full on 14-15)'},
+            # Reach's firing noise 4 is its 'loud'; Halo 2 numbers its enum differently (4 = quiet): the PR's loud (2)
+            'Firing Noise': {'value': 2, 'original': 2, 'note': "Halo 2's loud (Reach's 4 is another enum)"},
         },
         'fp_animations': r'objects\characters\*\fp\weapons\rifle\fp_plasma_repeater\fp_plasma_repeater',
         'reload_mult': None,

@@ -11625,9 +11625,10 @@
      "tag": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
      "field": "Firing Noise",
      "block": "Barrels",
-     "value": 2.0,
+     "value": 2,
      "card": "Firing Noise",
-     "original": 4.0,
+     "original": 2,
+     "note": "Halo 2's loud (Reach's 4 is another enum)",
      "index": "all"
     },
     {
@@ -11721,7 +11722,7 @@
      "block": null,
      "value": 0.1,
      "card": "Heat Threshold",
-     "original": 0.0,
+     "original": 0.1,
      "note": "approximation A (user 4a): Reach's 0 never leaves an overheat"
     },
     {
@@ -11731,7 +11732,7 @@
      "block": null,
      "value": 0.25,
      "card": "Heat Loss",
-     "original": 0.03333999961614609,
+     "original": 0.25,
      "note": "approximation A: Reach's cold loss (its function; the 0.0333 field is overridden)"
     },
     {
@@ -11741,7 +11742,7 @@
      "block": null,
      "value": 0.36,
      "card": "Heat Loss",
-     "original": 0.0,
+     "original": 0.36,
      "note": "approximation A: the overheat = Reach's 2.5 s vent (0.9 / 0.36)"
     },
     {
@@ -11751,7 +11752,7 @@
      "block": "Barrels",
      "value": 0.0915,
      "card": "Heat Per Round",
-     "original": 0.0,
+     "original": 0.0915,
      "note": "approximation A: overheats on round 15 at 1.48 s (Reach full on 14-15)"
     },
     {
