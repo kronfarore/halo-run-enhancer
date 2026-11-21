@@ -214,8 +214,18 @@ SHIPPED_V3 = {'Grunt': 'storm_lmg', 'Jackal': 'storm_machinegun_turret', 'Elite'
 #: Knights kept VANILLA weapons with the Plasma Turret (a Weapon List row onto the class's 'any' type --
 #: ACTION_ANY now needs a type named for the weapon). Boot 4: Grunt SAW again (the AR pose now),
 #: Knight Plasma Turret again (its own type now), Jackal Plasma Turret, Elite Spartan Laser (unseen)
-SHIPPED = {'Grunt': 'storm_lmg', 'Jackal': 'storm_plasma_turret', 'Elite': 'storm_spartan_laser',
-           'Knight': 'storm_plasma_turret'}
+SHIPPED_V4 = {'Grunt': 'storm_lmg', 'Jackal': 'storm_plasma_turret', 'Elite': 'storm_spartan_laser',
+              'Knight': 'storm_plasma_turret'}
+#: boot 4 RESULT (2026-11-21): Jackal Plasma Turret good; Elite Spartan Laser fires, aims a little off
+#: (accepted, user); Grunt SAW unchanged -- level at idle, aims up only when firing (accepted, user);
+#: Knights STILL no turret. Both turrets carry weap +0x2A0 bit 8 'Support Weapon', the launchers
+#: Knights do carry not. Boot 5 (user: one experiment boot): the Plasma Turret's Support Weapon flag
+#: CLEARED on this test map only (knowledge -- shipping it would change the player's turret); the rest
+#: unseen pairs
+SHIPPED = {'Grunt': 'storm_forerunner_incineration_launcher', 'Jackal': 'storm_spartan_laser',
+           'Elite': 'storm_machinegun_turret', 'Knight': 'storm_plasma_turret'}
+CLEAR_SUPPORT = ('storm_plasma_turret',)       # weap +0x2A0 bit 8
+WEAP_FLAGS2, SUPPORT_BIT = 0x2A0, 1 << 8
 HAMMER_TEST = False
 
 
@@ -235,6 +245,12 @@ def build_shipped(level='m30_cryptum'):
     for r in ew.apply(m, hp, {'cards': cards}, game=GAME):
         report.append('%s%s | %s | %s' % ('' if r.get('ok') else 'FAILED ', r.get('tag'), r.get('field'),
                                          r.get('new') or r.get('reason')))
+    for leaf in CLEAR_SUPPORT:
+        for p, t in m.find_tags('weap', '*'):
+            if p.lower().rsplit(BS, 1)[-1] == leaf:
+                v = m.u32(t + WEAP_FLAGS2)
+                struct.pack_into('<I', m.data, t + WEAP_FLAGS2, v & ~SUPPORT_BIT)
+                report.append('EXPERIMENT: %s Support Weapon flag %s -> cleared' % (leaf, bool(v & SUPPORT_BIT)))
     god_and_cheat(m, report)
     m.save(out)
     print('\n'.join(report))
