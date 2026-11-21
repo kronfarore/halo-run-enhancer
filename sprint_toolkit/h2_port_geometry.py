@@ -165,7 +165,9 @@ def h3_convert(g, rel, world):
     dropped; Bungie's name SYMBOLS may follow, e.g. `=?` on the BR's counter digits},
     regions {H2 material: region}, permutation / region (FP), world_permutation /
     world_region (what the world .model's variants name; default 'standard'), markers
-    {Halo 3 marker: H2 name} (unlisted markers dropped), muzzle_drop, ground_point."""
+    {Halo 3 marker: H2 name, or a LIST of H2 names = one per instance in the source's order, None in
+    the list drops that instance (the Plasma Repeater's two staggered muzzles, B3)} (unlisted markers
+    dropped), muzzle_drop, ground_point."""
     import h4_rm
     import h1_fp_retarget
     import h3_rm_to_jms as H3
@@ -233,8 +235,13 @@ def h3_convert(g, rel, world):
                 out.tris.append((src_mat[part['material']], (base + a, base + b, base + c)))
     if len(out.tris) < g.get('min_tris', 1000):
         raise SystemExit('only %d triangles from %s' % (len(out.tris), rel))
+    seen = {}
     for m in rm['markers']:
         nm = g.get('markers', {}).get(m['name'])
+        if isinstance(nm, (list, tuple)):
+            k = seen.get(m['name'], 0)
+            seen[m['name']] = k + 1
+            nm = nm[k] if k < len(nm) else None
         if nm is None:
             continue
         pos = [c * UNITS for c in m['pos']]
