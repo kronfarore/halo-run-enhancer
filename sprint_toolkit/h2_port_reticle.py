@@ -185,6 +185,44 @@ def h3_compose(donor):
             px = (px + px[:, ::-1] + px[::-1] + px[::-1, ::-1]) / 4.0
             art = Image.fromarray(np.clip(np.round(px), 0, 255).astype('uint8'), 'RGBA')
         reg = (c, c)
+    if H3_ART.get('quad') or H3_ART.get('spokes'):
+        # (the Plasma Repeater, B3) `quad` (cx, cy, gain): the sprite is ONE QUARTER of a ring (Reach's
+        # plasma_carbine crosshair #3, its top-left arc) whose centre sits at (cx, cy) sprite px -- mirrored
+        # four ways about that point, its alpha x gain (Reach draws the ring faint). `spokes` [(sequence,
+        # scale, radius, [angles])]: a sprite of the same sheet whose tip points +x (#33, a wedge), scaled,
+        # turned to point AT the centre and placed `radius` sprite px out at each angle (deg, 0 = right,
+        # 90 = down) -- Halo 1's B3 reticle layers, all on one image before the ratio rule sizes it
+        import math
+        q = H3_ART.get('quad')
+        parts = []
+        if q:
+            cx, cy, gain = q
+            px = np.asarray(art.convert('RGBA')).astype(float)
+            px[:, :, 3] *= gain
+            quarter = Image.fromarray(np.clip(px, 0, 255).astype('uint8'), 'RGBA')
+            w0, h0 = quarter.size
+            parts += [(quarter, (-cx, -cy)), (quarter.transpose(Image.FLIP_LEFT_RIGHT), (cx - w0, -cy)),
+                      (quarter.transpose(Image.FLIP_TOP_BOTTOM), (-cx, cy - h0)),
+                      (quarter.transpose(Image.ROTATE_180), (cx - w0, cy - h0))]
+        for seq, scale, radius, angles in H3_ART.get('spokes', ()):
+            sp = sprite(H3_ART['sheet'], seq)[0].convert('RGBA')
+            sp = sp.resize((max(1, int(round(sp.width * scale))), max(1, int(round(sp.height * scale)))),
+                           Image.LANCZOS)
+            for ang in angles:
+                # the tip (+x) must point back at the centre: direction ang + 180; PIL turns counter-clockwise
+                # on screen (y down), so a screen direction d is rotate(-d)
+                rot = sp.rotate(-(ang + 180.0), resample=Image.BICUBIC, expand=True)
+                ox = radius * math.cos(math.radians(ang)) - rot.width / 2.0
+                oy = radius * math.sin(math.radians(ang)) - rot.height / 2.0
+                parts.append((rot, (ox, oy)))
+        half = int(math.ceil(max(max(abs(o[0]), abs(o[0] + im.width), abs(o[1]), abs(o[1] + im.height))
+                                 for im, o in parts))) + 2 if parts else 0
+        art = Image.new('RGBA', (2 * half, 2 * half), (0, 0, 0, 0))
+        for im, (ox, oy) in parts:
+            layer = im.transform((2 * half, 2 * half), Image.AFFINE, (1, 0, -(half + ox), 0, 1, -(half + oy)),
+                                 Image.BILINEAR)
+            art.alpha_composite(layer)
+        reg = (half, half)
     yard, _ = sprite(H3_ART['sheet'], H3_ART['yardstick'])
     k = _ink(donor) / float(_ink(yard))
     if H3_ART.get('target_ink'):
