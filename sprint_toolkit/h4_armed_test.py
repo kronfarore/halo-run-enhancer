@@ -207,7 +207,14 @@ SHIPPED_V2 = {'Grunt': 'storm_dmr', 'Jackal': 'storm_rocket_launcher', 'Elite': 
 #: turrets (taught + grip marker), the SAW, the Railgun. (U9 answered offline: the gate itself refuses
 #: the hammer for Elites -- their 'any' hammer set has no idle -- matching boot 1's unarmed Elites; it
 #: stays EXCLUDED.)
-SHIPPED = {'Grunt': 'storm_lmg', 'Jackal': 'storm_machinegun_turret', 'Elite': 'storm_rail_gun_pve',
+SHIPPED_V3 = {'Grunt': 'storm_lmg', 'Jackal': 'storm_machinegun_turret', 'Elite': 'storm_rail_gun_pve',
+              'Knight': 'storm_plasma_turret'}
+#: boot 3 RESULT (2026-11-21): Grunt SAW fires but aims UP when firing (the DMR too: the Focus Rifle
+#: port lent its pose -> POSE_PREFER_GAMES); Jackal MG Turret holds well + fires; Elite Railgun fires;
+#: Knights kept VANILLA weapons with the Plasma Turret (a Weapon List row onto the class's 'any' type --
+#: ACTION_ANY now needs a type named for the weapon). Boot 4: Grunt SAW again (the AR pose now),
+#: Knight Plasma Turret again (its own type now), Jackal Plasma Turret, Elite Spartan Laser (unseen)
+SHIPPED = {'Grunt': 'storm_lmg', 'Jackal': 'storm_plasma_turret', 'Elite': 'storm_spartan_laser',
            'Knight': 'storm_plasma_turret'}
 HAMMER_TEST = False
 

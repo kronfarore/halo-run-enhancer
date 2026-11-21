@@ -174,6 +174,9 @@ SPARE_LOOSE_GAMES = ('Halo Reach', 'Halo 4')
 MODEL_GRAPHS_ONLY = ('Halo 4',)
 #: games where a weapon type without an idle takes its actions from the mode's class 'any'
 ACTION_ANY_GAMES = ('Halo 4',)
+#: games whose pose donors go in TEACH_DONORS order (Halo 4 boot 3: the Focus Rifle port, first by
+#: path, gave Grunts a sniper's aim -- the taught DMR / SAW pointed up when firing)
+POSE_PREFER_GAMES = ('Halo 4',)
 HLMT_ANIMATION = 0x20
 #: ODST's own story characters (squad mates, Dare, the Superintendent's avatars) are never armed
 NEVER_WORDS = {'Halo 3: ODST': ('odst', 'dare', 'vergil', 'buck', 'dutch', 'mickey', 'romeo'),
@@ -355,10 +358,13 @@ class Graphs:
                     T = C.get(t)
                     if T and self.idle in T:
                         return True
-                    if T is not None and GAME in ACTION_ANY_GAMES:
+                    if T is not None and t == wname and GAME in ACTION_ANY_GAMES:
                         # (Halo 4) Knights hold their rifles through TYPES (frr, smg, rl ...) with no
                         # idle of their own: the actions come from the mode's class 'any' -- a TYPE
-                        # must exist (Grunt + DMR: none -> unarmed, engine test 2026-11-19)
+                        # NAMED for the weapon must exist (Grunt + DMR: none -> unarmed, engine test
+                        # 2026-11-19; boot 3, 2026-11-21: Plasma Turret Knights reached through the
+                        # class's 'any' type kept their vanilla weapons, the Fuel Rod with its own
+                        # type copy was held)
                         A = (M.get(self.any) or {}).get(self.any)
                         if A and self.idle in A:
                             return True
@@ -960,8 +966,12 @@ def teach(m, hp, graphs, wanted):
                                  'new': "through the graph's own '%s' animations (%d graphs)"
                                  % (base, len(gs))})
                     continue
+            ordered = donors
+            if GAME in POSE_PREFER_GAMES:
+                pref = list(TEACH_DONORS[_kind(m, hp, info)])
+                ordered = sorted(donors, key=lambda d: pref.index(d[0]) if d[0] in pref else len(pref))
             pose = None if base in GRIP_FIX and enemy not in POSE_OK else \
-                _pose_plan(m, graphs, gs, info, donors)
+                _pose_plan(m, graphs, gs, info, ordered)
             if pose:
                 dname, plan = pose
                 for g, cl, copies in plan:
@@ -1010,6 +1020,50 @@ def teach(m, hp, graphs, wanted):
                     if base in GRIP_FIX:
                         grips.append((enemy, tags.get(w.lower(), w), dp, None))
                     break
+            if w in taught.get(enemy, ()) or base not in GRIP_FIX or GAME not in POSE_PREFER_GAMES:
+                continue
+            # (Halo 4 boot 3, 2026-11-21) a turret no Weapon List row can reach (Knights: a row
+            # onto the class's 'any' type kept their vanilla weapon) takes the POSE route after all
+            # -- its own type copied from a same-class donor, the Fuel Rod's route -- plus the grip
+            # -- from a donor of ANY class (TEACH_DONORS order: the Rocket Launcher first), the
+            # weapon re-classed to the donor's class by its Weapon List row
+            # (the Knight rifle class HAS an 'any' type -- with no idle -- so _pose_plan's copy rule,
+            # made for classes without one, would copy nothing: the donor's own type is copied
+            # wherever the donor has one)
+            pose = None
+            for dn in TEACH_DONORS[_kind(m, hp, info)]:
+                di = next((i for d, i in ordered if d == dn), None)
+                if di is None or not all(graphs.holds(g, di['class'], di['name']) for g in gs):
+                    continue
+                plan = []
+                for g in gs:
+                    cl = _eff_class(graphs, g, di)
+                    copies = [(mo, g['where'][(mo, cl, di['name'])]) for mo in (graphs.combat, graphs.any)
+                              if di['name'] in (g['modes'].get(mo, {}).get(cl) or {})
+                              and info['name'] not in g['modes'][mo][cl]]
+                    plan.append((g, cl, copies))
+                if all(c for _g, _cl, c in plan):
+                    pose = (dn, plan)
+                    break
+            if not pose:
+                continue
+            dname, plan = pose
+            for g, cl, copies in plan:
+                if cl != info['class']:
+                    g['wl'][info['name']] = cl
+                    adds.setdefault(id(g), (g, {}))[1][info['name']] = cl
+                for mo, src in copies:
+                    el = bytearray(m.data[src:src + JM_TYPE_ES])
+                    struct.pack_into('<I', el, 0, info['name'])
+                    types.setdefault(g['where'][(mo, cl)], {})[info['name']] = bytes(el)
+                    g['modes'][mo][cl][info['name']] = set(g['modes'][mo][cl][m.u32(src)])
+            if all(graphs.holds(g, info['class'], info['name']) for g, _c, _x in plan):
+                taught.setdefault(enemy, set()).add(w)
+                rows.append({'tag': 'jmad ' + enemy, 'field': 'taught: ' + base, 'ok': True,
+                             'new': 'in the %s pose + grip (%d graphs)' % (dname, len(gs))})
+                dp = by_base.get(dname)
+                if dp:
+                    grips.append((enemy, tags.get(w.lower(), w), dp, 'body'))
     # SORTED (boot 3, 2026-11-04): every stock Weapon List is sorted by the weapon-name string
     # id and the game binary-searches it -- rows appended at the end were found only where the
     # search happened to land on them (Brute Shot yes, Rocket Launcher / turrets no). The whole
