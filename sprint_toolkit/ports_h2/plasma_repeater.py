@@ -2,7 +2,37 @@ r"""Plasma Repeater into Halo 2 (H2_PORT_PLAN.md wave B (Reach), #B3) -- a phase
 reservations, yardstick candidates, the proposed donor and the AI source. The port session fills
 the pipeline sections (ports_h2/__init__.py; ports_h2/saw.py is the complete example) and sets
 'status' to 'in progress' at its start, 'done' at its end.
+
+The port (2026-11-21, alone): Reach's model, textures, Spartan + Elite FP animations and sounds on a clone of
+Halo 2's PLASMA RIFLE (spew, heat + battery, its heat gauge shader, its overheat states and HUD), dual wield
+cleared. Halo 2's Plasma Rifle skeleton (gun, rod_left / wing_left, rod_right / wing_right) is Reach's repeater's
+by name, plus Reach's cylinder and cowl.
 """
+
+RP = r'objects\weapons\rifle\plasma_repeater'       # the source's folder (HREK) AND the port's (H2EK)
+PRW = r'objects\weapons\rifle\plasma_rifle'         # the donor and yardstick (H2EK)
+FX = r'effects\objects\weapons\rifle\plasma_repeater'   # the reserved effects folder
+PRFX = r'effects\objects\weapons\rifle\plasma_rifle'
+R = 'reach:'                                        # an HREK path (reach_tags)
+RM = R + RP + r'\plasma_repeater.render_model'
+H2EK = r'F:\SteamLibrary\steamapps\common\H2EK'
+NEW_HUD = r'ui\hud\bitmaps\new_hud'
+RP_JMS = H2EK + r'\data' + '\\' + RP + r'\render\plasma_repeater.jms'   # the mesh the HUD art is drawn from
+RS = r'data\sound\weapons'                          # source folders in MCC's haloreach sfx.fsb (.info)
+# Reach's weapon nodes -> Halo 2's (the Plasma Rifle's names for the five it shares)
+NODES = {'b_gun': 'gun', 'b_rod_left': 'rod_left', 'b_wing_left': 'wing_left', 'b_rod_right': 'rod_right',
+         'b_wing_right': 'wing_right', 'b_cylinder': 'cylinder', 'b_cowl': 'cowl'}
+NODES_JMS = dict((k, 'frame ' + v) for k, v in NODES.items())
+HOLO = r'objects\weapons\support_high\plasma_launcher\bitmaps\plasma_launcher_holo.bitmap'   # Reach's display atlas
+CC = r'objects\weapons\rifle\covenant_carbine'      # its .model: a Covenant weapon model with NO world graph
+WP = RP + r'\plasma_repeater.weapon'
+PJ = RP + r'\projectiles\plasma_repeater_bolt.projectile'
+DM = RP + r'\damage_effects'
+MAT = r'effects\materials\objects\weapons'
+PR_MAPS = {PRW + r'\bitmaps\plasma_rifle_bump_active_camo': RP + r'\bitmaps\plasma_repeater_bump',
+           PRW + r'\bitmaps\plasma_rifle_bump': RP + r'\bitmaps\plasma_repeater_bump',
+           PRW + r'\bitmaps\plasma_rifle': RP + r'\bitmaps\plasma_repeater'}
+import os as _os
 
 PORT = {
     'order': 8,
@@ -54,6 +84,369 @@ PORT = {
                       "on at 3/s when hot (Halo 2 overheats instead), Reach's slow hot cooling (0.06/s; one loss 0.25)"),
         },
     },
+    # step 1 -- h2_port_geometry.py kind 'h3' with `reach:` paths (the DMR's route): Reach's ONE render model is world
+    # AND first person; 7 nodes, 1 mesh, 12 parts, 7 materials. Markers onto the Plasma Rifle's names (its effects
+    # and attachments name them): Reach's two STAGGERED muzzles (z 0.005 first, 0.048 second) -> the PR's lower
+    # `primary_trigger1` (lower_fire) and upper `primary_trigger` (upper_fire); fx_vent x2 -> `vent` (the
+    # overheated effect); firing_light -> `muzzle_flash` (the PR's light attachment); the grip (right_hand, the
+    # origin) -> `flashlight` (Halo 2's FP light hangs on the FP model's marker: the Arbiter-flashlight rule);
+    # left_hand_spartan -> the PR's `left_hand_mc`. No `heat_flare` markers: Reach has no lens flares there
+    'geometry': {
+        'kind': 'h3',
+        'world_rm': RM, 'fp_rm': RM,
+        'data_dir': RP,
+        'world': 'plasma_repeater', 'fp': 'fp_plasma_repeater',
+        'materials': {'plasma_repeater_metal': 'plasma_repeater_metal', 'plasma_repeater_rubber': 'plasma_repeater_rubber',
+                      'plasma_repeater_shell': 'plasma_repeater_shell', 'plasma_repeater_indicator': 'plasma_repeater_indicator',
+                      'plasma_repeater_display': 'plasma_repeater_display', 'plasma_repeater_gauge': 'plasma_repeater_gauge',
+                      'plasma_repeater_pilot': 'plasma_repeater_pilot'},
+        'world_permutation': 'default', 'world_region': 'default',   # the PR .model / render model's names
+        'node_names': NODES_JMS,
+        'markers': {'primary_trigger': ['primary_trigger1', 'primary_trigger'], 'fx_vent': 'vent',
+                    'firing_light': 'muzzle_flash', 'right_hand': 'flashlight',
+                    'left_hand': 'left_hand', 'left_hand_elite': 'left_hand_elite', 'left_hand_spartan': 'left_hand_mc'},
+        'muzzle_drop': 0.0,
+        'ground_point': {'rot': (0.7071068883, -1.8e-09, -7.42e-08, -0.7071067095)},   # the SMG's (the AR's)
+        'render': ['plasma_repeater', r'plasma_repeater\fp_plasma_repeater'],
+        'fine_weld': True,                    # the DMR's boot 1: tool's 1/512 weld drops small triangles
+    },
+
+    # step 2 -- kind 'h3' with `reach:` bitmaps, 1024 -> 512 (the DMR's). Reach's materials: metal (heat-tinted:
+    # no Halo 2 twin, the PR's carapace env instead), shell (its illum map plasma_repeater_illum is NOT in HREK:
+    # off, Halo 1's reading), rubber, the GAUGE (a meter: fill + colour by heat), the DISPLAY (holo lines whose
+    # colour follows heat), the INDICATOR (teal halogram) and the PILOT (a noise halogram flame).
+    # THE GAUGE = Halo 2's own Plasma Rifle heat gauge (meter_active_camo: meter value AND on-colour by `heat`,
+    # what Halo 1 had to build from a ramp + a multiply copy). Its fill order lives in the METER map's alpha, its
+    # shape in the ALPHA map (the Flamethrower's boot 23): the meter map a linear u ramp over Reach's lit window
+    # (its own alpha ramp is 0 over the left half: Halo 1's gradient_range 0.02..0.95), the shape Reach's gauge RGB.
+    # THE DISPLAY = the same template held fully lit (meter value 1: `weapon` function_edits), shape the holo
+    # atlas (plasma_launcher_holo, the display's UVs cover it), so only its colour moves with heat (Halo 1's look)
+    'textures': {
+        'kind': 'h3',
+        'rel': RP + r'\bitmaps',
+        'shaders_dir': RP + r'\shaders',
+        'bump_gain': 1.0,
+        'bitmaps': [(R + RP + r'\bitmaps\plasma_repeater_diffuse.bitmap', 'plasma_repeater', PRW + r'\bitmaps\plasma_rifle', 'color', (512, 512)),
+                    (R + RP + r'\bitmaps\plasma_repeater_normal.bitmap', 'plasma_repeater_bump', PRW + r'\bitmaps\plasma_rifle_bump', 'bump', (512, 512)),
+                    (None, 'plasma_repeater_gauge_meter', PRW + r'\bitmaps\plasma_rifle_heat_gauge',
+                     ('gradient', 'u', False, (0.02, 0.95), 'alpha'), (128, 32)),
+                    (R + RP + r'\bitmaps\plasma_repeater_gauge.bitmap', 'plasma_repeater_gauge_alpha', PRW + r'\bitmaps\plasma_rifle_heat_gauge_alpha',
+                     ('alpha_from', R + RP + r'\bitmaps\plasma_repeater_gauge.bitmap', 0), (256, 64)),
+                    # the display's meter map: alpha 0 everywhere (a ramp clipped below its window) -- lit at value 1
+                    (None, 'plasma_repeater_display_meter', PRW + r'\bitmaps\plasma_rifle_heat_gauge',
+                     ('gradient', 'u', False, (2.0, 3.0), 'alpha'), (16, 16)),
+                    (R + HOLO, 'plasma_repeater_display_alpha', PRW + r'\bitmaps\plasma_rifle_heat_gauge_alpha',
+                     ('alpha_from', R + HOLO, 3), None),
+                    # the indicator: the Needle Rifle's indicator recipe (the holo tinted Reach's teal 114, 255, 215 at
+                    # 1/4, Halo 1's level), additive
+                    (R + HOLO, 'plasma_repeater_indicator', r'objects\weapons\rifle\shotgun\bitmaps\illum_sights',
+                     ('tint', (0.25 * 114 / 255.0, 0.25, 0.25 * 215 / 255.0), 0), None)],
+        'shaders': [
+            ('plasma_repeater_metal', PRW + r'\shaders\plasma_rifle_main', PR_MAPS),
+            ('plasma_repeater_shell', PRW + r'\shaders\plasma_rifle_main', PR_MAPS),
+            ('plasma_repeater_rubber', PRW + r'\shaders\plasma_rifle_dull', PR_MAPS),
+            # the alpha FIRST (the Flamethrower's: a repoint refuses two records of one length)
+            ('plasma_repeater_gauge', PRW + r'\shaders\plasma_rifle_gauge',
+             {PRW + r'\bitmaps\plasma_rifle_heat_gauge_alpha': RP + r'\bitmaps\plasma_repeater_gauge_alpha',
+              PRW + r'\bitmaps\plasma_rifle_heat_gauge': RP + r'\bitmaps\plasma_repeater_gauge_meter'}),
+            ('plasma_repeater_display', PRW + r'\shaders\plasma_rifle_gauge',
+             {PRW + r'\bitmaps\plasma_rifle_heat_gauge_alpha': RP + r'\bitmaps\plasma_repeater_display_alpha',
+              PRW + r'\bitmaps\plasma_rifle_heat_gauge': RP + r'\bitmaps\plasma_repeater_display_meter'}),
+            ('plasma_repeater_indicator', r'objects\weapons\fixed\plasma_cannon\shaders\plasma_illum',
+             {r'objects\weapons\fixed\plasma_cannon\bitmaps\plasma_cannon': RP + r'\bitmaps\plasma_repeater_indicator'}),
+            # the pilot: Bungie's own plasma current (animated noise, the PR's arc), Reach's halogram noise flame
+            ('plasma_repeater_pilot', PRW + r'\shaders\plasma_rifle_current', {}),
+        ],
+        'report_rows': [(RP + r'\bitmaps\plasma_repeater_bump', 'the port'), (PRW + r'\bitmaps\plasma_rifle_bump', 'Bungie Plasma Rifle')],
+    },
+
+    # step 3 -- h2_port_weapon.py: the H2 PLASMA RIFLE's weapon (spew, heat + battery, its overheat effect and FP
+    # overheat states, its HUD) with its bolt, firing / misfire / overheat damage, both firing effects, the trail,
+    # the muzzle light and the material effects cloned. The .model is the COVENANT CARBINE's: the PR's names a
+    # world graph whose 1-frame idle holds ITS rods near the origin -- the repeater shares the node names (rod_left
+    # ...) but Reach's rods sit 12 cm forward, so that idle would tear them off; the Carbine's .model has no graph
+    # (as the Needle Rifle's, DMR's, Laser's). The PR's two prong LENS FLARES (`heat_flare` markers Reach has none
+    # of) scale by `ready`, used by nothing else in the tag -> `primary_charged` (0 on a spew trigger): off
+    'weapon': {
+        'weapon': WP,
+        'clones': [(PRW + r'\plasma_rifle.weapon', WP),
+                   (CC + r'\covenant_carbine.model', RP + r'\plasma_repeater.model'),
+                   (PRW + r'\projectiles\plasma_rifle_bolt.projectile', PJ),
+                   (PRW + r'\damage_effects\plasma_rifle_bolt.damage_effect', DM + r'\plasma_repeater_bolt.damage_effect'),
+                   (PRW + r'\damage_effects\plasma_rifle_upper_trigger.damage_effect', DM + r'\plasma_repeater_upper_trigger.damage_effect'),
+                   (PRW + r'\damage_effects\plasma_rifle_lower_trigger.damage_effect', DM + r'\plasma_repeater_lower_trigger.damage_effect'),
+                   (PRW + r'\damage_effects\plasma_rifle_misfire.damage_effect', DM + r'\plasma_repeater_misfire.damage_effect'),
+                   (PRW + r'\damage_effects\plasma_rifle_overheat.damage_effect', DM + r'\plasma_repeater_overheat.damage_effect'),
+                   (PRFX + r'\upper_fire.effect', FX + r'\upper_fire.effect'),
+                   (PRFX + r'\lower_fire.effect', FX + r'\lower_fire.effect'),
+                   (PRFX + r'\overheated.effect', FX + r'\overheated.effect'),
+                   (PRFX + r'\plasma_streak.contrail', FX + r'\plasma_repeater_streak.contrail'),
+                   (PRFX + r'\plasma_streak.light_volume', FX + r'\plasma_repeater_streak.light_volume'),
+                   (PRW + r'\plasma_rifle_muzzle_flash.light', RP + r'\plasma_repeater_muzzle_flash.light'),
+                   (MAT + r'\plasma_rifle.material_effects', FX + r'\plasma_repeater.material_effects'),
+                   (MAT + r'\plasma_rifle.material_effects', FX + r'\plasma_repeater_bolt.material_effects')],
+        # step 4a (user): the bolt is Reach's plasma_fast -- Halo 2 has that group (its own rows)
+        'string_id_renames': [(WP, {'ready': 'primary_charged'}),
+                              (DM + r'\plasma_repeater_bolt.damage_effect', {'plasma_slow': 'plasma_fast'})],
+        'wiring': [
+            (WP, 'hlmt', PRW + r'\plasma_rifle', RP + r'\plasma_repeater', 'world model'),
+            (RP + r'\plasma_repeater.model', 'mode', CC + r'\covenant_carbine', RP + r'\plasma_repeater', 'the world render model', {'nth': 0}),
+            (WP, 'mode', PRW + r'\fp_plasma_rifle\fp_plasma_rifle', RP + r'\fp_plasma_repeater\fp_plasma_repeater',
+             'first person model, Master Chief', {'nth': 0}),
+            (WP, 'mode', PRW + r'\fp_plasma_rifle\fp_plasma_rifle', RP + r'\fp_plasma_repeater\fp_plasma_repeater',
+             'first person model, Dervish (one model)', {'nth': 0}),
+            (WP, 'jmad', r'objects\characters\masterchief\fp\weapons\rifle\fp_plasma_rifle\fp_plasma_rifle',
+             r'objects\characters\masterchief\fp\weapons\rifle\fp_plasma_repeater\fp_plasma_repeater', "Master Chief FP graph: Reach's own animations"),
+            (WP, 'jmad', r'objects\characters\dervish\fp\weapons\rifle\fp_plasma_rifle\fp_plasma_rifle',
+             r'objects\characters\dervish\fp\weapons\rifle\fp_plasma_repeater\fp_plasma_repeater', "Dervish FP graph: Reach's Elite animations"),
+            (WP, 'proj', PRW + r'\projectiles\plasma_rifle_bolt', RP + r'\projectiles\plasma_repeater_bolt', 'the bolt'),
+            (WP, 'jpt!', PRW + r'\damage_effects\plasma_rifle_upper_trigger', DM + r'\plasma_repeater_upper_trigger', 'firing damage (upper)'),
+            (WP, 'jpt!', PRW + r'\damage_effects\plasma_rifle_lower_trigger', DM + r'\plasma_repeater_lower_trigger', 'firing damage (lower)'),
+            # two copies, and a third record of the same length: one at a time (`every` refuses)
+            (WP, 'jpt!', PRW + r'\damage_effects\plasma_rifle_misfire', DM + r'\plasma_repeater_misfire', 'misfire damage (upper)', {'nth': 0}),
+            (WP, 'jpt!', PRW + r'\damage_effects\plasma_rifle_misfire', DM + r'\plasma_repeater_misfire', 'misfire damage (lower)', {'nth': 0}),
+            (WP, 'effe', PRFX + r'\upper_fire', FX + r'\upper_fire', 'firing effect, upper muzzle'),
+            (WP, 'effe', PRFX + r'\lower_fire', FX + r'\lower_fire', 'firing effect, lower muzzle'),
+            (WP, 'effe', PRFX + r'\overheated', FX + r'\overheated', 'the overheat (the vent)'),
+            (WP, 'ligh', PRW + r'\plasma_rifle_muzzle_flash', RP + r'\plasma_repeater_muzzle_flash', 'the muzzle light'),
+            (WP, 'foot', MAT + r'\plasma_rifle', FX + r'\plasma_repeater', 'material effects (the weapon)'),
+            (FX + r'\overheated.effect', 'jpt!', PRW + r'\damage_effects\plasma_rifle_overheat', DM + r'\plasma_repeater_overheat', 'overheat damage'),
+            (PJ, 'jpt!', PRW + r'\damage_effects\plasma_rifle_bolt', DM + r'\plasma_repeater_bolt', 'impact damage'),
+            (PJ, 'foot', MAT + r'\plasma_rifle', FX + r'\plasma_repeater_bolt', 'impact material effects (the bolt)'),
+            # the trail and the light volume pool ONE path (two classes): each by nth, tool-verified
+            (PJ, 'cont', PRFX + r'\plasma_streak', FX + r'\plasma_repeater_streak', 'the trail', {'nth': 0}),
+            (PJ, 'MGS2', PRFX + r'\plasma_streak', FX + r'\plasma_repeater_streak', 'the light volume', {'nth': 0}),
+        ],
+        'shared': [(r'effects\lens_flares\plasma_rifle', "the PR's prong flares: kept, scaled by primary_charged (0) = off"),
+                   (r'effects\objects\weapons\pistol\plasma_pistol\misfire', "the PR's misfire effect (Bungie's)"),
+                   (r'objects\weapons\damage_effects\strike_melee, smash_melee(_response)',
+                    "Reach names strike_melee too: Halo 2's own, shared by every weapon"),
+                   (r'effects\impact\plasma_slow\*', "the bolt's per-material detonation effects (Bungie's, until the look step)")],
+    },
+
+    # step 4 -- h2_port_numbers.py: REACH's OWN values (DEFAULT = Original, boot 1) through approximation A (the heat
+    # rows: Reach x the Plasma Rifle ratio 1, so the same in Balanced); the balanced rows are the catalog's.
+    # h3_weapon_values.py --kit reach rifle\plasma_repeater\plasma_repeater
+    'numbers': {
+        'numbers': [
+            # the rate FALLS over the held time (approximation A: fitted to Reach's heat^1.5 curve)
+            (WP, 'rounds per second', 'barrels', 0, 0, [15.0, 3.0]),
+            (WP, 'acceleration time', 'barrels', 0, 0, 1.6),
+            (WP, 'deceleration time', 'barrels', 0, 0, 3.6),
+            # heat: overheats on round 15 at 1.48 s held; the overheat = Reach's 2.5 s vent (0.9 / 0.36)
+            (WP, 'heat generated per round', 'barrels', 0, 0, 0.0915),
+            (WP, 'heat loss per second', '', 0, 0, 0.25),
+            (WP, 'overheated heat loss per second', '', 0, 0, 0.36),
+            # the battery: 200 rounds (Reach 0.005)
+            (WP, 'age generated per round', 'barrels', 0, 0, 0.005),
+            # the single-wield cone (nth 1; the dual copy is unused once dual wield is cleared)
+            (WP, 'error angle', 'barrels', 0, 1, [0.4, 3.0]),
+            (WP, 'autoaim angle', '', 0, 0, 5.0),
+            (WP, 'autoaim range', '', 0, 0, 15.0),
+            (WP, 'magnetism angle', '', 0, 1, 10.0),
+            (WP, 'magnetism range', '', 0, 1, 20.0),
+            # flags'': `can be dual wielded` (bit 22) cleared -- Reach's repeater is two-handed; `cannot fire at
+            # maximum age` + `loop fp firing animation` kept (4327424 -> 133120)
+            (WP, 'flags', '', 0, 2, 133120),
+            # the bolt: 25 -> 35 wu/s, range 100
+            (PJ, 'initial velocity', '', 0, 0, 25.0),
+            (PJ, 'final velocity', '', 0, 0, 35.0),
+            (PJ, 'maximum range', '', 0, 0, 100.0),
+            # 5.834 -> 7 plasma_fast (the group: `weapon` string_id_renames), instantaneous acceleration 0.125
+            (DM + r'\plasma_repeater_bolt.damage_effect', 'damage lower bound', '', 0, 0, 5.834),
+            (DM + r'\plasma_repeater_bolt.damage_effect', 'damage upper bound', '', 0, 0, [5.834, 7.0]),
+            (DM + r'\plasma_repeater_bolt.damage_effect', 'instantaneous acceleration', '', 0, 0, 0.125),
+            (WP, 'first person weapon offset', '', 0, 0, [0.0, 0.0, 0.0]),
+            # step 4b, list 2 / 3: Reach's own (heat illumination 0: its muzzle light does not glow with heat)
+            (WP, 'heat illumination', '', 0, 0, 0.0),
+            (WP, 'illumination recovery time', 'barrels', 0, 0, 0.1),
+            (WP, 'active camo ding', '', 0, 0, 0.25),
+        ],
+        'skipped': [
+            ('heat generated per round function (0.03 a tick)', "Reach's heat lives in functions: approximation A's per-round heat"),
+            ('heat_driven_rate_of_fire (15 -> 3 by heat^1.5)', 'Halo 2 ramps by the held time: the 1.6 s ramp'),
+            ('heat_loss function (0.25 -> 0.06/s)', "one Halo 2 loss: Reach's cold 0.25"),
+            ('manual vent (reload, 2.5 s)', 'no Halo 2 vent (user 4a: no dll vent) -- the overheat stands in'),
+            ('fire recovery time 0.05', 'a 20/s ceiling above the 15/s rate: no effect'),
+        ],
+    },
+
+    # step 5 -- the Carbine's authored hull (its .model is the port's) on the port's own world skeleton
+    'collision': {
+        'donor': CC + r'\covenant_carbine',
+        'port': RP + r'\plasma_repeater',
+        'src': r'covenant_carbine\collision\collision.jms',
+        'out': RP + r'\collision\plasma_repeater.jms',
+        'port_render_jms': RP + r'\render\plasma_repeater.jms',
+        'donor_render_jms': r'covenant_carbine\render\covenant_carbine_L5.jms',
+        'max_growth': 1.25,
+        'nodes_from_render': True,
+    },
+
+    # step 9 -- h2_port_fp_anims.py kind 'reach' (the DMR's route): Reach's OWN FP animations for BOTH species
+    # (Spartan -> masterchief, Elite -> dervish), helpers dropped. THE VENT: Reach's vent_enter 21 / vent_loop 30 /
+    # vent_exit 13 = Halo 2's Plasma Rifle overheat states overheating / overheated / o_h_exit (Halo 1's mapping;
+    # whether Halo 2 loops `overheated` through the 2.5 s overheat: boot 1); throw_vent (with events) =
+    # throw_overheated; the ready also as ready_overheated (the PR has one). Not reproduced: barrel_spin (an
+    # overlay driven by the rate -- no Halo 2 slot), flaps, melee_strike_vent, overheated:melee_strike_1, sprint /
+    # jump / land / fall, ready_initial, Reach's own throw_overheated (no events: throw_vent carries them)
+    'fp_anims': {
+        'kind': 'reach',
+        'species': {
+            'masterchief': {
+                'graph': R + r'objects\characters\spartans\fp\weapons\rifle\fp_plasma_repeater\fp_plasma_repeater.model_animation_graph',
+                'arms_rm': R + r'objects\characters\spartans\fp\fp.render_model',
+                'arms': H2EK + r'\data\!extracted\fp_arms_masterchief\fp_arms.jms',
+                'source': r'objects\characters\masterchief\fp\weapons\rifle\fp_plasma_repeater',
+                # the SMG for its 17 sound slots (the DMR's reason)
+                'seed': r'objects\characters\masterchief\fp\weapons\rifle\fp_smg\fp_smg'},
+            'dervish': {
+                'graph': R + r'objects\characters\elite\fp\weapons\rifle\fp_plasma_repeater\fp_plasma_repeater.model_animation_graph',
+                'arms_rm': R + r'objects\characters\elite\fp\fp.render_model',
+                'arms': H2EK + r'\data\!extracted\fp_arms_dervish\dervish_fp_arms.jms',
+                'source': r'objects\characters\dervish\fp\weapons\rifle\fp_plasma_repeater',
+                'seed': r'objects\characters\dervish\fp\weapons\rifle\fp_smg\fp_smg'},
+        },
+        'weapon_dir': RP + r'\fp_plasma_repeater',
+        'weapon_rm': RM,
+        'weapon_nodes': sorted(NODES.values()),
+        'node_names': NODES,
+        'drop_nodes': ('pedestal', 'aim_pitch', 'aim_yaw', 'l_humerus', 'r_humerus', 'l_radius', 'r_radius',
+                       'l_handguard', 'r_handguard'),
+        'aliases': {'first_person:look': ['first_person:overlays', 'first_person:pitch_and_turn'],
+                    'first_person:ready': ['first_person:ready', 'first_person:ready_overheated']},
+        'rename': {'first_person:vent_enter': 'first_person:overheating',
+                   'first_person:vent_loop': 'first_person:overheated',
+                   'first_person:vent_exit': 'first_person:o_h_exit',
+                   'first_person:throw_vent': 'first_person:throw_overheated'},
+        # the FP position: the DMR's tested placement to start (Reach's repeater sits at the DMR's height: its
+        # first-person weapon offset z -0.002 = the DMR's); the weapon field 0 (the gun-only rule)
+        'model_offset': (-0.005, -0.002, -0.033),
+        'skip': ['first_person:look', 'first_person:accelration_screens', 'first_person:barrel_spin', 'first_person:fall',
+                 'first_person:flaps', 'first_person:jump', 'first_person:land_hard', 'first_person:land_soft',
+                 'first_person:ready_initial', 'first_person:melee_strike_vent', 'first_person:overheated:melee_strike_1',
+                 'first_person:throw_overheated', 'first_person:sprint_enter', 'first_person:sprint_exit',
+                 'first_person:sprint_loop', 'first_person:sprint_loop_airborne',
+                 # the ELITE graph also ships its own overheating 59 / overheated 30 / o_h_exit 37 (the names the vent
+                 # is renamed to: they collided, the vent won by sort order) -- the vent for both species, Reach's
+                 # manual vent; pill_fix_idle / throw_equipment have no Halo 2 slot
+                 'first_person:overheating', 'first_person:overheated', 'first_person:o_h_exit',
+                 'first_person:pill_fix_idle', 'first_person:throw_equipment'],
+        'looping': ['first_person:idle', 'first_person:posing:var1', 'first_person:posing:var2', 'first_person:vent_loop'],
+        'overlay_reference': 'first_person:idle',
+        'weights': {'first_person:posing:var1': 0.5, 'first_person:posing:var2': 0.5},
+        'drop_ik': ['masterchief'],
+        'clear_sound_ref_flags': True,
+        'clear_verify': True,
+        # Reach's graph cues one sound an animation at frame 0 (the DMR's measurement); the vent's: Halo 1's reading.
+        # Keys are the Halo 2 names (after `rename`)
+        'source_events': {'cues': {'first_person:melee_strike_1': [('rp_melee1', 0)],
+                                   'first_person:melee_strike_2': [('rp_melee2', 0)],
+                                   'first_person:posing:var1': [('rp_pose1', 0)],
+                                   'first_person:posing:var2': [('rp_pose2', 0)],
+                                   'first_person:ready': [('rp_ready', 0)],
+                                   'first_person:overheating': [('rp_vent', 0)],
+                                   'first_person:overheated': [('rp_vent_loop', 0)],
+                                   'first_person:o_h_exit': [('rp_vent_exit', 0)]}},
+    },
+
+    # step 10 -- h2_port_sounds.py: Reach's OWN sounds from MCC's haloreach sfx.fsb (the DMR's `bank`). Reach's
+    # firing effect plays the shot + the plasma rifle's exterior tail: mixed (Halo 1's B3); the far layer in the
+    # fire_lod slot and every remastered sweetener (lfe, mech, bottom) on it (the Mauler's / Laser's rule). One
+    # Spartan set for both species (Reach's elite_plasrepeater_* unused, as the DMR's). THE VENT (Halo 1's): the
+    # overheat cue + the manual vent's `in` mixed, its loop on every `overheated` loop, the exit
+    'sounds': {
+        'weapon': WP,
+        'fire_fx': FX + r'\upper_fire.effect',
+        'bank': 'haloreach',
+        'audio': _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), 'out', 'h2_sounds', 'plasma_repeater'),
+        'audio_key': 'Plasma Repeater',
+        'h3_bank': {'rp_fire': [RS + r'\plasma_repeater\plas_repeater_fire', RS + r'\plasma_rifle\plasma_rifle_tails_ext'],
+                    'rp_fire_lod': [RS + r'\plasma_repeater\plas_repeater_lod_far'],
+                    'rp_dryfire': [RS + r'\plasma_pistol\plasma_dryfire'],
+                    'rp_ready': [RS + r'\plasma_repeater\plasrepeater_ready'],
+                    'rp_melee1': [RS + r'\plasma_repeater\plasrepeater_melee1'],
+                    'rp_melee2': [RS + r'\plasma_repeater\plasrepeater_melee2'],
+                    'rp_pose1': [RS + r'\plasma_repeater\plasrepeater_pose1'],
+                    'rp_pose2': [RS + r'\plasma_repeater\plasrepeater_pose2'],
+                    'rp_vent': [RS + r'\plasma_repeater\plasrepeater_oh', RS + r'\plasma_repeater\plasrepeater_manvent\track_1\in'],
+                    'rp_vent_loop': [RS + r'\plasma_repeater\plasrepeater_manvent\track_1\loop'],
+                    'rp_vent_exit': [RS + r'\plasma_repeater\plasrepeater_oh_exit'],
+                    'rp_drop': [RS + r'\plasma_rifle\plasma_rifle_drop'],
+                    'rp_drop_soft': [RS + r'\plasma_rifle\plasma_rifle_drop_soft'],
+                    'rp_flyby': [RS + r'\impacts_riccs\plasma_flyby_reach'],
+                    'rp_impact': [RS + r'\impacts_riccs\plasma_impacts_reach']},
+        'sounds': {'rp_fire': ('rp_fire', 'weapon_fire'), 'rp_fire_lod': ('rp_fire_lod', 'weapon_fire'),
+                   'rp_dryfire': ('rp_dryfire', 'weapon_empty'), 'rp_ready': ('rp_ready', 'weapon_ready'),
+                   'rp_melee1': ('rp_melee1', 'weapon_melee'), 'rp_melee2': ('rp_melee2', 'weapon_melee'),
+                   'rp_pose1': ('rp_pose1', 'weapon_animation'), 'rp_pose2': ('rp_pose2', 'weapon_animation'),
+                   'rp_vent': ('rp_vent', 'weapon_overheat'), 'rp_vent_loop': ('rp_vent_loop', 'weapon_overheat'),
+                   'rp_vent_exit': ('rp_vent_exit', 'weapon_overheat'),
+                   'rp_drop': ('rp_drop', 'object_impacts'), 'rp_drop_soft': ('rp_drop_soft', 'object_impacts'),
+                   'rp_flyby': ('rp_flyby', 'projectile_flyby'), 'rp_impact': ('rp_impact', 'projectile_impact')},
+        'repoint_fx': [(r'sound\weapons\plasma_rifle\plas_rifle_fire', 'rp_fire'),
+                       (r'sound_remastered\weapons\plasma_rifle\plasma_rifle_fire_lod', 'rp_fire_lod'),
+                       (r'sound_remastered\weapons\plasma_rifle\plasmarifle_lfe', 'rp_fire_lod'),
+                       (r'sound_remastered\weapons\plasma_rifle\plas_fire_mech_swtnr', 'rp_fire_lod')],
+        'repoint_weapon': [],
+        'repoint_tags': [(FX + r'\lower_fire.effect', r'sound\weapons\plasma_rifle\plasma_rifle_fire', 'rp_fire'),
+                         (FX + r'\lower_fire.effect', r'sound_remastered\weapons\plasma_rifle\plas_rifle_fire_bottom', 'rp_fire_lod'),
+                         (FX + r'\lower_fire.effect', r'sound_remastered\weapons\plasma_rifle\plasma_rifle_fire_lod', 'rp_fire_lod'),
+                         (FX + r'\lower_fire.effect', r'sound_remastered\weapons\plasma_rifle\plasmarifle_lfe', 'rp_fire_lod'),
+                         (FX + r'\lower_fire.effect', r'sound_remastered\weapons\plasma_rifle\plas_fire_mech_swtnr', 'rp_fire_lod'),
+                         (PJ, r'sound\weapons\plasma_rifle\plasma_proj', 'rp_flyby'),
+                         (FX + r'\plasma_repeater.material_effects', r'sound\weapons\plasma_rifle\plasma_rifle_drop', 'rp_drop'),
+                         (FX + r'\plasma_repeater.material_effects', r'sound\weapons\plasma_rifle\plasma_rifle_drop_soft', 'rp_drop_soft'),
+                         (FX + r'\plasma_repeater.material_effects', r'sound\weapons\plasma_rifle\plasma_hit', 'rp_impact'),
+                         (FX + r'\plasma_repeater_bolt.material_effects', r'sound\weapons\plasma_rifle\plasma_rifle_drop', 'rp_drop'),
+                         (FX + r'\plasma_repeater_bolt.material_effects', r'sound\weapons\plasma_rifle\plasma_rifle_drop_soft', 'rp_drop_soft'),
+                         (FX + r'\plasma_repeater_bolt.material_effects', r'sound\weapons\plasma_rifle\plasma_hit', 'rp_impact')],
+        # the SMG seed's 17 references, all repointed; unused dual slots point at the ready
+        'graph_sounds': (('smg_melee1', 'rp_melee1'), ('smg_ready', 'rp_ready'), ('smg_reload', 'rp_vent'),
+                         ('smg_reload_full', 'rp_vent_exit'), ('smg_dual_ready', 'rp_melee2'),
+                         ('smg_posing_var0', 'rp_pose1'), ('smg_posing_var1', 'rp_pose2'),
+                         ('smg_dual_reload_left', 'rp_vent_loop'), ('smg_dual_reload_right', 'rp_ready'),
+                         ('smg_dual_posing_0_l', 'rp_ready'), ('smg_dual_posing_0_r', 'rp_ready'),
+                         ('smg_dual_posing_1_l', 'rp_ready'), ('smg_dual_posing_1_r', 'rp_ready'),
+                         ('smg_dual_posing_2_l', 'rp_ready'), ('smg_dual_posing_2_r', 'rp_ready'),
+                         ('smg_dual_posing_3_l', 'rp_ready'), ('smg_dual_posing_3_r', 'rp_ready')),
+        'graph_sound_dir': r'sound\weapons\smg' + '\\',
+        'gain': {},
+        'boost': {},
+        'backup': r'E:\HaloBackups\H2EK_plasma_repeater_before_sounds',
+        'graph_backup': r'E:\HaloBackups\H2EK_plasma_repeater_graphs_before_sounds',
+    },
+
+    # step 4b -- port_field_audit.py --port h2:plasma_repeater: the source pair (Reach's repeater vs Reach's plasma
+    # rifle, the yardstick) against the target pair (the port vs the H2 plasma rifle)
+    'field_audit': {
+        'source_kit': 'HREK',
+        'source': {'weapon': (RP + r'\plasma_repeater.weapon', PRW + r'\plasma_rifle.weapon'),
+                   'projectile': (RP + r'\projectiles\plasma_repeater_bolt.projectile', PRW + r'\projectiles\plasma_rifle_bolt.projectile'),
+                   'damage_effect': (RP + r'\projectiles\plasma_repeater_bolt.damage_effect',
+                                     PRW + r'\projectiles\plasma_rifle_bolt.damage_effect')},
+        'target': {'weapon': (WP, PRW + r'\plasma_rifle.weapon'),
+                   'projectile': (PJ, PRW + r'\projectiles\plasma_rifle_bolt.projectile'),
+                   'damage_effect': (DM + r'\plasma_repeater_bolt.damage_effect', PRW + r'\damage_effects\plasma_rifle_bolt.damage_effect')},
+        'decisions': {
+            'heat recovery threshold 0.1 (source 0)': "approximation A: Reach never overheats (its 0 means nothing); 0 "
+                                                      "would never leave the overheat (Halo 1's measure) -- the PR's 0.1",
+            'heat loss 0.25 / overheated loss 0.36 / heat 0.0915 / rate ramp 1.6 / 3.6 s (source 0.0333 / 0 / 0 / 0)':
+                "approximation A (user 4a): Reach's heat lives in functions; fitted, see the yardstick",
+            'barrels deceleration time (nth 1) 0.6 (ratio 1.06)': "Reach's own bloom decay (the PR's is the same 0.6)",
+            'barrels error angle (nth 0) 1.5-3 (ratio 0.46-2.57)': 'the DUAL-wield copy: unused, dual wield cleared',
+            'barrels illumination recovery time 0.1 (ratio 0.17)': "Reach's own (Original)",
+            'water gravity scale 0.2 (source 0)': "the PR's: a zero on one side",
+            'bounding radius 0.2 (source 0.135)': "the PR clone's (the world model's size)",
+            'barrel spin scale 1 / rounds between tracers 1 / fire recovery 0.05': "no Halo 2 barrel_spin animation; no "
+                                                                               "tracer; recovery above the rate",
+            'flags 133120': "can be dual wielded cleared (Reach's two-handed); the rest the PR's",
+            'first person weapon offset': '0 -- the position lives in fp_anims model_offset',
+            'functions / attachments / interpolation / falloff / accuracy penalties / venting time / heat warning':
+                'no such field in Halo 2 (heat venting 2.5 s = the overheat, approximation A)',
+        },
+    },
+
     'firing_profile': {'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map', 'from_weapon': 'objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater', 'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
     'test': {'level': '03a_oldmombasa', 'dervish_level': '04a_gasgiant'},
     'residency': {'levels': 'all', 'placements': False},
