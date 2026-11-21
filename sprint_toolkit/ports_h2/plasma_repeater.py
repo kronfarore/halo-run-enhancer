@@ -29,6 +29,15 @@ WP = RP + r'\plasma_repeater.weapon'
 PJ = RP + r'\projectiles\plasma_repeater_bolt.projectile'
 DM = RP + r'\damage_effects'
 MAT = r'effects\materials\objects\weapons'
+# the PR heat gauge's functions (h2 `data` blocks) and the port's (see `weapon` function_edits)
+PR_ON_COLOR = '0220030000ff000000000000000000000000ff00000000000000803f000000000000803f'
+RP_ON_COLOR = '02200300f4ff59000000000000000000' + '17b5ff00' + '000000000000803f000000000000803f'
+PR_OFF_COLOR = '01200000ff6666ff0000000000000000000000000000803f0000803f'
+RP_OFF_COLOR = '01200000656a26ff0000000000000000000000000000803f0000803f'
+PR_OFF_OPACITY = '03000a000000003f83c02a3f00000000000000000000803f00000000000000000000803f0000803f00000000000000000000803f'
+RP_OFF_OPACITY = '03000a000000003f0000003f00000000000000000000803f00000000000000000000803f0000803f00000000000000000000803f'
+PR_METER_VALUE = '02000000000000000000803f0000000000000000000000000000803f000000000000803f'
+RP_DISPLAY_VALUE = '020000000000803f0000803f0000000000000000000000000000803f000000000000803f'
 PR_MAPS = {PRW + r'\bitmaps\plasma_rifle_bump_active_camo': RP + r'\bitmaps\plasma_repeater_bump',
            PRW + r'\bitmaps\plasma_rifle_bump': RP + r'\bitmaps\plasma_repeater_bump',
            PRW + r'\bitmaps\plasma_rifle': RP + r'\bitmaps\plasma_repeater'}
@@ -184,10 +193,31 @@ PORT = {
                    (PRFX + r'\plasma_streak.light_volume', FX + r'\plasma_repeater_streak.light_volume'),
                    (PRW + r'\plasma_rifle_muzzle_flash.light', RP + r'\plasma_repeater_muzzle_flash.light'),
                    (MAT + r'\plasma_rifle.material_effects', FX + r'\plasma_repeater.material_effects'),
-                   (MAT + r'\plasma_rifle.material_effects', FX + r'\plasma_repeater_bolt.material_effects')],
+                   (MAT + r'\plasma_rifle.material_effects', FX + r'\plasma_repeater_bolt.material_effects'),
+                   # its own HUD (step 7): the PR's -- battery count, heat meter, plate, reticle, backpack
+                   (r'ui\hud\pr_hud.new_hud_definition', r'ui\hud\plasma_repeater.new_hud_definition')],
         # step 4a (user): the bolt is Reach's plasma_fast -- Halo 2 has that group (its own rows)
+        # CHECK 10 (the muzzle-flash rule): the PR's flash_c_generic_med fans two sprites SIDEWAYS (+-0.06 wu, +-120 deg,
+        # both trigger effects, first and third person); Reach's five flash systems all sit at the bore -> the pair
+        # turned onto the bore axis (offset -0.02, 0, 0, direction 0): every sprite forward, as Reach's
+        'byte_edits': [(FX + r'\%s.effect' % fx, old, '0ad7a3bc00000000000000000000000000000000',
+                        ('translational offset', 'relative direction'))
+                       for fx in ('upper_fire', 'lower_fire')
+                       for old in ('0ad7a3bc000000008fc2753d00000000920a0640',      # +0.06 wu, +120 deg
+                                   '0ad7a3bc000000008fc275bd00000000920a06c0')],    # -0.06 wu, -120 deg
         'string_id_renames': [(WP, {'ready': 'primary_charged'}),
                               (DM + r'\plasma_repeater_bolt.damage_effect', {'plasma_slow': 'plasma_fast'})],
+        # THE GAUGE AND THE DISPLAY'S COLOURS (the cloned PR gauge's functions, both shaders): meter_on_color, a
+        # transition by heat (slot 0 = input 0, slot 3 = input 1, BGRA), Bungie's green -> red -> Reach's
+        # meter_color_on teal 89, 255, 244 -> orange 255, 181, 23; meter_off_color Bungie's constant pale blue ->
+        # Reach's meter_color_off 77, 212, 203 at half; meter_off_opacity Bungie's 0.5-0.67 pulse -> a steady 0.5.
+        # The DISPLAY's meter_value (a transition by heat, 0 -> 1) -> 1 at every heat: fully lit, only its colour
+        # follows heat (Halo 1's display look)
+        'function_edits': [(RP + r'\shaders\%s.shader' % sh, old, new)
+                           for sh in ('plasma_repeater_gauge', 'plasma_repeater_display')
+                           for old, new in ((PR_ON_COLOR, RP_ON_COLOR), (PR_OFF_COLOR, RP_OFF_COLOR),
+                                            (PR_OFF_OPACITY, RP_OFF_OPACITY))]
+                          + [(RP + r'\shaders\plasma_repeater_display.shader', PR_METER_VALUE, RP_DISPLAY_VALUE)],
         'wiring': [
             (WP, 'hlmt', PRW + r'\plasma_rifle', RP + r'\plasma_repeater', 'world model'),
             (RP + r'\plasma_repeater.model', 'mode', CC + r'\covenant_carbine', RP + r'\plasma_repeater', 'the world render model', {'nth': 0}),
@@ -210,6 +240,7 @@ PORT = {
             (WP, 'effe', PRFX + r'\overheated', FX + r'\overheated', 'the overheat (the vent)'),
             (WP, 'ligh', PRW + r'\plasma_rifle_muzzle_flash', RP + r'\plasma_repeater_muzzle_flash', 'the muzzle light'),
             (WP, 'foot', MAT + r'\plasma_rifle', FX + r'\plasma_repeater', 'material effects (the weapon)'),
+            (WP, 'nhdt', r'ui\hud\pr_hud', r'ui\hud\plasma_repeater', 'its own HUD (step 7)'),
             (FX + r'\overheated.effect', 'jpt!', PRW + r'\damage_effects\plasma_rifle_overheat', DM + r'\plasma_repeater_overheat', 'overheat damage'),
             (PJ, 'jpt!', PRW + r'\damage_effects\plasma_rifle_bolt', DM + r'\plasma_repeater_bolt', 'impact damage'),
             (PJ, 'foot', MAT + r'\plasma_rifle', FX + r'\plasma_repeater_bolt', 'impact material effects (the bolt)'),
@@ -417,6 +448,68 @@ PORT = {
         'graph_backup': r'E:\HaloBackups\H2EK_plasma_repeater_graphs_before_sounds',
     },
 
+    # step 7 -- the PR's battery count + heat meter stay as they are (a battery weapon: no ammo pips); only the
+    # stowed (backpack) icon is the port's. The plate: the PR's, its symbol repainted from the port's mesh (the
+    # glow parts left out of the drawing)
+    'meter': {
+        'backpack_only': True,
+        'port_hud': r'ui\hud\plasma_repeater',
+        'backpack': NEW_HUD + r'\backpack_weapons',
+        'backpack_port': NEW_HUD + r'\plasma_repeater_backpack',
+        'backpack_size': (62, 30),
+        'model_3p': RP_JMS,
+        'model_skip': ('plasma_repeater_indicator', 'plasma_repeater_display', 'plasma_repeater_gauge', 'plasma_repeater_pilot'),
+    },
+    'hud_plate': {
+        'rel': NEW_HUD + r'\backgrounds',
+        'donor': NEW_HUD + r'\backgrounds\plasma_rifle_bkd',
+        'other': NEW_HUD + r'\backgrounds\plasma_pistol_bkd',
+        'name': 'plasma_repeater_bkd',
+        'hud': r'ui\hud\plasma_repeater',
+        'model_3p': RP_JMS,
+        'model_skip': ('plasma_repeater_indicator', 'plasma_repeater_display', 'plasma_repeater_gauge', 'plasma_repeater_pilot'),
+        'fallback_box': (105, 191, 5, 34),
+        'stretch': 1.4,
+        # the PR plate is the SMG's shape: 8 images, 0-3 bright (right / left / right out / left out), 4-7 dim
+        'all_images': {'dim': {4: 0, 5: 1, 6: 2, 7: 3}},
+    },
+    # step 8 -- the pickup icon at the reserved U+E145, untinted (the H2 ICON RULE); pr_* -> rp2_*
+    'glyph': {
+        'box': (160, 62),
+        'model_3p': RP_JMS,
+        'model_skip': ('plasma_repeater_indicator', 'plasma_repeater_display', 'plasma_repeater_gauge', 'plasma_repeater_pilot'),
+        'tif': 'plasma_repeater_h2_glyph.tif',
+        'colour': (255, 255, 255),
+        # Reach's dense mesh creases into speck lines inside the body: the DMR's min_line 14
+        'style': {'line': (255, 255, 255), 'body': (153, 153, 153), 'min_line': 14},
+    },
+    'messages': {
+        'donor_prefix': 'pr', 'donor_icon': '&plasma_rifle',
+        'donor_name': 'Plasma Rifle', 'port_name': 'Plasma Repeater',
+        'names': [('a Plasma Rifle', 'a Plasma Repeater')],
+        'weapon': WP,
+    },
+
+    # step 7 -- the HUD: the PR's clone (`weapon` clones; battery count, heat meter, plate). Reach's reticle (the
+    # plasma_carbine chud's crosshair): hud_reticles #3 = the TOP-LEFT QUARTER of a faint ring (alpha peak 85, its
+    # centre at the sprite's bottom right: 35.7, 34.6 sprite px -- Halo 1's 0.965 / 0.962) mirrored four ways, plus
+    # four #33 wedges on the diagonals at 0.56 of its scale, pointing in, centres 24.5 sprite px out (Halo 1's B3
+    # layers). The ring half transparent (alpha x1.5 = 0.5: the user's Halo 1 boot 2 'a half-transparent ring').
+    # Size: Reach's ring ~88 px across at 1080p (the user's Reach screenshot, Halo 1's B3) / 1.117 = target_ink 79
+    'reticle': {
+        'rel': NEW_HUD + r'\crosshairs',
+        'donor': NEW_HUD + r'\crosshairs\hud_reticles',
+        'donor_sequence': 4,                 # the PR's crosshair (the cloned HUD's)
+        'name': 'plasma_repeater_reticle',
+        'hud': r'ui\hud\plasma_repeater',
+        'footprint': 1.0,
+        'h3_art': {'sheet': R + r'ui\chud\bitmaps\hud_reticles', 'sequence': 3, 'yardstick': 3,
+                   'quad': (35.7, 34.6, 1.5), 'spokes': [(33, 0.56, 24.5, [225, 315, 45, 135])],
+                   # the wedges reach ~4/88 past the ring each side: the whole ink 79 x 96 / 88
+                   'target_ink': 86},
+        'preview': 'plasma_repeater_reticle_preview.png',
+    },
+
     # step 4b -- port_field_audit.py --port h2:plasma_repeater: the source pair (Reach's repeater vs Reach's plasma
     # rifle, the yardstick) against the target pair (the port vs the H2 plasma rifle)
     'field_audit': {
@@ -447,7 +540,36 @@ PORT = {
         },
     },
 
-    'firing_profile': {'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map', 'from_weapon': 'objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater', 'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
+    # step 11 -- `python ai_firing_profile.py --h2-port plasma_repeater`: Reach's ai\generic entry (m10) over the H2
+    # Plasma Rifle's (the donor; the Elites carry it in both games -- the Elite rows read directly)
+    'firing_profile': {'from_game': 'Halo Reach', 'from_map': r'haloreach\maps\m10.map',
+                       'from_weapon': RP + r'\plasma_repeater',
+                       'donor_weapon': PRW + r'\plasma_rifle'},
+    # BALANCED (step 4a, user 2026-11-21: reports/h2_plasma_repeater_4a.md). The table reads the PLASMA RIFLE's tags,
+    # each redirected onto the port's own; the ratio is x1 on every heat / rate / damage / battery / range row, so
+    # Balanced differs from Original in bolt speed (14 -> 19.6), the single-wield cone (0.077-0.64) and autoaim (6).
+    # The heat rows are approximation A's (the table reads Reach's per-round FIELDS, which its functions override);
+    # melee rows dropped (strike_melee is everyone's)
+    'catalog': {
+        'table': 'balance_Plasma_Repeater_HaloReach_to_Halo2.json',
+        'weapon_tag': RP + r'\plasma_repeater',
+        'port_tags': [(('weap', PRW + r'\plasma_rifle'), RP + r'\plasma_repeater'),
+                      (('proj', PRW + r'\projectiles\plasma_rifle_bolt'), RP + r'\projectiles\plasma_repeater_bolt'),
+                      (('jpt!', PRW + r'\damage_effects\plasma_rifle_bolt'), DM + r'\plasma_repeater_bolt')],
+        'shared': [('jpt!', r'objects\weapons\damage_effects\strike_melee')],
+        'value_overrides': {
+            'Heat Recovery Threshold': {'value': 0.1, 'note': "approximation A (user 4a): Reach's 0 never leaves an overheat"},
+            'Heat Loss Per Second': {'value': 0.25, 'note': "approximation A: Reach's cold loss (its function; the 0.0333 field is overridden)"},
+            'Overheated Heat Loss Per Second': {'value': 0.36, 'note': "approximation A: the overheat = Reach's 2.5 s vent (0.9 / 0.36)"},
+            'Heat Generated Per Round': {'value': 0.0915, 'note': 'approximation A: overheats on round 15 at 1.48 s (Reach full on 14-15)'},
+        },
+        'fp_animations': r'objects\characters\*\fp\weapons\rifle\fp_plasma_repeater\fp_plasma_repeater',
+        'reload_mult': None,
+        'desc': ('%s carried from %s into Halo 2 with its own model, textures, sounds and its own Reach first-person '
+                 'animations for both species; its rate falls as it heats and an overheat stands in for the manual '
+                 'vent. Balanced through the Plasma Rifle.'),
+    },
+
     'test': {'level': '03a_oldmombasa', 'dervish_level': '04a_gasgiant'},
     'residency': {'levels': 'all', 'placements': False},
 }
