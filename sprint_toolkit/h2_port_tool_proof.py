@@ -81,6 +81,12 @@ def extract(rev, tag):
         out = os.path.join(root, *n.split('/'))
         os.makedirs(os.path.dirname(out), exist_ok=True)
         open(out, 'wb').write(data)
+    # the vendored Reclaimer stack (untracked, fixed versions): port_env finds it beside ITSELF, so
+    # without a copy every OLD step importing it (h3_convert -> h1_fp_retarget -> fp_render) exited 1
+    # and the proof compared nothing (rpg1, the Plasma Repeater, 2026-11-21)
+    if os.path.isdir(os.path.join(HERE, 'pylibs')):
+        shutil.copytree(os.path.join(HERE, 'pylibs'), os.path.join(root, 'sprint_toolkit', 'pylibs'),
+                        ignore=shutil.ignore_patterns('__pycache__'))
     print('old toolkit at %s: %d files -> %s' % (rev, len(want), root), flush=True)
     return os.path.join(root, 'sprint_toolkit')
 

@@ -105,8 +105,21 @@ def rename(tag_path, renames, write=False, verbose=True):
                 # one-run rename (tool-verified; an ambiguous one by trial) -- this case used to refuse
                 done = []
                 for r in runs:
-                    done.append(rename(tag_path, {v: renames[v] for _i, _n, v in r}, write=True,
-                                       verbose=verbose))
+                    sub = {v: renames[v] for _i, _n, v in r}
+                    if any(v in sub for rr in runs if rr is not r for _i, _n, v in rr):
+                        # the SAME ids in another run (the Plasma Repeater's two attachments scaled by
+                        # `ready`, B3): a one-run rename would find both runs again and recurse for
+                        # ever -- this run alone, by trial (each pairing tool-verified)
+                        d = bytearray(open(tag_path, 'rb').read())
+                        rw = export(tag_path)
+                        old = [v for _i, _n, v in r]
+                        at1 = [p for a0, b0 in _arrays(d) for p in range(a0, b0 - 4 * len(old) + 1)
+                               if all(d[p + 4 * k + 3] == len(v) for k, v in enumerate(old))]
+                        pat1 = [m.start() for m in re.finditer(re.escape(''.join(old).encode('latin-1')),
+                                                               bytes(d))]
+                        done.append(_rename_by_trial(tag_path, d, rw, r, at1, pat1, renames, verbose))
+                        continue
+                    done.append(rename(tag_path, sub, write=True, verbose=verbose))
                 return '; '.join(done)
             if len(runs) != 1 or not write:
                 raise SystemExit('%s: ambiguous run %s (length fields %d, pooled %d)'
