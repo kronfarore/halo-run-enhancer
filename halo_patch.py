@@ -5520,9 +5520,10 @@ def reach_protected_slots(m, game, block='equipment'):
     (later the weapon) they picked on it. Map replacement scatters picks over existing
     placements, so without this it would happily overwrite the very placement the
     starting-equipment pass just set, and the player would arrive to find something
-    else there. Only Reach has markers, so this is empty everywhere else.
+    else there. Every game whose Object Names the patcher reads can carry markers
+    (Halo 3 and ODST included), so every one of them protects its markers.
     """
-    if str(game).strip() not in MARKER_GAMES:
+    if str(game).strip() not in _OBJECT_NAMES:
         return set()
     named = reach_named_markers(m, game, block=block)
     return set(named.values())
@@ -6627,8 +6628,9 @@ def _apply_spawn_grenades(m, game, registry, spec):
                 continue
             count, tag = sup
             tg += [tag] * count
-            # ODST levels carry no enhancer markers: the drop is the insertion start
-            where = 'at the start' if game == 'Halo 3: ODST' else 'on the marker'
+            # ODST levels without enhancer markers drop at the insertion start
+            where = ('at the start' if game == 'Halo 3: ODST'
+                     and not reach_named_markers(m, game) else 'on the marker')
             out.append({'effect': 'starting grenades',
                         'field': tag.rsplit(chr(92), 1)[-1], 'ok': True,
                         'old': 'none',
@@ -6794,7 +6796,10 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     # path below, which is what still serves Halo 3 and ODST.
     points = spec.get('points')         # [(pos, mask) or None per group]: fixed drops
     stack = bool(spec.get('stack'))     # every item exactly ON its point, no ring
-    if str(game).strip() == 'Halo 3' and not points:
+    if str(game).strip() in ('Halo 3', 'Halo 3: ODST') and not points:
+        # ODST takes the same route as soon as its levels carry enhancer_marker1/2
+        # (user, 2026-11-22: markers are coming); until then reach_named_markers finds
+        # none and the insertion-start drop below stays in charge.
         # The rebuilt Halo 3 maps carry enhancer_marker1/2, and the starting weapons
         # already go there (_apply_spawn_weapons_h3) -- the equipment went to the
         # start anchor or the Player Starting Location instead, 130 units away on The
