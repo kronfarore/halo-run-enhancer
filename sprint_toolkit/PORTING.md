@@ -355,6 +355,15 @@ translations) -- those come from the H3 render models' default transforms.
   model space, only the `blades` pivot differs) or `node` (fuel rod: grip node to grip node).
 * `fp_render.py` -- offline FP view (H1 hands + weapon, any frame of any H1 antr). Check
   every retarget with it before a build.
+* `h1_3p_retarget.py <weapon> --list | --preview "<H1 anim>" [--frame N --yaw D]` -- H3
+  THIRD-person animations onto the cyborg (the player): a node-for-node copy (masterchief's
+  core = the cyborg's 19 bip01 nodes), compiled with Reclaimer straight into
+  `characters\cyborg\cyborg.model_animations`, in a class of the port's own (Halo 1 picks the
+  class by the weapon's label; idle / moves are class-level). Config: the pickable section's
+  `third_person` (ports_h1/energy_sword.py); h1_pickable_weapons.teach_cyborg installs it.
+  FIRE slots play only as OVERLAYS (`{'overlay', 'on', 'nodes'}`), melee as a replacement.
+  The cyborg graph is FULL (256): free slots first (folding exact duplicates). Energy Sword,
+  confirmed in co-op 2026-11-22.
 * `h1_scaled_model.py` -- a scaled gbxmodel copy (the fuel rod's FP model: its own world
   mesh x0.75 -- 0.57 long is alien-sized; H3's FP fuel rod is 0.43, H1's PC one 0.41).
 * `h1_pickable_weapons.py --write` -- the kit tag edits (below). Rerun after every
