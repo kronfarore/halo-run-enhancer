@@ -482,7 +482,7 @@
 					"Halo 1": "coll characters\\cyborg\\cyborg",
 					"Halo 2": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
 					"Halo 3": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
-					"Halo 3: ODST": "hlmt objects\\characters\\odst_oni_op\\odst_oni_op_player",
+					"Halo 3: ODST": "hlmt objects\\characters\\odst_recon\\odst_recon & objects\\characters\\odst_oni_op\\odst_oni_op_player",
 					"Halo Reach": "hlmt objects\\characters\\spartans\\spartans",
 					"Halo 4": "hlmt objects\\characters\\storm_masterchief\\storm_masterchief"
 				},
@@ -523,7 +523,7 @@
 					"Halo 1": "coll characters\\cyborg\\cyborg",
 					"Halo 2": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
 					"Halo 3": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
-					"Halo 3: ODST": "hlmt objects\\characters\\odst_oni_op\\odst_oni_op_player",
+					"Halo 3: ODST": "hlmt objects\\characters\\odst_recon\\odst_recon & objects\\characters\\odst_oni_op\\odst_oni_op_player",
 					"Halo Reach": "hlmt objects\\characters\\spartans\\spartans",
 					"Halo 4": "hlmt objects\\characters\\storm_masterchief\\storm_masterchief"
 				},
@@ -553,7 +553,7 @@
 					"Halo 1": "coll characters\\cyborg\\cyborg",
 					"Halo 2": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
 					"Halo 3": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
-					"Halo 3: ODST": "hlmt objects\\characters\\odst_oni_op\\odst_oni_op_player",
+					"Halo 3: ODST": "hlmt objects\\characters\\odst_recon\\odst_recon & objects\\characters\\odst_oni_op\\odst_oni_op_player",
 					"Halo Reach": "hlmt objects\\characters\\spartans\\spartans",
 					"Halo 4": "hlmt objects\\characters\\storm_masterchief\\storm_masterchief"
 				},
@@ -583,7 +583,7 @@
 					"Halo 1": "coll characters\\cyborg\\cyborg",
 					"Halo 2": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
 					"Halo 3": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
-					"Halo 3: ODST": "hlmt objects\\characters\\odst_oni_op\\odst_oni_op_player",
+					"Halo 3: ODST": "hlmt objects\\characters\\odst_recon\\odst_recon & objects\\characters\\odst_oni_op\\odst_oni_op_player",
 					"Halo Reach": "hlmt objects\\characters\\spartans\\spartans",
 					"Halo 4": "hlmt objects\\characters\\storm_masterchief\\storm_masterchief"
 				},
