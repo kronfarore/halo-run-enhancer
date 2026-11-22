@@ -773,6 +773,53 @@ def name_enum_results(results, fld):
     return results
 
 
+# ODST BODY RECHARGE (user, play session 2026-11-21). The Rookie's stamina (shield)
+# recharges but health never does: on every campaign player model -- odst_recon, all
+# nine levels' player representations 0-8 -- the body's Stun Time, Recharge Time and
+# Health Recharge Velocity all ship 0 (New Damage Info, ODSTMCC hlmt). The stamina's
+# own numbers show the rule: velocity = 1 / Recharge Time (5 s stun, 3 s, 0.3333).
+# Both the time and the precomputed velocity are written, since which one the engine
+# reads at runtime is not measured. odst_oni_op_player is written too (same values).
+_ODST_PLAYER_MODELS = ('objects\\characters\\odst_recon\\odst_recon',
+                       'objects\\characters\\odst_oni_op\\odst_oni_op_player')
+
+
+def apply_odst_body_recharge(m, game, registry, spec):
+    """spec = {'delay': s, 'time': s, 'fraction': 0..1}. Runs before the card ops, so
+    a Recharge Delay card still scales the delay set here."""
+    if str(game).strip() != 'Halo 3: ODST' or not spec:
+        return []
+    plug = registry.get('hlmt') if registry else None
+    if plug is None:
+        return [{'effect': 'ODST body recharge', 'ok': False, 'reason': 'no hlmt plugin'}]
+    delay = max(0.0, float(spec.get('delay', 6.0)))
+    rtime = max(0.1, float(spec.get('time', 10.0)))
+    frac = min(1.0, max(0.05, float(spec.get('fraction', 1.0))))
+    out = []
+    for path in _ODST_PLAYER_MODELS:
+        hits = m.find_tags('hlmt', path) or []
+        if not hits:
+            continue
+        for t in hits:
+            base = t[1] if isinstance(t, tuple) else t      # find_tags: (name, base)
+            try:
+                for field, val, nth in (('Stun Time', delay, 0), ('Recharge Time', rtime, 0),
+                                        ('Recharge Fraction', frac, 0),
+                                        ('Health Recharge Velocity', frac / rtime, 0)):
+                    m.write_tag_field(base, field, val, plug, block='New Damage Info',
+                                      index=0, nth=nth)
+            except Exception as ex:
+                out.append({'effect': 'ODST body recharge', 'tag': path, 'ok': False,
+                            'reason': str(ex)})
+                continue
+            out.append({'effect': 'ODST body recharge', 'tag': path.rsplit(chr(92), 1)[-1],
+                        'field': 'health', 'ok': True, 'old': 'never recharges',
+                        'new': 'after %.1f s, full in %.1f s, up to %d%%'
+                               % (delay, rtime, round(frac * 100))})
+    return out or [{'effect': 'ODST body recharge', 'ok': False,
+                    'reason': 'no ODST player model on this map'}]
+
+
 def apply_difficulty_baseline(m, registry, target_difficulty, spec):
     """Set the whole-game enemy dials BEFORE any effect runs.
 
@@ -10395,6 +10442,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               keep_title_hud=False, keep_loadout=False, skip_space=False,
               skip_flight=False, hostile_sentinels=False, enemy_colors=None,
               h4_keep_loadout=False, h3_keep_loadout=False, odst_skip_tutorial=False,
+              odst_body_recharge=None,
               clear_profile_equipment=False,
               clear_profile_grenades=False, spawn_grenades=None,
               h4_ability_visibility=None, h1_enemy_weapons=None, h2_enemy_weapons=None,
@@ -10455,6 +10503,9 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # field. Nothing else in the pass depends on them, so ordering costs nothing.
         results.extend(apply_difficulty_baseline(m, registry, target_difficulty,
                                                  difficulty_baseline))
+    if odst_body_recharge:
+        # Before the card ops: the Recharge Delay card scales the delay set here.
+        results.extend(apply_odst_body_recharge(m, game, registry, odst_body_recharge))
     # What every weapon holds BEFORE the cards run -- the yardstick apply_ammo_display
     # rescales each bullet-tick meter against once they have. Taken after the ports, so a
     # ported weapon's own readout (set by its balance rows) counts as its starting point.

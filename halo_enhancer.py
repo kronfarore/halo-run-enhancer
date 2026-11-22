@@ -460,6 +460,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'odst_downgrade_unupgraded', 'odst_shield_into_health',
                'odst_patch_hub', 'odst_pools_from_map',
                'odst_all_starting_profiles', 'odst_ai_equipment_drops', 'odst_skip_tutorial',
+               'odst_body_recharge', 'odst_body_recharge_delay',
+               'odst_body_recharge_time', 'odst_body_recharge_pct',
                'odst_escort_buff', 'odst_equipment_all_insertions',
                'odst_profiles_by_insertion', 'carry_magnitudes_across_games',
                'other_chance', 'other_weights', 'other_hero_enabled', 'armed_max_share',
@@ -1512,6 +1514,12 @@ CONFIG = {
     # Mombasa Streets: skip the Rookie's tutorial and have the map (PDA) from the pod
     # (odst_scripts.skip_tutorial; user, play session 2026-11-21). Off until seen in game.
     "odst_skip_tutorial": False,
+    # ODST: the Rookie's HEALTH recharges too (halo_patch.apply_odst_body_recharge; user,
+    # play session 2026-11-21). Delay and full-recharge time in seconds, cap in percent.
+    "odst_body_recharge": False,
+    "odst_body_recharge_delay": 6.0,
+    "odst_body_recharge_time": 10.0,
+    "odst_body_recharge_pct": 100,
     # Data Hive and Coastal Highway fail if the Engineer (or, on Coastal Highway, the
     # olifaunt) dies, and neither scales with the run. On, the player's own vitality
     # cards are mirrored onto them. See ESCORT_BUFF_TAGS for the measured numbers.
@@ -9527,6 +9535,14 @@ class MagnitudeEditorDialog(QDialog):
         except Exception:
             return False
 
+    def _odst_body_recharge_spec(self):
+        """Options -> ODST health recharge, as apply_run's odst_body_recharge."""
+        if self.game != 'Halo 3: ODST' or not CONFIG.get('odst_body_recharge'):
+            return None
+        return {'delay': float(CONFIG.get('odst_body_recharge_delay', 6.0)),
+                'time': float(CONFIG.get('odst_body_recharge_time', 10.0)),
+                'fraction': int(CONFIG.get('odst_body_recharge_pct', 100)) / 100.0}
+
     def _starting_weapons_spec(self):
         """Starting-weapons spec from the run's picks (Primary = P1's first weapon,
         Secondary = P2's). Coop is profile index 1: #1 can exclude it from the picked
@@ -10647,7 +10663,8 @@ class MagnitudeEditorDialog(QDialog):
                 tartarus=(CONFIG.get('h2_tartarus') if self.mission_id == '08b' else None),
                 equipment_ai_drops=bool(CONFIG.get('odst_ai_equipment_drops'))
                 and self.game == 'Halo 3: ODST',
-                odst_skip_tutorial=bool(CONFIG.get('odst_skip_tutorial'))))
+                odst_skip_tutorial=bool(CONFIG.get('odst_skip_tutorial')),
+                odst_body_recharge=self._odst_body_recharge_spec()))
         except Exception as e:
             QMessageBox.critical(self, "Patch failed", _patch_error_text(e))
             return
@@ -10690,7 +10707,8 @@ class MagnitudeEditorDialog(QDialog):
                     no_level_prepare=bool(CONFIG.get(PRELOAD_KEYS['odst'])),
                 equipment_ai_drops=bool(CONFIG.get('odst_ai_equipment_drops'))
                 and self.game == 'Halo 3: ODST',
-                odst_skip_tutorial=bool(CONFIG.get('odst_skip_tutorial'))))
+                odst_skip_tutorial=bool(CONFIG.get('odst_skip_tutorial')),
+                odst_body_recharge=self._odst_body_recharge_spec()))
                 ok = sum(1 for r in hub_results if r.get('ok') and not r.get('skip'))
                 results.append({'effect': 'Mombasa Streets (hub)',
                                 'tag': Path(hub).name, 'ok': True,
@@ -13177,6 +13195,42 @@ class OptionsDialog(QDialog):
             "Mombasa Streets must be patched before the campaign starts: MCC keeps "
             "it open for the whole ODST run.")
         odform.addRow("ODST tutorial:", self.odst_skip_tutorial_cb)
+        br_row = QHBoxLayout()
+        self.odst_body_recharge_cb = QCheckBox("Health recharges")
+        self.odst_body_recharge_cb.setChecked(bool(CONFIG.get('odst_body_recharge')))
+        self.odst_body_recharge_delay = QDoubleSpinBox()
+        self.odst_body_recharge_delay.setRange(0.0, 60.0)
+        self.odst_body_recharge_delay.setSingleStep(0.5)
+        self.odst_body_recharge_delay.setSuffix(" s delay")
+        self.odst_body_recharge_delay.setValue(float(CONFIG.get('odst_body_recharge_delay', 6.0)))
+        self.odst_body_recharge_time = QDoubleSpinBox()
+        self.odst_body_recharge_time.setRange(0.5, 120.0)
+        self.odst_body_recharge_time.setSingleStep(0.5)
+        self.odst_body_recharge_time.setSuffix(" s to full")
+        self.odst_body_recharge_time.setValue(float(CONFIG.get('odst_body_recharge_time', 10.0)))
+        self.odst_body_recharge_pct = QSpinBox()
+        self.odst_body_recharge_pct.setRange(5, 100)
+        self.odst_body_recharge_pct.setSuffix(" % max")
+        self.odst_body_recharge_pct.setValue(int(CONFIG.get('odst_body_recharge_pct', 100)))
+        for wdg in (self.odst_body_recharge_cb, self.odst_body_recharge_delay,
+                    self.odst_body_recharge_time, self.odst_body_recharge_pct):
+            wdg.setToolTip(
+                "ODST: the Rookie's HEALTH comes back too, not only the stamina. After "
+                "the delay without taking damage, health refills over the given time, "
+                "up to the given share of the bar (100 % = full; lower keeps health packs "
+                "useful). Every ODST campaign player model; co-op players included. A "
+                "Recharge Delay card scales the delay. Not yet seen in game.")
+            br_row.addWidget(wdg)
+
+        def _sync_br(on=None):
+            on = self.odst_body_recharge_cb.isChecked()
+            for wdg in (self.odst_body_recharge_delay, self.odst_body_recharge_time,
+                        self.odst_body_recharge_pct):
+                wdg.setEnabled(on)
+        self.odst_body_recharge_cb.toggled.connect(_sync_br)
+        _sync_br()
+        br_row.addStretch(1)
+        odform.addRow("ODST health:", br_row)
 
         self.odst_escort_cb = QCheckBox(
             "ODST: buff the Engineer and the olifaunt on Data Hive / Coastal Highway")
@@ -14949,6 +15003,10 @@ class OptionsDialog(QDialog):
             'odst_all_starting_profiles': self.odst_all_profiles_cb.isChecked(),
             'odst_ai_equipment_drops': self.odst_ai_drops_cb.isChecked(),
             'odst_skip_tutorial': self.odst_skip_tutorial_cb.isChecked(),
+            'odst_body_recharge': self.odst_body_recharge_cb.isChecked(),
+            'odst_body_recharge_delay': self.odst_body_recharge_delay.value(),
+            'odst_body_recharge_time': self.odst_body_recharge_time.value(),
+            'odst_body_recharge_pct': self.odst_body_recharge_pct.value(),
             'odst_escort_buff': self.odst_escort_cb.isChecked(),
             'odst_equipment_all_insertions': self.odst_all_ins_cb.isChecked(),
             'odst_profiles_by_insertion': self.odst_prof_ins_cb.isChecked(),
