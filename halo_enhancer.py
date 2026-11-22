@@ -5959,8 +5959,13 @@ class PairCard(QGroupBox):
             self.parent_widget.add_to_blacklist(mod_data, pair_id, mod_type)
 
 class StartDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, gui=None):
+        # `gui` is the main window when the dialog is opened WITHOUT a parent: at
+        # startup the main window is still hidden, and a dialog owned by it gets no
+        # Windows taskbar button (play session 2026-11-21), so the startup menu is a
+        # window of its own and only borrows the main window for callbacks.
         super().__init__(parent)
+        self.gui = gui if gui is not None else parent
         self.choice = None
         self.loaded_state = None
         self.loaded_path = None     # where a loaded run came from (see _open_run_file)
@@ -6180,7 +6185,7 @@ class StartDialog(QDialog):
                                  + ", ".join(rep['settings_ignored']))
                 if rep['settings_backup']:
                     lines.append("   Previous file: " + rep['settings_backup'])
-                parent = self.parent()
+                parent = self.gui
                 if parent is not None and hasattr(parent, '_after_settings_import'):
                     parent._after_settings_import()
                 self._add_shared_button()
@@ -16273,7 +16278,8 @@ class HaloGUI(QMainWindow):
         self.show_start_dialog()
 
     def show_start_dialog(self):
-        dialog = StartDialog(self)
+        # Unparented while this window is still hidden, so the menu has a taskbar button
+        dialog = StartDialog(None if not self.isVisible() else self, gui=self)
         if dialog.exec() == QDialog.Accepted:
             if dialog.choice == 'new':
                 self.show_weapon_selection()
