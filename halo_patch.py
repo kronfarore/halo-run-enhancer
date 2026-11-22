@@ -4000,6 +4000,8 @@ def _apply_equipment_swaps(m, game, swaps):
                             'field': want[datum].rsplit(chr(92), 1)[-1], 'ok': True,
                             'old': 'not in this level', 'new': 'added to the palette'})
 
+    elig = _swap_eligible(m, ibase, ies, N, game)
+    NE = len(elig)
     assign = []
     for tag, rate in (swaps or {}).items():
         if not rate or rate <= 0:
@@ -4012,15 +4014,15 @@ def _apply_equipment_swaps(m, game, swaps):
             out.append({'effect': 'map equipment', 'field': short, 'ok': False,
                         'reason': "equipment not in this level's palette"})
             continue
-        c = int(round(rate * N))
+        c = int(round(rate * NE))
         if c <= 0:
             out.append({'effect': 'map equipment', 'field': short, 'ok': True,
                         'skip': True,
-                        'reason': f'rate too low for {N} placements (rounds to 0)'})
+                        'reason': f'rate too low for {NE} placements (rounds to 0)'})
             continue
         assign.append((pi, c, short))
 
-    while sum(a[1] for a in assign) > N and assign:
+    while sum(a[1] for a in assign) > NE and assign:
         j = max(range(len(assign)), key=lambda k: assign[k][1])
         pi, c, s = assign[j]
         assign[j] = (pi, c - 1, s)
@@ -4030,11 +4032,12 @@ def _apply_equipment_swaps(m, game, swaps):
     # such per-zone streaming, so they spread across every slot as before.
     if str(game).strip() in THIRD_GEN_GAMES:
         slot_masks = [struct.unpack_from('<H', m.data, ibase + i * ies + _EQ_ATTACH)[0]
-                      for i in range(N)]
-        slots = _spread_slots_bsp(N, slot_masks,
+                      for i in elig]
+        slots = _spread_slots_bsp(NE, slot_masks,
                                   [(a[0], a[1], _h3_stream_mask(m, ioff, ies, a[0])) for a in assign])
     else:
-        slots = _spread_slots(N, [(a[0], a[1]) for a in assign])
+        slots = _spread_slots(NE, [(a[0], a[1]) for a in assign])
+    slots = {elig[k]: v for k, v in slots.items()}
     # Same rule as the weapon swap: a MARKER is the player's own equipment position
     # and must not be scattered over. Without this the starting-equipment pass and the
     # replacement pass fight, and replacement wins because it runs second.
@@ -4047,7 +4050,7 @@ def _apply_equipment_swaps(m, game, swaps):
         done[pi] = done.get(pi, 0) + 1
     for pi, n in done.items():
         out.append({'effect': 'map equipment', 'field': names[pi], 'ok': True,
-                    'tag': 'scnr', 'old': f'{N} placements',
+                    'tag': 'scnr', 'old': f'{NE} spawning placements',
                     'new': f'{n} swapped in'})
     for pi, c, short in assign:                  # streaming left a piece nowhere to go
         if pi not in done:
@@ -7235,6 +7238,34 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     return out
 
 
+def _swap_eligible(m, base, es, N, game):
+    """Placement indices a Map Presence swap may land on: the ones that really spawn.
+
+    A rebuilt third-generation map carries many hidden placements -- Not Automatically,
+    unnamed: the enhancer's own residency placements, and Bungie's never-placed ones --
+    and spreading over all N put most swaps where nothing appears (Halo, play session
+    2026-11-21: 32 of 53 placements, 10 of 16 swaps). A NAMED Not Automatically
+    placement stays eligible: a script creates it by name. Halo 1 / Halo 2 keep every
+    slot (their layouts differ and their maps carry few such placements)."""
+    if str(game).strip() not in THIRD_GEN_GAMES or not base:
+        return list(range(N))
+    eqo = _eq_offsets(game)
+    never = 1 << eqo['never_bit']
+    out = []
+    for i in range(N):
+        e = base + i * es
+        fl = struct.unpack_from('<I', m.data, e + _EQ_FLAGS)[0]
+        if fl & never:
+            continue
+        if fl & _PLACE_NOT_AUTO and struct.unpack_from('<h', m.data, e + _EQ_NAME)[0] == -1:
+            continue
+        ty = _placement_type(m, e, game)
+        if ty is not None and ty < 0:
+            continue
+        out.append(i)
+    return out
+
+
 def _spread_slots(N, counts):
     """Assign each (key, count) `count` placement slots EVENLY spread across [0, N)
     — evenly-spaced positions with collisions bumped to the nearest free slot, so a
@@ -7497,6 +7528,8 @@ def _apply_weapon_swaps(m, game, registry, swaps):
                             'field': want[datum].rsplit(chr(92), 1)[-1], 'ok': True,
                             'old': 'not in this level', 'new': 'added to the palette'})
 
+    elig = _swap_eligible(m, wbase, wes, N, game)
+    NE = len(elig)
     assign = []          # (palette_index, count, rounds_left, rounds_loaded, short)
     for tag, rate in swaps.items():
         if not rate or rate <= 0:
@@ -7509,10 +7542,10 @@ def _apply_weapon_swaps(m, game, registry, swaps):
             out.append({'effect': 'map weapons', 'field': short, 'ok': False,
                         'reason': 'weapon not in this map\'s palette'})
             continue
-        c = int(round(rate * N))
+        c = int(round(rate * NE))
         if c <= 0:
             out.append({'effect': 'map weapons', 'field': short, 'ok': True, 'skip': True,
-                        'reason': f'rate too low for {N} placements (rounds to 0)'})
+                        'reason': f'rate too low for {NE} placements (rounds to 0)'})
             continue
         rl = rd = -1
         wb = _weap_base(m, name)
@@ -7523,8 +7556,8 @@ def _apply_weapon_swaps(m, game, registry, swaps):
             rd = int(l) if l is not None else -1
         assign.append((pi, c, rl, rd, short))
 
-    # never replace more than N placements (UI caps the slider sum, this is a guard)
-    while sum(a[1] for a in assign) > N and assign:
+    # never replace more than NE placements (UI caps the slider sum, this is a guard)
+    while sum(a[1] for a in assign) > NE and assign:
         j = max(range(len(assign)), key=lambda k: assign[k][1])
         pi, c, rl, rd, s = assign[j]
         assign[j] = (pi, c - 1, rl, rd, s)
@@ -7534,7 +7567,7 @@ def _apply_weapon_swaps(m, game, registry, swaps):
     # every combat zone — i.e. everywhere weapon placements sit — and the streaming gate
     # never bites. Confining to placement BSPs would only under-place a common weapon
     # whose own placements happen to cluster in a few zones.
-    slots = _spread_slots(N, [(a[0], a[1]) for a in assign])
+    slots = {elig[k]: v for k, v in _spread_slots(NE, [(a[0], a[1]) for a in assign]).items()}
     # Never scatter a pick onto a MARKER. It is the player's own loadout position and
     # the starting-equipment pass has already put their choice there; overwriting it
     # would silently swap the item they picked for something else.
@@ -7553,12 +7586,12 @@ def _apply_weapon_swaps(m, game, registry, swaps):
         done[short] = done.get(short, 0) + 1
     for short, n in done.items():
         out.append({'effect': 'map weapons', 'field': short, 'ok': True,
-                    'old': f'{N} placements', 'new': f'{n} swapped in'})
+                    'old': f'{NE} spawning placements', 'new': f'{n} swapped in'})
     # a pick that survived rate-rounding but got trimmed to 0 by the N cap
     for _pi, _c, _rl, _rd, short in assign:
         if done.get(short, 0) == 0:
             out.append({'effect': 'map weapons', 'field': short, 'ok': True, 'skip': True,
-                        'reason': f'trimmed to 0 (total capped at {N} placements)'})
+                        'reason': f'trimmed to 0 (total capped at {NE} placements)'})
     return out
 
 
