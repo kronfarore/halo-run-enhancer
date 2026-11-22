@@ -5940,6 +5940,11 @@ class StartDialog(QDialog):
     def setup_ui(self):
         layout = QVBoxLayout(self)
         layout.setSpacing(20)
+        # The layout sets the dialog's minimum size. Without this, the setMinimumHeight
+        # above wins, and a button added while the menu is open (the shared-session
+        # one, after an import sets the folder) squeezes every button below the height
+        # of its text -- the labels vanish and only the coloured bars stay.
+        layout.setSizeConstraint(QLayout.SetMinimumSize)
         title = QLabel("🎯 HALO RUN ENHANCER")
         title.setStyleSheet("font-size: 24px; font-weight: bold; color: #4CAF50;")
         layout.addWidget(title)
@@ -6045,6 +6050,8 @@ class StartDialog(QDialog):
         shared_btn.clicked.connect(self.load_latest_shared)
         self._layout.insertWidget(min(5, self._layout.count()), shared_btn)
         self._shared_btn = shared_btn
+        if self.isVisible():
+            self.adjustSize()
 
     def import_older_version(self):
         """Pick an older install's folder, show what it holds, back up this version's
