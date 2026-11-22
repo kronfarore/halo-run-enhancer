@@ -302,6 +302,20 @@ Jackal / Major / Ranger-shield clones; Forerunner -- Knights hold their own rifl
 rocket pose, turrets + grip. Halo 3 / ODST / Reach dry runs unchanged. Enhancer: ARMED_ENEMIES /
 ARMED_OPTIONS 'Halo 4', h4_enemy_weapon_cards / h4_armed_all_weapons in the Halo 4 box.
 
+Halo 4 boots 2-6 (Forerunner, h4_armed_test.py, the SHIPPED pass, one weapon per species) --
+HALO 4 CONFIRMED 2026-11-22. Boot 2 all good (Grunt DMR, shieldless Jackal Rocket, Elite Sticky
+Detonator, Knight Fuel Rod). Fixes on the way: pose donors in TEACH_DONORS order (the Focus Rifle port
+lent Grunts a sniper's aim); ACTION_ANY only for a type named for the weapon; a turret no Weapon List
+row reaches takes a pose copy from a heavy donor of any class + grip (Knight Plasma Turret); spawn
+points naming a character with weapon -1 in an empty cell are armed (SP_DEFAULT_GAMES -- most Knights
+spawn that way; the Support Weapon flag was NOT the block); Elite turrets re-posed with a body grip
+replacing Bungie's own right_hand_elite. Accepted by the user: Grunts with taught rifles aim up a little
+when firing (level at idle), Elite Spartan Laser aim slightly off, Elite turret hold a little awkward.
+The Gravity Hammer stays out (the gate refuses it: the Elite hammer set has no idle). Regression found
+and fixed on the way: the Reach-era named-type step had undone the confirmed Halo 3 / ODST Grunt Machine
+Gun Turret / Plasma Cannon re-pose; REPOSE pairs now skip it (restored, not re-booted). ALL FOUR GAMES
+DONE.
+
 ## Open questions only the game answers (first boot per game)
 
 - a refused weapon: unarmed, or the character's default?
