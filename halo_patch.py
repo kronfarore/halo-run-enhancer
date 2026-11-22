@@ -6627,10 +6627,12 @@ def _apply_spawn_grenades(m, game, registry, spec):
                 continue
             count, tag = sup
             tg += [tag] * count
+            # ODST levels carry no enhancer markers: the drop is the insertion start
+            where = 'at the start' if game == 'Halo 3: ODST' else 'on the marker'
             out.append({'effect': 'starting grenades',
                         'field': tag.rsplit(chr(92), 1)[-1], 'ok': True,
                         'old': 'none',
-                        'new': '%d on the marker (the Maximum Count)' % count})
+                        'new': '%d %s (the Maximum Count)' % (count, where)})
         tag_groups.append(tg)
     if game == 'Halo 2':
         # Halo 2's own placer (second-generation scenario), stacked on the marker
