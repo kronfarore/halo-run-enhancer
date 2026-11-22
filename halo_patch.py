@@ -7207,6 +7207,9 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
             struct.pack_into('<H', m.data, e + eqo['gameflags'], 0)  # campaign, not MP-only
         if mode == 'fallback':
             where = "at nearest weapon (can't stream at start)"
+        elif str(bkey).startswith('point'):
+            # a fixed drop point: Halo 3's enhancer marker, or a grenade marker
+            where = 'at enhancer marker %d' % (int(str(bkey)[5:] or 0) + 1)
         elif anchor:
             where = 'at start anchor'
         else:
