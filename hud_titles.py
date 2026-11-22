@@ -92,6 +92,71 @@ HIDERS = {
 }
 
 
+# THIRD-GENERATION SCOPE (Halo 3, ODST, Reach). A hide counts only inside a script that
+# shows a title -- it calls cinematic_set_title, or it is named for a chapter or title
+# (Reach's f_hud_chapter / cinematic_exit_into_title; Halo 3's chapter_start). Every
+# other hide is cutscene machinery: cinematic_fade_to_black / snap_to_black /
+# preparation, perspective_start, insertion_start, f_play_cinematic, the Gravemind HUD
+# flicker. Removing those kept the HUD up INSIDE cutscenes -- Mombasa Streets' ending
+# showed it, and Player 1 looked wrong on the summary screen (play session
+# 2026-11-21). Measured on the baselines: h100 0 of 24 hides belong to a title (ODST's
+# titles never hide the HUD), 040 / 010 0 of 12 (the rebuilt kit already dropped
+# chapter_start's), Reach m10 2 of 10.
+# game -> (Scripts block offset, element size, Root Expression offset, name kind)
+SCRIPTS = {'Halo 3': (0x3EC, 0x34, 0x24, 'ascii'),
+           'Halo 3: ODST': (0x42C, 0x34, 0x24, 'ascii'),
+           'Halo Reach': (0x430, 0x18, 0x8, 'sid')}
+TITLE_WORDS = ('chapter', 'title')
+
+
+def _title_owned(t):
+    """Expression indices reachable from a script that shows a title (see above)."""
+    spec = SCRIPTS.get(t.game)
+    m, scnr = t.m, getattr(t, 'scnr', None)
+    if not spec or scnr is None:
+        return set()
+    off, es, ro, kind = spec
+    n = max(0, m.i32(scnr + off))
+    base = t.block_base(m, scnr + off) if n else None
+    if not base:
+        return set()
+    sid_name = None
+    if kind == 'sid':
+        try:
+            import player_armour as _pa
+            sid_name = _pa.sid_name
+        except Exception:
+            sid_name = None
+    out = set()
+    for k in range(n):
+        e = base + k * es
+        if kind == 'ascii':
+            name = bytes(m.data[e:e + 0x20]).split(b'\0')[0].decode('latin-1')
+        else:
+            try:
+                name = (sid_name(m, t.game, m.u32(e)) if sid_name else '') or ''
+            except Exception:
+                name = ''
+        root = m.u32(e + ro)
+        body, stack = set(), ([root & 0xFFFF] if root != TERMINATOR else [])
+        while stack:
+            i = stack.pop()
+            if i in body or not (0 <= i < t.n):
+                continue
+            body.add(i)
+            r = t.at(i)
+            if r['next'] != TERMINATOR:
+                stack.append(r['next'] & 0xFFFF)
+            if r['vtype'] != T_FUNCNAME and not t.primitive(i) and r['value'] != TERMINATOR:
+                stack.append(r['value'] & 0xFFFF)
+        titled = any(w in name.lower() for w in TITLE_WORDS) or any(
+            t.at(i)['vtype'] == T_FUNCNAME and t.at(i)['string'] == 'cinematic_set_title'
+            for i in body)
+        if titled:
+            out |= body
+    return out
+
+
 # HALO 4 moved compiled scripts out of the scenario into `hsdt` tags (hs_script_data,
 # described by the plain Halo4 plugin set, not Halo4MCC): Expressions at +0x48, String
 # Constants dataRef at +0x54. There is one for the global script container and one per
@@ -149,6 +214,7 @@ class Tree:
         else:
             eoff, soff = SCRIPT_BLOCKS[self.game]
             owner = scnr_base
+            self.scnr, self.block_base = scnr_base, block_base
             self.lay = LAYOUTS['h2' if self.game == 'Halo 2' else 'gen3']
         self.size = self.lay['size']
         self.n = max(0, m.i32(owner + eoff))
@@ -336,6 +402,9 @@ def survey(t):
     # Halo 2's scope is decided ONCE, on the untouched tree: skipping a statement
     # changes who precedes whom, so a chain head read in a later pass can be wrong.
     old = t.game in ('Halo 1', 'Halo 2')
+    gen3 = t.game in SCRIPTS
+    if gen3 and not hasattr(t, 'title_scope'):
+        t.title_scope = _title_owned(t)          # once, on the untouched tree
     first = old and not hasattr(t, 'h2_scope')
     if first:
         t.h2_scope, titled = set(), _title_chains(t, pred, child_of)
@@ -353,12 +422,16 @@ def survey(t):
         if r['string'] in HIDE_STRINGS:
             arg = a['string'] if a else None
             hide = arg in HIDE_STRINGS[r['string']]
+            if hide and gen3:
+                hide = group in t.title_scope
             if hide and group is not None:
                 group = _lift_if(t, group, pred, child_of)
             out.append((r['string'], i, group, arg, hide))
             continue
         arg = t.number(a)
         hide = arg is not None and hiders[r['string']](arg)
+        if hide and gen3:
+            hide = group in t.title_scope    # else a cutscene's hide, not a title beat
         if hide and old:
             if first and t.game == 'Halo 2' and _chain_head(group, pred) in titled:
                 t.h2_scope.add(group)

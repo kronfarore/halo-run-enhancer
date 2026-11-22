@@ -10989,10 +10989,18 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             # a skip that is IN EFFECT: the map was built without the hide calls, so
             # the HUD already stays up (read as "skipped but applies" in the 2026-10-17
             # co-op logs)
-            row.update(ok=True, skip=True,
-                       reason='already in the map: it was built without the title hide '
-                              'calls, so the HUD stays up (%d restore(s) kept)'
-                              % rep.get('kept', 0))
+            if str(game).strip() in hud_titles.SCRIPTS:
+                # Halo 3 / ODST / Reach: only a title's own hides are removed; the
+                # rebuilt Halo 3 kit has none left, and ODST's titles never hide
+                row.update(ok=True, skip=True,
+                           reason='no chapter title hides the HUD on this level; the '
+                                  'cutscene fades stay (%d HUD call(s) kept)'
+                                  % rep.get('kept', 0))
+            else:
+                row.update(ok=True, skip=True,
+                           reason='already in the map: it was built without the title '
+                                  'hide calls, so the HUD stays up (%d restore(s) kept)'
+                                  % rep.get('kept', 0))
         elif rep.get('ok'):
             row.update(ok=True, skip=False,
                        old='hidden',
