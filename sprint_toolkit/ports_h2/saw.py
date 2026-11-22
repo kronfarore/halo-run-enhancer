@@ -207,8 +207,12 @@ PORT = {
             (SAW + r'\saw.weapon', 'minimum error', 'barrels', 0, 1, 0.0),
             (SAW + r'\saw.weapon', 'error angle', 'barrels', 0, 1, [0.3, 2.75]),
             (SAW + r'\saw.weapon', 'deceleration time', 'barrels', 0, 1, 0.49),
-            (SAW + r'\damage_effects\saw_bullet.damage_effect', 'damage lower bound', '', 0, 0, 7.5),
-            (SAW + r'\damage_effects\saw_bullet.damage_effect', 'damage upper bound', '', 0, 0, [7.5, 7.5]),
+            # HALO 2'S FIRE RULE (reports/h2_fire_rule.jsonl, 2026-11-22; user: 'Change both weapons'): a shot
+            # every ceil(30 / rate) ticks of 30 Hz, so the 20/s tag fires 15/s (the SMG's). The tag stays 20
+            # (fires 15 robustly; a More Shooting step down to 18 still fires 15, where 15 x 0.9 would drop
+            # to 10/s) and each round carries Halo 4's 7.5 x 20 / 15 = 10: Halo 4's damage per second at 15/s
+            (SAW + r'\damage_effects\saw_bullet.damage_effect', 'damage lower bound', '', 0, 0, 10.0),
+            (SAW + r'\damage_effects\saw_bullet.damage_effect', 'damage upper bound', '', 0, 0, [10.0, 10.0]),
             (SAW + r'\damage_effects\saw_bullet.damage_effect', 'instantaneous acceleration', '', 0, 0, 0.15),
             # Halo 4's own card-covered values (the DEFAULT side of the catalog rows, as the AR wrote
             # Halo 3's): aim assist, the bullet's speed and reach
@@ -540,7 +544,15 @@ PORT = {
             # bound's x1.25
             **{f: {'value': v, 'note': "user 2026-10-23: the sibling ratio (the AR's rule) -- Halo 4's "
                                        "0 / 0.3-2.75 x the cone's upper-bound ratio 1.25"}
-               for f, v in (('Minimum Error', 0.0), ('Error Angle', 0.375), ('Error Angle Max', 3.4375))}},
+               for f, v in (('Minimum Error', 0.0), ('Error Angle', 0.375), ('Error Angle Max', 3.4375))},
+            # HALO 2'S FIRE RULE (2026-11-22, user: 'Change both weapons'): the 20/s tag fires 15/s, so
+            # each round x 20 / 15 on BOTH sides -- the table's (7.5 / 7.125 / 0) times 4/3; `original`
+            # too, or the Original box writes Halo 4's per-round 7.5 back at 15/s
+            **{f: {'value': v, 'original': 10.0,
+                   'note': "Halo 2 fires the 20/s tag at 15/s (a shot every 2 ticks of 30 Hz; "
+                           "reports/h2_fire_rule.jsonl): per-round damage x 4/3 keeps the damage per second"}
+               for f, v in (('Damage Lower Bound', 0.0), ('Damage Upper Bound', 9.5),
+                            ('Damage Upper Bound Max', 9.5))}},
         'fp_animations': r'objects\characters\*\fp\weapons\rifle\fp_saw\fp_saw',
         # built at Halo 4's own 128 frames, the card takes it to the balanced 109
         'reload_mult': round(109.0 / 128.0, 6),

@@ -23,7 +23,12 @@ read "A1: what the Assault Rifle taught" (end of this file) before A2.
 
 **SAW: REWORKED, status 'done' again (2026-10-23/26)** -- rebuilt on the AR's recipe with Halo 4's
 own first-person animations, nothing of the GPMG left (read "SAW rework: what it taught", end of this
-file). It ships with the batched 13-level rebuild like the AR / Spike Rifle / Flamethrower. **Halo 2 Armed
+file). It ships with the batched 13-level rebuild like the AR / Spike Rifle / Flamethrower. **Fire-rule
+re-balance (2026-11-22, user: 'Change both weapons'):** Halo 2 fires the 20/s tag at 15/s (a shot every
+ceil(30 / rate) ticks, reports/h2_fire_rule.jsonl), so per-round damage x 4/3: tag 7.5 -> 10, catalog
+Balanced 7.125 -> 9.5 and `original` 10 (value_overrides). The tag rate stays 20 (fires 15 robustly; a
+More Shooting step down to 18 still fires 15). Damage per second back to Halo 4's: 150 Default / 142.5
+Balanced (Elite minor 0.93 / 1.00 s; reports/h2_saw_5b.txt); the 72-round box lasts 4.8 s. **Halo 2 Armed
 cards**: their own session (0.5's split; the enhancer session owns the enhancer's files).
 
 ## Phase 0: DONE (2026-10-20)
