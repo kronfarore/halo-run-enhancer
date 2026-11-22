@@ -174,6 +174,8 @@ SPARE_LOOSE_GAMES = ('Halo Reach', 'Halo 4')
 MODEL_GRAPHS_ONLY = ('Halo 4',)
 #: games where a weapon type without an idle takes its actions from the mode's class 'any'
 ACTION_ANY_GAMES = ('Halo 4',)
+#: games whose spawn points with a character and weapon -1 (the default) are armed too
+SP_DEFAULT_GAMES = ('Halo 4',)
 #: games whose pose donors go in TEACH_DONORS order (Halo 4 boot 3: the Focus Rifle port, first by
 #: path, gave Grunts a sniper's aim -- the taught DMR / SAW pointed up when firing)
 POSE_PREFER_GAMES = ('Halo 4',)
@@ -616,7 +618,9 @@ POSE_OK = ('Marine',)
 #: NATIVE pairs taught anyway (boot 7: the Grunt's own turret pose holds the Machine Gun Turret
 #: pointing up): rocket pose + body-frame grip like the taught turrets
 REPOSE_BY_GAME = {'Halo 3': {'Grunt': ('machinegun_turret', 'plasma_cannon')},
-                  'Halo 3: ODST': {'Grunt': ('machinegun_turret', 'plasma_cannon')}}
+                  'Halo 3: ODST': {'Grunt': ('machinegun_turret', 'plasma_cannon')},
+                  # Halo 4 boot 5 (2026-11-22): Elites point the Machine Gun Turret up even at idle
+                  'Halo 4': {'Elite': ('machinegun_turret', 'plasma_turret')}}
 REPOSE = REPOSE_BY_GAME['Halo 3']                   # bind() points it at the game's
 GRIP_NAME = {'Grunt': 'right_hand_grunt', 'Jackal': 'left_hand_jackal', 'Marine': 'right_hand_marine',
              'Bugger': 'right_hand_jackal'}
@@ -627,7 +631,7 @@ BIPD_PREFERRED = 0x1A4
 #: per game: the biped names per species (Halo 4: storm_*)
 GRIP_BIPEDS_BY_GAME = {'Halo 4': {'Grunt': ('storm_grunt',), 'Jackal': ('storm_jackal',),
                                   'Marine': ('storm_marine', 'storm_marine_female'),
-                                  'Elite': ('storm_elite',), 'Knight': ('storm_knight',)}}
+                                  'Elite': ('storm_elite_ai',), 'Knight': ('storm_knight',)}}
 #: the off-hand (IK) markers compared, most specific first (then any 'left_hand*')
 OFFHAND = {'Marine': ('left_hand_marine', 'left_hand'), 'Grunt': ('left_hand',),
            'Jackal': ('left_hand',), 'Bugger': ('left_hand',), 'Skirmisher': ('left_hand',)}
@@ -875,7 +879,7 @@ def grip_name(m, hp, enemy):
     return None
 
 
-def grip(m, hp, enemy, weapon, donor, style=None):
+def grip(m, hp, enemy, weapon, donor, style=None, replace=False):
     """The grip marker GRIP_NAME[enemy] on `weapon`'s render model, placed so the weapon's
     off-hand marker lands where the `donor`'s does in the hand (the donor is held at its origin):
     M = L_weapon * inverse(L_donor). The species' biped is pointed at that marker name (only
@@ -886,8 +890,9 @@ def grip(m, hp, enemy, weapon, donor, style=None):
     mt, md = _render_model(m, hp, weapon), _render_model(m, hp, donor)
     if sid is None or mt is None or md is None:
         return dict(row, reason='no %s id / render model in this map' % name)
-    if any(m.u32(g) == sid for g in m.follow_all(mt, [MODE_GROUPS], [MODE_GROUP_ES], 'all')):
-        # Bungie's own grip for this species (Reach): keep it
+    if not replace and any(m.u32(g) == sid for g in m.follow_all(mt, [MODE_GROUPS], [MODE_GROUP_ES], 'all')):
+        # Bungie's own grip for this species (Reach): keep it -- unless the pair is RE-POSED (its own
+        # marker belongs to the native pose being replaced: Halo 4 Elite turrets)
         return dict(row, ok=True, new='keeps its own %s marker' % name)
     off = OFFHAND.get(enemy, ('left_hand',))
     lt, ld = _marker(m, hp, mt, off), _marker(m, hp, md, off)
@@ -955,7 +960,8 @@ def teach(m, hp, graphs, wanted):
             info = weapon_info(m, tags.get(w.lower(), w))
             if base in NOT_TAUGHT or not info:
                 continue
-            named = _named_type_class(graphs, gs, info)
+            # a REPOSE pair (native, badly posed) never takes its own named animations
+            named = None if base in REPOSE.get(enemy, ()) else _named_type_class(graphs, gs, info)
             if named:
                 for g, cl in named:
                     g['wl'][info['name']] = cl
@@ -1018,7 +1024,8 @@ def teach(m, hp, graphs, wanted):
                     rows.append({'tag': 'jmad ' + enemy, 'field': 'taught: ' + base, 'ok': True,
                                  'new': 'held as the %s (%d graphs)' % (d, len(gs))})
                     if base in GRIP_FIX:
-                        grips.append((enemy, tags.get(w.lower(), w), dp, None))
+                        grips.append((enemy, tags.get(w.lower(), w), dp,
+                                      'repose' if base in REPOSE.get(enemy, ()) else None))
                     break
             if w in taught.get(enemy, ()) or base not in GRIP_FIX or GAME not in POSE_PREFER_GAMES:
                 continue
@@ -1069,7 +1076,10 @@ def teach(m, hp, graphs, wanted):
     # search happened to land on them (Brute Shot yes, Rocket Launcher / turrets no). The whole
     # list is rewritten sorted.
     for enemy, w, dp, style in grips:
-        rows.append(grip(m, hp, enemy, w, tags[dp], style))
+        if style == 'repose':
+            rows.append(grip(m, hp, enemy, w, tags[dp], 'body', replace=True))
+        else:
+            rows.append(grip(m, hp, enemy, w, tags[dp], style))
     for cls_el, new in types.items():
         if not _grow_sorted(m, hp, cls_el + JM_TYPE_SUB, JM_TYPE_ES, new):
             rows.append({'tag': 'jmad', 'field': 'animation types', 'ok': False,
@@ -1625,7 +1635,11 @@ def _arm_cells(m, hp, base, widx, info, graphs, type_of, draw, count, jackal_shi
             own_c, own_w = _i16(m, sp + SP_CHAR), _i16(m, sp + SP_WEAP)
             types = {type_of(own_c)} if own_c >= 0 else kinds.get(cell, {None})
             w = armed.get(cell)
-            if own_w >= 0 and None not in types:
+            # (Halo 4 boot 5, 2026-11-22) most Knights -- and many others -- spawn from a spawn point
+            # naming its own character and NO weapon (-1: the character's default) in an empty cell:
+            # such a point is drawn for as well, or it keeps the default weapon
+            default_sp = own_w < 0 and own_c >= 0 and w is None and GAME in SP_DEFAULT_GAMES
+            if (own_w >= 0 or default_sp) and None not in types:
                 enemy = next(iter(types))
                 c0 = own_c if own_c >= 0 else -1
                 team = squad_team if squad_team > 0 else (char_team[c0] if 0 <= c0 < len(char_team) else None)

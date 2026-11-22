@@ -222,9 +222,16 @@ SHIPPED_V4 = {'Grunt': 'storm_lmg', 'Jackal': 'storm_plasma_turret', 'Elite': 's
 #: Knights do carry not. Boot 5 (user: one experiment boot): the Plasma Turret's Support Weapon flag
 #: CLEARED on this test map only (knowledge -- shipping it would change the player's turret); the rest
 #: unseen pairs
-SHIPPED = {'Grunt': 'storm_forerunner_incineration_launcher', 'Jackal': 'storm_spartan_laser',
+SHIPPED_V5 = {'Grunt': 'storm_forerunner_incineration_launcher', 'Jackal': 'storm_spartan_laser',
+              'Elite': 'storm_machinegun_turret', 'Knight': 'storm_plasma_turret'}
+#: boot 5 RESULT (2026-11-22): Grunt Incineration Cannon + Jackal Spartan Laser good; Elites point the
+#: MG Turret up even at idle (-> REPOSE Elite turrets); SOME Knights carry + fire the Plasma Turret
+#: elsewhere in the map -- the flag was never the block: most Knights spawn from spawn points naming
+#: their character and weapon -1 (default) in empty cells, which the pass skipped (-> SP_DEFAULT_GAMES).
+#: Boot 6: Knight Plasma Turret again (flag as shipped), Elite MG Turret re-posed, unseen pairs
+SHIPPED = {'Grunt': 'storm_forerunner_smg', 'Jackal': 'storm_forerunner_sniper_rifle',
            'Elite': 'storm_machinegun_turret', 'Knight': 'storm_plasma_turret'}
-CLEAR_SUPPORT = ('storm_plasma_turret',)       # weap +0x2A0 bit 8
+CLEAR_SUPPORT = ()                             # boot 5's experiment: weap +0x2A0 bit 8
 WEAP_FLAGS2, SUPPORT_BIT = 0x2A0, 1 << 8
 HAMMER_TEST = False
 
