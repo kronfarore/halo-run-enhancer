@@ -5734,8 +5734,14 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
             k = ring.get(rkey, 0)
             ring[rkey] = k + 1
             if k and radius > 0:
-                ang = k * 1.9
-                pos = (ax + radius * math.cos(ang), ay + radius * math.sin(ang), az + LIFT)
+                # An even spiral (golden-angle steps, distance sqrt(k) x spacing), not
+                # one fixed ring: on a 0.25 ring with 1.9 rad steps, items 1 and 4 sat
+                # 0.1 rad apart, and on Halo the Sniper Rifle -- the longest gun, among
+                # 5-7 others -- never showed up at the marker (play session
+                # 2026-11-21; nothing in the map data rejects it). Spacing at least 0.3.
+                rr = max(radius, 0.3) * math.sqrt(k)
+                ang = k * 2.39996
+                pos = (ax + rr * math.cos(ang), ay + rr * math.sin(ang), az + LIFT)
             else:
                 pos = (ax, ay, az + LIFT)
             loaded = total = None
@@ -8764,6 +8770,10 @@ def _keep_reticle(m, game, weap_plugin=None):
 # has none level-1-only at all. So: on a weapon that ends with 2+ levels and whose HUD
 # has NO level-2-only state, every level-1-only state also shows at level 2. Widgets
 # and their bitmap / text children all keep State Data at +0x8.
+# Halo 1 needs nothing: a zoom overlay (crosshair type 1) picks its sprite by zoom
+# level from its bitmap sequence, and all 350 zoom overlays on the ten baselines have
+# 2+ sprites (the pistol and rocket launcher share sequence 1 with the sniper rifle),
+# so level 2 shows that sequence's second sprite rather than nothing.
 def _h3_hud_state_elems(m, game, hud):
     """[element base] of every widget and child carrying State Data in one HUD."""
     B = _chud_blocks(game)
