@@ -6789,6 +6789,25 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     # path below, which is what still serves Halo 3 and ODST.
     points = spec.get('points')         # [(pos, mask) or None per group]: fixed drops
     stack = bool(spec.get('stack'))     # every item exactly ON its point, no ring
+    if str(game).strip() == 'Halo 3' and not points:
+        # The rebuilt Halo 3 maps carry enhancer_marker1/2, and the starting weapons
+        # already go there (_apply_spawn_weapons_h3) -- the equipment went to the
+        # start anchor or the Player Starting Location instead, 130 units away on The
+        # Storm (play session 2026-11-21). Not the Reach route above: Halo 3's marker
+        # placements ship with Can Attach To BSP 0 and would never render if enabled,
+        # so the items are APPENDED at the marker with the mask of the BSP there.
+        # Player 2 without a marker of their own shares marker 1.
+        named = reach_named_markers(m, game)
+        qoff, qes = lay['items']
+        qbase = _block_base(m, scnr_base + qoff)
+        mk = {}
+        for mi in (1, 2):
+            pi = named.get('%s%d' % (REACH_MARKER_PREFIX, mi)) if qbase else None
+            if pi is not None:
+                pos = struct.unpack_from('<fff', m.data, qbase + pi * qes + _EQ_POS)
+                mk[mi - 1] = (pos, _h3_mask_at(m, pos, game))
+        if mk:
+            points = [mk.get(gi) or mk.get(0) for gi in range(len(groups))]
     if str(game).strip() in MARKER_GAMES and not points:
         # A prepared Reach map ships one inert equipment placement per ability, put
         # where the designer wants it, and two of them are NAMED as the players'
