@@ -1571,7 +1571,7 @@ CONFIG = {
     # Skull round once per game (user, 2026-11-22): one random map of each game where
     # every offer of ONE player carries a skull, so exactly one skull is guaranteed per
     # game; the player alternates from game to game. RunState.skull_rounds.
-    "skull_round_per_game": False,
+    "skull_round_per_game": True,
     # Options -> Patching -> Bugfixes: fixes to Bungie's own data. Off = vanilla.
     "bugfix_h2_fuel_rod": False,
     # Halo 2: human vehicle rows award points on levels with no human ally
@@ -11295,7 +11295,9 @@ class OptionsDialog(QDialog):
         self.skull_round_cb.setChecked(bool(CONFIG.get('skull_round_per_game')))
         self.skull_round_cb.setToolTip(
             "When the run reaches a game, one of its maps (this one or a later one) is "
-            "picked at random. On that map every offer of ONE player carries a skull, "
+            "picked at random -- only among levels whose recommended step deals pairs "
+            "(Generate or Weapon Identity), so following the Next recommended step always "
+            "reaches it; that button marks the level. On that map every offer of ONE player carries a skull, "
             "so exactly one skull is guaranteed per game. The player alternates: "
             "Player 1 in the first game, Player 2 in the next, and so on. The pair "
             "titles say 'SKULL ROUND'.\n\nThe choice is stored in the run, so a co-op "
@@ -16647,22 +16649,7 @@ class HaloGUI(QMainWindow):
                   'identity': "🧬 WEAPON IDENTITY"}
 
     def _recommended_kind(self, mission_index):
-        """What to draw first on a level, by its place in its game (user, 2026-10-03):
-        the first level gets New Anything -- or, when the new-weapon / new-equipment
-        chance is already non-zero (so rounds deal them anyway), the one still at zero,
-        and a normal round when both are non-zero; the second level gets Weapon
-        Identity; any later level a normal round."""
-        if mission_index == 0:
-            w = float(CONFIG.get('new_weapon_chance', 0) or 0) > 0
-            e = float(CONFIG.get('new_equipment_chance', 0) or 0) > 0
-            if not w and not e:
-                return 'anything'
-            if w and e:
-                return 'generate'
-            return 'equipment' if w else 'weapon'
-        if mission_index == 1:
-            return 'identity'
-        return 'generate'
+        return recommended_kind(mission_index)
 
     def _sync_rec_step(self):
         btn = getattr(self, 'rec_step_btn', None)
@@ -16675,7 +16662,21 @@ class HaloGUI(QMainWindow):
             mi = nxt[1] if nxt else -1
         kind = self._recommended_kind(mi) if mi >= 0 else None
         self._rec_kind = kind
-        btn.setText(self._REC_STEPS.get(kind, "— (last level)"))
+        text = self._REC_STEPS.get(kind, "— (last level)")
+        # The skull round of the level shown (chosen here the first time a game's
+        # level is shown, so the box can say which level it is)
+        sr = None
+        if kind and getattr(self, 'enhancer', None) is not None:
+            try:
+                g = (self.game_combo.currentText() if self._rec_armed
+                     else self.game_combo.itemText(nxt[0]))
+                mid_list = [m for m, _n in self.db.get_missions_for_game(g)]
+                sr = self.enhancer.skull_round(g, mid_list[mi]) if 0 <= mi < len(mid_list) else None
+            except Exception:
+                sr = None
+        if sr:
+            text += "  ·  💀 SKULL ROUND (%s)" % ('P1' if sr.get('player') == 'player1' else 'P2')
+        btn.setText(text)
         btn.setEnabled(bool(kind) and self._rec_armed)
         btn.setToolTip("Unlocked by NEXT LEVEL, for the level it moves to; one press."
                        if not self._rec_armed else "The recommended first draw on this level.")
@@ -19181,6 +19182,30 @@ class HaloGUI(QMainWindow):
         else:
             self.on_generate()
         
+def recommended_kind(mission_index):
+    """What to draw first on a level, by its place in its game (user, 2026-10-03):
+    the first level gets New Anything -- or, when the new-weapon / new-equipment
+    chance is already non-zero (so rounds deal them anyway), the one still at zero,
+    and a normal round when both are non-zero; the second level gets Weapon
+    Identity; any later level a normal round. Shared by the Next level box and the
+    skull round, which only lands where this is a pair round."""
+    if mission_index == 0:
+        w = float(CONFIG.get('new_weapon_chance', 0) or 0) > 0
+        e = float(CONFIG.get('new_equipment_chance', 0) or 0) > 0
+        if not w and not e:
+            return 'anything'
+        if w and e:
+            return 'generate'
+        return 'equipment' if w else 'weapon'
+    if mission_index == 1:
+        return 'identity'
+    return 'generate'
+
+
+# Recommended steps that draw PAIRS, i.e. carry the Other slot a skull round fills.
+PAIR_ROUND_STEPS = ('generate', 'identity')
+
+
 class RunEnhancer:
     def __init__(self, db, run_state):
         self.db = db
@@ -19590,7 +19615,13 @@ class RunEnhancer:
             missions = [m for m, _n in self.db.get_missions_for_game(game)]
             if mid not in missions:
                 return None
-            later = missions[missions.index(mid):]
+            here = missions.index(mid)
+            # Only where the recommended first draw deals PAIRS: a New Anything /
+            # Weapon / Equipment draw has no Other slot, so a skull map on a game's
+            # first level would pass without its skull when the step is followed.
+            later = ([m for i, m in enumerate(missions) if i >= here
+                      and recommended_kind(i) in PAIR_ROUND_STEPS]
+                     or missions[here:])
             e = sr[game] = {'mission': random.choice(later),
                             'player': 'player2' if len(sr) % 2 else 'player1',
                             'done': False}
