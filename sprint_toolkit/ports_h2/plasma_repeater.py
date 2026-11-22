@@ -146,8 +146,11 @@ PORT = {
                     # BOOT 2 (user's screenshots: the fill stops short at the highest heat before the overheat): Halo 2's
                     # last bolt before the overheat lands near 0.93 heat -> the ramp reaches the bar's END at 0.9
                     # heat: window 0.02 .. 0.02 + 0.98 / 0.9 = 1.109 (u 1 = 0.9)
+                    # BOOT 3 (user: 'fills up completely a little too early -- move it a bit further back'): the last
+                    # bolts before the overheat land at 0.89 / 0.95, the overheat bolt at 1.005 (the reset rule's
+                    # simulation) -> full at 0.97: window 0.02 .. 0.02 + 0.98 / 0.97 = 1.030 (the bolt before 98 %)
                     (None, 'plasma_repeater_gauge_meter', PRW + r'\bitmaps\plasma_rifle_heat_gauge',
-                     ('gradient', 'u', False, (0.02, 1.109), 'alpha'), (128, 32)),
+                     ('gradient', 'u', False, (0.02, 1.030), 'alpha'), (128, 32)),
                     # the SHAPE: Reach's gauge art (its red channel: a bold slanted frame + a hook glyph; its alpha is
                     # only the fill-order ramp). Boot 2 tried the whole quad (boot 1's 'the dim light is not completely
                     # filling the entire bar' read as the strokes alone) -- a plain rectangle; user after boot 2 (an
@@ -209,6 +212,11 @@ PORT = {
                    (MAT + r'\plasma_rifle.material_effects', FX + r'\plasma_repeater_bolt.material_effects'),
                    # its own HUD (step 7): the PR's -- battery count, heat meter, plate, reticle, backpack
                    (r'ui\hud\pr_hud.new_hud_definition', r'ui\hud\plasma_repeater.new_hud_definition')],
+        # THE 3P LABEL (boot 3, user: 'Elites hold it in one hand'): the PR clone's rifle / pr -- the Elite graph has `pr`
+        # only under `pistol` (its one-handed plasma rifle hold). rifle / cb (the Carbine's) is a two-handed type in the
+        # Elite, Dervish and Chief graphs; the Needle Rifle's Armed test passed on it, all seven species
+        'string_ids': {'rifle': 'rifle', 'pr': 'cb'},
+        'string_ids_done': ('weapon name', 'cb'),
         # step 4a (user): the bolt is Reach's plasma_fast -- Halo 2 has that group (its own rows)
         # CHECK 10 (the muzzle-flash rule): the PR's flash_c_generic_med fans two sprites SIDEWAYS (+-0.06 wu, +-120 deg,
         # both trigger effects, first and third person); Reach's five flash systems all sit at the bore -> the pair
