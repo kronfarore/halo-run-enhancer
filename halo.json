@@ -16584,7 +16584,7 @@
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\bubbleshield_equipment\\bubbleshield_equipment",
 				"targets": [
-					{ "step": "*1.2", "field": "Spawn Velocity", "block": "Spawner", "index": 0, "easier_when": "increased" }
+					{ "step": "*1.5", "field": "Spawn Velocity", "block": "Spawner", "index": 0, "easier_when": "increased" }
 				]
 			}
 		},
@@ -16629,7 +16629,7 @@
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\instantcover_equipment\\instantcover_equipment",
 				"targets": [
-					{ "step": "*1.2", "field": "Spawn Velocity", "block": "Spawner", "index": 0, "easier_when": "increased" }
+					{ "step": "*1.5", "field": "Spawn Velocity", "block": "Spawner", "index": 0, "easier_when": "increased" }
 				]
 			}
 		},
@@ -16857,7 +16857,7 @@
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\regenerator_equipment\\regenerator_equipment",
 				"targets": [
-					{ "step": "*1.2", "field": "Spawn Velocity", "block": "Spawner", "index": 0, "easier_when": "increased" }
+					{ "step": "*1.5", "field": "Spawn Velocity", "block": "Spawner", "index": 0, "easier_when": "increased" }
 				]
 			}
 		},
@@ -16939,7 +16939,7 @@
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\gravlift_equipment\\gravlift_equipment",
 				"targets": [
-					{ "step": "*1.2", "field": "Spawn Velocity", "block": "Spawner", "index": 0, "easier_when": "increased" }
+					{ "step": "*1.5", "field": "Spawn Velocity", "block": "Spawner", "index": 0, "easier_when": "increased" }
 				]
 			}
 		},
