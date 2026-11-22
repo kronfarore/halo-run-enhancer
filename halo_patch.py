@@ -10394,7 +10394,8 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               add_respawn_profile=False, extra_squads=None, tartarus=None,
               keep_title_hud=False, keep_loadout=False, skip_space=False,
               skip_flight=False, hostile_sentinels=False, enemy_colors=None,
-              h4_keep_loadout=False, h3_keep_loadout=False, clear_profile_equipment=False,
+              h4_keep_loadout=False, h3_keep_loadout=False, odst_skip_tutorial=False,
+              clear_profile_equipment=False,
               clear_profile_grenades=False, spawn_grenades=None,
               h4_ability_visibility=None, h1_enemy_weapons=None, h2_enemy_weapons=None,
               h3_enemy_weapons=None,
@@ -11209,6 +11210,22 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 row.update(ok=True, old='vanilla',
                            new=rep.get('reason') or '%d of %d reset call(s) removed (%s)'
                            % (rep['removed'], rep['found'], ', '.join(rep['profiles'])))
+            else:
+                row.update(ok=False, reason=rep.get('reason', 'script edit failed'))
+            results.append(row)
+
+    if odst_skip_tutorial and str(game).strip() == 'Halo 3: ODST':
+        # Mombasa Streets: skip the Rookie's tutorial, map from the pod (odst_scripts.py)
+        import odst_scripts
+        mission = os.path.splitext(os.path.basename(map_path))[0].lower()
+        rep = odst_scripts.skip_tutorial(m, mission, _block_base, _scnr_base(m))
+        if not rep.get('quiet'):
+            row = {'tag': 'scnr', 'field': 'level script',
+                   'effect': 'Skip the tutorial (map from the start)'}
+            if rep.get('skip'):
+                row.update(ok=True, skip=True, reason=rep.get('reason'))
+            elif rep.get('ok'):
+                row.update(ok=True, old='vanilla', new=rep.get('reason'))
             else:
                 row.update(ok=False, reason=rep.get('reason', 'script edit failed'))
             results.append(row)

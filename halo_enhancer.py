@@ -459,7 +459,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'odst_red_plasma_as_brute', 'odst_variants_as_base',
                'odst_downgrade_unupgraded', 'odst_shield_into_health',
                'odst_patch_hub', 'odst_pools_from_map',
-               'odst_all_starting_profiles', 'odst_ai_equipment_drops',
+               'odst_all_starting_profiles', 'odst_ai_equipment_drops', 'odst_skip_tutorial',
                'odst_escort_buff', 'odst_equipment_all_insertions',
                'odst_profiles_by_insertion', 'carry_magnitudes_across_games',
                'other_chance', 'other_weights', 'other_hero_enabled', 'armed_max_share',
@@ -1509,6 +1509,9 @@ CONFIG = {
     # Chance card has nothing to act on there. With this on, the flag is cleared on
     # every eqip tag in the map so AI can drop equipment again and the card works.
     "odst_ai_equipment_drops": False,
+    # Mombasa Streets: skip the Rookie's tutorial and have the map (PDA) from the pod
+    # (odst_scripts.skip_tutorial; user, play session 2026-11-21). Off until seen in game.
+    "odst_skip_tutorial": False,
     # Data Hive and Coastal Highway fail if the Engineer (or, on Coastal Highway, the
     # olifaunt) dies, and neither scales with the run. On, the player's own vitality
     # cards are mirrored onto them. See ESCORT_BUFF_TAGS for the measured numbers.
@@ -10643,7 +10646,8 @@ class MagnitudeEditorDialog(QDialog):
                 extra_squads=(CONFIG.get('h2_extra_squads') or {}).get(self.mission_id),
                 tartarus=(CONFIG.get('h2_tartarus') if self.mission_id == '08b' else None),
                 equipment_ai_drops=bool(CONFIG.get('odst_ai_equipment_drops'))
-                and self.game == 'Halo 3: ODST'))
+                and self.game == 'Halo 3: ODST',
+                odst_skip_tutorial=bool(CONFIG.get('odst_skip_tutorial'))))
         except Exception as e:
             QMessageBox.critical(self, "Patch failed", _patch_error_text(e))
             return
@@ -10685,7 +10689,8 @@ class MagnitudeEditorDialog(QDialog):
                     odst_downgrade=self._odst_downgrade_keep(),
                     no_level_prepare=bool(CONFIG.get(PRELOAD_KEYS['odst'])),
                 equipment_ai_drops=bool(CONFIG.get('odst_ai_equipment_drops'))
-                and self.game == 'Halo 3: ODST'))
+                and self.game == 'Halo 3: ODST',
+                odst_skip_tutorial=bool(CONFIG.get('odst_skip_tutorial'))))
                 ok = sum(1 for r in hub_results if r.get('ok') and not r.get('skip'))
                 results.append({'effect': 'Mombasa Streets (hub)',
                                 'tag': Path(hub).name, 'ok': True,
@@ -13161,6 +13166,17 @@ class OptionsDialog(QDialog):
             "gives the Brute Drop Chance card something to act on, instead of tuning "
             "weights the flag was overriding outright.")
         odform.addRow("ODST AI drops:", self.odst_ai_drops_cb)
+        self.odst_skip_tutorial_cb = QCheckBox("Mombasa Streets: skip the tutorial, map from the start")
+        self.odst_skip_tutorial_cb.setChecked(bool(CONFIG.get('odst_skip_tutorial')))
+        self.odst_skip_tutorial_cb.setToolTip(
+            "On: the Rookie's tutorial (look, stamina / health, VISR, PDA, beacon "
+            "training) counts as done from the start, the 'repeat training?' prompt is "
+            "gone, and the map (PDA) works as soon as you leave the pod. The "
+            "Superintendent's story beats still play. Uses Bungie's own debug script "
+            "(test_training_complete). Not yet seen in game -- off by default. "
+            "Mombasa Streets must be patched before the campaign starts: MCC keeps "
+            "it open for the whole ODST run.")
+        odform.addRow("ODST tutorial:", self.odst_skip_tutorial_cb)
 
         self.odst_escort_cb = QCheckBox(
             "ODST: buff the Engineer and the olifaunt on Data Hive / Coastal Highway")
@@ -14932,6 +14948,7 @@ class OptionsDialog(QDialog):
             'h4_spawn_all_weapons': self.h4_spawn_all_cb.isChecked(),
             'odst_all_starting_profiles': self.odst_all_profiles_cb.isChecked(),
             'odst_ai_equipment_drops': self.odst_ai_drops_cb.isChecked(),
+            'odst_skip_tutorial': self.odst_skip_tutorial_cb.isChecked(),
             'odst_escort_buff': self.odst_escort_cb.isChecked(),
             'odst_equipment_all_insertions': self.odst_all_ins_cb.isChecked(),
             'odst_profiles_by_insertion': self.odst_prof_ins_cb.isChecked(),
