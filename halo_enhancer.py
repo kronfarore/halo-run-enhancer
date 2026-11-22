@@ -418,7 +418,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'reach_placement_radius',
                'reach_equipment_drop', 'h4_equipment_drop', 'h4_hostile_sentinels',
                'reach_keep_loadout', 'reach_skip_space', 'par_time_scale',
-               'h4_skip_flight', 'h4_keep_loadout', 'h4_ability_visibility',
+               'h4_skip_flight', 'h4_keep_loadout', 'h3_keep_loadout', 'h4_ability_visibility',
                'h4_spawn_starting_weapons', 'h4_spawn_all_weapons',
                'h3_spawn_starting_weapons', 'h3_spawn_all_weapons',
                'h1_spawn_starting_weapons', 'h1_spawn_all_weapons',
@@ -1237,6 +1237,9 @@ CONFIG = {
     # Halo 4 script edit (h4_scripts.keep_loadout): Infinity's rally teleport no longer
     # re-applies a starting profile, so the players keep what they carry.
     "h4_keep_loadout": True,
+    # Halo 3 script edit (h3_scripts.keep_loadout): Halo's re-arm after the Guilty
+    # Spark fight no longer resets the players' weapons (play session 2026-11-21).
+    "h3_keep_loadout": True,
     # TEST (2026-09-27): make Halo 4 abilities on the ground easier to see. '' off,
     # 'icon' bigger hologram visible further, 'glow' stronger lights, 'lift' raised.
     "h4_ability_visibility": 'emissive_body',   # confirmed in game 2026-09-28: very visible
@@ -10529,6 +10532,7 @@ class MagnitudeEditorDialog(QDialog):
                 skip_space=bool(CONFIG.get('reach_skip_space')),
                 skip_flight=bool(CONFIG.get('h4_skip_flight')),
                 h4_keep_loadout=bool(CONFIG.get('h4_keep_loadout', True)),
+                h3_keep_loadout=bool(CONFIG.get('h3_keep_loadout', True)),
                 clear_profile_equipment=bool(CONFIG.get('clear_profile_equipment')),
                 clear_profile_grenades=bool(CONFIG.get('clear_profile_grenades')),
                 spawn_grenades=self._spawn_grenades_spec(),
@@ -13182,6 +13186,13 @@ class OptionsDialog(QDialog):
         self.h3_spawn_weapons_cb.toggled.connect(_sync_h3_spawn)
         _sync_h3_spawn()
         form.addRow("", self.h3_spawn_all_cb)
+        self.h3_keep_loadout_cb = QCheckBox("Halo: keep weapons after the Guilty Spark fight")
+        self.h3_keep_loadout_cb.setChecked(bool(CONFIG.get('h3_keep_loadout', True)))
+        self.h3_keep_loadout_cb.setToolTip(
+            "On: after the Guilty Spark fight the level hands every player a fresh "
+            "Assault Rifle loadout, throwing away what you carried. The script call "
+            "loses its reset and its profiles are emptied, so you keep your weapons.")
+        form.addRow("Travel sections:", self.h3_keep_loadout_cb)
 
         self.h1_spawn_weapons_cb = QCheckBox(
             "Place starting weapons at the enhancer marker instead of the profile")
@@ -14767,6 +14778,7 @@ class OptionsDialog(QDialog):
             'reach_skip_space': self.reach_skip_space_cb.isChecked(),
             'h4_skip_flight': self.h4_skip_flight_cb.isChecked(),
             'h4_keep_loadout': self.h4_keep_loadout_cb.isChecked(),
+            'h3_keep_loadout': self.h3_keep_loadout_cb.isChecked(),
             'h4_ability_visibility': 'emissive_body' if self.h4_ability_vis_cb.isChecked() else '',
             'h4_equipment_drop': self.h4_equipment_drop_cb.isChecked(),
             'h4_hostile_sentinels': self.h4_hostile_sentinels_cb.isChecked(),

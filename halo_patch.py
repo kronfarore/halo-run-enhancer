@@ -1767,6 +1767,65 @@ _PROFILE_GRENADES = {'Halo 1': (0x50, 4), 'Halo 2': (0x40, 4), 'Halo 3': (0x50, 
                      'Halo 4': (0x58, 8)}
 
 
+# scnr Flags "Characters Use Previous Mission Weapons": (offset, width, bit), read off
+# each MCC scnr plugin. With it set, the engine hands player 1 whatever they carried at
+# the end of the previous mission and applies no starting profile, so the run's
+# starting weapons never arrive (Halo 3 The Storm / Halo, play session 2026-11-21:
+# 030, 040, 050, 110 and 120 ship with it; 050's own script re-arms the player, the
+# others do not).
+_PREV_MISSION_WEAPONS = {'Halo 3': (0x2, 2, 3), 'Halo 3: ODST': (0x2, 2, 5),
+                         'Halo Reach': (0x2, 2, 4), 'Halo 4': (0x10, 4, 4)}
+
+
+def _clear_previous_mission_weapons(m, game):
+    """Clear the carry-over flag so the level's starting profiles (or the placed
+    starting weapons) are what the player starts with. [] when it is not set."""
+    spec = _PREV_MISSION_WEAPONS.get(str(game).strip())
+    scnr = _scnr_base(m)
+    if not spec or scnr is None:
+        return []
+    off, width, bit = spec
+    fmt = '<H' if width == 2 else '<I'
+    v = struct.unpack_from(fmt, m.data, scnr + off)[0]
+    if not v >> bit & 1:
+        return []
+    struct.pack_into(fmt, m.data, scnr + off, v & ~(1 << bit))
+    return [{'effect': 'starting weapons', 'field': 'Use Previous Mission Weapons',
+             'ok': True, 'old': 'on', 'new': 'off (the run hands out the start)'}]
+
+
+def _empty_named_profiles(m, game, registry, names):
+    """Null both weapon slots and every grenade count of the starting profiles named
+    `names` (h3_scripts.keep_loadout: re-arm calls whose reset was cleared must add
+    nothing). Returns the indices emptied."""
+    scnr_plug = registry.get('scnr') if registry else None
+    scnr_base = _scnr_base(m)
+    lay = _STARTING_SLOTS.get(game)
+    bf = None
+    for fn in ('Starting Health Damage', 'Starting Health Modifier'):
+        bf = scnr_plug.find(fn, 'Player Starting Profile') if scnr_plug else None
+        if bf:
+            break
+    if not bf or not lay or scnr_base is None:
+        return None
+    boff, esize = bf['block_offsets'][-1], bf['block_sizes'][-1]
+    gr = _PROFILE_GRENADES.get(game)
+    done = []
+    for i in range(max(0, m.i32(scnr_base + boff))):
+        poff = m.follow(scnr_base, [boff], [esize], i)
+        if poff is None:
+            continue
+        nm = bytes(m.data[poff:poff + 0x20]).split(b'\0')[0].decode('latin1', 'replace')
+        if nm not in names:
+            continue
+        for slot in ('primary', 'secondary'):
+            _null_starting_weapon(m, poff, slot, game)
+        if gr:
+            m.data[poff + gr[0]:poff + gr[0] + gr[1]] = bytes(gr[1])
+        done.append(i)
+    return done
+
+
 # Equipment the "remove starting equipment" option leaves in place (tag leaf names):
 # Reach's Exodus hands out the jetpack through profile_jetpack for its jetpack section.
 KEEP_PROFILE_EQUIPMENT = ('jet_pack',)
@@ -10111,7 +10170,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               add_respawn_profile=False, extra_squads=None, tartarus=None,
               keep_title_hud=False, keep_loadout=False, skip_space=False,
               skip_flight=False, hostile_sentinels=False, enemy_colors=None,
-              h4_keep_loadout=False, clear_profile_equipment=False,
+              h4_keep_loadout=False, h3_keep_loadout=False, clear_profile_equipment=False,
               clear_profile_grenades=False, spawn_grenades=None,
               h4_ability_visibility=None, h1_enemy_weapons=None, h2_enemy_weapons=None,
               h3_enemy_weapons=None,
@@ -10776,6 +10835,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                             'reason': 'no enhancer markers on this map; wrote the '
                                       'starting profile instead'})
         results.extend(_apply_starting_equipment(m, game, registry, starting))
+        results.extend(_clear_previous_mission_weapons(m, game))
 
     if clear_profile_equipment or clear_profile_grenades:
         # AFTER the starting-weapon write: Reach tells its player profiles apart by the
@@ -10914,6 +10974,31 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 row.update(ok=True, old='vanilla',
                            new=rep.get('reason') or '%d of %d reset call(s) removed (%s)'
                            % (rep['removed'], rep['found'], ', '.join(rep['profiles'])))
+            else:
+                row.update(ok=False, reason=rep.get('reason', 'script edit failed'))
+            results.append(row)
+
+    if h3_keep_loadout and str(game).strip() == 'Halo 3':
+        # Halo re-arms every player after the Guilty Spark fight (h3_scripts.py): the
+        # call loses its reset, and the profiles it names are emptied.
+        import h3_scripts
+        mission = os.path.splitext(os.path.basename(map_path))[0].lower()
+        rep = h3_scripts.keep_loadout(m, mission, _block_base, _scnr_base(m))
+        if not rep.get('quiet'):
+            row = {'tag': 'scnr', 'field': 'level script',
+                   'effect': 'Keep loadout through the Guilty Spark fight'}
+            if rep.get('skip'):
+                row.update(ok=True, skip=True, reason=rep.get('reason'))
+            elif rep.get('ok'):
+                emptied = _empty_named_profiles(m, 'Halo 3', registry, rep['profiles'])
+                if emptied is None:
+                    row.update(ok=False, reason='reset cleared, but the starting profile '
+                                                'layout is unavailable to empty %s'
+                                                % ', '.join(rep['profiles']))
+                else:
+                    row.update(ok=True, old='vanilla',
+                               new='%s; profile(s) %s emptied' % (
+                                   rep['reason'], ', '.join(map(str, emptied)) or 'none'))
             else:
                 row.update(ok=False, reason=rep.get('reason', 'script edit failed'))
             results.append(row)
