@@ -8708,6 +8708,168 @@ def _keep_reticle(m, game, weap_plugin=None):
     return rows
 
 
+# SECOND ZOOM LEVEL (play session 2026-11-21: "weapons that don't have an innate level
+# 2 zoom need the HUD copied over"). A Zoom card gives a one-level weapon a second
+# stage, but its HUD's scope and reticle are flagged for Zoom Lvl 1 only and vanish at
+# level 2. Measured on 010 / sc100: every one-level HUD carries such states (BR 4,
+# rocket 8, silenced SMG 5, carbine 1, laser 2, ...); the only HUD with a deliberate
+# level-2-only state is the Sniper Rifle's magnification readout, and the Beam Rifle
+# has none level-1-only at all. So: on a weapon that ends with 2+ levels and whose HUD
+# has NO level-2-only state, every level-1-only state also shows at level 2. Widgets
+# and their bitmap / text children all keep State Data at +0x8.
+def _h3_hud_state_elems(m, game, hud):
+    """[element base] of every widget and child carrying State Data in one HUD."""
+    B = _chud_blocks(game)
+    out = []
+    for w in _h3_chud_elems(m, hud, B['widgets']):
+        out.append(w)
+        for blk in (B['bitmaps'], B['texts']):
+            out.extend(_h3_chud_elems(m, w, blk))
+    return out
+
+
+# Halo 2 (nhdt): Bitmap / Text / Screen Effect widgets, each with [Yes] Unit Flags at
+# +0x8 and [No] at +0x10; bit 7 = Zoomed (Level 1), bit 8 = Zoomed (Level 2). Measured
+# on 03a / 05a: the one-level HUDs (BR, carbine, rocket) have [Yes] level-1-only widgets;
+# only the Sniper has a [Yes] level-2-only one. HUD widget blocks are not shared
+# between tags in Halo 2 (keep-reticle: 0 of 14 on 01b), so each HUD is written alone.
+_H2_HUD_WIDGET_BLOCKS = ((0x8, 0x64), (0x10, 0x54), (0x20, 0x50))
+_H2_ZOOM1, _H2_ZOOM2 = 1 << 7, 1 << 8
+
+
+def _second_zoom_hud_h2(m, weap_plugin):
+    if weap_plugin is None:
+        return []
+    huds, names = {}, {}
+    for t in m.tags:
+        if t.get('class') != 'weap' or not t.get('base'):
+            continue
+        try:
+            lv = m.read_tag_field(t['base'], 'Magnification Levels', weap_plugin)
+            hud = _hud_base(m, 'Halo 2', t['base'])
+        except Exception:
+            continue
+        if hud is None:
+            continue
+        huds[hud] = max(huds.get(hud, 0), int(lv or 0))
+        names.setdefault(hud, set()).add(str(t['name']).rsplit(chr(92), 1)[-1])
+
+    def elems(hud):
+        for off, es in _H2_HUD_WIDGET_BLOCKS:
+            n = m.i32(hud + off)
+            b = _block_base(m, hud + off) if n > 0 else None
+            for i in range(n if b else 0):
+                yield b + i * es
+
+    def flag(e, o):
+        return struct.unpack_from('<H', m.data, e + o)[0]
+
+    done = []
+    for hud, lv in huds.items():
+        if lv < 2:
+            continue
+        es = list(elems(hud))
+        if any(flag(e, 0x8) & _H2_ZOOM2 and not flag(e, 0x8) & _H2_ZOOM1 for e in es):
+            continue                               # designed for level 2 (the Sniper)
+        hit = False
+        for e in es:
+            for o in (0x8, 0x10):
+                v = flag(e, o)
+                if v & _H2_ZOOM1 and not v & _H2_ZOOM2:
+                    struct.pack_into('<H', m.data, e + o, v | _H2_ZOOM2)
+                    hit = True
+        if hit:
+            done.append(hud)
+    if not done:
+        return []
+    return [{'effect': 'second zoom HUD', 'field': '%d HUD(s)' % len(done), 'ok': True,
+             'old': 'scope / reticle shown at zoom level 1 only',
+             'new': 'also at level 2: ' + ', '.join(sorted(set().union(
+                 *[names.get(h, set()) for h in done])))}]
+
+
+def _second_zoom_hud(m, game, weap_plugin=None):
+    """Halo 3 / ODST: extend level-1-only HUD states to level 2 on weapons with 2+
+    magnification levels (see above). One summary row; idempotent."""
+    g = str(game).strip()
+    if g == 'Halo 2':
+        return _second_zoom_hud_h2(m, weap_plugin)
+    if g not in _H3_CHUD_STATE_LAYOUT or weap_plugin is None:
+        return []
+    lay = _H3_CHUD_STATE_LAYOUT[g]
+    soff, sesz = lay['states']
+    za = lay['zoom_at']
+    L1, L2 = 0b010, 0b100
+
+    def zooms(sd):
+        return m.u32(sd + za) & 0xFFFF
+
+    hud_of, names = {}, {}
+    for t in m.tags:
+        if t.get('class') != 'weap' or not t.get('base'):
+            continue
+        try:
+            lv = m.read_tag_field(t['base'], 'Magnification Levels', weap_plugin)
+            hud = _hud_base(m, g, t['base'])
+        except Exception:
+            continue
+        if hud is None:
+            continue
+        hud_of.setdefault(hud, 0)
+        hud_of[hud] = max(hud_of[hud], int(lv or 0))
+        names.setdefault(hud, set()).add(str(t['name']).rsplit(chr(92), 1)[-1])
+    # A HUD "uses level 2" when any state shows at level 2 only: leave it as designed.
+    aware = set()
+    elems = {}
+    for t in m.tags:
+        if t.get('class') != 'chdt' or not t.get('base'):
+            continue
+        es = _h3_hud_state_elems(m, g, t['base'])
+        elems[t['base']] = es
+        if any(zooms(sd) & L2 and not zooms(sd) & L1
+               for e in es for sd in _h3_chud_elems(m, e, lay['states'])):
+            aware.add(t['base'])
+    targets = [h for h, lv in hud_of.items() if lv >= 2 and h not in aware and h in elems]
+    # state array pointer -> HUDs using it (judged before anything is written)
+    users = {}
+    for h, es in elems.items():
+        for e in es:
+            p = m.u32(e + soff + 4)
+            if p:
+                users.setdefault(p, set()).add(h)
+    plan = []
+    for h in targets:
+        for e in elems[h]:
+            sds = _h3_chud_elems(m, e, lay['states'])
+            if any(zooms(sd) & L1 and not zooms(sd) & L2 for sd in sds):
+                plan.append((h, e))
+    done, unshared, no_room = set(), 0, []
+    for h, e in plan:
+        p = m.u32(e + soff + 4)
+        if users.get(p, set()) & aware:          # shared with a HUD that uses level 2
+            if _unshare_chain(m, g, e) is None:
+                no_room.append(', '.join(sorted(names.get(h, ()))))
+                continue
+            unshared += 1
+        for sd in _h3_chud_elems(m, e, lay['states']):
+            z = zooms(sd)
+            if z & L1 and not z & L2:
+                struct.pack_into('<H', m.data, sd + za, z | L2)
+        done.add(h)
+    rows = []
+    if no_room:
+        rows.append({'effect': 'second zoom HUD', 'field': 'shared HUD data', 'ok': False,
+                     'reason': 'no free space to give %s its own copy -- left unchanged'
+                               % '; '.join(no_room)})
+    if done:
+        tail = ' (own copy of shared HUD data for %d element(s))' % unshared if unshared else ''
+        rows.insert(0, {'effect': 'second zoom HUD', 'field': '%d HUD(s)' % len(done),
+                        'ok': True, 'old': 'scope / reticle shown at zoom level 1 only',
+                        'new': 'also at level 2: ' + ', '.join(sorted(set().union(
+                            *[names.get(h, set()) for h in done]))) + tail})
+    return rows
+
+
 # Whether a dying player drops the armour ability they carry is a PLAYER TRAIT: matg
 # Default Player Traits -> Weapon Traits -> Equipment Drop. Every Reach and Halo 4
 # campaign map ships it 1 (Disabled / False), which is why nothing falls on death;
@@ -10953,6 +11115,9 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # target weapon's HUD tag. Done after every value op so the relocated HUD
         # block can't disturb them.
         results.extend(_apply_zoom_ui(m, game, zoom_ui, prefer_donor=zoom_donor))
+    # After the graft (a grafted scope is level-1-only too) and every value op (a Zoom
+    # card's second stage): level-1-only HUD states also show at level 2.
+    results.extend(_second_zoom_hud(m, game, registry.get('weap') if registry else None))
 
     if equipment_drop:
         # Reach / Halo 4: a dying player drops the armour ability (see _equipment_drop).
