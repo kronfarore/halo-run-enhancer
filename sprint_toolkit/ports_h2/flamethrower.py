@@ -604,12 +604,18 @@ PORT = {
             # (its 30 Hz trigger) x 0.072 = 0.72/s -> 0.0667 a shot at 10.8/s; loss 0.44 (one rate in
             # Halo 1, both here), recovery 0.30: overheat after 1 / (0.72 - 0.44) = 3.6 s held (tank
             # 4.6 s), cool-down (1 - 0.3) / 0.44 = 1.6 s
+            # 2026-11-22 (Halo 2's MEASURED fire rule, reports/h2_fire_rule.jsonl, the Plasma Repeater:
+            # rate/30 added a tick in float32, a shot at 1, the sum RESET -> a shot every ceil(30/rate)
+            # ticks; user: 'change both weapons'): the 10.8 tag fires 10/s, so 0.0667 a shot overheated on
+            # shot 43 at 4.27 s (ttk_halo2.tick_shots), the 50-shot tank nearly dry. Now Halo 1's own
+            # 0.072 at the 10/s both games fire: shot 35 at 3.47 s, cool-down unchanged. (Balanced's 0.15
+            # was fitted on the measured 10.14/s already: shot 36 at 3.57 s, unchanged)
             (FT + r'\flamethrower.weapon', 'heat recovery threshold', '', 0, 0, 0.3, {'anchor': ('ready time', 36)}),
             (FT + r'\flamethrower.weapon', 'overheated threshold', '', 0, 0, 1.0, {'anchor': ('ready time', 40)}),
             (FT + r'\flamethrower.weapon', 'heat loss per second', '', 0, 0, 0.44, {'anchor': ('ready time', 52)}),
             (FT + r'\flamethrower.weapon', 'overheated heat loss per second', '', 0, 0, 0.44, {'anchor': ('ready time', 60)}),
             (FT + r'\flamethrower.weapon', 'heat illumination', '', 0, 0, 1.0, {'anchor': ('ready time', 56)}),
-            (FT + r'\flamethrower.weapon', 'heat generated per round', 'barrels', 0, 0, 0.066667,
+            (FT + r'\flamethrower.weapon', 'heat generated per round', 'barrels', 0, 0, 0.072,
              {'anchor': ('illumination recovery time', 4)}),
             # FUEL (no PR counterpart: Halo 1 raw): 100 loaded / 300 initial / 600 maximum, 2 a shot
             (FT + r'\flamethrower.weapon', 'rounds loaded maximum', 'magazines', 0, 0, 100),
@@ -619,8 +625,9 @@ PORT = {
             (FT + r'\flamethrower.weapon', 'reload time', 'magazines', 0, 0, 3.4),
             (FT + r'\flamethrower.weapon', 'rounds per shot', 'barrels', 0, 0, 2),
             (FT + r'\flamethrower.weapon', 'projectiles per shot', 'barrels', 0, 0, 2),
-            # rate: H1 12 x (9/10) = 10.8, flat (Halo 1 has no ramp)
-            (FT + r'\flamethrower.weapon', 'rounds per second', 'barrels', 0, 0, [10.8, 10.8]),
+            # rate: H1 12 x (9/10) = 10.8, flat (Halo 1 has no ramp) -- 2026-11-22: 10, what fires (any
+            # tag from 10 to 14.99 fires 10/s by the reset rule, Halo 1's 12 too; tick_rate(10) == 10)
+            (FT + r'\flamethrower.weapon', 'rounds per second', 'barrels', 0, 0, [10.0, 10.0]),
             # (zero now: a re-run finds them by the rate, not by the shared offset cache)
             (FT + r'\flamethrower.weapon', 'acceleration time', 'barrels', 0, 0, 0.0,
              {'anchor': ('rounds per second', 8)}),
@@ -973,7 +980,8 @@ PORT = {
         # first run 2026-10-21: list 2 weapon 5 / projectile 1 / damage 5 -> written (numbers, 4b rows) or
         # decided here. Lists 3 / 4 / 5, decided:
         'decisions': {
-            'barrels/[0]/rounds per second': "4a's flat 10.8 (H1 12 x the PR's 9/10; Halo 1 has no ramp)",
+            'barrels/[0]/rounds per second': "4a's flat 10.8 (H1 12 x the PR's 9/10; Halo 1 has no ramp); 10 since "
+                                             "2026-11-22: both games fire 10/s by the reset rule",
             'barrels/[0]/error angle (by name: the DUAL cone)': "4a's LIVE cone nth 1 = 1.0-1.2; the dual cone (nth 0) "
                                                                "stays the SMG's (not dual wielded)",
             'damage upper bound (element-wise 16.67, 16.43)': "4a's pair 15.38-17.69 (H1 20-23 x the PR's AVERAGE ratio "

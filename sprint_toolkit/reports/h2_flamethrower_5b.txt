@@ -1,32 +1,33 @@
 Flamethrower -- BALANCED (catalog rows on the ports), legendary, body shots (ttk_halo2); not a Halo 2 weapon here: Energy Blade (no projectile: melee)
-weapon                      dmg    rate/s    dps  mag reload init/max         vel range       error   autoaim dual
-Flamethrower (port)      18.4x2 10.3-10.8  396.9  100   3.40  300/600       3.6/0    16       2-2.4  1.8/7.68     
-Plasma Rifle                 10       6-9   90.0    -   0.00      0/0       14/14    40   0.25-0.75      6/12     
-Shotgun                  16.5x10       1-1  165.0   12   4.80    36/48     120/120     8        8-10       8/6     
-Sentinel Beam                 2     30-30   60.0    -   0.00      0/0   1200/1200    30         0-0      1/12     
-SMG                        4.75     15-15   71.2   60   2.00  180/240     400/400    40      1-2.75      6/12     
+weapon                      dmg    rate/s   fires/s    dps  mag reload init/max         vel range       error   autoaim dual
+Flamethrower (port)      18.4x2 10.3-10.8     10-10  367.5  100   3.40  300/600       3.6/0    16       2-2.4  1.8/7.68     
+Plasma Rifle                 10       6-9     6-7.5   75.0    -   0.00      0/0       14/14    40   0.25-0.75      6/12     
+Shotgun                  16.5x10       1-1       1-1  165.0   12   4.80    36/48     120/120     8        8-10       8/6     
+Sentinel Beam                 2     30-30     30-30   60.0    -   0.00      0/0   1200/1200    30         0-0      1/12     
+SMG                        4.75     15-15     15-15   71.2   60   2.00  180/240     400/400    40      1-2.75      6/12     
 
 time to kill (shots / seconds):
                               Elite minor      Brute minor      Grunt minor     Jackal minor
-Flamethrower (port)            7 / 0.56 s       4 / 0.28 s       1 / 0.00 s       1 / 0.00 s
-Plasma Rifle                  20 / 4.76 s     50 / 10.87 s       4 / 0.46 s       6 / 0.71 s
+Flamethrower (port)            7 / 0.60 s       4 / 0.30 s       1 / 0.00 s       1 / 0.00 s
+Plasma Rifle                  20 / 2.60 s      50 / 9.30 s       4 / 0.47 s       6 / 0.73 s
 Shotgun                        1 / 0.00 s       4 / 3.00 s       1 / 0.00 s       1 / 0.00 s
-Sentinel Beam                 75 / 2.47 s     125 / 6.41 s      20 / 0.63 s      30 / 0.97 s
+Sentinel Beam                 75 / 2.47 s     125 / 6.47 s      20 / 0.63 s      30 / 0.97 s
 SMG                           32 / 2.07 s     106 / 8.93 s       9 / 0.53 s      13 / 0.80 s
 Flamethrower -- DEFAULT (the kit's tags), legendary, body shots (ttk_halo2); not a Halo 2 weapon here: Energy Blade (no projectile: melee)
-weapon                      dmg    rate/s    dps  mag reload init/max         vel range       error   autoaim dual
-Flamethrower (port)      16.5x2 10.8-10.8  357.2  100   3.40  300/600       3.6/0    16       2-2.4  1.8/7.68     
-Plasma Rifle                 10       6-9   90.0    -   0.00      0/0       14/14    40   0.25-0.75      6/12     
-Shotgun                  16.5x10       1-1  165.0   12   4.80    36/48     120/120     8        8-10       8/6     
-Sentinel Beam                 2     30-30   60.0    -   0.00      0/0   1200/1200    30         0-0      1/12     
-SMG                        4.75     15-15   71.2   60   2.00  180/240     400/400    40      1-2.75      6/12     
+weapon                      dmg    rate/s   fires/s    dps  mag reload init/max         vel range       error   autoaim dual
+Flamethrower (port)      16.5x2     10-10     10-10  330.8  100   3.40  300/600       3.6/0    16       2-2.4  1.8/7.68     
+Plasma Rifle                 10       6-9     6-7.5   75.0    -   0.00      0/0       14/14    40   0.25-0.75      6/12     
+Shotgun                  16.5x10       1-1       1-1  165.0   12   4.80    36/48     120/120     8        8-10       8/6     
+Sentinel Beam                 2     30-30     30-30   60.0    -   0.00      0/0   1200/1200    30         0-0      1/12     
+SMG                        4.75     15-15     15-15   71.2   60   2.00  180/240     400/400    40      1-2.75      6/12     
 
 time to kill (shots / seconds):
                               Elite minor      Brute minor      Grunt minor     Jackal minor
-Flamethrower (port)            8 / 0.65 s       4 / 0.28 s       1 / 0.00 s       1 / 0.00 s
-Plasma Rifle                  20 / 4.76 s     50 / 10.87 s       4 / 0.46 s       6 / 0.71 s
+Flamethrower (port)            8 / 0.70 s       4 / 0.30 s       1 / 0.00 s       1 / 0.00 s
+Plasma Rifle                  20 / 2.60 s      50 / 9.30 s       4 / 0.47 s       6 / 0.73 s
 Shotgun                        1 / 0.00 s       4 / 3.00 s       1 / 0.00 s       1 / 0.00 s
-Sentinel Beam                 75 / 2.47 s     125 / 6.41 s      20 / 0.63 s      30 / 0.97 s
+Sentinel Beam                 75 / 2.47 s     125 / 6.47 s      20 / 0.63 s      30 / 0.97 s
+SMG                           32 / 2.07 s     106 / 8.93 s       9 / 0.53 s      13 / 0.80 s
 SMG                           32 / 2.07 s     106 / 8.93 s       9 / 0.53 s      13 / 0.80 s
 
 Re-run 2026-10-30 after h2_role_compare 2041b06 (only the shot's own impact damage rows). The 2026-10-23
@@ -35,3 +36,8 @@ Balanced block was wrong: the flame_burn rows overwrote the shot's (10.7 x2, 230
 these figures. The tags and catalog never had the wrong numbers, only this report.
 Conclusions unchanged: Balanced = Default x1.111 as the user set it (the old block had it BELOW Default);
 the rows, the AI ranges (4.7 wu) and the flat WDM x0.84 do not depend on these dps figures.
+Re-run 2026-11-22 (Halo 2's MEASURED fire rule, ttk_halo2.tick_shots: a shot every ceil(30/rate) ticks, so
+every tag from 10 to 14.99 fires 10/s -- the 'fires/s' column): Default's rate tag 10.8 -> 10 and heat
+0.0667 -> 0.072 (Halo 1's own): overheat held from cold on shot 35 at 3.47 s (was shot 43 at 4.27 s), cool-
+down 1.77 s. Balanced unchanged (fitted on the measured 10.14/s): shot 36 at 3.57 s. dps now at what fires
+(Default 330.8, Balanced 367.5); Balanced = Default x1.11 still.
