@@ -5733,19 +5733,27 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
             rkey = (round(ax, 2), round(ay, 2), round(az, 2))
             k = ring.get(rkey, 0)
             ring[rkey] = k + 1
-            if k and radius > 0:
-                # An even spiral (golden-angle steps, distance sqrt(k) x spacing), not
-                # one fixed ring: on a 0.25 ring with 1.9 rad steps, items 1 and 4 sat
-                # 0.1 rad apart, and on Halo the Sniper Rifle -- the longest gun, among
-                # 5-7 others -- never showed up at the marker (play session
-                # 2026-11-21; nothing in the map data rejects it). Spacing at least 0.3.
-                rr = max(radius, 0.3) * math.sqrt(k)
-                ang = k * 2.39996
-                pos = (ax + rr * math.cos(ang), ay + rr * math.sin(ang), az + LIFT)
-            else:
-                pos = (ax, ay, az + LIFT)
-            loaded = total = None
             wb = _weap_base(m, str(t))
+            # Lift by the weapon's own size: a fixed 0.30 is less than the Bounding
+            # Radius of the Sniper Rifle (0.325), the turrets, hammer, missile pod and
+            # Brute Shot, so their placement could start partly inside the ground --
+            # on Halo the Sniper never showed up at the marker (play session
+            # 2026-11-21). Stacked objects are handled fine by the game; buried ones
+            # are not (user, 2026-11-22), so the ring stays tight and only height grows.
+            lift = LIFT
+            if wb is not None and weap_plug is not None:
+                try:
+                    br = m.read_tag_field(wb, 'Bounding Radius', weap_plug)
+                    if br:
+                        lift = max(LIFT, float(br) + 0.1)
+                except Exception:
+                    pass
+            if k and radius > 0:
+                ang = k * 1.9
+                pos = (ax + radius * math.cos(ang), ay + radius * math.sin(ang), az + lift)
+            else:
+                pos = (ax, ay, az + lift)
+            loaded = total = None
             if wb is not None and weap_plug is not None:
                 loaded = m.read_tag_field(wb, 'Rounds Loaded Maximum', weap_plug,
                                           block='Magazines', index=0)
