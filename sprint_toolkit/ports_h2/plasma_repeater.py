@@ -143,14 +143,17 @@ PORT = {
         'bump_gain': 1.0,
         'bitmaps': [(R + RP + r'\bitmaps\plasma_repeater_diffuse.bitmap', 'plasma_repeater', PRW + r'\bitmaps\plasma_rifle', 'color', (512, 512)),
                     (R + RP + r'\bitmaps\plasma_repeater_normal.bitmap', 'plasma_repeater_bump', PRW + r'\bitmaps\plasma_rifle_bump', 'bump', (512, 512)),
+                    # BOOT 2 (user's screenshots: the fill stops short at the highest heat before the overheat): Halo 2's
+                    # last bolt before the overheat lands near 0.93 heat -> the ramp reaches the bar's END at 0.9
+                    # heat: window 0.02 .. 0.02 + 0.98 / 0.9 = 1.109 (u 1 = 0.9)
                     (None, 'plasma_repeater_gauge_meter', PRW + r'\bitmaps\plasma_rifle_heat_gauge',
-                     ('gradient', 'u', False, (0.02, 0.95), 'alpha'), (128, 32)),
-                    # BOOT 1 ('the dim light is not completely filling the entire bar; the overheat bar doesn't reach
-                    # the maximum'): Reach's gauge RGB is only its OUTLINE strokes (0 inside the panel) -- as the shape
-                    # it lit the strokes alone. The gauge MESH is the bar: the shape fully opaque (a ramp clipped
-                    # above its window = 1 everywhere), Halo 1's reading (its fill lit the whole quad)
-                    (None, 'plasma_repeater_gauge_alpha', PRW + r'\bitmaps\plasma_rifle_heat_gauge_alpha',
-                     ('gradient', 'u', False, (-2.0, -1.0), 'alpha'), (16, 16)),
+                     ('gradient', 'u', False, (0.02, 1.109), 'alpha'), (128, 32)),
+                    # the SHAPE: Reach's gauge art (its red channel: a bold slanted frame + a hook glyph; its alpha is
+                    # only the fill-order ramp). Boot 2 tried the whole quad (boot 1's 'the dim light is not completely
+                    # filling the entire bar' read as the strokes alone) -- a plain rectangle; user after boot 2 (an
+                    # offline render of both): 'A: frame + hook', Reach's art as drawn. Full size (512 x 128)
+                    (R + RP + r'\bitmaps\plasma_repeater_gauge.bitmap', 'plasma_repeater_gauge_alpha', PRW + r'\bitmaps\plasma_rifle_heat_gauge_alpha',
+                     ('alpha_from', R + RP + r'\bitmaps\plasma_repeater_gauge.bitmap', 0), (512, 128)),
                     # the display's meter map: alpha 0 everywhere (a ramp clipped below its window) -- lit at value 1
                     (None, 'plasma_repeater_display_meter', PRW + r'\bitmaps\plasma_rifle_heat_gauge',
                      ('gradient', 'u', False, (2.0, 3.0), 'alpha'), (16, 16)),
