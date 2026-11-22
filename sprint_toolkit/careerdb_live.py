@@ -29,7 +29,12 @@ import careerdb_patch as CP                                       # noqa: E402
 import score_live as SL                                           # noqa: E402
 
 OFF_TIMES, OFF_TITLE = 0x24, 0x48
-CACHE = os.path.join(HERE, 'out', 'careerdb_live_addrs.json')
+CACHE = os.path.join(SL.out_dir(), 'careerdb_live_addrs.json')
+
+
+def cache_warm():
+    """score_live.cache_warm for the chapter records (see there)."""
+    return SL.cache_warm(CACHE)
 
 
 def _title_at(h, rec):

@@ -280,9 +280,34 @@ SNAPSHOT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                         'out', 'score_live_snapshot.json')
 
 
+def out_dir():
+    """Where the per-MCC-launch address caches live. Beside this file when run from
+    source; beside the .exe in a frozen build, where __file__ is under the onefile
+    unpack folder that is deleted when the enhancer exits -- which made the slow first
+    scan repeat on every enhancer launch, not just every MCC launch."""
+    if getattr(sys, 'frozen', False):
+        return os.path.join(os.path.dirname(os.path.abspath(sys.executable)), 'out')
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), 'out')
+
+
 def _cache_path():
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                        'out', 'score_live_addrs.json')
+    return os.path.join(out_dir(), 'score_live_addrs.json')
+
+
+def cache_warm(path=None):
+    """True when the running MCC already has its addresses cached (the push skips the
+    memory scan), False when the next push will scan, None with no MCC running. Reads
+    only the pid and the cache file -- no process memory."""
+    import json
+    pid = find_pid()
+    if not pid:
+        return None
+    try:
+        with open(path or _cache_path(), encoding='utf-8') as f:
+            blob = json.load(f)
+    except Exception:
+        return False
+    return blob.get('pid') == pid
 
 
 def save_addrs(pid, rows):

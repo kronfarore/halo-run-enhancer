@@ -10062,6 +10062,25 @@ class MagnitudeEditorDialog(QDialog):
     def _run_busy(self, fn, title="Patching", label="Working"):
         return run_busy(self, fn, title, label)
 
+    # The first live push after MCC starts scans its memory for the tables (~2.5 GB,
+    # up to a minute) and caches the addresses until MCC closes (play session
+    # 2026-11-21: 'first time patching Point/Time takes longer').
+    FIRST_PUSH_NOTE = ("\n\nFirst push since MCC started: scanning MCC's memory, which "
+                       "can take about a minute. Later patches skip this until MCC "
+                       "is closed.")
+
+    def _first_push_note(self, kind):
+        """FIRST_PUSH_NOTE when the next `kind` push ('score' / 'par') will scan, else ''.
+        Never raises: a missing module or no MCC just means no note."""
+        try:
+            if kind == 'par':
+                import careerdb_live as _live
+            else:
+                import score_live as _live
+            return self.FIRST_PUSH_NOTE if _live.cache_warm() is False else ''
+        except Exception:
+            return ''
+
     # One string, so the MCC-closed warning always names the button as it is labelled.
     LIVE_ONLY_LABEL = "⚡ Only MCC live patch"
 
@@ -10148,7 +10167,8 @@ class MagnitudeEditorDialog(QDialog):
                         'ScoreDB.XML are still written and apply at the next MCC start',
                         lambda: self._run_busy(lambda: self._apply_betrayal_scoring(skulls),
                                                title="Betrayal scoring",
-                                               label="Setting how Marines score")))
+                                               label="Setting how Marines score"
+                                                     + self._first_push_note('score'))))
         return out
 
     def _confirm_mcc_closed(self, skulls):
@@ -10671,6 +10691,7 @@ class MagnitudeEditorDialog(QDialog):
             # tens of seconds during which the window sat there with no bar and looked
             # hung. The label says which half is running so the wait is legible.
             label = ("Rescaling metagame scores and pushing them to MCC"
+                     + self._first_push_note('score')
                      if CONFIG.get('score_live_push') else "Rescaling metagame scores")
             results.extend(self._run_busy(self._apply_score_scaling,
                                           title="Metagame scores", label=label))
@@ -10684,7 +10705,8 @@ class MagnitudeEditorDialog(QDialog):
             # Its own busy dialog: the first live push of an MCC launch scans the heap
             # for the chapter records (~55 s measured) before it can cache them.
             results.extend(self._run_busy(self._apply_par_time, title="Par time",
-                                          label="Scaling par time and pushing it to MCC"))
+                                          label="Scaling par time and pushing it to MCC"
+                                                + self._first_push_note('par')))
 
         # AFTER the rescale: that regenerates scoredb.xml from the pristine baseline,
         # so a sign flip applied before it would simply be overwritten.
@@ -10698,12 +10720,14 @@ class MagnitudeEditorDialog(QDialog):
                     lambda: self._apply_betrayal_scoring(skulls),
                     title="Betrayal scoring",
                     label=("Setting how Marines score" if drawn
-                           else "Putting Marine scoring back")))
+                           else "Putting Marine scoring back")
+                          + self._first_push_note('score')))
         # The human vehicle rows, every patch: Betrayal or the Halo 2 bugfix inverts
         # them, neither puts them back (and the revert needs no flag to find it)
         results.extend(self._run_busy(
             lambda: self._apply_vehicle_scoring(skulls, map_path),
-            title="Vehicle scoring", label="Setting how human vehicles score"))
+            title="Vehicle scoring", label="Setting how human vehicles score"
+                                           + self._first_push_note('score')))
 
         # Same footing: a live write to another process, never fatal to the map patch.
         results.extend(self._apply_iron(skulls))
