@@ -81,7 +81,13 @@ PORT = {
                    "strike_melee. Legendary: Elite 24 / 4.53 s, Brute 39 / 8.52 s, Grunt 7 / 0.45 s, Jackal 10 / "
                    "0.73 s (Plasma Rifle 4.76 / 10.87 / 0.46 / 0.71). Halo 2's per-tick fire rule is unmeasured: "
                    "probe it on boot 1 before any re-fit"),
-        'heat': {'rate': (15.0, 3.0), 'accel': 1.6, 'decel': 3.6, 'heat_per_round': 0.0915, 'heat_loss': 0.25,
+        # BOOT 1 (2026-11-22, Outskirts Original): no overheat at 1.5 s; battery 100 -> 78 = 44 rounds to the overheat.
+        # HALO 2 FIRES LIKE HALO 1 (reports/h2_fire_rule.jsonl): rate/30 a 30 Hz tick in float32, a shot when the sum
+        # reaches 1, the sum RESET (15/s fires 10/s); that rule simulates the overheat on round 44 exactly. Refit under it
+        # (Halo 1's B3 trigger): 20 -> 3.05 over 1.5 s = 15 -> 3/s, Reach's round count to 1 s / 1.58 s (12 / 15); loss
+        # 0.09 (Reach's loss at mid heat, 0.08-0.09; its cold 0.25 left the 3/s tail at +0.026/s: x0.93 heat = round 57)
+        # and heat 0.076 -> overheat on round 15 at 1.53 s, rounds 14-17 for heat x1.07 / x0.93 (tail +0.138/s)
+        'heat': {'rate': (20.0, 3.05), 'accel': 1.5, 'decel': 3.6, 'heat_per_round': 0.076, 'heat_loss': 0.09,
                  'overheated_loss': 0.36, 'recovery': 0.1, 'overheated_threshold': 1.0},
         'candidates': {
             'provisional': 'Plasma Rifle',
@@ -139,8 +145,12 @@ PORT = {
                     (R + RP + r'\bitmaps\plasma_repeater_normal.bitmap', 'plasma_repeater_bump', PRW + r'\bitmaps\plasma_rifle_bump', 'bump', (512, 512)),
                     (None, 'plasma_repeater_gauge_meter', PRW + r'\bitmaps\plasma_rifle_heat_gauge',
                      ('gradient', 'u', False, (0.02, 0.95), 'alpha'), (128, 32)),
-                    (R + RP + r'\bitmaps\plasma_repeater_gauge.bitmap', 'plasma_repeater_gauge_alpha', PRW + r'\bitmaps\plasma_rifle_heat_gauge_alpha',
-                     ('alpha_from', R + RP + r'\bitmaps\plasma_repeater_gauge.bitmap', 0), (256, 64)),
+                    # BOOT 1 ('the dim light is not completely filling the entire bar; the overheat bar doesn't reach
+                    # the maximum'): Reach's gauge RGB is only its OUTLINE strokes (0 inside the panel) -- as the shape
+                    # it lit the strokes alone. The gauge MESH is the bar: the shape fully opaque (a ramp clipped
+                    # above its window = 1 everywhere), Halo 1's reading (its fill lit the whole quad)
+                    (None, 'plasma_repeater_gauge_alpha', PRW + r'\bitmaps\plasma_rifle_heat_gauge_alpha',
+                     ('gradient', 'u', False, (-2.0, -1.0), 'alpha'), (16, 16)),
                     # the display's meter map: alpha 0 everywhere (a ramp clipped below its window) -- lit at value 1
                     (None, 'plasma_repeater_display_meter', PRW + r'\bitmaps\plasma_rifle_heat_gauge',
                      ('gradient', 'u', False, (2.0, 3.0), 'alpha'), (16, 16)),
@@ -260,13 +270,14 @@ PORT = {
     # h3_weapon_values.py --kit reach rifle\plasma_repeater\plasma_repeater
     'numbers': {
         'numbers': [
-            # the rate FALLS over the held time (approximation A: fitted to Reach's heat^1.5 curve)
-            (WP, 'rounds per second', 'barrels', 0, 0, [15.0, 3.0]),
-            (WP, 'acceleration time', 'barrels', 0, 0, 1.6),
+            # the rate FALLS over the held time (approximation A, refit after boot 1 under Halo 2's MEASURED fire
+            # rule -- the yardstick's `heat`): 20 -> 3.05 fires Reach's 15 -> 3/s (shot gaps 2,2,2,2,2,2,3,3,3,3,4,4,5,8,10 ticks)
+            (WP, 'rounds per second', 'barrels', 0, 0, [20.0, 3.05]),
+            (WP, 'acceleration time', 'barrels', 0, 0, 1.5),
             (WP, 'deceleration time', 'barrels', 0, 0, 3.6),
-            # heat: overheats on round 15 at 1.48 s held; the overheat = Reach's 2.5 s vent (0.9 / 0.36)
-            (WP, 'heat generated per round', 'barrels', 0, 0, 0.0915),
-            (WP, 'heat loss per second', '', 0, 0, 0.25),
+            # heat: overheats on round 15 at 1.53 s held (rounds 14-17 for heat +-7%); the overheat = Reach's 2.5 s vent
+            (WP, 'heat generated per round', 'barrels', 0, 0, 0.076),
+            (WP, 'heat loss per second', '', 0, 0, 0.09),
             (WP, 'overheated heat loss per second', '', 0, 0, 0.36),
             # the battery: 200 rounds (Reach 0.005)
             (WP, 'age generated per round', 'barrels', 0, 0, 0.005),
@@ -352,7 +363,8 @@ PORT = {
                    'first_person:throw_vent': 'first_person:throw_overheated'},
         # the FP position: the DMR's tested placement to start (Reach's repeater sits at the DMR's height: its
         # first-person weapon offset z -0.002 = the DMR's); the weapon field 0 (the gun-only rule)
-        'model_offset': (-0.005, -0.002, -0.033),
+        # boot 1 (user): 'move it down a unit' -> z -0.043
+        'model_offset': (-0.005, -0.002, -0.043),
         'skip': ['first_person:look', 'first_person:accelration_screens', 'first_person:barrel_spin', 'first_person:fall',
                  'first_person:flaps', 'first_person:jump', 'first_person:land_hard', 'first_person:land_soft',
                  'first_person:ready_initial', 'first_person:melee_strike_vent', 'first_person:overheated:melee_strike_1',
@@ -376,8 +388,10 @@ PORT = {
                                    'first_person:posing:var1': [('rp_pose1', 0)],
                                    'first_person:posing:var2': [('rp_pose2', 0)],
                                    'first_person:ready': [('rp_ready', 0)],
+                                   # boot 1 (user: 'check on the overheat venting sound'): the loop cued on EVERY
+                                   # 1 s `overheated` loop overlapped itself (its takes run 0.95-2.16 s) -> one vent
+                                   # sound at the start (rp_vent: the loop mixed in), none per loop
                                    'first_person:overheating': [('rp_vent', 0)],
-                                   'first_person:overheated': [('rp_vent_loop', 0)],
                                    'first_person:o_h_exit': [('rp_vent_exit', 0)]}},
     },
 
@@ -400,7 +414,8 @@ PORT = {
                     'rp_melee2': [RS + r'\plasma_repeater\plasrepeater_melee2'],
                     'rp_pose1': [RS + r'\plasma_repeater\plasrepeater_pose1'],
                     'rp_pose2': [RS + r'\plasma_repeater\plasrepeater_pose2'],
-                    'rp_vent': [RS + r'\plasma_repeater\plasrepeater_oh', RS + r'\plasma_repeater\plasrepeater_manvent\track_1\in'],
+                    'rp_vent': [RS + r'\plasma_repeater\plasrepeater_oh', RS + r'\plasma_repeater\plasrepeater_manvent\track_1\in',
+                                RS + r'\plasma_repeater\plasrepeater_manvent\track_1\loop'],
                     'rp_vent_loop': [RS + r'\plasma_repeater\plasrepeater_manvent\track_1\loop'],
                     'rp_vent_exit': [RS + r'\plasma_repeater\plasrepeater_oh_exit'],
                     'rp_drop': [RS + r'\plasma_rifle\plasma_rifle_drop'],
@@ -560,9 +575,12 @@ PORT = {
         # 'original' too: the Original box writes each row's original (the table's are Reach's overridden fields)
         'value_overrides': {
             'Heat Recovery Threshold': {'value': 0.1, 'original': 0.1, 'note': "approximation A (user 4a): Reach's 0 never leaves an overheat"},
-            'Heat Loss Per Second': {'value': 0.25, 'original': 0.25, 'note': "approximation A: Reach's cold loss (its function; the 0.0333 field is overridden)"},
+            'Heat Loss Per Second': {'value': 0.09, 'original': 0.09, 'note': "approximation A refit after boot 1: Reach's mid-heat loss (its function; the 0.0333 field is overridden)"},
             'Overheated Heat Loss Per Second': {'value': 0.36, 'original': 0.36, 'note': "approximation A: the overheat = Reach's 2.5 s vent (0.9 / 0.36)"},
-            'Heat Generated Per Round': {'value': 0.0915, 'original': 0.0915, 'note': 'approximation A: overheats on round 15 at 1.48 s (Reach full on 14-15)'},
+            'Heat Generated Per Round': {'value': 0.076, 'original': 0.076, 'note': "approximation A refit after boot 1 (Halo 2's reset fire rule): overheats on round 15 at 1.53 s"},
+            # the trigger under Halo 2's reset fire rule (boot 1): 20 -> 3.05 fires Reach's 15 -> 3/s
+            'Rounds Per Second': {'value': 20.0, 'original': 20.0, 'note': "fires 15/s under Halo 2's reset fire rule (Reach's 15)"},
+            'Rounds Per Second Max': {'value': 3.05, 'original': 3.05, 'note': "fires 3/s under Halo 2's reset fire rule (Reach's 3)"},
             # Reach's firing noise 4 is its 'loud'; Halo 2 numbers its enum differently (4 = quiet): the PR's loud (2)
             'Firing Noise': {'value': 2, 'original': 2, 'note': "Halo 2's loud (Reach's 4 is another enum)"},
         },

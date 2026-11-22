@@ -11636,18 +11636,20 @@
      "tag": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
      "field": "Rounds Per Second",
      "block": "Barrels",
-     "value": 15.0,
+     "value": 20.0,
      "card": "Salvo Shooting",
-     "original": 15.0
+     "original": 20.0,
+     "note": "fires 15/s under Halo 2's reset fire rule (Reach's 15)"
     },
     {
      "class": "weap",
      "tag": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
      "field": "Rounds Per Second Max",
      "block": "Barrels",
-     "value": 3.0,
+     "value": 3.05,
      "card": "Salvo Shooting",
-     "original": 3.0
+     "original": 3.05,
+     "note": "fires 3/s under Halo 2's reset fire rule (Reach's 3)"
     },
     {
      "class": "weap",
@@ -11730,10 +11732,10 @@
      "tag": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
      "field": "Heat Loss Per Second",
      "block": null,
-     "value": 0.25,
+     "value": 0.09,
      "card": "Heat Loss",
-     "original": 0.25,
-     "note": "approximation A: Reach's cold loss (its function; the 0.0333 field is overridden)"
+     "original": 0.09,
+     "note": "approximation A refit after boot 1: Reach's mid-heat loss (its function; the 0.0333 field is overridden)"
     },
     {
      "class": "weap",
@@ -11750,10 +11752,10 @@
      "tag": "objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
      "field": "Heat Generated Per Round",
      "block": "Barrels",
-     "value": 0.0915,
+     "value": 0.076,
      "card": "Heat Per Round",
-     "original": 0.0915,
-     "note": "approximation A: overheats on round 15 at 1.48 s (Reach full on 14-15)"
+     "original": 0.076,
+     "note": "approximation A refit after boot 1 (Halo 2's reset fire rule): overheats on round 15 at 1.53 s"
     },
     {
      "class": "weap",
