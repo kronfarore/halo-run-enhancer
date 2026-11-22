@@ -12,7 +12,9 @@ peers (`yardstick.candidates.peers`), each a stock Halo 2 weapon (STOCK) or anot
               table (damage group x the hit material's armour)
   enemies     Elite / Brute / Grunt / Jackal minor on LEGENDARY: the character's vitality (parent
               chain) x the matg difficulty dials
-  time        ttk_halo2.sim_player: rate ramp, bursts, heat + overheat, a reload whenever the
+  time        ttk_halo2.sim_player, Halo 2's MEASURED 30 Hz reset rule (a shot every ceil(30 / rate)
+              ticks: 'fires/s' beside the tag's 'rate/s'; dps at the fired rate; the shotgun's and
+              charge weapons' derived paces stay continuous): rate ramp, bursts, heat + overheat, a reload whenever the
               magazine empties (the masterchief FP graph's reload_empty when the tag's reload
               time is 0)
 STATED ASSUMPTIONS (ttk_halo2's): body shots, direct hits, no headshots, no splash, no recharge
@@ -177,6 +179,7 @@ def read(label, path, fp, entry, balanced, log):
         # a weapon paced by its fire recovery alone (Halo 2's shotgun: rate 0, recovery 1.0 s)
         w['rps'] = [1.0 / w['fire recovery']] * 2
         w['fire recovery'] = 0.0
+        w['fire rule'] = 'continuous'   # a derived pace, not a barrel rate: no 30 Hz accumulator
     if 'charge' in w['trigger behavior'] and 'charge' in tag.s('new triggers/[0]/primary action'):
         # a charge-to-fire weapon (the Spartan Laser: a release fires nothing): one shot a charge, and
         # a shot that overheats adds the vent. ttk() puts the first charge in front of the first shot
@@ -185,6 +188,7 @@ def read(label, path, fp, entry, balanced, log):
         w['charge'] = tag.f('new triggers/[0]/charging time')
         w['rps'] = [1.0 / (w['charge'] + vent)] * 2
         w['heat per round'] = w['accel'] = w['fire recovery'] = 0.0
+        w['fire rule'] = 'continuous'   # charge + vent is a derived pace (as the shotgun's)
     per = tag.f('magazines/[0]/rounds reloaded') if mags else 0
     if per and w['mag'] and per < w['mag']:
         w['reload'] *= w['mag'] / per         # shell by shell: the tag's time is per shell
@@ -259,22 +263,25 @@ def main():
             skipped.append('%s (no projectile: melee)' % label)
             continue
         w, ex = read(label, path, fp, entry, a.balanced, log)
-        rate = w['rps'][1] or w['rps'][0]
+        # the rate each end FIRES at: Halo 2's 30 Hz reset rule (ttk_halo2.tick_rate) unless the
+        # rate is a derived pace (shotgun, charge weapons)
+        fired = list(w['rps']) if w.get('fire rule') == 'continuous' else [t2.tick_rate(x) for x in w['rps']]
+        rate = fired[1] or fired[0]
         dps = w['upper'] * (w['projectiles per shot'] or 1.0) * rate
         rows.append(dict(label=label, tag=path, damage=w['upper'], projectiles=w['projectiles per shot'],
-                         rate=w['rps'], dps=dps, mag=w['mag'], reload=w['reload'], carry=ex['carry'],
+                         rate=w['rps'], fired=fired, dps=dps, mag=w['mag'], reload=w['reload'], carry=ex['carry'],
                          initial=ex['initial'], vel=ex['vel'], range=ex['range'], error=ex['err'],
                          autoaim=ex['aa'], dual=ex['dual'], heat=w['heat per round'],
                          ttk=ttk(g, targets, w)))
     print('%s -- %s, legendary, body shots (ttk_halo2)%s' % (
         own, 'BALANCED (catalog rows on the ports)' if a.balanced else 'DEFAULT (the kit\'s tags)',
         ('; not a Halo 2 weapon here: ' + ', '.join(skipped)) if skipped else ''))
-    print('%-24s %6s %9s %6s %4s %6s %8s %11s %5s %11s %9s %4s' % (
-        'weapon', 'dmg', 'rate/s', 'dps', 'mag', 'reload', 'init/max', 'vel', 'range', 'error', 'autoaim', 'dual'))
+    print('%-24s %6s %9s %9s %6s %4s %6s %8s %11s %5s %11s %9s %4s' % (
+        'weapon', 'dmg', 'rate/s', 'fires/s', 'dps', 'mag', 'reload', 'init/max', 'vel', 'range', 'error', 'autoaim', 'dual'))
     for r in rows:
         dmg = '%.3g%s' % (r['damage'], 'x%d' % r['projectiles'] if (r['projectiles'] or 1) > 1 else '')
-        print('%-24s %6s %9s %6.1f %4s %6.2f %8s %11s %5.0f %11s %9s %4s' % (
-            r['label'][:24], dmg, '%.3g-%.3g' % tuple(r['rate']), r['dps'], r['mag'] or '-', r['reload'],
+        print('%-24s %6s %9s %9s %6.1f %4s %6.2f %8s %11s %5.0f %11s %9s %4s' % (
+            r['label'][:24], dmg, '%.3g-%.3g' % tuple(r['rate']), '%.3g-%.3g' % tuple(r['fired']), r['dps'], r['mag'] or '-', r['reload'],
             '%d/%d' % (r['initial'], r['carry']), '%.4g/%.4g' % tuple(r['vel']), r['range'],
             '%.3g-%.3g' % tuple(r['error']), '%.3g/%.3g' % tuple(r['autoaim']), 'y' if r['dual'] else ''))
     print('\ntime to kill (shots / seconds):')

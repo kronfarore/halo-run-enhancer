@@ -1377,7 +1377,8 @@ Halo 2's own plasma_fast damage group.
 **For every port after it (observations of one port, but each cost a boot here):**
 1. HALO 2 FIRES BY THE RESET RULE (Halo 1's): rate/30 a 30 Hz tick in float32, a shot when the sum reaches 1, the sum
    reset -- 15/s fires 10/s. Fit any rate-sensitive mechanic (heat, ramps) under it before boot 1
-   (reports/h2_fire_rule.jsonl). ttk_halo2 / h2_role_compare do not model it yet.
+   (reports/h2_fire_rule.jsonl). ttk_halo2 / h2_role_compare model it since 2026-11-22 (`ttk_halo2.py --check`
+   reproduces round 44 and round 15; before/after in reports/h2_ttk_tick_rule.md).
 2. A heat fit must stay robust: check the overheat round for heat x0.93 / x1.07; a slow tail rate with a cold loss can
    push it from round 15 to round 57.
 3. A Reach meter bitmap: its RED channel is the shape, its ALPHA the fill order; Halo 2's meter wants the fill in the
@@ -1393,5 +1394,5 @@ Halo 2's own plasma_fast damage group.
 OLD side runs again (it lacked the vendored pylibs).
 
 **Closed:** 5b report (reports/h2_plasma_repeater_5b.txt), port_backup (F:\HaloPortBackups\2026-11-22_plasma-repeater-h2),
-glyph U+E145 captured. **Open (the user's call):** ttk_halo2 should model the reset fire rule (all H2 TTK reports are
-optimistic for rates that are not whole tick divisors); Reach's Elite FP sounds (elite_plasrepeater_*) unused, as the DMR's.
+glyph U+E145 captured. ttk_halo2 models the reset fire rule (2026-11-22, reports/h2_ttk_tick_rule.md).
+**Open (the user's call):** Reach's Elite FP sounds (elite_plasrepeater_*) unused, as the DMR's.

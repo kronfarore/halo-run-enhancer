@@ -171,7 +171,8 @@
      "bursts": 0
     },
     "ttk_common.player_time cross-check (constant-rate weapons)": 2.067,
-    "30 Hz quantised rate (H1 trigger model, cross-check only)": [
+    "player fire rule": "ticks",
+    "rounds per second fired at each end (30 Hz reset rule, flat rate)": [
      15.0,
      15.0
     ],
@@ -230,7 +231,7 @@
    "target": "Elite minor",
    "weapon": "Plasma Rifle",
    "shots": 20,
-   "seconds": 4.76,
+   "seconds": 2.6,
    "inputs": {
     "weapon": {
      "tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon",
@@ -382,12 +383,13 @@
      }
     },
     "events in the kill": {
-     "overheats": 1,
+     "overheats": 0,
      "reloads": 0,
      "bursts": 0
     },
     "ttk_common.player_time cross-check (constant-rate weapons)": null,
-    "30 Hz quantised rate (H1 trigger model, cross-check only)": [
+    "player fire rule": "ticks",
+    "rounds per second fired at each end (30 Hz reset rule, flat rate)": [
      6.0,
      7.5
     ],
@@ -436,10 +438,7 @@
     }
    },
    "flags": [
-    "fight (4.76 s) outlasts the shield recharge delay 4.50 s (character 15 s x matg enemy recharge 0.30, assumed to scale the delay) -- recharge not modelled",
-    "(inside the raw 15 s delay if the dial does not scale it)",
     "rate ramps 6 -> 9 rounds/s over 0.80 s held (re-ramps after each overheat)",
-    "1 overheat(s) during the kill: the 19-th bolt overheats the gun (heat loss assumed to run while firing), the cool-down to the recovery threshold costs 2.57 s; without overheat pauses: 2.27 s",
     "point-blank damage: the jpt upper bound falls toward the lower bound (6.00) across the projectile air damage range 0-40 wu (at 5 wu: x0.950, ASSUMED linear)"
    ]
   },
@@ -449,7 +448,7 @@
    "target": "Elite minor",
    "weapon": "Battle Rifle",
    "shots": 25,
-   "seconds": 3.147,
+   "seconds": 3.2,
    "inputs": {
     "weapon": {
      "tag": "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon",
@@ -612,7 +611,8 @@
      "bursts": 8
     },
     "ttk_common.player_time cross-check (constant-rate weapons)": null,
-    "30 Hz quantised rate (H1 trigger model, cross-check only)": [
+    "player fire rule": "ticks",
+    "rounds per second fired at each end (30 Hz reset rule, flat rate)": [
      15.0,
      15.0
     ],
@@ -813,7 +813,7 @@
     "burst duration used (mean)": 0.825,
     "burst separation (mean, before dial)": 0.6,
     "burst separation used": 0.3,
-    "30 Hz quantised rate (H1 trigger model, cross-check only)": 7.5,
+    "30 Hz quantised rate (the player trigger rule; AI times NOT quantised)": 7.5,
     "fields read": {
      "objects\\characters\\elite\\ai\\elite.character :: parent character": "ai\\generic",
      "ai\\generic.character :: parent character": "",
@@ -1070,7 +1070,8 @@
      "bursts": 0
     },
     "ttk_common.player_time cross-check (constant-rate weapons)": 8.933,
-    "30 Hz quantised rate (H1 trigger model, cross-check only)": [
+    "player fire rule": "ticks",
+    "rounds per second fired at each end (30 Hz reset rule, flat rate)": [
      15.0,
      15.0
     ],
@@ -1130,7 +1131,7 @@
    "target": "Brute minor",
    "weapon": "Plasma Rifle",
    "shots": 50,
-   "seconds": 10.869,
+   "seconds": 9.3,
    "inputs": {
     "weapon": {
      "tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon",
@@ -1267,12 +1268,13 @@
      }
     },
     "events in the kill": {
-     "overheats": 2,
+     "overheats": 1,
      "reloads": 0,
      "bursts": 0
     },
     "ttk_common.player_time cross-check (constant-rate weapons)": null,
-    "30 Hz quantised rate (H1 trigger model, cross-check only)": [
+    "player fire rule": "ticks",
+    "rounds per second fired at each end (30 Hz reset rule, flat rate)": [
      6.0,
      7.5
     ],
@@ -1322,7 +1324,7 @@
    },
    "flags": [
     "rate ramps 6 -> 9 rounds/s over 0.80 s held (re-ramps after each overheat)",
-    "2 overheat(s) during the kill: the 19-th bolt overheats the gun (heat loss assumed to run while firing), the cool-down to the recovery threshold costs 2.57 s; without overheat pauses: 5.60 s",
+    "1 overheat(s) during the kill: the 26-th bolt overheats the gun (heat loss assumed to run while firing), the cool-down to the recovery threshold costs 2.57 s; without overheat pauses: 6.60 s",
     "point-blank damage: the jpt upper bound falls toward the lower bound (6.00) across the projectile air damage range 0-40 wu (at 5 wu: x0.950, ASSUMED linear)"
    ]
   },
@@ -1332,7 +1334,7 @@
    "target": "Brute minor",
    "weapon": "Battle Rifle",
    "shots": 42,
-   "seconds": 6.92,
+   "seconds": 7.0,
    "inputs": {
     "weapon": {
      "tag": "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon",
@@ -1477,10 +1479,11 @@
     "events in the kill": {
      "overheats": 0,
      "reloads": 1,
-     "bursts": 13
+     "bursts": 14
     },
     "ttk_common.player_time cross-check (constant-rate weapons)": null,
-    "30 Hz quantised rate (H1 trigger model, cross-check only)": [
+    "player fire rule": "ticks",
+    "rounds per second fired at each end (30 Hz reset rule, flat rate)": [
      15.0,
      15.0
     ],
@@ -1682,7 +1685,7 @@
     "burst duration used (mean)": 0.7,
     "burst separation (mean, before dial)": 0.65,
     "burst separation used": 0.325,
-    "30 Hz quantised rate (H1 trigger model, cross-check only)": 10.0,
+    "30 Hz quantised rate (the player trigger rule; AI times NOT quantised)": 10.0,
     "fields read": {
      "objects\\characters\\brute\\ai\\brute.character :: parent character": "ai\\generic",
      "ai\\generic.character :: parent character": "",
@@ -1791,7 +1794,7 @@
   "Legendary = matg Difficulty \"imposs.\" column: enemy damage 1.50, enemy vitality 1.00, enemy shield 1.00, enemy recharge 0.30, rate of fire 1.50, burst separation 0.50.",
   "Enemy pools = character \"legendary body / shield vitality\" (the kit help: \"maximum body vitality of our unit (on legendary)\"), which replace the model maxima (Elite model 30/70 -> 45/105 on Legendary; Brute model 150 -> 250). The matg vitality/shield dials (1.0) multiply on top.",
   "Damage per hit = jpt damage upper bound (mean of the pair) x every matg damage-table row for (jpt general_damage, specific_damage) x (material general armor, specific armor), materials resolved up the parent chain; missing row = 1. None of these damage effects has a specific_damage and none of these materials a specific armor, so each multiplier is a single row. Body shot = Elite \"armored_torso\" (hard_metal_thin_cov_elite; the skinned parts resolve to the same hard_metal_thin armour), Brute \"body\" (tough_organic_flesh_brute -> tough_organic), Chief \"body\".",
-  "Player times: continuous-time trigger simulation (sim_player): ramp lo->hi over acceleration time, bursts + fire recovery, heat with continuous heat loss and the overheated cool-down to the recovery threshold, reloads. Constant-rate weapons are asserted equal to ttk_common.player_time. Battle Rifle reload = its fp reload_empty animation (magazine reload time is 0 = animation-driven); SMG uses its tag reload time 2.0 s (its fp reload animation is 50 frames = 1.67 s).",
+  "Player times: 30 Hz tick simulation of Halo 2's MEASURED trigger (sim_player / tick_shots; the Plasma Repeater port 2026-11-22, reports/h2_fire_rule.jsonl): rate / 30 added in float32 a tick, a shot at 1, the sum RESET (a shot every ceil(30 / rate) ticks: 20/s fires 15/s, 9/s 7.5/s); ramp lo->hi over the held acceleration time, bursts + fire recovery (rounded up to ticks, assumed), heat with heat loss every tick and the overheated cool-down to the recovery threshold, reloads. Times count from the first shot. Constant-rate weapons are asserted equal to ttk_common.player_time at the quantised rate. Battle Rifle reload = its fp reload_empty animation (magazine reload time is 0 = animation-driven); SMG uses its tag reload time 2.0 s (its fp reload animation is 50 frames = 1.67 s).",
   "Enemy shield recharge: the character delay (Elite 15 s) x matg \"enemy recharge\" (kit help: \"enemy shield recharge scale\") 0.3 -- ASSUMED to scale the delay (it falls with difficulty, so it cannot be a rate). Flags use 4.5 s.",
   "Not modelled: headshots, melee, grenades, misses, AI weapon heat, damage falloff with range (projectile air damage range 0-40 wu: the jpt lower bound is reached at 40 wu), the first-burst delay, the AI accuracy ramp (steady state used)."
  ]

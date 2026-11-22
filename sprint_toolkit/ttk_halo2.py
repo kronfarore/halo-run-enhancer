@@ -24,7 +24,9 @@ What Halo 2 reads where (found in the tags and the kit's own field help strings)
     rounds per second). matg 'imposs. rate of fire' scales the rate, 'imposs. burst
     separation' scales the separation.
 """
+import math
 import os
+import struct
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -215,8 +217,95 @@ def read_weapon(path, log):
     return d
 
 
-def sim_player(n, w):
-    """Seconds until the n-th shot (first at 0), trigger held. Continuous time:
+#: the player trigger model sim_player uses unless a weapon dict says otherwise
+#: (w['fire rule']): 'ticks' = Halo 2's MEASURED 30 Hz reset rule (reports/h2_fire_rule.jsonl),
+#: 'continuous' = the rate taken literally (the old model, kept for derived paces such as
+#: h2_role_compare's shotgun / charge weapons and for comparison)
+FIRE_RULE = 'ticks'
+
+
+def f32(x):
+    return struct.unpack('<f', struct.pack('<f', x))[0]
+
+
+def tick_shots(n, w, limit_s=600.0):
+    """Ticks (30 Hz, counted from the trigger pull at tick 0) of the first n shots with the
+    trigger held, by Halo 2's MEASURED fire rule (the Plasma Repeater port, 2026-11-22,
+    reports/h2_fire_rule.jsonl -- the rule Halo 1 has, ttk_halo1.player_ticks):
+      * every tick the rate (ramped from rounds per second [lo] to [hi] over 'acceleration
+        time' of HELD time) / 30 is added in float32 to a sum that starts at 0 on the pull;
+        a shot leaves on the tick the sum reaches 1 and the sum RESETS to 0 (no carry): a
+        shot every ceil(30 / rate) ticks -- 20/s fires 15/s, 9/s 7.5/s, 3.05/s 3/s, a flat
+        15/s 15/s (0.5 + 0.5 = 1.0) but a 15/s falling ramp 10/s (just under 0.5 a tick);
+      * heat + 'heat generated per round' on a shot, - 'heat loss per second' / 30 every
+        tick (also while firing); reaching the overheated threshold stops the gun, it cools
+        at 'overheated heat loss per second' / 30 a tick to the recovery threshold, then
+        the trigger starts over (sum 0, ramp from [lo]) -- ASSUMED as the cold start;
+      * 'shots per fire' > 1 = a burst at the barrel rate, then 'fire recovery time'
+        (rounded UP to whole ticks) from the burst's last shot before the next shot may
+        leave (the sum keeps running meanwhile); without bursts the recovery gates every
+        shot the same way -- ASSUMED, not measured;
+      * an empty magazine: the next shot leaves when the reload time (rounded up to ticks)
+        has passed after the last round, and the ramp restarts (as ttk_common).
+    Returns (ticks list, events)."""
+    lo, hi = w['rps']
+    burst = int(w['shots per fire'][1]) if w['shots per fire'][1] > 1 else 1
+    rec_ticks = int(math.ceil(w['fire recovery'] * TICK - 1e-6)) if w['fire recovery'] else 0
+    hpr, oh = w['heat per round'], w['overheated threshold']
+    loss = w['heat loss'] / TICK
+    loss_oh = (w['overheated heat loss'] or w['heat loss']) / TICK
+    s, heat, held, inmag, in_burst = 0.0, 0.0, 0, w['mag'], 0
+    tick, busy_until, reloading, overheated = 0, 0, False, False
+    shots, ev = [], {'overheats': 0, 'reloads': 0, 'bursts': 0}
+    while len(shots) < n and tick < limit_s * TICK:
+        if overheated:
+            heat -= loss_oh
+            if heat <= w['heat recovery threshold'] + 1e-9:
+                overheated, s, held = False, 0.0, 0
+                heat = max(heat, 0.0)
+            tick += 1
+            continue
+        if reloading:
+            if tick >= busy_until:
+                reloading, s, held = False, 1.0, 0   # ready: leaves on this tick
+        else:
+            rate = hi if not w['accel'] else lo + (hi - lo) * min(1.0, held / TICK / w['accel'])
+            s = f32(s + f32(rate / TICK))
+        if s >= 1.0 and tick >= busy_until:
+            shots.append(tick)
+            s = 0.0
+            heat += hpr
+            in_burst += 1
+            if burst > 1:
+                if in_burst >= burst:
+                    busy_until = tick + rec_ticks
+                    in_burst = 0
+                    ev['bursts'] += 1
+            elif rec_ticks:
+                busy_until = tick + rec_ticks
+            if w['mag']:
+                inmag -= 1
+                if inmag <= 0:
+                    busy_until = tick + int(math.ceil(w['reload'] * TICK - 1e-6))
+                    reloading, inmag, in_burst = True, w['mag'], 0
+                    ev['reloads'] += 1
+            if hpr and heat >= oh - 1e-9 and len(shots) < n:
+                overheated = True
+                ev['overheats'] += 1
+                tick += 1
+                continue
+        heat = max(0.0, heat - loss)
+        if not reloading:
+            held += 1
+        tick += 1
+    return shots, ev
+
+
+def sim_player(n, w, rule=None):
+    """Seconds until the n-th shot (first at 0), trigger held. rule (default
+    w['fire rule'], else FIRE_RULE) 'ticks' = tick_shots (Halo 2's measured 30 Hz rule;
+    times from the first shot, the pull-to-first-shot ticks not counted); 'continuous' =
+    the old model below. Continuous time:
       * rate ramps from rounds per second [lo] to [hi] over 'acceleration time' from the
         moment the trigger (re)starts (after an overheat or reload);
       * 'shots per fire' > 1 = a burst at the barrel rate, then 'fire recovery time' from
@@ -227,6 +316,11 @@ def sim_player(n, w):
       * an empty magazine costs the reload time before the next shot."""
     if n is None:
         return None, {}
+    if (rule or w.get('fire rule') or FIRE_RULE) == 'ticks':
+        shots, ev = tick_shots(n, w)
+        if len(shots) < n:
+            return None, ev
+        return (shots[-1] - shots[0]) / TICK, ev
     lo, hi = w['rps']
     burst = int(w['shots per fire'][1]) if w['shots per fire'][1] > 1 else 1
     t, start, heat, inmag, in_burst = 0.0, 0.0, 0.0, w['mag'], 0
@@ -271,15 +365,64 @@ def sim_player(n, w):
 
 
 def tick_rate(rate):
-    """Shots per second a 30 Hz accumulator that resets on each shot gives (the H1
-    collector's measured trigger; NOT measured for Halo 2 -- cross-check only)."""
+    """Shots per second Halo 2's measured 30 Hz trigger gives for a CONSTANT rate: rate / 30
+    added in float32 each tick, a shot at 1, the sum reset (tick_shots; Halo 1 alike)."""
     if rate <= 0:
         return 0.0
-    n, s = 0, 0.0
-    while s < 1.0 - 1e-9:
-        s += rate / TICK
+    step, s, n = f32(rate / TICK), 0.0, 0
+    while s < 1.0:
+        s = f32(s + step)
         n += 1
     return TICK / n
+
+
+
+def _rp(rps, accel, heat, loss, threshold=1.0, recovery=0.0, overheated_loss=1.0):
+    return {'rps': list(rps), 'accel': accel, 'shots per fire': [1.0, 1.0], 'fire recovery': 0.0,
+            'heat per round': heat, 'overheated threshold': threshold,
+            'heat recovery threshold': recovery, 'heat loss': loss,
+            'overheated heat loss': overheated_loss, 'mag': 0, 'reload': 0.0}
+
+
+def check_fire_rule(kit=True):
+    """The tick rule against the Plasma Repeater measurement (reports/h2_fire_rule.jsonl):
+    boot 1 ORIGINAL (15 -> 3 over 1.6 s, heat 0.0915/round, loss 0.25) overheated on round
+    44 (battery 100 -> 78) and was not overheated at 1.5 s; the shipped tags (20 -> 3.05
+    over 1.5 s, heat 0.076, loss 0.09) overheat on round 15 at ~1.53 s. Also the flat-rate
+    table (20 -> 15, 9 -> 7.5, 6 -> 6, 3.05 -> 3, 15 -> 15). kit=True also reads the port's
+    tag from the kit. Raises AssertionError on a mismatch."""
+    def first_overheat(w):
+        w = dict(w, **{'overheated heat loss': w['overheated heat loss'] or 1.0})
+        k = 1
+        while True:
+            shots, ev = tick_shots(k + 1, w, limit_s=60.0)
+            if ev['overheats']:
+                return k, shots[k - 1] / TICK
+            k += 1
+    out = []
+    n, t = first_overheat(_rp((15.0, 3.0), 1.6, 0.0915, 0.25))
+    out.append('boot 1 ORIGINAL 15 -> 3 / 1.6 s, 0.0915, loss 0.25: overheat on round %d at %.3f s '
+               '(measured: round 44, not by 1.5 s)' % (n, t))
+    assert n == 44 and t > 1.5, out[-1]
+    cont = _rp((15.0, 3.0), 1.6, 0.0915, 0.25)
+    cont['fire rule'] = 'continuous'
+    k = next(k for k in range(2, 200) if sim_player(k, cont)[1]['overheats']) - 1
+    out.append('  (the continuous rule would overheat on round %d)' % k)
+    n, t = first_overheat(_rp((20.0, 3.05), 1.5, 0.076, 0.09))
+    out.append('shipped tags 20 -> 3.05 / 1.5 s, 0.076, loss 0.09: overheat on round %d at %.3f s '
+               '(expected: round 15, ~1.53 s)' % (n, t))
+    assert n == 15 and abs(t - 1.533) < 0.02, out[-1]
+    for tag, fired in ((20.0, 15.0), (9.0, 7.5), (6.0, 6.0), (3.05, 3.0), (15.0, 15.0), (11.0, 10.0)):
+        assert abs(tick_rate(tag) - fired) < 1e-9, (tag, tick_rate(tag))
+    out.append('flat rates: 20 -> 15, 15 -> 15, 11 -> 10, 9 -> 7.5, 6 -> 6, 3.05 -> 3 rounds/s')
+    if kit:
+        w = read_weapon(r'objects\weapons\rifle\plasma_repeater\plasma_repeater', {})
+        n, t = first_overheat(w)
+        out.append('the kit\'s plasma_repeater.weapon (%s -> %s / %s s, heat %s, loss %s, threshold %s): '
+                   'overheat on round %d at %.3f s' % (w['rps'][0], w['rps'][1], w['accel'],
+                                                     w['heat per round'], w['heat loss'],
+                                                     w['overheated threshold'], n, t))
+    return out
 
 
 # ----------------------------------------------------------------------------- AI
@@ -437,8 +580,10 @@ def main():
             cross = None
             if w['rps'][0] == w['rps'][1] and not w['heat per round'] and \
                     int(w['shots per fire'][1]) <= 1:
-                cross = tc.player_time(n, 1.0 / w['rps'][1], w['mag'], w['reload'])
-                assert abs(cross - t) < 1e-6, (label, cross, t)
+                # the tick rule at a flat rate = ttk_common at the quantised rate (a
+                # reload rounds up to whole ticks: within a tick per reload)
+                cross = tc.player_time(n, 1.0 / tick_rate(w['rps'][1]), w['mag'], w['reload'])
+                assert abs(cross - t) < (ev['reloads'] + 0.5) / TICK, (label, cross, t)
             inputs = {
                 'weapon': {k: v for k, v in w.items()},
                 'damage multipliers': {'shield': d_sh, 'body': d_bo},
@@ -446,7 +591,8 @@ def main():
                 'target': target_in,
                 'events in the kill': ev,
                 'ttk_common.player_time cross-check (constant-rate weapons)': r3(cross),
-                '30 Hz quantised rate (H1 trigger model, cross-check only)':
+                'player fire rule': w.get('fire rule') or FIRE_RULE,
+                'rounds per second fired at each end (30 Hz reset rule, flat rate)':
                     [r3(tick_rate(x)) for x in w['rps']],
                 'fields read (weapon)': wl,
                 'fields read (matg)': glog}
@@ -545,7 +691,8 @@ def main():
             'burst duration used (mean)': r3(bd),
             'burst separation (mean, before dial)': r3(bs_raw),
             'burst separation used': r3(bs),
-            '30 Hz quantised rate (H1 trigger model, cross-check only)': r3(tick_rate(rate)),
+            '30 Hz quantised rate (the player trigger rule; AI times NOT quantised)':
+                r3(tick_rate(rate)),
             'fields read': dict(clog, **wl),
             'fields read (matg)': glog}
         rows.append({'direction': 'enemy->player', 'attacker': elabel,
@@ -571,10 +718,14 @@ def main():
         'so each multiplier is a single row. Body shot = Elite "armored_torso" '
         '(hard_metal_thin_cov_elite; the skinned parts resolve to the same hard_metal_thin '
         'armour), Brute "body" (tough_organic_flesh_brute -> tough_organic), Chief "body".',
-        'Player times: continuous-time trigger simulation (sim_player): ramp lo->hi over '
-        'acceleration time, bursts + fire recovery, heat with continuous heat loss and the '
-        'overheated cool-down to the recovery threshold, reloads. Constant-rate weapons are '
-        'asserted equal to ttk_common.player_time. Battle Rifle reload = its fp reload_empty '
+        'Player times: 30 Hz tick simulation of Halo 2\'s MEASURED trigger (sim_player / '
+        'tick_shots; the Plasma Repeater port 2026-11-22, reports/h2_fire_rule.jsonl): rate / 30 '
+        'added in float32 a tick, a shot at 1, the sum RESET (a shot every ceil(30 / rate) '
+        'ticks: 20/s fires 15/s, 9/s 7.5/s); ramp lo->hi over the held acceleration time, '
+        'bursts + fire recovery (rounded up to ticks, assumed), heat with heat loss every tick '
+        'and the overheated cool-down to the recovery threshold, reloads. Times count from the '
+        'first shot. Constant-rate weapons are asserted equal to ttk_common.player_time at the '
+        'quantised rate. Battle Rifle reload = its fp reload_empty '
         'animation (magazine reload time is 0 = animation-driven); SMG uses its tag reload '
         'time 2.0 s (its fp reload animation is 50 frames = 1.67 s).',
         'Enemy shield recharge: the character delay (Elite 15 s) x matg "enemy recharge" (kit '
@@ -596,4 +747,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    if '--check' in sys.argv[1:]:
+        print('\n'.join(check_fire_rule(kit='--no-kit' not in sys.argv[1:])))
+        print('fire rule check OK')
+    else:
+        main()
