@@ -21921,6 +21921,7 @@
 					"desc": "Grenade Velocity, Grenade Ideal Velocity",
 					"debug_desc": "The combat forms carry their own Grenades block on every level that fields them, in all three games, so the general **Grenade Properties** card never reached them.",
 					"game": ["Halo 2", "Halo 3"],
+					"requires_config": "flood_grenades",
 					"tag": {"Halo 2": "char objects\\characters\\floodcombat*", "Halo 3": "char objects\\characters\\floodcombat*"},
 					"split_from": "Grenades",
 					"targets": [
@@ -21933,6 +21934,7 @@
 					"desc": "Grenade Ranges, Grenade Ranges Max",
 					"debug_desc": "The combat forms carry their own Grenades block on every level that fields them, in all three games, so the general **Grenade Properties** card never reached them.",
 					"game": ["Halo 2", "Halo 3"],
+					"requires_config": "flood_grenades",
 					"tag": {"Halo 2": "char objects\\characters\\floodcombat*", "Halo 3": "char objects\\characters\\floodcombat*"},
 					"split_from": "Grenades",
 					"targets": [
@@ -21945,6 +21947,7 @@
 					"desc": "Won't throw a grenade, if there is an ally within this radius around the target",
 					"debug_desc": "The combat forms carry their own Grenades block on every level that fields them, in all three games, so the general **Grenade Properties** card never reached them.",
 					"game": ["Halo 2", "Halo 3"],
+					"requires_config": "flood_grenades",
 					"tag": {"Halo 2": "char objects\\characters\\floodcombat*", "Halo 3": "char objects\\characters\\floodcombat*"},
 					"split_from": "Grenades",
 					"targets": [

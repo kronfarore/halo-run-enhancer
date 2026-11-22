@@ -468,7 +468,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'skull_duration_value', 'skull_duration_multiply',
                'skull_disabled', 'skull_camo_after_ladder',
                'bugfix_h2_fuel_rod', 'bugfix_h2_vehicle_score', 'bugfix_h4_dead_grenades',
-               'player_armour_rows', 'no_immunities', 'vehicle_cards',
+               'player_armour_rows', 'no_immunities', 'vehicle_cards', 'flood_grenades',
                'set_starting_equipment', 'equipment_all_selected',
                'h2_add_respawn_profile', 'h2_extra_squads', 'h2_tartarus', 'swap_player_loadouts',
                'h3_all_chief_profiles',
@@ -1582,6 +1582,11 @@ CONFIG = {
     # Options -> Run rules -> Card rolls: vehicle cards join the draw (for now only the
     # Mounted guns damage cards -- halo.json requires_config "vehicle_cards")
     "vehicle_cards": False,
+    # Options -> Run rules -> Card rolls: the Flood Combat Form grenade cards (Velocity,
+    # Range, Collateral -- halo.json requires_config "flood_grenades"). Off by default:
+    # no combat form has a grenade-throw animation in any game, so the cards do nothing
+    # until one can throw (play session 2026-11-21).
+    "flood_grenades": False,
     # Weapon Identity rounds also roll the Other slot (Hero / Exhaust / Skull / Ally /
     # Bane) like a normal round: a fourth card on the offer. Off = the identity pair and
     # one enemy card only.
@@ -12754,6 +12759,15 @@ class OptionsDialog(QDialog):
             "vehicle guns one shared damage type, so they come as one. More vehicle cards "
             "will follow. Shared with a co-op partner through the run.")
         rform.addRow("", self.vehicle_cards_cb)
+        self.flood_grenades_cb = QCheckBox("Flood: Can throw grenades")
+        self.flood_grenades_cb.setChecked(bool(CONFIG.get('flood_grenades')))
+        self.flood_grenades_cb.setToolTip(
+            "On: the Flood Combat Form grenade cards (Grenade Velocity, Grenade Range, "
+            "Grenade Collateral) join the draw. Combat forms have no grenade-throw "
+            "animation in any game, so these cards do nothing today -- this stays off "
+            "until combat forms can actually throw. Shared with a co-op partner "
+            "through the run.")
+        rform.addRow("", self.flood_grenades_cb)
         self._opt_page("Run rules").addWidget(rolls)
 
         # ---- Map patching ----
@@ -14859,6 +14873,7 @@ class OptionsDialog(QDialog):
             'player_armour_rows': self.player_armour_cb.isChecked(),
             'no_immunities': self.no_immunities_cb.isChecked(),
             'vehicle_cards': self.vehicle_cards_cb.isChecked(),
+            'flood_grenades': self.flood_grenades_cb.isChecked(),
             'skull_disabled': sorted(k for k, cb in self.skull_cat_boxes.items()
                                      if not cb.isChecked()),
             'new_weapon_chance': round(self.new_weapon_chance.value(), 2),
