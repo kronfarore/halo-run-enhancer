@@ -633,7 +633,8 @@ def remove_title_hud_hiding(m, game, block_base, scnr_base):
         if not moved:
             failed = len(live)
             break
-    released = _h1_release_titles(t) if g == 'Halo 1' else 0
+    released = (_h1_release_titles(t) if g == 'Halo 1'
+                else _h3_release_titles(t) if g == 'Halo 3' else 0)
     return {'ok': True, 'removed': len(done), 'kept': kept, 'failed': failed,
             'sites': len(rows), 'passes': passes, 'released': released}
 
@@ -706,6 +707,65 @@ def _h1_release_titles(t):
             t.set_next(seq[-1], dat(chain[k]))
             moved += len(seq)
             break                              # one title per chain is enough
+    return moved
+
+
+def _h3_release_titles(t):
+    """Halo 3 titles after a cutscene: give the HUD back when the player gets control.
+
+    cinematic_title_to_gameplay (global) and The Storm's cinematic_title_to_gameplay_loc
+    run while the title shows: they hand input back (player_enable_input TRUE) about
+    1.4 s in, but restore the letterbox and the HUD only ~4 s later, at their end. The
+    HUD was hidden by the cutscene (cinematic_snap_to_black), and that hide is kept (it
+    belongs to the cutscene), so the restores are relinked to right after the input
+    returns -- the same release Halo 1 gets. Returns the number of statements moved;
+    0 again on a map already done."""
+    spec = SCRIPTS.get(t.game)
+    m, scnr = t.m, getattr(t, 'scnr', None)
+    if t.game != 'Halo 3' or not spec or scnr is None:
+        return 0
+    off, es, ro, _kind = spec
+    n = max(0, m.i32(scnr + off))
+    base = t.block_base(m, scnr + off) if n else None
+    moved = 0
+    dat = lambda i: (t.at(i)['salt'] << 16) | i
+    for k in range(n if base else 0):
+        e = base + k * es
+        name = bytes(m.data[e:e + 0x20]).split(b'\0')[0].decode('latin-1')
+        if not name.startswith('cinematic_title_to_gameplay'):
+            continue
+        root = m.u32(e + ro)
+        g = t.at(root & 0xFFFF) if root != TERMINATOR else None
+        head = t.at(g['child']) if g else None          # the 'begin' name
+        if not head or head['vtype'] != T_FUNCNAME or head['next'] == TERMINATOR:
+            continue
+        chain, x = [], head['next'] & 0xFFFF
+        while x is not None and len(chain) < 512:
+            chain.append(x)
+            r = t.at(x)
+            x = None if r['next'] == TERMINATOR else r['next'] & 0xFFFF
+        verbs = [_verb(t, c) for c in chain]
+        try:
+            i = next(j for j, v in enumerate(verbs)
+                     if v == 'player_enable_input' and _arg(t, chain[j]) == 1.0)
+        except StopIteration:
+            continue
+        grab = [j for j in range(i + 1, len(chain))
+                if (verbs[j] == 'cinematic_show_letterbox' and _arg(t, chain[j]) == 0.0)
+                or (verbs[j] == 'chud_cinematic_fade' and _arg(t, chain[j]) == 1.0)]
+        if not grab or grab == list(range(i + 1, i + 1 + len(grab))):
+            continue                     # nothing to move, or already right after input
+        order = list(chain)
+        for j in sorted(grab, reverse=True):
+            t.set_next(order[j - 1], t.at(order[j])['next'])
+            order.pop(j)
+        seq = [chain[j] for j in grab]
+        after = t.at(chain[i])['next']
+        t.set_next(chain[i], dat(seq[0]))
+        for a, b in zip(seq, seq[1:]):
+            t.set_next(a, dat(b))
+        t.set_next(seq[-1], after)
+        moved += len(seq)
     return moved
 
 

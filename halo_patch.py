@@ -11009,8 +11009,8 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                        old='hidden',
                        new='%d hide call(s) removed, %d restore(s) kept%s'
                            % (rep.get('removed', 0), rep.get('kept', 0),
-                              ', %d cutscene restore(s) moved before a title the player '
-                              'already plays through' % rep['released']
+                              ', %d cutscene restore(s) moved to where the player '
+                              'already has control during a title' % rep['released']
                               if rep.get('released') else ''))
         else:
             row.update(ok=False, reason=rep.get('reason', 'script edit failed'))
