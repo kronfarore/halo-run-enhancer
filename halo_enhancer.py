@@ -465,7 +465,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'other_chance', 'other_weights', 'other_hero_enabled', 'armed_max_share',
                'other_exhaust_enabled', 'other_skull_enabled', 'other_ally_enabled',
                'other_bane_enabled', 'identity_other_card',
-               'skull_duration_value', 'skull_duration_multiply',
+               'skull_duration_value', 'skull_duration_multiply', 'skull_round_per_game',
                'skull_disabled', 'skull_camo_after_ladder',
                'bugfix_h2_fuel_rod', 'bugfix_h2_vehicle_score', 'bugfix_h4_dead_grenades',
                'player_armour_rows', 'no_immunities', 'vehicle_cards', 'flood_grenades',
@@ -1567,6 +1567,10 @@ CONFIG = {
     "skull_duration_multiply": True,
     "skull_disabled": [],        # skull categories (halo.json `skull` keys) never offered
     "skull_camo_after_ladder": False,   # Thunderstorm / Downpour before Assassins
+    # Skull round once per game (user, 2026-11-22): one random map of each game where
+    # every offer of ONE player carries a skull, so exactly one skull is guaranteed per
+    # game; the player alternates from game to game. RunState.skull_rounds.
+    "skull_round_per_game": False,
     # Options -> Patching -> Bugfixes: fixes to Bungie's own data. Off = vanilla.
     "bugfix_h2_fuel_rod": False,
     # Halo 2: human vehicle rows award points on levels with no human ally
@@ -5097,6 +5101,10 @@ class RunState:
         self.inverted_steps = []
         # #5: a player who picked an Exhaust gets one no-negative choice next round.
         self.free_negative_pending = {'player1': False, 'player2': False}
+        # Skull round (option skull_round_per_game): {game: {'mission', 'player',
+        # 'done'}}, chosen the first time a game is drafted. In the run so a co-op
+        # partner drafting next draws the same map and player.
+        self.skull_rounds = {}
         # #8: the signature of the most recent patch, kept on the RUN rather than
         # on the window so it survives a save/load and travels to the co-op
         # partner — comparing codes is the whole point, and the partner loading
@@ -5184,6 +5192,7 @@ class RunState:
             "weapon_card_misses": {p: dict(v) for p, v in self.weapon_card_misses.items()},
             "offered_card_weapons": {p: sorted(v) for p, v in self.offered_card_weapons.items()},
             "free_negative_pending": dict(self.free_negative_pending),
+            "skull_rounds": {g: dict(v) for g, v in (self.skull_rounds or {}).items()},
             "patched_effect_keys": [list(k) for k in self.patched_effect_keys],
             "card_directions": dict(getattr(self, 'card_directions', {}) or {}),
             "inverted_steps": list(getattr(self, 'inverted_steps', []) or []),
@@ -5294,6 +5303,8 @@ class RunState:
         fnp = data.get('free_negative_pending') or {}
         state.free_negative_pending = {'player1': bool(fnp.get('player1')),
                                        'player2': bool(fnp.get('player2'))}
+        state.skull_rounds = {g: dict(v) for g, v in (data.get('skull_rounds') or {}).items()
+                              if isinstance(v, dict)}
         return state
 
 class WeaponSelectionCard(QGroupBox):
@@ -5607,7 +5618,8 @@ class PairCard(QGroupBox):
             player_text = "PLAYER 1 - "
         elif self.show_player2 and not self.show_player1:
             player_text = "PLAYER 2 - "
-        title = QLabel(f"{player_text}PAIR {self.pair['id']}")
+        title = QLabel(f"{player_text}PAIR {self.pair['id']}"
+                       + ("  —  💀 SKULL ROUND" if self.pair.get('skull_round') else ""))
         title.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_title']}px; color: #e0e0e0; margin: 0; padding: 0;")
         layout.addWidget(title)
 
@@ -11278,6 +11290,16 @@ class OptionsDialog(QDialog):
             "cloaks whatever is an Elite when the level starts.\n\nShared with a co-op "
             "partner through the run.")
         lay.addWidget(self.skull_camo_order_cb)
+        self.skull_round_cb = QCheckBox("Skull round once per game")
+        self.skull_round_cb.setChecked(bool(CONFIG.get('skull_round_per_game')))
+        self.skull_round_cb.setToolTip(
+            "When the run reaches a game, one of its maps (this one or a later one) is "
+            "picked at random. On that map every offer of ONE player carries a skull, "
+            "so exactly one skull is guaranteed per game. The player alternates: "
+            "Player 1 in the first game, Player 2 in the next, and so on. The pair "
+            "titles say 'SKULL ROUND'.\n\nThe choice is stored in the run, so a co-op "
+            "partner draws the same map. Shared with a co-op partner through the run.")
+        lay.addWidget(self.skull_round_cb)
         hint = QLabel("Untick a category to keep it out of the draw. Cards already drawn "
                       "stay. Shared with a co-op partner through the run.")
         hint.setWordWrap(True)
@@ -14921,6 +14943,7 @@ class OptionsDialog(QDialog):
             'skull_duration_value': float(self.skull_duration_spin.value()),
             'skull_duration_multiply': self.skull_duration_mult_cb.isChecked(),
             'skull_camo_after_ladder': self.skull_camo_order_cb.isChecked(),
+            'skull_round_per_game': self.skull_round_cb.isChecked(),
             'bugfix_h2_fuel_rod': self.bugfix_fuel_rod_cb.isChecked(),
             'bugfix_h2_vehicle_score': self.bugfix_vehicle_score_cb.isChecked(),
             'bugfix_h4_dead_grenades': self.bugfix_dead_grenades_cb.isChecked(),
@@ -18095,6 +18118,14 @@ class HaloGUI(QMainWindow):
             # many levels were finished when it was drawn. Only "Next level" counts a
             # map (halo_patch.skull_maps_left), so patching again never uses one up; at
             # 0 left it stops patching and re-enters the pool.
+            # The skull round is spent once its player took a pair on that map
+            _sr = (getattr(self.run_state, 'skull_rounds', None) or {}).get(
+                self._current_game())
+            if (_sr and not _sr.get('done')
+                    and _sr.get('mission') == self.run_state.mission_id
+                    and isinstance(round_data.get(
+                        'skull1' if _sr.get('player') == 'player1' else 'skull2'), dict)):
+                _sr['done'] = True
             for sk in ('skull1', 'skull2'):
                 if isinstance(round_data.get(sk), dict):
                     round_data[sk] = {**round_data[sk],
@@ -19453,8 +19484,13 @@ class RunEnhancer:
                 else:
                     p2_choice = choice
             # The Other slot is rolled for EVERY pair, including a new-weapon one: it
-            # is its own slot now, not the leftover of the player card.
-            kind, other = self._draw_other(mid, game, bl, active_neg, enemy_mods)
+            # is its own slot now, not the leftover of the player card. On this
+            # player's skull-round map it is a skull, on every pair.
+            forced = self._forced_skull(for_player, mid, game, bl, active_neg)
+            if forced:
+                kind, other = 'skull', forced
+            else:
+                kind, other = self._draw_other(mid, game, bl, active_neg, enemy_mods)
             if kind == 'bane':
                 # a Bane takes the ENEMY card's place; the Other slot is spent on it
                 enemy_choice = other
@@ -19480,6 +19516,7 @@ class RunEnhancer:
                 'boss_mod': boss_mod,
                 'hero_mod': hero,
                 'skull_mod': skull,
+                'skull_round': bool(forced),
                 'exhaust_mod': exhaust,
                 'new_weapon': new_weapon,
                 # 'weapon' | 'equipment': the roll that dealt new_weapon, so a reroll
@@ -19532,6 +19569,38 @@ class RunEnhancer:
                 self.run_state, self.db.get_game_for_mission(self.run_state.mission_id))
         except Exception:
             return set()
+
+    def skull_round(self, game, mid):
+        """This map's skull round entry ({'mission', 'player', 'done'}) when the option
+        is on, this map is the game's skull map and its skull is still owed, else None.
+        The map is chosen the first time the game is drafted, among this map and the
+        ones after it (a run started mid-game never lands on a map it passed); the
+        player alternates by how many games already had one."""
+        if not CONFIG.get('skull_round_per_game') or not game or not mid:
+            return None
+        rs = self.run_state
+        sr = getattr(rs, 'skull_rounds', None)
+        if sr is None:
+            sr = rs.skull_rounds = {}
+        e = sr.get(game)
+        if e is None:
+            missions = [m for m, _n in self.db.get_missions_for_game(game)]
+            if mid not in missions:
+                return None
+            later = missions[missions.index(mid):]
+            e = sr[game] = {'mission': random.choice(later),
+                            'player': 'player2' if len(sr) % 2 else 'player1',
+                            'done': False}
+        if e.get('done') or e.get('mission') != mid:
+            return None
+        return e
+
+    def _forced_skull(self, for_player, mid, game, bl, active_neg):
+        """A skull for this offer slot when this map is `for_player`'s skull round."""
+        e = self.skull_round(game, mid)
+        if not e or e.get('player') != for_player:
+            return None
+        return self.db.get_skull_modifier_filtered(active_neg, bl, game, mission_id=mid)
 
     def _active_negative_names(self):
         """Names of negatives already active this run — every enemy card, every SKULL,
@@ -19667,12 +19736,20 @@ class RunEnhancer:
             self._note_armed_offered(c)
         # Option: the Other slot too, rolled exactly like a normal round's (_draw_other)
         with_other = bool(CONFIG.get('identity_other_card'))
-        active_neg = self._active_negative_names() if with_other else set()
+        sr = self.skull_round(game, mid)
+        skull_round = bool(sr) and sr.get('player') == for_player
+        active_neg = self._active_negative_names() if (with_other or skull_round) else set()
         pairs = []
         for i, ((w, up, down, locked), enemy) in enumerate(zip(slots, enemies)):
             other = {'wildcard_mod': None, 'hero_mod': None, 'skull_mod': None,
                      'exhaust_mod': None}
-            if with_other:
+            forced = (self._forced_skull(for_player, mid, game, bl, active_neg)
+                      if skull_round else None)
+            if forced:
+                other['skull_mod'] = forced
+                other['skull_round'] = True
+                active_neg = set(active_neg) | {forced.get('name')}
+            elif with_other:
                 kind, card = self._draw_other(mid, game, bl, active_neg, enemy_mods)
                 if kind == 'bane':
                     enemy = card                  # a Bane takes the enemy card's place
