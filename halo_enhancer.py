@@ -2397,6 +2397,11 @@ MOD_COLORS = {
     # tied inverted card a green-adjacent teal with a normal outline
     'identity': {'border': '4CAF50', 'bg': '0a1a0a'},
     'identity_down': {'border': '26A69A', 'bg': '061a17'},
+    # An identity pair the player already OWNS, offered again (play session 2026-11-21:
+    # 'mark Fixed (picked) Identity cards to distinguish from new ones'): amber on both
+    # halves, so a returning pair reads apart from a new draw at a glance.
+    'identity_fixed': {'border': 'FFB300', 'bg': '1a1406'},
+    'identity_fixed_down': {'border': 'C79100', 'bg': '141005'},
 }
 
 
@@ -5637,14 +5642,34 @@ class PairCard(QGroupBox):
         if isinstance(ident, dict):
             # Weapon Identity: two tied cards for one weapon in the player's band
             who = "PLAYER 1" if self.show_player1 else "PLAYER 2"
-            lock = "  🔒 your identity" if ident.get('locked') else ""
-            positive.append(self.create_mod_widget(
+            owned = bool(ident.get('locked'))
+            lock = "  🔒 your identity" if owned else ""
+            up_w = self.create_mod_widget(
                 ident['up'], "%s (%s) — IDENTITY x%d%s" % (who, ident.get('weapon'),
                                                           IDENTITY_UP_PICKS, lock),
-                "identity", 'identity_up'))
-            positive.append(self.create_mod_widget(
+                "identity_fixed" if owned else "identity", 'identity_up')
+            down_w = self.create_mod_widget(
                 ident['down'], "TIED — INVERTED STEP x%d" % IDENTITY_DOWN_PICKS,
-                "identity_down", 'identity_down'))
+                "identity_fixed_down" if owned else "identity_down", 'identity_down')
+            # How often this pair was already taken (the run's rounds), for the badge
+            picked = 0
+            _rs = self.parent_widget.run_state if self.parent_widget else None
+            pk = 'player1' if self.show_player1 else 'player2'
+            for rd in (getattr(_rs, 'rounds', None) or []):
+                ri = (rd.get(pk) or {}).get('identity')
+                if isinstance(ri, dict) and ri.get('weapon') == ident.get('weapon'):
+                    picked += 1
+            if owned:
+                text = "🔒 FIXED IDENTITY" + (" — picked %d×" % picked if picked else "")
+                tint = MOD_COLORS['identity_fixed']['border']
+            else:
+                text, tint = "✨ NEW IDENTITY", MOD_COLORS['identity']['border']
+            tag = QLabel(text)
+            tag.setStyleSheet("color: #%s; font-size: %dpx; font-weight: bold;"
+                              % (tint, CONFIG['font_size_small']))
+            up_w.layout().insertWidget(1, tag)
+            positive.append(up_w)
+            positive.append(down_w)
 
         if self.show_player2 and not isinstance(ident, dict):
             if self.pair.get('new_weapon'):
@@ -5799,7 +5824,7 @@ class PairCard(QGroupBox):
 
         scheme = MOD_COLORS.get(color, MOD_COLORS['green'])
         border_width = 2 if color in ('gold', 'boss', 'exhaust') else 1  # emphasize 3rd-slot cards
-        identity = color == 'identity'
+        identity = color in ('identity', 'identity_fixed')
         if identity:
             border_width = 4                      # wide enough to draw as a double line
         special = bool(mod_data.get('special'))  # #3: escalating-odds effect
