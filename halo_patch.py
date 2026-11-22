@@ -8835,12 +8835,150 @@ def _second_zoom_hud_h2(m, weap_plugin):
                  *[names.get(h, set()) for h in done])))}]
 
 
+# Reach: zoom is a CONDITION code -- 0x55 zoom level 1, 0x56 zoom level 2 (0x54
+# unzoomed, 0x61 always). The engine draws from the COMPILED lists, not the source
+# trigger blocks (halo-zoom-ui notes: the graft rendered only once Compiled Widget
+# Data was copied too). Two places, both [groups, n1, codes.., n2, codes..]:
+#   widget  count u16 at +0xBC, list u16 from +0xC2 (13 slots)
+#   child   root Compiled Widget Data (+0x1C, 0x5C): u8 +0x20 = where its second
+#           section starts, u8 +0x21 = total, list u16 from +0x22 (29 slots)
+# Measured on m10 / m50: a one-level scope compiles to [2, 1,0x55, 1,0x61] (DMR) where the
+# Focus Rifle has [2, 2,0x55,0x56, 1,0x61]; only the DMR and Needle Rifle have a group
+# with 0x55 and no 0x56, and no HUD has 0x56 without 0x55. Widget arrays are never
+# shared between HUD tags; 3 compiled arrays are, which is harmless here (a group gains
+# level 2 only on a HUD whose weapon never reaches it unless carded too). The source
+# trigger blocks keep 0x55 alone (adding there means growing them); not what draws.
+_REACH_ZOOM1, _REACH_ZOOM2 = 0x55, 0x56
+
+
+def _reach_add_level2(sec):
+    """One [groups, n, codes..] section with 0x56 added beside every lone 0x55.
+    (new section, changed); a malformed section comes back unchanged."""
+    if not sec:
+        return sec, False
+    ng, out, i, changed = sec[0], [sec[0]], 1, False
+    for _g in range(ng):
+        if i >= len(sec):
+            return sec, False
+        k = sec[i]
+        grp = list(sec[i + 1:i + 1 + k])
+        if len(grp) != k:
+            return sec, False
+        i += 1 + k
+        if _REACH_ZOOM1 in grp and _REACH_ZOOM2 not in grp:
+            j = grp.index(_REACH_ZOOM1) + 1
+            grp = grp[:j] + [_REACH_ZOOM2] + grp[j:]
+            changed = True
+        out += [len(grp)] + grp
+    return out + list(sec[i:]), changed
+
+
+def _second_zoom_hud_reach(m, weap_plugin):
+    if weap_plugin is None:
+        return []
+    g = 'Halo Reach'
+    B = _chud_blocks(g)
+    huds, names = {}, {}
+    for t in m.tags:
+        if t.get('class') != 'weap' or not t.get('base'):
+            continue
+        try:
+            lv = m.read_tag_field(t['base'], 'Magnification Levels', weap_plugin)
+            hud = _hud_base(m, g, t['base'])
+        except Exception:
+            continue
+        if hud is None:
+            continue
+        huds[hud] = max(huds.get(hud, 0), int(lv or 0))
+        names.setdefault(hud, set()).add(str(t['name']).rsplit(chr(92), 1)[-1])
+
+    def u16s(a, n):
+        return list(struct.unpack_from('<%dH' % n, m.data, a)) if n > 0 else []
+
+    def widget_list(w):
+        n = struct.unpack_from('<H', m.data, w + 0xBC)[0]
+        return u16s(w + 0xC2, n) if 0 < n <= 13 else None
+
+    def child_lists(c):
+        split, total = m.data[c + 0x20], m.data[c + 0x21]
+        if not total or total > 29 or split > total:
+            return None
+        L = u16s(c + 0x22, total)
+        return L[:split], L[split:]
+
+    def aware(hud):
+        secs = []
+        for w in _h3_chud_elems(m, hud, B['widgets']):
+            wl = widget_list(w)
+            if wl:
+                secs.append(wl)
+        for c in _h3_chud_elems(m, hud, B['compiled']):
+            cl = child_lists(c)
+            if cl:
+                secs.extend(cl)
+        for sec in secs:
+            i = 1
+            for _g in range(sec[0] if sec else 0):
+                if i >= len(sec):
+                    break
+                grp = sec[i + 1:i + 1 + sec[i]]
+                i += 1 + sec[i]
+                if _REACH_ZOOM2 in grp and _REACH_ZOOM1 not in grp:
+                    return True
+        return False
+
+    plan = {}                                  # address -> ('w'|'c', new bytes)
+    done = set()
+    for hud, lv in huds.items():
+        if lv < 2 or aware(hud):
+            continue
+        for w in _h3_chud_elems(m, hud, B['widgets']):
+            if struct.unpack_from('<H', m.data, w + 0xBE)[0] or \
+                    struct.unpack_from('<H', m.data, w + 0xC0)[0]:
+                continue                       # an unmeasured layout: leave it
+            wl = widget_list(w)
+            if not wl:
+                continue
+            new, ch = _reach_add_level2(wl)
+            if ch and len(new) <= 13:
+                plan[w] = ('w', new)
+                done.add(hud)
+        for c in _h3_chud_elems(m, hud, B['compiled']):
+            cl = child_lists(c)
+            if not cl:
+                continue
+            a, ca = _reach_add_level2(cl[0])
+            b, cb = _reach_add_level2(cl[1])
+            if (ca or cb) and len(a) + len(b) <= 29:
+                plan[c] = ('c', (a, b))
+                done.add(hud)
+    for addr, (kind, new) in plan.items():     # planned from untouched bytes, then written
+        if kind == 'w':
+            struct.pack_into('<H', m.data, addr + 0xBC, len(new))
+            m.data[addr + 0xC2:addr + 0xDC] = bytes(0x1A)
+            struct.pack_into('<%dH' % len(new), m.data, addr + 0xC2, *new)
+        else:
+            a, b = new
+            m.data[addr + 0x20] = len(a)
+            m.data[addr + 0x21] = len(a) + len(b)
+            m.data[addr + 0x22:addr + 0x5C] = bytes(0x3A)
+            struct.pack_into('<%dH' % (len(a) + len(b)), m.data, addr + 0x22, *(a + b))
+    if not done:
+        return []
+    return [{'effect': 'second zoom HUD', 'field': '%d HUD(s)' % len(done), 'ok': True,
+             'old': 'scope / reticle shown at zoom level 1 only',
+             'new': 'also at level 2 (%d compiled list(s)): %s' % (len(plan), ', '.join(
+                 sorted(set().union(*[names.get(h, set()) for h in done]))))}]
+
+
 def _second_zoom_hud(m, game, weap_plugin=None):
     """Halo 3 / ODST: extend level-1-only HUD states to level 2 on weapons with 2+
     magnification levels (see above). One summary row; idempotent."""
     g = str(game).strip()
     if g == 'Halo 2':
         return _second_zoom_hud_h2(m, weap_plugin)
+    if g == 'Halo Reach':
+        return _second_zoom_hud_reach(m, weap_plugin)
     if g not in _H3_CHUD_STATE_LAYOUT or weap_plugin is None:
         return []
     lay = _H3_CHUD_STATE_LAYOUT[g]
