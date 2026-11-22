@@ -1180,7 +1180,8 @@ CONFIG = {
     "combine_heretic_hologram": False,
 
     # Halo 3 only: on patch, remove the Cortana flicker + Gravemind vision cutscenes
-    # from the map (opt-in, OFF by default). Composes with the .bak baseline model —
+    # from the map (ON by default), plus their slowdown and leftover effects
+    # (h3_visions.py; the voices stay). Composes with the .bak baseline model —
     # applied fresh from the pristine baseline each patch, so toggling it off and
     # re-patching restores the cutscenes. Reproduces "Halo 3 Cortana Begone".
     "remove_h3_cutscenes": True,   # #4: on by default — skip the vision cutscenes
@@ -12895,8 +12896,10 @@ class OptionsDialog(QDialog):
         self.cutscenes_cb = QCheckBox("Remove Cortana / Gravemind cutscenes (Halo 3)")
         self.cutscenes_cb.setChecked(bool(CONFIG.get('remove_h3_cutscenes', True)))
         self.cutscenes_cb.setToolTip("Halo 3 only: on patch, strip the flood Cortana-flicker and Gravemind "
-                                     "vision cutscenes from the map. On by default; reversible — turn off "
-                                     "and re-patch to restore.")
+                                     "vision cutscenes from the map, with the slowdown, screen effect and "
+                                     "HUD flicker they bring (Floodgate, Cortana, Halo and the rest). The "
+                                     "voice lines still play. On by default; reversible — turn off and "
+                                     "re-patch to restore.")
         form.addRow("Halo 3 cutscenes:", self.cutscenes_cb)
 
         def _preload_cb(game, dll, extra=''):

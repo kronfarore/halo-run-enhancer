@@ -11116,6 +11116,26 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         else:
             r.update(ok=False, reason=rep.get('reason', 'cutscene removal failed'))
         results.append(r)
+        if str(game).strip() == 'Halo 3':
+            # What the recipe leaves (h3_visions.py): the header scripts' slowdown,
+            # screen effect and HUD flicker on every map, and the moments' remaining
+            # effect calls. Voice lines stay.
+            import h3_visions
+            vrep = h3_visions.strip_visions(m, _block_base, _scnr_base(m))
+            v = {'tag': 'scnr', 'field': 'vision slowdown and effects',
+                 'effect': 'Remove Halo 3 cutscenes'}
+            if not vrep.get('ok'):
+                v.update(ok=False, reason=vrep.get('reason', 'script edit failed'))
+            elif vrep.get('stuck'):
+                v.update(ok=False, reason='%d call(s) removed, %d could not be '
+                                          '(the only statement of their block)'
+                                          % (vrep['removed'], vrep['stuck']))
+            else:
+                v.update(ok=True, skip=not vrep.get('removed'), old='present',
+                         new='%d call(s) removed (slowdown, screen effect, briefing '
+                             'camera); voices kept' % vrep.get('removed', 0),
+                         reason=vrep.get('reason'))
+            results.append(v)
 
     if no_level_prepare and str(game).strip() in THIRD_GEN_GAMES:
         # Options 'Disable Pre-Loading' (its dll half: next_map_prefetch.sync): drop the level script's
