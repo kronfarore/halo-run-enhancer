@@ -1361,3 +1361,37 @@ and `h2_dll_dis.py` (static). The enhancer option is handed off.
 
 **Closed:** 5b report (reports/h2_needle_rifle_5b.txt) and port_backup (F:\HaloPortBackups\2026-11-17_needle-rifle-h2).
 The Needler's two sideways flash sprites stay (user: the flash is good). Barrel 1 still carries the Carbine's flags (unused).
+
+## B3: what the Plasma Repeater taught (2026-11-21/22, Step 4 alone, DONE)
+
+Reach's Plasma Repeater is a complete Halo 2 port: `ports_h2/plasma_repeater.py`. Tested in game, CLASSIC: Outskirts
+(Chief, Original, 2 boots), The Arbiter (Balanced), Armed on Outskirts (Elite, Grunt, Jackal, Brute, Drone) and
+Quarantine Zone (Flood, Sentinel), trade to Marine / Elite / Grunt, world model, drops. Every item confirmed by the user.
+Residency: palette entry in all 13 levels; ships with the batched rebuild. PORTING "Halo 2: the Plasma Repeater, wave
+B3" is the recipe.
+
+**Step 4a (user):** yardstick the Plasma Rifle (Halo 2's = Reach's tag numbers: ratio x1 but bolt speed x0.56, cone,
+autoaim 6); heat approximation A (the overheat stands in for the vent, the rate falls over the held time); NO dll vent;
+Halo 2's own plasma_fast damage group.
+
+**For every port after it (observations of one port, but each cost a boot here):**
+1. HALO 2 FIRES BY THE RESET RULE (Halo 1's): rate/30 a 30 Hz tick in float32, a shot when the sum reaches 1, the sum
+   reset -- 15/s fires 10/s. Fit any rate-sensitive mechanic (heat, ramps) under it before boot 1
+   (reports/h2_fire_rule.jsonl). ttk_halo2 / h2_role_compare do not model it yet.
+2. A heat fit must stay robust: check the overheat round for heat x0.93 / x1.07; a slow tail rate with a cold loss can
+   push it from round 15 to round 57.
+3. A Reach meter bitmap: its RED channel is the shape, its ALPHA the fill order; Halo 2's meter wants the fill in the
+   meter map's alpha and the shape in the alpha map. Make the bar full a little BELOW 1.0 heat (the last bolt before an
+   overheat lands under 1).
+4. A donor `.model` with a world graph moves same-named nodes to the donor's binds: use a graph-less `.model`.
+5. Read the target characters' 3P class / type labels before boot (an Elite holds a rifle / pr ONE-handed).
+6. Catalog `original` values are what the Original box writes: check every row's original against the kit.
+7. Armed: Flood and Sentinels only on their own levels (the test map tool enforces it now).
+
+**New to the kit:** h2_port_geometry LIST marker maps; h2_port_reticle `quad` / `spokes`; make_port_catalog_h2
+`original` overrides; h2_port_test_map's not-native guard; h2_stringid's same-id-in-two-runs rename; h2_port_tool_proof's
+OLD side runs again (it lacked the vendored pylibs).
+
+**Closed:** 5b report (reports/h2_plasma_repeater_5b.txt), port_backup (F:\HaloPortBackups\2026-11-22_plasma-repeater-h2),
+glyph U+E145 captured. **Open (the user's call):** ttk_halo2 should model the reset fire rule (all H2 TTK reports are
+optimistic for rates that are not whole tick divisors); Reach's Elite FP sounds (elite_plasrepeater_*) unused, as the DMR's.

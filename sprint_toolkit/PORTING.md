@@ -4081,6 +4081,44 @@ Tested: Delta Halo (Original, 3 boots), Oracle (Arbiter, Balanced), Armed on Del
   extra_rows. Halo 2's plugin calls the core radius `Area Of Effect Core Radius`.
 * Armed: `--armed all` on Delta Halo replaced squads 320 wu away. Flood and Sentinels: Quarantine Zone, which has its own.
 
+### Halo 2: the Plasma Repeater, wave B3 (2026-11-21/22) -- heat that slows the gun, Halo 2's fire rule
+
+Reach's repeater (`ports_h2/plasma_repeater.py`) on the Reach route, alone. Donor the H2 PLASMA RIFLE (spew, heat +
+battery, its heat-gauge shader, overheat states, HUD), dual wield cleared, the COVENANT CARBINE's `.model`; Reach's
+model, textures, Spartan + Elite FP animations, sounds and reticle. Yardstick the Plasma Rifle -- Halo 2's carries Reach's
+Plasma Rifle tag numbers, so the ratio is x1 on heat / rate / damage / battery / range (Balanced differs in bolt speed,
+cone and autoaim only). Tested: Outskirts (Original, 2 boots), The Arbiter (Balanced), Armed on Outskirts and Quarantine
+Zone (all seven species), Marine / Elite / Grunt trade.
+
+* HALO 2 FIRES LIKE HALO 1 (measured by its battery: 44 rounds to the overheat on boot 1): rate/30 is added each 30 Hz
+  tick in float32, a shot when the sum reaches 1, then the sum RESETS -- 15/s fires 10/s. Only that rule reproduces 44
+  (carry: 20). A rate is fitted under it (h1_role_compare's `h1_ticks`; scratch tick_fit): 20 -> 3.05 fires 15 -> 3.
+  Log: reports/h2_fire_rule.jsonl. ttk_halo2 still fires continuously (optimistic for every H2 weapon).
+* THE HEAT (approximation A, user): Reach's heat lives in functions (0.03 a tick, rate 15 -> 3 by heat^1.5, loss 0.25
+  -> 0.06/s, manual vent 2.5 s). Halo 2: the rate ramps over the HELD time (1.5 s), heat 0.076 a round, ONE loss 0.09
+  (Reach's mid-heat loss: its cold 0.25 left the 3/s tail at +0.026/s, an overheat that x0.93 heat moved to round 57),
+  overheated loss 0.36 = the 2.5 s vent. Overheats on round 15 at ~1.5 s, rounds 14-17 for heat +-7%. No dll vent (user).
+* THE GAUGE = Halo 2's own PR heat gauge (meter_active_camo: meter value AND on-colour by `heat`). Fill order in the meter
+  map's ALPHA (a linear u ramp, full at 0.97 heat: the bolt before the overheat lands at ~0.95), the SHAPE in the alpha
+  map = Reach's gauge RED channel (a frame + hook; its alpha is only the fill ramp; an opaque shape drew a rectangle).
+  Colours by function_edits on the clone: Reach's teal -> orange on, dim teal off, the off pulse steadied. The DISPLAY:
+  the same template held at value 1 (lit), colour by heat.
+* The PR `.model` names a world graph whose 1-frame idle holds ITS rods near the origin; the repeater shares the node
+  names, so that idle would move Reach's rods 12 cm: the Carbine's graph-less `.model` instead.
+* Markers: Reach's two staggered `primary_trigger`s -> the PR's `primary_trigger1` (lower) / `primary_trigger` (upper),
+  by h2_port_geometry's new LIST map (one name per instance). The PR's prong lens flares (`heat_flare`, no Reach marker)
+  scale `ready` -> renamed `primary_charged` (0 on spew). Check 10: the PR flash's sideways +-120 deg pair turned onto
+  the bore.
+* FP: Reach's vent_enter / loop / exit = Halo 2's overheating / overheated / o_h_exit (the PR's states); Reach's ELITE
+  graph also ships its own overheating / overheated / o_h_exit -- skip them or they collide with the renames. One vent
+  sound at the vent's start (cue + manual vent in + loop mixed): a loop cued on each 1 s `overheated` loop overlapped.
+* 3P label rifle / cb (the Carbine's): the Elite graph has `pr` only under `pistol` (one-handed).
+* Reticle: h2_port_reticle `quad` (a quarter ring mirrored four ways, gain) + `spokes` (Reach's four #33 wedges).
+* Catalog: value_overrides take `original` (the Original box writes each row's original; the table's were Reach's
+  overridden heat fields and its firing-noise enum, 4 = Halo 2's quiet). Regenerating any entry drops enhancer-added keys.
+* Armed: Flood / Sentinels exist only on levels with their own characters (h2_port_test_map now refuses / skips them
+  elsewhere): Flood 04b 06a 06b 07a 07b, Sentinels 04a 04b 06a 06b.
+
 ## Halo Reach
 
 **COMPLETE 2026-09-30 -- all nine steps built and confirmed in game** on m20: world model

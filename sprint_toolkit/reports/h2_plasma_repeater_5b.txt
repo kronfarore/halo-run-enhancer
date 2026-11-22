@@ -1,0 +1,43 @@
+Plasma Repeater -- BALANCED (catalog rows on the ports), legendary, body shots (ttk_halo2)
+weapon                      dmg    rate/s    dps  mag reload init/max         vel range       error   autoaim dual
+Plasma Repeater (port)     6.42   20-3.05   19.6    -   0.00      0/0     14/19.6   100 0.0769-0.643      6/15     
+Plasma Rifle                 10       6-9   90.0    -   0.00      0/0       14/14    40   0.25-0.75      6/12     
+Plasma Pistol                 7     20-20  140.0    -   0.00      0/0       11/11    40         0-0      6/12     
+Brute Plasma Rifle           10      8-11  110.0    -   0.00      0/0       14/14    40   0.25-0.75      6/12     
+SMG                        4.75     15-15   71.2   60   2.00  180/240     400/400    40      1-2.75      6/12     
+Needler                       1       8-8    8.0   30   1.00   90/120         6/6    24     0.5-1.5      7/20     
+
+time to kill (shots / seconds):
+                              Elite minor      Brute minor      Grunt minor     Jackal minor
+Plasma Repeater (port)        24 / 4.03 s      39 / 7.47 s       7 / 0.32 s      10 / 0.52 s
+Plasma Rifle                  20 / 4.76 s     50 / 10.87 s       4 / 0.46 s       6 / 0.71 s
+Plasma Pistol                 29 / 7.58 s     72 / 24.01 s       6 / 0.25 s       9 / 2.51 s
+Brute Plasma Rifle            20 / 4.60 s     50 / 12.64 s       4 / 0.36 s       6 / 0.57 s
+SMG                           32 / 2.07 s     106 / 8.93 s       9 / 0.53 s      13 / 0.80 s
+Needler                     199 / 30.00 s    500 / 76.38 s      40 / 5.75 s      60 / 8.25 s
+Plasma Repeater -- DEFAULT (the kit's tags), legendary, body shots (ttk_halo2)
+weapon                      dmg    rate/s    dps  mag reload init/max         vel range       error   autoaim dual
+Plasma Repeater (port)     6.42   20-3.05   19.6    -   0.00      0/0       25/35   100       0.4-3      5/15     
+Plasma Rifle                 10       6-9   90.0    -   0.00      0/0       14/14    40   0.25-0.75      6/12     
+Plasma Pistol                 7     20-20  140.0    -   0.00      0/0       11/11    40         0-0      6/12     
+Brute Plasma Rifle           10      8-11  110.0    -   0.00      0/0       14/14    40   0.25-0.75      6/12     
+SMG                        4.75     15-15   71.2   60   2.00  180/240     400/400    40      1-2.75      6/12     
+Needler                       1       8-8    8.0   30   1.00   90/120         6/6    24     0.5-1.5      7/20     
+
+time to kill (shots / seconds):
+                              Elite minor      Brute minor      Grunt minor     Jackal minor
+Plasma Repeater (port)        24 / 4.03 s      39 / 7.47 s       7 / 0.32 s      10 / 0.52 s
+Plasma Rifle                  20 / 4.76 s     50 / 10.87 s       4 / 0.46 s       6 / 0.71 s
+Plasma Pistol                 29 / 7.58 s     72 / 24.01 s       6 / 0.25 s       9 / 2.51 s
+Brute Plasma Rifle            20 / 4.60 s     50 / 12.64 s       4 / 0.36 s       6 / 0.57 s
+SMG                           32 / 2.07 s     106 / 8.93 s       9 / 0.53 s      13 / 0.80 s
+Needler                     199 / 30.00 s    500 / 76.38 s      40 / 5.75 s      60 / 8.25 s
+
+NOTE (2026-11-22): ttk_halo2.sim_player fires the rate CONTINUOUSLY. Halo 2 fires by the reset rule measured on
+this port's boot 1 (reports/h2_fire_rule.jsonl: rate/30 a 30 Hz tick in float32, a shot when the sum reaches 1, the
+sum reset), so its times above are optimistic for every weapon with a rate that is not a whole tick divisor: the
+repeater's 20 -> 3.05 fires Reach's 15 -> 3/s (Grunt 7 bolts ~0.45 s, Elite ~4.5 s with one vent: the 4a table's
+approximation-A rows), the Plasma Rifle's 6 -> 9 fires 6 -> 7.5. Balanced = Original here except bolt speed,
+cone and autoaim (the yardstick ratio is x1 on damage / rate / heat): the TTK columns are the same by design.
+Conclusion unchanged from 4a: the repeater sits with the Plasma Rifle family on Elites and Brutes, faster on
+Brutes (plasma_fast), level on Grunts / Jackals.

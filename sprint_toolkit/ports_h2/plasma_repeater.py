@@ -1,9 +1,8 @@
-r"""Plasma Repeater into Halo 2 (H2_PORT_PLAN.md wave B (Reach), #B3) -- a phase-0 STUB (2026-10-20):
-reservations, yardstick candidates, the proposed donor and the AI source. The port session fills
-the pipeline sections (ports_h2/__init__.py; ports_h2/saw.py is the complete example) and sets
-'status' to 'in progress' at its start, 'done' at its end.
+r"""Plasma Repeater into Halo 2 (H2_PORT_PLAN.md wave B (Reach), #B3) -- DONE 2026-11-22 (the close-out record at
+the end of the file; PORTING "Halo 2: the Plasma Repeater, wave B3"; H2_PORT_PLAN "B3: what the Plasma Repeater
+taught").
 
-The port (2026-11-21, alone): Reach's model, textures, Spartan + Elite FP animations and sounds on a clone of
+The port (2026-11-21/22, alone): Reach's model, textures, Spartan + Elite FP animations and sounds on a clone of
 Halo 2's PLASMA RIFLE (spew, heat + battery, its heat gauge shader, its overheat states and HUD), dual wield
 cleared. Halo 2's Plasma Rifle skeleton (gun, rod_left / wing_left, rod_right / wing_right) is Reach's repeater's
 by name, plus Reach's cylinder and cowl.
@@ -48,7 +47,7 @@ PORT = {
     'wave': 'B3',
     'name': 'Plasma Repeater',
     'source': 'Halo Reach',
-    'status': 'in progress',
+    'status': 'done',
     'source_tag': 'objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater',
     'reservations': {
         'message_prefix': 'rp2',
@@ -550,8 +549,9 @@ PORT = {
         'decisions': {
             'heat recovery threshold 0.1 (source 0)': "approximation A: Reach never overheats (its 0 means nothing); 0 "
                                                       "would never leave the overheat (Halo 1's measure) -- the PR's 0.1",
-            'heat loss 0.25 / overheated loss 0.36 / heat 0.0915 / rate ramp 1.6 / 3.6 s (source 0.0333 / 0 / 0 / 0)':
-                "approximation A (user 4a): Reach's heat lives in functions; fitted, see the yardstick",
+            'heat loss 0.09 / overheated loss 0.36 / heat 0.076 / rate 20 -> 3.05, ramp 1.5 / 3.6 s (source 0.0333 / 0 / 0 / '
+            '15 -> 3 / 0 / 0)':
+                "approximation A (user 4a), refit after boot 1 under Halo 2's measured reset fire rule; see the yardstick",
             'barrels deceleration time (nth 1) 0.6 (ratio 1.06)': "Reach's own bloom decay (the PR's is the same 0.6)",
             'barrels error angle (nth 0) 1.5-3 (ratio 0.46-2.57)': 'the DUAL-wield copy: unused, dual wield cleared',
             'barrels illumination recovery time 0.1 (ratio 0.17)': "Reach's own (Original)",
@@ -602,6 +602,23 @@ PORT = {
                  'vent. Balanced through the Plasma Rifle.'),
     },
 
+    # every sound the port's own (port_sound_refs on the built 04a test map, 2026-11-22: 0 BORROWED)
+    'sound_keeps': {},
     'test': {'level': '03a_oldmombasa', 'dervish_level': '04a_gasgiant'},
     'residency': {'levels': 'all', 'placements': False},
 }
+
+# CLOSE-OUT RECORD (2026-11-22, DONE). Boots, every item confirmed by the user, CLASSIC:
+#   boot 1 Outskirts ORIGINAL: animations, rate + alternating muzzles, HUD, pickup, bolts / flash, world model, Marine
+#     trade good; fixed: FP 1 unit down, the overheat (HALO 2'S RESET FIRE RULE: 44 rounds to the overheat), the gauge
+#     shape, the vent sound overlapping itself
+#   boot 2 Outskirts ORIGINAL: FP, overheat (~15 rounds), vent sound confirmed; the gauge a plain rectangle -> Reach's
+#     frame + hook (user's pick from an offline render), full at 0.9 heat
+#   boot 3 The Arbiter BALANCED: gauge, FP (Arbiter), Balanced confirmed; Elite / Grunt trade; Elite one-handed -> 3P
+#     label rifle / cb; gauge full at 0.97
+#   Armed: Outskirts (Elite two-handed, Grunt, Jackal, Brute, Drone, drops) and Quarantine Zone (Flood, Sentinel)
+# Closing checks on the built 04a test map: port_refs_audit 0 problems; port_sound_refs every sound OWN; port_volume
+#   one own playback entry, headroom 3.1 dB; check 10 (the PR's sideways flash pair turned onto the bore); world
+#   model (boot 1); port_glyphs --capture --game halo2 (U+E145, eight fonts byte for byte). 4b re-run: list 2 = the
+#   recorded decisions. 5b: reports/h2_plasma_repeater_5b.txt. port_backup: F:\HaloPortBackups\2026-11-22_plasma-repeater-h2
+# Not rebuilt into the 13 levels (the batched rebuild is the user's go); residency entries are in all 13 kit resources.
