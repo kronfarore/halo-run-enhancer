@@ -172,6 +172,10 @@ def add_characters(d, species):
 #: --armed all build: the 7 characters added to the scenario never reached the map) -- its
 #: Character Palette is root +48 (04a: count 6 = the 16-byte chunk of character tagrefs)
 AI_CHAR_PALETTE = 48
+#: where Flood / Sentinel CHARACTERS live (each level's master AI resource, 2026-11-22): Flood 04b 06a 06b 07a 07b,
+#: Sentinels 04a 04b 06a 06b
+NATIVE_HINT = ('both: Oracle 04b_floodlab, Sacred Icon 06a_sentinelwalls, Quarantine Zone 06b_floodzone; '
+               'Sentinels also The Arbiter 04a_gasgiant; Flood also Gravemind 07a / High Charity 07b')
 
 
 def ai_resource(level):
@@ -202,7 +206,8 @@ def add_characters_ai(r, species):
 
 
 def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.0, god=True,
-          replace=True, balanced=True, secondary=None, species_weapons=None):
+          replace=True, balanced=True, secondary=None, species_weapons=None, armed_all=False):
+    a_all = armed_all
     p = ports_h2.load(key)
     weapon = R.weapon_path(p)
     scn, res = scenario(level), R.resource(level)
@@ -219,6 +224,25 @@ def build(key, level, profiles, rounds, keep_kit_map=False, armed=None, share=1.
                 names = [r[1] for r in profile_refs(d) if r[3] == PRIMARY][:2]
                 profiles = [n for n in names if not n.startswith('ab_')]
             got = arm_profiles(d, weapon, profiles, rounds)
+            if armed and os.path.exists(air):
+                # NOT-NATIVE GUARD (the Plasma Repeater's Armed boot on Outskirts, 2026-11-22, user: 'I don't think
+                # Sentinel or Flood exist on the map, which is a mistake we keep repeating' -- the Needle Rifle's B2
+                # lesson too): Brutes / Drones added to a level's palette spawn, Flood and Sentinels do NOT. They are
+                # armed only on a level whose own AI resource names one of theirs
+                # a CHARACTER of theirs (objects\characters\flood*|sentinel*\ai\...): Outskirts names the Sentinel
+                # BEAM (sentinel_aggressor\weapons\...) for its own reasons -- not a Sentinel
+                import re
+                raw = open(air, 'rb').read().lower()
+                missing = [s for s in ('flood', 'sentinel') if s in armed
+                           and not re.search(rb'objects\\characters\\' + s.encode() + rb'[a-z_]*\\ai\\', raw)]
+                if missing and not a_all:
+                    raise SystemExit('%s: %s not in this level (palette-added Flood / Sentinels never spawn) -- '
+                                     'test them on a level that has them (%s)'
+                                     % (level, ', '.join(missing), NATIVE_HINT))
+                if missing:
+                    armed = [s for s in armed if s not in missing]
+                    print('   NOT TESTED HERE: %s -- not in this level (palette-added ones never spawn); test them on a '
+                          'level that has them (%s)' % (', '.join(missing), NATIVE_HINT))
             if armed and replace:
                 added = add_characters(d, armed)
                 if os.path.exists(air):
@@ -358,7 +382,8 @@ def main():
         armed = list(ALL_ENEMIES)
     built = build(a.key, level, profiles, rounds, a.keep_kit_map, armed, a.share, god=not a.mortal,
                   replace=not a.no_replace, balanced=not a.original, secondary=a.secondary,
-                  species_weapons=dict(x.strip().split('=', 1) for x in a.with_.split(',') if '=' in x))
+                  species_weapons=dict(x.strip().split('=', 1) for x in a.with_.split(',') if '=' in x),
+                  armed_all=a.armed.strip() == 'all' if a.armed else False)
     print('test map: %s' % built)
     if a.stage:
         with kit_lock.held('h2_port_test_map %s --stage %s' % (a.key, level), owner=a.key, kit='h2'):
