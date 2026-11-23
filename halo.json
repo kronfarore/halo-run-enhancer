@@ -22924,6 +22924,7 @@
 					]
 				},
 				"Grenade Velocity": {
+					"requires_config": "flood_grenades",
 					"color": "aggressive",
 					"desc": "Grenade Velocity, Grenade Ideal Velocity",
 					"debug_desc": "The pure forms carry their own Grenades block on every Halo 3 and ODST level that fields them. They first appear in Halo 3, so there is no earlier game to inherit from.",
@@ -22936,6 +22937,7 @@
 					]
 				},
 				"Grenade Range": {
+					"requires_config": "flood_grenades",
 					"color": "aggressive",
 					"desc": "Grenade Ranges, Grenade Ranges Max",
 					"debug_desc": "The pure forms carry their own Grenades block on every Halo 3 and ODST level that fields them. They first appear in Halo 3, so there is no earlier game to inherit from.",
@@ -22948,6 +22950,7 @@
 					]
 				},
 				"Grenade Collateral": {
+					"requires_config": "flood_grenades",
 					"color": "aggressive",
 					"desc": "Won't throw a grenade, if there is an ally within this radius around the target",
 					"debug_desc": "The pure forms carry their own Grenades block on every Halo 3 and ODST level that fields them. They first appear in Halo 3, so there is no earlier game to inherit from.",
@@ -23609,6 +23612,7 @@
 					]
 				},
 				"Grenade Velocity": {
+					"requires_config": "flood_grenades",
 					"color": "aggressive",
 					"desc": "Grenade Velocity, Grenade Ideal Velocity",
 					"debug_desc": "The grenade group on the Bugger's own tags. In the older games the Bugger inherited these from `ai\\\\generic` and the shared card covered it; in Reach the bugger tag defines the block itself, with the same numbers generic ships (velocity 5.5, ideal 3.0, ranges 3.0-12.0, collateral radius 2.0), so the shared edit no longer reaches it.",
@@ -23621,6 +23625,7 @@
 					]
 				},
 				"Grenade Range": {
+					"requires_config": "flood_grenades",
 					"color": "aggressive",
 					"desc": "Grenade Ranges, Grenade Ranges Max",
 					"debug_desc": "The grenade group on the Bugger's own tags. In the older games the Bugger inherited these from `ai\\\\generic` and the shared card covered it; in Reach the bugger tag defines the block itself, with the same numbers generic ships (velocity 5.5, ideal 3.0, ranges 3.0-12.0, collateral radius 2.0), so the shared edit no longer reaches it.",
@@ -23633,6 +23638,7 @@
 					]
 				},
 				"Grenade Collateral": {
+					"requires_config": "flood_grenades",
 					"color": "aggressive",
 					"desc": "Won't throw a grenade, if there is an ally within this radius around the target",
 					"debug_desc": "The grenade group on the Bugger's own tags. In the older games the Bugger inherited these from `ai\\\\generic` and the shared card covered it; in Reach the bugger tag defines the block itself, with the same numbers generic ships (velocity 5.5, ideal 3.0, ranges 3.0-12.0, collateral radius 2.0), so the shared edit no longer reaches it.",

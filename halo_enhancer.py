@@ -1598,10 +1598,11 @@ CONFIG = {
     # Options -> Run rules -> Card rolls: vehicle cards join the draw (for now only the
     # Mounted guns damage cards -- halo.json requires_config "vehicle_cards")
     "vehicle_cards": False,
-    # Options -> Run rules -> Card rolls: the Flood Combat Form grenade cards (Velocity,
-    # Range, Collateral -- halo.json requires_config "flood_grenades"). Off by default:
-    # no combat form has a grenade-throw animation in any game, so the cards do nothing
-    # until one can throw (play session 2026-11-21).
+    # Options -> Run rules -> Card rolls: the grenade cards (Velocity, Range, Collateral)
+    # of species that cannot throw -- Flood Combat Forms (H2 / H3), Flood Pure Forms (H3)
+    # and Buggers (Reach); halo.json requires_config "flood_grenades". Off by default:
+    # none of them has a grenade-throw animation, so the cards do nothing until they can
+    # throw (play session 2026-11-21; Pure Forms and Buggers added by the user 2026-11-23).
     "flood_grenades": False,
     # Weapon Identity rounds also roll the Other slot (Hero / Exhaust / Skull / Ally /
     # Bane) like a normal round: a fourth card on the offer. Off = the identity pair and
@@ -12861,14 +12862,14 @@ class OptionsDialog(QDialog):
             "vehicle guns one shared damage type, so they come as one. More vehicle cards "
             "will follow. Shared with a co-op partner through the run.")
         rform.addRow("", self.vehicle_cards_cb)
-        self.flood_grenades_cb = QCheckBox("Flood: Can throw grenades")
+        self.flood_grenades_cb = QCheckBox("Flood and Buggers: can throw grenades")
         self.flood_grenades_cb.setChecked(bool(CONFIG.get('flood_grenades')))
         self.flood_grenades_cb.setToolTip(
-            "On: the Flood Combat Form grenade cards (Grenade Velocity, Grenade Range, "
-            "Grenade Collateral) join the draw. Combat forms have no grenade-throw "
-            "animation in any game, so these cards do nothing today -- this stays off "
-            "until combat forms can actually throw. Shared with a co-op partner "
-            "through the run.")
+            "On: the grenade cards (Grenade Velocity, Grenade Range, Grenade "
+            "Collateral) of Flood Combat Forms (Halo 2, Halo 3), Flood Pure Forms "
+            "(Halo 3) and Buggers (Reach) join the draw. None of them has a "
+            "grenade-throw animation, so these cards do nothing today -- this stays off "
+            "until they can actually throw. Shared with a co-op partner through the run.")
         rform.addRow("", self.flood_grenades_cb)
         self._opt_page("Run rules").addWidget(rolls)
 
