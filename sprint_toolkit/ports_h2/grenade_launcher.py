@@ -18,6 +18,7 @@ RM = R + GL + r'\grenade_launcher.render_model'
 WP = GL + r'\grenade_launcher.weapon'
 PJ = GL + r'\projectiles\grenade_launcher_grenade.projectile'          # barrel 0: the bouncing grenade
 PJC = GL + r'\projectiles\grenade_launcher_tethered_grenade.projectile'  # barrel 1: the charged release
+PJE = GL + r'\projectiles\grenade_launcher_emp_burst.projectile'        # spawned by the release burst: the EMP
 DM = GL + r'\damage_effects'
 RS = r'data\sound\weapons'                          # source folders in MCC's haloreach sfx.fsb (.info)
 NEW_HUD = r'ui\hud\bitmaps\new_hud'
@@ -245,11 +246,18 @@ PORT = {
                    (r'effects\objects\weapons\pistol\plasma_pistol\overcharge_fp.lens_flare', FX + r'\gl_light_flare_fp.lens_flare'),
                    # BOOT 2 (user): 'the EMP charge should have an added EMP explosion effect for clarity' -- Reach
                    # plays its emp_pulse (cyan-blue electric wisps) in the release burst; Halo 2's nearest stock look is
-                   # the PLASMA GRENADE's airborne burst (blue flash, electric discharge, its light). Nesting it as a part
-                   # of a frag burst FAILED: a Halo 2 effect part cannot be an effect (tool: 'invalid type effect',
-                   # the whole burst dropped from the map) -> the release burst IS the plasma grenade's, its lod-sound
-                   # part the EMP jpt!, its sounds the port's (the release loses the frag fireball; the tap keeps it)
-                   (r'effects\impact\explosion_small\plasma_grenade\airborne_detonation.effect', FX + r'\emp_burst.effect')],
+                   # the PLASMA GRENADE's airborne burst. Nesting an effect as a part of the frag burst FAILED: a Halo 2
+                   # effect part cannot be an effect (tool: 'invalid type effect', the whole burst dropped from the map);
+                   # boot 3 the release burst WAS the plasma grenade's -- user: 'the normal explosion should stay and the
+                   # other effect on top of it; try the Tartarus Gravity Hammer explosion effect'. A part CAN be an OBJECT
+                   # (Sentinel emp_death spawns its wreckage): the release burst = the frag burst again, its lod-sound part
+                   # an object part spawning PJE, a grenade that bursts at once with TARTARUS's hammer impact (ring,
+                   # distortion ripple, arcs) and the EMP as its detonation damage. The hammer's own blast part (tartarus_
+                   # hammer_explosion, its knockback) made a silent sound part; its marker melee_effect -> up (a burst has
+                   # only the engine's points: the Gravity Hammer's A5 finding)
+                   (r'effects\impact\explosion_small\frag_grenade\airborne_detonation.effect', FX + r'\tethered_detonation.effect'),
+                   (BS + r'\projectiles\grenade\grenade.projectile', PJE),
+                   (r'effects\objects\characters\brute\tartarus_hammer_impact.effect', FX + r'\emp_burst.effect')],
         # the charge lights' flares carry a colour ANIMATION (the pistol's dark green -> green, BGR; the Laser's boot 6):
         # -> Reach's tethered arm-switch red (255, 37, 0; dark 80, 10, 0)
         'byte_edits': [(FX + r'\gl_light_flare.lens_flare', '0320090036481c00000000000000000000ff0000',
@@ -266,7 +274,8 @@ PORT = {
         # held as a rifle; Marines and every Armed species took the DMR on it)
         'string_ids': {'missile': 'rifle', 'fc': 'br'},
         'string_ids_done': ('weapon name', 'br'),
-        'string_id_renames': [(DM + r'\grenade_launcher_impact.damage_effect', {'bullet_fast': 'collision'})],
+        'string_id_renames': [(DM + r'\grenade_launcher_impact.damage_effect', {'bullet_fast': 'collision'}),
+                              (FX + r'\emp_burst.effect', {'melee_effect': 'up'})],
         'wiring': [
             (WP, 'hlmt', FC + r'\flak_cannon', GL + r'\grenade_launcher', 'world model', {'nth': 0}),
             (GL + r'\grenade_launcher.model', 'mode', BR + r'\battle_rifle', GL + r'\grenade_launcher', 'the world render model', {'nth': 0}),
@@ -295,14 +304,28 @@ PORT = {
             (PJC, 'foot', r'effects\materials\objects\weapons\brute_shot', FX + r'\grenade', 'impact material effects'),
             (PJC, 'ligh', r'effects\objects\weapons\support_low\brute_shot\projectile', FX + r'\grenade', 'the grenade light', {'nth': 0}),
             (PJC, 'cont', r'effects\objects\weapons\support_low\brute_shot\projectile', FX + r'\grenade', 'the grenade trail', {'nth': 0}),
-            (PJC, 'effe', r'effects\impact\explosion_small\brute_shot\detonation', FX + r'\emp_burst', 'the release burst + EMP (air + ground)', {'every': True}),
+            (PJC, 'effe', r'effects\impact\explosion_small\brute_shot\detonation', FX + r'\tethered_detonation', 'the release burst (air + ground)', {'every': True}),
             (PJC, 'jpt!', BS + r'\damage_effects\shot_grenade_explosion', DM + r'\grenade_launcher_tethered_explosion', 'the tethered blast'),
             (PJC, 'jpt!', BS + r'\damage_effects\grenade_impact', DM + r'\grenade_launcher_impact', 'the impact'),
-            # THE EMP: the release burst's lod-sound part -> a jpt! part, then the port's EMP
-            (FX + r'\emp_burst.effect', 'snd!', r'sound_remastered\weapons\plasma_grenade\plasma_expl_lod',
-             r'sound_remastered\weapons\plasma_grenade\plasma_expl_lod', 'the EMP part (was the lod sound)', {'class': 'jpt!'}),
-            (FX + r'\emp_burst.effect', 'jpt!', r'sound_remastered\weapons\plasma_grenade\plasma_expl_lod',
-             DM + r'\grenade_launcher_emp', 'the EMP (Halo 2\'s emp group, the plasma pistol overcharge\'s)'),
+            # THE EMP: the release burst's lod-sound part -> an OBJECT part spawning PJE
+            (FX + r'\tethered_detonation.effect', 'snd!', r'sound_remastered\weapons\frag_grenade\frag_expl_lod',
+             r'sound_remastered\weapons\frag_grenade\frag_expl_lod', 'the EMP spawner part (was the lod sound)', {'class': 'proj'}),
+            (FX + r'\tethered_detonation.effect', 'proj', r'sound_remastered\weapons\frag_grenade\frag_expl_lod',
+             PJE[:-len('.projectile')], 'the EMP grenade, spawned in the burst'),
+            # PJE: bursts at once (numbers) with the Tartarus hammer impact and the EMP
+            (PJE, 'hlmt', BS + r'\projectiles\grenade\grenade', r'objects\weapons\grenade\frag_grenade\frag_grenade_projectile', 'the frag projectile model'),
+            (PJE, 'foot', r'effects\materials\objects\weapons\brute_shot', FX + r'\grenade', 'material effects'),
+            (PJE, 'ligh', r'effects\objects\weapons\support_low\brute_shot\projectile', FX + r'\grenade', 'the grenade light', {'nth': 0}),
+            (PJE, 'cont', r'effects\objects\weapons\support_low\brute_shot\projectile', FX + r'\grenade', 'the grenade trail', {'nth': 0}),
+            (PJE, 'lsnd', r'sound\weapons\brute_shot\brute_shot_projectile\brute_shot_projectile', FX + r'\gl_projectile', 'the flight loop'),
+            (PJE, 'effe', r'effects\impact\explosion_small\brute_shot\detonation', FX + r'\emp_burst', 'the EMP look: Tartarus\'s hammer impact', {'every': True}),
+            (PJE, 'jpt!', BS + r'\damage_effects\shot_grenade_explosion', DM + r'\grenade_launcher_emp', 'the EMP (Halo 2\'s emp group, the plasma pistol overcharge\'s)'),
+            (PJE, 'jpt!', BS + r'\damage_effects\grenade_impact', DM + r'\grenade_launcher_emp', 'impact (none: it never flies)'),
+            # the hammer impact's own blast part (knockback) -> a silent sound part
+            (FX + r'\emp_burst.effect', 'jpt!', r'objects\characters\brute\damage_effects\tartarus_hammer_explosion',
+             r'objects\characters\brute\damage_effects\tartarus_hammer_explosion', "the hammer's blast part, made a sound", {'class': 'snd!'}),
+            (FX + r'\emp_burst.effect', 'snd!', r'objects\characters\brute\damage_effects\tartarus_hammer_explosion',
+             r'sound\weapons\grenade_launcher_port\gl_charge', "silent (the charge cue's 0.3 s lead)"),
             # the flight loop: the port's lsnd, its track Reach's grenade_launcher_proj loop (step 10)
             (PJ, 'lsnd', r'sound\weapons\brute_shot\brute_shot_projectile\brute_shot_projectile', FX + r'\gl_projectile', 'the flight loop'),
             (PJC, 'lsnd', r'sound\weapons\brute_shot\brute_shot_projectile\brute_shot_projectile', FX + r'\gl_projectile', 'the flight loop'),
@@ -431,6 +454,12 @@ PORT = {
                 (DM + '\\' + dm + '.damage_effect', 'ai stun bounds', '', 0, 0, [1.0, 0.5], {'anchor': ('shake radius', -8)}),
                 (DM + '\\' + dm + '.damage_effect', 'rider minimum transfer damage scale', '', 0, 0, 1.0,
                  {'anchor': ('instantaneous acceleration', 12)}))] + [
+            # the EMP grenade (boot 3), spawned at rest inside the release burst: bursts after 0.01 s, never flies
+            (PJE, 'detonation timer starts', '', 0, 0, 0),             # immediately (the Brute Shot's: any surface)
+            (PJE, 'timer', '', 0, 0, [0.01, 0.01]),
+            (PJE, 'initial velocity', '', 0, 0, 0.0),
+            (PJE, 'final velocity', '', 0, 0, 0.0),
+            (PJE, 'air gravity scale', '', 0, 0, 0.0),
             # BOOT 1 (user): 'early ammo warning is always on' -- the Brute Shot HUD's low CLIP cutoff 1 (rounds loaded
             # <= 1 = low): a 1-round magazine is always low -> 0 (warns only empty, as the RL's 1 of 2 does at its last)
             (r'ui\hud\grenade_launcher.new_hud_definition', 'low clip cutoff', '', 0, 0, 0),
@@ -525,7 +554,11 @@ PORT = {
                           # reloaded?'): yes -- Reach's primary keyframe (27 of 63, 33 of 59) counts the round in Halo 2.
                           # Bungie's own Halo 2 reloads carry NO frame events (BR, SMG, RL, Brute Shot): the same here,
                           # the round counted at the animation's end. No dll (user: H1 left it, so H2 does too)
-                          'frames': {'first_person:reload_empty': [], 'first_person:reload_full': []}},
+                          # BOOT 3 (user): 'the reload is counted far too late now' -> the round counts at Reach's own
+                          # ALLOW INTERRUPTION frame (where Reach lets the player fire again): reload_empty 48 of 63,
+                          # reload_full 38 of 59 (was the primary keyframe 27 / 33)
+                          'frames': {'first_person:reload_empty': [('primary keyframe', 48), ('allow interruption', 48)],
+                                     'first_person:reload_full': [('primary keyframe', 38), ('allow interruption', 38)]}},
     },
 
     # step 10 -- h2_port_sounds.py: Reach's OWN sounds from MCC's haloreach sfx.fsb (the DMR's `bank`), layered as
@@ -581,10 +614,11 @@ PORT = {
         # the Fuel Rod's zoom sounds: no zoom (magnification levels 0) -> the ready, so nothing is borrowed
         'repoint_weapon': [(r'sound\weapons\beam_rifle\beam_rifle_zoom_in', 'gl_ready'),
                            (r'sound\weapons\beam_rifle\beam_rifle_zoom_out', 'gl_ready')],
-        # the release burst (the plasma grenade's): its plasma explosion -> Reach's far layer, its lfe -> the tail (its lod
-        # part is the EMP), the near explosion the projectile's own detonation sound (gl_expl) -- Reach's layers
-        'repoint_tags': [(FX + r'\emp_burst.effect', r'sound\weapons\plasma_grenade\plasma_expl', 'gl_expl_far'),
-                         (FX + r'\emp_burst.effect', r'sound_remastered\weapons\plasma_grenade\plasma_expl_lfe\lfe', 'gl_tail'),
+        # the release burst (the frag's, as the tap's): its explosion -> Reach's far layer (its lod part spawns the EMP
+        # grenade); the EMP grenade's own detonation sound silent (the Tartarus hits play in its hammer impact: KEPT for
+        # boot 4, the user's call)
+        'repoint_tags': [(FX + r'\tethered_detonation.effect', r'sound\weapons\frag_grenade\frag_expl', 'gl_expl_far'),
+                         (PJE, r'sound\weapons\brute_shot\brute_round_explode', 'gl_charge'),
                          (PJ, r'sound\weapons\brute_shot\brute_round_explode', 'gl_expl'),
                          (PJC, r'sound\weapons\brute_shot\brute_round_explode', 'gl_expl'),
                          (FX + r'\detonation.effect', r'sound\weapons\frag_grenade\frag_expl', 'gl_expl_far'),
