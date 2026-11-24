@@ -2073,9 +2073,10 @@ def model_times(wpn, shots):
                 t += 1 / 30.0
             heat, held, acc = max(heat, 0.0), 0.0, 1.0
         if acc >= 1.0 - 1e-9:
-            # Halo 1 (`h1_ticks`, the probe): the sum RESETS on a shot (a rate under 15 takes 3
-            # ticks); Reach's continuous rate carries the remainder
-            acc = 0.0 if m.get('h1_ticks') else acc - 1.0
+            # the sum RESETS on a shot in EVERY game (Halo 1: the probe; Reach / Halo 3 / ODST /
+            # Halo 4 / Halo 2: rof_test_stage.py, reports/rof_test.jsonl, 2026-11-23 -- the
+            # Reach models here carried the remainder before)
+            acc = 0.0
             out.append(t)
             heat = min(heat + m['hpr'], 1.0)
             continue

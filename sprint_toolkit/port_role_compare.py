@@ -6,7 +6,9 @@ reads each weapon's weapon / projectile / damage effect tags and derives role me
 
     hit        damage per projectile (upper bound; x projectiles per shot)
     interval   seconds between shots: 1 / rounds per second, or the fire recovery time
-               when that is longer (a semi-automatic beam rifle)
+               when that is longer (a semi-automatic beam rifle) -- as the game FIRES it,
+               by the measured 30 Hz reset rule (2026-11-23: ceil(30 / rate) ticks, the
+               recovery rounded up to ticks); 'tag interval' keeps the tag's own
     burst      shots and damage from cold until OVERHEATED, and the seconds it takes
     recover    seconds from overheated until it fires again:
                (overheated threshold - recovery threshold) / overheated heat loss
@@ -35,6 +37,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import port_field_audit as fa                                       # noqa: E402
+import ttk_common as tc                                             # noqa: E402
 
 R, P = r'objects\weapons\rifle', r'objects\weapons\pistol'
 #: comparison sets: label -> (kit, weapon tag, projectile tag stem). The stem names both
@@ -92,7 +95,13 @@ def metrics(kit, wtag, stem, overrides=None):
     pps = o('projectiles per shot', num(w, 'projectiles per shot', default=1.0)) or 1.0
     rps = o('rounds per second max', o('rounds per second', num(w, 'rounds per second')))
     recovery = o('fire recovery time', num(w, 'fire recovery time'))
-    interval = max(1.0 / rps if rps else 0.0, recovery if hit >= 20 else 0.0)
+    # the MEASURED 30 Hz reset rule (every game, reports/rof_test.jsonl, 2026-11-23): a shot every
+    # ceil(30 / rate) ticks (float32 sum, reset on the shot), a fire recovery rounded up to whole
+    # ticks (assumed) -- Reach's / Halo 4's tag rates are not the rates those games fire
+    tag_interval = max(1.0 / rps if rps else 0.0, recovery if hit >= 20 else 0.0)
+    rate_ticks = int(round(30.0 / tc.tick_rate(rps))) if rps else 0
+    rec_ticks = int(math.ceil(recovery * 30.0 - 1e-6)) if recovery and hit >= 20 else 0
+    interval = max(rate_ticks, rec_ticks) / 30.0 if (rate_ticks or rec_ticks) else tag_interval
     heat = o('heat generated per round', num(w, 'heat generated per round'))
     over = num(w, 'overheated threshold', default=0.0) or 1.0
     rec_thr = o('heat recovery threshold', num(w, 'heat recovery threshold'))
@@ -102,7 +111,8 @@ def metrics(kit, wtag, stem, overrides=None):
     flags = first(d, 'flags', default='')
     flags = '%d' % flags[0] if isinstance(flags, list) and flags else str(flags)
     specific = str(first(d, 'specific_damage', default=''))
-    m = {'hit': hit * pps, 'interval': interval, 'rps': 1.0 / interval if interval else 0.0,
+    m = {'hit': hit * pps, 'interval': interval, 'tag interval': tag_interval,
+         'rps': 1.0 / interval if interval else 0.0,
          'dps_raw': hit * pps / interval if interval else 0.0,
          'range': o('maximum range', num(p, 'maximum range')),
          'zoom': first(w, 'magnification range', default='-'),
