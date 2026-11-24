@@ -17,9 +17,10 @@ backed up and put back like a done port's (h2_port_snapshot.INCLUDE). Written fo
 is 'rework' with its rework not started (the AR pilot, 2026-10-20): the only other Halo 2 port.
 
 OLD tools = the toolkit as it was at --rev: its sprint_toolkit\*.py and ports_h2\ are extracted
-(git archive) to tool\_proof_<tag>_toolkit\sprint_toolkit and the same commands run from there
-(each script puts its own folder first on sys.path, so every module it imports is the old one);
-removed after. NEW = the working copy. The narrowed proof for a change to a shared tool: --steps
+(git show) to tool\_proof_<tag>_toolkit -- beside sprint_toolkit, so paths resolve as in the real one;
+the real toolkit's other folders (pylibs, out ...) junctioned in -- and the same commands run from
+there (each script puts its own folder first on sys.path, so every module it imports is the old one);
+removed after (junctions unlinked first). NEW = the working copy. The narrowed proof for a change to a shared tool: --steps
 naming the steps that use it. --rev HEAD with no change is a pure noise run.
 
 tool's own outputs (bitmaps, render / collision models) differ run to run in the header checksum
@@ -67,10 +68,18 @@ STEPS = [
 
 
 def extract(rev, tag):
-    """The toolkit at `rev` -> tool\\_proof_<tag>_toolkit\\sprint_toolkit (scripts + configs)."""
+    """The toolkit at `rev` -> tool\\_proof_<tag>_toolkit (scripts + configs), AT THE SAME DEPTH as
+    sprint_toolkit -- Halo 1's port_tool_proof.old_toolkit layout. Every script's own path arithmetic
+    then holds: dirname(HERE) is the tool folder, dirname(dirname(HERE)) the MCC folder. (Until
+    2026-11-24 the copy sat one level deeper, in ...\\_proof_<tag>_toolkit\\sprint_toolkit: the OLD
+    side's glyph and sounds steps looked for tool\\halo2\\h2_fonts and tool\\haloreach\\fmod and exited
+    1, and its catalog step wrote a stray copy beside itself -- the Plasma Repeater's rpall proof.)
+    The extracted folders (ports_h2 ...) are real; every OTHER folder of the real toolkit -- pylibs
+    (the vendored Reclaimer stack port_env finds beside itself), out, assets ... -- is a JUNCTION to
+    it, as Halo 1's; drop_old() unlinks them before removing the copy."""
     root = os.path.join(TOOL, '_proof_%s_toolkit' % tag)
     if os.path.exists(root):
-        shutil.rmtree(root)
+        drop_old(root)
     os.makedirs(root)
     names = subprocess.run(['git', '-C', TOOL, 'ls-tree', '-r', '--name-only', rev, 'sprint_toolkit'],
                            capture_output=True, text=True, check=True).stdout.split('\n')
@@ -78,17 +87,33 @@ def extract(rev, tag):
     for n in want:
         data = subprocess.run(['git', '-C', TOOL, 'show', '%s:%s' % (rev, n)], capture_output=True,
                               check=True).stdout
-        out = os.path.join(root, *n.split('/'))
+        out = os.path.join(root, *n.split('/')[1:])
         os.makedirs(os.path.dirname(out), exist_ok=True)
         open(out, 'wb').write(data)
-    # the vendored Reclaimer stack (untracked, fixed versions): port_env finds it beside ITSELF, so
-    # without a copy every OLD step importing it (h3_convert -> h1_fp_retarget -> fp_render) exited 1
-    # and the proof compared nothing (rpg1, the Plasma Repeater, 2026-11-21)
-    if os.path.isdir(os.path.join(HERE, 'pylibs')):
-        shutil.copytree(os.path.join(HERE, 'pylibs'), os.path.join(root, 'sprint_toolkit', 'pylibs'),
-                        ignore=shutil.ignore_patterns('__pycache__'))
-    print('old toolkit at %s: %d files -> %s' % (rev, len(want), root), flush=True)
-    return os.path.join(root, 'sprint_toolkit')
+    linked = []
+    for f in sorted(os.listdir(HERE)):
+        p, dst = os.path.join(HERE, f), os.path.join(root, f)
+        if os.path.isdir(p) and f != '__pycache__' and not os.path.exists(dst):
+            subprocess.run(['cmd', '/c', 'mklink', '/J', dst, p], capture_output=True, check=True)
+            linked.append(f)
+    print('old toolkit at %s: %d files -> %s (junctions: %s)' % (rev, len(want), root, ', '.join(linked)),
+          flush=True)
+    return root
+
+
+def drop_old(root):
+    """Remove the old copy: every junction in it UNLINKED first (never followed into the real
+    toolkit's pylibs / out / ...), then the rest."""
+    for dirpath, dirs, _files in os.walk(root, topdown=True):
+        keep = []
+        for d in dirs:
+            p = os.path.join(dirpath, d)
+            if os.path.isjunction(p):
+                os.rmdir(p)
+            else:
+                keep.append(d)
+        dirs[:] = keep
+    shutil.rmtree(root, ignore_errors=True)
 
 
 def run(cmd, here, log):
@@ -156,7 +181,7 @@ def main():
             S.snap(t + '_last')
             S.restore(t + '_pre', t + '_last', t + '_pre', delete_new=True)
             S.snap(t + '_end')
-            shutil.rmtree(os.path.dirname(old), ignore_errors=True)
+            drop_old(old)
         print('\n=== OLD vs NEW (the tool change)')
         S.diff(t + '_old', t + '_new')
         print('\n=== PRE vs NEW (regenerated against what is shipped)')
