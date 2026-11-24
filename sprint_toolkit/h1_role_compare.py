@@ -25,10 +25,12 @@ is not simulated (a burst from cold).
     python h1_role_compare.py energy_blade [--balanced]
     python h1_role_compare.py sentinel_beam [--balanced]
 
-A weapon entry may carry a 4th element {'rate': rounds/s}: the rate MEASURED in game,
-used instead of the tag's (the Sentinel Beam's 30/s fires 15/s, PORTING.md). Stock
-weapons keep their tag rate: the tick rule is an observation on one weapon, unverified on
-the others. A weapon with heat or battery also gets a sustained-fire table.
+A weapon entry may carry a 4th element {'rate': rounds/s}: a rate MEASURED in game (the
+Sentinel Beam's 30/s fires 15/s, PORTING.md) or a candidate's tag rate, used instead of the
+tag's. Every rate is then timed by the 30 Hz RESET rule, measured in every game (2026-11-23,
+reports/rof_test.jsonl; Halo 1: the Plasma Repeater and Focus Rifle probes): a shot every
+ceil(30 / rate) ticks, no 15/s cap (a 30 tag fires every tick). A weapon with heat or battery
+also gets a sustained-fire table.
 
 --balanced applies the catalog's balance rows (weapon_ports_catalog.json, Halo 1) the
 fields this tool knows -- what the enhancer's per-port Balanced box turns on.
@@ -42,6 +44,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import port_env  # noqa: E402,F401
+import ttk_common as tc  # noqa: E402
 from reclaimer.hek.defs.weap import weap_def  # noqa: E402
 from reclaimer.hek.defs.proj import proj_def  # noqa: E402
 from reclaimer.hek.defs.jpt_ import jpt__def  # noqa: E402
@@ -1967,7 +1970,10 @@ def apply_rows(out, rows):
         # a MEASURED engine cap wins over a balanced rate row (SMG: the 22.5 row fires 15/s)
         if out.get('cap') and out.get('rps'):
             out['rps'] = min(out['rps'], out['cap'])
-        out['interval'] = 1.0 / out['rps'] if out.get('rps') else 0.0
+        # the 30 Hz RESET rule (every game: the Plasma Repeater probe, the Focus Rifle probe's
+        # 29..30 -> 30/s, reports/rof_test.jsonl 2026-11-23): a shot every ceil(30 / rate)
+        # ticks, no 15/s cap -- the rate a tag (or a candidate's rate) actually FIRES
+        out['interval'] = (round(30.0 / tc.tick_rate(out['rps'])) / 30.0) if out.get('rps') else 0.0
         if out['charge']:
             out['interval'] = max(out['interval'], out['charge'])
         if out.get('burst'):                 # the mean interval: a burst's rounds per cycle
@@ -2170,7 +2176,7 @@ def main():
         rate = 1.0 / r['interval'] if r['interval'] else 0
         dps = sum(d['dmg'] for d in r['damage']) * r['per_shot'] * rate
         tag = r.get('tag_rps')
-        rtxt = ('%g' % rate) + ('*' if tag and abs(tag - rate) > 0.01 else '')
+        rtxt = ('%.4g' % rate) + ('*' if tag and abs(tag - rate) > 0.01 else '')
         print('%-26s %8s %7s %7.2fs %6s %6.0f %5s %6s %6s %6s  %4.1f/%-4g %4.1f/%-4g'
               % (r['label'], dmg, '%.2f' % spl if spl else '-', r['interval'], rtxt, dps,
                  r.get('mag') or '-', '%.1fs' % r['reload'] if r.get('reload') else '-',
@@ -2178,7 +2184,8 @@ def main():
                  '%g' % r['range'] if r.get('range') else '-', *r['aim']))
     if any(r.get('tag_rps') and abs(r['tag_rps'] - 1.0 / r['interval']) > 0.01 for r in rows
            if r['interval']):
-        print('  * measured in game, not the tag rate (tag: %s)' % ', '.join(
+        print('  * not the tag rate: the 30 Hz reset rule (ceil(30 / rate) ticks) or a rate measured '
+              'in game (tag: %s)' % ', '.join(
             '%s %g/s' % (r['label'], r['tag_rps']) for r in rows
             if r.get('tag_rps') and r['interval'] and abs(r['tag_rps'] - 1.0 / r['interval']) > 0.01))
     hot = [r for r in rows if r.get('heat') and (r['heat'][0] or r.get('age'))
