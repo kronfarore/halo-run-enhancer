@@ -243,7 +243,12 @@ PORT = {
                    (r'effects\generic_lights\overcharge.light', FX + r'\gl_charge.light'),
                    (r'effects\generic_lights\overcharge_fp.light', FX + r'\gl_charge_fp.light'),
                    (r'effects\objects\weapons\pistol\plasma_pistol\overcharge.lens_flare', FX + r'\gl_light_flare.lens_flare'),
-                   (r'effects\objects\weapons\pistol\plasma_pistol\overcharge_fp.lens_flare', FX + r'\gl_light_flare_fp.lens_flare')],
+                   (r'effects\objects\weapons\pistol\plasma_pistol\overcharge_fp.lens_flare', FX + r'\gl_light_flare_fp.lens_flare'),
+                   # BOOT 2 (user): 'the EMP charge should have an added EMP explosion effect for clarity' -- Reach
+                   # plays its emp_pulse (cyan-blue electric wisps) in the release burst; Halo 2's nearest stock look is
+                   # the PLASMA GRENADE's airborne burst (blue flash, electric discharge, its light), nested in the
+                   # release burst in place of the frag light; its plasma sounds silenced (Reach's burst has no EMP sound)
+                   (r'effects\impact\explosion_small\plasma_grenade\airborne_detonation.effect', FX + r'\emp_burst.effect')],
         # the charge lights' flares carry a colour ANIMATION (the pistol's dark green -> green, BGR; the Laser's boot 6):
         # -> Reach's tethered arm-switch red (255, 37, 0; dark 80, 10, 0)
         'byte_edits': [(FX + r'\gl_light_flare.lens_flare', '0320090036481c00000000000000000000ff0000',
@@ -311,6 +316,11 @@ PORT = {
              FX + r'\gl_charging', 'its remastered twin: itself (no plasma pistol sound left)'),
             (FX + r'\gl_charge.light', 'lens', r'effects\objects\weapons\pistol\plasma_pistol\overcharge', FX + r'\gl_light_flare', "the light's own flare"),
             (FX + r'\gl_charge_fp.light', 'lens', r'effects\objects\weapons\pistol\plasma_pistol\overcharge_fp', FX + r'\gl_light_flare_fp', "the FP light's own flare"),
+            # the EMP burst: the release burst's frag-light part -> an effect part, then the port's emp_burst
+            (FX + r'\tethered_detonation.effect', 'ligh', r'effects\objects\weapons\grenade\frag_grenade\grenade_frag_explosion',
+             r'effects\objects\weapons\grenade\frag_grenade\grenade_frag_explosion', 'the EMP burst part (was the frag light)', {'class': 'effe'}),
+            (FX + r'\tethered_detonation.effect', 'effe', r'effects\objects\weapons\grenade\frag_grenade\grenade_frag_explosion',
+             FX + r'\emp_burst', "the EMP burst (the plasma grenade's electric burst)"),
         ],
         # barrel 1's firing effect + firing damage are EMPTY in the fuel rod: filled by `python ports_h2\grenade_launcher.py
         # --barrel1` (the n-th `firing effects` chunk: wiring's record_from finds the first block of a name only)
@@ -511,7 +521,13 @@ PORT = {
                                    'first_person:posing:var2': [('gl_pose2', 0)],
                                    'first_person:ready': [('gl_ready', 0)],
                                    'first_person:reload_empty': [('gl_reload_e', 0)],
-                                   'first_person:reload_full': [('gl_reload_f', 0)]}},
+                                   'first_person:reload_full': [('gl_reload_f', 0)]},
+                          # BOOT 2 (user: 'the red light and beep can run before the reload animation is done; releasing
+                          # fires the contact burst' -- 'does the reload animation set the point the gun counts as
+                          # reloaded?'): yes -- Reach's primary keyframe (27 of 63, 33 of 59) counts the round in Halo 2.
+                          # Bungie's own Halo 2 reloads carry NO frame events (BR, SMG, RL, Brute Shot): the same here,
+                          # the round counted at the animation's end. No dll (user: H1 left it, so H2 does too)
+                          'frames': {'first_person:reload_empty': [], 'first_person:reload_full': []}},
     },
 
     # step 10 -- h2_port_sounds.py: Reach's OWN sounds from MCC's haloreach sfx.fsb (the DMR's `bank`), layered as
@@ -559,7 +575,8 @@ PORT = {
                    'gl_tail': ('gl_tail', 'projectile_detonation'), 'gl_proj': ('gl_proj', 'projectile_flyby'),
                    'gl_bounce': ('gl_bounce', 'object_impacts'), 'gl_bounce_metal': ('gl_bounce_metal', 'object_impacts'),
                    'gl_drop': ('gl_drop', 'object_impacts'), 'gl_drop_soft': ('gl_drop_soft', 'object_impacts'),
-                   'gl_charge': ('gl_charge', 'weapon_charge'), 'gl_charge_loop': ('gl_charge_loop', 'weapon_charge')},
+                   'gl_charge': ('gl_charge', 'weapon_charge'), 'gl_charge_loop': ('gl_charge_loop', 'weapon_charge'),
+                   'gl_silence': ('gl_silence', 'projectile_detonation')},
         'repoint_fx': [(r'sound\weapons\brute_shot\brute_shot_fire', 'gl_fire'),
                        (r'sound_remastered\weapons\brute_shot\brute_shot_lod', 'gl_fire_lod'),
                        (r'sound_remastered\weapons\brute_shot\bruteshot_lfe', 'gl_fire_lod'),
@@ -567,7 +584,10 @@ PORT = {
         # the Fuel Rod's zoom sounds: no zoom (magnification levels 0) -> the ready, so nothing is borrowed
         'repoint_weapon': [(r'sound\weapons\beam_rifle\beam_rifle_zoom_in', 'gl_ready'),
                            (r'sound\weapons\beam_rifle\beam_rifle_zoom_out', 'gl_ready')],
-        'repoint_tags': [(PJ, r'sound\weapons\brute_shot\brute_round_explode', 'gl_expl'),
+        'repoint_tags': [(FX + r'\emp_burst.effect', r'sound\weapons\plasma_grenade\plasma_expl', 'gl_silence'),
+                         (FX + r'\emp_burst.effect', r'sound_remastered\weapons\plasma_grenade\plasma_expl_lod', 'gl_silence'),
+                         (FX + r'\emp_burst.effect', r'sound_remastered\weapons\plasma_grenade\plasma_expl_lfe\lfe', 'gl_silence'),
+                         (PJ, r'sound\weapons\brute_shot\brute_round_explode', 'gl_expl'),
                          (PJC, r'sound\weapons\brute_shot\brute_round_explode', 'gl_expl'),
                          (FX + r'\detonation.effect', r'sound\weapons\frag_grenade\frag_expl', 'gl_expl_far'),
                          (FX + r'\detonation.effect', r'sound_remastered\weapons\frag_grenade\frag_expl_lod', 'gl_tail'),
@@ -590,7 +610,8 @@ PORT = {
                          ('smg_dual_posing_2_l', 'gl_ready'), ('smg_dual_posing_2_r', 'gl_ready'),
                          ('smg_dual_posing_3_l', 'gl_ready'), ('smg_dual_posing_3_r', 'gl_ready')),
         'graph_sound_dir': r'sound\weapons\smg' + '\\',
-        'split': {'gl_charge': ('gl_charge_silence', 0.0, 0.3)},
+        'split': {'gl_charge': ('gl_charge_silence', 0.0, 0.3),
+                  'gl_silence': ('gl_charge_silence', 0.0, 0.1)},    # the EMP burst's plasma sounds (boot 2)
         'gain': {},
         'boost': {},
         'backup': r'E:\HaloBackups\H2EK_grenade_launcher_before_sounds',
