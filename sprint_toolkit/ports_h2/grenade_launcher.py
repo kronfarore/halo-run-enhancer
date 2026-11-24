@@ -9,7 +9,7 @@ PORT = {
     'wave': 'B4',
     'name': 'Grenade Launcher',
     'source': 'Halo Reach',
-    'status': 'reserved',
+    'status': 'in progress',
     'source_tag': 'objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher',
     'reservations': {
         'message_prefix': 'gl2',
