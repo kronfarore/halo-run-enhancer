@@ -19,6 +19,10 @@ WP = GL + r'\grenade_launcher.weapon'
 PJ = GL + r'\projectiles\grenade_launcher_grenade.projectile'          # barrel 0: the bouncing grenade
 PJC = GL + r'\projectiles\grenade_launcher_tethered_grenade.projectile'  # barrel 1: the charged release
 DM = GL + r'\damage_effects'
+RS = r'data\sound\weapons'                          # source folders in MCC's haloreach sfx.fsb (.info)
+NEW_HUD = r'ui\hud\bitmaps\new_hud'
+GL_JMS = r'F:\SteamLibrary\steamapps\common\H2EK\data' + '\\' + GL + r'\render\grenade_launcher.jms'   # the HUD art's mesh
+GL_GLOW = ('gl_display', 'gl_display_status', 'gl_display_item', 'gl_digits', 'gl_glass')   # left out of the drawings
 # Reach's weapon nodes -> Halo 2's (b_ dropped; the root is Halo 2's `gun`)
 NODES = {'b_gun': 'gun', 'b_chamber': 'chamber', 'b_handle': 'handle', 'b_ironsight': 'ironsight', 'b_grenade': 'grenade'}
 NODES_JMS = dict((k, 'frame ' + v) for k, v in NODES.items())
@@ -227,7 +231,27 @@ PORT = {
                    (r'effects\materials\objects\weapons\rocket_launcher.material_effects', FX + r'\grenade_launcher.material_effects'),
                    (r'effects\materials\objects\weapons\brute_shot.material_effects', FX + r'\grenade.material_effects'),
                    (r'effects\objects\weapons\support_low\brute_shot\projectile.light', FX + r'\grenade.light'),
-                   (r'effects\objects\weapons\support_low\brute_shot\projectile.contrail', FX + r'\grenade.contrail')],
+                   (r'effects\objects\weapons\support_low\brute_shot\projectile.contrail', FX + r'\grenade.contrail'),
+                   # the grenade's flight loop (the Brute Shot's) and THE CHARGE CUE (the Laser's way, A2: the plasma
+                   # pistol's charging loop + its overcharge lights and their flares, scaled `primary_charged`)
+                   (r'sound\weapons\brute_shot\brute_shot_projectile\brute_shot_projectile.sound_looping', FX + r'\gl_projectile.sound_looping'),
+                   (r'sound\weapons\plasma_pistol\charging.sound_looping', FX + r'\gl_charging.sound_looping'),
+                   (r'effects\generic_lights\overcharge.light', FX + r'\gl_charge.light'),
+                   (r'effects\generic_lights\overcharge_fp.light', FX + r'\gl_charge_fp.light'),
+                   (r'effects\objects\weapons\pistol\plasma_pistol\overcharge.lens_flare', FX + r'\gl_light_flare.lens_flare'),
+                   (r'effects\objects\weapons\pistol\plasma_pistol\overcharge_fp.lens_flare', FX + r'\gl_light_flare_fp.lens_flare')],
+        # the charge lights' flares carry a colour ANIMATION (the pistol's dark green -> green, BGR; the Laser's boot 6):
+        # -> Reach's tethered arm-switch red (255, 37, 0; dark 80, 10, 0)
+        'byte_edits': [(FX + r'\gl_light_flare.lens_flare', '0320090036481c00000000000000000000ff0000',
+                        '03200900000a500000000000000000000025ff00'),
+                       (FX + r'\gl_light_flare_fp.lens_flare', '0320090036481c00000000000000000000ff0000',
+                        '03200900000a500000000000000000000025ff00')],
+        # (tag, class, path, marker, like class, scale function): the charge cue on the bore
+        'append_attachments': [
+            (WP, 'lsnd', FX + r'\gl_charging', 'primary_trigger', 'ligh', 'primary_charged'),
+            (WP, 'ligh', FX + r'\gl_charge', 'primary_trigger', 'ligh', 'primary_charged'),
+            (WP, 'ligh', FX + r'\gl_charge_fp', 'primary_trigger', 'ligh', 'primary_charged'),
+        ],
         # THE 3P LABEL: the Fuel Rod's missile / fc (a shoulder stance) -> the BR's rifle / br (the DMR's: Reach's GL is
         # held as a rifle; Marines and every Armed species took the DMR on it)
         'string_ids': {'missile': 'rifle', 'fc': 'br'},
@@ -269,6 +293,20 @@ PORT = {
              r'sound_remastered\weapons\frag_grenade\frag_expl_lod', 'the EMP part (was the lod sound)', {'class': 'jpt!'}),
             (FX + r'\tethered_detonation.effect', 'jpt!', r'sound_remastered\weapons\frag_grenade\frag_expl_lod',
              DM + r'\grenade_launcher_emp', 'the EMP (Halo 2\'s emp group, the plasma pistol overcharge\'s)'),
+            # the flight loop: the port's lsnd, its track Reach's grenade_launcher_proj loop (step 10)
+            (PJ, 'lsnd', r'sound\weapons\brute_shot\brute_shot_projectile\brute_shot_projectile', FX + r'\gl_projectile', 'the flight loop'),
+            (PJC, 'lsnd', r'sound\weapons\brute_shot\brute_shot_projectile\brute_shot_projectile', FX + r'\gl_projectile', 'the flight loop'),
+            (FX + r'\gl_projectile.sound_looping', 'snd!', r'sound\weapons\brute_shot\brute_shot_projectile\brute_shot_proj\loop',
+             r'sound\weapons\grenade_launcher_port\gl_proj', "the flight loop: Reach's"),
+            # the charge loop: Reach's landmine beep (Halo 1's B4 charge cue), in + loop; its remastered twin -> itself
+            (FX + r'\gl_charging.sound_looping', 'snd!', r'sound\weapons\plasma_pistol\startcharge',
+             r'sound\weapons\grenade_launcher_port\gl_charge', "the charge start: Reach's landmine beep in"),
+            (FX + r'\gl_charging.sound_looping', 'snd!', r'sound\weapons\plasma_pistol\charge',
+             r'sound\weapons\grenade_launcher_port\gl_charge_loop', "the charge loop: Reach's landmine beep loop"),
+            (FX + r'\gl_charging.sound_looping', 'lsnd', r'sound_remastered\weapons\plasma_pistol\charging',
+             FX + r'\gl_charging', 'its remastered twin: itself (no plasma pistol sound left)'),
+            (FX + r'\gl_charge.light', 'lens', r'effects\objects\weapons\pistol\plasma_pistol\overcharge', FX + r'\gl_light_flare', "the light's own flare"),
+            (FX + r'\gl_charge_fp.light', 'lens', r'effects\objects\weapons\pistol\plasma_pistol\overcharge_fp', FX + r'\gl_light_flare_fp', "the FP light's own flare"),
         ],
         # barrel 1's firing effect + firing damage are EMPTY in the fuel rod: filled by `python ports_h2\grenade_launcher.py
         # --barrel1` (the n-th `firing effects` chunk: wiring's record_from finds the first block of a name only)
@@ -368,6 +406,26 @@ PORT = {
             (DM + r'\grenade_launcher_emp.damage_effect', 'flags', '', 0, 1, 64, {'anchor': ('damage lower bound', -8)}),
             (DM + r'\grenade_launcher_emp.damage_effect', 'side effect', '', 0, 0, 3, {'anchor': ('damage lower bound', -12)}),
             (DM + r'\grenade_launcher_emp.damage_effect', 'emp radius', '', 0, 0, 2.5, {'anchor': ('damage lower bound', 76)}),   # shake radius + 4
+            # step 4b (port_field_audit --port h2:grenade_launcher), list 2 / 4 / 3: Reach's own
+            (WP, 'active camo ding', '', 0, 0, 0.75),
+            (WP, 'illumination recovery time', 'barrels', 0, 0, 0.1),
+            (WP, 'illumination recovery time', 'barrels', 1, 0, 0.1),
+            (WP, 'firing noise', 'barrels', 0, 0, 2),                   # Reach's loud (the Fuel Rod's shout)
+            (PJ, 'impact noise', '', 0, 0, 1),                          # Reach's medium (the Brute Shot's quiet)
+            (PJ, 'water damage range', '', 0, 0, [0.0, 0.0]),
+            (PJC, 'impact noise', '', 0, 0, 1),
+            (PJC, 'water damage range', '', 0, 0, [0.0, 0.0]),
+            ] + [row for dm in ('grenade_launcher_explosion', 'grenade_launcher_tethered_explosion') for row in (
+                (DM + '\\' + dm + '.damage_effect', 'shake radius', '', 0, 0, 8.0),
+                (DM + '\\' + dm + '.damage_effect', 'ai stun radius', '', 0, 0, 4.5, {'anchor': ('shake radius', -12)}),
+                (DM + '\\' + dm + '.damage_effect', 'ai stun bounds', '', 0, 0, [1.0, 0.5], {'anchor': ('shake radius', -8)}),
+                (DM + '\\' + dm + '.damage_effect', 'rider minimum transfer damage scale', '', 0, 0, 1.0,
+                 {'anchor': ('instantaneous acceleration', 12)}))] + [
+            # the charge cue: the pistol's green lights -> Reach's tethered arm-switch red (Halo 1's ARM_RED)
+            (FX + r'\gl_charge.light', 'diffuse upper bound', '', 0, 0, [1.0, 0.15, 0.0]),
+            (FX + r'\gl_charge.light', 'specular upper bound', '', 0, 0, [1.0, 0.15, 0.0]),
+            (FX + r'\gl_charge_fp.light', 'diffuse upper bound', '', 0, 0, [1.0, 0.15, 0.0]),
+            (FX + r'\gl_charge_fp.light', 'specular upper bound', '', 0, 0, [1.0, 0.15, 0.0]),
         ],
         'skipped': [
             ('the tether (hold detonates the grenade in flight)', '4a (user): the plasma pistol charged pair; the release fires a contact-burst EMP grenade'),
@@ -378,7 +436,279 @@ PORT = {
         ],
     },
 
-    'firing_profile': {'from_game': 'Halo Reach', 'from_map': 'haloreach\\maps\\m10.map', 'from_weapon': 'objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher', 'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
+    # step 5 -- the BR's authored hull (its .model is the port's, the DMR's) on the port's own world skeleton
+    'collision': {
+        'donor': BR + r'\battle_rifle',
+        'port': GL + r'\grenade_launcher',
+        'src': r'battle_rifle\collision\battle_rifle_collision.jms',
+        'out': GL + r'\collision\grenade_launcher.jms',
+        'port_render_jms': GL + r'\render\grenade_launcher.jms',
+        'donor_render_jms': r'battle_rifle\render\battle_rifle_L5.jms',
+        'max_growth': 1.25,
+        'nodes_from_render': True,
+    },
+
+    # step 9 -- h2_port_fp_anims.py kind 'reach' (the DMR's route): Reach's OWN FP animations for BOTH species
+    # (Spartan -> masterchief, Elite -> dervish), helpers dropped. Reach's GL graph is the DMR's shape: fire_1 x3,
+    # reload_empty 63 / reload_full 59 (Elite 63), melee_strike_1 / 2, posing x2, ready / put_away, throw_grenade.
+    # Not reproduced: sprint / jump / land / fall / ready_initial (no Halo 2 slot), throw_equipment (Elite)
+    'fp_anims': {
+        'kind': 'reach',
+        'species': {
+            'masterchief': {
+                'graph': R + r'objects\characters\spartans\fp\weapons\rifle\fp_grenade_launcher\fp_grenade_launcher.model_animation_graph',
+                'arms_rm': R + r'objects\characters\spartans\fp\fp.render_model',
+                'arms': r'F:\SteamLibrary\steamapps\common\H2EK\data\!extracted\fp_arms_masterchief\fp_arms.jms',
+                'source': r'objects\characters\masterchief\fp\weapons\rifle\fp_grenade_launcher',
+                # the SMG for its 17 sound slots (the DMR's reason)
+                'seed': r'objects\characters\masterchief\fp\weapons\rifle\fp_smg\fp_smg'},
+            'dervish': {
+                'graph': R + r'objects\characters\elite\fp\weapons\rifle\fp_grenade_launcher\fp_grenade_launcher.model_animation_graph',
+                'arms_rm': R + r'objects\characters\elite\fp\fp.render_model',
+                'arms': r'F:\SteamLibrary\steamapps\common\H2EK\data\!extracted\fp_arms_dervish\dervish_fp_arms.jms',
+                'source': r'objects\characters\dervish\fp\weapons\rifle\fp_grenade_launcher',
+                'seed': r'objects\characters\dervish\fp\weapons\rifle\fp_smg\fp_smg'},
+        },
+        'weapon_dir': GL + r'\fp_grenade_launcher',
+        'weapon_rm': RM,
+        'weapon_nodes': sorted(NODES.values()),
+        'node_names': NODES,
+        'drop_nodes': ('pedestal', 'aim_pitch', 'aim_yaw', 'l_humerus', 'r_humerus', 'l_radius', 'r_radius',
+                       'l_handguard', 'r_handguard'),
+        'aliases': {'first_person:look': ['first_person:overlays', 'first_person:pitch_and_turn']},
+        # the FP position: the DMR's accepted (-0.005, -0.002, -0.033) moved by the two Reach weapons' own first-person
+        # offsets (GL 0.0125, 0, 0; DMR 0, 0, -0.002): x +0.0125, z +0.002. The weapon field 0 (the gun-only rule)
+        'model_offset': (0.0075, -0.002, -0.031),
+        # the DMR's per-species hand corrections (Halo 2's hand meshes sit on their bones unlike Reach's; observations
+        # of one port): judged here with h2_fp_hand_check palm / ortho before boot 1
+        # h2_fp_hand_check palm (idle, gun frame, JMS units, + = the palm top BELOW the underside) with the DMR's
+        # offsets: Chief +0.68, Arbiter -0.91; the DMR's accepted grips -0.70 / -0.30 -> z +1.38 / -0.61 units
+        'left_arm_offset': {'masterchief': {'*': (0.0, 0.0, 0.0063)},
+                            'dervish': {'*': (0.0, 0.006, 0.0007)}},
+        'skip': ['first_person:look', 'first_person:acceleration_screens', 'first_person:fall', 'first_person:jump',
+                 'first_person:land_hard', 'first_person:land_soft', 'first_person:ready_initial',
+                 'first_person:sprint_enter', 'first_person:sprint_exit', 'first_person:sprint_loop',
+                 'first_person:sprint_loop_airborne', 'first_person:throw_equipment'],
+        'looping': ['first_person:idle', 'first_person:posing:var1', 'first_person:posing:var2'],
+        'overlay_reference': 'first_person:idle',
+        'weights': {'first_person:posing:var1': 0.5, 'first_person:posing:var2': 0.5},
+        'drop_ik': ['masterchief'],
+        'clear_sound_ref_flags': True,
+        'clear_verify': True,
+        # Reach's graph: one sound event an animation, at frame 0 (the DMR's measurement); the reloads one recording
+        # each until the Balanced boot (B1 rule 5: split before it)
+        'source_events': {'cues': {'first_person:melee_strike_1': [('gl_melee1', 0)],
+                                   'first_person:melee_strike_2': [('gl_melee2', 0)],
+                                   'first_person:posing:var1': [('gl_pose1', 0)],
+                                   'first_person:posing:var2': [('gl_pose2', 0)],
+                                   'first_person:ready': [('gl_ready', 0)],
+                                   'first_person:reload_empty': [('gl_reload_e', 0)],
+                                   'first_person:reload_full': [('gl_reload_f', 0)]}},
+    },
+
+    # step 10 -- h2_port_sounds.py: Reach's OWN sounds from MCC's haloreach sfx.fsb (the DMR's `bank`), layered as
+    # Reach's effects layer them: FIRE = grenade_launcher_fire + brute_shot_tails_ext (Reach's firing effect; Halo
+    # 1's mix), the far layer in fire_lod (every remastered sweetener on it: the Mauler's / Laser's rule); the BURST =
+    # the projectile's detonation sound (grenade_launcher_expl + frag_close_layer) + the effect's first part
+    # (frag_expl_lod_far) + its second (expl_tail_outdoor): Reach's airborne_detonation layers; BOUNCES Reach's frag
+    # (frag_bnc_dirt / metal: its own material effects'); DROPS Reach's disintegrator_drop (the GL's own material
+    # effects); the flight loop grenade_launcher_proj; the CHARGE CUE Reach's landmine beep (Halo 1's B4). One
+    # Spartan FP set for both species (Reach's grenade_launcher_elite_fp unused, as the DMR's)
+    'sounds': {
+        'weapon': WP,
+        'fire_fx': FX + r'\grenade_launcher_fire.effect',
+        'bank': 'haloreach',
+        'audio': _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), 'out', 'h2_sounds', 'grenade_launcher'),
+        'audio_key': 'Grenade Launcher',
+        'h3_bank': {'gl_fire': [RS + r'\grenade_launcher\grenade_launcher_fire', RS + r'\brute_shot\brute_shot_tails_ext'],
+                    'gl_fire_lod': [RS + r'\grenade_launcher\grenade_launcher_fire_lod'],
+                    'gl_ready': [RS + r'\grenade_launcher\grenade_launcher_fp\grenade_launcher_ready'],
+                    'gl_melee1': [RS + r'\grenade_launcher\grenade_launcher_fp\grenade_launcher_melee1'],
+                    'gl_melee2': [RS + r'\grenade_launcher\grenade_launcher_fp\grenade_launcher_melee2'],
+                    'gl_pose1': [RS + r'\grenade_launcher\grenade_launcher_fp\grenade_launcher_pose1'],
+                    'gl_pose2': [RS + r'\grenade_launcher\grenade_launcher_fp\grenade_launcher_pose2'],
+                    'gl_reload_e': [RS + r'\grenade_launcher\grenade_launcher_fp\grenade_launcher_reload_empty'],
+                    'gl_reload_f': [RS + r'\grenade_launcher\grenade_launcher_fp\grenade_launcher_reload_full'],
+                    'gl_expl': [RS + r'\grenade_launcher\grenade_launcher_expl', RS + r'\frag_grenade\frag_close_layer'],
+                    'gl_expl_far': [RS + r'\frag_grenade\frag_expl_lod_far'],
+                    'gl_tail': [RS + r'\surround_tails\outdoor\expl_tail_outdoor'],
+                    'gl_proj': [RS + r'\grenade_launcher\grenade_launcher_proj\grenade_launcher_proj\loop'],
+                    'gl_bounce': [RS + r'\frag_grenade\frag_bnc_dirt'],
+                    'gl_bounce_metal': [RS + r'\frag_grenade\frag_bnc_metal'],
+                    'gl_drop': [RS + r'\disintegrator\disintegrator_drop'],
+                    'gl_drop_soft': [RS + r'\disintegrator\disintegrator_drop_soft'],
+                    # the beep's `in` track is 1 s of SILENCE (rendered: peak 0) -- it would hold the cue past the
+                    # 0.5 s charge: the loop on both (the lsnd's primary_charged scale keeps a tap quiet)
+                    'gl_charge': [RS + r'\equipment\landmine\landmine_beep\track1\loop'],
+                    'gl_charge_loop': [RS + r'\equipment\landmine\landmine_beep\track1\loop']},
+        'sounds': {'gl_fire': ('gl_fire', 'weapon_fire'), 'gl_fire_lod': ('gl_fire_lod', 'weapon_fire'),
+                   'gl_ready': ('gl_ready', 'weapon_ready'), 'gl_melee1': ('gl_melee1', 'weapon_melee'),
+                   'gl_melee2': ('gl_melee2', 'weapon_melee'), 'gl_pose1': ('gl_pose1', 'weapon_animation'),
+                   'gl_pose2': ('gl_pose2', 'weapon_animation'), 'gl_reload_e': ('gl_reload_e', 'weapon_reload'),
+                   'gl_reload_f': ('gl_reload_f', 'weapon_reload'),
+                   'gl_expl': ('gl_expl', 'projectile_detonation'), 'gl_expl_far': ('gl_expl_far', 'projectile_detonation'),
+                   'gl_tail': ('gl_tail', 'projectile_detonation'), 'gl_proj': ('gl_proj', 'projectile_flyby'),
+                   'gl_bounce': ('gl_bounce', 'object_impacts'), 'gl_bounce_metal': ('gl_bounce_metal', 'object_impacts'),
+                   'gl_drop': ('gl_drop', 'object_impacts'), 'gl_drop_soft': ('gl_drop_soft', 'object_impacts'),
+                   'gl_charge': ('gl_charge', 'weapon_charge'), 'gl_charge_loop': ('gl_charge_loop', 'weapon_charge')},
+        'repoint_fx': [(r'sound\weapons\brute_shot\brute_shot_fire', 'gl_fire'),
+                       (r'sound_remastered\weapons\brute_shot\brute_shot_lod', 'gl_fire_lod'),
+                       (r'sound_remastered\weapons\brute_shot\bruteshot_lfe', 'gl_fire_lod'),
+                       (r'sound_remastered\weapons\brute_shot\brute_shot_fire_mech', 'gl_fire_lod')],
+        # the Fuel Rod's zoom sounds: no zoom (magnification levels 0) -> the ready, so nothing is borrowed
+        'repoint_weapon': [(r'sound\weapons\beam_rifle\beam_rifle_zoom_in', 'gl_ready'),
+                           (r'sound\weapons\beam_rifle\beam_rifle_zoom_out', 'gl_ready')],
+        'repoint_tags': [(PJ, r'sound\weapons\brute_shot\brute_round_explode', 'gl_expl'),
+                         (PJC, r'sound\weapons\brute_shot\brute_round_explode', 'gl_expl'),
+                         (FX + r'\detonation.effect', r'sound\weapons\frag_grenade\frag_expl', 'gl_expl_far'),
+                         (FX + r'\detonation.effect', r'sound_remastered\weapons\frag_grenade\frag_expl_lod', 'gl_tail'),
+                         (FX + r'\tethered_detonation.effect', r'sound\weapons\frag_grenade\frag_expl', 'gl_expl_far'),
+                         (FX + r'\grenade.material_effects', r'sound\weapons\brute_shot\brute_shot_bounce', 'gl_bounce'),
+                         (FX + r'\grenade.material_effects', r'sound\weapons\brute_shot\brute_shot_drop', 'gl_bounce'),
+                         (FX + r'\grenade.material_effects', r'sound\weapons\brute_shot\brute_shot_drop_soft', 'gl_bounce'),
+                         (FX + r'\grenade.material_effects', r'sound\weapons\rocket_launcher\rocket_launcher_drop', 'gl_bounce_metal'),
+                         (FX + r'\grenade_launcher.material_effects', r'sound\weapons\rocket_launcher\rocket_launcher_drop', 'gl_drop'),
+                         (FX + r'\grenade_launcher.material_effects', r'sound\weapons\rocket_launcher\rocket_launcher_drop_soft', 'gl_drop_soft'),
+                         (FX + r'\grenade_launcher.material_effects', r'sound\weapons\rocket_launcher\rocket_expl', 'gl_drop'),
+                         (FX + r'\grenade_launcher.material_effects', r'sound_remastered\weapons\rocket_launcher\projectile_exp\lod', 'gl_drop')],
+        # the SMG seed's 17 references, all repointed; unused dual slots point at the ready
+        'graph_sounds': (('smg_melee1', 'gl_melee1'), ('smg_ready', 'gl_ready'), ('smg_reload', 'gl_reload_e'),
+                         ('smg_reload_full', 'gl_reload_f'), ('smg_dual_ready', 'gl_melee2'),
+                         ('smg_posing_var0', 'gl_pose1'), ('smg_posing_var1', 'gl_pose2'),
+                         ('smg_dual_reload_left', 'gl_ready'), ('smg_dual_reload_right', 'gl_ready'),
+                         ('smg_dual_posing_0_l', 'gl_ready'), ('smg_dual_posing_0_r', 'gl_ready'),
+                         ('smg_dual_posing_1_l', 'gl_ready'), ('smg_dual_posing_1_r', 'gl_ready'),
+                         ('smg_dual_posing_2_l', 'gl_ready'), ('smg_dual_posing_2_r', 'gl_ready'),
+                         ('smg_dual_posing_3_l', 'gl_ready'), ('smg_dual_posing_3_r', 'gl_ready')),
+        'graph_sound_dir': r'sound\weapons\smg' + '\\',
+        'gain': {},
+        'boost': {},
+        'backup': r'E:\HaloBackups\H2EK_grenade_launcher_before_sounds',
+        'graph_backup': r'E:\HaloBackups\H2EK_grenade_launcher_graphs_before_sounds',
+    },
+
+    # step 7 -- the HUD: the BRUTE SHOT's (Halo 2's own grenade launcher: its grenade pips, its plate) cloned by the
+    # meter step; the weapon already names ui\hud\grenade_launcher. ONE pip for a 1-round magazine on a 31 x 37 canvas
+    # (registration top-left: the pip sits where the Brute Shot's first one does); the donor's own grenade pip (Reach's
+    # GL chud draws no ammo pips of its own)
+    'meter': {
+        'donor_meter': NEW_HUD + r'\meters\brute_shot_meter',
+        'rel': NEW_HUD + r'\meters',
+        'name': 'grenade_launcher_meter',
+        'donor_hud': r'ui\hud\brute_shot',
+        'port_hud': r'ui\hud\grenade_launcher',
+        'weapon': WP,
+        'rounds': 1, 'rows': 1,
+        'canvas': (31, 37), 'tick_w': 25,
+        'backpack': NEW_HUD + r'\backpack_weapons',
+        'backpack_port': NEW_HUD + r'\grenade_launcher_backpack',
+        'backpack_size': (62, 30),
+        'model_3p': GL_JMS,
+        'model_skip': GL_GLOW,
+        'preview': 'grenade_launcher_meter_preview.png',
+    },
+    # the Brute Shot plate: 4 images (0 / 1 bright single / out, 2 / 3 their dim twins), every one repainted
+    'hud_plate': {
+        'rel': NEW_HUD + r'\backgrounds',
+        'donor': NEW_HUD + r'\backgrounds\brute_shot_bkd',
+        'other': NEW_HUD + r'\backgrounds\rocket_launcher_bkd',
+        'name': 'grenade_launcher_bkd',
+        'hud': r'ui\hud\grenade_launcher',
+        'model_3p': GL_JMS,
+        'model_skip': GL_GLOW,
+        'fallback_box': (105, 191, 5, 34),
+        'stretch': 1.4,
+        'all_images': {'dim': {2: 0, 3: 1}},
+    },
+    # step 8 -- the pickup icon at the reserved U+E146, untinted (the H2 ICON RULE); fc_* -> gl2_*
+    'glyph': {
+        'box': (160, 62),
+        'model_3p': GL_JMS,
+        'model_skip': GL_GLOW,
+        'tif': 'grenade_launcher_h2_glyph.tif',
+        'colour': (255, 255, 255),
+        'style': {'line': (255, 255, 255), 'body': (153, 153, 153), 'min_line': 14},   # the DMR's (Reach's dense mesh)
+    },
+    'messages': {
+        'donor_prefix': 'fc', 'donor_icon': '&flak_cannon',
+        'donor_name': 'Fuel Rod Cannon', 'port_name': 'Grenade Launcher',
+        'names': [('rods for Fuel Rod Cannon', 'grenades for Grenade Launcher'),
+                  ('rod for Fuel Rod Cannon', 'grenade for Grenade Launcher'),
+                  ('a Fuel Rod Cannon', 'a Grenade Launcher')],
+        'weapon': WP,
+    },
+    # Reach's crosshair (its chud: hud_reticles #12 at scale 1.3 -- the circle, side ticks, drop marks and a dim frame
+    # -- and the AUTO square, the grenade_launcher sheet #1 at 0.5 with its right edge 47 units left). Sized by
+    # Reach's chud units (1 unit = 1 px at 1080p, the PR's screenshot reading) / 1.117 (Halo 2's px a bitmap px):
+    # #12's 441 px / 3 per unit x 1.3 = 191 units tall -> ink 171. The AUTO layer (h3_hud_art.sprite hands back 1 px a
+    # chud unit at widget scale 1): ratio 0.5 / 1.3 = 0.385; its centre 47 + 31 / 2 x 0.5 = 54.75 units left = 42.1
+    # main-sprite px (1.3 units a px). Halo 1's
+    # pitch ladder (falcon pitch, crop + stretch) left out: #12 carries its own drop marks.
+    # SUPERSAMPLING (Halo 1's B4, memory h1-reticle-supersample): Halo 1 had to draw from the stock sheets at ~0.5
+    # screen px a sheet px; Halo 2 draws the port's OWN one-image bitmap at ~1.1 screen px a px and its bitmap widgets
+    # have no scale field -- a finer bitmap cannot be drawn smaller, so the art is downsampled once from Reach's
+    # native density straight to its on-screen size (the recipe's point: no shrink-then-magnify)
+    'reticle': {
+        'rel': NEW_HUD + r'\crosshairs',
+        'donor': NEW_HUD + r'\crosshairs\hud_reticles',
+        'donor_sequence': 18,                # the Brute Shot's crosshair (the cloned HUD's)
+        'name': 'grenade_launcher_reticle',
+        'hud': r'ui\hud\grenade_launcher',
+        'footprint': 1.0,
+        'h3_art': {'sheet': R + r'ui\chud\bitmaps\hud_reticles', 'sequence': 12, 'yardstick': 12,
+                   'target_ink': 171,
+                   'layers': [((R + r'ui\chud\bitmaps\grenade_launcher', 1), 0.385, {'offset': (-42.1, 0.0)})]},
+        'preview': 'grenade_launcher_reticle_preview.png',
+    },
+
+    # step 4b -- port_field_audit.py --port h2:grenade_launcher: the source pair (Reach's GL vs Reach's yardstick: the
+    # RL weapon for the holes, the FRAG's projectile and blast) against the target pair (the port vs Halo 2's)
+    'field_audit': {
+        'source_kit': 'HREK',
+        'source': {'weapon': (GL + r'\grenade_launcher.weapon', RL + r'\rocket_launcher.weapon'),
+                   'projectile': (GL + r'\projectiles\grenade_launcher_grenade.projectile',
+                                  r'objects\weapons\grenade\frag_grenade\frag_grenade.projectile'),
+                   'damage_effect': (GL + r'\projectiles\damage_effects\grenade_launcher_grenade_explosion.damage_effect',
+                                     r'objects\weapons\grenade\frag_grenade\damage_effects\frag_grenade_explosion.damage_effect')},
+        'target': {'weapon': (WP, RL + r'\rocket_launcher.weapon'),
+                   'projectile': (PJ, r'objects\weapons\grenade\frag_grenade\frag_grenade.projectile'),
+                   'damage_effect': (DM + r'\grenade_launcher_explosion.damage_effect',
+                                     r'objects\weapons\grenade\frag_grenade\damage_effects\frag_grenade_explosion.damage_effect')},
+        # the first run (2026-11-24, before boot 1): list 2 written as Reach's (camo ding 0.75, illumination recovery 0.1
+        # both barrels, water damage range 0, shake radius 8; the rest of list 2 were 4a's rows); list 4 written (impact
+        # noise medium, AI stun 4.5 / 1-0.5 from Reach's = the frag's); list 3 decided:
+        'decisions': {
+            'magnification range 2,2 (source 0,0)': 'no zoom: magnification levels 0 makes the range unused',
+            'magazines rounds 0 (the ammo item)': "h2_tagfield cannot reach the nested magazines block (the DMR's); unused in campaign",
+            'max movement / turning acceleration / velocity 20 (source 0)': "the Fuel Rod clone's (an object-movement field; "
+                                                                            "Reach's 0 = unset)",
+            'trigger prediction / autofire / secondary action / charging / charged illumination / flags':
+                "the plasma pistol's charged pair (4a, user): Reach's latch-tether has no Halo 2 twin",
+            'reload time 0 (target 5)': "Reach's animation drives the reload (63 / 59 frames), the DMR's",
+            'shots per fire 0,0 both barrels': "the Fuel Rod's own (it fires as 1)",
+            'barrel 1 flags 1537': "the Fuel Rod's (can't fire while barrel 0 fires / recovers, tracks the projectile)",
+            'magnetism angle / range (the FIRST pair) 0': "Halo 2's first pair is the melee magnetism the Fuel Rod sets 0; "
+                                                          "Reach's 8 / 15 went into the live pair (nth 1)",
+            'deviation angle 0 (source 2)': "Halo 2's 0 (no ratio: a zero on one side; the RL's)",
+            'firing noise loud': "written (Reach's)",
+            'weapon type undefined': "Reach's (the RL's 'rocket launcher' is the yardstick's, not the port's)",
+            'damage (effect) reporting type': "the Fuel Rod's / Brute Shot's / frag's: Halo 2's enum has no 'grenade launcher'",
+            'first person weapon offset 0': 'the position lives in fp_anims model_offset',
+            'projectile flags 3 (AI ballistic, oriented along velocity)': "Reach's flags that exist in Halo 2",
+            'timer / gravity / velocity / range / acceleration range': "Reach's own (Original); the ratio is the catalog's",
+            'material responses (1 element)': "Reach's own old-style block (4a): Halo 2 has no turn physical",
+            'rider minimum transfer damage scale 1': "written (Reach's; a zero on one side)",
+            'no such field in Halo 2': 'functions, water density, falloff ranges, target tracking, zoom / ready time, '
+                                       'max latch time to arm, flyby response, ai velocity scales',
+        },
+    },
+
+    # step 11 -- `python ai_firing_profile.py --h2-port grenade_launcher`: Reach's ai\generic entry (m10) over the H2
+    # BRUTE SHOT's (Halo 2's own grenade launcher: its ballistic AI entry is the base)
+    'firing_profile': {'from_game': 'Halo Reach', 'from_map': r'haloreach\maps\m10.map',
+                       'from_weapon': GL + r'\grenade_launcher',
+                       'donor_weapon': BS + r'\brute_shot',
+                       'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
     'test': {'level': '03a_oldmombasa', 'dervish_level': '04a_gasgiant'},
     'residency': {'levels': 'all', 'placements': False},
 }
