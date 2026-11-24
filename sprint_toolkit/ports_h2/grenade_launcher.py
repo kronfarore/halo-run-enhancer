@@ -862,7 +862,8 @@ PORT = {
 
     # the Arbiter / Balanced boot moves to Sacred Icon (user, boot 1: 'test the vehicle stall on a map like Sacred
     # Icon, that starts with vehicles later -- combined with the Arbiter test')
-    'test': {'level': '03a_oldmombasa', 'dervish_level': '06a_sentinelwalls'},
+    # boot 3 (user): 'I said Sacred Icon, my mistake -- it's the next level: Quarantine Zone for the vehicle'
+    'test': {'level': '03a_oldmombasa', 'dervish_level': '06b_floodzone'},
     'residency': {'levels': 'all', 'placements': False},
 }
 
