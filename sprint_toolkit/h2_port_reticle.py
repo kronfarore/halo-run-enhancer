@@ -236,7 +236,11 @@ def h3_compose(donor):
     # A layer's path may be (sheet, sequence) instead: a SPRITE of a chud sheet (the DMR, B1 boot 1:
     # Reach's error_reticule_small #36 at 1.0 inside the #14 circle at 0.9 -- ratio 1 / 0.9)
     layers = []
-    for path, ratio in H3_ART.get('layers', ()):
+    # A third value {'offset': (x, y)} (opt-in; the Grenade Launcher, B4: Reach's AUTO square 47 chud units left of
+    # the crosshair) places a SPRITE layer's ink centre that many MAIN-sprite sheet px off the main sprite's
+    # REGISTRATION point (not its ink, which the GL's drop marks pull down), the canvas grown to hold it
+    for row in H3_ART.get('layers', ()):
+        path, ratio = row[:2]
         img = sprite(*path)[0] if isinstance(path, tuple) else h3_hud_art.decode(path)[0]
         lw, lh = max(1, int(round(img.width * k * ratio))), max(1, int(round(img.height * k * ratio)))
         img = img.convert('RGBA').resize((lw, lh), Image.LANCZOS)
@@ -245,8 +249,11 @@ def h3_compose(donor):
             px = np.asarray(img).astype(float)
             px[:, :, 3] = np.clip(px[:, :, 3] * 255.0 / max(px[:, :, 3].max(), 1.0), 0, 255)
             img = Image.fromarray(px.astype('uint8'), 'RGBA')
-        layers.append((img, isinstance(path, tuple)))
-    side = max([w, h, donor.width, donor.height] + [max(i.size) for i, _s in layers])
+        layers.append((img, isinstance(path, tuple), row[2] if len(row) > 2 else {}))
+    side = max([w, h, donor.width, donor.height] + [max(i.size) for i, _s, _o in layers])
+    for img, _s, opt in layers:
+        if opt.get('offset'):
+            side = max(side, int(2 * (max(abs(c) for c in opt['offset']) * k + max(img.size))) + 4)
     side += side % 2
     out = Image.new('RGBA', (side, side), (0, 0, 0, 0))
 
@@ -262,12 +269,15 @@ def h3_compose(donor):
     piece = tinted(art)
     at = (int(round(side / 2.0 - reg[0] * k)), int(round(side / 2.0 - reg[1] * k)))
     pc = centroid(piece)
-    for img, is_sprite in layers:
+    for img, is_sprite, opt in layers:
         if is_sprite:
             # a sprite layer CENTRED ON THE MAIN SPRITE'S INK, sub-pixel (the DMR, boot 2: 'the inner or the
             # outer ring is off centre' -- the two registration points and the rounding put #36 0.3 / 0.5 px off)
             lc = centroid(img)
             dx, dy = at[0] + pc[0] - lc[0], at[1] + pc[1] - lc[1]
+            if opt.get('offset'):
+                dx = at[0] + (reg[0] + opt['offset'][0]) * k - lc[0]
+                dy = at[1] + (reg[1] + opt['offset'][1]) * k - lc[1]
             moved = np.asarray(tinted(img).transform((side, side), Image.AFFINE, (1, 0, -dx, 0, 1, -dy),
                                                      Image.BILINEAR)).astype(float)
             moved[:, :, 3] = np.clip(moved[:, :, 3] * 255.0 / max(moved[:, :, 3].max(), 1.0), 0, 255)
