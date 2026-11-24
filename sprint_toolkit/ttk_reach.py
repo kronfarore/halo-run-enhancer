@@ -478,7 +478,7 @@ def main():
         'Player times: 30 Hz tick simulation of the MEASURED trigger (ttk_common.tick_shots; a '
         'flat 24/s fired 15/s in Reach, rof_test_stage.py 2026-11-23): rate / 30 in float32 a '
         'tick, a shot at 1, the sum RESET -- a shot every ceil(30 / rate) ticks; fire recovery and '
-        'reloads round up to whole ticks (assumed); heat drains every tick. Times count from the '
+        'reloads round up to whole ticks (the recovery measured 2026-11-24 -- and it paces only a one-shot-a-fire weapon -- reloads assumed); heat drains every tick. Times count from the '
         'first shot.',
     ]
     path = tc.write(GAME, rows, notes)

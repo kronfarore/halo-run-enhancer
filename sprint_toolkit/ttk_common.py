@@ -286,7 +286,8 @@ def tick_shots(n, w, limit_s=600.0, cool_while_firing=True, rate_fn=None):
         trigger starts over (sum 0, ramp from lo) -- ASSUMED as the cold start;
       * 'shots per fire' > 1 = a burst at the barrel rate, then 'fire recovery time' (rounded UP
         to whole ticks) from the burst's last shot before the next may leave (the sum keeps
-        running); without bursts the recovery gates every shot the same way -- ASSUMED;
+        running); a one-shot-a-fire weapon (shots per fire 1) the same way between shots, a held
+        automatic (shots per fire 0) never -- both MEASURED 2026-11-24 in Halo 2 / 3 / ODST / Reach / 4, reports/rof_test.jsonl;
       * an empty magazine: the next shot leaves when the reload time (rounded up to ticks) has
         passed after the last round, and the ramp restarts.
     Returns (ticks list, events)."""
@@ -297,7 +298,8 @@ def tick_shots(n, w, limit_s=600.0, cool_while_firing=True, rate_fn=None):
     # (1e-3 tick tolerance: a float32 0.7666667 s is 23.000001 ticks, meant as 23)
     # the recovery is the cooldown between FIRES: it paces a one-shot-a-pull weapon (shots per
     # fire 1, or a rate of 0) but not a held automatic (shots per fire 0 = fire while held) --
-    # Reach's Needler (12/s, recovery 0.2) would otherwise fire 5/s. INFERRED, not measured
+    # rof_test_stage reca: a held 30/s automatic with a 5-tick recovery fired 30/s; recb: a held
+    # one-shot-a-fire weapon with a 3.4-tick recovery fired every 4 ticks (rounded UP) -- MEASURED 2026-11-24 in Halo 2 / 3 / ODST / Reach / 4, reports/rof_test.jsonl
     gate_each = burst == 1 and (spf[1] >= 1 or all(r <= 0 for r in w['rps']))
     hpr, oh = w.get('heat per round') or 0.0, w.get('overheated threshold') or 1.0
     hpt = w.get('heat per tick') or 0.0

@@ -660,7 +660,7 @@ def run(kit, game, player, enemies, player_weapons, extra_notes=()):
         'ttk_common.tick_shots; a flat 24/s fired 15/s in Halo 3 and ODST, rof_test_stage.py '
         '2026-11-23): rate / 30 in float32 a tick, a shot at 1, the sum RESET -- a shot every '
         'ceil(30 / rate) ticks (9/s fires 7.5/s); ramp lo->hi over the held acceleration time, '
-        'bursts + fire recovery (rounded up to ticks, assumed), heat with heat loss every tick '
+        'bursts + fire recovery (rounded up to ticks, measured 2026-11-24; it paces only a one-shot-a-fire weapon), heat with heat loss every tick '
         'and the overheated cool-down to the recovery threshold, reloads (magazine reload time; '
         'when it is 0 the reload is animation-driven: first-person reload_empty frames / 30). '
         'Times count from the first shot. Constant-rate weapons are asserted equal to '

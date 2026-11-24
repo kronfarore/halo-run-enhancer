@@ -33,7 +33,7 @@ CAVEATS = [
     'rate / 30 added a tick, a shot at 1, the sum reset -- a shot every ceil(30 / rate) ticks, so '
     'a 9/s Plasma Rifle fires 7.5/s and a 20/s gun 15/s, a 30/s gun 30/s. Player times are '
     'tick simulations (ttk_common.tick_shots); fire recovery and reloads round up to whole '
-    'ticks (assumed). AI rates are not quantised.',
+    'ticks (measured 2026-11-24; a held automatic ignores its recovery). AI rates are not quantised.',
     "Reload pauses come from the tag's reload time, or the first-person reload animation "
     'where the tag has none (H3 AR/BR, Reach, H4). Damage is the point-blank upper bound '
     '(no fall-off with range). Default AI weapons come from scenario squads (census where '

@@ -233,7 +233,8 @@ def tick_shots(n, w, limit_s=600.0):
     by the MEASURED reset rule -- ttk_common.tick_shots, shared by every collector since
     2026-11-23 (this was its first home). A shot every ceil(30 / rate) ticks: 20/s fires 15/s,
     9/s 7.5/s, 3.05/s 3/s, a flat 15/s 15/s (0.5 + 0.5 = 1.0) but a 15/s falling ramp 10/s.
-    Heat drains every tick, bursts / fire recovery / reloads round up to whole ticks (assumed).
+    Heat drains every tick; bursts / fire recovery round up to whole ticks (measured 2026-11-24, and
+    the recovery paces only a one-shot-a-fire weapon), reloads too (assumed).
     Returns (ticks list, events)."""
     shots, ev = tc.tick_shots(n, w, limit_s=limit_s)
     return shots, {k: ev[k] for k in ('overheats', 'reloads', 'bursts')}
@@ -654,7 +655,7 @@ def main():
         'tick_shots; the Plasma Repeater port 2026-11-22, reports/h2_fire_rule.jsonl): rate / 30 '
         'added in float32 a tick, a shot at 1, the sum RESET (a shot every ceil(30 / rate) '
         'ticks: 20/s fires 15/s, 9/s 7.5/s); ramp lo->hi over the held acceleration time, '
-        'bursts + fire recovery (rounded up to ticks, assumed), heat with heat loss every tick '
+        'bursts + fire recovery (rounded up to ticks, measured 2026-11-24; it paces only a one-shot-a-fire weapon), heat with heat loss every tick '
         'and the overheated cool-down to the recovery threshold, reloads. Times count from the '
         'first shot. Constant-rate weapons are asserted equal to ttk_common.player_time at the '
         'quantised rate. Battle Rifle reload = its fp reload_empty '
