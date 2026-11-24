@@ -239,21 +239,32 @@ def h3_compose(donor):
     # A third value {'offset': (x, y)} (opt-in; the Grenade Launcher, B4: Reach's AUTO square 47 chud units left of
     # the crosshair) places a SPRITE layer's ink centre that many MAIN-sprite sheet px off the main sprite's
     # REGISTRATION point (not its ink, which the GL's drop marks pull down), the canvas grown to hold it
+    # More opt-in keys (the GL's boot 1: 'missing some of the finer lines' = Reach's pitch ladder, falcon\pitch, a whole
+    # 64 x 1024 bitmap drawn at the chud's 1.6 : 0.7): 'crop' (x0, y0, x1, y1) source px kept, 'stretch' (sx, sy) per
+    # axis on top of the ratio, 'at' (x, y) a source px of the (cropped) layer pinned onto the main registration point
+    # (+ 'offset'), its alpha stretched to full as a sprite's
     for row in H3_ART.get('layers', ()):
         path, ratio = row[:2]
+        opt = row[2] if len(row) > 2 else {}
         img = sprite(*path)[0] if isinstance(path, tuple) else h3_hud_art.decode(path)[0]
-        lw, lh = max(1, int(round(img.width * k * ratio))), max(1, int(round(img.height * k * ratio)))
+        if opt.get('crop'):
+            img = img.convert('RGBA').crop(tuple(opt['crop']))
+        sx, sy = opt.get('stretch', (1.0, 1.0))
+        lw, lh = max(1, int(round(img.width * k * ratio * sx))), max(1, int(round(img.height * k * ratio * sy)))
+        if opt.get('at'):
+            opt = dict(opt, _scale=(lw / float(img.width), lh / float(img.height)))
         img = img.convert('RGBA').resize((lw, lh), Image.LANCZOS)
-        if isinstance(path, tuple):
+        if isinstance(path, tuple) or opt.get('at'):
             # a thin sprite shrunk this far fades: its alpha stretched to full at its densest texel
             px = np.asarray(img).astype(float)
             px[:, :, 3] = np.clip(px[:, :, 3] * 255.0 / max(px[:, :, 3].max(), 1.0), 0, 255)
             img = Image.fromarray(px.astype('uint8'), 'RGBA')
-        layers.append((img, isinstance(path, tuple), row[2] if len(row) > 2 else {}))
+        layers.append((img, isinstance(path, tuple), opt))
     side = max([w, h, donor.width, donor.height] + [max(i.size) for i, _s, _o in layers])
     for img, _s, opt in layers:
-        if opt.get('offset'):
-            side = max(side, int(2 * (max(abs(c) for c in opt['offset']) * k + max(img.size))) + 4)
+        if opt.get('offset') or opt.get('at'):
+            off = max(abs(c) for c in opt.get('offset', (0.0, 0.0)))
+            side = max(side, int(2 * (off * k + max(img.size))) + 4)
     side += side % 2
     out = Image.new('RGBA', (side, side), (0, 0, 0, 0))
 
@@ -270,6 +281,16 @@ def h3_compose(donor):
     at = (int(round(side / 2.0 - reg[0] * k)), int(round(side / 2.0 - reg[1] * k)))
     pc = centroid(piece)
     for img, is_sprite, opt in layers:
+        if opt.get('at'):
+            fx, fy = opt['_scale']
+            ox, oy = opt.get('offset', (0.0, 0.0))
+            dx = at[0] + (reg[0] + ox) * k - opt['at'][0] * fx
+            dy = at[1] + (reg[1] + oy) * k - opt['at'][1] * fy
+            moved = np.asarray(tinted(img).transform((side, side), Image.AFFINE, (1, 0, -dx, 0, 1, -dy),
+                                                     Image.BILINEAR)).astype(float)
+            moved[:, :, 3] = np.clip(moved[:, :, 3] * 255.0 / max(moved[:, :, 3].max(), 1.0), 0, 255)
+            out.alpha_composite(Image.fromarray(moved.astype('uint8'), 'RGBA'))
+            continue
         if is_sprite:
             # a sprite layer CENTRED ON THE MAIN SPRITE'S INK, sub-pixel (the DMR, boot 2: 'the inner or the
             # outer ring is off centre' -- the two registration points and the rounding put #36 0.3 / 0.5 px off)

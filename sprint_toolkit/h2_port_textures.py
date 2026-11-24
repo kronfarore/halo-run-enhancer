@@ -264,6 +264,17 @@ def h3_main(t, argv):
                     g = np.maximum(g, b)
                 rgb = np.dstack([g * c for c in mode[1]])
                 out = Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8), 'RGB')
+            elif isinstance(mode, tuple) and mode[0] == 'levels':
+                # ('levels', channel, (lo, hi), floor, (r, g, b)): ONE channel of the source through a levels
+                # window (lo..hi -> 0..1), a floor under it, coloured -- an additive self-illum shape (the Grenade
+                # Launcher, B4 boot 1: 'the glass panel is empty' -- Reach paints the holo sight's reticle into the
+                # diffuse's ALPHA, lines ~200-242 over a ~132 panel; Halo 1's B4 levels (140, 235), floor 0.12)
+                ch = np.asarray(img.convert('RGBA')).astype(np.float32)[:, :, mode[1]]
+                lo, hi = mode[2]
+                v = np.clip((ch - lo) / float(hi - lo), 0.0, 1.0)
+                v = mode[3] + (1.0 - mode[3]) * v
+                rgb = np.dstack([v * c * 255.0 for c in mode[4]])
+                out = Image.fromarray(np.clip(rgb, 0, 255).astype(np.uint8), 'RGB')
             elif isinstance(mode, tuple) and mode[0] == 'alpha_from':
                 # ('alpha_from', other source, channel): the colour with ANOTHER map's channel as
                 # its alpha -- Halo 1's multipurpose RED (the reflection mask) as the specular mask
