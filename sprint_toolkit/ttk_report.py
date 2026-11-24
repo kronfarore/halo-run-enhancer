@@ -31,7 +31,7 @@ CAVEATS = [
     'PLAYER FIRE RATE: every game fires by the 30 Hz RESET rule (measured: Halo 1 probe, Halo 2 '
     'Plasma Repeater port, Halo 3 / ODST / Reach / Halo 4 / Halo 2 rof_test_stage.py 2026-11-23): '
     'rate / 30 added a tick, a shot at 1, the sum reset -- a shot every ceil(30 / rate) ticks, so '
-    'a 9/s Plasma Rifle fires 7.5/s and a 20/s gun 15/s (Halo 1 caps at 15/s). Player times are '
+    'a 9/s Plasma Rifle fires 7.5/s and a 20/s gun 15/s, a 30/s gun 30/s. Player times are '
     'tick simulations (ttk_common.tick_shots); fire recovery and reloads round up to whole '
     'ticks (assumed). AI rates are not quantised.',
     "Reload pauses come from the tag's reload time, or the first-person reload animation "

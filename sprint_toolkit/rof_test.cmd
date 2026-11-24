@@ -14,7 +14,7 @@ rem THE TEST: pick up the plasma weapon at your start (Halo 4: the Storm Rifle),
 rem from cold, and note the BATTERY number when it overheats -- or "empty, never overheated".
 rem   about 72 = the game fires its tag rate      about 46 = a 60 Hz reset rule
 rem   empty    = the 30 Hz reset rule (Halo 1 / 2)
-rem   Halo 2:  about 71 = Halo 2 fires 30/s       empty    = Halo 2 caps at 15/s like Halo 1
+rem   Halo 2:  about 71 = Halo 2 fires 30/s       empty    = Halo 2 caps at 15/s
 rem   about 91 (any game) = the heat does not drain while firing: tell Claude, the test needs a rework
 rem
 rem   Halo 2  01b Cairo Station    Halo 3  100 The Covenant    ODST  h100 Mombasa Streets

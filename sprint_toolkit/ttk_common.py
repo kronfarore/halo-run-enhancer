@@ -250,7 +250,8 @@ def player_time_drain(n, interval, heat_per_shot, loss_per_sec, overheat_at=1.0,
 #: Halo 3 / ODST / Reach / Halo 4 / Halo 2 at 30/s: rof_test_stage.py 2026-11-23, reports/rof_test.jsonl;
 #: Halo 1: h1_weapon_state_probe, ttk_halo1.player_ticks): every tick rate / 30 is added in float32,
 #: a shot leaves when the sum reaches 1 and the sum RESETS -- a shot every ceil(30 / rate) ticks.
-#: Halo 1 alone caps at 15/s (2 ticks); Halo 2 fires 30/s at a 30 tag.
+#: No game caps at 15/s: a 30 tag fires every tick (Halo 2 measured 2026-11-23; Halo 1 by the
+#: Focus Rifle probe -- its Sentinel Beam's 15/s is most likely the age rate-of-fire penalty).
 TICK_HZ = 30.0
 
 

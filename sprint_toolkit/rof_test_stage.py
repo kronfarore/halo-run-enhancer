@@ -107,7 +107,7 @@ def expect(game):
         out.append('%-34s %s' % (name, 'overheat on round %d -> battery %d' % (k, 100 - k)
                                  if k else 'never overheats: battery runs out'))
     if game == 'Halo 2':
-        out.append('%-34s %s' % ('Halo 1 cap (2 ticks = 15/s)', 'never overheats: battery runs out'))
+        out.append('%-34s %s' % ('a 15/s cap (2 ticks)', 'never overheats: battery runs out'))
     k = int(math.ceil(1.0 / h - 1e-9))
     out.append('%-34s %s' % ('(heat does NOT drain while firing)', 'overheat on round %d -> battery %d: '
                              'the rate cannot be read, the heat model is wrong' % (k, 100 - k)))
