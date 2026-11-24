@@ -63,6 +63,7 @@
   "AI stun radius": 168,
   "AOE core radius": 104,
   "active camouflage damage": 128,
+  "aoe core radius": 104,
   "category": 98,
   "damage lower bound": 108,
   "damage upper bound": 112,
@@ -105,6 +106,24 @@
  },
  "damage_effect@objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_shard": {
   "instantaneous acceleration": 144
+ },
+ "damage_effect@objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_emp": {
+  "emp radius": 184,
+  "flags#1": 100,
+  "side effect": 96
+ },
+ "damage_effect@objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_explosion": {
+  "ai stun bounds": 172,
+  "ai stun radius": 168,
+  "aoe core radius": 104,
+  "instantaneous acceleration": 144,
+  "rider minimum transfer damage scale": 156
+ },
+ "damage_effect@objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_tethered_explosion": {
+  "ai stun bounds": 172,
+  "ai stun radius": 168,
+  "instantaneous acceleration": 144,
+  "rider minimum transfer damage scale": 156
  },
  "damage_effect@objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_attached_super_detonation": {
   "AOE core radius": 104,
@@ -225,6 +244,10 @@
   "diffuse upper bound": 180,
   "specular upper bound": 156
  },
+ "light@effects\\objects\\weapons\\rifle\\grenade_launcher\\gl_charge_fp": {
+  "diffuse upper bound": 260,
+  "specular upper bound": 232
+ },
  "light@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_charge": {
   "diffuse upper bound": 180,
   "specular upper bound": 156
@@ -280,6 +303,26 @@
   "animations[4].production flags": 3380,
   "animations[5].production flags": 3504,
   "animations[9].production flags": 4000
+ },
+ "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\rifle\\fp_grenade_launcher\\fp_grenade_launcher": {
+  "animations[10].production flags": 4373,
+  "animations[12].production flags": 4621,
+  "animations[13].production flags": 4745,
+  "animations[14].production flags": 4869,
+  "animations[15].production flags": 4824,
+  "animations[4].production flags": 3629,
+  "animations[5].production flags": 3753,
+  "animations[9].production flags": 4249,
+  "sound references[10].flags": 2122,
+  "sound references[11].flags": 2142,
+  "sound references[12].flags": 2162,
+  "sound references[13].flags": 2182,
+  "sound references[14].flags": 2202,
+  "sound references[5].flags": 2022,
+  "sound references[6].flags": 2042,
+  "sound references[7].flags": 2062,
+  "sound references[8].flags": 2082,
+  "sound references[9].flags": 2102
  },
  "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\rifle\\fp_needle_rifle\\fp_needle_rifle": {
   "animations[10].production flags": 4613,
@@ -394,6 +437,26 @@
   "sound references[7].flags": 2287,
   "sound references[8].flags": 2307,
   "sound references[9].flags": 2327
+ },
+ "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_grenade_launcher\\fp_grenade_launcher": {
+  "animations[10].production flags": 4637,
+  "animations[12].production flags": 4885,
+  "animations[13].production flags": 5009,
+  "animations[14].production flags": 5133,
+  "animations[15].production flags": 5088,
+  "animations[4].production flags": 3893,
+  "animations[5].production flags": 4017,
+  "animations[9].production flags": 4513,
+  "sound references[10].flags": 2386,
+  "sound references[11].flags": 2406,
+  "sound references[12].flags": 2426,
+  "sound references[13].flags": 2446,
+  "sound references[14].flags": 2466,
+  "sound references[5].flags": 2286,
+  "sound references[6].flags": 2306,
+  "sound references[7].flags": 2326,
+  "sound references[8].flags": 2346,
+  "sound references[9].flags": 2366
  },
  "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_needle_rifle\\fp_needle_rifle": {
   "animations[10].production flags": 4877,
@@ -620,17 +683,22 @@
   "bitmap widgets[9].flags": 1266
  },
  "projectile": {
+  "acceleration range": 656,
   "air damage range": 820,
+  "air gravity scale": 616,
   "bounding radius": 84,
   "final velocity": 844,
   "flags#1": 460,
   "guided angular velocity (lower)": 648,
   "guided angular velocity (upper)": 652,
+  "impact noise": 342,
   "initial velocity": 840,
+  "material effect radius": 528,
   "material responses[0].and": 1264,
   "material responses[0].angular noise": 1308,
   "material responses[0].between": 1256,
   "material responses[0].chance fraction": 1766,
+  "material responses[0].flags#1": 1610,
   "material responses[0].parallel friction": 1364,
   "material responses[0].perpendicular friction": 1368,
   "material responses[0].response": 1329,
@@ -710,6 +778,32 @@
  },
  "projectile@objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet": {
   "material responses[9].maximum distance": 2752
+ },
+ "projectile@objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade": {
+  "acceleration range": 656,
+  "air gravity scale": 616,
+  "final velocity": 644,
+  "impact noise": 342,
+  "initial velocity": 640,
+  "material effect radius": 528,
+  "material responses[0].and": 1588,
+  "material responses[0].between": 1580,
+  "material responses[0].chance fraction": 1576,
+  "material responses[0].parallel friction": 1648,
+  "material responses[0].perpendicular friction": 1652,
+  "material responses[0].response#1": 1572,
+  "maximum range": 372,
+  "water damage range": 632,
+  "water gravity scale": 628
+ },
+ "projectile@objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_tethered_grenade": {
+  "final velocity": 644,
+  "initial velocity": 640,
+  "material responses[0].flags#1": 1610,
+  "material responses[0].response#1": 1608,
+  "maximum range": 372,
+  "water damage range": 632,
+  "water gravity scale": 628
  },
  "projectile@objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard": {
   "air damage range": 620,
@@ -911,6 +1005,12 @@
   "barrels[0].rounds per shot": 3127,
   "barrels[0].shots per fire": 3054,
   "barrels[0].soft recovery fraction": 3062,
+  "barrels[1].error angle#1": 3076,
+  "barrels[1].fire recovery time": 2992,
+  "barrels[1].illumination recovery time": 3506,
+  "barrels[1].minimum error#1": 3434,
+  "barrels[1].projectiles per shot": 3066,
+  "barrels[1].rounds per second": 2964,
   "bounding offset": 88,
   "bounding radius": 84,
   "damage pyramid depth": 696,
@@ -929,10 +1029,14 @@
   "magnetism range#1": 852,
   "magnification levels": 830,
   "magnification range": 832,
+  "new triggers[0].autofire throw": 2958,
+  "new triggers[0].autofire time": 2954,
   "new triggers[0].behavior": 2905,
   "new triggers[0].charged illumination": 3015,
   "new triggers[0].charging time": 3003,
+  "new triggers[0].flags": 2576,
   "new triggers[0].overcharged action": 3011,
+  "new triggers[0].prediction": 2950,
   "new triggers[0].primary action": 3001,
   "new triggers[0].primary barrel": 2983,
   "new triggers[0].secondary action": 2999,
@@ -1011,6 +1115,34 @@
   "magazines[0].rounds total initial": 2461,
   "magazines[0].rounds total maximum": 2463,
   "new triggers[0].behavior": 2684
+ },
+ "weapon@objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher": {
+  "barrels[0].error angle#1": 3190,
+  "barrels[0].fire recovery time": 3106,
+  "barrels[0].firing noise": 3128,
+  "barrels[0].illumination recovery time": 3250,
+  "barrels[0].minimum error#1": 3186,
+  "barrels[0].projectiles per shot": 2810,
+  "barrels[1].error angle#1": 3446,
+  "barrels[1].fire recovery time": 3362,
+  "barrels[1].illumination recovery time": 3506,
+  "barrels[1].minimum error#1": 3442,
+  "barrels[1].projectiles per shot": 3066,
+  "barrels[1].rounds per second": 2964,
+  "magazines[0].reload time": 2448,
+  "magazines[0].rounds loaded maximum": 2812,
+  "magazines[0].rounds reloaded": 2822,
+  "magazines[0].rounds total initial": 2808,
+  "magazines[0].rounds total maximum": 2810,
+  "new triggers[0].autofire throw": 2966,
+  "new triggers[0].autofire time": 2962,
+  "new triggers[0].behavior": 2952,
+  "new triggers[0].charged illumination": 2986,
+  "new triggers[0].charging time": 2966,
+  "new triggers[0].flags": 2946,
+  "new triggers[0].prediction": 2958,
+  "new triggers[0].secondary action": 2970,
+  "new triggers[0].secondary barrel": 2956
  },
  "weapon@objects\\weapons\\rifle\\needle_rifle\\needle_rifle": {
   "barrels[0].acceleration time#1": 3041,
