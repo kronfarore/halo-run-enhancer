@@ -1,0 +1,1698 @@
+[
+ {
+  "game": "Halo 1",
+  "port": "SAW",
+  "source": "Halo 4",
+  "balanced": {
+   "Rounds Per Second": 30.0,
+   "Rounds Per Second Max": 30.0
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "weapons\\saw\\bullet",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 10.0,
+    "card": "Bullet Damage",
+    "original": 7.5
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\saw\\bullet",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 10.0,
+    "card": "Bullet Damage",
+    "original": 7.5
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\saw\\melee",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 50.0,
+    "card": "Melee Damage",
+    "original": 70.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\saw\\melee",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 60.0,
+    "card": "Melee Damage",
+    "original": 70.0
+   }
+  ],
+  "notes": [],
+  "port fires": [
+   30.0,
+   30.0
+  ],
+  "chain": "balance_SAW_Halo4_to_Halo1.json",
+  "source fires": 15.0,
+  "legs": [
+   [
+    "Assault Rifle",
+    "Halo 4",
+    "Halo 1",
+    10.0,
+    15.0
+   ]
+  ],
+  "intended": 22.5,
+  "k": 0.75
+ },
+ {
+  "game": "Halo 1",
+  "port": "Flak Cannon",
+  "source": "Halo 1",
+  "balanced": {
+   "Rounds Per Second": 2.5,
+   "Rounds Per Second Max": 2.5
+  },
+  "damage rows": [],
+  "notes": [
+   "source no tag",
+   "no source rate"
+  ],
+  "port fires": [
+   2.5,
+   2.3076923076923075
+  ],
+  "chain": "ports_h1/fuel_rod.py"
+ },
+ {
+  "game": "Halo 1",
+  "port": "SMG",
+  "source": "Halo 3",
+  "balanced": {
+   "Rounds Per Second": 22.5,
+   "Rounds Per Second Max": 22.5
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "weapons\\smg\\bullet",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 6.67,
+    "card": "Bullet Damage",
+    "original": 5.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\smg\\bullet",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 6.67,
+    "card": "Bullet Damage",
+    "original": 5.0
+   }
+  ],
+  "notes": [
+   "source Halo 3: rate 15, recovery 0, shots/fire 0 -> fires 15/s (tag cadence 15)",
+   "yardstick Assault Rifle -- Halo 3: rate 10, recovery 0, shots/fire 0 -> fires 10/s (tag cadence 10); Halo 1: rate 15, recovery 0, shots/fire 0 -> fires 15/s (tag cadence 15)"
+  ],
+  "port fires": [
+   22.5,
+   15.0
+  ],
+  "chain": "ports_h1/smg.py",
+  "source fires": 15.0,
+  "legs": [
+   [
+    "Assault Rifle",
+    "Halo 3",
+    "Halo 1",
+    10.0,
+    15.0
+   ]
+  ],
+  "intended": 22.5,
+  "k": 1.5
+ },
+ {
+  "game": "Halo 1",
+  "port": "Covenant Carbine",
+  "source": "Halo 3",
+  "balanced": {
+   "Rounds Per Second": 8.24,
+   "Rounds Per Second Max": 8.24
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "weapons\\covenant carbine\\slug",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 16.67,
+    "card": "Bullet Damage",
+    "original": 10.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\covenant carbine\\slug",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 16.67,
+    "card": "Bullet Damage",
+    "original": 10.0
+   }
+  ],
+  "notes": [
+   "source Halo 3: rate 0, recovery 0.17, shots/fire 1 -> fires 5/s (tag cadence 5.88)",
+   "yardstick Pistol -- Halo 3: rate 0, recovery 0.4, shots/fire 1 -> fires 2.5/s (tag cadence 2.5); Halo 1: rate 3.5, recovery 0, shots/fire 0 -> fires 3.33/s (tag cadence 3.5)"
+  ],
+  "port fires": [
+   8.24,
+   7.5
+  ],
+  "chain": "ports_h1/covenant_carbine.py",
+  "source fires": 5.0,
+  "legs": [
+   [
+    "Pistol",
+    "Halo 3",
+    "Halo 1",
+    2.5,
+    3.3333333333333335
+   ]
+  ],
+  "intended": 6.666666666666668,
+  "k": 0.8888888888888891
+ },
+ {
+  "game": "Halo 1",
+  "port": "Beam Rifle",
+  "source": "Halo 3",
+  "balanced": {
+   "Rounds Per Second": 3.5,
+   "Rounds Per Second Max": 3.5
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "weapons\\beam rifle\\beam",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 101.0,
+    "card": "Beam damage",
+    "original": 80.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\beam rifle\\beam",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 101.0,
+    "card": "Beam damage",
+    "original": 80.0
+   }
+  ],
+  "notes": [
+   "source Halo 3: rate 0, recovery 0.4, shots/fire 1 -> fires 2.5/s (tag cadence 2.5)",
+   "yardstick Sniper Rifle -- Halo 3: rate 0, recovery 0.7, shots/fire 1 -> fires 1.43/s (tag cadence 1.43); Halo 1: rate 2, recovery 0, shots/fire 0 -> fires 2/s (tag cadence 2)"
+  ],
+  "port fires": [
+   3.5,
+   3.3333333333333335
+  ],
+  "chain": "ports_h1/beam_rifle.py",
+  "source fires": 2.5,
+  "legs": [
+   [
+    "Sniper Rifle",
+    "Halo 3",
+    "Halo 1",
+    1.4285714285714286,
+    2.0
+   ]
+  ],
+  "intended": 3.5,
+  "k": 1.05
+ },
+ {
+  "game": "Halo 1",
+  "port": "Spike Rifle",
+  "source": "Halo 3",
+  "balanced": {
+   "Rounds Per Second": 12.0,
+   "Rounds Per Second Max": 12.0
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "weapons\\spiker\\spike",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 12.0,
+    "card": "Spike Damage",
+    "original": 9.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\spiker\\spike",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 12.0,
+    "card": "Spike Damage",
+    "original": 9.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\spiker\\melee",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 51.45,
+    "card": "Melee Damage",
+    "original": 65.45
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\spiker\\melee",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 61.75,
+    "card": "Melee Damage",
+    "original": 78.55
+   }
+  ],
+  "notes": [
+   "source Halo 3: rate 8, recovery 0, shots/fire 0 -> fires 7.5/s (tag cadence 8)",
+   "yardstick Assault Rifle -- Halo 3: rate 10, recovery 0, shots/fire 0 -> fires 10/s (tag cadence 10); Halo 1: rate 15, recovery 0, shots/fire 0 -> fires 15/s (tag cadence 15)"
+  ],
+  "port fires": [
+   12.0,
+   10.0
+  ],
+  "chain": "ports_h1/brute_spiker.py",
+  "source fires": 7.5,
+  "legs": [
+   [
+    "Assault Rifle",
+    "Halo 3",
+    "Halo 1",
+    10.0,
+    15.0
+   ]
+  ],
+  "intended": 11.25,
+  "k": 1.125
+ },
+ {
+  "game": "Halo 1",
+  "port": "Brute Shot",
+  "source": "Halo 3",
+  "balanced": {
+   "Rounds Per Second": 1.3333333333333333,
+   "Rounds Per Second Max": 1.3333333333333333
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "weapons\\brute shot\\explosion",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 49.77,
+    "card": "Grenade Damage",
+    "original": 73.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\brute shot\\explosion",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 54.75,
+    "card": "Grenade Damage",
+    "original": 73.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\brute shot\\melee",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 56.27,
+    "card": "Melee Damage",
+    "original": 81.82
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\brute shot\\melee",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 67.53,
+    "card": "Melee Damage",
+    "original": 98.18
+   }
+  ],
+  "notes": [
+   "source Halo 3: rate 0, recovery 0.3, shots/fire 1 -> fires 3.33/s (tag cadence 3.33)",
+   "yardstick Rocket Launcher -- Halo 3: rate 0, recovery 0.8, shots/fire 1 -> fires 1.25/s (tag cadence 1.25); Halo 1: rate 0.5, recovery 0, shots/fire 0 -> fires 0.492/s (tag cadence 0.5)"
+  ],
+  "port fires": [
+   1.3333333333333333,
+   1.3043478260869565
+  ],
+  "chain": "ports_h1/brute_shot.py",
+  "source fires": 3.3333333333333335,
+  "legs": [
+   [
+    "Rocket Launcher",
+    "Halo 3",
+    "Halo 1",
+    1.25,
+    0.4918032786885246
+   ]
+  ],
+  "intended": 1.3114754098360657,
+  "k": 1.005464480874317
+ },
+ {
+  "game": "Halo 1",
+  "port": "DMR",
+  "source": "Halo Reach",
+  "balanced": {
+   "Rounds Per Second": 4.5,
+   "Rounds Per Second Max": 4.5
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "weapons\\dmr\\bullet",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 22.09,
+    "card": "Bullet Damage",
+    "original": 17.5
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\dmr\\bullet",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 22.09,
+    "card": "Bullet Damage",
+    "original": 17.5
+   }
+  ],
+  "notes": [
+   "source Halo Reach: rate 3, recovery 0.33, shots/fire 1 -> fires 3/s (tag cadence 3)",
+   "yardstick Sniper Rifle -- Halo Reach: rate 0, recovery 0.75, shots/fire 1 -> fires 1.3/s (tag cadence 1.33); Halo 1: rate 2, recovery 0, shots/fire 0 -> fires 2/s (tag cadence 2)"
+  ],
+  "port fires": [
+   4.5,
+   4.285714285714286
+  ],
+  "chain": "ports_h1/dmr.py",
+  "source fires": 3.0,
+  "legs": [
+   [
+    "Sniper Rifle",
+    "Halo Reach",
+    "Halo 1",
+    1.3043478260869565,
+    2.0
+   ]
+  ],
+  "intended": 4.6,
+  "k": 1.0733333333333333
+ },
+ {
+  "game": "Halo 1",
+  "port": "Needle Rifle",
+  "source": "Halo Reach",
+  "balanced": {
+   "Rounds Per Second": 3.333,
+   "Rounds Per Second Max": 3.333
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "weapons\\needle rifle\\needle",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 10.0,
+    "card": "Needle Damage",
+    "original": 6.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\needle rifle\\needle",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 10.0,
+    "card": "Needle Damage",
+    "original": 6.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\needle rifle\\supercombine",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 60.0,
+    "card": "Explosion Damage",
+    "original": 390.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\needle rifle\\supercombine",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 60.0,
+    "card": "Explosion Damage",
+    "original": 390.0
+   }
+  ],
+  "notes": [
+   "source Halo Reach: rate 4, recovery 0.25, shots/fire 1 -> fires 3.75/s (tag cadence 4)",
+   "yardstick Needler -- Halo Reach: rate 12, recovery 0.2, shots/fire 0 -> fires 10/s (tag cadence 12); Halo 1: rate 10, recovery 0, shots/fire 0 -> fires 10/s (tag cadence 10)"
+  ],
+  "port fires": [
+   3.333,
+   3.0
+  ],
+  "chain": "ports_h1/needle_rifle.py",
+  "source fires": 3.75,
+  "legs": [
+   [
+    "Needler",
+    "Halo Reach",
+    "Halo 1",
+    10.0,
+    10.0
+   ]
+  ],
+  "intended": 3.75,
+  "k": 1.25
+ },
+ {
+  "game": "Halo 1",
+  "port": "Plasma Repeater",
+  "source": "Halo Reach",
+  "balanced": {
+   "Rounds Per Second Max": 3.4
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "weapons\\plasma repeater\\bolt",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 7.584,
+    "card": "Bolt Damage",
+    "original": 5.834
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\plasma repeater\\bolt",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 9.1,
+    "card": "Bolt Damage",
+    "original": 7.0
+   }
+  ],
+  "notes": [
+   "excluded: heat-driven 20 -> 3.4 ramp fitted by h1_weapon_state_probe"
+  ],
+  "port fires": [
+   3.4,
+   3.3333333333333335
+  ],
+  "chain": "ports_h1/plasma_repeater.py"
+ },
+ {
+  "game": "Halo 1",
+  "port": "Grenade Launcher",
+  "source": "Halo Reach",
+  "balanced": {
+   "Rounds Per Second": 0.8,
+   "Rounds Per Second Max": 0.8
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "weapons\\grenade launcher\\explosion",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 135.0,
+    "card": "Grenade Damage",
+    "original": 180.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\grenade launcher\\explosion",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 135.0,
+    "card": "Grenade Damage",
+    "original": 180.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\grenade launcher\\impact",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 0.0,
+    "card": "Grenade Damage",
+    "original": 25.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\grenade launcher\\impact",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 0.0,
+    "card": "Grenade Damage",
+    "original": 25.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\grenade launcher\\release explosion",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 135.0,
+    "card": "Grenade Damage",
+    "original": 180.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\grenade launcher\\release explosion",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 135.0,
+    "card": "Grenade Damage",
+    "original": 180.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\grenade launcher\\emp",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 35.0,
+    "card": "EMP",
+    "original": 100.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\grenade launcher\\emp",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 35.0,
+    "card": "EMP",
+    "original": 100.0
+   }
+  ],
+  "notes": [
+   "source Halo Reach: rate 0, recovery 0.5, shots/fire 1 -> fires 2/s (tag cadence 2)",
+   "yardstick Frag Grenade: no rate in Halo Reach / Halo 1 (no leg)",
+   "no gun yardstick leg: intent = the port tag cadence x the source fired/tag"
+  ],
+  "port fires": [
+   0.8,
+   0.7894736842105263
+  ],
+  "chain": "ports_h1/grenade_launcher.py",
+  "source fires": 2.0,
+  "legs": [],
+  "intended": 0.8,
+  "k": 1.0133333333333334
+ },
+ {
+  "game": "Halo 1",
+  "port": "Concussion Rifle",
+  "source": "Halo Reach",
+  "balanced": {
+   "Rounds Per Second": 0.96,
+   "Rounds Per Second Max": 0.96
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "weapons\\concussion rifle\\explosion",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 26.9,
+    "card": "Explosion Damage",
+    "original": 21.5
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\concussion rifle\\explosion",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 26.9,
+    "card": "Explosion Damage",
+    "original": 21.5
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\concussion rifle\\impact",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 0.0,
+    "card": "Bolt Damage",
+    "original": 21.5
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\concussion rifle\\impact",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 0.0,
+    "card": "Bolt Damage",
+    "original": 21.5
+   }
+  ],
+  "notes": [
+   "source Halo Reach: rate 0, recovery 0.333333, shots/fire 1 -> fires 3/s (tag cadence 3)",
+   "yardstick Flak Cannon: no rate in Halo Reach / Halo 1 (no leg)",
+   "no gun yardstick leg: intent = the port tag cadence x the source fired/tag"
+  ],
+  "port fires": [
+   0.96,
+   0.9375
+  ],
+  "chain": "ports_h1/concussion_rifle.py",
+  "source fires": 3.0,
+  "legs": [],
+  "intended": 0.9599990399999999,
+  "k": 1.023998976
+ },
+ {
+  "game": "Halo 1",
+  "port": "Plasma Launcher",
+  "source": "Halo Reach",
+  "balanced": {
+   "Rounds Per Second": 0.845,
+   "Rounds Per Second Max": 0.845
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "weapons\\plasma launcher\\explosion",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 84.29,
+    "card": "Explosion Damage",
+    "original": 175.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\plasma launcher\\explosion",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 84.29,
+    "card": "Explosion Damage",
+    "original": 175.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\plasma launcher\\impact",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 0.0,
+    "card": "Bolt Damage",
+    "original": 2.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\plasma launcher\\impact",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 0.0,
+    "card": "Bolt Damage",
+    "original": 2.0
+   }
+  ],
+  "notes": [
+   "source Halo Reach: charge 3.00 s -- CHARGE-paced, not a rate leg",
+   "yardstick Plasma Grenade: no rate in Halo Reach / Halo 1 (no leg)",
+   "no source rate"
+  ],
+  "port fires": [
+   0.845,
+   0.8333333333333334
+  ],
+  "chain": "ports_h1/plasma_launcher.py"
+ },
+ {
+  "game": "Halo 1",
+  "port": "Suppressor",
+  "source": "Halo 4",
+  "balanced": {
+   "Rounds Per Second": 22.5,
+   "Rounds Per Second Max": 23.5
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "weapons\\suppressor\\shard",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 8.33,
+    "card": "Bullet Damage",
+    "original": 6.25
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\suppressor\\shard",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 8.33,
+    "card": "Bullet Damage",
+    "original": 6.25
+   }
+  ],
+  "notes": [
+   "source Halo 4: rate 15, recovery 0.133333, shots/fire 0 -> fires 15/s (tag cadence 15)",
+   "yardstick Assault Rifle -- Halo 4: rate 10, recovery 0.0666667, shots/fire 0 -> fires 10/s (tag cadence 10); Halo 1: rate 15, recovery 0, shots/fire 0 -> fires 15/s (tag cadence 15)"
+  ],
+  "port fires": [
+   23.5,
+   15.0
+  ],
+  "chain": "ports_h1/suppressor.py",
+  "source fires": 15.0,
+  "legs": [
+   [
+    "Assault Rifle",
+    "Halo 4",
+    "Halo 1",
+    10.0,
+    15.0
+   ]
+  ],
+  "intended": 22.5,
+  "k": 1.5
+ },
+ {
+  "game": "Halo 1",
+  "port": "Boltshot",
+  "source": "Halo 4",
+  "balanced": {
+   "Rounds Per Second": 7.0,
+   "Rounds Per Second Max": 7.0
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "weapons\\boltshot\\bolt",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 12.5,
+    "card": "Bolt Damage",
+    "original": 7.5
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\boltshot\\bolt",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 12.5,
+    "card": "Bolt Damage",
+    "original": 7.5
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\boltshot\\pellet",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 20.48,
+    "card": "Blast Damage",
+    "original": 10.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\boltshot\\pellet",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 20.48,
+    "card": "Blast Damage",
+    "original": 10.0
+   }
+  ],
+  "notes": [
+   "source Halo 4: rate 30, recovery 0.1, shots/fire 1, charge 0.60 s -> fires 10/s (tag cadence 10)",
+   "yardstick Pistol -- Halo 4: rate 30, recovery 0.2, shots/fire 1 -> fires 5/s (tag cadence 5); Halo 1: rate 3.5, recovery 0, shots/fire 0 -> fires 3.33/s (tag cadence 3.5)"
+  ],
+  "port fires": [
+   7.0,
+   6.0
+  ],
+  "chain": "ports_h1/boltshot.py",
+  "source fires": 10.0,
+  "legs": [
+   [
+    "Pistol",
+    "Halo 4",
+    "Halo 1",
+    5.0,
+    3.3333333333333335
+   ]
+  ],
+  "intended": 6.666666666666668,
+  "k": 1.1111111111111114
+ },
+ {
+  "game": "Halo 1",
+  "port": "Binary Rifle",
+  "source": "Halo 4",
+  "balanced": {
+   "Rounds Per Second": 1.533,
+   "Rounds Per Second Max": 1.533
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "weapons\\binary rifle\\bullet",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 162.9,
+    "card": "Bullet Damage",
+    "original": 129.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\binary rifle\\bullet",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 162.9,
+    "card": "Bullet Damage",
+    "original": 129.0
+   }
+  ],
+  "notes": [
+   "source Halo 4: rate 30, recovery 1, shots/fire 1 -> fires 1/s (tag cadence 1)",
+   "yardstick Sniper Rifle -- Halo 4: rate 30, recovery 0.766667, shots/fire 1 -> fires 1.25/s (tag cadence 1.3); Halo 1: rate 2, recovery 0, shots/fire 0 -> fires 2/s (tag cadence 2)"
+  ],
+  "port fires": [
+   1.533,
+   1.5
+  ],
+  "chain": "ports_h1/binary_rifle.py",
+  "source fires": 1.0,
+  "legs": [
+   [
+    "Sniper Rifle",
+    "Halo 4",
+    "Halo 1",
+    1.25,
+    2.0
+   ]
+  ],
+  "intended": 1.6,
+  "k": 1.0666666666666667
+ },
+ {
+  "game": "Halo 1",
+  "port": "Sticky Detonator",
+  "source": "Halo 4",
+  "balanced": {
+   "Rounds Per Second": 0.4,
+   "Rounds Per Second Max": 0.4
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "weapons\\sticky detonator\\explosion",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 346.29,
+    "card": "Charge Damage",
+    "original": 505.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\sticky detonator\\explosion",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 346.29,
+    "card": "Charge Damage",
+    "original": 505.0
+   }
+  ],
+  "notes": [
+   "source Halo 4: rate 30, recovery 1, shots/fire 1 -> fires 1/s (tag cadence 1)",
+   "yardstick Plasma Grenade: no rate in Halo 4 / Halo 1 (no leg)",
+   "no gun yardstick leg: intent = the port tag cadence x the source fired/tag"
+  ],
+  "port fires": [
+   0.4,
+   0.39473684210526316
+  ],
+  "chain": "ports_h1/sticky_detonator.py",
+  "source fires": 1.0,
+  "legs": [],
+  "intended": 0.4,
+  "k": 1.0133333333333334
+ },
+ {
+  "game": "Halo 1",
+  "port": "Incineration Cannon",
+  "source": "Halo 4",
+  "balanced": {
+   "Rounds Per Second": 0.5,
+   "Rounds Per Second Max": 0.5
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "weapons\\incineration cannon\\impact",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 143.18,
+    "card": "Shell Damage",
+    "original": 200.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\incineration cannon\\impact",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 143.18,
+    "card": "Shell Damage",
+    "original": 200.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\incineration cannon\\explosion",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 171.82,
+    "card": "Shell Damage",
+    "original": 240.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\incineration cannon\\explosion",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 171.82,
+    "card": "Shell Damage",
+    "original": 240.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\incineration cannon\\bomblet explosion",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 85.91,
+    "card": "Bomblet Damage",
+    "original": 120.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "weapons\\incineration cannon\\bomblet explosion",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 85.91,
+    "card": "Bomblet Damage",
+    "original": 120.0
+   }
+  ],
+  "notes": [
+   "source Halo 4: rate 30, recovery 0.8, shots/fire 1 -> fires 1.25/s (tag cadence 1.25)",
+   "yardstick Rocket Launcher -- Halo 4: rate 30, recovery 0.8, shots/fire 1 -> fires 1.25/s (tag cadence 1.25); Halo 1: rate 0.5, recovery 0, shots/fire 0 -> fires 0.492/s (tag cadence 0.5)"
+  ],
+  "port fires": [
+   0.5,
+   0.4918032786885246
+  ],
+  "chain": "ports_h1/incineration_cannon.py",
+  "source fires": 1.25,
+  "legs": [
+   [
+    "Rocket Launcher",
+    "Halo 4",
+    "Halo 1",
+    1.25,
+    0.4918032786885246
+   ]
+  ],
+  "intended": 0.4918032786885246,
+  "k": 1.0
+ },
+ {
+  "game": "Halo 3",
+  "port": "SAW",
+  "source": "Halo 4",
+  "balanced": {
+   "Rounds Per Second": 20.0,
+   "Rounds Per Second Max": 20.0,
+   "Shots Per Fire": 0,
+   "Fire Recovery Time": 0.0
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\saw\\damage_effects\\saw_bullet_h4_original_numbers",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 7.5,
+    "card": "Bullet Damage",
+    "original": 7.5
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\saw\\damage_effects\\saw_bullet_h4_original_numbers",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 7.5,
+    "card": "Bullet Damage",
+    "original": 7.5
+   }
+  ],
+  "notes": [],
+  "port fires": [
+   20.0,
+   15.0
+  ],
+  "chain": "balance_SAW_Halo4_to_Halo3.json",
+  "source fires": 15.0,
+  "legs": [
+   [
+    "Assault Rifle",
+    "Halo 4",
+    "Halo 3",
+    10.0,
+    10.0
+   ]
+  ],
+  "intended": 15.0,
+  "k": 1.0
+ },
+ {
+  "game": "Halo 2",
+  "port": "Assault Rifle",
+  "source": "Halo 3",
+  "balanced": {
+   "Rounds Per Second": 10.0,
+   "Rounds Per Second Max": 10.0,
+   "Shots Per Fire": 0,
+   "Fire Recovery Time": 0
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\assault_rifle\\damage_effects\\assault_rifle_bullet",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 7.125,
+    "card": "Bullet Damage",
+    "original": 7.5
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\assault_rifle\\damage_effects\\assault_rifle_bullet",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 7.125,
+    "card": "Bullet Damage",
+    "original": 7.5
+   }
+  ],
+  "notes": [],
+  "port fires": [
+   10.0,
+   10.0
+  ],
+  "chain": "balance_Assault_Rifle_Halo3_to_Halo2.json",
+  "source fires": 10.0,
+  "legs": [
+   [
+    "SMG",
+    "Halo 3",
+    "Halo 2",
+    15.0,
+    15.0
+   ]
+  ],
+  "intended": 10.0,
+  "k": 1.0
+ },
+ {
+  "game": "Halo 2",
+  "port": "Spike Rifle",
+  "source": "Halo 3",
+  "balanced": {
+   "Rounds Per Second": 8.0,
+   "Rounds Per Second Max": 8.0,
+   "Shots Per Fire": 0,
+   "Fire Recovery Time": 0
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_melee",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 61.714286,
+    "card": "Melee Damage",
+    "original": 72.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_melee",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 61.714286,
+    "card": "Melee Damage",
+    "original": 72.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_spike",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 8.55,
+    "card": "Bullet Damage",
+    "original": 9.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_spike",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 8.55,
+    "card": "Bullet Damage",
+    "original": 9.0
+   }
+  ],
+  "notes": [],
+  "port fires": [
+   8.0,
+   7.5
+  ],
+  "chain": "balance_Spike_Rifle_Halo3_to_Halo2.json",
+  "source fires": 7.5,
+  "legs": [
+   [
+    "SMG",
+    "Halo 3",
+    "Halo 2",
+    15.0,
+    15.0
+   ]
+  ],
+  "intended": 7.5,
+  "k": 1.0
+ },
+ {
+  "game": "Halo 2",
+  "port": "Flamethrower",
+  "source": "Halo 1",
+  "balanced": {
+   "Rounds Per Second": 10.285714,
+   "Rounds Per Second Max": 10.8
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 17.094,
+    "card": "Projectile Damage",
+    "original": 20.0,
+    "note": "user 2026-10-22 (boots 13-14): Balanced stays the Plasma Rifle ratio, the heat gain recalibrated so held fire overheats at Halo 1's 3.6 s (~shot 37, before the 50-shot tank runs dry; heat loss 1.25/s counted per shot at the effective 10.14 shots/s that boot 2 measured on Halo 1's numbers): 0.135 -> 0.150; the damage raised by the same margin x1.1111"
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 19.6581,
+    "card": "Projectile Damage",
+    "original": 23.0,
+    "note": "user 2026-10-22 (boots 13-14): Balanced stays the Plasma Rifle ratio, the heat gain recalibrated so held fire overheats at Halo 1's 3.6 s (~shot 37, before the 50-shot tank runs dry; heat loss 1.25/s counted per shot at the effective 10.14 shots/s that boot 2 measured on Halo 1's numbers): 0.135 -> 0.150; the damage raised by the same margin x1.1111"
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame_burn",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 10.2564,
+    "card": "Projectile Damage",
+    "original": 12.0,
+    "note": "user 2026-10-23 (boot 22): Halo 1's burn -- every flame detonates (1.3 s in flight, 1.3-8 s stuck) with `explosion` 10 / 12-13; the Plasma Rifle ratio (x0.6 / x0.769) and the flame's balance margin x1.1111"
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame_burn",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 11.1111,
+    "card": "Projectile Damage",
+    "original": 13.0,
+    "note": "user 2026-10-23 (boot 22): Halo 1's burn -- every flame detonates (1.3 s in flight, 1.3-8 s stuck) with `explosion` 10 / 12-13; the Plasma Rifle ratio (x0.6 / x0.769) and the flame's balance margin x1.1111"
+   }
+  ],
+  "notes": [],
+  "port fires": [
+   10.8,
+   10.0
+  ],
+  "chain": "balance_Flamethrower_Halo1_to_Halo2.json",
+  "source fires": 10.0,
+  "legs": [
+   [
+    "Plasma Rifle",
+    "Halo 1",
+    "Halo 2",
+    10.0,
+    7.5
+   ]
+  ],
+  "intended": 7.5,
+  "k": 0.75
+ },
+ {
+  "game": "Halo 2",
+  "port": "Mauler",
+  "source": "Halo 3",
+  "balanced": {
+   "Rounds Per Second": 0.0,
+   "Rounds Per Second Max": 0.0,
+   "Shots Per Fire": 1.0,
+   "Fire Recovery Time": 0.75
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_melee",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 61.714286,
+    "card": "Melee Damage",
+    "original": 72.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_melee",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 61.714286,
+    "card": "Melee Damage",
+    "original": 72.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_shard",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 11.55,
+    "card": "Bullet Damage",
+    "original": 7.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_shard",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 11.55,
+    "card": "Bullet Damage",
+    "original": 7.0
+   }
+  ],
+  "notes": [],
+  "port fires": [
+   1.3333333333333333,
+   1.3043478260869565
+  ],
+  "chain": "balance_Mauler_Halo3_to_Halo2.json",
+  "source fires": 1.3043478260869565,
+  "legs": [
+   [
+    "Shotgun",
+    "Halo 3",
+    "Halo 2",
+    1.0,
+    1.0
+   ]
+  ],
+  "intended": 1.3043478260869565,
+  "k": 1.0
+ },
+ {
+  "game": "Halo 2",
+  "port": "DMR",
+  "source": "Halo Reach",
+  "balanced": {
+   "Rounds Per Second": 0.0,
+   "Rounds Per Second Max": 0.0,
+   "Shots Per Fire": 1.0,
+   "Fire Recovery Time": 0.22
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\dmr\\damage_effects\\dmr_bullet",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 9.84375,
+    "card": "Bullet Damage",
+    "original": 17.5
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\dmr\\damage_effects\\dmr_bullet",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 9.84375,
+    "card": "Bullet Damage",
+    "original": 17.5
+   }
+  ],
+  "notes": [],
+  "port fires": [
+   4.545454545454546,
+   4.285714285714286
+  ],
+  "chain": "balance_DMR_HaloReach_to_Halo2.json",
+  "source fires": 3.0,
+  "legs": [
+   [
+    "Sniper Rifle",
+    "Halo Reach",
+    "Halo 2",
+    1.3043478260869565,
+    2.0
+   ]
+  ],
+  "intended": 4.6,
+  "k": 1.0733333333333333
+ },
+ {
+  "game": "Halo 2",
+  "port": "Needle Rifle",
+  "source": "Halo Reach",
+  "balanced": {
+   "Rounds Per Second": 4.0,
+   "Rounds Per Second Max": 4.0,
+   "Shots Per Fire": 1,
+   "Fire Recovery Time": 0.25
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_attached_super_detonation",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 400.0,
+    "card": "Explosion Damage",
+    "original": 350.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_attached_super_detonation",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 400.0,
+    "card": "Explosion Damage",
+    "original": 350.0
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_impact",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 3.0,
+    "card": "Projectile Damage",
+    "original": 6.0,
+    "note": "user 4a: Halo 2's real needle 1 + 2 = 3, on impact (the tool read the detonation alone)"
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_impact",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 3.0,
+    "card": "Projectile Damage",
+    "original": 6.0,
+    "note": "user 4a: Halo 2's real needle 1 + 2 = 3, on impact (the tool read the detonation alone)"
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_super_detonation",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 50.0,
+    "card": "Projectile Damage",
+    "original": 40.0,
+    "note": "user 4a: the Needler's area blast"
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_super_detonation",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 50.0,
+    "card": "Projectile Damage",
+    "original": 40.0,
+    "note": "user 4a: the Needler's area blast"
+   }
+  ],
+  "notes": [
+   "rate SET BY HAND (catalog 4.0, ratio rule 2.6666666666666665 / recovery 0.0): tested as it fires, no correction"
+  ],
+  "port fires": [
+   4.0,
+   3.75
+  ],
+  "chain": "balance_Needle_Rifle_HaloReach_to_Halo2.json"
+ },
+ {
+  "game": "Halo 2",
+  "port": "Plasma Repeater",
+  "source": "Halo Reach",
+  "balanced": {
+   "Rounds Per Second": 20.0,
+   "Rounds Per Second Max": 3.05,
+   "Shots Per Fire": 0
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\plasma_repeater\\damage_effects\\plasma_repeater_bolt",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 5.834,
+    "card": "Bullet Damage",
+    "original": 5.834000110626221
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\plasma_repeater\\damage_effects\\plasma_repeater_bolt",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 7.0,
+    "card": "Bullet Damage",
+    "original": 7.0
+   }
+  ],
+  "notes": [
+   "excluded: heat-driven 20 -> 3.05 ramp fitted to the measured round 44"
+  ],
+  "port fires": [
+   3.05,
+   3.0
+  ],
+  "chain": "balance_Plasma_Repeater_HaloReach_to_Halo2.json"
+ },
+ {
+  "game": "Halo 2",
+  "port": "SAW",
+  "source": "Halo 4",
+  "balanced": {
+   "Rounds Per Second": 20.0,
+   "Rounds Per Second Max": 20.0,
+   "Shots Per Fire": 0,
+   "Fire Recovery Time": 0
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\saw\\damage_effects\\saw_bullet",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 7.125,
+    "card": "Bullet Damage",
+    "original": 7.5
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\saw\\damage_effects\\saw_bullet",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 7.125,
+    "card": "Bullet Damage",
+    "original": 7.5
+   }
+  ],
+  "notes": [],
+  "port fires": [
+   20.0,
+   15.0
+  ],
+  "chain": "balance_SAW_Halo4_to_Halo2.json",
+  "source fires": 15.0,
+  "legs": [
+   [
+    "Assault Rifle",
+    "Halo 4",
+    "Halo 3",
+    10.0,
+    10.0
+   ],
+   [
+    "SMG",
+    "Halo 3",
+    "Halo 2",
+    15.0,
+    15.0
+   ]
+  ],
+  "intended": 15.0,
+  "k": 1.0
+ },
+ {
+  "game": "Halo 3: ODST",
+  "port": "SAW",
+  "source": "Halo 4",
+  "balanced": {
+   "Rounds Per Second": 20.0,
+   "Rounds Per Second Max": 20.0,
+   "Shots Per Fire": 0,
+   "Fire Recovery Time": 0.0
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\saw\\damage_effects\\saw_bullet_h4_original_numbers",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 7.5,
+    "card": "Bullet Damage",
+    "original": 7.5
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\saw\\damage_effects\\saw_bullet_h4_original_numbers",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 7.5,
+    "card": "Bullet Damage",
+    "original": 7.5
+   }
+  ],
+  "notes": [
+   "no chain found (no balance file, no Halo 1 config pick)"
+  ],
+  "port fires": [
+   20.0,
+   15.0
+  ]
+ },
+ {
+  "game": "Halo Reach",
+  "port": "SAW",
+  "source": "Halo 4",
+  "balanced": {
+   "Rounds Per Second": 20.0,
+   "Rounds Per Second Max": 20.0,
+   "Shots Per Fire": 0,
+   "Fire Recovery Time": 0.05
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 5.834,
+    "card": "Bullet Damage",
+    "original": 7.5
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 6.788,
+    "card": "Bullet Damage",
+    "original": 7.5
+   }
+  ],
+  "notes": [],
+  "port fires": [
+   20.0,
+   15.0
+  ],
+  "chain": "balance_SAW_Halo4_to_HaloReach.json",
+  "source fires": 15.0,
+  "legs": [
+   [
+    "Assault Rifle",
+    "Halo 4",
+    "Halo Reach",
+    10.0,
+    10.0
+   ]
+  ],
+  "intended": 15.0,
+  "k": 1.0
+ },
+ {
+  "game": "Halo 4",
+  "port": "Focus Rifle",
+  "source": "Halo Reach",
+  "balanced": {
+   "Rounds Per Second": 30.0,
+   "Rounds Per Second Max": 30.0,
+   "Fire Recovery Time": 0.511111
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 3.0,
+    "card": "Beam Damage",
+    "original": 3.0,
+    "note": "measured: sniper round 80 (Reach) -> 80 (Halo 4)"
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 3.0,
+    "card": "Beam Damage",
+    "original": 3.0,
+    "note": "measured: sniper round 80 (Reach) -> 80 (Halo 4)"
+   }
+  ],
+  "notes": [],
+  "port fires": [
+   30.0,
+   30.0
+  ],
+  "chain": "balance_Focus_Rifle_HaloReach_to_Halo4.json",
+  "source fires": 30.0,
+  "legs": [
+   [
+    "Sniper Rifle",
+    "Halo Reach",
+    "Halo 4",
+    1.3043478260869565,
+    1.25
+   ]
+  ],
+  "intended": 28.75,
+  "k": 0.9583333333333334
+ }
+]

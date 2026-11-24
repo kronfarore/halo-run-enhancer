@@ -296,8 +296,11 @@ def player_weapon(wdef, inp):
         return spec
     # the MEASURED 30 Hz reset rule (Reach fires a flat 24/s tag at 15/s, rof_test_stage.py
     # 2026-11-23): a shot every ceil(30 / rate) ticks, the fire recovery rounded up to ticks
-    fired = 30.0 / max(int(math.ceil(30.0 / tc.tick_rate(rps) - 1e-6)),
-                       int(math.ceil(rec * 30.0 - 1e-6)) if rec else 1)
+    spf = number(w, 'barrels/[0]/firing/shots per fire', inp, pre + 'shots per fire')
+    # the recovery paces a one-shot-a-pull weapon (shots per fire >= 1), not a held automatic
+    gate = rec if (spf >= 1 or rps <= 0) else 0.0
+    fired = 30.0 / max(int(math.ceil(30.0 / tc.tick_rate(rps) - 1e-6)) if rps > 0 else 1,
+                       int(math.ceil(gate * 30.0 - 1e-6)) if gate else 1)
     interval = 1.0 / fired
     inp.put(pre + 'interval s', interval, 'max(ceil(30 / rounds per second), ceil(30 x fire recovery '
             'time)) ticks / 30 (the 30 Hz reset rule; tag max(1 / rps, recovery) = %.4g s)'
@@ -305,7 +308,7 @@ def player_weapon(wdef, inp):
     if mag and wdef.get('fp'):
         spec['reload'] = reload_time(wdef['fp'], inp, pre)
     r = read(w)
-    wd = {'rps': [rps, rps], 'fire recovery': rec, 'heat per round': heat,
+    wd = {'rps': [rps, rps], 'fire recovery': rec, 'shots per fire': [spf, spf], 'heat per round': heat,
           'overheated threshold': tc.num(r.get('overheated threshold'), 1.0) or 1.0,
           'heat recovery threshold': tc.num(r.get('heat recovery threshold')),
           'heat loss': tc.num(r.get('heat loss per second')),

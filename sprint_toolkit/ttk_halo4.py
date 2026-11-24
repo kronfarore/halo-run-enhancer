@@ -374,7 +374,7 @@ def burst_time(n, m):
 
 def tick_weapon(m):
     """player_weapon's numbers as ttk_common.tick_shots' weapon dict."""
-    spf = float(m['shots per fire'] or 1)
+    spf = float(m['shots per fire'] or 0)          # 0 = fire while held (no recovery gate)
     return {'rps': [m['rounds per second']] * 2, 'accel': 0.0, 'shots per fire': [spf, spf],
             'fire recovery': m['fire recovery time'], 'heat per round': m['heat per round'],
             'overheated threshold': m['overheated threshold'],

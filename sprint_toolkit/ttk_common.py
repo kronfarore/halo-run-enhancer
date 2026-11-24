@@ -294,6 +294,10 @@ def tick_shots(n, w, limit_s=600.0, cool_while_firing=True, rate_fn=None):
     spf = w.get('shots per fire') or [1.0, 1.0]
     burst = int(spf[1]) if spf[1] > 1 else 1
     rec_ticks = int(math.ceil(w['fire recovery'] * TICK_HZ - 1e-6)) if w.get('fire recovery') else 0
+    # the recovery is the cooldown between FIRES: it paces a one-shot-a-pull weapon (shots per
+    # fire 1, or a rate of 0) but not a held automatic (shots per fire 0 = fire while held) --
+    # Reach's Needler (12/s, recovery 0.2) would otherwise fire 5/s. INFERRED, not measured
+    gate_each = burst == 1 and (spf[1] >= 1 or all(r <= 0 for r in w['rps']))
     hpr, oh = w.get('heat per round') or 0.0, w.get('overheated threshold') or 1.0
     hpt = w.get('heat per tick') or 0.0
     can_overheat = bool(hpr or hpt) and not w.get('never overheats')
@@ -337,7 +341,7 @@ def tick_shots(n, w, limit_s=600.0, cool_while_firing=True, rate_fn=None):
                     busy_until = tick + rec_ticks
                     in_burst = 0
                     ev['bursts'] += 1
-            elif rec_ticks:
+            elif rec_ticks and gate_each:
                 busy_until = tick + rec_ticks
             if mag:
                 inmag -= 1
