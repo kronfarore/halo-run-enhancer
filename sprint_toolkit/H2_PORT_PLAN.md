@@ -871,6 +871,45 @@ taught" last.
 > directly.
 > Then the COMMON DONE of "Step 4", "B3: what the Plasma Repeater taught" last.
 
+### Step 5: B4 Grenade Launcher ALONE (prepared 2026-11-24)
+
+User, 2026-11-24: "Start the next one, only one." ONE session, as in Step 4, with no other port session on the H2 kit.
+Done before it: wave A (7) and B1-B3 (10 ports). The 13-level rebuild has still NOT run.
+
+| session | weapon | test levels (`--level` on EVERY h2_port_test_map run) |
+|---|---|---|
+| 1 | B4 Grenade Launcher | 03a_oldmombasa, Outskirts (Chief, Marines) + 04a_gasgiant, The Arbiter |
+
+COMMON READING: as "Step 4", plus "B3: what the Plasma Repeater taught" (its seven points apply from the start: above all
+THE RESET FIRE RULE, catalog `original` values, the graph-less donor `.model`, the 3P class labels), H1_PORT_PLAN "B4:
+what the Grenade Launcher taught" and PORTING "Halo 1: the Grenade Launcher, wave B4", memory h2-plasma-repeater-port.
+COMMON DONE: as "Step 4", "B4: what the Grenade Launcher taught" last.
+
+### The Grenade Launcher (B4), filled in -- ALONE
+
+> [PREFACE: the "Running ports in parallel" rules (kit lock, shared records, one test level at a time), with no other
+> port session running; your levels = Outskirts (03a_oldmombasa, Chief) and The Arbiter (04a_gasgiant)]
+> Port the GRENADE LAUNCHER into Halo 2 (H2_PORT_PLAN.md wave B, #B4, "Step 5"). Source: Halo Reach,
+> `objects\weapons\rifle\grenade_launcher\grenade_launcher` (HREK), on the DMR's Reach route (`b1_reach_route.md` in the
+> shared notes folder, PORTING "Halo 2: the DMR, wave B1").
+> Your config: ports_h2/grenade_launcher.py (a stub). Reserved: prefix `gl2`, glyph U+E146 (DECIMAL 57670),
+> `objects\weapons\rifle\grenade_launcher`, effects `effects\objects\weapons\rifle\grenade_launcher`, FP graph
+> `weapons\rifle\fp_grenade_launcher\fp_grenade_launcher`, HUD `ui\hud\grenade_launcher` + `grenade_launcher_*`, sounds
+> `sound\weapons\grenade_launcher_port`, catalog name `Grenade Launcher`.
+> STEP 4a WITH ME first: candidates in the config (provisional the Frag Grenade with the Rocket Launcher for the holes,
+> Halo 1's pick; alternatives the Rocket Launcher and the Flak Cannon; peers Brute Shot, Rocket Launcher, Flak Cannon).
+> Halo 2 has its own grenade launcher, the Brute Shot: say what that changes about Halo 1's pick.
+> NEW for this port: (1) THE HOLD-TO-DETONATE + EMP: Reach's held fire detonates the grenade on release and its EMP
+> drains shields and stalls vehicles. Halo 1 approximated it with the plasma pistol's CHARGED PAIR (tap = the bouncing
+> grenade, held 0.5 s + released = a contact burst with a shield-only EMP). Read what Halo 2 offers first (its Charge
+> trigger, proven on a player weapon by the Spartan Laser; the plasma pistol's overcharge and its EMP on vehicles);
+> approximate, never skip, record what is lost; (2) THE BOUNCE + FUSE: Reach's friction 0.42, Halo 1's fuse from launch
+> 1.2 s (user's pick after three bounce boots); Halo 2's projectile flags and the frag grenade's own bounce data;
+> (3) donor the Brute Shot (latch magazine, arcing explosive grenade, ballistic AI aim), magazine 4 -> 1, one reload
+> per round; (4) the crosshair supersampled (memory h1-reticle-supersample, an observation of Halo 1); (5) the charge cue
+> (light + sound) and the explosion's own particle sprite; check 10 (the FP flash) as always.
+> Then the COMMON DONE of "Step 5", "B4: what the Grenade Launcher taught" last.
+
 ## Hand-off prompt for a weapon session
 
 > Port the <WEAPON> into Halo 2 (H2_PORT_PLAN.md, wave <X>, #<n>). Source: <game>, `<tag>`.
