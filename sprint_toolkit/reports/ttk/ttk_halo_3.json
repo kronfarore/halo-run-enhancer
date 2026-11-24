@@ -249,7 +249,7 @@
    "target": "Elite minor",
    "weapon": "Plasma Rifle",
    "shots": 20,
-   "seconds": 4.76,
+   "seconds": 2.6,
    "inputs": {
     "weapon": {
      "tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon",
@@ -414,12 +414,11 @@
      }
     },
     "events in the kill": {
-     "overheats": 1,
+     "overheats": 0,
      "reloads": 0,
      "bursts started": 1,
-     "first overheat at shot": 19,
-     "longest gap s": 2.603,
-     "overheat pause s": 2.603
+     "first overheat at shot": null,
+     "longest gap s": 0.167
     },
     "ttk_common.player_time cross-check (constant-rate weapons)": null,
     "fields read (weapon)": {
@@ -471,11 +470,8 @@
     }
    },
    "flags": [
-    "fight (4.76 s) outlasts the shield recharge delay 4.50 s (character 15 s x matg enemy recharge 0.30, assumed to scale the delay) -- recharge not modelled",
-    "(inside the raw 15 s delay if the dial does not scale it)",
     "rate ramps 6 -> 9 rounds/s over 0.80 s held (re-ramps after each overheat / reload)",
-    "1 overheat(s) during the kill: shot 19 overheats the gun (heat loss assumed to run between shots, like the H2 collector), the cool-down to the recovery threshold costs 2.60 s",
-    "if heat only falls while NOT firing (kit help text; user-confirmed for Halo 4's Focus Rifle): 10.098 s, 3 overheat(s), first at shot 7",
+    "if heat only falls while NOT firing (kit help text; user-confirmed for Halo 4's Focus Rifle): 8.533 s, 2 overheat(s), first at shot 7",
     "point-blank damage: the jpt upper bound; the lower bound 6.00 applies toward the end of the projectile air damage range 0-40 wu (not modelled)"
    ]
   },
@@ -485,7 +481,7 @@
    "target": "Elite minor",
    "weapon": "Battle Rifle",
    "shots": 25,
-   "seconds": 3.307,
+   "seconds": 3.467,
    "inputs": {
     "weapon": {
      "tag": "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon",
@@ -662,7 +658,7 @@
      "reloads": 0,
      "bursts started": 9,
      "first overheat at shot": null,
-     "longest gap s": 0.28
+     "longest gap s": 0.3
     },
     "ttk_common.player_time cross-check (constant-rate weapons)": null,
     "fields read (weapon)": {
@@ -1245,7 +1241,7 @@
    "target": "Brute minor",
    "weapon": "Plasma Rifle",
    "shots": 19,
-   "seconds": 2.157,
+   "seconds": 2.467,
    "inputs": {
     "weapon": {
      "tag": "objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle.weapon",
@@ -1463,10 +1459,10 @@
     }
    },
    "flags": [
-    "fight (2.16 s) outlasts the shield recharge delay 1.50 s (character 5 s x matg enemy recharge 0.30, assumed to scale the delay) -- recharge not modelled",
+    "fight (2.47 s) outlasts the shield recharge delay 1.50 s (character 5 s x matg enemy recharge 0.30, assumed to scale the delay) -- recharge not modelled",
     "(inside the raw 5 s delay if the dial does not scale it)",
     "rate ramps 6 -> 9 rounds/s over 0.80 s held (re-ramps after each overheat / reload)",
-    "if heat only falls while NOT firing (kit help text; user-confirmed for Halo 4's Focus Rifle): 7.526 s, 2 overheat(s), first at shot 7",
+    "if heat only falls while NOT firing (kit help text; user-confirmed for Halo 4's Focus Rifle): 8.4 s, 2 overheat(s), first at shot 7",
     "point-blank damage: the jpt upper bound; the lower bound 6.00 applies toward the end of the projectile air damage range 0-40 wu (not modelled)"
    ]
   },
@@ -1476,7 +1472,7 @@
    "target": "Brute minor",
    "weapon": "Battle Rifle",
    "shots": 24,
-   "seconds": 3.027,
+   "seconds": 3.167,
    "inputs": {
     "weapon": {
      "tag": "objects\\weapons\\rifle\\battle_rifle\\battle_rifle.weapon",
@@ -1648,9 +1644,9 @@
     "events in the kill": {
      "overheats": 0,
      "reloads": 0,
-     "bursts started": 8,
+     "bursts started": 9,
      "first overheat at shot": null,
-     "longest gap s": 0.28
+     "longest gap s": 0.3
     },
     "ttk_common.player_time cross-check (constant-rate weapons)": null,
     "fields read (weapon)": {
@@ -1705,10 +1701,10 @@
     }
    },
    "flags": [
-    "fight (3.03 s) outlasts the shield recharge delay 1.50 s (character 5 s x matg enemy recharge 0.30, assumed to scale the delay) -- recharge not modelled",
+    "fight (3.17 s) outlasts the shield recharge delay 1.50 s (character 5 s x matg enemy recharge 0.30, assumed to scale the delay) -- recharge not modelled",
     "(inside the raw 5 s delay if the dial does not scale it)",
-    "fight (3.03 s) outlasts the body recharge delay 3.0 s (recharges 35% of body) -- not modelled",
-    "3-round bursts at 15/s, 0.28 s fire recovery from a burst's last round to the next burst (assumed timing); 8 bursts",
+    "fight (3.17 s) outlasts the body recharge delay 3.0 s (recharges 35% of body) -- not modelled",
+    "3-round bursts at 15/s, 0.28 s fire recovery from a burst's last round to the next burst (assumed timing); 9 bursts",
     "point-blank damage: the jpt upper bound; the lower bound 0.00 applies toward the end of the projectile air damage range 0-40 wu (not modelled)"
    ]
   },
@@ -1997,7 +1993,7 @@
   "Legendary = matg Difficulty [0] \"imposs.\" column: enemy damage 1.60, enemy vitality 1.00, enemy shield 1.00, enemy recharge 0.30, rate of fire 1.00, burst separation 1.00.",
   "Enemy pools = the character's \"legendary body / shield vitality\" (they replace the model maxima); the matg vitality / shield dials multiply on top.",
   "Damage per hit = jpt damage upper bound (mean of the pair) x every matg damage-table [0] row for (jpt general_damage, specific_damage) x (material general armor, specific armor), materials resolved up the parent chain; missing row = 1. Player shields (and in Halo 3 the Chief / Elite armour) carry the specific armours energy_shield_thin_player / hard_metal_thin_player, but table [0] has rows for them only in no_damage, so they multiply by 1 here; every row looked up is listed per row under inputs.",
-  "Player times: continuous-time trigger simulation (ttk_h3family.sim_player): ramp lo->hi over acceleration time, bursts + fire recovery, heat with heat loss between shots and the overheated cool-down to the recovery threshold, reloads (magazine reload time; when it is 0 the reload is animation-driven: first-person reload_empty frames / 30). Constant-rate weapons are asserted equal to ttk_common.player_time.",
+  "Player times: 30 Hz tick simulation of the MEASURED trigger (ttk_h3family.sim_player -> ttk_common.tick_shots; a flat 24/s fired 15/s in Halo 3 and ODST, rof_test_stage.py 2026-11-23): rate / 30 in float32 a tick, a shot at 1, the sum RESET -- a shot every ceil(30 / rate) ticks (9/s fires 7.5/s); ramp lo->hi over the held acceleration time, bursts + fire recovery (rounded up to ticks, assumed), heat with heat loss every tick and the overheated cool-down to the recovery threshold, reloads (magazine reload time; when it is 0 the reload is animation-driven: first-person reload_empty frames / 30). Times count from the first shot. Constant-rate weapons are asserted equal to ttk_common.player_time at the quantised rate.",
   "Enemy shield recharge: character delay x matg \"enemy recharge\" (help: \"enemy shield recharge scale\") 0.30 -- ASSUMED to scale the delay (it falls with difficulty: 1.4 easy -> 0.3 legendary, so it cannot be a recharge speed). Flags use the scaled delay.",
   "AI fire: the character's firing pattern for the weapon (from ai\\generic; the minor characters define none of their own); the steady state of the legendary accuracy ramp is used (second firing pattern), the ramp start is in the flags. AI rate capped at the weapon's own rate. Paced = ttk_common.ai_times with the mean burst duration and separation.",
   "Not modelled: headshots, melee, grenades, misses, AI weapon heat, damage falloff with range, the first-burst delay, damage-section (region) pools, Brute armour pieces.",

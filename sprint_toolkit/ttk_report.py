@@ -28,6 +28,12 @@ CAVEATS = [
     "Focus Rifle reading was wrong). H1 was measured with the Plasma Repeater port probe; "
     "H2 assumes the same; Reach uses the Plasma Repeater's measured heat curve (rate falls "
     "15 -> 3/s). Halo 4's Storm Rifle first overheats on about the 27th bolt.",
+    'PLAYER FIRE RATE: every game fires by the 30 Hz RESET rule (measured: Halo 1 probe, Halo 2 '
+    'Plasma Repeater port, Halo 3 / ODST / Reach / Halo 4 / Halo 2 rof_test_stage.py 2026-11-23): '
+    'rate / 30 added a tick, a shot at 1, the sum reset -- a shot every ceil(30 / rate) ticks, so '
+    'a 9/s Plasma Rifle fires 7.5/s and a 20/s gun 15/s (Halo 1 caps at 15/s). Player times are '
+    'tick simulations (ttk_common.tick_shots); fire recovery and reloads round up to whole '
+    'ticks (assumed). AI rates are not quantised.',
     "Reload pauses come from the tag's reload time, or the first-person reload animation "
     'where the tag has none (H3 AR/BR, Reach, H4). Damage is the point-blank upper bound '
     '(no fall-off with range). Default AI weapons come from scenario squads (census where '

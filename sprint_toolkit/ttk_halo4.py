@@ -372,6 +372,18 @@ def burst_time(n, m):
     return t
 
 
+def tick_weapon(m):
+    """player_weapon's numbers as ttk_common.tick_shots' weapon dict."""
+    spf = float(m['shots per fire'] or 1)
+    return {'rps': [m['rounds per second']] * 2, 'accel': 0.0, 'shots per fire': [spf, spf],
+            'fire recovery': m['fire recovery time'], 'heat per round': m['heat per round'],
+            'overheated threshold': m['overheated threshold'],
+            'heat recovery threshold': m['heat recovery threshold'],
+            'heat loss': m['heat loss per second'],
+            'overheated heat loss': m['overheated heat loss per second'],
+            'mag': m['magazine'], 'reload': m['reload']}
+
+
 # ----------------------------------------------------------------------------- main
 def main():
     G = Globals()
@@ -445,17 +457,13 @@ def main():
             mb, why_b = G.multiplier(m['groups'], E['body material'])
             hit = m['shot']['damage upper bound'] * m['shot']['projectiles per shot'] * pds
             n, _ = tc.shots_to_kill(e_shield, e_body, hit * ms, hit * mb)
-            if m['shots per fire']:
-                secs = burst_time(n, m)
-            elif m['heat per round']:
-                # heat DRAINS while firing (user, 2026-10-13: H3 and H4 both do in play;
-                # the Focus Rifle 'cools only when not firing' reading was wrong)
-                secs, overheats = tc.player_time_drain(
-                    n, m['interval'], m['heat per round'], m['heat loss per second'],
-                    m['overheated threshold'], m['heat recovery threshold'],
-                    m['overheated heat loss per second'], m['magazine'], m['reload'])
-            else:
-                secs = tc.player_time(n, m['interval'], m['magazine'], m['reload'])
+            # the MEASURED 30 Hz reset rule (Halo 4 fires a flat 24/s tag at 15/s:
+            # rof_test_stage.py, reports/rof_test.jsonl, 2026-11-23) -- ttk_common.tick_shots:
+            # a shot every ceil(30 / rate) ticks, bursts of `shots per fire` then the fire
+            # recovery, an automatic's recovery gating every shot (both rounded up to ticks,
+            # assumed), heat DRAINING while firing (user, 2026-10-13), reloads
+            secs, tev = tc.tick_seconds(n, tick_weapon(m))
+            overheats = tev.get('overheats', 0)
             flags = list(e_flags)
             if secs is not None and secs > vit['shield recharge delay']:
                 flags.append('fight outlasts the target\'s shield recharge delay (%g s)'
@@ -575,10 +583,15 @@ def main():
         'every row found multiplied (jpt general/specific x material general/specific armor, '
         'inherited up the parent chain; missing = 1). The Spartan, Elite materials carry the '
         'specific armors hard_metal_thin_player / energy_shield_thin_player, which have NO rows.',
+        'Player times: 30 Hz tick simulation of the MEASURED trigger (ttk_common.tick_shots; a '
+        'flat 24/s fired 15/s in Halo 4, rof_test_stage.py 2026-11-23): rate / 30 in float32 a '
+        'tick, a shot at 1, the sum RESET -- a shot every ceil(30 / rate) ticks; fire recovery '
+        'and reloads round up to whole ticks (assumed); heat drains every tick. Times count from '
+        'the first shot.',
         'The Battle Rifle in Halo 4 fires a 3-ROUND burst (barrel shots per fire 3,3), not 4: '
-        'modelled as 3 rounds at 1/30 s, then the 0.3 s fire recovery from the last round. If the '
-        'engine counts recovery after the last round\'s own 1/30 s slot, each burst cycle is '
-        '0.033 s longer.',
+        'modelled as 3 rounds a tick apart, then the 0.3 s fire recovery (9 ticks) from the last '
+        'round. If the engine counts recovery after the last round\'s own tick, each burst '
+        'cycle is 0.033 s longer.',
         'Reload: Halo 4 weapons carry no reload time; the first-person reload_empty animation '
         'frame count / 30 is used (reload ends when the animation ends; animation-cancel tricks '
         'not modelled).',

@@ -227,8 +227,17 @@ def read_weapon(kit, path, log):
     return d
 
 
-def sim_player(n, w, cool_while_firing=True):
-    """Seconds until the n-th shot (first at 0), trigger held; events. Continuous time:
+#: the player trigger sim_player uses: 'ticks' = the MEASURED 30 Hz reset rule (Halo 3 and ODST
+#: fire a flat 24/s tag at 15/s: rof_test_stage.py, reports/rof_test.jsonl, 2026-11-23);
+#: 'continuous' = the rate taken literally (the model before 2026-11-23)
+FIRE_RULE = 'ticks'
+
+
+def sim_player(n, w, cool_while_firing=True, rule=None):
+    """Seconds until the n-th shot (first at 0), trigger held; events. rule (default
+    w['fire rule'], else FIRE_RULE): 'ticks' = ttk_common.tick_shots, a shot every
+    ceil(30 / rate) ticks (a rate of 0 = the semi-automatic placeholder, gated by the fire
+    recovery rounded up to ticks); 'continuous' = the old model below. Continuous time:
       * rate ramps from rounds per second [lo] to [hi] over 'acceleration time' of
         continuous fire, from each (re)start (after an overheat or a reload);
       * 'shots per fire' > 1 = a burst at the barrel rate, then 'fire recovery time' from
@@ -242,6 +251,15 @@ def sim_player(n, w, cool_while_firing=True):
       * an empty magazine costs the reload time before the next shot."""
     if n is None:
         return None, {}
+    if (rule or w.get('fire rule') or FIRE_RULE) == 'ticks':
+        t, e = tc.tick_seconds(n, w, cool_while_firing=cool_while_firing)
+        ev = {'overheats': e.get('overheats', 0), 'reloads': e.get('reloads', 0),
+              'bursts started': e.get('bursts', 0) + 1, 'first overheat at shot':
+              e.get('first overheat at shot')}
+        for k in ('overheat pause s', 'longest gap s'):
+            if k in e:
+                ev[k] = e[k]
+        return t, ev
     lo, hi = w['rps']
     burst = int(w['shots per fire'][1]) if w['shots per fire'][1] > 1 else 1
     t, start, heat, inmag, in_burst = 0.0, 0.0, 0.0, w['mag'], 0
@@ -482,8 +500,10 @@ def run(kit, game, player, enemies, player_weapons, extra_notes=()):
             cross = None
             if w['rps'][0] == w['rps'][1] and w['rps'][1] > 0 and not w['heat per round'] and \
                     int(w['shots per fire'][1]) <= 1 and w['fire recovery'] <= 1.0 / w['rps'][1]:
-                cross = tc.player_time(n, 1.0 / w['rps'][1], w['mag'], w['reload'])
-                assert abs(cross - t) < 1e-6, (label, cross, t)
+                # the tick rule at a flat rate = ttk_common at the quantised rate (a reload
+                # rounds up to whole ticks: within a tick per reload)
+                cross = tc.player_time(n, 1.0 / tc.tick_rate(w['rps'][1]), w['mag'], w['reload'])
+                assert abs(cross - t) < (ev['reloads'] + 0.5) / tc.TICK_HZ, (label, cross, t)
             inputs = {
                 'weapon': dict(w),
                 'damage multipliers': {'shield': d_sh, 'body': d_bo},
@@ -636,11 +656,15 @@ def run(kit, game, player, enemies, player_weapons, extra_notes=()):
         'Halo 3 the Chief / Elite armour) carry the specific armours energy_shield_thin_player / '
         'hard_metal_thin_player, but table [0] has rows for them only in no_damage, so they '
         'multiply by 1 here; every row looked up is listed per row under inputs.',
-        'Player times: continuous-time trigger simulation (ttk_h3family.sim_player): ramp lo->hi '
-        'over acceleration time, bursts + fire recovery, heat with heat loss between shots and '
-        'the overheated cool-down to the recovery threshold, reloads (magazine reload time; '
+        'Player times: 30 Hz tick simulation of the MEASURED trigger (ttk_h3family.sim_player -> '
+        'ttk_common.tick_shots; a flat 24/s fired 15/s in Halo 3 and ODST, rof_test_stage.py '
+        '2026-11-23): rate / 30 in float32 a tick, a shot at 1, the sum RESET -- a shot every '
+        'ceil(30 / rate) ticks (9/s fires 7.5/s); ramp lo->hi over the held acceleration time, '
+        'bursts + fire recovery (rounded up to ticks, assumed), heat with heat loss every tick '
+        'and the overheated cool-down to the recovery threshold, reloads (magazine reload time; '
         'when it is 0 the reload is animation-driven: first-person reload_empty frames / 30). '
-        'Constant-rate weapons are asserted equal to ttk_common.player_time.',
+        'Times count from the first shot. Constant-rate weapons are asserted equal to '
+        'ttk_common.player_time at the quantised rate.',
         'Enemy shield recharge: character delay x matg "enemy recharge" (help: "enemy shield '
         'recharge scale") %.2f -- ASSUMED to scale the delay (it falls with difficulty: 1.4 '
         'easy -> 0.3 legendary, so it cannot be a recharge speed). Flags use the scaled delay.'

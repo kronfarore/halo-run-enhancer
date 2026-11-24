@@ -32,6 +32,7 @@ WHERE REACH KEEPS THE NUMBERS (found 2026-10-13, see 'inputs' of every row):
 
     python ttk_reach.py
 """
+import math
 import os
 import sys
 
@@ -261,16 +262,14 @@ def enemy_pool(e, diff, inp):
 
 # ----------------------------------------------------------------------------- weapons
 def repeater_time(n):
-    """Seconds to the n-th Plasma Repeater shot, trigger held from cold: heat 0.9/s while
-    firing (0.03 a tick), rate 15 -> 3 by heat^1.5, never overheats."""
-    if n is None:
-        return None
+    """Seconds to the n-th Plasma Repeater shot, trigger held from cold: heat 0.03 a tick while
+    firing, rate 15 -> 3 by heat^1.5, never overheats -- through the MEASURED 30 Hz reset rule
+    (ttk_common.tick_shots: Reach fires a flat 24/s tag at 15/s, rof_test_stage.py 2026-11-23),
+    so the rate's sum resets on each shot (15/s = every 2 ticks, a falling 15 every 3)."""
     hi, lo = 15.0, 3.0
-    t = 0.0
-    for _ in range(1, n):
-        heat = min(1.0, REPEATER['heat_per_tick'] * 30.0 * t)
-        t += 1.0 / (hi + (lo - hi) * heat ** REPEATER['rate_exponent'])
-    return t
+    w = {'rps': [hi, hi], 'heat per tick': REPEATER['heat_per_tick'], 'never overheats': True,
+         'fire recovery': 0.0}
+    return tc.tick_seconds(n, w, rate_fn=lambda h: hi + (lo - hi) * h ** REPEATER['rate_exponent'])[0]
 
 
 def player_weapon(wdef, inp):
@@ -295,13 +294,24 @@ def player_weapon(wdef, inp):
         spec['time'] = repeater_time
         spec['battery'] = int(round(1.0 / age)) if age else 0
         return spec
-    interval = max(1.0 / rps, rec)
-    inp.put(pre + 'interval s', interval, 'max(1 / rounds per second, fire recovery time)')
+    # the MEASURED 30 Hz reset rule (Reach fires a flat 24/s tag at 15/s, rof_test_stage.py
+    # 2026-11-23): a shot every ceil(30 / rate) ticks, the fire recovery rounded up to ticks
+    fired = 30.0 / max(int(math.ceil(30.0 / tc.tick_rate(rps) - 1e-6)),
+                       int(math.ceil(rec * 30.0 - 1e-6)) if rec else 1)
+    interval = 1.0 / fired
+    inp.put(pre + 'interval s', interval, 'max(ceil(30 / rounds per second), ceil(30 x fire recovery '
+            'time)) ticks / 30 (the 30 Hz reset rule; tag max(1 / rps, recovery) = %.4g s)'
+            % max(1.0 / rps, rec))
     if mag and wdef.get('fp'):
         spec['reload'] = reload_time(wdef['fp'], inp, pre)
-    over = tc.num(read(w).get('overheated threshold'), 1.0) or 1.0
-    spec['time'] = lambda n: tc.player_time(n, interval, mag=mag, reload=spec['reload'],
-                                            heat_per_shot=heat, overheat_at=over)
+    r = read(w)
+    wd = {'rps': [rps, rps], 'fire recovery': rec, 'heat per round': heat,
+          'overheated threshold': tc.num(r.get('overheated threshold'), 1.0) or 1.0,
+          'heat recovery threshold': tc.num(r.get('heat recovery threshold')),
+          'heat loss': tc.num(r.get('heat loss per second')),
+          'overheated heat loss': tc.num(r.get('overheated heat loss per second')),
+          'mag': mag, 'reload': 0.0}
+    spec['time'] = lambda n: tc.tick_seconds(n, dict(wd, reload=spec['reload']))[0]
     return spec
 
 
@@ -462,6 +472,11 @@ def main():
         '(0.03 heat a tick firing, rate 15 + (3-15) x heat^1.5, never overheats). Holding the '
         'trigger is modelled; a manual vent (2.5 s) is not.',
         'Bloom / spread ignored (every shot hits), body shots only.',
+        'Player times: 30 Hz tick simulation of the MEASURED trigger (ttk_common.tick_shots; a '
+        'flat 24/s fired 15/s in Reach, rof_test_stage.py 2026-11-23): rate / 30 in float32 a '
+        'tick, a shot at 1, the sum RESET -- a shot every ceil(30 / rate) ticks; fire recovery and '
+        'reloads round up to whole ticks (assumed); heat drains every tick. Times count from the '
+        'first shot.',
     ]
     path = tc.write(GAME, rows, notes)
     print(path)

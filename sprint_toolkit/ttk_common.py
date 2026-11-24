@@ -36,8 +36,10 @@ THE METHOD (signed off by the user 2026-10-13):
     player feels; misses are not counted in either.
 """
 import json
+import math
 import os
 import re
+import struct
 import subprocess
 import sys
 import uuid
@@ -241,6 +243,132 @@ def player_time_drain(n, interval, heat_per_shot, loss_per_sec, overheat_at=1.0,
             heat = max(0.0, heat - loss_per_sec * dt)
         t += dt
     return t, over
+
+
+# ----------------------------------------------------------------------------- the 30 Hz trigger
+#: MEASURED in all six games (Halo 2: the Plasma Repeater port 2026-11-22, reports/h2_fire_rule.jsonl;
+#: Halo 3 / ODST / Reach / Halo 4 / Halo 2 at 30/s: rof_test_stage.py 2026-11-23, reports/rof_test.jsonl;
+#: Halo 1: h1_weapon_state_probe, ttk_halo1.player_ticks): every tick rate / 30 is added in float32,
+#: a shot leaves when the sum reaches 1 and the sum RESETS -- a shot every ceil(30 / rate) ticks.
+#: Halo 1 alone caps at 15/s (2 ticks); Halo 2 fires 30/s at a 30 tag.
+TICK_HZ = 30.0
+
+
+def f32(x):
+    return struct.unpack('<f', struct.pack('<f', x))[0]
+
+
+def tick_rate(rate, min_ticks=1):
+    """Rounds a second the reset rule fires for a CONSTANT rate (min_ticks 2 = Halo 1's cap)."""
+    if rate <= 0:
+        return 0.0
+    step, s, n = f32(rate / TICK_HZ), 0.0, 0
+    while s < 1.0:
+        s = f32(s + step)
+        n += 1
+    return TICK_HZ / max(n, min_ticks)
+
+
+def tick_shots(n, w, limit_s=600.0, cool_while_firing=True, rate_fn=None):
+    """Ticks (30 Hz, from the trigger pull at tick 0) of the first n shots, trigger held, by the
+    measured reset rule. `w` (the collectors' weapon dict): 'rps' [lo, hi] (a rate of 0 reads as
+    30, every tick: the RECOVERY weapons' placeholder), 'accel', 'shots per fire' [lo, hi],
+    'fire recovery', 'heat per round', 'overheated threshold', 'heat recovery threshold',
+    'heat loss', 'overheated heat loss', 'mag', 'reload'; optional 'heat per tick' (heat while
+    the trigger is held: Reach's per-tick heat function) and 'never overheats'.
+      * every tick the rate (ramped lo -> hi over 'acceleration time' of HELD time, or
+        rate_fn(heat) for a heat-driven rate) / 30 is added in float32 to a sum that starts at 0
+        on the pull; a shot leaves on the tick the sum reaches 1 and the sum resets to 0;
+      * heat + per round on a shot, - 'heat loss per second' / 30 every tick (while firing too,
+        unless cool_while_firing is False); at the overheated threshold the gun stops, cools at
+        'overheated heat loss per second' / 30 a tick to the recovery threshold, then the
+        trigger starts over (sum 0, ramp from lo) -- ASSUMED as the cold start;
+      * 'shots per fire' > 1 = a burst at the barrel rate, then 'fire recovery time' (rounded UP
+        to whole ticks) from the burst's last shot before the next may leave (the sum keeps
+        running); without bursts the recovery gates every shot the same way -- ASSUMED;
+      * an empty magazine: the next shot leaves when the reload time (rounded up to ticks) has
+        passed after the last round, and the ramp restarts.
+    Returns (ticks list, events)."""
+    lo, hi = [r if r > 0 else TICK_HZ for r in w['rps']]
+    spf = w.get('shots per fire') or [1.0, 1.0]
+    burst = int(spf[1]) if spf[1] > 1 else 1
+    rec_ticks = int(math.ceil(w['fire recovery'] * TICK_HZ - 1e-6)) if w.get('fire recovery') else 0
+    hpr, oh = w.get('heat per round') or 0.0, w.get('overheated threshold') or 1.0
+    hpt = w.get('heat per tick') or 0.0
+    can_overheat = bool(hpr or hpt) and not w.get('never overheats')
+    loss = (w.get('heat loss') or 0.0) / TICK_HZ
+    loss_oh = (w.get('overheated heat loss') or w.get('heat loss') or 1.0) / TICK_HZ
+    rec_at = w.get('heat recovery threshold') or 0.0
+    mag, reload_ticks = w.get('mag') or 0, int(math.ceil((w.get('reload') or 0.0) * TICK_HZ - 1e-6))
+    s, heat, held, inmag, in_burst = 0.0, 0.0, 0, mag, 0
+    tick, busy_until, reloading, overheated, oh_tick = 0, 0, False, False, 0
+    shots = []
+    ev = {'overheats': 0, 'reloads': 0, 'bursts': 0, 'first overheat at shot': None}
+    while len(shots) < n and tick < limit_s * TICK_HZ:
+        if overheated:
+            heat -= loss_oh
+            if heat <= rec_at + 1e-9:
+                overheated, s, held = False, 0.0, 0
+                heat = max(heat, 0.0)
+                ev['overheat pause s'] = round((tick + 1 - oh_tick) / TICK_HZ, 3)
+            tick += 1
+            continue
+        if reloading:
+            if tick >= busy_until:
+                reloading, s, held = False, 1.0, 0   # ready: leaves on this tick
+        else:
+            if rate_fn is not None:
+                rate = rate_fn(heat)
+            else:
+                rate = hi if not w.get('accel') else lo + (hi - lo) * min(1.0, held / TICK_HZ / w['accel'])
+            s = f32(s + f32(rate / TICK_HZ))
+            heat = min(1.0, heat + hpt) if hpt else heat
+        if s >= 1.0 and tick >= busy_until:
+            if shots:
+                ev['longest gap s'] = round(max(ev.get('longest gap s') or 0.0,
+                                                (tick - shots[-1]) / TICK_HZ), 3)
+            shots.append(tick)
+            s = 0.0
+            heat += hpr
+            in_burst += 1
+            if burst > 1:
+                if in_burst >= burst:
+                    busy_until = tick + rec_ticks
+                    in_burst = 0
+                    ev['bursts'] += 1
+            elif rec_ticks:
+                busy_until = tick + rec_ticks
+            if mag:
+                inmag -= 1
+                if inmag <= 0:
+                    busy_until = tick + reload_ticks
+                    reloading, inmag, in_burst = True, mag, 0
+                    ev['reloads'] += 1
+            if can_overheat and heat >= oh - 1e-9 and len(shots) < n:
+                overheated, oh_tick = True, tick
+                ev['overheats'] += 1
+                if ev['first overheat at shot'] is None:
+                    ev['first overheat at shot'] = len(shots)
+                tick += 1
+                continue
+        if cool_while_firing:
+            heat = max(0.0, heat - loss)
+        if not reloading:
+            held += 1
+        tick += 1
+    return shots, ev
+
+
+def tick_seconds(n, w, **kw):
+    """(seconds from the FIRST shot to the n-th, events) by tick_shots; (None, events) when the
+    gun never gets there. The pull-to-first-shot ticks are not counted (TTK's first shot at 0)."""
+    if n is None:
+        return None, {}
+    shots, ev = tick_shots(n, w, **kw)
+    if len(shots) < n:
+        return None, ev
+    return (shots[-1] - shots[0]) / TICK_HZ, ev
+
 
 
 def ai_times(n, shots_per_sec, burst_duration=0.0, burst_separation=0.0):

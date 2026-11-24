@@ -100,7 +100,7 @@
     },
     "weapon interval s": {
      "value": 0.1,
-     "src": "max(1 / rounds per second, fire recovery time)"
+     "src": "max(ceil(30 / rounds per second), ceil(30 x fire recovery time)) ticks / 30 (the 30 Hz reset rule; tag max(1 / rps, recovery) = 0.1 s)"
     },
     "weapon reload s": {
      "value": 2.066666666666667,
@@ -131,7 +131,7 @@
    "target": "Elite minor",
    "weapon": "Plasma Repeater",
    "shots": 28,
-   "seconds": 6.107,
+   "seconds": 7.3,
    "inputs": {
     "target legendary body vitality": {
      "value": 100.0,
@@ -352,7 +352,7 @@
     },
     "weapon interval s": {
      "value": 0.3333333333333333,
-     "src": "max(1 / rounds per second, fire recovery time)"
+     "src": "max(ceil(30 / rounds per second), ceil(30 x fire recovery time)) ticks / 30 (the 30 Hz reset rule; tag max(1 / rps, recovery) = 0.3333 s)"
     },
     "weapon reload s": {
      "value": 2.066666666666667,
@@ -610,7 +610,7 @@
     },
     "weapon interval s": {
      "value": 0.1,
-     "src": "max(1 / rounds per second, fire recovery time)"
+     "src": "max(ceil(30 / rounds per second), ceil(30 x fire recovery time)) ticks / 30 (the 30 Hz reset rule; tag max(1 / rps, recovery) = 0.1 s)"
     },
     "weapon reload s": {
      "value": 2.066666666666667,
@@ -644,7 +644,7 @@
    "target": "Brute minor",
    "weapon": "Plasma Repeater",
    "shots": 39,
-   "seconds": 9.774,
+   "seconds": 10.967,
    "inputs": {
     "target legendary body vitality": {
      "value": 175.0,
@@ -765,7 +765,7 @@
    },
    "flags": [
     "shield never recharges (character shield recharge delay/time 0)",
-    "fight (9.77 s) outlasts body recharge delay (8 s, 0.35 of body)",
+    "fight (10.97 s) outlasts body recharge delay (8 s, 0.35 of body)",
     "rate falls with heat (15 -> 3/s); the manual vent (2.5 s) is not used"
    ]
   },
@@ -867,7 +867,7 @@
     },
     "weapon interval s": {
      "value": 0.3333333333333333,
-     "src": "max(1 / rounds per second, fire recovery time)"
+     "src": "max(ceil(30 / rounds per second), ceil(30 x fire recovery time)) ticks / 30 (the 30 Hz reset rule; tag max(1 / rps, recovery) = 0.3333 s)"
     },
     "weapon reload s": {
      "value": 2.066666666666667,
@@ -1039,6 +1039,7 @@
   "Default AI weapons come from the campaign squad templates (Elite minor: plasma rifle; Brute: spike rifle); the character tags only list weapon handling.",
   "Reload times are the first-person reload_empty \"allow interruption\" frame / 30 (Reach reloads are animation-driven).",
   "Plasma Repeater heat curves are not in the XML export; the B3 research values are used (0.03 heat a tick firing, rate 15 + (3-15) x heat^1.5, never overheats). Holding the trigger is modelled; a manual vent (2.5 s) is not.",
-  "Bloom / spread ignored (every shot hits), body shots only."
+  "Bloom / spread ignored (every shot hits), body shots only.",
+  "Player times: 30 Hz tick simulation of the MEASURED trigger (ttk_common.tick_shots; a flat 24/s fired 15/s in Reach, rof_test_stage.py 2026-11-23): rate / 30 in float32 a tick, a shot at 1, the sum RESET -- a shot every ceil(30 / rate) ticks; fire recovery and reloads round up to whole ticks (assumed); heat drains every tick. Times count from the first shot."
  ]
 }
