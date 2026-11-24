@@ -560,6 +560,11 @@ PORT = {
             'barrel spin scale 1 / rounds between tracers 1 / fire recovery 0.05': "no Halo 2 barrel_spin animation; no "
                                                                                "tracer; recovery above the rate",
             'flags 133120': "can be dual wielded cleared (Reach's two-handed); the rest the PR's",
+            'flags (the first, word flags)': "not the same field: Reach's item flags vs Halo 2's object flags ('4 unused'); "
+                                             "the PR's kept",
+            'damage (effect) reporting type, weapon + bolt': "the PR's (Halo 2's enum has no 'plasma repeater'; the "
+                                                             "kill feed reads the Plasma Rifle's)",
+            'active camo ding 0.25': "written (Reach's)",
             'first person weapon offset': '0 -- the position lives in fp_anims model_offset',
             'functions / attachments / interpolation / falloff / accuracy penalties / venting time / heat warning':
                 'no such field in Halo 2 (heat venting 2.5 s = the overheat, approximation A)',
