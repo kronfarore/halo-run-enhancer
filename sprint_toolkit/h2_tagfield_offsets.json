@@ -11,6 +11,18 @@
   "point states[1].width": 502,
   "texture repeats u": 108
  },
+ "contrail@effects\\objects\\weapons\\support_high\\spartan_laser\\spartan_laser_inner": {
+  "point states[0].color lower bound": 537,
+  "point states[0].color upper bound": 553,
+  "point states[0].transition duration": 477,
+  "point states[0].width": 533
+ },
+ "contrail@effects\\objects\\weapons\\support_high\\spartan_laser\\spartan_laser_outer": {
+  "point states[0].color lower bound": 531,
+  "point states[0].color upper bound": 547,
+  "point states[0].transition duration": 471,
+  "point states[0].width": 527
+ },
  "contrail@effects\\objects\\weapons\\support_low\\flamethrower\\flame_contrail": {
   "point generation rate": 84,
   "point states[0].color lower bound": 454,
@@ -56,8 +68,46 @@
   "rotation": 208,
   "shake radius": 180
  },
+ "damage_effect@objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_explosion": {
+  "AI stun radius": 168,
+  "AOE core radius": 104,
+  "category": 98,
+  "flags#1": 100,
+  "instantaneous acceleration": 144,
+  "outward radius": 284,
+  "outward velocity": 280,
+  "shake radius": 180
+ },
+ "damage_effect@objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_slam": {
+  "instantaneous acceleration": 144,
+  "radius": 80
+ },
+ "damage_effect@objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_trigger": {
+  "active camouflage damage": 128,
+  "damage lower bound": 108,
+  "damage upper bound": 112,
+  "flags": 92,
+  "instantaneous acceleration": 148,
+  "radius": 80
+ },
  "damage_effect@objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_shard": {
   "instantaneous acceleration": 144
+ },
+ "damage_effect@objects\\weapons\\rifle\\plasma_repeater\\damage_effects\\plasma_repeater_bolt": {
+  "instantaneous acceleration": 144
+ },
+ "damage_effect@objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_splash": {
+  "AI stun bounds": 172,
+  "damage lower bound": 108,
+  "forward exponent": 276,
+  "forward radius": 272,
+  "forward velocity": 268,
+  "instantaneous acceleration": 144,
+  "outward exponent": 288,
+  "pushback": 212,
+  "random translation": 232,
+  "rider minimum transfer damage scale": 156,
+  "rotation": 208
  },
  "damage_effect@objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame": {
   "active camouflage damage": 128,
@@ -74,6 +124,15 @@
   "decay time": 148,
   "lifetime": 200,
   "radius": 104
+ },
+ "decal@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_glow": {
+  "color lower bounds": 132,
+  "color upper bounds": 144,
+  "lifetime": 200
+ },
+ "decal@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_scorch": {
+  "decay time": 148,
+  "lifetime": 140
  },
  "decal@effects\\objects\\weapons\\support_low\\flamethrower\\flame_char": {
   "radius": 104
@@ -95,6 +154,11 @@
  "effect@effects\\objects\\weapons\\rifle\\spike_rifle\\spike_rifle_fire": {
   "particle systems[2].camera mode": 675
  },
+ "effect@effects\\objects\\weapons\\support_high\\spartan_laser\\spartan_laser_fire": {
+  "particle systems[3].camera mode": 1461,
+  "particle systems[6].camera mode": 1665,
+  "particle systems[6].coordinate system": 1659
+ },
  "effect@effects\\objects\\weapons\\support_low\\flamethrower\\flame_burning": {
   "particle systems[2].flags": 430,
   "particle systems[3].flags": 498
@@ -104,6 +168,42 @@
   "particle systems[1].flags": 363,
   "particle systems[2].flags": 431,
   "particle systems[3].flags": 499
+ },
+ "lens_flare": {
+  "flags": 128,
+  "reflections[0].bitmap index": 268,
+  "reflections[0].color": 300,
+  "reflections[0].flags": 388,
+  "reflections[0].modulation factor": 296,
+  "reflections[0].radius": 280
+ },
+ "lens_flare@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_charge": {
+  "reflections[0].bitmap index": 268,
+  "reflections[0].color": 300,
+  "reflections[0].flags": 264,
+  "reflections[0].modulation factor": 296,
+  "reflections[0].radius": 280
+ },
+ "lens_flare@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_light_flare": {
+  "reflections[0].color": 456,
+  "reflections[0].flags": 388,
+  "reflections[0].modulation factor": 452
+ },
+ "lens_flare@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_light_flare_fp": {
+  "reflections[0].color": 456,
+  "reflections[0].modulation factor": 452
+ },
+ "light": {
+  "diffuse upper bound": 180,
+  "specular upper bound": 156
+ },
+ "light@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_charge": {
+  "diffuse upper bound": 180,
+  "specular upper bound": 156
+ },
+ "light@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_charge_fp": {
+  "diffuse upper bound": 260,
+  "specular upper bound": 232
  },
  "model_animation_graph": {
   "animations[0].production flags": 2799,
@@ -140,6 +240,25 @@
   "sound references[4].flags": 1957,
   "sound references[5].flags": 1977
  },
+ "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\rifle\\fp_plasma_repeater\\fp_plasma_repeater": {
+  "animations[12].production flags": 4535,
+  "animations[13].production flags": 4659,
+  "animations[15].production flags": 4907,
+  "animations[16].production flags": 5031,
+  "animations[17].production flags": 5155,
+  "animations[19].production flags": 5403,
+  "animations[4].production flags": 3543,
+  "sound references[10].flags": 2205,
+  "sound references[11].flags": 2225,
+  "sound references[12].flags": 2245,
+  "sound references[13].flags": 2265,
+  "sound references[14].flags": 2285,
+  "sound references[5].flags": 2105,
+  "sound references[6].flags": 2125,
+  "sound references[7].flags": 2145,
+  "sound references[8].flags": 2165,
+  "sound references[9].flags": 2185
+ },
  "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\rifle\\fp_saw\\fp_saw": {
   "animations[11].production flags": 4204,
   "animations[12].production flags": 4328,
@@ -161,6 +280,14 @@
   "sound references[7].flags": 1945,
   "sound references[8].flags": 1965,
   "sound references[9].flags": 1985
+ },
+ "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\support_high\\fp_spartan_laser\\fp_spartan_laser": {
+  "animations[0].production flags": 2535,
+  "animations[12].production flags": 4023,
+  "animations[14].production flags": 4271,
+  "animations[2].production flags": 2783,
+  "animations[8].production flags": 3527,
+  "animations[9].production flags": 3651
  },
  "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower": {
   "animations[10].production flags": 4236,
@@ -186,6 +313,22 @@
   "animations[10].weight": 3778,
   "animations[9].weight": 3654
  },
+ "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_plasma_repeater\\fp_plasma_repeater": {
+  "animations[12].production flags": 4799,
+  "animations[15].production flags": 5171,
+  "animations[17].production flags": 5419,
+  "animations[4].production flags": 3807,
+  "sound references[10].flags": 2469,
+  "sound references[11].flags": 2489,
+  "sound references[12].flags": 2509,
+  "sound references[13].flags": 2529,
+  "sound references[14].flags": 2549,
+  "sound references[5].flags": 2369,
+  "sound references[6].flags": 2389,
+  "sound references[7].flags": 2409,
+  "sound references[8].flags": 2429,
+  "sound references[9].flags": 2449
+ },
  "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_saw\\fp_saw": {
   "animations[11].production flags": 4475,
   "animations[12].production flags": 4599,
@@ -206,6 +349,14 @@
   "sound references[7].flags": 2209,
   "sound references[8].flags": 2229,
   "sound references[9].flags": 2249
+ },
+ "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\support_high\\fp_spartan_laser\\fp_spartan_laser": {
+  "animations[0].production flags": 2799,
+  "animations[12].production flags": 4287,
+  "animations[14].production flags": 4500,
+  "animations[2].production flags": 3047,
+  "animations[8].production flags": 3791,
+  "animations[9].production flags": 3915
  },
  "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower": {
   "animations[10].production flags": 4624,
@@ -323,8 +474,38 @@
   "bitmap widgets[9].input 1": 1240,
   "bitmap widgets[9].quarterscreen offset": 1312
  },
+ "new_hud_definition@ui\\hud\\gravity_hammer": {
+  "bitmap widgets[1].fullscreen sequence index": 340,
+  "bitmap widgets[1].halfscreen sequence index": 341,
+  "bitmap widgets[1].quarterscreen sequence index": 342,
+  "bitmap widgets[2].fullscreen sequence index": 460,
+  "bitmap widgets[2].halfscreen sequence index": 461,
+  "bitmap widgets[2].quarterscreen sequence index": 462
+ },
  "new_hud_definition@ui\\hud\\saw": {
   "bitmap widgets[12].[N] extra flags": 1614
+ },
+ "new_hud_definition@ui\\hud\\spartan_laser": {
+  "bitmap widgets[10].anchor": 1384,
+  "bitmap widgets[10].flags": 1386,
+  "bitmap widgets[10].fullscreen offset": 1424,
+  "bitmap widgets[10].halfscreen offset": 1428,
+  "bitmap widgets[10].input 1": 1360,
+  "bitmap widgets[11].flags": 1506,
+  "bitmap widgets[11].fullscreen offset": 1544,
+  "bitmap widgets[11].halfscreen offset": 1548,
+  "bitmap widgets[12].flags": 1626,
+  "bitmap widgets[12].fullscreen offset": 1664,
+  "bitmap widgets[12].halfscreen offset": 1668,
+  "bitmap widgets[13].fullscreen sequence index": 1780,
+  "bitmap widgets[13].halfscreen sequence index": 1781,
+  "bitmap widgets[13].quarterscreen sequence index": 1782,
+  "bitmap widgets[7].flags": 1026,
+  "bitmap widgets[7].fullscreen offset": 1064,
+  "bitmap widgets[7].halfscreen offset": 1068,
+  "bitmap widgets[8].flags": 1146,
+  "bitmap widgets[8].input 1": 1120,
+  "bitmap widgets[9].flags": 1266
  },
  "projectile": {
   "air damage range": 820,
@@ -386,6 +567,21 @@
   "maximum range": 504,
   "water damage range": 832,
   "water gravity scale": 828
+ },
+ "projectile@objects\\weapons\\melee\\gravity_hammer_port\\projectiles\\gravity_hammer_port_strike": {
+  "material responses[1].response": 1495,
+  "material responses[2].response": 1655,
+  "material responses[3].response": 1815,
+  "material responses[3].response#1": 1849,
+  "material responses[4].response": 1975,
+  "material responses[4].response#1": 2009,
+  "material responses[5].response": 2135,
+  "material responses[6].response": 2295,
+  "material responses[6].response#1": 2329,
+  "material responses[7].response": 2455,
+  "material responses[8].response": 2615,
+  "material responses[9].response": 2775,
+  "timer": 492
  },
  "projectile@objects\\weapons\\pistol\\excavator\\projectiles\\excavator_shard": {
   "air damage range": 620,
@@ -508,6 +704,9 @@
   "water damage range": 832,
   "water gravity scale": 828
  },
+ "projectile@objects\\weapons\\support_high\\spartan_laser\\projectiles\\spartan_laser_beam": {
+  "collision radius": 480
+ },
  "projectile@objects\\weapons\\support_low\\flamethrower\\projectiles\\flame": {
   "AI perception radius": 476,
   "bounding radius": 84,
@@ -525,6 +724,11 @@
   "parameters[2].const color": 395,
   "parameters[3].const color": 447,
   "parameters[4].const color": 499
+ },
+ "shader@objects\\weapons\\support_high\\spartan_laser\\shaders\\spartan_laser_luminous": {
+  "data[4].Value": 783,
+  "data[5].Value": 784,
+  "data[6].Value": 785
  },
  "shader@objects\\weapons\\support_low\\flamethrower\\shaders\\flamethrower_pilot": {
   "animation properties[0].time period": 738,
@@ -594,6 +798,18 @@
   "overheated threshold": 548,
   "ready time": 508
  },
+ "weapon@objects\\weapons\\melee\\gravity_hammer_port\\gravity_hammer_port": {
+  "AI scariness": 888,
+  "Apply collision damage scale": 236,
+  "barrels[0].age generated per round": 3509,
+  "barrels[0].error angle#1": 3501,
+  "barrels[0].fire recovery time": 3357,
+  "barrels[0].firing noise": 3379,
+  "barrels[0].heat generated per round": 3565,
+  "damage pyramid depth": 696,
+  "heat recovery threshold": 544,
+  "overheated threshold": 548
+ },
  "weapon@objects\\weapons\\pistol\\excavator\\excavator": {
   "barrels[0].dual wield damage scale": 3135,
   "barrels[0].error angle": 3127,
@@ -634,6 +850,16 @@
  "weapon@objects\\weapons\\rifle\\battle_rifle\\battle_rifle": {
   "bounding offset": 88
  },
+ "weapon@objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater": {
+  "barrels[0].acceleration time": 3227,
+  "barrels[0].age generated per round": 3399,
+  "barrels[0].deceleration time": 3231,
+  "barrels[0].error angle#1": 3331,
+  "barrels[0].heat generated per round": 3395,
+  "barrels[0].illumination recovery time": 3391,
+  "barrels[0].rounds per second": 3219,
+  "heat illumination": 564
+ },
  "weapon@objects\\weapons\\rifle\\saw\\saw": {
   "barrels[0].acceleration time": 2909,
   "barrels[0].deceleration time": 2913,
@@ -667,152 +893,6 @@
   "magazines[0].rounds total initial": 2718,
   "magazines[0].rounds total maximum": 2720
  },
- "weapon@objects\\weapons\\support_low\\flamethrower\\flamethrower": {
-  "barrels[0].acceleration time": 3312,
-  "barrels[0].acceleration time#1": 3141,
-  "barrels[0].angle change per shot": 3277,
-  "barrels[0].deceleration time": 3316,
-  "barrels[0].deceleration time#1": 3145,
-  "barrels[0].error angle#1": 3416,
-  "barrels[0].heat generated per round": 3480,
-  "barrels[0].illumination recovery time": 3476,
-  "barrels[0].minimum error#1": 3197,
-  "barrels[0].projectiles per shot": 3406,
-  "barrels[0].rounds between tracers": 3131,
-  "barrels[0].rounds per second": 3304,
-  "barrels[0].rounds per shot": 3342,
-  "heat illumination": 564,
-  "heat loss per second": 560,
-  "heat recovery threshold": 544,
-  "magazines[0].reload time": 2904,
-  "magazines[0].rounds loaded maximum": 2898,
-  "magazines[0].rounds reloaded": 2908,
-  "magazines[0].rounds total initial": 2894,
-  "magazines[0].rounds total maximum": 2896,
-  "overheated heat loss per second": 568,
-  "overheated threshold": 548
- },
- "contrail@effects\\objects\\weapons\\support_high\\spartan_laser\\spartan_laser_inner": {
-  "point states[0].color lower bound": 537,
-  "point states[0].color upper bound": 553,
-  "point states[0].transition duration": 477,
-  "point states[0].width": 533
- },
- "contrail@effects\\objects\\weapons\\support_high\\spartan_laser\\spartan_laser_outer": {
-  "point states[0].color lower bound": 531,
-  "point states[0].color upper bound": 547,
-  "point states[0].transition duration": 471,
-  "point states[0].width": 527
- },
- "damage_effect@objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_splash": {
-  "AI stun bounds": 172,
-  "damage lower bound": 108,
-  "forward exponent": 276,
-  "forward radius": 272,
-  "forward velocity": 268,
-  "instantaneous acceleration": 144,
-  "outward exponent": 288,
-  "pushback": 212,
-  "random translation": 232,
-  "rider minimum transfer damage scale": 156,
-  "rotation": 208
- },
- "decal@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_glow": {
-  "color lower bounds": 132,
-  "color upper bounds": 144,
-  "lifetime": 200
- },
- "decal@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_scorch": {
-  "decay time": 148,
-  "lifetime": 140
- },
- "effect@effects\\objects\\weapons\\support_high\\spartan_laser\\spartan_laser_fire": {
-  "particle systems[3].camera mode": 1461,
-  "particle systems[6].camera mode": 1665,
-  "particle systems[6].coordinate system": 1659
- },
- "lens_flare": {
-  "flags": 128,
-  "reflections[0].bitmap index": 268,
-  "reflections[0].color": 300,
-  "reflections[0].flags": 388,
-  "reflections[0].modulation factor": 296,
-  "reflections[0].radius": 280
- },
- "lens_flare@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_charge": {
-  "reflections[0].bitmap index": 268,
-  "reflections[0].color": 300,
-  "reflections[0].flags": 264,
-  "reflections[0].modulation factor": 296,
-  "reflections[0].radius": 280
- },
- "lens_flare@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_light_flare": {
-  "reflections[0].color": 456,
-  "reflections[0].flags": 388,
-  "reflections[0].modulation factor": 452
- },
- "lens_flare@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_light_flare_fp": {
-  "reflections[0].color": 456,
-  "reflections[0].modulation factor": 452
- },
- "light": {
-  "diffuse upper bound": 180,
-  "specular upper bound": 156
- },
- "light@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_charge": {
-  "diffuse upper bound": 180,
-  "specular upper bound": 156
- },
- "light@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_charge_fp": {
-  "diffuse upper bound": 260,
-  "specular upper bound": 232
- },
- "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\support_high\\fp_spartan_laser\\fp_spartan_laser": {
-  "animations[0].production flags": 2535,
-  "animations[12].production flags": 4023,
-  "animations[14].production flags": 4271,
-  "animations[2].production flags": 2783,
-  "animations[8].production flags": 3527,
-  "animations[9].production flags": 3651
- },
- "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\support_high\\fp_spartan_laser\\fp_spartan_laser": {
-  "animations[0].production flags": 2799,
-  "animations[12].production flags": 4287,
-  "animations[14].production flags": 4500,
-  "animations[2].production flags": 3047,
-  "animations[8].production flags": 3791,
-  "animations[9].production flags": 3915
- },
- "new_hud_definition@ui\\hud\\spartan_laser": {
-  "bitmap widgets[10].anchor": 1384,
-  "bitmap widgets[10].flags": 1386,
-  "bitmap widgets[10].fullscreen offset": 1424,
-  "bitmap widgets[10].halfscreen offset": 1428,
-  "bitmap widgets[10].input 1": 1360,
-  "bitmap widgets[11].flags": 1506,
-  "bitmap widgets[11].fullscreen offset": 1544,
-  "bitmap widgets[11].halfscreen offset": 1548,
-  "bitmap widgets[12].flags": 1626,
-  "bitmap widgets[12].fullscreen offset": 1664,
-  "bitmap widgets[12].halfscreen offset": 1668,
-  "bitmap widgets[13].fullscreen sequence index": 1780,
-  "bitmap widgets[13].halfscreen sequence index": 1781,
-  "bitmap widgets[13].quarterscreen sequence index": 1782,
-  "bitmap widgets[7].flags": 1026,
-  "bitmap widgets[7].fullscreen offset": 1064,
-  "bitmap widgets[7].halfscreen offset": 1068,
-  "bitmap widgets[8].flags": 1146,
-  "bitmap widgets[8].input 1": 1120,
-  "bitmap widgets[9].flags": 1266
- },
- "projectile@objects\\weapons\\support_high\\spartan_laser\\projectiles\\spartan_laser_beam": {
-  "collision radius": 480
- },
- "shader@objects\\weapons\\support_high\\spartan_laser\\shaders\\spartan_laser_luminous": {
-  "data[4].Value": 783,
-  "data[5].Value": 784,
-  "data[6].Value": 785
- },
  "weapon@objects\\weapons\\support_high\\spartan_laser\\spartan_laser": {
   "active camo ding": 996,
   "age misfire chance": 944,
@@ -840,61 +920,29 @@
   "new triggers[0].secondary barrel": 3488,
   "overheated heat loss per second": 568
  },
- "damage_effect@objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_explosion": {
-  "AI stun radius": 168,
-  "AOE core radius": 104,
-  "category": 98,
-  "flags#1": 100,
-  "instantaneous acceleration": 144,
-  "outward radius": 284,
-  "outward velocity": 280,
-  "shake radius": 180
- },
- "damage_effect@objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_slam": {
-  "instantaneous acceleration": 144,
-  "radius": 80
- },
- "damage_effect@objects\\weapons\\melee\\gravity_hammer_port\\damage_effects\\gravity_hammer_port_trigger": {
-  "active camouflage damage": 128,
-  "damage lower bound": 108,
-  "damage upper bound": 112,
-  "flags": 92,
-  "instantaneous acceleration": 148,
-  "radius": 80
- },
- "new_hud_definition@ui\\hud\\gravity_hammer": {
-  "bitmap widgets[1].fullscreen sequence index": 340,
-  "bitmap widgets[1].halfscreen sequence index": 341,
-  "bitmap widgets[1].quarterscreen sequence index": 342,
-  "bitmap widgets[2].fullscreen sequence index": 460,
-  "bitmap widgets[2].halfscreen sequence index": 461,
-  "bitmap widgets[2].quarterscreen sequence index": 462
- },
- "projectile@objects\\weapons\\melee\\gravity_hammer_port\\projectiles\\gravity_hammer_port_strike": {
-  "material responses[1].response": 1495,
-  "material responses[2].response": 1655,
-  "material responses[3].response": 1815,
-  "material responses[3].response#1": 1849,
-  "material responses[4].response": 1975,
-  "material responses[4].response#1": 2009,
-  "material responses[5].response": 2135,
-  "material responses[6].response": 2295,
-  "material responses[6].response#1": 2329,
-  "material responses[7].response": 2455,
-  "material responses[8].response": 2615,
-  "material responses[9].response": 2775,
-  "timer": 492
- },
- "weapon@objects\\weapons\\melee\\gravity_hammer_port\\gravity_hammer_port": {
-  "AI scariness": 888,
-  "Apply collision damage scale": 236,
-  "barrels[0].age generated per round": 3509,
-  "barrels[0].error angle#1": 3501,
-  "barrels[0].fire recovery time": 3357,
-  "barrels[0].firing noise": 3379,
-  "barrels[0].heat generated per round": 3565,
-  "damage pyramid depth": 696,
+ "weapon@objects\\weapons\\support_low\\flamethrower\\flamethrower": {
+  "barrels[0].acceleration time": 3312,
+  "barrels[0].acceleration time#1": 3141,
+  "barrels[0].angle change per shot": 3277,
+  "barrels[0].deceleration time": 3316,
+  "barrels[0].deceleration time#1": 3145,
+  "barrels[0].error angle#1": 3416,
+  "barrels[0].heat generated per round": 3480,
+  "barrels[0].illumination recovery time": 3476,
+  "barrels[0].minimum error#1": 3197,
+  "barrels[0].projectiles per shot": 3406,
+  "barrels[0].rounds between tracers": 3131,
+  "barrels[0].rounds per second": 3304,
+  "barrels[0].rounds per shot": 3342,
+  "heat illumination": 564,
+  "heat loss per second": 560,
   "heat recovery threshold": 544,
+  "magazines[0].reload time": 2904,
+  "magazines[0].rounds loaded maximum": 2898,
+  "magazines[0].rounds reloaded": 2908,
+  "magazines[0].rounds total initial": 2894,
+  "magazines[0].rounds total maximum": 2896,
+  "overheated heat loss per second": 568,
   "overheated threshold": 548
  }
 }
