@@ -186,16 +186,20 @@ PORT = {
                     (RB + 'gl_display_details_diffuse.bitmap', 'grenade_launcher_display_item', r'objects\weapons\rifle\shotgun\bitmaps\illum_sights',
                      ('tint', TEAL, 0), None),
                     (RB + 'numbers.bitmap', 'grenade_launcher_digits', r'objects\weapons\rifle\shotgun\bitmaps\illum_sights',
-                     ('tint', TEAL, 0), None)],
+                     ('tint', TEAL, 0), None),
+                    # BOOT 1 (user): 'the glass panel with the drawn crosshair is empty' -- Reach paints the holo
+                    # sight's reticle into the diffuse's ALPHA (frame, ring, side bars, drop ticks): Halo 1's B4 reading,
+                    # levels (140, 235) over a 0.12 floor, teal (0.45, 0.95, 1.0), drawn ADDITIVE (see-through). Full
+                    # 1024: the glass UVs cover 7 x 18 % of the map
+                    (RB + 'grenade_launcher_diffuse.bitmap', 'grenade_launcher_sight', r'objects\weapons\rifle\shotgun\bitmaps\illum_sights',
+                     ('levels', 3, (140, 235), 0.12, (0.45, 0.95, 1.0)), None)],
         'shaders': [
             ('gl_metal', BR + r'\shaders\battle_rifle_metal', MAPS),
             ('gl_composite', BR + r'\shaders\battle_rifle_plastic', MAPS),
             ('gl_rubber', SMG + r'\shaders\smg_rubber_grip', SMG_MAPS),
             ('gl_metal_shiny', SMG + r'\shaders\smg_bare_metal', SMG_MAPS),
-            # Reach's glass (vehicle_glass env over the diffuse) = the BR's lens look on flat grey (the DMR's)
-            ('gl_glass', BR + r'\shaders\battle_rifle_lens',
-             {BR + r'\bitmaps\battle_rifle': r'shaders\default_bitmaps\bitmaps\gray_50_percent',
-              BR + r'\bitmaps\battle_rifle_bump': r'shaders\default_bitmaps\bitmaps\default_vector'}),
+            # the glass = the holo SIGHT (boot 1): its reticle additive on the indicator template (was the BR's lens on grey)
+            ('gl_glass', PCI + r'\shaders\plasma_illum', {PCI + r'\bitmaps\plasma_cannon': GLB + 'grenade_launcher_sight'}),
             ('gl_decals', RL + r'\shaders\rocket_launcher_decal',
              {RL + r'\bitmaps\rocket_launcher_decal': GLB + 'grenade_launcher_decals'}),
             ('gl_display', PCI + r'\shaders\plasma_illum', {PCI + r'\bitmaps\plasma_cannon': GLB + 'grenade_launcher_display'}),
@@ -421,6 +425,9 @@ PORT = {
                 (DM + '\\' + dm + '.damage_effect', 'ai stun bounds', '', 0, 0, [1.0, 0.5], {'anchor': ('shake radius', -8)}),
                 (DM + '\\' + dm + '.damage_effect', 'rider minimum transfer damage scale', '', 0, 0, 1.0,
                  {'anchor': ('instantaneous acceleration', 12)}))] + [
+            # BOOT 1 (user): 'early ammo warning is always on' -- the Brute Shot HUD's low CLIP cutoff 1 (rounds loaded
+            # <= 1 = low): a 1-round magazine is always low -> 0 (warns only empty, as the RL's 1 of 2 does at its last)
+            (r'ui\hud\grenade_launcher.new_hud_definition', 'low clip cutoff', '', 0, 0, 0),
             # the charge cue: the pistol's green lights -> Reach's tethered arm-switch red (Halo 1's ARM_RED)
             (FX + r'\gl_charge.light', 'diffuse upper bound', '', 0, 0, [1.0, 0.15, 0.0]),
             (FX + r'\gl_charge.light', 'specular upper bound', '', 0, 0, [1.0, 0.15, 0.0]),
@@ -478,7 +485,8 @@ PORT = {
         'aliases': {'first_person:look': ['first_person:overlays', 'first_person:pitch_and_turn']},
         # the FP position: the DMR's accepted (-0.005, -0.002, -0.033) moved by the two Reach weapons' own first-person
         # offsets (GL 0.0125, 0, 0; DMR 0, 0, -0.002): x +0.0125, z +0.002. The weapon field 0 (the gun-only rule)
-        'model_offset': (0.0075, -0.002, -0.031),
+        # boot 1 (user): 'move FP one unit down' -> z -0.041
+        'model_offset': (0.0075, -0.002, -0.041),
         # the DMR's per-species hand corrections (Halo 2's hand meshes sit on their bones unlike Reach's; observations
         # of one port): judged here with h2_fp_hand_check palm / ortho before boot 1
         # h2_fp_hand_check palm (idle, gun frame, JMS units, + = the palm top BELOW the underside) with the DMR's
@@ -537,9 +545,10 @@ PORT = {
                     'gl_bounce_metal': [RS + r'\frag_grenade\frag_bnc_metal'],
                     'gl_drop': [RS + r'\disintegrator\disintegrator_drop'],
                     'gl_drop_soft': [RS + r'\disintegrator\disintegrator_drop_soft'],
-                    # the beep's `in` track is 1 s of SILENCE (rendered: peak 0) -- it would hold the cue past the
-                    # 0.5 s charge: the loop on both (the lsnd's primary_charged scale keeps a tap quiet)
-                    'gl_charge': [RS + r'\equipment\landmine\landmine_beep\track1\loop'],
+                    # the beep's `in` track is 1 s of SILENCE (rendered: peak 0). BOOT 1 (user): 'the charge sound
+                    # starts too early -- occasionally a normal shot starts it' -> the lsnd's START = 0.3 s of that
+                    # silence (`split` below: Halo 1's 0.3 s lead), then the beep loop: a tap stays silent
+                    'gl_charge_silence': [RS + r'\equipment\landmine\landmine_beep\track1\in'],
                     'gl_charge_loop': [RS + r'\equipment\landmine\landmine_beep\track1\loop']},
         'sounds': {'gl_fire': ('gl_fire', 'weapon_fire'), 'gl_fire_lod': ('gl_fire_lod', 'weapon_fire'),
                    'gl_ready': ('gl_ready', 'weapon_ready'), 'gl_melee1': ('gl_melee1', 'weapon_melee'),
@@ -581,6 +590,7 @@ PORT = {
                          ('smg_dual_posing_2_l', 'gl_ready'), ('smg_dual_posing_2_r', 'gl_ready'),
                          ('smg_dual_posing_3_l', 'gl_ready'), ('smg_dual_posing_3_r', 'gl_ready')),
         'graph_sound_dir': r'sound\weapons\smg' + '\\',
+        'split': {'gl_charge': ('gl_charge_silence', 0.0, 0.3)},
         'gain': {},
         'boost': {},
         'backup': r'E:\HaloBackups\H2EK_grenade_launcher_before_sounds',
@@ -600,6 +610,9 @@ PORT = {
         'weapon': WP,
         'rounds': 1, 'rows': 1,
         'canvas': (31, 37), 'tick_w': 25,
+        # BOOT 1 (user): 'the single pip looks odd -- use the frag grenade icon as in H1': Reach's HUD frag
+        # (grenade_scematics #0, ink 40 x 54) at 25 x 34 (its aspect), the donor pip's lit colour
+        'tick_art': {'h3': (R + r'ui\chud\bitmaps\grenade_scematics', 0), 'h': 34},
         'backpack': NEW_HUD + r'\backpack_weapons',
         'backpack_port': NEW_HUD + r'\grenade_launcher_backpack',
         'backpack_size': (62, 30),
@@ -655,9 +668,17 @@ PORT = {
         'name': 'grenade_launcher_reticle',
         'hud': r'ui\hud\grenade_launcher',
         'footprint': 1.0,
+        # BOOT 1 (user): 'pretty good, only missing some of the finer lines from Reach' = the PITCH LADDER (falcon\pitch,
+        # Halo 1's layer). SIZE from the user's Reach screenshot (Halo 1's B4 record): the frame 74 x 224 px at 1080p
+        # -> ink 224 / 1.117 = 200 (was 171 from chud units: Reach draws 1.17 px a unit at 1080p). The ladder: 10 deg =
+        # 70 ladder px = 29.5 screen px = 25.2 units = 19.4 #12 px (1.3 units a px) -> 0.277 a ladder row, x 1.6 / 0.7
+        # across = 0.634; Halo 1's window rows 275..600 (+30 .. -10), the 0 row (519.5) on the centre; static (Reach
+        # scrolls it with the aim)
         'h3_art': {'sheet': R + r'ui\chud\bitmaps\hud_reticles', 'sequence': 12, 'yardstick': 12,
-                   'target_ink': 171,
-                   'layers': [((R + r'ui\chud\bitmaps\grenade_launcher', 1), 0.385, {'offset': (-42.1, 0.0)})]},
+                   'target_ink': 200,
+                   'layers': [((R + r'ui\chud\bitmaps\grenade_launcher', 1), 0.385, {'offset': (-42.1, 0.0)}),
+                              (R + r'ui\chud\bitmaps\falcon\pitch.bitmap', 1.0,
+                               {'crop': (0, 275, 64, 600), 'stretch': (0.634, 0.277), 'at': (32.0, 244.5)})]},
         'preview': 'grenade_launcher_reticle_preview.png',
     },
 
@@ -785,9 +806,20 @@ PORT = {
                  "Balanced through the Frag Grenade and the Rocket Launcher."),
     },
 
-    'test': {'level': '03a_oldmombasa', 'dervish_level': '04a_gasgiant'},
+    # the Arbiter / Balanced boot moves to Sacred Icon (user, boot 1: 'test the vehicle stall on a map like Sacred
+    # Icon, that starts with vehicles later -- combined with the Arbiter test')
+    'test': {'level': '03a_oldmombasa', 'dervish_level': '06a_sentinelwalls'},
     'residency': {'levels': 'all', 'placements': False},
 }
+
+# BOOT LOG (CLASSIC)
+#   boot 1 Outskirts ORIGINAL (2026-11-24, user): tap / hold fire the two grenades; bounce + any-surface fuse work; the
+#     EMP strips the shield completely (tested on himself, god shield), the plain blast does nothing to it; animations,
+#     world model, trade, pickup message + icon good. Fixed for boot 2: FP 1 unit down; the pip -> Reach's HUD frag
+#     icon (Halo 1's); the crosshair + Reach's pitch ladder ('finer lines') at the screenshot's size; the holo sight
+#     (diffuse alpha, additive teal); low clip cutoff 1 -> 0 (the warning was always on); the charge sound's 0.3 s
+#     silent lead (a tap started it). Open: the charge during the RELOAD (user: 'reloading shouldn't allow the
+#     charge'); the vehicle stall (Sacred Icon)
 
 
 def barrel1():
