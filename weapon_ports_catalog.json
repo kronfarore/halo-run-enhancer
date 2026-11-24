@@ -11914,6 +11914,486 @@
    "anims": {
     "reload": 0.851562
    }
+  },
+  {
+   "weapon": "Grenade Launcher",
+   "source": "Halo Reach",
+   "donor": "Rocket Launcher",
+   "default_on": true,
+   "desc": "Halo Reach's Grenade Launcher carried into Halo 2 with its own model, textures, sounds and its own Reach first-person animations for both species: a tap fires a bouncing grenade that bursts half a second after its first bounce or on an enemy; hold for half a second and release to fire a grenade that bursts on contact with an EMP that strips shields. One round, reloaded after every shot. Balanced through the Frag Grenade and the Rocket Launcher.",
+   "balance": [
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 11.25,
+     "card": "Autoaim",
+     "original": 15.0,
+     "note": "the RL ratio: 15 x 45 / 60"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 4.0,
+     "card": "Autoaim",
+     "original": 4.0,
+     "note": "the RL ratio x1"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 8.0,
+     "card": "Autoaim",
+     "original": 8.0,
+     "nth": 1,
+     "note": "the RL ratio x1"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 15.0,
+     "card": "Autoaim",
+     "original": 15.0,
+     "nth": 1,
+     "note": "the RL ratio x1"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+     "field": "Fire Recovery Time",
+     "block": "Barrels",
+     "value": 0.5,
+     "card": "Rate of Fire",
+     "original": 0.5,
+     "index": "all",
+     "note": "the RL ratio x1 (0.8 / 0.8); 15 ticks"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+     "field": "Minimum Error",
+     "block": "Barrels",
+     "value": 0.15,
+     "card": "Accuracy",
+     "original": 0.15,
+     "nth": 1,
+     "index": "all",
+     "note": "the RL's 0 is degenerate: Reach's own"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+     "field": "Error Angle Max",
+     "block": "Barrels",
+     "value": 0.4,
+     "card": "Accuracy",
+     "original": 0.4,
+     "nth": 1,
+     "index": "all",
+     "note": "the RL's 0 is degenerate: Reach's own"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 1,
+     "card": "Magazine",
+     "original": 1,
+     "note": "the RL ratio x1 (2 / 2)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+     "field": "Rounds Reloaded",
+     "block": "Magazines",
+     "value": 1,
+     "card": "Magazine",
+     "original": 1,
+     "note": "the RL ratio x1"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 8,
+     "card": "Magazine",
+     "original": 8,
+     "note": "the RL ratio x1 (4 / 4)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+     "field": "Rounds Inventory Maximum",
+     "block": "Magazines",
+     "value": 15,
+     "card": "Magazine",
+     "original": 15,
+     "note": "16 total - 1 loaded (the RL ratio x1)"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 12.5,
+     "card": "Projectile Velocity",
+     "original": 12.5,
+     "note": "the throw speed: 10 wu/s in both games, x1"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 7.5,
+     "card": "Projectile Velocity",
+     "original": 7.5,
+     "note": "x1"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade",
+     "field": "Air Gravity Scale",
+     "block": null,
+     "value": 0.778,
+     "card": "Projectile Gravity",
+     "original": 0.7,
+     "note": "the frag ratio: 0.7 x 1.0 / 0.9"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade",
+     "field": "Water Gravity Scale",
+     "block": null,
+     "value": 1.0,
+     "card": "Projectile Gravity",
+     "original": 0.75,
+     "note": "the frag ratio: 0.75 x 1.0 / 0.75"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 100.0,
+     "card": "Projectile Range",
+     "original": 100.0,
+     "note": "the RL ratio x1 (175 / 175)"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_tethered_grenade",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 12.5,
+     "card": "Projectile Velocity",
+     "original": 12.5,
+     "note": "the throw speed: 10 wu/s in both games, x1"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_tethered_grenade",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 7.5,
+     "card": "Projectile Velocity",
+     "original": 7.5,
+     "note": "x1"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_tethered_grenade",
+     "field": "Air Gravity Scale",
+     "block": null,
+     "value": 0.778,
+     "card": "Projectile Gravity",
+     "original": 0.7,
+     "note": "the frag ratio: 0.7 x 1.0 / 0.9"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_tethered_grenade",
+     "field": "Water Gravity Scale",
+     "block": null,
+     "value": 1.0,
+     "card": "Projectile Gravity",
+     "original": 0.75,
+     "note": "the frag ratio: 0.75 x 1.0 / 0.75"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_tethered_grenade",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 100.0,
+     "card": "Projectile Range",
+     "original": 100.0,
+     "note": "the RL ratio x1 (175 / 175)"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade",
+     "field": "Timer",
+     "block": null,
+     "value": 0.4,
+     "card": "Fuse",
+     "original": 0.5,
+     "note": "the frag ratio: 0.5 x 0.5 / 0.625 (Reach's rule, after the first bounce off any surface)"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade",
+     "field": "Timer Max",
+     "block": null,
+     "value": 0.4,
+     "card": "Fuse",
+     "original": 0.5,
+     "note": "the frag ratio: 0.5 x 0.5 / 0.625 (Reach's rule, after the first bounce off any surface)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_explosion",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 56.25,
+     "card": "Explosion Damage",
+     "original": 60.0,
+     "note": "the sibling rule: 168.75 x the frag's 50 / 150 (Reach's 0 is unset)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_explosion",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 168.75,
+     "card": "Explosion Damage",
+     "original": 180.0,
+     "note": "the frag ratio: 180 x 150 / 160"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_explosion",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 168.75,
+     "card": "Explosion Damage",
+     "original": 180.0,
+     "note": "the frag ratio"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_explosion",
+     "field": "Radius",
+     "block": null,
+     "value": 0.833,
+     "card": "Radius",
+     "original": 0.75,
+     "note": "the frag ratio: 0.75 x 0.75 / 0.675"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_explosion",
+     "field": "Radius Max",
+     "block": null,
+     "value": 1.75,
+     "card": "Radius",
+     "original": 2.25,
+     "note": "the frag ratio: 2.25 x 1.75 / 2.25"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_explosion",
+     "field": "Area Of Effect Core Radius",
+     "block": null,
+     "value": 0.833,
+     "card": "Radius",
+     "original": 0.6,
+     "note": "the frag ratio: 0.6 x 0.75 / 0.54"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_explosion",
+     "field": "Shake Radius",
+     "block": null,
+     "value": 8.889,
+     "card": "Radius",
+     "original": 8.0,
+     "note": "the frag ratio: 8 x 10 / 9 (4b list 2)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_impact",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 18.75,
+     "card": "Impact Damage",
+     "original": 25.0,
+     "note": "the hole by the RL: 25 x 150 / 200"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_impact",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 18.75,
+     "card": "Impact Damage",
+     "original": 25.0,
+     "note": "the RL ratio"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_impact",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 18.75,
+     "card": "Impact Damage",
+     "original": 25.0,
+     "note": "the RL ratio"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_tethered_explosion",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 56.25,
+     "card": "Explosion Damage",
+     "original": 60.0,
+     "note": "the release: as the blast"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_tethered_explosion",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 168.75,
+     "card": "Explosion Damage",
+     "original": 180.0,
+     "note": "the release: the frag ratio"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_tethered_explosion",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 168.75,
+     "card": "Explosion Damage",
+     "original": 180.0,
+     "note": "the release: the frag ratio"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_tethered_explosion",
+     "field": "Radius",
+     "block": null,
+     "value": 0.0011,
+     "card": "Radius",
+     "original": 0.001,
+     "note": "the release: 0.001 x 0.75 / 0.675"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_tethered_explosion",
+     "field": "Radius Max",
+     "block": null,
+     "value": 0.778,
+     "card": "Radius",
+     "original": 1.0,
+     "note": "the release: 1 x 1.75 / 2.25"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_tethered_explosion",
+     "field": "Area Of Effect Core Radius",
+     "block": null,
+     "value": 0.278,
+     "card": "Radius",
+     "original": 0.2,
+     "note": "the release: 0.2 x 0.75 / 0.54"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_emp",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 0.5,
+     "card": "EMP",
+     "original": 100.0,
+     "note": "the plasma pistol overcharge ratio: 100 x H2 1 / Reach 200 (Halo 2's emp group: shields x500)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_emp",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 0.5,
+     "card": "EMP",
+     "original": 100.0,
+     "note": "the overcharge ratio"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_emp",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 0.5,
+     "card": "EMP",
+     "original": 100.0,
+     "note": "the overcharge ratio"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_emp",
+     "field": "Radius",
+     "block": null,
+     "value": 0.278,
+     "card": "EMP",
+     "original": 0.25,
+     "note": "the frag radius ratio: 0.25 x 0.75 / 0.675"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_emp",
+     "field": "Radius Max",
+     "block": null,
+     "value": 1.944,
+     "card": "EMP",
+     "original": 2.5,
+     "note": "the frag radius ratio: 2.5 x 1.75 / 2.25"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_emp",
+     "field": "EMP Radius",
+     "block": null,
+     "value": 1.944,
+     "card": "EMP",
+     "original": 2.5,
+     "note": "the vehicle-stall test's radius, as the EMP's"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 16.0,
+     "card": "Magazine",
+     "original": null,
+     "note": "derived from Rounds Inventory Maximum + Rounds Loaded Maximum"
+    }
+   ],
+   "fp_animations": "objects\\characters\\*\\fp\\weapons\\rifle\\fp_grenade_launcher\\fp_grenade_launcher",
+   "anims": {
+    "reload": 1.293333
+   }
   }
  ],
  "Halo 3: ODST": [
