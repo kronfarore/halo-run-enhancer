@@ -98,6 +98,10 @@
      "value": "",
      "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : barrels/[0]/heat generated per round function"
     },
+    "weapon shots per fire": {
+     "value": 0.0,
+     "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : barrels/[0]/firing/shots per fire = 0,0"
+    },
     "weapon interval s": {
      "value": 0.1,
      "src": "max(ceil(30 / rounds per second), ceil(30 x fire recovery time)) ticks / 30 (the 30 Hz reset rule; tag max(1 / rps, recovery) = 0.1 s)"
@@ -349,6 +353,10 @@
     "weapon heat per round function": {
      "value": "",
      "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : barrels/[0]/heat generated per round function"
+    },
+    "weapon shots per fire": {
+     "value": 1.0,
+     "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : barrels/[0]/firing/shots per fire = 1,1"
     },
     "weapon interval s": {
      "value": 0.3333333333333333,
@@ -608,6 +616,10 @@
      "value": "",
      "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : barrels/[0]/heat generated per round function"
     },
+    "weapon shots per fire": {
+     "value": 0.0,
+     "src": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle.weapon : barrels/[0]/firing/shots per fire = 0,0"
+    },
     "weapon interval s": {
      "value": 0.1,
      "src": "max(ceil(30 / rounds per second), ceil(30 x fire recovery time)) ticks / 30 (the 30 Hz reset rule; tag max(1 / rps, recovery) = 0.1 s)"
@@ -864,6 +876,10 @@
     "weapon heat per round function": {
      "value": "",
      "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : barrels/[0]/heat generated per round function"
+    },
+    "weapon shots per fire": {
+     "value": 1.0,
+     "src": "objects\\weapons\\rifle\\dmr\\dmr.weapon : barrels/[0]/firing/shots per fire = 1,1"
     },
     "weapon interval s": {
      "value": 0.3333333333333333,
