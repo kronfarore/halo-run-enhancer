@@ -231,7 +231,6 @@ PORT = {
                    (r'effects\objects\weapons\support_low\brute_shot\firing.effect', FX + r'\grenade_launcher_fire.effect'),
                    (r'effects\objects\weapons\rifle\battle_rifle\muzzle_flash.light', FX + r'\grenade_launcher_muzzle_flash.light'),
                    (r'effects\impact\explosion_small\frag_grenade\airborne_detonation.effect', FX + r'\detonation.effect'),
-                   (r'effects\impact\explosion_small\frag_grenade\airborne_detonation.effect', FX + r'\tethered_detonation.effect'),
                    (r'effects\materials\objects\weapons\rocket_launcher.material_effects', FX + r'\grenade_launcher.material_effects'),
                    (r'effects\materials\objects\weapons\brute_shot.material_effects', FX + r'\grenade.material_effects'),
                    (r'effects\objects\weapons\support_low\brute_shot\projectile.light', FX + r'\grenade.light'),
@@ -246,8 +245,10 @@ PORT = {
                    (r'effects\objects\weapons\pistol\plasma_pistol\overcharge_fp.lens_flare', FX + r'\gl_light_flare_fp.lens_flare'),
                    # BOOT 2 (user): 'the EMP charge should have an added EMP explosion effect for clarity' -- Reach
                    # plays its emp_pulse (cyan-blue electric wisps) in the release burst; Halo 2's nearest stock look is
-                   # the PLASMA GRENADE's airborne burst (blue flash, electric discharge, its light), nested in the
-                   # release burst in place of the frag light; its plasma sounds silenced (Reach's burst has no EMP sound)
+                   # the PLASMA GRENADE's airborne burst (blue flash, electric discharge, its light). Nesting it as a part
+                   # of a frag burst FAILED: a Halo 2 effect part cannot be an effect (tool: 'invalid type effect',
+                   # the whole burst dropped from the map) -> the release burst IS the plasma grenade's, its lod-sound
+                   # part the EMP jpt!, its sounds the port's (the release loses the frag fireball; the tap keeps it)
                    (r'effects\impact\explosion_small\plasma_grenade\airborne_detonation.effect', FX + r'\emp_burst.effect')],
         # the charge lights' flares carry a colour ANIMATION (the pistol's dark green -> green, BGR; the Laser's boot 6):
         # -> Reach's tethered arm-switch red (255, 37, 0; dark 80, 10, 0)
@@ -294,13 +295,13 @@ PORT = {
             (PJC, 'foot', r'effects\materials\objects\weapons\brute_shot', FX + r'\grenade', 'impact material effects'),
             (PJC, 'ligh', r'effects\objects\weapons\support_low\brute_shot\projectile', FX + r'\grenade', 'the grenade light', {'nth': 0}),
             (PJC, 'cont', r'effects\objects\weapons\support_low\brute_shot\projectile', FX + r'\grenade', 'the grenade trail', {'nth': 0}),
-            (PJC, 'effe', r'effects\impact\explosion_small\brute_shot\detonation', FX + r'\tethered_detonation', 'the release burst + EMP (air + ground)', {'every': True}),
+            (PJC, 'effe', r'effects\impact\explosion_small\brute_shot\detonation', FX + r'\emp_burst', 'the release burst + EMP (air + ground)', {'every': True}),
             (PJC, 'jpt!', BS + r'\damage_effects\shot_grenade_explosion', DM + r'\grenade_launcher_tethered_explosion', 'the tethered blast'),
             (PJC, 'jpt!', BS + r'\damage_effects\grenade_impact', DM + r'\grenade_launcher_impact', 'the impact'),
             # THE EMP: the release burst's lod-sound part -> a jpt! part, then the port's EMP
-            (FX + r'\tethered_detonation.effect', 'snd!', r'sound_remastered\weapons\frag_grenade\frag_expl_lod',
-             r'sound_remastered\weapons\frag_grenade\frag_expl_lod', 'the EMP part (was the lod sound)', {'class': 'jpt!'}),
-            (FX + r'\tethered_detonation.effect', 'jpt!', r'sound_remastered\weapons\frag_grenade\frag_expl_lod',
+            (FX + r'\emp_burst.effect', 'snd!', r'sound_remastered\weapons\plasma_grenade\plasma_expl_lod',
+             r'sound_remastered\weapons\plasma_grenade\plasma_expl_lod', 'the EMP part (was the lod sound)', {'class': 'jpt!'}),
+            (FX + r'\emp_burst.effect', 'jpt!', r'sound_remastered\weapons\plasma_grenade\plasma_expl_lod',
              DM + r'\grenade_launcher_emp', 'the EMP (Halo 2\'s emp group, the plasma pistol overcharge\'s)'),
             # the flight loop: the port's lsnd, its track Reach's grenade_launcher_proj loop (step 10)
             (PJ, 'lsnd', r'sound\weapons\brute_shot\brute_shot_projectile\brute_shot_projectile', FX + r'\gl_projectile', 'the flight loop'),
@@ -316,11 +317,6 @@ PORT = {
              FX + r'\gl_charging', 'its remastered twin: itself (no plasma pistol sound left)'),
             (FX + r'\gl_charge.light', 'lens', r'effects\objects\weapons\pistol\plasma_pistol\overcharge', FX + r'\gl_light_flare', "the light's own flare"),
             (FX + r'\gl_charge_fp.light', 'lens', r'effects\objects\weapons\pistol\plasma_pistol\overcharge_fp', FX + r'\gl_light_flare_fp', "the FP light's own flare"),
-            # the EMP burst: the release burst's frag-light part -> an effect part, then the port's emp_burst
-            (FX + r'\tethered_detonation.effect', 'ligh', r'effects\objects\weapons\grenade\frag_grenade\grenade_frag_explosion',
-             r'effects\objects\weapons\grenade\frag_grenade\grenade_frag_explosion', 'the EMP burst part (was the frag light)', {'class': 'effe'}),
-            (FX + r'\tethered_detonation.effect', 'effe', r'effects\objects\weapons\grenade\frag_grenade\grenade_frag_explosion',
-             FX + r'\emp_burst', "the EMP burst (the plasma grenade's electric burst)"),
         ],
         # barrel 1's firing effect + firing damage are EMPTY in the fuel rod: filled by `python ports_h2\grenade_launcher.py
         # --barrel1` (the n-th `firing effects` chunk: wiring's record_from finds the first block of a name only)
@@ -577,8 +573,7 @@ PORT = {
                    'gl_tail': ('gl_tail', 'projectile_detonation'), 'gl_proj': ('gl_proj', 'projectile_flyby'),
                    'gl_bounce': ('gl_bounce', 'object_impacts'), 'gl_bounce_metal': ('gl_bounce_metal', 'object_impacts'),
                    'gl_drop': ('gl_drop', 'object_impacts'), 'gl_drop_soft': ('gl_drop_soft', 'object_impacts'),
-                   'gl_charge': ('gl_charge', 'weapon_charge'), 'gl_charge_loop': ('gl_charge_loop', 'weapon_charge'),
-                   'gl_silence': ('gl_silence', 'projectile_detonation')},
+                   'gl_charge': ('gl_charge', 'weapon_charge'), 'gl_charge_loop': ('gl_charge_loop', 'weapon_charge')},
         'repoint_fx': [(r'sound\weapons\brute_shot\brute_shot_fire', 'gl_fire'),
                        (r'sound_remastered\weapons\brute_shot\brute_shot_lod', 'gl_fire_lod'),
                        (r'sound_remastered\weapons\brute_shot\bruteshot_lfe', 'gl_fire_lod'),
@@ -586,14 +581,14 @@ PORT = {
         # the Fuel Rod's zoom sounds: no zoom (magnification levels 0) -> the ready, so nothing is borrowed
         'repoint_weapon': [(r'sound\weapons\beam_rifle\beam_rifle_zoom_in', 'gl_ready'),
                            (r'sound\weapons\beam_rifle\beam_rifle_zoom_out', 'gl_ready')],
-        'repoint_tags': [(FX + r'\emp_burst.effect', r'sound\weapons\plasma_grenade\plasma_expl', 'gl_silence'),
-                         (FX + r'\emp_burst.effect', r'sound_remastered\weapons\plasma_grenade\plasma_expl_lod', 'gl_silence'),
-                         (FX + r'\emp_burst.effect', r'sound_remastered\weapons\plasma_grenade\plasma_expl_lfe\lfe', 'gl_silence'),
+        # the release burst (the plasma grenade's): its plasma explosion -> Reach's far layer, its lfe -> the tail (its lod
+        # part is the EMP), the near explosion the projectile's own detonation sound (gl_expl) -- Reach's layers
+        'repoint_tags': [(FX + r'\emp_burst.effect', r'sound\weapons\plasma_grenade\plasma_expl', 'gl_expl_far'),
+                         (FX + r'\emp_burst.effect', r'sound_remastered\weapons\plasma_grenade\plasma_expl_lfe\lfe', 'gl_tail'),
                          (PJ, r'sound\weapons\brute_shot\brute_round_explode', 'gl_expl'),
                          (PJC, r'sound\weapons\brute_shot\brute_round_explode', 'gl_expl'),
                          (FX + r'\detonation.effect', r'sound\weapons\frag_grenade\frag_expl', 'gl_expl_far'),
                          (FX + r'\detonation.effect', r'sound_remastered\weapons\frag_grenade\frag_expl_lod', 'gl_tail'),
-                         (FX + r'\tethered_detonation.effect', r'sound\weapons\frag_grenade\frag_expl', 'gl_expl_far'),
                          (FX + r'\grenade.material_effects', r'sound\weapons\brute_shot\brute_shot_bounce', 'gl_bounce'),
                          (FX + r'\grenade.material_effects', r'sound\weapons\brute_shot\brute_shot_drop', 'gl_bounce'),
                          (FX + r'\grenade.material_effects', r'sound\weapons\brute_shot\brute_shot_drop_soft', 'gl_bounce'),
@@ -613,7 +608,6 @@ PORT = {
                          ('smg_dual_posing_3_l', 'gl_ready'), ('smg_dual_posing_3_r', 'gl_ready')),
         'graph_sound_dir': r'sound\weapons\smg' + '\\',
         'split': {'gl_charge': ('gl_charge_silence', 0.0, 0.3),
-                  'gl_silence': ('gl_charge_silence', 0.0, 0.1),     # the EMP burst's plasma sounds (boot 2)
                   # the reload's quiet gaps (40 ms envelope, all three takes): ~0.64 s (a -30 dB lull), 1.32 s (-41..-60)
                   'gl_rl1': ('gl_reload_e', 0.0, 0.64), 'gl_rl2': ('gl_reload_e', 0.64, 1.32),
                   'gl_rl3': ('gl_reload_e', 1.32, None)},
