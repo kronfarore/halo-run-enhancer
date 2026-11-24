@@ -3,13 +3,26 @@
   "point generation rate": 84,
   "point states[0].color lower bound": 434,
   "point states[0].color upper bound": 450,
+  "point states[0].duration": 399,
   "point states[0].transition duration": 426,
   "point states[0].width": 430,
   "point states[1].color lower bound": 506,
   "point states[1].color upper bound": 522,
   "point states[1].duration": 490,
   "point states[1].width": 502,
+  "point velocity": 88,
   "texture repeats u": 108
+ },
+ "contrail@effects\\objects\\weapons\\rifle\\needle_rifle\\needle_rifle_shard": {
+  "point states[0].color lower bound": 435,
+  "point states[0].color upper bound": 451,
+  "point states[0].duration": 399,
+  "point states[0].transition duration": 407,
+  "point states[0].width": 431,
+  "point states[1].color lower bound": 507,
+  "point states[1].color upper bound": 523,
+  "point states[1].width": 503,
+  "point velocity": 88
  },
  "contrail@effects\\objects\\weapons\\support_high\\spartan_laser\\spartan_laser_inner": {
   "point states[0].color lower bound": 537,
@@ -91,6 +104,17 @@
   "radius": 80
  },
  "damage_effect@objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_shard": {
+  "instantaneous acceleration": 144
+ },
+ "damage_effect@objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_attached_super_detonation": {
+  "AOE core radius": 104,
+  "radius": 80
+ },
+ "damage_effect@objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_impact": {
+  "flags#1": 100,
+  "forward exponent": 612
+ },
+ "damage_effect@objects\\weapons\\rifle\\needle_rifle\\damage_effects\\needle_rifle_shard_super_detonation": {
   "instantaneous acceleration": 144
  },
  "damage_effect@objects\\weapons\\rifle\\plasma_repeater\\damage_effects\\plasma_repeater_bolt": {
@@ -177,6 +201,10 @@
   "reflections[0].modulation factor": 296,
   "reflections[0].radius": 280
  },
+ "lens_flare@effects\\objects\\weapons\\pistol\\excavator\\excavator_flare": {
+  "flags": 128,
+  "reflections[0].color": 300
+ },
  "lens_flare@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_charge": {
   "reflections[0].bitmap index": 268,
   "reflections[0].color": 300,
@@ -214,6 +242,10 @@
   "animations[12].production flags": 3924,
   "animations[13].production flags": 4996,
   "animations[14].production flags": 4172,
+  "animations[15].production flags": 5049,
+  "animations[16].production flags": 5621,
+  "animations[17].production flags": 5419,
+  "animations[19].production flags": 5403,
   "animations[1].production flags": 3508,
   "animations[2].production flags": 3047,
   "animations[3].production flags": 2808,
@@ -239,6 +271,36 @@
   "sound references[14].flags": 2157,
   "sound references[4].flags": 1957,
   "sound references[5].flags": 1977
+ },
+ "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\rifle\\fp_dmr\\fp_dmr": {
+  "animations[10].production flags": 4124,
+  "animations[12].production flags": 4372,
+  "animations[13].production flags": 4496,
+  "animations[14].production flags": 4620,
+  "animations[4].production flags": 3380,
+  "animations[5].production flags": 3504,
+  "animations[9].production flags": 4000
+ },
+ "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\rifle\\fp_needle_rifle\\fp_needle_rifle": {
+  "animations[10].production flags": 4613,
+  "animations[12].production flags": 4861,
+  "animations[13].production flags": 4985,
+  "animations[14].production flags": 5109,
+  "animations[15].production flags": 5233,
+  "animations[16].production flags": 5357,
+  "animations[4].production flags": 3869,
+  "animations[5].production flags": 3993,
+  "animations[9].production flags": 4489,
+  "sound references[10].flags": 2531,
+  "sound references[11].flags": 2551,
+  "sound references[12].flags": 2571,
+  "sound references[13].flags": 2591,
+  "sound references[14].flags": 2611,
+  "sound references[5].flags": 2431,
+  "sound references[6].flags": 2451,
+  "sound references[7].flags": 2471,
+  "sound references[8].flags": 2491,
+  "sound references[9].flags": 2511
  },
  "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\rifle\\fp_plasma_repeater\\fp_plasma_repeater": {
   "animations[12].production flags": 4535,
@@ -282,12 +344,12 @@
   "sound references[9].flags": 1985
  },
  "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\support_high\\fp_spartan_laser\\fp_spartan_laser": {
-  "animations[0].production flags": 2535,
-  "animations[12].production flags": 4023,
-  "animations[14].production flags": 4271,
-  "animations[2].production flags": 2783,
-  "animations[8].production flags": 3527,
-  "animations[9].production flags": 3651
+  "animations[0].production flags": 2500,
+  "animations[12].production flags": 3988,
+  "animations[14].production flags": 4236,
+  "animations[2].production flags": 2748,
+  "animations[8].production flags": 3492,
+  "animations[9].production flags": 3616
  },
  "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower": {
   "animations[10].production flags": 4236,
@@ -313,6 +375,47 @@
   "animations[10].weight": 3778,
   "animations[9].weight": 3654
  },
+ "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_dmr\\fp_dmr": {
+  "animations[10].production flags": 4401,
+  "animations[12].production flags": 4677,
+  "animations[13].production flags": 4801,
+  "animations[14].production flags": 4925,
+  "animations[15].production flags": 5049,
+  "animations[4].production flags": 3685,
+  "animations[5].production flags": 3781,
+  "animations[9].production flags": 4305,
+  "sound references[10].flags": 2347,
+  "sound references[11].flags": 2367,
+  "sound references[12].flags": 2387,
+  "sound references[13].flags": 2407,
+  "sound references[14].flags": 2427,
+  "sound references[5].flags": 2247,
+  "sound references[6].flags": 2267,
+  "sound references[7].flags": 2287,
+  "sound references[8].flags": 2307,
+  "sound references[9].flags": 2327
+ },
+ "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_needle_rifle\\fp_needle_rifle": {
+  "animations[10].production flags": 4877,
+  "animations[12].production flags": 5125,
+  "animations[13].production flags": 5249,
+  "animations[14].production flags": 5373,
+  "animations[15].production flags": 5497,
+  "animations[16].production flags": 5621,
+  "animations[4].production flags": 4133,
+  "animations[5].production flags": 4257,
+  "animations[9].production flags": 4753,
+  "sound references[10].flags": 2795,
+  "sound references[11].flags": 2815,
+  "sound references[12].flags": 2835,
+  "sound references[13].flags": 2855,
+  "sound references[14].flags": 2875,
+  "sound references[5].flags": 2695,
+  "sound references[6].flags": 2715,
+  "sound references[7].flags": 2735,
+  "sound references[8].flags": 2755,
+  "sound references[9].flags": 2775
+ },
  "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_plasma_repeater\\fp_plasma_repeater": {
   "animations[12].production flags": 4799,
   "animations[15].production flags": 5171,
@@ -330,14 +433,15 @@
   "sound references[9].flags": 2449
  },
  "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_saw\\fp_saw": {
-  "animations[11].production flags": 4475,
-  "animations[12].production flags": 4599,
-  "animations[13].production flags": 4723,
+  "animations[11].production flags": 4468,
+  "animations[12].production flags": 4592,
+  "animations[13].production flags": 4716,
   "animations[14].production flags": 4847,
-  "animations[3].production flags": 3483,
-  "animations[4].production flags": 2932,
-  "animations[8].production flags": 4103,
+  "animations[3].production flags": 3476,
+  "animations[4].production flags": 3600,
+  "animations[8].production flags": 4096,
   "animations[8].weight": 4101,
+  "animations[9].production flags": 4220,
   "animations[9].weight": 4225,
   "sound references[10].flags": 2269,
   "sound references[11].flags": 2289,
@@ -351,12 +455,12 @@
   "sound references[9].flags": 2249
  },
  "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\support_high\\fp_spartan_laser\\fp_spartan_laser": {
-  "animations[0].production flags": 2799,
-  "animations[12].production flags": 4287,
+  "animations[0].production flags": 2764,
+  "animations[12].production flags": 4252,
   "animations[14].production flags": 4500,
-  "animations[2].production flags": 3047,
-  "animations[8].production flags": 3791,
-  "animations[9].production flags": 3915
+  "animations[2].production flags": 3012,
+  "animations[8].production flags": 3756,
+  "animations[9].production flags": 3880
  },
  "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\support_low\\fp_flamethrower\\fp_flamethrower": {
   "animations[10].production flags": 4624,
@@ -402,9 +506,12 @@
   "bitmap widgets[3].fullscreen sequence index": 580,
   "bitmap widgets[3].halfscreen sequence index": 581,
   "bitmap widgets[3].quarterscreen sequence index": 582,
+  "bitmap widgets[4].fullscreen offset": 704,
   "bitmap widgets[4].fullscreen sequence index": 700,
   "bitmap widgets[4].halfscreen sequence index": 701,
   "bitmap widgets[4].quarterscreen sequence index": 702,
+  "bitmap widgets[5].flags": 786,
+  "bitmap widgets[5].fullscreen offset": 824,
   "bitmap widgets[5].fullscreen sequence index": 820,
   "bitmap widgets[5].halfscreen sequence index": 821,
   "bitmap widgets[5].quarterscreen sequence index": 822,
@@ -482,6 +589,11 @@
   "bitmap widgets[2].halfscreen sequence index": 461,
   "bitmap widgets[2].quarterscreen sequence index": 462
  },
+ "new_hud_definition@ui\\hud\\needle_rifle": {
+  "bitmap widgets[4].fullscreen offset": 704,
+  "bitmap widgets[5].flags": 786,
+  "bitmap widgets[5].fullscreen offset": 824
+ },
  "new_hud_definition@ui\\hud\\saw": {
   "bitmap widgets[12].[N] extra flags": 1614
  },
@@ -512,10 +624,13 @@
   "bounding radius": 84,
   "final velocity": 844,
   "flags#1": 460,
+  "guided angular velocity (lower)": 648,
+  "guided angular velocity (upper)": 652,
   "initial velocity": 840,
   "material responses[0].and": 1264,
   "material responses[0].angular noise": 1308,
   "material responses[0].between": 1256,
+  "material responses[0].chance fraction": 1766,
   "material responses[0].parallel friction": 1364,
   "material responses[0].perpendicular friction": 1368,
   "material responses[0].response": 1329,
@@ -565,6 +680,10 @@
   "material responses[9].maximum distance": 2752,
   "material responses[9].response": 2769,
   "maximum range": 504,
+  "minimum velocity": 368,
+  "super det. projectile count": 378,
+  "targeted leading fraction": 668,
+  "timer": 360,
   "water damage range": 832,
   "water gravity scale": 828
  },
@@ -591,6 +710,26 @@
  },
  "projectile@objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet": {
   "material responses[9].maximum distance": 2752
+ },
+ "projectile@objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard": {
+  "air damage range": 620,
+  "final velocity": 644,
+  "guided angular velocity (lower)": 648,
+  "guided angular velocity (upper)": 652,
+  "initial velocity": 640,
+  "material responses[0].angular noise": 1907,
+  "material responses[0].between": 1871,
+  "material responses[0].chance fraction": 1867,
+  "material responses[0].perpendicular friction": 1938,
+  "material responses[3].chance fraction": 2203,
+  "material responses[4].between": 2319,
+  "material responses[4].chance fraction": 2315,
+  "maximum range": 372,
+  "minimum velocity": 368,
+  "super det. projectile count": 378,
+  "targeted leading fraction": 668,
+  "timer": 360,
+  "water gravity scale": 628
  },
  "projectile@objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_rifle_spike": {
   "acceleration range": 856,
@@ -770,11 +909,15 @@
   "barrels[0].rounds between tracers": 3113,
   "barrels[0].rounds per second": 3436,
   "barrels[0].rounds per shot": 3127,
+  "barrels[0].shots per fire": 3054,
+  "barrels[0].soft recovery fraction": 3062,
   "bounding offset": 88,
   "bounding radius": 84,
   "damage pyramid depth": 696,
+  "firing effects[0].shot count lower bound": 3591,
   "first person weapon offset": 1188,
   "flags#2": 492,
+  "heat illumination": 564,
   "heat loss per second": 560,
   "heat recovery threshold": 544,
   "magazines[0].reload time": 2690,
@@ -811,18 +954,21 @@
   "overheated threshold": 548
  },
  "weapon@objects\\weapons\\pistol\\excavator\\excavator": {
-  "barrels[0].dual wield damage scale": 3135,
-  "barrels[0].error angle": 3127,
-  "barrels[0].error angle#1": 3151,
-  "barrels[0].fire recovery time": 3067,
-  "barrels[0].illumination recovery time": 3211,
-  "barrels[0].minimum error": 3123,
-  "barrels[0].minimum error#1": 3147,
-  "barrels[0].projectiles per shot": 3141,
-  "magazines[0].rounds loaded maximum": 2696,
-  "magazines[0].rounds reloaded": 2706,
-  "magazines[0].rounds total initial": 2692,
-  "magazines[0].rounds total maximum": 2694
+  "barrels[0].dual wield damage scale": 3257,
+  "barrels[0].error angle": 3249,
+  "barrels[0].error angle#1": 3273,
+  "barrels[0].fire recovery time": 3189,
+  "barrels[0].illumination recovery time": 3333,
+  "barrels[0].minimum error": 3245,
+  "barrels[0].minimum error#1": 3269,
+  "barrels[0].projectiles per shot": 3263,
+  "magazines[0].rounds loaded maximum": 2818,
+  "magazines[0].rounds reloaded": 2828,
+  "magazines[0].rounds total initial": 2814,
+  "magazines[0].rounds total maximum": 2816
+ },
+ "weapon@objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol": {
+  "ai scariness": 888
  },
  "weapon@objects\\weapons\\rifle\\assault_rifle\\assault_rifle": {
   "acceleration scale": 100,
@@ -849,6 +995,41 @@
  },
  "weapon@objects\\weapons\\rifle\\battle_rifle\\battle_rifle": {
   "bounding offset": 88
+ },
+ "weapon@objects\\weapons\\rifle\\dmr\\dmr": {
+  "ai scariness": 888,
+  "barrels[0].acceleration time#1": 2862,
+  "barrels[0].deceleration time#1": 2866,
+  "barrels[0].error angle#1": 2922,
+  "barrels[0].fire recovery time": 2838,
+  "barrels[0].illumination recovery time": 2982,
+  "barrels[0].rounds between tracers": 2851,
+  "barrels[0].rounds per second": 2809,
+  "barrels[0].shots per fire": 2834,
+  "magazines[0].rounds loaded maximum": 2465,
+  "magazines[0].rounds reloaded": 2475,
+  "magazines[0].rounds total initial": 2461,
+  "magazines[0].rounds total maximum": 2463,
+  "new triggers[0].behavior": 2684
+ },
+ "weapon@objects\\weapons\\rifle\\needle_rifle\\needle_rifle": {
+  "barrels[0].acceleration time#1": 3041,
+  "barrels[0].deceleration time#1": 3045,
+  "barrels[0].error angle#1": 3101,
+  "barrels[0].fire recovery time": 3017,
+  "barrels[0].illumination recovery time": 3161,
+  "barrels[0].rounds per second": 2989,
+  "barrels[0].shots per fire": 3013,
+  "barrels[0].soft recovery fraction": 3021,
+  "deviation angle": 856,
+  "firing effects[0].shot count lower bound": 3595,
+  "magazines[0].rounds loaded maximum": 2657,
+  "magazines[0].rounds reloaded": 2667,
+  "magazines[0].rounds total initial": 2653,
+  "magazines[0].rounds total maximum": 2655,
+  "new triggers[0].behavior": 2869,
+  "new triggers[0].primary barrel": 2871,
+  "new triggers[0].secondary barrel": 2873
  },
  "weapon@objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater": {
   "barrels[0].acceleration time": 3227,
@@ -892,6 +1073,9 @@
   "magazines[0].rounds reloaded": 2732,
   "magazines[0].rounds total initial": 2718,
   "magazines[0].rounds total maximum": 2720
+ },
+ "weapon@objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher": {
+  "barrels[0].fire recovery time": 2798
  },
  "weapon@objects\\weapons\\support_high\\spartan_laser\\spartan_laser": {
   "active camo ding": 996,
