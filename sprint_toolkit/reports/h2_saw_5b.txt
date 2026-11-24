@@ -1,6 +1,6 @@
 SAW -- BALANCED (catalog rows on the ports), legendary, body shots (ttk_halo2)
 weapon                      dmg    rate/s   fires/s    dps  mag reload init/max         vel range       error   autoaim dual
-SAW (port)                  9.5     20-20     15-15  142.5   72   1.70  129/411       80/80    30  0.375-3.44      6/15     
+SAW (port)                 7.12     20-20     15-15  106.9   72   1.70  129/411       80/80    30  0.375-3.44      6/15     
 SMG                        4.75     15-15     15-15   71.2   60   2.00  180/240     400/400    40      1-2.75      6/12     
 Battle Rifle                  6     15-15     15-15   90.0   36   1.93  108/144     400/400    40     0.3-0.6      3/17     
 Plasma Rifle                 10       6-9     6-7.5   75.0    -   0.00      0/0       14/14    40   0.25-0.75      6/12     
@@ -9,7 +9,7 @@ Assault Rifle (port)       7.12     10-10     10-10   71.2   32   1.93   96/384 
 
 time to kill (shots / seconds):
                               Elite minor      Brute minor      Grunt minor     Jackal minor
-SAW (port)                    16 / 1.00 s      53 / 3.47 s       5 / 0.27 s       7 / 0.40 s
+SAW (port)                    22 / 1.40 s      71 / 4.67 s       6 / 0.33 s       9 / 0.53 s
 SMG                           32 / 2.07 s     106 / 8.93 s       9 / 0.53 s      13 / 0.80 s
 Battle Rifle                  25 / 3.20 s      42 / 7.00 s       7 / 0.80 s      10 / 1.20 s
 Plasma Rifle                  20 / 2.60 s      50 / 9.30 s       4 / 0.47 s       6 / 0.73 s
@@ -17,7 +17,7 @@ Brute Plasma Rifle            20 / 4.83 s     50 / 13.47 s       4 / 0.40 s     
 Assault Rifle (port)          22 / 2.10 s     71 / 10.67 s       6 / 0.50 s       9 / 0.80 s
 SAW -- DEFAULT (the kit's tags), legendary, body shots (ttk_halo2)
 weapon                      dmg    rate/s   fires/s    dps  mag reload init/max         vel range       error   autoaim dual
-SAW (port)                   10     20-20     15-15  150.0   72   2.00  216/288     300/300    75    0.3-2.75      5/16     
+SAW (port)                  7.5     20-20     15-15  112.5   72   2.00  216/288     300/300    75    0.3-2.75      5/16     
 SMG                        4.75     15-15     15-15   71.2   60   2.00  180/240     400/400    40      1-2.75      6/12     
 Battle Rifle                  6     15-15     15-15   90.0   36   1.93  108/144     400/400    40     0.3-0.6      3/17     
 Plasma Rifle                 10       6-9     6-7.5   75.0    -   0.00      0/0       14/14    40   0.25-0.75      6/12     
@@ -26,7 +26,7 @@ Assault Rifle (port)        7.5     10-10     10-10   75.0   32   1.93   96/384 
 
 time to kill (shots / seconds):
                               Elite minor      Brute minor      Grunt minor     Jackal minor
-SAW (port)                    15 / 0.93 s      50 / 3.27 s       4 / 0.20 s       6 / 0.33 s
+SAW (port)                    20 / 1.27 s      67 / 4.40 s       6 / 0.33 s       8 / 0.47 s
 SMG                           32 / 2.07 s     106 / 8.93 s       9 / 0.53 s      13 / 0.80 s
 Battle Rifle                  25 / 3.20 s      42 / 7.00 s       7 / 0.80 s      10 / 1.20 s
 Plasma Rifle                  20 / 2.60 s      50 / 9.30 s       4 / 0.47 s       6 / 0.73 s

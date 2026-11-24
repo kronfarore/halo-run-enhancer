@@ -11680,30 +11680,27 @@
      "tag": "objects\\weapons\\rifle\\saw\\damage_effects\\saw_bullet",
      "field": "Damage Lower Bound",
      "block": null,
-     "value": 0.0,
+     "value": 0,
      "card": "Bullet Damage",
-     "original": 10.0,
-     "note": "Halo 2 fires the 20/s tag at 15/s (a shot every 2 ticks of 30 Hz; reports/h2_fire_rule.jsonl): per-round damage x 4/3 keeps the damage per second"
+     "original": 7.5
     },
     {
      "class": "jpt!",
      "tag": "objects\\weapons\\rifle\\saw\\damage_effects\\saw_bullet",
      "field": "Damage Upper Bound",
      "block": null,
-     "value": 9.5,
+     "value": 7.125,
      "card": "Bullet Damage",
-     "original": 10.0,
-     "note": "Halo 2 fires the 20/s tag at 15/s (a shot every 2 ticks of 30 Hz; reports/h2_fire_rule.jsonl): per-round damage x 4/3 keeps the damage per second"
+     "original": 7.5
     },
     {
      "class": "jpt!",
      "tag": "objects\\weapons\\rifle\\saw\\damage_effects\\saw_bullet",
      "field": "Damage Upper Bound Max",
      "block": null,
-     "value": 9.5,
+     "value": 7.125,
      "card": "Bullet Damage",
-     "original": 10.0,
-     "note": "Halo 2 fires the 20/s tag at 15/s (a shot every 2 ticks of 30 Hz; reports/h2_fire_rule.jsonl): per-round damage x 4/3 keeps the damage per second"
+     "original": 7.5
     },
     {
      "class": "weap",
