@@ -300,7 +300,7 @@ def player_weapon(wdef, inp):
     # the recovery paces a one-shot-a-pull weapon (shots per fire >= 1), not a held automatic
     gate = rec if (spf >= 1 or rps <= 0) else 0.0
     fired = 30.0 / max(int(math.ceil(30.0 / tc.tick_rate(rps) - 1e-6)) if rps > 0 else 1,
-                       int(math.ceil(gate * 30.0 - 1e-6)) if gate else 1)
+                       int(math.ceil(gate * 30.0 - 1e-3)) if gate else 1)
     interval = 1.0 / fired
     inp.put(pre + 'interval s', interval, 'max(ceil(30 / rounds per second), ceil(30 x fire recovery '
             'time)) ticks / 30 (the 30 Hz reset rule; tag max(1 / rps, recovery) = %.4g s)'

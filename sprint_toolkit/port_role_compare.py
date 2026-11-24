@@ -100,7 +100,7 @@ def metrics(kit, wtag, stem, overrides=None):
     # ticks (assumed) -- Reach's / Halo 4's tag rates are not the rates those games fire
     tag_interval = max(1.0 / rps if rps else 0.0, recovery if hit >= 20 else 0.0)
     rate_ticks = int(round(30.0 / tc.tick_rate(rps))) if rps else 0
-    rec_ticks = int(math.ceil(recovery * 30.0 - 1e-6)) if recovery and hit >= 20 else 0
+    rec_ticks = int(math.ceil(recovery * 30.0 - 1e-3)) if recovery and hit >= 20 else 0
     interval = max(rate_ticks, rec_ticks) / 30.0 if (rate_ticks or rec_ticks) else tag_interval
     heat = o('heat generated per round', num(w, 'heat generated per round'))
     over = num(w, 'overheated threshold', default=0.0) or 1.0

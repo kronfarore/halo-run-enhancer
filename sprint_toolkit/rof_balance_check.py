@@ -64,7 +64,7 @@ def cadence(rate, rec=0.0, spf=0):
     rt = int(round(30.0 / tc.tick_rate(r)))
     if spf == 0 and rate > 0:
         rec = 0.0                       # a held automatic: the recovery does not pace it
-    rct = int(math.ceil(rec * 30.0 - 1e-6)) if rec > 0 else 0
+    rct = int(math.ceil(rec * 30.0 - 1e-3)) if rec > 0 else 0
     if spf > 1:
         cont = spf / ((spf - 1) / r + max(1.0 / r, rec))
         fired = spf * 30.0 / ((spf - 1) * rt + max(rt, rct))

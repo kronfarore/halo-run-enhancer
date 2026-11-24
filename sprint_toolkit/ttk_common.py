@@ -293,7 +293,8 @@ def tick_shots(n, w, limit_s=600.0, cool_while_firing=True, rate_fn=None):
     lo, hi = [r if r > 0 else TICK_HZ for r in w['rps']]
     spf = w.get('shots per fire') or [1.0, 1.0]
     burst = int(spf[1]) if spf[1] > 1 else 1
-    rec_ticks = int(math.ceil(w['fire recovery'] * TICK_HZ - 1e-6)) if w.get('fire recovery') else 0
+    rec_ticks = int(math.ceil(w['fire recovery'] * TICK_HZ - 1e-3)) if w.get('fire recovery') else 0
+    # (1e-3 tick tolerance: a float32 0.7666667 s is 23.000001 ticks, meant as 23)
     # the recovery is the cooldown between FIRES: it paces a one-shot-a-pull weapon (shots per
     # fire 1, or a rate of 0) but not a held automatic (shots per fire 0 = fire while held) --
     # Reach's Needler (12/s, recovery 0.2) would otherwise fire 5/s. INFERRED, not measured
@@ -304,7 +305,7 @@ def tick_shots(n, w, limit_s=600.0, cool_while_firing=True, rate_fn=None):
     loss = (w.get('heat loss') or 0.0) / TICK_HZ
     loss_oh = (w.get('overheated heat loss') or w.get('heat loss') or 1.0) / TICK_HZ
     rec_at = w.get('heat recovery threshold') or 0.0
-    mag, reload_ticks = w.get('mag') or 0, int(math.ceil((w.get('reload') or 0.0) * TICK_HZ - 1e-6))
+    mag, reload_ticks = w.get('mag') or 0, int(math.ceil((w.get('reload') or 0.0) * TICK_HZ - 1e-3))
     s, heat, held, inmag, in_burst = 0.0, 0.0, 0, mag, 0
     tick, busy_until, reloading, overheated, oh_tick = 0, 0, False, False, 0
     shots = []
