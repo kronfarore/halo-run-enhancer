@@ -709,6 +709,82 @@ PORT = {
                        'from_weapon': GL + r'\grenade_launcher',
                        'donor_weapon': BS + r'\brute_shot',
                        'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
+    # BALANCED (step 4a, user 2026-11-24: reports/h2_grenade_launcher_4a.md, the FRAG + RL holes). The table
+    # (balance_port.py "Grenade Launcher" "Rocket Launcher" "Halo Reach" "Halo 2") is the plain RL ratio, the 4a
+    # ALTERNATIVE: its rows are all dropped (no port_tags) and every row is written here from the yardstick's
+    # `balanced`, `original` = the kit's (Reach's own). The weapon row FIRST (weapon_ports.weap_path reads it).
+    # Barrel rows on BOTH barrels (index 'all': the charged pair's barrel 1). Melee: the shared smash_melee, no row
+    'catalog': {
+        'table': 'balance_Grenade_Launcher_HaloReach_to_Halo2.json',
+        'weapon_tag': GL + r'\grenade_launcher',
+        'port_tags': [],
+        'shared': [('jpt!', r'objects\weapons\damage_effects\smash_melee')],
+        'extra_rows': (
+            [{'class': 'weap', 'tag': GL + r'\grenade_launcher', 'field': f, 'block': blk, 'value': v, 'card': card,
+              'original': o, **({'nth': nth} if nth else {}), **({'index': 'all'} if blk == 'Barrels' else {}),
+              'note': note}
+             for f, blk, nth, v, o, card, note in (
+                ('Autoaim Range', None, 0, 11.25, 15.0, 'Autoaim', "the RL ratio: 15 x 45 / 60"),
+                ('Autoaim Angle', None, 0, 4.0, 4.0, 'Autoaim', "the RL ratio x1"),
+                ('Magnetism Angle', None, 1, 8.0, 8.0, 'Autoaim', "the RL ratio x1"),
+                ('Magnetism Range', None, 1, 15.0, 15.0, 'Autoaim', "the RL ratio x1"),
+                ('Fire Recovery Time', 'Barrels', 0, 0.5, 0.5, 'Rate of Fire', "the RL ratio x1 (0.8 / 0.8); 15 ticks"),
+                ('Minimum Error', 'Barrels', 1, 0.15, 0.15, 'Accuracy', "the RL's 0 is degenerate: Reach's own"),
+                ('Error Angle Max', 'Barrels', 1, 0.4, 0.4, 'Accuracy', "the RL's 0 is degenerate: Reach's own"),
+                ('Rounds Loaded Maximum', 'Magazines', 0, 1, 1, 'Magazine', "the RL ratio x1 (2 / 2)"),
+                ('Rounds Reloaded', 'Magazines', 0, 1, 1, 'Magazine', "the RL ratio x1"),
+                ('Rounds Total Initial', 'Magazines', 0, 8, 8, 'Magazine', "the RL ratio x1 (4 / 4)"),
+                ('Rounds Inventory Maximum', 'Magazines', 0, 15, 15, 'Magazine', "16 total - 1 loaded (the RL ratio x1)"))]
+            + [{'class': 'proj', 'tag': GL + '\\projectiles\\' + pj, 'field': f, 'block': None, 'value': v, 'card': card,
+                'original': o, 'note': note}
+               for pj in ('grenade_launcher_grenade', 'grenade_launcher_tethered_grenade')
+               for f, v, o, card, note in (
+                ('Initial Velocity', 12.5, 12.5, 'Projectile Velocity', 'the throw speed: 10 wu/s in both games, x1'),
+                ('Final Velocity', 7.5, 7.5, 'Projectile Velocity', 'x1'),
+                ('Air Gravity Scale', 0.778, 0.7, 'Projectile Gravity', 'the frag ratio: 0.7 x 1.0 / 0.9'),
+                ('Water Gravity Scale', 1.0, 0.75, 'Projectile Gravity', 'the frag ratio: 0.75 x 1.0 / 0.75'),
+                ('Maximum Range', 100.0, 100.0, 'Projectile Range', 'the RL ratio x1 (175 / 175)'))]
+            + [{'class': 'proj', 'tag': GL + r'\projectiles\grenade_launcher_grenade', 'field': f, 'block': None,
+                'value': 0.4, 'card': 'Fuse', 'original': 0.5,
+                'note': "the frag ratio: 0.5 x 0.5 / 0.625 (Reach's rule, after the first bounce off any surface)"}
+               for f in ('Timer', 'Timer Max')]
+            + [{'class': 'jpt!', 'tag': DM + '\\' + dm, 'field': f, 'block': None, 'value': v, 'card': card,
+                'original': o, 'note': note}
+               for dm, f, v, o, card, note in (
+                ('grenade_launcher_explosion', 'Damage Lower Bound', 56.25, 60.0, 'Explosion Damage',
+                 "the sibling rule: 168.75 x the frag's 50 / 150 (Reach's 0 is unset)"),
+                ('grenade_launcher_explosion', 'Damage Upper Bound', 168.75, 180.0, 'Explosion Damage', 'the frag ratio: 180 x 150 / 160'),
+                ('grenade_launcher_explosion', 'Damage Upper Bound Max', 168.75, 180.0, 'Explosion Damage', 'the frag ratio'),
+                ('grenade_launcher_explosion', 'Radius', 0.833, 0.75, 'Radius', 'the frag ratio: 0.75 x 0.75 / 0.675'),
+                ('grenade_launcher_explosion', 'Radius Max', 1.75, 2.25, 'Radius', 'the frag ratio: 2.25 x 1.75 / 2.25'),
+                ('grenade_launcher_explosion', 'Area Of Effect Core Radius', 0.833, 0.6, 'Radius', 'the frag ratio: 0.6 x 0.75 / 0.54'),
+                ('grenade_launcher_explosion', 'Shake Radius', 8.889, 8.0, 'Radius', 'the frag ratio: 8 x 10 / 9 (4b list 2)'),
+                ('grenade_launcher_impact', 'Damage Lower Bound', 18.75, 25.0, 'Impact Damage', "the hole by the RL: 25 x 150 / 200"),
+                ('grenade_launcher_impact', 'Damage Upper Bound', 18.75, 25.0, 'Impact Damage', 'the RL ratio'),
+                ('grenade_launcher_impact', 'Damage Upper Bound Max', 18.75, 25.0, 'Impact Damage', 'the RL ratio'),
+                ('grenade_launcher_tethered_explosion', 'Damage Lower Bound', 56.25, 60.0, 'Explosion Damage', 'the release: as the blast'),
+                ('grenade_launcher_tethered_explosion', 'Damage Upper Bound', 168.75, 180.0, 'Explosion Damage', 'the release: the frag ratio'),
+                ('grenade_launcher_tethered_explosion', 'Damage Upper Bound Max', 168.75, 180.0, 'Explosion Damage', 'the release: the frag ratio'),
+                ('grenade_launcher_tethered_explosion', 'Radius', 0.0011, 0.001, 'Radius', 'the release: 0.001 x 0.75 / 0.675'),
+                ('grenade_launcher_tethered_explosion', 'Radius Max', 0.778, 1.0, 'Radius', 'the release: 1 x 1.75 / 2.25'),
+                ('grenade_launcher_tethered_explosion', 'Area Of Effect Core Radius', 0.278, 0.2, 'Radius', 'the release: 0.2 x 0.75 / 0.54'),
+                ('grenade_launcher_emp', 'Damage Lower Bound', 0.5, 100.0, 'EMP',
+                 "the plasma pistol overcharge ratio: 100 x H2 1 / Reach 200 (Halo 2's emp group: shields x500)"),
+                ('grenade_launcher_emp', 'Damage Upper Bound', 0.5, 100.0, 'EMP', 'the overcharge ratio'),
+                ('grenade_launcher_emp', 'Damage Upper Bound Max', 0.5, 100.0, 'EMP', 'the overcharge ratio'),
+                ('grenade_launcher_emp', 'Radius', 0.278, 0.25, 'EMP', 'the frag radius ratio: 0.25 x 0.75 / 0.675'),
+                ('grenade_launcher_emp', 'Radius Max', 1.944, 2.5, 'EMP', 'the frag radius ratio: 2.5 x 1.75 / 2.25'),
+                ('grenade_launcher_emp', 'EMP Radius', 1.944, 2.5, 'EMP', "the vehicle-stall test's radius, as the EMP's"))]),
+        'fp_animations': r'objects\characters\*\fp\weapons\rifle\fp_grenade_launcher\fp_grenade_launcher',
+        # the reload by the RL ratio: Reach's 63 fr (2.1 s) x H2 RL 5.0 s / Reach RL 116 fr (3.867 s) = 2.716 s
+        'reload_mult': round(2.716 / 2.1, 6),
+        'desc': ("Halo Reach's Grenade Launcher carried into Halo 2 with its own model, textures, sounds and its own "
+                 "Reach first-person animations for both species: a tap fires a bouncing grenade that bursts half a "
+                 "second after its first bounce or on an enemy; hold for half a second and release to fire a grenade "
+                 "that bursts on contact with an EMP that strips shields. One round, reloaded after every shot. "
+                 "Balanced through the Frag Grenade and the Rocket Launcher."),
+    },
+
     'test': {'level': '03a_oldmombasa', 'dervish_level': '04a_gasgiant'},
     'residency': {'levels': 'all', 'placements': False},
 }

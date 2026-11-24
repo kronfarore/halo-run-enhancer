@@ -1579,6 +1579,114 @@
   "k": 1.0
  },
  {
+  "game": "Halo 2",
+  "port": "Grenade Launcher",
+  "source": "Halo Reach",
+  "balanced": {
+   "Fire Recovery Time": 0.5
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_explosion",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 168.75,
+    "card": "Explosion Damage",
+    "original": 180.0,
+    "note": "the frag ratio: 180 x 150 / 160"
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_explosion",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 168.75,
+    "card": "Explosion Damage",
+    "original": 180.0,
+    "note": "the frag ratio"
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_impact",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 18.75,
+    "card": "Impact Damage",
+    "original": 25.0,
+    "note": "the RL ratio"
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_impact",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 18.75,
+    "card": "Impact Damage",
+    "original": 25.0,
+    "note": "the RL ratio"
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_tethered_explosion",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 168.75,
+    "card": "Explosion Damage",
+    "original": 180.0,
+    "note": "the release: the frag ratio"
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_tethered_explosion",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 168.75,
+    "card": "Explosion Damage",
+    "original": 180.0,
+    "note": "the release: the frag ratio"
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_emp",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 0.5,
+    "card": "EMP",
+    "original": 100.0,
+    "note": "the overcharge ratio"
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_emp",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 0.5,
+    "card": "EMP",
+    "original": 100.0,
+    "note": "the overcharge ratio"
+   }
+  ],
+  "notes": [],
+  "port fires": [
+   2.0,
+   2.0
+  ],
+  "chain": "balance_Grenade_Launcher_HaloReach_to_Halo2.json",
+  "source fires": 2.0,
+  "legs": [
+   [
+    "Rocket Launcher",
+    "Halo Reach",
+    "Halo 2",
+    1.25,
+    1.25
+   ]
+  ],
+  "intended": 2.0,
+  "k": 1.0
+ },
+ {
   "game": "Halo 3: ODST",
   "port": "SAW",
   "source": "Halo 4",
