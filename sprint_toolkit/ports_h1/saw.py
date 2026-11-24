@@ -52,3 +52,11 @@ PORT = {
     'impact_thin': {'materials': [22], 'from': r'weapons\assault rifle\effects\impact cyborg shield',
                     'out': 'weapons\\saw\\effects\\impact\\', 'thin': {}, 'rate': 15.0},
 }
+
+# FIRE RULE (user 2026-11-24: 'Apply them all'; port_fire_rule.py): every game fires a shot every
+# ceil(30 / rate) ticks (reports/rof_test.jsonl), so the Balanced rate's damage per second drifts from
+# the ratio rule's -- rof_balance_check 2026-11-24: the Balanced rate fires 30/s, the ratio rule meant 22.5/s (source fires 15/s). The projectile's Balanced damage x 0.75 (make_port_catalog_* apply it).
+PORT['fire_rule_damage'] = {'k': 0.75, 'tags': ['weapons' + chr(92) + 'saw' + chr(92) + 'bullet'],
+                            'why': 'rof_balance_check 2026-11-24: the Balanced rate fires 30/s, the ratio rule meant 22.5/s (source fires 15/s)'}
+# ARMED parity: the balanced WDM rule's port dps follows the damage (was 150)
+PORT['firing_profile']['wdm_rule']['balanced_port_dps'] = 112.5

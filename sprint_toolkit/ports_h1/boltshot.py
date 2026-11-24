@@ -674,3 +674,11 @@ PORT.update({
     # the dry test: b30 (this session's level, parallel pair 3)
     'test': {'level': 'b30', 'rounds': (10, 30), 'grunt': None, 'elite': None},
 })
+
+# FIRE RULE (user 2026-11-24: 'Apply them all'; port_fire_rule.py): every game fires a shot every
+# ceil(30 / rate) ticks (reports/rof_test.jsonl), so the Balanced rate's damage per second drifts from
+# the ratio rule's -- rof_balance_check 2026-11-24: the Balanced rate fires 6/s, the ratio rule meant 6.667/s (source fires 10/s). The projectile's Balanced damage x 1.11111 (make_port_catalog_* apply it).
+PORT['fire_rule_damage'] = {'k': 1.111111, 'tags': [BO + 'bolt'],
+                            'why': 'rof_balance_check 2026-11-24: the Balanced rate fires 6/s, the ratio rule meant 6.667/s (source fires 10/s)'}
+# ARMED parity: the balanced WDM rule's port dps follows the damage (was 87.5)
+PORT['firing_profile']['wdm_rule']['balanced_port_dps'] = 97.222

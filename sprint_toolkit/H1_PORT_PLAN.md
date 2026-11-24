@@ -1427,6 +1427,8 @@ All of PORTING.md's "What ported actually means", steps 1-11, plus:
   - the user picks; record the pick and the reason in the weapon's config and PORTING
     notes. The session never decides it alone.
 - **step 5b:** the h1_role_compare.py set, with balanced values the user picked;
+- **the fire rule, after 4a**: `rof_balance_check.py` -- a port off by more than 5% records its k as
+  `fire_rule_damage` (PORTING "Balance", THE FIRE RULE) before the catalog is written;
 - **in every map:** palette entry plus resident-only placement in all ten scenarios,
   checked on the BUILT maps;
 - **tested in game:** a dry test map first, then enemy behaviour (Armed card);

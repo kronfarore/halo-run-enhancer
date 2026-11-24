@@ -68,6 +68,7 @@ WEAPON_TAG = SAW + B + 'saw'
 #: 2026-10-20: the spread by the SIBLING ratio -- Minimum Error / Error Angle / Error Angle Max)
 OVERRIDES = {}
 EXTRA = []
+FIRE = None
 DESC = ('%s carried from %s into Halo 2, built on the cut GPMG and balanced through '
         'the Assault Rifle into Halo 3 and the SMG out of it. It owns its own '
         'first-person animations, so its reload can be retimed.')
@@ -75,10 +76,11 @@ DESC = ('%s carried from %s into Halo 2, built on the cut GPMG and balanced thro
 
 def setup(key):
     """Point the module at one ports_h2 config's `catalog` section."""
-    global TABLE, PORT_TAGS, SHARED, FP_ANIMATIONS, RELOAD_MULT, WEAPON_TAG, DESC, OVERRIDES, EXTRA
+    global TABLE, PORT_TAGS, SHARED, FP_ANIMATIONS, RELOAD_MULT, WEAPON_TAG, DESC, OVERRIDES, EXTRA, FIRE
     sys.path.insert(0, HERE)
     import ports_h2
     c = ports_h2.get(key, 'catalog')
+    FIRE = c.get('fire_rule_damage')
     EXTRA = list(c.get('extra_rows') or ())
     TABLE = os.path.join(HERE, c['table'])
     PORT_TAGS = {tuple(k): v for k, v in c['port_tags']}
@@ -132,6 +134,11 @@ def main():
     # `extra_rows`: whole rows the table has no source for, appended as given (the Flamethrower's
     # damage effects and its overheated cool-down, set with the user)
     rows.extend(dict(r) for r in EXTRA)
+    if FIRE:
+        # the FIRE RULE correction (port_fire_rule.py, rof_balance_check): the projectile's
+        # Balanced damage x k
+        import port_fire_rule
+        print('fire rule: %d damage row(s) x %g' % (port_fire_rule.apply(rows, FIRE), FIRE['k']))
 
     # DERIVED (2026-10-05): Halo 2 keeps Rounds Total Maximum = Rounds Inventory Maximum +
     # Rounds Loaded Maximum (the Magazine card writes the inventory and DERIVES the total,
@@ -180,13 +187,13 @@ def _write(entry):
     if True:
         cat = json.load(open(OUT, encoding='utf-8')) if os.path.exists(OUT) else {}
         cat.setdefault('Halo 2', [])
-        for old in cat['Halo 2']:
-            if old.get('weapon') == entry['weapon']:
-                for k in ('ammo',):        # wired in separately; never drop it silently
-                    if old.get(k) and not entry.get(k):
-                        entry[k] = old[k]
-        cat['Halo 2'] = ([e for e in cat['Halo 2'] if e.get('weapon') != entry['weapon']]
-                         + [entry])
+        # keep EVERY key other tools own (ammo, the enhancer's card_map / tag_map / card_donors /
+        # skip_cards ...: 2026-11-24, a rebuild dropped them) and the entry's place in the list
+        at = next((i for i, e in enumerate(cat['Halo 2']) if e.get('weapon') == entry['weapon']), None)
+        if at is None:
+            cat['Halo 2'].append(entry)
+        else:
+            cat['Halo 2'][at] = dict(cat['Halo 2'][at], **entry)
         json.dump(cat, open(OUT, 'w', encoding='utf-8'), indent=1)
         print('\nwrote %s' % OUT)
 

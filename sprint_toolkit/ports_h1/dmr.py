@@ -449,3 +449,11 @@ PORT.update({
     # the dry test: a30 (Covenant within seconds of the landing), Reach's own loadout
     'test': {'level': 'a30', 'rounds': (15, 45), 'grunt': None, 'elite': None},
 })
+
+# FIRE RULE (user 2026-11-24: 'Apply them all'; port_fire_rule.py): every game fires a shot every
+# ceil(30 / rate) ticks (reports/rof_test.jsonl), so the Balanced rate's damage per second drifts from
+# the ratio rule's -- rof_balance_check 2026-11-24: the Balanced rate fires 4.286/s, the ratio rule meant 4.6/s (source fires 3/s). The projectile's Balanced damage x 1.07333 (make_port_catalog_* apply it).
+PORT['fire_rule_damage'] = {'k': 1.073333, 'tags': [DMR + 'bullet'],
+                            'why': 'rof_balance_check 2026-11-24: the Balanced rate fires 4.286/s, the ratio rule meant 4.6/s (source fires 3/s)'}
+# ARMED parity: the balanced WDM rule's port dps follows the damage (was 99.4)
+PORT['firing_profile']['wdm_rule']['balanced_port_dps'] = 106.689

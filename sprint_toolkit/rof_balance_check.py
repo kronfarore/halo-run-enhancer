@@ -29,6 +29,7 @@ import importlib
 import json
 import math
 import os
+import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -282,9 +283,16 @@ def main():
         flag = abs(k - 1) > THRESHOLD
         dm = ', '.join('%s %g -> %.4g' % (d['field'].replace('Damage ', ''), d['value'], d['value'] * k)
                        for d in r['damage rows'] if isinstance(d.get('value'), (int, float))) or '(no damage row)'
+        applied = sorted({m.group(1) for d in r['damage rows']
+                          for m in [re.search(r'fire rule x([0-9.]+)', str(d.get('note') or ''))] if m})
+        if applied:
+            dm = 'APPLIED x%s (damage now %s)' % (', '.join(applied), ', '.join(
+                '%s %g' % (d['field'].replace('Damage ', ''), d['value']) for d in r['damage rows']
+                if 'fire rule' in str(d.get('note') or '')))
+            flag = False
         L.append('| %s | %s | %s | %.3g | %s | %.3g | %s%.3f%s | %s |' % (
             r['game'], r['port'], rate_txt, r['source fires'], legs, r['intended'],
-            '**' if flag else '', k, '**' if flag else '', dm if flag else '-'))
+            '**' if flag else '', k, '**' if flag else '', dm if (flag or applied) else '-'))
     L += ['', '## Notes per port', '']
     for r in rows_out:
         if r['notes']:

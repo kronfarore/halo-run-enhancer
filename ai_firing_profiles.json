@@ -112,7 +112,7 @@
    "balanced_fields": {
     "0xC4": [
      "<f",
-     0.4,
+     0.5333333333333333,
      "Weapon Damage Modifier"
     ],
     "0x1D8": [
@@ -130,7 +130,7 @@
     "base": 0.4,
     "yardstick_dps": 150.0,
     "port_dps": 112.5,
-    "balanced_port_dps": 150.0
+    "balanced_port_dps": 112.5
    }
   },
   "weapons\\sentinel beam\\sentinel beam": {
@@ -282,7 +282,7 @@
    "balanced_fields": {
     "0xC4": [
      "<f",
-     0.6,
+     0.4,
      "Weapon Damage Modifier"
     ],
     "0x1D8": [
@@ -310,7 +310,7 @@
     "base": 0.4,
     "yardstick_dps": 150.0,
     "port_dps": 75.0,
-    "balanced_port_dps": 100.0
+    "balanced_port_dps": 150.0
    }
   },
   "weapons\\battle rifle\\battle rifle": {
@@ -630,7 +630,7 @@
    "balanced_fields": {
     "0xC4": [
      "<f",
-     0.2569343065693431,
+     0.28905056742597185,
      "Weapon Damage Modifier"
     ],
     "0x1D8": [
@@ -658,7 +658,7 @@
     "base": 0.4,
     "yardstick_dps": 88.0,
     "port_dps": 59.0,
-    "balanced_port_dps": 137.0
+    "balanced_port_dps": 121.778
    }
   },
   "weapons\\beam rifle\\beam rifle": {
@@ -760,7 +760,7 @@
    "balanced_fields": {
     "0xC4": [
      "<f",
-     0.2282485875706215,
+     0.21737960721011573,
      "Weapon Damage Modifier"
     ],
     "0x1D8": [
@@ -778,7 +778,7 @@
     "base": 0.4,
     "yardstick_dps": 202.0,
     "port_dps": 200.0,
-    "balanced_port_dps": 354.0
+    "balanced_port_dps": 371.7
    }
   },
   "weapons\\spiker\\spiker": {
@@ -924,7 +924,7 @@
    "balanced_fields": {
     "0xC4": [
      "<f",
-     0.4166666666666667,
+     0.37037037037037035,
      "Weapon Damage Modifier"
     ],
     "0x1D8": [
@@ -952,7 +952,7 @@
     "base": 0.4,
     "yardstick_dps": 150.0,
     "port_dps": 72.0,
-    "balanced_port_dps": 144.0
+    "balanced_port_dps": 162.0
    }
   },
   "weapons\\mauler\\mauler": {
@@ -1582,7 +1582,7 @@
    "balanced_fields": {
     "0xC4": [
      "<f",
-     0.812877263581489,
+     0.757341431637751,
      "Weapon Damage Modifier"
     ],
     "0x1D8": [
@@ -1610,7 +1610,7 @@
     "base": 0.4,
     "yardstick_dps": 202.0,
     "port_dps": 52.5,
-    "balanced_port_dps": 99.4
+    "balanced_port_dps": 106.689
    }
   },
   "weapons\\needle rifle\\needle rifle": {
@@ -1752,7 +1752,7 @@
    "balanced_fields": {
     "0xC4": [
      "<f",
-     1.5015015015015016,
+     1.2012012012012012,
      "Weapon Damage Modifier"
     ],
     "0x1D8": [
@@ -1780,7 +1780,7 @@
     "base": 0.5,
     "yardstick_dps": 100.0,
     "port_dps": 24.0,
-    "balanced_port_dps": 33.3
+    "balanced_port_dps": 41.625
    }
   },
   "weapons\\plasma repeater\\plasma repeater": {
@@ -2770,7 +2770,7 @@
    "balanced_fields": {
     "0xC4": [
      "<f",
-     0.48,
+     0.32,
      "Weapon Damage Modifier"
     ],
     "0x1D8": [
@@ -2788,7 +2788,7 @@
     "base": 0.4,
     "yardstick_dps": 150.0,
     "port_dps": 93.75,
-    "balanced_port_dps": 125.0
+    "balanced_port_dps": 187.5
    }
   },
   "weapons\\boltshot\\boltshot": {
@@ -2926,7 +2926,7 @@
    "balanced_fields": {
     "0xC4": [
      "<f",
-     0.5028571428571429,
+     0.45257246302277265,
      "Weapon Damage Modifier"
     ],
     "0x1D8": [
@@ -2944,7 +2944,7 @@
     "base": 0.5,
     "yardstick_dps": 88.0,
     "port_dps": 75.0,
-    "balanced_port_dps": 87.5
+    "balanced_port_dps": 97.222
    }
   },
   "weapons\\scattershot\\scattershot": {

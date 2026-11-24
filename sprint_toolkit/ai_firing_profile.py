@@ -212,7 +212,10 @@ def wdm_rule(prof, rule):
     Checked in game on the Carbine (a30, all Elite minors, stopwatch time to die x5):
     stock plasma rifle 3.61 s, Armed carbine (balanced, WDM 0.40) 2.04 s -> measured
     0.40 x 2.04/3.61 = 0.23 against the rule's 0.26. Source profiles carry no WDM of their
-    own from Halo 3 (Halo 4 does: the SAW's 0.75) -- a rule value replaces it."""
+    own from Halo 3 (Halo 4 does: the SAW's 0.75) -- a rule value replaces it.
+    The dps are what the guns FIRE (the 30 Hz reset rule, h1_role_compare since 2026-11-24); a
+    port whose Balanced damage takes the fire-rule correction (port_fire_rule.py) scales its
+    balanced_port_dps by the same k, so the Armed enemy keeps its damage (Armed parity)."""
     if not rule:
         return
     base, yard = rule['base'], rule['yardstick_dps']

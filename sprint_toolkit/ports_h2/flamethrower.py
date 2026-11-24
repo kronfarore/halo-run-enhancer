@@ -1118,3 +1118,9 @@ PORT = {
     'test': {'level': '05a_deltaapproach', 'dervish_level': '06b_floodzone', 'rounds': (100, 300)},
     'residency': {'levels': 'all', 'placements': False},
 }
+
+# FIRE RULE (user 2026-11-24: 'Apply them all'; port_fire_rule.py): every game fires a shot every
+# ceil(30 / rate) ticks (reports/rof_test.jsonl) -- rof_balance_check 2026-11-24: the Balanced rate fires 10/s, the ratio rule meant 7.5/s (source fires 10/s). The projectile's Balanced damage x 0.75
+# (make_port_catalog_h2.py applies it).
+PORT['catalog']['fire_rule_damage'] = {'k': 0.75, 'tags': [FT + r'\damage_effects\flame', FT + r'\damage_effects\flame_burn'],
+                                       'why': 'rof_balance_check 2026-11-24: the Balanced rate fires 10/s, the ratio rule meant 7.5/s (source fires 10/s)'}

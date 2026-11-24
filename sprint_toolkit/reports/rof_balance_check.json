@@ -13,18 +13,20 @@
     "tag": "weapons\\saw\\bullet",
     "field": "Damage Upper Bound",
     "block": null,
-    "value": 10.0,
+    "value": 7.5,
     "card": "Bullet Damage",
-    "original": 7.5
+    "original": 7.5,
+    "note": "fire rule x0.75 (rof_balance_check 2026-11-24: the Balanced rate fires 30/s, the ratio rule meant 22.5/s (source fires 15/s))"
    },
    {
     "class": "jpt!",
     "tag": "weapons\\saw\\bullet",
     "field": "Damage Upper Bound Max",
     "block": null,
-    "value": 10.0,
+    "value": 7.5,
     "card": "Bullet Damage",
-    "original": 7.5
+    "original": 7.5,
+    "note": "fire rule x0.75 (rof_balance_check 2026-11-24: the Balanced rate fires 30/s, the ratio rule meant 22.5/s (source fires 15/s))"
    },
    {
     "class": "jpt!",
@@ -97,18 +99,20 @@
     "tag": "weapons\\smg\\bullet",
     "field": "Damage Upper Bound",
     "block": null,
-    "value": 6.67,
+    "value": 10.005,
     "card": "Bullet Damage",
-    "original": 5.0
+    "original": 5.0,
+    "note": "fire rule x1.5 (rof_balance_check 2026-11-24: the Balanced rate fires 15/s, the ratio rule meant 22.5/s (source fires 15/s))"
    },
    {
     "class": "jpt!",
     "tag": "weapons\\smg\\bullet",
     "field": "Damage Upper Bound Max",
     "block": null,
-    "value": 6.67,
+    "value": 10.005,
     "card": "Bullet Damage",
-    "original": 5.0
+    "original": 5.0,
+    "note": "fire rule x1.5 (rof_balance_check 2026-11-24: the Balanced rate fires 15/s, the ratio rule meant 22.5/s (source fires 15/s))"
    }
   ],
   "notes": [
@@ -147,18 +151,20 @@
     "tag": "weapons\\covenant carbine\\slug",
     "field": "Damage Upper Bound",
     "block": null,
-    "value": 16.67,
+    "value": 14.8178,
     "card": "Bullet Damage",
-    "original": 10.0
+    "original": 10.0,
+    "note": "fire rule x0.888889 (rof_balance_check 2026-11-24: the Balanced rate fires 7.5/s, the ratio rule meant 6.667/s (source fires 5/s))"
    },
    {
     "class": "jpt!",
     "tag": "weapons\\covenant carbine\\slug",
     "field": "Damage Upper Bound Max",
     "block": null,
-    "value": 16.67,
+    "value": 14.8178,
     "card": "Bullet Damage",
-    "original": 10.0
+    "original": 10.0,
+    "note": "fire rule x0.888889 (rof_balance_check 2026-11-24: the Balanced rate fires 7.5/s, the ratio rule meant 6.667/s (source fires 5/s))"
    }
   ],
   "notes": [
@@ -197,18 +203,20 @@
     "tag": "weapons\\beam rifle\\beam",
     "field": "Damage Upper Bound",
     "block": null,
-    "value": 101.0,
+    "value": 106.05,
     "card": "Beam damage",
-    "original": 80.0
+    "original": 80.0,
+    "note": "fire rule x1.05 (rof_balance_check 2026-11-24: the Balanced rate fires 3.333/s, the ratio rule meant 3.5/s (source fires 2.5/s))"
    },
    {
     "class": "jpt!",
     "tag": "weapons\\beam rifle\\beam",
     "field": "Damage Upper Bound Max",
     "block": null,
-    "value": 101.0,
+    "value": 106.05,
     "card": "Beam damage",
-    "original": 80.0
+    "original": 80.0,
+    "note": "fire rule x1.05 (rof_balance_check 2026-11-24: the Balanced rate fires 3.333/s, the ratio rule meant 3.5/s (source fires 2.5/s))"
    }
   ],
   "notes": [
@@ -247,18 +255,20 @@
     "tag": "weapons\\spiker\\spike",
     "field": "Damage Upper Bound",
     "block": null,
-    "value": 12.0,
+    "value": 13.5,
     "card": "Spike Damage",
-    "original": 9.0
+    "original": 9.0,
+    "note": "fire rule x1.125 (rof_balance_check 2026-11-24: the Balanced rate fires 10/s, the ratio rule meant 11.25/s (source fires 7.5/s))"
    },
    {
     "class": "jpt!",
     "tag": "weapons\\spiker\\spike",
     "field": "Damage Upper Bound Max",
     "block": null,
-    "value": 12.0,
+    "value": 13.5,
     "card": "Spike Damage",
-    "original": 9.0
+    "original": 9.0,
+    "note": "fire rule x1.125 (rof_balance_check 2026-11-24: the Balanced rate fires 10/s, the ratio rule meant 11.25/s (source fires 7.5/s))"
    },
    {
     "class": "jpt!",
@@ -383,18 +393,20 @@
     "tag": "weapons\\dmr\\bullet",
     "field": "Damage Upper Bound",
     "block": null,
-    "value": 22.09,
+    "value": 23.7099,
     "card": "Bullet Damage",
-    "original": 17.5
+    "original": 17.5,
+    "note": "fire rule x1.07333 (rof_balance_check 2026-11-24: the Balanced rate fires 4.286/s, the ratio rule meant 4.6/s (source fires 3/s))"
    },
    {
     "class": "jpt!",
     "tag": "weapons\\dmr\\bullet",
     "field": "Damage Upper Bound Max",
     "block": null,
-    "value": 22.09,
+    "value": 23.7099,
     "card": "Bullet Damage",
-    "original": 17.5
+    "original": 17.5,
+    "note": "fire rule x1.07333 (rof_balance_check 2026-11-24: the Balanced rate fires 4.286/s, the ratio rule meant 4.6/s (source fires 3/s))"
    }
   ],
   "notes": [
@@ -433,18 +445,20 @@
     "tag": "weapons\\needle rifle\\needle",
     "field": "Damage Upper Bound",
     "block": null,
-    "value": 10.0,
+    "value": 12.5,
     "card": "Needle Damage",
-    "original": 6.0
+    "original": 6.0,
+    "note": "fire rule x1.25 (rof_balance_check 2026-11-24: the Balanced rate fires 3/s, the ratio rule meant 3.75/s (source fires 3.75/s))"
    },
    {
     "class": "jpt!",
     "tag": "weapons\\needle rifle\\needle",
     "field": "Damage Upper Bound Max",
     "block": null,
-    "value": 10.0,
+    "value": 12.5,
     "card": "Needle Damage",
-    "original": 6.0
+    "original": 6.0,
+    "note": "fire rule x1.25 (rof_balance_check 2026-11-24: the Balanced rate fires 3/s, the ratio rule meant 3.75/s (source fires 3.75/s))"
    },
    {
     "class": "jpt!",
@@ -752,18 +766,20 @@
     "tag": "weapons\\suppressor\\shard",
     "field": "Damage Upper Bound",
     "block": null,
-    "value": 8.33,
+    "value": 12.495,
     "card": "Bullet Damage",
-    "original": 6.25
+    "original": 6.25,
+    "note": "fire rule x1.5 (rof_balance_check 2026-11-24: the Balanced rate fires 15/s, the ratio rule meant 22.5/s (source fires 15/s))"
    },
    {
     "class": "jpt!",
     "tag": "weapons\\suppressor\\shard",
     "field": "Damage Upper Bound Max",
     "block": null,
-    "value": 8.33,
+    "value": 12.495,
     "card": "Bullet Damage",
-    "original": 6.25
+    "original": 6.25,
+    "note": "fire rule x1.5 (rof_balance_check 2026-11-24: the Balanced rate fires 15/s, the ratio rule meant 22.5/s (source fires 15/s))"
    }
   ],
   "notes": [
@@ -802,18 +818,20 @@
     "tag": "weapons\\boltshot\\bolt",
     "field": "Damage Upper Bound",
     "block": null,
-    "value": 12.5,
+    "value": 13.8889,
     "card": "Bolt Damage",
-    "original": 7.5
+    "original": 7.5,
+    "note": "fire rule x1.11111 (rof_balance_check 2026-11-24: the Balanced rate fires 6/s, the ratio rule meant 6.667/s (source fires 10/s))"
    },
    {
     "class": "jpt!",
     "tag": "weapons\\boltshot\\bolt",
     "field": "Damage Upper Bound Max",
     "block": null,
-    "value": 12.5,
+    "value": 13.8889,
     "card": "Bolt Damage",
-    "original": 7.5
+    "original": 7.5,
+    "note": "fire rule x1.11111 (rof_balance_check 2026-11-24: the Balanced rate fires 6/s, the ratio rule meant 6.667/s (source fires 10/s))"
    },
    {
     "class": "jpt!",
@@ -1214,40 +1232,40 @@
     "tag": "objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame",
     "field": "Damage Upper Bound",
     "block": null,
-    "value": 17.094,
+    "value": 12.8205,
     "card": "Projectile Damage",
     "original": 20.0,
-    "note": "user 2026-10-22 (boots 13-14): Balanced stays the Plasma Rifle ratio, the heat gain recalibrated so held fire overheats at Halo 1's 3.6 s (~shot 37, before the 50-shot tank runs dry; heat loss 1.25/s counted per shot at the effective 10.14 shots/s that boot 2 measured on Halo 1's numbers): 0.135 -> 0.150; the damage raised by the same margin x1.1111"
+    "note": "user 2026-10-22 (boots 13-14): Balanced stays the Plasma Rifle ratio, the heat gain recalibrated so held fire overheats at Halo 1's 3.6 s (~shot 37, before the 50-shot tank runs dry; heat loss 1.25/s counted per shot at the effective 10.14 shots/s that boot 2 measured on Halo 1's numbers): 0.135 -> 0.150; the damage raised by the same margin x1.1111; fire rule x0.75 (rof_balance_check 2026-11-24: the Balanced rate fires 10/s, the ratio rule meant 7.5/s (source fires 10/s))"
    },
    {
     "class": "jpt!",
     "tag": "objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame",
     "field": "Damage Upper Bound Max",
     "block": null,
-    "value": 19.6581,
+    "value": 14.7436,
     "card": "Projectile Damage",
     "original": 23.0,
-    "note": "user 2026-10-22 (boots 13-14): Balanced stays the Plasma Rifle ratio, the heat gain recalibrated so held fire overheats at Halo 1's 3.6 s (~shot 37, before the 50-shot tank runs dry; heat loss 1.25/s counted per shot at the effective 10.14 shots/s that boot 2 measured on Halo 1's numbers): 0.135 -> 0.150; the damage raised by the same margin x1.1111"
+    "note": "user 2026-10-22 (boots 13-14): Balanced stays the Plasma Rifle ratio, the heat gain recalibrated so held fire overheats at Halo 1's 3.6 s (~shot 37, before the 50-shot tank runs dry; heat loss 1.25/s counted per shot at the effective 10.14 shots/s that boot 2 measured on Halo 1's numbers): 0.135 -> 0.150; the damage raised by the same margin x1.1111; fire rule x0.75 (rof_balance_check 2026-11-24: the Balanced rate fires 10/s, the ratio rule meant 7.5/s (source fires 10/s))"
    },
    {
     "class": "jpt!",
     "tag": "objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame_burn",
     "field": "Damage Upper Bound",
     "block": null,
-    "value": 10.2564,
+    "value": 7.6923,
     "card": "Projectile Damage",
     "original": 12.0,
-    "note": "user 2026-10-23 (boot 22): Halo 1's burn -- every flame detonates (1.3 s in flight, 1.3-8 s stuck) with `explosion` 10 / 12-13; the Plasma Rifle ratio (x0.6 / x0.769) and the flame's balance margin x1.1111"
+    "note": "user 2026-10-23 (boot 22): Halo 1's burn -- every flame detonates (1.3 s in flight, 1.3-8 s stuck) with `explosion` 10 / 12-13; the Plasma Rifle ratio (x0.6 / x0.769) and the flame's balance margin x1.1111; fire rule x0.75 (rof_balance_check 2026-11-24: the Balanced rate fires 10/s, the ratio rule meant 7.5/s (source fires 10/s))"
    },
    {
     "class": "jpt!",
     "tag": "objects\\weapons\\support_low\\flamethrower\\damage_effects\\flame_burn",
     "field": "Damage Upper Bound Max",
     "block": null,
-    "value": 11.1111,
+    "value": 8.3333,
     "card": "Projectile Damage",
     "original": 13.0,
-    "note": "user 2026-10-23 (boot 22): Halo 1's burn -- every flame detonates (1.3 s in flight, 1.3-8 s stuck) with `explosion` 10 / 12-13; the Plasma Rifle ratio (x0.6 / x0.769) and the flame's balance margin x1.1111"
+    "note": "user 2026-10-23 (boot 22): Halo 1's burn -- every flame detonates (1.3 s in flight, 1.3-8 s stuck) with `explosion` 10 / 12-13; the Plasma Rifle ratio (x0.6 / x0.769) and the flame's balance margin x1.1111; fire rule x0.75 (rof_balance_check 2026-11-24: the Balanced rate fires 10/s, the ratio rule meant 7.5/s (source fires 10/s))"
    }
   ],
   "notes": [],
@@ -1352,18 +1370,20 @@
     "tag": "objects\\weapons\\rifle\\dmr\\damage_effects\\dmr_bullet",
     "field": "Damage Upper Bound",
     "block": null,
-    "value": 9.84375,
+    "value": 10.5656,
     "card": "Bullet Damage",
-    "original": 17.5
+    "original": 17.5,
+    "note": "fire rule x1.07333 (rof_balance_check 2026-11-24: the Balanced rate fires 4.286/s, the ratio rule meant 4.6/s (source fires 3/s))"
    },
    {
     "class": "jpt!",
     "tag": "objects\\weapons\\rifle\\dmr\\damage_effects\\dmr_bullet",
     "field": "Damage Upper Bound Max",
     "block": null,
-    "value": 9.84375,
+    "value": 10.5656,
     "card": "Bullet Damage",
-    "original": 17.5
+    "original": 17.5,
+    "note": "fire rule x1.07333 (rof_balance_check 2026-11-24: the Balanced rate fires 4.286/s, the ratio rule meant 4.6/s (source fires 3/s))"
    }
   ],
   "notes": [],

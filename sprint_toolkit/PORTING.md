@@ -4711,6 +4711,19 @@ the ratio per field; `balance_port.py` turns that into the port's balance rows.
 `port_coverage.py`, `port_field_matrix.py` and `port_gap_check.py` audit which fields a
 game actually exposes, so a missing row is a known gap rather than an oversight.
 
+**THE FIRE RULE (measured in every game, 2026-11-22/24, reports/rof_test.jsonl):** a gun fires a shot every
+ceil(30 / rate) ticks (rate/30 added in float32 a tick, a shot at 1, the sum RESET; no cap: 30 fires 30/s); a
+fire recovery paces only a one-shot-a-fire weapon (shots per fire >= 1) and is ROUNDED UP to whole ticks; a
+held automatic (shots per fire 0) ignores it. So a TAG rate is not what fires (20/s fires 15, 9/s 7.5), and the
+ratio rule -- field by field on tag values -- can miss the damage per second it means. After step 4a's
+Balanced rows exist: `python rof_balance_check.py` (intended = fired(source) x PRODUCT fired(yard, to) /
+fired(yard, from), k = intended / fired(port)); a port off by more than 5% records
+`'fire_rule_damage': {'k': k, 'tags': [<its projectile's damage effects>], 'why': ...}` in its config
+(Halo 1: PORT; Halo 2: the catalog section) and, with an Armed WDM rule, its balanced_port_dps x k (Armed
+parity). The catalog builders apply it (port_fire_rule.py: the projectile's damage only -- not melee,
+supercombine, a charged blast). Applied to 11 ports 2026-11-24 (user: 'Apply them all'). The time-to-kill
+tools (ttk_*, h1/h2/port_role_compare) all fire by this rule.
+
 Ports carry their ORIGINAL numbers by default; the balance option swaps in the derived
 values, and damage moves by the same ratio. (Exception: fields NO card covers -- step 4b --
 have no row to switch, so the port takes the ratio value outright.)

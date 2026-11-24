@@ -458,6 +458,8 @@ All of PORTING.md's steps 1-11 (the Halo 2 section's pipeline), plus:
   picks; recorded in the config's `yardstick` and PORTING);
 - **step 5b**: the step-5b peers compared with the balanced values the user picked (4a and 5b:
   `h2_role_compare.py <key> [--balanced]`, the config's candidates + peers);
+- **the fire rule, after 4a**: `rof_balance_check.py` -- a port off by more than 5% records its k as
+  `fire_rule_damage` (PORTING "Balance", THE FIRE RULE) before the catalog is written;
 - **check 10, the muzzle flash, before boot 1**: `h2_effect_particles.py <key>` (port / donor /
   source first-person systems side by side);
 - **both species**: an FP model + graph for masterchief AND dervish, each checked in game

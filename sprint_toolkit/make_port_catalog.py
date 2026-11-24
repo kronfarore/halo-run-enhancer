@@ -34,6 +34,14 @@ def main():
         rows.append({'class': key[0], 'tag': PORT_TAGS[key], 'field': r['dst_field'],
                      'block': r.get('dst_block'), 'value': round(float(r['balanced']), 6),
                      'card': r['card'], 'original': r.get('original')})
+    # the FIRE RULE correction (port_fire_rule.py, rof_balance_check): the projectile's Balanced
+    # damage x k, from the SAW's config (ports_h1/saw.py 'fire_rule_damage')
+    sys.path.insert(0, HERE)
+    import ports_h1
+    import port_fire_rule
+    spec = dict(ports_h1.all_ports()).get('saw', {}).get('fire_rule_damage')
+    if spec:
+        print('fire rule: %d damage row(s) x %g' % (port_fire_rule.apply(rows, spec), spec['k']))
     # Rounds per ammo pickup is not a card field (weap Magazines/Magazines), but it has
     # to follow the balanced magazine: as many magazines per pickup as the donor gives.
     bal_mag = next((r['balanced'] for r in t['rows']
@@ -90,11 +98,19 @@ def main():
     # keep what other tools added to the entry (e.g. 'ammo', the pickup choices)
     old = next((e for e in cat[t['target']] if e.get('weapon') == entry['weapon']), {})
     entry = dict(old, **entry)
-    cat[t['target']] = [e for e in cat[t['target']] if e.get('weapon') != entry['weapon']] + [entry]
+    # the entry keeps its place (no reorder churn in the file); a new one goes last
+    at = next((i for i, e in enumerate(cat[t['target']]) if e.get('weapon') == entry['weapon']), None)
+    if at is None:
+        cat[t['target']].append(entry)
+    else:
+        cat[t['target']][at] = entry
     json.dump(cat, open(OUT, 'w', encoding='utf-8'), indent=1)
     print('wrote %s: %s -> %s, %d balance field(s), anims %s'
           % (OUT, entry['weapon'], t['target'], len(rows), entry['anims']))
 
 
 if __name__ == '__main__':
-    main()
+    sys.path.insert(0, HERE)
+    import kit_lock       # weapon_ports_catalog.json is one file for every port session
+    with kit_lock.held('make_port_catalog SAW', owner='catalog'):
+        main()

@@ -429,3 +429,11 @@ PORT.update({
     # the dry test: a30 (Covenant within seconds of the landing), Halo 3's own loadout
     'test': {'level': 'a30', 'rounds': (18, 54), 'grunt': None, 'elite': None},
 })
+
+# FIRE RULE (user 2026-11-24: 'Apply them all'; port_fire_rule.py): every game fires a shot every
+# ceil(30 / rate) ticks (reports/rof_test.jsonl), so the Balanced rate's damage per second drifts from
+# the ratio rule's -- rof_balance_check 2026-11-24: the Balanced rate fires 7.5/s, the ratio rule meant 6.667/s (source fires 5/s). The projectile's Balanced damage x 0.888889 (make_port_catalog_* apply it).
+PORT['fire_rule_damage'] = {'k': 0.888889, 'tags': [CC + 'slug'],
+                            'why': 'rof_balance_check 2026-11-24: the Balanced rate fires 7.5/s, the ratio rule meant 6.667/s (source fires 5/s)'}
+# ARMED parity: the balanced WDM rule's port dps follows the damage (was 137)
+PORT['firing_profile']['wdm_rule']['balanced_port_dps'] = 121.778

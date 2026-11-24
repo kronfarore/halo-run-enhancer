@@ -538,3 +538,9 @@ PORT = {
     'test': {'level': '03a_oldmombasa', 'dervish_level': '04a_gasgiant', 'rounds': (15, 75)},
     'residency': {'levels': 'all', 'placements': False},
 }
+
+# FIRE RULE (user 2026-11-24: 'Apply them all'; port_fire_rule.py): every game fires a shot every
+# ceil(30 / rate) ticks (reports/rof_test.jsonl) -- rof_balance_check 2026-11-24: the Balanced rate fires 4.286/s, the ratio rule meant 4.6/s (source fires 3/s). The projectile's Balanced damage x 1.07333
+# (make_port_catalog_h2.py applies it).
+PORT['catalog']['fire_rule_damage'] = {'k': 1.073333, 'tags': [DMR + r'\damage_effects\dmr_bullet'],
+                                       'why': 'rof_balance_check 2026-11-24: the Balanced rate fires 4.286/s, the ratio rule meant 4.6/s (source fires 3/s)'}

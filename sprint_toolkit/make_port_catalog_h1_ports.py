@@ -71,6 +71,12 @@ def own_projectile(p):
 
 def entry_for(key, p):
     e = dict(p['catalog']['entry'])
+    if p.get('fire_rule_damage'):
+        # the FIRE RULE correction (port_fire_rule.py, rof_balance_check): the projectile's
+        # Balanced damage x k, on copies of the config's rows
+        import port_fire_rule
+        e['balance'] = [dict(r) for r in e.get('balance') or ()]
+        port_fire_rule.apply(e['balance'], p['fire_rule_damage'])
     if e.get('weapon') != p['name']:
         raise SystemExit('%s: catalog weapon %r is not the config name %r'
                          % (key, e.get('weapon'), p['name']))
