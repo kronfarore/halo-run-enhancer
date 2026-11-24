@@ -3,6 +3,8 @@ r"""Stage the RATE OF FIRE rule test: does a game fire its tag rate, or a 30 Hz 
     python sprint_toolkit\rof_test_stage.py              # stage all five games
     python sprint_toolkit\rof_test_stage.py "Halo 4"     # only the named game(s)
     python sprint_toolkit\rof_test_stage.py --expect     # print the expected readings only
+    python sprint_toolkit\rof_test_stage.py --kind=reca  # the FIRE RECOVERY tests (KINDS below):
+    python sprint_toolkit\rof_test_stage.py --kind=recb  #   held automatic gate / tick rounding
 
 Halo 1 and Halo 2 fire by the 30 Hz RESET rule (Halo 2 measured on the Plasma Repeater port,
 reports/h2_fire_rule.jsonl): rate / 30 added a tick, a shot at 1, the sum reset -> only 30/n
@@ -52,6 +54,29 @@ DEFAULT_LOSS = 2.0
 BATTERY = 0.01                     # a round: the HUD battery counts rounds down from 100
 
 
+#: FIRE RECOVERY kinds (user 2026-11-24: 'Can we measure the Fire recovery time exactly?'), the same
+#: levels / weapon / battery count, one boot each:
+#:   reca  does the recovery pace a HELD AUTOMATIC? flat 30/s, shots per fire 0, recovery 0.1667 s
+#:         (5 ticks); heat 0.0523, loss 0.5345: ignored -> 30/s; a 15/s cap -> later; gating every
+#:         shot -> 6/s -> never overheats (battery runs out) -- the readings: expect()
+#:   recb  how is a recovery ROUNDED to ticks? one shot a pull (shots per fire 1), trigger HELD,
+#:         flat 30/s, recovery 0.11333 s = 3.4 ticks; heat 0.1943, loss 1.543:
+#:         rounded UP (4 ticks, 7.5/s) -> never overheats; down / to nearest (3 ticks, 10/s) ->
+#:         overheat at battery ~78; exact time (8.82/s) -> battery ~57; ONE shot per pull = a held
+#:         one-shot trigger does not repeat
+KINDS = {
+    'reca': {'rate': 30.0, 'spf': 0.0, 'rec': 0.16667, 'heat': 0.0523, 'loss': 0.5345,
+             'cases': (('recovery IGNORED by a held automatic (30/s)', 1 / 30.0),
+                       ('ignored, but a 15/s cap (2 ticks)', 2 / 30.0),
+                       ('recovery GATES every shot (5 ticks, 6/s)', 5 / 30.0))},
+    'recb': {'rate': 30.0, 'spf': 1.0, 'rec': 0.11333, 'heat': 0.1943, 'loss': 1.543,
+             'cases': (('rounded DOWN or to NEAREST (3 ticks, 10/s)', 3 / 30.0),
+                       ('exact time, no rounding (8.82/s)', 0.11333),
+                       ('rounded UP (4 ticks, 7.5/s)', 4 / 30.0))},
+}
+KIND = next((a[7:] for a in sys.argv if a.startswith('--kind=')), 'rof')
+
+
 def fit(game):
     """(rate, heat a round, loss): overheat on round 30 if the tag rate fires."""
     r, L = RATE.get(game, DEFAULT_RATE), LOSS.get(game, DEFAULT_LOSS)
@@ -60,14 +85,20 @@ def fit(game):
 
 def ops(game):
     r, h, L = fit(game)
+    rec, spf = 0.0, None
+    if KIND in KINDS:
+        k = KINDS[KIND]
+        r, h, L, rec, spf = k['rate'], k['heat'], k['loss'], k['rec'], k['spf']
     rows = [('Rounds Per Second', 'Barrels', r), ('Rounds Per Second Max', 'Barrels', r),
-            ('Acceleration Time', 'Barrels', 0.0), ('Fire Recovery Time', 'Barrels', 0.0),
+            ('Acceleration Time', 'Barrels', 0.0), ('Fire Recovery Time', 'Barrels', rec),
             ('Heat Generated Per Round', 'Barrels', h), ('Overheated Threshold', None, 1.0),
             ('Heat Recovery Threshold', None, 0.1), ('Heat Loss Per Second', None, L),
             ('Overheated Heat Loss Per Second', None, 0.35),
             ('Age Generated Per Round', 'Barrels', BATTERY)]
     if game in ('Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4'):
         rows.append(('Campaign Age Generated Per Round', 'Barrels', BATTERY))
+    if spf is not None:
+        rows += [('Shots Per Fire', 'Barrels', spf), ('Shots Per Fire Max', 'Barrels', spf)]
     return [{'field': f, 'block': b, 'index': 0, 'nth': 0, 'set': v} for f, b, v in rows]
 
 
@@ -96,7 +127,30 @@ def overheat_round(rate, heat, loss, hz, carry, shots=200):
     return None
 
 
+def overheat_interval(interval, heat, loss, shots=200):
+    """Round a gun firing every `interval` seconds overheats on (None = never), heat draining."""
+    h = 0.0
+    for n in range(1, shots + 1):
+        h += heat
+        if h >= 1.0:
+            return n
+        h = max(0.0, h - loss * interval)
+    return None
+
+
 def expect(game):
+    if KIND in KINDS:
+        k = KINDS[KIND]
+        out = []
+        for name, iv in k['cases']:
+            n = overheat_interval(iv, k['heat'], k['loss'])
+            out.append('%-46s %s' % (name, 'overheat on round %d -> battery %d' % (n, 100 - n)
+                                     if n else 'never overheats: battery runs out'))
+        if KIND == 'recb':
+            out.append('%-46s %s' % ('a held one-shot trigger does not repeat', 'ONE shot per pull'))
+        n = int(math.ceil(1.0 / k['heat'] - 1e-9))
+        out.append('%-46s overheat on round %d -> battery %d' % ('(heat does NOT drain while firing)', n, 100 - n))
+        return out
     r, h, L = fit(game)
     out = []
     for name, hz, carry in (('fires the tag rate (continuous)', None, False),
@@ -121,7 +175,7 @@ def stage(game):
     live = hp.default_map_path(C['mcc_root'], sub, mid)
     src = hp.existing_baseline(live, C.get('baseline_root'), sub)
     name = os.path.basename(live)
-    dst = os.path.join(OUT, 'rof', sub.replace('/', os.sep), name)
+    dst = os.path.join(OUT, KIND, sub.replace('/', os.sep), name)
     print('##', game, name, '<-', src, flush=True)
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     shutil.copyfile(src, dst)
@@ -167,21 +221,24 @@ def main():
     games = args or list(WEAPON)
     if '--expect' in sys.argv:
         for g in games:
-            print('##', g, 'rate %g, heat %g a round, loss %g' % fit(g))
+            print('##', g, KIND, KINDS.get(KIND) and {k: v for k, v in KINDS[KIND].items() if k != 'cases'}
+                  or 'rate %g, heat %g a round, loss %g' % fit(g))
             for line in expect(g):
                 print('  ', line)
         return
     path = os.path.join(OUT, 'staged.json')
     try:
-        log = {r['game']: r for r in json.load(open(path, encoding='utf-8'))}
+        log = {(r['game'], r.get('kind', 'rof')): r for r in json.load(open(path, encoding='utf-8'))}
     except (OSError, ValueError):
         log = {}
     for g in games:
-        log[g] = {'game': g, 'level': SG.LEVELS[g], 'weapon': WEAPON[g], 'map': stage(g),
-                  'rate/heat/loss': fit(g), 'expect': expect(g)}
+        log[(g, KIND)] = {'game': g, 'kind': KIND, 'level': SG.LEVELS[g], 'weapon': WEAPON[g],
+                          'map': stage(g), 'rate/heat/loss': fit(g) if KIND not in KINDS else
+                          KINDS[KIND], 'expect': expect(g)}
     os.makedirs(OUT, exist_ok=True)
     with open(path, 'w', encoding='utf-8') as f:
-        json.dump([log[g] for g in WEAPON if g in log], f, indent=1)
+        json.dump([v for _k, v in sorted(log.items(), key=lambda kv: (kv[0][1], list(WEAPON).index(kv[0][0])))],
+                  f, indent=1, default=str)
 
 
 if __name__ == '__main__':
