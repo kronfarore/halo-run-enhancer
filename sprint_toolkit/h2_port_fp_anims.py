@@ -345,6 +345,11 @@ def reach_events(cfg, sp, refs):
     types = {'primary keyframe': 0, 'secondary keyframe': 1, 'left foot': 2, 'right foot': 3,
              'allow interruption': 4}
     _nodes, _anims, events = h1_fp_retarget.reach_tags.load_graph(sp['graph'])
+    # `source_events['frames']` {Halo 2 animation: [(type, frame)]} (opt-in; the Grenade Launcher, B4 boot 2: Reach's
+    # reload_empty primary keyframe 27 of 63 counts the round in Halo 2, so a trigger charged during the reload fired
+    # the moment the round counted, mid-animation) REPLACES that animation's Reach frame events; [] = none, Bungie's
+    # own Halo 2 reloads' shape
+    frames = cfg['source_events'].get('frames', {})
     alias = {}
     for donor, own in ports_h2.get(cfg['_key'], 'sounds').get('graph_sounds', ()):
         alias.setdefault(own, []).append(donor)
@@ -358,6 +363,8 @@ def reach_events(cfg, sp, refs):
             if not hit:
                 raise SystemExit('%s: no sound reference %s (graph: %s)' % (name, snd, refs))
             se.append((refs.index(hit[0]), f))
+        if name in frames:
+            evs = frames[name]
         want[name] = ([(types[t], f) for t, f in evs if t in types], se)
     return want
 
