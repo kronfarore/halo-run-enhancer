@@ -520,8 +520,10 @@ PORT = {
                                    'first_person:posing:var1': [('gl_pose1', 0)],
                                    'first_person:posing:var2': [('gl_pose2', 0)],
                                    'first_person:ready': [('gl_ready', 0)],
-                                   'first_person:reload_empty': [('gl_reload_e', 0)],
-                                   'first_person:reload_full': [('gl_reload_f', 0)]},
+                                   # before the Balanced boot (B1 rule 5; Balanced retimes the reload x1.29): Reach's ONE
+                                   # recording (the same for both reloads) cut in its quiet gaps, each piece at its frame
+                                   'first_person:reload_empty': [('gl_rl1', 0), ('gl_rl2', 19), ('gl_rl3', 40)],
+                                   'first_person:reload_full': [('gl_rl1', 0), ('gl_rl2', 19), ('gl_rl3', 40)]},
                           # BOOT 2 (user: 'the red light and beep can run before the reload animation is done; releasing
                           # fires the contact burst' -- 'does the reload animation set the point the gun counts as
                           # reloaded?'): yes -- Reach's primary keyframe (27 of 63, 33 of 59) counts the round in Halo 2.
@@ -569,8 +571,8 @@ PORT = {
         'sounds': {'gl_fire': ('gl_fire', 'weapon_fire'), 'gl_fire_lod': ('gl_fire_lod', 'weapon_fire'),
                    'gl_ready': ('gl_ready', 'weapon_ready'), 'gl_melee1': ('gl_melee1', 'weapon_melee'),
                    'gl_melee2': ('gl_melee2', 'weapon_melee'), 'gl_pose1': ('gl_pose1', 'weapon_animation'),
-                   'gl_pose2': ('gl_pose2', 'weapon_animation'), 'gl_reload_e': ('gl_reload_e', 'weapon_reload'),
-                   'gl_reload_f': ('gl_reload_f', 'weapon_reload'),
+                   'gl_pose2': ('gl_pose2', 'weapon_animation'), 'gl_rl1': ('gl_rl1', 'weapon_reload'),
+                   'gl_rl2': ('gl_rl2', 'weapon_reload'), 'gl_rl3': ('gl_rl3', 'weapon_reload'),
                    'gl_expl': ('gl_expl', 'projectile_detonation'), 'gl_expl_far': ('gl_expl_far', 'projectile_detonation'),
                    'gl_tail': ('gl_tail', 'projectile_detonation'), 'gl_proj': ('gl_proj', 'projectile_flyby'),
                    'gl_bounce': ('gl_bounce', 'object_impacts'), 'gl_bounce_metal': ('gl_bounce_metal', 'object_impacts'),
@@ -601,17 +603,20 @@ PORT = {
                          (FX + r'\grenade_launcher.material_effects', r'sound\weapons\rocket_launcher\rocket_expl', 'gl_drop'),
                          (FX + r'\grenade_launcher.material_effects', r'sound_remastered\weapons\rocket_launcher\projectile_exp\lod', 'gl_drop')],
         # the SMG seed's 17 references, all repointed; unused dual slots point at the ready
-        'graph_sounds': (('smg_melee1', 'gl_melee1'), ('smg_ready', 'gl_ready'), ('smg_reload', 'gl_reload_e'),
-                         ('smg_reload_full', 'gl_reload_f'), ('smg_dual_ready', 'gl_melee2'),
+        'graph_sounds': (('smg_melee1', 'gl_melee1'), ('smg_ready', 'gl_ready'), ('smg_reload', 'gl_rl1'),
+                         ('smg_reload_full', 'gl_rl2'), ('smg_dual_ready', 'gl_melee2'),
                          ('smg_posing_var0', 'gl_pose1'), ('smg_posing_var1', 'gl_pose2'),
-                         ('smg_dual_reload_left', 'gl_ready'), ('smg_dual_reload_right', 'gl_ready'),
+                         ('smg_dual_reload_left', 'gl_rl3'), ('smg_dual_reload_right', 'gl_ready'),
                          ('smg_dual_posing_0_l', 'gl_ready'), ('smg_dual_posing_0_r', 'gl_ready'),
                          ('smg_dual_posing_1_l', 'gl_ready'), ('smg_dual_posing_1_r', 'gl_ready'),
                          ('smg_dual_posing_2_l', 'gl_ready'), ('smg_dual_posing_2_r', 'gl_ready'),
                          ('smg_dual_posing_3_l', 'gl_ready'), ('smg_dual_posing_3_r', 'gl_ready')),
         'graph_sound_dir': r'sound\weapons\smg' + '\\',
         'split': {'gl_charge': ('gl_charge_silence', 0.0, 0.3),
-                  'gl_silence': ('gl_charge_silence', 0.0, 0.1)},    # the EMP burst's plasma sounds (boot 2)
+                  'gl_silence': ('gl_charge_silence', 0.0, 0.1),     # the EMP burst's plasma sounds (boot 2)
+                  # the reload's quiet gaps (40 ms envelope, all three takes): ~0.64 s (a -30 dB lull), 1.32 s (-41..-60)
+                  'gl_rl1': ('gl_reload_e', 0.0, 0.64), 'gl_rl2': ('gl_reload_e', 0.64, 1.32),
+                  'gl_rl3': ('gl_reload_e', 1.32, None)},
         'gain': {},
         'boost': {},
         'backup': r'E:\HaloBackups\H2EK_grenade_launcher_before_sounds',
