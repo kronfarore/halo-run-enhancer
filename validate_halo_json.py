@@ -235,6 +235,159 @@ def check_structure():
     #    Halo 1/2 weapons have no zoom time). Melee weapons are the only exceptions.
     check_zoom_coverage(per_game)
 
+    # 8. Game names and per-game keys, and 9. a card offered in a game where it has no
+    #    tag or no row (review U5 V5).
+    check_games()
+    check_offered()
+
+
+# Keys whose value is either a plain value or a dict keyed BY GAME (the app resolves
+# them with resolve_gamed): on a card, on a target row, and in a `constraints` entry.
+# In such a dict only game names and 'default' are read. Any other key is lost in
+# silence: `"block": {"Halo 3": "Barrels", "index": 1}` resolved to 'Barrels' and the
+# row wrote barrel 0 (Spartan Laser / Projectiles Per Shot, from 2026-07-20 until the
+# review found it by script) while this validator printed 0 problems.
+GAMED_CARD_KEYS = ('tag', 'targets', 'debug_desc', 'desc_inverted', 'harder_when',
+                   'easier_when', 'requires_config', 'invertible')
+GAMED_ROW_KEYS = ('field', 'block', 'negate', 'nth', 'index', 'offset', 'zero_is', 'tag',
+                  'inverse_steps')
+GAMED_CONSTRAINT_KEYS = ('field', 'of', 'block', 'index')
+
+# Rows that are not a plugin field write: apply_run has a dedicated op for each
+# (animation lengths, placement shares, the Brute equipment drop, ability tuning ...).
+PSEUDO_ROWS = ('reload_anim', 'swap_anim', 'berserk_anim', 'sword_drain', 'morph_anim',
+               'infect_anim', 'move_speed', 'squad_count', 'species_swap', 'camo',
+               'damage_row', 'map_swap', 'map_equip', 'equip_drop', 'sprint')
+
+
+def card_ignored(eff):
+    """halo_enhancer.is_ignored: the card is held out of every pool. Only a real yes
+    counts ('yes' / 'true' / '1' / true), so a typo cannot delete a card."""
+    v = eff.get('ignore')
+    if isinstance(v, bool):
+        return v
+    return isinstance(v, str) and v.strip().lower() in ('yes', 'true', '1')
+
+
+def row_applies(t, game):
+    """halo_enhancer.target_applies: the row's own ignore / games / skip_games gates."""
+    if t.get('ignore'):
+        return False
+    if game in (t.get('skip_games') or []):
+        return False
+    return not t.get('games') or game in t['games']
+
+
+def _rows(eff):
+    """Every target row of a card, whichever shape `targets` has: [(where, row)]."""
+    ts = eff.get('targets')
+    if isinstance(ts, dict):
+        return [(f'targets[{g}]', t) for g, lst in ts.items()
+                for t in (lst if isinstance(lst, list) else [])]
+    return [('targets', t) for t in (ts if isinstance(ts, list) else [])]
+
+
+def check_games():
+    """8. Every game NAME must be one of the Missions keys, and a per-game dict may hold
+    only game names and 'default'. A misspelt name gates the card or the row out of the
+    game it meant (`_game_ok` / `target_applies` compare strings), a stray key is never
+    read -- and both used to pass here without a word."""
+    known = set(GAMES)
+
+    def names(label, where, val, need_list=False):
+        if val is None:
+            return
+        if isinstance(val, str):
+            if need_list:
+                # target_applies tests `game in value`: on a string that is a SUBSTRING
+                # test, and 'Halo 3' is inside 'Halo 3: ODST'
+                report(f'{label}: {where} must be a list of game names, got the string '
+                       f'{val!r}')
+            val = [val]
+        if not isinstance(val, list):
+            report(f'{label}: {where} must be a game name or a list of them, got '
+                   f'{type(val).__name__}')
+            return
+        for g in val:
+            if g not in known:
+                report(f'{label}: {where} names unknown game {g!r} '
+                       f'(known: {", ".join(GAMES)})')
+
+    def gamed(label, where, val, strict):
+        """`strict`: the key is only ever a plain value or a per-game dict. Otherwise the
+        dict may be a plain spec (init_defaults, damage_row) and is judged per-game only
+        when it holds at least one game key."""
+        if not isinstance(val, dict):
+            return
+        if not strict and not any(k in known or k == 'default' for k in val):
+            return
+        for k in val:
+            if k not in known and k != 'default':
+                report(f'{label}: {where} has the key {k!r} inside a per-game entry -- '
+                       f'only game names and "default" are read there, so it is lost')
+
+    for label, eff, _weapon in iter_effects():
+        if not isinstance(eff, dict):
+            report(f'{label}: a card must be an object, got {type(eff).__name__}')
+            continue
+        names(label, '"game"', eff.get('game'))
+        names(label, '"skip_games"', eff.get('skip_games'))
+        for k, v in eff.items():
+            if k != 'desc_overrides':           # rule 4 reports that one
+                gamed(label, f'"{k}"', v, k in GAMED_CARD_KEYS)
+        for c in eff.get('constraints') or []:
+            if isinstance(c, dict):
+                for k, v in c.items():
+                    gamed(label, f'constraints "{k}"', v, k in GAMED_CONSTRAINT_KEYS)
+        if not isinstance(eff.get('targets'), (list, dict, type(None))):
+            report(f'{label}: "targets" must be a list (or a per-game dict of lists), got '
+                   f'{type(eff["targets"]).__name__}')
+        if isinstance(eff.get('targets'), dict):
+            for g, lst in eff['targets'].items():
+                if not isinstance(lst, list):
+                    report(f'{label}: targets[{g}] must be a list of rows, got '
+                           f'{type(lst).__name__}')
+        for where, t in _rows(eff):
+            if not isinstance(t, dict):
+                # the app drops such a row (on_patch_map); it is a typo all the same
+                report(f'{label}: {where} holds {t!r} -- a row must be an object')
+                continue
+            row = f'{where} [{t.get("field") if isinstance(t.get("field"), str) else "row"}]'
+            names(label, f'{row} "games"', t.get('games'), need_list=True)
+            names(label, f'{row} "skip_games"', t.get('skip_games'), need_list=True)
+            for k, v in t.items():
+                gamed(label, f'{row} "{k}"', v, k in GAMED_ROW_KEYS)
+
+
+def check_offered():
+    """9. In every game a card is OFFERED in it needs a tag and at least one row that
+    applies there. Without a tag collect_effects drops the pick (`if not tag: return`),
+    without a row the patcher has nothing to write: either way the draft slot is spent
+    on nothing and no report row exists anywhere. check_resolution used to `continue`
+    past both. Skulls are whole-map rules with no rows of their own; an ignored card is
+    offered nowhere."""
+    for label, eff, _weapon in iter_effects():
+        if not isinstance(eff, dict) or card_ignored(eff):
+            continue
+        for game in declared_games(eff):
+            if game not in GAMES:
+                continue                        # rule 8 names it
+            quiet = is_inert(label, game)
+            tag = resolve_gamed(eff.get('tag'), game)
+            if not isinstance(tag, str) or not tag.strip():
+                report(f'{label} [{game}]: NO TAG in a game the card is offered in -- the '
+                       f'pick is dropped at patch time', quiet)
+                continue
+            if eff.get('skull'):
+                continue
+            rows = resolve_gamed(eff.get('targets'), game) or []
+            live = [t for t in rows if isinstance(t, dict) and row_applies(t, game)
+                    and (any(t.get(k) for k in PSEUDO_ROWS) or t.get('placed')
+                         or resolve_gamed(t.get('field'), game) is not None)]
+            if not live:
+                report(f'{label} [{game}]: NO ROW applies in a game the card is offered '
+                       f'in ({len(rows)} row(s), none for this game)', quiet)
+
 
 ZOOM_EXEMPT = ('Energy Blade', 'Gravity Hammer')
 ZOOM_TIME_GAMES = ('Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4')
@@ -455,9 +608,7 @@ def _targets_of(eff, game, cls, tpath):
     """
     out = []
     for t in resolve_gamed(eff.get('targets'), game) or []:
-        if not isinstance(t, dict) or any(
-                t.get(k) for k in ('reload_anim', 'swap_anim', 'berserk_anim', 'sword_drain', 'morph_anim', 'infect_anim', 'move_speed', 'squad_count', 'species_swap', 'camo', 'damage_row', 'map_swap',
-                                   'map_equip', 'equip_drop', 'sprint')):
+        if not isinstance(t, dict) or any(t.get(k) for k in PSEUDO_ROWS):
             continue
         if t.get('games') and game not in t['games']:
             continue
@@ -514,15 +665,19 @@ def check_resolution():
     Grenades block on 9 of the 13 levels that field them).
     """
     work = {}                       # game -> [(label, cls, path, [targets])]
+    for game in GAMES:
+        if game not in MAPS:        # a game added to Missions without a sample list
+            report(f'{game}: no sampled maps (MAPS) -- none of its cards is '
+                   f'resolution-checked')
     for label, eff, _weapon in iter_effects():
         if eff.get('skull'):        # whole-map rules, applied in code; nothing to resolve
             continue
         for game in declared_games(eff):
             if game not in MAPS:
-                continue
+                continue            # an unknown name: structure rule 8 reports it
             tag = resolve_gamed(eff.get('tag'), game)
             if not isinstance(tag, str) or not tag.strip():
-                continue
+                continue            # no tag in an offered game: structure rule 9
             cls, tpath = hm.split_tag(tag)
             if cls == 'matg':
                 continue
