@@ -313,7 +313,8 @@ PORT = {
             (FX + r'\tethered_detonation.effect', 'proj', r'sound_remastered\weapons\frag_grenade\frag_expl_lod',
              PJE[:-len('.projectile')], 'the EMP grenade, spawned in the burst'),
             # PJE: bursts at once (numbers) with the Tartarus hammer impact and the EMP
-            (PJE, 'hlmt', BS + r'\projectiles\grenade\grenade', r'objects\weapons\grenade\frag_grenade\frag_grenade_projectile', 'the frag projectile model'),
+            # boot 4 (user): 'the extra projectile is not invisible' -> Bungie's NULL model (the invisible script anchor)
+            (PJE, 'hlmt', BS + r'\projectiles\grenade\grenade', r'scenarios\objects\special\null\null', 'invisible: the null model'),
             (PJE, 'foot', r'effects\materials\objects\weapons\brute_shot', FX + r'\grenade', 'material effects'),
             (PJE, 'ligh', r'effects\objects\weapons\support_low\brute_shot\projectile', FX + r'\grenade', 'the grenade light', {'nth': 0}),
             (PJE, 'cont', r'effects\objects\weapons\support_low\brute_shot\projectile', FX + r'\grenade', 'the grenade trail', {'nth': 0}),
