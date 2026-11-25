@@ -262,9 +262,9 @@ PORT = {
                    # it), and its Brute Shot light glowed on. Own .model: the frag projectile's COLLISION, the null
                    # (invisible-shader) render model; the light a black copy
                    (r'objects\weapons\grenade\frag_grenade\frag_grenade_projectile.model', GL + r'\projectiles\emp_burst.model'),
-                   # (the null render model failed too: tool 'collision region grenade has no corresponding model region
-                   # (will not be collideable)' -> the frag's OWN render model, its shaders Bungie's invisible one)
-                   (r'objects\weapons\grenade\frag_grenade\frag_grenade.render_model', GL + r'\projectiles\emp_burst.render_model'),
+                   # (the null render model failed: tool 'collision region grenade has no corresponding model region';
+                   # boot 6, the frag render model on Bungie's INVISIBLE shader failed too: no burst, no EMP. Back to the
+                   # exact boot-4 render + collision; hidden by the .model's own DISAPPEAR / FADE distance instead)
                    (r'effects\objects\weapons\support_low\brute_shot\projectile.light', FX + r'\emp_grenade_dark.light'),
                    (r'effects\objects\characters\brute\tartarus_hammer_impact.effect', FX + r'\emp_burst.effect')],
         # the charge lights' flares carry a colour ANIMATION (the pistol's dark green -> green, BGR; the Laser's boot 6):
@@ -325,12 +325,6 @@ PORT = {
             # boot 4 (user): 'the extra projectile is not invisible' -> boot 5: its own model, the frag's collision under
             # Bungie's NULL render model (the invisible shader)
             (PJE, 'hlmt', BS + r'\projectiles\grenade\grenade', GL + r'\projectiles\emp_burst', 'invisible: own model, frag collision'),
-            (GL + r'\projectiles\emp_burst.model', 'mode', r'objects\weapons\grenade\frag_grenade\frag_grenade',
-             GL + r'\projectiles\emp_burst', "the frag's render model, invisible", {'nth': 0}),
-            (GL + r'\projectiles\emp_burst.render_model', 'shad', r'objects\weapons\grenade\frag_grenade\shaders\frag_metal',
-             r'scenarios\objects\special\shaders\invisible', 'invisible'),
-            (GL + r'\projectiles\emp_burst.render_model', 'shad', r'objects\weapons\grenade\frag_grenade\shaders\frag_plastic',
-             r'scenarios\objects\special\shaders\invisible', 'invisible'),
             (PJE, 'foot', r'effects\materials\objects\weapons\brute_shot', FX + r'\grenade', 'material effects'),
             (PJE, 'ligh', r'effects\objects\weapons\support_low\brute_shot\projectile', FX + r'\emp_grenade_dark', 'a black light (no glow)', {'nth': 0}),
             (PJE, 'cont', r'effects\objects\weapons\support_low\brute_shot\projectile', FX + r'\grenade', 'the grenade trail', {'nth': 0}),
@@ -471,6 +465,10 @@ PORT = {
                 (DM + '\\' + dm + '.damage_effect', 'ai stun bounds', '', 0, 0, [1.0, 0.5], {'anchor': ('shake radius', -8)}),
                 (DM + '\\' + dm + '.damage_effect', 'rider minimum transfer damage scale', '', 0, 0, 1.0,
                  {'anchor': ('instantaneous acceleration', 12)}))] + [
+            # boot 6: the spawned EMP grenade never DRAWN -- its own .model (the frag projectile's render + collision,
+            # unchanged) fades from 0.0005 and disappears beyond 0.001 wu (the frag's 30 / 50)
+            (GL + r'\projectiles\emp_burst.model', 'disappear distance', '', 0, 0, 0.001),
+            (GL + r'\projectiles\emp_burst.model', 'begin fade distance', '', 0, 0, 0.0005),
             # boot 5: the spawned EMP grenade's light black (the Brute Shot glow was the 'extra projectile')
             (FX + r'\emp_grenade_dark.light', 'diffuse upper bound', '', 0, 0, [0.0, 0.0, 0.0]),
             (FX + r'\emp_grenade_dark.light', 'specular upper bound', '', 0, 0, [0.0, 0.0, 0.0]),
