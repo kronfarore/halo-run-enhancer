@@ -731,17 +731,22 @@ def check_resolution():
             report(f'{game}: no sampled maps (MAPS) -- none of its cards is '
                    f'resolution-checked')
     for label, eff, _weapon in iter_effects():
-        if eff.get('skull'):        # whole-map rules, applied in code; nothing to resolve
-            continue
         for game in declared_games(eff):
             if game not in MAPS:
                 continue            # an unknown name: structure rule 8 reports it
+            if eff.get('skull') and not _targets_of(eff, game, None, None):
+                # A whole-map rule applied in code: its `tag` is a class or 'MCC
+                # process', not a path, and there is nothing to resolve. The eight
+                # Downpour skulls are different -- they carry field rows the patcher
+                # applies as ordinary ops, so those go through like any card. (Every
+                # skull used to be skipped here, and every matg card below: 153 cards
+                # with 311 field rows nobody looked up; Stun Penalty and Stun Time were
+                # offered in Halo 4, whose matg has none of their fields. Review U5 V3.)
+                continue
             tag = resolve_gamed(eff.get('tag'), game)
             if not isinstance(tag, str) or not tag.strip():
                 continue            # no tag in an offered game: structure rule 9
             cls, tpath = hm.split_tag(tag)
-            if cls == 'matg':
-                continue
             init = eff.get('init_defaults')
             # `init_defaults` is a PLAIN dict on most cards and a per-game one on a
             # few, and resolve_gamed treats any dict as game-keyed -- so resolving
