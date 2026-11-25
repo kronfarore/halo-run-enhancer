@@ -12969,7 +12969,7 @@
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
 					"game": ["Halo 4", "Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
-					"tag": { "Halo 4": "jmad *fp_assault_rifle*", "Halo 1": "antr weapons\\saw\\fp\\fp", "Halo 2": "jmad objects\\characters\\*\\fp\\weapons\\rifle\\fp_saw\\fp_saw", "Halo 3": "jmad objects\\weapons\\rifle\\saw\\fp\\fp_saw_*", "Halo Reach": "jmad objects\\weapons\\rifle\\saw\\fp_saw_*" },
+					"tag": { "Halo 4": "jmad *fp_lmg*", "Halo 1": "antr weapons\\saw\\fp\\fp", "Halo 2": "jmad objects\\characters\\*\\fp\\weapons\\rifle\\fp_saw\\fp_saw", "Halo 3": "jmad objects\\weapons\\rifle\\saw\\fp\\fp_saw_*", "Halo Reach": "jmad objects\\weapons\\rifle\\saw\\fp_saw_*" },
 					"targets": [
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "games": ["Halo 4"], "easier_when": "decreased" },
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "games": ["Halo 1"], "easier_when": "decreased" },
@@ -13258,7 +13258,7 @@
 					"desc": "How long you spend reloading. *0.5 is twice as fast.",
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 4", "Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
-					"tag": { "Halo 4": "jmad *fp_assault_rifle*", "Halo 1": "antr weapons\\saw\\fp\\fp", "Halo 2": "jmad objects\\characters\\*\\fp\\weapons\\rifle\\fp_saw\\fp_saw", "Halo 3": "jmad objects\\weapons\\rifle\\saw\\fp\\fp_saw_*", "Halo Reach": "jmad objects\\weapons\\rifle\\saw\\fp_saw_*" },
+					"tag": { "Halo 4": "jmad *fp_lmg*", "Halo 1": "antr weapons\\saw\\fp\\fp", "Halo 2": "jmad objects\\characters\\*\\fp\\weapons\\rifle\\fp_saw\\fp_saw", "Halo 3": "jmad objects\\weapons\\rifle\\saw\\fp\\fp_saw_*", "Halo Reach": "jmad objects\\weapons\\rifle\\saw\\fp_saw_*" },
 					"targets": [
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "games": ["Halo 4"], "easier_when": "decreased" },
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "games": ["Halo 1"], "easier_when": "decreased" },
@@ -13439,7 +13439,7 @@
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
 					"game": ["Halo 4", "Halo 1"],
-					"tag": { "Halo 4": "jmad *fp_shotgun*", "Halo 1": "antr weapons\\scattershot\\fp\\fp" },
+					"tag": { "Halo 4": "jmad *fp_spread_gun*", "Halo 1": "antr weapons\\scattershot\\fp\\fp" },
 					"targets": [
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 4"] },
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 1"] }
@@ -13640,7 +13640,7 @@
 					"desc": "How long you spend reloading. *0.5 is twice as fast.",
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 4", "Halo 1"],
-					"tag": { "Halo 4": "jmad *fp_shotgun*", "Halo 1": "antr weapons\\scattershot\\fp\\fp" },
+					"tag": { "Halo 4": "jmad *fp_spread_gun*", "Halo 1": "antr weapons\\scattershot\\fp\\fp" },
 					"targets": [
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "easier_when": "decreased", "games": ["Halo 4"] },
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "easier_when": "decreased", "games": ["Halo 1"] },
@@ -13795,7 +13795,7 @@
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
 					"game": ["Halo 4", "Halo 1"],
-					"tag": { "Halo 4": "jmad *fp_covenant_carbine*", "Halo 1": "antr weapons\\light rifle\\fp\\fp" },
+					"tag": { "Halo 4": "jmad *fp_forerunner_rifle*", "Halo 1": "antr weapons\\light rifle\\fp\\fp" },
 					"targets": [
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 4"] },
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 1"] }
@@ -13960,7 +13960,7 @@
 					"desc": "How long you spend reloading. *0.5 is twice as fast.",
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 4", "Halo 1"],
-					"tag": { "Halo 4": "jmad *fp_covenant_carbine*", "Halo 1": "antr weapons\\light rifle\\fp\\fp" },
+					"tag": { "Halo 4": "jmad *fp_forerunner_rifle*", "Halo 1": "antr weapons\\light rifle\\fp\\fp" },
 					"targets": [
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "easier_when": "decreased", "games": ["Halo 4"] },
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "easier_when": "decreased", "games": ["Halo 1"] }
@@ -14078,7 +14078,7 @@
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
 					"game": ["Halo 4", "Halo 1"],
-					"tag": { "Halo 4": "jmad *fp_assault_rifle*", "Halo 1": "antr weapons\\suppressor\\fp\\fp" },
+					"tag": { "Halo 4": "jmad *fp_forerunner_smg*", "Halo 1": "antr weapons\\suppressor\\fp\\fp" },
 					"targets": [
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 4"] },
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 1"] }
@@ -14279,7 +14279,7 @@
 					"desc": "How long you spend reloading. *0.5 is twice as fast.",
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 4", "Halo 1"],
-					"tag": { "Halo 4": "jmad *fp_assault_rifle*", "Halo 1": "antr weapons\\suppressor\\fp\\fp" },
+					"tag": { "Halo 4": "jmad *fp_forerunner_smg*", "Halo 1": "antr weapons\\suppressor\\fp\\fp" },
 					"targets": [
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "easier_when": "decreased", "games": ["Halo 4"] },
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "easier_when": "decreased", "games": ["Halo 1"] }
@@ -14447,7 +14447,7 @@
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
 					"game": ["Halo 4", "Halo 1"],
-					"tag": { "Halo 4": "jmad *fp_magnum*", "Halo 1": "antr weapons\\boltshot\\fp\\fp" },
+					"tag": { "Halo 4": "jmad *fp_stasis_pistol*", "Halo 1": "antr weapons\\boltshot\\fp\\fp" },
 					"targets": [
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 4"] },
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 1"] }
@@ -14648,7 +14648,7 @@
 					"desc": "How long you spend reloading. *0.5 is twice as fast.",
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 4", "Halo 1"],
-					"tag": { "Halo 4": "jmad *fp_magnum*", "Halo 1": "antr weapons\\boltshot\\fp\\fp" },
+					"tag": { "Halo 4": "jmad *fp_stasis_pistol*", "Halo 1": "antr weapons\\boltshot\\fp\\fp" },
 					"targets": [
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "easier_when": "decreased", "games": ["Halo 4"] },
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "easier_when": "decreased", "games": ["Halo 1"] }
@@ -14783,7 +14783,7 @@
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
 					"game": ["Halo 4", "Halo 1"],
-					"tag": { "Halo 4": "jmad *fp_spartan_laser*", "Halo 1": "antr weapons\\railgun\\fp\\fp" },
+					"tag": { "Halo 4": "jmad *fp_rail_gun*", "Halo 1": "antr weapons\\railgun\\fp\\fp" },
 					"targets": [
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 4"] },
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 1"] }
@@ -15361,7 +15361,7 @@
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
 					"game": ["Halo 4", "Halo 1"],
-					"tag": { "Halo 4": "jmad *fp_sniper_rifle*", "Halo 1": "antr weapons\\binary rifle\\fp\\fp" },
+					"tag": { "Halo 4": "jmad *fp_forerunner_sniper_rifle*", "Halo 1": "antr weapons\\binary rifle\\fp\\fp" },
 					"targets": [
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 4"] },
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 1"] }
@@ -15549,7 +15549,7 @@
 					"desc": "How long you spend reloading. *0.5 is twice as fast.",
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 4", "Halo 1"],
-					"tag": { "Halo 4": "jmad *fp_sniper_rifle*", "Halo 1": "antr weapons\\binary rifle\\fp\\fp" },
+					"tag": { "Halo 4": "jmad *fp_forerunner_sniper_rifle*", "Halo 1": "antr weapons\\binary rifle\\fp\\fp" },
 					"targets": [
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "easier_when": "decreased", "games": ["Halo 4"] },
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "easier_when": "decreased", "games": ["Halo 1"] }
@@ -15644,7 +15644,7 @@
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
 					"game": ["Halo 4", "Halo 1"],
-					"tag": { "Halo 4": "jmad *fp_rocket_launcher*", "Halo 1": "antr weapons\\incineration cannon\\fp\\fp" },
+					"tag": { "Halo 4": "jmad *fp_forerunner_incineration_launcher*", "Halo 1": "antr weapons\\incineration cannon\\fp\\fp" },
 					"targets": [
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 4"] },
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "easier_when": "decreased", "games": ["Halo 1"] }
@@ -15876,7 +15876,7 @@
 					"desc": "How long you spend reloading. *0.5 is twice as fast.",
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 4", "Halo 1"],
-					"tag": { "Halo 4": "jmad *fp_rocket_launcher*", "Halo 1": "antr weapons\\incineration cannon\\fp\\fp" },
+					"tag": { "Halo 4": "jmad *fp_forerunner_incineration_launcher*", "Halo 1": "antr weapons\\incineration cannon\\fp\\fp" },
 					"targets": [
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "easier_when": "decreased", "games": ["Halo 4"] },
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "easier_when": "decreased", "games": ["Halo 1"] }

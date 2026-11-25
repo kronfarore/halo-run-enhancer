@@ -265,12 +265,64 @@ def _shared_in_h4(path, names):
     return None
 
 
+def _wild_set(pattern, names):
+    """The tag names a `*`-wildcard path matches (an exact path matches itself)."""
+    matcher = halo_patch.hm._wildcard_matcher(pattern)
+    return {n for n in names if matcher(n)}
+
+
+# weap /First Person (an element per first-person character), and the `First Person
+# Animations` tagRef inside it: the graph a Reload Time / Weapon Swap Speed card retimes.
+FP_BLOCK = (0x4D4, 0x28)
+FP_ANIMATIONS_REF = 0x10
+#: {weap tag: {its first-person jmad graph(s)}}, filled by campaign_tags()
+FP_GRAPHS = {}
+
+
+def _fp_refs(m, base):
+    """The first-person graphs a weapon's own tag names, or []."""
+    off, esz = FP_BLOCK
+    out = []
+    try:
+        count = m.i32(base + off)
+        arr = m.data2off(m.u32(base + off + 4))
+        if not arr or not 0 < count <= 8:
+            return out
+        for i in range(count):
+            ident = m.u32(arr + i * esz + FP_ANIMATIONS_REF + 0xC)
+            if ident == 0xFFFFFFFF:
+                continue
+            r = m.tag(ident & 0xFFFF)
+            if r and r['name']:
+                out.append(r['name'])
+    except Exception:
+        return []
+    return out
+
+
+def own_fp_graphs(weapon, have, patterns):
+    """The first-person graphs THIS weapon's own Halo 4 weap tags name."""
+    out = set()
+    for wp in h4_paths(weapon, 'weap', have, patterns):
+        out |= FP_GRAPHS.get(wp, set())
+    return out
+
+
 def _fp_wildcard(weapon, cls, have, patterns):
     """`*fp_<name>*` for this weapon's Halo 4 first-person graph, or None.
 
-    Derived from the weapon's own Halo 4 `weap` leaf with the `storm_` prefix taken
+    The weapon's own tag is the authority (FP_GRAPHS): the wildcard is the folder of
+    the graph it names, and it must match exactly that graph. Without that read, it is
+    derived from the weapon's own Halo 4 `weap` leaf with the `storm_` prefix taken
     off, because the fp folder tracks the weapon's Halo 4 name and not its Halo 3 one.
     """
+    own = own_fp_graphs(weapon, have, patterns) if cls == 'jmad' else set()
+    if own:
+        for folder in sorted({g.rsplit(SEP, 2)[-2] for g in own if g.count(SEP) >= 2}):
+            pattern = '*%s*' % folder
+            if _wild_set(pattern, have.get(cls, ())) == own:
+                return pattern
+        return ' & '.join(sorted(own))      # no one wildcard names exactly them
     weaps = h4_paths(weapon, 'weap', have, patterns)
     if not weaps:
         return None
@@ -314,6 +366,10 @@ def campaign_tags():
                 ref = _melee_ref(m, t['base'])
                 if ref:
                     melee[t['name']] = ref
+            if t['class'] == 'weap' and t['base'] is not None:
+                fp = _fp_refs(m, t['base'])
+                if fp:
+                    FP_GRAPHS.setdefault(t['name'], set()).update(fp)
     return have, melee
 
 
@@ -428,8 +484,30 @@ def h4_tag_for(weapon, inherited, have, patterns, melee):
         # `*fp_battle_rifle*` or `*fp_flak_cannon*` can match. So derive the Halo 4
         # wildcard from the weapon's own Halo 4 tag rather than keeping a table of
         # renames -- it is the same rename, already resolved once.
-        if all('*' not in p or _wild_hits(p, have.get(cls, ())) for p in inherited_paths):
-            tag = None                  # inherited wildcard still hits: widen `game`
+        #
+        # "Still hits" is not enough, though: it must hit THIS weapon's graph.
+        # h4_new_weapons hands in the MODEL's card (SAW <- Assault Rifle), whose
+        # `*fp_assault_rifle*` hits -- the Assault Rifle's graph. Fifteen Reload Time /
+        # Weapon Swap Speed cards of eight new weapons were written that way and retimed
+        # their model weapon, never themselves (review U5 K1; Storm Rifle and Sticky
+        # Detonator escaped only because their models' wildcards miss in Halo 4). So
+        # the weapon's own tag decides: the graph its First Person block names.
+        names = have.get(cls, ())
+        still = all('*' not in p or _wild_hits(p, names) for p in inherited_paths)
+        hits = set()
+        for p in inherited_paths:
+            hits |= _wild_set(p, names)
+        own = own_fp_graphs(weapon, have, patterns) if cls == 'jmad' else set()
+        if cls == 'jmad' and still and not own:
+            mine = set(h4_paths(weapon, 'weap', have, patterns))
+            other = sorted(w for w, gs in FP_GRAPHS.items() if w not in mine and gs & hits)
+            if other:
+                return None, ('the wildcard hits ANOTHER weapon\'s first-person graph '
+                              '(%s, named by %s) and %s names none of its own'
+                              % (', '.join(sorted(_leaf(h) for h in hits)),
+                                 _leaf(other[0]), weapon))
+        if still and (not own or hits == own):
+            tag = None      # the inherited wildcard hits this weapon's graph: widen `game`
         else:
             derived = _fp_wildcard(weapon, cls, have, patterns)
             if derived is None:
