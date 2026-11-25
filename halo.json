@@ -12691,7 +12691,7 @@
 					"game": ["Halo 4", "Halo 1"],
 					"tag": { "Halo 4": "weap objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine", "Halo 1": "weap weapons\\storm rifle\\storm rifle" },
 					"targets": [
-						{ "step": "*1.2", "field": "Distribution Function", "block": "Barrels", "index": "all", "easier_when": "increased", "games": ["Halo 4"] },
+						{ "field": "Distribution Function", "block": "Barrels", "index": "all", "set": "horizontal fan", "games": ["Halo 4"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Barrels", "min": 0, "zero_is": 0.1, "index": "all", "easier_when": "increased", "games": ["Halo 4"] },
 						{ "field": "Distribution Function", "block": "Triggers", "index": "all", "set": "horizontal fan", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Triggers", "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
@@ -13020,7 +13020,7 @@
 					"game": ["Halo 4", "Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
 					"tag": { "Halo 4": "weap objects\\weapons\\rifle\\storm_lmg\\storm_lmg", "Halo 1": "weap weapons\\saw\\saw", "Halo 2": "weap objects\\weapons\\rifle\\saw\\saw", "Halo 3": "weap objects\\weapons\\rifle\\saw\\saw", "Halo Reach": "weap objects\\weapons\\rifle\\saw\\saw" },
 					"targets": [
-						{ "step": "*1.2", "field": "Distribution Function", "block": "Barrels", "index": "all", "games": ["Halo 4"], "easier_when": "increased" },
+						{ "field": "Distribution Function", "block": "Barrels", "index": "all", "set": "horizontal fan", "games": ["Halo 4"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Barrels", "min": 0, "zero_is": 0.1, "index": "all", "games": ["Halo 4"], "easier_when": "increased" },
 						{ "field": "Distribution Function", "block": "Triggers", "index": "all", "set": "horizontal fan", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Triggers", "index": "all", "zero_is": 0.1, "min": 0, "games": ["Halo 1"], "easier_when": "increased" },
@@ -13485,7 +13485,7 @@
 					"game": ["Halo 4", "Halo 1"],
 					"tag": { "Halo 4": "weap objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun & objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun_npc", "Halo 1": "weap weapons\\scattershot\\scattershot" },
 					"targets": [
-						{ "step": "*1.2", "field": "Distribution Function", "block": "Barrels", "index": "all", "easier_when": "increased", "games": ["Halo 4"] },
+						{ "field": "Distribution Function", "block": "Barrels", "index": "all", "set": "horizontal fan", "games": ["Halo 4"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Barrels", "min": 0, "zero_is": 0.1, "index": "all", "easier_when": "increased", "games": ["Halo 4"] },
 						{ "field": "Distribution Function", "block": "Triggers", "index": "all", "set": "horizontal fan", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Triggers", "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
@@ -13831,7 +13831,7 @@
 					"game": ["Halo 4", "Halo 1"],
 					"tag": { "Halo 4": "weap objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle & objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle_npc", "Halo 1": "weap weapons\\light rifle\\light rifle" },
 					"targets": [
-						{ "step": "*1.2", "field": "Distribution Function", "block": "Barrels", "index": "all", "easier_when": "increased", "games": ["Halo 4"] },
+						{ "field": "Distribution Function", "block": "Barrels", "index": "all", "set": "horizontal fan", "games": ["Halo 4"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Barrels", "min": 0, "zero_is": 0.1, "index": "all", "easier_when": "increased", "games": ["Halo 4"] },
 						{ "field": "Distribution Function", "block": "Triggers", "index": "all", "set": "horizontal fan", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Triggers", "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
@@ -14124,7 +14124,7 @@
 					"game": ["Halo 4", "Halo 1"],
 					"tag": { "Halo 4": "weap objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_pawnhead", "Halo 1": "weap weapons\\suppressor\\suppressor" },
 					"targets": [
-						{ "step": "*1.2", "field": "Distribution Function", "block": "Barrels", "index": "all", "easier_when": "increased", "games": ["Halo 4"] },
+						{ "field": "Distribution Function", "block": "Barrels", "index": "all", "set": "horizontal fan", "games": ["Halo 4"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Barrels", "min": 0, "zero_is": 0.1, "index": "all", "easier_when": "increased", "games": ["Halo 4"] },
 						{ "field": "Distribution Function", "block": "Triggers", "index": "all", "set": "horizontal fan", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Triggers", "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
@@ -14493,7 +14493,7 @@
 					"game": ["Halo 4", "Halo 1"],
 					"tag": { "Halo 4": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead", "Halo 1": "weap weapons\\boltshot\\boltshot" },
 					"targets": [
-						{ "step": "*1.2", "field": "Distribution Function", "block": "Barrels", "index": "all", "easier_when": "increased", "games": ["Halo 4"] },
+						{ "field": "Distribution Function", "block": "Barrels", "index": "all", "set": "horizontal fan", "games": ["Halo 4"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Barrels", "min": 0, "zero_is": 0.1, "index": "all", "easier_when": "increased", "games": ["Halo 4"] },
 						{ "field": "Distribution Function", "block": "Triggers", "index": "all", "set": "horizontal fan", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Triggers", "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
@@ -14830,7 +14830,7 @@
 					"game": ["Halo 4", "Halo 1"],
 					"tag": { "Halo 4": "weap objects\\weapons\\rifle\\storm_rail_gun\\storm_rail_gun_pve", "Halo 1": "weap weapons\\railgun\\railgun" },
 					"targets": [
-						{ "step": "*1.2", "field": "Distribution Function", "block": "Barrels", "index": "all", "easier_when": "increased", "games": ["Halo 4"] },
+						{ "field": "Distribution Function", "block": "Barrels", "index": "all", "set": "horizontal fan", "games": ["Halo 4"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Barrels", "min": 0, "zero_is": 0.1, "index": "all", "easier_when": "increased", "games": ["Halo 4"] },
 						{ "field": "Distribution Function", "block": "Triggers", "index": "all", "set": "horizontal fan", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Triggers", "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
@@ -15154,7 +15154,7 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\pistol\\storm_sticky_detonator\\storm_sticky_detonator_pve",
 					"targets": [
-						{ "step": "*1.2","field": "Distribution Function", "block": "Barrels", "index": "all", "easier_when": "increased"},
+						{ "field": "Distribution Function", "block": "Barrels", "index": "all", "set": "horizontal fan" },
 						{ "step": "*1.2","field": "Distribution Angle", "block": "Barrels", "min": 0, "zero_is": 0.1, "index": "all", "easier_when": "increased"}
 					]
 				},
@@ -15407,7 +15407,7 @@
 					"game": ["Halo 4", "Halo 1"],
 					"tag": { "Halo 4": "weap objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle & objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle_npc", "Halo 1": "weap weapons\\binary rifle\\binary rifle" },
 					"targets": [
-						{ "step": "*1.2", "field": "Distribution Function", "block": "Barrels", "index": "all", "easier_when": "increased", "games": ["Halo 4"] },
+						{ "field": "Distribution Function", "block": "Barrels", "index": "all", "set": "horizontal fan", "games": ["Halo 4"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Barrels", "min": 0, "zero_is": 0.1, "index": "all", "easier_when": "increased", "games": ["Halo 4"] },
 						{ "field": "Distribution Function", "block": "Triggers", "index": "all", "set": "horizontal fan", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Triggers", "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
@@ -15691,7 +15691,7 @@
 					"game": ["Halo 4", "Halo 1"],
 					"tag": { "Halo 4": "weap objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher & objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher_knight", "Halo 1": "weap weapons\\incineration cannon\\incineration cannon" },
 					"targets": [
-						{ "step": "*1.2", "field": "Distribution Function", "block": "Barrels", "index": "all", "easier_when": "increased", "games": ["Halo 4"] },
+						{ "field": "Distribution Function", "block": "Barrels", "index": "all", "set": "horizontal fan", "games": ["Halo 4"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Barrels", "min": 0, "zero_is": 0.1, "index": "all", "easier_when": "increased", "games": ["Halo 4"] },
 						{ "field": "Distribution Function", "block": "Triggers", "index": "all", "set": "horizontal fan", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Triggers", "index": "all", "zero_is": 0.1, "min": 0, "easier_when": "increased", "games": ["Halo 1"] }
