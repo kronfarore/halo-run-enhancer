@@ -257,14 +257,12 @@ PORT = {
                    # only the engine's points: the Gravity Hammer's A5 finding)
                    (r'effects\impact\explosion_small\frag_grenade\airborne_detonation.effect', FX + r'\tethered_detonation.effect'),
                    (BS + r'\projectiles\grenade\grenade.projectile', PJE),
-                   # boot 5 (user: 'the EMP is gone, the extra projectile still there'): on the null model (no
-                   # collision) the spawned grenade never burst -- it bursts on CONTACT (its 0.01 s timer does not fire
-                   # it), and its Brute Shot light glowed on. Own .model: the frag projectile's COLLISION, the null
-                   # (invisible-shader) render model; the light a black copy
-                   (r'objects\weapons\grenade\frag_grenade\frag_grenade_projectile.model', GL + r'\projectiles\emp_burst.model'),
-                   # (the null render model failed: tool 'collision region grenade has no corresponding model region';
-                   # boot 6, the frag render model on Bungie's INVISIBLE shader failed too: no burst, no EMP. Back to the
-                   # exact boot-4 render + collision; hidden by the .model's own DISAPPEAR / FADE distance instead)
+                   # THE SPAWNED GRENADE'S MODEL (boots 5-7): every change to it broke the burst -- Bungie's null model
+                   # (tool: 'collision region has no corresponding model region'), the frag render model on the
+                   # INVISIBLE shader ('transparent imported as opaque'), the frag model with disappear distance 0.001 (an
+                   # object past it is likely never ACTIVATED). It keeps the frag projectile model, exactly boot 4's (it
+                   # lives 0.01 s); what showed was what it carries: the Brute Shot glow light and the frag smoke trail,
+                   # both made a black light
                    (r'effects\objects\weapons\support_low\brute_shot\projectile.light', FX + r'\emp_grenade_dark.light'),
                    (r'effects\objects\characters\brute\tartarus_hammer_impact.effect', FX + r'\emp_burst.effect')],
         # the charge lights' flares carry a colour ANIMATION (the pistol's dark green -> green, BGR; the Laser's boot 6):
@@ -322,11 +320,14 @@ PORT = {
             (FX + r'\tethered_detonation.effect', 'proj', r'sound_remastered\weapons\frag_grenade\frag_expl_lod',
              PJE[:-len('.projectile')], 'the EMP grenade, spawned in the burst'),
             # PJE: bursts at once (numbers) with the Tartarus hammer impact and the EMP
-            # boot 4 (user): 'the extra projectile is not invisible' -> boot 5: its own model, the frag's collision under
-            # Bungie's NULL render model (the invisible shader)
-            (PJE, 'hlmt', BS + r'\projectiles\grenade\grenade', GL + r'\projectiles\emp_burst', 'invisible: own model, frag collision'),
+            (PJE, 'hlmt', BS + r'\projectiles\grenade\grenade', r'objects\weapons\grenade\frag_grenade\frag_grenade_projectile',
+             'the frag projectile model (boot 4: the burst works on it)'),
             (PJE, 'foot', r'effects\materials\objects\weapons\brute_shot', FX + r'\grenade', 'material effects'),
             (PJE, 'ligh', r'effects\objects\weapons\support_low\brute_shot\projectile', FX + r'\emp_grenade_dark', 'a black light (no glow)', {'nth': 0}),
+            # the frag smoke trail attachment -> a second black light (no smoke left hanging)
+            (PJE, 'effe', r'effects\objects\weapons\grenade\frag_grenade\smoke_trail',
+             r'effects\objects\weapons\grenade\frag_grenade\smoke_trail', 'the smoke trail, made a light', {'class': 'ligh'}),
+            (PJE, 'ligh', r'effects\objects\weapons\grenade\frag_grenade\smoke_trail', FX + r'\emp_grenade_dark', 'a black light (no smoke)'),
             (PJE, 'cont', r'effects\objects\weapons\support_low\brute_shot\projectile', FX + r'\grenade', 'the grenade trail', {'nth': 0}),
             (PJE, 'lsnd', r'sound\weapons\brute_shot\brute_shot_projectile\brute_shot_projectile', FX + r'\gl_projectile', 'the flight loop'),
             (PJE, 'effe', r'effects\impact\explosion_small\brute_shot\detonation', FX + r'\emp_burst', 'the EMP look: Tartarus\'s hammer impact', {'every': True}),
@@ -465,10 +466,6 @@ PORT = {
                 (DM + '\\' + dm + '.damage_effect', 'ai stun bounds', '', 0, 0, [1.0, 0.5], {'anchor': ('shake radius', -8)}),
                 (DM + '\\' + dm + '.damage_effect', 'rider minimum transfer damage scale', '', 0, 0, 1.0,
                  {'anchor': ('instantaneous acceleration', 12)}))] + [
-            # boot 6: the spawned EMP grenade never DRAWN -- its own .model (the frag projectile's render + collision,
-            # unchanged) fades from 0.0005 and disappears beyond 0.001 wu (the frag's 30 / 50)
-            (GL + r'\projectiles\emp_burst.model', 'disappear distance', '', 0, 0, 0.001),
-            (GL + r'\projectiles\emp_burst.model', 'begin fade distance', '', 0, 0, 0.0005),
             # boot 5: the spawned EMP grenade's light black (the Brute Shot glow was the 'extra projectile')
             (FX + r'\emp_grenade_dark.light', 'diffuse upper bound', '', 0, 0, [0.0, 0.0, 0.0]),
             (FX + r'\emp_grenade_dark.light', 'specular upper bound', '', 0, 0, [0.0, 0.0, 0.0]),
