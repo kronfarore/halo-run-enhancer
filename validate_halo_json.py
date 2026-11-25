@@ -655,6 +655,67 @@ def _check_placed(label, game, field, t, quiet):
                f'in {E["items"]}', quiet)
 
 
+STEP_KEYS = ('step', 'steps', 'add_step', 'inverse_step', 'inverse_steps', 'from_zero')
+
+
+def type_problems(t, fld, ladder=()):
+    """What is wrong between a row's OPERATOR and the plugin field's TYPE, as sentences
+    (review U5 V2). The plugin lookup only ever asked whether the field exists, so a
+    multiplier on an enum passed: ten Halo 4 'Distribution Function' cards carried
+    `"step": "*1.2"` on enum16 {point, horizontal fan, ...}; 0 x 1.2 is 0, the row
+    reported ok and the fan the card promises never engaged.
+
+      flag / set_bit   a flags field, and a bit the plugin names
+      choice           an enum, and every `ladder` name one of its options; a
+                       `follows_choice` row takes the chosen NAME, so it needs them too
+      set              a name needs an enum that has it; a number on an enum must be
+                       one of its values
+      step ...         never on an enum or a flags field
+    """
+    out = []
+    ftype = str(fld.get('type') or '?')
+    enum, flags = ftype.startswith('enum'), ftype.startswith('flags')
+    opts, bits = fld.get('options') or {}, fld.get('bits') or {}
+
+    def low(x):
+        return str(x).strip().lower()
+
+    bit = next((t[k] for k in ('flag', 'set_bit', 'clear_bit') if t.get(k) is not None), None)
+    if bit is not None:
+        if not flags:
+            out.append(f'the flag {bit!r} is set on a {ftype} field, not a flags field')
+        elif low(bit) not in bits:
+            out.append(f'the flags field has no bit {bit!r} (it has: '
+                       f'{", ".join(sorted(bits)) or "none named"})')
+        return out                      # such a row's `set` is its display text
+    if t.get('choice') or t.get('follows_choice'):
+        if not enum:
+            out.append(f'a choice needs an enum, the field is {ftype}')
+        else:
+            names = (t.get('ladder') or []) if t.get('choice') else ladder
+            miss = [n for n in names if low(n) not in opts]
+            if miss:
+                out.append(f'the enum has no option {", ".join(map(repr, miss))} (it has: '
+                           f'{", ".join(sorted(opts))})')
+    sv = t.get('set')
+    if isinstance(sv, str):
+        if not enum:
+            out.append(f'"set": {sv!r} names an option, the field is {ftype}')
+        elif low(sv) not in opts:
+            out.append(f'"set": {sv!r} is not an option of the enum (it has: '
+                       f'{", ".join(sorted(opts))})')
+    elif isinstance(sv, (int, float)) and not isinstance(sv, bool) and enum and opts \
+            and sv not in opts.values():
+        out.append(f'"set": {sv!r} is not a value of the enum {sorted(opts.values())}')
+    if (enum or flags) and sv is None and not t.get('choice') and not t.get('follows_choice'):
+        stepped = [k for k in STEP_KEYS if t.get(k) is not None]
+        if stepped:
+            out.append(f'"{stepped[0]}": {t[stepped[0]]!r} is an operator, the field is '
+                       f'{ftype} -- a multiplier or an addition does not select an '
+                       f'option; use "set" (or "choice" / "flag")')
+    return out
+
+
 def check_resolution():
     """Per game: build the work list, then walk the maps ONE AT A TIME.
 
@@ -704,6 +765,8 @@ def check_resolution():
                 report(f'{label} [{game}]: no {cls} plugin', quiet)
                 continue
             keep = []
+            ladder = [x for _f, _b, _n, _c, _p, tt in targets if tt.get('choice')
+                      for x in (tt.get('ladder') or [])]
             for field, block, nth, ucls, upath, t in targets:
                 if t.get('placed'):
                     _check_placed(label, game, field, t, quiet)
@@ -721,6 +784,9 @@ def check_resolution():
                     report(f'{label} [{game}]: FIELD not in plugin: {field!r} '
                            f'(block {block!r})', quiet)
                     continue
+                # the operator against the field's type (an enum is not multiplied)
+                for why in type_problems(t, fld, ladder):
+                    report(f'{label} [{game}]: {field!r} (block {block!r}): {why}', quiet)
                 # A card that SEEDS the block it edits is not broken when that block
                 # reads empty -- being empty is the whole reason it seeds, and the
                 # patcher grows or copies it before writing. Same comparison
