@@ -8466,7 +8466,7 @@
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4", "Halo 1", "Halo 2"],
 					"tag": { "Halo 3": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser", "Halo Reach": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser", "Halo 4": "weap objects\\weapons\\support_high\\storm_spartan_laser\\storm_spartan_laser", "Halo 1": "weap weapons\\spartan laser\\spartan laser", "Halo 2": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser" },
 					"targets": [
-						{ "step": "+1", "field": "Projectiles Per Shot", "block": { "Halo 3": "Barrels", "index": 1 }, "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] },
+						{ "step": "+1", "field": "Projectiles Per Shot", "block": "Barrels", "index": 1, "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] },
 						{ "step": "+1", "field": "Rounds Per Shot", "block": "Barrels", "index": 1, "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "easier_when": "increased" },
 						{ "step": "+1", "field": "Projectiles Per Shot", "block": "Triggers", "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 1"] },
 						{ "step": "+1", "field": "Rounds Per Shot", "block": "Triggers", "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "easier_when": "increased", "games": ["Halo 1"] },
