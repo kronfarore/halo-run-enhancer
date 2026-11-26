@@ -3153,6 +3153,18 @@ Fifteen blocks — weapons, vehicles, equipment, scenery, decals, trigger volume
 Guerilla palette entry getting "neither geometry nor residency": the edit was discarded
 before it could do anything. `odst_saw_place.py` reads the real palette and placements.
 
+**UPDATE 2026-11-26: a headless edit DOES gather -- through the designer zone.** None of
+the three failed routes put the weapon in a designer zone, and `tool` gathers a tag's
+resources per zone. `odst_dz_enhancer.py` appends the weapon to the resource palette (and
+the scenario's copy) and lists its index in `dz_enhancer`, written through the tag's own
+layout by `h3_loosetag.py` (every ODST scenario and resource round-trips byte for byte).
+Proof on sc150: the DLC golf club, in no campaign level, came out of the build with its
+render model (3 chunks) and first-person graph (4 chunks), in the dz_enhancer pool --
+from the script's entry alone, no Sapien placement, no profile. So for ODST, a port's
+"place it in Sapien AND give it a profile" step can be `odst_dz_enhancer.py` once the
+level has `dz_enhancer` (add the port to its WEAPONS list), with `--check-built` after
+the build instead of h3_chunk_check.
+
 ### What ODST does NOT share with Halo 3
 
 * **One animation graph, not two.** Halo 3's Assault Rifle names the Master Chief's and
