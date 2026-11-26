@@ -12394,6 +12394,318 @@
    "anims": {
     "reload": 1.293333
    }
+  },
+  {
+   "weapon": "Concussion Rifle",
+   "source": "Halo Reach",
+   "donor": "Flak Cannon",
+   "default_on": true,
+   "desc": "Halo Reach's Concussion Rifle carried into Halo 2 with its own model, textures, sounds and its own Reach first-person animations for both species: six violet plasma bolts a magazine, three a second, each speeding up in flight and bursting on contact with a blast that throws what it hits. Balanced through Halo 2's Fuel Rod.",
+   "balance": [
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 15.0,
+     "card": "Autoaim",
+     "original": 15.0,
+     "note": "the fuel rod ratio x1 (25 / 25)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 4.0,
+     "card": "Autoaim",
+     "original": 4.0,
+     "note": "the fuel rod ratio x1 (4 / 4)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 6.0,
+     "card": "Autoaim",
+     "original": 8.0,
+     "nth": 1,
+     "note": "the fuel rod ratio: 8 x 6 / 8"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 15.0,
+     "card": "Autoaim",
+     "original": 15.0,
+     "nth": 1,
+     "note": "the fuel rod ratio x1 (25 / 25)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+     "field": "Fire Recovery Time",
+     "block": "Barrels",
+     "value": 0.333333,
+     "card": "Rate of Fire",
+     "original": 0.333333,
+     "index": "all",
+     "note": "the fuel rod ratio x1 (0.4 / 0.4); 10 ticks"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+     "field": "Minimum Error",
+     "block": "Barrels",
+     "value": 0.15,
+     "card": "Accuracy",
+     "original": 0.15,
+     "nth": 1,
+     "index": "all",
+     "note": "both fuel rods 0: Reach's own"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+     "field": "Error Angle",
+     "block": "Barrels",
+     "value": 0.4,
+     "card": "Accuracy",
+     "original": 0.4,
+     "nth": 1,
+     "index": "all",
+     "note": "both fuel rods 0: Reach's own"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+     "field": "Error Angle Max",
+     "block": "Barrels",
+     "value": 0.4,
+     "card": "Accuracy",
+     "original": 0.4,
+     "nth": 1,
+     "index": "all",
+     "note": "the fuel rod ratio x1 (0.05 / 0.05)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 6,
+     "card": "Magazine",
+     "original": 6,
+     "note": "the fuel rod ratio x1 (5 / 5)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+     "field": "Rounds Reloaded",
+     "block": "Magazines",
+     "value": 6,
+     "card": "Magazine",
+     "original": 6,
+     "note": "the fuel rod ratio x1"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 18,
+     "card": "Magazine",
+     "original": 18,
+     "note": "the fuel rod ratio x1 (20 / 20)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+     "field": "Rounds Inventory Maximum",
+     "block": "Magazines",
+     "value": 24,
+     "card": "Magazine",
+     "original": 24,
+     "note": "30 total - 6 loaded (x1)"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_bolt",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 12.0,
+     "card": "Projectile Velocity",
+     "original": 12.0,
+     "note": "both fuel rods 15 -> 6.5: x1"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_bolt",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 16.0,
+     "card": "Projectile Velocity",
+     "original": 16.0,
+     "note": "x1"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_bolt",
+     "field": "Air Gravity Scale",
+     "block": null,
+     "value": 0.25,
+     "card": "Projectile Gravity",
+     "original": 0.25,
+     "note": "both fuel rods 0.025: x1"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_bolt",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 100.0,
+     "card": "Projectile Range",
+     "original": 100.0,
+     "note": "both fuel rods 80: x1"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_bolt",
+     "field": "Minimum Velocity",
+     "block": null,
+     "value": 11.0,
+     "card": "Projectile Velocity",
+     "original": 11.0,
+     "note": "both fuel rods 0 (a zero on one side): Reach's own; the bolt never flies under 12 (4a)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\damage_effects\\concussion_rifle_explosion",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 14.333,
+     "card": "Explosion Damage",
+     "original": 0.0,
+     "note": "the sibling rule: 32.25 x Halo 2's fuel rod 40 / 90 (both Reach lowers 0)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\damage_effects\\concussion_rifle_explosion",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 32.25,
+     "card": "Explosion Damage",
+     "original": 21.5,
+     "note": "the fuel rod ratio: 21.5 x 90 / 60"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\damage_effects\\concussion_rifle_explosion",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 32.25,
+     "card": "Explosion Damage",
+     "original": 21.5,
+     "note": "the fuel rod ratio"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\damage_effects\\concussion_rifle_explosion",
+     "field": "Radius",
+     "block": null,
+     "value": 1.0,
+     "card": "Radius",
+     "original": 1.0,
+     "note": "the fuel rod ratio: 1 x 0.5 / 0.5"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\damage_effects\\concussion_rifle_explosion",
+     "field": "Radius Max",
+     "block": null,
+     "value": 1.333,
+     "card": "Radius",
+     "original": 2.0,
+     "note": "the fuel rod ratio: 2 x 1.5 / 2.25"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\damage_effects\\concussion_rifle_explosion",
+     "field": "Area Of Effect Core Radius",
+     "block": null,
+     "value": 0.8,
+     "card": "Radius",
+     "original": 0.8,
+     "note": "the fuel rod ratio x1 (0.5 / 0.5)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\damage_effects\\concussion_rifle_explosion",
+     "field": "Instantaneous Acceleration",
+     "block": null,
+     "value": 3.75,
+     "card": "Knockback",
+     "original": 2.5,
+     "note": "THE KNOCKBACK: the fuel rod ratio 2.5 x 2.25 / 1.5 (Original = Reach's own 2.5, user 4a)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\damage_effects\\concussion_rifle_impact",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 21.5,
+     "card": "Impact Damage",
+     "original": 21.5,
+     "note": "the fuel rod ratio x1 (100 / 100)"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\damage_effects\\concussion_rifle_impact",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 21.5,
+     "card": "Impact Damage",
+     "original": 21.5,
+     "note": "x1"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\damage_effects\\concussion_rifle_impact",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 21.5,
+     "card": "Impact Damage",
+     "original": 21.5,
+     "note": "x1"
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\damage_effects\\concussion_rifle_impact",
+     "field": "Instantaneous Acceleration",
+     "block": null,
+     "value": 0.75,
+     "card": "Knockback",
+     "original": 0.75,
+     "note": "x1 (1 / 1)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 30.0,
+     "card": "Magazine",
+     "original": null,
+     "note": "derived from Rounds Inventory Maximum + Rounds Loaded Maximum"
+    }
+   ],
+   "fp_animations": "objects\\characters\\*\\fp\\weapons\\rifle\\fp_concussion_rifle\\fp_concussion_rifle",
+   "anims": {
+    "reload": 1.6668
+   }
   }
  ],
  "Halo 3: ODST": [

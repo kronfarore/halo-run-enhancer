@@ -319,7 +319,7 @@ PORT = {
             (DM + r'\concussion_rifle_explosion.damage_effect', 'ai stun radius', '', 0, 0, 0.0, {'anchor': ('shake radius', -12)}),
             (DM + r'\concussion_rifle_explosion.damage_effect', 'ai stun bounds', '', 0, 0, [0.0, 0.0], {'anchor': ('shake radius', -8)}),
             (DM + r'\concussion_rifle_explosion.damage_effect', 'rider minimum transfer damage scale', '', 0, 0, 1.0,
-             {'anchor': ('instantaneous acceleration', 12)}),
+             {'anchor': ('instantaneous acceleration', 20)}),   # measured: accel, 8 pad bytes, direct 1, max 0.5, min 0
             # THE LOOK, the colours that are plain fields (the colour FUNCTIONS are `--recolour`'s): the trail's two
             # point states (alpha, r, g, b: the fuel rod's 0.26 / 0.89 / 0.58) -> Reach's violet (its contrail
             # gradient); the muzzle light (0.08 / 1 / 0.06) -> Reach's deep violet (the flare gradient); the burst light
@@ -509,6 +509,9 @@ PORT = {
         'model_skip': CR_GLOW,
         'fallback_box': (105, 191, 5, 34),
         'stretch': 1.4,
+        # the fuel rod plate: 4 images (0 / 1 bright, Chief / Arbiter corners; 2 / 3 their dim 'out' twins), every one
+        # repainted (the GL's Brute Shot layout)
+        'all_images': {'dim': {2: 0, 3: 1}},
     },
     # no zoom: the scope mask blanked (the SAW's)
     'scope': {
