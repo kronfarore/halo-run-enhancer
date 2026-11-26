@@ -630,7 +630,7 @@
 			},
 			"Stun Penalty": {
 				"desc": "Stun Movement Penalty, Stun Turning Penalty, Stun Jumping Penalty",
-				"skip_games": ["Halo Reach"],
+				"skip_games": ["Halo Reach", "Halo 4"],
 				"tag": "matg globals\\globals",
 				"targets": [
 					{ "step": "-0.2","field": "Stun Movement Penalty", "block": "Player Information", "index": "all", "group": "Stun Penalty", "easier_when": "decreased" },
@@ -640,7 +640,7 @@
 			},
 			"Stun Time": {
 				"desc": "Minimum & Maximum Stun Time (after Fall Damage?)",
-				"skip_games": ["Halo Reach"],
+				"skip_games": ["Halo Reach", "Halo 4"],
 				"tag": "matg globals\\globals",
 				"targets": [
 					{ "step": "*0.9","field": "Minimum Stun Time", "block": "Player Information", "index": "all", "group": "Stun Time", "easier_when": "decreased" },

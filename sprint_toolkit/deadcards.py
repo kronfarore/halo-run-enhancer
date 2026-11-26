@@ -70,11 +70,9 @@ VERIFIED = {
     ('Halo 3', 'Hero enemy modifier / Brute Chieftain / Melee Behavior',
      'char objects' + _S + 'characters' + _S + 'brute' + _S + 'ai' + _S
      + 'brute_chieftain*'): 'empty Melee block on the 030 chieftain',
-    # Pre-existing, unrelated to any Halo 4 work: matg carries no such field there.
-    ('Halo 4', 'Player Modifiers / General Modifiers / Stun Penalty',
-     'matg globals' + _S + 'globals'): 'Halo 4 matg has no Stun Penalty field',
-    ('Halo 4', 'Player Modifiers / General Modifiers / Stun Time',
-     'matg globals' + _S + 'globals'): 'Halo 4 matg has no Stun Time field',
+    # Stun Penalty / Stun Time in Halo 4 sat here from 2026-09-08 ("matg carries no
+    # such field there"): silenced, and so still offered. They are GATED now
+    # (skip_games, review U5 D5), which is what a dead card in a game wants.
 }
 SHOW_ALL = '--all' in sys.argv
 _seen_verified = []
