@@ -257,6 +257,7 @@ PORT = {
                    # only the engine's points: the Gravity Hammer's A5 finding)
                    (r'effects\impact\explosion_small\frag_grenade\airborne_detonation.effect', FX + r'\tethered_detonation.effect'),
                    (BS + r'\projectiles\grenade\grenade.projectile', PJE),
+                   (BS + r'\damage_effects\shot_grenade_explosion.damage_effect', DM + r'\grenade_launcher_pop.damage_effect'),
                    # THE SPAWNED GRENADE (boot 7, user: 'a second grenade is left where the detonation happened; it does
                    # not go off -- if I destroy it, it has the EMP explosion'): a projectile spawned by an effect part does
                    # NOT run its fuse; it bursts when DESTROYED. The release blast destroys it (boot 4); boots 5-7 failed
@@ -316,11 +317,18 @@ PORT = {
             (PJC, 'effe', r'effects\impact\explosion_small\brute_shot\detonation', FX + r'\tethered_detonation', 'the release burst (air + ground)', {'every': True}),
             (PJC, 'jpt!', BS + r'\damage_effects\shot_grenade_explosion', DM + r'\grenade_launcher_tethered_explosion', 'the tethered blast'),
             (PJC, 'jpt!', BS + r'\damage_effects\grenade_impact', DM + r'\grenade_launcher_impact', 'the impact'),
-            # THE EMP: the release burst's lod-sound part -> an OBJECT part spawning PJE
-            (FX + r'\tethered_detonation.effect', 'snd!', r'sound_remastered\weapons\frag_grenade\frag_expl_lod',
-             r'sound_remastered\weapons\frag_grenade\frag_expl_lod', 'the EMP spawner part (was the lod sound)', {'class': 'proj'}),
-            (FX + r'\tethered_detonation.effect', 'proj', r'sound_remastered\weapons\frag_grenade\frag_expl_lod',
+            # THE EMP: the release burst's part 1 (the explosion sound) -> an OBJECT part spawning PJE, part 2 (the lod
+            # sound) -> the POP, a tiny area damage that destroys PJE at once (boot 8, user: 'it doesn't always follow the
+            # main explosion -- not going off, or exploding somewhere else': the projectile's own blast lands BEFORE the
+            # effect spawns PJE, which then lingers invisibly until another blast pops it). Parts are created in order
+            (FX + r'\tethered_detonation.effect', 'snd!', r'sound\weapons\frag_grenade\frag_expl',
+             r'sound\weapons\frag_grenade\frag_expl', 'the EMP spawner part (was the explosion sound)', {'class': 'proj'}),
+            (FX + r'\tethered_detonation.effect', 'proj', r'sound\weapons\frag_grenade\frag_expl',
              PJE[:-len('.projectile')], 'the EMP grenade, spawned in the burst'),
+            (FX + r'\tethered_detonation.effect', 'snd!', r'sound_remastered\weapons\frag_grenade\frag_expl_lod',
+             r'sound_remastered\weapons\frag_grenade\frag_expl_lod', 'the pop part (was the lod sound)', {'class': 'jpt!'}),
+            (FX + r'\tethered_detonation.effect', 'jpt!', r'sound_remastered\weapons\frag_grenade\frag_expl_lod',
+             DM + r'\grenade_launcher_pop', 'the pop: destroys the EMP grenade right after it spawns'),
             # PJE: bursts at once (numbers) with the Tartarus hammer impact and the EMP
             (PJE, 'hlmt', BS + r'\projectiles\grenade\grenade', GL + r'\projectiles\emp_burst', 'own model: frag collision, invisible'),
             (GL + r'\projectiles\emp_burst.model', 'mode', r'objects\weapons\grenade\frag_grenade\frag_grenade',
@@ -476,7 +484,15 @@ PORT = {
             # boot 5: the spawned EMP grenade's light black (the Brute Shot glow was the 'extra projectile')
             (FX + r'\emp_grenade_dark.light', 'diffuse upper bound', '', 0, 0, [0.0, 0.0, 0.0]),
             (FX + r'\emp_grenade_dark.light', 'specular upper bound', '', 0, 0, [0.0, 0.0, 0.0]),
-            # the EMP grenade (boot 3), spawned at rest inside the release burst: bursts after 0.01 s, never flies
+            # the POP (boot 9): 1 damage within 0.5 wu, no shove -- only destroys the spawned EMP grenade ('detonates
+            # explosives', the Brute Shot blast's flag, kept); not a balance row
+            (DM + r'\grenade_launcher_pop.damage_effect', 'damage lower bound', '', 0, 0, 1.0),
+            (DM + r'\grenade_launcher_pop.damage_effect', 'damage upper bound', '', 0, 0, [1.0, 1.0]),
+            (DM + r'\grenade_launcher_pop.damage_effect', 'radius', '', 0, 0, [0.25, 0.5]),
+            (DM + r'\grenade_launcher_pop.damage_effect', 'aoe core radius', '', 0, 0, 0.25),
+            (DM + r'\grenade_launcher_pop.damage_effect', 'instantaneous acceleration', '', 0, 0, 0.0),
+            (DM + r'\grenade_launcher_pop.damage_effect', 'shake radius', '', 0, 0, 0.0),
+            # the EMP grenade (boot 3), spawned at rest inside the release burst: its fuse never runs (boot 7)
             (PJE, 'detonation timer starts', '', 0, 0, 0),             # immediately (the Brute Shot's: any surface)
             (PJE, 'timer', '', 0, 0, [0.01, 0.01]),
             (PJE, 'initial velocity', '', 0, 0, 0.0),
@@ -639,7 +655,7 @@ PORT = {
         # the release burst (the frag's, as the tap's): its explosion -> Reach's far layer (its lod part spawns the EMP
         # grenade); the EMP grenade's own detonation sound silent (the Tartarus hits play in its hammer impact: KEPT for
         # boot 4, the user's call)
-        'repoint_tags': [(FX + r'\tethered_detonation.effect', r'sound\weapons\frag_grenade\frag_expl', 'gl_expl_far'),
+        'repoint_tags': [
                          (PJE, r'sound\weapons\brute_shot\brute_round_explode', 'gl_charge'),
                          (PJ, r'sound\weapons\brute_shot\brute_round_explode', 'gl_expl'),
                          (PJC, r'sound\weapons\brute_shot\brute_round_explode', 'gl_expl'),
@@ -897,6 +913,12 @@ PORT = {
 #     (diffuse alpha, additive teal); low clip cutoff 1 -> 0 (the warning was always on); the charge sound's 0.3 s
 #     silent lead (a tap started it). Open: the charge during the RELOAD (user: 'reloading shouldn't allow the
 #     charge'); the vehicle stall (Sacred Icon)
+#   boots 3-8 (Sacred Icon / Quarantine Zone, user): reload count at Reach's allow-interruption frame (48 / 38) good;
+#     double burst (frag + Tartarus hammer impact via a spawned EMP grenade); Armed: Elite, Grunt, Jackal, Brute,
+#     Drone (Outskirts), Flood, Sentinel (Quarantine Zone) fire it, drops + pickup good; the AI's high arc is Reach's
+#     ballistic aim (kept, user); display digits static 000 (user). THE VEHICLE STALL: NOT reproduced (an isolated
+#     EMP-only test on Quarantine Zone, boot 8: no stall) -- Halo 2's unused 'emp' side effect does nothing visible;
+#     the fields stay set (harmless). Boot 9: the spawned EMP grenade popped by the burst's own part (it lingered)
 
 
 def barrel1():
