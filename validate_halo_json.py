@@ -22,6 +22,11 @@ TOOL = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, TOOL)
 import halo_map as hm                                    # noqa: E402
 import halo_patch as hp                                  # noqa: E402
+# The app's own gate: ModifierDatabase._game_ok and the tables it reads (which game
+# inherits another's cards, where an Options switch fields a hero). Imported, not
+# copied -- the copy declared_games() used to be never learnt the ODST inheritance.
+os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+import halo_enhancer as he                               # noqa: E402
 
 BS = chr(92)
 MCC = os.path.abspath(os.path.join(TOOL, '..'))
@@ -102,21 +107,23 @@ def resolve_gamed(v, game):
 
 
 def declared_games(eff):
-    """Which games an effect is OFFERED in — matching ModifierDatabase._game_ok,
-    which is the code that actually gates a card.
+    """Which games an effect is OFFERED in: ModifierDatabase._game_ok ITSELF, the code
+    that gates a card, asked once per game.
+
+    This used to be a hand-written copy that returned the literal `game` list, and
+    `_game_ok` also admits a game whose CONFIG `game_inherits` parent is listed (ODST
+    inherits Halo 3's cards). So every card ODST gets by inheritance -- 657 of them,
+    more than half of what ODST offers -- was never resolution-checked there, while
+    the run printed 0 problems (review U5 V1). An unknown name in `game` gates nothing
+    in and is reported by structure rule 8.
 
     Note it does NOT infer anything from the tag dict: `_game_ok` returns True
     whenever there is no explicit `game` key, so a per-game tag dict alone does not
     restrict an effect. An effect with tag keys {H1, H2} and no `game` key is still
     offered in H3, where `resolve_gamed` silently falls back to the H2 tag."""
-    skip = eff.get('skip_games')
-    skip = [skip] if isinstance(skip, str) else list(skip or [])
-    g = eff.get('game')
-    if isinstance(g, str):
-        return [g] if g not in skip else []
-    if isinstance(g, list):
-        return [x for x in g if x not in skip]
-    return [x for x in GAMES if x not in skip]
+    parse = he.ModifierDatabase._parse_games
+    mod = {'games': parse(eff.get('game')), 'skip_games': parse(eff.get('skip_games'))}
+    return [g for g in GAMES if he.ModifierDatabase._game_ok(mod, g)]
 
 
 def iter_effects():
@@ -398,10 +405,8 @@ def check_zoom_coverage(per_game):
         pass
 
     def has(card, game):
-        if not isinstance(card, dict):
-            return False
-        d = declared_games(card)
-        return game in d or (game == 'Halo 3: ODST' and 'Halo 3' in d)
+        # declared_games follows the ODST inheritance itself now
+        return isinstance(card, dict) and game in declared_games(card)
     for w, cards in sorted(weapons.items()):
         if w in ZOOM_EXEMPT:
             continue
@@ -494,9 +499,23 @@ _FIELDED = {}
 for _g, _ms in DB['Missions'].items():
     _s = set()
     for _md in _ms.values():
-        for _k in ('weapons', 'grenades', 'equipment', 'enemies', 'bosses', 'turrets'):
+        for _k in ('weapons', 'grenades', 'equipment', 'enemies', 'turrets'):
             _s |= set(_md.get(_k) or [])
+        # The story bosses. The key is `boss` (a name or a list); this read `bosses`,
+        # which no mission has, so no boss or hero owner could ever be inert -- unseen
+        # only because each of them names its games outright. With ODST's inheritance
+        # walked, 343 Guilty Spark's five Halo 3 cards would read as ODST faults.
+        _b = _md.get('boss')
+        _s |= set([_b] if isinstance(_b, str) else (_b or []))
     _FIELDED[_g] = _s
+# The recurring heroes are fielded by Options switches (halo_enhancer.HERO_OPTIONS:
+# switch, hero, missions). A hero counts as fielded wherever a switch CAN field it,
+# whatever the switch says today: its cards are drafted there once it is on.
+_MISSION_GAME = {_mid: _g for _g, _ms in DB['Missions'].items() for _mid in _ms}
+for _key, _hero, _missions in he.HERO_OPTIONS:
+    for _mid in _missions:
+        if _mid in _MISSION_GAME:
+            _FIELDED[_MISSION_GAME[_mid]].add(_hero)
 # Ported weapons (weapon_ports_catalog.json) are fielded by every game they were
 # ported into: the SAW's Halo 1-Reach cards are real cards, not inert ones.
 _PORTS = {}
