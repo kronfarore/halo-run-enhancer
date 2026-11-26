@@ -9,7 +9,7 @@ PORT = {
     'wave': 'B5',
     'name': 'Concussion Rifle',
     'source': 'Halo Reach',
-    'status': 'reserved',
+    'status': 'in progress',
     'source_tag': 'objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle',
     'reservations': {
         'message_prefix': 'cr2',
