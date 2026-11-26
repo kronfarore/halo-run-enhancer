@@ -1,5 +1,10 @@
-r"""Grenade Launcher into Halo 2 (H2_PORT_PLAN.md wave B (Reach), #B4, "Step 5", alone) -- IN PROGRESS
-(2026-11-24).
+r"""Grenade Launcher into Halo 2 (H2_PORT_PLAN.md wave B (Reach), #B4, "Step 5", alone) -- DONE 2026-11-26 (the
+close-out record at the end of the file; PORTING "Halo 2: the Grenade Launcher, wave B4"; H2_PORT_PLAN "B4: what the
+Grenade Launcher taught").
+
+REGENERATING FROM SCRATCH needs two steps the pipeline does not run, after h2_port_weapon (and h2_port_sounds):
+    python ports_h2\grenade_launcher.py --barrel1        barrel 1's empty firing effect + damage
+    python ports_h2\grenade_launcher.py --hammer-event   the hammer-impact event copied into the release burst
 
 The port: Reach's model, textures, Spartan + Elite FP animations and sounds on a clone of Halo 2's FUEL ROD
 (flak_cannon: latch, magazine, an explosive shot and a SECOND, unused barrel), firing grenades built on the
@@ -46,7 +51,7 @@ PORT = {
     'wave': 'B4',
     'name': 'Grenade Launcher',
     'source': 'Halo Reach',
-    'status': 'in progress',
+    'status': 'done',
     'source_tag': 'objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher',
     'reservations': {
         'message_prefix': 'gl2',
@@ -129,8 +134,10 @@ PORT = {
             'peers': ['Brute Shot', 'Rocket Launcher', 'Fuel Rod'],
             'why': "1-round latch-tether, bouncing grenade (H1 pick). H2 has no tether trigger (approximate as in H1); the Brute Shot is H2's own grenade launcher -- a peer only (no Reach Brute Shot)",
             'lacks': ("detonating a grenade already in flight (the release fires a contact-burst EMP grenade instead), "
-                      "rolling ('turn physical': Halo 2's responses have none), the vehicle stall unless Halo 2's unused "
-                      "`side effect` emp works (to test)"),
+                      "rolling ('turn physical': Halo 2's responses have none), the vehicle stall (Halo 2's unused "
+                      "`side effect` emp: an isolated test showed none), the tether-distance readout (static 000, user), "
+                      "the AI's charged shot (it only taps, as Halo 1's), charging during the reload (no dll, user; the "
+                      "round counts at Reach's allow-interruption frame)"),
         },
     },
     # step 1 -- h2_port_geometry.py kind 'h3' with `reach:` paths (the DMR's route): Reach's ONE render model is world
@@ -840,6 +847,12 @@ PORT = {
     # the Arbiter / Balanced boot moves to Sacred Icon (user, boot 1: 'test the vehicle stall on a map like Sacred
     # Icon, that starts with vehicles later -- combined with the Arbiter test')
     # boot 3 (user): 'I said Sacred Icon, my mistake -- it's the next level: Quarantine Zone for the vehicle'
+    # port_sound_refs on the built Quarantine Zone test map (2026-11-26): every weapon / graph / firing sound OWN. Keeps:
+    'sound_keeps': {FX + r'\gl_charging': "the port's own charge-loop lsnd (its tracks Reach's landmine beep), listed "
+                                          "BORROW only because it sits in the effects folder (the Spartan Laser's case)",
+                    r'sound\characters\brute\tartarus_hits (+ remastered hits_stereo / hits_swtnr, scarab_steps_lfe)':
+                        "Tartarus's hammer hits in the copied hammer event of the release burst (user, boot 4: 'sounds "
+                        "are good')"},
     'test': {'level': '03a_oldmombasa', 'dervish_level': '06b_floodzone'},
     'residency': {'levels': 'all', 'placements': False},
 }
@@ -858,6 +871,17 @@ PORT = {
 #     ballistic aim (kept, user); display digits static 000 (user). THE VEHICLE STALL: NOT reproduced (an isolated
 #     EMP-only test on Quarantine Zone, boot 8: no stall) -- Halo 2's unused 'emp' side effect does nothing visible;
 #     the fields stay set (harmless). Boot 9: the spawned EMP grenade popped by the burst's own part (it lingered)
+#   boot 9 (user): still unreliable (no ring on some, a grenade flying off, a light left) -> boot 10: the spawned
+#     grenade REMOVED; the hammer impact's event copied into the release burst (--hammer-event), its blast part the
+#     EMP. Boot 10 Quarantine Zone, Balanced (user): 'This passes'.
+# CLOSE-OUT (2026-11-26, DONE). Tested in game, CLASSIC: Outskirts (Chief, Original, boots 1-2), Sacred Icon + Quarantine
+#   Zone (Arbiter, Balanced, boots 3-10), Armed on Outskirts (Elite, Grunt, Jackal, Brute, Drone) and Quarantine Zone
+#   (Flood, Sentinel), Marine trade, world model, drops. Every item confirmed by the user.
+# Closing checks on the built Quarantine Zone test map: port_refs_audit 0 problems; port_sound_refs every sound OWN
+#   (keeps above); port_volume one own entry, headroom 3.11 dB; check 10 (3 FP systems on the bore, as Reach's 3);
+#   port_glyphs --capture --game halo2 (U+E146, eight fonts byte for byte). 4b re-run: list 2 = the recorded decisions.
+#   5b: reports/h2_grenade_launcher_5b.txt. port_backup: F:\HaloPortBackups\2026-11-26_grenade-launcher-h2.
+# Not rebuilt into the 13 levels (the batched rebuild is the user's go); residency entries are in all 13 kit resources.
 
 
 def barrel1():

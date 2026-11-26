@@ -1,0 +1,33 @@
+Grenade Launcher -- BALANCED (catalog rows on the ports), legendary, body shots (ttk_halo2); not a Halo 2 weapon here: Frag Grenade + Rocket Launcher for the holes, Flak Cannon
+weapon                      dmg    rate/s   fires/s    dps  mag reload init/max         vel range       error   autoaim dual
+Grenade Launcher (port)    18.8       2-2       2-2   37.5    1   2.72     8/16    12.5/7.5   100       0-0.4    4/11.2     
+Rocket Launcher             150 1.25-1.25 1.25-1.25  187.5    2   5.00      4/8        8/20   175         0-0      5/45     
+Brute Shot                   20 3.33-3.33 3.33-3.33   66.7    4   2.00    12/16       20/10     0     0.6-0.6      4/15     
+Fuel Rod                    100   2.5-2.5   2.5-2.5  250.0    5   5.00    20/30      15/6.5    80      0-0.05      4/25     
+
+time to kill (shots / seconds):
+                              Elite minor      Brute minor      Grunt minor     Jackal minor
+Grenade Launcher (port)       8 / 19.01 s     14 / 35.31 s       3 / 5.43 s       4 / 8.15 s
+Rocket Launcher                2 / 0.80 s       2 / 0.80 s       1 / 0.00 s       1 / 0.00 s
+Brute Shot                     8 / 3.80 s      13 / 8.70 s       2 / 0.30 s       3 / 0.60 s
+Fuel Rod                       3 / 0.80 s       3 / 0.80 s       1 / 0.00 s       1 / 0.00 s
+Grenade Launcher -- DEFAULT (the kit's tags), legendary, body shots (ttk_halo2); not a Halo 2 weapon here: Frag Grenade + Rocket Launcher for the holes, Flak Cannon
+weapon                      dmg    rate/s   fires/s    dps  mag reload init/max         vel range       error   autoaim dual
+Grenade Launcher (port)      25       2-2       2-2   50.0    1   2.10     8/16    12.5/7.5   100       0-0.4      4/15     
+Rocket Launcher             150 1.25-1.25 1.25-1.25  187.5    2   5.00      4/8        8/20   175         0-0      5/45     
+Brute Shot                   20 3.33-3.33 3.33-3.33   66.7    4   2.00    12/16       20/10     0     0.6-0.6      4/15     
+Fuel Rod                    100   2.5-2.5   2.5-2.5  250.0    5   5.00    20/30      15/6.5    80      0-0.05      4/25     
+
+time to kill (shots / seconds):
+                              Elite minor      Brute minor      Grunt minor     Jackal minor
+Grenade Launcher (port)       6 / 10.50 s     10 / 18.90 s       2 / 2.10 s       3 / 4.20 s
+Rocket Launcher                2 / 0.80 s       2 / 0.80 s       1 / 0.00 s       1 / 0.00 s
+Brute Shot                     8 / 3.80 s      13 / 8.70 s       2 / 0.30 s       3 / 0.60 s
+Fuel Rod                       3 / 0.80 s       3 / 0.80 s       1 / 0.00 s       1 / 0.00 s
+
+NOTE (B4 close-out, 2026-11-26): ttk_halo2 counts IMPACT damage only (its stated assumption: no splash), so the Grenade
+Launcher's rows above are its 18.75 / 25 impact alone. With the blast (direct hits = impact + the full blast core, each
+part through its own group; reports/h2_grenade_launcher_4a.md, scratch gl4a_ttk.py): Elite minor 2, Brute minor 2,
+Grunt / Jackal 1, in Original (205 a hit, one shot every 2.6 s: 0.5 recovery + 2.1 reload) and Balanced (187.5 a hit,
+one every 3.2 s: 0.5 + 2.72). Peers: Brute Shot 3 / 4 / 1 / 1 at 3.33/s (4 a magazine); Rocket 2 / 1 / 1 / 1. The
+charged release adds the EMP (strips any shield in ~2 wu) on the same blast.
