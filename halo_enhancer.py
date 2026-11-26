@@ -421,6 +421,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h4_skip_flight', 'h4_keep_loadout', 'h3_keep_loadout', 'h4_ability_visibility',
                'h4_spawn_starting_weapons', 'h4_spawn_all_weapons',
                'h3_spawn_starting_weapons', 'h3_spawn_all_weapons',
+               'odst_spawn_starting_weapons', 'odst_spawn_all_weapons',
                'h1_spawn_starting_weapons', 'h1_spawn_all_weapons',
                'h2_spawn_starting_weapons', 'h2_spawn_all_weapons',
                'h1_replace_first_weapons', 'h1_enemy_weapon_enabled',
@@ -1530,6 +1531,11 @@ CONFIG = {
     # cluster-everything behaviour did implicitly, and it is why a single Invincibility
     # pick turned into five pickups across ONI Alpha Site.
     "odst_equipment_all_insertions": False,
+    # ODST's placed-weapon mode (2026-11-26): the picks go to every enhancer marker the
+    # player owns plus the hub's re-entry points, the profile slots are emptied. Off
+    # until a boot confirms it; the profile route is the one known to work.
+    "odst_spawn_starting_weapons": False,
+    "odst_spawn_all_weapons": False,
     # Give each ODST player the starting profile their own insertion point uses,
     # instead of writing profile 0 (player 1 only) or every profile (which also arms
     # the co-op slots of insertion points you are not at). UNVERIFIED in game — the
@@ -9785,6 +9791,7 @@ class MagnitudeEditorDialog(QDialog):
         key = {'Halo Reach': 'reach_spawn_starting_weapons',
                'Halo 4': 'h4_spawn_starting_weapons',
                'Halo 3': 'h3_spawn_starting_weapons',
+               'Halo 3: ODST': 'odst_spawn_starting_weapons',
                'Halo 1': 'h1_spawn_starting_weapons',
                'Halo 2': 'h2_spawn_starting_weapons'}.get(self.game)
         return (key is not None
@@ -9810,6 +9817,7 @@ class MagnitudeEditorDialog(QDialog):
             return None
         first_only = not CONFIG.get({'Halo 4': 'h4_spawn_all_weapons',
                                      'Halo 3': 'h3_spawn_all_weapons',
+                                     'Halo 3: ODST': 'odst_spawn_all_weapons',
                                      'Halo 1': 'h1_spawn_all_weapons',
                                      'Halo 2': 'h2_spawn_all_weapons'}.get(
                                          self.game, 'reach_spawn_all_weapons'))
@@ -13268,6 +13276,37 @@ class OptionsDialog(QDialog):
             "does drop you at them.")
         odform.addRow("ODST equipment:", self.odst_all_ins_cb)
 
+        self.odst_spawn_weapons_cb = QCheckBox(
+            "ODST: place starting weapons at the enhancer markers instead of the profile")
+        self.odst_spawn_weapons_cb.setChecked(bool(CONFIG.get('odst_spawn_starting_weapons')))
+        self.odst_spawn_weapons_cb.setToolTip(
+            "Off: the run writes its weapon picks into the Starting Profile, so you begin "
+            "the level holding them.\n\nOn: they are PLACED on the floor to be picked up "
+            "-- player 1's at enhancer_marker1, player 2's at enhancer_marker2, and at any "
+            "more markers that player owns (Mombasa Streets: 10/11 and 20/21) -- plus the "
+            "hub's re-entry points, where starting equipment drops too. The profile's "
+            "weapon slots are emptied so nothing arrives twice. A level without markers "
+            "keeps the profile and says so. Needs 'Set starting weapons'. Not yet "
+            "confirmed in game.")
+        odform.addRow("ODST weapons:", self.odst_spawn_weapons_cb)
+        self.odst_spawn_all_cb = QCheckBox("↳ place every selected weapon, not just the first")
+        self.odst_spawn_all_cb.setChecked(bool(CONFIG.get('odst_spawn_all_weapons')))
+        self.odst_spawn_all_cb.setToolTip(
+            "Off: only each player's first weapon is placed, as a profile would give it. "
+            "On: every weapon that player holds is placed, ringed round each marker. "
+            "Mombasa Streets holds 80 of the 128 weapon placements a level takes, so a "
+            "long list there runs out of room; the duplicates at the re-entry points go "
+            "first.")
+
+        def _sync_odst_spawn(on=None):
+            on = self.odst_spawn_weapons_cb.isChecked()
+            self.odst_spawn_all_cb.setEnabled(on)
+            if not on:
+                self.odst_spawn_all_cb.setChecked(False)
+        self.odst_spawn_weapons_cb.toggled.connect(_sync_odst_spawn)
+        _sync_odst_spawn()
+        odform.addRow("", self.odst_spawn_all_cb)
+
         self.odst_shield_health_cb = QCheckBox("ODST: Starting Shield cards raise Starting Health instead")
         self.odst_shield_health_cb.setChecked(bool(CONFIG.get('odst_shield_into_health', True)))
         self.odst_shield_health_cb.setToolTip(
@@ -15013,6 +15052,8 @@ class OptionsDialog(QDialog):
             'odst_body_recharge_pct': self.odst_body_recharge_pct.value(),
             'odst_escort_buff': self.odst_escort_cb.isChecked(),
             'odst_equipment_all_insertions': self.odst_all_ins_cb.isChecked(),
+            'odst_spawn_starting_weapons': self.odst_spawn_weapons_cb.isChecked(),
+            'odst_spawn_all_weapons': self.odst_spawn_all_cb.isChecked(),
             'odst_profiles_by_insertion': self.odst_prof_ins_cb.isChecked(),
             'other_chance': round(self.other_chance.value(), 2),
             'armed_max_share': round(self.armed_max_share.value() / 100.0, 2),

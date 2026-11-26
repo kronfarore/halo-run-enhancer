@@ -5359,6 +5359,45 @@ def player_marker_slots(m, game, block='equipment'):
             for p, v in out.items()}
 
 
+def _player_marker_points(m, game, scnr=None):
+    """{player index: [(pos, attach mask, marker name), ...]} from player_marker_slots.
+    The mask is the BSP at the marker's position (_h3_mask_at), not the marker's own:
+    Halo 3's marker placements ship with Can Attach To BSP 0."""
+    scnr = _scnr_base(m) if scnr is None else scnr
+    lay = _MAP_EQUIPMENT.get(str(game).strip())
+    qbase = _block_base(m, scnr + lay['items'][0]) if (lay and scnr is not None) else None
+    out = {}
+    for p, idxs in sorted(player_marker_slots(m, game).items()) if qbase else []:
+        for nm, pi in idxs:
+            pos = struct.unpack_from('<fff', m.data, qbase + pi * lay['items'][1] + _EQ_POS)
+            out.setdefault(p, []).append((pos, _h3_mask_at(m, pos, game), nm))
+    return out
+
+
+def _odst_shared_drops(m, game, covered, all_insertions=False):
+    """ODST drop points every player shares, next to their markers: [(pos, mask, label)].
+
+    The hub's scripted re-entry teleports (and, opted in, the level's other insertion
+    points) -- the places a player can begin that no marker covers. Markers replace the
+    INSERTION-0 start, not these: without them a player coming back to Mombasa Streets
+    from a mission found nothing where the re-entry put them. A point within 8 units of
+    a marker or of another shared point is dropped as a duplicate.
+    """
+    tp = list(_odst_teleport_points(m))
+    if all_insertions:
+        for ip, locs in sorted(odst_player_starts(m, game).items()):
+            if ip != ODST_START_INSERTION:
+                tp += list(locs)
+    seen_pts = list(covered)
+    shared = []
+    for pos, _bsp in tp:
+        if not any(math.dist(pos, q) < 8.0 for q in seen_pts):
+            seen_pts.append(pos)
+            shared.append((pos, _h3_mask_at(m, pos, game),
+                           'shared drop %d' % (len(shared) + 1)))
+    return shared
+
+
 def reach_equipment_markers(m, game):
     """{eqip basename: [placement index, ...]} for every INERT equipment placement.
 
@@ -5659,6 +5698,11 @@ def spawn_weapons_ready(m, game):
     level has."""
     if str(game).strip() == 'Halo 3':
         return bool(h3_player_spawns(m, game))
+    if str(game).strip() == 'Halo 3: ODST':
+        # Markers only: ODST's starting locations carry no BSP, and its insertion-0
+        # start is not where the hub re-entries put the player (all nine levels carry
+        # enhancer_marker1/2 since 2026-11-26).
+        return bool(player_marker_slots(m, game))
     return reach_spawn_ready(m, game)
 
 
@@ -5677,6 +5721,12 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
     A level with no room left in the block (Cortana) has the rest REUSE the enhancer's
     own hidden placements -- Not Automatically, unnamed, no editor folder, added for
     residency -- moved to the drop point (user, 2026-10-31).
+
+    ODST takes the same path (user, 2026-11-26), markers only: each player's weapons go
+    to EVERY marker they own (player_marker_slots) plus the shared drops beside them
+    (_odst_shared_drops: the hub's re-entry teleports), the points the starting
+    equipment uses. A level without markers is refused (spawn_weapons_ready), so the
+    profile path stays in charge there.
     """
     out = []
     lay = _MAP_WEAPONS.get(game)
@@ -5690,15 +5740,18 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
                  'reason': 'no player starting locations'}]
     anchor = _H3_LOADOUT_ANCHOR.get(str(getattr(m, 'internal_name', '') or ''))
     anchor_mask = _h3_mask_at(m, anchor, game) if anchor else None
-    markers = {}
-    named = reach_named_markers(m, game)
-    if named:
-        qoff, qes = _MAP_EQUIPMENT[game]['items']
-        qbase = _block_base(m, scnr + qoff)
-        for mi in (1, 2):
-            pi = named.get('%s%d' % (REACH_MARKER_PREFIX, mi))
-            if pi is not None:
-                markers[mi - 1] = struct.unpack_from('<fff', m.data, qbase + pi * qes + _EQ_POS)
+    # Every marker a player owns (player_marker_slots: Mombasa Streets gives each player
+    # three), and on ODST the shared drops beside them -- the same points the starting
+    # equipment uses, so a player finds weapons and gear together.
+    markers = _player_marker_points(m, game, scnr)
+    shared = []
+    if game == 'Halo 3: ODST':
+        if not markers:
+            return [{'effect': 'spawned weapons', 'ok': False,
+                     'reason': 'no enhancer markers on this map'}]
+        shared = _odst_shared_drops(m, game,
+                                    [q for lst in markers.values() for q, _mm, _nm in lst],
+                                    bool(spec.get('all_insertions')))
     woff, wes = lay['weapons']
     poff, pes = lay['palette']
     N = max(0, m.i32(scnr + woff))
@@ -5721,29 +5774,37 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
     radius = 0.25 if radius is None else max(0.0, float(radius))
     weap_plug = registry.get('weap') if registry is not None else None
     new_pal, new_idx, plan, ring = [], {}, [], {}
+    missing = set()
+    # (rank, player, drop): every player's OWN points first, the shared ones after, so
+    # a block that fills up (128 placements; Mombasa Streets already holds 80) cuts the
+    # duplicates at the re-entry teleports rather than player 2's markers.
+    drops = []
     for gi, g in enumerate(groups):
-        point = markers.get(gi) or markers.get(0)
-        if point:
-            ax, ay, az = point
-            mask = _h3_mask_at(m, point, game)
-            where = 'enhancer marker'
+        pts = markers.get(gi) or markers.get(0)
+        if pts:
+            drops += [(0, gi, d) for d in pts] + [(1, gi, d) for d in shared]
         elif anchor:
-            (ax, ay, az), mask, where = anchor, anchor_mask, 'start anchor'
+            drops.append((0, gi, (anchor, anchor_mask, 'start anchor')))
         else:
             si = min(gi, len(spawns) - 1)
-            (ax, ay, az), bsp = spawns[si]
+            pos, bsp = spawns[si]
             mask = ((1 << bsp) if bsp is not None and bsp >= 0
-                    else _h3_mask_at(m, (ax, ay, az), game))
-            where = 'spawn %d' % si
-        for t in g:
+                    else _h3_mask_at(m, pos, game))
+            drops.append((0, gi, (pos, mask, 'spawn %d' % si)))
+    drops.sort(key=lambda d: d[0])                  # stable: player order kept per rank
+    for _rank, gi, ((ax, ay, az), mask, where) in drops:
+        for t in groups[gi]:
             short = str(t).rsplit(chr(92), 1)[-1]
             key = str(t).replace('/', chr(92)).lower()
             pi, added = pal.get(key, new_idx.get(key)), False
             if pi is None:
                 datum = _h3_tag_datum(m, 'weap', t)
                 if datum is None:
-                    out.append({'effect': 'spawned weapons', 'field': short, 'ok': False,
-                                'reason': 'weapon not in this map: %s' % short})
+                    if key not in missing:          # once, not once per drop point
+                        missing.add(key)
+                        out.append({'effect': 'spawned weapons', 'field': short,
+                                    'ok': False,
+                                    'reason': 'weapon not in this map: %s' % short})
                     continue
                 if datum in pal_by_datum:
                     pi = pal_by_datum[datum]
@@ -6221,7 +6282,9 @@ def _apply_spawn_weapons(m, game, spec, registry=None):
     """
     out = []
     game = str(game).strip()
-    if game == 'Halo 3':
+    if game in ('Halo 3', 'Halo 3: ODST'):
+        # ODST's weapon placement is Halo 3's element (0xA8, same flags, same rounds
+        # offsets -- checked against both kits' layouts 2026-11-26).
         return _apply_spawn_weapons_h3(m, game, spec, registry)
     if game == 'Halo 1':
         return _apply_spawn_weapons_h1(m, game, spec, registry)
@@ -6894,34 +6957,13 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
         # A player can own SEVERAL markers (player_marker_slots: Mombasa Streets has
         # enhancer_marker10/11 and 20/21 at its other insertion points), and every one
         # of them gets that player's whole set.
-        slots = player_marker_slots(m, game)
-        qoff, qes = lay['items']
-        qbase = _block_base(m, scnr_base + qoff)
-        mk = {}
-        for p, idxs in sorted(slots.items()) if qbase else []:
-            for nm, pi in idxs:
-                pos = struct.unpack_from('<fff', m.data, qbase + pi * qes + _EQ_POS)
-                mk.setdefault(p, []).append((pos, _h3_mask_at(m, pos, game), nm))
+        mk = _player_marker_points(m, game, scnr_base)
         if mk:
             points = [list(mk.get(gi) or mk.get(0) or []) for gi in range(len(groups))]
             if str(game).strip() == 'Halo 3: ODST':
-                # The hub's scripted re-entry points (and, opted in, the other
-                # insertion points) keep their shared drop: markers replace the
-                # INSERTION-0 start, not the six level-select teleports no marker
-                # covers. Without this a player coming back to Mombasa Streets from a
-                # mission found nothing where the re-entry put them.
-                tp = list(_odst_teleport_points(m))
-                if odst_all_insertions:
-                    for ip, locs in sorted(odst_player_starts(m, game).items()):
-                        if ip != ODST_START_INSERTION:
-                            tp += list(locs)
-                seen_pts = [q for lst in mk.values() for q, _mm, _nm in lst]
-                shared = []
-                for pos, _bsp in tp:
-                    if not any(math.dist(pos, q) < 8.0 for q in seen_pts):
-                        seen_pts.append(pos)
-                        shared.append((pos, _h3_mask_at(m, pos, game),
-                                       'shared drop %d' % (len(shared) + 1)))
+                shared = _odst_shared_drops(
+                    m, game, [q for lst in mk.values() for q, _mm, _nm in lst],
+                    odst_all_insertions)
                 points = [pl + shared for pl in points]
     if str(game).strip() in MARKER_GAMES and not points:
         # A prepared Reach map ships one inert equipment placement per ability, put
