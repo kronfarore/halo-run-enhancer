@@ -2,7 +2,7 @@
 
 Reach = HREK `rifle\grenade_launcher\grenade_launcher` (h3_weapon_values --kit reach; the projectile, damage and
 fuse values as Halo 1's B4 read them from HREK, ports_h1/grenade_launcher.py). Halo 2 = H2EK tags read through
-ttk_halo2 (scratch gl4a_dump.py / gl4a_table.py / gl4a_ttk.py). Time to kill: legendary, DIRECT hits = impact +
+ttk_halo2 (h2_gl_ttk_4a.py; scratch tag dumps). Time to kill: legendary, DIRECT hits = impact +
 the full blast (the core), each part through its own Halo 2 damage group, shield first.
 
 ## What Halo 2 offers (read before any number)
@@ -53,7 +53,7 @@ Reach's groups by name exist in Halo 2: blast `explosion_small` (= the frag's an
 | melee | strike_melee | **smash_melee** (RL: Reach strike -> H2 smash) | smash | | BS slice (the blade: NOT kept) |
 | shot pace (1-round mag) | 2.6 s | **3.22 s** | 3.22 | | |
 
-Direct hits to kill, legendary (gl4a_ttk.py):
+Direct hits to kill, legendary (h2_gl_ttk_4a.py):
 
 | | Elite minor | Brute minor | Grunt | Jackal |
 |---|---|---|---|---|

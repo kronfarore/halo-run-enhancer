@@ -27,7 +27,7 @@ Fuel Rod                       3 / 0.80 s       3 / 0.80 s       1 / 0.00 s     
 
 NOTE (B4 close-out, 2026-11-26): ttk_halo2 counts IMPACT damage only (its stated assumption: no splash), so the Grenade
 Launcher's rows above are its 18.75 / 25 impact alone. With the blast (direct hits = impact + the full blast core, each
-part through its own group; reports/h2_grenade_launcher_4a.md, scratch gl4a_ttk.py): Elite minor 2, Brute minor 2,
+part through its own group; reports/h2_grenade_launcher_4a.md, h2_gl_ttk_4a.py): Elite minor 2, Brute minor 2,
 Grunt / Jackal 1, in Original (205 a hit, one shot every 2.6 s: 0.5 recovery + 2.1 reload) and Balanced (187.5 a hit,
 one every 3.2 s: 0.5 + 2.72). Peers: Brute Shot 3 / 4 / 1 / 1 at 3.33/s (4 a magazine); Rocket 2 / 1 / 1 / 1. The
 charged release adds the EMP (strips any shield in ~2 wu) on the same blast.

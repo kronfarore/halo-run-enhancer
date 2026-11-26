@@ -74,7 +74,7 @@ PORT = {
               'why': ("the charged pair needs two barrels: the Fuel Rod's weapon (latch, magazine 5 -> 1, a free barrel 1) "
                       "+ the Brute Shot's grenade (ballistic AI aim, 'after first bounce off any surface')")},
     'yardstick': {
-        # step 4a, user 2026-11-24: reports/h2_grenade_launcher_4a.md (scratch gl4a_dump / gl4a_table / gl4a_ttk).
+        # step 4a, user 2026-11-24: reports/h2_grenade_launcher_4a.md (h2_gl_ttk_4a.py).
         # REACH (HREK, Halo 1's B4 reading): latch-tether, recovery 0.5 s, 1 / 8 / 16, reloads 1 (63 fr empty, 59
         # full), error 0.15 min, 0 -> 0.4, 12.5 -> 7.5 wu/s, gravity 0.7 / water 0.75, range 100, arming 0, minimum
         # velocity 0. IMPACT 25 `collision` (accel 0.5) + DETONATION 0..180 over 0.75 -> 2.25 (core 0.6,
@@ -758,7 +758,26 @@ PORT = {
             'material responses (1 element)': "Reach's own old-style block (4a): Halo 2 has no turn physical",
             'rider minimum transfer damage scale 1': "written (Reach's; a zero on one side)",
             'no such field in Halo 2': 'functions, water density, falloff ranges, target tracking, zoom / ready time, '
-                                       'max latch time to arm, flyby response, ai velocity scales',
+                                       'max latch time to arm (the tether: lost with it), flyby response, ai velocity '
+                                       'scales, Reach\'s newer material responses (old-style block ported instead)',
+            # the close-out re-check (2026-11-26, the user: 'every step done, especially 4b'): the rows left without a
+            # written decision after the first run
+            'old message index 0 (target 24)': "the Fuel Rod clone's; the port's own gl2_* messages are string ids (step 8)",
+            'multiplayer on-ground scale 1.7 (target 1.35)': "the Fuel Rod clone's; multiplayer only",
+            'throttle magnitude / minimum distance / maximum adjustment angle (0.9 / 0.1 / 20)':
+                "the Fuel Rod clone's (Halo 2's own launcher values; no source counterpart)",
+            'tracking type no tracking (target human tracking)': "Reach's GL does not lock on (the RL's tracking is its own)",
+            'bounding offset 0,0,0': "Reach's own (the port already holds it)",
+            'flags (Reach: allows binocular)': "no such Halo 2 flag; the Fuel Rod clone's object flags ('4 unused') kept",
+            'barrels[0] flags 1536 (Reach none)': "the Fuel Rod's 'can't fire while others fire / recover': barrel 0 must "
+                                                  "not fire while the charged barrel 1 recovers (the charged pair)",
+            'projectile sweetener size small': "Reach's own (the port already holds it)",
+            'projectile attachments 6 (source 5, target 3)': "the port's own set: grenade light, trail, smoke trail, flight "
+                                                             "loop (Reach's light / lens flare / contrail have Halo 2 stand-ins)",
+            'damage aoe core radius 0.6 (ratio 0.833)': "Reach's own in the kit (Original); the ratio's 0.833 is the "
+                                                       "catalog's Balanced row",
+            'damage flags (detonates explosives)': "Reach's = the Brute Shot clone's: kept",
+            'damage lower bound 60 (Reach 0 = unset)': "the sibling rule onto the frag's 50 / 150 (Original); Balanced 56.25",
         },
     },
 
