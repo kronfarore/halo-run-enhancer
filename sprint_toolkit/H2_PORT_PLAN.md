@@ -1441,3 +1441,39 @@ OLD side runs again (it lacked the vendored pylibs).
 **Closed:** 5b report (reports/h2_plasma_repeater_5b.txt), port_backup (F:\HaloPortBackups\2026-11-22_plasma-repeater-h2),
 glyph U+E145 captured. ttk_halo2 models the reset fire rule (2026-11-22, reports/h2_ttk_tick_rule.md).
 **Open (the user's call):** Reach's Elite FP sounds (elite_plasrepeater_*) unused, as the DMR's.
+
+## B4: what the Grenade Launcher taught (2026-11-24/26, Step 5 alone, DONE)
+
+Reach's Grenade Launcher is a complete Halo 2 port: `ports_h2/grenade_launcher.py`. Tested in game, CLASSIC: Outskirts
+(Chief, Original, 2 boots), Sacred Icon + Quarantine Zone (Arbiter, Balanced, 8 boots), Armed on Outskirts (Elite, Grunt,
+Jackal, Brute, Drone) and Quarantine Zone (Flood, Sentinel), Marine trade, world model, drops. Every item confirmed by the
+user. Residency: palette entry in all 13 levels; ships with the batched rebuild. PORTING "Halo 2: the Grenade Launcher,
+wave B4" is the recipe.
+
+**Step 4a (user):** yardstick the Frag Grenade, holes by the Rocket Launcher (Halo 1's pick; the Brute Shot is Halo 2's role
+twin but Reach has none: a peer). The plasma pistol's CHARGED PAIR (native in Halo 2: one trigger, barrel 1); Reach's own
+fuse rule (Halo 2 has `after first bounce off any surface`); a stall test (none). Balanced 168.75 blast / 18.75 impact,
+0.4 s fuse, reload 2.72 s, EMP 0.5 on Halo 2's `emp` group. Weapon donor the FUEL ROD (two barrels), not the Brute Shot.
+
+**For every port after it (observations of one port, each cost boots here):**
+1. A Halo 2 effect PART cannot be an effect: tool silently drops the whole effect from the map. A part CAN be an object,
+   but a projectile spawned by an effect never runs its fuse (it bursts only when destroyed): unreliable. To stack two
+   looks, COPY an event between effects (`ports_h2/grenade_launcher.py hammer_event`: struct + depth-first tail + both
+   counts; an effect's root holds its block counts at +0x0C / +0x18 beside stale, non-zero pointers).
+2. READ THE TEST MAP'S BUILD LOG (out/h2logs_port_test/<level>.build.log) after every look change ('removing invalid tag',
+   'no corresponding model region', 'transparent but imported as opaque' = re-render after a shader turns transparent).
+3. A reload's `primary keyframe` is where Halo 2 counts the round; Bungie's reloads have none (= the end). A Reach reload
+   needs its keyframe moved to taste: h2_port_fp_anims `source_events['frames']`.
+4. A Brute Shot / RL-style HUD's `low clip cutoff` 1 keeps a 1-round magazine's warning on: 0.
+5. Halo 1's crosshair SUPERSAMPLING has no Halo 2 twin (no widget scale); size the crosshair from the user's source
+   screenshot (the frame here 224 px at 1080p), add a source's other chud widgets as layers (`offset`, `crop`,
+   `stretch`, `at`).
+6. A Reach projectile may carry an `old material responses` block in Halo 2's own shape: port it as is.
+
+**New to the kit:** h2_port_reticle layer `offset` / `crop` / `stretch` / `at`; h2_port_textures mode `levels`;
+h2_port_fp_anims `source_events['frames']`; port_volume 'Grenade Launcher' 0.11.
+
+**Closed:** 5b report (reports/h2_grenade_launcher_5b.txt), port_backup (F:\HaloPortBackups\2026-11-26_grenade-launcher-h2),
+glyph U+E146 captured. Vehicle stall: not reproduced (an isolated test). Display digits static 000 (user).
+**Open (the user's call):** charging during the reload (Halo 1's GL left it; no dll, user); Reach's Elite FP sounds
+(grenade_launcher_elite_fp) unused, as the DMR's.

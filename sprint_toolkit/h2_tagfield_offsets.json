@@ -119,6 +119,9 @@
   "instantaneous acceleration": 144,
   "rider minimum transfer damage scale": 156
  },
+ "damage_effect@objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_pop": {
+  "instantaneous acceleration": 144
+ },
  "damage_effect@objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_tethered_explosion": {
   "ai stun bounds": 172,
   "ai stun radius": 168,
@@ -244,6 +247,10 @@
   "diffuse upper bound": 180,
   "specular upper bound": 156
  },
+ "light@effects\\objects\\weapons\\rifle\\grenade_launcher\\emp_grenade_dark": {
+  "diffuse upper bound": 260,
+  "specular upper bound": 232
+ },
  "light@effects\\objects\\weapons\\rifle\\grenade_launcher\\gl_charge_fp": {
   "diffuse upper bound": 260,
   "specular upper bound": 232
@@ -255,6 +262,14 @@
  "light@effects\\objects\\weapons\\support_high\\spartan_laser\\sl_charge_fp": {
   "diffuse upper bound": 260,
   "specular upper bound": 232
+ },
+ "model": {
+  "begin fade distance": 164,
+  "disappear distance": 160
+ },
+ "model@objects\\weapons\\rifle\\grenade_launcher\\projectiles\\emp_burst": {
+  "begin fade distance": 164,
+  "disappear distance": 160
  },
  "model_animation_graph": {
   "animations[0].production flags": 2799,
@@ -306,13 +321,13 @@
  },
  "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\rifle\\fp_grenade_launcher\\fp_grenade_launcher": {
   "animations[10].production flags": 4373,
-  "animations[12].production flags": 4621,
-  "animations[13].production flags": 4745,
-  "animations[14].production flags": 4869,
+  "animations[12].production flags": 4452,
+  "animations[13].production flags": 4576,
+  "animations[14].production flags": 4700,
   "animations[15].production flags": 4824,
-  "animations[4].production flags": 3629,
+  "animations[4].production flags": 3460,
   "animations[5].production flags": 3753,
-  "animations[9].production flags": 4249,
+  "animations[9].production flags": 4080,
   "sound references[10].flags": 2122,
   "sound references[11].flags": 2142,
   "sound references[12].flags": 2162,
@@ -440,13 +455,13 @@
  },
  "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_grenade_launcher\\fp_grenade_launcher": {
   "animations[10].production flags": 4637,
-  "animations[12].production flags": 4885,
-  "animations[13].production flags": 5009,
-  "animations[14].production flags": 5133,
+  "animations[12].production flags": 4716,
+  "animations[13].production flags": 4840,
+  "animations[14].production flags": 4964,
   "animations[15].production flags": 5088,
-  "animations[4].production flags": 3893,
+  "animations[4].production flags": 3724,
   "animations[5].production flags": 4017,
-  "animations[9].production flags": 4513,
+  "animations[9].production flags": 4344,
   "sound references[10].flags": 2386,
   "sound references[11].flags": 2406,
   "sound references[12].flags": 2426,
@@ -611,7 +626,8 @@
   "bitmap widgets[9].halfscreen offset": 1308,
   "bitmap widgets[9].halfscreen sequence index": 1301,
   "bitmap widgets[9].quarterscreen offset": 1312,
-  "bitmap widgets[9].quarterscreen sequence index": 1302
+  "bitmap widgets[9].quarterscreen sequence index": 1302,
+  "low clip cutoff": 120
  },
  "new_hud_definition@ui\\hud\\assault_rifle": {
   "bitmap widgets[14].fullscreen sequence index": 1900,
@@ -652,6 +668,9 @@
   "bitmap widgets[2].halfscreen sequence index": 461,
   "bitmap widgets[2].quarterscreen sequence index": 462
  },
+ "new_hud_definition@ui\\hud\\grenade_launcher": {
+  "low clip cutoff": 120
+ },
  "new_hud_definition@ui\\hud\\needle_rifle": {
   "bitmap widgets[4].fullscreen offset": 704,
   "bitmap widgets[5].flags": 786,
@@ -687,6 +706,7 @@
   "air damage range": 820,
   "air gravity scale": 616,
   "bounding radius": 84,
+  "detonation timer starts": 340,
   "final velocity": 844,
   "flags#1": 460,
   "guided angular velocity (lower)": 648,
@@ -778,6 +798,11 @@
  },
  "projectile@objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet": {
   "material responses[9].maximum distance": 2752
+ },
+ "projectile@objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_emp_burst": {
+  "detonation timer starts": 340,
+  "final velocity": 644,
+  "initial velocity": 640
  },
  "projectile@objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade": {
   "acceleration range": 656,

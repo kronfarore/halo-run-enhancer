@@ -4131,6 +4131,47 @@ Zone (all seven species), Marine / Elite / Grunt trade.
 * Armed: Flood / Sentinels exist only on levels with their own characters (h2_port_test_map now refuses / skips them
   elsewhere): Flood 04b 06a 06b 07a 07b, Sentinels 04a 04b 06a 06b.
 
+### Halo 2: the Grenade Launcher, wave B4 (2026-11-24/26) -- a charged pair, a bouncing grenade, an event copied between effects
+
+Reach's launcher (`ports_h2/grenade_launcher.py`) on the Reach route, alone. Weapon donor the FUEL ROD (flak_cannon: latch,
+magazine, a free barrel 1 -- the Brute Shot has one barrel, and the charged pair needs two), grenades on the BRUTE SHOT's
+(ballistic AI aim), HUD the Brute Shot's, the BR's graph-less human `.model`; Reach's model, textures, Spartan + Elite FP
+animations, sounds and crosshair. Yardstick the Frag Grenade, its holes by the Rocket Launcher (Halo 1's pick). Tested:
+Outskirts (Original, 2 boots), Sacred Icon + Quarantine Zone (Arbiter, Balanced, 8 boots), Armed on Outskirts and
+Quarantine Zone (all seven species), Marine trade.
+
+* THE CHARGED PAIR is native: the plasma pistol's ONE trigger (latch-autofire, prediction charge, autofire 0.0667 / throw
+  0.5, secondary action charge, secondary barrel 1, charging 0.5 s). Tap = barrel 0's bouncing grenade, hold + release =
+  barrel 1's contact-burst grenade. The zero trigger fields placed from `secondary barrel` (the Laser's offsets). Barrel 1's
+  EMPTY firing effect / damage: `--barrel1` (wiring's record_from only finds the first block of a name).
+* THE BOUNCE: Reach's projectile carries an `old material responses` block in Halo 2's own shape (default detonate; potential
+  bounce, never against units, 0-70 deg, 5-30 wu/s) -- ported as is, friction 0.42. Halo 2 has Reach's fuse rule natively
+  (`after first bounce off any surface`); no `turn physical` (no rolling).
+* THE EMP: Halo 2's `emp` damage group (shields x500, the plasma pistol overcharge's) with `only hurts shields`. Halo 2's
+  `side effect` enum has `emp` and an `emp radius`, unused by Bungie: an isolated test showed NO vehicle stall.
+* THE RELEASE BURST = the frag burst + Tartarus's hammer-impact EVENT copied in as a third event (`--hammer-event`), its
+  blast part the EMP. What failed first: an effect PART that is an EFFECT ('invalid type effect': tool DROPS the whole
+  effect from the map, silently); an OBJECT part spawning a projectile that carries the second burst -- a projectile
+  spawned by an effect never runs its fuse, it bursts only when destroyed (lingered, flew off, left its light).
+  COPYING AN EVENT: a loose tag is depth-first -- a block's element structs, then per element its pooled paths and child
+  chunks, contiguous; an effect's root struct holds locations at +0x0C, events at +0x18 (count + two stale pointers, not
+  zero). Struct after our last event, tail at the end of the file, both counts; tool's export proves it.
+* RELOAD: Reach's reload `primary keyframe` counts the round in Halo 2 (27 of 63: a charge held through the reload fired
+  mid-animation); Bungie's own reloads carry no frame events (= the animation's END: too late, user). Final: Reach's
+  allow-interruption frame (48 / 38). h2_port_fp_anims `source_events['frames']` overrides an animation's events.
+* HUD: the Brute Shot HUD's `low clip cutoff` 1 = always low for a 1-round magazine -> 0. The pip = Reach's HUD frag icon
+  (`tick_art`, Halo 1's). Crosshair: Reach's #12 + the AUTO square + the pitch ladder, sized from the user's Reach
+  screenshot (h2_port_reticle layer `offset`, `crop`, `stretch`, `at`). Halo 1's SUPERSAMPLING has no Halo 2 twin: H2's
+  bitmap widgets have no scale field; an own bitmap draws at ~1.1 screen px a px, downsampled once from Reach's art.
+* HOLO SIGHT: Reach paints the sight's reticle into the diffuse's ALPHA: h2_port_textures mode `levels` (140-235, floor
+  0.12, teal), additive. The glass shader is then TRANSPARENT: re-render (tool: 'transparent but imported as opaque').
+* Charge cue: the Laser's lsnd + lights scaled `primary_charged`; Reach's landmine beep `in` track is 1 s of SILENCE --
+  its first 0.3 s is the cue's lead (a tap stays silent). Reload sound split 0 / 19 / 40 before the Balanced boot.
+* READ THE BUILD LOG (`out/h2logs_port_test/<level>.build.log`) after every look change: 'removing invalid tag' and
+  'collision region ... has no corresponding model region' never show in game until something is missing.
+* The AI lobs high: Reach's own ballistic-aim flag at Reach's 12.5 wu/s (kept, user). The display digits stay 000 (Reach's
+  tether readout has no source).
+
 ## Halo Reach
 
 **COMPLETE 2026-09-30 -- all nine steps built and confirmed in game** on m20: world model
