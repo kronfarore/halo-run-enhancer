@@ -251,12 +251,22 @@ class Level(object):
         zsets = r['zone sets']
         self.zone_sets = [z.subs['name'].text() for z in zsets]
         self.unloaded = []
+        # A zone set has TWO masks over the designer zones, required and forbidden, side
+        # by side in Guerilla. A forbidden tick keeps the zone out of that zone set; on
+        # 2026-11-26 sc150 had dz_enhancer forbidden in all seven and required in none.
+        self.forbidden = []
         if self.dz_index is not None:
             for z in zsets:
                 if not (z.get('required designer zones') >> self.dz_index) & 1:
                     self.unloaded.append(z.subs['name'].text())
-        objn = {e.get('name') for e in r['object names']}
-        self.markers = [m for m in MARKERS if m in objn]
+                if (z.get('forbidden designer zones') >> self.dz_index) & 1:
+                    self.forbidden.append(z.subs['name'].text())
+        # A marker counts only as an EQUIPMENT PLACEMENT carrying the name (what the
+        # patcher resolves, placement -> object name). The object-names entry alone says
+        # nothing: h100's two have type/datum -1 although both are placed.
+        objn = [e.get('name') for e in r['object names']]
+        placed = {e.get('name') for e in r['equipment']}
+        self.markers = [m for m in MARKERS if m in objn and objn.index(m) in placed]
         self.problems = []
         self.plan = {}
 
@@ -469,7 +479,10 @@ def report(lv):
         print('   %s: designer zone %d; zone sets loading it: %d of %d%s'
               % (DZ, lv.dz_index, len(lv.zone_sets) - len(lv.unloaded), len(lv.zone_sets),
                  '' if not lv.unloaded else '  NOT IN: ' + ', '.join(lv.unloaded)))
-    print('   markers: %s' % (', '.join(lv.markers) or 'none') +
+        if lv.forbidden:
+            print('   %s FORBIDDEN in %d zone sets (untick it there): %s'
+                  % (DZ, len(lv.forbidden), ', '.join(lv.forbidden)))
+    print('   markers (placed equipment): %s' % (', '.join(lv.markers) or 'none') +
           ('' if len(lv.markers) == len(MARKERS) else
            '  (missing %s)' % ', '.join(m for m in MARKERS if m not in lv.markers)))
     for kind in ORDER:
