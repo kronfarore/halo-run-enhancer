@@ -13254,9 +13254,12 @@ class OptionsDialog(QDialog):
             "ODST: also drop starting equipment at mid-mission insertion points")
         self.odst_all_ins_cb.setChecked(bool(CONFIG.get('odst_equipment_all_insertions')))
         self.odst_all_ins_cb.setToolTip(
-            "Off (default): each player's equipment drops once, at their own start — "
-            "insertion point 0, which every ODST level declares with exactly one "
-            "location per co-op player.\n\nOn: it also drops at the level's other "
+            "Off (default): each player's equipment drops at their own enhancer marker "
+            "— enhancer_marker1 for player 1, enhancer_marker2 for player 2, plus any "
+            "more that player owns (Mombasa Streets: 10/11 and 20/21 at its other "
+            "starts). A level without markers drops it at insertion point 0, which every "
+            "ODST level declares with exactly one location per co-op player."
+            "\n\nOn: it also drops at the level's other "
             "insertion points, the places a mission reverts you to as it progresses. "
             "Useful if you keep dying past a checkpoint and want the gear waiting "
             "there too, but it multiplies every pickup: ONI Alpha Site declares three "

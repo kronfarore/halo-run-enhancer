@@ -5339,6 +5339,26 @@ def reach_named_markers(m, game, prefix=REACH_MARKER_PREFIX, block='equipment'):
     return out
 
 
+def player_marker_slots(m, game, block='equipment'):
+    """{player index (0-based): [(marker name, placement index), ...]}, main one first.
+
+    `enhancer_marker<p>` is player p's position. A level with more than one place a
+    player can begin carries more: `enhancer_marker<p><k>` is ANOTHER of player p's
+    positions, and every one of them gets that player's picks. Mombasa Streets is the
+    case (user, 2026-11-26): enhancer_marker1/2 at its first entry (insertion 0),
+    10/20 at insertion 7 and 11/21 at insertion 8. Single digit players, so
+    `enhancer_marker12` is player 1's third position, never a player twelve.
+    """
+    out = {}
+    for nm, pi in reach_named_markers(m, game, block=block).items():
+        rest = nm[len(REACH_MARKER_PREFIX):]
+        if not rest.isdigit() or rest[0] == '0':
+            continue
+        out.setdefault(int(rest[0]) - 1, []).append((rest[1:], nm, pi))
+    return {p: [(nm, pi) for _s, nm, pi in sorted(v, key=lambda x: (x[0] != '', x[0]))]
+            for p, v in out.items()}
+
+
 def reach_equipment_markers(m, game):
     """{eqip basename: [placement index, ...]} for every INERT equipment placement.
 
@@ -6871,17 +6891,38 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
         # placements ship with Can Attach To BSP 0 and would never render if enabled,
         # so the items are APPENDED at the marker with the mask of the BSP there.
         # Player 2 without a marker of their own shares marker 1.
-        named = reach_named_markers(m, game)
+        # A player can own SEVERAL markers (player_marker_slots: Mombasa Streets has
+        # enhancer_marker10/11 and 20/21 at its other insertion points), and every one
+        # of them gets that player's whole set.
+        slots = player_marker_slots(m, game)
         qoff, qes = lay['items']
         qbase = _block_base(m, scnr_base + qoff)
         mk = {}
-        for mi in (1, 2):
-            pi = named.get('%s%d' % (REACH_MARKER_PREFIX, mi)) if qbase else None
-            if pi is not None:
+        for p, idxs in sorted(slots.items()) if qbase else []:
+            for nm, pi in idxs:
                 pos = struct.unpack_from('<fff', m.data, qbase + pi * qes + _EQ_POS)
-                mk[mi - 1] = (pos, _h3_mask_at(m, pos, game))
+                mk.setdefault(p, []).append((pos, _h3_mask_at(m, pos, game), nm))
         if mk:
-            points = [mk.get(gi) or mk.get(0) for gi in range(len(groups))]
+            points = [list(mk.get(gi) or mk.get(0) or []) for gi in range(len(groups))]
+            if str(game).strip() == 'Halo 3: ODST':
+                # The hub's scripted re-entry points (and, opted in, the other
+                # insertion points) keep their shared drop: markers replace the
+                # INSERTION-0 start, not the six level-select teleports no marker
+                # covers. Without this a player coming back to Mombasa Streets from a
+                # mission found nothing where the re-entry put them.
+                tp = list(_odst_teleport_points(m))
+                if odst_all_insertions:
+                    for ip, locs in sorted(odst_player_starts(m, game).items()):
+                        if ip != ODST_START_INSERTION:
+                            tp += list(locs)
+                seen_pts = [q for lst in mk.values() for q, _mm, _nm in lst]
+                shared = []
+                for pos, _bsp in tp:
+                    if not any(math.dist(pos, q) < 8.0 for q in seen_pts):
+                        seen_pts.append(pos)
+                        shared.append((pos, _h3_mask_at(m, pos, game),
+                                       'shared drop %d' % (len(shared) + 1)))
+                points = [pl + shared for pl in points]
     if str(game).strip() in MARKER_GAMES and not points:
         # A prepared Reach map ships one inert equipment placement per ability, put
         # where the designer wants it, and two of them are NAMED as the players'
@@ -7109,7 +7150,11 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
         if not items:
             continue
         if points and si < len(points) and points[si]:
-            targets = [('point%d' % si, points[si][0], points[si][1])]
+            # One (pos, mask) drop point, or a LIST of (pos, mask, label): a player
+            # who owns several markers, plus any shared drops.
+            pts = points[si] if isinstance(points[si], list) else [
+                (points[si][0], points[si][1], 'enhancer marker %d' % (si + 1))]
+            targets = [('point:%s' % q[2], q[0], q[1]) for q in pts]
         elif points:
             continue                    # this player has no marker: nothing to stack on
         elif anchor:
@@ -7278,9 +7323,10 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
             struct.pack_into('<H', m.data, e + eqo['gameflags'], 0)  # campaign, not MP-only
         if mode == 'fallback':
             where = "at nearest weapon (can't stream at start)"
-        elif str(bkey).startswith('point'):
-            # a fixed drop point: Halo 3's enhancer marker, or a grenade marker
-            where = 'at enhancer marker %d' % (int(str(bkey)[5:] or 0) + 1)
+        elif str(bkey).startswith('point:'):
+            # a fixed drop point: an enhancer marker (by name), a grenade marker, or a
+            # shared ODST drop -- the label travels in the key
+            where = 'at ' + str(bkey)[6:]
         elif anchor:
             where = 'at start anchor'
         else:
