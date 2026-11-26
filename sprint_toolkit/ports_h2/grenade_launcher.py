@@ -18,7 +18,6 @@ RM = R + GL + r'\grenade_launcher.render_model'
 WP = GL + r'\grenade_launcher.weapon'
 PJ = GL + r'\projectiles\grenade_launcher_grenade.projectile'          # barrel 0: the bouncing grenade
 PJC = GL + r'\projectiles\grenade_launcher_tethered_grenade.projectile'  # barrel 1: the charged release
-PJE = GL + r'\projectiles\grenade_launcher_emp_burst.projectile'        # spawned by the release burst: the EMP
 DM = GL + r'\damage_effects'
 RS = r'data\sound\weapons'                          # source folders in MCC's haloreach sfx.fsb (.info)
 NEW_HUD = r'ui\hud\bitmaps\new_hud'
@@ -246,27 +245,15 @@ PORT = {
                    (r'effects\objects\weapons\pistol\plasma_pistol\overcharge_fp.lens_flare', FX + r'\gl_light_flare_fp.lens_flare'),
                    # BOOT 2 (user): 'the EMP charge should have an added EMP explosion effect for clarity' -- Reach
                    # plays its emp_pulse (cyan-blue electric wisps) in the release burst; Halo 2's nearest stock look is
-                   # the PLASMA GRENADE's airborne burst. Nesting an effect as a part of the frag burst FAILED: a Halo 2
-                   # effect part cannot be an effect (tool: 'invalid type effect', the whole burst dropped from the map);
-                   # boot 3 the release burst WAS the plasma grenade's -- user: 'the normal explosion should stay and the
-                   # other effect on top of it; try the Tartarus Gravity Hammer explosion effect'. A part CAN be an OBJECT
-                   # (Sentinel emp_death spawns its wreckage): the release burst = the frag burst again, its lod-sound part
-                   # an object part spawning PJE, a grenade that bursts at once with TARTARUS's hammer impact (ring,
-                   # distortion ripple, arcs) and the EMP as its detonation damage. The hammer's own blast part (tartarus_
-                   # hammer_explosion, its knockback) made a silent sound part; its marker melee_effect -> up (a burst has
-                   # only the engine's points: the Gravity Hammer's A5 finding)
+                   # THE RELEASE BURST (boots 2-9). Reach plays its emp_pulse in the release burst; the user wanted the
+                   # normal explosion WITH Tartarus's hammer impact on top (boot 3). Tried and failed: an effect part
+                   # that is an EFFECT (tool: 'invalid type effect', the whole burst dropped); an OBJECT part spawning a
+                   # grenade that carries the hammer burst + EMP (boots 4-9): a projectile spawned by an effect never runs
+                   # its fuse and bursts only when destroyed -- popped by the blast it lingered, flew off, left its light
+                   # (user: unreliable). So the hammer impact's EVENT (its ring, ripple, arcs, sounds and blast part) is
+                   # COPIED into the frag burst as a third event (`python ports_h2\grenade_launcher.py --hammer-event`),
+                   # its blast part the EMP. emp_burst.effect is that event's source (the hammer clone, melee_effect -> up)
                    (r'effects\impact\explosion_small\frag_grenade\airborne_detonation.effect', FX + r'\tethered_detonation.effect'),
-                   (BS + r'\projectiles\grenade\grenade.projectile', PJE),
-                   (BS + r'\damage_effects\shot_grenade_explosion.damage_effect', DM + r'\grenade_launcher_pop.damage_effect'),
-                   # THE SPAWNED GRENADE (boot 7, user: 'a second grenade is left where the detonation happened; it does
-                   # not go off -- if I destroy it, it has the EMP explosion'): a projectile spawned by an effect part does
-                   # NOT run its fuse; it bursts when DESTROYED. The release blast destroys it (boot 4); boots 5-7 failed
-                   # because the null model had no collision and the EMP-only test maps had the blast zeroed. So it needs
-                   # COLLISION (the frag's) and no visible model: own .model, the frag render model on Bungie's INVISIBLE
-                   # shader; its glow light and smoke trail black lights
-                   (r'objects\weapons\grenade\frag_grenade\frag_grenade_projectile.model', GL + r'\projectiles\emp_burst.model'),
-                   (r'objects\weapons\grenade\frag_grenade\frag_grenade.render_model', GL + r'\projectiles\emp_burst.render_model'),
-                   (r'effects\objects\weapons\support_low\brute_shot\projectile.light', FX + r'\emp_grenade_dark.light'),
                    (r'effects\objects\characters\brute\tartarus_hammer_impact.effect', FX + r'\emp_burst.effect')],
         # the charge lights' flares carry a colour ANIMATION (the pistol's dark green -> green, BGR; the Laser's boot 6):
         # -> Reach's tethered arm-switch red (255, 37, 0; dark 80, 10, 0)
@@ -317,42 +304,10 @@ PORT = {
             (PJC, 'effe', r'effects\impact\explosion_small\brute_shot\detonation', FX + r'\tethered_detonation', 'the release burst (air + ground)', {'every': True}),
             (PJC, 'jpt!', BS + r'\damage_effects\shot_grenade_explosion', DM + r'\grenade_launcher_tethered_explosion', 'the tethered blast'),
             (PJC, 'jpt!', BS + r'\damage_effects\grenade_impact', DM + r'\grenade_launcher_impact', 'the impact'),
-            # THE EMP: the release burst's part 1 (the explosion sound) -> an OBJECT part spawning PJE, part 2 (the lod
-            # sound) -> the POP, a tiny area damage that destroys PJE at once (boot 8, user: 'it doesn't always follow the
-            # main explosion -- not going off, or exploding somewhere else': the projectile's own blast lands BEFORE the
-            # effect spawns PJE, which then lingers invisibly until another blast pops it). Parts are created in order
-            (FX + r'\tethered_detonation.effect', 'snd!', r'sound\weapons\frag_grenade\frag_expl',
-             r'sound\weapons\frag_grenade\frag_expl', 'the EMP spawner part (was the explosion sound)', {'class': 'proj'}),
-            (FX + r'\tethered_detonation.effect', 'proj', r'sound\weapons\frag_grenade\frag_expl',
-             PJE[:-len('.projectile')], 'the EMP grenade, spawned in the burst'),
-            (FX + r'\tethered_detonation.effect', 'snd!', r'sound_remastered\weapons\frag_grenade\frag_expl_lod',
-             r'sound_remastered\weapons\frag_grenade\frag_expl_lod', 'the pop part (was the lod sound)', {'class': 'jpt!'}),
-            (FX + r'\tethered_detonation.effect', 'jpt!', r'sound_remastered\weapons\frag_grenade\frag_expl_lod',
-             DM + r'\grenade_launcher_pop', 'the pop: destroys the EMP grenade right after it spawns'),
-            # PJE: bursts at once (numbers) with the Tartarus hammer impact and the EMP
-            (PJE, 'hlmt', BS + r'\projectiles\grenade\grenade', GL + r'\projectiles\emp_burst', 'own model: frag collision, invisible'),
-            (GL + r'\projectiles\emp_burst.model', 'mode', r'objects\weapons\grenade\frag_grenade\frag_grenade',
-             GL + r'\projectiles\emp_burst', "the frag's render model, invisible", {'nth': 0}),
-            (GL + r'\projectiles\emp_burst.render_model', 'shad', r'objects\weapons\grenade\frag_grenade\shaders\frag_metal',
-             r'scenarios\objects\special\shaders\invisible', 'invisible'),
-            (GL + r'\projectiles\emp_burst.render_model', 'shad', r'objects\weapons\grenade\frag_grenade\shaders\frag_plastic',
-             r'scenarios\objects\special\shaders\invisible', 'invisible'),
-            (PJE, 'foot', r'effects\materials\objects\weapons\brute_shot', FX + r'\grenade', 'material effects'),
-            (PJE, 'ligh', r'effects\objects\weapons\support_low\brute_shot\projectile', FX + r'\emp_grenade_dark', 'a black light (no glow)', {'nth': 0}),
-            # the frag smoke trail attachment -> a second black light (no smoke left hanging)
-            (PJE, 'effe', r'effects\objects\weapons\grenade\frag_grenade\smoke_trail',
-             r'effects\objects\weapons\grenade\frag_grenade\smoke_trail', 'the smoke trail, made a light', {'class': 'ligh'}),
-            (PJE, 'ligh', r'effects\objects\weapons\grenade\frag_grenade\smoke_trail', FX + r'\emp_grenade_dark', 'a black light (no smoke)'),
-            (PJE, 'cont', r'effects\objects\weapons\support_low\brute_shot\projectile', FX + r'\grenade', 'the grenade trail', {'nth': 0}),
-            (PJE, 'lsnd', r'sound\weapons\brute_shot\brute_shot_projectile\brute_shot_projectile', FX + r'\gl_projectile', 'the flight loop'),
-            (PJE, 'effe', r'effects\impact\explosion_small\brute_shot\detonation', FX + r'\emp_burst', 'the EMP look: Tartarus\'s hammer impact', {'every': True}),
-            (PJE, 'jpt!', BS + r'\damage_effects\shot_grenade_explosion', DM + r'\grenade_launcher_emp', 'the EMP (Halo 2\'s emp group, the plasma pistol overcharge\'s)'),
-            (PJE, 'jpt!', BS + r'\damage_effects\grenade_impact', DM + r'\grenade_launcher_emp', 'impact (none: it never flies)'),
-            # the hammer impact's own blast part (knockback) -> a silent sound part
+            # THE EMP: the hammer impact's own blast part (tartarus_hammer_explosion, its knockback) -> the port's EMP;
+            # the event is then copied into the release burst (--hammer-event)
             (FX + r'\emp_burst.effect', 'jpt!', r'objects\characters\brute\damage_effects\tartarus_hammer_explosion',
-             r'objects\characters\brute\damage_effects\tartarus_hammer_explosion', "the hammer's blast part, made a sound", {'class': 'snd!'}),
-            (FX + r'\emp_burst.effect', 'snd!', r'objects\characters\brute\damage_effects\tartarus_hammer_explosion',
-             r'sound\weapons\grenade_launcher_port\gl_charge', "silent (the charge cue's 0.3 s lead)"),
+             DM + r'\grenade_launcher_emp', 'the EMP (Halo 2\'s emp group, the plasma pistol overcharge\'s)'),
             # the flight loop: the port's lsnd, its track Reach's grenade_launcher_proj loop (step 10)
             (PJ, 'lsnd', r'sound\weapons\brute_shot\brute_shot_projectile\brute_shot_projectile', FX + r'\gl_projectile', 'the flight loop'),
             (PJC, 'lsnd', r'sound\weapons\brute_shot\brute_shot_projectile\brute_shot_projectile', FX + r'\gl_projectile', 'the flight loop'),
@@ -481,23 +436,6 @@ PORT = {
                 (DM + '\\' + dm + '.damage_effect', 'ai stun bounds', '', 0, 0, [1.0, 0.5], {'anchor': ('shake radius', -8)}),
                 (DM + '\\' + dm + '.damage_effect', 'rider minimum transfer damage scale', '', 0, 0, 1.0,
                  {'anchor': ('instantaneous acceleration', 12)}))] + [
-            # boot 5: the spawned EMP grenade's light black (the Brute Shot glow was the 'extra projectile')
-            (FX + r'\emp_grenade_dark.light', 'diffuse upper bound', '', 0, 0, [0.0, 0.0, 0.0]),
-            (FX + r'\emp_grenade_dark.light', 'specular upper bound', '', 0, 0, [0.0, 0.0, 0.0]),
-            # the POP (boot 9): 1 damage within 0.5 wu, no shove -- only destroys the spawned EMP grenade ('detonates
-            # explosives', the Brute Shot blast's flag, kept); not a balance row
-            (DM + r'\grenade_launcher_pop.damage_effect', 'damage lower bound', '', 0, 0, 1.0),
-            (DM + r'\grenade_launcher_pop.damage_effect', 'damage upper bound', '', 0, 0, [1.0, 1.0]),
-            (DM + r'\grenade_launcher_pop.damage_effect', 'radius', '', 0, 0, [0.25, 0.5]),
-            (DM + r'\grenade_launcher_pop.damage_effect', 'aoe core radius', '', 0, 0, 0.25),
-            (DM + r'\grenade_launcher_pop.damage_effect', 'instantaneous acceleration', '', 0, 0, 0.0),
-            (DM + r'\grenade_launcher_pop.damage_effect', 'shake radius', '', 0, 0, 0.0),
-            # the EMP grenade (boot 3), spawned at rest inside the release burst: its fuse never runs (boot 7)
-            (PJE, 'detonation timer starts', '', 0, 0, 0),             # immediately (the Brute Shot's: any surface)
-            (PJE, 'timer', '', 0, 0, [0.01, 0.01]),
-            (PJE, 'initial velocity', '', 0, 0, 0.0),
-            (PJE, 'final velocity', '', 0, 0, 0.0),
-            (PJE, 'air gravity scale', '', 0, 0, 0.0),
             # BOOT 1 (user): 'early ammo warning is always on' -- the Brute Shot HUD's low CLIP cutoff 1 (rounds loaded
             # <= 1 = low): a 1-round magazine is always low -> 0 (warns only empty, as the RL's 1 of 2 does at its last)
             (r'ui\hud\grenade_launcher.new_hud_definition', 'low clip cutoff', '', 0, 0, 0),
@@ -656,7 +594,8 @@ PORT = {
         # grenade); the EMP grenade's own detonation sound silent (the Tartarus hits play in its hammer impact: KEPT for
         # boot 4, the user's call)
         'repoint_tags': [
-                         (PJE, r'sound\weapons\brute_shot\brute_round_explode', 'gl_charge'),
+                         (FX + r'\tethered_detonation.effect', r'sound\weapons\frag_grenade\frag_expl', 'gl_expl_far'),
+                         (FX + r'\tethered_detonation.effect', r'sound_remastered\weapons\frag_grenade\frag_expl_lod', 'gl_tail'),
                          (PJ, r'sound\weapons\brute_shot\brute_round_explode', 'gl_expl'),
                          (PJC, r'sound\weapons\brute_shot\brute_round_explode', 'gl_expl'),
                          (FX + r'\detonation.effect', r'sound\weapons\frag_grenade\frag_expl', 'gl_expl_far'),
@@ -961,7 +900,85 @@ def barrel1():
         print('      (barrel 1 %s)' % field)
 
 
+def hammer_event():
+    """COPY the hammer impact's event (emp_burst.effect, event 0: its parts -- the EMP, Tartarus's hit sounds -- and
+    its particle systems -- ring, ripple, arcs, plasma blast radius) into the release burst (tethered_detonation.effect)
+    as one more event. A Halo 2 loose tag is depth-first (h2_loosetag): a block's element structs, then per element its
+    pooled paths and child chunks, contiguous. In both effects `events` is the LAST root block, so the donor event's
+    tail runs to the end of its file and goes to the end of ours; its 72-byte struct goes after our last event's; the
+    count is bumped in the chunk header and in the root struct's tagblock (the later of the root's two blocks).
+    PROVED by tool's export: our old rows unchanged, the new event's rows equal the donor's; else restored."""
+    import re
+    import struct
+    import sys
+    sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    import h2_tagref as R
+    import h2_tagfield as tf
+    src = _os.path.join(R.H2EK, 'tags', FX + r'\emp_burst.effect')
+    dst = _os.path.join(R.H2EK, 'tags', FX + r'\tethered_detonation.effect')
+
+    def events_chunk(path, data):
+        x = tf.export(path)
+        names = re.findall(r'<block name="([^"]*)"', x)
+        if names[:2] != ['locations', 'events'] or 'events' in names[2:] or 'locations' in names[2:]:
+            raise SystemExit('%s: root blocks %s -- expected locations, events' % (path, names[:3]))
+        start, end = tf.arrays(data)[2]            # chunk 2 = events (root 0, locations 1)
+        _v, n, es = struct.unpack_from('<III', data, start - 12)
+        return x, start, n, es
+
+    s, d = open(src, 'rb').read(), open(dst, 'rb').read()
+    xs, s0, sn, ses = events_chunk(src, s)
+    xd, d0, dn, des = events_chunk(dst, d)
+    if sn != 1 or ses != des:
+        raise SystemExit('donor events %d x %d, ours %d x %d' % (sn, ses, dn, des))
+    rows_s = [r for r in tf.read_all(xs) if r[0] not in ('', 'locations')]      # the donor's whole events subtree
+    if dn == 3:
+        print('   tethered_detonation already has 3 events (the hammer event copied)')
+        return
+    if dn != 2:
+        raise SystemExit('tethered_detonation has %d events (expected 2)' % dn)
+    ev_struct = s[s0:s0 + ses]
+    ev_tail = s[s0 + ses * sn:]
+    rows_before = tf.read_all(xd)
+    # the root struct's tagblocks (measured on both effects): locations at +0x0C, events at +0x18 -- (count, then two
+    # stale editor pointers, NOT zero in a loose tag)
+    root0, _root1 = tf.arrays(d)[0]
+    nloc = struct.unpack_from('<I', d, root0 + 0x0C)[0]
+    if struct.unpack_from('<I', d, root0 + 0x18)[0] != dn or nloc != len(re.findall(
+            r'<element index="\d+"', xd[xd.find('<block name="locations"'):xd.find('<block name="events"')])):
+        raise SystemExit('the root struct does not hold the locations / events counts at +0x0C / +0x18')
+    out = bytearray(d)
+    struct.pack_into('<I', out, root0 + 0x18, dn + 1)
+    struct.pack_into('<I', out, d0 - 8, dn + 1)            # chunk header: 'dfbt', version, COUNT, size
+    at = d0 + des * dn
+    out[at:at] = ev_struct
+    out += ev_tail
+    open(dst, 'wb').write(bytes(out))
+    x = tf.export(dst)
+    ok = bool(x)
+    if ok:
+        rows_after = tf.read_all(x)
+        # the root's and locations' rows unchanged; every row count adds up; the new event's field texts (in order)
+        # are the donor's
+        top = lambda rows: [r for r in rows if r[0] in ('', 'locations')]
+        texts = lambda rows: [(r[2], r[4]) for r in rows]
+        ev_rows = [r for r in rows_after if r[0] not in ('', 'locations')]
+        ok = (top(rows_after) == top(rows_before)
+              and len(rows_after) == len(rows_before) + len(rows_s)
+              and texts(ev_rows[-len(rows_s):]) == texts(rows_s)
+              and texts(ev_rows[:-len(rows_s)]) == texts([r for r in rows_before if r[0] not in ('', 'locations')]))
+        if not ok:
+            print('   rows before %d, donor %d, after %d' % (len(rows_before), len(rows_s), len(rows_after)))
+    if not ok:
+        open(dst, 'wb').write(d)
+        raise SystemExit('the copied event did not read back -- tethered_detonation restored')
+    print('   tethered_detonation.effect: + event 2 = the hammer impact (%d bytes struct + %d tail); %d -> %d events, '
+          'tool reads every row' % (len(ev_struct), len(ev_tail), dn, dn + 1))
+
+
 if __name__ == '__main__':
     import sys as _sys
     if '--barrel1' in _sys.argv:
         barrel1()
+    if '--hammer-event' in _sys.argv:
+        hammer_event()
