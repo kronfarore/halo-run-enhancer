@@ -19,6 +19,8 @@ The config's `reticle` section:
                                  Flamethrower, S1); 'ring': N composes one arc into four, N chud
                                  units off the centre (Reach's Needle Rifle); 'inner': (N, s) a
                                  second ring of that arc at scale s, N units off (its centre circle);
+                                 'mirror': {'stretch', 'drop'} Reach's 'mirror horizontal' widget:
+                                 the sprite's right edge on the centre + its mirror (the Concussion Rifle);
                                  'layers': [(bitmap tag or (sheet, sequence), ratio)] further
                                  widgets centred on the same point (a sequence = a sprite: the DMR)
 A Reach source: wave B's pilot adds its art reader. Every crosshair widget naming the port's
@@ -158,6 +160,18 @@ def h3_compose(donor):
     colour = a[:, :, :3][ink].mean(0) if ink.any() else np.array([0, 0, 202.0])
     sprite = h1_sprite if H3_ART.get('kind') == 'h1' else h3_hud_art.sprite
     art, reg = sprite(H3_ART['sheet'], H3_ART['sequence'])
+    if H3_ART.get('mirror'):
+        # (opt-in; the Concussion Rifle, B5) `mirror` {'stretch': sx, 'drop': px}: Reach's chud 'mirror horizontal'
+        # -- the sprite (x sx across, the widget's scale) drawn with its RIGHT edge on the centre and its mirror
+        # image on the other side (#17: one crescent + half drop triangles, whole once mirrored); the registration
+        # on that centre line, `drop` sprite px above the box centre (the crescent onto the aim point)
+        mo = H3_ART['mirror']
+        half = art.convert('RGBA').resize((max(1, int(round(art.width * mo.get('stretch', 1.0)))), art.height),
+                                          Image.LANCZOS)
+        both = Image.new('RGBA', (2 * half.width, half.height), (0, 0, 0, 0))
+        both.alpha_composite(half, (0, 0))
+        both.alpha_composite(half.transpose(Image.FLIP_LEFT_RIGHT), (half.width, 0))
+        art, reg = both, (float(half.width), reg[1] - mo.get('drop', 0.0))
     if H3_ART.get('ring'):
         # `ring` N (the Needle Rifle): ONE arc on four chud widgets, N chud units off the centre -- the
         # sprite at the sheet's own density, mirrored and turned into one image

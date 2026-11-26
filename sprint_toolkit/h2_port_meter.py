@@ -10,6 +10,8 @@ the threshold field is laid over every pixel first, then the tick art without to
     donor_meter, rel, name        the donor's meter tag, the meters folder, the port's bitmap name
     donor_hud, port_hud, weapon   the HUD cloned donor -> port, the weapon repointed at it
     rounds, rows, canvas, tick_w  the art (keep the donor's canvas so the widget does not move)
+    tick_box                      (opt-in) the donor art's box that IS one tick, for a one-row bar
+                                  donor (the fuel rod's: the Concussion Rifle, B5)
     sequences                     [{'rounds', 'tick_w'?}, ...] one meter a magazine size on one
                                   multi-sequence plate (seq 0 = Original; Balanced rows pick another)
     backpack, backpack_port, backpack_size, model_3p   the stowed icon drawn from the port's mesh
@@ -101,12 +103,20 @@ def source_tick(m, sprite, tick_w):
 def build(m, rounds, rows):
     donor = donor_art(m)
     tick_w = m['tick_w']
-    sprite = tick_sprite(donor, tick_w)
     per_row = -(-rounds // rows)
     w, h = m['canvas']
     pitch = w / float(per_row)
     row_pitch = h / float(rows)
     tick_h = int(row_pitch) - 1
+    if m.get('tick_box'):
+        # (opt-in; the Concussion Rifle, B5) `tick_box` (x0, y0, x1, y1): a donor meter that is ONE row of cells
+        # (Halo 2's fuel rod: a 194 x 14 bar of five hexagons) -- the tick is that box of the donor art, whole
+        # (tick_sprite cuts a half-height tick out of a multi-row grid), squeezed to tick_w, at its own height
+        # when the row holds it
+        sprite = donor.crop(tuple(m['tick_box']))
+        tick_h = min(sprite.height, int(row_pitch))
+    else:
+        sprite = tick_sprite(donor, tick_w)
     if m.get('tick_art'):
         small = source_tick(m, sprite, tick_w)
         tick_h = small.shape[0]
