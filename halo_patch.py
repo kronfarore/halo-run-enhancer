@@ -56,25 +56,28 @@ def level_salt(m):
     return os.path.basename(p.replace(chr(92), '/')).split('.')[0]
 
 
-def open_map(map_path, game=None):
+def open_map(map_path, game=None, readonly=False):
     """Open a map with the right parser for its game: Halo 2 -> `Halo2Map`
     (second-gen), Halo 3 -> `Halo3Map` (third-gen), Reach -> `ReachMap`
     (fourth-gen), Halo 4 -> `Halo4Map` (fifth-gen), everything else -> the Halo 1
-    `HaloMap`."""
+    `HaloMap`.
+
+    `readonly` maps the file instead of loading it (hm.load_map_bytes): for a caller
+    that only looks things up. Such a map cannot be edited or saved."""
     g = str(game).strip()
     if g in SECOND_GEN_GAMES:
         import halo2_map
-        return halo2_map.Halo2Map(map_path)
+        return halo2_map.Halo2Map(map_path, readonly=readonly)
     if g in THIRD_GEN_GAMES:
         import halo3_map
-        return halo3_map.Halo3Map(map_path)
+        return halo3_map.Halo3Map(map_path, readonly=readonly)
     if g in FOURTH_GEN_GAMES:
         import reach_map
-        return reach_map.ReachMap(map_path)
+        return reach_map.ReachMap(map_path, readonly=readonly)
     if g in FIFTH_GEN_GAMES:
         import halo4_map
-        return halo4_map.Halo4Map(map_path)
-    return hm.HaloMap(map_path)
+        return halo4_map.Halo4Map(map_path, readonly=readonly)
+    return hm.HaloMap(map_path, readonly=readonly)
 
 
 class PluginRegistry:

@@ -71,22 +71,37 @@ class ReachMap(Halo3Map):
         validate the descriptor pairs behind it — including the '343i' guard, which
         is what distinguishes a real Reach index header from a stray 'sgat'."""
         m = self.TAGS_MAGIC_OFF
+
+        def valid(ioff):
+            if ioff < 0 or ioff + m + 4 > len(self.data):
+                return False
+            ng = struct.unpack_from('<i', self.data, ioff)[0]
+            nt = struct.unpack_from('<i', self.data, ioff + 0x10)[0]
+            ta = self.u64(ioff + 0x18)
+            ga = self.u64(ioff + 0x8)
+            return (0 < ng < 1000 and 0 < nt < 40000
+                    and ta > 0x100000000 and ga > 0x100000000
+                    and self.data[ioff + 0x4:ioff + 0x8] == b'343i'
+                    and self.data[ioff + m:ioff + m + 4] == b'sgat')
+
+        # The header does say where it is: index VA - virtual base + the tag buffer
+        # offset at 0x10, Halo 3's own formula -- it only looked wrong here because
+        # Halo 3 tests the magic at +0x44 and Reach keeps it at +0x48. Measured equal
+        # to the scan's answer on every Reach and Halo 4 campaign map, live and
+        # baseline (review U5 V7). The scan below reads the file from its start to the
+        # index, 80-90% in: fine in RAM, 20 s a map on a file mapped from a slow drive.
+        cand = self.index_header_va - (self.virt_base - self.tag_buffer_offset)
+        if valid(cand):
+            self.index_header_off = cand
+            return
         start = 0
         while True:
             i = self.data.find(b'sgat', start)
             if i < 0:
                 break
-            ioff = i - m
-            if ioff >= 0:
-                ng = struct.unpack_from('<i', self.data, ioff)[0]
-                nt = struct.unpack_from('<i', self.data, ioff + 0x10)[0]
-                ta = self.u64(ioff + 0x18)
-                ga = self.u64(ioff + 0x8)
-                if (0 < ng < 1000 and 0 < nt < 40000
-                        and ta > 0x100000000 and ga > 0x100000000
-                        and self.data[ioff + 0x4:ioff + 0x8] == b'343i'):
-                    self.index_header_off = ioff
-                    return
+            if valid(i - m):
+                self.index_header_off = i - m
+                return
             start = i + 1
         raise ValueError("Halo Reach index header ('tags' magic) not found")
 
@@ -185,7 +200,17 @@ class ReachMap(Halo3Map):
             return False
         want = ((matg['index'], 'globals\\globals'),
                 (scnr['index'], self.scenario_name))
-        for blob in self._blob_candidates():
+
+        def candidates():
+            # Bias 0 first: on every MCC campaign cache measured, live and baseline,
+            # the header's file_tbl_offset IS the blob's file offset. The scan below
+            # looks for the blob from 0x1000 on and finds it in the last 0.2% of the
+            # file -- the whole file read to learn a number the header holds (24 s a
+            # map when it is mapped from a slow drive; review U5 V7). Either answer
+            # must pass the same two-name verification.
+            yield self.file_tbl_offset
+            yield from self._blob_candidates()
+        for blob in candidates():
             k = self.file_tbl_offset - blob
             idx = self.file_idx_offset - k
             if not (0 <= idx and idx + self.file_tbl_count * 4 <= len(self.data)):

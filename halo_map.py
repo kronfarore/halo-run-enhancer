@@ -9,9 +9,34 @@
 # This module has no GUI dependency so it can be tested headless.
 
 import math
+import mmap
 import struct
 import xml.etree.ElementTree as ET
 from pathlib import Path
+
+
+class ReadOnlyBytes(mmap.mmap):
+    """A map file MAPPED for reading instead of loaded (load_map_bytes, readonly). The
+    parsers index it exactly like their bytearray; only what a lookup touches is read
+    from disk, and any write raises."""
+
+    def index(self, sub, start=0, end=None):          # bytearray has it, mmap only find()
+        r = self.find(sub, start) if end is None else self.find(sub, start, end)
+        if r < 0:
+            raise ValueError('subsection not found')
+        return r
+
+
+def load_map_bytes(path, readonly=False):
+    """The bytes of a map file for a parser: a bytearray it may edit and save, or --
+    `readonly` -- the file mapped into memory. A tool that only LOOKS (the validator
+    walks all 59 baselines, 41 GB on an external drive: 18.5 minutes loaded whole) then
+    reads the tag index and the blocks it asks about and nothing else. The mapping
+    holds the file open until the map object is dropped."""
+    with open(path, 'rb') as f:
+        if readonly:
+            return ReadOnlyBytes(f.fileno(), 0, access=mmap.ACCESS_READ)
+        return bytearray(f.read())
 
 _GAME_NAMES = ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4')
 _ZERO_IS = {}
@@ -421,10 +446,10 @@ TAG_BASE = 0x50000000      # where MCC Halo 1 loads the tag-data region
 class HaloMap:
     """Parsed Halo 1 (MCC) map with tag lookup and field read/write."""
 
-    def __init__(self, path):
+    def __init__(self, path, readonly=False):
         self.path = str(path)
-        with open(path, 'rb') as f:
-            self.data = bytearray(f.read())
+        self.readonly = bool(readonly)      # mapped, not loaded: lookups only
+        self.data = load_map_bytes(path, readonly)
         self._parse_index()
 
     # --- low-level ---
@@ -879,6 +904,8 @@ class HaloMap:
         return new_off
 
     def save(self, out_path):
+        if getattr(self, 'readonly', False):
+            raise ValueError('this map was opened read-only')
         with open(out_path, 'wb') as f:
             f.write(self.data)
 

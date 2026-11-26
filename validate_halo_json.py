@@ -8,7 +8,9 @@ Two kinds of check:
                traps that are invisible until a specific game is played.
   RESOLUTION — for every effect, for each game it declares, resolve the tag on the
                real maps and confirm each target field exists in the plugin AND
-               reads on at least one matching tag.
+               reads on at least one matching tag. The maps are the pristine
+               BASELINES of every mission in halo.json (what a patch rebuilds from),
+               and the run prints which ones it read.
 
 Exit code is 0 only when nothing is reported.
 """
@@ -29,29 +31,12 @@ import assembly_plugins
 
 PLUGINS = assembly_plugins.plugins_dir()
 
-MAPS = {
-    'Halo 1': ('halo1/maps', ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40']),
-    'Halo 2': ('halo2/h2_maps_win64_dx11',
-               ['01a_tutorial', '03a_oldmombasa', '04b_floodlab', '05a_deltaapproach',
-                '05b_deltatowers', '06a_sentinelwalls', '07b_forerunnership', '08b_deltacontrol']),
-    'Halo 3': ('halo3/maps',
-               ['005_intro', '010_jungle', '020_base', '030_outskirts', '040_voi',
-                '050_floodvoi', '070_waste', '100_citadel', '110_hc', '120_halo']),
-    # ODST, Reach and Halo 4 were never resolution-checked -- the dict simply stopped
-    # at Halo 3, so `0 problems` said nothing about half the games in the database and
-    # a Halo 4 card naming a field the engine renamed could not be caught here. Fewer
-    # maps each than the older games get: these caches are an order of magnitude larger
-    # and every one is held open at once.
-    'Halo 3: ODST': ('halo3odst/maps',
-                     ['l200', 'l300', 'sc110', 'sc120', 'sc130', 'sc140', 'h100']),
-    'Halo Reach': ('haloreach/maps',
-                   ['m10', 'm20', 'm30', 'm35', 'm45', 'm50', 'm52', 'm60', 'm70']),
-    # Shutdown, Composer and Infinity between them field every Halo 4 species and
-    # nearly every weapon; Dawn carries the sprint equipment the other three lack.
-    'Halo 4': ('halo4/maps',
-               ['m10_crash', 'm020', 'm30_cryptum', 'm40_invasion', 'm60_rescue',
-                'm70_liftoff', 'm80_delta', 'm90_sacrifice']),
-}
+# The game's map folder under the MCC root (CONFIG map_game_folder). WHICH maps are read
+# is not listed here any more: it is every mission of halo.json's own Missions list (see
+# MAPS below), each from its pristine BASELINE.
+FOLDERS = {'Halo 1': 'halo1/maps', 'Halo 2': 'halo2/h2_maps_win64_dx11',
+           'Halo 3': 'halo3/maps', 'Halo 3: ODST': 'halo3odst/maps',
+           'Halo Reach': 'haloreach/maps', 'Halo 4': 'halo4/maps'}
 SUBDIRS = {'Halo 1': ['Halo1MCC', 'Halo1'], 'Halo 2': ['Halo2MCC', 'Halo2'],
            'Halo 3': ['Halo3MCC', 'Halo3'], 'Halo 3: ODST': ['ODSTMCC', 'ODST'],
            'Halo Reach': ['ReachMCC', 'Reach'], 'Halo 4': ['Halo4MCC', 'Halo4']}
@@ -91,6 +76,12 @@ def report(msg, quiet=False):
 with open(os.path.join(TOOL, 'halo.json'), encoding='utf-8') as f:
     DB = json.load(f)
 GAMES = list(DB['Missions'].keys())
+# game -> (map folder, the missions to read). Every mission the run can play, in halo.json's
+# order. These used to be hand-kept samples: they named two maps no mission plays (Halo 2
+# 01a_tutorial, Halo 3 005_intro -- a tag resident only there would have counted as
+# resolving) and left out nine that are played (Halo 2 01b / 03b / 04a / 06b / 07a / 08a,
+# ODST sc100 / sc150, Reach m70_bonus): ODST's SAW port lives on sc150 alone.
+MAPS = {g: (FOLDERS[g], list(DB['Missions'][g])) for g in GAMES if g in FOLDERS}
 
 
 def resolve_gamed(v, game):
@@ -527,6 +518,7 @@ _ANY_FIELDED = set().union(*_FIELDED.values()) if _FIELDED else set()
 # cards were derived from the kit is checked against the same kit
 sys.path.insert(0, os.path.join(TOOL, 'sprint_toolkit'))
 from port_cards import KIT_TAGS, KIT_EXT          # noqa: E402
+import map_vault                                  # noqa: E402  (the Baselines folder)
 pending = []
 
 
@@ -575,13 +567,39 @@ def plugin(game, cls):
 
 
 def map_paths(game):
-    """The sampled map FILES for a game, opened one at a time by the caller."""
-    subdir, names = MAPS[game]
-    out = []
-    for mn in names:
-        fn = os.path.join(MCC, *subdir.split('/'), mn + '.map')
-        if os.path.exists(fn):
-            out.append((mn, fn))
+    """The maps to read for a game, opened one at a time by the caller: [(mission, file)].
+
+    Each mission's pristine BASELINE -- the bytes every patch rebuilds from
+    (halo_patch.existing_baseline with the Baselines folder of settings.json, as
+    apply_run and the sibling audits read it). This used to build
+    `<MCC>/<game folder>/<name>.map`, the LIVE file the patcher writes: "the tag
+    resolves" and "the block is not empty" were answered by whatever the last patch
+    left there, or by an older build than the baseline (after 2026-11-13 every Halo 3
+    and ODST live map was the previous build), and a map that was not there was dropped
+    without a word (review U5 V7). What was read is printed; a mission with no baseline
+    is read from its live map and SAID so; a mission with no file at all is named."""
+    subdir, missions = MAPS[game]
+    root = map_vault.baseline_root()
+    out, notes = [], []
+    for mid in missions:
+        live = hp.default_map_path(MCC, subdir, mid)
+        try:
+            base = hp.existing_baseline(live, root, subdir)
+        except hp.BaselineUnreachable as ex:
+            report(f'{game}: {ex} -- its maps were NOT read')
+            return []
+        if base:
+            out.append((mid, base))
+        elif live and os.path.isfile(live):
+            out.append((mid, live))
+            notes.append(f'{mid}: no baseline, the LIVE (patched) map was read')
+        else:
+            notes.append(f'{mid}: MISSING (no baseline, no live map) -- not read')
+    where = os.path.join(root, *subdir.split('/')) if root else 'the .bak beside each map'
+    print(f'  {game}: {len(out)} of {len(missions)} map(s) to read ({where}): '
+          f'{", ".join(m for m, _f in out) or "none"}')
+    for n in notes:
+        print(f'      {n}')
     return out
 
 
@@ -805,12 +823,15 @@ def check_resolution():
         found = {}                  # label -> tag resolved on some map
         tfound = {}                 # (cls, path) -> a TARGET's own tag resolved
         filled = {}                 # (label, field, path) -> block non-empty somewhere
+        n_read = 0
         for mn, fn in map_paths(game):
             try:
-                m = hp.open_map(fn, game)
+                # read-only: mapped, not loaded -- the baselines are 41 GB
+                m = hp.open_map(fn, game, readonly=True)
             except Exception as ex:
                 print(f'  (could not open {mn}: {ex})')
                 continue
+            n_read += 1
             hits = {}
 
             def tags_for(cls, path):
@@ -838,6 +859,12 @@ def check_resolution():
                             break
             del m                   # one map at a time: Halo 4's eight are 5.5 GB
 
+        if not n_read:
+            # Not one map of this game could be read. Every card would come out "tag
+            # resolves on 0 maps": loud, but blaming the cards for a missing folder.
+            report(f'{game}: NO MAP could be read -- the {len(live)} card(s) offered '
+                   f'there were not resolution-checked on a map')
+            continue
         for label, tag, cls, tpath, keep in live:
             quiet = is_inert(label, game)
             if not found.get(label):

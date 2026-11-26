@@ -43,10 +43,10 @@ class Halo3Map:
     HEADER_SIZE = 0x4000        # version 13 (Update 6+/U9/U12/U13). v11 flights use 0x3000.
     CHECKSUM_OFF = 0x360
 
-    def __init__(self, path):
+    def __init__(self, path, readonly=False):
         self.path = str(path)
-        with open(path, 'rb') as f:
-            self.data = bytearray(f.read())
+        self.readonly = bool(readonly)      # mapped, not loaded (hm.load_map_bytes)
+        self.data = hm.load_map_bytes(path, readonly)
         if self.data[:4] != b'daeh':
             raise ValueError("Not a Halo map (missing 'head' magic)")
         self._parse_header()
@@ -684,6 +684,8 @@ class Halo3Map:
         return cs
 
     def save(self, out_path=None):
+        if getattr(self, 'readonly', False):
+            raise ValueError('this map was opened read-only')
         self.update_checksum()
         with open(out_path or self.path, 'wb') as f:
             f.write(self.data)

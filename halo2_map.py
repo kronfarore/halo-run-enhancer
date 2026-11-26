@@ -29,16 +29,23 @@ class Halo2Map:
     HEADER_SIZE = 0x380
     SEGMENT_ALIGN = 0x1000   # tag-data / meta segment sizes must stay 0x1000-aligned
 
-    def __init__(self, path):
+    def __init__(self, path, readonly=False):
         self.path = str(path)
-        with open(path, 'rb') as f:
-            raw = f.read()
+        self.readonly = bool(readonly)      # mapped, not loaded (hm.load_map_bytes)
+        if readonly:
+            raw = hm.load_map_bytes(path, True)
+        else:
+            with open(path, 'rb') as f:
+                raw = f.read()
         if raw[:4] != b'daeh':
             raise ValueError("Not a Halo map (missing 'head' magic)")
         if len(raw) < self.HEADER_SIZE:
             raise ValueError("File too small to be a Halo 2 map")
         self.compressed = self._is_compressed(raw)
-        self.data = self._decompress(raw) if self.compressed else bytearray(raw)
+        # a compressed map has to be inflated whole either way; an uncompressed one
+        # opened read-only stays the mapping
+        self.data = (self._decompress(raw) if self.compressed
+                     else raw if readonly else bytearray(raw))
         self._parse_header()
         self._parse_tags()
 
@@ -465,6 +472,8 @@ class Halo2Map:
         """Persist the (possibly edited) image. Uncompressed maps are written
         directly with a refreshed checksum. Compressed maps are not supported
         yet (would need re-chunking + recompression)."""
+        if getattr(self, 'readonly', False):
+            raise ValueError('this map was opened read-only')
         if self.compressed:
             raise NotImplementedError(
                 "save() for compressed H2 maps needs recompression; the relevant "
