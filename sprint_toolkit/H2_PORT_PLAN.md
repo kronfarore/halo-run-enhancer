@@ -910,6 +910,46 @@ COMMON DONE: as "Step 4", "B4: what the Grenade Launcher taught" last.
 > (light + sound) and the explosion's own particle sprite; check 10 (the FP flash) as always.
 > Then the COMMON DONE of "Step 5", "B4: what the Grenade Launcher taught" last.
 
+### Step 6: B5 Concussion Rifle ALONE (prepared 2026-11-26)
+
+User, 2026-11-26: "Grenade Launcher port is done. Start the next one." ONE session, as in Steps 4 and 5, with no other
+port session on the H2 kit. Done before it: wave A (7) and B1-B4 (11 ports). The 13-level rebuild has still NOT run.
+
+| session | weapon | test levels (`--level` on EVERY h2_port_test_map run) |
+|---|---|---|
+| 1 | B5 Concussion Rifle | 03a_oldmombasa, Outskirts (Chief, Marines) + 04a_gasgiant, The Arbiter |
+
+COMMON READING: as "Step 5", plus "B4: what the Grenade Launcher taught" (its six points apply from the start: above all
+an effect PART cannot be an effect, READ THE TEST MAP'S BUILD LOG after every look change, the reload keyframe), H1_PORT_PLAN
+"B5: what the Concussion Rifle taught" and PORTING "Halo 1: the Concussion Rifle, wave B5", memory h2-grenade-launcher-port.
+COMMON DONE: as "Step 5", "B5: what the Concussion Rifle taught" last.
+
+### The Concussion Rifle (B5), filled in -- ALONE
+
+> [PREFACE: the "Running ports in parallel" rules (kit lock, shared records, one test level at a time), with no other
+> port session running; your levels = Outskirts (03a_oldmombasa, Chief) and The Arbiter (04a_gasgiant)]
+> Port the CONCUSSION RIFLE into Halo 2 (H2_PORT_PLAN.md wave B, #B5, "Step 6"). Source: Halo Reach,
+> `objects\weapons\rifle\concussion_rifle\concussion_rifle` (HREK), on the DMR's Reach route (`b1_reach_route.md` in the
+> shared notes folder, PORTING "Halo 2: the DMR, wave B1").
+> Your config: ports_h2/concussion_rifle.py (a stub). Reserved: prefix `cr2`, glyph U+E147 (DECIMAL 57671),
+> `objects\weapons\rifle\concussion_rifle`, effects `effects\objects\weapons\rifle\concussion_rifle`, FP graph
+> `weapons\rifle\fp_concussion_rifle\fp_concussion_rifle`, HUD `ui\hud\concussion_rifle` + `concussion_rifle_*`, sounds
+> `sound\weapons\concussion_rifle_port`, catalog name `Concussion Rifle`.
+> STEP 4a WITH ME first: candidates in the config (provisional the Flak Cannon, Halo 2's fuel rod: Reach's and Halo 2's
+> are both 5-round magazines; alternatives the Rocket Launcher and the Plasma Grenade; peers Flak Cannon, Rocket Launcher,
+> Brute Shot). Halo 1's decisions are in its "B5" (Hunters: Reach's values in Default, the offset in Balanced; a
+> yardstick's ZERO may mean unset; a changed DEFAULT waits until I have seen Reach's own numbers in game).
+> NEW for this port: (1) THE KNOCKBACK: the bolt's detonation carries an instantaneous acceleration of 2.5 (Reach's raw
+> value was 'decent enough' in Halo 1); Halo 2's push needs damage to apply (the Gravity Hammer's token-damage lesson,
+> A5), so read how Halo 2 applies an explosion's acceleration first; (2) THE BOLT: minimum velocity 11 DETONATES (check
+> it against the Balanced initial velocity too), it ACCELERATES 12 -> 16 wu/s, gravity 0.25; (3) donor the Flak Cannon
+> (latch magazine, explosive plasma bolt, two-handed Covenant HUD), magazine 5 -> 6, zoom 1 -> 0 (NO zoom: blank the
+> scope widgets as the SAW's); (4) THE LOOK: a borrowed Covenant look is green in five places 4b does not show (Halo 1's
+> B5 list: particle type-state colour multipliers, change-colour particles, a glow shader's reflection tint, the material
+> responses' potential effect, the light-volume widget). Recolour against Reach's own purple, and read the build log;
+> (5) the 6-round reload (Reach reloads all six at once, 100 frames) and its keyframe.
+> Then the COMMON DONE of "Step 6", "B5: what the Concussion Rifle taught" last.
+
 ## Hand-off prompt for a weapon session
 
 > Port the <WEAPON> into Halo 2 (H2_PORT_PLAN.md, wave <X>, #<n>). Source: <game>, `<tag>`.
