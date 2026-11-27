@@ -109,7 +109,8 @@ calls (2026-11-27), "Plan" marks calls made while planning, from the code.
 
 ## 4. Phase 0: bugs to fix first (found while planning)
 
-Each is a standalone commit with its own check.
+**DONE 2026-11-27, commit 26bdac5** (one commit; every check below ran in memory, not
+booted). None of the 11 saved runs is affected by #2 or #4.
 
 1. **Regeneration Field is not equipment.**
    - Cause: no Halo 4 mission lists it, so `is_equipment` (any mission's `equipment` list)
