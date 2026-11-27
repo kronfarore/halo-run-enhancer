@@ -335,6 +335,10 @@ PORT = {
             (FX + r'\detonation.light', 'specular upper bound', '', 0, 0, list(VIOLET)),
             (CR + r'\shaders\cr_bolt_luminous.shader', 'const color', 'parameters', 5, 0, list(PINK)),
             (CR + r'\shaders\cr_bolt_luminous.shader', 'const color', 'parameters', 6, 0, [1.0, 0.3, 0.7]),
+            # BOOT 1 (user, 2026-11-27): 'Bolt and explosion is probably too big' -> the trail's width x RESIZE (the
+            # fuel rod's 0.1 -> 0.025; the glow and the burst particles are `--resize`'s)
+            (FX + r'\bolt.contrail', 'width', 'point states', 0, 0, 0.1 * 0.5),
+            (FX + r'\bolt.contrail', 'width', 'point states', 1, 0, 0.025 * 0.5),
         ],
         'skipped': [
             ('melee strike_melee', "the Fuel Rod's smash_melee (4a: Reach strike -> Halo 2 smash, the GL's)"),
@@ -403,15 +407,16 @@ PORT = {
         'drop_ik': ['masterchief'],
         'clear_sound_ref_flags': True,
         'clear_verify': True,
-        # Reach's graph: one sound event an animation, at frame 0 (the DMR's measurement); the reloads one recording
-        # (fp_cr_reload, both reloads) until the Balanced boot (B1 rule 5: split before it)
+        # Reach's graph: one sound event an animation, at frame 0 (the DMR's measurement); the reloads ONE recording
+        # (fp_cr_reload, both reloads) -> split before the Balanced boot (B1 rule 5): its three pieces cued at their
+        # cut times x 30 (0.90 s = 27, 1.66 s = 50), so they move with the retimed reload
         'source_events': {'cues': {'first_person:melee_strike_1': [('cr_melee', 0)],
                                    'first_person:melee_strike_2': [('cr_melee', 0)],
                                    'first_person:posing:var1': [('cr_pose1', 0)],
                                    'first_person:posing:var2': [('cr_pose2', 0)],
                                    'first_person:ready': [('cr_ready', 0)],
-                                   'first_person:reload_empty': [('cr_reload', 0)],
-                                   'first_person:reload_full': [('cr_reload', 0)]},
+                                   'first_person:reload_empty': [('cr_rl_1', 0), ('cr_rl_2', 27), ('cr_rl_3', 50)],
+                                   'first_person:reload_full': [('cr_rl_1', 0), ('cr_rl_2', 27), ('cr_rl_3', 50)]},
                           # the round counts at Reach's ALLOW-INTERRUPTION frame (the GL's boot 3: the primary keyframe
                           # counts it in Halo 2; Reach lets the player fire again at 63 of 100)
                           'frames': {'first_person:reload_empty': [('primary keyframe', 63), ('allow interruption', 63)],
@@ -442,10 +447,14 @@ PORT = {
                     'cr_proj': [RS + r'\brute_shot\brute_shot_projectile\brute_shot_proj\loop'],
                     'cr_drop': [RS + r'\flak_cannon\flak_cannon_drop'],
                     'cr_drop_soft': [RS + r'\flak_cannon\flak_cannon_drop_soft']},
+        # Reach's reload (3.5 s, one recording for both reloads) cut in the quiet gaps all three takes share (onsets
+        # 0.00-0.87 | 0.95-1.60 | 1.73-3.42 s at -40 dB)
+        'split': {'cr_rl_1': ('cr_reload', 0.0, 0.90), 'cr_rl_2': ('cr_reload', 0.90, 1.66),
+                  'cr_rl_3': ('cr_reload', 1.66, None)},
         'sounds': {'cr_fire': ('cr_fire', 'weapon_fire'), 'cr_fire_lod': ('cr_fire_lod', 'weapon_fire'),
                    'cr_ready': ('cr_ready', 'weapon_ready'), 'cr_melee': ('cr_melee', 'weapon_melee'),
                    'cr_pose1': ('cr_pose1', 'weapon_animation'), 'cr_pose2': ('cr_pose2', 'weapon_animation'),
-                   'cr_reload': ('cr_reload', 'weapon_reload'),
+                   **{n: (n, 'weapon_reload') for n in ('cr_rl_1', 'cr_rl_2', 'cr_rl_3')},
                    'cr_expl': ('cr_expl', 'projectile_detonation'), 'cr_proj': ('cr_proj', 'projectile_flyby'),
                    'cr_drop': ('cr_drop', 'object_impacts'), 'cr_drop_soft': ('cr_drop_soft', 'object_impacts')},
         'repoint_fx': [(r'sound\weapons\flak_cannon\flak_fire', 'cr_fire'),
@@ -463,10 +472,10 @@ PORT = {
             (FX + r'\concussion_rifle.material_effects', r'sound\weapons\flak_cannon\flak_cannon_drop_soft', 'cr_drop_soft'),
             (FX + r'\concussion_rifle.material_effects', r'sound\weapons\flak_cannon\flak_expl', 'cr_drop')],
         # the SMG seed's 17 references, all repointed; unused dual slots point at the ready
-        'graph_sounds': (('smg_melee1', 'cr_melee'), ('smg_ready', 'cr_ready'), ('smg_reload', 'cr_reload'),
-                         ('smg_reload_full', 'cr_reload'), ('smg_dual_ready', 'cr_ready'),
+        'graph_sounds': (('smg_melee1', 'cr_melee'), ('smg_ready', 'cr_ready'), ('smg_reload', 'cr_rl_1'),
+                         ('smg_reload_full', 'cr_rl_1'), ('smg_dual_ready', 'cr_ready'),
                          ('smg_posing_var0', 'cr_pose1'), ('smg_posing_var1', 'cr_pose2'),
-                         ('smg_dual_reload_left', 'cr_ready'), ('smg_dual_reload_right', 'cr_ready'),
+                         ('smg_dual_reload_left', 'cr_rl_2'), ('smg_dual_reload_right', 'cr_rl_3'),
                          ('smg_dual_posing_0_l', 'cr_ready'), ('smg_dual_posing_0_r', 'cr_ready'),
                          ('smg_dual_posing_1_l', 'cr_ready'), ('smg_dual_posing_1_r', 'cr_ready'),
                          ('smg_dual_posing_2_l', 'cr_ready'), ('smg_dual_posing_2_r', 'cr_ready'),
@@ -740,9 +749,89 @@ def recolour():
     h2_port_weapon.byte_edits({'byte_edits': rows})
 
 
+# ------------------------------------------------------------------------------------------------- the resize
+# BOOT 1 (user, 2026-11-27): 'The bolt looks nice. Bolt and explosion is probably too big' (Halo 1's B5 boot 2 said the
+# same). The fuel rod's look is the banshee bomb's burst (burst_additive 0.25 -> 1.5 wu, flare_large 0.5 -> 2 wu) and a
+# glow ball of sprites 0.25 -> 0.3 wu wide strung over 1.5 wu; Reach's detonation is one explosive_flash (bounding
+# 0.73 wu) and its bolt glow ~0.35 -> Halo 1's rule x0.5 on everything that draws a size. Halo 2 keeps a size in a
+# FUNCTION (EXPLOSION_VISUAL_SCALE.md 5a: byte 0 type, byte 1 flags, the output range at +4 / +8): an emitter's
+# Particle Size (function 4 of 9) and Emission Radius (7); a light volume's Offset (0) and Radius (1). The rows are
+# read from the CLONE'S SOURCE tag (Bungie's, never resized), so a second run finds them 'already'; a run byte-equal
+# to a run the edit must not touch (byte_edits replaces every occurrence) is refused.
+RESIZE = 0.5
+RESIZE_TAGS = {FX + r'\detonation.effect': r'effects\impact\explosion_large\banshee_bomb\detonation.effect',
+               FX + r'\bolt_armed.effect': FCFX + r'\flak_bolt_armed.effect',
+               FX + r'\bolt.light_volume': FCFX + r'\flak_bolt.light_volume',
+               FX + r'\bolt_armed.light_volume': FCFX + r'\flak_bolt_armed.light_volume'}
+
+
+def resize_rows(scale=RESIZE):
+    """[(tag, old hex, new hex)]: every size function of RESIZE_TAGS' sources with its output range x `scale`"""
+    import re
+    import struct
+    import sys
+    sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    import ttk_common as tc
+    rows = []
+    for tag, src in RESIZE_TAGS.items():
+        v = tc.flatten('H2EK', src)
+        runs, order = {}, []
+        for k, (_t, x) in v.items():
+            m = re.match(r"(.*)/data/\[(\d+)\]/value('*)$", k)
+            if m:
+                key = (m.group(1), len(m.group(3)))
+                if key not in runs:
+                    runs[key] = {}
+                    order.append(key)
+                runs[key][int(m.group(2))] = int(x) & 255
+        want = (4, 7) if tag.endswith('.effect') else (0, 1)
+        raw = open(_os.path.join(r'F:\SteamLibrary\steamapps\common\H2EK\tags', tag), 'rb').read()
+        hit, other = {}, set()
+        for key in order:
+            d = runs[key]
+            b = bytes(d[i] for i in range(max(d) + 1))
+            target = ('/emitters/' in key[0] if tag.endswith('.effect')
+                      else re.match(r'volumes/\[\d+\]$', key[0])) and key[1] in want
+            if not target or (b[1] & 0x20):
+                other.add(b)
+                continue
+            new = bytearray(b)
+            for at in (4, 8):
+                struct.pack_into('<f', new, at, struct.unpack_from('<f', b, at)[0] * scale)
+            if bytes(new) == b:
+                continue
+            # the stored length (a run tool's export pads 20 -> 28: the recolour's finding)
+            n = len(b) if b in raw or bytes(new) in raw else 20
+            hit[b[:n]] = bytes(new[:n])
+        for old, new in hit.items():
+            if any(o.startswith(old) for o in other):
+                print('   REFUSED %s %s: the same bytes are a run the resize must not touch' % (_os.path.basename(tag), old.hex()[:24]))
+                continue
+            rows.append((tag, old.hex(), new.hex()))
+    return rows
+
+
+def resize():
+    import struct
+    import sys
+    sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))))
+    import h2_port_weapon
+    rows = resize_rows()
+    for tag, old, new in rows:
+        o, n = bytes.fromhex(old), bytes.fromhex(new)
+        print('   %-26s %s -> %s' % (_os.path.basename(tag), [round(struct.unpack_from('<f', o, i)[0], 4) for i in (4, 8)],
+                                     [round(struct.unpack_from('<f', n, i)[0], 4) for i in (4, 8)]))
+    h2_port_weapon.byte_edits({'byte_edits': rows})
+
+
 if __name__ == '__main__':
     import sys as _sys
-    if '--recolour' in _sys.argv:
+    if '--resize' in _sys.argv:
+        resize()
+    elif '--resize-dry' in _sys.argv:
+        for _row in resize_rows():
+            print(_row)
+    elif '--recolour' in _sys.argv:
         recolour()
     elif '--recolour-dry' in _sys.argv:
         for _row in recolour_rows():
