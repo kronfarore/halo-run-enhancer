@@ -1,0 +1,86 @@
+marker_placement_audit 2026-11-27 10:13 (in memory, nothing written)
+====================================================================================================
+Halo 1 -- 10 weapons, 0 equipment, 2 grenade types per player
+  a10            markers P1:1 P2:2              weapons 10/10   grenades 2/2   [15s]
+  a30            markers P1:1 P2:2              weapons 10/10   grenades 2/2   [1s]
+  a50            markers P1:1 P2:2              weapons 10/10   grenades 2/2   [29s]
+  b30            markers P1:1 P2:2              weapons 10/10   grenades 2/2   [26s]
+  b40            markers P1:1 P2:2              weapons 10/10   grenades 2/2   [14s]
+  c10            markers P1:1 P2:2              weapons 10/10   grenades 2/2   [32s]
+  c20            markers P1:1 P2:2              weapons 10/10   grenades 2/2   [50s]
+  c40            markers P1:1 P2:2              weapons 10/10   grenades 2/2   [14s]
+  d20            markers P1:1 P2:2              weapons 10/10   grenades 2/2   [13s]
+  d40            markers P1:1 P2:2              weapons 10/10   grenades 2/2   [15s]
+  MISSES: none
+====================================================================================================
+Halo 2 -- 22 weapons, 0 equipment, 2 grenade types per player
+  01b            markers P1:1 P2:2              weapons 17/22   grenades 2/2   [30s]
+  03a            markers P1:1 P2:2              weapons 17/22   grenades 2/2   [28s]
+  03b            markers P1:1 P2:2              weapons 17/22   grenades 2/2   [18s]
+  04a            markers P1:1 P2:2              weapons 17/22   grenades 2/2   [14s]
+  04b            markers P1:1 P2:2              weapons 17/22   grenades 2/2   [16s]
+  05a            markers P1:1 P2:2              weapons 17/22   grenades 2/2   [17s]
+  05b            markers P1:1 P2:2              weapons 17/22   grenades 2/2   [16s]
+  06a            markers P1:1 P2:2              weapons 17/22   grenades 2/2   [18s]
+  06b            markers P1:1 P2:2              weapons 17/22   grenades 2/2   [18s]
+  07a            markers P1:1 P2:2              weapons 17/22   grenades 2/2   [20s]
+  08a            markers P1:1 P2:2              weapons 17/22   grenades 2/2   [13s]
+  07b            markers P1:1 P2:2              weapons 17/22   grenades 2/2   [14s]
+  08b            markers P1:1 P2:2              weapons 17/22   grenades 2/2   [22s]
+  MISSES:
+    weapons   Concussion Rifle           not in this map (its tag is not in the cache)                on EVERY level
+    weapons   DMR                        not in this map (its tag is not in the cache)                on EVERY level
+    weapons   Grenade Launcher           not in this map (its tag is not in the cache)                on EVERY level
+    weapons   Needle Rifle               not in this map (its tag is not in the cache)                on EVERY level
+    weapons   Plasma Repeater            not in this map (its tag is not in the cache)                on EVERY level
+====================================================================================================
+Halo 3 -- 24 weapons, 11 equipment, 4 grenade types per player
+  010            markers P1:1 P2:2              weapons 24/24   equipment 11/11   grenades 4/4   [22s]
+  020            markers P1:1 P2:2              weapons 24/24   equipment 11/11   grenades 4/4   [20s]
+  030            markers P1:1 P2:2              weapons 24/24   equipment 11/11   grenades 4/4   [20s]
+  040            markers P1:1 P2:2              weapons 24/24   equipment 11/11   grenades 4/4   [22s]
+  050            markers P1:1 P2:2              weapons 24/24   equipment 11/11   grenades 4/4   [20s]
+  070            markers P1:1 P2:2              weapons 24/24   equipment 11/11   grenades 4/4   [24s]
+  100            markers P1:1 P2:2              weapons 24/24   equipment 11/11   grenades 4/4   [22s]
+  110            markers P1:1 P2:2              weapons 6/24 (+18 only capacity)   equipment 11/11   grenades 4/4   [12s]
+  120            markers P1:1 P2:2              weapons 24/24   equipment 11/11   grenades 4/4   [17s]
+  MISSES: none
+====================================================================================================
+Halo 3: ODST -- 24 weapons, 11 equipment, 4 grenade types per player
+  h100           markers P1:1,10,11 P2:2,20,21  weapons 24/24   equipment 11/11   grenades 4/4   [46s]
+  sc100          markers P1:1 P2:2              weapons 24/24   equipment 11/11   grenades 4/4   [16s]
+  sc110          markers P1:1 P2:2              weapons 24/24   equipment 11/11   grenades 4/4   [16s]
+  sc120          markers P1:1 P2:2              weapons 24/24   equipment 11/11   grenades 4/4   [15s]
+  sc130          markers P1:1 P2:2              weapons 24/24   equipment 11/11   grenades 4/4   [16s]
+  sc140          markers P1:1 P2:2              weapons 24/24   equipment 11/11   grenades 4/4   [15s]
+  sc150          markers P1:1 P2:2              weapons 24/24   equipment 11/11   grenades 4/4   [13s]
+  l200           markers P1:1 P2:2              weapons 24/24   equipment 11/11   grenades 4/4   [20s]
+  l300           markers P1:1 P2:2              weapons 24/24   equipment 11/11   grenades 4/4   [19s]
+  MISSES: none
+====================================================================================================
+Halo Reach -- 24 weapons, 6 equipment, 2 grenade types per player
+  m10            markers P1:1 P2:2              weapons 23/24   equipment 6/6   grenades 2/2   [22s]
+  m20            markers P1:1 P2:2              weapons 24/24   equipment 6/6   grenades 2/2   [21s]
+  m30            markers P1:1 P2:2              weapons 23/24   equipment 6/6   grenades 2/2   [20s]
+  m35            markers P1:1 P2:2              weapons 23/24   equipment 6/6   grenades 2/2   [22s]
+  m45            markers P1:1 P2:2              weapons 23/24   equipment 6/6   grenades 2/2   [24s]
+  m50            markers P1:1 P2:2              weapons 23/24   equipment 6/6   grenades 2/2   [21s]
+  m52            markers P1:1 P2:2              weapons 23/24   equipment 6/6   grenades 2/2   [19s]
+  m60            markers P1:1 P2:2              weapons 23/24   equipment 6/6   grenades 2/2   [26s]
+  m70            markers P1:1 P2:2              weapons 23/24   equipment 6/6   grenades 2/2   [23s]
+  m70_bonus      markers P1:1 P2:2              weapons 23/24   equipment 6/6   grenades 2/2   [14s]
+  MISSES:
+    weapons   SAW                        not in this level weapon palette                             on m10, m30, m35, m45, m50, m52, m60, m70, m70_bonus
+====================================================================================================
+Halo 4 -- 29 weapons, 9 equipment, 3 grenade types per player
+  m10_crash      markers P1:1 P2:2              weapons 28/29   equipment 9/9   grenades 3/3   [27s]
+  m020           markers P1:1 P2:2              weapons 28/29   equipment 8/9   grenades 3/3   [63s]
+  m30_cryptum    markers P1:1 P2:2              weapons 29/29   equipment 8/9   grenades 3/3   [32s]
+  m60_rescue     markers P1:1 P2:2              weapons 27/29 (+1 only capacity)   equipment 8/9   grenades 3/3   [68s]
+  m40_invasion   markers P1:1 P2:2              weapons 26/29 (+2 only capacity)   equipment 7/9 (+2 only capacity)   grenades 3/3   [75s]
+  m70_liftoff    markers P1:1 P2:2              weapons 28/29   equipment 8/9   grenades 3/3   [40s]
+  m80_delta      markers P1:1 P2:2              weapons 28/29   equipment 9/9   grenades 3/3   [33s]
+  m90_sacrifice  markers P1:1 P2:2              weapons 28/29   equipment 8/9   grenades 3/3   [29s]
+  MISSES:
+    equipment Sprint                     not in this level -- the ability has to be placed in the map on m020, m30_cryptum, m60_rescue, m70_liftoff, m90_sacrifice
+    weapons   Focus Rifle                not in this level weapon palette                             on m10_crash, m020, m60_rescue, m40_invasion, m70_liftoff, m80_delta, m90_sacrifice

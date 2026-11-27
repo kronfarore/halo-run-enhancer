@@ -4797,6 +4797,45 @@ def _h3_free_run(m, need):
     return got[0] if got else None
 
 
+def _h3_reserve_most(m, head, unit, n, extra=()):
+    """(k, offsets): reserve one run holding a block of `head` + k * `unit` bytes, plus
+    the fixed `extra` regions, for the LARGEST k <= n that fits. (0, None) when not even
+    one element fits.
+
+    The placers used to ask for everything at once and place NOTHING when it did not
+    fit: on Halo 4's Infinity and Shutdown a long weapon list (58 new placements) found
+    no run, while 32 would have fitted (marker_placement_audit, 2026-11-27). A caller
+    orders its plan most-important first and keeps the first k.
+
+    Fits are monotonic (k fitting means k-1 fits in the same run), so this bisects.
+    _h3_reserve records every SUCCESS in m._h3_reserved, so a probe that succeeds is
+    released again and only the final reservation stays taken."""
+    regions = 1 + len(extra)
+
+    def probe(k, keep):
+        got = _h3_reserve(m, [head + k * unit] + list(extra))
+        if got is not None and not keep:
+            taken = getattr(m, '_h3_reserved', None)
+            if taken is not None and len(taken) >= regions:
+                del taken[-regions:]
+        return got
+
+    got = probe(n, True)
+    if got is not None:
+        return n, got
+    if n <= 1 or probe(1, False) is None:
+        return 0, None
+    lo, hi = 1, n - 1                   # lo fits; find the largest that does
+    while lo < hi:
+        mid = (lo + hi + 1) // 2
+        if probe(mid, False) is not None:
+            lo = mid
+        else:
+            hi = mid - 1
+    got = probe(lo, True)
+    return (lo, got) if got is not None else (0, None)
+
+
 def _h3_tag_datum(m, cls, path):
     """The tag datum (salt<<16)|row for a class+path present in the map, or None.
 
@@ -5818,26 +5857,31 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
     radius = 0.25 if radius is None else max(0.0, float(radius))
     weap_plug = registry.get('weap') if registry is not None else None
     new_pal, new_idx, plan, ring = [], {}, [], {}
+    prio = []                           # (rank, point, weapon, player) per plan entry
     missing = set()
     # (rank, player, drop): every player's OWN points first, the shared ones after, so
     # a block that fills up (128 placements; Mombasa Streets already holds 80) cuts the
     # duplicates at the re-entry teleports rather than player 2's markers.
+    #
+    # Within a rank the players ALTERNATE (see the plan sort below), so a cut never
+    # takes one player's whole share before the other's has started (2026-11-27).
     drops = []
     for gi, g in enumerate(groups):
         pts = markers.get(gi) or markers.get(0)
         if pts:
-            drops += [(0, gi, d) for d in pts] + [(1, gi, d) for d in shared]
+            drops += ([(0, j, gi, d) for j, d in enumerate(pts)]
+                      + [(1, j, gi, d) for j, d in enumerate(shared)])
         elif anchor:
-            drops.append((0, gi, (anchor, anchor_mask, 'start anchor')))
+            drops.append((0, 0, gi, (anchor, anchor_mask, 'start anchor')))
         else:
             si = min(gi, len(spawns) - 1)
             pos, bsp = spawns[si]
             mask = ((1 << bsp) if bsp is not None and bsp >= 0
                     else _h3_mask_at(m, pos, game))
-            drops.append((0, gi, (pos, mask, 'spawn %d' % si)))
-    drops.sort(key=lambda d: d[0])                  # stable: player order kept per rank
-    for _rank, gi, ((ax, ay, az), mask, where) in drops:
-        for t in groups[gi]:
+            drops.append((0, 0, gi, (pos, mask, 'spawn %d' % si)))
+    drops.sort(key=lambda d: d[:3])
+    for _rank, _j, gi, ((ax, ay, az), mask, where) in drops:
+        for wi, t in enumerate(groups[gi]):
             short = str(t).rsplit(chr(92), 1)[-1]
             key = str(t).replace('/', chr(92)).lower()
             pi, added = pal.get(key, new_idx.get(key)), False
@@ -5890,8 +5934,12 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
             plan.append((pi, pos, mask, short, where, added,
                          0 if loaded is None else int(loaded),
                          0 if total is None else int(total)))
+            prio.append((_rank, _j, wi, gi))
     if not plan:
         return out
+    # Players alternate WEAPON by weapon at each point (rank, point, weapon, player):
+    # Cortana has room for 11 and the first marker used to take all of them.
+    plan = [plan[i] for i in sorted(range(len(plan)), key=lambda i: prio[i])]
 
     eqo = _eq_offsets(game)
 
@@ -5929,12 +5977,27 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
         out.append({'effect': 'spawned weapons', 'field': it[3], 'ok': False,
                     'reason': 'weapon block full (%d) and no residency placement left to '
                               'reuse, at %s' % (_H3_MAX_WEAPON_PLACEMENTS, it[4])})
-    sizes = (([(N + len(extra)) * wes] if extra else [])
-             + ([(pc + len(new_pal)) * pes] if new_pal else []))
-    got = _h3_reserve(m, sizes) if sizes else []
-    if got is None:
-        return out + [{'effect': 'spawned weapons', 'ok': False,
-                       'reason': 'no free space to grow the weapon blocks'}]
+    pal_sizes = [(pc + len(new_pal)) * pes] if new_pal else []
+    if extra:
+        # as many as the map's free space holds, in plan order (_h3_reserve_most)
+        k, got = _h3_reserve_most(m, N * wes, wes, len(extra), pal_sizes)
+        if got is None:
+            got = _h3_reserve(m, pal_sizes) if pal_sizes else []
+            if got is None:
+                return out + [{'effect': 'spawned weapons', 'ok': False,
+                               'reason': 'no free space to grow the weapon blocks'}]
+            got = [None] + got
+        for it in extra[k:]:
+            out.append({'effect': 'spawned weapons', 'field': it[3], 'ok': False,
+                        'reason': 'no free space to grow the weapon block for it, at %s'
+                                  % it[4]})
+        extra = extra[:k]
+    else:
+        got = _h3_reserve(m, pal_sizes) if pal_sizes else []
+        if got is None:
+            return out + [{'effect': 'spawned weapons', 'ok': False,
+                           'reason': 'no free space to grow the weapon palette'}]
+        got = [None] + got
     dest = got[0] if extra else base
     if new_pal:                          # palette first: placements reference it
         pdest = got[-1]
@@ -6390,7 +6453,7 @@ def _apply_spawn_weapons(m, game, spec, registry=None):
     radius = spec.get('radius')
     radius = 0.25 if radius is None else max(0.0, float(radius))
     weap_plug = registry.get('weap') if registry is not None else None
-    plan = []
+    plan, prio = [], []
     for gi, g in enumerate(groups):
         key = '%s%d' % (REACH_MARKER_PREFIX, gi + 1)
         anchor = anchors.get(key)
@@ -6434,8 +6497,12 @@ def _apply_spawn_weapons(m, game, spec, registry=None):
             plan.append((pi, pos, mask, short, key,
                          0 if loaded is None else int(loaded),
                          0 if total is None else int(total)))
+            prio.append((seat, gi))
     if not plan:
         return out
+    # Players ALTERNATE (each one's first weapon, then each one's second ...), so when
+    # the free space cannot hold the whole list the cut is shared, not all player 2's.
+    plan = [plan[i] for i in sorted(range(len(plan)), key=lambda i: prio[i])]
 
     # A template with a VALID Type, so appended elements inherit real Type / Source /
     # BSP Policy rather than guessed ones. Auto is only a tie-break -- the copy clears
@@ -6455,10 +6522,17 @@ def _apply_spawn_weapons(m, game, spec, registry=None):
         return out + [{'effect': 'spawned weapons', 'ok': False,
                        'reason': 'no weapon placement to use as a template'}]
 
-    got = _h3_reserve(m, [(N + len(plan)) * wes])
+    # As many as fit, not all-or-nothing: Infinity and Shutdown hold 32 new weapon
+    # placements but not 58, and asking for 58 used to place none (2026-11-27).
+    k, got = _h3_reserve_most(m, N * wes, wes, len(plan))
     if got is None:
         return out + [{'effect': 'spawned weapons', 'ok': False,
                        'reason': 'no free space to grow the weapon block'}]
+    for it in plan[k:]:
+        out.append({'effect': 'spawned weapons', 'field': it[3], 'ok': False,
+                    'reason': 'no free space to grow the weapon block for it (%d of %d '
+                              'fit)' % (k, len(plan))})
+    plan = plan[:k]
     dest = got[0]
     m.data[dest:dest + N * wes] = m.data[base:base + N * wes]
     uids = [m.u32(base + i * wes + _eq_offsets(game)['uid']) for i in range(N)]
@@ -7110,6 +7184,23 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
         groups = left
         if not any(groups):
             return out
+        # 4. What is still left is APPENDED -- at the player's OWN marker, ringed, the
+        #    way grenades already are. It used to fall through to the Player Starting
+        #    Location: with the cluster spent, player 2's pieces all landed "on spawn 1"
+        #    on Halo 4 (marker_placement_audit, 2026-11-27). A player without a marker
+        #    keeps that old fallback for everyone, so nobody's pieces are dropped.
+        if named:
+            pts = []
+            for gi in range(len(groups)):
+                slot = named.get('%s%d' % (REACH_MARKER_PREFIX, gi + 1))
+                if slot is None:
+                    pts.append(None)
+                    continue
+                e = _ib + slot * lay['items'][1]
+                pts.append((struct.unpack_from('<fff', m.data, e + _EQ_POS),
+                            _mask_get(m, e, game)))
+            if all(pts[gi] is not None for gi, g in enumerate(groups) if g):
+                points = pts
     eqo = _eq_offsets(game)
     ioff, ies = lay['items']
     poff, pes = lay['palette']
@@ -7194,7 +7285,8 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
         new_pal_idx[key] = pi
         return pi, True
 
-    plan = []                   # (pi, pos, mask, label, si, added, mode)
+    plan = []                   # (pi, pos, mask, label, bkey, added, mode)
+    prio = []                   # (target index, item index, player) per plan entry
     new_pal = []                # datums to append to the palette, in assignment order
     new_pal_idx = {}            # path key -> the palette index it will get
     used_weapons = set()        # weapon placements already used as a fallback drop
@@ -7286,7 +7378,8 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
                             'field': str(tag).rsplit('\\', 1)[-1], 'ok': True, 'skip': True,
                             'reason': f'no player starting location {si}'})
             continue
-        for bkey, base_pos, base_mask in targets:
+        for tj, (bkey, base_pos, base_mask) in enumerate(targets):
+            n0 = len(plan)
             for tag in items:
                 key = str(tag).replace('/', '\\').lower()
                 label = str(tag).rsplit('\\', 1)[-1]
@@ -7337,8 +7430,14 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
                     p = (base_pos[0] + rad * math.cos(ang),
                          base_pos[1] + rad * math.sin(ang), base_pos[2])
                     plan.append((pi, p, base_mask, label, bkey, added, 'start'))
+            tidx = {str(t).rsplit(chr(92), 1)[-1]: i for i, t in enumerate(items)}
+            prio += [(tj, tidx.get(plan[x][3], 0), si) for x in range(n0, len(plan))]
     if not plan:
         return out
+    # Players ALTERNATE, item by item at each drop point (point, item, player): if the
+    # free space cannot hold everything, the cut falls on the last points of BOTH
+    # players -- the shared drops -- and never on one player alone.
+    plan = [plan[i] for i in sorted(range(len(plan)), key=lambda i: prio[i])]
 
     # A template placement that already spawns on its own, so new elements inherit
     # valid Type / Source / BSP Policy instead of guessed values.
@@ -7369,13 +7468,17 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
                        'reason': 'no equipment placement to use as a template'}]
 
     # Reserve slack for both grown blocks in one run so neither clobbers the other.
-    items_need = (N + len(plan)) * ies
+    # As many as fit (_h3_reserve_most), in the plan's order -- not all-or-nothing.
     pal_need = (pc + len(new_pal)) * pes
-    sizes = [items_need] + ([pal_need] if new_pal else [])
-    got = _h3_reserve(m, sizes)
+    k, got = _h3_reserve_most(m, N * ies, ies, len(plan), [pal_need] if new_pal else [])
     if got is None:
         return out + [{'effect': 'starting equipment', 'ok': False,
-                       'reason': f'no free run of {sum(sizes)} bytes to relocate blocks'}]
+                       'reason': 'no free space to relocate the equipment blocks'}]
+    for it in plan[k:]:
+        out.append({'effect': 'starting equipment', 'field': it[3], 'ok': False,
+                    'reason': 'no free space to grow the equipment block for it (%d of %d '
+                              'fit)' % (k, len(plan))})
+    plan = plan[:k]
     dest = got[0]
 
     # --- grow the palette first (placements below reference its new indices) ---
