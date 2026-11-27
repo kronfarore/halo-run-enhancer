@@ -1,0 +1,13 @@
+marker_placement_audit 2026-11-27 18:01 (in memory, nothing written)
+====================================================================================================
+Halo 4 -- 29 weapons, 9 equipment, 3 grenade types per player
+  m10_crash      markers P1:1 P2:2              weapons 28/29   equipment 9/9   grenades 3/3   [27s]
+  m020           markers P1:1 P2:2              weapons 28/29   equipment 9/9   grenades 3/3   [59s]
+  m30_cryptum    markers P1:1 P2:2              weapons 29/29   equipment 9/9   grenades 3/3   [32s]
+  m60_rescue     markers P1:1 P2:2              weapons 28/29   equipment 9/9   grenades 3/3   [41s]
+  m40_invasion   markers P1:1 P2:2              weapons 28/29   equipment 9/9   grenades 3/3   [34s]
+  m70_liftoff    markers P1:1 P2:2              weapons 28/29   equipment 9/9   grenades 3/3   [39s]
+  m80_delta      markers P1:1 P2:2              weapons 28/29   equipment 9/9   grenades 3/3   [33s]
+  m90_sacrifice  markers P1:1 P2:2              weapons 28/29   equipment 9/9   grenades 3/3   [29s]
+  MISSES:
+    weapons   Focus Rifle                not in this level weapon palette                             on m10_crash, m020, m60_rescue, m40_invasion, m70_liftoff, m80_delta, m90_sacrifice
