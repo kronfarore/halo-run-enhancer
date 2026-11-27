@@ -357,6 +357,20 @@ three cards, Blacklist replacing one, two picks, the round's end). As built:
 
 ## 9. Options page "Equipment lines"
 
+**Phase 4 DONE 2026-11-27** (`python sprint_toolkit/equipment_lines_options_check.py`:
+offscreen dialog with the real app stylesheet, rendered and looked at). As built:
+- The cell checklist lists `line_game_items(db, game)` (halo.json only, instant), not
+  `level_equipment`, which may read maps. It is the same set validation accepts.
+- An ODST cell with no own key reads "↳ <Halo 3 items>". Its checklist has a "Same as
+  Halo 3" box: ticked, the key is removed and the cell follows Halo 3 again.
+- Ticked items keep their order; new ones go last, since the first is what a held item
+  becomes.
+- Warnings appear live under the table. Those found when loading the saved table say
+  "When loaded: ...". `values()` saves the validated table.
+- The refund share snaps to steps of 10, halves up (35 -> 40).
+- The page's own dark-theme rules: the checklist dialog styles its list, items,
+  indicators and buttons itself.
+
 A new navigation page after "Loadout", with two group boxes.
 
 **"Equipment upgrade lines"**

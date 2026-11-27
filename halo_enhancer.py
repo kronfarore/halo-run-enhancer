@@ -2603,7 +2603,7 @@ def validate_lines(db, lines):
                     mine.add(k)
             stages[g] = cell
         if not mine:
-            warn.append('Line "%s" has no item left, removed.' % name)
+            warn.append('Line "%s" has no item, so it is removed.' % name)
             continue
         for k in mine:
             used[k] = name
@@ -12247,8 +12247,8 @@ class OptionsDialog(QDialog):
 
         # Pre-create the pages so the nav order is the designed one rather than
         # whichever group happens to be built first.
-        for _name in ['Run rules', 'Skulls', 'Loadout', 'Co-op', 'Abilities', 'Patching',
-                      'Bugfixes', 'Interface', 'Housekeeping']:
+        for _name in ['Run rules', 'Skulls', 'Loadout', 'Equipment lines', 'Co-op',
+                      'Abilities', 'Patching', 'Bugfixes', 'Interface', 'Housekeeping']:
             self._opt_page(_name)
 
         # ---- Map archive: first, because it is about protecting what everything
@@ -12985,6 +12985,9 @@ class OptionsDialog(QDialog):
         _sync_denied_sub()
         eform.addRow("    ↳ Denied → enemies:", self.denied_as_enemy_cb)
         self._opt_page("Loadout").addWidget(equip_g)
+
+        # ---- Equipment lines: its own page, right after Loadout ----
+        self._build_equipment_lines_page()
 
         # ---- Coop (#6) ----
         # A form row is only obviously inert if its LABEL greys out too — Qt disables the
@@ -15745,8 +15748,289 @@ class OptionsDialog(QDialog):
         self._ports_volume[(game, weapon)] = sp
         return lbl, sp
 
+    # ---- Equipment lines page (EQUIPMENT_LINES_PLAN.md section 9) -------------------
+    _EL_SHORT = {'Halo 3: ODST': 'ODST', 'Halo Reach': 'Reach'}
+
+    def _el_db(self):
+        """The card database: the main window's, or (a dialog opened on its own) one
+        read for this dialog."""
+        db = getattr(self.parent(), 'db', None) if self.parent() else None
+        if db is None:
+            db = getattr(self, '_el_own_db', None)
+            if db is None:
+                db = self._el_own_db = ModifierDatabase()
+        return db
+
+    def _build_equipment_lines_page(self):
+        db = self._el_db()
+        page = self._opt_page("Equipment lines")
+        lines_g = QGroupBox("Equipment upgrade lines")
+        lv = QVBoxLayout(lines_g)
+        self.el_enabled_cb = QCheckBox("Use equipment upgrade lines")
+        self.el_enabled_cb.setChecked(bool(CONFIG.get('equipment_lines_enabled')))
+        self.el_enabled_cb.setToolTip(
+            "On: the table's lines apply, and holding ANY item of a line keeps every item "
+            "of that line out of the offers, for both players.\n"
+            "Off: only the built-in Sprint and Camo lines carry an item into the next "
+            "game, and the offers are the usual ones (only the exact items held are "
+            "taken).")
+        lv.addWidget(self.el_enabled_cb)
+        intro = QLabel(
+            "A line is ONE item across the games: entering a new game, an item a player "
+            "holds becomes the line's item there, with that game's cards. A '-' cell is a "
+            "gap: the item stays, does nothing there, and continues at the next game that "
+            "has one. With two items in a cell, a held item becomes the first. Sprint and "
+            "Camo are built in and always on. Click a cell to choose its items.")
+        intro.setWordWrap(True)
+        intro.setStyleSheet("color: #9fb3c8;")
+        lv.addWidget(intro)
+        self.el_table = QTableWidget(0, 1 + len(LINE_GAMES))
+        self.el_table.setHorizontalHeaderLabels(
+            ['Line'] + [self._EL_SHORT.get(g, g) for g in LINE_GAMES])
+        self.el_table.verticalHeader().setVisible(False)
+        self.el_table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.el_table.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.el_table.setEditTriggers(QAbstractItemView.DoubleClicked
+                                      | QAbstractItemView.EditKeyPressed)
+        hh = self.el_table.horizontalHeader()
+        hh.setSectionResizeMode(QHeaderView.Stretch)
+        hh.setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        self.el_table.setMinimumHeight(330)
+        self.el_table.itemChanged.connect(self._el_name_changed)
+        lv.addWidget(self.el_table)
+        btns = QHBoxLayout()
+        for text, tip, slot in (
+                ("Add line", "A new, empty line at the bottom. Name it (double-click the "
+                 "name) and click its cells to choose the items.", self._el_add),
+                ("Remove line", "Remove the selected line. Sprint and Camo are built in "
+                 "and cannot be removed.", self._el_remove),
+                ("Restore defaults", "Put back the seven default lines (Overshield, "
+                 "Regeneration, Shield, Cover, Mobility, Decoy, Turret).", self._el_restore)):
+            b = QPushButton(text)
+            b.setToolTip(tip)
+            b.clicked.connect(slot)
+            btns.addWidget(b)
+        btns.addStretch(1)
+        lv.addLayout(btns)
+        self.el_warn = QLabel("")
+        self.el_warn.setWordWrap(True)
+        self.el_warn.setStyleSheet("color: #d0a24a;")
+        lv.addWidget(self.el_warn)
+        page.addWidget(lines_g, order=10)
+
+        ref_g = QGroupBox("Refunds")
+        rform = QFormLayout(ref_g)
+        rform.setLabelAlignment(Qt.AlignRight)
+        tip = ("When a held item becomes its line's next item, the picks you spent on its "
+               "cards that stop working in the new game are refunded at this share, "
+               "rounded to the nearest pick, halves up (at 50 %: 1 pick gives 1, 2 give "
+               "1, 3 give 2). Each refunded pick is spent in an EQUIPMENT REFINEMENT "
+               "round: three cards of the new item to choose from, no enemy card. "
+               "Player 1 goes item by item, then player 2. Refunds you do not spend "
+               "before the next game are lost. Only Next level into a later game "
+               "refunds; Sprint and Camo count too.")
+        self.el_refund_cb = QCheckBox("Refund equipment picks when an item upgrades")
+        self.el_refund_cb.setChecked(bool(CONFIG.get('equipment_refund_enabled')))
+        self.el_refund_cb.setToolTip(tip)
+        rform.addRow("Refunds:", self.el_refund_cb)
+        self.el_refund_pct = QSpinBox()
+        self.el_refund_pct.setRange(10, 100)
+        self.el_refund_pct.setSingleStep(10)
+        self.el_refund_pct.setSuffix(" %")
+        self.el_refund_pct.setMaximumWidth(110)
+        self.el_refund_pct.setValue(int(CONFIG.get('equipment_refund_percent', 50) or 50))
+        self.el_refund_pct.setToolTip(tip)
+        rform.addRow("Refund share:", self.el_refund_pct)
+
+        def _sync_refund(_=False):
+            on = self.el_refund_cb.isChecked()
+            self.el_refund_pct.setEnabled(on)
+            lab = rform.labelForField(self.el_refund_pct)
+            if lab is not None:
+                lab.setEnabled(on)
+        self.el_refund_cb.toggled.connect(_sync_refund)
+        _sync_refund()
+        page.addWidget(ref_g, order=20)
+
+        raw = CONFIG.get('equipment_lines')
+        clean, warn = validate_lines(db, default_equipment_lines() if raw is None else raw)
+        self._el_rows = clean
+        self._el_load_warn = ['When loaded: ' + w for w in warn]
+        self._el_refresh()
+
+    def _el_cell_text(self, line, game):
+        stages = line.get('stages') or {}
+        if game == 'Halo 3: ODST' and game not in stages:
+            inner = ' + '.join(stages.get('Halo 3') or []) or '-'
+            return '↳ ' + inner, "Follows the Halo 3 cell until you edit it."
+        return ' + '.join(stages.get(game) or []) or '-', ''
+
+    def _el_refresh(self):
+        t = self.el_table
+        t.blockSignals(True)
+        try:
+            t.setRowCount(0)
+            rows = list(BUILTIN_LINES) + list(self._el_rows)
+            nb = len(BUILTIN_LINES)
+            for r, line in enumerate(rows):
+                t.insertRow(r)
+                name = QTableWidgetItem(line.get('name') or '')
+                if r < nb:
+                    name.setFlags(Qt.ItemIsEnabled)
+                    name.setForeground(QBrush(QColor('#8a8a8a')))
+                    name.setToolTip("Built in: always on, not editable.")
+                else:
+                    name.setFlags(Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable)
+                    name.setToolTip("Double-click to rename.")
+                t.setItem(r, 0, name)
+                for c, g in enumerate(LINE_GAMES, 1):
+                    text, tip = self._el_cell_text(line, g)
+                    b = QPushButton(text)
+                    b.setToolTip(tip or ("Built in." if r < nb else
+                                         "Click to choose the %s item(s) of this line." % g))
+                    b.setEnabled(r >= nb)
+                    if r >= nb:
+                        b.clicked.connect(lambda _=False, i=r - nb, gg=g: self._el_edit_cell(i, gg))
+                    t.setCellWidget(r, c, b)
+        finally:
+            t.blockSignals(False)
+        self._el_validate()
+
+    def _el_validate(self):
+        clean, warn = validate_lines(self._el_db(), self._el_rows)
+        msgs = list(getattr(self, '_el_load_warn', None) or []) + warn
+        self.el_warn.setText('\n'.join('⚠ ' + m for m in msgs))
+        return clean
+
+    def _el_used_elsewhere(self, i):
+        """{item: line name} for every item a built-in line or ANOTHER table row holds."""
+        db = self._el_db()
+        used = {}
+        others = list(BUILTIN_LINES) + [l for j, l in enumerate(self._el_rows) if j != i]
+        for line in others:
+            for g in LINE_GAMES:
+                for it in _line_cell(line, g):
+                    used.setdefault(_line_canon(db, it), line.get('name'))
+        return used
+
+    def _el_edit_cell(self, i, game):
+        """The checklist of a cell: the game's items, those of other lines disabled."""
+        db = self._el_db()
+        line = self._el_rows[i]
+        stages = line.setdefault('stages', {})
+        follows = game == 'Halo 3: ODST' and game not in stages
+        current = list(stages.get('Halo 3') or []) if follows else list(stages.get(game) or [])
+        used = self._el_used_elsewhere(i)
+        dlg = QDialog(self)
+        dlg.setWindowTitle("%s line · %s" % (line.get('name'), game))
+        dlg.setStyleSheet(
+            "QDialog { background-color: #141414; } QLabel, QCheckBox { color: #e0e0e0; } "
+            "QListWidget { background-color: #1a1a1a; color: #e0e0e0; "
+            "border: 1px solid #3a3a3a; } "
+            "QListWidget::item { color: #e0e0e0; padding: 3px; } "
+            "QListWidget::item:disabled { color: #5c5c5c; } "
+            "QListWidget::indicator { width: 14px; height: 14px; border: 1px solid #5a5a5a; "
+            "background-color: #1a1a1a; } "
+            "QListWidget::indicator:checked { background-color: #4CAF50; "
+            "border: 1px solid #4CAF50; } "
+            "QListWidget::indicator:disabled { border: 1px solid #333333; "
+            "background-color: #141414; } "
+            "QPushButton { background-color: #2a2a2a; color: #e0e0e0; "
+            "border: 1px solid #3a3a3a; border-radius: 3px; padding: 4px 10px; }")
+        v = QVBoxLayout(dlg)
+        head = QLabel("The %s item(s) of the %s line. With two, a held item becomes the "
+                      "first ticked one; an item another line uses is greyed out."
+                      % (game, line.get('name')))
+        head.setWordWrap(True)
+        v.addWidget(head)
+        same = None
+        if game == 'Halo 3: ODST':
+            same = QCheckBox("Same as Halo 3")
+            same.setChecked(follows)
+            v.addWidget(same)
+        lst = QListWidget()
+        names = list(line_game_items(db, game))
+        names += [x for x in current if x not in names]
+        for nm in names:
+            it = QListWidgetItem(nm if nm not in used else "%s  (in the %s line)" % (nm, used[nm]))
+            it.setData(Qt.UserRole, nm)
+            if nm in used:
+                it.setFlags(Qt.ItemIsUserCheckable)          # not enabled
+                it.setCheckState(Qt.Unchecked)
+            else:
+                it.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
+                it.setCheckState(Qt.Checked if nm in current else Qt.Unchecked)
+            lst.addItem(it)
+        v.addWidget(lst, 1)
+        if same is not None:
+            same.toggled.connect(lambda on: lst.setEnabled(not on))
+            lst.setEnabled(not follows)
+        bb = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        bb.accepted.connect(dlg.accept)
+        bb.rejected.connect(dlg.reject)
+        v.addWidget(bb)
+        dlg.resize(360, 420)
+        self._el_last_checklist = (dlg, lst, same)      # the offscreen check drives it
+        if dlg.exec() != QDialog.Accepted:
+            return
+        self._el_apply_checklist(i, game, lst, same)
+
+    def _el_apply_checklist(self, i, game, lst, same):
+        stages = self._el_rows[i].setdefault('stages', {})
+        if same is not None and same.isChecked():
+            stages.pop(game, None)
+        else:
+            ticked = [lst.item(k).data(Qt.UserRole) for k in range(lst.count())
+                      if lst.item(k).checkState() == Qt.Checked
+                      and lst.item(k).flags() & Qt.ItemIsEnabled]
+            before = list(stages.get(game) or [])
+            stages[game] = ([x for x in before if x in ticked]
+                            + [x for x in ticked if x not in before])
+        self._el_refresh()
+
+    def _el_name_changed(self, item):
+        nb = len(BUILTIN_LINES)
+        r = item.row()
+        if item.column() != 0 or r < nb:
+            return
+        self._el_rows[r - nb]['name'] = item.text().strip()
+        self._el_validate()
+
+    def _el_add(self):
+        taken = {l.get('name', '').lower() for l in list(BUILTIN_LINES) + self._el_rows}
+        name, n = "New line", 2
+        while name.lower() in taken:
+            name, n = "New line %d" % n, n + 1
+        self._el_rows.append({'name': name, 'stages': {}})
+        self._el_refresh()
+        r = len(BUILTIN_LINES) + len(self._el_rows) - 1
+        self.el_table.selectRow(r)
+
+    def _el_remove(self):
+        r = self.el_table.currentRow()
+        nb = len(BUILTIN_LINES)
+        if r < nb:
+            self.el_warn.setText("⚠ Select one of the table's own lines -- Sprint and Camo "
+                                 "are built in.")
+            return
+        del self._el_rows[r - nb]
+        self._el_refresh()
+
+    def _el_restore(self):
+        self._el_rows = default_equipment_lines()
+        self._el_load_warn = []
+        self._el_refresh()
+
+    def _equipment_lines_values(self):
+        # steps of 10, halves up (round() would take 35 to 40 but 25 to 20)
+        pct = int(self.el_refund_pct.value() / 10.0 + 0.5) * 10
+        return {'equipment_lines_enabled': self.el_enabled_cb.isChecked(),
+                'equipment_lines': self._el_validate(),
+                'equipment_refund_enabled': self.el_refund_cb.isChecked(),
+                'equipment_refund_percent': max(10, min(100, pct))}
+
     def values(self):
-        return {
+        return {**self._equipment_lines_values(),
             'target_difficulty': self.diff_combo.currentData(),   # internal slot name
             'remove_single_game_mods': self.single_game_cb.isChecked(),
             'remove_boss_mods': not self._user_boss_cards,  # inverted UI ("Add Boss card"); boss_mods_removed() ORs in single-game at runtime
