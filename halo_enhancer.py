@@ -2347,6 +2347,11 @@ def _is_allied_elite_mod(mod, game):
     played ODST session."""
     if str(game).strip() not in ELITE_ALLY_GAMES:
         return False
+    # Armed cards are not an enemy tuning: they hand the species a weapon, which means
+    # as much for allied Elites as for hostile ones (user, 2026-11-27: dropping them was
+    # a mistake). Offer and patch both ask here, so both keep them.
+    if any(isinstance(t, dict) and t.get('enemy_weapon') for t in (mod.get('targets') or [])):
+        return False
     if mod.get('enemy') == 'Elite':
         return True
     who = mod.get('boss') or ''
