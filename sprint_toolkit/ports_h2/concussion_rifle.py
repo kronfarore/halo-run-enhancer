@@ -611,6 +611,14 @@ PORT = {
     'firing_profile': {'from_game': 'Halo Reach', 'from_map': r'haloreach\maps\m10.map',
                        'from_weapon': CR + r'\concussion_rifle',
                        'donor_weapon': FC + r'\flak_cannon',
+                       # THE ARC (Armed boot 3, user: 'They do fire ballistically. Is that intended?'): yes, Reach's bolt
+                       # carries 'AI must use ballistic aiming' (gravity 0.25). Reach keeps the arc on the WEAPON
+                       # (ballistic arcing fraction bounds 0 / 0, '0 = low, fast, 1 = high, slow'); Halo 2 on the
+                       # character's weapon entry with the scale REVERSED ('0 = high, slow, 1 = low, fast'), so the copied
+                       # 0 / 0 was Halo 2's steepest lob -> 1 / 1 (Halo 2's Scarab gun and gun-tower mortar; its Brute
+                       # Shot 0.7 -> 0.9). Reach's AI velocity scales (normal 0.7 / heroic 0.9 / legendary 1.1 x the
+                       # bolt's speed) have no Halo 2 field
+                       'set': ['Ballistic Fraction Bounds=1.0', 'Ballistic Fraction Bounds Max=1.0'],
                        'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
     # BALANCED (step 4a, user 2026-11-26: reports/h2_concussion_rifle_4a.md, the FUEL ROD ratio). The table
     # (balance_port.py "Concussion Rifle" "Flak Cannon" "Halo Reach" "Halo 2") reads the maps' values (rate 30, the
