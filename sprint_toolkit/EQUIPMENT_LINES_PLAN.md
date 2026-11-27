@@ -212,6 +212,29 @@ booted). None of the 11 saved runs is affected by #2 or #4.
 
 ## 6. Transitions (entering a new game)
 
+**Phase 2 DONE 2026-11-27** (checks 9-13 of `equipment_lines_check.py`, plus an offscreen
+GUI smoke test: manual change to Halo 3, Next level from ODST into Reach). As built:
+- `apply_line_transitions(db, state, game, from_game, via)` runs in `on_game_changed`
+  for every game change. Next level marks its own change `via='next_level'`
+  (`_line_via`); a hand-made one is `'manual'`. Refunds (Phase 3) hook in here.
+- Rename rule: held items the new cell has are kept (Jammer and Superflare both stay in
+  Halo 3/ODST); otherwise they become the cell's first item, merged into one. The
+  primary weapon follows.
+- `line_log` entries: `{player, line, game, from_game, from, to, via, after_round,
+  stranded, refund}`. A gap gets ONE entry per dormant stretch (Sprint sits out Halo 3
+  and ODST: one entry). `stranded` and `refund` stay None until Phase 3.
+- Offers: `drop_weapons_taken` and `ability_offer_pool` treat every item of a held line
+  as taken, for both players. Halo 4 `holder` counts any Sprint-line item.
+- Display: `arsenal_text` (dormant items read "(inactive in <game>)"; the tooltip traces
+  each line and names the next game where a dormant item comes back); `line_entry_text`
+  lines sit in the history after the round they followed, and in the status line.
+- **For Phase 3:** a line can keep its item's NAME and still change cards. Auto Turret
+  ODST -> Halo 4 keeps Map Presence, Projectiles Per Shot, Turret Damage and Vitality,
+  but its other ODST cards stop applying. So refunds are computed on every forward
+  game change of a held line, not only on renames.
+- Not carried over: `weapon_card_misses` counters keyed by the old name (the renamed
+  item starts its pity count fresh).
+
 **Hooks:**
 - The game-change branch of `on_next_level` runs transitions with refunds.
 - `on_game_changed` (a manual change) runs the rename only.

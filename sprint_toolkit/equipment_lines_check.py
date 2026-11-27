@@ -32,6 +32,143 @@ def keys(mods):
     return {he.line_card_key(m) for m in mods}
 
 
+def walk(db, state, games, via='next_level', start=None):
+    """Enter each game in turn, as Next level does; {game: (p1 items, p2 items, entries)}."""
+    out, prev = {}, start
+    for g in games:
+        added = he.apply_line_transitions(db, state, g, from_game=prev, via=via)
+        out[g] = (list(state.player1_weapons), list(state.player2_weapons), added)
+        prev = g
+    return out
+
+
+def phase2(db):
+    """Transitions, the offer rule, display (plan section 10, Phase 2)."""
+    S, C = he.SPRINT_ITEM, he.CAMO_ITEM
+    he.CONFIG.update({'equipment_lines_enabled': True, 'equipment_lines': None,
+                      'remove_superflare_jammer': False,
+                      'remove_invincibility_invisibility': False,
+                      'sprint_feature': True, 'h4_sprint_mode': 'restore'})
+
+    print('\n9. walk Halo 1 -> Halo 4 (Next level)')
+    st = he.RunState()
+    st.player1_weapons, st.player1_weapon = ['Assault Rifle', C], 'Assault Rifle'
+    st.player2_weapons, st.player2_weapon = [S, 'Pistol'], S
+    w = walk(db, st, ['Halo 1', 'Halo 2', 'Halo 3'])
+    check(w['Halo 1'][:2] == (['Assault Rifle', C], [S, 'Pistol']) and not w['Halo 1'][2]
+          and not w['Halo 2'][2], 'Halo 1 / 2: nothing changes, nothing logged')
+    check(w['Halo 3'][0] == ['Assault Rifle', 'Invisibility'], 'H3: 👁 Camo -> Invisibility')
+    check(w['Halo 3'][1] == [S, 'Pistol']
+          and sorted((e['player'], str(e['to'])) for e in w['Halo 3'][2])
+          == [('player1', 'Invisibility'), ('player2', 'None')],
+          'H3: ⚡ Sprint stays, dormant (one gap entry)')
+    # Halo 3 drafts: Decoy x2 (P1), Turret + Mobility (P2), Power Drain (no line)
+    st.player1_weapons += ['Jammer', 'Superflare', 'Power Drain']
+    st.player2_weapons += ['Auto Turret', 'Grav Lift']
+    st.rounds.append({'player1': {'weapon': 'Jammer', 'mod': None, 'gained_weapon': None},
+                      'player2': {'weapon': 'Grav Lift', 'mod': None, 'gained_weapon': None},
+                      'enemy1': None, 'enemy2': None, 'wildcard': None,
+                      'boss1': None, 'boss2': None})
+    w = walk(db, st, ['Halo 3: ODST', 'Halo Reach', 'Halo 4'], start='Halo 3')
+    check(not w['Halo 3: ODST'][2] and w['Halo 3: ODST'][0][-3:] == ['Jammer', 'Superflare',
+                                                                     'Power Drain'],
+          'ODST: nothing changes; Sprint still dormant, no second entry')
+    check(w['Halo Reach'][0] == ['Assault Rifle', 'Active Camouflage', 'Hologram', 'Power Drain'],
+          'Reach P1: Invisibility -> Active Camouflage; Jammer + Superflare -> ONE Hologram; '
+          'Power Drain (no line) kept')
+    check(w['Halo Reach'][1] == ['Sprint', 'Pistol', 'Auto Turret', 'Jet Pack']
+          and st.player2_weapon == 'Sprint',
+          'Reach P2: ⚡ Sprint -> Sprint (primary follows), Grav Lift -> Jet Pack, '
+          'Auto Turret dormant')
+    r = {(e['player'], e['line']): e for e in w['Halo Reach'][2]}
+    check(r[('player1', 'Decoy')]['from'] == ['Jammer', 'Superflare']
+          and r[('player2', 'Turret')]['to'] is None and r[('player1', 'Decoy')]['after_round'] == 1
+          and all(e['via'] == 'next_level' and e['from_game'] == 'Halo 3: ODST'
+                  for e in w['Halo Reach'][2]),
+          'Reach log: merge, gap, after_round, via and from_game recorded')
+    check(not w['Halo 4'][2] and w['Halo 4'][1] == ['Sprint', 'Pistol', 'Auto Turret', 'Jet Pack'],
+          'H4: nothing renamed (Auto Turret active again, Sprint stays Sprint)')
+    for e in st.line_log:
+        print('       ' + he.line_entry_text(e))
+
+    print('\n10. display')
+    t1, tip1 = he.arsenal_text(db, st, 'player1', 'Halo 4')
+    check(t1 == 'Assault Rifle, Active Camouflage, Hologram, Power Drain'
+          and 'Camo line: 👁 Camo (Halo 2) -> Invisibility (Halo 3) -> Active Camouflage '
+              '(Halo Reach)' in tip1,
+          'H4 P1 tooltip traces the Camo line: %r' % tip1.split('\n')[0])
+    t2, tip2 = he.arsenal_text(db, st, 'player2', 'Halo Reach')
+    check('Auto Turret (inactive in Halo Reach)' in t2
+          and 'Turret line: Auto Turret; inactive in Halo Reach; becomes Auto Turret in Halo 4'
+          in tip2, 'Reach P2: Auto Turret marked inactive, tooltip names Halo 4')
+    st3 = he.RunState()
+    st3.player2_weapons = [S]
+    t3, tip3 = he.arsenal_text(db, st3, 'player2', 'Halo 3')
+    check(t3 == '⚡ Sprint (inactive in Halo 3)' and 'becomes Sprint in Halo Reach' in tip3,
+          'H3: ⚡ Sprint inactive, becomes Sprint in Reach')
+
+    print('\n11. offers: a held line is taken for both players')
+    pool = ['Active Camouflage', 'Drop Shield', 'Jet Pack', 'Armor Lock', 'Hologram', 'DMR']
+    st4 = he.RunState()
+    st4.player1_weapons = ['Invisibility']            # carried, not renamed yet
+    st4.player2_weapons = ['Grav Lift']
+    check(he.drop_weapons_taken(db, pool, st4) == ['Drop Shield', 'Armor Lock', 'Hologram', 'DMR'],
+          'Invisibility held -> Active Camouflage taken; Grav Lift -> Jet Pack taken')
+    he.CONFIG['equipment_lines_enabled'] = False
+    check(he.drop_weapons_taken(db, pool, st4) == ['Drop Shield', 'Jet Pack', 'Armor Lock',
+                                                   'Hologram', 'DMR'],
+          'table off: only the built-in Camo line counts')
+    he.CONFIG['equipment_lines_enabled'] = True
+    he.CONFIG.update({'sprint_as_card': True, 'sprint_start_with': False,
+                      'sprint_need_weapon': False,
+                      'abilities_offered': ['sprint', 'overshield', 'regeneration', 'camo']})
+    st5 = he.RunState()
+    st5.player1_weapons = ['Assault Rifle', 'Invisibility']
+    st5.player2_weapons = ['Pistol']
+    got = he.ability_offer_pool(db, 'Halo 1', st5, 'player2')
+    check(C not in got and S in got, 'H1: Invisibility held -> 👁 Camo not offered (%s)' % got)
+
+    print('\n12. Halo 4 holder, gaps and denied items, backwards, table off')
+    he.CONFIG['h4_sprint_mode'] = 'holder'
+    pm = db.get_player_modifiers_filtered([S], set(), 'Halo 4')
+    check(any(m.get('equipment') == 'Sprint' for m in pm), 'holder: ⚡ Sprint holder gets Sprint cards')
+    he.CONFIG['h4_sprint_mode'] = 'off'
+    st6 = he.RunState()
+    st6.player1_weapons = ['Sprint']
+    w = walk(db, st6, ['Halo 4'], start='Halo Reach')
+    check(w['Halo 4'][0] == ['Sprint'] and w['Halo 4'][2][0]['to'] is None,
+          'h4_sprint_mode off: Sprint dormant in Halo 4')
+    he.CONFIG['h4_sprint_mode'] = 'restore'
+    he.CONFIG['remove_superflare_jammer'] = True
+    st7 = he.RunState()
+    st7.player1_weapons = ['Hologram', 'Active Camouflage', 'Jet Pack', 'Sprint']
+    w = walk(db, st7, ['Halo 3'], via='manual', start='Halo Reach')
+    check(w['Halo 3'][0] == ['Hologram', 'Invisibility', 'Grav Lift', 'Sprint'],
+          'backwards to H3, Jammer/Superflare denied: Hologram + Sprint dormant, '
+          'Camo and Mobility follow')
+    check(all(e['via'] == 'manual' for e in w['Halo 3'][2]), 'manual change logged as manual')
+    he.CONFIG['remove_superflare_jammer'] = False
+    w = walk(db, st7, ['Halo 1'], via='manual', start='Halo 3')
+    check(w['Halo 1'][0] == ['Hologram', C, 'Grav Lift', S],
+          'on to H1: Camo -> 👁 Camo, Sprint -> ⚡ Sprint, the rest dormant')
+    he.CONFIG['equipment_lines_enabled'] = False
+    st8 = he.RunState()
+    st8.player1_weapons = ['Grav Lift', 'Invisibility']
+    w = walk(db, st8, ['Halo Reach'], start='Halo 3: ODST')
+    check(w['Halo Reach'][0] == ['Grav Lift', 'Active Camouflage'],
+          'table off: Grav Lift stays, the built-in Camo line still renames')
+    he.CONFIG['equipment_lines_enabled'] = True
+
+    print('\n13. line_log is saved with the run')
+    with contextlib.redirect_stdout(io.StringIO()):
+        back = he.RunState.from_dict(st.to_dict())
+    check(back.line_log == st.line_log and back.player2_weapons == st.player2_weapons,
+          '.run round trip keeps line_log (%d entries) and the renamed arsenal' % len(st.line_log))
+    with contextlib.redirect_stdout(io.StringIO()):
+        old = he.RunState.from_dict({'phase': 'player1_turn', 'rounds': []})
+    check(old.line_log == [], 'an old run loads with an empty line_log')
+
+
 def main():
     he.load_settings()
     with contextlib.redirect_stdout(io.StringIO()):
@@ -197,6 +334,8 @@ def main():
     check(new.options.get('equipment_lines_enabled') is True
           and new.options.get('equipment_lines') == he.CONFIG.get('equipment_lines'),
           'a new run round-trips its lines options')
+
+    phase2(db)
 
     he.CONFIG.clear()
     he.CONFIG.update(saved)

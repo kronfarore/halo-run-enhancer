@@ -2130,7 +2130,13 @@ def drop_weapons_taken(db, weapons, run_state):
     held = set(run_state.weapons_for('player1')) | set(run_state.weapons_for('player2'))
     if not held:
         return list(weapons)
-    return [w for w in weapons if w not in held]
+    # Equipment upgrade lines: holding ANY item of a line keeps EVERY item of that line
+    # out of every offer, for both players (plan decision 11) -- a player carrying
+    # Invisibility into Reach holds the Camo line, so Active Camouflage is taken.
+    idx = line_index(db) if db is not None else {}
+    lines = held_line_names(db, run_state, idx=idx) if idx else set()
+    return [w for w in weapons if w not in held
+            and not (lines and idx.get(_line_canon(db, w)) in lines)]
 
 
 def ability_offer_pool(db, game, run_state, player=None):
@@ -2160,8 +2166,12 @@ def ability_offer_pool(db, game, run_state, player=None):
             run_state.weapons_for('player1') + run_state.weapons_for('player2')
             if is_ability_item(w)}
     offered = CONFIG.get('abilities_offered') or ['sprint']
+    # an ability whose line someone holds is taken, as in drop_weapons_taken
+    idx = line_index(db) if db is not None else {}
+    lines = held_line_names(db, run_state, idx=idx) if idx else set()
     return [item for item, ab in ABILITY_ITEMS.items()
-            if ab in offered and not (ab in ABILITY_ONE_PER_RUN and ab in held)]
+            if ab in offered and not (ab in ABILITY_ONE_PER_RUN and ab in held)
+            and idx.get(item) not in lines]
 
 
 def card_metrics():
@@ -2713,6 +2723,150 @@ def line_cards(db, line, game):
                     and m not in out):
                 out.append(m)
     return out
+
+
+def line_index(db):
+    """{item: line name} over every active line, for the offer rule and the display."""
+    idx = {}
+    for line in active_lines(db):
+        for g in LINE_GAMES:
+            for it in _line_cell(line, g):
+                idx.setdefault(_line_canon(db, it), line['name'])
+    return idx
+
+
+def held_line_names(db, run_state, players=('player1', 'player2'), idx=None):
+    """The lines whose items these players hold (any game's item of the line)."""
+    if db is None or run_state is None:
+        return set()
+    idx = line_index(db) if idx is None else idx
+    out = set()
+    for p in players:
+        for w in run_state.weapons_for(p) or []:
+            name = idx.get(_line_canon(db, w))
+            if name:
+                out.add(name)
+    return out
+
+
+def _replace_line_items(state, player, held, new):
+    """Swap a player's `held` items of one line for `new`, at the place of the first
+    held one, every other pick in place. The primary weapon follows."""
+    lst = state.weapons_for(player)
+    out, placed = [], False
+    for w in lst:
+        if w in held:
+            if not placed:
+                out.extend(x for x in new if x not in out)
+                placed = True
+            continue
+        if w not in out:
+            out.append(w)
+    lst[:] = out
+    attr = 'player1_weapon' if player == 'player1' else 'player2_weapon'
+    if getattr(state, attr) not in out:
+        setattr(state, attr, out[0] if out else None)
+
+
+def apply_line_transitions(db, state, game, from_game=None, via='manual'):
+    """Entering `game`: every held item of an active line becomes the line's item there
+    (EQUIPMENT_LINES_PLAN.md section 6, steps 1, 2 and 4; refunds are Phase 3).
+
+    Per player and line:
+    - a gap (no item there, or every item switched off): the items stay, dormant;
+    - held items the game's cell has are kept (Jammer and Superflare both stay in
+      Halo 3); otherwise they are replaced by the cell's FIRST item, two held items of
+      one line collapsing into one (Jammer + Superflare -> one Hologram);
+    - each change, and each newly dormant line, is one `line_log` entry:
+      {player, line, game, from_game, from: [items], to: item | None, via, after_round,
+      stranded, refund} -- `stranded` / `refund` are filled by the refunds (Phase 3).
+    Runs for a manual game change too (via 'manual'), forwards or backwards, so the
+    arsenal always shows the current game's item of the line (decision 13).
+    Returns the new log entries."""
+    if db is None or state is None or game not in LINE_GAMES:
+        return []
+    log = getattr(state, 'line_log', None)
+    if log is None:
+        log = state.line_log = []
+    added = []
+    for line in active_lines(db):
+        cells = {_line_canon(db, x) for g in LINE_GAMES for x in _line_cell(line, g)}
+        stage = line_stage(db, line, game)
+        for p in ('player1', 'player2'):
+            held = [w for w in state.weapons_for(p) or [] if _line_canon(db, w) in cells]
+            if not held:
+                continue
+            if not stage:
+                new, to = held, None
+            else:
+                new = [w for w in held if _line_canon(db, w) in stage] or [stage[0]]
+                to = _line_canon(db, new[0])
+            last = next((e for e in reversed(log)
+                         if e.get('player') == p and e.get('line') == line['name']), None)
+            # Nothing changed, or still dormant since the last entry (Sprint sits out
+            # Halo 3 AND ODST: one entry for the stretch).
+            if new == held and (to is not None or (last and last.get('to') is None)):
+                continue
+            if new != held:
+                _replace_line_items(state, p, held, new)
+            entry = {'player': p, 'line': line['name'], 'game': game,
+                     'from_game': from_game, 'from': list(held), 'to': to, 'via': via,
+                     'after_round': len(state.rounds or []), 'stranded': None,
+                     'refund': None}
+            log.append(entry)
+            added.append(entry)
+    return added
+
+
+def line_entry_text(e):
+    """One history line for a line_log entry."""
+    who = 'P1' if e.get('player') == 'player1' else 'P2'
+    frm = ' + '.join(e.get('from') or []) or '?'
+    if e.get('to') is None:
+        return '💤 %s · %s %s line: %s inactive here' % (e.get('game'), who, e.get('line'), frm)
+    return '♻ %s · %s %s line: %s → %s' % (e.get('game'), who, e.get('line'), frm, e['to'])
+
+
+def arsenal_text(db, state, player, game):
+    """(label text, tooltip) of a player's arsenal: a line item the current game leaves
+    dormant reads '(inactive in <game>)', and the tooltip traces each held line item,
+    e.g. 'Camo line: 👁 Camo (Halo 2) -> Invisibility (Halo 3)'."""
+    items = list(state.weapons_for(player) or [])
+    if db is None or not items:
+        return ', '.join(items), ''
+    by_name = {l['name']: l for l in active_lines(db)}
+    idx = line_index(db)
+    log = [e for e in getattr(state, 'line_log', None) or [] if e.get('player') == player]
+    parts, tips, seen = [], [], set()
+    for w in items:
+        name = idx.get(_line_canon(db, w))
+        line = by_name.get(name)
+        if line is None or game not in LINE_GAMES:
+            parts.append(w)
+            continue
+        stage = line_stage(db, line, game)
+        dormant = _line_canon(db, w) not in stage
+        parts.append('%s (inactive in %s)' % (w, game) if dormant else w)
+        if name in seen:
+            continue
+        seen.add(name)
+        chain = []
+        for e in log:
+            if e.get('line') != name or e.get('to') is None:
+                continue
+            if not chain:
+                chain.append('%s (%s)' % (' + '.join(e.get('from') or []),
+                                          e.get('from_game') or '?'))
+            chain.append('%s (%s)' % (e['to'], e.get('game')))
+        tip = '%s line: %s' % (name, ' -> '.join(chain) if chain else w)
+        if dormant:
+            later = LINE_GAMES[LINE_GAMES.index(game) + 1:]
+            nxt = next(((g, line_stage(db, line, g)[0]) for g in later
+                        if line_stage(db, line, g)), None)
+            tip += ('; inactive in %s' % game
+                    + ('; becomes %s in %s' % (nxt[1], nxt[0]) if nxt else ''))
+        tips.append(tip)
+    return ', '.join(parts), '\n'.join(tips)
 
 # Direction-indicator colours, matching the positive/negative card borders.
 EASIER_GREEN = '#4CAF50'
@@ -5269,7 +5423,13 @@ class ModifierDatabase:
             mode = h4_sprint_mode()
             held = [w for w in (weapons or []) if w]
             has_eq = any(self.resolve_equipment(w) == 'Sprint' for w in held)
-            has_ability = any(ability_of_item(w) == 'sprint' for w in held)
+            # "Holds the Sprint line" (equipment lines plan, section 8): the Halo 1/2
+            # ability, or any item of the built-in Sprint line. Entering Halo 4 renames
+            # the item to Sprint (has_eq) unless the mode is off; a run whose item was
+            # never renamed still counts as a holder.
+            idx = line_index(self)
+            has_ability = any(ability_of_item(w) == 'sprint'
+                              or idx.get(_line_canon(self, w)) == 'Sprint' for w in held)
             want = (mode in ('all', 'restore')
                     or (mode == 'holder' and has_ability))
             if want and not has_eq:
@@ -5508,6 +5668,10 @@ class RunState:
         # held: its draw weight drops by one each time, to a floor (ModifierDatabase.
         # armed_cards). Saved with the run, so a co-op partner draws the same way.
         self.armed_offered = {}
+        # Equipment upgrade lines: one entry per line change of a held item
+        # (apply_line_transitions) -- the history, the arsenal tooltip and, from Phase 3,
+        # the once-per-player/line/game refund rule read it.
+        self.line_log = []
 
     def weapons_for(self, player):
         return self.player1_weapons if player == 'player1' else self.player2_weapons
@@ -5589,6 +5753,7 @@ class RunState:
             "last_patch": self.last_patch,
             "levels": list(getattr(self, 'levels', []) or []),
             "armed_offered": dict(getattr(self, 'armed_offered', {}) or {}),
+            "line_log": [dict(e) for e in getattr(self, 'line_log', None) or []],
             "rounds": self.rounds
         }
 
@@ -5656,6 +5821,7 @@ class RunState:
         state.levels = [x for x in (data.get('levels') or []) if isinstance(x, dict)]
         state.armed_offered = {str(k): int(v) for k, v in (data.get('armed_offered') or {}).items()
                                if isinstance(v, (int, float))}
+        state.line_log = [dict(e) for e in (data.get('line_log') or []) if isinstance(e, dict)]
 
         p1_mod = p1data.get('selected_mod')
         p2_mod = p2data.get('selected_mod')
@@ -17416,12 +17582,23 @@ class HaloGUI(QMainWindow):
             return
         gi, mi = nxt
         self._rec_armed = True                       # the recommended step unlocks
+        n_log = len(getattr(rs, 'line_log', None) or [])
         if gi != self.game_combo.currentIndex():
-            self.game_combo.setCurrentIndex(gi)       # on_game_changed: first level
+            # on_game_changed: first level. Marked as Next level's own change, the one
+            # that may refund equipment picks (equipment lines, Phase 3); a hand-made
+            # game change only renames line items.
+            self._line_via = 'next_level'
+            try:
+                self.game_combo.setCurrentIndex(gi)
+            finally:
+                self._line_via = None
         else:
             self.mission_combo.setCurrentIndex(mi)    # on_mission_changed
+        lines = [line_entry_text(e).split(' · ', 1)[-1]
+                 for e in (getattr(rs, 'line_log', None) or [])[n_log:]]
         self.update_status(f"{old} recorded in {where} -- now on {rs.mission_name}. "
-                           "Generate pairs manually")
+                           "Generate pairs manually"
+                           + (' · ' + '; '.join(lines) if lines else ''))
         self._sync_next_level()
 
     def display_weapon_selection(self, choices, is_player2=False, mode='initial'):
@@ -18246,6 +18423,7 @@ class HaloGUI(QMainWindow):
         mid = self.mission_combo.currentData()
         if not mid:
             return
+        left = self.db.get_game_for_mission(self.run_state.mission_id)
         self.run_state.mission_id = mid
         self._ensure_map_pools(mid)
         self.run_state.mission_name = self.db.mission_enemies[mid]['name']
@@ -18258,7 +18436,21 @@ class HaloGUI(QMainWindow):
             self.show_weapon_selection()
             self.update_status(f"Game: {game} — pick a weapon from its pool")
         else:
+            # Equipment upgrade lines: a held item of a line becomes the line's item in
+            # this game (apply_line_transitions), whichever way the game changed.
+            changed = []
+            if left != game:
+                try:
+                    changed = apply_line_transitions(
+                        self.db, self.run_state, game, from_game=left,
+                        via=getattr(self, '_line_via', None) or 'manual')
+                except Exception as e:
+                    print(f"equipment line transitions failed: {e}")
             self._reset_for_new_round(f"Game changed to {game}")
+            if changed:
+                self.update_history()
+                self.update_status(self.status_label.text() + ' · ' + '; '.join(
+                    line_entry_text(e).split(' · ', 1)[-1] for e in changed))
 
     def _ensure_game_pools(self):
         """Before a draw: every level of the current game must have its map pools
@@ -18919,8 +19111,14 @@ class HaloGUI(QMainWindow):
         else:
             text += "⏳ Player 2: Waiting for selection...\n"
 
-        if self.run_state.rounds:
+        # Equipment line changes, each after the round it followed (after_round).
+        line_after = {}
+        for e in getattr(self.run_state, 'line_log', None) or []:
+            line_after.setdefault(int(e.get('after_round') or 0), []).append(e)
+        if self.run_state.rounds or line_after:
             text += "\n--- Previous Rounds ---\n"
+            for e in line_after.get(0, []):
+                text += line_entry_text(e) + "\n"
             for i, round_data in enumerate(self.run_state.rounds, 1):
                 enemy1 = round_data.get('enemy1')
                 enemy2 = round_data.get('enemy2')
@@ -18949,6 +19147,12 @@ class HaloGUI(QMainWindow):
                     text += ", Skull: " + ', '.join(
                         f"{k.get('name', '?')} ({self._skull_left_text(k)})" for k in skulls)
                 text += "\n"
+                for e in line_after.get(i, []):
+                    text += line_entry_text(e) + "\n"
+            # entries past the last round (a round removed since) still show
+            for n in sorted(k for k in line_after if k > len(self.run_state.rounds)):
+                for e in line_after[n]:
+                    text += line_entry_text(e) + "\n"
 
         self.history_text.setText(text)
         self.update_weapon_display()
@@ -18966,10 +19170,18 @@ class HaloGUI(QMainWindow):
         return 'last map' if left == 1 else '%d maps left' % left
 
     def update_weapon_display(self):
-        p1 = ", ".join(self.run_state.player1_weapons) or "No weapon selected"
-        p2 = ", ".join(self.run_state.player2_weapons) or "No weapon selected"
-        self.p1_weapon_display.setText(f"Player 1: {p1}")
-        self.p2_weapon_display.setText(f"Player 2: {p2}")
+        # Equipment upgrade lines: a line item this game leaves dormant reads
+        # '(inactive in <game>)', and the tooltip traces where each line item came from.
+        game = self._current_game()
+        for player, label, num in (('player1', self.p1_weapon_display, 1),
+                                   ('player2', self.p2_weapon_display, 2)):
+            try:
+                text, tip = arsenal_text(self.db, self.run_state, player, game)
+            except Exception as e:
+                print(f"arsenal display: {e}")
+                text, tip = ", ".join(self.run_state.weapons_for(player)), ''
+            label.setText(f"Player {num}: {text or 'No weapon selected'}")
+            label.setToolTip(tip)
 
     def update_status(self, msg):
         self.status_label.setText(msg)
