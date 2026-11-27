@@ -9586,6 +9586,8 @@ class MagnitudeEditorDialog(QDialog):
                         and not db.is_grenade(w) and not db.is_equipment(w)):
                     return False
                 if self._port_only_off(w, db):
+                    if any(s.get('field') == w for s in self._starting_skips):
+                        return False                  # reported once already
                     self._starting_skips.append({
                         'effect': 'starting weapons', 'field': w, 'ok': True, 'skip': True,
                         'reason': '%s: a ported weapon, and its port is off (Options -> '
@@ -9611,10 +9613,26 @@ class MagnitudeEditorDialog(QDialog):
                         return up
                 return weapon
 
-            p1 = _upgraded(p1, slot1)
-            p2 = _upgraded(p2, slot2)
-            prim = db.weap_tag_for(p1, self.game) if _startable(p1) else None
-            sec = db.weap_tag_for(p2, self.game) if _startable(p2) else None
+            def _first(player, held):
+                """(weapon, tag): the player's current pick when it is a gun this game
+                has, else their FIRST weapon in the run that is.
+
+                The current pick can be a grenade or an ability: Run2's Player 1 drew
+                the Plasma Grenade first, so their profile slot was emptied and the
+                Rocket Launcher they also held never arrived in ODST (co-op run
+                2026-11-14, Mombasa Streets / Tayari Plaza / Uplift Reserve). Halo 3's
+                placer walks every held weapon and never hit this; the profile route
+                looked at the first pick only."""
+                for w in [held] + list(rs.weapons_for(player)):
+                    w = _upgraded(w, player)
+                    if _startable(w):
+                        t = db.weap_tag_for(w, self.game)
+                        if t:
+                            return w, t
+                return held, None
+
+            p1, prim = _first(slot1, _upgraded(p1, slot1))
+            p2, sec = _first(slot2, _upgraded(p2, slot2))
 
             def _second(player, first):
                 """That player's next startable weapon after `first`.
