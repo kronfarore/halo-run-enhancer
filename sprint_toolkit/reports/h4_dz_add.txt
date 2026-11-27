@@ -1,0 +1,75 @@
+h4_dz_add 20261127_105742: objects\equipment\sprint\sprint.equipment -> dz_enhancer.equipment on m10_crash, m020, m30_cryptum, m40_invasion, m60_rescue, m70_liftoff, m80_delta, m90_sacrifice (dry run)
+m10_crash      dz_enhancer zone 24, required by None/14 zone sets; palette 22 + 3 reference-only equipment; already holds it
+m020           dz_enhancer zone 10, required by None/17 zone sets; palette 8 + 3 reference-only equipment; would add (reference, index 11)
+m30_cryptum    dz_enhancer zone 11, required by None/24 zone sets; palette 8 + 4 reference-only equipment; would add (reference, index 12)
+m40_invasion   dz_enhancer zone 18, required by None/26 zone sets; palette 8 + 8 reference-only equipment; would add (reference)
+m60_rescue     dz_enhancer zone 25, required by None/29 zone sets; palette 8 + 3 reference-only equipment; would add (reference)
+m70_liftoff    dz_enhancer zone 19, required by None/17 zone sets; palette 8 + 5 reference-only equipment; would add (reference)
+m80_delta      dz_enhancer zone 31, required by None/30 zone sets; palette 8 + 4 reference-only equipment; would add (reference, index 12)
+m90_sacrifice  dz_enhancer zone 21, required by None/22 zone sets; palette 8 + 8 reference-only equipment; would add (reference)
+
+h4_dz_add 20261127_110317: objects\equipment\sprint\sprint.equipment -> dz_enhancer.equipment on m10_crash, m020, m30_cryptum, m40_invasion, m60_rescue, m70_liftoff, m80_delta, m90_sacrifice (WRITE)
+m10_crash      dz_enhancer (designer zone 24): 65 references, 25 equipment indices; already holds it
+m020           dz_enhancer (designer zone 10): 43 references, 11 equipment indices; adding the reference
+m020             read back: OK (references 44, equipment indices 11)
+m30_cryptum    dz_enhancer (designer zone 11): 50 references, 12 equipment indices; adding the reference
+m30_cryptum      read back: OK (references 51, equipment indices 12)
+m40_invasion   dz_enhancer (designer zone 18): 57 references, 17 equipment indices; adding the reference
+m40_invasion     read back: OK (references 58, equipment indices 17)
+m60_rescue     dz_enhancer (designer zone 25): 46 references, 13 equipment indices; adding the reference
+m60_rescue       read back: OK (references 47, equipment indices 13)
+m70_liftoff    dz_enhancer (designer zone 19): 50 references, 18 equipment indices; adding the reference
+m70_liftoff      read back: OK (references 51, equipment indices 18)
+m80_delta      dz_enhancer (designer zone 31): 44 references, 12 equipment indices; adding the reference
+m80_delta        read back: OK (references 45, equipment indices 12)
+m90_sacrifice  dz_enhancer (designer zone 21): 51 references, 19 equipment indices; adding the reference
+m90_sacrifice    read back: OK (references 52, equipment indices 19)
+changed: m020, m30_cryptum, m40_invasion, m60_rescue, m70_liftoff, m80_delta, m90_sacrifice; scenario backups in E:\HaloBackups\h4_dz_add\20261127_110317
+
+h4_dz_add 20261127_113055: objects\equipment\sprint\sprint.equipment -> dz_enhancer.equipment on m10_crash, m020, m30_cryptum, m40_invasion, m60_rescue, m70_liftoff, m80_delta, m90_sacrifice (dry run)
+m10_crash      dz_enhancer (designer zone 24): 65 references, 25 equipment indices, combined palette 25; already holds it (index 10)
+m020           dz_enhancer (designer zone 10): 44 references, 11 equipment indices, combined palette 12; would add index 11
+m30_cryptum    dz_enhancer (designer zone 11): 51 references, 12 equipment indices, combined palette 13; would add index 12
+m40_invasion   dz_enhancer (designer zone 18): 58 references, 17 equipment indices, combined palette 17; already holds it (index 16)
+m60_rescue     dz_enhancer (designer zone 25): 47 references, 13 equipment indices, combined palette 12; already holds it (index 11)
+m70_liftoff    dz_enhancer (designer zone 19): 51 references, 18 equipment indices, combined palette 14; already holds it (index 13)
+m80_delta      dz_enhancer (designer zone 31): 45 references, 12 equipment indices, combined palette 13; would add index 12
+m90_sacrifice  dz_enhancer (designer zone 21): 52 references, 19 equipment indices, combined palette 17; already holds it (index 16)
+
+h4_dz_add 20261127_113107: objects\equipment\sprint\sprint.equipment -> dz_enhancer.equipment on m020, m30_cryptum, m80_delta (WRITE)
+m020           dz_enhancer (designer zone 10): 44 references, 11 equipment indices, combined palette 12; adding index 11
+m020             read back: OK (references 44, equipment indices 12)
+m30_cryptum    dz_enhancer (designer zone 11): 51 references, 12 equipment indices, combined palette 13; adding index 12
+m30_cryptum      read back: OK (references 51, equipment indices 13)
+m80_delta      dz_enhancer (designer zone 31): 45 references, 12 equipment indices, combined palette 13; adding index 12
+m80_delta        read back: OK (references 45, equipment indices 13)
+changed: m020, m30_cryptum, m80_delta; scenario backups in E:\HaloBackups\h4_dz_add\20261127_113107
+
+h4_dz_add 20261127_115013: objects\equipment\sprint\sprint.equipment -> dz_enhancer.equipment on m10_crash, m020, m30_cryptum, m40_invasion, m60_rescue, m70_liftoff, m80_delta, m90_sacrifice (dry run)
+m10_crash      17 scenarios, merged equipment palette 25; dz_enhancer index 10; already holds it
+m020           20 scenarios, merged equipment palette 11; dz_enhancer index 11; would add palette entry in m020_streaming.scenario
+m30_cryptum    17 scenarios, merged equipment palette 12; dz_enhancer index 12; would add palette entry in m30_decorators.scenario
+m40_invasion   22 scenarios, merged equipment palette 16; dz_enhancer index 16; would add palette entry in m40_streaming.scenario
+m60_rescue     12 scenarios, merged equipment palette 11; dz_enhancer index 11; would add palette entry in m60_dillon_destructible.scenario
+m70_liftoff    12 scenarios, merged equipment palette 13; dz_enhancer index 13; would add palette entry in m70_streaming.scenario
+m80_delta      27 scenarios, merged equipment palette 12; dz_enhancer index 12; would add palette entry in m80_streaming.scenario
+m90_sacrifice  16 scenarios, merged equipment palette 17; dz_enhancer index 17; would add palette entry in m90_streaming.scenario
+
+h4_dz_add 20261127_115027: objects\equipment\sprint\sprint.equipment -> dz_enhancer.equipment on m10_crash, m020, m30_cryptum, m40_invasion, m60_rescue, m70_liftoff, m80_delta, m90_sacrifice (WRITE)
+m10_crash      17 scenarios, merged equipment palette 25; dz_enhancer index 10; already holds it
+m020           20 scenarios, merged equipment palette 11; dz_enhancer index 11; adding palette entry in m020_streaming.scenario
+m020             read back: OK (merged palette 12, index 11)
+m30_cryptum    17 scenarios, merged equipment palette 12; dz_enhancer index 12; adding palette entry in m30_decorators.scenario
+m30_cryptum      read back: OK (merged palette 13, index 12)
+m40_invasion   22 scenarios, merged equipment palette 16; dz_enhancer index 16; adding palette entry in m40_streaming.scenario
+m40_invasion     read back: OK (merged palette 17, index 16)
+m60_rescue     12 scenarios, merged equipment palette 11; dz_enhancer index 11; adding palette entry in m60_dillon_destructible.scenario
+m60_rescue       read back: OK (merged palette 12, index 11)
+m70_liftoff    12 scenarios, merged equipment palette 13; dz_enhancer index 13; adding palette entry in m70_streaming.scenario
+m70_liftoff      read back: OK (merged palette 14, index 13)
+m80_delta      27 scenarios, merged equipment palette 12; dz_enhancer index 12; adding palette entry in m80_streaming.scenario
+m80_delta        read back: OK (merged palette 13, index 12)
+m90_sacrifice  16 scenarios, merged equipment palette 17; dz_enhancer index 17; adding palette entry in m90_streaming.scenario
+m90_sacrifice    read back: OK (merged palette 18, index 17)
+changed: m020, m30_cryptum, m40_invasion, m60_rescue, m70_liftoff, m80_delta, m90_sacrifice; backups in E:\HaloBackups\h4_dz_add\20261127_115027
+

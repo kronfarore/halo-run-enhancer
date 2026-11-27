@@ -74,13 +74,13 @@ Halo Reach -- 24 weapons, 6 equipment, 2 grenade types per player
 ====================================================================================================
 Halo 4 -- 29 weapons, 9 equipment, 3 grenade types per player
   m10_crash      markers P1:1 P2:2              weapons 28/29   equipment 9/9   grenades 3/3   [27s]
-  m020           markers P1:1 P2:2              weapons 28/29   equipment 8/9   grenades 3/3   [63s]
-  m30_cryptum    markers P1:1 P2:2              weapons 29/29   equipment 8/9   grenades 3/3   [32s]
-  m60_rescue     markers P1:1 P2:2              weapons 27/29 (+1 only capacity)   equipment 8/9   grenades 3/3   [68s]
-  m40_invasion   markers P1:1 P2:2              weapons 26/29 (+2 only capacity)   equipment 7/9 (+2 only capacity)   grenades 3/3   [75s]
-  m70_liftoff    markers P1:1 P2:2              weapons 28/29   equipment 8/9   grenades 3/3   [40s]
+  m020           markers P1:1 P2:2              weapons 28/29   equipment 9/9   grenades 3/3   [58s]
+  m30_cryptum    markers P1:1 P2:2              weapons 29/29   equipment 9/9   grenades 3/3   [32s]
+  m60_rescue     markers P1:1 P2:2              weapons 28/29   equipment 9/9   grenades 3/3   [41s]
+  m40_invasion   markers P1:1 P2:2              weapons 28/29   equipment 9/9   grenades 3/3   [34s]
+  m70_liftoff    markers P1:1 P2:2              weapons 28/29   equipment 9/9   grenades 3/3   [40s]
   m80_delta      markers P1:1 P2:2              weapons 28/29   equipment 9/9   grenades 3/3   [33s]
-  m90_sacrifice  markers P1:1 P2:2              weapons 28/29   equipment 8/9   grenades 3/3   [29s]
+  m90_sacrifice  markers P1:1 P2:2              weapons 28/29   equipment 9/9   grenades 3/3   [29s]
   MISSES:
-    equipment Sprint                     not in this level -- the ability has to be placed in the map on m020, m30_cryptum, m60_rescue, m70_liftoff, m90_sacrifice
     weapons   Focus Rifle                not in this level weapon palette                             on m10_crash, m020, m60_rescue, m40_invasion, m70_liftoff, m80_delta, m90_sacrifice
+  (Halo 4 rerun 2026-11-27 13:54 after Sprint was added to dz_enhancer on all eight)

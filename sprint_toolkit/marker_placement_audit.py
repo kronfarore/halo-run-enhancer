@@ -323,9 +323,13 @@ def main(argv=None):
         report_game(game, items, res, w)
         dump[game] = {'items': items, 'levels': res}
     if not a.levels:
-        with open(REPORT, 'w', encoding='utf-8') as f:
+        # A run of some games writes its own file, so it never replaces the full report.
+        report = REPORT if not a.game else REPORT.replace(
+            '.txt', '_%s.txt' % '_'.join(g.lower().replace(' ', '').replace(':', '')
+                                         for g in games))
+        with open(report, 'w', encoding='utf-8') as f:
             f.write('\n'.join(lines) + '\n')
-        w('report: %s' % REPORT)
+        w('report: %s' % report)
     if a.json:
         print(json.dumps(dump, default=str)[:200000])
 
