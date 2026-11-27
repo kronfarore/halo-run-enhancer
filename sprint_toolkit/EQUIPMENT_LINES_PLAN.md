@@ -149,6 +149,24 @@ booted). None of the 11 saved runs is affected by #2 or #4.
 
 ## 5. Data model
 
+**Phase 1 DONE 2026-11-27** (halo_enhancer.py, after `denied_equipment`; check:
+`python sprint_toolkit/equipment_lines_check.py`, all passing). As built:
+- A cell with no key follows `game_inherits` (ODST follows Halo 3); an explicit `[]` is a
+  gap. The defaults leave ODST out.
+- `CONFIG['equipment_lines']` is filled with the defaults at import, so settings and run
+  snapshots hold a concrete table.
+- Every lookup takes the database: `active_lines(db)`, `line_of(db, item)`,
+  `line_stage(db, line, game)`, `line_cards(db, line, game)`; plus `line_item_off`,
+  `line_card_key`, `line_game_items`, `validate_lines`, `refund_picks`.
+- "Switched off" (decision 12) covers: denied equipment, an ability outside Halo 1/2 or
+  with `sprint_feature` off, and equipment whose every card there is config-gated (Halo 4
+  Sprint with `h4_sprint_mode` off).
+- Measured: no Reach card of Camo, Mobility, Decoy or Sprint (restore) is stranded in
+  Halo 4; Halo 1 and Halo 2 hold the same ability cards; Halo 3 and ODST the same
+  equipment cards.
+- A run saved without the keys loads with `equipment_lines_enabled` and
+  `equipment_refund_enabled` off (`RunState.from_dict`).
+
 **Code** (halo_enhancer.py):
 - `BUILTIN_LINES`: the Sprint and Camo rows, as `{name, stages: {game: [item, ...]}}`.
 

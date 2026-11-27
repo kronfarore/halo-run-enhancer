@@ -477,6 +477,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h3_all_chief_profiles',
                'starting_vitality_cards',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
+               'equipment_lines_enabled', 'equipment_lines',
+               'equipment_refund_enabled', 'equipment_refund_percent',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
                'ammo_display_follows_magazine',
                'upgrade_inherits_base',
@@ -1680,6 +1682,17 @@ CONFIG = {
     # "deny the enemy information" pieces, two "become untouchable" pieces.
     "remove_superflare_jammer": False,
     "remove_invincibility_invisibility": False,
+    # Equipment upgrade lines (sprint_toolkit/EQUIPMENT_LINES_PLAN.md): an item of a
+    # line becomes that line's item in the next game. Sprint and Camo are built in
+    # (BUILTIN_LINES, always on); these are the optional table lines, `[{name,
+    # stages: {game: [items]}}]` -- a missing "Halo 3: ODST" cell follows Halo 3.
+    # None = the defaults (DEFAULT_EQUIPMENT_LINES, filled in below the ability items).
+    "equipment_lines_enabled": False,
+    "equipment_lines": None,
+    # Picks spent on cards that stop applying when an item upgrades are refunded at
+    # this share (rounded to the nearest pick, halves up) into a refinement round.
+    "equipment_refund_enabled": False,
+    "equipment_refund_percent": 50,
     # Anything denied above can instead be offered as an ENEMY modifier, since
     # Brutes are the only characters that carry equipment.
     "denied_equipment_as_enemy_mods": False,
@@ -2409,6 +2422,296 @@ def denied_equipment():
     for key, names in DENIABLE_EQUIPMENT.items():
         if CONFIG.get(key):
             out.update(names)
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Equipment upgrade lines (sprint_toolkit/EQUIPMENT_LINES_PLAN.md, Phase 1: the data
+# and the lookups; transitions, refunds and the Options page come later).
+#
+# A LINE is one item across games: entering a new game, a held item of a line becomes
+# the line's item there. A line is {'name', 'stages': {game: [item, ...]}}; a cell
+# holds exact item names (halo.json Equipment keys, or the ABILITY_ITEMS pseudo-items
+# for Halo 1/2). A cell may hold several items (the Decoy line's Jammer + Superflare);
+# the FIRST is the one a held item becomes. An empty cell is a gap: the item stays,
+# dormant, until a later game has one. A game with no key follows the game it inherits
+# from (game_inherits), so ODST's cell is Halo 3's until the table says otherwise.
+# ---------------------------------------------------------------------------
+
+#: The games a line spans, in run order.
+LINE_GAMES = ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4')
+
+#: Always on, not editable (user, 2026-11-27). Shown read-only atop the Options table.
+BUILTIN_LINES = (
+    {'name': 'Sprint', 'stages': {'Halo 1': [SPRINT_ITEM], 'Halo 2': [SPRINT_ITEM],
+                                  'Halo 3': [], 'Halo Reach': ['Sprint'],
+                                  'Halo 4': ['Sprint']}},
+    {'name': 'Camo', 'stages': {'Halo 1': [CAMO_ITEM], 'Halo 2': [CAMO_ITEM],
+                                'Halo 3': ['Invisibility'],
+                                'Halo Reach': ['Active Camouflage'],
+                                'Halo 4': ['Active Camouflage']}},
+)
+
+#: The optional table lines' defaults (user, 2026-11-27): Instant Cover gets its own
+#: line ending in Hardlight Shield, and Superflare joins Jammer as the one two-item cell.
+DEFAULT_EQUIPMENT_LINES = (
+    {'name': 'Overshield', 'stages': {'Halo 1': [OVERSHIELD_ITEM], 'Halo 2': [OVERSHIELD_ITEM],
+                                      'Halo 3': ['Invincibility'],
+                                      'Halo Reach': ['Armor Lock'], 'Halo 4': []}},
+    {'name': 'Regeneration', 'stages': {'Halo 1': [REGEN_ITEM], 'Halo 2': [REGEN_ITEM],
+                                        'Halo 3': ['Regenerator'], 'Halo Reach': [],
+                                        'Halo 4': ['Regeneration Field']}},
+    {'name': 'Shield', 'stages': {'Halo 1': [], 'Halo 2': [], 'Halo 3': ['Bubble Shield'],
+                                  'Halo Reach': ['Drop Shield'], 'Halo 4': []}},
+    {'name': 'Cover', 'stages': {'Halo 1': [], 'Halo 2': [], 'Halo 3': ['Instant Cover'],
+                                 'Halo Reach': [], 'Halo 4': ['Hardlight Shield']}},
+    {'name': 'Mobility', 'stages': {'Halo 1': [], 'Halo 2': [], 'Halo 3': ['Grav Lift'],
+                                    'Halo Reach': ['Jet Pack'], 'Halo 4': ['Jet Pack']}},
+    {'name': 'Decoy', 'stages': {'Halo 1': [], 'Halo 2': [],
+                                 'Halo 3': ['Jammer', 'Superflare'],
+                                 'Halo Reach': ['Hologram'], 'Halo 4': ['Hologram']}},
+    {'name': 'Turret', 'stages': {'Halo 1': [], 'Halo 2': [], 'Halo 3': ['Auto Turret'],
+                                  'Halo Reach': [], 'Halo 4': ['Auto Turret']}},
+)
+
+#: The abilities that run on Halo 1 / Halo 2 ability maps (_sprint_spec).
+ABILITY_GAMES = ('Halo 1', 'Halo 2')
+
+
+def default_equipment_lines():
+    """A fresh, editable copy of the table lines' defaults."""
+    return copy.deepcopy(list(DEFAULT_EQUIPMENT_LINES))
+
+
+if CONFIG.get('equipment_lines') is None:
+    CONFIG['equipment_lines'] = default_equipment_lines()
+
+
+def refund_picks(stranded, percent):
+    """Refunded picks: `percent` of `stranded`, to the nearest pick, halves up (user,
+    2026-11-27). At 50 %: 1 -> 1, 2 -> 1, 3 -> 2, 4 -> 2, 5 -> 3; at 30 %: 4 -> 1."""
+    import math
+    if not stranded or not percent:
+        return 0
+    return int(math.floor(stranded * float(percent) / 100.0 + 0.5))
+
+
+def _line_canon(db, name):
+    """The name a line compares an item by: an ability item as is, equipment by its
+    halo.json key (resolve_equipment's spacing/case tolerance)."""
+    if not isinstance(name, str):
+        return None
+    name = name.strip()
+    if not name or name in ABILITY_ITEMS:
+        return name or None
+    return (db.resolve_equipment(name) if db is not None else None) or name
+
+
+def line_game_items(db, game):
+    """The items a cell of `game` may hold: the equipment its levels declare, every
+    Equipment key with a card for the game (Halo 4's Regeneration Field and Sprint are
+    in no level list -- dz_enhancer brings them), and for Halo 1 / 2 the four ability
+    items. Read from halo.json only, never from a map, so it is instant."""
+    out = list(ABILITY_ITEMS) if game in ABILITY_GAMES else []
+    for mid, g in db.mission_games.items():
+        if g != game:
+            continue
+        for e in db.mission_equipment.get(mid) or ():
+            k = _line_canon(db, e)
+            if k and k not in out:
+                out.append(k)
+    for k, mods in db.equipment_mods.items():
+        if k not in out and any(db._game_ok(m, game) for m in mods):
+            out.append(k)
+    return out
+
+
+def _line_cell(line, game):
+    """The cell's items as written, following game_inherits for a game with no key."""
+    stages = (line or {}).get('stages') or {}
+    g = game
+    while g is not None and g not in stages:
+        g = (CONFIG.get('game_inherits') or {}).get(g)
+    return list(stages.get(g) or []) if g is not None else []
+
+
+def validate_lines(db, lines):
+    """(clean lines, warnings) for the table lines. On load and on Save in Options:
+    - an item that is not an item of that cell's game is dropped;
+    - an item a built-in line or an EARLIER line already uses is dropped from the later
+      one (one line per item; repeats inside one line, Jet Pack in Reach and Halo 4,
+      are the point);
+    - a line left with no item is removed;
+    - a name already taken (built-in lines included, any case) gets ' (2)', ' (3)'...
+    Each drop is one warning, worded for the Options page."""
+    used = {}
+    names = set()
+    for bl in BUILTIN_LINES:
+        names.add(bl['name'].lower())
+        for g in LINE_GAMES:
+            for it in _line_cell(bl, g):
+                used.setdefault(_line_canon(db, it), bl['name'])
+    valid = {g: set(line_game_items(db, g)) for g in LINE_GAMES}
+    clean, warn = [], []
+    for row in (lines if isinstance(lines, (list, tuple)) else []):
+        if not isinstance(row, dict):
+            warn.append('A line that is not a table row was removed.')
+            continue
+        base = str(row.get('name') or '').strip() or 'Line'
+        name, n = base, 2
+        while name.lower() in names:
+            name, n = '%s (%d)' % (base, n), n + 1
+        if name != base:
+            warn.append('Line "%s": the name is taken, renamed to "%s".' % (base, name))
+        raw = row.get('stages') if isinstance(row.get('stages'), dict) else {}
+        for g in raw:
+            if g not in LINE_GAMES:
+                warn.append('Line "%s": "%s" is not a game, ignored.' % (name, g))
+        stages, mine = {}, set()
+        for g in LINE_GAMES:
+            if g not in raw:
+                continue
+            cell_in = raw[g]
+            cell_in = [cell_in] if isinstance(cell_in, str) else (
+                cell_in if isinstance(cell_in, (list, tuple)) else [])
+            cell = []
+            for it in cell_in:
+                k = _line_canon(db, it)
+                if not k:
+                    continue
+                if k not in valid[g]:
+                    warn.append('Line "%s": %s is not an item of %s, removed.' % (name, k, g))
+                    continue
+                if used.get(k, name) != name:
+                    warn.append('Line "%s": %s is already in the %s line, removed.'
+                                % (name, k, used[k]))
+                    continue
+                if k not in cell:
+                    cell.append(k)
+                    mine.add(k)
+            stages[g] = cell
+        if not mine:
+            warn.append('Line "%s" has no item left, removed.' % name)
+            continue
+        for k in mine:
+            used[k] = name
+        names.add(name.lower())
+        clean.append({'name': name, 'stages': stages})
+    return clean, warn
+
+
+_LINES_CACHE = {}
+
+
+def equipment_lines_table(db):
+    """The table lines in force: CONFIG's, validated (defaults when unset). Cached per
+    value, since every offer and transition asks."""
+    raw = CONFIG.get('equipment_lines')
+    if raw is None:
+        raw = default_equipment_lines()
+    try:
+        key = json.dumps(raw, sort_keys=True, ensure_ascii=False)
+    except (TypeError, ValueError):
+        key = repr(raw)
+    hit = _LINES_CACHE.get(key)
+    if hit is None or hit[0] is not db:
+        hit = _LINES_CACHE[key] = (db, validate_lines(db, raw))
+    return copy.deepcopy(hit[1][0])
+
+
+def active_lines(db):
+    """Every line in force, built-in first, then the table's in table order (the order
+    the refinement round walks them)."""
+    lines = copy.deepcopy(list(BUILTIN_LINES))
+    if CONFIG.get('equipment_lines_enabled'):
+        lines += equipment_lines_table(db)
+    return lines
+
+
+def line_of(db, item):
+    """(line, games): the active line holding `item` and the games whose cell names it
+    (ODST included when it follows Halo 3). (None, []) for an item in no line."""
+    k = _line_canon(db, item)
+    if not k:
+        return None, []
+    for line in active_lines(db):
+        games = [g for g in LINE_GAMES
+                 if k in [_line_canon(db, x) for x in _line_cell(line, g)]]
+        if games:
+            return line, games
+    return None, []
+
+
+def line_item_off(db, item, game):
+    """Is `item` switched off in `game` by the Options? Such an item counts as a gap
+    there (plan decision 12): an ability outside Halo 1 / 2 or with the abilities off;
+    equipment the player is denied (remove_superflare_jammer...); equipment whose every
+    card in that game waits on a setting that is off (Halo 4 Sprint, h4_sprint_mode
+    off -- the same rule as map_equip_mod)."""
+    if item in ABILITY_ITEMS:
+        return game not in ABILITY_GAMES or not CONFIG.get('sprint_feature')
+    key = db.resolve_equipment(item) or item
+    if key in denied_equipment() or item in denied_equipment():
+        return True
+    cards = [m for m in db.equipment_mods.get(key, [])
+             if m.get('name') != 'Map Presence' and db._game_ok(m, game)]
+    return bool(cards) and not any(db._config_ok(m, game) for m in cards)
+
+
+def line_stage(db, line, game):
+    """The line's items in `game`: its cell minus what the Options switch off there.
+    Empty = a gap. The first item is the one a held item of the line becomes."""
+    out = []
+    for it in _line_cell(line, game):
+        k = _line_canon(db, it)
+        if k and k not in out and not line_item_off(db, k, game):
+            out.append(k)
+    return out
+
+
+def line_card_key(mod):
+    """What a pick is counted by when a line compares games: an equipment card by its
+    item and name, an ability card (a General card) by its name."""
+    if mod.get('equipment'):
+        return ('equipment', mod['equipment'], mod.get('name'))
+    return ('general', mod.get('name'))
+
+
+def _ability_cards(db, ability):
+    """The General cards that tune one H1/H2 ability (their target's `sprint` marker,
+    ABILITY_CARD_PARAMS)."""
+    out = []
+    for m in db.positive_pool + db.negative_pool + db.wildcard_pool:
+        params = {t.get('sprint') for t in (m.get('targets') or [])
+                  if isinstance(t, dict) and t.get('sprint')}
+        if params and ability in {ability_of_param(p) for p in params} and m not in out:
+            out.append(m)
+    return out
+
+
+def line_cards(db, line, game):
+    """The cards of the line's items that APPLY in `game` -- the ones a pick of keeps
+    working there: the item is on (line_stage), the card is for that game (_game_ok),
+    its Options gate is on (_config_ok) and it is not held back (`ignore`); the patcher
+    excludes the rest since Phase 0 #4. An equipment item without a Map Presence card
+    there gets the synthesized one (map_equip_mod), as its offers do. Picks on a card
+    the old game had and the new one lacks are the 'stranded' picks a refund pays."""
+    out = []
+    for it in line_stage(db, line, game):
+        if it in ABILITY_ITEMS:
+            mods = _ability_cards(db, ability_of_item(it))
+        else:
+            key = db.resolve_equipment(it)
+            mods = list(db.equipment_mods.get(key, [])) if key else []
+            if not any(m.get('name') == 'Map Presence' and db._game_ok(m, game)
+                       for m in mods):
+                extra = db.map_equip_mod(key, game) if key else None
+                if extra:
+                    mods.append(extra)
+        for m in mods:
+            if (db._game_ok(m, game) and db._config_ok(m, game) and not mod_ignored(m)
+                    and m not in out):
+                out.append(m)
     return out
 
 # Direction-indicator colours, matching the positive/negative card borders.
@@ -5301,6 +5604,12 @@ class RunState:
         if not data.get('spawn_options_v2'):
             state.options = {k: v for k, v in state.options.items()
                              if not k.endswith(('_spawn_starting_weapons', '_spawn_all_weapons'))}
+        # Equipment upgrade lines came after a run that has no say on them: it keeps
+        # playing as it was saved, with no table lines and no refunds (equipment lines
+        # plan, section 9). The built-in Sprint and Camo lines need no option.
+        if 'equipment_lines_enabled' not in opts:
+            state.options['equipment_lines_enabled'] = False
+            state.options['equipment_refund_enabled'] = False
         for k, v in state.options.items():
             CONFIG[k] = v
         # A partner who syncs their port volume knobs: this machine takes them OVER,
