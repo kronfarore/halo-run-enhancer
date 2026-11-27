@@ -1465,14 +1465,27 @@ def _h2_profile_names(m, scnr_base, boff, esize, count):
     return out
 
 
-#: ODST profile names that are NOT player spawn profiles. `weapon insert` and
-#: `insertion_profile` are templates the level's scripts hand a weapon from; every ODST
-#: map trails its real profiles with them (Mombasa Streets has fourteen).
+#: ODST profile names the blanket "every starting profile" write skips. Every ODST map
+#: trails its sixteen spawn profiles with them (Mombasa Streets has fourteen `weapon
+#: insert`). NOTE, read from H3ODSTEK's level scripts 2026-11-27: no script names
+#: `weapon insert`, but `insertion_profile` IS a player's -- sc110, sc130 and sc140
+#: hand it to all four players (reset TRUE) at their later insertion points.
 _SCRIPTED_PROFILE_NAMES = ('weapon insert', 'insertion_profile')
+
+#: ODST profiles a level's scripts hand an AI SQUAD, not a player. Every
+#: unit_add_equipment in the nine levels' scripts (H3ODSTEK, 2026-11-27): Kizingo
+#: Boulevard arms sq_dutch with profile_dutch, Uplift Reserve two pod squads; all the
+#: others go to (player0..3).
+_ODST_AI_PROFILE_NAMES = ('profile_dutch', 'profile_pod_03_allies_01',
+                          'profile_pod_04_allies_med')
 
 
 def _is_scripted_profile(name):
     return str(name or '').strip().lower() in _SCRIPTED_PROFILE_NAMES
+
+
+def _is_odst_ai_profile(name):
+    return str(name or '').strip().lower() in _ODST_AI_PROFILE_NAMES
 
 
 def odst_profile_for(m, game, scnr_base, boff, esize, count, insertion_ordinal, player):
@@ -2122,6 +2135,16 @@ def _apply_starting_equipment(m, game, registry, starting):
                             if 0 <= i < count]
                 if third_gen:
                     profiles = [i for i in profiles if i == 0]
+        if starting.get('spawn_instead') and str(game).strip() == 'Halo 3: ODST':
+            # Placed weapons replace the profile for EVERY player at EVERY entry, so
+            # every player profile is emptied, whatever the ODST profile options say:
+            # those choose which profiles to ARM, and profile 0 alone left player 2 and
+            # the other entries holding the map's guns on top of the placed ones. That
+            # includes insertion_profile, which Uplift Reserve, ONI Alpha Site and NMPD
+            # HQ hand all four players at their later insertion points. Only the
+            # profiles a level's scripts give an AI squad keep their weapons.
+            names = _h2_profile_names(m, scnr_base, boff, esize, count)
+            profiles = [i for i in range(count) if not _is_odst_ai_profile(names[i])]
         # No guard here: these profiles were named outright, and a map that starts
         # the player unarmed on purpose (Halo 1's a10) should still honour the picks.
         plan = [('primary', profiles, prim, 'Primary Weapon', False),
@@ -5718,9 +5741,10 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
     wins over both. A weapon the level's palette lacks gets a palette entry, exactly as
     starting equipment does; a tag the map does not ship at all is reported, not guessed.
 
-    A level with no room left in the block (Cortana) has the rest REUSE the enhancer's
-    own hidden placements -- Not Automatically, unnamed, no editor folder, added for
-    residency -- moved to the drop point (user, 2026-10-31).
+    The placements that only bring a weapon into the map -- Not Automatically,
+    unnamed, no editor folder -- are REUSED, moved to the drop points (user,
+    2026-10-31 for Cortana, whose block was full), and since 2026-11-27 FIRST, before
+    the block grows: Mombasa Streets' 29 included.
 
     ODST takes the same path (user, 2026-11-26), markers only: each player's weapons go
     to EVERY marker they own (player_marker_slots) plus the shared drops beside them
@@ -5865,17 +5889,26 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
     if tmpl is None:
         return out + [{'effect': 'spawned weapons', 'ok': False,
                        'reason': 'no weapon placement to use as a template'}]
+    # The placements that exist only to bring a weapon INTO the map -- Not
+    # Automatically, unnamed, no editor folder, so nothing ever creates them -- are
+    # used FIRST, before the block grows (user, 2026-11-27). Mombasa Streets has 29:
+    # the user's hand-made 52-79 (one per weapon, stacked in one spot) and stock 0;
+    # Cortana has the user's eleven. They no longer carry the residency: the palette +
+    # dz_enhancer does (odst_dz_enhancer --check-built, h3_map_audit), and tool has
+    # already gathered every weapon when the map was built, so moving one costs that
+    # weapon nothing -- while each one reused is a slot the 128 cap keeps.
+    spare = [i for i in range(N)
+             if struct.unpack_from('<I', m.data, base + i * wes + _EQ_FLAGS)[0] & _PLACE_NOT_AUTO
+             and struct.unpack_from('<h', m.data, base + i * wes + 0x2)[0] == -1
+             and struct.unpack_from('<h', m.data, base + i * wes + eqo['folder'])[0] == -1]
+    over = list(zip(spare, plan))
+    rest = plan[len(over):]
     room = max(0, _H3_MAX_WEAPON_PLACEMENTS - N)
-    extra, over = plan[:room], plan[room:]
-    if over:
-        spare = [i for i in range(N)
-                 if struct.unpack_from('<I', m.data, base + i * wes + _EQ_FLAGS)[0] & _PLACE_NOT_AUTO
-                 and struct.unpack_from('<h', m.data, base + i * wes + 0x2)[0] == -1
-                 and struct.unpack_from('<h', m.data, base + i * wes + eqo['folder'])[0] == -1]
-        for it in over[len(spare):]:
-            out.append({'effect': 'spawned weapons', 'field': it[3], 'ok': False,
-                        'reason': 'weapon block full and no enhancer placement left to reuse'})
-        over = list(zip(spare, over))
+    extra = rest[:room]
+    for it in rest[room:]:
+        out.append({'effect': 'spawned weapons', 'field': it[3], 'ok': False,
+                    'reason': 'weapon block full (%d) and no residency placement left to '
+                              'reuse, at %s' % (_H3_MAX_WEAPON_PLACEMENTS, it[4])})
     sizes = (([(N + len(extra)) * wes] if extra else [])
              + ([(pc + len(new_pal)) * pes] if new_pal else []))
     got = _h3_reserve(m, sizes) if sizes else []
@@ -5897,13 +5930,16 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
     uids = [m.u32(base + i * wes + eqo['uid']) for i in range(N)]
     salt = (uids[tmpl] >> 16) if uids else 0
     nxt = (max(u & 0xFFFF for u in uids) + 1) if uids else 1
-    slots = [(dest + (N + k) * wes, it, False) for k, it in enumerate(extra)]
-    slots += [(dest + i * wes, it, True) for i, it in over]
-    for k, (e, (pi, pos, mask, short, where, added, loaded, total), reused) in enumerate(slots):
-        if not reused:
+    # plan order: the reused residency placements carry the first drops
+    slots = [(dest + i * wes, it, i) for i, it in over]
+    slots += [(dest + (N + k) * wes, it, None) for k, it in enumerate(extra)]
+    fresh = 0
+    for e, (pi, pos, mask, short, where, added, loaded, total), reused in slots:
+        if reused is None:
             m.data[e:e + wes] = m.data[base + tmpl * wes: base + (tmpl + 1) * wes]
             struct.pack_into('<I', m.data, e + eqo['uid'],
-                             ((salt << 16) | (nxt + k)) & 0xFFFFFFFF)
+                             ((salt << 16) | (nxt + fresh)) & 0xFFFFFFFF)
+            fresh += 1
         struct.pack_into('<h', m.data, e, pi)
         struct.pack_into('<h', m.data, e + 0x2, -1)          # unnamed
         struct.pack_into('<I', m.data, e + _EQ_FLAGS, _H3_PLACE_AT_REST)
@@ -5921,8 +5957,10 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
                          max(-32768, min(32767, loaded)))
         out.append({'effect': 'spawned weapons', 'field': short, 'ok': True,
                     'old': where,
-                    'new': 'placed at (%.1f, %.1f, %.1f), %d/%d rounds%s'
-                           % (pos + (loaded, total, ' (+palette)' if added else ''))})
+                    'new': 'placed at (%.1f, %.1f, %.1f), %d/%d rounds%s%s'
+                           % (pos + (loaded, total, ' (+palette)' if added else '',
+                                     '' if reused is None
+                                     else ', residency placement %d reused' % reused))})
     if extra:
         struct.pack_into('<i', m.data, scnr + woff, N + len(extra))
         struct.pack_into('<I', m.data, scnr + woff + 4, m.off2data(dest))

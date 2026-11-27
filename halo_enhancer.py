@@ -9866,8 +9866,12 @@ class MagnitudeEditorDialog(QDialog):
             groups = [p1 + [x for x in p2 if x not in p1]]
         if not any(groups):
             return None
+        # ODST weapons drop where its starting equipment does, mid-mission insertion
+        # points included when that option is on (the placer reads it as all_insertions).
         return {'groups': groups,
-                'radius': float(CONFIG.get('reach_placement_radius', 0.25))}
+                'radius': float(CONFIG.get('reach_placement_radius', 0.25)),
+                'all_insertions': (self.game == 'Halo 3: ODST'
+                                   and bool(CONFIG.get('odst_equipment_all_insertions')))}
 
     def _spawn_grenades_spec(self):
         """{'groups': [[Grenades block index, ...] per player]} for the drafted grenade
@@ -13090,6 +13094,43 @@ class OptionsDialog(QDialog):
         allform.addRow("Par time:", self.par_time_scale)
 
         self.ignore_elite_h3_cb = QCheckBox("Ignore Elite enemy effects in Halo 3 (they're allies)")
+
+        # First in the ODST box, under the name every other game gives it (user,
+        # 2026-11-27).
+        self.odst_spawn_weapons_cb = QCheckBox(
+            "Place starting weapons at the enhancer markers instead of the profile")
+        self.odst_spawn_weapons_cb.setChecked(bool(CONFIG.get('odst_spawn_starting_weapons')))
+        self.odst_spawn_weapons_cb.setToolTip(
+            "Off: the run writes its weapon picks into the Starting Profile, so you begin "
+            "the level holding them.\n\nOn: they are PLACED on the floor to be picked up "
+            "-- player 1's at enhancer_marker1, player 2's at enhancer_marker2, and at any "
+            "more markers that player owns (Mombasa Streets: 10/11 and 20/21) -- plus the "
+            "hub's re-entry points, and the mission's other insertion points when "
+            "'ODST equipment' drops there too.\n\nEVERY player profile is emptied, "
+            "whatever the ODST profile options say, so nothing arrives twice; only the "
+            "profiles a level's scripts give allied squads keep their weapons. A level "
+            "without markers keeps the profile and says so. Needs 'Set starting "
+            "weapons'. Not yet confirmed in game.")
+        odform.addRow("Starting weapons:", self.odst_spawn_weapons_cb)
+        self.odst_spawn_all_cb = QCheckBox("↳ place every selected weapon, not just the first")
+        self.odst_spawn_all_cb.setChecked(bool(CONFIG.get('odst_spawn_all_weapons')))
+        self.odst_spawn_all_cb.setToolTip(
+            "Off: only each player's first weapon is placed, as a profile would give it. "
+            "On: every weapon that player holds is placed, ringed round each marker."
+            "\n\nA level holds 128 weapon placements. The placements that only exist to "
+            "bring a weapon into the map are used first (Mombasa Streets has 29), then "
+            "the free ones (Mombasa Streets: 48). If both run out, the copies at the "
+            "shared points are the ones left out, never a player's own markers.")
+
+        def _sync_odst_spawn(on=None):
+            on = self.odst_spawn_weapons_cb.isChecked()
+            self.odst_spawn_all_cb.setEnabled(on)
+            if not on:
+                self.odst_spawn_all_cb.setChecked(False)
+        self.odst_spawn_weapons_cb.toggled.connect(_sync_odst_spawn)
+        _sync_odst_spawn()
+        odform.addRow("", self.odst_spawn_all_cb)
+
         self.red_plasma_cb = QCheckBox("ODST: treat the Red Plasma Rifle as the Brute Plasma Rifle")
         self.red_plasma_cb.setChecked(bool(CONFIG.get('odst_red_plasma_as_brute')))
         self.red_plasma_cb.setToolTip(
@@ -13273,39 +13314,9 @@ class OptionsDialog(QDialog):
             "there too, but it multiplies every pickup: ONI Alpha Site declares three "
             "insertion points, so one Invincibility becomes three.\n\nMombasa Streets' "
             "scripted level-select destinations are handled either way — the hub really "
-            "does drop you at them.")
+            "does drop you at them.\n\nPlaced starting weapons ('Starting weapons', at "
+            "the top) drop at the same points.")
         odform.addRow("ODST equipment:", self.odst_all_ins_cb)
-
-        self.odst_spawn_weapons_cb = QCheckBox(
-            "ODST: place starting weapons at the enhancer markers instead of the profile")
-        self.odst_spawn_weapons_cb.setChecked(bool(CONFIG.get('odst_spawn_starting_weapons')))
-        self.odst_spawn_weapons_cb.setToolTip(
-            "Off: the run writes its weapon picks into the Starting Profile, so you begin "
-            "the level holding them.\n\nOn: they are PLACED on the floor to be picked up "
-            "-- player 1's at enhancer_marker1, player 2's at enhancer_marker2, and at any "
-            "more markers that player owns (Mombasa Streets: 10/11 and 20/21) -- plus the "
-            "hub's re-entry points, where starting equipment drops too. The profile's "
-            "weapon slots are emptied so nothing arrives twice. A level without markers "
-            "keeps the profile and says so. Needs 'Set starting weapons'. Not yet "
-            "confirmed in game.")
-        odform.addRow("ODST weapons:", self.odst_spawn_weapons_cb)
-        self.odst_spawn_all_cb = QCheckBox("↳ place every selected weapon, not just the first")
-        self.odst_spawn_all_cb.setChecked(bool(CONFIG.get('odst_spawn_all_weapons')))
-        self.odst_spawn_all_cb.setToolTip(
-            "Off: only each player's first weapon is placed, as a profile would give it. "
-            "On: every weapon that player holds is placed, ringed round each marker. "
-            "Mombasa Streets holds 80 of the 128 weapon placements a level takes, so a "
-            "long list there runs out of room; the duplicates at the re-entry points go "
-            "first.")
-
-        def _sync_odst_spawn(on=None):
-            on = self.odst_spawn_weapons_cb.isChecked()
-            self.odst_spawn_all_cb.setEnabled(on)
-            if not on:
-                self.odst_spawn_all_cb.setChecked(False)
-        self.odst_spawn_weapons_cb.toggled.connect(_sync_odst_spawn)
-        _sync_odst_spawn()
-        odform.addRow("", self.odst_spawn_all_cb)
 
         self.odst_shield_health_cb = QCheckBox("ODST: Starting Shield cards raise Starting Health instead")
         self.odst_shield_health_cb.setChecked(bool(CONFIG.get('odst_shield_into_health', True)))
