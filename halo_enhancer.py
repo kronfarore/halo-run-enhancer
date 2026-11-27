@@ -3412,8 +3412,16 @@ class ModifierDatabase:
 
     def is_equipment(self, name):
         """H3 equipment (Bubble Shield, Regenerator...): an `eqip` tag, not a
-        `weap` one. Like grenades, never a Primary/Secondary starting weapon."""
-        return any(name in el for el in self.mission_equipment.values())
+        `weap` one. Like grenades, never a Primary/Secondary starting weapon.
+
+        Also every key of halo.json's Equipment section: Halo 4's Regeneration Field
+        is in no mission's equipment list (the dz_enhancer pool brings it), so the
+        mission test alone called it a gun -- offered through the weapon path, its
+        five cards never drafted, never placed (equipment lines plan, Phase 0 #1)."""
+        if not name:
+            return False
+        return (any(name in el for el in self.mission_equipment.values())
+                or self.resolve_equipment(name) is not None)
 
     def weap_tag_for(self, weapon_name, game):
         """The `weap ...` tag for a weapon in the given game, taken from any of its
@@ -4234,8 +4242,48 @@ class ModifierDatabase:
             return f"{mod['weapon']}{CONFIG['blacklist_label_separator']}{mod['name']}"
         elif mod.get('enemy'):
             return f"{mod['enemy']}{CONFIG['blacklist_label_separator']}{mod['name']}"
+        elif mod.get('equipment'):
+            # An equipment card is its item's own: Sprint, Jet Pack and Active
+            # Camouflage all have a "Recharge", and as 'General: Recharge' blacklisting
+            # one blacklisted all three (equipment lines plan, Phase 0 #2). Saved
+            # labels are rewritten by migrate_equipment_labels.
+            return f"{mod['equipment']}{CONFIG['blacklist_label_separator']}{mod['name']}"
         else:
             return f"General{CONFIG['blacklist_label_separator']}{display_name(mod['name'], 'General')}"
+
+    def migrate_equipment_labels(self, state):
+        """Rewrite a saved run's equipment blacklist labels to the item's own spelling.
+
+        Before get_mod_label had its equipment branch an equipment card was stored as
+        'General: <card>'. Such a label -- one that is no real General card -- becomes
+        '<item>: <card>' for every item a player holds that has that card: the old
+        label blocked the card on all of them, so keeping it blocked on each is what
+        the run already did. A label no held item explains is kept as it was.
+        Returns how many labels were rewritten."""
+        sep = CONFIG['blacklist_label_separator']
+        pre = 'General' + sep
+        general = {self.get_mod_label(m)
+                   for m in (self.positive_pool + self.negative_pool
+                             + self.wildcard_pool + self.skull_pool)}
+        held = []
+        for p in ('player1', 'player2'):
+            for w in state.weapons_for(p) or []:
+                key = self.resolve_equipment(w)
+                if key and key not in held:
+                    held.append(key)
+        out, changed = set(), 0
+        for lab in state.blacklist:
+            if lab.startswith(pre) and lab not in general:
+                card = lab[len(pre):]
+                items = [k for k in held
+                         if any(m.get('name') == card for m in self.equipment_mods[k])]
+                if items:
+                    out.update(f"{k}{sep}{card}" for k in items)
+                    changed += 1
+                    continue
+            out.add(lab)
+        state.blacklist = out
+        return changed
 
     # Cards the Player Health / Player Shield pair supersedes. Starting Health and
     # Starting Shield Modifier scale the scenario profile rather than the pool, and
@@ -4849,6 +4897,15 @@ class ModifierDatabase:
         swap itself works in every game; only the card was missing."""
         tag = self.eqip_tag_for(name, game) if game else None
         if not tag:
+            return None
+        # An item whose every card here waits on an Options setting that is off (Halo
+        # 4's Sprint with h4_sprint_mode off) is switched off in this game, so it gets
+        # no Map Presence either: the card would scatter it over the level anyway.
+        # _resynth_for_game asks here too, so an old pick of it stops patching
+        # (equipment lines plan, Phase 0 #4).
+        cards = [m for m in self.equipment_mods.get(self.resolve_equipment(name), [])
+                 if m.get('name') != 'Map Presence' and self._game_ok(m, game)]
+        if cards and not any(self._config_ok(m, game) for m in cards):
             return None
         return {
             'name': 'Map Presence',
@@ -8693,11 +8750,16 @@ class MagnitudeEditorDialog(QDialog):
         run's own copies may still carry a pre-rename name (they were frozen when
         the card was drawn), hence the EFFECT_RENAMES fallback when matching."""
         name, weapon, enemy = eff['name'], eff.get('weapon'), eff.get('enemy')
+        # An equipment card is its item's own: Sprint, Jet Pack and Active Camouflage
+        # each have a "Recharge", and without this test removing one removed all
+        # three (equipment lines plan, Phase 0 #3).
+        equipment = eff.get('equipment')
 
         def matches(mod):
             if not isinstance(mod, dict):
                 return False
-            if mod.get('weapon') != weapon or mod.get('enemy') != enemy:
+            if (mod.get('weapon') != weapon or mod.get('enemy') != enemy
+                    or mod.get('equipment') != equipment):
                 return False
             n = mod.get('name')
             return n == name or effect_rename(n, mod) == name
@@ -17434,6 +17496,12 @@ class HaloGUI(QMainWindow):
     # ---- Load ----
     def load_run_state(self, state, path=None):
         self.run_state = state
+        # Equipment cards' labels became '<item>: <card>' (get_mod_label); a run
+        # saved before that still says 'General: <card>'.
+        try:
+            self.db.migrate_equipment_labels(state)
+        except Exception as e:
+            print(f"Equipment blacklist labels not migrated: {e}")
         # Saving defaults back to the file this run came from (see on_save), and if it
         # came from the shared folder, that is also the file this run writes back to.
         self.loaded_run_path = path or None
@@ -19319,6 +19387,15 @@ class HaloGUI(QMainWindow):
                 if not self.db._game_ok(mod, game):
                     # A mod-level game filter (e.g. "game": "Halo 1") now excludes the
                     # WHOLE effect from patching the other game, not just its targets.
+                    mod['_game_excluded'] = True
+                    continue
+                if not self.db._config_ok(mod, game) or mod_ignored(mod):
+                    # The Options gate (requires_config) and the card's own `ignore`
+                    # flag were offer-only (filter_blacklisted), so a pick made before
+                    # the setting went off kept patching: Reach Sprint picks wrote Halo
+                    # 4's sprint fields with h4_sprint_mode off (equipment lines plan,
+                    # Phase 0 #4). _refresh_mod_definition has just carried both gates
+                    # over from halo.json.
                     mod['_game_excluded'] = True
                     continue
                 if _is_absent_flood_mod(mod, game):

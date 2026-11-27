@@ -658,48 +658,48 @@
 				]
 			},
 			"Sprint Speed": {
-				"desc": "Sprint faster. Tunes the base sprint speed from Options with an operator (+/-/*/=) in the patcher. Halo 1 sprint maps only.",
-				"game": "Halo 1",
+				"desc": "Sprint faster. Tunes the base sprint speed from Options with an operator (+/-/*/=) in the patcher. Halo 1 and Halo 2 ability maps only.",
+				"game": ["Halo 1", "Halo 2"],
 				"tag": "matg globals\\globals",
 				"targets": [
 					{ "field": "Sprint speed", "sprint": "speed" }
 				]
 			},
 			"Sprint Duration": {
-				"desc": "Sprint longer before it runs out. Tunes the base duration with an operator (+/-/*/=) in the patcher. Halo 1 sprint maps only.",
-				"game": "Halo 1",
+				"desc": "Sprint longer before it runs out. Tunes the base duration with an operator (+/-/*/=) in the patcher. Halo 1 and Halo 2 ability maps only.",
+				"game": ["Halo 1", "Halo 2"],
 				"tag": "matg globals\\globals",
 				"targets": [
 					{ "field": "Sprint duration", "sprint": "duration" }
 				]
 			},
 			"Sprint Cooldown": {
-				"desc": "Shorter wait between sprints. Tunes the base cooldown with an operator (-x or *0.x to cut it) in the patcher. Halo 1 sprint maps only.",
-				"game": "Halo 1",
+				"desc": "Shorter wait between sprints. Tunes the base cooldown with an operator (-x or *0.x to cut it) in the patcher. Halo 1 and Halo 2 ability maps only.",
+				"game": ["Halo 1", "Halo 2"],
 				"tag": "matg globals\\globals",
 				"targets": [
 					{ "field": "Sprint cooldown", "sprint": "cooldown" }
 				]
 			},
 			"Sprint": {
-				"desc": "Unlock sprinting for the rest of the run (press the flashlight key). Halo 1 sprint maps only.",
-				"game": "Halo 1",
+				"desc": "Unlock sprinting for the rest of the run (press the flashlight key). Halo 1 and Halo 2 ability maps only.",
+				"game": ["Halo 1", "Halo 2"],
 				"tag": "matg globals\\globals",
 				"targets": [
 					{ "field": "Enable sprint", "sprint": "enable" }
 				]
 			},
 			"Overshield Strength": {
-				"desc": "A stronger overshield. Tunes the base multiplier from Options with an operator (+/-/*/=) in the patcher. Halo 1 ability maps only.",
-				"game": "Halo 1",
+				"desc": "A stronger overshield. Tunes the base multiplier from Options with an operator (+/-/*/=) in the patcher. Halo 1 and Halo 2 ability maps only.",
+				"game": ["Halo 1", "Halo 2"],
 				"tag": "matg globals\\globals",
 				"targets": [
 					{ "field": "Overshield strength", "sprint": "os_mult" }
 				]
 			},
 			"Regeneration Amount": {
-				"desc": "Regenerate more health per use. Tunes the base percentage with an operator (+/-/*/=) in the patcher. Halo 1 ability maps only.",
-				"game": "Halo 1",
+				"desc": "Regenerate more health per use. Tunes the base percentage with an operator (+/-/*/=) in the patcher. Halo 1 and Halo 2 ability maps only.",
+				"game": ["Halo 1", "Halo 2"],
 				"tag": "matg globals\\globals",
 				"targets": [
 					{ "field": "Regeneration amount", "sprint": "regen_percent" }
@@ -707,24 +707,24 @@
 			},
 			"Regeneration Speed": {
 				"desc": "How quickly the Regeneration ability heals you.",
-				"debug_desc": "Tunes the base duration with an operator (-x or *0.x to shorten it). Halo 1 ability maps only.",
-				"game": "Halo 1",
+				"debug_desc": "Tunes the base duration with an operator (-x or *0.x to shorten it). Halo 1 and Halo 2 ability maps only.",
+				"game": ["Halo 1", "Halo 2"],
 				"tag": "matg globals\\globals",
 				"targets": [
 					{ "field": "Regeneration window", "sprint": "regen_duration" }
 				]
 			},
 			"Camo Duration": {
-				"desc": "Stay invisible longer. Tunes the base camo duration with an operator (+/-/*/=) in the patcher. Halo 1 ability maps only.",
-				"game": "Halo 1",
+				"desc": "Stay invisible longer. Tunes the base camo duration with an operator (+/-/*/=) in the patcher. Halo 1 and Halo 2 ability maps only.",
+				"game": ["Halo 1", "Halo 2"],
 				"tag": "matg globals\\globals",
 				"targets": [
 					{ "field": "Camo duration", "sprint": "camo_duration" }
 				]
 			},
 			"Camo Cooldown": {
-				"desc": "Shorter wait between camo uses. Tunes the base cooldown with an operator (-x or *0.x to cut it) in the patcher. Halo 1 ability maps only.",
-				"game": "Halo 1",
+				"desc": "Shorter wait between camo uses. Tunes the base cooldown with an operator (-x or *0.x to cut it) in the patcher. Halo 1 and Halo 2 ability maps only.",
+				"game": ["Halo 1", "Halo 2"],
 				"tag": "matg globals\\globals",
 				"targets": [
 					{ "field": "Camo cooldown", "sprint": "camo_cooldown" }
