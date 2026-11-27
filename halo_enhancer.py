@@ -18901,6 +18901,7 @@ class HaloGUI(QMainWindow):
             for mod in self._round_mods(rd):
                 try:
                     self._refresh_mod_definition(mod)
+                    self._resynth_for_game(mod, self._current_game())
                 except Exception:
                     pass
         mags.update(run_magnitudes(fresh, self.run_state.mission_id))
@@ -19099,6 +19100,55 @@ class HaloGUI(QMainWindow):
                                     f"Selection saved to:\n{file_path}{mag_line}")
 
     # ---- Map patching (feature a) ----
+    def _resynth_for_game(self, mod, game):
+        """Rebuild a GENERATED card (Map Presence for a weapon or a piece of equipment,
+        Armed) for `game`, in place. True when it was rebuilt.
+
+        These cards are built in code at draft time and stamped with that game --
+        'games': [game] and that game's tag -- and _refresh_mod_definition skips them,
+        so every later game dropped them: the co-op run of 2026-11-13/14 lost its
+        Halo 2 'Map Presence: Sniper Rifle' (a Weapon Identity half) and all twelve
+        Armed cards from Halo 3 on, though every game has a sniper rifle and Armed
+        cards. Rebuilt only where the card means something: the game has the weapon /
+        equipment, and for Armed its Armed cards are on and the species can hold
+        weapons there. Otherwise the card keeps its old stamp and is dropped as
+        before. The pick count lives in the round, so it carries over unchanged."""
+        if not isinstance(mod, dict) or not mod.get('synth') or not game:
+            return False
+        ts = [t for t in (mod.get('targets') or []) if isinstance(t, dict)]
+        fresh = None
+        if any(t.get('map_swap') for t in ts) and mod.get('weapon'):
+            # Not map_swap_mod: that answers whether the card is OFFERED (Options ->
+            # weapon_swap_cards); a card already picked keeps working either way.
+            tag = self.db.weap_tag_for(mod['weapon'], game)
+            if tag:
+                mod['tag'], mod['games'] = tag, [game]
+                mod.pop('_game_excluded', None)
+                return True
+            return False
+        elif any(t.get('map_equip') for t in ts) and mod.get('equipment'):
+            fresh = self.db.map_equip_mod(mod['equipment'], game)
+        elif any(t.get('enemy_weapon') for t in ts):
+            t0 = next(t for t in ts if t.get('enemy_weapon'))
+            weapon, kind = t0['enemy_weapon'], t0.get('enemy_type')
+            ally = bool(mod.get('ally_enemy'))
+            opts = self.db.ARMED_OPTIONS.get(game)
+            who = self.db.ARMED_ENEMIES.get(game) or ()
+            if (opts and CONFIG.get(opts[0], True) and kind
+                    and (ally or kind in who)
+                    and self.db.weap_tag_for(weapon, game)):
+                fresh = self.db.armed_card(kind if not ally else 'Marine', weapon,
+                                           ally=ally, game=game)
+        if not fresh:
+            return False
+        for k in list(mod.keys()):
+            if k not in fresh and not k.startswith('_') and k not in (
+                    'selected_by', 'count'):
+                mod.pop(k, None)
+        mod.update(copy.deepcopy(fresh))
+        mod.pop('_game_excluded', None)
+        return True
+
     def _refresh_mod_definition(self, mod):
         """A saved/loaded run embeds a full snapshot of each mod's definition
         (tag/field/targets/...) as it was AT ROLL TIME. If halo.json has since
@@ -19260,6 +19310,7 @@ class HaloGUI(QMainWindow):
                 if not isinstance(mod, dict):
                     continue
                 self._refresh_mod_definition(mod)
+                self._resynth_for_game(mod, game)     # generated cards follow the game
                 if not self.db._game_ok(mod, game):
                     # A mod-level game filter (e.g. "game": "Halo 1") now excludes the
                     # WHOLE effect from patching the other game, not just its targets.
