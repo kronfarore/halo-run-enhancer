@@ -786,6 +786,10 @@ PORT = {
     'firing_profile': {'from_game': 'Halo Reach', 'from_map': r'haloreach\maps\m10.map',
                        'from_weapon': GL + r'\grenade_launcher',
                        'donor_weapon': BS + r'\brute_shot',
+                       # THE ARC (found on the Concussion Rifle's Armed boots, 2026-11-27): Reach keeps it on the
+                       # WEAPON (ballistic arcing fraction bounds 0 / 0 = '0 = low, fast'); Halo 2 on this entry with
+                       # the scale REVERSED ('0 = high, slow'), so the copied 0 / 0 was Halo 2's steepest lob -> 1 / 1
+                       'set': ['Ballistic Fraction Bounds=1.0', 'Ballistic Fraction Bounds Max=1.0'],
                        'target': 'Halo 2 ai\\generic weapons properties + firing pattern properties (H2_PORT_PLAN 0.5)'},
     # BALANCED (step 4a, user 2026-11-24: reports/h2_grenade_launcher_4a.md, the FRAG + RL holes). The table
     # (balance_port.py "Grenade Launcher" "Rocket Launcher" "Halo Reach" "Halo 2") is the plain RL ratio, the 4a
