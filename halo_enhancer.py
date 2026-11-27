@@ -2778,27 +2778,128 @@ def _replace_line_items(state, player, held, new):
         setattr(state, attr, out[0] if out else None)
 
 
+def drafting_rounds(rounds):
+    """The rounds that DRAFTED something: every round but the equipment refinement picks.
+    The death penalty and the levels' round counts read these (plan section 7): a
+    refund pick re-spends picks the run already had, it is not a new round."""
+    return [rd for rd in rounds or [] if not (isinstance(rd, dict)
+                                              and rd.get('kind') == 'refinement')]
+
+
+def player_card_picks(rounds, player):
+    """{line_card_key: signed picks} of ONE player's cards over `rounds` -- the same
+    counting as collect_effects (Weapon Identity halves +2 / -1, refinement picks +1),
+    on a view of the rounds holding only that player's slot."""
+    import halo_patch
+    view = [{player: rd.get(player)} for rd in rounds or [] if isinstance(rd, dict)]
+    out = {}
+    for e in halo_patch.collect_effects(view):
+        k = line_card_key(e)
+        out[k] = out.get(k, 0) + int(e.get('count') or 0)
+    return out
+
+
+def _line_prev_game(db, line, from_game):
+    """The game a refund compares against: the game being left, or -- when the line had
+    a gap there -- the last earlier game where it had an item (Turret: ODST, not Reach,
+    on the way into Halo 4). None when there is none."""
+    if from_game not in LINE_GAMES:
+        return None
+    for g in reversed(LINE_GAMES[:LINE_GAMES.index(from_game) + 1]):
+        if line_stage(db, line, g):
+            return g
+    return None
+
+
+def line_stranded(db, line, prev_game, new_game, picks):
+    """Picks on the line's cards that applied in `prev_game` and do not in `new_game`
+    (plan decision 5). A card's negative total (an inverted half) counts as 0."""
+    old = {line_card_key(m) for m in line_cards(db, line, prev_game)}
+    new = {line_card_key(m) for m in line_cards(db, line, new_game)}
+    return sum(max(0, n) for k, n in picks.items() if k in old and k not in new)
+
+
+def refinement_pending(state, game, player=None):
+    """[(player, entry)] of refund picks still to spend in `game`, in round order:
+    player 1's items in line order, then player 2's."""
+    out = []
+    pend = getattr(state, 'pending_refinement', None) or {}
+    for p in (('player1', 'player2') if player is None else (player,)):
+        for ent in pend.get(p) or []:
+            if ent.get('game') == game and int(ent.get('picks') or 0) > 0:
+                out.append((p, ent))
+    return out
+
+
+def lapse_refinement(state, player, ent, reason, via=None):
+    """Drop a pending refund entry with a history note (a line_log entry of kind
+    'lapse'). Returns the note entry."""
+    pend = (getattr(state, 'pending_refinement', None) or {}).get(player) or []
+    if ent in pend:
+        pend.remove(ent)
+    note = {'kind': 'lapse', 'player': player, 'line': ent.get('line'),
+            'game': ent.get('game'), 'item': ent.get('item'),
+            'picks': int(ent.get('picks') or 0), 'reason': reason, 'via': via,
+            'after_round': len(getattr(state, 'rounds', None) or [])}
+    state.line_log.append(note)
+    return note
+
+
+def spend_refinement_pick(state, player, line, game):
+    """One refund pick spent: the entry's count drops, and it goes when it reaches 0."""
+    pend = (getattr(state, 'pending_refinement', None) or {}).get(player) or []
+    for ent in pend:
+        if ent.get('line') == line and ent.get('game') == game:
+            ent['picks'] = int(ent.get('picks') or 0) - 1
+            if ent['picks'] <= 0:
+                pend.remove(ent)
+            return True
+    return False
+
+
 def apply_line_transitions(db, state, game, from_game=None, via='manual'):
     """Entering `game`: every held item of an active line becomes the line's item there
-    (EQUIPMENT_LINES_PLAN.md section 6, steps 1, 2 and 4; refunds are Phase 3).
+    (EQUIPMENT_LINES_PLAN.md section 6).
 
     Per player and line:
     - a gap (no item there, or every item switched off): the items stay, dormant;
     - held items the game's cell has are kept (Jammer and Superflare both stay in
       Halo 3); otherwise they are replaced by the cell's FIRST item, two held items of
       one line collapsing into one (Jammer + Superflare -> one Hologram);
-    - each change, and each newly dormant line, is one `line_log` entry:
+    - REFUNDS, only for Next level into a LATER game with the refund option on, once per
+      player, line and game: the player's picks on the line's cards that applied in the
+      previous game (the last one where the line had an item) and do not apply here
+      ('stranded', also when the item keeps its name -- Auto Turret ODST -> Halo 4),
+      times the share, rounded to the nearest pick, halves up, become
+      `pending_refinement[player]` entries {line, item, game, picks, total, from};
+    - Next level also lapses the refund picks left from an earlier game (a 'lapse'
+      line_log entry each);
+    - each change, newly dormant line or refund is one `line_log` entry:
       {player, line, game, from_game, from: [items], to: item | None, via, after_round,
-      stranded, refund} -- `stranded` / `refund` are filled by the refunds (Phase 3).
-    Runs for a manual game change too (via 'manual'), forwards or backwards, so the
-    arsenal always shows the current game's item of the line (decision 13).
-    Returns the new log entries."""
+      stranded, refund}.
+    Runs for a manual game change too (via 'manual'), forwards or backwards -- renames
+    only -- so the arsenal always shows the current game's item of the line (decision
+    13). Returns the new log entries."""
     if db is None or state is None or game not in LINE_GAMES:
         return []
     log = getattr(state, 'line_log', None)
     if log is None:
         log = state.line_log = []
+    pend = getattr(state, 'pending_refinement', None)
+    if pend is None:
+        pend = state.pending_refinement = {}
     added = []
+    if via == 'next_level':
+        for p in ('player1', 'player2'):
+            for ent in list(pend.get(p) or []):
+                if ent.get('game') != game:
+                    added.append(lapse_refinement(state, p, ent, 'unspent when the run '
+                                                  'moved on to %s' % game, via))
+    refund_on = (via == 'next_level' and bool(CONFIG.get('equipment_refund_enabled'))
+                 and from_game in LINE_GAMES
+                 and LINE_GAMES.index(game) > LINE_GAMES.index(from_game))
+    percent = CONFIG.get('equipment_refund_percent', 50)
+    picks_of = {}
     for line in active_lines(db):
         cells = {_line_canon(db, x) for g in LINE_GAMES for x in _line_cell(line, g)}
         stage = line_stage(db, line, game)
@@ -2811,30 +2912,56 @@ def apply_line_transitions(db, state, game, from_game=None, via='manual'):
             else:
                 new = [w for w in held if _line_canon(db, w) in stage] or [stage[0]]
                 to = _line_canon(db, new[0])
-            last = next((e for e in reversed(log)
-                         if e.get('player') == p and e.get('line') == line['name']), None)
-            # Nothing changed, or still dormant since the last entry (Sprint sits out
-            # Halo 3 AND ODST: one entry for the stretch).
-            if new == held and (to is not None or (last and last.get('to') is None)):
+            mine = [e for e in log if e.get('player') == p and e.get('line') == line['name']
+                    and e.get('kind', 'change') == 'change']
+            last = mine[-1] if mine else None
+            stranded = refund = None
+            if stage and refund_on and not any(e.get('game') == game and e.get('refund')
+                                               for e in mine):
+                prev = _line_prev_game(db, line, from_game)
+                if prev is not None:
+                    if p not in picks_of:
+                        picks_of[p] = player_card_picks(state.rounds, p)
+                    stranded = line_stranded(db, line, prev, game, picks_of[p])
+                    refund = refund_picks(stranded, percent)
+            # Nothing changed, nothing stranded, or still dormant since the last entry
+            # (Sprint sits out Halo 3 AND ODST: one entry for the stretch).
+            if new == held and not stranded and (to is not None
+                                                 or (last and last.get('to') is None)):
                 continue
             if new != held:
                 _replace_line_items(state, p, held, new)
             entry = {'player': p, 'line': line['name'], 'game': game,
                      'from_game': from_game, 'from': list(held), 'to': to, 'via': via,
-                     'after_round': len(state.rounds or []), 'stranded': None,
-                     'refund': None}
+                     'after_round': len(state.rounds or []), 'stranded': stranded,
+                     'refund': refund}
             log.append(entry)
             added.append(entry)
+            if refund:
+                pend.setdefault(p, []).append({'line': line['name'], 'item': to,
+                                               'game': game, 'picks': refund,
+                                               'total': refund, 'from': list(held)})
     return added
 
 
 def line_entry_text(e):
     """One history line for a line_log entry."""
     who = 'P1' if e.get('player') == 'player1' else 'P2'
+    if e.get('kind') == 'lapse':
+        n = int(e.get('picks') or 0)
+        return '⌛ %s · %s %s line: %d refund pick%s for %s lapsed (%s)' % (
+            e.get('game'), who, e.get('line'), n, '' if n == 1 else 's', e.get('item'),
+            e.get('reason') or 'unspent')
     frm = ' + '.join(e.get('from') or []) or '?'
     if e.get('to') is None:
         return '💤 %s · %s %s line: %s inactive here' % (e.get('game'), who, e.get('line'), frm)
-    return '♻ %s · %s %s line: %s → %s' % (e.get('game'), who, e.get('line'), frm, e['to'])
+    text = ('♻ %s · %s %s line: %s → %s' % (e.get('game'), who, e.get('line'), frm, e['to'])
+            if [e['to']] != list(e.get('from') or []) else
+            '♻ %s · %s %s line: %s' % (e.get('game'), who, e.get('line'), e['to']))
+    if e.get('stranded'):
+        text += ' (%d pick%s stranded, %d refunded)' % (
+            e['stranded'], '' if e['stranded'] == 1 else 's', e.get('refund') or 0)
+    return text
 
 
 def arsenal_text(db, state, player, game):
@@ -5682,6 +5809,9 @@ class RunState:
         # (apply_line_transitions) -- the history, the arsenal tooltip and, from Phase 3,
         # the once-per-player/line/game refund rule read it.
         self.line_log = []
+        # Refund picks still to spend in a refinement round: {player: [{line, item,
+        # game, picks, total, from}]} (apply_line_transitions, the refinement round).
+        self.pending_refinement = {}
 
     def weapons_for(self, player):
         return self.player1_weapons if player == 'player1' else self.player2_weapons
@@ -5764,6 +5894,8 @@ class RunState:
             "levels": list(getattr(self, 'levels', []) or []),
             "armed_offered": dict(getattr(self, 'armed_offered', {}) or {}),
             "line_log": [dict(e) for e in getattr(self, 'line_log', None) or []],
+            "pending_refinement": {p: [dict(e) for e in v] for p, v in
+                                   (getattr(self, 'pending_refinement', None) or {}).items()},
             "rounds": self.rounds
         }
 
@@ -5832,6 +5964,10 @@ class RunState:
         state.armed_offered = {str(k): int(v) for k, v in (data.get('armed_offered') or {}).items()
                                if isinstance(v, (int, float))}
         state.line_log = [dict(e) for e in (data.get('line_log') or []) if isinstance(e, dict)]
+        state.pending_refinement = {
+            p: [dict(e) for e in v if isinstance(e, dict)]
+            for p, v in (data.get('pending_refinement') or {}).items()
+            if p in ('player1', 'player2') and isinstance(v, list)}
 
         p1_mod = p1data.get('selected_mod')
         p2_mod = p2data.get('selected_mod')
@@ -6190,8 +6326,17 @@ class PairCard(QGroupBox):
             player_text = "PLAYER 1 - "
         elif self.show_player2 and not self.show_player1:
             player_text = "PLAYER 2 - "
-        title = QLabel(f"{player_text}PAIR {self.pair['id']}"
-                       + ("  —  💀 SKULL ROUND" if self.pair.get('skull_round') else ""))
+        ref = self.pair.get('refinement')
+        if isinstance(ref, dict):
+            # an equipment refinement offer (HaloGUI._refinement_next): one card per pick
+            title = QLabel("%s · %s line: %s → %s · refund pick %d of %d" % (
+                'PLAYER 1' if ref.get('player') == 'player1' else 'PLAYER 2',
+                ref.get('line'), ref.get('from') or '?', ref.get('item'),
+                ref.get('n', 1), ref.get('of', 1)))
+            title.setWordWrap(True)
+        else:
+            title = QLabel(f"{player_text}PAIR {self.pair['id']}"
+                           + ("  —  💀 SKULL ROUND" if self.pair.get('skull_round') else ""))
         title.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_title']}px; color: #e0e0e0; margin: 0; padding: 0;")
         layout.addWidget(title)
 
@@ -6219,7 +6364,8 @@ class PairCard(QGroupBox):
                 w1 = self.pair['player1_mod'].get('weapon')
                 positive.append(self.create_mod_widget(
                     self.pair['player1_mod'],
-                    f"PLAYER 1 ({w1})" if w1 else "Player (General)",
+                    ("♻ REFINEMENT (%s)" % ref.get('item')) if isinstance(ref, dict)
+                    else f"PLAYER 1 ({w1})" if w1 else "Player (General)",
                     "green", 'player1'))
 
         ident = self.pair.get('identity')
@@ -6263,7 +6409,8 @@ class PairCard(QGroupBox):
                 w2 = self.pair['player2_mod'].get('weapon')
                 positive.append(self.create_mod_widget(
                     self.pair['player2_mod'],
-                    f"PLAYER 2 ({w2})" if w2 else "Player (General)",
+                    ("♻ REFINEMENT (%s)" % ref.get('item')) if isinstance(ref, dict)
+                    else f"PLAYER 2 ({w2})" if w2 else "Player (General)",
                     "green", 'player2'))
 
         if self.pair['enemy_mod']:
@@ -6271,6 +6418,14 @@ class PairCard(QGroupBox):
                 self.pair['enemy_mod'],
                 "☣ BANE (x%d, blacklisted after patching)" % BANE_PICKS
                 if self.pair['enemy_mod'].get('bane') else "ENEMY", "red", 'enemy'))
+        elif isinstance(ref, dict):
+            note = QLabel("♻ REFUND PICK — no enemy card, no Other slot")
+            note.setStyleSheet("color: #4fc3d9; font-weight: bold; font-size: "
+                               f"{CONFIG['font_size_name']}px; padding: 8px; "
+                               "border: 1px dashed #4fc3d9; border-radius: 4px; "
+                               "background-color: #0a1a20;")
+            note.setWordWrap(True)
+            negative.append(note)
         elif self.pair.get('no_negative'):
             # #5: exhaust reward — this pair carries no enemy buff.
             free = QLabel("✦ NO ENEMY BUFF  (exhaust reward)")
@@ -6505,6 +6660,9 @@ class PairCard(QGroupBox):
         # is the player's identity and is offered as it is
         if mod_type in ('identity_up', 'identity_down'):
             reroll_btn.setVisible(not (self.pair.get('identity') or {}).get('locked'))
+        # a refinement card has no Reroll (plan decision 15); Blacklist replaces it
+        if self.pair.get('refinement'):
+            reroll_btn.setVisible(False)
 
         blacklist_btn = QPushButton("🚫 Blacklist")
         blacklist_btn.setMaximumWidth(100)
@@ -9190,7 +9348,8 @@ class MagnitudeEditorDialog(QDialog):
             return [{'tag': 'MCC process', 'effect': 'Death penalty', 'field': 'penalty',
                      'ok': False, 'reason': 'death_penalty.py unavailable: %s' % e}]
         rs = getattr(self.parent_gui, 'run_state', None)
-        rounds = len(getattr(rs, 'rounds', None) or [])
+        # refinement picks re-spend refunded picks: not rounds (drafting_rounds)
+        rounds = len(drafting_rounds(getattr(rs, 'rounds', None)))
         per = float(CONFIG.get('death_penalty_per_round', 0.10) or 0)
         base = float(CONFIG.get('death_penalty_base', 100.0) or 100.0)
         try:
@@ -17387,9 +17546,15 @@ class HaloGUI(QMainWindow):
     # (kind, button text) per recommendation
     _REC_STEPS = {'anything': "🎁 NEW ANYTHING", 'weapon': "🔫 NEW WEAPON",
                   'equipment': "🎒 NEW EQUIPMENT", 'generate': "🔄 GENERATE PAIRS",
-                  'identity': "🧬 WEAPON IDENTITY"}
+                  'identity': "🧬 WEAPON IDENTITY",
+                  'refinement': "♻ EQUIPMENT REFINEMENT"}
 
     def _recommended_kind(self, mission_index):
+        # Refund picks waiting on the level Next level just moved to come first; once
+        # spent, the box re-arms with the level's usual first step (plan section 7).
+        if (getattr(self, '_rec_armed', False)
+                and refinement_pending(self.run_state, self._current_game())):
+            return 'refinement'
         return recommended_kind(mission_index)
 
     def _sync_rec_step(self):
@@ -17407,7 +17572,7 @@ class HaloGUI(QMainWindow):
         # The skull round of the level shown (chosen here the first time a game's
         # level is shown, so the box can say which level it is)
         sr = None
-        if kind and getattr(self, 'enhancer', None) is not None:
+        if kind and kind != 'refinement' and getattr(self, 'enhancer', None) is not None:
             try:
                 g = (self.game_combo.currentText() if self._rec_armed
                      else self.game_combo.itemText(nxt[0]))
@@ -17425,10 +17590,13 @@ class HaloGUI(QMainWindow):
     def on_recommended_step(self):
         kind = getattr(self, '_rec_kind', None)
         self._rec_armed = False
+        # a refinement round started here hands the box back when it ends
+        self._refine_rearm = kind == 'refinement'
         self._sync_rec_step()
         handler = {'anything': self.on_new_anything_button, 'weapon': self.on_new_weapon_button,
                    'equipment': self.on_new_equipment_button,
-                   'generate': self.on_generate_clicked, 'identity': self.on_identity_clicked}.get(kind)
+                   'generate': self.on_generate_clicked, 'identity': self.on_identity_clicked,
+                   'refinement': self.on_refinement_clicked}.get(kind)
         if handler:
             handler()
 
@@ -17540,9 +17708,10 @@ class HaloGUI(QMainWindow):
             'time': time_t, 'time_seconds': time_secs,
             'time_multiplier': mult,
             # rounds drafted on this level (since the previous Next level) and in all
-            'rounds': len(rs.rounds or []) - ((getattr(rs, 'levels', None) or [{}])[-1]
-                                              .get('rounds_total') or 0),
-            'rounds_total': len(rs.rounds or []),
+            # (refinement picks are not drafting rounds: drafting_rounds)
+            'rounds': len(drafting_rounds(rs.rounds)) - (
+                (getattr(rs, 'levels', None) or [{}])[-1].get('rounds_total') or 0),
+            'rounds_total': len(drafting_rounds(rs.rounds)),
             'recorded_at': datetime.now().isoformat(timespec='seconds'),
             # what was in force, so a result can be read against the par-time change
             'par_time_scale': float(CONFIG.get('par_time_scale') or 1.0),
@@ -18174,6 +18343,21 @@ class HaloGUI(QMainWindow):
         self.identity_btn.clicked.connect(self.on_identity_clicked)
         button_layout.addWidget(self.identity_btn)
 
+        # Equipment upgrade lines: spend the refund picks an upgraded item earned
+        # (EQUIPMENT_LINES_PLAN.md section 7). Live only while some are pending here.
+        self.refinement_btn = QPushButton("♻ EQUIPMENT REFINEMENT")
+        self.refinement_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #1f4a5a; color: white; font-weight: bold;
+                font-size: 14px; padding: 10px 20px; border-radius: 5px;
+            }
+            QPushButton:hover { background-color: #2a6a7a; }
+            QPushButton:disabled { background-color: #2a2a2a; color: #777; }
+        """)
+        self.refinement_btn.clicked.connect(self.on_refinement_clicked)
+        self.refinement_btn.setEnabled(False)
+        button_layout.addWidget(self.refinement_btn)
+
         self.new_weapon_btn = QPushButton("🔫 NEW WEAPON")
         self.new_weapon_btn.setToolTip(
             "Draw a new WEAPON for both players — guns, duals and upgrades only. "
@@ -18705,6 +18889,138 @@ class HaloGUI(QMainWindow):
     def on_identity_clicked(self):
         self._start_round_kind('identity')
 
+    # ---- Equipment refinement (EQUIPMENT_LINES_PLAN.md section 7) ----------------
+    def _sync_refinement_btn(self):
+        btn = getattr(self, 'refinement_btn', None)
+        if btn is None:
+            return
+        rs = self.run_state
+        todo = refinement_pending(rs, self._current_game())
+        busy = (self._mid_picking_round()
+                and getattr(rs, 'round_kind', 'normal') != 'refinement')
+        n = sum(int(e.get('picks') or 0) for _p, e in todo)
+        btn.setText("♻ EQUIPMENT REFINEMENT" + (" (%d)" % n if n else ""))
+        btn.setEnabled(bool(todo) and not busy)
+        btn.setToolTip(
+            "Spend the picks refunded when an item upgraded: for each one, take one of "
+            "three cards of the NEW item -- no enemy card, no Other slot. Player 1 goes "
+            "item by item, then player 2.\n" + (
+                "\n".join("%s %s line -> %s: %d pick%s" % (
+                    'P1' if p == 'player1' else 'P2', e.get('line'), e.get('item'),
+                    int(e['picks']), '' if int(e['picks']) == 1 else 's') for p, e in todo)
+                if todo else "Nothing to refine on this game."))
+
+    def on_refinement_clicked(self):
+        rs = self.run_state
+        if (self._mid_picking_round()
+                and getattr(rs, 'round_kind', 'normal') != 'refinement'):
+            self.update_status("Finish the round on screen first.")
+            return
+        if not refinement_pending(rs, self._current_game()):
+            self.update_status("No refund picks to spend on this game.")
+            return
+        rs.round_kind = 'refinement'
+        self._refinement_next()
+
+    def _refinement_next(self):
+        """Show the next refund pick's three cards, or end the round."""
+        rs, game = self.run_state, self._current_game()
+        while True:
+            todo = refinement_pending(rs, game)
+            if not todo:
+                self._refinement_finish()
+                return
+            player, ent = todo[0]
+            held = {_line_canon(self.db, w) for w in rs.weapons_for(player) or []}
+            if _line_canon(self.db, ent.get('item')) not in held:
+                lapse_refinement(rs, player, ent, 'the item is no longer held')
+                continue
+            cards = self.enhancer.refinement_cards(ent['item'])
+            if not cards:
+                lapse_refinement(rs, player, ent, 'no card of it left to offer')
+                continue
+            break
+        total = int(ent.get('total') or ent['picks'])
+        info = {'player': player, 'line': ent.get('line'), 'item': ent['item'],
+                'from': ' + '.join(ent.get('from') or []), 'game': game,
+                'n': total - int(ent['picks']) + 1, 'of': total}
+        rs.pairs = [{'id': i + 1, 'player1_mod': c if player == 'player1' else None,
+                     'player2_mod': c if player == 'player2' else None,
+                     'enemy_mod': None, 'wildcard_mod': None, 'refinement': dict(info)}
+                    for i, c in enumerate(cards)]
+        rs.phase = 'player1_turn' if player == 'player1' else 'player2_turn'
+        rs.current_turn = player
+        self.display_pairs(rs.pairs, player == 'player1', player == 'player2')
+        self.update_status("%s · %s line: %s -> %s · refund pick %d of %d -- take one card"
+                           % ('Player 1' if player == 'player1' else 'Player 2', info['line'],
+                              info['from'] or '?', info['item'], info['n'], info['of']))
+        self.update_history()
+        self._sync_save_button()
+
+    def _on_refinement_pick(self, pair):
+        """Record one refund pick as its own round and move on."""
+        rs, info = self.run_state, pair['refinement']
+        player = info['player']
+        card = pair.get(player + '_mod')
+        if not isinstance(card, dict):
+            return
+        slot = {'weapon': info['item'], 'mod': card, 'gained_weapon': None,
+                'refinement': {'line': info['line']}}
+        rd = {'kind': 'refinement', 'game': info['game']}
+        for pk in ('player1', 'player2'):
+            rd[pk] = (slot if pk == player else
+                      {'weapon': rs.player1_weapon if pk == 'player1' else rs.player2_weapon,
+                       'mod': None, 'gained_weapon': None})
+        for k in ('enemy1', 'enemy2', 'wildcard', 'wildcard2', 'boss1', 'boss2',
+                  'hero1', 'hero2', 'skull1', 'skull2', 'exhaust1', 'exhaust2'):
+            rd[k] = None
+        rs.rounds.append(rd)
+        self._blacklist_exclusive_siblings(rd)
+        spend_refinement_pick(rs, player, info['line'], info['game'])
+        self.update_status("%s refined %s: %s" % ('Player 1' if player == 'player1'
+                                                  else 'Player 2', info['item'],
+                                                  card.get('name')))
+        self._refinement_next()
+
+    def _refinement_replace(self, pair):
+        """A refinement card was blacklisted: draw a replacement of the same item,
+        never one already on screen. No replacement left: the offer shrinks; nothing
+        left at all: the rest of that item's refund lapses."""
+        rs, info = self.run_state, pair['refinement']
+        player = info['player']
+        lab = self.db.get_mod_label
+        shown = [lab(pp.get(player + '_mod')) for pp in rs.pairs
+                 if isinstance(pp.get(player + '_mod'), dict)]
+        new = self.enhancer.refinement_cards(info['item'], 1, exclude=shown)
+        if new:
+            pair[player + '_mod'] = new[0]
+        else:
+            rs.pairs = [pp for pp in rs.pairs if pp is not pair]
+        if not rs.pairs:
+            ent = next((e for _p, e in refinement_pending(rs, info['game'], player)
+                        if e.get('line') == info['line']), None)
+            if ent is not None:
+                lapse_refinement(rs, player, ent, 'every card of it is blacklisted')
+            self._refinement_next()
+            return
+        self.display_pairs(rs.pairs, player == 'player1', player == 'player2')
+
+    def _refinement_finish(self):
+        rs = self.run_state
+        rs.round_kind = 'normal'
+        rs.pairs = []
+        rs.phase = 'complete'
+        rs.current_turn = 'player1'
+        rs.selected_pairs = {'player1': None, 'player2': None}
+        self.clear_pairs()
+        if getattr(self, '_refine_rearm', False):
+            self._refine_rearm = False
+            self._rec_armed = True          # the level's usual first step comes next
+        self.update_status("Equipment refinement done -- generate pairs when ready.")
+        self.update_history()
+        self._sync_save_button()
+        self.generate_btn.setEnabled(True)
+
     def on_generate(self):
         if not self.run_state.player1_weapon or not self.run_state.player2_weapon:
             self.update_status("Please select weapons for both players first")
@@ -18799,6 +19115,7 @@ class HaloGUI(QMainWindow):
         rs = getattr(self, 'run_state', None)
         self.save_btn.setEnabled(not self._mid_picking_round())
         self._sync_next_level()
+        self._sync_refinement_btn()
         qb = getattr(self, 'quicksave_btn', None)
         if qb is not None:
             # Quicksave writes a completed run for the partner to pick up, so it needs
@@ -18816,6 +19133,11 @@ class HaloGUI(QMainWindow):
                           % (getattr(rs, 'phase', '?') if rs else '?'))
 
     def on_pair_selected(self, pair_id):
+        ref = next((pp for pp in self.run_state.pairs or []
+                    if pp.get('id') == pair_id and pp.get('refinement')), None)
+        if ref is not None:
+            self._on_refinement_pick(ref)
+            return
         player = self.run_state.current_turn
         if not self.enhancer.select_pair(pair_id, player):
             return
@@ -18973,6 +19295,9 @@ class HaloGUI(QMainWindow):
         pair = next((p for p in self.run_state.pairs if p['id'] == pair_id), None)
         if not pair:
             return
+        if pair.get('refinement'):
+            self._refinement_replace(pair)      # only the Blacklist button gets here
+            return
         game = self._current_game()
         bl = self.run_state.blacklist
         if mod_type in ('player1', 'player2'):
@@ -19129,14 +19454,26 @@ class HaloGUI(QMainWindow):
             text += "\n--- Previous Rounds ---\n"
             for e in line_after.get(0, []):
                 text += line_entry_text(e) + "\n"
+            n_round = 0
             for i, round_data in enumerate(self.run_state.rounds, 1):
+                if round_data.get('kind') == 'refinement':
+                    # a refund pick: shown as such, not numbered as a round
+                    who = [(pk, round_data[pk]) for pk in ('player1', 'player2')
+                           if isinstance((round_data.get(pk) or {}).get('mod'), dict)]
+                    text += "♻ Refinement (%s): %s" % (round_data.get('game') or '?', ', '.join(
+                        "%s: %s" % ('P1' if pk == 'player1' else 'P2',
+                                    self._round_summary(pd)) for pk, pd in who)) + "\n"
+                    for e in line_after.get(i, []):
+                        text += line_entry_text(e) + "\n"
+                    continue
+                n_round += 1
                 enemy1 = round_data.get('enemy1')
                 enemy2 = round_data.get('enemy2')
                 # both players' wildcard slots (deduped if the same one)
                 wilds = [w for w in (round_data.get('wildcard'), round_data.get('wildcard2')) if w]
                 boss1 = round_data.get('boss1')
                 boss2 = round_data.get('boss2')
-                text += f"Round {i}: P1: {self._round_summary(round_data['player1'])}, "
+                text += f"Round {n_round}: P1: {self._round_summary(round_data['player1'])}, "
                 text += f"P2: {self._round_summary(round_data['player2'])}, "
                 text += f"Enemies: {self._enemy_effect_label(enemy1)}, {self._enemy_effect_label(enemy2)}"
                 if wilds:
@@ -19166,6 +19503,7 @@ class HaloGUI(QMainWindow):
 
         self.history_text.setText(text)
         self.update_weapon_display()
+        self._sync_refinement_btn()
 
     def _skull_left_text(self, sk):
         """How long a recorded skull still runs, for the round history."""
@@ -20220,6 +20558,23 @@ class RunEnhancer:
     def card_item(mod):
         """The weapon / equipment a player card belongs to, or None for a General card."""
         return mod.get('weapon') or mod.get('equipment') or None
+
+    def refinement_cards(self, item, n=3, exclude=()):
+        """Up to `n` distinct cards of `item` for one refund pick (EQUIPMENT_LINES_PLAN.md
+        section 7): the item's cards through the usual filter (blacklist, game, Options
+        gates, one step variant), drawn one by one with _weighted_pick. `exclude` holds
+        labels already on screen. Fewer when the item has fewer."""
+        game = self.db.get_game_for_mission(self.run_state.mission_id)
+        lab = self.db.get_mod_label
+        pool = [m for m in self.db.get_equipment_modifiers_filtered(
+                    item, self.run_state.blacklist, game)
+                if lab(m) not in set(exclude)]
+        out = []
+        while pool and len(out) < n:
+            m = self._weighted_pick(pool, None)
+            out.append(m)
+            pool = [x for x in pool if lab(x) != lab(m)]
+        return out
 
     def _weighted_pick(self, mods, player=None):
         """Pick a player card in two steps (weapon_card_share): a weapon card with that

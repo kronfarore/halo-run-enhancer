@@ -2,7 +2,7 @@
 
     python sprint_toolkit/equipment_lines_check.py
 
-Phase 1 (data + lookups). In memory, halo.json only: no map is read, nothing is
+Phases 1-3 (data + lookups, transitions, refunds). In memory, halo.json only: no map is read, nothing is
 written. Exits 1 on the first failed assertion group, printing what failed.
 """
 import contextlib
@@ -173,6 +173,144 @@ def phase2(db):
     check(old.line_log == [], 'an old run loads with an empty line_log')
 
 
+def card(db, item, name):
+    """A copy of a card as a round stores it: an equipment card of `item`, or (item
+    None) a General card."""
+    pool = (db.equipment_mods.get(item, []) if item else
+            db.positive_pool + db.negative_pool + db.wildcard_pool)
+    return dict(next(m for m in pool if m.get('name') == name))
+
+
+def rnd(p1=None, p2=None, kind=None):
+    rd = {'player1': {'weapon': 'X', 'mod': p1, 'gained_weapon': None},
+          'player2': {'weapon': 'Y', 'mod': p2, 'gained_weapon': None},
+          'enemy1': None, 'enemy2': None, 'wildcard': None, 'boss1': None, 'boss2': None}
+    if kind:
+        rd['kind'] = kind
+    return rd
+
+
+def pending(st, p):
+    return [(e['line'], e['item'], e['game'], e['picks'])
+            for e in (st.pending_refinement.get(p) or [])]
+
+
+def phase3(db):
+    """Refunds, pending_refinement, refinement rounds, counters (plan section 10)."""
+    import halo_patch
+    S, C = he.SPRINT_ITEM, he.CAMO_ITEM
+    he.CONFIG.update({'equipment_lines_enabled': True, 'equipment_lines': None,
+                      'equipment_refund_enabled': True, 'equipment_refund_percent': 50,
+                      'remove_superflare_jammer': False,
+                      'remove_invincibility_invisibility': False,
+                      'sprint_feature': True, 'h4_sprint_mode': 'restore'})
+
+    print('\n14. the worked example: refunds at 50 % (plan section 6)')
+    st = he.RunState()
+    st.player1_weapons, st.player1_weapon = ['Assault Rifle', C], 'Assault Rifle'
+    st.player2_weapons, st.player2_weapon = ['Pistol', S], 'Pistol'
+    for _ in range(3):
+        st.rounds.append(rnd(card(db, None, 'Camo Duration'), card(db, None, 'Sprint Speed')))
+    st.rounds[-1]['player2']['mod'] = None            # P2: 2 Sprint Speed picks
+    w = walk(db, st, ['Halo 1', 'Halo 2'])
+    check(not st.pending_refinement.get('player1') and not w['Halo 2'][2],
+          'H1 -> H2: 👁 Camo stays, its cards continue, nothing refunded')
+    w = walk(db, st, ['Halo 3'], start='Halo 2')
+    e = next(x for x in w['Halo 3'][2] if x['line'] == 'Camo')
+    check((e['to'], e['stranded'], e['refund']) == ('Invisibility', 3, 2)
+          and pending(st, 'player1') == [('Camo', 'Invisibility', 'Halo 3', 2)],
+          'H2 -> H3: Invisibility, 3 Camo Duration picks stranded, 2 refunded')
+    check(not st.pending_refinement.get('player2'), 'P2 ⚡ Sprint: gap in H3, no refund yet')
+    print('       ' + he.line_entry_text(e))
+    # spend both refund picks on Invisibility cards (what the round records)
+    before = {x['name']: x['count'] for x in halo_patch.collect_effects(st.rounds)
+              if x.get('equipment') == 'Invisibility'}
+    for nm in ('Duration', 'Charges'):
+        st.rounds.append(rnd(card(db, 'Invisibility', nm), None, kind='refinement'))
+        he.spend_refinement_pick(st, 'player1', 'Camo', 'Halo 3')
+    after = {x['name']: x['count'] for x in halo_patch.collect_effects(st.rounds)
+             if x.get('equipment') == 'Invisibility'}
+    check(before == {} and after == {'Duration': 1, 'Charges': 1}
+          and not st.pending_refinement.get('player1'),
+          'refinement picks raise Invisibility counts in collect_effects; pending spent')
+    check(len(he.drafting_rounds(st.rounds)) == 3 and len(st.rounds) == 5,
+          'death penalty / level counts read 3 drafting rounds, not 5')
+    # P2: Auto Turret in ODST, 2 Accuracy Bounds (H3 only) + 1 Turret Damage (H3 + H4)
+    st.player2_weapons.append('Auto Turret')
+    w = walk(db, st, ['Halo 3: ODST'], start='Halo 3')
+    check(not st.pending_refinement.get('player1') and not w['Halo 3: ODST'][2],
+          'H3 -> ODST: same item, inherited cards, nothing refunded')
+    for nm in ('Accuracy Bounds', 'Accuracy Bounds', 'Turret Damage'):
+        st.rounds.append(rnd(None, card(db, 'Auto Turret', nm)))
+    w = walk(db, st, ['Halo Reach'], start='Halo 3: ODST')
+    r = {x['line']: x for x in w['Halo Reach'][2] if x.get('kind', 'change') == 'change'}
+    check((r['Camo']['to'], r['Camo']['stranded'], r['Camo']['refund'])
+          == ('Active Camouflage', 2, 1),
+          'ODST -> Reach: Active Camouflage, the 2 refinement picks stranded, 1 refunded')
+    check((r['Sprint']['to'], r['Sprint']['stranded'], r['Sprint']['refund']) == ('Sprint', 2, 1),
+          'Sprint across its gap: H2 picks (2 Sprint Speed) stranded at Reach, 1 refunded')
+    check(r['Turret']['to'] is None and r['Turret']['refund'] is None,
+          'Auto Turret: gap in Reach, no refund there')
+    check(pending(st, 'player1') == [('Camo', 'Active Camouflage', 'Halo Reach', 1)]
+          and pending(st, 'player2') == [('Sprint', 'Sprint', 'Halo Reach', 1)],
+          'pending: P1 Active Camouflage 1, P2 Sprint 1')
+    for x in w['Halo Reach'][2]:
+        print('       ' + he.line_entry_text(x))
+
+    print('\n15. once per player, line and game; lapses; refunds off')
+    walk(db, st, ['Halo 3: ODST'], via='manual', start='Halo Reach')
+    walk(db, st, ['Halo Reach'], start='Halo 3: ODST')
+    check(pending(st, 'player1') == [('Camo', 'Active Camouflage', 'Halo Reach', 1)]
+          and pending(st, 'player2') == [('Sprint', 'Sprint', 'Halo Reach', 1)],
+          'back to ODST by hand and Next level again: no second refund')
+    w = walk(db, st, ['Halo 4'], start='Halo Reach')
+    lapses = [x for x in w['Halo 4'][2] if x.get('kind') == 'lapse']
+    check(sorted((x['player'], x['item'], x['picks']) for x in lapses)
+          == [('player1', 'Active Camouflage', 1), ('player2', 'Sprint', 1)],
+          'Reach -> H4: the unspent Reach refunds lapse, with a note each')
+    print('       ' + he.line_entry_text(lapses[0]))
+    t = next(x for x in w['Halo 4'][2] if x.get('line') == 'Turret')
+    check((t['from'], t['to'], t['stranded'], t['refund'])
+          == (['Auto Turret'], 'Auto Turret', 2, 1)
+          and pending(st, 'player2') == [('Turret', 'Auto Turret', 'Halo 4', 1)],
+          'H4: Auto Turret keeps its name; 2 Accuracy Bounds stranded (vs ODST), 1 refunded')
+    print('       ' + he.line_entry_text(t))
+    check(not any(x.get('line') == 'Camo' and x.get('kind', 'change') == 'change'
+                  for x in w['Halo 4'][2]), 'Reach -> H4: Camo cards continue, no entry')
+    he.CONFIG['equipment_refund_enabled'] = False
+    st2 = he.RunState()
+    st2.player1_weapons = [C]
+    st2.rounds = [rnd(card(db, None, 'Camo Duration'))]
+    w = walk(db, st2, ['Halo 3'], start='Halo 2')
+    check(w['Halo 3'][2][0]['refund'] is None and not st2.pending_refinement,
+          'refunds off: rename only')
+    he.CONFIG['equipment_refund_enabled'] = True
+    st3 = he.RunState()
+    st3.player1_weapons = [C]
+    st3.rounds = [rnd(card(db, None, 'Camo Duration'))]
+    walk(db, st3, ['Halo 3'], via='manual', start='Halo 2')
+    check(not st3.pending_refinement, 'a manual game change renames, never refunds')
+    he.CONFIG['equipment_refund_percent'] = 30
+    st4 = he.RunState()
+    st4.player1_weapons = [C]
+    st4.rounds = [rnd(card(db, None, 'Camo Duration')) for _ in range(4)]
+    walk(db, st4, ['Halo 3'], start='Halo 2')
+    check(pending(st4, 'player1') == [('Camo', 'Invisibility', 'Halo 3', 1)],
+          '30 %: 4 stranded picks -> 1')
+    he.CONFIG['equipment_refund_percent'] = 50
+
+    print('\n16. saved with the run')
+    with contextlib.redirect_stdout(io.StringIO()):
+        back = he.RunState.from_dict(st.to_dict())
+    check(back.pending_refinement == st.pending_refinement and back.line_log == st.line_log
+          and [rd.get('kind') for rd in back.rounds] == [rd.get('kind') for rd in st.rounds],
+          '.run round trip keeps pending_refinement, line_log and the refinement rounds')
+    with contextlib.redirect_stdout(io.StringIO()):
+        old = he.RunState.from_dict({'phase': 'player1_turn', 'rounds': []})
+    check(old.pending_refinement == {} and old.options.get('equipment_refund_enabled') is False,
+          'an old run: nothing pending, refunds off')
+
+
 def main():
     he.load_settings()
     with contextlib.redirect_stdout(io.StringIO()):
@@ -340,6 +478,7 @@ def main():
           'a new run round-trips its lines options')
 
     phase2(db)
+    phase3(db)
 
     he.CONFIG.clear()
     he.CONFIG.update(saved)

@@ -277,6 +277,35 @@ Reach. The refund is computed there from the Halo 1/2 picks.
 
 ## 7. The refinement round
 
+**Phase 3 DONE 2026-11-27** (checks 14-16 of `equipment_lines_check.py`, and
+`equipment_lines_gui_check.py`: an offscreen Next level H2 -> H3, the recommended step,
+three cards, Blacklist replacing one, two picks, the round's end). As built:
+- Refunds live in `apply_line_transitions`, Next level only, the refund option on, a
+  LATER game, once per player/line/game (an entry there with refund > 0 blocks another).
+  They're evaluated on every held line with an item there, renamed or not: Auto Turret
+  ODST -> Halo 4 refunds its Halo-3-only picks.
+- `player_card_picks` counts one player's picks like `collect_effects` does, on a view
+  of the rounds holding only that player's slot. `line_stranded` sums the cards in
+  `line_cards(prev) - line_cards(new)`; a negative card total counts 0.
+- `pending_refinement[player]`: `{line, item, game, picks, total, from}`. Next level
+  into another game lapses what is left, as a `line_log` entry of kind `lapse`. A
+  refund is also lapsed when its item is no longer held or has no card left.
+- Measured on the worked example: Camo H2 -> H3, 3 stranded -> 2; the 2 refinement
+  picks on Invisibility are themselves stranded at Reach -> 1. Sprint H2 -> Reach
+  across its gap, 2 -> 1. Auto Turret ODST -> H4, 2 Accuracy Bounds -> 1. At 30 %,
+  4 -> 1.
+- The round: "♻ EQUIPMENT REFINEMENT (n)" beside Weapon Identity; refused while
+  another round is on screen. Offers are PairCards flagged `refinement`: a titled
+  header, "no enemy card" in the negative band, no Reroll. Blacklist draws a
+  replacement not on screen, or the offer shrinks. Each pick is a round
+  `{'kind': 'refinement', 'game', player slot {weapon, mod, refinement: {line}}}`.
+- The same card may come up again for the next refund pick, as in normal drafting.
+- The Next level box recommends the refinement first; a round started there re-arms the
+  box with the level's usual step when it ends.
+- Walkers: `drafting_rounds` feeds the death penalty and the levels' `rounds` /
+  `rounds_total`. The history shows "♻ Refinement (game): P1: item - card", and normal
+  rounds keep their numbering.
+
 - **Button:** "♻ EQUIPMENT REFINEMENT" next to "🧬 WEAPON IDENTITY", enabled while
   `pending_refinement` holds picks for the current game.
 - **Recommended step:** `recommended_kind(0)` returns `refinement` while refunds are
