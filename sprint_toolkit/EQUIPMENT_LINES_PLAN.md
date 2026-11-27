@@ -43,7 +43,9 @@ calls (2026-11-27), "Plan" marks calls made while planning, from the code.
     lacks them, no refund.
 11. **Offers** (plan): today a held item is offered to nobody (`drop_weapons_taken`). With
     lines, holding ANY item of a line keeps EVERY item of that line out of every offer,
-    for both players.
+    for both players. **Only with "Use equipment upgrade lines" on** (user, 2026-11-27):
+    off, every offer is the old one, the built-in Sprint and Camo lines included (they
+    still rename held items).
 12. **A denied item counts as "-"** (plan): an item an Option switches off in that game
     (e.g. `remove_superflare_jammer`) leaves the line with no item there.
 13. **Direction** (plan): the arsenal always shows the current game's item of the line,
@@ -224,7 +226,9 @@ GUI smoke test: manual change to Halo 3, Next level from ODST into Reach). As bu
   stranded, refund}`. A gap gets ONE entry per dormant stretch (Sprint sits out Halo 3
   and ODST: one entry). `stranded` and `refund` stay None until Phase 3.
 - Offers: `drop_weapons_taken` and `ability_offer_pool` treat every item of a held line
-  as taken, for both players. Halo 4 `holder` counts any Sprint-line item.
+  as taken, for both players. Halo 4 `holder` counts any Sprint-line item. All three
+  only with the switch on (`line_offers_on`); off, they match the pre-Phase-2 code on
+  400 random arsenals (drop, the Halo 1/2 ability pool, the Halo 4 holder pool).
 - Display: `arsenal_text` (dormant items read "(inactive in <game>)"; the tooltip traces
   each line and names the next game where a dormant item comes back); `line_entry_text`
   lines sit in the history after the round they followed, and in the status line.

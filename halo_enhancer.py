@@ -2132,8 +2132,10 @@ def drop_weapons_taken(db, weapons, run_state):
         return list(weapons)
     # Equipment upgrade lines: holding ANY item of a line keeps EVERY item of that line
     # out of every offer, for both players (plan decision 11) -- a player carrying
-    # Invisibility into Reach holds the Camo line, so Active Camouflage is taken.
-    idx = line_index(db) if db is not None else {}
+    # Invisibility into Reach holds the Camo line, so Active Camouflage is taken. Only
+    # with "Use equipment upgrade lines" on (user, 2026-11-27): off, the offers are the
+    # old ones, the built-in Sprint and Camo lines included.
+    idx = line_index(db) if (db is not None and line_offers_on()) else {}
     lines = held_line_names(db, run_state, idx=idx) if idx else set()
     return [w for w in weapons if w not in held
             and not (lines and idx.get(_line_canon(db, w)) in lines)]
@@ -2166,8 +2168,8 @@ def ability_offer_pool(db, game, run_state, player=None):
             run_state.weapons_for('player1') + run_state.weapons_for('player2')
             if is_ability_item(w)}
     offered = CONFIG.get('abilities_offered') or ['sprint']
-    # an ability whose line someone holds is taken, as in drop_weapons_taken
-    idx = line_index(db) if db is not None else {}
+    # an ability whose line someone holds is taken, as in drop_weapons_taken (lines on)
+    idx = line_index(db) if (db is not None and line_offers_on()) else {}
     lines = held_line_names(db, run_state, idx=idx) if idx else set()
     return [item for item, ab in ABILITY_ITEMS.items()
             if ab in offered and not (ab in ABILITY_ONE_PER_RUN and ab in held)
@@ -2723,6 +2725,14 @@ def line_cards(db, line, game):
                     and m not in out):
                 out.append(m)
     return out
+
+
+def line_offers_on():
+    """Do the lines change what is OFFERED? Only with "Use equipment upgrade lines" on
+    (user, 2026-11-27): with it off every offer is the old one -- only the exact items a
+    player holds are taken -- even though the built-in Sprint and Camo lines still
+    rename held items on a game change."""
+    return bool(CONFIG.get('equipment_lines_enabled'))
 
 
 def line_index(db):
@@ -5426,8 +5436,8 @@ class ModifierDatabase:
             # "Holds the Sprint line" (equipment lines plan, section 8): the Halo 1/2
             # ability, or any item of the built-in Sprint line. Entering Halo 4 renames
             # the item to Sprint (has_eq) unless the mode is off; a run whose item was
-            # never renamed still counts as a holder.
-            idx = line_index(self)
+            # never renamed still counts as a holder. Lines off: the old rule.
+            idx = line_index(self) if line_offers_on() else {}
             has_ability = any(ability_of_item(w) == 'sprint'
                               or idx.get(_line_canon(self, w)) == 'Sprint' for w in held)
             want = (mode in ('all', 'restore')

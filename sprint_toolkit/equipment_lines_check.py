@@ -115,9 +115,9 @@ def phase2(db):
     check(he.drop_weapons_taken(db, pool, st4) == ['Drop Shield', 'Armor Lock', 'Hologram', 'DMR'],
           'Invisibility held -> Active Camouflage taken; Grav Lift -> Jet Pack taken')
     he.CONFIG['equipment_lines_enabled'] = False
-    check(he.drop_weapons_taken(db, pool, st4) == ['Drop Shield', 'Jet Pack', 'Armor Lock',
-                                                   'Hologram', 'DMR'],
-          'table off: only the built-in Camo line counts')
+    check(he.drop_weapons_taken(db, pool, st4) == pool,
+          'switch off: the old offers -- only held items are taken, no line rule '
+          '(user, 2026-11-27)')
     he.CONFIG['equipment_lines_enabled'] = True
     he.CONFIG.update({'sprint_as_card': True, 'sprint_start_with': False,
                       'sprint_need_weapon': False,
@@ -127,6 +127,10 @@ def phase2(db):
     st5.player2_weapons = ['Pistol']
     got = he.ability_offer_pool(db, 'Halo 1', st5, 'player2')
     check(C not in got and S in got, 'H1: Invisibility held -> 👁 Camo not offered (%s)' % got)
+    he.CONFIG['equipment_lines_enabled'] = False
+    got = he.ability_offer_pool(db, 'Halo 1', st5, 'player2')
+    check(C in got, 'switch off: 👁 Camo offered as before (%s)' % got)
+    he.CONFIG['equipment_lines_enabled'] = True
 
     print('\n12. Halo 4 holder, gaps and denied items, backwards, table off')
     he.CONFIG['h4_sprint_mode'] = 'holder'
