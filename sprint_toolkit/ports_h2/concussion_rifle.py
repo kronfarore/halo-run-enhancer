@@ -673,7 +673,8 @@ PORT = {
                  "each speeding up in flight and bursting on contact with a blast that throws what it hits. "
                  "Balanced through Halo 2's Fuel Rod."),
     },
-    'test': {'level': '03a_oldmombasa', 'dervish_level': '04a_gasgiant'},
+    # rounds: The Arbiter's profile carries none for the port (boot 2: 6 loaded, nothing in reserve) -> Reach's 6 / 30
+    'test': {'level': '03a_oldmombasa', 'dervish_level': '04a_gasgiant', 'rounds': (6, 30)},
     'residency': {'levels': 'all', 'placements': False},
 }
 
