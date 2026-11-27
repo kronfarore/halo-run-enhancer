@@ -1465,11 +1465,13 @@ def _h2_profile_names(m, scnr_base, boff, esize, count):
     return out
 
 
-#: ODST profile names the blanket "every starting profile" write skips. Every ODST map
-#: trails its sixteen spawn profiles with them (Mombasa Streets has fourteen `weapon
-#: insert`). NOTE, read from H3ODSTEK's level scripts 2026-11-27: no script names
-#: `weapon insert`, but `insertion_profile` IS a player's -- sc110, sc130 and sc140
-#: hand it to all four players (reset TRUE) at their later insertion points.
+#: ODST profile names that are not one of the insertion point's groups of four, which
+#: odst_profile_for's stride must not land on. Every ODST map trails its sixteen
+#: spawn profiles with them (Mombasa Streets has fourteen `weapon insert`). Read from
+#: H3ODSTEK's level scripts 2026-11-27: no script names `weapon insert`, and
+#: `insertion_profile` IS a player's -- sc110, sc130 and sc140 hand it to all four
+#: players (reset TRUE) at their later insertion points -- so both writes that sweep
+#: every profile take them (_odst_player_profiles).
 _SCRIPTED_PROFILE_NAMES = ('weapon insert', 'insertion_profile')
 
 #: ODST profiles a level's scripts hand an AI SQUAD, not a player. Every
@@ -1486,6 +1488,14 @@ def _is_scripted_profile(name):
 
 def _is_odst_ai_profile(name):
     return str(name or '').strip().lower() in _ODST_AI_PROFILE_NAMES
+
+
+def _odst_player_profiles(names):
+    """Indices of every ODST profile a player can be handed: all of them but the ones
+    a level's scripts give an AI squad. One rule for both sweeps -- arming every
+    profile (the profile route) and emptying every profile (placed weapons) -- so the
+    two cannot disagree about whose profile is whose."""
+    return [i for i, n in enumerate(names) if not _is_odst_ai_profile(n)]
 
 
 def odst_profile_for(m, game, scnr_base, boff, esize, count, insertion_ordinal, player):
@@ -1513,7 +1523,10 @@ def odst_profile_for(m, game, scnr_base, boff, esize, count, insertion_ordinal, 
     if not (0 <= idx < count):
         return None
     poff = m.follow(scnr_base, [boff], [esize], idx)
-    if poff is None or _is_scripted_profile(_profile_name(m, poff)):
+    if poff is None:
+        return None
+    nm = _profile_name(m, poff)
+    if _is_scripted_profile(nm) or _is_odst_ai_profile(nm):
         return None
     return idx
 
@@ -2112,18 +2125,18 @@ def _apply_starting_equipment(m, game, registry, starting):
                         wanted.append(p)
             profiles = wanted or [0]
         elif starting.get('all_profiles'):
-            # Deliberate blanket write (ODST option). Which profile ODST spawns the
-            # player on follows the insertion point and can change mid-mission, so a
-            # run that must not lose its picks arms every one of them.
+            # Deliberate blanket write (ODST option, TO BE REMOVED with the profile
+            # route -- user 2026-11-27). Which profile ODST spawns the player on follows
+            # the insertion point and can change mid-mission, so a run that must not
+            # lose its picks arms every one of them.
             #
-            # Except the SCRIPTED ones. Every ODST level ends its profile list with
-            # entries named `weapon insert` or `insertion_profile` -- Mombasa Streets
-            # ships fourteen of them -- and those are not player spawn profiles at all;
-            # they are the templates scripts hand a weapon from. Arming them is pure
-            # noise, so the blanket write stops short of them.
+            # Every PLAYER's, that is (fixed 2026-11-27 from the level scripts): it used
+            # to skip insertion_profile, which three levels hand all four players at
+            # their later insertion points (reset TRUE, so those entries lost the run's
+            # weapons), and to arm the three profiles scripts give AI squads (Dutch on
+            # Kizingo Boulevard, two pod squads on Uplift Reserve).
             names = _h2_profile_names(m, scnr_base, boff, esize, count)
-            profiles = [i for i in range(count)
-                        if not _is_scripted_profile(names[i])]
+            profiles = _odst_player_profiles(names)
         else:
             if reach_roles is not None:
                 # The configured index list ([0, 1] by default) means nothing in Reach,
@@ -2137,14 +2150,15 @@ def _apply_starting_equipment(m, game, registry, starting):
                     profiles = [i for i in profiles if i == 0]
         if starting.get('spawn_instead') and str(game).strip() == 'Halo 3: ODST':
             # Placed weapons replace the profile for EVERY player at EVERY entry, so
-            # every player profile is emptied, whatever the ODST profile options say:
-            # those choose which profiles to ARM, and profile 0 alone left player 2 and
-            # the other entries holding the map's guns on top of the placed ones. That
+            # every player profile is emptied and the ODST profile options are IGNORED
+            # (user, 2026-11-27: the two routes contradict each other). Those options
+            # choose which profiles to ARM, and profile 0 alone left player 2 and the
+            # other entries holding the map's guns on top of the placed ones. That
             # includes insertion_profile, which Uplift Reserve, ONI Alpha Site and NMPD
             # HQ hand all four players at their later insertion points. Only the
             # profiles a level's scripts give an AI squad keep their weapons.
             names = _h2_profile_names(m, scnr_base, boff, esize, count)
-            profiles = [i for i in range(count) if not _is_odst_ai_profile(names[i])]
+            profiles = _odst_player_profiles(names)
         # No guard here: these profiles were named outright, and a map that starts
         # the player unarmed on purpose (Halo 1's a10) should still honour the picks.
         plan = [('primary', profiles, prim, 'Primary Weapon', False),
@@ -2155,7 +2169,13 @@ def _apply_starting_equipment(m, game, registry, starting):
         # applies none, so arming index 0 alone leaves several entries untouched.
         # Sweep the other chief-role profiles too, GUARDED so a scripted weaponless
         # state (chief_pre_training) stays weaponless.
-        if game == 'Halo 3' and starting.get('h3_all_chief'):
+        #
+        # Placed weapons sweep them whatever the option says (user, 2026-11-27: the
+        # option is a profile-route one, to be removed, and must not decide how much
+        # of the profile route a placing run leaves behind). Emptying with the guard on
+        # only skips slots already empty, so every chief profile ends up weaponless.
+        if game == 'Halo 3' and (starting.get('h3_all_chief')
+                                 or starting.get('spawn_instead')):
             roles = {}
             for i in range(count):
                 poff = m.follow(scnr_base, [boff], [esize], i)

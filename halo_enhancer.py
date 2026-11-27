@@ -1090,6 +1090,8 @@ CONFIG = {
     # starting profile, not just index 0. Crow's Nest hands the player a profile
     # per rally point and applies NONE at level start, so index 0 alone leaves
     # entries unarmed. Scripted weaponless profiles are still skipped.
+    # TO BE REMOVED with the profile route (user, 2026-11-27); ignored whenever
+    # h3_spawn_starting_weapons places the weapons.
     "h3_all_chief_profiles": True,
     # Write player 1's loadout where player 2's would go and vice versa — starting
     # weapons, starting equipment and abilities together. Only affects what is
@@ -1504,8 +1506,10 @@ CONFIG = {
     # profile 0 and the game can spawn the player on another one holding the map's
     # vanilla weapons. With this on, EVERY profile in the scenario gets the run's
     # starting weapons, so wherever the game spawns you the loadout is right.
-    # Off by default: ODST also names NPC profiles (dutch, buck, odst02, 'a'), so this
-    # hands squadmates the player's weapons too. Harmless to a run, but visible.
+    # Only PLAYER profiles since 2026-11-27 (insertion_profile included, the three
+    # AI-squad ones skipped: halo_patch._odst_player_profiles).
+    # TO BE REMOVED with the profile route (user, 2026-11-27); ignored whenever
+    # odst_spawn_starting_weapons places the weapons.
     "odst_all_starting_profiles": False,
     # ODST sets "Never Dropped By AI" on every equipment PICKUP tag; Halo 3 sets it on
     # none. That is why Brutes never drop equipment in ODST, and why a Brute Drop
@@ -1541,6 +1545,8 @@ CONFIG = {
     # the co-op slots of insertion points you are not at). UNVERIFIED in game — the
     # stride of four is inferred from profile naming and count; see
     # halo_patch.odst_profile_for.
+    # TO BE REMOVED with the profile route (user, 2026-11-27); ignored whenever
+    # odst_spawn_starting_weapons places the weapons.
     "odst_profiles_by_insertion": False,
     # Moving a run up a game used to blank every operator box: the preset key carries
     # both the tag and the game, and both change between engines, so a Halo 2 leg's
@@ -9644,6 +9650,10 @@ class MagnitudeEditorDialog(QDialog):
         # ODST picks the starting profile from the insertion point, and which one is
         # live can change mid-mission — so a run can spawn on a profile the patch never
         # touched and lose its weapons. With this on, every profile gets the picks.
+        # This, by_insertion and h3_all_chief are the PROFILE ROUTE, to be removed
+        # (user, 2026-11-27): they still travel in the spec, but the patcher ignores
+        # them whenever spawn_instead places the weapons, and they only act on a level
+        # that falls back to the profile for want of markers.
         all_profiles = (self.game == 'Halo 3: ODST'
                         and bool(CONFIG.get('odst_all_starting_profiles')))
         # The targeted alternative to the blanket write: give each player the profile
@@ -13106,9 +13116,10 @@ class OptionsDialog(QDialog):
             "-- player 1's at enhancer_marker1, player 2's at enhancer_marker2, and at any "
             "more markers that player owns (Mombasa Streets: 10/11 and 20/21) -- plus the "
             "hub's re-entry points, and the mission's other insertion points when "
-            "'ODST equipment' drops there too.\n\nEVERY player profile is emptied, "
-            "whatever the ODST profile options say, so nothing arrives twice; only the "
-            "profiles a level's scripts give allied squads keep their weapons. A level "
+            "'ODST equipment' drops there too.\n\nEVERY player profile is emptied so "
+            "nothing arrives twice, and the ODST profile options (to be removed) are "
+            "greyed out and ignored; only the profiles a level's scripts give allied "
+            "squads keep their weapons. A level "
             "without markers keeps the profile and says so. Needs 'Set starting "
             "weapons'. Not yet confirmed in game.")
         odform.addRow("Starting weapons:", self.odst_spawn_weapons_cb)
@@ -13192,25 +13203,39 @@ class OptionsDialog(QDialog):
             "never appear.")
         odform.addRow("ODST weapon pools:", self.odst_pools_cb)
 
+        # The PROFILE ROUTE options, TO BE REMOVED (user, 2026-11-27): 'Starting
+        # weapons' at the top of this box places the weapons instead, and the two
+        # routes contradict each other, so these are greyed out while it is ticked and
+        # the patcher ignores them whenever it places. Their saved value still applies
+        # on a level that cannot place (no markers) and falls back to the profile.
+        _PROFILE_ROUTE_NOTE = (
+            "TO BE REMOVED: 'Starting weapons' at the top of this box replaces the "
+            "profile route. Greyed out and ignored while that is ticked (a level without "
+            "markers falls back to the profile, and this applies there).\n\n")
         self.odst_all_profiles_cb = QCheckBox(
-            "ODST: write the starting weapons to EVERY starting profile")
+            "ODST: write the starting weapons to EVERY starting profile (to be removed)")
         self.odst_all_profiles_cb.setChecked(
             bool(CONFIG.get('odst_all_starting_profiles')))
         self.odst_all_profiles_cb.setToolTip(
+            _PROFILE_ROUTE_NOTE +
             "ODST picks the player's Starting Profile from the insertion point, and "
             "which one is live can change as a mission progresses — so the run's "
             "weapons can be written to profile 0 and the game can still spawn you on "
             "another profile holding the map's vanilla guns.\n\nWith this on, every "
-            "profile in the scenario gets the picked starting weapons, so the loadout "
-            "is right wherever the game puts you.\n\nOff by default because ODST also "
-            "names NPC profiles (dutch, buck, odst02), so this hands squadmates the "
-            "same weapons. That does not affect the run, but you will see it.")
+            "player profile in the scenario gets the picked starting weapons, so the "
+            "loadout is right wherever the game puts you — insertion_profile included, "
+            "which Uplift Reserve, ONI Alpha Site and NMPD HQ hand all four players at "
+            "their later insertion points. The three profiles a level's scripts give "
+            "allied squads (Dutch on Kizingo Boulevard, two pod squads on Uplift "
+            "Reserve) keep their own weapons.")
         odform.addRow("ODST profiles:", self.odst_all_profiles_cb)
 
         self.odst_prof_ins_cb = QCheckBox(
-            "ODST: give each player the profile their own insertion point uses")
+            "ODST: give each player the profile their own insertion point uses "
+            "(to be removed)")
         self.odst_prof_ins_cb.setChecked(bool(CONFIG.get('odst_profiles_by_insertion')))
         self.odst_prof_ins_cb.setToolTip(
+            _PROFILE_ROUTE_NOTE +
             "The targeted alternative to the two blunt options above: instead of "
             "profile 0 (player 1 only) or every profile (which also arms co-op slots "
             "you are not standing in), each player gets the profile their own "
@@ -13223,6 +13248,13 @@ class OptionsDialog(QDialog):
             "run entering a mission from two different insertion points to prove. "
             "Overrides the blanket write when both are ticked.")
         odform.addRow("", self.odst_prof_ins_cb)
+
+        def _sync_odst_profile_route(on=None):
+            placing = self.odst_spawn_weapons_cb.isChecked()
+            for cb in (self.odst_all_profiles_cb, self.odst_prof_ins_cb):
+                cb.setEnabled(not placing)      # greyed, not unticked: the fallback
+        self.odst_spawn_weapons_cb.toggled.connect(_sync_odst_profile_route)
+        _sync_odst_profile_route()
 
         self.odst_ai_drops_cb = QCheckBox("ODST: let AI drop equipment again")
         self.odst_ai_drops_cb.setChecked(bool(CONFIG.get('odst_ai_equipment_drops')))
@@ -13369,9 +13401,15 @@ class OptionsDialog(QDialog):
         self.ignore_elite_h3_cb.setToolTip("On by default. In Halo 3 the Elites fight alongside you, "
                                            "so Elite enemy modifiers would tune your allies — this skips "
                                            "them when patching a Halo 3 map. Turn off to patch them anyway.")
-        self.h3_all_chief_cb = QCheckBox("Arm every Chief starting profile, not just the first")
+        # Profile route, TO BE REMOVED (user, 2026-11-27) -- see _PROFILE_ROUTE_NOTE.
+        self.h3_all_chief_cb = QCheckBox(
+            "Arm every Chief starting profile, not just the first (to be removed)")
         self.h3_all_chief_cb.setChecked(bool(CONFIG.get('h3_all_chief_profiles', True)))
         self.h3_all_chief_cb.setToolTip(
+            "TO BE REMOVED: 'Starting weapons' below replaces the profile route. Greyed "
+            "out and ignored while that is ticked — placing empties every Chief profile "
+            "regardless (a level without markers falls back to the profile, and this "
+            "applies there).\n\n"
             "Halo 3 hands the player a starting profile per ENTRY POINT — Crow’s Nest "
             "gives one at each rally point and none at all at level start — so writing "
             "only the first profile can leave you spawning empty-handed. This writes "
@@ -13387,8 +13425,9 @@ class OptionsDialog(QDialog):
             "The starting profile cannot hand out every weapon: a turret written into it "
             "never reaches your hands. With this on, each player's starting weapon is "
             "PLACED at their enhancer marker (else their spawn, or the level's start "
-            "anchor) to be picked up, and the profile's weapon slots are emptied so you do "
-            "not get it twice. Needs 'Set starting weapons'.")
+            "anchor) to be picked up, and every player profile's weapon slots are "
+            "emptied so you do not get it twice. 'Halo 3 profiles' is ignored while this "
+            "is on. Needs 'Set starting weapons'.")
         form.addRow("Starting weapons:", self.h3_spawn_weapons_cb)
         self.h3_spawn_all_cb = QCheckBox("↳ place every selected weapon, not just the first")
         self.h3_spawn_all_cb.setChecked(bool(CONFIG.get('h3_spawn_all_weapons')))
@@ -13402,6 +13441,7 @@ class OptionsDialog(QDialog):
             self.h3_spawn_all_cb.setEnabled(on)
             if not on:
                 self.h3_spawn_all_cb.setChecked(False)
+            self.h3_all_chief_cb.setEnabled(not on)   # greyed, not unticked: the fallback
         self.h3_spawn_weapons_cb.toggled.connect(_sync_h3_spawn)
         _sync_h3_spawn()
         form.addRow("", self.h3_spawn_all_cb)
