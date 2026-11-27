@@ -22,6 +22,7 @@ os.chdir(TOOL)
 import halo_enhancer as he  # noqa: E402
 from PySide6.QtWidgets import QApplication, QDialog  # noqa: E402
 from PySide6.QtCore import Qt  # noqa: E402
+from PySide6.QtGui import QFont  # noqa: E402
 
 he.load_settings()
 he.save_settings = lambda: True
@@ -36,6 +37,9 @@ def check(cond, what):
 
 app = QApplication.instance() or QApplication(sys.argv)
 app.setStyle('Fusion')
+# Windows' UI font: offscreen Qt otherwise picks a narrower one, and the cells that were
+# cut in the real app ("Jammer + Superflare", "Regeneration Field") fitted here.
+app.setFont(QFont('Segoe UI', 9))
 src = open(os.path.join(TOOL, 'halo_enhancer.py'), encoding='utf-8').read()
 m = re.search(r'app\.setStyleSheet\("""(.*?)"""\)', src, re.S)
 app.setStyleSheet(m.group(1))                    # the real app stylesheet
@@ -52,7 +56,7 @@ nb = len(he.BUILTIN_LINES)
 
 
 def cell(r, c):
-    return t.cellWidget(r, c).text()
+    return ' '.join(t.cellWidget(r, c).text().split())      # a wrapped cell reads as one line
 
 
 names = [t.item(r, 0).text() for r in range(t.rowCount())]
@@ -159,11 +163,37 @@ check([ln['name'] for ln in dlg3.values()['equipment_lines']]
       == ['Overshield', 'Shield', 'Cover', 'Mobility', 'Decoy', 'Turret'],
       'Remove line on a selected row')
 
-# ---- render for a look (the dark-theme trap) ----
-dlg2.resize(1250, 900)
+# ---- every cell readable: wrapped to its column, never clipped ----
+def clipped(d):
+    tt, out = d.el_table, []
+    for r in range(tt.rowCount()):
+        for c in range(1, tt.columnCount()):
+            b = tt.cellWidget(r, c)
+            fm = b.fontMetrics()
+            adv = max(fm.horizontalAdvance(x) for x in b.text().split('\n'))
+            pad = b.sizeHint().width() - adv
+            if adv > tt.columnWidth(c) - pad + 1:
+                out.append(b.text())
+    return out
+
+
 dlg2._opt_nav.setCurrentRow(nav.index('Equipment lines'))
 dlg2.show()
-app.processEvents()
+for w, h in ((620, 720), (1250, 900), (910, 742)):        # 910 x 742: the user's window
+    dlg2.resize(w, h)
+    for _ in range(4):          # resize -> layout -> sectionResized -> rewrap -> layout
+        app.processEvents()
+    tt = dlg2.el_table
+    below = [b for b in tt.parentWidget().findChildren(he.QPushButton)
+             if b.text() == 'Add line'][0]
+    check(not clipped(dlg2) and tt.height() >= sum(tt.rowHeight(r) for r in range(tt.rowCount()))
+          and below.y() >= tt.geometry().bottom(),
+          '%d px window: no cell clipped, every row shown, buttons below the table: %s'
+          % (w, clipped(dlg2)))
+dec = [r for r in range(tt.rowCount()) if tt.item(r, 0).text() == 'Decoy'][0]
+check('\n' in tt.cellWidget(dec, col['Halo 3']).text()
+      and tt.rowHeight(dec) > tt.verticalHeader().defaultSectionSize(),
+      '910 px: "Jammer + Superflare" on two lines, its row taller')
 png = os.path.join(tempfile.gettempdir(), 'equipment_lines_page.png')
 dlg2.grab().save(png)
 print('  rendered', png)

@@ -15795,7 +15795,10 @@ class OptionsDialog(QDialog):
         hh = self.el_table.horizontalHeader()
         hh.setSectionResizeMode(QHeaderView.Stretch)
         hh.setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        self.el_table.setMinimumHeight(330)
+        # The table is as tall as its rows (_el_rewrap sets it), so the page scrolls,
+        # never the table; a column that narrows re-wraps its cells.
+        self.el_table.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        hh.sectionResized.connect(self._el_rewrap_soon)
         self.el_table.itemChanged.connect(self._el_name_changed)
         lv.addWidget(self.el_table)
         btns = QHBoxLayout()
@@ -15886,6 +15889,7 @@ class OptionsDialog(QDialog):
                 for c, g in enumerate(LINE_GAMES, 1):
                     text, tip = self._el_cell_text(line, g)
                     b = QPushButton(text)
+                    b.setProperty('full_text', text)     # the text before _el_rewrap breaks it
                     b.setToolTip(tip or ("Built in." if r < nb else
                                          "Click to choose the %s item(s) of this line." % g))
                     b.setEnabled(r >= nb)
@@ -15894,7 +15898,77 @@ class OptionsDialog(QDialog):
                     t.setCellWidget(r, c, b)
         finally:
             t.blockSignals(False)
+        self._el_rewrap()
         self._el_validate()
+
+    @staticmethod
+    def _el_wrap(text, fm, width):
+        """`text` broken at spaces onto as many lines as it needs to fit `width` pixels.
+        A '+' stays at the end of its line, and a lone symbol (↳, ✚ ...) with the word
+        after it, so no line starts with '+' or holds only an arrow -- unless that pair
+        alone is too wide, then it comes apart too."""
+        if fm.horizontalAdvance(text) <= width:
+            return text
+        toks = []
+        for w in text.split(' '):
+            if toks and (w == '+' or not any(ch.isalnum() for ch in toks[-1])):
+                toks[-1] += ' ' + w
+            else:
+                toks.append(w)
+        toks = [p for tok in toks
+                for p in (tok.split(' ') if fm.horizontalAdvance(tok) > width else [tok])]
+        lines = []
+        for tok in toks:
+            if lines and fm.horizontalAdvance(lines[-1] + ' ' + tok) <= width:
+                lines[-1] += ' ' + tok
+            else:
+                lines.append(tok)
+        return '\n'.join(lines)
+
+    def _el_rewrap_soon(self, *_):
+        # sectionResized fires once per column; fit the cells once, after the last.
+        if not getattr(self, '_el_rewrap_queued', False):
+            self._el_rewrap_queued = True
+            QTimer.singleShot(0, self, self._el_rewrap)
+
+    def _el_rewrap(self):
+        """Fit every cell to its column. A push button never wraps and clips what does
+        not fit, so in Segoe UI at a 910 px window "Jammer + Superflare", "Regeneration
+        Field", "Hardlight Shield" and "Active Camouflage" were cut on both sides. A
+        name too wide for its button now breaks onto more lines, and the rows and the
+        table grow to show every line. The table is never narrower than its widest WORD
+        needs, so in a narrow window the page scrolls sideways instead of cutting it."""
+        self._el_rewrap_queued = False
+        t = getattr(self, 'el_table', None)
+        if t is None:
+            return
+        base = t.verticalHeader().defaultSectionSize()
+        widest = 0
+        for r in range(t.rowCount()):
+            h = base
+            for c in range(1, t.columnCount()):
+                b = t.cellWidget(r, c)
+                if b is None:
+                    continue
+                b.ensurePolished()
+                fm = b.fontMetrics()
+                cur = b.text()
+                full = b.property('full_text') or cur
+                # the button's padding + border: what its size hint adds to the text
+                pad = b.sizeHint().width() - max(fm.horizontalAdvance(x) for x in cur.split('\n'))
+                widest = max(widest, pad + max(fm.horizontalAdvance(w) for w in full.split(' ')))
+                # +1: a pixel past the padding still shows (measured: "↳ Bubble Shield")
+                text = self._el_wrap(full, fm, t.columnWidth(c) - pad + 1)
+                if text != cur:
+                    b.setText(text)
+                h = max(h, b.sizeHint().height())
+            t.setRowHeight(r, h)
+        # Stretch gives every game column the same width, so each needs the widest word.
+        col0 = max(t.sizeHintForColumn(0), t.horizontalHeader().sectionSizeHint(0))
+        t.setMinimumWidth(col0 + (t.columnCount() - 1) * widest + 2 * t.frameWidth())
+        t.setFixedHeight(t.horizontalHeader().sizeHint().height()
+                         + sum(t.rowHeight(r) for r in range(t.rowCount()))
+                         + 2 * t.frameWidth())
 
     def _el_validate(self):
         clean, warn = validate_lines(self._el_db(), self._el_rows)
@@ -21388,6 +21462,12 @@ def main():
         QScrollBar::handle:vertical { background-color: #3a3a3a; border-radius: 6px; min-height: 20px; }
         QScrollBar::handle:vertical:hover { background-color: #4a4a4a; }
         QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0px; }
+        /* Horizontal bars had no rule, so a sideways-scrolling page (Options in a narrow
+           window) drew Fusion's light default bar on the dark theme. */
+        QScrollBar:horizontal { background-color: #1a1a1a; height: 12px; }
+        QScrollBar::handle:horizontal { background-color: #3a3a3a; border-radius: 6px; min-width: 20px; }
+        QScrollBar::handle:horizontal:hover { background-color: #4a4a4a; }
+        QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal { width: 0px; }
         QDialog { background-color: #0a0a0a; }
         QScrollArea { background-color: #0a0a0a; }
         QScrollArea > QWidget > QWidget { background-color: #0a0a0a; }
