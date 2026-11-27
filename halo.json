@@ -16563,10 +16563,11 @@
 			},
 			"Duration": {
 				"desc": "How long the equipment stays active",
+				"debug_desc": "The piece's active time, on the deployed object's tag. ODST's plugin names this root field `Cooldown Time`; it is Halo 3's `Duration`: the ODST equipment layout is Halo 3's shifted by 0x10 (Duration 0x18C -> 0x19C, with Phantom Volume Activation Time, Charges, Flags and every type block behind it), and each piece holds the same number in both games (Bubble Shield 21, Jammer 21, Power Drain 7, Regenerator 16, Superflare 6, Grav Lift 30, Trip Mine 90, Invincibility 10 seconds; read on the 100_citadel and sc140 baselines). A block-less `Duration` resolves in ODST to Active Camo / Duration instead, which is Halo 3's Invisibility Mode / Invisible Time and is empty on these tags.",
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\bubbleshield\\bubbleshield",
 				"targets": [
-					{ "step": "*1.2", "field": "Duration", "easier_when": "increased" },
+					{ "step": "*1.2", "field": { "Halo 3": "Duration", "Halo 3: ODST": "Cooldown Time" }, "label": "Duration", "easier_when": "increased" },
 					{ "step": "*0.8", "field": "Arm Time", "block": "Proximity Mine", "index": 0, "easier_when": "decreased" },
 					{ "step": "*0.8", "field": "Self Destruct Time", "block": "Proximity Mine", "index": 0, "easier_when": "decreased" }
 				]
@@ -16662,11 +16663,11 @@
 			},
 			"Duration": {
 				"desc": "How long does the shield stay active",
+				"debug_desc": "The piece's active time, on the deployed object's tag. ODST's plugin names this root field `Cooldown Time`; it is Halo 3's `Duration`: the ODST equipment layout is Halo 3's shifted by 0x10 (Duration 0x18C -> 0x19C, with Phantom Volume Activation Time, Charges, Flags and every type block behind it), and each piece holds the same number in both games (Bubble Shield 21, Jammer 21, Power Drain 7, Regenerator 16, Superflare 6, Grav Lift 30, Trip Mine 90, Invincibility 10 seconds; read on the 100_citadel and sc140 baselines). A block-less `Duration` resolves in ODST to Active Camo / Duration instead, which is Halo 3's Invisibility Mode / Invisible Time and is empty on these tags.",
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\invincibility_equipment\\invincibility_equipment",
 				"targets": [
-					{ "step": "*1.2", "field": "Duration", "group": "Duration", "easier_when": "increased" },
-					{ "step": "*0.8", "field": "Cooldown Time", "games": ["Halo 3: ODST"], "group": "Duration", "easier_when": "decreased" }
+					{ "step": "*1.2", "field": { "Halo 3": "Duration", "Halo 3: ODST": "Cooldown Time" }, "label": "Duration", "easier_when": "increased" }
 				]
 			}
 		},
@@ -16691,10 +16692,11 @@
 			},
 			"Duration": {
 				"desc": "How long the equipment stays active",
+				"debug_desc": "The piece's active time, on the deployed object's tag. ODST's plugin names this root field `Cooldown Time`; it is Halo 3's `Duration`: the ODST equipment layout is Halo 3's shifted by 0x10 (Duration 0x18C -> 0x19C, with Phantom Volume Activation Time, Charges, Flags and every type block behind it), and each piece holds the same number in both games (Bubble Shield 21, Jammer 21, Power Drain 7, Regenerator 16, Superflare 6, Grav Lift 30, Trip Mine 90, Invincibility 10 seconds; read on the 100_citadel and sc140 baselines). A block-less `Duration` resolves in ODST to Active Camo / Duration instead, which is Halo 3's Invisibility Mode / Invisible Time and is empty on these tags.",
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\jammer\\jammer",
 				"targets": [
-					{ "step": "*1.2", "field": "Duration", "easier_when": "increased" },
+					{ "step": "*1.2", "field": { "Halo 3": "Duration", "Halo 3: ODST": "Cooldown Time" }, "label": "Duration", "easier_when": "increased" },
 					{ "step": "*0.8", "field": "Arm Time", "block": "Proximity Mine", "index": 0, "easier_when": "decreased" },
 					{ "step": "*0.8", "field": "Self Destruct Time", "block": "Proximity Mine", "index": 0, "easier_when": "decreased" }
 				]
@@ -16748,10 +16750,11 @@
 			},
 			"Duration": {
 				"desc": "How long the equipment stays active",
+				"debug_desc": "The piece's active time, on the deployed object's tag. ODST's plugin names this root field `Cooldown Time`; it is Halo 3's `Duration`: the ODST equipment layout is Halo 3's shifted by 0x10 (Duration 0x18C -> 0x19C, with Phantom Volume Activation Time, Charges, Flags and every type block behind it), and each piece holds the same number in both games (Bubble Shield 21, Jammer 21, Power Drain 7, Regenerator 16, Superflare 6, Grav Lift 30, Trip Mine 90, Invincibility 10 seconds; read on the 100_citadel and sc140 baselines). A block-less `Duration` resolves in ODST to Active Camo / Duration instead, which is Halo 3's Invisibility Mode / Invisible Time and is empty on these tags.",
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\powerdrain\\powerdrain",
 				"targets": [
-					{ "step": "*1.2", "field": "Duration", "easier_when": "increased" },
+					{ "step": "*1.2", "field": { "Halo 3": "Duration", "Halo 3: ODST": "Cooldown Time" }, "label": "Duration", "easier_when": "increased" },
 					{ "step": "*0.8", "field": "Arm Time", "block": "Proximity Mine", "index": 0, "easier_when": "decreased" },
 					{ "step": "*0.8", "field": "Self Destruct Time", "block": "Proximity Mine", "index": 0, "easier_when": "decreased" }
 				]
@@ -16836,10 +16839,11 @@
 			},
 			"Duration": {
 				"desc": "How long the equipment stays active",
+				"debug_desc": "The piece's active time, on the deployed object's tag. ODST's plugin names this root field `Cooldown Time`; it is Halo 3's `Duration`: the ODST equipment layout is Halo 3's shifted by 0x10 (Duration 0x18C -> 0x19C, with Phantom Volume Activation Time, Charges, Flags and every type block behind it), and each piece holds the same number in both games (Bubble Shield 21, Jammer 21, Power Drain 7, Regenerator 16, Superflare 6, Grav Lift 30, Trip Mine 90, Invincibility 10 seconds; read on the 100_citadel and sc140 baselines). A block-less `Duration` resolves in ODST to Active Camo / Duration instead, which is Halo 3's Invisibility Mode / Invisible Time and is empty on these tags.",
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\regenerator\\regenerator",
 				"targets": [
-					{ "step": "*1.2", "field": "Duration", "easier_when": "increased" },
+					{ "step": "*1.2", "field": { "Halo 3": "Duration", "Halo 3: ODST": "Cooldown Time" }, "label": "Duration", "easier_when": "increased" },
 					{ "step": "*0.8", "field": "Arm Time", "block": "Proximity Mine", "index": 0, "easier_when": "decreased" },
 					{ "step": "*0.8", "field": "Self Destruct Time", "block": "Proximity Mine", "index": 0, "easier_when": "decreased" }
 				]
@@ -16882,10 +16886,11 @@
 			},
 			"Duration": {
 				"desc": "How long the equipment stays active",
+				"debug_desc": "The piece's active time, on the deployed object's tag. ODST's plugin names this root field `Cooldown Time`; it is Halo 3's `Duration`: the ODST equipment layout is Halo 3's shifted by 0x10 (Duration 0x18C -> 0x19C, with Phantom Volume Activation Time, Charges, Flags and every type block behind it), and each piece holds the same number in both games (Bubble Shield 21, Jammer 21, Power Drain 7, Regenerator 16, Superflare 6, Grav Lift 30, Trip Mine 90, Invincibility 10 seconds; read on the 100_citadel and sc140 baselines). A block-less `Duration` resolves in ODST to Active Camo / Duration instead, which is Halo 3's Invisibility Mode / Invisible Time and is empty on these tags.",
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\superflare\\superflare",
 				"targets": [
-					{ "step": "*1.2", "field": "Duration", "easier_when": "increased" },
+					{ "step": "*1.2", "field": { "Halo 3": "Duration", "Halo 3: ODST": "Cooldown Time" }, "label": "Duration", "easier_when": "increased" },
 					{ "step": "*0.8", "field": "Arm Time", "block": "Proximity Mine", "index": 0, "easier_when": "decreased" },
 					{ "step": "*0.8", "field": "Self Destruct Time", "block": "Proximity Mine", "index": 0, "easier_when": "decreased" }
 				]
@@ -16918,10 +16923,11 @@
 			},
 			"Duration": {
 				"desc": "How long the equipment stays active",
+				"debug_desc": "The piece's active time, on the deployed object's tag. ODST's plugin names this root field `Cooldown Time`; it is Halo 3's `Duration`: the ODST equipment layout is Halo 3's shifted by 0x10 (Duration 0x18C -> 0x19C, with Phantom Volume Activation Time, Charges, Flags and every type block behind it), and each piece holds the same number in both games (Bubble Shield 21, Jammer 21, Power Drain 7, Regenerator 16, Superflare 6, Grav Lift 30, Trip Mine 90, Invincibility 10 seconds; read on the 100_citadel and sc140 baselines). A block-less `Duration` resolves in ODST to Active Camo / Duration instead, which is Halo 3's Invisibility Mode / Invisible Time and is empty on these tags.",
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\gravlift\\gravlift",
 				"targets": [
-					{ "step": "*1.2", "field": "Duration", "easier_when": "increased" },
+					{ "step": "*1.2", "field": { "Halo 3": "Duration", "Halo 3: ODST": "Cooldown Time" }, "label": "Duration", "easier_when": "increased" },
 					{ "step": "*0.8", "field": "Arm Time", "block": "Proximity Mine", "index": 0, "easier_when": "decreased" },
 					{ "step": "*0.8", "field": "Self Destruct Time", "block": "Proximity Mine", "index": 0, "easier_when": "decreased" }
 				]
@@ -16964,10 +16970,11 @@
 			},
 			"Duration": {
 				"desc": "How long the equipment stays active",
+				"debug_desc": "The piece's active time, on the deployed object's tag. ODST's plugin names this root field `Cooldown Time`; it is Halo 3's `Duration`: the ODST equipment layout is Halo 3's shifted by 0x10 (Duration 0x18C -> 0x19C, with Phantom Volume Activation Time, Charges, Flags and every type block behind it), and each piece holds the same number in both games (Bubble Shield 21, Jammer 21, Power Drain 7, Regenerator 16, Superflare 6, Grav Lift 30, Trip Mine 90, Invincibility 10 seconds; read on the 100_citadel and sc140 baselines). A block-less `Duration` resolves in ODST to Active Camo / Duration instead, which is Halo 3's Invisibility Mode / Invisible Time and is empty on these tags.",
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\tripmine\\tripmine",
 				"targets": [
-					{ "step": "*1.2", "field": "Duration", "easier_when": "increased" },
+					{ "step": "*1.2", "field": { "Halo 3": "Duration", "Halo 3: ODST": "Cooldown Time" }, "label": "Duration", "easier_when": "increased" },
 					{ "step": "*0.8", "field": "Arm Time", "block": "Proximity Mine", "index": 0, "easier_when": "decreased" },
 					{ "step": "*0.8", "field": "Self Destruct Time", "block": "Proximity Mine", "index": 0, "easier_when": "decreased" }
 				]

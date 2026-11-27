@@ -13,6 +13,14 @@
   "point velocity": 88,
   "texture repeats u": 108
  },
+ "contrail@effects\\objects\\weapons\\rifle\\concussion_rifle\\bolt": {
+  "point states[0].color lower bound": 530,
+  "point states[0].color upper bound": 546,
+  "point states[0].width": 526,
+  "point states[1].color lower bound": 634,
+  "point states[1].color upper bound": 650,
+  "point states[1].width": 630
+ },
  "contrail@effects\\objects\\weapons\\rifle\\needle_rifle\\needle_rifle_shard": {
   "point states[0].color lower bound": 435,
   "point states[0].color upper bound": 451,
@@ -63,6 +71,8 @@
   "AI stun radius": 168,
   "AOE core radius": 104,
   "active camouflage damage": 128,
+  "ai stun bounds": 324,
+  "ai stun radius": 320,
   "aoe core radius": 104,
   "category": 98,
   "damage lower bound": 108,
@@ -106,6 +116,12 @@
  },
  "damage_effect@objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_shard": {
   "instantaneous acceleration": 144
+ },
+ "damage_effect@objects\\weapons\\rifle\\concussion_rifle\\damage_effects\\concussion_rifle_explosion": {
+  "ai stun bounds": 324,
+  "ai stun radius": 320,
+  "rider minimum transfer damage scale": 168,
+  "shake radius": 332
  },
  "damage_effect@objects\\weapons\\rifle\\grenade_launcher\\damage_effects\\grenade_launcher_emp": {
   "emp radius": 184,
@@ -310,6 +326,26 @@
   "sound references[4].flags": 1957,
   "sound references[5].flags": 1977
  },
+ "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\rifle\\fp_concussion_rifle\\fp_concussion_rifle": {
+  "animations[10].production flags": 4461,
+  "animations[12].production flags": 4709,
+  "animations[13].production flags": 4833,
+  "animations[14].production flags": 4957,
+  "animations[15].production flags": 5081,
+  "animations[4].production flags": 3717,
+  "animations[5].production flags": 3841,
+  "animations[9].production flags": 4337,
+  "sound references[10].flags": 2379,
+  "sound references[11].flags": 2399,
+  "sound references[12].flags": 2419,
+  "sound references[13].flags": 2439,
+  "sound references[14].flags": 2459,
+  "sound references[5].flags": 2279,
+  "sound references[6].flags": 2299,
+  "sound references[7].flags": 2319,
+  "sound references[8].flags": 2339,
+  "sound references[9].flags": 2359
+ },
  "model_animation_graph@objects\\characters\\dervish\\fp\\weapons\\rifle\\fp_dmr\\fp_dmr": {
   "animations[10].production flags": 4124,
   "animations[12].production flags": 4372,
@@ -432,6 +468,26 @@
  "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_assault_rifle\\fp_assault_rifle": {
   "animations[10].weight": 3778,
   "animations[9].weight": 3654
+ },
+ "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_concussion_rifle\\fp_concussion_rifle": {
+  "animations[10].production flags": 4725,
+  "animations[12].production flags": 4973,
+  "animations[13].production flags": 5097,
+  "animations[14].production flags": 5221,
+  "animations[15].production flags": 5345,
+  "animations[4].production flags": 3981,
+  "animations[5].production flags": 4105,
+  "animations[9].production flags": 4601,
+  "sound references[10].flags": 2643,
+  "sound references[11].flags": 2663,
+  "sound references[12].flags": 2683,
+  "sound references[13].flags": 2703,
+  "sound references[14].flags": 2723,
+  "sound references[5].flags": 2543,
+  "sound references[6].flags": 2563,
+  "sound references[7].flags": 2583,
+  "sound references[8].flags": 2603,
+  "sound references[9].flags": 2623
  },
  "model_animation_graph@objects\\characters\\masterchief\\fp\\weapons\\rifle\\fp_dmr\\fp_dmr": {
   "animations[10].production flags": 4401,
@@ -706,6 +762,9 @@
   "air damage range": 820,
   "air gravity scale": 616,
   "bounding radius": 84,
+  "collision radius": 348,
+  "danger radius": 356,
+  "detonation noise": 376,
   "detonation timer starts": 340,
   "final velocity": 844,
   "flags#1": 460,
@@ -798,6 +857,17 @@
  },
  "projectile@objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet": {
   "material responses[9].maximum distance": 2752
+ },
+ "projectile@objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_bolt": {
+  "collision radius": 348,
+  "danger radius": 356,
+  "detonation noise": 376,
+  "final velocity": 644,
+  "flags#1": 336,
+  "initial velocity": 640,
+  "maximum range": 372,
+  "minimum velocity": 368,
+  "water gravity scale": 628
  },
  "projectile@objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_emp_burst": {
   "detonation timer starts": 340,
@@ -981,7 +1051,13 @@
   "data[6].Value": 785,
   "parameters[2].const color": 395,
   "parameters[3].const color": 447,
-  "parameters[4].const color": 499
+  "parameters[4].const color": 499,
+  "parameters[5].const color": 555,
+  "parameters[6].const color": 607
+ },
+ "shader@objects\\weapons\\rifle\\concussion_rifle\\shaders\\cr_bolt_luminous": {
+  "parameters[5].const color": 555,
+  "parameters[6].const color": 607
  },
  "shader@objects\\weapons\\support_high\\spartan_laser\\shaders\\spartan_laser_luminous": {
   "data[4].Value": 783,
@@ -1124,6 +1200,19 @@
  },
  "weapon@objects\\weapons\\rifle\\battle_rifle\\battle_rifle": {
   "bounding offset": 88
+ },
+ "weapon@objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle": {
+  "barrels[0].error angle#1": 2828,
+  "barrels[0].fire recovery time": 2744,
+  "barrels[0].firing noise": 2766,
+  "barrels[0].illumination recovery time": 2888,
+  "barrels[0].minimum error#1": 2824,
+  "barrels[0].projectiles per shot": 2810,
+  "magazines[0].reload time": 2448,
+  "magazines[0].rounds loaded maximum": 2450,
+  "magazines[0].rounds reloaded": 2460,
+  "magazines[0].rounds total initial": 2446,
+  "magazines[0].rounds total maximum": 2448
  },
  "weapon@objects\\weapons\\rifle\\dmr\\dmr": {
   "ai scariness": 888,

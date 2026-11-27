@@ -1,0 +1,16 @@
+{"time": "2026-10-28 12:30:03", "map": "04b_floodlab.map", "marker": "body", "event": "show", "anchor": "spine1"}
+{"time": "2026-10-28 12:30:19", "map": "04b_floodlab.map", "marker": "body", "event": "show", "anchor": "spine"}
+{"time": "2026-10-28 12:30:27", "map": "04b_floodlab.map", "marker": "body", "event": "show", "anchor": "pelvis"}
+{"time": "2026-10-28 12:30:32", "map": "04b_floodlab.map", "marker": "body", "event": "show", "anchor": "physics_control"}
+{"time": "2026-10-28 12:30:37", "map": "04b_floodlab.map", "marker": "body", "event": "show", "anchor": "r_hand"}
+{"time": "2026-10-28 12:30:42", "map": "04b_floodlab.map", "marker": "body", "event": "show", "anchor": "head"}
+{"time": "2026-10-28 12:30:50", "map": "04b_floodlab.map", "marker": "body", "event": "show", "anchor": "neck1"}
+{"time": "2026-10-28 12:30:55", "map": "04b_floodlab.map", "marker": "body", "event": "show", "anchor": "neck"}
+{"time": "2026-10-28 12:31:03", "map": "04b_floodlab.map", "marker": "body", "event": "show", "anchor": "spine1"}
+{"time": "2026-10-28 12:31:08", "map": "04b_floodlab.map", "marker": "body", "event": "pick", "anchor": "spine1"}
+{"time": "2026-10-28 12:31:10", "map": "04b_floodlab.map", "marker": "body", "event": "show", "anchor": "spine"}
+{"time": "2026-10-28 12:31:11", "map": "04b_floodlab.map", "marker": "body", "event": "show", "anchor": "pelvis"}
+{"time": "2026-10-28 12:31:12", "map": "04b_floodlab.map", "marker": "body", "event": "show", "anchor": "spine"}
+{"time": "2026-10-28 12:31:12", "map": "04b_floodlab.map", "marker": "body", "event": "show", "anchor": "spine1"}
+{"time": "2026-10-28 12:31:12", "map": "04b_floodlab.map", "marker": "body", "event": "show", "anchor": "neck"}
+{"time": "2026-10-28 12:31:16", "map": "04b_floodlab.map", "marker": "body", "event": "pick", "anchor": "neck"}
