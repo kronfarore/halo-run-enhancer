@@ -5011,8 +5011,8 @@
     "Super-Ballistic Range": 0.0,
     "Ballistic Firing Bounds": 0.0,
     "Ballistic Firing Bounds Max": 0.0,
-    "Ballistic Fraction Bounds": 0.0,
-    "Ballistic Fraction Bounds Max": 0.0,
+    "Ballistic Fraction Bounds": 1.0,
+    "Ballistic Fraction Bounds Max": 1.0,
     "First Burst Delay Time": 1.0,
     "First Burst Delay Time Max": 1.25,
     "Surprise Delay Time": 1.0,
@@ -5085,7 +5085,10 @@
      "Maximum Error Angle": 0.0872664600610733
     }
    ],
-   "set": [],
+   "set": [
+    "Ballistic Fraction Bounds=1.0",
+    "Ballistic Fraction Bounds Max=1.0"
+   ],
    "donor_only": [],
    "not_copied": [
     "Weapons Flags",
