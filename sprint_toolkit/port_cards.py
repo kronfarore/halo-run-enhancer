@@ -115,9 +115,13 @@ class Checker:
         if not wpath:
             return None
         if self.game in KIT_TAGS:
+            if self.game == 'Halo 2':
+                # the kit tag through tool export-tag-to-xml (h2_tagfield, read-only): a
+                # port with NO zoom of its own reads 0 here and gets the from_zero card
+                # (the Concussion Rifle, B5); else the catalog's own balance rows (their
+                # 'original' is the kit's value), else the donor ladder
+                return self.h2_kit_zoom(wpath) or self.catalog_zoom()
             if self.game != 'Halo 1':
-                # no loose-tag reader for its weapon layout: the catalog's own balance
-                # rows (their 'original' is the kit's value), else the donor ladder
                 return self.catalog_zoom()
             f = os.path.join(KIT_TAGS[self.game], wpath + '.weapon')
             if not os.path.exists(f):
@@ -141,6 +145,24 @@ class Checker:
         if levels is None or rng is None:
             return None
         return int(levels), float(rng[0] if isinstance(rng, (tuple, list)) else rng)
+
+    def h2_kit_zoom(self, wpath):
+        """(levels, range from) of a Halo 2 kit weapon tag, or None when it cannot be
+        exported. Only tool's export runs; the tag is not written."""
+        f = os.path.join(KIT_TAGS['Halo 2'], wpath + '.weapon')
+        if not os.path.exists(f):
+            return None
+        import h2_tagfield
+        xml = h2_tagfield.export(f)
+        if not xml:
+            return None
+        rows = h2_tagfield.read_all(xml)
+        try:
+            lv = h2_tagfield.pick(rows, 'magnification levels')
+            rg = h2_tagfield.pick(rows, 'magnification range')
+        except KeyError:
+            return None
+        return int(h2_tagfield._number(lv[4])), float(h2_tagfield._number(rg[4]))
 
     def catalog_zoom(self):
         """(levels, range from) from the port's catalog balance rows 'Magnification
