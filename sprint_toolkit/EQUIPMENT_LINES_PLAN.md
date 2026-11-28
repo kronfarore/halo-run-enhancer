@@ -6,11 +6,19 @@ abilities, the Halo 3/ODST equipment and the Reach/Halo 4 armour abilities into 
 an item in a line becomes that line's item in the next game, keeping or refunding the
 picks spent on it.
 
-**Status 2026-11-27: Phases 0-4 are built** (each section below opens with its as-built
-note). Checks: `sprint_toolkit/equipment_lines_check.py` (data, transitions, refunds),
-`equipment_lines_gui_check.py` (the refinement round), and
-`equipment_lines_options_check.py` (the Options page), all offscreen. Not yet tried in
-the running app or booted.
+**Status 2026-11-28: CONCLUDED** (user). Phases 0-4 are built, and each section below
+opens with its as-built note. The user reviewed the Options page in the running app. Its
+one complaint, clipped table cells, is fixed (4c4228f).
+
+The checks, all offscreen:
+- `sprint_toolkit/equipment_lines_check.py`: data, transitions, refunds.
+- `equipment_lines_gui_check.py`: the refinement round.
+- `equipment_lines_options_check.py`: the Options page, rendered in Segoe UI.
+
+Not yet played through:
+- a run that crosses games with the lines and refunds on;
+- the Phase 0 boots: a Halo 2 level with an ability card, and Halo 4 with sprint mode off
+  after a Reach Sprint pick.
 
 One rule was added after planning (user, 2026-11-27): the line OFFER rule applies only
 with "Use equipment upgrade lines" on. With it off, offers are the old ones, though
