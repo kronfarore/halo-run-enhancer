@@ -598,6 +598,20 @@ PORT = {
             'material responses (1 element: detonate on everything)': "the fuel rod's; Reach's plants / liquid "
                                                                        "overpenetrate and its shield bounce lost (no block insert)",
             'barrel prediction type none (Reach instant)': "the fuel rod's (a network prediction setting; campaign only)",
+            # the close-out re-check (2026-11-28, the user: 'every ported step, especially 4b'): the list-3 rows left
+            # without a decision until then
+            'attachments 1 (Reach 2: firing_1p + firing_3p lights)': "the fuel rod's ONE muzzle-flash light on "
+                                                                      "primary_trigger serves both views in Halo 2; it is "
+                                                                      "the port's own clone (concussion_rifle_muzzle_flash, "
+                                                                      "recoloured), scaled by illumination as Reach's",
+            'trigger flags autofire single action only, latch': "the fuel rod's (Reach's CR is a latch with no flags): one "
+                                                                "bolt a pull, as Reach fires it (user, boot 1: 'firing "
+                                                                "is good')",
+            'barrel flags cant fire when others firing / recovering': "the fuel rod's; barrel 1 is never fired",
+            "barrel 1 (the fuel rod's: 2/s, Bungie's flak_bolt)": "kept from the clone and UNREACHABLE, as in Bungie's own "
+                                                                  "fuel rod: one trigger, no charge, primary and "
+                                                                  "secondary barrel both 0, the AI's special fire none "
+                                                                  "(port_refs_audit lists barrel 0 only)",
             'max movement / turning acceleration / velocity 20': "the Fuel Rod clone's (Reach's 0 = unset), the GL's",
             'first person weapon offset 0': "the position lives in fp_anims model_offset (Reach's CR offset 0, override "
                                             "0, 0, -0.015 unused: the DMR / GL built on the plain field)",
