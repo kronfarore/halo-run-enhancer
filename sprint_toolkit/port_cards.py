@@ -340,7 +340,13 @@ def plan(weapon, only_cards=None, only_game=None):
                                     if base in pinned:
                                         pinned += [k for k in kids if k not in pinned]
                                 t['games'] = pinned
-                        card['targets'] += new_targets
+                        # a target the card ALREADY applies in this game (the derived
+                        # Rounds Total Maximum pinned to Halo 2 + Halo 4) is not added twice
+                        bare = lambda t: json.dumps({k: v for k, v in t.items() if k != 'games'},
+                                                    sort_keys=True)
+                        have = {bare(t) for t in card['targets']
+                                if isinstance(t, dict) and game in (t.get('games') or ())}
+                        card['targets'] += [t for t in new_targets if bare(t) not in have]
                     else:
                         card.setdefault('targets', {})[game] = new_targets
                     card['game'] = old_games + [game]
