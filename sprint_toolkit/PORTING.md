@@ -4169,8 +4169,43 @@ Quarantine Zone (all seven species), Marine trade.
   its first 0.3 s is the cue's lead (a tap stays silent). Reload sound split 0 / 19 / 40 before the Balanced boot.
 * READ THE BUILD LOG (`out/h2logs_port_test/<level>.build.log`) after every look change: 'removing invalid tag' and
   'collision region ... has no corresponding model region' never show in game until something is missing.
-* The AI lobs high: Reach's own ballistic-aim flag at Reach's 12.5 wu/s (kept, user). The display digits stay 000 (Reach's
-  tether readout has no source).
+* The AI lobbed high: Reach's own ballistic-aim flag at Reach's 12.5 wu/s (kept, user) -- but the lob came from the arc
+  value copied with Reach's scale reversed (the Concussion Rifle found it, B5): `firing_profile` 'set' Ballistic Fraction
+  Bounds 1 / 1 since 2026-11-28 (1f5f355), a flatter arc confirmed by the user on Outskirts. The display digits stay 000
+  (Reach's tether readout has no source).
+
+### Halo 2: the Concussion Rifle, wave B5 (2026-11-26/28) -- a knockback bolt, sizes in functions, the AI arc reversed
+
+Reach's Concussion Rifle (`ports_h2/concussion_rifle.py`) on the Reach route, alone. Weapon donor AND yardstick Halo 2's
+FUEL ROD (flak_cannon: latch, magazine 5 -> 6, an explosive plasma bolt, the Covenant HUD), the bolt on its flak_bolt, the
+Covenant Carbine's graph-less `.model` (the Plasma Repeater's); Reach's model, textures, Spartan + Elite FP animations
+and sounds. Tested: Outskirts (Original; Armed + Marine trade), The Arbiter (Balanced; Armed), Quarantine Zone (Armed
+Flood / Sentinel / Elite). Balanced: the fuel rod ratio -- Reach's handling kept, the blast x1.5, push 3.75, reload 5.56 s.
+
+* THE KNOCKBACK: an explosion's `instantaneous acceleration` applies with real damage (the Hammer's rule: damage > 0) and
+  is scaled by the hit object's `acceleration scale` and the distance. Reach's blast carries damage, so 2.5 (Original) /
+  3.75 (Balanced) work as is (user: 'working well').
+* THE BOLT: Halo 2 HAS an acceleration range natively (12 -> 16 over 6..15 wu); minimum velocity 11 under the initial 12,
+  gravity 0.25, no guidance.
+* THE LOOK: the fuel rod's green lives in COLOUR FUNCTIONS (byte 1 bit 0x20, two colours at +4 / +16 as B G R A) of every
+  emitter's tint and light volume, plus plain colour fields: `--recolour` turns them to Reach's violet / pink. Some runs are
+  stored 20 bytes long while tool exports them padded to 28: match the STORED length.
+* SIZES live in FUNCTIONS too (output range floats at +4 / +8): an emitter's Particle Size (function 4 of 9) and Emission
+  Radius (7); a light volume's Offset (0) and Radius (1) of `volumes/[n]` (NOT its aspect block). `--resize` x0.5 (boot 1:
+  'probably too big') reads its rows from the clone's SOURCE tag (idempotent) and refuses a run byte-equal to one it must
+  not touch (byte_edits replaces every occurrence). Trail widths: plain point-state fields.
+* RELOAD: Reach's 100-frame reload in one recording -> `split` in the gaps shared by all three takes (0.90 / 1.66 s),
+  cued 0 / 27 / 50; the round counts at Reach's allow-interruption frame 63. A level's starting profile may carry no
+  reserve for the port: `test.rounds` (6, 30).
+* THE AI ARC (all seven species fire it, ballistically: Reach's projectile flag 'AI must use ballistic aiming'). Reach and
+  Halo 4 keep the arc on the WEAPON (ballistic arcing firing / fraction bounds, '0 = low, fast'); Halo 2 keeps it on the
+  ai\generic weapon entry with the scale REVERSED ('0 = high, slow'). The copied 0 / 0 was Halo 2's steepest lob:
+  **Halo 2 Ballistic Fraction Bounds = 1 - the source weapon's arcing fraction** (`firing_profile` 'set', 1 / 1 here).
+  Reach's per-difficulty AI velocity scale (0.7 / 0.9 / 1.1) has no Halo 2 field. Bungie's own: Brute Shot 0.7 -> 0.9 over
+  3..15 wu, mortar turret 0.4 -> 0.3, guntower / Scarab 1 / 1, Sentinel Enforcer rocket 0 / 0.
+* Jackal / Brute / Bugger squads placed on The Arbiter never spawned: the Armed check for them is on Outskirts.
+* THE FIRE RULE: rof_balance_check's k 0.083 is a misread of the balance file's placeholder 30 for the Reach fuel rod's
+  rate 0 (both fuel rods fire 2.5/s by their 0.4 s recovery): k = 1.
 
 ## Halo Reach
 

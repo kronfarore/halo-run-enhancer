@@ -1,4 +1,6 @@
-r"""Concussion Rifle into Halo 2 (H2_PORT_PLAN.md wave B (Reach), #B5, "Step 6", alone) -- IN PROGRESS (2026-11-26).
+r"""Concussion Rifle into Halo 2 (H2_PORT_PLAN.md wave B (Reach), #B5, "Step 6", alone) -- DONE (2026-11-26/28): the
+close-out record at the end of the file; PORTING "Halo 2: the Concussion Rifle, wave B5"; H2_PORT_PLAN "B5: what the
+Concussion Rifle taught".
 
 The port: Reach's model, textures, Spartan + Elite FP animations and sounds on a clone of Halo 2's FUEL ROD
 (flak_cannon: latch, magazine 5 -> 6, an explosive plasma bolt, the Covenant HUD), the bolt on the fuel rod's
@@ -9,6 +11,8 @@ user 2026-11-26): reports/h2_concussion_rifle_4a.md.
 REGENERATING FROM SCRATCH needs the step the pipeline does not run, after h2_port_weapon and h2_port_numbers:
     python ports_h2\concussion_rifle.py --recolour       the fuel rod's green -> Reach's violet (colour functions,
                                                          light colours), each edit proved by tool's export
+    python ports_h2\concussion_rifle.py --resize         every size function of the burst / armed effects and both
+                                                         light volumes x0.5 (boot 1: 'probably too big')
 """
 
 import os as _os
@@ -55,7 +59,7 @@ PORT = {
     'wave': 'B5',
     'name': 'Concussion Rifle',
     'source': 'Halo Reach',
-    'status': 'in progress',
+    'status': 'done',
     'source_tag': 'objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle',
     'reservations': {
         'message_prefix': 'cr2',
@@ -684,7 +688,39 @@ PORT = {
     # rounds: The Arbiter's profile carries none for the port (boot 2: 6 loaded, nothing in reserve) -> Reach's 6 / 30
     'test': {'level': '03a_oldmombasa', 'dervish_level': '04a_gasgiant', 'rounds': (6, 30)},
     'residency': {'levels': 'all', 'placements': False},
+    # port_sound_refs on the built Quarantine Zone test map (2026-11-28): every weapon / graph / firing sound OWN, no keeps.
+    # (cr_reload, the whole Reach reload, stays in the sound folder as the source of the split: nothing names it.)
+    'sound_keeps': {},
 }
+
+# BOOT LOG (CLASSIC)
+#   boot 1 Outskirts ORIGINAL (2026-11-27, user): pickup icon + text, HUD, FP, firing, knockback, sounds, world model
+#     good; Marine trade (no fire yet: no AI entry). 'Bolt and explosion is probably too big' -> --resize x0.5, trail
+#     widths x0.5; Reach's reload split in three (cr_rl_1/2/3, cut 0.90 / 1.66 s, cued 0 / 27 / 50)
+#   boot 2 The Arbiter BALANCED (user): size good, knockback 3.75 fine, Legendary ally Elite 4 hits / Grunt 3, Arbiter
+#     animations good, Grunt + Elite trades. Reload untestable (6 loaded, no reserve) -> test.rounds (6, 30)
+#   boot 3 The Arbiter BALANCED --armed all (user): reload good (sound in sync); Grunts, Elites, Sentinels fire it --
+#     BALLISTICALLY (Reach's projectile flag 'AI must use ballistic aiming'); drops + pickups. Jackal / Brute / Bugger
+#     squads never spawned on 04a -> Outskirts
+#   boot 4 Outskirts BALANCED --armed jackal,brute,bugger + Marine trade (user): all four pass. THE ARC: Reach's weapon
+#     'ballistic arcing fraction bounds' 0 / 0 is '0 = low, fast'; Halo 2's ai\generic Ballistic Fraction Bounds runs
+#     the other way ('0 = high, slow') -> the copied 0 / 0 was the steepest lob: firing_profile 'set' 1 / 1
+#   boot 5 Quarantine Zone BALANCED --armed flood,sentinel,elite (user): Flood fire it; the flatter arc passes. The
+#     Grenade Launcher had the same 0 / 0 -> 1 / 1 too (1f5f355), confirmed by the user on Outskirts.
+# CLOSE-OUT (2026-11-28, DONE). Tested in game, CLASSIC: Outskirts (Chief, Original, boot 1; Armed + Marine trade, boot
+#   4), The Arbiter (Balanced, boots 2-3), Quarantine Zone (Armed Flood / Sentinel / Elite, boot 5). Every item confirmed
+#   by the user: all seven species fire it, drops, trades both ways, world model.
+# Closing checks on the built Quarantine Zone test map: port_refs_audit 0 problems (own bolt, trigger, impact, blast;
+#   melee smash_melee GLOBAL); port_sound_refs every sound OWN; port_volume one own entry, headroom 3.12 dB; check 10
+#   (the fuel rod's 2 FP systems on primary_trigger, recoloured; Reach has 3 first-person-only ones -- the user: 'firing
+#   is good'); port_glyphs --capture --game halo2 (U+E147, eight fonts byte for byte). 4b re-run: lists 2 / 5 = the
+#   recorded decisions (magnification range unused with no zoom levels, reload time 0 = the animation, camo damage 1).
+#   5b: reports/h2_concussion_rifle_5b.txt (ttk_halo2 counts the IMPACT only, 7 Elite shots; impact + core blast is 4a's
+#   3 direct hits). THE FIRE RULE: rof_balance_check flags k 0.083, a MISREAD -- the balance file stores the Reach fuel
+#   rod's rate 0 as the placeholder 30, read as a 30/s automatic; both fuel rods are rate 0 + recovery 0.4 (2.5/s), so
+#   the leg is 2.5 -> 2.5, intended 3/s = the port's 3/s, k = 1: no fire_rule_damage.
+#   port_backup: F:\HaloPortBackups\2026-11-28_concussion-rifle-h2.
+# Not rebuilt into the 13 levels (the batched rebuild is the user's go); residency entries are in all 13 kit resources.
 
 
 # ------------------------------------------------------------------------------------------------- the recolour

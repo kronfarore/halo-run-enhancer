@@ -1687,6 +1687,74 @@
   "k": 1.0
  },
  {
+  "game": "Halo 2",
+  "port": "Concussion Rifle",
+  "source": "Halo Reach",
+  "balanced": {
+   "Fire Recovery Time": 0.333333
+  },
+  "damage rows": [
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\concussion_rifle\\damage_effects\\concussion_rifle_explosion",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 32.25,
+    "card": "Explosion Damage",
+    "original": 21.5,
+    "note": "the fuel rod ratio: 21.5 x 90 / 60"
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\concussion_rifle\\damage_effects\\concussion_rifle_explosion",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 32.25,
+    "card": "Explosion Damage",
+    "original": 21.5,
+    "note": "the fuel rod ratio"
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\concussion_rifle\\damage_effects\\concussion_rifle_impact",
+    "field": "Damage Upper Bound",
+    "block": null,
+    "value": 21.5,
+    "card": "Impact Damage",
+    "original": 21.5,
+    "note": "x1"
+   },
+   {
+    "class": "jpt!",
+    "tag": "objects\\weapons\\rifle\\concussion_rifle\\damage_effects\\concussion_rifle_impact",
+    "field": "Damage Upper Bound Max",
+    "block": null,
+    "value": 21.5,
+    "card": "Impact Damage",
+    "original": 21.5,
+    "note": "x1"
+   }
+  ],
+  "notes": [],
+  "port fires": [
+   3.0000030000030002,
+   3.0
+  ],
+  "chain": "balance_Concussion_Rifle_HaloReach_to_Halo2.json",
+  "source fires": 3.0,
+  "legs": [
+   [
+    "Flak Cannon",
+    "Halo Reach",
+    "Halo 2",
+    30.0,
+    2.5
+   ]
+  ],
+  "intended": 0.25,
+  "k": 0.08333333333333333
+ },
+ {
   "game": "Halo 3: ODST",
   "port": "SAW",
   "source": "Halo 4",

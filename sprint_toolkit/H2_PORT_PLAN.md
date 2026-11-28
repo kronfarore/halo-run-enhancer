@@ -1517,3 +1517,42 @@ h2_port_fp_anims `source_events['frames']`; port_volume 'Grenade Launcher' 0.11.
 glyph U+E146 captured. Vehicle stall: not reproduced (an isolated test). Display digits static 000 (user).
 **Open (the user's call):** charging during the reload (Halo 1's GL left it; no dll, user); Reach's Elite FP sounds
 (grenade_launcher_elite_fp) unused, as the DMR's.
+**Changed 2026-11-28 (the Concussion Rifle's finding):** the AI arc, Ballistic Fraction Bounds 0 / 0 -> 1 / 1 (1f5f355,
+ai entry e54abdd), flatter, confirmed by the user on Outskirts.
+
+## B5: what the Concussion Rifle taught (2026-11-26/28, Step 6 alone, DONE)
+
+Reach's Concussion Rifle is a complete Halo 2 port: `ports_h2/concussion_rifle.py`. Tested in game, CLASSIC: Outskirts
+(Chief, Original, boot 1; Armed Jackal / Brute / Drone + Marine trade, boot 4), The Arbiter (Balanced, boots 2-3; Armed
+Elite / Grunt / Sentinel), Quarantine Zone (Armed Flood / Sentinel / Elite, boot 5), drops, trades both ways, world
+model. Every item confirmed by the user, in five boots. Residency: palette entry in all 13 levels; ships with the
+batched rebuild. PORTING "Halo 2: the Concussion Rifle, wave B5" is the recipe.
+
+**Step 4a (user):** donor AND yardstick Halo 2's fuel rod (Reach's and Halo 2's are the same gun, so the ratio keeps
+Reach's handling); groups by Reach's names (impact `collision`, blast `plasma_fast`: Hunters armour-immune); knockback
+Original 2.5 / Balanced 3.75; Balanced reload 5.56 s (the fuel rod's TAG time, the GL's rule).
+
+**For every port after it (observations of one port):**
+1. **THE AI ARC IS REVERSED BETWEEN REACH AND HALO 2.** Reach / Halo 4 keep the arc on the WEAPON (ballistic arcing
+   fraction, '0 = low, fast'); Halo 2 on the ai\generic weapon entry ('0 = high, slow'). A Reach / Halo 4 port whose
+   projectile has 'AI must use ballistic aiming' gets **Halo 2 Ballistic Fraction Bounds = 1 - the source's** in its
+   `firing_profile` 'set' -- the copied value is otherwise the steepest lob. It cost the Grenade Launcher its arc too
+   (fixed). Not automated in ai_firing_profile (user, 2026-11-28: no tool change now).
+2. A Halo 2 effect's SIZES live in functions like its colours: emitter Particle Size (fn 4 of 9) and Emission Radius (7),
+   light volume Offset (0) and Radius (1) of `volumes/[n]` -- the output range at +4 / +8. Scale them from the clone's
+   SOURCE tag (idempotent) and refuse a run equal to one you must not touch: byte_edits replaces every occurrence.
+3. A borrowed look's colour functions may be stored 20 bytes long while tool exports 28: match the STORED length.
+4. An explosion's knockback (`instantaneous acceleration`) needs only real damage: Reach's blast value works as is.
+5. The Arbiter's (04a) placed Jackal / Brute / Bugger squads do not spawn: Armed checks for them go on Outskirts. A level's
+   starting profile can carry no reserve for the port: set `test.rounds`.
+6. rof_balance_check reads a balance file's zero placeholder (Reach rate 0 stored as 30) as a 30/s automatic: a flag on a
+   recovery-paced pair of guns is a misread until the kits' own rate fields say otherwise.
+
+**New to the kit:** h2_port_meter `tick_box` (hexagon cells); h2_port_reticle `h3_art` `mirror`; port_volume
+'Concussion Rifle' 0.12; the config's `--recolour` / `--resize` steps (regeneration).
+
+**Closed:** 5b report (reports/h2_concussion_rifle_5b.txt: ttk_halo2 counts the impact only; impact + core blast is 4a's
+table), port_backup (F:\HaloPortBackups\2026-11-28_concussion-rifle-h2), glyph U+E147 captured, enhancer hand-off in the
+shared notes (`b5_concussion_rifle_progress.md`).
+**Open (the user's call):** native Halo 2 weapons at arc 0 / 0, a separate test (session h2-arc-test-00); automating rule 1
+in ai_firing_profile; rof_balance_check's placeholder misread (a read-only report, k 1 recorded in the config).
